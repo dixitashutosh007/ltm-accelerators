@@ -1515,7 +1515,7 @@ function logPos(val,sl){ const min=Math.log(sl.min),max=Math.log(sl.max);
   return Math.round(((Math.log(Math.max(sl.min,val))-min)/(max-min))*sl.steps); }
 
 /* ---------------- scoring (Bridge to AWS Lambda ap-south-1) ---------------- */
-const EVALUATE_API_ENDPOINT = "https://vh7pwyw8q3.execute-api.ap-south-1.amazonaws.com/api/evaluate/finops-value-case";
+const EVALUATE_API_ENDPOINT = "https://zvnmwxa9sf.execute-api.ap-south-1.amazonaws.com/api/evaluate/finops-value-case";
 
 async function fetchCloudEvaluation() {
   try {

@@ -5,7 +5,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "test:engine": "node --experimental-strip-types packages/engine-core/src/test-runner.ts",
+    "test:engine": "tsx packages/engine-core/src/test-runner.ts",
     "amplify": "ampx"
   },
   "dependencies": {

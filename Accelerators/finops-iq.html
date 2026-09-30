@@ -1588,6 +1588,9 @@
       <button class="nav-tab-btn" data-tab="bank" onclick="switchTab('bank')">
         <span class="tab-num">05</span> Question Bank Studio
       </button>
+      <a href="studio.html?tool=finops-iq" class="nav-tab-btn" style="text-decoration:none;display:inline-flex;align-items:center;gap:6px;color:var(--teal);font-weight:700">
+        ⚙️ Studio
+      </a>
     </div>
   </div>
 
@@ -1730,7 +1733,1666 @@
 
   <!-- Embedded Knowledge Base & Application Runtime -->
   <script>
-    const KB = {"meta": {"schema_version": "2.2.0", "framework": "FinOps IQ", "edition": "Production Consulting & Advisory Edition", "last_reviewed": "2026-09", "scale": "0-100 normalised", "disclaimer": "Indicative FinOps maturity screen based on self-reported inputs and consultant diagnostic probes. Scores reflect responses given and are intended to prioritize advisory action, not to certify compliance. Aligned with FinOps Foundation Framework (Inform, Optimize, Operate) and FOCUS 1.0 specifications. 'FinOps' is a trademark of the FinOps Foundation.", "gating_note": "Maturity is the highest stage passed with all preceding stages also passed. A stage passes only when its weighted score meets the threshold AND every critical checkpoint question meets the critical minimum threshold.", "sources": [{"name": "FinOps Foundation \u2014 FinOps Framework 2026", "url": "https://www.finops.org/framework/"}, {"name": "FinOps Open Cost and Usage Specification (FOCUS 1.0)", "url": "https://focus.finops.org/"}, {"name": "State of FinOps 2026 Benchmark", "url": "https://www.finops.org/insights/state-of-finops/"}], "stages": [{"id": "chaos", "n": 1, "name": "Chaos / Crawl Baseline", "short_name": "Chaos", "color": "#FF5E4F", "threshold": 60, "crit_min": 70, "desc": "Foundational governance, security root boundaries, and raw billing data ingestion must exist before meaningful FinOps work can begin.", "aim": "Establish who owns what, eliminate rogue unallocated spend, and ingest trustworthy raw billing data.", "leap_guide": "To graduate from Chaos to Informed: (1) Formalize an account registry with a single named owner per subscription; (2) Ingest raw cloud billing exports into central S3/Blob storage; (3) Mandate the 3 core tags (CostCenter, Owner, App) on all compute resources."}, {"id": "informed", "n": 2, "name": "Informed / Walk Foundation", "short_name": "Informed", "color": "#B26A00", "threshold": 65, "crit_min": 70, "desc": "Cost visibility, tagging discipline (\u226580%), scheduled showback cadence, and anomaly detection are established across business units.", "aim": "Make spend visible and attributable, detect unexpected cost anomalies within 24h, and build regular monthly review cadences.", "leap_guide": "To graduate from Informed to Optimized: (1) Shift from mere reporting to active waste elimination; (2) Establish a centralized commitment discount strategy (RIs/Savings Plans coverage \u2265 70%); (3) Allocate shared container and Kubernetes clusters by namespace."}, {"id": "optimized", "n": 3, "name": "Optimized / Rate & Usage", "short_name": "Optimized", "color": "#35754D", "threshold": 70, "crit_min": 75, "desc": "The enterprise actively reduces waste, optimizes commitment-based rates, rightsizes compute/storage, and evaluates cost in architecture reviews.", "aim": "Convert visibility into recurring, measurable savings and embed cost consciousness into engineering sprints.", "leap_guide": "To graduate from Optimized to Automated: (1) Replace manual Jira tickets with automated policy-as-code guardrails; (2) Implement automated non-prod parking schedules; (3) Put FinOps efficiency metrics into engineering OKRs and performance reviews."}, {"id": "automated", "n": 4, "name": "Automated / Run Practice", "short_name": "Automated", "color": "#3C829B", "threshold": 75, "crit_min": 75, "desc": "Cost governance is enforced programmatically through policy-as-code pipelines, auto-parking, storage tiering, and engineering KPIs.", "aim": "Make the efficient path the default path without manual friction, and extend FinOps to modern GenAI/GPU workloads.", "leap_guide": "To graduate from Automated to Transparent: (1) Transition from showback to automated multi-tenant chargeback; (2) Model real-time unit economics (cost per transaction/tenant/API); (3) Integrate cloud unit costs directly into product pricing and gross margin models."}, {"id": "transparent", "n": 5, "name": "Transparent / Unit Economics", "short_name": "Transparent", "color": "#5A3A83", "threshold": 80, "crit_min": 80, "desc": "Full financial accountability, real-time unit economics, margin forecasting, and direct integration into product roadmaps and pricing.", "aim": "Run cloud as a core business driver, priced, margin-managed, and optimized for maximum shareholder value.", "leap_guide": "At Stage 5 (Transparent): Focus on continuous posture defensibility, real-time margin defense, automated vendor contract renegotiations, and carbon sustainability unit economics."}], "domains": [{"id": "understanding_usage", "label": "Understanding Cloud Usage & Cost", "color": "#3C829B", "icon": "\ud83d\udcca"}, {"id": "business_value", "label": "Quantifying Business Value", "color": "#5A3A83", "icon": "\ud83c\udfaf"}, {"id": "optimizing_cost", "label": "Optimizing Usage & Cost", "color": "#35754D", "icon": "\u26a1"}, {"id": "managing_practice", "label": "Managing the FinOps Practice", "color": "#B26A00", "icon": "\ud83c\udfdb\ufe0f"}, {"id": "modern_workloads", "label": "Modern Workloads (K8s & GenAI)", "color": "#FF5E4F", "icon": "\ud83e\udd16"}], "checkpoints": [{"id": "chk-c1", "stage": "chaos", "title": "Account Ownership & Scoped Access Model", "desc": "Named technical & business owners assigned per account/subscription with least-privilege billing console access."}, {"id": "chk-c2", "stage": "chaos", "title": "Centralized Raw Billing Ingestion", "desc": "Granular hourly/daily cost & usage data exported to centralized, durable storage (S3/GCS/Blob)."}, {"id": "chk-c3", "stage": "chaos", "title": "Basic Billing Alarms & Spend Thresholds", "desc": "Active budget threshold alerts configured to fire before bills unexpectedly surge."}, {"id": "chk-c4", "stage": "chaos", "title": "Finance Direct Cost Console Visibility", "desc": "Finance & procurement have self-service read-only access to billing data without ticketing engineering."}, {"id": "chk-c5", "stage": "chaos", "title": "Production & Non-Prod Account Isolation", "desc": "Separate accounts/subscriptions with clear billing boundaries between production and sandbox/dev estates."}, {"id": "chk-i1", "stage": "informed", "title": "Comprehensive Tagging Policy (\u226580% coverage)", "desc": "Documented tagging strategy with CostCenter, Owner, and App tags actively enforced on \u226580% compute/storage."}, {"id": "chk-i2", "stage": "informed", "title": "Multi-Cloud Normalization & FOCUS Readiness", "desc": "Billing data mapped to standardized taxonomy or FOCUS 1.0 format across hyperscalers."}, {"id": "chk-i3", "stage": "informed", "title": "Scheduled Showback Reporting Cadence", "desc": "Bi-weekly or monthly showback reports distributed directly to engineering team leads and BUs."}, {"id": "chk-i4", "stage": "informed", "title": "Automated Anomaly Detection", "desc": "Algorithmic cost anomaly detection alerting on unexpected spend spikes within 24 hours."}, {"id": "chk-i5", "stage": "informed", "title": "Month-over-Month Variance Accountability", "desc": "Engineering and product leads can explain month-over-month cloud cost variances with business drivers."}, {"id": "chk-o1", "stage": "optimized", "title": "Commitment Discount Coverage (\u226570%)", "desc": "\u226570% of steady-state compute covered by RIs, Savings Plans, or CUDs with centralized portfolio management."}, {"id": "chk-o2", "stage": "optimized", "title": "Continuous Rightsizing Review & Execution", "desc": "Bi-weekly/monthly cadence where rightsizing and idle resource recommendations are actively deployed."}, {"id": "chk-o3", "stage": "optimized", "title": "Container & Kubernetes Cost Allocation", "desc": "Shared cluster costs broken down by namespace, pod, service, or tenant (e.g. Kubecost, OpenCost)."}, {"id": "chk-o4", "stage": "optimized", "title": "Spot & Transient Compute Workload Adoption", "desc": "Eligible stateless, batch, or non-critical workloads leverage Spot/Preemptible instances with automated eviction handling."}, {"id": "chk-a1", "stage": "automated", "title": "Policy-as-Code Guardrails & Enforcement", "desc": "Automated enforcement (OPA, Terraform Sentinel, Azure Policy, SCPs) blocking non-compliant or untagged provisioning."}, {"id": "chk-a2", "stage": "automated", "title": "Automated Non-Prod Environment Parking", "desc": "Development and test environments automatically parked outside of core business hours."}, {"id": "chk-a3", "stage": "automated", "title": "Storage Lifecycle & Snapshot Auto-Pruning", "desc": "Automated lifecycle policies tiering object storage and purging unattached snapshots/disks by TTL."}, {"id": "chk-a4", "stage": "automated", "title": "AI / GenAI & GPU Spend Governance", "desc": "GPU cluster utilization tracking, idle model endpoint shutoff, and token inference cost attribution."}, {"id": "chk-t1", "stage": "transparent", "title": "Automated Multi-Tenant Chargeback", "desc": "Direct financial cross-charging to business unit P&Ls with auditable allocation of shared platforms."}, {"id": "chk-t2", "stage": "transparent", "title": "Real-Time Unit Economics Tracking", "desc": "Cloud spend measured against business metrics (cost per transaction, cost per active user, cost per API call)."}, {"id": "chk-t3", "stage": "transparent", "title": "Product Pricing & Gross Margin Integration", "desc": "Cloud unit costs feed directly into product pricing, enterprise client contract margins, and CFO forecasting."}, {"id": "chk-t4", "stage": "transparent", "title": "Near-Zero Waste Posture (<4% bill)", "desc": "Orphaned, idle, and unallocated cloud waste consistently held under 4% of total estate spend."}]}, "questions": [{"id": "C1", "stage": "chaos", "domain": "managing_practice", "finops_capability": "Account & Identity Governance", "critical": true, "weight": 2, "checkpoint_id": "chk-c1", "text": "Is there an account-ownership and access model that supports cost governance (named owners per account, least-privilege access to billing and cost consoles)?", "consultant_probe": "Ask to inspect their cloud organizational hierarchy (AWS Organizations / Azure Management Groups / GCP Resource Manager). Verify whether individual subscriptions have documented business & technical owners or are orphaned under former employees.", "subjective_prompt": "Document client's account ownership structure, billing console access policies, and any known orphaned subscriptions.", "options": [{"label": "Yes \u2014 named owners on every account, scoped billing access documented", "score": 100}, {"label": "Ownership mostly assigned, access permissions ad hoc", "score": 65}, {"label": "Owners named for some accounts only", "score": 30}, {"label": "Neither owners nor access model defined", "score": 0}], "remediation": "Establish named owners for every account/subscription and a documented access model for billing and cost consoles \u2014 the foundation FinOps decisions attach to."}, {"id": "C2", "stage": "chaos", "domain": "understanding_usage", "finops_capability": "Cost Data Ingestion", "critical": true, "weight": 2, "checkpoint_id": "chk-c2", "text": "Is granular billing and usage data exported to a centralised, durable store (e.g. CUR to S3, Cost Management export to Azure Blob, Cloud Billing export to BigQuery)?", "consultant_probe": "Verify if raw hourly/daily Cost & Usage Reports (CUR / FOCUS-ready exports) are enabled and flowing to an immutable analytical bucket, or if teams rely solely on 30-day portal summaries.", "subjective_prompt": "Note data export frequency, storage destination, retention policy, and whether multiple cloud providers are consolidated.", "options": [{"label": "Yes \u2014 daily/hourly granular export active to a central bucket for all cloud accounts", "score": 100}, {"label": "Export enabled for primary cloud accounts only", "score": 65}, {"label": "Billing data viewed in console only; no automated export", "score": 30}, {"label": "No centralised access to billing data", "score": 0}], "remediation": "Enable automated daily/hourly billing exports (AWS CUR 2.0, Azure Cost Export, GCP BigQuery Export) to an analytical data lake \u2014 without granular data, attribution and optimization are impossible."}, {"id": "C3", "stage": "chaos", "domain": "business_value", "finops_capability": "Budgeting & Anomaly Alerting", "critical": false, "weight": 1, "checkpoint_id": "chk-c3", "text": "Are billing alarms or spend threshold notifications configured and actively alerting when spend crosses defined thresholds?", "consultant_probe": "Ask when the last unexpected spend surge occurred. Were they alerted by an automated notification, or did they only find out when the monthly invoice arrived?", "subjective_prompt": "Document current alert configuration, distribution lists, and false-positive / alert-fatigue issues.", "options": [{"label": "Yes \u2014 proactive threshold alerts on all accounts, routed to active communication channels (Slack/Teams/Email)", "score": 100}, {"label": "Alarms configured for some accounts or at high threshold only", "score": 65}, {"label": "Configured historically but alerts are ignored or misrouted", "score": 30}, {"label": "No billing alarms or spend alerts exist", "score": 0}], "remediation": "Configure automated spend alerts at 50%, 80%, and 100% of budgeted spend with routing to active engineering communication channels."}, {"id": "C4", "stage": "chaos", "domain": "managing_practice", "finops_capability": "Cross-Functional Collaboration", "critical": true, "weight": 2, "checkpoint_id": "chk-c4", "text": "Does the finance team have direct read-only access to cloud billing consoles and cost dashboards without needing engineering tickets?", "consultant_probe": "Ask Finance how they reconcile month-end invoices. Do they wait 2 weeks for an engineering manager to manually pull a CSV, or can they self-service in the cloud console?", "subjective_prompt": "Capture current finance workflow, invoice reconciliation delay, and any friction between finance and cloud architects.", "options": [{"label": "Yes \u2014 finance has self-service, read-only access to cloud billing tools and portals", "score": 100}, {"label": "Finance receives periodic manual reports from engineering on request", "score": 65}, {"label": "Finance sees the top-level invoice only with no line-item visibility", "score": 30}, {"label": "Finance has no direct visibility into cloud spend", "score": 0}], "remediation": "Grant Finance and procurement read-only billing IAM roles (e.g. AWS BillingReadOnlyAccess, Azure Cost Management Reader) to eliminate invoice blind spots."}, {"id": "C5", "stage": "chaos", "domain": "managing_practice", "finops_capability": "Account & Subscription Governance", "critical": true, "weight": 2, "checkpoint_id": "chk-c1", "text": "Does an account / subscription ownership registry exist with a named technical and business owner per account?", "consultant_probe": "Ask for the registry document or CMDB extract. Check if ownership is maintained in an automated service catalog or an outdated spreadsheet from two years ago.", "subjective_prompt": "Assess accuracy of the account registry and how new cloud accounts are provisioned and registered.", "options": [{"label": "Yes \u2014 comprehensive registry maintained and reviewed on account provisioning", "score": 100}, {"label": "Registry exists but is partially out of date or missing some business owners", "score": 65}, {"label": "Informal knowledge of who owns which accounts", "score": 30}, {"label": "No account registry exists", "score": 0}], "remediation": "Mandate an Account Ownership Registry integrated into your Identity Provider (Okta/Entra ID) and account vending pipeline."}, {"id": "C6", "stage": "chaos", "domain": "managing_practice", "finops_capability": "Cloud Architecture & Boundaries", "critical": false, "weight": 1, "checkpoint_id": "chk-c5", "text": "Are production and non-production environments strictly separated into distinct cloud accounts/subscriptions with clear billing boundaries?", "consultant_probe": "Inspect whether developers have permissions to spin up GPU or high-memory instances in the same AWS account / Azure subscription that hosts production workloads.", "subjective_prompt": "Note environment segmentation architecture, sandbox policies, and cost containment guardrails.", "options": [{"label": "Yes \u2014 strict separation into separate accounts/subscriptions with isolated billing", "score": 100}, {"label": "Separated by VPC / Resource Group but sharing the same account / subscription", "score": 65}, {"label": "Partially mixed environments across legacy workloads", "score": 30}, {"label": "Production and non-production share the same accounts with no boundary", "score": 0}], "remediation": "Isolate production, staging, and sandbox environments into dedicated accounts/subscriptions to prevent non-prod experiments from polluting production billing."}, {"id": "C7", "stage": "chaos", "domain": "managing_practice", "finops_capability": "FinOps Enablement & Team Structure", "critical": false, "weight": 1, "checkpoint_id": "chk-c1", "text": "Is a single team or individual formally accountable for cloud spend governance (e.g. CCoE, FinOps Champion, Cloud Architect)?", "consultant_probe": "Ask who owns the cloud budget variance conversation. If everyone says 'everyone is responsible', in practice nobody is accountable.", "subjective_prompt": "Document existing FinOps/CCoE charter, reporting line (CFO vs CTO), and time dedication.", "options": [{"label": "Yes \u2014 formally chartered FinOps team or lead with documented responsibilities", "score": 100}, {"label": "Informally owned by a cloud lead alongside other infrastructure duties", "score": 65}, {"label": "FinOps responsibilities fragmented across engineering leads with no coordination", "score": 30}, {"label": "No team or individual is accountable for cloud spend governance", "score": 0}], "remediation": "Appoint a dedicated FinOps Lead or formalize a Cloud Center of Excellence (CCoE) cross-functional charter with Finance and Engineering representation."}, {"id": "C8", "stage": "chaos", "domain": "understanding_usage", "finops_capability": "Multi-Cloud Account Isolation", "critical": false, "weight": 1, "checkpoint_id": "chk-c2", "text": "Are root credentials, multi-cloud master payer accounts, and enterprise agreement portals properly secured with MFA and restricted billing console roles?", "consultant_probe": "Check how master payer accounts (AWS Management Account / Azure Enterprise Agreement portal) are accessed and who can purchase savings plans or marketplace items.", "subjective_prompt": "Document master payer security, marketplace commitment approval gates, and IAM controls.", "options": [{"label": "Yes \u2014 master payer isolated, root MFA enforced, dedicated billing IAM roles", "score": 100}, {"label": "Master payer secured, but billing role access is loosely restricted", "score": 65}, {"label": "Shared administrator logins used for billing consoles", "score": 30}, {"label": "No access controls or MFA on root/master billing consoles", "score": 0}], "remediation": "Lock down root billing credentials with hardware MFA and enforce least-privilege IAM roles for purchasing and marketplace commitments."}, {"id": "I1", "stage": "informed", "domain": "understanding_usage", "finops_capability": "Cost Allocation & Metadata", "critical": true, "weight": 2, "checkpoint_id": "chk-i1", "text": "Is a tagging / metadata strategy formally defined and documented (specifying CostCenter, Owner, Application, and Environment)?", "consultant_probe": "Ask to see the written tagging standard. Check if there are case-sensitivity clashes (e.g. 'Environment' vs 'env') and whether shared services have defined allocation keys.", "subjective_prompt": "Evaluate completeness of tagging standard and consistency across business units.", "options": [{"label": "Yes \u2014 formal policy covering required keys, allowed values, and inheritance rules", "score": 100}, {"label": "Standard documented but loosely adopted or inconsistent across teams", "score": 65}, {"label": "Informal conventions exist without formal documentation", "score": 30}, {"label": "No tagging strategy or metadata standard defined", "score": 0}], "remediation": "Publish a mandatory tagging taxonomy (CostCenter, Owner, AppID, Env, DataClassification) with strict casing and value validation rules."}, {"id": "I2", "stage": "informed", "domain": "understanding_usage", "finops_capability": "Cost Allocation Coverage", "critical": true, "weight": 2, "checkpoint_id": "chk-i1", "text": "What percentage of active compute and storage resources currently carry complete, valid mandatory tags in production and non-production?", "consultant_probe": "Run or ask for a Cost Allocation Tag coverage report. Many clients think they are at 90%, but untagged disks, snapshots, and networking bring actual coverage below 50%.", "subjective_prompt": "Record actual tag coverage percentage, hardest resources to tag, and untagged spend dollar value.", "options": [{"label": "\u2265 85% of total spend carries full, validated mandatory tags", "score": 100}, {"label": "60% \u2013 84% tagged; key compute tagged but storage/network untagged", "score": 65}, {"label": "30% \u2013 59% tagged with substantial unallocated spend", "score": 30}, {"label": "< 30% tagged; spend cannot be reliably mapped to teams", "score": 0}], "remediation": "Establish a sprint goal to achieve \u226580% tag coverage on compute and storage, focusing on the top 20% of resources that generate 80% of spend."}, {"id": "I3", "stage": "informed", "domain": "understanding_usage", "finops_capability": "Data Normalization & FOCUS", "critical": false, "weight": 1, "checkpoint_id": "chk-i2", "text": "Is multi-cloud and hybrid cost data normalized using a common taxonomy or the FinOps Open Cost and Usage Specification (FOCUS 1.0)?", "consultant_probe": "Ask how they compare AWS EC2 vs Azure VM vs GCP Compute Engine costs. Is there a normalized data model, or do analysts write bespoke SQL scripts for each provider?", "subjective_prompt": "Note multi-cloud data pipeline tools (e.g. Snowflake, Databricks, CloudHealth, Apptio) and FOCUS adoption plans.", "options": [{"label": "Yes \u2014 normalized data model or FOCUS 1.0 specification adopted across all clouds", "score": 100}, {"label": "Single-cloud estate, or partial normalization across primary clouds", "score": 65}, {"label": "Multi-cloud data maintained in separate siloed spreadsheets/consoles", "score": 30}, {"label": "No normalization; impossible to compare cross-cloud usage", "score": 0}], "remediation": "Adopt the FinOps Foundation FOCUS 1.0 schema to normalize multi-cloud billing into consistent dimensions (BilledCost, EffectiveCost, Provider, ChargeSubcategory)."}, {"id": "I4", "stage": "informed", "domain": "understanding_usage", "finops_capability": "Data Analysis & Showback", "critical": false, "weight": 1, "checkpoint_id": "chk-i3", "text": "Can engineering and product teams view their own team's cost data self-service without raising a ticket or waiting for monthly finance reports?", "consultant_probe": "Ask an engineering lead to show where they look up yesterday's spend for their team. Is it on a live dashboard or completely hidden?", "subjective_prompt": "Document developer access to cost dashboards, tool adoption rates, and feedback.", "options": [{"label": "Yes \u2014 self-service dashboards filtered to team/application updated daily", "score": 100}, {"label": "Dashboards exist but require manual permission setup or are infrequently used", "score": 65}, {"label": "Teams can view top-level account cost but cannot filter to their workloads", "score": 30}, {"label": "Engineering teams have no visibility into their specific cost data", "score": 0}], "remediation": "Deploy role-based, team-filtered showback dashboards (e.g. QuickSight, PowerBI, Grafana, Cloudability) showing daily cost trends per product squad."}, {"id": "I5", "stage": "informed", "domain": "understanding_usage", "finops_capability": "Showback Cadence", "critical": false, "weight": 1, "checkpoint_id": "chk-i3", "text": "How regularly are showback reports or automated spend summaries distributed to engineering leaders and business unit stakeholders?", "consultant_probe": "Check if showback is an automated proactive push (Slack/email digest) or a reactive report compiled only when budgets are blown.", "subjective_prompt": "Capture showback frequency, recipients, and whether teams actively review reports.", "options": [{"label": "Weekly or bi-weekly automated reports with trend analysis", "score": 100}, {"label": "Monthly showback reports distributed alongside finance reviews", "score": 65}, {"label": "Quarterly or ad-hoc reports only when leadership requests", "score": 30}, {"label": "No showback reporting exists", "score": 0}], "remediation": "Automate a weekly showback digest highlighting top spend drivers, cost deltas, and month-to-date budget consumption for each engineering director."}, {"id": "I6", "stage": "informed", "domain": "business_value", "finops_capability": "Anomaly Management", "critical": false, "weight": 1, "checkpoint_id": "chk-i4", "text": "Is automated cost anomaly detection enabled and alerting on unexpected spend spikes within 24 hours of occurrence?", "consultant_probe": "Ask: 'If an engineer mistakenly deploys an unindexed vector DB cluster that burns $10k in a weekend, when does someone find out?'", "subjective_prompt": "Record recent cost anomaly horror stories, threshold tuning, and response procedures.", "options": [{"label": "Yes \u2014 automated ML-based anomaly detection alerting within 24 hours to team channels", "score": 100}, {"label": "Cloud-native anomaly detection active on some accounts with email alerts", "score": 65}, {"label": "Static threshold alerts only; anomalies discovered during monthly bill review", "score": 30}, {"label": "No anomaly detection in place", "score": 0}], "remediation": "Turn on AWS Cost Anomaly Detection / Azure Cost Alerts with Slack/Teams webhooks configured to notify on-call engineers for spend spikes > $200/day."}, {"id": "I7", "stage": "informed", "domain": "optimizing_cost", "finops_capability": "Waste Management & Orphan Discovery", "critical": false, "weight": 1, "checkpoint_id": "chk-i4", "text": "Are orphaned and idle resources (unattached EBS/disks, unassociated Elastic IPs, stale snapshots, idle load balancers) routinely identified?", "consultant_probe": "Inspect their storage bill. In almost every unmanaged environment, 10-25% of storage cost comes from abandoned snapshots and detached disks from terminated instances.", "subjective_prompt": "Estimate dollar value of idle resources and frequency of cleanup sprints.", "options": [{"label": "Yes \u2014 continuous automated scans identify and flag orphaned resources weekly", "score": 100}, {"label": "Periodic manual audits conducted every few months", "score": 65}, {"label": "Identified opportunistically when cleaning up environments", "score": 30}, {"label": "Orphaned and idle resources are never scanned or tracked", "score": 0}], "remediation": "Schedule an immediate 'Cloud Janitor' cleanup sprint to delete unattached volumes, idle load balancers, and snapshots older than 90 days."}, {"id": "I8", "stage": "informed", "domain": "managing_practice", "finops_capability": "Variance Analysis & Accountability", "critical": true, "weight": 2, "checkpoint_id": "chk-i5", "text": "How confidently can engineering teams explain their month-over-month cloud cost variances with specific business and architectural drivers?", "consultant_probe": "Ask what caused last month's largest cost increase. If the answer is 'we don't know, maybe data transfer or traffic', accountability is weak.", "subjective_prompt": "Gauge engineering familiarity with cost drivers (user growth vs inefficient code vs architectural leak).", "options": [{"label": "Very confidently \u2014 variances tied directly to release changes, traffic volume, or unit scaling", "score": 100}, {"label": "Moderate confidence \u2014 explainable with research, but takes several days to diagnose", "score": 65}, {"label": "Low confidence \u2014 cost increases often unexplained or attributed to generic cloud growth", "score": 30}, {"label": "Teams have no awareness of their cost variances", "score": 0}], "remediation": "Incorporate a 15-minute monthly FinOps variance review into sprint retrospectives, requiring teams to account for changes >10% MoM."}, {"id": "I9", "stage": "informed", "domain": "managing_practice", "finops_capability": "Review Cadence & Culture", "critical": false, "weight": 1, "checkpoint_id": "chk-i5", "text": "What formal cadence exists for reviewing cloud cost trends, forecasts, and optimization opportunities at team or BU level?", "consultant_probe": "Check if cost reviews are embedded into existing engineering sprint rituals or isolated into a dreaded annual procurement grilling.", "subjective_prompt": "Document meeting cadence, attendance (finance vs engineering), and follow-through on action items.", "options": [{"label": "Monthly structured review with both engineering and finance leaders attending", "score": 100}, {"label": "Quarterly reviews tied to budget cycles", "score": 65}, {"label": "Ad-hoc reviews triggered only when budgets are overrun", "score": 30}, {"label": "No regular cost review cadence exists", "score": 0}], "remediation": "Establish a standing monthly Cloud Financial Review between Engineering Directors, Product Owners, and Finance Leads."}, {"id": "O1", "stage": "optimized", "domain": "optimizing_cost", "finops_capability": "Rate Optimization & Commitments", "critical": true, "weight": 2, "checkpoint_id": "chk-o1", "text": "What percentage of steady-state, eligible compute spend is covered by commitment-based discounts (Savings Plans, Reserved Instances, CUDs)?", "consultant_probe": "Ask for their Compute Savings Plans / RI coverage and utilization percentages. Elite FinOps practitioners maintain 75\u201385% coverage with >98% utilization.", "subjective_prompt": "Capture current commitment coverage %, utilization %, commitment expiration calendar, and purchasing policy.", "options": [{"label": "\u2265 75% coverage with >95% commitment utilization managed centrally", "score": 100}, {"label": "50% \u2013 74% coverage; some accounts optimized, others running purely on-demand", "score": 65}, {"label": "25% \u2013 49% coverage; ad-hoc purchases without centralized tracking", "score": 30}, {"label": "< 25% coverage; vast majority running on expensive on-demand rates", "score": 0}], "remediation": "Centralize commitment purchasing at the master payer level and execute a 1-year / 3-year Compute Savings Plan to cover steady-state baseline, yielding immediate 20-35% savings."}, {"id": "O2", "stage": "optimized", "domain": "optimizing_cost", "finops_capability": "Workload Optimization & Rightsizing", "critical": true, "weight": 2, "checkpoint_id": "chk-o2", "text": "How regularly are instance rightsizing, CPU/memory downsizing, and modern generation upgrades (e.g. Graviton/ARM) reviewed and deployed?", "consultant_probe": "Check if rightsizing recommendations in AWS Compute Optimizer or Azure Advisor sit in an untouched backlog or are actively converted into Jira tickets and deployed.", "subjective_prompt": "Document rightsizing deployment blockers (e.g. fear of outages, lack of automated testing, dev team resistance).", "options": [{"label": "Bi-weekly or monthly cadence with verified rightsizing actions deployed to production", "score": 100}, {"label": "Quarterly reviews; recommendations actioned for non-prod, slow for production", "score": 65}, {"label": "Rightsizing reviewed ad-hoc or only during infrastructure refresh", "score": 30}, {"label": "Instances are rarely or never rightsized after initial provisioning", "score": 0}], "remediation": "Dedicate 10% of engineering sprint capacity to deploy Compute Optimizer rightsizing recommendations, starting with non-prod and over-provisioned memory instances."}, {"id": "O3", "stage": "optimized", "domain": "modern_workloads", "finops_capability": "Container & K8s Allocation", "critical": false, "weight": 2, "checkpoint_id": "chk-o3", "text": "Are Kubernetes / container cluster infrastructure costs broken down and allocated by namespace, deployment, pod, or microservice?", "consultant_probe": "Ask how multi-tenant EKS/GKE/AKS cluster costs are distributed to product squads. Are clusters treated as a single massive black-box bill, or allocated via Kubecost/OpenCost?", "subjective_prompt": "Detail container footprint (EKS/AKS/GKE/ECS), cluster tooling, and pod resource request vs limit discipline.", "options": [{"label": "Yes \u2014 container cost allocation tool (e.g. Kubecost, OpenCost) active with pod-level showback", "score": 100}, {"label": "Cluster costs allocated using rough namespace node percentages or tag proxies", "score": 65}, {"label": "Cluster spend tracked as a single shared pool with no team breakdown", "score": 30}, {"label": "Containerized workloads have zero cost visibility", "score": 0}], "remediation": "Deploy OpenCost or Kubecost across your Kubernetes clusters to allocate node costs down to namespaces, controller workloads, and idle pod allocations."}, {"id": "O4", "stage": "optimized", "domain": "optimizing_cost", "finops_capability": "Spot & Preemptible Compute", "critical": false, "weight": 1, "checkpoint_id": "chk-o4", "text": "What share of eligible stateless, batch, CI/CD, or transient compute spend runs on Spot / Preemptible instances?", "consultant_probe": "Inspect CI/CD runners, batch processing, and non-prod Kubernetes worker nodes. Are they paying full on-demand pricing for disposable compute?", "subjective_prompt": "Document Spot utilization, auto-scaler configuration (e.g. Karpenter), and interruption tolerance.", "options": [{"label": "\u2265 50% of eligible stateless/batch workloads leverage Spot with automated eviction handling", "score": 100}, {"label": "20% \u2013 49% Spot usage in dev/test or specific batch pipelines", "score": 65}, {"label": "< 20% Spot usage; perceived as too risky or complex", "score": 30}, {"label": "Zero Spot usage; everything runs on on-demand compute", "score": 0}], "remediation": "Migrate CI/CD runners and dev Kubernetes node pools to Spot instances using Karpenter / Spot Ocean, cutting compute costs by up to 70%."}, {"id": "O5", "stage": "optimized", "domain": "managing_practice", "finops_capability": "Architecture & Engineering Review", "critical": true, "weight": 2, "checkpoint_id": "chk-o5", "text": "Is cloud financial impact and unit cost a mandatory evaluation criterion in architectural reviews, RFCs, and major system design approvals?", "consultant_probe": "Review a recent Architecture Review Board (ARB) design document. Does it have an estimated monthly operating cost and unit economics section, or purely latency/HA diagrams?", "subjective_prompt": "Assess whether cloud cost is designed in at inception or treated as an afterthought.", "options": [{"label": "Yes \u2014 estimated cost and unit economics are mandatory in all design reviews/RFCs", "score": 100}, {"label": "Cost is discussed informally but not formally modeled or audited", "score": 65}, {"label": "Cost is considered only for multi-million dollar projects", "score": 30}, {"label": "Architecture reviews evaluate performance and security only, ignoring cost", "score": 0}], "remediation": "Add a mandatory 'FinOps & Operating Cost Impact' section to your Architecture Review Board (ARB) templates before code is written."}, {"id": "O6", "stage": "optimized", "domain": "optimizing_cost", "finops_capability": "Commitment Lifecycle Management", "critical": false, "weight": 1, "checkpoint_id": "chk-o1", "text": "How are commitment-based discount portfolios (RIs, Savings Plans, CUDs) monitored for expiration, utilization drift, and break-even targets?", "consultant_probe": "Ask who tracks expiring 1-year and 3-year commitments. Have commitments ever expired unnoticed, causing spend to spike by 30% overnight?", "subjective_prompt": "Review commitment renewal calendar and portfolio hedging strategy.", "options": [{"label": "Continuous automated monitoring with staggered expiration pipeline and alerts", "score": 100}, {"label": "Tracked in a shared spreadsheet with quarterly renewal checks", "score": 65}, {"label": "Reactive renewals; commitments have expired unnoticed in the past", "score": 30}, {"label": "No tracking of commitment expirations or utilization", "score": 0}], "remediation": "Implement a rolling commitment strategy with staggered expirations every quarter to smooth budget impact and prevent cliff-edge renewals."}, {"id": "O7", "stage": "optimized", "domain": "optimizing_cost", "finops_capability": "Data Transfer & Egress Optimization", "critical": false, "weight": 1, "checkpoint_id": "chk-o2", "text": "Has data transfer, cross-AZ traffic, NAT Gateway data processing, and public egress been reviewed and optimized with architectural controls?", "consultant_probe": "Look at the NAT Gateway and Cross-AZ Inter-Region data transfer line items. In modern microservices, inter-AZ traffic often accounts for 15-25% of the total network bill.", "subjective_prompt": "Document network topology, VPC endpoints, CloudFront caching, and cross-AZ traffic patterns.", "options": [{"label": "Yes \u2014 VPC endpoints, direct interconnects, and local AZ routing active; egress audited quarterly", "score": 100}, {"label": "VPC endpoints deployed for top services (S3/Dynamo), but cross-AZ traffic unoptimized", "score": 65}, {"label": "Egress acknowledged as high but no architectural remediation implemented", "score": 30}, {"label": "Data transfer and cross-AZ traffic are unmonitored and unoptimized", "score": 0}], "remediation": "Deploy VPC Gateway Endpoints for S3 and DynamoDB and configure zonal DNS routing to eliminate expensive NAT Gateway and cross-AZ transfer charges."}, {"id": "O8", "stage": "optimized", "domain": "managing_practice", "finops_capability": "FinOps Culture & Gamification", "critical": false, "weight": 1, "checkpoint_id": "chk-o5", "text": "To what extent are engineering teams recognized, celebrated, or rewarded for eliminating cloud waste and improving architectural efficiency?", "consultant_probe": "Ask engineers: 'Do you get recognition in performance reviews or all-hands for saving $50k/month in cloud waste, or only for shipping features?'", "subjective_prompt": "Evaluate organizational incentives, gamification leaderboards, and engineering leadership support.", "options": [{"label": "Active recognition \u2014 FinOps achievements celebrated in all-hands, bonuses, or hackathons", "score": 100}, {"label": "Informal shout-outs in team retrospectives for major savings", "score": 65}, {"label": "Cost savings expected but never publicly recognized or rewarded", "score": 30}, {"label": "Feature velocity is rewarded exclusively; cost optimization is invisible", "score": 0}], "remediation": "Launch an internal 'FinOps Champions' recognition award and highlight top waste-reduction stories in engineering monthly town halls."}, {"id": "O9", "stage": "optimized", "domain": "optimizing_cost", "finops_capability": "Continuous Optimization Backlog", "critical": false, "weight": 1, "checkpoint_id": "chk-o2", "text": "Does a dedicated cost optimization backlog exist and get groomed alongside functional features in regular engineering sprints?", "consultant_probe": "Check their Jira / Azure DevOps backlog. Are FinOps tickets tagged with estimated monthly savings and prioritized by ROI?", "subjective_prompt": "Review Jira backlog for FinOps stories, prioritization criteria, and completion velocity.", "options": [{"label": "Yes \u2014 dedicated FinOps epics/stories with quantified ROI groomed in standard sprints", "score": 100}, {"label": "Stories created occasionally but routinely deprioritized for functional features", "score": 65}, {"label": "Ad-hoc tickets created only when finance rings alarm bells", "score": 30}, {"label": "No cost optimization stories exist in engineering backlogs", "score": 0}], "remediation": "Tag optimization tickets in Jira with estimated monthly savings (e.g. '$2,400/mo savings \u00b7 4 story points') to enable data-driven sprint prioritization."}, {"id": "O10", "stage": "optimized", "domain": "optimizing_cost", "finops_capability": "Optimization Lever Prioritization", "critical": false, "weight": 1, "checkpoint_id": "chk-o1", "text": "Rank these optimization levers by historical ROI in your estate: Commitments, Rightsizing, Storage Lifecycle, and Spot/Autoscaling.", "consultant_probe": "Evaluate which levers have matured vs which are completely neglected by their infrastructure teams.", "subjective_prompt": "Document realized savings across each lever over the past 12 months.", "options": [{"label": "All four levers actively harvested across steady-state workloads", "score": 100}, {"label": "Commitments and storage lifecycle mature; rightsizing and spot nascent", "score": 65}, {"label": "Commitments only; usage optimization and rightsizing not executed", "score": 30}, {"label": "None of these optimization levers have been systematically deployed", "score": 0}], "remediation": "Balance rate optimization (quick financial wins) with architectural usage optimization (permanent engineering efficiency) for compounded ROI."}, {"id": "A1", "stage": "automated", "domain": "managing_practice", "finops_capability": "Policy-as-Code & Guardrails", "critical": true, "weight": 2, "checkpoint_id": "chk-a1", "text": "Is tagging and cost governance enforced automatically through policy-as-code guardrails (e.g. OPA, Terraform Sentinel, Azure Policy, SCPs)?", "consultant_probe": "Test whether an engineer can deploy an untagged EC2 instance or Azure VM via CLI/Terraform right now. Does the CI/CD pipeline or cloud policy immediately block or quarantine it?", "subjective_prompt": "Assess policy-as-code enforcement tools, bypass mechanisms, and automated remediation bots.", "options": [{"label": "Yes \u2014 automated policy gates block non-compliant deployments in CI/CD and at cloud API level", "score": 100}, {"label": "Policies configured in audit mode (flags violations but does not block)", "score": 65}, {"label": "Linting rules exist in some repos but no central enforcement gate", "score": 30}, {"label": "No policy-as-code or automated guardrails exist", "score": 0}], "remediation": "Convert tagging and instance-family guidelines into strict policy-as-code guardrails in Terraform/OpenTofu and Azure Policy / AWS SCPs to block non-compliant deployments."}, {"id": "A2", "stage": "automated", "domain": "optimizing_cost", "finops_capability": "Automated Workload Scheduling", "critical": false, "weight": 1, "checkpoint_id": "chk-a2", "text": "Are non-production resources (dev, test, staging environments) automatically parked or shut down outside working hours and on weekends?", "consultant_probe": "Check if non-prod compute runs 24/7 (744 hours/month) or is on a 50-hour weekly schedule (10 hours x 5 days). Automated parking immediately cuts 65% of non-prod compute spend.", "subjective_prompt": "Document auto-parking tools (AWS Instance Scheduler, Cloud Custodian, Azure Automation) and opt-out rate.", "options": [{"label": "Yes \u2014 default automated schedule stops non-prod outside 8am-6pm weekdays with easy opt-out", "score": 100}, {"label": "Automated schedules active for some teams; others run 24/7 continuously", "score": 65}, {"label": "Engineers are asked to stop instances manually (infrequently done)", "score": 30}, {"label": "All non-production environments run 24/7 by default", "score": 0}], "remediation": "Deploy automated environment schedulers across all dev/staging accounts to power down compute outside core business hours, reclaiming 65% of non-prod cost."}, {"id": "A3", "stage": "automated", "domain": "optimizing_cost", "finops_capability": "Storage Auto-Lifecycle", "critical": false, "weight": 1, "checkpoint_id": "chk-a3", "text": "Do automated lifecycle policies govern object storage tiering (e.g. S3 Intelligent-Tiering / Glacier, Azure Blob cool/archive) and snapshot TTL expiration?", "consultant_probe": "Check S3/Blob storage classes. Are petabytes of log data or backups sitting on S3 Standard / Blob Hot storage that hasn't been accessed in 180 days?", "subjective_prompt": "Audit object storage lifecycle policies, snapshot retention scripts, and archive usage.", "options": [{"label": "Yes \u2014 comprehensive lifecycle rules automatically transition and expire storage across all buckets", "score": 100}, {"label": "Lifecycle rules active on primary buckets; secondary storage unmanaged", "score": 65}, {"label": "Manual cleanup scripts run occasionally when storage bills escalate", "score": 30}, {"label": "No automated lifecycle policies exist; data accumulates indefinitely", "score": 0}], "remediation": "Enable S3 Intelligent-Tiering across all production buckets and enforce a 30-day lifecycle rule on debug logs and ephemeral test snapshots."}, {"id": "A4", "stage": "automated", "domain": "modern_workloads", "finops_capability": "AI & GenAI Cloud Spend Governance", "critical": false, "weight": 2, "checkpoint_id": "chk-a4", "text": "Are modern AI / GenAI and GPU infrastructure costs tracked with idle model endpoint shutdown, GPU utilization metrics, and token cost attribution?", "consultant_probe": "Ask how they track spending on OpenAI/Anthropic APIs, AWS Bedrock, SageMaker, or Azure OpenAI. Are dedicated GPU clusters sitting idle over weekends at $10k/day?", "subjective_prompt": "Document GenAI architecture, dedicated GPU cluster count, prompt token tracking, and caching mechanisms.", "options": [{"label": "Yes \u2014 dedicated GenAI FinOps tracking GPU cluster saturation, token attribution, and idle shutdown", "score": 100}, {"label": "LLM API spend tracked at account level, but GPU utilization and prompt caching unmonitored", "score": 65}, {"label": "AI spend lumped into general cloud compute with zero visibility into model economics", "score": 30}, {"label": "No AI workloads in cloud, or AI spend completely unmanaged", "score": 0}], "remediation": "Implement automatic scale-to-zero on SageMaker/Azure ML inference endpoints and enforce semantic prompt caching to cut recurring model inference costs."}, {"id": "A5", "stage": "automated", "domain": "modern_workloads", "finops_capability": "Container Autoscaling & Rightsizing", "critical": false, "weight": 1, "checkpoint_id": "chk-a3", "text": "Are container resource requests and limits (CPU/Memory) tuned automatically using Horizontal/Vertical Pod Autoscalers (HPA/VPA) or Karpenter?", "consultant_probe": "Inspect their Kubernetes Pod Resource Requests vs Actual Utilization ratio. Across the industry, pods are provisioned for 4x their average memory/CPU need.", "subjective_prompt": "Evaluate VPA/Karpenter adoption, namespace quota enforcement, and node pool bin-packing efficiency.", "options": [{"label": "Yes \u2014 automated VPA/HPA tuning with intelligent node bin-packing (e.g. Karpenter)", "score": 100}, {"label": "HPA configured based on traffic; pod requests tuned manually every few months", "score": 65}, {"label": "Static pod requests set high to prevent OOM errors, causing massive cluster slack", "score": 30}, {"label": "No pod requests/limits configured; nodes run in unbalanced, unoptimized states", "score": 0}], "remediation": "Deploy Vertical Pod Autoscaler in recommendation mode to rightsize container CPU/Memory requests, eliminating massive cluster slack."}, {"id": "A6", "stage": "automated", "domain": "managing_practice", "finops_capability": "Engineering OKRs & KPIs", "critical": true, "weight": 2, "checkpoint_id": "chk-a1", "text": "Are FinOps efficiency metrics formally included in engineering team OKRs, sprint KPIs, or performance evaluations?", "consultant_probe": "Ask the VP of Engineering: 'Are your engineering managers held accountable for unit efficiency and cost targets in their quarterly performance reviews?'", "subjective_prompt": "Document existing engineering OKRs and how cost efficiency is weighted against delivery velocity.", "options": [{"label": "Yes \u2014 explicit cost-efficiency OKRs (e.g. unit cost reduction, zero untagged compute) in sprint KPIs", "score": 100}, {"label": "Discussed at director level, but not cascaded into individual engineering squad OKRs", "score": 65}, {"label": "Mentioned informally when budgets are tight, but not part of performance reviews", "score": 30}, {"label": "Cost efficiency plays zero role in engineering OKRs or evaluations", "score": 0}], "remediation": "Incorporate a standardized FinOps Key Result into engineering squad quarterly OKRs (e.g. 'Maintain <5% unallocated spend and rightsizing compliance \u226590%')."}, {"id": "A7", "stage": "automated", "domain": "optimizing_cost", "finops_capability": "Automated Spot Interruption Handling", "critical": false, "weight": 1, "checkpoint_id": "chk-a2", "text": "Does automated handling, graceful draining, and instant replacement exist for Spot / Preemptible instance interruptions?", "consultant_probe": "Verify if Spot termination notices (AWS 2-minute warning) trigger automated node draining and replacement via Karpenter/Cluster Autoscaler without dropping user traffic.", "subjective_prompt": "Review Spot resilience architecture and zero-downtime test results.", "options": [{"label": "Yes \u2014 automated node drainer and diversified capacity pools ensure zero-downtime Spot resilience", "score": 100}, {"label": "Basic autoscaler handles replacements, but transient failures can occur", "score": 65}, {"label": "Spot used only for batch tasks that can afford hard crashes", "score": 30}, {"label": "No automated interruption handling; Spot cannot be used for application services", "score": 0}], "remediation": "Implement AWS Node Termination Handler or Karpenter capacity rebalancing to drain and rotate Spot instances before cloud termination."}, {"id": "A8", "stage": "automated", "domain": "business_value", "finops_capability": "Forecasting & Predictive Analytics", "critical": true, "weight": 2, "checkpoint_id": "chk-a1", "text": "Over the last rolling quarter, what has been your cloud spend forecast variance against actual monthly billing?", "consultant_probe": "Ask Finance and Cloud Ops to compare their forecasted spend from 90 days ago against the actual invoiced total. Is variance within 5% or 40% off?", "subjective_prompt": "Record actual forecast variance percentage, forecasting tools, and driver-based modeling capabilities.", "options": [{"label": "Within \u00b1 5% variance consistently across quarters", "score": 100}, {"label": "Within \u00b1 15% variance; major product launches sometimes cause drift", "score": 65}, {"label": "Within \u00b1 30% variance; forecasts are rough approximations", "score": 30}, {"label": "> 30% variance or no formal cloud spend forecast is produced", "score": 0}], "remediation": "Build a driver-based rolling forecast model combining historical run-rate trends with product roadmap launch schedules to maintain variance within \u00b15%."}, {"id": "A9", "stage": "automated", "domain": "managing_practice", "finops_capability": "CI/CD Cost Shift-Left", "critical": false, "weight": 1, "checkpoint_id": "chk-a1", "text": "Do software and DevOps engineers receive automated cost feedback inside their normal workflow (e.g. Infracost in GitHub/GitLab pull requests)?", "consultant_probe": "Ask to see a sample Pull Request. Does Infracost comment directly on the PR showing: 'This Terraform change will increase monthly AWS spend by $340'?", "subjective_prompt": "Assess shift-left FinOps tooling (Infracost, Terraform cost estimators) and developer response.", "options": [{"label": "Yes \u2014 automated PR comments show exact estimated dollar impact before code is merged", "score": 100}, {"label": "PR cost checks deployed on some core repositories but not universal", "score": 65}, {"label": "Cost discussed manually during code reviews for high-risk changes", "score": 30}, {"label": "Engineers merge infrastructure code with zero automated cost visibility", "score": 0}], "remediation": "Integrate Infracost into GitHub/GitLab CI/CD pipelines to show engineers the real-time cost delta of Terraform/CloudFormation PRs before merging."}, {"id": "T1", "stage": "transparent", "domain": "understanding_usage", "finops_capability": "Automated Multi-Tenant Chargeback", "critical": true, "weight": 2, "checkpoint_id": "chk-t1", "text": "How mature is financial chargeback to business units, product lines, and cost centers (actual financial transfer to P&Ls)?", "consultant_probe": "Verify whether chargeback is actual journal entries debiting BU general ledgers or just 'showback' reports that directors can ignore with zero budget consequence.", "subjective_prompt": "Document financial ledger integration, dispute resolution processes, and shared platform allocation keys.", "options": [{"label": "Fully automated chargeback with monthly journal entries posted to SAP/Oracle general ledgers", "score": 100}, {"label": "Showback is enforced with budget accountability, but no direct P&L debit", "score": 65}, {"label": "Informal chargeback based on rough percentage splits with frequent disputes", "score": 30}, {"label": "Centralized IT absorbs all cloud costs as corporate overhead with zero chargeback", "score": 0}], "remediation": "Transition from informational showback to direct automated chargeback in your ERP (SAP/Oracle/NetSuite), holding business unit leaders financially accountable for their cloud consumption."}, {"id": "T2", "stage": "transparent", "domain": "business_value", "finops_capability": "Unit Economics & Margin Modeling", "critical": true, "weight": 2, "checkpoint_id": "chk-t2", "text": "Are business unit economics defined, tracked, and reported in real-time (e.g. cost per transaction, cost per active user, cost per order)?", "consultant_probe": "Ask the client's executive: 'What is your cloud infrastructure cost per completed customer order or active subscriber, and has it increased or decreased over the last 12 months?'", "subjective_prompt": "Document defined unit economics metrics, data source integrations, and executive reporting frequency.", "options": [{"label": "Yes \u2014 granular unit metrics (cost/transaction, cost/tenant) tracked and trended on executive dashboards", "score": 100}, {"label": "Unit metrics calculated manually on a quarterly basis for key products", "score": 65}, {"label": "Top-level cloud spend tracked against revenue, but no operational unit metrics", "score": 30}, {"label": "No unit economics defined; cloud spend treated solely as a lump-sum IT expense", "score": 0}], "remediation": "Define 1-2 core unit economic metrics (e.g. Cloud Cost per 1,000 Transactions) combining cloud billing telemetry with product analytics in BI dashboards."}, {"id": "T3", "stage": "transparent", "domain": "business_value", "finops_capability": "BI & Financial Integration", "critical": true, "weight": 2, "checkpoint_id": "chk-t3", "text": "Is cloud cost and unit telemetry integrated directly into enterprise BI platforms and long-range corporate financial planning?", "consultant_probe": "Check if CFO forecasting models incorporate real-time cloud unit cost metrics, or if cloud budgets are forecasted as a flat 15% annual increase.", "subjective_prompt": "Evaluate FP&A involvement in cloud budgeting and multi-year forecasting accuracy.", "options": [{"label": "Yes \u2014 cloud unit telemetry feeds directly into corporate BI and FP&A financial models", "score": 100}, {"label": "Cloud costs integrated into BI dashboards, but FP&A models use manual quarterly inputs", "score": 65}, {"label": "Separate reporting tracks; cloud team tools do not communicate with finance BI", "score": 30}, {"label": "Cloud financials completely isolated from corporate BI platforms", "score": 0}], "remediation": "Feed normalized cloud cost data directly into the enterprise data warehouse (Snowflake/BigQuery) so FP&A can model cloud COGS against product revenue pipelines."}, {"id": "T4", "stage": "transparent", "domain": "business_value", "finops_capability": "Tenant Cost Attribution & Pricing", "critical": false, "weight": 1, "checkpoint_id": "chk-t2", "text": "Is infrastructure cost per customer or tenant tracked and used directly to inform product tier pricing, enterprise contracts, and margin defense?", "consultant_probe": "Ask Sales / Product: 'Do you know which of your enterprise customers are unprofitable due to heavy cloud compute/storage consumption?'", "subjective_prompt": "Detail multi-tenant cost tracking capabilities and how it informs bespoke enterprise contract pricing.", "options": [{"label": "Yes \u2014 exact cost-to-serve per customer is tracked and informs contract pricing and tier margins", "score": 100}, {"label": "Calculated for high-tier enterprise clients during annual contract renewals", "score": 65}, {"label": "Rough approximations used; individual customer cloud cost unknown", "score": 30}, {"label": "No tracking of customer cost-to-serve; all customers billed standard pricing", "score": 0}], "remediation": "Implement customer-tenant attribution tags on storage and compute to identify unprofitable enterprise accounts and adjust renewal pricing."}, {"id": "T5", "stage": "transparent", "domain": "managing_practice", "finops_capability": "Executive Scorecards & Benchmarking", "critical": false, "weight": 1, "checkpoint_id": "chk-t3", "text": "How embedded are executive FinOps scorecards, department leaderboards, and peer benchmarking in driving executive behavior?", "consultant_probe": "Check if business unit leaders compare their unit costs against other internal BUs on monthly executive scorecards.", "subjective_prompt": "Review executive scorecard metrics and C-suite engagement.", "options": [{"label": "Highly embedded \u2014 monthly executive scorecards drive competition and senior accountability", "score": 100}, {"label": "Scorecards shared with department heads quarterly; discussed at leadership reviews", "score": 65}, {"label": "Scorecards distributed informally without executive sponsorship", "score": 30}, {"label": "No scorecards or peer benchmarks exist", "score": 0}], "remediation": "Publish an executive 'Cloud Efficiency Scorecard' ranking business units by tag compliance, commitment coverage, and unit cost trajectory."}, {"id": "T6", "stage": "transparent", "domain": "optimizing_cost", "finops_capability": "Waste Threshold & Posture Defense", "critical": true, "weight": 2, "checkpoint_id": "chk-t4", "text": "What proportion of the total cloud bill is currently attributable to unallocated waste, idle compute, or unattached storage?", "consultant_probe": "Verify client's total unallocated and idle spend. Best-in-class Stage 5 organizations hold waste strictly below 4% of total cloud spend.", "subjective_prompt": "Analyze client's waste percentage and ongoing posture defense mechanisms.", "options": [{"label": "< 4% of total spend \u2014 lean, autonomous estate with continuous self-healing guardrails", "score": 100}, {"label": "4% \u2013 9% waste \u2014 healthy posture with minor occasional drift", "score": 65}, {"label": "10% \u2013 20% waste \u2014 regular cleanups required to keep spend in check", "score": 30}, {"label": "> 20% waste \u2014 significant ongoing waste across multiple accounts", "score": 0}], "remediation": "Implement automated self-healing guardrails (e.g. auto-quarantine unattached disks after 7 days) to sustain a world-class <4% waste baseline."}, {"id": "T7", "stage": "transparent", "domain": "managing_practice", "finops_capability": "Executive Compensation & Performance", "critical": false, "weight": 1, "checkpoint_id": "chk-t3", "text": "To what extent does cloud cost efficiency, unit economics, and margin optimization feature in senior leadership performance evaluations and compensation?", "consultant_probe": "Ask if engineering directors and VP-level leaders have performance bonuses tied to cloud gross margin targets.", "subjective_prompt": "Assess leadership compensation structures and incentives.", "options": [{"label": "Formally tied to executive KPIs, bonus incentives, and performance reviews", "score": 100}, {"label": "Considered during annual performance reviews as part of overall operational rigor", "score": 65}, {"label": "Evaluated only if massive budget overruns occur", "score": 30}, {"label": "Plays zero role in leadership evaluations or compensation", "score": 0}], "remediation": "Align leadership incentives by tying a portion of engineering executive bonuses to achieving gross margin and unit cost efficiency targets."}, {"id": "T8", "stage": "transparent", "domain": "business_value", "finops_capability": "Strategic Product Roadmap Steering", "critical": false, "weight": 1, "checkpoint_id": "chk-t3", "text": "Do cloud unit economics and margin data directly inform product feature deprecation, architecture rewrites, and expansion decisions?", "consultant_probe": "Ask: 'Have you ever killed an unprofitable feature or rewritten an architecture because its cloud unit cost eroded customer margin?'", "subjective_prompt": "Capture specific examples of product strategy influenced by cloud unit economics.", "options": [{"label": "Yes \u2014 product roadmaps and feature lifecycle decisions are routinely steered by unit margin data", "score": 100}, {"label": "Considered during major product overhauls, but not continuously during feature planning", "score": 65}, {"label": "Informally acknowledged, but feature velocity always trumps margin data", "score": 30}, {"label": "Product teams never consult cloud cost data when planning roadmaps", "score": 0}], "remediation": "Embed FinOps architects into the product roadmap lifecycle to audit the unit economics of new features prior to general availability."}], "archetypes": [{"id": "saas", "name": "Cloud-Native B2B SaaS Scale-up", "sector": "Technology / Software", "spend": "$8M \u2013 $15M / yr", "spend_numeric": 10000000, "clouds": ["AWS"], "tech_stack": ["Kubernetes (EKS)", "Microservices", "PostgreSQL", "Kafka"], "description": "Fast-growing high-velocity SaaS. Heavy EKS cluster footprint. Engineers spin up resources freely. Good awareness but tagging is inconsistent and 40% of compute runs on expensive on-demand instances.", "baseline_stage": 2, "sample_answers": {"C1": 0, "C2": 0, "C3": 0, "C4": 1, "C5": 0, "C6": 1, "C7": 1, "C8": 0, "I1": 1, "I2": 2, "I3": 1, "I4": 0, "I5": 1, "I6": 0, "I7": 1, "I8": 1, "I9": 1, "O1": 2, "O2": 2, "O3": 1, "O4": 2, "O5": 2, "O6": 2, "O7": 2, "O8": 2, "O9": 2, "O10": 2, "A1": 2, "A2": 2, "A3": 1, "A4": 2, "A5": 1, "A6": 2, "A7": 2, "A8": 2, "A9": 2, "T1": 3, "T2": 2, "T3": 2, "T4": 2, "T5": 3, "T6": 2, "T7": 3, "T8": 2}}, {"id": "banking", "name": "Tier-1 Enterprise Bank & Capital Markets", "sector": "Banking & Financial Services", "spend": "$25M \u2013 $50M / yr", "spend_numeric": 35000000, "clouds": ["Azure", "AWS"], "tech_stack": ["Multi-Cloud", "Legacy Enterprise VMs", "OpenShift", "Oracle"], "description": "Heavily regulated global financial institution. Strong account boundaries and centralized procurement. However, rightsizing approvals take months, container allocation is unmapped, and on-demand legacy spend leaks millions.", "baseline_stage": 2, "sample_answers": {"C1": 0, "C2": 0, "C3": 0, "C4": 0, "C5": 0, "C6": 0, "C7": 0, "C8": 0, "I1": 0, "I2": 1, "I3": 1, "I4": 1, "I5": 0, "I6": 1, "I7": 1, "I8": 1, "I9": 0, "O1": 1, "O2": 2, "O3": 2, "O4": 3, "O5": 1, "O6": 1, "O7": 1, "O8": 3, "O9": 2, "O10": 1, "A1": 1, "A2": 2, "A3": 1, "A4": 2, "A5": 2, "A6": 1, "A7": 3, "A8": 1, "A9": 2, "T1": 1, "T2": 2, "T3": 1, "T4": 2, "T5": 1, "T6": 2, "T7": 2, "T8": 2}}, {"id": "healthcare", "name": "Healthcare & Life Sciences Network", "sector": "Healthcare & Life Sciences", "spend": "$10M \u2013 $20M / yr", "spend_numeric": 14000000, "clouds": ["AWS", "GCP"], "tech_stack": ["AI/ML GPU Clusters", "Petabyte Imaging Lake", "Kubernetes", "HIPAA Enclaves"], "description": "Research hospital and diagnostics platform. Enormous petabyte-scale genomics and imaging datasets. Dedicated GPU clusters for AI model training frequently sit idle, driving up cloud bills with minimal unit attribution.", "baseline_stage": 1, "sample_answers": {"C1": 0, "C2": 0, "C3": 1, "C4": 1, "C5": 1, "C6": 0, "C7": 1, "C8": 0, "I1": 1, "I2": 2, "I3": 2, "I4": 2, "I5": 2, "I6": 2, "I7": 2, "I8": 2, "I9": 2, "O1": 2, "O2": 2, "O3": 2, "O4": 3, "O5": 2, "O6": 2, "O7": 2, "O8": 3, "O9": 3, "O10": 2, "A1": 3, "A2": 2, "A3": 2, "A4": 2, "A5": 2, "A6": 3, "A7": 3, "A8": 2, "A9": 3, "T1": 3, "T2": 3, "T3": 2, "T4": 3, "T5": 3, "T6": 2, "T7": 3, "T8": 3}}, {"id": "retail", "name": "Global Retail & Omnichannel E-Commerce", "sector": "Retail & Consumer Goods", "spend": "$15M \u2013 $30M / yr", "spend_numeric": 22000000, "clouds": ["AWS", "Azure"], "tech_stack": ["Serverless", "Kubernetes", "Redis", "Multi-Region CDN"], "description": "High seasonal transaction volume with huge Black Friday/holiday elasticity. Significant cross-AZ data transfer costs and NAT Gateway processing fees. Good automated scheduling in dev, but lacks real-time unit economics per order.", "baseline_stage": 3, "sample_answers": {"C1": 0, "C2": 0, "C3": 0, "C4": 0, "C5": 0, "C6": 0, "C7": 0, "C8": 0, "I1": 0, "I2": 0, "I3": 1, "I4": 0, "I5": 0, "I6": 0, "I7": 1, "I8": 0, "I9": 0, "O1": 0, "O2": 1, "O3": 1, "O4": 1, "O5": 1, "O6": 0, "O7": 1, "O8": 1, "O9": 1, "O10": 0, "A1": 0, "A2": 0, "A3": 0, "A4": 1, "A5": 1, "A6": 1, "A7": 1, "A8": 1, "A9": 1, "T1": 1, "T2": 1, "T3": 1, "T4": 1, "T5": 1, "T6": 1, "T7": 2, "T8": 1}}]};
+    const KB = {
+  "meta": {
+    "schema_version": "2.2.0",
+    "framework": "FinOps IQ",
+    "edition": "Production Consulting & Advisory Edition",
+    "last_reviewed": "2026-09",
+    "scale": "0-100 normalised",
+    "disclaimer": "Indicative FinOps maturity screen based on self-reported inputs and consultant diagnostic probes. Scores reflect responses given and are intended to prioritize advisory action, not to certify compliance. Aligned with FinOps Foundation Framework (Inform, Optimize, Operate) and FOCUS 1.0 specifications. 'FinOps' is a trademark of the FinOps Foundation.",
+    "gating_note": "Maturity is the highest stage passed with all preceding stages also passed. A stage passes only when its weighted score meets the threshold AND every critical checkpoint question meets the critical minimum threshold.",
+    "sources": [
+      {
+        "name": "FinOps Foundation \u2014 FinOps Framework 2026",
+        "url": "https://www.finops.org/framework/"
+      },
+      {
+        "name": "FinOps Open Cost and Usage Specification (FOCUS 1.0)",
+        "url": "https://focus.finops.org/"
+      },
+      {
+        "name": "State of FinOps 2026 Benchmark",
+        "url": "https://www.finops.org/insights/state-of-finops/"
+      }
+    ],
+    "stages": [
+      {
+        "id": "chaos",
+        "n": 1,
+        "name": "Chaos / Crawl Baseline",
+        "short_name": "Chaos",
+        "color": "#FF5E4F",
+        "threshold": 60,
+        "crit_min": 70,
+        "desc": "Foundational governance, security root boundaries, and raw billing data ingestion must exist before meaningful FinOps work can begin.",
+        "aim": "Establish who owns what, eliminate rogue unallocated spend, and ingest trustworthy raw billing data.",
+        "leap_guide": "To graduate from Chaos to Informed: (1) Formalize an account registry with a single named owner per subscription; (2) Ingest raw cloud billing exports into central S3/Blob storage; (3) Mandate the 3 core tags (CostCenter, Owner, App) on all compute resources."
+      },
+      {
+        "id": "informed",
+        "n": 2,
+        "name": "Informed / Walk Foundation",
+        "short_name": "Informed",
+        "color": "#B26A00",
+        "threshold": 65,
+        "crit_min": 70,
+        "desc": "Cost visibility, tagging discipline (\u226580%), scheduled showback cadence, and anomaly detection are established across business units.",
+        "aim": "Make spend visible and attributable, detect unexpected cost anomalies within 24h, and build regular monthly review cadences.",
+        "leap_guide": "To graduate from Informed to Optimized: (1) Shift from mere reporting to active waste elimination; (2) Establish a centralized commitment discount strategy (RIs/Savings Plans coverage \u2265 70%); (3) Allocate shared container and Kubernetes clusters by namespace."
+      },
+      {
+        "id": "optimized",
+        "n": 3,
+        "name": "Optimized / Rate & Usage",
+        "short_name": "Optimized",
+        "color": "#35754D",
+        "threshold": 70,
+        "crit_min": 75,
+        "desc": "The enterprise actively reduces waste, optimizes commitment-based rates, rightsizes compute/storage, and evaluates cost in architecture reviews.",
+        "aim": "Convert visibility into recurring, measurable savings and embed cost consciousness into engineering sprints.",
+        "leap_guide": "To graduate from Optimized to Automated: (1) Replace manual Jira tickets with automated policy-as-code guardrails; (2) Implement automated non-prod parking schedules; (3) Put FinOps efficiency metrics into engineering OKRs and performance reviews."
+      },
+      {
+        "id": "automated",
+        "n": 4,
+        "name": "Automated / Run Practice",
+        "short_name": "Automated",
+        "color": "#3C829B",
+        "threshold": 75,
+        "crit_min": 75,
+        "desc": "Cost governance is enforced programmatically through policy-as-code pipelines, auto-parking, storage tiering, and engineering KPIs.",
+        "aim": "Make the efficient path the default path without manual friction, and extend FinOps to modern GenAI/GPU workloads.",
+        "leap_guide": "To graduate from Automated to Transparent: (1) Transition from showback to automated multi-tenant chargeback; (2) Model real-time unit economics (cost per transaction/tenant/API); (3) Integrate cloud unit costs directly into product pricing and gross margin models."
+      },
+      {
+        "id": "transparent",
+        "n": 5,
+        "name": "Transparent / Unit Economics",
+        "short_name": "Transparent",
+        "color": "#5A3A83",
+        "threshold": 80,
+        "crit_min": 80,
+        "desc": "Full financial accountability, real-time unit economics, margin forecasting, and direct integration into product roadmaps and pricing.",
+        "aim": "Run cloud as a core business driver, priced, margin-managed, and optimized for maximum shareholder value.",
+        "leap_guide": "At Stage 5 (Transparent): Focus on continuous posture defensibility, real-time margin defense, automated vendor contract renegotiations, and carbon sustainability unit economics."
+      }
+    ],
+    "domains": [
+      {
+        "id": "understanding_usage",
+        "label": "Understanding Cloud Usage & Cost",
+        "color": "#3C829B",
+        "icon": "\ud83d\udcca"
+      },
+      {
+        "id": "business_value",
+        "label": "Quantifying Business Value",
+        "color": "#5A3A83",
+        "icon": "\ud83c\udfaf"
+      },
+      {
+        "id": "optimizing_cost",
+        "label": "Optimizing Usage & Cost",
+        "color": "#35754D",
+        "icon": "\u26a1"
+      },
+      {
+        "id": "managing_practice",
+        "label": "Managing the FinOps Practice",
+        "color": "#B26A00",
+        "icon": "\ud83c\udfdb\ufe0f"
+      },
+      {
+        "id": "modern_workloads",
+        "label": "Modern Workloads (K8s & GenAI)",
+        "color": "#FF5E4F",
+        "icon": "\ud83e\udd16"
+      }
+    ],
+    "checkpoints": [
+      {
+        "id": "chk-c1",
+        "stage": "chaos",
+        "title": "Account Ownership & Scoped Access Model",
+        "desc": "Named technical & business owners assigned per account/subscription with least-privilege billing console access."
+      },
+      {
+        "id": "chk-c2",
+        "stage": "chaos",
+        "title": "Centralized Raw Billing Ingestion",
+        "desc": "Granular hourly/daily cost & usage data exported to centralized, durable storage (S3/GCS/Blob)."
+      },
+      {
+        "id": "chk-c3",
+        "stage": "chaos",
+        "title": "Basic Billing Alarms & Spend Thresholds",
+        "desc": "Active budget threshold alerts configured to fire before bills unexpectedly surge."
+      },
+      {
+        "id": "chk-c4",
+        "stage": "chaos",
+        "title": "Finance Direct Cost Console Visibility",
+        "desc": "Finance & procurement have self-service read-only access to billing data without ticketing engineering."
+      },
+      {
+        "id": "chk-c5",
+        "stage": "chaos",
+        "title": "Production & Non-Prod Account Isolation",
+        "desc": "Separate accounts/subscriptions with clear billing boundaries between production and sandbox/dev estates."
+      },
+      {
+        "id": "chk-i1",
+        "stage": "informed",
+        "title": "Comprehensive Tagging Policy (\u226580% coverage)",
+        "desc": "Documented tagging strategy with CostCenter, Owner, and App tags actively enforced on \u226580% compute/storage."
+      },
+      {
+        "id": "chk-i2",
+        "stage": "informed",
+        "title": "Multi-Cloud Normalization & FOCUS Readiness",
+        "desc": "Billing data mapped to standardized taxonomy or FOCUS 1.0 format across hyperscalers."
+      },
+      {
+        "id": "chk-i3",
+        "stage": "informed",
+        "title": "Scheduled Showback Reporting Cadence",
+        "desc": "Bi-weekly or monthly showback reports distributed directly to engineering team leads and BUs."
+      },
+      {
+        "id": "chk-i4",
+        "stage": "informed",
+        "title": "Automated Anomaly Detection",
+        "desc": "Algorithmic cost anomaly detection alerting on unexpected spend spikes within 24 hours."
+      },
+      {
+        "id": "chk-i5",
+        "stage": "informed",
+        "title": "Month-over-Month Variance Accountability",
+        "desc": "Engineering and product leads can explain month-over-month cloud cost variances with business drivers."
+      },
+      {
+        "id": "chk-o1",
+        "stage": "optimized",
+        "title": "Commitment Discount Coverage (\u226570%)",
+        "desc": "\u226570% of steady-state compute covered by RIs, Savings Plans, or CUDs with centralized portfolio management."
+      },
+      {
+        "id": "chk-o2",
+        "stage": "optimized",
+        "title": "Continuous Rightsizing Review & Execution",
+        "desc": "Bi-weekly/monthly cadence where rightsizing and idle resource recommendations are actively deployed."
+      },
+      {
+        "id": "chk-o3",
+        "stage": "optimized",
+        "title": "Container & Kubernetes Cost Allocation",
+        "desc": "Shared cluster costs broken down by namespace, pod, service, or tenant (e.g. Kubecost, OpenCost)."
+      },
+      {
+        "id": "chk-o4",
+        "stage": "optimized",
+        "title": "Spot & Transient Compute Workload Adoption",
+        "desc": "Eligible stateless, batch, or non-critical workloads leverage Spot/Preemptible instances with automated eviction handling."
+      },
+      {
+        "id": "chk-a1",
+        "stage": "automated",
+        "title": "Policy-as-Code Guardrails & Enforcement",
+        "desc": "Automated enforcement (OPA, Terraform Sentinel, Azure Policy, SCPs) blocking non-compliant or untagged provisioning."
+      },
+      {
+        "id": "chk-a2",
+        "stage": "automated",
+        "title": "Automated Non-Prod Environment Parking",
+        "desc": "Development and test environments automatically parked outside of core business hours."
+      },
+      {
+        "id": "chk-a3",
+        "stage": "automated",
+        "title": "Storage Lifecycle & Snapshot Auto-Pruning",
+        "desc": "Automated lifecycle policies tiering object storage and purging unattached snapshots/disks by TTL."
+      },
+      {
+        "id": "chk-a4",
+        "stage": "automated",
+        "title": "AI / GenAI & GPU Spend Governance",
+        "desc": "GPU cluster utilization tracking, idle model endpoint shutoff, and token inference cost attribution."
+      },
+      {
+        "id": "chk-t1",
+        "stage": "transparent",
+        "title": "Automated Multi-Tenant Chargeback",
+        "desc": "Direct financial cross-charging to business unit P&Ls with auditable allocation of shared platforms."
+      },
+      {
+        "id": "chk-t2",
+        "stage": "transparent",
+        "title": "Real-Time Unit Economics Tracking",
+        "desc": "Cloud spend measured against business metrics (cost per transaction, cost per active user, cost per API call)."
+      },
+      {
+        "id": "chk-t3",
+        "stage": "transparent",
+        "title": "Product Pricing & Gross Margin Integration",
+        "desc": "Cloud unit costs feed directly into product pricing, enterprise client contract margins, and CFO forecasting."
+      },
+      {
+        "id": "chk-t4",
+        "stage": "transparent",
+        "title": "Near-Zero Waste Posture (<4% bill)",
+        "desc": "Orphaned, idle, and unallocated cloud waste consistently held under 4% of total estate spend."
+      }
+    ]
+  },
+  "questions": [
+    {
+      "id": "C1",
+      "stage": "chaos",
+      "domain": "managing_practice",
+      "finops_capability": "Account & Identity Governance",
+      "critical": true,
+      "checkpoint_id": "chk-c1",
+      "text": "Is there an account-ownership and access model that supports cost governance (named owners per account, least-privilege access to billing and cost consoles)?",
+      "options": [
+        {
+          "label": "Yes \u2014 named owners on every account, scoped billing access documented"
+        },
+        {
+          "label": "Ownership mostly assigned, access permissions ad hoc"
+        },
+        {
+          "label": "Owners named for some accounts only"
+        },
+        {
+          "label": "Neither owners nor access model defined"
+        }
+      ],
+      "consultant_probe": "Ask to inspect their cloud organizational hierarchy (AWS Organizations / Azure Management Groups / GCP Resource Manager). Verify whether individual subscriptions have documented business & technical owners or are orphaned under former employees.",
+      "subjective_prompt": "Document client's account ownership structure, billing console access policies, and any known orphaned subscriptions.",
+      "remediation": "Establish named owners for every account/subscription and a documented access model for billing and cost consoles \u2014 the foundation FinOps decisions attach to."
+    },
+    {
+      "id": "C2",
+      "stage": "chaos",
+      "domain": "understanding_usage",
+      "finops_capability": "Cost Data Ingestion",
+      "critical": true,
+      "checkpoint_id": "chk-c2",
+      "text": "Is granular billing and usage data exported to a centralised, durable store (e.g. CUR to S3, Cost Management export to Azure Blob, Cloud Billing export to BigQuery)?",
+      "options": [
+        {
+          "label": "Yes \u2014 daily/hourly granular export active to a central bucket for all cloud accounts"
+        },
+        {
+          "label": "Export enabled for primary cloud accounts only"
+        },
+        {
+          "label": "Billing data viewed in console only; no automated export"
+        },
+        {
+          "label": "No centralised access to billing data"
+        }
+      ],
+      "consultant_probe": "Verify if raw hourly/daily Cost & Usage Reports (CUR / FOCUS-ready exports) are enabled and flowing to an immutable analytical bucket, or if teams rely solely on 30-day portal summaries.",
+      "subjective_prompt": "Note data export frequency, storage destination, retention policy, and whether multiple cloud providers are consolidated.",
+      "remediation": "Enable automated daily/hourly billing exports (AWS CUR 2.0, Azure Cost Export, GCP BigQuery Export) to an analytical data lake \u2014 without granular data, attribution and optimization are impossible."
+    },
+    {
+      "id": "C3",
+      "stage": "chaos",
+      "domain": "business_value",
+      "finops_capability": "Budgeting & Anomaly Alerting",
+      "critical": false,
+      "checkpoint_id": "chk-c3",
+      "text": "Are billing alarms or spend threshold notifications configured and actively alerting when spend crosses defined thresholds?",
+      "options": [
+        {
+          "label": "Yes \u2014 proactive threshold alerts on all accounts, routed to active communication channels (Slack/Teams/Email)"
+        },
+        {
+          "label": "Alarms configured for some accounts or at high threshold only"
+        },
+        {
+          "label": "Configured historically but alerts are ignored or misrouted"
+        },
+        {
+          "label": "No billing alarms or spend alerts exist"
+        }
+      ],
+      "consultant_probe": "Ask when the last unexpected spend surge occurred. Were they alerted by an automated notification, or did they only find out when the monthly invoice arrived?",
+      "subjective_prompt": "Document current alert configuration, distribution lists, and false-positive / alert-fatigue issues.",
+      "remediation": "Configure automated spend alerts at 50%, 80%, and 100% of budgeted spend with routing to active engineering communication channels."
+    },
+    {
+      "id": "C4",
+      "stage": "chaos",
+      "domain": "managing_practice",
+      "finops_capability": "Cross-Functional Collaboration",
+      "critical": true,
+      "checkpoint_id": "chk-c4",
+      "text": "Does the finance team have direct read-only access to cloud billing consoles and cost dashboards without needing engineering tickets?",
+      "options": [
+        {
+          "label": "Yes \u2014 finance has self-service, read-only access to cloud billing tools and portals"
+        },
+        {
+          "label": "Finance receives periodic manual reports from engineering on request"
+        },
+        {
+          "label": "Finance sees the top-level invoice only with no line-item visibility"
+        },
+        {
+          "label": "Finance has no direct visibility into cloud spend"
+        }
+      ],
+      "consultant_probe": "Ask Finance how they reconcile month-end invoices. Do they wait 2 weeks for an engineering manager to manually pull a CSV, or can they self-service in the cloud console?",
+      "subjective_prompt": "Capture current finance workflow, invoice reconciliation delay, and any friction between finance and cloud architects.",
+      "remediation": "Grant Finance and procurement read-only billing IAM roles (e.g. AWS BillingReadOnlyAccess, Azure Cost Management Reader) to eliminate invoice blind spots."
+    },
+    {
+      "id": "C5",
+      "stage": "chaos",
+      "domain": "managing_practice",
+      "finops_capability": "Account & Subscription Governance",
+      "critical": true,
+      "checkpoint_id": "chk-c1",
+      "text": "Does an account / subscription ownership registry exist with a named technical and business owner per account?",
+      "options": [
+        {
+          "label": "Yes \u2014 comprehensive registry maintained and reviewed on account provisioning"
+        },
+        {
+          "label": "Registry exists but is partially out of date or missing some business owners"
+        },
+        {
+          "label": "Informal knowledge of who owns which accounts"
+        },
+        {
+          "label": "No account registry exists"
+        }
+      ],
+      "consultant_probe": "Ask for the registry document or CMDB extract. Check if ownership is maintained in an automated service catalog or an outdated spreadsheet from two years ago.",
+      "subjective_prompt": "Assess accuracy of the account registry and how new cloud accounts are provisioned and registered.",
+      "remediation": "Mandate an Account Ownership Registry integrated into your Identity Provider (Okta/Entra ID) and account vending pipeline."
+    },
+    {
+      "id": "C6",
+      "stage": "chaos",
+      "domain": "managing_practice",
+      "finops_capability": "Cloud Architecture & Boundaries",
+      "critical": false,
+      "checkpoint_id": "chk-c5",
+      "text": "Are production and non-production environments strictly separated into distinct cloud accounts/subscriptions with clear billing boundaries?",
+      "options": [
+        {
+          "label": "Yes \u2014 strict separation into separate accounts/subscriptions with isolated billing"
+        },
+        {
+          "label": "Separated by VPC / Resource Group but sharing the same account / subscription"
+        },
+        {
+          "label": "Partially mixed environments across legacy workloads"
+        },
+        {
+          "label": "Production and non-production share the same accounts with no boundary"
+        }
+      ],
+      "consultant_probe": "Inspect whether developers have permissions to spin up GPU or high-memory instances in the same AWS account / Azure subscription that hosts production workloads.",
+      "subjective_prompt": "Note environment segmentation architecture, sandbox policies, and cost containment guardrails.",
+      "remediation": "Isolate production, staging, and sandbox environments into dedicated accounts/subscriptions to prevent non-prod experiments from polluting production billing."
+    },
+    {
+      "id": "C7",
+      "stage": "chaos",
+      "domain": "managing_practice",
+      "finops_capability": "FinOps Enablement & Team Structure",
+      "critical": false,
+      "checkpoint_id": "chk-c1",
+      "text": "Is a single team or individual formally accountable for cloud spend governance (e.g. CCoE, FinOps Champion, Cloud Architect)?",
+      "options": [
+        {
+          "label": "Yes \u2014 formally chartered FinOps team or lead with documented responsibilities"
+        },
+        {
+          "label": "Informally owned by a cloud lead alongside other infrastructure duties"
+        },
+        {
+          "label": "FinOps responsibilities fragmented across engineering leads with no coordination"
+        },
+        {
+          "label": "No team or individual is accountable for cloud spend governance"
+        }
+      ],
+      "consultant_probe": "Ask who owns the cloud budget variance conversation. If everyone says 'everyone is responsible', in practice nobody is accountable.",
+      "subjective_prompt": "Document existing FinOps/CCoE charter, reporting line (CFO vs CTO), and time dedication.",
+      "remediation": "Appoint a dedicated FinOps Lead or formalize a Cloud Center of Excellence (CCoE) cross-functional charter with Finance and Engineering representation."
+    },
+    {
+      "id": "C8",
+      "stage": "chaos",
+      "domain": "understanding_usage",
+      "finops_capability": "Multi-Cloud Account Isolation",
+      "critical": false,
+      "checkpoint_id": "chk-c2",
+      "text": "Are root credentials, multi-cloud master payer accounts, and enterprise agreement portals properly secured with MFA and restricted billing console roles?",
+      "options": [
+        {
+          "label": "Yes \u2014 master payer isolated, root MFA enforced, dedicated billing IAM roles"
+        },
+        {
+          "label": "Master payer secured, but billing role access is loosely restricted"
+        },
+        {
+          "label": "Shared administrator logins used for billing consoles"
+        },
+        {
+          "label": "No access controls or MFA on root/master billing consoles"
+        }
+      ],
+      "consultant_probe": "Check how master payer accounts (AWS Management Account / Azure Enterprise Agreement portal) are accessed and who can purchase savings plans or marketplace items.",
+      "subjective_prompt": "Document master payer security, marketplace commitment approval gates, and IAM controls.",
+      "remediation": "Lock down root billing credentials with hardware MFA and enforce least-privilege IAM roles for purchasing and marketplace commitments."
+    },
+    {
+      "id": "I1",
+      "stage": "informed",
+      "domain": "understanding_usage",
+      "finops_capability": "Cost Allocation & Metadata",
+      "critical": true,
+      "checkpoint_id": "chk-i1",
+      "text": "Is a tagging / metadata strategy formally defined and documented (specifying CostCenter, Owner, Application, and Environment)?",
+      "options": [
+        {
+          "label": "Yes \u2014 formal policy covering required keys, allowed values, and inheritance rules"
+        },
+        {
+          "label": "Standard documented but loosely adopted or inconsistent across teams"
+        },
+        {
+          "label": "Informal conventions exist without formal documentation"
+        },
+        {
+          "label": "No tagging strategy or metadata standard defined"
+        }
+      ],
+      "consultant_probe": "Ask to see the written tagging standard. Check if there are case-sensitivity clashes (e.g. 'Environment' vs 'env') and whether shared services have defined allocation keys.",
+      "subjective_prompt": "Evaluate completeness of tagging standard and consistency across business units.",
+      "remediation": "Publish a mandatory tagging taxonomy (CostCenter, Owner, AppID, Env, DataClassification) with strict casing and value validation rules."
+    },
+    {
+      "id": "I2",
+      "stage": "informed",
+      "domain": "understanding_usage",
+      "finops_capability": "Cost Allocation Coverage",
+      "critical": true,
+      "checkpoint_id": "chk-i1",
+      "text": "What percentage of active compute and storage resources currently carry complete, valid mandatory tags in production and non-production?",
+      "options": [
+        {
+          "label": "\u2265 85% of total spend carries full, validated mandatory tags"
+        },
+        {
+          "label": "60% \u2013 84% tagged; key compute tagged but storage/network untagged"
+        },
+        {
+          "label": "30% \u2013 59% tagged with substantial unallocated spend"
+        },
+        {
+          "label": "< 30% tagged; spend cannot be reliably mapped to teams"
+        }
+      ],
+      "consultant_probe": "Run or ask for a Cost Allocation Tag coverage report. Many clients think they are at 90%, but untagged disks, snapshots, and networking bring actual coverage below 50%.",
+      "subjective_prompt": "Record actual tag coverage percentage, hardest resources to tag, and untagged spend dollar value.",
+      "remediation": "Establish a sprint goal to achieve \u226580% tag coverage on compute and storage, focusing on the top 20% of resources that generate 80% of spend."
+    },
+    {
+      "id": "I3",
+      "stage": "informed",
+      "domain": "understanding_usage",
+      "finops_capability": "Data Normalization & FOCUS",
+      "critical": false,
+      "checkpoint_id": "chk-i2",
+      "text": "Is multi-cloud and hybrid cost data normalized using a common taxonomy or the FinOps Open Cost and Usage Specification (FOCUS 1.0)?",
+      "options": [
+        {
+          "label": "Yes \u2014 normalized data model or FOCUS 1.0 specification adopted across all clouds"
+        },
+        {
+          "label": "Single-cloud estate, or partial normalization across primary clouds"
+        },
+        {
+          "label": "Multi-cloud data maintained in separate siloed spreadsheets/consoles"
+        },
+        {
+          "label": "No normalization; impossible to compare cross-cloud usage"
+        }
+      ],
+      "consultant_probe": "Ask how they compare AWS EC2 vs Azure VM vs GCP Compute Engine costs. Is there a normalized data model, or do analysts write bespoke SQL scripts for each provider?",
+      "subjective_prompt": "Note multi-cloud data pipeline tools (e.g. Snowflake, Databricks, CloudHealth, Apptio) and FOCUS adoption plans.",
+      "remediation": "Adopt the FinOps Foundation FOCUS 1.0 schema to normalize multi-cloud billing into consistent dimensions (BilledCost, EffectiveCost, Provider, ChargeSubcategory)."
+    },
+    {
+      "id": "I4",
+      "stage": "informed",
+      "domain": "understanding_usage",
+      "finops_capability": "Data Analysis & Showback",
+      "critical": false,
+      "checkpoint_id": "chk-i3",
+      "text": "Can engineering and product teams view their own team's cost data self-service without raising a ticket or waiting for monthly finance reports?",
+      "options": [
+        {
+          "label": "Yes \u2014 self-service dashboards filtered to team/application updated daily"
+        },
+        {
+          "label": "Dashboards exist but require manual permission setup or are infrequently used"
+        },
+        {
+          "label": "Teams can view top-level account cost but cannot filter to their workloads"
+        },
+        {
+          "label": "Engineering teams have no visibility into their specific cost data"
+        }
+      ],
+      "consultant_probe": "Ask an engineering lead to show where they look up yesterday's spend for their team. Is it on a live dashboard or completely hidden?",
+      "subjective_prompt": "Document developer access to cost dashboards, tool adoption rates, and feedback.",
+      "remediation": "Deploy role-based, team-filtered showback dashboards (e.g. QuickSight, PowerBI, Grafana, Cloudability) showing daily cost trends per product squad."
+    },
+    {
+      "id": "I5",
+      "stage": "informed",
+      "domain": "understanding_usage",
+      "finops_capability": "Showback Cadence",
+      "critical": false,
+      "checkpoint_id": "chk-i3",
+      "text": "How regularly are showback reports or automated spend summaries distributed to engineering leaders and business unit stakeholders?",
+      "options": [
+        {
+          "label": "Weekly or bi-weekly automated reports with trend analysis"
+        },
+        {
+          "label": "Monthly showback reports distributed alongside finance reviews"
+        },
+        {
+          "label": "Quarterly or ad-hoc reports only when leadership requests"
+        },
+        {
+          "label": "No showback reporting exists"
+        }
+      ],
+      "consultant_probe": "Check if showback is an automated proactive push (Slack/email digest) or a reactive report compiled only when budgets are blown.",
+      "subjective_prompt": "Capture showback frequency, recipients, and whether teams actively review reports.",
+      "remediation": "Automate a weekly showback digest highlighting top spend drivers, cost deltas, and month-to-date budget consumption for each engineering director."
+    },
+    {
+      "id": "I6",
+      "stage": "informed",
+      "domain": "business_value",
+      "finops_capability": "Anomaly Management",
+      "critical": false,
+      "checkpoint_id": "chk-i4",
+      "text": "Is automated cost anomaly detection enabled and alerting on unexpected spend spikes within 24 hours of occurrence?",
+      "options": [
+        {
+          "label": "Yes \u2014 automated ML-based anomaly detection alerting within 24 hours to team channels"
+        },
+        {
+          "label": "Cloud-native anomaly detection active on some accounts with email alerts"
+        },
+        {
+          "label": "Static threshold alerts only; anomalies discovered during monthly bill review"
+        },
+        {
+          "label": "No anomaly detection in place"
+        }
+      ],
+      "consultant_probe": "Ask: 'If an engineer mistakenly deploys an unindexed vector DB cluster that burns $10k in a weekend, when does someone find out?'",
+      "subjective_prompt": "Record recent cost anomaly horror stories, threshold tuning, and response procedures.",
+      "remediation": "Turn on AWS Cost Anomaly Detection / Azure Cost Alerts with Slack/Teams webhooks configured to notify on-call engineers for spend spikes > $200/day."
+    },
+    {
+      "id": "I7",
+      "stage": "informed",
+      "domain": "optimizing_cost",
+      "finops_capability": "Waste Management & Orphan Discovery",
+      "critical": false,
+      "checkpoint_id": "chk-i4",
+      "text": "Are orphaned and idle resources (unattached EBS/disks, unassociated Elastic IPs, stale snapshots, idle load balancers) routinely identified?",
+      "options": [
+        {
+          "label": "Yes \u2014 continuous automated scans identify and flag orphaned resources weekly"
+        },
+        {
+          "label": "Periodic manual audits conducted every few months"
+        },
+        {
+          "label": "Identified opportunistically when cleaning up environments"
+        },
+        {
+          "label": "Orphaned and idle resources are never scanned or tracked"
+        }
+      ],
+      "consultant_probe": "Inspect their storage bill. In almost every unmanaged environment, 10-25% of storage cost comes from abandoned snapshots and detached disks from terminated instances.",
+      "subjective_prompt": "Estimate dollar value of idle resources and frequency of cleanup sprints.",
+      "remediation": "Schedule an immediate 'Cloud Janitor' cleanup sprint to delete unattached volumes, idle load balancers, and snapshots older than 90 days."
+    },
+    {
+      "id": "I8",
+      "stage": "informed",
+      "domain": "managing_practice",
+      "finops_capability": "Variance Analysis & Accountability",
+      "critical": true,
+      "checkpoint_id": "chk-i5",
+      "text": "How confidently can engineering teams explain their month-over-month cloud cost variances with specific business and architectural drivers?",
+      "options": [
+        {
+          "label": "Very confidently \u2014 variances tied directly to release changes, traffic volume, or unit scaling"
+        },
+        {
+          "label": "Moderate confidence \u2014 explainable with research, but takes several days to diagnose"
+        },
+        {
+          "label": "Low confidence \u2014 cost increases often unexplained or attributed to generic cloud growth"
+        },
+        {
+          "label": "Teams have no awareness of their cost variances"
+        }
+      ],
+      "consultant_probe": "Ask what caused last month's largest cost increase. If the answer is 'we don't know, maybe data transfer or traffic', accountability is weak.",
+      "subjective_prompt": "Gauge engineering familiarity with cost drivers (user growth vs inefficient code vs architectural leak).",
+      "remediation": "Incorporate a 15-minute monthly FinOps variance review into sprint retrospectives, requiring teams to account for changes >10% MoM."
+    },
+    {
+      "id": "I9",
+      "stage": "informed",
+      "domain": "managing_practice",
+      "finops_capability": "Review Cadence & Culture",
+      "critical": false,
+      "checkpoint_id": "chk-i5",
+      "text": "What formal cadence exists for reviewing cloud cost trends, forecasts, and optimization opportunities at team or BU level?",
+      "options": [
+        {
+          "label": "Monthly structured review with both engineering and finance leaders attending"
+        },
+        {
+          "label": "Quarterly reviews tied to budget cycles"
+        },
+        {
+          "label": "Ad-hoc reviews triggered only when budgets are overrun"
+        },
+        {
+          "label": "No regular cost review cadence exists"
+        }
+      ],
+      "consultant_probe": "Check if cost reviews are embedded into existing engineering sprint rituals or isolated into a dreaded annual procurement grilling.",
+      "subjective_prompt": "Document meeting cadence, attendance (finance vs engineering), and follow-through on action items.",
+      "remediation": "Establish a standing monthly Cloud Financial Review between Engineering Directors, Product Owners, and Finance Leads."
+    },
+    {
+      "id": "O1",
+      "stage": "optimized",
+      "domain": "optimizing_cost",
+      "finops_capability": "Rate Optimization & Commitments",
+      "critical": true,
+      "checkpoint_id": "chk-o1",
+      "text": "What percentage of steady-state, eligible compute spend is covered by commitment-based discounts (Savings Plans, Reserved Instances, CUDs)?",
+      "options": [
+        {
+          "label": "\u2265 75% coverage with >95% commitment utilization managed centrally"
+        },
+        {
+          "label": "50% \u2013 74% coverage; some accounts optimized, others running purely on-demand"
+        },
+        {
+          "label": "25% \u2013 49% coverage; ad-hoc purchases without centralized tracking"
+        },
+        {
+          "label": "< 25% coverage; vast majority running on expensive on-demand rates"
+        }
+      ],
+      "consultant_probe": "Ask for their Compute Savings Plans / RI coverage and utilization percentages. Elite FinOps practitioners maintain 75\u201385% coverage with >98% utilization.",
+      "subjective_prompt": "Capture current commitment coverage %, utilization %, commitment expiration calendar, and purchasing policy.",
+      "remediation": "Centralize commitment purchasing at the master payer level and execute a 1-year / 3-year Compute Savings Plan to cover steady-state baseline, yielding immediate 20-35% savings."
+    },
+    {
+      "id": "O2",
+      "stage": "optimized",
+      "domain": "optimizing_cost",
+      "finops_capability": "Workload Optimization & Rightsizing",
+      "critical": true,
+      "checkpoint_id": "chk-o2",
+      "text": "How regularly are instance rightsizing, CPU/memory downsizing, and modern generation upgrades (e.g. Graviton/ARM) reviewed and deployed?",
+      "options": [
+        {
+          "label": "Bi-weekly or monthly cadence with verified rightsizing actions deployed to production"
+        },
+        {
+          "label": "Quarterly reviews; recommendations actioned for non-prod, slow for production"
+        },
+        {
+          "label": "Rightsizing reviewed ad-hoc or only during infrastructure refresh"
+        },
+        {
+          "label": "Instances are rarely or never rightsized after initial provisioning"
+        }
+      ],
+      "consultant_probe": "Check if rightsizing recommendations in AWS Compute Optimizer or Azure Advisor sit in an untouched backlog or are actively converted into Jira tickets and deployed.",
+      "subjective_prompt": "Document rightsizing deployment blockers (e.g. fear of outages, lack of automated testing, dev team resistance).",
+      "remediation": "Dedicate 10% of engineering sprint capacity to deploy Compute Optimizer rightsizing recommendations, starting with non-prod and over-provisioned memory instances."
+    },
+    {
+      "id": "O3",
+      "stage": "optimized",
+      "domain": "modern_workloads",
+      "finops_capability": "Container & K8s Allocation",
+      "critical": false,
+      "checkpoint_id": "chk-o3",
+      "text": "Are Kubernetes / container cluster infrastructure costs broken down and allocated by namespace, deployment, pod, or microservice?",
+      "options": [
+        {
+          "label": "Yes \u2014 container cost allocation tool (e.g. Kubecost, OpenCost) active with pod-level showback"
+        },
+        {
+          "label": "Cluster costs allocated using rough namespace node percentages or tag proxies"
+        },
+        {
+          "label": "Cluster spend tracked as a single shared pool with no team breakdown"
+        },
+        {
+          "label": "Containerized workloads have zero cost visibility"
+        }
+      ],
+      "consultant_probe": "Ask how multi-tenant EKS/GKE/AKS cluster costs are distributed to product squads. Are clusters treated as a single massive black-box bill, or allocated via Kubecost/OpenCost?",
+      "subjective_prompt": "Detail container footprint (EKS/AKS/GKE/ECS), cluster tooling, and pod resource request vs limit discipline.",
+      "remediation": "Deploy OpenCost or Kubecost across your Kubernetes clusters to allocate node costs down to namespaces, controller workloads, and idle pod allocations."
+    },
+    {
+      "id": "O4",
+      "stage": "optimized",
+      "domain": "optimizing_cost",
+      "finops_capability": "Spot & Preemptible Compute",
+      "critical": false,
+      "checkpoint_id": "chk-o4",
+      "text": "What share of eligible stateless, batch, CI/CD, or transient compute spend runs on Spot / Preemptible instances?",
+      "options": [
+        {
+          "label": "\u2265 50% of eligible stateless/batch workloads leverage Spot with automated eviction handling"
+        },
+        {
+          "label": "20% \u2013 49% Spot usage in dev/test or specific batch pipelines"
+        },
+        {
+          "label": "< 20% Spot usage; perceived as too risky or complex"
+        },
+        {
+          "label": "Zero Spot usage; everything runs on on-demand compute"
+        }
+      ],
+      "consultant_probe": "Inspect CI/CD runners, batch processing, and non-prod Kubernetes worker nodes. Are they paying full on-demand pricing for disposable compute?",
+      "subjective_prompt": "Document Spot utilization, auto-scaler configuration (e.g. Karpenter), and interruption tolerance.",
+      "remediation": "Migrate CI/CD runners and dev Kubernetes node pools to Spot instances using Karpenter / Spot Ocean, cutting compute costs by up to 70%."
+    },
+    {
+      "id": "O5",
+      "stage": "optimized",
+      "domain": "managing_practice",
+      "finops_capability": "Architecture & Engineering Review",
+      "critical": true,
+      "checkpoint_id": "chk-o5",
+      "text": "Is cloud financial impact and unit cost a mandatory evaluation criterion in architectural reviews, RFCs, and major system design approvals?",
+      "options": [
+        {
+          "label": "Yes \u2014 estimated cost and unit economics are mandatory in all design reviews/RFCs"
+        },
+        {
+          "label": "Cost is discussed informally but not formally modeled or audited"
+        },
+        {
+          "label": "Cost is considered only for multi-million dollar projects"
+        },
+        {
+          "label": "Architecture reviews evaluate performance and security only, ignoring cost"
+        }
+      ],
+      "consultant_probe": "Review a recent Architecture Review Board (ARB) design document. Does it have an estimated monthly operating cost and unit economics section, or purely latency/HA diagrams?",
+      "subjective_prompt": "Assess whether cloud cost is designed in at inception or treated as an afterthought.",
+      "remediation": "Add a mandatory 'FinOps & Operating Cost Impact' section to your Architecture Review Board (ARB) templates before code is written."
+    },
+    {
+      "id": "O6",
+      "stage": "optimized",
+      "domain": "optimizing_cost",
+      "finops_capability": "Commitment Lifecycle Management",
+      "critical": false,
+      "checkpoint_id": "chk-o1",
+      "text": "How are commitment-based discount portfolios (RIs, Savings Plans, CUDs) monitored for expiration, utilization drift, and break-even targets?",
+      "options": [
+        {
+          "label": "Continuous automated monitoring with staggered expiration pipeline and alerts"
+        },
+        {
+          "label": "Tracked in a shared spreadsheet with quarterly renewal checks"
+        },
+        {
+          "label": "Reactive renewals; commitments have expired unnoticed in the past"
+        },
+        {
+          "label": "No tracking of commitment expirations or utilization"
+        }
+      ],
+      "consultant_probe": "Ask who tracks expiring 1-year and 3-year commitments. Have commitments ever expired unnoticed, causing spend to spike by 30% overnight?",
+      "subjective_prompt": "Review commitment renewal calendar and portfolio hedging strategy.",
+      "remediation": "Implement a rolling commitment strategy with staggered expirations every quarter to smooth budget impact and prevent cliff-edge renewals."
+    },
+    {
+      "id": "O7",
+      "stage": "optimized",
+      "domain": "optimizing_cost",
+      "finops_capability": "Data Transfer & Egress Optimization",
+      "critical": false,
+      "checkpoint_id": "chk-o2",
+      "text": "Has data transfer, cross-AZ traffic, NAT Gateway data processing, and public egress been reviewed and optimized with architectural controls?",
+      "options": [
+        {
+          "label": "Yes \u2014 VPC endpoints, direct interconnects, and local AZ routing active; egress audited quarterly"
+        },
+        {
+          "label": "VPC endpoints deployed for top services (S3/Dynamo), but cross-AZ traffic unoptimized"
+        },
+        {
+          "label": "Egress acknowledged as high but no architectural remediation implemented"
+        },
+        {
+          "label": "Data transfer and cross-AZ traffic are unmonitored and unoptimized"
+        }
+      ],
+      "consultant_probe": "Look at the NAT Gateway and Cross-AZ Inter-Region data transfer line items. In modern microservices, inter-AZ traffic often accounts for 15-25% of the total network bill.",
+      "subjective_prompt": "Document network topology, VPC endpoints, CloudFront caching, and cross-AZ traffic patterns.",
+      "remediation": "Deploy VPC Gateway Endpoints for S3 and DynamoDB and configure zonal DNS routing to eliminate expensive NAT Gateway and cross-AZ transfer charges."
+    },
+    {
+      "id": "O8",
+      "stage": "optimized",
+      "domain": "managing_practice",
+      "finops_capability": "FinOps Culture & Gamification",
+      "critical": false,
+      "checkpoint_id": "chk-o5",
+      "text": "To what extent are engineering teams recognized, celebrated, or rewarded for eliminating cloud waste and improving architectural efficiency?",
+      "options": [
+        {
+          "label": "Active recognition \u2014 FinOps achievements celebrated in all-hands, bonuses, or hackathons"
+        },
+        {
+          "label": "Informal shout-outs in team retrospectives for major savings"
+        },
+        {
+          "label": "Cost savings expected but never publicly recognized or rewarded"
+        },
+        {
+          "label": "Feature velocity is rewarded exclusively; cost optimization is invisible"
+        }
+      ],
+      "consultant_probe": "Ask engineers: 'Do you get recognition in performance reviews or all-hands for saving $50k/month in cloud waste, or only for shipping features?'",
+      "subjective_prompt": "Evaluate organizational incentives, gamification leaderboards, and engineering leadership support.",
+      "remediation": "Launch an internal 'FinOps Champions' recognition award and highlight top waste-reduction stories in engineering monthly town halls."
+    },
+    {
+      "id": "O9",
+      "stage": "optimized",
+      "domain": "optimizing_cost",
+      "finops_capability": "Continuous Optimization Backlog",
+      "critical": false,
+      "checkpoint_id": "chk-o2",
+      "text": "Does a dedicated cost optimization backlog exist and get groomed alongside functional features in regular engineering sprints?",
+      "options": [
+        {
+          "label": "Yes \u2014 dedicated FinOps epics/stories with quantified ROI groomed in standard sprints"
+        },
+        {
+          "label": "Stories created occasionally but routinely deprioritized for functional features"
+        },
+        {
+          "label": "Ad-hoc tickets created only when finance rings alarm bells"
+        },
+        {
+          "label": "No cost optimization stories exist in engineering backlogs"
+        }
+      ],
+      "consultant_probe": "Check their Jira / Azure DevOps backlog. Are FinOps tickets tagged with estimated monthly savings and prioritized by ROI?",
+      "subjective_prompt": "Review Jira backlog for FinOps stories, prioritization criteria, and completion velocity.",
+      "remediation": "Tag optimization tickets in Jira with estimated monthly savings (e.g. '$2,400/mo savings \u00b7 4 story points') to enable data-driven sprint prioritization."
+    },
+    {
+      "id": "O10",
+      "stage": "optimized",
+      "domain": "optimizing_cost",
+      "finops_capability": "Optimization Lever Prioritization",
+      "critical": false,
+      "checkpoint_id": "chk-o1",
+      "text": "Rank these optimization levers by historical ROI in your estate: Commitments, Rightsizing, Storage Lifecycle, and Spot/Autoscaling.",
+      "options": [
+        {
+          "label": "All four levers actively harvested across steady-state workloads"
+        },
+        {
+          "label": "Commitments and storage lifecycle mature; rightsizing and spot nascent"
+        },
+        {
+          "label": "Commitments only; usage optimization and rightsizing not executed"
+        },
+        {
+          "label": "None of these optimization levers have been systematically deployed"
+        }
+      ],
+      "consultant_probe": "Evaluate which levers have matured vs which are completely neglected by their infrastructure teams.",
+      "subjective_prompt": "Document realized savings across each lever over the past 12 months.",
+      "remediation": "Balance rate optimization (quick financial wins) with architectural usage optimization (permanent engineering efficiency) for compounded ROI."
+    },
+    {
+      "id": "A1",
+      "stage": "automated",
+      "domain": "managing_practice",
+      "finops_capability": "Policy-as-Code & Guardrails",
+      "critical": true,
+      "checkpoint_id": "chk-a1",
+      "text": "Is tagging and cost governance enforced automatically through policy-as-code guardrails (e.g. OPA, Terraform Sentinel, Azure Policy, SCPs)?",
+      "options": [
+        {
+          "label": "Yes \u2014 automated policy gates block non-compliant deployments in CI/CD and at cloud API level"
+        },
+        {
+          "label": "Policies configured in audit mode (flags violations but does not block)"
+        },
+        {
+          "label": "Linting rules exist in some repos but no central enforcement gate"
+        },
+        {
+          "label": "No policy-as-code or automated guardrails exist"
+        }
+      ],
+      "consultant_probe": "Test whether an engineer can deploy an untagged EC2 instance or Azure VM via CLI/Terraform right now. Does the CI/CD pipeline or cloud policy immediately block or quarantine it?",
+      "subjective_prompt": "Assess policy-as-code enforcement tools, bypass mechanisms, and automated remediation bots.",
+      "remediation": "Convert tagging and instance-family guidelines into strict policy-as-code guardrails in Terraform/OpenTofu and Azure Policy / AWS SCPs to block non-compliant deployments."
+    },
+    {
+      "id": "A2",
+      "stage": "automated",
+      "domain": "optimizing_cost",
+      "finops_capability": "Automated Workload Scheduling",
+      "critical": false,
+      "checkpoint_id": "chk-a2",
+      "text": "Are non-production resources (dev, test, staging environments) automatically parked or shut down outside working hours and on weekends?",
+      "options": [
+        {
+          "label": "Yes \u2014 default automated schedule stops non-prod outside 8am-6pm weekdays with easy opt-out"
+        },
+        {
+          "label": "Automated schedules active for some teams; others run 24/7 continuously"
+        },
+        {
+          "label": "Engineers are asked to stop instances manually (infrequently done)"
+        },
+        {
+          "label": "All non-production environments run 24/7 by default"
+        }
+      ],
+      "consultant_probe": "Check if non-prod compute runs 24/7 (744 hours/month) or is on a 50-hour weekly schedule (10 hours x 5 days). Automated parking immediately cuts 65% of non-prod compute spend.",
+      "subjective_prompt": "Document auto-parking tools (AWS Instance Scheduler, Cloud Custodian, Azure Automation) and opt-out rate.",
+      "remediation": "Deploy automated environment schedulers across all dev/staging accounts to power down compute outside core business hours, reclaiming 65% of non-prod cost."
+    },
+    {
+      "id": "A3",
+      "stage": "automated",
+      "domain": "optimizing_cost",
+      "finops_capability": "Storage Auto-Lifecycle",
+      "critical": false,
+      "checkpoint_id": "chk-a3",
+      "text": "Do automated lifecycle policies govern object storage tiering (e.g. S3 Intelligent-Tiering / Glacier, Azure Blob cool/archive) and snapshot TTL expiration?",
+      "options": [
+        {
+          "label": "Yes \u2014 comprehensive lifecycle rules automatically transition and expire storage across all buckets"
+        },
+        {
+          "label": "Lifecycle rules active on primary buckets; secondary storage unmanaged"
+        },
+        {
+          "label": "Manual cleanup scripts run occasionally when storage bills escalate"
+        },
+        {
+          "label": "No automated lifecycle policies exist; data accumulates indefinitely"
+        }
+      ],
+      "consultant_probe": "Check S3/Blob storage classes. Are petabytes of log data or backups sitting on S3 Standard / Blob Hot storage that hasn't been accessed in 180 days?",
+      "subjective_prompt": "Audit object storage lifecycle policies, snapshot retention scripts, and archive usage.",
+      "remediation": "Enable S3 Intelligent-Tiering across all production buckets and enforce a 30-day lifecycle rule on debug logs and ephemeral test snapshots."
+    },
+    {
+      "id": "A4",
+      "stage": "automated",
+      "domain": "modern_workloads",
+      "finops_capability": "AI & GenAI Cloud Spend Governance",
+      "critical": false,
+      "checkpoint_id": "chk-a4",
+      "text": "Are modern AI / GenAI and GPU infrastructure costs tracked with idle model endpoint shutdown, GPU utilization metrics, and token cost attribution?",
+      "options": [
+        {
+          "label": "Yes \u2014 dedicated GenAI FinOps tracking GPU cluster saturation, token attribution, and idle shutdown"
+        },
+        {
+          "label": "LLM API spend tracked at account level, but GPU utilization and prompt caching unmonitored"
+        },
+        {
+          "label": "AI spend lumped into general cloud compute with zero visibility into model economics"
+        },
+        {
+          "label": "No AI workloads in cloud, or AI spend completely unmanaged"
+        }
+      ],
+      "consultant_probe": "Ask how they track spending on OpenAI/Anthropic APIs, AWS Bedrock, SageMaker, or Azure OpenAI. Are dedicated GPU clusters sitting idle over weekends at $10k/day?",
+      "subjective_prompt": "Document GenAI architecture, dedicated GPU cluster count, prompt token tracking, and caching mechanisms.",
+      "remediation": "Implement automatic scale-to-zero on SageMaker/Azure ML inference endpoints and enforce semantic prompt caching to cut recurring model inference costs."
+    },
+    {
+      "id": "A5",
+      "stage": "automated",
+      "domain": "modern_workloads",
+      "finops_capability": "Container Autoscaling & Rightsizing",
+      "critical": false,
+      "checkpoint_id": "chk-a3",
+      "text": "Are container resource requests and limits (CPU/Memory) tuned automatically using Horizontal/Vertical Pod Autoscalers (HPA/VPA) or Karpenter?",
+      "options": [
+        {
+          "label": "Yes \u2014 automated VPA/HPA tuning with intelligent node bin-packing (e.g. Karpenter)"
+        },
+        {
+          "label": "HPA configured based on traffic; pod requests tuned manually every few months"
+        },
+        {
+          "label": "Static pod requests set high to prevent OOM errors, causing massive cluster slack"
+        },
+        {
+          "label": "No pod requests/limits configured; nodes run in unbalanced, unoptimized states"
+        }
+      ],
+      "consultant_probe": "Inspect their Kubernetes Pod Resource Requests vs Actual Utilization ratio. Across the industry, pods are provisioned for 4x their average memory/CPU need.",
+      "subjective_prompt": "Evaluate VPA/Karpenter adoption, namespace quota enforcement, and node pool bin-packing efficiency.",
+      "remediation": "Deploy Vertical Pod Autoscaler in recommendation mode to rightsize container CPU/Memory requests, eliminating massive cluster slack."
+    },
+    {
+      "id": "A6",
+      "stage": "automated",
+      "domain": "managing_practice",
+      "finops_capability": "Engineering OKRs & KPIs",
+      "critical": true,
+      "checkpoint_id": "chk-a1",
+      "text": "Are FinOps efficiency metrics formally included in engineering team OKRs, sprint KPIs, or performance evaluations?",
+      "options": [
+        {
+          "label": "Yes \u2014 explicit cost-efficiency OKRs (e.g. unit cost reduction, zero untagged compute) in sprint KPIs"
+        },
+        {
+          "label": "Discussed at director level, but not cascaded into individual engineering squad OKRs"
+        },
+        {
+          "label": "Mentioned informally when budgets are tight, but not part of performance reviews"
+        },
+        {
+          "label": "Cost efficiency plays zero role in engineering OKRs or evaluations"
+        }
+      ],
+      "consultant_probe": "Ask the VP of Engineering: 'Are your engineering managers held accountable for unit efficiency and cost targets in their quarterly performance reviews?'",
+      "subjective_prompt": "Document existing engineering OKRs and how cost efficiency is weighted against delivery velocity.",
+      "remediation": "Incorporate a standardized FinOps Key Result into engineering squad quarterly OKRs (e.g. 'Maintain <5% unallocated spend and rightsizing compliance \u226590%')."
+    },
+    {
+      "id": "A7",
+      "stage": "automated",
+      "domain": "optimizing_cost",
+      "finops_capability": "Automated Spot Interruption Handling",
+      "critical": false,
+      "checkpoint_id": "chk-a2",
+      "text": "Does automated handling, graceful draining, and instant replacement exist for Spot / Preemptible instance interruptions?",
+      "options": [
+        {
+          "label": "Yes \u2014 automated node drainer and diversified capacity pools ensure zero-downtime Spot resilience"
+        },
+        {
+          "label": "Basic autoscaler handles replacements, but transient failures can occur"
+        },
+        {
+          "label": "Spot used only for batch tasks that can afford hard crashes"
+        },
+        {
+          "label": "No automated interruption handling; Spot cannot be used for application services"
+        }
+      ],
+      "consultant_probe": "Verify if Spot termination notices (AWS 2-minute warning) trigger automated node draining and replacement via Karpenter/Cluster Autoscaler without dropping user traffic.",
+      "subjective_prompt": "Review Spot resilience architecture and zero-downtime test results.",
+      "remediation": "Implement AWS Node Termination Handler or Karpenter capacity rebalancing to drain and rotate Spot instances before cloud termination."
+    },
+    {
+      "id": "A8",
+      "stage": "automated",
+      "domain": "business_value",
+      "finops_capability": "Forecasting & Predictive Analytics",
+      "critical": true,
+      "checkpoint_id": "chk-a1",
+      "text": "Over the last rolling quarter, what has been your cloud spend forecast variance against actual monthly billing?",
+      "options": [
+        {
+          "label": "Within \u00b1 5% variance consistently across quarters"
+        },
+        {
+          "label": "Within \u00b1 15% variance; major product launches sometimes cause drift"
+        },
+        {
+          "label": "Within \u00b1 30% variance; forecasts are rough approximations"
+        },
+        {
+          "label": "> 30% variance or no formal cloud spend forecast is produced"
+        }
+      ],
+      "consultant_probe": "Ask Finance and Cloud Ops to compare their forecasted spend from 90 days ago against the actual invoiced total. Is variance within 5% or 40% off?",
+      "subjective_prompt": "Record actual forecast variance percentage, forecasting tools, and driver-based modeling capabilities.",
+      "remediation": "Build a driver-based rolling forecast model combining historical run-rate trends with product roadmap launch schedules to maintain variance within \u00b15%."
+    },
+    {
+      "id": "A9",
+      "stage": "automated",
+      "domain": "managing_practice",
+      "finops_capability": "CI/CD Cost Shift-Left",
+      "critical": false,
+      "checkpoint_id": "chk-a1",
+      "text": "Do software and DevOps engineers receive automated cost feedback inside their normal workflow (e.g. Infracost in GitHub/GitLab pull requests)?",
+      "options": [
+        {
+          "label": "Yes \u2014 automated PR comments show exact estimated dollar impact before code is merged"
+        },
+        {
+          "label": "PR cost checks deployed on some core repositories but not universal"
+        },
+        {
+          "label": "Cost discussed manually during code reviews for high-risk changes"
+        },
+        {
+          "label": "Engineers merge infrastructure code with zero automated cost visibility"
+        }
+      ],
+      "consultant_probe": "Ask to see a sample Pull Request. Does Infracost comment directly on the PR showing: 'This Terraform change will increase monthly AWS spend by $340'?",
+      "subjective_prompt": "Assess shift-left FinOps tooling (Infracost, Terraform cost estimators) and developer response.",
+      "remediation": "Integrate Infracost into GitHub/GitLab CI/CD pipelines to show engineers the real-time cost delta of Terraform/CloudFormation PRs before merging."
+    },
+    {
+      "id": "T1",
+      "stage": "transparent",
+      "domain": "understanding_usage",
+      "finops_capability": "Automated Multi-Tenant Chargeback",
+      "critical": true,
+      "checkpoint_id": "chk-t1",
+      "text": "How mature is financial chargeback to business units, product lines, and cost centers (actual financial transfer to P&Ls)?",
+      "options": [
+        {
+          "label": "Fully automated chargeback with monthly journal entries posted to SAP/Oracle general ledgers"
+        },
+        {
+          "label": "Showback is enforced with budget accountability, but no direct P&L debit"
+        },
+        {
+          "label": "Informal chargeback based on rough percentage splits with frequent disputes"
+        },
+        {
+          "label": "Centralized IT absorbs all cloud costs as corporate overhead with zero chargeback"
+        }
+      ],
+      "consultant_probe": "Verify whether chargeback is actual journal entries debiting BU general ledgers or just 'showback' reports that directors can ignore with zero budget consequence.",
+      "subjective_prompt": "Document financial ledger integration, dispute resolution processes, and shared platform allocation keys.",
+      "remediation": "Transition from informational showback to direct automated chargeback in your ERP (SAP/Oracle/NetSuite), holding business unit leaders financially accountable for their cloud consumption."
+    },
+    {
+      "id": "T2",
+      "stage": "transparent",
+      "domain": "business_value",
+      "finops_capability": "Unit Economics & Margin Modeling",
+      "critical": true,
+      "checkpoint_id": "chk-t2",
+      "text": "Are business unit economics defined, tracked, and reported in real-time (e.g. cost per transaction, cost per active user, cost per order)?",
+      "options": [
+        {
+          "label": "Yes \u2014 granular unit metrics (cost/transaction, cost/tenant) tracked and trended on executive dashboards"
+        },
+        {
+          "label": "Unit metrics calculated manually on a quarterly basis for key products"
+        },
+        {
+          "label": "Top-level cloud spend tracked against revenue, but no operational unit metrics"
+        },
+        {
+          "label": "No unit economics defined; cloud spend treated solely as a lump-sum IT expense"
+        }
+      ],
+      "consultant_probe": "Ask the client's executive: 'What is your cloud infrastructure cost per completed customer order or active subscriber, and has it increased or decreased over the last 12 months?'",
+      "subjective_prompt": "Document defined unit economics metrics, data source integrations, and executive reporting frequency.",
+      "remediation": "Define 1-2 core unit economic metrics (e.g. Cloud Cost per 1,000 Transactions) combining cloud billing telemetry with product analytics in BI dashboards."
+    },
+    {
+      "id": "T3",
+      "stage": "transparent",
+      "domain": "business_value",
+      "finops_capability": "BI & Financial Integration",
+      "critical": true,
+      "checkpoint_id": "chk-t3",
+      "text": "Is cloud cost and unit telemetry integrated directly into enterprise BI platforms and long-range corporate financial planning?",
+      "options": [
+        {
+          "label": "Yes \u2014 cloud unit telemetry feeds directly into corporate BI and FP&A financial models"
+        },
+        {
+          "label": "Cloud costs integrated into BI dashboards, but FP&A models use manual quarterly inputs"
+        },
+        {
+          "label": "Separate reporting tracks; cloud team tools do not communicate with finance BI"
+        },
+        {
+          "label": "Cloud financials completely isolated from corporate BI platforms"
+        }
+      ],
+      "consultant_probe": "Check if CFO forecasting models incorporate real-time cloud unit cost metrics, or if cloud budgets are forecasted as a flat 15% annual increase.",
+      "subjective_prompt": "Evaluate FP&A involvement in cloud budgeting and multi-year forecasting accuracy.",
+      "remediation": "Feed normalized cloud cost data directly into the enterprise data warehouse (Snowflake/BigQuery) so FP&A can model cloud COGS against product revenue pipelines."
+    },
+    {
+      "id": "T4",
+      "stage": "transparent",
+      "domain": "business_value",
+      "finops_capability": "Tenant Cost Attribution & Pricing",
+      "critical": false,
+      "checkpoint_id": "chk-t2",
+      "text": "Is infrastructure cost per customer or tenant tracked and used directly to inform product tier pricing, enterprise contracts, and margin defense?",
+      "options": [
+        {
+          "label": "Yes \u2014 exact cost-to-serve per customer is tracked and informs contract pricing and tier margins"
+        },
+        {
+          "label": "Calculated for high-tier enterprise clients during annual contract renewals"
+        },
+        {
+          "label": "Rough approximations used; individual customer cloud cost unknown"
+        },
+        {
+          "label": "No tracking of customer cost-to-serve; all customers billed standard pricing"
+        }
+      ],
+      "consultant_probe": "Ask Sales / Product: 'Do you know which of your enterprise customers are unprofitable due to heavy cloud compute/storage consumption?'",
+      "subjective_prompt": "Detail multi-tenant cost tracking capabilities and how it informs bespoke enterprise contract pricing.",
+      "remediation": "Implement customer-tenant attribution tags on storage and compute to identify unprofitable enterprise accounts and adjust renewal pricing."
+    },
+    {
+      "id": "T5",
+      "stage": "transparent",
+      "domain": "managing_practice",
+      "finops_capability": "Executive Scorecards & Benchmarking",
+      "critical": false,
+      "checkpoint_id": "chk-t3",
+      "text": "How embedded are executive FinOps scorecards, department leaderboards, and peer benchmarking in driving executive behavior?",
+      "options": [
+        {
+          "label": "Highly embedded \u2014 monthly executive scorecards drive competition and senior accountability"
+        },
+        {
+          "label": "Scorecards shared with department heads quarterly; discussed at leadership reviews"
+        },
+        {
+          "label": "Scorecards distributed informally without executive sponsorship"
+        },
+        {
+          "label": "No scorecards or peer benchmarks exist"
+        }
+      ],
+      "consultant_probe": "Check if business unit leaders compare their unit costs against other internal BUs on monthly executive scorecards.",
+      "subjective_prompt": "Review executive scorecard metrics and C-suite engagement.",
+      "remediation": "Publish an executive 'Cloud Efficiency Scorecard' ranking business units by tag compliance, commitment coverage, and unit cost trajectory."
+    },
+    {
+      "id": "T6",
+      "stage": "transparent",
+      "domain": "optimizing_cost",
+      "finops_capability": "Waste Threshold & Posture Defense",
+      "critical": true,
+      "checkpoint_id": "chk-t4",
+      "text": "What proportion of the total cloud bill is currently attributable to unallocated waste, idle compute, or unattached storage?",
+      "options": [
+        {
+          "label": "< 4% of total spend \u2014 lean, autonomous estate with continuous self-healing guardrails"
+        },
+        {
+          "label": "4% \u2013 9% waste \u2014 healthy posture with minor occasional drift"
+        },
+        {
+          "label": "10% \u2013 20% waste \u2014 regular cleanups required to keep spend in check"
+        },
+        {
+          "label": "> 20% waste \u2014 significant ongoing waste across multiple accounts"
+        }
+      ],
+      "consultant_probe": "Verify client's total unallocated and idle spend. Best-in-class Stage 5 organizations hold waste strictly below 4% of total cloud spend.",
+      "subjective_prompt": "Analyze client's waste percentage and ongoing posture defense mechanisms.",
+      "remediation": "Implement automated self-healing guardrails (e.g. auto-quarantine unattached disks after 7 days) to sustain a world-class <4% waste baseline."
+    },
+    {
+      "id": "T7",
+      "stage": "transparent",
+      "domain": "managing_practice",
+      "finops_capability": "Executive Compensation & Performance",
+      "critical": false,
+      "checkpoint_id": "chk-t3",
+      "text": "To what extent does cloud cost efficiency, unit economics, and margin optimization feature in senior leadership performance evaluations and compensation?",
+      "options": [
+        {
+          "label": "Formally tied to executive KPIs, bonus incentives, and performance reviews"
+        },
+        {
+          "label": "Considered during annual performance reviews as part of overall operational rigor"
+        },
+        {
+          "label": "Evaluated only if massive budget overruns occur"
+        },
+        {
+          "label": "Plays zero role in leadership evaluations or compensation"
+        }
+      ],
+      "consultant_probe": "Ask if engineering directors and VP-level leaders have performance bonuses tied to cloud gross margin targets.",
+      "subjective_prompt": "Assess leadership compensation structures and incentives.",
+      "remediation": "Align leadership incentives by tying a portion of engineering executive bonuses to achieving gross margin and unit cost efficiency targets."
+    },
+    {
+      "id": "T8",
+      "stage": "transparent",
+      "domain": "business_value",
+      "finops_capability": "Strategic Product Roadmap Steering",
+      "critical": false,
+      "checkpoint_id": "chk-t3",
+      "text": "Do cloud unit economics and margin data directly inform product feature deprecation, architecture rewrites, and expansion decisions?",
+      "options": [
+        {
+          "label": "Yes \u2014 product roadmaps and feature lifecycle decisions are routinely steered by unit margin data"
+        },
+        {
+          "label": "Considered during major product overhauls, but not continuously during feature planning"
+        },
+        {
+          "label": "Informally acknowledged, but feature velocity always trumps margin data"
+        },
+        {
+          "label": "Product teams never consult cloud cost data when planning roadmaps"
+        }
+      ],
+      "consultant_probe": "Ask: 'Have you ever killed an unprofitable feature or rewritten an architecture because its cloud unit cost eroded customer margin?'",
+      "subjective_prompt": "Capture specific examples of product strategy influenced by cloud unit economics.",
+      "remediation": "Embed FinOps architects into the product roadmap lifecycle to audit the unit economics of new features prior to general availability."
+    }
+  ],
+  "archetypes": [
+    {
+      "id": "saas",
+      "name": "Cloud-Native B2B SaaS Scale-up",
+      "sector": "Technology / Software",
+      "spend": "$8M \u2013 $15M / yr",
+      "spend_numeric": 10000000,
+      "clouds": [
+        "AWS"
+      ],
+      "tech_stack": [
+        "Kubernetes (EKS)",
+        "Microservices",
+        "PostgreSQL",
+        "Kafka"
+      ],
+      "description": "Fast-growing high-velocity SaaS. Heavy EKS cluster footprint. Engineers spin up resources freely. Good awareness but tagging is inconsistent and 40% of compute runs on expensive on-demand instances.",
+      "baseline_stage": 2,
+      "sample_answers": {
+        "C1": 0,
+        "C2": 0,
+        "C3": 0,
+        "C4": 1,
+        "C5": 0,
+        "C6": 1,
+        "C7": 1,
+        "C8": 0,
+        "I1": 1,
+        "I2": 2,
+        "I3": 1,
+        "I4": 0,
+        "I5": 1,
+        "I6": 0,
+        "I7": 1,
+        "I8": 1,
+        "I9": 1,
+        "O1": 2,
+        "O2": 2,
+        "O3": 1,
+        "O4": 2,
+        "O5": 2,
+        "O6": 2,
+        "O7": 2,
+        "O8": 2,
+        "O9": 2,
+        "O10": 2,
+        "A1": 2,
+        "A2": 2,
+        "A3": 1,
+        "A4": 2,
+        "A5": 1,
+        "A6": 2,
+        "A7": 2,
+        "A8": 2,
+        "A9": 2,
+        "T1": 3,
+        "T2": 2,
+        "T3": 2,
+        "T4": 2,
+        "T5": 3,
+        "T6": 2,
+        "T7": 3,
+        "T8": 2
+      }
+    },
+    {
+      "id": "banking",
+      "name": "Tier-1 Enterprise Bank & Capital Markets",
+      "sector": "Banking & Financial Services",
+      "spend": "$25M \u2013 $50M / yr",
+      "spend_numeric": 35000000,
+      "clouds": [
+        "Azure",
+        "AWS"
+      ],
+      "tech_stack": [
+        "Multi-Cloud",
+        "Legacy Enterprise VMs",
+        "OpenShift",
+        "Oracle"
+      ],
+      "description": "Heavily regulated global financial institution. Strong account boundaries and centralized procurement. However, rightsizing approvals take months, container allocation is unmapped, and on-demand legacy spend leaks millions.",
+      "baseline_stage": 2,
+      "sample_answers": {
+        "C1": 0,
+        "C2": 0,
+        "C3": 0,
+        "C4": 0,
+        "C5": 0,
+        "C6": 0,
+        "C7": 0,
+        "C8": 0,
+        "I1": 0,
+        "I2": 1,
+        "I3": 1,
+        "I4": 1,
+        "I5": 0,
+        "I6": 1,
+        "I7": 1,
+        "I8": 1,
+        "I9": 0,
+        "O1": 1,
+        "O2": 2,
+        "O3": 2,
+        "O4": 3,
+        "O5": 1,
+        "O6": 1,
+        "O7": 1,
+        "O8": 3,
+        "O9": 2,
+        "O10": 1,
+        "A1": 1,
+        "A2": 2,
+        "A3": 1,
+        "A4": 2,
+        "A5": 2,
+        "A6": 1,
+        "A7": 3,
+        "A8": 1,
+        "A9": 2,
+        "T1": 1,
+        "T2": 2,
+        "T3": 1,
+        "T4": 2,
+        "T5": 1,
+        "T6": 2,
+        "T7": 2,
+        "T8": 2
+      }
+    },
+    {
+      "id": "healthcare",
+      "name": "Healthcare & Life Sciences Network",
+      "sector": "Healthcare & Life Sciences",
+      "spend": "$10M \u2013 $20M / yr",
+      "spend_numeric": 14000000,
+      "clouds": [
+        "AWS",
+        "GCP"
+      ],
+      "tech_stack": [
+        "AI/ML GPU Clusters",
+        "Petabyte Imaging Lake",
+        "Kubernetes",
+        "HIPAA Enclaves"
+      ],
+      "description": "Research hospital and diagnostics platform. Enormous petabyte-scale genomics and imaging datasets. Dedicated GPU clusters for AI model training frequently sit idle, driving up cloud bills with minimal unit attribution.",
+      "baseline_stage": 1,
+      "sample_answers": {
+        "C1": 0,
+        "C2": 0,
+        "C3": 1,
+        "C4": 1,
+        "C5": 1,
+        "C6": 0,
+        "C7": 1,
+        "C8": 0,
+        "I1": 1,
+        "I2": 2,
+        "I3": 2,
+        "I4": 2,
+        "I5": 2,
+        "I6": 2,
+        "I7": 2,
+        "I8": 2,
+        "I9": 2,
+        "O1": 2,
+        "O2": 2,
+        "O3": 2,
+        "O4": 3,
+        "O5": 2,
+        "O6": 2,
+        "O7": 2,
+        "O8": 3,
+        "O9": 3,
+        "O10": 2,
+        "A1": 3,
+        "A2": 2,
+        "A3": 2,
+        "A4": 2,
+        "A5": 2,
+        "A6": 3,
+        "A7": 3,
+        "A8": 2,
+        "A9": 3,
+        "T1": 3,
+        "T2": 3,
+        "T3": 2,
+        "T4": 3,
+        "T5": 3,
+        "T6": 2,
+        "T7": 3,
+        "T8": 3
+      }
+    },
+    {
+      "id": "retail",
+      "name": "Global Retail & Omnichannel E-Commerce",
+      "sector": "Retail & Consumer Goods",
+      "spend": "$15M \u2013 $30M / yr",
+      "spend_numeric": 22000000,
+      "clouds": [
+        "AWS",
+        "Azure"
+      ],
+      "tech_stack": [
+        "Serverless",
+        "Kubernetes",
+        "Redis",
+        "Multi-Region CDN"
+      ],
+      "description": "High seasonal transaction volume with huge Black Friday/holiday elasticity. Significant cross-AZ data transfer costs and NAT Gateway processing fees. Good automated scheduling in dev, but lacks real-time unit economics per order.",
+      "baseline_stage": 3,
+      "sample_answers": {
+        "C1": 0,
+        "C2": 0,
+        "C3": 0,
+        "C4": 0,
+        "C5": 0,
+        "C6": 0,
+        "C7": 0,
+        "C8": 0,
+        "I1": 0,
+        "I2": 0,
+        "I3": 1,
+        "I4": 0,
+        "I5": 0,
+        "I6": 0,
+        "I7": 1,
+        "I8": 0,
+        "I9": 0,
+        "O1": 0,
+        "O2": 1,
+        "O3": 1,
+        "O4": 1,
+        "O5": 1,
+        "O6": 0,
+        "O7": 1,
+        "O8": 1,
+        "O9": 1,
+        "O10": 0,
+        "A1": 0,
+        "A2": 0,
+        "A3": 0,
+        "A4": 1,
+        "A5": 1,
+        "A6": 1,
+        "A7": 1,
+        "A8": 1,
+        "A9": 1,
+        "T1": 1,
+        "T2": 1,
+        "T3": 1,
+        "T4": 1,
+        "T5": 1,
+        "T6": 1,
+        "T7": 2,
+        "T8": 1
+      }
+    }
+  ]
+};
 
     // Application State
     const STATE_KEY = 'finops_iq_state_v2';
@@ -1755,6 +3417,7 @@
         stageIdx: 0,
         answers: {},
         notes: {},
+        evaluation: null,
         aiInterpretations: {},
         aiSynthesis: null
       };
@@ -2098,9 +3761,39 @@
     }
 
     // Scoring & Gating Engine
+    /* ---------- Cloud Scoring Engine Bridge (AWS Lambda ap-south-1) ---------- */
+    const EVALUATE_API_ENDPOINT = "https://zvnmwxa9sf.execute-api.ap-south-1.amazonaws.com/api/evaluate/finops-iq";
+
+    async function fetchCloudEvaluation() {
+      try {
+        const payload = {
+          answers: STATE.answers,
+          annualSpend: STATE.org.annualSpend || 0,
+          org: STATE.org
+        };
+        const res = await fetch(EVALUATE_API_ENDPOINT, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        if (!res.ok) {
+          console.error('[FinOps IQ Cloud Eval] Error:', res.status, await res.text());
+          return null;
+        }
+        const json = await res.json();
+        if (json && json.ok && json.data) {
+          STATE.evaluation = json.data;
+          return STATE.evaluation;
+        }
+      } catch (err) {
+        console.error('[FinOps IQ Cloud Eval] Connection failed:', err);
+      }
+      return null;
+    }
+
     function qScore(q, a) {
       if (a === undefined || a === null || a === '__NA__') return null;
-      if (typeof a === 'number' && q.options && q.options[a]) return q.options[a].score;
+      if (typeof a === 'number') return a;
       return null;
     }
 
@@ -2109,192 +3802,89 @@
     }
 
     function stageScore(stageId) {
+      if (STATE.evaluation && STATE.evaluation.stageScores && STATE.evaluation.stageScores[stageId]) {
+        return STATE.evaluation.stageScores[stageId];
+      }
       const qs = stageQuestions(stageId);
-      let t = 0, w = 0, answered = 0;
-      qs.forEach(q => {
-        const s = qScore(q, STATE.answers[q.id]);
-        if (s !== null) {
-          const ww = q.weight || 1;
-          t += s * ww;
-          w += ww;
-          answered++;
-        }
-      });
-      return {
-        score: w ? Math.round(t / w) : null,
-        answered: answered,
-        total: qs.length
-      };
+      const answered = qs.filter(q => STATE.answers[q.id] !== undefined && STATE.answers[q.id] !== null).length;
+      return { score: null, answered: answered, total: qs.length };
     }
 
     function stageCriticals(stageId) {
+      if (STATE.evaluation && STATE.evaluation.stageCriticals && STATE.evaluation.stageCriticals[stageId]) {
+        return STATE.evaluation.stageCriticals[stageId];
+      }
       const qs = stageQuestions(stageId).filter(q => q.critical);
-      const st = KB.meta.stages.find(s => s.id === stageId);
-      const critMin = st ? st.crit_min : 70;
-      let pass = 0, failing = [];
-      qs.forEach(q => {
-        const s = qScore(q, STATE.answers[q.id]);
-        if (s !== null && s >= critMin) pass++;
-        else failing.push({ q: q, score: s, target: critMin });
-      });
-      return { pass, total: qs.length, failing };
+      return { pass: 0, total: qs.length, failing: [] };
     }
 
     function stageStatus(stageId) {
+      if (STATE.evaluation && STATE.evaluation.stageStatuses && STATE.evaluation.stageStatuses[stageId]) {
+        return STATE.evaluation.stageStatuses[stageId];
+      }
       const sc = stageScore(stageId);
       if (sc.answered === 0) return 'unanswered';
-      const st = KB.meta.stages.find(s => s.id === stageId);
-      const cr = stageCriticals(stageId);
-      if (sc.score !== null && sc.score >= st.threshold && cr.failing.length === 0 && sc.answered === sc.total) {
-        return 'passed';
-      }
       if (sc.answered < sc.total) return 'in-progress';
-      return 'failed';
+      return 'unanswered';
     }
 
     function maturity() {
-      const stages = KB.meta.stages;
-      let highest = -1;
-      for (let i = 0; i < stages.length; i++) {
-        if (stageStatus(stages[i].id) === 'passed') {
-          highest = i;
-        } else {
-          break; // strict prerequisite gating
-        }
+      if (STATE.evaluation && STATE.evaluation.maturity !== undefined) {
+        return STATE.evaluation.maturity;
       }
-      return highest;
+      return -1;
     }
 
     function overallScore() {
-      let t = 0, w = 0;
-      KB.questions.forEach(q => {
-        const s = qScore(q, STATE.answers[q.id]);
-        if (s !== null) {
-          const ww = q.weight || 1;
-          t += s * ww;
-          w += ww;
-        }
-      });
-      return w ? Math.round(t / w) : null;
+      if (STATE.evaluation && STATE.evaluation.overallScore !== undefined) {
+        return STATE.evaluation.overallScore;
+      }
+      return null;
     }
 
     function domainScores() {
-      const acc = {};
-      KB.meta.domains.forEach(d => acc[d.id] = { t: 0, w: 0 });
-      KB.questions.forEach(q => {
-        const s = qScore(q, STATE.answers[q.id]);
-        if (s !== null && acc[q.domain]) {
-          const ww = q.weight || 1;
-          acc[q.domain].t += s * ww;
-          acc[q.domain].w += ww;
-        }
-      });
+      if (STATE.evaluation && STATE.evaluation.domainScores) {
+        return STATE.evaluation.domainScores;
+      }
       const out = {};
-      Object.keys(acc).forEach(k => {
-        out[k] = acc[k].w ? Math.round(acc[k].t / acc[k].w) : 0;
-      });
+      KB.meta.domains.forEach(d => out[d.id] = 0);
       return out;
     }
 
     function checkpointCoverage() {
-      const checkpoints = KB.meta.checkpoints || [];
+      if (STATE.evaluation && STATE.evaluation.checkpointCoverage) {
+        return STATE.evaluation.checkpointCoverage;
+      }
       const res = {};
-      checkpoints.forEach(c => {
-        // associate with questions referencing this checkpoint
-        const matchingQs = KB.questions.filter(q => q.checkpoint_id === c.id);
-        if (!matchingQs.length) {
-          res[c.id] = { status: 'met', pct: 100, checkpoint: c };
-          return;
-        }
-        let totalScore = 0, count = 0, hasCriticalFailure = false;
-        matchingQs.forEach(q => {
-          const s = qScore(q, STATE.answers[q.id]);
-          if (s !== null) {
-            totalScore += s;
-            count++;
-            if (q.critical && s < 70) hasCriticalFailure = true;
-          }
-        });
-        const avg = count ? Math.round(totalScore / count) : 0;
-        let st = 'blocker';
-        if (count === matchingQs.length && avg >= 75 && !hasCriticalFailure) st = 'met';
-        else if (count > 0 && avg >= 40) st = 'partial';
-        res[c.id] = { status: st, pct: avg, checkpoint: c };
+      (KB.meta.checkpoints || []).forEach(c => {
+        res[c.id] = { status: 'blocker', pct: 0, checkpoint: c };
       });
       return res;
     }
 
     function calculateValueAtStake() {
+      if (STATE.evaluation && STATE.evaluation.valueAtStake) {
+        return STATE.evaluation.valueAtStake;
+      }
       const spend = STATE.org.annualSpend || 0;
-      const mIdx = maturity();
-      // Estimated leak percentage by stage
-      let minPct = 0.25, maxPct = 0.35;
-      if (mIdx === 0) { minPct = 0.25; maxPct = 0.35; }
-      else if (mIdx === 1) { minPct = 0.18; maxPct = 0.28; }
-      else if (mIdx === 2) { minPct = 0.10; maxPct = 0.18; }
-      else if (mIdx === 3) { minPct = 0.05; maxPct = 0.09; }
-      else if (mIdx === 4) { minPct = 0.02; maxPct = 0.04; }
-
       return {
         annualSpend: spend,
-        minSavings: Math.round(spend * minPct),
-        maxSavings: Math.round(spend * maxPct),
-        minPct: Math.round(minPct * 100),
-        maxPct: Math.round(maxPct * 100)
+        minSavings: Math.round(spend * 0.25),
+        maxSavings: Math.round(spend * 0.35),
+        minPct: 25,
+        maxPct: 35
       };
     }
 
     function buildRoadmap() {
-      const stages = KB.meta.stages;
-      const mIdx = maturity();
-      const nextIdx = Math.min(mIdx + 1, stages.length - 1);
-      const gaps = [];
-
-      stages.forEach((st, si) => {
-        stageQuestions(st.id).forEach(q => {
-          const s = qScore(q, STATE.answers[q.id]);
-          const target = q.critical ? st.crit_min : st.threshold;
-          if (s === null || s < target) {
-            gaps.push({
-              q,
-              stage: st,
-              stageIdx: si,
-              score: s,
-              target,
-              gapSize: s === null ? 100 : (target - s)
-            });
-          }
-        });
-      });
-
-      const rank = (a, b) => (b.q.critical ? 1 : 0) - (a.q.critical ? 1 : 0) || (b.q.weight || 1) - (a.q.weight || 1) || b.gapSize - a.gapSize;
-      const short = gaps.filter(g => g.stageIdx <= nextIdx && g.q.critical).sort(rank);
-      const mid = gaps.filter(g => (g.stageIdx <= nextIdx && !g.q.critical) || (g.stageIdx === nextIdx + 1 && g.q.critical)).sort(rank);
-      const long = gaps.filter(g => g.stageIdx > nextIdx && !(g.stageIdx === nextIdx + 1 && g.q.critical)).sort(rank);
-
+      if (STATE.evaluation && STATE.evaluation.roadmap) {
+        return STATE.evaluation.roadmap;
+      }
       return {
         horizons: [
-          {
-            name: "Short Term",
-            when: "0–3 Months",
-            color: "#FF5E4F",
-            aim: mIdx < stages.length - 1 ? ("Unblock prerequisite gates for " + stages[nextIdx].name + " & capture immediate waste savings.") : "Protect baseline posture against control drift.",
-            items: short
-          },
-          {
-            name: "Mid Term",
-            when: "3–9 Months",
-            color: "#B26A00",
-            aim: "Deploy policy-as-code guardrails, container allocation, and embed monthly engineering review cadences.",
-            items: mid
-          },
-          {
-            name: "Long Term",
-            when: "9–24 Months",
-            color: "#226882",
-            aim: "Achieve real-time unit economics, multi-tenant chargeback, and direct product margin integration.",
-            items: long
-          }
+          { name: "Short Term", when: "0–3 Months", color: "#FF5E4F", aim: "Establish foundational gates", items: [] },
+          { name: "Mid Term", when: "3–9 Months", color: "#B26A00", aim: "Deploy policy guardrails", items: [] },
+          { name: "Long Term", when: "9–24 Months", color: "#226882", aim: "Achieve unit economics", items: [] }
         ]
       };
     }
@@ -2334,6 +3924,13 @@
       document.querySelectorAll('.nav-tab-btn').forEach(b => {
         b.classList.toggle('active', b.dataset.tab === tabId);
       });
+      if (tabId === 'checkpoints' || tabId === 'report') {
+        const app = document.getElementById('main-app');
+        if (app && (!STATE.evaluation || Object.keys(STATE.answers).length > 0)) {
+          fetchCloudEvaluation().finally(() => renderApp());
+          return;
+        }
+      }
       renderApp();
     }
 
@@ -2687,6 +4284,9 @@
       STATE.answers[qId] = val;
       saveState();
       renderAssess();
+      fetchCloudEvaluation().then(res => {
+        if(res && STATE.tab === 'assess') renderAssess();
+      });
     }
     function updateQuestionNote(qId, val) {
       STATE.notes[qId] = val;

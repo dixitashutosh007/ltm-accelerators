@@ -441,15 +441,18 @@
           </div>
         </div>
 
-        <div class="acc-card" style="opacity: 0.65;">
+        <div class="acc-card active" onclick="window.location.href='finops-iq.html'">
           <div class="acc-header">
             <div class="acc-title">FinOps IQ</div>
-            <span class="pill pill-amber">Ready to Wire</span>
+            <span class="pill pill-green">Live on AWS</span>
           </div>
-          <p class="acc-desc">Production Cloud Financial Management & Maturity Platform evaluating 6 FinOps domains and boardroom roadmap.</p>
+          <p class="acc-desc">Production Cloud Financial Management &amp; Maturity Platform evaluating 5 domains, 5 maturity stages, and boardroom roadmap.</p>
           <div style="display:flex; justify-content:space-between; align-items:center;">
-            <span class="pill">40 Questions · Maturity Radar</span>
-            <button class="btn btn-secondary" style="padding: 8px 16px; font-size: 13px;">In Engine Queue</button>
+            <span class="pill">44 Questions · 5 Stages</span>
+            <div style="display:flex;gap:8px">
+              <a href="studio.html?tool=finops-iq" class="btn" style="text-decoration:none;background:transparent;border:1px solid var(--border-light);color:var(--text-muted);padding:8px 12px;font-size:12px" onclick="event.stopPropagation()">⚙️ Edit</a>
+              <button class="btn btn-primary" style="padding: 8px 16px; font-size: 13px;">Launch Diagnostic →</button>
+            </div>
           </div>
         </div>
 
@@ -477,7 +480,7 @@
   </main>
 
   <script>
-    const API_ENDPOINT = "https://vh7pwyw8q3.execute-api.ap-south-1.amazonaws.com/api/evaluate/finops-value-case";
+    const API_ENDPOINT = "https://zvnmwxa9sf.execute-api.ap-south-1.amazonaws.com/api/evaluate/finops-value-case";
 
     let state = {
       acceleratorId: null,
