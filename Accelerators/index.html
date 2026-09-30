@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LTM Advisory Accelerators — Enterprise Platform</title>
+  
+  <!-- CDNs for Visual Charting -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Manrope:wght@600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --coral: #FF5E4F;
+      --coral-hover: #E5412F;
+      --dark: #12161A;
+      --card-dark: #1A2129;
+      --border-dark: #2A3441;
+      --text-main: #F3F4F6;
+      --text-muted: #9CA3AF;
+      --bg-page: #0C1014;
+      --bg-card: #151C24;
+      --border-light: #24303E;
+      --teal: #3C829B;
+      --green: #35754D;
+      --amber: #B26A00;
+      --font-sans: 'Plus Jakarta Sans', sans-serif;
+      --font-heading: 'Manrope', sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: var(--font-sans);
+      background-color: var(--bg-page);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      line-height: 1.5;
+    }
+
+    /* Top Nav */
+    header {
+      background: rgba(18, 22, 26, 0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border-light);
+      padding: 16px 32px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-family: var(--font-heading);
+      font-weight: 800;
+      font-size: 17px;
+      letter-spacing: -0.02em;
+    }
+
+    .brand-badge {
+      background: var(--coral);
+      color: #fff;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .nav-status {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      background: #10B981;
+      border-radius: 50%;
+      box-shadow: 0 0 8px #10B981;
+    }
+
+    /* Main Container */
+    main {
+      flex: 1;
+      max-width: 1080px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 40px 24px;
+    }
+
+    .hero {
+      margin-bottom: 36px;
+      text-align: center;
+    }
+
+    .hero h1 {
+      font-family: var(--font-heading);
+      font-size: 36px;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      margin-bottom: 12px;
+    }
+
+    .hero p {
+      color: var(--text-muted);
+      font-size: 16px;
+      max-width: 620px;
+      margin: 0 auto;
+    }
+
+    /* Accelerator Grid */
+    .acc-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+      margin-bottom: 40px;
+    }
+
+    .acc-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-light);
+      border-radius: 14px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+
+    .acc-card:hover {
+      border-color: var(--coral);
+      transform: translateY(-2px);
+      box-shadow: 0 12px 30px rgba(0,0,0,0.3);
+    }
+
+    .acc-card.active {
+      border-color: var(--coral);
+      background: linear-gradient(180deg, rgba(255,94,79,0.06) 0%, var(--bg-card) 100%);
+    }
+
+    .acc-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 12px;
+    }
+
+    .acc-title {
+      font-family: var(--font-heading);
+      font-size: 19px;
+      font-weight: 700;
+    }
+
+    .acc-desc {
+      color: var(--text-muted);
+      font-size: 13.5px;
+      margin-bottom: 20px;
+      line-height: 1.5;
+    }
+
+    .pill {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 3px 8px;
+      border-radius: 6px;
+      background: rgba(255,255,255,0.08);
+    }
+
+    .pill-green {
+      background: rgba(16, 185, 129, 0.15);
+      color: #34D399;
+      border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+
+    .pill-amber {
+      background: rgba(245, 158, 11, 0.15);
+      color: #FBBF24;
+      border: 1px solid rgba(245, 158, 11, 0.3);
+    }
+
+    /* Player View */
+    .player-container {
+      background: var(--bg-card);
+      border: 1px solid var(--border-light);
+      border-radius: 16px;
+      padding: 32px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+    }
+
+    .player-progress {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--border-light);
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    .question-prompt {
+      font-family: var(--font-heading);
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      line-height: 1.3;
+    }
+
+    .question-hint {
+      color: var(--text-muted);
+      font-size: 14px;
+      margin-bottom: 24px;
+    }
+
+    /* Options / Inputs */
+    .options-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 32px;
+    }
+
+    .option-btn {
+      background: rgba(255,255,255,0.03);
+      border: 1.5px solid var(--border-light);
+      color: var(--text-main);
+      padding: 16px 20px;
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: 500;
+      text-align: left;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: all 0.15s ease;
+    }
+
+    .option-btn:hover {
+      background: rgba(255,255,255,0.07);
+      border-color: #4B5563;
+    }
+
+    .option-btn.selected {
+      background: rgba(255, 94, 79, 0.12);
+      border-color: var(--coral);
+      color: #fff;
+      font-weight: 600;
+    }
+
+    .slider-box {
+      margin: 32px 0;
+    }
+
+    .slider-box input[type="range"] {
+      width: 100%;
+      height: 6px;
+      background: #374151;
+      border-radius: 999px;
+      outline: none;
+      -webkit-appearance: none;
+    }
+
+    .slider-box input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 22px;
+      height: 22px;
+      background: var(--coral);
+      border-radius: 50%;
+      cursor: pointer;
+      box-shadow: 0 0 12px var(--coral);
+    }
+
+    .slider-display {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-top: 14px;
+    }
+
+    .slider-val {
+      font-family: var(--font-heading);
+      font-size: 28px;
+      font-weight: 800;
+      color: var(--coral);
+    }
+
+    /* Button Bar */
+    .button-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 24px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border-light);
+    }
+
+    .btn {
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: all 0.15s;
+    }
+
+    .btn-secondary {
+      background: transparent;
+      border-color: var(--border-light);
+      color: var(--text-muted);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255,255,255,0.05);
+      color: #fff;
+    }
+
+    .btn-primary {
+      background: var(--coral);
+      color: #fff;
+    }
+
+    .btn-primary:hover {
+      background: var(--coral-hover);
+    }
+
+    /* Report View */
+    .report-hero {
+      background: linear-gradient(135deg, rgba(255,94,79,0.15) 0%, rgba(60,130,155,0.1) 100%);
+      border: 1px solid var(--border-light);
+      border-radius: 16px;
+      padding: 32px;
+      margin-bottom: 24px;
+    }
+
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin-top: 24px;
+    }
+
+    .stat-card {
+      background: rgba(0,0,0,0.3);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 10px;
+      padding: 16px 20px;
+    }
+
+    .stat-label {
+      font-size: 12px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 4px;
+    }
+
+    .stat-value {
+      font-family: var(--font-heading);
+      font-size: 26px;
+      font-weight: 800;
+    }
+
+    .stream-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-light);
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 16px;
+    }
+
+    .stream-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .spinner {
+      border: 3px solid rgba(255,255,255,0.1);
+      border-top: 3px solid var(--coral);
+      border-radius: 50%;
+      width: 32px;
+      height: 32px;
+      animation: spin 1s linear infinite;
+      margin: 40px auto;
+    }
+
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+  </style>
+<script>window.__DEFAULT_PUBLIC_SCHEMA = {"meta": {"schema_version": "1.0.3", "instrument": "FinOps Value Case \u2014 Pre-Maturity Qualification", "last_reviewed": "2026-07-22", "disclaimer": "Indicative estimate based on self-reported inputs and published industry benchmarks. Figures illustrate the scale of opportunity and are not a guarantee of savings. A validated baseline requires assessment of actual billing data. Indicative and directional only. Not a commitment, quote or financial advice.", "currencies": [{"id": "gbp", "symbol": "\u00a3"}, {"id": "usd", "symbol": "$"}, {"id": "eur", "symbol": "\u20ac"}, {"id": "inr", "symbol": "\u20b9"}]}, "questions": [{"id": "E1", "section": "estate", "answer_type": "card_select", "text": "Which best describes your infrastructure today?", "hint": "Pick the closest match \u2014 precision is not required.", "options": [{"label": "Entirely on-premise / data centre"}, {"label": "Mostly data centre, some cloud"}, {"label": "Balanced hybrid"}, {"label": "Mostly cloud, some legacy"}, {"label": "Cloud-native / fully migrated"}]}, {"id": "E2", "section": "estate", "answer_type": "multi_select_logo", "text": "Which cloud platforms are in use or planned?", "hint": "Multi-cloud materially increases the cost of poor visibility.", "options": [{"label": "Amazon Web Services"}, {"label": "Microsoft Azure"}, {"label": "Google Cloud"}, {"label": "Oracle Cloud"}, {"label": "Private / hosted cloud"}, {"label": "Not yet decided"}]}, {"id": "E3", "section": "estate", "answer_type": "slider_currency", "text": "Roughly what is your annual cloud spend?", "hint": "An order-of-magnitude estimate is enough. This drives the value calculation.", "slider": {"min": 50000, "max": 100000000, "steps": 60, "default": 2000000}}, {"id": "E4", "section": "estate", "answer_type": "single_select", "text": "Where are you in your cloud journey?", "options": [{"label": "Planning \u2014 not yet migrating"}, {"label": "Early migration \u2014 under 25% moved"}, {"label": "In flight \u2014 25% to 75% moved"}, {"label": "Largely migrated \u2014 over 75% moved"}, {"label": "Migration complete, now optimising"}]}, {"id": "E5", "section": "estate", "answer_type": "slider_signed", "text": "How do you expect cloud spend to change over the next 12 months?", "slider": {"min": -25, "max": 200, "step": 5, "default": 25, "suffix": "%"}}, {"id": "E6", "section": "estate", "answer_type": "slider_percent", "text": "What proportion of your remaining estate is still to move to cloud in the next 24 months?", "hint": "Migrating on top of weak cost controls multiplies the problem rather than adding to it.", "slider": {"min": 0, "max": 100, "step": 5, "default": 30, "suffix": "%"}}, {"id": "V1", "section": "visibility", "answer_type": "single_select", "text": "Can you attribute cloud cost to a specific business unit, product or team?", "options": [{"label": "Yes \u2014 fully and automatically"}, {"label": "Mostly, with some manual effort"}, {"label": "Only at a very high level"}, {"label": "No \u2014 it is one undifferentiated bill"}]}, {"id": "V2", "section": "visibility", "answer_type": "slider_percent", "text": "What percentage of your cloud resources carry complete, reliable tags or labels?", "slider": {"min": 0, "max": 100, "step": 5, "default": 40, "suffix": "%"}}, {"id": "V3", "section": "visibility", "answer_type": "single_select", "text": "How long does it take to answer the question \"why did the bill go up last month?\"", "hint": "This is the single most revealing question in the assessment.", "options": [{"label": "Same day \u2014 the data is at hand"}, {"label": "A few days of analysis"}, {"label": "Weeks, and the answer is contested"}, {"label": "We cannot reliably answer it"}]}, {"id": "V4", "section": "visibility", "answer_type": "boolean_dk", "text": "Do you know what it costs to serve one customer, transaction or unit of output?"}, {"id": "V5", "section": "visibility", "answer_type": "multi_select", "text": "Which of these do you receive on a regular, scheduled basis?", "hint": "Select all that genuinely arrive without being chased.", "options": [{"label": "Monthly cost report by team or product"}, {"label": "Forward-looking spend forecast"}, {"label": "Automated anomaly or spike alerts"}, {"label": "Unit cost or efficiency trend"}, {"label": "Commitment coverage and utilisation report"}, {"label": "None of these arrive regularly"}]}, {"id": "P1", "section": "predictability", "answer_type": "slider_percent", "text": "Over the last 12 months, how far did actual cloud spend differ from what was budgeted?", "slider": {"min": 0, "max": 60, "step": 1, "default": 15, "suffix": "%"}}, {"id": "P2", "section": "predictability", "answer_type": "single_select", "text": "How often has an unexpected cloud bill required explanation to Finance or the board?", "options": [{"label": "Never"}, {"label": "Once"}, {"label": "A few times"}, {"label": "It is a recurring conversation"}]}, {"id": "P3", "section": "predictability", "answer_type": "rating_1_5", "text": "How confident are you in your cloud spend forecast for next quarter?", "labels": ["No forecast exists", "Little confidence", "Moderate", "Confident", "High confidence"]}, {"id": "P4", "section": "predictability", "answer_type": "single_select", "text": "Who explains the cloud bill to Finance or the CFO?", "options": [{"label": "A dedicated cost owner with the data to back it"}, {"label": "Central IT, on request"}, {"label": "Whoever is available that month"}, {"label": "No one \u2014 Finance interprets it themselves"}]}, {"id": "O1", "section": "ownership", "answer_type": "single_select", "text": "Who is formally accountable for cloud spend?", "options": [{"label": "A named FinOps owner or team with a mandate"}, {"label": "Each business unit owns its own consumption"}, {"label": "The CIO or CTO, by default rather than design"}, {"label": "Shared and unclear"}, {"label": "No one specifically"}]}, {"id": "O2", "section": "ownership", "answer_type": "allocation_100", "text": "Distribute 100 points across where responsibility for cloud cost actually sits today.", "hint": "Not where it should sit \u2014 where it genuinely does."}, {"id": "O3", "section": "ownership", "answer_type": "rating_1_5", "text": "To what extent do engineers see the cost consequences of what they build?", "labels": ["Not at all", "Rarely", "Occasionally", "Usually", "Continuously, in workflow"]}, {"id": "O4", "section": "ownership", "answer_type": "boolean_dk", "text": "Is cost efficiency written into anyone's objectives or performance measures?"}, {"id": "C1", "section": "controls", "answer_type": "multi_select", "text": "Which cost controls are actually operating today?", "hint": "Select only those in live use, not those planned or configured but ignored.", "options": [{"label": "Budgets with alerting"}, {"label": "Automated anomaly detection"}, {"label": "Enforced tagging policy"}, {"label": "Commitment / reserved capacity management"}, {"label": "Regular rightsizing cadence"}, {"label": "Automated non-production shutdown"}, {"label": "Showback or chargeback to teams"}, {"label": "None of these"}]}, {"id": "C2", "section": "controls", "answer_type": "slider_percent", "text": "What proportion of eligible spend is covered by commitments \u2014 reserved instances, savings plans or committed use discounts?", "slider": {"min": 0, "max": 100, "step": 5, "default": 20, "suffix": "%"}}, {"id": "C3", "section": "controls", "answer_type": "single_select", "text": "When did you last systematically decommission unused or idle resources?", "options": [{"label": "Continuously \u2014 it is automated"}, {"label": "Within the last month"}, {"label": "Within the last quarter"}, {"label": "Over a year ago"}, {"label": "Never, or not that we know of"}]}, {"id": "C4", "section": "controls", "answer_type": "drag_order", "text": "Rank these cost concerns by how much they worry you \u2014 most concerning first.", "hint": "This shapes where we focus, and is not scored against a right answer.", "options": [{}, {}, {}, {}, {}, {}]}, {"id": "C5", "section": "controls", "answer_type": "single_select", "text": "How actively do you monitor and optimize network data transfer (cross-AZ, cross-region, egress to on-premises/internet)?", "options": [{"label": "Active architectural governance \u2014 private endpoints/interconnects, direct routes, and egress budget alerting"}, {"label": "Standard monitoring in place, but egress spikes are investigated reactively"}, {"label": "High-level awareness; egress is rarely tracked or attributed to specific workloads"}, {"label": "Unmonitored \u2014 network data transfer is treated as an unmanaged baseline utility"}]}, {"id": "L1", "section": "value", "answer_type": "single_select", "text": "Can you demonstrate to the board that cloud spend is delivering business value?", "options": [{"label": "Yes \u2014 with quantified, trended evidence"}, {"label": "Partially \u2014 anecdotally or by project"}, {"label": "Not currently"}, {"label": "The question has not been asked yet"}]}, {"id": "L2", "section": "value", "answer_type": "single_select", "text": "Has cloud delivered the savings or benefits set out in the original business case?", "options": [{"label": "Exceeded expectations"}, {"label": "Broadly met them"}, {"label": "Fallen short"}, {"label": "We do not track against the business case"}, {"label": "There was no formal business case"}]}, {"id": "L3", "section": "value", "answer_type": "rating_1_5", "text": "If Finance asked today whether cloud spend was under control, how comfortable would you be answering?", "labels": ["Very uncomfortable", "Uncomfortable", "Neutral", "Comfortable", "Very comfortable"]}, {"id": "L4", "section": "value", "answer_type": "multi_select", "text": "What would a good outcome look like in 12 months?", "hint": "Used to shape the recommendations, not scored.", "options": [{"label": "A bill we can predict"}, {"label": "Lower cost per unit of output"}, {"label": "Faster, better-informed decisions"}, {"label": "A position we can defend to Finance"}, {"label": "Funding freed up for innovation"}, {"label": "Confidence to accelerate migration"}]}, {"id": "X1", "section": "value", "answer_type": "open_text", "text": "Anything else about your cloud cost position we should understand?", "placeholder": "Optional \u2014 included in the report for the follow-up conversation."}]};</script>
+</head>
+<body>
+
+  <header>
+    <div class="brand">
+      <span>LTM ADVISORY</span>
+      <span class="brand-badge">Accelerators</span>
+    </div>
+    <div class="nav-status">
+      <div class="status-dot"></div>
+      <span>AWS Cloud Engine Live</span>
+    </div>
+  </header>
+
+  <main>
+    <div id="portal-view">
+      <div class="hero">
+        <h1>Cloud Advisory Accelerators</h1>
+        <p>Run diagnostic assessments powered by our secure AWS cloud evaluation engine. Zero calculation code or secret rubrics are ever exposed to the browser.</p>
+      </div>
+
+      <div class="acc-grid">
+        <div class="acc-card active" onclick="window.location.href='finops-value-case.html'">
+          <div class="acc-header">
+            <div class="acc-title">FinOps Value Case</div>
+            <span class="pill pill-green">Live on AWS</span>
+          </div>
+          <p class="acc-desc">Pre-maturity diagnostic evaluating cloud financial waste, 5 optimization streams, and 3-year exposure models.</p>
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <span class="pill">29 Questions · BFSI Benchmark</span>
+            <button class="btn btn-primary" style="padding: 8px 16px; font-size: 13px;">Launch Diagnostic →</button>
+          </div>
+        </div>
+
+        <div class="acc-card" style="opacity: 0.65;">
+          <div class="acc-header">
+            <div class="acc-title">FinOps IQ</div>
+            <span class="pill pill-amber">Ready to Wire</span>
+          </div>
+          <p class="acc-desc">Production Cloud Financial Management & Maturity Platform evaluating 6 FinOps domains and boardroom roadmap.</p>
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <span class="pill">40 Questions · Maturity Radar</span>
+            <button class="btn btn-secondary" style="padding: 8px 16px; font-size: 13px;">In Engine Queue</button>
+          </div>
+        </div>
+
+        <div class="acc-card" style="opacity: 0.65;">
+          <div class="acc-header">
+            <div class="acc-title">Posture IQ</div>
+            <span class="pill pill-amber">Ready to Wire</span>
+          </div>
+          <p class="acc-desc">Multi-cloud security posture, compliance benchmarks (DORA, NIS2), and threat surface qualification.</p>
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <span class="pill">36 Questions · Security Deck</span>
+            <button class="btn btn-secondary" style="padding: 8px 16px; font-size: 13px;">In Engine Queue</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Active Assessment Player (Dynamically Swapped) -->
+    <div id="player-view" style="display:none;" class="player-container">
+      <div id="player-content"></div>
+    </div>
+
+    <!-- Report View (Populated from AWS API result) -->
+    <div id="report-view" style="display:none;"></div>
+  </main>
+
+  <script>
+    const API_ENDPOINT = "https://vh7pwyw8q3.execute-api.ap-south-1.amazonaws.com/api/evaluate/finops-value-case";
+
+    let state = {
+      acceleratorId: null,
+      schema: null,
+      currentQuestionIdx: 0,
+      answers: {},
+      org: {
+        name: "Enterprise Client",
+        sector: "Banking / Financial Services",
+        sector_class: "bfsi",
+        currency: "usd"
+      },
+      evaluationResult: null
+    };
+
+    async function startAssessment(id) {
+      state.acceleratorId = id;
+      document.getElementById('portal-view').style.display = 'none';
+      document.getElementById('player-view').style.display = 'block';
+
+      // Load sanitized public schema (Zero scoring formulas or secret weights)
+      document.getElementById('player-content').innerHTML = '<div class="spinner"></div><p style="text-align:center;color:var(--text-muted)">Loading accelerator schema from secure engine…</p>';
+
+      try {
+        const res = await fetch('./public-schema.json');
+        state.schema = await res.json();
+      } catch (e) {
+        // Fallback embedded public schema if opened via file:// protocol
+        state.schema = window.__DEFAULT_PUBLIC_SCHEMA;
+      }
+
+      state.currentQuestionIdx = 0;
+      state.answers = {
+        E2: [0, 1],
+        E3: 4000000,
+        E4: 1,
+        E5: 30,
+        E6: 50,
+        P1: 15,
+        P2: 1,
+        C2: 45,
+        C3: 1,
+        C5: 0,
+        V1: 0
+      };
+      renderQuestion();
+    }
+
+    function renderQuestion() {
+      const q = state.schema.questions[state.currentQuestionIdx];
+      const total = state.schema.questions.length;
+      const currentAns = state.answers[q.id];
+
+      let inputHtml = '';
+      if (q.options && (q.answer_type === 'card_select' || q.answer_type === 'single_select')) {
+        inputHtml = '<div class="options-list">' +
+          q.options.map((opt, i) => `
+            <button class="option-btn ${currentAns === i ? 'selected' : ''}" onclick="selectSingleOption('${q.id}', ${i})">
+              <span>${opt.label}</span>
+              ${currentAns === i ? '<span>✓</span>' : ''}
+            </button>
+          `).join('') +
+        '</div>';
+      } else if (q.slider) {
+        const val = currentAns !== undefined ? currentAns : (q.slider.min + q.slider.max) / 2;
+        inputHtml = `
+          <div class="slider-box">
+            <input type="range" min="${q.slider.min}" max="${q.slider.max}" step="${q.slider.step || 1}" value="${val}" oninput="updateSlider('${q.id}', this.value)">
+            <div class="slider-display">
+              <span style="color:var(--text-muted)">Declared Scale</span>
+              <span class="slider-val" id="slider-val-display">${formatScale(val, q.slider)}</span>
+            </div>
+          </div>
+        `;
+      } else {
+        inputHtml = `
+          <div class="options-list">
+            <button class="option-btn selected" onclick="selectSingleOption('${q.id}', 1)"><span>Applicable & In Place</span><span>✓</span></button>
+            <button class="option-btn" onclick="selectSingleOption('${q.id}', 0)"><span>Not in Place / Disconnected</span></button>
+          </div>
+        `;
+      }
+
+      document.getElementById('player-content').innerHTML = `
+        <div class="player-progress">
+          <span>Question ${state.currentQuestionIdx + 1} of ${total} · Section: ${q.section.toUpperCase()}</span>
+          <span style="font-family:var(--font-mono)">${q.id}</span>
+        </div>
+        <div class="question-prompt">${q.text}</div>
+        <div class="question-hint">${q.hint || 'Select the closest match for your enterprise environment.'}</div>
+        ${inputHtml}
+        <div class="button-bar">
+          <button class="btn btn-secondary" onclick="prevQuestion()" ${state.currentQuestionIdx === 0 ? 'disabled style="opacity:0.3"' : ''}>← Previous</button>
+          <div style="display:flex;gap:12px;">
+            <button class="btn btn-secondary" onclick="runLiveEvaluation()">⚡ Calculate Now (Skip to Report)</button>
+            <button class="btn btn-primary" onclick="nextQuestion()">${state.currentQuestionIdx === total - 1 ? 'Calculate Assessment →' : 'Next Question →'}</button>
+          </div>
+        </div>
+      `;
+    }
+
+    function selectSingleOption(qid, idx) {
+      state.answers[qid] = idx;
+      renderQuestion();
+    }
+
+    function updateSlider(qid, val) {
+      state.answers[qid] = Number(val);
+      const display = document.getElementById('slider-val-display');
+      if (display) display.textContent = val > 1000 ? '$' + (val / 1e6).toFixed(1) + 'M' : val + '%';
+    }
+
+    function formatScale(val, sl) {
+      if (val >= 1e6) return '$' + (val / 1e6).toFixed(1) + 'M / yr';
+      if (val > 100) return '$' + (val / 1e3).toFixed(0) + 'k';
+      return val + '%';
+    }
+
+    function nextQuestion() {
+      if (state.currentQuestionIdx < state.schema.questions.length - 1) {
+        state.currentQuestionIdx++;
+        renderQuestion();
+      } else {
+        runLiveEvaluation();
+      }
+    }
+
+    function prevQuestion() {
+      if (state.currentQuestionIdx > 0) {
+        state.currentQuestionIdx--;
+        renderQuestion();
+      }
+    }
+
+    async function runLiveEvaluation() {
+      document.getElementById('player-view').style.display = 'none';
+      document.getElementById('report-view').style.display = 'block';
+      document.getElementById('report-view').innerHTML = `
+        <div style="text-align:center;padding:60px 0;">
+          <div class="spinner"></div>
+          <h2 style="font-family:var(--font-heading);font-size:24px;margin-bottom:8px;">Running Cloud Calculation Engine…</h2>
+          <p style="color:var(--text-muted)">Securely executing proprietary scoring algorithms and BFSI benchmark models on AWS Lambda.</p>
+        </div>
+      `;
+
+      try {
+        const response = await fetch(API_ENDPOINT, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            answers: state.answers,
+            org: state.org
+          })
+        });
+
+        const json = await response.json();
+        if (json.ok && json.data) {
+          state.evaluationResult = json.data;
+          renderReportView();
+        } else {
+          throw new Error(json.error || "Evaluation failed");
+        }
+      } catch (err) {
+        document.getElementById('report-view').innerHTML = `
+          <div style="padding:40px;background:#3B1212;border:1px solid #7F1D1D;border-radius:12px;text-align:center;">
+            <h3>Unable to complete cloud evaluation</h3>
+            <p style="margin-top:8px;color:#FCA5A5">${err.message}</p>
+            <button class="btn btn-primary" style="margin-top:20px" onclick="runLiveEvaluation()">Retry Request</button>
+          </div>
+        `;
+      }
+    }
+
+    function renderReportView() {
+      const data = state.evaluationResult;
+      const b = data.wasteBand;
+      const exp = data.exposure;
+
+      document.getElementById('report-view').innerHTML = `
+        <div class="report-hero">
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <span class="pill pill-green">AWS Verified Evaluation</span>
+            <span style="font-size:12px;color:var(--text-muted)">Target: ${data.annualSpend ? '$' + (data.annualSpend / 1e6).toFixed(1) + 'M Spend' : 'Unspecified Spend'}</span>
+          </div>
+          <h1 style="font-family:var(--font-heading);font-size:32px;font-weight:800;margin-top:12px;">${data.verdict.label}</h1>
+          <p style="color:var(--text-muted);font-size:16px;margin-top:8px;max-width:700px;">${data.verdict.narrative}</p>
+
+          <div class="stat-grid">
+            <div class="stat-card">
+              <div class="stat-label">Need Index</div>
+              <div class="stat-value" style="color:var(--coral)">${data.needIndex}/100</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">Waste Band</div>
+              <div class="stat-value">${(b.low * 100).toFixed(0)}% – ${(b.high * 100).toFixed(0)}%</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">Year 1 Recoverable</div>
+              <div class="stat-value" style="color:#34D399">${exp.y1 ? '$' + Math.round(exp.y1[0]/1000) + 'k – $' + Math.round(exp.y1[1]/1000) + 'k' : '—'}</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">3-Year Exposure</div>
+              <div class="stat-value">${exp.y3 ? '$' + (exp.y3[0]/1e6).toFixed(1) + 'M – $' + (exp.y3[1]/1e6).toFixed(1) + 'M' : '—'}</div>
+            </div>
+          </div>
+        </div>
+
+        <h2 style="font-family:var(--font-heading);font-size:22px;margin-bottom:16px;">Prioritized Optimization Streams (30-60-90 Days)</h2>
+        ${data.streams.map(st => `
+          <div class="stream-card">
+            <div class="stream-header">
+              <div style="display:flex;align-items:center;gap:10px;">
+                <span style="font-size:20px;">${st.icon}</span>
+                <strong style="font-size:16px;">${st.name}</strong>
+              </div>
+              <span class="pill ${st.priority.includes('P1') ? 'pill-amber' : 'pill-green'}">${st.priority}</span>
+            </div>
+            <p style="color:var(--text-muted);font-size:13.5px;margin-bottom:12px;">${st.objective}</p>
+            <div style="font-size:12.5px;color:#D1D5DB;margin-bottom:8px;"><b>Quick Wins:</b> ${st.quickWins[0]}</div>
+            <div style="font-size:12px;color:var(--text-muted);"><b>Timeline:</b> ${st.timeline} · <b>Potential:</b> ${st.savingsRange}</div>
+          </div>
+        `).join('')}
+
+        <div style="text-align:center;margin-top:32px;">
+          <button class="btn btn-secondary" onclick="location.reload()">← Back to Accelerators</button>
+        </div>
+      `;
+    }
+  </script>
+</body>
+</html>
