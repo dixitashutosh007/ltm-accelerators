@@ -2,17 +2,15 @@ import { defineBackend } from '@aws-amplify/backend';
 import { auth } from './auth/resource';
 import { data } from './data/resource';
 import { evaluateFinOpsFunction } from './functions/evaluate-finops/resource';
-import { CorsHttpMethod, HttpApi, HttpMethod } from 'aws-cdk-lib/aws-apigatewayv2';
+import { HttpApi, HttpMethod } from 'aws-cdk-lib/aws-apigatewayv2';
 import { HttpLambdaIntegration } from 'aws-cdk-lib/aws-apigatewayv2-integrations';
 
 /**
- * AWS Amplify Gen 2 Backend Definition
+ * AWS Amplify Gen 2 Backend Definition (Region: ap-south-1)
  * 
- * Packages:
- * - Cognito User Pool with RBAC (Admin, Consultant) and Pre-Sign-up Allowlist
- * - DynamoDB Tables (Accelerator registry, QuestionBanks, ScoringModels, Submissions)
- * - Headless Scoring Lambda Function running evaluateFinOpsValueCase()
- * - HTTP API Gateway exposing POST /api/evaluate/finops-value-case
+ * Note: CORS is handled directly by the Lambda function proxy handler
+ * so that both web origins (https://...) and local file origins (file:///, Origin: null)
+ * receive Access-Control-Allow-Origin: * unconditionally without API Gateway stripping.
  */
 export const backend = defineBackend({
   auth,
@@ -24,12 +22,7 @@ export const backend = defineBackend({
 const apiStack = backend.createStack('AcceleratorsApiStack');
 
 const httpApi = new HttpApi(apiStack, 'AcceleratorsHttpApi', {
-  apiName: 'ltm-accelerators-api',
-  corsPreflight: {
-    allowMethods: [CorsHttpMethod.GET, CorsHttpMethod.POST, CorsHttpMethod.OPTIONS],
-    allowOrigins: ['*'],
-    allowHeaders: ['*']
-  }
+  apiName: 'ltm-accelerators-api'
 });
 
 const evaluateIntegration = new HttpLambdaIntegration(
