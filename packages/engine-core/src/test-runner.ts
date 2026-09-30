@@ -1,4 +1,4 @@
-import { evaluateFinOpsValueCase } from './accelerators/finops-value-case/evaluate';
+import { evaluateFinOpsValueCase } from './accelerators/finops-value-case/evaluate.ts';
 
 console.log('--- Testing FinOps Value Case Headless Engine ---');
 
