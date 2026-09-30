@@ -1,13 +1,13 @@
 {
   "meta": {
     "schema_version": "1.0.3",
-    "instrument": "FinOps Value Case — Pre-Maturity Qualification",
+    "instrument": "FinOps Value Case \u2014 Pre-Maturity Qualification",
     "last_reviewed": "2026-07-22",
     "disclaimer": "Indicative estimate based on self-reported inputs and published industry benchmarks. Figures illustrate the scale of opportunity and are not a guarantee of savings. A validated baseline requires assessment of actual billing data. Indicative and directional only. Not a commitment, quote or financial advice.",
     "currencies": [
       {
         "id": "gbp",
-        "symbol": "£"
+        "symbol": "\u00a3"
       },
       {
         "id": "usd",
@@ -15,36 +15,313 @@
       },
       {
         "id": "eur",
-        "symbol": "€"
+        "symbol": "\u20ac"
       },
       {
         "id": "inr",
-        "symbol": "₹"
+        "symbol": "\u20b9"
       }
-    ]
+    ],
+    "signals": [
+      {
+        "id": "visibility",
+        "label": "Cost visibility",
+        "color": "#3C829B"
+      },
+      {
+        "id": "predictability",
+        "label": "Bill predictability",
+        "color": "#B26A00"
+      },
+      {
+        "id": "ownership",
+        "label": "Ownership & accountability",
+        "color": "#5A3A83"
+      },
+      {
+        "id": "control",
+        "label": "Controls & optimisation",
+        "color": "#35754D"
+      },
+      {
+        "id": "value",
+        "label": "Value realisation",
+        "color": "#226882"
+      }
+    ],
+    "benchmarks": {
+      "sources": [
+        {
+          "label": "Flexera 2026 State of the Cloud Report (n=753, March 2026)",
+          "url": "https://info.flexera.com/CM-REPORT-State-of-the-Cloud",
+          "note": "Wasted IaaS/PaaS spend 29% \u2014 the first increase in five years, attributed to AI workloads and new PaaS/SaaS pricing complexity. 63% of organisations run an established FinOps team; 71% operate a CCoE; 49% use unit economics. Fewer than half use any one commitment discount per provider."
+        },
+        {
+          "label": "Flexera State of the Cloud, multi-year (2019\u20132026)",
+          "url": "https://info.flexera.com/CM-REPORT-State-of-the-Cloud",
+          "note": "Estimated waste has stayed within a 27\u201332% band every year since 2019 \u2014 the most stable benchmark available."
+        },
+        {
+          "label": "Harness Cloud Cost Management Report (2025)",
+          "url": "https://www.harness.io/whitepapers/cloud-cost-management-report",
+          "note": "21% of infrastructure budget wasted on unused or underused resources; a useful conservative floor."
+        },
+        {
+          "label": "FinOps Foundation, State of FinOps 2026",
+          "url": "https://www.finops.org/insights/state-of-finops/",
+          "note": "Workload optimisation and waste reduction remain the top practitioner priority, but with diminishing returns \u2014 the large obvious waste has been captured."
+        }
+      ],
+      "honesty_note": "Published waste benchmarks are reported cross-industry, not per-sector. Headline anchors below are global figures from named public sources. BFSI modifiers are LTM directional adjustments based on sector characteristics \u2014 not published sector waste rates \u2014 and are editable."
+    },
+    "service_areas": [
+      {
+        "id": "operating_model",
+        "name": "FinOps Operating Model & Governance",
+        "triggers": [
+          {
+            "signal": "ownership",
+            "below": 60
+          }
+        ],
+        "problem": "No one is genuinely accountable for cloud spend, so decisions default to whoever notices the bill.",
+        "deliverables": [
+          "FinOps charter and mandate, signed at executive level",
+          "Operating model design \u2014 centralised, federated or hybrid, with rationale",
+          "RACI across Engineering, Finance, Procurement and BU owners",
+          "Governance forum design, cadence and decision rights",
+          "Tooling assessment and platform recommendation",
+          "90-day mobilisation plan with named owners"
+        ]
+      },
+      {
+        "id": "visibility_allocation",
+        "name": "Cost Visibility & Allocation",
+        "triggers": [
+          {
+            "signal": "visibility",
+            "below": 65
+          }
+        ],
+        "problem": "Spend cannot be attributed to a team, product or customer, so no one can be held to it.",
+        "deliverables": [
+          "Tagging and metadata taxonomy with enforcement policy",
+          "Cost allocation model including shared-cost treatment",
+          "Showback design, progressing to chargeback where appropriate",
+          "Executive and team-level cost dashboards",
+          "Automated cost data pipeline into enterprise BI",
+          "Allocation coverage baseline and improvement roadmap"
+        ]
+      },
+      {
+        "id": "forecast_control",
+        "name": "Forecasting, Budgets & Anomaly Control",
+        "triggers": [
+          {
+            "signal": "predictability",
+            "below": 65
+          }
+        ],
+        "problem": "The bill cannot be predicted, so Finance treats cloud as uncontrolled spend.",
+        "deliverables": [
+          "Driver-based forecasting model with documented assumptions",
+          "Budget framework at BU and product level with forecast-breach alerting",
+          "Anomaly detection configuration and escalation routing",
+          "Monthly variance reporting pack and commentary standard",
+          "Forecast accuracy baseline and improvement target"
+        ]
+      },
+      {
+        "id": "rate_optimisation",
+        "name": "Commitment & Rate Optimisation",
+        "triggers": [
+          {
+            "signal": "control",
+            "below": 70
+          }
+        ],
+        "problem": "Paying on-demand rates for predictable, steady-state workloads.",
+        "deliverables": [
+          "Commitment coverage analysis across providers",
+          "Commitment strategy and purchase calendar",
+          "Savings plan and reserved capacity portfolio design",
+          "Provider agreement and discount review",
+          "Ongoing coverage monitoring and renewal governance"
+        ]
+      },
+      {
+        "id": "workload_optimisation",
+        "name": "Workload & Architecture Optimisation",
+        "triggers": [
+          {
+            "signal": "control",
+            "below": 60
+          }
+        ],
+        "problem": "Resources are oversized, idle or orphaned, and nothing systematically reclaims them.",
+        "deliverables": [
+          "Rightsizing assessment with prioritised savings backlog",
+          "Waste and orphaned-resource elimination programme",
+          "Storage tiering and lifecycle policy design",
+          "Non-production scheduling and automated parking",
+          "Spot and transient capacity adoption strategy",
+          "Architecture cost review standard for design gates"
+        ]
+      },
+      {
+        "id": "unit_economics",
+        "name": "Unit Economics & Value Realisation",
+        "triggers": [
+          {
+            "signal": "value",
+            "below": 60
+          }
+        ],
+        "problem": "Cloud spend cannot be defended to the board because its business value is not measured.",
+        "deliverables": [
+          "Unit metric definition per product or service line",
+          "Cost-per-unit instrumentation and trending",
+          "Cloud business case validation against original assumptions",
+          "Margin and cost-to-serve analysis by customer or tenant",
+          "Board-level cloud value reporting pack"
+        ]
+      },
+      {
+        "id": "enablement",
+        "name": "FinOps Enablement & Capability Build",
+        "triggers": [
+          {
+            "signal": "ownership",
+            "below": 70
+          },
+          {
+            "signal": "value",
+            "below": 70
+          }
+        ],
+        "problem": "Cost awareness does not survive contact with delivery pressure unless it is built into how engineers work.",
+        "deliverables": [
+          "FinOps role definitions and target capability model",
+          "Training curriculum and FinOps certification pathway",
+          "Cost-aware architecture and design standards",
+          "Engineering enablement \u2014 cost feedback in CI/CD and pull requests",
+          "Community of practice launch and operating rhythm"
+        ]
+      }
+    ],
+    "case_studies": [
+      {
+        "id": "cs_airline_na",
+        "title": "How a leading North American airline saved 30% on cloud cost with our FinOps Excellence Service",
+        "region": "North America",
+        "industry": "Aviation & Transport",
+        "outcome": "30% cost reduction",
+        "relevance": [
+          "control",
+          "predictability"
+        ],
+        "file": "assets/case-studies/PLACEHOLDER-airline-north-america.pdf",
+        "status": "placeholder"
+      },
+      {
+        "id": "cs_bank_africa",
+        "title": "How we helped a leading African bank establish a FinOps governance model",
+        "region": "Africa",
+        "industry": "Banking & Financial Services",
+        "outcome": "Governance model established",
+        "relevance": [
+          "ownership",
+          "visibility"
+        ],
+        "file": "assets/case-studies/PLACEHOLDER-bank-africa.pdf",
+        "status": "placeholder"
+      },
+      {
+        "id": "cs_retail_eu",
+        "title": "How an EU retail business implemented FinOps to improve every-dollar-spend efficacy",
+        "region": "Europe",
+        "industry": "Retail & Consumer",
+        "outcome": "Improved spend efficacy",
+        "relevance": [
+          "value",
+          "visibility"
+        ],
+        "file": "assets/case-studies/PLACEHOLDER-retail-eu.pdf",
+        "status": "placeholder"
+      }
+    ],
+    "brochure": {
+      "title": "LTM FinOps Services",
+      "subtitle": "Cloud financial management \u2014 advisory, implementation and managed practice",
+      "file": "assets/PLACEHOLDER-ltm-finops-brochure.pdf",
+      "status": "placeholder"
+    }
   },
+  "sections": [
+    {
+      "id": "estate",
+      "n": "01",
+      "label": "Your cloud estate",
+      "blurb": "Where you are today, and where you are heading."
+    },
+    {
+      "id": "visibility",
+      "n": "02",
+      "label": "Visibility",
+      "blurb": "Whether spend can be attributed and explained."
+    },
+    {
+      "id": "predictability",
+      "n": "03",
+      "label": "Predictability",
+      "blurb": "Whether the bill behaves the way you expect."
+    },
+    {
+      "id": "ownership",
+      "n": "04",
+      "label": "Ownership",
+      "blurb": "Who is actually accountable for what is spent."
+    },
+    {
+      "id": "controls",
+      "n": "05",
+      "label": "Controls",
+      "blurb": "What prevents and reclaims waste today."
+    },
+    {
+      "id": "value",
+      "n": "06",
+      "label": "Value",
+      "blurb": "Whether the spend can be defended as worthwhile."
+    }
+  ],
   "questions": [
     {
       "id": "E1",
       "section": "estate",
       "answer_type": "card_select",
       "text": "Which best describes your infrastructure today?",
-      "hint": "Pick the closest match — precision is not required.",
+      "hint": "Pick the closest match \u2014 precision is not required.",
       "options": [
         {
-          "label": "Entirely on-premise / data centre"
+          "label": "Entirely on-premise / data centre",
+          "icon": "\u25a4"
         },
         {
-          "label": "Mostly data centre, some cloud"
+          "label": "Mostly data centre, some cloud",
+          "icon": "\u25a5"
         },
         {
-          "label": "Balanced hybrid"
+          "label": "Balanced hybrid",
+          "icon": "\u25eb"
         },
         {
-          "label": "Mostly cloud, some legacy"
+          "label": "Mostly cloud, some legacy",
+          "icon": "\u25d7"
         },
         {
-          "label": "Cloud-native / fully migrated"
+          "label": "Cloud-native / fully migrated",
+          "icon": "\u25cf"
         }
       ]
     },
@@ -81,6 +358,7 @@
       "answer_type": "slider_currency",
       "text": "Roughly what is your annual cloud spend?",
       "hint": "An order-of-magnitude estimate is enough. This drives the value calculation.",
+      "allow_dk": true,
       "slider": {
         "min": 50000,
         "max": 100000000,
@@ -95,16 +373,16 @@
       "text": "Where are you in your cloud journey?",
       "options": [
         {
-          "label": "Planning — not yet migrating"
+          "label": "Planning \u2014 not yet migrating"
         },
         {
-          "label": "Early migration — under 25% moved"
+          "label": "Early migration \u2014 under 25% moved"
         },
         {
-          "label": "In flight — 25% to 75% moved"
+          "label": "In flight \u2014 25% to 75% moved"
         },
         {
-          "label": "Largely migrated — over 75% moved"
+          "label": "Largely migrated \u2014 over 75% moved"
         },
         {
           "label": "Migration complete, now optimising"
@@ -143,9 +421,10 @@
       "section": "visibility",
       "answer_type": "single_select",
       "text": "Can you attribute cloud cost to a specific business unit, product or team?",
+      "allow_dk": true,
       "options": [
         {
-          "label": "Yes — fully and automatically"
+          "label": "Yes \u2014 fully and automatically"
         },
         {
           "label": "Mostly, with some manual effort"
@@ -154,7 +433,7 @@
           "label": "Only at a very high level"
         },
         {
-          "label": "No — it is one undifferentiated bill"
+          "label": "No \u2014 it is one undifferentiated bill"
         }
       ]
     },
@@ -163,6 +442,7 @@
       "section": "visibility",
       "answer_type": "slider_percent",
       "text": "What percentage of your cloud resources carry complete, reliable tags or labels?",
+      "allow_dk": true,
       "slider": {
         "min": 0,
         "max": 100,
@@ -179,7 +459,7 @@
       "hint": "This is the single most revealing question in the assessment.",
       "options": [
         {
-          "label": "Same day — the data is at hand"
+          "label": "Same day \u2014 the data is at hand"
         },
         {
           "label": "A few days of analysis"
@@ -221,7 +501,8 @@
           "label": "Commitment coverage and utilisation report"
         },
         {
-          "label": "None of these arrive regularly"
+          "label": "None of these arrive regularly",
+          "exclusive": true
         }
       ]
     },
@@ -230,6 +511,7 @@
       "section": "predictability",
       "answer_type": "slider_percent",
       "text": "Over the last 12 months, how far did actual cloud spend differ from what was budgeted?",
+      "allow_dk": true,
       "slider": {
         "min": 0,
         "max": 60,
@@ -287,7 +569,7 @@
           "label": "Whoever is available that month"
         },
         {
-          "label": "No one — Finance interprets it themselves"
+          "label": "No one \u2014 Finance interprets it themselves"
         }
       ]
     },
@@ -319,7 +601,29 @@
       "section": "ownership",
       "answer_type": "allocation_100",
       "text": "Distribute 100 points across where responsibility for cloud cost actually sits today.",
-      "hint": "Not where it should sit — where it genuinely does."
+      "hint": "Not where it should sit \u2014 where it genuinely does.",
+      "buckets": [
+        {
+          "id": "engineering",
+          "label": "Engineering teams",
+          "color": "#35754D"
+        },
+        {
+          "id": "finance",
+          "label": "Finance",
+          "color": "#3C829B"
+        },
+        {
+          "id": "central_it",
+          "label": "Central IT / Platform",
+          "color": "#5A3A83"
+        },
+        {
+          "id": "nobody",
+          "label": "Honestly, nobody",
+          "color": "#FF5E4F"
+        }
+      ]
     },
     {
       "id": "O3",
@@ -369,7 +673,8 @@
           "label": "Showback or chargeback to teams"
         },
         {
-          "label": "None of these"
+          "label": "None of these",
+          "exclusive": true
         }
       ]
     },
@@ -377,7 +682,8 @@
       "id": "C2",
       "section": "controls",
       "answer_type": "slider_percent",
-      "text": "What proportion of eligible spend is covered by commitments — reserved instances, savings plans or committed use discounts?",
+      "text": "What proportion of eligible spend is covered by commitments \u2014 reserved instances, savings plans or committed use discounts?",
+      "allow_dk": true,
       "slider": {
         "min": 0,
         "max": 100,
@@ -393,7 +699,7 @@
       "text": "When did you last systematically decommission unused or idle resources?",
       "options": [
         {
-          "label": "Continuously — it is automated"
+          "label": "Continuously \u2014 it is automated"
         },
         {
           "label": "Within the last month"
@@ -413,15 +719,15 @@
       "id": "C4",
       "section": "controls",
       "answer_type": "drag_order",
-      "text": "Rank these cost concerns by how much they worry you — most concerning first.",
+      "text": "Rank these cost concerns by how much they worry you \u2014 most concerning first.",
       "hint": "This shapes where we focus, and is not scored against a right answer.",
       "options": [
-        {},
-        {},
-        {},
-        {},
-        {},
-        {}
+        "Unpredictable or rising bills",
+        "Inability to attribute cost to teams",
+        "Paying for resources nobody uses",
+        "Cost of the migration itself",
+        "Lack of internal skills",
+        "Justifying cloud value to the board"
       ]
     },
     {
@@ -429,9 +735,11 @@
       "section": "controls",
       "answer_type": "single_select",
       "text": "How actively do you monitor and optimize network data transfer (cross-AZ, cross-region, egress to on-premises/internet)?",
+      "sub": "Data transfer and network egress typically account for 10\u201325% of cloud infrastructure spend and often go unallocated.",
+      "allow_dk": true,
       "options": [
         {
-          "label": "Active architectural governance — private endpoints/interconnects, direct routes, and egress budget alerting"
+          "label": "Active architectural governance \u2014 private endpoints/interconnects, direct routes, and egress budget alerting"
         },
         {
           "label": "Standard monitoring in place, but egress spikes are investigated reactively"
@@ -440,7 +748,7 @@
           "label": "High-level awareness; egress is rarely tracked or attributed to specific workloads"
         },
         {
-          "label": "Unmonitored — network data transfer is treated as an unmanaged baseline utility"
+          "label": "Unmonitored \u2014 network data transfer is treated as an unmanaged baseline utility"
         }
       ]
     },
@@ -451,10 +759,10 @@
       "text": "Can you demonstrate to the board that cloud spend is delivering business value?",
       "options": [
         {
-          "label": "Yes — with quantified, trended evidence"
+          "label": "Yes \u2014 with quantified, trended evidence"
         },
         {
-          "label": "Partially — anecdotally or by project"
+          "label": "Partially \u2014 anecdotally or by project"
         },
         {
           "label": "Not currently"
@@ -469,6 +777,7 @@
       "section": "value",
       "answer_type": "single_select",
       "text": "Has cloud delivered the savings or benefits set out in the original business case?",
+      "allow_dk": true,
       "options": [
         {
           "label": "Exceeded expectations"
@@ -532,7 +841,7 @@
       "section": "value",
       "answer_type": "open_text",
       "text": "Anything else about your cloud cost position we should understand?",
-      "placeholder": "Optional — included in the report for the follow-up conversation."
+      "placeholder": "Optional \u2014 included in the report for the follow-up conversation."
     }
   ]
 }

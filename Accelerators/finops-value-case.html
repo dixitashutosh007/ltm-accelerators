@@ -946,31 +946,38 @@ const DEFAULT_KB = {
     {
       "id": "E1",
       "section": "estate",
-      "text": "Which best describes your infrastructure today?",
       "answer_type": "card_select",
+      "text": "Which best describes your infrastructure today?",
+      "hint": "Pick the closest match \u2014 precision is not required.",
       "options": [
         {
-          "label": "Entirely on-premise / data centre"
+          "label": "Entirely on-premise / data centre",
+          "icon": "\u25a4"
         },
         {
-          "label": "Mostly data centre, some cloud"
+          "label": "Mostly data centre, some cloud",
+          "icon": "\u25a5"
         },
         {
-          "label": "Balanced hybrid"
+          "label": "Balanced hybrid",
+          "icon": "\u25eb"
         },
         {
-          "label": "Mostly cloud, some legacy"
+          "label": "Mostly cloud, some legacy",
+          "icon": "\u25d7"
         },
         {
-          "label": "Cloud-native / fully migrated"
+          "label": "Cloud-native / fully migrated",
+          "icon": "\u25cf"
         }
       ]
     },
     {
       "id": "E2",
       "section": "estate",
-      "text": "Which cloud platforms are in use or planned?",
       "answer_type": "multi_select_logo",
+      "text": "Which cloud platforms are in use or planned?",
+      "hint": "Multi-cloud materially increases the cost of poor visibility.",
       "options": [
         {
           "label": "Amazon Web Services"
@@ -995,8 +1002,9 @@ const DEFAULT_KB = {
     {
       "id": "E3",
       "section": "estate",
-      "text": "Roughly what is your annual cloud spend?",
       "answer_type": "slider_currency",
+      "text": "Roughly what is your annual cloud spend?",
+      "hint": "An order-of-magnitude estimate is enough. This drives the value calculation.",
       "allow_dk": true,
       "slider": {
         "min": 50000,
@@ -1008,8 +1016,8 @@ const DEFAULT_KB = {
     {
       "id": "E4",
       "section": "estate",
-      "text": "Where are you in your cloud journey?",
       "answer_type": "single_select",
+      "text": "Where are you in your cloud journey?",
       "options": [
         {
           "label": "Planning \u2014 not yet migrating"
@@ -1031,8 +1039,8 @@ const DEFAULT_KB = {
     {
       "id": "E5",
       "section": "estate",
-      "text": "How do you expect cloud spend to change over the next 12 months?",
       "answer_type": "slider_signed",
+      "text": "How do you expect cloud spend to change over the next 12 months?",
       "slider": {
         "min": -25,
         "max": 200,
@@ -1044,8 +1052,9 @@ const DEFAULT_KB = {
     {
       "id": "E6",
       "section": "estate",
-      "text": "What proportion of your remaining estate is still to move to cloud in the next 24 months?",
       "answer_type": "slider_percent",
+      "text": "What proportion of your remaining estate is still to move to cloud in the next 24 months?",
+      "hint": "Migrating on top of weak cost controls multiplies the problem rather than adding to it.",
       "slider": {
         "min": 0,
         "max": 100,
@@ -1057,8 +1066,8 @@ const DEFAULT_KB = {
     {
       "id": "V1",
       "section": "visibility",
-      "text": "Can you attribute cloud cost to a specific business unit, product or team?",
       "answer_type": "single_select",
+      "text": "Can you attribute cloud cost to a specific business unit, product or team?",
       "allow_dk": true,
       "options": [
         {
@@ -1078,8 +1087,8 @@ const DEFAULT_KB = {
     {
       "id": "V2",
       "section": "visibility",
-      "text": "What percentage of your cloud resources carry complete, reliable tags or labels?",
       "answer_type": "slider_percent",
+      "text": "What percentage of your cloud resources carry complete, reliable tags or labels?",
       "allow_dk": true,
       "slider": {
         "min": 0,
@@ -1092,8 +1101,9 @@ const DEFAULT_KB = {
     {
       "id": "V3",
       "section": "visibility",
-      "text": "How long does it take to answer the question \"why did the bill go up last month?\"",
       "answer_type": "single_select",
+      "text": "How long does it take to answer the question \"why did the bill go up last month?\"",
+      "hint": "This is the single most revealing question in the assessment.",
       "options": [
         {
           "label": "Same day \u2014 the data is at hand"
@@ -1112,14 +1122,15 @@ const DEFAULT_KB = {
     {
       "id": "V4",
       "section": "visibility",
-      "text": "Do you know what it costs to serve one customer, transaction or unit of output?",
-      "answer_type": "boolean_dk"
+      "answer_type": "boolean_dk",
+      "text": "Do you know what it costs to serve one customer, transaction or unit of output?"
     },
     {
       "id": "V5",
       "section": "visibility",
-      "text": "Which of these do you receive on a regular, scheduled basis?",
       "answer_type": "multi_select",
+      "text": "Which of these do you receive on a regular, scheduled basis?",
+      "hint": "Select all that genuinely arrive without being chased.",
       "options": [
         {
           "label": "Monthly cost report by team or product"
@@ -1137,15 +1148,16 @@ const DEFAULT_KB = {
           "label": "Commitment coverage and utilisation report"
         },
         {
-          "label": "None of these arrive regularly"
+          "label": "None of these arrive regularly",
+          "exclusive": true
         }
       ]
     },
     {
       "id": "P1",
       "section": "predictability",
-      "text": "Over the last 12 months, how far did actual cloud spend differ from what was budgeted?",
       "answer_type": "slider_percent",
+      "text": "Over the last 12 months, how far did actual cloud spend differ from what was budgeted?",
       "allow_dk": true,
       "slider": {
         "min": 0,
@@ -1158,8 +1170,8 @@ const DEFAULT_KB = {
     {
       "id": "P2",
       "section": "predictability",
-      "text": "How often has an unexpected cloud bill required explanation to Finance or the board?",
       "answer_type": "single_select",
+      "text": "How often has an unexpected cloud bill required explanation to Finance or the board?",
       "options": [
         {
           "label": "Never"
@@ -1178,14 +1190,21 @@ const DEFAULT_KB = {
     {
       "id": "P3",
       "section": "predictability",
+      "answer_type": "rating_1_5",
       "text": "How confident are you in your cloud spend forecast for next quarter?",
-      "answer_type": "rating_1_5"
+      "labels": [
+        "No forecast exists",
+        "Little confidence",
+        "Moderate",
+        "Confident",
+        "High confidence"
+      ]
     },
     {
       "id": "P4",
       "section": "predictability",
-      "text": "Who explains the cloud bill to Finance or the CFO?",
       "answer_type": "single_select",
+      "text": "Who explains the cloud bill to Finance or the CFO?",
       "options": [
         {
           "label": "A dedicated cost owner with the data to back it"
@@ -1204,8 +1223,8 @@ const DEFAULT_KB = {
     {
       "id": "O1",
       "section": "ownership",
-      "text": "Who is formally accountable for cloud spend?",
       "answer_type": "single_select",
+      "text": "Who is formally accountable for cloud spend?",
       "options": [
         {
           "label": "A named FinOps owner or team with a mandate"
@@ -1227,26 +1246,57 @@ const DEFAULT_KB = {
     {
       "id": "O2",
       "section": "ownership",
+      "answer_type": "allocation_100",
       "text": "Distribute 100 points across where responsibility for cloud cost actually sits today.",
-      "answer_type": "allocation_100"
+      "hint": "Not where it should sit \u2014 where it genuinely does.",
+      "buckets": [
+        {
+          "id": "engineering",
+          "label": "Engineering teams",
+          "color": "#35754D"
+        },
+        {
+          "id": "finance",
+          "label": "Finance",
+          "color": "#3C829B"
+        },
+        {
+          "id": "central_it",
+          "label": "Central IT / Platform",
+          "color": "#5A3A83"
+        },
+        {
+          "id": "nobody",
+          "label": "Honestly, nobody",
+          "color": "#FF5E4F"
+        }
+      ]
     },
     {
       "id": "O3",
       "section": "ownership",
+      "answer_type": "rating_1_5",
       "text": "To what extent do engineers see the cost consequences of what they build?",
-      "answer_type": "rating_1_5"
+      "labels": [
+        "Not at all",
+        "Rarely",
+        "Occasionally",
+        "Usually",
+        "Continuously, in workflow"
+      ]
     },
     {
       "id": "O4",
       "section": "ownership",
-      "text": "Is cost efficiency written into anyone's objectives or performance measures?",
-      "answer_type": "boolean_dk"
+      "answer_type": "boolean_dk",
+      "text": "Is cost efficiency written into anyone's objectives or performance measures?"
     },
     {
       "id": "C1",
       "section": "controls",
-      "text": "Which cost controls are actually operating today?",
       "answer_type": "multi_select",
+      "text": "Which cost controls are actually operating today?",
+      "hint": "Select only those in live use, not those planned or configured but ignored.",
       "options": [
         {
           "label": "Budgets with alerting"
@@ -1270,15 +1320,16 @@ const DEFAULT_KB = {
           "label": "Showback or chargeback to teams"
         },
         {
-          "label": "None of these"
+          "label": "None of these",
+          "exclusive": true
         }
       ]
     },
     {
       "id": "C2",
       "section": "controls",
-      "text": "What proportion of eligible spend is covered by commitments \u2014 reserved instances, savings plans or committed use discounts?",
       "answer_type": "slider_percent",
+      "text": "What proportion of eligible spend is covered by commitments \u2014 reserved instances, savings plans or committed use discounts?",
       "allow_dk": true,
       "slider": {
         "min": 0,
@@ -1291,8 +1342,8 @@ const DEFAULT_KB = {
     {
       "id": "C3",
       "section": "controls",
-      "text": "When did you last systematically decommission unused or idle resources?",
       "answer_type": "single_select",
+      "text": "When did you last systematically decommission unused or idle resources?",
       "options": [
         {
           "label": "Continuously \u2014 it is automated"
@@ -1314,22 +1365,24 @@ const DEFAULT_KB = {
     {
       "id": "C4",
       "section": "controls",
-      "text": "Rank these cost concerns by how much they worry you \u2014 most concerning first.",
       "answer_type": "drag_order",
+      "text": "Rank these cost concerns by how much they worry you \u2014 most concerning first.",
+      "hint": "This shapes where we focus, and is not scored against a right answer.",
       "options": [
-        {},
-        {},
-        {},
-        {},
-        {},
-        {}
+        "Unpredictable or rising bills",
+        "Inability to attribute cost to teams",
+        "Paying for resources nobody uses",
+        "Cost of the migration itself",
+        "Lack of internal skills",
+        "Justifying cloud value to the board"
       ]
     },
     {
       "id": "C5",
       "section": "controls",
-      "text": "How actively do you monitor and optimize network data transfer (cross-AZ, cross-region, egress to on-premises/internet)?",
       "answer_type": "single_select",
+      "text": "How actively do you monitor and optimize network data transfer (cross-AZ, cross-region, egress to on-premises/internet)?",
+      "sub": "Data transfer and network egress typically account for 10\u201325% of cloud infrastructure spend and often go unallocated.",
       "allow_dk": true,
       "options": [
         {
@@ -1349,8 +1402,8 @@ const DEFAULT_KB = {
     {
       "id": "L1",
       "section": "value",
-      "text": "Can you demonstrate to the board that cloud spend is delivering business value?",
       "answer_type": "single_select",
+      "text": "Can you demonstrate to the board that cloud spend is delivering business value?",
       "options": [
         {
           "label": "Yes \u2014 with quantified, trended evidence"
@@ -1369,8 +1422,8 @@ const DEFAULT_KB = {
     {
       "id": "L2",
       "section": "value",
-      "text": "Has cloud delivered the savings or benefits set out in the original business case?",
       "answer_type": "single_select",
+      "text": "Has cloud delivered the savings or benefits set out in the original business case?",
       "allow_dk": true,
       "options": [
         {
@@ -1393,14 +1446,22 @@ const DEFAULT_KB = {
     {
       "id": "L3",
       "section": "value",
+      "answer_type": "rating_1_5",
       "text": "If Finance asked today whether cloud spend was under control, how comfortable would you be answering?",
-      "answer_type": "rating_1_5"
+      "labels": [
+        "Very uncomfortable",
+        "Uncomfortable",
+        "Neutral",
+        "Comfortable",
+        "Very comfortable"
+      ]
     },
     {
       "id": "L4",
       "section": "value",
-      "text": "What would a good outcome look like in 12 months?",
       "answer_type": "multi_select",
+      "text": "What would a good outcome look like in 12 months?",
+      "hint": "Used to shape the recommendations, not scored.",
       "options": [
         {
           "label": "A bill we can predict"
@@ -1425,8 +1486,9 @@ const DEFAULT_KB = {
     {
       "id": "X1",
       "section": "value",
+      "answer_type": "open_text",
       "text": "Anything else about your cloud cost position we should understand?",
-      "answer_type": "open_text"
+      "placeholder": "Optional \u2014 included in the report for the follow-up conversation."
     }
   ]
 };
