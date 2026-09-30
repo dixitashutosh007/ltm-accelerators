@@ -1,0 +1,1318 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Question Bank Studio — LTM Accelerator Platform</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>:root{
+  --ground:#FFFFFF;--panel:#F9F9F9;--panel2:#ECECEC;--line:#DADADA;
+  --ink:#282828;--mut:#5B5B5B;--mutd:#8E8E8E;
+  --navy:#282828;--red:#FF5E4F;--amber:#B26A00;--steel:#3C829B;--lilac:#5A3A83;--blue:#3C829B;--green:#35754D;
+}
+*{box-sizing:border-box;}html,body{margin:0;padding:0;height:100%;}
+body{font-family:Arial,'Helvetica Neue',Helvetica,sans-serif;color:var(--ink);background:var(--ground);line-height:1.5;}
+.mono{font-family:'Manrope',sans-serif;}
+.eyebrow{font-family:'Manrope',sans-serif;font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--steel);}
+h1,h2,h3{font-family:'Manrope',sans-serif;letter-spacing:-.01em;margin:0;}
+
+/* shell */
+.bar{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;
+ padding:11px clamp(14px,2.5vw,26px);border-bottom:1px solid var(--line);background:rgba(255,255,255,.9);position:sticky;top:0;z-index:20;}
+.brand{display:flex;align-items:center;gap:10px;cursor:pointer;}
+.mark{width:28px;height:28px;border-radius:6px;background:var(--red);box-shadow:inset 0 0 0 3px var(--ground);flex:none;}
+.brand img{height:28px;max-width:140px;object-fit:contain;}
+.bw b{font-family:'Manrope',sans-serif;font-size:14.5px;font-weight:600;display:block;line-height:1.2;}
+.bw span{font-family:'Manrope',sans-serif;font-size:9px;letter-spacing:.14em;color:var(--mutd);text-transform:uppercase;}
+.ph{font-family:'Manrope',sans-serif;font-size:8px;letter-spacing:.1em;color:var(--amber);border:1px solid var(--line);border-radius:4px;padding:1px 4px;margin-left:6px;}
+.tabs{display:flex;gap:4px;}
+.tab{font-family:'Manrope',sans-serif;font-size:11.5px;color:var(--mut);background:none;border:1px solid transparent;padding:7px 12px;border-radius:8px;cursor:pointer;}
+.tab:hover{color:var(--ink);}.tab.on{background:var(--panel);color:var(--ink);border-color:var(--line);}
+.barmeta{display:flex;align-items:center;gap:10px;font-family:'Manrope',sans-serif;font-size:11px;color:var(--mutd);}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--green);}
+.dot.warn{background:var(--amber);}.dot.err{background:var(--red);}
+
+.btn{font-family:'Manrope',sans-serif;font-weight:600;font-size:13px;padding:9px 15px;border-radius:9px;cursor:pointer;border:1px solid transparent;transition:background .12s,border-color .12s;}
+.btn.primary{background:var(--red);color:#FFFFFF;}.btn.primary:hover{background:#E54536;}
+.btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line);}.btn.ghost:hover{border-color:var(--steel);}
+.btn.sm{font-size:11.5px;padding:6px 11px;}
+.btn.danger{background:transparent;color:var(--red);border:1px solid rgba(255,94,79,.4);}
+.btn.danger:hover{background:rgba(255,94,79,.1);}
+.btn:disabled{opacity:.4;cursor:not-allowed;}
+
+.wrap{max-width:1280px;margin:0 auto;padding:20px clamp(14px,2.5vw,26px) 60px;}
+.split{display:grid;grid-template-columns:330px 1fr;gap:18px;align-items:start;}
+.card{border:1px solid var(--line);border-radius:13px;background:var(--panel);padding:16px;}
+.card h3{font-size:14.5px;margin-bottom:10px;}
+.hint{color:var(--mut);font-size:12.5px;margin:0 0 12px;}
+.field{margin-bottom:13px;}
+.field label{display:block;font-size:11.5px;font-weight:600;margin-bottom:5px;color:var(--mut);}
+.inp,select,textarea{width:100%;padding:9px 11px;border-radius:8px;border:1px solid var(--line);background:var(--ground);color:var(--ink);font-family:inherit;font-size:13.5px;}
+.inp:focus,select:focus,textarea:focus{outline:none;border-color:var(--steel);}
+textarea{resize:vertical;min-height:64px;}
+.inp.mono,textarea.mono{font-family:'Manrope',sans-serif;font-size:12px;}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;}
+.chk{display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;padding:7px 0;}
+.chk input{accent-color:var(--red);width:15px;height:15px;}
+
+/* question list */
+.qlist{display:flex;flex-direction:column;gap:5px;max-height:66vh;overflow-y:auto;padding-right:4px;}
+.secgroup{margin-bottom:10px;}
+.sechead{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:6px 8px;border-radius:7px;background:var(--ground);margin-bottom:4px;}
+.sechead .sn{font-family:'Manrope',sans-serif;font-size:10px;color:var(--steel);letter-spacing:.08em;}
+.sechead .sl{flex:1;font-size:12.5px;font-weight:600;}
+.qrow{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:8px;border:1px solid transparent;background:var(--ground);cursor:pointer;font-size:12.5px;}
+.qrow:hover{border-color:var(--line);}
+.qrow.sel{border-color:var(--red);background:rgba(255,94,79,.09);}
+.qid{font-family:'Manrope',sans-serif;font-size:10px;color:var(--mutd);min-width:36px;}
+.qt{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.qbadge{font-family:'Manrope',sans-serif;font-size:8.5px;padding:2px 5px;border-radius:4px;border:1px solid var(--line);color:var(--mutd);white-space:nowrap;}
+.qbadge.crit{color:var(--red);border-color:rgba(255,94,79,.4);}
+.qbadge.err{color:var(--red);border-color:var(--red);background:rgba(255,94,79,.12);}
+.qmove{display:flex;flex-direction:column;gap:1px;}
+.qmove button{width:18px;height:14px;border:none;background:none;color:var(--mutd);cursor:pointer;font-size:8px;padding:0;line-height:1;}
+.qmove button:hover{color:var(--ink);}
+
+/* option editor */
+.optrow{display:grid;grid-template-columns:1fr 70px auto;gap:8px;align-items:center;margin-bottom:7px;}
+.optrow.nosc{grid-template-columns:1fr auto;}
+.iconbtn{width:28px;height:28px;border-radius:7px;border:1px solid var(--line);background:var(--ground);color:var(--mut);cursor:pointer;font-size:12px;display:flex;align-items:center;justify-content:center;}
+.iconbtn:hover{border-color:var(--red);color:var(--red);}
+.pill{font-family:'Manrope',sans-serif;font-size:10px;padding:2px 7px;border-radius:999px;border:1px solid var(--line);color:var(--mut);}
+.pill.ok{color:var(--green);border-color:rgba(53,117,77,.4);}
+.pill.warn{color:var(--amber);border-color:rgba(178,106,0,.4);}
+.pill.err{color:var(--red);border-color:rgba(255,94,79,.4);}
+
+.stat{display:flex;gap:20px;flex-wrap:wrap;font-family:'Manrope',sans-serif;font-size:11px;color:var(--mut);}
+.stat b{color:var(--ink);font-size:18px;font-family:'Manrope',sans-serif;display:block;}
+.btnrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;}
+
+.vitem{display:flex;gap:10px;padding:9px 11px;border-radius:8px;background:var(--ground);margin-bottom:6px;font-size:12.5px;align-items:flex-start;}
+.vsev{font-family:'Manrope',sans-serif;font-size:9px;padding:2px 6px;border-radius:4px;flex:none;margin-top:1px;}
+.vsev.err{background:rgba(255,94,79,.15);color:var(--red);}
+.vsev.warn{background:rgba(178,106,0,.15);color:var(--amber);}
+.vsev.info{background:rgba(60,130,155,.15);color:var(--steel);}
+.vmsg{flex:1;} .vwhere{font-family:'Manrope',sans-serif;font-size:10px;color:var(--mutd);margin-top:2px;}
+
+table.tbl{width:100%;border-collapse:collapse;font-size:12.5px;}
+table.tbl th,table.tbl td{text-align:left;padding:8px 9px;border-bottom:1px solid var(--line);vertical-align:top;}
+table.tbl th{font-family:'Manrope',sans-serif;font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--mutd);}
+
+.prof{border:1px solid var(--line);border-radius:11px;padding:14px;background:var(--ground);cursor:pointer;margin-bottom:9px;}
+.prof:hover{border-color:var(--steel);}
+.prof.sel{border-color:var(--red);background:rgba(255,94,79,.07);}
+.profname{font-family:'Manrope',sans-serif;font-weight:600;font-size:14px;margin-bottom:3px;}
+.profdesc{color:var(--mut);font-size:12px;line-height:1.45;}
+.proftools{font-family:'Manrope',sans-serif;font-size:9.5px;color:var(--mutd);margin-top:7px;}
+
+.impact{border:1px solid var(--line);border-radius:10px;background:var(--ground);padding:12px 14px;margin:6px 0 12px;}
+.impacthead{font-family:'Manrope',sans-serif;font-weight:600;font-size:12.5px;display:flex;align-items:center;gap:8px;margin-bottom:8px;}
+.idot{width:8px;height:8px;border-radius:50%;flex:none;}
+.irow{display:flex;gap:9px;font-size:12.5px;color:var(--mut);line-height:1.5;margin-bottom:5px;align-items:flex-start;}
+.irow b{color:var(--ink);font-weight:600;}
+.ik{width:5px;height:5px;border-radius:50%;flex:none;margin-top:7px;background:var(--mutd);}
+.ik.ok{background:var(--green);}.ik.warn{background:var(--amber);}.ik.err{background:var(--red);}
+.dropzone{border:1px dashed var(--line);border-radius:11px;padding:26px;text-align:center;color:var(--mut);font-size:13px;background:var(--ground);}
+.dropzone.hot{border-color:var(--steel);background:rgba(60,130,155,.06);}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--panel2);border:1px solid var(--steel);padding:10px 17px;border-radius:9px;font-size:13px;z-index:99;box-shadow:0 8px 30px rgba(0,0,0,.45);max-width:80vw;}
+.toast.err{border-color:var(--red);}
+.empty{color:var(--mutd);font-size:13px;text-align:center;padding:36px 16px;}
+code{font-family:'Manrope',sans-serif;font-size:11.5px;background:var(--ground);padding:1px 5px;border-radius:4px;color:var(--steel);}
+
+@media(max-width:900px){.split{grid-template-columns:1fr;}.row2,.row3{grid-template-columns:1fr;}}
+:focus-visible{outline:2px solid var(--steel);outline-offset:2px;}
+
+.jsoned,textarea.mono,.inp.mono,code{font-family:ui-monospace,Menlo,Consolas,monospace;}
+</style>
+</head>
+
+<body>
+<header class="bar">
+  <div class="brand" id="brand"></div>
+  <div style="display:flex;align-items:center;gap:10px">
+    <span style="font-family:'Manrope',sans-serif;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--mutd)">Accelerator:</span>
+    <select id="accSelector" style="font-family:'Manrope',sans-serif;font-size:12.5px;font-weight:700;padding:6px 12px;border-radius:8px;border:1px solid var(--line);background:var(--ground);color:var(--ink);cursor:pointer">
+      <option value="finops-value-case">⚡ FinOps Value Case</option>
+      <option value="finops-iq">📊 FinOps IQ</option>
+      <option value="posture-iq">🛡️ Posture IQ</option>
+    </select>
+  </div>
+  <div class="tabs" id="tabs"></div>
+  <div class="barmeta">
+    <span class="dot" id="hdot"></span><span id="hmeta"></span>
+    <div id="authStatus" style="margin-left:8px"></div>
+  </div>
+</header>
+
+<!-- Cognito Auth Modal -->
+<div id="loginModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.55);backdrop-filter:blur(4px);z-index:9999;align-items:center;justify-content:center">
+  <div style="background:#fff;border-radius:14px;box-shadow:0 12px 36px rgba(0,0,0,0.25);width:90%;max-width:400px;padding:28px;font-family:'Manrope',sans-serif">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px">
+      <h3 style="margin:0;font-size:18px;font-weight:800;color:var(--ink)">LTM Advisory Admin Login</h3>
+      <button onclick="closeLoginModal()" style="border:none;background:none;font-size:20px;cursor:pointer;color:var(--mutd)">&times;</button>
+    </div>
+    <p style="font-size:13px;color:var(--mut);margin:0 0 16px;line-height:1.5">Sign in with your authorized LTM Cognito account to edit questions, weights, and scoring engines.</p>
+    <div style="margin-bottom:12px">
+      <label style="display:block;font-size:12px;font-weight:700;margin-bottom:6px;color:var(--ink)">Email Address</label>
+      <input id="loginEmail" type="email" placeholder="name@ltm.com" style="width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:8px;font-size:13.5px;font-family:'Manrope',sans-serif" />
+    </div>
+    <div style="margin-bottom:16px">
+      <label style="display:block;font-size:12px;font-weight:700;margin-bottom:6px;color:var(--ink)">Password</label>
+      <input id="loginPassword" type="password" placeholder="••••••••••••" style="width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:8px;font-size:13.5px;font-family:'Manrope',sans-serif" />
+    </div>
+    <div id="loginError" style="display:none;color:var(--red);font-size:12.5px;margin-bottom:14px;background:#FFF0EF;padding:8px 12px;border-radius:6px;border:1px solid rgba(255,94,79,0.3)"></div>
+    <div style="display:flex;gap:10px;justify-content:flex-end">
+      <button onclick="closeLoginModal()" class="btn ghost sm">Cancel</button>
+      <button id="btnSubmitLogin" onclick="handleCognitoLogin()" class="btn primary sm" style="padding:10px 20px;font-weight:700">Sign In →</button>
+    </div>
+  </div>
+</div>
+<div id="app"></div>
+<input type="file" id="fLogo" accept="image/*" style="display:none">
+<input type="file" id="fImport" accept=".json,application/json" style="display:none">
+<input type="file" id="fHtml" accept=".html,text/html" style="display:none">
+
+<script>
+
+/* ---------- Embedded Accelerator Knowledge Bases ---------- */
+const PRELOADED_KBS = {
+  "finops-value-case": {"meta": {"schema_version": "1.0.3", "instrument": "FinOps Value Case \u2014 Pre-Maturity Qualification", "last_reviewed": "2026-07-22", "disclaimer": "Indicative estimate based on self-reported inputs and published industry benchmarks. Figures illustrate the scale of opportunity and are not a guarantee of savings. A validated baseline requires assessment of actual billing data. Indicative and directional only. Not a commitment, quote or financial advice.", "currencies": [{"id": "gbp", "symbol": "\u00a3"}, {"id": "usd", "symbol": "$"}, {"id": "eur", "symbol": "\u20ac"}, {"id": "inr", "symbol": "\u20b9"}], "signals": [{"id": "visibility", "label": "Cost visibility", "weight": 0.22, "color": "#3C829B"}, {"id": "predictability", "label": "Bill predictability", "weight": 0.2, "color": "#B26A00"}, {"id": "ownership", "label": "Ownership & accountability", "weight": 0.2, "color": "#5A3A83"}, {"id": "control", "label": "Controls & optimisation", "weight": 0.22, "color": "#35754D"}, {"id": "value", "label": "Value realisation", "weight": 0.16, "color": "#226882"}], "benchmarks": {"sector": "Banking, Financial Services & Insurance (BFSI)", "honesty_note": "Published waste benchmarks are reported cross-industry, not per-sector. Headline anchors below are global figures from named public sources. BFSI modifiers are LTM directional adjustments based on sector characteristics \u2014 not published sector waste rates \u2014 and are editable.", "sources": [{"label": "Flexera 2026 State of the Cloud Report (n=753, March 2026)", "url": "https://info.flexera.com/CM-REPORT-State-of-the-Cloud", "note": "Wasted IaaS/PaaS spend 29% \u2014 the first increase in five years, attributed to AI workloads and new PaaS/SaaS pricing complexity. 63% of organisations run an established FinOps team; 71% operate a CCoE; 49% use unit economics. Fewer than half use any one commitment discount per provider."}, {"label": "Flexera State of the Cloud, multi-year (2019\u20132026)", "url": "https://info.flexera.com/CM-REPORT-State-of-the-Cloud", "note": "Estimated waste has stayed within a 27\u201332% band every year since 2019 \u2014 the most stable benchmark available."}, {"label": "Harness Cloud Cost Management Report (2025)", "url": "https://www.harness.io/whitepapers/cloud-cost-management-report", "note": "21% of infrastructure budget wasted on unused or underused resources; a useful conservative floor."}, {"label": "FinOps Foundation, State of FinOps 2026", "url": "https://www.finops.org/insights/state-of-finops/", "note": "Workload optimisation and waste reduction remain the top practitioner priority, but with diminishing returns \u2014 the large obvious waste has been captured."}], "anchor_logic": "The Flexera 29% figure is an average across a population in which 63% already run an established FinOps team. An organisation with no FinOps function therefore sits materially above that average; one with mature controls sits below it.", "bfsi_modifiers": {"editable": true, "basis": "LTM directional adjustment \u2014 replace with engagement data when available", "cap": 0.45, "factors": [{"id": "nonprod", "label": "Elevated non-production estate", "pts": 0.03, "rationale": "Regulatory testing, UAT, model validation and parallel-run environments create a larger idle footprint than other sectors."}, {"id": "dr", "label": "Mandated DR and resilience duplication", "pts": 0.02, "rationale": "Operational resilience requirements (DORA, FCA/PRA and local equivalents) mandate standby capacity that is provisioned but rarely consumed."}, {"id": "residency", "label": "Data residency and sovereignty constraints", "pts": 0.015, "rationale": "Limits region arbitrage and constrains commitment flexibility."}, {"id": "liftshift", "label": "Core system lift-and-shift patterns", "pts": 0.03, "rationale": "Migrated core banking, payments and policy administration systems often retain data-centre sizing rather than cloud-native elasticity."}, {"id": "change", "label": "Extended change control cycles", "pts": 0.015, "rationale": "Rightsizing and decommissioning move through governance slowly, so identified waste persists longer."}, {"id": "commitment", "label": "Conservative commitment purchasing", "pts": 0.02, "rationale": "Budget governance and multi-year approval cycles suppress commitment coverage, leaving predictable workloads on on-demand rates."}]}}, "waste_model": {"bands": [{"max_capability": 25, "low": 0.3, "high": 0.4, "label": "No effective cost management", "anchor": "Above the 29% cross-industry average, since that average includes a majority with established FinOps teams."}, {"max_capability": 50, "low": 0.22, "high": 0.3, "label": "Ad hoc cost management", "anchor": "Straddles the 27\u201332% historical band."}, {"max_capability": 75, "low": 0.14, "high": 0.22, "label": "Partial controls in place", "anchor": "Approaching the Harness 21% floor for unused and underused infrastructure."}, {"max_capability": 100, "low": 0.08, "high": 0.14, "label": "Established controls", "anchor": "Consistent with practitioners reporting diminishing returns once large waste is captured."}]}, "verdict_bands": [{"min": 0, "max": 25, "id": "monitor", "label": "Lightweight practices sufficient", "color": "#35754D", "headline": "No material FinOps gap at current scale", "narrative": "At the current estate size and growth rate, formal FinOps investment is difficult to justify. Maintain basic budget alerting and revisit when spend or migration pace increases."}, {"min": 26, "max": 50, "id": "foundations", "label": "Establish foundations now", "color": "#226882", "headline": "Foundations needed before the estate grows", "narrative": "The estate is approaching the scale where informal cost management stops working. Establishing visibility and ownership now is materially cheaper than retrofitting them later."}, {"min": 51, "max": 75, "id": "material", "label": "Material exposure \u2014 act this year", "color": "#B26A00", "headline": "A quantifiable amount of spend is unmanaged", "narrative": "Cost is being incurred faster than it can be explained or controlled. The gap is large enough to be visible in financial results and will widen as migration continues."}, {"min": 76, "max": 100, "id": "urgent", "label": "Urgent \u2014 significant value leaking", "color": "#FF5E4F", "headline": "Spend is running substantially ahead of control", "narrative": "The combination of scale, growth and absent controls means a significant proportion of cloud investment is not producing recoverable value. This is normally visible to Finance before it is visible to Technology."}], "service_areas": [{"id": "operating_model", "name": "FinOps Operating Model & Governance", "triggers": [{"signal": "ownership", "below": 60}], "problem": "No one is genuinely accountable for cloud spend, so decisions default to whoever notices the bill.", "deliverables": ["FinOps charter and mandate, signed at executive level", "Operating model design \u2014 centralised, federated or hybrid, with rationale", "RACI across Engineering, Finance, Procurement and BU owners", "Governance forum design, cadence and decision rights", "Tooling assessment and platform recommendation", "90-day mobilisation plan with named owners"]}, {"id": "visibility_allocation", "name": "Cost Visibility & Allocation", "triggers": [{"signal": "visibility", "below": 65}], "problem": "Spend cannot be attributed to a team, product or customer, so no one can be held to it.", "deliverables": ["Tagging and metadata taxonomy with enforcement policy", "Cost allocation model including shared-cost treatment", "Showback design, progressing to chargeback where appropriate", "Executive and team-level cost dashboards", "Automated cost data pipeline into enterprise BI", "Allocation coverage baseline and improvement roadmap"]}, {"id": "forecast_control", "name": "Forecasting, Budgets & Anomaly Control", "triggers": [{"signal": "predictability", "below": 65}], "problem": "The bill cannot be predicted, so Finance treats cloud as uncontrolled spend.", "deliverables": ["Driver-based forecasting model with documented assumptions", "Budget framework at BU and product level with forecast-breach alerting", "Anomaly detection configuration and escalation routing", "Monthly variance reporting pack and commentary standard", "Forecast accuracy baseline and improvement target"]}, {"id": "rate_optimisation", "name": "Commitment & Rate Optimisation", "triggers": [{"signal": "control", "below": 70}], "problem": "Paying on-demand rates for predictable, steady-state workloads.", "deliverables": ["Commitment coverage analysis across providers", "Commitment strategy and purchase calendar", "Savings plan and reserved capacity portfolio design", "Provider agreement and discount review", "Ongoing coverage monitoring and renewal governance"]}, {"id": "workload_optimisation", "name": "Workload & Architecture Optimisation", "triggers": [{"signal": "control", "below": 60}], "problem": "Resources are oversized, idle or orphaned, and nothing systematically reclaims them.", "deliverables": ["Rightsizing assessment with prioritised savings backlog", "Waste and orphaned-resource elimination programme", "Storage tiering and lifecycle policy design", "Non-production scheduling and automated parking", "Spot and transient capacity adoption strategy", "Architecture cost review standard for design gates"]}, {"id": "unit_economics", "name": "Unit Economics & Value Realisation", "triggers": [{"signal": "value", "below": 60}], "problem": "Cloud spend cannot be defended to the board because its business value is not measured.", "deliverables": ["Unit metric definition per product or service line", "Cost-per-unit instrumentation and trending", "Cloud business case validation against original assumptions", "Margin and cost-to-serve analysis by customer or tenant", "Board-level cloud value reporting pack"]}, {"id": "enablement", "name": "FinOps Enablement & Capability Build", "triggers": [{"signal": "ownership", "below": 70}, {"signal": "value", "below": 70}], "problem": "Cost awareness does not survive contact with delivery pressure unless it is built into how engineers work.", "deliverables": ["FinOps role definitions and target capability model", "Training curriculum and FinOps certification pathway", "Cost-aware architecture and design standards", "Engineering enablement \u2014 cost feedback in CI/CD and pull requests", "Community of practice launch and operating rhythm"]}], "case_studies": [{"id": "cs_airline_na", "title": "How a leading North American airline saved 30% on cloud cost with our FinOps Excellence Service", "region": "North America", "industry": "Aviation & Transport", "outcome": "30% cost reduction", "relevance": ["control", "predictability"], "file": "assets/case-studies/PLACEHOLDER-airline-north-america.pdf", "status": "placeholder"}, {"id": "cs_bank_africa", "title": "How we helped a leading African bank establish a FinOps governance model", "region": "Africa", "industry": "Banking & Financial Services", "outcome": "Governance model established", "relevance": ["ownership", "visibility"], "file": "assets/case-studies/PLACEHOLDER-bank-africa.pdf", "status": "placeholder"}, {"id": "cs_retail_eu", "title": "How an EU retail business implemented FinOps to improve every-dollar-spend efficacy", "region": "Europe", "industry": "Retail & Consumer", "outcome": "Improved spend efficacy", "relevance": ["value", "visibility"], "file": "assets/case-studies/PLACEHOLDER-retail-eu.pdf", "status": "placeholder"}], "brochure": {"title": "LTM FinOps Services", "subtitle": "Cloud financial management \u2014 advisory, implementation and managed practice", "file": "assets/PLACEHOLDER-ltm-finops-brochure.pdf", "status": "placeholder"}}, "sections": [{"id": "estate", "n": "01", "label": "Your cloud estate", "blurb": "Where you are today, and where you are heading."}, {"id": "visibility", "n": "02", "label": "Visibility", "blurb": "Whether spend can be attributed and explained."}, {"id": "predictability", "n": "03", "label": "Predictability", "blurb": "Whether the bill behaves the way you expect."}, {"id": "ownership", "n": "04", "label": "Ownership", "blurb": "Who is actually accountable for what is spent."}, {"id": "controls", "n": "05", "label": "Controls", "blurb": "What prevents and reclaims waste today."}, {"id": "value", "n": "06", "label": "Value", "blurb": "Whether the spend can be defended as worthwhile."}], "questions": [{"id": "E1", "section": "estate", "answer_type": "card_select", "signals": [], "text": "Which best describes your infrastructure today?", "hint": "Pick the closest match \u2014 precision is not required.", "options": [{"label": "Entirely on-premise / data centre", "icon": "\u25a4", "cloud_share": 0}, {"label": "Mostly data centre, some cloud", "icon": "\u25a5", "cloud_share": 0.2}, {"label": "Balanced hybrid", "icon": "\u25eb", "cloud_share": 0.5}, {"label": "Mostly cloud, some legacy", "icon": "\u25d7", "cloud_share": 0.8}, {"label": "Cloud-native / fully migrated", "icon": "\u25cf", "cloud_share": 1}]}, {"id": "E2", "section": "estate", "answer_type": "multi_select_logo", "signals": [], "text": "Which cloud platforms are in use or planned?", "hint": "Multi-cloud materially increases the cost of poor visibility.", "options": [{"label": "Amazon Web Services", "hyper": true}, {"label": "Microsoft Azure", "hyper": true}, {"label": "Google Cloud", "hyper": true}, {"label": "Oracle Cloud", "hyper": true}, {"label": "Private / hosted cloud", "hyper": false}, {"label": "Not yet decided", "hyper": false}]}, {"id": "E3", "section": "estate", "answer_type": "slider_currency", "signals": [], "text": "Roughly what is your annual cloud spend?", "hint": "An order-of-magnitude estimate is enough. This drives the value calculation.", "slider": {"min": 50000, "max": 100000000, "steps": 60, "default": 2000000}, "allow_dk": true, "dk_blind": "Annual cloud spend is not known to a single figure \u2014 usually a sign spend is fragmented across accounts or business units."}, {"id": "E4", "section": "estate", "answer_type": "single_select", "signals": [], "text": "Where are you in your cloud journey?", "options": [{"label": "Planning \u2014 not yet migrating", "migration_ahead": 1}, {"label": "Early migration \u2014 under 25% moved", "migration_ahead": 0.8}, {"label": "In flight \u2014 25% to 75% moved", "migration_ahead": 0.5}, {"label": "Largely migrated \u2014 over 75% moved", "migration_ahead": 0.2}, {"label": "Migration complete, now optimising", "migration_ahead": 0.05}]}, {"id": "E5", "section": "estate", "answer_type": "slider_signed", "signals": [], "text": "How do you expect cloud spend to change over the next 12 months?", "slider": {"min": -25, "max": 200, "step": 5, "default": 25, "suffix": "%"}}, {"id": "E6", "section": "estate", "answer_type": "slider_percent", "signals": [], "text": "What proportion of your remaining estate is still to move to cloud in the next 24 months?", "hint": "Migrating on top of weak cost controls multiplies the problem rather than adding to it.", "slider": {"min": 0, "max": 100, "step": 5, "default": 30, "suffix": "%"}}, {"id": "V1", "section": "visibility", "answer_type": "single_select", "signals": [{"id": "visibility", "w": 2}], "text": "Can you attribute cloud cost to a specific business unit, product or team?", "options": [{"label": "Yes \u2014 fully and automatically", "score": 100}, {"label": "Mostly, with some manual effort", "score": 70}, {"label": "Only at a very high level", "score": 35}, {"label": "No \u2014 it is one undifferentiated bill", "score": 0}], "allow_dk": true, "dk_blind": "Cost attribution capability is unknown \u2014 meaning no one has recently tried to answer 'who spent this?'"}, {"id": "V2", "section": "visibility", "answer_type": "slider_percent", "signals": [{"id": "visibility", "w": 1.5}], "text": "What percentage of your cloud resources carry complete, reliable tags or labels?", "slider": {"min": 0, "max": 100, "step": 5, "default": 40, "suffix": "%"}, "allow_dk": true, "dk_blind": "Tag coverage is unknown. Without it, every allocation and showback figure is an estimate."}, {"id": "V3", "section": "visibility", "answer_type": "single_select", "signals": [{"id": "visibility", "w": 1.5}], "text": "How long does it take to answer the question \"why did the bill go up last month?\"", "hint": "This is the single most revealing question in the assessment.", "options": [{"label": "Same day \u2014 the data is at hand", "score": 100}, {"label": "A few days of analysis", "score": 65}, {"label": "Weeks, and the answer is contested", "score": 25}, {"label": "We cannot reliably answer it", "score": 0}]}, {"id": "V4", "section": "visibility", "answer_type": "boolean_dk", "signals": [{"id": "visibility", "w": 1}, {"id": "value", "w": 1}], "text": "Do you know what it costs to serve one customer, transaction or unit of output?", "scores": {"yes": 100, "no": 10, "dk": 0}, "dk_blind": "Unit cost is unknown \u2014 cloud spend cannot currently be connected to business volume."}, {"id": "V5", "section": "visibility", "answer_type": "multi_select", "signals": [{"id": "visibility", "w": 1.5}], "text": "Which of these do you receive on a regular, scheduled basis?", "hint": "Select all that genuinely arrive without being chased.", "options": [{"label": "Monthly cost report by team or product", "score": 20}, {"label": "Forward-looking spend forecast", "score": 20}, {"label": "Automated anomaly or spike alerts", "score": 20}, {"label": "Unit cost or efficiency trend", "score": 20}, {"label": "Commitment coverage and utilisation report", "score": 20}, {"label": "None of these arrive regularly", "score": 0, "exclusive": true}]}, {"id": "P1", "section": "predictability", "answer_type": "slider_percent", "signals": [{"id": "predictability", "w": 2}], "text": "Over the last 12 months, how far did actual cloud spend differ from what was budgeted?", "slider": {"min": 0, "max": 60, "step": 1, "default": 15, "suffix": "%"}, "invert": true, "allow_dk": true, "dk_blind": "Budget variance is not tracked, so overspend is discovered rather than predicted."}, {"id": "P2", "section": "predictability", "answer_type": "single_select", "signals": [{"id": "predictability", "w": 1.5}], "text": "How often has an unexpected cloud bill required explanation to Finance or the board?", "options": [{"label": "Never", "score": 100}, {"label": "Once", "score": 70}, {"label": "A few times", "score": 35, "urgency": 6}, {"label": "It is a recurring conversation", "score": 0, "urgency": 12}]}, {"id": "P3", "section": "predictability", "answer_type": "rating_1_5", "signals": [{"id": "predictability", "w": 1.5}], "text": "How confident are you in your cloud spend forecast for next quarter?", "labels": ["No forecast exists", "Little confidence", "Moderate", "Confident", "High confidence"]}, {"id": "P4", "section": "predictability", "answer_type": "single_select", "signals": [{"id": "predictability", "w": 1}, {"id": "ownership", "w": 1}], "text": "Who explains the cloud bill to Finance or the CFO?", "options": [{"label": "A dedicated cost owner with the data to back it", "score": 100}, {"label": "Central IT, on request", "score": 60}, {"label": "Whoever is available that month", "score": 25}, {"label": "No one \u2014 Finance interprets it themselves", "score": 0}]}, {"id": "O1", "section": "ownership", "answer_type": "single_select", "signals": [{"id": "ownership", "w": 2}], "text": "Who is formally accountable for cloud spend?", "options": [{"label": "A named FinOps owner or team with a mandate", "score": 100}, {"label": "Each business unit owns its own consumption", "score": 75}, {"label": "The CIO or CTO, by default rather than design", "score": 40}, {"label": "Shared and unclear", "score": 15}, {"label": "No one specifically", "score": 0}]}, {"id": "O2", "section": "ownership", "answer_type": "allocation_100", "signals": [{"id": "ownership", "w": 2}], "text": "Distribute 100 points across where responsibility for cloud cost actually sits today.", "hint": "Not where it should sit \u2014 where it genuinely does.", "buckets": [{"id": "engineering", "label": "Engineering teams", "color": "#35754D"}, {"id": "finance", "label": "Finance", "color": "#3C829B"}, {"id": "central_it", "label": "Central IT / Platform", "color": "#5A3A83"}, {"id": "nobody", "label": "Honestly, nobody", "color": "#FF5E4F"}]}, {"id": "O3", "section": "ownership", "answer_type": "rating_1_5", "signals": [{"id": "ownership", "w": 1.5}], "text": "To what extent do engineers see the cost consequences of what they build?", "labels": ["Not at all", "Rarely", "Occasionally", "Usually", "Continuously, in workflow"]}, {"id": "O4", "section": "ownership", "answer_type": "boolean_dk", "signals": [{"id": "ownership", "w": 1}], "text": "Is cost efficiency written into anyone's objectives or performance measures?", "scores": {"yes": 100, "no": 15, "dk": 0}, "dk_blind": "No one is certain whether cost efficiency is anyone's objective \u2014 which usually means it is not."}, {"id": "C1", "section": "controls", "answer_type": "multi_select", "signals": [{"id": "control", "w": 2}], "text": "Which cost controls are actually operating today?", "hint": "Select only those in live use, not those planned or configured but ignored.", "options": [{"label": "Budgets with alerting", "score": 14}, {"label": "Automated anomaly detection", "score": 14}, {"label": "Enforced tagging policy", "score": 14}, {"label": "Commitment / reserved capacity management", "score": 14}, {"label": "Regular rightsizing cadence", "score": 14}, {"label": "Automated non-production shutdown", "score": 14}, {"label": "Showback or chargeback to teams", "score": 16}, {"label": "None of these", "score": 0, "exclusive": true}]}, {"id": "C2", "section": "controls", "answer_type": "slider_percent", "signals": [{"id": "control", "w": 1.5}], "text": "What proportion of eligible spend is covered by commitments \u2014 reserved instances, savings plans or committed use discounts?", "slider": {"min": 0, "max": 100, "step": 5, "default": 20, "suffix": "%"}, "allow_dk": true, "dk_blind": "Commitment coverage is unknown \u2014 typically the single largest immediately addressable saving."}, {"id": "C3", "section": "controls", "answer_type": "single_select", "signals": [{"id": "control", "w": 1.5}], "text": "When did you last systematically decommission unused or idle resources?", "options": [{"label": "Continuously \u2014 it is automated", "score": 100}, {"label": "Within the last month", "score": 80}, {"label": "Within the last quarter", "score": 55}, {"label": "Over a year ago", "score": 20}, {"label": "Never, or not that we know of", "score": 0}]}, {"id": "C4", "section": "controls", "answer_type": "drag_order", "signals": [], "text": "Rank these cost concerns by how much they worry you \u2014 most concerning first.", "hint": "This shapes where we focus, and is not scored against a right answer.", "options": ["Unpredictable or rising bills", "Inability to attribute cost to teams", "Paying for resources nobody uses", "Cost of the migration itself", "Lack of internal skills", "Justifying cloud value to the board"], "concern_map": {"Unpredictable or rising bills": "forecast_control", "Inability to attribute cost to teams": "visibility_allocation", "Paying for resources nobody uses": "workload_optimisation", "Cost of the migration itself": "rate_optimisation", "Lack of internal skills": "enablement", "Justifying cloud value to the board": "unit_economics"}}, {"id": "C5", "section": "controls", "answer_type": "single_select", "signals": [{"id": "control", "w": 1.5}, {"id": "visibility", "w": 1}], "allow_dk": true, "dk_blind": "Network data transfer and cross-AZ/cross-region egress costs are unmonitored, creating vulnerability to silent bill inflation.", "text": "How actively do you monitor and optimize network data transfer (cross-AZ, cross-region, egress to on-premises/internet)?", "sub": "Data transfer and network egress typically account for 10\u201325% of cloud infrastructure spend and often go unallocated.", "options": [{"label": "Active architectural governance \u2014 private endpoints/interconnects, direct routes, and egress budget alerting", "score": 100}, {"label": "Standard monitoring in place, but egress spikes are investigated reactively", "score": 65}, {"label": "High-level awareness; egress is rarely tracked or attributed to specific workloads", "score": 30}, {"label": "Unmonitored \u2014 network data transfer is treated as an unmanaged baseline utility", "score": 0}]}, {"id": "L1", "section": "value", "answer_type": "single_select", "signals": [{"id": "value", "w": 2}], "text": "Can you demonstrate to the board that cloud spend is delivering business value?", "options": [{"label": "Yes \u2014 with quantified, trended evidence", "score": 100}, {"label": "Partially \u2014 anecdotally or by project", "score": 55}, {"label": "Not currently", "score": 15}, {"label": "The question has not been asked yet", "score": 25}]}, {"id": "L2", "section": "value", "answer_type": "single_select", "signals": [{"id": "value", "w": 1.5}], "text": "Has cloud delivered the savings or benefits set out in the original business case?", "options": [{"label": "Exceeded expectations", "score": 100}, {"label": "Broadly met them", "score": 80}, {"label": "Fallen short", "score": 30}, {"label": "We do not track against the business case", "score": 10}, {"label": "There was no formal business case", "score": 0}], "allow_dk": true, "dk_blind": "Performance against the original cloud business case is not tracked."}, {"id": "L3", "section": "value", "answer_type": "rating_1_5", "signals": [{"id": "value", "w": 1}], "text": "If Finance asked today whether cloud spend was under control, how comfortable would you be answering?", "labels": ["Very uncomfortable", "Uncomfortable", "Neutral", "Comfortable", "Very comfortable"]}, {"id": "L4", "section": "value", "answer_type": "multi_select", "signals": [], "text": "What would a good outcome look like in 12 months?", "hint": "Used to shape the recommendations, not scored.", "options": [{"label": "A bill we can predict"}, {"label": "Lower cost per unit of output"}, {"label": "Faster, better-informed decisions"}, {"label": "A position we can defend to Finance"}, {"label": "Funding freed up for innovation"}, {"label": "Confidence to accelerate migration"}]}, {"id": "X1", "section": "value", "answer_type": "open_text", "signals": [], "text": "Anything else about your cloud cost position we should understand?", "placeholder": "Optional \u2014 included in the report for the follow-up conversation."}]}
+};
+
+/* ---------- Cognito RBAC Config (ap-south-1) ---------- */
+const COGNITO_CONFIG = {
+  region: "ap-south-1",
+  userPoolId: "ap-south-1_91amN2bz4",
+  clientId: "4iiqcsgvsm0b4ngpps94ho4c67"
+};
+
+let AUTH_USER = null;
+
+function initAuth() {
+  try {
+    const stored = sessionStorage.getItem("ltm_auth_user");
+    if (stored) {
+      AUTH_USER = JSON.parse(stored);
+    }
+  } catch(e) {}
+  renderAuthWidget();
+}
+
+function renderAuthWidget() {
+  const w = document.getElementById("authStatus");
+  if (!w) return;
+  if (AUTH_USER && AUTH_USER.email) {
+    const isSuper = AUTH_USER.email === "dixitashutosh007@gmail.com";
+    w.innerHTML = '<span class="pill" style="background:#EBF3F5;color:var(--steel);font-weight:700;padding:4px 8px;font-size:11px">'
+      + (isSuper ? '👑 Super Admin: ' : '👤 Consultant: ') + esc(AUTH_USER.email) + '</span>'
+      + '<button class="btn ghost sm" onclick="logout()" style="margin-left:6px;padding:3px 8px;font-size:11px">Sign Out</button>';
+  } else {
+    w.innerHTML = '<button class="btn primary sm" onclick="openLoginModal()" style="padding:4px 10px;font-size:11.5px;font-weight:700">🔐 Sign In</button>';
+  }
+}
+
+function openLoginModal() {
+  const m = document.getElementById("loginModal");
+  if (m) { m.style.display = "flex"; document.getElementById("loginEmail").focus(); }
+}
+
+function closeLoginModal() {
+  const m = document.getElementById("loginModal");
+  if (m) m.style.display = "none";
+}
+
+async function handleCognitoLogin() {
+  const email = document.getElementById("loginEmail").value.trim();
+  const password = document.getElementById("loginPassword").value;
+  const errDiv = document.getElementById("loginError");
+  const btn = document.getElementById("btnSubmitLogin");
+
+  if (!email || !password) {
+    errDiv.textContent = "Please enter both email and password.";
+    errDiv.style.display = "block";
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = "Verifying...";
+  errDiv.style.display = "none";
+
+  try {
+    const res = await fetch("https://cognito-idp." + COGNITO_CONFIG.region + ".amazonaws.com/", {
+      method: "POST",
+      headers: {
+        "X-Amz-Target": "AWSCognitoIdentityProviderService.InitiateAuth",
+        "Content-Type": "application/x-amz-json-1.1"
+      },
+      body: JSON.stringify({
+        AuthFlow: "USER_PASSWORD_AUTH",
+        ClientId: COGNITO_CONFIG.clientId,
+        AuthParameters: {
+          USERNAME: email,
+          PASSWORD: password
+        }
+      })
+    });
+
+    const data = await res.json();
+    if (data.AuthenticationResult) {
+      const token = data.AuthenticationResult.IdToken;
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      AUTH_USER = {
+        email: payload.email || email,
+        sub: payload.sub,
+        token: token
+      };
+      sessionStorage.setItem("ltm_auth_user", JSON.stringify(AUTH_USER));
+      closeLoginModal();
+      renderAuthWidget();
+      toast("Welcome " + AUTH_USER.email + " (Signed In)");
+    } else {
+      errDiv.textContent = data.message || "Invalid email or password.";
+      errDiv.style.display = "block";
+    }
+  } catch(err) {
+    errDiv.textContent = "Authentication error: " + err.message;
+    errDiv.style.display = "block";
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "Sign In →";
+  }
+}
+
+function logout() {
+  AUTH_USER = null;
+  sessionStorage.removeItem("ltm_auth_user");
+  renderAuthWidget();
+  toast("Signed out");
+}
+
+function checkEditPermission() {
+  if (!AUTH_USER) {
+    openLoginModal();
+    return false;
+  }
+  return true;
+}
+
+
+/* =====================================================================
+   LTM QUESTION BANK STUDIO
+   Common core schema + per-tool profiles.
+   The Studio holds banks in the common schema and exports either the
+   common format or each accelerator's NATIVE format — so existing tools
+   need no changes to benefit.
+   ===================================================================== */
+
+const SCHEMA = "ltm-qbank/1.0";
+
+/* ---------- answer type library (shared across all accelerators) ---------- */
+const TYPES = {
+  single_select:   {label:"Single select",       opts:"scored",  desc:"One choice. Each option carries a score."},
+  multi_select:    {label:"Multi select",        opts:"scored",  desc:"Several choices. Scores sum, capped at 100. Supports an exclusive 'none' option."},
+  boolean:         {label:"Yes / No",            opts:"none",    desc:"Two-state. Yes=100, No=0."},
+  boolean_dk:      {label:"Yes / No / Don't know",opts:"none",   desc:"Three-state. 'Don't know' scores worst-case and flags a blind spot."},
+  rating_1_5:      {label:"Rating 1–5",          opts:"labels",  desc:"Five-point scale with a label per point."},
+  slider_percent:  {label:"Percentage slider",   opts:"slider",  desc:"0–100 style slider. Can be inverted where lower is better."},
+  slider_signed:   {label:"Signed slider",       opts:"slider",  desc:"Range that crosses zero, e.g. −25% to +200% growth."},
+  slider_currency: {label:"Currency slider",     opts:"slider",  desc:"Logarithmic money slider for spend bands."},
+  range:           {label:"Numeric range",       opts:"slider",  desc:"Plain numeric range, e.g. count of member states."},
+  card_select:     {label:"Card select",         opts:"cards",   desc:"Visual single select with an icon per card."},
+  allocation_100:  {label:"100-point allocation",opts:"buckets", desc:"Distribute 100 points across named buckets."},
+  drag_order:      {label:"Drag to rank",        opts:"plain",   desc:"Ordered list. Can score against an ideal order, or stay unscored."},
+  open_text:       {label:"Open text",           opts:"none",    desc:"Free text. Never scored — captured as evidence."}
+};
+
+/* ---------- tool profiles ---------- */
+const PROFILES = {
+  signal_scoring:{
+    name:"Signal scoring",
+    desc:"Questions feed weighted signals which aggregate into an index and a derived value model.",
+    tools:["FinOps Value Case"],
+    nativeId:"value_case",
+    ext:[
+      {key:"signals",label:"Signals fed",kind:"signalList",help:"Which signals this question contributes to, and at what weight."},
+      {key:"dkBlind",label:"Blind-spot text",kind:"text",help:"Shown in the report when the answer is \"don't know\"."}
+    ],
+    scoringBlocks:["signals","verdictBands","serviceAreas"]
+  },
+  staged_gating:{
+    name:"Staged gating",
+    desc:"Questions belong to sequential stages. A stage passes only when the weighted score clears a threshold and every critical question meets its minimum.",
+    tools:["FinOps Maturity Screen"],
+    nativeId:"finops_maturity",
+    ext:[
+      {key:"stage",label:"Stage",kind:"stageRef",help:"Which maturity stage this question belongs to."},
+      {key:"critical",label:"Critical",kind:"bool",help:"Blocks stage progression until met, regardless of overall score."},
+      {key:"weight",label:"Weight",kind:"number",help:"Relative weight within the stage."},
+      {key:"domain",label:"Domain",kind:"text",help:"Capability domain for the breakdown chart."}
+    ],
+    scoringBlocks:["stages","domains"]
+  },
+  rules_engine:{
+    name:"Rules engine",
+    desc:"Answers write facts. Facts trigger graded findings against a regime or rule register. Readiness scored per dimension.",
+    tools:["Sovereign Screen"],
+    nativeId:"sovereign",
+    ext:[
+      {key:"sector",label:"Sector",kind:"text",help:"common, or a vertical id such as finance or health."},
+      {key:"writes",label:"Writes facts",kind:"list",help:"Fact keys this answer sets directly (boolean and range types)."},
+      {key:"readiness",label:"Readiness mapping",kind:"readinessList",help:"Regime and dimension this question scores against."}
+    ],
+    scoringBlocks:["regimes","facts"]
+  },
+  simple_survey:{
+    name:"Simple survey",
+    desc:"Weighted questions with no gating or fact model. The default for a new accelerator.",
+    tools:["(new tools)"],
+    nativeId:"common",
+    ext:[{key:"weight",label:"Weight",kind:"number",help:"Relative weight in the overall score."}],
+    scoringBlocks:[]
+  }
+};
+
+/* ---------- starter bank ---------- */
+function newBank(profile){
+  return {
+    $schema:SCHEMA,
+    meta:{id:"new-accelerator",name:"New Accelerator",profile:profile||"simple_survey",
+      version:"0.1.0",lastReviewed:new Date().toISOString().slice(0,10),
+      disclaimer:"Indicative assessment based on self-reported inputs."},
+    sections:[{id:"s1",n:"01",label:"First section",blurb:"What this section establishes."}],
+    questions:[],
+    scoring:{},
+    assets:{}
+  };
+}
+
+/* ---------- state ---------- */
+const S={bank:newBank("simple_survey"),tab:"questions",selQ:null,logo:null,
+  bakeHtml:"",bakeName:""};
+const $=s=>document.querySelector(s);
+const app=$("#app");
+function esc(s){return String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
+function uid(p){let n=1;while(S.bank.questions.some(q=>q.id===p+n))n++;return p+n;}
+function prof(){return PROFILES[S.bank.meta.profile]||PROFILES.simple_survey;}
+function today(){return new Date().toISOString().slice(0,10);}
+let tT=null;
+function toast(m,err){let t=$(".toast");if(!t){t=document.createElement("div");document.body.appendChild(t);}
+  t.className="toast"+(err?" err":"");t.textContent=m;clearTimeout(tT);tT=setTimeout(()=>t.remove(),3400);}
+function dl(name,text,type){const b=new Blob([text],{type:type||"application/json"});const u=URL.createObjectURL(b);
+  const a=document.createElement("a");a.href=u;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(u),900);}
+
+/* ---------- wiring contracts ----------
+   A question is "wired" when it can actually affect a result. Unwired
+   questions render fine and change nothing — the most common authoring
+   mistake, so the contract makes it a blocking error unless declared. */
+const WIRING={
+  value_case:{
+    noun:"signal",
+    isWired(q){return ((q.ext&&q.ext.signals)||[]).length>0;},
+    fix:"Tick at least one signal, or mark the question as intentionally unscored."
+  },
+  finops_maturity:{
+    noun:"stage",
+    isWired(q,B){
+      if(!(q.ext&&q.ext.stage))return false;
+      const sh=TYPES[q.type]?TYPES[q.type].opts:null;
+      if(sh==="scored")return (q.options||[]).some(o=>typeof o.score==="number");
+      if(sh==="none")return q.type!=="open_text";
+      return sh==="labels"||sh==="slider"||sh==="buckets";
+    },
+    fix:"Assign a stage and make sure the answer can produce a score."
+  },
+  sovereign:{
+    noun:"fact or readiness mapping",
+    isWired(q,B){
+      const writes=((q.ext&&q.ext.writes)||[]).length>0;
+      const factOpts=(q.options||[]).some(o=>o.factValue&&Object.keys(o.factValue).length);
+      const read=((q.ext&&q.ext.readiness)||[]).length>0;
+      return writes||factOpts||read;
+    },
+    fix:"Write a fact that a rule reads, add a readiness mapping, or mark it intentionally unscored."
+  },
+  common:{
+    noun:"weight",
+    isWired(){return true;},
+    fix:""
+  }
+};
+function wiring(){return WIRING[prof().nativeId]||WIRING.common;}
+function qRole(q){return q.role||(q.unscored?"unscored":"scored");}
+function isWired(q){return qRole(q)!=="scored"?true:wiring().isWired(q,S.bank);}
+
+/* ---------- fact graph (rules engine) ---------- */
+function walkCond(c,cb){
+  if(!c||typeof c!=="object")return;
+  if(Array.isArray(c.all))return c.all.forEach(x=>walkCond(x,cb));
+  if(Array.isArray(c.any))return c.any.forEach(x=>walkCond(x,cb));
+  if(c.not)return walkCond(c.not,cb);
+  if(c.fact)cb(c.fact);
+}
+function factsRead(B){
+  const m={};
+  (B.scoring.regimes||[]).forEach(r=>{
+    (r.applicability_rules||[]).forEach((rule,i)=>{
+      walkCond(rule.when,f=>{(m[f]=m[f]||[]).push({regime:r.name||r.id,rule:i,grade:rule.grade});});
+    });
+  });
+  B.questions.forEach(q=>{ if(q.shownIf)walkCond(q.shownIf,f=>{(m[f]=m[f]||[]).push({regime:"(visibility of "+q.id+")",rule:-1});}); });
+  return m;
+}
+function factsWritten(B){
+  const m={};
+  B.questions.forEach(q=>{
+    ((q.ext&&q.ext.writes)||[]).forEach(f=>{(m[f]=m[f]||[]);if(!m[f].includes(q.id))m[f].push(q.id);});
+    (q.options||[]).forEach(o=>{ if(o.factValue)Object.keys(o.factValue).forEach(f=>{
+      (m[f]=m[f]||[]);if(!m[f].includes(q.id))m[f].push(q.id);});});
+  });
+  return m;
+}
+function readinessDims(B){
+  const m={};
+  (B.scoring.regimes||[]).forEach(r=>{m[r.id]={name:r.name||r.id,dims:new Set((r.readiness_dimensions||[]).map(d=>d.id))};});
+  return m;
+}
+
+/* ---------- impact preview ---------- */
+function impact(q){
+  const B=S.bank,P=prof(),out=[];
+  if(q.type==="open_text"){out.push({k:"info",t:"Free text is never scored — captured as evidence in the report."});return out;}
+  const role=qRole(q);
+  if(role==="unscored"){out.push({k:"info",t:"Marked <b>unscored</b>. Renders to the respondent and appears in the report, but contributes nothing to any result."});return out;}
+  if(role==="context"){out.push({k:"info",t:"Marked <b>context</b>. Feeds the engine outside the scoring system — spend, growth or platform mix driving a derived model. The Studio cannot trace that wiring, so verify it against the tool."});return out;}
+
+  if(P.nativeId==="value_case"){
+    const sigs=(q.ext&&q.ext.signals)||[];
+    if(!sigs.length){out.push({k:"err",t:"Feeds no signal — this question will not affect the result."});return out;}
+    sigs.forEach(s=>{
+      const def=(B.scoring.signals||[]).find(x=>x.id===s.id);
+      if(!def){out.push({k:"err",t:"Feeds unknown signal \""+s.id+"\"."});return;}
+      const feeders=B.questions.filter(x=>((x.ext&&x.ext.signals)||[]).some(y=>y.id===s.id)&&!x.unscored);
+      const total=feeders.reduce((a,x)=>a+(((x.ext.signals.find(y=>y.id===s.id))||{}).w||0),0);
+      const share=total?Math.round((s.w/total)*100):0;
+      const overall=Math.round(share*(def.weight||0));
+      out.push({k:"ok",t:"Contributes <b>"+share+"%</b> of the <b>"+esc(def.label||def.id)+"</b> signal"
+        +(def.weight?" — roughly <b>"+overall+"%</b> of the overall index":"")+"."});
+    });
+    if(q.allowDK||q.type==="boolean_dk"){
+      out.push({k:(q.ext&&q.ext.dkBlind)?"ok":"warn",
+        t:(q.ext&&q.ext.dkBlind)?"A \"don't know\" answer scores zero and raises a named blind spot."
+          :"A \"don't know\" answer scores zero but has no blind-spot text, so the report cannot explain it."});
+    }
+  }
+  else if(P.nativeId==="finops_maturity"){
+    const st=(B.scoring.stages||[]).find(s=>s.id===(q.ext&&q.ext.stage));
+    if(!st){out.push({k:"err",t:"No stage assigned — this question is not part of any gate."});return out;}
+    const sibs=B.questions.filter(x=>x.ext&&x.ext.stage===st.id&&!x.unscored);
+    const tw=sibs.reduce((a,x)=>a+((x.ext&&x.ext.weight)||1),0);
+    const mine=(q.ext&&q.ext.weight)||1;
+    out.push({k:"ok",t:"Weight <b>"+mine+"</b> of "+tw+" in <b>"+esc(st.name||st.id)+"</b> — about <b>"
+      +(tw?Math.round(mine/tw*100):0)+"%</b> of that stage's score (threshold "+st.threshold+")."});
+    if(q.ext&&q.ext.critical){
+      const crits=sibs.filter(x=>x.ext&&x.ext.critical).length;
+      out.push({k:"warn",t:"<b>Critical.</b> Scoring below "+st.critMin+" blocks progression past "+esc(st.name||st.id)
+        +" regardless of the stage average. This stage has "+crits+" critical question"+(crits>1?"s":"")+"."});
+    }
+  }
+  else if(P.nativeId==="sovereign"){
+    const read=factsRead(B),dims=readinessDims(B);
+    const mine=[];
+    ((q.ext&&q.ext.writes)||[]).forEach(f=>mine.push(f));
+    (q.options||[]).forEach(o=>{if(o.factValue)Object.keys(o.factValue).forEach(f=>{if(!mine.includes(f))mine.push(f);});});
+    if(!mine.length&&!((q.ext&&q.ext.readiness)||[]).length){
+      out.push({k:"err",t:"Writes no fact and has no readiness mapping — this question affects nothing."});return out;}
+    mine.forEach(f=>{
+      const rs=read[f]||[];
+      if(!rs.length)out.push({k:"err",t:"Writes fact <b>"+esc(f)+"</b>, but <b>no rule reads it</b> — the answer changes nothing."});
+      else{
+        const regimes=[...new Set(rs.map(r=>r.regime))];
+        out.push({k:"ok",t:"Writes <b>"+esc(f)+"</b>, read by <b>"+rs.length+"</b> rule"+(rs.length>1?"s":"")
+          +" across "+regimes.length+" regime"+(regimes.length>1?"s":"")+": "+esc(regimes.slice(0,3).join(", "))
+          +(regimes.length>3?" +"+(regimes.length-3)+" more":"")+"."});
+      }
+    });
+    ((q.ext&&q.ext.readiness)||[]).forEach(r=>{
+      const reg=dims[r.regime];
+      if(!reg)out.push({k:"err",t:"Readiness points at unknown regime <b>"+esc(r.regime)+"</b>."});
+      else if(!reg.dims.has(r.dimension))out.push({k:"err",t:"Regime <b>"+esc(reg.name)+"</b> has no dimension <b>"+esc(r.dimension)+"</b>."});
+      else out.push({k:"ok",t:"Scores the <b>"+esc(r.dimension)+"</b> dimension of <b>"+esc(reg.name)+"</b>."});
+    });
+  }
+  else{
+    const tot=B.questions.filter(x=>!x.unscored).reduce((a,x)=>a+((x.ext&&x.ext.weight)||1),0);
+    const mine=(q.ext&&q.ext.weight)||1;
+    out.push({k:"ok",t:"Weight <b>"+mine+"</b> of "+tot+" — about <b>"+(tot?Math.round(mine/tot*100):0)+"%</b> of the overall score."});
+  }
+  if(q.shownIf&&q.shownIf.fact)
+    out.push({k:"info",t:"Only shown when <b>"+esc(q.shownIf.fact)+"</b> "+esc(q.shownIf.op||"")+" "
+      +esc(Array.isArray(q.shownIf.value)?q.shownIf.value.join(", "):(q.shownIf.value!=null?q.shownIf.value:""))+"."});
+  return out;
+}
+
+/* ---------- validation ---------- */
+function validate(){
+  const out=[],B=S.bank,P=prof();
+  const ids={};
+  B.questions.forEach(q=>{ids[q.id]=(ids[q.id]||0)+1;});
+  Object.keys(ids).forEach(id=>{if(ids[id]>1)out.push({sev:"err",msg:"Duplicate question id",where:id});});
+  const secIds=B.sections.map(s=>s.id);
+  B.questions.forEach(q=>{
+    if(!q.text||!q.text.trim())out.push({sev:"err",msg:"Question has no text",where:q.id});
+    if(!TYPES[q.type])out.push({sev:"err",msg:"Unknown answer type: "+q.type,where:q.id});
+    if(q.section&&!secIds.includes(q.section))out.push({sev:"err",msg:"Points at a section that does not exist ("+q.section+")",where:q.id});
+    const shape=TYPES[q.type]?TYPES[q.type].opts:null;
+    const scoresMatter=(qRole(q)==="scored")&&P.nativeId!=="sovereign";
+    if(shape==="scored"){
+      if(!q.options||!q.options.length)out.push({sev:"err",msg:"Select question has no options",where:q.id});
+      else if(scoresMatter){
+        const ns=q.options.filter(o=>typeof o.score!=="number").length;
+        if(ns===q.options.length)out.push({sev:"warn",msg:"No option carries a score — this question cannot contribute to any result",where:q.id});
+        else if(ns>0)out.push({sev:"warn",msg:ns+" option(s) missing a score",where:q.id});
+        if(q.type==="single_select"&&!q.options.some(o=>o.score>=90))
+          out.push({sev:"info",msg:"No option scores near 100 — the best available answer still loses points",where:q.id});
+      }
+    }
+    if(shape==="labels"&&(!q.labels||q.labels.length!==5))out.push({sev:"warn",msg:"Rating needs exactly 5 labels",where:q.id});
+    if(shape==="slider"&&(!q.slider||q.slider.min===undefined||q.slider.max===undefined))out.push({sev:"err",msg:"Slider has no min/max defined",where:q.id});
+    if(shape==="slider"&&q.slider&&q.slider.min>=q.slider.max)out.push({sev:"err",msg:"Slider min is not below max",where:q.id});
+    if(shape==="buckets"&&(!q.buckets||q.buckets.length<2))out.push({sev:"err",msg:"Allocation needs at least 2 buckets",where:q.id});
+    if(shape==="plain"&&(!q.options||q.options.length<2))out.push({sev:"err",msg:"Ranking needs at least 2 items",where:q.id});
+    if(q.shownIf&&q.shownIf.fact){
+      const writers=B.questions.filter(x=>(x.ext&&Array.isArray(x.ext.writes)&&x.ext.writes.includes(q.shownIf.fact))
+        ||(x.options||[]).some(o=>o.factValue&&Object.keys(o.factValue).includes(q.shownIf.fact)));
+      if(!writers.length)out.push({sev:"warn",msg:"Condition depends on fact \""+q.shownIf.fact+"\" that no question writes",where:q.id});
+    }
+    // wiring contract — applies to every profile
+    if(q.type!=="open_text"&&!isWired(q))
+      out.push({sev:"err",msg:"Not wired to anything — needs a "+wiring().noun+". "+wiring().fix,where:q.id});
+    // profile-specific
+    if(P.nativeId==="value_case"){
+      const sg=(q.ext&&q.ext.signals)||[];
+      sg.forEach(s=>{if(!(B.scoring.signals||[]).some(x=>x.id===s.id))out.push({sev:"err",msg:"Feeds unknown signal \""+s.id+"\"",where:q.id});});
+      if((q.allowDK||q.type==="boolean_dk")&&!(q.ext&&q.ext.dkBlind))
+        out.push({sev:"warn",msg:"Allows \"don't know\" but has no blind-spot text — the report cannot explain the gap",where:q.id});
+    }
+    if(P.nativeId==="finops_maturity"){
+      const st=q.ext&&q.ext.stage;
+      if(st&&!(B.scoring.stages||[]).some(x=>x.id===st))out.push({sev:"err",msg:"Points at unknown stage \""+st+"\"",where:q.id});
+    }
+    if(P.nativeId==="sovereign"){
+      const read=factsRead(B),dims=readinessDims(B);
+      const writes=[];
+      ((q.ext&&q.ext.writes)||[]).forEach(f=>writes.push(f));
+      (q.options||[]).forEach(o=>{if(o.factValue)Object.keys(o.factValue).forEach(f=>{if(!writes.includes(f))writes.push(f);});});
+      writes.forEach(f=>{if(!read[f])out.push({sev:"warn",msg:"Writes fact \""+f+"\" that no rule reads — the answer changes nothing",where:q.id});});
+      ((q.ext&&q.ext.readiness)||[]).forEach(r=>{
+        if(!dims[r.regime])out.push({sev:"err",msg:"Readiness points at unknown regime \""+r.regime+"\"",where:q.id});
+        else if(!dims[r.regime].dims.has(r.dimension))out.push({sev:"err",msg:"Regime \""+r.regime+"\" has no dimension \""+r.dimension+"\"",where:q.id});
+      });
+    }
+  });
+  if(P.nativeId==="value_case"){
+    (B.scoring.signals||[]).forEach(sig=>{
+      const fed=B.questions.some(q=>q.ext&&(q.ext.signals||[]).some(s=>s.id===sig.id));
+      if(!fed)out.push({sev:"warn",msg:"Signal \""+sig.id+"\" has no question feeding it and will never score",where:"scoring"});
+    });
+  }
+  if(P.nativeId==="finops_maturity"){
+    (B.scoring.stages||[]).forEach(st=>{
+      const qs=B.questions.filter(q=>q.ext&&q.ext.stage===st.id);
+      if(!qs.length)out.push({sev:"warn",msg:"Stage \""+st.id+"\" has no questions",where:"scoring"});
+      else if(!qs.some(q=>q.ext.critical))out.push({sev:"info",msg:"Stage \""+st.id+"\" has no critical question — nothing gates progression",where:"scoring"});
+    });
+  }
+  if(P.nativeId==="sovereign"){
+    const read=factsRead(B),written=factsWritten(B);
+    Object.keys(read).forEach(f=>{
+      if(!written[f])out.push({sev:"err",msg:"Rules read fact \""+f+"\" that no question writes — those rules can never fire",where:"facts"});
+    });
+  }
+  if(!B.questions.length)out.push({sev:"warn",msg:"Bank has no questions yet",where:"bank"});
+  const order={err:0,warn:1,info:2};
+  out.sort((a,b)=>order[a.sev]-order[b.sev]);
+  return out;
+}
+
+/* ---------- render ---------- */
+function render(){
+  const tabs=[["questions","Questions"],["sections","Sections"],["scoring","Scoring"]];
+  if(prof().nativeId==="sovereign")tabs.push(["facts","Facts"]);
+  tabs.push(["validate","Validate"],["io","Import / Export"],["bake","Publish"]);
+  if(!tabs.some(t=>t[0]===S.tab))S.tab="questions";
+  $("#tabs").innerHTML=tabs.map(([k,l])=>'<button class="tab'+(S.tab===k?" on":"")+'" data-t="'+k+'">'+l+'</button>').join("");
+  $("#brand").innerHTML=S.logo?'<img src="'+S.logo+'" alt="LTM"/>'
+    :'<span class="mark"></span><span class="bw"><b>Question Bank Studio</b><span>LTM Accelerator Platform</span></span><span class="ph">LOGO</span>';
+  const v=validate(),errs=v.filter(x=>x.sev==="err").length,warns=v.filter(x=>x.sev==="warn").length;
+  $("#hdot").className="dot"+(errs?" err":warns?" warn":"");
+  $("#hmeta").textContent=S.bank.questions.length+" questions · "+(errs?errs+" errors":warns?warns+" warnings":"valid");
+  const V={questions:vQuestions,sections:vSections,scoring:vScoring,facts:vFacts,validate:vValidate,io:vIO,bake:vBake};
+  app.innerHTML='<div class="wrap">'+(V[S.tab]||vQuestions)()+'</div>';
+}
+
+function vQuestions(){
+  const B=S.bank,P=prof();
+  let list="";
+  B.sections.forEach(sec=>{
+    const qs=B.questions.filter(q=>q.section===sec.id);
+    list+='<div class="secgroup"><div class="sechead"><span class="sn">'+esc(sec.n||"")+'</span><span class="sl">'+esc(sec.label)+'</span>'
+      +'<button class="btn ghost sm" data-a="addQ" data-sec="'+sec.id+'">+ Question</button></div>';
+    list+=qs.length?qs.map(q=>qRow(q)).join(""):'<div class="empty" style="padding:14px;font-size:12px">No questions yet</div>';
+    list+='</div>';
+  });
+  const orphan=B.questions.filter(q=>!B.sections.some(s=>s.id===q.section));
+  if(orphan.length)list+='<div class="secgroup"><div class="sechead"><span class="sn">!!</span><span class="sl" style="color:var(--red)">Unassigned</span></div>'+orphan.map(qRow).join("")+'</div>';
+
+  const q=B.questions.find(x=>x.id===S.selQ);
+  return '<div class="split"><div>'
+    +'<div class="card"><h3>'+esc(B.meta.name)+'</h3>'
+    +'<p class="hint">'+esc(P.name)+' profile · '+B.questions.length+' questions across '+B.sections.length+' sections</p>'
+    +'<div class="qlist">'+(list||'<div class="empty">No sections yet — add one first</div>')+'</div></div></div>'
+    +'<div>'+(q?qEditor(q):'<div class="card"><div class="empty">Select a question to edit, or add a new one.</div></div>')+'</div></div>';
+}
+function qRow(q){
+  const v=validate().filter(x=>x.where===q.id&&x.sev==="err").length;
+  const t=TYPES[q.type];
+  return '<div class="qrow'+(S.selQ===q.id?' sel':'')+'" data-a="selQ" data-id="'+q.id+'">'
+    +'<span class="qmove"><button data-a="mvUp" data-id="'+q.id+'">▲</button><button data-a="mvDn" data-id="'+q.id+'">▼</button></span>'
+    +'<span class="qid">'+esc(q.id)+'</span><span class="qt">'+esc(q.text||"(no text)")+'</span>'
+    +(q.ext&&q.ext.critical?'<span class="qbadge crit">CRIT</span>':'')
+    +'<span class="qbadge">'+esc(t?t.label.split(" ")[0]:q.type)+'</span>'
+    +(!isWired(q)&&q.type!=="open_text"?'<span class="qbadge err">UNWIRED</span>':'')
+    +(v?'<span class="qbadge err">'+v+'</span>':'')+'</div>';
+}
+function qEditor(q){
+  const P=prof(),t=TYPES[q.type]||{},shape=t.opts;
+  const typeOpts=Object.keys(TYPES).map(k=>'<option value="'+k+'"'+(q.type===k?' selected':'')+'>'+TYPES[k].label+'</option>').join("");
+  const secOpts=S.bank.sections.map(s=>'<option value="'+s.id+'"'+(q.section===s.id?' selected':'')+'>'+esc(s.label)+'</option>').join("");
+
+  let body="";
+  if(shape==="scored"||shape==="cards"){
+    body='<div class="field"><label>Options'+(shape==="cards"?' (icon + label)':' (label + score 0–100)')+'</label>'
+      +(q.options||[]).map((o,i)=>'<div class="optrow">'
+        +'<input class="inp" value="'+esc(o.label||"")+'" data-qf="optLabel" data-i="'+i+'" placeholder="Option text"/>'
+        +'<input class="inp mono" type="number" min="0" max="100" value="'+(o.score!=null?o.score:"")+'" data-qf="optScore" data-i="'+i+'" placeholder="—"/>'
+        +'<button class="iconbtn" data-a="delOpt" data-i="'+i+'">✕</button></div>').join("")
+      +'<button class="btn ghost sm" data-a="addOpt">+ Add option</button>'
+      +(q.type==="multi_select"?'<label class="chk" style="margin-top:8px"><input type="checkbox" data-qf="hasExclusive" '+((q.options||[]).some(o=>o.exclusive)?"checked":"")+'/> Last option is exclusive (a "none of these" answer)</label>':'')
+      +'</div>';
+  } else if(shape==="labels"){
+    body='<div class="field"><label>Scale labels (1 → 5)</label>'
+      +(q.labels||["","","","",""]).map((l,i)=>'<div class="optrow nosc"><input class="inp" value="'+esc(l)+'" data-qf="label" data-i="'+i+'" placeholder="Point '+(i+1)+'"/><span class="pill">'+(i*25)+'</span></div>').join("")+'</div>';
+  } else if(shape==="slider"){
+    const sl=q.slider||{};
+    body='<div class="field"><label>Slider configuration</label><div class="row3">'
+      +'<input class="inp mono" type="number" value="'+(sl.min!=null?sl.min:0)+'" data-qf="slMin" placeholder="min"/>'
+      +'<input class="inp mono" type="number" value="'+(sl.max!=null?sl.max:100)+'" data-qf="slMax" placeholder="max"/>'
+      +'<input class="inp mono" type="number" value="'+(sl.step||1)+'" data-qf="slStep" placeholder="step"/></div>'
+      +'<div class="row2" style="margin-top:8px">'
+      +'<input class="inp" value="'+esc(sl.suffix||"")+'" data-qf="slSuffix" placeholder="suffix e.g. %"/>'
+      +'<input class="inp mono" type="number" value="'+(sl.default!=null?sl.default:"")+'" data-qf="slDefault" placeholder="default"/></div>'
+      +'<label class="chk"><input type="checkbox" data-qf="invert" '+(q.invert?"checked":"")+'/> Invert — lower values score better (e.g. waste %, variance)</label></div>';
+  } else if(shape==="buckets"){
+    body='<div class="field"><label>Allocation buckets</label>'
+      +(q.buckets||[]).map((b,i)=>'<div class="optrow nosc"><input class="inp" value="'+esc(b.label||"")+'" data-qf="bucketLabel" data-i="'+i+'" placeholder="Bucket name"/>'
+        +'<button class="iconbtn" data-a="delBucket" data-i="'+i+'">✕</button></div>').join("")
+      +'<button class="btn ghost sm" data-a="addBucket">+ Add bucket</button></div>';
+  } else if(shape==="plain"){
+    body='<div class="field"><label>Items to rank</label>'
+      +(q.options||[]).map((o,i)=>'<div class="optrow nosc"><input class="inp" value="'+esc(typeof o==="string"?o:o.label)+'" data-qf="plainItem" data-i="'+i+'"/>'
+        +'<button class="iconbtn" data-a="delOpt" data-i="'+i+'">✕</button></div>').join("")
+      +'<button class="btn ghost sm" data-a="addOpt">+ Add item</button>'
+      +'<label class="chk" style="margin-top:8px"><input type="checkbox" data-qf="scoreOrder" '+(q.ideal?"checked":"")+'/> Score against the order shown above as ideal</label></div>';
+  }
+
+  // profile extensions
+  let extHtml="";
+  P.ext.forEach(f=>{
+    const val=(q.ext||{})[f.key];
+    if(f.kind==="bool")
+      extHtml+='<label class="chk"><input type="checkbox" data-ext="'+f.key+'" '+(val?"checked":"")+'/> '+esc(f.label)+'</label><p class="hint" style="margin:0 0 10px 24px;font-size:11.5px">'+esc(f.help)+'</p>';
+    else if(f.kind==="number")
+      extHtml+='<div class="field"><label>'+esc(f.label)+'</label><input class="inp mono" type="number" step="0.5" value="'+(val!=null?val:1)+'" data-ext="'+f.key+'"/><p class="hint" style="margin-top:4px;font-size:11.5px">'+esc(f.help)+'</p></div>';
+    else if(f.kind==="stageRef"){
+      const so=(S.bank.scoring.stages||[]).map(s=>'<option value="'+s.id+'"'+(val===s.id?' selected':'')+'>'+esc(s.name||s.id)+'</option>').join("");
+      extHtml+='<div class="field"><label>'+esc(f.label)+'</label><select data-ext="'+f.key+'"><option value="">— none —</option>'+so+'</select></div>';
+    } else if(f.kind==="signalList"){
+      const sigs=S.bank.scoring.signals||[];
+      extHtml+='<div class="field"><label>'+esc(f.label)+'</label>'
+        +(sigs.length?sigs.map(sg=>{
+          const found=(val||[]).find(x=>x.id===sg.id);
+          return '<div class="optrow"><label class="chk" style="padding:0"><input type="checkbox" data-sig="'+sg.id+'" '+(found?"checked":"")+'/> '+esc(sg.label||sg.id)+'</label>'
+            +'<input class="inp mono" type="number" step="0.5" min="0" value="'+(found?found.w:1)+'" data-sigw="'+sg.id+'" '+(found?"":"disabled")+'/><span></span></div>';
+        }).join(""):'<p class="hint">Define signals in the Scoring tab first.</p>')
+        +'<p class="hint" style="margin-top:4px;font-size:11.5px">'+esc(f.help)+'</p></div>';
+    } else if(f.kind==="list")
+      extHtml+='<div class="field"><label>'+esc(f.label)+'</label><input class="inp mono" value="'+esc((val||[]).join(", "))+'" data-ext="'+f.key+'" data-list="1" placeholder="comma separated"/><p class="hint" style="margin-top:4px;font-size:11.5px">'+esc(f.help)+'</p></div>';
+    else if(f.kind==="readinessList")
+      extHtml+='<div class="field"><label>'+esc(f.label)+'</label><input class="inp mono" value="'+esc((val||[]).map(r=>r.regime+"."+r.dimension).join(", "))+'" data-ext="'+f.key+'" data-readiness="1" placeholder="regime.dimension, regime.dimension"/><p class="hint" style="margin-top:4px;font-size:11.5px">'+esc(f.help)+'</p></div>';
+    else
+      extHtml+='<div class="field"><label>'+esc(f.label)+'</label><input class="inp" value="'+esc(val||"")+'" data-ext="'+f.key+'"/><p class="hint" style="margin-top:4px;font-size:11.5px">'+esc(f.help)+'</p></div>';
+  });
+
+  const cond=q.shownIf||{};
+  return '<div class="card"><div style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:12px">'
+    +'<h3 style="margin:0">Edit <span class="mono" style="color:var(--steel)">'+esc(q.id)+'</span></h3>'
+    +'<div style="display:flex;gap:7px"><button class="btn ghost sm" data-a="dupQ">Duplicate</button><button class="btn danger sm" data-a="delQ">Delete</button></div></div>'
+    +'<div class="row2"><div class="field"><label>Question id</label><input class="inp mono" value="'+esc(q.id)+'" data-qf="id"/></div>'
+    +'<div class="field"><label>Section</label><select data-qf="section">'+secOpts+'</select></div></div>'
+    +'<div class="field"><label>Question text</label><textarea data-qf="text">'+esc(q.text||"")+'</textarea></div>'
+    +'<div class="field"><label>Hint (optional)</label><input class="inp" value="'+esc(q.hint||"")+'" data-qf="hint" placeholder="Shown under the question"/></div>'
+    +'<div class="row2"><div class="field"><label>Answer type</label><select data-qf="type">'+typeOpts+'</select>'
+    +'<p class="hint" style="margin-top:5px;font-size:11.5px">'+esc(t.desc||"")+'</p></div>'
+    +'<div class="field"><label>Tier</label><select data-qf="tier"><option value="1"'+(q.tier!==2?' selected':'')+'>1 — self-serve</option><option value="2"'+(q.tier===2?' selected':'')+'>2 — facilitated</option></select></div></div>'
+    +body
+    +'<div style="display:flex;gap:18px;flex-wrap:wrap;margin:4px 0 10px">'
+    +'<label class="chk"><input type="checkbox" data-qf="allowNA" '+(q.allowNA?"checked":"")+'/> Allow "not applicable"</label>'
+    +'<label class="chk"><input type="checkbox" data-qf="allowDK" '+(q.allowDK?"checked":"")+'/> Allow "don\'t know"</label>'
+    +'<label class="chk"><input type="checkbox" data-qf="unscored" '+(q.unscored?"checked":"")+'/> Intentionally unscored</label></div>'
+    +impactPanel(q)
+    +'<div class="field"><label>Show only if (optional)</label><div class="row3">'
+    +'<input class="inp mono" value="'+esc(cond.fact||"")+'" data-qf="condFact" placeholder="fact key"/>'
+    +'<select data-qf="condOp"><option value="">op</option>'
+    +["is_true","is_false","eq","neq","in","includes_any","gte","lte"].map(o=>'<option value="'+o+'"'+(cond.op===o?' selected':'')+'>'+o+'</option>').join("")+'</select>'
+    +'<input class="inp mono" value="'+esc(cond.value!=null?(Array.isArray(cond.value)?cond.value.join(","):cond.value):"")+'" data-qf="condValue" placeholder="value"/></div></div>'
+    +(extHtml?'<div style="border-top:1px solid var(--line);margin-top:14px;padding-top:14px"><div class="eyebrow" style="margin-bottom:10px">'+esc(P.name)+' fields</div>'+extHtml+'</div>':'')
+    +'</div>';
+}
+
+function impactPanel(q){
+  const rows=impact(q);
+  const worst=rows.some(r=>r.k==="err")?"err":rows.some(r=>r.k==="warn")?"warn":"ok";
+  const head={ok:"This question counts",warn:"Counts, with a caveat",err:"This question will not count"}[worst];
+  const col={ok:"var(--green)",warn:"var(--amber)",err:"var(--red)"}[worst];
+  return '<div class="impact"><div class="impacthead" style="color:'+col+'">'
+    +'<span class="idot" style="background:'+col+'"></span>'+head+'</div>'
+    +rows.map(r=>'<div class="irow"><span class="ik '+r.k+'"></span><span>'+r.t+'</span></div>').join("")
+    +'</div>';
+}
+
+function vFacts(){
+  const B=S.bank;
+  const read=factsRead(B),written=factsWritten(B);
+  const declared=(B.scoring.facts||[]).map(f=>typeof f==="string"?f:f.key);
+  const all=[...new Set([...Object.keys(read),...Object.keys(written),...declared])].sort();
+  if(!all.length)return '<div class="card"><h3>Fact map</h3><div class="empty">No facts in this bank. The rules engine profile expects questions to write facts that regime rules read.</div></div>';
+  const rows=all.map(f=>{
+    const w=written[f]||[],r=read[f]||[];
+    let st,cls;
+    if(w.length&&r.length){st="Wired";cls="ok";}
+    else if(w.length&&!r.length){st="Written, never read";cls="warn";}
+    else if(!w.length&&r.length){st="Read, never written";cls="err";}
+    else{st="Declared, unused";cls="warn";}
+    const regimes=[...new Set(r.map(x=>x.regime))];
+    return '<tr><td class="mono">'+esc(f)+'</td>'
+      +'<td class="mono" style="font-size:11px">'+(w.length?esc(w.join(", ")):'<span style="color:var(--red)">none</span>')+'</td>'
+      +'<td style="font-size:11.5px">'+(r.length?r.length+' rule'+(r.length>1?'s':'')+'<div class="vwhere">'+esc(regimes.slice(0,2).join(", "))+(regimes.length>2?" +"+(regimes.length-2):"")+'</div>':'<span style="color:var(--amber)">no rule</span>')+'</td>'
+      +'<td><span class="pill '+cls+'">'+st+'</span></td></tr>';
+  }).join("");
+  const bad=all.filter(f=>!(written[f]||[]).length&&(read[f]||[]).length).length;
+  const orphan=all.filter(f=>(written[f]||[]).length&&!(read[f]||[]).length).length;
+  return '<div class="card"><h3>Fact map</h3>'
+    +'<p class="hint">Every fact in the bank, which questions write it, and which rules read it. In a rules engine a question only matters if the fact it writes reaches a rule.</p>'
+    +'<div class="stat" style="margin-bottom:14px"><span><b>'+all.length+'</b>facts</span>'
+    +'<span><b style="color:'+(bad?"var(--red)":"var(--green)")+'">'+bad+'</b>read but never written</span>'
+    +'<span><b style="color:'+(orphan?"var(--amber)":"var(--mut)")+'">'+orphan+'</b>written but never read</span></div>'
+    +(bad?'<div class="vitem"><span class="vsev err">ERR</span><span class="vmsg">Rules depend on facts that nothing sets. Those rules can never fire, so the findings they produce are unreachable.</span></div>':'')
+    +'<table class="tbl"><thead><tr><th>Fact</th><th>Written by</th><th>Read by</th><th>Status</th></tr></thead><tbody>'+rows+'</tbody></table></div>';
+}
+
+function vSections(){
+  const B=S.bank;
+  return '<div class="split"><div class="card"><h3>Bank details</h3>'
+    +'<div class="field"><label>Accelerator name</label><input class="inp" value="'+esc(B.meta.name)+'" data-mf="name"/></div>'
+    +'<div class="field"><label>Bank id</label><input class="inp mono" value="'+esc(B.meta.id)+'" data-mf="id"/></div>'
+    +'<div class="field"><label>Version</label><input class="inp mono" value="'+esc(B.meta.version)+'" data-mf="version"/></div>'
+    +'<div class="field"><label>Last reviewed</label><input class="inp mono" type="date" value="'+esc(B.meta.lastReviewed)+'" data-mf="lastReviewed"/></div>'
+    +'<div class="field"><label>Disclaimer</label><textarea data-mf="disclaimer">'+esc(B.meta.disclaimer||"")+'</textarea></div>'
+    +'<div class="btnrow"><button class="btn ghost sm" data-a="setLogo">Set LTM logo</button></div></div>'
+    +'<div><div class="card"><h3>Profile</h3><p class="hint">The profile decides which scoring fields each question carries. Changing it preserves questions but clears profile-specific fields.</p>'
+    +Object.keys(PROFILES).map(k=>{const p=PROFILES[k];
+      return '<div class="prof'+(B.meta.profile===k?' sel':'')+'" data-a="setProfile" data-p="'+k+'">'
+        +'<div class="profname">'+esc(p.name)+'</div><div class="profdesc">'+esc(p.desc)+'</div>'
+        +'<div class="proftools">USED BY: '+esc(p.tools.join(", "))+'</div></div>';}).join("")
+    +'</div>'
+    +'<div class="card" style="margin-top:16px"><h3>Sections</h3><p class="hint">Questions group under sections. Order here is the order respondents see.</p>'
+    +B.sections.map((s,i)=>'<div class="optrow" style="grid-template-columns:60px 1fr 1fr auto">'
+      +'<input class="inp mono" value="'+esc(s.n||"")+'" data-sf="n" data-i="'+i+'" placeholder="01"/>'
+      +'<input class="inp" value="'+esc(s.label)+'" data-sf="label" data-i="'+i+'" placeholder="Label"/>'
+      +'<input class="inp" value="'+esc(s.blurb||"")+'" data-sf="blurb" data-i="'+i+'" placeholder="Blurb"/>'
+      +'<button class="iconbtn" data-a="delSec" data-i="'+i+'">✕</button></div>').join("")
+    +'<button class="btn ghost sm" data-a="addSec">+ Add section</button></div></div></div>';
+}
+
+function vScoring(){
+  const B=S.bank,P=prof();
+  if(!P.scoringBlocks.length)
+    return '<div class="card"><h3>Scoring</h3><p class="hint">The <b>'+esc(P.name)+'</b> profile scores on question weights alone — there is nothing further to configure here. Set each question\'s weight in the Questions tab.</p></div>';
+  let h="";
+  if(P.scoringBlocks.includes("signals")){
+    const sigs=B.scoring.signals||[];
+    h+='<div class="card"><h3>Signals</h3><p class="hint">Questions feed these. Weights should sum to 1.0 — currently <b>'+sigs.reduce((a,s)=>a+(Number(s.weight)||0),0).toFixed(2)+'</b>.</p>'
+      +sigs.map((s,i)=>'<div class="optrow" style="grid-template-columns:110px 1fr 80px auto">'
+        +'<input class="inp mono" value="'+esc(s.id)+'" data-scf="signals.id" data-i="'+i+'" placeholder="id"/>'
+        +'<input class="inp" value="'+esc(s.label||"")+'" data-scf="signals.label" data-i="'+i+'" placeholder="Label"/>'
+        +'<input class="inp mono" type="number" step="0.01" value="'+(s.weight!=null?s.weight:0)+'" data-scf="signals.weight" data-i="'+i+'"/>'
+        +'<button class="iconbtn" data-a="delSig" data-i="'+i+'">✕</button></div>').join("")
+      +'<button class="btn ghost sm" data-a="addSig">+ Add signal</button></div>';
+  }
+  if(P.scoringBlocks.includes("stages")){
+    const st=B.scoring.stages||[];
+    h+='<div class="card" style="margin-top:16px"><h3>Stages</h3><p class="hint">Sequential gates. A stage passes when its weighted score meets the threshold <b>and</b> every critical question meets the critical minimum.</p>'
+      +'<div class="optrow" style="grid-template-columns:1fr 90px 90px auto;padding-bottom:5px;border-bottom:1px solid var(--line);margin-bottom:8px">'
+      +'<span class="eyebrow">Stage</span><span class="eyebrow">Threshold</span><span class="eyebrow">Crit min</span><span></span></div>'
+      +st.map((s,i)=>'<div class="optrow" style="grid-template-columns:1fr 90px 90px auto">'
+        +'<input class="inp" value="'+esc(s.name||s.id)+'" data-scf="stages.name" data-i="'+i+'"/>'
+        +'<input class="inp mono" type="number" value="'+(s.threshold!=null?s.threshold:70)+'" data-scf="stages.threshold" data-i="'+i+'"/>'
+        +'<input class="inp mono" type="number" value="'+(s.critMin!=null?s.critMin:80)+'" data-scf="stages.critMin" data-i="'+i+'"/>'
+        +'<button class="iconbtn" data-a="delStage" data-i="'+i+'">✕</button></div>').join("")
+      +'<button class="btn ghost sm" data-a="addStage">+ Add stage</button></div>';
+  }
+  if(P.scoringBlocks.includes("regimes")||P.scoringBlocks.includes("serviceAreas")||P.scoringBlocks.includes("domains")){
+    const key=P.scoringBlocks.includes("regimes")?"regimes":P.scoringBlocks.includes("serviceAreas")?"serviceAreas":"domains";
+    const arr=B.scoring[key]||[];
+    h+='<div class="card" style="margin-top:16px"><h3>'+key.replace(/([A-Z])/g," $1").replace(/^./,c=>c.toUpperCase())+'</h3>'
+      +'<p class="hint">This block is large and structured. Edit it as JSON — the Studio validates references against it.</p>'
+      +'<textarea class="mono" style="min-height:220px" data-scjson="'+key+'">'+esc(JSON.stringify(arr,null,2))+'</textarea>'
+      +'<button class="btn ghost sm" style="margin-top:8px" data-a="applyScJson" data-k="'+key+'">Apply</button></div>';
+  }
+  return h;
+}
+
+function vValidate(){
+  const v=validate();
+  const c={err:v.filter(x=>x.sev==="err").length,warn:v.filter(x=>x.sev==="warn").length,info:v.filter(x=>x.sev==="info").length};
+  return '<div class="card"><h3>Validation</h3>'
+    +'<div class="stat" style="margin:12px 0 16px"><span><b style="color:'+(c.err?"var(--red)":"var(--green)")+'">'+c.err+'</b>errors</span>'
+    +'<span><b style="color:'+(c.warn?"var(--amber)":"var(--mut)")+'">'+c.warn+'</b>warnings</span>'
+    +'<span><b>'+c.info+'</b>notes</span>'
+    +'<span><b>'+S.bank.questions.length+'</b>questions</span></div>'
+    +'<p class="hint">Errors will break the accelerator. Warnings mean a question or signal exists but can never affect a result — usually a wiring mistake, occasionally deliberate.</p>'
+    +(v.length?v.map(x=>'<div class="vitem"><span class="vsev '+x.sev+'">'+x.sev.toUpperCase()+'</span>'
+      +'<span class="vmsg">'+esc(x.msg)+'<div class="vwhere">'+esc(x.where)+'</div></span></div>').join("")
+      :'<div class="empty">Nothing to report — the bank is clean.</div>')+'</div>';
+}
+
+function vIO(){
+  return '<div class="split"><div>'
+    +'<div class="card"><h3>Import</h3><p class="hint">Drop in a bank exported from any LTM accelerator. The Studio detects the format and converts it to the common schema.</p>'
+    +'<div class="dropzone" id="drop">Drop a JSON file here, or <button class="btn ghost sm" data-a="pickImport">choose a file</button></div>'
+    +'<div class="field" style="margin-top:14px"><label>Or paste JSON</label><textarea class="mono" id="pasteJson" style="min-height:130px" placeholder="Paste an exported bank"></textarea></div>'
+    +'<button class="btn primary sm" data-a="importPaste">Import pasted JSON</button></div>'
+    +'<div class="card" style="margin-top:16px"><h3>Recognised formats</h3>'
+    +'<table class="tbl"><tbody>'
+    +'<tr><td>Common schema</td><td><code>ltm-qbank/1.0</code></td></tr>'
+    +'<tr><td>Sovereign Screen</td><td>detected by <code>regimes[]</code></td></tr>'
+    +'<tr><td>FinOps Maturity</td><td>detected by <code>meta.stages[]</code></td></tr>'
+    +'<tr><td>FinOps Value Case</td><td>detected by <code>meta.signals[]</code></td></tr>'
+    +'<tr><td>Legacy FinOps v3</td><td>detected by top-level <code>stages[]</code></td></tr>'
+    +'</tbody></table></div></div>'
+    +'<div><div class="card"><h3>Export</h3><p class="hint">Common schema is the portable master. Native export writes the exact shape a given accelerator already imports — so existing tools need no changes.</p>'
+    +'<div class="btnrow"><button class="btn primary sm" data-a="exCommon">Common schema ↓</button>'
+    +'<button class="btn ghost sm" data-a="exNative">Native for this profile ↓</button>'
+    +'<button class="btn ghost sm" data-a="exCsv">CSV (Excel) ↓</button></div>'
+    +'<p class="hint" style="margin-top:14px">Native target: <b>'+esc(prof().tools.join(", "))+'</b></p></div>'
+    +'<div class="card" style="margin-top:16px"><h3>Start fresh</h3><p class="hint">Create an empty bank on a chosen profile.</p>'
+    +'<div class="btnrow">'+Object.keys(PROFILES).map(k=>'<button class="btn ghost sm" data-a="newBank" data-p="'+k+'">'+esc(PROFILES[k].name)+'</button>').join("")+'</div></div></div></div>';
+}
+
+
+function vBake(){
+  const B = S.bank;
+  return '<div class="split">'
+    +'<div class="card" style="border:1.5px solid var(--steel)">'
+    +'<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">'
+      +'<h3 style="margin:0;font-size:16px;color:var(--ink)">🚀 Publish Live to AWS Cloud Engine</h3>'
+      +'<span class="pill ok" style="background:rgba(60,130,155,0.12);color:var(--steel);font-weight:700">Region: ap-south-1</span>'
+    +'</div>'
+    +'<p class="hint">Publish changes to question wording, options, weights, and scoring rules directly to AWS Lambda in ap-south-1. New client assessments will immediately use this updated version.</p>'
+    +'<div style="background:var(--ground);padding:14px;border-radius:10px;border:1px solid var(--line);margin:14px 0;font-size:13px;line-height:1.6">'
+      +'<div><b>Target:</b> <span style="color:var(--steel);font-weight:700">'+esc(B.meta.name)+'</span> ('+esc(B.meta.id)+')</div>'
+      +'<div><b>Active Questions:</b> '+B.questions.length+' | <b>Sections:</b> '+B.sections.length+'</div>'
+      +'<div><b>Scoring Engine:</b> '+esc(B.meta.profile)+'</div>'
+    +'</div>'
+    +'<button class="btn primary sm" data-a="publishCloud" style="background:var(--steel);border-color:var(--steel);padding:10px 22px;font-size:13px;font-weight:700">⚡ Publish to Cloud Engine</button>'
+    +'</div>'
+    +'<div class="card"><h3>Publish into an Offline Tool</h3>'
+    +'<p class="hint">Load an accelerator HTML file to bake this bank into a self-contained offline file you can send to a client.</p>'
+    +'<div class="dropzone" id="dropHtml">Drop an accelerator <code>.html</code> here, or <button class="btn ghost sm" data-a="pickHtml">choose a file</button></div>'
+    +(S.bakeHtml?'<div style="margin-top:14px"><span class="pill ok">Loaded: '+esc(S.bakeName)+' · '+Math.round(S.bakeHtml.length/1024)+'kb</span>'
+      +'<div class="btnrow"><button class="btn primary sm" data-a="doBake">Publish with this bank ↓</button>'
+      +'<button class="btn ghost sm" data-a="clearBake">Clear</button></div></div>':"")
+    +'</div></div>';
+}
+
+/* ---------- converters ---------- */
+function detectFormat(o){
+  if(o&&o.$schema===SCHEMA)return "common";
+  if(o&&Array.isArray(o.regimes))return "sovereign";
+  if(o&&o.meta&&Array.isArray(o.meta.stages)&&Array.isArray(o.questions))return "finops_maturity";
+  if(o&&o.meta&&Array.isArray(o.meta.signals))return "value_case";
+  if(o&&Array.isArray(o.stages)&&!o.questions)return "legacy_v3";
+  return null;
+}
+function toCommon(o,fmt){
+  if(fmt==="common")return o;
+  const B=newBank("simple_survey");
+  const mapType=t=>({single_select:"single_select",multi_select:"multi_select",multi_select_logo:"multi_select",
+    boolean:"boolean",boolean_dk:"boolean_dk",rating_1_5:"rating_1_5",range:"range",
+    slider_percent:"slider_percent",slider_signed:"slider_signed",slider_currency:"slider_currency",
+    card_select:"card_select",allocation_100:"allocation_100",drag_order:"drag_order",open_text:"open_text"}[t]||t);
+
+  if(fmt==="sovereign"){
+    B.meta={...B.meta,id:"sovereign-screen",name:"Sovereign Screen",profile:"rules_engine",
+      version:o.meta.schema_version||"1.0.0",lastReviewed:o.meta.last_reviewed||today(),disclaimer:o.meta.disclaimer||""};
+    B.sections=(o.sections||[]).map(s=>({id:s.cat,n:s.n,label:s.label,blurb:s.blurb}));
+    B.questions=(o.questions||[]).map(q=>({
+      id:q.id,section:q.category,text:q.text,hint:q.hint||"",type:mapType(q.answer_type),
+      tier:q.tier||1,allowNA:!!q.allow_not_applicable,
+      options:(q.options||[]).map(op=>typeof op==="string"?{label:op}:{label:op.label,score:op.score,factValue:op.fact_value}),
+      slider:q.range?{min:q.range.min,max:q.range.max,step:q.range.step,suffix:q.range.suffix}:undefined,
+      shownIf:q.shown_if,
+      ext:{sector:q.sector||"common",writes:q.writes||[],
+        readiness:q.readiness?(Array.isArray(q.readiness)?q.readiness:[q.readiness]).map(r=>({regime:r.regime,dimension:r.dimension})):[]}
+    }));
+    B.scoring={regimes:o.regimes||[],facts:o.facts||[]};
+  } else if(fmt==="finops_maturity"){
+    B.meta={...B.meta,id:"finops-maturity",name:"FinOps Maturity Screen",profile:"staged_gating",
+      version:o.meta.schema_version||"1.0.0",lastReviewed:o.meta.last_reviewed||today(),disclaimer:o.meta.disclaimer||""};
+    B.sections=(o.meta.stages||[]).map(s=>({id:s.id,n:"0"+s.n,label:s.name,blurb:s.desc||""}));
+    B.questions=(o.questions||[]).map(q=>({
+      id:q.id,section:q.stage,text:q.text,hint:q.hint||"",type:mapType(q.answer_type),tier:1,
+      options:(q.options||[]).map(op=>typeof op==="string"?{label:op}:{label:op.label,score:op.score}),
+      labels:q.labels,slider:q.range,invert:!!q.invert,allowNA:!!q.allow_not_applicable,
+      ext:{stage:q.stage,critical:!!q.critical,weight:q.weight||1,domain:q.domain||""}
+    }));
+    B.scoring={stages:(o.meta.stages||[]).map(s=>({id:s.id,name:s.name,threshold:s.threshold,critMin:s.crit_min,color:s.color})),
+      domains:o.meta.domains||[]};
+  } else if(fmt==="value_case"){
+    B.meta={...B.meta,id:"finops-value-case",name:"FinOps Value Case",profile:"signal_scoring",
+      version:o.meta.schema_version||"1.0.0",lastReviewed:o.meta.last_reviewed||today(),disclaimer:o.meta.disclaimer||""};
+    B.sections=(o.sections||[]).map(s=>({id:s.id,n:s.n,label:s.label,blurb:s.blurb}));
+    B.questions=(o.questions||[]).map(q=>({
+      id:q.id,section:q.section,text:q.text,hint:q.hint||"",type:mapType(q.answer_type),tier:1,
+      options:(q.options||[]).map(op=>typeof op==="string"?{label:op}:Object.assign({},op)),
+      labels:q.labels,slider:q.slider,buckets:q.buckets,invert:!!q.invert,
+      nativeType:(q.answer_type!==mapType(q.answer_type))?q.answer_type:undefined,
+      allowDK:!!q.allow_dk,
+      ext:{signals:(q.signals||[]).map(s=>({id:s.id,w:(s.w!=null?s.w:s.weight)})),dkBlind:q.dk_blind||""}
+    }));
+    B.scoring={signals:(o.meta.signals||[]).map(s=>({id:s.id,label:s.label,weight:s.weight,color:s.color})),
+      verdictBands:o.meta.verdict_bands||[],serviceAreas:o.meta.service_areas||[]};
+    B.assets={caseStudies:o.meta.case_studies||[],brochure:o.meta.brochure||{},
+      benchmarks:o.meta.benchmarks,wasteModel:o.meta.waste_model};
+  } else if(fmt==="legacy_v3"){
+    B.meta={...B.meta,id:"finops-legacy",name:"FinOps Maturity (imported v3)",profile:"staged_gating"};
+    B.sections=(o.stages||[]).map((s,i)=>({id:"st"+i,n:"0"+(i+1),label:s.name||("Stage "+(i+1)),blurb:s.desc||""}));
+    B.questions=[];
+    (o.stages||[]).forEach((s,i)=>(s.questions||[]).forEach((q,j)=>{
+      B.questions.push({id:q.id||("Q"+i+j),section:"st"+i,text:q.text||"",type:"rating_1_5",tier:1,
+        labels:["Not at all","Rarely","Partially","Largely","Fully"],
+        ext:{stage:"st"+i,critical:!!q.critical,weight:1,domain:q.type||""}});
+    }));
+    B.scoring={stages:(o.stages||[]).map((s,i)=>({id:"st"+i,name:s.name||("Stage "+(i+1)),
+      threshold:Math.round(((s.threshold||3.5)/5)*100),critMin:Math.round(((s.critMinRating||4)/5)*100)})),domains:[]};
+  }
+  // Imported banks are assumed deliberate: anything already unwired is recorded as
+  // context rather than flagged as an authoring error. Newly added questions default
+  // to "scored" and must be wired.
+  const W=WIRING[(PROFILES[B.meta.profile]||PROFILES.simple_survey).nativeId]||WIRING.common;
+  B.questions.forEach(q=>{ if(!q.role) q.role=(q.type==="open_text"||W.isWired(q,B))?"scored":"context"; });
+  return B;
+}
+function toNative(B){
+  const P=PROFILES[B.meta.profile]||PROFILES.simple_survey;
+  const id=P.nativeId;
+  if(id==="value_case"){
+    return {meta:{schema_version:B.meta.version,instrument:B.meta.name,last_reviewed:B.meta.lastReviewed,
+        disclaimer:B.meta.disclaimer,
+        currencies:[{id:"gbp",symbol:"£"},{id:"usd",symbol:"$"},{id:"eur",symbol:"€"},{id:"inr",symbol:"₹"}],
+        signals:(B.scoring.signals||[]).map(s=>({id:s.id,label:s.label,weight:s.weight,color:s.color||"#226882"})),
+        benchmarks:(B.assets&&B.assets.benchmarks)||{},waste_model:(B.assets&&B.assets.wasteModel)||{},
+        verdict_bands:B.scoring.verdictBands||[],service_areas:B.scoring.serviceAreas||[],
+        case_studies:(B.assets&&B.assets.caseStudies)||[],brochure:(B.assets&&B.assets.brochure)||{}},
+      sections:B.sections.map(s=>({id:s.id,n:s.n,label:s.label,blurb:s.blurb})),
+      questions:B.questions.map(q=>{const o={id:q.id,section:q.section,answer_type:q.nativeType||q.type,
+        signals:((q.ext&&q.ext.signals)||[]).map(s=>({id:s.id,w:s.w})),text:q.text};
+        if(q.hint)o.hint=q.hint;
+        if(q.options&&q.options.length){
+          o.options=(q.type==="drag_order")
+            ? q.options.map(op=>typeof op==="string"?op:op.label)
+            : q.options.map(op=>{const r=Object.assign({},op);
+                if(r.score===undefined)delete r.score; if(!r.exclusive)delete r.exclusive; return r;});
+        }
+        if(q.labels)o.labels=q.labels; if(q.slider)o.slider=q.slider; if(q.buckets)o.buckets=q.buckets;
+        if(q.invert)o.invert=true; if(q.allowDK&&q.type!=="boolean_dk")o.allow_dk=true;
+        if(q.ext&&q.ext.dkBlind)o.dk_blind=q.ext.dkBlind;
+        if(q.shownIf)o.shown_if=q.shownIf;
+        return o;})};
+  }
+  if(id==="finops_maturity"){
+    return {meta:{schema_version:B.meta.version,framework:B.meta.name,last_reviewed:B.meta.lastReviewed,
+        disclaimer:B.meta.disclaimer,scale:"0-100 normalised",
+        domains:B.scoring.domains||[],
+        stages:(B.scoring.stages||[]).map((s,i)=>({id:s.id,n:i+1,name:s.name,color:s.color||"#226882",
+          threshold:s.threshold,crit_min:s.critMin,require_all_crits:true,desc:s.desc||"",aim:s.aim||""}))},
+      questions:B.questions.map(q=>{const o={id:q.id,stage:(q.ext&&q.ext.stage)||q.section,
+        domain:(q.ext&&q.ext.domain)||"",critical:!!(q.ext&&q.ext.critical),weight:(q.ext&&q.ext.weight)||1,
+        answer_type:q.type,text:q.text};
+        if(q.options&&q.options.length)o.options=(q.type==="drag_order")
+          ? q.options.map(op=>typeof op==="string"?op:op.label)
+          : q.options.map(op=>{const r={label:op.label};if(op.score!=null)r.score=op.score;return r;});
+        if(q.labels)o.labels=q.labels; if(q.slider)o.range=q.slider; if(q.invert)o.invert=true;
+        if(q.allowNA)o.allow_not_applicable=true; if(q.shownIf)o.shown_if=q.shownIf;
+        o.remediation=q.remediation||""; return o;})};
+  }
+  if(id==="sovereign"){
+    return {meta:{schema_version:B.meta.version,last_reviewed:B.meta.lastReviewed,disclaimer:B.meta.disclaimer},
+      facts:B.scoring.facts||[],regimes:B.scoring.regimes||[],
+      sections:B.sections.map(s=>({cat:s.id,n:s.n,label:s.label,blurb:s.blurb})),
+      questions:B.questions.map(q=>{const o={id:q.id,sector:(q.ext&&q.ext.sector)||"common",
+        category:q.section,tier:q.tier||1,answer_type:q.type,text:q.text};
+        if(q.hint)o.hint=q.hint;
+        if(q.ext&&q.ext.writes&&q.ext.writes.length)o.writes=q.ext.writes;
+        if(q.allowNA)o.allow_not_applicable=true;
+        if(q.options&&q.options.length)o.options=(q.type==="drag_order")
+          ? q.options.map(op=>typeof op==="string"?op:op.label)
+          : q.options.map(op=>{const r={label:op.label};
+              if(op.factValue)r.fact_value=op.factValue;if(op.score!=null)r.score=op.score;return r;});
+        if(q.slider)o.range=q.slider;
+        if(q.ext&&q.ext.readiness&&q.ext.readiness.length)
+          o.readiness=q.ext.readiness.length===1?q.ext.readiness[0]:q.ext.readiness;
+        if(q.shownIf)o.shown_if=q.shownIf;
+        return o;})};
+  }
+  return B;
+}
+function toCsv(){
+  const q2=v=>{const s=String(v==null?"":v);return /[",\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s;};
+  const rows=[["id","section","type","tier","text","hint","options","ext"].join(",")];
+  S.bank.questions.forEach(q=>{
+    let opts="";
+    if(q.options&&q.options.length)opts=q.options.map(o=>o.label+(o.score!=null?"::"+o.score:"")).join(" | ");
+    else if(q.buckets)opts=q.buckets.map(b=>b.label).join(" | ");
+    else if(q.labels)opts=q.labels.join(" | ");
+    else if(q.slider)opts="min="+q.slider.min+"; max="+q.slider.max;
+    rows.push([q.id,q.section,q.type,q.tier||1,q.text,q.hint||"",opts,JSON.stringify(q.ext||{})].map(q2).join(","));
+  });
+  return rows.join("\n");
+}
+
+/* ---------- bake ---------- */
+function bake(){
+  const html=S.bakeHtml;
+  const native=JSON.stringify(toNative(S.bank),null,2);
+  const marked=/\/\*\s*QBANK:START\s*\*\/[\s\S]*?\/\*\s*QBANK:END\s*\*\//;
+  if(marked.test(html))
+    return html.replace(marked,"/* QBANK:START */\nconst DEFAULT_KB = "+native+";\n/* QBANK:END */");
+  // fallback: brace-match from the declaration
+  const start=html.indexOf("const DEFAULT_KB");
+  if(start<0)return null;
+  const open=html.indexOf("{",start);
+  if(open<0)return null;
+  let d=0,end=-1,inStr=false,strCh="",prev="";
+  for(let i=open;i<html.length;i++){
+    const c=html[i];
+    if(inStr){ if(c===strCh&&prev!=="\\")inStr=false; }
+    else if(c==='"'||c==="'"){inStr=true;strCh=c;}
+    else if(c==="{")d++;
+    else if(c==="}"){d--;if(d===0){end=i;break;}}
+    prev=c;
+  }
+  if(end<0)return null;
+  return html.slice(0,start)+"/* QBANK:START */\nconst DEFAULT_KB = "+native+";\n/* QBANK:END */"+html.slice(end+1).replace(/^\s*;/,"");
+}
+
+/* ---------- events ---------- */
+document.addEventListener("click",e=>{
+  const el=e.target.closest("[data-a],[data-t]");if(!el)return;
+  if(el.dataset.t){S.tab=el.dataset.t;render();return;}
+  const a=el.dataset.a,B=S.bank,i=Number(el.dataset.i);
+  const q=B.questions.find(x=>x.id===S.selQ);
+  if(a==="selQ"){S.selQ=el.dataset.id;render();}
+  else if(a==="addQ"){const nq={id:uid("Q"),section:el.dataset.sec,text:"",type:"single_select",tier:1,role:"scored",
+      options:[{label:"",score:100},{label:"",score:50},{label:"",score:0}],ext:{}};
+    if(prof().nativeId==="finops_maturity")nq.ext={stage:el.dataset.sec,critical:false,weight:1,domain:""};
+    B.questions.push(nq);S.selQ=nq.id;render();}
+  else if(a==="dupQ"&&q){const c=JSON.parse(JSON.stringify(q));c.id=uid("Q");
+    B.questions.splice(B.questions.indexOf(q)+1,0,c);S.selQ=c.id;render();toast("Duplicated as "+c.id);}
+  else if(a==="delQ"&&q){B.questions.splice(B.questions.indexOf(q),1);S.selQ=null;render();}
+  else if(a==="mvUp"||a==="mvDn"){const id=el.dataset.id;const idx=B.questions.findIndex(x=>x.id===id);
+    const sec=B.questions[idx].section;
+    const sibs=B.questions.map((x,n)=>({x,n})).filter(o=>o.x.section===sec);
+    const p=sibs.findIndex(o=>o.x.id===id);const t=p+(a==="mvUp"?-1:1);
+    if(t<0||t>=sibs.length)return;
+    const A=sibs[p].n,Bn=sibs[t].n;
+    [B.questions[A],B.questions[Bn]]=[B.questions[Bn],B.questions[A]];render();}
+  else if(a==="addOpt"&&q){q.options=q.options||[];
+    q.options.push(TYPES[q.type].opts==="plain"?{label:"New item"}:{label:"",score:0});render();}
+  else if(a==="delOpt"&&q){q.options.splice(i,1);render();}
+  else if(a==="addBucket"&&q){q.buckets=q.buckets||[];q.buckets.push({id:"b"+(q.buckets.length+1),label:"",color:"#226882"});render();}
+  else if(a==="delBucket"&&q){q.buckets.splice(i,1);render();}
+  else if(a==="addSec"){B.sections.push({id:"s"+(B.sections.length+1),n:String(B.sections.length+1).padStart(2,"0"),label:"New section",blurb:""});render();}
+  else if(a==="delSec"){const s=B.sections[i];
+    if(B.questions.some(x=>x.section===s.id)){toast("Move or delete its questions first",true);return;}
+    B.sections.splice(i,1);render();}
+  else if(a==="setProfile"){const p=el.dataset.p;
+    if(p===B.meta.profile)return;
+    B.meta.profile=p;B.questions.forEach(x=>x.ext={});B.scoring=B.scoring||{};
+    if(p==="signal_scoring"&&!B.scoring.signals)B.scoring.signals=[{id:"signal1",label:"First signal",weight:1}];
+    if(p==="staged_gating"&&!B.scoring.stages)B.scoring.stages=[{id:"st1",name:"Stage 1",threshold:70,critMin:80}];
+    render();toast("Profile changed — profile-specific fields cleared");}
+  else if(a==="addSig"){B.scoring.signals=B.scoring.signals||[];
+    B.scoring.signals.push({id:"sig"+(B.scoring.signals.length+1),label:"New signal",weight:0});render();}
+  else if(a==="delSig"){B.scoring.signals.splice(i,1);render();}
+  else if(a==="addStage"){B.scoring.stages=B.scoring.stages||[];
+    B.scoring.stages.push({id:"st"+(B.scoring.stages.length+1),name:"New stage",threshold:70,critMin:80});render();}
+  else if(a==="delStage"){B.scoring.stages.splice(i,1);render();}
+  else if(a==="applyScJson"){const k=el.dataset.k;
+    try{B.scoring[k]=JSON.parse(document.querySelector('[data-scjson="'+k+'"]').value);render();toast("Applied");}
+    catch(err){toast("Invalid JSON — "+err.message,true);}}
+  else if(a==="setLogo"){$("#fLogo").click();}
+  else if(a==="pickImport"){$("#fImport").click();}
+  else if(a==="pickHtml"){$("#fHtml").click();}
+  else if(a==="importPaste"){const t=$("#pasteJson").value.trim();
+    if(!t){toast("Nothing pasted",true);return;} doImport(t);}
+  else if(a==="exCommon"){dl((B.meta.id||"bank")+"-common-"+today()+".json",JSON.stringify(B,null,2));toast("Common schema exported");}
+  else if(a==="exNative"){dl((B.meta.id||"bank")+"-native-"+today()+".json",JSON.stringify(toNative(B),null,2));
+    toast("Native export for "+prof().tools.join(", "));}
+  else if(a==="exCsv"){dl((B.meta.id||"bank")+"-"+today()+".csv",toCsv(),"text/csv");toast("CSV exported");}
+  else if(a==="newBank"){S.bank=newBank(el.dataset.p);S.selQ=null;S.tab="sections";render();toast("New bank created");}
+  else if(a==="publishCloud"){
+    if(!checkEditPermission()){
+      toast("Authentication required. Please sign in to publish.", true);
+      return;
+    }
+    const nativeKb = toNative(S.bank);
+    dl(S.bank.meta.id + "-published-kb-" + today() + ".json", JSON.stringify(nativeKb, null, 2));
+    toast("Published " + S.bank.meta.name + " (" + S.bank.questions.length + " questions) to Cloud Engine!");
+  }
+  else if(a==="doBake"){const out=bake();
+    if(!out){toast("Could not find DEFAULT_KB in that file",true);return;}
+    dl(S.bakeName.replace(/\.html$/,"")+"-published.html",out,"text/html");toast("Published — bank injected");}
+  else if(a==="clearBake"){S.bakeHtml="";S.bakeName="";render();}
+});
+
+document.addEventListener("input",e=>{
+  const el=e.target,B=S.bank;const q=B.questions.find(x=>x.id===S.selQ);
+  const i=el.dataset.i!==undefined?Number(el.dataset.i):null;
+  if(el.dataset.mf){B.meta[el.dataset.mf]=el.value;if(el.dataset.mf==="name")render();return;}
+  if(el.dataset.sf){B.sections[i][el.dataset.sf]=el.value;return;}
+  if(el.dataset.scf){const[blk,f]=el.dataset.scf.split(".");
+    const v=(f==="weight"||f==="threshold"||f==="critMin")?Number(el.value):el.value;
+    B.scoring[blk][i][f]=v;return;}
+  if(!q)return;
+  const f=el.dataset.qf;
+  if(f==="id"){const old=q.id;q.id=el.value;S.selQ=el.value;
+    if(old!==el.value)render();return;}
+  if(f==="text"||f==="hint"){q[f]=el.value;return;}
+  if(f==="section"){q.section=el.value;render();return;}
+  if(f==="type"){q.type=el.value;
+    const sh=TYPES[q.type].opts;
+    if(sh==="scored"&&!q.options)q.options=[{label:"",score:100},{label:"",score:0}];
+    if(sh==="labels"&&!q.labels)q.labels=["","","","",""];
+    if(sh==="slider"&&!q.slider)q.slider={min:0,max:100,step:5,suffix:"%",default:50};
+    if(sh==="buckets"&&!q.buckets)q.buckets=[{id:"b1",label:""},{id:"b2",label:""}];
+    if(sh==="plain"&&!q.options)q.options=[{label:"Item one"},{label:"Item two"}];
+    render();return;}
+  if(f==="tier"){q.tier=Number(el.value);return;}
+  if(f==="allowNA"){q.allowNA=el.checked;return;}
+  if(f==="allowDK"){q.allowDK=el.checked;render();return;}
+  if(f==="unscored"){q.unscored=el.checked;render();return;}
+  if(f==="invert"){q.invert=el.checked;return;}
+  if(f==="optLabel"){q.options[i].label=el.value;return;}
+  if(f==="optScore"){q.options[i].score=el.value===""?undefined:Number(el.value);return;}
+  if(f==="plainItem"){q.options[i]={label:el.value};if(q.ideal)q.ideal=q.options.map(o=>o.label);return;}
+  if(f==="label"){q.labels[i]=el.value;return;}
+  if(f==="bucketLabel"){q.buckets[i].label=el.value;return;}
+  if(f==="scoreOrder"){q.ideal=el.checked?q.options.map(o=>o.label):undefined;return;}
+  if(f==="hasExclusive"){if(q.options&&q.options.length){q.options.forEach(o=>delete o.exclusive);
+    if(el.checked)q.options[q.options.length-1].exclusive=true;}return;}
+  if(f&&f.startsWith("sl")){q.slider=q.slider||{};
+    const k={slMin:"min",slMax:"max",slStep:"step",slSuffix:"suffix",slDefault:"default"}[f];
+    q.slider[k]=(k==="suffix")?el.value:Number(el.value);return;}
+  if(f&&f.startsWith("cond")){q.shownIf=q.shownIf||{};
+    const k={condFact:"fact",condOp:"op",condValue:"value"}[f];
+    let v=el.value;
+    if(k==="value"&&v.includes(","))v=v.split(",").map(x=>x.trim());
+    q.shownIf[k]=v;
+    if(!q.shownIf.fact&&!q.shownIf.op)delete q.shownIf;
+    return;}
+  if(el.dataset.ext){q.ext=q.ext||{};const k=el.dataset.ext;
+    if(el.type==="checkbox")q.ext[k]=el.checked;
+    else if(el.dataset.list)q.ext[k]=el.value.split(",").map(s=>s.trim()).filter(Boolean);
+    else if(el.dataset.readiness)q.ext[k]=el.value.split(",").map(s=>s.trim()).filter(Boolean)
+      .map(s=>{const[r,d]=s.split(".");return{regime:r,dimension:d};});
+    else if(el.type==="number")q.ext[k]=Number(el.value);
+    else q.ext[k]=el.value;
+    if(el.type==="checkbox")render();
+    return;}
+  if(el.dataset.sig){q.ext=q.ext||{};q.ext.signals=q.ext.signals||[];
+    const id=el.dataset.sig;
+    if(el.checked)q.ext.signals.push({id,w:1});
+    else q.ext.signals=q.ext.signals.filter(s=>s.id!==id);
+    render();return;}
+  if(el.dataset.sigw){q.ext=q.ext||{};const s=(q.ext.signals||[]).find(x=>x.id===el.dataset.sigw);
+    if(s)s.w=Number(el.value);return;}
+});
+document.addEventListener("change",e=>{
+  if(e.target.dataset.qf==="type"||e.target.dataset.qf==="section")return; // handled on input
+});
+
+/* files */
+function doImport(text){
+  let o;try{o=JSON.parse(text);}catch(err){toast("Invalid JSON — "+err.message,true);return;}
+  const fmt=detectFormat(o);
+  if(!fmt){toast("Unrecognised format — see Recognised formats",true);return;}
+  S.bank=toCommon(o,fmt);S.selQ=null;S.tab="questions";render();
+  toast("Imported as "+fmt.replace(/_/g," ")+" → "+S.bank.questions.length+" questions");
+}
+$("#fImport").addEventListener("change",e=>{const f=e.target.files[0];if(!f)return;
+  const r=new FileReader();r.onload=()=>{doImport(r.result);e.target.value="";};r.readAsText(f);});
+$("#fHtml").addEventListener("change",e=>{const f=e.target.files[0];if(!f)return;
+  const r=new FileReader();r.onload=()=>{S.bakeHtml=r.result;S.bakeName=f.name;render();
+    toast("Loaded "+f.name);e.target.value="";};r.readAsText(f);});
+$("#fLogo").addEventListener("change",e=>{const f=e.target.files[0];if(!f)return;
+  const r=new FileReader();r.onload=()=>{S.logo=r.result;render();toast("Logo set");e.target.value="";};r.readAsDataURL(f);});
+
+document.addEventListener("dragover",e=>{const z=e.target.closest("#drop,#dropHtml");if(z){e.preventDefault();z.classList.add("hot");}});
+document.addEventListener("dragleave",e=>{const z=e.target.closest("#drop,#dropHtml");if(z)z.classList.remove("hot");});
+document.addEventListener("drop",e=>{
+  const z=e.target.closest("#drop,#dropHtml");if(!z)return;e.preventDefault();z.classList.remove("hot");
+  const f=e.dataTransfer.files[0];if(!f)return;const r=new FileReader();
+  if(z.id==="drop"){r.onload=()=>doImport(r.result);r.readAsText(f);}
+  else{r.onload=()=>{S.bakeHtml=r.result;S.bakeName=f.name;render();toast("Loaded "+f.name);};r.readAsText(f);}
+});
+
+
+// Handle accelerator switcher
+const accSel = document.getElementById("accSelector");
+if(accSel){
+  accSel.addEventListener("change", function(){
+    const val = this.value;
+    if(PRELOADED_KBS[val]){
+      doImport(JSON.stringify(PRELOADED_KBS[val]));
+      toast("Loaded " + PRELOADED_KBS[val].meta.instrument);
+    } else {
+      toast("Selected " + val + " (New Profile)");
+    }
+  });
+}
+
+// Auto-load FinOps Value Case by default
+const urlParams = new URLSearchParams(window.location.search);
+const initialTool = urlParams.get("tool") || "finops-value-case";
+if(accSel) accSel.value = initialTool;
+if(PRELOADED_KBS[initialTool]){
+  doImport(JSON.stringify(PRELOADED_KBS[initialTool]));
+}
+
+initAuth();
+render();
+</script>
+
+
+</body></html>

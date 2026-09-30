@@ -626,6 +626,7 @@ table.qtable th{font-family:'Manrope',sans-serif;font-size:10.5px;letter-spacing
   <div class="nav" id="topnav">
     <button class="navbtn" data-nav="assessment">Assessment</button>
     <button class="navbtn" data-nav="bank">Question Bank</button>
+    <a href="studio.html?tool=finops-value-case" class="navbtn" style="text-decoration:none;display:inline-flex;align-items:center;gap:5px;color:var(--steel);font-weight:700">⚙️ Studio</a>
   </div>
 </header>
 <div id="app"></div>
@@ -2121,7 +2122,7 @@ function viewBank(){
   return '<main class="wrap"><div class="eyebrow">Admin Portal</div><h1 class="h1 sm">Question Bank &amp; Engine</h1>'
    + '<p class="lead" style="margin-bottom:20px">Live question schema synchronized with AWS Amplify Backend (ap-south-1).</p>'
    + '<div class="panelcard"><h2 class="h2" style="font-size:16px;margin-bottom:12px">Security &amp; Engine Architecture</h2>'
-   + '<p style="font-size:13px;color:var(--text-muted);line-height:1.6">Proprietary scoring models, BFSI modifiers, and waste algorithms are encapsulated inside AWS Lambda in ap-south-1 (API: <code>' + EVALUATE_API_ENDPOINT + '</code>). Access to edit scoring models requires Admin RBAC permissions.</p></div>'
+   + '<p style="font-size:13px;color:var(--text-muted);line-height:1.6">Proprietary scoring models, BFSI modifiers, and waste algorithms are encapsulated inside AWS Lambda in ap-south-1 (API: <code>' + EVALUATE_API_ENDPOINT + '</code>). Access to edit scoring models requires Admin RBAC permissions.</p><div style="margin-top:14px"><a href="studio.html?tool=finops-value-case" class="btn primary sm" style="text-decoration:none;display:inline-flex;align-items:center;gap:6px">⚙️ Open Question Bank &amp; Weight Studio →</a></div></div>'
    + '<div class="panelcard"><h2 class="h2" style="font-size:16px;margin-bottom:12px">Active Questions (' + kb.questions.length + ')</h2>'
    + '<div style="overflow-x:auto"><table class="banktable"><thead><tr><th>ID</th><th>Section</th><th>Type</th><th>Scoring Engine</th><th>DK</th><th>Question</th></tr></thead>'
    + '<tbody>' + rows + '</tbody></table></div></div></main>';
