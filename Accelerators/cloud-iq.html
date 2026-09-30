@@ -1,0 +1,2463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="generator" content="Cloud IQ v2.1 · LTM Infrastructure Tech Advisory" />
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' blob: data:; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob:; connect-src 'self' https://api.openai.com https://api.anthropic.com https://generativelanguage.googleapis.com; frame-ancestors 'self';">
+<title>Cloud IQ — Enterprise Infrastructure Diagnostic Platform · LTM</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+<style>
+@font-face {
+  font-family: 'ES Klarheit Grotesk';
+  src: local('ES Klarheit Grotesk'), local('ESKlarheitGrotesk-Regular'), local('Klarheit Grotesk');
+  font-weight: 400 500;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'ES Klarheit Grotesk';
+  src: local('ES Klarheit Grotesk Bold'), local('ESKlarheitGrotesk-Bold'), local('Klarheit Grotesk Bold');
+  font-weight: 700 800;
+  font-style: normal;
+}
+
+/* ============================================================
+   LTM Advisory Design System — Enterprise Clean Blueprint
+   Palette: Coral #FF5E4F, Slate Blue #226882, Violet #482475,
+   Amber #B8860B, Green #35754D, Ground #F9F9F9, Ink #282828.
+   ============================================================ */
+@import url("https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap");
+:root{
+  --ground:#F9F9F9; --panel:#FFFFFF; --panel2:#F5F5F5; --panel3:#EFEFEF;
+  --line:#DADADA; --line2:#ECECEC; --line-dark:#282828;
+  --ink:#282828; --mut:#5B5B5B; --mutd:#8E8E8E;
+  --coral:#FF5E4F; --coral-dk:#E54536; --coral-dkr:#CC2B1C; --coral-tint:#FCF0EE;
+  --blue:#226882; --blue-tint:#EDF5F8;
+  --violet:#482475; --violet-tint:#F3EDF9;
+  --amber:#B8860B; --amber-tint:#FFF9E6; --amber-dk:#8A6500;
+  --green:#35754D; --green-tint:#EDF7F1;
+  --red:#D32F2F; --red-tint:#FFEBEE;
+  --radius-xs:3px; --radius-sm:6px; --radius-md:10px; --radius-lg:16px; --radius-pill:999px;
+  --shadow-card:0 1px 3px rgba(40,40,40,.06), 0 4px 14px rgba(40,40,40,.07);
+  --shadow-elevated:0 8px 30px rgba(40,40,40,.12);
+  --font-display:'ES Klarheit Grotesk','Klarheit Grotesk','Plus Jakarta Sans','Manrope',-apple-system,sans-serif;
+  --font-body:Arial,"Helvetica Neue",Helvetica,sans-serif;
+  --font-mono:"JetBrains Mono",ui-monospace,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font-body);background:var(--ground);color:var(--ink);line-height:1.5;-webkit-font-smoothing:antialiased}
+h1,h2,h3,h4{font-family:var(--font-display);letter-spacing:-.015em;color:var(--ink)}
+.wrap{max-width:1040px;margin:0 auto;padding:0 24px}
+
+/* Top Navigation Bar */
+#ltm-family-nav{background:#282828;color:#F9F9F9;font-family:var(--font-display);font-size:12px;padding:9px 0;border-bottom:2px solid var(--coral);position:relative;z-index:100}
+.ltm-fam-inner{max-width:1240px;margin:0 auto;padding:0 20px;display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+.ltm-fam-brand{display:flex;flex-direction:column;gap:1px;padding-right:16px;border-right:1px solid rgba(255,255,255,0.15)}
+.ltm-fam-b{font-weight:800;color:var(--coral);letter-spacing:.04em;font-size:13px}
+.ltm-fam-s{color:rgba(255,255,255,0.65);font-size:9.5px;text-transform:uppercase;letter-spacing:.12em}
+.ltm-fam-links{display:flex;gap:2px;flex-wrap:wrap;flex:1}
+.ltm-fam-link{color:rgba(255,255,255,0.78);text-decoration:none;padding:5px 11px;border-radius:4px;font-weight:600;font-size:11.5px;letter-spacing:.01em;transition:.15s;display:inline-flex;align-items:center;gap:5px;white-space:nowrap}
+.ltm-fam-link:hover{color:#fff;background:rgba(255,255,255,0.08)}
+.ltm-fam-link.current{background:var(--coral);color:#fff}
+.ltm-fam-tag{font-size:8.5px;text-transform:uppercase;letter-spacing:.12em;background:rgba(255,255,255,0.14);padding:2px 5px;border-radius:3px}
+.ltm-fam-link.current .ltm-fam-tag{background:rgba(255,255,255,0.28)}
+
+/* Header & Consultant Meta Banner */
+header.top{background:var(--panel);border-bottom:1px solid var(--line);padding:14px 0}
+header.top .wrap{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px}
+.ltmlogo{display:flex;align-items:center;gap:12px}
+.ltmlogo>img{height:26px;width:auto;object-fit:contain;flex:none}
+.ltmword{line-height:1.15;border-left:1px solid var(--line);padding-left:12px}
+.ltmword b{font-family:var(--font-display);font-size:15px;font-weight:700;display:block;color:var(--ink)}
+.ltmword span{display:block;font-family:var(--font-display);font-size:10px;letter-spacing:.12em;color:var(--mutd);text-transform:uppercase;margin-top:2px}
+.header-meta{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+
+/* Consultant Session Bar */
+.session-bar{background:#FFFFFF;border-bottom:1px solid var(--line);padding:8px 0;font-size:12px;font-family:var(--font-display)}
+.session-inner{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap}
+.session-fields{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.s-field{display:inline-flex;align-items:center;gap:5px;color:var(--mut)}
+.s-field strong{color:var(--ink);font-weight:600}
+.s-badge{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:var(--radius-pill);font-size:11px;font-weight:700;background:var(--panel2);border:1px solid var(--line);color:var(--ink)}
+.s-badge.mode-workshop{background:var(--blue-tint);border-color:var(--blue);color:var(--blue)}
+.s-badge.mode-flash{background:var(--amber-tint);border-color:var(--amber);color:var(--amber-dk)}
+.session-actions{display:flex;align-items:center;gap:8px}
+
+/* Progress Bar */
+.progress-bar{height:3px;background:var(--line2)}
+.progress-fill{height:3px;background:var(--coral);width:0;transition:width .3s cubic-bezier(.4,0,.2,1)}
+
+/* Screen & Card Layout */
+.screen{padding:30px 0 60px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius-lg);padding:28px;margin-bottom:20px;box-shadow:var(--shadow-card)}
+.card-header-row{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;margin-bottom:14px}
+.lead{font-size:16px;color:var(--mut);margin-bottom:18px;line-height:1.55}
+.pill{display:inline-block;background:var(--coral-tint);color:var(--coral-dkr);border-radius:var(--radius-pill);padding:5px 12px;font-size:12px;font-weight:600;margin:0 6px 6px 0;font-family:var(--font-display)}
+.sec-label{font-family:var(--font-display);font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--coral);margin-bottom:6px}
+.qtext{font-family:var(--font-display);font-size:19px;font-weight:700;color:var(--ink);margin-bottom:4px;line-height:1.35}
+.qhint{font-size:13px;color:var(--mutd);margin-bottom:16px}
+.qmeta-tag{display:inline-block;font-size:10px;font-family:var(--font-mono);font-weight:600;background:var(--panel2);color:var(--mut);border:1px solid var(--line);padding:2px 6px;border-radius:3px;margin-left:6px;vertical-align:middle}
+
+/* Form & Option Controls */
+.opts{display:flex;flex-direction:column;gap:9px}
+.opt{border:1.5px solid var(--line);border-radius:var(--radius-md);padding:13px 16px;cursor:pointer;background:var(--panel);font-size:14.5px;transition:.15s ease;display:flex;align-items:center;gap:12px}
+.opt:hover{border-color:var(--coral);background:var(--coral-tint)}
+.opt.sel{border-color:var(--coral);background:var(--coral-tint);font-weight:600}
+.opt .mark{width:19px;height:19px;border-radius:50%;border:2px solid var(--line);flex:0 0 auto;display:flex;align-items:center;justify-content:center;transition:.15s}
+.opt.multi .mark{border-radius:4px}
+.opt.sel .mark{border-color:var(--coral);background:var(--coral)}
+.opt.sel .mark::after{content:'✓';color:#fff;font-size:11px;font-weight:bold}
+.opt .sub{display:block;font-size:12px;color:var(--mutd);font-weight:400;margin-top:2px}
+
+.scen{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.scen .opt{flex-direction:column;align-items:flex-start;text-align:left}
+.scen .opt .tag{font-family:var(--font-display);font-size:11px;font-weight:700;color:var(--coral);letter-spacing:.12em}
+
+.slider-wrap{padding:10px 4px}
+.slider-wrap input[type=range]{width:100%;accent-color:var(--coral)}
+.slider-labels{display:flex;justify-content:space-between;font-size:12px;color:var(--mutd);margin-top:8px;font-family:var(--font-display)}
+.slider-val{text-align:center;font-family:var(--font-display);font-size:22px;font-weight:700;color:var(--coral);margin:10px 0}
+
+.rank-list{display:flex;flex-direction:column;gap:8px}
+.rank-item{border:1.5px solid var(--line);border-radius:var(--radius-md);padding:11px 14px;background:var(--panel);cursor:grab;display:flex;align-items:center;gap:12px;font-size:14.5px}
+.rank-item.dragging{opacity:.4}
+.rank-item .num{width:24px;height:24px;border-radius:50%;background:var(--coral);color:#fff;display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-weight:700;font-size:12px;flex:0 0 auto}
+.rank-item .grip{color:var(--mutd);margin-left:auto;font-size:16px}
+
+.tf{display:flex;gap:12px}
+.tf .opt{flex:1;justify-content:center;font-weight:600}
+
+/* Buttons & Navigation */
+.nav{display:flex;justify-content:space-between;align-items:center;margin-top:20px;flex-wrap:wrap;gap:10px}
+.btn{background:var(--coral);color:#fff;border:none;border-radius:var(--radius-md);padding:12px 24px;font-family:var(--font-display);font-size:14px;font-weight:700;cursor:pointer;transition:.15s;letter-spacing:.01em;display:inline-flex;align-items:center;gap:7px}
+.btn:hover{background:var(--coral-dk)}
+.btn:disabled{background:var(--line);color:var(--mutd);cursor:not-allowed}
+.btn.ghost{background:transparent;color:var(--coral);border:1.5px solid var(--line)}
+.btn.ghost:hover{background:var(--coral-tint);color:var(--coral-dkr);border-color:var(--coral)}
+.btn.secondary{background:var(--panel2);color:var(--ink);border:1px solid var(--line)}
+.btn.secondary:hover{background:var(--panel3);border-color:var(--mutd)}
+.btn.small{padding:7px 14px;font-size:12px;border-radius:var(--radius-sm)}
+.btn.big{padding:14px 34px;font-size:16px}
+.qcount{font-family:var(--font-display);font-size:13px;color:var(--mutd)}
+.qblock{padding:20px 0;border-bottom:1px solid var(--line2)}
+.qblock:first-child{padding-top:4px}
+.qblock:last-child{border-bottom:none;padding-bottom:0}
+
+/* ============================================================
+   CONSULTING COMPONENTS: HEATMAP, 4-PHASE ROADMAP, AI, MASKING
+   ============================================================ */
+
+/* 2D Strategic Risk Heatmap */
+.heatmap-container{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius-lg);padding:22px;margin:20px 0;overflow-x:auto}
+.heatmap-grid{display:grid;grid-template-columns:120px repeat(5,1fr);gap:8px;min-width:760px}
+.hm-header{font-family:var(--font-display);font-size:11px;font-weight:700;color:var(--mut);text-align:center;padding:8px 4px;text-transform:uppercase;letter-spacing:.06em}
+.hm-row-label{font-family:var(--font-display);font-size:12px;font-weight:700;color:var(--ink);display:flex;align-items:center;justify-content:flex-end;padding-right:12px;text-align:right}
+.hm-row-label span{font-size:10px;font-weight:500;color:var(--mut);display:block}
+.hm-cell{background:var(--panel2);border:1px solid var(--line2);border-radius:var(--radius-sm);min-height:76px;padding:8px;display:flex;flex-direction:column;gap:5px;transition:.2s}
+.hm-cell.danger-zone{background:#FFF2F1;border:1.5px dashed var(--red)}
+.hm-cell.watch-zone{background:#FFFBEB;border:1px solid rgba(184,134,11,.2)}
+.hm-cell.strength-zone{background:#F0FAF4;border:1px solid rgba(53,117,77,.2)}
+.hm-badge{font-family:var(--font-display);font-size:11px;font-weight:700;padding:5px 8px;border-radius:var(--radius-sm);display:flex;align-items:center;justify-content:space-between;cursor:pointer;transition:.15s;border:1px solid transparent}
+.hm-badge:hover{transform:translateY(-1px);box-shadow:0 2px 6px rgba(0,0,0,.1)}
+.hm-badge.b-red{background:#FFCDD2;color:#B71C1C;border-color:#EF9A9A}
+.hm-badge.b-amber{background:#FFE082;color:#E65100;border-color:#FFD54F}
+.hm-badge.b-green{background:#C8E6C9;color:#1B5E20;border-color:#A5D6A7}
+
+/* 4-Phase Horizon Modernization Roadmap */
+.horizon-roadmap{display:flex;flex-direction:column;gap:16px;margin:18px 0}
+.horizon-wave{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius-md);overflow:hidden}
+.hw-header{padding:14px 20px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line)}
+.hw-p1 .hw-header{background:linear-gradient(90deg,#FFF2F1 0%,#FFF 100%);border-left:5px solid var(--red)}
+.hw-p2 .hw-header{background:linear-gradient(90deg,#FFF9E6 0%,#FFF 100%);border-left:5px solid var(--amber)}
+.hw-p3 .hw-header{background:linear-gradient(90deg,#EDF5F8 0%,#FFF 100%);border-left:5px solid var(--blue)}
+.hw-p4 .hw-header{background:linear-gradient(90deg,#EDF7F1 0%,#FFF 100%);border-left:5px solid var(--green)}
+.hw-title{font-family:var(--font-display);font-size:14px;font-weight:800;letter-spacing:.02em}
+.hw-time{font-family:var(--font-mono);font-size:11px;font-weight:700;color:var(--mut)}
+.hw-items{padding:14px 20px;display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.hw-item{background:var(--panel2);border:1px solid var(--line2);border-radius:var(--radius-sm);padding:12px;font-size:13px}
+.hwi-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+.hwi-code{font-family:var(--font-display);font-weight:800;color:var(--coral);font-size:12px}
+.hwi-size{font-family:var(--font-mono);font-size:10px;font-weight:700;padding:2px 6px;border-radius:3px;background:#fff;border:1px solid var(--line)}
+.hwi-title{font-weight:700;color:var(--ink);margin-bottom:4px}
+.hwi-desc{font-size:12px;color:var(--mut);line-height:1.4}
+
+/* Decomposed Value Hook */
+.decomp-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:14px}
+.decomp-card{background:var(--panel2);border:1px solid var(--line);border-radius:var(--radius-md);padding:16px}
+.decomp-card .val{font-family:var(--font-display);font-size:20px;font-weight:800;color:var(--coral);margin:6px 0}
+.decomp-card .lbl{font-size:12px;font-weight:700;color:var(--ink);font-family:var(--font-display)}
+.decomp-card .desc{font-size:11.5px;color:var(--mut);margin-top:4px;line-height:1.4}
+
+/* Consulting Depth Probes */
+.probe-card{background:var(--panel);border:1.5px solid var(--line);border-radius:var(--radius-md);padding:22px;margin-bottom:18px;box-shadow:var(--shadow-card)}
+.probe-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:8px}
+.probe-badge{font-family:var(--font-display);font-size:11px;font-weight:700;padding:4px 10px;border-radius:var(--radius-pill);letter-spacing:.02em}
+.probe-badge.red{background:var(--red-tint);color:var(--red);border:1px solid rgba(211,47,47,.25)}
+.probe-badge.amber{background:var(--amber-tint);color:var(--amber-dk);border:1px solid rgba(184,134,11,.25)}
+.probe-badge.blue{background:var(--blue-tint);color:var(--blue);border:1px solid rgba(34,104,130,.25)}
+.probe-q{font-family:var(--font-display);font-size:15px;font-weight:700;color:var(--ink);line-height:1.45;margin-bottom:12px}
+.probe-opts{display:grid;grid-template-columns:1fr;gap:8px;margin-bottom:12px}
+.probe-opt{border:1.5px solid var(--line);border-radius:var(--radius-sm);padding:10px 14px;cursor:pointer;background:var(--panel2);font-size:13px;transition:.15s;display:flex;align-items:center;gap:10px}
+.probe-opt:hover{border-color:var(--coral);background:var(--coral-tint)}
+.probe-opt.sel{border-color:var(--coral);background:var(--coral-tint);font-weight:700;color:var(--coral-dkr)}
+.probe-opt .mark{width:16px;height:16px;border-radius:50%;border:1.5px solid var(--line);display:flex;align-items:center;justify-content:center;flex:0 0 auto}
+.probe-opt.sel .mark{border-color:var(--coral);background:var(--coral)}
+.probe-opt.sel .mark::after{content:'✓';color:#fff;font-size:10px;font-weight:bold}
+.probe-notes{width:100%;border:1.5px solid var(--line);border-radius:var(--radius-sm);padding:9px 12px;font-family:inherit;font-size:12.5px;line-height:1.45;color:var(--ink);resize:vertical;min-height:54px;background:#FFF}
+.probe-notes:focus{border-color:var(--coral);outline:none}
+
+/* Report Gating & Teaser Masking */
+.gated-wrapper{position:relative}
+.gated-content-blur{filter:blur(6px);opacity:.35;pointer-events:none;user-select:none}
+.gate-overlay-box{position:absolute;top:50px;left:50%;transform:translateX(-50%);width:min(580px,92%);background:#FFFFFF;border:2px solid var(--coral);border-radius:var(--radius-lg);padding:32px;box-shadow:var(--shadow-elevated);text-align:center;z-index:40}
+.gate-overlay-box h3{font-size:22px;margin-bottom:8px}
+.gate-overlay-box p{font-size:13.5px;color:var(--mut);margin-bottom:20px;line-height:1.5}
+.gate-form{display:flex;flex-direction:column;gap:10px;text-align:left}
+.gate-form label{font-size:11px;font-weight:700;color:var(--mut);text-transform:uppercase}
+.gate-form input{padding:11px 14px;border:1.5px solid var(--line);border-radius:var(--radius-sm);font-size:14px;font-family:inherit}
+.gate-form input:focus{border-color:var(--coral);outline:none}
+
+/* LTM Advisory Studio Drawer */
+.ai-drawer-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:900;backdrop-filter:blur(3px);display:none}
+.ai-drawer-overlay.open{display:block}
+.ai-drawer{position:fixed;top:0;right:0;bottom:0;width:min(660px,94vw);background:#FFF;border-left:1px solid var(--line);box-shadow:var(--shadow-elevated);z-index:901;transform:translateX(100%);transition:transform .25s ease;display:flex;flex-direction:column}
+.ai-drawer.open{transform:translateX(0)}
+.ai-drawer-header{padding:20px 24px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between}
+.ai-drawer-body{padding:24px;overflow-y:auto;flex:1}
+.ai-drawer-foot{padding:16px 24px;border-top:1px solid var(--line);background:var(--panel2);display:flex;justify-content:space-between;align-items:center}
+.ai-memo-box{background:var(--panel2);border:1.5px solid var(--line);border-radius:var(--radius-md);padding:18px;font-family:var(--font-body);font-size:13.5px;line-height:1.6;color:var(--ink);margin-top:14px;white-space:pre-wrap}
+
+/* Full-Screen Boardroom Readout View (Presentation Mode) */
+#boardroom-modal{position:fixed;inset:0;background:#181818;color:#FFF;z-index:1000;display:none;flex-direction:column}
+#boardroom-modal.open{display:flex}
+.br-nav{background:#111;padding:12px 24px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #333}
+.br-content{flex:1;display:flex;align-items:center;justify-content:center;padding:40px;overflow-y:auto}
+.br-slide{max-width:1100px;width:100%;background:#222;border:1px solid #383838;border-radius:var(--radius-lg);padding:44px;box-shadow:0 12px 40px rgba(0,0,0,.6)}
+.br-slide h2{color:#FFF;font-size:32px;margin-bottom:14px}
+.br-slide p{color:#CCC;font-size:16px;line-height:1.6}
+.br-foot{background:#111;padding:12px 24px;display:flex;align-items:center;justify-content:space-between;border-top:1px solid #333}
+
+/* Scorecard & Results Elements */
+.res-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.badge{display:inline-block;padding:6px 14px;border-radius:var(--radius-pill);font-family:var(--font-display);font-weight:700;font-size:14px;color:#fff;background:var(--coral)}
+.band-scale{display:flex;gap:4px;margin-top:12px}
+.band-seg{flex:1;text-align:center;font-family:var(--font-display);font-size:10px;font-weight:600;padding:6px 2px;border-radius:var(--radius-sm);background:var(--panel2);color:var(--mut);letter-spacing:.06em;text-transform:uppercase}
+.band-seg.on{background:var(--coral);color:#fff}
+.dimrow{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.dimrow .dname{width:220px;font-size:12px;color:var(--mut);font-family:var(--font-display);font-weight:600}
+.dimbar{flex:1;background:var(--panel2);border-radius:var(--radius-sm);height:12px;overflow:hidden}
+.dimbar .fill{height:12px;background:var(--coral);border-radius:var(--radius-sm)}
+.dimrow .dval{width:36px;text-align:right;font-family:var(--font-display);font-weight:700;font-size:12px;color:var(--ink)}
+
+.offer{border:1px solid var(--line);border-radius:var(--radius-md);padding:16px;margin-bottom:10px;background:var(--panel)}
+.offer .ocode{font-family:var(--font-display);font-weight:700;color:var(--coral)}
+.offer .odoor{font-size:12px;color:var(--green);font-weight:600;margin-top:4px;font-family:var(--font-display)}
+.handoff{background:var(--coral-tint);border:1px dashed var(--coral);border-radius:var(--radius-md);padding:14px 16px;margin-bottom:10px;color:var(--ink)}
+.valuehook{background:var(--ink);color:#fff;border-radius:var(--radius-lg);padding:26px;text-align:center}
+.valuehook .big{font-family:var(--font-display);font-size:38px;font-weight:800;color:var(--coral);letter-spacing:-.01em}
+.valuehook .lbl{font-family:var(--font-display);font-size:12px;color:var(--mutd);letter-spacing:.16em;text-transform:uppercase}
+footer.foot{text-align:center;color:var(--mutd);font-size:12px;padding:28px 0 44px;font-family:var(--font-display);letter-spacing:.02em}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.chip-journey{padding:10px 14px;border-radius:var(--radius-md);font-family:var(--font-display);font-size:13px;font-weight:600;margin-bottom:8px}
+.chip-primary{background:var(--coral);color:#fff}
+.chip-secondary{background:var(--coral-tint);color:var(--coral-dkr);border:1px solid var(--coral)}
+
+@media(max-width:768px){
+  .res-grid,.scen,.two-col,.decomp-grid,.hw-items{grid-template-columns:1fr}
+  .dimrow .dname{width:130px}
+  .heatmap-grid{min-width:620px}
+}
+</style>
+</head>
+<body>
+
+<!-- Suite Navigation -->
+<nav id="ltm-family-nav" aria-label="LTM Infrastructure Tech Advisory accelerators">
+  <div class="ltm-fam-inner">
+    <div class="ltm-fam-brand">
+      <span class="ltm-fam-b">LTM</span>
+      <span class="ltm-fam-s">Infrastructure Tech Advisory</span>
+    </div>
+    <div class="ltm-fam-links">
+      <a href="cloud-iq.html" class="ltm-fam-link current" aria-current="page" data-fam="cloud">Cloud IQ <span class="ltm-fam-tag">front door</span></a>
+      <a href="strategy-iq.html" class="ltm-fam-link" data-fam="strategy">Strategy IQ</a>
+      <a href="modernization-iq.html" class="ltm-fam-link" data-fam="moderniz">Modernization IQ</a>
+      <a href="ai-readiness-iq.html" class="ltm-fam-link" data-fam="ai">AI Readiness IQ</a>
+      <a href="sovereign-iq.html" class="ltm-fam-link" data-fam="sovereign">Sovereign IQ</a>
+      <a href="posture-iq.html" class="ltm-fam-link" data-fam="posture">Posture IQ</a>
+      <a href="finops-iq.html" class="ltm-fam-link" data-fam="finops">FinOps IQ</a>
+      <a href="cost-iq/master/CostIQ_Master.html" class="ltm-fam-link" data-fam="cost">Cost IQ Studio</a>
+    </div>
+  </div>
+</nav>
+
+<!-- Header -->
+<header class="top">
+  <div class="wrap">
+    <div class="ltmlogo">
+      <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAsoAAAC8CAMAAABWrHiHAAAAM1BMVEVMaXHxX1PxX1PxX1PxX1PxX1PxX1PxX1PxX1PxX1PxX1PxX1PxX1PxX1PxX1PxX1PxX1MKL2o4AAAAEHRSTlMAkBDgIGDwQIDAoLAw0FBwWz2zBgAAAAlwSFlzAAALEgAACxIB0t1+/AAAC19JREFUeJztndtC21oMRCHc7/n/rz0lBZoASTQjaXt89qz3FlVauB5f5Istxt3FSO7A6lbMQ7AlTT/+6nHQZO8er5r+CWhrrHITC6v8XsGmdZY7Nk999VtlEZZXOVxCgkaTrbIKAipv31qH+Ye3zuqtsggKKt9et07zYnPbWb1VFkFB5e1j6zQvHluLt8oiSKi8bT0sX/fWbpVF0FC59bDce1C2yipoqLxtvCDXe6ZslWUQUfm+b5itly+2VlkGEZWv+obZdZfvE6ssgojK29fVztIqi6Ci8lPXLJtDn1WWQUXlrutxm/bCrbIIMio3Bb/u0GeVZZBRuSn4dYc+qyyDjMo9Ix4wSassgo7KLXf82kOfVZZBR+WOO37dd/rescoiCKnc8NjyzYCyrbIIQio3BL+XAWVbZRGEVK4f8vOIqq2yCEoqlwe/AaHPKsugpHJ18BsR+qyyDFIq39SOcUTos8oySKn8UjvGEaHPKssgpfL2uXKKze/0fWKVRdBSuTT4XY62VRdBS+Xby74d7iKFgfx4W+x5u7S/wanlUWoUvll92DQc/UI8Pp4EeFvqvdjcYNXLFVFqFJ5c9H3DbMSWt6fRwT+uiKtVW+vm+Cfq/h9rGpouiJKVjvl43MUSG9RYD5/fkyDF2YqK1yH8/c81r3Az6eexp6XsyzEMm94cyvzyP9p2dVmXqh/VbgX0/Pi3ntORn8mLT57/zcKofBj8vFLyJT8PNiDsup4MdsB997E8sqh4Hj9YDPmZ+HnxdzOSEV/Jjt4Hu/O1Y5DnrRs+2LMwiJeREXeVPBjwh9+2c0VjkOeqlo6Xp3JObF3HpLzJsJfa+JPz+zynCvFMjMizhMJrYIEKHv4D8BqxxnOpWZOxb01Ucm9B08jGeV40ynMhP86L3hzOsjBxdMrHKc6VQeGvyIG6qHl4iscpz5VB4Y/Jjt4IfX7a1ynPlUHhj8mJuph3+DVY4zocrDgh9zm/zbG1hWOc6EKjPBj7pdnw59VhlhQpWZ4Eetj0uHPquMMKPKTPAj1sflQ59VRphR5UHBj3gK78cL3lY5zpQqE8GP2BueD31WGWFKlYcEv4LQZ5URplR5SPAj3jb7+TC4VY4zp8oDgl/Nkd8qx5lTZSb4gevjKkKfVUaYVGUm+GE1VoQ+q4wwqcrtwa8k9FllhElVZoIf9IZu0d9vlePMqjIT/IAtAlVHfascZ1aVm4Nf1bm4VY4zrcq9wa/qF8Uqx5lW5dbgV3b6YpXjTKsyE8zC6+PKQqVVjjOvyo3Br+6Ib5XjzKsycz4bXB9Xdx5uleNMrDIhXHCLQN3VEascZ2KVmdOA0PZHZlHckVMXqxxnYpXbgh+xM+DYnUSrHGdmlZuCH7Mo7thlPqscZ2aVm4IfsR386M0XqxxnapV7gl/lLXGrHGdqlVuCX2Hos8oIU6vMvH93dotAYeizyghzq8w8IH9mi0Bl6LPKCHOrzLy2dGZvOPHbceKJO6scZ3KViZdJzwQ/YlHcieegrXKcyVVmgt/J8TOL4k5cq7bKcSZXuTz4lYY+q4wwu8rFwY/ZDn7qgX6rHGd2lYuDX23os8oI06tMBL8T6+NqQ59VRpheZSb4HV0fVxz6rDLC9CqXBj/iEH96UYxVjmOVmdPbY8GvOPRZZQSrXOhfdeizyghWuTD4EecqZzYeWeU4Vrku+DF/0Zm3UqxyHKtcF/zKQ59VRrDKdae45aHPKiNY5YsqB+tDn1VGsMoXVWcG9aHPKiNY5YuivNYQ+qwyglV+p+KASry+ff6TEFY5jlV+p+I0l9gZcH5fs1WOY5V35IMfseoosEXfKsexyjvywY9YQBf4tolVjmOVd6QzW0vos8oIVvkvRPA7WB/XEvqsMoJV/gsR/A62CLSEPquMYJU/IILf3vq4ntBnlRGs8gdE8NvbG07sDAh90NIqx7HKH6RyG7MoLvS1Kascxyp/kgl+xHbw2MffrXIcq/xJJvg1hT6rjGCVv+CDH7EdPPi9bKscxyp/QQS/j5dJukKfVUawyl8wwW+3RaAt9FllBKv8DyL47dbHtYU+q4xglf/BBj9iUVws9FllBKu8BxH87qhFccHQZ5URrPIeXPDrC31WGcEq70EFP2Y7eDD0WWUEq7wPE/yIM+xo6LPKCFZ5H0LLl8bQZ5URrPIBxMkCTjj0WWUEq3wAEfxwwqHPKiNY5QOY4AcTDn1WGcEqH0IEP5R46LPKCFb5EOY7fiDx0GeVEazyN9qDHxD6rDKCVf5Ge/ADQp9VRrDK32gPfkDos8oIVvk7zcEPCX1WGcEqf6c5+CGhzyojWOUftAY/KPRZZQSr/IPW4AeFPquMYJV/0Br8oNDXr/Lr+RJWg1X+SWPww0Jfv8pHPzy/QqzyTxqDHxb6+lU++uH5FWKVf6Et+IGhr1/l/9Nh2Sr/QlvwA0PfAJXxkmSxyr/QFvzA0DdC5e0TXJQoVvk3moIfGvqI8TDnRg/3GsDdSfZKAbBmXOWm4IeGPmI8A563bgPuTrJXCoA1E/cBWoIfHPqscmuvFABrJlRuCX5EwoLHM+TlxCbw9uR6pQBYM6FyS/Aj8hU8HuKjazLg7cn1SgGwZuZBg4b/qPHQR4yH2FouA9GfVK8UAGtmVG4IfnjoI8bD7HpWgehPqlcKgDVTj3+VBz8i9DHjIT6LogLToFSvBABrplQuz0/UbTV8PMReURWYBqV6JQBYM6VyefCjbqrh4xmw/aALpkGpXgkA1sw9X14c/JjQx4xnxSfLVIcyvRIArJlTufjwxoQ+ajzEZlERqA6lerU8YM3kWz+lwY8KfdR4iI/8iMC1KNOr5QFrJlUuDX7ks5TEeNZ7hsG1KNOr5QFrJlUuDX7kk5TMeJ4q6x4J16JUrxYHrJl9rbgw+HGhjxvPam/4kT3K9GpxwJpZlQuDHxf6yPGs9S4J2aNUr5YGrJle9lAW/MjQR45nrZeW2SZlerU0YM20ymXBj36BjhvPSg/LbJNSvVoYsGZa5bLgR78+x41npYdltkmpXi0MWDO/Taoo+LGhjx7POt8lobuU6tWygDXzKhcd3tjQR4+H+Oy2AHSXUr1aFrDmxI6/kuBHhz5+PKt8L4pvU6pXiwLWnFC5RInE1hR2PJs1Jj++TaleLQpYc0LlkuCX2JlCj2eNpxh8m3K9WhKw5swS4YIAxYe+zHhW+FRRok+5Xi0IWHNG5YLgx4e+1HjW9zpJok/JXi0HWHNqtXs6+CVCX2o8m9U9uJxpVK5XywHWnFI5HfxSqzIz41ld9Ms0KtmrxQBrTqmcDn6pRZmp8Ty3fxm2lkyjsr1aCrDm3LdjksEvE/qy41mZy6lOWeXzJINfJvSlx/O8qnOMVKescoDUoS0V+vLjWVX2y7XKKp8nFfyS30dIj2ezomtyuVZZ5fOkgl/y6wgF41nPvZJcq6xygETwy4W+mvGs5oRZoFfDAWvOqpwIfrnQVzSezUqek1Po1WjAmtMfcqaDXzL0lY3neRXP4mv0aixgzWmV6VXy2Y8e1Y3nZgVnGSq9GglYc1rlDXlYzn92t3A8+jLr9GocYM1plS9ewZ/4QfZMuXg8r+J7i5R6NQqw5rzKXPIr+OZu8Xiu35RvmWj1agxgzQUqMy6/FfzY+vFc3zyqnmnI9WoAYM0VKsMXAR6eK35qz3g2d/eXD3oXNSR71QxYc4nKf2S+DP/v/HJZ9DPR8fwHdq5oWHNX+MYAAAAASUVORK5CYII=" alt="LTM"/>
+      <div class="ltmword">
+        <b>Cloud IQ Enterprise</b>
+        <span>Infrastructure &amp; Estate Diagnostic</span>
+      </div>
+    </div>
+    <div class="header-meta">
+      <a href="cloud-iq-sample-report.html" class="btn ghost small" style="text-decoration:none">📄 View Sample Report</a>
+      <button class="btn secondary small" onclick="openSessionModal()">⚙ Session Setup</button>
+      <button class="btn secondary small" onclick="exportSessionJSON()">💾 Save .ciq</button>
+      <button class="btn secondary small" onclick="triggerSessionLoad()">📂 Load .ciq</button>
+      <input type="file" id="ciqFileInput" accept=".ciq,.json" style="display:none" onchange="loadSessionFile(event)">
+    </div>
+  </div>
+</header>
+
+<!-- Active Session Ribbon -->
+<div class="session-bar">
+  <div class="wrap session-inner">
+    <div class="session-fields">
+      <span class="s-field">Client: <strong id="lblClient">Global Enterprise</strong></span>
+      <span class="s-field">Consultant: <strong id="lblLead">Ashutosh Dixit</strong></span>
+      <span class="s-field">Horizon: <strong id="lblHorizon">12-Month Modernization &amp; DC Exit</strong></span>
+      <span class="s-badge" id="lblModeBadge">Workshop Mode (30m)</span>
+    </div>
+    <div class="session-actions">
+      <label style="display:inline-flex;align-items:center;gap:6px;cursor:pointer;font-size:11px;color:var(--mut)">
+        <input type="checkbox" id="chkAnonymize" onchange="toggleAnonymize(this.checked)"> Anonymize for Readout
+      </label>
+      <button class="btn secondary small" style="padding:3px 8px;font-size:10.5px" onclick="toggleConsultantUnlock()" id="btnConsultantUnlock">
+        🔓 Consultant Unlock: Off
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-label="Assessment progress"><div class="progress-fill" id="pfill"></div></div>
+
+<div class="wrap screen" id="app"></div>
+
+<footer class="foot">
+  LTM &middot; Infrastructure Tech Advisory &middot; Public Cloud &amp; Modernization &nbsp;&middot;&nbsp; Cloud IQ Enterprise v2.1
+</footer>
+
+<!-- LTM Advisory Studio Drawer -->
+<div class="ai-drawer-overlay" id="aiDrawerOverlay" onclick="closeAiDrawer()"></div>
+<div class="ai-drawer" id="aiDrawer">
+  <div class="ai-drawer-header">
+    <div>
+      <h3 style="font-size:18px;font-weight:800">✨ LTM Advisory Studio</h3>
+      <p style="font-size:12px;color:var(--mut)">Grounded executive briefing engine powered by Gemini, OpenAI, Claude, Offline LTM or LTM SLM</p>
+    </div>
+    <button class="btn ghost small" onclick="closeAiDrawer()">✕</button>
+  </div>
+  <div class="ai-drawer-body">
+    <div style="background:var(--panel2);border:1px solid var(--line);border-radius:var(--radius-sm);padding:12px;margin-bottom:16px">
+      <div style="font-size:11px;font-weight:700;color:var(--mut);text-transform:uppercase;margin-bottom:6px">Model &amp; Execution Architecture</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div>
+          <label style="font-size:11px;color:var(--mut);display:block;margin-bottom:4px">Advisory Engine</label>
+          <select id="aiProvider" style="width:100%;padding:6px;border-radius:4px;border:1px solid var(--line)">
+            <option value="gemini">Google Gemini (Gemini 1.5 Flash)</option>
+            <option value="openai">OpenAI (GPT-4o)</option>
+            <option value="anthropic">Anthropic (Claude 3.5 Sonnet)</option>
+            <option value="heuristic">Offline LTM Grounded Heuristic</option>
+            <option value="slm" disabled>LTM Advisory SLM (Roadmap · Private Enterprise / On-Prem)</option>
+          </select>
+        </div>
+        <div>
+          <label style="font-size:11px;color:var(--mut);display:block;margin-bottom:4px">API Key (session only)</label>
+          <input type="password" id="aiApiKey" placeholder="API key..." style="width:100%;padding:6px;border-radius:4px;border:1px solid var(--line)">
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:10px;margin-bottom:14px">
+      <button class="btn" style="flex:1" onclick="generateAiBriefing()">⚡ Generate Grounded Memo</button>
+      <button class="btn secondary" onclick="copyAiPromptPack()">📋 Copy Prompt Pack</button>
+    </div>
+
+    <div id="aiMemoStatus" style="font-size:12px;color:var(--mut);font-family:var(--font-mono);margin-bottom:8px"></div>
+    <div class="ai-memo-box" id="aiMemoContent">Click "Generate Grounded Memo" to synthesize this estate's quantitative metrics, on-prem constraints, and contradiction analysis into an executive CIO briefing.</div>
+  </div>
+  <div class="ai-drawer-foot">
+    <span style="font-size:11px;color:var(--mut)">Direct browser connection · Zero server persistence</span>
+    <button class="btn ghost small" onclick="copyMemoText()">Copy Memo</button>
+  </div>
+</div>
+
+<!-- Boardroom Presentation Mode Modal -->
+<div id="boardroom-modal">
+  <div class="br-nav">
+    <div style="display:flex;align-items:center;gap:12px">
+      <span style="font-family:var(--font-display);font-weight:800;color:var(--coral);font-size:15px">LTM ADVISORY</span>
+      <span style="color:#666">|</span>
+      <span id="brClientHeader" style="font-weight:600;font-size:13px">Executive Diagnostic Readout</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px">
+      <span id="brSlideNum" style="font-family:var(--font-mono);font-size:12px;color:#888">Slide 1 of 6</span>
+      <button class="btn secondary small" onclick="exitBoardroom()">Exit (Esc)</button>
+    </div>
+  </div>
+  <div class="br-content" id="brContent"></div>
+  <div class="br-foot">
+    <button class="btn secondary small" onclick="prevSlide()">← Previous Slide</button>
+    <span style="font-size:12px;color:#666">Use ← / → Arrow Keys to Navigate</span>
+    <button class="btn small" onclick="nextSlide()">Next Slide →</button>
+  </div>
+</div>
+
+<script>
+/* ============================================================
+   Cloud IQ v2.1 Enterprise Diagnostic Data Model
+   ============================================================ */
+var CLOUD_IQ_VERSION = "2.1";
+var STORE_KEY = "cloudiq.v2.state";
+var SHARE_PREFIX = "#s=";
+
+// Session Context
+var SESSION = {
+  clientName: "Global Enterprise",
+  consultantLead: "Ashutosh Dixit",
+  engagementDate: new Date().toISOString().slice(0,10),
+  targetHorizon: "12-Month Modernization & DC Exit",
+  mode: "workshop", // "flash" (10m) vs "workshop" (30m)
+  anonymize: false,
+  isUnlocked: false, // Lead-gen gating flag
+  consultingProbes: {},
+  consultingProbeNotes: {}
+};
+
+// Automatic sector regulatory defaults (consulting intelligence)
+var SECTOR_DEFAULT_REG_INDICES = {
+  0: [0, 1, 4, 5, 6],       // BFSI: Residency, DORA, RBI/SEBI, PCI-DSS, SOX
+  1: [0, 7, 8, 9],          // Public Sector: Residency, FedRAMP, NIS2, SecNumCloud
+  2: [0, 2, 3],             // Healthcare: Residency, HIPAA, GDPR
+  3: [3, 5, 6],             // Retail: GDPR, PCI-DSS, SOX
+  4: [0, 8],                // Manufacturing: Residency, NIS2
+  5: [0, 3, 8],             // Telco: Residency, GDPR, NIS2
+  6: [0, 8],                // Energy: Residency, NIS2
+  7: [0, 3]                 // Other: Residency, GDPR
+};
+
+var QUESTIONS = [
+  // ---- Persona & Context ----
+  {id:"Q0.1",sec:"Persona & Context",q:"Which best describes your role?",type:"single",mode:"both",
+   opts:[["CIO / CTO"],["Head of Infrastructure / Cloud"],["Enterprise Architect"],["FinOps / IT Finance Lead"],["App Dev / Engineering Lead"],["CISO / Security & Compliance"]]},
+  {id:"Q0.2",sec:"Persona & Context",q:"Your industry sector?",type:"single",mode:"both",
+   opts:[["BFSI (Banking & Financial Services)"],["Public Sector & Government"],["Healthcare & Life Sciences"],["Retail & Consumer Goods"],["Manufacturing & Industrial"],["Telecom & Media"],["Energy & Utilities"],["Other"]]},
+  {id:"Q0.3",sec:"Persona & Context",q:"Which apply to your regulatory & compliance posture?",hint:"Pre-selected based on sector. Anchors digital sovereignty, DORA, and SecNumCloud.",type:"multi",mode:"both",
+   opts:[["Data residency required by law"],["DORA (EU Digital Operational Resilience Act)"],["HIPAA / HITECH (Health data)"],["GDPR / UK GDPR strict cross-border"],["RBI / SEBI (India Financial)"],["PCI-DSS Level 1"],["SOX / Internal Financial Controls"],["FedRAMP / Public Sector Security"],["NIS2 Directive (EU Critical Infrastructure)"],["SecNumCloud (France / EU Cloud de Confiance)"],["None significant"]],
+   frameworks:["residency","dora","hipaa","gdpr","rbi","pci","sox","fedramp","nis2","secnum","none"],
+   sovFlagExcept:"None significant"},
+  {id:"Q0.4",sec:"Persona & Context",q:"Where does your overall application estate sit today?",type:"single",mode:"both",
+   opts:[["100% on-premise / legacy data centres"],["Early pilots / <20% on cloud"],["Hybrid split (~40–60% migrated)"],["Mostly cloud (>75% on cloud)"],["Cloud-native / multi-cloud modern"]],
+   route:{0:{B:2},1:{B:2},2:{A:1,B:1},3:{A:2},4:{A:2}}},
+  {id:"Q0.5",sec:"Persona & Context",q:"Approximate size of application estate?",hint:"Used to anchor estate sizing and legacy drag.",type:"slider",mode:"both",
+   scale:["<50 apps","50–200 apps","200–500 apps","500–1000 apps","1000+ apps"], apps:[35,120,350,750,1500]},
+  {id:"Q0.6",sec:"Persona & Context",q:"Rank your top strategic objectives.",hint:"Drag to prioritize — #1 is the anchor binding constraint.",type:"rank",mode:"both",
+   opts:["Cost reduction & FinOps","Speed / agility / time-to-market","Compliance & data sovereignty","Legacy DC exit & modernization","Operational resilience & DR","AI enablement & platform readiness"],
+   objDim:{"Cost reduction & FinOps":"D3","Speed / agility / time-to-market":"D5","Compliance & data sovereignty":"D7","Legacy DC exit & modernization":"D2","Operational resilience & DR":"D4","AI enablement & platform readiness":"D8"},
+   objJourney:{"Cost reduction & FinOps":"A","Operational resilience & DR":"A","Legacy DC exit & modernization":"B","Compliance & data sovereignty":"B"}},
+
+  // ---- Estate & Footprint (Cloud + On-Premise Depth) ----
+  {id:"Q0.7",sec:"Estate footprint",q:"Which public cloud providers run active workloads?",hint:"Select all in production.",type:"multi",mode:"both",
+   opts:[["AWS"],["Microsoft Azure"],["Google Cloud (GCP)"],["Oracle Cloud Infrastructure (OCI)"],["Alibaba / Huawei"],["Private Cloud (OpenStack / Nutanix)"],["None / On-Premise Only"]]},
+  {id:"Q0.8",sec:"Estate footprint",q:"Approximate annual public-cloud spend?",hint:"Used to calculate the quantified financial leakage.",type:"single",mode:"both",
+   opts:[["< $1M / Minimal"],["$1M–$5M"],["$5M–$20M"],["$20M–$50M"],["$50M–$100M"],["$100M+"]],
+   midM:[0.5, 3, 12, 35, 75, 150]},
+  {id:"Q0.9",sec:"Estate footprint",q:"Commitment discount coverage (RI, Savings Plans, CUDs)?",hint:"Share of compute spend covered by pricing commitments.",type:"single",mode:"both",
+   opts:[["Don't know / Untracked"],["0–20% (mostly on-demand)"],["20–40%"],["40–60%"],["60–80%"],["80%+ (highly committed)"]],
+   midPct:[0.1, 0.1, 0.3, 0.5, 0.7, 0.9]},
+  {id:"Q0.10",sec:"Estate footprint",q:"What is the scale of your current on-premises data centre footprint?",hint:"On-premise physical scale.",type:"single",mode:"both",
+   opts:[["None (all cloud / colocation eliminated)"],["1–2 server rooms / edge sites"],["1–2 enterprise colocation facilities"],["3–5 enterprise data centres"],["6+ global facilities / legacy private estate"]],
+   dcScore:[5,4,3,2,1]},
+  {id:"Q0.11",sec:"Estate footprint",q:"Virtualization platform & VMware Broadcom renewal posture?",hint:"Identifies commercial hypervisor renewal pressure.",type:"single",mode:"both",
+   opts:[["No on-prem hypervisors (100% cloud)"],["VMware — long-term contract locked in"],["VMware — facing steep price renewal cliff"],["Nutanix AHV / Microsoft Hyper-V / KVM"],["Bare-metal OpenShift / Kubernetes"]],
+   vmwareRisk:[false,false,true,false,false]},
+  {id:"Q0.12",sec:"Estate footprint",q:"On-premise hardware age & facility lease horizon?",hint:"Identifies hard timelines driving migration urgency.",type:"single",mode:"both",
+   opts:[["No impending deadlines (>3 years safe)"],["Hardware EOL / refresh due in 12–18 months"],["Facility / colocation lease ending in 12 months"],["Imminent lease cliff (<6 months)"],["Hardware fully depreciated on month-to-month"]],
+   leaseCliff:[false,false,true,true,true]},
+  {id:"Q0.13",sec:"Estate footprint",q:"Which workload archetypes dominate your estate?",hint:"Select all that apply.",type:"multi",mode:"both",
+   opts:[["Legacy monoliths / 3-tier Java & .NET"],["Heavy COTS / ERP (SAP, Oracle, Mainframe)"],["VM-based application clusters"],["Containerized microservices (Docker/K8s)"],["Serverless & event-driven functions"],["Stateful data lakes & batch analytics"],["AI / LLM inference pipelines"]]},
+
+  // ---- Journey Signals ----
+  {id:"Q1.1",sec:"Journey signals",q:"Which statement best captures your current position?",hint:"Choose up to 2 cards.",type:"cards",multi:true,max:2,mode:"both",
+   opts:[
+    {tag:"T1",t:"On cloud but spend & ops is chaotic (Cloud Value Optimization Track)",j:{A:2}},
+    {tag:"T2",t:"Migrated workloads — urgently need governance & unit economics",j:{A:2}},
+    {tag:"T3",t:"Evaluating cloud targets / hesitant on migration strategy",j:{B:2}},
+    {tag:"T4",t:"Active DC exit or VMware renewal cliff driving modernization",j:{B:2}}
+   ]},
+  {id:"Q1.2",sec:"Journey signals",q:"What hurts most right now?",hint:"Pick up to 3 acute friction points.",type:"multi",max:3,mode:"both",
+   opts:[["Unpredictable / runaway cloud bills"],["Lack of centralized guardrails & security"],["Technical debt / monoliths hard to move"],["Expiring data centre lease or hardware cliff"],["VMware / licensing cost shock"],["Severe cloud skills & SRE shortage"],["Slow delivery / developer friction"],["Audit / regulatory compliance exposure"]]},
+
+  // ---- D1: Cloud Strategy & Placement ----
+  {id:"Q2.1",sec:"Cloud Strategy & Placement",dim:"D1",q:"Is your target operating landscape & placement policy defined?",type:"single",mode:"both",
+   opts:[["No documented landscape — ad-hoc decisions"],["Informal guidelines per team"],["Documented decision tree (SaaS vs PaaS vs IaaS)"],["Formally modelled with TCO & risk scorecards"],["Automated workload placement policy enforced in CI/CD"]],maturity:true},
+  {id:"Q2.2",sec:"Cloud Strategy & Placement",dim:"D1",q:"How are multi-cloud vs single-cloud decisions governed?",type:"single",mode:"both",
+   opts:[["Accidental multi-cloud without central strategy"],["Preferred single provider with exceptions"],["Deliberate best-of-breed multi-cloud framework"],["Governed abstraction layer with exit-strategy playbooks"],["Workload portability with unified API control plane"]],maturity:true},
+  {id:"Q2.3",sec:"Cloud Strategy & Placement",dim:"D1",q:"Business-IT alignment on transformation milestones?",type:"single",mode:"workshop",
+   opts:[["IT-driven only; business disengaged"],["Loose reference to strategic business goals"],["Co-authored milestones with business units"],["Shared quarterly OKRs tracking value realization"],["Continuous business-IT product team funding model"]],maturity:true},
+
+  // ---- D2: Migration & Modernization (6-Rs) ----
+  {id:"Q3.1",sec:"Migration & Modernization",dim:"D2",q:"Have you defined dispositions (the 6 R's) across your app estate?",hint:"Rehost, Replatform, Refactor, Repurchase, Retain, Retire.",type:"single",mode:"both",
+   opts:[["No portfolio disposition mapping"],["Informal categorisation for top 10 apps"],["Documented 6-R mapping for critical workloads"],["Full estate mapped with business case & roadmap"],["Continuously maintained CMDB disposition lifecycle"]],maturity:true},
+  {id:"Q3.2",sec:"Migration & Modernization",dim:"D2",q:"How heavy is technical debt in the core applications?",type:"slider",mode:"both",
+   scale:["Paralyzing / EOS systems","Heavy monolithic debt","Moderate manageable debt","Well-maintained codebase","Cloud-native / decoupled"],maturity:true},
+  {id:"Q3.3",sec:"Migration & Modernization",dim:"D2",q:"Do you have an automated migration factory & pattern library?",type:"single",mode:"workshop",
+   opts:[["Every migration is a bespoke manual project"],["Some standard templates and playbooks"],["Repeatable migration factory with automated pipelines"],["Golden patterns with automated code refactoring tooling"],["Continuous modernization with platform-as-a-product"]],maturity:true},
+
+  // ---- D3: Cost & FinOps ----
+  {id:"Q4.1",sec:"Cost & FinOps",dim:"D3",q:"Maturity of cloud cost allocation & visibility?",type:"single",mode:"both",
+   opts:[["No cost attribution — single massive invoice"],["Reactive bill reviews at month-end"],["Tagging policy enforced with monthly budget alerts"],["Automated showback / chargeback to cost centres"],["Unit economics tracked (cost per business transaction)"]],maturity:true},
+  {id:"Q4.2",sec:"Cost & FinOps",dim:"D3",q:"Which FinOps capabilities are live and automated?",hint:"Select all operational practices.",type:"multi",mode:"both",
+   opts:[["Tagging hygiene policy"],["Automated rightsizing alerts"],["Commitment discount management (RIs/SPs)"],["Idle resource auto-shutdown (Dev/QA)"],["Storage lifecycle auto-tiering"],["Unit economic cost modelling"]],maturityCount:true},
+  {id:"Q4.3",sec:"Cost & FinOps",dim:"D3",q:"Estimated cloud waste / overspend rate?",type:"single",mode:"both",
+   opts:[["Don't know / Untracked (~30%+ industry avg)"],["<10% (tightly controlled)"],["10–20% (typical hygiene leak)"],["20–35% (substantial waste)"],[">35% (severe unoptimized spend)"]],
+   waste:[0.30, 0.08, 0.16, 0.28, 0.40]},
+  {id:"Q4.4",sec:"Cost & FinOps",dim:"D3",q:"Is FinOps embedded in engineering teams' sprint cycles?",type:"single",mode:"workshop",
+   opts:[["Engineering ignores cost; finance only"],["Occasional cost optimization campaigns"],["Cost visibility provided in pull requests / CI"],["Engineers accountable for unit cost budgets"],["Autonomous optimization bots & automated waste remediation"]],maturity:true},
+
+  // ---- D4: Hybrid & Multi-Cloud Ops ----
+  {id:"Q5.1",sec:"Hybrid & Multi-Cloud Ops",dim:"D4",q:"How consistent are operations across hybrid / multi-cloud environments?",type:"single",mode:"both",
+   opts:[["Completely siloed teams and tooling"],["Manual coordination between on-prem and cloud"],["Defined shared operating model with standard runbooks"],["Unified control plane across all clouds"],["Fully automated self-healing SRE platform"]],maturity:true},
+  {id:"Q5.2",sec:"Hybrid & Multi-Cloud Ops",dim:"D4",q:"Do you operate a unified observability & telemetry mesh?",type:"tf",mode:"both",maturityTF:true},
+  {id:"Q5.3",sec:"Hybrid & Multi-Cloud Ops",dim:"D4",q:"Disaster Recovery (DR) and business continuity posture?",type:"single",mode:"workshop",
+   opts:[["Unverified / manual tape restores"],["Warm DR in secondary DC with >24h RTO"],["Active-passive cross-region cloud replication"],["Active-active multi-region / hybrid resilience"],["Continuous chaos engineering & automated cross-cloud failover"]],maturity:true},
+
+  // ---- D5: Platform Engineering & DevEx ----
+  {id:"Q6.1",sec:"Platform Engineering",dim:"D5",q:"Infrastructure as Code (IaC) & automation maturity?",type:"single",mode:"both",
+   opts:[["Manual click-ops in web consoles"],["Ad-hoc Bash / PowerShell scripts"],["IaC standardized (Terraform / Bicep / OpenTofu)"],["GitOps CI/CD with automated drift detection"],["Policy-as-code (OPA/Sentinel) with self-healing infrastructure"]],maturity:true},
+  {id:"Q6.2",sec:"Platform Engineering",dim:"D5",q:"Do engineering teams have self-service 'Golden Paths'?",hint:"Paved-road templates with networking, IAM, CI/CD and security baked in.",type:"single",mode:"both",
+   opts:[["No — every team builds bespoke infra"],["A few template repos; mostly manual setup"],["Documented golden paths used by ~50% of teams"],["Automated Internal Developer Platform (IDP) used by default"],["Full platform-as-a-product with developer NPS tracking"]],maturity:true},
+  {id:"Q6.3",sec:"Platform Engineering",dim:"D5",q:"Typical lead time to provision a production-grade environment?",type:"single",mode:"workshop",
+   opts:[["> 4 weeks (ticket-driven bureaucracy)"],["1–4 weeks (semi-automated)"],["2–5 business days"],["1–4 hours (self-service catalog)"],["< 15 minutes (fully automated GitOps)"]],maturity:true},
+
+  // ---- D6: Data Centre & Estate Health ----
+  {id:"Q7.1",sec:"Data Centre & Estate",dim:"D6",q:"What is your data centre exit or consolidation posture?",type:"single",mode:"both",
+   opts:[["Committed to owned DCs long-term"],["No strategic plan despite rising costs"],["Actively evaluating colocation / DC exit options"],["Formal DC exit programme committed with target dates"],["DC exit underway or fully complete"]],maturity:true},
+  {id:"Q7.2",sec:"Data Centre & Estate",dim:"D6",q:"Fidelity of application inventory & dependency mapping?",type:"single",mode:"both",
+   opts:[["No central inventory (tribal knowledge)"],["Outdated manual spreadsheets"],["Standard CMDB updated periodically"],["Automated discovery tools deployed (e.g. Device42, Dynatrace)"],["Real-time continuous dependency graph with API telemetry"]],maturity:true},
+  {id:"Q7.3",sec:"Data Centre & Estate",dim:"D6",q:"On-premise storage saturation & ransomware backup immutability?",type:"single",mode:"workshop",
+   opts:[["Storage nearing 90% capacity; legacy backups"],["Adequate SAN capacity; mutable backups"],["Modern SAN with offsite tape/cloud replication"],["Air-gapped immutable backups tested quarterly"],["Continuous zero-trust cyber-resilience with instant snapshot recovery"]],maturity:true},
+
+  // ---- D7: Governance, Security & Zero Trust ----
+  {id:"Q8.1",sec:"Governance & Security",dim:"D7",q:"Maturity of cloud landing zones & security guardrails?",type:"single",mode:"both",
+   opts:[["No landing zones — flat network topology"],["Basic perimeter security and reactive scans"],["Well-Architected landing zone baseline deployed"],["Automated preventative guardrails & policy-as-code"],["Continuous real-time posture management (CSPM) with auto-remediation"]],maturity:true},
+  {id:"Q8.2",sec:"Governance & Security",dim:"D7",q:"Do you have binding digital sovereignty or data-residency mandates?",type:"tf",mode:"both",sovFlagTF:true,maturityTF:true},
+  {id:"Q8.3",sec:"Governance & Security",dim:"D7",q:"Identity, Zero Trust & IAM blast-radius containment?",type:"single",mode:"workshop",
+   opts:[["Overprivileged shared admin credentials"],["Federated AD/Okta but wide internal network trust"],["Role-based access (RBAC) with MFA enforced"],["Least-privilege JIT (Just-In-Time) access & microsegmentation"],["Zero Trust architecture with continuous identity verification"]],maturity:true},
+
+  // ---- D8: Data Platform & AI Readiness ----
+  {id:"Q9.1",sec:"Data & AI Readiness",dim:"D8",q:"How ready is your enterprise data foundation for modern AI?",type:"single",mode:"both",
+   opts:[["Siloed legacy databases / no centralized data lake"],["Data lake in place but untagged and ungoverned"],["Governed lakehouse (Snowflake/Databricks/BigQuery) with catalogs"],["Data contracts, quality SLOs, and lineage monitoring enforced"],["Enterprise feature stores & real-time data mesh in production"]],maturity:true},
+  {id:"Q9.2",sec:"Data & AI Readiness",dim:"D8",q:"AI & GenAI ambitions over the next 12 months?",hint:"Select all targeted initiatives.",type:"multi",mode:"both",
+   opts:[["None yet / monitoring only"],["GenAI copilots & developer productivity"],["Customer-facing AI chatbots & assistants"],["Domain-specific fine-tuned LLMs on corporate data"],["Autonomous agentic workflows & core product infusion"]],aiFlagExcept:"None yet / monitoring only"},
+  {id:"Q9.3",sec:"Data & AI Readiness",dim:"D8",q:"AI cost governance (TokenOps) and data boundary protection?",type:"single",mode:"workshop",
+   opts:[["No visibility into AI API usage or data leaks"],["Basic acceptable-use policy for public AI"],["Private VPC-hosted models with DLP/PII filtering"],["Token budgets, provider cost routing & observability"],["Full enterprise AI boundary with sovereign compute control"]],maturity:true}
+];
+
+// Assessment Groups (12 themed cards)
+var GROUPS = [
+  {id:"g0", name:"1 · Persona & Client Context", qs:["Q0.1","Q0.2","Q0.3","Q0.4","Q0.5"]},
+  {id:"g1", name:"2 · Strategic Priorities & Objectives", qs:["Q0.6"]},
+  {id:"g2", name:"3 · Cloud & Infrastructure Footprint", qs:["Q0.7","Q0.8","Q0.9","Q0.10","Q0.11","Q0.12","Q0.13"]},
+  {id:"g3", name:"4 · Strategic Transformation Signals", qs:["Q1.1","Q1.2"]},
+  {id:"g4", name:"5 · Cloud Strategy & Placement (D1)", qs:["Q2.1","Q2.2","Q2.3"]},
+  {id:"g5", name:"6 · Migration & Modernization (D2)", qs:["Q3.1","Q3.2","Q3.3"]},
+  {id:"g6", name:"7 · Cost & FinOps Excellence (D3)", qs:["Q4.1","Q4.2","Q4.3","Q4.4"]},
+  {id:"g7", name:"8 · Hybrid & Multi-Cloud Ops (D4)", qs:["Q5.1","Q5.2","Q5.3"]},
+  {id:"g8", name:"9 · Platform Engineering & DevEx (D5)", qs:["Q6.1","Q6.2","Q6.3"]},
+  {id:"g9", name:"10 · Data Centre & Infrastructure (D6)", qs:["Q7.1","Q7.2","Q7.3"]},
+  {id:"g10",name:"11 · Governance, Security & Zero Trust (D7)", qs:["Q8.1","Q8.2","Q8.3"]},
+  {id:"g11",name:"12 · Data Platform & AI Readiness (D8)", qs:["Q9.1","Q9.2","Q9.3"]}
+];
+
+var DIM_NAMES = {
+  D1: "Cloud Strategy & Placement",
+  D2: "Migration & Modernization",
+  D3: "Cost & FinOps Excellence",
+  D4: "Hybrid & Multi-Cloud Ops",
+  D5: "Platform Engineering & DevEx",
+  D6: "Data Centre & Estate Health",
+  D7: "Governance, Security & Zero Trust",
+  D8: "Data Platform & AI Readiness"
+};
+
+var INDUSTRY_BENCHMARKS = {
+  "BFSI (Banking & Financial Services)": {overall:3.2, D1:3.4, D2:2.8, D3:3.3, D4:3.1, D5:3.0, D6:2.9, D7:3.8, D8:3.3, note:"Strict regulation (DORA/RBI) drives D7, but legacy core slows D2/D6."},
+  "Public Sector & Government":          {overall:2.6, D1:2.8, D2:2.3, D3:2.5, D4:2.6, D5:2.4, D6:2.4, D7:3.5, D8:2.3, note:"Sovereignty and procurement cycles slow platform engineering."},
+  "Healthcare & Life Sciences":          {overall:2.8, D1:3.0, D2:2.6, D3:2.7, D4:2.7, D5:2.6, D6:2.7, D7:3.6, D8:2.5, note:"HIPAA/GxP compliance prioritised; data silos impede AI."},
+  "Retail & Consumer Goods":             {overall:3.1, D1:3.2, D2:3.3, D3:3.4, D4:3.0, D5:3.2, D6:2.8, D7:2.9, D8:3.0, note:"Cost-conscious with agile digital storefronts, uneven DC exit."},
+  "Manufacturing & Industrial":          {overall:2.8, D1:2.9, D2:2.7, D3:2.8, D4:2.9, D5:2.6, D6:2.6, D7:3.1, D8:2.8, note:"OT/SCADA operational dependencies anchor heavy on-premise footprint."},
+  "Telecom & Media":                     {overall:3.3, D1:3.5, D2:3.2, D3:3.4, D4:3.4, D5:3.5, D6:3.0, D7:3.2, D8:3.2, note:"High container/Kubernetes adoption with advanced network orchestration."},
+  "Energy & Utilities":                  {overall:2.7, D1:2.9, D2:2.4, D3:2.6, D4:2.8, D5:2.5, D6:2.5, D7:3.3, D8:2.6, note:"Critical infrastructure security focus; conservative modernization."},
+  "Other":                               {overall:2.9, D1:3.0, D2:2.8, D3:3.0, D4:2.9, D5:2.8, D6:2.7, D7:3.2, D8:2.8, note:"Cross-industry directional median baseline."}
+};
+
+var OFFERINGS = {
+  "03.1": {name:"Right Cloud Strategy & Workload Placement", track:"Estate Modernization", door:"Advisory → Placement & Business Case"},
+  "03.2": {name:"Hybrid & Multi-Cloud Management", track:"Cloud Value Optimization", door:"Advise → Unified Control Plane"},
+  "03.3": {name:"FinOps Excellence & Cloud Unit Economics", track:"Cloud Value Optimization", door:"Advise → Execute Cost Transformation", xref:"+ FinOps IQ"},
+  "03.4": {name:"Application Modernization & Migration", track:"Shared Cross-Track", door:"Advise → 6-R Migration Factory"},
+  "03.5": {name:"Data Centre & Compute Capacity Strategy", track:"Estate Modernization", door:"Advise → DC Decommissioning & Exit", xref:"+ Modernization IQ"},
+  "03.6": {name:"Platform Engineering & Developer Experience", track:"Shared Cross-Track", door:"Advise → Build Internal Developer Platform (IDP)"}
+};
+
+/* ============================================================
+   Application State & Persistence
+   ============================================================ */
+var gIdx = 0;
+var A = {};
+var RESULT = null;
+var currentSlide = 0;
+var app = document.getElementById('app');
+var pfill = document.getElementById('pfill');
+
+function updateSessionUI(){
+  document.getElementById('lblClient').textContent = SESSION.anonymize ? "Confidential Enterprise Client" : SESSION.clientName;
+  document.getElementById('lblLead').textContent = SESSION.consultantLead;
+  document.getElementById('lblHorizon').textContent = SESSION.targetHorizon;
+  const badge = document.getElementById('lblModeBadge');
+  if(SESSION.mode==="workshop"){
+    badge.textContent = "Workshop Mode (30m · Deep Discovery)";
+    badge.className = "s-badge mode-workshop";
+  } else {
+    badge.textContent = "Executive Flash Mode (10m · Rapid Read)";
+    badge.className = "s-badge mode-flash";
+  }
+  const btnUnlock = document.getElementById('btnConsultantUnlock');
+  if(btnUnlock){
+    btnUnlock.textContent = SESSION.isUnlocked ? "🔓 Consultant Unlock: Active" : "🔒 Consultant Unlock: Off";
+    btnUnlock.style.background = SESSION.isUnlocked ? "var(--green-tint)" : "var(--panel2)";
+    btnUnlock.style.color = SESSION.isUnlocked ? "var(--green)" : "var(--ink)";
+    btnUnlock.style.borderColor = SESSION.isUnlocked ? "var(--green)" : "var(--line)";
+  }
+}
+
+function toggleConsultantUnlock(){
+  SESSION.isUnlocked = !SESSION.isUnlocked;
+  updateSessionUI();
+  if(RESULT) showResults(RESULT);
+}
+
+function saveState(){
+  try{ localStorage.setItem(STORE_KEY, JSON.stringify({SESSION, gIdx, A, ts:Date.now()})); }catch(e){}
+}
+function loadState(){
+  try{
+    const raw = localStorage.getItem(STORE_KEY); if(!raw) return null;
+    const st = JSON.parse(raw);
+    if(st && st.A && typeof st.gIdx === "number") return st;
+    return null;
+  }catch(e){ return null; }
+}
+function clearState(){ try{ localStorage.removeItem(STORE_KEY); }catch(e){} }
+function hydrate(st){
+  if(st.SESSION) Object.assign(SESSION, st.SESSION);
+  Object.keys(A).forEach(k=>delete A[k]);
+  Object.assign(A, st.A||{});
+  gIdx = st.gIdx||0;
+  updateSessionUI();
+}
+
+function toggleAnonymize(val){
+  SESSION.anonymize = val;
+  updateSessionUI();
+  if(RESULT) showResults(RESULT);
+}
+
+/* ============================================================
+   Render Screen Pipeline
+   ============================================================ */
+function start(){
+  updateSessionUI();
+  const st = loadState();
+  let resumeHtml = "";
+  if(st && (st.gIdx > 0 || Object.keys(st.A||{}).length > 0)){
+    const pct = Math.round((st.gIdx/GROUPS.length)*100);
+    resumeHtml = `<div class="card" style="background:var(--coral-tint);border-color:var(--coral);padding:16px 20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px">
+      <span style="font-family:var(--font-display);font-weight:700;color:var(--coral-dkr);font-size:13.5px">
+        You were partway through an engagement assessment (${pct}% complete). Resume where you left off?
+      </span>
+      <div style="display:flex;gap:8px">
+        <button class="btn small" onclick="resumeSaved()">Resume Assessment</button>
+        <button class="btn secondary small" onclick="startFresh()">Start Fresh</button>
+      </div>
+    </div>`;
+  }
+
+  app.innerHTML = `
+    ${resumeHtml}
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:8px">
+        <div class="sec-label">LTM Infrastructure Tech Advisory · Diagnostic Platform</div>
+        <a href="cloud-iq-sample-report.html" class="btn ghost small" style="text-decoration:none">📄 View Finished Sample Report →</a>
+      </div>
+      <h1 style="font-size:34px;line-height:1.2;margin-bottom:12px">Enterprise Cloud &amp; Hybrid Estate Diagnostic</h1>
+      <p class="lead">
+        A rigorous, consultant-led diagnostic platform scanning on-premises data centre footprint, VMware renewal cliffs, and public-cloud maturity across 8 core dimensions. Outputs an executive <b>Maturity Scorecard</b>, <b>2D Strategic Risk Heatmap</b>, <b>4-Phase Modernization Roadmap</b>, and <b>Decomposed Value-at-Stake Hook</b>.
+      </p>
+
+      <div style="margin:16px 0">
+        <span class="pill">📊 8 Core Dimensions (D1–D8)</span>
+        <span class="pill">🔥 2D Risk Heatmap</span>
+        <span class="pill">🧭 4-Phase Horizon Roadmap</span>
+        <span class="pill">💰 Quantified Cost Leakage ($)</span>
+        <span class="pill">✨ LTM Advisory Studio</span>
+        <span class="pill">📄 Boardroom PDF &amp; Slide Export</span>
+      </div>
+
+      <div class="two-col" style="margin:22px 0 16px">
+        <div style="background:var(--panel2);border:1.5px solid var(--line);border-radius:var(--radius-md);padding:18px;cursor:pointer;transition:.15s" onclick="setMode('flash')" id="cardModeFlash">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+            <h3 style="font-size:16px">⚡ Executive Flash Mode</h3>
+            <span class="s-badge mode-flash">~10 Mins</span>
+          </div>
+          <p style="font-size:13px;color:var(--mut)">Rapid high-level scan with 1 key anchor question per dimension. Built for initial CIO/CTO alignment readouts.</p>
+        </div>
+
+        <div style="background:var(--panel2);border:2px solid var(--coral);border-radius:var(--radius-md);padding:18px;cursor:pointer;transition:.15s" onclick="setMode('workshop')" id="cardModeWorkshop">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+            <h3 style="font-size:16px;color:var(--coral)">🔬 Comprehensive Workshop Mode</h3>
+            <span class="s-badge mode-workshop">~25–35 Mins</span>
+          </div>
+          <p style="font-size:13px;color:var(--mut)">Calibrated multi-criteria discovery covering on-premise storage, VMware Broadcom risk, DevEx golden paths, and TokenOps.</p>
+        </div>
+      </div>
+
+      <div class="nav" style="margin-top:24px">
+        <button class="btn secondary" onclick="openSessionModal()">⚙ Configure Session Details</button>
+        <button class="btn big" onclick="begin()">Start Diagnostic Assessment →</button>
+      </div>
+    </div>
+  `;
+  pfill.style.width = "0%";
+}
+
+function setMode(m){
+  SESSION.mode = m;
+  updateSessionUI();
+  const cf = document.getElementById('cardModeFlash');
+  const cw = document.getElementById('cardModeWorkshop');
+  if(cf && cw){
+    if(m==="flash"){
+      cf.style.border = "2px solid var(--coral)";
+      cw.style.border = "1.5px solid var(--line)";
+    } else {
+      cw.style.border = "2px solid var(--coral)";
+      cf.style.border = "1.5px solid var(--line)";
+    }
+  }
+}
+
+function begin(){
+  clearState();
+  Object.keys(A).forEach(k=>delete A[k]);
+  gIdx = 0;
+  saveState();
+  renderGroup();
+}
+function resumeSaved(){
+  const st = loadState();
+  if(!st){ begin(); return; }
+  hydrate(st);
+  renderGroup();
+}
+function startFresh(){
+  clearState();
+  begin();
+}
+
+function shouldSkip(Q){
+  if(SESSION.mode === "flash" && Q.mode === "workshop") return true;
+  return false;
+}
+
+function renderGroup(){
+  const G = GROUPS[gIdx];
+  pfill.style.width = ((gIdx) / GROUPS.length * 100) + "%";
+
+  // Ensure default regulatory frameworks are populated if sector is selected
+  if(A["Q0.2"] !== undefined && (!A["Q0.3"] || !A["Q0.3"].length)){
+    A["Q0.3"] = [...(SECTOR_DEFAULT_REG_INDICES[A["Q0.2"]] || [0])];
+  }
+
+  const activeQs = G.qs.filter(qid => {
+    const Q = QUESTIONS.find(x => x.id === qid);
+    return !shouldSkip(Q);
+  });
+
+  const parts = activeQs.map(qid => {
+    const Q = QUESTIONS.find(x => x.id === qid);
+    let body = "";
+    if(Q.type === "single") body = renderSingle(Q);
+    else if(Q.type === "multi") body = renderMulti(Q);
+    else if(Q.type === "cards") body = renderCards(Q);
+    else if(Q.type === "slider") body = renderSlider(Q);
+    else if(Q.type === "rank") body = renderRank(Q);
+    else if(Q.type === "tf") body = renderTF(Q);
+
+    const dimBadge = Q.dim ? `<span class="qmeta-tag">${Q.dim}</span>` : "";
+    return `
+      <div class="qblock">
+        <div class="qtext">${Q.q} ${dimBadge}</div>
+        <div class="qhint">${Q.hint || "&nbsp;"}</div>
+        ${body}
+      </div>
+    `;
+  }).join("");
+
+  const answered = activeQs.every(qid => {
+    const Q = QUESTIONS.find(x => x.id === qid);
+    return isAnswered(Q);
+  });
+
+  app.innerHTML = `
+    <div class="card">
+      <div class="card-header-row">
+        <div>
+          <div class="sec-label">${G.name}</div>
+          <h2 style="font-size:22px">${G.name.split("·")[1]||G.name}</h2>
+        </div>
+        <span class="qcount">Section ${gIdx+1} of ${GROUPS.length}</span>
+      </div>
+
+      ${parts}
+
+      <div class="nav" style="margin-top:24px">
+        <button class="btn ghost" onclick="prevGroup()" ${gIdx===0?'style="visibility:hidden"':''}>← Back</button>
+        <span class="qcount">Card ${gIdx+1} / ${GROUPS.length}</span>
+        <button class="btn" id="nextBtn" onclick="nextGroup()" ${answered?"":"disabled"}>
+          ${gIdx === GROUPS.length - 1 ? "Synthesize Results →" : "Next Section →"}
+        </button>
+      </div>
+    </div>
+  `;
+
+  activeQs.forEach(qid => {
+    const Q = QUESTIONS.find(x => x.id === qid);
+    if(Q.type === "rank") wireRank(Q);
+  });
+
+  saveState();
+}
+
+function isAnswered(Q){
+  const v = A[Q.id];
+  if(Q.type === "multi") return Array.isArray(v) && v.length > 0;
+  if(Q.type === "cards" && Q.multi) return Array.isArray(v) && v.length > 0;
+  if(Q.type === "rank" || Q.type === "slider") return true;
+  return v !== undefined && v !== null;
+}
+
+function refreshNext(){
+  const G = GROUPS[gIdx];
+  const activeQs = G.qs.filter(qid => !shouldSkip(QUESTIONS.find(x => x.id === qid)));
+  const ok = activeQs.every(qid => isAnswered(QUESTIONS.find(x => x.id === qid)));
+  const b = document.getElementById('nextBtn');
+  if(b) b.disabled = !ok;
+  saveState();
+}
+
+/* Question Type Renderers */
+function renderSingle(Q){
+  return `<div class="opts" role="radiogroup" aria-label="${Q.q}">` +
+    Q.opts.map((o,i) => {
+      const sel = A[Q.id] === i ? 'sel' : '';
+      return `<div class="opt ${sel}" role="radio" tabindex="0" onclick="pickSingle('${Q.id}',${i})">
+        <span class="mark"></span>
+        <span>${o[0]}${o[1] ? `<span class="sub">${o[1]}</span>` : ""}</span>
+      </div>`;
+    }).join("") + `</div>`;
+}
+function pickSingle(id,i){
+  A[id] = i;
+
+  // Auto-populate regulatory defaults whenever industry sector is selected or changed
+  if(id === "Q0.2"){
+    const defaultIndices = SECTOR_DEFAULT_REG_INDICES[i] || [0];
+    A["Q0.3"] = [...defaultIndices];
+  }
+
+  renderGroup();
+}
+
+function renderMulti(Q){
+  const sel = A[Q.id] || [];
+  return `<div class="opts" role="group" aria-label="${Q.q}">` +
+    Q.opts.map((o,i) => {
+      const on = sel.includes(i) ? 'sel' : '';
+      return `<div class="opt multi ${on}" role="checkbox" tabindex="0" onclick="pickMulti('${Q.id}',${i})">
+        <span class="mark"></span>
+        <span>${o[0]}</span>
+      </div>`;
+    }).join("") + `</div>`;
+}
+function pickMulti(id,i){
+  const Q = QUESTIONS.find(x => x.id === id);
+  let sel = A[id] || [];
+  if(sel.includes(i)) sel = sel.filter(x => x !== i);
+  else {
+    if(Q.max && sel.length >= Q.max) return;
+    sel = [...sel, i];
+  }
+  A[id] = sel;
+  renderGroup();
+}
+
+function renderCards(Q){
+  const multi = !!Q.multi;
+  const sel = multi ? (A[Q.id] || []) : [];
+  return `<div class="scen" role="group" aria-label="${Q.q}">` +
+    Q.opts.map((o,i) => {
+      const on = multi ? sel.includes(i) : A[Q.id] === i;
+      const handler = multi ? `pickMulti('${Q.id}',${i})` : `pickSingle('${Q.id}',${i})`;
+      return `<div class="opt ${on?'sel':''}" tabindex="0" onclick="${handler}">
+        <span class="tag">${o.tag}</span>
+        <span>${o.t}</span>
+      </div>`;
+    }).join("") + `</div>`;
+}
+
+function renderSlider(Q){
+  if(A[Q.id] === undefined) A[Q.id] = Math.floor(Q.scale.length / 2);
+  const v = A[Q.id];
+  return `<div class="slider-wrap">
+    <div class="slider-val" id="sv_${Q.id}">${Q.scale[v]}</div>
+    <input type="range" min="0" max="${Q.scale.length-1}" value="${v}" oninput="setSlider('${Q.id}',this.value)">
+    <div class="slider-labels"><span>${Q.scale[0]}</span><span>${Q.scale[Q.scale.length-1]}</span></div>
+  </div>`;
+}
+function setSlider(id,val){
+  A[id] = +val;
+  const Q = QUESTIONS.find(x => x.id === id);
+  document.getElementById('sv_'+id).textContent = Q.scale[val];
+  refreshNext();
+}
+
+function renderRank(Q){
+  if(!A[Q.id]) A[Q.id] = [...Q.opts];
+  return `<div class="rank-list" id="rank_${Q.id}">` +
+    A[Q.id].map((o,i) => `
+      <div class="rank-item" draggable="true" data-val="${o}">
+        <span class="num">${i+1}</span>
+        <span>${o}</span>
+        <span class="grip">⣿</span>
+      </div>
+    `).join("") + `</div>`;
+}
+function wireRank(Q){
+  const list = document.getElementById('rank_' + Q.id);
+  if(!list) return;
+  let dragEl = null;
+  list.querySelectorAll('.rank-item').forEach(it => {
+    it.addEventListener('dragstart', () => { dragEl = it; it.classList.add('dragging'); });
+    it.addEventListener('dragend', () => { it.classList.remove('dragging'); saveRank(Q); });
+  });
+  list.addEventListener('dragover', e => {
+    e.preventDefault();
+    const after = getAfter(list, e.clientY);
+    if(after == null) list.appendChild(dragEl); else list.insertBefore(dragEl, after);
+  });
+}
+function getAfter(list, y){
+  const els = [...list.querySelectorAll('.rank-item:not(.dragging)')];
+  return els.reduce((closest, child) => {
+    const box = child.getBoundingClientRect();
+    const offset = y - box.top - box.height / 2;
+    if(offset < 0 && offset > closest.offset) return {offset, element:child};
+    return closest;
+  }, {offset:-Infinity}).element || null;
+}
+function saveRank(Q){
+  const list = document.getElementById('rank_' + Q.id);
+  A[Q.id] = [...list.querySelectorAll('.rank-item')].map(x => x.dataset.val);
+  list.querySelectorAll('.rank-item .num').forEach((n,i) => n.textContent = i+1);
+}
+
+function renderTF(Q){
+  return `<div class="tf" role="radiogroup">
+    <div class="opt ${A[Q.id]===true?'sel':''}" onclick="pickSingle('${Q.id}',true)"><span class="mark"></span><span>Yes / Confirmed</span></div>
+    <div class="opt ${A[Q.id]===false?'sel':''}" onclick="pickSingle('${Q.id}',false)"><span class="mark"></span><span>No / Unresolved</span></div>
+  </div>`;
+}
+
+function nextGroup(){
+  saveState();
+  if(gIdx < GROUPS.length - 1){
+    gIdx++;
+    renderGroup();
+    window.scrollTo({top:0, behavior:'smooth'});
+  } else {
+    startConsultingDepthStep();
+  }
+}
+function prevGroup(){
+  if(gIdx > 0){
+    gIdx--;
+    renderGroup();
+    window.scrollTo({top:0, behavior:'smooth'});
+  }
+}
+
+/* ============================================================
+   LTM Advisory · Dynamic Consulting Depth Read Inquiries
+   ============================================================ */
+function startConsultingDepthStep(){
+  const R = compute();
+  const probes = generateConsultingProbes(A, R);
+  if(!probes || probes.length === 0){
+    clearState();
+    computeAndShow();
+  } else {
+    renderConsultingDepthStep(probes, R);
+    window.scrollTo({top:0, behavior:'smooth'});
+  }
+}
+
+function generateConsultingProbes(A, R){
+  const probes = [];
+
+  // Probe 1: FinOps & Commitment Anomaly
+  const spendVal = R.totalCloudSpend || 12000000;
+  const isHighSpendLowCommit = spendVal >= 5000000 && (A["Q0.9"] === 0 || A["Q0.9"] === 1);
+  const isFinOpsTopObj = R.topObj && R.topObj.toLowerCase().includes("cost");
+  if(isHighSpendLowCommit || (isFinOpsTopObj && spendVal >= 2000000)){
+    probes.push({
+      id: "P_FINOPS",
+      badge: "⚠ Cost & FinOps Anomaly",
+      badgeClass: "red",
+      q: `You reported ~$${(spendVal/1000000).toFixed(1)}M/yr in public cloud spend with pricing commitment coverage under 40%. Who currently approves on-demand cloud budget overruns, and do engineering squads have unit-cost visibility?`,
+      options: [
+        "No formal approval; overages absorbed into central IT budget with zero squad visibility",
+        "Central FinOps/Procurement reviews monthly retroactively; squads lack unit cost KPIs",
+        "Automated alerts trigger when squads exceed forecast, but no hard enforcement",
+        "Formal exception approvals required for >10% variance with squad-level chargeback"
+      ],
+      subjectivePrompt: "Consultant / Client notes on FinOps governance gaps, untagged workloads, or budget variance approvals..."
+    });
+  }
+
+  // Probe 2: Data Centre Lease Expiry & Colocation Cliff
+  if(R.leaseCliff || [2,3,4].includes(A["Q0.12"])){
+    probes.push({
+      id: "P_DC_EXIT",
+      badge: "⏰ Impending DC Lease Deadline",
+      badgeClass: "red",
+      q: "Your on-premises hardware or facility lease expires within 12–24 months. What is the contractual notice period required to terminate your colocation lease, and what are the penalty escalations if migration stalls?",
+      options: [
+        "Strict 6-month notice required; missing deadline triggers automatic 12–24 month commercial lease extension penalty",
+        "Rolling quarterly lease with 20–30% monthly price penalty surcharge",
+        "Owned facility / flexible colocation with no hard financial penalty, but aging hardware failure risk",
+        "Contract terms currently under legal review / unknown to infrastructure team"
+      ],
+      subjectivePrompt: "Facility site names, lease termination dates, or colocation provider notice requirements..."
+    });
+  }
+
+  // Probe 3: VMware Broadcom Renewal Defense
+  if(R.vmwareRisk || A["Q0.11"] === 2){
+    probes.push({
+      id: "P_VMWARE",
+      badge: "⚠ VMware Renewal Price Shock",
+      badgeClass: "amber",
+      q: "VMware Broadcom subscription pricing shifts are increasing on-premise run-rates by 2x to 4x. What percentage of your on-premises virtualized workloads can be rapidly containerized vs. migrated to native cloud VMs?",
+      options: [
+        "<10% container-ready; over 90% require full VM rehosting or bare-metal hypervisor alternatives (Nutanix/KVM/OpenShift)",
+        "25–50% can be containerized within 6 months; remaining legacy apps require temporary cloud IaaS hosting",
+        ">50% can be refactored or decommissioned before the contract renewal window",
+        "No current mitigation plan; awaiting Broadcom enterprise agreement renewal proposal"
+      ],
+      subjectivePrompt: "Total socket / core count, ESXi cluster versions, or contract renewal expiration month..."
+    });
+  }
+
+  // Probe 4: Digital Sovereignty & SecNumCloud / DORA Cryptographic Isolation
+  if(R.secnumFlag || R.sovFlag || (A["Q0.3"]||[]).some(x => [0,1,7,8,9].includes(x))){
+    probes.push({
+      id: "P_SOVEREIGNTY",
+      badge: "🔐 SecNumCloud & DORA Key Governance",
+      badgeClass: "blue",
+      q: "You indicated strict sovereignty (SecNumCloud / DORA / Residency). Where are your master cryptographic keys (HSMs) stored, and could foreign cloud provider personnel access unencrypted tenant data under extraterritorial subpoenas (e.g. US CLOUD Act)?",
+      options: [
+        "Keys stored in cloud-native KMS with provider access (potential CLOUD Act exposure)",
+        "Dedicated on-premises or European third-party HSM (BYOK/HYOK) with tenant-isolated control",
+        "Currently evaluating sovereign hyperscale partnerships (e.g., S3NS, Bleu, OVHcloud SecNumCloud)",
+        "No formal sovereignty architecture defined; compliance review pending"
+      ],
+      subjectivePrompt: "Target regulator audit deadlines, specific data classifications, or French/EU client sovereign mandates..."
+    });
+  }
+
+  // Probe 5: Multi-Cloud Topology & Egress Friction
+  if((A["Q0.7"]||[]).length >= 2){
+    probes.push({
+      id: "P_MULTICLOUD",
+      badge: "🌐 Multi-Cloud Interconnect & Egress",
+      badgeClass: "amber",
+      q: "You operate across multiple public clouds. What is your primary cross-cloud data replication pattern, and do you experience significant network egress costs or latency friction between providers?",
+      options: [
+        "Siloed workloads with minimal cross-cloud data transfer; each cloud hosts independent domains",
+        "Active cross-cloud replication with high monthly egress fees ($20K–$100K+/mo) and transit gateway complexity",
+        "Direct dedicated interconnection fabric (e.g. Equinix Cloud Exchange / Megaport) with optimized latency",
+        "Unplanned multi-cloud sprawl resulting from acquisitions or disparate shadow IT initiatives"
+      ],
+      subjectivePrompt: "Monthly cross-cloud egress estimates, interconnected databases, or latency-sensitive workloads..."
+    });
+  }
+
+  // Probe 6: Landing Zone & Infrastructure as Code Drift
+  if(R.dimScores && (R.dimScores["D2"] < 3.0 || R.dimScores["D5"] < 3.0)){
+    probes.push({
+      id: "P_LANDING_ZONE",
+      badge: "⚙ Platform Engineering & Drift",
+      badgeClass: "amber",
+      q: "How are new cloud accounts, network VPCs, and IAM policies provisioned for application teams today?",
+      options: [
+        "Manual service desk tickets and console clicks; lead time is 2 to 6+ weeks per environment",
+        "Semi-automated scripts and fragmented Terraform templates maintained independently by individual teams",
+        "Centralized Infrastructure as Code (IaC) repository with code review, but lacking automated compliance guardrails",
+        "Fully automated Internal Developer Platform (IDP) with self-service golden paths and policy-as-code"
+      ],
+      subjectivePrompt: "Current average provisioning lead time or security review bottlenecks..."
+    });
+  }
+
+  // Probe 7: Subjective CIO Executive Mandate
+  probes.push({
+    id: "P_CIO_MANDATE",
+    badge: "🎯 Executive Leadership Mandate",
+    badgeClass: "blue",
+    q: "What is the single most critical infrastructure or cloud milestone the CIO/CTO must deliver to the Board or CEO in the next 6 to 12 months?",
+    options: [
+      "Decommission aging data centre facility and eliminate recurring colocation lease overhead",
+      "Cut public cloud monthly burn rate by 20–30% to hit enterprise EBITDA targets",
+      "Pass critical regulatory / sovereignty audit (DORA, SecNumCloud, PCI-DSS) with zero non-conformances",
+      "Stand up scalable enterprise platform for AI model training and workload acceleration"
+    ],
+    subjectivePrompt: "Describe any specific Board-level commitments, executive deadlines, or confidential strategic goals..."
+  });
+
+  // Probe 8: Delivery Capacity & Operating Model
+  probes.push({
+    id: "P_DELIVERY_MODEL",
+    badge: "👥 Engineering Capacity & Execution Model",
+    badgeClass: "amber",
+    q: "Does your internal engineering organization have the bandwidth and specialized cloud skills (Kubernetes, FinOps, Terraform) to execute modernization in-house, or will an external migration factory partner be required?",
+    options: [
+      "Internal team is at 100% capacity on business BAU; external turnkey migration factory is mandatory",
+      "Internal architects can lead design, but require external engineering augmentation for execution sprints",
+      "Internal team is fully staffed and capable, requiring only strategic advisory and architectural review",
+      "Skills gap exists across cloud-native tooling; formal upskilling and operating model transformation required"
+    ],
+    subjectivePrompt: "Internal engineering headcounts, skill gaps, or preferred consulting engagement model..."
+  });
+
+  return probes;
+}
+
+function renderConsultingDepthStep(probes, R){
+  pfill.style.width = "95%";
+  window.currentProbes = probes;
+
+  const probeCardsHtml = probes.map((p, idx) => {
+    const savedAns = (SESSION.consultingProbes && SESSION.consultingProbes[p.id]) || "";
+    const savedNote = (SESSION.consultingProbeNotes && SESSION.consultingProbeNotes[p.id]) || "";
+
+    const optsHtml = (p.options || []).map((opt, oIdx) => {
+      const isSel = savedAns === opt;
+      return `<div class="probe-opt ${isSel?'sel':''}" onclick="pickProbeOption('${p.id}', ${oIdx}, '${opt.replace(/'/g, "\\'")}')">
+        <span class="mark"></span>
+        <span>${opt}</span>
+      </div>`;
+    }).join("");
+
+    return `
+      <div class="probe-card" id="probe_card_${p.id}">
+        <div class="probe-head">
+          <span class="probe-badge ${p.badgeClass}">${p.badge}</span>
+          <span style="font-size:11px;font-family:var(--font-mono);color:var(--mutd)">PROBE ${idx+1} OF ${probes.length}</span>
+        </div>
+        <div class="probe-q">${p.q}</div>
+        ${optsHtml ? `<div class="probe-opts">${optsHtml}</div>` : ""}
+        <div>
+          <textarea class="probe-notes" data-probe-id="${p.id}" placeholder="${p.subjectivePrompt}">${savedNote}</textarea>
+        </div>
+      </div>
+    `;
+  }).join("");
+
+  app.innerHTML = `
+    <div class="card" style="border-top:4px solid var(--coral)">
+      <div class="card-header-row">
+        <div>
+          <div class="sec-label">LTM Infrastructure Tech Advisory · Consulting Depth Read</div>
+          <h1 style="font-size:26px;margin-bottom:6px">Estate Signals &amp; Targeted Follow-Up Inquiries</h1>
+        </div>
+        <span class="qcount">${probes.length} Dynamic Inquiries Generated</span>
+      </div>
+      <p class="lead" style="font-size:14px;margin-bottom:20px">
+        Our diagnostic engine detected <b>${probes.length} specific estate signals, cost anomalies, and compliance anchors</b> based on your responses. Providing these details will give forensic precision to your scoring and feed directly into your bespoke <b>LTM Advisory Studio</b> Boardroom Memo.
+      </p>
+
+      ${probeCardsHtml}
+
+      <div class="nav" style="margin-top:24px;border-top:1px solid var(--line2);padding-top:20px">
+        <button class="btn ghost" onclick="skipConsultingProbes()">Skip to Baseline Report →</button>
+        <button class="btn big" onclick="submitConsultingProbes()">Calibrate &amp; Synthesize Custom Report →</button>
+      </div>
+    </div>
+  `;
+}
+
+function pickProbeOption(pid, optIdx, text){
+  if(!SESSION.consultingProbes) SESSION.consultingProbes = {};
+  SESSION.consultingProbes[pid] = text;
+
+  const card = document.getElementById('probe_card_' + pid);
+  if(card){
+    card.querySelectorAll('.probe-opt').forEach((el, idx) => {
+      if(idx === optIdx) el.classList.add('sel');
+      else el.classList.remove('sel');
+    });
+  }
+}
+
+function submitConsultingProbes(){
+  document.querySelectorAll('textarea[data-probe-id]').forEach(el => {
+    const pid = el.getAttribute('data-probe-id');
+    const val = el.value.trim();
+    if(val){
+      if(!SESSION.consultingProbeNotes) SESSION.consultingProbeNotes = {};
+      SESSION.consultingProbeNotes[pid] = val;
+    }
+  });
+  clearState();
+  computeAndShow();
+}
+
+function skipConsultingProbes(){
+  clearState();
+  computeAndShow();
+}
+
+function formatConsultingProbesForPrompt(){
+  if(!SESSION.consultingProbes || Object.keys(SESSION.consultingProbes).length === 0){
+    return "No consulting depth probes answered (baseline diagnostic mode).";
+  }
+  let out = "";
+  for(const [pid, ans] of Object.entries(SESSION.consultingProbes)){
+    const note = (SESSION.consultingProbeNotes && SESSION.consultingProbeNotes[pid]) || "";
+    out += `- [${pid}] Answer: "${ans}"${note ? ` | Qualitative Note: "${note}"` : ""}\n`;
+  }
+  return out;
+}
+
+/* ============================================================
+   Scoring, Analytical & Heatmap Computation Engine
+   ============================================================ */
+function compute(){
+  // 1. Strategic Transformation Track Routing
+  let JA = 0, JB = 0;
+  const r04 = QUESTIONS.find(x => x.id === "Q0.4").route[A["Q0.4"]] || {};
+  JA += r04.A || 0; JB += r04.B || 0;
+  const Q11 = QUESTIONS.find(x => x.id === "Q1.1");
+  (A["Q1.1"] || []).forEach(i => { const j = Q11.opts[i].j; JA += j.A || 0; JB += j.B || 0; });
+  const Q06 = QUESTIONS.find(x => x.id === "Q0.6");
+  const topObj = (A["Q0.6"] || [])[0] || "Cost reduction & FinOps";
+  const oj = Q06.objJourney[topObj];
+  if(oj === "A") JA += 2; if(oj === "B") JB += 2;
+
+  const isHybrid = Math.abs(JA - JB) <= 1;
+  const trackCode = isHybrid ? "Hybrid" : (JA >= JB ? "A" : "B");
+  const trackName = isHybrid ? "Dual-Horizon Transformation Track" :
+                    (trackCode === "A" ? "Cloud Value Optimization Track" : "Estate Modernization & DC Exit Track");
+
+  // 2. Calibrated Maturity per Dimension (D1–D8)
+  const dimAcc = {};
+  function add(dim, val){ if(!dimAcc[dim]) dimAcc[dim] = []; dimAcc[dim].push(val); }
+
+  QUESTIONS.forEach(Q => {
+    if(!Q.dim || shouldSkip(Q)) return;
+    const v = A[Q.id];
+    if(v === undefined || v === null) return;
+    if(Q.maturity && Q.type === "single") add(Q.dim, v + 1);
+    else if(Q.maturity && Q.type === "slider") add(Q.dim, v + 1);
+    else if(Q.maturityCount){
+      const n = (v || []).length;
+      add(Q.dim, Math.max(1, Math.round(n / Q.opts.length * 5)));
+    }
+    else if(Q.maturityTF){ add(Q.dim, v === true ? 4.5 : 1.5); }
+  });
+
+  const dimScores = {};
+  Object.keys(DIM_NAMES).forEach(d => {
+    dimScores[d] = dimAcc[d] && dimAcc[d].length ? (dimAcc[d].reduce((a,b)=>a+b,0) / dimAcc[d].length) : 2.5;
+  });
+
+  const topDim = Q06.objDim[topObj] || "D3";
+  let wsum = 0, wtot = 0;
+  Object.keys(dimScores).forEach(d => {
+    const w = (d === topDim) ? 1.5 : 1.0;
+    wsum += dimScores[d] * w;
+    wtot += w;
+  });
+  const overall = wsum / wtot;
+  const band = scoreBand(overall);
+
+  // 3. Flags & Critical Risks
+  const Q03 = QUESTIONS.find(x => x.id === "Q0.3");
+  const sov03 = (A["Q0.3"] || []).some(i => Q03.opts[i][0] !== Q03.sovFlagExcept);
+  const sov82 = A["Q8.2"] === true;
+  const sovFlag = sov03 || sov82;
+  const secnumFlag = (A["Q0.3"] || []).includes(9); // SecNumCloud checked
+  const aiFlag = (A["Q9.2"] || []).some(i => QUESTIONS.find(x => x.id === "Q9.2").opts[i][0] !== "None yet / monitoring only");
+  const vmwareRisk = A["Q0.11"] === 2; // VMware renewal cliff
+  const leaseCliff = [2,3,4].includes(A["Q0.12"]); // Imminent DC lease or EOL cliff
+
+  // 4. Decomposed Financial Value Hook ($ Leakage Breakdown)
+  const wasteRate = (QUESTIONS.find(x => x.id === "Q4.3").waste[A["Q4.3"]]) || 0.25;
+  const Q08 = QUESTIONS.find(x => x.id === "Q0.8");
+  const spendMidM = (Q08.midM[A["Q0.8"]] !== undefined) ? Q08.midM[A["Q0.8"]] : 12;
+  const Q09 = QUESTIONS.find(x => x.id === "Q0.9");
+  const commitMid = (Q09.midPct[A["Q0.9"]] !== undefined) ? Q09.midPct[A["Q0.9"]] : 0.3;
+  const apps = QUESTIONS.find(x => x.id === "Q0.5").apps[A["Q0.5"]] || 350;
+
+  const totalCloudSpend = spendMidM * 1000000;
+  const totalLeakage = Math.round(totalCloudSpend * wasteRate * (1 - commitMid * 0.45));
+  const leakLow = Math.round(totalLeakage * 0.8);
+  const leakHigh = Math.round(totalLeakage * 1.25);
+
+  const decomp = {
+    compute: Math.round(totalLeakage * 0.40),     // Rightsizing & Zombie VMs
+    commit: Math.round(totalLeakage * 0.28),      // Commitment discount arbitrage
+    storage: Math.round(totalLeakage * 0.18),     // Cold storage tiering & egress
+    licensing: Math.round(totalLeakage * 0.14)    // Hypervisor / BYOL inefficiency
+  };
+
+  // 5. 2D Heatmap Urgency & Criticality Calculation
+  const urgencyMap = {};
+  Object.keys(DIM_NAMES).forEach(d => {
+    let u = 2; // Default Medium
+    if(d === topDim) u = 3;
+    if(d === "D3" && wasteRate >= 0.25) u = 3;
+    if(d === "D6" && (leaseCliff || vmwareRisk)) u = 3;
+    if(d === "D7" && (sovFlag || secnumFlag)) u = 3;
+    if(d === "D2" && trackCode === "B") u = 3;
+    if(d === "D8" && aiFlag && dimScores.D8 < 2.5) u = 2;
+    urgencyMap[d] = u;
+  });
+
+  // 6. Explicit 4-Phase Horizon Modernization Roadmap
+  const movesPhase1 = []; // Immediate (0-30 Days)
+  const movesPhase2 = []; // Short-Term (30-90 Days)
+  const movesPhase3 = []; // Mid-Term (3-9 Months)
+  const movesPhase4 = []; // Long-Term (9-18+ Months)
+
+  // Phase 1: Immediate Triage (0–30 Days)
+  if(vmwareRisk){
+    movesPhase1.push({code:"03.5", size:"S", title:"VMware Broadcom Renewal Defense & Sizing", desc:"Audit vSphere core allocations, assess Nutanix/Hyper-V/cloud alternative licensing before renewal lock-in.", impact:"Averts 2.5x–3.5x licensing cost escalation"});
+  }
+  if(dimScores.D3 < 3.2 || wasteRate >= 0.20){
+    movesPhase1.push({code:"03.3", size:"S", title:"Zombie Asset Cleanup & Dev/QA Shutdown", desc:"Automate shutdown of unattached EBS/managed disks and idle non-production compute.", impact:"Immediate reclamation of ~$"+(Math.round(decomp.compute*0.35/1000))+"k"});
+  }
+  if(dimScores.D7 < 3.0){
+    movesPhase1.push({code:"03.6", size:"S", title:"Cloud Landing Zone MFA & IAM Hardening", desc:"Remediate open storage buckets, enforce MFA on privileged accounts, and isolate blast radius.", impact:"Closes critical compliance/audit exposure"});
+  }
+  if(!movesPhase1.length){
+    movesPhase1.push({code:"03.3", size:"S", title:"Baseline Cost Visibility & Tagging Enforcement", desc:"Establish centralized billing view and initial attribution tags.", impact:"Immediate visibility for IT leadership"});
+  }
+
+  // Phase 2: Short-Term Quick Wins (30–90 Days)
+  if(dimScores.D3 < 3.5){
+    movesPhase2.push({code:"03.3", size:"M", title:"Commitment Discount Arbitrage (Savings Plans/RIs)", desc:"Model stable baseline compute and execute 1-yr/3-yr discount coverage up to 60–70%.", impact:"Locks in ~$"+(Math.round(decomp.commit/1000))+"k annual recurring savings"});
+  }
+  if(leaseCliff || dimScores.D6 < 3.0){
+    movesPhase2.push({code:"03.5", size:"M", title:"Automated Estate Discovery & Dependency Mapping", desc:"Deploy discovery agents (Device42/Dynatrace) to catalog all on-prem assets and network flows.", impact:"Eliminates migration blind spots"});
+  }
+  if(dimScores.D2 < 3.5){
+    movesPhase2.push({code:"03.4", size:"M", title:"Top-20 Application 6-R Disposition Scoring", desc:"Assess first wave of critical workloads against Rehost, Replatform, Refactor, Retire.", impact:"Defensible migration business case"});
+  }
+  if(!movesPhase2.length){
+    movesPhase2.push({code:"03.6", size:"M", title:"Automated Landing Zone IaC Baseline", desc:"Standardize Terraform/Bicep baseline repositories across cloud subscriptions.", impact:"Prevents architectural drift"});
+  }
+
+  // Phase 3: Mid-Term Programmatic Modernization (3–9 Months)
+  if(dimScores.D2 < 3.8 || trackCode === "B"){
+    movesPhase3.push({code:"03.4", size:"L", title:"Industrialized 6-R Migration Factory", desc:"Launch automated migration pipeline with reusable refactoring and containerization patterns.", impact:"Accelerates migration velocity by 40%"});
+  }
+  if(dimScores.D5 < 3.4){
+    movesPhase3.push({code:"03.6", size:"M", title:"Internal Developer Platform (IDP) & Golden Paths", desc:"Build self-service infrastructure blueprints with CI/CD and security guardrails baked in.", impact:"Reduces provisioning time from weeks to hours"});
+  }
+  if(dimScores.D4 < 3.4){
+    movesPhase3.push({code:"03.2", size:"M", title:"Hybrid Interconnect Fabric & Unified Telemetry", desc:"Deploy redundant DirectConnect/ExpressRoute circuits and cross-environment observability mesh.", impact:"Eliminates multi-cloud operational silos"});
+  }
+  if(secnumFlag || sovFlag){
+    movesPhase3.push({code:"02.1", size:"M", title:"Sovereign Cloud & SecNumCloud Compliance Boundary", desc:"Partition sensitive data into sovereign European / local cloud enclaves with strict key management.", impact:"Fulfills ANSSI/DORA regulatory compliance"});
+  }
+
+  // Phase 4: Long-Term Transformation & AI (9–18+ Months)
+  if(dimScores.D6 < 3.8 || leaseCliff){
+    movesPhase4.push({code:"03.5", size:"XL", title:"Full Data Centre Decommissioning & Facility Handback", desc:"Physical server decommissioning, lease termination, and hardware asset liquidation.", impact:"Permanently eliminates facility lease overhead"});
+  }
+  if(dimScores.D2 < 4.2){
+    movesPhase4.push({code:"03.4", size:"L", title:"Core Legacy Monolith Decoupling", desc:"Refactor core monolithic applications into microservices or serverless event-driven architecture.", impact:"Improves release cycle frequency by 5x"});
+  }
+  if(aiFlag || dimScores.D8 < 3.8){
+    movesPhase4.push({code:"04.4", size:"M", title:"Enterprise AI Lakehouse & TokenOps Platform", desc:"Governed feature store, model routing gateway, and private data boundary for generative AI.", impact:"Scalable, cost-governed GenAI adoption"});
+  }
+
+  // 7. Recommended Offerings
+  const offers = [];
+  if(dimScores.D3 <= 3.2 || wasteRate >= 0.15) offers.push({code:"03.3", why:"Cost allocation, waste leakage & FinOps unit economics"});
+  if(dimScores.D4 <= 3.2) offers.push({code:"03.2", why:"Inconsistent hybrid / multi-cloud operating model"});
+  if(dimScores.D5 <= 3.2) offers.push({code:"03.6", why:"Platform automation, golden paths & developer experience"});
+  if(dimScores.D1 <= 3.2 || trackCode === "B") offers.push({code:"03.1", why:"Workload placement, cloud strategy & business case"});
+  if(dimScores.D2 <= 3.2) offers.push({code:"03.4", why:"Application modernization & migration factory execution"});
+  if(dimScores.D6 <= 3.2 || leaseCliff) offers.push({code:"03.5", why:"Data centre consolidation, facility exit & compute capacity"});
+
+  const offersDedup = [];
+  const seenOffers = new Set();
+  offers.forEach(o => {
+    if(!seenOffers.has(o.code)){
+      seenOffers.add(o.code);
+      offersDedup.push(o);
+    }
+  });
+
+  const industryKey = QUESTIONS.find(x => x.id === "Q0.2").opts[A["Q0.2"] || 0][0];
+  const peer = INDUSTRY_BENCHMARKS[industryKey] || INDUSTRY_BENCHMARKS["Other"];
+  const peerDelta = overall - peer.overall;
+
+  return {
+    trackCode, trackName, isHybrid, dimScores, overall, band,
+    topObj, topDim, sovFlag, secnumFlag, aiFlag, vmwareRisk, leaseCliff,
+    totalCloudSpend, totalLeakage, leakLow, leakHigh, decomp,
+    urgencyMap, movesPhase1, movesPhase2, movesPhase3, movesPhase4,
+    offers: offersDedup, peer, peerDelta, industryKey
+  };
+}
+
+function scoreBand(s){
+  if(s < 2.0) return "Nascent";
+  if(s < 2.8) return "Emerging";
+  if(s < 3.8) return "Established";
+  if(s < 4.5) return "Advanced";
+  return "Leading";
+}
+const BANDS = ["Nascent","Emerging","Established","Advanced","Leading"];
+function fmt(n){ return "$" + Number(n).toLocaleString(); }
+
+/* ============================================================
+   Results Screen Presentation with Gating / Teaser Mode
+   ============================================================ */
+
+function checkCloudAnswerThreshold(){
+  var total = GROUPS.reduce(function(acc, g){ return acc + g.questions.length; }, 0);
+  var answered = 0;
+  GROUPS.forEach(function(g){
+    g.questions.forEach(function(q){
+      if(ANSWERS[q.id] !== undefined && ANSWERS[q.id] !== null) answered++;
+    });
+  });
+  var pct = total > 0 ? (answered / total) : 0;
+  if(pct < 0.50){
+    alert("⚠️ Diagnostic Quality Gate: You have answered " + answered + " of " + total + " questions (" + Math.round(pct*100) + "%).\n\nPlease complete at least 50% of the assessment questions to generate a statistically reliable maturity diagnostic.");
+    return false;
+  }
+  return true;
+}
+function computeAndShow(){
+  if(typeof checkCloudAnswerThreshold === 'function' && !checkCloudAnswerThreshold()) return;
+  RESULT = compute();
+  showResults(RESULT);
+}
+
+function unlockReport(){
+  const email = (document.getElementById('leadEmail')?.value || '').trim();
+  const name = (document.getElementById('leadName')?.value || '').trim();
+  const company = (document.getElementById('leadCompany')?.value || '').trim();
+
+  if(!email || !email.includes('@') || !email.includes('.')){
+    alert("Please enter a valid business email address.");
+    return;
+  }
+  const domain = email.split('@')[1].toLowerCase();
+  const freeProviders = ['gmail.com', 'yahoo.com', 'hotmail.com', 'outlook.com', 'icloud.com', 'aol.com'];
+  if(freeProviders.includes(domain)){
+    alert("Please enter your corporate business email address (e.g. name@company.com) to access the executive report.");
+    return;
+  }
+
+  if(name) SESSION.consultantLead = name;
+  if(company) SESSION.clientName = company;
+  SESSION.isUnlocked = true;
+  updateSessionUI();
+  showResults(RESULT);
+}
+
+
+/* Kavach-style 60fps Cubic Ease-out Counter Animation */
+function animateCountUp(el, target, duration, decimals, prefix, suffix){
+  prefix = prefix || '';
+  suffix = suffix || '';
+  decimals = decimals || 0;
+  var startTs = null;
+  function step(ts){
+    if(!startTs) startTs = ts;
+    var progress = Math.min((ts - startTs) / duration, 1);
+    var ease = 1 - Math.pow(1 - progress, 3);
+    var cur = (ease * target).toFixed(decimals);
+    el.textContent = prefix + cur + suffix;
+    if(progress < 1) requestAnimationFrame(step);
+    else el.textContent = prefix + target.toFixed(decimals) + suffix;
+  }
+  requestAnimationFrame(step);
+}
+function showResults(R){
+  pfill.style.width = "100%";
+  const client = SESSION.anonymize ? "Confidential Enterprise Client" : SESSION.clientName;
+  const deltaText = R.peerDelta >= 0.2 ? `Outperforming ${R.industryKey.split(" ")[0]} peer median (+${R.peerDelta.toFixed(1)})` :
+                    R.peerDelta <= -0.2 ? `Lagging ${R.industryKey.split(" ")[0]} peer median (${R.peerDelta.toFixed(1)})` :
+                    `In line with ${R.industryKey.split(" ")[0]} peer baseline`;
+
+  // 1. Heatmap HTML Generation
+  const heatmapRows = [
+    {label:"High Urgency", sub:"Immediate Priority", level:3},
+    {label:"Medium Urgency", sub:"Strategic Watch", level:2},
+    {label:"Low Urgency", sub:"Steady State", level:1}
+  ];
+  const maturityCols = [
+    {name:"1 · Nascent", min:0, max:2.0},
+    {name:"2 · Emerging", min:2.0, max:2.8},
+    {name:"3 · Established", min:2.8, max:3.8},
+    {name:"4 · Advanced", min:3.8, max:4.5},
+    {name:"5 · Leading", min:4.5, max:5.1}
+  ];
+
+  let hmGridHtml = `<div class="hm-header"></div>` + maturityCols.map(c => `<div class="hm-header">${c.name}</div>`).join("");
+  heatmapRows.forEach(row => {
+    hmGridHtml += `<div class="hm-row-label">${row.label}<span>${row.sub}</span></div>`;
+    maturityCols.forEach((col, colIdx) => {
+      const dimsHere = Object.keys(DIM_NAMES).filter(d => {
+        const score = R.dimScores[d];
+        const urg = R.urgencyMap[d];
+        return urg === row.level && score >= col.min && score < col.max;
+      });
+
+      let zoneClass = "";
+      if(row.level === 3 && colIdx <= 1) zoneClass = "danger-zone";
+      else if(row.level === 3 || colIdx <= 1) zoneClass = "watch-zone";
+      else if(colIdx >= 3) zoneClass = "strength-zone";
+
+      const badges = dimsHere.map(d => {
+        let bColor = colIdx <= 1 ? "b-red" : (colIdx === 2 ? "b-amber" : "b-green");
+        return `<div class="hm-badge ${bColor}" onclick="alert('${d}: ${DIM_NAMES[d]}\\nScore: ${R.dimScores[d].toFixed(1)}/5.0\\nUrgency: ${row.label}')">${d} · ${R.dimScores[d].toFixed(1)}</div>`;
+      }).join("");
+
+      hmGridHtml += `<div class="hm-cell ${zoneClass}">${badges}</div>`;
+    });
+  });
+
+  // 2. 4-Phase Roadmap HTML Generation
+  function renderRoadmapWave(title, time, items, waveClass){
+    return `
+      <div class="horizon-wave ${waveClass}">
+        <div class="hw-header">
+          <span class="hw-title">${title}</span>
+          <span class="hw-time">${time}</span>
+        </div>
+        <div class="hw-items">
+          ${items.map(it => `
+            <div class="hw-item">
+              <div class="hwi-head">
+                <span class="hwi-code">${it.code} — ${OFFERINGS[it.code]?.name||"Advisory Move"}</span>
+                <span class="hwi-size">Size: ${it.size}</span>
+              </div>
+              <div class="hwi-title">${it.title}</div>
+              <div class="hwi-desc">${it.desc}</div>
+              <div style="font-size:11px;font-weight:700;color:var(--green);margin-top:6px">→ ${it.impact}</div>
+            </div>
+          `).join("")}
+        </div>
+      </div>
+    `;
+  }
+
+  // 3. Dimension Bars
+  const dimBarsHtml = Object.keys(DIM_NAMES).map(d => {
+    const v = R.dimScores[d];
+    return `
+      <div class="dimrow">
+        <div class="dname">${d} · ${DIM_NAMES[d]}</div>
+        <div class="dimbar"><div class="fill" style="width:${(v/5)*100}%"></div></div>
+        <div class="dval">${v.toFixed(1)}</div>
+      </div>
+    `;
+  }).join("");
+
+  const isUnlocked = SESSION.isUnlocked;
+
+  // Gated HTML wrapper
+  const gatedClass = isUnlocked ? "" : "gated-content-blur";
+
+  const gateOverlayHtml = isUnlocked ? "" : `
+    <div class="gate-overlay-box">
+      <div style="font-size:36px;margin-bottom:8px">🔒</div>
+      <h3>Unlock Complete Executive Transformation Pack</h3>
+      <p>
+        Your visual maturity score, radar benchmark, 2D risk heatmap, and financial leakage are displayed above. Enter your business email to unlock your bespoke <b>4-Phase Modernization Roadmap</b>, <b>Migration Wave Schedule</b>, <b>LTM Advisory Studio Boardroom Memo</b>, and <b>Downloadable 3-Page Executive PDF Pack</b>.
+      </p>
+      <div class="gate-form">
+        <div>
+          <label>Full Name</label>
+          <input type="text" id="leadName" placeholder="e.g. Jane Doe" value="${SESSION.consultantLead!=='Ashutosh Dixit'?SESSION.consultantLead:''}">
+        </div>
+        <div>
+          <label>Corporate Business Email</label>
+          <input type="email" id="leadEmail" placeholder="e.g. j.doe@enterprise.com">
+        </div>
+        <div>
+          <label>Organization / Company</label>
+          <input type="text" id="leadCompany" placeholder="e.g. Global Financial Corp" value="${SESSION.clientName!=='Global Enterprise'?SESSION.clientName:''}">
+        </div>
+        <button class="btn big" style="width:100%;margin-top:8px" onclick="unlockReport()">Unlock Full Roadmap &amp; PDF Pack →</button>
+      </div>
+      <div style="margin-top:16px;padding-top:14px;border-top:1px solid var(--line2);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
+        <a href="mailto:ashutosh.dixit@ltm.com?subject=Cloud%20IQ%20Advisory%20Readout%20Request&body=Hi%20Ashutosh,%0A%0AWe%20completed%20the%20Cloud%20IQ%20diagnostic%20for%20our%20estate%20and%20would%20like%20to%20schedule%20an%20executive%20readout%20session.%0A%0AClient:%20${encodeURIComponent(SESSION.clientName)}%0AScore:%20${R.overall.toFixed(1)}/5.0" class="btn ghost small" style="text-decoration:none">
+          📧 Book Readout with ashutosh.dixit@ltm.com
+        </a>
+        <a href="javascript:void(0)" onclick="toggleConsultantUnlock()" style="font-size:11px;color:var(--mutd);text-decoration:underline">
+          LTM Consultant Bypass
+        </a>
+      </div>
+    </div>
+  `;
+
+  app.innerHTML = `
+    <!-- Top Teaser Banner (Always Visible) -->
+    <div class="card" style="background:linear-gradient(135deg,var(--panel) 0%,var(--coral-tint) 100%);border-color:var(--coral)">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px">
+        <div>
+          <div class="sec-label">Executive Diagnostic Readout</div>
+          <h1 style="font-size:26px;margin-bottom:6px">Engagement: ${client}</h1>
+          <p style="font-size:14px;color:var(--mut)">
+            <b>Designated Track:</b> <span style="color:var(--coral);font-weight:700">${R.trackName}</span> &nbsp;|&nbsp; 
+            <b>Maturity Score:</b> ${R.overall.toFixed(1)}/5.0 (${R.band})
+          </p>
+          <div style="font-size:12.5px;color:var(--coral-dkr);font-weight:700;margin-top:4px">📊 Sector Benchmark: ${deltaText}</div>
+          <div style="font-size:13px;color:var(--ink);margin-top:8px">
+            💰 <b>Annual Value-at-Stake:</b> Estimated <span style="color:var(--coral);font-weight:800">${fmt(R.leakLow)} – ${fmt(R.leakHigh)}</span> in reclaimable leakage
+          </div>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          ${isUnlocked ? `
+            <button class="btn" onclick="openAiDrawer()">✨ LTM Advisory Studio</button>
+            <button class="btn secondary" onclick="launchBoardroom()">🖥 Boardroom Mode</button>
+          ` : `
+            <button class="btn" onclick="document.getElementById('leadEmail')?.focus()">🔒 Unlock Full Pack</button>
+            <a href="mailto:ashutosh.dixit@ltm.com?subject=Cloud%20IQ%20Advisory%20Readout" class="btn secondary" style="text-decoration:none">📧 Book with Ashutosh</a>
+          `}
+        </div>
+      </div>
+    </div>
+
+    <!-- Visual Maturity Scorecard & Spider Benchmark (Always Visible) -->
+    <div class="res-grid">
+      <div class="card">
+        <div class="sec-label">Comparative Benchmark</div>
+        <h3 style="font-size:18px">Maturity Scorecard &amp; Radar Profile</h3>
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;margin-top:6px">
+          <span class="badge">Overall ${R.overall.toFixed(1)} / 5.0</span>
+          <span style="font-weight:700;font-size:16px">${R.band}</span>
+        </div>
+        <div class="band-scale">${BANDS.map(b => `<div class="band-seg ${b===R.band?'on':''}">${b}</div>`).join("")}</div>
+        <div style="position:relative;height:240px;margin-top:14px">
+          <canvas id="radarChart" height="240"></canvas>
+        </div>
+        <div style="display:flex;justify-content:center;gap:16px;margin-top:10px;font-size:11.5px;font-family:var(--font-display)">
+          <span style="display:inline-flex;align-items:center;gap:5px"><span style="width:10px;height:10px;background:#FF5E4F;border-radius:2px"></span> Estate (${R.overall.toFixed(1)})</span>
+          <span style="display:inline-flex;align-items:center;gap:5px"><span style="width:10px;height:10px;background:#226882;border-radius:2px"></span> ${R.industryKey.split(" ")[0]} Median (${(R.peer.overall||3.0).toFixed(1)})</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="sec-label">Calibrated Rubrics</div>
+        <h3 style="font-size:18px">Dimension Breakdown (D1–D8)</h3>
+        <div style="margin-top:14px">${dimBarsHtml}</div>
+        ${R.vmwareRisk ? `<div style="background:var(--amber-tint);border:1px solid var(--amber);border-radius:var(--radius-sm);padding:10px 14px;margin-top:12px;font-size:12px;color:var(--amber-dk)"><b>⚠ Critical Signal:</b> VMware Broadcom renewal cost cliff detected. High urgency to triage alternatives.</div>` : ""}
+        ${R.leaseCliff ? `<div style="background:var(--red-tint);border:1px solid var(--red);border-radius:var(--radius-sm);padding:10px 14px;margin-top:8px;font-size:12px;color:var(--red)"><b>⚠ Hard Deadline:</b> Impending data centre lease expiry (<12 months) creates acute migration time constraint.</div>` : ""}
+        ${R.secnumFlag ? `<div style="background:var(--blue-tint);border:1px solid var(--blue);border-radius:var(--radius-sm);padding:10px 14px;margin-top:8px;font-size:12px;color:var(--blue)"><b>🔐 SecNumCloud Imperative:</b> French / European Cloud de Confiance requirements mandate dedicated sovereign enclave architecture.</div>` : ""}
+      </div>
+    </div>
+
+    <!-- 2D Strategic Risk Heatmap (Always Visible) -->
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:12px">
+        <div>
+          <div class="sec-label">Risk Visualizer</div>
+          <h3 style="font-size:18px">2D Strategic Risk Heatmap</h3>
+          <p style="font-size:12.5px;color:var(--mut)">Identifies estate friction by plotting <b>Maturity (X-Axis)</b> against <b>Business Criticality / Urgency (Y-Axis)</b></p>
+        </div>
+        <div style="display:flex;gap:10px;font-size:11px;font-family:var(--font-display)">
+          <span style="display:inline-flex;align-items:center;gap:4px"><span style="width:10px;height:10px;background:#FFCDD2;border:1px solid #B71C1C;border-radius:2px"></span> Critical Danger Zone</span>
+          <span style="display:inline-flex;align-items:center;gap:4px"><span style="width:10px;height:10px;background:#FFE082;border:1px solid #E65100;border-radius:2px"></span> Watch Area</span>
+          <span style="display:inline-flex;align-items:center;gap:4px"><span style="width:10px;height:10px;background:#C8E6C9;border:1px solid #1B5E20;border-radius:2px"></span> Strategic Strength</span>
+        </div>
+      </div>
+      <div class="heatmap-container">
+        <div class="heatmap-grid">
+          ${hmGridHtml}
+        </div>
+      </div>
+    </div>
+
+    <!-- Quantified Decomposed Value Hook (Always Visible) -->
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:10px">
+        <div>
+          <div class="sec-label">Economic Business Case</div>
+          <h3 style="font-size:18px">Quantified Financial Value Hook</h3>
+          <p style="font-size:12.5px;color:var(--mut)">Evidence-based annual cost leakage decomposition across cloud &amp; infrastructure</p>
+        </div>
+        <div style="text-align:right">
+          <div style="font-size:24px;font-weight:800;color:var(--coral);font-family:var(--font-display)">${fmt(R.leakLow)} – ${fmt(R.leakHigh)}</div>
+          <div style="font-size:11px;color:var(--mut)">Estimated addressable annual leak</div>
+        </div>
+      </div>
+      <div class="decomp-grid">
+        <div class="decomp-card">
+          <div class="lbl">Compute Rightsizing</div>
+          <div class="val">${fmt(R.decomp.compute)}</div>
+          <div class="desc">Oversized instances, unattached EBS/managed disks, and idle non-production clusters.</div>
+        </div>
+        <div class="decomp-card">
+          <div class="lbl">Commitment Arbitrage</div>
+          <div class="val">${fmt(R.decomp.commit)}</div>
+          <div class="desc">Unoptimized on-demand spend eligible for Savings Plans, RIs, or CUDs.</div>
+        </div>
+        <div class="decomp-card">
+          <div class="lbl">Storage &amp; Egress</div>
+          <div class="val">${fmt(R.decomp.storage)}</div>
+          <div class="desc">Hot storage tiering bloat, uncompressed network cross-region traffic.</div>
+        </div>
+        <div class="decomp-card">
+          <div class="lbl">Licensing &amp; Hypervisors</div>
+          <div class="val">${fmt(R.decomp.licensing)}</div>
+          <div class="desc">VMware CPU model escalation risk and unoptimized SQL/Oracle core licensing.</div>
+        </div>
+      </div>
+      <div style="margin-top:14px;background:var(--panel2);border:1px solid var(--line);border-radius:var(--radius-sm);padding:12px 16px;font-size:12.5px;color:var(--ink)">
+        <b>💡 CFO Self-Funding Realization:</b> Capturing quick wins in compute rightsizing and commitment discounts directly self-funds the application modernization factory and DC exit.
+      </div>
+    </div>
+
+    <!-- Gated Container Wrapper (Protecting Proprietary Execution Blueprint) -->
+    <div class="gated-wrapper">
+      ${gateOverlayHtml}
+
+      <div class="${gatedClass}">
+        <!-- 4-Phase Horizon Modernization Roadmap -->
+        <div class="card">
+          <div class="sec-label">Transformation Execution Blueprint</div>
+          <h3 style="font-size:18px">Prioritized 4-Phase Modernization Roadmap</h3>
+          <p style="font-size:12.5px;color:var(--mut)">Sequenced across Immediate (0–30d), Short-Term (30–90d), Mid-Term (3–9m), and Long-Term (9–18m+)</p>
+          <div class="horizon-roadmap">
+            ${renderRoadmapWave("Phase 1 · Immediate (0–30 Days)", "Stop the Bleeding &amp; Rapid Triage", R.movesPhase1, "hw-p1")}
+            ${renderRoadmapWave("Phase 2 · Short-Term (30–90 Days)", "Quick Wins &amp; Baseline Governance", R.movesPhase2, "hw-p2")}
+            ${renderRoadmapWave("Phase 3 · Mid-Term (3–9 Months)", "Programmatic Modernization &amp; Migration Factory", R.movesPhase3, "hw-p3")}
+            ${renderRoadmapWave("Phase 4 · Long-Term (9–18+ Months)", "Transformational Scale, DC Decommissioning &amp; AI", R.movesPhase4, "hw-p4")}
+          </div>
+        </div>
+
+        <!-- Recommended LTM Offerings -->
+        <div class="card">
+          <div class="sec-label">Practice Alignment</div>
+          <h3 style="font-size:18px">Recommended LTM Offerings (Pillar 03 &amp; Cross-Pillars)</h3>
+          <div style="margin-top:14px">
+            ${R.offers.map(o => `
+              <div class="offer">
+                <div><span class="ocode">${o.code}</span> — <b>${OFFERINGS[o.code]?.name||"Advisory"}</b></div>
+                <div style="font-size:12.5px;color:var(--mut);margin-top:3px"><b>Why Routed:</b> ${o.why}</div>
+                <div class="odoor">Engage via: ${OFFERINGS[o.code]?.door||"Advisory sprint"}</div>
+              </div>
+            `).join("")}
+            ${R.sovFlag ? `<div class="handoff">🔐 <b>Pillar 02 Digital Sovereignty Referral:</b> Strict residency / regulatory flags raised. Routes to <b>Sovereign IQ</b> and <b>Posture IQ</b>.</div>` : ""}
+            ${R.aiFlag ? `<div class="handoff">🤖 <b>Pillar 04 AI Infusion Referral:</b> AI ambition detected. Foundation engineering stays with <b>03.6</b>; full AI programme routes to <b>AI Readiness IQ</b>.</div>` : ""}
+          </div>
+        </div>
+
+        <!-- Export & Readout Pack Controls -->
+        <div class="card" style="text-align:center;background:var(--panel2)">
+          <h2 style="font-size:20px;margin-bottom:6px">Boardroom Deliverables &amp; Session Management</h2>
+          <p style="font-size:13px;color:var(--mut);margin-bottom:16px">Export presentation-grade assets or schedule an executive readout session.</p>
+          <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+            <button class="btn big" onclick="downloadExecutivePDF()">📄 Download Executive PDF Pack</button>
+            <button class="btn secondary" onclick="launchBoardroom()">🖥 Boardroom Presentation Mode</button>
+            <button class="btn secondary" onclick="openAiDrawer()">✨ LTM Advisory Studio</button>
+            <a href="mailto:ashutosh.dixit@ltm.com?subject=Cloud%20IQ%20Readout%20Request%20—%20${encodeURIComponent(client)}&body=Hi%20Ashutosh,%0A%0AWe%20completed%20our%20Cloud%20IQ%20diagnostic%20for%20${encodeURIComponent(client)}%20and%20would%20like%20to%20schedule%20a%2030-minute%20readout%20session.%0A%0AScore:%20${R.overall.toFixed(1)}/5.0%20(${R.band})%0AValue%20at%20Stake:%20${fmt(R.leakLow)}%20-%20${fmt(R.leakHigh)}" class="btn secondary" style="text-decoration:none">
+              📧 Book Readout with Ashutosh
+            </a>
+            <button class="btn secondary" onclick="exportSessionJSON()">💾 Save Session (.ciq)</button>
+            <button class="btn ghost" onclick="start()">Restart Assessment</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+
+  drawSpiderChart(R);
+}
+
+/* ============================================================
+   Chart.js Spider / Radar Renderer
+   ============================================================ */
+var spiderChartInstance = null;
+function drawSpiderChart(R){
+  const ctx = document.getElementById('radarChart');
+  if(!ctx) return;
+  const labels = Object.keys(DIM_NAMES);
+  const dataScores = labels.map(d => R.dimScores[d]);
+  const peerScores = labels.map(d => R.peer[d] || R.peer.overall || 3.0);
+
+  if(spiderChartInstance) spiderChartInstance.destroy();
+  spiderChartInstance = new Chart(ctx, {
+    type: 'radar',
+    data: {
+      labels,
+      datasets: [
+        {
+          label: 'Client Estate',
+          data: dataScores,
+          backgroundColor: 'rgba(255,94,79,0.22)',
+          borderColor: '#FF5E4F',
+          pointBackgroundColor: '#282828',
+          borderWidth: 2
+        },
+        {
+          label: 'Sector Peer Median',
+          data: peerScores,
+          backgroundColor: 'rgba(34,104,130,0.12)',
+          borderColor: '#226882',
+          borderDash: [4, 4],
+          borderWidth: 1.5,
+          pointRadius: 2
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      animation: { duration: 500 },
+      scales: {
+        r: {
+          min: 0,
+          max: 5,
+          ticks: { stepSize: 1, color: '#8E8E8E' },
+          grid: { color: '#DADADA' },
+          angleLines: { color: '#DADADA' },
+          pointLabels: { color: '#282828', font: { size: 10, weight: '700' } }
+        }
+      },
+      plugins: {
+        legend: { display: true, position: 'bottom', labels: { boxWidth: 12, font: { size: 11 } } }
+      }
+    }
+  });
+}
+
+/* ============================================================
+   Grounded AI Advisory Studio Engine (Gemini, OpenAI, Claude)
+   ============================================================ */
+function openAiDrawer(){
+  document.getElementById('aiDrawerOverlay').classList.add('open');
+  document.getElementById('aiDrawer').classList.add('open');
+}
+function closeAiDrawer(){
+  document.getElementById('aiDrawerOverlay').classList.remove('open');
+  document.getElementById('aiDrawer').classList.remove('open');
+}
+
+function buildGroundedPromptPayload(){
+  if(!RESULT) RESULT = compute();
+  const R = RESULT;
+  const client = SESSION.anonymize ? "Confidential Client" : SESSION.clientName;
+  const persona = QUESTIONS.find(x => x.id === "Q0.1").opts[A["Q0.1"]||0][0];
+
+  return `
+# LTM INFRASTRUCTURE TECH ADVISORY BRIEFING SPECIFICATION
+
+## CLIENT & ENGAGEMENT METADATA
+- Client: ${client}
+- Stakeholder Role: ${persona}
+- Industry Sector: ${R.industryKey}
+- Mandate Track: ${R.trackName}
+- Target Horizon: ${SESSION.targetHorizon}
+- Estate Sizing: ~${QUESTIONS.find(x=>x.id==="Q0.5").apps[A["Q0.5"]||0]} apps | Cloud Spend: ~$${(R.totalCloudSpend/1000000).toFixed(1)}M/yr
+
+## QUANTIFIED MATURITY & VARIANCE
+- Overall Maturity: ${R.overall.toFixed(1)}/5.0 (${R.band})
+- Sector Benchmark Delta: ${R.peerDelta >= 0 ? "+" : ""}${R.peerDelta.toFixed(1)} vs ${R.industryKey} median
+- Dimension Scores:
+${Object.keys(DIM_NAMES).map(d => `  * ${d} ${DIM_NAMES[d]}: ${R.dimScores[d].toFixed(1)}/5.0 (Urgency: ${R.urgencyMap[d]===3?"HIGH":R.urgencyMap[d]===2?"MED":"LOW"})`).join("\n")}
+
+## CRITICAL HARDWARE & CONTRACT SIGNALS
+- VMware Renewal Exposure: ${R.vmwareRisk ? "CRITICAL (Imminent Broadcom price cliff)" : "Standard"}
+- Data Centre Lease Expiration: ${R.leaseCliff ? "CRITICAL (<12 months facility exit cliff)" : "Managed"}
+- SecNumCloud Mandate: ${R.secnumFlag ? "YES (French/EU Cloud de Confiance requirements active)" : "No"}
+- Stated #1 Objective: "${R.topObj}"
+- Estimated Annual Financial Leakage: $${(R.leakLow/1000).toFixed(0)}k – $${(R.leakHigh/1000).toFixed(0)}k (Compute: $${(R.decomp.compute/1000).toFixed(0)}k, Commitments: $${(R.decomp.commit/1000).toFixed(0)}k)
+
+## CONSULTING DEPTH READ & ANOMALY RESPONSES
+${formatConsultingProbesForPrompt()}
+
+## INSTRUCTIONS FOR ADVISORY SYNTHESIS
+You are an elite Senior Partner in LTM Infrastructure Tech Advisory. Author a bespoke, 3-part Executive Advisory Memo:
+1. EXECUTIVE DIAGNOSTIC: Pinpoint the client's single binding constraint. Expose the contradiction between their stated objective ("${R.topObj}") and their operational metrics.
+2. ARCHITECTURAL & COMMERCIAL IMPERATIVES: Name non-negotiable moves across Phase 1 (Immediate 0-30d), Phase 2 (Short-Term 30-90d), Phase 3 (Mid-Term 3-9m), and Phase 4 (Long-Term 9-18m).
+3. VALUE AT STAKE: Detail how the $${(R.totalLeakage/1000).toFixed(0)}k cost leakage will be reclaimed.
+Maintain a crisp, boardroom tone (McKinsey / Big 4 style). Absolutely zero generic consulting platitudes.
+`;
+}
+
+function copyAiPromptPack(){
+  const prompt = buildGroundedPromptPayload();
+  navigator.clipboard.writeText(prompt).then(() => {
+    alert("LTM Advisory Studio Prompt Pack copied to clipboard! Paste into ChatGPT Enterprise, Claude, or Gemini.");
+  });
+}
+
+async function generateAiBriefing(){
+  const provider = document.getElementById('aiProvider').value;
+  const apiKey = document.getElementById('aiApiKey').value.trim();
+  const statusEl = document.getElementById('aiMemoStatus');
+  const contentEl = document.getElementById('aiMemoContent');
+
+  if(provider === "heuristic" || !apiKey){
+    statusEl.textContent = "Synthesizing grounded heuristic memo...";
+    contentEl.textContent = generateRuleBasedMemo();
+    statusEl.textContent = "Generated via LTM Heuristic Engine (Offline)";
+    return;
+  }
+
+  statusEl.textContent = "Connecting to " + provider.toUpperCase() + "...";
+  contentEl.textContent = "Synthesizing executive briefing...";
+
+  const prompt = buildGroundedPromptPayload();
+
+  try{
+    if(provider === "gemini"){
+      const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+      const resp = await fetch(geminiUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: "You are an elite Infrastructure Tech Advisory partner at LTM. Write a concise, high-impact, evidenced C-level advisory memo.\n\n" + prompt }] }]
+        })
+      });
+      if(!resp.ok) throw new Error("HTTP " + resp.status);
+      const data = await resp.json();
+      contentEl.textContent = data.candidates?.[0]?.content?.parts?.[0]?.text || "No memo generated.";
+      statusEl.textContent = "Generated via Google Gemini 1.5 Flash";
+    } else if(provider === "openai"){
+      const resp = await fetch("https://api.openai.com/v1/chat/completions", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "Authorization": "Bearer " + apiKey },
+        body: JSON.stringify({
+          model: "gpt-4o",
+          messages: [
+            {role:"system", content:"You are an elite Infrastructure Tech Advisory partner at LTM. Write concise, high-impact, evidenced advisory memos for CIOs."},
+            {role:"user", content:prompt}
+          ],
+          temperature: 0.2
+        })
+      });
+      if(!resp.ok) throw new Error("HTTP " + resp.status);
+      const data = await resp.json();
+      contentEl.textContent = data.choices[0].message.content;
+      statusEl.textContent = "Generated via OpenAI GPT-4o";
+    } else if(provider === "anthropic"){
+      const resp = await fetch("https://api.anthropic.com/v1/messages", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-api-key": apiKey,
+          "anthropic-version": "2023-06-01",
+          "anthropic-dangerous-direct-browser-access": "true"
+        },
+        body: JSON.stringify({
+          model: "claude-3-5-sonnet-20241022",
+          max_tokens: 1500,
+          messages: [{role:"user", content:prompt}]
+        })
+      });
+      if(!resp.ok) throw new Error("HTTP " + resp.status);
+      const data = await resp.json();
+      contentEl.textContent = data.content[0].text;
+      statusEl.textContent = "Generated via Claude 3.5 Sonnet";
+    }
+  }catch(err){
+    statusEl.textContent = "API call error (" + err.message + "). Defaulting to offline heuristic.";
+    contentEl.textContent = generateRuleBasedMemo();
+  }
+}
+
+function generateRuleBasedMemo(){
+  if(!RESULT) RESULT = compute();
+  const R = RESULT;
+  const client = SESSION.anonymize ? "Confidential Client" : SESSION.clientName;
+  const persona = QUESTIONS.find(x => x.id === "Q0.1").opts[A["Q0.1"]||0][0];
+
+  let probesFindings = "";
+  if(SESSION.consultingProbes && Object.keys(SESSION.consultingProbes).length > 0){
+    probesFindings = "\n\nCONSULTING FIELD CALIBRATION & ANOMALY FINDINGS:\n";
+    if(SESSION.consultingProbes["P_FINOPS"]){
+      probesFindings += `• FINOPS ANOMALY: Leadership confirmed: "${SESSION.consultingProbes["P_FINOPS"]}". This operational visibility gap explains the ${fmt(R.decomp.commit)} commitment leakage.\n`;
+    }
+    if(SESSION.consultingProbes["P_DC_EXIT"]){
+      probesFindings += `• DC EXIT TIMELINE: Client verified: "${SESSION.consultingProbes["P_DC_EXIT"]}". Failure to vacate within contractual notice windows triggers severe lease extension penalties.\n`;
+    }
+    if(SESSION.consultingProbes["P_VMWARE"]){
+      probesFindings += `• HYPERVISOR DEFENSE: Client confirmed: "${SESSION.consultingProbes["P_VMWARE"]}". Rapid alternative triage is required.\n`;
+    }
+    if(SESSION.consultingProbes["P_SOVEREIGNTY"]){
+      probesFindings += `• SOVEREIGN KEY BOUNDARY: Client confirmed: "${SESSION.consultingProbes["P_SOVEREIGNTY"]}". Dedicated EU sovereign enclave required.\n`;
+    }
+    if(SESSION.consultingProbes["P_CIO_MANDATE"]){
+      const note = (SESSION.consultingProbeNotes && SESSION.consultingProbeNotes["P_CIO_MANDATE"]) ? ` (${SESSION.consultingProbeNotes["P_CIO_MANDATE"]})` : "";
+      probesFindings += `• CIO STRATEGIC MANDATE: "${SESSION.consultingProbes["P_CIO_MANDATE"]}"${note}.\n`;
+    }
+    if(SESSION.consultingProbes["P_DELIVERY_MODEL"]){
+      probesFindings += `• DELIVERY MODEL: "${SESSION.consultingProbes["P_DELIVERY_MODEL"]}".\n`;
+    }
+  }
+
+  return `EXECUTIVE ADVISORY MEMO
+To: ${persona}, ${client}
+From: Ashutosh Dixit, LTM Infrastructure Tech Advisory (ashutosh.dixit@ltm.com)
+Date: ${new Date().toLocaleDateString()}
+Subject: Strategic Estate Diagnostic & 4-Phase Modernization Blueprint (${R.trackName})
+
+1. EXECUTIVE DIAGNOSTIC & BINDING CONSTRAINT
+${client}'s estate is currently operating at an overall maturity of ${R.overall.toFixed(1)}/5.0 (${R.band}). While your leadership team has designated "${R.topObj}" as the preeminent strategic mandate, operational reality exposes a severe binding constraint:
+
+${R.vmwareRisk ? "• CRITICAL HYPERVISOR CLIFF: You face an impending VMware Broadcom renewal with anticipated 2.5x–3.5x licensing cost escalations. Operating on-premises without a validated alternative hypervisor (KVM/Nutanix/Cloud Native) invalidates cost reduction targets.\n" : ""}${R.leaseCliff ? "• DC FACILITY LEASE CLIFF: Imminent data centre lease expiration (<12 months) imposes a hard physical timeline. Lifting-and-shifting without disposition mapping will inflate public cloud operational costs by an estimated 35%.\n" : ""}${R.secnumFlag ? "• SECNUMCLOUD BOUNDARY: European sovereign data regulations mandate segregated enclaves for sensitive regulated workloads.\n" : ""}• DISCONNECT IN EXECUTION: With discount commitment coverage hovering at low levels and FinOps visibility largely reactive, public cloud spend is leaking an estimated ${fmt(R.leakLow)}–${fmt(R.leakHigh)} annually across oversized compute and unmanaged storage.${probesFindings}
+
+2. FOUR-PHASE MODERNIZATION BLUEPRINT
+• PHASE 1 (IMMEDIATE 0–30 DAYS): Execute emergency FinOps compute rightsizing to harvest ~$${Math.round(R.decomp.compute*0.35/1000)}k in zombie asset waste, while conducting an immediate VMware core entitlement audit (LTM Offering 03.3 & 03.5).
+• PHASE 2 (SHORT-TERM 30–90 DAYS): Execute 1-yr/3-yr Savings Plans commitment coverage and deploy automated discovery tooling across the application estate (LTM Offering 03.3 & 03.5).
+• PHASE 3 (MID-TERM 3–9 MONTHS): Launch a programmatic Migration Factory for top application clusters and establish CI/CD Golden Paths with automated policy-as-code landing zone guardrails (LTM Offering 03.4 & 03.6).
+• PHASE 4 (LONG-TERM 9–18+ MONTHS): Complete physical data centre decommissioning, decouple core legacy monoliths, and instantiate a sovereign AI data boundary (LTM Offering 03.5 & 04.4).
+
+3. VALUE AT STAKE
+Through structured execution of this 4-phase roadmap, ${client} will permanently eliminate facility lease overhead, stabilize hypervisor unit costs, and reclaim an addressable ${fmt(R.totalLeakage)} in annual cloud waste.`;
+}
+
+function copyMemoText(){
+  const t = document.getElementById('aiMemoContent').textContent;
+  navigator.clipboard.writeText(t).then(() => alert("Executive Memo copied!"));
+}
+
+/* ============================================================
+   Boardroom Presentation Mode (Interactive Slide Show)
+   ============================================================ */
+function launchBoardroom(){
+  if(!RESULT) RESULT = compute();
+  document.getElementById('boardroom-modal').classList.add('open');
+  currentSlide = 0;
+  renderSlide(currentSlide);
+  window.addEventListener('keydown', handleSlideKey);
+}
+function exitBoardroom(){
+  document.getElementById('boardroom-modal').classList.remove('open');
+  window.removeEventListener('keydown', handleSlideKey);
+}
+function handleSlideKey(e){
+  if(e.key === "ArrowRight") nextSlide();
+  else if(e.key === "ArrowLeft") prevSlide();
+  else if(e.key === "Escape") exitBoardroom();
+}
+function nextSlide(){ if(currentSlide < 5){ currentSlide++; renderSlide(currentSlide); } }
+function prevSlide(){ if(currentSlide > 0){ currentSlide--; renderSlide(currentSlide); } }
+
+function renderSlide(idx){
+  const R = RESULT;
+  const client = SESSION.anonymize ? "Confidential Client" : SESSION.clientName;
+  document.getElementById('brSlideNum').textContent = `Slide ${idx+1} of 6`;
+  document.getElementById('brClientHeader').textContent = `${client} — Executive Readout (${R.trackName})`;
+
+  const container = document.getElementById('brContent');
+  if(idx === 0){
+    container.innerHTML = `
+      <div class="br-slide" style="text-align:center">
+        <div style="font-family:var(--font-display);font-size:14px;letter-spacing:.16em;color:var(--coral);text-transform:uppercase;margin-bottom:12px">LTM Infrastructure Tech Advisory</div>
+        <h2 style="font-size:42px;margin-bottom:16px">${client}</h2>
+        <div style="font-size:22px;color:#EEE;margin-bottom:28px">Cloud &amp; Hybrid Infrastructure Diagnostic Readout</div>
+        <p style="max-width:700px;margin:0 auto 28px;color:#AAA">
+          A defensible, evidence-grounded assessment of your on-premises data centre, VMware licensing exposure, and public-cloud maturity across 8 core dimensions.
+        </p>
+        <div style="display:flex;justify-content:center;gap:16px">
+          <span class="badge" style="font-size:16px;padding:8px 20px">${R.trackName}</span>
+          <span class="badge" style="background:#226882;font-size:16px;padding:8px 20px">Overall ${R.overall.toFixed(1)} / 5.0 (${R.band})</span>
+        </div>
+      </div>
+    `;
+  } else if(idx === 1){
+    container.innerHTML = `
+      <div class="br-slide">
+        <h2>Executive Summary &amp; Context</h2>
+        <div class="two-col" style="margin-top:24px">
+          <div>
+            <h3 style="color:var(--coral);font-size:18px;margin-bottom:10px">The Stated Mandate</h3>
+            <p>Target Objective: <b>${R.topObj}</b></p>
+            <p>Designated Track: <b>${R.trackName}</b></p>
+            <p>Cloud Footprint: <b>$${(R.totalCloudSpend/1000000).toFixed(1)}M/yr</b> across ~<b>${QUESTIONS.find(x=>x.id==="Q0.5").apps[A["Q0.5"]||0]} apps</b></p>
+            <p style="margin-top:14px">Peer Comparison: <b>${R.peerDelta>=0?'+':''}${R.peerDelta.toFixed(1)}</b> variance vs ${R.industryKey.split(' ')[0]} median.</p>
+          </div>
+          <div>
+            <h3 style="color:#FFB74D;font-size:18px;margin-bottom:10px">Acute Operational Pressures</h3>
+            <p>${R.vmwareRisk ? "🔴 <b>VMware Renewal Cliff:</b> Steep price escalations require immediate hypervisor triage." : "🟢 VMware licensing within standard governance."}</p>
+            <p style="margin-top:8px">${R.leaseCliff ? "🔴 <b>Data Centre Lease Expiration:</b> Facility deadline forces hard migration milestones." : "🟢 DC lease timeline manageable."}</p>
+            <p style="margin-top:8px">💰 <b>Annual Value-at-Stake:</b> Estimated <b>${fmt(R.leakLow)}–${fmt(R.leakHigh)}</b> in reclaimable leakage.</p>
+          </div>
+        </div>
+      </div>
+    `;
+  } else if(idx === 2){
+    container.innerHTML = `
+      <div class="br-slide">
+        <h2>2D Strategic Risk Heatmap</h2>
+        <p style="margin-bottom:20px">Plotting maturity against urgency highlights where estate risks are concentrated.</p>
+        <div style="background:#111;padding:18px;border-radius:10px;overflow-x:auto">
+          <div style="font-size:14px;color:#EEE;line-height:2">
+            ${Object.keys(DIM_NAMES).map(d => {
+              const u = R.urgencyMap[d];
+              const score = R.dimScores[d];
+              const color = (u===3 && score<2.8) ? "#FF5252" : (score<3.0 ? "#FFD740" : "#69F0AE");
+              return `<span style="display:inline-block;padding:4px 12px;margin:4px;border-radius:4px;background:#282828;border-left:4px solid ${color};font-weight:700">${d} ${DIM_NAMES[d]}: ${score.toFixed(1)}/5 (${u===3?'High Urgency':'Standard'})</span>`;
+            }).join(" ")}
+          </div>
+        </div>
+      </div>
+    `;
+  } else if(idx === 3){
+    container.innerHTML = `
+      <div class="br-slide">
+        <h2>Quantified Value at Stake: ${fmt(R.leakLow)} – ${fmt(R.leakHigh)}</h2>
+        <p>Annual cost leakage decomposed across operational domains:</p>
+        <div class="two-col" style="margin-top:24px">
+          <div style="background:#282828;padding:20px;border-radius:10px">
+            <h3 style="color:var(--coral);font-size:22px;margin-bottom:6px">${fmt(R.decomp.compute)}</h3>
+            <b>Compute &amp; Zombie Resources</b>
+            <p style="font-size:13px;margin-top:4px">Oversized instances, unattached disks, unbudgeted sandbox sprawl.</p>
+          </div>
+          <div style="background:#282828;padding:20px;border-radius:10px">
+            <h3 style="color:var(--coral);font-size:22px;margin-bottom:6px">${fmt(R.decomp.commit)}</h3>
+            <b>Commitment Arbitrage</b>
+            <p style="font-size:13px;margin-top:4px">Uncovered on-demand spend eligible for Savings Plans / RIs.</p>
+          </div>
+          <div style="background:#282828;padding:20px;border-radius:10px">
+            <h3 style="color:var(--coral);font-size:22px;margin-bottom:6px">${fmt(R.decomp.storage)}</h3>
+            <b>Storage &amp; Egress Waste</b>
+            <p style="font-size:13px;margin-top:4px">Cold data on tier-1 block storage, cross-AZ traffic leakage.</p>
+          </div>
+          <div style="background:#282828;padding:20px;border-radius:10px">
+            <h3 style="color:var(--coral);font-size:22px;margin-bottom:6px">${fmt(R.decomp.licensing)}</h3>
+            <b>Hypervisor &amp; Licensing</b>
+            <p style="font-size:13px;margin-top:4px">VMware core licensing inflation &amp; unoptimized database cores.</p>
+          </div>
+        </div>
+      </div>
+    `;
+  } else if(idx === 4){
+    container.innerHTML = `
+      <div class="br-slide">
+        <h2>4-Phase Modernization Roadmap</h2>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:12px;margin-top:20px">
+          <div style="background:#282828;padding:14px;border-radius:8px;border-top:4px solid var(--red)">
+            <h3 style="font-size:15px;color:#FFF;margin-bottom:4px">Phase 1 · 0–30d</h3>
+            <p style="font-size:11px;color:#AAA;margin-bottom:10px">Stop Bleeding &amp; Triage</p>
+            ${R.movesPhase1.map(m=>`<div style="font-size:12px;margin-bottom:6px">• <b>${m.code}</b> ${m.title}</div>`).join("")}
+          </div>
+          <div style="background:#282828;padding:14px;border-radius:8px;border-top:4px solid var(--amber)">
+            <h3 style="font-size:15px;color:#FFF;margin-bottom:4px">Phase 2 · 30–90d</h3>
+            <p style="font-size:11px;color:#AAA;margin-bottom:10px">Quick Wins &amp; Governance</p>
+            ${R.movesPhase2.map(m=>`<div style="font-size:12px;margin-bottom:6px">• <b>${m.code}</b> ${m.title}</div>`).join("")}
+          </div>
+          <div style="background:#282828;padding:14px;border-radius:8px;border-top:4px solid #226882">
+            <h3 style="font-size:15px;color:#FFF;margin-bottom:4px">Phase 3 · 3–9m</h3>
+            <p style="font-size:11px;color:#AAA;margin-bottom:10px">Migration Factory</p>
+            ${R.movesPhase3.map(m=>`<div style="font-size:12px;margin-bottom:6px">• <b>${m.code}</b> ${m.title}</div>`).join("")}
+          </div>
+          <div style="background:#282828;padding:14px;border-radius:8px;border-top:4px solid #35754D">
+            <h3 style="font-size:15px;color:#FFF;margin-bottom:4px">Phase 4 · 9–18m+</h3>
+            <p style="font-size:11px;color:#AAA;margin-bottom:10px">Decommission &amp; AI</p>
+            ${R.movesPhase4.map(m=>`<div style="font-size:12px;margin-bottom:6px">• <b>${m.code}</b> ${m.title}</div>`).join("")}
+          </div>
+        </div>
+      </div>
+    `;
+  } else if(idx === 5){
+    container.innerHTML = `
+      <div class="br-slide">
+        <h2>Recommended Engagement Courses</h2>
+        <p style="margin-bottom:20px">Specific LTM Infrastructure Tech Advisory offerings aligned to this estate:</p>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          ${R.offers.map(o => `
+            <div style="background:#282828;padding:14px 18px;border-radius:8px;border-left:4px solid var(--coral);display:flex;justify-content:space-between;align-items:center">
+              <div>
+                <b style="color:var(--coral);font-size:15px">${o.code}</b> — <span style="font-size:15px;color:#FFF">${OFFERINGS[o.code]?.name}</span>
+                <div style="font-size:12px;color:#AAA;margin-top:2px">${o.why}</div>
+              </div>
+              <span class="badge" style="background:#333;font-size:12px">${OFFERINGS[o.code]?.door}</span>
+            </div>
+          `).join("")}
+        </div>
+      </div>
+    `;
+  }
+}
+
+/* ============================================================
+   Session Setup & Portability (.ciq)
+   ============================================================ */
+function openSessionModal(){
+  const newClient = prompt("Enter Client / Account Name:", SESSION.clientName);
+  if(newClient !== null && newClient.trim()) SESSION.clientName = newClient.trim();
+  const newLead = prompt("Enter Lead Consultant Name:", SESSION.consultantLead);
+  if(newLead !== null && newLead.trim()) SESSION.consultantLead = newLead.trim();
+  const newHorizon = prompt("Enter Target Mandate / Horizon:", SESSION.targetHorizon);
+  if(newHorizon !== null && newHorizon.trim()) SESSION.targetHorizon = newHorizon.trim();
+  updateSessionUI();
+  saveState();
+  if(RESULT) showResults(RESULT);
+}
+
+function exportSessionJSON(){
+  const payload = {
+    format: "CloudIQ Enterprise Assessment",
+    version: CLOUD_IQ_VERSION,
+    exportedAt: new Date().toISOString(),
+    SESSION,
+    gIdx,
+    answers: A
+  };
+  const blob = new Blob([JSON.stringify(payload, null, 2)], {type:"application/json"});
+  const a = document.createElement("a");
+  const fname = (SESSION.clientName.replace(/[^a-z0-9]/gi,'_') || "Client") + "_CloudIQ_Session.ciq";
+  a.href = URL.createObjectURL(blob);
+  a.download = fname;
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+function triggerSessionLoad(){
+  document.getElementById('ciqFileInput').click();
+}
+function loadSessionFile(event){
+  const file = event.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    try {
+      const data = JSON.parse(e.target.result);
+      if(data.answers){
+        hydrate({SESSION: data.SESSION, A: data.answers, gIdx: data.gIdx || 0});
+        alert("Session loaded successfully for " + SESSION.clientName);
+        if(data.gIdx >= GROUPS.length - 1 || Object.keys(data.answers).length >= 10){
+          computeAndShow();
+        } else {
+          renderGroup();
+        }
+      } else {
+        alert("Invalid .ciq file format.");
+      }
+    } catch(err){
+      alert("Error reading file: " + err.message);
+    }
+  };
+  reader.readAsText(file);
+}
+
+/* ============================================================
+   Enhanced 3-Page Executive PDF Export Engine
+   ============================================================ */
+function downloadExecutivePDF(){
+  if(!RESULT) RESULT = compute();
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ unit: "pt", format: "a4" });
+  const W = doc.internal.pageSize.getWidth();
+  const H = doc.internal.pageSize.getHeight();
+  const R = RESULT;
+  const M = 44;
+  const coral = [255, 94, 79], dark = [40, 40, 40], cream = [245, 245, 245], blue = [34, 104, 130];
+  const client = SESSION.anonymize ? "Confidential Client" : SESSION.clientName;
+
+  function header(title){
+    doc.setFillColor(...dark); doc.rect(0, 0, W, 58, "F");
+    doc.setFont("helvetica", "bold"); doc.setFontSize(16); doc.setTextColor(255, 255, 255);
+    doc.text("LTM ADVISORY", M, 34);
+    doc.setFont("helvetica", "normal"); doc.setFontSize(9); doc.setTextColor(200, 200, 200);
+    doc.text("Cloud IQ Enterprise Diagnostic", M + 130, 34);
+    doc.text(title.toUpperCase(), W - M, 34, { align: "right" });
+  }
+  function footer(pageNum){
+    doc.setDrawColor(220, 220, 220); doc.setLineWidth(1); doc.line(M, H - 36, W - M, H - 36);
+    doc.setFont("helvetica", "normal"); doc.setFontSize(8); doc.setTextColor(140, 140, 140);
+    doc.text("LTM CIS · Infrastructure Tech Advisory · Lead: ashutosh.dixit@ltm.com", M, H - 22);
+    doc.text(`Page ${pageNum} of 3 · Engagement: ${client}`, W - M, H - 22, { align: "right" });
+  }
+
+  // --- PAGE 1: Executive Summary & Context ---
+  header("Executive Readout Pack");
+  let y = 84;
+
+  doc.setFont("helvetica", "bold"); doc.setFontSize(20); doc.setTextColor(...dark);
+  doc.text(client, M, y);
+  doc.setFont("helvetica", "normal"); doc.setFontSize(10); doc.setTextColor(100, 100, 100);
+  doc.text(`Consultant: ${SESSION.consultantLead}   ·   Date: ${SESSION.engagementDate}   ·   Mandate: ${R.trackName}`, M, y + 16);
+  y += 38;
+
+  doc.setFillColor(...coral); doc.roundedRect(M, y, W - 2*M, 52, 6, 6, "F");
+  doc.setFont("helvetica", "bold"); doc.setFontSize(12); doc.setTextColor(255, 255, 255);
+  doc.text(`DESIGNATED TRACK: ${R.trackName}`, M + 16, y + 22);
+  doc.setFont("helvetica", "normal"); doc.setFontSize(10);
+  doc.text(`Overall Estate Maturity: ${R.overall.toFixed(1)} / 5.0 (${R.band})   ·   Peer Variance: ${R.peerDelta>=0?'+':''}${R.peerDelta.toFixed(1)} vs ${R.industryKey}`, M + 16, y + 38);
+  y += 66;
+
+  doc.setFillColor(...cream); doc.roundedRect(M, y, W - 2*M, 46, 6, 6, "F");
+  doc.setFont("helvetica", "bold"); doc.setFontSize(10); doc.setTextColor(...dark);
+  doc.text(`ANNUAL VALUE AT STAKE: ${fmt(R.leakLow)} – ${fmt(R.leakHigh)}`, M + 16, y + 20);
+  doc.setFont("helvetica", "normal"); doc.setFontSize(9); doc.setTextColor(100, 100, 100);
+  doc.text(`Decomposed into: Compute Rightsizing (${fmt(R.decomp.compute)}) · Commitments (${fmt(R.decomp.commit)}) · Storage (${fmt(R.decomp.storage)})`, M + 16, y + 34);
+  y += 60;
+
+  if(spiderChartInstance){
+    try{
+      const img = spiderChartInstance.toBase64Image("image/png", 1);
+      doc.addImage(img, "PNG", W/2 - 120, y, 240, 200);
+      y += 210;
+    }catch(e){}
+  }
+
+  if(R.vmwareRisk || R.leaseCliff || R.secnumFlag){
+    doc.setFillColor(255, 235, 238); doc.roundedRect(M, y, W - 2*M, 36, 4, 4, "F");
+    doc.setFont("helvetica", "bold"); doc.setFontSize(9); doc.setTextColor(183, 28, 28);
+    let alertMsg = "CRITICAL ADVISORY SIGNALS: ";
+    if(R.vmwareRisk) alertMsg += "VMware renewal cost cliff. ";
+    if(R.leaseCliff) alertMsg += "DC lease expiry (<12 mos). ";
+    if(R.secnumFlag) alertMsg += "SecNumCloud European sovereign mandate.";
+    doc.text(alertMsg, M + 12, y + 22);
+  }
+
+  footer(1);
+
+  // --- PAGE 2: Dimension Audit Table & 2D Risk Matrix ---
+  doc.addPage();
+  header("Dimension Audit & Risk Heatmap");
+  y = 80;
+
+  doc.setFont("helvetica", "bold"); doc.setFontSize(12); doc.setTextColor(...dark);
+  doc.text("1. Estate Dimension Audit (D1–D8)", M, y);
+  y += 14;
+
+  const dimRows = Object.keys(DIM_NAMES).map(d => [
+    d,
+    DIM_NAMES[d],
+    R.dimScores[d].toFixed(1),
+    scoreBand(R.dimScores[d]),
+    R.urgencyMap[d] === 3 ? "HIGH" : R.urgencyMap[d] === 2 ? "MED" : "LOW",
+    (R.urgencyMap[d] === 3 && R.dimScores[d] < 2.8) ? "CRITICAL" : "OK"
+  ]);
+
+  doc.autoTable({
+    startY: y,
+    head: [["ID", "Dimension Name", "Score", "Maturity", "Urgency", "Status"]],
+    body: dimRows,
+    theme: "grid",
+    headStyles: { fillColor: coral, textColor: 255, fontSize: 8.5 },
+    bodyStyles: { fontSize: 8, textColor: dark },
+    alternateRowStyles: { fillColor: cream },
+    margin: { left: M, right: M },
+    columnStyles: { 0: { cellWidth: 32 }, 2: { cellWidth: 44, halign: "center" }, 5: { cellWidth: 60 } }
+  });
+  y = doc.lastAutoTable.finalY + 24;
+
+  doc.setFont("helvetica", "bold"); doc.setFontSize(12); doc.setTextColor(...dark);
+  doc.text("2. Strategic Heatmap Positioning", M, y);
+  y += 14;
+
+  const hmSummary = [
+    ["Critical Danger Zone", "Low Maturity + High Urgency", Object.keys(DIM_NAMES).filter(d => R.urgencyMap[d]===3 && R.dimScores[d]<2.8).join(", ") || "None"],
+    ["Strategic Watch Area", "Medium Urgency or Emerging Maturity", Object.keys(DIM_NAMES).filter(d => R.urgencyMap[d]===2 || (R.dimScores[d]>=2.8 && R.dimScores[d]<3.8)).join(", ") || "None"],
+    ["Strategic Strengths", "Established or Advanced Maturity", Object.keys(DIM_NAMES).filter(d => R.dimScores[d]>=3.8).join(", ") || "None"]
+  ];
+
+  doc.autoTable({
+    startY: y,
+    head: [["Zone", "Definition", "Assigned Dimensions"]],
+    body: hmSummary,
+    theme: "grid",
+    headStyles: { fillColor: blue, textColor: 255, fontSize: 8.5 },
+    bodyStyles: { fontSize: 8, textColor: dark },
+    margin: { left: M, right: M }
+  });
+
+  footer(2);
+
+  // --- PAGE 3: 4-Phase Roadmap & Offering Routing ---
+  doc.addPage();
+  header("4-Phase Modernization Roadmap");
+  y = 80;
+
+  doc.setFont("helvetica", "bold"); doc.setFontSize(12); doc.setTextColor(...dark);
+  doc.text("3. Prioritized 4-Phase Modernization Roadmap", M, y);
+  y += 14;
+
+  const roadmapRows = [];
+  R.movesPhase1.forEach(m => roadmapRows.push(["Phase 1 (0–30d)", m.code, m.title, m.size, m.impact]));
+  R.movesPhase2.forEach(m => roadmapRows.push(["Phase 2 (30–90d)", m.code, m.title, m.size, m.impact]));
+  R.movesPhase3.forEach(m => roadmapRows.push(["Phase 3 (3–9m)", m.code, m.title, m.size, m.impact]));
+  R.movesPhase4.forEach(m => roadmapRows.push(["Phase 4 (9–18m+)", m.code, m.title, m.size, m.impact]));
+
+  doc.autoTable({
+    startY: y,
+    head: [["Horizon", "Offer", "Initiative Title", "Size", "Expected Outcome"]],
+    body: roadmapRows,
+    theme: "grid",
+    headStyles: { fillColor: [53, 117, 77], textColor: 255, fontSize: 8.5 },
+    bodyStyles: { fontSize: 7.5, textColor: dark },
+    alternateRowStyles: { fillColor: cream },
+    margin: { left: M, right: M },
+    columnStyles: { 0: { cellWidth: 78 }, 1: { cellWidth: 40 }, 3: { cellWidth: 36 } }
+  });
+  y = doc.lastAutoTable.finalY + 24;
+
+  doc.setFont("helvetica", "bold"); doc.setFontSize(12); doc.setTextColor(...dark);
+  doc.text("4. Recommended LTM Advisory Offerings", M, y);
+  y += 14;
+
+  const offerRows = R.offers.map(o => [o.code, OFFERINGS[o.code]?.name, OFFERINGS[o.code]?.door, o.why]);
+  doc.autoTable({
+    startY: y,
+    head: [["Code", "Offering Name", "Doorway", "Rationale"]],
+    body: offerRows,
+    theme: "grid",
+    headStyles: { fillColor: coral, textColor: 255, fontSize: 8.5 },
+    bodyStyles: { fontSize: 8, textColor: dark },
+    margin: { left: M, right: M },
+    columnStyles: { 0: { cellWidth: 36 } }
+  });
+
+  footer(3);
+
+  const cleanFname = client.replace(/[^a-z0-9]/gi,'_');
+  doc.save(`CloudIQ_Executive_Pack_${cleanFname}_${new Date().toISOString().slice(0,10)}.pdf`);
+}
+
+/* Boot application */
+start();
+</script>
+</body>
+</html>

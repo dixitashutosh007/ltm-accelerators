@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>AI Readiness IQ — LTM Infrastructure Tech Advisory</title>
+<meta name="generator" content="AI Readiness IQ v0.9 · LTM Infrastructure Tech Advisory" />
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' blob: data:; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https://www.ltm.com https://ltm-core.s3.us-east-1.amazonaws.com; connect-src 'none'; frame-ancestors 'self';">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+@import url("https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap");
+:root{
+  --ground:#F9F9F9; --panel:#FFFFFF; --panel2:#F5F5F5; --line:#DADADA; --line2:#ECECEC;
+  --ink:#282828; --mut:#5B5B5B; --mutd:#8E8E8E;
+  --coral:#FF5E4F; --coral-dk:#E54536; --coral-dkr:#CC2B1C; --coral-tint:#FCF0EE;
+  --blue:#226882; --violet:#482475; --green:#35754D;
+  --radius-sm:4px; --radius-md:8px; --radius-lg:16px;
+  --shadow-card:0 1px 2px rgba(40,40,40,.06), 0 4px 12px rgba(40,40,40,.08);
+  --font-display:"Manrope","Segoe UI",Arial,sans-serif;
+  --font-body:Arial,"Helvetica Neue",Helvetica,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font-body);background:var(--ground);color:var(--ink);line-height:1.5;-webkit-font-smoothing:antialiased}
+h1,h2,h3{font-family:var(--font-display);letter-spacing:-.01em;color:var(--ink)}
+.wrap{max-width:960px;margin:0 auto;padding:0 24px}
+/* family nav */
+#ltm-family-nav{background:#282828;color:#F9F9F9;font-family:'Manrope','Segoe UI',Arial,sans-serif;font-size:12px;padding:10px 0;border-bottom:2px solid #FF5E4F;position:relative;z-index:100}
+.ltm-fam-inner{max-width:1200px;margin:0 auto;padding:0 20px;display:flex;align-items:center;gap:20px;flex-wrap:wrap}
+.ltm-fam-brand{display:flex;flex-direction:column;gap:2px;padding-right:16px;border-right:1px solid rgba(255,255,255,0.15)}
+.ltm-fam-b{font-weight:700;color:#FF5E4F;letter-spacing:.04em;font-size:13px}
+.ltm-fam-s{color:rgba(255,255,255,0.6);font-size:10px;text-transform:uppercase;letter-spacing:.12em}
+.ltm-fam-links{display:flex;gap:2px;flex-wrap:wrap;flex:1}
+.ltm-fam-link{color:rgba(255,255,255,0.75);text-decoration:none;padding:6px 12px;border-radius:4px;font-weight:600;letter-spacing:.01em;transition:background .15s,color .15s;display:inline-flex;align-items:center;gap:4px;white-space:nowrap}
+.ltm-fam-link:hover{color:#fff;background:rgba(255,255,255,0.08)}
+.ltm-fam-link.current{background:#FF5E4F;color:#fff}
+.ltm-fam-tag{font-size:9px;text-transform:uppercase;letter-spacing:.12em;opacity:.7;background:rgba(255,255,255,0.12);padding:2px 6px;border-radius:3px}
+.ltm-fam-link.current .ltm-fam-tag{background:rgba(255,255,255,0.25);opacity:1}
+/* handoff banner */
+#ltm-handoff-banner{background:#FCF0EE;border-bottom:1px solid #FF5E4F;padding:12px 0}
+.ltm-hb-inner{max-width:1200px;margin:0 auto;padding:0 20px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.ltm-hb-badge{background:#FF5E4F;color:#fff;font-size:10px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;padding:4px 10px;border-radius:12px;font-family:var(--font-display)}
+.ltm-hb-msg{color:#282828;font-size:13px;line-height:1.5;flex:1;min-width:220px}
+.ltm-hb-close{background:transparent;border:1px solid rgba(0,0,0,0.15);color:#5B5B5B;font-family:var(--font-display);font-size:11px;font-weight:600;padding:5px 10px;border-radius:4px;cursor:pointer}
+.ltm-hb-close:hover{background:rgba(255,94,79,0.08);color:#282828;border-color:#FF5E4F}
+/* header */
+header.top{background:var(--panel);border-bottom:1px solid var(--line);padding:14px 0}
+header.top .wrap{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
+.ltmlogo{display:flex;align-items:center;gap:12px}
+.ltmlogo>img{height:26px;width:auto;object-fit:contain;flex:none}
+.ltmword{line-height:1.15;border-left:1px solid var(--line);padding-left:12px}
+.ltmword b{font-family:var(--font-display);font-size:14px;font-weight:600;display:block;color:var(--ink)}
+.ltmword span{display:block;font-family:var(--font-display);font-size:10px;letter-spacing:.12em;color:var(--mutd);text-transform:uppercase;margin-top:2px}
+.kicker{font-family:var(--font-display);font-size:11px;letter-spacing:.16em;color:var(--mut);text-transform:uppercase}
+/* progress */
+.progress-bar{height:3px;background:var(--line2)}
+.progress-fill{height:3px;background:var(--coral);width:0;transition:width .3s}
+/* cards */
+.screen{padding:36px 0 64px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius-lg);padding:28px;margin-bottom:20px;box-shadow:var(--shadow-card)}
+h1{font-size:36px;font-weight:700;line-height:1.15;margin-bottom:10px}
+h2{font-size:22px;font-weight:600;margin-bottom:14px}
+h3{font-family:var(--font-display);font-size:12px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--coral);margin:0 0 10px}
+.lead{font-size:16px;color:var(--mut);margin-bottom:18px}
+.pill{display:inline-block;background:var(--coral-tint);color:var(--coral-dkr);border-radius:999px;padding:5px 12px;font-size:12px;font-weight:600;margin:0 6px 6px 0;font-family:var(--font-display)}
+.sec-label{font-family:var(--font-display);font-size:12px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--coral);margin-bottom:8px}
+.qtext{font-family:var(--font-display);font-size:18px;font-weight:600;color:var(--ink);margin-bottom:4px}
+.qhint{font-size:13px;color:var(--mutd);margin-bottom:14px}
+/* option buttons */
+.opts{display:flex;flex-direction:column;gap:8px}
+.opt{border:1.5px solid var(--line);border-radius:var(--radius-md);padding:12px 14px;cursor:pointer;background:var(--panel);font-size:14px;transition:.15s;display:flex;align-items:center;gap:12px}
+.opt:hover{border-color:var(--coral);background:var(--coral-tint)}
+.opt.sel{border-color:var(--coral);background:var(--coral-tint);font-weight:600}
+.opt .mark{width:18px;height:18px;border-radius:50%;border:2px solid var(--line);flex:0 0 auto;display:flex;align-items:center;justify-content:center}
+.opt.multi .mark{border-radius:5px}
+.opt.sel .mark{border-color:var(--coral);background:var(--coral)}
+.opt.sel .mark::after{content:'✓';color:#fff;font-size:11px;font-weight:bold}
+.qblock{padding:18px 0;border-bottom:1px solid var(--line2)}
+.qblock:first-child{padding-top:4px}
+.qblock:last-child{border-bottom:none;padding-bottom:0}
+/* nav */
+.nav{display:flex;justify-content:space-between;align-items:center;margin-top:16px;flex-wrap:wrap;gap:8px}
+.btn{background:var(--coral);color:#fff;border:none;border-radius:var(--radius-md);padding:12px 24px;font-family:var(--font-display);font-size:14px;font-weight:600;cursor:pointer;transition:.15s;letter-spacing:.01em}
+.btn:hover{background:var(--coral-dk)}
+.btn:disabled{background:var(--line);color:var(--mutd);cursor:not-allowed}
+.btn.ghost{background:transparent;color:var(--coral);border:1.5px solid var(--line)}
+.btn.ghost:hover{background:var(--coral-tint);color:var(--coral-dkr);border-color:var(--coral)}
+.btn.big{padding:14px 32px;font-size:16px}
+.qcount{font-family:var(--font-display);font-size:13px;color:var(--mutd)}
+/* results */
+.badge{display:inline-block;padding:5px 12px;border-radius:999px;font-family:var(--font-display);font-weight:700;font-size:13px;color:#fff;background:var(--coral)}
+.dimrow{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.dimrow .dname{width:220px;font-size:12px;color:var(--mut);font-family:var(--font-display);font-weight:500}
+.dimbar{flex:1;background:var(--panel2);border-radius:var(--radius-sm);height:12px;overflow:hidden}
+.dimbar .fill{height:12px;background:var(--coral);border-radius:var(--radius-sm)}
+.dimrow .dval{width:34px;text-align:right;font-family:var(--font-display);font-weight:700;font-size:12px;color:var(--ink)}
+.move{border-left:4px solid var(--coral);background:var(--panel2);padding:14px 18px;border-radius:0 var(--radius-md) var(--radius-md) 0;margin-bottom:10px}
+.move .mtitle{font-family:var(--font-display);font-weight:700;color:var(--ink);margin-bottom:2px}
+.move .mmeta{font-size:12px;color:var(--mut)}
+.handoff{background:var(--coral-tint);border:1px dashed var(--coral);border-radius:var(--radius-md);padding:14px 16px;margin-bottom:10px;color:var(--ink)}
+footer.foot{text-align:center;color:var(--mutd);font-size:12px;padding:22px 0 26px;font-family:var(--font-display);letter-spacing:.02em;border-top:1px solid var(--line2)}
+.opt:focus-visible,.btn:focus-visible{outline:3px solid var(--coral);outline-offset:2px}
+@media(max-width:520px){.wrap{padding:0 16px}.card{padding:20px}h1{font-size:26px}.btn.big{padding:12px 20px;font-size:14px}.dimrow .dname{width:140px}}
+</style>
+</head>
+<body>
+<nav id="ltm-family-nav" aria-label="LTM Infrastructure Tech Advisory accelerators">
+  <div class="ltm-fam-inner">
+    <div class="ltm-fam-brand"><span class="ltm-fam-b">LTM</span><span class="ltm-fam-s">Infrastructure Tech Advisory</span></div>
+    <div class="ltm-fam-links">
+      <a href="cloud-iq.html" class="ltm-fam-link" data-fam="cloud">Cloud IQ <span class="ltm-fam-tag">front door</span></a>
+      <a href="strategy-iq.html" class="ltm-fam-link" data-fam="strategy">Strategy IQ</a>
+      <a href="modernization-iq.html" class="ltm-fam-link" data-fam="moderniz">Modernization IQ</a>
+      <a href="sovereign-screen.html" class="ltm-fam-link" data-fam="sovereign">Sovereign IQ</a>
+      <a href="Data-Residency-Jurisdiction-Audit.html" class="ltm-fam-link" data-fam="posture">Posture IQ</a>
+      <a href="finops-screen.html" class="ltm-fam-link" data-fam="finops">FinOps IQ</a>
+      <a href="finops-value-case.html" class="ltm-fam-link" data-fam="fvc">FinOps Value Case</a>
+      <a href="ai-readiness-iq.html" class="ltm-fam-link current" data-fam="ai" aria-current="page">AI Readiness IQ</a>
+    </div>
+  </div>
+</nav>
+<header class="top">
+  <div class="wrap">
+    <div class="ltmlogo">
+      <img src="data:image/png;base64,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" alt="LTM" />
+      <span class="ltmword"><b>AI Readiness IQ</b><span>AI readiness diagnostic</span></span>
+    </div>
+    <div class="kicker">Pillar 04 — AI Infusion · Infrastructure Tech Advisory</div>
+  </div>
+</header>
+<div class="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-label="Assessment progress"><div class="progress-fill" id="pfill"></div></div>
+
+<div class="wrap screen" id="app"></div>
+
+<footer class="foot">LTM &middot; Infrastructure Tech Advisory &middot; Pillar 04 — AI Infusion &nbsp;&middot;&nbsp; AI Readiness IQ diagnostic</footer>
+<footer id="ltm-legal-footer" style="position:relative;padding:22px 24px 28px;font-family:'Manrope','Segoe UI',Arial,sans-serif;font-size:11px;color:#8E8E8E;background:#F9F9F9;border-top:1px solid #ECECEC;letter-spacing:.01em;line-height:1.55;text-align:center"><div style="max-width:900px;margin:0 auto">This is a preliminary, indicative self-assessment intended for planning conversations only — not legal, tax, financial, or regulatory advice.</div><div style="max-width:900px;margin:6px auto 0">All answers stay in your browser; nothing is transmitted to LTM unless you use Contact Us. External loads: Manrope from Google Fonts, LTM logomark embedded. Outbound network is blocked by CSP (<code style="font-family:inherit">connect-src 'none'</code>).</div><div style="max-width:900px;margin:8px auto 0;font-family:'Manrope','Segoe UI',Arial,sans-serif;font-size:11px;color:#5B5B5B">Not sure where to start? <a href="cloud-iq.html" style="color:#FF5E4F;text-decoration:none;font-weight:600">Cloud IQ</a> is the front door — begin there to be routed to the right lens.</div><div style="max-width:900px;margin:10px auto 0;color:#C1C1C1;font-size:10px;letter-spacing:.08em">LTM · Infrastructure Tech Advisory · AI Readiness IQ v0.9</div></footer>
+<script id="ltm-handoff-script">
+(function(){
+  try {
+    var params = new URLSearchParams(location.search);
+    var from = params.get('from');
+    if (from !== 'cloud-iq') return;
+    var industry = params.get('industry')||'', spend = params.get('spend')||'',
+        waste = params.get('waste')||'', sov = params.get('sov')||'',
+        frameworks = params.get('frameworks')||'', v = params.get('v')||'';
+    var bits = [];
+    if (industry) bits.push('<b>'+industry+'</b>');
+    if (spend) bits.push('annual spend <b>'+spend+'</b>');
+    if (waste) bits.push('~<b>'+waste+'%</b> waste');
+    if (frameworks) bits.push('flagged frameworks <b>'+frameworks.toUpperCase()+'</b>');
+    else if (sov==='1') bits.push('<b>sovereignty flag</b>');
+    var suffix = bits.length ? (' with '+bits.join(' &middot; ')) : '';
+    try {
+      window.CLOUD_IQ_TELEMETRY = window.CLOUD_IQ_TELEMETRY || {events:[]};
+      var evt = {type:'handoff_received', from:from, v:v, industry:industry, spend:spend, waste:waste, sov:sov, frameworks:frameworks, ts:Date.now()};
+      window.CLOUD_IQ_TELEMETRY.events.push(evt);
+      window.dispatchEvent(new CustomEvent('cloudiq:event',{detail:evt}));
+    } catch(e){}
+    window.LTM_HANDOFF = {from:from, industry:industry, spend:spend, waste:waste, sov:sov, frameworks:frameworks, v:v};
+    function mount(){
+      if (document.getElementById('ltm-handoff-banner')) return;
+      var b = document.createElement('div');
+      b.id='ltm-handoff-banner'; b.setAttribute('role','status');
+      b.innerHTML='<div class="ltm-hb-inner"><span class="ltm-hb-badge">Arrived from Cloud IQ</span>'
+       +'<span class="ltm-hb-msg">Your Cloud IQ diagnostic routed here'+suffix+'. The result will land in that context.</span>'
+       +'<button class="ltm-hb-close" onclick="this.parentElement.parentElement.remove()">Dismiss</button></div>';
+      var nav = document.getElementById('ltm-family-nav');
+      if (nav && nav.parentNode) nav.parentNode.insertBefore(b, nav.nextSibling);
+      else if (document.body) document.body.insertBefore(b, document.body.firstChild);
+    }
+    if (document.readyState==='loading') document.addEventListener('DOMContentLoaded', mount);
+    else mount();
+  } catch(e){}
+})();
+</script>
+
+<script>
+/* ============================================================
+   AI Readiness IQ — v0.9 (LTM Infrastructure Tech Advisory)
+   ============================================================ */
+const ACCEL_NAME = "AI Readiness IQ";
+const ACCEL_VERSION = "0.9";
+const ACCEL_PILLAR = "Pillar 04 — AI Infusion";
+const STORE_KEY = "ai-readiness-iq.v1.state";
+const SHARE_PREFIX = "#s=";
+
+const QUESTIONS = [{"id": "A1.1", "dim": "A1", "q": "How ready is your data foundation for AI?", "opts": ["Siloed / no data platform", "Data lake with ad-hoc governance", "Governed lake / lakehouse", "Productionised with contracts and quality SLOs", "AI at scale with lineage and freshness monitored"]}, {"id": "A1.2", "dim": "A1", "q": "Do you have a documented data classification and access model?", "hint": "Especially for the data AI would use.", "opts": ["No", "Draft", "Documented", "Enforced access controls", "Continuously audited with lineage"]}, {"id": "A2.1", "dim": "A2", "q": "How defined is your model / platform strategy?", "hint": "Which providers, hosting posture, and multi-model policy.", "opts": ["Ad-hoc, per team", "Preferred provider only", "Documented multi-model policy", "Governed platform with routing", "Platform-as-product with SLAs"]}, {"id": "A2.2", "dim": "A2", "q": "Where do your models actually run?", "opts": ["Only in public API calls", "Public API + private sandboxes", "Mix, some in your VPC", "Mostly in-VPC / dedicated", "Sovereign-controlled hosting for sensitive data"]}, {"id": "A3.1", "dim": "A3", "q": "How mature are your AI guardrails and governance?", "hint": "Content filtering, prompt safety, PII redaction, model risk management.", "opts": ["None", "Basic filters only", "Documented policy", "Enforced with logging", "Continuous evaluation and red-teaming"]}, {"id": "A3.2", "dim": "A3", "q": "Do you have a Responsible-AI / model-risk framework?", "hint": "NIST AI RMF, EU AI Act, ISO 42001 or equivalent internal.", "opts": ["No", "Under discussion", "Documented framework", "Applied per use case", "Board-level oversight with reporting"]}, {"id": "A4.1", "dim": "A4", "q": "How mature are your AI engineering skills?", "opts": ["No internal AI/ML capability", "A few interested individuals", "A dedicated team", "Multiple product-embedded teams", "Community of practice at scale"]}, {"id": "A4.2", "dim": "A4", "q": "Is there a clear operating model for who owns AI outcomes?", "opts": ["No — anyone can start", "Loose ownership", "Documented model", "Enforced accountability", "Board-level accountability with KPIs"]}, {"id": "A5.1", "dim": "A5", "q": "What's the shape of your AI use case portfolio?", "opts": ["None yet", "Isolated experiments", "A few production copilots", "Multiple production products / features", "AI infused across the value chain"]}, {"id": "A5.2", "dim": "A5", "q": "Do you have a documented use case selection framework?", "hint": "E.g. value/feasibility scoring, risk band, sunset criteria.", "opts": ["No — first-come first-served", "Loose triage", "Documented framework", "Applied consistently", "Portfolio-level ROI tracking"]}, {"id": "A6.1", "dim": "A6", "q": "How disciplined is your AI cost management?", "hint": "TokenOps: budget, unit economics, provider routing.", "opts": ["No visibility", "Basic bill review", "Tagged and budgeted", "Per-team chargeback", "Unit economics per AI feature"]}, {"id": "A6.2", "dim": "A6", "q": "Do you route between providers / models to control cost?", "opts": ["No — single provider", "Manual switch when bills spike", "Documented routing policy", "Automated routing by cost/latency", "Continuous optimization with fallback tiers"]}];
+const DIMS = [{"id": "A1", "label": "Data foundation"}, {"id": "A2", "label": "Model & platform choices"}, {"id": "A3", "label": "Governance & guardrails"}, {"id": "A4", "label": "Skills & operating model"}, {"id": "A5", "label": "Use case portfolio"}, {"id": "A6", "label": "Cost & TokenOps discipline"}];
+const DIM_LABELS = Object.fromEntries(DIMS.map(d => [d.id, d.label]));
+const MOVES_MAP = {"A1": "Data foundation programme (contracts, quality SLOs, lineage)", "A2": "Model & platform strategy — governed multi-model platform", "A3": "Responsible-AI / model-risk framework + guardrails", "A4": "AI operating model & skills programme", "A5": "Use case portfolio & value-realization discipline", "A6": "TokenOps: budgets, unit economics, provider routing"};
+const HANDOFFS = [["Cloud IQ", "cloud-iq.html", "broader-lens front-door diagnostic across the whole cloud estate"], ["Sovereign IQ", "sovereign-screen.html", "if the AI use cases touch regulated or residency-constrained data"], ["Posture IQ", "Data-Residency-Jurisdiction-Audit.html", "deep-dive on residency posture where AI processes regulated data"], ["FinOps IQ", "finops-screen.html", "wrap TokenOps into the broader cloud financial management discipline"]];
+const GROUPS = [{"name": "A1 · A2", "qs": ["A1.1", "A1.2", "A2.1", "A2.2"]}, {"name": "A3 · A4", "qs": ["A3.1", "A3.2", "A4.1", "A4.2"]}, {"name": "A5 · A6", "qs": ["A5.1", "A5.2", "A6.1", "A6.2"]}];
+
+let gIdx = 0;
+const A = {};
+const app = document.getElementById('app');
+const pfill = document.getElementById('pfill');
+
+window.CLOUD_IQ_TELEMETRY = window.CLOUD_IQ_TELEMETRY || {events:[]};
+function telemetry(type, detail){ try {
+  const evt = Object.assign({type, ts:Date.now(), tool:"ai-readiness-iq", v:ACCEL_VERSION}, detail||{});
+  window.CLOUD_IQ_TELEMETRY.events.push(evt);
+  window.dispatchEvent(new CustomEvent("cloudiq:event",{detail:evt}));
+} catch(e){} }
+
+function saveState(){ try{ localStorage.setItem(STORE_KEY, JSON.stringify({gIdx, A, ts:Date.now()})); }catch(e){} }
+function loadState(){ try{ const raw=localStorage.getItem(STORE_KEY); if(!raw) return null;
+  const s=JSON.parse(raw); if(!s||!s.A||typeof s.gIdx!=="number") return null; return s; }catch(e){ return null; } }
+function clearState(){ try{ localStorage.removeItem(STORE_KEY); }catch(e){} }
+function hydrate(st){ Object.keys(A).forEach(k=>delete A[k]); Object.assign(A, st.A||{}); gIdx=st.gIdx||0; }
+
+function encodeShare(){
+  try{
+    const payload = JSON.stringify({v:ACCEL_VERSION, A:A});
+    const b64 = btoa(unescape(encodeURIComponent(payload))).replace(/=+$/,"");
+    return location.origin + location.pathname + SHARE_PREFIX + b64;
+  }catch(e){ return null; }
+}
+function decodeShareHash(){
+  try{
+    const h=location.hash||""; if(!h.startsWith(SHARE_PREFIX)) return null;
+    const b64=h.slice(SHARE_PREFIX.length);
+    const pad="=".repeat((4 - b64.length%4)%4);
+    const json=decodeURIComponent(escape(atob(b64+pad)));
+    const s=JSON.parse(json); return (s&&s.A)?s:null;
+  }catch(e){ return null; }
+}
+function shareResult(){
+  const url=encodeShare(); if(!url) return;
+  const toast=document.getElementById("shareToast");
+  const done = ok => { if(toast){ toast.textContent = ok?"Share link copied.":"Couldn\u2019t copy — URL in console."; toast.style.opacity=1; setTimeout(()=>toast.style.opacity=0,2500);} };
+  try {
+    if(navigator.clipboard&&navigator.clipboard.writeText) navigator.clipboard.writeText(url).then(()=>done(true),()=>done(false));
+    else { const ta=document.createElement("textarea"); ta.value=url; document.body.appendChild(ta); ta.select(); document.execCommand("copy"); document.body.removeChild(ta); done(true); }
+  } catch(e){ console.log(url); done(false); }
+  telemetry("share_generated");
+}
+
+/* ---- Render engine ---- */
+function start(){
+  const shared = decodeShareHash();
+  if (shared) { hydrate(shared); telemetry("share_opened"); RESULT=compute(); showResults(RESULT); return; }
+  const st = loadState();
+  let resumeHtml="";
+  if (st && (st.gIdx>0 || Object.keys(st.A||{}).length>0)) {
+    const pct = Math.round((st.gIdx/GROUPS.length)*100);
+    resumeHtml = '<div style="background:var(--coral-tint);border:1px solid var(--coral);border-radius:var(--radius-md);padding:12px 16px;margin-bottom:18px;display:flex;align-items:center;gap:12px;flex-wrap:wrap">'
+      +'<span style="font-family:var(--font-display);font-weight:600;color:var(--coral-dkr);font-size:13px;flex:1">You were partway through — '+pct+'% complete. Resume where you left off?</span>'
+      +'<button class="btn" style="padding:6px 12px;font-size:12px" onclick="resumeSaved()">Resume</button>'
+      +'<button class="btn ghost" style="padding:6px 12px;font-size:12px" onclick="startFresh()">Start over</button></div>';
+  }
+  app.innerHTML = resumeHtml + `
+    <div class="card">
+      <div class="sec-label">Pillar 04 — AI Infusion · Diagnostic layer</div>
+      <h1>Is your platform<br>ready for AI?</h1>
+      <p class="lead">A short diagnostic on the six things that decide whether AI programmes ship: data foundation, model / platform choices, governance and guardrails, skills, use-case portfolio, and cost / TokenOps discipline.</p>
+      <div style="margin:14px 0">
+        <span class="pill">⏱ ~5–7 minutes</span>
+        <span class="pill">📊 Maturity scorecard</span>
+        <span class="pill">🧭 3-move roadmap</span>
+        <span class="pill">📄 LTM PDF report</span>
+        <span class="pill">💾 Auto-saved locally</span>
+      </div>
+      <div class="nav"><span></span><button class="btn big" onclick="begin()">Start assessment →</button></div>
+      <p style="font-size:11px;color:var(--mut);margin-top:18px;line-height:1.5">Preliminary, indicative planning assessment — not legal, tax, financial, or regulatory advice. Answers stay in your browser.</p>
+      <div style="text-align:right;margin-top:10px;font-family:var(--font-display);font-size:10px;color:var(--mutd);letter-spacing:.08em">AI Readiness IQ v0.9</div>
+    </div>`;
+  pfill.style.width = "0%";
+}
+function begin(){ clearState(); Object.keys(A).forEach(k=>delete A[k]); gIdx=0; telemetry("assessment_started"); renderGroup(); }
+function resumeSaved(){ const st=loadState(); if(!st){ begin(); return; } hydrate(st); renderGroup(); }
+function startFresh(){ clearState(); begin(); }
+
+function renderGroup(){
+  const G = GROUPS[gIdx];
+  pfill.style.width = ((gIdx)/GROUPS.length*100)+"%";
+  const parts = G.qs.map(qid => {
+    const Q = QUESTIONS.find(x=>x.id===qid); if (!Q) return "";
+    let body = renderSingle(Q);
+    const meta = Q.dim ? ` <span style="color:var(--mutd);font-size:11px;font-weight:500;letter-spacing:.08em">· ${Q.dim}</span>` : "";
+    return `<div class="qblock"><div class="qtext">${Q.q}${meta}</div><div class="qhint">${Q.hint||"&nbsp;"}</div>${body}</div>`;
+  }).join("");
+  const answered = G.qs.every(qid => A[qid] !== undefined);
+  app.innerHTML = `
+    <div class="card">
+      <div class="sec-label">${G.name}</div>
+      ${parts}
+      <div class="nav" style="margin-top:18px">
+        <button class="btn ghost" onclick="prevGroup()" ${gIdx===0?'style="visibility:hidden"':''}>← Back</button>
+        <span class="qcount">Card ${gIdx+1} of ${GROUPS.length}</span>
+        <button class="btn" id="nextBtn" onclick="nextGroup()" ${answered?"":"disabled"}>${gIdx===GROUPS.length-1?"See my results →":"Next →"}</button>
+      </div>
+    </div>`;
+  saveState();
+}
+function renderSingle(Q){
+  return '<div class="opts" role="radiogroup" aria-label="'+Q.q.replace(/"/g,'&quot;')+'">' + Q.opts.map((o,i)=>{
+    const sel = A[Q.id]===i ? 'sel' : '';
+    return `<div class="opt ${sel}" role="radio" tabindex="0" aria-checked="${sel?'true':'false'}" onclick="pick('${Q.id}',${i})" onkeydown="kb(event,()=>pick('${Q.id}',${i}))"><span class="mark"></span><span>${o}</span></div>`;
+  }).join("") + '</div>';
+}
+function pick(id, i){ A[id]=i; renderGroup(); }
+function kb(ev, fn){ if(ev.key==="Enter"||ev.key===" "||ev.key==="Spacebar"){ ev.preventDefault(); fn(); } }
+function nextGroup(){ saveState(); telemetry("card_completed",{gIdx, card:GROUPS[gIdx].name}); if (gIdx<GROUPS.length-1){ gIdx++; renderGroup(); } else { clearState(); computeAndShow(); } }
+function prevGroup(){ if (gIdx>0){ gIdx--; renderGroup(); } }
+
+/* ---- Scoring ---- */
+function compute(){
+  // dimension scores: mean of question option index (0..4) + 1 → 1..5 scale
+  const dimAcc = {};
+  QUESTIONS.forEach(Q => {
+    if (!Q.dim) return;
+    const v = A[Q.id]; if (v===undefined) return;
+    if (!dimAcc[Q.dim]) dimAcc[Q.dim]=[];
+    dimAcc[Q.dim].push(v+1);
+  });
+  const dimScores = {};
+  DIMS.forEach(d => {
+    dimScores[d.id] = dimAcc[d.id]&&dimAcc[d.id].length
+      ? dimAcc[d.id].reduce((a,b)=>a+b,0)/dimAcc[d.id].length : 3;
+  });
+  const overall = DIMS.reduce((s,d)=>s+dimScores[d.id],0) / DIMS.length;
+  const band = overall<2 ? "Nascent" : overall<3 ? "Emerging" : overall<4 ? "Established" : overall<4.5 ? "Advanced" : "Leading";
+
+  // 3-move roadmap: 3 lowest-scoring dims
+  const sorted = Object.keys(dimScores).sort((a,b)=>dimScores[a]-dimScores[b]);
+  const moves = sorted.slice(0,3).map((d,i)=>({
+    n:i+1, dim:d, label:DIM_LABELS[d], score:dimScores[d].toFixed(1),
+    offer:MOVES_MAP[d] || ("Lift "+DIM_LABELS[d])
+  }));
+
+  // top risks (lowest 3 dims) for exec summary
+  const risks = sorted.slice(0,3).map(d => ({dim:d, name:DIM_LABELS[d], score:dimScores[d]}));
+
+  return { dimScores, overall, band, moves, risks };
+}
+
+let RESULT=null;
+function computeAndShow(){
+  RESULT = compute();
+  telemetry("assessment_completed", {overall:RESULT.overall.toFixed(2), band:RESULT.band});
+  showResults(RESULT);
+}
+
+function showResults(R){
+  pfill.style.width = "100%";
+  const execRisks = R.risks.map(r => `<li style="margin:4px 0;font-size:13px"><b>${r.dim}</b> ${r.name} — <span style="color:var(--mut)">${r.score.toFixed(1)}/5</span></li>`).join("");
+  const firstMove = R.moves[0] ? `<b>${R.moves[0].offer}</b>` : "an assessment review";
+  const nextLinks = HANDOFFS.map(([label,href,why]) => `<div class="handoff"><b><a href="${href}" style="color:var(--coral);text-decoration:none">${label}</a></b> <span style="color:var(--mut);font-size:12px">— ${why}</span></div>`).join("");
+
+  const dimBars = DIMS.map(d => {
+    const v = R.dimScores[d.id];
+    return `<div class="dimrow"><div class="dname">${d.id} · ${d.label}</div><div class="dimbar"><div class="fill" style="width:${v/5*100}%"></div></div><div class="dval">${v.toFixed(1)}</div></div>`;
+  }).join("");
+
+  const movesHtml = R.moves.map(m => `<div class="move"><div class="mtitle">Move ${m.n}: ${m.offer}</div><div class="mmeta">${m.dim} · ${m.label} · now ${m.score}/5</div></div>`).join("");
+
+  app.innerHTML = `
+    <div class="card" style="background:linear-gradient(135deg,var(--panel) 0%,var(--coral-tint) 100%);border-color:var(--coral)">
+      <div class="sec-label">Executive summary</div>
+      <h1 style="font-size:22px;margin-bottom:8px">${ACCEL_NAME}: overall ${R.overall.toFixed(1)}/5 — ${R.band}</h1>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px 24px;margin-top:16px">
+        <div><h3>Where you are</h3>
+          <div style="font-family:var(--font-display);font-size:17px;font-weight:700;color:var(--ink)">${R.band} — ${R.overall.toFixed(1)}/5</div>
+          <div style="font-size:12px;color:var(--mut);margin-top:4px">Across ${DIMS.length} dimensions</div></div>
+        <div><h3>Top 3 risks</h3>
+          <ol style="margin:0 0 0 22px;padding:0;color:var(--ink)">${execRisks}</ol></div>
+        <div><h3>What to do first</h3>
+          <div style="font-family:var(--font-display);font-size:14px;font-weight:600;color:var(--ink);line-height:1.35">${firstMove}</div>
+          <div style="font-size:12px;color:var(--mut);margin-top:4px">Move 1 targets the lowest-scoring dimension</div></div>
+        <div><h3>Where to go next</h3>
+          <div style="font-family:var(--font-display);font-size:14px;font-weight:700"><a href="cloud-iq.html" style="color:var(--coral);text-decoration:none">Cloud IQ</a> &middot; <a href="finops-value-case.html" style="color:var(--coral);text-decoration:none">FinOps Value Case</a></div>
+          <div style="font-size:12px;color:var(--mut);margin-top:4px">Front door · broader lens</div></div>
+      </div>
+    </div>
+
+    <div class="card"><h3>Dimension detail</h3>${dimBars}</div>
+    <div class="card"><h3>Prioritized 3-move roadmap</h3>${movesHtml}</div>
+    <div class="card"><h3>Cross-accelerator handoffs</h3>${nextLinks}</div>
+
+    <div class="card" style="text-align:center;background:var(--panel2)">
+      <h2 style="margin-bottom:6px">Take your report with you</h2>
+      <p style="color:var(--mut);margin-bottom:16px">Download the LTM-branded output, share the summary, or start over.</p>
+      <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+        <button class="btn big" onclick="downloadPDF()">📄 Download PDF</button>
+        <button class="btn ghost" onclick="emailReadout()">📧 Book a 30-min readout with LTM</button>
+        <button class="btn ghost" onclick="shareResult()">🔗 Share this result</button>
+        <button class="btn ghost" onclick="start()">Restart</button>
+      </div>
+      <div id="shareToast" style="font-family:var(--font-display);font-size:12px;color:var(--green);margin-top:10px;opacity:0;transition:opacity .2s"></div>
+      <div style="font-family:var(--font-display);font-size:10px;color:var(--mutd);letter-spacing:.08em;margin-top:14px">${ACCEL_NAME} v${ACCEL_VERSION}</div>
+    </div>`;
+}
+
+function summaryText(){
+  if (!RESULT) return "";
+  const R = RESULT;
+  const risks = R.risks.map(r=>r.dim+" "+r.name+" ("+r.score.toFixed(1)+"/5)").join(", ");
+  const move1 = R.moves[0] ? R.moves[0].offer : "assessment review";
+  return [
+    ACCEL_NAME+" readout",
+    "Overall: "+R.overall.toFixed(1)+"/5 ("+R.band+")",
+    "Top risks: "+risks,
+    "First move: "+move1
+  ].join("\n");
+}
+function emailReadout(){
+  const body = encodeURIComponent(summaryText()+"\n\nI'd like a 30-minute readout with LTM Infrastructure Tech Advisory.");
+  const subject = encodeURIComponent(ACCEL_NAME+" readout — request 30-min conversation");
+  window.location.href = "mailto:?subject="+subject+"&body="+body;
+}
+
+/* ---- PDF export ---- */
+function downloadPDF(){
+  const {jsPDF} = window.jspdf;
+  const doc = new jsPDF({unit:"pt", format:"a4"});
+  const W = doc.internal.pageSize.getWidth();
+  const H = doc.internal.pageSize.getHeight();
+  const M = 48;
+  const R = RESULT;
+  const coral=[255,94,79], ink=[40,40,40], mut=[91,91,91], mutd=[142,142,142], panel=[245,245,245];
+
+  // Header band
+  doc.setFillColor(...ink); doc.rect(0,0,W,64,"F");
+  doc.setFont("helvetica","bold"); doc.setFontSize(18); doc.setTextColor(255,255,255);
+  doc.text(ACCEL_NAME, M, 34);
+  doc.setFont("helvetica","normal"); doc.setFontSize(8); doc.setTextColor(255,150,140);
+  doc.text("INFRASTRUCTURE TECH ADVISORY", W-M, 26, {align:"right"});
+  doc.setFont("helvetica","bold"); doc.setFontSize(11); doc.setTextColor(255,255,255);
+  doc.text(ACCEL_PILLAR+" · Diagnostic", W-M, 44, {align:"right"});
+
+  let y = 96;
+  // Exec summary strip
+  doc.setFillColor(...coral); doc.roundedRect(M, y, W-2*M, 40, 6, 6, "F");
+  doc.setFont("helvetica","bold"); doc.setFontSize(11); doc.setTextColor(255,255,255);
+  doc.text("EXECUTIVE SUMMARY", M+14, y+16);
+  doc.setFont("helvetica","normal"); doc.setFontSize(10);
+  doc.text(ACCEL_NAME+" overall "+R.overall.toFixed(1)+"/5 — "+R.band, M+14, y+32);
+  y += 52;
+
+  // Dimensions
+  doc.setFont("helvetica","bold"); doc.setFontSize(12); doc.setTextColor(...coral);
+  doc.text("DIMENSION DETAIL", M, y);
+  doc.setDrawColor(...coral); doc.setLineWidth(1.5); doc.line(M, y+5, M+30, y+5);
+  y += 22;
+  DIMS.forEach(d => {
+    const v = R.dimScores[d.id];
+    doc.setFont("helvetica","bold"); doc.setFontSize(9.5); doc.setTextColor(...ink);
+    doc.text(d.id+" · "+d.label, M, y);
+    doc.setFont("helvetica","normal"); doc.setTextColor(...mut);
+    doc.text(v.toFixed(1)+"/5", W-M, y, {align:"right"});
+    // bar
+    doc.setFillColor(...panel); doc.rect(M, y+4, W-2*M, 6, "F");
+    doc.setFillColor(...coral); doc.rect(M, y+4, (W-2*M)*(v/5), 6, "F");
+    y += 20;
+  });
+  y += 8;
+
+  // Moves
+  doc.setFont("helvetica","bold"); doc.setFontSize(12); doc.setTextColor(...coral);
+  doc.text("PRIORITIZED 3-MOVE ROADMAP", M, y);
+  doc.setDrawColor(...coral); doc.setLineWidth(1.5); doc.line(M, y+5, M+30, y+5);
+  y += 22;
+  R.moves.forEach(m => {
+    doc.setFillColor(251,241,233); doc.rect(M, y, W-2*M, 30, "F");
+    doc.setFillColor(...coral); doc.rect(M, y, 4, 30, "F");
+    doc.setFont("helvetica","bold"); doc.setFontSize(10); doc.setTextColor(...ink);
+    doc.text("Move "+m.n+": "+m.offer, M+12, y+13);
+    doc.setFont("helvetica","normal"); doc.setFontSize(8.5); doc.setTextColor(...mut);
+    doc.text(m.dim+" · "+m.label+" · now "+m.score+"/5", M+12, y+24);
+    y += 36;
+  });
+  y += 8;
+
+  // Footer
+  doc.setDrawColor(230,230,230); doc.setLineWidth(1); doc.line(M, H-40, W-M, H-40);
+  doc.setFont("helvetica","normal"); doc.setFontSize(8); doc.setTextColor(...mutd);
+  doc.text("LTM · Infrastructure Tech Advisory · "+ACCEL_PILLAR, M, H-26);
+  doc.text(ACCEL_NAME+" v"+ACCEL_VERSION, W-M, H-26, {align:"right"});
+  doc.setFontSize(7); doc.text("This is a preliminary, indicative self-assessment intended for planning conversations only — not legal, tax, financial, or regulatory advice.", W/2, H-14, {align:"center", maxWidth:W-2*M});
+
+  doc.save(ACCEL_NAME.replace(/\s+/g,"_")+"_Report_"+new Date().toISOString().slice(0,10)+".pdf");
+}
+
+/* boot */
+start();
+</script>
+</body>
+</html>

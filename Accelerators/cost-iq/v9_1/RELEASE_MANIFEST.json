@@ -1,0 +1,35 @@
+{
+  "product":"Cost IQ",
+  "release":"9.1.0",
+  "branch":"chatGPT-branch",
+  "baseline":"v8.8",
+  "purpose":"LTM Environment Implementation & Pilot Acceptance Kit",
+  "artifacts":[
+    "reference-api/server.mjs",
+    "reference-host/index.html",
+    "database/schema.sql",
+    "database/seed.sql",
+    "contracts/environment.json",
+    "uat/UAT_MATRIX.md",
+    "security/SECURITY_CHECKLIST.md",
+    "runbook/DEPLOYMENT_RUNBOOK.md",
+    "scripts/smoke-test.mjs",
+    "docker-compose.yml"
+  ],
+  "localValidation":{
+    "referenceApi":"implemented",
+    "portalHost":"implemented",
+    "postgresSchema":"implemented",
+    "etagConcurrency":"implemented",
+    "evidenceMetadata":"implemented",
+    "realLtmIntegration":"open",
+    "realSso":"open",
+    "realBrowserUat":"open",
+    "securityApproval":"open"
+  },
+  "calibrationPolicy":{
+    "syntheticCases":"ineligible",
+    "publicBenchmarks":"reference_only",
+    "clientSavings":"evidence_gated"
+  }
+}

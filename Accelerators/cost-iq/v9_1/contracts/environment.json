@@ -1,0 +1,10 @@
+{
+  "release": "9.1.0",
+  "host": {"owns":["navigation","session","identity","enterprise-policy"],"callsRuntimeThrough":"adapter"},
+  "identity": {"mode":"host-owned","requiredClaims":["sub","roles"],"referenceHeaders":["x-demo-subject","x-demo-roles"]},
+  "api": {"basePath":"/api","requiredConcurrencyHeader":"If-Match","etagRequired":true},
+  "storage": {"evidenceMode":"object-storage-adapter","databaseStoresMetadataOnly":true},
+  "security": {"clientDataMustNotBeLogged":true,"secretsMustNotBeBundled":true,"transport":"TLS-in-enterprise"},
+  "retention": {"owner":"LTM-host","runtimeDoesNotDefinePolicy":true},
+  "integrationStatus":"OPEN"
+}

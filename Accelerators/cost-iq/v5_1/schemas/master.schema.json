@@ -1,0 +1,15 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "title":"Cost IQ Master Configuration",
+  "type":"object",
+  "required":["manifest","dimensions","questions","rules","findings","recommendations","settings"],
+  "properties":{
+    "manifest":{"type":"object","required":["product","schemaVersion","masterVersion","releaseId","releaseStatus"],"properties":{"product":{"const":"Cost IQ"},"schemaVersion":{"type":"string"},"masterVersion":{"type":"string"},"releaseId":{"type":"string"},"releaseStatus":{"enum":["draft","validated","approved","released"]}}},
+    "dimensions":{"type":"array","items":{"type":"object","required":["id","name","type","weight"]}},
+    "questions":{"type":"array","items":{"type":"object","required":["id","section","prompt","intent","interaction","required","options","scoring","active"],"properties":{"id":{"type":"string"},"interaction":{"enum":["single-select","multi-select","slider","stars","ranking","matching","true-false","range","multi-select-ranking","allocation-ranking"]},"options":{"type":"array"},"required":{"type":"boolean"},"active":{"type":"boolean"}}}},
+    "rules":{"type":"array","items":{"type":"object","required":["id","condition","action","triggerKey"]}},
+    "findings":{"type":"array","items":{"type":"object","required":["id","title","description","recommendationIds"]}},
+    "recommendations":{"type":"array","items":{"type":"object","required":["id","title","description","findingIds"]}},
+    "settings":{"type":"object"}
+  }
+}

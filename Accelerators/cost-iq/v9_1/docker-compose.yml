@@ -1,0 +1,25 @@
+services:
+  api:
+    image: node:22-alpine
+    working_dir: /app
+    volumes:
+      - ./reference-api:/app:ro
+    command: ["node","server.mjs"]
+    environment:
+      PORT: "8787"
+    ports:
+      - "8787:8787"
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: costiq
+      POSTGRES_USER: costiq
+      POSTGRES_PASSWORD: change-me-local-only
+    ports:
+      - "5433:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./database/schema.sql:/docker-entrypoint-initdb.d/001-schema.sql:ro
+      - ./database/seed.sql:/docker-entrypoint-initdb.d/002-seed.sql:ro
+volumes:
+  pgdata:
