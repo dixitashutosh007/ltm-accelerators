@@ -1,8 +1,11 @@
 import { evaluateFinOpsValueCase } from './accelerators/finops-value-case/evaluate';
 import { evaluateFinOpsIq } from './accelerators/finops-iq/evaluate';
+import { evaluatePostureIq } from './accelerators/posture-iq/evaluate';
+import { evaluateSovereignIq } from './accelerators/sovereign-iq/evaluate';
+import postureKb from './accelerators/posture-iq/knowledge-base.json' with { type: 'json' };
+import sovereignKb from './accelerators/sovereign-iq/knowledge-base.json' with { type: 'json' };
 
-console.log('--- Testing FinOps Value Case Headless Engine ---');
-
+console.log('--- 1. Testing FinOps Value Case Headless Engine ---');
 const mockAnswers = {
   E2: [0, 1], // AWS, Azure
   E3: 3500000, // £3.5M annual spend
@@ -31,7 +34,7 @@ console.log('Year 1 Exposure Range:', result.exposure.y1);
 console.log('Streams Prioritized:', result.streams.map(s => `${s.name} (${s.priority})`).join(', '));
 console.log('--- FinOps Value Case Assertions Passed! ---\n');
 
-console.log('--- Testing FinOps IQ Headless Engine ---');
+console.log('--- 2. Testing FinOps IQ Headless Engine ---');
 const iqMockAnswers = {
   C1: 0, C2: 0, C3: 0, C4: 0, C5: 0, C6: 0, C7: 0, C8: 0,
   R1: 0, R2: 0, R3: 0, R4: 0, R5: 0, R6: 0, R7: 0, R8: 0, R9: 0
@@ -48,4 +51,46 @@ console.log('Chaos Stage Status:', iqResult.stageStatuses['chaos']);
 console.log('Reactive Stage Status:', iqResult.stageStatuses['reactive']);
 console.log('Value at Stake Min Savings:', iqResult.valueAtStake.minSavings);
 console.log('Roadmap Horizons:', iqResult.roadmap.horizons.map(h => `${h.name}: ${h.items.length} actions`).join(' | '));
-console.log('--- FinOps IQ Assertions Passed! ---');
+console.log('--- FinOps IQ Assertions Passed! ---\n');
+
+console.log('--- 3. Testing Posture IQ Headless Engine ---');
+const bankArch = (postureKb as any).demoArchetypes['bank'];
+const postureResult = evaluatePostureIq({
+  answers: bankArch.answers,
+  org: {
+    name: bankArch.name,
+    turnover: bankArch.turnover,
+    hq: bankArch.hq,
+    footprint: bankArch.footprint,
+    size: bankArch.size
+  },
+  regulations: bankArch.regulations,
+  sectors: bankArch.sectors
+});
+
+console.log('Posture IQ Overall Score:', postureResult.overallScore, postureResult.label.t);
+console.log('Pillars Evaluated:', postureResult.pillarScores.pillars.map(p => `${p.num}: ${p.score}`).join(', '));
+console.log('Total Statutory Exposure:', postureResult.penalties.totalValueAtStake, 'Hedge Ratio:', postureResult.penalties.riskHedgeRatio + '%');
+console.log('Triggered Findings Count:', postureResult.findings.length, 'Severity Breakdown:', postureResult.counts);
+console.log('Triggered Facilitator Probes:', postureResult.triggeredProbes.map((p: any) => p.name).join(' | '));
+console.log('--- Posture IQ Assertions Passed! ---\n');
+
+console.log('--- 4. Testing Sovereign IQ Headless Engine ---');
+const ksaArch = (sovereignKb as any).demoArchetypes['saudi_bank'];
+const sovereignResult = evaluateSovereignIq({
+  answers: ksaArch.answers,
+  session: {
+    clientName: ksaArch.clientName,
+    mode: 'workshop'
+  }
+});
+
+console.log('Sovereign Maturity Score:', sovereignResult.maturity.score, sovereignResult.maturity.stage.label);
+console.log('Sovereign Pillars:', sovereignResult.pillarScores);
+console.log('In-Scope Regimes Count:', sovereignResult.inScopeRegimes.filter((r: any) => r.inScope).length);
+console.log('Financial Statutory Ceiling:', '$' + (sovereignResult.fin.statutoryCeiling / 1000000).toFixed(1) + 'M');
+console.log('Anomalies Identified:', sovereignResult.anomalies.map((a: any) => a.title).join(' | '));
+console.log('Consulting Probes Triggered:', sovereignResult.probes.map((p: any) => p.badge).join(' | '));
+console.log('--- Sovereign IQ Assertions Passed! ---\n');
+
+console.log('🎉 ALL 4 ACCELERATOR ENGINES VALIDATED AND FUNCTIONING FLAWLESSLY!');

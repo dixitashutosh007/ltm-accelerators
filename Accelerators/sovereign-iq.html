@@ -2485,6 +2485,13 @@ h1,h2,h3,h4{font-family:var(--font-display);letter-spacing:-.015em;color:var(--i
         </div>
         <span class="sidebar-badge">&nearr;</span>
       </a>
+      <a href="studio.html?tool=sovereign-iq" class="sidebar-nav-btn" target="_blank" onclick="closeAppSidebar()" style="background:#F0FDF4;border:1px solid #BBF7D0">
+        <div class="snb-main">
+          <div class="snb-title" style="color:#15803D">⚙️ Question Bank Studio</div>
+          <div class="snb-desc">Cognito RBAC &middot; Question Bank &amp; Scoring Engine Studio</div>
+        </div>
+        <span class="sidebar-badge" style="background:#15803D;color:#fff">&nearr;</span>
+      </a>
       <a href="finops-iq.html" class="sidebar-nav-btn" target="_blank" onclick="closeAppSidebar()">
         <div class="snb-main">
           <div class="snb-title">FinOps IQ</div>
@@ -2525,6 +2532,7 @@ h1,h2,h3,h4{font-family:var(--font-display);letter-spacing:-.015em;color:var(--i
     </div>
 
     <div class="top-executive-right">
+      <a href="/studio.html?tool=sovereign-iq" class="btn small ghost" style="text-decoration:none;font-weight:700">⚙️ Question Bank Studio</a>
       <button class="btn small" onclick="openBriefingModal()" style="font-weight:700;background:var(--coral);border-color:var(--coral);color:#fff">Schedule Briefing</button>
       <input type="file" id="importFile" accept=".json,.siq" style="display:none" onchange="importJSON(event)">
     </div>
@@ -2866,224 +2874,550 @@ var REGIMES = [
 
 // Diagnostic Questions (Organized across 7 Consulting Sections)
 var QUESTIONS = [
-  // --- Section 1: Organisation, Sector & Footprint ---
-  { id: "Q1.1", sec: "Organisation & Sector", secNum: "01", mode: "both", type: "single",
-    q: "Which primary industry sector defines your organization?",
-    hint: "Drives baseline regulatory exposure, statutory penalty ceilings, and peer benchmarks.",
-    opts: [
-      { text: "BFSI (Banking, Financial Services, Insurance, Crypto, FinTech)", tag: "BFSI", fact: { sector: "bfsi" } },
-      { text: "Healthcare, Life Sciences & Pharmaceuticals", tag: "Health", fact: { sector: "health" } },
-      { text: "Public Sector, Defense & National Government", tag: "Public", fact: { sector: "public" } },
-      { text: "Energy, Utilities & Critical Infrastructure", tag: "Energy", fact: { sector: "energy" } },
-      { text: "Telecommunications, Media & Technology (TMT)", tag: "TMT", fact: { sector: "telco" } },
-      { text: "Manufacturing, Automotive & Industrial", tag: "Mfg", fact: { sector: "mfg" } },
-      { text: "Retail, Consumer Goods & E-Commerce", tag: "Retail", fact: { sector: "retail" } },
-      { text: "Cross-Industry / Enterprise Services", tag: "Cross", fact: { sector: "other" } }
+  {
+    "id": "Q1.1",
+    "sec": "Organisation & Sector",
+    "secNum": "01",
+    "mode": "both",
+    "type": "single",
+    "q": "Which primary industry sector defines your organization?",
+    "hint": "Drives baseline regulatory exposure, statutory penalty ceilings, and peer benchmarks.",
+    "opts": [
+      {
+        "text": "BFSI (Banking, Financial Services, Insurance, Crypto, FinTech)",
+        "tag": "BFSI"
+      },
+      {
+        "text": "Healthcare, Life Sciences & Pharmaceuticals",
+        "tag": "Health"
+      },
+      {
+        "text": "Public Sector, Defense & National Government",
+        "tag": "Public"
+      },
+      {
+        "text": "Energy, Utilities & Critical Infrastructure",
+        "tag": "Energy"
+      },
+      {
+        "text": "Telecommunications, Media & Technology (TMT)",
+        "tag": "TMT"
+      },
+      {
+        "text": "Manufacturing, Automotive & Industrial",
+        "tag": "Mfg"
+      },
+      {
+        "text": "Retail, Consumer Goods & E-Commerce",
+        "tag": "Retail"
+      },
+      {
+        "text": "Cross-Industry / Enterprise Services",
+        "tag": "Cross"
+      }
     ]
   },
-  { id: "Q1.2", sec: "Organisation & Sector", secNum: "01", mode: "both", type: "multi",
-    q: "In which global jurisdictions does your organization operate, host data, or serve customers?",
-    hint: "Select all active legal entities, branches, and customer markets.",
-    opts: [
-      { text: "European Union (EU 27 Member States)", tag: "EU", fact: { geo_eu: true } },
-      { text: "United Kingdom (UK)", tag: "UK", fact: { geo_uk: true } },
-      { text: "Kingdom of Saudi Arabia (KSA)", tag: "KSA", fact: { geo_ksa: true } },
-      { text: "United Arab Emirates (UAE - Abu Dhabi / Dubai)", tag: "UAE", fact: { geo_uae: true } },
-      { text: "Qatar / Gulf Cooperation Council (GCC)", tag: "GCC", fact: { geo_gcc: true } },
-      { text: "Singapore (APAC)", tag: "SG", fact: { geo_sg: true } },
-      { text: "Australia & New Zealand (APAC)", tag: "AU", fact: { geo_au: true } },
-      { text: "India (APAC)", tag: "IN", fact: { geo_in: true } },
-      { text: "Japan & Hong Kong (APAC)", tag: "JPHK", fact: { geo_jphk: true } },
-      { text: "United States (US Headquarters, Customers, or Vendors)", tag: "US", fact: { geo_us: true } }
+  {
+    "id": "Q1.2",
+    "sec": "Organisation & Sector",
+    "secNum": "01",
+    "mode": "both",
+    "type": "multi",
+    "q": "In which global jurisdictions does your organization operate, host data, or serve customers?",
+    "hint": "Select all active legal entities, branches, and customer markets.",
+    "opts": [
+      {
+        "text": "European Union (EU 27 Member States)",
+        "tag": "EU"
+      },
+      {
+        "text": "United Kingdom (UK)",
+        "tag": "UK"
+      },
+      {
+        "text": "Kingdom of Saudi Arabia (KSA)",
+        "tag": "KSA"
+      },
+      {
+        "text": "United Arab Emirates (UAE - Abu Dhabi / Dubai)",
+        "tag": "UAE"
+      },
+      {
+        "text": "Qatar / Gulf Cooperation Council (GCC)",
+        "tag": "GCC"
+      },
+      {
+        "text": "Singapore (APAC)",
+        "tag": "SG"
+      },
+      {
+        "text": "Australia & New Zealand (APAC)",
+        "tag": "AU"
+      },
+      {
+        "text": "India (APAC)",
+        "tag": "IN"
+      },
+      {
+        "text": "Japan & Hong Kong (APAC)",
+        "tag": "JPHK"
+      },
+      {
+        "text": "United States (US Headquarters, Customers, or Vendors)",
+        "tag": "US"
+      }
     ]
   },
-  { id: "Q1.3", sec: "Organisation & Sector", secNum: "01", mode: "workshop", type: "single",
-    q: "What is your enterprise annual global revenue / operating turnover?",
-    hint: "Required to accurately size statutory turnover penalty ceilings (GDPR 4%, AI Act 7%, NIS2 2%, APRA 30%).",
-    opts: [
-      { text: "Over $10 Billion USD / €9B / SAR 37B (Tier-1 Global Multilateral)", tag: ">$10B", val: 10000000000 },
-      { text: "$1 Billion to $10 Billion USD (Large Enterprise)", tag: "$1B-$10B", val: 3000000000 },
-      { text: "$250 Million to $1 Billion USD (Upper Mid-Market)", tag: "$250M-$1B", val: 500000000 },
-      { text: "Under $250 Million USD (Mid-Market / Fast-Growth Challenger)", tag: "<$250M", val: 100000000 }
+  {
+    "id": "Q1.3",
+    "sec": "Organisation & Sector",
+    "secNum": "01",
+    "mode": "workshop",
+    "type": "single",
+    "q": "What is your enterprise annual global revenue / operating turnover?",
+    "hint": "Required to accurately size statutory turnover penalty ceilings (GDPR 4%, AI Act 7%, NIS2 2%, APRA 30%).",
+    "opts": [
+      {
+        "text": "Over $10 Billion USD / \u20ac9B / SAR 37B (Tier-1 Global Multilateral)",
+        "tag": ">$10B"
+      },
+      {
+        "text": "$1 Billion to $10 Billion USD (Large Enterprise)",
+        "tag": "$1B-$10B"
+      },
+      {
+        "text": "$250 Million to $1 Billion USD (Upper Mid-Market)",
+        "tag": "$250M-$1B"
+      },
+      {
+        "text": "Under $250 Million USD (Mid-Market / Fast-Growth Challenger)",
+        "tag": "<$250M"
+      }
     ]
   },
-
-  // --- Section 2: Hybrid Estate Composition (Cloud, On-Prem, SaaS, AI) ---
-  { id: "Q2.1", sec: "Hybrid Estate Profile", secNum: "02", mode: "both", type: "multi",
-    q: "How is your operating technology estate distributed across delivery archetypes?",
-    hint: "Digital sovereignty spans the entire estate — from on-prem DCs to hyperscale cloud and SaaS.",
-    opts: [
-      { text: "Public Cloud IaaS & PaaS (AWS, Azure, Google Cloud, Oracle Cloud, Alibaba, OVH)", tag: "IaaS/PaaS", fact: { uses_cloud: true } },
-      { text: "On-Premises Data Centers & Private Colocation (Equinix, owned facilities, mainframes)", tag: "On-Prem", fact: { uses_onprem: true } },
-      { text: "Enterprise SaaS (Microsoft 365, Salesforce, ServiceNow, Workday, Snowflake, SAP)", tag: "SaaS", fact: { uses_saas: true } },
-      { text: "AI & Large Language Models (OpenAI, Anthropic, Gemini, self-hosted LLMs, agentic AI)", tag: "AI", fact: { uses_ai: true } },
-      { text: "Edge, Industrial SCADA & Remote Branch Infrastructures", tag: "Edge", fact: { uses_edge: true } }
+  {
+    "id": "Q2.1",
+    "sec": "Hybrid Estate Profile",
+    "secNum": "02",
+    "mode": "both",
+    "type": "multi",
+    "q": "How is your operating technology estate distributed across delivery archetypes?",
+    "hint": "Digital sovereignty spans the entire estate \u2014 from on-prem DCs to hyperscale cloud and SaaS.",
+    "opts": [
+      {
+        "text": "Public Cloud IaaS & PaaS (AWS, Azure, Google Cloud, Oracle Cloud, Alibaba, OVH)",
+        "tag": "IaaS/PaaS"
+      },
+      {
+        "text": "On-Premises Data Centers & Private Colocation (Equinix, owned facilities, mainframes)",
+        "tag": "On-Prem"
+      },
+      {
+        "text": "Enterprise SaaS (Microsoft 365, Salesforce, ServiceNow, Workday, Snowflake, SAP)",
+        "tag": "SaaS"
+      },
+      {
+        "text": "AI & Large Language Models (OpenAI, Anthropic, Gemini, self-hosted LLMs, agentic AI)",
+        "tag": "AI"
+      },
+      {
+        "text": "Edge, Industrial SCADA & Remote Branch Infrastructures",
+        "tag": "Edge"
+      }
     ]
   },
-  { id: "Q2.2", sec: "Hybrid Estate Profile", secNum: "02", mode: "workshop", type: "slider",
-    q: "What percentage of your production core / mission-critical workloads run on public cloud vs on-prem / SaaS?",
-    hint: "Slide to estimate public cloud proportion. 0% = Pure On-Prem; 100% = All-in Public Cloud.",
-    min: 0, max: 100, step: 5, defaultVal: 50, suffix: "% Public Cloud"
+  {
+    "id": "Q2.2",
+    "sec": "Hybrid Estate Profile",
+    "secNum": "02",
+    "mode": "workshop",
+    "type": "slider",
+    "q": "What percentage of your production core / mission-critical workloads run on public cloud vs on-prem / SaaS?",
+    "hint": "Slide to estimate public cloud proportion. 0% = Pure On-Prem; 100% = All-in Public Cloud.",
+    "min": 0,
+    "max": 100,
+    "step": 5,
+    "defaultVal": 50,
+    "suffix": "% Public Cloud"
   },
-  { id: "Q2.3", sec: "Hybrid Estate Profile", secNum: "02", mode: "both", type: "single",
-    q: "Do you utilize Artificial Intelligence or automated decision models for customer-facing or regulated functions?",
-    hint: "Engages EU AI Act, UK AI Principles, and sector-specific model governance rules.",
-    opts: [
-      { text: "Yes — High-impact AI (credit scoring, insurance underwriting, biometrics, hiring, health diagnosis)", tag: "High-Risk AI", fact: { ai_high_risk: true } },
-      { text: "Yes — Operational AI (fraud detection, chatbots, code assistance, internal process automation)", tag: "Standard AI", fact: { ai_operational: true } },
-      { text: "Yes — Foundation Model Provider / Fine-tuner (pre-training or fine-tuning GPAI models)", tag: "GPAI Provider", fact: { ai_gpai_provider: true } },
-      { text: "No — AI is currently restricted or in non-production sandbox only", tag: "No AI", fact: { ai_none: true } }
+  {
+    "id": "Q2.3",
+    "sec": "Hybrid Estate Profile",
+    "secNum": "02",
+    "mode": "both",
+    "type": "single",
+    "q": "Do you utilize Artificial Intelligence or automated decision models for customer-facing or regulated functions?",
+    "hint": "Engages EU AI Act, UK AI Principles, and sector-specific model governance rules.",
+    "opts": [
+      {
+        "text": "Yes \u2014 High-impact AI (credit scoring, insurance underwriting, biometrics, hiring, health diagnosis)",
+        "tag": "High-Risk AI"
+      },
+      {
+        "text": "Yes \u2014 Operational AI (fraud detection, chatbots, code assistance, internal process automation)",
+        "tag": "Standard AI"
+      },
+      {
+        "text": "Yes \u2014 Foundation Model Provider / Fine-tuner (pre-training or fine-tuning GPAI models)",
+        "tag": "GPAI Provider"
+      },
+      {
+        "text": "No \u2014 AI is currently restricted or in non-production sandbox only",
+        "tag": "No AI"
+      }
     ]
   },
-
-  // --- Section 3: Data Sensitivity, Localization & Cross-Border Flows ---
-  { id: "Q3.1", sec: "Data Residency & Flows", secNum: "03", mode: "both", type: "multi",
-    q: "What categories of sensitive or regulated data do you store, process, or transmit?",
-    hint: "Special categories trigger strict statutory transfer barriers and domestic localization mandates.",
-    opts: [
-      { text: "Citizen / Customer Financial Records (account balances, transactions, payment cards)", tag: "Financial", fact: { data_financial: true } },
-      { text: "Special-Category Personal Data (biometrics, health, genetic, government IDs, facial scans)", tag: "Biometric/Health", fact: { data_special: true } },
-      { text: "National Security, Defense, or Critical Infrastructure SCADA telemetry", tag: "National Security", fact: { data_national_sec: true } },
-      { text: "Standard Commercial B2B data & corporate business records", tag: "Commercial", fact: { data_commercial: true } }
+  {
+    "id": "Q3.1",
+    "sec": "Data Residency & Flows",
+    "secNum": "03",
+    "mode": "both",
+    "type": "multi",
+    "q": "What categories of sensitive or regulated data do you store, process, or transmit?",
+    "hint": "Special categories trigger strict statutory transfer barriers and domestic localization mandates.",
+    "opts": [
+      {
+        "text": "Citizen / Customer Financial Records (account balances, transactions, payment cards)",
+        "tag": "Financial"
+      },
+      {
+        "text": "Special-Category Personal Data (biometrics, health, genetic, government IDs, facial scans)",
+        "tag": "Biometric/Health"
+      },
+      {
+        "text": "National Security, Defense, or Critical Infrastructure SCADA telemetry",
+        "tag": "National Security"
+      },
+      {
+        "text": "Standard Commercial B2B data & corporate business records",
+        "tag": "Commercial"
+      }
     ]
   },
-  { id: "Q3.2", sec: "Data Residency & Flows", secNum: "03", mode: "both", type: "single",
-    q: "Where is your primary production data physically stored and hosted at rest?",
-    hint: "Local physical residency is the foundational prerequisite — though not the only requirement.",
-    opts: [
-      { text: "100% within the domestic border of operating country (e.g. within KSA, UAE, or strictly in EU/UK)", tag: "Domestic", score: 90, fact: { hosting_domestic: true } },
-      { text: "Mixed: Primary data in-country, but analytical data or archives stored in foreign regions", tag: "Mixed", score: 50, fact: { hosting_mixed: true } },
-      { text: "Global Multi-Tenant Cloud: Hosted wherever the hyperscaler routes the regional cluster", tag: "Global Cluster", score: 20, fact: { hosting_global: true } }
+  {
+    "id": "Q3.2",
+    "sec": "Data Residency & Flows",
+    "secNum": "03",
+    "mode": "both",
+    "type": "single",
+    "q": "Where is your primary production data physically stored and hosted at rest?",
+    "hint": "Local physical residency is the foundational prerequisite \u2014 though not the only requirement.",
+    "opts": [
+      {
+        "text": "100% within the domestic border of operating country (e.g. within KSA, UAE, or strictly in EU/UK)",
+        "tag": "Domestic"
+      },
+      {
+        "text": "Mixed: Primary data in-country, but analytical data or archives stored in foreign regions",
+        "tag": "Mixed"
+      },
+      {
+        "text": "Global Multi-Tenant Cloud: Hosted wherever the hyperscaler routes the regional cluster",
+        "tag": "Global Cluster"
+      }
     ]
   },
-  { id: "Q3.3", sec: "Data Residency & Flows", secNum: "03", mode: "workshop", type: "single",
-    q: "Where do your database snapshots, disaster recovery targets, and backup archives reside?",
-    hint: "A common audit failure: domestic primary storage with cross-border automated backup replication.",
-    opts: [
-      { text: "Strictly in-country / domestic dedicated secondary zone", tag: "Domestic DR", score: 100, fact: { dr_domestic: true } },
-      { text: "Cross-border secondary region within the same economic bloc (e.g. Frankfurt -> Dublin in EEA)", tag: "Regional DR", score: 65, fact: { dr_regional: true } },
-      { text: "Cross-border to US, APAC, or global backup pools without contractual isolation", tag: "Cross-Border DR", score: 10, fact: { dr_cross_border: true } }
+  {
+    "id": "Q3.3",
+    "sec": "Data Residency & Flows",
+    "secNum": "03",
+    "mode": "workshop",
+    "type": "single",
+    "q": "Where do your database snapshots, disaster recovery targets, and backup archives reside?",
+    "hint": "A common audit failure: domestic primary storage with cross-border automated backup replication.",
+    "opts": [
+      {
+        "text": "Strictly in-country / domestic dedicated secondary zone",
+        "tag": "Domestic DR"
+      },
+      {
+        "text": "Cross-border secondary region within the same economic bloc (e.g. Frankfurt -> Dublin in EEA)",
+        "tag": "Regional DR"
+      },
+      {
+        "text": "Cross-border to US, APAC, or global backup pools without contractual isolation",
+        "tag": "Cross-Border DR"
+      }
     ]
   },
-
-  // --- Section 4: Jurisdictional Contracting & Extraterritorial Exposure ---
-  { id: "Q4.1", sec: "Jurisdictional Exposure", secNum: "04", mode: "both", type: "single",
-    q: "What is the corporate parent headquarters jurisdiction of your primary hyperscalers and SaaS providers?",
-    hint: "Under the US CLOUD Act, a US-headquartered parent must comply with US warrants regardless of where data sits.",
-    opts: [
-      { text: "Primarily US-headquartered providers (AWS, Microsoft, Google Cloud, Salesforce, Oracle, Snowflake)", tag: "US Hyperscalers", score: 30, fact: { uses_us_hq: true } },
-      { text: "Mix of US hyperscalers with certified local sovereign partners (e.g. T-Systems, Thales, stc, e&)", tag: "Sovereign Enclave", score: 75, fact: { uses_sovereign_partner: true } },
-      { text: "Strictly domestic / national sovereign cloud providers (OVHcloud, Hetzner, domestic telecom clouds)", tag: "National Sovereign", score: 95, fact: { uses_national_cloud: true } }
+  {
+    "id": "Q4.1",
+    "sec": "Jurisdictional Exposure",
+    "secNum": "04",
+    "mode": "both",
+    "type": "single",
+    "q": "What is the corporate parent headquarters jurisdiction of your primary hyperscalers and SaaS providers?",
+    "hint": "Under the US CLOUD Act, a US-headquartered parent must comply with US warrants regardless of where data sits.",
+    "opts": [
+      {
+        "text": "Primarily US-headquartered providers (AWS, Microsoft, Google Cloud, Salesforce, Oracle, Snowflake)",
+        "tag": "US Hyperscalers"
+      },
+      {
+        "text": "Mix of US hyperscalers with certified local sovereign partners (e.g. T-Systems, Thales, stc, e&)",
+        "tag": "Sovereign Enclave"
+      },
+      {
+        "text": "Strictly domestic / national sovereign cloud providers (OVHcloud, Hetzner, domestic telecom clouds)",
+        "tag": "National Sovereign"
+      }
     ]
   },
-  { id: "Q4.2", sec: "Jurisdictional Exposure", secNum: "04", mode: "workshop", type: "single",
-    q: "What contractual vehicle governs your relationship with cloud and technology providers?",
-    hint: "Contracting directly with a US parent entity waives corporate veil protections vs contracting with an EU/local entity.",
-    opts: [
-      { text: "Direct contract with local/in-country operating subsidiary governed exclusively by local law", tag: "Local Entity", score: 85, fact: { contract_local: true } },
-      { text: "Standard global terms governed by Delaware, California, or non-domestic foreign courts", tag: "Foreign Law", score: 20, fact: { contract_foreign: true } },
-      { text: "Contract terms unexamined / default click-through enterprise agreement", tag: "Unreviewed", score: 10, fact: { contract_unreviewed: true } }
+  {
+    "id": "Q4.2",
+    "sec": "Jurisdictional Exposure",
+    "secNum": "04",
+    "mode": "workshop",
+    "type": "single",
+    "q": "What contractual vehicle governs your relationship with cloud and technology providers?",
+    "hint": "Contracting directly with a US parent entity waives corporate veil protections vs contracting with an EU/local entity.",
+    "opts": [
+      {
+        "text": "Direct contract with local/in-country operating subsidiary governed exclusively by local law",
+        "tag": "Local Entity"
+      },
+      {
+        "text": "Standard global terms governed by Delaware, California, or non-domestic foreign courts",
+        "tag": "Foreign Law"
+      },
+      {
+        "text": "Contract terms unexamined / default click-through enterprise agreement",
+        "tag": "Unreviewed"
+      }
     ]
   },
-  { id: "Q4.3", sec: "Jurisdictional Exposure", secNum: "04", mode: "both", type: "single",
-    q: "Have you conducted Transfer Impact Assessments (TIAs) covering foreign lawful access (CLOUD Act, FISA 702)?",
-    hint: "Required by EDPB Schrems II guidance, UK ICO, and KSA PDPL before cross-border routing.",
-    opts: [
-      { text: "Yes — Formal TIAs executed and regularly reviewed with documented supplementary technical measures", tag: "Formal TIAs", score: 100, fact: { tia_complete: true } },
-      { text: "Partially — Standard Contractual Clauses (SCCs) signed, but formal surveillance analysis incomplete", tag: "Partial TIAs", score: 45, fact: { tia_partial: true } },
-      { text: "No — Relying solely on provider marketing claims and standard Data Processing Addenda (DPAs)", tag: "No TIAs", score: 10, fact: { tia_none: true } }
+  {
+    "id": "Q4.3",
+    "sec": "Jurisdictional Exposure",
+    "secNum": "04",
+    "mode": "both",
+    "type": "single",
+    "q": "Have you conducted Transfer Impact Assessments (TIAs) covering foreign lawful access (CLOUD Act, FISA 702)?",
+    "hint": "Required by EDPB Schrems II guidance, UK ICO, and KSA PDPL before cross-border routing.",
+    "opts": [
+      {
+        "text": "Yes \u2014 Formal TIAs executed and regularly reviewed with documented supplementary technical measures",
+        "tag": "Formal TIAs"
+      },
+      {
+        "text": "Partially \u2014 Standard Contractual Clauses (SCCs) signed, but formal surveillance analysis incomplete",
+        "tag": "Partial TIAs"
+      },
+      {
+        "text": "No \u2014 Relying solely on provider marketing claims and standard Data Processing Addenda (DPAs)",
+        "tag": "No TIAs"
+      }
     ]
   },
-
-  // --- Section 5: Operational Access, Support Boundaries & Remote Telemetry ---
-  { id: "Q5.1", sec: "Operational Sovereignty", secNum: "05", mode: "both", type: "single",
-    q: "How is administrative support and root-level infrastructure maintenance handled by your technology providers?",
-    hint: "Follow-the-Sun models allow engineers in India, the US, or Eastern Europe to hold elevated access to live estates.",
-    opts: [
-      { text: "Strictly bounded: 24/7 support operated exclusively by cleared domestic/EU nationals in-country", tag: "Sovereign Support", score: 95, fact: { ops_sovereign_support: true } },
-      { text: "Customer Approval Required: Provider support requires Just-In-Time (JIT) customer approval and access broker logging", tag: "Customer Broker", score: 70, fact: { ops_jit_approval: true } },
-      { text: "Standard Follow-the-Sun: Global support engineers access environments based on timezone rotations", tag: "Follow-the-Sun", score: 25, fact: { ops_follow_the_sun: true } }
+  {
+    "id": "Q5.1",
+    "sec": "Operational Sovereignty",
+    "secNum": "05",
+    "mode": "both",
+    "type": "single",
+    "q": "How is administrative support and root-level infrastructure maintenance handled by your technology providers?",
+    "hint": "Follow-the-Sun models allow engineers in India, the US, or Eastern Europe to hold elevated access to live estates.",
+    "opts": [
+      {
+        "text": "Strictly bounded: 24/7 support operated exclusively by cleared domestic/EU nationals in-country",
+        "tag": "Sovereign Support"
+      },
+      {
+        "text": "Customer Approval Required: Provider support requires Just-In-Time (JIT) customer approval and access broker logging",
+        "tag": "Customer Broker"
+      },
+      {
+        "text": "Standard Follow-the-Sun: Global support engineers access environments based on timezone rotations",
+        "tag": "Follow-the-Sun"
+      }
     ]
   },
-  { id: "Q5.2", sec: "Operational Sovereignty", secNum: "05", mode: "workshop", type: "single",
-    q: "For on-premises hardware, storage, and firewalls, are remote out-of-band management channels (iDRAC/iLO) active?",
-    hint: "Hardware vendor call-home telemetry and remote support tunnels represent unmapped extraterritorial vectors.",
-    opts: [
-      { text: "Air-gapped / Strictly internal OOB networks with all vendor phone-home telemetry blocked", tag: "Air-Gapped OOB", score: 95, fact: { oob_airgap: true } },
-      { text: "Connected OOB networks with automated vendor telemetry and remote diagnostics enabled", tag: "Connected OOB", score: 35, fact: { oob_connected: true } },
-      { text: "No on-premises infrastructure / Pure Cloud", tag: "N/A Cloud", score: 70, fact: { oob_na: true } }
+  {
+    "id": "Q5.2",
+    "sec": "Operational Sovereignty",
+    "secNum": "05",
+    "mode": "workshop",
+    "type": "single",
+    "q": "For on-premises hardware, storage, and firewalls, are remote out-of-band management channels (iDRAC/iLO) active?",
+    "hint": "Hardware vendor call-home telemetry and remote support tunnels represent unmapped extraterritorial vectors.",
+    "opts": [
+      {
+        "text": "Air-gapped / Strictly internal OOB networks with all vendor phone-home telemetry blocked",
+        "tag": "Air-Gapped OOB"
+      },
+      {
+        "text": "Connected OOB networks with automated vendor telemetry and remote diagnostics enabled",
+        "tag": "Connected OOB"
+      },
+      {
+        "text": "No on-premises infrastructure / Pure Cloud",
+        "tag": "N/A Cloud"
+      }
     ]
   },
-  { id: "Q5.3", sec: "Operational Sovereignty", secNum: "05", mode: "both", type: "single",
-    q: "In SaaS applications (M365, Salesforce, ServiceNow), does the SaaS provider hold administrative access to tenant data?",
-    hint: "Most enterprise SaaS platforms operate multi-tenant databases where vendor SREs possess broad diagnostic privileges.",
-    opts: [
-      { text: "Customer Lockbox enforced: Vendor engineers cannot access tenant data without explicit time-limited approval", tag: "Lockbox Enforced", score: 85, fact: { saas_lockbox: true } },
-      { text: "Standard SaaS operations: Provider manages uptime and internal access under standard security attestations (SOC2)", tag: "Standard SaaS", score: 40, fact: { saas_standard: true } },
-      { text: "Uncontrolled / Multi-tenant SaaS with unmonitored vendor telemetry feeds", tag: "Unmonitored", score: 15, fact: { saas_unmonitored: true } }
+  {
+    "id": "Q5.3",
+    "sec": "Operational Sovereignty",
+    "secNum": "05",
+    "mode": "both",
+    "type": "single",
+    "q": "In SaaS applications (M365, Salesforce, ServiceNow), does the SaaS provider hold administrative access to tenant data?",
+    "hint": "Most enterprise SaaS platforms operate multi-tenant databases where vendor SREs possess broad diagnostic privileges.",
+    "opts": [
+      {
+        "text": "Customer Lockbox enforced: Vendor engineers cannot access tenant data without explicit time-limited approval",
+        "tag": "Lockbox Enforced"
+      },
+      {
+        "text": "Standard SaaS operations: Provider manages uptime and internal access under standard security attestations (SOC2)",
+        "tag": "Standard SaaS"
+      },
+      {
+        "text": "Uncontrolled / Multi-tenant SaaS with unmonitored vendor telemetry feeds",
+        "tag": "Unmonitored"
+      }
     ]
   },
-
-  // --- Section 6: Cryptographic Custody, HYOK & Confidential Computing ---
-  { id: "Q6.1", sec: "Cryptographic Autonomy", secNum: "06", mode: "both", type: "single",
-    q: "How are encryption keys managed for data at rest across your public cloud and SaaS environments?",
-    hint: "If the cloud provider holds or has access to your encryption keys, encryption does NOT defeat foreign subpoenas.",
-    opts: [
-      { text: "Hold Your Own Key (HYOK) / External HSM: Keys generated, stored, and managed in on-prem or sovereign HSMs", tag: "HYOK / External HSM", score: 100, fact: { crypto_hyok: true } },
-      { text: "Bring Your Own Key (BYOK): Customer imports keys into cloud-managed KMS (provider can access during operations)", tag: "BYOK (Cloud KMS)", score: 55, fact: { crypto_byok: true } },
-      { text: "Cloud Provider-Managed Keys: Default server-side encryption with provider-owned keys (AWS SSE-S3, Azure PMK)", tag: "Provider KMS", score: 15, fact: { crypto_provider_kms: true } }
+  {
+    "id": "Q6.1",
+    "sec": "Cryptographic Autonomy",
+    "secNum": "06",
+    "mode": "both",
+    "type": "single",
+    "q": "How are encryption keys managed for data at rest across your public cloud and SaaS environments?",
+    "hint": "If the cloud provider holds or has access to your encryption keys, encryption does NOT defeat foreign subpoenas.",
+    "opts": [
+      {
+        "text": "Hold Your Own Key (HYOK) / External HSM: Keys generated, stored, and managed in on-prem or sovereign HSMs",
+        "tag": "HYOK / External HSM"
+      },
+      {
+        "text": "Bring Your Own Key (BYOK): Customer imports keys into cloud-managed KMS (provider can access during operations)",
+        "tag": "BYOK (Cloud KMS)"
+      },
+      {
+        "text": "Cloud Provider-Managed Keys: Default server-side encryption with provider-owned keys (AWS SSE-S3, Azure PMK)",
+        "tag": "Provider KMS"
+      }
     ]
   },
-  { id: "Q6.2", sec: "Cryptographic Autonomy", secNum: "06", mode: "workshop", type: "single",
-    q: "Have you implemented Confidential Computing (hardware-rooted enclaves e.g. AMD SEV-SNP, Intel SGX) for data in use?",
-    hint: "Confidential Computing protects data in memory from hypervisor inspection and rogue administrative access.",
-    opts: [
-      { text: "Yes — Deployed in production for high-risk data processing and AI inference", tag: "Production Enclaves", score: 100, fact: { conf_compute_prod: true } },
-      { text: "Evaluating / PoC — Testing confidential VMs for regulated financial or healthcare workloads", tag: "Evaluating PoC", score: 50, fact: { conf_compute_poc: true } },
-      { text: "No — Standard virtualization and container runtimes only", tag: "No Confidential VM", score: 15, fact: { conf_compute_none: true } }
+  {
+    "id": "Q6.2",
+    "sec": "Cryptographic Autonomy",
+    "secNum": "06",
+    "mode": "workshop",
+    "type": "single",
+    "q": "Have you implemented Confidential Computing (hardware-rooted enclaves e.g. AMD SEV-SNP, Intel SGX) for data in use?",
+    "hint": "Confidential Computing protects data in memory from hypervisor inspection and rogue administrative access.",
+    "opts": [
+      {
+        "text": "Yes \u2014 Deployed in production for high-risk data processing and AI inference",
+        "tag": "Production Enclaves"
+      },
+      {
+        "text": "Evaluating / PoC \u2014 Testing confidential VMs for regulated financial or healthcare workloads",
+        "tag": "Evaluating PoC"
+      },
+      {
+        "text": "No \u2014 Standard virtualization and container runtimes only",
+        "tag": "No Confidential VM"
+      }
     ]
   },
-  { id: "Q6.3", sec: "Cryptographic Autonomy", secNum: "06", mode: "both", type: "single",
-    q: "Can your organization instantly revoke encryption keys to render foreign-hosted data permanently unreadable?",
-    hint: "The definitive technical test of cryptographic sovereignty: remote cryptographic kill-switch.",
-    opts: [
-      { text: "Yes — Cryptographic kill-switch verified: revoking key access instantly blinds all cloud/SaaS data stores", tag: "Kill-Switch Verified", score: 100, fact: { crypto_killswitch: true } },
-      { text: "Partial — Can disable keys in cloud console, but cached keys or provider backups may persist", tag: "Partial Revocation", score: 45, fact: { crypto_partial_revoke: true } },
-      { text: "No — Provider manages the lifecycle; instantaneous unilateral revocation is impossible", tag: "No Revocation", score: 10, fact: { crypto_no_revoke: true } }
+  {
+    "id": "Q6.3",
+    "sec": "Cryptographic Autonomy",
+    "secNum": "06",
+    "mode": "both",
+    "type": "single",
+    "q": "Can your organization instantly revoke encryption keys to render foreign-hosted data permanently unreadable?",
+    "hint": "The definitive technical test of cryptographic sovereignty: remote cryptographic kill-switch.",
+    "opts": [
+      {
+        "text": "Yes \u2014 Cryptographic kill-switch verified: revoking key access instantly blinds all cloud/SaaS data stores",
+        "tag": "Kill-Switch Verified"
+      },
+      {
+        "text": "Partial \u2014 Can disable keys in cloud console, but cached keys or provider backups may persist",
+        "tag": "Partial Revocation"
+      },
+      {
+        "text": "No \u2014 Provider manages the lifecycle; instantaneous unilateral revocation is impossible",
+        "tag": "No Revocation"
+      }
     ]
   },
-
-  // --- Section 7: Critical Third-Party (CTPP) Concentration & Tested Exitability ---
-  { id: "Q7.1", sec: "Third-Party & Exitability", secNum: "07", mode: "both", type: "single",
-    q: "Do you have single-vendor concentration where a disruption to one cloud or SaaS provider halts core business operations?",
-    hint: "A primary focus of DORA Art. 28, UK CTP, APRA CPS 230, and MAS Outsourcing guidelines.",
-    opts: [
-      { text: "Severe Concentration: Single hyperscaler / SaaS platform hosts >75% of all critical business functions", tag: "Critical Concentration", score: 20, fact: { conc_critical: true } },
-      { text: "Managed Concentration: Dominant primary provider, but critical workloads have documented fallback options", tag: "Managed Concentration", score: 60, fact: { conc_managed: true } },
-      { text: "Architectural Multi-Cloud / Hybrid: Workloads portable across distinct providers and on-premises enclaves", tag: "Multi-Cloud Portable", score: 90, fact: { conc_portable: true } }
+  {
+    "id": "Q7.1",
+    "sec": "Third-Party & Exitability",
+    "secNum": "07",
+    "mode": "both",
+    "type": "single",
+    "q": "Do you have single-vendor concentration where a disruption to one cloud or SaaS provider halts core business operations?",
+    "hint": "A primary focus of DORA Art. 28, UK CTP, APRA CPS 230, and MAS Outsourcing guidelines.",
+    "opts": [
+      {
+        "text": "Severe Concentration: Single hyperscaler / SaaS platform hosts >75% of all critical business functions",
+        "tag": "Critical Concentration"
+      },
+      {
+        "text": "Managed Concentration: Dominant primary provider, but critical workloads have documented fallback options",
+        "tag": "Managed Concentration"
+      },
+      {
+        "text": "Architectural Multi-Cloud / Hybrid: Workloads portable across distinct providers and on-premises enclaves",
+        "tag": "Multi-Cloud Portable"
+      }
     ]
   },
-  { id: "Q7.2", sec: "Third-Party & Exitability", secNum: "07", mode: "workshop", type: "single",
-    q: "What is your realistic, tested timeline to execute a complete exit strategy from your primary cloud provider?",
-    hint: "Regulatory requirements mandate an actionable, auditable, and tested exit strategy without disruption.",
-    opts: [
-      { text: "Under 3 Months: Workloads are containerized (Kubernetes/OpenShift) and data formats are open standard", tag: "<3 Months", score: 95, fact: { exit_under_3m: true } },
-      { text: "6 to 12 Months: Documented transition plan exists, but significant proprietary PaaS rewrites would be required", tag: "6-12 Months", score: 55, fact: { exit_6_12m: true } },
-      { text: "Over 18 Months / Effectively Impossible: Deep proprietary serverless and database lock-in prevents migration", tag: ">18 Months", score: 15, fact: { exit_impossible: true } }
+  {
+    "id": "Q7.2",
+    "sec": "Third-Party & Exitability",
+    "secNum": "07",
+    "mode": "workshop",
+    "type": "single",
+    "q": "What is your realistic, tested timeline to execute a complete exit strategy from your primary cloud provider?",
+    "hint": "Regulatory requirements mandate an actionable, auditable, and tested exit strategy without disruption.",
+    "opts": [
+      {
+        "text": "Under 3 Months: Workloads are containerized (Kubernetes/OpenShift) and data formats are open standard",
+        "tag": "<3 Months"
+      },
+      {
+        "text": "6 to 12 Months: Documented transition plan exists, but significant proprietary PaaS rewrites would be required",
+        "tag": "6-12 Months"
+      },
+      {
+        "text": "Over 18 Months / Effectively Impossible: Deep proprietary serverless and database lock-in prevents migration",
+        "tag": ">18 Months"
+      }
     ]
   },
-  { id: "Q7.3", sec: "Third-Party & Exitability", secNum: "07", mode: "both", type: "single",
-    q: "For on-premises hardware, appliances, and telecom equipment, have you audited hardware provenance (e.g. NDAA Section 889)?",
-    hint: "National security rules in the US, UK, Australia, and EU ban certain foreign-manufactured telecom and compute components.",
-    opts: [
-      { text: "Fully Audited: Hardware bill of materials (SBOM/HBOM) verified compliant with clean supply chain lists", tag: "Hardware Verified", score: 95, fact: { hw_audited: true } },
-      { text: "Partially Audited: Major server vendors certified, but network switches, cameras, and IoT unverified", tag: "Partially Audited", score: 50, fact: { hw_partial: true } },
-      { text: "Not Audited: Hardware procurement driven purely by commercial cost with no origin restrictions", tag: "Not Audited", score: 20, fact: { hw_not_audited: true } }
+  {
+    "id": "Q7.3",
+    "sec": "Third-Party & Exitability",
+    "secNum": "07",
+    "mode": "both",
+    "type": "single",
+    "q": "For on-premises hardware, appliances, and telecom equipment, have you audited hardware provenance (e.g. NDAA Section 889)?",
+    "hint": "National security rules in the US, UK, Australia, and EU ban certain foreign-manufactured telecom and compute components.",
+    "opts": [
+      {
+        "text": "Fully Audited: Hardware bill of materials (SBOM/HBOM) verified compliant with clean supply chain lists",
+        "tag": "Hardware Verified"
+      },
+      {
+        "text": "Partially Audited: Major server vendors certified, but network switches, cameras, and IoT unverified",
+        "tag": "Partially Audited"
+      },
+      {
+        "text": "Not Audited: Hardware procurement driven purely by commercial cost with no origin restrictions",
+        "tag": "Not Audited"
+      }
     ]
   }
 ];
 
-// Dynamic Consultant Probes (Contradiction & Anomaly Detection)
 var CONSULTING_PROBES = [
   {
     id: "P_RESIDENCY_ILLUSION",
@@ -4815,6 +5149,7 @@ function triggerReportSynthesis() {
 
   // Trigger AI briefing generation in parallel so it's ready when report mounts
   generateAiBriefing();
+  fetchSovereignIqEvaluation();
 
   var pFill = document.getElementById("synthPFill");
   setTimeout(function() {
@@ -4917,17 +5252,61 @@ function generateGapTailoredRoadmap(facts, anomalies, answers) {
   return [w1, w2, w3, w4];
 }
 
+
+/* ---------- Cloud Scoring Engine Bridge (AWS Lambda ap-south-1) ---------- */
+const EVALUATE_API_ENDPOINT = "https://zvnmwxa9sf.execute-api.ap-south-1.amazonaws.com/api/evaluate/sovereign-iq";
+
+async function fetchSovereignIqEvaluation() {
+  try {
+    const payload = {
+      answers: STATE.answers,
+      session: SESSION
+    };
+    const res = await fetch(EVALUATE_API_ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    if (!res.ok) {
+      console.error('[Sovereign IQ Cloud Eval] Error:', res.status, await res.text());
+      return null;
+    }
+    const json = await res.json();
+    if (json && json.ok && json.data) {
+      STATE.evaluation = json.data;
+      return STATE.evaluation;
+    }
+  } catch (err) {
+    console.error('[Sovereign IQ Cloud Eval] Connection failed:', err);
+  }
+  return null;
+}
+
 function renderReport() {
-  var facts = computeFacts(STATE.answers);
-  var inScopeRegimes = evaluateRegimes(facts);
-  var pillarScores = computePillarScores(STATE.answers, facts);
-  var maturity = computeOverallMaturity(pillarScores);
-  var fin = calculateFinancialExposure(STATE.answers, inScopeRegimes, facts);
-  var heatmap = generateStrategicHeatmap(inScopeRegimes, pillarScores);
-  var anomalies = analyzeEstateAnomalies(STATE.answers, facts);
-  var roadmap = generateGapTailoredRoadmap(facts, anomalies, STATE.answers);
-  var archetypes = generateArchetypes(STATE.answers);
-  var offerings = generateLTMOfferings(inScopeRegimes, pillarScores);
+  var facts, inScopeRegimes, pillarScores, maturity, fin, heatmap, anomalies, roadmap, archetypes, offerings;
+  if (STATE.evaluation) {
+    facts = STATE.evaluation.facts;
+    inScopeRegimes = STATE.evaluation.inScopeRegimes;
+    pillarScores = STATE.evaluation.pillarScores;
+    maturity = STATE.evaluation.maturity;
+    fin = STATE.evaluation.fin;
+    heatmap = STATE.evaluation.heatmap;
+    anomalies = STATE.evaluation.anomalies;
+    roadmap = STATE.evaluation.roadmap;
+    archetypes = STATE.evaluation.archetypes;
+    offerings = STATE.evaluation.offerings;
+  } else {
+    facts = computeFacts(STATE.answers);
+    inScopeRegimes = evaluateRegimes(facts);
+    pillarScores = computePillarScores(STATE.answers, facts);
+    maturity = computeOverallMaturity(pillarScores);
+    fin = calculateFinancialExposure(STATE.answers, inScopeRegimes, facts);
+    heatmap = generateStrategicHeatmap(inScopeRegimes, pillarScores);
+    anomalies = analyzeEstateAnomalies(STATE.answers, facts);
+    roadmap = generateGapTailoredRoadmap(facts, anomalies, STATE.answers);
+    archetypes = generateArchetypes(STATE.answers);
+    offerings = generateLTMOfferings(inScopeRegimes, pillarScores);
+  }
 
   var clientDisplay = SESSION.anonymize ? "Client Enterprise [Confidential]" : SESSION.clientName;
   var mode = STATE.targetStateMode || "baseline";
