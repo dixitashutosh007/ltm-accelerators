@@ -1,0 +1,23 @@
+{
+  "name": "ltm-accelerators",
+  "version": "1.0.0",
+  "description": "Enterprise cloud advisory accelerators with headless scoring engines and role-based access control",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test:engine": "node --experimental-strip-types packages/engine-core/src/test-runner.ts",
+    "amplify": "ampx"
+  },
+  "dependencies": {
+    "@aws-amplify/backend": "^1.14.0",
+    "@aws-amplify/backend-cli": "^1.4.0",
+    "aws-cdk-lib": "^2.170.0",
+    "constructs": "^10.4.0"
+  },
+  "devDependencies": {
+    "@types/aws-lambda": "^8.10.147",
+    "@types/node": "^22.10.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.7.0"
+  }
+}

@@ -186,7 +186,7 @@ export function evaluateFinOpsValueCase(
     kb.meta.waste_model.bands.find((b: any) => cap <= b.max_capability) ||
     kb.meta.waste_model.bands[kb.meta.waste_model.bands.length - 1];
   const mods = kb.meta.benchmarks.bfsi_modifiers;
-  const isBfsi = org.sector_class === 'bfsi' || org.sector?.toLowerCase().includes('banking') || org.sector?.toLowerCase().includes('financial');
+  const isBfsi = Boolean(org.sector_class === 'bfsi' || org.sector?.toLowerCase().includes('banking') || org.sector?.toLowerCase().includes('financial'));
   const full = mods.factors.reduce((a: number, f: any) => a + f.pts, 0);
   const uplift = isBfsi ? full * (1 - cap / 100) : 0;
 
