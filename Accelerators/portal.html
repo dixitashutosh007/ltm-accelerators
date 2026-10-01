@@ -395,9 +395,9 @@
       position: relative;
       background: radial-gradient(circle at 50% 10%, rgba(255, 94, 79, 0.12) 0%, rgba(12, 18, 26, 0.95) 60%, #080C12 100%);
       border: 1px solid rgba(255, 255, 255, 0.08);
-      border-radius: 24px;
-      padding: 48px 36px 36px;
-      margin-bottom: 48px;
+      border-radius: 20px;
+      padding: 38px 24px 30px;
+      margin-bottom: 40px;
       overflow: hidden;
       box-shadow: 0 16px 50px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.08);
     }
@@ -441,44 +441,13 @@
       100% { transform: translateY(2px); opacity: 0.8; }
     }
 
-    .hero-tech-eyebrow {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      font-family: var(--font-mono);
-      font-size: 11px;
-      font-weight: 700;
-      letter-spacing: 0.16em;
-      text-transform: uppercase;
-      color: #FF7B6E;
-      background: rgba(255, 94, 79, 0.08);
-      border: 1px solid rgba(255, 94, 79, 0.22);
-      padding: 4px 14px;
-      border-radius: 999px;
-      margin-bottom: 16px;
-    }
-
-    .hero-radar-dot {
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      background: #FF5E4F;
-      box-shadow: 0 0 8px #FF5E4F;
-      animation: radarPulseDot 1.8s ease-in-out infinite;
-    }
-
-    @keyframes radarPulseDot {
-      0%, 100% { transform: scale(1); opacity: 1; }
-      50% { transform: scale(1.5); opacity: 0.4; }
-    }
-
     .hero-tech-title {
       font-family: var(--font-heading);
-      font-size: 46px;
+      font-size: 44px;
       font-weight: 800;
       letter-spacing: -0.03em;
       color: #FFFFFF;
-      margin: 0 0 16px;
+      margin: 0 0 18px;
       line-height: 1.15;
       background: linear-gradient(135deg, #FFFFFF 0%, #E2E8F0 60%, #FF9E95 100%);
       -webkit-background-clip: text;
@@ -486,61 +455,11 @@
       filter: drop-shadow(0 2px 16px rgba(0,0,0,0.6));
     }
 
-    .hero-live-hud {
-      display: inline-flex;
-      align-items: center;
-      gap: 16px;
-      background: rgba(10, 15, 22, 0.7);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      border-radius: 12px;
-      padding: 8px 18px;
-      font-family: var(--font-mono);
-      font-size: 11.5px;
-      color: #94A3B8;
-      backdrop-filter: blur(8px);
-      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
-      flex-wrap: wrap;
-      justify-content: center;
-    }
-
-    .hud-item {
-      display: flex;
-      align-items: center;
-      gap: 7px;
-    }
-
-    .hud-pulse {
-      width: 7px;
-      height: 7px;
-      border-radius: 50%;
-    }
-
-    .hud-pulse.green {
-      background: #10B981;
-      box-shadow: 0 0 8px #10B981;
-    }
-
-    .hud-pulse.blue {
-      background: #3B82F6;
-      box-shadow: 0 0 8px #3B82F6;
-    }
-
-    .hud-pulse.coral {
-      background: #FF5E4F;
-      box-shadow: 0 0 8px #FF5E4F;
-    }
-
-    .hud-divider {
-      width: 1px;
-      height: 14px;
-      background: rgba(255, 255, 255, 0.12);
-    }
-
     .hero-practice-tabs {
       display: flex;
       justify-content: center;
       gap: 10px;
-      margin-top: 24px;
+      margin-top: 0;
       flex-wrap: wrap;
     }
 
@@ -1160,7 +1079,7 @@
       </div>
 
       <h1 class="splash-title">Advisory Accelerators</h1>
-      <p class="splash-sub">Enterprise Decision Platform &middot; AWS Sovereign Engine</p>
+      <p class="splash-sub">Enterprise Decision Platform</p>
 
       <div class="splash-bar-outer">
         <div class="splash-bar-inner" id="splashProgress"></div>
@@ -1186,7 +1105,7 @@
 
     <div class="nav-actions">
       <!-- Live Icon -->
-      <div class="live-pill" title="Cloud Engine Online (AWS ap-south-1)">
+      <div class="live-pill" title="Advisory Engine Online">
         <span class="live-dot"><span class="live-ping"></span></span>
         <span class="live-label">Live</span>
       </div>
@@ -1219,15 +1138,7 @@
       <div class="hero-tech-beam"></div>
 
       <div style="position:relative;z-index:2;text-align:center;">
-        <div class="hero-tech-eyebrow"><span class="hero-radar-dot"></span> ADVISORY ACCELERATOR PLATFORM &middot; AWS SOVEREIGN ARCHITECTURE</div>
         <h1 class="hero-tech-title">Advisory Accelerators</h1>
-        <div class="hero-live-hud">
-          <div class="hud-item"><span class="hud-pulse green"></span> ENGINE: <b>ZERO-EXPOSURE</b></div>
-          <div class="hud-divider"></div>
-          <div class="hud-item"><span class="hud-pulse blue"></span> RUNTIME: <b>AWS AP-SOUTH-1</b></div>
-          <div class="hud-divider"></div>
-          <div class="hud-item"><span class="hud-pulse coral"></span> SECURITY: <b>COGNITO RBAC</b></div>
-        </div>
         <div class="hero-practice-tabs">
           <button class="hero-tab active" onclick="filterPracticeGroup('all', this)">All Accelerators (4)</button>
           <button class="hero-tab" onclick="filterPracticeGroup('finops', this)">FinOps Practice</button>
@@ -1387,7 +1298,7 @@
           </div>
 
           <div class="form-group">
-            <label class="form-label">Cognito Password</label>
+            <label class="form-label">Password</label>
             <input type="password" id="loginPassword" class="form-input" placeholder="••••••••••••" required autofocus>
           </div>
 
@@ -1457,10 +1368,10 @@
         <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
           <div>
             <div style="font-family:var(--font-mono);font-size:11px;font-weight:700;color:#10B981;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:4px">
-              AWS S3 SECURE STORAGE
+              SECURE STORAGE
             </div>
             <h3 class="modal-title">Reports</h3>
-            <p class="modal-desc">Customer assessment deliverables archived in AWS S3 (<code>ltm-advisory-reports-223833501993</code>).</p>
+            <p class="modal-desc">Customer assessment deliverables and generated executive reports.</p>
           </div>
           <button class="btn-auth" onclick="fetchAndRenderReports()" style="font-size:11.5px;padding:5px 10px;">Refresh</button>
         </div>
@@ -1478,7 +1389,7 @@
       <div class="modal-scrollable" id="reportsListContainer">
         <div style="text-align:center;padding:40px 0;color:var(--text-muted);">
           <div class="spinner" style="width:28px;height:28px;border:3px solid rgba(255,255,255,0.1);border-top-color:#10B981;border-radius:50%;animation:spinRadar 0.8s linear infinite;margin:0 auto 12px;"></div>
-          Fetching archived deliverables from AWS S3...
+          Fetching archived deliverables...
         </div>
       </div>
     </div>
@@ -1515,7 +1426,7 @@
         <div class="modal-scrollable" id="userListContainer" style="max-height:calc(85vh - 220px);">
           <div style="text-align:center;padding:40px 0;color:var(--text-muted);">
             <div class="spinner" style="width:28px;height:28px;border:3px solid rgba(255,255,255,0.1);border-top-color:#3B82F6;border-radius:50%;animation:spinRadar 0.8s linear infinite;margin:0 auto 12px;"></div>
-            Loading user directory and permissions from AWS Cognito &amp; S3...
+            Loading user directory and permissions...
           </div>
         </div>
       </div>
@@ -1641,7 +1552,7 @@
         </div>
 
         <button type="submit" id="btnSubmitQuickReset" class="btn-auth primary" style="width:100%;justify-content:center;padding:11px;font-size:13px;margin-bottom:14px;">
-          Set New Password in AWS Cognito &rarr;
+          Set New Password &rarr;
         </button>
       </form>
 
@@ -1670,7 +1581,7 @@
     <div style="display:flex;gap:18px;">
       <a href="/portal" style="color:inherit;text-decoration:none;">Showcase Portal</a>
       <a href="/studio" style="color:inherit;text-decoration:none;">Question Bank Studio</a>
-      <span style="color:#10B981;">&#9679; AWS ap-south-1 Online</span>
+      <span style="color:#10B981;">&#9679; Advisory Engine Online</span>
     </div>
   </footer>
 
@@ -1703,8 +1614,8 @@
       const pMsg = document.getElementById('splashMsg');
 
       const steps = [
-        { p: 25, msg: "Connecting to AWS ap-south-1 Infrastructure..." },
-        { p: 60, msg: "Verifying Zero-Exposure Scoring Engines..." },
+        { p: 25, msg: "Connecting to Diagnostic Engine..." },
+        { p: 60, msg: "Initializing Advisory Frameworks..." },
         { p: 88, msg: "Calibrating FinOps & Sovereignty Practice Suites..." },
         { p: 100, msg: "Platform Ready." }
       ];
@@ -1886,7 +1797,7 @@
       }
 
       btn.disabled = true;
-      btn.textContent = 'Updating Password in AWS Cognito...';
+      btn.textContent = 'Updating Password...';
 
       try {
         const res = await fetch("https://zvnmwxa9sf.execute-api.ap-south-1.amazonaws.com/api/auth/reset-password", {
@@ -1928,7 +1839,7 @@
       const btn = document.getElementById('btnSubmitLogin');
 
       btn.disabled = true;
-      btn.textContent = 'Verifying with Cognito ap-south-1...';
+      btn.textContent = 'Authenticating...';
       errDiv.style.display = 'none';
 
       try {
@@ -2047,7 +1958,7 @@
       container.innerHTML = `
         <div style="text-align:center;padding:40px 0;color:var(--text-muted);">
           <div class="spinner" style="width:28px;height:28px;border:3px solid rgba(255,255,255,0.1);border-top-color:#10B981;border-radius:50%;animation:spinRadar 0.8s linear infinite;margin:0 auto 12px;"></div>
-          Fetching archived deliverables from AWS S3...
+          Fetching archived deliverables...
         </div>
       `;
 
@@ -2062,7 +1973,7 @@
       } catch(err) {
         container.innerHTML = `
           <div style="padding:28px;background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.25);border-radius:12px;text-align:center;color:#FCA5A5;">
-            <b>Unable to load S3 reports archive</b>
+            <b>Unable to load reports archive</b>
             <p style="font-size:12px;color:var(--text-muted);margin-top:6px;">${err.message}</p>
             <button class="btn-auth" onclick="fetchAndRenderReports()" style="margin-top:14px;">Try Again</button>
           </div>
@@ -2082,8 +1993,8 @@
             <div style="font-size:32px;margin-bottom:8px;">📁</div>
             <h4 style="color:#FFFFFF;font-size:16px;margin-bottom:4px;">No Archived Reports Found</h4>
             <p style="font-size:12.5px;max-width:440px;margin:0 auto 16px;">
-              ${CURRENT_REPORTS_FILTER ? 'No reports for this diagnostic yet.' : 'No customer PDF reports have been archived to AWS S3 yet.'} 
-              Execute any assessment diagnostic and click <b>"Archive to AWS S3"</b> to save deliverables here.
+              ${CURRENT_REPORTS_FILTER ? 'No reports for this diagnostic yet.' : 'No customer PDF reports have been archived yet.'} 
+              Execute any assessment diagnostic and click <b>"Archive Report"</b> to save deliverables here.
             </p>
           </div>
         `;
@@ -2120,7 +2031,7 @@
         <table class="reports-table">
           <thead>
             <tr>
-              <th>Client Deliverable / S3 Key</th>
+              <th>Client Deliverable</th>
               <th>Accelerator</th>
               <th>Archived At</th>
               <th>Size</th>
@@ -2254,7 +2165,7 @@
       container.innerHTML = `
         <div style="text-align:center;padding:40px 0;color:var(--text-muted);">
           <div class="spinner" style="width:28px;height:28px;border:3px solid rgba(255,255,255,0.1);border-top-color:#3B82F6;border-radius:50%;animation:spinRadar 0.8s linear infinite;margin:0 auto 12px;"></div>
-          Fetching users and access rights from AWS Cognito &amp; S3...
+          Fetching users and access rights...
         </div>
       `;
 
@@ -2366,7 +2277,7 @@
       errDiv.style.display = 'none';
       succDiv.style.display = 'none';
       btn.disabled = true;
-      btn.textContent = 'Provisioning in AWS Cognito & S3...';
+      btn.textContent = 'Provisioning User...';
 
       try {
         const res = await fetch("https://zvnmwxa9sf.execute-api.ap-south-1.amazonaws.com/api/users/create", {
@@ -2446,7 +2357,7 @@
       errDiv.style.display = 'none';
       succDiv.style.display = 'none';
       btn.disabled = true;
-      btn.textContent = 'Updating Password in AWS Cognito...';
+      btn.textContent = 'Updating Password...';
 
       try {
         const res = await fetch("https://zvnmwxa9sf.execute-api.ap-south-1.amazonaws.com/api/users/set-password", {
@@ -2463,7 +2374,7 @@
         if (data.ok) {
           succDiv.textContent = `Password successfully updated for ${email}!`;
           succDiv.style.display = 'block';
-          toast("Password updated in Cognito", "✅");
+          toast("Password updated successfully", "✅");
           setTimeout(() => { closeQuickResetModal(); }, 1600);
         } else {
           errDiv.textContent = data.error || 'Failed to update password.';
@@ -2474,7 +2385,7 @@
         errDiv.style.display = 'block';
       } finally {
         btn.disabled = false;
-        btn.textContent = 'Set New Password in AWS Cognito →';
+        btn.textContent = 'Set New Password →';
       }
     }
 

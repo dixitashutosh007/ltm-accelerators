@@ -5013,7 +5013,7 @@ function coverBlock(score,label,counts,findings,pillarData,penalties,probes,isUn
     <div class="no-print" style="display:flex;gap:10px;margin-top:20px;flex-wrap:wrap;align-items:center">
       ${isUnlocked ? `
         <button class="btn btn-primary" onclick="downloadPostureExecutivePDF()">📄 Download Executive Vector PDF</button>
-        <button class="btn btn-secondary" onclick="downloadPostureExecutivePDF(true)" style="border:1px solid #10B981;color:#10B981;background:#F0FDF4;font-weight:700">☁️ Archive to AWS S3</button>
+        <button class="btn btn-secondary" onclick="downloadPostureExecutivePDF(true)" style="border:1px solid #10B981;color:#10B981;background:#F0FDF4;font-weight:700">☁️ Archive Report</button>
         <button class="btn btn-secondary" onclick="openSlideDeck()" style="border:1px solid #FF5E4F;color:#CC2B1C;background:#FFF4F2;font-weight:700">📊 Boardroom Slides</button>
         <button class="btn btn-secondary" onclick="openSOWModal()" style="border:1px solid #226882;color:#226882;background:#F0F7FA;font-weight:700">📋 Statement of Work (SOW)</button>
       ` : `
@@ -6327,7 +6327,7 @@ function downloadPostureExecutivePDF(isArchiveOnly){
     doc.save("Posture_IQ_Executive_Report_" + cleanClient + ".pdf");
     toast("Executive PDF report downloaded!");
   } else {
-    toast("Archiving PDF deliverable to AWS S3...");
+    toast("Archiving PDF deliverable...");
   }
 
   // Automatic Archive to AWS S3

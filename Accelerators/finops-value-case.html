@@ -2278,7 +2278,7 @@ function viewReport(){
    +'<button class="btn ghost" data-a="exportRes">Export results ↓</button>'
    +(isUnlocked ? '<button class="btn ghost" data-a="toggleConsultant">Lock Teaser Mode 🔒</button>' : '<button class="btn ghost" data-a="toggleConsultant">Consultant Unlock 🔓</button>')
    +'<button class="btn primary" data-a="print">Download PDF ↓</button>'
-   +'<button class="btn ghost" data-a="saveS3Report" style="background:rgba(16,185,129,0.12);border-color:#10B981;color:#10B981;font-weight:700;">☁️ Archive to AWS S3</button></div>'
+   +'<button class="btn ghost" data-a="saveS3Report" style="background:rgba(16,185,129,0.12);border-color:#10B981;color:#10B981;font-weight:700;">☁️ Archive Report</button></div>'
    +'<div class="paper"><div class="cover"><div class="covertop"><div class="coverlogo">'+ltm+'</div>'
    +'<div style="text-align:right" class="mono" style="font-size:10px"><div class="mlab">Prepared</div><div class="mline">'+esc(r.date)+'</div></div></div>'
    +'<div class="reptitle">FinOps Value Case</div><div class="repsub">Pre-maturity qualification · Executive Advisory</div>'
@@ -2582,7 +2582,7 @@ function initValueSplash() {
   const phases = [
     { time: 100, pct: 25, msg: "Initializing FinOps Diagnostic Probes..." },
     { time: 450, pct: 55, msg: "Calibrating Benchmark Variance Models..." },
-    { time: 850, pct: 85, msg: "Mounting Zero-Exposure Financial Logic (AWS ap-south-1)..." },
+    { time: 850, pct: 85, msg: "Mounting Financial Optimization Logic..." },
     { time: 1300, pct: 100, msg: "FinOps Value Engine Ready." }
   ];
 
