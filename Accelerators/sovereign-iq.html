@@ -11,6 +11,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
 <!-- S3 Customer Reports Client -->
 <script src="/assets/s3-reports.js"></script>
+<script src="/assets/rbac-guard.js" data-tool="sovereign-iq"></script>
 <style>
 /* ============================================================
    LTM Advisory Design System — Enterprise Clean Blueprint
@@ -2260,15 +2261,7 @@ h1,h2,h3,h4{font-family:var(--font-display);letter-spacing:-.015em;color:var(--i
         }, 550);
       }
 
-      window.runSovereignSplash = function(force) {
-        if (!force) {
-          try {
-            if (sessionStorage.getItem('sovereign_iq_splash_seen') === '1') {
-              if (splash) splash.style.display = 'none';
-              return;
-            }
-          } catch(e){}
-        }
+      window.runSovereignSplash = function() {
         if (splash) {
           splash.style.display = 'flex';
           if (splash.classList) splash.classList.remove('splash-out');
@@ -2279,8 +2272,8 @@ h1,h2,h3,h4{font-family:var(--font-display);letter-spacing:-.015em;color:var(--i
         startSequence();
       };
 
-      // Auto start on first load
-      window.runSovereignSplash(false);
+      // Auto start on load
+      window.runSovereignSplash();
 
       // Skip triggers
       if (skip && typeof skip.addEventListener === 'function') skip.addEventListener('click', dismiss);

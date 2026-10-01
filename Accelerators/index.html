@@ -965,6 +965,90 @@
       accent-color: #3B82F6;
     }
 
+    .granular-perm-matrix {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 12px;
+      margin-top: 6px;
+    }
+    .granular-acc-card {
+      background: #090E16;
+      border: 1px solid #233142;
+      border-radius: 10px;
+      padding: 12px 14px;
+    }
+    .granular-acc-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .granular-acc-name {
+      font-size: 11.5px;
+      font-weight: 700;
+      color: #F1F5F9;
+    }
+    .full-perm-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 10.5px;
+      font-weight: 700;
+      color: #38BDF8;
+      cursor: pointer;
+      background: rgba(56, 189, 248, 0.1);
+      padding: 2px 7px;
+      border-radius: 4px;
+      border: 1px solid rgba(56, 189, 248, 0.25);
+    }
+    .granular-acc-options {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      font-size: 11.5px;
+      color: #94A3B8;
+    }
+    .granular-acc-options label {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      cursor: pointer;
+      user-select: none;
+    }
+    .granular-acc-options input[type="checkbox"] {
+      accent-color: #3B82F6;
+      width: 14px;
+      height: 14px;
+      cursor: pointer;
+    }
+    .perm-subpill {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      padding: 1px 6px;
+      border-radius: 4px;
+      font-size: 10px;
+      font-weight: 600;
+      font-family: var(--font-mono);
+    }
+    .perm-subpill.take { background: rgba(59, 130, 246, 0.15); color: #93C5FD; border: 1px solid rgba(59, 130, 246, 0.3); }
+    .perm-subpill.edit { background: rgba(245, 158, 11, 0.15); color: #FCD34D; border: 1px solid rgba(245, 158, 11, 0.3); }
+    .perm-subpill.archive { background: rgba(16, 185, 129, 0.15); color: #6EE7B7; border: 1px solid rgba(16, 185, 129, 0.3); }
+    .perm-subpill.full { background: rgba(255, 94, 79, 0.18); color: #FFA59E; border: 1px solid rgba(255, 94, 79, 0.35); }
+    .btn-action-launch.btn-locked {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(255, 255, 255, 0.15);
+      color: #94A3B8;
+      box-shadow: none;
+    }
+    .btn-action-launch.btn-locked:hover {
+      background: rgba(255, 94, 79, 0.15);
+      color: #FFA59E;
+      border-color: rgba(255, 94, 79, 0.3);
+    }
+
     .role-badge {
       display: inline-block;
       padding: 3px 8px;
@@ -1198,13 +1282,6 @@
 
     <!-- Unified Executive Navigation Island -->
     <nav class="nav-island">
-      <div class="nav-island-segment live-indicator" title="Advisory Diagnostic Engine Online">
-        <span class="live-dot"><span class="live-ping"></span></span>
-        <span>Live</span>
-      </div>
-
-      <div class="nav-island-divider"></div>
-
       <button class="nav-island-segment" onclick="openReportsModal()" id="btnNavReports" title="Customer Deliverables &amp; Archived Reports">
         <span>📑 Reports</span>
       </button>
@@ -1258,7 +1335,6 @@
           <div class="card-top">
             <div class="card-meta-row">
               <span class="card-eyebrow">OPPORTUNITY &amp; WASTE QUALIFICATION</span>
-              <div class="live-pill" style="font-size:10px;padding:3px 8px;"><span class="live-dot"></span> Live</div>
             </div>
             <h3 class="card-title">FinOps Value Case</h3>
             <p class="card-desc">Pre-maturity diagnostic evaluating cloud financial waste, 5 core optimization streams, and 3-year P&amp;L recoverable exposure models.</p>
@@ -1272,7 +1348,7 @@
           <div class="card-footer" style="justify-content:flex-end;">
             <div class="card-actions">
               <button class="btn-action-edit" data-tool="finops-value-case" onclick="handleEditClick('finops-value-case')">Edit</button>
-              <a href="/finops-value-case" class="btn-action-launch">Launch Diagnostic &rarr;</a>
+              <button class="btn-action-launch" data-tool="finops-value-case" onclick="handleLaunchClick('finops-value-case', '/finops-value-case')">Take Assessment &rarr;</button>
             </div>
           </div>
         </div>
@@ -1282,7 +1358,6 @@
           <div class="card-top">
             <div class="card-meta-row">
               <span class="card-eyebrow">ENTERPRISE MATURITY &amp; GATING</span>
-              <div class="live-pill" style="font-size:10px;padding:3px 8px;"><span class="live-dot"></span> Live</div>
             </div>
             <h3 class="card-title">FinOps IQ</h3>
             <p class="card-desc">Production Cloud Financial Management platform evaluating 5 capability domains, 5 maturity stages, and critical gatekeeping criteria.</p>
@@ -1296,7 +1371,7 @@
           <div class="card-footer" style="justify-content:flex-end;">
             <div class="card-actions">
               <button class="btn-action-edit" data-tool="finops-iq" onclick="handleEditClick('finops-iq')">Edit</button>
-              <a href="/finops-iq" class="btn-action-launch">Launch Diagnostic &rarr;</a>
+              <button class="btn-action-launch" data-tool="finops-iq" onclick="handleLaunchClick('finops-iq', '/finops-iq')">Take Assessment &rarr;</button>
             </div>
           </div>
         </div>
@@ -1320,7 +1395,6 @@
           <div class="card-top">
             <div class="card-meta-row">
               <span class="card-eyebrow orange">JURISDICTIONAL DEFENSE &amp; CLOUD ACT</span>
-              <div class="live-pill" style="font-size:10px;padding:3px 8px;"><span class="live-dot"></span> Live</div>
             </div>
             <h3 class="card-title">Sovereign IQ</h3>
             <p class="card-desc">Architectural diagnostic auditing US CLOUD Act reach, foreign subpoena exposures, HYOK cryptographic autonomy, and compliance with 30+ global regimes.</p>
@@ -1334,7 +1408,7 @@
           <div class="card-footer" style="justify-content:flex-end;">
             <div class="card-actions">
               <button class="btn-action-edit" data-tool="sovereign-iq" onclick="handleEditClick('sovereign-iq')">Edit</button>
-              <a href="/sovereign-iq" class="btn-action-launch">Launch Diagnostic &rarr;</a>
+              <button class="btn-action-launch" data-tool="sovereign-iq" onclick="handleLaunchClick('sovereign-iq', '/sovereign-iq')">Take Assessment &rarr;</button>
             </div>
           </div>
         </div>
@@ -1344,7 +1418,6 @@
           <div class="card-top">
             <div class="card-meta-row">
               <span class="card-eyebrow orange">MULTI-CLOUD FORENSIC STATUTORY AUDIT</span>
-              <div class="live-pill" style="font-size:10px;padding:3px 8px;"><span class="live-dot"></span> Live</div>
             </div>
             <h3 class="card-title">Posture IQ</h3>
             <p class="card-desc">Automated forensic statutory posture accelerator auditing NIS2, DORA, and GDPR compliance with dynamic facilitator probes and SOW generation.</p>
@@ -1358,7 +1431,7 @@
           <div class="card-footer" style="justify-content:flex-end;">
             <div class="card-actions">
               <button class="btn-action-edit" data-tool="posture-iq" onclick="handleEditClick('posture-iq')">Edit</button>
-              <a href="/posture-iq" class="btn-action-launch">Launch Diagnostic &rarr;</a>
+              <button class="btn-action-launch" data-tool="posture-iq" onclick="handleLaunchClick('posture-iq', '/posture-iq')">Take Assessment &rarr;</button>
             </div>
           </div>
         </div>
@@ -1551,55 +1624,68 @@
             </div>
 
             <div class="form-group">
-              <label class="form-label">Role Template Preset</label>
-              <select id="newUserRolePreset" class="form-input" onchange="applyRolePreset(this.value)">
-                <option value="advisor_viewer">Advisory Practitioner (View All 4 Tools &middot; No Question Bank Edit)</option>
-                <option value="practice_finops">FinOps Practice Lead (Full View &amp; Edit on FinOps Value Case + FinOps IQ)</option>
-                <option value="practice_sovereignty">Sovereignty Practice Lead (Full View &amp; Edit on Sovereign IQ + Posture IQ)</option>
-                <option value="practice_director">Practice Director (Full View &amp; Edit Across All 4 Accelerators)</option>
-                <option value="custom">Custom RBAC (Individually Configure Tools Below)</option>
-              </select>
-            </div>
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+                <div>
+                  <label class="form-label" style="margin-bottom:2px;">Granular Accelerator Permissions</label>
+                  <span style="font-size:11.5px;color:var(--text-muted);">Configure Full, Take Assessment, Edit Engine, and View Archive permissions per accelerator.</span>
+                </div>
+                <div style="display:flex;gap:8px;font-size:11.5px;">
+                  <button type="button" onclick="setGranularAll('create', true)" style="background:none;border:none;color:#60A5FA;cursor:pointer;text-decoration:underline;">Select All Full</button>
+                  <span style="color:#374151;">|</span>
+                  <button type="button" onclick="setGranularAll('create', false)" style="background:none;border:none;color:var(--text-muted);cursor:pointer;text-decoration:underline;">Clear All</button>
+                </div>
+              </div>
 
-            <div class="form-group">
-              <label class="form-label">Granular Access &amp; Edit Controls</label>
-              <div class="permissions-grid">
-                <div class="perm-tool-card">
-                  <div class="perm-tool-name">💰 FinOps Value Case</div>
-                  <div class="perm-checkboxes">
-                    <label><input type="checkbox" id="perm_view_finops-value-case" checked> Can View / Run</label>
-                    <label><input type="checkbox" id="perm_edit_finops-value-case"> Can Edit Questions</label>
+              <div class="granular-perm-matrix">
+                <!-- FinOps Value Case -->
+                <div class="granular-acc-card">
+                  <div class="granular-acc-head">
+                    <span class="granular-acc-name">💰 FinOps Value Case</span>
+                    <label class="full-perm-label"><input type="checkbox" id="perm_create_finops-value-case_full" onchange="toggleAccFull('create', 'finops-value-case', this.checked)"> Full</label>
+                  </div>
+                  <div class="granular-acc-options">
+                    <label><input type="checkbox" id="perm_create_finops-value-case_take" onchange="syncAccFull('create', 'finops-value-case')" checked> Take Assessment</label>
+                    <label><input type="checkbox" id="perm_create_finops-value-case_edit" onchange="syncAccFull('create', 'finops-value-case')"> Edit Engine</label>
+                    <label><input type="checkbox" id="perm_create_finops-value-case_archive" onchange="syncAccFull('create', 'finops-value-case')"> View Archive</label>
                   </div>
                 </div>
 
-                <div class="perm-tool-card">
-                  <div class="perm-tool-name">📊 FinOps IQ</div>
-                  <div class="perm-checkboxes">
-                    <label><input type="checkbox" id="perm_view_finops-iq" checked> Can View / Run</label>
-                    <label><input type="checkbox" id="perm_edit_finops-iq"> Can Edit Questions</label>
+                <!-- FinOps IQ -->
+                <div class="granular-acc-card">
+                  <div class="granular-acc-head">
+                    <span class="granular-acc-name">📊 FinOps IQ</span>
+                    <label class="full-perm-label"><input type="checkbox" id="perm_create_finops-iq_full" onchange="toggleAccFull('create', 'finops-iq', this.checked)"> Full</label>
+                  </div>
+                  <div class="granular-acc-options">
+                    <label><input type="checkbox" id="perm_create_finops-iq_take" onchange="syncAccFull('create', 'finops-iq')" checked> Take Assessment</label>
+                    <label><input type="checkbox" id="perm_create_finops-iq_edit" onchange="syncAccFull('create', 'finops-iq')"> Edit Engine</label>
+                    <label><input type="checkbox" id="perm_create_finops-iq_archive" onchange="syncAccFull('create', 'finops-iq')"> View Archive</label>
                   </div>
                 </div>
 
-                <div class="perm-tool-card">
-                  <div class="perm-tool-name">🛡️ Sovereign IQ</div>
-                  <div class="perm-checkboxes">
-                    <label><input type="checkbox" id="perm_view_sovereign-iq" checked> Can View / Run</label>
-                    <label><input type="checkbox" id="perm_edit_sovereign-iq"> Can Edit Questions</label>
+                <!-- Sovereign IQ -->
+                <div class="granular-acc-card">
+                  <div class="granular-acc-head">
+                    <span class="granular-acc-name">🛡️ Sovereign IQ</span>
+                    <label class="full-perm-label"><input type="checkbox" id="perm_create_sovereign-iq_full" onchange="toggleAccFull('create', 'sovereign-iq', this.checked)"> Full</label>
+                  </div>
+                  <div class="granular-acc-options">
+                    <label><input type="checkbox" id="perm_create_sovereign-iq_take" onchange="syncAccFull('create', 'sovereign-iq')" checked> Take Assessment</label>
+                    <label><input type="checkbox" id="perm_create_sovereign-iq_edit" onchange="syncAccFull('create', 'sovereign-iq')"> Edit Engine</label>
+                    <label><input type="checkbox" id="perm_create_sovereign-iq_archive" onchange="syncAccFull('create', 'sovereign-iq')"> View Archive</label>
                   </div>
                 </div>
 
-                <div class="perm-tool-card">
-                  <div class="perm-tool-name">⚡ Posture IQ</div>
-                  <div class="perm-checkboxes">
-                    <label><input type="checkbox" id="perm_view_posture-iq" checked> Can View / Run</label>
-                    <label><input type="checkbox" id="perm_edit_posture-iq"> Can Edit Questions</label>
+                <!-- Posture IQ -->
+                <div class="granular-acc-card">
+                  <div class="granular-acc-head">
+                    <span class="granular-acc-name">⚡ Posture IQ</span>
+                    <label class="full-perm-label"><input type="checkbox" id="perm_create_posture-iq_full" onchange="toggleAccFull('create', 'posture-iq', this.checked)"> Full</label>
                   </div>
-                </div>
-
-                <div class="perm-tool-card">
-                  <div class="perm-tool-name">📁 Customer Reports</div>
-                  <div class="perm-checkboxes">
-                    <label><input type="checkbox" id="perm_view_reports"> View &amp; Download</label>
+                  <div class="granular-acc-options">
+                    <label><input type="checkbox" id="perm_create_posture-iq_take" onchange="syncAccFull('create', 'posture-iq')" checked> Take Assessment</label>
+                    <label><input type="checkbox" id="perm_create_posture-iq_edit" onchange="syncAccFull('create', 'posture-iq')"> Edit Engine</label>
+                    <label><input type="checkbox" id="perm_create_posture-iq_archive" onchange="syncAccFull('create', 'posture-iq')"> View Archive</label>
                   </div>
                 </div>
               </div>
@@ -1660,6 +1746,100 @@
         </div>
         <p style="font-size:11px;color:var(--text-dim);margin-top:6px;">Share this direct link with the user so they can access the platform with their email prefilled.</p>
       </div>
+    </div>
+  </div>
+
+  <!-- Edit User Granular Permissions Modal -->
+  <div class="modal-overlay" id="editPermissionsModal" style="z-index:10006;" onclick="if(event.target===this)closeEditPermissionsModal()">
+    <div class="modal-box modal-lg" style="max-width:760px;">
+      <button class="modal-close-btn" onclick="closeEditPermissionsModal()">&times;</button>
+      <div class="modal-head" style="margin-bottom:12px;">
+        <div style="font-family:var(--font-mono);font-size:11px;font-weight:700;color:#60A5FA;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:4px">
+          GRANULAR RBAC MANAGEMENT
+        </div>
+        <h3 class="modal-title">Edit Accelerator Permissions</h3>
+        <p class="modal-desc" id="editPermUserDesc">Configure accelerator capabilities for user.</p>
+      </div>
+
+      <div class="error-banner" id="editPermError"></div>
+      <div class="error-banner" id="editPermSuccess" style="background:rgba(16,185,129,0.1);border-color:#10B981;color:#34D399;display:none;"></div>
+
+      <form id="editPermissionsForm" onsubmit="handleEditPermissionsSubmit(event)">
+        <input type="hidden" id="editPermEmail">
+
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+          <div>
+            <label class="form-label" style="margin-bottom:2px;">Individual Accelerator Governance</label>
+            <span style="font-size:11.5px;color:var(--text-muted);">Assign Full, Take Assessment, Edit Engine, or View Archive permissions per accelerator.</span>
+          </div>
+          <div style="display:flex;gap:8px;font-size:11.5px;">
+            <button type="button" onclick="setGranularAll('editperm', true)" style="background:none;border:none;color:#60A5FA;cursor:pointer;text-decoration:underline;">Select All Full</button>
+            <span style="color:#374151;">|</span>
+            <button type="button" onclick="setGranularAll('editperm', false)" style="background:none;border:none;color:var(--text-muted);cursor:pointer;text-decoration:underline;">Clear All</button>
+          </div>
+        </div>
+
+        <div class="granular-perm-matrix">
+          <!-- FinOps Value Case -->
+          <div class="granular-acc-card">
+            <div class="granular-acc-head">
+              <span class="granular-acc-name">💰 FinOps Value Case</span>
+              <label class="full-perm-label"><input type="checkbox" id="perm_editperm_finops-value-case_full" onchange="toggleAccFull('editperm', 'finops-value-case', this.checked)"> Full</label>
+            </div>
+            <div class="granular-acc-options">
+              <label><input type="checkbox" id="perm_editperm_finops-value-case_take" onchange="syncAccFull('editperm', 'finops-value-case')"> Take Assessment</label>
+              <label><input type="checkbox" id="perm_editperm_finops-value-case_edit" onchange="syncAccFull('editperm', 'finops-value-case')"> Edit Engine</label>
+              <label><input type="checkbox" id="perm_editperm_finops-value-case_archive" onchange="syncAccFull('editperm', 'finops-value-case')"> View Archive</label>
+            </div>
+          </div>
+
+          <!-- FinOps IQ -->
+          <div class="granular-acc-card">
+            <div class="granular-acc-head">
+              <span class="granular-acc-name">📊 FinOps IQ</span>
+              <label class="full-perm-label"><input type="checkbox" id="perm_editperm_finops-iq_full" onchange="toggleAccFull('editperm', 'finops-iq', this.checked)"> Full</label>
+            </div>
+            <div class="granular-acc-options">
+              <label><input type="checkbox" id="perm_editperm_finops-iq_take" onchange="syncAccFull('editperm', 'finops-iq')"> Take Assessment</label>
+              <label><input type="checkbox" id="perm_editperm_finops-iq_edit" onchange="syncAccFull('editperm', 'finops-iq')"> Edit Engine</label>
+              <label><input type="checkbox" id="perm_editperm_finops-iq_archive" onchange="syncAccFull('editperm', 'finops-iq')"> View Archive</label>
+            </div>
+          </div>
+
+          <!-- Sovereign IQ -->
+          <div class="granular-acc-card">
+            <div class="granular-acc-head">
+              <span class="granular-acc-name">🛡️ Sovereign IQ</span>
+              <label class="full-perm-label"><input type="checkbox" id="perm_editperm_sovereign-iq_full" onchange="toggleAccFull('editperm', 'sovereign-iq', this.checked)"> Full</label>
+            </div>
+            <div class="granular-acc-options">
+              <label><input type="checkbox" id="perm_editperm_sovereign-iq_take" onchange="syncAccFull('editperm', 'sovereign-iq')"> Take Assessment</label>
+              <label><input type="checkbox" id="perm_editperm_sovereign-iq_edit" onchange="syncAccFull('editperm', 'sovereign-iq')"> Edit Engine</label>
+              <label><input type="checkbox" id="perm_editperm_sovereign-iq_archive" onchange="syncAccFull('editperm', 'sovereign-iq')"> View Archive</label>
+            </div>
+          </div>
+
+          <!-- Posture IQ -->
+          <div class="granular-acc-card">
+            <div class="granular-acc-head">
+              <span class="granular-acc-name">⚡ Posture IQ</span>
+              <label class="full-perm-label"><input type="checkbox" id="perm_editperm_posture-iq_full" onchange="toggleAccFull('editperm', 'posture-iq', this.checked)"> Full</label>
+            </div>
+            <div class="granular-acc-options">
+              <label><input type="checkbox" id="perm_editperm_posture-iq_take" onchange="syncAccFull('editperm', 'posture-iq')"> Take Assessment</label>
+              <label><input type="checkbox" id="perm_editperm_posture-iq_edit" onchange="syncAccFull('editperm', 'posture-iq')"> Edit Engine</label>
+              <label><input type="checkbox" id="perm_editperm_posture-iq_archive" onchange="syncAccFull('editperm', 'posture-iq')"> View Archive</label>
+            </div>
+          </div>
+        </div>
+
+        <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:20px;">
+          <button type="button" class="btn-auth" onclick="closeEditPermissionsModal()">Cancel</button>
+          <button type="submit" id="btnSubmitEditPerm" class="btn-auth primary" style="padding:10px 22px;">
+            Save Permissions &rarr;
+          </button>
+        </div>
+      </form>
     </div>
   </div>
 
@@ -1751,22 +1931,71 @@
       return AUTH_USER && AUTH_USER.email && AUTH_USER.email.toLowerCase() === COGNITO_CONFIG.superAdminEmail.toLowerCase();
     }
 
+    function canUserTakeAssessment(toolId) {
+      if (isSuperAdmin()) return true;
+      if (!AUTH_USER || !AUTH_USER.permissions) return false;
+      const p = AUTH_USER.permissions;
+      if (p.accelerators && p.accelerators[toolId]) {
+        return !!(p.accelerators[toolId].full || p.accelerators[toolId].take);
+      }
+      if (Array.isArray(p.take) && p.take.includes(toolId)) return true;
+      if (Array.isArray(p.view) && p.view.includes(toolId)) return true;
+      return false;
+    }
+
     function canUserEdit(toolId) {
       if (isSuperAdmin()) return true;
       if (!AUTH_USER || !AUTH_USER.permissions) return false;
-      return Array.isArray(AUTH_USER.permissions.edit) && AUTH_USER.permissions.edit.includes(toolId);
+      const p = AUTH_USER.permissions;
+      if (p.accelerators && p.accelerators[toolId]) {
+        return !!(p.accelerators[toolId].full || p.accelerators[toolId].edit);
+      }
+      if (Array.isArray(p.edit) && p.edit.includes(toolId)) return true;
+      return false;
+    }
+
+    function canUserViewArchive(toolId) {
+      if (isSuperAdmin()) return true;
+      if (!AUTH_USER || !AUTH_USER.permissions) return false;
+      const p = AUTH_USER.permissions;
+      if (toolId) {
+        if (p.accelerators && p.accelerators[toolId]) {
+          return !!(p.accelerators[toolId].full || p.accelerators[toolId].archive);
+        }
+        if (Array.isArray(p.archive) && p.archive.includes(toolId)) return true;
+        return false;
+      }
+      if (Array.isArray(p.archive) && p.archive.length > 0) return true;
+      if (p.accelerators) {
+        const hasAny = Object.values(p.accelerators).some(a => a.archive || a.full);
+        if (hasAny) return true;
+      }
+      if (Array.isArray(p.view) && p.view.includes('reports')) return true;
+      return false;
     }
 
     function canUserView(toolId) {
-      if (isSuperAdmin()) return true;
-      if (!AUTH_USER || !AUTH_USER.permissions) return true;
-      return Array.isArray(AUTH_USER.permissions.view) && AUTH_USER.permissions.view.includes(toolId);
+      return canUserTakeAssessment(toolId);
+    }
+
+    function handleLaunchClick(toolId, targetUrl) {
+      if (!AUTH_USER || !AUTH_USER.email) {
+        openLoginModal();
+        toast("Sign in required to take diagnostic assessment.", "🔐");
+        return;
+      }
+      if (!canUserTakeAssessment(toolId)) {
+        toast("Access restricted: You do not have permission to take this assessment. Contact Super Admin.", "🚫");
+        return;
+      }
+      window.location.href = targetUrl;
     }
 
     function renderAuthWidget() {
       const w = document.getElementById('authWidget');
       const btnAC = document.getElementById('btnNavAccessControl');
       const editBtns = document.querySelectorAll('.btn-action-edit');
+      const launchBtns = document.querySelectorAll('.btn-action-launch');
 
       if (isSuperAdmin()) {
         if (btnAC) btnAC.style.display = 'inline-flex';
@@ -1781,6 +2010,11 @@
           b.classList.add('admin-unlocked');
           b.innerHTML = '⚙️ Edit';
           b.title = 'Authorized to edit question bank';
+        });
+        launchBtns.forEach(b => {
+          b.classList.remove('btn-locked');
+          b.innerHTML = 'Take Assessment &rarr;';
+          b.title = 'Authorized: Super Admin Access';
         });
       } else if (AUTH_USER && AUTH_USER.email) {
         if (btnAC) btnAC.style.display = 'none';
@@ -1804,6 +2038,18 @@
             b.title = 'Edit permissions required for this question bank';
           }
         });
+        launchBtns.forEach(b => {
+          const toolId = b.getAttribute('data-tool');
+          if (canUserTakeAssessment(toolId)) {
+            b.classList.remove('btn-locked');
+            b.innerHTML = 'Take Assessment &rarr;';
+            b.title = 'Authorized to take this assessment';
+          } else {
+            b.classList.add('btn-locked');
+            b.innerHTML = '🔒 Restricted';
+            b.title = 'Permission required to take this assessment';
+          }
+        });
       } else {
         if (btnAC) btnAC.style.display = 'none';
         w.innerHTML = `
@@ -1813,6 +2059,11 @@
           b.classList.remove('admin-unlocked');
           b.innerHTML = '🔒 Edit';
           b.title = 'Sign in as administrator or authorized practice editor to edit';
+        });
+        launchBtns.forEach(b => {
+          b.classList.remove('btn-locked');
+          b.innerHTML = '🔒 Take Assessment';
+          b.title = 'Sign in to access this diagnostic assessment';
         });
       }
     }
@@ -1988,6 +2239,13 @@
           closeLoginModal();
           renderAuthWidget();
           toast("Welcome " + AUTH_USER.email + (isSuper ? " (Super Admin Granted)" : " (Logged In)"), "👑");
+
+          const urlParams = new URLSearchParams(window.location.search);
+          const redirectTarget = urlParams.get('redirect');
+          if (redirectTarget) {
+            window.location.href = redirectTarget;
+            return;
+          }
         } else {
           errDiv.textContent = data.message || "Invalid credentials. Check email and password.";
           errDiv.style.display = 'block';
@@ -2026,9 +2284,13 @@
     let CACHED_REPORTS = [];
 
     function openReportsModal() {
-      if (!isSuperAdmin()) {
+      if (!AUTH_USER || !AUTH_USER.email) {
         openLoginModal();
-        toast("Super Admin authentication required to access customer reports.", "🔒");
+        toast("Sign in required to access customer reports archive.", "🔒");
+        return;
+      }
+      if (!isSuperAdmin() && !canUserViewArchive()) {
+        toast("Access restricted: You do not have permission to view reports archive. Contact Super Admin.", "🚫");
         return;
       }
       document.getElementById('reportsModal').style.display = 'flex';
@@ -2266,58 +2528,110 @@
       if (field) field.value = pass;
     }
 
-    function applyRolePreset(role) {
-      const chkViewFinVal = document.getElementById('perm_view_finops-value-case');
-      const chkEditFinVal = document.getElementById('perm_edit_finops-value-case');
-      const chkViewFinIQ = document.getElementById('perm_view_finops-iq');
-      const chkEditFinIQ = document.getElementById('perm_edit_finops-iq');
-      const chkViewSovIQ = document.getElementById('perm_view_sovereign-iq');
-      const chkEditSovIQ = document.getElementById('perm_edit_sovereign-iq');
-      const chkViewPosIQ = document.getElementById('perm_view_posture-iq');
-      const chkEditPosIQ = document.getElementById('perm_edit_posture-iq');
-      const chkViewReports = document.getElementById('perm_view_reports');
+    const ACCELERATOR_TOOLS = [
+      { id: 'finops-value-case', name: 'FinOps Value Case', icon: '💰' },
+      { id: 'finops-iq', name: 'FinOps IQ', icon: '📊' },
+      { id: 'sovereign-iq', name: 'Sovereign IQ', icon: '🛡️' },
+      { id: 'posture-iq', name: 'Posture IQ', icon: '⚡' }
+    ];
 
-      if (role === 'practice_finops') {
-        if (chkViewFinVal) chkViewFinVal.checked = true;
-        if (chkEditFinVal) chkEditFinVal.checked = true;
-        if (chkViewFinIQ) chkViewFinIQ.checked = true;
-        if (chkEditFinIQ) chkEditFinIQ.checked = true;
-        if (chkViewSovIQ) chkViewSovIQ.checked = false;
-        if (chkEditSovIQ) chkEditSovIQ.checked = false;
-        if (chkViewPosIQ) chkViewPosIQ.checked = false;
-        if (chkEditPosIQ) chkEditPosIQ.checked = false;
-        if (chkViewReports) chkViewReports.checked = true;
-      } else if (role === 'practice_sovereignty') {
-        if (chkViewFinVal) chkViewFinVal.checked = false;
-        if (chkEditFinVal) chkEditFinVal.checked = false;
-        if (chkViewFinIQ) chkViewFinIQ.checked = false;
-        if (chkEditFinIQ) chkEditFinIQ.checked = false;
-        if (chkViewSovIQ) chkViewSovIQ.checked = true;
-        if (chkEditSovIQ) chkEditSovIQ.checked = true;
-        if (chkViewPosIQ) chkViewPosIQ.checked = true;
-        if (chkEditPosIQ) chkEditPosIQ.checked = true;
-        if (chkViewReports) chkViewReports.checked = true;
-      } else if (role === 'practice_director') {
-        if (chkViewFinVal) chkViewFinVal.checked = true;
-        if (chkEditFinVal) chkEditFinVal.checked = true;
-        if (chkViewFinIQ) chkViewFinIQ.checked = true;
-        if (chkEditFinIQ) chkEditFinIQ.checked = true;
-        if (chkViewSovIQ) chkViewSovIQ.checked = true;
-        if (chkEditSovIQ) chkEditSovIQ.checked = true;
-        if (chkViewPosIQ) chkViewPosIQ.checked = true;
-        if (chkEditPosIQ) chkEditPosIQ.checked = true;
-        if (chkViewReports) chkViewReports.checked = true;
-      } else if (role === 'advisor_viewer') {
-        if (chkViewFinVal) chkViewFinVal.checked = true;
-        if (chkEditFinVal) chkEditFinVal.checked = false;
-        if (chkViewFinIQ) chkViewFinIQ.checked = true;
-        if (chkEditFinIQ) chkEditFinIQ.checked = false;
-        if (chkViewSovIQ) chkViewSovIQ.checked = true;
-        if (chkEditSovIQ) chkEditSovIQ.checked = false;
-        if (chkViewPosIQ) chkViewPosIQ.checked = true;
-        if (chkEditPosIQ) chkEditPosIQ.checked = false;
-        if (chkViewReports) chkViewReports.checked = false;
+    function toggleAccFull(prefix, toolId, checked) {
+      const take = document.getElementById(`perm_${prefix}_${toolId}_take`);
+      const edit = document.getElementById(`perm_${prefix}_${toolId}_edit`);
+      const arch = document.getElementById(`perm_${prefix}_${toolId}_archive`);
+      if (take) take.checked = checked;
+      if (edit) edit.checked = checked;
+      if (arch) arch.checked = checked;
+    }
+
+    function syncAccFull(prefix, toolId) {
+      const full = document.getElementById(`perm_${prefix}_${toolId}_full`);
+      const take = document.getElementById(`perm_${prefix}_${toolId}_take`)?.checked;
+      const edit = document.getElementById(`perm_${prefix}_${toolId}_edit`)?.checked;
+      const arch = document.getElementById(`perm_${prefix}_${toolId}_archive`)?.checked;
+      if (full) {
+        full.checked = Boolean(take && edit && arch);
       }
+    }
+
+    function setGranularAll(prefix, enable) {
+      ACCELERATOR_TOOLS.forEach(t => {
+        const full = document.getElementById(`perm_${prefix}_${t.id}_full`);
+        const take = document.getElementById(`perm_${prefix}_${t.id}_take`);
+        const edit = document.getElementById(`perm_${prefix}_${t.id}_edit`);
+        const arch = document.getElementById(`perm_${prefix}_${t.id}_archive`);
+        if (full) full.checked = enable;
+        if (take) take.checked = enable;
+        if (edit) edit.checked = enable;
+        if (arch) arch.checked = enable;
+      });
+    }
+
+    function collectGranularPermissions(prefix) {
+      const acceleratorsMap = {};
+      const takeList = [];
+      const editList = [];
+      const archiveList = [];
+
+      ACCELERATOR_TOOLS.forEach(t => {
+        const isTake = document.getElementById(`perm_${prefix}_${t.id}_take`)?.checked || false;
+        const isEdit = document.getElementById(`perm_${prefix}_${t.id}_edit`)?.checked || false;
+        const isArchive = document.getElementById(`perm_${prefix}_${t.id}_archive`)?.checked || false;
+        const isFull = isTake && isEdit && isArchive;
+
+        acceleratorsMap[t.id] = {
+          full: isFull,
+          take: isTake,
+          edit: isEdit,
+          archive: isArchive
+        };
+
+        if (isTake) takeList.push(t.id);
+        if (isEdit) editList.push(t.id);
+        if (isArchive) archiveList.push(t.id);
+      });
+
+      const viewList = [...takeList];
+      if (archiveList.length > 0) viewList.push('reports');
+      if (editList.length > 0) editList.push('reports');
+
+      return {
+        accelerators: acceleratorsMap,
+        take: takeList,
+        edit: editList,
+        archive: archiveList,
+        view: viewList
+      };
+    }
+
+    function populateGranularForm(prefix, perms) {
+      const p = perms || {};
+      ACCELERATOR_TOOLS.forEach(t => {
+        const acc = p.accelerators?.[t.id];
+        let isTake = false, isEdit = false, isArchive = false, isFull = false;
+
+        if (acc) {
+          isTake = Boolean(acc.take || acc.full);
+          isEdit = Boolean(acc.edit || acc.full);
+          isArchive = Boolean(acc.archive || acc.full);
+          isFull = Boolean(acc.full || (isTake && isEdit && isArchive));
+        } else {
+          isTake = Boolean(p.take?.includes(t.id) || p.view?.includes(t.id));
+          isEdit = Boolean(p.edit?.includes(t.id));
+          isArchive = Boolean(p.archive?.includes(t.id) || p.view?.includes('reports'));
+          isFull = isTake && isEdit && isArchive;
+        }
+
+        const fullEl = document.getElementById(`perm_${prefix}_${t.id}_full`);
+        const takeEl = document.getElementById(`perm_${prefix}_${t.id}_take`);
+        const editEl = document.getElementById(`perm_${prefix}_${t.id}_edit`);
+        const archEl = document.getElementById(`perm_${prefix}_${t.id}_archive`);
+
+        if (fullEl) fullEl.checked = isFull;
+        if (takeEl) takeEl.checked = isTake;
+        if (editEl) editEl.checked = isEdit;
+        if (archEl) archEl.checked = isArchive;
+      });
     }
 
     async function fetchAndRenderUsers() {
@@ -2362,14 +2676,35 @@
 
       const rows = CACHED_APP_USERS.map(u => {
         const isSuper = u.email.toLowerCase() === COGNITO_CONFIG.superAdminEmail.toLowerCase();
-        let roleBadge = `<span class="role-badge viewer">Viewer</span>`;
+        let roleBadge = `<span class="role-badge viewer">Member</span>`;
         if (isSuper) roleBadge = `<span class="role-badge super">Super Admin</span>`;
-        else if (u.role === 'practice_finops') roleBadge = `<span class="role-badge finops">FinOps Lead</span>`;
-        else if (u.role === 'practice_sovereignty') roleBadge = `<span class="role-badge sovereignty">Sovereignty Lead</span>`;
-        else if (u.role === 'practice_director') roleBadge = `<span class="role-badge super">Director</span>`;
 
-        const viewPills = (u.permissions?.view || []).map(v => `<span class="chip" style="font-size:10px;padding:2px 6px;">${v}</span>`).join(' ') || '<span style="color:var(--text-dim);">None</span>';
-        const editPills = (u.permissions?.edit || []).map(e => `<span class="chip" style="font-size:10px;padding:2px 6px;color:#34D399;border-color:rgba(16,185,129,0.3);">${e}</span>`).join(' ') || '<span style="color:var(--text-dim);">Read Only</span>';
+        const p = u.permissions || {};
+        const accBadges = ACCELERATOR_TOOLS.map(t => {
+          const acc = p.accelerators?.[t.id];
+          const isTake = isSuper || Boolean(acc?.take || acc?.full || p.take?.includes(t.id) || p.view?.includes(t.id));
+          const isEdit = isSuper || Boolean(acc?.edit || acc?.full || p.edit?.includes(t.id));
+          const isArchive = isSuper || Boolean(acc?.archive || acc?.full || p.archive?.includes(t.id) || p.view?.includes('reports'));
+          const isFull = isSuper || Boolean(acc?.full || (isTake && isEdit && isArchive));
+
+          let pillHtml = '';
+          if (isFull) {
+            pillHtml = `<span class="perm-subpill full">Full</span>`;
+          } else {
+            const pills = [];
+            if (isTake) pills.push(`<span class="perm-subpill take">Take</span>`);
+            if (isEdit) pills.push(`<span class="perm-subpill edit">Edit</span>`);
+            if (isArchive) pills.push(`<span class="perm-subpill archive">Archive</span>`);
+            pillHtml = pills.length ? pills.join(' ') : `<span style="color:var(--text-dim);font-size:10px;">None</span>`;
+          }
+
+          return `
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;padding:3px 0;border-bottom:1px solid rgba(255,255,255,0.04);">
+              <span style="font-size:11px;color:#CBD5E1;">${t.icon} ${t.name}</span>
+              <div style="display:flex;gap:3px;">${pillHtml}</div>
+            </div>
+          `;
+        }).join('');
 
         return `
           <tr>
@@ -2378,15 +2713,19 @@
               <div style="font-family:var(--font-mono);font-size:11px;color:var(--text-muted);">${u.email}</div>
             </td>
             <td>${roleBadge}</td>
-            <td>
-              <div style="display:flex;flex-wrap:wrap;gap:4px;max-width:240px;">${viewPills}</div>
-            </td>
-            <td>
-              <div style="display:flex;flex-wrap:wrap;gap:4px;max-width:200px;">${editPills}</div>
+            <td style="min-width:280px;">
+              <div style="background:rgba(255,255,255,0.02);padding:6px 10px;border-radius:6px;border:1px solid rgba(255,255,255,0.06);">
+                ${accBadges}
+              </div>
             </td>
             <td style="text-align:right;white-space:nowrap;">
-              <button class="btn-auth" onclick="openQuickResetModal('${u.email}')" style="font-size:11px;padding:5px 9px;margin-right:6px;">
-                🔑 Reset / Link
+              ${!isSuper ? `
+                <button class="btn-auth" onclick="openEditPermissionsModal('${u.email}')" style="font-size:11px;padding:5px 9px;margin-right:4px;" title="Edit Granular Permissions">
+                  ✏️ Permissions
+                </button>
+              ` : ''}
+              <button class="btn-auth" onclick="openQuickResetModal('${u.email}')" style="font-size:11px;padding:5px 9px;" title="Reset Password / Direct Link">
+                🔑 Password / Link
               </button>
             </td>
           </tr>
@@ -2399,8 +2738,7 @@
             <tr>
               <th>User / Email</th>
               <th>Role</th>
-              <th>View Permissions</th>
-              <th>Edit Rights (Question Bank)</th>
+              <th>Accelerator Permissions (Take · Edit · Archive)</th>
               <th style="text-align:right;">Actions</th>
             </tr>
           </thead>
@@ -2411,24 +2749,73 @@
       `;
     }
 
+    function openEditPermissionsModal(email) {
+      const user = CACHED_APP_USERS.find(u => u.email.toLowerCase() === email.toLowerCase());
+      if (!user) return;
+      document.getElementById('editPermEmail').value = user.email;
+      document.getElementById('editPermUserDesc').innerHTML = `Configure granular permissions for <b>${user.name || user.email}</b> (${user.email}).`;
+      document.getElementById('editPermError').style.display = 'none';
+      document.getElementById('editPermSuccess').style.display = 'none';
+
+      populateGranularForm('editperm', user.permissions);
+      document.getElementById('editPermissionsModal').style.display = 'flex';
+    }
+
+    function closeEditPermissionsModal() {
+      document.getElementById('editPermissionsModal').style.display = 'none';
+    }
+
+    async function handleEditPermissionsSubmit(e) {
+      e.preventDefault();
+      const email = document.getElementById('editPermEmail').value.trim();
+      const perms = collectGranularPermissions('editperm');
+      const errDiv = document.getElementById('editPermError');
+      const succDiv = document.getElementById('editPermSuccess');
+      const btn = document.getElementById('btnSubmitEditPerm');
+
+      errDiv.style.display = 'none';
+      succDiv.style.display = 'none';
+      btn.disabled = true;
+      btn.textContent = 'Saving Changes...';
+
+      try {
+        const res = await fetch("https://zvnmwxa9sf.execute-api.ap-south-1.amazonaws.com/api/users/permissions", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            email,
+            permissions: perms,
+            requesterEmail: AUTH_USER ? AUTH_USER.email : ''
+          })
+        });
+        const data = await res.json();
+        if (data.ok) {
+          succDiv.textContent = `Permissions updated successfully for ${email}!`;
+          succDiv.style.display = 'block';
+          toast(`Permissions updated for ${email}`, "✅");
+          await fetchAndRenderUsers();
+          setTimeout(closeEditPermissionsModal, 1200);
+        } else {
+          errDiv.textContent = data.error || 'Failed to update permissions.';
+          errDiv.style.display = 'block';
+        }
+      } catch (err) {
+        errDiv.textContent = 'Network or API error: ' + err.message;
+        errDiv.style.display = 'block';
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Save Permissions →';
+      }
+    }
+
     async function handleProvisionUser(e) {
       e.preventDefault();
       const email = document.getElementById('newUserEmail').value.trim();
       const name = document.getElementById('newUserName').value.trim();
       const password = document.getElementById('newUserPassword').value;
-      const role = document.getElementById('newUserRolePreset').value;
 
-      const viewPerms = [];
-      const editPerms = [];
-
-      ['finops-value-case', 'finops-iq', 'sovereign-iq', 'posture-iq'].forEach(t => {
-        const vChk = document.getElementById(`perm_view_${t}`);
-        const eChk = document.getElementById(`perm_edit_${t}`);
-        if (vChk && vChk.checked) viewPerms.push(t);
-        if (eChk && eChk.checked) editPerms.push(t);
-      });
-      const repChk = document.getElementById('perm_view_reports');
-      if (repChk && repChk.checked) viewPerms.push('reports');
+      const perms = collectGranularPermissions('create');
+      const role = 'custom';
 
       const errDiv = document.getElementById('provisionError');
       const succDiv = document.getElementById('provisionSuccess');
@@ -2448,7 +2835,7 @@
             password,
             name,
             role,
-            permissions: { view: viewPerms, edit: editPerms },
+            permissions: perms,
             requesterEmail: AUTH_USER ? AUTH_USER.email : ''
           })
         });
@@ -2465,9 +2852,10 @@
             </div>
           `;
           succDiv.style.display = 'block';
-          toast("User created with assigned permissions", "✅");
+          toast("User created with granular permissions", "✅");
           fetchAndRenderUsers();
           document.getElementById('provisionUserForm').reset();
+          setGranularAll('create', false);
         } else {
           errDiv.textContent = data.error || 'Failed to provision user.';
           errDiv.style.display = 'block';
@@ -2647,7 +3035,7 @@
       initAuth();
       initHeroAnimation();
 
-      // Check query params for direct onboarding link
+      // Check query params for direct onboarding link or required login
       const params = new URLSearchParams(window.location.search);
       const prefillEmail = params.get('portal_user');
       if (prefillEmail) {
@@ -2655,6 +3043,9 @@
         const emailField = document.getElementById('loginEmail');
         if (emailField) emailField.value = prefillEmail;
         toast(`Welcome back! Sign in with your assigned password.`, "👋");
+      } else if (params.get('require_login')) {
+        openLoginModal();
+        toast("Sign in required to access diagnostic assessments.", "🔐");
       }
     });
   </script>

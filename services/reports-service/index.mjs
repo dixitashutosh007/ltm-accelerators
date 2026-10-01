@@ -110,11 +110,22 @@ export const handler = async (event) => {
           permissions: isSuper 
             ? {
                 view: ['finops-value-case', 'finops-iq', 'sovereign-iq', 'posture-iq', 'reports'],
-                edit: ['finops-value-case', 'finops-iq', 'sovereign-iq', 'posture-iq']
+                edit: ['finops-value-case', 'finops-iq', 'sovereign-iq', 'posture-iq', 'reports'],
+                take: ['finops-value-case', 'finops-iq', 'sovereign-iq', 'posture-iq'],
+                archive: ['finops-value-case', 'finops-iq', 'sovereign-iq', 'posture-iq', 'reports'],
+                accelerators: {
+                  'finops-value-case': { full: true, take: true, edit: true, archive: true },
+                  'finops-iq': { full: true, take: true, edit: true, archive: true },
+                  'sovereign-iq': { full: true, take: true, edit: true, archive: true },
+                  'posture-iq': { full: true, take: true, edit: true, archive: true }
+                }
               }
             : (custom.permissions || {
-                view: ['finops-value-case', 'finops-iq', 'sovereign-iq', 'posture-iq'],
-                edit: []
+                view: [],
+                edit: [],
+                take: [],
+                archive: [],
+                accelerators: {}
               })
         };
       });

@@ -5,6 +5,7 @@
 <title>FinOps Value Case — Do you need FinOps? · LTM</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <script src="/assets/s3-reports.js"></script>
+<script src="/assets/rbac-guard.js" data-tool="finops-value-case"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <style>/* cyrillic-ext */
 @font-face {
@@ -809,7 +810,7 @@ table.qtable th{font-family:'Manrope',sans-serif;font-size:10.5px;letter-spacing
       </div>
     </div>
 
-    <div class="fvs-brand-badge">&bull; LTM INFRA TECH ADVISORY &bull;</div>
+    <div class="fvs-brand-badge">&bull; LTM INFRASTRUCTURE TECH ADVISORY &bull;</div>
     <h1 class="fvs-title">FinOps Value Case</h1>
     <p class="fvs-sub">Pre-Maturity Qualification &amp; Cloud Financial Exposure Diagnostic</p>
 
@@ -2455,7 +2456,6 @@ document.addEventListener("click",e=>{
     }
 
     window.print();
-    }
   }
   else if(a==="toggleConsultant"){S.consultantUnlocked=!S.consultantUnlocked;render();window.scrollTo(0,0);}
   else if(a==="bookSession"){
@@ -2626,9 +2626,11 @@ document.addEventListener('keydown', function(e) {
   if (e.key === 'Escape') dismissValueSplash();
 });
 
-window.addEventListener('DOMContentLoaded', () => {
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initValueSplash);
+} else {
   initValueSplash();
-});
+}
 </script>
 
 
