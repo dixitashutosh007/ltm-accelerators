@@ -13,6 +13,8 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+  <!-- S3 Customer Reports Client -->
+  <script src="/assets/s3-reports.js"></script>
   <style>
 
 @import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap");
@@ -4970,6 +4972,11 @@ function coverBlock(score,label,counts,findings,pillarData,penalties,probes,isUn
 
   return `<div class="print-cover">
     <div class="cover-bg-glow no-print"></div>
+    <div style="display:flex;align-items:center;gap:14px;margin-bottom:14px;">
+      <a href="/portal" style="display:flex;align-items:center;text-decoration:none;" title="Back to Advisory Accelerators Portal">
+        <img src="/assets/ltm-logo.jpg" alt="LTM - A Larsen & Toubro Group Company" style="height:36px;width:auto;border-radius:6px;object-fit:contain;box-shadow:0 2px 10px rgba(0,0,0,0.2);">
+      </a>
+    </div>
     <div class="eyebrow">Infrastructure Tech Advisory · Digital Sovereignty · ${modeTag}</div>
     <h1 style="font-size:34px;margin:6px 0 10px">Posture IQ</h1>
     <div class="mono" style="font-size:11px;color:var(--ink3);letter-spacing:.08em;margin:-2px 0 8px">FRAMEWORK v${BANK.meta.version} · REVIEWED ${BANK.meta.updated} · ${STATE.mode.toUpperCase()} MODE</div>
@@ -5006,6 +5013,7 @@ function coverBlock(score,label,counts,findings,pillarData,penalties,probes,isUn
     <div class="no-print" style="display:flex;gap:10px;margin-top:20px;flex-wrap:wrap;align-items:center">
       ${isUnlocked ? `
         <button class="btn btn-primary" onclick="downloadPostureExecutivePDF()">📄 Download Executive Vector PDF</button>
+        <button class="btn btn-secondary" onclick="downloadPostureExecutivePDF(true)" style="border:1px solid #10B981;color:#10B981;background:#F0FDF4;font-weight:700">☁️ Archive to AWS S3</button>
         <button class="btn btn-secondary" onclick="openSlideDeck()" style="border:1px solid #FF5E4F;color:#CC2B1C;background:#FFF4F2;font-weight:700">📊 Boardroom Slides</button>
         <button class="btn btn-secondary" onclick="openSOWModal()" style="border:1px solid #226882;color:#226882;background:#F0F7FA;font-weight:700">📋 Statement of Work (SOW)</button>
       ` : `
@@ -5914,7 +5922,7 @@ function generateSOWMarkdown(clientDisplay, score, label, penalties, pillarData,
 }
 
 /* ---------- High-Fidelity Vector jsPDF Export ---------- */
-function downloadPostureExecutivePDF(){
+function downloadPostureExecutivePDF(isArchiveOnly){
   if(typeof window.jspdf === "undefined" || !window.jspdf.jsPDF){
     alert("jsPDF library is still loading. Please try again in a moment.");
     return;
@@ -6315,8 +6323,35 @@ function downloadPostureExecutivePDF(){
 
   addFooter(4, totalPages);
 
-  doc.save("Posture_IQ_Executive_Report_" + cleanClient + ".pdf");
-  toast("Executive PDF report generated and downloaded!");
+  if(!isArchiveOnly){
+    doc.save("Posture_IQ_Executive_Report_" + cleanClient + ".pdf");
+    toast("Executive PDF report downloaded!");
+  } else {
+    toast("Archiving PDF deliverable to AWS S3...");
+  }
+
+  // Automatic Archive to AWS S3
+  try {
+    if(window.LTM_S3){
+      var pdfBase64 = doc.output('datauristring');
+      window.LTM_S3.saveReportToS3({
+        acceleratorId: 'posture-iq',
+        clientName: cleanClient,
+        pdfBase64: pdfBase64,
+        metadata: {
+          overallScore: score,
+          label: label,
+          exposure: penalties.totalValueAtStake
+        }
+      }).then(function(res){
+        window.LTM_S3.showS3SuccessBanner(res);
+      }).catch(function(err){
+        console.warn('S3 archive notice:', err);
+      });
+    }
+  } catch(e){
+    console.warn('S3 archive hook error:', e);
+  }
 }
 
 

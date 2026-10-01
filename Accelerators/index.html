@@ -7,6 +7,8 @@
   
   <!-- CDNs for Visual Charting -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <!-- S3 Customer Reports Client -->
+  <script src="/assets/s3-reports.js"></script>
 
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -697,6 +699,49 @@
       position: relative;
     }
 
+    .modal-box.modal-lg {
+      max-width: 860px;
+      max-height: 85vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .modal-scrollable {
+      overflow-y: auto;
+      max-height: calc(85vh - 170px);
+      padding-right: 6px;
+      margin-top: 14px;
+    }
+
+    .reports-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12.5px;
+    }
+
+    .reports-table th {
+      text-align: left;
+      padding: 10px 14px;
+      background: #182330;
+      color: #9CA3AF;
+      font-weight: 700;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      border-bottom: 1px solid #2B3A4D;
+    }
+
+    .reports-table td {
+      padding: 12px 14px;
+      border-bottom: 1px solid #1F2C3D;
+      color: #E5E7EB;
+    }
+
+    .reports-table tr:hover td {
+      background: rgba(255, 255, 255, 0.02);
+    }
+
     .modal-head {
       margin-bottom: 20px;
     }
@@ -821,6 +866,9 @@
     <button class="splash-skip-btn" onclick="dismissSplash()">Skip Intro &rarr;</button>
 
     <div class="splash-content">
+      <div style="margin-bottom: 20px;">
+        <img src="/assets/ltm-logo.jpg" alt="LTM - A Larsen & Toubro Group Company" style="height: 48px; width: auto; max-width: 260px; object-fit: contain; border-radius: 6px; box-shadow: 0 4px 20px rgba(0,0,0,0.6);">
+      </div>
       <div class="splash-brand-badge">LTM INFRA TECH ADVISORY</div>
       
       <div class="splash-radar-wrap">
@@ -847,10 +895,10 @@
        HEADER
        ============================================================ -->
   <header>
-    <a href="/portal" class="brand">
-      <span class="brand-badge">LTM</span>
+    <a href="/portal" class="brand" style="display:flex;align-items:center;gap:14px;text-decoration:none;">
+      <img src="/assets/ltm-logo.jpg" alt="LTM - A Larsen & Toubro Group Company" style="height: 38px; width: auto; object-fit: contain; border-radius: 6px; box-shadow: 0 2px 10px rgba(0,0,0,0.5);">
       <div class="brand-text">
-        <div class="brand-name">LTM Infra Tech Advisory</div>
+        <div class="brand-name">Infra Tech Advisory</div>
         <div class="brand-sub">Practice Diagnostics &amp; Decision Accelerators</div>
       </div>
     </a>
@@ -862,10 +910,10 @@
         <span class="live-label">Live</span>
       </div>
 
-      <!-- Question Bank Studio Direct Link -->
-      <a href="/studio" class="btn-auth" id="btnNavStudio">
-        <span>⚙️ Studio</span>
-      </a>
+      <!-- S3 Archived Reports Modal Trigger -->
+      <button class="btn-auth" onclick="openReportsModal()" id="btnNavReports" title="Customer PDF Reports archived in AWS S3">
+        <span>📁 S3 Reports Archive</span>
+      </button>
 
       <!-- Cognito RBAC Auth Widget -->
       <div id="authWidget" class="auth-box">
@@ -1062,6 +1110,44 @@
           Verify Credentials &amp; Unlock Studio &rarr;
         </button>
       </form>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       AWS S3 CUSTOMER REPORTS ARCHIVE MODAL
+       ============================================================ -->
+  <div class="modal-overlay" id="reportsModal" onclick="if(event.target===this)closeReportsModal()">
+    <div class="modal-box modal-lg">
+      <button class="modal-close-btn" onclick="closeReportsModal()">&times;</button>
+
+      <div class="modal-head" style="margin-bottom:14px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
+          <div>
+            <div style="font-family:var(--font-mono);font-size:11px;font-weight:700;color:#10B981;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:4px">
+              ☁️ AWS S3 Cloud Storage (ap-south-1)
+            </div>
+            <h3 class="modal-title">Customer PDF Reports Archive</h3>
+            <p class="modal-desc">Centralized repository for customer assessment deliverables stored securely in S3 (<code>ltm-advisory-reports-223833501993</code>).</p>
+          </div>
+          <button class="btn-auth" onclick="fetchAndRenderReports()" style="font-size:11.5px;padding:5px 10px;">🔄 Refresh List</button>
+        </div>
+
+        <!-- Filter bar -->
+        <div style="display:flex;gap:8px;margin-top:14px;flex-wrap:wrap;" id="reportsFilterBar">
+          <button class="chip active-chip" onclick="setReportsFilter('', this)">All Diagnostics</button>
+          <button class="chip" onclick="setReportsFilter('finops-value-case', this)">FinOps Value Case</button>
+          <button class="chip" onclick="setReportsFilter('finops-iq', this)">FinOps IQ</button>
+          <button class="chip" onclick="setReportsFilter('posture-iq', this)">Posture IQ</button>
+          <button class="chip" onclick="setReportsFilter('sovereign-iq', this)">Sovereign IQ</button>
+        </div>
+      </div>
+
+      <div class="modal-scrollable" id="reportsListContainer">
+        <div style="text-align:center;padding:40px 0;color:var(--text-muted);">
+          <div class="spinner" style="width:28px;height:28px;border:3px solid rgba(255,255,255,0.1);border-top-color:#10B981;border-radius:50%;animation:spinRadar 0.8s linear infinite;margin:0 auto 12px;"></div>
+          Connecting to AWS S3 bucket in ap-south-1...
+        </div>
+      </div>
     </div>
   </div>
 
@@ -1275,14 +1361,117 @@
       }
     }
 
-    let toastTimer = null;
-    function toast(msg, icon = '🔔') {
-      const t = document.getElementById('toastPopup');
-      document.getElementById('toastIcon').textContent = icon;
-      document.getElementById('toastMsg').textContent = msg;
-      t.classList.add('show');
-      clearTimeout(toastTimer);
-      toastTimer = setTimeout(() => { t.classList.remove('show'); }, 3500);
+    /* ---------- AWS S3 Reports Archive Controller ---------- */
+    let CURRENT_REPORTS_FILTER = '';
+    let CACHED_REPORTS = [];
+
+    function openReportsModal() {
+      document.getElementById('reportsModal').style.display = 'flex';
+      fetchAndRenderReports(CURRENT_REPORTS_FILTER);
+    }
+
+    function closeReportsModal() {
+      document.getElementById('reportsModal').style.display = 'none';
+    }
+
+    function setReportsFilter(accId, btn) {
+      CURRENT_REPORTS_FILTER = accId;
+      const chips = document.querySelectorAll('#reportsFilterBar .chip');
+      chips.forEach(c => c.classList.remove('active-chip'));
+      if (btn) btn.classList.add('active-chip');
+      renderReportsList();
+    }
+
+    async function fetchAndRenderReports(filterAcc = CURRENT_REPORTS_FILTER) {
+      const container = document.getElementById('reportsListContainer');
+      container.innerHTML = `
+        <div style="text-align:center;padding:40px 0;color:var(--text-muted);">
+          <div class="spinner" style="width:28px;height:28px;border:3px solid rgba(255,255,255,0.1);border-top-color:#10B981;border-radius:50%;animation:spinRadar 0.8s linear infinite;margin:0 auto 12px;"></div>
+          Fetching archived deliverables from AWS S3...
+        </div>
+      `;
+
+      try {
+        const data = await window.LTM_S3.listReportsFromS3();
+        if (data.ok && Array.isArray(data.reports)) {
+          CACHED_REPORTS = data.reports;
+          renderReportsList();
+        } else {
+          throw new Error(data.error || 'Failed to retrieve reports list.');
+        }
+      } catch(err) {
+        container.innerHTML = `
+          <div style="padding:28px;background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.25);border-radius:12px;text-align:center;color:#FCA5A5;">
+            <b>Unable to load S3 reports archive</b>
+            <p style="font-size:12px;color:var(--text-muted);margin-top:6px;">${err.message}</p>
+            <button class="btn-auth" onclick="fetchAndRenderReports()" style="margin-top:14px;">Try Again</button>
+          </div>
+        `;
+      }
+    }
+
+    function renderReportsList() {
+      const container = document.getElementById('reportsListContainer');
+      const filtered = CURRENT_REPORTS_FILTER 
+        ? CACHED_REPORTS.filter(r => r.acceleratorId === CURRENT_REPORTS_FILTER)
+        : CACHED_REPORTS;
+
+      if (!filtered.length) {
+        container.innerHTML = `
+          <div style="text-align:center;padding:46px 20px;color:var(--text-muted);background:rgba(255,255,255,0.015);border-radius:12px;border:1px dashed #243040;">
+            <div style="font-size:32px;margin-bottom:8px;">📁</div>
+            <h4 style="color:#FFFFFF;font-size:16px;margin-bottom:4px;">No Archived Reports Found</h4>
+            <p style="font-size:12.5px;max-width:440px;margin:0 auto 16px;">
+              ${CURRENT_REPORTS_FILTER ? 'No reports for this diagnostic yet.' : 'No customer PDF reports have been archived to AWS S3 yet.'} 
+              Execute any assessment diagnostic and click <b>"Archive to AWS S3"</b> to save deliverables here.
+            </p>
+          </div>
+        `;
+        return;
+      }
+
+      const rows = filtered.map(r => {
+        const cleanName = r.filename.replace(/\.pdf$/, '').replace(/_/g, ' ');
+        const dateStr = r.lastModified ? new Date(r.lastModified).toLocaleString() : 'Recent';
+        const sizeStr = r.size ? (r.size / 1024).toFixed(1) + ' KB' : '—';
+        const accPillColor = r.acceleratorId.includes('finops') ? 'var(--teal)' : '#FB923C';
+
+        return `
+          <tr>
+            <td>
+              <div style="font-weight:700;color:#FFFFFF;margin-bottom:2px;">${cleanName}</div>
+              <div style="font-family:var(--font-mono);font-size:10.5px;color:var(--text-dim);word-break:break-all;">${r.key}</div>
+            </td>
+            <td>
+              <span class="chip" style="color:${accPillColor};border-color:currentColor;">${r.acceleratorId}</span>
+            </td>
+            <td style="color:var(--text-muted);font-size:12px;">${dateStr}</td>
+            <td style="font-family:var(--font-mono);font-size:11.5px;color:var(--text-muted);">${sizeStr}</td>
+            <td style="text-align:right;white-space:nowrap;">
+              <a href="${r.downloadUrl}" target="_blank" class="btn-auth" style="padding:5px 11px;font-size:11.5px;background:rgba(16,185,129,0.12);color:#34D399;border-color:rgba(16,185,129,0.3);text-decoration:none;">
+                📥 Open PDF
+              </a>
+            </td>
+          </tr>
+        `;
+      }).join('');
+
+      container.innerHTML = `
+        <table class="reports-table">
+          <thead>
+            <tr>
+              <th>Client Deliverable / S3 Key</th>
+              <th>Accelerator</th>
+              <th>Archived At</th>
+              <th>Size</th>
+              <th style="text-align:right;">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${rows}
+          </tbody>
+        </table>
+      `;
     }
 
     // Initialize on page load

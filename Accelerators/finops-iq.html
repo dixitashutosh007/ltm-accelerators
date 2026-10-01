@@ -15,6 +15,9 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+  <!-- S3 Customer Reports Client & Authentic Logo Data -->
+  <script src="/assets/s3-reports.js"></script>
+  <script src="/assets/ltm-logo-data.js"></script>
 
   <!-- Typography: Plus Jakarta Sans, Manrope, JetBrains Mono -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -1515,6 +1518,9 @@
       </div>
 
       <div class="splash-brand-title">
+        <div style="margin-bottom:12px;">
+          <img src="/assets/ltm-logo.jpg" alt="LTM - A Larsen & Toubro Group Company" style="height:44px;width:auto;border-radius:6px;box-shadow:0 4px 16px rgba(0,0,0,0.5);">
+        </div>
         <div class="splash-org-tag">
           <span class="splash-ltm">LTM</span>
           <span class="splash-div">INFRASTRUCTURE TECH ADVISORY</span>
@@ -1541,8 +1547,10 @@
   <header class="advisory-subbar" role="banner">
     <div class="subbar-inner">
       <div class="subbar-left">
+        <a href="/portal" style="display:flex;align-items:center;text-decoration:none;" title="Back to Advisory Accelerators Portal">
+          <img src="/assets/ltm-logo.jpg" alt="LTM" style="height:32px;width:auto;margin-right:12px;border-radius:4px;vertical-align:middle;">
+        </a>
         <div class="app-brand" onclick="playSplashScreen(true)" style="cursor:pointer" title="FinOps IQ v2.2 · Click to replay intro animation">
-          <span class="app-brand-ltm">LTM <span>CIS</span></span>
           <h1>FinOps IQ</h1>
           <span class="badge-tag">Advisory v2.2</span>
         </div>
@@ -4816,7 +4824,30 @@
         });
 
         doc.save('FinOps-IQ-Executive-Readout-' + (o.name || 'Client').replace(/\s+/g, '-') + '.pdf');
-        toast('PDF generated successfully!');
+        toast('PDF generated and downloaded!');
+
+        // Automatic archive to AWS S3 bucket
+        try {
+          if (window.LTM_S3) {
+            const pdfBase64 = doc.output('datauristring');
+            window.LTM_S3.saveReportToS3({
+              acceleratorId: 'finops-iq',
+              clientName: o.name || 'Enterprise Client',
+              pdfBase64: pdfBase64,
+              metadata: {
+                stage: curStage ? curStage.name : 'Baseline',
+                overallScore: sc,
+                annualSpend: o.annualSpend
+              }
+            }).then(function(res) {
+              window.LTM_S3.showS3SuccessBanner(res);
+            }).catch(function(err) {
+              console.warn('S3 background archive notice:', err);
+            });
+          }
+        } catch(s3Err) {
+          console.warn('S3 archive warning:', s3Err);
+        }
       } catch(e) {
         console.error('PDF error:', e);
         window.print();

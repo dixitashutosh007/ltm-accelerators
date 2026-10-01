@@ -3,6 +3,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>FinOps Value Case — Do you need FinOps? · LTM</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<script src="/assets/s3-reports.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <style>/* cyrillic-ext */
 @font-face {
@@ -635,11 +637,7 @@ table.qtable th{font-family:'Manrope',sans-serif;font-size:10.5px;letter-spacing
 <input type="file" id="fileImport" accept=".json,application/json" style="display:none">
 
 <script>
-const DEFAULT_LTM_LOGO = '<svg width="105" height="28" viewBox="0 0 110 30" fill="none" xmlns="http://www.w3.org/2000/svg">'
-  + '<path d="M95.2507 0.740829L87.8453 19.5397L80.4399 0.740829C80.2642 0.295746 79.8309 0 79.3507 0H65.884V29.2818H73.2044V8.51514C73.2044 7.22088 74.9906 6.88414 75.465 8.0847L83.5233 28.538C83.699 28.986 84.1324 29.2788 84.6126 29.2788H91.078C91.5582 29.2788 91.9916 28.9831 92.1673 28.538L100.226 8.0847C100.7 6.88122 102.486 7.22088 102.486 8.51514V29.2818H109.807V0H96.34C95.8597 0 95.4264 0.295746 95.2507 0.740829Z" fill="#FF5E4F"/>'
-  + '<path d="M7.32045 20.7901V0H0V21.9613C0 26.0051 3.27663 29.2818 7.32045 29.2818H29.2818V21.9613H8.49172C7.84459 21.9613 7.32045 21.4372 7.32045 20.7901Z" fill="#FF5E4F"/>'
-  + '<path d="M60.0277 0H23.4254V7.32044H36.3094C37.2786 7.32044 38.0663 8.10812 38.0663 9.07735V29.2818H45.3868V9.07735C45.3868 8.10812 46.1744 7.32044 47.1437 7.32044H60.0277V0Z" fill="#FF5E4F"/>'
-  + '</svg>';
+const DEFAULT_LTM_LOGO = '<img src="/assets/ltm-logo.jpg" alt="LTM - A Larsen & Toubro Group Company" style="height:28px;width:auto;object-fit:contain;border-radius:4px;vertical-align:middle;">';
 
 /* ============================================================
    FinOps Value Case — pre-maturity qualification
@@ -2073,7 +2071,8 @@ function viewReport(){
    +'<div class="reportbar no-print"><button class="btn ghost" data-a="goto" data-s="assess">← Edit answers</button>'
    +'<button class="btn ghost" data-a="exportRes">Export results ↓</button>'
    +(isUnlocked ? '<button class="btn ghost" data-a="toggleConsultant">Lock Teaser Mode 🔒</button>' : '<button class="btn ghost" data-a="toggleConsultant">Consultant Unlock 🔓</button>')
-   +'<button class="btn primary" data-a="print">Download PDF ↓</button></div>'
+   +'<button class="btn primary" data-a="print">Download PDF ↓</button>'
+   +'<button class="btn ghost" data-a="saveS3Report" style="background:rgba(16,185,129,0.12);border-color:#10B981;color:#10B981;font-weight:700;">☁️ Archive to AWS S3</button></div>'
    +'<div class="paper"><div class="cover"><div class="covertop"><div class="coverlogo">'+ltm+'</div>'
    +'<div style="text-align:right" class="mono" style="font-size:10px"><div class="mlab">Prepared</div><div class="mline">'+esc(r.date)+'</div></div></div>'
    +'<div class="reptitle">FinOps Value Case</div><div class="repsub">Pre-maturity qualification · Executive Advisory</div>'
@@ -2189,7 +2188,57 @@ document.addEventListener("click",e=>{
       window.scrollTo(0,0);
     });
   }
-  else if(a==="print"){window.print();}
+  else if(a==="print" || a==="saveS3Report"){
+    const btn = el;
+    const isSaveOnly = a==="saveS3Report";
+    const origHtml = btn.innerHTML;
+    if(isSaveOnly){
+      btn.disabled = true;
+      btn.innerHTML = '☁️ Archiving to S3...';
+    }
+
+    const paper = document.querySelector('.paper');
+    if (window.html2pdf && paper && window.LTM_S3) {
+      const opt = {
+        margin: 10,
+        filename: (S.org.name || 'Client').replace(/\s+/g, '_') + '_FinOps_Value_Case.pdf',
+        image: { type: 'jpeg', quality: 0.95 },
+        html2canvas: { scale: 1.5, useCORS: true },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+      };
+
+      html2pdf().set(opt).from(paper).outputPdf('datauristring').then(function(pdfBase64){
+        if(!isSaveOnly){
+          window.print();
+        }
+        return window.LTM_S3.saveReportToS3({
+          acceleratorId: 'finops-value-case',
+          clientName: S.org.name || 'Enterprise Client',
+          pdfBase64: pdfBase64,
+          metadata: {
+            needIndex: needIndex(),
+            verdict: verdict() ? verdict().label : 'N/A',
+            annualSpend: annualSpend()
+          }
+        });
+      }).then(function(res){
+        if(isSaveOnly){
+          btn.disabled = false;
+          btn.innerHTML = '✅ Saved to S3!';
+          setTimeout(function(){ btn.innerHTML = origHtml; }, 3500);
+        }
+        window.LTM_S3.showS3SuccessBanner(res);
+      }).catch(function(err){
+        if(isSaveOnly){
+          btn.disabled = false;
+          btn.innerHTML = origHtml;
+          alert('Could not archive to S3: ' + err.message);
+        }
+      });
+    } else {
+      window.print();
+    }
+  }
   else if(a==="toggleConsultant"){S.consultantUnlocked=!S.consultantUnlocked;render();window.scrollTo(0,0);}
   else if(a==="bookSession"){
     const sig=signalScores(), n=needIndex(), v=verdict(), ex=exposure();

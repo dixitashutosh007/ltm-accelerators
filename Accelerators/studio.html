@@ -650,7 +650,7 @@ function render(){
   if(!tabs.some(t=>t[0]===S.tab))S.tab="questions";
   $("#tabs").innerHTML=tabs.map(([k,l])=>'<button class="tab'+(S.tab===k?" on":"")+'" data-t="'+k+'">'+l+'</button>').join("");
   $("#brand").innerHTML=S.logo?'<img src="'+S.logo+'" alt="LTM"/>'
-    :'<span class="mark"></span><span class="bw"><b>Question Bank Studio</b><span>LTM Accelerator Platform</span></span><span class="ph">LOGO</span>';
+    :'<a href="/portal" style="display:flex;align-items:center;gap:10px;text-decoration:none;color:inherit;"><img src="/assets/ltm-logo.jpg" alt="LTM" style="height:28px;width:auto;border-radius:4px;object-fit:contain;"><span class="bw"><b>Question Bank Studio</b><span>Infra Tech Advisory</span></span></a>';
   const v=validate(),errs=v.filter(x=>x.sev==="err").length,warns=v.filter(x=>x.sev==="warn").length;
   $("#hdot").className="dot"+(errs?" err":warns?" warn":"");
   $("#hmeta").textContent=S.bank.questions.length+" questions · "+(errs?errs+" errors":warns?warns+" warnings":"valid");

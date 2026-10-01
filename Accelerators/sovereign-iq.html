@@ -9,6 +9,8 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+<!-- S3 Customer Reports Client -->
+<script src="/assets/s3-reports.js"></script>
 <style>
 /* ============================================================
    LTM Advisory Design System — Enterprise Clean Blueprint
@@ -2513,8 +2515,8 @@ h1,h2,h3,h4{font-family:var(--font-display);letter-spacing:-.015em;color:var(--i
         <span>Advisory Menu</span>
       </button>
       <div class="top-nav-sep"></div>
-      <a href="javascript:void(0)" onclick="STATE.screen='welcome';renderScreen();" class="exec-brand">
-        <span class="exec-badge">LTM</span>
+      <a href="/portal" class="exec-brand" style="display:flex;align-items:center;gap:12px;text-decoration:none;" title="Back to Advisory Accelerators Portal">
+        <img src="/assets/ltm-logo.jpg" alt="LTM - A Larsen & Toubro Group Company" style="height:32px;width:auto;border-radius:4px;object-fit:contain;box-shadow:0 2px 8px rgba(0,0,0,0.3);">
         <div class="exec-brand-text">
           <b>Sovereign IQ™</b>
           <span>Digital Sovereignty Advisory</span>
@@ -9116,6 +9118,29 @@ function downloadSovereignExecutivePDF() {
     });
 
     doc.save("Sovereign_IQ_Executive_Pack_" + clientDisplay.replace(/[^a-zA-Z0-9]/g, "_") + ".pdf");
+  }
+
+  // Automatic Archive to AWS S3
+  try {
+    if(window.LTM_S3) {
+      var pdfBase64 = doc.output('datauristring');
+      window.LTM_S3.saveReportToS3({
+        acceleratorId: 'sovereign-iq',
+        clientName: clientDisplay,
+        pdfBase64: pdfBase64,
+        metadata: {
+          maturityScore: Math.round(overallScore),
+          unlocked: isUnlocked,
+          consultantLead: SESSION.consultantLead
+        }
+      }).then(function(res){
+        window.LTM_S3.showS3SuccessBanner(res);
+      }).catch(function(err){
+        console.warn('S3 archive notice:', err);
+      });
+    }
+  } catch(e) {
+    console.warn('S3 archive hook error:', e);
   }
 }
 
