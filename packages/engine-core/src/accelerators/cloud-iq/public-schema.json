@@ -1,0 +1,791 @@
+{
+  "meta": {
+    "id": "cloud-iq",
+    "name": "Cloud IQ",
+    "version": "2.2",
+    "profile": "multi-dimension-maturity",
+    "delivery": "single-file-html",
+    "updated": "2026-10-01",
+    "disclaimer": "This diagnostic provides strategic advisory guidance to support enterprise cloud architecture, placement, modernization, and FinOps investment decisions. It does not constitute a legal, financial audit, or vendor procurement warranty."
+  },
+  "dimensions": {
+    "D1": "Cloud Strategy & Placement",
+    "D2": "Migration & Modernization",
+    "D3": "Cost & FinOps Excellence",
+    "D4": "Hybrid & Multi-Cloud Ops",
+    "D5": "Platform Engineering & DevEx",
+    "D6": "Data Centre & Estate Health",
+    "D7": "Governance, Security & Zero Trust",
+    "D8": "Data Platform & AI Readiness"
+  },
+  "benchmarks": {
+    "BFSI (Banking & Financial Services)": {
+      "overall": 3.2,
+      "D1": 3.4,
+      "D2": 2.8,
+      "D3": 3.3,
+      "D4": 3.1,
+      "D5": 3,
+      "D6": 2.9,
+      "D7": 3.8,
+      "D8": 3.3,
+      "note": "Strict regulation (DORA/RBI) drives D7, but legacy core slows D2/D6."
+    },
+    "Public Sector & Government": {
+      "overall": 2.6,
+      "D1": 2.8,
+      "D2": 2.3,
+      "D3": 2.5,
+      "D4": 2.6,
+      "D5": 2.4,
+      "D6": 2.4,
+      "D7": 3.5,
+      "D8": 2.3,
+      "note": "Sovereignty and procurement cycles slow platform engineering."
+    },
+    "Healthcare & Life Sciences": {
+      "overall": 2.8,
+      "D1": 3,
+      "D2": 2.6,
+      "D3": 2.7,
+      "D4": 2.7,
+      "D5": 2.6,
+      "D6": 2.7,
+      "D7": 3.6,
+      "D8": 2.5,
+      "note": "HIPAA/GxP compliance prioritised; data silos impede AI."
+    },
+    "Retail & Consumer Goods": {
+      "overall": 3.1,
+      "D1": 3.2,
+      "D2": 3.3,
+      "D3": 3.4,
+      "D4": 3,
+      "D5": 3.2,
+      "D6": 2.8,
+      "D7": 2.9,
+      "D8": 3,
+      "note": "Cost-conscious with agile digital storefronts, uneven DC exit."
+    },
+    "Manufacturing & Industrial": {
+      "overall": 2.8,
+      "D1": 2.9,
+      "D2": 2.7,
+      "D3": 2.8,
+      "D4": 2.9,
+      "D5": 2.6,
+      "D6": 2.6,
+      "D7": 3.1,
+      "D8": 2.8,
+      "note": "OT/SCADA operational dependencies anchor heavy on-premise footprint."
+    },
+    "Telecom & Media": {
+      "overall": 3.3,
+      "D1": 3.5,
+      "D2": 3.2,
+      "D3": 3.4,
+      "D4": 3.4,
+      "D5": 3.5,
+      "D6": 3,
+      "D7": 3.2,
+      "D8": 3.2,
+      "note": "High container/Kubernetes adoption with advanced network orchestration."
+    },
+    "Energy & Utilities": {
+      "overall": 2.7,
+      "D1": 2.9,
+      "D2": 2.4,
+      "D3": 2.6,
+      "D4": 2.8,
+      "D5": 2.5,
+      "D6": 2.5,
+      "D7": 3.3,
+      "D8": 2.6,
+      "note": "Critical infrastructure security focus; conservative modernization."
+    },
+    "Other": {
+      "overall": 2.9,
+      "D1": 3,
+      "D2": 2.8,
+      "D3": 3,
+      "D4": 2.9,
+      "D5": 2.8,
+      "D6": 2.7,
+      "D7": 3.2,
+      "D8": 2.8,
+      "note": "Cross-industry directional median baseline."
+    }
+  },
+  "groups": [
+    {
+      "name": "1 · Persona & Client Context",
+      "questionCount": 5
+    },
+    {
+      "name": "2 · Strategic Priorities & Objectives",
+      "questionCount": 1
+    },
+    {
+      "name": "3 · Cloud & Infrastructure Footprint",
+      "questionCount": 7
+    },
+    {
+      "name": "4 · Strategic Transformation Signals",
+      "questionCount": 2
+    },
+    {
+      "name": "5 · Cloud Strategy & Placement (D1)",
+      "questionCount": 3
+    },
+    {
+      "name": "6 · Migration & Modernization (D2)",
+      "questionCount": 3
+    },
+    {
+      "name": "7 · Cost & FinOps Excellence (D3)",
+      "questionCount": 4
+    },
+    {
+      "name": "8 · Hybrid & Multi-Cloud Ops (D4)",
+      "questionCount": 3
+    },
+    {
+      "name": "9 · Platform Engineering & DevEx (D5)",
+      "questionCount": 3
+    },
+    {
+      "name": "10 · Data Centre & Infrastructure (D6)",
+      "questionCount": 3
+    },
+    {
+      "name": "11 · Governance, Security & Zero Trust (D7)",
+      "questionCount": 3
+    },
+    {
+      "name": "12 · Data Platform & AI Readiness (D8)",
+      "questionCount": 3
+    }
+  ],
+  "questions": [
+    {
+      "id": "Q0.1",
+      "sec": "Persona & Context",
+      "dim": null,
+      "q": "Which best describes your role?",
+      "type": "single",
+      "mode": "both",
+      "options": [
+        "CIO / CTO",
+        "Head of Infrastructure / Cloud",
+        "Enterprise Architect",
+        "FinOps / IT Finance Lead",
+        "App Dev / Engineering Lead",
+        "CISO / Security & Compliance"
+      ]
+    },
+    {
+      "id": "Q0.2",
+      "sec": "Persona & Context",
+      "dim": null,
+      "q": "Your industry sector?",
+      "type": "single",
+      "mode": "both",
+      "options": [
+        "BFSI (Banking & Financial Services)",
+        "Public Sector & Government",
+        "Healthcare & Life Sciences",
+        "Retail & Consumer Goods",
+        "Manufacturing & Industrial",
+        "Telecom & Media",
+        "Energy & Utilities",
+        "Other"
+      ]
+    },
+    {
+      "id": "Q0.3",
+      "sec": "Persona & Context",
+      "dim": null,
+      "q": "Which apply to your regulatory & compliance posture?",
+      "type": "multi",
+      "mode": "both",
+      "options": [
+        "Data residency required by law",
+        "DORA (EU Digital Operational Resilience Act)",
+        "HIPAA / HITECH (Health data)",
+        "GDPR / UK GDPR strict cross-border",
+        "RBI / SEBI (India Financial)",
+        "PCI-DSS Level 1",
+        "SOX / Internal Financial Controls",
+        "FedRAMP / Public Sector Security",
+        "NIS2 Directive (EU Critical Infrastructure)",
+        "SecNumCloud (France / EU Cloud de Confiance)",
+        "None significant"
+      ]
+    },
+    {
+      "id": "Q0.4",
+      "sec": "Persona & Context",
+      "dim": null,
+      "q": "Where does your overall application estate sit today?",
+      "type": "single",
+      "mode": "both",
+      "options": [
+        "100% on-premise / legacy data centres",
+        "Early pilots / <20% on cloud",
+        "Hybrid split (~40–60% migrated)",
+        "Mostly cloud (>75% on cloud)",
+        "Cloud-native / multi-cloud modern"
+      ]
+    },
+    {
+      "id": "Q0.5",
+      "sec": "Persona & Context",
+      "dim": null,
+      "q": "Approximate size of application estate?",
+      "type": "slider",
+      "mode": "both",
+      "options": []
+    },
+    {
+      "id": "Q0.6",
+      "sec": "Persona & Context",
+      "dim": null,
+      "q": "Rank your top strategic objectives.",
+      "type": "rank",
+      "mode": "both",
+      "options": [
+        "Cost reduction & FinOps",
+        "Speed / agility / time-to-market",
+        "Compliance & data sovereignty",
+        "Legacy DC exit & modernization",
+        "Operational resilience & DR",
+        "AI enablement & platform readiness"
+      ]
+    },
+    {
+      "id": "Q0.7",
+      "sec": "Estate footprint",
+      "dim": null,
+      "q": "Which public cloud providers run active workloads?",
+      "type": "multi",
+      "mode": "both",
+      "options": [
+        "AWS",
+        "Microsoft Azure",
+        "Google Cloud (GCP)",
+        "Oracle Cloud Infrastructure (OCI)",
+        "Alibaba / Huawei",
+        "Private Cloud (OpenStack / Nutanix)",
+        "None / On-Premise Only"
+      ]
+    },
+    {
+      "id": "Q0.8",
+      "sec": "Estate footprint",
+      "dim": null,
+      "q": "Approximate annual public-cloud spend?",
+      "type": "single",
+      "mode": "both",
+      "options": [
+        "< $1M / Minimal",
+        "$1M–$5M",
+        "$5M–$20M",
+        "$20M–$50M",
+        "$50M–$100M",
+        "$100M+"
+      ]
+    },
+    {
+      "id": "Q0.9",
+      "sec": "Estate footprint",
+      "dim": null,
+      "q": "Commitment discount coverage (RI, Savings Plans, CUDs)?",
+      "type": "single",
+      "mode": "both",
+      "options": [
+        "Don't know / Untracked",
+        "0–20% (mostly on-demand)",
+        "20–40%",
+        "40–60%",
+        "60–80%",
+        "80%+ (highly committed)"
+      ]
+    },
+    {
+      "id": "Q0.10",
+      "sec": "Estate footprint",
+      "dim": null,
+      "q": "What is the scale of your current on-premises data centre footprint?",
+      "type": "single",
+      "mode": "both",
+      "options": [
+        "None (all cloud / colocation eliminated)",
+        "1–2 server rooms / edge sites",
+        "1–2 enterprise colocation facilities",
+        "3–5 enterprise data centres",
+        "6+ global facilities / legacy private estate"
+      ]
+    },
+    {
+      "id": "Q0.11",
+      "sec": "Estate footprint",
+      "dim": null,
+      "q": "Virtualization platform & VMware Broadcom renewal posture?",
+      "type": "single",
+      "mode": "both",
+      "options": [
+        "No on-prem hypervisors (100% cloud)",
+        "VMware — long-term contract locked in",
+        "VMware — facing steep price renewal cliff",
+        "Nutanix AHV / Microsoft Hyper-V / KVM",
+        "Bare-metal OpenShift / Kubernetes"
+      ]
+    },
+    {
+      "id": "Q0.12",
+      "sec": "Estate footprint",
+      "dim": null,
+      "q": "On-premise hardware age & facility lease horizon?",
+      "type": "single",
+      "mode": "both",
+      "options": [
+        "No impending deadlines (>3 years safe)",
+        "Hardware EOL / refresh due in 12–18 months",
+        "Facility / colocation lease ending in 12 months",
+        "Imminent lease cliff (<6 months)",
+        "Hardware fully depreciated on month-to-month"
+      ]
+    },
+    {
+      "id": "Q0.13",
+      "sec": "Estate footprint",
+      "dim": null,
+      "q": "Which workload archetypes dominate your estate?",
+      "type": "multi",
+      "mode": "both",
+      "options": [
+        "Legacy monoliths / 3-tier Java & .NET",
+        "Heavy COTS / ERP (SAP, Oracle, Mainframe)",
+        "VM-based application clusters",
+        "Containerized microservices (Docker/K8s)",
+        "Serverless & event-driven functions",
+        "Stateful data lakes & batch analytics",
+        "AI / LLM inference pipelines"
+      ]
+    },
+    {
+      "id": "Q1.1",
+      "sec": "Journey signals",
+      "dim": null,
+      "q": "Which statement best captures your current position?",
+      "type": "cards",
+      "mode": "both",
+      "options": [
+        {
+          "tag": "T1",
+          "t": "On cloud but spend & ops is chaotic (Cloud Value Optimization Track)",
+          "j": {
+            "A": 2
+          }
+        },
+        {
+          "tag": "T2",
+          "t": "Migrated workloads — urgently need governance & unit economics",
+          "j": {
+            "A": 2
+          }
+        },
+        {
+          "tag": "T3",
+          "t": "Evaluating cloud targets / hesitant on migration strategy",
+          "j": {
+            "B": 2
+          }
+        },
+        {
+          "tag": "T4",
+          "t": "Active DC exit or VMware renewal cliff driving modernization",
+          "j": {
+            "B": 2
+          }
+        }
+      ]
+    },
+    {
+      "id": "Q1.2",
+      "sec": "Journey signals",
+      "dim": null,
+      "q": "What hurts most right now?",
+      "type": "multi",
+      "mode": "both",
+      "options": [
+        "Unpredictable / runaway cloud bills",
+        "Lack of centralized guardrails & security",
+        "Technical debt / monoliths hard to move",
+        "Expiring data centre lease or hardware cliff",
+        "VMware / licensing cost shock",
+        "Severe cloud skills & SRE shortage",
+        "Slow delivery / developer friction",
+        "Audit / regulatory compliance exposure"
+      ]
+    },
+    {
+      "id": "Q2.1",
+      "sec": "Cloud Strategy & Placement",
+      "dim": "D1",
+      "q": "Is your target operating landscape & placement policy defined?",
+      "type": "single",
+      "mode": "both",
+      "options": [
+        "No documented landscape — ad-hoc decisions",
+        "Informal guidelines per team",
+        "Documented decision tree (SaaS vs PaaS vs IaaS)",
+        "Formally modelled with TCO & risk scorecards",
+        "Automated workload placement policy enforced in CI/CD"
+      ]
+    },
+    {
+      "id": "Q2.2",
+      "sec": "Cloud Strategy & Placement",
+      "dim": "D1",
+      "q": "How are multi-cloud vs single-cloud decisions governed?",
+      "type": "single",
+      "mode": "both",
+      "options": [
+        "Accidental multi-cloud without central strategy",
+        "Preferred single provider with exceptions",
+        "Deliberate best-of-breed multi-cloud framework",
+        "Governed abstraction layer with exit-strategy playbooks",
+        "Workload portability with unified API control plane"
+      ]
+    },
+    {
+      "id": "Q2.3",
+      "sec": "Cloud Strategy & Placement",
+      "dim": "D1",
+      "q": "Business-IT alignment on transformation milestones?",
+      "type": "single",
+      "mode": "workshop",
+      "options": [
+        "IT-driven only; business disengaged",
+        "Loose reference to strategic business goals",
+        "Co-authored milestones with business units",
+        "Shared quarterly OKRs tracking value realization",
+        "Continuous business-IT product team funding model"
+      ]
+    },
+    {
+      "id": "Q3.1",
+      "sec": "Migration & Modernization",
+      "dim": "D2",
+      "q": "Have you defined dispositions (the 6 R's) across your app estate?",
+      "type": "single",
+      "mode": "both",
+      "options": [
+        "No portfolio disposition mapping",
+        "Informal categorisation for top 10 apps",
+        "Documented 6-R mapping for critical workloads",
+        "Full estate mapped with business case & roadmap",
+        "Continuously maintained CMDB disposition lifecycle"
+      ]
+    },
+    {
+      "id": "Q3.2",
+      "sec": "Migration & Modernization",
+      "dim": "D2",
+      "q": "How heavy is technical debt in the core applications?",
+      "type": "slider",
+      "mode": "both",
+      "options": []
+    },
+    {
+      "id": "Q3.3",
+      "sec": "Migration & Modernization",
+      "dim": "D2",
+      "q": "Do you have an automated migration factory & pattern library?",
+      "type": "single",
+      "mode": "workshop",
+      "options": [
+        "Every migration is a bespoke manual project",
+        "Some standard templates and playbooks",
+        "Repeatable migration factory with automated pipelines",
+        "Golden patterns with automated code refactoring tooling",
+        "Continuous modernization with platform-as-a-product"
+      ]
+    },
+    {
+      "id": "Q4.1",
+      "sec": "Cost & FinOps",
+      "dim": "D3",
+      "q": "Maturity of cloud cost allocation & visibility?",
+      "type": "single",
+      "mode": "both",
+      "options": [
+        "No cost attribution — single massive invoice",
+        "Reactive bill reviews at month-end",
+        "Tagging policy enforced with monthly budget alerts",
+        "Automated showback / chargeback to cost centres",
+        "Unit economics tracked (cost per business transaction)"
+      ]
+    },
+    {
+      "id": "Q4.2",
+      "sec": "Cost & FinOps",
+      "dim": "D3",
+      "q": "Which FinOps capabilities are live and automated?",
+      "type": "multi",
+      "mode": "both",
+      "options": [
+        "Tagging hygiene policy",
+        "Automated rightsizing alerts",
+        "Commitment discount management (RIs/SPs)",
+        "Idle resource auto-shutdown (Dev/QA)",
+        "Storage lifecycle auto-tiering",
+        "Unit economic cost modelling"
+      ]
+    },
+    {
+      "id": "Q4.3",
+      "sec": "Cost & FinOps",
+      "dim": "D3",
+      "q": "Estimated cloud waste / overspend rate?",
+      "type": "single",
+      "mode": "both",
+      "options": [
+        "Don't know / Untracked (~30%+ industry avg)",
+        "<10% (tightly controlled)",
+        "10–20% (typical hygiene leak)",
+        "20–35% (substantial waste)",
+        ">35% (severe unoptimized spend)"
+      ]
+    },
+    {
+      "id": "Q4.4",
+      "sec": "Cost & FinOps",
+      "dim": "D3",
+      "q": "Is FinOps embedded in engineering teams' sprint cycles?",
+      "type": "single",
+      "mode": "workshop",
+      "options": [
+        "Engineering ignores cost; finance only",
+        "Occasional cost optimization campaigns",
+        "Cost visibility provided in pull requests / CI",
+        "Engineers accountable for unit cost budgets",
+        "Autonomous optimization bots & automated waste remediation"
+      ]
+    },
+    {
+      "id": "Q5.1",
+      "sec": "Hybrid & Multi-Cloud Ops",
+      "dim": "D4",
+      "q": "How consistent are operations across hybrid / multi-cloud environments?",
+      "type": "single",
+      "mode": "both",
+      "options": [
+        "Completely siloed teams and tooling",
+        "Manual coordination between on-prem and cloud",
+        "Defined shared operating model with standard runbooks",
+        "Unified control plane across all clouds",
+        "Fully automated self-healing SRE platform"
+      ]
+    },
+    {
+      "id": "Q5.2",
+      "sec": "Hybrid & Multi-Cloud Ops",
+      "dim": "D4",
+      "q": "Do you operate a unified observability & telemetry mesh?",
+      "type": "tf",
+      "mode": "both",
+      "options": []
+    },
+    {
+      "id": "Q5.3",
+      "sec": "Hybrid & Multi-Cloud Ops",
+      "dim": "D4",
+      "q": "Disaster Recovery (DR) and business continuity posture?",
+      "type": "single",
+      "mode": "workshop",
+      "options": [
+        "Unverified / manual tape restores",
+        "Warm DR in secondary DC with >24h RTO",
+        "Active-passive cross-region cloud replication",
+        "Active-active multi-region / hybrid resilience",
+        "Continuous chaos engineering & automated cross-cloud failover"
+      ]
+    },
+    {
+      "id": "Q6.1",
+      "sec": "Platform Engineering",
+      "dim": "D5",
+      "q": "Infrastructure as Code (IaC) & automation maturity?",
+      "type": "single",
+      "mode": "both",
+      "options": [
+        "Manual click-ops in web consoles",
+        "Ad-hoc Bash / PowerShell scripts",
+        "IaC standardized (Terraform / Bicep / OpenTofu)",
+        "GitOps CI/CD with automated drift detection",
+        "Policy-as-code (OPA/Sentinel) with self-healing infrastructure"
+      ]
+    },
+    {
+      "id": "Q6.2",
+      "sec": "Platform Engineering",
+      "dim": "D5",
+      "q": "Do engineering teams have self-service 'Golden Paths'?",
+      "type": "single",
+      "mode": "both",
+      "options": [
+        "No — every team builds bespoke infra",
+        "A few template repos; mostly manual setup",
+        "Documented golden paths used by ~50% of teams",
+        "Automated Internal Developer Platform (IDP) used by default",
+        "Full platform-as-a-product with developer NPS tracking"
+      ]
+    },
+    {
+      "id": "Q6.3",
+      "sec": "Platform Engineering",
+      "dim": "D5",
+      "q": "Typical lead time to provision a production-grade environment?",
+      "type": "single",
+      "mode": "workshop",
+      "options": [
+        "> 4 weeks (ticket-driven bureaucracy)",
+        "1–4 weeks (semi-automated)",
+        "2–5 business days",
+        "1–4 hours (self-service catalog)",
+        "< 15 minutes (fully automated GitOps)"
+      ]
+    },
+    {
+      "id": "Q7.1",
+      "sec": "Data Centre & Estate",
+      "dim": "D6",
+      "q": "What is your data centre exit or consolidation posture?",
+      "type": "single",
+      "mode": "both",
+      "options": [
+        "Committed to owned DCs long-term",
+        "No strategic plan despite rising costs",
+        "Actively evaluating colocation / DC exit options",
+        "Formal DC exit programme committed with target dates",
+        "DC exit underway or fully complete"
+      ]
+    },
+    {
+      "id": "Q7.2",
+      "sec": "Data Centre & Estate",
+      "dim": "D6",
+      "q": "Fidelity of application inventory & dependency mapping?",
+      "type": "single",
+      "mode": "both",
+      "options": [
+        "No central inventory (tribal knowledge)",
+        "Outdated manual spreadsheets",
+        "Standard CMDB updated periodically",
+        "Automated discovery tools deployed (e.g. Device42, Dynatrace)",
+        "Real-time continuous dependency graph with API telemetry"
+      ]
+    },
+    {
+      "id": "Q7.3",
+      "sec": "Data Centre & Estate",
+      "dim": "D6",
+      "q": "On-premise storage saturation & ransomware backup immutability?",
+      "type": "single",
+      "mode": "workshop",
+      "options": [
+        "Storage nearing 90% capacity; legacy backups",
+        "Adequate SAN capacity; mutable backups",
+        "Modern SAN with offsite tape/cloud replication",
+        "Air-gapped immutable backups tested quarterly",
+        "Continuous zero-trust cyber-resilience with instant snapshot recovery"
+      ]
+    },
+    {
+      "id": "Q8.1",
+      "sec": "Governance & Security",
+      "dim": "D7",
+      "q": "Maturity of cloud landing zones & security guardrails?",
+      "type": "single",
+      "mode": "both",
+      "options": [
+        "No landing zones — flat network topology",
+        "Basic perimeter security and reactive scans",
+        "Well-Architected landing zone baseline deployed",
+        "Automated preventative guardrails & policy-as-code",
+        "Continuous real-time posture management (CSPM) with auto-remediation"
+      ]
+    },
+    {
+      "id": "Q8.2",
+      "sec": "Governance & Security",
+      "dim": "D7",
+      "q": "Do you have binding digital sovereignty or data-residency mandates?",
+      "type": "tf",
+      "mode": "both",
+      "options": []
+    },
+    {
+      "id": "Q8.3",
+      "sec": "Governance & Security",
+      "dim": "D7",
+      "q": "Identity, Zero Trust & IAM blast-radius containment?",
+      "type": "single",
+      "mode": "workshop",
+      "options": [
+        "Overprivileged shared admin credentials",
+        "Federated AD/Okta but wide internal network trust",
+        "Role-based access (RBAC) with MFA enforced",
+        "Least-privilege JIT (Just-In-Time) access & microsegmentation",
+        "Zero Trust architecture with continuous identity verification"
+      ]
+    },
+    {
+      "id": "Q9.1",
+      "sec": "Data & AI Readiness",
+      "dim": "D8",
+      "q": "How ready is your enterprise data foundation for modern AI?",
+      "type": "single",
+      "mode": "both",
+      "options": [
+        "Siloed legacy databases / no centralized data lake",
+        "Data lake in place but untagged and ungoverned",
+        "Governed lakehouse (Snowflake/Databricks/BigQuery) with catalogs",
+        "Data contracts, quality SLOs, and lineage monitoring enforced",
+        "Enterprise feature stores & real-time data mesh in production"
+      ]
+    },
+    {
+      "id": "Q9.2",
+      "sec": "Data & AI Readiness",
+      "dim": "D8",
+      "q": "AI & GenAI ambitions over the next 12 months?",
+      "type": "multi",
+      "mode": "both",
+      "options": [
+        "None yet / monitoring only",
+        "GenAI copilots & developer productivity",
+        "Customer-facing AI chatbots & assistants",
+        "Domain-specific fine-tuned LLMs on corporate data",
+        "Autonomous agentic workflows & core product infusion"
+      ]
+    },
+    {
+      "id": "Q9.3",
+      "sec": "Data & AI Readiness",
+      "dim": "D8",
+      "q": "AI cost governance (TokenOps) and data boundary protection?",
+      "type": "single",
+      "mode": "workshop",
+      "options": [
+        "No visibility into AI API usage or data leaks",
+        "Basic acceptable-use policy for public AI",
+        "Private VPC-hosted models with DLP/PII filtering",
+        "Token budgets, provider cost routing & observability",
+        "Full enterprise AI boundary with sovereign compute control"
+      ]
+    }
+  ]
+}

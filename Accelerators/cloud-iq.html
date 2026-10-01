@@ -3,12 +3,15 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<meta name="generator" content="Cloud IQ v2.1 · LTM Infrastructure Tech Advisory" />
-<meta http-equiv="Content-Security-Policy" content="default-src 'self' blob: data:; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob:; connect-src 'self' https://api.openai.com https://api.anthropic.com https://generativelanguage.googleapis.com; frame-ancestors 'self';">
+<meta name="generator" content="Cloud IQ v2.2 · LTM Infrastructure Tech Advisory" />
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' blob: data:; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https://www.ltm.com; connect-src 'self' blob: data: https://api.openai.com https://api.anthropic.com https://generativelanguage.googleapis.com https://zvnmwxa9sf.execute-api.ap-south-1.amazonaws.com https://*.amazonaws.com; frame-ancestors 'self';">
 <title>Cloud IQ — Enterprise Infrastructure Diagnostic Platform · LTM</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+<!-- S3 Customer Reports Client & RBAC Guard -->
+<script src="/assets/s3-reports.js"></script>
+<script src="/assets/rbac-guard.js" data-tool="cloud-iq"></script>
 <style>
 @font-face {
   font-family: 'ES Klarheit Grotesk';
@@ -28,54 +31,105 @@
    Palette: Coral #FF5E4F, Slate Blue #226882, Violet #482475,
    Amber #B8860B, Green #35754D, Ground #F9F9F9, Ink #282828.
    ============================================================ */
-@import url("https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap");
 :root{
-  --ground:#F9F9F9; --panel:#FFFFFF; --panel2:#F5F5F5; --panel3:#EFEFEF;
-  --line:#DADADA; --line2:#ECECEC; --line-dark:#282828;
-  --ink:#282828; --mut:#5B5B5B; --mutd:#8E8E8E;
+  --ground:#F8FAFC; --panel:#FFFFFF; --panel2:#F1F5F9; --panel3:#E2E8F0;
+  --line:#CBD5E1; --line2:#94A3B8; --line-dark:#0F172A;
+  --ink:#0F172A; --mut:#334155; --mutd:#64748B;
   --coral:#FF5E4F; --coral-dk:#E54536; --coral-dkr:#CC2B1C; --coral-tint:#FCF0EE;
   --blue:#226882; --blue-tint:#EDF5F8;
   --violet:#482475; --violet-tint:#F3EDF9;
   --amber:#B8860B; --amber-tint:#FFF9E6; --amber-dk:#8A6500;
   --green:#35754D; --green-tint:#EDF7F1;
   --red:#D32F2F; --red-tint:#FFEBEE;
-  --radius-xs:3px; --radius-sm:6px; --radius-md:10px; --radius-lg:16px; --radius-pill:999px;
-  --shadow-card:0 1px 3px rgba(40,40,40,.06), 0 4px 14px rgba(40,40,40,.07);
-  --shadow-elevated:0 8px 30px rgba(40,40,40,.12);
-  --font-display:'ES Klarheit Grotesk','Klarheit Grotesk','Plus Jakarta Sans','Manrope',-apple-system,sans-serif;
-  --font-body:Arial,"Helvetica Neue",Helvetica,sans-serif;
-  --font-mono:"JetBrains Mono",ui-monospace,monospace;
+  --radius-xs:3px; --radius-sm:6px; --radius-md:8px; --radius-lg:12px; --radius-pill:999px;
+  --shadow-card:0 1px 3px rgba(15,23,42,.06), 0 4px 14px rgba(15,23,42,.07);
+  --shadow-elevated:0 8px 30px rgba(15,23,42,.12);
+  --font-display:'ES Klarheit Grotesk','Klarheit Grotesk','Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+  --font-body:'ES Klarheit Grotesk','Klarheit Grotesk','Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+  --font-mono:'JetBrains Mono','SF Mono',Menlo,Consolas,monospace;
 }
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:var(--font-body);background:var(--ground);color:var(--ink);line-height:1.5;-webkit-font-smoothing:antialiased}
+body{font-family:var(--font-body);background:var(--ground);color:var(--ink);line-height:1.55;-webkit-font-smoothing:antialiased}
 h1,h2,h3,h4{font-family:var(--font-display);letter-spacing:-.015em;color:var(--ink)}
-.wrap{max-width:1040px;margin:0 auto;padding:0 24px}
+.wrap{max-width:1080px;margin:0 auto;padding:0 24px}
 
-/* Top Navigation Bar */
-#ltm-family-nav{background:#282828;color:#F9F9F9;font-family:var(--font-display);font-size:12px;padding:9px 0;border-bottom:2px solid var(--coral);position:relative;z-index:100}
-.ltm-fam-inner{max-width:1240px;margin:0 auto;padding:0 20px;display:flex;align-items:center;gap:18px;flex-wrap:wrap}
-.ltm-fam-brand{display:flex;flex-direction:column;gap:1px;padding-right:16px;border-right:1px solid rgba(255,255,255,0.15)}
-.ltm-fam-b{font-weight:800;color:var(--coral);letter-spacing:.04em;font-size:13px}
-.ltm-fam-s{color:rgba(255,255,255,0.65);font-size:9.5px;text-transform:uppercase;letter-spacing:.12em}
-.ltm-fam-links{display:flex;gap:2px;flex-wrap:wrap;flex:1}
-.ltm-fam-link{color:rgba(255,255,255,0.78);text-decoration:none;padding:5px 11px;border-radius:4px;font-weight:600;font-size:11.5px;letter-spacing:.01em;transition:.15s;display:inline-flex;align-items:center;gap:5px;white-space:nowrap}
-.ltm-fam-link:hover{color:#fff;background:rgba(255,255,255,0.08)}
-.ltm-fam-link.current{background:var(--coral);color:#fff}
-.ltm-fam-tag{font-size:8.5px;text-transform:uppercase;letter-spacing:.12em;background:rgba(255,255,255,0.14);padding:2px 5px;border-radius:3px}
-.ltm-fam-link.current .ltm-fam-tag{background:rgba(255,255,255,0.28)}
-
-/* Header & Consultant Meta Banner */
-header.top{background:var(--panel);border-bottom:1px solid var(--line);padding:14px 0}
-header.top .wrap{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px}
-.ltmlogo{display:flex;align-items:center;gap:12px}
-.ltmlogo>img{height:26px;width:auto;object-fit:contain;flex:none}
-.ltmword{line-height:1.15;border-left:1px solid var(--line);padding-left:12px}
-.ltmword b{font-family:var(--font-display);font-size:15px;font-weight:700;display:block;color:var(--ink)}
-.ltmword span{display:block;font-family:var(--font-display);font-size:10px;letter-spacing:.12em;color:var(--mutd);text-transform:uppercase;margin-top:2px}
-.header-meta{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+/* Unified Suite Topbar (Aligned with Posture IQ, Sovereign IQ & FinOps Suite) */
+.topbar{
+  border-bottom: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(8px);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.topbar .wrap{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 62px;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+.brand{
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+}
+.brand-badge{
+  background: linear-gradient(135deg, var(--coral) 0%, var(--coral-dk) 100%);
+  color: #fff;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 13.5px;
+  padding: 4px 9px;
+  border-radius: 6px;
+  letter-spacing: .04em;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.brand .name{
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 15px;
+  letter-spacing: .01em;
+  color: var(--ink);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.brand-tag{
+  font-size: 9.5px;
+  font-weight: 700;
+  color: var(--coral);
+  background: var(--coral-tint);
+  border: 1px solid var(--coral);
+  padding: 1.5px 6px;
+  border-radius: 4px;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+}
+.brand .sub{
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  color: var(--mutd);
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  margin-top: 1px;
+}
+.topbar-actions{
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
 
 /* Consultant Session Bar */
-.session-bar{background:#FFFFFF;border-bottom:1px solid var(--line);padding:8px 0;font-size:12px;font-family:var(--font-display)}
+.session-bar{display:none;background:#FFFFFF;border-bottom:1px solid var(--line);padding:8px 0;font-size:12px;font-family:var(--font-display)}
 .session-inner{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap}
 .session-fields{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
 .s-field{display:inline-flex;align-items:center;gap:5px;color:var(--mut)}
@@ -88,6 +142,13 @@ header.top .wrap{display:flex;align-items:center;justify-content:space-between;f
 /* Progress Bar */
 .progress-bar{height:3px;background:var(--line2)}
 .progress-fill{height:3px;background:var(--coral);width:0;transition:width .3s cubic-bezier(.4,0,.2,1)}
+
+/* Button variants aligned across suite */
+.btn-primary, .btn.primary{ background: var(--coral); border-color: var(--coral); color: #fff; }
+.btn-primary:hover, .btn.primary:hover{ background: var(--coral-dk); border-color: var(--coral-dk); color: #fff; }
+.btn-ghost, .btn.ghost{ background: transparent; color: var(--ink); border: 1px solid var(--line); }
+.btn-ghost:hover, .btn.ghost:hover{ background: var(--coral-tint); color: var(--coral-dkr); border-color: var(--coral); }
+.btn-sm, .btn.small{ padding: 6px 12px; font-size: 12px; border-radius: var(--radius-sm); }
 
 /* Screen & Card Layout */
 .screen{padding:30px 0 60px}
@@ -264,8 +325,251 @@ footer.foot{text-align:center;color:var(--mutd);font-size:12px;padding:28px 0 44
 .chip-primary{background:var(--coral);color:#fff}
 .chip-secondary{background:var(--coral-tint);color:var(--coral-dkr);border:1px solid var(--coral)}
 
+/* ============================================================
+   LTM SPLASH SCREEN, CINEMATIC REPORT GEN & SPORTS INFOGRAPHICS
+   ============================================================ */
+/* 1. Splash Screen */
+#ltm-splash {
+  position: fixed; inset: 0; z-index: 999999;
+  background: radial-gradient(circle at 50% 35%, #162432 0%, #0B121A 55%, #05080B 100%);
+  color: #ffffff;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, sans-serif;
+  overflow: hidden;
+  opacity: 1; transition: opacity 550ms cubic-bezier(0.2, 0.9, 0.3, 1), transform 550ms cubic-bezier(0.2, 0.9, 0.3, 1);
+}
+#ltm-splash.splash-out {
+  opacity: 0; transform: scale(1.06); filter: blur(6px); pointer-events: none;
+}
+#splash-canvas {
+  position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; opacity: 0.65;
+}
+.splash-skip-btn {
+  position: absolute; top: 20px; right: 24px; z-index: 10;
+  background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.2);
+  color: rgba(255,255,255,0.7); font-size: 11px; font-weight: 600; letter-spacing: .12em;
+  text-transform: uppercase; padding: 6px 14px; border-radius: 999px; cursor: pointer;
+  backdrop-filter: blur(8px); transition: all .2s;
+}
+.splash-skip-btn:hover {
+  background: rgba(255,94,79,0.2); border-color: #FF5E4F; color: #fff;
+}
+.splash-content {
+  position: relative; z-index: 2; display: flex; flex-direction: column; align-items: center; text-align: center;
+  max-width: 580px; width: min(90vw, 580px); padding: 20px;
+}
+.splash-hero {
+  position: relative; width: 160px; height: 100px; display: flex; align-items: center; justify-content: center;
+  margin-bottom: 20px;
+}
+.splash-ring {
+  position: absolute; border-radius: 50%; pointer-events: none;
+  animation: splashPulse 3s cubic-bezier(0.2, 0.8, 0.2, 1) infinite;
+}
+.splash-ring:nth-child(1) { width: 90px; height: 90px; border: 1.5px solid rgba(255,94,79,0.4); animation-delay: 0s; }
+.splash-ring:nth-child(2) { width: 130px; height: 130px; border: 1px dashed rgba(60,130,155,0.45); animation-delay: 0.8s; }
+.splash-ring:nth-child(3) { width: 170px; height: 170px; border: 1px solid rgba(255,94,79,0.2); animation-delay: 1.6s; }
+@keyframes splashPulse {
+  0% { transform: scale(0.85) rotate(0deg); opacity: 0; }
+  50% { opacity: 0.8; }
+  100% { transform: scale(1.4) rotate(180deg); opacity: 0; }
+}
+.splash-logo-box {
+  position: relative; z-index: 2;
+  background: rgba(15, 25, 35, 0.85); border: 1px solid rgba(255, 94, 79, 0.35);
+  padding: 14px 22px; border-radius: 14px; box-shadow: 0 0 35px rgba(255, 94, 79, 0.25), inset 0 0 15px rgba(255, 94, 79, 0.1);
+  backdrop-filter: blur(10px);
+  animation: splashFloat 4s ease-in-out infinite alternate;
+}
+@keyframes splashFloat {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(-4px); }
+}
+.splash-brand {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: 11px; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase;
+  color: #FF5E4F; margin-bottom: 8px;
+}
+.splash-brand .dot {
+  width: 6px; height: 6px; border-radius: 50%; background: #FF5E4F; box-shadow: 0 0 8px #FF5E4F;
+}
+.splash-title {
+  font-size: clamp(28px, 5vw, 42px); font-weight: 800; letter-spacing: -0.02em; line-height: 1.15;
+  margin: 0 0 8px;
+  background: linear-gradient(90deg, #FFFFFF 0%, #FF8A7A 50%, #FFFFFF 100%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: textShimmer 3s linear infinite;
+}
+@keyframes textShimmer {
+  0% { background-position: 0% center; }
+  100% { background-position: 200% center; }
+}
+.splash-subtitle {
+  font-size: 13.5px; color: rgba(255,255,255,0.7); max-width: 48ch; margin: 0 0 24px; line-height: 1.45;
+}
+.splash-console {
+  width: 100%; background: rgba(0, 0, 0, 0.45); border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 8px; padding: 10px 14px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 11.5px; color: #3C829B; text-align: left; margin-bottom: 16px;
+  display: flex; align-items: center; justify-content: space-between;
+  box-shadow: inset 0 2px 6px rgba(0,0,0,0.4);
+}
+.splash-console-left {
+  display: flex; align-items: center; gap: 8px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;
+}
+.splash-console-prompt { color: #FF5E4F; font-weight: 700; }
+.splash-console-text { color: rgba(255,255,255,0.85); transition: opacity 0.2s; }
+.splash-console-pct { font-weight: 700; color: #FF5E4F; flex: none; margin-left: 12px; }
+.splash-progress-track {
+  width: 100%; height: 3px; background: rgba(255,255,255,0.12); border-radius: 999px; overflow: hidden;
+  margin-bottom: 8px;
+}
+.splash-progress-bar {
+  height: 100%; width: 0%;
+  background: linear-gradient(90deg, #3C829B 0%, #FF5E4F 70%, #FFA89E 100%);
+  border-radius: 999px; transition: width 0.3s cubic-bezier(0.1, 0.8, 0.2, 1);
+  box-shadow: 0 0 10px rgba(255,94,79,0.8);
+}
+.splash-footer-note {
+  font-size: 10.5px; color: rgba(255,255,255,0.4); letter-spacing: 0.05em; text-transform: uppercase;
+}
+
+/* 2. Cinematic Report Generation Overlay */
+.report-gen-overlay {
+  position: fixed; inset: 0; z-index: 99998;
+  background: linear-gradient(135deg, #0F1923 0%, #162432 60%, #0B121A 100%);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  opacity: 1; transition: opacity 0.5s ease; padding: 20px;
+}
+.report-gen-overlay.fade-out { opacity: 0; pointer-events: none; }
+.rg-brand { font-family: var(--font-mono); font-size: 11px; letter-spacing: .18em; text-transform: uppercase; color: #FF5E4F; margin-bottom: 24px; }
+.rg-title { font-family: var(--font-display); font-size: 26px; font-weight: 800; color: #fff; margin-bottom: 8px; text-align: center; }
+.rg-subtitle { font-size: 13.5px; color: rgba(255,255,255,0.65); text-align: center; margin-bottom: 32px; max-width: 520px; line-height: 1.5; }
+.rg-pulse-container { position: relative; width: 110px; height: 110px; margin-bottom: 32px; }
+.rg-pulse-ring {
+  position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
+  border: 2px solid rgba(255,94,79,0.35); border-radius: 50%;
+  animation: radarPulse 2.4s ease-out infinite;
+}
+.rg-pulse-ring:nth-child(1) { width: 40px; height: 40px; animation-delay: 0s; }
+.rg-pulse-ring:nth-child(2) { width: 75px; height: 75px; animation-delay: 0.6s; }
+.rg-pulse-ring:nth-child(3) { width: 110px; height: 110px; animation-delay: 1.2s; }
+.rg-core-dot {
+  position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
+  width: 14px; height: 14px; border-radius: 50%;
+  background: #FF5E4F; box-shadow: 0 0 24px rgba(255,94,79,0.8);
+}
+@keyframes radarPulse {
+  0% { transform: translate(-50%,-50%) scale(0.6); opacity: 0.9; border-color: rgba(255,94,79,0.6); }
+  100% { transform: translate(-50%,-50%) scale(1.4); opacity: 0; border-color: rgba(60,130,155,0.1); }
+}
+.rg-step-list { list-style: none; padding: 0; margin: 0 0 28px; width: 420px; max-width: 90vw; }
+.rg-step {
+  display: flex; align-items: center; gap: 12px;
+  padding: 9px 0; font-size: 13px; color: rgba(255,255,255,0.35);
+  transition: color 0.4s, transform 0.3s;
+}
+.rg-step.active { color: #fff; transform: translateX(4px); font-weight: 600; }
+.rg-step.done { color: rgba(255,255,255,0.7); }
+.rg-step-icon {
+  width: 22px; height: 22px; border-radius: 50%; flex-shrink: 0;
+  border: 1.5px solid rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center;
+  font-size: 11px; transition: 0.3s; font-family: var(--font-mono);
+}
+.rg-step.active .rg-step-icon { border-color: #FF5E4F; background: rgba(255,94,79,0.2); color: #FF5E4F; box-shadow: 0 0 12px rgba(255,94,79,0.4); }
+.rg-step.done .rg-step-icon { border-color: #35754D; background: #35754D; color: #fff; }
+.rg-progress-track { width: 340px; max-width: 85vw; height: 4px; background: rgba(255,255,255,0.12); border-radius: 999px; overflow: hidden; }
+.rg-progress-fill { height: 100%; width: 0; background: linear-gradient(90deg, #3C829B, #FF5E4F, #FFA89E); border-radius: 999px; transition: width 0.5s ease; box-shadow: 0 0 8px rgba(255,94,79,0.7); }
+
+/* 3. Pulse Button & Animations */
+.pulse-btn {
+  animation: pulseGlow 2.5s infinite;
+}
+@keyframes pulseGlow {
+  0% { box-shadow: 0 0 0 0 rgba(255,94,79,0.5); }
+  70% { box-shadow: 0 0 0 14px rgba(255,94,79,0); }
+  100% { box-shadow: 0 0 0 0 rgba(255,94,79,0); }
+}
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* 4. Sports/Kavach-Inspired Stats Infographics */
+.kavach-hero-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin: 18px 0;
+}
+.kavach-stat-card {
+  background: var(--panel); border: 1.5px solid var(--line); border-radius: var(--radius-lg);
+  padding: 20px; box-shadow: var(--shadow-card); position: relative; overflow: hidden;
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+.kavach-stat-card:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,.08); }
+.kavach-stat-card.accent-coral { border-top: 4px solid var(--coral); }
+.kavach-stat-card.accent-blue { border-top: 4px solid var(--blue); }
+.kavach-stat-card.accent-green { border-top: 4px solid var(--green); }
+.kavach-stat-card.accent-amber { border-top: 4px solid var(--amber); }
+
+.kavach-stat-head {
+  display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;
+}
+.kavach-stat-label {
+  font-family: var(--font-display); font-size: 11.5px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: .1em; color: var(--mut);
+}
+.kavach-stat-pill {
+  font-size: 10px; font-weight: 700; font-family: var(--font-mono); padding: 2px 7px;
+  border-radius: var(--radius-pill); text-transform: uppercase;
+}
+.kavach-num-row { display: flex; align-items: baseline; gap: 6px; }
+.kavach-big-num {
+  font-family: var(--font-display); font-size: 38px; font-weight: 800; line-height: 1; color: var(--ink);
+}
+.kavach-sub-unit { font-size: 15px; font-weight: 600; color: var(--mutd); }
+
+/* SVG Gauge Ring */
+.kavach-gauge-wrap {
+  display: flex; align-items: center; gap: 16px;
+}
+.gauge-svg { flex: 0 0 84px; transform: rotate(-90deg); }
+.gauge-bg { fill: none; stroke: var(--panel2); stroke-width: 8; }
+.gauge-meter {
+  fill: none; stroke: var(--coral); stroke-width: 8; stroke-linecap: round;
+  transition: stroke-dashoffset 1s ease-in-out;
+}
+
+/* Mini Visual Progress Bars */
+.kavach-bars-list { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
+.kavach-bar-row { display: flex; align-items: center; gap: 8px; font-size: 12px; }
+.kavach-bar-label { width: 100px; color: var(--mut); font-weight: 600; font-size: 11.5px; }
+.kavach-bar-track { flex: 1; height: 8px; background: var(--panel2); border-radius: 4px; overflow: hidden; display: flex; }
+.kavach-bar-fill { height: 100%; border-radius: 4px; transition: width 0.8s ease; }
+.kavach-bar-val { width: 44px; text-align: right; font-weight: 700; font-family: var(--font-mono); font-size: 11px; }
+
+/* 5. Subjective Architecture Notes */
+.q-note-wrap { margin-top: 10px; }
+.q-note-textarea {
+  width: 100%; height: 58px; font-family: var(--font-body); font-size: 12.5px; line-height: 1.4;
+  padding: 8px 12px; border: 1px dashed var(--line); border-radius: var(--radius-sm);
+  background: var(--panel2); color: var(--ink); resize: vertical; outline: none; transition: border-color .15s;
+}
+.q-note-textarea:focus { border-color: var(--coral); background: #fff; }
+
+/* 6. AI Configuration Modal */
+.ai-modal-overlay {
+  position: fixed; inset: 0; z-index: 100000; background: rgba(0,0,0,0.55); backdrop-filter: blur(5px);
+  display: none; align-items: center; justify-content: center; padding: 20px;
+}
+.ai-modal-overlay.open { display: flex; }
+.ai-modal-card {
+  background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius-lg);
+  padding: 26px; max-width: 520px; width: 100%; box-shadow: 0 16px 40px rgba(0,0,0,0.25);
+}
+
 @media(max-width:768px){
-  .res-grid,.scen,.two-col,.decomp-grid,.hw-items{grid-template-columns:1fr}
+  .res-grid,.scen,.two-col,.decomp-grid,.hw-items,.kavach-hero-grid{grid-template-columns:1fr}
   .dimrow .dname{width:130px}
   .heatmap-grid{min-width:620px}
 }
@@ -273,52 +577,181 @@ footer.foot{text-align:center;color:var(--mutd);font-size:12px;padding:28px 0 44
 </head>
 <body>
 
-<!-- Suite Navigation -->
-<nav id="ltm-family-nav" aria-label="LTM Infrastructure Tech Advisory accelerators">
-  <div class="ltm-fam-inner">
-    <div class="ltm-fam-brand">
-      <span class="ltm-fam-b">LTM</span>
-      <span class="ltm-fam-s">Infrastructure Tech Advisory</span>
-    </div>
-    <div class="ltm-fam-links">
-      <a href="cloud-iq.html" class="ltm-fam-link current" aria-current="page" data-fam="cloud">Cloud IQ <span class="ltm-fam-tag">front door</span></a>
-      <a href="strategy-iq.html" class="ltm-fam-link" data-fam="strategy">Strategy IQ</a>
-      <a href="modernization-iq.html" class="ltm-fam-link" data-fam="moderniz">Modernization IQ</a>
-      <a href="ai-readiness-iq.html" class="ltm-fam-link" data-fam="ai">AI Readiness IQ</a>
-      <a href="sovereign-iq.html" class="ltm-fam-link" data-fam="sovereign">Sovereign IQ</a>
-      <a href="posture-iq.html" class="ltm-fam-link" data-fam="posture">Posture IQ</a>
-      <a href="finops-iq.html" class="ltm-fam-link" data-fam="finops">FinOps IQ</a>
-      <a href="cost-iq/master/CostIQ_Master.html" class="ltm-fam-link" data-fam="cost">Cost IQ Studio</a>
-    </div>
-  </div>
-</nav>
+<!-- High-Tech Welcome Splash Screen -->
+<div id="ltm-splash" role="status" aria-label="Initializing Cloud IQ Accelerator">
+  <button class="splash-skip-btn" id="splashSkip">Skip Intro &times;</button>
+  <canvas id="splash-canvas"></canvas>
 
-<!-- Header -->
-<header class="top">
-  <div class="wrap">
-    <div class="ltmlogo">
-      <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAsoAAAC8CAMAAABWrHiHAAAAM1BMVEVMaXHxX1PxX1PxX1PxX1PxX1PxX1PxX1PxX1PxX1PxX1PxX1PxX1PxX1PxX1PxX1PxX1MKL2o4AAAAEHRSTlMAkBDgIGDwQIDAoLAw0FBwWz2zBgAAAAlwSFlzAAALEgAACxIB0t1+/AAAC19JREFUeJztndtC21oMRCHc7/n/rz0lBZoASTQjaXt89qz3FlVauB5f5Istxt3FSO7A6lbMQ7AlTT/+6nHQZO8er5r+CWhrrHITC6v8XsGmdZY7Nk999VtlEZZXOVxCgkaTrbIKAipv31qH+Ye3zuqtsggKKt9et07zYnPbWb1VFkFB5e1j6zQvHluLt8oiSKi8bT0sX/fWbpVF0FC59bDce1C2yipoqLxtvCDXe6ZslWUQUfm+b5itly+2VlkGEZWv+obZdZfvE6ssgojK29fVztIqi6Ci8lPXLJtDn1WWQUXlrutxm/bCrbIIMio3Bb/u0GeVZZBRuSn4dYc+qyyDjMo9Ix4wSassgo7KLXf82kOfVZZBR+WOO37dd/rescoiCKnc8NjyzYCyrbIIQio3BL+XAWVbZRGEVK4f8vOIqq2yCEoqlwe/AaHPKsugpHJ18BsR+qyyDFIq39SOcUTos8oySKn8UjvGEaHPKssgpfL2uXKKze/0fWKVRdBSuTT4XY62VRdBS+Xby74d7iKFgfx4W+x5u7S/wanlUWoUvll92DQc/UI8Pp4EeFvqvdjcYNXLFVFqFJ5c9H3DbMSWt6fRwT+uiKtVW+vm+Cfq/h9rGpouiJKVjvl43MUSG9RYD5/fkyDF2YqK1yH8/c81r3Az6eexp6XsyzEMm94cyvzyP9p2dVmXqh/VbgX0/Pi3ntORn8mLT57/zcKofBj8vFLyJT8PNiDsup4MdsB997E8sqh4Hj9YDPmZ+HnxdzOSEV/Jjt4Hu/O1Y5DnrRs+2LMwiJeREXeVPBjwh9+2c0VjkOeqlo6Xp3JObF3HpLzJsJfa+JPz+zynCvFMjMizhMJrYIEKHv4D8BqxxnOpWZOxb01Ucm9B08jGeV40ynMhP86L3hzOsjBxdMrHKc6VQeGvyIG6qHl4iscpz5VB4Y/Jjt4IfX7a1ynPlUHhj8mJuph3+DVY4zocrDgh9zm/zbG1hWOc6EKjPBj7pdnw59VhlhQpWZ4Eetj0uHPquMMKPKTPAj1sflQ59VRphR5UHBj3gK78cL3lY5zpQqE8GP2BueD31WGWFKlYcEv4LQZ5URplR5SPAj3jb7+TC4VY4zp8oDgl/Nkd8qx5lTZSb4gevjKkKfVUaYVGUm+GE1VoQ+q4wwqcrtwa8k9FllhElVZoIf9IZu0d9vlePMqjIT/IAtAlVHfascZ1aVm4Nf1bm4VY4zrcq9wa/qF8Uqx5lW5dbgV3b6YpXjTKsyE8zC6+PKQqVVjjOvyo3Br+6Ib5XjzKsycz4bXB9Xdx5uleNMrDIhXHCLQN3VEascZ2KVmdOA0PZHZlHckVMXqxxnYpXbgh+xM+DYnUSrHGdmlZuCH7Mo7thlPqscZ2aVm4IfsR386M0XqxxnapV7gl/lLXGrHGdqlVuCX2Hos8oIU6vMvH93dotAYeizyghzq8w8IH9mi0Bl6LPKCHOrzLy2dGZvOPHbceKJO6scZ3KViZdJzwQ/YlHcieegrXKcyVVmgt/J8TOL4k5cq7bKcSZXuTz4lYY+q4wwu8rFwY/ZDn7qgX6rHGd2lYuDX23os8oI06tMBL8T6+NqQ59VRpheZSb4HV0fVxz6rDLC9CqXBj/iEH96UYxVjmOVmdPbY8GvOPRZZQSrXOhfdeizyghWuTD4EecqZzYeWeU4Vrku+DF/0Zm3UqxyHKtcF/zKQ59VRrDKdae45aHPKiNY5YsqB+tDn1VGsMoXVWcG9aHPKiNY5YuivNYQ+qwyglV+p+KASry+ff6TEFY5jlV+p+I0l9gZcH5fs1WOY5V35IMfseoosEXfKsexyjvywY9YQBf4tolVjmOVd6QzW0vos8oIVvkvRPA7WB/XEvqsMoJV/gsR/A62CLSEPquMYJU/IILf3vq4ntBnlRGs8gdE8NvbG07sDAh90NIqx7HKH6RyG7MoLvS1Kascxyp/kgl+xHbw2MffrXIcq/xJJvg1hT6rjGCVv+CDH7EdPPi9bKscxyp/QQS/j5dJukKfVUawyl8wwW+3RaAt9FllBKv8DyL47dbHtYU+q4xglf/BBj9iUVws9FllBKu8BxH87qhFccHQZ5URrPIeXPDrC31WGcEq70EFP2Y7eDD0WWUEq7wPE/yIM+xo6LPKCFZ5H0LLl8bQZ5URrPIBxMkCTjj0WWUEq3wAEfxwwqHPKiNY5QOY4AcTDn1WGcEqH0IEP5R46LPKCFb5EOY7fiDx0GeVEazyN9qDHxD6rDKCVf5Ge/ADQp9VRrDK32gPfkDos8oIVvk7zcEPCX1WGcEqf6c5+CGhzyojWOUftAY/KPRZZQSr/IPW4AeFPquMYJV/0Br8oNDXr/Lr+RJWg1X+SWPww0Jfv8pHPzy/QqzyTxqDHxb6+lU++uH5FWKVf6Et+IGhr1/l/9Nh2Sr/QlvwA0PfAJXxkmSxyr/QFvzA0DdC5e0TXJQoVvk3moIfGvqI8TDnRg/3GsDdSfZKAbBmXOWm4IeGPmI8A563bgPuTrJXCoA1E/cBWoIfHPqscmuvFABrJlRuCX5EwoLHM+TlxCbw9uR6pQBYM6FyS/Aj8hU8HuKjazLg7cn1SgGwZuZBg4b/qPHQR4yH2FouA9GfVK8UAGtmVG4IfnjoI8bD7HpWgehPqlcKgDVTj3+VBz8i9DHjIT6LogLToFSvBABrplQuz0/UbTV8PMReURWYBqV6JQBYM6VyefCjbqrh4xmw/aALpkGpXgkA1sw9X14c/JjQx4xnxSfLVIcyvRIArJlTufjwxoQ+ajzEZlERqA6lerU8YM3kWz+lwY8KfdR4iI/8iMC1KNOr5QFrJlUuDX7ks5TEeNZ7hsG1KNOr5QFrJlUuDX7kk5TMeJ4q6x4J16JUrxYHrJl9rbgw+HGhjxvPam/4kT3K9GpxwJpZlQuDHxf6yPGs9S4J2aNUr5YGrJle9lAW/MjQR45nrZeW2SZlerU0YM20ymXBj36BjhvPSg/LbJNSvVoYsGZa5bLgR78+x41npYdltkmpXi0MWDO/Taoo+LGhjx7POt8lobuU6tWygDXzKhcd3tjQR4+H+Oy2AHSXUr1aFrDmxI6/kuBHhz5+PKt8L4pvU6pXiwLWnFC5RInE1hR2PJs1Jj++TaleLQpYc0LlkuCX2JlCj2eNpxh8m3K9WhKw5swS4YIAxYe+zHhW+FRRok+5Xi0IWHNG5YLgx4e+1HjW9zpJok/JXi0HWHNqtXs6+CVCX2o8m9U9uJxpVK5XywHWnFI5HfxSqzIz41ld9Ms0KtmrxQBrTqmcDn6pRZmp8Ty3fxm2lkyjsr1aCrDm3LdjksEvE/qy41mZy6lOWeXzJINfJvSlx/O8qnOMVKescoDUoS0V+vLjWVX2y7XKKp8nFfyS30dIj2ezomtyuVZZ5fOkgl/y6wgF41nPvZJcq6xygETwy4W+mvGs5oRZoFfDAWvOqpwIfrnQVzSezUqek1Po1WjAmtMfcqaDXzL0lY3neRXP4mv0aixgzWmV6VXy2Y8e1Y3nZgVnGSq9GglYc1rlDXlYzn92t3A8+jLr9GocYM1plS9ewZ/4QfZMuXg8r+J7i5R6NQqw5rzKXPIr+OZu8Xiu35RvmWj1agxgzQUqMy6/FfzY+vFc3zyqnmnI9WoAYM0VKsMXAR6eK35qz3g2d/eXD3oXNSR71QxYc4nKf2S+DP/v/HJZ9DPR8fwHdq5oWHNX+MYAAAAASUVORK5CYII=" alt="LTM"/>
-      <div class="ltmword">
-        <b>Cloud IQ Enterprise</b>
-        <span>Infrastructure &amp; Estate Diagnostic</span>
+  <div class="splash-content">
+    <div class="splash-hero">
+      <div class="splash-ring"></div>
+      <div class="splash-ring"></div>
+      <div class="splash-ring"></div>
+      <div class="splash-logo-box">
+        <svg width="110" height="30" viewBox="0 0 110 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M95.2507 0.740829L87.8453 19.5397L80.4399 0.740829C80.2642 0.295746 79.8309 0 79.3507 0H65.884V29.2818H73.2044V8.51514C73.2044 7.22088 74.9906 6.88414 75.465 8.0847L83.5233 28.538C83.699 28.986 84.1324 29.2788 84.6126 29.2788H91.078C91.5582 29.2788 91.9916 28.9831 92.1673 28.538L100.226 8.0847C100.7 6.88122 102.486 7.22088 102.486 8.51514V29.2818H109.807V0H96.34C95.8597 0 95.4264 0.295746 95.2507 0.740829Z" fill="#FF5E4F"/>
+          <path d="M7.32045 20.7901V0H0V21.9613C0 26.0051 3.27663 29.2818 7.32045 29.2818H29.2818V21.9613H8.49172C7.84459 21.9613 7.32045 21.4372 7.32045 20.7901Z" fill="#FF5E4F"/>
+          <path d="M60.0277 0H23.4254V7.32044H36.3094C37.2786 7.32044 38.0663 8.10812 38.0663 9.07735V29.2818H45.3868V9.07735C45.3868 8.10812 46.1744 7.32044 47.1437 7.32044H60.0277V0Z" fill="#FF5E4F"/>
+        </svg>
       </div>
     </div>
-    <div class="header-meta">
-      <a href="cloud-iq-sample-report.html" class="btn ghost small" style="text-decoration:none">📄 View Sample Report</a>
-      <button class="btn secondary small" onclick="openSessionModal()">⚙ Session Setup</button>
-      <button class="btn secondary small" onclick="exportSessionJSON()">💾 Save .ciq</button>
-      <button class="btn secondary small" onclick="triggerSessionLoad()">📂 Load .ciq</button>
+
+    <div class="splash-brand"><span class="dot"></span> LTM · INFRASTRUCTURE TECH ADVISORY</div>
+    <h1 class="splash-title">Cloud IQ</h1>
+    <p class="splash-subtitle">Enterprise Hybrid Cloud &amp; Infrastructure Diagnostic Platform</p>
+
+    <div class="splash-console">
+      <div class="splash-console-left">
+        <span class="splash-console-prompt">&gt;</span>
+        <span class="splash-console-text" id="splashStatus">Initializing Architecture &amp; Modernization Engine (v2.2)...</span>
+      </div>
+      <span class="splash-console-pct" id="splashPct">00%</span>
+    </div>
+
+    <div class="splash-progress-track">
+      <div class="splash-progress-bar" id="splashBar"></div>
+    </div>
+    <div class="splash-footer-note">Enterprise Hybrid Cloud Diagnostic · Public Cloud &amp; Modernization Practice</div>
+  </div>
+
+  <script>
+    (function(){
+      var splash = document.getElementById('ltm-splash');
+      if (!splash) return;
+
+      var bar = document.getElementById('splashBar');
+      var status = document.getElementById('splashStatus');
+      var pct = document.getElementById('splashPct');
+      var skip = document.getElementById('splashSkip');
+      var canvas = document.getElementById('splash-canvas');
+
+      // 1. Ambient Particle Wave Canvas
+      var ctx = canvas ? canvas.getContext('2d') : null;
+      var particles = [];
+      var w, h;
+      function resize() {
+        if (!canvas) return;
+        w = canvas.width = window.innerWidth;
+        h = canvas.height = window.innerHeight;
+      }
+      resize();
+      window.addEventListener('resize', resize);
+
+      var animId;
+      if (ctx) {
+        for (var i = 0; i < 45; i++) {
+          particles.push({
+            x: Math.random() * (w || 800),
+            y: Math.random() * (h || 600),
+            radius: Math.random() * 2 + 0.8,
+            speedX: Math.random() * 0.8 + 0.2,
+            speedY: (Math.random() - 0.5) * 0.4,
+            alpha: Math.random() * 0.6 + 0.2,
+            color: Math.random() > 0.4 ? '#FF5E4F' : '#3C829B'
+          });
+        }
+        function renderParticles() {
+          ctx.clearRect(0, 0, w, h);
+          for (var i = 0; i < particles.length; i++) {
+            var p = particles[i];
+            p.x += p.speedX;
+            p.y += p.speedY;
+            if (p.x > w) p.x = 0;
+            if (p.y < 0) p.y = h;
+            if (p.y > h) p.y = 0;
+
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+            ctx.fillStyle = p.color;
+            ctx.globalAlpha = p.alpha;
+            ctx.fill();
+          }
+          animId = requestAnimationFrame(renderParticles);
+        }
+        animId = requestAnimationFrame(renderParticles);
+      }
+
+      // 2. Cinematic Loading Sequence
+      var steps = [
+        { p: 18, text: "Initializing Cloud Architecture & Modernization Diagnostic Engine (v2.2)..." },
+        { p: 44, text: "Mounting FinOps Excellence, VMware Broadcom Risk & SecNumCloud 3.2 Frameworks..." },
+        { p: 72, text: "Calibrating Dual-Horizon Track 1 (Value) & Track 2 (DC Exit) Archetypes..." },
+        { p: 90, text: "Synthesizing Statutory Boundaries, Statutory Ceilings & Peer Benchmarks..." },
+        { p: 100, text: "Diagnostic Engine Ready · Launching Cloud IQ..." }
+      ];
+
+      var duration = 2400; // 2.4s
+      var stepInterval = duration / steps.length;
+      var isDismissed = false;
+
+      function updateStep(idx) {
+        if (isDismissed || !steps[idx]) return;
+        var s = steps[idx];
+        if (bar) bar.style.width = s.p + '%';
+        if (pct) pct.textContent = (s.p < 10 ? '0' : '') + s.p + '%';
+        if (status) {
+          status.style.opacity = '0';
+          setTimeout(function(){
+            if (isDismissed) return;
+            status.textContent = s.text;
+            status.style.opacity = '1';
+          }, 100);
+        }
+      }
+
+      updateStep(0);
+      var timers = [];
+      for (var j = 1; j < steps.length; j++) {
+        (function(idx){
+          timers.push(setTimeout(function(){ updateStep(idx); }, idx * stepInterval));
+        })(j);
+      }
+
+      function dismiss() {
+        if (isDismissed) return;
+        isDismissed = true;
+        timers.forEach(clearTimeout);
+        if (animId) cancelAnimationFrame(animId);
+        splash.classList.add('splash-out');
+        try { sessionStorage.setItem('cloud_iq_splash_seen', '1'); } catch(e){}
+        setTimeout(function(){
+          if (splash && splash.parentNode) splash.parentNode.removeChild(splash);
+        }, 550);
+      }
+
+      if (skip) skip.onclick = dismiss;
+      setTimeout(dismiss, duration + 300);
+    })();
+  </script>
+</div>
+
+<!-- Unified Executive Header Bar -->
+<header class="topbar no-print" role="banner">
+  <div class="wrap">
+    <div class="brand">
+      <img src="assets/ltm-logo.png" onerror="this.onerror=null;this.src='/assets/ltm-logo.png'" alt="LTM - A Larsen & Toubro Group Company" style="height:32px;width:auto;border-radius:4px;object-fit:contain;vertical-align:middle;">
+      <div>
+        <div class="name">Cloud IQ</div>
+        <div class="sub">Infrastructure Tech Advisory · Public Cloud &amp; Modernization</div>
+      </div>
+    </div>
+    <div class="topbar-actions">
+      <a href="cloud-iq-sample-report.html" class="btn btn-ghost btn-sm" style="text-decoration:none;font-weight:700">Sample Report</a>
+      <button class="btn btn-ghost btn-sm" onclick="openSessionModal()">Session</button>
+      <button class="btn btn-ghost btn-sm" onclick="exportSessionJSON()" title="Save .ciq file">Save</button>
+      <button class="btn btn-ghost btn-sm" onclick="triggerSessionLoad()" title="Load .ciq file">Load</button>
       <input type="file" id="ciqFileInput" accept=".ciq,.json" style="display:none" onchange="loadSessionFile(event)">
+      <button class="btn btn-ghost btn-sm" onclick="start()" id="btn-restart" style="display:none">Restart</button>
     </div>
   </div>
 </header>
 
-<!-- Active Session Ribbon -->
-<div class="session-bar">
+<!-- Active Session Ribbon (Hidden on Home Screen, shown during active engagement) -->
+<div class="session-bar no-print" id="sessionBar" style="display:none">
   <div class="wrap session-inner">
     <div class="session-fields">
       <span class="s-field">Client: <strong id="lblClient">Global Enterprise</strong></span>
-      <span class="s-field">Consultant: <strong id="lblLead">Ashutosh Dixit</strong></span>
+      <span class="s-field">Advisory Lead: <strong id="lblLead">Ashutosh Dixit</strong></span>
       <span class="s-field">Horizon: <strong id="lblHorizon">12-Month Modernization &amp; DC Exit</strong></span>
       <span class="s-badge" id="lblModeBadge">Workshop Mode (30m)</span>
     </div>
@@ -327,7 +760,7 @@ footer.foot{text-align:center;color:var(--mutd);font-size:12px;padding:28px 0 44
         <input type="checkbox" id="chkAnonymize" onchange="toggleAnonymize(this.checked)"> Anonymize for Readout
       </label>
       <button class="btn secondary small" style="padding:3px 8px;font-size:10.5px" onclick="toggleConsultantUnlock()" id="btnConsultantUnlock">
-        🔓 Consultant Unlock: Off
+        Consultant Unlock: Off
       </button>
     </div>
   </div>
@@ -346,10 +779,10 @@ footer.foot{text-align:center;color:var(--mutd);font-size:12px;padding:28px 0 44
 <div class="ai-drawer" id="aiDrawer">
   <div class="ai-drawer-header">
     <div>
-      <h3 style="font-size:18px;font-weight:800">✨ LTM Advisory Studio</h3>
+      <h3 style="font-size:18px;font-weight:800">LTM Advisory Studio</h3>
       <p style="font-size:12px;color:var(--mut)">Grounded executive briefing engine powered by Gemini, OpenAI, Claude, Offline LTM or LTM SLM</p>
     </div>
-    <button class="btn ghost small" onclick="closeAiDrawer()">✕</button>
+    <button class="btn ghost small" onclick="closeAiDrawer()">&times;</button>
   </div>
   <div class="ai-drawer-body">
     <div style="background:var(--panel2);border:1px solid var(--line);border-radius:var(--radius-sm);padding:12px;margin-bottom:16px">
@@ -373,8 +806,8 @@ footer.foot{text-align:center;color:var(--mutd);font-size:12px;padding:28px 0 44
     </div>
 
     <div style="display:flex;gap:10px;margin-bottom:14px">
-      <button class="btn" style="flex:1" onclick="generateAiBriefing()">⚡ Generate Grounded Memo</button>
-      <button class="btn secondary" onclick="copyAiPromptPack()">📋 Copy Prompt Pack</button>
+      <button class="btn" style="flex:1" onclick="generateAiBriefing()">Generate Grounded Memo</button>
+      <button class="btn secondary" onclick="copyAiPromptPack()">Copy Prompt Pack</button>
     </div>
 
     <div id="aiMemoStatus" style="font-size:12px;color:var(--mut);font-family:var(--font-mono);margin-bottom:8px"></div>
@@ -407,11 +840,40 @@ footer.foot{text-align:center;color:var(--mutd);font-size:12px;padding:28px 0 44
   </div>
 </div>
 
+<!-- AI Configuration Modal -->
+<div class="ai-modal-overlay" id="aiSettingsModalOverlay" onclick="closeAiSettingsModal()">
+  <div class="ai-modal-card" onclick="event.stopPropagation()">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+      <div>
+        <h3 style="font-size:18px;font-weight:800;color:var(--ink)">Configure OpenAI / ChatGPT Live Engine</h3>
+        <p style="font-size:12px;color:var(--mut);margin-top:2px">Used to synthesize bespoke C-Suite executive memorandums via GPT-4o.</p>
+      </div>
+      <button class="btn ghost small" onclick="closeAiSettingsModal()">&times;</button>
+    </div>
+    <div style="margin-bottom:14px">
+      <label style="display:block;font-size:12px;font-weight:700;color:var(--ink);margin-bottom:6px">OpenAI API Key (Stored in Local Browser Only)</label>
+      <input type="password" id="cfgOpenAiKey" placeholder="sk-proj-..." style="width:100%;padding:10px;border-radius:6px;border:1.5px solid var(--line);font-family:var(--font-mono);font-size:13px" />
+      <div style="font-size:11px;color:var(--mutd);margin-top:4px">Zero server persistence. Your key is stored in localStorage to enable instant in-browser synthesis.</div>
+    </div>
+    <div style="margin-bottom:18px">
+      <label style="display:block;font-size:12px;font-weight:700;color:var(--ink);margin-bottom:6px">Model Selection</label>
+      <select id="cfgOpenAiModel" style="width:100%;padding:8px;border-radius:6px;border:1.5px solid var(--line);font-size:13px">
+        <option value="gpt-4o" selected>OpenAI GPT-4o (Recommended · Deepest Advisory Logic)</option>
+        <option value="gpt-4o-mini">OpenAI GPT-4o-mini (Faster Response)</option>
+      </select>
+    </div>
+    <div style="display:flex;gap:10px;justify-content:flex-end">
+      <button class="btn secondary" onclick="clearOpenAiKey()">Clear Key (Use Heuristic)</button>
+      <button class="btn" onclick="saveOpenAiKeyFromModal()">Save &amp; Activate Live Engine</button>
+    </div>
+  </div>
+</div>
+
 <script>
 /* ============================================================
-   Cloud IQ v2.1 Enterprise Diagnostic Data Model
+   Cloud IQ v2.2 Enterprise Diagnostic Data Model
    ============================================================ */
-var CLOUD_IQ_VERSION = "2.1";
+var CLOUD_IQ_VERSION = "2.2";
 var STORE_KEY = "cloudiq.v2.state";
 var SHARE_PREFIX = "#s=";
 
@@ -425,7 +887,9 @@ var SESSION = {
   anonymize: false,
   isUnlocked: false, // Lead-gen gating flag
   consultingProbes: {},
-  consultingProbeNotes: {}
+  consultingProbeNotes: {},
+  questionNotes: {},
+  memoText: ""
 };
 
 // Automatic sector regulatory defaults (consulting intelligence)
@@ -629,7 +1093,7 @@ function updateSessionUI(){
   }
   const btnUnlock = document.getElementById('btnConsultantUnlock');
   if(btnUnlock){
-    btnUnlock.textContent = SESSION.isUnlocked ? "🔓 Consultant Unlock: Active" : "🔒 Consultant Unlock: Off";
+    btnUnlock.textContent = SESSION.isUnlocked ? "Consultant Unlock: Active" : "Consultant Unlock: Off";
     btnUnlock.style.background = SESSION.isUnlocked ? "var(--green-tint)" : "var(--panel2)";
     btnUnlock.style.color = SESSION.isUnlocked ? "var(--green)" : "var(--ink)";
     btnUnlock.style.borderColor = SESSION.isUnlocked ? "var(--green)" : "var(--line)";
@@ -688,12 +1152,15 @@ function start(){
     </div>`;
   }
 
+  const sb = document.getElementById('sessionBar');
+  if(sb) sb.style.display = 'none';
+
   app.innerHTML = `
     ${resumeHtml}
     <div class="card">
       <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:8px">
         <div class="sec-label">LTM Infrastructure Tech Advisory · Diagnostic Platform</div>
-        <a href="cloud-iq-sample-report.html" class="btn ghost small" style="text-decoration:none">📄 View Finished Sample Report →</a>
+        <a href="cloud-iq-sample-report.html" class="btn ghost small" style="text-decoration:none">View Finished Sample Report →</a>
       </div>
       <h1 style="font-size:34px;line-height:1.2;margin-bottom:12px">Enterprise Cloud &amp; Hybrid Estate Diagnostic</h1>
       <p class="lead">
@@ -701,18 +1168,16 @@ function start(){
       </p>
 
       <div style="margin:16px 0">
-        <span class="pill">📊 8 Core Dimensions (D1–D8)</span>
-        <span class="pill">🔥 2D Risk Heatmap</span>
-        <span class="pill">🧭 4-Phase Horizon Roadmap</span>
-        <span class="pill">💰 Quantified Cost Leakage ($)</span>
-        <span class="pill">✨ LTM Advisory Studio</span>
-        <span class="pill">📄 Boardroom PDF &amp; Slide Export</span>
+        <span class="pill">2D Risk Heatmap</span>
+        <span class="pill">4-Phase Horizon Roadmap</span>
+        <span class="pill">Quantified Cost Leakage ($)</span>
+        <span class="pill">Boardroom PDF &amp; Slide Export</span>
       </div>
 
       <div class="two-col" style="margin:22px 0 16px">
         <div style="background:var(--panel2);border:1.5px solid var(--line);border-radius:var(--radius-md);padding:18px;cursor:pointer;transition:.15s" onclick="setMode('flash')" id="cardModeFlash">
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-            <h3 style="font-size:16px">⚡ Executive Flash Mode</h3>
+            <h3 style="font-size:16px">Executive Flash Mode</h3>
             <span class="s-badge mode-flash">~10 Mins</span>
           </div>
           <p style="font-size:13px;color:var(--mut)">Rapid high-level scan with 1 key anchor question per dimension. Built for initial CIO/CTO alignment readouts.</p>
@@ -720,7 +1185,7 @@ function start(){
 
         <div style="background:var(--panel2);border:2px solid var(--coral);border-radius:var(--radius-md);padding:18px;cursor:pointer;transition:.15s" onclick="setMode('workshop')" id="cardModeWorkshop">
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-            <h3 style="font-size:16px;color:var(--coral)">🔬 Comprehensive Workshop Mode</h3>
+            <h3 style="font-size:16px;color:var(--coral)">Comprehensive Workshop Mode</h3>
             <span class="s-badge mode-workshop">~25–35 Mins</span>
           </div>
           <p style="font-size:13px;color:var(--mut)">Calibrated multi-criteria discovery covering on-premise storage, VMware Broadcom risk, DevEx golden paths, and TokenOps.</p>
@@ -728,7 +1193,7 @@ function start(){
       </div>
 
       <div class="nav" style="margin-top:24px">
-        <button class="btn secondary" onclick="openSessionModal()">⚙ Configure Session Details</button>
+        <button class="btn secondary" onclick="openSessionModal()">Configure Session Details</button>
         <button class="btn big" onclick="begin()">Start Diagnostic Assessment →</button>
       </div>
     </div>
@@ -800,11 +1265,21 @@ function renderGroup(){
     else if(Q.type === "tf") body = renderTF(Q);
 
     const dimBadge = Q.dim ? `<span class="qmeta-tag">${Q.dim}</span>` : "";
+    const savedNote = (SESSION.questionNotes && SESSION.questionNotes[Q.id]) || "";
+    const hasNote = !!savedNote.trim();
     return `
       <div class="qblock">
         <div class="qtext">${Q.q} ${dimBadge}</div>
         <div class="qhint">${Q.hint || "&nbsp;"}</div>
         ${body}
+        <div class="q-note-wrap">
+          <button type="button" class="btn-note-toggle" onclick="toggleQNote('${Q.id}')" style="background:none;border:none;color:var(--coral);font-size:12px;font-weight:600;cursor:pointer;padding:4px 0;display:inline-flex;align-items:center;gap:4px">
+            <span id="lbl_note_${Q.id}">${hasNote ? "Edit Context / Subjective Note" : "+ Add Context / Subjective Note (Optional)"}</span>
+          </button>
+          <div id="box_note_${Q.id}" style="display:${hasNote ? "block" : "none"};margin-top:6px">
+            <textarea class="q-note-textarea" oninput="saveQNote('${Q.id}', this.value)" placeholder="Enter subjective observations, legacy constraints, specific technologies, or organizational context for the AI report...">${savedNote}</textarea>
+          </div>
+        </div>
       </div>
     `;
   }).join("");
@@ -859,6 +1334,39 @@ function refreshNext(){
   const b = document.getElementById('nextBtn');
   if(b) b.disabled = !ok;
   saveState();
+}
+
+function toggleQNote(qid){
+  const box = document.getElementById('box_note_' + qid);
+  if(!box) return;
+  const isHidden = box.style.display === "none";
+  box.style.display = isHidden ? "block" : "none";
+  if(isHidden){
+    const ta = box.querySelector('textarea');
+    if(ta) ta.focus();
+  }
+}
+function saveQNote(qid, text){
+  if(!SESSION.questionNotes) SESSION.questionNotes = {};
+  SESSION.questionNotes[qid] = text;
+  const lbl = document.getElementById('lbl_note_' + qid);
+  if(lbl){
+    lbl.textContent = text.trim() ? "Edit Context / Subjective Note" : "+ Add Context / Subjective Note (Optional)";
+  }
+  saveState();
+}
+function formatQuestionNotesForPrompt(){
+  if(!SESSION.questionNotes || Object.keys(SESSION.questionNotes).length === 0){
+    return "No subjective architecture notes provided.";
+  }
+  let out = "";
+  for(const [qid, note] of Object.entries(SESSION.questionNotes)){
+    if(note && note.trim()){
+      const Q = QUESTIONS.find(x => x.id === qid);
+      out += `- [${qid}: ${Q ? Q.q : ""}] Note: "${note.trim()}"\n`;
+    }
+  }
+  return out || "No subjective architecture notes provided.";
 }
 
 /* Question Type Renderers */
@@ -1009,8 +1517,8 @@ function startConsultingDepthStep(){
   const R = compute();
   const probes = generateConsultingProbes(A, R);
   if(!probes || probes.length === 0){
-    clearState();
-    computeAndShow();
+    saveState();
+    showPreliminaryScorecard(R);
   } else {
     renderConsultingDepthStep(probes, R);
     window.scrollTo({top:0, behavior:'smooth'});
@@ -1027,7 +1535,7 @@ function generateConsultingProbes(A, R){
   if(isHighSpendLowCommit || (isFinOpsTopObj && spendVal >= 2000000)){
     probes.push({
       id: "P_FINOPS",
-      badge: "⚠ Cost & FinOps Anomaly",
+      badge: "Cost & FinOps Anomaly",
       badgeClass: "red",
       q: `You reported ~$${(spendVal/1000000).toFixed(1)}M/yr in public cloud spend with pricing commitment coverage under 40%. Who currently approves on-demand cloud budget overruns, and do engineering squads have unit-cost visibility?`,
       options: [
@@ -1044,7 +1552,7 @@ function generateConsultingProbes(A, R){
   if(R.leaseCliff || [2,3,4].includes(A["Q0.12"])){
     probes.push({
       id: "P_DC_EXIT",
-      badge: "⏰ Impending DC Lease Deadline",
+      badge: "Impending DC Lease Deadline",
       badgeClass: "red",
       q: "Your on-premises hardware or facility lease expires within 12–24 months. What is the contractual notice period required to terminate your colocation lease, and what are the penalty escalations if migration stalls?",
       options: [
@@ -1061,7 +1569,7 @@ function generateConsultingProbes(A, R){
   if(R.vmwareRisk || A["Q0.11"] === 2){
     probes.push({
       id: "P_VMWARE",
-      badge: "⚠ VMware Renewal Price Shock",
+      badge: "VMware Renewal Price Shock",
       badgeClass: "amber",
       q: "VMware Broadcom subscription pricing shifts are increasing on-premise run-rates by 2x to 4x. What percentage of your on-premises virtualized workloads can be rapidly containerized vs. migrated to native cloud VMs?",
       options: [
@@ -1075,10 +1583,11 @@ function generateConsultingProbes(A, R){
   }
 
   // Probe 4: Digital Sovereignty & SecNumCloud / DORA Cryptographic Isolation
-  if(R.secnumFlag || R.sovFlag || (A["Q0.3"]||[]).some(x => [0,1,7,8,9].includes(x))){
+  const q03Arr = Array.isArray(A["Q0.3"]) ? A["Q0.3"] : (A["Q0.3"]!==undefined && A["Q0.3"]!==null ? [A["Q0.3"]] : []);
+  if(R.secnumFlag || R.sovFlag || q03Arr.some(x => [0,1,7,8,9].includes(x))){
     probes.push({
       id: "P_SOVEREIGNTY",
-      badge: "🔐 SecNumCloud & DORA Key Governance",
+      badge: "SecNumCloud & DORA Key Governance",
       badgeClass: "blue",
       q: "You indicated strict sovereignty (SecNumCloud / DORA / Residency). Where are your master cryptographic keys (HSMs) stored, and could foreign cloud provider personnel access unencrypted tenant data under extraterritorial subpoenas (e.g. US CLOUD Act)?",
       options: [
@@ -1095,7 +1604,7 @@ function generateConsultingProbes(A, R){
   if((A["Q0.7"]||[]).length >= 2){
     probes.push({
       id: "P_MULTICLOUD",
-      badge: "🌐 Multi-Cloud Interconnect & Egress",
+      badge: "Multi-Cloud Interconnect & Egress",
       badgeClass: "amber",
       q: "You operate across multiple public clouds. What is your primary cross-cloud data replication pattern, and do you experience significant network egress costs or latency friction between providers?",
       options: [
@@ -1112,7 +1621,7 @@ function generateConsultingProbes(A, R){
   if(R.dimScores && (R.dimScores["D2"] < 3.0 || R.dimScores["D5"] < 3.0)){
     probes.push({
       id: "P_LANDING_ZONE",
-      badge: "⚙ Platform Engineering & Drift",
+      badge: "Platform Engineering & Drift",
       badgeClass: "amber",
       q: "How are new cloud accounts, network VPCs, and IAM policies provisioned for application teams today?",
       options: [
@@ -1128,7 +1637,7 @@ function generateConsultingProbes(A, R){
   // Probe 7: Subjective CIO Executive Mandate
   probes.push({
     id: "P_CIO_MANDATE",
-    badge: "🎯 Executive Leadership Mandate",
+    badge: "Executive Leadership Mandate",
     badgeClass: "blue",
     q: "What is the single most critical infrastructure or cloud milestone the CIO/CTO must deliver to the Board or CEO in the next 6 to 12 months?",
     options: [
@@ -1143,7 +1652,7 @@ function generateConsultingProbes(A, R){
   // Probe 8: Delivery Capacity & Operating Model
   probes.push({
     id: "P_DELIVERY_MODEL",
-    badge: "👥 Engineering Capacity & Execution Model",
+    badge: "Engineering Capacity & Execution Model",
     badgeClass: "amber",
     q: "Does your internal engineering organization have the bandwidth and specialized cloud skills (Kubernetes, FinOps, Terraform) to execute modernization in-house, or will an external migration factory partner be required?",
     options: [
@@ -1234,13 +1743,15 @@ function submitConsultingProbes(){
       SESSION.consultingProbeNotes[pid] = val;
     }
   });
-  clearState();
-  computeAndShow();
+  saveState();
+  const R = compute();
+  showPreliminaryScorecard(R);
 }
 
 function skipConsultingProbes(){
-  clearState();
-  computeAndShow();
+  saveState();
+  const R = compute();
+  showPreliminaryScorecard(R);
 }
 
 function formatConsultingProbesForPrompt(){
@@ -1264,10 +1775,12 @@ function compute(){
   const r04 = QUESTIONS.find(x => x.id === "Q0.4").route[A["Q0.4"]] || {};
   JA += r04.A || 0; JB += r04.B || 0;
   const Q11 = QUESTIONS.find(x => x.id === "Q1.1");
-  (A["Q1.1"] || []).forEach(i => { const j = Q11.opts[i].j; JA += j.A || 0; JB += j.B || 0; });
+  const a11 = Array.isArray(A["Q1.1"]) ? A["Q1.1"] : (A["Q1.1"] !== undefined && A["Q1.1"] !== null ? [A["Q1.1"]] : []);
+  a11.forEach(i => { if(Q11 && Q11.opts[i]){ const j = Q11.opts[i].j; JA += j.A || 0; JB += j.B || 0; } });
   const Q06 = QUESTIONS.find(x => x.id === "Q0.6");
-  const topObj = (A["Q0.6"] || [])[0] || "Cost reduction & FinOps";
-  const oj = Q06.objJourney[topObj];
+  const a06 = Array.isArray(A["Q0.6"]) ? A["Q0.6"] : (A["Q0.6"] !== undefined && A["Q0.6"] !== null ? [A["Q0.6"]] : []);
+  const topObj = a06[0] || "Cost reduction & FinOps";
+  const oj = Q06 ? Q06.objJourney[topObj] : null;
   if(oj === "A") JA += 2; if(oj === "B") JB += 2;
 
   const isHybrid = Math.abs(JA - JB) <= 1;
@@ -1308,12 +1821,16 @@ function compute(){
   const band = scoreBand(overall);
 
   // 3. Flags & Critical Risks
+  const asArr = (v) => Array.isArray(v) ? v : (v !== undefined && v !== null ? [v] : []);
   const Q03 = QUESTIONS.find(x => x.id === "Q0.3");
-  const sov03 = (A["Q0.3"] || []).some(i => Q03.opts[i][0] !== Q03.sovFlagExcept);
+  const sov03 = asArr(A["Q0.3"]).some(i => Q03 && Q03.opts[i] && Q03.opts[i][0] !== Q03.sovFlagExcept);
   const sov82 = A["Q8.2"] === true;
   const sovFlag = sov03 || sov82;
-  const secnumFlag = (A["Q0.3"] || []).includes(9); // SecNumCloud checked
-  const aiFlag = (A["Q9.2"] || []).some(i => QUESTIONS.find(x => x.id === "Q9.2").opts[i][0] !== "None yet / monitoring only");
+  const secnumFlag = asArr(A["Q0.3"]).includes(9); // SecNumCloud checked
+  const aiFlag = asArr(A["Q9.2"]).some(i => {
+    const q92 = QUESTIONS.find(x => x.id === "Q9.2");
+    return q92 && q92.opts[i] && q92.opts[i][0] !== "None yet / monitoring only";
+  });
   const vmwareRisk = A["Q0.11"] === 2; // VMware renewal cliff
   const leaseCliff = [2,3,4].includes(A["Q0.12"]); // Imminent DC lease or EOL cliff
 
@@ -1455,24 +1972,341 @@ function fmt(n){ return "$" + Number(n).toLocaleString(); }
    ============================================================ */
 
 function checkCloudAnswerThreshold(){
-  var total = GROUPS.reduce(function(acc, g){ return acc + g.questions.length; }, 0);
+  var total = GROUPS.reduce(function(acc, g){ return acc + (g.qs ? g.qs.length : 0); }, 0);
   var answered = 0;
   GROUPS.forEach(function(g){
-    g.questions.forEach(function(q){
-      if(ANSWERS[q.id] !== undefined && ANSWERS[q.id] !== null) answered++;
-    });
+    if(g.qs){
+      g.qs.forEach(function(qid){
+        if(A[qid] !== undefined && A[qid] !== null && A[qid] !== "") answered++;
+      });
+    }
   });
   var pct = total > 0 ? (answered / total) : 0;
-  if(pct < 0.50){
-    alert("⚠️ Diagnostic Quality Gate: You have answered " + answered + " of " + total + " questions (" + Math.round(pct*100) + "%).\n\nPlease complete at least 50% of the assessment questions to generate a statistically reliable maturity diagnostic.");
+  if(pct < 0.25){
+    alert("Diagnostic Quality Gate: You have answered " + answered + " of " + total + " questions (" + Math.round(pct*100) + "%).\n\nPlease complete at least 25% of the assessment questions to generate a statistically reliable maturity diagnostic.");
     return false;
   }
   return true;
 }
+
 function computeAndShow(){
   if(typeof checkCloudAnswerThreshold === 'function' && !checkCloudAnswerThreshold()) return;
   RESULT = compute();
-  showResults(RESULT);
+  showPreliminaryScorecard(RESULT);
+}
+
+function showPreliminaryScorecard(R){
+  if(!R) R = compute();
+  RESULT = R;
+  pfill.style.width = "100%";
+  
+  const client = SESSION.anonymize ? "Confidential Enterprise Client" : SESSION.clientName;
+  const trackDesc = R.isHybrid ? 
+    "Simultaneous cloud value realization and systematic on-premises data centre decommissioning." :
+    (R.trackCode === "A" ? "Cloud-native optimization, FinOps rate arbitrage, and platform engineering golden paths." :
+     "Data centre evacuation, colocation exit, and 6R application migration factory.");
+
+  const dangerDims = Object.keys(DIM_NAMES).filter(d => R.urgencyMap[d] === 3 && R.dimScores[d] < 2.8);
+  const dangerNames = dangerDims.map(d => `${d} ${DIM_NAMES[d]}`).join(", ") || "None Identified";
+
+  app.innerHTML = `
+    <div class="card prelim-card" style="border-top:4px solid var(--coral);animation:fadeInUp 0.5s ease both">
+      <div class="card-header-row">
+        <div>
+          <div class="sec-label">Diagnostic Quality Gate Passed · Preliminary Readout</div>
+          <h1 style="font-size:26px;margin-bottom:6px">Estate Maturity Preliminary Scorecard</h1>
+          <p style="font-size:14px;color:var(--mut);margin:0">Key indicators correlated across 8 architecture dimensions, FinOps commitment models, and peer benchmarks.</p>
+        </div>
+        <span class="badge" style="background:var(--coral);font-size:13px;padding:6px 14px">${R.band.toUpperCase()}</span>
+      </div>
+
+      <!-- Hero Metrics Strip (Sports/Kavach analytics style) -->
+      <div class="kavach-hero-grid">
+        <!-- Metric 1: Overall Score Gauge -->
+        <div class="kavach-stat-card accent-coral">
+          <div class="kavach-stat-head">
+            <span class="kavach-stat-label">Overall Maturity</span>
+            <span class="kavach-stat-pill" style="background:${R.overall<2.8?'var(--amber-tint)':R.overall<3.8?'var(--blue-tint)':'var(--green-tint)'};color:${R.overall<2.8?'var(--amber-dk)':R.overall<3.8?'var(--blue)':'var(--green)'}">${R.band}</span>
+          </div>
+          <div class="kavach-num-row">
+            <span class="kavach-big-num">${R.overall.toFixed(1)}</span>
+            <span class="kavach-sub-unit">/ 5.0</span>
+          </div>
+          <div style="font-size:11.5px;color:var(--mutd);margin-top:8px">Calculated across 8 core dimensions</div>
+        </div>
+
+        <!-- Metric 2: Transformation Track -->
+        <div class="kavach-stat-card accent-blue">
+          <div class="kavach-stat-head">
+            <span class="kavach-stat-label">Strategy Track</span>
+            <span class="kavach-stat-pill" style="background:var(--blue-tint);color:var(--blue)">Track Code: ${R.trackCode}</span>
+          </div>
+          <div style="font-family:var(--font-display);font-size:16px;font-weight:800;color:var(--ink);line-height:1.3;margin-bottom:6px">${R.trackName}</div>
+          <p style="font-size:11.5px;color:var(--mut);line-height:1.4">${trackDesc}</p>
+        </div>
+
+        <!-- Metric 3: Peer Benchmark Delta -->
+        <div class="kavach-stat-card ${R.peerDelta>=0?'accent-green':'accent-coral'}">
+          <div class="kavach-stat-head">
+            <span class="kavach-stat-label">Sector Benchmark</span>
+            <span class="kavach-stat-pill" style="background:${R.peerDelta>=0?'var(--green-tint)':'var(--coral-tint)'};color:${R.peerDelta>=0?'var(--green)':'var(--coral-dkr)'}">${R.peerDelta>=0?'Ahead of Peer':'Lagging Peer'}</span>
+          </div>
+          <div class="kavach-num-row">
+            <span class="kavach-big-num" style="color:${R.peerDelta>=0?'var(--green)':'var(--coral)'}">${R.peerDelta>=0?'+':''}${R.peerDelta.toFixed(1)}</span>
+            <span class="kavach-sub-unit">vs Peer Median</span>
+          </div>
+          <div style="font-size:11.5px;color:var(--mut);margin-top:8px">Sector: ${R.industryKey.split(' ')[0]} (${(R.peer.overall||3.0).toFixed(1)} baseline)</div>
+        </div>
+
+        <!-- Metric 4: Annual Cost Leakage -->
+        <div class="kavach-stat-card accent-amber">
+          <div class="kavach-stat-head">
+            <span class="kavach-stat-label">Addressable Waste</span>
+            <span class="kavach-stat-pill" style="background:var(--coral-tint);color:var(--coral-dkr)">Value at Stake</span>
+          </div>
+          <div class="kavach-num-row">
+            <span class="kavach-big-num" style="color:var(--coral)">${fmt(R.totalLeakage)}</span>
+          </div>
+          <div style="font-size:11.5px;color:var(--mut);margin-top:8px">Range: ${fmt(R.leakLow)} – ${fmt(R.leakHigh)} / yr</div>
+        </div>
+      </div>
+
+      <!-- Critical Warnings Banner if any detected -->
+      ${(R.vmwareRisk || R.leaseCliff || R.secnumFlag || dangerDims.length > 0) ? `
+        <div style="background:#FFF3E0;border:1px solid #FFE082;border-radius:var(--radius-md);padding:16px;margin:20px 0">
+          <div style="font-weight:700;font-size:13px;color:#E65100;margin-bottom:6px">Critical Operational Signals &amp; Bottlenecks Detected:</div>
+          <ul style="font-size:12.5px;color:#5D4037;padding-left:18px;line-height:1.6">
+            ${R.vmwareRisk ? `<li><b>VMware Renewal Cliff:</b> Anticipated Broadcom 2.5x–3.5x licensing cost escalation requires emergency hypervisor strategy.</li>` : ""}
+            ${R.leaseCliff ? `<li><b>Facility Lease Expiration (<12 Months):</b> Impending colocation contract cliff forces hard migration factory velocity.</li>` : ""}
+            ${R.secnumFlag ? `<li><b>SecNumCloud European Sovereign Boundary:</b> French/EU Cloud de Confiance requirements mandate segregated hosting for regulated workloads.</li>` : ""}
+            ${dangerDims.length > 0 ? `<li><b>High-Urgency Architectural Deficits:</b> Immediate remediation required in: <u>${dangerNames}</u>.</li>` : ""}
+          </ul>
+        </div>
+      ` : ""}
+
+      <!-- Call to Action Box: Engine Generation -->
+      <div style="background:linear-gradient(135deg, #162432 0%, #0F1923 100%);color:#fff;border-radius:var(--radius-lg);padding:28px;text-align:center;box-shadow:0 8px 30px rgba(0,0,0,0.18);margin-top:20px">
+        <div style="font-family:var(--font-mono);font-size:11px;letter-spacing:.18em;color:var(--coral);text-transform:uppercase;margin-bottom:10px">Diagnostic Synthesis Engine Ready</div>
+        <h2 style="font-size:24px;color:#fff;margin-bottom:10px">Compile Full Executive Advisory Deliverable</h2>
+        <p style="max-width:620px;margin:0 auto 24px;font-size:14px;color:rgba(255,255,255,0.75);line-height:1.55">
+          Launch our cinematic diagnostic synthesis engine to generate your <b>Canvas Spider Chart</b>, <b>2D Strategic Risk Heatmap</b>, <b>4-Phase Modernization Roadmap</b>, and <b>Executive C-Suite Memorandum</b>.
+        </p>
+        <div style="display:flex;justify-content:center;gap:14px;flex-wrap:wrap">
+          <button class="btn big pulse-btn" style="background:var(--coral);color:#fff;font-size:15px;padding:16px 36px;box-shadow:0 0 25px rgba(255,94,79,0.5)" onclick="startCinematicReportGeneration()">
+            Run Diagnostic Engine &amp; Generate Executive Report →
+          </button>
+        </div>
+      </div>
+
+      <div class="nav" style="margin-top:20px;border-top:1px solid var(--line2);padding-top:16px">
+        <button class="btn ghost" onclick="reviewAssessmentAnswers()">← Review Assessment Answers</button>
+        <button class="btn secondary" onclick="openAiSettingsModal()">Configure ChatGPT / OpenAI Key</button>
+      </div>
+    </div>
+  `;
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+function reviewAssessmentAnswers(){
+  gIdx = 0;
+  renderGroup();
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+function startCinematicReportGeneration(){
+  showReportGenerationAnimation(function(){
+    RESULT = compute();
+    if(!SESSION.memoText){
+      SESSION.memoText = generateRuleBasedMemo();
+    }
+    showResults(RESULT);
+    window.scrollTo({top:0, behavior:'smooth'});
+
+    const storedKey = localStorage.getItem("cloud_iq_openai_key") || (document.getElementById('aiApiKey')?.value || '').trim();
+    if(storedKey){
+      generateAiBriefingWithKey(storedKey);
+    }
+  });
+}
+
+function showReportGenerationAnimation(callback){
+  const overlay = document.createElement('div');
+  overlay.className = 'report-gen-overlay';
+  overlay.id = 'report-gen-overlay';
+
+  const steps = [
+    'Scanning Multi-Cloud Estate & Hybrid Topology Telemetry…',
+    'Analyzing Architectural Contradictions & FinOps Waste…',
+    'Computing Risk Exposure, VMware Cliff & SecNumCloud Bounds…',
+    'Compiling C-Suite Executive Readout & 4-Phase Modernization Roadmap…'
+  ];
+
+  overlay.innerHTML = `
+    <div class="rg-brand">LTM CIS · Infrastructure Tech Advisory · Cloud Diagnostic Engine</div>
+    <div class="rg-pulse-container">
+      <div class="rg-pulse-ring"></div>
+      <div class="rg-pulse-ring"></div>
+      <div class="rg-pulse-ring"></div>
+      <div class="rg-core-dot"></div>
+    </div>
+    <div class="rg-title">Generating Executive Cloud Diagnostic</div>
+    <div class="rg-subtitle">Correlating responses against 8 architecture dimensions, FinOps commitment models, and sector peer medians...</div>
+    <ul class="rg-step-list">
+      ${steps.map((s,i) => `
+        <li class="rg-step" id="rg-step-${i}">
+          <div class="rg-step-icon">${i+1}</div>
+          <span>${s}</span>
+        </li>
+      `).join('')}
+    </ul>
+    <div class="rg-progress-track"><div class="rg-progress-fill" id="rg-pf"></div></div>
+  `;
+  document.body.appendChild(overlay);
+
+  const totalDuration = 3200;
+  const stepDuration = totalDuration / steps.length;
+  const pf = overlay.querySelector('#rg-pf');
+
+  function activateStep(idx){
+    if(idx > 0){
+      const prev = overlay.querySelector('#rg-step-' + (idx-1));
+      if(prev){
+        prev.classList.remove('active');
+        prev.classList.add('done');
+        prev.querySelector('.rg-step-icon').textContent = '✓';
+      }
+    }
+    const cur = overlay.querySelector('#rg-step-' + idx);
+    if(cur) cur.classList.add('active');
+    if(pf) pf.style.width = ((idx+1) / steps.length * 100) + '%';
+  }
+
+  activateStep(0);
+  for(let i = 1; i < steps.length; i++){
+    (function(si){
+      setTimeout(function(){ activateStep(si); }, si * stepDuration);
+    })(i);
+  }
+
+  setTimeout(function(){
+    const last = overlay.querySelector('#rg-step-' + (steps.length - 1));
+    if(last){
+      last.classList.remove('active');
+      last.classList.add('done');
+      last.querySelector('.rg-step-icon').textContent = '✓';
+    }
+    if(pf) pf.style.width = '100%';
+    setTimeout(function(){
+      overlay.classList.add('fade-out');
+      setTimeout(function(){
+        if(overlay.parentNode) overlay.parentNode.removeChild(overlay);
+        callback();
+      }, 500);
+    }, 400);
+  }, totalDuration);
+}
+
+function openAiSettingsModal(){
+  const modal = document.getElementById('aiSettingsModalOverlay');
+  if(!modal) return;
+  const key = localStorage.getItem('cloud_iq_openai_key') || '';
+  const model = localStorage.getItem('cloud_iq_openai_model') || 'gpt-4o';
+  const keyInput = document.getElementById('cfgOpenAiKey');
+  if(keyInput) keyInput.value = key;
+  const modelInput = document.getElementById('cfgOpenAiModel');
+  if(modelInput) modelInput.value = model;
+  modal.classList.add('open');
+}
+
+function closeAiSettingsModal(){
+  const modal = document.getElementById('aiSettingsModalOverlay');
+  if(modal) modal.classList.remove('open');
+}
+
+function saveOpenAiKeyFromModal(){
+  const key = (document.getElementById('cfgOpenAiKey')?.value || '').trim();
+  const model = document.getElementById('cfgOpenAiModel')?.value || 'gpt-4o';
+  if(key){
+    localStorage.setItem('cloud_iq_openai_key', key);
+    localStorage.setItem('cloud_iq_openai_model', model);
+    const aiKeyInput = document.getElementById('aiApiKey');
+    if(aiKeyInput) aiKeyInput.value = key;
+    const aiProvider = document.getElementById('aiProvider');
+    if(aiProvider) aiProvider.value = "openai";
+    const headerStatus = document.getElementById('lblHeaderAiStatus');
+    if(headerStatus) headerStatus.textContent = "OpenAI: " + model;
+    alert("OpenAI API key saved! Model: " + model + ". Live C-Suite advisory memo synthesis is now active.");
+  } else {
+    clearOpenAiKey();
+  }
+  closeAiSettingsModal();
+}
+
+function clearOpenAiKey(){
+  localStorage.removeItem('cloud_iq_openai_key');
+  const aiKeyInput = document.getElementById('aiApiKey');
+  if(aiKeyInput) aiKeyInput.value = '';
+  const aiProvider = document.getElementById('aiProvider');
+  if(aiProvider) aiProvider.value = "heuristic";
+  const headerStatus = document.getElementById('lblHeaderAiStatus');
+  if(headerStatus) headerStatus.textContent = "OpenAI Live AI: Ready";
+  alert("OpenAI key cleared. Diagnostic will use LTM Grounded Heuristic Engine.");
+  closeAiSettingsModal();
+}
+
+async function generateAiBriefingWithKey(apiKey){
+  const statusEl = document.getElementById('aiMemoStatus');
+  const contentEl = document.getElementById('aiMemoContent');
+  const memoCardContent = document.getElementById('reportMemoText');
+  const memoBadge = document.getElementById('reportMemoBadge');
+  const model = localStorage.getItem('cloud_iq_openai_model') || 'gpt-4o';
+
+  if(statusEl) statusEl.textContent = "Connecting to OpenAI " + model + "...";
+  if(contentEl) contentEl.textContent = "Synthesizing executive briefing via OpenAI...";
+  if(memoCardContent) memoCardContent.innerHTML = "<em>Live synthesis in progress via OpenAI " + model + "...</em>";
+
+  const prompt = buildGroundedPromptPayload();
+
+  try{
+    const resp = await fetch("https://api.openai.com/v1/chat/completions", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "Authorization": "Bearer " + apiKey },
+      body: JSON.stringify({
+        model: model,
+        messages: [
+          {role:"system", content:"You are an elite Senior Partner in LTM Infrastructure Tech Advisory. Author a bespoke, crisp, evidenced C-level advisory memo for CIOs and CTOs. Use British English. Never use generic consulting platitudes."},
+          {role:"user", content:prompt}
+        ],
+        temperature: 0.2
+      })
+    });
+    if(!resp.ok) throw new Error("HTTP " + resp.status);
+    const data = await resp.json();
+    const memoText = data.choices[0].message.content;
+    SESSION.memoText = memoText;
+    if(contentEl) contentEl.textContent = memoText;
+    if(statusEl) statusEl.innerHTML = `<span style="color:var(--green);font-weight:700">Live Synthesis Complete via OpenAI ${model}</span> (${new Date().toLocaleTimeString()})`;
+    if(memoCardContent) memoCardContent.textContent = memoText;
+    if(memoBadge){
+      memoBadge.textContent = "Generated via OpenAI " + model;
+      memoBadge.style.background = "var(--green-tint)";
+      memoBadge.style.color = "var(--green)";
+      memoBadge.style.borderColor = "var(--green)";
+    }
+  } catch(err){
+    console.warn("OpenAI API call failed, using heuristic:", err);
+    const fallbackMemo = generateRuleBasedMemo();
+    SESSION.memoText = fallbackMemo;
+    if(contentEl) contentEl.textContent = fallbackMemo;
+    if(statusEl) statusEl.textContent = "Generated via LTM Heuristic Engine (Offline fallback: " + err.message + ")";
+    if(memoCardContent) memoCardContent.textContent = fallbackMemo;
+    if(memoBadge){
+      memoBadge.textContent = "LTM Heuristic Engine";
+      memoBadge.style.background = "var(--panel2)";
+      memoBadge.style.color = "var(--ink)";
+      memoBadge.style.borderColor = "var(--line)";
+    }
+  }
 }
 
 function unlockReport(){
@@ -1605,7 +2439,7 @@ function showResults(R){
 
   const gateOverlayHtml = isUnlocked ? "" : `
     <div class="gate-overlay-box">
-      <div style="font-size:36px;margin-bottom:8px">🔒</div>
+      <div style="font-size:12px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--coral);margin-bottom:8px">Restricted Advisory Deliverable</div>
       <h3>Unlock Complete Executive Transformation Pack</h3>
       <p>
         Your visual maturity score, radar benchmark, 2D risk heatmap, and financial leakage are displayed above. Enter your business email to unlock your bespoke <b>4-Phase Modernization Roadmap</b>, <b>Migration Wave Schedule</b>, <b>LTM Advisory Studio Boardroom Memo</b>, and <b>Downloadable 3-Page Executive PDF Pack</b>.
@@ -1626,8 +2460,8 @@ function showResults(R){
         <button class="btn big" style="width:100%;margin-top:8px" onclick="unlockReport()">Unlock Full Roadmap &amp; PDF Pack →</button>
       </div>
       <div style="margin-top:16px;padding-top:14px;border-top:1px solid var(--line2);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
-        <a href="mailto:ashutosh.dixit@ltm.com?subject=Cloud%20IQ%20Advisory%20Readout%20Request&body=Hi%20Ashutosh,%0A%0AWe%20completed%20the%20Cloud%20IQ%20diagnostic%20for%20our%20estate%20and%20would%20like%20to%20schedule%20an%20executive%20readout%20session.%0A%0AClient:%20${encodeURIComponent(SESSION.clientName)}%0AScore:%20${R.overall.toFixed(1)}/5.0" class="btn ghost small" style="text-decoration:none">
-          📧 Book Readout with ashutosh.dixit@ltm.com
+        <a href="mailto:ashutosh.dixit@ltm.com?subject=Cloud%20IQ%20Advisory%20Readout%20Request&body=Hi%20Advisory%20Team,%0A%0AWe%20completed%20the%20Cloud%20IQ%20diagnostic%20for%20our%20estate%20and%20would%20like%20to%20schedule%20an%20executive%20readout%20session.%0A%0AClient:%20${encodeURIComponent(SESSION.clientName)}%0AScore:%20${R.overall.toFixed(1)}/5.0" class="btn ghost small" style="text-decoration:none">
+          Book Readout with Our Advisory Team
         </a>
         <a href="javascript:void(0)" onclick="toggleConsultantUnlock()" style="font-size:11px;color:var(--mutd);text-decoration:underline">
           LTM Consultant Bypass
@@ -1637,8 +2471,103 @@ function showResults(R){
   `;
 
   app.innerHTML = `
+    <!-- Kavach Cricket / Sports Analytics Inspired High-Impact Stats Hero -->
+    <div class="kavach-hero-grid" style="margin-bottom:20px;animation:fadeInUp 0.5s ease both">
+      <!-- 1. Circular SVG Score Donut -->
+      <div class="kavach-stat-card accent-coral">
+        <div class="kavach-stat-head">
+          <span class="kavach-stat-label">Estate Maturity</span>
+          <span class="kavach-stat-pill" style="background:${R.overall<2.8?'var(--amber-tint)':R.overall<3.8?'var(--blue-tint)':'var(--green-tint)'};color:${R.overall<2.8?'var(--amber-dk)':R.overall<3.8?'var(--blue)':'var(--green)'}">${R.band}</span>
+        </div>
+        <div class="kavach-gauge-wrap">
+          <svg class="gauge-svg" width="84" height="84" viewBox="0 0 100 100">
+            <circle class="gauge-bg" cx="50" cy="50" r="38"></circle>
+            <circle class="gauge-meter" cx="50" cy="50" r="38"
+              stroke-dasharray="238.76"
+              stroke-dashoffset="${238.76 * (1 - (R.overall / 5.0))}"
+              style="stroke:${R.overall<2.8?'var(--amber)':R.overall<3.8?'var(--coral)':'var(--green)'}">
+            </circle>
+          </svg>
+          <div>
+            <div class="kavach-num-row">
+              <span class="kavach-big-num">${R.overall.toFixed(1)}</span>
+              <span class="kavach-sub-unit">/ 5.0</span>
+            </div>
+            <div style="font-size:11.5px;color:var(--mutd);margin-top:4px">Target: 4.5+ Leading</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. Addressable Financial Leakage -->
+      <div class="kavach-stat-card accent-amber">
+        <div class="kavach-stat-head">
+          <span class="kavach-stat-label">Addressable Waste</span>
+          <span class="kavach-stat-pill" style="background:var(--coral-tint);color:var(--coral-dkr)">Value at Stake</span>
+        </div>
+        <div class="kavach-num-row">
+          <span class="kavach-big-num" style="color:var(--coral)">${fmt(R.totalLeakage)}</span>
+        </div>
+        <div class="kavach-bars-list">
+          <div class="kavach-bar-row">
+            <span class="kavach-bar-label">Compute</span>
+            <div class="kavach-bar-track"><div class="kavach-bar-fill" style="width:${Math.round((R.decomp.compute/R.totalLeakage)*100)}%;background:var(--coral)"></div></div>
+            <span class="kavach-bar-val">${fmt(R.decomp.compute)}</span>
+          </div>
+          <div class="kavach-bar-row">
+            <span class="kavach-bar-label">Commitments</span>
+            <div class="kavach-bar-track"><div class="kavach-bar-fill" style="width:${Math.round((R.decomp.commit/R.totalLeakage)*100)}%;background:var(--blue)"></div></div>
+            <span class="kavach-bar-val">${fmt(R.decomp.commit)}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. Head-to-Head Peer Comparison -->
+      <div class="kavach-stat-card ${R.peerDelta>=0?'accent-green':'accent-coral'}">
+        <div class="kavach-stat-head">
+          <span class="kavach-stat-label">Peer Benchmark</span>
+          <span class="kavach-stat-pill" style="background:${R.peerDelta>=0?'var(--green-tint)':'var(--coral-tint)'};color:${R.peerDelta>=0?'var(--green)':'var(--coral-dkr)'}">
+            ${R.peerDelta>=0?'+':''}${R.peerDelta.toFixed(1)} vs Peer
+          </span>
+        </div>
+        <div class="kavach-num-row">
+          <span class="kavach-big-num" style="color:${R.peerDelta>=0?'var(--green)':'var(--coral)'}">
+            ${R.peerDelta>=0?'+':''}${R.peerDelta.toFixed(1)}
+          </span>
+          <span class="kavach-sub-unit">vs ${R.industryKey.split(' ')[0]} Median</span>
+        </div>
+        <div class="kavach-bars-list">
+          <div class="kavach-bar-row">
+            <span class="kavach-bar-label">Estate</span>
+            <div class="kavach-bar-track"><div class="kavach-bar-fill" style="width:${Math.round((R.overall/5)*100)}%;background:var(--coral)"></div></div>
+            <span class="kavach-bar-val">${R.overall.toFixed(1)}</span>
+          </div>
+          <div class="kavach-bar-row">
+            <span class="kavach-bar-label">Sector Median</span>
+            <div class="kavach-bar-track"><div class="kavach-bar-fill" style="width:${Math.round(((R.peer.overall||3.0)/5)*100)}%;background:var(--blue)"></div></div>
+            <span class="kavach-bar-val">${(R.peer.overall||3.0).toFixed(1)}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4. Binding Constraint / Primary Friction -->
+      <div class="kavach-stat-card accent-blue">
+        <div class="kavach-stat-head">
+          <span class="kavach-stat-label">Binding Constraint</span>
+          <span class="kavach-stat-pill" style="background:${(R.vmwareRisk||R.leaseCliff)?'var(--red-tint)':'var(--blue-tint)'};color:${(R.vmwareRisk||R.leaseCliff)?'var(--red)':'var(--blue)'}">
+            ${(R.vmwareRisk||R.leaseCliff)?'High Urgency':'Strategic'}
+          </span>
+        </div>
+        <div style="font-family:var(--font-display);font-size:15px;font-weight:800;color:var(--ink);line-height:1.3;margin-bottom:6px">
+          ${R.vmwareRisk ? "VMware Broadcom Renewal Cliff" : (R.leaseCliff ? "Colocation Lease Expiration Deadline" : (R.secnumFlag ? "SecNumCloud European Sovereign Boundary" : "Cloud Value Realization & FinOps Drag"))}
+        </div>
+        <p style="font-size:11.5px;color:var(--mut);line-height:1.4">
+          ${R.vmwareRisk ? "Impending 2.5x–3.5x licensing cost escalation mandates immediate hypervisor alternative triage." : (R.leaseCliff ? "Facility deadline <12 months requires accelerated migration factory throughput." : "Targeted operating model and FinOps rate arbitrage required to achieve EBITDA mandates.")}
+        </p>
+      </div>
+    </div>
+
     <!-- Top Teaser Banner (Always Visible) -->
-    <div class="card" style="background:linear-gradient(135deg,var(--panel) 0%,var(--coral-tint) 100%);border-color:var(--coral)">
+    <div class="card" style="background:linear-gradient(135deg,var(--panel) 0%,var(--coral-tint) 100%);border-color:var(--coral);animation:fadeInUp 0.6s ease both">
       <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px">
         <div>
           <div class="sec-label">Executive Diagnostic Readout</div>
@@ -1647,18 +2576,18 @@ function showResults(R){
             <b>Designated Track:</b> <span style="color:var(--coral);font-weight:700">${R.trackName}</span> &nbsp;|&nbsp; 
             <b>Maturity Score:</b> ${R.overall.toFixed(1)}/5.0 (${R.band})
           </p>
-          <div style="font-size:12.5px;color:var(--coral-dkr);font-weight:700;margin-top:4px">📊 Sector Benchmark: ${deltaText}</div>
+          <div style="font-size:12.5px;color:var(--coral-dkr);font-weight:700;margin-top:4px">Sector Benchmark: ${deltaText}</div>
           <div style="font-size:13px;color:var(--ink);margin-top:8px">
-            💰 <b>Annual Value-at-Stake:</b> Estimated <span style="color:var(--coral);font-weight:800">${fmt(R.leakLow)} – ${fmt(R.leakHigh)}</span> in reclaimable leakage
+            <b>Annual Value-at-Stake:</b> Estimated <span style="color:var(--coral);font-weight:800">${fmt(R.leakLow)} – ${fmt(R.leakHigh)}</span> in reclaimable leakage
           </div>
         </div>
         <div style="display:flex;gap:8px;flex-wrap:wrap">
           ${isUnlocked ? `
-            <button class="btn" onclick="openAiDrawer()">✨ LTM Advisory Studio</button>
-            <button class="btn secondary" onclick="launchBoardroom()">🖥 Boardroom Mode</button>
+            <button class="btn" onclick="openAiDrawer()">LTM Advisory Studio</button>
+            <button class="btn secondary" onclick="launchBoardroom()">Boardroom Mode</button>
           ` : `
-            <button class="btn" onclick="document.getElementById('leadEmail')?.focus()">🔒 Unlock Full Pack</button>
-            <a href="mailto:ashutosh.dixit@ltm.com?subject=Cloud%20IQ%20Advisory%20Readout" class="btn secondary" style="text-decoration:none">📧 Book with Ashutosh</a>
+            <button class="btn" onclick="document.getElementById('leadEmail')?.focus()">Unlock Full Pack</button>
+            <a href="mailto:ashutosh.dixit@ltm.com?subject=Cloud%20IQ%20Advisory%20Readout" class="btn secondary" style="text-decoration:none">Book with Our Advisory Team</a>
           `}
         </div>
       </div>
@@ -1687,9 +2616,9 @@ function showResults(R){
         <div class="sec-label">Calibrated Rubrics</div>
         <h3 style="font-size:18px">Dimension Breakdown (D1–D8)</h3>
         <div style="margin-top:14px">${dimBarsHtml}</div>
-        ${R.vmwareRisk ? `<div style="background:var(--amber-tint);border:1px solid var(--amber);border-radius:var(--radius-sm);padding:10px 14px;margin-top:12px;font-size:12px;color:var(--amber-dk)"><b>⚠ Critical Signal:</b> VMware Broadcom renewal cost cliff detected. High urgency to triage alternatives.</div>` : ""}
-        ${R.leaseCliff ? `<div style="background:var(--red-tint);border:1px solid var(--red);border-radius:var(--radius-sm);padding:10px 14px;margin-top:8px;font-size:12px;color:var(--red)"><b>⚠ Hard Deadline:</b> Impending data centre lease expiry (<12 months) creates acute migration time constraint.</div>` : ""}
-        ${R.secnumFlag ? `<div style="background:var(--blue-tint);border:1px solid var(--blue);border-radius:var(--radius-sm);padding:10px 14px;margin-top:8px;font-size:12px;color:var(--blue)"><b>🔐 SecNumCloud Imperative:</b> French / European Cloud de Confiance requirements mandate dedicated sovereign enclave architecture.</div>` : ""}
+        ${R.vmwareRisk ? `<div style="background:var(--amber-tint);border:1px solid var(--amber);border-radius:var(--radius-sm);padding:10px 14px;margin-top:12px;font-size:12px;color:var(--amber-dk)"><b>Critical Signal:</b> VMware Broadcom renewal cost cliff detected. High urgency to triage alternatives.</div>` : ""}
+        ${R.leaseCliff ? `<div style="background:var(--red-tint);border:1px solid var(--red);border-radius:var(--radius-sm);padding:10px 14px;margin-top:8px;font-size:12px;color:var(--red)"><b>Hard Deadline:</b> Impending data centre lease expiry (<12 months) creates acute migration time constraint.</div>` : ""}
+        ${R.secnumFlag ? `<div style="background:var(--blue-tint);border:1px solid var(--blue);border-radius:var(--radius-sm);padding:10px 14px;margin-top:8px;font-size:12px;color:var(--blue)"><b>SecNumCloud Imperative:</b> French / European Cloud de Confiance requirements mandate dedicated sovereign enclave architecture.</div>` : ""}
       </div>
     </div>
 
@@ -1750,7 +2679,7 @@ function showResults(R){
         </div>
       </div>
       <div style="margin-top:14px;background:var(--panel2);border:1px solid var(--line);border-radius:var(--radius-sm);padding:12px 16px;font-size:12.5px;color:var(--ink)">
-        <b>💡 CFO Self-Funding Realization:</b> Capturing quick wins in compute rightsizing and commitment discounts directly self-funds the application modernization factory and DC exit.
+        <b>CFO Self-Funding Realization:</b> Capturing quick wins in compute rightsizing and commitment discounts directly self-funds the application modernization factory and DC exit.
       </div>
     </div>
 
@@ -1784,8 +2713,32 @@ function showResults(R){
                 <div class="odoor">Engage via: ${OFFERINGS[o.code]?.door||"Advisory sprint"}</div>
               </div>
             `).join("")}
-            ${R.sovFlag ? `<div class="handoff">🔐 <b>Pillar 02 Digital Sovereignty Referral:</b> Strict residency / regulatory flags raised. Routes to <b>Sovereign IQ</b> and <b>Posture IQ</b>.</div>` : ""}
-            ${R.aiFlag ? `<div class="handoff">🤖 <b>Pillar 04 AI Infusion Referral:</b> AI ambition detected. Foundation engineering stays with <b>03.6</b>; full AI programme routes to <b>AI Readiness IQ</b>.</div>` : ""}
+            ${R.sovFlag ? `<div class="handoff"><b>Pillar 02 Digital Sovereignty Referral:</b> Strict residency / regulatory flags raised. Routes to <b>Sovereign IQ</b> and <b>Posture IQ</b>.</div>` : ""}
+            ${R.aiFlag ? `<div class="handoff"><b>Pillar 04 AI Infusion Referral:</b> AI ambition detected. Foundation engineering stays with <b>03.6</b>; full AI programme routes to <b>AI Readiness IQ</b>.</div>` : ""}
+          </div>
+        </div>
+
+        <!-- Executive C-Suite Advisory Memorandum Card -->
+        <div class="card" style="border-left:4px solid var(--coral);background:var(--panel);">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px;margin-bottom:12px">
+            <div>
+              <div class="sec-label">Confidential Advisory Briefing</div>
+              <h3 style="font-size:18px">Executive C-Suite Advisory Memorandum</h3>
+              <p style="font-size:12.5px;color:var(--mut)">Grounded executive readout tailored for CIO, CTO &amp; CFO leadership alignment</p>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+              <span id="reportMemoBadge" class="kavach-stat-pill" style="background:${localStorage.getItem('cloud_iq_openai_key') ? 'var(--green-tint)' : 'var(--panel2)'};color:${localStorage.getItem('cloud_iq_openai_key') ? 'var(--green)' : 'var(--ink)'};border:1px solid var(--line)">
+                ${localStorage.getItem('cloud_iq_openai_key') ? 'Live OpenAI ' + (localStorage.getItem('cloud_iq_openai_model') || 'gpt-4o') : 'LTM Heuristic Engine'}
+              </span>
+              <button class="btn secondary small" onclick="openAiSettingsModal()">Model Settings</button>
+              <button class="btn ghost small" onclick="copyReportMemo()">Copy Memo</button>
+              <button class="btn ghost small" onclick="regenerateReportMemo()">Regenerate</button>
+            </div>
+          </div>
+          <div id="reportMemoText" style="white-space:pre-wrap;font-family:var(--font-mono, monospace);font-size:12.5px;line-height:1.6;background:var(--panel2);padding:18px;border-radius:var(--radius-sm);border:1px solid var(--line);max-height:480px;overflow-y:auto;color:var(--ink)">${SESSION.memoText || generateRuleBasedMemo()}</div>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-top:12px;font-size:11.5px;color:var(--mut);flex-wrap:wrap;gap:8px">
+            <span>Author: <b>Ashutosh Dixit</b>, Infrastructure Tech Advisory (ashutosh.dixit@ltm.com)</span>
+            <span>Grounding: 8 Architecture Dimensions · FinOps Models · Consulting Field Probes</span>
           </div>
         </div>
 
@@ -1794,13 +2747,13 @@ function showResults(R){
           <h2 style="font-size:20px;margin-bottom:6px">Boardroom Deliverables &amp; Session Management</h2>
           <p style="font-size:13px;color:var(--mut);margin-bottom:16px">Export presentation-grade assets or schedule an executive readout session.</p>
           <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
-            <button class="btn big" onclick="downloadExecutivePDF()">📄 Download Executive PDF Pack</button>
-            <button class="btn secondary" onclick="launchBoardroom()">🖥 Boardroom Presentation Mode</button>
-            <button class="btn secondary" onclick="openAiDrawer()">✨ LTM Advisory Studio</button>
-            <a href="mailto:ashutosh.dixit@ltm.com?subject=Cloud%20IQ%20Readout%20Request%20—%20${encodeURIComponent(client)}&body=Hi%20Ashutosh,%0A%0AWe%20completed%20our%20Cloud%20IQ%20diagnostic%20for%20${encodeURIComponent(client)}%20and%20would%20like%20to%20schedule%20a%2030-minute%20readout%20session.%0A%0AScore:%20${R.overall.toFixed(1)}/5.0%20(${R.band})%0AValue%20at%20Stake:%20${fmt(R.leakLow)}%20-%20${fmt(R.leakHigh)}" class="btn secondary" style="text-decoration:none">
-              📧 Book Readout with Ashutosh
+            <button class="btn big" onclick="downloadExecutivePDF()">Download Executive PDF Pack</button>
+            <button class="btn secondary" onclick="launchBoardroom()">Boardroom Presentation Mode</button>
+            <button class="btn secondary" onclick="openAiDrawer()">LTM Advisory Studio</button>
+            <a href="mailto:ashutosh.dixit@ltm.com?subject=Cloud%20IQ%20Readout%20Request%20—%20${encodeURIComponent(client)}&body=Hi%20Advisory%20Team,%0A%0AWe%20completed%20our%20Cloud%20IQ%20diagnostic%20for%20${encodeURIComponent(client)}%20and%20would%20like%20to%20schedule%20a%2030-minute%20readout%20session.%0A%0AScore:%20${R.overall.toFixed(1)}/5.0%20(${R.band})%0AValue%20at%20Stake:%20${fmt(R.leakLow)}%20-%20${fmt(R.leakHigh)}" class="btn secondary" style="text-decoration:none">
+              Book Readout with Our Advisory Team
             </a>
-            <button class="btn secondary" onclick="exportSessionJSON()">💾 Save Session (.ciq)</button>
+            <button class="btn secondary" onclick="exportSessionJSON()">Save Session (.ciq)</button>
             <button class="btn ghost" onclick="start()">Restart Assessment</button>
           </div>
         </div>
@@ -2055,8 +3008,34 @@ Through structured execution of this 4-phase roadmap, ${client} will permanently
 }
 
 function copyMemoText(){
-  const t = document.getElementById('aiMemoContent').textContent;
+  const t = document.getElementById('aiMemoContent')?.textContent || '';
   navigator.clipboard.writeText(t).then(() => alert("Executive Memo copied!"));
+}
+
+function copyReportMemo(){
+  const el = document.getElementById('reportMemoText');
+  if(!el) return;
+  navigator.clipboard.writeText(el.innerText || el.textContent).then(() => alert("Executive Memorandum copied to clipboard!"));
+}
+
+function regenerateReportMemo(){
+  const key = localStorage.getItem('cloud_iq_openai_key') || (document.getElementById('aiApiKey')?.value || '').trim();
+  if(key){
+    generateAiBriefingWithKey(key);
+  } else {
+    const memo = generateRuleBasedMemo();
+    SESSION.memoText = memo;
+    const memoCardContent = document.getElementById('reportMemoText');
+    if(memoCardContent) memoCardContent.textContent = memo;
+    const memoBadge = document.getElementById('reportMemoBadge');
+    if(memoBadge){
+      memoBadge.textContent = "LTM Heuristic Engine";
+      memoBadge.style.background = "var(--panel2)";
+      memoBadge.style.color = "var(--ink)";
+      memoBadge.style.borderColor = "var(--line)";
+    }
+    alert("Synthesised fresh executive memorandum via LTM Heuristic Engine.");
+  }
 }
 
 /* ============================================================
@@ -2117,9 +3096,9 @@ function renderSlide(idx){
           </div>
           <div>
             <h3 style="color:#FFB74D;font-size:18px;margin-bottom:10px">Acute Operational Pressures</h3>
-            <p>${R.vmwareRisk ? "🔴 <b>VMware Renewal Cliff:</b> Steep price escalations require immediate hypervisor triage." : "🟢 VMware licensing within standard governance."}</p>
-            <p style="margin-top:8px">${R.leaseCliff ? "🔴 <b>Data Centre Lease Expiration:</b> Facility deadline forces hard migration milestones." : "🟢 DC lease timeline manageable."}</p>
-            <p style="margin-top:8px">💰 <b>Annual Value-at-Stake:</b> Estimated <b>${fmt(R.leakLow)}–${fmt(R.leakHigh)}</b> in reclaimable leakage.</p>
+            <p>${R.vmwareRisk ? "<b>VMware Renewal Cliff:</b> Steep price escalations require immediate hypervisor triage." : "VMware licensing within standard governance."}</p>
+            <p style="margin-top:8px">${R.leaseCliff ? "<b>Data Centre Lease Expiration:</b> Facility deadline forces hard migration milestones." : "DC lease timeline manageable."}</p>
+            <p style="margin-top:8px"><b>Annual Value-at-Stake:</b> Estimated <b>${fmt(R.leakLow)}–${fmt(R.leakHigh)}</b> in reclaimable leakage.</p>
           </div>
         </div>
       </div>
@@ -2302,11 +3281,12 @@ function downloadExecutivePDF(){
     doc.text("Cloud IQ Enterprise Diagnostic", M + 130, 34);
     doc.text(title.toUpperCase(), W - M, 34, { align: "right" });
   }
+  const totalPages = SESSION.memoText ? 4 : 3;
   function footer(pageNum){
     doc.setDrawColor(220, 220, 220); doc.setLineWidth(1); doc.line(M, H - 36, W - M, H - 36);
     doc.setFont("helvetica", "normal"); doc.setFontSize(8); doc.setTextColor(140, 140, 140);
     doc.text("LTM CIS · Infrastructure Tech Advisory · Lead: ashutosh.dixit@ltm.com", M, H - 22);
-    doc.text(`Page ${pageNum} of 3 · Engagement: ${client}`, W - M, H - 22, { align: "right" });
+    doc.text(`Page ${pageNum} of ${totalPages} · Engagement: ${client}`, W - M, H - 22, { align: "right" });
   }
 
   // --- PAGE 1: Executive Summary & Context ---
@@ -2452,8 +3432,54 @@ function downloadExecutivePDF(){
 
   footer(3);
 
+  // --- PAGE 4: Executive C-Suite Advisory Memorandum (if available) ---
+  if(SESSION.memoText){
+    doc.addPage();
+    header("Executive Advisory Memorandum");
+    y = 80;
+    doc.setFont("helvetica", "bold"); doc.setFontSize(12); doc.setTextColor(...dark);
+    doc.text("5. Executive C-Suite Advisory Memorandum", M, y);
+    y += 18;
+    doc.setFillColor(...cream); doc.roundedRect(M, y, W - 2*M, H - y - 56, 4, 4, "F");
+    doc.setFont("courier", "normal"); doc.setFontSize(7.5); doc.setTextColor(40, 40, 40);
+    const splitMemo = doc.splitTextToSize(SESSION.memoText, W - 2*M - 24);
+    doc.text(splitMemo.slice(0, 56), M + 12, y + 18);
+    footer(4);
+  }
+
   const cleanFname = client.replace(/[^a-z0-9]/gi,'_');
   doc.save(`CloudIQ_Executive_Pack_${cleanFname}_${new Date().toISOString().slice(0,10)}.pdf`);
+
+  // Archive with Client Consent to Secured Storage
+  if (window.LTM_S3 && window.LTM_S3.requestArchiveConsent) {
+    window.LTM_S3.requestArchiveConsent({
+      acceleratorId: 'cloud-iq',
+      acceleratorTitle: 'Cloud IQ Executive Dossier',
+      clientName: client
+    }, function(confirmedClient) {
+      try {
+        var pdfBase64 = doc.output('datauristring');
+        window.LTM_S3.saveReportToS3({
+          acceleratorId: 'cloud-iq',
+          clientName: confirmedClient,
+          pdfBase64: pdfBase64,
+          metadata: {
+            track: R.trackCode,
+            overallScore: R.overall,
+            band: R.band,
+            cloudSpend: R.totalCloudSpend,
+            consultantLead: SESSION.consultantLead
+          }
+        }).then(function(res){
+          window.LTM_S3.showS3SuccessBanner(res);
+        }).catch(function(err){
+          alert('Archive notice: ' + err.message);
+        });
+      } catch(e) {
+        console.warn('Archive hook error:', e);
+      }
+    });
+  }
 }
 
 /* Boot application */

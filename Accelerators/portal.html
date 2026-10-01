@@ -687,6 +687,7 @@
     .acc-card.card-finops-iq { --card-accent: #06B6D4; }
     .acc-card.card-sovereign-iq { --card-accent: #FF5E4F; }
     .acc-card.card-posture-iq { --card-accent: #F59E0B; }
+    .acc-card.card-cloud-iq { --card-accent: #226882; }
 
     .card-top {
       display: flex;
@@ -1311,9 +1312,10 @@
       <div style="position:relative;z-index:2;text-align:center;">
         <h1 class="hero-tech-title">Advisory Accelerators</h1>
         <div class="hero-practice-tabs">
-          <button class="hero-tab active" onclick="filterPracticeGroup('all', this)">All Accelerators (4)</button>
+          <button class="hero-tab active" onclick="filterPracticeGroup('all', this)">All Accelerators (5)</button>
           <button class="hero-tab" onclick="filterPracticeGroup('finops', this)">FinOps Practice</button>
           <button class="hero-tab" onclick="filterPracticeGroup('sovereignty', this)">Digital Sovereignty</button>
+          <button class="hero-tab" onclick="filterPracticeGroup('cloud', this)">Hybrid Cloud &amp; Infra</button>
         </div>
       </div>
     </div>
@@ -1437,6 +1439,43 @@
         </div>
       </div>
     </section>
+
+    <!-- ============================================================
+         GROUP 3: HYBRID CLOUD & INFRASTRUCTURE MODERNIZATION
+         ============================================================ -->
+    <section class="practice-section" id="sectionCloud">
+      <div class="practice-header">
+        <div class="practice-title-group">
+          <h2 class="practice-title">Hybrid Cloud &amp; Modernization Suite</h2>
+        </div>
+        <p class="practice-desc">Evaluate 8-dimension architectural maturity, financial leakage decomposition, VMware Broadcom renewal defense, and colocation data centre exit roadmaps.</p>
+      </div>
+
+      <div class="acc-grid">
+        <!-- 5. Cloud IQ -->
+        <div class="acc-card card-cloud-iq">
+          <div class="card-top">
+            <div class="card-meta-row">
+              <span class="card-eyebrow blue">8-DIMENSION ARCHITECTURE &amp; DC EXIT</span>
+            </div>
+            <h3 class="card-title">Cloud IQ</h3>
+            <p class="card-desc">Enterprise diagnostic platform evaluating 8 capability dimensions, dual transformation tracks, financial leakage breakdown, and 4-phase modernization roadmaps.</p>
+            <div class="chip-row">
+              <span class="chip">40 Diagnostic Questions</span>
+              <span class="chip">8 Architectural Dimensions</span>
+              <span class="chip">4-Phase Modernization Roadmap</span>
+            </div>
+          </div>
+
+          <div class="card-footer" style="justify-content:flex-end;">
+            <div class="card-actions">
+              <button class="btn-action-edit" data-tool="cloud-iq" onclick="handleEditClick('cloud-iq')">Edit</button>
+              <button class="btn-action-launch" data-tool="cloud-iq" onclick="handleLaunchClick('cloud-iq', '/cloud-iq')">Take Assessment &rarr;</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
   </main>
 
   <!-- ============================================================
@@ -1550,6 +1589,7 @@
           <button class="chip" onclick="setReportsFilter('finops-iq', this)">FinOps IQ</button>
           <button class="chip" onclick="setReportsFilter('posture-iq', this)">Posture IQ</button>
           <button class="chip" onclick="setReportsFilter('sovereign-iq', this)">Sovereign IQ</button>
+          <button class="chip" onclick="setReportsFilter('cloud-iq', this)">Cloud IQ</button>
         </div>
       </div>
 
@@ -1686,6 +1726,19 @@
                     <label><input type="checkbox" id="perm_create_posture-iq_take" onchange="syncAccFull('create', 'posture-iq')" checked> Take Assessment</label>
                     <label><input type="checkbox" id="perm_create_posture-iq_edit" onchange="syncAccFull('create', 'posture-iq')"> Edit Engine</label>
                     <label><input type="checkbox" id="perm_create_posture-iq_archive" onchange="syncAccFull('create', 'posture-iq')"> View Archive</label>
+                  </div>
+                </div>
+
+                <!-- Cloud IQ -->
+                <div class="granular-acc-card">
+                  <div class="granular-acc-head">
+                    <span class="granular-acc-name">☁️ Cloud IQ</span>
+                    <label class="full-perm-label"><input type="checkbox" id="perm_create_cloud-iq_full" onchange="toggleAccFull('create', 'cloud-iq', this.checked)"> Full</label>
+                  </div>
+                  <div class="granular-acc-options">
+                    <label><input type="checkbox" id="perm_create_cloud-iq_take" onchange="syncAccFull('create', 'cloud-iq')" checked> Take Assessment</label>
+                    <label><input type="checkbox" id="perm_create_cloud-iq_edit" onchange="syncAccFull('create', 'cloud-iq')"> Edit Engine</label>
+                    <label><input type="checkbox" id="perm_create_cloud-iq_archive" onchange="syncAccFull('create', 'cloud-iq')"> View Archive</label>
                   </div>
                 </div>
               </div>
@@ -1829,6 +1882,19 @@
               <label><input type="checkbox" id="perm_editperm_posture-iq_take" onchange="syncAccFull('editperm', 'posture-iq')"> Take Assessment</label>
               <label><input type="checkbox" id="perm_editperm_posture-iq_edit" onchange="syncAccFull('editperm', 'posture-iq')"> Edit Engine</label>
               <label><input type="checkbox" id="perm_editperm_posture-iq_archive" onchange="syncAccFull('editperm', 'posture-iq')"> View Archive</label>
+            </div>
+          </div>
+
+          <!-- Cloud IQ -->
+          <div class="granular-acc-card">
+            <div class="granular-acc-head">
+              <span class="granular-acc-name">☁️ Cloud IQ</span>
+              <label class="full-perm-label"><input type="checkbox" id="perm_editperm_cloud-iq_full" onchange="toggleAccFull('editperm', 'cloud-iq', this.checked)"> Full</label>
+            </div>
+            <div class="granular-acc-options">
+              <label><input type="checkbox" id="perm_editperm_cloud-iq_take" onchange="syncAccFull('editperm', 'cloud-iq')"> Take Assessment</label>
+              <label><input type="checkbox" id="perm_editperm_cloud-iq_edit" onchange="syncAccFull('editperm', 'cloud-iq')"> Edit Engine</label>
+              <label><input type="checkbox" id="perm_editperm_cloud-iq_archive" onchange="syncAccFull('editperm', 'cloud-iq')"> View Archive</label>
             </div>
           </div>
         </div>
@@ -2217,8 +2283,8 @@
             token: token,
             role: isSuper ? 'super_admin' : 'advisor_viewer',
             permissions: {
-              view: ['finops-value-case', 'finops-iq', 'sovereign-iq', 'posture-iq', isSuper ? 'reports' : ''],
-              edit: isSuper ? ['finops-value-case', 'finops-iq', 'sovereign-iq', 'posture-iq'] : []
+              view: ['finops-value-case', 'finops-iq', 'sovereign-iq', 'posture-iq', 'cloud-iq', isSuper ? 'reports' : ''],
+              edit: isSuper ? ['finops-value-case', 'finops-iq', 'sovereign-iq', 'posture-iq', 'cloud-iq'] : []
             }
           };
 
@@ -2532,7 +2598,8 @@
       { id: 'finops-value-case', name: 'FinOps Value Case', icon: '💰' },
       { id: 'finops-iq', name: 'FinOps IQ', icon: '📊' },
       { id: 'sovereign-iq', name: 'Sovereign IQ', icon: '🛡️' },
-      { id: 'posture-iq', name: 'Posture IQ', icon: '⚡' }
+      { id: 'posture-iq', name: 'Posture IQ', icon: '⚡' },
+      { id: 'cloud-iq', name: 'Cloud IQ', icon: '☁️' }
     ];
 
     function toggleAccFull(prefix, toolId, checked) {
@@ -3016,16 +3083,24 @@
 
       const secFinOps = document.getElementById('sectionFinOps');
       const secSovereignty = document.getElementById('sectionSovereignty');
+      const secCloud = document.getElementById('sectionCloud');
 
       if (group === 'finops') {
         if (secFinOps) secFinOps.style.display = 'block';
         if (secSovereignty) secSovereignty.style.display = 'none';
+        if (secCloud) secCloud.style.display = 'none';
       } else if (group === 'sovereignty') {
         if (secFinOps) secFinOps.style.display = 'none';
         if (secSovereignty) secSovereignty.style.display = 'block';
+        if (secCloud) secCloud.style.display = 'none';
+      } else if (group === 'cloud') {
+        if (secFinOps) secFinOps.style.display = 'none';
+        if (secSovereignty) secSovereignty.style.display = 'none';
+        if (secCloud) secCloud.style.display = 'block';
       } else {
         if (secFinOps) secFinOps.style.display = 'block';
         if (secSovereignty) secSovereignty.style.display = 'block';
+        if (secCloud) secCloud.style.display = 'block';
       }
     }
 

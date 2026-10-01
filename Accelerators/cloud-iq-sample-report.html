@@ -11,62 +11,117 @@
    LTM Advisory Design System — Enterprise Clean Blueprint
    Palette: Coral #FF5E4F, Slate Blue #226882, Ground #F9F9F9, Ink #282828
    ============================================================ */
-@import url("https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap");
 :root{
-  --ground:#F9F9F9; --panel:#FFFFFF; --panel2:#F5F5F5; --panel3:#EFEFEF;
-  --line:#DADADA; --line2:#ECECEC; --line-dark:#282828;
-  --ink:#282828; --mut:#5B5B5B; --mutd:#8E8E8E;
+  --ground:#F8FAFC; --panel:#FFFFFF; --panel2:#F1F5F9; --panel3:#E2E8F0;
+  --line:#CBD5E1; --line2:#94A3B8; --line-dark:#0F172A;
+  --ink:#0F172A; --mut:#334155; --mutd:#64748B;
   --coral:#FF5E4F; --coral-dk:#E54536; --coral-dkr:#CC2B1C; --coral-tint:#FCF0EE;
   --blue:#226882; --blue-tint:#EDF5F8;
   --violet:#482475; --violet-tint:#F3EDF9;
   --amber:#B8860B; --amber-tint:#FFF9E6; --amber-dk:#8A6500;
   --green:#35754D; --green-tint:#EDF7F1;
   --red:#D32F2F; --red-tint:#FFEBEE;
-  --radius-xs:3px; --radius-sm:6px; --radius-md:10px; --radius-lg:16px; --radius-pill:999px;
-  --shadow-card:0 1px 3px rgba(40,40,40,.06), 0 4px 14px rgba(40,40,40,.07);
-  --shadow-elevated:0 8px 30px rgba(40,40,40,.12);
-  --font-display:"Manrope","Segoe UI",Arial,sans-serif;
-  --font-body:Arial,"Helvetica Neue",Helvetica,sans-serif;
-  --font-mono:"JetBrains Mono",ui-monospace,monospace;
+  --radius-xs:3px; --radius-sm:6px; --radius-md:8px; --radius-lg:12px; --radius-pill:999px;
+  --shadow-card:0 1px 3px rgba(15,23,42,.06), 0 4px 14px rgba(15,23,42,.07);
+  --shadow-elevated:0 8px 30px rgba(15,23,42,.12);
+  --font-display:'ES Klarheit Grotesk','Klarheit Grotesk','Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+  --font-body:'ES Klarheit Grotesk','Klarheit Grotesk','Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+  --font-mono:'JetBrains Mono','SF Mono',Menlo,Consolas,monospace;
 }
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:var(--font-body);background:var(--ground);color:var(--ink);line-height:1.55;-webkit-font-smoothing:antialiased}
 h1,h2,h3,h4{font-family:var(--font-display);letter-spacing:-.015em;color:var(--ink)}
 .wrap{max-width:1080px;margin:0 auto;padding:0 24px}
 
-/* Top Family Navigation Bar */
-#ltm-family-nav{background:#282828;color:#F9F9F9;font-family:var(--font-display);font-size:12px;padding:9px 0;border-bottom:2px solid var(--coral);position:relative;z-index:100}
-.ltm-fam-inner{max-width:1240px;margin:0 auto;padding:0 20px;display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap}
-.ltm-fam-brand{display:flex;flex-direction:column;gap:1px;padding-right:16px;border-right:1px solid rgba(255,255,255,0.15)}
-.ltm-fam-b{font-weight:800;color:var(--coral);letter-spacing:.04em;font-size:13px}
-.ltm-fam-s{color:rgba(255,255,255,0.65);font-size:9.5px;text-transform:uppercase;letter-spacing:.12em}
-.ltm-fam-links{display:flex;gap:4px;flex-wrap:wrap;align-items:center}
-.ltm-fam-link{color:rgba(255,255,255,0.78);text-decoration:none;padding:5px 11px;border-radius:4px;font-weight:600;font-size:11.5px;letter-spacing:.01em;transition:.15s;display:inline-flex;align-items:center;gap:5px}
-.ltm-fam-link:hover{color:#fff;background:rgba(255,255,255,0.08)}
-.ltm-fam-link.current{background:var(--coral);color:#fff}
-.ltm-fam-tag{font-size:8.5px;text-transform:uppercase;letter-spacing:.12em;background:rgba(255,255,255,0.18);padding:2px 6px;border-radius:3px}
-
-/* Header & Meta */
-header.top{background:var(--panel);border-bottom:1px solid var(--line);padding:14px 0}
-header.top .wrap{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px}
-.ltmlogo{display:flex;align-items:center;gap:12px}
-.ltmlogo>img{height:28px;width:auto;object-fit:contain}
-.ltmword{line-height:1.15;border-left:1px solid var(--line);padding-left:12px}
-.ltmword b{font-family:var(--font-display);font-size:15px;font-weight:700;display:block;color:var(--ink)}
-.ltmword span{display:block;font-family:var(--font-display);font-size:10px;letter-spacing:.12em;color:var(--mutd);text-transform:uppercase;margin-top:2px}
+/* Unified Suite Topbar */
+.topbar{
+  border-bottom: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(8px);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.topbar .wrap{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 62px;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+.brand{
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+}
+.brand-badge{
+  background: linear-gradient(135deg, var(--coral) 0%, var(--coral-dk) 100%);
+  color: #fff;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 13.5px;
+  padding: 4px 9px;
+  border-radius: 6px;
+  letter-spacing: .04em;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.brand .name{
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 15px;
+  letter-spacing: .01em;
+  color: var(--ink);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.brand-tag{
+  font-size: 9.5px;
+  font-weight: 700;
+  color: var(--coral);
+  background: var(--coral-tint);
+  border: 1px solid var(--coral);
+  padding: 1.5px 6px;
+  border-radius: 4px;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+}
+.brand .sub{
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  color: var(--mutd);
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  margin-top: 1px;
+}
+.topbar-actions{
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
 
 /* Notice Bar */
 .sample-notice{background:var(--blue-tint);border-bottom:1px solid var(--blue);color:var(--blue);padding:8px 0;font-family:var(--font-display);font-size:12px}
 .sample-notice .wrap{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}
 
 /* Buttons */
-.btn{background:var(--coral);color:#fff;border:none;border-radius:var(--radius-md);padding:11px 22px;font-family:var(--font-display);font-size:13.5px;font-weight:700;cursor:pointer;transition:.15s;display:inline-flex;align-items:center;gap:7px;text-decoration:none}
+.btn{background:var(--coral);color:#fff;border:none;border-radius:var(--radius-md);padding:10px 20px;font-family:var(--font-display);font-size:13.5px;font-weight:700;cursor:pointer;transition:.15s;display:inline-flex;align-items:center;gap:7px;text-decoration:none}
 .btn:hover{background:var(--coral-dk)}
-.btn.ghost{background:transparent;color:var(--coral);border:1.5px solid var(--line)}
-.btn.ghost:hover{background:var(--coral-tint);border-color:var(--coral)}
+.btn.ghost, .btn-ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}
+.btn.ghost:hover, .btn-ghost:hover{background:var(--coral-tint);border-color:var(--coral);color:var(--coral-dkr)}
 .btn.secondary{background:var(--panel2);color:var(--ink);border:1px solid var(--line)}
 .btn.secondary:hover{background:var(--panel3);border-color:var(--mutd)}
-.btn.small{padding:6px 14px;font-size:12px;border-radius:var(--radius-sm)}
+.btn.small, .btn-sm{padding:6px 12px;font-size:12px;border-radius:var(--radius-sm)}
+.btn.primary, .btn-primary{background:var(--coral);color:#fff;border-color:var(--coral)}
+.btn.primary:hover, .btn-primary:hover{background:var(--coral-dk);border-color:var(--coral-dk)}
 
 /* Card & Layout */
 .card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius-lg);padding:28px;margin-bottom:24px;box-shadow:var(--shadow-card)}
@@ -80,7 +135,7 @@ header.top .wrap{display:flex;align-items:center;justify-content:space-between;f
 .meta-val{font-size:13.5px;font-weight:700;color:var(--ink);font-family:var(--font-display)}
 .meta-val.highlight{color:var(--coral)}
 
-/* Executive KPI Strip */
+/* Executive KPI Strip & Kavach Cricket / Sports Analytics Inspired Grid */
 .kpi-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin:24px 0}
 .kpi-box{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius-md);padding:20px;box-shadow:var(--shadow-card);position:relative;overflow:hidden}
 .kpi-box::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:var(--coral)}
@@ -94,6 +149,55 @@ header.top .wrap{display:flex;align-items:center;justify-content:space-between;f
 .kpi-tag.green{background:var(--green-tint);color:var(--green)}
 .kpi-tag.amber{background:var(--amber-tint);color:var(--amber-dk)}
 .kpi-tag.blue{background:var(--blue-tint);color:var(--blue)}
+
+.kavach-hero-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin: 24px 0;
+}
+.kavach-stat-card {
+  background: var(--panel); border: 1.5px solid var(--line); border-radius: var(--radius-lg);
+  padding: 20px; box-shadow: var(--shadow-card); position: relative; overflow: hidden;
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+.kavach-stat-card:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,.08); }
+.kavach-stat-card.accent-coral { border-top: 4px solid var(--coral); }
+.kavach-stat-card.accent-blue { border-top: 4px solid var(--blue); }
+.kavach-stat-card.accent-green { border-top: 4px solid var(--green); }
+.kavach-stat-card.accent-amber { border-top: 4px solid var(--amber); }
+
+.kavach-stat-head {
+  display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;
+}
+.kavach-stat-label {
+  font-family: var(--font-display); font-size: 11.5px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: .1em; color: var(--mut);
+}
+.kavach-stat-pill {
+  font-size: 10px; font-weight: 700; font-family: var(--font-mono); padding: 2px 7px;
+  border-radius: var(--radius-pill); text-transform: uppercase;
+}
+.kavach-num-row { display: flex; align-items: baseline; gap: 6px; }
+.kavach-big-num {
+  font-family: var(--font-display); font-size: 38px; font-weight: 800; line-height: 1; color: var(--ink);
+}
+.kavach-sub-unit { font-size: 15px; font-weight: 600; color: var(--mutd); }
+
+/* SVG Gauge Ring */
+.kavach-gauge-wrap {
+  display: flex; align-items: center; gap: 16px;
+}
+.gauge-svg { flex: 0 0 84px; transform: rotate(-90deg); }
+.gauge-bg { fill: none; stroke: var(--panel2); stroke-width: 8; }
+.gauge-meter {
+  fill: none; stroke: var(--coral); stroke-width: 8; stroke-linecap: round;
+}
+
+/* Mini Visual Progress Bars */
+.kavach-bars-list { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
+.kavach-bar-row { display: flex; align-items: center; gap: 8px; font-size: 12px; }
+.kavach-bar-label { width: 100px; color: var(--mut); font-weight: 600; font-size: 11.5px; }
+.kavach-bar-track { flex: 1; height: 8px; background: var(--panel2); border-radius: 4px; overflow: hidden; display: flex; }
+.kavach-bar-fill { height: 100%; border-radius: 4px; }
+.kavach-bar-val { width: 48px; text-align: right; font-weight: 700; font-family: var(--font-mono); font-size: 11px; }
 
 /* 2D Heatmap Grid */
 .heatmap-container{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius-lg);padding:22px;margin:18px 0;overflow-x:auto}
@@ -166,72 +270,50 @@ footer.foot{text-align:center;color:var(--mutd);font-size:12px;padding:36px 0 48
 
 /* Print Styles */
 @media print{
-  #ltm-family-nav, .sample-notice, .action-buttons, footer.foot{display:none !important}
+  .topbar, .sample-notice, .action-buttons, footer.foot{display:none !important}
   body{background:#FFF;color:#000}
   .card, .memo-sheet{box-shadow:none;border:1px solid #CCC;page-break-inside:avoid;margin-bottom:20px}
   .wrap{max-width:100%;padding:0}
 }
 @media(max-width:768px){
-  .meta-grid, .kpi-strip, .decomp-grid, .two-col, .hw-items{grid-template-columns:1fr}
+  .meta-grid, .kpi-strip, .decomp-grid, .two-col, .hw-items, .kavach-hero-grid{grid-template-columns:1fr}
   .dimrow .dname{width:140px}
 }
 </style>
 </head>
 <body>
 
-<!-- Top Navigation -->
-<nav id="ltm-family-nav">
-  <div class="ltm-fam-inner">
-    <div style="display:flex;align-items:center;gap:16px">
-      <div class="ltm-fam-brand">
-        <span class="ltm-fam-b">LTM CIS</span>
-        <span class="ltm-fam-s">Infrastructure Tech Advisory Suite</span>
-      </div>
-      <div class="ltm-fam-links">
-        <a href="cloud-iq.html" class="ltm-fam-link current"><span>Cloud IQ</span><span class="ltm-fam-tag">Diagnostic</span></a>
-        <a href="strategy-iq.html" class="ltm-fam-link"><span>Strategy IQ</span></a>
-        <a href="cost-iq/index.html" class="ltm-fam-link"><span>Cost IQ</span></a>
-        <a href="finops-iq.html" class="ltm-fam-link"><span>FinOps IQ</span></a>
-        <a href="sovereign-iq.html" class="ltm-fam-link"><span>Sovereign IQ</span></a>
-        <a href="posture-iq.html" class="ltm-fam-link"><span>Posture IQ</span></a>
-      </div>
-    </div>
-    <div>
-      <a href="cloud-iq.html" class="btn small" style="background:#FFF;color:#282828">← Open Live Diagnostic Tool</a>
-    </div>
-  </div>
-</nav>
-
-<!-- Sample Notice Banner -->
-<div class="sample-notice">
+<!-- Unified Executive Header Bar -->
+<header class="topbar no-print" role="banner">
   <div class="wrap">
-    <div>
-      <b>📄 REFERENTIAL SAMPLE DELIVERABLE:</b> This is an unmasked, completed <i>CloudIQ™</i> executive diagnostic readout for <b>Meridian Financial Group</b>.
-    </div>
-    <div>
-      <a href="cloud-iq.html" style="color:var(--blue);font-weight:700;text-decoration:underline">Run Your Own Enterprise Assessment →</a>
-    </div>
-  </div>
-</div>
-
-<!-- Header -->
-<header class="top">
-  <div class="wrap">
-    <div class="ltmlogo">
-      <img src="data:image/png;base64,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" alt="LTM Logo" />
-      <div class="ltmword">
-        <b>CloudIQ™ Diagnostic Readout</b>
-        <span>LTM Infrastructure Tech Advisory · Pillar 03</span>
+    <div class="brand">
+      <img src="assets/ltm-logo.png" onerror="this.onerror=null;this.src='/assets/ltm-logo.png'" alt="LTM - A Larsen & Toubro Group Company" style="height:32px;width:auto;border-radius:4px;object-fit:contain;vertical-align:middle;">
+      <div>
+        <div class="name">Cloud IQ</div>
+        <div class="sub">Infrastructure Tech Advisory · Public Cloud &amp; Modernization</div>
       </div>
     </div>
-    <div class="action-buttons" style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
-      <button class="btn secondary small" onclick="window.print()">🖨️ Print / Save PDF</button>
-      <a href="mailto:ashutosh.dixit@ltm.com?subject=CloudIQ%20Readout%20Discussion%20—%20Meridian%20Financial%20Group&body=Hi%20Ashutosh,%0A%0AWe%20reviewed%20the%20CloudIQ%20sample%20diagnostic%20report%20for%20Meridian%20Financial%20Group%20and%20would%20like%20to%20discuss%20a%20similar%20engagement%20for%20our%20estate.%0A%0AThank%20you." class="btn small">
-        📅 Schedule Strategy Session
+    <div class="topbar-actions">
+      <a href="cloud-iq.html" class="btn btn-ghost btn-sm" style="text-decoration:none;font-weight:700">← Open Live Tool</a>
+      <button class="btn btn-ghost btn-sm" onclick="window.print()">Print / Save PDF</button>
+      <a href="mailto:ashutosh.dixit@ltm.com?subject=CloudIQ%20Readout%20Discussion%20—%20Meridian%20Financial%20Group&body=Hi%20Advisory%20Team,%0A%0AWe%20reviewed%20the%20CloudIQ%20sample%20diagnostic%20report%20for%20Meridian%20Financial%20Group%20and%20would%20like%20to%20discuss%20a%20similar%20engagement%20for%20our%20estate.%0A%0AThank%20you." class="btn btn-primary btn-sm" style="text-decoration:none">
+        Book with Our Advisory Team
       </a>
     </div>
   </div>
 </header>
+
+<!-- Sample Notice Banner -->
+<div class="sample-notice no-print">
+  <div class="wrap">
+    <div>
+      <b>REFERENTIAL SAMPLE DELIVERABLE:</b> This is an unmasked, completed <i>CloudIQ™</i> executive diagnostic readout for <b>Meridian Financial Group</b>.
+    </div>
+    <div>
+      <a href="cloud-iq.html" style="color:var(--coral);font-weight:700;text-decoration:underline">Run Your Own Enterprise Assessment →</a>
+    </div>
+  </div>
+</div>
 
 <main class="wrap" style="padding-top:28px;padding-bottom:60px">
 
@@ -292,34 +374,92 @@ footer.foot{text-align:center;color:var(--mutd);font-size:12px;padding:36px 0 48
     </div>
   </div>
 
-  <!-- KPI Banner -->
-  <div class="kpi-strip">
-    <div class="kpi-box">
-      <span class="sec-label">Overall Maturity</span>
-      <div class="kpi-num" style="color:var(--coral)">52 <span style="font-size:18px;font-weight:600;color:var(--mut)">/ 100</span></div>
-      <div class="kpi-sub">Level 2.6 · <b>Developing</b> Multi-Cloud</div>
-      <span class="kpi-tag amber">Sector Median: 64 / 100 (-12 Gap)</span>
+  <!-- Kavach Cricket / Sports Analytics Inspired High-Impact Stats Hero -->
+  <div class="kavach-hero-grid">
+    <!-- 1. Circular SVG Score Donut -->
+    <div class="kavach-stat-card accent-coral">
+      <div class="kavach-stat-head">
+        <span class="kavach-stat-label">Estate Maturity</span>
+        <span class="kavach-stat-pill" style="background:var(--amber-tint);color:var(--amber-dk)">Developing · 2.6</span>
+      </div>
+      <div class="kavach-gauge-wrap">
+        <svg class="gauge-svg" width="84" height="84" viewBox="0 0 100 100">
+          <circle class="gauge-bg" cx="50" cy="50" r="38"></circle>
+          <circle class="gauge-meter" cx="50" cy="50" r="38"
+            stroke-dasharray="238.76"
+            stroke-dashoffset="114.6"
+            style="stroke:var(--coral)">
+          </circle>
+        </svg>
+        <div>
+          <div class="kavach-num-row">
+            <span class="kavach-big-num">2.6</span>
+            <span class="kavach-sub-unit">/ 5.0</span>
+          </div>
+          <div style="font-size:11.5px;color:var(--mutd);margin-top:4px">Target: 4.5+ Leading</div>
+        </div>
+      </div>
     </div>
 
-    <div class="kpi-box green">
-      <span class="sec-label" style="color:var(--green)">Quantified Value at Stake</span>
-      <div class="kpi-num" style="color:var(--green)">$3.85M</div>
-      <div class="kpi-sub">Annual addressable cost leakage</div>
-      <span class="kpi-tag green">27.1% of Addressable Cloud Run-rate</span>
+    <!-- 2. Addressable Financial Leakage -->
+    <div class="kavach-stat-card accent-amber">
+      <div class="kavach-stat-head">
+        <span class="kavach-stat-label">Addressable Waste</span>
+        <span class="kavach-stat-pill" style="background:var(--coral-tint);color:var(--coral-dkr)">Value at Stake</span>
+      </div>
+      <div class="kavach-num-row">
+        <span class="kavach-big-num" style="color:var(--coral)">$3.85M</span>
+      </div>
+      <div class="kavach-bars-list">
+        <div class="kavach-bar-row">
+          <span class="kavach-bar-label">Compute</span>
+          <div class="kavach-bar-track"><div class="kavach-bar-fill" style="width:48%;background:var(--coral)"></div></div>
+          <span class="kavach-bar-val">$1.85M</span>
+        </div>
+        <div class="kavach-bar-row">
+          <span class="kavach-bar-label">Commitments</span>
+          <div class="kavach-bar-track"><div class="kavach-bar-fill" style="width:31%;background:var(--blue)"></div></div>
+          <span class="kavach-bar-val">$1.20M</span>
+        </div>
+      </div>
     </div>
 
-    <div class="kpi-box red">
-      <span class="sec-label" style="color:var(--red)">DC Exit Urgency</span>
-      <div class="kpi-num" style="color:var(--red)">10 Mo</div>
-      <div class="kpi-sub">London Slough DC lease expiration</div>
-      <span class="kpi-tag red">$2.4M Penalty Exposure on Renewal</span>
+    <!-- 3. Head-to-Head Peer Comparison -->
+    <div class="kavach-stat-card accent-coral">
+      <div class="kavach-stat-head">
+        <span class="kavach-stat-label">Peer Benchmark</span>
+        <span class="kavach-stat-pill" style="background:var(--coral-tint);color:var(--coral-dkr)">-0.6 vs Peer</span>
+      </div>
+      <div class="kavach-num-row">
+        <span class="kavach-big-num" style="color:var(--coral)">-0.6</span>
+        <span class="kavach-sub-unit">vs BFSI Median</span>
+      </div>
+      <div class="kavach-bars-list">
+        <div class="kavach-bar-row">
+          <span class="kavach-bar-label">Meridian</span>
+          <div class="kavach-bar-track"><div class="kavach-bar-fill" style="width:52%;background:var(--coral)"></div></div>
+          <span class="kavach-bar-val">2.6</span>
+        </div>
+        <div class="kavach-bar-row">
+          <span class="kavach-bar-label">Sector Median</span>
+          <div class="kavach-bar-track"><div class="kavach-bar-fill" style="width:64%;background:var(--blue)"></div></div>
+          <span class="kavach-bar-val">3.2</span>
+        </div>
+      </div>
     </div>
 
-    <div class="kpi-box blue">
-      <span class="sec-label" style="color:var(--blue)">Sovereignty Exposure</span>
-      <div class="kpi-num" style="color:var(--blue)">High</div>
-      <div class="kpi-sub">SecNumCloud &amp; DORA Audit Window</div>
-      <span class="kpi-tag blue">French Investor Telemetry at Risk</span>
+    <!-- 4. Binding Constraint / Primary Friction -->
+    <div class="kavach-stat-card accent-blue">
+      <div class="kavach-stat-head">
+        <span class="kavach-stat-label">Binding Constraint</span>
+        <span class="kavach-stat-pill" style="background:var(--red-tint);color:var(--red)">High Urgency</span>
+      </div>
+      <div style="font-family:var(--font-display);font-size:15px;font-weight:800;color:var(--ink);line-height:1.3;margin-bottom:6px">
+        ⏰ London Slough DC Lease Cliff (10 Months)
+      </div>
+      <p style="font-size:11.5px;color:var(--mut);line-height:1.4">
+        Imminent facility deadline mandates immediate migration factory mobilization. Overrunning into holdover penalty triggers $2.4M in unbudgeted expense.
+      </p>
     </div>
   </div>
 
@@ -469,7 +609,7 @@ footer.foot{text-align:center;color:var(--mutd);font-size:12px;padding:36px 0 48
       </div>
 
       <div style="background:var(--blue-tint);border:1px solid var(--blue);border-radius:var(--radius-sm);padding:10px 14px;margin-top:14px;font-size:12px;color:var(--blue)">
-        <b>🔐 SecNumCloud &amp; DORA Flag:</b> Customer telemetry and asset valuation services are hosted on US-sovereign hyperscale regions without hardware encryption isolation. Action required ahead of Q1 audit.
+        <b>SecNumCloud &amp; DORA Flag:</b> Customer telemetry and asset valuation services are hosted on US-sovereign hyperscale regions without hardware encryption isolation. Action required ahead of Q1 audit.
       </div>
     </div>
   </div>
@@ -515,7 +655,7 @@ footer.foot{text-align:center;color:var(--mutd);font-size:12px;padding:36px 0 48
     </div>
 
     <div style="margin-top:16px;background:var(--panel2);border:1px solid var(--line);border-radius:var(--radius-sm);padding:14px 18px;font-size:13px;color:var(--ink);line-height:1.5">
-      <b>💡 CFO Modernization Self-Funding Model:</b> Reclaiming $2.13M from compute rightsizing and commitment arbitrage in the first 90 days completely self-funds the $1.8M application migration factory required to decommission the London Slough DC ahead of the 10-month lease cliff.
+      <b>CFO Modernization Self-Funding Model:</b> Reclaiming $2.13M from compute rightsizing and commitment arbitrage in the first 90 days completely self-funds the $1.8M application migration factory required to decommission the London Slough DC ahead of the 10-month lease cliff.
     </div>
   </div>
 
@@ -726,11 +866,11 @@ footer.foot{text-align:center;color:var(--mutd);font-size:12px;padding:36px 0 48
     </div>
 
     <div class="handoff">
-      🔐 <b>Pillar 02 Digital Sovereignty Referral:</b> Strict EU residency and SecNumCloud compliance flags raised. Routes to <b>Sovereign IQ</b> and <b>Posture IQ</b> for a 300-point ANSSI SecNumCloud 3.2 certification audit.
+      <b>Pillar 02 Digital Sovereignty Referral:</b> Strict EU residency and SecNumCloud compliance flags raised. Routes to <b>Sovereign IQ</b> and <b>Posture IQ</b> for a 300-point ANSSI SecNumCloud 3.2 certification audit.
     </div>
 
     <div class="handoff" style="background:var(--violet-tint);border-color:var(--violet)">
-      🤖 <b>Pillar 04 AI Infusion Referral:</b> Modernization of the wealth analytics engine requires scalable vector data pipelines. Foundational engineering supported under 03.6; generative AI models route to <b>AI Readiness IQ</b>.
+      <b>Pillar 04 AI Infusion Referral:</b> Modernization of the wealth analytics engine requires scalable vector data pipelines. Foundational engineering supported under 03.6; generative AI models route to <b>AI Readiness IQ</b>.
     </div>
   </div>
 
@@ -846,8 +986,8 @@ footer.foot{text-align:center;color:var(--mutd);font-size:12px;padding:36px 0 48
         Prepared by <b>LTM Infrastructure Tech Advisory Practice</b> · Contact: <a href="mailto:ashutosh.dixit@ltm.com" style="color:var(--coral);font-weight:700">ashutosh.dixit@ltm.com</a>
       </div>
       <div>
-        <a href="mailto:ashutosh.dixit@ltm.com?subject=Schedule%20Executive%20Readout%20—%20Meridian%20Diagnostic&body=Hi%20Ashutosh,%0A%0AWe%20would%20like%20to%20schedule%20an%20executive%20strategy%20readout%20to%20review%20this%20diagnostic%20in%20detail.%0A%0AThank%20you." class="btn small">
-          Book Readout with Ashutosh
+        <a href="mailto:ashutosh.dixit@ltm.com?subject=Schedule%20Executive%20Readout%20—%20Meridian%20Diagnostic&body=Hi%20Advisory%20Team,%0A%0AWe%20would%20like%20to%20schedule%20an%20executive%20strategy%20readout%20to%20review%20this%20diagnostic%20in%20detail.%0A%0AThank%20you." class="btn btn-primary btn-sm">
+          Book with Our Advisory Team
         </a>
       </div>
     </div>
@@ -862,10 +1002,10 @@ footer.foot{text-align:center;color:var(--mutd);font-size:12px;padding:36px 0 48
     </p>
     <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
       <a href="cloud-iq.html" class="btn big">
-        🚀 Launch CloudIQ™ Diagnostic
+        Launch CloudIQ™ Diagnostic
       </a>
       <a href="mailto:ashutosh.dixit@ltm.com?subject=Request%20LTM%20Advisory%20Engagement" class="btn secondary big">
-        📧 Contact Advisory Team (ashutosh.dixit@ltm.com)
+        Contact Advisory Team
       </a>
     </div>
   </div>

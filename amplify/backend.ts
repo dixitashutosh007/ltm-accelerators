@@ -5,6 +5,7 @@ import { evaluateFinOpsFunction } from './functions/evaluate-finops/resource';
 import { evaluateFinOpsIqFunction } from './functions/evaluate-finops-iq/resource';
 import { evaluatePostureIqFunction } from './functions/evaluate-posture-iq/resource';
 import { evaluateSovereignIqFunction } from './functions/evaluate-sovereign-iq/resource';
+import { evaluateCloudIqFunction } from './functions/evaluate-cloud-iq/resource';
 import { HttpApi, HttpMethod } from 'aws-cdk-lib/aws-apigatewayv2';
 import { HttpLambdaIntegration } from 'aws-cdk-lib/aws-apigatewayv2-integrations';
 
@@ -17,7 +18,8 @@ export const backend = defineBackend({
   evaluateFinOpsFunction,
   evaluateFinOpsIqFunction,
   evaluatePostureIqFunction,
-  evaluateSovereignIqFunction
+  evaluateSovereignIqFunction,
+  evaluateCloudIqFunction
 });
 
 // Create custom API Gateway Stack on top of Amplify resources
@@ -47,6 +49,11 @@ const evaluateSovereignIntegration = new HttpLambdaIntegration(
   backend.evaluateSovereignIqFunction.resources.lambda
 );
 
+const evaluateCloudIntegration = new HttpLambdaIntegration(
+  'EvaluateCloudIqIntegration',
+  backend.evaluateCloudIqFunction.resources.lambda
+);
+
 httpApi.addRoutes({
   path: '/api/evaluate/finops-value-case',
   methods: [HttpMethod.POST, HttpMethod.OPTIONS],
@@ -69,6 +76,12 @@ httpApi.addRoutes({
   path: '/api/evaluate/sovereign-iq',
   methods: [HttpMethod.POST, HttpMethod.OPTIONS],
   integration: evaluateSovereignIntegration
+});
+
+httpApi.addRoutes({
+  path: '/api/evaluate/cloud-iq',
+  methods: [HttpMethod.POST, HttpMethod.OPTIONS],
+  integration: evaluateCloudIntegration
 });
 
 // Expose API URL in outputs

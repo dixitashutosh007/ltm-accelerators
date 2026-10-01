@@ -2,6 +2,7 @@ import { evaluateFinOpsValueCase } from './accelerators/finops-value-case/evalua
 import { evaluateFinOpsIq } from './accelerators/finops-iq/evaluate';
 import { evaluatePostureIq } from './accelerators/posture-iq/evaluate';
 import { evaluateSovereignIq } from './accelerators/sovereign-iq/evaluate';
+import { evaluateCloudIq } from './accelerators/cloud-iq/evaluate';
 import postureKb from './accelerators/posture-iq/knowledge-base.json' with { type: 'json' };
 import sovereignKb from './accelerators/sovereign-iq/knowledge-base.json' with { type: 'json' };
 
@@ -93,4 +94,49 @@ console.log('Anomalies Identified:', sovereignResult.anomalies.map((a: any) => a
 console.log('Consulting Probes Triggered:', sovereignResult.probes.map((p: any) => p.badge).join(' | '));
 console.log('--- Sovereign IQ Assertions Passed! ---\n');
 
-console.log('🎉 ALL 4 ACCELERATOR ENGINES VALIDATED AND FUNCTIONING FLAWLESSLY!');
+console.log('--- 5. Testing Cloud IQ Headless Engine ---');
+const cloudIqMockAnswers = {
+  'Q0.1': 0, // CIO / CTO
+  'Q0.2': 0, // BFSI
+  'Q0.3': [0, 1], // Residency, DORA
+  'Q0.4': 0, // Track A bias
+  'Q0.5': 1, // 150-500 apps
+  'Q0.6': ['Cost reduction & FinOps'],
+  'Q0.7': [0, 1], // AWS & Azure
+  'Q0.8': 2, // $10M-$25M spend
+  'Q0.9': 1, // 20-40% commitments
+  'Q0.10': 1,
+  'Q0.11': 2, // VMware renewal cliff
+  'Q0.12': 3, // Imminent DC lease cliff
+  'Q0.13': 1,
+  'Q1.1': [0],
+  'Q1.2': 2,
+  'Q2.1': 1, 'Q2.2': 2, 'Q2.3': 2,
+  'Q3.1': 1, 'Q3.2': 2, 'Q3.3': 2,
+  'Q4.1': 2, 'Q4.2': [0, 1], 'Q4.3': 1, 'Q4.4': 2,
+  'Q5.1': 2, 'Q5.2': true, 'Q5.3': 1,
+  'Q6.1': 2, 'Q6.2': 2, 'Q6.3': 1,
+  'Q7.1': 2, 'Q7.2': 2, 'Q7.3': 2,
+  'Q8.1': 2, 'Q8.2': true, 'Q8.3': 2,
+  'Q9.1': 2, 'Q9.2': [0], 'Q9.3': 2
+};
+
+const cloudIqResult = evaluateCloudIq({
+  answers: cloudIqMockAnswers,
+  session: {
+    clientName: 'Tier 1 Global Bank',
+    mode: 'workshop'
+  }
+});
+
+console.log('Transformation Track:', cloudIqResult.trackCode, `(${cloudIqResult.trackName})`);
+console.log('Overall Score:', cloudIqResult.overall, `(${cloudIqResult.band})`);
+console.log('Total Cloud Spend:', '$' + (cloudIqResult.totalCloudSpend / 1000000).toFixed(1) + 'M', '| Leakage:', '$' + (cloudIqResult.totalLeakage / 1000).toFixed(0) + 'k');
+console.log('Financial Decomp:', cloudIqResult.decomp);
+console.log('Dimensions (D1-D8):', Object.entries(cloudIqResult.dimScores).map(([k, v]) => `${k}: ${v.toFixed(1)}`).join(' | '));
+console.log('Roadmap Phases: P1:', cloudIqResult.movesPhase1.length, '| P2:', cloudIqResult.movesPhase2.length, '| P3:', cloudIqResult.movesPhase3.length, '| P4:', cloudIqResult.movesPhase4.length);
+console.log('Recommended Offerings:', cloudIqResult.offers.map(o => o.code).join(', '));
+console.log('Triggered Probes:', cloudIqResult.probes.map(p => p.badge).join(' | '));
+console.log('--- Cloud IQ Assertions Passed! ---\n');
+
+console.log('🎉 ALL 5 ACCELERATOR ENGINES VALIDATED AND FUNCTIONING FLAWLESSLY!');

@@ -39,8 +39,8 @@ async function getPermissionsConfig() {
           role: 'super_admin',
           name: 'Ashutosh Dixit (Super Admin)',
           permissions: {
-            view: ['finops-value-case', 'finops-iq', 'sovereign-iq', 'posture-iq', 'reports'],
-            edit: ['finops-value-case', 'finops-iq', 'sovereign-iq', 'posture-iq']
+            view: ['finops-value-case', 'finops-iq', 'sovereign-iq', 'posture-iq', 'cloud-iq', 'reports'],
+            edit: ['finops-value-case', 'finops-iq', 'sovereign-iq', 'posture-iq', 'cloud-iq']
           }
         }
       }
@@ -109,15 +109,16 @@ export const handler = async (event) => {
           role: isSuper ? 'super_admin' : (custom.role || 'advisor_viewer'),
           permissions: isSuper 
             ? {
-                view: ['finops-value-case', 'finops-iq', 'sovereign-iq', 'posture-iq', 'reports'],
-                edit: ['finops-value-case', 'finops-iq', 'sovereign-iq', 'posture-iq', 'reports'],
-                take: ['finops-value-case', 'finops-iq', 'sovereign-iq', 'posture-iq'],
-                archive: ['finops-value-case', 'finops-iq', 'sovereign-iq', 'posture-iq', 'reports'],
+                view: ['finops-value-case', 'finops-iq', 'sovereign-iq', 'posture-iq', 'cloud-iq', 'reports'],
+                edit: ['finops-value-case', 'finops-iq', 'sovereign-iq', 'posture-iq', 'cloud-iq', 'reports'],
+                take: ['finops-value-case', 'finops-iq', 'sovereign-iq', 'posture-iq', 'cloud-iq'],
+                archive: ['finops-value-case', 'finops-iq', 'sovereign-iq', 'posture-iq', 'cloud-iq', 'reports'],
                 accelerators: {
                   'finops-value-case': { full: true, take: true, edit: true, archive: true },
                   'finops-iq': { full: true, take: true, edit: true, archive: true },
                   'sovereign-iq': { full: true, take: true, edit: true, archive: true },
-                  'posture-iq': { full: true, take: true, edit: true, archive: true }
+                  'posture-iq': { full: true, take: true, edit: true, archive: true },
+                  'cloud-iq': { full: true, take: true, edit: true, archive: true }
                 }
               }
             : (custom.permissions || {
