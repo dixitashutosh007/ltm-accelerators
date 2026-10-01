@@ -2657,7 +2657,7 @@ h1,h2,h3,h4{font-family:var(--font-display);letter-spacing:-.015em;color:var(--i
   <div class="modal-content" style="max-width:880px">
     <div class="modal-head">
       <div>
-        <div style="font-size:11px;font-family:var(--font-mono);font-weight:700;color:var(--coral);text-transform:uppercase">LTM CIS Tech Advisory &middot; Commercial Scoping</div>
+        <div style="font-size:11px;font-family:var(--font-mono);font-weight:700;color:var(--coral);text-transform:uppercase">LTM Infrastructure Tech Advisory &middot; Commercial Scoping</div>
         <h3 style="font-family:var(--font-display);font-size:18px">Statement of Work (SOW) &middot; Advisory Proposal Blueprint</h3>
       </div>
       <button class="btn secondary small" onclick="closeSOWModal()">Close &times;</button>
@@ -3980,7 +3980,7 @@ function generateLTMOfferings(inScopeRegimes, pillarScores) {
     {
       title: "DORA & APRA Operational Resilience Accelerator",
       desc: "Comprehensive readiness assessment, Register of Information assembly, Threat-Led Penetration Testing (TLPT) governance, and CTPP contract remediation.",
-      meta: "LTM CIS Tech Advisory · Pillar 03 & 04",
+      meta: "LTM Infrastructure Tech Advisory · Pillar 03 & 04",
       duration: "6–8 Weeks Sprint"
     },
     {
@@ -5512,12 +5512,13 @@ function renderReport() {
         <div class="sec-label">Executive Transformation Pack</div>
         <h1 style="font-size:26px">Digital Sovereignty Scorecard &amp; Diagnostic Readout</h1>
       </div>
-      <div style="display:flex;align-items:center;gap:8px" class="no-print">
+      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;" class="no-print">
         <button class="btn secondary" onclick="openBoardModal()">Board Slides</button>
         <button class="btn secondary" onclick="openTIAModal()">Legal TIA Dossier</button>
         <button class="btn secondary" onclick="openSOWModal()">SOW / Proposal</button>
         <button class="btn ghost" onclick="openPlaybookModal()">Facilitator Guide</button>
         <button class="btn primary" onclick="downloadSovereignExecutivePDF()">Download PDF &darr;</button>
+        <button class="btn ghost" onclick="downloadSovereignExecutivePDF(true)" style="background:rgba(16,185,129,0.12);border:1px solid #10B981;color:#10B981;font-weight:700;">☁️ Archive Report</button>
         <button class="btn ghost" onclick="STATE.screen='questions';renderScreen();">&larr; Edit Answers</button>
       </div>
     </div>
@@ -5812,7 +5813,7 @@ ${formatMarkdownToHtml(generateRuleBasedSovereignMemo())}
 
     <!-- LTM Advisory Offerings -->
     <div class="card" style="background:var(--panel2)">
-      <div class="sec-label">LTM CIS Tech Advisory &middot; Engagement Blueprints</div>
+      <div class="sec-label">LTM Infrastructure Tech Advisory &middot; Engagement Blueprints</div>
       <h3 style="font-size:18px;margin-bottom:4px">Recommended Advisory Services &amp; SOW Scope</h3>
       <p style="font-size:13px;color:var(--mut)">Turnkey consulting sprints to execute your sovereignty roadmap:</p>
       <div class="offering-grid">${offeringsHtml}</div>
@@ -8851,7 +8852,7 @@ function exportSIQ() {
    VECTOR JSPDF REPORT GENERATION
    ============================================================ */
 
-function downloadSovereignExecutivePDF() {
+function downloadSovereignExecutivePDF(isArchiveOnly) {
   if (typeof jspdf === "undefined" || !jspdf.jsPDF) {
     alert("jsPDF library is still loading. Please try again in a moment.");
     return;
@@ -9117,30 +9118,39 @@ function downloadSovereignExecutivePDF() {
       styles: { fontSize: 8 }
     });
 
-    doc.save("Sovereign_IQ_Executive_Pack_" + clientDisplay.replace(/[^a-zA-Z0-9]/g, "_") + ".pdf");
+    if (!isArchiveOnly) {
+      doc.save("Sovereign_IQ_Executive_Pack_" + clientDisplay.replace(/[^a-zA-Z0-9]/g, "_") + ".pdf");
+      return;
+    }
   }
 
-  // Automatic Archive to AWS S3
-  try {
-    if(window.LTM_S3) {
-      var pdfBase64 = doc.output('datauristring');
-      window.LTM_S3.saveReportToS3({
-        acceleratorId: 'sovereign-iq',
-        clientName: clientDisplay,
-        pdfBase64: pdfBase64,
-        metadata: {
-          maturityScore: Math.round(overallScore),
-          unlocked: isUnlocked,
-          consultantLead: SESSION.consultantLead
-        }
-      }).then(function(res){
-        window.LTM_S3.showS3SuccessBanner(res);
-      }).catch(function(err){
-        console.warn('S3 archive notice:', err);
-      });
-    }
-  } catch(e) {
-    console.warn('S3 archive hook error:', e);
+  // Archive with Client Consent
+  if (window.LTM_S3 && window.LTM_S3.requestArchiveConsent) {
+    window.LTM_S3.requestArchiveConsent({
+      acceleratorId: 'sovereign-iq',
+      acceleratorTitle: 'Digital Sovereignty IQ Dossier',
+      clientName: clientDisplay
+    }, function(confirmedClient) {
+      try {
+        var pdfBase64 = doc.output('datauristring');
+        window.LTM_S3.saveReportToS3({
+          acceleratorId: 'sovereign-iq',
+          clientName: confirmedClient,
+          pdfBase64: pdfBase64,
+          metadata: {
+            maturityScore: Math.round(overallScore),
+            unlocked: isUnlocked,
+            consultantLead: SESSION.consultantLead
+          }
+        }).then(function(res){
+          window.LTM_S3.showS3SuccessBanner(res);
+        }).catch(function(err){
+          alert('Archive notice: ' + err.message);
+        });
+      } catch(e) {
+        console.warn('Archive hook error:', e);
+      }
+    });
   }
 }
 
@@ -9355,7 +9365,7 @@ function exportQuestionBank() {
       profile: "rules_engine",
       version: SOVEREIGN_IQ_VERSION,
       lastReviewed: new Date().toISOString().slice(0, 10),
-      disclaimer: "LTM CIS Tech Advisory proprietary framework. Applicable across EU, UK, Middle East, APAC, and cross-border extraterritoriality."
+      disclaimer: "LTM Infrastructure Tech Advisory proprietary framework. Applicable across EU, UK, Middle East, APAC, and cross-border extraterritoriality."
     },
     sections: SECTIONS,
     regimes: REGIMES,

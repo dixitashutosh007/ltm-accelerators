@@ -1895,7 +1895,7 @@ function showReportGenerationAnimation(callback) {
     'Compiling Executive CIO Value Case & Board Readout…'
   ];
   overlay.innerHTML =
-    '<div class="rg-brand">LTM · CIS Tech Advisory · FinOps Value Engine</div>' +
+    '<div class="rg-brand">LTM · Infrastructure Tech Advisory · FinOps Value Engine</div>' +
     '<div class="rg-pulse-container"><div class="rg-pulse-ring"></div><div class="rg-pulse-ring"></div><div class="rg-pulse-ring"></div><div class="rg-core-dot"></div></div>' +
     '<div class="rg-title">Synthesizing Cloud Financial Diagnostic</div>' +
     '<div class="rg-subtitle">Correlating estate declarations against 40+ FinOps capabilities, published benchmarks, and peer patterns</div>' +
@@ -2017,7 +2017,7 @@ function render(){
   document.querySelectorAll("#topnav .navbtn").forEach(b=>b.classList.toggle("on",b.dataset.nav===S.tab));
   $("#ltmLogo").innerHTML = S.ltmLogo
     ? '<img src="'+S.ltmLogo+'" alt="LTM"/>'
-    : '<div style="display:flex;align-items:center;gap:12px">' + DEFAULT_LTM_LOGO + '<div style="border-left:1px solid var(--line);padding-left:10px;line-height:1.2"><b style="font-size:13.5px;color:var(--ink)">FinOps Value Case</b><span style="display:block;font-size:9.5px;letter-spacing:.12em;color:var(--steel);text-transform:uppercase">CIS Tech Advisory</span></div></div>';
+    : '<div style="display:flex;align-items:center;gap:12px">' + DEFAULT_LTM_LOGO + '<div style="border-left:1px solid var(--line);padding-left:10px;line-height:1.2"><b style="font-size:13.5px;color:var(--ink)">FinOps Value Case</b><span style="display:block;font-size:9.5px;letter-spacing:.12em;color:var(--steel);text-transform:uppercase">Infrastructure Tech Advisory</span></div></div>';
   if(S.tab==="bank"){app.innerHTML=viewBank();return;}
   if(S.screen==="intro"){app.innerHTML=viewIntro();return;}
   if(S.screen==="org"){app.innerHTML=viewOrg();return;}
@@ -2147,7 +2147,7 @@ function viewReport(){
   const o=S.org, r=S.respondent, M=S.kb.meta;
   const ltm=S.ltmLogo
     ? '<img src="'+S.ltmLogo+'" alt="LTM"/>'
-    : '<div style="display:flex;align-items:center;gap:12px">' + DEFAULT_LTM_LOGO + '<div style="border-left:1px solid var(--line);padding-left:12px;line-height:1.2"><b style="font-size:14px;color:var(--ink)">FinOps Value Case</b><span style="display:block;font-size:9.5px;letter-spacing:.12em;color:var(--steel);text-transform:uppercase">CIS Tech Advisory</span></div></div>';
+    : '<div style="display:flex;align-items:center;gap:12px">' + DEFAULT_LTM_LOGO + '<div style="border-left:1px solid var(--line);padding-left:12px;line-height:1.2"><b style="font-size:14px;color:var(--ink)">FinOps Value Case</b><span style="display:block;font-size:9.5px;letter-spacing:.12em;color:var(--steel);text-transform:uppercase">Infrastructure Tech Advisory</span></div></div>';
   const orgId=(o.logo?'<img src="'+o.logo+'"/>':'')+'<div><div class="mval">'+esc(o.name||"—")+'</div><div class="mline">'+esc(o.sector)+'</div></div>';
 
   const streams = computeStreams(sig, annualSpend(), S.answers);
@@ -2398,28 +2398,28 @@ document.addEventListener("click",e=>{
     const btn = el;
     const isSaveOnly = a==="saveS3Report";
     const origHtml = btn.innerHTML;
-    if(isSaveOnly){
-      btn.disabled = true;
-      btn.innerHTML = '☁️ Archiving to S3...';
-    }
-
     const paper = document.querySelector('.paper');
-    if (window.html2pdf && paper && window.LTM_S3) {
+
+    function executeArchive(clientNameConfirmed) {
+      if (!window.html2pdf || !paper || !window.LTM_S3) {
+        alert('PDF generator or storage service not available.');
+        return;
+      }
+      btn.disabled = true;
+      btn.innerHTML = '☁️ Archiving Report...';
+
       const opt = {
         margin: 10,
-        filename: (S.org.name || 'Client').replace(/\s+/g, '_') + '_FinOps_Value_Case.pdf',
+        filename: (clientNameConfirmed || S.org.name || 'Client').replace(/\s+/g, '_') + '_FinOps_Value_Case.pdf',
         image: { type: 'jpeg', quality: 0.95 },
         html2canvas: { scale: 1.5, useCORS: true },
         jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
       };
 
-      html2pdf().set(opt).from(paper).outputPdf('datauristring').then(function(pdfBase64){
-        if(!isSaveOnly){
-          window.print();
-        }
+      html2pdf().set(opt).from(paper).toPdf().outputPdf('datauristring').then(function(pdfBase64){
         return window.LTM_S3.saveReportToS3({
           acceleratorId: 'finops-value-case',
-          clientName: S.org.name || 'Enterprise Client',
+          clientName: clientNameConfirmed || S.org.name || 'Enterprise Client',
           pdfBase64: pdfBase64,
           metadata: {
             needIndex: needIndex(),
@@ -2428,21 +2428,33 @@ document.addEventListener("click",e=>{
           }
         });
       }).then(function(res){
-        if(isSaveOnly){
-          btn.disabled = false;
-          btn.innerHTML = '✅ Saved to S3!';
-          setTimeout(function(){ btn.innerHTML = origHtml; }, 3500);
-        }
+        btn.disabled = false;
+        btn.innerHTML = '✅ Saved!';
+        setTimeout(function(){ btn.innerHTML = origHtml; }, 3500);
         window.LTM_S3.showS3SuccessBanner(res);
       }).catch(function(err){
-        if(isSaveOnly){
-          btn.disabled = false;
-          btn.innerHTML = origHtml;
-          alert('Could not archive to S3: ' + err.message);
-        }
+        btn.disabled = false;
+        btn.innerHTML = origHtml;
+        alert('Could not archive report: ' + err.message);
       });
-    } else {
-      window.print();
+    }
+
+    if (isSaveOnly) {
+      if (window.LTM_S3 && window.LTM_S3.requestArchiveConsent) {
+        window.LTM_S3.requestArchiveConsent({
+          acceleratorId: 'finops-value-case',
+          acceleratorTitle: 'FinOps Value Case Diagnostic',
+          clientName: S.org.name || 'Enterprise Client'
+        }, function(confirmedClient) {
+          executeArchive(confirmedClient);
+        });
+      } else {
+        executeArchive(S.org.name || 'Enterprise Client');
+      }
+      return;
+    }
+
+    window.print();
     }
   }
   else if(a==="toggleConsultant"){S.consultantUnlocked=!S.consultantUnlocked;render();window.scrollTo(0,0);}

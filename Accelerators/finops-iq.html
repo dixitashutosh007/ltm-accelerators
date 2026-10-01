@@ -1713,7 +1713,7 @@
       </div>
       <div class="modal-body">
         <p style="font-size:13px;color:#4B5563;margin-bottom:14px">
-          Connect with <strong>Ashutosh Dixit</strong> and the <strong>LTM CIS Tech Advisory</strong> leadership team to review your detailed assessment findings, unit-economics bridge, and prioritized transformation roadmap.
+          Connect with <strong>Ashutosh Dixit</strong> and the <strong>LTM Infrastructure Tech Advisory</strong> leadership team to review your detailed assessment findings, unit-economics bridge, and prioritized transformation roadmap.
         </p>
         <div class="form-group">
           <label>Your Name</label>
@@ -3717,7 +3717,7 @@
       if (!q) return;
 
       toast('AI interpreting discussion notes...');
-      const sysPrompt = 'You are a Senior Principal FinOps Consultant at LTM CIS Tech Advisory. Evaluate the qualitative discussion notes against the 4 options (Option 0: High maturity score 100; Option 1: Moderate score 65; Option 2: Low score 30; Option 3: Zero maturity score 0). Return strictly valid JSON: { "suggested_option_index": 0|1|2|3, "reasoning": "2 sentences explaining the match", "key_finding": "1 sentence executive takeaway", "remediation": "1 specific immediate action" }';
+      const sysPrompt = 'You are a Senior Principal FinOps Consultant at LTM Infrastructure Tech Advisory. Evaluate the qualitative discussion notes against the 4 options (Option 0: High maturity score 100; Option 1: Moderate score 65; Option 2: Low score 30; Option 3: Zero maturity score 0). Return strictly valid JSON: { "suggested_option_index": 0|1|2|3, "reasoning": "2 sentences explaining the match", "key_finding": "1 sentence executive takeaway", "remediation": "1 specific immediate action" }';
       const userPrompt = 'Question: ' + q.text + '\n\nOptions:\n' + q.options.map((o, i) => i + ': ' + o.label + ' (score: ' + o.score + ')').join('\n') + '\n\nConsultant Interview Notes & Qualitative Evidence:\n' + note;
 
       try {
@@ -4375,13 +4375,14 @@
       let html = modeBanner
         + '<div class="card" style="border-top: 4px solid var(--ltm-red)">'
         + '<div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:16px;margin-bottom:20px">'
-        + '<div><span style="font-family:var(--font-mono);font-size:11px;font-weight:700;color:var(--ltm-red);text-transform:uppercase">LTM CIS Tech Advisory</span>'
+        + '<div><span style="font-family:var(--font-mono);font-size:11px;font-weight:700;color:var(--ltm-red);text-transform:uppercase">LTM Infrastructure Tech Advisory</span>'
         + '<h1 style="font-family:var(--font-heading);font-size:24px;font-weight:800;color:var(--ltm-dark);margin:4px 0">' + (o.name || 'Client Enterprise') + ' · FinOps Maturity Diagnostic</h1>'
-        + '<div style="font-size:13px;color:#6B7280">' + [o.sector, formatSpend(o.annualSpend), (o.footprint || []).join(' / ')].filter(Boolean).join(' · ') + '</div>'
+        + '<div style="font-size:13px;color:#6B7280">' + [o.sector, formatSpend(o.annualSpend), (o.footprint || []).join(' · ')].filter(Boolean).join(' · ') + '</div>'
         + '</div>'
-        + '<div style="display:flex;gap:10px">'
+        + '<div style="display:flex;gap:10px;flex-wrap:wrap;">'
         + '<button class="btn secondary" onclick="exportSessionJSON()">Export Audit JSON</button>'
         + '<button class="btn primary" onclick="exportBoardroomPDF()">Download Boardroom PDF ↓</button>'
+        + '<button class="btn ghost" onclick="exportBoardroomPDF(true)" style="background:rgba(16,185,129,0.12);border:1px solid #10B981;color:#10B981;font-weight:700;">☁️ Archive Report</button>'
         + '</div>'
         + '</div>'
         + '<div class="executive-dashboard-grid">'
@@ -4475,7 +4476,7 @@
           + '<div class="mask-cta-box">'
           + '<div class="mask-lock-icon">🔒</div>'
           + '<h3>Unlock Complete FinOps Transformation Blueprint &amp; Granular SOW</h3>'
-          + '<p>The detailed 3-horizon modernization roadmap, granular checkpoint audit trail, unit-economics model, and tailored consulting SOW have been synthesized for this engagement. Schedule an executive readout session with the LTM CIS Tech Advisory leadership team to unlock the unmasked report and customized action plan.</p>'
+          + '<p>The detailed 3-horizon modernization roadmap, granular checkpoint audit trail, unit-economics model, and tailored consulting SOW have been synthesized for this engagement. Schedule an executive readout session with the LTM Infrastructure Tech Advisory leadership team to unlock the unmasked report and customized action plan.</p>'
           + '<button type="button" class="btn-advisory-cta" onclick="openAdvisoryModal()">'
           + 'Schedule Advisory Session with Ashutosh Dixit →'
           + '</button>'
@@ -4670,7 +4671,7 @@
       const lines = [
         "Hi Ashutosh,",
         "",
-        "I've completed the FinOps IQ maturity screen for " + (comp || "our enterprise") + " and would like to schedule a 45-minute advisory readout with the LTM CIS Tech Advisory team.",
+        "I've completed the FinOps IQ maturity screen for " + (comp || "our enterprise") + " and would like to schedule a 45-minute advisory readout with the LTM Infrastructure Tech Advisory team.",
         "",
         "Engagement Context:",
         "  Client Name:        " + (comp || "—"),
@@ -4688,7 +4689,7 @@
         name || "Client Lead"
       ];
 
-      const subject = "CIS Tech Advisory — FinOps IQ Readout Request — " + (comp || "Enterprise");
+      const subject = "Infrastructure Tech Advisory — FinOps IQ Readout Request — " + (comp || "Enterprise");
       const href = "mailto:ashutosh.dixit@ltm.com?subject=" + encodeURIComponent(subject) + "&body=" + encodeURIComponent(lines.join("\n"));
       window.location.href = href;
       closeAdvisoryModal();
@@ -4696,7 +4697,7 @@
     }
 
     // Boardroom PDF Generation (jsPDF + autoTable)
-    function exportBoardroomPDF() {
+    function exportBoardroomPDF(isArchiveOnly) {
       if (!window.jspdf || !window.jspdf.jsPDF) {
         window.print();
         return;
@@ -4722,7 +4723,7 @@
         doc.text("LTM", 20, 30);
         doc.setFontSize(10);
         doc.setTextColor(200, 200, 200);
-        doc.text("INFRASTRUCTURE TECH ADVISORY · CIS PRACTICE", 20, 36);
+        doc.text("INFRASTRUCTURE TECH ADVISORY", 20, 36);
 
         // Title
         doc.setTextColor(255, 255, 255);
@@ -4823,30 +4824,41 @@
           theme: 'grid'
         });
 
-        doc.save('FinOps-IQ-Executive-Readout-' + (o.name || 'Client').replace(/\s+/g, '-') + '.pdf');
-        toast('PDF generated and downloaded!');
+        if (!isArchiveOnly) {
+          doc.save('FinOps-IQ-Executive-Readout-' + (o.name || 'Client').replace(/\s+/g, '-') + '.pdf');
+          toast('PDF generated and downloaded!');
+          return;
+        }
 
-        // Automatic archive to AWS S3 bucket
-        try {
-          if (window.LTM_S3) {
-            const pdfBase64 = doc.output('datauristring');
-            window.LTM_S3.saveReportToS3({
-              acceleratorId: 'finops-iq',
-              clientName: o.name || 'Enterprise Client',
-              pdfBase64: pdfBase64,
-              metadata: {
-                stage: curStage ? curStage.name : 'Baseline',
-                overallScore: sc,
-                annualSpend: o.annualSpend
-              }
-            }).then(function(res) {
-              window.LTM_S3.showS3SuccessBanner(res);
-            }).catch(function(err) {
-              console.warn('S3 background archive notice:', err);
-            });
-          }
-        } catch(s3Err) {
-          console.warn('S3 archive warning:', s3Err);
+        // Archive with Client Consent
+        if (window.LTM_S3 && window.LTM_S3.requestArchiveConsent) {
+          window.LTM_S3.requestArchiveConsent({
+            acceleratorId: 'finops-iq',
+            acceleratorTitle: 'FinOps IQ Enterprise Diagnostic',
+            clientName: o.name || 'Enterprise Client'
+          }, function(confirmedClient) {
+            toast('Archiving PDF deliverable...');
+            try {
+              const pdfBase64 = doc.output('datauristring');
+              window.LTM_S3.saveReportToS3({
+                acceleratorId: 'finops-iq',
+                clientName: confirmedClient,
+                pdfBase64: pdfBase64,
+                metadata: {
+                  stage: curStage ? curStage.name : 'Baseline',
+                  overallScore: sc,
+                  annualSpend: o.annualSpend
+                }
+              }).then(function(res) {
+                toast('Report archived successfully', '✅');
+                window.LTM_S3.showS3SuccessBanner(res);
+              }).catch(function(err) {
+                toast('Archive failed: ' + err.message, '⚠️');
+              });
+            } catch(s3Err) {
+              console.warn('Archive error:', s3Err);
+            }
+          });
         }
       } catch(e) {
         console.error('PDF error:', e);

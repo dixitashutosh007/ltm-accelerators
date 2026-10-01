@@ -439,7 +439,7 @@ function generateLTMOfferings(inScopeRegimes, pillarScores) {
     {
       title: "DORA & APRA Operational Resilience Accelerator",
       desc: "Comprehensive readiness assessment, Register of Information assembly, Threat-Led Penetration Testing (TLPT) governance, and CTPP contract remediation.",
-      meta: "LTM CIS Tech Advisory · Pillar 03 & 04",
+      meta: "LTM Infrastructure Tech Advisory · Pillar 03 & 04",
       duration: "6–8 Weeks Sprint"
     },
     {

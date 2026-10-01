@@ -1,4 +1,4 @@
-import { S3Client, PutObjectCommand, ListObjectsV2Command, GetObjectCommand } from '@aws-sdk/client-s3';
+import { S3Client, PutObjectCommand, ListObjectsV2Command, GetObjectCommand, DeleteObjectCommand } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { 
   CognitoIdentityProviderClient, 
@@ -337,8 +337,24 @@ export const handler = async (event) => {
       const pdfKey = `reports/${safeAccId}/${cleanClient}_${timestamp}_${randomTag}.pdf`;
       const metaKey = `reports/${safeAccId}/${cleanClient}_${timestamp}_${randomTag}.meta.json`;
 
-      const rawBase64 = pdfBase64.replace(/^data:application\/pdf;base64,/, '');
-      const pdfBuffer = Buffer.from(rawBase64, 'base64');
+      let cleanBase64 = (pdfBase64 || '').trim();
+      if (cleanBase64.includes(';base64,')) {
+        cleanBase64 = cleanBase64.split(';base64,')[1];
+      } else if (cleanBase64.startsWith('data:')) {
+        cleanBase64 = cleanBase64.replace(/^data:[^;]+;base64,/, '');
+      }
+      const pdfBuffer = Buffer.from(cleanBase64, 'base64');
+
+      if (!pdfBuffer || pdfBuffer.length < 50) {
+        return {
+          statusCode: 400,
+          headers: CORS_HEADERS,
+          body: JSON.stringify({
+            ok: false,
+            error: 'Generated PDF binary is invalid or empty.'
+          })
+        };
+      }
 
       // 1. Upload PDF file to S3
       await s3Client.send(new PutObjectCommand({
@@ -374,6 +390,7 @@ export const handler = async (event) => {
       const downloadCommand = new GetObjectCommand({
         Bucket: BUCKET_NAME,
         Key: pdfKey,
+        ResponseContentType: 'application/pdf',
         ResponseContentDisposition: `inline; filename="${cleanClient}_${safeAccId}_Report.pdf"`
       });
 
@@ -384,7 +401,7 @@ export const handler = async (event) => {
         headers: CORS_HEADERS,
         body: JSON.stringify({
           ok: true,
-          message: 'Report PDF successfully archived to AWS S3',
+          message: 'Report PDF successfully archived to S3',
           bucket: BUCKET_NAME,
           key: pdfKey,
           s3Uri: `s3://${BUCKET_NAME}/${pdfKey}`,
@@ -408,7 +425,7 @@ export const handler = async (event) => {
       const listResp = await s3Client.send(new ListObjectsV2Command({
         Bucket: BUCKET_NAME,
         Prefix: prefix,
-        MaxKeys: 100
+        MaxKeys: 150
       }));
 
       const pdfItems = (listResp.Contents || []).filter(item => item.Key && item.Key.endsWith('.pdf'));
@@ -418,9 +435,21 @@ export const handler = async (event) => {
         const accId = parts[1] || 'general';
         const filename = parts[parts.length - 1] || item.Key;
 
+        const metaKey = item.Key.replace(/\.pdf$/, '.meta.json');
+        let clientName = '';
+        try {
+          const metaResp = await s3Client.send(new GetObjectCommand({
+            Bucket: BUCKET_NAME,
+            Key: metaKey
+          }));
+          const metaData = JSON.parse(await metaResp.Body.transformToString());
+          clientName = metaData.clientName || '';
+        } catch (e) {}
+
         const downloadCommand = new GetObjectCommand({
           Bucket: BUCKET_NAME,
           Key: item.Key,
+          ResponseContentType: 'application/pdf',
           ResponseContentDisposition: `inline; filename="${filename}"`
         });
 
@@ -432,6 +461,7 @@ export const handler = async (event) => {
         return {
           key: item.Key,
           filename: filename,
+          clientName: clientName,
           acceleratorId: accId,
           size: item.Size,
           lastModified: item.LastModified,
@@ -450,6 +480,112 @@ export const handler = async (event) => {
           count: reports.length,
           bucket: BUCKET_NAME,
           reports: reports
+        })
+      };
+    }
+
+    // -------------------------------------------------------------
+    // Route 7: POST /api/reports/delete (Delete Report from S3)
+    // -------------------------------------------------------------
+    if (path.includes('/reports/delete') || (method === 'POST' && path.includes('/reports/delete'))) {
+      const { key, requesterEmail } = body;
+      if (!key) {
+        return {
+          statusCode: 400,
+          headers: CORS_HEADERS,
+          body: JSON.stringify({ ok: false, error: 'Report key is required.' })
+        };
+      }
+
+      const cleanRequester = (requesterEmail || '').trim().toLowerCase();
+      const permConfig = await getPermissionsConfig();
+      const isSuper = cleanRequester === SUPER_ADMIN_EMAIL.toLowerCase();
+      const userPerms = permConfig.users?.[cleanRequester]?.permissions;
+      const canEditReports = isSuper || (userPerms?.edit || []).includes('reports') || (userPerms?.edit || []).includes('*');
+
+      if (!canEditReports) {
+        return {
+          statusCode: 403,
+          headers: CORS_HEADERS,
+          body: JSON.stringify({ ok: false, error: 'Unauthorized: Report deletion requires Super Admin or reports edit rights.' })
+        };
+      }
+
+      await s3Client.send(new DeleteObjectCommand({
+        Bucket: BUCKET_NAME,
+        Key: key
+      }));
+
+      const metaKey = key.replace(/\.pdf$/, '.meta.json');
+      try {
+        await s3Client.send(new DeleteObjectCommand({
+          Bucket: BUCKET_NAME,
+          Key: metaKey
+        }));
+      } catch(e) {}
+
+      return {
+        statusCode: 200,
+        headers: CORS_HEADERS,
+        body: JSON.stringify({ ok: true, message: 'Report deleted successfully', key })
+      };
+    }
+
+    // -------------------------------------------------------------
+    // Route 8: POST /api/reports/rename (Rename Report Client Name)
+    // -------------------------------------------------------------
+    if (path.includes('/reports/rename') || (method === 'POST' && path.includes('/reports/rename'))) {
+      const { key, newClientName, requesterEmail } = body;
+      if (!key || !newClientName) {
+        return {
+          statusCode: 400,
+          headers: CORS_HEADERS,
+          body: JSON.stringify({ ok: false, error: 'Report key and newClientName are required.' })
+        };
+      }
+
+      const cleanRequester = (requesterEmail || '').trim().toLowerCase();
+      const permConfig = await getPermissionsConfig();
+      const isSuper = cleanRequester === SUPER_ADMIN_EMAIL.toLowerCase();
+      const userPerms = permConfig.users?.[cleanRequester]?.permissions;
+      const canEditReports = isSuper || (userPerms?.edit || []).includes('reports') || (userPerms?.edit || []).includes('*');
+
+      if (!canEditReports) {
+        return {
+          statusCode: 403,
+          headers: CORS_HEADERS,
+          body: JSON.stringify({ ok: false, error: 'Unauthorized: Renaming reports requires Super Admin or reports edit rights.' })
+        };
+      }
+
+      const metaKey = key.replace(/\.pdf$/, '.meta.json');
+      let currentMeta = {};
+      try {
+        const metaResp = await s3Client.send(new GetObjectCommand({
+          Bucket: BUCKET_NAME,
+          Key: metaKey
+        }));
+        currentMeta = JSON.parse(await metaResp.Body.transformToString());
+      } catch(e) {}
+
+      currentMeta.clientName = newClientName.trim();
+      currentMeta.updatedAt = new Date().toISOString();
+
+      await s3Client.send(new PutObjectCommand({
+        Bucket: BUCKET_NAME,
+        Key: metaKey,
+        Body: Buffer.from(JSON.stringify(currentMeta, null, 2)),
+        ContentType: 'application/json'
+      }));
+
+      return {
+        statusCode: 200,
+        headers: CORS_HEADERS,
+        body: JSON.stringify({
+          ok: true,
+          message: 'Report renamed successfully',
+          key,
+          clientName: newClientName.trim()
         })
       };
     }

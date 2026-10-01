@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>LTM Infra Tech Advisory — Advisory Accelerators Platform</title>
+  <title>LTM Infrastructure Tech Advisory — Advisory Accelerators Platform</title>
   
   <!-- CDNs for Visual Charting -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
@@ -266,7 +266,7 @@
 
     .brand-name {
       font-family: var(--font-heading);
-      font-size: 16.5px;
+      font-size: 16px;
       font-weight: 800;
       letter-spacing: -0.02em;
       color: #FFFFFF;
@@ -279,25 +279,52 @@
       color: var(--text-muted);
     }
 
-    .nav-actions {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-    }
-
-    /* Pulsing Live Icon */
-    .live-pill {
+    /* Unified Executive Navigation Island */
+    .nav-island {
       display: inline-flex;
       align-items: center;
-      gap: 7px;
-      padding: 5px 11px;
+      gap: 3px;
+      padding: 4px 6px;
+      background: rgba(14, 21, 32, 0.72);
+      border: 1px solid rgba(255, 255, 255, 0.1);
       border-radius: 999px;
-      background: rgba(16, 185, 129, 0.09);
-      border: 1px solid rgba(16, 185, 129, 0.28);
-      font-size: 11px;
-      font-weight: 700;
+      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+    }
+
+    .nav-island-segment {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 13px;
+      font-family: var(--font-body);
+      font-size: 12px;
+      font-weight: 600;
+      color: #94A3B8;
+      border-radius: 999px;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .nav-island-segment:hover {
+      color: #FFFFFF;
+      background: rgba(255, 255, 255, 0.07);
+    }
+
+    .nav-island-segment.live-indicator {
+      cursor: default;
       color: #34D399;
-      letter-spacing: 0.04em;
+      font-size: 11.5px;
+      padding: 6px 11px;
+    }
+
+    .nav-island-segment.live-indicator:hover {
+      background: transparent;
+      color: #34D399;
     }
 
     .live-dot {
@@ -321,30 +348,96 @@
       100% { transform: scale(2.6); opacity: 0; }
     }
 
-    /* Auth Widget */
-    .auth-box {
-      display: flex;
-      align-items: center;
-      gap: 10px;
+    .nav-island-divider {
+      width: 1px;
+      height: 18px;
+      background: rgba(255, 255, 255, 0.1);
+      margin: 0 2px;
     }
 
-    .auth-badge {
+    .nav-auth-wrapper {
+      display: inline-flex;
+      align-items: center;
+    }
+
+    .nav-sign-in-btn {
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      background: rgba(255, 255, 255, 0.06);
-      border: 1px solid var(--border-subtle);
-      border-radius: 8px;
-      padding: 5px 11px;
-      font-size: 11.5px;
-      font-weight: 600;
-      color: var(--text-main);
+      padding: 6px 15px;
+      background: rgba(255, 94, 79, 0.14);
+      border: 1px solid rgba(255, 94, 79, 0.35);
+      color: #FFA59E;
+      font-size: 12px;
+      font-weight: 700;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: all 0.2s ease;
     }
 
-    .auth-badge.super {
-      background: rgba(255, 94, 79, 0.12);
-      border-color: rgba(255, 94, 79, 0.35);
-      color: #FFA299;
+    .nav-sign-in-btn:hover {
+      background: rgba(255, 94, 79, 0.25);
+      color: #FFFFFF;
+      box-shadow: 0 0 14px rgba(255, 94, 79, 0.35);
+    }
+
+    .nav-user-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 4px 6px 4px 10px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      font-size: 11.5px;
+      color: #E2E8F0;
+    }
+
+    .nav-user-pill .user-role {
+      font-size: 9.5px;
+      font-weight: 700;
+      text-transform: uppercase;
+      padding: 2px 7px;
+      border-radius: 999px;
+      letter-spacing: 0.05em;
+    }
+
+    .nav-user-pill .user-role.super {
+      background: rgba(255, 94, 79, 0.18);
+      color: #FFA59E;
+      border: 1px solid rgba(255, 94, 79, 0.3);
+    }
+
+    .nav-user-pill .user-role.member {
+      background: rgba(59, 130, 246, 0.18);
+      color: #93C5FD;
+      border: 1px solid rgba(59, 130, 246, 0.3);
+    }
+
+    .nav-user-pill .user-name {
+      font-weight: 600;
+      max-width: 140px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .nav-user-pill .btn-logout {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: #94A3B8;
+      border-radius: 999px;
+      padding: 3px 8px;
+      font-size: 10.5px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .nav-user-pill .btn-logout:hover {
+      background: rgba(239, 68, 68, 0.2);
+      color: #F87171;
+      border-color: rgba(239, 68, 68, 0.4);
     }
 
     .btn-auth {
@@ -1070,7 +1163,7 @@
       <div style="margin-bottom: 20px;">
         <img src="/assets/ltm-logo.png" alt="LTM" style="height: 48px; width: auto; max-width: 260px; object-fit: contain; filter: drop-shadow(0 4px 20px rgba(255, 94, 79, 0.45));">
       </div>
-      <div class="splash-brand-badge">LTM INFRA TECH ADVISORY</div>
+      <div class="splash-brand-badge">LTM INFRASTRUCTURE TECH ADVISORY</div>
       
       <div class="splash-radar-wrap">
         <div class="splash-radar-ring"></div>
@@ -1093,38 +1186,39 @@
   </div>
 
   <!-- ============================================================
-       HEADER
+       HEADER: UNIFIED EXECUTIVE COMMAND BAR
        ============================================================ -->
   <header>
-    <a href="/portal" class="brand" style="display:flex;align-items:center;gap:14px;text-decoration:none;">
+    <a href="/portal" class="brand" title="Infrastructure Tech Advisory">
       <img src="/assets/ltm-logo.png" alt="LTM" style="height: 34px; width: auto; object-fit: contain; filter: drop-shadow(0 2px 8px rgba(255, 94, 79, 0.4));">
       <div class="brand-text">
-        <div class="brand-name">Infra Tech Advisory</div>
+        <div class="brand-name">Infrastructure Tech Advisory</div>
       </div>
     </a>
 
-    <div class="nav-actions">
-      <!-- Live Icon -->
-      <div class="live-pill" title="Advisory Engine Online">
+    <!-- Unified Executive Navigation Island -->
+    <nav class="nav-island">
+      <div class="nav-island-segment live-indicator" title="Advisory Diagnostic Engine Online">
         <span class="live-dot"><span class="live-ping"></span></span>
-        <span class="live-label">Live</span>
+        <span>Live</span>
       </div>
 
-      <!-- Access Control / User Management (Super Admin) -->
-      <button class="btn-auth" onclick="openAccessControlModal()" id="btnNavAccessControl" style="display:none;background:rgba(59,130,246,0.12);color:#60A5FA;border-color:rgba(59,130,246,0.3);" title="Manage Users &amp; Permissions (Super Admin Access)">
+      <div class="nav-island-divider"></div>
+
+      <button class="nav-island-segment" onclick="openReportsModal()" id="btnNavReports" title="Customer Deliverables &amp; Archived Reports">
+        <span>📑 Reports</span>
+      </button>
+
+      <button class="nav-island-segment" onclick="openAccessControlModal()" id="btnNavAccessControl" style="display:none;" title="User Directory &amp; RBAC (Super Admin Access)">
         <span>👥 Access Control</span>
       </button>
 
-      <!-- Customer Reports Archive (Super Admin) -->
-      <button class="btn-auth" onclick="openReportsModal()" id="btnNavReports" title="Customer Deliverables (Super Admin Access)">
-        <span>Reports</span>
-      </button>
+      <div class="nav-island-divider"></div>
 
-      <!-- Cognito RBAC Auth Widget -->
-      <div id="authWidget" class="auth-box">
-        <button class="btn-auth primary" onclick="openLoginModal()">🔐 Sign In</button>
+      <div id="authWidget" class="nav-auth-wrapper">
+        <button class="nav-sign-in-btn" onclick="openLoginModal()">🔐 Sign In</button>
       </div>
-    </div>
+    </nav>
   </header>
 
   <!-- ============================================================
@@ -1368,7 +1462,7 @@
         <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
           <div>
             <div style="font-family:var(--font-mono);font-size:11px;font-weight:700;color:#10B981;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:4px">
-              SECURE STORAGE
+              Secured Storage
             </div>
             <h3 class="modal-title">Reports</h3>
             <p class="modal-desc">Customer assessment deliverables and generated executive reports.</p>
@@ -1577,7 +1671,7 @@
 
   <!-- Footer -->
   <footer>
-    <div>&copy; 2026 <b>LTM Infra Tech Advisory</b> &middot; Enterprise Platform Architecture</div>
+    <div>&copy; 2026 <b>LTM Infrastructure Tech Advisory</b> &middot; Enterprise Platform Architecture</div>
     <div style="display:flex;gap:18px;">
       <a href="/portal" style="color:inherit;text-decoration:none;">Showcase Portal</a>
       <a href="/studio" style="color:inherit;text-decoration:none;">Question Bank Studio</a>
@@ -1677,11 +1771,11 @@
       if (isSuperAdmin()) {
         if (btnAC) btnAC.style.display = 'inline-flex';
         w.innerHTML = `
-          <div class="auth-badge super">
-            <span>👑 Super Admin:</span>
-            <b>${AUTH_USER.email}</b>
+          <div class="nav-user-pill">
+            <span class="user-role super">Super Admin</span>
+            <span class="user-name" title="${AUTH_USER.email}">${AUTH_USER.name || AUTH_USER.email.split('@')[0]}</span>
+            <button class="btn-logout" onclick="logout()" title="Sign Out">Sign Out</button>
           </div>
-          <button class="btn-auth" onclick="logout()">Sign Out</button>
         `;
         editBtns.forEach(b => {
           b.classList.add('admin-unlocked');
@@ -1692,11 +1786,11 @@
         if (btnAC) btnAC.style.display = 'none';
         const roleLabel = (AUTH_USER.role && AUTH_USER.role.replace(/_/g, ' ').toUpperCase()) || 'MEMBER';
         w.innerHTML = `
-          <div class="auth-badge">
-            <span>👤 ${roleLabel}:</span>
-            <b>${AUTH_USER.email}</b>
+          <div class="nav-user-pill">
+            <span class="user-role member">${roleLabel}</span>
+            <span class="user-name" title="${AUTH_USER.email}">${AUTH_USER.name || AUTH_USER.email.split('@')[0]}</span>
+            <button class="btn-logout" onclick="logout()" title="Sign Out">Sign Out</button>
           </div>
-          <button class="btn-auth" onclick="logout()">Sign Out</button>
         `;
         editBtns.forEach(b => {
           const toolId = b.getAttribute('data-tool');
@@ -1713,7 +1807,7 @@
       } else {
         if (btnAC) btnAC.style.display = 'none';
         w.innerHTML = `
-          <button class="btn-auth primary" onclick="openLoginModal()">🔐 Sign In</button>
+          <button class="nav-sign-in-btn" onclick="openLoginModal()">🔐 Sign In</button>
         `;
         editBtns.forEach(b => {
           b.classList.remove('admin-unlocked');
@@ -1981,6 +2075,16 @@
       }
     }
 
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
     function renderReportsList() {
       const container = document.getElementById('reportsListContainer');
       const filtered = CURRENT_REPORTS_FILTER 
@@ -2001,17 +2105,22 @@
         return;
       }
 
+      const canManageReports = isSuperAdmin() || (AUTH_USER && AUTH_USER.permissions && Array.isArray(AUTH_USER.permissions.edit) && AUTH_USER.permissions.edit.includes('reports'));
+
       const rows = filtered.map(r => {
         const cleanName = r.filename.replace(/\.pdf$/, '').replace(/_/g, ' ');
+        const displayName = r.clientName || cleanName;
         const dateStr = r.lastModified ? new Date(r.lastModified).toLocaleString() : 'Recent';
         const sizeStr = r.size ? (r.size / 1024).toFixed(1) + ' KB' : '—';
         const accPillColor = r.acceleratorId.includes('finops') ? 'var(--teal)' : '#FB923C';
+        const encKey = encodeURIComponent(r.key);
+        const encName = encodeURIComponent(displayName);
 
         return `
           <tr>
             <td>
-              <div style="font-weight:700;color:#FFFFFF;margin-bottom:2px;">${cleanName}</div>
-              <div style="font-family:var(--font-mono);font-size:10.5px;color:var(--text-dim);word-break:break-all;">${r.key}</div>
+              <div style="font-weight:700;color:#FFFFFF;margin-bottom:2px;">${escapeHtml(displayName)}</div>
+              <div style="font-family:var(--font-mono);font-size:10.5px;color:var(--text-dim);word-break:break-all;">${escapeHtml(r.key)}</div>
             </td>
             <td>
               <span class="chip" style="color:${accPillColor};border-color:currentColor;">${r.acceleratorId}</span>
@@ -2019,9 +2128,19 @@
             <td style="color:var(--text-muted);font-size:12px;">${dateStr}</td>
             <td style="font-family:var(--font-mono);font-size:11.5px;color:var(--text-muted);">${sizeStr}</td>
             <td style="text-align:right;white-space:nowrap;">
-              <a href="${r.downloadUrl}" target="_blank" class="btn-auth" style="padding:5px 11px;font-size:11.5px;background:rgba(16,185,129,0.12);color:#34D399;border-color:rgba(16,185,129,0.3);text-decoration:none;">
-                📥 Open PDF
-              </a>
+              <div style="display:inline-flex;gap:6px;align-items:center;">
+                <a href="${r.downloadUrl}" target="_blank" class="btn-auth" style="padding:5px 11px;font-size:11.5px;background:rgba(16,185,129,0.12);color:#34D399;border-color:rgba(16,185,129,0.3);text-decoration:none;">
+                  📥 Open PDF
+                </a>
+                ${canManageReports ? `
+                  <button class="btn-auth" onclick="handleRenameReport('${encKey}', '${encName}')" style="padding:5px 9px;font-size:11.5px;color:#93C5FD;border-color:rgba(59,130,246,0.3);" title="Rename Report">
+                    ✏️
+                  </button>
+                  <button class="btn-auth" onclick="handleDeleteReport('${encKey}', '${encName}')" style="padding:5px 9px;font-size:11.5px;color:#FCA5A5;border-color:rgba(239,68,68,0.3);" title="Delete Report">
+                    🗑️
+                  </button>
+                ` : ''}
+              </div>
             </td>
           </tr>
         `;
@@ -2043,6 +2162,47 @@
           </tbody>
         </table>
       `;
+    }
+
+    async function handleRenameReport(encodedKey, encodedCurrentName) {
+      const key = decodeURIComponent(encodedKey);
+      const currentName = decodeURIComponent(encodedCurrentName);
+      const newName = prompt("Enter new title / client deliverable name for this report:", currentName);
+      if (!newName || newName.trim() === '' || newName.trim() === currentName) return;
+
+      toast("Renaming report...", "⏳");
+      try {
+        const res = await window.LTM_S3.renameReportInS3(key, newName.trim(), AUTH_USER ? AUTH_USER.email : '');
+        if (res.ok) {
+          toast("Report renamed successfully", "✅");
+          fetchAndRenderReports();
+        } else {
+          toast("Failed to rename report: " + (res.error || 'Unknown error'), "❌");
+        }
+      } catch (err) {
+        toast("Error renaming report: " + err.message, "❌");
+      }
+    }
+
+    async function handleDeleteReport(encodedKey, encodedName) {
+      const key = decodeURIComponent(encodedKey);
+      const name = decodeURIComponent(encodedName);
+      if (!confirm(`Are you sure you want to permanently delete this report?\n\n"${name}"\n\nThis action cannot be undone.`)) {
+        return;
+      }
+
+      toast("Deleting report from secured storage...", "⏳");
+      try {
+        const res = await window.LTM_S3.deleteReportFromS3(key, AUTH_USER ? AUTH_USER.email : '');
+        if (res.ok) {
+          toast("Report permanently deleted", "🗑️");
+          fetchAndRenderReports();
+        } else {
+          toast("Failed to delete report: " + (res.error || 'Unknown error'), "❌");
+        }
+      } catch (err) {
+        toast("Error deleting report: " + err.message, "❌");
+      }
     }
 
     /* ---------- Access Control & User Management Controller ---------- */
