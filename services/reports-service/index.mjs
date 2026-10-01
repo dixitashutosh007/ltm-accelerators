@@ -1,6 +1,13 @@
 import { S3Client, PutObjectCommand, ListObjectsV2Command, GetObjectCommand } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
-import { CognitoIdentityProviderClient, AdminSetUserPasswordCommand } from '@aws-sdk/client-cognito-identity-provider';
+import { 
+  CognitoIdentityProviderClient, 
+  AdminSetUserPasswordCommand,
+  AdminCreateUserCommand,
+  AdminResetUserPasswordCommand,
+  AdminDeleteUserCommand,
+  ListUsersCommand 
+} from '@aws-sdk/client-cognito-identity-provider';
 
 const BUCKET_NAME = process.env.REPORTS_BUCKET || 'ltm-advisory-reports-223833501993';
 const REGION = process.env.AWS_REGION || 'ap-south-1';
@@ -17,6 +24,39 @@ const CORS_HEADERS = {
   'Access-Control-Allow-Methods': 'GET,POST,OPTIONS'
 };
 
+async function getPermissionsConfig() {
+  try {
+    const resp = await s3Client.send(new GetObjectCommand({
+      Bucket: BUCKET_NAME,
+      Key: 'config/rbac-permissions.json'
+    }));
+    const text = await resp.Body.transformToString();
+    return JSON.parse(text);
+  } catch (err) {
+    return {
+      users: {
+        [SUPER_ADMIN_EMAIL.toLowerCase()]: {
+          role: 'super_admin',
+          name: 'Ashutosh Dixit (Super Admin)',
+          permissions: {
+            view: ['finops-value-case', 'finops-iq', 'sovereign-iq', 'posture-iq', 'reports'],
+            edit: ['finops-value-case', 'finops-iq', 'sovereign-iq', 'posture-iq']
+          }
+        }
+      }
+    };
+  }
+}
+
+async function savePermissionsConfig(config) {
+  await s3Client.send(new PutObjectCommand({
+    Bucket: BUCKET_NAME,
+    Key: 'config/rbac-permissions.json',
+    Body: Buffer.from(JSON.stringify(config, null, 2)),
+    ContentType: 'application/json'
+  }));
+}
+
 export const handler = async (event) => {
   const method = event.requestContext?.http?.method || event.httpMethod;
   const path = event.rawPath || event.path || '';
@@ -30,19 +70,147 @@ export const handler = async (event) => {
     };
   }
 
+  let body = {};
+  if (event.body) {
+    try {
+      body = event.isBase64Encoded
+        ? JSON.parse(Buffer.from(event.body, 'base64').toString('utf-8'))
+        : JSON.parse(event.body);
+    } catch(e) {}
+  }
+
   try {
     // -------------------------------------------------------------
-    // Route 1: POST /api/auth/reset-password (In-page Password Reset)
+    // Route 1: GET /api/users (List all users + roles + permissions)
     // -------------------------------------------------------------
-    if (path.includes('/reset-password') || path.endsWith('/reset-password')) {
-      let body = {};
-      if (event.body) {
-        body = event.isBase64Encoded
-          ? JSON.parse(Buffer.from(event.body, 'base64').toString('utf-8'))
-          : JSON.parse(event.body);
+    if (path === '/api/users' || (method === 'GET' && path.includes('/api/users') && !path.includes('/list'))) {
+      const cognitoUsersResp = await cognitoClient.send(new ListUsersCommand({
+        UserPoolId: USER_POOL_ID,
+        Limit: 60
+      }));
+
+      const permConfig = await getPermissionsConfig();
+
+      const userList = (cognitoUsersResp.Users || []).map(u => {
+        const emailAttr = (u.Attributes || []).find(a => a.Name === 'email');
+        const nameAttr = (u.Attributes || []).find(a => a.Name === 'name');
+        const email = (emailAttr ? emailAttr.Value : u.Username).toLowerCase();
+        const isSuper = email === SUPER_ADMIN_EMAIL.toLowerCase();
+
+        const custom = permConfig.users?.[email] || {};
+
+        return {
+          username: u.Username,
+          email: email,
+          name: custom.name || (nameAttr ? nameAttr.Value : email.split('@')[0]),
+          status: u.UserStatus,
+          enabled: u.Enabled,
+          created: u.UserCreateDate,
+          role: isSuper ? 'super_admin' : (custom.role || 'advisor_viewer'),
+          permissions: isSuper 
+            ? {
+                view: ['finops-value-case', 'finops-iq', 'sovereign-iq', 'posture-iq', 'reports'],
+                edit: ['finops-value-case', 'finops-iq', 'sovereign-iq', 'posture-iq']
+              }
+            : (custom.permissions || {
+                view: ['finops-value-case', 'finops-iq', 'sovereign-iq', 'posture-iq'],
+                edit: []
+              })
+        };
+      });
+
+      return {
+        statusCode: 200,
+        headers: CORS_HEADERS,
+        body: JSON.stringify({
+          ok: true,
+          users: userList,
+          superAdminEmail: SUPER_ADMIN_EMAIL
+        })
+      };
+    }
+
+    // -------------------------------------------------------------
+    // Route 2: POST /api/users/create (Create App User in Cognito + RBAC)
+    // -------------------------------------------------------------
+    if (path.includes('/api/users/create')) {
+      const { email, password, name, role, permissions, requesterEmail } = body;
+      if (!email || !password) {
+        return {
+          statusCode: 400,
+          headers: CORS_HEADERS,
+          body: JSON.stringify({ ok: false, error: 'Email and password are required.' })
+        };
       }
 
-      const { email, newPassword } = body;
+      if ((requesterEmail || '').trim().toLowerCase() !== SUPER_ADMIN_EMAIL.toLowerCase()) {
+        return {
+          statusCode: 403,
+          headers: CORS_HEADERS,
+          body: JSON.stringify({ ok: false, error: 'Only Super Admin can provision new users.' })
+        };
+      }
+
+      const cleanEmail = email.trim().toLowerCase();
+
+      // 1. Create in Cognito
+      await cognitoClient.send(new AdminCreateUserCommand({
+        UserPoolId: USER_POOL_ID,
+        Username: cleanEmail,
+        UserAttributes: [
+          { Name: 'email', Value: cleanEmail },
+          { Name: 'email_verified', Value: 'true' },
+          { Name: 'name', Value: name || cleanEmail }
+        ],
+        MessageAction: 'SUPPRESS'
+      }));
+
+      // 2. Set permanent password
+      await cognitoClient.send(new AdminSetUserPasswordCommand({
+        UserPoolId: USER_POOL_ID,
+        Username: cleanEmail,
+        Password: password,
+        Permanent: true
+      }));
+
+      // 3. Save permissions to S3
+      const permConfig = await getPermissionsConfig();
+      if (!permConfig.users) permConfig.users = {};
+      permConfig.users[cleanEmail] = {
+        role: role || 'advisor_viewer',
+        name: name || cleanEmail,
+        permissions: permissions || {
+          view: ['finops-value-case', 'finops-iq', 'sovereign-iq', 'posture-iq'],
+          edit: role === 'practice_finops' 
+            ? ['finops-value-case', 'finops-iq'] 
+            : role === 'practice_sovereignty' 
+            ? ['sovereign-iq', 'posture-iq'] 
+            : []
+        },
+        createdAt: new Date().toISOString()
+      };
+      await savePermissionsConfig(permConfig);
+
+      return {
+        statusCode: 200,
+        headers: CORS_HEADERS,
+        body: JSON.stringify({
+          ok: true,
+          message: `User ${cleanEmail} created successfully with role ${role || 'advisor_viewer'}.`,
+          user: {
+            email: cleanEmail,
+            role: role || 'advisor_viewer',
+            permissions: permConfig.users[cleanEmail].permissions
+          }
+        })
+      };
+    }
+
+    // -------------------------------------------------------------
+    // Route 3: POST /api/users/set-password & /api/auth/reset-password
+    // -------------------------------------------------------------
+    if (path.includes('/set-password') || path.includes('/reset-password')) {
+      const { email, newPassword, requesterEmail } = body;
       if (!email || !newPassword) {
         return {
           statusCode: 400,
@@ -51,11 +219,15 @@ export const handler = async (event) => {
         };
       }
 
-      if (email.trim().toLowerCase() !== SUPER_ADMIN_EMAIL.toLowerCase()) {
+      const cleanEmail = email.trim().toLowerCase();
+      const reqEmail = (requesterEmail || cleanEmail).trim().toLowerCase();
+
+      // Only Super Admin OR the user themselves can change password
+      if (reqEmail !== SUPER_ADMIN_EMAIL.toLowerCase() && reqEmail !== cleanEmail) {
         return {
           statusCode: 403,
           headers: CORS_HEADERS,
-          body: JSON.stringify({ ok: false, error: 'Password reset is only authorized for dixitashutosh007@gmail.com.' })
+          body: JSON.stringify({ ok: false, error: 'Unauthorized to reset password for this user.' })
         };
       }
 
@@ -69,32 +241,76 @@ export const handler = async (event) => {
 
       await cognitoClient.send(new AdminSetUserPasswordCommand({
         UserPoolId: USER_POOL_ID,
-        Username: email.trim(),
+        Username: cleanEmail,
         Password: newPassword,
         Permanent: true
       }));
+
+      // Generate a one-click direct access reset link for the user
+      const resetLink = `https://main.d1xnevzszm0ehs.amplifyapp.com/?portal_user=${encodeURIComponent(cleanEmail)}`;
 
       return {
         statusCode: 200,
         headers: CORS_HEADERS,
         body: JSON.stringify({
           ok: true,
-          message: 'Password successfully updated for ' + SUPER_ADMIN_EMAIL
+          message: `Password updated successfully for ${cleanEmail}`,
+          resetLink: resetLink,
+          email: cleanEmail
         })
       };
     }
 
     // -------------------------------------------------------------
-    // Route 2: POST /api/reports/save (Store PDF Report in S3)
+    // Route 4: POST /api/users/permissions (Update User Role & Access)
     // -------------------------------------------------------------
-    if (path.includes('/reports/save') || (method === 'POST' && !path.includes('/list'))) {
-      let body = {};
-      if (event.body) {
-        body = event.isBase64Encoded
-          ? JSON.parse(Buffer.from(event.body, 'base64').toString('utf-8'))
-          : JSON.parse(event.body);
+    if (path.includes('/api/users/permissions')) {
+      const { email, role, permissions, requesterEmail } = body;
+      if (!email || !permissions) {
+        return {
+          statusCode: 400,
+          headers: CORS_HEADERS,
+          body: JSON.stringify({ ok: false, error: 'Email and permissions are required.' })
+        };
       }
 
+      if ((requesterEmail || '').trim().toLowerCase() !== SUPER_ADMIN_EMAIL.toLowerCase()) {
+        return {
+          statusCode: 403,
+          headers: CORS_HEADERS,
+          body: JSON.stringify({ ok: false, error: 'Only Super Admin can update user permissions.' })
+        };
+      }
+
+      const cleanEmail = email.trim().toLowerCase();
+      const permConfig = await getPermissionsConfig();
+      if (!permConfig.users) permConfig.users = {};
+
+      permConfig.users[cleanEmail] = {
+        ...(permConfig.users[cleanEmail] || {}),
+        role: role || permConfig.users[cleanEmail]?.role || 'custom',
+        permissions: permissions,
+        updatedAt: new Date().toISOString()
+      };
+
+      await savePermissionsConfig(permConfig);
+
+      return {
+        statusCode: 200,
+        headers: CORS_HEADERS,
+        body: JSON.stringify({
+          ok: true,
+          message: `Permissions updated for ${cleanEmail}`,
+          permissions: permConfig.users[cleanEmail].permissions,
+          role: permConfig.users[cleanEmail].role
+        })
+      };
+    }
+
+    // -------------------------------------------------------------
+    // Route 5: POST /api/reports/save (Store PDF Report in S3)
+    // -------------------------------------------------------------
+    if (path.includes('/reports/save') || (method === 'POST' && path.includes('/reports/save'))) {
       const { acceleratorId, clientName, pdfBase64, metadata } = body;
 
       if (!acceleratorId || !pdfBase64) {
@@ -108,7 +324,6 @@ export const handler = async (event) => {
         };
       }
 
-      // Sanitize client name and generate timestamped key
       const cleanClient = (clientName || 'Enterprise_Client')
         .replace(/[^a-zA-Z0-9_-]/g, '_')
         .replace(/__+/g, '_')
@@ -138,7 +353,7 @@ export const handler = async (event) => {
         }
       }));
 
-      // 2. Upload structured metadata alongside the PDF
+      // 2. Upload structured metadata
       const reportMeta = {
         acceleratorId: safeAccId,
         clientName: clientName || 'Enterprise Client',
@@ -183,7 +398,7 @@ export const handler = async (event) => {
     }
 
     // -------------------------------------------------------------
-    // Route 3: GET /api/reports/list (List Saved Reports from S3)
+    // Route 6: GET /api/reports/list (List Saved Reports from S3)
     // -------------------------------------------------------------
     if (path.includes('/reports/list') || (method === 'GET' && path.includes('/list'))) {
       const qParams = event.queryStringParameters || {};
@@ -242,7 +457,7 @@ export const handler = async (event) => {
     return {
       statusCode: 404,
       headers: CORS_HEADERS,
-      body: JSON.stringify({ ok: false, error: 'Endpoint not found' })
+      body: JSON.stringify({ ok: false, error: 'Endpoint not found: ' + path })
     };
   } catch (err) {
     console.error('[ReportsService] Error handling request:', err);

@@ -390,25 +390,34 @@
       padding: 44px 28px 80px;
     }
 
-    /* Modern Tech / IQ Theme Hero */
+    /* Advanced Cyber / IQ Theme Hero */
     .hero-tech-container {
       position: relative;
-      background: radial-gradient(circle at 50% 0%, rgba(255, 94, 79, 0.09) 0%, rgba(14, 20, 28, 0.95) 70%, #0B1017 100%);
-      border: 1px solid #1D2836;
-      border-radius: 20px;
-      padding: 44px 36px 36px;
-      margin-bottom: 50px;
+      background: radial-gradient(circle at 50% 10%, rgba(255, 94, 79, 0.12) 0%, rgba(12, 18, 26, 0.95) 60%, #080C12 100%);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 24px;
+      padding: 48px 36px 36px;
+      margin-bottom: 48px;
       overflow: hidden;
-      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.45);
+      box-shadow: 0 16px 50px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    }
+
+    #heroCyberCanvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      opacity: 0.55;
     }
 
     .hero-tech-grid {
       position: absolute;
       inset: 0;
       background-image: 
-        linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
-      background-size: 32px 32px;
+        linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+      background-size: 28px 28px;
       mask-image: radial-gradient(circle at center, black 40%, transparent 85%);
       -webkit-mask-image: radial-gradient(circle at center, black 40%, transparent 85%);
       pointer-events: none;
@@ -420,50 +429,144 @@
       left: 0;
       right: 0;
       height: 2px;
-      background: linear-gradient(90deg, transparent 0%, var(--coral) 50%, transparent 100%);
-      opacity: 0.8;
-      box-shadow: 0 0 16px var(--coral);
+      background: linear-gradient(90deg, transparent 0%, rgba(59, 130, 246, 0.4) 20%, var(--coral) 50%, rgba(16, 185, 129, 0.4) 80%, transparent 100%);
+      opacity: 0.9;
+      box-shadow: 0 0 20px rgba(255, 94, 79, 0.7);
+      animation: heroBeamSweep 4s ease-in-out infinite alternate;
+    }
+
+    @keyframes heroBeamSweep {
+      0% { transform: translateY(0); opacity: 0.6; }
+      50% { opacity: 1; }
+      100% { transform: translateY(2px); opacity: 0.8; }
+    }
+
+    .hero-tech-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: #FF7B6E;
+      background: rgba(255, 94, 79, 0.08);
+      border: 1px solid rgba(255, 94, 79, 0.22);
+      padding: 4px 14px;
+      border-radius: 999px;
+      margin-bottom: 16px;
+    }
+
+    .hero-radar-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #FF5E4F;
+      box-shadow: 0 0 8px #FF5E4F;
+      animation: radarPulseDot 1.8s ease-in-out infinite;
+    }
+
+    @keyframes radarPulseDot {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.5); opacity: 0.4; }
     }
 
     .hero-tech-title {
       font-family: var(--font-heading);
-      font-size: 42px;
+      font-size: 46px;
       font-weight: 800;
       letter-spacing: -0.03em;
       color: #FFFFFF;
-      margin-bottom: 12px;
+      margin: 0 0 16px;
       line-height: 1.15;
+      background: linear-gradient(135deg, #FFFFFF 0%, #E2E8F0 60%, #FF9E95 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      filter: drop-shadow(0 2px 16px rgba(0,0,0,0.6));
     }
 
-    .hero-tech-hud {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 12px;
-      flex-wrap: wrap;
-      margin-top: 16px;
-    }
-
-    .hud-badge {
-      font-family: var(--font-mono);
-      font-size: 11px;
-      font-weight: 600;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: #94A3B8;
-      background: rgba(15, 23, 42, 0.6);
-      border: 1px solid #1E293B;
-      padding: 5px 12px;
-      border-radius: 6px;
+    .hero-live-hud {
       display: inline-flex;
       align-items: center;
-      gap: 6px;
+      gap: 16px;
+      background: rgba(10, 15, 22, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+      padding: 8px 18px;
+      font-family: var(--font-mono);
+      font-size: 11.5px;
+      color: #94A3B8;
+      backdrop-filter: blur(8px);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+      flex-wrap: wrap;
+      justify-content: center;
     }
 
-    .hud-badge.accent {
-      color: #F87171;
-      border-color: rgba(239, 68, 68, 0.3);
-      background: rgba(239, 68, 68, 0.06);
+    .hud-item {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .hud-pulse {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+    }
+
+    .hud-pulse.green {
+      background: #10B981;
+      box-shadow: 0 0 8px #10B981;
+    }
+
+    .hud-pulse.blue {
+      background: #3B82F6;
+      box-shadow: 0 0 8px #3B82F6;
+    }
+
+    .hud-pulse.coral {
+      background: #FF5E4F;
+      box-shadow: 0 0 8px #FF5E4F;
+    }
+
+    .hud-divider {
+      width: 1px;
+      height: 14px;
+      background: rgba(255, 255, 255, 0.12);
+    }
+
+    .hero-practice-tabs {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 24px;
+      flex-wrap: wrap;
+    }
+
+    .hero-tab {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      color: var(--text-muted);
+      padding: 7px 18px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .hero-tab:hover {
+      background: rgba(255, 255, 255, 0.07);
+      color: #fff;
+      border-color: rgba(255, 255, 255, 0.18);
+    }
+
+    .hero-tab.active {
+      background: rgba(255, 94, 79, 0.12);
+      border-color: #FF5E4F;
+      color: #FF8A7A;
+      box-shadow: 0 0 14px rgba(255, 94, 79, 0.25);
     }
 
     /* ============================================================
@@ -539,17 +642,39 @@
       flex-direction: column;
       justify-content: space-between;
       min-height: 290px;
-      transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+      transition: all 0.24s cubic-bezier(0.16, 1, 0.3, 1);
       position: relative;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.25);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+      overflow: hidden;
+    }
+
+    .acc-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, transparent 0%, var(--card-accent, #10B981) 50%, transparent 100%);
+      opacity: 0.75;
+      transition: opacity 0.3s;
     }
 
     .acc-card:hover {
       background: var(--card-hover);
       border-color: rgba(255, 94, 79, 0.45);
-      transform: translateY(-3px);
-      box-shadow: 0 16px 36px rgba(0,0,0,0.4);
+      transform: translateY(-4px);
+      box-shadow: 0 20px 45px rgba(0,0,0,0.5), 0 0 25px rgba(255, 94, 79, 0.1);
     }
+
+    .acc-card:hover::before {
+      opacity: 1;
+    }
+
+    .acc-card.card-finops-val { --card-accent: #10B981; }
+    .acc-card.card-finops-iq { --card-accent: #06B6D4; }
+    .acc-card.card-sovereign-iq { --card-accent: #FF5E4F; }
+    .acc-card.card-posture-iq { --card-accent: #F59E0B; }
 
     .card-top {
       display: flex;
@@ -724,6 +849,145 @@
       flex-direction: column;
     }
 
+    .modal-box.modal-xl {
+      max-width: 960px;
+      width: 100%;
+      max-height: 88vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .ac-header-badge {
+      display: inline-block;
+      font-family: var(--font-mono);
+      font-size: 10.5px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #60A5FA;
+      background: rgba(59, 130, 246, 0.08);
+      border: 1px solid rgba(59, 130, 246, 0.25);
+      padding: 3px 10px;
+      border-radius: 6px;
+      margin-bottom: 8px;
+    }
+
+    .ac-tabs-bar {
+      display: flex;
+      gap: 8px;
+      border-bottom: 1px solid #233142;
+      padding-bottom: 10px;
+      margin-bottom: 16px;
+    }
+
+    .ac-tab-btn {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid #26364A;
+      color: var(--text-muted);
+      padding: 7px 16px;
+      border-radius: 8px;
+      font-size: 12.5px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.18s;
+    }
+
+    .ac-tab-btn:hover {
+      color: #fff;
+      border-color: #3B82F6;
+    }
+
+    .ac-tab-btn.active {
+      background: rgba(59, 130, 246, 0.15);
+      border-color: #3B82F6;
+      color: #93C5FD;
+    }
+
+    .form-row-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    @media (max-width: 640px) {
+      .form-row-2 { grid-template-columns: 1fr; }
+    }
+
+    .permissions-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+      gap: 10px;
+      margin-top: 6px;
+    }
+
+    .perm-tool-card {
+      background: #0B111A;
+      border: 1px solid #223042;
+      border-radius: 8px;
+      padding: 10px;
+    }
+
+    .perm-tool-name {
+      font-size: 11.5px;
+      font-weight: 700;
+      color: #E2E8F0;
+      margin-bottom: 8px;
+    }
+
+    .perm-checkboxes {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      font-size: 11px;
+      color: #94A3B8;
+    }
+
+    .perm-checkboxes label {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+    }
+
+    .perm-checkboxes input[type="checkbox"] {
+      accent-color: #3B82F6;
+    }
+
+    .role-badge {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 10.5px;
+      font-weight: 700;
+      font-family: var(--font-mono);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .role-badge.super {
+      background: rgba(245, 158, 11, 0.12);
+      border: 1px solid rgba(245, 158, 11, 0.35);
+      color: #FBBF24;
+    }
+
+    .role-badge.finops {
+      background: rgba(16, 185, 129, 0.12);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      color: #34D399;
+    }
+
+    .role-badge.sovereignty {
+      background: rgba(255, 94, 79, 0.12);
+      border: 1px solid rgba(255, 94, 79, 0.3);
+      color: #FF7B6E;
+    }
+
+    .role-badge.viewer {
+      background: rgba(148, 163, 184, 0.12);
+      border: 1px solid rgba(148, 163, 184, 0.25);
+      color: #CBD5E1;
+    }
+
     .modal-scrollable {
       overflow-y: auto;
       max-height: calc(85vh - 170px);
@@ -885,7 +1149,7 @@
 
     <div class="splash-content">
       <div style="margin-bottom: 20px;">
-        <img src="/assets/ltm-logo.jpg" alt="LTM - A Larsen & Toubro Group Company" style="height: 48px; width: auto; max-width: 260px; object-fit: contain; border-radius: 6px; box-shadow: 0 4px 20px rgba(0,0,0,0.6);">
+        <img src="/assets/ltm-logo.png" alt="LTM" style="height: 48px; width: auto; max-width: 260px; object-fit: contain; filter: drop-shadow(0 4px 20px rgba(255, 94, 79, 0.45));">
       </div>
       <div class="splash-brand-badge">LTM INFRA TECH ADVISORY</div>
       
@@ -896,7 +1160,7 @@
       </div>
 
       <h1 class="splash-title">Advisory Accelerators</h1>
-      <p class="splash-sub">Executive Diagnostic &amp; Decision Platform &middot; AWS Sovereign Engine</p>
+      <p class="splash-sub">Enterprise Decision Platform &middot; AWS Sovereign Engine</p>
 
       <div class="splash-bar-outer">
         <div class="splash-bar-inner" id="splashProgress"></div>
@@ -914,10 +1178,9 @@
        ============================================================ -->
   <header>
     <a href="/portal" class="brand" style="display:flex;align-items:center;gap:14px;text-decoration:none;">
-      <img src="/assets/ltm-logo.jpg" alt="LTM - A Larsen & Toubro Group Company" style="height: 38px; width: auto; object-fit: contain; border-radius: 6px; box-shadow: 0 2px 10px rgba(0,0,0,0.5);">
+      <img src="/assets/ltm-logo.png" alt="LTM" style="height: 34px; width: auto; object-fit: contain; filter: drop-shadow(0 2px 8px rgba(255, 94, 79, 0.4));">
       <div class="brand-text">
         <div class="brand-name">Infra Tech Advisory</div>
-        <div class="brand-sub">Practice Diagnostics &amp; Decision Accelerators</div>
       </div>
     </a>
 
@@ -928,6 +1191,11 @@
         <span class="live-label">Live</span>
       </div>
 
+      <!-- Access Control / User Management (Super Admin) -->
+      <button class="btn-auth" onclick="openAccessControlModal()" id="btnNavAccessControl" style="display:none;background:rgba(59,130,246,0.12);color:#60A5FA;border-color:rgba(59,130,246,0.3);" title="Manage Users &amp; Permissions (Super Admin Access)">
+        <span>👥 Access Control</span>
+      </button>
+
       <!-- Customer Reports Archive (Super Admin) -->
       <button class="btn-auth" onclick="openReportsModal()" id="btnNavReports" title="Customer Deliverables (Super Admin Access)">
         <span>Reports</span>
@@ -935,7 +1203,7 @@
 
       <!-- Cognito RBAC Auth Widget -->
       <div id="authWidget" class="auth-box">
-        <button class="btn-auth primary" onclick="openLoginModal()">🔐 Admin Sign In</button>
+        <button class="btn-auth primary" onclick="openLoginModal()">🔐 Sign In</button>
       </div>
     </div>
   </header>
@@ -946,16 +1214,24 @@
   <main>
     <!-- Modern Tech / IQ Theme Hero -->
     <div class="hero-tech-container">
+      <canvas id="heroCyberCanvas"></canvas>
       <div class="hero-tech-grid"></div>
       <div class="hero-tech-beam"></div>
 
       <div style="position:relative;z-index:2;text-align:center;">
+        <div class="hero-tech-eyebrow"><span class="hero-radar-dot"></span> ADVISORY ACCELERATOR PLATFORM &middot; AWS SOVEREIGN ARCHITECTURE</div>
         <h1 class="hero-tech-title">Advisory Accelerators</h1>
-        <div class="hero-tech-hud">
-          <span class="hud-badge accent">FOCUS 1.0 STANDARDS</span>
-          <span class="hud-badge">STATUTORY REGIMES: DORA &middot; NIS2 &middot; EU AI</span>
-          <span class="hud-badge">ZERO DATA EXPOSURE EVALUATION</span>
-          <span class="hud-badge">AWS AP-SOUTH-1 REGION</span>
+        <div class="hero-live-hud">
+          <div class="hud-item"><span class="hud-pulse green"></span> ENGINE: <b>ZERO-EXPOSURE</b></div>
+          <div class="hud-divider"></div>
+          <div class="hud-item"><span class="hud-pulse blue"></span> RUNTIME: <b>AWS AP-SOUTH-1</b></div>
+          <div class="hud-divider"></div>
+          <div class="hud-item"><span class="hud-pulse coral"></span> SECURITY: <b>COGNITO RBAC</b></div>
+        </div>
+        <div class="hero-practice-tabs">
+          <button class="hero-tab active" onclick="filterPracticeGroup('all', this)">All Accelerators (4)</button>
+          <button class="hero-tab" onclick="filterPracticeGroup('finops', this)">FinOps Practice</button>
+          <button class="hero-tab" onclick="filterPracticeGroup('sovereignty', this)">Digital Sovereignty</button>
         </div>
       </div>
     </div>
@@ -963,7 +1239,7 @@
     <!-- ============================================================
          GROUP 1: FINOPS & CLOUD FINANCIAL MANAGEMENT
          ============================================================ -->
-    <section class="practice-section">
+    <section class="practice-section" id="sectionFinOps">
       <div class="practice-header">
         <div class="practice-title-group">
           <h2 class="practice-title">FinOps &amp; Value Realisation Suite</h2>
@@ -973,7 +1249,7 @@
 
       <div class="acc-grid">
         <!-- 1. FinOps Value Case -->
-        <div class="acc-card">
+        <div class="acc-card card-finops-val">
           <div class="card-top">
             <div class="card-meta-row">
               <span class="card-eyebrow">OPPORTUNITY &amp; WASTE QUALIFICATION</span>
@@ -990,14 +1266,14 @@
 
           <div class="card-footer" style="justify-content:flex-end;">
             <div class="card-actions">
-              <button class="btn-action-edit" onclick="handleEditClick('finops-value-case')">⚙️ Edit</button>
+              <button class="btn-action-edit" data-tool="finops-value-case" onclick="handleEditClick('finops-value-case')">Edit</button>
               <a href="/finops-value-case" class="btn-action-launch">Launch Diagnostic &rarr;</a>
             </div>
           </div>
         </div>
 
         <!-- 2. FinOps IQ -->
-        <div class="acc-card">
+        <div class="acc-card card-finops-iq">
           <div class="card-top">
             <div class="card-meta-row">
               <span class="card-eyebrow">ENTERPRISE MATURITY &amp; GATING</span>
@@ -1014,7 +1290,7 @@
 
           <div class="card-footer" style="justify-content:flex-end;">
             <div class="card-actions">
-              <button class="btn-action-edit" onclick="handleEditClick('finops-iq')">⚙️ Edit</button>
+              <button class="btn-action-edit" data-tool="finops-iq" onclick="handleEditClick('finops-iq')">Edit</button>
               <a href="/finops-iq" class="btn-action-launch">Launch Diagnostic &rarr;</a>
             </div>
           </div>
@@ -1025,7 +1301,7 @@
     <!-- ============================================================
          GROUP 2: DIGITAL SOVEREIGNTY & STATUTORY POSTURE
          ============================================================ -->
-    <section class="practice-section">
+    <section class="practice-section" id="sectionSovereignty">
       <div class="practice-header">
         <div class="practice-title-group">
           <h2 class="practice-title">Digital Sovereignty &amp; Statutory Posture Suite</h2>
@@ -1035,7 +1311,7 @@
 
       <div class="acc-grid">
         <!-- 3. Sovereign IQ -->
-        <div class="acc-card">
+        <div class="acc-card card-sovereign-iq">
           <div class="card-top">
             <div class="card-meta-row">
               <span class="card-eyebrow orange">JURISDICTIONAL DEFENSE &amp; CLOUD ACT</span>
@@ -1052,14 +1328,14 @@
 
           <div class="card-footer" style="justify-content:flex-end;">
             <div class="card-actions">
-              <button class="btn-action-edit" onclick="handleEditClick('sovereign-iq')">⚙️ Edit</button>
+              <button class="btn-action-edit" data-tool="sovereign-iq" onclick="handleEditClick('sovereign-iq')">Edit</button>
               <a href="/sovereign-iq" class="btn-action-launch">Launch Diagnostic &rarr;</a>
             </div>
           </div>
         </div>
 
         <!-- 4. Posture IQ -->
-        <div class="acc-card">
+        <div class="acc-card card-posture-iq">
           <div class="card-top">
             <div class="card-meta-row">
               <span class="card-eyebrow orange">MULTI-CLOUD FORENSIC STATUTORY AUDIT</span>
@@ -1076,7 +1352,7 @@
 
           <div class="card-footer" style="justify-content:flex-end;">
             <div class="card-actions">
-              <button class="btn-action-edit" onclick="handleEditClick('posture-iq')">⚙️ Edit</button>
+              <button class="btn-action-edit" data-tool="posture-iq" onclick="handleEditClick('posture-iq')">Edit</button>
               <a href="/posture-iq" class="btn-action-launch">Launch Diagnostic &rarr;</a>
             </div>
           </div>
@@ -1208,6 +1484,180 @@
     </div>
   </div>
 
+  <!-- ============================================================
+       ACCESS CONTROL & USER MANAGEMENT MODAL (SUPER ADMIN ONLY)
+       ============================================================ -->
+  <div class="modal-overlay" id="accessControlModal" onclick="if(event.target===this)closeAccessControlModal()">
+    <div class="modal-box modal-xl">
+      <button class="modal-close-btn" onclick="closeAccessControlModal()">&times;</button>
+
+      <div class="modal-head" style="margin-bottom:14px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
+          <div>
+            <div class="ac-header-badge">ENTERPRISE RBAC &amp; MODEL GOVERNANCE</div>
+            <h3 class="modal-title">Access Control &amp; User Management</h3>
+            <p class="modal-desc">Configure who can view or edit specific accelerators, provision new credentials, and manage password reset links.</p>
+          </div>
+          <div style="display:flex;gap:8px;">
+            <button class="btn-auth" onclick="fetchAndRenderUsers()" style="font-size:11.5px;padding:5px 12px;">🔄 Refresh Users</button>
+          </div>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <div class="ac-tabs-bar" style="margin-top:14px;">
+          <button class="ac-tab-btn active" id="tabBtnUsers" onclick="switchACTab('users')">👥 User Directory &amp; RBAC</button>
+          <button class="ac-tab-btn" id="tabBtnCreate" onclick="switchACTab('create')">➕ Provision App User</button>
+        </div>
+      </div>
+
+      <!-- Tab View 1: User Directory & Permissions -->
+      <div id="acViewUsers" class="ac-tab-content">
+        <div class="modal-scrollable" id="userListContainer" style="max-height:calc(85vh - 220px);">
+          <div style="text-align:center;padding:40px 0;color:var(--text-muted);">
+            <div class="spinner" style="width:28px;height:28px;border:3px solid rgba(255,255,255,0.1);border-top-color:#3B82F6;border-radius:50%;animation:spinRadar 0.8s linear infinite;margin:0 auto 12px;"></div>
+            Loading user directory and permissions from AWS Cognito &amp; S3...
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab View 2: Provision New App User -->
+      <div id="acViewCreate" class="ac-tab-content" style="display:none;padding-top:4px;">
+        <div class="modal-scrollable" style="max-height:calc(85vh - 220px);">
+          <form id="provisionUserForm" onsubmit="handleProvisionUser(event)">
+            <div class="form-row-2">
+              <div class="form-group">
+                <label class="form-label">Colleague / Client Email Address</label>
+                <input type="email" id="newUserEmail" class="form-input" placeholder="advisor@ltm.com" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Full Name / Practice Role</label>
+                <input type="text" id="newUserName" class="form-input" placeholder="e.g. Lead Cloud Architect" required>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+                <label class="form-label" style="margin-bottom:0;">Initial Password (min 8 characters)</label>
+                <button type="button" onclick="generateRandomPassword()" style="background:none;border:none;color:#60A5FA;font-size:11.5px;cursor:pointer;text-decoration:underline;">
+                  ⚡ Auto-Generate Strong Password
+                </button>
+              </div>
+              <input type="text" id="newUserPassword" class="form-input" placeholder="Enter or auto-generate initial password" required minlength="8">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Role Template Preset</label>
+              <select id="newUserRolePreset" class="form-input" onchange="applyRolePreset(this.value)">
+                <option value="advisor_viewer">Advisory Practitioner (View All 4 Tools &middot; No Question Bank Edit)</option>
+                <option value="practice_finops">FinOps Practice Lead (Full View &amp; Edit on FinOps Value Case + FinOps IQ)</option>
+                <option value="practice_sovereignty">Sovereignty Practice Lead (Full View &amp; Edit on Sovereign IQ + Posture IQ)</option>
+                <option value="practice_director">Practice Director (Full View &amp; Edit Across All 4 Accelerators)</option>
+                <option value="custom">Custom RBAC (Individually Configure Tools Below)</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Granular Access &amp; Edit Controls</label>
+              <div class="permissions-grid">
+                <div class="perm-tool-card">
+                  <div class="perm-tool-name">💰 FinOps Value Case</div>
+                  <div class="perm-checkboxes">
+                    <label><input type="checkbox" id="perm_view_finops-value-case" checked> Can View / Run</label>
+                    <label><input type="checkbox" id="perm_edit_finops-value-case"> Can Edit Questions</label>
+                  </div>
+                </div>
+
+                <div class="perm-tool-card">
+                  <div class="perm-tool-name">📊 FinOps IQ</div>
+                  <div class="perm-checkboxes">
+                    <label><input type="checkbox" id="perm_view_finops-iq" checked> Can View / Run</label>
+                    <label><input type="checkbox" id="perm_edit_finops-iq"> Can Edit Questions</label>
+                  </div>
+                </div>
+
+                <div class="perm-tool-card">
+                  <div class="perm-tool-name">🛡️ Sovereign IQ</div>
+                  <div class="perm-checkboxes">
+                    <label><input type="checkbox" id="perm_view_sovereign-iq" checked> Can View / Run</label>
+                    <label><input type="checkbox" id="perm_edit_sovereign-iq"> Can Edit Questions</label>
+                  </div>
+                </div>
+
+                <div class="perm-tool-card">
+                  <div class="perm-tool-name">⚡ Posture IQ</div>
+                  <div class="perm-checkboxes">
+                    <label><input type="checkbox" id="perm_view_posture-iq" checked> Can View / Run</label>
+                    <label><input type="checkbox" id="perm_edit_posture-iq"> Can Edit Questions</label>
+                  </div>
+                </div>
+
+                <div class="perm-tool-card">
+                  <div class="perm-tool-name">📁 Customer Reports</div>
+                  <div class="perm-checkboxes">
+                    <label><input type="checkbox" id="perm_view_reports"> View &amp; Download</label>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="error-banner" id="provisionError"></div>
+            <div class="error-banner" id="provisionSuccess" style="background:rgba(16,185,129,0.1);border-color:#10B981;color:#34D399;display:none;"></div>
+
+            <button type="submit" id="btnSubmitProvision" class="btn-auth primary" style="width:100%;justify-content:center;padding:12px;font-size:13.5px;margin-top:8px;">
+              Provision App User &amp; Grant Access &rarr;
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick Reset & Share Link Sub-Modal -->
+  <div class="modal-overlay" id="quickResetModal" style="z-index:10005;" onclick="if(event.target===this)closeQuickResetModal()">
+    <div class="modal-box" style="max-width:480px;">
+      <button class="modal-close-btn" onclick="closeQuickResetModal()">&times;</button>
+      <div class="modal-head">
+        <div style="font-family:var(--font-mono);font-size:11px;font-weight:700;color:#60A5FA;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:4px">
+          CREDENTIAL MANAGEMENT
+        </div>
+        <h3 class="modal-title">Reset User Password &amp; Links</h3>
+        <p class="modal-desc" id="quickResetDesc">Manage credentials for user.</p>
+      </div>
+
+      <div class="error-banner" id="quickResetError"></div>
+      <div class="error-banner" id="quickResetSuccess" style="background:rgba(16,185,129,0.1);border-color:#10B981;color:#34D399;display:none;"></div>
+
+      <form onsubmit="handleQuickResetSubmit(event)">
+        <input type="hidden" id="quickResetEmail">
+        
+        <div class="form-group">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+            <label class="form-label" style="margin-bottom:0;">New Password (min 8 chars)</label>
+            <button type="button" onclick="generateQuickResetPassword()" style="background:none;border:none;color:#60A5FA;font-size:11.5px;cursor:pointer;text-decoration:underline;">
+              ⚡ Auto-Generate
+            </button>
+          </div>
+          <input type="text" id="quickResetNewPass" class="form-input" placeholder="Enter or generate new password" required minlength="8">
+        </div>
+
+        <button type="submit" id="btnSubmitQuickReset" class="btn-auth primary" style="width:100%;justify-content:center;padding:11px;font-size:13px;margin-bottom:14px;">
+          Set New Password in AWS Cognito &rarr;
+        </button>
+      </form>
+
+      <div style="border-top:1px solid rgba(255,255,255,0.08);padding-top:14px;margin-top:6px;">
+        <label class="form-label">Direct Onboarding / Login Link</label>
+        <div style="display:flex;gap:8px;">
+          <input type="text" id="quickResetLink" class="form-input" readonly style="font-size:11px;font-family:var(--font-mono);background:#060A0F;">
+          <button type="button" class="btn-auth" onclick="copyQuickResetLink()" style="white-space:nowrap;padding:8px 12px;font-size:12px;">
+            📋 Copy Link
+          </button>
+        </div>
+        <p style="font-size:11px;color:var(--text-dim);margin-top:6px;">Share this direct link with the user so they can access the platform with their email prefilled.</p>
+      </div>
+    </div>
+  </div>
+
   <!-- Toast Notification -->
   <div class="toast-popup" id="toastPopup">
     <span id="toastIcon">🔔</span>
@@ -1296,11 +1746,25 @@
       return AUTH_USER && AUTH_USER.email && AUTH_USER.email.toLowerCase() === COGNITO_CONFIG.superAdminEmail.toLowerCase();
     }
 
+    function canUserEdit(toolId) {
+      if (isSuperAdmin()) return true;
+      if (!AUTH_USER || !AUTH_USER.permissions) return false;
+      return Array.isArray(AUTH_USER.permissions.edit) && AUTH_USER.permissions.edit.includes(toolId);
+    }
+
+    function canUserView(toolId) {
+      if (isSuperAdmin()) return true;
+      if (!AUTH_USER || !AUTH_USER.permissions) return true;
+      return Array.isArray(AUTH_USER.permissions.view) && AUTH_USER.permissions.view.includes(toolId);
+    }
+
     function renderAuthWidget() {
       const w = document.getElementById('authWidget');
+      const btnAC = document.getElementById('btnNavAccessControl');
       const editBtns = document.querySelectorAll('.btn-action-edit');
 
       if (isSuperAdmin()) {
+        if (btnAC) btnAC.style.display = 'inline-flex';
         w.innerHTML = `
           <div class="auth-badge super">
             <span>👑 Super Admin:</span>
@@ -1310,30 +1774,40 @@
         `;
         editBtns.forEach(b => {
           b.classList.add('admin-unlocked');
-          b.innerHTML = '⚙️ Edit (Admin)';
+          b.innerHTML = '⚙️ Edit';
           b.title = 'Authorized to edit question bank';
         });
       } else if (AUTH_USER && AUTH_USER.email) {
+        if (btnAC) btnAC.style.display = 'none';
+        const roleLabel = (AUTH_USER.role && AUTH_USER.role.replace(/_/g, ' ').toUpperCase()) || 'MEMBER';
         w.innerHTML = `
           <div class="auth-badge">
-            <span>👤 User:</span>
+            <span>👤 ${roleLabel}:</span>
             <b>${AUTH_USER.email}</b>
           </div>
           <button class="btn-auth" onclick="logout()">Sign Out</button>
         `;
         editBtns.forEach(b => {
-          b.classList.remove('admin-unlocked');
-          b.innerHTML = '🔒 Locked';
-          b.title = 'Admin privileges required to edit';
+          const toolId = b.getAttribute('data-tool');
+          if (canUserEdit(toolId)) {
+            b.classList.add('admin-unlocked');
+            b.innerHTML = '⚙️ Edit';
+            b.title = 'Authorized to edit this question bank';
+          } else {
+            b.classList.remove('admin-unlocked');
+            b.innerHTML = '🔒 Edit';
+            b.title = 'Edit permissions required for this question bank';
+          }
         });
       } else {
+        if (btnAC) btnAC.style.display = 'none';
         w.innerHTML = `
-          <button class="btn-auth primary" onclick="openLoginModal()">🔐 Admin Sign In</button>
+          <button class="btn-auth primary" onclick="openLoginModal()">🔐 Sign In</button>
         `;
         editBtns.forEach(b => {
           b.classList.remove('admin-unlocked');
           b.innerHTML = '🔒 Edit';
-          b.title = 'Sign in as administrator to edit question banks';
+          b.title = 'Sign in as administrator or authorized practice editor to edit';
         });
       }
     }
@@ -1478,15 +1952,37 @@
         if (data.AuthenticationResult) {
           const token = data.AuthenticationResult.IdToken;
           const payload = JSON.parse(atob(token.split('.')[1]));
+          const cleanEmail = (payload.email || email).toLowerCase();
+          const isSuper = cleanEmail === COGNITO_CONFIG.superAdminEmail.toLowerCase();
+
           AUTH_USER = {
-            email: payload.email || email,
+            email: cleanEmail,
             sub: payload.sub,
-            token: token
+            token: token,
+            role: isSuper ? 'super_admin' : 'advisor_viewer',
+            permissions: {
+              view: ['finops-value-case', 'finops-iq', 'sovereign-iq', 'posture-iq', isSuper ? 'reports' : ''],
+              edit: isSuper ? ['finops-value-case', 'finops-iq', 'sovereign-iq', 'posture-iq'] : []
+            }
           };
+
+          // Fetch latest permissions config
+          try {
+            const uRes = await fetch("https://zvnmwxa9sf.execute-api.ap-south-1.amazonaws.com/api/users");
+            const uData = await uRes.json();
+            if (uData.ok && Array.isArray(uData.users)) {
+              const matched = uData.users.find(u => u.email.toLowerCase() === cleanEmail);
+              if (matched) {
+                AUTH_USER.role = matched.role;
+                AUTH_USER.permissions = matched.permissions;
+              }
+            }
+          } catch(err) {}
+
           sessionStorage.setItem("ltm_auth_user", JSON.stringify(AUTH_USER));
           closeLoginModal();
           renderAuthWidget();
-          toast("Welcome " + AUTH_USER.email + " (Administrator Access Granted)", "👑");
+          toast("Welcome " + AUTH_USER.email + (isSuper ? " (Super Admin Granted)" : " (Logged In)"), "👑");
         } else {
           errDiv.textContent = data.message || "Invalid credentials. Check email and password.";
           errDiv.style.display = 'block';
@@ -1504,15 +2000,19 @@
       AUTH_USER = null;
       sessionStorage.removeItem("ltm_auth_user");
       renderAuthWidget();
-      toast("Signed out of Administrator session", "ℹ️");
+      toast("Signed out of session", "ℹ️");
     }
 
     function handleEditClick(toolId) {
-      if (isSuperAdmin()) {
+      if (canUserEdit(toolId)) {
         window.location.href = `/studio?tool=${toolId}`;
       } else {
-        openLoginModal();
-        toast("Administrator authentication required to edit question bank.", "🔒");
+        if (!AUTH_USER) {
+          openLoginModal();
+          toast("Authentication required to edit question bank.", "🔒");
+        } else {
+          toast("You do not have edit permission for this question bank. Contact Super Admin.", "🚫");
+        }
       }
     }
 
@@ -1634,10 +2134,457 @@
       `;
     }
 
+    /* ---------- Access Control & User Management Controller ---------- */
+    let CACHED_APP_USERS = [];
+
+    function openAccessControlModal() {
+      if (!isSuperAdmin()) {
+        openLoginModal();
+        toast("Super Admin authorization required for Access Control.", "🔒");
+        return;
+      }
+      document.getElementById('accessControlModal').style.display = 'flex';
+      switchACTab('users');
+      fetchAndRenderUsers();
+    }
+
+    function closeAccessControlModal() {
+      document.getElementById('accessControlModal').style.display = 'none';
+      const pErr = document.getElementById('provisionError');
+      const pSucc = document.getElementById('provisionSuccess');
+      if (pErr) pErr.style.display = 'none';
+      if (pSucc) pSucc.style.display = 'none';
+    }
+
+    function switchACTab(tab) {
+      const tabBtnUsers = document.getElementById('tabBtnUsers');
+      const tabBtnCreate = document.getElementById('tabBtnCreate');
+      const viewUsers = document.getElementById('acViewUsers');
+      const viewCreate = document.getElementById('acViewCreate');
+
+      if (tab === 'create') {
+        tabBtnUsers.classList.remove('active');
+        tabBtnCreate.classList.add('active');
+        viewUsers.style.display = 'none';
+        viewCreate.style.display = 'block';
+      } else {
+        tabBtnCreate.classList.remove('active');
+        tabBtnUsers.classList.add('active');
+        viewCreate.style.display = 'none';
+        viewUsers.style.display = 'block';
+      }
+    }
+
+    function generateRandomPassword() {
+      const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*";
+      let pass = "";
+      for (let i = 0; i < 12; i++) {
+        pass += chars.charAt(Math.floor(Math.random() * chars.length));
+      }
+      const field = document.getElementById('newUserPassword');
+      if (field) field.value = pass;
+    }
+
+    function generateQuickResetPassword() {
+      const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*";
+      let pass = "";
+      for (let i = 0; i < 12; i++) {
+        pass += chars.charAt(Math.floor(Math.random() * chars.length));
+      }
+      const field = document.getElementById('quickResetNewPass');
+      if (field) field.value = pass;
+    }
+
+    function applyRolePreset(role) {
+      const chkViewFinVal = document.getElementById('perm_view_finops-value-case');
+      const chkEditFinVal = document.getElementById('perm_edit_finops-value-case');
+      const chkViewFinIQ = document.getElementById('perm_view_finops-iq');
+      const chkEditFinIQ = document.getElementById('perm_edit_finops-iq');
+      const chkViewSovIQ = document.getElementById('perm_view_sovereign-iq');
+      const chkEditSovIQ = document.getElementById('perm_edit_sovereign-iq');
+      const chkViewPosIQ = document.getElementById('perm_view_posture-iq');
+      const chkEditPosIQ = document.getElementById('perm_edit_posture-iq');
+      const chkViewReports = document.getElementById('perm_view_reports');
+
+      if (role === 'practice_finops') {
+        if (chkViewFinVal) chkViewFinVal.checked = true;
+        if (chkEditFinVal) chkEditFinVal.checked = true;
+        if (chkViewFinIQ) chkViewFinIQ.checked = true;
+        if (chkEditFinIQ) chkEditFinIQ.checked = true;
+        if (chkViewSovIQ) chkViewSovIQ.checked = false;
+        if (chkEditSovIQ) chkEditSovIQ.checked = false;
+        if (chkViewPosIQ) chkViewPosIQ.checked = false;
+        if (chkEditPosIQ) chkEditPosIQ.checked = false;
+        if (chkViewReports) chkViewReports.checked = true;
+      } else if (role === 'practice_sovereignty') {
+        if (chkViewFinVal) chkViewFinVal.checked = false;
+        if (chkEditFinVal) chkEditFinVal.checked = false;
+        if (chkViewFinIQ) chkViewFinIQ.checked = false;
+        if (chkEditFinIQ) chkEditFinIQ.checked = false;
+        if (chkViewSovIQ) chkViewSovIQ.checked = true;
+        if (chkEditSovIQ) chkEditSovIQ.checked = true;
+        if (chkViewPosIQ) chkViewPosIQ.checked = true;
+        if (chkEditPosIQ) chkEditPosIQ.checked = true;
+        if (chkViewReports) chkViewReports.checked = true;
+      } else if (role === 'practice_director') {
+        if (chkViewFinVal) chkViewFinVal.checked = true;
+        if (chkEditFinVal) chkEditFinVal.checked = true;
+        if (chkViewFinIQ) chkViewFinIQ.checked = true;
+        if (chkEditFinIQ) chkEditFinIQ.checked = true;
+        if (chkViewSovIQ) chkViewSovIQ.checked = true;
+        if (chkEditSovIQ) chkEditSovIQ.checked = true;
+        if (chkViewPosIQ) chkViewPosIQ.checked = true;
+        if (chkEditPosIQ) chkEditPosIQ.checked = true;
+        if (chkViewReports) chkViewReports.checked = true;
+      } else if (role === 'advisor_viewer') {
+        if (chkViewFinVal) chkViewFinVal.checked = true;
+        if (chkEditFinVal) chkEditFinVal.checked = false;
+        if (chkViewFinIQ) chkViewFinIQ.checked = true;
+        if (chkEditFinIQ) chkEditFinIQ.checked = false;
+        if (chkViewSovIQ) chkViewSovIQ.checked = true;
+        if (chkEditSovIQ) chkEditSovIQ.checked = false;
+        if (chkViewPosIQ) chkViewPosIQ.checked = true;
+        if (chkEditPosIQ) chkEditPosIQ.checked = false;
+        if (chkViewReports) chkViewReports.checked = false;
+      }
+    }
+
+    async function fetchAndRenderUsers() {
+      const container = document.getElementById('userListContainer');
+      container.innerHTML = `
+        <div style="text-align:center;padding:40px 0;color:var(--text-muted);">
+          <div class="spinner" style="width:28px;height:28px;border:3px solid rgba(255,255,255,0.1);border-top-color:#3B82F6;border-radius:50%;animation:spinRadar 0.8s linear infinite;margin:0 auto 12px;"></div>
+          Fetching users and access rights from AWS Cognito &amp; S3...
+        </div>
+      `;
+
+      try {
+        const res = await fetch("https://zvnmwxa9sf.execute-api.ap-south-1.amazonaws.com/api/users");
+        const data = await res.json();
+        if (data.ok && Array.isArray(data.users)) {
+          CACHED_APP_USERS = data.users;
+          renderUsersTable();
+        } else {
+          throw new Error(data.error || 'Failed to list users.');
+        }
+      } catch(err) {
+        container.innerHTML = `
+          <div style="padding:24px;background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.25);border-radius:12px;text-align:center;color:#FCA5A5;">
+            <b>Unable to load user directory</b>
+            <p style="font-size:12px;color:var(--text-muted);margin-top:6px;">${err.message}</p>
+            <button class="btn-auth" onclick="fetchAndRenderUsers()" style="margin-top:12px;">Retry</button>
+          </div>
+        `;
+      }
+    }
+
+    function renderUsersTable() {
+      const container = document.getElementById('userListContainer');
+      if (!CACHED_APP_USERS.length) {
+        container.innerHTML = `
+          <div style="text-align:center;padding:40px 20px;color:var(--text-muted);border:1px dashed #243040;border-radius:12px;">
+            No users found. Provision your first app user using the "Provision App User" tab.
+          </div>
+        `;
+        return;
+      }
+
+      const rows = CACHED_APP_USERS.map(u => {
+        const isSuper = u.email.toLowerCase() === COGNITO_CONFIG.superAdminEmail.toLowerCase();
+        let roleBadge = `<span class="role-badge viewer">Viewer</span>`;
+        if (isSuper) roleBadge = `<span class="role-badge super">Super Admin</span>`;
+        else if (u.role === 'practice_finops') roleBadge = `<span class="role-badge finops">FinOps Lead</span>`;
+        else if (u.role === 'practice_sovereignty') roleBadge = `<span class="role-badge sovereignty">Sovereignty Lead</span>`;
+        else if (u.role === 'practice_director') roleBadge = `<span class="role-badge super">Director</span>`;
+
+        const viewPills = (u.permissions?.view || []).map(v => `<span class="chip" style="font-size:10px;padding:2px 6px;">${v}</span>`).join(' ') || '<span style="color:var(--text-dim);">None</span>';
+        const editPills = (u.permissions?.edit || []).map(e => `<span class="chip" style="font-size:10px;padding:2px 6px;color:#34D399;border-color:rgba(16,185,129,0.3);">${e}</span>`).join(' ') || '<span style="color:var(--text-dim);">Read Only</span>';
+
+        return `
+          <tr>
+            <td>
+              <div style="font-weight:700;color:#FFFFFF;margin-bottom:2px;">${u.name || u.email.split('@')[0]}</div>
+              <div style="font-family:var(--font-mono);font-size:11px;color:var(--text-muted);">${u.email}</div>
+            </td>
+            <td>${roleBadge}</td>
+            <td>
+              <div style="display:flex;flex-wrap:wrap;gap:4px;max-width:240px;">${viewPills}</div>
+            </td>
+            <td>
+              <div style="display:flex;flex-wrap:wrap;gap:4px;max-width:200px;">${editPills}</div>
+            </td>
+            <td style="text-align:right;white-space:nowrap;">
+              <button class="btn-auth" onclick="openQuickResetModal('${u.email}')" style="font-size:11px;padding:5px 9px;margin-right:6px;">
+                🔑 Reset / Link
+              </button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+
+      container.innerHTML = `
+        <table class="reports-table">
+          <thead>
+            <tr>
+              <th>User / Email</th>
+              <th>Role</th>
+              <th>View Permissions</th>
+              <th>Edit Rights (Question Bank)</th>
+              <th style="text-align:right;">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${rows}
+          </tbody>
+        </table>
+      `;
+    }
+
+    async function handleProvisionUser(e) {
+      e.preventDefault();
+      const email = document.getElementById('newUserEmail').value.trim();
+      const name = document.getElementById('newUserName').value.trim();
+      const password = document.getElementById('newUserPassword').value;
+      const role = document.getElementById('newUserRolePreset').value;
+
+      const viewPerms = [];
+      const editPerms = [];
+
+      ['finops-value-case', 'finops-iq', 'sovereign-iq', 'posture-iq'].forEach(t => {
+        const vChk = document.getElementById(`perm_view_${t}`);
+        const eChk = document.getElementById(`perm_edit_${t}`);
+        if (vChk && vChk.checked) viewPerms.push(t);
+        if (eChk && eChk.checked) editPerms.push(t);
+      });
+      const repChk = document.getElementById('perm_view_reports');
+      if (repChk && repChk.checked) viewPerms.push('reports');
+
+      const errDiv = document.getElementById('provisionError');
+      const succDiv = document.getElementById('provisionSuccess');
+      const btn = document.getElementById('btnSubmitProvision');
+
+      errDiv.style.display = 'none';
+      succDiv.style.display = 'none';
+      btn.disabled = true;
+      btn.textContent = 'Provisioning in AWS Cognito & S3...';
+
+      try {
+        const res = await fetch("https://zvnmwxa9sf.execute-api.ap-south-1.amazonaws.com/api/users/create", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            email,
+            password,
+            name,
+            role,
+            permissions: { view: viewPerms, edit: editPerms },
+            requesterEmail: AUTH_USER ? AUTH_USER.email : ''
+          })
+        });
+
+        const data = await res.json();
+        if (data.ok) {
+          const directLink = `https://main.d1xnevzszm0ehs.amplifyapp.com/?portal_user=${encodeURIComponent(email)}`;
+          succDiv.innerHTML = `
+            <b>✅ User Provisioned Successfully!</b>
+            <div style="font-size:12px;margin-top:6px;">
+              Email: <b>${email}</b><br>
+              Password: <code>${password}</code><br>
+              Direct Link: <a href="${directLink}" target="_blank" style="color:#93C5FD;word-break:break-all;">${directLink}</a>
+            </div>
+          `;
+          succDiv.style.display = 'block';
+          toast("User created with assigned permissions", "✅");
+          fetchAndRenderUsers();
+          document.getElementById('provisionUserForm').reset();
+        } else {
+          errDiv.textContent = data.error || 'Failed to provision user.';
+          errDiv.style.display = 'block';
+        }
+      } catch(err) {
+        errDiv.textContent = 'Network or API error: ' + err.message;
+        errDiv.style.display = 'block';
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Provision App User & Grant Access →';
+      }
+    }
+
+    function openQuickResetModal(email) {
+      document.getElementById('quickResetModal').style.display = 'flex';
+      document.getElementById('quickResetEmail').value = email;
+      document.getElementById('quickResetDesc').innerHTML = `Set new credentials or generate access link for <b>${email}</b>.`;
+      
+      const directLink = `https://main.d1xnevzszm0ehs.amplifyapp.com/?portal_user=${encodeURIComponent(email)}`;
+      document.getElementById('quickResetLink').value = directLink;
+
+      document.getElementById('quickResetNewPass').value = '';
+      document.getElementById('quickResetError').style.display = 'none';
+      document.getElementById('quickResetSuccess').style.display = 'none';
+      generateQuickResetPassword();
+    }
+
+    function closeQuickResetModal() {
+      document.getElementById('quickResetModal').style.display = 'none';
+    }
+
+    function copyQuickResetLink() {
+      const linkInput = document.getElementById('quickResetLink');
+      linkInput.select();
+      navigator.clipboard.writeText(linkInput.value);
+      toast("Onboarding link copied to clipboard", "📋");
+    }
+
+    async function handleQuickResetSubmit(e) {
+      e.preventDefault();
+      const email = document.getElementById('quickResetEmail').value;
+      const newPass = document.getElementById('quickResetNewPass').value;
+      const errDiv = document.getElementById('quickResetError');
+      const succDiv = document.getElementById('quickResetSuccess');
+      const btn = document.getElementById('btnSubmitQuickReset');
+
+      errDiv.style.display = 'none';
+      succDiv.style.display = 'none';
+      btn.disabled = true;
+      btn.textContent = 'Updating Password in AWS Cognito...';
+
+      try {
+        const res = await fetch("https://zvnmwxa9sf.execute-api.ap-south-1.amazonaws.com/api/users/set-password", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            email,
+            newPassword: newPass,
+            requesterEmail: AUTH_USER ? AUTH_USER.email : ''
+          })
+        });
+
+        const data = await res.json();
+        if (data.ok) {
+          succDiv.textContent = `Password successfully updated for ${email}!`;
+          succDiv.style.display = 'block';
+          toast("Password updated in Cognito", "✅");
+          setTimeout(() => { closeQuickResetModal(); }, 1600);
+        } else {
+          errDiv.textContent = data.error || 'Failed to update password.';
+          errDiv.style.display = 'block';
+        }
+      } catch(err) {
+        errDiv.textContent = 'API connection error: ' + err.message;
+        errDiv.style.display = 'block';
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Set New Password in AWS Cognito →';
+      }
+    }
+
+    /* ---------- Cyber Hero Canvas Animation & Filter Tabs ---------- */
+    function initHeroAnimation() {
+      const canvas = document.getElementById('heroCyberCanvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+
+      let width, height;
+      function resize() {
+        width = canvas.width = canvas.offsetWidth;
+        height = canvas.height = canvas.offsetHeight;
+      }
+      resize();
+      window.addEventListener('resize', resize);
+
+      const particles = [];
+      const count = Math.min(Math.floor(width / 22), 40);
+
+      for (let i = 0; i < count; i++) {
+        particles.push({
+          x: Math.random() * width,
+          y: Math.random() * height,
+          vx: (Math.random() - 0.5) * 0.45,
+          vy: (Math.random() - 0.5) * 0.45,
+          radius: Math.random() * 1.8 + 0.8,
+          color: Math.random() > 0.4 ? '#FF5E4F' : '#3B82F6'
+        });
+      }
+
+      function render() {
+        ctx.clearRect(0, 0, width, height);
+
+        for (let i = 0; i < particles.length; i++) {
+          for (let j = i + 1; j < particles.length; j++) {
+            const dx = particles[i].x - particles[j].x;
+            const dy = particles[i].y - particles[j].y;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            if (dist < 110) {
+              ctx.beginPath();
+              ctx.moveTo(particles[i].x, particles[i].y);
+              ctx.lineTo(particles[j].x, particles[j].y);
+              ctx.strokeStyle = `rgba(255, 94, 79, ${0.16 * (1 - dist / 110)})`;
+              ctx.lineWidth = 0.8;
+              ctx.stroke();
+            }
+          }
+        }
+
+        particles.forEach(p => {
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+          ctx.fillStyle = p.color;
+          ctx.shadowBlur = 8;
+          ctx.shadowColor = p.color;
+          ctx.fill();
+          ctx.shadowBlur = 0;
+
+          p.x += p.vx;
+          p.y += p.vy;
+
+          if (p.x < 0) p.x = width;
+          if (p.x > width) p.x = 0;
+          if (p.y < 0) p.y = height;
+          if (p.y > height) p.y = 0;
+        });
+
+        requestAnimationFrame(render);
+      }
+
+      render();
+    }
+
+    function filterPracticeGroup(group, btn) {
+      const tabs = document.querySelectorAll('.hero-tab');
+      tabs.forEach(t => t.classList.remove('active'));
+      if (btn) btn.classList.add('active');
+
+      const secFinOps = document.getElementById('sectionFinOps');
+      const secSovereignty = document.getElementById('sectionSovereignty');
+
+      if (group === 'finops') {
+        if (secFinOps) secFinOps.style.display = 'block';
+        if (secSovereignty) secSovereignty.style.display = 'none';
+      } else if (group === 'sovereignty') {
+        if (secFinOps) secFinOps.style.display = 'none';
+        if (secSovereignty) secSovereignty.style.display = 'block';
+      } else {
+        if (secFinOps) secFinOps.style.display = 'block';
+        if (secSovereignty) secSovereignty.style.display = 'block';
+      }
+    }
+
     // Initialize on page load
     window.addEventListener('DOMContentLoaded', () => {
       initSplash();
       initAuth();
+      initHeroAnimation();
+
+      // Check query params for direct onboarding link
+      const params = new URLSearchParams(window.location.search);
+      const prefillEmail = params.get('portal_user');
+      if (prefillEmail) {
+        openLoginModal();
+        const emailField = document.getElementById('loginEmail');
+        if (emailField) emailField.value = prefillEmail;
+        toast(`Welcome back! Sign in with your assigned password.`, "👋");
+      }
     });
   </script>
 </body>
