@@ -1201,7 +1201,7 @@
       inset: 0;
       z-index: 99999;
       background: #080A0F;
-      display: none;
+      display: flex;
       align-items: center;
       justify-content: center;
       overflow: hidden;
@@ -4872,10 +4872,6 @@
     let splashPhaseTimers = [];
 
     function playSplashScreen(force = false) {
-      if (!force && sessionStorage.getItem('finops_splash_shown')) {
-        return; // Only play once per browser session unless user triggers replay
-      }
-
       const splash = document.getElementById('finops-splash-screen');
       if (!splash) return;
 

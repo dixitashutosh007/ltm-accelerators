@@ -618,10 +618,216 @@ table.qtable th{font-family:'Manrope',sans-serif;font-size:10.5px;letter-spacing
 .rg-progress-track { width: 340px; max-width: 80vw; height: 4px; background: rgba(255,255,255,0.1); border-radius: 2px; overflow: hidden; }
 .rg-progress-fill { height: 100%; width: 0; background: linear-gradient(90deg, #FF5E4F, #FF8A7A); border-radius: 2px; transition: width 0.6s ease; }
 
+/* Executive Splash Screen */
+#finopsValueSplash {
+  position: fixed;
+  inset: 0;
+  z-index: 999999;
+  background: radial-gradient(circle at 50% 38%, #141E28 0%, #080D13 60%, #030609 100%);
+  color: #FFFFFF;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  transition: opacity 0.55s cubic-bezier(0.16, 1, 0.3, 1), transform 0.55s cubic-bezier(0.16, 1, 0.3, 1), filter 0.55s ease;
+}
+#finopsValueSplash.splash-out {
+  opacity: 0;
+  transform: scale(1.05);
+  filter: blur(8px);
+  pointer-events: none;
+}
+.fvs-bg-glow {
+  position: absolute;
+  width: 680px;
+  height: 680px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 94, 79, 0.16) 0%, rgba(255, 94, 79, 0.04) 45%, transparent 70%);
+  filter: blur(60px);
+  pointer-events: none;
+}
+.fvs-skip-btn {
+  position: absolute;
+  top: 24px;
+  right: 28px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  color: rgba(255, 255, 255, 0.75);
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  cursor: pointer;
+  z-index: 10;
+  transition: all 0.2s ease;
+}
+.fvs-skip-btn:hover {
+  background: rgba(255, 94, 79, 0.2);
+  border-color: #FF5E4F;
+  color: #FFF;
+}
+.fvs-content {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  max-width: 580px;
+  padding: 24px;
+}
+.fvs-radar-wrap {
+  position: relative;
+  width: 96px;
+  height: 96px;
+  margin-bottom: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.fvs-radar-ring {
+  position: absolute;
+  border: 1px solid rgba(255, 94, 79, 0.35);
+  border-radius: 50%;
+  pointer-events: none;
+}
+.fvs-radar-ring.r1 {
+  width: 96px;
+  height: 96px;
+  animation: fvsPulse 2.4s ease-out infinite;
+}
+.fvs-radar-ring.r2 {
+  width: 136px;
+  height: 136px;
+  animation: fvsPulse 2.4s ease-out infinite 0.8s;
+}
+@keyframes fvsPulse {
+  0% { transform: scale(0.8); opacity: 0; }
+  50% { opacity: 0.8; }
+  100% { transform: scale(1.3); opacity: 0; }
+}
+.fvs-logo-box {
+  position: relative;
+  z-index: 2;
+  background: rgba(14, 21, 29, 0.9);
+  border: 1px solid rgba(255, 94, 79, 0.4);
+  padding: 12px 18px;
+  border-radius: 12px;
+  box-shadow: 0 0 30px rgba(255, 94, 79, 0.25);
+}
+.fvs-brand-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--mono, ui-monospace, monospace);
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  color: #FF5E4F;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+.fvs-title {
+  font-family: 'Manrope', -apple-system, sans-serif;
+  font-size: clamp(26px, 4.5vw, 36px);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  margin: 0 0 6px;
+  background: linear-gradient(90deg, #FFFFFF 0%, #FF9E95 60%, #FFFFFF 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.fvs-sub {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.65);
+  max-width: 46ch;
+  margin: 0 0 24px;
+  line-height: 1.45;
+}
+.fvs-console {
+  width: 100%;
+  background: rgba(4, 8, 12, 0.65);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-family: var(--mono, ui-monospace, monospace);
+  font-size: 11px;
+  color: #FF7B6E;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+.fvs-progress-track {
+  width: 100%;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 999px;
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+.fvs-progress-bar {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #3C829B 0%, #FF5E4F 70%, #FFA89E 100%);
+  border-radius: 999px;
+  transition: width 0.25s ease-out;
+  box-shadow: 0 0 8px rgba(255, 94, 79, 0.8);
+}
+.fvs-footer-note {
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.4);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-family: var(--mono, ui-monospace, monospace);
+}
+
 </style>
 </head>
 
 <body>
+<!-- ============================================================
+     EXECUTIVE SPLASH SCREEN
+     ============================================================ -->
+<div id="finopsValueSplash">
+  <div class="fvs-bg-glow"></div>
+  <button class="fvs-skip-btn" onclick="dismissValueSplash()">Skip Intro &rarr;</button>
+
+  <div class="fvs-content">
+    <div style="margin-bottom: 14px;">
+      <img src="/assets/ltm-logo.jpg" alt="LTM - A Larsen & Toubro Group Company" style="height: 38px; width: auto; border-radius: 6px; box-shadow: 0 4px 16px rgba(0,0,0,0.5);">
+    </div>
+
+    <div class="fvs-radar-wrap">
+      <div class="fvs-radar-ring r1"></div>
+      <div class="fvs-radar-ring r2"></div>
+      <div class="fvs-logo-box">
+        <span style="font-weight: 800; font-size: 14px; color: #FF5E4F; letter-spacing: 0.05em;">VALUE</span>
+      </div>
+    </div>
+
+    <div class="fvs-brand-badge">&bull; LTM INFRA TECH ADVISORY &bull;</div>
+    <h1 class="fvs-title">FinOps Value Case</h1>
+    <p class="fvs-sub">Pre-Maturity Qualification &amp; Cloud Financial Exposure Diagnostic</p>
+
+    <div class="fvs-console">
+      <div style="display:flex;align-items:center;gap:8px;">
+        <span style="color:#FF5E4F;font-weight:700;">&gt;</span>
+        <span id="fvsStatusText" style="color:rgba(255,255,255,0.85);">Initializing Diagnostic Probes...</span>
+      </div>
+      <span id="fvsPctText" style="color:#FF5E4F;font-weight:700;">0%</span>
+    </div>
+
+    <div class="fvs-progress-track">
+      <div class="fvs-progress-bar" id="fvsProgressBar"></div>
+    </div>
+    <div class="fvs-footer-note">Enterprise Cloud Financial Management &middot; Headless Evaluation Architecture</div>
+  </div>
+</div>
+
 <div class="gridbg"></div>
 <header class="bar no-print">
   <div class="ltmlogo" id="ltmLogo" title="Set LTM logo"></div>
@@ -2361,6 +2567,56 @@ function toCsv(){
 }
 render();
 
+/* ---------- Splash Screen Controller ---------- */
+let fvsTimer = null;
+let fvsPhaseTimers = [];
+
+function initValueSplash() {
+  const splash = document.getElementById('finopsValueSplash');
+  if (!splash) return;
+
+  const bar = document.getElementById('fvsProgressBar');
+  const pct = document.getElementById('fvsPctText');
+  const log = document.getElementById('fvsStatusText');
+
+  const phases = [
+    { time: 100, pct: 25, msg: "Initializing FinOps Diagnostic Probes..." },
+    { time: 450, pct: 55, msg: "Calibrating Benchmark Variance Models..." },
+    { time: 850, pct: 85, msg: "Mounting Zero-Exposure Financial Logic (AWS ap-south-1)..." },
+    { time: 1300, pct: 100, msg: "FinOps Value Engine Ready." }
+  ];
+
+  phases.forEach(p => {
+    const t = setTimeout(() => {
+      if (bar) bar.style.width = p.pct + '%';
+      if (pct) pct.textContent = p.pct + '%';
+      if (log) log.textContent = p.msg;
+    }, p.time);
+    fvsPhaseTimers.push(t);
+  });
+
+  fvsTimer = setTimeout(() => {
+    dismissValueSplash();
+  }, 1750);
+}
+
+function dismissValueSplash() {
+  if (fvsTimer) clearTimeout(fvsTimer);
+  fvsPhaseTimers.forEach(t => clearTimeout(t));
+  fvsPhaseTimers = [];
+  const splash = document.getElementById('finopsValueSplash');
+  if (!splash) return;
+  splash.classList.add('splash-out');
+  setTimeout(() => { splash.style.display = 'none'; }, 550);
+}
+
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') dismissValueSplash();
+});
+
+window.addEventListener('DOMContentLoaded', () => {
+  initValueSplash();
+});
 </script>
 
 

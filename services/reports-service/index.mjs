@@ -1,10 +1,14 @@
 import { S3Client, PutObjectCommand, ListObjectsV2Command, GetObjectCommand } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
+import { CognitoIdentityProviderClient, AdminSetUserPasswordCommand } from '@aws-sdk/client-cognito-identity-provider';
 
 const BUCKET_NAME = process.env.REPORTS_BUCKET || 'ltm-advisory-reports-223833501993';
 const REGION = process.env.AWS_REGION || 'ap-south-1';
+const USER_POOL_ID = 'ap-south-1_91amN2bz4';
+const SUPER_ADMIN_EMAIL = 'dixitashutosh007@gmail.com';
 
 const s3Client = new S3Client({ region: REGION });
+const cognitoClient = new CognitoIdentityProviderClient({ region: REGION });
 
 const CORS_HEADERS = {
   'Content-Type': 'application/json',
@@ -28,9 +32,62 @@ export const handler = async (event) => {
 
   try {
     // -------------------------------------------------------------
-    // Route 1: POST /api/reports/save (Store PDF Report in S3)
+    // Route 1: POST /api/auth/reset-password (In-page Password Reset)
     // -------------------------------------------------------------
-    if (method === 'POST' || path.endsWith('/save')) {
+    if (path.includes('/reset-password') || path.endsWith('/reset-password')) {
+      let body = {};
+      if (event.body) {
+        body = event.isBase64Encoded
+          ? JSON.parse(Buffer.from(event.body, 'base64').toString('utf-8'))
+          : JSON.parse(event.body);
+      }
+
+      const { email, newPassword } = body;
+      if (!email || !newPassword) {
+        return {
+          statusCode: 400,
+          headers: CORS_HEADERS,
+          body: JSON.stringify({ ok: false, error: 'Email and newPassword are required.' })
+        };
+      }
+
+      if (email.trim().toLowerCase() !== SUPER_ADMIN_EMAIL.toLowerCase()) {
+        return {
+          statusCode: 403,
+          headers: CORS_HEADERS,
+          body: JSON.stringify({ ok: false, error: 'Password reset is only authorized for dixitashutosh007@gmail.com.' })
+        };
+      }
+
+      if (newPassword.length < 8) {
+        return {
+          statusCode: 400,
+          headers: CORS_HEADERS,
+          body: JSON.stringify({ ok: false, error: 'Password must be at least 8 characters long.' })
+        };
+      }
+
+      await cognitoClient.send(new AdminSetUserPasswordCommand({
+        UserPoolId: USER_POOL_ID,
+        Username: email.trim(),
+        Password: newPassword,
+        Permanent: true
+      }));
+
+      return {
+        statusCode: 200,
+        headers: CORS_HEADERS,
+        body: JSON.stringify({
+          ok: true,
+          message: 'Password successfully updated for ' + SUPER_ADMIN_EMAIL
+        })
+      };
+    }
+
+    // -------------------------------------------------------------
+    // Route 2: POST /api/reports/save (Store PDF Report in S3)
+    // -------------------------------------------------------------
+    if (path.includes('/reports/save') || (method === 'POST' && !path.includes('/list'))) {
       let body = {};
       if (event.body) {
         body = event.isBase64Encoded
@@ -65,8 +122,6 @@ export const handler = async (event) => {
       const pdfKey = `reports/${safeAccId}/${cleanClient}_${timestamp}_${randomTag}.pdf`;
       const metaKey = `reports/${safeAccId}/${cleanClient}_${timestamp}_${randomTag}.meta.json`;
 
-      // Decode Base64 PDF to buffer
-      // Remove any data URL header if present (e.g. data:application/pdf;base64,)
       const rawBase64 = pdfBase64.replace(/^data:application\/pdf;base64,/, '');
       const pdfBuffer = Buffer.from(rawBase64, 'base64');
 
@@ -100,7 +155,7 @@ export const handler = async (event) => {
         ContentType: 'application/json'
       }));
 
-      // 3. Generate a secure pre-signed GET URL valid for 7 days (604,800 seconds)
+      // 3. Generate a secure pre-signed GET URL valid for 7 days
       const downloadCommand = new GetObjectCommand({
         Bucket: BUCKET_NAME,
         Key: pdfKey,
@@ -128,9 +183,9 @@ export const handler = async (event) => {
     }
 
     // -------------------------------------------------------------
-    // Route 2: GET /api/reports/list (List Saved Reports from S3)
+    // Route 3: GET /api/reports/list (List Saved Reports from S3)
     // -------------------------------------------------------------
-    if (method === 'GET' || path.endsWith('/list')) {
+    if (path.includes('/reports/list') || (method === 'GET' && path.includes('/list'))) {
       const qParams = event.queryStringParameters || {};
       const filterAcc = qParams.acceleratorId ? qParams.acceleratorId.replace(/[^a-zA-Z0-9_-]/g, '') : '';
       const prefix = filterAcc ? `reports/${filterAcc}/` : 'reports/';
@@ -143,7 +198,6 @@ export const handler = async (event) => {
 
       const pdfItems = (listResp.Contents || []).filter(item => item.Key && item.Key.endsWith('.pdf'));
 
-      // Generate signed URLs for recent reports
       const reports = await Promise.all(pdfItems.map(async (item) => {
         const parts = item.Key.split('/');
         const accId = parts[1] || 'general';
@@ -171,7 +225,6 @@ export const handler = async (event) => {
         };
       }));
 
-      // Sort newest first
       reports.sort((a, b) => new Date(b.lastModified).getTime() - new Date(a.lastModified).getTime());
 
       return {

@@ -390,62 +390,80 @@
       padding: 44px 28px 80px;
     }
 
-    /* Hero Section */
-    .hero {
-      text-align: center;
+    /* Modern Tech / IQ Theme Hero */
+    .hero-tech-container {
+      position: relative;
+      background: radial-gradient(circle at 50% 0%, rgba(255, 94, 79, 0.09) 0%, rgba(14, 20, 28, 0.95) 70%, #0B1017 100%);
+      border: 1px solid #1D2836;
+      border-radius: 20px;
+      padding: 44px 36px 36px;
       margin-bottom: 50px;
+      overflow: hidden;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.45);
     }
 
-    .hero-eyebrow {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 11.5px;
-      font-weight: 700;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: var(--coral);
-      margin-bottom: 12px;
-      background: var(--coral-subtle);
-      padding: 5px 14px;
-      border-radius: 999px;
-      border: 1px solid rgba(255, 94, 79, 0.25);
+    .hero-tech-grid {
+      position: absolute;
+      inset: 0;
+      background-image: 
+        linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+      background-size: 32px 32px;
+      mask-image: radial-gradient(circle at center, black 40%, transparent 85%);
+      -webkit-mask-image: radial-gradient(circle at center, black 40%, transparent 85%);
+      pointer-events: none;
     }
 
-    .hero h1 {
+    .hero-tech-beam {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent 0%, var(--coral) 50%, transparent 100%);
+      opacity: 0.8;
+      box-shadow: 0 0 16px var(--coral);
+    }
+
+    .hero-tech-title {
       font-family: var(--font-heading);
       font-size: 42px;
       font-weight: 800;
-      letter-spacing: -0.035em;
-      margin-bottom: 14px;
+      letter-spacing: -0.03em;
       color: #FFFFFF;
+      margin-bottom: 12px;
       line-height: 1.15;
     }
 
-    .hero p {
-      color: var(--text-muted);
-      font-size: 16px;
-      max-width: 740px;
-      margin: 0 auto 24px;
-      line-height: 1.6;
-    }
-
-    .hero-pills {
+    .hero-tech-hud {
       display: flex;
       justify-content: center;
       align-items: center;
       gap: 12px;
       flex-wrap: wrap;
+      margin-top: 16px;
     }
 
-    .hero-pill-item {
-      font-size: 11.5px;
+    .hud-badge {
+      font-family: var(--font-mono);
+      font-size: 11px;
       font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #94A3B8;
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid #1E293B;
       padding: 5px 12px;
-      border-radius: 8px;
-      background: rgba(255, 255, 255, 0.04);
-      border: 1px solid var(--border-subtle);
-      color: #D1D5DB;
+      border-radius: 6px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .hud-badge.accent {
+      color: #F87171;
+      border-color: rgba(239, 68, 68, 0.3);
+      background: rgba(239, 68, 68, 0.06);
     }
 
     /* ============================================================
@@ -910,9 +928,9 @@
         <span class="live-label">Live</span>
       </div>
 
-      <!-- S3 Archived Reports Modal Trigger -->
-      <button class="btn-auth" onclick="openReportsModal()" id="btnNavReports" title="Customer PDF Reports archived in AWS S3">
-        <span>📁 S3 Reports Archive</span>
+      <!-- Customer Reports Archive (Super Admin) -->
+      <button class="btn-auth" onclick="openReportsModal()" id="btnNavReports" title="Customer Deliverables (Super Admin Access)">
+        <span>Reports</span>
       </button>
 
       <!-- Cognito RBAC Auth Widget -->
@@ -926,16 +944,19 @@
        MAIN DASHBOARD
        ============================================================ -->
   <main>
-    <div class="hero">
-      <div class="hero-eyebrow">PRACTICE ACCELERATOR PLATFORM &middot; 2026 EDITION</div>
-      <h1>Advisory Accelerators</h1>
-      <p>Precision diagnostic instruments engineered for CIOs, CISOs, and enterprise cloud committees. Powered by our zero-exposure headless cloud evaluation architecture in AWS Mumbai (ap-south-1).</p>
-      
-      <div class="hero-pills">
-        <span class="hero-pill-item">💰 FinOps &amp; Value Realisation</span>
-        <span class="hero-pill-item">🛡️ Digital Sovereignty &amp; Posture</span>
-        <span class="hero-pill-item">⚡ Zero-Exposure Cloud Lambdas</span>
-        <span class="hero-pill-item">🔐 Cognito RBAC Model Governance</span>
+    <!-- Modern Tech / IQ Theme Hero -->
+    <div class="hero-tech-container">
+      <div class="hero-tech-grid"></div>
+      <div class="hero-tech-beam"></div>
+
+      <div style="position:relative;z-index:2;text-align:center;">
+        <h1 class="hero-tech-title">Advisory Accelerators</h1>
+        <div class="hero-tech-hud">
+          <span class="hud-badge accent">FOCUS 1.0 STANDARDS</span>
+          <span class="hud-badge">STATUTORY REGIMES: DORA &middot; NIS2 &middot; EU AI</span>
+          <span class="hud-badge">ZERO DATA EXPOSURE EVALUATION</span>
+          <span class="hud-badge">AWS AP-SOUTH-1 REGION</span>
+        </div>
       </div>
     </div>
 
@@ -945,7 +966,6 @@
     <section class="practice-section">
       <div class="practice-header">
         <div class="practice-title-group">
-          <span class="practice-badge">PRACTICE 01 &middot; CLOUD FINANCIAL MANAGEMENT</span>
           <h2 class="practice-title">FinOps &amp; Value Realisation Suite</h2>
         </div>
         <p class="practice-desc">Quantify unmanaged cloud financial waste, establish unit economics, and transition through staged maturity gating from crawl to run.</p>
@@ -968,10 +988,7 @@
             </div>
           </div>
 
-          <div class="card-footer">
-            <div class="card-status">
-              <span style="color:#10B981;">&#9679;</span> Headless Lambda Active
-            </div>
+          <div class="card-footer" style="justify-content:flex-end;">
             <div class="card-actions">
               <button class="btn-action-edit" onclick="handleEditClick('finops-value-case')">⚙️ Edit</button>
               <a href="/finops-value-case" class="btn-action-launch">Launch Diagnostic &rarr;</a>
@@ -995,10 +1012,7 @@
             </div>
           </div>
 
-          <div class="card-footer">
-            <div class="card-status">
-              <span style="color:#10B981;">&#9679;</span> Headless Lambda Active
-            </div>
+          <div class="card-footer" style="justify-content:flex-end;">
             <div class="card-actions">
               <button class="btn-action-edit" onclick="handleEditClick('finops-iq')">⚙️ Edit</button>
               <a href="/finops-iq" class="btn-action-launch">Launch Diagnostic &rarr;</a>
@@ -1014,7 +1028,6 @@
     <section class="practice-section">
       <div class="practice-header">
         <div class="practice-title-group">
-          <span class="practice-badge orange">PRACTICE 02 &middot; JURISDICTIONAL DEFENSE &amp; COMPLIANCE</span>
           <h2 class="practice-title">Digital Sovereignty &amp; Statutory Posture Suite</h2>
         </div>
         <p class="practice-desc">Audit extraterritorial jurisdiction risks, enforce HYOK cryptographic custody, and ensure supervisory defensibility across DORA, NIS2, and the EU AI Act.</p>
@@ -1037,10 +1050,7 @@
             </div>
           </div>
 
-          <div class="card-footer">
-            <div class="card-status">
-              <span style="color:#10B981;">&#9679;</span> Headless Lambda Active
-            </div>
+          <div class="card-footer" style="justify-content:flex-end;">
             <div class="card-actions">
               <button class="btn-action-edit" onclick="handleEditClick('sovereign-iq')">⚙️ Edit</button>
               <a href="/sovereign-iq" class="btn-action-launch">Launch Diagnostic &rarr;</a>
@@ -1064,10 +1074,7 @@
             </div>
           </div>
 
-          <div class="card-footer">
-            <div class="card-status">
-              <span style="color:#10B981;">&#9679;</span> Headless Lambda Active
-            </div>
+          <div class="card-footer" style="justify-content:flex-end;">
             <div class="card-actions">
               <button class="btn-action-edit" onclick="handleEditClick('posture-iq')">⚙️ Edit</button>
               <a href="/posture-iq" class="btn-action-launch">Launch Diagnostic &rarr;</a>
@@ -1079,42 +1086,92 @@
   </main>
 
   <!-- ============================================================
-       COGNITO RBAC LOGIN MODAL
+       COGNITO RBAC LOGIN & IN-PAGE PASSWORD RESET MODAL
        ============================================================ -->
   <div class="modal-overlay" id="loginModal" onclick="if(event.target===this)closeLoginModal()">
     <div class="modal-box">
       <button class="modal-close-btn" onclick="closeLoginModal()">&times;</button>
       
-      <div class="modal-head">
-        <div style="font-family:var(--font-mono);font-size:11px;font-weight:700;color:var(--coral);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:6px">
-          🔐 RBAC Access Gate
+      <!-- View 1: Sign In -->
+      <div id="modalViewSignIn">
+        <div class="modal-head">
+          <div style="font-family:var(--font-mono);font-size:11px;font-weight:700;color:var(--coral);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:6px">
+            RBAC ACCESS GATE
+          </div>
+          <h3 class="modal-title">Administrator Authentication</h3>
+          <p class="modal-desc">Sign in with authorized administrator credentials (<b>dixitashutosh007@gmail.com</b>) to manage question banks and client deliverables.</p>
         </div>
-        <h3 class="modal-title">Administrator Authentication</h3>
-        <p class="modal-desc">Sign in to unlock Question Bank Studio and proprietary scoring models. Only authorized administrator (<b>dixitashutosh007@gmail.com</b>) has edit privileges.</p>
+
+        <div class="error-banner" id="loginError"></div>
+
+        <form onsubmit="handleCognitoLogin(event)">
+          <div class="form-group">
+            <label class="form-label">Authorized Admin Email</label>
+            <input type="email" id="loginEmail" class="form-input" value="dixitashutosh007@gmail.com" required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Cognito Password</label>
+            <input type="password" id="loginPassword" class="form-input" placeholder="••••••••••••" required autofocus>
+          </div>
+
+          <button type="submit" id="btnSubmitLogin" class="btn-auth primary" style="width:100%;justify-content:center;padding:11px;font-size:13.5px;margin-top:8px;">
+            Verify Credentials &rarr;
+          </button>
+        </form>
+
+        <div style="text-align:center;margin-top:16px;border-top:1px solid rgba(255,255,255,0.06);padding-top:14px;">
+          <button type="button" onclick="showPasswordResetView(true)" style="background:none;border:none;color:var(--text-muted);font-size:12px;cursor:pointer;text-decoration:underline;">
+            Reset or Change Password from this Page &rarr;
+          </button>
+        </div>
       </div>
 
-      <div class="error-banner" id="loginError"></div>
-
-      <form onsubmit="handleCognitoLogin(event)">
-        <div class="form-group">
-          <label class="form-label">Authorized Admin Email</label>
-          <input type="email" id="loginEmail" class="form-input" value="dixitashutosh007@gmail.com" required>
+      <!-- View 2: In-Page Password Reset -->
+      <div id="modalViewReset" style="display:none;">
+        <div class="modal-head">
+          <div style="font-family:var(--font-mono);font-size:11px;font-weight:700;color:#10B981;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:6px">
+            PASSWORD RECOVERY &amp; RESET
+          </div>
+          <h3 class="modal-title">Reset Admin Password</h3>
+          <p class="modal-desc">Set a new permanent password directly for <b>dixitashutosh007@gmail.com</b>.</p>
         </div>
 
-        <div class="form-group">
-          <label class="form-label">Cognito Password</label>
-          <input type="password" id="loginPassword" class="form-input" placeholder="••••••••••••" required autofocus>
-        </div>
+        <div class="error-banner" id="resetError"></div>
+        <div class="error-banner" id="resetSuccess" style="background:rgba(16,185,129,0.1);border-color:#10B981;color:#34D399;display:none;"></div>
 
-        <button type="submit" id="btnSubmitLogin" class="btn-auth primary" style="width:100%;justify-content:center;padding:11px;font-size:13.5px;margin-top:8px;">
-          Verify Credentials &amp; Unlock Studio &rarr;
-        </button>
-      </form>
+        <form onsubmit="handleDirectPasswordReset(event)">
+          <div class="form-group">
+            <label class="form-label">Admin Email</label>
+            <input type="email" id="resetEmail" class="form-input" value="dixitashutosh007@gmail.com" readonly style="opacity:0.8;background:#060A0F;">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">New Password (min 8 characters)</label>
+            <input type="password" id="resetNewPass" class="form-input" placeholder="Enter new password" required minlength="8">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Confirm New Password</label>
+            <input type="password" id="resetConfirmPass" class="form-input" placeholder="Confirm new password" required minlength="8">
+          </div>
+
+          <button type="submit" id="btnSubmitReset" class="btn-auth primary" style="width:100%;justify-content:center;padding:11px;font-size:13.5px;margin-top:8px;">
+            Set New Password Now &rarr;
+          </button>
+        </form>
+
+        <div style="text-align:center;margin-top:16px;border-top:1px solid rgba(255,255,255,0.06);padding-top:14px;">
+          <button type="button" onclick="showPasswordResetView(false)" style="background:none;border:none;color:var(--text-muted);font-size:12px;cursor:pointer;">
+            &larr; Back to Sign In
+          </button>
+        </div>
+      </div>
     </div>
   </div>
 
   <!-- ============================================================
-       AWS S3 CUSTOMER REPORTS ARCHIVE MODAL
+       REPORTS ARCHIVE MODAL (SUPER ADMIN ACCESS)
        ============================================================ -->
   <div class="modal-overlay" id="reportsModal" onclick="if(event.target===this)closeReportsModal()">
     <div class="modal-box modal-lg">
@@ -1124,17 +1181,17 @@
         <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
           <div>
             <div style="font-family:var(--font-mono);font-size:11px;font-weight:700;color:#10B981;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:4px">
-              ☁️ AWS S3 Cloud Storage (ap-south-1)
+              AWS S3 SECURE STORAGE
             </div>
-            <h3 class="modal-title">Customer PDF Reports Archive</h3>
-            <p class="modal-desc">Centralized repository for customer assessment deliverables stored securely in S3 (<code>ltm-advisory-reports-223833501993</code>).</p>
+            <h3 class="modal-title">Reports</h3>
+            <p class="modal-desc">Customer assessment deliverables archived in AWS S3 (<code>ltm-advisory-reports-223833501993</code>).</p>
           </div>
-          <button class="btn-auth" onclick="fetchAndRenderReports()" style="font-size:11.5px;padding:5px 10px;">🔄 Refresh List</button>
+          <button class="btn-auth" onclick="fetchAndRenderReports()" style="font-size:11.5px;padding:5px 10px;">Refresh</button>
         </div>
 
         <!-- Filter bar -->
         <div style="display:flex;gap:8px;margin-top:14px;flex-wrap:wrap;" id="reportsFilterBar">
-          <button class="chip active-chip" onclick="setReportsFilter('', this)">All Diagnostics</button>
+          <button class="chip active-chip" onclick="setReportsFilter('', this)">All Reports</button>
           <button class="chip" onclick="setReportsFilter('finops-value-case', this)">FinOps Value Case</button>
           <button class="chip" onclick="setReportsFilter('finops-iq', this)">FinOps IQ</button>
           <button class="chip" onclick="setReportsFilter('posture-iq', this)">Posture IQ</button>
@@ -1145,7 +1202,7 @@
       <div class="modal-scrollable" id="reportsListContainer">
         <div style="text-align:center;padding:40px 0;color:var(--text-muted);">
           <div class="spinner" style="width:28px;height:28px;border:3px solid rgba(255,255,255,0.1);border-top-color:#10B981;border-radius:50%;animation:spinRadar 0.8s linear infinite;margin:0 auto 12px;"></div>
-          Connecting to AWS S3 bucket in ap-south-1...
+          Fetching archived deliverables from AWS S3...
         </div>
       </div>
     </div>
@@ -1281,14 +1338,112 @@
       }
     }
 
+    function toast(msg, icon = '🔔') {
+      const el = document.getElementById('toastPopup');
+      const msgEl = document.getElementById('toastMsg');
+      const iconEl = document.getElementById('toastIcon');
+      if (!el) return;
+      if (msgEl) msgEl.textContent = msg;
+      if (iconEl) iconEl.textContent = icon;
+      el.classList.add('show');
+      clearTimeout(window._toastTimer);
+      window._toastTimer = setTimeout(() => {
+        el.classList.remove('show');
+      }, 3500);
+    }
+
     function openLoginModal() {
+      showPasswordResetView(false);
       document.getElementById('loginModal').style.display = 'flex';
-      document.getElementById('loginPassword').focus();
+      const passField = document.getElementById('loginPassword');
+      if (passField) passField.focus();
     }
 
     function closeLoginModal() {
       document.getElementById('loginModal').style.display = 'none';
-      document.getElementById('loginError').style.display = 'none';
+      const err = document.getElementById('loginError');
+      if (err) err.style.display = 'none';
+      showPasswordResetView(false);
+    }
+
+    function showPasswordResetView(showReset) {
+      const signInView = document.getElementById('modalViewSignIn');
+      const resetView = document.getElementById('modalViewReset');
+      const errDiv = document.getElementById('resetError');
+      const successDiv = document.getElementById('resetSuccess');
+      if (errDiv) errDiv.style.display = 'none';
+      if (successDiv) successDiv.style.display = 'none';
+
+      if (showReset) {
+        if (signInView) signInView.style.display = 'none';
+        if (resetView) resetView.style.display = 'block';
+        const newPass = document.getElementById('resetNewPass');
+        if (newPass) { newPass.value = ''; newPass.focus(); }
+        const confirmPass = document.getElementById('resetConfirmPass');
+        if (confirmPass) confirmPass.value = '';
+      } else {
+        if (resetView) resetView.style.display = 'none';
+        if (signInView) signInView.style.display = 'block';
+      }
+    }
+
+    async function handleDirectPasswordReset(e) {
+      e.preventDefault();
+      const email = document.getElementById('resetEmail').value.trim();
+      const newPass = document.getElementById('resetNewPass').value;
+      const confirmPass = document.getElementById('resetConfirmPass').value;
+      const errDiv = document.getElementById('resetError');
+      const successDiv = document.getElementById('resetSuccess');
+      const btn = document.getElementById('btnSubmitReset');
+
+      errDiv.style.display = 'none';
+      successDiv.style.display = 'none';
+
+      if (newPass !== confirmPass) {
+        errDiv.textContent = 'Passwords do not match. Please re-enter.';
+        errDiv.style.display = 'block';
+        return;
+      }
+
+      if (newPass.length < 8) {
+        errDiv.textContent = 'Password must be at least 8 characters long.';
+        errDiv.style.display = 'block';
+        return;
+      }
+
+      btn.disabled = true;
+      btn.textContent = 'Updating Password in AWS Cognito...';
+
+      try {
+        const res = await fetch("https://zvnmwxa9sf.execute-api.ap-south-1.amazonaws.com/api/auth/reset-password", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, newPassword: newPass })
+        });
+        const data = await res.json();
+        if (data.ok) {
+          successDiv.textContent = 'Password successfully updated! Redirecting to sign in...';
+          successDiv.style.display = 'block';
+          toast("Admin password updated successfully", "✅");
+          setTimeout(() => {
+            showPasswordResetView(false);
+            const loginPass = document.getElementById('loginPassword');
+            if (loginPass) {
+              loginPass.value = newPass;
+              loginPass.focus();
+            }
+          }, 1500);
+        } else {
+          errDiv.textContent = data.error || 'Failed to update password.';
+          errDiv.style.display = 'block';
+        }
+      } catch(err) {
+        errDiv.textContent = 'Network or API error: ' + err.message;
+        errDiv.style.display = 'block';
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Set New Password Now →';
+      }
     }
 
     async function handleCognitoLogin(e) {
@@ -1366,6 +1521,11 @@
     let CACHED_REPORTS = [];
 
     function openReportsModal() {
+      if (!isSuperAdmin()) {
+        openLoginModal();
+        toast("Super Admin authentication required to access customer reports.", "🔒");
+        return;
+      }
       document.getElementById('reportsModal').style.display = 'flex';
       fetchAndRenderReports(CURRENT_REPORTS_FILTER);
     }
