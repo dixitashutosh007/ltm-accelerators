@@ -3,10 +3,13 @@ frontend:
   phases:
     build:
       commands:
+        - npm ci
+        - npm run validate:costiq
         - echo "Packaging Accelerators for Amplify Hosting..."
   artifacts:
     baseDirectory: Accelerators
     files:
       - '**/*'
   cache:
-    paths: []
+    paths:
+      - node_modules/**/*
