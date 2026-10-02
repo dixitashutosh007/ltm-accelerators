@@ -2,6 +2,7 @@
 
 const path = require('path');
 const canon = require('./canon/costiq-engine-v10.cjs');
+const { orchestrate } = require('./canon/costiq-orchestrator-v10.2.cjs');
 
 const RELEASE_MANIFEST = require('./canon/RELEASE_MANIFEST.json');
 
@@ -41,4 +42,4 @@ function questions() {
   };
 }
 
-module.exports = { evaluateCostIq, metadata, questions, RELEASE_MANIFEST };
+module.exports = { evaluateCostIq, metadata, questions, orchestrate, RELEASE_MANIFEST };
