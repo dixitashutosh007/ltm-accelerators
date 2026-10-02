@@ -6,7 +6,8 @@
   "type": "module",
   "scripts": {
     "test:engine": "tsx packages/engine-core/src/test-runner.ts",
-    "amplify": "ampx"
+    "amplify": "ampx",
+    "validate:costiq": "node scripts/validate-cost-iq.cjs"
   },
   "dependencies": {
     "@aws-amplify/backend": "^1.14.0",
