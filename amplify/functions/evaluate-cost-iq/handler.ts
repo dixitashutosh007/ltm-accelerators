@@ -1,5 +1,5 @@
 import type { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
-import { evaluateCostIq, metadata, questions } from '../../../packages/engine-core/src/accelerators/cost-iq/evaluate';
+import { evaluateCostIq, metadata, questions } from '../../../packages/engine-core/src/accelerators/cost-iq/evaluate.cjs';
 
 const CORS_HEADERS = {
   'Content-Type': 'application/json',
