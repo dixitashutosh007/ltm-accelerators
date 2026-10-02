@@ -1,0 +1,540 @@
+{
+  "version": "7.1.0",
+  "economicOpportunityRule": "Addressable Spend \u00d7 Opportunity Factor \u00d7 Confidence Modifier",
+  "practicalOpportunityRule": "Economic Opportunity adjusted after feasibility/constraint assessment",
+  "numericCalibration": "pending",
+  "avoidDoubleCounting": true,
+  "findingGates": {
+    "F-001": {
+      "severity": "high",
+      "evidenceRequired": [
+        "enterprise spend ledger or equivalent",
+        "major technology category totals",
+        "owner/service mapping"
+      ],
+      "feasibilityFactors": [
+        "data availability",
+        "ownership alignment"
+      ],
+      "economicOpportunity": {
+        "status": "candidate-until-evidence",
+        "quantificationAllowed": false,
+        "note": "Do not quantify from assessment answers alone unless required evidence is supplied and validated."
+      },
+      "practicalOpportunity": {
+        "status": "blocked-until-feasibility-evidence",
+        "quantificationAllowed": false,
+        "note": "Apply feasibility constraints only after economic addressability is established."
+      },
+      "recommendationIds": [
+        "R-001"
+      ],
+      "recommendationActivation": "candidate-until-finding-and-evidence-validated"
+    },
+    "F-002": {
+      "severity": "medium",
+      "evidenceRequired": [
+        "allocation rules",
+        "service/product ownership mapping",
+        "cost-driver or unit-economics evidence"
+      ],
+      "feasibilityFactors": [
+        "ownership alignment",
+        "data quality"
+      ],
+      "economicOpportunity": {
+        "status": "candidate-until-evidence",
+        "quantificationAllowed": false,
+        "note": "Do not quantify from assessment answers alone unless required evidence is supplied and validated."
+      },
+      "practicalOpportunity": {
+        "status": "blocked-until-feasibility-evidence",
+        "quantificationAllowed": false,
+        "note": "Apply feasibility constraints only after economic addressability is established."
+      },
+      "recommendationIds": [
+        "R-001"
+      ],
+      "recommendationActivation": "candidate-until-finding-and-evidence-validated"
+    },
+    "F-003": {
+      "severity": "high",
+      "evidenceRequired": [
+        "portfolio governance decisions",
+        "spend challenge/stop history",
+        "investment/value thresholds"
+      ],
+      "feasibilityFactors": [
+        "governance mandate",
+        "business criticality"
+      ],
+      "economicOpportunity": {
+        "status": "candidate-until-evidence",
+        "quantificationAllowed": false,
+        "note": "Do not quantify from assessment answers alone unless required evidence is supplied and validated."
+      },
+      "practicalOpportunity": {
+        "status": "blocked-until-feasibility-evidence",
+        "quantificationAllowed": false,
+        "note": "Apply feasibility constraints only after economic addressability is established."
+      },
+      "recommendationIds": [
+        "R-002"
+      ],
+      "recommendationActivation": "candidate-until-finding-and-evidence-validated"
+    },
+    "F-004": {
+      "severity": "high",
+      "evidenceRequired": [
+        "benefit baselines",
+        "benefit targets",
+        "post-delivery KPI evidence"
+      ],
+      "feasibilityFactors": [
+        "benefit ownership",
+        "measurement capability"
+      ],
+      "economicOpportunity": {
+        "status": "candidate-until-evidence",
+        "quantificationAllowed": false,
+        "note": "Do not quantify from assessment answers alone unless required evidence is supplied and validated."
+      },
+      "practicalOpportunity": {
+        "status": "blocked-until-feasibility-evidence",
+        "quantificationAllowed": false,
+        "note": "Apply feasibility constraints only after economic addressability is established."
+      },
+      "recommendationIds": [
+        "R-009"
+      ],
+      "recommendationActivation": "candidate-until-finding-and-evidence-validated"
+    },
+    "F-005": {
+      "severity": "high",
+      "evidenceRequired": [
+        "cloud billing/usage data",
+        "workload-level utilization",
+        "optimization/anomaly evidence"
+      ],
+      "feasibilityFactors": [
+        "architecture dependencies",
+        "business criticality",
+        "change capacity"
+      ],
+      "economicOpportunity": {
+        "status": "candidate-until-evidence",
+        "quantificationAllowed": false,
+        "note": "Do not quantify from assessment answers alone unless required evidence is supplied and validated."
+      },
+      "practicalOpportunity": {
+        "status": "blocked-until-feasibility-evidence",
+        "quantificationAllowed": false,
+        "note": "Apply feasibility constraints only after economic addressability is established."
+      },
+      "recommendationIds": [
+        "R-003"
+      ],
+      "recommendationActivation": "candidate-until-finding-and-evidence-validated"
+    },
+    "F-006": {
+      "severity": "medium",
+      "evidenceRequired": [
+        "commitment contracts",
+        "utilization history",
+        "renewal/commitment terms"
+      ],
+      "feasibilityFactors": [
+        "contractual lock-in",
+        "renewal timing"
+      ],
+      "economicOpportunity": {
+        "status": "candidate-until-evidence",
+        "quantificationAllowed": false,
+        "note": "Do not quantify from assessment answers alone unless required evidence is supplied and validated."
+      },
+      "practicalOpportunity": {
+        "status": "blocked-until-feasibility-evidence",
+        "quantificationAllowed": false,
+        "note": "Apply feasibility constraints only after economic addressability is established."
+      },
+      "recommendationIds": [
+        "R-003"
+      ],
+      "recommendationActivation": "candidate-until-finding-and-evidence-validated"
+    },
+    "F-007": {
+      "severity": "high",
+      "evidenceRequired": [
+        "SaaS user/usage data",
+        "subscription inventory",
+        "business-owner validation"
+      ],
+      "feasibilityFactors": [
+        "business ownership",
+        "contractual lock-in"
+      ],
+      "economicOpportunity": {
+        "status": "candidate-until-evidence",
+        "quantificationAllowed": false,
+        "note": "Do not quantify from assessment answers alone unless required evidence is supplied and validated."
+      },
+      "practicalOpportunity": {
+        "status": "blocked-until-feasibility-evidence",
+        "quantificationAllowed": false,
+        "note": "Apply feasibility constraints only after economic addressability is established."
+      },
+      "recommendationIds": [
+        "R-004"
+      ],
+      "recommendationActivation": "candidate-until-finding-and-evidence-validated"
+    },
+    "F-008": {
+      "severity": "high",
+      "evidenceRequired": [
+        "license entitlements",
+        "deployment/usage reconciliation",
+        "renewal/audit exposure"
+      ],
+      "feasibilityFactors": [
+        "license compliance",
+        "contractual lock-in"
+      ],
+      "economicOpportunity": {
+        "status": "candidate-until-evidence",
+        "quantificationAllowed": false,
+        "note": "Do not quantify from assessment answers alone unless required evidence is supplied and validated."
+      },
+      "practicalOpportunity": {
+        "status": "blocked-until-feasibility-evidence",
+        "quantificationAllowed": false,
+        "note": "Apply feasibility constraints only after economic addressability is established."
+      },
+      "recommendationIds": [
+        "R-004"
+      ],
+      "recommendationActivation": "candidate-until-finding-and-evidence-validated"
+    },
+    "F-009": {
+      "severity": "medium",
+      "evidenceRequired": [
+        "asset inventory",
+        "utilization/capacity data",
+        "refresh/lifecycle plan"
+      ],
+      "feasibilityFactors": [
+        "business criticality",
+        "technical dependencies",
+        "change capacity"
+      ],
+      "economicOpportunity": {
+        "status": "candidate-until-evidence",
+        "quantificationAllowed": false,
+        "note": "Do not quantify from assessment answers alone unless required evidence is supplied and validated."
+      },
+      "practicalOpportunity": {
+        "status": "blocked-until-feasibility-evidence",
+        "quantificationAllowed": false,
+        "note": "Apply feasibility constraints only after economic addressability is established."
+      },
+      "recommendationIds": [
+        "R-005"
+      ],
+      "recommendationActivation": "candidate-until-finding-and-evidence-validated"
+    },
+    "F-010": {
+      "severity": "medium",
+      "evidenceRequired": [
+        "demand/capacity data",
+        "skills inventory",
+        "sourcing/workforce cost data"
+      ],
+      "feasibilityFactors": [
+        "workforce/skills constraints",
+        "change capacity"
+      ],
+      "economicOpportunity": {
+        "status": "candidate-until-evidence",
+        "quantificationAllowed": false,
+        "note": "Do not quantify from assessment answers alone unless required evidence is supplied and validated."
+      },
+      "practicalOpportunity": {
+        "status": "blocked-until-feasibility-evidence",
+        "quantificationAllowed": false,
+        "note": "Apply feasibility constraints only after economic addressability is established."
+      },
+      "recommendationIds": [
+        "R-006"
+      ],
+      "recommendationActivation": "candidate-until-finding-and-evidence-validated"
+    },
+    "F-011": {
+      "severity": "high",
+      "evidenceRequired": [
+        "contracts",
+        "vendor spend",
+        "commercial terms and benchmarks"
+      ],
+      "feasibilityFactors": [
+        "contractual lock-in",
+        "supplier dependencies",
+        "procurement capacity"
+      ],
+      "economicOpportunity": {
+        "status": "candidate-until-evidence",
+        "quantificationAllowed": false,
+        "note": "Do not quantify from assessment answers alone unless required evidence is supplied and validated."
+      },
+      "practicalOpportunity": {
+        "status": "blocked-until-feasibility-evidence",
+        "quantificationAllowed": false,
+        "note": "Apply feasibility constraints only after economic addressability is established."
+      },
+      "recommendationIds": [
+        "R-007"
+      ],
+      "recommendationActivation": "candidate-until-finding-and-evidence-validated"
+    },
+    "F-012": {
+      "severity": "high",
+      "evidenceRequired": [
+        "architecture/dependency evidence",
+        "technical-debt inventory",
+        "run/change effort evidence"
+      ],
+      "feasibilityFactors": [
+        "technical dependencies",
+        "change capacity",
+        "skills constraints"
+      ],
+      "economicOpportunity": {
+        "status": "candidate-until-evidence",
+        "quantificationAllowed": false,
+        "note": "Do not quantify from assessment answers alone unless required evidence is supplied and validated."
+      },
+      "practicalOpportunity": {
+        "status": "blocked-until-feasibility-evidence",
+        "quantificationAllowed": false,
+        "note": "Apply feasibility constraints only after economic addressability is established."
+      },
+      "recommendationIds": [
+        "R-008"
+      ],
+      "recommendationActivation": "candidate-until-finding-and-evidence-validated"
+    },
+    "F-013": {
+      "severity": "high",
+      "evidenceRequired": [
+        "application portfolio",
+        "usage/business value",
+        "run/support cost and duplication evidence"
+      ],
+      "feasibilityFactors": [
+        "business criticality",
+        "dependencies",
+        "change capacity"
+      ],
+      "economicOpportunity": {
+        "status": "candidate-until-evidence",
+        "quantificationAllowed": false,
+        "note": "Do not quantify from assessment answers alone unless required evidence is supplied and validated."
+      },
+      "practicalOpportunity": {
+        "status": "blocked-until-feasibility-evidence",
+        "quantificationAllowed": false,
+        "note": "Apply feasibility constraints only after economic addressability is established."
+      },
+      "recommendationIds": [
+        "R-008"
+      ],
+      "recommendationActivation": "candidate-until-finding-and-evidence-validated"
+    },
+    "F-014": {
+      "severity": "medium",
+      "evidenceRequired": [
+        "business stakeholder evidence",
+        "service/product KPIs",
+        "satisfaction trend"
+      ],
+      "feasibilityFactors": [
+        "stakeholder alignment"
+      ],
+      "economicOpportunity": {
+        "status": "candidate-until-evidence",
+        "quantificationAllowed": false,
+        "note": "Do not quantify from assessment answers alone unless required evidence is supplied and validated."
+      },
+      "practicalOpportunity": {
+        "status": "blocked-until-feasibility-evidence",
+        "quantificationAllowed": false,
+        "note": "Apply feasibility constraints only after economic addressability is established."
+      },
+      "recommendationIds": [
+        "R-009"
+      ],
+      "recommendationActivation": "candidate-until-finding-and-evidence-validated"
+    },
+    "F-015": {
+      "severity": "high",
+      "evidenceRequired": [
+        "contractual commitments",
+        "funding model",
+        "dependency/criticality evidence"
+      ],
+      "feasibilityFactors": [
+        "contractual lock-in",
+        "funding rigidity",
+        "business criticality"
+      ],
+      "economicOpportunity": {
+        "status": "candidate-until-evidence",
+        "quantificationAllowed": false,
+        "note": "Do not quantify from assessment answers alone unless required evidence is supplied and validated."
+      },
+      "practicalOpportunity": {
+        "status": "blocked-until-feasibility-evidence",
+        "quantificationAllowed": false,
+        "note": "Apply feasibility constraints only after economic addressability is established."
+      },
+      "recommendationIds": [
+        "R-010"
+      ],
+      "recommendationActivation": "candidate-until-finding-and-evidence-validated"
+    },
+    "F-016": {
+      "severity": "medium",
+      "evidenceRequired": [
+        "process inventory",
+        "manual effort/time evidence",
+        "automation candidates"
+      ],
+      "feasibilityFactors": [
+        "change capacity",
+        "skills constraints",
+        "process dependencies"
+      ],
+      "economicOpportunity": {
+        "status": "candidate-until-evidence",
+        "quantificationAllowed": false,
+        "note": "Do not quantify from assessment answers alone unless required evidence is supplied and validated."
+      },
+      "practicalOpportunity": {
+        "status": "blocked-until-feasibility-evidence",
+        "quantificationAllowed": false,
+        "note": "Apply feasibility constraints only after economic addressability is established."
+      },
+      "recommendationIds": [
+        "R-006"
+      ],
+      "recommendationActivation": "candidate-until-finding-and-evidence-validated"
+    },
+    "F-017": {
+      "severity": "high",
+      "evidenceRequired": [
+        "business-led spend inventory",
+        "ownership/governance model",
+        "procurement/billing evidence"
+      ],
+      "feasibilityFactors": [
+        "governance mandate",
+        "business ownership"
+      ],
+      "economicOpportunity": {
+        "status": "candidate-until-evidence",
+        "quantificationAllowed": false,
+        "note": "Do not quantify from assessment answers alone unless required evidence is supplied and validated."
+      },
+      "practicalOpportunity": {
+        "status": "blocked-until-feasibility-evidence",
+        "quantificationAllowed": false,
+        "note": "Apply feasibility constraints only after economic addressability is established."
+      },
+      "recommendationIds": [
+        "R-002",
+        "R-001"
+      ],
+      "recommendationActivation": "candidate-until-finding-and-evidence-validated"
+    },
+    "F-018": {
+      "severity": "high",
+      "evidenceRequired": [
+        "transformation business cases",
+        "outcome baselines/targets",
+        "post-delivery benefits evidence"
+      ],
+      "feasibilityFactors": [
+        "business ownership",
+        "transformation dependencies"
+      ],
+      "economicOpportunity": {
+        "status": "candidate-until-evidence",
+        "quantificationAllowed": false,
+        "note": "Do not quantify from assessment answers alone unless required evidence is supplied and validated."
+      },
+      "practicalOpportunity": {
+        "status": "blocked-until-feasibility-evidence",
+        "quantificationAllowed": false,
+        "note": "Apply feasibility constraints only after economic addressability is established."
+      },
+      "recommendationIds": [
+        "R-009"
+      ],
+      "recommendationActivation": "candidate-until-finding-and-evidence-validated"
+    },
+    "F-019": {
+      "severity": "medium",
+      "evidenceRequired": [
+        "AI workload/use-case cost data",
+        "unit economics",
+        "business outcome evidence"
+      ],
+      "feasibilityFactors": [
+        "business value uncertainty",
+        "technology dependencies",
+        "change capacity"
+      ],
+      "economicOpportunity": {
+        "status": "candidate-until-evidence",
+        "quantificationAllowed": false,
+        "note": "Do not quantify from assessment answers alone unless required evidence is supplied and validated."
+      },
+      "practicalOpportunity": {
+        "status": "blocked-until-feasibility-evidence",
+        "quantificationAllowed": false,
+        "note": "Apply feasibility constraints only after economic addressability is established."
+      },
+      "recommendationIds": [
+        "R-009",
+        "R-010"
+      ],
+      "recommendationActivation": "candidate-until-finding-and-evidence-validated"
+    },
+    "F-020": {
+      "severity": "high",
+      "evidenceRequired": [
+        "M&A application/platform inventory",
+        "contract overlap",
+        "team/capability duplication evidence"
+      ],
+      "feasibilityFactors": [
+        "business criticality",
+        "dependencies",
+        "integration sequencing"
+      ],
+      "economicOpportunity": {
+        "status": "candidate-until-evidence",
+        "quantificationAllowed": false,
+        "note": "Do not quantify from assessment answers alone unless required evidence is supplied and validated."
+      },
+      "practicalOpportunity": {
+        "status": "blocked-until-feasibility-evidence",
+        "quantificationAllowed": false,
+        "note": "Apply feasibility constraints only after economic addressability is established."
+      },
+      "recommendationIds": [
+        "R-008",
+        "R-007"
+      ],
+      "recommendationActivation": "candidate-until-finding-and-evidence-validated"
+    }
+  }
+}
