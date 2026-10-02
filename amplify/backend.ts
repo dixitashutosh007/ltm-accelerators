@@ -46,7 +46,7 @@ httpApi.addRoutes({
 });
 httpApi.addRoutes({
   path: '/api/evaluate/cost-iq/{proxy+}',
-  methods: [HttpMethod.GET, HttpMethod.OPTIONS],
+  methods: [HttpMethod.GET, HttpMethod.POST, HttpMethod.OPTIONS],
   integration: integrations.costIq
 });
 
