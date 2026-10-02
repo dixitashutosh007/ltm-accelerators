@@ -1,13 +1,18 @@
 'use strict';
 
-const path = require('path');
 const canon = require('./canon/costiq-engine-v10.cjs');
-const { orchestrate } = require('./canon/costiq-orchestrator-v10.2.cjs');
-
+const orchestrator = require('./canon/costiq-orchestrator-v10.2.cjs');
+const config = require('./canon/config/master-v6.6.json');
+const overlay = require('./canon/config/finops-overlay-v7.1.0.json');
+const calibration = require('./canon/config/finding-activation-calibration-v7.1.0.json');
+const opportunityGates = require('./canon/config/opportunity-recommendation-gates-v7.1.0.json');
 const RELEASE_MANIFEST = require('./canon/RELEASE_MANIFEST.json');
 
 function evaluateCostIq({ answers = {}, scope = null, capabilityScores = {}, evidence = {}, feasibilityEvidence = {}, options = {} } = {}) {
-  return canon.evaluate(null, {
+  return canon.evaluate(config, {
+    overlay,
+    calibration,
+    opportunityGates,
     answers,
     scope: scope ? { ...scope, capabilityScores } : null,
     capabilityScores,
@@ -20,26 +25,30 @@ function metadata() {
     product: 'Cost IQ',
     release: RELEASE_MANIFEST,
     baseline: {
-      questions: canon.config.questions.length + (canon.overlay.supplementalQuestions || []).length,
-      dimensions: canon.config.dimensions.length,
-      findings: canon.config.findings.length,
-      recommendations: canon.config.recommendations.length,
-      rules: canon.config.rules?.length || 0
+      questions: config.questions.length + (overlay.supplementalQuestions || []).length,
+      dimensions: config.dimensions.length,
+      findings: config.findings.length,
+      recommendations: config.recommendations.length,
+      rules: config.rules?.length || 0
     },
     finops: {
-      version: canon.overlay.version,
-      capabilities: Object.keys(canon.overlay.capabilityMappings || {}).length,
-      domains: (canon.overlay.frameworkDomains || []).length
+      version: overlay.version,
+      capabilities: Object.keys(overlay.capabilityMappings || {}).length,
+      domains: (overlay.frameworkDomains || []).length
     }
   };
 }
 
 function questions() {
   return {
-    manifest: canon.config.manifest,
-    questions: [...canon.config.questions, ...(canon.overlay.supplementalQuestions || [])],
-    dimensions: canon.config.dimensions
+    manifest: config.manifest,
+    questions: [...config.questions, ...(overlay.supplementalQuestions || [])],
+    dimensions: config.dimensions
   };
+}
+
+function orchestrate(args = {}) {
+  return orchestrator.orchestrate({ overlay, ...args });
 }
 
 module.exports = { evaluateCostIq, metadata, questions, orchestrate, RELEASE_MANIFEST };
