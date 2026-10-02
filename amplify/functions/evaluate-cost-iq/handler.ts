@@ -36,7 +36,7 @@ export const handler = async (event: APIGatewayProxyEventV2): Promise<APIGateway
       };
     }
 
-    const result = evaluateCostIq({
+    const result = await evaluateCostIq({
       answers: body.answers,
       scope: body.scope || null,
       capabilityScores: body.capabilityScores || {},
