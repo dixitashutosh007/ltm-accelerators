@@ -1,0 +1,255 @@
+{
+  "version": "7.1.1",
+  "source": "v6.6 deterministic scoring maps",
+  "rule": "Only explicitly calibrated scored questions can activate an existing finding; signal/hypothesis/tradeoff/constraint questions remain evidence signals unless separately configured.",
+  "findingActivation": {
+    "F-001": [
+      {
+        "questionId": "CORE-12",
+        "type": "option",
+        "triggerOptions": [
+          "D",
+          "E"
+        ]
+      },
+      {
+        "questionId": "CORE-15",
+        "type": "option",
+        "triggerOptions": [
+          "ANNUAL",
+          "ADHOC",
+          "NONE"
+        ]
+      }
+    ],
+    "F-002": [
+      {
+        "questionId": "CORE-13",
+        "type": "option",
+        "triggerOptions": [
+          "VENDORS",
+          "PROJECTS",
+          "GL"
+        ]
+      },
+      {
+        "questionId": "CORE-17",
+        "type": "numeric",
+        "operator": "lt",
+        "value": 50
+      }
+    ],
+    "F-003": [
+      {
+        "questionId": "CORE-18",
+        "type": "option",
+        "triggerOptions": [
+          "OWNER",
+          "NONE"
+        ]
+      },
+      {
+        "questionId": "CORE-22",
+        "type": "option",
+        "triggerOptions": [
+          "PROBLEM",
+          "RARE"
+        ]
+      }
+    ],
+    "F-004": [
+      {
+        "questionId": "CORE-20",
+        "type": "option",
+        "triggerOptions": [
+          "USAGE",
+          "NONE"
+        ]
+      }
+    ],
+    "F-018": [
+      {
+        "questionId": "CORE-20",
+        "type": "option",
+        "triggerOptions": [
+          "USAGE",
+          "NONE"
+        ]
+      },
+      {
+        "questionId": "CORE-44",
+        "type": "option",
+        "triggerOptions": [
+          "INCONSISTENT",
+          "NOT_MEASURED"
+        ]
+      }
+    ],
+    "F-015": [
+      {
+        "questionId": "CORE-21",
+        "type": "option",
+        "triggerOptions": [
+          "TOWER",
+          "FIXED"
+        ]
+      }
+    ],
+    "F-005": [
+      {
+        "questionId": "CORE-24",
+        "type": "option",
+        "triggerOptions": [
+          "D",
+          "E",
+          "F"
+        ]
+      }
+    ],
+    "F-007": [
+      {
+        "questionId": "CORE-26",
+        "type": "option",
+        "triggerOptions": [
+          "SELECTIVE",
+          "COUNT",
+          "UNKNOWN"
+        ]
+      },
+      {
+        "questionId": "CORE-27",
+        "type": "option",
+        "triggerOptions": [
+          "D",
+          "E",
+          "F"
+        ]
+      }
+    ],
+    "F-013": [
+      {
+        "questionId": "CORE-27",
+        "type": "option",
+        "triggerOptions": [
+          "D",
+          "E",
+          "F"
+        ]
+      },
+      {
+        "questionId": "CORE-41",
+        "type": "option",
+        "triggerOptions": [
+          "VISIBLE_BUT_HARD",
+          "AD_HOC"
+        ]
+      }
+    ],
+    "F-006": [
+      {
+        "questionId": "CORE-28",
+        "type": "option",
+        "triggerOptions": [
+          "D",
+          "E",
+          "F"
+        ]
+      }
+    ],
+    "F-011": [
+      {
+        "questionId": "CORE-28",
+        "type": "option",
+        "triggerOptions": [
+          "D",
+          "E",
+          "F"
+        ]
+      },
+      {
+        "questionId": "CORE-37",
+        "type": "option",
+        "triggerOptions": [
+          "RENEWAL_LED",
+          "LIMITED"
+        ]
+      }
+    ],
+    "F-008": [
+      {
+        "questionId": "CORE-30",
+        "type": "option",
+        "triggerOptions": [
+          "D",
+          "E",
+          "F"
+        ]
+      }
+    ],
+    "F-009": [
+      {
+        "questionId": "CORE-33",
+        "type": "option",
+        "triggerOptions": [
+          "D",
+          "E",
+          "F"
+        ]
+      }
+    ],
+    "F-016": [
+      {
+        "questionId": "CORE-34",
+        "type": "numeric",
+        "operator": "gt",
+        "value": 50
+      }
+    ],
+    "F-010": [
+      {
+        "questionId": "CORE-35",
+        "type": "option",
+        "triggerOptions": [
+          "MISMATCH",
+          "NOT_MEASURED"
+        ]
+      }
+    ],
+    "F-012": [
+      {
+        "questionId": "CORE-40",
+        "type": "scale",
+        "triggerAnswers": [
+          4,
+          5
+        ]
+      }
+    ],
+    "F-014": [
+      {
+        "questionId": "CORE-43",
+        "type": "scale",
+        "triggerAnswers": [
+          1,
+          2
+        ]
+      }
+    ],
+    "F-020": [
+      {
+        "questionId": "ADP-49",
+        "type": "option",
+        "triggerOptions": [
+          "LATE",
+          "NONE"
+        ]
+      },
+      {
+        "questionId": "ADP-50",
+        "type": "numeric",
+        "operator": "gt",
+        "value": 20
+      }
+    ]
+  }
+}
