@@ -23,7 +23,7 @@ input[type=range]{width:100%}
 <header><div class="wrap"><strong style="font-size:20px">LTM ADVISORY · Cost IQ</strong><div id="meta" class="muted" style="margin-top:5px">Loading production configuration…</div></div></header>
 <div class="wrap"><div id="app"></div></div>
 <script>
-const API = window.COST_IQ_API || 'https://ltm-accelerators-api.execute-api.ap-south-1.amazonaws.com';
+const API = window.COST_IQ_API || '';
 let questions=[], answers={}, pos=0, meta=null, scope={enabled:false};
 
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
