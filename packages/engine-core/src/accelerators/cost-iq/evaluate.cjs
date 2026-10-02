@@ -4,7 +4,7 @@ const canon = require('./canon/costiq-engine-v10.cjs');
 const orchestrator = require('./canon/costiq-orchestrator-v10.2.cjs');
 const config = require('./canon/config/master-v6.6.json');
 const overlay = require('./canon/config/finops-overlay-v7.1.0.json');
-const calibration = require('./canon/config/finding-activation-calibration-v7.1.0.json');
+const calibration = require('./canon/config/finding-activation-calibration-v7.1.1.json');
 const opportunityGates = require('./canon/config/opportunity-recommendation-gates-v7.1.0.json');
 const RELEASE_MANIFEST = require('./canon/RELEASE_MANIFEST.json');
 
