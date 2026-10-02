@@ -5,6 +5,7 @@ frontend:
       commands:
         - npm ci
         - npm run validate:costiq
+        - npm run build:costiq-config
         - echo "Packaging Accelerators for Amplify Hosting..."
   artifacts:
     baseDirectory: Accelerators
