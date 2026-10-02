@@ -20,7 +20,7 @@ function metadata() {
     product: 'Cost IQ',
     release: RELEASE_MANIFEST,
     baseline: {
-      questions: canon.config.questions.length,
+      questions: canon.config.questions.length + (canon.overlay.supplementalQuestions || []).length,
       dimensions: canon.config.dimensions.length,
       findings: canon.config.findings.length,
       recommendations: canon.config.recommendations.length,
