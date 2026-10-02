@@ -1,0 +1,38 @@
+{
+  "schema": "costiq-amplify-release/1.0",
+  "product": "Cost IQ",
+  "releaseId": "COSTIQ-0.7.8-DRAFT",
+  "status": "ENGINEERING_INTEGRATION_BASELINE",
+  "source": {
+    "repository": "dixitashutosh007/ltm-core",
+    "branch": "costiq-v10-phase-e",
+    "commit": "9497614d5b2e240684484155eeedc0ea41560faf"
+  },
+  "methodology": {
+    "masterVersion": "6.6.0",
+    "finopsOverlayVersion": "7.1.0",
+    "findingCalibrationVersion": "7.1.1",
+    "opportunityGateVersion": "7.1.0",
+    "routingContractVersion": "10.1.0"
+  },
+  "baseline": {
+    "questions": 105,
+    "dimensions": 16,
+    "findings": 20,
+    "recommendations": 10,
+    "finopsCapabilities": 22,
+    "finopsDomains": 4
+  },
+  "deployment": {
+    "platform": "AWS Amplify Gen 2",
+    "application": "Existing LTM Accelerators shared Amplify App",
+    "region": "ap-south-1",
+    "api": "Shared API Gateway + Lambda pattern"
+  },
+  "controls": {
+    "methodologyChangesInBundle": false,
+    "externalRuntimeDependency": false,
+    "filesystemDependencyOnCanonicalRepo": false,
+    "failClosedBeforeApprovedBundle": true
+  }
+}
