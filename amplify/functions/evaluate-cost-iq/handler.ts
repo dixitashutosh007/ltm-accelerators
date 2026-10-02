@@ -1,5 +1,5 @@
 import type { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
-import { evaluateCostIq, metadata, questions } from '../../../packages/engine-core/src/accelerators/cost-iq/evaluate.cjs';
+import { evaluateCostIq, metadata, questions, orchestrate } from '../../../packages/engine-core/src/accelerators/cost-iq/evaluate.cjs';
 
 const CORS_HEADERS = {
   'Content-Type': 'application/json',
@@ -36,6 +36,9 @@ export const handler = async (event: APIGatewayProxyEventV2): Promise<APIGateway
     }
     if (!body.answers || typeof body.answers !== 'object' || Array.isArray(body.answers)) {
       return response(400, { error: 'answers_object_required', requestId: id }, id);
+    }
+    if (path.endsWith('/orchestrate')) {
+      return response(200, orchestrate({ answers: body.answers, options: body.options || {} }), id);
     }
 
     const result = await evaluateCostIq({
