@@ -3,7 +3,7 @@ const fs=require('fs');
 const path=require('path');
 
 const root=path.resolve(__dirname,'../packages/engine-core/src/accelerators/cost-iq');
-const files=['canon/costiq-engine-v10.cjs','canon/config/master-v6.6.json','canon/config/finops-overlay-v7.1.0.json','canon/config/finding-activation-calibration-v7.1.0.json','canon/config/opportunity-recommendation-gates-v7.1.0.json','canon/RELEASE_MANIFEST.json','evaluate.cjs'];
+const files=['canon/costiq-engine-v10.cjs','canon/config/master-v6.6.json','canon/config/finops-overlay-v7.1.0.json','canon/config/finding-activation-calibration-v7.1.1.json','canon/config/opportunity-recommendation-gates-v7.1.0.json','canon/RELEASE_MANIFEST.json','evaluate.cjs'];
 for(const f of files){if(!fs.existsSync(path.join(root,f)))throw new Error('Missing Cost IQ release artifact: '+f);}
 const adapter=require(path.join(root,'evaluate.cjs'));
 const m=adapter.metadata();
