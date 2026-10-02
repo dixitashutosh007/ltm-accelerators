@@ -10,9 +10,7 @@ import { evaluateCostIqFunction } from './functions/evaluate-cost-iq/resource';
 import { HttpApi, HttpMethod } from 'aws-cdk-lib/aws-apigatewayv2';
 import { HttpLambdaIntegration } from 'aws-cdk-lib/aws-apigatewayv2-integrations';
 
-/**
- * AWS Amplify Gen 2 Backend Definition (Region: ap-south-1)
- */
+/** AWS Amplify Gen 2 Backend Definition (Region: ap-south-1) */
 export const backend = defineBackend({
   auth,
   data,
@@ -24,82 +22,23 @@ export const backend = defineBackend({
   evaluateCostIqFunction
 });
 
-// Create custom API Gateway Stack on top of Amplify resources
 const apiStack = backend.createStack('AcceleratorsApiStack');
+const httpApi = new HttpApi(apiStack, 'AcceleratorsHttpApi', { apiName: 'ltm-accelerators-api' });
 
-const httpApi = new HttpApi(apiStack, 'AcceleratorsHttpApi', {
-  apiName: 'ltm-accelerators-api'
-});
+const integrations = {
+  finops: new HttpLambdaIntegration('EvaluateFinOpsIntegration', backend.evaluateFinOpsFunction.resources.lambda),
+  finopsIq: new HttpLambdaIntegration('EvaluateFinOpsIqIntegration', backend.evaluateFinOpsIqFunction.resources.lambda),
+  posture: new HttpLambdaIntegration('EvaluatePostureIqIntegration', backend.evaluatePostureIqFunction.resources.lambda),
+  sovereign: new HttpLambdaIntegration('EvaluateSovereignIqIntegration', backend.evaluateSovereignIqFunction.resources.lambda),
+  cloud: new HttpLambdaIntegration('EvaluateCloudIqIntegration', backend.evaluateCloudIqFunction.resources.lambda),
+  costIq: new HttpLambdaIntegration('EvaluateCostIqIntegration', backend.evaluateCostIqFunction.resources.lambda)
+};
 
-const evaluateIntegration = new HttpLambdaIntegration(
-  'EvaluateFinOpsIntegration',
-  backend.evaluateFinOpsFunction.resources.lambda
-);
+httpApi.addRoutes({ path: '/api/evaluate/finops-value-case', methods: [HttpMethod.POST, HttpMethod.OPTIONS], integration: integrations.finops });
+httpApi.addRoutes({ path: '/api/evaluate/finops-iq', methods: [HttpMethod.POST, HttpMethod.OPTIONS], integration: integrations.finopsIq });
+httpApi.addRoutes({ path: '/api/evaluate/posture-iq', methods: [HttpMethod.POST, HttpMethod.OPTIONS], integration: integrations.posture });
+httpApi.addRoutes({ path: '/api/evaluate/sovereign-iq', methods: [HttpMethod.POST, HttpMethod.OPTIONS], integration: integrations.sovereign });
+httpApi.addRoutes({ path: '/api/evaluate/cloud-iq', methods: [HttpMethod.POST, HttpMethod.OPTIONS], integration: integrations.cloud });
+httpApi.addRoutes({ path: '/api/evaluate/cost-iq', methods: [HttpMethod.POST, HttpMethod.OPTIONS], integration: integrations.costIq });
 
-const evaluateIqIntegration = new HttpLambdaIntegration(
-  'EvaluateFinOpsIqIntegration',
-  backend.evaluateFinOpsIqFunction.resources.lambda
-);
-
-const evaluatePostureIntegration = new HttpLambdaIntegration(
-  'EvaluatePostureIqIntegration',
-  backend.evaluatePostureIqFunction.resources.lambda
-);
-
-const evaluateSovereignIntegration = new HttpLambdaIntegration(
-  'EvaluateSovereignIqIntegration',
-  backend.evaluateSovereignIqFunction.resources.lambda
-);
-
-const evaluateCloudIntegration = new HttpLambdaIntegration(
-  'EvaluateCloudIqIntegration',
-  backend.evaluateCloudIqFunction.resources.lambda
-);
-
-const evaluateCostIqIntegration = new HttpLambdaIntegration(
-  'EvaluateCostIqIntegration',
-  backend.evaluateCostIqFunction.resources.lambda
-);
-
-httpApi.addRoutes({
-  path: '/api/evaluate/finops-value-case',
-  methods: [HttpMethod.POST, HttpMethod.OPTIONS],
-  integration: evaluateIntegration
-});
-
-httpApi.addRoutes({
-  path: '/api/evaluate/finops-iq',
-  methods: [HttpMethod.POST, HttpMethod.OPTIONS],
-  integration: evaluateIqIntegration
-});
-
-httpApi.addRoutes({
-  path: '/api/evaluate/posture-iq',
-  methods: [HttpMethod.POST, HttpMethod.OPTIONS],
-  integration: evaluatePostureIntegration
-});
-
-httpApi.addRoutes({
-  path: '/api/evaluate/sovereign-iq',
-  methods: [HttpMethod.POST, HttpMethod.OPTIONS],
-  integration: evaluateSovereignIntegration
-});
-
-httpApi.addRoutes({
-  path: '/api/evaluate/cloud-iq',
-  methods: [HttpMethod.POST, HttpMethod.OPTIONS],
-  integration: evaluateCloudIntegration
-});
-
-httpApi.addRoutes({
-  path: '/api/evaluate/cost-iq',
-  methods: [HttpMethod.POST, HttpMethod.OPTIONS],
-  integration: evaluateCostIqIntegration
-});
-
-// Expose API URL in outputs
-backend.addOutput({
-  custom: {
-    apiUrl: httpApi.url
-  }
-});
+backend.addOutput({ custom: { apiUrl: httpApi.url } });
