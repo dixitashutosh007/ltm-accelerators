@@ -1,0 +1,22 @@
+name: Cost IQ Integration Validation
+
+on:
+  push:
+    branches:
+      - costiq-v10-phase-e-integration
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  validate-costiq:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm run validate:costiq
+      - run: npm run build:costiq-config
