@@ -1,8 +1,4 @@
 import type { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
-
-// Cost IQ v10 production evaluator. Methodology/configuration is kept in the
-// canonical ltm-core repository and supplied to this function as generated
-// artifacts before deployment.
 import { evaluateCostIq } from '../../../packages/engine-core/src/accelerators/cost-iq/evaluate';
 
 const CORS_HEADERS = {
@@ -12,12 +8,12 @@ const CORS_HEADERS = {
   'Access-Control-Allow-Methods': 'OPTIONS,POST'
 };
 
-function requestId(event: APIGatewayProxyEventV2): string {
+function makeRequestId(event: APIGatewayProxyEventV2): string {
   return event.requestContext?.requestId || crypto.randomUUID();
 }
 
 export const handler = async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> => {
-  const id = requestId(event);
+  const id = makeRequestId(event);
   const method = event.requestContext?.http?.method || (event as any).httpMethod;
 
   if (method === 'OPTIONS') {
