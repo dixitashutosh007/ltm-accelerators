@@ -10,7 +10,6 @@ import { evaluateCostIqFunction } from './functions/evaluate-cost-iq/resource';
 import { HttpApi, HttpMethod } from 'aws-cdk-lib/aws-apigatewayv2';
 import { HttpLambdaIntegration } from 'aws-cdk-lib/aws-apigatewayv2-integrations';
 
-/** AWS Amplify Gen 2 Backend Definition (Region: ap-south-1) */
 export const backend = defineBackend({
   auth,
   data,
@@ -39,6 +38,16 @@ httpApi.addRoutes({ path: '/api/evaluate/finops-iq', methods: [HttpMethod.POST, 
 httpApi.addRoutes({ path: '/api/evaluate/posture-iq', methods: [HttpMethod.POST, HttpMethod.OPTIONS], integration: integrations.posture });
 httpApi.addRoutes({ path: '/api/evaluate/sovereign-iq', methods: [HttpMethod.POST, HttpMethod.OPTIONS], integration: integrations.sovereign });
 httpApi.addRoutes({ path: '/api/evaluate/cloud-iq', methods: [HttpMethod.POST, HttpMethod.OPTIONS], integration: integrations.cloud });
-httpApi.addRoutes({ path: '/api/evaluate/cost-iq', methods: [HttpMethod.POST, HttpMethod.OPTIONS], integration: integrations.costIq });
+
+httpApi.addRoutes({
+  path: '/api/evaluate/cost-iq',
+  methods: [HttpMethod.POST, HttpMethod.OPTIONS],
+  integration: integrations.costIq
+});
+httpApi.addRoutes({
+  path: '/api/evaluate/cost-iq/{proxy+}',
+  methods: [HttpMethod.GET, HttpMethod.OPTIONS],
+  integration: integrations.costIq
+});
 
 backend.addOutput({ custom: { apiUrl: httpApi.url } });
