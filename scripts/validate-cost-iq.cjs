@@ -9,7 +9,7 @@ const adapter=require(path.join(root,'evaluate.cjs'));
 const m=adapter.metadata();
 const q=adapter.questions();
 const checks=[
- ['questions',q.questions.length===117],
+ ['questions',q.questions.length===118],
  ['dimensions',q.dimensions.length===16],
  ['findings',m.baseline.findings===20],
  ['recommendations',m.baseline.recommendations===10],
