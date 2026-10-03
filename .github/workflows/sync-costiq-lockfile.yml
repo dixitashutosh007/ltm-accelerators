@@ -33,9 +33,6 @@ jobs:
       - name: Validate Cost IQ
         run: npm run validate:costiq
 
-      - name: Build Cost IQ runtime config
-        run: npm run build:costiq-config
-
       - name: Check lockfile changes
         id: changes
         run: |
