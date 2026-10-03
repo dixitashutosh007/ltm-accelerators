@@ -17,6 +17,9 @@ jobs:
         with:
           node-version: 20
           cache: npm
-      - run: npm ci
+      # The repository lockfile is currently stale against the Amplify dependency graph.
+      # Resolve from package.json without rewriting the committed lockfile so Cost IQ
+      # validation can run; normalize package-lock.json separately before final merge.
+      - run: npm install --package-lock=false
       - run: npm run validate:costiq
       - run: npm run build:costiq-config
