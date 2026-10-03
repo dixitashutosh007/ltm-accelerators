@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Cost IQ v10 — LTM</title>
+<style>
+:root{--bg:#0C1014;--card:#151C24;--line:#24303E;--text:#F3F4F6;--muted:#9CA3AF;--coral:#FF5E4F;--green:#34D399;--amber:#FBBF24}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:Arial,sans-serif;line-height:1.5}
+header{padding:22px 28px;border-bottom:1px solid var(--line);background:#12161A;position:sticky;top:0;z-index:10}
+.wrap{max-width:1080px;margin:auto;padding:24px}.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:24px;margin-bottom:18px}
+.muted{color:var(--muted);font-size:13px}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px}
+.score{font-size:34px;font-weight:800;margin-top:5px}.bar{height:7px;background:#27313D;border-radius:10px;overflow:hidden;margin:12px 0}.fill{height:100%;background:var(--coral)}
+.opt{display:block;width:100%;text-align:left;background:#111821;color:var(--text);border:1px solid var(--line);border-radius:10px;padding:13px;margin:8px 0;cursor:pointer}
+.opt.selected{border-color:var(--coral);background:rgba(255,94,79,.12)}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}button{border:1px solid var(--line);background:#1A2129;color:var(--text);border-radius:9px;padding:10px 14px;font-weight:700;cursor:pointer}.primary{background:var(--coral);border-color:var(--coral)}
+.pill{display:inline-block;padding:5px 9px;border-radius:20px;background:#1E2832;color:#C7D2DE;font-size:12px}.ok{color:var(--green)}.blocked{color:var(--amber)}
+input[type=range]{width:100%}
+@media(max-width:650px){.wrap{padding:16px}.card{padding:18px}}
+</style>
+</head>
+<body>
+<header><div class="wrap"><strong style="font-size:20px">LTM ADVISORY · Cost IQ</strong><div id="meta" class="muted" style="margin-top:5px">Loading production configuration…</div></div></header>
+<div class="wrap"><div id="app"></div></div>
+<script>
+const API = window.COST_IQ_API || '';
+let questions=[], answers={}, pos=0, meta=null, scope={enabled:false};
+
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+async function get(path,opts={}) {
+  const r=await fetch(API+path,opts);
+  const text=await r.text();
+  let data={}; try{data=text?JSON.parse(text):{}}catch{throw new Error('Invalid JSON response ('+r.status+')')}
+  if(!r.ok) throw new Error(data.message||data.error||('HTTP '+r.status));
+  return data;
+}
+async function boot(){
+  try{
+    meta=await get('/api/evaluate/cost-iq/metadata').catch(()=>null);
+    const q=await get('/api/evaluate/cost-iq/questions').catch(()=>null);
+    if(q?.questions){questions=q.questions}
+    else throw new Error('Cost IQ question endpoint is not yet published.');
+    $('meta').textContent='Cost IQ v10 · 105-question baseline · AWS Amplify backend';
+    home();
+  }catch(e){
+    $('app').innerHTML='<div class="card"><h2>Cost IQ v10</h2><p class="muted">Amplify integration is prepared, but the shared API contract is not published yet.</p><p class="blocked">'+esc(e.message)+'</p></div>';
+  }
+}
+function $(id){return document.getElementById(id)}
+function home(){
+  $('app').innerHTML='<div class="card"><span class="pill">ENGINEERING RELEASE CANDIDATE</span><h1>Technology Cost & Value Diagnostic</h1><p class="muted">Configuration-driven Cost IQ v10. Cost IQ, Value IQ, confidence, FinOps capability maturity, calibrated findings, and evidence/practical opportunity gates are kept separate.</p><div class="grid"><div><b>Questions</b><div class="score">105</div></div><div><b>Dimensions</b><div class="score">16</div></div><div><b>Findings</b><div class="score">20</div></div><div><b>Recommendations</b><div class="score">10</div></div></div><div class="actions"><button class="primary" onclick="start()">Start assessment</button></div></div>';
+}
+function start(){answers={};pos=0;render()}
+function current(){return questions[pos]}
+function selectedValue(q){return answers[q.id]}
+function options(q){
+  const value=selectedValue(q);
+  if(q.interaction==='multi-select'){
+    const vals=new Set(Array.isArray(value)?value:[]);
+    return (q.options||[]).map(o=>'<button class="opt '+(vals.has(o.id)?'selected':'')+'" onclick="toggleMulti(\''+q.id+'\',\''+o.id+'\')">'+esc(o.label)+'</button>').join('');
+  }
+  return (q.options||[]).map(o=>'<button class="opt '+(value===o.id?'selected':'')+'" onclick="pick(\''+q.id+'\',\''+o.id+'\')">'+esc(o.label)+'</button>').join('');
+}
+function render(){
+  const q=current(); if(!q)return report();
+  let body='';
+  if(['single-select','true-false','range'].includes(q.interaction)) body=options(q);
+  else if(q.interaction==='multi-select') body=options(q);
+  else if(q.interaction==='slider'){
+    const v=answers[q.id]??q.control?.min??0;
+    body='<input id="slider" type="range" min="'+q.control.min+'" max="'+q.control.max+'" step="'+(q.control.step||1)+'" value="'+v+'" oninput="slide(\''+q.id+'\',this.value)"><div class="actions" style="justify-content:space-between"><span>'+esc(q.control.leftLabel||'')+'</span><b id="sliderVal">'+v+'</b><span>'+esc(q.control.rightLabel||'')+'</span></div>';
+  } else if(q.interaction==='stars'){
+    const v=answers[q.id]||0;
+    body='<div class="actions">'+[1,2,3,4,5].map(n=>'<button class="'+(n===v?'primary':'')+'" onclick="pickStar(\''+q.id+'\','+n+')">★ '+n+'</button>').join('')+'</div>';
+  } else if(['ranking','multi-select-ranking','allocation-ranking'].includes(q.interaction)){
+    body=options({...q,interaction:'multi-select'});
+  } else body='<p class="muted">Unsupported interaction: '+esc(q.interaction)+'</p>';
+  $('app').innerHTML='<div class="card"><div class="muted">'+esc(q.id)+' · '+esc(q.section||'')+' · '+(pos+1)+' / '+questions.length+'</div><div class="bar"><div class="fill" style="width:'+Math.round(pos/questions.length*100)+'%"></div></div><h2>'+esc(q.prompt)+'</h2><p class="muted">'+esc(q.answerGuidance||q.intent||'')+'</p>'+body+'<div class="actions"><button onclick="prev()">Back</button><button class="primary" onclick="next()">'+(pos===questions.length-1?'Finish':'Continue')+'</button></div></div>';
+}
+function pick(id,v){answers[id]=v;render()}
+function pickStar(id,v){answers[id]=v;render()}
+function toggleMulti(id,v){const a=Array.isArray(answers[id])?[...answers[id]]:[];const i=a.indexOf(v);if(i>=0)a.splice(i,1);else a.push(v);answers[id]=a;render()}
+function slide(id,v){answers[id]=Number(v);const x=$('sliderVal');if(x)x.textContent=v}
+function valid(){const q=current();const a=answers[q.id];return q.required===false||!(a===undefined||a===null||a===''||(Array.isArray(a)&&!a.length))}
+function next(){if(!valid()){alert('Please answer this question before continuing.');return}pos++;render()}
+function prev(){if(pos>0){pos--;render()}else home()}
+async function report(){
+  try{
+    const r=await get('/api/evaluate/cost-iq',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({answers,scope})});
+    $('app').innerHTML='<div class="card"><span class="pill">Cost IQ v10</span><h1>Executive Diagnostic</h1><div class="grid"><div><div class="muted">Cost IQ</div><div class="score">'+(r.headlines?.costIQ??'—')+'</div></div><div><div class="muted">Value IQ</div><div class="score">'+(r.headlines?.valueIQ??'—')+'</div></div><div><div class="muted">Confidence</div><div class="score">'+esc(r.evidence?.confidence||'—')+'</div><div class="muted">'+(r.evidence?.assessmentCompleteness??0)+'% complete</div></div></div><h3>Findings</h3>'+((r.findings||[]).map(f=>'<div class="opt"><b>'+esc(f.id)+' · '+esc(f.title)+'</b><div class="muted">'+esc(f.severity||'')+'</div></div>').join('')||'<p class="ok">No calibrated findings activated.</p>')+'<h3>Opportunity gates</h3>'+((r.opportunities||[]).map(o=>'<div class="opt"><b>'+esc(o.findingId)+'</b> · Economic: <span class="'+(o.economic?.quantificationAllowed?'ok':'blocked')+'">'+esc(o.economic?.status)+'</span> · Practical: <span class="'+(o.practical?.quantificationAllowed?'ok':'blocked')+'">'+esc(o.practical?.status)+'</span></div>').join('')||'<p class="muted">No opportunities.</p>')+'<h3>Recommendations</h3>'+((r.recommendations||[]).map(x=>'<div class="opt"><b>'+esc(x.id)+' · '+esc(x.title)+'</b><div class="muted">'+esc(x.ltmService||'')+'</div></div>').join('')||'<p class="muted">No recommendations.</p>')+'<div class="actions"><button class="primary" onclick="home()">New assessment</button><button onclick="download('+JSON.stringify(r).replace(/</g,'\\u003c')+')">Export JSON</button></div></div>';
+  }catch(e){$('app').innerHTML='<div class="card"><h2>Evaluation unavailable</h2><p class="blocked">'+esc(e.message)+'</p><div class="actions"><button onclick="start()">Restart</button></div></div>'}
+}
+function download(r){const b=new Blob([JSON.stringify(r,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='cost-iq-v10-diagnostic.json';a.click()}
+boot();
+</script>
+</body>
+</html>

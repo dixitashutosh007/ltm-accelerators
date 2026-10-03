@@ -1381,6 +1381,41 @@
     </section>
 
     <!-- ============================================================
+         GROUP 1B: TECHNOLOGY COST & VALUE
+         ============================================================ -->
+    <section class="practice-section" id="sectionCostIq">
+      <div class="practice-header">
+        <div class="practice-title-group">
+          <h2 class="practice-title">Technology Cost &amp; Value Advisory</h2>
+        </div>
+        <p class="practice-desc">Enterprise technology cost and value diagnostic covering spend transparency, cloud and software economics, infrastructure, workforce, vendors, applications, investment effectiveness and FinOps capability maturity.</p>
+      </div>
+      <div class="acc-grid">
+        <div class="acc-card" style="--card-accent:#A78BFA;">
+          <div class="card-top">
+            <div class="card-meta-row">
+              <span class="card-eyebrow">TECHNOLOGY COST &amp; VALUE DIAGNOSTIC</span>
+            </div>
+            <h3 class="card-title">Cost IQ</h3>
+            <p class="card-desc">Configuration-driven CIO diagnostic producing Cost IQ, Value IQ, confidence, calibrated findings, opportunity gates and technology-wide FinOps capability signals.</p>
+            <div class="chip-row">
+              <span class="chip">105 Questions</span>
+              <span class="chip">16 Dimensions</span>
+              <span class="chip">20 Findings</span>
+              <span class="chip">22 FinOps Capabilities</span>
+            </div>
+          </div>
+          <div class="card-footer" style="justify-content:flex-end;">
+            <div class="card-actions">
+              <button class="btn-action-edit" data-tool="cost-iq" onclick="handleEditClick('cost-iq')">Edit</button>
+              <button class="btn-action-launch" data-tool="cost-iq" onclick="handleLaunchClick('cost-iq', '/cost-iq-v10')">Take Assessment &rarr;</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
          GROUP 2: DIGITAL SOVEREIGNTY & STATUTORY POSTURE
          ============================================================ -->
     <section class="practice-section" id="sectionSovereignty">
@@ -2599,7 +2634,8 @@
       { id: 'finops-iq', name: 'FinOps IQ', icon: '📊' },
       { id: 'sovereign-iq', name: 'Sovereign IQ', icon: '🛡️' },
       { id: 'posture-iq', name: 'Posture IQ', icon: '⚡' },
-      { id: 'cloud-iq', name: 'Cloud IQ', icon: '☁️' }
+      { id: 'cloud-iq', name: 'Cloud IQ', icon: '☁️' },
+      { id: 'cost-iq', name: 'Cost IQ', icon: '💡' }
     ];
 
     function toggleAccFull(prefix, toolId, checked) {

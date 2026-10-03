@@ -1,0 +1,15 @@
+{
+  "schema":"costiq-routing-contract/1.0",
+  "version":"10.1.0",
+  "principle":"Every contextual rule trigger must resolve to an explicit assessment signal or explicitly declared external context.",
+  "routes":{
+    "TR-21":{"triggerKey":"Observability","source":"ADP-39","activationAnswers":["PARTIAL","GROWING","UNKNOWN"],"status":"resolved"},
+    "TR-22":{"triggerKey":"ITSM","source":"ADP-40","activation":"any_answer_except_NONE","status":"resolved"},
+    "TR-23":{"triggerKey":"ProductModel","source":"ADP-41","activation":"any_answer_except_FULL","status":"resolved"},
+    "TR-29":{"triggerKey":"M&A","sources":["ADP-49","ADP-50"],"activation":"any_answered","status":"resolved"},
+    "TR-30":{"triggerKey":"Global","sources":["ADP-51","ADP-52"],"activation":"any_answered","status":"resolved"},
+    "TR-34":{"triggerKey":"OperatingModel=Yes","externalContext":"operatingModelFormal","activation":"equals_true","status":"external-context","reason":"No deterministic v6.6 question directly establishes a formal technology operating model."}
+  },
+  "unresolvedAfterContract":[],
+  "safeguards":{"noInferenceFromMissingAdaptiveAnswers":true,"externalContextMustBeExplicit":true}
+}

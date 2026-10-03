@@ -1,0 +1,1492 @@
+{
+  "version": "7.1.0",
+  "baseline": "CostIQ 6.6.0",
+  "framework": "FinOps Framework 2026",
+  "capabilityMaturityCalibration": {
+    "status": "draft",
+    "bands": {
+      "CRAWL": {
+        "min": 0,
+        "max": 59
+      },
+      "WALK": {
+        "min": 60,
+        "max": 84
+      },
+      "RUN": {
+        "min": 85,
+        "max": 100
+      }
+    },
+    "note": "Provisional thresholds for engineering validation; not production-approved."
+  },
+  "capabilityMappings": {
+    "DATA_INGESTION": [
+      "CORE-05",
+      "CORE-06",
+      "ADP-01",
+      "ADP-08"
+    ],
+    "ALLOCATION": [
+      "CORE-12",
+      "CORE-13",
+      "CORE-17",
+      "ADP-04",
+      "ADP-08"
+    ],
+    "REPORTING_ANALYTICS": [
+      "CORE-15",
+      "CORE-17",
+      "ADP-01",
+      "ADP-51"
+    ],
+    "ANOMALY_MANAGEMENT": [
+      "CORE-24",
+      "ADP-43"
+    ],
+    "PLANNING_ESTIMATING": [
+      "CORE-07",
+      "CORE-10",
+      "CORE-21",
+      "ADP-29",
+      "ADP-31"
+    ],
+    "FORECASTING": [
+      "CORE-08",
+      "CORE-11",
+      "CORE-21",
+      "ADP-30"
+    ],
+    "BUDGETING": [
+      "CORE-10",
+      "CORE-18",
+      "CORE-21",
+      "ADP-57",
+      "ADP-58"
+    ],
+    "KPIS_BENCHMARKING": [
+      "CORE-20",
+      "CORE-43",
+      "CORE-44",
+      "ADP-53",
+      "ADP-54"
+    ],
+    "UNIT_ECONOMICS": [
+      "CORE-07",
+      "CORE-20",
+      "CORE-24",
+      "ADP-32"
+    ],
+    "ARCHITECTING_WORKLOAD_PLACEMENT": [
+      "ADP-05",
+      "ADP-09",
+      "ADP-45",
+      "CORE-40"
+    ],
+    "USAGE_OPTIMIZATION": [
+      "CORE-24",
+      "ADP-02",
+      "ADP-10",
+      "ADP-37",
+      "ADP-39"
+    ],
+    "RATE_OPTIMIZATION": [
+      "ADP-03",
+      "CORE-28",
+      "ADP-20",
+      "ADP-48"
+    ],
+    "LICENSING_SAAS": [
+      "CORE-26",
+      "CORE-27",
+      "CORE-30",
+      "ADP-07",
+      "ADP-15",
+      "ADP-16",
+      "ADP-34"
+    ],
+    "SUSTAINABILITY": [
+      "FIN-03"
+    ],
+    "EXECUTIVE_STRATEGY_ALIGNMENT": [
+      "CORE-07",
+      "CORE-09",
+      "CORE-11",
+      "CORE-45",
+      "FIN-09"
+    ],
+    "FINOPS_PRACTICE_OPERATIONS": [
+      "ADP-42",
+      "FIN-06"
+    ],
+    "GOVERNANCE_POLICY_RISK": [
+      "CORE-18",
+      "CORE-22",
+      "ADP-28",
+      "FIN-08"
+    ],
+    "FINOPS_EDUCATION_ENABLEMENT": [
+      "FIN-06"
+    ],
+    "INVOICING_CHARGEBACK": [
+      "CORE-13",
+      "CORE-17",
+      "FIN-07"
+    ],
+    "FINOPS_ASSESSMENT": [
+      "ADP-42",
+      "ADP-43",
+      "FIN-06"
+    ],
+    "AUTOMATION_TOOLS_SERVICES": [
+      "CORE-34",
+      "ADP-02",
+      "ADP-43",
+      "FIN-08"
+    ],
+    "INTERSECTING_DISCIPLINES": [
+      "CORE-35",
+      "CORE-36",
+      "CORE-37",
+      "ADP-18",
+      "ADP-47",
+      "FIN-10"
+    ]
+  },
+  "supplementalQuestions": [
+    {
+      "id": "FIN-01",
+      "section": "FinOps Data Readiness",
+      "prompt": "How ready is the organization to normalize technology cost and usage data across providers and technology categories into a common analytical model?",
+      "interaction": "single-select",
+      "scopeTrigger": "ANY_FINOPS_SCOPE",
+      "scoring": {
+        "method": "semantic-option-map",
+        "dimensionIds": [
+          "COST-01"
+        ],
+        "defaultMap": {
+          "FOCUS_READY": 100,
+          "NORMALIZED": 80,
+          "PARTIAL": 60,
+          "PROVIDER_NATIVE": 35,
+          "FRAGMENTED": 15
+        }
+      },
+      "finopsCapabilities": [
+        "DATA_INGESTION",
+        "REPORTING_ANALYTICS"
+      ],
+      "principles": [
+        "P4"
+      ],
+      "evidenceImplication": "Validate with evidence before quantifying material opportunity.",
+      "options": [
+        {
+          "id": "FOCUS_READY",
+          "label": "FOCUS-aligned or equivalent normalized model is established and routinely used."
+        },
+        {
+          "id": "NORMALIZED",
+          "label": "A common normalized model exists across major providers/categories."
+        },
+        {
+          "id": "PARTIAL",
+          "label": "Some linkage exists but material gaps remain."
+        },
+        {
+          "id": "PROVIDER_NATIVE",
+          "label": "Data is primarily provider-native and requires manual normalization."
+        },
+        {
+          "id": "FRAGMENTED",
+          "label": "Cost/usage data is fragmented and difficult to reconcile."
+        }
+      ],
+      "headlineContribution": false,
+      "findingIds": [
+        "F-001"
+      ],
+      "recommendationIds": [],
+      "evidenceBeforeFindingActivation": true,
+      "findingActivationRules": {
+        "PROVIDER_NATIVE": [
+          "F-001"
+        ],
+        "FRAGMENTED": [
+          "F-001"
+        ]
+      }
+    },
+    {
+      "id": "FIN-02",
+      "section": "FinOps Value",
+      "prompt": "Which business or product units are meaningful enough that technology cost should be expressed as a unit cost or unit-economics measure?",
+      "interaction": "multi-select",
+      "signalOnly": true,
+      "finopsCapabilities": [
+        "UNIT_ECONOMICS"
+      ],
+      "principles": [
+        "P2"
+      ],
+      "evidenceImplication": "Validate with evidence before quantifying material opportunity.",
+      "activationCapabilities": [
+        "UNIT_ECONOMICS"
+      ],
+      "options": [
+        {
+          "id": "NONE",
+          "label": "No material unit-economics use case is currently needed."
+        },
+        {
+          "id": "SELECTIVE",
+          "label": "Applied to selected material areas."
+        },
+        {
+          "id": "MATERIAL",
+          "label": "Several major products/services require unit economics."
+        },
+        {
+          "id": "BROAD",
+          "label": "Unit economics is material across most major products/services."
+        }
+      ],
+      "headlineContribution": false,
+      "findingIds": [],
+      "recommendationIds": [],
+      "evidenceBeforeFindingActivation": true
+    },
+    {
+      "id": "FIN-03",
+      "section": "FinOps Sustainability",
+      "prompt": "How consistently are energy, carbon or sustainability considerations included alongside cost, performance and resilience when material technology decisions are made?",
+      "interaction": "single-select",
+      "scoring": {
+        "method": "semantic-option-map",
+        "dimensionIds": [
+          "VALUE-05"
+        ],
+        "defaultMap": {
+          "INTEGRATED": 100,
+          "REGULAR": 80,
+          "SELECTIVE": 60,
+          "LIMITED": 35,
+          "NONE": 15
+        }
+      },
+      "finopsCapabilities": [
+        "SUSTAINABILITY"
+      ],
+      "principles": [
+        "P2",
+        "P6"
+      ],
+      "evidenceImplication": "Validate with evidence before quantifying material opportunity.",
+      "activationCapabilities": [
+        "SUSTAINABILITY"
+      ],
+      "options": [
+        {
+          "id": "INTEGRATED",
+          "label": "Integrated end-to-end or routinely embedded in decisions."
+        },
+        {
+          "id": "REGULAR",
+          "label": "Applied regularly for material decisions."
+        },
+        {
+          "id": "SELECTIVE",
+          "label": "Applied to selected material areas."
+        },
+        {
+          "id": "LIMITED",
+          "label": "Applied inconsistently or only occasionally."
+        },
+        {
+          "id": "NONE",
+          "label": "No material unit-economics use case is currently needed."
+        }
+      ],
+      "headlineContribution": false,
+      "findingIds": [
+        "F-019"
+      ],
+      "recommendationIds": [],
+      "evidenceBeforeFindingActivation": true,
+      "findingActivationRules": {
+        "LIMITED": [
+          "F-019"
+        ],
+        "NONE": [
+          "F-019"
+        ]
+      }
+    },
+    {
+      "id": "FIN-04",
+      "section": "FinOps Value",
+      "prompt": "How consistently are technology unit costs, outcome metrics and benchmarks used together to evaluate whether a technology investment is creating value?",
+      "interaction": "single-select",
+      "scoring": {
+        "method": "semantic-option-map",
+        "dimensionIds": [
+          "VALUE-02",
+          "VALUE-03"
+        ],
+        "defaultMap": {
+          "SYSTEMATIC": 100,
+          "REGULAR": 80,
+          "SELECTIVE": 60,
+          "LIMITED": 35,
+          "NONE": 15
+        }
+      },
+      "finopsCapabilities": [
+        "KPIS_BENCHMARKING",
+        "UNIT_ECONOMICS"
+      ],
+      "principles": [
+        "P2"
+      ],
+      "evidenceImplication": "Validate with evidence before quantifying material opportunity.",
+      "activationCapabilities": [
+        "KPIS_BENCHMARKING",
+        "UNIT_ECONOMICS"
+      ],
+      "options": [
+        {
+          "id": "SYSTEMATIC",
+          "label": "Systematic and evidence-driven."
+        },
+        {
+          "id": "REGULAR",
+          "label": "Applied regularly for material decisions."
+        },
+        {
+          "id": "SELECTIVE",
+          "label": "Applied to selected material areas."
+        },
+        {
+          "id": "LIMITED",
+          "label": "Applied inconsistently or only occasionally."
+        },
+        {
+          "id": "NONE",
+          "label": "No material unit-economics use case is currently needed."
+        }
+      ],
+      "headlineContribution": false,
+      "findingIds": [
+        "F-004",
+        "F-018",
+        "F-019"
+      ],
+      "recommendationIds": [],
+      "evidenceBeforeFindingActivation": true,
+      "findingActivationRules": {
+        "LIMITED": [
+          "F-004",
+          "F-018",
+          "F-019"
+        ],
+        "NONE": [
+          "F-004",
+          "F-018",
+          "F-019"
+        ]
+      }
+    },
+    {
+      "id": "FIN-05",
+      "section": "FinOps Planning",
+      "prompt": "How tightly are technology cost forecasts, budgets and investment plans connected to current usage, demand and business priorities?",
+      "interaction": "single-select",
+      "scoring": {
+        "method": "semantic-option-map",
+        "dimensionIds": [
+          "COST-02",
+          "VALUE-05"
+        ],
+        "defaultMap": {
+          "INTEGRATED": 100,
+          "LINKED": 80,
+          "PARTIAL": 60,
+          "LIMITED": 35,
+          "SEPARATE": 15
+        }
+      },
+      "finopsCapabilities": [
+        "PLANNING_ESTIMATING",
+        "FORECASTING",
+        "BUDGETING"
+      ],
+      "principles": [
+        "P2",
+        "P4"
+      ],
+      "evidenceImplication": "Validate with evidence before quantifying material opportunity.",
+      "activationCapabilities": [
+        "PLANNING_ESTIMATING",
+        "FORECASTING",
+        "BUDGETING"
+      ],
+      "options": [
+        {
+          "id": "INTEGRATED",
+          "label": "Integrated end-to-end or routinely embedded in decisions."
+        },
+        {
+          "id": "LINKED",
+          "label": "Linked"
+        },
+        {
+          "id": "PARTIAL",
+          "label": "Some linkage exists but material gaps remain."
+        },
+        {
+          "id": "LIMITED",
+          "label": "Applied inconsistently or only occasionally."
+        },
+        {
+          "id": "SEPARATE",
+          "label": "Planning/usage/investment decisions are largely disconnected."
+        }
+      ],
+      "headlineContribution": false,
+      "findingIds": [
+        "F-003",
+        "F-015"
+      ],
+      "recommendationIds": [],
+      "evidenceBeforeFindingActivation": true,
+      "findingActivationRules": {
+        "LIMITED": [
+          "F-003",
+          "F-015"
+        ],
+        "SEPARATE": [
+          "F-003",
+          "F-015"
+        ]
+      }
+    },
+    {
+      "id": "FIN-06",
+      "section": "FinOps Practice",
+      "prompt": "How effectively does the FinOps operating model establish ownership, recurring cadence, education, decision support and continuous improvement across the relevant Personas?",
+      "interaction": "single-select",
+      "scoring": {
+        "method": "semantic-option-map",
+        "dimensionIds": [
+          "COST-02"
+        ],
+        "defaultMap": {
+          "EMBEDDED": 100,
+          "MANAGED": 80,
+          "ESTABLISHED": 60,
+          "LIMITED": 35,
+          "NONE": 15
+        }
+      },
+      "finopsCapabilities": [
+        "FINOPS_PRACTICE_OPERATIONS",
+        "FINOPS_EDUCATION_ENABLEMENT",
+        "FINOPS_ASSESSMENT"
+      ],
+      "principles": [
+        "P1",
+        "P5"
+      ],
+      "evidenceImplication": "Validate with evidence before quantifying material opportunity.",
+      "activationCapabilities": [
+        "FINOPS_PRACTICE_OPERATIONS",
+        "FINOPS_EDUCATION_ENABLEMENT",
+        "FINOPS_ASSESSMENT"
+      ],
+      "options": [
+        {
+          "id": "EMBEDDED",
+          "label": "Embedded across ownership, cadence, education and continuous improvement."
+        },
+        {
+          "id": "MANAGED",
+          "label": "Managed operating model exists across major areas."
+        },
+        {
+          "id": "ESTABLISHED",
+          "label": "Formal practice exists but coverage/action is uneven."
+        },
+        {
+          "id": "LIMITED",
+          "label": "Applied inconsistently or only occasionally."
+        },
+        {
+          "id": "NONE",
+          "label": "No material unit-economics use case is currently needed."
+        }
+      ],
+      "headlineContribution": false,
+      "findingIds": [
+        "F-005",
+        "F-016"
+      ],
+      "recommendationIds": [],
+      "evidenceBeforeFindingActivation": true,
+      "findingActivationRules": {
+        "LIMITED": [
+          "F-005",
+          "F-016"
+        ],
+        "NONE": [
+          "F-005",
+          "F-016"
+        ]
+      }
+    },
+    {
+      "id": "FIN-07",
+      "section": "FinOps Financial Operations",
+      "prompt": "How reliably are technology invoices, allocation, showback or chargeback and financial reconciliation connected from source billing data through to accountable owners?",
+      "interaction": "single-select",
+      "scoring": {
+        "method": "semantic-option-map",
+        "dimensionIds": [
+          "COST-01",
+          "COST-02"
+        ],
+        "defaultMap": {
+          "INTEGRATED": 100,
+          "CONTROLLED": 80,
+          "PARTIAL": 60,
+          "LIMITED": 35,
+          "NONE": 15
+        }
+      },
+      "finopsCapabilities": [
+        "INVOICING_CHARGEBACK",
+        "ALLOCATION"
+      ],
+      "principles": [
+        "P3",
+        "P4"
+      ],
+      "evidenceImplication": "Validate with evidence before quantifying material opportunity.",
+      "activationCapabilities": [
+        "INVOICING_CHARGEBACK",
+        "ALLOCATION"
+      ],
+      "options": [
+        {
+          "id": "INTEGRATED",
+          "label": "Integrated end-to-end or routinely embedded in decisions."
+        },
+        {
+          "id": "CONTROLLED",
+          "label": "Controlled"
+        },
+        {
+          "id": "PARTIAL",
+          "label": "Some linkage exists but material gaps remain."
+        },
+        {
+          "id": "LIMITED",
+          "label": "Applied inconsistently or only occasionally."
+        },
+        {
+          "id": "NONE",
+          "label": "No material unit-economics use case is currently needed."
+        }
+      ],
+      "headlineContribution": false,
+      "findingIds": [
+        "F-001",
+        "F-002"
+      ],
+      "recommendationIds": [],
+      "evidenceBeforeFindingActivation": true,
+      "findingActivationRules": {
+        "LIMITED": [
+          "F-001",
+          "F-002"
+        ],
+        "NONE": [
+          "F-001",
+          "F-002"
+        ]
+      }
+    },
+    {
+      "id": "FIN-08",
+      "section": "FinOps Governance",
+      "prompt": "How consistently are technology cost policies, guardrails and risk controls translated into enforceable actions across relevant technology categories?",
+      "interaction": "single-select",
+      "scoring": {
+        "method": "semantic-option-map",
+        "dimensionIds": [
+          "COST-02"
+        ],
+        "defaultMap": {
+          "AUTOMATED": 100,
+          "ENFORCED": 80,
+          "DEFINED": 60,
+          "ADHOC": 35,
+          "NONE": 15
+        }
+      },
+      "finopsCapabilities": [
+        "GOVERNANCE_POLICY_RISK",
+        "AUTOMATION_TOOLS_SERVICES"
+      ],
+      "principles": [
+        "P3",
+        "P5"
+      ],
+      "evidenceImplication": "Validate with evidence before quantifying material opportunity.",
+      "activationCapabilities": [
+        "GOVERNANCE_POLICY_RISK",
+        "AUTOMATION_TOOLS_SERVICES"
+      ],
+      "options": [
+        {
+          "id": "AUTOMATED",
+          "label": "Policies/guardrails are automated or actively enforced."
+        },
+        {
+          "id": "ENFORCED",
+          "label": "Policies are defined and materially enforced."
+        },
+        {
+          "id": "DEFINED",
+          "label": "Policies exist but enforcement is inconsistent."
+        },
+        {
+          "id": "ADHOC",
+          "label": "Controls depend on individual teams."
+        },
+        {
+          "id": "NONE",
+          "label": "No material unit-economics use case is currently needed."
+        }
+      ],
+      "headlineContribution": false,
+      "findingIds": [
+        "F-003",
+        "F-017"
+      ],
+      "recommendationIds": [],
+      "evidenceBeforeFindingActivation": true,
+      "findingActivationRules": {
+        "ADHOC": [
+          "F-003",
+          "F-017"
+        ],
+        "NONE": [
+          "F-003",
+          "F-017"
+        ]
+      }
+    },
+    {
+      "id": "FIN-09",
+      "section": "FinOps Strategy",
+      "prompt": "How directly does the FinOps practice support executive trade-offs among cost, speed, quality, resilience and strategic investment?",
+      "interaction": "single-select",
+      "scoring": {
+        "method": "semantic-option-map",
+        "dimensionIds": [
+          "VALUE-01",
+          "VALUE-05"
+        ],
+        "defaultMap": {
+          "STRATEGIC": 100,
+          "REGULAR": 80,
+          "SELECTIVE": 60,
+          "LIMITED": 35,
+          "NONE": 15
+        }
+      },
+      "finopsCapabilities": [
+        "EXECUTIVE_STRATEGY_ALIGNMENT"
+      ],
+      "principles": [
+        "P1",
+        "P2"
+      ],
+      "evidenceImplication": "Validate with evidence before quantifying material opportunity.",
+      "activationCapabilities": [
+        "EXECUTIVE_STRATEGY_ALIGNMENT"
+      ],
+      "options": [
+        {
+          "id": "STRATEGIC",
+          "label": "Directly supports recurring executive trade-offs and investment decisions."
+        },
+        {
+          "id": "REGULAR",
+          "label": "Applied regularly for material decisions."
+        },
+        {
+          "id": "SELECTIVE",
+          "label": "Applied to selected material areas."
+        },
+        {
+          "id": "LIMITED",
+          "label": "Applied inconsistently or only occasionally."
+        },
+        {
+          "id": "NONE",
+          "label": "No material unit-economics use case is currently needed."
+        }
+      ],
+      "headlineContribution": false,
+      "findingIds": [
+        "F-003",
+        "F-015",
+        "F-018",
+        "F-019"
+      ],
+      "recommendationIds": [],
+      "evidenceBeforeFindingActivation": true,
+      "findingActivationRules": {
+        "LIMITED": [
+          "F-003",
+          "F-015",
+          "F-018",
+          "F-019"
+        ],
+        "NONE": [
+          "F-003",
+          "F-015",
+          "F-018",
+          "F-019"
+        ]
+      }
+    },
+    {
+      "id": "FIN-10",
+      "section": "FinOps Collaboration",
+      "prompt": "How effectively do FinOps activities connect with ITAM, ITFM, ITSM, Security, Sustainability, Architecture, Engineering and Procurement where their decisions intersect?",
+      "interaction": "single-select",
+      "scoring": {
+        "method": "semantic-option-map",
+        "dimensionIds": [
+          "COST-02"
+        ],
+        "defaultMap": {
+          "INTEGRATED": 100,
+          "COORDINATED": 80,
+          "SELECTIVE": 60,
+          "LIMITED": 35,
+          "NONE": 15
+        }
+      },
+      "finopsCapabilities": [
+        "INTERSECTING_DISCIPLINES"
+      ],
+      "principles": [
+        "P1"
+      ],
+      "evidenceImplication": "Validate with evidence before quantifying material opportunity.",
+      "activationCapabilities": [
+        "INTERSECTING_DISCIPLINES"
+      ],
+      "options": [
+        {
+          "id": "INTEGRATED",
+          "label": "Integrated end-to-end or routinely embedded in decisions."
+        },
+        {
+          "id": "COORDINATED",
+          "label": "Formal coordination exists for major intersections."
+        },
+        {
+          "id": "SELECTIVE",
+          "label": "Applied to selected material areas."
+        },
+        {
+          "id": "LIMITED",
+          "label": "Applied inconsistently or only occasionally."
+        },
+        {
+          "id": "NONE",
+          "label": "No material unit-economics use case is currently needed."
+        }
+      ],
+      "headlineContribution": false,
+      "findingIds": [
+        "F-011",
+        "F-017",
+        "F-020"
+      ],
+      "recommendationIds": [],
+      "evidenceBeforeFindingActivation": true,
+      "findingActivationRules": {
+        "LIMITED": [
+          "F-011",
+          "F-017",
+          "F-020"
+        ],
+        "NONE": [
+          "F-011",
+          "F-017",
+          "F-020"
+        ]
+      }
+    },
+    {
+      "id": "FIN-11",
+      "section": "FinOps Usage Optimization",
+      "prompt": "How consistently are technology consumption changes automatically or operationally driven toward the desired cost, performance and business outcome?",
+      "interaction": "single-select",
+      "scoring": {
+        "method": "semantic-option-map",
+        "dimensionIds": [
+          "COST-03",
+          "VALUE-04"
+        ],
+        "defaultMap": {
+          "CONTINUOUS": 100,
+          "RECURRING": 80,
+          "SELECTIVE": 60,
+          "MANUAL": 35,
+          "NONE": 15
+        }
+      },
+      "finopsCapabilities": [
+        "USAGE_OPTIMIZATION",
+        "AUTOMATION_TOOLS_SERVICES"
+      ],
+      "principles": [
+        "P3",
+        "P6"
+      ],
+      "evidenceImplication": "Validate with evidence before quantifying material opportunity.",
+      "activationCapabilities": [
+        "USAGE_OPTIMIZATION",
+        "AUTOMATION_TOOLS_SERVICES"
+      ],
+      "options": [
+        {
+          "id": "CONTINUOUS",
+          "label": "Optimization is continuously driven toward desired outcomes."
+        },
+        {
+          "id": "RECURRING",
+          "label": "Optimization actions occur routinely."
+        },
+        {
+          "id": "SELECTIVE",
+          "label": "Applied to selected material areas."
+        },
+        {
+          "id": "MANUAL",
+          "label": "Optimization relies mainly on manual action."
+        },
+        {
+          "id": "NONE",
+          "label": "No material unit-economics use case is currently needed."
+        }
+      ],
+      "headlineContribution": false,
+      "findingIds": [
+        "F-005",
+        "F-016"
+      ],
+      "recommendationIds": [],
+      "evidenceBeforeFindingActivation": true,
+      "findingActivationRules": {
+        "MANUAL": [
+          "F-005",
+          "F-016"
+        ],
+        "NONE": [
+          "F-005",
+          "F-016"
+        ]
+      }
+    },
+    {
+      "id": "FIN-12",
+      "section": "FinOps Rates",
+      "prompt": "How systematically are pricing, commitment, contract and purchasing levers optimized using demand forecasts and actual utilization?",
+      "interaction": "single-select",
+      "scoring": {
+        "method": "semantic-option-map",
+        "dimensionIds": [
+          "COST-07",
+          "COST-03"
+        ],
+        "defaultMap": {
+          "SYSTEMATIC": 100,
+          "REGULAR": 80,
+          "SELECTIVE": 60,
+          "LIMITED": 35,
+          "NONE": 15
+        }
+      },
+      "finopsCapabilities": [
+        "RATE_OPTIMIZATION"
+      ],
+      "principles": [
+        "P2",
+        "P6"
+      ],
+      "evidenceImplication": "Validate with evidence before quantifying material opportunity.",
+      "activationCapabilities": [
+        "RATE_OPTIMIZATION"
+      ],
+      "options": [
+        {
+          "id": "SYSTEMATIC",
+          "label": "Systematic and evidence-driven."
+        },
+        {
+          "id": "REGULAR",
+          "label": "Applied regularly for material decisions."
+        },
+        {
+          "id": "SELECTIVE",
+          "label": "Applied to selected material areas."
+        },
+        {
+          "id": "LIMITED",
+          "label": "Applied inconsistently or only occasionally."
+        },
+        {
+          "id": "NONE",
+          "label": "No material unit-economics use case is currently needed."
+        }
+      ],
+      "headlineContribution": false,
+      "findingIds": [
+        "F-006",
+        "F-011"
+      ],
+      "recommendationIds": [],
+      "evidenceBeforeFindingActivation": true,
+      "findingActivationRules": {
+        "LIMITED": [
+          "F-006",
+          "F-011"
+        ],
+        "NONE": [
+          "F-006",
+          "F-011"
+        ]
+      }
+    }
+  ],
+  "frameworkDomains": [
+    {
+      "id": "D1",
+      "name": "Understand Usage & Cost",
+      "capabilities": [
+        "DATA_INGESTION",
+        "ALLOCATION",
+        "REPORTING_ANALYTICS",
+        "ANOMALY_MANAGEMENT"
+      ]
+    },
+    {
+      "id": "D2",
+      "name": "Quantify Business Value",
+      "capabilities": [
+        "PLANNING_ESTIMATING",
+        "FORECASTING",
+        "BUDGETING",
+        "KPIS_BENCHMARKING",
+        "UNIT_ECONOMICS"
+      ]    },
+    {
+      "id": "D3",
+      "name": "Optimize Usage & Cost",
+      "capabilities": [
+        "ARCHITECTING_WORKLOAD_PLACEMENT",
+        "USAGE_OPTIMIZATION",
+        "RATE_OPTIMIZATION",
+        "LICENSING_SAAS",
+        "SUSTAINABILITY"
+      ]
+    },
+    {
+      "id": "D4",
+      "name": "Manage the FinOps Practice",
+      "capabilities": [
+        "EXECUTIVE_STRATEGY_ALIGNMENT",
+        "FINOPS_PRACTICE_OPERATIONS",
+        "GOVERNANCE_POLICY_RISK",
+        "FINOPS_EDUCATION_ENABLEMENT",
+        "INVOICING_CHARGEBACK",
+        "FINOPS_ASSESSMENT",
+        "AUTOMATION_TOOLS_SERVICES",
+        "INTERSECTING_DISCIPLINES"
+      ]
+    }
+  ],
+  "frameworkPhases": [
+    "INFORM",
+    "OPTIMIZE",
+    "OPERATE"
+  ],
+  "frameworkMaturity": [
+    "CRAWL",
+    "WALK",
+    "RUN"
+  ],
+  "technologyCategories": [
+    "PUBLIC_CLOUD",
+    "SAAS",
+    "DATA_CLOUD_PLATFORM",
+    "PRIVATE_CLOUD",
+    "LICENSES",
+    "DATA_CENTER",
+    "AI",
+    "MANAGED_SERVICES",
+    "COLOCATION",
+    "NETWORK",
+    "SECURITY",
+    "OTHER"
+  ],
+  "principles": [
+    {
+      "id": "P1",
+      "name": "Teams need to collaborate"
+    },
+    {
+      "id": "P2",
+      "name": "Business value drives technology decisions"
+    },
+    {
+      "id": "P3",
+      "name": "Everyone takes ownership for their technology usage"
+    },
+    {
+      "id": "P4",
+      "name": "FinOps data should be accessible, timely, and accurate"
+    },
+    {
+      "id": "P5",
+      "name": "FinOps should be enabled centrally"
+    },
+    {
+      "id": "P6",
+      "name": "Take advantage of the variable cost model of the cloud"
+    }
+  ],
+  "personas": {
+    "core": [
+      "FINOPS_PRACTITIONER",
+      "ENGINEERING",
+      "FINANCE",
+      "LEADERSHIP",
+      "PROCUREMENT",
+      "PRODUCT"
+    ],
+    "allied": [
+      "ITAM",
+      "ITFM",
+      "ITSM",
+      "SECURITY",
+      "SUSTAINABILITY"
+    ]
+  },
+  "capabilityRelevance": {
+    "DATA_INGESTION": "always",
+    "ALLOCATION": "always",
+    "REPORTING_ANALYTICS": "always",
+    "ANOMALY_MANAGEMENT": "scope",
+    "PLANNING_ESTIMATING": "always",
+    "FORECASTING": "always",
+    "BUDGETING": "always",
+    "KPIS_BENCHMARKING": "always",
+    "UNIT_ECONOMICS": "scope",
+    "ARCHITECTING_WORKLOAD_PLACEMENT": "scope",
+    "USAGE_OPTIMIZATION": "scope",
+    "RATE_OPTIMIZATION": "scope",
+    "LICENSING_SAAS": "scope",
+    "SUSTAINABILITY": "scope",
+    "EXECUTIVE_STRATEGY_ALIGNMENT": "always",
+    "FINOPS_PRACTICE_OPERATIONS": "always",
+    "GOVERNANCE_POLICY_RISK": "always",
+    "FINOPS_EDUCATION_ENABLEMENT": "always",
+    "INVOICING_CHARGEBACK": "scope",
+    "FINOPS_ASSESSMENT": "always",
+    "AUTOMATION_TOOLS_SERVICES": "scope",
+    "INTERSECTING_DISCIPLINES": "always"
+  },
+  "crossCuttingAssessments": {
+    "FOCUS_DATA_READINESS": {
+      "questionIds": [
+        "FIN-01"
+      ],
+      "status": "cross-cutting-readiness",
+      "notAFrameworkCapability": true,
+      "mappedCapabilities": [
+        "DATA_INGESTION",
+        "REPORTING_ANALYTICS"
+      ],
+      "principles": [
+        "P4"
+      ]
+    }
+  },
+  "scopeModel": {
+    "status": "draft",
+    "scopeRequired": "whenFinOpsRelevant",
+    "constructs": [
+      "PRODUCT",
+      "COST_CENTER",
+      "ENVIRONMENT",
+      "BUSINESS_UNIT",
+      "APPLICATION",
+      "SERVICE",
+      "CUSTOM"
+    ],
+    "technologyCategories": "technologyCategories",
+    "selectionModel": "core-baseline-plus-relevant-adaptive",
+    "note": "Scope is a decision context; it is not itself a maturity score."
+  },
+  "technologyCategoryCapabilityTriggers": {
+    "PUBLIC_CLOUD": [
+      "ANOMALY_MANAGEMENT",
+      "ARCHITECTING_WORKLOAD_PLACEMENT",
+      "USAGE_OPTIMIZATION",
+      "RATE_OPTIMIZATION"
+    ],
+    "SAAS": [
+      "LICENSING_SAAS",
+      "RATE_OPTIMIZATION"
+    ],
+    "DATA_CLOUD_PLATFORM": [
+      "UNIT_ECONOMICS",
+      "USAGE_OPTIMIZATION",
+      "RATE_OPTIMIZATION"
+    ],
+    "PRIVATE_CLOUD": [
+      "ARCHITECTING_WORKLOAD_PLACEMENT",
+      "USAGE_OPTIMIZATION"
+    ],
+    "LICENSES": [
+      "LICENSING_SAAS",
+      "RATE_OPTIMIZATION"
+    ],
+    "DATA_CENTER": [
+      "ARCHITECTING_WORKLOAD_PLACEMENT",
+      "USAGE_OPTIMIZATION",
+      "SUSTAINABILITY"
+    ],
+    "AI": [
+      "UNIT_ECONOMICS",
+      "USAGE_OPTIMIZATION",
+      "RATE_OPTIMIZATION",
+      "SUSTAINABILITY"
+    ],
+    "MANAGED_SERVICES": [
+      "RATE_OPTIMIZATION",
+      "INTERSECTING_DISCIPLINES"
+    ],
+    "COLOCATION": [
+      "RATE_OPTIMIZATION",
+      "SUSTAINABILITY"
+    ],
+    "NETWORK": [
+      "USAGE_OPTIMIZATION",
+      "RATE_OPTIMIZATION"
+    ],
+    "SECURITY": [
+      "INTERSECTING_DISCIPLINES"
+    ],
+    "OTHER": []
+  },
+  "capabilityFindingBridges": {
+    "DATA_INGESTION": {
+      "findings": [
+        "F-001",
+        "F-002"
+      ],
+      "recommendations": [
+        "R-001"
+      ],
+      "mode": "supporting-evidence"
+    },
+    "ALLOCATION": {
+      "findings": [
+        "F-002",
+        "F-017"
+      ],
+      "recommendations": [
+        "R-001",
+        "R-002"
+      ],
+      "mode": "supporting-evidence"
+    },
+    "REPORTING_ANALYTICS": {
+      "findings": [
+        "F-001",
+        "F-004",
+        "F-014"
+      ],
+      "recommendations": [
+        "R-001",
+        "R-009"
+      ],
+      "mode": "supporting-evidence"
+    },
+    "ANOMALY_MANAGEMENT": {
+      "findings": [
+        "F-005"
+      ],
+      "recommendations": [
+        "R-003"
+      ],
+      "mode": "supporting-evidence"
+    },
+    "PLANNING_ESTIMATING": {
+      "findings": [
+        "F-003",
+        "F-015"
+      ],
+      "recommendations": [
+        "R-002",
+        "R-010"
+      ],
+      "mode": "supporting-evidence"
+    },
+    "FORECASTING": {
+      "findings": [
+        "F-006",
+        "F-015"
+      ],
+      "recommendations": [
+        "R-003",
+        "R-010"
+      ],
+      "mode": "supporting-evidence"
+    },
+    "BUDGETING": {
+      "findings": [
+        "F-003",
+        "F-015",
+        "F-017"
+      ],
+      "recommendations": [
+        "R-002",
+        "R-010"
+      ],
+      "mode": "supporting-evidence"
+    },
+    "KPIS_BENCHMARKING": {
+      "findings": [
+        "F-004",
+        "F-014",
+        "F-018",
+        "F-019"
+      ],
+      "recommendations": [
+        "R-009"
+      ],
+      "mode": "supporting-evidence"
+    },
+    "UNIT_ECONOMICS": {
+      "findings": [
+        "F-004",
+        "F-005",
+        "F-019"
+      ],
+      "recommendations": [
+        "R-003",
+        "R-009",
+        "R-010"
+      ],
+      "mode": "supporting-evidence"
+    },
+    "ARCHITECTING_WORKLOAD_PLACEMENT": {
+      "findings": [
+        "F-005",
+        "F-009",
+        "F-012"
+      ],
+      "recommendations": [
+        "R-003",
+        "R-005",
+        "R-008"
+      ],
+      "mode": "supporting-evidence"
+    },
+    "USAGE_OPTIMIZATION": {
+      "findings": [
+        "F-005",
+        "F-007",
+        "F-009",
+        "F-013",
+        "F-016"
+      ],
+      "recommendations": [
+        "R-003",
+        "R-004",
+        "R-005",
+        "R-006"
+      ],
+      "mode": "supporting-evidence"
+    },
+    "RATE_OPTIMIZATION": {
+      "findings": [
+        "F-006",
+        "F-011"
+      ],
+      "recommendations": [
+        "R-003",
+        "R-007"
+      ],
+      "mode": "supporting-evidence"
+    },
+    "LICENSING_SAAS": {
+      "findings": [
+        "F-007",
+        "F-008",
+        "F-013"
+      ],
+      "recommendations": [
+        "R-004"
+      ],
+      "mode": "supporting-evidence"
+    },
+    "SUSTAINABILITY": {
+      "findings": [
+        "F-019"
+      ],
+      "recommendations": [
+        "R-009",
+        "R-010"
+      ],
+      "mode": "supporting-evidence"
+    },
+    "EXECUTIVE_STRATEGY_ALIGNMENT": {
+      "findings": [
+        "F-003",
+        "F-015",
+        "F-018",
+        "F-019"
+      ],
+      "recommendations": [
+        "R-002",
+        "R-009",
+        "R-010"
+      ],
+      "mode": "supporting-evidence"
+    },
+    "FINOPS_PRACTICE_OPERATIONS": {
+      "findings": [
+        "F-005",
+        "F-016"
+      ],
+      "recommendations": [
+        "R-003",
+        "R-006"
+      ],
+      "mode": "supporting-evidence"
+    },
+    "GOVERNANCE_POLICY_RISK": {
+      "findings": [
+        "F-003",
+        "F-017"
+      ],
+      "recommendations": [
+        "R-002"
+      ],
+      "mode": "supporting-evidence"
+    },
+    "FINOPS_EDUCATION_ENABLEMENT": {
+      "findings": [
+        "F-005",
+        "F-016"
+      ],
+      "recommendations": [
+        "R-003",
+        "R-006"
+      ],
+      "mode": "supporting-evidence"
+    },
+    "INVOICING_CHARGEBACK": {
+      "findings": [
+        "F-001",
+        "F-002"
+      ],
+      "recommendations": [
+        "R-001"
+      ],
+      "mode": "supporting-evidence"
+    },
+    "FINOPS_ASSESSMENT": {
+      "findings": [],
+      "recommendations": [],
+      "mode": "enabler-only"
+    },
+    "AUTOMATION_TOOLS_SERVICES": {
+      "findings": [
+        "F-005",
+        "F-016"
+      ],
+      "recommendations": [
+        "R-003",
+        "R-006"
+      ],
+      "mode": "supporting-evidence"
+    },
+    "INTERSECTING_DISCIPLINES": {
+      "findings": [
+        "F-010",
+        "F-011",
+        "F-017",
+        "F-019",
+        "F-020"
+      ],
+      "recommendations": [
+        "R-002",
+        "R-007",
+        "R-008",
+        "R-009"
+      ],
+      "mode": "supporting-evidence"
+    }
+  },
+  "headlineContributionPolicy": {
+    "default": "capability-only",
+    "note": "FinOps supplemental questions do not directly alter Cost IQ or Value IQ headline scores in v7.1. They enrich FinOps capability maturity, findings evidence and opportunity context."
+  },
+  "questionScoringOverrides": {
+    "CORE-40": {
+      "method": "scale",
+      "scaleMax": 5,
+      "direction": "invert",
+      "reason": "v6.6 prompt labels define higher technical-debt cost impact as worse maturity; direct scoring would invert the intended Cost IQ semantic."
+    },
+    "CORE-43": {
+      "method": "scale",
+      "scaleMax": 5,
+      "direction": "direct",
+      "reason": "Higher perceived business value is better Value IQ maturity."
+    }
+  },
+  "findingActivationOverrides": {
+    "F-012": [
+      {
+        "questionId": "CORE-40",
+        "triggerAnswers": [
+          4,
+          5
+        ]
+      }
+    ],
+    "F-014": [
+      {
+        "questionId": "CORE-43",
+        "triggerAnswers": [
+          1,
+          2
+        ]
+      }
+    ]
+  }
+}
