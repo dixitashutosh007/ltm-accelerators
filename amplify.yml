@@ -3,7 +3,9 @@ frontend:
   phases:
     build:
       commands:
-        - npm ci
+        # package-lock.json is currently stale against the Amplify dependency graph.
+        # Resolve dependencies without rewriting the lockfile during the hosted build.
+        - npm install --package-lock=false
         - npm run validate:costiq
         - npm run build:costiq-config
         - echo "Packaging Accelerators for Amplify Hosting..."
