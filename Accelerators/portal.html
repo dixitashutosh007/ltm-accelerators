@@ -1312,7 +1312,7 @@
       <div style="position:relative;z-index:2;text-align:center;">
         <h1 class="hero-tech-title">Advisory Accelerators</h1>
         <div class="hero-practice-tabs">
-          <button class="hero-tab active" onclick="filterPracticeGroup('all', this)">All Accelerators (5)</button>
+          <button class="hero-tab active" onclick="filterPracticeGroup('all', this)">All Accelerators (6)</button>
           <button class="hero-tab" onclick="filterPracticeGroup('finops', this)">FinOps Practice</button>
           <button class="hero-tab" onclick="filterPracticeGroup('sovereignty', this)">Digital Sovereignty</button>
           <button class="hero-tab" onclick="filterPracticeGroup('cloud', this)">Hybrid Cloud &amp; Infra</button>
@@ -3118,23 +3118,33 @@
       if (btn) btn.classList.add('active');
 
       const secFinOps = document.getElementById('sectionFinOps');
+      const secCostIq = document.getElementById('sectionCostIq');
       const secSovereignty = document.getElementById('sectionSovereignty');
       const secCloud = document.getElementById('sectionCloud');
 
       if (group === 'finops') {
         if (secFinOps) secFinOps.style.display = 'block';
+        if (secCostIq) secCostIq.style.display = 'none';
+        if (secSovereignty) secSovereignty.style.display = 'none';
+        if (secCloud) secCloud.style.display = 'none';
+      } else if (group === 'costiq') {
+        if (secFinOps) secFinOps.style.display = 'none';
+        if (secCostIq) secCostIq.style.display = 'block';
         if (secSovereignty) secSovereignty.style.display = 'none';
         if (secCloud) secCloud.style.display = 'none';
       } else if (group === 'sovereignty') {
         if (secFinOps) secFinOps.style.display = 'none';
+        if (secCostIq) secCostIq.style.display = 'none';
         if (secSovereignty) secSovereignty.style.display = 'block';
         if (secCloud) secCloud.style.display = 'none';
       } else if (group === 'cloud') {
         if (secFinOps) secFinOps.style.display = 'none';
+        if (secCostIq) secCostIq.style.display = 'none';
         if (secSovereignty) secSovereignty.style.display = 'none';
         if (secCloud) secCloud.style.display = 'block';
       } else {
         if (secFinOps) secFinOps.style.display = 'block';
+        if (secCostIq) secCostIq.style.display = 'block';
         if (secSovereignty) secSovereignty.style.display = 'block';
         if (secCloud) secCloud.style.display = 'block';
       }
