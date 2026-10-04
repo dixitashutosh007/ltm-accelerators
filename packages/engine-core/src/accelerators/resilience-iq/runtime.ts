@@ -45,6 +45,7 @@ export interface ResilienceResult {
   } | null;
   roadmap: Array<{ wave: string; window: string; actions: string[] }>;
   decisionLog: string[];
+  executiveSummary: string;
 }
 
 const rtoMinutes: Record<string, number | null> = {
@@ -416,6 +417,10 @@ export function evaluateResilienceIq(a: ResilienceAnswers): ResilienceResult {
     blueprintIds
   };
 
+  const executiveSummary = requirementsIncomplete || missing.length > 0
+    ? "Resilience assessment requires defined recovery objectives before a final target-state recommendation can be issued."
+    : `The assessment indicates a ${rating(postureScore).toLowerCase()} resilience posture with ${criticalExposure(gaps).toLowerCase()} critical exposure. ${preferred ? preferred + " is the preferred primary recovery strategy based on the stated recovery objectives and risk profile." : "A primary recovery strategy remains undefined."}`;
+
   return {
     status: requirementsIncomplete || missing.length > 0 ? "requirements_incomplete" : "ready",
     score: requirementsIncomplete ? null : score,
@@ -437,6 +442,7 @@ export function evaluateResilienceIq(a: ResilienceAnswers): ResilienceResult {
     technologyOptions: preferred ? technologyOptions([preferred, ...recoveryRanking.slice(1,3).map(x => x.id), ...(cyberRisk(a) === "destructive" || cyberRisk(a) === "high" ? ["CYBER-01"] : [])], a) : {},
     blueprint,
     roadmap: roadmap(gaps, preferred),
+    executiveSummary,
     decisionLog: [
       "Vendor-neutral strategy is selected before provider implementation mapping.",
       "RTO/RPO are treated as business requirements and are never inferred from technology.",
