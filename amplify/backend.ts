@@ -49,5 +49,15 @@ httpApi.addRoutes({
   methods: [HttpMethod.GET, HttpMethod.POST, HttpMethod.OPTIONS],
   integration: integrations.costIq
 });
+httpApi.addRoutes({
+  path: '/api/evaluate/cost-iq/ai-review',
+  methods: [HttpMethod.POST, HttpMethod.OPTIONS],
+  integration: integrations.costIq
+});
+httpApi.addRoutes({
+  path: '/api/evaluate/cost-iq/ai-report',
+  methods: [HttpMethod.POST, HttpMethod.OPTIONS],
+  integration: integrations.costIq
+});
 
 backend.addOutput({ custom: { apiUrl: httpApi.url } });
