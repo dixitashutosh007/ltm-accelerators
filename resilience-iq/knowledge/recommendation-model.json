@@ -1,0 +1,404 @@
+{
+  "schema_version": "1.0",
+  "last_reviewed": "2026-10-04",
+  "purpose": "Explainable vendor-neutral recommendation engine for Resilience IQ. Converts assessed business requirements, current capability, risk and evidence into ranked resilience patterns and implementation guidance.",
+  "principle": "Score patterns only after hard constraints and mandatory resilience controls are applied. A high assessment score must never override a requirement mismatch or critical risk.",
+  "pipeline": [
+    "normalize_answers",
+    "derive_business_requirements",
+    "derive_current_capability",
+    "calculate_recovery_gaps",
+    "apply_hard_elimination_rules",
+    "apply_mandatory_control_rules",
+    "score_remaining_patterns",
+    "select_preferred_and_alternatives",
+    "map_to_technology",
+    "generate_evidence_and_testing_plan",
+    "generate_roadmap"
+  ],
+  "normalized_inputs": {
+    "business_criticality": [
+      "low",
+      "medium",
+      "high",
+      "very_high",
+      "extreme",
+      "unknown"
+    ],
+    "impact_tolerance": [
+      "near_zero",
+      "minutes",
+      "hours",
+      "day_plus",
+      "unknown"
+    ],
+    "required_rto_minutes": "number|null",
+    "required_rpo_minutes": "number|null",
+    "current_rto_minutes": "number|null",
+    "current_rpo_minutes": "number|null",
+    "cyber_risk": [
+      "low",
+      "medium",
+      "high",
+      "destructive",
+      "unknown"
+    ],
+    "dependency_risk": [
+      "low",
+      "medium",
+      "high",
+      "unknown"
+    ],
+    "concentration_risk": [
+      "low",
+      "medium",
+      "high",
+      "unknown"
+    ],
+    "regulatory_constraints": [
+      "none",
+      "moderate",
+      "high",
+      "unknown"
+    ],
+    "environment": [
+      "on_prem",
+      "aws",
+      "azure",
+      "gcp",
+      "hybrid",
+      "saas",
+      "unknown"
+    ],
+    "cost_tolerance": [
+      "low",
+      "medium",
+      "high",
+      "very_high",
+      "unknown"
+    ],
+    "evidence_confidence": [
+      "none",
+      "self_declared",
+      "documented",
+      "tested",
+      "independently_validated"
+    ]
+  },
+  "derived_metrics": {
+    "rto_gap_minutes": "max(required_rto_minutes - current_rto_minutes, 0), when both are known",
+    "rpo_gap_minutes": "max(required_rpo_minutes - current_rpo_minutes, 0), when both are known",
+    "requirement_defined": "required_rto_minutes != null AND required_rpo_minutes != null",
+    "capability_proven": "current_rto_minutes != null AND current_rpo_minutes != null AND recovery_test_evidence=true",
+    "strategy_mismatch": "current recovery capability does not credibly meet defined business requirement",
+    "evidence_gap": "required control exists by assertion/design but lacks appropriate test evidence"
+  },
+  "hard_constraints": [
+    {
+      "id": "HC-01",
+      "condition": "required_rto_minutes < 60",
+      "eliminate": [
+        "DR-01"
+      ],
+      "reason": "Backup restoration cannot credibly satisfy sub-hour recovery without an explicitly validated exception."
+    },
+    {
+      "id": "HC-02",
+      "condition": "required_rto_minutes < 15",
+      "eliminate": [
+        "DR-01",
+        "DR-02"
+      ],
+      "reason": "Backup restore and conventional pilot-light rebuild are not credible default choices for very low RTO."
+    },
+    {
+      "id": "HC-03",
+      "condition": "required_rpo_minutes <= 15",
+      "eliminate": [
+        "DR-01"
+      ],
+      "reason": "Conventional backup/restore is not a default fit for very low data-loss tolerance."
+    },
+    {
+      "id": "HC-04",
+      "condition": "required_rpo_minutes == 0 OR required_rto_minutes <= 5",
+      "prefer": [
+        "DR-05",
+        "DR-04"
+      ],
+      "reason": "Near-zero objectives require continuously available or hot recovery architectures where technically feasible."
+    },
+    {
+      "id": "HC-05",
+      "condition": "business_criticality == 'low' AND regulatory_constraints == 'none' AND required_rto_minutes >= 1440",
+      "prefer": [
+        "DR-01",
+        "DR-06"
+      ],
+      "reason": "Do not over-engineer low-impact services."
+    },
+    {
+      "id": "HC-06",
+      "condition": "cyber_risk in ['high','destructive']",
+      "require_any": [
+        "DATA-01",
+        "DATA-02",
+        "CYBER-01",
+        "CYBER-02",
+        "CYBER-03"
+      ],
+      "reason": "Cyber resilience must include protected recovery controls."
+    },
+    {
+      "id": "HC-07",
+      "condition": "concentration_risk == 'high'",
+      "require_any": [
+        "TP-03",
+        "TP-05",
+        "INF-03",
+        "INF-04"
+      ],
+      "reason": "Correlated provider/failure-domain risk must be treated explicitly."
+    },
+    {
+      "id": "HC-08",
+      "condition": "dependency_risk == 'high'",
+      "require_any": [
+        "DR-07",
+        "APP-04",
+        "DR-08"
+      ],
+      "reason": "Recovery must sequence and validate shared dependencies."
+    },
+    {
+      "id": "HC-09",
+      "condition": "required_rto_minutes == null OR required_rpo_minutes == null",
+      "block_final_recommendation": true,
+      "reason": "Business requirements cannot be safely inferred from technology."
+    }
+  ],
+  "scoring": {
+    "weights": {
+      "requirement_fit": 0.3,
+      "risk_reduction": 0.2,
+      "technology_feasibility": 0.15,
+      "cyber_resilience": 0.1,
+      "operational_complexity": 0.1,
+      "cost_efficiency": 0.1,
+      "testing_evidence": 0.05
+    },
+    "scale": "0-100",
+    "formula": "sum(dimension_score * dimension_weight) for non-eliminated candidates",
+    "dimension_guidance": {
+      "requirement_fit": "How credibly the pattern meets required RTO, RPO and impact tolerance.",
+      "risk_reduction": "Reduction of identified business, dependency, concentration and failure-domain risks.",
+      "technology_feasibility": "Fit with application/data architecture, environment and constraints.",
+      "cyber_resilience": "Ability to recover after compromise and preserve trustworthy recovery points.",
+      "operational_complexity": "Score higher for patterns the operating model can realistically sustain; penalize unnecessary complexity.",
+      "cost_efficiency": "Relative value against cost tolerance and business impact; do not optimize cost when impact tolerance is strict.",
+      "testing_evidence": "Strength of existing evidence and ability to validate the proposed pattern."
+    },
+    "score_bands": [
+      {
+        "min": 85,
+        "max": 100,
+        "label": "Strong fit"
+      },
+      {
+        "min": 70,
+        "max": 84,
+        "label": "Good fit"
+      },
+      {
+        "min": 55,
+        "max": 69,
+        "label": "Conditional fit"
+      },
+      {
+        "min": 0,
+        "max": 54,
+        "label": "Weak fit"
+      }
+    ]
+  },
+  "pattern_fit_rules": [
+    {
+      "pattern": "DR-01",
+      "fit": "high",
+      "when": "required_rto_minutes >= 1440 AND required_rpo_minutes >= 1440 AND business_criticality in ['low','medium']"
+    },
+    {
+      "pattern": "DR-02",
+      "fit": "high",
+      "when": "required_rto_minutes >= 60 AND required_rto_minutes <= 720 AND required_rpo_minutes <= 240"
+    },
+    {
+      "pattern": "DR-03",
+      "fit": "high",
+      "when": "required_rto_minutes >= 15 AND required_rto_minutes <= 240 AND required_rpo_minutes <= 60 AND business_criticality in ['high','very_high']"
+    },
+    {
+      "pattern": "DR-04",
+      "fit": "high",
+      "when": "required_rto_minutes <= 60 AND required_rpo_minutes <= 15 AND business_criticality in ['very_high','extreme']"
+    },
+    {
+      "pattern": "DR-05",
+      "fit": "high",
+      "when": "required_rto_minutes <= 15 AND required_rpo_minutes <= 5 AND business_criticality == 'extreme'"
+    },
+    {
+      "pattern": "DR-06",
+      "fit": "high",
+      "when": "portfolio_assessment == true"
+    },
+    {
+      "pattern": "DATA-01",
+      "fit": "high",
+      "when": "cyber_risk in ['high','destructive']"
+    },
+    {
+      "pattern": "DATA-02",
+      "fit": "high",
+      "when": "cyber_risk == 'destructive' OR identity_recovery_gap == true"
+    },
+    {
+      "pattern": "CYBER-01",
+      "fit": "high",
+      "when": "ransomware_in_scope == true AND clean_recovery_required == true"
+    },
+    {
+      "pattern": "TP-05",
+      "fit": "high",
+      "when": "concentration_risk == 'high'"
+    },
+    {
+      "pattern": "INF-04",
+      "fit": "high",
+      "when": "cloud_environment == true AND region_failure_in_scope == true"
+    },
+    {
+      "pattern": "DR-07",
+      "fit": "high",
+      "when": "dependency_risk == 'high'"
+    },
+    {
+      "pattern": "DR-08",
+      "fit": "high",
+      "when": "recovery_orchestration_required == true"
+    }
+  ],
+  "evidence_adjustments": [
+    {
+      "condition": "recovery_test_evidence=false",
+      "dimension": "testing_evidence",
+      "adjustment": -20
+    },
+    {
+      "condition": "backup_restore_test=false",
+      "dimension": "testing_evidence",
+      "adjustment": -20
+    },
+    {
+      "condition": "critical_requirement_evidence='none'",
+      "dimension": "requirement_fit",
+      "adjustment": -25
+    },
+    {
+      "condition": "independently_validated=true",
+      "dimension": "testing_evidence",
+      "adjustment": 10
+    },
+    {
+      "condition": "documented_only=true",
+      "dimension": "testing_evidence",
+      "adjustment": -10
+    }
+  ],
+  "risk_adjustments": [
+    {
+      "condition": "same_failure_domain_as_production=true",
+      "adjustment": -30,
+      "flag": "correlated_failure"
+    },
+    {
+      "condition": "unmanaged_identity_dependency=true",
+      "adjustment": -20,
+      "flag": "identity_recovery_gap"
+    },
+    {
+      "condition": "high_provider_concentration=true AND no_alternative=true",
+      "adjustment": -20,
+      "flag": "concentration_risk"
+    },
+    {
+      "condition": "required_objectives_not_tested=true",
+      "adjustment": -15,
+      "flag": "unproven_recovery"
+    }
+  ],
+  "output_contract": {
+    "assessment_summary": {
+      "overall_score": "0-100",
+      "maturity": "Reactive|Documented|Defined|Tested|Adaptive",
+      "rating": "Critical Exposure|Fragile|Managed|Resilient|Adaptive",
+      "confidence": "0-100"
+    },
+    "recommendation": {
+      "preferred_pattern": "pattern id",
+      "preferred_score": "0-100",
+      "alternative_patterns": [
+        "pattern id"
+      ],
+      "decision_summary": "plain-language explanation",
+      "requirement_fit": "explanation",
+      "risk_reduction": "explanation",
+      "assumptions": [
+        "..."
+      ],
+      "key_risks": [
+        "..."
+      ],
+      "prerequisites": [
+        "..."
+      ],
+      "evidence_gaps": [
+        "..."
+      ],
+      "testing_requirements": [
+        "..."
+      ]
+    },
+    "technology_mapping": {
+      "environment": "selected environment",
+      "implementation_family": "from implementation-mappings.json",
+      "architecture_variant": "selected implementation variant",
+      "provider_specific_notes": [
+        "..."
+      ]
+    },
+    "roadmap": {
+      "immediate_0_90_days": [
+        "..."
+      ],
+      "near_term_3_6_months": [
+        "..."
+      ],
+      "strategic_6_18_months": [
+        "..."
+      ]
+    }
+  },
+  "explanation_template": "Based on the defined business requirement, current recovery capability, dependency/cyber/concentration risk and available evidence, {preferred_pattern} is the preferred strategy because {rationale}. {alternative_pattern} remains viable if {condition}. The recommendation depends on {assumptions} and must be validated through {tests}.",
+  "guardrails": [
+    "Never recommend a pattern solely because it has the highest numerical score.",
+    "Never infer RTO/RPO from existing architecture.",
+    "Never hide evidence gaps behind a high maturity score.",
+    "Never recommend active-active solely because it is technically possible.",
+    "Always provide at least one alternative unless every alternative is eliminated by a hard constraint.",
+    "Separate vendor-neutral strategy from provider implementation.",
+    "Treat cyber recovery and identity recovery as distinct from conventional DR.",
+    "Treat third-party concentration as an end-to-end resilience concern.",
+    "If critical requirements are unknown, produce a requirement-definition action rather than a false target architecture."
+  ]
+}
