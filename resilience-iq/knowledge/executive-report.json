@@ -1,0 +1,57 @@
+{
+  "schema_version": "1.0",
+  "name": "resilience-iq-executive-report",
+  "phase": "4",
+  "purpose": "Convert Executive Scan results into an evidence-aware CIO/CTO advisory report without overstating certainty.",
+  "sections": [
+    "executive_summary",
+    "assessment_scope",
+    "posture_scorecard",
+    "business_requirement_baseline",
+    "critical_exposure",
+    "critical_gaps",
+    "recovery_strategy",
+    "decision_rationale",
+    "supporting_controls",
+    "technology_mapping",
+    "evidence_validation",
+    "target_state",
+    "roadmap",
+    "governance_metrics",
+    "decision_points",
+    "recommendation_sensitivity"
+  ],
+  "rules": {
+    "executive_scan_is_initial_assessment": true,
+    "final_architecture_requires_validation": true,
+    "vendor_neutral_before_provider_mapping": true,
+    "recovery_strategy_separate_from_supporting_controls": true,
+    "unknown_requirements_are_never_inferred": true,
+    "evidence_gaps_must_be_visible": true
+  },
+  "recommendation_sensitivity": {
+    "purpose": "Explain conditions that could change the preferred recovery strategy.",
+    "triggers": [
+      "measured RTO misses target",
+      "measured RPO misses target",
+      "business impact tolerance changes",
+      "dependency topology changes",
+      "cyber recovery cannot be isolated",
+      "concentration cannot be mitigated",
+      "cost or operating-model constraints change"
+    ]
+  },
+  "decision_points": [
+    "Approve immediate risk-treatment priorities",
+    "Validate target RTO/RPO and impact tolerance",
+    "Approve preferred recovery strategy for detailed design",
+    "Approve cyber recovery and identity recovery controls",
+    "Approve dependency and third-party resilience remediation"
+  ],
+  "output_contract": {
+    "top_risks": 5,
+    "roadmap_waves": 4,
+    "recommendation_alternatives": 2,
+    "evidence_requests_grouped": true
+  }
+}
