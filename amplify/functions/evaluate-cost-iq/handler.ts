@@ -26,13 +26,6 @@ export const handler = async (event: APIGatewayProxyEventV2): Promise<APIGateway
     if (method === 'GET' && path.endsWith('/metadata')) return response(200, metadata(), id);
     if (method === 'GET' && path.endsWith('/questions')) return response(200, questions(), id);
 
-    if (method === 'POST' && path.endsWith('/ai-review')) {
-      return response(200, await aiReview(body), id);
-    }
-    if (method === 'POST' && path.endsWith('/ai-report')) {
-      return response(200, await aiReport(body), id);
-    }
-
     if (method !== 'POST') return response(405, { error: 'method_not_allowed', requestId: id }, id);
 
     let body: any = {};
@@ -41,6 +34,13 @@ export const handler = async (event: APIGatewayProxyEventV2): Promise<APIGateway
         ? JSON.parse(Buffer.from(event.body, 'base64').toString('utf-8'))
         : JSON.parse(event.body);
     }
+    if (method === 'POST' && path.endsWith('/ai-review')) {
+      return response(200, await aiReview(body), id);
+    }
+    if (method === 'POST' && path.endsWith('/ai-report')) {
+      return response(200, await aiReport(body), id);
+    }
+
     if (!body.answers || typeof body.answers !== 'object' || Array.isArray(body.answers)) {
       return response(400, { error: 'answers_object_required', requestId: id }, id);
     }
