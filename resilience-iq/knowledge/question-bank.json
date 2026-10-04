@@ -1,0 +1,1085 @@
+{
+  "schema_version": "1.0",
+  "last_reviewed": "2026-10-04",
+  "purpose": "Evidence-aware executive and advisory question bank for Resilience IQ. Questions are reusable assessment objects; branching is defined in decision-tree.json.",
+  "answer_types": [
+    "single_select",
+    "multi_select",
+    "number",
+    "text",
+    "yes_no",
+    "evidence_select"
+  ],
+  "evidence_levels": [
+    "none",
+    "self_declared",
+    "documented",
+    "tested",
+    "independently_validated"
+  ],
+  "executive_questions": [
+    {
+      "id": "EX-01",
+      "domain": "OPS",
+      "taxonomy": "business_service_criticality",
+      "text": "Which business services are most critical to the enterprise?",
+      "type": "multi_select",
+      "options": [
+        "Customer-facing services",
+        "Revenue-generating services",
+        "Regulatory/financial reporting",
+        "Workforce-critical services",
+        "Supply-chain/operations services",
+        "Other"
+      ],
+      "evidence": [
+        "BIA",
+        "application inventory"
+      ],
+      "required": true
+    },
+    {
+      "id": "EX-02",
+      "domain": "OPS",
+      "taxonomy": "impact_tolerance",
+      "text": "For the most critical service, how long can the business tolerate material disruption before impact becomes unacceptable?",
+      "type": "single_select",
+      "options": [
+        "<15 minutes",
+        "15-60 minutes",
+        "1-4 hours",
+        "4-24 hours",
+        ">24 hours",
+        "Unknown"
+      ],
+      "evidence": [
+        "BIA"
+      ],
+      "required": true
+    },
+    {
+      "id": "EX-03",
+      "domain": "DR",
+      "taxonomy": "RTO",
+      "text": "What is the required recovery time for the most critical service?",
+      "type": "single_select",
+      "options": [
+        "<15 minutes",
+        "15-60 minutes",
+        "1-4 hours",
+        "4-24 hours",
+        ">24 hours",
+        "Unknown"
+      ],
+      "evidence": [
+        "RTO/RPO register",
+        "BIA"
+      ],
+      "required": true
+    },
+    {
+      "id": "EX-04",
+      "domain": "DR",
+      "taxonomy": "RPO",
+      "text": "What is the maximum acceptable data loss for the most critical service?",
+      "type": "single_select",
+      "options": [
+        "Near-zero",
+        "<15 minutes",
+        "15-60 minutes",
+        "1-4 hours",
+        "4-24 hours",
+        ">24 hours",
+        "Unknown"
+      ],
+      "evidence": [
+        "RTO/RPO register",
+        "BIA"
+      ],
+      "required": true
+    },
+    {
+      "id": "EX-05",
+      "domain": "OPS",
+      "taxonomy": "dependency",
+      "text": "Are critical business services mapped end-to-end to applications, data, infrastructure, people and third parties?",
+      "type": "single_select",
+      "options": [
+        "Yes, current and validated",
+        "Partially",
+        "Documented but stale",
+        "No",
+        "Unknown"
+      ],
+      "evidence": [
+        "dependency map",
+        "architecture diagram"
+      ],
+      "required": true
+    },
+    {
+      "id": "EX-06",
+      "domain": "DR",
+      "taxonomy": "recovery_capability",
+      "text": "Can critical applications be recovered within their stated RTO today?",
+      "type": "single_select",
+      "options": [
+        "Yes, proven by testing",
+        "Likely, but not recently tested",
+        "No",
+        "Unknown"
+      ],
+      "evidence": [
+        "failover test evidence",
+        "DR runbook"
+      ],
+      "required": true
+    },
+    {
+      "id": "EX-07",
+      "domain": "DR",
+      "taxonomy": "recovery_testing",
+      "text": "When was the last successful end-to-end recovery test of a critical service?",
+      "type": "single_select",
+      "options": [
+        "Within 3 months",
+        "3-12 months ago",
+        "1-2 years ago",
+        ">2 years ago",
+        "Never",
+        "Unknown"
+      ],
+      "evidence": [
+        "failover test evidence"
+      ],
+      "required": true
+    },
+    {
+      "id": "EX-08",
+      "domain": "CYBER",
+      "taxonomy": "cyber_recovery",
+      "text": "Can ransomware or destructive compromise affect both production and recovery assets?",
+      "type": "single_select",
+      "options": [
+        "No, recovery is isolated",
+        "Potentially",
+        "Yes",
+        "Unknown"
+      ],
+      "evidence": [
+        "cyber recovery test evidence",
+        "architecture diagram"
+      ],
+      "required": true
+    },
+    {
+      "id": "EX-09",
+      "domain": "CYBER",
+      "taxonomy": "backup_integrity",
+      "text": "Are critical backups immutable and independently recoverable?",
+      "type": "single_select",
+      "options": [
+        "Yes, tested",
+        "Immutable but restore not proven",
+        "Recoverable but not immutable",
+        "No",
+        "Unknown"
+      ],
+      "evidence": [
+        "backup evidence",
+        "restore test evidence"
+      ],
+      "required": true
+    },
+    {
+      "id": "EX-10",
+      "domain": "TP",
+      "taxonomy": "third_party",
+      "text": "Do critical services depend on third parties whose failure could breach business impact tolerance?",
+      "type": "single_select",
+      "options": [
+        "No",
+        "Yes, but alternatives exist",
+        "Yes, with no viable alternative",
+        "Unknown"
+      ],
+      "evidence": [
+        "dependency map",
+        "supplier SLA/contract"
+      ],
+      "required": true
+    },
+    {
+      "id": "EX-11",
+      "domain": "TP",
+      "taxonomy": "concentration_risk",
+      "text": "Do multiple critical services rely on the same cloud provider, region, network provider, SaaS platform or other concentration point?",
+      "type": "single_select",
+      "options": [
+        "No material concentration",
+        "Moderate concentration",
+        "High concentration",
+        "Unknown"
+      ],
+      "evidence": [
+        "dependency map",
+        "application inventory"
+      ],
+      "required": true
+    },
+    {
+      "id": "EX-12",
+      "domain": "INFRA",
+      "taxonomy": "single_point_of_failure",
+      "text": "Are there known single points of failure in facilities, power, network, storage, identity or recovery infrastructure?",
+      "type": "single_select",
+      "options": [
+        "No known SPOFs",
+        "Some non-critical SPOFs",
+        "Critical SPOFs exist",
+        "Unknown"
+      ],
+      "evidence": [
+        "architecture diagram",
+        "risk register"
+      ],
+      "required": true
+    },
+    {
+      "id": "EX-13",
+      "domain": "BCP",
+      "taxonomy": "people_and_roles",
+      "text": "Can critical business processes continue if key people or the primary workplace are unavailable?",
+      "type": "single_select",
+      "options": [
+        "Yes, proven",
+        "Yes, documented",
+        "Partially",
+        "No",
+        "Unknown"
+      ],
+      "evidence": [
+        "policy/document",
+        "exercise evidence"
+      ],
+      "required": true
+    },
+    {
+      "id": "EX-14",
+      "domain": "BCP",
+      "taxonomy": "crisis_management",
+      "text": "Is there an established crisis-management and executive decision process with clear roles and communications?",
+      "type": "single_select",
+      "options": [
+        "Yes, exercised",
+        "Yes, documented",
+        "Partially",
+        "No"
+      ],
+      "evidence": [
+        "policy/document",
+        "exercise evidence"
+      ],
+      "required": true
+    },
+    {
+      "id": "EX-15",
+      "domain": "GOV",
+      "taxonomy": "governance",
+      "text": "Is resilience performance reviewed regularly by accountable business and technology leadership?",
+      "type": "single_select",
+      "options": [
+        "Yes, with metrics and actions",
+        "Yes, periodic review",
+        "Informal",
+        "No"
+      ],
+      "evidence": [
+        "policy/document",
+        "observability/control evidence"
+      ],
+      "required": true
+    },
+    {
+      "id": "EX-16",
+      "domain": "OPS",
+      "taxonomy": "scenario_testing",
+      "text": "Have severe-but-plausible scenarios been exercised across business and technology teams?",
+      "type": "single_select",
+      "options": [
+        "Yes, regularly",
+        "Yes, occasionally",
+        "Technical tests only",
+        "No",
+        "Unknown"
+      ],
+      "evidence": [
+        "exercise evidence",
+        "incident/postmortem"
+      ],
+      "required": true
+    },
+    {
+      "id": "EX-17",
+      "domain": "TP",
+      "taxonomy": "exit_strategy",
+      "text": "Do critical third parties have tested continuity or exit arrangements?",
+      "type": "single_select",
+      "options": [
+        "Yes, tested",
+        "Documented only",
+        "Contractual only",
+        "No",
+        "Unknown"
+      ],
+      "evidence": [
+        "supplier SLA/contract",
+        "exercise evidence"
+      ],
+      "required": true
+    },
+    {
+      "id": "EX-18",
+      "domain": "INFRA",
+      "taxonomy": "environment",
+      "text": "What technology environments support critical services?",
+      "type": "multi_select",
+      "options": [
+        "On-premises",
+        "AWS",
+        "Azure",
+        "GCP",
+        "Other public cloud",
+        "SaaS"
+      ],
+      "evidence": [
+        "application inventory",
+        "architecture diagram"
+      ],
+      "required": true
+    },
+    {
+      "id": "EX-19",
+      "domain": "CYBER",
+      "taxonomy": "identity_recovery",
+      "text": "Can privileged identity and access be recovered if the primary identity/control plane is compromised?",
+      "type": "single_select",
+      "options": [
+        "Yes, isolated alternate path exists",
+        "Partially",
+        "No",
+        "Unknown"
+      ],
+      "evidence": [
+        "cyber recovery test evidence",
+        "architecture diagram"
+      ],
+      "required": true
+    },
+    {
+      "id": "EX-20",
+      "domain": "DR",
+      "taxonomy": "recovery_capability",
+      "text": "How confident are you that documented recovery procedures meet the stated business objectives?",
+      "type": "single_select",
+      "options": [
+        "High — independently validated",
+        "High — tested",
+        "Medium — documented but not fully tested",
+        "Low",
+        "Unknown"
+      ],
+      "evidence": [
+        "DR runbook",
+        "failover test evidence"
+      ],
+      "required": true
+    }
+  ],
+  "advisory_question_families": [
+    {
+      "id": "AF-BIA",
+      "domain": "BCP",
+      "trigger": "critical_service_identified",
+      "questions": [
+        "AF-BIA-01",
+        "AF-BIA-02",
+        "AF-BIA-03",
+        "AF-BIA-04"
+      ]
+    },
+    {
+      "id": "AF-DR",
+      "domain": "DR",
+      "trigger": "critical_service_or_recovery_gap",
+      "questions": [
+        "AF-DR-01",
+        "AF-DR-02",
+        "AF-DR-03",
+        "AF-DR-04",
+        "AF-DR-05",
+        "AF-DR-06"
+      ]
+    },
+    {
+      "id": "AF-CYBER",
+      "domain": "CYBER",
+      "trigger": "ransomware_or_destructive_attack_in_scope",
+      "questions": [
+        "AF-CY-01",
+        "AF-CY-02",
+        "AF-CY-03",
+        "AF-CY-04",
+        "AF-CY-05"
+      ]
+    },
+    {
+      "id": "AF-TP",
+      "domain": "TP",
+      "trigger": "critical_third_party_identified",
+      "questions": [
+        "AF-TP-01",
+        "AF-TP-02",
+        "AF-TP-03",
+        "AF-TP-04"
+      ]
+    },
+    {
+      "id": "AF-CLOUD",
+      "domain": "INFRA",
+      "trigger": "cloud_environment_selected",
+      "questions": [
+        "AF-CL-01",
+        "AF-CL-02",
+        "AF-CL-03",
+        "AF-CL-04"
+      ]
+    },
+    {
+      "id": "AF-ONPREM",
+      "domain": "INFRA",
+      "trigger": "on_prem_environment_selected",
+      "questions": [
+        "AF-OP-01",
+        "AF-OP-02",
+        "AF-OP-03"
+      ]
+    },
+    {
+      "id": "AF-TEST",
+      "domain": "OPS",
+      "trigger": "recovery_not_recently_tested",
+      "questions": [
+        "AF-TS-01",
+        "AF-TS-02",
+        "AF-TS-03"
+      ]
+    },
+    {
+      "id": "AF-GOV",
+      "domain": "BCP",
+      "trigger": "governance_deep_dive",
+      "questions": [
+        "AF-GV-01",
+        "AF-GV-02",
+        "AF-GV-03"
+      ]
+    }
+  ],
+  "advisory_questions": [
+    {
+      "id": "AF-BIA-01",
+      "domain": "BCP",
+      "taxonomy": "MTPD",
+      "text": "What is the maximum tolerable period of disruption for this service before unacceptable business impact occurs?",
+      "type": "single_select",
+      "options": [
+        "<15 minutes",
+        "15-60 minutes",
+        "1-4 hours",
+        "4-24 hours",
+        ">24 hours",
+        "Unknown"
+      ],
+      "evidence": [
+        "BIA"
+      ]
+    },
+    {
+      "id": "AF-BIA-02",
+      "domain": "OPS",
+      "taxonomy": "dependency",
+      "text": "Which people, processes, applications, data, facilities and third parties are mandatory for this service to operate?",
+      "type": "multi_select",
+      "options": [
+        "People",
+        "Process",
+        "Application",
+        "Data",
+        "Facility",
+        "Network",
+        "Identity",
+        "Third party",
+        "Other"
+      ],
+      "evidence": [
+        "dependency map",
+        "BIA"
+      ]
+    },
+    {
+      "id": "AF-BIA-03",
+      "domain": "OPS",
+      "taxonomy": "impact_tolerance",
+      "text": "Which failure impacts are included in the service impact tolerance?",
+      "type": "multi_select",
+      "options": [
+        "Revenue loss",
+        "Customer harm",
+        "Regulatory breach",
+        "Safety impact",
+        "Reputational impact",
+        "Operational backlog",
+        "Data integrity loss"
+      ],
+      "evidence": [
+        "BIA",
+        "risk register"
+      ]
+    },
+    {
+      "id": "AF-BIA-04",
+      "domain": "OPS",
+      "taxonomy": "single_point_of_failure",
+      "text": "Which dependencies can independently prevent service recovery?",
+      "type": "multi_select",
+      "options": [
+        "Identity",
+        "Network",
+        "DNS",
+        "Storage",
+        "Database",
+        "Third party",
+        "People",
+        "Facility",
+        "Cloud control plane",
+        "Other"
+      ],
+      "evidence": [
+        "dependency map",
+        "architecture diagram"
+      ]
+    },
+    {
+      "id": "AF-DR-01",
+      "domain": "DR",
+      "taxonomy": "recovery_capability",
+      "text": "What is the current proven recovery time for this service?",
+      "type": "single_select",
+      "options": [
+        "<15 minutes",
+        "15-60 minutes",
+        "1-4 hours",
+        "4-24 hours",
+        ">24 hours",
+        "Not proven"
+      ],
+      "evidence": [
+        "failover test evidence"
+      ]
+    },
+    {
+      "id": "AF-DR-02",
+      "domain": "DR",
+      "taxonomy": "recovery_capability",
+      "text": "What is the current proven recovery point for this service?",
+      "type": "single_select",
+      "options": [
+        "Near-zero",
+        "<15 minutes",
+        "15-60 minutes",
+        "1-4 hours",
+        "4-24 hours",
+        ">24 hours",
+        "Not proven"
+      ],
+      "evidence": [
+        "restore test evidence"
+      ]
+    },
+    {
+      "id": "AF-DR-03",
+      "domain": "DR",
+      "taxonomy": "recovery_testing",
+      "text": "Which recovery activities have been tested end-to-end?",
+      "type": "multi_select",
+      "options": [
+        "Application failover",
+        "Database recovery",
+        "Data restore",
+        "Network recovery",
+        "Identity recovery",
+        "Third-party dependency",
+        "Failback",
+        "Business validation"
+      ],
+      "evidence": [
+        "failover test evidence",
+        "restore test evidence"
+      ]
+    },
+    {
+      "id": "AF-DR-04",
+      "domain": "DR",
+      "taxonomy": "dependency",
+      "text": "Does recovery depend on services that fail with the same site, region, provider or control plane?",
+      "type": "single_select",
+      "options": [
+        "No",
+        "Yes",
+        "Partially",
+        "Unknown"
+      ],
+      "evidence": [
+        "dependency map",
+        "architecture diagram"
+      ]
+    },
+    {
+      "id": "AF-DR-05",
+      "domain": "DR",
+      "taxonomy": "recovery_capability",
+      "text": "How is recovery orchestrated?",
+      "type": "single_select",
+      "options": [
+        "Manual runbook",
+        "Partially automated",
+        "Fully orchestrated",
+        "Rebuild from IaC",
+        "Unknown"
+      ],
+      "evidence": [
+        "DR runbook",
+        "observability/control evidence"
+      ]
+    },
+    {
+      "id": "AF-DR-06",
+      "domain": "DR",
+      "taxonomy": "technology_constraints",
+      "text": "Which recovery constraints materially limit the target strategy?",
+      "type": "multi_select",
+      "options": [
+        "Legacy technology",
+        "Licensing",
+        "Data volume",
+        "Network bandwidth",
+        "Vendor dependency",
+        "Data residency",
+        "Skill availability",
+        "Budget",
+        "None known"
+      ],
+      "evidence": [
+        "risk register",
+        "architecture diagram"
+      ]
+    },
+    {
+      "id": "AF-CY-01",
+      "domain": "CYBER",
+      "taxonomy": "cyber_recovery",
+      "text": "Can attackers modify, encrypt or delete backup infrastructure using production credentials?",
+      "type": "single_select",
+      "options": [
+        "No",
+        "Potentially",
+        "Yes",
+        "Unknown"
+      ],
+      "evidence": [
+        "architecture diagram",
+        "cyber recovery test evidence"
+      ]
+    },
+    {
+      "id": "AF-CY-02",
+      "domain": "CYBER",
+      "taxonomy": "backup_integrity",
+      "text": "How are clean recovery points identified and validated?",
+      "type": "single_select",
+      "options": [
+        "Automated validation",
+        "Regular manual validation",
+        "Occasional checks",
+        "No formal validation",
+        "Unknown"
+      ],
+      "evidence": [
+        "backup evidence",
+        "restore test evidence"
+      ]
+    },
+    {
+      "id": "AF-CY-03",
+      "domain": "CYBER",
+      "taxonomy": "identity_recovery",
+      "text": "Is there an isolated identity recovery path independent of the compromised production identity plane?",
+      "type": "single_select",
+      "options": [
+        "Yes, tested",
+        "Yes, documented",
+        "No",
+        "Unknown"
+      ],
+      "evidence": [
+        "cyber recovery test evidence"
+      ]
+    },
+    {
+      "id": "AF-CY-04",
+      "domain": "CYBER",
+      "taxonomy": "recovery_testing",
+      "text": "Has a destructive cyber recovery scenario been executed from compromised production to clean recovery?",
+      "type": "single_select",
+      "options": [
+        "Yes, successfully",
+        "Partially",
+        "Tabletop only",
+        "No",
+        "Unknown"
+      ],
+      "evidence": [
+        "cyber recovery test evidence"
+      ]
+    },
+    {
+      "id": "AF-CY-05",
+      "domain": "CYBER",
+      "taxonomy": "recovery_point_trust",
+      "text": "How is recovery-point trust established after a destructive event?",
+      "type": "single_select",
+      "options": [
+        "Known-good immutable points with validation",
+        "Manual investigation",
+        "Backup age only",
+        "No defined method",
+        "Unknown"
+      ],
+      "evidence": [
+        "cyber recovery test evidence",
+        "backup evidence"
+      ]
+    },
+    {
+      "id": "AF-TP-01",
+      "domain": "TP",
+      "taxonomy": "third_party",
+      "text": "What contractual resilience commitments exist for this critical provider?",
+      "type": "multi_select",
+      "options": [
+        "RTO",
+        "RPO",
+        "Availability",
+        "Incident notification",
+        "DR testing",
+        "Audit rights",
+        "Exit assistance",
+        "Data portability",
+        "None"
+      ],
+      "evidence": [
+        "supplier SLA/contract"
+      ]
+    },
+    {
+      "id": "AF-TP-02",
+      "domain": "TP",
+      "taxonomy": "concentration_risk",
+      "text": "What concentration risk exists if this provider becomes unavailable?",
+      "type": "single_select",
+      "options": [
+        "Low — viable alternative",
+        "Medium — migration required",
+        "High — no practical alternative",
+        "Unknown"
+      ],
+      "evidence": [
+        "dependency map",
+        "risk register"
+      ]
+    },
+    {
+      "id": "AF-TP-03",
+      "domain": "TP",
+      "taxonomy": "exit_strategy",
+      "text": "How quickly could the service be moved to an alternative provider or internal capability?",
+      "type": "single_select",
+      "options": [
+        "Within impact tolerance",
+        "Within days",
+        "Weeks/months",
+        "No viable exit",
+        "Unknown"
+      ],
+      "evidence": [
+        "supplier SLA/contract",
+        "exit plan"
+      ]
+    },
+    {
+      "id": "AF-TP-04",
+      "domain": "TP",
+      "taxonomy": "recovery_testing",
+      "text": "Has the provider's resilience capability been independently evidenced or tested?",
+      "type": "single_select",
+      "options": [
+        "Independent validation",
+        "Customer test",
+        "Provider test evidence",
+        "Contractual assertion only",
+        "No evidence"
+      ],
+      "evidence": [
+        "supplier SLA/contract",
+        "test evidence"
+      ]
+    },
+    {
+      "id": "AF-CL-01",
+      "domain": "INFRA",
+      "taxonomy": "failure_domain",
+      "text": "What failure domains are separated for the recovery design?",
+      "type": "multi_select",
+      "options": [
+        "Availability Zone",
+        "Region",
+        "Account/subscription/project",
+        "Identity plane",
+        "Network provider",
+        "Cloud provider",
+        "None"
+      ],
+      "evidence": [
+        "architecture diagram"
+      ]
+    },
+    {
+      "id": "AF-CL-02",
+      "domain": "INFRA",
+      "taxonomy": "single_point_of_failure",
+      "text": "Which cloud control-plane or managed-service dependencies could prevent recovery?",
+      "type": "multi_select",
+      "options": [
+        "Identity",
+        "DNS",
+        "KMS/keys",
+        "Quota",
+        "Control plane",
+        "Managed database",
+        "Network",
+        "Marketplace/licensing",
+        "None known"
+      ],
+      "evidence": [
+        "architecture diagram",
+        "risk register"
+      ]
+    },
+    {
+      "id": "AF-CL-03",
+      "domain": "INFRA",
+      "taxonomy": "data_residency",
+      "text": "Do data residency or regulatory constraints limit region/provider choices?",
+      "type": "single_select",
+      "options": [
+        "No",
+        "Yes — regions constrained",
+        "Yes — provider constrained",
+        "Unknown"
+      ],
+      "evidence": [
+        "policy/document",
+        "risk register"
+      ]
+    },
+    {
+      "id": "AF-CL-04",
+      "domain": "INFRA",
+      "taxonomy": "recovery_capability",
+      "text": "Can the recovery environment be rebuilt independently using infrastructure/configuration automation?",
+      "type": "single_select",
+      "options": [
+        "Yes, tested",
+        "Yes, documented",
+        "Partially",
+        "No",
+        "Unknown"
+      ],
+      "evidence": [
+        "architecture diagram",
+        "observability/control evidence"
+      ]
+    },
+    {
+      "id": "AF-OP-01",
+      "domain": "INFRA",
+      "taxonomy": "single_point_of_failure",
+      "text": "Is there a geographically separate recovery site with sufficient capacity?",
+      "type": "single_select",
+      "options": [
+        "Yes, tested",
+        "Yes, not tested",
+        "Limited capacity",
+        "No",
+        "Unknown"
+      ],
+      "evidence": [
+        "architecture diagram",
+        "failover test evidence"
+      ]
+    },
+    {
+      "id": "AF-OP-02",
+      "domain": "INFRA",
+      "taxonomy": "network",
+      "text": "Are network paths to the recovery environment physically or logically diverse?",
+      "type": "single_select",
+      "options": [
+        "Yes, tested",
+        "Yes, designed",
+        "Partially",
+        "No",
+        "Unknown"
+      ],
+      "evidence": [
+        "architecture diagram",
+        "test evidence"
+      ]
+    },
+    {
+      "id": "AF-OP-03",
+      "domain": "INFRA",
+      "taxonomy": "recovery_capability",
+      "text": "Can critical infrastructure configurations be reconstructed without relying on unavailable production systems?",
+      "type": "single_select",
+      "options": [
+        "Yes, automated",
+        "Yes, documented",
+        "Partially",
+        "No",
+        "Unknown"
+      ],
+      "evidence": [
+        "observability/control evidence",
+        "DR runbook"
+      ]
+    },
+    {
+      "id": "AF-TS-01",
+      "domain": "OPS",
+      "taxonomy": "recovery_testing",
+      "text": "What prevented a recent end-to-end recovery test?",
+      "type": "multi_select",
+      "options": [
+        "Business disruption risk",
+        "Cost",
+        "Complexity",
+        "Vendor limitation",
+        "Change freeze",
+        "Lack of ownership",
+        "No blocker",
+        "Other"
+      ],
+      "evidence": [
+        "risk register",
+        "exercise evidence"
+      ]
+    },
+    {
+      "id": "AF-TS-02",
+      "domain": "OPS",
+      "taxonomy": "recovery_testing",
+      "text": "Does the test measure actual recovery against business impact tolerance, not only technical availability?",
+      "type": "single_select",
+      "options": [
+        "Yes",
+        "Partially",
+        "No",
+        "Unknown"
+      ],
+      "evidence": [
+        "exercise evidence"
+      ]
+    },
+    {
+      "id": "AF-TS-03",
+      "domain": "OPS",
+      "taxonomy": "continuous_validation",
+      "text": "How frequently are recovery controls revalidated after material changes?",
+      "type": "single_select",
+      "options": [
+        "Automatically/continuously",
+        "Per major change",
+        "Quarterly/annually",
+        "Ad hoc",
+        "Never"
+      ],
+      "evidence": [
+        "observability/control evidence"
+      ]
+    },
+    {
+      "id": "AF-GV-01",
+      "domain": "BCP",
+      "taxonomy": "governance",
+      "text": "Who owns resilience outcomes for each critical business service?",
+      "type": "single_select",
+      "options": [
+        "Named business owner with technology counterpart",
+        "Technology owner only",
+        "Shared but informal",
+        "No clear owner"
+      ],
+      "evidence": [
+        "policy/document"
+      ]
+    },
+    {
+      "id": "AF-GV-02",
+      "domain": "BCP",
+      "taxonomy": "governance",
+      "text": "How are resilience exceptions and accepted risks governed?",
+      "type": "single_select",
+      "options": [
+        "Formal approval and expiry",
+        "Formal approval without expiry",
+        "Informal acceptance",
+        "Not governed"
+      ],
+      "evidence": [
+        "risk register",
+        "policy/document"
+      ]
+    },
+    {
+      "id": "AF-GV-03",
+      "domain": "BCP",
+      "taxonomy": "investment_constraints",
+      "text": "How are resilience investments prioritized?",
+      "type": "single_select",
+      "options": [
+        "Business impact and risk reduction",
+        "Regulatory priority",
+        "Technology lifecycle",
+        "Incident-driven",
+        "Budget availability",
+        "No consistent method"
+      ],
+      "evidence": [
+        "risk register",
+        "policy/document"
+      ]
+    }
+  ]
+}
