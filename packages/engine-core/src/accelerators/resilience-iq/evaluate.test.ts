@@ -1,7 +1,42 @@
 import { evaluateResilienceIq } from "./evaluate";
-const incomplete = evaluateResilienceIq({"EX-03":"Unknown","EX-04":"Unknown"});
+
+const incomplete = evaluateResilienceIq({
+  "EX-01": ["Revenue-generating services"],
+  "EX-03": "Unknown",
+  "EX-04": "Unknown"
+});
 if (incomplete.status !== "requirements_incomplete") throw new Error("Missing objectives must block recommendation");
-const result = evaluateResilienceIq({"EX-03":"15-60 minutes","EX-04":"<15 minutes","EX-07":">2 years ago","EX-09":"Immutable but restore not proven"});
-if (result.status !== "ready") throw new Error("Expected ready result");
+if (incomplete.preferredPattern !== null) throw new Error("Incomplete requirements must not produce a preferred pattern");
+if (!incomplete.evidenceRequests.includes("BIA")) throw new Error("Missing objectives should request BIA evidence");
+
+const result = evaluateResilienceIq({
+  "EX-01": ["Customer-facing services", "Revenue-generating services"],
+  "EX-02": "15-60 minutes",
+  "EX-03": "15-60 minutes",
+  "EX-04": "<15 minutes",
+  "EX-05": "Partially",
+  "EX-06": "Likely, but not recently tested",
+  "EX-07": ">2 years ago",
+  "EX-08": "Potentially",
+  "EX-09": "Immutable but restore not proven",
+  "EX-10": "Yes, but alternatives exist",
+  "EX-11": "High concentration",
+  "EX-12": "No known SPOFs",
+  "EX-13": "Partially",
+  "EX-14": "Partially",
+  "EX-15": "Yes, periodic review",
+  "EX-16": "Technical tests only",
+  "EX-17": "No",
+  "EX-18": ["AWS", "SaaS"],
+  "EX-19": "Partially",
+  "EX-20": "Medium — documented but not fully tested"
+});
+if (result.status !== "ready") throw new Error("Expected complete executive baseline to be ready");
 if (!result.eliminatedPatterns.includes("DR-01")) throw new Error("DR-01 should be eliminated");
-console.log("Resilience IQ runtime tests passed");
+if (!result.nextQuestions.some(q => q.id.startsWith("AF-"))) throw new Error("Decision tree should produce advisory questions");
+if (!result.mandatoryControls.includes("DATA-01")) throw new Error("Cyber exposure should require protected recovery");
+if (!result.technologyOptions["DR-03:aws"]) throw new Error("Preferred/alternative strategy should map to AWS implementation options");
+if (result.gapRegister.length === 0) throw new Error("Expected evidence/risk gaps");
+if (result.roadmap.length !== 4) throw new Error("Expected four roadmap waves");
+
+console.log("Resilience IQ knowledge-driven runtime tests passed");
