@@ -1,0 +1,31 @@
+name: Resilience IQ Runtime
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "resilience-iq/**"
+      - "packages/engine-core/src/accelerators/resilience-iq/**"
+      - "packages/engine-core/src/index.ts"
+      - "package.json"
+      - "tsconfig.json"
+  pull_request:
+    branches: [main]
+    paths:
+      - "resilience-iq/**"
+      - "packages/engine-core/src/accelerators/resilience-iq/**"
+      - "packages/engine-core/src/index.ts"
+      - "package.json"
+      - "tsconfig.json"
+
+jobs:
+  runtime:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm run test:resilience
