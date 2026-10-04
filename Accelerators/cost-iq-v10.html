@@ -21,6 +21,7 @@
 <main class="wrap"><div id="app"></div></main>
 <script>
 const API=window.COST_IQ_API||'';
+const $=id=>document.getElementById(id);
 let allQuestions=[],questions=[],answers={},subjective={},selectedAreas=[],sectionIndex=0,qIndex=0,assessment=null,aiReview=null;
 const BASELINE=['Enterprise Context','CIO Priorities','Spend & Financial Visibility','Cost Governance & Investment'];
 const AREAS={
