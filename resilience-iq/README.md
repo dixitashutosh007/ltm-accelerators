@@ -8,6 +8,13 @@ Assess an enterprise's ability to sustain critical business services through dis
 
 ## Phase 1 assets
 
+- `knowledge/decision-matrix.json` — pattern shortlist/elimination/ranking logic
+- `knowledge/implementation-mappings.json` — AWS/Azure/GCP/on-prem implementation mappings
+- `knowledge/question-bank.json` — executive and dynamic advisory questions
+- `knowledge/decision-tree.json` — assessment branching and evidence triggers
+- `knowledge/recommendation-model.json` — pattern recommendation engine
+- `knowledge/blueprint-engine.json` — target-state, gap-analysis and roadmap generation logic
+
 - `knowledge/frameworks.json` — framework and standards catalog
 - `knowledge/patterns.json` — initial resilience pattern library
 - `knowledge/blueprints.json` — blueprint catalog
