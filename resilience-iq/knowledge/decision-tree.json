@@ -1,0 +1,530 @@
+{
+  "schema_version": "1.0",
+  "last_reviewed": "2026-10-04",
+  "purpose": "Deterministic branching logic for Resilience IQ assessment. Rules trigger follow-up questions, evidence requests, pattern constraints and recommendation depth.",
+  "entry_sequence": [
+    "EX-01",
+    "EX-02",
+    "EX-03",
+    "EX-04",
+    "EX-05",
+    "EX-06",
+    "EX-07",
+    "EX-08",
+    "EX-09",
+    "EX-10",
+    "EX-11",
+    "EX-12",
+    "EX-13",
+    "EX-14",
+    "EX-15",
+    "EX-16",
+    "EX-17",
+    "EX-18",
+    "EX-19",
+    "EX-20"
+  ],
+  "branching_rules": [
+    {
+      "id": "BR-01",
+      "when": {
+        "question": "EX-01",
+        "condition": "critical_service_identified"
+      },
+      "then": {
+        "add_questions": [
+          "AF-BIA-01",
+          "AF-BIA-02",
+          "AF-BIA-03",
+          "AF-BIA-04"
+        ],
+        "require_evidence": [
+          "BIA",
+          "dependency map"
+        ],
+        "expand_domains": [
+          "DR",
+          "CYBER",
+          "OPS",
+          "INFRA"
+        ]
+      }
+    },
+    {
+      "id": "BR-02",
+      "when": {
+        "question": "EX-03",
+        "condition": "RTO_<15m"
+      },
+      "then": {
+        "eliminate_patterns": [
+          "DR-01",
+          "DR-02"
+        ],
+        "candidate_patterns": [
+          "DR-03",
+          "DR-04",
+          "DR-05"
+        ],
+        "add_questions": [
+          "AF-DR-01",
+          "AF-DR-03",
+          "AF-DR-04"
+        ]
+      }
+    },
+    {
+      "id": "BR-03",
+      "when": {
+        "question": "EX-03",
+        "condition": "RTO_15m_to_1h"
+      },
+      "then": {
+        "eliminate_patterns": [
+          "DR-01"
+        ],
+        "candidate_patterns": [
+          "DR-02",
+          "DR-03",
+          "DR-04",
+          "DR-05"
+        ],
+        "add_questions": [
+          "AF-DR-01",
+          "AF-DR-05"
+        ]
+      }
+    },
+    {
+      "id": "BR-04",
+      "when": {
+        "question": "EX-03",
+        "condition": "RTO_1h_to_4h"
+      },
+      "then": {
+        "candidate_patterns": [
+          "DR-01",
+          "DR-02",
+          "DR-03",
+          "DR-04"
+        ],
+        "add_questions": [
+          "AF-DR-01",
+          "AF-DR-05"
+        ]
+      }
+    },
+    {
+      "id": "BR-05",
+      "when": {
+        "question": "EX-03",
+        "condition": "RTO_gt_4h"
+      },
+      "then": {
+        "candidate_patterns": [
+          "DR-01",
+          "DR-02",
+          "DR-03"
+        ],
+        "add_questions": [
+          "AF-DR-01"
+        ]
+      }
+    },
+    {
+      "id": "BR-06",
+      "when": {
+        "question": "EX-03",
+        "condition": "unknown"
+      },
+      "then": {
+        "action": "do_not_infer_rto",
+        "require_evidence": [
+          "BIA"
+        ],
+        "flag": "business_requirement_undefined"
+      }
+    },
+    {
+      "id": "BR-07",
+      "when": {
+        "question": "EX-04",
+        "condition": "RPO_near_zero"
+      },
+      "then": {
+        "eliminate_patterns": [
+          "DR-01",
+          "DR-02"
+        ],
+        "add_questions": [
+          "AF-DR-02",
+          "AF-DR-03"
+        ]
+      }
+    },
+    {
+      "id": "BR-08",
+      "when": {
+        "question": "EX-06",
+        "condition": "not_proven_or_no"
+      },
+      "then": {
+        "flag": "recovery_capability_gap",
+        "add_questions": [
+          "AF-DR-01",
+          "AF-DR-02",
+          "AF-DR-03",
+          "AF-DR-05"
+        ],
+        "require_evidence": [
+          "failover test evidence",
+          "restore test evidence"
+        ]
+      }
+    },
+    {
+      "id": "BR-09",
+      "when": {
+        "question": "EX-07",
+        "condition": "never_or_gt_2y"
+      },
+      "then": {
+        "flag": "low_test_evidence",
+        "add_questions": [
+          "AF-TS-01",
+          "AF-TS-02",
+          "AF-TS-03"
+        ],
+        "evidence_confidence_cap": "documented"
+      }
+    },
+    {
+      "id": "BR-10",
+      "when": {
+        "question": "EX-08",
+        "condition": "yes_or_potentially"
+      },
+      "then": {
+        "add_questions": [
+          "AF-CY-01",
+          "AF-CY-02",
+          "AF-CY-03",
+          "AF-CY-04",
+          "AF-CY-05"
+        ],
+        "require_patterns": [
+          "DATA-01",
+          "DATA-02"
+        ],
+        "candidate_patterns": [
+          "CYBER-01",
+          "CYBER-02",
+          "CYBER-03",
+          "CYBER-04"
+        ]
+      }
+    },
+    {
+      "id": "BR-11",
+      "when": {
+        "question": "EX-09",
+        "condition": "not_immutable_or_not_recoverable"
+      },
+      "then": {
+        "flag": "backup_resilience_gap",
+        "candidate_patterns": [
+          "DATA-01",
+          "DATA-02",
+          "DATA-03",
+          "CYBER-03"
+        ],
+        "require_evidence": [
+          "backup evidence",
+          "restore test evidence"
+        ]
+      }
+    },
+    {
+      "id": "BR-12",
+      "when": {
+        "question": "EX-10",
+        "condition": "critical_third_party"
+      },
+      "then": {
+        "add_questions": [
+          "AF-TP-01",
+          "AF-TP-02",
+          "AF-TP-03",
+          "AF-TP-04"
+        ],
+        "candidate_patterns": [
+          "TP-01",
+          "TP-02",
+          "TP-04",
+          "TP-05"
+        ],
+        "require_evidence": [
+          "supplier SLA/contract"
+        ]
+      }
+    },
+    {
+      "id": "BR-13",
+      "when": {
+        "question": "EX-11",
+        "condition": "moderate_or_high_concentration"
+      },
+      "then": {
+        "flag": "concentration_risk",
+        "candidate_patterns": [
+          "TP-03",
+          "TP-05",
+          "INF-03",
+          "INF-04"
+        ],
+        "add_questions": [
+          "AF-TP-02"
+        ]
+      }
+    },
+    {
+      "id": "BR-14",
+      "when": {
+        "question": "EX-12",
+        "condition": "critical_spof"
+      },
+      "then": {
+        "flag": "critical_spof",
+        "add_questions": [
+          "AF-BIA-04",
+          "AF-DR-04"
+        ]
+      }
+    },
+    {
+      "id": "BR-15",
+      "when": {
+        "question": "EX-18",
+        "condition": "cloud_selected"
+      },
+      "then": {
+        "add_questions": [
+          "AF-CL-01",
+          "AF-CL-02",
+          "AF-CL-03",
+          "AF-CL-04"
+        ]
+      }
+    },
+    {
+      "id": "BR-16",
+      "when": {
+        "question": "EX-18",
+        "condition": "on_prem_selected"
+      },
+      "then": {
+        "add_questions": [
+          "AF-OP-01",
+          "AF-OP-02",
+          "AF-OP-03"
+        ]
+      }
+    },
+    {
+      "id": "BR-17",
+      "when": {
+        "question": "EX-19",
+        "condition": "no_or_unknown"
+      },
+      "then": {
+        "flag": "identity_recovery_gap",
+        "candidate_patterns": [
+          "CYBER-02"
+        ],
+        "add_questions": [
+          "AF-CY-03",
+          "AF-CY-04"
+        ]
+      }
+    },
+    {
+      "id": "BR-18",
+      "when": {
+        "question": "EX-20",
+        "condition": "low_or_unknown"
+      },
+      "then": {
+        "flag": "evidence_gap",
+        "add_questions": [
+          "AF-DR-03",
+          "AF-TS-02"
+        ]
+      }
+    },
+    {
+      "id": "BR-19",
+      "when": {
+        "multiple": [
+          "critical_service",
+          "ransomware_in_scope",
+          "no_proven_recovery"
+        ],
+        "then": {
+          "action": "force_advisory_depth",
+          "reason": "Critical business services with cyber exposure and unproven recovery cannot be safely assessed from executive answers alone."
+        }
+      }
+    },
+    {
+      "id": "BR-20",
+      "when": {
+        "question": "EX-05",
+        "condition": "partial_or_stale"
+      },
+      "then": {
+        "add_questions": [
+          "AF-BIA-02",
+          "AF-BIA-04"
+        ],
+        "require_evidence": [
+          "dependency map"
+        ],
+        "flag": "dependency_mapping_gap"
+      }
+    },
+    {
+      "id": "BR-21",
+      "when": {
+        "question": "EX-16",
+        "condition": "no_or_technical_only"
+      },
+      "then": {
+        "add_questions": [
+          "AF-TS-02",
+          "AF-TS-03"
+        ],
+        "candidate_patterns": [
+          "OPS-02",
+          "TEST-01",
+          "TEST-02",
+          "TEST-03"
+        ]
+      }
+    },
+    {
+      "id": "BR-22",
+      "when": {
+        "question": "EX-13",
+        "condition": "partial_or_no"
+      },
+      "then": {
+        "candidate_patterns": [
+          "BCP-01",
+          "BCP-02",
+          "BCP-03",
+          "BCP-04"
+        ],
+        "add_questions": [
+          "AF-BIA-02"
+        ]
+      }
+    },
+    {
+      "id": "BR-23",
+      "when": {
+        "question": "EX-14",
+        "condition": "partial_or_no"
+      },
+      "then": {
+        "candidate_patterns": [
+          "BCP-04",
+          "GOV-01"
+        ],
+        "add_questions": [
+          "AF-GV-01",
+          "AF-GV-02"
+        ]
+      }
+    },
+    {
+      "id": "BR-24",
+      "when": {
+        "question": "EX-17",
+        "condition": "no_or_unknown"
+      },
+      "then": {
+        "candidate_patterns": [
+          "TP-02",
+          "TP-04"
+        ],
+        "add_questions": [
+          "AF-TP-03",
+          "AF-TP-04"
+        ]
+      }
+    }
+  ],
+  "evidence_rules": [
+    {
+      "id": "EV-01",
+      "trigger": "RTO_or_RPO_unknown",
+      "request": [
+        "BIA",
+        "RTO/RPO register"
+      ],
+      "reason": "Do not infer business recovery requirements from technology."
+    },
+    {
+      "id": "EV-02",
+      "trigger": "critical_recovery_not_tested",
+      "request": [
+        "failover test evidence",
+        "restore test evidence"
+      ],
+      "reason": "Documented capability is insufficient to prove recoverability."
+    },
+    {
+      "id": "EV-03",
+      "trigger": "ransomware_in_scope",
+      "request": [
+        "backup evidence",
+        "cyber recovery test evidence",
+        "identity recovery evidence"
+      ],
+      "reason": "Recovery must remain trustworthy after compromise."
+    },
+    {
+      "id": "EV-04",
+      "trigger": "critical_third_party",
+      "request": [
+        "supplier SLA/contract",
+        "provider test evidence",
+        "exit plan"
+      ],
+      "reason": "Third-party dependency must be assessed end-to-end."
+    },
+    {
+      "id": "EV-05",
+      "trigger": "high_concentration",
+      "request": [
+        "dependency map",
+        "risk register",
+        "alternative-provider analysis"
+      ],
+      "reason": "Shared failure domains create correlated risk."
+    }
+  ],
+  "depth_policy": {
+    "executive_scan_max_questions": 45,
+    "minimum_executive_questions_before_recommendation": 20,
+    "advisory_trigger_conditions": [
+      "critical service with unknown RTO/RPO",
+      "critical recovery not tested",
+      "ransomware/destructive attack in scope",
+      "critical third-party with no viable alternative",
+      "high concentration risk",
+      "critical identity recovery gap"
+    ],
+    "recommendation_gate": "Do not issue a final target-state recommendation until required branch questions and minimum evidence checks are completed or explicitly marked as unavailable."
+  }
+}
