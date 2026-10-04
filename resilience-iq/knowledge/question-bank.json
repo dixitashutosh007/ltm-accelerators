@@ -5,6 +5,10 @@
   "answer_types": [
     "single_select",
     "multi_select",
+    "slider_choice",
+    "matrix",
+    "ranking",
+    "scenario",
     "number",
     "text",
     "yes_no",
@@ -36,7 +40,12 @@
         "BIA",
         "application inventory"
       ],
-      "required": true
+      "required": true,
+      "ui": {
+        "interaction": "ranking",
+        "instruction": "Drag to arrange by business criticality. Most critical first.",
+        "multi": true
+      }
     },
     {
       "id": "EX-02",
@@ -55,7 +64,11 @@
       "evidence": [
         "BIA"
       ],
-      "required": true
+      "required": true,
+      "ui": {
+        "interaction": "slider_choice",
+        "instruction": "Move the scale to the closest current business tolerance."
+      }
     },
     {
       "id": "EX-03",
@@ -75,7 +88,11 @@
         "RTO/RPO register",
         "BIA"
       ],
-      "required": true
+      "required": true,
+      "ui": {
+        "interaction": "slider_choice",
+        "instruction": "Select the recovery objective on the scale."
+      }
     },
     {
       "id": "EX-04",
@@ -96,7 +113,11 @@
         "RTO/RPO register",
         "BIA"
       ],
-      "required": true
+      "required": true,
+      "ui": {
+        "interaction": "slider_choice",
+        "instruction": "Select the maximum acceptable data loss on the scale."
+      }
     },
     {
       "id": "EX-05",
@@ -115,7 +136,24 @@
         "dependency map",
         "architecture diagram"
       ],
-      "required": true
+      "required": true,
+      "ui": {
+        "interaction": "matrix",
+        "instruction": "Rate each dependency dimension. Use evidence where available.",
+        "rows": [
+          "Applications",
+          "Data",
+          "Infrastructure",
+          "People",
+          "Third parties"
+        ],
+        "columns": [
+          "Validated",
+          "Partial",
+          "Stale",
+          "No mapping"
+        ]
+      }
     },
     {
       "id": "EX-06",
@@ -133,7 +171,10 @@
         "failover test evidence",
         "DR runbook"
       ],
-      "required": true
+      "required": true,
+      "ui": {
+        "interaction": "single_select"
+      }
     },
     {
       "id": "EX-07",
@@ -152,7 +193,10 @@
       "evidence": [
         "failover test evidence"
       ],
-      "required": true
+      "required": true,
+      "ui": {
+        "interaction": "single_select"
+      }
     },
     {
       "id": "EX-08",
@@ -170,7 +214,11 @@
         "cyber recovery test evidence",
         "architecture diagram"
       ],
-      "required": true
+      "required": true,
+      "ui": {
+        "interaction": "scenario",
+        "instruction": "Consider a destructive cyber event affecting production. Choose the closest current state."
+      }
     },
     {
       "id": "EX-09",
@@ -189,7 +237,10 @@
         "backup evidence",
         "restore test evidence"
       ],
-      "required": true
+      "required": true,
+      "ui": {
+        "interaction": "single_select"
+      }
     },
     {
       "id": "EX-10",
@@ -207,7 +258,10 @@
         "dependency map",
         "supplier SLA/contract"
       ],
-      "required": true
+      "required": true,
+      "ui": {
+        "interaction": "single_select"
+      }
     },
     {
       "id": "EX-11",
@@ -225,7 +279,10 @@
         "dependency map",
         "application inventory"
       ],
-      "required": true
+      "required": true,
+      "ui": {
+        "interaction": "single_select"
+      }
     },
     {
       "id": "EX-12",
@@ -243,7 +300,10 @@
         "architecture diagram",
         "risk register"
       ],
-      "required": true
+      "required": true,
+      "ui": {
+        "interaction": "single_select"
+      }
     },
     {
       "id": "EX-13",
@@ -262,7 +322,10 @@
         "policy/document",
         "exercise evidence"
       ],
-      "required": true
+      "required": true,
+      "ui": {
+        "interaction": "single_select"
+      }
     },
     {
       "id": "EX-14",
@@ -280,7 +343,10 @@
         "policy/document",
         "exercise evidence"
       ],
-      "required": true
+      "required": true,
+      "ui": {
+        "interaction": "single_select"
+      }
     },
     {
       "id": "EX-15",
@@ -298,7 +364,10 @@
         "policy/document",
         "observability/control evidence"
       ],
-      "required": true
+      "required": true,
+      "ui": {
+        "interaction": "single_select"
+      }
     },
     {
       "id": "EX-16",
@@ -317,7 +386,10 @@
         "exercise evidence",
         "incident/postmortem"
       ],
-      "required": true
+      "required": true,
+      "ui": {
+        "interaction": "single_select"
+      }
     },
     {
       "id": "EX-17",
@@ -336,7 +408,10 @@
         "supplier SLA/contract",
         "exercise evidence"
       ],
-      "required": true
+      "required": true,
+      "ui": {
+        "interaction": "single_select"
+      }
     },
     {
       "id": "EX-18",
@@ -356,7 +431,11 @@
         "application inventory",
         "architecture diagram"
       ],
-      "required": true
+      "required": true,
+      "ui": {
+        "interaction": "multi_select",
+        "instruction": "Select all environments supporting critical services."
+      }
     },
     {
       "id": "EX-19",
@@ -374,7 +453,10 @@
         "cyber recovery test evidence",
         "architecture diagram"
       ],
-      "required": true
+      "required": true,
+      "ui": {
+        "interaction": "single_select"
+      }
     },
     {
       "id": "EX-20",
@@ -393,7 +475,10 @@
         "DR runbook",
         "failover test evidence"
       ],
-      "required": true
+      "required": true,
+      "ui": {
+        "interaction": "single_select"
+      }
     }
   ],
   "advisory_question_families": [
