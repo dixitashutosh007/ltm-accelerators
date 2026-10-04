@@ -24,6 +24,8 @@ export interface ResilienceResult {
   rating: string | null;
   maturity: { level: number; label: string } | null;
   evidenceConfidence: string;
+  postureScore: number | null;
+  criticalExposure: "Low" | "Moderate" | "High" | "Severe" | null;
   domainScores: Record<string, number>;
   preferredPattern: string | null;
   alternatives: PatternDecision[];
@@ -203,6 +205,15 @@ function scoreDomains(a: ResilienceAnswers, confidence: number): Record<string, 
   return result;
 }
 
+function criticalExposure(gaps: Array<{ severity: string }>): "Low" | "Moderate" | "High" | "Severe" {
+  const critical = gaps.filter(g => g.severity.toLowerCase() === "critical").length;
+  const high = gaps.filter(g => g.severity.toLowerCase() === "high").length;
+  if (critical >= 3) return "Severe";
+  if (critical >= 1 || high >= 4) return "High";
+  if (high >= 1) return "Moderate";
+  return "Low";
+}
+
 function rating(score: number): string {
   const band = (k.scoringModel.rating_bands as any[]).find(x => score >= x.min && score <= x.max);
   return band?.label ?? "Unknown";
@@ -335,7 +346,8 @@ export function evaluateResilienceIq(a: ResilienceAnswers): ResilienceResult {
   const confidenceLabel = evidenceConfidence(a);
   const confidence = Number((k.scoringModel.evidence_confidence as any)[confidenceLabel] ?? 0.7);
   const domains = scoreDomains(a, confidence);
-  let score = Math.round(Object.entries(domains).reduce((s, [d, v]) => s + v * Number((k.scoringModel.domain_weights as any)[d] ?? 0), 0));
+  const postureScore = Math.round(Object.entries(domains).reduce((s, [d, v]) => s + v * Number((k.scoringModel.domain_weights as any)[d] ?? 0), 0));
+  let score = postureScore;
 
   if (branch.flags.has("critical_spof")) score -= 10;
   if (branch.flags.has("backup_resilience_gap")) score -= 15;
@@ -394,7 +406,9 @@ export function evaluateResilienceIq(a: ResilienceAnswers): ResilienceResult {
   return {
     status: requirementsIncomplete || missing.length > 0 ? "requirements_incomplete" : "ready",
     score: requirementsIncomplete ? null : score,
-    rating: requirementsIncomplete ? null : rating(score),
+    postureScore: requirementsIncomplete ? null : postureScore,
+    criticalExposure: requirementsIncomplete ? null : criticalExposure(gaps),
+    rating: requirementsIncomplete ? null : rating(postureScore),
     maturity: requirementsIncomplete ? null : maturity(score),
     evidenceConfidence: confidenceLabel,
     domainScores: domains,
@@ -414,6 +428,7 @@ export function evaluateResilienceIq(a: ResilienceAnswers): ResilienceResult {
       "Vendor-neutral strategy is selected before provider implementation mapping.",
       "RTO/RPO are treated as business requirements and are never inferred from technology.",
       requirementsIncomplete ? "Final recommendation blocked until required RTO/RPO are defined." : "Final recommendation permitted because required executive baseline is complete.",
+      `Resilience posture score: ${postureScore}; critical exposure: ${requirementsIncomplete ? "not assessed" : criticalExposure(gaps)}.`,
       `Evidence confidence: ${confidenceLabel}.`
     ]
   };
