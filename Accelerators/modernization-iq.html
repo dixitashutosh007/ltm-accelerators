@@ -883,6 +883,7 @@ const DIMS = [
 ];
 
 // Rich Multi-Modal Question Bank (18 Questions across 6 Dimensions with Single, Multi, Rating, Slider, Matrix, and Drag)
+/* QBANK:START */
 const QUESTIONS = [
   // D1: Facility Assets & DC Disposition
   {
@@ -1105,6 +1106,7 @@ const QUESTIONS = [
     ]
   }
 ];
+/* QBANK:END */
 
 // Interactive Anomaly Discovery Probes (Contradiction Checkers)
 const ANOMALY_PROBES = [
@@ -2548,6 +2550,38 @@ function exportPDF() {
   doc.text("Modernization IQ v" + ACCEL_VERSION, W - M, H - 24, { align: "right" });
 
   doc.save(`${STATE.org.clientName.replace(/\s+/g, '_')}_Modernization_IQ_Dossier.pdf`);
+
+  // Archive with Client Consent to Secured Storage
+  if (window.LTM_S3 && window.LTM_S3.requestArchiveConsent) {
+    const client = (STATE.org && STATE.org.clientName) ? STATE.org.clientName : 'Enterprise';
+    window.LTM_S3.requestArchiveConsent({
+      acceleratorId: 'modernization-iq',
+      acceleratorTitle: 'Modernize IQ Executive Dossier',
+      clientName: client
+    }, function(confirmedClient) {
+      try {
+        var pdfBase64 = doc.output('datauristring');
+        window.LTM_S3.saveReportToS3({
+          acceleratorId: 'modernization-iq',
+          clientName: confirmedClient,
+          pdfBase64: pdfBase64,
+          metadata: {
+            overallScore: R ? R.overall : undefined,
+            band: R ? R.band : undefined,
+            primaryFriction: R ? R.primaryFriction : undefined,
+            annualDcSpend: (STATE.org && STATE.org.annualDcSpend) ? STATE.org.annualDcSpend : undefined,
+            industry: (STATE.org && STATE.org.industry) ? STATE.org.industry : undefined
+          }
+        }).then(function(res){
+          window.LTM_S3.showS3SuccessBanner(res);
+        }).catch(function(err){
+          alert('Archive notice: ' + err.message);
+        });
+      } catch(e) {
+        console.warn('Archive hook error:', e);
+      }
+    });
+  }
 }
 
 function escapeHtml(str) {

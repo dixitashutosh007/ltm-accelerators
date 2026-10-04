@@ -1,0 +1,32 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "ModernizationIqEvaluationRequest",
+  "type": "object",
+  "required": ["answers"],
+  "properties": {
+    "org": {
+      "type": "object",
+      "properties": {
+        "clientName": { "type": "string" },
+        "industry": { "type": "string" },
+        "workloadCount": { "type": "string" },
+        "dcCount": { "type": "string" },
+        "annualDcSpend": { "type": "string" },
+        "targetExitHorizon": { "type": "string" }
+      }
+    },
+    "answers": {
+      "type": "object",
+      "description": "Map of Question ID (e.g. Q1.1, Q2.1, Q3.2) to selected value",
+      "additionalProperties": true
+    },
+    "subjectiveNotes": {
+      "type": "object",
+      "additionalProperties": { "type": "string" }
+    },
+    "clarificationAnswers": {
+      "type": "object",
+      "additionalProperties": { "type": "string" }
+    }
+  }
+}
