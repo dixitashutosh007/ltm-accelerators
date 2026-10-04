@@ -41,7 +41,14 @@ export interface ResilienceExecutiveReport {
   supportingControls: PatternDecision[];
   technologyMapping: Record<string, string[]>;
   evidenceValidation: Array<{ evidence: string; purpose: string }>;
-  targetState: { targetPrinciples: string[]; architectureLayers: string[]; blueprintIds: string[] } | null;
+  targetState: {
+    environment: string;
+    recoveryPattern: string;
+    principles: string[];
+    architectureLayers: string[];
+    architectureDecisions: string[];
+    blueprintIds: string[];
+  } | null;
   roadmap: Array<{ wave: string; window: string; actions: string[] }>;
   governanceMetrics: string[];
   decisionPoints: string[];
