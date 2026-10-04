@@ -61,16 +61,17 @@ function mapAnswers(){const out={};for(const q of questions){const v=answers[q.i
 function renderReport(){const d=result;document.getElementById('app').innerHTML=`
 <div class="hero"><h1>Resilience IQ Results</h1><p>${d.status==='ready'?'Executive assessment complete.':'Final recommendation is blocked until required business objectives and baseline questions are complete.'}</p></div>
 <div class="grid">
-<div class="stat"><div class="label">Overall Score</div><div class="value">${d.score??'—'}</div></div>
+<div class="stat"><div class="label">Resilience Posture</div><div class="value">${d.postureScore??'—'}</div></div>
+<div class="stat"><div class="label">Critical Exposure</div><div class="value" style="font-size:20px">${esc(d.criticalExposure||'—')}</div></div>
 <div class="stat"><div class="label">Rating</div><div class="value" style="font-size:20px">${esc(d.rating||'Incomplete')}</div></div>
 <div class="stat"><div class="label">Maturity</div><div class="value" style="font-size:20px">${d.maturity?esc(d.maturity.label):'—'}</div></div>
 <div class="stat"><div class="label">Evidence</div><div class="value" style="font-size:17px">${esc(d.evidenceConfidence)}</div></div>
 </div>
 <div class="panel">
-<div class="section"><h2>Preferred Resilience Strategy</h2><p style="font-size:24px;font-weight:800">${esc(d.preferredPattern||'No final strategy yet')}</p><p style="color:var(--muted)">Vendor-neutral strategy selection is completed before cloud/provider implementation mapping.</p></div>
+<div class="section"><h2>Recovery Strategy</h2><p style="font-size:24px;font-weight:800">${esc(d.preferredPattern||'No final strategy yet')}</p><p style="color:var(--muted)">Primary recovery strategy is selected separately from cyber-recovery and supporting controls.</p></div>
 <div class="section"><h2>Domain Scorecard</h2>${Object.entries(d.domainScores||{}).map(([k,v])=>`<div class="row"><b>${k}</b><span style="float:right">${v}/100</span></div>`).join('')}</div>
 <div class="section"><h2>Critical Gaps</h2>${(d.gapRegister||[]).map(g=>`<div class="row"><span class="pill">${esc(g.severity)}</span> <b>${esc(g.name)}</b><div style="color:var(--muted);margin-top:5px">${esc(g.action)}</div></div>`).join('')||'<p>No material gaps returned.</p>'}</div>
-<div class="section"><h2>Pattern Ranking</h2>${(d.patternRanking||[]).slice(0,5).map(p=>`<div class="row"><b>${esc(p.id)} — ${esc(p.name)}</b><span style="float:right">${p.score}/100</span><div style="color:var(--muted);margin-top:5px">${esc(p.fit)}</div></div>`).join('')}</div>
+<div class="section"><h2>Recovery Strategy Ranking</h2>${(d.patternRanking||[]).slice(0,5).map(p=>`<div class="row"><b>${esc(p.id)} — ${esc(p.name)}</b><span style="float:right">${p.score}/100</span><div style="color:var(--muted);margin-top:5px">${esc(p.fit)}</div></div>`).join('')}</div>
 <div class="section"><h2>Technology Options</h2>${Object.entries(d.technologyOptions||{}).map(([k,v])=>`<div class="row"><b>${esc(k)}</b><div style="color:var(--muted);margin-top:5px">${v.map(esc).join(' · ')}</div></div>`).join('')||'<p style="color:var(--muted)">Provider mapping becomes available after a final pattern is selected.</p>'}</div>
 <div class="section"><h2>Evidence Requests</h2><p>${(d.evidenceRequests||[]).map(x=>'<span class="pill" style="margin:3px">'+esc(x)+'</span>').join(' ')||'None'}</p></div>
 <div class="section"><h2>Roadmap</h2>${(d.roadmap||[]).map(w=>`<div class="row"><b>${esc(w.wave)} · ${esc(w.window)}</b><div style="color:var(--muted);margin-top:6px">${(w.actions||[]).map(esc).join(' · ')}</div></div>`).join('')}</div>
