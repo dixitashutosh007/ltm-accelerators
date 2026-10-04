@@ -23,7 +23,7 @@ html,body{background:var(--bg)!important;color:var(--ink)!important;font-family:
 </div>
 <script>
 const API=(window.RESILIENCE_IQ_API||'')+'/api/evaluate/resilience-iq';
-const questions=[
+let questions=[
 {id:'EX-01',t:'Which business services are most critical to the enterprise?',type:'rank',o:['Customer-facing services','Revenue-generating services','Regulatory/financial reporting','Workforce-critical services','Supply-chain/operations services','Other']},
 {id:'EX-02',t:'For the most critical service, how long can the business tolerate material disruption before impact becomes unacceptable?',type:'slider',o:['<15 minutes','15-60 minutes','1-4 hours','4-24 hours','>24 hours','Unknown']},
 {id:'EX-03',t:'What is the required recovery time for the most critical service?',type:'slider',o:['<15 minutes','15-60 minutes','1-4 hours','4-24 hours','>24 hours','Unknown']},
@@ -113,6 +113,26 @@ ${(d.patternRanking||[]).filter(p=>/^DR-/.test(p.id)).slice(0,3).map(p=>`<div cl
 <div class="section"><h2>Roadmap</h2>${(d.roadmap||[]).map(w=>`<div class="row"><b>${esc(w.wave)} · ${esc(w.window)}</b><div style="color:var(--muted);margin-top:6px">${(w.actions||[]).map(esc).join(' · ')}</div></div>`).join('')}</div>
 <div class="bar"><button class="btn secondary" onclick="location.reload()">← Back to Assessment</button></div>
 </div>`;}
+async function loadQuestionBank(){
+ try{
+  const r=await fetch('../resilience-iq/knowledge/question-bank.json',{cache:'no-store'});
+  if(!r.ok)throw new Error('Question bank unavailable');
+  const bank=await r.json();
+  const byId=Object.fromEntries((bank.executive_questions||[]).map(q=>[q.id,q]));
+  questions=questions.map(q=>{
+   const b=byId[q.id]; if(!b)return q;
+   const ui=b.ui||{};
+   const typeMap={ranking:'rank',slider_choice:'slider',matrix:'matrix',scenario:'scenario',multi_select:'multi',single_select:'single'};
+   const merged={...q,t:b.text||q.t};
+   if(ui.interaction)merged.type=typeMap[ui.interaction]||q.type;
+   if(merged.type==='matrix'){merged.rows=ui.rows||q.rows;merged.cols=ui.columns||q.cols;}
+   else if(Array.isArray(b.options))merged.o=b.options;
+   return merged;
+  });
+  render();
+ }catch(e){console.warn('Using embedded Resilience IQ question fallback:',e.message);}
+}
+loadQuestionBank();
 setTimeout(()=>{const splash=document.getElementById("splash");if(splash){splash.classList.add("fadeout");setTimeout(()=>splash.remove(),600);}},1400);render();
 </script>
 </body></html>
