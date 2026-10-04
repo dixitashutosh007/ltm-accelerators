@@ -338,14 +338,17 @@ function technologyOptions(patternIds: string[], a: ResilienceAnswers): Record<s
   return result;
 }
 
-function roadmap(gaps: ReturnType<typeof gapRegister>, preferred: string | null) {
+function roadmap(gaps: ReturnType<typeof gapRegister>, preferred: string | null, cyberRiskLevel: string) {
   const templates = k.blueprintEngine.roadmap_action_templates as any[];
-  const actions = gaps.map(g => templates.find(t => t.trigger === g.id)?.action).filter(Boolean) as string[];
-  if (preferred) actions.push(`Validate and implement ${preferred} against measured RTO/RPO`);
+  const byGap = gaps.map(g => templates.find(t => t.trigger === g.id)).filter(Boolean) as any[];
+  const immediate = byGap.filter(x => ["G-01","G-02","G-03","G-04","G-05","G-06"].includes(x.trigger)).map(x => x.action);
+  const enablement = byGap.filter(x => ["G-07","G-08","G-09","G-10"].includes(x.trigger)).map(x => x.action);
+  const strategy = preferred ? [`Validate and implement ${preferred} against measured RTO/RPO`] : [];
+  if (cyberRiskLevel === "destructive" || cyberRiskLevel === "high") strategy.unshift("Validate cyber recovery isolation and clean restore before production recovery migration");
   return [
-    { wave: "W0", window: "0-30 days", actions: actions.slice(0, 4) },
-    { wave: "W1", window: "31-90 days", actions: actions.slice(4, 8) },
-    { wave: "W2", window: "3-6 months", actions: preferred ? [`Engineer target-state ${preferred} and automate recovery validation`] : ["Engineer target-state recovery capability"] },
+    { wave: "W0", window: "0-30 days", actions: [...new Set(immediate)].slice(0, 4) },
+    { wave: "W1", window: "31-90 days", actions: [...new Set([...immediate.slice(4), ...enablement, ...strategy])].slice(0, 4) },
+    { wave: "W2", window: "3-6 months", actions: strategy.length ? strategy : ["Engineer target-state recovery capability"] },
     { wave: "W3", window: "6-18 months", actions: ["Scale testing, dependency resilience and continuous validation"] }
   ];
 }
@@ -441,7 +444,7 @@ export function evaluateResilienceIq(a: ResilienceAnswers): ResilienceResult {
     evidenceRequests,
     technologyOptions: preferred ? technologyOptions([preferred, ...recoveryRanking.slice(1,3).map(x => x.id), ...(cyberRisk(a) === "destructive" || cyberRisk(a) === "high" ? ["CYBER-01"] : [])], a) : {},
     blueprint,
-    roadmap: roadmap(gaps, preferred),
+    roadmap: roadmap(gaps, preferred, cyberRisk(a)),
     executiveSummary,
     decisionLog: [
       "Vendor-neutral strategy is selected before provider implementation mapping.",
