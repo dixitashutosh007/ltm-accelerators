@@ -1,0 +1,369 @@
+{
+  "schema_version": "1.0",
+  "last_reviewed": "2026-10-04",
+  "note": "Service mappings are advisory families and must be validated against current provider capabilities, region availability, quotas, pricing, licensing and workload compatibility.",
+  "aws": {
+    "DR-01": [
+      "AWS Backup",
+      "Amazon S3",
+      "Amazon EBS snapshots",
+      "AWS Elastic Disaster Recovery"
+    ],
+    "DR-02": [
+      "AWS Elastic Disaster Recovery",
+      "Amazon EC2",
+      "Amazon RDS",
+      "Amazon S3"
+    ],
+    "DR-03": [
+      "AWS Elastic Disaster Recovery",
+      "Amazon RDS/Aurora replication options",
+      "Amazon Route 53",
+      "Elastic Load Balancing"
+    ],
+    "DR-04": [
+      "Amazon Route 53",
+      "Elastic Load Balancing",
+      "Amazon RDS/Aurora replication options",
+      "AWS Elastic Disaster Recovery"
+    ],
+    "DR-05": [
+      "Amazon Route 53",
+      "AWS Global Accelerator",
+      "AWS Application Recovery Controller",
+      "regional replication services"
+    ],
+    "DATA-01": [
+      "AWS Backup Vault Lock",
+      "Amazon S3 Object Lock"
+    ],
+    "DATA-02": [
+      "isolated recovery account",
+      "AWS Backup Vault Lock",
+      "Amazon S3"
+    ],
+    "DATA-03": [
+      "Amazon RDS/Aurora replication options",
+      "Amazon DynamoDB global tables where appropriate"
+    ],
+    "DATA-04": [
+      "Amazon RDS point-in-time recovery",
+      "Amazon S3 versioning"
+    ],
+    "DATA-05": [
+      "separate backup accounts",
+      "AWS Organizations",
+      "AWS Backup Vault Lock"
+    ],
+    "CYBER-01": [
+      "isolated recovery account/landing zone",
+      "AWS Elastic Disaster Recovery",
+      "AWS Backup"
+    ],
+    "CYBER-02": [
+      "IAM emergency access design",
+      "AWS IAM Identity Center",
+      "separate recovery credentials"
+    ],
+    "CYBER-03": [
+      "isolated restore environment",
+      "backup validation workflow"
+    ],
+    "INF-02": [
+      "AWS Elastic Disaster Recovery",
+      "AWS Site-to-Site VPN/Direct Connect",
+      "Amazon EC2"
+    ],
+    "INF-04": [
+      "multi-Region architecture",
+      "Amazon Route 53",
+      "AWS Global Accelerator"
+    ],
+    "INF-05": [
+      "Multi-AZ architecture",
+      "Elastic Load Balancing",
+      "Auto Scaling"
+    ],
+    "INF-06": [
+      "AWS CloudFormation",
+      "AWS Systems Manager",
+      "CI/CD services"
+    ],
+    "INF-07": [
+      "Amazon Machine Images",
+      "EC2 Image Builder"
+    ],
+    "INF-08": [
+      "Direct Connect plus diverse VPN/carrier paths",
+      "Route 53 health checks"
+    ],
+    "TEST-04": [
+      "AWS Resilience Hub",
+      "AWS Fault Injection Service where appropriate",
+      "automated recovery validation"
+    ]
+  },
+  "azure": {
+    "DR-01": [
+      "Azure Backup",
+      "Azure Blob Storage",
+      "Azure Site Recovery"
+    ],
+    "DR-02": [
+      "Azure Site Recovery",
+      "Azure Compute",
+      "Azure SQL recovery/replication options"
+    ],
+    "DR-03": [
+      "Azure Site Recovery",
+      "Azure SQL replication options",
+      "Azure Traffic Manager"
+    ],
+    "DR-04": [
+      "Azure Site Recovery",
+      "Azure Front Door/Load Balancer",
+      "Azure SQL replication options"
+    ],
+    "DR-05": [
+      "Azure Front Door",
+      "Traffic Manager",
+      "multi-region service architecture"
+    ],
+    "DATA-01": [
+      "Azure Backup immutable vault",
+      "Blob immutable storage"
+    ],
+    "DATA-02": [
+      "isolated recovery subscription",
+      "Azure Backup immutable vault"
+    ],
+    "DATA-03": [
+      "Azure SQL geo-replication/Failover Groups",
+      "Azure Cosmos DB multi-region"
+    ],
+    "DATA-04": [
+      "Azure SQL point-in-time restore",
+      "Blob versioning"
+    ],
+    "DATA-05": [
+      "separate recovery subscriptions",
+      "privileged access controls",
+      "immutable vault"
+    ],
+    "CYBER-01": [
+      "isolated recovery subscription",
+      "Azure Site Recovery",
+      "Azure Backup"
+    ],
+    "CYBER-02": [
+      "break-glass identity design",
+      "Microsoft Entra ID",
+      "Privileged Identity Management"
+    ],
+    "CYBER-03": [
+      "isolated restore",
+      "backup validation workflow"
+    ],
+    "INF-02": [
+      "Azure Site Recovery",
+      "ExpressRoute/VPN"
+    ],
+    "INF-04": [
+      "Availability Zones",
+      "secondary region architecture",
+      "Azure Front Door"
+    ],
+    "INF-05": [
+      "Availability Zones",
+      "Azure Load Balancer"
+    ],
+    "INF-06": [
+      "Bicep/ARM",
+      "Azure Automation",
+      "CI/CD"
+    ],
+    "INF-07": [
+      "Azure Compute Gallery",
+      "image management"
+    ],
+    "INF-08": [
+      "ExpressRoute plus diverse VPN/provider paths"
+    ],
+    "TEST-04": [
+      "Azure Chaos Studio",
+      "automated recovery validation"
+    ]
+  },
+  "gcp": {
+    "DR-01": [
+      "Backup and DR Service",
+      "Cloud Storage",
+      "Persistent Disk snapshots"
+    ],
+    "DR-02": [
+      "Backup and DR Service",
+      "Compute Engine",
+      "Cloud SQL"
+    ],
+    "DR-03": [
+      "Compute Engine",
+      "Cloud SQL replication options",
+      "Cloud Load Balancing"
+    ],
+    "DR-04": [
+      "Cloud Load Balancing",
+      "regional/multi-region services",
+      "database replication options"
+    ],
+    "DR-05": [
+      "global external Application Load Balancer",
+      "multi-region services"
+    ],
+    "DATA-01": [
+      "Backup and DR Service",
+      "Cloud Storage retention/immutability controls"
+    ],
+    "DATA-02": [
+      "separate recovery project architecture",
+      "Backup and DR Service"
+    ],
+    "DATA-03": [
+      "Cloud SQL cross-region replicas",
+      "Spanner multi-region where appropriate"
+    ],
+    "DATA-04": [
+      "Cloud SQL point-in-time recovery",
+      "Cloud Storage object versioning"
+    ],
+    "DATA-05": [
+      "separate recovery projects",
+      "IAM separation"
+    ],
+    "CYBER-01": [
+      "isolated recovery project",
+      "Backup and DR Service",
+      "Compute Engine"
+    ],
+    "CYBER-02": [
+      "Cloud IAM recovery controls",
+      "break-glass accounts"
+    ],
+    "CYBER-03": [
+      "isolated restore",
+      "backup validation workflow"
+    ],
+    "INF-02": [
+      "Backup and DR Service",
+      "Cloud VPN/Interconnect",
+      "Compute Engine"
+    ],
+    "INF-04": [
+      "multi-region architecture",
+      "global load balancing"
+    ],
+    "INF-05": [
+      "zonal/regional redundancy",
+      "Cloud Load Balancing"
+    ],
+    "INF-06": [
+      "Terraform",
+      "CI/CD"
+    ],
+    "INF-07": [
+      "Compute Engine images",
+      "Artifact Registry"
+    ],
+    "INF-08": [
+      "Cloud Interconnect plus diverse VPN/provider paths"
+    ],
+    "TEST-04": [
+      "Fault Injection Service where available",
+      "automated recovery validation",
+      "Cloud Monitoring"
+    ]
+  },
+  "on_prem": {
+    "DR-01": [
+      "enterprise backup platform",
+      "immutable/retention-capable backup storage",
+      "secondary backup copy"
+    ],
+    "DR-02": [
+      "replicated data",
+      "automated infrastructure provisioning",
+      "virtualization recovery"
+    ],
+    "DR-03": [
+      "secondary site capacity",
+      "storage replication",
+      "network failover"
+    ],
+    "DR-04": [
+      "production-grade secondary site",
+      "near-real-time replication",
+      "traffic/load balancing"
+    ],
+    "DR-05": [
+      "dual active sites",
+      "application clustering",
+      "data consistency architecture"
+    ],
+    "DATA-01": [
+      "immutable storage",
+      "WORM/object-lock capable repository",
+      "isolated credentials"
+    ],
+    "DATA-02": [
+      "air-gapped vault",
+      "offline or logically isolated recovery storage"
+    ],
+    "DATA-03": [
+      "storage/database replication",
+      "low-latency network"
+    ],
+    "DATA-04": [
+      "snapshot/PIT recovery",
+      "versioned backup"
+    ],
+    "DATA-05": [
+      "segmented backup management plane",
+      "separate credentials"
+    ],
+    "CYBER-01": [
+      "isolated clean room",
+      "trusted recovery images",
+      "forensic gating"
+    ],
+    "CYBER-02": [
+      "break-glass directory recovery",
+      "independent privileged accounts"
+    ],
+    "INF-01": [
+      "secondary data center",
+      "independent power/network/facility"
+    ],
+    "INF-02": [
+      "cloud connectivity",
+      "replication gateway",
+      "cloud recovery platform"
+    ],
+    "INF-06": [
+      "configuration management",
+      "IaC where supported",
+      "golden configuration"
+    ],
+    "INF-07": [
+      "golden images",
+      "configuration repository"
+    ],
+    "INF-08": [
+      "diverse carriers",
+      "physically diverse paths"
+    ],
+    "TEST-04": [
+      "automated recovery validation",
+      "sandbox recovery environment",
+      "configuration drift checks"
+    ]
+  }
+}
