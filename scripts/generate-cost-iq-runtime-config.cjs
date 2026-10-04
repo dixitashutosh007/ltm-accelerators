@@ -11,5 +11,5 @@ if(typeof endpoint!=='string'||!endpoint) throw new Error('Amplify custom.apiUrl
 
 const safe=endpoint.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
 const target=path.resolve('Accelerators/cost-iq-runtime-config.js');
-fs.writeFileSync(target,"window.COST_IQ_API='"+safe+"';\\nwindow.RESILIENCE_IQ_API='"+safe+"';\\n");
+fs.writeFileSync(target,"window.COST_IQ_API='"+safe+"';\nwindow.RESILIENCE_IQ_API='"+safe+"';\n");
 console.log('Generated Cost IQ runtime API configuration:',endpoint);
