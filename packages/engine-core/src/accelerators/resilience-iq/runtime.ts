@@ -254,15 +254,34 @@ function patternScore(id: string, a: ResilienceAnswers, eliminated: Set<string>)
   const rpo = rpoMinutes[str(a["EX-04"])] ?? null;
   const crit = criticality(a);
   const cyber = cyberRisk(a);
+  const concentration = concentrationRisk(a);
+  const dependency = dependencyRisk(a);
   let score = 55;
+
   if (id === "DR-01") score += (rto !== null && rto >= 1440 ? 22 : 0) + (rpo !== null && rpo >= 1440 ? 15 : 0) - (crit === "very_high" ? 10 : 0);
   if (id === "DR-02") score += (rto !== null && rto >= 240 && rto < 1440 ? 18 : 0);
   if (id === "DR-03") score += (rto !== null && rto <= 240 ? 15 : 0) + (rpo !== null && rpo <= 60 ? 10 : 0);
   if (id === "DR-04") score += (rto !== null && rto <= 60 ? 18 : 0) + (crit === "very_high" ? 8 : 0);
   if (id === "DR-05") score += (rto !== null && rto <= 15 ? 24 : 0) + (rpo === 0 ? 16 : 0);
-  if (cyber === "destructive") score += /CYBER|DATA/.test(id) ? 25 : -12;
-  if (concentrationRisk(a) === "high" && /INF-03|INF-04|TP-03|TP-05/.test(id)) score += 20;
-  if (dependencyRisk(a) === "high" && /DR-07|APP-04|DR-08/.test(id)) score += 18;
+
+  if (cyber === "destructive") {
+    if (id === "CYBER-01") score += 24;
+    else if (id === "CYBER-04") score += 16;
+    else if (id === "CYBER-03") score += 12;
+    else if (id === "CYBER-02") score += 10;
+    else if (id === "DATA-01") score += 8;
+    else if (p.decision_role === "recovery_strategy") score -= 4;
+  } else if (cyber === "high") {
+    if (id === "CYBER-01") score += 18;
+    else if (id === "CYBER-04") score += 12;
+    else if (id === "CYBER-03") score += 10;
+    else if (id === "CYBER-02") score += 8;
+    else if (id === "DATA-01") score += 6;
+  }
+
+  if (concentration === "high" && /INF-03|INF-04|TP-03|TP-05/.test(id)) score += 20;
+  if (dependency === "high" && /DR-07|APP-04|DR-08/.test(id)) score += 18;
+
   const env = environment(a);
   if (env !== "unknown" && Array.isArray(p[env === "on_prem" ? "on_prem_mapping" : env + "_mapping"])) score += 3;
   score = Math.max(0, Math.min(100, score));
@@ -271,7 +290,11 @@ function patternScore(id: string, a: ResilienceAnswers, eliminated: Set<string>)
     name: p.name,
     score,
     fit: score >= 85 ? "Strong fit" : score >= 70 ? "Good fit" : score >= 55 ? "Conditional fit" : "Weak fit",
-    rationale: `${p.name} is ranked against the stated recovery objectives, risk signals and operating constraints; it is not selected from the overall maturity score alone.`,
+    rationale: p.decision_role === "cyber_strategy"
+      ? p.name + " is a cyber-recovery strategy and is evaluated separately from the primary DR recovery strategy."
+      : p.decision_role === "cyber_control"
+        ? p.name + " is a supporting cyber control rather than a replacement for the primary recovery strategy."
+        : p.name + " is ranked against the stated recovery objectives, business criticality and operating constraints.",
     whyNot: p.when_not_to_use
   };
 }
@@ -327,11 +350,12 @@ export function evaluateResilienceIq(a: ResilienceAnswers): ResilienceResult {
   if (rto !== null && rto < 15) eliminated.add("DR-02");
   if (rpo !== null && rpo <= 15) eliminated.add("DR-01");
 
-  const candidateIds = ["DR-01","DR-02","DR-03","DR-04","DR-05",...branch.candidates];
+  const candidateIds = ["DR-01","DR-02","DR-03","DR-04","DR-05","CYBER-01","CYBER-02","CYBER-03","CYBER-04","DATA-01",...branch.candidates];
   const unique = [...new Set(candidateIds)];
   const ranking = unique.map(id => patternScore(id, a, eliminated)).filter(Boolean) as PatternDecision[];
   ranking.sort((x, y) => y.score - x.score);
-  const preferred = requirementsIncomplete || missing.length > 0 ? null : ranking[0]?.id ?? null;
+  const recoveryRanking = ranking.filter(x => ["DR-01","DR-02","DR-03","DR-04","DR-05"].includes(x.id));
+  const preferred = requirementsIncomplete || missing.length > 0 ? null : recoveryRanking[0]?.id ?? null;
 
   const nextQuestions: NextQuestion[] = [];
   for (const id of branch.questions) {
@@ -375,7 +399,7 @@ export function evaluateResilienceIq(a: ResilienceAnswers): ResilienceResult {
     evidenceConfidence: confidenceLabel,
     domainScores: domains,
     preferredPattern: preferred,
-    alternatives: ranking.slice(1, 3),
+    alternatives: recoveryRanking.slice(1, 3),
     patternRanking: ranking.slice(0, 8),
     eliminatedPatterns: [...eliminated],
     mandatoryControls,
@@ -383,7 +407,7 @@ export function evaluateResilienceIq(a: ResilienceAnswers): ResilienceResult {
     gapRegister: gaps,
     nextQuestions,
     evidenceRequests,
-    technologyOptions: preferred ? technologyOptions([preferred, ...ranking.slice(1,3).map(x => x.id)], a) : {},
+    technologyOptions: preferred ? technologyOptions([preferred, ...recoveryRanking.slice(1,3).map(x => x.id), ...(cyberRisk(a) === "destructive" || cyberRisk(a) === "high" ? ["CYBER-01"] : [])], a) : {},
     blueprint,
     roadmap: roadmap(gaps, preferred),
     decisionLog: [
