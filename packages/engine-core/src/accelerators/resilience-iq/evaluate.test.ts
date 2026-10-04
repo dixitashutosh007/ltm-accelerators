@@ -114,6 +114,54 @@ if (!cyberCase.preferredPattern) throw new Error("Cyber case should still select
 if (!cyberCase.technologyOptions["CYBER-01:azure"]) throw new Error("Destructive cyber risk should map the cyber recovery overlay");
 if (!cyberCase.mandatoryControls.includes("CYBER-02")) throw new Error("Destructive cyber risk should require identity recovery isolation");
 
+
+const onPremCase = evaluateResilienceIq({
+  "EX-01": ["Customer-facing services"],
+  "EX-03": "1-4 hours",
+  "EX-04": "15-60 minutes",
+  "EX-05": "Yes, current",
+  "EX-06": "Yes, proven by testing",
+  "EX-07": "Within 3 months",
+  "EX-08": "No",
+  "EX-09": "Immutable and restore proven",
+  "EX-10": "No",
+  "EX-11": "Low concentration",
+  "EX-12": "No known SPOFs",
+  "EX-13": "Partially",
+  "EX-14": "Yes, current",
+  "EX-15": "Yes, periodic review",
+  "EX-16": "Scenario-based tests",
+  "EX-17": "Yes",
+  "EX-18": ["On-premises"],
+  "EX-19": "Partially",
+  "EX-20": "High — tested"
+});
+if (!onPremCase.technologyOptions["DR-03:on_prem"]) throw new Error("On-premises scenario should map the selected recovery strategy to on-prem implementation");
+
+const cloudConcentration = evaluateResilienceIq({
+  "EX-01": ["Customer-facing services", "Revenue-generating services"],
+  "EX-03": "15-60 minutes",
+  "EX-04": "15-60 minutes",
+  "EX-05": "Yes, current",
+  "EX-06": "Yes, proven by testing",
+  "EX-07": "Within 3 months",
+  "EX-08": "No",
+  "EX-09": "Immutable and restore proven",
+  "EX-10": "Yes, but alternatives exist",
+  "EX-11": "High concentration",
+  "EX-12": "Critical SPOFs exist",
+  "EX-13": "Partially",
+  "EX-14": "Partially",
+  "EX-15": "Yes, periodic review",
+  "EX-16": "Scenario-based tests",
+  "EX-17": "No",
+  "EX-18": ["AWS"],
+  "EX-19": "Partially",
+  "EX-20": "Medium — documented but not fully tested"
+});
+if (!cloudConcentration.mandatoryControls.includes("TP-05")) throw new Error("Cloud concentration should require concentration-risk mitigation");
+if (!cloudConcentration.mandatoryControls.includes("INF-04")) throw new Error("Cloud concentration should require multi-region resilience");
+
 console.log("Resilience IQ knowledge-driven runtime tests passed");
 
 
