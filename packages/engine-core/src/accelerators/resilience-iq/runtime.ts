@@ -378,6 +378,64 @@ function technologyOptions(patternIds: string[], a: ResilienceAnswers): Record<s
   return result;
 }
 
+function targetStateBlueprint(
+  a: ResilienceAnswers,
+  preferred: string | null,
+  gaps: ReturnType<typeof gapRegister>,
+  mandatoryControls: string[]
+) {
+  if (!preferred) return null;
+
+  const env = environment(a);
+  const layers = new Set<string>([
+    "business_service",
+    "people_process",
+    "application",
+    "data",
+    "infrastructure",
+    "network",
+    "identity",
+    "observability_governance"
+  ]);
+
+  if (cyberRisk(a) === "destructive" || cyberRisk(a) === "high") layers.add("cyber_recovery");
+  if (str(a["EX-10"]) !== "No" || concentrationRisk(a) !== "low") layers.add("third_party");
+
+  const architectureDecisions: string[] = [
+    "Design recovery around critical business services and validated impact tolerance/RTO/RPO.",
+    "Separate recovery capability from the primary production failure domain.",
+    "Sequence application, data, infrastructure, network and identity dependencies before service recovery.",
+    "Use evidence-driven testing to prove recovery objectives rather than relying on design assumptions."
+  ];
+
+  if (preferred === "DR-02") architectureDecisions.push("Use a rebuild/pilot-light recovery foundation with automated provisioning and validated recovery sequencing.");
+  if (preferred === "DR-03") architectureDecisions.push("Maintain continuously available warm recovery capacity sufficient to meet the measured RTO/RPO.");
+  if (preferred === "DR-04") architectureDecisions.push("Maintain hot recovery capacity and automated failover for services requiring near-continuous readiness.");
+  if (preferred === "DR-05") architectureDecisions.push("Use independently resilient failure domains with active traffic distribution and synchronized data where justified by business objectives.");
+  if (preferred === "DR-01") architectureDecisions.push("Use protected backup and controlled rebuild/restore as the primary recovery pattern for relaxed objectives.");
+
+  if (mandatoryControls.includes("CYBER-01")) architectureDecisions.push("Maintain an isolated cyber-recovery capability with clean restore validation.");
+  if (mandatoryControls.includes("CYBER-02")) architectureDecisions.push("Provide an alternate privileged identity recovery path independent of the primary control plane.");
+  if (mandatoryControls.includes("TP-05")) architectureDecisions.push("Reduce or explicitly govern concentration across providers, regions, networks and critical SaaS dependencies.");
+  if (mandatoryControls.includes("DR-07")) architectureDecisions.push("Make dependency-aware recovery sequencing an explicit architectural control.");
+
+  const blueprintIds = ((k.blueprintEngine.recommendation_to_blueprint_mapping as any)[preferred] ?? []).slice();
+  for (const g of gaps) {
+    if (g.id === "G-05" && !blueprintIds.includes("BP-07")) blueprintIds.push("BP-07");
+    if (g.id === "G-08" && !blueprintIds.includes("BP-08")) blueprintIds.push("BP-08");
+    if (g.id === "G-07" && !blueprintIds.includes("BP-03")) blueprintIds.push("BP-03");
+  }
+
+  return {
+    environment: env,
+    recoveryPattern: preferred,
+    principles: ["business_service_first","failure_domain_separation","cyber_recovery","dependency_awareness","evidence_driven_testing","tiered_investment"],
+    architectureLayers: [...layers],
+    architectureDecisions,
+    blueprintIds: [...new Set(blueprintIds)]
+  };
+}
+
 function roadmap(gaps: ReturnType<typeof gapRegister>, preferred: string | null, cyberRiskLevel: string) {
   const templates = k.blueprintEngine.roadmap_action_templates as any[];
   const byGap = gaps.map(g => templates.find(t => t.trigger === g.id)).filter(Boolean) as any[];
@@ -450,15 +508,7 @@ export function evaluateResilienceIq(a: ResilienceAnswers): ResilienceResult {
     ...(dependencyRisk(a) === "high" ? ["DR-07", "APP-04", "DR-08"] : [])
   ];
 
-  const blueprintIds = preferred
-    ? ((k.blueprintEngine.recommendation_to_blueprint_mapping as any)[preferred] ?? [])
-    : ["BP-02", "BP-12"];
-
-  const blueprint = requirementsIncomplete || missing.length > 0 ? null : {
-    targetPrinciples: ["business_service_first","failure_domain_separation","cyber_recovery","dependency_awareness","evidence_driven_testing","tiered_investment"],
-    architectureLayers: ["business_service","people_process","application","data","infrastructure","network","identity","cyber_recovery","third_party","observability_governance"],
-    blueprintIds
-  };
+  const blueprint = requirementsIncomplete || missing.length > 0 ? null : targetStateBlueprint(a, preferred, gaps, mandatoryControls);
 
   const executiveSummary = requirementsIncomplete || missing.length > 0
     ? "Resilience assessment requires defined recovery objectives before a final target-state recommendation can be issued."
