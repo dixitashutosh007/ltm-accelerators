@@ -185,20 +185,32 @@ function dynamicBranch(a: ResilienceAnswers) {
 
 function scoreDomains(a: ResilienceAnswers, confidence: number): Record<string, number> {
   const q = k.questionBank.executive_questions as any[];
+  const scoring = (k.scoringModel as any).question_scoring ?? {};
   const scores: Record<string, { sum: number; n: number }> = {};
+
   for (const x of q) {
     const v = a[x.id];
     if (v === undefined || v === null || v === "") continue;
-    let s = 60;
-    const text = String(v);
-    if (/Unknown|No$|^No,|Never|Low$|Critical SPOFs|stale|not proven/i.test(text)) s = 25;
-    else if (/Partially|Potentially|Contractual only|Technical tests only|1-2 years/i.test(text)) s = 50;
-    else if (/tested|validated|Yes, current|Yes, exercised|regularly|High —/i.test(text)) s = 90;
+    const rule = scoring[x.id];
+    let s: number;
+
+    if (rule?.scores && typeof v === "string" && typeof rule.scores[v] === "number") {
+      s = rule.scores[v];
+    } else if (rule?.type === "criticality_presence" || rule?.type === "environment_presence") {
+      s = Number(rule.default ?? 60);
+    } else if (rule?.scores && Array.isArray(v)) {
+      const values = v.map(String).map((item: string) => Number(rule.scores[item])).filter(Number.isFinite);
+      s = values.length ? values.reduce((sum: number, value: number) => sum + value, 0) / values.length : Number(rule.default ?? 60);
+    } else {
+      s = Number(rule?.default ?? 60);
+    }
+
     const d = x.domain;
     scores[d] ??= { sum: 0, n: 0 };
-    scores[d].sum += s;
+    scores[d].sum += Math.max(0, Math.min(100, s));
     scores[d].n++;
   }
+
   const result: Record<string, number> = {};
   for (const d of Object.keys(k.scoringModel.domain_weights)) {
     const raw = scores[d] ? scores[d].sum / scores[d].n : 50;
@@ -206,7 +218,6 @@ function scoreDomains(a: ResilienceAnswers, confidence: number): Record<string, 
   }
   return result;
 }
-
 function criticalExposure(gaps: Array<{ severity: string }>): "Low" | "Moderate" | "High" | "Severe" {
   const critical = gaps.filter(g => g.severity.toLowerCase() === "critical").length;
   const high = gaps.filter(g => g.severity.toLowerCase() === "high").length;
