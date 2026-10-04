@@ -155,16 +155,8 @@ function scoreColor(v){
   return 'background:#fde9e6;color:#9a3428';
 }
 function visualSection(entries){
-  const labels=JSON.stringify(entries.map(x=>x.name));
-  const values=JSON.stringify(entries.map(x=>x.score));
   const heat=entries.map(function(x){return '<div class="heat-cell" style="'+scoreColor(x.score)+'"><div class="heat-score">'+x.score+'</div><div class="heat-name">'+esc(x.name)+'</div></div>'}).join('');
-  return '<div class="visual-grid"><div class="chart-card"><div class="eyebrow">DIMENSION RADAR</div><h3 style="margin:5px 0 10px">Cost & value profile</h3><div class="chart-wrap"><canvas id="costRadar"></canvas></div></div><div class="chart-card"><div class="eyebrow">CONCENTRATION HEAT MAP</div><h3 style="margin:5px 0 10px">Where management attention is concentrated</h3><div class="heatmap">'+(heat||'<p class="muted">No dimension scores were returned by the engine.</p>')+'</div></div></div>';
-}
-function initVisuals(){
-  var el=document.getElementById('costRadar');
-  if(!el||typeof Chart==='undefined')return;
-  var entries=scoreEntries();
-  new Chart(el,{type:'radar',data:{labels:entries.map(function(x){return x.name}),datasets:[{label:'Diagnostic score',data:entries.map(function(x){return x.score}),fill:true,borderWidth:2,pointRadius:3}]},options:{responsive:true,maintainAspectRatio:false,scales:{r:{min:0,max:100,ticks:{stepSize:25,backdropColor:'transparent'},pointLabels:{font:{size:10}}}},plugins:{legend:{display:false}}}});
+  return '<div class="visual-grid"><div class="chart-card"><div class="eyebrow">SCORE PROFILE</div><h3>Diagnostic score at a glance</h3><div class="chart-wrap"><canvas id="scoreProfile"></canvas></div></div><div class="chart-card"><div class="eyebrow">DIMENSION RADAR</div><h3>Cost & value profile</h3><div class="chart-wrap"><canvas id="costRadar"></canvas></div></div></div><div class="card"><div class="eyebrow">CONCENTRATION HEAT MAP</div><h3>Where management attention is concentrated</h3><div class="heatmap">'+(heat||'<p class="muted">No dimension scores were returned.</p>')+'</div></div><div class="visual-grid"><div class="chart-card"><div class="eyebrow">DIMENSION SCORECARD</div><h3>Relative strength by dimension</h3><div class="chart-wrap"><canvas id="costBars"></canvas></div></div><div class="chart-card"><div class="eyebrow">VALUE AREAS</div><h3>Priority value levers</h3><div class="report-band">'+(entries.slice(0,4).map(function(x){return '<div class="signal"><b>'+esc(x.name)+'</b><span>Score '+x.score+' — '+(x.score<50?'Priority opportunity':x.score<70?'Improvement opportunity':'Relatively healthy')+'</span></div>'}).join(''))+'</div></div></div>';
 }
 function preliminary(){
   const h=assessment.headlines||{};const ev=assessment.evidence||{};const dims=scoreEntries();const findings=assessment.findings||[];
@@ -191,7 +183,21 @@ async function generateDetailedReport(){
     }
   });
 }
+function normalizeAI(ai){
+  ai=ai||{};
+  const dims=scoreEntries(),findings=assessment?.findings||[],recs=assessment?.recommendations||[];
+  const ranked=[...dims].sort((a,b)=>a.score-b.score);
+  if(!Array.isArray(ai.priorityAreas)||!ai.priorityAreas.length) ai.priorityAreas=ranked.slice(0,5).map(x=>({name:x.name,score:x.score,why:x.score<50?'Priority management attention area.':x.score<70?'Improvement opportunity identified.':'Relatively healthy dimension.',action:'Validate evidence, ownership and improvement actions for this dimension.'}));
+  if(!Array.isArray(ai.keyMessages)||!ai.keyMessages.length) ai.keyMessages=findings.slice(0,5).map(f=>String(f.title||f.id||'Calibrated finding')+' — '+String(f.severity||'Management attention required.'));
+  if(!Array.isArray(ai.opportunities)||!ai.opportunities.length) ai.opportunities=recs.slice(0,6).map(r=>({title:r.title||r.id||'Advisory opportunity',description:r.description||r.summary||'Opportunity identified by the deterministic Cost IQ methodology.',evidence:'Deterministic Cost IQ recommendation activated from assessment evidence.',confidence:'Medium',nextStep:r.ltmService||r.action||'Validate with the consulting team.'}));
+  if(!Array.isArray(ai.roadmap)||!ai.roadmap.length) ai.roadmap=[{horizon:'0-30 days',actions:['Validate priority dimensions and evidence gaps','Confirm ownership for highest-priority findings']},{horizon:'30-90 days',actions:['Build quantified opportunity cases','Launch targeted optimization and governance workstreams']},{horizon:'90-180+ days',actions:['Embed operating-model changes','Track benefits realization and executive value outcomes']}];
+  if(!Array.isArray(ai.consultingRecommendations)||!ai.consultingRecommendations.length) ai.consultingRecommendations=recs.map(x=>x.ltmService||x.title||x.id).filter(Boolean);
+  ai.executiveSummary=ai.executiveSummary||'The Cost IQ diagnostic identifies the strongest management attention areas across technology cost transparency, governance, economics and value realization.';
+  ai.limitations=ai.limitations||'Deterministic scores and findings remain the source of truth. AI is used to interpret evidence and structure the executive narrative.';
+  return ai;
+}
 function renderReport(ai){
+  ai=normalizeAI(ai);
   const h=assessment.headlines||{},findings=assessment.findings||[],recs=assessment.recommendations||[],dims=scoreEntries();
   const pri=(ai.priorityAreas||[]).map(function(x){return '<div class="signal"><b>'+esc(x.name)+'</b><span>Score '+esc(x.score)+' · '+esc(x.why)+'</span><p style="font-size:11px;margin:7px 0 0"><b>Next:</b> '+esc(x.action)+'</p></div>'}).join('');
   const opp=(ai.opportunities||[]).map(function(x){return '<div class="finding"><strong>'+esc(x.title)+'</strong><p>'+esc(x.description)+'</p><p><b>Confidence:</b> '+esc(x.confidence)+' · '+esc(x.nextStep)+'</p></div>'}).join('');
