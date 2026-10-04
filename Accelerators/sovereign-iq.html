@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <meta name="generator" content="Sovereign IQ v3.0 · LTM Infrastructure Tech Advisory" />
-<meta http-equiv="Content-Security-Policy" content="default-src 'self' blob: data:; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https://www.ltm.com; connect-src 'self' blob: data: https://api.anthropic.com https://api.openai.com https://generativelanguage.googleapis.com; frame-ancestors 'self';">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' blob: data:; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https://www.ltm.com; connect-src 'self' blob: data: https://zvnmwxa9sf.execute-api.ap-south-1.amazonaws.com https://api.anthropic.com https://api.openai.com https://generativelanguage.googleapis.com; frame-ancestors 'self';">
 <title>Sovereign IQ — Global Digital Sovereignty &amp; Jurisdictional Posture Platform · LTM</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -4223,12 +4223,14 @@ function loadDemoArchetype(key, jumpToReport) {
   STATE.probeAnswers = JSON.parse(JSON.stringify(arch.probeAnswers || {}));
   STATE.probeNotes = JSON.parse(JSON.stringify(arch.probeNotes || {}));
   STATE.currentSecIndex = 0;
-  STATE.screen = jumpToReport ? "report" : "questions";
+  STATE.evaluation = null;
+  STATE.screen = "questions";
   saveState();
   updateSessionBar();
   renderScreen();
   window.scrollTo(0, 0);
   showToast("Loaded Archetype: " + arch.name + " (" + (jumpToReport ? "Full Report" : "Interactive Stepper") + ")");
+  if (jumpToReport) triggerReportSynthesis();
 }
 
 function showToast(msg) {
@@ -5144,7 +5146,7 @@ function triggerReportSynthesis() {
 
   // Trigger AI briefing generation in parallel so it's ready when report mounts
   generateAiBriefing();
-  fetchSovereignIqEvaluation();
+  var evaluationPromise = fetchSovereignIqEvaluation();
 
   var pFill = document.getElementById("synthPFill");
   setTimeout(function() {
@@ -5178,10 +5180,13 @@ function triggerReportSynthesis() {
   }, 2100);
 
   setTimeout(function() {
-    overlay.remove();
-    STATE.screen = "report";
-    renderScreen();
-    window.scrollTo(0, 0);
+    // Render only once the server evaluation has returned (the report never uses local scoring).
+    evaluationPromise.then(function() {
+      overlay.remove();
+      STATE.screen = "report";
+      renderScreen();
+      window.scrollTo(0, 0);
+    });
   }, 2400);
 }
 
@@ -5252,6 +5257,7 @@ function generateGapTailoredRoadmap(facts, anomalies, answers) {
 const EVALUATE_API_ENDPOINT = "https://zvnmwxa9sf.execute-api.ap-south-1.amazonaws.com/api/evaluate/sovereign-iq";
 
 async function fetchSovereignIqEvaluation() {
+  STATE.evaluation = null;
   try {
     const payload = {
       answers: STATE.answers,
@@ -5291,16 +5297,15 @@ function renderReport() {
     archetypes = STATE.evaluation.archetypes;
     offerings = STATE.evaluation.offerings;
   } else {
-    facts = computeFacts(STATE.answers);
-    inScopeRegimes = evaluateRegimes(facts);
-    pillarScores = computePillarScores(STATE.answers, facts);
-    maturity = computeOverallMaturity(pillarScores);
-    fin = calculateFinancialExposure(STATE.answers, inScopeRegimes, facts);
-    heatmap = generateStrategicHeatmap(inScopeRegimes, pillarScores);
-    anomalies = analyzeEstateAnomalies(STATE.answers, facts);
-    roadmap = generateGapTailoredRoadmap(facts, anomalies, STATE.answers);
-    archetypes = generateArchetypes(STATE.answers);
-    offerings = generateLTMOfferings(inScopeRegimes, pillarScores);
+    // The scoring service is unavailable. Do not fall back to in-browser scoring: the public
+    // question bank carries no regulatory fact mappings, so a local result would be wrong.
+    return `
+      <section class="card" style="max-width:720px;margin:48px auto;padding:32px;text-align:center">
+        <h2 style="margin-bottom:8px">Sovereign IQ results are temporarily unavailable</h2>
+        <p class="lead" style="margin-bottom:20px">The scoring service could not be reached, so no report has been generated. Your answers are saved.</p>
+        <button class="btn primary" onclick="triggerReportSynthesis()">Retry</button>
+        <button class="btn" onclick="STATE.screen='questions';renderScreen();">Back to answers</button>
+      </section>`;
   }
 
   var clientDisplay = SESSION.anonymize ? "Client Enterprise [Confidential]" : SESSION.clientName;
@@ -5319,9 +5324,11 @@ function renderReport() {
   var displayScoreColor = maturity.stage.color;
   var displayStageLabel = maturity.stage.label;
   var displayPercentile = maturity.percentile;
-  var displayFine = "$" + (fin.statutoryCeiling/1000000).toFixed(1);
+  var displayFine = fin.statutoryCeiling > 0 ? "$" + (fin.statutoryCeiling/1000000).toFixed(1) : "Not quantified";
   var displayFineColor = "red";
-  var displayFineDesc = "DORA Art. 50 &middot; AI Act (7%) &middot; GDPR (4%)";
+  var fineLaws = (fin.components || []).slice().sort(function(a, b) { return (b.amt || 0) - (a.amt || 0); })
+    .slice(0, 3).map(function(c) { return escapeHtml(c.law); });
+  var displayFineDesc = fineLaws.length ? fineLaws.join(" &middot; ") : "Largest single in-scope statutory maximum";
   var displayLockout = "$" + (fin.downtimeRisk24h/1000000).toFixed(1);
   var displayLockoutColor = "amber";
   var displayLockoutDesc = "Operational disruption under cloud subpoena";
@@ -5331,10 +5338,10 @@ function renderReport() {
     displayScore = 88;
     displayScoreColor = "var(--green)";
     displayStageLabel = "Stage 4 &middot; Sovereign-by-Design";
-    displayPercentile = 96;
-    displayFine = "$0.0";
+    displayPercentile = null;
+    displayFine = "Reduced";
     displayFineColor = "green";
-    displayFineDesc = "100% Mitigated via HYOK &amp; Covenants";
+    displayFineDesc = "Indicative: exposure materially reduced via HYOK &amp; contractual covenants";
     displayLockout = "$0.4";
     displayLockoutColor = "green";
     displayLockoutDesc = "95% Disruption Hardened with Multi-Cloud Failover";
@@ -5342,11 +5349,11 @@ function renderReport() {
   } else if (mode === "compare") {
     displayScore = maturity.score + " &rarr; 88";
     displayScoreColor = "var(--ink)";
-    displayStageLabel = maturity.stage.label + " &rarr; Sovereign-by-Design (+44 pts)";
-    displayPercentile = 96;
-    displayFine = "$" + (fin.statutoryCeiling/1000000).toFixed(0) + "M &rarr; $0M";
+    displayStageLabel = maturity.stage.label + " &rarr; Sovereign-by-Design (+" + Math.max(0, 88 - maturity.score) + " pts)";
+    displayPercentile = null;
+    displayFine = "$" + (fin.statutoryCeiling/1000000).toFixed(0) + "M &rarr; Reduced";
     displayFineColor = "green";
-    displayFineDesc = "Full Statutory Fine Shield (-100%)";
+    displayFineDesc = "Indicative target-state reduction (not a guarantee)";
     displayLockout = "$" + (fin.downtimeRisk24h/1000000).toFixed(1) + "M &rarr; $0.4M";
     displayLockoutColor = "blue";
     displayLockoutDesc = "95% Resilience Hardening";
@@ -5526,7 +5533,7 @@ function renderReport() {
         </div>
         <div style="text-align:right">
           <span class="pill" style="background:${maturity.stage.color}15;color:${maturity.stage.color};font-weight:700;font-size:12px;padding:5px 12px">${maturity.stage.label}</span>
-          <div style="font-size:11px;color:var(--mutd);margin-top:4px;font-family:var(--font-mono)">${maturity.stage.band} &middot; ${maturity.percentile}th Percentile vs Peers</div>
+          <div style="font-size:11px;color:var(--mutd);margin-top:4px;font-family:var(--font-mono)">${maturity.stage.band}${maturity.percentile != null ? ' &middot; ' + maturity.percentile + 'th Percentile vs Peers' : ''}</div>
         </div>
       </div>
       <p style="font-size:13.5px;color:var(--mut);line-height:1.5">${maturity.stage.desc}</p>
@@ -5553,14 +5560,14 @@ function renderReport() {
             <div class="stat-radial-val" style="color:${displayScoreColor}">${displayScore}</div>
           </div>
           <div class="stat-label">Sovereignty Maturity</div>
-          <div class="stat-desc">${displayStageLabel} (${displayPercentile}th Percentile)</div>
+          <div class="stat-desc">${displayStageLabel}${displayPercentile != null ? ' (' + displayPercentile + 'th Percentile)' : ''}</div>
         </div>
 
         <!-- Stat 2: Max Statutory Penalty Ceiling -->
         <div class="stat-item">
           <div class="stat-number-wrapper">
             <span class="stat-number ${displayFineColor}">${displayFine}</span>
-            <span class="stat-suffix">M</span>
+            <span class="stat-suffix">${/\d$/.test(displayFine) ? 'M' : ''}</span>
           </div>
           <div class="stat-label">Max Penalty Ceiling</div>
           <div class="stat-desc">${displayFineDesc}</div>
@@ -5862,7 +5869,7 @@ LEAD PARTNER: ${SESSION.consultantLead}, LTM Infrastructure Tech Advisory
   * P5 (Software, Vendor & Supply Chain): ${pillarScores.P5}/100
 
 ## 2. QUANTIFIED VALUE AT STAKE
-- Maximum Statutory Penalty Ceiling: $${(fin.statutoryCeiling/1000000).toFixed(1)}M USD (EU AI Act 7% / GDPR 4% / APRA)
+- Maximum Statutory Penalty Ceiling: $${(fin.statutoryCeiling/1000000).toFixed(1)}M USD (largest single in-scope statutory maximum)
 - 24h Geopolitical Lockout Disruption: $${(fin.downtimeRisk24h/1000000).toFixed(1)}M USD
 - Remediation Sizing Estimate: ~$${(fin.remediationEst/1000).toFixed(0)}k USD (12-week sprint)
 - In-Scope Binding Regimes: ${inScope.length} Global Laws (${inScope.map(function(r){ return r.regime.name; }).join(", ")})
@@ -7725,7 +7732,7 @@ function openEmailModal() {
     "• P4: Cryptographic & Technical Autonomy: " + pillarScores.P4 + "/100\n" +
     "• P5: Software, Vendor & Supply Chain: " + pillarScores.P5 + "/100\n\n" +
     "3. FINANCIAL VALUE AT STAKE & RISK EXPOSURE\n" +
-    "• Max Statutory Penalty Ceiling: $" + (fin.statutoryCeiling/1000000).toFixed(1) + "M USD (AI Act 7% / GDPR 4% / APRA)\n" +
+    "• Max Statutory Penalty Ceiling: $" + (fin.statutoryCeiling/1000000).toFixed(1) + "M USD (largest single in-scope statutory maximum)\n" +
     "• 24h Geopolitical Lockout Disruption: $" + (fin.downtimeRisk24h/1000000).toFixed(1) + "M USD\n" +
     "• In-Scope Binding Regimes: " + inScope.length + " Applicable Global Laws\n" +
     "• 12-Week Sovereign Remediation Sizing: ~$" + (fin.remediationEst/1000).toFixed(0) + "k USD\n\n" +
@@ -10153,7 +10160,7 @@ function renderTargetStateDelta(maturity, fin, facts) {
 
   return `
     <div class="cio-context-banner">
-      <strong>Why this matters to the CIO:</strong> Compares current baseline posture against post-remediation target architecture. Demonstrates how targeted cryptographic decoupling (HYOK) and contractual covenants eliminate up to 100% of statutory fine exposure while preserving multi-cloud agility.
+      <strong>Why this matters to the CIO:</strong> Compares current baseline posture against post-remediation target architecture. Demonstrates how targeted cryptographic decoupling (HYOK) and contractual covenants materially reduce statutory fine exposure while preserving multi-cloud agility.
     </div>
 
     <div class="target-state-switcher">

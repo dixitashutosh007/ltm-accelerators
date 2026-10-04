@@ -306,13 +306,15 @@ export function evaluatePostureIq(
   }
 
   if (inScopeRegs.includes('aiact') || inScopeRegs.includes('ukai')) {
-    const capEUR = Math.max(35000000, tEUR * 0.07);
+    // EU AI Act Art. 99(4): EUR 15M or 3% (whichever is higher) for high-risk / Art. 10 data-governance breaches.
+    // The EUR 35M / 7% tier (Art. 99(3)) applies only to prohibited practices, which this diagnostic does not assess.
+    const capEUR = Math.max(15000000, tEUR * 0.03);
     const capUSD = Math.round(capEUR * EUR_TO_USD);
     const hasGap = findings.some((f: any) => f.reg === 'aiact');
     fines.push({
       regId: 'aiact',
       regName: 'EU AI Act (Art. 99 Statutory Ceiling)',
-      statuteBasis: 'Up to €35M or 7% global turnover (prohibited practices) / €15M or 3% (Art. 10 training-data governance & provenance).',
+      statuteBasis: 'Up to €15M or 3% of worldwide turnover, whichever is higher, for high-risk system and Art. 10 data-governance obligations (Art. 99(4)).',
       capUSD: capUSD,
       capFormatted: formatCurrency(capUSD),
       status: hasGap ? 'Severe Non-Compliance' : 'Governance Aligned',

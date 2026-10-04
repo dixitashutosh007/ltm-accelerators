@@ -325,14 +325,15 @@ function calculateFinancialExposure(answers, inScopeRegimes, facts) {
 
   var fineComponents = [];
   if (hasAIAct && facts.ai_high_risk) {
-    var aiFine = Math.min(35000000, turnover * 0.07);
-    fineComponents.push({ law: "EU AI Act (7% global turnover)", amt: aiFine });
-    maxSingleFine = Math.max(maxSingleFine, aiFine);
+    // EU AI Act Art. 99(4): high-risk obligations up to EUR 15M or 3% of worldwide turnover, whichever is higher.
+    // (The EUR 35M / 7% tier in Art. 99(3) applies only to prohibited practices under Art. 5.)
+    var aiFine = Math.max(15000000, turnover * 0.03);
+    fineComponents.push({ law: "EU AI Act Art. 99(4) (3% global turnover)", amt: aiFine });
   }
   if (hasGDPR) {
-    var gdprFine = Math.min(20000000, turnover * 0.04);
-    fineComponents.push({ law: "GDPR Ch. V (4% global turnover)", amt: gdprFine });
-    maxSingleFine = Math.max(maxSingleFine, gdprFine);
+    // GDPR Art. 83(5): up to EUR 20M or 4% of worldwide annual turnover, whichever is higher.
+    var gdprFine = Math.max(20000000, turnover * 0.04);
+    fineComponents.push({ law: "GDPR Art. 83(5) (4% global turnover)", amt: gdprFine });
   }
   if (hasKSA) {
     fineComponents.push({ law: "KSA PDPL (Statutory max)", amt: 1330000 }); // SAR 5M in USD
@@ -340,8 +341,8 @@ function calculateFinancialExposure(answers, inScopeRegimes, facts) {
   if (hasAU) {
     fineComponents.push({ law: "AU Privacy Act / APRA (Max penalty)", amt: 33000000 }); // AUD 50M
   }
-
-  if (maxSingleFine === 0) maxSingleFine = 20000000;
+  // Largest single statutory maximum among in-scope regimes (0 when none is quantified).
+  fineComponents.forEach(function(c) { maxSingleFine = Math.max(maxSingleFine, c.amt); });
 
   // Operational downtime risk: estimate $250k / hr for enterprise core outage
   var hourlyDowntime = (turnover / (365 * 24)) * 1.5;

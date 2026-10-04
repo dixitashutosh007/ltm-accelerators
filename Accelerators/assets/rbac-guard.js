@@ -1,6 +1,7 @@
 /**
  * LTM Infrastructure Tech Advisory — RBAC Client Enforcement Guard
- * Protects accelerator routes against unauthenticated and unauthorized access.
+ * Redirects signed-out or unauthorized users away from accelerator pages.
+ * UX only: data access is enforced server-side by Cognito token verification.
  */
 (function() {
   const currentScript = document.currentScript;
@@ -15,6 +16,19 @@
     }
 
     const user = JSON.parse(raw);
+
+    // Expired or token-less sessions must sign in again. (This guard is a UX redirect only:
+    // the APIs enforce access by verifying the Cognito token server-side.)
+    let expired = true;
+    try {
+      const payload = JSON.parse(atob(String(user.token || '').split('.')[1].replace(/-/g, '+').replace(/_/g, '/')));
+      expired = !payload.exp || payload.exp * 1000 <= Date.now();
+    } catch (e) {}
+    if (expired) {
+      sessionStorage.removeItem("ltm_auth_user");
+      window.location.replace('/?require_login=1&redirect=' + encodeURIComponent(window.location.pathname));
+      return;
+    }
     const email = (user.email || '').toLowerCase();
     if (email === SUPER_ADMIN.toLowerCase()) {
       return; // Super admin granted full access

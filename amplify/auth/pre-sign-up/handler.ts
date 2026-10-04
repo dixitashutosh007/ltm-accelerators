@@ -41,9 +41,13 @@ export const handler: PreSignUpTriggerHandler = async (event) => {
 
   console.info(`[PreSignUp] Authorized registration for email: ${email}`);
   
-  // Auto-confirm verified allowed users
-  event.response.autoConfirmUser = true;
-  event.response.autoVerifyEmail = true;
+  // Only accounts created by an administrator are confirmed automatically. Self-registered
+  // accounts must prove they own the address via Cognito's emailed verification code;
+  // otherwise anyone could register an unclaimed allow-listed address (e.g. any @ltm.com).
+  if (event.triggerSource === 'PreSignUp_AdminCreateUser') {
+    event.response.autoConfirmUser = true;
+    event.response.autoVerifyEmail = true;
+  }
 
   return event;
 };
