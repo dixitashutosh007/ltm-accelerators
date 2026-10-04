@@ -4838,7 +4838,8 @@ function businessImpactBand(){
 /* ---------- results rendering ---------- */
 
 /* ---------- Cloud Scoring Engine Bridge (AWS Lambda ap-south-1) ---------- */
-const EVALUATE_API_ENDPOINT = "https://zvnmwxa9sf.execute-api.ap-south-1.amazonaws.com/api/evaluate/posture-iq";
+// Scoring runs on the Advisory API; LTM_API attaches the signed-in user's token.
+const EVALUATE_API_PATH = "/api/evaluate/posture-iq";
 
 async function fetchPostureIqEvaluation() {
   try {
@@ -4849,9 +4850,8 @@ async function fetchPostureIqEvaluation() {
       sectors: STATE.sectors,
       mode: STATE.mode
     };
-    const res = await fetch(EVALUATE_API_ENDPOINT, {
+    const res = await LTM_API.fetch(EVALUATE_API_PATH, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload)
     });
     if (!res.ok) {
@@ -4978,7 +4978,7 @@ function coverBlock(score,label,counts,findings,pillarData,penalties,probes,isUn
   return `<div class="print-cover">
     <div class="cover-bg-glow no-print"></div>
     <div style="display:flex;align-items:center;gap:14px;margin-bottom:14px;">
-      <a href="/portal" style="display:flex;align-items:center;text-decoration:none;" title="Back to Advisory Accelerators Portal">
+      <a href="/" style="display:flex;align-items:center;text-decoration:none;" title="Back to Advisory Accelerators Portal">
         <img src="/assets/ltm-logo.png" alt="LTM - A Larsen & Toubro Group Company" style="height:36px;width:auto;border-radius:6px;object-fit:contain;box-shadow:0 2px 10px rgba(0,0,0,0.2);">
       </a>
     </div>

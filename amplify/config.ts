@@ -50,3 +50,8 @@ export const KEEP_LEGACY_API = env('LTM_KEEP_LEGACY_API', 'true').toLowerCase() 
 /** Steady-state request rate per second and burst for the API stage. */
 export const API_RATE_LIMIT = Number(env('LTM_API_RATE_LIMIT', '25'));
 export const API_BURST_LIMIT = Number(env('LTM_API_BURST_LIMIT', '50'));
+
+/** Sign-up allowlist for the Amplify-managed user pool (comma-separated; ltm.com is always allowed). */
+export const SIGNUP_ALLOWED_EMAILS = env('LTM_SIGNUP_ALLOWED_EMAILS', 'dixitashutosh007@gmail.com');
+export const SIGNUP_ALLOWED_DOMAINS = env('LTM_SIGNUP_ALLOWED_DOMAINS', 'ltm.com');
+export const ACCESS_CONTACT_EMAIL = env('LTM_ACCESS_CONTACT_EMAIL', 'ashutosh.dixit@ltm.com');

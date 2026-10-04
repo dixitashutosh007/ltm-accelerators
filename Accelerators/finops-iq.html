@@ -1550,7 +1550,7 @@
   <header class="advisory-subbar" role="banner">
     <div class="subbar-inner">
       <div class="subbar-left">
-        <a href="/portal" style="display:flex;align-items:center;text-decoration:none;" title="Back to Advisory Accelerators Portal">
+        <a href="/" style="display:flex;align-items:center;text-decoration:none;" title="Back to Advisory Accelerators Portal">
           <img src="/assets/ltm-logo.png" alt="LTM" style="height:32px;width:auto;margin-right:12px;border-radius:4px;vertical-align:middle;">
         </a>
         <div class="app-brand" onclick="playSplashScreen(true)" style="cursor:pointer" title="FinOps IQ v2.2 · Click to replay intro animation">
@@ -3773,7 +3773,8 @@
 
     // Scoring & Gating Engine
     /* ---------- Cloud Scoring Engine Bridge (AWS Lambda ap-south-1) ---------- */
-    const EVALUATE_API_ENDPOINT = "https://zvnmwxa9sf.execute-api.ap-south-1.amazonaws.com/api/evaluate/finops-iq";
+    // Scoring runs on the Advisory API; LTM_API attaches the signed-in user's token.
+const EVALUATE_API_PATH = "/api/evaluate/finops-iq";
 
     async function fetchCloudEvaluation() {
       try {
@@ -3782,9 +3783,8 @@
           annualSpend: STATE.org.annualSpend || 0,
           org: STATE.org
         };
-        const res = await fetch(EVALUATE_API_ENDPOINT, {
+        const res = await LTM_API.fetch(EVALUATE_API_PATH, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload)
         });
         if (!res.ok) {

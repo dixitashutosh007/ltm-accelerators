@@ -1278,7 +1278,7 @@
        HEADER: UNIFIED EXECUTIVE COMMAND BAR
        ============================================================ -->
   <header>
-    <a href="/portal" class="brand" title="Infrastructure Tech Advisory">
+    <a href="/" class="brand" title="Infrastructure Tech Advisory">
       <img src="/assets/ltm-logo.png" alt="LTM" style="height: 34px; width: auto; object-fit: contain; filter: drop-shadow(0 2px 8px rgba(255, 94, 79, 0.4));">
       <div class="brand-text">
         <div class="brand-name">Infrastructure Tech Advisory</div>
@@ -1452,7 +1452,7 @@
           <div class="card-footer" style="justify-content:flex-end;">
             <div class="card-actions">
               <button class="btn-action-edit" data-tool="cost-iq" onclick="handleEditClick('cost-iq')">Edit</button>
-              <button class="btn-action-launch" data-tool="cost-iq" disabled title="Cost IQ is temporarily unavailable while its scoring service is being restored." style="opacity:0.55;cursor:not-allowed;">Temporarily Unavailable</button>
+              <button class="btn-action-launch" id="btnLaunchCostIq" data-tool="cost-iq" disabled title="Cost IQ is temporarily unavailable while its scoring service is being restored." style="opacity:0.55;cursor:not-allowed;">Temporarily Unavailable</button>
             </div>
           </div>
         </div>
@@ -1595,15 +1595,15 @@
             RBAC ACCESS GATE
           </div>
           <h3 class="modal-title">Administrator Authentication</h3>
-          <p class="modal-desc">Sign in with authorized administrator credentials (<b>dixitashutosh007@gmail.com</b>) to manage question banks and client deliverables.</p>
+          <p class="modal-desc">Sign in with your LTM Advisory account to run assessments, manage question banks and access client deliverables.</p>
         </div>
 
         <div class="error-banner" id="loginError"></div>
 
         <form onsubmit="handleCognitoLogin(event)">
           <div class="form-group">
-            <label class="form-label">Authorized Admin Email</label>
-            <input type="email" id="loginEmail" class="form-input" value="dixitashutosh007@gmail.com" required>
+            <label class="form-label">Email</label>
+            <input type="email" id="loginEmail" class="form-input" placeholder="name@ltm.com" autocomplete="username" required>
           </div>
 
           <div class="form-group">
@@ -2084,7 +2084,7 @@
   <footer>
     <div>&copy; 2026 <b>LTM Infrastructure Tech Advisory</b> &middot; Enterprise Platform Architecture</div>
     <div style="display:flex;gap:18px;">
-      <a href="/portal" style="color:inherit;text-decoration:none;">Showcase Portal</a>
+      <a href="/" style="color:inherit;text-decoration:none;">Showcase Portal</a>
       <a href="/studio" style="color:inherit;text-decoration:none;">Question Bank Studio</a>
       <span style="color:#10B981;">&#9679; Advisory Engine Online</span>
     </div>
@@ -2094,51 +2094,28 @@
        CLIENT JAVASCRIPT: SPLASH, RBAC & STUDIO ROUTING
        ============================================================ -->
   <script>
-    /* ---------- Cognito RBAC Config (ap-south-1) ---------- */
-    const COGNITO_CONFIG = {
-      region: "ap-south-1",
-      userPoolId: "ap-south-1_91amN2bz4",
-      clientId: "4iiqcsgvsm0b4ngpps94ho4c67",
-      superAdminEmail: "dixitashutosh007@gmail.com"
-    };
+    /* ---------- Configuration & authenticated API access ----------
+       Cognito settings and the API address come from window.LTM_CONFIG (runtime-config.js,
+       generated at build time). LTM_API (ltm-api.js) attaches and silently renews the
+       user's token. Identity and permissions are always decided server-side. */
+    const COGNITO_CONFIG = (window.LTM_CONFIG && window.LTM_CONFIG.cognito) || {};
+    const FEATURES = (window.LTM_CONFIG && window.LTM_CONFIG.features) || {};
 
     let AUTH_USER = null;
 
-    /* ---------- Authenticated API access ----------
-       The reports/users API verifies the Cognito ID token on every call.
-       Identity and permissions are decided server-side, never from the request body. */
-    const ADVISORY_API_BASE = "https://zvnmwxa9sf.execute-api.ap-south-1.amazonaws.com";
-
-    function tokenExpired(token) {
-      try {
-        const payload = JSON.parse(atob(token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')));
-        return !payload.exp || (payload.exp * 1000) <= Date.now() + 30000;
-      } catch (e) { return true; }
-    }
-
     async function apiFetch(path, options = {}) {
-      if (!AUTH_USER || !AUTH_USER.token || tokenExpired(AUTH_USER.token)) {
-        handleSessionExpired();
-        throw new Error('Your session has expired. Please sign in again.');
-      }
-      const headers = Object.assign({ "Content-Type": "application/json" }, options.headers || {}, {
-        "Authorization": "Bearer " + AUTH_USER.token
-      });
-      const res = await fetch(ADVISORY_API_BASE + path, Object.assign({}, options, { headers }));
-      if (res.status === 401) {
-        handleSessionExpired();
-        throw new Error('Your session has expired. Please sign in again.');
-      }
-      return res;
+      return LTM_API.fetch(path, options);
     }
 
+    // Called by LTM_API when the session cannot be renewed.
     function handleSessionExpired() {
       AUTH_USER = null;
-      sessionStorage.removeItem("ltm_auth_user");
+      LTM_API.clearSession();
       renderAuthWidget();
       openLoginModal();
       toast("Session expired. Please sign in again.", "🔐");
     }
+    window.LTM_onSessionExpired = handleSessionExpired;
 
     /* ---------- Splash Screen Controller ---------- */
     function initSplash() {
@@ -2184,15 +2161,23 @@
     }
 
     /* ---------- Authentication & RBAC ---------- */
+    function applyFeatureFlags() {
+      const costIq = document.getElementById('btnLaunchCostIq');
+      if (costIq && FEATURES.costIq) {
+        costIq.disabled = false;
+        costIq.removeAttribute('style');
+        costIq.removeAttribute('title');
+        costIq.setAttribute('onclick', "handleLaunchClick('cost-iq', '/cost-iq-v10')");
+      }
+    }
+
     function initAuth() {
+      applyFeatureFlags();
       try {
-        const stored = sessionStorage.getItem('ltm_auth_user');
-        if (stored) {
-          AUTH_USER = JSON.parse(stored);
-          if (!AUTH_USER || !AUTH_USER.token || tokenExpired(AUTH_USER.token)) {
-            AUTH_USER = null;
-            sessionStorage.removeItem('ltm_auth_user');
-          }
+        if (LTM_API.hasUsableSession()) {
+          AUTH_USER = LTM_API.readSession();
+        } else {
+          LTM_API.clearSession();
         }
       } catch(e) {}
       renderAuthWidget();
@@ -2200,7 +2185,7 @@
 
     function isSuperAdmin() {
       // UI hint only: the API enforces admin rights from the verified token.
-      return !!(AUTH_USER && AUTH_USER.email && (AUTH_USER.role === 'super_admin' || AUTH_USER.email.toLowerCase() === COGNITO_CONFIG.superAdminEmail.toLowerCase()));
+      return !!(AUTH_USER && AUTH_USER.role === 'super_admin');
     }
 
     function canUserTakeAssessment(toolId) {
@@ -2394,18 +2379,8 @@
       }
     }
 
-    async function cognitoRequest(target, payload) {
-      const res = await fetch("https://cognito-idp." + COGNITO_CONFIG.region + ".amazonaws.com/", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/x-amz-json-1.1",
-          "X-Amz-Target": "AWSCognitoIdentityProviderService." + target
-        },
-        body: JSON.stringify(Object.assign({ ClientId: COGNITO_CONFIG.clientId }, payload))
-      });
-      const data = await res.json().catch(() => ({}));
-      if (!res.ok) throw new Error(data.message || ('Request failed (' + res.status + ')'));
-      return data;
+    function cognitoRequest(target, payload) {
+      return LTM_API.cognitoCall(target, payload);
     }
 
     async function sendPasswordResetCode() {
@@ -2496,71 +2471,37 @@
       errDiv.style.display = 'none';
 
       try {
-        const res = await fetch("https://cognito-idp." + COGNITO_CONFIG.region + ".amazonaws.com/", {
-          method: "POST",
-          headers: {
-            "X-Amz-Target": "AWSCognitoIdentityProviderService.InitiateAuth",
-            "Content-Type": "application/x-amz-json-1.1"
-          },
-          body: JSON.stringify({
-            AuthFlow: "USER_PASSWORD_AUTH",
-            ClientId: COGNITO_CONFIG.clientId,
-            AuthParameters: {
-              USERNAME: email,
-              PASSWORD: password
+        const session = await LTM_API.signIn(email, password);
+
+        // Role and permissions are resolved server-side from the verified token.
+        try {
+          const meRes = await LTM_API.fetch("/api/me");
+          if (meRes.ok) {
+            const me = await meRes.json();
+            if (me.ok) {
+              session.role = me.role;
+              session.permissions = me.permissions;
+              LTM_API.writeSession(session);
             }
-          })
-        });
-
-        const data = await res.json();
-        if (data.AuthenticationResult) {
-          const token = data.AuthenticationResult.IdToken;
-          const payload = JSON.parse(atob(token.split('.')[1]));
-          const cleanEmail = (payload.email || email).toLowerCase();
-          const isSuper = cleanEmail === COGNITO_CONFIG.superAdminEmail.toLowerCase();
-
-          AUTH_USER = {
-            email: cleanEmail,
-            sub: payload.sub,
-            token: token,
-            role: isSuper ? 'super_admin' : 'advisor_viewer',
-            permissions: {
-              view: ['strategy-iq', 'modernization-iq', 'finops-value-case', 'finops-iq', 'sovereign-iq', 'posture-iq', 'cloud-iq', 'cost-iq', isSuper ? 'reports' : ''],
-              edit: isSuper ? ['strategy-iq', 'modernization-iq', 'finops-value-case', 'finops-iq', 'sovereign-iq', 'posture-iq', 'cloud-iq', 'cost-iq'] : []
-            }
-          };
-
-          // Fetch this user's role and permissions (resolved server-side from the verified token)
-          try {
-            const meRes = await fetch(ADVISORY_API_BASE + "/api/me", {
-              headers: { "Authorization": "Bearer " + token }
-            });
-            if (meRes.ok) {
-              const me = await meRes.json();
-              if (me.ok) {
-                AUTH_USER.role = me.role;
-                AUTH_USER.permissions = me.permissions;
-              }
-            }
-          } catch(err) {}
-
-          sessionStorage.setItem("ltm_auth_user", JSON.stringify(AUTH_USER));
-          closeLoginModal();
-          renderAuthWidget();
-          toast("Welcome " + AUTH_USER.email + (isSuper ? " (Super Admin Granted)" : " (Logged In)"), "👑");
-
-          const urlParams = new URLSearchParams(window.location.search);
-          const redirectTarget = urlParams.get('redirect');
-          if (redirectTarget) {
-            window.location.href = redirectTarget;
-            return;
           }
-        } else {
-          errDiv.textContent = data.message || "Invalid credentials. Check email and password.";
-          errDiv.style.display = 'block';
+        } catch(err) {
+          console.warn('Could not load permissions:', err.message);
+        }
+
+        AUTH_USER = session;
+        closeLoginModal();
+        renderAuthWidget();
+        toast("Welcome " + AUTH_USER.email + (isSuperAdmin() ? " (Administrator)" : ""), "👑");
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const redirectTarget = urlParams.get('redirect');
+        // Only follow same-site relative paths (no open redirects).
+        if (redirectTarget && /^\/(?!\/)[\w\-./?=&%]*$/.test(redirectTarget)) {
+          window.location.href = redirectTarget;
+          return;
         }
       } catch(err) {
-        errDiv.textContent = "Authentication connection failed: " + err.message;
+        errDiv.textContent = err.message || "Sign-in failed. Check email and password.";
         errDiv.style.display = 'block';
       } finally {
         btn.disabled = false;
@@ -2570,7 +2511,7 @@
 
     function logout() {
       AUTH_USER = null;
-      sessionStorage.removeItem("ltm_auth_user");
+      LTM_API.signOut();
       renderAuthWidget();
       toast("Signed out of session", "ℹ️");
     }
@@ -2988,7 +2929,7 @@
       }
 
       const rows = CACHED_APP_USERS.map(u => {
-        const isSuper = u.email.toLowerCase() === COGNITO_CONFIG.superAdminEmail.toLowerCase();
+        const isSuper = u.role === 'super_admin';
         let roleBadge = `<span class="role-badge viewer">Member</span>`;
         if (isSuper) roleBadge = `<span class="role-badge super">Super Admin</span>`;
 

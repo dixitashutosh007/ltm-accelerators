@@ -21,7 +21,7 @@
 <div class="top"><div class="top-in"><div class="brand"><span class="brand-badge">LTM</span><span class="brand-title">ADVISORY · Cost IQ</span></div><span id="status" class="mono muted">Diagnostic Engine</span></div></div>
 <main class="wrap"><div id="app"></div></main>
 <script>
-const API=window.COST_IQ_API||'';
+// API calls go through LTM_API (assets/ltm-api.js): Advisory API address + the user's token.
 const $=id=>document.getElementById(id);
 let allQuestions=[],questions=[],answers={},subjective={},selectedAreas=[],sectionIndex=0,qIndex=0,assessment=null,aiReview=null;
 const BASELINE=['Enterprise Context','CIO Priorities','Spend & Financial Visibility','Cost Governance & Investment'];
@@ -68,7 +68,7 @@ const AREA_DESC={
  'Operations & Service Management':'IT operations, automation, service management and productivity.'
 };
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-async function api(path,opts){const r=await fetch(API+path,opts);const t=await r.text();let d={};try{d=t?JSON.parse(t):{}}catch(e){throw Error('Invalid API response ('+r.status+')')}if(!r.ok)throw Error(d.message||d.error||('HTTP '+r.status));return d}
+async function api(path,opts){const r=await LTM_API.fetch(path,opts);const t=await r.text();let d={};try{d=t?JSON.parse(t):{}}catch(e){throw Error('Invalid API response ('+r.status+')')}if(!r.ok)throw Error(d.message||d.error||('HTTP '+r.status));return d}
 function boot(){
   showSplash(['Loading Cost IQ engine…','Loading diagnostic framework…','Preparing adaptive assessment…'],function(){
     api('/api/evaluate/cost-iq/questions').then(function(d){allQuestions=d.questions||[];home()}).catch(function(e){fail(e.message)});

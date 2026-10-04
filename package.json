@@ -8,7 +8,9 @@
     "test:engine": "tsx packages/engine-core/src/test-runner.ts",
     "amplify": "ampx",
     "validate:costiq": "node scripts/validate-cost-iq.cjs",
-    "build:costiq-config": "node scripts/generate-cost-iq-runtime-config.cjs"
+    "build:runtime-config": "node scripts/generate-runtime-config.cjs",
+    "test:reports": "npm --prefix services/reports-service test",
+    "typecheck": "tsc --noEmit -p ."
   },
   "dependencies": {
     "@aws-amplify/backend": "^1.14.0",
