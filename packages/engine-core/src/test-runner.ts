@@ -3,6 +3,7 @@ import { evaluateFinOpsIq } from './accelerators/finops-iq/evaluate';
 import { evaluatePostureIq } from './accelerators/posture-iq/evaluate';
 import { evaluateSovereignIq } from './accelerators/sovereign-iq/evaluate';
 import { evaluateCloudIq } from './accelerators/cloud-iq/evaluate';
+import { evaluateStrategyIq } from './accelerators/strategy-iq/evaluate';
 import postureKb from './accelerators/posture-iq/knowledge-base.json' with { type: 'json' };
 import sovereignKb from './accelerators/sovereign-iq/knowledge-base.json' with { type: 'json' };
 
@@ -139,4 +140,30 @@ console.log('Recommended Offerings:', cloudIqResult.offers.map(o => o.code).join
 console.log('Triggered Probes:', cloudIqResult.probes.map(p => p.badge).join(' | '));
 console.log('--- Cloud IQ Assertions Passed! ---\n');
 
-console.log('🎉 ALL 5 ACCELERATOR ENGINES VALIDATED AND FUNCTIONING FLAWLESSLY!');
+console.log('--- 6. Testing Strategy IQ Headless Engine ---');
+const strategyIqMockAnswers = {
+  'S1.1': 3, 'S1.2': 4, 'S1.3': 3, 'S1.4': 2,
+  'S2.1': 3, 'S2.2': 3, 'S2.3': 4, 'S2.4': 3,
+  'S3.1': 3, 'S3.2': 2, 'S3.3': 3, 'S3.4': 3,
+  'S4.1': 2, 'S4.2': 3, 'S4.3': 3, 'S4.4': 2,
+  'S5.1': 3, 'S5.2': 4, 'S5.3': 3, 'S5.4': 3,
+  'S6.1': 3, 'S6.2': 3, 'S6.3': 3, 'S6.4': 4
+};
+
+const strategyIqResult = evaluateStrategyIq({
+  answers: strategyIqMockAnswers,
+  intake: {
+    orgName: 'Global Enterprise Corp',
+    sector: 'financial-services',
+    itSpend: 80000000,
+    execRole: 'CIO / Group CTO'
+  }
+});
+
+console.log('Overall Score:', strategyIqResult.overall, `(${strategyIqResult.band})`);
+console.log('Section Scores:', strategyIqResult.sectionScores);
+console.log('Alignment Index:', strategyIqResult.alignmentIndex + '%', '| Tech Debt Drag:', strategyIqResult.debtDragPct + '%', '($' + (strategyIqResult.debtDollarWaste / 1000000).toFixed(1) + 'M)');
+console.log('Delivery Velocity:', strategyIqResult.deliveryVelocity + 'x', '| Resilience Score:', strategyIqResult.resilienceScore + '%');
+console.log('--- Strategy IQ Assertions Passed! ---\n');
+
+console.log('🎉 ALL 6 ACCELERATOR ENGINES VALIDATED AND FUNCTIONING FLAWLESSLY!');

@@ -1,0 +1,719 @@
+{
+  "meta": {
+    "id": "strategy-iq",
+    "name": "Strategy IQ",
+    "version": "2.2.0",
+    "profile": "strategic_alignment_maturity",
+    "delivery": "single-file-html",
+    "updated": "2026-10-04",
+    "disclaimer": "This diagnostic provides strategic advisory guidance to support enterprise IT strategy, Target Operating Model (TOM), application rationalization, tech debt sizing, and board-level investment governance. It does not constitute a formal legal or financial audit."
+  },
+  "sections": [
+    {
+      "id": "S1",
+      "num": "01",
+      "title": "Business-IT Alignment & Co-Design",
+      "desc": "Coupling between technology investments and enterprise P&L growth strategies."
+    },
+    {
+      "id": "S2",
+      "num": "02",
+      "title": "Target Operating Model (TOM)",
+      "desc": "Product-led squad structures, platform-as-a-product, and decision autonomy."
+    },
+    {
+      "id": "S3",
+      "num": "03",
+      "title": "Application Portfolio Health & TIME",
+      "desc": "TIME rationalization (Tolerate, Invest, Migrate, Eliminate) and lifecycle currency."
+    },
+    {
+      "id": "S4",
+      "num": "04",
+      "title": "Tech Debt Sizing & Modernization",
+      "desc": "Balance sheet tech debt quantification and ring-fenced refactoring capacity."
+    },
+    {
+      "id": "S5",
+      "num": "05",
+      "title": "Capability Sourcing & Resilience",
+      "desc": "Core-vs-context partner intentionality, key-person de-risking, and talent ladders."
+    },
+    {
+      "id": "S6",
+      "num": "06",
+      "title": "Investment Governance & Value Realization",
+      "desc": "Economic value gating, post-launch benefit realization, and unit economics."
+    }
+  ],
+  "questions": [
+    {
+      "id": "S1.1",
+      "section": "S1",
+      "type": "single_select",
+      "q": "How intentionally is IT strategy coupled with enterprise business strategy?",
+      "hint": "Evaluates whether technology is treated as a back-office cost center or a co-author of market differentiation.",
+      "opts": [
+        {
+          "text": "<b>Level 1 · Nascent:</b> Isolated IT roadmap with zero reference to business P&L outcomes",
+          "score": 1
+        },
+        {
+          "text": "<b>Level 2 · Emerging:</b> Periodic presentation of IT plans with loose references to corporate goals",
+          "score": 2
+        },
+        {
+          "text": "<b>Level 3 · Established:</b> Documented alignment matrices mapping projects to strategic priorities",
+          "score": 3
+        },
+        {
+          "text": "<b>Level 4 · Advanced:</b> Shared OKRs and joint accountability between IT and business executives",
+          "score": 4
+        },
+        {
+          "text": "<b>Level 5 · Leading:</b> Continuous co-design where technology directly originates new revenue models",
+          "score": 5
+        }
+      ]
+    },
+    {
+      "id": "S1.2",
+      "section": "S1",
+      "type": "slider",
+      "q": "What is the strategic review cadence for technology roadmaps?",
+      "hint": "Frequency of recalibration against market shifts, competitor moves, and macro dynamics.",
+      "sliderConfig": {
+        "min": 1,
+        "max": 5,
+        "step": 1,
+        "defaultVal": 3,
+        "ticks": [
+          "Static (Years)",
+          "Annual Review",
+          "Twice-Yearly",
+          "Quarterly OKRs",
+          "Continuous Waves"
+        ],
+        "descs": [
+          "Level 1 · Nascent: Multi-year static plan rarely revisited until crises occur",
+          "Level 2 · Emerging: Annual defensive review aligned strictly to budget calendar",
+          "Level 3 · Established: Twice-yearly structured executive architectural health reviews",
+          "Level 4 · Advanced: Quarterly rolling horizon reviews with adaptive reallocation",
+          "Level 5 · Leading: Continuous rolling waves with real-time portfolio reprioritization"
+        ]
+      }
+    },
+    {
+      "id": "S1.3",
+      "section": "S1",
+      "type": "single_select",
+      "q": "How is the digital/technology value proposition perceived by the Board and CEO?",
+      "hint": "Strategic posture of IT in boardroom capital allocation decisions.",
+      "opts": [
+        {
+          "text": "<b>Level 1 · Utility Cost Center:</b> Subject to arbitrary across-the-board budget reduction targets",
+          "score": 1
+        },
+        {
+          "text": "<b>Level 2 · Operational Enabler:</b> Funded primarily to keep the lights on and satisfy compliance mandates",
+          "score": 2
+        },
+        {
+          "text": "<b>Level 3 · Respected Service Partner:</b> Dedicated funding allocated for business process automation",
+          "score": 3
+        },
+        {
+          "text": "<b>Level 4 · Strategic Growth Driver:</b> Primary driver of customer experience, retention, and speed-to-market",
+          "score": 4
+        },
+        {
+          "text": "<b>Level 5 · Core Business Multiplier:</b> Foundational board-level value multiplier and competitive differentiator",
+          "score": 5
+        }
+      ]
+    },
+    {
+      "id": "S1.4",
+      "section": "S1",
+      "type": "multi_select",
+      "q": "Which Business Architecture & Strategic Mapping artifacts are active in practice?",
+      "hint": "Select all that are maintained, actively used, and reviewed with business stakeholders.",
+      "opts": [
+        {
+          "text": "Documented Enterprise Business Capability Model (Level 1–3 capabilities defined)",
+          "score": 1
+        },
+        {
+          "text": "Value Stream Mapping tying customer journeys to underlying IT systems",
+          "score": 1
+        },
+        {
+          "text": "Systems-to-Capability Heatmap highlighting technical health and redundancy",
+          "score": 1
+        },
+        {
+          "text": "Domain Data Architecture models governed by designated business data stewards",
+          "score": 1
+        },
+        {
+          "text": "Dynamic runtime telemetry linking business KPIs directly to system performance",
+          "score": 1
+        }
+      ]
+    },
+    {
+      "id": "S2.1",
+      "section": "S2",
+      "type": "single_select",
+      "q": "What is the primary structure of your technology delivery operating model?",
+      "hint": "Distinction between project-based handoff silos and dedicated cross-functional product squads.",
+      "opts": [
+        {
+          "text": "<b>Level 1 · Siloed Waterfall:</b> Rigid project-mode silos with painful cross-departmental handover chains",
+          "score": 1
+        },
+        {
+          "text": "<b>Level 2 · Component Teams:</b> Component-based delivery teams with fragmented accountability and ticketing queues",
+          "score": 2
+        },
+        {
+          "text": "<b>Level 3 · Hybrid Matrix:</b> Product squads piloted in digital channels, while core platforms remain in waterfall silos",
+          "score": 3
+        },
+        {
+          "text": "<b>Level 4 · Product & Platform TOM:</b> Standardized product-and-platform operating model across core business domains",
+          "score": 4
+        },
+        {
+          "text": "<b>Level 5 · Scaled Product Flow:</b> Scaled team topologies with autonomous squads, golden paths, and flow telemetry",
+          "score": 5
+        }
+      ]
+    },
+    {
+      "id": "S2.2",
+      "section": "S2",
+      "type": "rating_matrix",
+      "q": "Rate maturity across your internal Developer Platform & Platform-as-a-Product capabilities:",
+      "hint": "Rate each sub-capability from 1 (Manual/Friction) to 5 (Autonomous/Golden Path):",
+      "subItems": [
+        {
+          "id": "p1",
+          "name": "Self-Service Infrastructure & Environments (cloud sandbox provisioning)"
+        },
+        {
+          "id": "p2",
+          "name": "CI/CD Golden Paths & Automated Deployment Pipelines"
+        },
+        {
+          "id": "p3",
+          "name": "Policy-as-Code, Security Scanning & Automated Governance Guardrails"
+        },
+        {
+          "id": "p4",
+          "name": "Platform Observability, Error Budgets & Developer Experience SLOs"
+        }
+      ]
+    },
+    {
+      "id": "S2.3",
+      "section": "S2",
+      "type": "drag_rank",
+      "q": "Rank your primary operational delivery bottlenecks (Drag or use arrows to sort from Biggest Bottleneck to Lowest):",
+      "hint": "Arrange the most significant organizational friction points impacting delivery speed:",
+      "rankItems": [
+        {
+          "id": "r1",
+          "label": "Manual Ticket-based Infrastructure Provisioning & Environment Delays"
+        },
+        {
+          "id": "r2",
+          "label": "Ivory-Tower Architecture Approvals & Bureaucratic Stage Gates"
+        },
+        {
+          "id": "r3",
+          "label": "Legacy Monolithic Deploy Freezes & Fear of Production Regression"
+        },
+        {
+          "id": "r4",
+          "label": "Uncontrolled Shadow IT & Disjointed Engineering Standards Across Teams"
+        }
+      ]
+    },
+    {
+      "id": "S2.4",
+      "section": "S2",
+      "type": "single_select",
+      "q": "How seamlessly do business product owners and engineering squads collaborate?",
+      "hint": "Proximity of software engineering to end customer feedback and commercial decision-makers.",
+      "opts": [
+        {
+          "text": "<b>Level 1 · Adversarial Handover:</b> Business writes heavy specs and throws them over the wall to IT",
+          "score": 1
+        },
+        {
+          "text": "<b>Level 2 · Intermediated:</b> Business analysts act as intermediaries with delayed feedback and mismatched intent",
+          "score": 2
+        },
+        {
+          "text": "<b>Level 3 · Nominal Participation:</b> Product owners present in ceremonies but engineers remain insulated from customers",
+          "score": 3
+        },
+        {
+          "text": "<b>Level 4 · Co-Located Squads:</b> True cross-functional product squads with shared customer empathy and weekly releases",
+          "score": 4
+        },
+        {
+          "text": "<b>Level 5 · Autonomous Commercial Squads:</b> Empowered teams with direct authority to experiment, measure, and pivot",
+          "score": 5
+        }
+      ]
+    },
+    {
+      "id": "S3.1",
+      "section": "S3",
+      "type": "single_select",
+      "q": "How structured is your Application Portfolio Management (APM) & TIME scoring?",
+      "hint": "Tolerate, Invest, Migrate, Eliminate methodology applied across systems.",
+      "opts": [
+        {
+          "text": "<b>Level 1 · Untracked:</b> No central inventory; applications tracked across disparate informal spreadsheets",
+          "score": 1
+        },
+        {
+          "text": "<b>Level 2 · Static CMDB:</b> CMDB contains system names but lacks business value, cost, or fitness ratings",
+          "score": 2
+        },
+        {
+          "text": "<b>Level 3 · Periodic Survey:</b> Annual APM survey categorizing applications by high-level lifecycle tags",
+          "score": 3
+        },
+        {
+          "text": "<b>Level 4 · Active TIME Governance:</b> Rigorous TIME framework actively driving retirement and modernization budgets",
+          "score": 4
+        },
+        {
+          "text": "<b>Level 5 · Real-Time Observability:</b> Continuous real-time APM telemetry scoring cost, technical risk, and business fitness",
+          "score": 5
+        }
+      ]
+    },
+    {
+      "id": "S3.2",
+      "section": "S3",
+      "type": "drag_rank",
+      "q": "Rank the biggest areas of capability duplication & overlap across your business units:",
+      "hint": "Order from Highest Capability Redundancy to Lowest Redundancy:",
+      "rankItems": [
+        {
+          "id": "d1",
+          "label": "Multiple Disjointed ERPs & Core General Ledger Accounts"
+        },
+        {
+          "id": "d2",
+          "label": "Fragmented CRM & Customer Master Data Repositories"
+        },
+        {
+          "id": "d3",
+          "label": "Overlapping Collaboration, Ticketing & Document Tooling"
+        },
+        {
+          "id": "d4",
+          "label": "Redundant Analytics Warehouses & Unsynchronized Data Lakes"
+        }
+      ]
+    },
+    {
+      "id": "S3.3",
+      "section": "S3",
+      "type": "slider",
+      "q": "What percentage of your production applications run on supported/current vendor runtimes?",
+      "hint": "Operating systems, databases, runtime frameworks within N-1 supported vendor currency.",
+      "sliderConfig": {
+        "min": 0,
+        "max": 100,
+        "step": 5,
+        "defaultVal": 65,
+        "ticks": [
+          "0% (Severely EOL)",
+          "25%",
+          "50%",
+          "75%",
+          "100% (Fully Current)"
+        ],
+        "descs": [
+          "Critical Exposure: Majority of production workloads running on end-of-life, unpatched runtimes",
+          "High Vulnerability: Severe legacy sprawl; multiple unsupported databases and core OS layers",
+          "Moderate Currency: Core systems maintained; peripheral applications lag in obsolescence",
+          "High Currency: Over 75% of production estate actively complies with N-1 support policies",
+          "Automated Currency: Continuous SBOM scanning, automated patch pipelines, zero EOL systems"
+        ]
+      }
+    },
+    {
+      "id": "S3.4",
+      "section": "S3",
+      "type": "single_select",
+      "q": "What is the architectural maturity of your enterprise integration backbone?",
+      "hint": "Decoupling between systems via APIs/events versus point-to-point batch files.",
+      "opts": [
+        {
+          "text": "<b>Level 1 · Point-to-Point Spaghetti:</b> Fragile direct database links, batch CSV exports, and scheduled FTP scripts",
+          "score": 1
+        },
+        {
+          "text": "<b>Level 2 · Monolithic ESB:</b> Legacy on-prem Enterprise Service Bus creating an operational bottleneck",
+          "score": 2
+        },
+        {
+          "text": "<b>Level 3 · Hybrid APIs:</b> Central API gateway with REST endpoints exposed for high-priority systems",
+          "score": 3
+        },
+        {
+          "text": "<b>Level 4 · Governed Event Architecture:</b> Standardized API catalog combined with an enterprise event-driven backbone",
+          "score": 4
+        },
+        {
+          "text": "<b>Level 5 · Composable Mesh:</b> Enterprise event mesh with published developer contracts, schema registries, and SLOs",
+          "score": 5
+        }
+      ]
+    },
+    {
+      "id": "S4.1",
+      "section": "S4",
+      "type": "single_select",
+      "q": "How quantitatively is technical debt measured and sized across the enterprise?",
+      "hint": "Financial and operational quantification of architectural compromises.",
+      "opts": [
+        {
+          "text": "<b>Level 1 · Unmeasured:</b> Tech debt is dismissed as engineer complaining; zero visibility into liability",
+          "score": 1
+        },
+        {
+          "text": "<b>Level 2 · Anecdotal Register:</b> Informally maintained lists of legacy grievances with no financial sizing",
+          "score": 2
+        },
+        {
+          "text": "<b>Level 3 · Risk-Weighted Backlog:</b> Documented tech-debt backlog with qualitative risk severity ratings",
+          "score": 3
+        },
+        {
+          "text": "<b>Level 4 · Quantified Balance Sheet:</b> Fully sized debt register with estimated business remediation costs and outage risks",
+          "score": 4
+        },
+        {
+          "text": "<b>Level 5 · Boardroom Index:</b> Tech Debt Index integrated directly into corporate risk registers and capital governance",
+          "score": 5
+        }
+      ]
+    },
+    {
+      "id": "S4.2",
+      "section": "S4",
+      "type": "slider",
+      "q": "What percentage of annual engineering change budget is ring-fenced for debt paydown?",
+      "hint": "Dedicated capacity allocated for refactoring, architectural upgrades, and deprecation.",
+      "sliderConfig": {
+        "min": 0,
+        "max": 40,
+        "step": 5,
+        "defaultVal": 10,
+        "ticks": [
+          "0% (Firefighting)",
+          "10%",
+          "20% (Recommended)",
+          "30%",
+          "40%+ (Deep Refactoring)"
+        ],
+        "descs": [
+          "Level 1 (0%): Zero capacity; 100% of bandwidth hijacked by emergency firefighting and feature demands",
+          "Level 2 (5-10%): Stealth refactoring performed by engineers informally during feature delivery",
+          "Level 3 (15-20%): Ring-fenced recurring capacity formally agreed between engineering and product leadership",
+          "Level 4 (25-30%): Continuous debt retirement built into every squad capacity model with measurable burndown",
+          "Level 5 (>35%): Transformational modernization sprint actively retiring monolithic liabilities"
+        ]
+      }
+    },
+    {
+      "id": "S4.3",
+      "section": "S4",
+      "type": "multi_select",
+      "q": "Which Modernization & Decoupling Patterns are actively utilized in production?",
+      "hint": "Select all patterns currently executed with verified production workloads:",
+      "opts": [
+        {
+          "text": "Strangler Fig Pattern systematically hollowing out legacy monolithic systems",
+          "score": 1
+        },
+        {
+          "text": "Domain Microservices with independent databases and deployment pipelines",
+          "score": 1
+        },
+        {
+          "text": "Infrastructure-as-Code (Terraform/CloudFormation) with automated immutable staging",
+          "score": 1
+        },
+        {
+          "text": "Automated Regression Test Suites preventing deployment regressions without manual QA",
+          "score": 1
+        },
+        {
+          "text": "Anti-Corruption Layers protecting new cloud architectures from legacy database schemas",
+          "score": 1
+        }
+      ]
+    },
+    {
+      "id": "S4.4",
+      "section": "S4",
+      "type": "single_select",
+      "q": "How is cloud modernization structured across your infrastructure estate?",
+      "hint": "Evolution from legacy on-premises data centers to cloud-native managed architectures.",
+      "opts": [
+        {
+          "text": "<b>Level 1 · Data Center Lock-in:</b> Legacy on-prem colocation with aging hardware and no cloud exit strategy",
+          "score": 1
+        },
+        {
+          "text": "<b>Level 2 · Unoptimized Lift-and-Shift:</b> Virtual machines migrated to public cloud with inflated run costs",
+          "score": 2
+        },
+        {
+          "text": "<b>Level 3 · Hybrid Replatforming:</b> Managed cloud services utilized for new initiatives; core estate on IaaS",
+          "score": 3
+        },
+        {
+          "text": "<b>Level 4 · Cloud-Native Containers:</b> Containerized microservices, serverless components, and automated IaC",
+          "score": 4
+        },
+        {
+          "text": "<b>Level 5 · Sovereign & Multi-Cloud:</b> Architecturally decoupled workloads optimizing cost, latency, and compliance",
+          "score": 5
+        }
+      ]
+    },
+    {
+      "id": "S5.1",
+      "section": "S5",
+      "type": "single_select",
+      "q": "How deliberate is your strategic sourcing model (In-House vs. SIs vs. SaaS)?",
+      "hint": "Clear segregation between strategic differentiating core and commoditized context capabilities.",
+      "opts": [
+        {
+          "text": "<b>Level 1 · Accidental Sourcing:</b> Reactive reliance on short-term contractor body-shopping without IP retention",
+          "score": 1
+        },
+        {
+          "text": "<b>Level 2 · Vendor Lock-in:</b> Heavy dependence on a single systems integrator with no knowledge transfer",
+          "score": 2
+        },
+        {
+          "text": "<b>Level 3 · Documented Guidelines:</b> Clear sourcing policy defining build vs. buy criteria for new projects",
+          "score": 3
+        },
+        {
+          "text": "<b>Level 4 · Core-vs-Context Segregation:</b> Differentiating IP built in-house; context capabilities sourced via SaaS/partners",
+          "score": 4
+        },
+        {
+          "text": "<b>Level 5 · Dynamic Partner Ecosystem:</b> Multi-vendor leverage with transparent benchmarking and continuous knowledge capture",
+          "score": 5
+        }
+      ]
+    },
+    {
+      "id": "S5.2",
+      "section": "S5",
+      "type": "rating_matrix",
+      "q": "Rate operational resilience against Key-Person Dependency in critical systems:",
+      "hint": "Rate resilience from 1 (Extreme Single Point of Failure) to 5 (Fully Documented / Self-Healing):",
+      "subItems": [
+        {
+          "id": "k1",
+          "name": "Core Transaction Ledger / Mission-Critical Business Runtimes"
+        },
+        {
+          "id": "k2",
+          "name": "Cloud Infrastructure, IAM Security & Network Routing"
+        },
+        {
+          "id": "k3",
+          "name": "Integration Middleware, Legacy ETL & Data Pipelines"
+        },
+        {
+          "id": "k4",
+          "name": "Proprietary Algorithms, Pricing Engines & Regulatory Reporting"
+        }
+      ]
+    },
+    {
+      "id": "S5.3",
+      "section": "S5",
+      "type": "single_select",
+      "q": "How effectively are critical software and cloud vendor renewals managed?",
+      "hint": "Commercial leverage, audit defense, and mitigation of punitive price escalation.",
+      "opts": [
+        {
+          "text": "<b>Level 1 · Passive Renewals:</b> Automatic renewals with zero leverage and frequent vendor audit true-up penalties",
+          "score": 1
+        },
+        {
+          "text": "<b>Level 2 · Last-Minute Sourcing:</b> Procurement steps in 30 days prior with minimal time for architecture leverage",
+          "score": 2
+        },
+        {
+          "text": "<b>Level 3 · Centralized VMO:</b> Vendor Management Office tracking renewal calendars and major license spend tiers",
+          "score": 3
+        },
+        {
+          "text": "<b>Level 4 · Strategic Vendor Governance:</b> Proactive roadmaps, competitive benchmarks, and multi-cloud architectural leverage",
+          "score": 4
+        },
+        {
+          "text": "<b>Level 5 · Continuous Commercial Optimization:</b> Real-time consumption telemetry, aggressive price gating, and exit options",
+          "score": 5
+        }
+      ]
+    },
+    {
+      "id": "S5.4",
+      "section": "S5",
+      "type": "multi_select",
+      "q": "Which Technical Talent & Engineering Retention structures are established?",
+      "hint": "Select all active mechanisms in your engineering organization:",
+      "opts": [
+        {
+          "text": "Dedicated Fellow/Principal Technical Career Ladder (growth without managerial overhead)",
+          "score": 1
+        },
+        {
+          "text": "Market-Benchmarked Compensation Parity for elite software and cloud architects",
+          "score": 1
+        },
+        {
+          "text": "Internal Engineering Academy with protected hours for certifications and cross-skilling",
+          "score": 1
+        },
+        {
+          "text": "Rotational Guilds & Communities of Practice sharing architectural standards",
+          "score": 1
+        },
+        {
+          "text": "Active Open-Source contribution policy and engineering brand visibility",
+          "score": 1
+        }
+      ]
+    },
+    {
+      "id": "S6.1",
+      "section": "S6",
+      "type": "drag_rank",
+      "q": "Rank what actually drives project funding and capital approval in practice:",
+      "hint": "Order from Most Influential Driver of Project Funding to Least Influential:",
+      "rankItems": [
+        {
+          "id": "f1",
+          "label": "Executive Sponsor Clout & Political Loudest Voice in the Room"
+        },
+        {
+          "id": "f2",
+          "label": "Urgent Regulatory Mandates & Imminent Compliance Deadlines"
+        },
+        {
+          "id": "f3",
+          "label": "Exaggerated Upfront ROI Business Cases (Never Formally Audited)"
+        },
+        {
+          "id": "f4",
+          "label": "Quantified Economic Value Added (EVA) & Customer Value Stream Telemetry"
+        }
+      ]
+    },
+    {
+      "id": "S6.2",
+      "section": "S6",
+      "type": "single_select",
+      "q": "How rigorously is business value tracked after modernizations go live?",
+      "hint": "Post-implementation review and verified realization of P&L benefits.",
+      "opts": [
+        {
+          "text": "<b>Level 1 · Unaudited:</b> Zero tracking post-launch; project success is declared purely if it goes live",
+          "score": 1
+        },
+        {
+          "text": "<b>Level 2 · Delivery Retrospective:</b> One-time project close meeting focused strictly on schedule and cost variance",
+          "score": 2
+        },
+        {
+          "text": "<b>Level 3 · Qualitative Confirmation:</b> Business sponsor submits an informal benefit memo after 6 months",
+          "score": 3
+        },
+        {
+          "text": "<b>Level 4 · Formal Finance Reconciliation:</b> 12-month post-launch value realization audit reconciled against P&L results",
+          "score": 4
+        },
+        {
+          "text": "<b>Level 5 · Automated Telemetry:</b> Continuous real-time value realization metrics directly linking software releases to revenue",
+          "score": 5
+        }
+      ]
+    },
+    {
+      "id": "S6.3",
+      "section": "S6",
+      "type": "slider",
+      "q": "What is your Cloud Financial Management (FinOps) and unit economics maturity?",
+      "hint": "Visibility into technology unit cost per customer transaction, active user, or product line.",
+      "sliderConfig": {
+        "min": 0,
+        "max": 100,
+        "step": 5,
+        "defaultVal": 45,
+        "ticks": [
+          "0% (Black Box Overhead)",
+          "25%",
+          "50%",
+          "75%",
+          "100% (Unit Economics)"
+        ],
+        "descs": [
+          "Unallocated Overhead: Technology bills are a black box shared expense; zero accountability",
+          "Basic Bill Reviews: Monthly cloud invoice reviews with frequent bill-shock surprises",
+          "Enforced Tagging: Departmental cost allocation and showback implemented for major systems",
+          "Mature FinOps: Automated anomaly detection, rightsizing, and committed use discount coverage",
+          "Unit Economics: Real-time cost-per-transaction telemetry actively guiding engineering decisions"
+        ]
+      }
+    },
+    {
+      "id": "S6.4",
+      "section": "S6",
+      "type": "single_select",
+      "q": "How disciplined is your enterprise at terminating underperforming technology initiatives?",
+      "hint": "Stage-gate kill switches preventing zombie projects from consuming valuable capital.",
+      "opts": [
+        {
+          "text": "<b>Level 1 · Sunk Cost Fallacy:</b> Zombie projects funded indefinitely because 'we already invested too much'",
+          "score": 1
+        },
+        {
+          "text": "<b>Level 2 · Crisis Intervention:</b> Projects cancelled only after multi-million dollar overruns trigger public embarrassment",
+          "score": 2
+        },
+        {
+          "text": "<b>Level 3 · Annual De-Scoping:</b> Yearly portfolio reviews periodically pause or trim underperforming projects",
+          "score": 3
+        },
+        {
+          "text": "<b>Level 4 · Disciplined Stage Gates:</b> Explicit off-ramps and criteria for project termination enforced at stage gates",
+          "score": 4
+        },
+        {
+          "text": "<b>Level 5 · Venture Capital Model:</b> Fast milestones, fail-fast culture, and rapid redeployment of engineering capital",
+          "score": 5
+        }
+      ]
+    }
+  ]
+}

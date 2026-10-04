@@ -688,6 +688,7 @@
     .acc-card.card-sovereign-iq { --card-accent: #FF5E4F; }
     .acc-card.card-posture-iq { --card-accent: #F59E0B; }
     .acc-card.card-cloud-iq { --card-accent: #226882; }
+    .acc-card.card-strategy-iq { --card-accent: #FF5E4F; }
 
     .card-top {
       display: flex;
@@ -1312,7 +1313,8 @@
       <div style="position:relative;z-index:2;text-align:center;">
         <h1 class="hero-tech-title">Advisory Accelerators</h1>
         <div class="hero-practice-tabs">
-          <button class="hero-tab active" onclick="filterPracticeGroup('all', this)">All Accelerators (6)</button>
+          <button class="hero-tab active" onclick="filterPracticeGroup('all', this)">All Accelerators (7)</button>
+          <button class="hero-tab" onclick="filterPracticeGroup('strategy', this)">Strategic IT Advisory</button>
           <button class="hero-tab" onclick="filterPracticeGroup('finops', this)">FinOps Practice</button>
           <button class="hero-tab" onclick="filterPracticeGroup('costiq', this)">Cost &amp; Value</button>
           <button class="hero-tab" onclick="filterPracticeGroup('sovereignty', this)">Digital Sovereignty</button>
@@ -1320,6 +1322,44 @@
         </div>
       </div>
     </div>
+
+    <!-- ============================================================
+         GROUP 0: STRATEGIC IT ADVISORY
+         ============================================================ -->
+    <section class="practice-section" id="sectionStrategy">
+      <div class="practice-header">
+        <div class="practice-title-group">
+          <h2 class="practice-title">Strategic IT Advisory Suite</h2>
+        </div>
+        <p class="practice-desc">Assess business-IT alignment, operating model maturity, application portfolio rationalization (TIME), technical debt drag, and capability sourcing.</p>
+      </div>
+
+      <div class="acc-grid">
+        <!-- Strategy IQ -->
+        <div class="acc-card card-strategy-iq">
+          <div class="card-top">
+            <div class="card-meta-row">
+              <span class="card-eyebrow" style="color:#FF5E4F;border-color:rgba(255,94,79,0.3);background:rgba(255,94,79,0.08);">6 STRATEGIC PILLARS &amp; TECH DEBT</span>
+            </div>
+            <h3 class="card-title">Strategy IQ</h3>
+            <p class="card-desc">Diagnostic platform evaluating 6 strategic pillars, 24 diagnostic vectors, TIME portfolio rationalization, and tech debt dollar drag sizing.</p>
+            <div class="chip-row">
+              <span class="chip">24 Diagnostic Questions</span>
+              <span class="chip">6 Strategic Pillars</span>
+              <span class="chip">TIME Rationalization</span>
+              <span class="chip">Debt Drag Sizing</span>
+            </div>
+          </div>
+
+          <div class="card-footer" style="justify-content:flex-end;">
+            <div class="card-actions">
+              <button class="btn-action-edit" data-tool="strategy-iq" onclick="handleEditClick('strategy-iq')">Edit</button>
+              <button class="btn-action-launch" data-tool="strategy-iq" onclick="handleLaunchClick('strategy-iq', '/strategy-iq')">Take Assessment &rarr;</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
 
     <!-- ============================================================
          GROUP 1: FINOPS & CLOUD FINANCIAL MANAGEMENT
@@ -1621,6 +1661,7 @@
         <!-- Filter bar -->
         <div style="display:flex;gap:8px;margin-top:14px;flex-wrap:wrap;" id="reportsFilterBar">
           <button class="chip active-chip" onclick="setReportsFilter('', this)">All Reports</button>
+          <button class="chip" onclick="setReportsFilter('strategy-iq', this)">Strategy IQ</button>
           <button class="chip" onclick="setReportsFilter('finops-value-case', this)">FinOps Value Case</button>
           <button class="chip" onclick="setReportsFilter('finops-iq', this)">FinOps IQ</button>
           <button class="chip" onclick="setReportsFilter('posture-iq', this)">Posture IQ</button>
@@ -1713,6 +1754,19 @@
               </div>
 
               <div class="granular-perm-matrix">
+                <!-- Strategy IQ -->
+                <div class="granular-acc-card">
+                  <div class="granular-acc-head">
+                    <span class="granular-acc-name">🎯 Strategy IQ</span>
+                    <label class="full-perm-label"><input type="checkbox" id="perm_create_strategy-iq_full" onchange="toggleAccFull('create', 'strategy-iq', this.checked)"> Full</label>
+                  </div>
+                  <div class="granular-acc-options">
+                    <label><input type="checkbox" id="perm_create_strategy-iq_take" onchange="syncAccFull('create', 'strategy-iq')" checked> Take Assessment</label>
+                    <label><input type="checkbox" id="perm_create_strategy-iq_edit" onchange="syncAccFull('create', 'strategy-iq')"> Edit Engine</label>
+                    <label><input type="checkbox" id="perm_create_strategy-iq_archive" onchange="syncAccFull('create', 'strategy-iq')"> View Archive</label>
+                  </div>
+                </div>
+
                 <!-- FinOps Value Case -->
                 <div class="granular-acc-card">
                   <div class="granular-acc-head">
@@ -1869,6 +1923,19 @@
         </div>
 
         <div class="granular-perm-matrix">
+          <!-- Strategy IQ -->
+          <div class="granular-acc-card">
+            <div class="granular-acc-head">
+              <span class="granular-acc-name">🎯 Strategy IQ</span>
+              <label class="full-perm-label"><input type="checkbox" id="perm_editperm_strategy-iq_full" onchange="toggleAccFull('editperm', 'strategy-iq', this.checked)"> Full</label>
+            </div>
+            <div class="granular-acc-options">
+              <label><input type="checkbox" id="perm_editperm_strategy-iq_take" onchange="syncAccFull('editperm', 'strategy-iq')"> Take Assessment</label>
+              <label><input type="checkbox" id="perm_editperm_strategy-iq_edit" onchange="syncAccFull('editperm', 'strategy-iq')"> Edit Engine</label>
+              <label><input type="checkbox" id="perm_editperm_strategy-iq_archive" onchange="syncAccFull('editperm', 'strategy-iq')"> View Archive</label>
+            </div>
+          </div>
+
           <!-- FinOps Value Case -->
           <div class="granular-acc-card">
             <div class="granular-acc-head">
@@ -2319,8 +2386,8 @@
             token: token,
             role: isSuper ? 'super_admin' : 'advisor_viewer',
             permissions: {
-              view: ['finops-value-case', 'finops-iq', 'sovereign-iq', 'posture-iq', 'cloud-iq', isSuper ? 'reports' : ''],
-              edit: isSuper ? ['finops-value-case', 'finops-iq', 'sovereign-iq', 'posture-iq', 'cloud-iq'] : []
+              view: ['strategy-iq', 'finops-value-case', 'finops-iq', 'sovereign-iq', 'posture-iq', 'cloud-iq', 'cost-iq', isSuper ? 'reports' : ''],
+              edit: isSuper ? ['strategy-iq', 'finops-value-case', 'finops-iq', 'sovereign-iq', 'posture-iq', 'cloud-iq', 'cost-iq'] : []
             }
           };
 
@@ -2631,6 +2698,7 @@
     }
 
     const ACCELERATOR_TOOLS = [
+      { id: 'strategy-iq', name: 'Strategy IQ', icon: '🎯' },
       { id: 'finops-value-case', name: 'FinOps Value Case', icon: '💰' },
       { id: 'finops-iq', name: 'FinOps IQ', icon: '📊' },
       { id: 'sovereign-iq', name: 'Sovereign IQ', icon: '🛡️' },
@@ -3118,32 +3186,44 @@
       tabs.forEach(t => t.classList.remove('active'));
       if (btn) btn.classList.add('active');
 
+      const secStrategy = document.getElementById('sectionStrategy');
       const secFinOps = document.getElementById('sectionFinOps');
       const secCostIq = document.getElementById('sectionCostIq');
       const secSovereignty = document.getElementById('sectionSovereignty');
       const secCloud = document.getElementById('sectionCloud');
 
-      if (group === 'finops') {
+      if (group === 'strategy') {
+        if (secStrategy) secStrategy.style.display = 'block';
+        if (secFinOps) secFinOps.style.display = 'none';
+        if (secCostIq) secCostIq.style.display = 'none';
+        if (secSovereignty) secSovereignty.style.display = 'none';
+        if (secCloud) secCloud.style.display = 'none';
+      } else if (group === 'finops') {
+        if (secStrategy) secStrategy.style.display = 'none';
         if (secFinOps) secFinOps.style.display = 'block';
         if (secCostIq) secCostIq.style.display = 'none';
         if (secSovereignty) secSovereignty.style.display = 'none';
         if (secCloud) secCloud.style.display = 'none';
       } else if (group === 'costiq') {
+        if (secStrategy) secStrategy.style.display = 'none';
         if (secFinOps) secFinOps.style.display = 'none';
         if (secCostIq) secCostIq.style.display = 'block';
         if (secSovereignty) secSovereignty.style.display = 'none';
         if (secCloud) secCloud.style.display = 'none';
       } else if (group === 'sovereignty') {
+        if (secStrategy) secStrategy.style.display = 'none';
         if (secFinOps) secFinOps.style.display = 'none';
         if (secCostIq) secCostIq.style.display = 'none';
         if (secSovereignty) secSovereignty.style.display = 'block';
         if (secCloud) secCloud.style.display = 'none';
       } else if (group === 'cloud') {
+        if (secStrategy) secStrategy.style.display = 'none';
         if (secFinOps) secFinOps.style.display = 'none';
         if (secCostIq) secCostIq.style.display = 'none';
         if (secSovereignty) secSovereignty.style.display = 'none';
         if (secCloud) secCloud.style.display = 'block';
       } else {
+        if (secStrategy) secStrategy.style.display = 'block';
         if (secFinOps) secFinOps.style.display = 'block';
         if (secCostIq) secCostIq.style.display = 'block';
         if (secSovereignty) secSovereignty.style.display = 'block';

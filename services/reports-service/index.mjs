@@ -39,8 +39,8 @@ async function getPermissionsConfig() {
           role: 'super_admin',
           name: 'Ashutosh Dixit (Super Admin)',
           permissions: {
-            view: ['finops-value-case', 'finops-iq', 'sovereign-iq', 'posture-iq', 'cloud-iq', 'reports'],
-            edit: ['finops-value-case', 'finops-iq', 'sovereign-iq', 'posture-iq', 'cloud-iq']
+            view: ['strategy-iq', 'finops-value-case', 'finops-iq', 'sovereign-iq', 'posture-iq', 'cloud-iq', 'cost-iq', 'reports'],
+            edit: ['strategy-iq', 'finops-value-case', 'finops-iq', 'sovereign-iq', 'posture-iq', 'cloud-iq', 'cost-iq']
           }
         }
       }
@@ -109,13 +109,15 @@ export const handler = async (event) => {
           role: isSuper ? 'super_admin' : (custom.role || 'advisor_viewer'),
           permissions: isSuper 
             ? {
-                view: ['finops-value-case', 'finops-iq', 'sovereign-iq', 'posture-iq', 'cloud-iq', 'reports'],
-                edit: ['finops-value-case', 'finops-iq', 'sovereign-iq', 'posture-iq', 'cloud-iq', 'reports'],
-                take: ['finops-value-case', 'finops-iq', 'sovereign-iq', 'posture-iq', 'cloud-iq'],
-                archive: ['finops-value-case', 'finops-iq', 'sovereign-iq', 'posture-iq', 'cloud-iq', 'reports'],
+                view: ['strategy-iq', 'finops-value-case', 'finops-iq', 'sovereign-iq', 'posture-iq', 'cloud-iq', 'cost-iq', 'reports'],
+                edit: ['strategy-iq', 'finops-value-case', 'finops-iq', 'sovereign-iq', 'posture-iq', 'cloud-iq', 'cost-iq', 'reports'],
+                take: ['strategy-iq', 'finops-value-case', 'finops-iq', 'sovereign-iq', 'posture-iq', 'cloud-iq', 'cost-iq'],
+                archive: ['strategy-iq', 'finops-value-case', 'finops-iq', 'sovereign-iq', 'posture-iq', 'cloud-iq', 'cost-iq', 'reports'],
                 accelerators: {
+                  'strategy-iq': { full: true, take: true, edit: true, archive: true },
                   'finops-value-case': { full: true, take: true, edit: true, archive: true },
                   'finops-iq': { full: true, take: true, edit: true, archive: true },
+                  'cost-iq': { full: true, take: true, edit: true, archive: true },
                   'sovereign-iq': { full: true, take: true, edit: true, archive: true },
                   'posture-iq': { full: true, take: true, edit: true, archive: true },
                   'cloud-iq': { full: true, take: true, edit: true, archive: true }
