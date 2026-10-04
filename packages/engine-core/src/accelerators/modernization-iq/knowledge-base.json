@@ -1,0 +1,342 @@
+{
+  "meta": {
+    "id": "modernization-iq",
+    "name": "Modernize IQ",
+    "version": "3.0",
+    "pillar": "Pillar 03.5 — Data Centre & Compute Capacity Strategy",
+    "author": "LTM Infrastructure Tech Advisory",
+    "updated": "2026-10-04",
+    "disclaimer": "Confidential advisory instrument for C-level modernization planning and DC exit roadmap evaluation."
+  },
+  "dimensions": [
+    { "id": "D1", "num": "1", "title": "Facility Assets & DC Disposition", "weight": 1.2, "focus": "Per-facility strategy, lease cliffs & exit vs keep" },
+    { "id": "D2", "num": "2", "title": "Power Ceilings & Cooling Constraints", "weight": 1.4, "focus": "True thermal limits, PUE, grid allocation & density" },
+    { "id": "D3", "num": "3", "title": "AI/GPU Siting & Compute Capacity", "weight": 1.3, "focus": "High-density rack readiness, sovereign AI boundaries" },
+    { "id": "D4", "num": "4", "title": "Application 6R Portfolio Mapping", "weight": 1.1, "focus": "Disposition mapping, refactor velocity & technical debt" },
+    { "id": "D5", "num": "5", "title": "Migration Factory & Landing Zone", "weight": 1.0, "focus": "IaC guardrails, multi-account GitOps, throughput velocity" },
+    { "id": "D6", "num": "6", "title": "Financial Economics & Operating Model", "weight": 1.0, "focus": "Stranded asset write-down, FinOps unit economics & cross-functional OKRs" }
+  ],
+  "questions": [
+    {
+      "id": "Q1.1",
+      "dimension": "D1",
+      "type": "single",
+      "prompt": "What is your enterprise position on owned and leased data centre facilities?",
+      "hint": "Considers contractual lease expirations, colocation commitments, and board-mandated exit timelines.",
+      "weight": 1.0,
+      "options": [
+        { "id": "0", "score": 1, "text": "No formal posture; decisions occur ad-hoc at lease renewal deadlines" },
+        { "id": "1", "score": 2, "text": "Broad cloud-first mandate exists, but facility exits lack mapped dependencies and dates" },
+        { "id": "2", "score": 3, "text": "Evaluating per-facility disposition (exit, consolidate, colocate, or retain)" },
+        { "id": "3", "score": 4, "text": "Structured DC exit underway with identified target migration waves" },
+        { "id": "4", "score": 5, "text": "Disciplined hybrid estate: selected DCs optimized as strategic assets alongside cloud" }
+      ]
+    },
+    {
+      "id": "Q1.2",
+      "dimension": "D1",
+      "type": "multi",
+      "prompt": "Which facility and infrastructure asset classes are currently tracked in automated discovery?",
+      "hint": "Select all that apply across your physical, virtual, and power topologies.",
+      "weight": 1.0,
+      "options": [
+        { "id": "srv", "score": 1, "text": "Physical Compute & Hypervisors (Bare-metal, VMware, Nutanix)" },
+        { "id": "san", "score": 1, "text": "Storage & SAN Fabrics (Block, File, Object, Backup arrays)" },
+        { "id": "net", "score": 1, "text": "Network Topologies & Top-of-Rack Switches" },
+        { "id": "pdu", "score": 1, "text": "Power Distribution Units (PDUs) & Sub-metered Breaker Loads" },
+        { "id": "sha", "score": 1, "text": "Shadow Data Centre & Edge Server Rooms (Branch/Plant closets)" }
+      ]
+    },
+    {
+      "id": "Q1.3",
+      "dimension": "D1",
+      "type": "rating",
+      "prompt": "Rate your contract runway risk regarding upcoming facility leases or OEM hardware refresh cliffs:",
+      "hint": "1 = Severe immediate cliff (<6 months); 5 = Fully decoupled runway with zero contractual lock-in.",
+      "weight": 1.0,
+      "scaleLabels": [
+        "Critical Cliff (<6m)",
+        "High Risk (6-12m)",
+        "Moderate (12-24m)",
+        "Protected (2-4 yrs)",
+        "Decoupled / Cloud"
+      ]
+    },
+    {
+      "id": "Q2.1",
+      "dimension": "D2",
+      "type": "slider",
+      "prompt": "Estimated peak power utilization relative to utility substation allocated capacity:",
+      "hint": "Over 68% of enterprise data centres hit utility breaker or transformer limits before floor space limits.",
+      "weight": 1.0,
+      "min": 20,
+      "max": 100,
+      "step": 5,
+      "defaultVal": 65,
+      "unit": "% of Utility Capacity",
+      "ticks": ["20% (Low)", "50% (Comfortable)", "75% (Threshold)", "90%+ (Capped Ceiling)"]
+    },
+    {
+      "id": "Q2.2",
+      "dimension": "D2",
+      "type": "single",
+      "prompt": "What is your facility thermal cooling architecture's capability for modern rack densities?",
+      "hint": "Traditional CRAC/CRAH handles 5–10 kW/rack; modern AI clusters demand 30–100+ kW/rack.",
+      "weight": 1.0,
+      "options": [
+        { "id": "0", "score": 1, "text": "Legacy air cooling struggling with standard racks (>5–7 kW causes hot spots)" },
+        { "id": "1", "score": 2, "text": "Standard hot/cold aisle containment supporting up to 10–12 kW/rack maximum" },
+        { "id": "2", "score": 3, "text": "High-density hybrid zones engineered for 15–25 kW/rack in designated rows" },
+        { "id": "3", "score": 4, "text": "Rear-door heat exchangers or in-row liquid assist operational for 30–50 kW/rack" },
+        { "id": "4", "score": 5, "text": "Direct-to-chip liquid cooling or immersion infrastructure in production for >70 kW/rack" }
+      ]
+    },
+    {
+      "id": "Q2.3",
+      "dimension": "D2",
+      "type": "rating",
+      "prompt": "Rate your facility energy efficiency governance and PUE (Power Usage Effectiveness) telemetry:",
+      "hint": "1 = PUE unmeasured (>1.9); 5 = Sub-metered audited real-time PUE (<1.25) with renewable PPAs.",
+      "weight": 1.0,
+      "scaleLabels": [
+        "Unmeasured (>1.9)",
+        "Estimated (1.7-1.9)",
+        "Reported (1.4-1.7)",
+        "Audited (<1.4)",
+        "World-class (<1.25)"
+      ]
+    },
+    {
+      "id": "Q3.1",
+      "dimension": "D3",
+      "type": "single",
+      "prompt": "Where and how is high-density AI/GPU compute capacity planned and sited?",
+      "hint": "Addresses the critical dilemma: public cloud vs specialized colocation vs retrofitting owned DCs.",
+      "weight": 1.0,
+      "options": [
+        { "id": "0", "score": 1, "text": "No plan; business units order cloud GPUs or shadow workstations without central architecture" },
+        { "id": "1", "score": 2, "text": "Assuming 100% of AI will run in hyperscaler public cloud regardless of latency/data volume" },
+        { "id": "2", "score": 3, "text": "Evaluating AI siting tradeoffs (data residency, inference latency, power cost, and sovereignty)" },
+        { "id": "3", "score": 4, "text": "Structured hybrid AI siting framework: training in public cloud, low-latency inference on-prem/colo" },
+        { "id": "4", "score": 5, "text": "Optimized multi-tier AI topology: high-density sovereign clusters matched to exact workload envelopes" }
+      ]
+    },
+    {
+      "id": "Q3.2",
+      "dimension": "D3",
+      "type": "matrix",
+      "prompt": "AI Workload Siting Matrix: Map current or planned deployment targets across key AI archetypes:",
+      "hint": "Evaluates how data gravity and sovereignty dictate compute placement.",
+      "weight": 1.0,
+      "rows": [
+        { "id": "llm_train", "label": "Foundation Model Training & Fine-Tuning" },
+        { "id": "llm_infer", "label": "Low-Latency Real-Time Inference" },
+        { "id": "pii_embed", "label": "Sensitive / Regulated PII Embeddings" },
+        { "id": "batch_rag", "label": "Enterprise Knowledge Base / Batch RAG" }
+      ],
+      "cols": [
+        { "id": "cloud", "label": "Public Hyperscaler" },
+        { "id": "colo", "label": "High-Density Colo" },
+        { "id": "dc", "label": "Owned On-Prem DC" },
+        { "id": "undecided", "label": "Uncertain / Unplanned" }
+      ]
+    },
+    {
+      "id": "Q3.3",
+      "dimension": "D3",
+      "type": "single",
+      "prompt": "How are data residency and technical sovereignty governed for proprietary enterprise AI data?",
+      "hint": "Prevents regulatory non-compliance under EU AI Act, DORA, DPDP, and SEC disclosure rules.",
+      "weight": 1.0,
+      "options": [
+        { "id": "0", "score": 1, "text": "Unmanaged; proprietary enterprise data exposed to public SaaS/AI models" },
+        { "id": "1", "score": 2, "text": "Informal policy prohibiting sensitive data in public AI, but technical controls lacking" },
+        { "id": "2", "score": 3, "text": "Clear classification of AI data domains with private tenancy agreements in public cloud" },
+        { "id": "3", "score": 4, "text": "Sovereign AI enclaves: air-gapped or dedicated hardware for regulated PII and IP" },
+        { "id": "4", "score": 5, "text": "Cryptographically enforced zero-trust AI pipelines with localized model inference" }
+      ]
+    },
+    {
+      "id": "Q4.1",
+      "dimension": "D4",
+      "type": "slider",
+      "prompt": "Percentage of application portfolio with an officially approved 6R modernization disposition:",
+      "hint": "The 6 R's: Rehost, Replatform, Refactor, Repurchase (SaaS), Retain, Retire.",
+      "weight": 1.0,
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "defaultVal": 35,
+      "unit": "% Applications Formally Mapped",
+      "ticks": ["0% (Unmapped)", "25% (Early)", "50% (Midway)", "75% (Advanced)", "100% (Complete)"]
+    },
+    {
+      "id": "Q4.2",
+      "dimension": "D4",
+      "type": "single",
+      "prompt": "How dominant are legacy monolithic dependencies and technical debt in your estate?",
+      "hint": "Includes mainframes, legacy Unix/AIX, unsupported databases, and tightly coupled batch jobs.",
+      "weight": 1.0,
+      "options": [
+        { "id": "0", "score": 1, "text": "Estate dominated by aging monoliths (>70%) with severe documentation deficits" },
+        { "id": "1", "score": 2, "text": "Heavy monolith footprint (40%–70%) creating complex migration blast radiuses" },
+        { "id": "2", "score": 3, "text": "Moderate footprint (20%–40%); modern tiers separated from legacy core engines" },
+        { "id": "3", "score": 4, "text": "Low footprint (<20%); legacy systems encapsulated behind API mediation layers" },
+        { "id": "4", "score": 5, "text": "Decoupled cloud-native estate; legacy systems retired or replatformed into microservices" }
+      ]
+    },
+    {
+      "id": "Q4.3",
+      "dimension": "D4",
+      "type": "drag",
+      "prompt": "Prioritize your enterprise modernization drivers (Drag or use arrows to rank 1 to 4):",
+      "hint": "Top-ranked items directly shape your tailored advisory roadmap priorities.",
+      "weight": 1.0,
+      "items": [
+        { "id": "cost", "label": "Facility Lease & Run-Rate Cost Elimination" },
+        { "id": "ai", "label": "Enabling High-Density AI & GPU Workloads" },
+        { "id": "agility", "label": "Developer Velocity & Microservices Agility" },
+        { "id": "risk", "label": "Hypervisor / Vendor Risk & Operational Resilience" }
+      ]
+    },
+    {
+      "id": "Q5.1",
+      "dimension": "D5",
+      "type": "single",
+      "prompt": "Do you operate a repeatable, industrialized migration factory with proven velocity?",
+      "hint": "Assesses automation, standardized runbooks, cutover testing, and predictable delivery throughput.",
+      "weight": 1.0,
+      "options": [
+        { "id": "0", "score": 1, "text": "No repeatable factory; every application migration is treated as a bespoke project" },
+        { "id": "1", "score": 2, "text": "Documented guidelines exist, but migrations require extensive manual engineering" },
+        { "id": "2", "score": 3, "text": "Documented playbooks with standardized landing templates and wave scheduling" },
+        { "id": "3", "score": 4, "text": "Automated migration pipelines with standardized cutover runbooks and rollbacks" },
+        { "id": "4", "score": 5, "text": "Industrialized continuous factory: automated discovery, wave orchestration, and telemetry" }
+      ]
+    },
+    {
+      "id": "Q5.2",
+      "dimension": "D5",
+      "type": "rating",
+      "prompt": "Rate your average migration velocity per application group from architecture approval to production:",
+      "hint": "1 = Sluggish (>12 months per group); 5 = Industrialized (<1 month per group via self-service).",
+      "weight": 1.0,
+      "scaleLabels": [
+        ">12 Months (Sluggish)",
+        "6-12 Months (Slow)",
+        "3-6 Months (Moderate)",
+        "1-3 Months (Fast)",
+        "<1 Month (Automated)"
+      ]
+    },
+    {
+      "id": "Q5.3",
+      "dimension": "D5",
+      "type": "multi",
+      "prompt": "Which cloud landing zone automated guardrails are actively enforced in code?",
+      "hint": "Select all automated baseline controls active across your hyperscaler environments.",
+      "weight": 1.0,
+      "options": [
+        { "id": "iac", "score": 1, "text": "Infrastructure-as-Code (Terraform / OpenTofu / CDK) with Zero Manual Console Changes" },
+        { "id": "policy", "score": 1, "text": "Policy-as-Code Guardrails (OPA, AWS Control Tower, Azure Policy) with Drift Detection" },
+        { "id": "zt_net", "score": 1, "text": "Centralized Zero-Trust Transit Hubs & Micro-segmented VPC/VNet Topologies" },
+        { "id": "finops", "score": 1, "text": "Automated Tagging Enforcement, Cost Anomaly Alarms & Auto-remediation" },
+        { "id": "sec_scan", "score": 1, "text": "Continuous Cloud Security Posture Management (CSPM) & Vulnerability Scanning" }
+      ]
+    },
+    {
+      "id": "Q6.1",
+      "dimension": "D6",
+      "type": "single",
+      "prompt": "How rigorously are data centre exit savings, stranded assets, and dual-run costs modeled?",
+      "hint": "Unmanaged bubble/dual-run costs during 18-month migrations frequently erase business case ROI.",
+      "weight": 1.0,
+      "options": [
+        { "id": "0", "score": 1, "text": "No financial model; business assumes cloud will be cheaper without modeling exit costs" },
+        { "id": "1", "score": 2, "text": "Basic hardware cost comparisons without factoring facility leases, power, or stranded assets" },
+        { "id": "2", "score": 3, "text": "TCO model includes leases and power, but dual-run migration bubble costs are underestimated" },
+        { "id": "3", "score": 4, "text": "Comprehensive multi-year cash flow model tracking lease step-downs, stranded write-offs, and run rates" },
+        { "id": "4", "score": 5, "text": "Dynamic unit-economics FinOps framework linking cloud unit costs directly to business product margins" }
+      ]
+    },
+    {
+      "id": "Q6.2",
+      "dimension": "D6",
+      "type": "rating",
+      "prompt": "Rate the cross-functional alignment between Infrastructure, App Dev, Security, and Finance:",
+      "hint": "1 = Siloed hostility; 5 = Product-mode platform squads sharing unified business OKRs.",
+      "weight": 1.0,
+      "scaleLabels": [
+        "Siloed / Friction",
+        "Loose Steering Comm.",
+        "Joint Working Groups",
+        "Shared Squad OKRs",
+        "Unified Platform Mode"
+      ]
+    },
+    {
+      "id": "Q6.3",
+      "dimension": "D6",
+      "type": "multi",
+      "prompt": "Which business metrics are explicitly contracted to modernization outcomes?",
+      "hint": "Select all executive outcome KPIs measured by C-suite and board.",
+      "weight": 1.0,
+      "options": [
+        { "id": "ebitda", "score": 1, "text": "Permanent Operating Run-Rate Reduction (EBITDA Expansion)" },
+        { "id": "time_market", "score": 1, "text": "Product Feature Release Velocity (Cycle Time Reduction)" },
+        { "id": "resilience", "score": 1, "text": "Mean Time to Recovery (MTTR) & Operational SLA Resilience" },
+        { "id": "carbon", "score": 1, "text": "Scope 2/3 GHG Carbon Reductions & PUE Sustainability Goals" }
+      ]
+    }
+  ],
+  "anomalyProbes": [
+    {
+      "id": "PROBE_POWER_GPU",
+      "name": "Thermal Ceiling vs AI Expansion Paradox",
+      "badge": "Operational Risk",
+      "finding": "You are planning ambitious high-density AI/GPU compute expansion while your facility power utilization is capped (>80%) and cooling infrastructure remains limited to legacy air containment (<12 kW/rack).",
+      "clarificationQ": "How does the organization plan to support modern GPU thermal envelopes (30–80+ kW/rack)?",
+      "options": [
+        "We will restrict AI/GPU compute strictly to high-density colocation or hyperscaler public cloud",
+        "We plan a dedicated capital retrofit for specialized liquid/in-row cooling in our primary DC",
+        "We are currently reviewing power constraints and require LTM to model our facility power ceilings"
+      ]
+    },
+    {
+      "id": "PROBE_CLIFF_VELOCITY",
+      "name": "Contractual Cliff vs Migration Throughput Deficit",
+      "badge": "Financial Exposure",
+      "finding": "Major facility leases or hardware renewals expire in <12 months, yet your migration factory velocity exceeds 6–12 months per application group.",
+      "clarificationQ": "How will the enterprise avoid catastrophic dual-run penalties or forced lease extension holdovers?",
+      "options": [
+        "We will negotiate temporary 12-month colocation bridge extensions to buy migration runway",
+        "We will establish an accelerated LTM Migration Factory to increase migration throughput 3x",
+        "We will prioritize aggressive lift-and-shift for non-critical workloads to meet the lease cutoff"
+      ]
+    },
+    {
+      "id": "PROBE_UNMAPPED_SCALE",
+      "name": "Workload Scale vs 6R Disposition Void",
+      "badge": "Execution Blindspot",
+      "finding": "Your enterprise operates a substantial application estate, yet less than 20% of applications have an approved 6R modernization disposition.",
+      "clarificationQ": "What framework will determine which workloads are retired, replatformed, or rehosted?",
+      "options": [
+        "We will conduct a 6-week automated discovery sprint with LTM to classify all workloads",
+        "Application owners will define dispositions ad-hoc as their migration waves approach",
+        "We will default to bulk IaaS rehost and defer refactoring until after cloud cutover"
+      ]
+    },
+    {
+      "id": "PROBE_SOVEREIGN_AI",
+      "name": "Sovereign Boundary vs Cloud Gravity Mismatch",
+      "badge": "Regulatory Boundary",
+      "finding": "Proprietary enterprise data and regulated workloads are being considered for public cloud AI without established sovereign boundaries or localized cryptographic controls.",
+      "clarificationQ": "How will compliance (EU AI Act / DORA / statutory data residency) be enforced?",
+      "options": [
+        "We will isolate regulated data within dedicated sovereign on-premises or sovereign cloud enclaves",
+        "We rely on contractual DPA agreements with hyperscalers but lack technical cryptographic boundaries",
+        "We require an architectural audit to delineate sovereign data boundaries before AI deployment"
+      ]
+    }
+  ]
+}

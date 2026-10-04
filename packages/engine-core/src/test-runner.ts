@@ -5,6 +5,7 @@ import { evaluatePostureIq } from './accelerators/posture-iq/evaluate';
 import { evaluateSovereignIq } from './accelerators/sovereign-iq/evaluate';
 import { evaluateCloudIq } from './accelerators/cloud-iq/evaluate';
 import { evaluateStrategyIq } from './accelerators/strategy-iq/evaluate';
+import { evaluateModernizationIq } from './accelerators/modernization-iq/evaluate';
 import postureKb from './accelerators/posture-iq/knowledge-base.json' with { type: 'json' };
 import sovereignKb from './accelerators/sovereign-iq/knowledge-base.json' with { type: 'json' };
 
@@ -189,5 +190,48 @@ console.log('Section Scores:', strategyIqResult.sectionScores);
 console.log('Alignment Index:', strategyIqResult.alignmentIndex + '%', '| Tech Debt Drag:', strategyIqResult.debtDragPct + '%', '($' + (strategyIqResult.debtDollarWaste / 1000000).toFixed(1) + 'M)');
 console.log('Delivery Velocity:', strategyIqResult.deliveryVelocity + 'x', '| Resilience Score:', strategyIqResult.resilienceScore + '%');
 console.log('--- Strategy IQ Assertions Passed! ---\n');
+
+console.log('--- 7. Testing Modernize IQ Headless Engine ---');
+const modernizationIqMockAnswers = {
+  'Q1.1': 3,
+  'Q1.2': ['srv', 'san', 'net'],
+  'Q1.3': 2,
+  'Q2.1': 70,
+  'Q2.2': 2,
+  'Q2.3': 2,
+  'Q3.1': 2,
+  'Q3.2': { llm_train: 'cloud', llm_infer: 'colo', pii_embed: 'dc', batch_rag: 'cloud' },
+  'Q3.3': 2,
+  'Q4.1': 45,
+  'Q4.2': 2,
+  'Q4.3': ['cost', 'ai', 'agility', 'risk'],
+  'Q5.1': 3,
+  'Q5.2': 3,
+  'Q5.3': ['iac', 'policy', 'zt_net'],
+  'Q6.1': 3,
+  'Q6.2': 3,
+  'Q6.3': ['ebitda', 'time_market']
+};
+
+const modernizationIqResult = evaluateModernizationIq({
+  answers: modernizationIqMockAnswers,
+  org: {
+    clientName: 'Global FinTech Corp',
+    industry: 'Banking / Capital Markets',
+    workloadCount: '1,400',
+    dcCount: '3 Owned / 2 Colocation',
+    annualDcSpend: '$24.5M',
+    targetExitHorizon: '24 Months'
+  }
+});
+
+console.log('Overall Score:', modernizationIqResult.overall, `(${modernizationIqResult.band})`);
+console.log('Dimension Scores (D1-D6):', modernizationIqResult.dimScores);
+console.log('Peer Benchmark Delta:', modernizationIqResult.peerDelta > 0 ? `+${modernizationIqResult.peerDelta}` : modernizationIqResult.peerDelta, '(Median: ' + modernizationIqResult.peerMedian + ')');
+console.log('Primary Friction:', modernizationIqResult.primaryFriction, '—', modernizationIqResult.frictionDetail);
+console.log('Triggered Probes:', modernizationIqResult.triggeredProbes.map(p => p.name).join(' | ') || 'None (Balanced)');
+console.log('Roadmap Phases Count:', modernizationIqResult.roadmapPhases.length);
+console.log('--- Modernize IQ Assertions Passed! ---\n');
+
 
 console.log('All engine checks completed. (Posture IQ and Sovereign IQ carry assertions; the other engines are smoke-run only until Phase 2 adds golden tests.)');

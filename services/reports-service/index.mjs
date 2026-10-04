@@ -31,7 +31,7 @@ const DOWNLOAD_URL_TTL_SECONDS = 900; // 15 minutes
 const MAX_PDF_BYTES = 5 * 1024 * 1024;
 const REPORT_KEY_PATTERN = /^reports\/[A-Za-z0-9_-]+\/[A-Za-z0-9_.-]+\.pdf$/;
 
-const ALL_ACCELERATORS = ['strategy-iq', 'finops-value-case', 'finops-iq', 'sovereign-iq', 'posture-iq', 'cloud-iq', 'cost-iq'];
+const ALL_ACCELERATORS = ['strategy-iq', 'modernization-iq', 'finops-value-case', 'finops-iq', 'sovereign-iq', 'posture-iq', 'cloud-iq', 'cost-iq'];
 
 const s3Client = new S3Client({ region: REGION });
 const cognitoClient = new CognitoIdentityProviderClient({ region: REGION });

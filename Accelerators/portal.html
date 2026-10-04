@@ -689,6 +689,7 @@
     .acc-card.card-posture-iq { --card-accent: #F59E0B; }
     .acc-card.card-cloud-iq { --card-accent: #226882; }
     .acc-card.card-strategy-iq { --card-accent: #FF5E4F; }
+    .acc-card.card-modernization-iq { --card-accent: #35754D; }
 
     .card-top {
       display: flex;
@@ -1313,7 +1314,7 @@
       <div style="position:relative;z-index:2;text-align:center;">
         <h1 class="hero-tech-title">Advisory Accelerators</h1>
         <div class="hero-practice-tabs">
-          <button class="hero-tab active" onclick="filterPracticeGroup('all', this)">All Accelerators (7)</button>
+          <button class="hero-tab active" onclick="filterPracticeGroup('all', this)">All Accelerators (8)</button>
           <button class="hero-tab" onclick="filterPracticeGroup('strategy', this)">Strategic IT Advisory</button>
           <button class="hero-tab" onclick="filterPracticeGroup('finops', this)">FinOps Practice</button>
           <button class="hero-tab" onclick="filterPracticeGroup('costiq', this)">Cost &amp; Value</button>
@@ -1550,6 +1551,30 @@
             </div>
           </div>
         </div>
+
+        <!-- 6. Modernize IQ -->
+        <div class="acc-card card-modernization-iq">
+          <div class="card-top">
+            <div class="card-meta-row">
+              <span class="card-eyebrow" style="color:#35754D;border-color:rgba(53,117,77,0.3);background:rgba(53,117,77,0.08);">DATA CENTRE &amp; COMPUTE CAPACITY</span>
+            </div>
+            <h3 class="card-title">Modernize IQ</h3>
+            <p class="card-desc">Diagnostic platform evaluating 6 strategic dimensions, utility power ceilings, high-density AI/GPU compute siting, 6R dispositions, and DC exit factory velocity.</p>
+            <div class="chip-row">
+              <span class="chip">18 Diagnostic Questions</span>
+              <span class="chip">6 Strategic Dimensions</span>
+              <span class="chip">Power &amp; Thermal Limits</span>
+              <span class="chip">AI/GPU Compute Siting</span>
+            </div>
+          </div>
+
+          <div class="card-footer" style="justify-content:flex-end;">
+            <div class="card-actions">
+              <button class="btn-action-edit" data-tool="modernization-iq" onclick="handleEditClick('modernization-iq')">Edit</button>
+              <button class="btn-action-launch" data-tool="modernization-iq" onclick="handleLaunchClick('modernization-iq', '/modernization-iq')">Take Assessment &rarr;</button>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
   </main>
@@ -1675,6 +1700,7 @@
           <button class="chip" onclick="setReportsFilter('posture-iq', this)">Posture IQ</button>
           <button class="chip" onclick="setReportsFilter('sovereign-iq', this)">Sovereign IQ</button>
           <button class="chip" onclick="setReportsFilter('cloud-iq', this)">Cloud IQ</button>
+          <button class="chip" onclick="setReportsFilter('modernization-iq', this)">Modernize IQ</button>
         </div>
       </div>
 
@@ -1837,6 +1863,19 @@
                     <label><input type="checkbox" id="perm_create_cloud-iq_take" onchange="syncAccFull('create', 'cloud-iq')" checked> Take Assessment</label>
                     <label><input type="checkbox" id="perm_create_cloud-iq_edit" onchange="syncAccFull('create', 'cloud-iq')"> Edit Engine</label>
                     <label><input type="checkbox" id="perm_create_cloud-iq_archive" onchange="syncAccFull('create', 'cloud-iq')"> View Archive</label>
+                  </div>
+                </div>
+
+                <!-- Modernize IQ -->
+                <div class="granular-acc-card">
+                  <div class="granular-acc-head">
+                    <span class="granular-acc-name">🏗️ Modernize IQ</span>
+                    <label class="full-perm-label"><input type="checkbox" id="perm_create_modernization-iq_full" onchange="toggleAccFull('create', 'modernization-iq', this.checked)"> Full</label>
+                  </div>
+                  <div class="granular-acc-options">
+                    <label><input type="checkbox" id="perm_create_modernization-iq_take" onchange="syncAccFull('create', 'modernization-iq')" checked> Take Assessment</label>
+                    <label><input type="checkbox" id="perm_create_modernization-iq_edit" onchange="syncAccFull('create', 'modernization-iq')"> Edit Engine</label>
+                    <label><input type="checkbox" id="perm_create_modernization-iq_archive" onchange="syncAccFull('create', 'modernization-iq')"> View Archive</label>
                   </div>
                 </div>
               </div>
@@ -2006,6 +2045,19 @@
               <label><input type="checkbox" id="perm_editperm_cloud-iq_take" onchange="syncAccFull('editperm', 'cloud-iq')"> Take Assessment</label>
               <label><input type="checkbox" id="perm_editperm_cloud-iq_edit" onchange="syncAccFull('editperm', 'cloud-iq')"> Edit Engine</label>
               <label><input type="checkbox" id="perm_editperm_cloud-iq_archive" onchange="syncAccFull('editperm', 'cloud-iq')"> View Archive</label>
+            </div>
+          </div>
+
+          <!-- Modernize IQ -->
+          <div class="granular-acc-card">
+            <div class="granular-acc-head">
+              <span class="granular-acc-name">🏗️ Modernize IQ</span>
+              <label class="full-perm-label"><input type="checkbox" id="perm_editperm_modernization-iq_full" onchange="toggleAccFull('editperm', 'modernization-iq', this.checked)"> Full</label>
+            </div>
+            <div class="granular-acc-options">
+              <label><input type="checkbox" id="perm_editperm_modernization-iq_take" onchange="syncAccFull('editperm', 'modernization-iq')"> Take Assessment</label>
+              <label><input type="checkbox" id="perm_editperm_modernization-iq_edit" onchange="syncAccFull('editperm', 'modernization-iq')"> Edit Engine</label>
+              <label><input type="checkbox" id="perm_editperm_modernization-iq_archive" onchange="syncAccFull('editperm', 'modernization-iq')"> View Archive</label>
             </div>
           </div>
         </div>
@@ -2471,8 +2523,8 @@
             token: token,
             role: isSuper ? 'super_admin' : 'advisor_viewer',
             permissions: {
-              view: ['strategy-iq', 'finops-value-case', 'finops-iq', 'sovereign-iq', 'posture-iq', 'cloud-iq', 'cost-iq', isSuper ? 'reports' : ''],
-              edit: isSuper ? ['strategy-iq', 'finops-value-case', 'finops-iq', 'sovereign-iq', 'posture-iq', 'cloud-iq', 'cost-iq'] : []
+              view: ['strategy-iq', 'modernization-iq', 'finops-value-case', 'finops-iq', 'sovereign-iq', 'posture-iq', 'cloud-iq', 'cost-iq', isSuper ? 'reports' : ''],
+              edit: isSuper ? ['strategy-iq', 'modernization-iq', 'finops-value-case', 'finops-iq', 'sovereign-iq', 'posture-iq', 'cloud-iq', 'cost-iq'] : []
             }
           };
 
@@ -2790,6 +2842,7 @@
       { id: 'sovereign-iq', name: 'Sovereign IQ', icon: '🛡️' },
       { id: 'posture-iq', name: 'Posture IQ', icon: '⚡' },
       { id: 'cloud-iq', name: 'Cloud IQ', icon: '☁️' },
+      { id: 'modernization-iq', name: 'Modernize IQ', icon: '🏗️' },
       { id: 'cost-iq', name: 'Cost IQ', icon: '💡' }
     ];
 
