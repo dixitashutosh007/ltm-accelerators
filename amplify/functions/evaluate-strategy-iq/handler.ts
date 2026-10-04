@@ -1,14 +1,13 @@
 import type { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
+import { corsHeaders } from '../_shared/http';
 import { evaluateStrategyIq } from '../../../packages/engine-core/src/accelerators/strategy-iq/evaluate';
 
-const CORS_HEADERS = {
-  'Content-Type': 'application/json',
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'Content-Type,Authorization,X-Amz-Date,X-Api-Key,X-Amz-Security-Token',
-  'Access-Control-Allow-Methods': 'OPTIONS,POST'
-};
+// Per-request CORS headers (origin allowlist). Lambda handles one request at a time,
+// so this module-level value is safe.
+let CORS_HEADERS: Record<string, string> = corsHeaders();
 
 export const handler = async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> => {
+  CORS_HEADERS = corsHeaders(event, 'OPTIONS,POST');
   const method = event.requestContext?.http?.method || (event as any).httpMethod;
   if (method === 'OPTIONS') {
     return {

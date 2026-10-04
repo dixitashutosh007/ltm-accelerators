@@ -1,22 +1,15 @@
 /**
  * LTM Infrastructure Tech Advisory — Customer Reports Archive Utility
- * Region: ap-south-1 (Mumbai)
- * Bucket: ltm-advisory-reports-223833501993
+ * Talks to the Advisory API's /api/reports routes (Cognito-authenticated).
  */
 (function(window) {
-  const REPORTS_API_BASE = 'https://zvnmwxa9sf.execute-api.ap-south-1.amazonaws.com/api/reports';
-
-  // The reports API requires the signed-in user's Cognito ID token on every call.
-  function authHeaders() {
-    let token = '';
-    try {
-      const user = JSON.parse(sessionStorage.getItem('ltm_auth_user') || 'null');
-      token = (user && user.token) || '';
-    } catch (e) {}
-    if (!token) {
-      throw new Error('Please sign in to the LTM Advisory portal to archive or view reports.');
+  // All calls go through the shared API client (assets/ltm-api.js), which attaches and
+  // renews the signed-in user's Cognito token.
+  function reportsFetch(path, options) {
+    if (!window.LTM_API) {
+      return Promise.reject(new Error('Please sign in to the LTM Advisory portal to archive or view reports.'));
     }
-    return { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token };
+    return window.LTM_API.fetch('/api/reports' + path, options);
   }
 
   function escapeHtml(value) {
@@ -58,9 +51,8 @@
       throw new Error('PDF data string is empty or invalid.');
     }
 
-    const resp = await checkAuth(await fetch(`${REPORTS_API_BASE}/save`, {
+    const resp = await checkAuth(await reportsFetch('/save', {
       method: 'POST',
-      headers: authHeaders(),
       body: JSON.stringify({
         acceleratorId,
         clientName: clientName || 'Enterprise Client',
@@ -78,14 +70,8 @@
   }
 
   async function listReportsFromS3(acceleratorId) {
-    const url = acceleratorId 
-      ? `${REPORTS_API_BASE}/list?acceleratorId=${encodeURIComponent(acceleratorId)}`
-      : `${REPORTS_API_BASE}/list`;
-
-    const resp = await checkAuth(await fetch(url, {
-      method: 'GET',
-      headers: authHeaders()
-    }));
+    const query = acceleratorId ? `?acceleratorId=${encodeURIComponent(acceleratorId)}` : '';
+    const resp = await checkAuth(await reportsFetch('/list' + query, { method: 'GET' }));
 
     if (!resp.ok) {
       throw new Error(`Failed to list reports (${resp.status})`);
@@ -96,9 +82,8 @@
 
   async function deleteReportFromS3(key) {
     if (!key) throw new Error('Report key is required.');
-    const resp = await checkAuth(await fetch(`${REPORTS_API_BASE}/delete`, {
+    const resp = await checkAuth(await reportsFetch('/delete', {
       method: 'POST',
-      headers: authHeaders(),
       body: JSON.stringify({ key })
     }));
     const data = await resp.json();
@@ -108,9 +93,8 @@
 
   async function renameReportInS3(key, newClientName) {
     if (!key || !newClientName) throw new Error('Key and new name are required.');
-    const resp = await checkAuth(await fetch(`${REPORTS_API_BASE}/rename`, {
+    const resp = await checkAuth(await reportsFetch('/rename', {
       method: 'POST',
-      headers: authHeaders(),
       body: JSON.stringify({ key, newClientName })
     }));
     const data = await resp.json();

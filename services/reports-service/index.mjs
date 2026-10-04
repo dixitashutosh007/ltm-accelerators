@@ -13,13 +13,15 @@ import { createPublicKey, verify as cryptoVerify } from 'node:crypto';
  * ------------------------------------------------------------------ */
 const BUCKET_NAME = process.env.REPORTS_BUCKET || 'ltm-advisory-reports-223833501993';
 const REGION = process.env.AWS_REGION || 'ap-south-1';
+const COGNITO_REGION = process.env.COGNITO_REGION || REGION;
 const USER_POOL_ID = process.env.USER_POOL_ID || 'ap-south-1_91amN2bz4';
 const COGNITO_CLIENT_ID = process.env.COGNITO_CLIENT_ID || '4iiqcsgvsm0b4ngpps94ho4c67';
-const COGNITO_ISSUER = `https://cognito-idp.${REGION}.amazonaws.com/${USER_POOL_ID}`;
+const COGNITO_ISSUER = `https://cognito-idp.${COGNITO_REGION}.amazonaws.com/${USER_POOL_ID}`;
 
-// Super Admins: comma-separated emails. Members of the Cognito 'Admin' group are also admins.
+// Bootstrap admins: comma-separated emails ("none" = rely on the Cognito admin group only).
+// Members of the Cognito ADMIN_GROUP are always admins.
 const SUPER_ADMIN_EMAILS = (process.env.SUPER_ADMIN_EMAILS || 'dixitashutosh007@gmail.com')
-  .split(',').map(e => e.trim().toLowerCase()).filter(Boolean);
+  .split(',').map(e => e.trim().toLowerCase()).filter(e => e && e !== 'none');
 const ADMIN_GROUP = process.env.ADMIN_GROUP || 'Admin';
 
 // Browser origins allowed to call this API (comma-separated). 'https://*.domain' allows sub-domains (branch previews).
@@ -34,7 +36,7 @@ const REPORT_KEY_PATTERN = /^reports\/[A-Za-z0-9_-]+\/[A-Za-z0-9_.-]+\.pdf$/;
 const ALL_ACCELERATORS = ['strategy-iq', 'modernization-iq', 'finops-value-case', 'finops-iq', 'sovereign-iq', 'posture-iq', 'cloud-iq', 'cost-iq'];
 
 const s3Client = new S3Client({ region: REGION });
-const cognitoClient = new CognitoIdentityProviderClient({ region: REGION });
+const cognitoClient = new CognitoIdentityProviderClient({ region: COGNITO_REGION });
 
 /* ------------------------------------------------------------------
  * CORS
