@@ -1,0 +1,86 @@
+{
+  "schema_version": "1.0",
+  "last_reviewed": "2026-10-04",
+  "scoring_principles": {
+    "overall_score": "weighted domain score adjusted for evidence confidence and critical-gap penalties",
+    "scale": "0-100",
+    "maturity_scale": {
+      "1": "Reactive — little formalization; recovery depends on individuals.",
+      "2": "Documented — policies/plans exist but capability is inconsistent.",
+      "3": "Defined — standardized processes, ownership and tiering exist.",
+      "4": "Tested — recovery is exercised with evidence and gaps are remediated.",
+      "5": "Adaptive — resilience is continuously validated, automated where appropriate and integrated into architecture/investment decisions."
+    }
+  },
+  "domain_weights": {
+    "BCP": 0.18,
+    "DR": 0.20,
+    "CYBER": 0.18,
+    "OPS": 0.16,
+    "TP": 0.12,
+    "INFRA": 0.16
+  },
+  "dimension_scoring": {
+    "strategy": 0.15,
+    "design": 0.20,
+    "implementation": 0.20,
+    "testing": 0.20,
+    "evidence": 0.10,
+    "governance": 0.15
+  },
+  "evidence_confidence": {
+    "none": 0.5,
+    "self_declared": 0.7,
+    "documented": 0.85,
+    "tested": 0.95,
+    "independently_validated": 1.0
+  },
+  "critical_gap_penalties": [
+    {"condition":"critical business service has no defined impact tolerance or RTO/RPO","penalty":8},
+    {"condition":"critical service recovery plan has never been tested","penalty":8},
+    {"condition":"critical data has no recoverable backup","penalty":15},
+    {"condition":"backup exists but restore has not been proven","penalty":8},
+    {"condition":"critical recovery relies on the same failure domain as production","penalty":10},
+    {"condition":"critical service has unmanaged single-provider concentration risk","penalty":6},
+    {"condition":"identity/control plane compromise can block recovery and no alternate recovery path exists","penalty":8},
+    {"condition":"critical service has a documented DR plan but no evidence it meets the required RTO/RPO","penalty":6}
+  ],
+  "rating_bands": [
+    {"min":0,"max":39,"label":"Critical Exposure","executive_message":"Material resilience exposure requires immediate risk treatment."},
+    {"min":40,"max":59,"label":"Fragile","executive_message":"Core resilience capabilities exist but significant gaps could disrupt critical services."},
+    {"min":60,"max":74,"label":"Managed","executive_message":"Resilience is established but important capability and evidence gaps remain."},
+    {"min":75,"max":89,"label":"Resilient","executive_message":"Strong resilience foundation with targeted improvement opportunities."},
+    {"min":90,"max":100,"label":"Adaptive","executive_message":"Resilience is engineered, tested and continuously improved."}
+  ],
+  "recommendation_logic": {
+    "principle": "Never select a DR pattern from score alone.",
+    "decision_inputs": [
+      "business criticality",
+      "impact tolerance",
+      "required RTO",
+      "required RPO",
+      "current RTO",
+      "current RPO",
+      "application architecture",
+      "data architecture",
+      "dependency topology",
+      "cyber threat model",
+      "regulatory/data residency constraints",
+      "provider concentration",
+      "operating model",
+      "budget envelope"
+    ],
+    "strategy_order": [
+      "define business requirement",
+      "validate current capability",
+      "identify gap",
+      "select candidate patterns",
+      "eliminate patterns that cannot meet requirements",
+      "rank remaining patterns by risk/cost/complexity",
+      "select preferred pattern",
+      "provide at least one viable alternative",
+      "map to technology implementation",
+      "define test/evidence plan"
+    ]
+  }
+}
