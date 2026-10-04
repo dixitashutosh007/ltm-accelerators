@@ -43,3 +43,6 @@ if (!result.mandatoryControls.includes("DR-07")) throw new Error("High dependenc
 if (!result.evidenceRequests.length) throw new Error("Risk-driven assessment should request evidence");
 
 console.log("Resilience IQ knowledge-driven runtime tests passed");
+
+
+// Posture score 53 must map to maturity level 2 (Documented), not Reactive.
