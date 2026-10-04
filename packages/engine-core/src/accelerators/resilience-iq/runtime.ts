@@ -512,6 +512,7 @@ export function evaluateResilienceIq(a: ResilienceAnswers): ResilienceResult {
   const mandatoryControls = [
     ...(cyberRisk(a) === "destructive" || cyberRisk(a) === "high" ? ["DATA-01", "DATA-02", "CYBER-01", "CYBER-02"] : []),
     ...(concentrationRisk(a) === "high" ? ["TP-03", "TP-05"] : []),
+    ...(concentrationRisk(a) === "high" && ["cloud", "multi_cloud"].includes(environment(a)) ? ["INF-04"] : []),
     ...(dependencyRisk(a) === "high" ? ["DR-07", "APP-04", "DR-08"] : [])
   ];
 
