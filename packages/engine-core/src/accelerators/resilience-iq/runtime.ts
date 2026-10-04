@@ -16,6 +16,7 @@ export interface PatternDecision {
   fit: string;
   rationale: string;
   whyNot?: string;
+  decisionFactors?: string[];
 }
 
 export interface ResilienceResult {
@@ -296,6 +297,17 @@ function patternScore(id: string, a: ResilienceAnswers, eliminated: Set<string>)
   const env = environment(a);
   if (env !== "unknown" && Array.isArray(p[env === "on_prem" ? "on_prem_mapping" : env + "_mapping"])) score += 3;
   score = Math.max(0, Math.min(100, score));
+  const decisionFactors: string[] = [];
+  if (rto !== null) decisionFactors.push(`Required RTO: ${str(a["EX-03"])}`);
+  if (rpo !== null) decisionFactors.push(`Required RPO: ${str(a["EX-04"])}`);
+  if (crit !== "unknown") decisionFactors.push(`Business criticality: ${crit}`);
+  if (cyber !== "low" && cyber !== "unknown") decisionFactors.push(`Cyber risk: ${cyber}`);
+  if (concentration !== "low" && concentration !== "unknown") decisionFactors.push(`Concentration risk: ${concentration}`);
+  if (dependency !== "low" && dependency !== "unknown") decisionFactors.push(`Dependency risk: ${dependency}`);
+  if (id === "DR-02" && rto !== null && rto <= 240) decisionFactors.push("Pilot Light provides a faster recovery path than backup/rebuild without assuming active-active complexity.");
+  if (id === "DR-03" && rto !== null && rto <= 240) decisionFactors.push("Warm Standby improves recovery speed and readiness, but carries greater continuous operating cost.");
+  if (id === "DR-04" && rto !== null && rto <= 60) decisionFactors.push("Hot Standby becomes justified when recovery objectives demand near-continuous readiness.");
+  if (id === "DR-05" && rto !== null && rto <= 15 && rpo === 0) decisionFactors.push("Active-Active is primarily justified by near-zero recovery objectives and tolerance for materially higher complexity.");
   return {
     id,
     name: p.name,
@@ -306,7 +318,8 @@ function patternScore(id: string, a: ResilienceAnswers, eliminated: Set<string>)
       : p.decision_role === "cyber_control"
         ? p.name + " is a supporting cyber control rather than a replacement for the primary recovery strategy."
         : p.name + " is ranked against the stated recovery objectives, business criticality and operating constraints.",
-    whyNot: p.when_not_to_use
+    whyNot: p.when_not_to_use,
+    decisionFactors
   };
 }
 
