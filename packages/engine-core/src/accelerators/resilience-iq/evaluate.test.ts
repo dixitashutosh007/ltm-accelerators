@@ -38,5 +38,8 @@ if (!result.mandatoryControls.includes("DATA-01")) throw new Error("Cyber exposu
 if (!result.technologyOptions["DR-03:aws"]) throw new Error("Preferred/alternative strategy should map to AWS implementation options");
 if (result.gapRegister.length === 0) throw new Error("Expected evidence/risk gaps");
 if (result.roadmap.length !== 4) throw new Error("Expected four roadmap waves");
+if (!result.mandatoryControls.includes("TP-05")) throw new Error("High concentration should require concentration-risk control");
+if (!result.mandatoryControls.includes("DR-07")) throw new Error("High dependency risk should require dependency-aware recovery");
+if (!result.evidenceRequests.length) throw new Error("Risk-driven assessment should request evidence");
 
 console.log("Resilience IQ knowledge-driven runtime tests passed");
