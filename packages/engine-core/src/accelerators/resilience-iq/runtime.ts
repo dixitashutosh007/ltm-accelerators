@@ -321,7 +321,6 @@ export function evaluateResilienceIq(a: ResilienceAnswers): ResilienceResult {
   if (branch.flags.has("recovery_capability_gap")) score -= 8;
   score = Math.max(0, Math.min(100, score));
 
-  const capability = currentCapability(a);
   const gaps = gapRegister(a, branch.flags, score);
   const eliminated = new Set<string>(branch.eliminate);
   if (rto !== null && rto < 60) eliminated.add("DR-01");
