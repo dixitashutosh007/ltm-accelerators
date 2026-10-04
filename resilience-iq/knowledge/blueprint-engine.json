@@ -1,0 +1,373 @@
+{
+  "schema_version": "1.0",
+  "last_reviewed": "2026-10-04",
+  "purpose": "Transform recommendation-engine output into an explainable CIO/CTO resilience target-state blueprint, gap analysis and sequenced roadmap.",
+  "generation_order": [
+    "executive_summary",
+    "business_requirement_baseline",
+    "current_state_posture",
+    "critical_gaps",
+    "target_state_principles",
+    "target_architecture",
+    "pattern_decisions",
+    "technology_mapping",
+    "testing_and_evidence_plan",
+    "roadmap",
+    "governance_and_metrics",
+    "decision_log"
+  ],
+  "section_rules": {
+    "executive_summary": {
+      "required": [
+        "overall_rating",
+        "top_risks",
+        "preferred_strategy",
+        "investment_priority",
+        "confidence"
+      ],
+      "max_top_risks": 5
+    },
+    "business_requirement_baseline": {
+      "required": [
+        "critical_services",
+        "impact_tolerance",
+        "required_rto",
+        "required_rpo",
+        "recovery_priority"
+      ],
+      "rule": "Unknown business objectives must be shown as a gap, never silently inferred."
+    },
+    "current_state_posture": {
+      "required": [
+        "maturity",
+        "recovery_capability",
+        "evidence_confidence",
+        "key_dependencies",
+        "concentration_points",
+        "testing_posture"
+      ]
+    },
+    "critical_gaps": {
+      "priority_formula": "business_impact * risk_exposure * evidence_gap * dependency_multiplier",
+      "severity": [
+        "critical",
+        "high",
+        "medium",
+        "low"
+      ],
+      "critical_definition": "Gap can prevent a critical business service from operating within impact tolerance or can invalidate recovery after destructive compromise."
+    },
+    "target_state_principles": {
+      "required": [
+        "business_service_first",
+        "failure_domain_separation",
+        "cyber_recovery",
+        "dependency_awareness",
+        "evidence_driven_testing",
+        "tiered_investment"
+      ]
+    },
+    "target_architecture": {
+      "layers": [
+        "business_service",
+        "people_process",
+        "application",
+        "data",
+        "infrastructure",
+        "network",
+        "identity",
+        "cyber_recovery",
+        "third_party",
+        "observability_governance"
+      ],
+      "rule": "Only include layers materially supported by assessment evidence or mark them as assumptions."
+    },
+    "pattern_decisions": {
+      "required": [
+        "preferred_pattern",
+        "alternatives",
+        "eliminated_patterns",
+        "decision_rationale",
+        "assumptions",
+        "prerequisites"
+      ],
+      "rule": "Every preferred pattern must have an explicit why, why-not, and validation method."
+    },
+    "technology_mapping": {
+      "rule": "Map vendor-neutral patterns to provider implementation only after pattern selection.",
+      "providers": [
+        "aws",
+        "azure",
+        "gcp",
+        "on_prem"
+      ]
+    },
+    "testing_and_evidence_plan": {
+      "test_types": [
+        "tabletop",
+        "technical_failover",
+        "restore",
+        "cyber_recovery",
+        "dependency_failover",
+        "regional/site_failover",
+        "business_validation",
+        "continuous_validation"
+      ],
+      "rule": "Every critical target control must have an evidence method."
+    },
+    "roadmap": {
+      "waves": [
+        {
+          "id": "W0",
+          "name": "Stabilize & Define",
+          "window": "0-30 days"
+        },
+        {
+          "id": "W1",
+          "name": "Protect & Prove",
+          "window": "31-90 days"
+        },
+        {
+          "id": "W2",
+          "name": "Engineer Target State",
+          "window": "3-6 months"
+        },
+        {
+          "id": "W3",
+          "name": "Scale & Optimize",
+          "window": "6-18 months"
+        }
+      ],
+      "prioritization": "critical risk reduction first, then dependency enablers, then target architecture, then optimization"
+    },
+    "governance_and_metrics": {
+      "required_metrics": [
+        "critical_service_RTO_attainment",
+        "critical_service_RPO_attainment",
+        "recovery_test_success_rate",
+        "restore_success_rate",
+        "critical_dependency_coverage",
+        "immutable_backup_coverage",
+        "identity_recovery_readiness",
+        "third_party_resilience_coverage",
+        "open_critical_exceptions"
+      ]
+    }
+  },
+  "gap_taxonomy": [
+    {
+      "id": "G-01",
+      "name": "Undefined Business Requirement",
+      "trigger": "RTO/RPO/impact tolerance unknown",
+      "severity": "critical",
+      "action": "Complete BIA and define impact tolerance/RTO/RPO."
+    },
+    {
+      "id": "G-02",
+      "name": "Unproven Recovery",
+      "trigger": "Recovery documented but not tested",
+      "severity": "high",
+      "action": "Execute controlled recovery and measure actual RTO/RPO."
+    },
+    {
+      "id": "G-03",
+      "name": "Unrecoverable Data",
+      "trigger": "No recoverable critical backup",
+      "severity": "critical",
+      "action": "Implement protected backup and prove restore."
+    },
+    {
+      "id": "G-04",
+      "name": "Recovery-Production Correlation",
+      "trigger": "Recovery shares critical failure domain",
+      "severity": "critical",
+      "action": "Separate site/region/provider/control plane as appropriate."
+    },
+    {
+      "id": "G-05",
+      "name": "Cyber Recovery Gap",
+      "trigger": "Production compromise can affect recovery",
+      "severity": "critical",
+      "action": "Implement immutable/isolated recovery and clean restore validation."
+    },
+    {
+      "id": "G-06",
+      "name": "Identity Recovery Gap",
+      "trigger": "Primary identity compromise can block recovery",
+      "severity": "critical",
+      "action": "Establish and test alternate privileged recovery path."
+    },
+    {
+      "id": "G-07",
+      "name": "Dependency Mapping Gap",
+      "trigger": "Critical service dependencies incomplete/stale",
+      "severity": "high",
+      "action": "Map end-to-end service dependencies and recovery sequence."
+    },
+    {
+      "id": "G-08",
+      "name": "Third-Party Concentration",
+      "trigger": "Critical service relies on single provider without viable alternative",
+      "severity": "high",
+      "action": "Diversify, establish exit capability or formally accept risk."
+    },
+    {
+      "id": "G-09",
+      "name": "Recovery Automation Gap",
+      "trigger": "Manual recovery cannot meet target consistently",
+      "severity": "medium-high",
+      "action": "Automate provisioning, orchestration and validation."
+    },
+    {
+      "id": "G-10",
+      "name": "Testing Coverage Gap",
+      "trigger": "Scenarios do not cover severe-but-plausible failures",
+      "severity": "high",
+      "action": "Create integrated scenario and exercise program."
+    }
+  ],
+  "roadmap_action_templates": [
+    {
+      "id": "RA-01",
+      "trigger": "G-01",
+      "action": "Run BIA workshop for critical services",
+      "owner": "Business + CIO/BCM",
+      "evidence": "Approved impact tolerance/RTO/RPO register"
+    },
+    {
+      "id": "RA-02",
+      "trigger": "G-02",
+      "action": "Execute end-to-end recovery test",
+      "owner": "DR + Application + Business",
+      "evidence": "Measured RTO/RPO and test report"
+    },
+    {
+      "id": "RA-03",
+      "trigger": "G-03",
+      "action": "Implement protected backup and restore validation",
+      "owner": "Infrastructure + Security",
+      "evidence": "Successful clean restore"
+    },
+    {
+      "id": "RA-04",
+      "trigger": "G-04",
+      "action": "Remove critical shared failure domain",
+      "owner": "Architecture + Infrastructure",
+      "evidence": "Validated target topology"
+    },
+    {
+      "id": "RA-05",
+      "trigger": "G-05",
+      "action": "Build cyber recovery vault/clean recovery capability",
+      "owner": "CISO + Infrastructure",
+      "evidence": "Cyber recovery exercise"
+    },
+    {
+      "id": "RA-06",
+      "trigger": "G-06",
+      "action": "Implement isolated identity recovery path",
+      "owner": "IAM + Security",
+      "evidence": "Identity recovery test"
+    },
+    {
+      "id": "RA-07",
+      "trigger": "G-07",
+      "action": "Complete critical service dependency map",
+      "owner": "Enterprise Architecture",
+      "evidence": "Validated dependency map"
+    },
+    {
+      "id": "RA-08",
+      "trigger": "G-08",
+      "action": "Create third-party resilience/exit plan",
+      "owner": "Procurement + Risk + Technology",
+      "evidence": "Approved exit or diversification plan"
+    },
+    {
+      "id": "RA-09",
+      "trigger": "G-09",
+      "action": "Automate recovery orchestration and validation",
+      "owner": "Platform/DR Engineering",
+      "evidence": "Repeatable automated recovery run"
+    },
+    {
+      "id": "RA-10",
+      "trigger": "G-10",
+      "action": "Establish severe-but-plausible exercise calendar",
+      "owner": "CIO/CISO/BCM",
+      "evidence": "Exercise results and remediation backlog"
+    }
+  ],
+  "recommendation_to_blueprint_mapping": {
+    "DR-01": [
+      "BP-04",
+      "BP-11",
+      "BP-12"
+    ],
+    "DR-02": [
+      "BP-04",
+      "BP-10",
+      "BP-12"
+    ],
+    "DR-03": [
+      "BP-04",
+      "BP-10",
+      "BP-12"
+    ],
+    "DR-04": [
+      "BP-04",
+      "BP-10",
+      "BP-12"
+    ],
+    "DR-05": [
+      "BP-03",
+      "BP-06",
+      "BP-10",
+      "BP-12"
+    ],
+    "CYBER-01": [
+      "BP-07",
+      "BP-09",
+      "BP-10"
+    ],
+    "CYBER-02": [
+      "BP-07",
+      "BP-10"
+    ],
+    "TP-02": [
+      "BP-08",
+      "BP-12"
+    ],
+    "TP-03": [
+      "BP-08",
+      "BP-10"
+    ],
+    "TP-05": [
+      "BP-03",
+      "BP-08",
+      "BP-11"
+    ],
+    "OPS-02": [
+      "BP-09",
+      "BP-12"
+    ],
+    "GOV-01": [
+      "BP-01",
+      "BP-12"
+    ]
+  },
+  "output_contract": {
+    "executive_summary": "3-5 concise paragraphs",
+    "scorecard": "domain scores, maturity, confidence and rating",
+    "business_requirements": "critical services and recovery objectives",
+    "current_state": "capability/evidence/dependency posture",
+    "gap_register": "prioritized critical/high/medium/low gaps",
+    "target_state": "principles and layered architecture",
+    "pattern_decisions": "preferred, alternatives, eliminated and rationale",
+    "technology_options": "provider-specific implementation variants",
+    "test_plan": "tests, success criteria, evidence and cadence",
+    "roadmap": "0-30d, 31-90d, 3-6m, 6-18m",
+    "governance": "owners, KPIs/KRIs, review cadence",
+    "decision_log": "assumptions, exceptions and unresolved decisions"
+  }
+}
