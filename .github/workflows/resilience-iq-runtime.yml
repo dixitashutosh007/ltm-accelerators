@@ -18,6 +18,10 @@ on:
       - "package.json"
       - "tsconfig.json"
 
+concurrency:
+  group: resilience-iq-runtime-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   runtime:
     runs-on: ubuntu-latest
