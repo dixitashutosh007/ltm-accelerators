@@ -10,11 +10,12 @@
       "3": "Defined — standardized processes, ownership and tiering exist.",
       "4": "Tested — recovery is exercised with evidence and gaps are remediated.",
       "5": "Adaptive — resilience is continuously validated, automated where appropriate and integrated into architecture/investment decisions."
-    }
+    },
+    "question_level_scoring": "Executive question scores are defined by question-level scoring metadata in this knowledge asset; runtime must not infer score from answer-text regex."
   },
   "domain_weights": {
     "BCP": 0.18,
-    "DR": 0.20,
+    "DR": 0.2,
     "CYBER": 0.18,
     "OPS": 0.16,
     "TP": 0.12,
@@ -22,10 +23,10 @@
   },
   "dimension_scoring": {
     "strategy": 0.15,
-    "design": 0.20,
-    "implementation": 0.20,
-    "testing": 0.20,
-    "evidence": 0.10,
+    "design": 0.2,
+    "implementation": 0.2,
+    "testing": 0.2,
+    "evidence": 0.1,
     "governance": 0.15
   },
   "evidence_confidence": {
@@ -33,24 +34,73 @@
     "self_declared": 0.7,
     "documented": 0.85,
     "tested": 0.95,
-    "independently_validated": 1.0
+    "independently_validated": 1
   },
   "critical_gap_penalties": [
-    {"condition":"critical business service has no defined impact tolerance or RTO/RPO","penalty":8},
-    {"condition":"critical service recovery plan has never been tested","penalty":8},
-    {"condition":"critical data has no recoverable backup","penalty":15},
-    {"condition":"backup exists but restore has not been proven","penalty":8},
-    {"condition":"critical recovery relies on the same failure domain as production","penalty":10},
-    {"condition":"critical service has unmanaged single-provider concentration risk","penalty":6},
-    {"condition":"identity/control plane compromise can block recovery and no alternate recovery path exists","penalty":8},
-    {"condition":"critical service has a documented DR plan but no evidence it meets the required RTO/RPO","penalty":6}
+    {
+      "condition": "critical business service has no defined impact tolerance or RTO/RPO",
+      "penalty": 8
+    },
+    {
+      "condition": "critical service recovery plan has never been tested",
+      "penalty": 8
+    },
+    {
+      "condition": "critical data has no recoverable backup",
+      "penalty": 15
+    },
+    {
+      "condition": "backup exists but restore has not been proven",
+      "penalty": 8
+    },
+    {
+      "condition": "critical recovery relies on the same failure domain as production",
+      "penalty": 10
+    },
+    {
+      "condition": "critical service has unmanaged single-provider concentration risk",
+      "penalty": 6
+    },
+    {
+      "condition": "identity/control plane compromise can block recovery and no alternate recovery path exists",
+      "penalty": 8
+    },
+    {
+      "condition": "critical service has a documented DR plan but no evidence it meets the required RTO/RPO",
+      "penalty": 6
+    }
   ],
   "rating_bands": [
-    {"min":0,"max":39,"label":"Critical Exposure","executive_message":"Material resilience exposure requires immediate risk treatment."},
-    {"min":40,"max":59,"label":"Fragile","executive_message":"Core resilience capabilities exist but significant gaps could disrupt critical services."},
-    {"min":60,"max":74,"label":"Managed","executive_message":"Resilience is established but important capability and evidence gaps remain."},
-    {"min":75,"max":89,"label":"Resilient","executive_message":"Strong resilience foundation with targeted improvement opportunities."},
-    {"min":90,"max":100,"label":"Adaptive","executive_message":"Resilience is engineered, tested and continuously improved."}
+    {
+      "min": 0,
+      "max": 39,
+      "label": "Critical Exposure",
+      "executive_message": "Material resilience exposure requires immediate risk treatment."
+    },
+    {
+      "min": 40,
+      "max": 59,
+      "label": "Fragile",
+      "executive_message": "Core resilience capabilities exist but significant gaps could disrupt critical services."
+    },
+    {
+      "min": 60,
+      "max": 74,
+      "label": "Managed",
+      "executive_message": "Resilience is established but important capability and evidence gaps remain."
+    },
+    {
+      "min": 75,
+      "max": 89,
+      "label": "Resilient",
+      "executive_message": "Strong resilience foundation with targeted improvement opportunities."
+    },
+    {
+      "min": 90,
+      "max": 100,
+      "label": "Adaptive",
+      "executive_message": "Resilience is engineered, tested and continuously improved."
+    }
   ],
   "recommendation_logic": {
     "principle": "Never select a DR pattern from score alone.",
@@ -82,5 +132,192 @@
       "map to technology implementation",
       "define test/evidence plan"
     ]
+  },
+  "question_scoring": {
+    "EX-01": {
+      "type": "criticality_presence",
+      "default": 70
+    },
+    "EX-02": {
+      "type": "impact_tolerance_defined",
+      "scores": {
+        "<15 minutes": 95,
+        "15-60 minutes": 90,
+        "1-4 hours": 80,
+        "4-24 hours": 70,
+        ">24 hours": 60,
+        "Unknown": 20
+      }
+    },
+    "EX-03": {
+      "type": "requirement_definition",
+      "scores": {
+        "<15 minutes": 95,
+        "15-60 minutes": 90,
+        "1-4 hours": 80,
+        "4-24 hours": 70,
+        ">24 hours": 60,
+        "Unknown": 20
+      }
+    },
+    "EX-04": {
+      "type": "requirement_definition",
+      "scores": {
+        "Near-zero": 95,
+        "<15 minutes": 90,
+        "15-60 minutes": 80,
+        "1-4 hours": 70,
+        "4-24 hours": 60,
+        ">24 hours": 50,
+        "Unknown": 20
+      }
+    },
+    "EX-05": {
+      "type": "dependency_mapping",
+      "scores": {
+        "Yes, current and validated": 95,
+        "Partially": 60,
+        "Documented but stale": 45,
+        "No": 20,
+        "Unknown": 20
+      }
+    },
+    "EX-06": {
+      "type": "recovery_capability",
+      "scores": {
+        "Yes, proven by testing": 95,
+        "Likely, but not recently tested": 60,
+        "No": 20,
+        "Unknown": 20
+      }
+    },
+    "EX-07": {
+      "type": "recovery_testing",
+      "scores": {
+        "Within 3 months": 95,
+        "3-12 months ago": 85,
+        "1-2 years ago": 60,
+        ">2 years ago": 35,
+        "Never": 15,
+        "Unknown": 20
+      }
+    },
+    "EX-08": {
+      "type": "cyber_recovery",
+      "scores": {
+        "No, recovery is isolated": 95,
+        "Potentially": 55,
+        "Yes": 25,
+        "Unknown": 20
+      }
+    },
+    "EX-09": {
+      "type": "backup_integrity",
+      "scores": {
+        "Yes, tested": 95,
+        "Immutable but restore not proven": 60,
+        "Recoverable but not immutable": 55,
+        "No": 20,
+        "Unknown": 20
+      }
+    },
+    "EX-10": {
+      "type": "third_party_dependency",
+      "scores": {
+        "No": 95,
+        "Yes, but alternatives exist": 70,
+        "Yes, with no viable alternative": 35,
+        "Unknown": 20
+      }
+    },
+    "EX-11": {
+      "type": "concentration_risk",
+      "scores": {
+        "No material concentration": 95,
+        "Moderate concentration": 65,
+        "High concentration": 30,
+        "Unknown": 20
+      }
+    },
+    "EX-12": {
+      "type": "single_point_of_failure",
+      "scores": {
+        "No known SPOFs": 95,
+        "Some non-critical SPOFs": 70,
+        "Critical SPOFs exist": 25,
+        "Unknown": 20
+      }
+    },
+    "EX-13": {
+      "type": "people_continuity",
+      "scores": {
+        "Yes, proven": 95,
+        "Yes, documented": 80,
+        "Partially": 55,
+        "No": 25,
+        "Unknown": 20
+      }
+    },
+    "EX-14": {
+      "type": "crisis_management",
+      "scores": {
+        "Yes, exercised": 95,
+        "Yes, documented": 80,
+        "Partially": 55,
+        "No": 25
+      }
+    },
+    "EX-15": {
+      "type": "governance",
+      "scores": {
+        "Yes, with metrics and actions": 95,
+        "Yes, periodic review": 80,
+        "Informal": 55,
+        "No": 25
+      }
+    },
+    "EX-16": {
+      "type": "scenario_testing",
+      "scores": {
+        "Yes, regularly": 95,
+        "Yes, occasionally": 75,
+        "Technical tests only": 50,
+        "No": 25,
+        "Unknown": 20
+      }
+    },
+    "EX-17": {
+      "type": "third_party_exit",
+      "scores": {
+        "Yes, tested": 95,
+        "Documented only": 70,
+        "Contractual only": 50,
+        "No": 25,
+        "Unknown": 20
+      }
+    },
+    "EX-18": {
+      "type": "environment_presence",
+      "default": 80
+    },
+    "EX-19": {
+      "type": "identity_recovery",
+      "scores": {
+        "Yes, isolated alternate path exists": 95,
+        "Partially": 55,
+        "No": 20,
+        "Unknown": 20
+      }
+    },
+    "EX-20": {
+      "type": "recovery_evidence_confidence",
+      "scores": {
+        "High — independently validated": 100,
+        "High — tested": 95,
+        "Medium — documented but not fully tested": 70,
+        "Low": 40,
+        "Unknown": 20
+      }
+    }
   }
 }
