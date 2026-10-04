@@ -24,16 +24,17 @@ export interface SovereignIqEvaluation {
   };
   maturity: {
     score: number;
-    percentile: number;
+    /** Not computed yet: peer percentiles need a sourced benchmark dataset (Phase 3). */
+    percentile?: number;
     stage: any;
   };
   fin: {
+    turnover: number;
+    /** Largest single statutory maximum among in-scope regimes (0 when none is quantified). */
     statutoryCeiling: number;
     downtimeRisk24h: number;
-    advisoryCost: number;
-    hedgeRatio: string;
-    regimesContributing: string[];
-    turnover: number;
+    remediationEst: number;
+    components: { law: string; amt: number }[];
   };
   heatmap: Record<string, string[]>;
   anomalies: any[];
@@ -51,9 +52,9 @@ let REGIMES: any[] = defaultKb.regimes;
 let MATURITY_STAGES: any[] = defaultKb.maturityStages;
 let PILLARS: any[] = defaultKb.pillars;
 
-function computeFacts(answers) {
+function computeFacts(answers: Record<string, any>) {
   var F = {};
-  QUESTIONS.forEach(function(q) {
+  QUESTIONS.forEach(function(q: any) {
     var a = answers[q.id];
     if (a === undefined || a === null) return;
     if (q.type === "single" || q.type === "scen") {
@@ -61,7 +62,7 @@ function computeFacts(answers) {
       if (opt && opt.fact) Object.assign(F, opt.fact);
     } else if (q.type === "multi") {
       if (Array.isArray(a)) {
-        a.forEach(function(idx) {
+        a.forEach(function(idx: any) {
           var opt = q.opts[idx];
           if (opt && opt.fact) Object.assign(F, opt.fact);
         });
@@ -71,10 +72,10 @@ function computeFacts(answers) {
   return F;
 }
 
-function evaluateRegimes(facts) {
-  var results = [];
+function evaluateRegimes(facts: Record<string, any>) {
+  var results: any[] = [];
 
-  REGIMES.forEach(function(reg) {
+  REGIMES.forEach(function(reg: any) {
     var inScope = false;
     var grade = "not_applicable";
     var rationale = "";
@@ -240,45 +241,45 @@ function evaluateRegimes(facts) {
   return results;
 }
 
-function computePillarScores(answers, facts) {
+function computePillarScores(answers: any, facts: any) {
   var scores = { P1: 60, P2: 50, P3: 55, P4: 45, P5: 50 }; // default baseline
 
   // Helper to extract score from question options
-  function getScore(qid) {
+  function getScore(qid: any) {
     var a = answers[qid];
     if (a === undefined || a === null) return null;
-    var q = QUESTIONS.find(function(item) { return item.id === qid; });
+    var q = QUESTIONS.find(function(item: any) { return item.id === qid; });
     if (!q || !q.opts || !q.opts[a]) return null;
     return typeof q.opts[a].score === "number" ? q.opts[a].score : null;
   }
 
   // P1: Data Sovereignty & Localization
-  var p1Scores = [getScore("Q3.2"), getScore("Q3.3")].filter(function(s) { return s !== null; });
+  var p1Scores = [getScore("Q3.2"), getScore("Q3.3")].filter(function(s: any) { return s !== null; });
   if (facts.data_national_sec) p1Scores.push(30);
   if (facts.hosting_domestic) p1Scores.push(90);
   if (p1Scores.length) scores.P1 = Math.round(p1Scores.reduce(function(a,b){return a+b;},0) / p1Scores.length);
 
   // P2: Jurisdictional Reach & Extraterritoriality
-  var p2Scores = [getScore("Q4.1"), getScore("Q4.2"), getScore("Q4.3")].filter(function(s) { return s !== null; });
+  var p2Scores = [getScore("Q4.1"), getScore("Q4.2"), getScore("Q4.3")].filter(function(s: any) { return s !== null; });
   if (facts.uses_us_hq && !facts.crypto_hyok) p2Scores.push(25);
   if (facts.tia_complete) p2Scores.push(95);
   if (p2Scores.length) scores.P2 = Math.round(p2Scores.reduce(function(a,b){return a+b;},0) / p2Scores.length);
 
   // P3: Operational & Personnel Sovereignty
-  var p3Scores = [getScore("Q5.1"), getScore("Q5.2"), getScore("Q5.3")].filter(function(s) { return s !== null; });
+  var p3Scores = [getScore("Q5.1"), getScore("Q5.2"), getScore("Q5.3")].filter(function(s: any) { return s !== null; });
   if (facts.ops_sovereign_support) p3Scores.push(95);
   if (facts.oob_connected) p3Scores.push(35);
   if (p3Scores.length) scores.P3 = Math.round(p3Scores.reduce(function(a,b){return a+b;},0) / p3Scores.length);
 
   // P4: Cryptographic & Technical Autonomy
-  var p4Scores = [getScore("Q6.1"), getScore("Q6.2"), getScore("Q6.3")].filter(function(s) { return s !== null; });
+  var p4Scores = [getScore("Q6.1"), getScore("Q6.2"), getScore("Q6.3")].filter(function(s: any) { return s !== null; });
   if (facts.crypto_hyok) p4Scores.push(100);
   if (facts.conf_compute_prod) p4Scores.push(95);
   if (facts.crypto_provider_kms) p4Scores.push(20);
   if (p4Scores.length) scores.P4 = Math.round(p4Scores.reduce(function(a,b){return a+b;},0) / p4Scores.length);
 
   // P5: Software, Vendor & Supply Chain Sovereignty
-  var p5Scores = [getScore("Q7.1"), getScore("Q7.2"), getScore("Q7.3")].filter(function(s) { return s !== null; });
+  var p5Scores = [getScore("Q7.1"), getScore("Q7.2"), getScore("Q7.3")].filter(function(s: any) { return s !== null; });
   if (facts.exit_under_3m) p5Scores.push(95);
   if (facts.exit_impossible) p5Scores.push(15);
   if (facts.hw_audited) p5Scores.push(90);
@@ -287,7 +288,7 @@ function computePillarScores(answers, facts) {
   return scores;
 }
 
-function computeOverallMaturity(pillarScores) {
+function computeOverallMaturity(pillarScores: any) {
   var total = (pillarScores.P1 * 0.25) +
               (pillarScores.P2 * 0.25) +
               (pillarScores.P3 * 0.15) +
@@ -306,22 +307,22 @@ function computeOverallMaturity(pillarScores) {
   return { score: overall, stage: stage };
 }
 
-function calculateFinancialExposure(answers, inScopeRegimes, facts) {
+function calculateFinancialExposure(answers: any, inScopeRegimes: any, facts: any) {
   // Enterprise turnover sizing
   var revOpt = answers["Q1.3"];
   var turnover = 3000000000; // default $3B
-  if (revOpt !== undefined && QUESTIONS.find(function(q){return q.id==="Q1.3";})) {
-    var qObj = QUESTIONS.find(function(q){return q.id==="Q1.3";});
+  if (revOpt !== undefined && QUESTIONS.find(function(q: any){return q.id==="Q1.3";})) {
+    var qObj = QUESTIONS.find(function(q: any){return q.id==="Q1.3";});
     if (qObj.opts[revOpt] && qObj.opts[revOpt].val) turnover = qObj.opts[revOpt].val;
   }
 
   // Statutory fines
   var maxSingleFine = 0;
-  var hasGDPR = inScopeRegimes.some(function(r){ return r.regime.id === "EU_GDPR" || r.regime.id === "UK_GDPR"; });
-  var hasAIAct = inScopeRegimes.some(function(r){ return r.regime.id === "EU_AI_ACT"; });
-  var hasDORA = inScopeRegimes.some(function(r){ return r.regime.id === "DORA"; });
-  var hasKSA = inScopeRegimes.some(function(r){ return r.regime.id === "KSA_PDPL"; });
-  var hasAU = inScopeRegimes.some(function(r){ return r.regime.id === "AU_PRIVACY_SOCI"; });
+  var hasGDPR = inScopeRegimes.some(function(r: any){ return r.regime.id === "EU_GDPR" || r.regime.id === "UK_GDPR"; });
+  var hasAIAct = inScopeRegimes.some(function(r: any){ return r.regime.id === "EU_AI_ACT"; });
+  var hasDORA = inScopeRegimes.some(function(r: any){ return r.regime.id === "DORA"; });
+  var hasKSA = inScopeRegimes.some(function(r: any){ return r.regime.id === "KSA_PDPL"; });
+  var hasAU = inScopeRegimes.some(function(r: any){ return r.regime.id === "AU_PRIVACY_SOCI"; });
 
   var fineComponents = [];
   if (hasAIAct && facts.ai_high_risk) {
@@ -342,7 +343,7 @@ function calculateFinancialExposure(answers, inScopeRegimes, facts) {
     fineComponents.push({ law: "AU Privacy Act / APRA (Max penalty)", amt: 33000000 }); // AUD 50M
   }
   // Largest single statutory maximum among in-scope regimes (0 when none is quantified).
-  fineComponents.forEach(function(c) { maxSingleFine = Math.max(maxSingleFine, c.amt); });
+  fineComponents.forEach(function(c: any) { maxSingleFine = Math.max(maxSingleFine, c.amt); });
 
   // Operational downtime risk: estimate $250k / hr for enterprise core outage
   var hourlyDowntime = (turnover / (365 * 24)) * 1.5;
@@ -360,18 +361,18 @@ function calculateFinancialExposure(answers, inScopeRegimes, facts) {
   };
 }
 
-function generateStrategicHeatmap(inScopeRegimes, pillarScores) {
+function generateStrategicHeatmap(inScopeRegimes: any, pillarScores: any) {
   // Classifies into 4x4 matrix:
   // Impact: 4 (Catastrophic), 3 (Major), 2 (Moderate), 1 (Minor)
   // Exposure: 4 (Critical Exposure), 3 (High Vulnerability), 2 (Managed), 1 (High Assurance)
-  var cells = {
+  var cells: Record<string, any[]> = {
     "4-4": [], "4-3": [], "4-2": [], "4-1": [],
     "3-4": [], "3-3": [], "3-2": [], "3-1": [],
     "2-4": [], "2-3": [], "2-2": [], "2-1": [],
     "1-4": [], "1-3": [], "1-2": [], "1-1": []
   };
 
-  inScopeRegimes.forEach(function(item) {
+  inScopeRegimes.forEach(function(item: any) {
     var impact = item.regime.impact || 3;
     var exp = 2; // default managed
 
@@ -398,7 +399,7 @@ function generateStrategicHeatmap(inScopeRegimes, pillarScores) {
   return cells;
 }
 
-function generateArchetypes(answers) {
+function generateArchetypes(answers: any) {
   return [
     {
       tag: "Archetype 01",
@@ -435,7 +436,7 @@ function generateArchetypes(answers) {
   ];
 }
 
-function generateLTMOfferings(inScopeRegimes, pillarScores) {
+function generateLTMOfferings(inScopeRegimes: any, pillarScores: any) {
   return [
     {
       title: "DORA & APRA Operational Resilience Accelerator",
@@ -458,7 +459,7 @@ function generateLTMOfferings(inScopeRegimes, pillarScores) {
   ];
 }
 
-function analyzeEstateAnomalies(answers, facts) {
+function analyzeEstateAnomalies(answers: any, facts: any) {
   var anomalies = [];
 
   // 1. The Residency Illusion
@@ -549,8 +550,8 @@ function analyzeEstateAnomalies(answers, facts) {
   return anomalies;
 }
 
-function generateGapTailoredRoadmap(facts, anomalies, answers) {
-  var aIds = anomalies.map(function(a) { return a.id; });
+function generateGapTailoredRoadmap(facts: any, anomalies: any, answers: any) {
+  var aIds = anomalies.map(function(a: any) { return a.id; });
   var hasResidency   = aIds.indexOf("ANOM_RESIDENCY")  >= 0;
   var hasAiReclass   = aIds.indexOf("ANOM_AI_RECLASS") >= 0;
   var hasSaasBind    = aIds.indexOf("ANOM_SAAS_BLIND") >= 0;
