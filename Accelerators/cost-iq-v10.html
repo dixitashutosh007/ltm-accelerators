@@ -158,6 +158,17 @@ function visualSection(entries){
   const heat=entries.map(function(x){return '<div class="heat-cell" style="'+scoreColor(x.score)+'"><div class="heat-score">'+x.score+'</div><div class="heat-name">'+esc(x.name)+'</div></div>'}).join('');
   return '<div class="visual-grid"><div class="chart-card"><div class="eyebrow">SCORE PROFILE</div><h3>Diagnostic score at a glance</h3><div class="chart-wrap"><canvas id="scoreProfile"></canvas></div></div><div class="chart-card"><div class="eyebrow">DIMENSION RADAR</div><h3>Cost & value profile</h3><div class="chart-wrap"><canvas id="costRadar"></canvas></div></div></div><div class="card"><div class="eyebrow">CONCENTRATION HEAT MAP</div><h3>Where management attention is concentrated</h3><div class="heatmap">'+(heat||'<p class="muted">No dimension scores were returned.</p>')+'</div></div><div class="visual-grid"><div class="chart-card"><div class="eyebrow">DIMENSION SCORECARD</div><h3>Relative strength by dimension</h3><div class="chart-wrap"><canvas id="costBars"></canvas></div></div><div class="chart-card"><div class="eyebrow">VALUE AREAS</div><h3>Priority value levers</h3><div class="report-band">'+(entries.slice(0,4).map(function(x){return '<div class="signal"><b>'+esc(x.name)+'</b><span>Score '+x.score+' — '+(x.score<50?'Priority opportunity':x.score<70?'Improvement opportunity':'Relatively healthy')+'</span></div>'}).join(''))+'</div></div></div>';
 }
+function initVisuals(){
+  const dims=scoreEntries(),labels=dims.map(x=>x.name),values=dims.map(x=>x.score),h=assessment.headlines||{};
+  function make(id,type,l,v,title){
+    const el=document.getElementById(id);if(!el||typeof Chart==='undefined')return;
+    const scales=type==='radar'?{r:{min:0,max:100,ticks:{stepSize:25,backdropColor:'transparent'},pointLabels:{font:{size:9}}}}:{y:{min:0,max:100}};
+    new Chart(el,{type:type,data:{labels:l,datasets:[{label:title,data:v,fill:type==='radar',borderWidth:2,pointRadius:3}]},options:{responsive:true,maintainAspectRatio:false,indexAxis:type==='bar'?'y':undefined,scales:scales,plugins:{legend:{display:false}}}});
+  }
+  make('scoreProfile','bar',['Cost IQ','Value IQ','Completeness'],[Number(h.costIQ)||0,Number(h.valueIQ)||0,Number((assessment.evidence||{}).assessmentCompleteness)||0],'Diagnostic score');
+  make('costRadar','radar',labels,values,'Dimension score');
+  make('costBars','bar',labels,values,'Dimension score');
+}
 function preliminary(){
   const h=assessment.headlines||{};const ev=assessment.evidence||{};const dims=scoreEntries();const findings=assessment.findings||[];
   const signals=findings.slice(0,4).map(function(f){return '<div class="signal"><b>'+esc(f.title||f.id||'Finding')+'</b><span>'+esc(f.severity||'Management attention required')+'</span></div>'}).join('');
