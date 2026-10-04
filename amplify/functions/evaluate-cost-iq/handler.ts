@@ -85,7 +85,16 @@ async function callOpenAI(instruction: string, input: string) {
   });
   const data:any = await resp.json();
   if (!resp.ok) throw new Error(data?.error?.message || `OpenAI HTTP ${resp.status}`);
-  return data.output_text || '';
+  const extracted = data?.output_text ||
+    (Array.isArray(data?.output)
+      ? data.output
+          .flatMap((item:any) => Array.isArray(item?.content) ? item.content : [])
+          .filter((item:any) => item?.type === 'output_text' && typeof item?.text === 'string')
+          .map((item:any) => item.text)
+          .join('\n')
+      : '');
+  if (!extracted) throw new Error('OpenAI returned no output text.');
+  return extracted;
 }
 
 function safeJsonText(text: string) {
