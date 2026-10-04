@@ -409,7 +409,7 @@ export function evaluateResilienceIq(a: ResilienceAnswers): ResilienceResult {
     postureScore: requirementsIncomplete ? null : postureScore,
     criticalExposure: requirementsIncomplete ? null : criticalExposure(gaps),
     rating: requirementsIncomplete ? null : rating(postureScore),
-    maturity: requirementsIncomplete ? null : maturity(score),
+    maturity: requirementsIncomplete ? null : maturity(postureScore),
     evidenceConfidence: confidenceLabel,
     domainScores: domains,
     preferredPattern: preferred,
