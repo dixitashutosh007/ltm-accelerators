@@ -67,6 +67,7 @@ function renderReport(){const d=result;document.getElementById('app').innerHTML=
 <div class="stat"><div class="label">Maturity</div><div class="value" style="font-size:20px">${d.maturity?esc(d.maturity.label):'—'}</div></div>
 <div class="stat"><div class="label">Evidence</div><div class="value" style="font-size:17px">${esc(d.evidenceConfidence)}</div></div>
 </div>
+<div class="panel"><div class="section"><h2>Executive Summary</h2><p style="font-size:18px;line-height:1.6">${esc(d.executiveSummary||"")}</p></div></div>
 <div class="panel">
 <div class="section"><h2>Recovery Strategy</h2><p style="font-size:24px;font-weight:800">${esc(d.preferredPattern||'No final strategy yet')}</p><p style="color:var(--muted)">Primary recovery strategy is selected separately from cyber-recovery and supporting controls.</p></div>
 <div class="section"><h2>Domain Scorecard</h2>${Object.entries(d.domainScores||{}).map(([k,v])=>`<div class="row"><b>${k}</b><span style="float:right">${v}/100</span></div>`).join('')}</div>
