@@ -6,6 +6,7 @@ import blueprintEngine from "../../../../../resilience-iq/knowledge/blueprint-en
 import patterns from "../../../../../resilience-iq/knowledge/patterns.json" with { type: "json" };
 import implementationMappings from "../../../../../resilience-iq/knowledge/implementation-mappings.json" with { type: "json" };
 import assessmentModel from "../../../../../resilience-iq/knowledge/assessment-model.json" with { type: "json" };
+import executiveReport from "../../../../../resilience-iq/knowledge/executive-report.json" with { type: "json" };
 
 export const resilienceKnowledge = {
   questionBank,
@@ -15,7 +16,8 @@ export const resilienceKnowledge = {
   blueprintEngine,
   patterns,
   implementationMappings,
-  assessmentModel
+  assessmentModel,
+  executiveReport
 } as const;
 
 export type ResilienceKnowledge = typeof resilienceKnowledge;
