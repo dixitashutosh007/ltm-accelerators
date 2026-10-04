@@ -19,6 +19,34 @@ export interface PatternDecision {
   decisionFactors?: string[];
 }
 
+export interface ResilienceExecutiveReport {
+  assessmentType: "Executive Scan";
+  advisoryStatus: "initial" | "requirements_incomplete";
+  executiveSummary: string;
+  assessmentScope: string;
+  postureScore: number | null;
+  rating: string | null;
+  maturity: { level: number; label: string } | null;
+  evidenceConfidence: string;
+  criticalExposure: "Low" | "Moderate" | "High" | "Severe" | null;
+  topRisks: Array<{ id: string; name: string; severity: string; action: string }>;
+  businessRequirements: {
+    criticalServices: string[];
+    impactTolerance: string;
+    requiredRto: string;
+    requiredRpo: string;
+    recoveryPriority: string;
+  };
+  recoveryStrategy: { preferred: string | null; alternatives: PatternDecision[]; rationale: string; sensitivity: string[] };
+  supportingControls: PatternDecision[];
+  technologyMapping: Record<string, string[]>;
+  evidenceValidation: Array<{ evidence: string; purpose: string }>;
+  targetState: { targetPrinciples: string[]; architectureLayers: string[]; blueprintIds: string[] } | null;
+  roadmap: Array<{ wave: string; window: string; actions: string[] }>;
+  governanceMetrics: string[];
+  decisionPoints: string[];
+}
+
 export interface ResilienceResult {
   status: "ready" | "requirements_incomplete";
   score: number | null;
@@ -46,6 +74,7 @@ export interface ResilienceResult {
   roadmap: Array<{ wave: string; window: string; actions: string[] }>;
   decisionLog: string[];
   executiveSummary: string;
+  executiveReport: ResilienceExecutiveReport;
 }
 
 const rtoMinutes: Record<string, number | null> = {
@@ -435,6 +464,60 @@ export function evaluateResilienceIq(a: ResilienceAnswers): ResilienceResult {
     ? "Resilience assessment requires defined recovery objectives before a final target-state recommendation can be issued."
     : `The assessment indicates a ${rating(postureScore).toLowerCase()} resilience posture with ${criticalExposure(gaps).toLowerCase()} critical exposure. ${preferred ? preferred + " is the preferred primary recovery strategy based on the stated recovery objectives and risk profile." : "A primary recovery strategy remains undefined."}`;
 
+  const topRisks = gaps.slice().sort((x, y) => {
+    const rank: Record<string, number> = { critical: 4, "medium-high": 3, high: 3, medium: 2, low: 1 };
+    return (rank[y.severity.toLowerCase()] ?? 0) - (rank[x.severity.toLowerCase()] ?? 0);
+  }).slice(0, 5);
+
+  const evidenceValidation = evidenceRequests.map(evidence => ({
+    evidence,
+    purpose: evidence.toLowerCase().includes("test") ? "Validate that documented recovery capability achieves the stated business objective." :
+      evidence.toLowerCase().includes("dependency") ? "Validate recovery sequencing, shared dependencies and failure-domain exposure." :
+      evidence.toLowerCase().includes("supplier") ? "Validate third-party resilience commitments, alternatives and exit capability." :
+      evidence.toLowerCase().includes("backup") || evidence.toLowerCase().includes("restore") ? "Validate data recoverability and clean restoration." :
+      "Validate the assessment assumption and supporting control."
+  }));
+
+  const sensitivity = preferred ? [
+    "If measured recovery misses the stated RTO/RPO, reassess the selected " + preferred + " strategy and consider the next higher resilience tier.",
+    "If business impact tolerance or recovery objectives change, rerun the strategy decision.",
+    "If cyber recovery cannot be isolated, strengthen the cyber recovery architecture before relying on production DR.",
+    "If concentration or dependency risks cannot be reduced, reassess multi-region, multi-provider or dependency-aware controls."
+  ] : ["Define and validate business recovery objectives before selecting a final recovery strategy."];
+
+  const executiveReport: ResilienceExecutiveReport = {
+    assessmentType: "Executive Scan",
+    advisoryStatus: requirementsIncomplete || missing.length > 0 ? "requirements_incomplete" : "initial",
+    executiveSummary,
+    assessmentScope: "20-question executive resilience scan covering business continuity, disaster recovery, cyber recovery, operational resilience, third-party resilience and infrastructure resilience.",
+    postureScore: requirementsIncomplete ? null : postureScore,
+    rating: requirementsIncomplete ? null : rating(postureScore),
+    maturity: requirementsIncomplete ? null : maturity(postureScore),
+    evidenceConfidence: confidenceLabel,
+    criticalExposure: requirementsIncomplete ? null : criticalExposure(gaps),
+    topRisks,
+    businessRequirements: {
+      criticalServices: arr(a["EX-01"]),
+      impactTolerance: str(a["EX-02"]) || "Unknown",
+      requiredRto: str(a["EX-03"]) || "Unknown",
+      requiredRpo: str(a["EX-04"]) || "Unknown",
+      recoveryPriority: criticality(a)
+    },
+    recoveryStrategy: {
+      preferred,
+      alternatives: recoveryRanking.slice(1, 3),
+      rationale: preferred ? "The " + preferred + " strategy is selected from recovery objectives first, then adjusted for criticality, cyber risk, dependency risk and concentration." : "No final recovery strategy is issued until recovery objectives are defined.",
+      sensitivity
+    },
+    supportingControls: ranking.filter(x => !/^DR-/.test(x.id)).slice(0, 5),
+    technologyMapping: preferred ? technologyOptions([preferred, ...recoveryRanking.slice(1, 3).map(x => x.id), ...(cyberRisk(a) === "destructive" || cyberRisk(a) === "high" ? ["CYBER-01"] : [])], a) : {},
+    evidenceValidation,
+    targetState: blueprint,
+    roadmap,
+    governanceMetrics: (k.blueprintEngine.section_rules?.governance_and_metrics?.required_metrics ?? []) as string[],
+    decisionPoints: (k.executiveReport.decision_points ?? []) as string[]
+  };
+
   return {
     status: requirementsIncomplete || missing.length > 0 ? "requirements_incomplete" : "ready",
     score: requirementsIncomplete ? null : score,
@@ -457,6 +540,7 @@ export function evaluateResilienceIq(a: ResilienceAnswers): ResilienceResult {
     blueprint,
     roadmap: roadmap(gaps, preferred, cyberRisk(a)),
     executiveSummary,
+    executiveReport,
     decisionLog: [
       "Vendor-neutral strategy is selected before provider implementation mapping.",
       "RTO/RPO are treated as business requirements and are never inferred from technology.",
