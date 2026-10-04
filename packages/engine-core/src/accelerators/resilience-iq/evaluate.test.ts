@@ -45,7 +45,8 @@ if (!result.evidenceRequests.length) throw new Error("Risk-driven assessment sho
 
 const nearZero = evaluateResilienceIq({
   "EX-01": ["Revenue-generating services"],
-  "EX-03": "Near-zero",
+  "EX-02": "<15 minutes",
+  "EX-03": "<15 minutes",
   "EX-04": "Near-zero",
   "EX-05": "Yes, current",
   "EX-06": "Yes, proven by testing",
@@ -68,6 +69,7 @@ if (nearZero.preferredPattern !== "DR-05") throw new Error("Near-zero RTO/RPO sh
 
 const lowCriticality = evaluateResilienceIq({
   "EX-01": ["Internal workforce services"],
+  "EX-02": ">24 hours",
   "EX-03": ">24 hours",
   "EX-04": ">24 hours",
   "EX-05": "Yes, current",
@@ -91,6 +93,7 @@ if (lowCriticality.preferredPattern !== "DR-01") throw new Error("Low-criticalit
 
 const cyberCase = evaluateResilienceIq({
   "EX-01": ["Customer-facing services", "Revenue-generating services"],
+  "EX-02": "1-4 hours",
   "EX-03": "1-4 hours",
   "EX-04": "15-60 minutes",
   "EX-05": "Yes, current",
@@ -117,6 +120,7 @@ if (!cyberCase.mandatoryControls.includes("CYBER-02")) throw new Error("Destruct
 
 const onPremCase = evaluateResilienceIq({
   "EX-01": ["Customer-facing services"],
+  "EX-02": "1-4 hours",
   "EX-03": "1-4 hours",
   "EX-04": "15-60 minutes",
   "EX-05": "Yes, current",
@@ -140,6 +144,7 @@ if (!onPremCase.technologyOptions["DR-03:on_prem"]) throw new Error("On-premises
 
 const cloudConcentration = evaluateResilienceIq({
   "EX-01": ["Customer-facing services", "Revenue-generating services"],
+  "EX-02": "15-60 minutes",
   "EX-03": "15-60 minutes",
   "EX-04": "15-60 minutes",
   "EX-05": "Yes, current",
