@@ -10,11 +10,15 @@ Region: `ap-south-1` · User pool: `ap-south-1_91amN2bz4` · Reports API: `zvnmw
 
 The reports/users service is deployed manually, outside Amplify. Moving it into Amplify IaC is Phase 1.
 
-1. Build the package (or use the committed zip):
+> **Superseded by Phase 1.** Amplify now builds and deploys this service behind the new authenticated
+> API. The preferred path is the Phase 1 cutover (`docs/security/PHASE1_PLATFORM_RUNBOOK.md`). Use the
+> manual steps below only as an emergency patch for the old API.
+
+1. Build the package:
    ```bash
    cd services/reports-service
    npm install && npm test        # 21 auth/authorization tests must pass
-   npm run build                  # produces reports-lambda.zip
+   zip -j reports-lambda.zip index.mjs
    ```
 2. AWS Console → Lambda → open the function behind API `zvnmwxa9sf` (API Gateway → `zvnmwxa9sf` → Integrations shows its name).
 3. **Runtime:** confirm Node.js **20.x or later**. The code uses the built-in `fetch` and `node:crypto` JWK support.
@@ -23,7 +27,7 @@ The reports/users service is deployed manually, outside Amplify. Moving it into 
 
    | Key | Default | Notes |
    |---|---|---|
-   | `SUPER_ADMIN_EMAILS` | `dixitashutosh007@gmail.com` | Comma-separated. Add your LTM corporate admin address; Phase 1 removes the Gmail default |
+   | `SUPER_ADMIN_EMAILS` | *(none; required)* | Comma-separated admin addresses. The code no longer has a built-in admin |
    | `ADMIN_GROUP` | `Admin` | Members of this Cognito group are admins |
    | `ALLOWED_ORIGINS` | `https://main.d1xnevzszm0ehs.amplifyapp.com,https://*.d1xnevzszm0ehs.amplifyapp.com` | Browser origins allowed by CORS |
    | `USER_POOL_ID` / `COGNITO_CLIENT_ID` | current pool and client | Used to verify tokens |

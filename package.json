@@ -15,7 +15,8 @@
     "test:e2e": "playwright test",
     "test": "npm run typecheck && npm run test:engine && npm run test:reports && npm run check:repo",
     "check:repo": "node scripts/check-repo.cjs",
-    "check:backend": "node scripts/check-backend-synth.cjs"
+    "check:backend": "node scripts/check-backend-synth.cjs",
+    "claims:extract": "node scripts/extract-claims.cjs"
   },
   "dependencies": {
     "@aws-sdk/client-cognito-identity-provider": "^3.1146.0",
