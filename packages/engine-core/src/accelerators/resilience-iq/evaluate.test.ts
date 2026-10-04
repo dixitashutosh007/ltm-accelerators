@@ -14,7 +14,7 @@ const result = evaluateResilienceIq({
   "EX-02": "15-60 minutes",
   "EX-03": "15-60 minutes",
   "EX-04": "<15 minutes",
-  "EX-05": "Partially",
+  "EX-05": "No",
   "EX-06": "Likely, but not recently tested",
   "EX-07": ">2 years ago",
   "EX-08": "Potentially",
