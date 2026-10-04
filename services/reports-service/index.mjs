@@ -18,9 +18,9 @@ const USER_POOL_ID = process.env.USER_POOL_ID || 'ap-south-1_91amN2bz4';
 const COGNITO_CLIENT_ID = process.env.COGNITO_CLIENT_ID || '4iiqcsgvsm0b4ngpps94ho4c67';
 const COGNITO_ISSUER = `https://cognito-idp.${COGNITO_REGION}.amazonaws.com/${USER_POOL_ID}`;
 
-// Bootstrap admins: comma-separated emails ("none" = rely on the Cognito admin group only).
+// Bootstrap admins: comma-separated emails, set by amplify/config.ts ("none" or unset = Cognito admin group only).
 // Members of the Cognito ADMIN_GROUP are always admins.
-const SUPER_ADMIN_EMAILS = (process.env.SUPER_ADMIN_EMAILS || 'dixitashutosh007@gmail.com')
+const SUPER_ADMIN_EMAILS = (process.env.SUPER_ADMIN_EMAILS || '')
   .split(',').map(e => e.trim().toLowerCase()).filter(e => e && e !== 'none');
 const ADMIN_GROUP = process.env.ADMIN_GROUP || 'Admin';
 

@@ -197,11 +197,7 @@ const PRELOADED_KBS = {
 };
 
 /* ---------- Cognito RBAC Config (ap-south-1) ---------- */
-const COGNITO_CONFIG = {
-  region: "ap-south-1",
-  userPoolId: "ap-south-1_91amN2bz4",
-  clientId: "4iiqcsgvsm0b4ngpps94ho4c67"
-};
+const COGNITO_CONFIG = (window.LTM_CONFIG && window.LTM_CONFIG.cognito) || {};
 
 let AUTH_USER = null;
 
@@ -219,7 +215,7 @@ function renderAuthWidget() {
   const w = document.getElementById("authStatus");
   if (!w) return;
   if (AUTH_USER && AUTH_USER.email) {
-    const isSuper = AUTH_USER.email === "dixitashutosh007@gmail.com";
+    const isSuper = AUTH_USER.role === "super_admin";
     w.innerHTML = '<span class="pill" style="background:#EBF3F5;color:var(--steel);font-weight:700;padding:4px 8px;font-size:11px">'
       + (isSuper ? '👑 Super Admin: ' : '👤 Consultant: ') + esc(AUTH_USER.email) + '</span>'
       + '<button class="btn ghost sm" onclick="logout()" style="margin-left:6px;padding:3px 8px;font-size:11px">Sign Out</button>';
@@ -255,41 +251,21 @@ async function handleCognitoLogin() {
   errDiv.style.display = "none";
 
   try {
-    const res = await fetch("https://cognito-idp." + COGNITO_CONFIG.region + ".amazonaws.com/", {
-      method: "POST",
-      headers: {
-        "X-Amz-Target": "AWSCognitoIdentityProviderService.InitiateAuth",
-        "Content-Type": "application/x-amz-json-1.1"
-      },
-      body: JSON.stringify({
-        AuthFlow: "USER_PASSWORD_AUTH",
-        ClientId: COGNITO_CONFIG.clientId,
-        AuthParameters: {
-          USERNAME: email,
-          PASSWORD: password
-        }
-      })
-    });
-
-    const data = await res.json();
-    if (data.AuthenticationResult) {
-      const token = data.AuthenticationResult.IdToken;
-      const payload = JSON.parse(atob(token.split('.')[1]));
-      AUTH_USER = {
-        email: payload.email || email,
-        sub: payload.sub,
-        token: token
-      };
-      sessionStorage.setItem("ltm_auth_user", JSON.stringify(AUTH_USER));
-      closeLoginModal();
-      renderAuthWidget();
-      toast("Welcome " + AUTH_USER.email + " (Signed In)");
-    } else {
-      errDiv.textContent = data.message || "Invalid email or password.";
-      errDiv.style.display = "block";
-    }
+    // Shared client: stores the ID + refresh token; role/permissions come from the server.
+    const session = await LTM_API.signIn(email, password);
+    try {
+      const meRes = await LTM_API.fetch("/api/me");
+      if (meRes.ok) {
+        const me = await meRes.json();
+        if (me.ok) { session.role = me.role; session.permissions = me.permissions; LTM_API.writeSession(session); }
+      }
+    } catch (e) { console.warn("Could not load permissions:", e.message); }
+    AUTH_USER = session;
+    closeLoginModal();
+    renderAuthWidget();
+    toast("Welcome " + AUTH_USER.email + " (Signed In)");
   } catch(err) {
-    errDiv.textContent = "Authentication error: " + err.message;
+    errDiv.textContent = err.message || "Invalid email or password.";
     errDiv.style.display = "block";
   } finally {
     btn.disabled = false;
@@ -299,7 +275,7 @@ async function handleCognitoLogin() {
 
 function logout() {
   AUTH_USER = null;
-  sessionStorage.removeItem("ltm_auth_user");
+  LTM_API.signOut();
   renderAuthWidget();
   toast("Signed out");
 }

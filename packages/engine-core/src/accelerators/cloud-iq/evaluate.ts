@@ -533,7 +533,9 @@ export function evaluateCloudIq(
   const q02 = KB.questions.find((x: any) => x.id === 'Q0.2');
   const industryKey =
     q02 && q02.opts && q02.opts[A['Q0.2'] || 0] ? q02.opts[A['Q0.2'] || 0][0] : 'Other';
-  const peer = KB.benchmarks[industryKey] || 3.1;
+  // Benchmarks are objects ({ overall, D1..D8, note }); compare against the overall median.
+  const peerBenchmark = KB.benchmarks[industryKey];
+  const peer = typeof peerBenchmark?.overall === 'number' ? peerBenchmark.overall : 3.1;
   const peerDelta = overall - peer;
 
   // 9. Generate Dynamic Consulting Probes
