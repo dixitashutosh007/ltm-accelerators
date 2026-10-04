@@ -216,6 +216,13 @@ function maturity(score: number) {
   return { level, label: labels[level] };
 }
 
+function currentCapability(a: ResilienceAnswers) {
+  const currentRto = rtoMinutes[str(a["AF-DR-01"])] ?? null;
+  const currentRpo = rpoMinutes[str(a["AF-DR-02"])] ?? null;
+  const recoveryTested = str(a["EX-06"]) === "Yes, proven by testing" || str(a["EX-20"]) === "High — tested" || str(a["EX-20"]) === "High — independently validated";
+  return { currentRto, currentRpo, recoveryTested };
+}
+
 function gapRegister(a: ResilienceAnswers, flags: Set<string>, score: number) {
   const gaps: Array<{ id: string; name: string; severity: string; action: string }> = [];
   const add = (id: string) => {
@@ -230,7 +237,10 @@ function gapRegister(a: ResilienceAnswers, flags: Set<string>, score: number) {
   if (flags.has("identity_recovery_gap")) add("G-06");
   if (flags.has("dependency_mapping_gap") || ["No", "Documented but stale"].includes(str(a["EX-05"]))) add("G-07");
   if (str(a["EX-10"]) === "Yes, with no viable alternative" || flags.has("concentration_risk")) add("G-08");
+  const capability = currentCapability(a);
   if (str(a["EX-06"]) === "No" || str(a["EX-20"]) === "Low") add("G-09");
+  if (capability.currentRto !== null && rtoMinutes[str(a["EX-03"])] !== null && capability.currentRto > (rtoMinutes[str(a["EX-03"])] as number)) add("G-02");
+  if (capability.currentRpo !== null && rpoMinutes[str(a["EX-04"])] !== null && capability.currentRpo > (rpoMinutes[str(a["EX-04"])] as number)) add("G-02");
   if (["No", "Technical tests only", "Unknown"].includes(str(a["EX-16"]))) add("G-10");
   if (score < 60 && gaps.length === 0) add("G-02");
   return gaps;
@@ -311,6 +321,7 @@ export function evaluateResilienceIq(a: ResilienceAnswers): ResilienceResult {
   if (branch.flags.has("recovery_capability_gap")) score -= 8;
   score = Math.max(0, Math.min(100, score));
 
+  const capability = currentCapability(a);
   const gaps = gapRegister(a, branch.flags, score);
   const eliminated = new Set<string>(branch.eliminate);
   if (rto !== null && rto < 60) eliminated.add("DR-01");
