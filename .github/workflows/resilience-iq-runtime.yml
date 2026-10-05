@@ -41,5 +41,6 @@ jobs:
       - run: npm ci
       - run: npm run validate:resilience-bank
       - run: npm run validate:resilience-deployment
+      - run: npm run validate:resilience-persistence
       - run: npm run test:resilience
       - run: npm run test:resilience-api
