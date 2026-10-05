@@ -22,7 +22,8 @@ html,body{background:var(--bg)!important;color:var(--ink)!important;font-family:
 <div id="app"></div>
 </div>
 <script>
-const API=(window.RESILIENCE_IQ_API||'')+'/api/evaluate/resilience-iq';
+const API_BASE=(window.RESILIENCE_IQ_API||'').replace(/\/$/,'');
+const API=API_BASE+'/api/evaluate/resilience-iq';
 let questions=[
 {id:'EX-01',t:'Which business services are most critical to the enterprise?',type:'rank',o:['Customer-facing services','Revenue-generating services','Regulatory/financial reporting','Workforce-critical services','Supply-chain/operations services','Other']},
 {id:'EX-02',t:'For the most critical service, how long can the business tolerate material disruption before impact becomes unacceptable?',type:'slider',o:['<15 minutes','15-60 minutes','1-4 hours','4-24 hours','>24 hours','Unknown']},
@@ -77,8 +78,11 @@ function next(){const q=questions[idx];if((q.type==='number'||q.type==='text')&&
 async function evaluate(){
  document.getElementById('app').innerHTML='<div class="panel" style="text-align:center;padding:70px"><h2>Running Resilience IQ...</h2><p style="color:var(--muted)">Applying decision branches, evidence confidence, hard constraints, pattern ranking and blueprint logic.</p></div>';
  try{
+  if(!API_BASE)throw new Error('Resilience IQ API is not configured. Refresh the application or contact the platform administrator.');
   const res=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({answers:mapAnswers()})});
-  const j=await res.json();if(!j.ok)throw new Error(j.error||'Evaluation failed');result=j.data;
+  let j;
+  try{j=await res.json();}catch{throw new Error('The evaluation service returned an invalid response.');}
+  if(!res.ok||!j.ok)throw new Error(j.error||j.message||('Evaluation failed (HTTP '+res.status+').'));result=j.data;
   if(result.status==='requirements_incomplete' && Array.isArray(result.nextQuestions) && result.nextQuestions.length){
     await loadAdvisoryQuestions(result.nextQuestions);
     return;
