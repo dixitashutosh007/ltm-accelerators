@@ -81,14 +81,14 @@ export const handler = async (event: APIGatewayProxyEventV2): Promise<APIGateway
       return response(400, { ok: false, error: 'evidenceLocation must be a string.', requestId }, requestId);
     }
 
-    return response(200, {
-      ok: true,
+    return response(501, {
+      ok: false,
+      error: 'evidence_persistence_not_configured',
+      message: 'Evidence lifecycle validation succeeded, but persistence is not configured.',
       assessmentId,
       evidenceId,
       fromStatus,
       toStatus,
-      validationOutcome: validationOutcome || null,
-      evidenceLocation: evidenceLocation || null,
       requestId
     }, requestId);
   } catch (error) {
