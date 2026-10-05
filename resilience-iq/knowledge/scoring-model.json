@@ -319,5 +319,80 @@
         "Unknown": 20
       }
     }
+  },
+  "advisory_adjustments": {
+    "recovery_capability_gap": {
+      "domains": {
+        "DR": -12
+      },
+      "overall": -8
+    },
+    "recovery_automation_gap": {
+      "domains": {
+        "DR": -5,
+        "INFRA": -5
+      },
+      "overall": -3
+    },
+    "backup_resilience_gap": {
+      "domains": {
+        "DR": -6,
+        "CYBER": -8
+      },
+      "overall": -5
+    },
+    "cyber_recovery_gap": {
+      "domains": {
+        "CYBER": -15
+      },
+      "overall": -8
+    },
+    "concentration_risk": {
+      "domains": {
+        "TP": -8,
+        "INFRA": -8
+      },
+      "overall": -5
+    },
+    "third_party_exit_gap": {
+      "domains": {
+        "TP": -12
+      },
+      "overall": -5
+    },
+    "low_test_evidence": {
+      "domains": {
+        "DR": -5,
+        "CYBER": -5,
+        "OPS": -5
+      },
+      "overall": -4
+    },
+    "people_continuity_gap": {
+      "domains": {
+        "BCP": -10
+      },
+      "overall": -4
+    },
+    "crisis_management_gap": {
+      "domains": {
+        "BCP": -8,
+        "OPS": -5
+      },
+      "overall": -3
+    },
+    "governance_gap": {
+      "domains": {
+        "OPS": -8
+      },
+      "overall": -3
+    }
+  },
+  "advisory_adjustment_rules": {
+    "purpose": "Apply evidence-aware advisory findings to the executive posture without pretending advisory answers are equivalent to the governed executive question score.",
+    "max_domain_penalty": 20,
+    "max_overall_penalty": 20,
+    "method": "sum_matching_flag_adjustments_then_cap",
+    "rationale": "Advisory findings are diagnostic refinements. They adjust posture through explicit risk signals while executive question scoring remains governed by question_scoring."
   }
 }
