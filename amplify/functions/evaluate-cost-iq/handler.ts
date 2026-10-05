@@ -58,7 +58,10 @@ export const handler = async (event: APIGatewayProxyEventV2): Promise<APIGateway
     });
     return response(200, result, id);
   } catch (error) {
-    console.error('[EvaluateCostIq] Request failed', { requestId: id });
+    const errorDetails = error instanceof Error
+      ? { name: error.name, message: error.message }
+      : { name: 'UnknownError', message: String(error) };
+    console.error('[EvaluateCostIq] Request failed', { requestId: id, error: errorDetails });
     return response(500, {
       error: 'internal_evaluation_error',
       message: 'An internal error occurred while processing the Cost IQ request.',
