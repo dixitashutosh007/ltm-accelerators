@@ -485,7 +485,7 @@ function gapRegister(a: ResilienceAnswers, flags: Set<string>, score: number) {
   if (flags.has("recovery_capability_gap") || ["Never", ">2 years ago", "Unknown"].includes(str(a["EX-07"]))) add("G-02");
   if (flags.has("backup_resilience_gap")) add("G-03");
   if (flags.has("concentration_risk") || str(a["EX-12"]) === "Critical SPOFs exist") add("G-04");
-  if (["Yes", "Potentially"].includes(str(a["EX-08"]))) add("G-05");
+  if (["Yes", "Potentially"].includes(str(a["EX-08"])) || flags.has("cyber_recovery_gap")) add("G-05");
   if (flags.has("identity_recovery_gap")) add("G-06");
   if (flags.has("dependency_mapping_gap") || ["No", "Documented but stale"].includes(str(normalizedScoringValue("EX-05", a["EX-05"])))) add("G-07");
   if (str(a["EX-10"]) === "Yes, with no viable alternative" || flags.has("concentration_risk")) add("G-08");
