@@ -13,7 +13,7 @@ assert.equal(metadata.baseline.questions, 117);
 assert.equal(metadata.baseline.dimensions, 16);
 assert.equal(metadata.baseline.findings, 20);
 assert.equal(metadata.baseline.recommendations, 10);
-assert.equal(metadata.baseline.rules, 0);
+assert.equal(metadata.baseline.rules, 38);
 assert.equal(metadata.finops.version, '7.1.0');
 assert.equal(metadata.finops.capabilities, 22);
 assert.equal(metadata.finops.domains, 4);
