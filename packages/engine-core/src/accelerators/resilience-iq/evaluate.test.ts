@@ -339,6 +339,7 @@ if (advisoryLifecycle.executiveReport.targetState !== advisoryLifecycle.blueprin
 if (advisoryLifecycle.executiveReport.recommendationConfidence.level !== advisoryLifecycle.recommendationConfidence.level) throw new Error("Executive report recommendation confidence must match runtime");
 if (advisoryLifecycle.executiveReport.evidenceRegister.length !== advisoryLifecycle.evidenceRegister.length) throw new Error("Executive report evidence register must match runtime evidence register");
 if (advisoryLifecycle.evidenceRegister.some(x => !x.id || !x.type || !x.validationCriteria?.length)) throw new Error("Evidence register items must include typed validation criteria");
+if (new Set(advisoryLifecycle.evidenceRegister.map(x => x.id)).size !== advisoryLifecycle.evidenceRegister.length) throw new Error("Evidence register IDs must be unique");
 if (advisoryLifecycle.executiveReport.roadmap.length !== advisoryLifecycle.roadmap.length) throw new Error("Executive report roadmap must match runtime roadmap");
 if (advisoryLifecycle.executiveReport.recoveryStrategy.alternatives.map(x => x.id).join(",") !== advisoryLifecycle.alternatives.map(x => x.id).join(",")) throw new Error("Executive report alternatives must match runtime alternatives");
 
