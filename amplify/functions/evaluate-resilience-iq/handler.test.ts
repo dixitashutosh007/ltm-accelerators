@@ -48,6 +48,16 @@ const oversized = await handler(event({
 }));
 if (oversized.statusCode !== 400) throw new Error("Oversized text should return 400");
 
+const nullEnvelope = await handler(event(null));
+if (nullEnvelope.statusCode !== 400 || !String(json(nullEnvelope).error).includes("JSON object")) {
+  throw new Error("Null request envelope should return 400");
+}
+
+const arrayEnvelope = await handler(event([]));
+if (arrayEnvelope.statusCode !== 400 || !String(json(arrayEnvelope).error).includes("JSON object")) {
+  throw new Error("Array request envelope should return 400");
+}
+
 const malformed = await handler({
   requestContext: { http: { method: "POST" } },
   body: "{not-json}",
