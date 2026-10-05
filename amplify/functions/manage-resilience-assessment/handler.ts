@@ -107,7 +107,7 @@ function parseBody(event: APIGatewayProxyEventV2): any {
   return JSON.parse(raw);
 }
 
-function assertAssessmentAccess(assessment: Assessment, claims: Record<string, unknown>, groups: string[]): void {
+export function assertAssessmentAccess(assessment: Assessment, claims: Record<string, unknown>, groups: string[]): void {
   if (groups.includes('Admin')) return;
   const identity = String(claims.email ?? claims['cognito:username'] ?? claims.username ?? '').toLowerCase();
   if (!identity || assessment.respondentEmail.toLowerCase() !== identity) {
