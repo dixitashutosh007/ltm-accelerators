@@ -42,6 +42,11 @@ for (const [id, meta] of Object.entries(scoring.question_scoring || {})) {
 }
 for (const id of tree.entry_sequence || []) if (!byId.has(id)) errors.push('Decision tree entry_sequence references unknown question: ' + id);
 for (const rule of tree.branching_rules || []) {
+  if (!rule.id) errors.push('Branching rule missing id');
+  if (!rule.when || typeof rule.when !== 'object') errors.push((rule.id || '?') + ': when must be an object');
+  if (!rule.then || typeof rule.then !== 'object') errors.push((rule.id || '?') + ': then must be an object');
+  if (rule.when?.question && !rule.when?.condition) errors.push(rule.id + ': question-based rule needs when.condition');
+  if (rule.when?.multiple && (!Array.isArray(rule.when.multiple) || !rule.when.multiple.length)) errors.push(rule.id + ': when.multiple must be a non-empty array');
   const qid = rule.when?.question;
   if (qid && !byId.has(qid)) errors.push(rule.id + ': when.question references unknown question ' + qid);
   for (const id of rule.then?.add_questions || []) if (!byId.has(id)) errors.push(rule.id + ': add_questions references unknown question ' + id);
