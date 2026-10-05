@@ -332,6 +332,21 @@ if (advisoryLifecycle.status !== "ready") throw new Error("Completing triggered 
 if (!advisoryLifecycle.preferredPattern) throw new Error("Completed advisory lifecycle should produce a preferred recovery strategy");
 if (!advisoryLifecycle.blueprint) throw new Error("Completed advisory lifecycle should produce a target-state blueprint");
 
+if (advisoryLifecycle.executiveReport.postureScore !== advisoryLifecycle.postureScore) throw new Error("Executive report posture score must match runtime posture score");
+if (advisoryLifecycle.executiveReport.preferredPattern !== undefined && advisoryLifecycle.executiveReport.recoveryStrategy.preferred !== advisoryLifecycle.preferredPattern) throw new Error("Executive report preferred strategy must match runtime");
+if (advisoryLifecycle.executiveReport.recoveryStrategy.preferred !== advisoryLifecycle.preferredPattern) throw new Error("Recovery strategy report must match runtime preferred pattern");
+if (advisoryLifecycle.executiveReport.targetState !== advisoryLifecycle.blueprint) throw new Error("Executive report target state must match runtime blueprint");
+if (advisoryLifecycle.executiveReport.recommendationConfidence.level !== advisoryLifecycle.recommendationConfidence.level) throw new Error("Executive report recommendation confidence must match runtime");
+if (advisoryLifecycle.executiveReport.evidenceRegister.length !== advisoryLifecycle.evidenceRegister.length) throw new Error("Executive report evidence register must match runtime evidence register");
+if (advisoryLifecycle.executiveReport.roadmap.length !== advisoryLifecycle.roadmap.length) throw new Error("Executive report roadmap must match runtime roadmap");
+if (advisoryLifecycle.executiveReport.recoveryStrategy.alternatives.map(x => x.id).join(",") !== advisoryLifecycle.alternatives.map(x => x.id).join(",")) throw new Error("Executive report alternatives must match runtime alternatives");
+
+if (advisoryGateCase.executiveReport.recoveryStrategy.preferred !== null) throw new Error("Blocked assessment report must not expose a recovery strategy");
+if (advisoryGateCase.executiveReport.targetState !== null) throw new Error("Blocked assessment report must not expose target state");
+if (advisoryGateCase.executiveReport.advisoryStatus !== "requirements_incomplete") throw new Error("Blocked assessment report must expose incomplete advisory status");
+if (advisoryGateCase.executiveReport.recommendationConfidence.level !== "Blocked") throw new Error("Blocked assessment must expose blocked recommendation confidence");
+
+
 
 console.log("Resilience IQ knowledge-driven runtime tests passed");
 
