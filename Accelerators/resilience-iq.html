@@ -6,7 +6,7 @@
 <title>Resilience IQ | LTM Advisory</title>
 <style>
 :root{--bg:#08111f;--panel:#101b2d;--line:#26364e;--text:#eef4fb;--muted:#9eafc5;--accent:#55d6be;--warn:#f6c85f;--danger:#ff7b72}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:15px Inter,Arial,sans-serif}header{padding:20px 6%;border-bottom:1px solid var(--line);display:flex;justify-content:space-between}.brand{font-weight:800;letter-spacing:.08em}.badge{color:var(--accent);font-size:12px}.studio-link{font:600 10px var(--font-m);letter-spacing:.08em;color:var(--ink3);text-decoration:none;border:1px solid var(--line);padding:7px 9px;border-radius:5px}.studio-link:hover{color:var(--red);border-color:var(--red)}.wrap{max-width:1050px;margin:0 auto;padding:40px 24px}.hero h1{font-size:42px;margin:0 0 8px}.hero p{color:var(--muted);max-width:760px;line-height:1.6}.panel{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:28px;margin-top:28px}.progress{color:var(--muted);font-size:12px;margin-bottom:28px;display:flex;justify-content:space-between}.q{font-size:24px;font-weight:700;line-height:1.35;margin-bottom:8px}.hint{color:var(--muted);margin-bottom:22px}.options{display:grid;gap:10px}.option{background:#0c1626;border:1px solid var(--line);border-radius:10px;padding:15px;text-align:left;color:var(--text);cursor:pointer}.option.selected{border-color:var(--accent);background:#102a2a}.bar{display:flex;justify-content:space-between;margin-top:26px}.btn{border:0;border-radius:9px;padding:12px 18px;cursor:pointer;font-weight:700}.primary{background:var(--accent);color:#06131b}.secondary{background:#1b2940;color:var(--text)}.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.stat{background:#0b1525;border:1px solid var(--line);padding:18px;border-radius:12px}.label{color:var(--muted);font-size:11px;text-transform:uppercase}.value{font-size:27px;font-weight:800;margin-top:6px}.section{margin-top:30px}.section h2{font-size:20px}.row{padding:14px 0;border-bottom:1px solid var(--line)}.pill{display:inline-block;padding:5px 9px;border-radius:999px;background:#1c2a40;color:var(--muted);font-size:11px}.danger{color:var(--danger)}.good{color:var(--accent)}.mono{font-family:ui-monospace,monospace}@media(max-width:700px){.grid{grid-template-columns:1fr 1fr}.hero h1{font-size:32px}.q{font-size:20px}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:15px Inter,Arial,sans-serif}header{padding:20px 6%;border-bottom:1px solid var(--line);display:flex;justify-content:space-between}.brand{font-weight:800;letter-spacing:.08em}.badge{color:var(--accent);font-size:12px}.studio-link{font:600 10px var(--font-m);letter-spacing:.08em;color:var(--ink3);text-decoration:none;border:1px solid var(--line);padding:7px 9px;border-radius:5px}.studio-link:hover{color:var(--red);border-color:var(--red)}.wrap{max-width:1050px;margin:0 auto;padding:40px 24px}.hero h1{font-size:42px;margin:0 0 8px}.hero p{color:var(--muted);max-width:760px;line-height:1.6}.panel{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:28px;margin-top:28px}.progress{color:var(--muted);font-size:12px;margin-bottom:28px;display:flex;justify-content:space-between}.q{font-size:24px;font-weight:700;line-height:1.35;margin-bottom:8px}.hint{color:var(--muted);margin-bottom:22px}.options{display:grid;gap:10px}.option{background:#0c1626;border:1px solid var(--line);border-radius:10px;padding:15px;text-align:left;color:var(--text);cursor:pointer}.option.selected{border-color:var(--accent);background:#102a2a}.bar{display:flex;justify-content:space-between;margin-top:26px}.btn{border:0;border-radius:9px;padding:12px 18px;cursor:pointer;font-weight:700}.primary{background:var(--accent);color:#06131b}.secondary{background:#1b2940;color:var(--text)}.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.stat{background:#0b1525;border:1px solid var(--line);padding:18px;border-radius:12px}.label{color:var(--muted);font-size:11px;text-transform:uppercase}.value{font-size:27px;font-weight:800;margin-top:6px}.section{margin-top:30px}.section h2{font-size:20px}.row{padding:14px 0;border-bottom:1px solid var(--line)}.pill{display:inline-block;padding:5px 9px;border-radius:999px;background:#1c2a40;color:var(--muted);font-size:11px}.danger{color:var(--danger)}.auth-panel{max-width:520px;margin:50px auto}.auth-panel input{margin:7px 0}.auth-status{font-size:12px;color:var(--ink3);margin-top:8px}.good{color:var(--accent)}.mono{font-family:ui-monospace,monospace}@media(max-width:700px){.grid{grid-template-columns:1fr 1fr}.hero h1{font-size:32px}.q{font-size:20px}}
 
 /* Resilience IQ suite visual system */
 @import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap");
@@ -15,6 +15,18 @@ html,body{background:var(--bg)!important;color:var(--ink)!important;font-family:
 .suitebar{height:62px;display:flex;align-items:center;justify-content:space-between;max-width:1120px;margin:auto;padding:0 24px}.suitebrand{display:flex;align-items:center;gap:11px;font-weight:700}.suite-logo{width:34px;height:34px;border-radius:8px;background:linear-gradient(135deg,var(--red),var(--red2));color:#fff;display:grid;place-items:center;font-weight:800}.suite-sub{font:10px var(--font-m);color:var(--ink3);letter-spacing:.08em;text-transform:uppercase}.wrap{max-width:1120px!important;padding:0 24px!important}.hero{padding:38px 0 10px}.eyebrow{font:11px var(--font-m);letter-spacing:.16em;text-transform:uppercase;color:var(--red);margin-bottom:12px}.hero h1{font-size:40px!important;letter-spacing:-.03em}.hero p{color:var(--ink2)!important;max-width:780px}.panel{background:#fff!important;border:1px solid var(--line)!important;border-radius:8px!important;box-shadow:0 1px 2px rgba(15,23,42,.03);padding:28px!important}.progressbar{height:5px;background:#E2E8F0;border-radius:4px;overflow:hidden;margin:8px 0 25px}.progressbar i{display:block;height:100%;background:var(--red);transition:width .35s ease}.progress{color:var(--ink3)!important}.q{font-size:25px!important;letter-spacing:-.02em;color:var(--ink)}.hint{color:var(--ink3)!important}.options{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.option{background:#fff!important;border:1px solid var(--line)!important;color:var(--ink)!important;border-radius:6px!important;transition:.15s}.option:hover{border-color:#94A3B8!important;transform:translateY(-1px)}.option.selected{border-color:var(--red)!important;background:#FFF4F2!important;box-shadow:0 0 0 1px rgba(255,94,79,.08)}.text-input{width:100%;box-sizing:border-box;border:1px solid var(--line);border-radius:6px;padding:13px;font:15px var(--font-h);color:var(--ink);background:#fff}.text-input:focus{outline:none;border-color:var(--red);box-shadow:0 0 0 2px rgba(255,94,79,.12)}.btn.primary{background:var(--red)!important;color:#fff!important}.btn.secondary{background:#fff!important;color:var(--ink)!important;border:1px solid var(--line)}.interaction-note{font:10px var(--font-m);color:var(--ink3);text-transform:uppercase;letter-spacing:.08em;margin:0 0 12px}.slider-wrap{padding:24px 8px 8px}.slider{width:100%;accent-color:var(--red)}.slider-value{text-align:center;font-size:30px;font-weight:800;margin-bottom:16px}.slider-scale{display:flex;justify-content:space-between;color:var(--ink3);font-size:11px}.matrix{display:grid;grid-template-columns:1.5fr repeat(4,1fr);border:1px solid var(--line);border-radius:6px;overflow:hidden}.matrix>div{padding:11px;border-right:1px solid var(--line);border-bottom:1px solid var(--line);font-size:12px}.matrix .mh{font:10px var(--font-m);text-transform:uppercase;color:var(--ink3);background:#F8FAFC}.matrix button{width:100%;border:0;background:transparent;cursor:pointer;padding:7px;border-radius:4px}.matrix button.selected{background:#FFF0ED;box-shadow:inset 0 0 0 1px var(--red)}.rank-list{display:grid;gap:8px}.rank-item{display:flex;align-items:center;gap:12px;background:#fff;border:1px solid var(--line);border-radius:6px;padding:13px;cursor:grab}.rank-item .handle{font:12px var(--font-m);color:var(--ink3)}.rank-item .ranknum{width:25px;height:25px;border-radius:50%;background:#F1F5F9;display:grid;place-items:center;font:11px var(--font-m)}.rank-item.dragging{opacity:.5;border-color:var(--red)}.splash{position:fixed;inset:0;background:#07111F;color:#fff;z-index:999;display:grid;place-items:center;overflow:hidden}.splash:before{content:"";position:absolute;width:650px;height:650px;border-radius:50%;background:radial-gradient(circle,rgba(255,94,79,.18),transparent 68%);animation:pulse 2s ease-in-out infinite}.splash-inner{position:relative;text-align:center;max-width:700px;padding:30px}.splash-mark{font:800 13px var(--font-m);letter-spacing:.18em;color:#FF8A80}.splash-title{font-size:58px;line-height:1;margin:18px 0 14px;letter-spacing:-.05em}.splash-copy{color:#A9B8CA;font-size:15px;line-height:1.7}.splash-line{width:180px;height:2px;background:#FF5E4F;margin:28px auto 0;animation:loadline 1.4s ease forwards}.fadeout{animation:fadeout .55s ease forwards}@keyframes pulse{50%{transform:scale(1.15);opacity:.7}}@keyframes loadline{from{width:0}to{width:180px}}@keyframes fadeout{to{opacity:0;visibility:hidden}}@media(max-width:700px){.options{grid-template-columns:1fr}.splash-title{font-size:42px}.matrix{grid-template-columns:1.1fr repeat(4,1fr);font-size:10px}}
 </style>
 <script src="./cost-iq-runtime-config.js"></script>
+<script type="module">
+window.resilienceAuthReady=(async()=>{
+ try{
+  const outputs=await fetch('./amplify_outputs.json',{cache:'no-store'}).then(r=>{if(!r.ok)throw new Error('Amplify outputs unavailable');return r.json();});
+  const {Amplify}=await import('https://cdn.jsdelivr.net/npm/aws-amplify@6.22.1/+esm');
+  const auth=await import('https://cdn.jsdelivr.net/npm/aws-amplify@6.22.1/auth/+esm');
+  Amplify.configure(outputs);
+  return { ...auth };
+ }catch(error){return {error};}
+})();
+</script>
+
 </head>
 <body>
 <div class="topbar"><div class="suitebar"><div class="suitebrand"><span class="suite-logo">L</span><span>LTM Advisory<br><span class="suite-sub">Resilience IQ · Enterprise Resilience</span></span></div><div style="display:flex;align-items:center;gap:10px"><a href="./resilience-iq-question-bank.html" class="studio-link">QUESTION BANK STUDIO</a><span class="badge">EXECUTIVE SCAN</span></div></div></div><div id="splash" class="splash"><div class="splash-inner"><div class="splash-mark">LTM ADVISORY · RESILIENCE IQ</div><div class="splash-title">Resilience under pressure.</div><div class="splash-copy">A business-service-first diagnostic for continuity, recovery, cyber resilience and operational resilience.</div><div class="splash-line"></div></div></div>
@@ -47,6 +59,66 @@ let questions=[
 {id:'EX-20',t:'How confident are you that documented recovery procedures meet the stated business objectives?',type:'single',o:['High — independently validated','High — tested','Medium — documented but not fully tested','Low','Unknown']}
 ];
 let answers={},idx=0,result=null;
+let authApi=null,currentUser=null,assessmentId=localStorage.getItem('resilienceIqAssessmentId')||'',assessmentClientName='',saving=false;
+const ASSESSMENT_API=API_BASE+'/api/resilience-iq/assessment';
+async function initAuth(){
+ const ready=await window.resilienceAuthReady;
+ if(!ready||ready.error){authApi=null;renderAuthError(ready?.error?.message||'Authentication configuration is unavailable.');return;}
+ authApi=ready;
+ try{currentUser=(await authApi.getCurrentUser()).user;}catch{currentUser=null;}
+ if(!currentUser){renderLogin();return;}
+ await resumeOrStart();
+}
+function renderAuthError(message){document.getElementById('app').innerHTML='<div class="panel auth-panel"><h2>Resilience IQ sign-in unavailable</h2><p class="danger">'+esc(message)+'</p><p class="auth-status">The assessment engine is available, but persistent assessments require the authenticated Amplify environment.</p></div>';}
+function renderLogin(message=''){
+ document.getElementById('app').innerHTML='<div class="panel auth-panel"><div class="eyebrow">LTM ADVISORY · SECURE ASSESSMENT</div><h2>Sign in to Resilience IQ</h2><p style="color:var(--ink3)">Sign in with your approved Consultant/Admin account to create and resume persistent assessments.</p><input id="loginEmail" class="text-input" type="email" placeholder="Work email"><input id="loginPassword" class="text-input" type="password" placeholder="Password"><button class="btn primary" onclick="login()">Sign in</button><div id="authMessage" class="auth-status">'+esc(message)+'</div></div>';
+}
+async function login(){
+ const email=document.getElementById('loginEmail')?.value.trim(),password=document.getElementById('loginPassword')?.value;
+ const msg=document.getElementById('authMessage');
+ if(!email||!password){if(msg)msg.textContent='Enter your work email and password.';return;}
+ try{
+  const r=await authApi.signIn({username:email,password});
+  if(r.nextStep?.signInStep!=='DONE'){if(msg)msg.textContent='Additional sign-in verification is required: '+r.nextStep.signInStep;return;}
+  currentUser=(await authApi.getCurrentUser()).user;await resumeOrStart();
+ }catch(e){if(msg)msg.textContent=e?.message||'Sign-in failed.';}
+}
+async function authToken(){const s=await authApi.fetchAuthSession();return s.tokens?.accessToken?.toString()||'';}
+async function assessmentRequest(body){
+ const token=await authToken();if(!token)throw new Error('Your session has expired. Please sign in again.');
+ const r=await fetch(ASSESSMENT_API,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},body:JSON.stringify(body)});
+ const j=await r.json().catch(()=>({}));
+ if(!r.ok||!j.ok)throw new Error(j.error||j.message||('Assessment service failed (HTTP '+r.status+').'));
+ return j.data;
+}
+async function resumeOrStart(){
+ if(assessmentId){
+  try{
+   const saved=await assessmentRequest({action:'get',assessmentId});
+   if(saved){answers=saved.answers||{};assessmentClientName=saved.clientName||'';if(saved.result){result=saved.result;}if(saved.status==='completed'||saved.status==='archived'){renderReport();return;}render();return;}
+  }catch(e){console.warn('Unable to resume saved assessment:',e.message);localStorage.removeItem('resilienceIqAssessmentId');assessmentId='';}
+ }
+ renderStart();
+}
+function renderStart(message=''){
+ document.getElementById('app').innerHTML='<div class="hero"><div class="eyebrow">LTM ADVISORY · EXECUTIVE RESILIENCE DIAGNOSTIC</div><h1>Resilience IQ</h1><p>Assess the enterprise ability to sustain critical business services through disruption — before technology choices are made.</p></div><div class="panel auth-panel"><div class="section"><h2>Start Assessment</h2><p style="color:var(--ink3)">Signed in as <b>'+esc(currentUser?.username||currentUser?.signInDetails?.loginId||'authenticated user')+'</b>.</p><input id="clientName" class="text-input" placeholder="Client / organisation name" value="'+esc(assessmentClientName)+'"><button class="btn primary" onclick="createAssessment()">Start new assessment →</button><div class="auth-status">'+esc(message)+'</div></div></div>';
+}
+async function createAssessment(){
+ const name=document.getElementById('clientName')?.value.trim();if(!name){renderStart('Client / organisation name is required.');return;}
+ try{
+  const email=currentUser?.signInDetails?.loginId||currentUser?.username||'';
+  const saved=await assessmentRequest({action:'create',clientName:name,respondentEmail:email});
+  assessmentId=saved.assessmentId;assessmentClientName=name;localStorage.setItem('resilienceIqAssessmentId',assessmentId);idx=0;answers={};result=null;render();
+ }catch(e){renderStart(e.message);}
+}
+async function saveAssessment(status='in_progress'){
+ if(!assessmentId||saving||result)return;
+ saving=true;
+ try{await assessmentRequest({action:'save',assessmentId,status,answers:mapAnswers()});}
+ catch(e){console.warn('Assessment autosave failed:',e.message);}
+ finally{saving=false;}
+}
+
 function esc(s){return String(s??'').replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]));}
 function render(){
  if(result){renderReport();return}
@@ -86,9 +158,10 @@ function next(){
  const q=questions[idx];
  if(q.type==='rank'&&answers[q.id]===undefined)answers[q.id]=q.o.map((_,i)=>i);
  if(!answerProvided(q)){alert(q.type==='matrix'?'Please complete the dependency matrix before continuing.':'Please provide an answer before continuing.');return;}
- if(idx<questions.length-1){idx++;render();}else evaluate();
+ if(idx<questions.length-1){await saveAssessment('in_progress');idx++;render();}else evaluate();
 }
 async function evaluate(){
+ await saveAssessment('in_progress');
  document.getElementById('app').innerHTML='<div class="panel" style="text-align:center;padding:70px"><h2>Running Resilience IQ...</h2><p style="color:var(--muted)">Applying decision branches, evidence confidence, hard constraints, pattern ranking and blueprint logic.</p></div>';
  try{
   if(!API_BASE)throw new Error('Resilience IQ API is not configured. Refresh the application or contact the platform administrator.');
@@ -99,6 +172,10 @@ async function evaluate(){
   if(result.status==='requirements_incomplete' && Array.isArray(result.nextQuestions) && result.nextQuestions.length){
     await loadAdvisoryQuestions(result.nextQuestions);
     return;
+  }
+  if(result.status==='ready'&&assessmentId){
+    try{const saved=await assessmentRequest({action:'complete',assessmentId,answers:mapAnswers()});result=saved.result||result;localStorage.removeItem('resilienceIqAssessmentId');}
+    catch(e){document.getElementById('app').innerHTML='<div class="panel"><h2>Assessment evaluated, but finalization failed</h2><p class="danger">'+esc(e.message)+'</p><button class="btn primary" onclick="evaluate()">Retry finalization</button></div>';return;}
   }
   renderReport();
  }catch(e){document.getElementById('app').innerHTML='<div class="panel"><h2>Evaluation failed</h2><p class="danger">'+esc(e.message)+'</p><button class="btn primary" onclick="render()">Retry</button></div>';}}
@@ -180,6 +257,7 @@ async function loadQuestionBank(){
  }catch(e){console.warn('Using embedded Resilience IQ question fallback:',e.message);}
 }
 loadQuestionBank();
+initAuth();
 setTimeout(()=>{const splash=document.getElementById("splash");if(splash){splash.classList.add("fadeout");setTimeout(()=>splash.remove(),600);}},1400);render();
 </script>
 </body></html>
