@@ -1,4 +1,5 @@
 import { resilienceKnowledge as k } from "./knowledge";
+import { RESILIENCE_IQ_VERSION } from "./version";
 
 export type ResilienceMatrixAnswer = Record<string, string>;
 export type ResilienceAnswers = Record<string, unknown>;
@@ -86,6 +87,7 @@ export interface ResilienceExecutiveReport {
 }
 
 export interface ResilienceResult {
+  version: typeof RESILIENCE_IQ_VERSION;
   status: "ready" | "requirements_incomplete";
   score: number | null;
   rating: string | null;
@@ -825,6 +827,7 @@ export function evaluateResilienceIq(a: ResilienceAnswers): ResilienceResult {
   };
 
   return {
+    version: RESILIENCE_IQ_VERSION,
     status: assessmentIncomplete ? "requirements_incomplete" : "ready",
     score: assessmentIncomplete ? null : score,
     postureScore: assessmentIncomplete ? null : postureScore,
