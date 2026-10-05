@@ -99,7 +99,7 @@ const cyberCase = evaluateResilienceIq({
   "EX-05": "Yes, current",
   "EX-06": "Yes, proven by testing",
   "EX-07": "Within 3 months",
-  "EX-08": "Yes, tested",
+  "EX-08": "Yes",
   "EX-09": "Immutable but restore not proven",
   "EX-10": "Yes, with no viable alternative",
   "EX-11": "High concentration",
