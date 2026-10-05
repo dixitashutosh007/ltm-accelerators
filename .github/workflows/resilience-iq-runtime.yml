@@ -38,6 +38,7 @@ jobs:
         with:
           node-version: 20
           cache: npm
+      - run: npm install --package-lock-only --ignore-scripts
       - run: npm ci
       - run: npm run validate:resilience-bank
       - run: npm run validate:resilience-deployment
