@@ -11,6 +11,9 @@ on:
       - "amplify/backend.ts"
       - "package.json"
       - "tsconfig.json"
+      - "scripts/**"
+      - "Accelerators/resilience-iq.html"
+      - "Accelerators/cost-iq-runtime-config.js"
   pull_request:
     branches: [main]
     paths:
