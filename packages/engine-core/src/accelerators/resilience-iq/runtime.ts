@@ -379,7 +379,7 @@ function gapRegister(a: ResilienceAnswers, flags: Set<string>, score: number) {
   return gaps;
 }
 
-function patternScore(id: string, a: ResilienceAnswers, eliminated: Set<string>): PatternDecision | null {
+function patternScore(id: string, a: ResilienceAnswers, eliminated: Set<string>, advisoryFlags: Set<string> = new Set()): PatternDecision | null {
   if (eliminated.has(id)) return null;
   const p = (k.patterns.patterns as any[]).find(x => x.id === id);
   if (!p) return null;
@@ -414,6 +414,24 @@ function patternScore(id: string, a: ResilienceAnswers, eliminated: Set<string>)
 
   if (concentration === "high" && /INF-03|INF-04|TP-03|TP-05/.test(id)) score += 20;
   if (dependency === "high" && /DR-07|APP-04|DR-08/.test(id)) score += 18;
+
+  // Advisory findings refine pattern fit. They do not replace hard requirement elimination.
+  if (advisoryFlags.has("recovery_capability_gap")) {
+    if (/^DR-0[34]$/.test(id)) score -= 8;
+    if (id === "DR-08" || id === "INF-06") score += 12;
+  }
+  if (advisoryFlags.has("recovery_automation_gap")) {
+    if (id === "DR-08" || id === "INF-06") score += 14;
+    if (/^DR-0[34]$/.test(id)) score -= 4;
+  }
+  if (advisoryFlags.has("cyber_recovery_gap")) {
+    if (id === "CYBER-01") score += 22;
+    if (id === "CYBER-02" || id === "CYBER-03") score += 12;
+    if (/^DR-/.test(id)) score -= 3;
+  }
+  if (advisoryFlags.has("backup_resilience_gap") && /DATA-01|DATA-02|CYBER-03/.test(id)) score += 15;
+  if (advisoryFlags.has("third_party_exit_gap") && /TP-02|TP-04|TP-05/.test(id)) score += 18;
+  if (advisoryFlags.has("low_test_evidence") && /TEST-01|TEST-02|TEST-03|TEST-04/.test(id)) score += 16;
 
   const env = environment(a);
   if (env !== "unknown" && Array.isArray(p[env === "on_prem" ? "on_prem_mapping" : env + "_mapping"])) score += 3;
@@ -566,7 +584,7 @@ export function evaluateResilienceIq(a: ResilienceAnswers): ResilienceResult {
 
   const candidateIds = ["DR-01","DR-02","DR-03","DR-04","DR-05","CYBER-01","CYBER-02","CYBER-03","CYBER-04","DATA-01",...branch.candidates];
   const unique = [...new Set(candidateIds)];
-  const ranking = unique.map(id => patternScore(id, a, eliminated)).filter(Boolean) as PatternDecision[];
+  const ranking = unique.map(id => patternScore(id, a, eliminated, advisory)).filter(Boolean) as PatternDecision[];
   ranking.sort((x, y) => y.score - x.score);
   const recoveryRanking = ranking.filter(x => ["DR-01","DR-02","DR-03","DR-04","DR-05"].includes(x.id));
   const preferred = assessmentIncomplete ? null : recoveryRanking[0]?.id ?? null;
