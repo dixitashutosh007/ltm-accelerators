@@ -24,6 +24,7 @@ const API=window.COST_IQ_API||'';
 const $=id=>document.getElementById(id);
 let allQuestions=[],questions=[],answers={},subjective={},selectedAreas=[],sectionIndex=0,qIndex=0,assessment=null,aiReview=null;
 const BASELINE=['Enterprise Context','CIO Priorities','Spend & Financial Visibility','Cost Governance & Investment'];
+const DEFAULT_AREAS=['Cloud Economics','Cost Governance'];
 const AREAS={
  'Cloud Economics':['Cloud & SaaS Economics','Public Cloud'],
  'SaaS & Licensing':['Cloud & SaaS Economics','SaaS','Software','Software & Licensing'],
@@ -78,25 +79,46 @@ function showSplash(steps,done){
   steps.forEach(function(x,i){setTimeout(function(){document.querySelectorAll('.step').forEach(function(s){s.classList.remove('active')});const s=document.getElementById('sp'+i);if(s)s.classList.add('active')},i*650)});
   setTimeout(function(){o.remove();done()},steps.length*650+650);
 }
+function questionCountForSelection(){
+  const q=allQuestions.filter(function(q){
+    if(BASELINE.includes(q.section)) return true;
+    return selectedAreas.some(function(a){return (AREAS[a]||[]).includes(q.section)});
+  });
+  return q.filter(function(q){return !String(q.id).startsWith('FIN-')||selectedAreas.includes('FinOps')}).length;
+}
+function updateQuestionCount(){
+  const el=$('selectionQuestionCount');
+  if(el) el.textContent=questionCountForSelection();
+}
 function home(){
-  selectedAreas=BASELINE.slice();
-  const cards=Object.keys(AREAS).map(function(a){return '<label class="area selected" data-area="'+esc(a)+'"><input type="checkbox" checked onchange="toggleArea(this,\''+esc(a).replace(/'/g,"\\'")+'\')"><span class="check">✓</span><h3>'+esc(a)+'</h3><p>'+esc(AREA_DESC[a])+'</p></label>'}).join('');
-  $('app').innerHTML='<div class="hero"><div class="eyebrow">LTM INFRASTRUCTURE TECHNOLOGY ADVISORY</div><h1>Technology Cost & Value Diagnostic</h1><p>Cost IQ helps leadership understand where technology spend is going, where value is being created, and where management attention may be required.</p><div class="actions"><button class="btn primary" onclick="begin()">Configure diagnostic →</button></div></div><div class="stat-grid"><div class="stat"><span class="mini">Adaptive</span><br><b>20–50</b><div class="mini">Typical questions</div></div><div class="stat"><span class="mini">Baseline</span><br><b>16</b><div class="mini">Cost & value dimensions</div></div><div class="stat"><span class="mini">Engine</span><br><b>20</b><div class="mini">Calibrated findings</div></div><div class="stat"><span class="mini">AI</span><br><b>Review</b><div class="mini">Anomaly & report synthesis</div></div></div><div class="card"><div class="eyebrow" style="color:#60717d">STEP 01 · FOCUS AREAS</div><h2>What would you like to diagnose?</h2><p class="muted">Baseline areas are pre-selected. Add or remove specialist areas to focus the session.</p><div class="baseline">✓ Enterprise context, CIO priorities, spend visibility and cost governance remain part of every assessment.</div><div class="section-grid" style="margin-top:16px">'+cards+'</div><div class="actions"><button class="btn primary" onclick="begin()">Start focused assessment →</button></div></div>';
+  selectedAreas=DEFAULT_AREAS.slice();
+  const cards=Object.keys(AREAS).map(function(a){
+    const checked=selectedAreas.includes(a);
+    return '<label class="area '+(checked?'selected':'')+'" data-area="'+esc(a)+'"><input type="checkbox" '+(checked?'checked':'')+' onchange="toggleArea(this,\''+esc(a).replace(/'/g,"\\'")+'\')"><span class="check">'+(checked?'✓':'')+'</span><h3>'+esc(a)+'</h3><p>'+esc(AREA_DESC[a])+'</p></label>';
+  }).join('');
+  $('app').innerHTML='<div class="hero"><div class="eyebrow">LTM INFRASTRUCTURE TECHNOLOGY ADVISORY</div><h1>Technology Cost & Value Diagnostic</h1><p>Cost IQ helps leadership understand where technology spend is going, where value is being created, and where management attention may be required.</p><div class="actions"><button class="btn primary" onclick="begin()">Configure diagnostic →</button></div></div><div class="stat-grid"><div class="stat"><span class="mini">Questions</span><br><b id="selectionQuestionCount">'+questionCountForSelection()+'</b><div class="mini">Questions for this selection</div></div><div class="stat"><span class="mini">Baseline</span><br><b>16</b><div class="mini">Cost & value dimensions</div></div><div class="stat"><span class="mini">Engine</span><br><b>20</b><div class="mini">Calibrated findings</div></div><div class="stat"><span class="mini">AI</span><br><b>Review</b><div class="mini">Anomaly & report synthesis</div></div></div><div class="card"><div class="eyebrow" style="color:#60717d">STEP 01 · FOCUS AREAS</div><h2>What would you like to diagnose?</h2><p class="muted">Select one or more focus areas. Two are pre-selected to give you a useful starting point. Baseline questions remain part of every assessment.</p><div class="baseline">✓ Enterprise context, CIO priorities, spend visibility and cost governance remain part of every assessment.</div><div class="section-grid" style="margin-top:16px">'+cards+'</div><div class="actions"><button class="btn primary" onclick="begin()">Start focused assessment →</button></div></div>';
 }
 function toggleArea(el,a){if(el.checked){if(!selectedAreas.includes(a))selectedAreas.push(a);el.parentElement.classList.add('selected')}else{selectedAreas=selectedAreas.filter(x=>x!==a);el.parentElement.classList.remove('selected')}}
-function begin(){
-  const q=allQuestions.filter(function(q){if(BASELINE.includes(q.section))return true;return selectedAreas.some(function(a){return (AREAS[a]||[]).includes(q.section)})});
-  questions=q.filter(function(q){return !String(q.id).startsWith('FIN-')||selectedAreas.includes('FinOps')});
-  answers={};subjective={};sectionIndex=0;qIndex=0;
-  renderAssessment();
+function toggleArea(el,a){
+  if(el.checked){
+    if(!selectedAreas.includes(a))selectedAreas.push(a);
+    el.parentElement.classList.add('selected');
+    el.parentElement.querySelector('.check').textContent='✓';
+  }else{
+    selectedAreas=selectedAreas.filter(x=>x!==a);
+    el.parentElement.classList.remove('selected');
+    el.parentElement.querySelector('.check').textContent='';
+  }
+  updateQuestionCount();
 }
 function sections(){const seen=[];questions.forEach(function(q){if(!seen.includes(q.section))seen.push(q.section)});return seen}
 function renderAssessment(){
-  const secs=sections();const sec=secs[sectionIndex];const qs=questions.filter(q=>q.section===sec);const q=qs[qIndex];
-  if(!q){sectionIndex++;qIndex=0;if(sectionIndex>=secs.length){runEngine();return}renderAssessment();return}
+  const secs=sections();const sec=secs[sectionIndex];const qs=questions.filter(q=>q.section===sec);
+  if(!qs.length){sectionIndex++;qIndex=0;if(sectionIndex>=secs.length){runEngine();return}renderAssessment();return}
   const answered=questions.filter(q=>answers[q.id]!==undefined).length,total=questions.length,pct=Math.round(answered/total*100);
   const rail=secs.map(function(s,i){return '<div class="rail-item '+(i===sectionIndex?'active':'')+' '+(i<sectionIndex?'done':'')+'">'+(i<sectionIndex?'✓ ':'')+esc(s)+'</div>'}).join('');
-  $('app').innerHTML='<div class="assessment"><aside class="rail"><div class="rail-card"><div class="mono" style="color:#9fb0bb">COST IQ</div><h3 style="margin:7px 0 12px">Diagnostic</h3>'+rail+'<div style="margin-top:14px;font-size:10px;color:#8797a2">'+answered+' of '+total+' answered</div><div class="progress" style="margin-top:7px"><i style="width:'+pct+'%"></i></div></div></aside><section><div class="mini" style="margin-bottom:8px">SECTION '+(sectionIndex+1)+' OF '+secs.length+' · '+esc(sec)+'</div><div class="q-card">'+questionHTML(q,qs.indexOf(q)+1,qs.length)+'</div><div class="nav"><button class="btn" onclick="backQ()">← Back</button><div class="mini">'+(qIndex+1)+' of '+qs.length+'</div><button class="btn primary" onclick="nextQ()">'+(qIndex===qs.length-1?(sectionIndex===secs.length-1?'Complete assessment →':'Next section →'):'Continue →')+'</button></div></section></div>';
+  const cards=qs.map(function(q,i){return '<div class="q-card" style="margin-bottom:16px">'+questionHTML(q,i+1,qs.length)+'</div>'}).join('');
+  $('app').innerHTML='<div class="assessment"><aside class="rail"><div class="rail-card"><div class="mono" style="color:#9fb0bb">COST IQ</div><h3 style="margin:7px 0 12px">Diagnostic</h3><div style="font-size:11px;color:#9fb0bb;margin-bottom:10px">QUESTIONS IN ASSESSMENT</div><div style="font-size:28px;font-weight:800">'+total+'</div>'+rail+'<div style="margin-top:14px;font-size:10px;color:#8797a2">'+answered+' of '+total+' answered</div><div class="progress" style="margin-top:7px"><i style="width:'+pct+'%"></i></div></div></aside><section><div class="mini" style="margin-bottom:8px">SECTION '+(sectionIndex+1)+' OF '+secs.length+' · '+esc(sec)+' · '+qs.length+' QUESTIONS</div>'+cards+'<div class="nav"><button class="btn" onclick="backQ()">← Back</button><div class="mini">Section '+(sectionIndex+1)+' of '+secs.length+'</div><button class="btn primary" onclick="nextSection()">'+(sectionIndex===secs.length-1?'Complete assessment →':'Next section →')+'</button></div></section></div>';
 }
 function questionHTML(q,n,total){
   let body='';
@@ -110,10 +132,22 @@ function questionHTML(q,n,total){
   return '<span class="q-no">'+esc(q.id)+' · QUESTION '+n+' OF '+total+'</span><h2 class="q-title">'+esc(q.prompt)+'</h2>'+(q.answerGuidance?'<div class="help"><b>How to answer:</b> '+esc(q.answerGuidance)+'</div>':'')+body+sub;
 }
 function pick(id,v){answers[id]=v;renderAssessment()}function toggle(id,v){const a=Array.isArray(answers[id])?[...answers[id]]:[];const i=a.indexOf(v);if(i>=0)a.splice(i,1);else a.push(v);answers[id]=a;renderAssessment()}function setStar(id,v){answers[id]=v;renderAssessment()}function setSlider(id,v){answers[id]=Number(v);const x=$('sv');if(x)x.textContent=v}
-function currentQ(){const s=sections()[sectionIndex];return questions.filter(q=>q.section===s)[qIndex]}
-function validQ(){const q=currentQ();const a=answers[q.id];return q.required===false||!(a===undefined||a===null||a===''||(Array.isArray(a)&&!a.length))}
-function nextQ(){if(!validQ()){alert('Please answer this question before continuing.');return}const qs=questions.filter(q=>q.section===sections()[sectionIndex]);if(qIndex<qs.length-1){qIndex++;renderAssessment()}else{sectionIndex++;qIndex=0;if(sectionIndex>=sections().length)runEngine();else renderAssessment()}}
-function backQ(){if(qIndex>0){qIndex--;renderAssessment()}else if(sectionIndex>0){sectionIndex--;qIndex=questions.filter(q=>q.section===sections()[sectionIndex]).length-1;renderAssessment()}else home()}
+function currentSectionQuestions(){return questions.filter(q=>q.section===sections()[sectionIndex])}
+function sectionValid(){
+  const qs=currentSectionQuestions();
+  return qs.every(function(q){
+    const a=answers[q.id];
+    return q.required===false||!(a===undefined||a===null||a===''||(Array.isArray(a)&&!a.length));
+  });
+}
+function nextSection(){
+  if(!sectionValid()){alert('Please answer all required questions in this section before continuing.');return}
+  sectionIndex++;qIndex=0;
+  if(sectionIndex>=sections().length)runEngine();else renderAssessment();
+}
+function backQ(){
+  if(sectionIndex>0){sectionIndex--;qIndex=0;renderAssessment();}else home();
+}
 async function runEngine(){
   $('app').innerHTML='<div class="card" style="text-align:center;padding:70px 30px"><div class="pulse" style="margin:auto"><div class="core"></div></div><h2>Reviewing your diagnostic…</h2><p class="muted">Cost IQ is evaluating the deterministic scoring engine before the AI review.</p></div>';
   try{assessment=await api('/api/evaluate/cost-iq',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({answers:answers,scope:{selectedAreas:selectedAreas}})});showEngineOverlay(function(){aiCheck()})}catch(e){fail(e.message)}
