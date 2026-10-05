@@ -31,9 +31,20 @@ export const handler = async (event: APIGatewayProxyEventV2): Promise<APIGateway
 
     let body: any = {};
     if (event.body) {
-      body = event.isBase64Encoded
-        ? JSON.parse(Buffer.from(event.body, 'base64').toString('utf-8'))
-        : JSON.parse(event.body);
+      const rawBody = event.isBase64Encoded
+        ? Buffer.from(event.body, 'base64').toString('utf-8')
+        : event.body;
+      if (rawBody.length > 256 * 1024) {
+        return response(413, { error: 'payload_too_large', requestId: id }, id);
+      }
+      try {
+        body = JSON.parse(rawBody);
+      } catch {
+        return response(400, { error: 'invalid_json', requestId: id }, id);
+      }
+    }
+    if (!body || typeof body !== 'object' || Array.isArray(body)) {
+      return response(400, { error: 'json_object_required', requestId: id }, id);
     }
     if (method === 'POST' && path.endsWith('/ai-review')) {
       return response(200, await aiReview(body), id);
@@ -44,6 +55,21 @@ export const handler = async (event: APIGatewayProxyEventV2): Promise<APIGateway
 
     if (!body.answers || typeof body.answers !== 'object' || Array.isArray(body.answers)) {
       return response(400, { error: 'answers_object_required', requestId: id }, id);
+    }
+    if (Object.keys(body.answers).length > 500) {
+      return response(400, { error: 'too_many_answers', requestId: id }, id);
+    }
+    for (const [key, value] of Object.entries(body.answers)) {
+      if (key.length > 128) {
+        return response(400, { error: 'invalid_answer_key', requestId: id }, id);
+      }
+      if (Array.isArray(value)) {
+        if (value.length > 100 || value.some(v => typeof v === 'object' && v !== null)) {
+          return response(400, { error: 'invalid_answer_value', requestId: id }, id);
+        }
+      } else if (value !== null && typeof value === 'object') {
+        return response(400, { error: 'invalid_answer_value', requestId: id }, id);
+      }
     }
     if (path.endsWith('/orchestrate')) {
       return response(200, orchestrate({ answers: body.answers, options: body.options || {} }), id);
