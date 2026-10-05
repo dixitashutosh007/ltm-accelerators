@@ -29,6 +29,10 @@ function sortHistory(records = []) {
     .sort((a, b) => String(b.updatedAt).localeCompare(String(a.updatedAt)));
 }
 
+/**
+ * Persistence record shape consumed by the infrastructure adapter.
+ */
+
 function createPersistenceAdapter(store) {
   if (!store || typeof store.create !== 'function' || typeof store.update !== 'function' ||
       typeof store.get !== 'function' || typeof store.list !== 'function') {
