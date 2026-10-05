@@ -54,3 +54,12 @@ This is advisory IP and a starting catalog. It must be reviewed by subject-matte
 - Google Cloud Architecture Center
 
 Source URLs and version notes are maintained in `frameworks.json`.
+
+
+## Question Bank Studio Contract
+
+The question bank is the contract between assessment content and the renderer. Each question can define its interaction through `ui.interaction`, while scoring, evidence and decision logic remain separate concerns. The planned Question Bank Studio will support draft → validate → publish → deprecate governance without changing runtime code.
+
+Required editor fields: id, domain, taxonomy, text, type, options, required, evidence, ui, scoring, branching, framework mappings, version and status.
+
+Supported interaction patterns include single-select, multi-select, slider choice, matrix, ranking, scenario, numeric, text, yes/no and evidence-select.
