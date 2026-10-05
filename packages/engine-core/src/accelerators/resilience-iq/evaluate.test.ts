@@ -346,6 +346,12 @@ if (advisoryGateCase.executiveReport.targetState !== null) throw new Error("Bloc
 if (advisoryGateCase.executiveReport.advisoryStatus !== "requirements_incomplete") throw new Error("Blocked assessment report must expose incomplete advisory status");
 if (advisoryGateCase.executiveReport.recommendationConfidence.level !== "Blocked") throw new Error("Blocked assessment must expose blocked recommendation confidence");
 
+if (advisoryGateCase.executiveReport.postureScore !== null) throw new Error("Blocked assessment report should not expose a final posture score");
+if (advisoryGateCase.executiveReport.rating !== null) throw new Error("Blocked assessment report should not expose a final rating");
+if (advisoryGateCase.executiveReport.criticalExposure !== null) throw new Error("Blocked assessment report should not expose final critical exposure");
+if (advisoryLifecycle.executiveReport.postureScore !== advisoryLifecycle.postureScore) throw new Error("Completed report posture score must match runtime");
+
+
 
 
 console.log("Resilience IQ knowledge-driven runtime tests passed");
