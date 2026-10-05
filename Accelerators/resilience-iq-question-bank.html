@@ -40,7 +40,7 @@ function render(){
  document.querySelectorAll('#opts input').forEach(x=>x.oninput=e=>{q.options[+x.dataset.opt]=e.target.value;refreshPreview()});
  document.querySelectorAll('[data-del]').forEach(x=>x.onclick=()=>{q.options.splice(+x.dataset.del,1);render()});
  $('addopt').onclick=()=>{q.options=q.options||[];q.options.push('New option');render()};
- ['domain','taxonomy','text','type','status','evidence','version','instruction','required'].forEach(id=>$(id).addEventListener('input',()=>sync(q)));
+ ['domain','taxonomy','text','type','status','evidence','version','instruction','scoring','branching','frameworks','required'].forEach(id=>$(id).addEventListener('input',()=>sync(q)));
  refreshPreview();
 }
 function sync(q){
