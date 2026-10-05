@@ -59,7 +59,11 @@ function validateAnswersPayload(answers: unknown): { ok: true } | { ok: false; e
       if (!value || typeof value !== 'object' || Array.isArray(value)) return { ok: false, error: `Invalid matrix answer for ${key}.` };
       const rows = (q.ui?.rows ?? []).map(String);
       const columns = (q.ui?.columns ?? []).map(String);
-      for (const [row, column] of Object.entries(value as Record<string, unknown>)) {
+      const matrix = value as Record<string, unknown>;
+      if (Object.keys(matrix).length !== rows.length || rows.some(row => !Object.prototype.hasOwnProperty.call(matrix, row))) {
+        return { ok: false, error: `Incomplete matrix answer for ${key}.` };
+      }
+      for (const [row, column] of Object.entries(matrix)) {
         if (!rows.includes(row) || typeof column !== 'string' || !columns.includes(column)) return { ok: false, error: `Invalid matrix value for answer ${key}.` };
       }
     } else if (type === 'number') {
