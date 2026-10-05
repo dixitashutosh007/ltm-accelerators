@@ -675,16 +675,24 @@ export function evaluateResilienceIq(a: ResilienceAnswers): ResilienceResult {
   const recommendationConfidenceResult = recommendationConfidence(a, preferred, ranking, gaps, confidenceLabel, assessmentIncomplete);
 
   const nextQuestions: NextQuestion[] = [];
+  const advisoryPriority: Record<string, number> = {
+    "AF-DR-04": 100, "AF-DR-01": 98, "AF-DR-02": 98,
+    "AF-CY-03": 96, "AF-CY-04": 95, "AF-CY-05": 94,
+    "AF-TP-02": 92, "AF-TP-03": 91, "AF-TP-04": 90,
+    "AF-CL-01": 88, "AF-CL-02": 87, "AF-CL-04": 86,
+    "AF-TS-02": 84, "AF-TS-03": 83
+  };
   for (const id of branch.questions) {
-    const existing = a[id];
-    if (existing !== undefined) continue;
+    if (a[id] !== undefined && a[id] !== null && a[id] !== "") continue;
     const q = (k.questionBank.advisory_questions as any[]).find(x => x.id === id);
-    if (q) nextQuestions.push({ id, reason: "Triggered by assessed resilience risk/decision branch.", evidence: q.evidence ?? [], priority: "required" });
+    if (q) nextQuestions.push({ id, reason: "Triggered by an active resilience risk or decision branch.", evidence: q.evidence ?? [], priority: "required" });
   }
   for (const id of missing) {
     const q = (k.questionBank.executive_questions as any[]).find(x => x.id === id);
     if (q) nextQuestions.push({ id, reason: "Required executive baseline question.", evidence: q.evidence ?? [], priority: "required" });
   }
+  nextQuestions.sort((x, y) => (advisoryPriority[y.id] ?? 50) - (advisoryPriority[x.id] ?? 50));
+  const prioritizedQuestions = nextQuestions.slice(0, 8);
 
   const evidenceRequests = [...new Set([
     ...branch.evidence,
@@ -722,7 +730,6 @@ export function evaluateResilienceIq(a: ResilienceAnswers): ResilienceResult {
   }));
 
   const evidenceRegister = buildEvidenceRegister(evidenceRequests, gaps);
-  if (evidenceRegister.some(x => x.affectsRecommendation)) reasons.push("Requested evidence can materially change the recovery strategy or supporting controls.");
   const sensitivity = preferred ? [
     "If measured recovery misses the stated RTO/RPO, reassess the selected " + preferred + " strategy and consider the next higher resilience tier.",
     "If business impact tolerance or recovery objectives change, rerun the strategy decision.",
@@ -781,7 +788,7 @@ export function evaluateResilienceIq(a: ResilienceAnswers): ResilienceResult {
     mandatoryControls,
     gaps: gaps.map(g => g.name),
     gapRegister: gaps,
-    nextQuestions,
+    nextQuestions: prioritizedQuestions,
     evidenceRequests,
     evidenceRegister,
     technologyOptions: preferred ? technologyOptions([preferred, ...recoveryRanking.slice(1,3).map(x => x.id), ...(cyberRisk(a) === "destructive" || cyberRisk(a) === "high" ? ["CYBER-01"] : [])], a) : {},
