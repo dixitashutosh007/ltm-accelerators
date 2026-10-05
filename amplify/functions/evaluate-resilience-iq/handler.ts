@@ -74,9 +74,6 @@ function validateAnswersPayload(answers: unknown): { ok: true } | { ok: false; e
 
 export const handler = async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> => {
   const requestId = makeRequestId(event);
-  const configuredOrigin = process.env.RESILIENCE_IQ_ALLOWED_ORIGIN || '*';
-  const requestOrigin = event.headers?.origin || event.headers?.Origin;
-  const allowOrigin = configuredOrigin === '*' ? '*' : (requestOrigin === configuredOrigin ? configuredOrigin : configuredOrigin);
   const method = event.requestContext?.http?.method || (event as any).httpMethod || 'POST';
   if (method === 'OPTIONS') return { statusCode: 200, headers: { ...CORS_HEADERS, 'X-Request-Id': requestId }, body: '' };
   if (method !== 'POST') return response(405, { ok: false, error: 'method_not_allowed', requestId }, requestId);
