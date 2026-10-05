@@ -252,6 +252,7 @@ function normalizeAI(ai){
 }
 function renderReport(ai){
   ai=normalizeAI(ai);
+  window._renderCostReport=ai;
   const h=assessment.headlines||{},findings=assessment.findings||[],recs=assessment.recommendations||[],dims=scoreEntries();
   const pri=(ai.priorityAreas||[]).map(function(x){return '<div class="signal"><b>'+esc(x.name)+'</b><span>Score '+esc(x.score)+' · '+esc(x.why)+'</span><p style="font-size:11px;margin:7px 0 0"><b>Next:</b> '+esc(x.action)+'</p></div>'}).join('');
   const opp=(ai.opportunities||[]).map(function(x){return '<div class="finding"><strong>'+esc(x.title)+'</strong><p>'+esc(x.description)+'</p><p><b>Confidence:</b> '+esc(x.confidence)+' · '+esc(x.nextStep)+'</p></div>'}).join('');
