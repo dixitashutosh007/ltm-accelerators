@@ -26,7 +26,7 @@ for (const field of requiredFields) {
 
 assert.match(source, /completedAt:\s*a\.datetime\(\)/);
 assert.match(source, /resultJson:\s*a\.string\(\)/);
-assert.match(source, /allow\.owner\(\)\.to\(\['create', 'read', 'update'\]\)/);
+assert.match(source, /\.identifier\(\['assessmentId'\]\)/);\nassert.match(source, /allow\.owner\(\)\.to\(\['create', 'read', 'update'\]\)/);\nassert.doesNotMatch(source, /allow\.resource\(evaluateCostIqFunction\)/);
 assert.match(source, /allow\.group\('Admin'\)/);
 assert.match(source, /allow\.group\('Consultant'\)/);
 
