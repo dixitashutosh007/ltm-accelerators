@@ -69,7 +69,8 @@
       },
       "validation_rule": "Only evidence explicitly validated against validation_criteria may increase evidence maturity or recommendation confidence.",
       "recommendation_rule": "Evidence marked provided, validated or rejected must be reflected in the assessment decision log; validated material evidence may trigger recommendation sensitivity and reassessment.",
-      "material_evidence_rule": "Evidence affects recommendation confidence only when its status is validated and affects_recommendation is true; provided evidence remains unvalidated."
+      "material_evidence_rule": "Evidence affects recommendation confidence only when its status is validated and affects_recommendation is true; provided evidence remains unvalidated.",
+      "decision_log_rule": "Every evidence status change must create or update a decision-log entry identifying the affected assumption, gaps, recommendation impact and validation outcome."
     }
   }
 }
