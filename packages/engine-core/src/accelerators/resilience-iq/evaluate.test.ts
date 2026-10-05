@@ -355,6 +355,12 @@ if (advisoryGateCase.executiveReport.rating !== null) throw new Error("Blocked a
 if (advisoryGateCase.executiveReport.criticalExposure !== null) throw new Error("Blocked assessment report should not expose final critical exposure");
 if (advisoryLifecycle.executiveReport.postureScore !== advisoryLifecycle.postureScore) throw new Error("Completed report posture score must match runtime");
 
+const repeatA = evaluateResilienceIq(advisoryLifecycleAnswers);
+const repeatB = evaluateResilienceIq(advisoryLifecycleAnswers);
+if (JSON.stringify(repeatA) !== JSON.stringify(repeatB)) {
+  throw new Error("Identical Resilience IQ inputs must produce deterministic identical results");
+}
+
 
 
 
