@@ -7,7 +7,6 @@ import { Amplify } from 'aws-amplify';
 import { generateClient } from 'aws-amplify/data';
 import { getAmplifyDataClientConfig } from '@aws-amplify/backend/function/runtime';
 import type { Schema } from '../../data/resource';
-import { env } from '$amplify/env/manage-resilience-assessment';
 
 const ALLOWED_ORIGIN = process.env.RESILIENCE_IQ_ALLOWED_ORIGIN || '*';
 const json = (statusCode: number, body: unknown, requestId: string): APIGatewayProxyResultV2 => ({
@@ -34,7 +33,7 @@ export type AssessmentRepository = {
   put(assessment: Assessment): Promise<Assessment>;
 };
 
-const { resourceConfig, libraryOptions } = await getAmplifyDataClientConfig(env);
+const { resourceConfig, libraryOptions } = await getAmplifyDataClientConfig(process.env as Record<string, string>);
 Amplify.configure(resourceConfig, libraryOptions);
 const client = generateClient<Schema>();
 
