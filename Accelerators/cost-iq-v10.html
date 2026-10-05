@@ -122,9 +122,13 @@ function showEngineOverlay(done){
   showSplash(['Normalizing assessment responses…','Evaluating cost dimensions…','Evaluating value dimensions…','Checking evidence & confidence…','Preparing AI diagnostic review…'],done)
 }
 async function aiCheck(){
-  // AI is intentionally optional. Cost IQ remains fully usable without an external AI service.
-  aiReview={needsClarification:false,observations:['AI review is currently disabled; deterministic assessment retained as the source of truth.']};
-  preliminary();
+  try{
+    aiReview=await api('/api/evaluate/cost-iq/ai-review',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({selectedAreas:selectedAreas,answers:answers,context:{assessment:assessment}})});
+    preliminary();
+  }catch(e){
+    aiReview={needsClarification:false,observations:['Gemini AI review unavailable; deterministic assessment retained as the source of truth.']};
+    preliminary();
+  }
 }
 function clarify(i){
   if(i>=(aiReview.questions||[]).length){preliminary();return}
@@ -183,17 +187,22 @@ function openBooking(){
   generateDetailedReport();
 }
 async function generateDetailedReport(){
-  const overlaySteps=['Reading assessment evidence…','Mapping cost & value dimensions…','Analyzing concentration patterns…','Building deterministic opportunity signals…','Constructing executive roadmap…','Rendering executive report…'];
-  showSplash(overlaySteps,function(){
-    renderReport({
-      executiveSummary:'The Cost IQ deterministic diagnostic has completed. This report summarizes the assessment scores, evidence confidence, calibrated findings, opportunity signals and recommended action path.',
-      keyMessages:[],
-      priorityAreas:[],
-      opportunities:[],
-      roadmap:[],
-      consultingRecommendations:[],
-      limitations:'Deterministic Cost IQ scores, findings and evidence gates are the source of truth. AI review and narrative synthesis are currently disabled.'
-    });
+  const overlaySteps=['Reading assessment evidence…','Mapping cost & value dimensions…','Analyzing concentration patterns…','Building deterministic opportunity signals…','Synthesizing executive narrative…','Rendering executive report…'];
+  showSplash(overlaySteps,async function(){
+    try{
+      const ai=await api('/api/evaluate/cost-iq/ai-report',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({assessment:assessment,answers:answers,subjective:subjective,aiReview:aiReview,selectedAreas:selectedAreas})});
+      renderReport(ai);
+    }catch(e){
+      renderReport({
+        executiveSummary:'The Cost IQ deterministic diagnostic has completed. Gemini narrative synthesis was unavailable, so the report below uses the deterministic assessment as its source of truth.',
+        keyMessages:[],
+        priorityAreas:[],
+        opportunities:[],
+        roadmap:[],
+        consultingRecommendations:[],
+        limitations:'Deterministic Cost IQ scores, findings and evidence gates are the source of truth. Gemini AI narrative synthesis was unavailable for this run.'
+      });
+    }
   });
 }
 function normalizeAI(ai){
