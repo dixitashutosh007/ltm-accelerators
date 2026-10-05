@@ -58,7 +58,7 @@ export const handler = async (event: APIGatewayProxyEventV2): Promise<APIGateway
     });
     return response(200, result, id);
   } catch (error) {
-    console.error('[EvaluateCostIq] Request failed', { requestId: id });
+    console.error('[EvaluateCostIq] Request failed', { requestId: id, errorName: error instanceof Error ? error.name : 'UnknownError', errorMessage: error instanceof Error ? error.message : String(error) });
     return response(500, {
       error: 'internal_evaluation_error',
       message: 'An internal error occurred while processing the Cost IQ request.',
@@ -68,66 +68,46 @@ export const handler = async (event: APIGatewayProxyEventV2): Promise<APIGateway
 };
 
 
-async function callOpenAI(instruction: string, input: string) {
-  const key = process.env.OPENAI_API_KEY;
-  if (!key) throw new Error('AI service is not configured. Add the OPENAI_API_KEY Amplify secret.');
-  const resp = await fetch('https://api.openai.com/v1/responses', {
+async function callGemini(instruction: string, input: string) {
+  const key = process.env.GEMINI_API_KEY;
+  if (!key) throw new Error('AI service is not configured. Add the GEMINI_API_KEY Amplify secret.');
+  const model = process.env.GEMINI_MODEL || 'gemini-3.8-flash';
+  const resp = await fetch('https://generativelanguage.googleapis.com/v1beta/models/' + encodeURIComponent(model) + ':generateContent', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${key}` },
+    headers: { 'Content-Type': 'application/json', 'x-goog-api-key': key },
     body: JSON.stringify({
-      model: 'gpt-6-sol',
-      input: [
-        { role: 'system', content: [{ type: 'input_text', text: instruction }] },
-        { role: 'user', content: [{ type: 'input_text', text: input }] }
-      ],
-      max_output_tokens: 5000
+      contents: [{ role: 'user', parts: [{ text: instruction + '\n\nINPUT:\n' + input }] }],
+      generationConfig: { responseMimeType: 'application/json', temperature: 0.2 }
     })
   });
   const data:any = await resp.json();
-  if (!resp.ok) throw new Error(data?.error?.message || `OpenAI HTTP ${resp.status}`);
-  const extracted = data?.output_text ||
-    (Array.isArray(data?.output)
-      ? data.output
-          .flatMap((item:any) => Array.isArray(item?.content) ? item.content : [])
-          .filter((item:any) => item?.type === 'output_text' && typeof item?.text === 'string')
-          .map((item:any) => item.text)
-          .join('\n')
-      : '');
-  if (!extracted) throw new Error('OpenAI returned no output text.');
+  if (!resp.ok) throw new Error(data?.error?.message || ('Gemini HTTP ' + resp.status));
+  const extracted = data?.candidates?.[0]?.content?.parts?.map((part:any) => typeof part?.text === 'string' ? part.text : '').join('') || '';
+  if (!extracted) throw new Error('Gemini returned no output text.');
   return extracted;
 }
 
 function safeJsonText(text: string) {
-  const match = text.match(/\{[\s\S]*\}/);
-  if (!match) throw new Error('AI returned an invalid structured response.');
-  return JSON.parse(match[0]);
+  const cleaned = text.trim().replace(/^```json\s*/i, '').replace(/\s*```$/i, '');
+  try { return JSON.parse(cleaned); }
+  catch { const match = cleaned.match(/\{[\s\S]*\}/); if (!match) throw new Error('AI returned an invalid structured response.'); return JSON.parse(match[0]); }
 }
 
 async function aiReview(body:any) {
-  const payload = JSON.stringify({
-    selectedAreas: body.selectedAreas || [],
-    answers: body.answers || {},
-    context: body.context || {}
-  });
+  const payload = JSON.stringify({ selectedAreas: body.selectedAreas || [], answers: body.answers || {}, context: body.context || {} });
   const instruction = `You are the Cost IQ diagnostic quality reviewer for LTM Infrastructure Technology Advisory.
 Review answers for contradictions, ambiguity, missing critical context and suspiciously strong claims.
-Do NOT change deterministic scores. Return ONLY JSON:
+Do NOT change deterministic scores. Return ONLY valid JSON:
 {"needsClarification":true|false,"questions":[{"id":"AI-1","reason":"...","question":"...","options":["...","...","..."]}],"observations":["..."]}
 Ask at most 3 high-value questions. Do not ask for information already provided. Prefer questions that materially affect interpretation.`;
-  return safeJsonText(await callOpenAI(instruction, payload));
+  return safeJsonText(await callGemini(instruction, payload));
 }
 
 async function aiReport(body:any) {
-  const payload = JSON.stringify({
-    assessment: body.assessment || {},
-    answers: body.answers || {},
-    subjective: body.subjective || {},
-    aiReview: body.aiReview || {},
-    selectedAreas: body.selectedAreas || []
-  });
+  const payload = JSON.stringify({ assessment: body.assessment || {}, answers: body.answers || {}, subjective: body.subjective || {}, aiReview: body.aiReview || {}, selectedAreas: body.selectedAreas || [] });
   const instruction = `You are a senior LTM technology economics advisor. Produce an executive Cost IQ report using the supplied deterministic assessment as the source of truth.
 Do not invent scores, savings, facts or findings. Clearly distinguish evidence-backed observations from hypotheses.
-Return ONLY JSON:
+Return ONLY valid JSON:
 {"executiveSummary":"...","keyMessages":["..."],"priorityAreas":[{"name":"...","score":0,"why":"...","action":"..."}],"opportunities":[{"title":"...","description":"...","evidence":"...","confidence":"High|Medium|Low","nextStep":"..."}],"roadmap":[{"horizon":"0-30 days","actions":["..."]},{"horizon":"30-90 days","actions":["..."]},{"horizon":"90-180+ days","actions":["..."]}],"consultingRecommendations":["..."],"limitations":"..."}.`;
-  return safeJsonText(await callOpenAI(instruction, payload));
+  return safeJsonText(await callGemini(instruction, payload));
 }
