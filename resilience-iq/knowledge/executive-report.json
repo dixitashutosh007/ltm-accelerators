@@ -58,6 +58,17 @@
     "evidence_status_values": ["not_requested","requested","provided","validated","rejected"],
     "evidence_register_fields": ["id","evidence","type","status","purpose","validation_criteria","affected_gaps","affects_recommendation"],
     "evidence_types": ["business_requirement","architecture","recovery_test","backup_restore","cyber_recovery","third_party","dependency","governance","other"],
-    "evidence_maturity_is_distinct_from_question_confidence": true
+    "evidence_maturity_is_distinct_from_question_confidence": true,
+    "evidence_lifecycle": {
+      "status_transitions": {
+        "not_requested": ["requested"],
+        "requested": ["provided","rejected"],
+        "provided": ["validated","rejected"],
+        "validated": ["validated"],
+        "rejected": ["requested","rejected"]
+      },
+      "validation_rule": "Only evidence explicitly validated against validation_criteria may increase evidence maturity or recommendation confidence.",
+      "recommendation_rule": "Evidence marked provided, validated or rejected must be reflected in the assessment decision log; validated material evidence may trigger recommendation sensitivity and reassessment."
+    }
   }
 }
