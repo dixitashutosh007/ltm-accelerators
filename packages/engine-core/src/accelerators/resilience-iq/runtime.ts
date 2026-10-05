@@ -27,6 +27,14 @@ export interface RecommendationConfidence {
   decisionSensitivity: string[];
 }
 
+export interface EvidenceRegisterItem {
+  evidence: string;
+  status: "not_requested" | "requested" | "provided" | "validated" | "rejected";
+  purpose: string;
+  affectedGaps: string[];
+  affectsRecommendation: boolean;
+}
+
 export interface ResilienceExecutiveReport {
   assessmentType: "Executive Scan";
   advisoryStatus: "initial" | "requirements_incomplete";
@@ -49,6 +57,7 @@ export interface ResilienceExecutiveReport {
   supportingControls: PatternDecision[];
   technologyMapping: Record<string, string[]>;
   evidenceValidation: Array<{ evidence: string; purpose: string }>;
+  evidenceRegister: EvidenceRegisterItem[];
   targetState: {
     environment: string;
     recoveryPattern: string;
@@ -81,6 +90,7 @@ export interface ResilienceResult {
   gapRegister: Array<{ id: string; name: string; severity: string; action: string }>;
   nextQuestions: NextQuestion[];
   evidenceRequests: string[];
+  evidenceRegister: EvidenceRegisterItem[];
   technologyOptions: Record<string, string[]>;
   blueprint: {
     targetPrinciples: string[];
@@ -348,6 +358,34 @@ function recommendationConfidence(
     "New evidence showing cyber recovery, identity recovery or third-party recovery is less isolated than assumed."
   ];
   return { level, score, reasons: reasons.length ? reasons : ["Recovery objectives, evidence confidence and strategy ranking provide a consistent basis for the current recommendation."], decisionSensitivity: sensitivity };
+}
+
+function buildEvidenceRegister(
+  evidenceRequests: string[],
+  gaps: Array<{ id: string; name: string; severity: string; action: string }>
+): EvidenceRegisterItem[] {
+  return evidenceRequests.map(evidence => {
+    const text = evidence.toLowerCase();
+    const affectedGaps = gaps.filter(g => {
+      if (text.includes("rto") || text.includes("rpo") || text.includes("bia")) return g.id === "G-01" || g.id === "G-02";
+      if (text.includes("backup") || text.includes("restore")) return g.id === "G-03" || g.id === "G-05";
+      if (text.includes("failover") || text.includes("recovery")) return ["G-02","G-04","G-06","G-09","G-10"].includes(g.id);
+      if (text.includes("cyber")) return g.id === "G-05" || g.id === "G-06";
+      if (text.includes("supplier") || text.includes("third-party") || text.includes("exit")) return g.id === "G-08";
+      if (text.includes("dependency")) return g.id === "G-07" || g.id === "G-04";
+      return false;
+    }).map(g => g.id);
+    return {
+      evidence,
+      status: "requested",
+      purpose: evidence.toLowerCase().includes("test") ? "Validate that documented recovery capability achieves the stated business objective." :
+        evidence.toLowerCase().includes("backup") || evidence.toLowerCase().includes("restore") ? "Validate data recoverability and clean restoration." :
+        evidence.toLowerCase().includes("supplier") ? "Validate third-party resilience commitments, alternatives and exit capability." :
+        "Validate the assessment assumption and supporting control.",
+      affectedGaps,
+      affectsRecommendation: affectedGaps.some(id => ["G-01","G-02","G-03","G-04","G-05","G-06","G-07","G-08","G-09"].includes(id))
+    };
+  });
 }
 
 function criticalExposure(gaps: Array<{ severity: string }>): "Low" | "Moderate" | "High" | "Severe" {
@@ -683,6 +721,8 @@ export function evaluateResilienceIq(a: ResilienceAnswers): ResilienceResult {
       "Validate the assessment assumption and supporting control."
   }));
 
+  const evidenceRegister = buildEvidenceRegister(evidenceRequests, gaps);
+  if (evidenceRegister.some(x => x.affectsRecommendation)) reasons.push("Requested evidence can materially change the recovery strategy or supporting controls.");
   const sensitivity = preferred ? [
     "If measured recovery misses the stated RTO/RPO, reassess the selected " + preferred + " strategy and consider the next higher resilience tier.",
     "If business impact tolerance or recovery objectives change, rerun the strategy decision.",
@@ -717,6 +757,7 @@ export function evaluateResilienceIq(a: ResilienceAnswers): ResilienceResult {
     supportingControls: ranking.filter(x => !/^DR-/.test(x.id)).slice(0, 5),
     technologyMapping: preferred ? technologyOptions([preferred, ...recoveryRanking.slice(1, 3).map(x => x.id), ...(cyberRisk(a) === "destructive" || cyberRisk(a) === "high" ? ["CYBER-01"] : [])], a) : {},
     evidenceValidation,
+    evidenceRegister,
     targetState: blueprint,
     roadmap,
     governanceMetrics: (k.blueprintEngine.section_rules?.governance_and_metrics?.required_metrics ?? []) as string[],
@@ -742,6 +783,7 @@ export function evaluateResilienceIq(a: ResilienceAnswers): ResilienceResult {
     gapRegister: gaps,
     nextQuestions,
     evidenceRequests,
+    evidenceRegister,
     technologyOptions: preferred ? technologyOptions([preferred, ...recoveryRanking.slice(1,3).map(x => x.id), ...(cyberRisk(a) === "destructive" || cyberRisk(a) === "high" ? ["CYBER-01"] : [])], a) : {},
     blueprint,
     roadmap: roadmap(gaps, preferred, cyberRisk(a)),
