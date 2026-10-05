@@ -56,6 +56,7 @@ const schema = a.schema({
     ]),
 
   ResilienceAssessment: a
+    .identifier(['assessmentId'])
     .model({
       assessmentId: a.string().required(),
       clientName: a.string().required(),
