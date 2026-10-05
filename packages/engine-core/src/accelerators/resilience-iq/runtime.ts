@@ -222,6 +222,12 @@ function ruleMatches(rule: any, a: ResilienceAnswers): boolean {
   if (condition === "low_or_unknown") return ["Low", "Unknown"].includes(v);
   if (condition === "no_or_technical_only") return ["No", "Technical tests only", "Unknown"].includes(v);
   if (condition === "partial_or_no") return ["Partially", "No", "Unknown"].includes(v);
+  if (condition === "advisory_recovery_not_proven") return ["No", "Partially", "Unknown"].includes(v);
+  if (condition === "advisory_automation_weak") return ["Manual runbook", "Partially automated", "Unknown"].includes(v);
+  if (condition === "advisory_cyber_weak") return ["No", "Unknown", "Tabletop only"].includes(v);
+  if (condition === "advisory_backup_weak") return ["No", "Unknown"].includes(v);
+  if (condition === "advisory_exit_weak") return ["High — no practical alternative", "Unknown", "No viable exit"].includes(v);
+  if (condition === "advisory_testing_weak") return ["No", "Partially", "Unknown", "Never", "Ad hoc"].includes(v);
   return false;
 }
 
