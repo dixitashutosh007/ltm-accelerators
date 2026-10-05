@@ -269,7 +269,7 @@ const advisoryBranchCase = evaluateResilienceIq({
   "EX-09":"Yes, tested","EX-10":"Yes, but alternatives exist","EX-11":"No material concentration","EX-12":"No known SPOFs",
   "EX-13":"Yes, isolated alternate path exists","EX-14":"Yes, isolated alternate path exists","EX-15":"Yes, periodic review","EX-16":"Yes, regularly","EX-17":"Yes, tested",
   "EX-18":["AWS"],"EX-19":"Yes, isolated alternate path exists","EX-20":"High — tested",
-  "AF-DR-04":"No","AF-DR-05":"Manual runbook","AF-CY-03":"No","AF-CY-04":"No","AF-TS-02":"No"
+  "AF-DR-05":"Manual runbook","AF-CY-03":"No","AF-CY-04":"No","AF-TS-02":"No"
 });
 if (!advisoryBranchCase.evidenceRequests.includes("cyber recovery exercise evidence")) throw new Error("Advisory cyber branch should request cyber exercise evidence");
 if (!advisoryBranchCase.evidenceRequests.includes("recovery orchestration evidence")) throw new Error("Advisory recovery automation branch should request orchestration evidence");
