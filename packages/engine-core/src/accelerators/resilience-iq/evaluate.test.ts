@@ -340,6 +340,8 @@ if (advisoryLifecycle.executiveReport.recommendationConfidence.level !== advisor
 if (advisoryLifecycle.executiveReport.evidenceRegister.length !== advisoryLifecycle.evidenceRegister.length) throw new Error("Executive report evidence register must match runtime evidence register");
 if (advisoryLifecycle.evidenceRegister.some(x => !x.id || !x.type || !x.validationCriteria?.length)) throw new Error("Evidence register items must include typed validation criteria");
 if (new Set(advisoryLifecycle.evidenceRegister.map(x => x.id)).size !== advisoryLifecycle.evidenceRegister.length) throw new Error("Evidence register IDs must be unique");
+if (!advisoryLifecycle.decisionLog.some(x => x.startsWith("Evidence register:"))) throw new Error("Decision log must record evidence register state");
+if (!advisoryLifecycle.decisionLog.some(x => x.startsWith("Recommendation sensitivity:"))) throw new Error("Decision log must record recommendation sensitivity");
 if (advisoryLifecycle.executiveReport.roadmap.length !== advisoryLifecycle.roadmap.length) throw new Error("Executive report roadmap must match runtime roadmap");
 if (advisoryLifecycle.executiveReport.recoveryStrategy.alternatives.map(x => x.id).join(",") !== advisoryLifecycle.alternatives.map(x => x.id).join(",")) throw new Error("Executive report alternatives must match runtime alternatives");
 
