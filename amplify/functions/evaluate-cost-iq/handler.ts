@@ -58,7 +58,11 @@ export const handler = async (event: APIGatewayProxyEventV2): Promise<APIGateway
     });
     return response(200, result, id);
   } catch (error) {
-    console.error('[EvaluateCostIq] Request failed', { requestId: id });
+    console.error('[EvaluateCostIq] Request failed', {
+      requestId: id,
+      errorName: error instanceof Error ? error.name : 'UnknownError',
+      errorMessage: error instanceof Error ? error.message : String(error)
+    });
     return response(500, {
       error: 'internal_evaluation_error',
       message: 'An internal error occurred while processing the Cost IQ request.',
@@ -66,7 +70,6 @@ export const handler = async (event: APIGatewayProxyEventV2): Promise<APIGateway
     }, id);
   }
 };
-
 
 async function callOpenAI(instruction: string, input: string) {
   const key = process.env.OPENAI_API_KEY;
@@ -128,6 +131,6 @@ async function aiReport(body:any) {
   const instruction = `You are a senior LTM technology economics advisor. Produce an executive Cost IQ report using the supplied deterministic assessment as the source of truth.
 Do not invent scores, savings, facts or findings. Clearly distinguish evidence-backed observations from hypotheses.
 Return ONLY JSON:
-{"executiveSummary":"...","keyMessages":["..."],"priorityAreas":[{"name":"...","score":0,"why":"...","action":"..."}],"opportunities":[{"title":"...","description":"...","evidence":"...","confidence":"High|Medium|Low","nextStep":"..."}],"roadmap":[{"horizon":"0-30 days","actions":["..."]},{"horizon":"30-90 days","actions":["..."]},{"horizon":"90-180+ days","actions":["..."]}],"consultingRecommendations":["..."],"limitations":"..."}.`;
+{"executiveSummary":"...","keyMessages":["..."],"priorityAreas":[{"name":"...","score":0,"why":"...","action":"..."}],"opportunities":[{"title":"...","description":"...","evidence":"...","confidence":"High|Medium|Low","nextStep":"..."}],"roadmap":[{"horizon":"0-30 days","actions":["..."]},{"horizon":"30-90 days","actions":["..."]},{"horizon":"90-180+ days","actions":["..."]}],"consultingRecommendations":["..."],"limitations":"..." }.`;
   return safeJsonText(await callOpenAI(instruction, payload));
 }
