@@ -292,7 +292,7 @@ const advisoryPriorityCase = evaluateResilienceIq({
   "EX-08":"Yes","EX-09":"No","EX-10":"Yes, with no viable alternative","EX-11":"High concentration",
   "EX-12":"Critical SPOFs exist","EX-13":"Partially","EX-14":"No","EX-15":"No","EX-16":"Technical tests only",
   "EX-17":"No","EX-18":["AWS"],"EX-19":"Unknown","EX-20":"Low",
-  "AF-DR-04":"No","AF-DR-05":"Manual runbook","AF-CY-03":"No","AF-CY-04":"No",
+  "AF-DR-05":"Manual runbook","AF-CY-03":"No","AF-CY-04":"No",
   "AF-CY-05":"No defined method","AF-TP-02":"High — no practical alternative","AF-TP-03":"No viable exit",
   "AF-TS-02":"No","AF-TS-03":"Never"
 });
