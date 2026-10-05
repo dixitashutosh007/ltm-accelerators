@@ -33,13 +33,22 @@ export type AssessmentRepository = {
   put(assessment: Assessment): Promise<Assessment>;
 };
 
-const { resourceConfig, libraryOptions } = await getAmplifyDataClientConfig(process.env as Record<string, string>);
-Amplify.configure(resourceConfig, libraryOptions);
-const client = generateClient<Schema>();
+let clientPromise: ReturnType<typeof initializeClient> | undefined;
+async function initializeClient() {
+  const { resourceConfig, libraryOptions } = await getAmplifyDataClientConfig(process.env as Record<string, string>);
+  Amplify.configure(resourceConfig, libraryOptions);
+  return generateClient<Schema>();
+}
+function getClient() {
+  clientPromise ??= initializeClient();
+  return clientPromise;
+}
 
 export function getAssessmentRepository(): AssessmentRepository {
   return {
+
     async get(assessmentId) {
+      const client = await getClient();
       const { data, errors } = await client.models.ResilienceAssessment.get({ assessmentId });
       if (errors?.length) throw new Error(errors.map(error => error.message).join('; '));
       if (!data) return null;
@@ -78,6 +87,7 @@ export function getAssessmentRepository(): AssessmentRepository {
         completedAt: assessment.completedAt,
         finalizedAt: assessment.finalizedAt
       };
+      const client = await getClient();
       const { data, errors } = await client.models.ResilienceAssessment.upsert(input);
       if (errors?.length) throw new Error(errors.map(error => error.message).join('; '));
       if (!data) throw new Error('Resilience assessment persistence returned no record.');
