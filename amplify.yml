@@ -10,6 +10,7 @@ backend:
         - export CI=1
         - npx ampx pipeline-deploy --branch $AWS_BRANCH --app-id $AWS_APP_ID --outputs-out-dir . --outputs-version 1
         - npx ampx generate outputs --branch $AWS_BRANCH --app-id $AWS_APP_ID --out-dir . --outputs-version 1
+        - cp amplify_outputs.json Accelerators/amplify_outputs.json
 
 frontend:
   phases:
