@@ -107,6 +107,14 @@ function parseBody(event: APIGatewayProxyEventV2): any {
   return JSON.parse(raw);
 }
 
+function assertAssessmentAccess(assessment: Assessment, claims: Record<string, unknown>, groups: string[]): void {
+  if (groups.includes('Admin')) return;
+  const identity = String(claims.email ?? claims['cognito:username'] ?? claims.username ?? '').toLowerCase();
+  if (!identity || assessment.respondentEmail.toLowerCase() !== identity) {
+    throw Object.assign(new Error('forbidden'), { code: 'FORBIDDEN' });
+  }
+}
+
 function validStatus(value: unknown): value is ResilienceAssessmentStatus {
   return ['draft', 'in_progress', 'completed', 'archived'].includes(String(value));
 }
@@ -154,6 +162,7 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<APIGateway
     if (!assessmentId) return json(400, { ok: false, error: 'assessmentId is required' }, requestId);
     const current = await repo.get(assessmentId);
     if (!current) return json(404, { ok: false, error: 'assessment_not_found' }, requestId);
+    try { assertAssessmentAccess(current, claims ?? {}, groups); } catch { return json(403, { ok: false, error: 'forbidden' }, requestId); }
 
     if (action === 'save') {
       if (isAssessmentFinal(current.status)) return json(409, { ok: false, error: 'assessment_finalized' }, requestId);
