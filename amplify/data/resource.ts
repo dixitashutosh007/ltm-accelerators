@@ -55,6 +55,31 @@ const schema = a.schema({
       allow.group('Consultant').to(['read'])
     ]),
 
+  ResilienceAssessment: a
+    .model({
+      assessmentId: a.string().required(),
+      clientName: a.string().required(),
+      clientSector: a.string(),
+      respondentEmail: a.string().required(),
+      status: a.string().required(),
+      questionBankVersion: a.string().required(),
+      scoringModelVersion: a.string().required(),
+      decisionTreeVersion: a.string().required(),
+      blueprintEngineVersion: a.string().required(),
+      executiveReportVersion: a.string().required(),
+      engineVersion: a.string().required(),
+      answersJson: a.string().required(),
+      resultJson: a.string(),
+      decisionLogJson: a.string(),
+      recommendationSensitivityJson: a.string(),
+      startedAt: a.datetime().required(),
+      completedAt: a.datetime(),
+      finalizedAt: a.datetime()
+    })
+    .authorization(allow => [
+      allow.groups(['Admin', 'Consultant']).to(['create', 'read', 'update'])
+    ]),
+
   AssessmentSubmission: a
     .model({
       acceleratorId: a.string().required(),
