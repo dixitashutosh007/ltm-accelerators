@@ -1,4 +1,5 @@
 import type { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
+import { createHash } from 'node:crypto';
 import { evaluateCostIq, metadata, questions, orchestrate } from '../../../packages/engine-core/src/accelerators/cost-iq/evaluate.cjs';
 
 const CORS_HEADERS = {
@@ -75,6 +76,8 @@ async function callGemini(instruction: string, input: string) {
   const key = process.env.GEMINI_API_KEY;
   if (!key) throw new Error('AI service is not configured. Add the GEMINI_API_KEY Amplify secret.');
   const model = process.env.GEMINI_MODEL || 'gemini-3.8-flash';
+  const fingerprint = createHash('sha256').update(key).digest('hex').slice(0, 12);
+  console.log('[CostIQ Gemini] key diagnostic', { present: true, length: key.length, fingerprint, model });
   const resp = await fetch('https://generativelanguage.googleapis.com/v1beta/models/' + encodeURIComponent(model) + ':generateContent', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', 'x-goog-api-key': key },
