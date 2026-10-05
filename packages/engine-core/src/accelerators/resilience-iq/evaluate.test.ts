@@ -355,6 +355,10 @@ if (advisoryGateCase.executiveReport.rating !== null) throw new Error("Blocked a
 if (advisoryGateCase.executiveReport.criticalExposure !== null) throw new Error("Blocked assessment report should not expose final critical exposure");
 if (advisoryLifecycle.executiveReport.postureScore !== advisoryLifecycle.postureScore) throw new Error("Completed report posture score must match runtime");
 
+if (advisoryLifecycle.version.engine !== "1.0.0" || advisoryLifecycle.version.questionBank !== "1.0") {
+  throw new Error("Completed assessment must carry immutable engine and question-bank version metadata");
+}
+
 const repeatA = evaluateResilienceIq(advisoryLifecycleAnswers);
 const repeatB = evaluateResilienceIq(advisoryLifecycleAnswers);
 if (JSON.stringify(repeatA) !== JSON.stringify(repeatB)) {
