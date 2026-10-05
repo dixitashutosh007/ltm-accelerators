@@ -6,6 +6,7 @@ const read = p => JSON.parse(fs.readFileSync(path.join(root, p), 'utf8'));
 const bank = read('resilience-iq/knowledge/question-bank.json');
 const scoring = read('resilience-iq/knowledge/scoring-model.json');
 const tree = read('resilience-iq/knowledge/decision-tree.json');
+const executiveReport = read('resilience-iq/knowledge/executive-report.json');
 
 const errors = [];
 const warnings = [];
@@ -61,6 +62,21 @@ for (const f of ['id','domain','taxonomy','text','type','options','required','ev
   if (!contract.includes(f)) errors.push('editor_contract missing field: ' + f);
 }
 if (bank.editor_contract?.governance?.id_immutable !== true) errors.push('editor_contract must make question IDs immutable');
+const evidenceLifecycle = executiveReport.output_contract?.evidence_lifecycle;
+const evidenceStatuses = new Set(executiveReport.output_contract?.evidence_status_values || []);
+if (!evidenceLifecycle?.status_transitions || !evidenceLifecycle?.validation_rule || !evidenceLifecycle?.recommendation_rule) {
+  errors.push('executive-report evidence_lifecycle contract is incomplete');
+} else {
+  for (const status of evidenceStatuses) {
+    if (!Array.isArray(evidenceLifecycle.status_transitions[status])) {
+      errors.push('executive-report evidence_lifecycle missing transitions for status: ' + status);
+    } else {
+      for (const next of evidenceLifecycle.status_transitions[status]) {
+        if (!evidenceStatuses.has(next)) errors.push('executive-report evidence_lifecycle references unknown status: ' + next);
+      }
+    }
+  }
+}
 if (errors.length) {
   console.error('Resilience IQ Question Bank validation FAILED');
   errors.forEach(e => console.error('ERROR:', e));
