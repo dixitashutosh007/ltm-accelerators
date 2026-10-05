@@ -9,9 +9,10 @@ import { getAmplifyDataClientConfig } from '@aws-amplify/backend/function/runtim
 import type { Schema } from '../../data/resource';
 import { env } from '$amplify/env/manage-resilience-assessment';
 
+const ALLOWED_ORIGIN = process.env.RESILIENCE_IQ_ALLOWED_ORIGIN || '*';
 const json = (statusCode: number, body: unknown, requestId: string): APIGatewayProxyResultV2 => ({
   statusCode,
-  headers: { 'content-type': 'application/json', 'x-request-id': requestId },
+  headers: { 'content-type': 'application/json', 'x-request-id': requestId, 'access-control-allow-origin': ALLOWED_ORIGIN, 'access-control-allow-headers': 'Content-Type,Authorization,X-Amz-Date,X-Api-Key,X-Amz-Security-Token,X-Request-Id', 'access-control-allow-methods': 'OPTIONS,POST' },
   body: JSON.stringify(body)
 });
 
