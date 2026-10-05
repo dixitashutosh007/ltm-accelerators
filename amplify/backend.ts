@@ -10,6 +10,7 @@ import { evaluateCostIqFunction } from './functions/evaluate-cost-iq/resource';
 import { evaluateStrategyIqFunction } from './functions/evaluate-strategy-iq/resource';
 import { evaluateModernizationIqFunction } from './functions/evaluate-modernization-iq/resource';
 import { evaluateResilienceIqFunction } from './functions/evaluate-resilience-iq/resource';
+import { manageResilienceEvidenceFunction } from './functions/manage-resilience-evidence/resource';
 import { HttpApi, HttpMethod } from 'aws-cdk-lib/aws-apigatewayv2';
 import { HttpLambdaIntegration } from 'aws-cdk-lib/aws-apigatewayv2-integrations';
 
@@ -24,7 +25,8 @@ export const backend = defineBackend({
   evaluateCostIqFunction,
   evaluateStrategyIqFunction,
   evaluateModernizationIqFunction,
-  evaluateResilienceIqFunction
+  evaluateResilienceIqFunction,
+  manageResilienceEvidenceFunction
 });
 
 const apiStack = backend.createStack('AcceleratorsApiStack');
@@ -39,7 +41,8 @@ const integrations = {
   costIq: new HttpLambdaIntegration('EvaluateCostIqIntegration', backend.evaluateCostIqFunction.resources.lambda),
   strategy: new HttpLambdaIntegration('EvaluateStrategyIqIntegration', backend.evaluateStrategyIqFunction.resources.lambda),
   modernization: new HttpLambdaIntegration('EvaluateModernizationIqIntegration', backend.evaluateModernizationIqFunction.resources.lambda),
-  resilience: new HttpLambdaIntegration('EvaluateResilienceIqIntegration', backend.evaluateResilienceIqFunction.resources.lambda)
+  resilience: new HttpLambdaIntegration('EvaluateResilienceIqIntegration', backend.evaluateResilienceIqFunction.resources.lambda),
+  resilienceEvidence: new HttpLambdaIntegration('ManageResilienceEvidenceIntegration', backend.manageResilienceEvidenceFunction.resources.lambda)
 };
 
 httpApi.addRoutes({ path: '/api/evaluate/finops-value-case', methods: [HttpMethod.POST, HttpMethod.OPTIONS], integration: integrations.finops });
@@ -50,6 +53,7 @@ httpApi.addRoutes({ path: '/api/evaluate/cloud-iq', methods: [HttpMethod.POST, H
 httpApi.addRoutes({ path: '/api/evaluate/strategy-iq', methods: [HttpMethod.POST, HttpMethod.OPTIONS], integration: integrations.strategy });
 httpApi.addRoutes({ path: '/api/evaluate/modernization-iq', methods: [HttpMethod.POST, HttpMethod.OPTIONS], integration: integrations.modernization });
 httpApi.addRoutes({ path: '/api/evaluate/resilience-iq', methods: [HttpMethod.POST, HttpMethod.OPTIONS], integration: integrations.resilience });
+httpApi.addRoutes({ path: '/api/resilience-iq/evidence', methods: [HttpMethod.POST, HttpMethod.OPTIONS], integration: integrations.resilienceEvidence });
 
 httpApi.addRoutes({
   path: '/api/evaluate/cost-iq',
