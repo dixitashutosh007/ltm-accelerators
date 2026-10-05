@@ -302,6 +302,37 @@ if (advisoryPriorityCase.nextQuestions[0]?.id !== "AF-DR-04") throw new Error("H
 if (!advisoryPriorityCase.recommendationSensitivity.some(s => s.id === "SENS-01" && s.affectedDecision)) throw new Error("Recommendation sensitivity should identify the affected decision");
 if (!advisoryPriorityCase.recommendationSensitivity.some(s => s.id === "SENS-03")) throw new Error("Cyber recovery sensitivity should be explicit");
 
+const advisoryLifecycleAnswers: any = {
+  "EX-01": advisoryGateCase ? ["Customer-facing services", "Revenue-generating services"] : [],
+  "EX-02": "1-4 hours", "EX-03": "1-4 hours", "EX-04": "15-60 minutes",
+  "EX-05": "Yes, current and validated", "EX-06": "Likely, but not recently tested", "EX-07": "1-2 years ago",
+  "EX-08": "Potentially", "EX-09": "Immutable but restore not proven", "EX-10": "Yes, with no viable alternative",
+  "EX-11": "High concentration", "EX-12": "Critical SPOFs exist", "EX-13": "Partially", "EX-14": "Partially",
+  "EX-15": "Yes, periodic review", "EX-16": "Technical tests only", "EX-17": "No", "EX-18": ["AWS"],
+  "EX-19": "Unknown", "EX-20": "Medium — documented but not fully tested",
+  "AF-BIA-01": "1-4 hours",
+  "AF-BIA-02": ["People", "Process", "Application", "Data"],
+  "AF-BIA-03": ["Revenue loss", "Customer harm"],
+  "AF-BIA-04": ["Identity", "Network"],
+  "AF-DR-01": "1-4 hours", "AF-DR-02": "15-60 minutes",
+  "AF-DR-03": ["Application failover", "Database recovery", "Data restore", "Business validation"],
+  "AF-DR-04": "No", "AF-DR-05": "Fully orchestrated", "AF-DR-06": ["None known"],
+  "AF-CY-01": "No", "AF-CY-02": "Automated validation", "AF-CY-03": "Yes, tested",
+  "AF-CY-04": "Yes, successfully", "AF-CY-05": "Known-good immutable points with validation",
+  "AF-TP-01": ["RTO", "RPO", "Availability", "Incident notification"],
+  "AF-TP-02": "Low — viable alternative", "AF-TP-03": "Within impact tolerance", "AF-TP-04": "Independent validation",
+  "AF-CL-01": ["Availability Zone", "Region"], "AF-CL-02": ["None known"], "AF-CL-03": "No", "AF-CL-04": "Yes, tested",
+  "AF-OP-01": "Yes, tested", "AF-OP-02": "Yes, tested", "AF-OP-03": "Yes, automated",
+  "AF-TS-01": ["No blocker"], "AF-TS-02": "Yes", "AF-TS-03": "Automatically/continuously",
+  "AF-GV-01": "Named business owner with technology counterpart", "AF-GV-02": "Formal approval and expiry",
+  "AF-GV-03": ["Business impact and risk reduction"]
+};
+const advisoryLifecycle = evaluateResilienceIq(advisoryLifecycleAnswers);
+if (advisoryLifecycle.status !== "ready") throw new Error("Completing triggered advisory questions should release the advisory-depth gate");
+if (!advisoryLifecycle.preferredPattern) throw new Error("Completed advisory lifecycle should produce a preferred recovery strategy");
+if (!advisoryLifecycle.blueprint) throw new Error("Completed advisory lifecycle should produce a target-state blueprint");
+
+
 console.log("Resilience IQ knowledge-driven runtime tests passed");
 
 
