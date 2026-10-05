@@ -66,9 +66,17 @@ export const handler = async (event: APIGatewayProxyEventV2): Promise<APIGateway
   try {
     let body: any = {};
     if (event.body) {
-      body = event.isBase64Encoded
-        ? JSON.parse(Buffer.from(event.body, 'base64').toString('utf-8'))
-        : JSON.parse(event.body);
+      try {
+        body = event.isBase64Encoded
+          ? JSON.parse(Buffer.from(event.body, 'base64').toString('utf-8'))
+          : JSON.parse(event.body);
+      } catch {
+        return {
+          statusCode: 400,
+          headers: CORS_HEADERS,
+          body: JSON.stringify({ ok: false, error: 'Request body must contain valid JSON.' })
+        };
+      }
     }
 
     const { answers } = body;
