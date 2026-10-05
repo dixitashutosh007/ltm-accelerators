@@ -122,10 +122,8 @@ function showEngineOverlay(done){
   showSplash(['Normalizing assessment responses…','Evaluating cost dimensions…','Evaluating value dimensions…','Checking evidence & confidence…','Preparing AI diagnostic review…'],done)
 }
 async function aiCheck(){
-  try{
-    aiReview=await api('/api/evaluate/cost-iq/ai-review',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({answers:answers,selectedAreas:selectedAreas,context:subjective})});
-    if(aiReview.needsClarification&&aiReview.questions&&aiReview.questions.length){clarify(0);return}
-  }catch(e){aiReview={needsClarification:false,observations:['AI review unavailable; deterministic assessment retained.']}}
+  // AI is intentionally optional. Cost IQ remains fully usable without an external AI service.
+  aiReview={needsClarification:false,observations:['AI review is currently disabled; deterministic assessment retained as the source of truth.']};
   preliminary();
 }
 function clarify(i){
@@ -185,14 +183,17 @@ function openBooking(){
   generateDetailedReport();
 }
 async function generateDetailedReport(){
-  const overlaySteps=['Reading assessment evidence…','Mapping cost & value dimensions…','Analyzing concentration patterns…','Correlating AI observations…','Building opportunity signals…','Constructing executive roadmap…','Rendering visual report…'];
-  showSplash(overlaySteps,async function(){
-    try{
-      const ai=await api('/api/evaluate/cost-iq/ai-report',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({assessment:assessment,answers:answers,subjective:subjective,aiReview:aiReview,selectedAreas:selectedAreas})});
-      renderReport(ai);
-    }catch(e){
-      renderReport({executiveSummary:'The deterministic diagnostic completed successfully. AI narrative generation was unavailable for this run.',keyMessages:[],priorityAreas:[],opportunities:[],roadmap:[],consultingRecommendations:[],limitations:e.message});
-    }
+  const overlaySteps=['Reading assessment evidence…','Mapping cost & value dimensions…','Analyzing concentration patterns…','Building deterministic opportunity signals…','Constructing executive roadmap…','Rendering executive report…'];
+  showSplash(overlaySteps,function(){
+    renderReport({
+      executiveSummary:'The Cost IQ deterministic diagnostic has completed. This report summarizes the assessment scores, evidence confidence, calibrated findings, opportunity signals and recommended action path.',
+      keyMessages:[],
+      priorityAreas:[],
+      opportunities:[],
+      roadmap:[],
+      consultingRecommendations:[],
+      limitations:'Deterministic Cost IQ scores, findings and evidence gates are the source of truth. AI review and narrative synthesis are currently disabled.'
+    });
   });
 }
 function normalizeAI(ai){
@@ -209,6 +210,7 @@ function normalizeAI(ai){
   return ai;
 }
 function renderReport(ai){
+  window._renderCostReport=ai;
   ai=normalizeAI(ai);
   const h=assessment.headlines||{},findings=assessment.findings||[],recs=assessment.recommendations||[],dims=scoreEntries();
   const pri=(ai.priorityAreas||[]).map(function(x){return '<div class="signal"><b>'+esc(x.name)+'</b><span>Score '+esc(x.score)+' · '+esc(x.why)+'</span><p style="font-size:11px;margin:7px 0 0"><b>Next:</b> '+esc(x.action)+'</p></div>'}).join('');
