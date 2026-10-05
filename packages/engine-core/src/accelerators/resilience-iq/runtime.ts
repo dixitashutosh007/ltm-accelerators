@@ -28,9 +28,12 @@ export interface RecommendationConfidence {
 }
 
 export interface EvidenceRegisterItem {
+  id: string;
   evidence: string;
+  type: "business_requirement" | "architecture" | "recovery_test" | "backup_restore" | "cyber_recovery" | "third_party" | "dependency" | "governance" | "other";
   status: "not_requested" | "requested" | "provided" | "validated" | "rejected";
   purpose: string;
+  validationCriteria: string[];
   affectedGaps: string[];
   affectsRecommendation: boolean;
 }
@@ -375,13 +378,33 @@ function buildEvidenceRegister(
       if (text.includes("dependency")) return g.id === "G-07" || g.id === "G-04";
       return false;
     }).map(g => g.id);
+    const type =
+      text.includes("rto") || text.includes("rpo") || text.includes("bia") ? "business_requirement" :
+      text.includes("backup") || text.includes("restore") ? "backup_restore" :
+      text.includes("cyber") ? "cyber_recovery" :
+      text.includes("supplier") || text.includes("third-party") || text.includes("exit") ? "third_party" :
+      text.includes("dependency") ? "dependency" :
+      text.includes("test") || text.includes("failover") || text.includes("recovery") ? "recovery_test" :
+      text.includes("architecture") || text.includes("diagram") ? "architecture" :
+      "other";
+    const validationCriteria =
+      type === "business_requirement" ? ["Evidence identifies the critical service and approved impact tolerance/RTO/RPO.", "Values are owned by the business and consistent with the assessment scope."] :
+      type === "backup_restore" ? ["Recovery points are protected from production compromise.", "A restore test demonstrates usable data and records achieved recovery time."] :
+      type === "cyber_recovery" ? ["Recovery path is isolated from the compromised production trust boundary.", "A clean recovery exercise demonstrates usable recovery points and identity access."] :
+      type === "third_party" ? ["Contract/SLA defines resilience obligations and notification/testing requirements.", "Alternative or exit capability is credible for the stated impact tolerance."] :
+      type === "dependency" ? ["Dependencies are mapped to the critical service and recovery sequence.", "Shared failure domains and recovery blockers are explicitly identified."] :
+      type === "recovery_test" ? ["Test covers the end-to-end service, not only infrastructure components.", "Observed RTO/RPO are recorded and compared with approved objectives."] :
+      ["Evidence is current, attributable and relevant to the assessed control."];
     return {
+      id: "ER-" + String(evidenceRequests.indexOf(evidence) + 1).padStart(2, "0"),
       evidence,
+      type,
       status: "requested",
       purpose: evidence.toLowerCase().includes("test") ? "Validate that documented recovery capability achieves the stated business objective." :
         evidence.toLowerCase().includes("backup") || evidence.toLowerCase().includes("restore") ? "Validate data recoverability and clean restoration." :
         evidence.toLowerCase().includes("supplier") ? "Validate third-party resilience commitments, alternatives and exit capability." :
         "Validate the assessment assumption and supporting control.",
+      validationCriteria,
       affectedGaps,
       affectsRecommendation: affectedGaps.some(id => ["G-01","G-02","G-03","G-04","G-05","G-06","G-07","G-08","G-09"].includes(id))
     };
