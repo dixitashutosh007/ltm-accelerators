@@ -36,6 +36,21 @@ assert.equal(empty.safeguards.economicPracticalSeparated, true);
 const sample = { answers: {}};
 assert.deepEqual(adapter.evaluateCostIq(sample), adapter.evaluateCostIq(sample));
 
+const high = adapter.evaluateCostIq({ answers: { 'CORE-06': 5 } });
+assert.equal(high.headlines.costIQ, 100);
+assert.equal(high.headlines.valueIQ, null);
+assert.equal(high.dimensions.find(d => d.id === 'COST-01').score, 100);
+assert.deepEqual(high.findings, []);
+
+const low = adapter.evaluateCostIq({ answers: { 'CORE-06': 1 } });
+assert.equal(low.headlines.costIQ, 0);
+assert.equal(low.headlines.valueIQ, null);
+assert.equal(low.dimensions.find(d => d.id === 'COST-01').score, 0);
+assert.deepEqual(low.findings, []);
+
+const calibrated = adapter.evaluateCostIq({ answers: { 'CORE-17': 49 } });
+assert.ok(calibrated.findings.some(f => f.id === 'F-002'));
+
 console.log('Cost IQ Phase 1 baseline contract: PASS');
 console.log(JSON.stringify({
   questions: questionSet.questions.length,
