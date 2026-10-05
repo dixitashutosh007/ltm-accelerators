@@ -1166,5 +1166,56 @@
         "policy/document"
       ]
     }
-  ]
+  ],
+  "editor_contract": {
+    "schema_version": "1.0",
+    "name": "Resilience IQ Question Bank Studio",
+    "purpose": "Define and govern executive and advisory assessment questions independently from the assessment renderer.",
+    "fields": [
+      "id",
+      "domain",
+      "taxonomy",
+      "text",
+      "type",
+      "options",
+      "required",
+      "evidence",
+      "ui",
+      "scoring",
+      "branching",
+      "framework_mappings",
+      "version",
+      "status"
+    ],
+    "interaction_types": [
+      "single_select",
+      "multi_select",
+      "slider_choice",
+      "matrix",
+      "ranking",
+      "scenario",
+      "number",
+      "text",
+      "yes_no",
+      "evidence_select"
+    ],
+    "governance": {
+      "id_immutable": true,
+      "required_questions_must_have_scoring": true,
+      "interactive_questions_must_have_ui": true,
+      "branching_references_must_resolve": true,
+      "framework_mappings_recommended": true,
+      "status_values": [
+        "draft",
+        "active",
+        "deprecated"
+      ]
+    },
+    "workflow": [
+      "draft",
+      "validate",
+      "publish",
+      "deprecate"
+    ]
+  }
 }
