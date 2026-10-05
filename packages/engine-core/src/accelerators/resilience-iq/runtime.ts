@@ -239,6 +239,7 @@ function dynamicBranch(a: ResilienceAnswers) {
     for (const p of rule.then?.eliminate_patterns ?? []) eliminate.add(p);
     for (const p of rule.then?.candidate_patterns ?? []) candidates.add(p);
     if (rule.then?.flag) flags.add(rule.then.flag);
+    if (rule.then?.action) flags.add(rule.then.action);
   }
   return { questions, evidence, eliminate, candidates, flags };
 }
@@ -490,6 +491,9 @@ export function evaluateResilienceIq(a: ResilienceAnswers): ResilienceResult {
   const required = requiredQuestions();
   const missing = required.filter(id => a[id] === undefined || a[id] === null || a[id] === "");
   const requirementsIncomplete = rto === null || rpo === null;
+  const advisoryMissing = [...branch.questions].filter(id => a[id] === undefined || a[id] === null || a[id] === "");
+  const advisoryDepthRequired = branch.flags.has("force_advisory_depth");
+  const assessmentIncomplete = requirementsIncomplete || missing.length > 0 || (advisoryDepthRequired && advisoryMissing.length > 0);
   const confidenceLabel = evidenceConfidence(a);
   const confidence = Number((k.scoringModel.evidence_confidence as any)[confidenceLabel] ?? 0.7);
   const domains = scoreDomains(a, confidence);
@@ -514,7 +518,7 @@ export function evaluateResilienceIq(a: ResilienceAnswers): ResilienceResult {
   const ranking = unique.map(id => patternScore(id, a, eliminated)).filter(Boolean) as PatternDecision[];
   ranking.sort((x, y) => y.score - x.score);
   const recoveryRanking = ranking.filter(x => ["DR-01","DR-02","DR-03","DR-04","DR-05"].includes(x.id));
-  const preferred = requirementsIncomplete || missing.length > 0 ? null : recoveryRanking[0]?.id ?? null;
+  const preferred = assessmentIncomplete ? null : recoveryRanking[0]?.id ?? null;
 
   const nextQuestions: NextQuestion[] = [];
   for (const id of branch.questions) {
@@ -541,10 +545,12 @@ export function evaluateResilienceIq(a: ResilienceAnswers): ResilienceResult {
     ...(dependencyRisk(a) === "high" ? ["DR-07", "APP-04", "DR-08"] : [])
   ];
 
-  const blueprint = requirementsIncomplete || missing.length > 0 ? null : targetStateBlueprint(a, preferred, gaps, mandatoryControls);
+  const blueprint = assessmentIncomplete ? null : targetStateBlueprint(a, preferred, gaps, mandatoryControls);
 
-  const executiveSummary = requirementsIncomplete || missing.length > 0
-    ? "Resilience assessment requires defined recovery objectives before a final target-state recommendation can be issued."
+  const executiveSummary = assessmentIncomplete
+    ? advisoryDepthRequired && advisoryMissing.length > 0
+      ? "Resilience assessment requires advisory-depth validation of the triggered critical-service, cyber-recovery and recovery-capability risks before a final target-state recommendation can be issued."
+      : "Resilience assessment requires defined recovery objectives before a final target-state recommendation can be issued."
     : `The assessment indicates a ${rating(postureScore).toLowerCase()} resilience posture with ${criticalExposure(gaps).toLowerCase()} critical exposure. ${preferred ? preferred + " is the preferred primary recovery strategy based on the stated recovery objectives and risk profile." : "A primary recovery strategy remains undefined."}`;
 
   const topRisks = gaps.slice().sort((x, y) => {
@@ -570,7 +576,7 @@ export function evaluateResilienceIq(a: ResilienceAnswers): ResilienceResult {
 
   const executiveReport: ResilienceExecutiveReport = {
     assessmentType: "Executive Scan",
-    advisoryStatus: requirementsIncomplete || missing.length > 0 ? "requirements_incomplete" : "initial",
+    advisoryStatus: assessmentIncomplete ? "requirements_incomplete" : "initial",
     executiveSummary,
     assessmentScope: "20-question executive resilience scan covering business continuity, disaster recovery, cyber recovery, operational resilience, third-party resilience and infrastructure resilience.",
     postureScore: requirementsIncomplete ? null : postureScore,
@@ -602,12 +608,12 @@ export function evaluateResilienceIq(a: ResilienceAnswers): ResilienceResult {
   };
 
   return {
-    status: requirementsIncomplete || missing.length > 0 ? "requirements_incomplete" : "ready",
-    score: requirementsIncomplete ? null : score,
-    postureScore: requirementsIncomplete ? null : postureScore,
-    criticalExposure: requirementsIncomplete ? null : criticalExposure(gaps),
-    rating: requirementsIncomplete ? null : rating(postureScore),
-    maturity: requirementsIncomplete ? null : maturity(postureScore),
+    status: assessmentIncomplete ? "requirements_incomplete" : "ready",
+    score: assessmentIncomplete ? null : score,
+    postureScore: assessmentIncomplete ? null : postureScore,
+    criticalExposure: assessmentIncomplete ? null : criticalExposure(gaps),
+    rating: assessmentIncomplete ? null : rating(postureScore),
+    maturity: assessmentIncomplete ? null : maturity(postureScore),
     evidenceConfidence: confidenceLabel,
     domainScores: domains,
     preferredPattern: preferred,
@@ -627,7 +633,9 @@ export function evaluateResilienceIq(a: ResilienceAnswers): ResilienceResult {
     decisionLog: [
       "Vendor-neutral strategy is selected before provider implementation mapping.",
       "RTO/RPO are treated as business requirements and are never inferred from technology.",
-      requirementsIncomplete ? "Final recommendation blocked until required RTO/RPO are defined." : "Final recommendation permitted because required executive baseline is complete.",
+      requirementsIncomplete ? "Final recommendation blocked until required RTO/RPO are defined." :
+        advisoryDepthRequired && advisoryMissing.length > 0 ? "Final recommendation blocked until triggered advisory-depth questions are completed." :
+        "Final recommendation permitted because required executive baseline is complete.",
       `Resilience posture score: ${postureScore}; critical exposure: ${requirementsIncomplete ? "not assessed" : criticalExposure(gaps)}.`,
       `Evidence confidence: ${confidenceLabel}.`
     ]
