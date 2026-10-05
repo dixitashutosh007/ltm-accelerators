@@ -100,6 +100,10 @@ function validStatus(value: unknown): value is ResilienceAssessmentStatus {
 
 export async function handler(event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> {
   const requestId = event.requestContext.requestId || crypto.randomUUID();
+  const claims = event.requestContext.authorizer?.jwt?.claims as Record<string, unknown> | undefined;
+  const rawGroups = claims?.['cognito:groups'];
+  const groups = Array.isArray(rawGroups) ? rawGroups.map(String) : typeof rawGroups === 'string' ? rawGroups.split(',').map(x => x.trim()) : [];
+  if (!groups.some(group => group === 'Admin' || group === 'Consultant')) return json(403, { ok: false, error: 'forbidden' }, requestId);
   if (event.requestContext.http.method === 'OPTIONS') return json(200, { ok: true }, requestId);
   if (event.requestContext.http.method !== 'POST') return json(405, { ok: false, error: 'method_not_allowed' }, requestId);
 
@@ -122,7 +126,7 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<APIGateway
         assessmentId,
         clientName: String(body.clientName ?? ''),
         clientSector: body.clientSector ? String(body.clientSector) : undefined,
-        respondentEmail: String(body.respondentEmail ?? ''),
+        respondentEmail: String(claims?.email ?? claims?.['cognito:username'] ?? claims?.username ?? ''),
         status: 'draft',
         answers: {},
         startedAt: now
