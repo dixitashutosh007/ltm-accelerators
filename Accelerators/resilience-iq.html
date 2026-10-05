@@ -74,7 +74,20 @@ let dragFrom=null;
 function dragStart(e){dragFrom=Number(e.currentTarget.dataset.i);e.currentTarget.classList.add('dragging');}
 function dropRank(e,target){e.currentTarget.classList.remove('dragging');const q=questions[idx];const order=[...(answers[q.id]||q.o.map((_,i)=>i))];const from=order.indexOf(dragFrom);if(from<0)return;order.splice(from,1);order.splice(target,0,dragFrom);answers[q.id]=order;render();}
 function back(){if(idx>0){idx--;render();}}
-function next(){const q=questions[idx];if((q.type==='number'||q.type==='text')&&answers[q.id]===undefined){alert('Please enter an answer before continuing.');return}if(q.type==='rank'&&answers[q.id]===undefined)answers[q.id]=q.o.map((_,i)=>i);if(q.type==='matrix'&&(!answers[q.id]||Object.keys(answers[q.id]).length<q.rows.length)){alert('Please complete the dependency matrix before continuing.');return}if(answers[q.id]===undefined){alert('Please select an answer before continuing.');return}if(idx<questions.length-1){idx++;render();}else evaluate();}
+function answerProvided(q){
+ const v=answers[q.id];
+ if(q.type==='number'||q.type==='text')return v!==undefined&&v!==null&&String(v).trim()!=='';
+ if(q.type==='multi')return Array.isArray(v)&&v.length>0;
+ if(q.type==='matrix')return v&&Object.keys(v).length===q.rows.length;
+ if(q.type==='rank')return Array.isArray(v)&&v.length===q.o.length;
+ return v!==undefined&&v!==null;
+}
+function next(){
+ const q=questions[idx];
+ if(q.type==='rank'&&answers[q.id]===undefined)answers[q.id]=q.o.map((_,i)=>i);
+ if(!answerProvided(q)){alert(q.type==='matrix'?'Please complete the dependency matrix before continuing.':'Please provide an answer before continuing.');return;}
+ if(idx<questions.length-1){idx++;render();}else evaluate();
+}
 async function evaluate(){
  document.getElementById('app').innerHTML='<div class="panel" style="text-align:center;padding:70px"><h2>Running Resilience IQ...</h2><p style="color:var(--muted)">Applying decision branches, evidence confidence, hard constraints, pattern ranking and blueprint logic.</p></div>';
  try{
