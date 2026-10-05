@@ -15,7 +15,9 @@ const valid = await handler(event({
   toStatus: "provided",
   evidenceLocation: "s3://example/evidence-1"
 }));
-if (valid.statusCode !== 200 || !json(valid).ok) throw new Error("Valid evidence transition should return 200");
+if (valid.statusCode !== 501 || json(valid).ok || json(valid).error !== "evidence_persistence_not_configured") {
+  throw new Error("Validated evidence transition should fail explicitly until persistence is configured");
+}
 
 const validate = await handler(event({
   assessmentId: "assessment-1",
@@ -24,7 +26,7 @@ const validate = await handler(event({
   toStatus: "validated",
   validationOutcome: "Meets all validation criteria."
 }));
-if (validate.statusCode !== 200 || !json(validate).ok) throw new Error("Evidence validation should return 200");
+if (validate.statusCode !== 501 || json(validate).ok) throw new Error("Evidence validation should fail explicitly until persistence is configured");
 
 const missingOutcome = await handler(event({
   assessmentId: "assessment-1",
