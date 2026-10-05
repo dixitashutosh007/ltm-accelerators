@@ -855,7 +855,14 @@ export function evaluateResilienceIq(a: ResilienceAnswers): ResilienceResult {
         advisoryDepthRequired && advisoryMissing.length > 0 ? "Final recommendation blocked until triggered advisory-depth questions are completed." :
         "Final recommendation permitted because required executive baseline is complete.",
       `Resilience posture score: ${postureScore}; critical exposure: ${requirementsIncomplete ? "not assessed" : criticalExposure(gaps)}.`,
-      `Evidence confidence: ${confidenceLabel}.`
+      `Evidence confidence: ${confidenceLabel}.`,
+      `Evidence register: ${evidenceRegister.length} requested item(s); validation is required before material evidence can affect recommendation confidence.`,
+      evidenceRegister.some(x => x.affectsRecommendation)
+        ? "Recommendation-affecting evidence requests are linked to material resilience gaps and must be validated before final investment approval."
+        : "No recommendation-affecting evidence gaps are currently registered.",
+      recommendationSensitivity.length
+        ? `Recommendation sensitivity: ${recommendationSensitivity.map(x => x.id).join(", ")}.`
+        : "No additional recommendation sensitivity triggers identified."
     ]
   };
 }
