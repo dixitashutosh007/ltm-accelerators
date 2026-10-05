@@ -98,6 +98,14 @@ export const handler = async (event: APIGatewayProxyEventV2): Promise<APIGateway
       }
     }
 
+    if (!body || typeof body !== 'object' || Array.isArray(body)) {
+      return response(400, {
+        ok: false,
+        error: 'Request body must be a JSON object.',
+        requestId
+      }, requestId);
+    }
+
     const { answers } = body;
     const validation = validateAnswersPayload(answers);
     if (!validation.ok) {
