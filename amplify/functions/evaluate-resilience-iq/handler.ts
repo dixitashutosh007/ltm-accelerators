@@ -21,7 +21,7 @@ function validateAnswersPayload(answers: unknown): { ok: true } | { ok: false; e
     return { ok: false, error: `Too many answer fields. Maximum supported is ${MAX_ANSWER_KEYS}.` };
   }
   for (const [key, value] of entries) {
-    if (!/^[A-Z]{2,5}-[A-Z]{2,6}-?\d{2}$/.test(key)) {
+    if (!/^(?:EX|AF-[A-Z]{2,6})-\d{2}$/.test(key)) {
       return { ok: false, error: `Invalid answer field: ${key}.` };
     }
     if (typeof value === 'string' && value.length > MAX_TEXT_LENGTH) {
