@@ -13,7 +13,8 @@
     "validate:resilience-bank": "node scripts/validate-resilience-question-bank.cjs",
     "test:resilience-api": "tsx amplify/functions/evaluate-resilience-iq/handler.test.ts",
     "validate:resilience-deployment": "node scripts/validate-resilience-deployment.cjs",
-    "validate:resilience-persistence": "node scripts/validate-resilience-assessment-persistence.cjs"
+    "validate:resilience-persistence": "node scripts/validate-resilience-assessment-persistence.cjs",
+    "test:costiq": "node packages/engine-core/src/accelerators/cost-iq/baseline.test.cjs"
   },
   "dependencies": {
     "@aws-amplify/backend": "^1.14.0",
