@@ -33,6 +33,16 @@ const invalidMatrix = await handler(event({
 }));
 if (invalidMatrix.statusCode !== 400) throw new Error("Invalid matrix value should return 400");
 
+const incompleteMatrix = await handler(event({
+  answers: {
+    ...validAnswers,
+    "EX-05": { Applications: "Validated" }
+  }
+}));
+if (incompleteMatrix.statusCode !== 400 || !String(json(incompleteMatrix).error).includes("Incomplete matrix")) {
+  throw new Error("Incomplete matrix should return 400");
+}
+
 const oversized = await handler(event({
   answers: { "AF-BIA-01": "x".repeat(4001) }
 }));
