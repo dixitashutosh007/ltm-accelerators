@@ -9,6 +9,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="/assets/s3-reports.js"></script>
 <script src="/assets/rbac-guard.js" data-tool="cost-iq"></script>
+<script src="/assets/cost-iq-persistence.js"></script>
 <style>
 @import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap");
 :root{--bg:#f6f8fa;--panel:#fff;--ink:#1e2932;--muted:#697586;--line:#e4e8ed;--red:#ff5e4f;--red2:#e54536;--teal:#226882;--green:#35754d;--amber:#c77b00;--nav:#17212b;--shadow:0 12px 35px rgba(22,34,45,.08)}
@@ -23,6 +24,7 @@
 const API=window.COST_IQ_API||'';
 const $=id=>document.getElementById(id);
 let allQuestions=[],questions=[],answers={},subjective={},selectedAreas=[],sectionIndex=0,qIndex=0,assessment=null,aiReview=null;
+let assessmentMetadata={},savedAssessment=null,persistTimer=null,persistQueue=Promise.resolve(),testScenario=false,viewEpoch=0;
 const BASELINE=['Enterprise Context','CIO Priorities','Spend & Financial Visibility','Cost Governance & Investment'];
 const DEFAULT_AREAS=['Cloud Economics','Cost Governance'];
 const AREAS={
@@ -71,7 +73,7 @@ const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&
 async function api(path,opts){const r=await fetch(API+path,opts);const t=await r.text();let d={};try{d=t?JSON.parse(t):{}}catch(e){throw Error('Invalid API response ('+r.status+')')}if(!r.ok)throw Error(d.message||d.error||('HTTP '+r.status));return d}
 function boot(){
   showSplash(['Loading Cost IQ engine…','Loading diagnostic framework…','Preparing adaptive assessment…'],function(){
-    api('/api/evaluate/cost-iq/questions').then(function(d){allQuestions=d.questions||[];home()}).catch(function(e){fail(e.message)});
+    Promise.all([api('/api/evaluate/cost-iq/questions'),api('/api/evaluate/cost-iq/metadata')]).then(function(values){allQuestions=values[0].questions||[];assessmentMetadata=values[1].release||{};home()}).catch(function(e){fail(e.message)});
   });
 }
 function showSplash(steps,done){
@@ -91,12 +93,53 @@ function updateQuestionCount(){
   if(el) el.textContent=questionCountForSelection();
 }
 function home(){
+  const epoch=++viewEpoch;
+  if(persistTimer&&savedAssessment&&!testScenario&&savedAssessment.status!=='completed'){clearTimeout(persistTimer);const pending=persistenceRecord('in_progress');persistQueue=persistQueue.then(()=>window.CostIqPersistence.update(pending)).catch(e=>persistStatus('Save failed · '+e.message))}
+  clearTimeout(persistTimer);savedAssessment=null;testScenario=false;
   selectedAreas=DEFAULT_AREAS.slice();
   const cards=Object.keys(AREAS).map(function(a){
     const checked=selectedAreas.includes(a);
     return '<label class="area '+(checked?'selected':'')+'" data-area="'+esc(a)+'"><input type="checkbox" '+(checked?'checked':'')+' onchange="toggleArea(this,\''+esc(a).replace(/'/g,"\\'")+'\')"><span class="check">'+(checked?'✓':'')+'</span><h3>'+esc(a)+'</h3><p>'+esc(AREA_DESC[a])+'</p></label>';
   }).join('');
   $('app').innerHTML='<div class="hero"><div class="eyebrow">LTM INFRASTRUCTURE TECHNOLOGY ADVISORY</div><h1>Technology Cost & Value Diagnostic</h1><p>Cost IQ helps leadership understand where technology spend is going, where value is being created, and where management attention may be required.</p><div class="actions"><button class="btn primary" onclick="begin()">Configure diagnostic →</button></div><div class="card" style="margin-top:16px"><div class="eyebrow">DEVELOPER TEST DATA</div><h3>Fast regression scenarios</h3><p class="muted">Pre-answer the full assessment with deterministic test data. Use these only for development and validation.</p><div class="actions"><button class="btn" onclick="loadTestScenario(\'healthy\')">Load Healthy</button><button class="btn" onclick="loadTestScenario(\'typical\')">Load Typical</button><button class="btn" onclick="loadTestScenario(\'challenge\')">Load Cost Challenge</button></div></div></div><div class="stat-grid"><div class="stat"><span class="mini">Questions</span><br><b id="selectionQuestionCount">'+questionCountForSelection()+'</b><div class="mini">Questions for this selection</div></div><div class="stat"><span class="mini">Baseline</span><br><b>16</b><div class="mini">Cost & value dimensions</div></div><div class="stat"><span class="mini">Engine</span><br><b>20</b><div class="mini">Calibrated findings</div></div><div class="stat"><span class="mini">AI</span><br><b>Review</b><div class="mini">Anomaly & report synthesis</div></div></div><div class="card"><div class="eyebrow" style="color:#60717d">STEP 01 · FOCUS AREAS</div><h2>What would you like to diagnose?</h2><p class="muted">Select one or more focus areas. Two are pre-selected to give you a useful starting point. Baseline questions remain part of every assessment.</p><div class="baseline">✓ Enterprise context, CIO priorities, spend visibility and cost governance remain part of every assessment.</div><div class="section-grid" style="margin-top:16px">'+cards+'</div><div class="actions"><button class="btn primary" onclick="begin()">Start focused assessment →</button></div></div>';
+  if(window.CostIqPersistence?.configured()) loadSavedAssessments(epoch);
+  else {const note=document.createElement('div');note.className='card';note.innerHTML='<div class="eyebrow">SAVED ASSESSMENTS</div><p class="muted">Assessment saving is not configured in this environment yet. You can still complete a session in this browser.</p>';$('app').appendChild(note)}
+}
+async function loadSavedAssessments(epoch){
+  try{
+    const records=await window.CostIqPersistence.list();
+    if(epoch!==viewEpoch)return;
+    const rows=records.sort((a,b)=>String(b.updatedAt||'').localeCompare(String(a.updatedAt||''))).map(function(r){
+      let score=null;try{score=r.resultJson?JSON.parse(r.resultJson).headlines?.costIQ:null}catch(_){score=null}
+      return '<div class="signal"><b>'+esc(r.clientName||'Cost IQ assessment')+'</b><span>'+esc(r.status)+' · Updated '+esc(new Date(r.updatedAt).toLocaleString())+(score!==null&&score!==undefined?' · Cost IQ '+esc(score):'')+'</span><div class="actions"><button class="btn" onclick="resumeAssessment('+JSON.stringify(r.assessmentId)+')">'+(r.status==='completed'?'View result':'Resume')+'</button></div></div>';
+    }).join('');
+    const card=document.createElement('div');card.className='card';card.innerHTML='<div class="eyebrow">SAVED ASSESSMENTS</div><h2>Continue where you left off</h2><div class="report-band">'+(rows||'<p class="muted">No saved assessments yet.</p>')+'</div>';$('app').appendChild(card);
+  }catch(e){console.warn('Cost IQ history unavailable:',e.message)}
+}
+function persistStatus(message){const el=$('status');if(el)el.textContent=message}
+function persistenceRecord(status){
+  if(!savedAssessment)return null;
+  return {...savedAssessment,status:status||'in_progress',selectedAreasJson:JSON.stringify(selectedAreas),answersJson:JSON.stringify(answers),subjectiveJson:JSON.stringify(subjective),updatedAt:new Date().toISOString()};
+}
+function scheduleProgressSave(){
+  if(testScenario||!savedAssessment)return;
+  clearTimeout(persistTimer);
+  persistTimer=setTimeout(function(){
+    persistTimer=null;
+    const record=persistenceRecord('in_progress');
+    persistQueue=persistQueue.then(()=>window.CostIqPersistence.update(record)).then(updated=>{if(savedAssessment?.assessmentId===record.assessmentId)savedAssessment=updated;persistStatus('Progress saved')}).catch(e=>persistStatus('Save failed · '+e.message));
+  },700);
+}
+async function resumeAssessment(id){
+  ++viewEpoch;
+  try{
+    const record=await window.CostIqPersistence.get(id);if(!record)throw new Error('Assessment not found or access denied.');
+    savedAssessment=record;selectedAreas=JSON.parse(record.selectedAreasJson||'[]');answers=JSON.parse(record.answersJson||'{}');subjective=JSON.parse(record.subjectiveJson||'{}');
+    questions=allQuestions.filter(q=>BASELINE.includes(q.section)||selectedAreas.some(a=>(AREAS[a]||[]).includes(q.section))).filter(q=>!String(q.id).startsWith('FIN-')||selectedAreas.includes('FinOps'));
+    testScenario=false;sectionIndex=0;
+    if(record.status==='completed'&&record.resultJson){assessment=JSON.parse(record.resultJson);aiReview=null;preliminary();return}
+    const secs=sections();const first=secs.findIndex(s=>questions.filter(q=>q.section===s).some(q=>answers[q.id]===undefined));sectionIndex=first<0?Math.max(0,secs.length-1):first;renderAssessment();persistStatus('Assessment resumed');
+  }catch(e){alert('Could not resume this assessment: '+e.message)}
 }
 function toggleArea(el,a){
   if(el.checked){
@@ -136,23 +179,33 @@ function testAnswer(q,profile){
   return strength;
 }
 async function loadTestScenario(profile){
+  ++viewEpoch;
   if(!allQuestions.length){alert('Questions are still loading. Please wait a moment and try again.');return}
   selectedAreas=Object.keys(AREAS);
   questions=allQuestions.filter(function(q){
     if(BASELINE.includes(q.section))return true;
     return selectedAreas.some(function(a){return (AREAS[a]||[]).includes(q.section)});
   }).filter(function(q){return !String(q.id).startsWith('FIN-')||selectedAreas.includes('FinOps')});
-  answers={};subjective={};sectionIndex=0;qIndex=0;
+  answers={};subjective={};sectionIndex=0;qIndex=0;testScenario=true;savedAssessment=null;
   questions.forEach(function(q){answers[q.id]=testAnswer(q,profile)});
   await runEngine();
 }
-function begin(){
+async function begin(){
+  ++viewEpoch;
   const q=allQuestions.filter(function(q){
     if(BASELINE.includes(q.section))return true;
     return selectedAreas.some(function(a){return (AREAS[a]||[]).includes(q.section)});
   });
   questions=q.filter(function(q){return !String(q.id).startsWith('FIN-')||selectedAreas.includes('FinOps')});
-  answers={};subjective={};sectionIndex=0;qIndex=0;
+  answers={};subjective={};sectionIndex=0;qIndex=0;testScenario=false;savedAssessment=null;
+  if(window.CostIqPersistence?.configured()){
+    persistStatus('Creating draft…');
+    const timestamp=new Date().toISOString();
+    const manifest=assessmentMetadata.methodology||{};
+    const input={assessmentId:'CIQ-'+crypto.randomUUID(),acceleratorId:'cost-iq',releaseId:assessmentMetadata.release?.releaseId||'unknown',methodologyVersion:manifest.masterVersion||'unknown',status:'draft',selectedAreasJson:JSON.stringify(selectedAreas),answersJson:'{}',subjectiveJson:'{}',startedAt:timestamp,updatedAt:timestamp};
+    try{savedAssessment=await window.CostIqPersistence.create(input);persistStatus('Draft saved')}
+    catch(e){savedAssessment=null;persistStatus('Saving unavailable · '+e.message)}
+  }else persistStatus('Session only · persistence endpoint unavailable');
   renderAssessment();
 }
 function sections(){const seen=[];questions.forEach(function(q){if(!seen.includes(q.section))seen.push(q.section)});return seen}
@@ -172,10 +225,10 @@ function questionHTML(q,n,total){
   else if(q.interaction==='ranking'){body=(q.options||[]).map(function(o,i){return '<div class="option '+((answers[q.id]||[]).includes(o.id)?'selected':'')+'" onclick="toggle(\''+q.id+'\',\''+o.id+'\')"><span class="letter">'+(i+1)+'</span><div class="option-title">'+esc(o.label)+'</div></div>'}).join('')}
   else {body=(q.options||[]).map(function(o,i){return '<div class="option '+(answers[q.id]===o.id?'selected':'')+'" onclick="pick(\''+q.id+'\',\''+o.id+'\')"><span class="letter">'+String.fromCharCode(65+i)+'</span><div><div class="option-title">'+esc(o.label)+'</div></div></div>'}).join('')}
   const subjectiveAllowed=!!(q.control?.allowActual||q.interaction==='range'||q.interaction==='slider'||q.interaction==='single-select'||q.interaction==='true-false'||q.interaction==='stars');
-  const sub=subjectiveAllowed?'<div class="subjective"><div style="font-size:11px;font-weight:800;margin-bottom:5px">Additional context <span class="mini">· optional</span></div><textarea placeholder="Add context, evidence, exceptions or anything our AI reviewer should consider..." oninput="subjective['+JSON.stringify(q.id)+']=this.value">'+esc(subjective[q.id]||'')+'</textarea></div>':'';
+  const sub=subjectiveAllowed?'<div class="subjective"><div style="font-size:11px;font-weight:800;margin-bottom:5px">Additional context <span class="mini">· optional</span></div><textarea placeholder="Add context, evidence, exceptions or anything our AI reviewer should consider..." oninput="subjective['+JSON.stringify(q.id)+']=this.value;scheduleProgressSave()">'+esc(subjective[q.id]||'')+'</textarea></div>':'';
   return '<span class="q-no">'+esc(q.id)+' · QUESTION '+n+' OF '+total+'</span><h2 class="q-title">'+esc(q.prompt)+'</h2>'+(q.answerGuidance?'<div class="help"><b>How to answer:</b> '+esc(q.answerGuidance)+'</div>':'')+body+sub;
 }
-function pick(id,v){answers[id]=v;renderAssessment()}function toggle(id,v){const a=Array.isArray(answers[id])?[...answers[id]]:[];const i=a.indexOf(v);if(i>=0)a.splice(i,1);else a.push(v);answers[id]=a;renderAssessment()}function setStar(id,v){answers[id]=v;renderAssessment()}function setSlider(id,v){answers[id]=Number(v);const x=$('sv');if(x)x.textContent=v}
+function pick(id,v){answers[id]=v;scheduleProgressSave();renderAssessment()}function toggle(id,v){const a=Array.isArray(answers[id])?[...answers[id]]:[];const i=a.indexOf(v);if(i>=0)a.splice(i,1);else a.push(v);answers[id]=a;scheduleProgressSave();renderAssessment()}function setStar(id,v){answers[id]=v;scheduleProgressSave();renderAssessment()}function setSlider(id,v){answers[id]=Number(v);scheduleProgressSave();const x=$('sv');if(x)x.textContent=v}
 function currentSectionQuestions(){return questions.filter(q=>q.section===sections()[sectionIndex])}
 function sectionValid(){
   const qs=currentSectionQuestions();
@@ -193,8 +246,9 @@ function backQ(){
   if(sectionIndex>0){sectionIndex--;qIndex=0;renderAssessment();}else home();
 }
 async function runEngine(){
+  clearTimeout(persistTimer);persistTimer=null;
   $('app').innerHTML='<div class="card" style="text-align:center;padding:70px 30px"><div class="pulse" style="margin:auto"><div class="core"></div></div><h2>Reviewing your diagnostic…</h2><p class="muted">Cost IQ is evaluating the deterministic scoring engine before the AI review.</p></div>';
-  try{assessment=await api('/api/evaluate/cost-iq',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({answers:answers,scope:{selectedAreas:selectedAreas}})});showEngineOverlay(function(){aiCheck()})}catch(e){fail(e.message)}
+  try{assessment=await api('/api/evaluate/cost-iq',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({answers:answers,scope:{selectedAreas:selectedAreas}})});if(savedAssessment){try{await persistQueue;savedAssessment=await window.CostIqPersistence.update({...persistenceRecord('completed'),completedAt:new Date().toISOString(),resultJson:JSON.stringify(assessment)});persistStatus('Assessment completed and saved')}catch(e){persistStatus('Score ready · save failed · '+e.message)}}showEngineOverlay(function(){aiCheck()})}catch(e){fail(e.message)}
 }
 function showEngineOverlay(done){
   showSplash(['Normalizing assessment responses…','Evaluating cost dimensions…','Evaluating value dimensions…','Checking evidence & confidence…','Preparing AI diagnostic review…'],done)
