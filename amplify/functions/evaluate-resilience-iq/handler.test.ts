@@ -52,4 +52,12 @@ const options = await handler({
 } as any);
 if (options.statusCode !== 200) throw new Error("OPTIONS should return 200");
 
+const get = await handler({
+  requestContext: { http: { method: "GET" } }
+} as any);
+if (get.statusCode !== 405) throw new Error("Unsupported methods should return 405");
+
+const traceable = await handler(event({ answers: validAnswers }));
+if (!traceable.headers?.["X-Request-Id"]) throw new Error("Responses should include a request ID");
+
 console.log("Resilience IQ API contract tests passed");
