@@ -111,9 +111,11 @@ async function loadSavedAssessments(epoch){
     if(epoch!==viewEpoch)return;
     const rows=records.sort((a,b)=>String(b.updatedAt||'').localeCompare(String(a.updatedAt||''))).map(function(r){
       let score=null;try{score=r.resultJson?JSON.parse(r.resultJson).headlines?.costIQ:null}catch(_){score=null}
-      return '<div class="signal"><b>'+esc(r.clientName||'Cost IQ assessment')+'</b><span>'+esc(r.status)+' · Updated '+esc(new Date(r.updatedAt).toLocaleString())+(score!==null&&score!==undefined?' · Cost IQ '+esc(score):'')+'</span><div class="actions"><button class="btn" onclick="resumeAssessment('+JSON.stringify(r.assessmentId)+')">'+(r.status==='completed'?'View result':'Resume')+'</button></div></div>';
+      return '<div class="signal"><b>'+esc(r.clientName||'Cost IQ assessment')+'</b><span>'+esc(r.status)+' · Updated '+esc(new Date(r.updatedAt).toLocaleString())+(score!==null&&score!==undefined?' · Cost IQ '+esc(score):'')+'</span><div class="actions"><button class="btn" data-assessment-id="'+esc(r.assessmentId)+'">'+(r.status==='completed'?'View result':'Resume')+'</button></div></div>';
     }).join('');
-    const card=document.createElement('div');card.className='card';card.innerHTML='<div class="eyebrow">SAVED ASSESSMENTS</div><h2>Continue where you left off</h2><div class="report-band">'+(rows||'<p class="muted">No saved assessments yet.</p>')+'</div>';$('app').appendChild(card);
+    const card=document.createElement('div');card.className='card';card.innerHTML='<div class="eyebrow">SAVED ASSESSMENTS</div><h2>Continue where you left off</h2><div class="report-band">'+(rows||'<p class="muted">No saved assessments yet.</p>')+'</div>';
+    card.querySelectorAll('[data-assessment-id]').forEach(button=>button.addEventListener('click',()=>resumeAssessment(button.dataset.assessmentId)));
+    $('app').appendChild(card);
   }catch(e){console.warn('Cost IQ history unavailable:',e.message)}
 }
 function persistStatus(message){const el=$('status');if(el)el.textContent=message}
@@ -131,9 +133,10 @@ function scheduleProgressSave(){
   },700);
 }
 async function resumeAssessment(id){
-  ++viewEpoch;
+  const epoch=++viewEpoch;
   try{
     const record=await window.CostIqPersistence.get(id);if(!record)throw new Error('Assessment not found or access denied.');
+    if(epoch!==viewEpoch)return;
     savedAssessment=record;selectedAreas=JSON.parse(record.selectedAreasJson||'[]');answers=JSON.parse(record.answersJson||'{}');subjective=JSON.parse(record.subjectiveJson||'{}');
     questions=allQuestions.filter(q=>BASELINE.includes(q.section)||selectedAreas.some(a=>(AREAS[a]||[]).includes(q.section))).filter(q=>!String(q.id).startsWith('FIN-')||selectedAreas.includes('FinOps'));
     testScenario=false;sectionIndex=0;

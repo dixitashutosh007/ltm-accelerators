@@ -10,6 +10,8 @@ async function main() {
   const inlineScripts = [...html.matchAll(/<script>([\s\S]*?)<\/script>/g)];
   assert.ok(inlineScripts.length, 'Cost IQ page has an inline application script');
   new vm.Script(inlineScripts.at(-1)[1], { filename: 'cost-iq-v10.html:inline-script' });
+  assert.match(html, /data-assessment-id=/, 'saved assessment IDs are rendered as escaped data attributes');
+  assert.doesNotMatch(html, /onclick="resumeAssessment\(/, 'saved assessment IDs are not interpolated into inline JavaScript');
   const calls = [];
   const pages = [
     { items: [{ assessmentId: 'A1' }], nextToken: 'page-2' },
