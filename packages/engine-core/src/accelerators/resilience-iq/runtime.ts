@@ -540,7 +540,7 @@ export function evaluateResilienceIq(a: ResilienceAnswers): ResilienceResult {
   const confidenceLabel = evidenceConfidence(a);
   const confidence = Number((k.scoringModel.evidence_confidence as any)[confidenceLabel] ?? 0.7);
   const baseDomains = scoreDomains(a, confidence);
-  const advisoryPosture = applyAdvisoryPostureAdjustments(baseDomains, effectiveFlags);
+  const advisoryPosture = applyAdvisoryPostureAdjustments(baseDomains, advisory);
   const domains = advisoryPosture.domains;
   const postureScore = Math.round(Object.entries(domains).reduce((s, [d, v]) => s + v * Number((k.scoringModel.domain_weights as any)[d] ?? 0), 0));
   let score = Math.max(0, postureScore - advisoryPosture.overallPenalty);
