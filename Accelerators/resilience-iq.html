@@ -74,7 +74,32 @@ function back(){if(idx>0){idx--;render();}}
 function next(){const q=questions[idx];if(q.type==='rank'&&answers[q.id]===undefined)answers[q.id]=q.o.map((_,i)=>i);if(q.type==='matrix'&&(!answers[q.id]||Object.keys(answers[q.id]).length<q.rows.length)){alert('Please complete the dependency matrix before continuing.');return}if(answers[q.id]===undefined){alert('Please select an answer before continuing.');return}if(idx<questions.length-1){idx++;render();}else evaluate();}
 async function evaluate(){
  document.getElementById('app').innerHTML='<div class="panel" style="text-align:center;padding:70px"><h2>Running Resilience IQ...</h2><p style="color:var(--muted)">Applying decision branches, evidence confidence, hard constraints, pattern ranking and blueprint logic.</p></div>';
- try{const res=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({answers:mapAnswers()})});const j=await res.json();if(!j.ok)throw new Error(j.error||'Evaluation failed');result=j.data;renderReport();}catch(e){document.getElementById('app').innerHTML='<div class="panel"><h2>Evaluation failed</h2><p class="danger">'+esc(e.message)+'</p><button class="btn primary" onclick="render()">Retry</button></div>';}}
+ try{
+  const res=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({answers:mapAnswers()})});
+  const j=await res.json();if(!j.ok)throw new Error(j.error||'Evaluation failed');result=j.data;
+  if(result.status==='requirements_incomplete' && Array.isArray(result.nextQuestions) && result.nextQuestions.length){
+    await loadAdvisoryQuestions(result.nextQuestions);
+    return;
+  }
+  renderReport();
+ }catch(e){document.getElementById('app').innerHTML='<div class="panel"><h2>Evaluation failed</h2><p class="danger">'+esc(e.message)+'</p><button class="btn primary" onclick="render()">Retry</button></div>';}}
+async function loadAdvisoryQuestions(nextQuestions){
+ try{
+  const bank=await fetch('../resilience-iq/knowledge/question-bank.json',{cache:'no-store'}).then(r=>r.ok?r.json():null);
+  if(!bank)throw new Error('Question bank unavailable');
+  const byId=new Map((bank.advisory_questions||[]).map(q=>[q.id,q]));
+  const additions=nextQuestions.map(n=>byId.get(n.id)).filter(Boolean).map(q=>({
+    id:q.id,t:q.text,type:q.ui?.interaction||q.type,o:q.options||[],rows:q.ui?.rows||[],cols:q.ui?.columns||[],required:true
+  })).filter(q=>!questions.some(existing=>existing.id===q.id));
+  if(!additions.length){renderReport();return;}
+  questions=[...questions,...additions];
+  for(const q of additions) answers[q.id]=undefined;
+  idx=questions.length-additions.length;
+  document.querySelector('.badge').textContent='ADVISORY DEEP DIVE';
+  render();
+ }catch(e){
+  document.getElementById('app').innerHTML='<div class="panel"><h2>Advisory questions unavailable</h2><p class="danger">'+esc(e.message)+'</p><button class="btn primary" onclick="evaluate()">Retry</button></div>';
+ }}
 function mapAnswers(){const out={};for(const q of questions){const v=answers[q.id];if(q.type==='multi')out[q.id]=(v||[]).map(i=>q.o[i]);else if(q.type==='slider')out[q.id]=q.o[v];else if(q.type==='rank')out[q.id]=(v||q.o.map((_,i)=>i)).map(i=>q.o[i]);else if(q.type==='matrix'){const m=v||{};out[q.id]=Object.fromEntries(Object.entries(m).map(([row,i])=>[q.rows[row],q.cols[i]]));}else out[q.id]=q.o[v];}return out;}
 function renderReport(){const d=result;document.getElementById('app').innerHTML=`
 <div class="hero"><h1>Resilience IQ Results</h1><p>${d.status==='ready'?'Executive assessment complete.':'Final recommendation is blocked until required business objectives and baseline questions are complete.'}</p></div>
