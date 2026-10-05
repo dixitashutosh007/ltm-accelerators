@@ -4,7 +4,12 @@ import { LIFECYCLE } from '../../../packages/engine-core/src/accelerators/cost-i
 import { validateCreate, validateUpdate, validateComplete } from '../../../packages/engine-core/src/accelerators/cost-iq/persistence-api-contract.cjs';
 import type { CostIqAssessmentRepository } from './repository';
 
-const HEADERS = { 'Content-Type': 'application/json' };
+const HEADERS = {
+  'Content-Type': 'application/json',
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'Content-Type,Authorization,X-Amz-Date,X-Api-Key,X-Amz-Security-Token,X-Request-Id',
+  'Access-Control-Allow-Methods': 'OPTIONS,GET,POST,PUT'
+};
 
 function json(statusCode: number, body: unknown): APIGatewayProxyResultV2 {
   return { statusCode, headers: HEADERS, body: JSON.stringify(body) };
