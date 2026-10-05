@@ -57,6 +57,14 @@ const get = await handler({
 } as any);
 if (get.statusCode !== 405) throw new Error("Unsupported methods should return 405");
 
+process.env.RESILIENCE_IQ_ALLOWED_ORIGIN = "https://example.com";
+const restrictedOrigin = await handler({
+  requestContext: { http: { method: "OPTIONS" } },
+  headers: { origin: "https://example.com" }
+} as any);
+if (restrictedOrigin.headers?.["Access-Control-Allow-Origin"] !== "https://example.com") throw new Error("Configured CORS origin should be emitted");
+delete process.env.RESILIENCE_IQ_ALLOWED_ORIGIN;
+
 const traceable = await handler(event({ answers: validAnswers }));
 if (!traceable.headers?.["X-Request-Id"]) throw new Error("Responses should include a request ID");
 
