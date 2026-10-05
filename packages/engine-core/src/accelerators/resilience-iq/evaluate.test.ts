@@ -299,6 +299,9 @@ const advisoryPriorityCase = evaluateResilienceIq({
 if (advisoryPriorityCase.nextQuestions.length > 8) throw new Error("Advisory rounds should be capped at 8 questions");
 if (advisoryPriorityCase.nextQuestions[0]?.id !== "AF-DR-04") throw new Error("Highest-impact recovery validation question should be prioritized first");
 
+if (!advisoryPriorityCase.recommendationSensitivity.some(s => s.id === "SENS-01" && s.affectedDecision)) throw new Error("Recommendation sensitivity should identify the affected decision");
+if (!advisoryPriorityCase.recommendationSensitivity.some(s => s.id === "SENS-03")) throw new Error("Cyber recovery sensitivity should be explicit");
+
 console.log("Resilience IQ knowledge-driven runtime tests passed");
 
 
