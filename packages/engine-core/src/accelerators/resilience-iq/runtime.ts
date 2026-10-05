@@ -675,23 +675,39 @@ export function evaluateResilienceIq(a: ResilienceAnswers): ResilienceResult {
   const recommendationConfidenceResult = recommendationConfidence(a, preferred, ranking, gaps, confidenceLabel, assessmentIncomplete);
 
   const nextQuestions: NextQuestion[] = [];
-  const advisoryPriority: Record<string, number> = {
-    "AF-DR-04": 100, "AF-DR-01": 98, "AF-DR-02": 98,
-    "AF-CY-03": 96, "AF-CY-04": 95, "AF-CY-05": 94,
-    "AF-TP-02": 92, "AF-TP-03": 91, "AF-TP-04": 90,
-    "AF-CL-01": 88, "AF-CL-02": 87, "AF-CL-04": 86,
-    "AF-TS-02": 84, "AF-TS-03": 83
+  const advisoryQuestions = k.questionBank.advisory_questions as any[];
+  const decisionImpact: Record<string, number> = {
+    recovery_capability_gap: 100,
+    cyber_recovery_gap: 96,
+    backup_resilience_gap: 94,
+    third_party_exit_gap: 90,
+    concentration_risk: 88,
+    recovery_automation_gap: 84,
+    low_test_evidence: 82,
+    people_continuity_gap: 76,
+    crisis_management_gap: 74,
+    governance_gap: 72
+  };
+  const advisoryPriority = (q: any) => {
+    const branches = k.decisionTree.branching_rules as any[];
+    const triggers = branches
+      .filter(rule => (rule.then?.add_questions ?? []).includes(q.id))
+      .map(rule => rule.then?.flag ?? rule.then?.action)
+      .filter(Boolean);
+    const impact = Math.max(0, ...triggers.map((flag: string) => decisionImpact[flag] ?? 50));
+    const materialEvidence = (q.evidence ?? []).length ? 5 : 0;
+    return impact + materialEvidence;
   };
   for (const id of branch.questions) {
     if (a[id] !== undefined && a[id] !== null && a[id] !== "") continue;
-    const q = (k.questionBank.advisory_questions as any[]).find(x => x.id === id);
+    const q = advisoryQuestions.find(x => x.id === id);
     if (q) nextQuestions.push({ id, reason: "Triggered by an active resilience risk or decision branch.", evidence: q.evidence ?? [], priority: "required" });
   }
   for (const id of missing) {
     const q = (k.questionBank.executive_questions as any[]).find(x => x.id === id);
     if (q) nextQuestions.push({ id, reason: "Required executive baseline question.", evidence: q.evidence ?? [], priority: "required" });
   }
-  nextQuestions.sort((x, y) => (advisoryPriority[y.id] ?? 50) - (advisoryPriority[x.id] ?? 50));
+  nextQuestions.sort((x, y) => advisoryPriority(advisoryQuestions.find(q => q.id === y.id) ?? {}) - advisoryPriority(advisoryQuestions.find(q => q.id === x.id) ?? {}));
   const prioritizedQuestions = nextQuestions.slice(0, 8);
 
   const evidenceRequests = [...new Set([
