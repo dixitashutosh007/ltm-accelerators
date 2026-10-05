@@ -4,6 +4,7 @@ const assert = require('node:assert/strict');
 const { LIFECYCLE } = require('./persistence.cjs');
 const { createCostIqPersistenceService } = require('./persistence-service.cjs');
 
+async function main() {
 const db = new Map();
 const store = {
   async create(record) { db.set(record.assessmentId, { ...record }); return db.get(record.assessmentId); },
@@ -51,3 +52,9 @@ assert.equal(final.status, LIFECYCLE.COMPLETED);
 assert.deepEqual(final.result, { headlines: { costIQ: 80 } });
 
 console.log('Cost IQ Phase 5 persistence service: PASS');
+}
+
+main().catch(error => {
+  console.error(error);
+  process.exitCode = 1;
+});

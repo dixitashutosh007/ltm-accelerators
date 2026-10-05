@@ -4,7 +4,7 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
 
-const schemaPath = path.resolve(__dirname, '../../../../../../amplify/data/resource.ts');
+const schemaPath = path.resolve(__dirname, '../../../../../amplify/data/resource.ts');
 const source = fs.readFileSync(schemaPath, 'utf8');
 
 assert.match(source, /CostIqAssessment:\s*a\s*\.model\(\{/);

@@ -29,6 +29,7 @@ const store = {
 };
 
 const adapter = createPersistenceAdapter(store);
+async function main() {
 await adapter.createDraft({ ...records[0], status: LIFECYCLE.DRAFT });
 await adapter.saveProgress({ ...records[1] });
 assert.equal((await adapter.resume('new')).assessmentId, 'new');
@@ -42,14 +43,20 @@ assert.throws(
   /persistence_store_contract_invalid/
 );
 
-assert.rejects(
+await assert.rejects(
   () => adapter.saveProgress({ ...records[0], status: LIFECYCLE.COMPLETED }),
   /active_assessment_required/
 );
 
-assert.rejects(
+await assert.rejects(
   () => adapter.complete({ ...records[0], resultJson: null }),
   /completed_result_required/
 );
 
 console.log('Cost IQ Phase 4 persistence adapter/history: PASS');
+}
+
+main().catch(error => {
+  console.error(error);
+  process.exitCode = 1;
+});

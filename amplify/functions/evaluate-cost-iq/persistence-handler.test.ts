@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import type { APIGatewayProxyEventV2 } from 'aws-lambda';
-import { handlePersistence } from './persistence-handler';
+import { handlePersistence } from './persistence-handler.ts';
 import type { CostIqAssessmentRepository } from './repository';
 
 const records = new Map<string, any>();
