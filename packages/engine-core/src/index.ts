@@ -9,3 +9,4 @@ export * from './accelerators/resilience-iq/evaluate';
 export * from './accelerators/resilience-iq/evidence-lifecycle';
 export * from './accelerators/resilience-iq/version';
 export * from './accelerators/resilience-iq/assessment-lifecycle';
+export * from './accelerators/resilience-iq/assessment-persistence';
