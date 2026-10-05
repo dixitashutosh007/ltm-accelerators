@@ -15,7 +15,8 @@
     "validate:resilience-deployment": "node scripts/validate-resilience-deployment.cjs",
     "validate:resilience-persistence": "node scripts/validate-resilience-assessment-persistence.cjs",
     "test:costiq": "node packages/engine-core/src/accelerators/cost-iq/baseline.test.cjs",
-    "test:costiq:hardening": "node packages/engine-core/src/accelerators/cost-iq/assessment-hardening.test.cjs"
+    "test:costiq:hardening": "node packages/engine-core/src/accelerators/cost-iq/assessment-hardening.test.cjs",
+    "test:costiq:persistence": "node packages/engine-core/src/accelerators/cost-iq/persistence-contract.test.cjs"
   },
   "dependencies": {
     "@aws-amplify/backend": "^1.14.0",
