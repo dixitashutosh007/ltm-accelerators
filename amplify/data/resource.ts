@@ -1,4 +1,5 @@
 import { type ClientSchema, a, defineData } from '@aws-amplify/backend';
+import { manageResilienceAssessmentFunction } from '../functions/manage-resilience-assessment/resource';
 
 /**
  * Defines DynamoDB tables via Amplify Data Schema:
@@ -133,10 +134,13 @@ const schema = a.schema({
     ])
 });
 
+// Lambda Data access is intentionally attached at schema level per Amplify Gen 2 authorization semantics.
+const authorizedSchema = schema.authorization(allow => [allow.resource(manageResilienceAssessmentFunction)]);
+
 export type Schema = ClientSchema<typeof schema>;
 
 export const data = defineData({
-  schema,
+  schema: authorizedSchema,
   authorizationModes: {
     defaultAuthorizationMode: 'userPool'
   }
