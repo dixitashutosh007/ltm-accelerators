@@ -1,4 +1,9 @@
-import { handler } from './handler';
+import { handler, assertAssessmentAccess } from './handler';
+
+const ownedAssessment = { assessmentId: 'RIQ-1', clientName: 'Client', respondentEmail: 'consultant@example.com', status: 'in_progress', answers: {}, startedAt: '2026-10-05T00:00:00.000Z' } as any;
+assertAssessmentAccess(ownedAssessment, { email: 'consultant@example.com' }, ['Consultant']);
+try { assertAssessmentAccess(ownedAssessment, { email: 'other@example.com' }, ['Consultant']); throw new Error('Consultant ownership guard failed'); } catch (e) { if (e instanceof Error && e.message === 'Consultant ownership guard failed') throw e; }
+assertAssessmentAccess(ownedAssessment, { email: 'other@example.com' }, ['Admin']);
 
 const base = {
   requestContext: { requestId: 'test-request', http: { method: 'POST' }, authorizer: { jwt: { claims: { 'cognito:groups': 'Consultant', email: 'test@example.com' } } } },
