@@ -27,6 +27,15 @@ export interface RecommendationConfidence {
   decisionSensitivity: string[];
 }
 
+export interface RecommendationSensitivity {
+  id: string;
+  trigger: string;
+  currentAssumption: string;
+  impact: string;
+  affectedDecision: string;
+  action: string;
+}
+
 export interface EvidenceRegisterItem {
   id: string;
   evidence: string;
@@ -73,6 +82,7 @@ export interface ResilienceExecutiveReport {
   governanceMetrics: string[];
   decisionPoints: string[];
   recommendationConfidence: RecommendationConfidence;
+  recommendationSensitivity: RecommendationSensitivity[];
 }
 
 export interface ResilienceResult {
@@ -769,12 +779,15 @@ export function evaluateResilienceIq(a: ResilienceAnswers): ResilienceResult {
   }));
 
   const evidenceRegister = buildEvidenceRegister(evidenceRequests, gaps);
-  const sensitivity = preferred ? [
-    "If measured recovery misses the stated RTO/RPO, reassess the selected " + preferred + " strategy and consider the next higher resilience tier.",
-    "If business impact tolerance or recovery objectives change, rerun the strategy decision.",
-    "If cyber recovery cannot be isolated, strengthen the cyber recovery architecture before relying on production DR.",
-    "If concentration or dependency risks cannot be reduced, reassess multi-region, multi-provider or dependency-aware controls."
-  ] : ["Define and validate business recovery objectives before selecting a final recovery strategy."];
+  const recommendationSensitivity: RecommendationSensitivity[] = preferred ? [
+    { id: "SENS-01", trigger: "Measured recovery misses the approved RTO/RPO.", currentAssumption: "Current recovery capability can meet the stated objectives.", impact: "The selected recovery tier may be insufficient.", affectedDecision: preferred, action: "Re-test the service and reassess the next higher credible recovery pattern." },
+    { id: "SENS-02", trigger: "Business impact tolerance or recovery objectives change.", currentAssumption: "Current business requirements remain valid.", impact: "Pattern requirement fit changes.", affectedDecision: preferred, action: "Re-run the strategy decision using the revised business requirement." },
+    { id: "SENS-03", trigger: "Cyber recovery cannot be isolated from the production trust boundary.", currentAssumption: "Recovery remains trustworthy after destructive compromise.", impact: "Production DR may not be a safe recovery path.", affectedDecision: "CYBER-01/CYBER-02", action: "Strengthen isolated cyber recovery before relying on production recovery." },
+    { id: "SENS-04", trigger: "Critical concentration or dependency risk cannot be reduced.", currentAssumption: "Shared failure-domain risk is controllable.", impact: "Recovery can fail through a correlated dependency.", affectedDecision: "TP-03/TP-05/INF-03/INF-04/DR-07", action: "Reassess multi-provider, multi-region and dependency-aware controls." }
+  ] : [
+    { id: "SENS-00", trigger: "RTO/RPO are undefined.", currentAssumption: "No approved business recovery requirement exists.", impact: "A final recovery strategy cannot be safely selected.", affectedDecision: "Business requirement baseline", action: "Complete BIA and approve impact tolerance, RTO and RPO." }
+  ];
+  const sensitivity = recommendationSensitivity.map(x => x.action);
 
   const executiveReport: ResilienceExecutiveReport = {
     assessmentType: "Executive Scan",
