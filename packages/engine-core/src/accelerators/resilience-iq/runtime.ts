@@ -280,6 +280,24 @@ function scoreDomains(a: ResilienceAnswers, confidence: number): Record<string, 
   }
   return result;
 }
+function applyAdvisoryPostureAdjustments(domains: Record<string, number>, flags: Set<string>) {
+  const model = (k.scoringModel as any).advisory_adjustments ?? {};
+  const adjusted = { ...domains };
+  let overallPenalty = 0;
+  for (const flag of flags) {
+    const rule = model[flag];
+    if (!rule) continue;
+    overallPenalty += Number(rule.overall ?? 0);
+    for (const [domain, penalty] of Object.entries(rule.domains ?? {})) {
+      if (adjusted[domain] !== undefined) {
+        adjusted[domain] = Math.max(0, adjusted[domain] + Number(penalty));
+      }
+    }
+  }
+  const cap = Number((k.scoringModel as any).advisory_adjustment_rules?.max_overall_penalty ?? 20);
+  return { domains: adjusted, overallPenalty: Math.min(cap, Math.max(0, -overallPenalty)) };
+}
+
 function criticalExposure(gaps: Array<{ severity: string }>): "Low" | "Moderate" | "High" | "Severe" {
   const critical = gaps.filter(g => g.severity.toLowerCase() === "critical").length;
   const high = gaps.filter(g => g.severity.toLowerCase() === "high").length;
@@ -521,9 +539,11 @@ export function evaluateResilienceIq(a: ResilienceAnswers): ResilienceResult {
   const assessmentIncomplete = requirementsIncomplete || missing.length > 0 || (advisoryDepthRequired && advisoryMissing.length > 0);
   const confidenceLabel = evidenceConfidence(a);
   const confidence = Number((k.scoringModel.evidence_confidence as any)[confidenceLabel] ?? 0.7);
-  const domains = scoreDomains(a, confidence);
+  const baseDomains = scoreDomains(a, confidence);
+  const advisoryPosture = applyAdvisoryPostureAdjustments(baseDomains, effectiveFlags);
+  const domains = advisoryPosture.domains;
   const postureScore = Math.round(Object.entries(domains).reduce((s, [d, v]) => s + v * Number((k.scoringModel.domain_weights as any)[d] ?? 0), 0));
-  let score = postureScore;
+  let score = Math.max(0, postureScore - advisoryPosture.overallPenalty);
 
   if (effectiveFlags.has("critical_spof")) score -= 10;
   if (effectiveFlags.has("backup_resilience_gap")) score -= 15;
