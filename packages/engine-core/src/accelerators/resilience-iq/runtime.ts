@@ -1,5 +1,6 @@
 import { resilienceKnowledge as k } from "./knowledge";
 
+export type ResilienceMatrixAnswer = Record<string, string>;
 export type ResilienceAnswers = Record<string, unknown>;
 
 export interface NextQuestion {
@@ -132,11 +133,33 @@ function concentrationRisk(a: ResilienceAnswers): string {
 }
 
 function dependencyRisk(a: ResilienceAnswers): string {
-  const v = str(a["EX-05"]);
+  const raw = a["EX-05"];
+  if (raw && typeof raw === "object" && !Array.isArray(raw)) {
+    const values = Object.values(raw as Record<string, unknown>).map(String);
+    if (!values.length) return "unknown";
+    if (values.some(v => v === "No mapping" || v === "Stale")) return "high";
+    if (values.some(v => v === "Partial")) return "medium";
+    if (values.every(v => v === "Validated")) return "low";
+    return "unknown";
+  }
+  const v = str(raw);
   if (v === "No" || v === "Documented but stale") return "high";
   if (v === "Partially") return "medium";
   if (v === "Unknown") return "unknown";
   return "low";
+}
+
+function normalizedScoringValue(questionId: string, value: unknown): string | string[] | undefined {
+  if (questionId !== "EX-05" || !value || typeof value !== "object" || Array.isArray(value)) {
+    return typeof value === "string" || Array.isArray(value) ? value as string | string[] : undefined;
+  }
+  const values = Object.values(value as Record<string, unknown>).map(String);
+  if (!values.length) return undefined;
+  if (values.every(v => v === "Validated")) return "Yes, current and validated";
+  if (values.some(v => v === "No mapping")) return "No";
+  if (values.some(v => v === "Stale")) return "Documented but stale";
+  if (values.some(v => v === "Partial")) return "Partially";
+  return "Unknown";
 }
 
 function environment(a: ResilienceAnswers): string {
@@ -177,7 +200,8 @@ function ruleMatches(rule: any, a: ResilienceAnswers): boolean {
     });
   }
   if (!id || !condition) return false;
-  const v = str(a[id]);
+  const raw = a[id];
+  const v = str(normalizedScoringValue(id, raw));
   if (condition === "unknown") return v === "Unknown";
   if (condition === "RTO_<15m") return rtoMinutes[v] !== null && (rtoMinutes[v] as number) < 15;
   if (condition === "RTO_15m_to_1h") return rtoMinutes[v] !== null && (rtoMinutes[v] as number) >= 15 && (rtoMinutes[v] as number) <= 60;
@@ -295,7 +319,7 @@ function gapRegister(a: ResilienceAnswers, flags: Set<string>, score: number) {
   if (flags.has("concentration_risk") || str(a["EX-12"]) === "Critical SPOFs exist") add("G-04");
   if (["Yes", "Potentially"].includes(str(a["EX-08"]))) add("G-05");
   if (flags.has("identity_recovery_gap")) add("G-06");
-  if (flags.has("dependency_mapping_gap") || ["No", "Documented but stale"].includes(str(a["EX-05"]))) add("G-07");
+  if (flags.has("dependency_mapping_gap") || ["No", "Documented but stale"].includes(str(normalizedScoringValue("EX-05", a["EX-05"])))) add("G-07");
   if (str(a["EX-10"]) === "Yes, with no viable alternative" || flags.has("concentration_risk")) add("G-08");
   const capability = currentCapability(a);
   if (str(a["EX-06"]) === "No" || str(a["EX-20"]) === "Low") add("G-09");
