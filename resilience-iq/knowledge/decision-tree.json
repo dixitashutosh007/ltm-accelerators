@@ -462,6 +462,116 @@
           "AF-TP-04"
         ]
       }
+    },
+    {
+      "id": "BR-A01",
+      "when": {
+        "question": "AF-DR-04",
+        "condition": "advisory_recovery_not_proven"
+      },
+      "then": {
+        "flag": "recovery_capability_gap",
+        "require_evidence": [
+          "failover test evidence",
+          "restore test evidence"
+        ],
+        "candidate_patterns": [
+          "DR-07",
+          "DR-08"
+        ]
+      }
+    },
+    {
+      "id": "BR-A02",
+      "when": {
+        "question": "AF-DR-05",
+        "condition": "advisory_automation_weak"
+      },
+      "then": {
+        "flag": "recovery_automation_gap",
+        "candidate_patterns": [
+          "INF-06",
+          "DR-08"
+        ],
+        "require_evidence": [
+          "recovery orchestration evidence"
+        ]
+      }
+    },
+    {
+      "id": "BR-A03",
+      "when": {
+        "question": "AF-CY-03",
+        "condition": "advisory_backup_weak"
+      },
+      "then": {
+        "flag": "backup_resilience_gap",
+        "candidate_patterns": [
+          "DATA-01",
+          "DATA-02",
+          "CYBER-03"
+        ],
+        "require_evidence": [
+          "backup evidence",
+          "restore test evidence"
+        ]
+      }
+    },
+    {
+      "id": "BR-A04",
+      "when": {
+        "question": "AF-CY-04",
+        "condition": "advisory_cyber_weak"
+      },
+      "then": {
+        "flag": "cyber_recovery_gap",
+        "candidate_patterns": [
+          "CYBER-01",
+          "CYBER-02",
+          "CYBER-03"
+        ],
+        "require_evidence": [
+          "cyber recovery exercise evidence"
+        ]
+      }
+    },
+    {
+      "id": "BR-A05",
+      "when": {
+        "question": "AF-TP-02",
+        "condition": "advisory_exit_weak"
+      },
+      "then": {
+        "flag": "third_party_exit_gap",
+        "candidate_patterns": [
+          "TP-02",
+          "TP-04",
+          "TP-05"
+        ],
+        "require_evidence": [
+          "supplier exit plan",
+          "supplier resilience evidence"
+        ]
+      }
+    },
+    {
+      "id": "BR-A06",
+      "when": {
+        "question": "AF-TS-02",
+        "condition": "advisory_testing_weak"
+      },
+      "then": {
+        "flag": "low_test_evidence",
+        "candidate_patterns": [
+          "TEST-01",
+          "TEST-02",
+          "TEST-03"
+        ],
+        "require_evidence": [
+          "failover test evidence",
+          "scenario exercise evidence"
+        ]
+      }
     }
   ],
   "evidence_rules": [
