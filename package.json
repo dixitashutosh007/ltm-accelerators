@@ -11,7 +11,8 @@
     "build:costiq-config": "node scripts/generate-cost-iq-runtime-config.cjs",
     "test:resilience": "tsx packages/engine-core/src/accelerators/resilience-iq/evaluate.test.ts",
     "validate:resilience-bank": "node scripts/validate-resilience-question-bank.cjs",
-    "test:resilience-api": "tsx amplify/functions/evaluate-resilience-iq/handler.test.ts"
+    "test:resilience-api": "tsx amplify/functions/evaluate-resilience-iq/handler.test.ts",
+    "validate:resilience-deployment": "node scripts/validate-resilience-deployment.cjs"
   },
   "dependencies": {
     "@aws-amplify/backend": "^1.14.0",
