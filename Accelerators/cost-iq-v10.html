@@ -96,7 +96,7 @@ function home(){
     const checked=selectedAreas.includes(a);
     return '<label class="area '+(checked?'selected':'')+'" data-area="'+esc(a)+'"><input type="checkbox" '+(checked?'checked':'')+' onchange="toggleArea(this,\''+esc(a).replace(/'/g,"\\'")+'\')"><span class="check">'+(checked?'✓':'')+'</span><h3>'+esc(a)+'</h3><p>'+esc(AREA_DESC[a])+'</p></label>';
   }).join('');
-  $('app').innerHTML='<div class="hero"><div class="eyebrow">LTM INFRASTRUCTURE TECHNOLOGY ADVISORY</div><h1>Technology Cost & Value Diagnostic</h1><p>Cost IQ helps leadership understand where technology spend is going, where value is being created, and where management attention may be required.</p><div class="actions"><button class="btn primary" onclick="begin()">Configure diagnostic →</button></div></div><div class="stat-grid"><div class="stat"><span class="mini">Questions</span><br><b id="selectionQuestionCount">'+questionCountForSelection()+'</b><div class="mini">Questions for this selection</div></div><div class="stat"><span class="mini">Baseline</span><br><b>16</b><div class="mini">Cost & value dimensions</div></div><div class="stat"><span class="mini">Engine</span><br><b>20</b><div class="mini">Calibrated findings</div></div><div class="stat"><span class="mini">AI</span><br><b>Review</b><div class="mini">Anomaly & report synthesis</div></div></div><div class="card"><div class="eyebrow" style="color:#60717d">STEP 01 · FOCUS AREAS</div><h2>What would you like to diagnose?</h2><p class="muted">Select one or more focus areas. Two are pre-selected to give you a useful starting point. Baseline questions remain part of every assessment.</p><div class="baseline">✓ Enterprise context, CIO priorities, spend visibility and cost governance remain part of every assessment.</div><div class="section-grid" style="margin-top:16px">'+cards+'</div><div class="actions"><button class="btn primary" onclick="begin()">Start focused assessment →</button></div></div>';
+  $('app').innerHTML='<div class="hero"><div class="eyebrow">LTM INFRASTRUCTURE TECHNOLOGY ADVISORY</div><h1>Technology Cost & Value Diagnostic</h1><p>Cost IQ helps leadership understand where technology spend is going, where value is being created, and where management attention may be required.</p><div class="actions"><button class="btn primary" onclick="begin()">Configure diagnostic →</button></div><div class="card" style="margin-top:16px"><div class="eyebrow">DEVELOPER TEST DATA</div><h3>Fast regression scenarios</h3><p class="muted">Pre-answer the full assessment with deterministic test data. Use these only for development and validation.</p><div class="actions"><button class="btn" onclick="loadTestScenario('healthy')">Load Healthy</button><button class="btn" onclick="loadTestScenario('typical')">Load Typical</button><button class="btn" onclick="loadTestScenario('challenge')">Load Cost Challenge</button></div></div></div><div class="stat-grid"><div class="stat"><span class="mini">Questions</span><br><b id="selectionQuestionCount">'+questionCountForSelection()+'</b><div class="mini">Questions for this selection</div></div><div class="stat"><span class="mini">Baseline</span><br><b>16</b><div class="mini">Cost & value dimensions</div></div><div class="stat"><span class="mini">Engine</span><br><b>20</b><div class="mini">Calibrated findings</div></div><div class="stat"><span class="mini">AI</span><br><b>Review</b><div class="mini">Anomaly & report synthesis</div></div></div><div class="card"><div class="eyebrow" style="color:#60717d">STEP 01 · FOCUS AREAS</div><h2>What would you like to diagnose?</h2><p class="muted">Select one or more focus areas. Two are pre-selected to give you a useful starting point. Baseline questions remain part of every assessment.</p><div class="baseline">✓ Enterprise context, CIO priorities, spend visibility and cost governance remain part of every assessment.</div><div class="section-grid" style="margin-top:16px">'+cards+'</div><div class="actions"><button class="btn primary" onclick="begin()">Start focused assessment →</button></div></div>';
 }
 function toggleArea(el,a){
   if(el.checked){
@@ -109,6 +109,42 @@ function toggleArea(el,a){
     el.parentElement.querySelector('.check').textContent='';
   }
   updateQuestionCount();
+}
+function testAnswer(q,profile){
+  const strength=profile==='healthy'?5:profile==='challenge'?1:3;
+  const interaction=String(q.interaction||'').toLowerCase();
+  if(interaction.includes('slider')){
+    const min=Number(q.control?.min??1),max=Number(q.control?.max??5);
+    return profile==='healthy'?max:profile==='challenge'?min:Math.round((min+max)/2);
+  }
+  if(interaction.includes('star'))return strength;
+  if(interaction.includes('multi-select-ranking')){
+    const opts=q.options||q.choices||[];
+    return opts.slice(0,Math.min(2,opts.length)).map(function(x){return x.value??x.id??x});
+  }
+  if(interaction.includes('multi-select')){
+    const opts=q.options||q.choices||[];
+    return opts.length?[opts[0].value??opts[0].id??opts[0]]:[];
+  }
+  if(interaction.includes('select')||interaction.includes('choice')||interaction.includes('radio')){
+    const opts=q.options||q.choices||[];
+    if(!opts.length)return strength;
+    const x=profile==='challenge'?opts[0]:profile==='healthy'?opts[opts.length-1]:opts[Math.min(1,opts.length-1)];
+    return x.value??x.id??x;
+  }
+  if(interaction.includes('text')||interaction.includes('textarea'))return profile==='healthy'?'Established and measured':profile==='challenge'?'Not established':'Partially established';
+  return strength;
+}
+async function loadTestScenario(profile){
+  if(!allQuestions.length){alert('Questions are still loading. Please wait a moment and try again.');return}
+  selectedAreas=Object.keys(AREAS);
+  questions=allQuestions.filter(function(q){
+    if(BASELINE.includes(q.section))return true;
+    return selectedAreas.some(function(a){return (AREAS[a]||[]).includes(q.section)});
+  }).filter(function(q){return !String(q.id).startsWith('FIN-')||selectedAreas.includes('FinOps')});
+  answers={};subjective={};sectionIndex=0;qIndex=0;
+  questions.forEach(function(q){answers[q.id]=testAnswer(q,profile)});
+  await runEngine();
 }
 function begin(){
   const q=allQuestions.filter(function(q){
