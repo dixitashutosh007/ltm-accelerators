@@ -88,9 +88,13 @@ export function getAssessmentRepository(): AssessmentRepository {
         finalizedAt: assessment.finalizedAt
       };
       const client = await getClient();
-      const { data, errors } = await client.models.ResilienceAssessment.upsert(input);
-      if (errors?.length) throw new Error(errors.map(error => error.message).join('; '));
-      if (!data) throw new Error('Resilience assessment persistence returned no record.');
+      const existing = await client.models.ResilienceAssessment.get({ assessmentId: assessment.assessmentId });
+      if (existing.errors?.length) throw new Error(existing.errors.map(error => error.message).join('; '));
+      const mutation = existing.data
+        ? await client.models.ResilienceAssessment.update(input)
+        : await client.models.ResilienceAssessment.create(input);
+      if (mutation.errors?.length) throw new Error(mutation.errors.map(error => error.message).join('; '));
+      if (!mutation.data) throw new Error('Resilience assessment persistence returned no record.');
       return assessment;
     }
   };
