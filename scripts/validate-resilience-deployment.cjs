@@ -11,6 +11,8 @@ const checks=[
   ['Resilience IQ page loads shared runtime config', html.includes('cost-iq-runtime-config.js')],
   ['Resilience IQ page reads RESILIENCE_IQ_API', html.includes('RESILIENCE_IQ_API')],
   ['Amplify backend exposes Resilience IQ route', backend.includes("/api/evaluate/resilience-iq")],
+  ['Resilience IQ assessment persistence route is Cognito protected', backend.includes("/api/resilience-iq/assessment") && backend.includes('ResilienceAssessmentAuthorizer')],
+  ['Resilience IQ page includes Amplify authentication bootstrap', html.includes('resilienceAuthReady') && html.includes('signIn')],
   ['Runtime config generator declares RESILIENCE_IQ_API', generator.includes("window.RESILIENCE_IQ_API='")]
 ];
 const failed=checks.filter(([,ok])=>!ok);
