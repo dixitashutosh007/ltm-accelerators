@@ -98,7 +98,6 @@ function home(){
   }).join('');
   $('app').innerHTML='<div class="hero"><div class="eyebrow">LTM INFRASTRUCTURE TECHNOLOGY ADVISORY</div><h1>Technology Cost & Value Diagnostic</h1><p>Cost IQ helps leadership understand where technology spend is going, where value is being created, and where management attention may be required.</p><div class="actions"><button class="btn primary" onclick="begin()">Configure diagnostic →</button></div></div><div class="stat-grid"><div class="stat"><span class="mini">Questions</span><br><b id="selectionQuestionCount">'+questionCountForSelection()+'</b><div class="mini">Questions for this selection</div></div><div class="stat"><span class="mini">Baseline</span><br><b>16</b><div class="mini">Cost & value dimensions</div></div><div class="stat"><span class="mini">Engine</span><br><b>20</b><div class="mini">Calibrated findings</div></div><div class="stat"><span class="mini">AI</span><br><b>Review</b><div class="mini">Anomaly & report synthesis</div></div></div><div class="card"><div class="eyebrow" style="color:#60717d">STEP 01 · FOCUS AREAS</div><h2>What would you like to diagnose?</h2><p class="muted">Select one or more focus areas. Two are pre-selected to give you a useful starting point. Baseline questions remain part of every assessment.</p><div class="baseline">✓ Enterprise context, CIO priorities, spend visibility and cost governance remain part of every assessment.</div><div class="section-grid" style="margin-top:16px">'+cards+'</div><div class="actions"><button class="btn primary" onclick="begin()">Start focused assessment →</button></div></div>';
 }
-function toggleArea(el,a){if(el.checked){if(!selectedAreas.includes(a))selectedAreas.push(a);el.parentElement.classList.add('selected')}else{selectedAreas=selectedAreas.filter(x=>x!==a);el.parentElement.classList.remove('selected')}}
 function toggleArea(el,a){
   if(el.checked){
     if(!selectedAreas.includes(a))selectedAreas.push(a);
@@ -110,6 +109,15 @@ function toggleArea(el,a){
     el.parentElement.querySelector('.check').textContent='';
   }
   updateQuestionCount();
+}
+function begin(){
+  const q=allQuestions.filter(function(q){
+    if(BASELINE.includes(q.section))return true;
+    return selectedAreas.some(function(a){return (AREAS[a]||[]).includes(q.section)});
+  });
+  questions=q.filter(function(q){return !String(q.id).startsWith('FIN-')||selectedAreas.includes('FinOps')});
+  answers={};subjective={};sectionIndex=0;qIndex=0;
+  renderAssessment();
 }
 function sections(){const seen=[];questions.forEach(function(q){if(!seen.includes(q.section))seen.push(q.section)});return seen}
 function renderAssessment(){
