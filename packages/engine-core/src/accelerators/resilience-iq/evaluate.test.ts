@@ -261,6 +261,8 @@ if (!advisorySignalCase.mandatoryControls.includes("CYBER-01")) throw new Error(
 if (!advisorySignalCase.mandatoryControls.includes("DATA-01")) throw new Error("Advisory cyber evidence should require protected backup");
 if (!advisorySignalCase.roadmap.some(w => w.actions.some(a => /cyber recovery/i.test(a)))) throw new Error("Advisory cyber evidence should affect the roadmap");
 
+if (advisorySignalCase.domainScores.CYBER >= 70) throw new Error("Advisory cyber weakness should reduce CYBER posture");
+if (advisorySignalCase.domainScores.DR >= 70) throw new Error("Advisory recovery weakness should reduce DR posture");
 console.log("Resilience IQ knowledge-driven runtime tests passed");
 
 
