@@ -27,6 +27,10 @@ for (const q of questions) {
   if (q.options && !Array.isArray(q.options)) errors.push(q.id + ': options must be an array');
   if (q.type && ['single_select','multi_select','slider_choice','matrix','ranking','scenario','yes_no','evidence_select'].includes(q.type) && (!Array.isArray(q.options) || q.options.length === 0) && q.type !== 'matrix') errors.push(q.id + ': selectable question has no options');
   if (q.ui?.interaction && !['single_select','multi_select','slider_choice','matrix','ranking','scenario','number','text','yes_no','evidence_select'].includes(q.ui.interaction)) errors.push(q.id + ': unsupported UI interaction');
+  if (['single_select','multi_select','slider_choice','matrix','ranking','scenario','number','text','yes_no','evidence_select'].includes(q.type)) {
+    if (!q.ui?.interaction) errors.push(q.id + ': interactive question needs ui.interaction');
+    if (!q.ui?.instruction) errors.push(q.id + ': interactive question needs ui.instruction');
+  }
   if (['ranking','slider_choice','matrix','scenario'].includes(q.ui?.interaction) && !q.ui?.instruction) errors.push(q.id + ': interactive UI needs instruction');
   if (q.type === 'matrix') {
     if (!Array.isArray(q.ui?.rows) || !q.ui.rows.length) errors.push(q.id + ': matrix needs ui.rows');
