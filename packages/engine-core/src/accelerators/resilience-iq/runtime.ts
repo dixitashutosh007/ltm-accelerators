@@ -249,8 +249,9 @@ function scoreDomains(a: ResilienceAnswers, confidence: number): Record<string, 
   const scores: Record<string, { sum: number; n: number }> = {};
 
   for (const x of q) {
-    const v = a[x.id];
-    if (v === undefined || v === null || v === "") continue;
+    const raw = a[x.id];
+    if (raw === undefined || raw === null || raw === "") continue;
+    const v = normalizedScoringValue(x.id, raw);
     const rule = scoring[x.id];
     let s: number;
 
