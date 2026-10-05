@@ -55,6 +55,8 @@
     "evidence_requests_grouped": true,
     "evidence_register": true,
     "evidence_status_values": ["not_requested","requested","provided","validated","rejected"],
+    "evidence_register_fields": ["id","evidence","type","status","purpose","validation_criteria","affected_gaps","affects_recommendation"],
+    "evidence_types": ["business_requirement","architecture","recovery_test","backup_restore","cyber_recovery","third_party","dependency","governance","other"],
     "evidence_maturity_is_distinct_from_question_confidence": true
   }
 }
