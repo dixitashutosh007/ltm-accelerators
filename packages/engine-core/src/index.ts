@@ -7,3 +7,4 @@ export * from './accelerators/strategy-iq/evaluate';
 export * from './accelerators/modernization-iq/evaluate';
 export * from './accelerators/resilience-iq/evaluate';
 export * from './accelerators/resilience-iq/evidence-lifecycle';
+export * from './accelerators/resilience-iq/version';
