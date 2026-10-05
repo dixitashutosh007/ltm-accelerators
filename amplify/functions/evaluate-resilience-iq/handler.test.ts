@@ -60,4 +60,25 @@ if (get.statusCode !== 405) throw new Error("Unsupported methods should return 4
 const traceable = await handler(event({ answers: validAnswers }));
 if (!traceable.headers?.["X-Request-Id"]) throw new Error("Responses should include a request ID");
 
+const base64 = await handler({
+  requestContext: { http: { method: "POST" } },
+  body: Buffer.from(JSON.stringify({ answers: validAnswers }), "utf-8").toString("base64"),
+  isBase64Encoded: true
+} as any);
+if (base64.statusCode !== 200 || !json(base64).ok) throw new Error("Base64 JSON payload should be accepted");
+
+const missingAnswers = await handler(event({}));
+if (missingAnswers.statusCode !== 400) throw new Error("Missing answers should return 400");
+
+const arrayAnswers = await handler(event({ answers: [] }));
+if (arrayAnswers.statusCode !== 400) throw new Error("Array answers should return 400");
+
+const oversizedFields = await handler(event({
+  answers: Object.fromEntries(Array.from({ length: 181 }, (_, i) => [`EX-${i}`, "x"]))
+}));
+if (oversizedFields.statusCode !== 400) throw new Error("Oversized answer field count should return 400");
+
+const invalidNumber = await handler(event({ answers: { "AF-BIA-01": "not-a-number" } }));
+if (invalidNumber.statusCode !== 400) throw new Error("Invalid numeric answer should return 400");
+
 console.log("Resilience IQ API contract tests passed");
