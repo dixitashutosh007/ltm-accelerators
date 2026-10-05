@@ -33,6 +33,8 @@ function render(){
  '<div class="field"><label>Options</label><div id="opts">'+(q.options||[]).map((o,i)=>'<div class="option-row"><input data-opt="'+i+'" value="'+esc(o)+'"><button class="iconbtn" data-del="'+i+'">×</button></div>').join('')+'</div><button class="btn" id="addopt">+ Add option</button></div>'+
  '<div class="row2"><div class="field"><label>Evidence required</label><input id="evidence" value="'+esc((q.evidence||[]).join(', '))"></div><div class="field"><label>Version</label><input id="version" value="'+esc(q.version||'1.0')+'"></div></div>'+
  '<div class="field"><label>UI instruction</label><input id="instruction" value="'+esc(ui.instruction||'')+'"></div>'+
+ '<div class="row2"><div class="field"><label>Scoring metadata · JSON</label><textarea id="scoring" style="min-height:120px">'+esc(JSON.stringify(q.scoring||{},null,2))+'</textarea></div><div class="field"><label>Branching metadata · JSON</label><textarea id="branching" style="min-height:120px">'+esc(JSON.stringify(q.branching||{},null,2))+'</textarea></div></div>'+
+ '<div class="field"><label>Framework mappings · JSON</label><textarea id="frameworks" style="min-height:100px">'+esc(JSON.stringify(q.framework_mappings||{},null,2))+'</textarea></div>'+
  '<div class="field"><label>Required</label><label class="check"><input id="required" type="checkbox" '+(q.required?'checked':'')+'> This question must be answered</label></div>'+
  '<div class="status" id="saveState">Edits are local to this browser until exported.</div>';
  document.querySelectorAll('#opts input').forEach(x=>x.oninput=e=>{q.options[+x.dataset.opt]=e.target.value;refreshPreview()});
