@@ -9,7 +9,7 @@
     "amplify": "ampx",
     "validate:costiq": "node scripts/validate-cost-iq.cjs",
     "build:costiq-config": "node scripts/generate-cost-iq-runtime-config.cjs",
-    "test:resilience": "tsx packages/engine-core/src/accelerators/resilience-iq/evaluate.test.ts && tsx packages/engine-core/src/accelerators/resilience-iq/evidence-lifecycle.test.ts && tsx packages/engine-core/src/accelerators/resilience-iq/assessment-lifecycle.test.ts",
+    "test:resilience": "tsx packages/engine-core/src/accelerators/resilience-iq/evaluate.test.ts && tsx packages/engine-core/src/accelerators/resilience-iq/evidence-lifecycle.test.ts && tsx packages/engine-core/src/accelerators/resilience-iq/assessment-lifecycle.test.ts && tsx packages/engine-core/src/accelerators/resilience-iq/assessment-persistence.test.ts",
     "validate:resilience-bank": "node scripts/validate-resilience-question-bank.cjs",
     "test:resilience-api": "tsx amplify/functions/evaluate-resilience-iq/handler.test.ts",
     "validate:resilience-deployment": "node scripts/validate-resilience-deployment.cjs",
