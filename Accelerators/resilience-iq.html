@@ -88,9 +88,11 @@ async function loadAdvisoryQuestions(nextQuestions){
   const bank=await fetch('../resilience-iq/knowledge/question-bank.json',{cache:'no-store'}).then(r=>r.ok?r.json():null);
   if(!bank)throw new Error('Question bank unavailable');
   const byId=new Map((bank.advisory_questions||[]).map(q=>[q.id,q]));
-  const additions=nextQuestions.map(n=>byId.get(n.id)).filter(Boolean).map(q=>({
-    id:q.id,t:q.text,type:q.ui?.interaction||q.type,o:q.options||[],rows:q.ui?.rows||[],cols:q.ui?.columns||[],required:true
-  })).filter(q=>!questions.some(existing=>existing.id===q.id));
+  const additions=nextQuestions.map(n=>byId.get(n.id)).filter(Boolean).map(q=>{
+    const interaction=q.ui?.interaction||q.type;
+    const typeMap={multi_select:'multi',slider_choice:'slider',ranking:'rank',matrix:'matrix',scenario:'scenario',single_select:'single',yes_no:'single',evidence_select:'multi',number:'single',text:'single'};
+    return {id:q.id,t:q.text,type:typeMap[interaction]||'single',o:q.options||[],rows:q.ui?.rows||[],cols:q.ui?.columns||[],required:true};
+  }).filter(q=>!questions.some(existing=>existing.id===q.id));
   if(!additions.length){renderReport();return;}
   questions=[...questions,...additions];
   for(const q of additions) answers[q.id]=undefined;
