@@ -6,7 +6,9 @@ import { type ClientSchema, a, defineData } from '@aws-amplify/backend';
  * 2. QuestionBank: Versioned questions for each accelerator
  * 3. ScoringModel: Private scoring models, weights, and rules
  * 4. AssessmentSubmission: Client answers and computed boardroom results
- * 5. UserAllowlist: Pre-approved email directory with RBAC roles
+ * 5. ResilienceEvidence: Governed evidence metadata and validation lifecycle for Resilience IQ
+ * 6. UserAllowlist: Pre-approved email directory with RBAC roles
+
  */
 const schema = a.schema({
   Accelerator: a
