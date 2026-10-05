@@ -377,7 +377,7 @@ function buildEvidenceRegister(
   evidenceRequests: string[],
   gaps: Array<{ id: string; name: string; severity: string; action: string }>
 ): EvidenceRegisterItem[] {
-  return evidenceRequests.map(evidence => {
+  return evidenceRequests.map((evidence, index) => {
     const text = evidence.toLowerCase();
     const affectedGaps = gaps.filter(g => {
       if (text.includes("rto") || text.includes("rpo") || text.includes("bia")) return g.id === "G-01" || g.id === "G-02";
@@ -406,7 +406,7 @@ function buildEvidenceRegister(
       type === "recovery_test" ? ["Test covers the end-to-end service, not only infrastructure components.", "Observed RTO/RPO are recorded and compared with approved objectives."] :
       ["Evidence is current, attributable and relevant to the assessed control."];
     return {
-      id: "ER-" + String(evidenceRequests.indexOf(evidence) + 1).padStart(2, "0"),
+      id: "ER-" + String(index + 1).padStart(2, "0"),
       evidence,
       type,
       status: "requested",
