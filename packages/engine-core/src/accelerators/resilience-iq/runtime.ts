@@ -302,6 +302,29 @@ function maturity(score: number) {
   return { level, label: labels[level] };
 }
 
+function advisorySignals(a: ResilienceAnswers): Set<string> {
+  const flags = new Set<string>();
+  const v = (id: string) => str(a[id]);
+  const vals = (id: string) => arr(a[id]).map(String);
+
+  // Advisory answers refine the executive branch rather than replacing it.
+  if (["No", "Partially", "Unknown"].includes(v("AF-DR-04"))) flags.add("recovery_capability_gap");
+  if (["Manual runbook", "Partially automated", "Unknown"].includes(v("AF-DR-05"))) flags.add("recovery_automation_gap");
+  if (["No", "Unknown"].includes(v("AF-CY-03"))) flags.add("backup_resilience_gap");
+  if (["No", "Unknown", "Tabletop only"].includes(v("AF-CY-04"))) flags.add("cyber_recovery_gap");
+  if (["No defined method", "Unknown"].includes(v("AF-CY-05"))) flags.add("cyber_recovery_gap");
+  if (["High — no practical alternative", "Unknown"].includes(v("AF-TP-02"))) flags.add("concentration_risk");
+  if (["No viable exit", "Unknown"].includes(v("AF-TP-03"))) flags.add("third_party_exit_gap");
+  if (["Provider test evidence only", "Contractual assertion only", "No evidence"].includes(v("AF-TP-04"))) flags.add("low_test_evidence");
+  if (vals("AF-CL-01").some(x => ["Identity plane", "Cloud provider"].includes(x))) flags.add("concentration_risk");
+  if (["No", "Unknown", "Partially"].includes(v("AF-CL-04"))) flags.add("low_test_evidence");
+  if (["Limited capacity", "No", "Unknown"].includes(v("AF-OP-01"))) flags.add("people_continuity_gap");
+  if (["Partially", "No", "Unknown"].includes(v("AF-OP-02"))) flags.add("crisis_management_gap");
+  if (["Partially", "No", "Unknown"].includes(v("AF-OP-03"))) flags.add("governance_gap");
+  if (["No", "Unknown"].includes(v("AF-TS-02")) || ["Never", "Ad hoc"].includes(v("AF-TS-03"))) flags.add("low_test_evidence");
+  return flags;
+}
+
 function currentCapability(a: ResilienceAnswers) {
   const currentRto = rtoMinutes[str(a["AF-DR-01"])] ?? null;
   const currentRpo = rpoMinutes[str(a["AF-DR-02"])] ?? null;
@@ -488,11 +511,13 @@ export function evaluateResilienceIq(a: ResilienceAnswers): ResilienceResult {
   const rto = rtoMinutes[str(a["EX-03"])] ?? null;
   const rpo = rpoMinutes[str(a["EX-04"])] ?? null;
   const branch = dynamicBranch(a);
+  const advisory = advisorySignals(a);
+  const effectiveFlags = new Set([...branch.flags, ...advisory]);
   const required = requiredQuestions();
   const missing = required.filter(id => a[id] === undefined || a[id] === null || a[id] === "");
   const requirementsIncomplete = rto === null || rpo === null;
   const advisoryMissing = [...branch.questions].filter(id => a[id] === undefined || a[id] === null || a[id] === "");
-  const advisoryDepthRequired = branch.flags.has("force_advisory_depth");
+  const advisoryDepthRequired = effectiveFlags.has("force_advisory_depth");
   const assessmentIncomplete = requirementsIncomplete || missing.length > 0 || (advisoryDepthRequired && advisoryMissing.length > 0);
   const confidenceLabel = evidenceConfidence(a);
   const confidence = Number((k.scoringModel.evidence_confidence as any)[confidenceLabel] ?? 0.7);
@@ -500,14 +525,14 @@ export function evaluateResilienceIq(a: ResilienceAnswers): ResilienceResult {
   const postureScore = Math.round(Object.entries(domains).reduce((s, [d, v]) => s + v * Number((k.scoringModel.domain_weights as any)[d] ?? 0), 0));
   let score = postureScore;
 
-  if (branch.flags.has("critical_spof")) score -= 10;
-  if (branch.flags.has("backup_resilience_gap")) score -= 15;
-  if (branch.flags.has("identity_recovery_gap")) score -= 8;
-  if (branch.flags.has("concentration_risk")) score -= 6;
-  if (branch.flags.has("recovery_capability_gap")) score -= 8;
+  if (effectiveFlags.has("critical_spof")) score -= 10;
+  if (effectiveFlags.has("backup_resilience_gap")) score -= 15;
+  if (effectiveFlags.has("identity_recovery_gap")) score -= 8;
+  if (effectiveFlags.has("concentration_risk")) score -= 6;
+  if (effectiveFlags.has("recovery_capability_gap")) score -= 8;
   score = Math.max(0, Math.min(100, score));
 
-  const gaps = gapRegister(a, branch.flags, score);
+  const gaps = gapRegister(a, effectiveFlags, score);
   const eliminated = new Set<string>(branch.eliminate);
   if (rto !== null && rto < 60) eliminated.add("DR-01");
   if (rto !== null && rto < 15) eliminated.add("DR-02");
@@ -535,11 +560,11 @@ export function evaluateResilienceIq(a: ResilienceAnswers): ResilienceResult {
   const evidenceRequests = [...new Set([
     ...branch.evidence,
     ...(requirementsIncomplete ? ["BIA", "RTO/RPO register"] : []),
-    ...(branch.flags.has("low_test_evidence") ? ["failover test evidence", "restore test evidence"] : [])
+    ...(effectiveFlags.has("low_test_evidence") ? ["failover test evidence", "restore test evidence"] : [])
   ])];
 
   const mandatoryControls = [
-    ...(cyberRisk(a) === "destructive" || cyberRisk(a) === "high" ? ["DATA-01", "DATA-02", "CYBER-01", "CYBER-02"] : []),
+    ...(cyberRisk(a) === "destructive" || cyberRisk(a) === "high" || effectiveFlags.has("cyber_recovery_gap") ? ["DATA-01", "DATA-02", "CYBER-01", "CYBER-02"] : []),
     ...(concentrationRisk(a) === "high" ? ["TP-03", "TP-05"] : []),
     ...(concentrationRisk(a) === "high" && ["aws", "azure", "gcp"].includes(environment(a)) ? ["INF-04"] : []),
     ...(dependencyRisk(a) === "high" ? ["DR-07", "APP-04", "DR-08"] : [])
