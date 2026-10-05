@@ -20,6 +20,13 @@ export interface PatternDecision {
   decisionFactors?: string[];
 }
 
+export interface RecommendationConfidence {
+  level: "High" | "Moderate" | "Low" | "Blocked";
+  score: number;
+  reasons: string[];
+  decisionSensitivity: string[];
+}
+
 export interface ResilienceExecutiveReport {
   assessmentType: "Executive Scan";
   advisoryStatus: "initial" | "requirements_incomplete";
@@ -53,6 +60,7 @@ export interface ResilienceExecutiveReport {
   roadmap: Array<{ wave: string; window: string; actions: string[] }>;
   governanceMetrics: string[];
   decisionPoints: string[];
+  recommendationConfidence: RecommendationConfidence;
 }
 
 export interface ResilienceResult {
@@ -83,6 +91,7 @@ export interface ResilienceResult {
   decisionLog: string[];
   executiveSummary: string;
   executiveReport: ResilienceExecutiveReport;
+  recommendationConfidence: RecommendationConfidence;
 }
 
 const rtoMinutes: Record<string, number | null> = {
@@ -302,6 +311,43 @@ function applyAdvisoryPostureAdjustments(domains: Record<string, number>, flags:
   }
   const cap = Number((k.scoringModel as any).advisory_adjustment_rules?.max_overall_penalty ?? 20);
   return { domains: adjusted, overallPenalty: Math.min(cap, Math.max(0, -overallPenalty)) };
+}
+
+function recommendationConfidence(
+  a: ResilienceAnswers,
+  preferred: string | null,
+  ranking: PatternDecision[],
+  gaps: Array<{ severity: string }>,
+  confidenceLabel: string,
+  assessmentIncomplete: boolean
+): RecommendationConfidence {
+  if (assessmentIncomplete || !preferred) {
+    return { level: "Blocked", score: 0, reasons: ["Required business objectives or advisory validation are incomplete."], decisionSensitivity: ["Complete required questions and evidence validation before approving a target-state strategy."] };
+  }
+  let score = confidenceLabel === "independently_validated" ? 95 :
+    confidenceLabel === "tested" ? 85 :
+    confidenceLabel === "documented" ? 70 :
+    confidenceLabel === "self_declared" ? 55 : 35;
+  const reasons: string[] = [];
+  const lead = ranking.find(x => x.id === preferred);
+  const second = ranking.find(x => x.id !== preferred && /^DR-/.test(x.id));
+  const margin = lead && second ? lead.score - second.score : 20;
+  if (margin < 8) { score -= 15; reasons.push("Recovery strategy ranking is sensitive because the leading options are closely matched."); }
+  if (gaps.some(g => ["critical","high"].includes(g.severity.toLowerCase()))) { score -= 10; reasons.push("Material resilience gaps remain unresolved."); }
+  if (a["EX-06"] === "Likely, but not recently tested" || a["EX-07"] === ">2 years ago" || a["EX-07"] === "Never") {
+    score -= 10; reasons.push("Recovery capability is not supported by recent successful testing.");
+  }
+  if (a["EX-03"] === "Unknown" || a["EX-04"] === "Unknown") {
+    score = 0; reasons.push("Recovery objectives are undefined.");
+  }
+  score = Math.max(0, Math.min(100, score));
+  const level = score >= 80 ? "High" : score >= 60 ? "Moderate" : "Low";
+  const sensitivity = [
+    "Measured RTO/RPO results that miss the stated objectives.",
+    "Material change to business impact tolerance or critical-service dependency topology.",
+    "New evidence showing cyber recovery, identity recovery or third-party recovery is less isolated than assumed."
+  ];
+  return { level, score, reasons: reasons.length ? reasons : ["Recovery objectives, evidence confidence and strategy ranking provide a consistent basis for the current recommendation."], decisionSensitivity: sensitivity };
 }
 
 function criticalExposure(gaps: Array<{ severity: string }>): "Low" | "Moderate" | "High" | "Severe" {
@@ -588,6 +634,7 @@ export function evaluateResilienceIq(a: ResilienceAnswers): ResilienceResult {
   ranking.sort((x, y) => y.score - x.score);
   const recoveryRanking = ranking.filter(x => ["DR-01","DR-02","DR-03","DR-04","DR-05"].includes(x.id));
   const preferred = assessmentIncomplete ? null : recoveryRanking[0]?.id ?? null;
+  const recommendationConfidenceResult = recommendationConfidence(a, preferred, ranking, gaps, confidenceLabel, assessmentIncomplete);
 
   const nextQuestions: NextQuestion[] = [];
   for (const id of branch.questions) {
@@ -673,7 +720,8 @@ export function evaluateResilienceIq(a: ResilienceAnswers): ResilienceResult {
     targetState: blueprint,
     roadmap,
     governanceMetrics: (k.blueprintEngine.section_rules?.governance_and_metrics?.required_metrics ?? []) as string[],
-    decisionPoints: (k.executiveReport.decision_points ?? []) as string[]
+    decisionPoints: (k.executiveReport.decision_points ?? []) as string[],
+    recommendationConfidence: recommendationConfidenceResult
   };
 
   return {
