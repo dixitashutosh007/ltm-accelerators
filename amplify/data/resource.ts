@@ -69,6 +69,30 @@ const schema = a.schema({
       allow.owner().to(['create', 'read'])
     ]),
 
+  ResilienceEvidence: a
+    .model({
+      assessmentId: a.string().required(),
+      evidenceId: a.string().required(),
+      evidence: a.string().required(),
+      type: a.string().required(),
+      status: a.string().required(),
+      purpose: a.string().required(),
+      validationCriteriaJson: a.string().required(),
+      affectedGapsJson: a.string().required(),
+      affectsRecommendation: a.boolean().required(),
+      evidenceLocation: a.string(),
+      evidenceChecksum: a.string(),
+      validationOutcome: a.string(),
+      submittedBy: a.string(),
+      validatedBy: a.string(),
+      validatedAt: a.datetime(),
+      rejectedReason: a.string()
+    })
+    .authorization(allow => [
+      allow.group('Admin').to(['create', 'read', 'update', 'delete']),
+      allow.group('Consultant').to(['create', 'read', 'update', 'delete'])
+    ]),
+
   UserAllowlist: a
     .model({
       email: a.string().required(),
