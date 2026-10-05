@@ -167,6 +167,39 @@ const cloudConcentration = evaluateResilienceIq({
 if (!cloudConcentration.mandatoryControls.includes("TP-05")) throw new Error("Cloud concentration should require concentration-risk mitigation");
 if (!cloudConcentration.mandatoryControls.includes("INF-04")) throw new Error("Cloud concentration should require multi-region resilience");
 
+const matrixCase = evaluateResilienceIq({
+  "EX-01": ["Customer-facing services"],
+  "EX-02": "1-4 hours",
+  "EX-03": "1-4 hours",
+  "EX-04": "15-60 minutes",
+  "EX-05": {
+    "Applications": "Validated",
+    "Data": "Validated",
+    "Infrastructure": "Partial",
+    "People": "Validated",
+    "Third parties": "Stale"
+  },
+  "EX-06": "Yes, proven by testing",
+  "EX-07": "Within 3 months",
+  "EX-08": "No",
+  "EX-09": "Yes, tested",
+  "EX-10": "No",
+  "EX-11": "No material concentration",
+  "EX-12": "No known SPOFs",
+  "EX-13": "Yes, proven",
+  "EX-14": "Yes, exercised",
+  "EX-15": "Yes, with metrics and actions",
+  "EX-16": "Yes, regularly",
+  "EX-17": "Yes, tested",
+  "EX-18": ["AWS"],
+  "EX-19": "Yes, isolated alternate path exists",
+  "EX-20": "High — tested"
+});
+if (matrixCase.status !== "ready") throw new Error("Matrix answers should satisfy the executive baseline");
+if (!matrixCase.mandatoryControls.includes("DR-07")) throw new Error("Partial/stale matrix dependency state should require dependency-aware recovery");
+if (!matrixCase.gapRegister.some(g => g.id === "G-07")) throw new Error("Matrix dependency state should register a dependency mapping gap");
+
+
 console.log("Resilience IQ knowledge-driven runtime tests passed");
 
 
