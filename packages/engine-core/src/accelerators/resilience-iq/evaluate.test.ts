@@ -226,6 +226,41 @@ if (advisoryGateCase.status !== "requirements_incomplete") throw new Error("Crit
 if (advisoryGateCase.preferredPattern !== null) throw new Error("Advisory depth gate should block the final recovery strategy");
 if (!advisoryGateCase.nextQuestions.some(q => q.id === "AF-CY-01")) throw new Error("Advisory gate should surface cyber deep-dive questions");
 
+
+const advisorySignalCase = evaluateResilienceIq({
+  "EX-01": ["Revenue-generating services"],
+  "EX-02": "<15 minutes",
+  "EX-03": "<15 minutes",
+  "EX-04": "<15 minutes",
+  "EX-05": "Yes, current and validated",
+  "EX-06": "Yes, proven by testing",
+  "EX-07": "Within 3 months",
+  "EX-08": "No",
+  "EX-09": "Immutable and restore proven",
+  "EX-10": "No",
+  "EX-11": "Low concentration",
+  "EX-12": "No known SPOFs",
+  "EX-13": "Yes, current",
+  "EX-14": "Yes, current",
+  "EX-15": "Yes, periodic review",
+  "EX-16": "Scenario-based tests",
+  "EX-17": "Yes",
+  "EX-18": ["AWS"],
+  "EX-19": "Yes, current",
+  "EX-20": "High — tested",
+  "AF-DR-04": "No",
+  "AF-DR-05": "Manual runbook",
+  "AF-CY-03": "No",
+  "AF-CY-04": "No",
+  "AF-CY-05": "No defined method",
+  "AF-CL-04": "No"
+});
+if (!advisorySignalCase.gapRegister.some(g => g.id === "G-02")) throw new Error("Advisory recovery evidence should create a recovery capability gap");
+if (!advisorySignalCase.gapRegister.some(g => g.id === "G-05")) throw new Error("Advisory cyber evidence should create a cyber recovery gap");
+if (!advisorySignalCase.mandatoryControls.includes("CYBER-01")) throw new Error("Advisory cyber evidence should require isolated cyber recovery");
+if (!advisorySignalCase.mandatoryControls.includes("DATA-01")) throw new Error("Advisory cyber evidence should require protected backup");
+if (!advisorySignalCase.roadmap.some(w => w.actions.some(a => /cyber recovery/i.test(a)))) throw new Error("Advisory cyber evidence should affect the roadmap");
+
 console.log("Resilience IQ knowledge-driven runtime tests passed");
 
 
