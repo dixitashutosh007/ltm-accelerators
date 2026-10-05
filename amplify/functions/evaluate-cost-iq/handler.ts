@@ -1,8 +1,6 @@
 import type { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
 import { createHash } from 'node:crypto';
 import { evaluateCostIq, metadata, questions, orchestrate } from '../../../packages/engine-core/src/accelerators/cost-iq/evaluate.cjs';
-import { handlePersistence } from './persistence-handler';
-import { costIqAssessmentRepository } from './amplify-repository';
 
 const CORS_HEADERS = {
   'Content-Type': 'application/json',
@@ -47,9 +45,6 @@ export const handler = async (event: APIGatewayProxyEventV2): Promise<APIGateway
     }
     if (!body || typeof body !== 'object' || Array.isArray(body)) {
       return response(400, { error: 'json_object_required', requestId: id }, id);
-    }
-    if (path.includes('/assessment')) {
-      return await handlePersistence(event, costIqAssessmentRepository);
     }
     if (method === 'POST' && path.endsWith('/ai-review')) {
       return response(200, await aiReview(body), id);
