@@ -200,6 +200,32 @@ if (!matrixCase.mandatoryControls.includes("DR-07")) throw new Error("Partial/st
 if (!matrixCase.gapRegister.some(g => g.id === "G-07")) throw new Error("Matrix dependency state should register a dependency mapping gap");
 
 
+const advisoryGateCase = evaluateResilienceIq({
+  "EX-01": ["Customer-facing services", "Revenue-generating services"],
+  "EX-02": "1-4 hours",
+  "EX-03": "1-4 hours",
+  "EX-04": "15-60 minutes",
+  "EX-05": "Yes, current and validated",
+  "EX-06": "Likely, but not recently tested",
+  "EX-07": "1-2 years ago",
+  "EX-08": "Potentially",
+  "EX-09": "Immutable but restore not proven",
+  "EX-10": "Yes, with no viable alternative",
+  "EX-11": "High concentration",
+  "EX-12": "Critical SPOFs exist",
+  "EX-13": "Partially",
+  "EX-14": "Partially",
+  "EX-15": "Yes, periodic review",
+  "EX-16": "Technical tests only",
+  "EX-17": "No",
+  "EX-18": ["AWS"],
+  "EX-19": "Unknown",
+  "EX-20": "Medium — documented but not fully tested"
+});
+if (advisoryGateCase.status !== "requirements_incomplete") throw new Error("Critical cyber exposure with unproven recovery should require advisory depth");
+if (advisoryGateCase.preferredPattern !== null) throw new Error("Advisory depth gate should block the final recovery strategy");
+if (!advisoryGateCase.nextQuestions.some(q => q.id === "AF-CY-01")) throw new Error("Advisory gate should surface cyber deep-dive questions");
+
 console.log("Resilience IQ knowledge-driven runtime tests passed");
 
 
