@@ -729,7 +729,13 @@ export function evaluateResilienceIq(a: ResilienceAnswers): ResilienceResult {
       .filter(rule => (rule.then?.add_questions ?? []).includes(q.id))
       .map(rule => rule.then?.flag ?? rule.then?.action)
       .filter(Boolean);
-    const impact = Math.max(0, ...triggers.map((flag: string) => decisionImpact[flag] ?? 50));
+    let impact = Math.max(0, ...triggers.map((flag: string) => decisionImpact[flag] ?? 50));
+    // Keep questions tied directly to a critical branch ahead of generic advisory questions.
+    for (const rule of branches) {
+      if (!(rule.then?.add_questions ?? []).includes(q.id)) continue;
+      if (rule.when?.question === "EX-08" && rule.when?.condition === "yes_or_potentially") impact = Math.max(impact, 96);
+      if (rule.when?.question === "EX-06" && rule.when?.condition === "not_proven_or_no") impact = Math.max(impact, 100);
+    }
     const materialEvidence = (q.evidence ?? []).length ? 5 : 0;
     return impact + materialEvidence;
   };
