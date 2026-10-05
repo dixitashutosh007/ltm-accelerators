@@ -17,7 +17,7 @@
 <div class="layout"><aside class="side"><h3>Executive Questions <span id="count"></span></h3><div id="list"></div></aside>
 <section class="main"><div class="editor"><div id="editor"></div></div><aside class="preview"><h3>Live Preview</h3><div id="preview"></div></aside></section></div>
 <script>
-const BANK_URL='../resilience-iq/knowledge/question-bank.json'; let bank=null,selected=0;
+const BANK_URL='../resilience-iq/knowledge/question-bank.json'; const SCORE_URL='../resilience-iq/knowledge/scoring-model.json'; const TREE_URL='../resilience-iq/knowledge/decision-tree.json'; let bank=null,scoreModel=null,decisionTree=null,selected=0;
 const $=id=>document.getElementById(id);
 function esc(v){return String(v??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
 function questions(){return bank?.executive_questions||[]}
@@ -48,14 +48,14 @@ function sync(q){
 }
 function refreshPreview(){const q=questions()[selected];if(!q)return;$('preview').innerHTML='<div class="mono">'+esc(q.id)+' · '+esc(q.type)+'</div><div class="pvq">'+esc(q.text)+'</div>'+(q.ui?.instruction?'<p style="color:#64748b;font-size:12px">'+esc(q.ui.instruction)+'</p>':'')+(q.options||[]).map(o=>'<div class="pvo">'+esc(o)+'</div>').join('')}
 function validate(){
- const errors=[];const ids=new Set();questions().forEach((q,i)=>{if(!q.id||ids.has(q.id))errors.push('Question '+(i+1)+': ID missing or duplicate');ids.add(q.id);if(!q.domain)errors.push(q.id+': domain missing');if(!q.text)errors.push(q.id+': text missing');if(!q.type)errors.push(q.id+': type missing');if(q.required&&!q.scoring)errors.push(q.id+': required question has no scoring metadata');if(['ranking','slider_choice','matrix','scenario'].includes(q.ui?.interaction)&&!q.ui?.instruction)errors.push(q.id+': interactive question should have a UI instruction');if(['ranking','slider_choice','matrix','scenario'].includes(q.ui?.interaction)&&!q.ui)errors.push(q.id+': interactive question missing UI metadata')});
- const el=$('saveState');el.className='status '+(errors.length?'warn':'ok');el.textContent=errors.length?errors.join(' · '):'Validation passed — question bank is structurally ready for review/export.';
+ const errors=[];const ids=new Set();questions().forEach((q,i)=>{if(!q.id||ids.has(q.id))errors.push('Question '+(i+1)+': ID missing or duplicate');ids.add(q.id);if(!q.domain)errors.push(q.id+': domain missing');if(!q.text)errors.push(q.id+': text missing');if(!q.type)errors.push(q.id+': type missing');if(q.required&&!q.scoring&&!scoreModel?.question_scoring?.[q.id])errors.push(q.id+': required question has no scoring metadata');if(['ranking','slider_choice','matrix','scenario'].includes(q.ui?.interaction)&&!q.ui?.instruction)errors.push(q.id+': interactive question should have a UI instruction');if(['ranking','slider_choice','matrix','scenario'].includes(q.ui?.interaction)&&!q.ui)errors.push(q.id+': interactive question missing UI metadata')});
+ if(scoreModel) for(const q of questions()) if(q.required&&!scoreModel.question_scoring?.[q.id]) errors.push(q.id+': missing governed scoring-model entry'); if(decisionTree){for(const id of decisionTree.entry_sequence||[])if(!questions().some(q=>q.id===id))errors.push('Decision tree entry references unknown question: '+id);for(const rule of decisionTree.branching_rules||[])for(const id of rule.then?.add_questions||[])if(!questions().some(q=>q.id===id))errors.push(rule.id+': unknown advisory question '+id)} const el=$('saveState');el.className='status '+(errors.length?'warn':'ok');el.textContent=errors.length?errors.join(' · '):'Validation passed — question bank and governed scoring/branching references are structurally ready for review/export.';
 }
 function download(){
  const blob=new Blob([JSON.stringify(bank,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='question-bank.json';a.click();URL.revokeObjectURL(a.href)
 }
 $('validate').onclick=validate;$('export').onclick=download;$('import').onclick=()=>$('file').click();
 $('file').onchange=async e=>{const f=e.target.files[0];if(!f)return;try{bank=JSON.parse(await f.text());selected=0;render()}catch(err){alert('Invalid JSON: '+err.message)}};
-async function init(){try{const r=await fetch(BANK_URL,{cache:'no-store'});if(!r.ok)throw Error('HTTP '+r.status);bank=await r.json()}catch(e){const saved=localStorage.getItem('resilience-iq-question-bank');if(saved)bank=JSON.parse(saved);else{$('editor').innerHTML='<div class="empty">Question bank could not be loaded. Use Import JSON to open a bank file.</div>';return}}render()}
+async function init(){try{const [b,s,t]=await Promise.all([fetch(BANK_URL,{cache:'no-store'}),fetch(SCORE_URL,{cache:'no-store'}),fetch(TREE_URL,{cache:'no-store'})]);if(!b.ok)throw Error('Question bank HTTP '+b.status);bank=await b.json();scoreModel=s.ok?await s.json():null;decisionTree=t.ok?await t.json():null}catch(e){const saved=localStorage.getItem('resilience-iq-question-bank');if(saved)bank=JSON.parse(saved);else{$('editor').innerHTML='<div class="empty">Question bank could not be loaded. Use Import JSON to open a bank file.</div>';return}}render()}
 window.addEventListener('beforeunload',()=>{if(bank)localStorage.setItem('resilience-iq-question-bank',JSON.stringify(bank))});init();
 </script></body></html>
