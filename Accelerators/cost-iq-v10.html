@@ -263,10 +263,80 @@ function renderReport(ai){
 function downloadJSON(){const blob=new Blob([JSON.stringify({assessment:assessment,answers:answers,aiReview:aiReview,selectedAreas:selectedAreas},null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='cost-iq-assessment.json';a.click();URL.revokeObjectURL(a.href)}
 function downloadPDF(){
   if(!window.jspdf?.jsPDF){alert('PDF library is still loading. Please try again.');return}
-  const doc=new window.jspdf.jsPDF();const h=assessment.headlines||{};let y=18;
-  doc.setFontSize(18);doc.text('LTM Cost IQ — Executive Report',14,y);y+=10;doc.setFontSize(11);doc.text('Cost IQ: '+(h.costIQ??'—')+'   Value IQ: '+(h.valueIQ??'—'),14,y);y+=10;
-  const ai=window._renderCostReport||{};doc.setFontSize(10);const lines=doc.splitTextToSize(ai.executiveSummary||'',180);doc.text(lines,14,y);y+=lines.length*5+7;
-  (ai.keyMessages||[]).slice(0,8).forEach(function(x){const l=doc.splitTextToSize('• '+x,180);if(y>275){doc.addPage();y=18}doc.text(l,14,y);y+=l.length*5+3});
+  const doc=new window.jspdf.jsPDF();
+  const h=assessment.headlines||{},ev=assessment.evidence||{},findings=assessment.findings||[],recs=assessment.recommendations||[],dims=scoreEntries(),ai=normalizeAI(window._renderCostReport||{});
+  window._renderCostReport=ai;
+  let y=18;
+  const left=14,right=196,width=182;
+  function page(){doc.addPage();y=18}
+  function ensure(height){if(y+height>280)page()}
+  function textBlock(text,size=10,indent=0,gap=4){
+    const lines=doc.splitTextToSize(String(text??''),width-indent);
+    ensure(lines.length*5+gap);doc.setFontSize(size);doc.text(lines,left+indent,y);y+=lines.length*5+gap;
+  }
+  function heading(title){
+    ensure(14);doc.setFontSize(14);doc.text(title,left,y);y+=8;
+  }
+  function subheading(title){
+    ensure(10);doc.setFontSize(11);doc.text(title,left,y);y+=6;
+  }
+  function bullet(text){
+    textBlock('• '+text,9,2,3);
+  }
+  doc.setFontSize(18);doc.text('LTM Cost IQ — Executive Report',left,y);y+=8;
+  doc.setFontSize(10);doc.text('Technology Cost & Value Diagnostic',left,y);y+=8;
+  doc.setFontSize(11);doc.text('Cost IQ: '+(h.costIQ??'—')+'   Value IQ: '+(h.valueIQ??'—')+'   Confidence: '+(ev.confidence||'—'),left,y);y+=10;
+  doc.setFontSize(9);doc.text('Assessment completeness: '+(ev.assessmentCompleteness??'—')+'   Findings: '+findings.length, left,y);y+=9;
+
+  heading('Executive Summary');
+  textBlock(ai.executiveSummary||'The Cost IQ diagnostic has completed deterministic scoring.',10,0,6);
+
+  heading('Priority Areas');
+  (ai.priorityAreas||[]).slice(0,5).forEach(function(x){
+    subheading((x.name||'Priority area')+' — Score '+(x.score??'—'));
+    textBlock('Why: '+(x.why||'Management attention area.'),9,2,2);
+    textBlock('Action: '+(x.action||'Validate evidence, ownership and improvement actions.'),9,2,4);
+  });
+
+  heading('Dimension Scorecard');
+  dims.forEach(function(x){textBlock(x.name+': '+x.score+'/100',9,2,2)});
+
+  heading('Deterministic Findings');
+  if(findings.length){
+    findings.forEach(function(f){
+      subheading((f.id||'Finding')+' — '+(f.title||'Management attention'));
+      textBlock((f.severity||'')+(f.detail?' — '+f.detail:''),9,2,3);
+    });
+  } else textBlock('No calibrated findings were activated by the deterministic methodology.',9,2,4);
+
+  heading('Opportunity Signals');
+  (ai.opportunities||[]).forEach(function(x){
+    subheading(x.title||'Advisory opportunity');
+    textBlock(x.description||'Opportunity identified by the deterministic methodology.',9,2,2);
+    if(x.evidence)textBlock('Evidence: '+x.evidence,9,2,2);
+    textBlock('Confidence: '+(x.confidence||'—')+(x.nextStep?' · Next: '+x.nextStep:''),9,2,4);
+  });
+
+  heading('Recommended Roadmap');
+  (ai.roadmap||[]).forEach(function(r){
+    subheading(r.horizon||'Next horizon');
+    (r.actions||[]).forEach(bullet);
+    y+=1;
+  });
+
+  heading('LTM Advisory Recommendations');
+  const advisory=ai.consultingRecommendations||recs.map(function(x){return x.ltmService||x.title||x.id}).filter(Boolean);
+  if(advisory.length) advisory.forEach(bullet);
+  else textBlock('No additional advisory recommendations were activated.',9,2,4);
+
+  heading('Methodology & Limitations');
+  textBlock(ai.limitations||'Deterministic scores and findings remain the source of truth.',9,0,4);
+  textBlock('This report is generated from the Cost IQ deterministic assessment engine. AI narrative synthesis is optional and does not alter deterministic scores, findings or recommendations.',9,0,6);
+
+  const pages=doc.getNumberOfPages();
+  for(let p=1;p<=pages;p++){
+    doc.setPage(p);doc.setFontSize(8);doc.text('LTM Cost IQ · Confidential',left,289);doc.text('Page '+p+' of '+pages,176,289);
+  }
   doc.save('cost-iq-executive-report.pdf');
 }
 async function archivePDF(){
