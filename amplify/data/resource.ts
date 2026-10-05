@@ -1,4 +1,5 @@
 import { type ClientSchema, a, defineData } from '@aws-amplify/backend';
+import { evaluateCostIqFunction } from '../functions/evaluate-cost-iq/resource';
 
 /**
  * Defines DynamoDB tables via Amplify Data Schema:
@@ -98,10 +99,12 @@ const schema = a.schema({
       updatedAt: a.datetime().required(),
       completedAt: a.datetime()
     })
+    .identifier(['assessmentId'])
     .authorization(allow => [
       allow.group('Admin').to(['create', 'read', 'update', 'delete']),
       allow.group('Consultant').to(['create', 'read', 'update', 'delete']),
-      allow.owner().to(['create', 'read', 'update'])
+      allow.owner().to(['create', 'read', 'update']),
+      allow.resource(evaluateCostIqFunction)
     ]),
 
   AssessmentSubmission: a
