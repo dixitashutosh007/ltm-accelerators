@@ -274,6 +274,17 @@ const advisoryBranchCase = evaluateResilienceIq({
 if (!advisoryBranchCase.evidenceRequests.includes("cyber recovery exercise evidence")) throw new Error("Advisory cyber branch should request cyber exercise evidence");
 if (!advisoryBranchCase.evidenceRequests.includes("recovery orchestration evidence")) throw new Error("Advisory recovery automation branch should request orchestration evidence");
 if (!advisoryBranchCase.mandatoryControls.includes("DATA-01")) throw new Error("Advisory backup weakness should require protected backup");
+const advisoryRanking = evaluateResilienceIq({
+  "EX-01":["Revenue-generating services"],"EX-02":"1-4 hours","EX-03":"1-4 hours","EX-04":"15-60 minutes",
+  "EX-05":"Yes, current and validated","EX-06":"Yes, proven by testing","EX-07":"Within 3 months","EX-08":"Yes",
+  "EX-09":"Immutable and restore proven","EX-10":"Yes, with alternatives","EX-11":"Low concentration","EX-12":"No known SPOFs",
+  "EX-13":"Yes, current","EX-14":"Yes, current","EX-15":"Yes, periodic review","EX-16":"Scenario-based tests","EX-17":"Yes",
+  "EX-18":["AWS"],"EX-19":"Yes, current","EX-20":"High — tested",
+  "AF-DR-04":"No","AF-DR-05":"Manual runbook","AF-CY-03":"No","AF-CY-04":"No","AF-CY-05":"No defined method",
+  "AF-TS-02":"No"
+});
+if (!advisoryRanking.patternRanking.some(p => p.id === "CYBER-01" && p.score >= 70)) throw new Error("Cyber advisory weakness should materially rank isolated cyber recovery");
+if (!advisoryRanking.patternRanking.some(p => p.id === "DR-08" && p.score >= 60)) throw new Error("Recovery weakness should elevate orchestration");
 console.log("Resilience IQ knowledge-driven runtime tests passed");
 
 
