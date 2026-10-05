@@ -1,12 +1,13 @@
 import { type APIGatewayProxyEventV2, type APIGatewayProxyResultV2 } from 'aws-lambda';
 import crypto from 'node:crypto';
-import {
-  assertAssessmentStatusTransition,
-  type ResilienceAssessmentStatus,
-  isAssessmentFinal
-} from '@ltm/engine-core';
-import { evaluateResilienceIq } from '@ltm/engine-core';
-import { buildResilienceAssessmentSnapshot } from '@ltm/engine-core';
+import { assertAssessmentStatusTransition, type ResilienceAssessmentStatus, isAssessmentFinal } from '../../../packages/engine-core/src/accelerators/resilience-iq/assessment-lifecycle';
+import { evaluateResilienceIq } from '../../../packages/engine-core/src/accelerators/resilience-iq/runtime';
+import { buildResilienceAssessmentSnapshot } from '../../../packages/engine-core/src/accelerators/resilience-iq/assessment-persistence';
+import { Amplify } from 'aws-amplify';
+import { generateClient } from 'aws-amplify/data';
+import { getAmplifyDataClientConfig } from '@aws-amplify/backend/function/runtime';
+import type { Schema } from '../../data/resource';
+import { env } from '$amplify/env/manage-resilience-assessment';
 
 const json = (statusCode: number, body: unknown, requestId: string): APIGatewayProxyResultV2 => ({
   statusCode,
@@ -32,8 +33,57 @@ export type AssessmentRepository = {
   put(assessment: Assessment): Promise<Assessment>;
 };
 
-export function requireAssessmentRepository(): AssessmentRepository {
-  throw new Error('Resilience assessment repository is not configured.');
+const { resourceConfig, libraryOptions } = await getAmplifyDataClientConfig(env);
+Amplify.configure(resourceConfig, libraryOptions);
+const client = generateClient<Schema>();
+
+export function getAssessmentRepository(): AssessmentRepository {
+  return {
+    async get(assessmentId) {
+      const { data, errors } = await client.models.ResilienceAssessment.get({ assessmentId });
+      if (errors?.length) throw new Error(errors.map(error => error.message).join('; '));
+      if (!data) return null;
+      return {
+        assessmentId: data.assessmentId,
+        clientName: data.clientName,
+        clientSector: data.clientSector ?? undefined,
+        respondentEmail: data.respondentEmail,
+        status: data.status as ResilienceAssessmentStatus,
+        answers: JSON.parse(data.answersJson),
+        result: data.resultJson ? JSON.parse(data.resultJson) : undefined,
+        startedAt: data.startedAt,
+        completedAt: data.completedAt ?? undefined,
+        finalizedAt: data.finalizedAt ?? undefined
+      };
+    },
+    async put(assessment) {
+      const version = assessment.result?.version;
+      const input = {
+        assessmentId: assessment.assessmentId,
+        clientName: assessment.clientName,
+        clientSector: assessment.clientSector,
+        respondentEmail: assessment.respondentEmail,
+        status: assessment.status,
+        questionBankVersion: version?.questionBank ?? '1.0',
+        scoringModelVersion: version?.scoringModel ?? '1.0',
+        decisionTreeVersion: version?.decisionTree ?? '1.0',
+        blueprintEngineVersion: version?.blueprintEngine ?? '1.0',
+        executiveReportVersion: version?.executiveReport ?? '1.0',
+        engineVersion: version?.engine ?? '1.0.0',
+        answersJson: JSON.stringify(assessment.answers),
+        resultJson: assessment.result ? JSON.stringify(assessment.result) : undefined,
+        decisionLogJson: assessment.result ? JSON.stringify(assessment.result.decisionLog) : undefined,
+        recommendationSensitivityJson: assessment.result ? JSON.stringify(assessment.result.recommendationSensitivity) : undefined,
+        startedAt: assessment.startedAt,
+        completedAt: assessment.completedAt,
+        finalizedAt: assessment.finalizedAt
+      };
+      const { data, errors } = await client.models.ResilienceAssessment.upsert(input);
+      if (errors?.length) throw new Error(errors.map(error => error.message).join('; '));
+      if (!data) throw new Error('Resilience assessment persistence returned no record.');
+      return assessment;
+    }
+  };
 }
 
 function parseBody(event: APIGatewayProxyEventV2): any {
@@ -61,7 +111,7 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<APIGateway
   }
 
   const action = String(body.action ?? '');
-  const repo = requireAssessmentRepository();
+  const repo = getAssessmentRepository();
 
   try {
     if (action === 'create') {
