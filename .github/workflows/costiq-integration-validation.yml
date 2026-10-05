@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - costiq-v10-phase-e-integration
+      - diagnose-costiq-ai-500
   pull_request:
     branches:
       - main
@@ -21,3 +22,13 @@ jobs:
 
       - run: npm ci
       - run: npm run validate:costiq
+      - run: npm run test:costiq
+      - run: npm run test:costiq:hardening
+      - run: npm run test:costiq:persistence
+      - run: npm run test:costiq:persistence:lifecycle
+      - run: npm run test:costiq:persistence:adapter
+      - run: npm run test:costiq:persistence:api
+      - run: npm run test:costiq:persistence:service
+      - run: npm run test:costiq:persistence:http
+      - run: npm run test:costiq:persistence:amplify
+      - run: npm run test:costiq:persistence:browser
