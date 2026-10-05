@@ -13,6 +13,7 @@ import { evaluateResilienceIqFunction } from './functions/evaluate-resilience-iq
 import { manageResilienceEvidenceFunction } from './functions/manage-resilience-evidence/resource';
 import { manageResilienceAssessmentFunction } from './functions/manage-resilience-assessment/resource';
 import { HttpApi, HttpMethod } from 'aws-cdk-lib/aws-apigatewayv2';
+import { HttpUserPoolAuthorizer } from 'aws-cdk-lib/aws-apigatewayv2-authorizers';
 import { HttpLambdaIntegration } from 'aws-cdk-lib/aws-apigatewayv2-integrations';
 
 export const backend = defineBackend({
@@ -33,6 +34,7 @@ export const backend = defineBackend({
 
 const apiStack = backend.createStack('AcceleratorsApiStack');
 const httpApi = new HttpApi(apiStack, 'AcceleratorsHttpApi', { apiName: 'ltm-accelerators-api' });
+const resilienceAssessmentAuthorizer = new HttpUserPoolAuthorizer('ResilienceAssessmentAuthorizer', backend.auth.resources.userPool);
 
 const integrations = {
   finops: new HttpLambdaIntegration('EvaluateFinOpsIntegration', backend.evaluateFinOpsFunction.resources.lambda),
@@ -57,7 +59,8 @@ httpApi.addRoutes({ path: '/api/evaluate/strategy-iq', methods: [HttpMethod.POST
 httpApi.addRoutes({ path: '/api/evaluate/modernization-iq', methods: [HttpMethod.POST, HttpMethod.OPTIONS], integration: integrations.modernization });
 httpApi.addRoutes({ path: '/api/evaluate/resilience-iq', methods: [HttpMethod.POST, HttpMethod.OPTIONS], integration: integrations.resilience });
 httpApi.addRoutes({ path: '/api/resilience-iq/evidence', methods: [HttpMethod.POST, HttpMethod.OPTIONS], integration: integrations.resilienceEvidence });
-httpApi.addRoutes({ path: '/api/resilience-iq/assessment', methods: [HttpMethod.POST, HttpMethod.OPTIONS], integration: integrations.resilienceAssessment });
+httpApi.addRoutes({ path: '/api/resilience-iq/assessment', methods: [HttpMethod.POST], integration: integrations.resilienceAssessment, authorizer: resilienceAssessmentAuthorizer });
+httpApi.addRoutes({ path: '/api/resilience-iq/assessment', methods: [HttpMethod.OPTIONS], integration: integrations.resilienceAssessment });
 
 httpApi.addRoutes({
   path: '/api/evaluate/cost-iq',
