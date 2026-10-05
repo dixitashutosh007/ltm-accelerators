@@ -13,6 +13,7 @@ const checks=[
   ['Amplify backend exposes Resilience IQ route', backend.includes("/api/evaluate/resilience-iq")],
   ['Resilience IQ assessment persistence route is Cognito protected', backend.includes("/api/resilience-iq/assessment") && backend.includes('ResilienceAssessmentAuthorizer')],
   ['Resilience IQ page includes Amplify authentication bootstrap', html.includes('resilienceAuthReady') && html.includes('signIn')],
+  ['Amplify build packages generated outputs for Resilience IQ', fs.readFileSync(path.join(root,'amplify.yml'),'utf8').includes('cp amplify_outputs.json Accelerators/amplify_outputs.json')],
   ['Runtime config generator declares RESILIENCE_IQ_API', generator.includes("window.RESILIENCE_IQ_API='")]
 ];
 const failed=checks.filter(([,ok])=>!ok);
