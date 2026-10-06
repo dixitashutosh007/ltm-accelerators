@@ -324,19 +324,33 @@ export function evaluatePostureIq(
   }
 
   if (inScopeRegs.includes('dora')) {
-    // DORA Art. 35 periodic penalty payments (1% of average daily turnover, up to 6 months) are imposed by the
-    // Lead Overseer on critical ICT third-party providers only. Financial entities (everyone this diagnostic
-    // assesses: see question A2) face penalties set under national law (Art. 50-51), with no harmonised cap.
     const hasGap = findings.some((f: any) => f.reg === 'dora');
-    fines.push({
-      regId: 'dora',
-      regName: 'DORA (Art. 50–51 National Administrative Penalties)',
-      statuteBasis: 'Penalties for financial entities are set by each member state; DORA sets no EU-wide turnover cap. Art. 35 periodic penalties apply only to critical ICT third-party providers.',
-      capUSD: null,
-      capFormatted: 'Set under national law',
-      status: hasGap ? 'Supervisory Sanction Exposure' : 'Compliant Architecture',
-      statusColor: hasGap ? '#B93829' : '#1B5B34'
-    });
+    if (answers['A2'] === 'ict-ctpp') {
+      // Critical ICT third-party providers: Art. 35(6)-(8) periodic penalty payments of up to 1% of average daily
+      // worldwide turnover, imposed daily for up to six months.
+      const capUSD = Math.round((tUSD / 365) * 0.01 * 180);
+      fines.push({
+        regId: 'dora',
+        regName: 'DORA (Art. 35 Periodic Penalty Payments · Critical ICT Third-Party Provider)',
+        statuteBasis: 'Up to 1% of average daily worldwide turnover per day, for up to six months, imposed by the Lead Overseer (Art. 35(6)–(8)).',
+        capUSD,
+        capFormatted: formatCurrency(capUSD),
+        status: hasGap ? 'Oversight Sanction Exposure' : 'Oversight Ready',
+        statusColor: hasGap ? '#B93829' : '#1B5B34'
+      });
+      maxSinglePenalty = Math.max(maxSinglePenalty, capUSD);
+    } else {
+      // Financial entities face penalties set under national law (Art. 50-51), with no EU-wide turnover cap.
+      fines.push({
+        regId: 'dora',
+        regName: 'DORA (Art. 50–51 National Administrative Penalties)',
+        statuteBasis: 'Penalties for financial entities are set by each member state; DORA sets no EU-wide turnover cap. Art. 35 periodic penalties apply only to critical ICT third-party providers.',
+        capUSD: null,
+        capFormatted: 'Set under national law',
+        status: hasGap ? 'Supervisory Sanction Exposure' : 'Compliant Architecture',
+        statusColor: hasGap ? '#B93829' : '#1B5B34'
+      });
+    }
   }
 
   if (!fines.length) {
