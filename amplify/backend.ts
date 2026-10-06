@@ -126,7 +126,9 @@ const accessLogs = new LogGroup(apiStack, 'AdvisoryApiAccessLogs', {
   removalPolicy: RemovalPolicy.RETAIN
 });
 const stage = advisoryApi.defaultStage!.node.defaultChild as CfnStage;
-const tight = { throttlingRateLimit: 2, throttlingBurstLimit: 5 };
+// `routeSettings` is untyped JSON passed to CloudFormation verbatim, so its keys must be PascalCase
+// (unlike the typed `defaultRouteSettings`, which CDK converts).
+const tight = { ThrottlingRateLimit: 2, ThrottlingBurstLimit: 5 };
 stage.defaultRouteSettings = { throttlingRateLimit: API_RATE_LIMIT, throttlingBurstLimit: API_BURST_LIMIT };
 stage.routeSettings = {
   'POST /api/users/create': tight,
