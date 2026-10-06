@@ -53,3 +53,24 @@ to the subject-matter lead for review in the pull request.
 - "Don't know" on commitment coverage (C2) or forecast variance (P1) currently uses the default (20% and 15%), while
   "don't know" elsewhere scores 0. Should these be pessimistic as well?
 - Waste bands, the BFSI factors and the 45% cap need a cited source (Phase 3 claims register).
+
+## Strategy IQ (Wave 2): what Phase 2 changed
+
+Before Phase 2 the page scored everything in the browser and never called the API. The server engine existed but
+disagreed with the page in several places.
+
+| Issue | Effect | Fix |
+|---|---|---|
+| Browser-only scoring | Scores could not be audited or protected, and the server engine had drifted | The page calls `/api/evaluate/strategy-iq`, renders only the server result, and shows an error otherwise. The browser engine and the in-page option scores are removed |
+| The page stored a single-select answer as its score; the server read it as an option index | Switching to the server as it stood would have mis-scored every answer | Answers are option indexes (the contract); the demo archetypes are converted |
+| The server scored multi-select questions as a flat 3.0 | Good practices in place counted for nothing | 1 + 0.8 per practice, capped at 5 (the rule the page used) |
+| The server scored an unanswered slider with its raw default (e.g. 65 on a 1–5 scale) | One unanswered question could swamp a section | Defaults are normalised to the 1–5 scale |
+| Ranking questions were scored as a fixed 3.2 | Extreme clients were pulled toward the middle: the demo tech company read 3.95 ("Established") and now reads 4.1 ("Advanced") | Rankings are left out of the score and still feed the narrative |
+| "Operating Velocity Multiple" (section 2 score × 0.85, shown as "1.7x"), and "will unlock an estimated 1.7x acceleration in cycle times" | An invented multiple, presented as a forecast | Shown as what it is: operating-model maturity out of 5. The forecast sentence is rewritten to state only what was measured |
+
+### Open questions for the strategy lead (Phase 3)
+
+- Approve the golden outputs in `packages/engine-core/test/golden/strategy-iq.json`.
+- S6.1 (what drives funding) could be scored by how high "quantified economic value" ranks. Should it be?
+- Tech-debt drag = (5.2 − S4) × 8.5%, clamped to 8–45% of IT spend; alignment and resilience = section score ÷ 5. These
+  formulas need a cited basis or a "heuristic" label.
