@@ -104,7 +104,7 @@ async function evaluate(){
  }catch(e){document.getElementById('app').innerHTML='<div class="panel"><h2>Evaluation failed</h2><p class="danger">'+esc(e.message)+'</p><button class="btn primary" onclick="render()">Retry</button></div>';}}
 async function loadAdvisoryQuestions(nextQuestions){
  try{
-  const bank=await fetch('../resilience-iq/knowledge/question-bank.json',{cache:'no-store'}).then(r=>r.ok?r.json():null);
+  const bank=await fetch('./resilience-iq/knowledge/question-bank.json',{cache:'no-store'}).then(r=>r.ok?r.json():null);
   if(!bank)throw new Error('Question bank unavailable');
   const byId=new Map((bank.advisory_questions||[]).map(q=>[q.id,q]));
   const additions=nextQuestions.map(n=>byId.get(n.id)).filter(Boolean).map(q=>{
@@ -166,7 +166,7 @@ function renderReport(){
 }
 async function loadQuestionBank(){
  try{
-  const r=await fetch('../resilience-iq/knowledge/question-bank.json',{cache:'no-store'});
+  const r=await fetch('./resilience-iq/knowledge/question-bank.json',{cache:'no-store'});
   if(!r.ok)throw new Error('Question bank unavailable');
   const bank=await r.json();
   const byId=Object.fromEntries((bank.executive_questions||[]).map(q=>[q.id,q]));
