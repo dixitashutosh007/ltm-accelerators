@@ -20,11 +20,19 @@ export const USER_POOL_ID = env('LTM_USER_POOL_ID', 'ap-south-1_91amN2bz4');
 export const USER_POOL_CLIENT_ID = env('LTM_USER_POOL_CLIENT_ID', '4iiqcsgvsm0b4ngpps94ho4c67');
 export const COGNITO_ISSUER = `https://cognito-idp.${REGION}.amazonaws.com/${USER_POOL_ID}`;
 
-/** Browser origins allowed to call the API. `https://*.domain` covers Amplify branch previews. */
+/**
+ * Browser origins allowed to call the API (both Amplify apps' main domains by default).
+ * `https://*.domain` entries (branch previews) are honoured by the Lambdas' own CORS checks only:
+ * API Gateway HTTP APIs accept exact origins or "*", so wildcard entries are not sent to it.
+ */
 export const ALLOWED_ORIGINS = list(env(
   'LTM_ALLOWED_ORIGINS',
-  'https://main.d1xnevzszm0ehs.amplifyapp.com,https://*.d1xnevzszm0ehs.amplifyapp.com'
+  'https://main.d1xnevzszm0ehs.amplifyapp.com,https://main.d199dq940iqyj2.amplifyapp.com,' +
+  'https://*.d1xnevzszm0ehs.amplifyapp.com,https://*.d199dq940iqyj2.amplifyapp.com'
 ));
+
+/** Exact origins only, for API Gateway's CORS configuration. */
+export const API_GATEWAY_CORS_ORIGINS = ALLOWED_ORIGINS.filter(origin => !origin.includes('*'));
 
 /** Members of this Cognito group are platform administrators. */
 export const ADMIN_GROUP = env('LTM_ADMIN_GROUP', 'Admin');

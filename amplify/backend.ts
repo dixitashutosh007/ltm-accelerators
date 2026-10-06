@@ -20,7 +20,7 @@ import { reportsServiceFunction } from './functions/reports-service/resource';
 import { evaluateResilienceIqFunction } from './functions/evaluate-resilience-iq/resource';
 import { manageResilienceEvidenceFunction } from './functions/manage-resilience-evidence/resource';
 import {
-  ALLOWED_ORIGINS, API_BURST_LIMIT, API_RATE_LIMIT, COGNITO_ISSUER, KEEP_LEGACY_API,
+  API_GATEWAY_CORS_ORIGINS, API_BURST_LIMIT, API_RATE_LIMIT, COGNITO_ISSUER, KEEP_LEGACY_API,
   REGION, REPORTS_BUCKET, USER_POOL_CLIENT_ID, USER_POOL_ID
 } from './config';
 
@@ -75,7 +75,7 @@ const advisoryApi = new HttpApi(apiStack, 'AdvisoryHttpApi', {
   apiName: 'ltm-advisory-api',
   defaultAuthorizer: jwtAuthorizer,
   corsPreflight: {
-    allowOrigins: ALLOWED_ORIGINS,
+    allowOrigins: API_GATEWAY_CORS_ORIGINS,
     allowMethods: [CorsHttpMethod.GET, CorsHttpMethod.POST, CorsHttpMethod.OPTIONS],
     allowHeaders: ['Content-Type', 'Authorization', 'X-Request-Id'],
     exposeHeaders: ['X-Request-Id'],

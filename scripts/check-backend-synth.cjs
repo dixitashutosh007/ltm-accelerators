@@ -66,6 +66,10 @@ if (advisory) {
   const cors = advisory.Properties.CorsConfiguration || {};
   check(Array.isArray(cors.AllowOrigins) && cors.AllowOrigins.length > 0, 'Advisory API has no CORS origin allowlist');
   check(!(cors.AllowOrigins || []).includes('*'), 'Advisory API CORS allows "*"');
+  // API Gateway HTTP APIs reject partial wildcards such as https://*.example.com at deploy time.
+  for (const origin of cors.AllowOrigins || []) {
+    check(/^https?:\/\/[a-z0-9.-]+(:\d+)?$/i.test(origin), `Advisory API CORS origin "${origin}" is not an exact origin (API Gateway rejects it)`);
+  }
 
   const authorizers = ofType('AWS::ApiGatewayV2::Authorizer').filter(a => a.Properties.ApiId?.Ref === advisory.id);
   check(authorizers.length === 1 && authorizers[0].Properties.AuthorizerType === 'JWT', 'Advisory API must have exactly one JWT authorizer');
