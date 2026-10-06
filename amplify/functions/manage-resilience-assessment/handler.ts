@@ -1,5 +1,5 @@
 import type { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
-import { createHash, createHmac } from 'node:crypto';
+import { createHash, createHmac, randomUUID } from 'node:crypto';
 import { assertAssessmentStatusTransition, type ResilienceAssessmentStatus } from '../../../packages/engine-core/src/accelerators/resilience-iq/assessment-lifecycle';
 
 const ALLOWED_ORIGIN = process.env.RESILIENCE_IQ_ALLOWED_ORIGIN || '*';
@@ -90,7 +90,7 @@ async function getAssessment(assessmentId:string){
 }
 
 export const handler=async(event:APIGatewayProxyEventV2):Promise<APIGatewayProxyResultV2>=>{
-  const requestId=event.requestContext?.requestId || crypto.randomUUID();
+  const requestId=event.requestContext?.requestId || randomUUID();
   const method=event.requestContext?.http?.method || 'POST';
   if(method==='OPTIONS') return response(200,{},requestId);
   if(!authorized(event)) return response(403,{ok:false,error:'forbidden',requestId},requestId);
