@@ -2634,6 +2634,10 @@ var BANK = {
           "label": "Other financial entity (crowdfunding, credit rating agency, benchmark administrator, etc.)"
         },
         {
+          "value": "ict-ctpp",
+          "label": "ICT third-party service provider designated (or likely to be designated) as critical under DORA (CTPP)"
+        },
+        {
           "value": "na",
           "label": "Not a financial entity under DORA"
         }
@@ -4021,7 +4025,7 @@ var DEMO_ARCHETYPES = {
     ],
     "answers": {
       "A1": "important",
-      "A2": "na",
+      "A2": "ict-ctpp",
       "B1": [
         "financial",
         "pii",
@@ -4986,16 +4990,16 @@ function statutoryExposureBlock(penalties){
         <p style="font-size:13px;color:#5B5B5B;margin-top:3px">Calculated against declared enterprise turnover of <b>${formatCurrency(penalties.turnover)}</b>.</p>
       </div>
       <div style="text-align:right">
-        <div style="font-family:var(--font-m);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:#8E8E8E">Aggregate Exposure Ceiling</div>
+        <div style="font-family:var(--font-m);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:#8E8E8E">Largest Single Statutory Ceiling</div>
         <div style="font-family:var(--font-h);font-size:32px;font-weight:800;color:#CC2B1C;line-height:1.1">${formatCurrency(penalties.totalValueAtStake)}</div>
-        <div style="font-size:11.5px;color:#5B5B5B;margin-top:2px">Unhedged downside regulatory risk</div>
+        <div style="font-size:11.5px;color:#5B5B5B;margin-top:2px">Maximum fine under the most severe applicable regime (not a sum; actual penalties are usually far lower)</div>
       </div>
     </div>
     <div class="grid2" style="gap:12px;margin:16px 0">
       ${cards}
     </div>
     <div style="margin-top:14px;padding-top:12px;border-top:1px solid rgba(255,94,79,0.2);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;font-size:12px;color:#5B5B5B">
-      <div><b style="color:#282828">Advisory Hedge Ratio:</b> A typical LTM CIS advisory engagement (~${formatCurrency(penalties.advisoryFeeEstimate)}) represents <b>&lt; ${penalties.riskHedgeRatio}%</b> of the unhedged statutory penalty ceiling.</div>
+      <div><b style="color:#282828">For scale:</b> ${penalties.riskHedgeRatio === 'n/a' ? 'no quantified statutory ceiling applies to the regimes in scope.' : 'an indicative LTM advisory engagement (~' + formatCurrency(penalties.advisoryFeeEstimate) + ') is about <b>' + penalties.riskHedgeRatio + '%</b> of the largest single statutory ceiling. An illustrative comparison, not a measure of risk reduction.'}</div>
       <div style="font-family:var(--font-m);font-size:11px;color:#8A6500;background:#FFF9E6;padding:4px 8px;border-radius:4px;border:1px solid #FFE58F">Statutory Articles 83, 34, 99 &amp; 35</div>
     </div>
   </div>`;
@@ -5485,14 +5489,14 @@ function renderSlide(idx){
             <div style="font-family:var(--font-h);font-size:34px;font-weight:800;color:#FF5E4F;line-height:1.1;margin-bottom:6px">
               ` + exposureFormatted + `
             </div>
-            <div style="font-size:11px;color:#94a3b8;margin-bottom:12px">Aggregate statutory penalty exposure across assessed mandates</div>
+            <div style="font-size:11px;color:#94a3b8;margin-bottom:12px">Largest single statutory ceiling among the assessed regimes (not a sum)</div>
             <ul>
               ` + penalties.fines.slice(0,3).map(function(f){
                 return "<li><b>" + f.regName + ":</b> " + f.capFormatted + " (" + f.statuteBasis + ")</li>";
               }).join("") + `
             </ul>
             <div style="margin-top:10px;font-size:11.5px;color:#93c5fd;background:rgba(34,104,130,0.25);padding:8px 12px;border-radius:6px">
-              <b>Advisory Hedge Ratio:</b> Remediation sprint represents &lt; ` + penalties.riskHedgeRatio + `% of unhedged statutory exposure.
+              <b>For scale:</b> ` + (penalties.riskHedgeRatio === 'n/a' ? 'no quantified statutory ceiling applies.' : 'an indicative engagement is about ' + penalties.riskHedgeRatio + '% of the largest single statutory ceiling (illustrative, not a risk measure).') + `
             </div>
           </div>
         </div>
@@ -5640,7 +5644,7 @@ function copyMarpDeck(){
 "---\n\n" +
 "## 01. Posture Defensibility & Value at Stake\n\n" +
 "- **Overall Defensibility:** " + pillarData.overallScore + "/100 (" + pillarData.label.t + ")\n" +
-"- **Aggregate Statutory Penalty Ceiling:** " + exposureFormatted + "\n" +
+"- **Largest Single Statutory Ceiling:** " + exposureFormatted + " (not a sum of regimes)\n" +
 "- **Assessed Regulations:** " + STATE.regulations.map(regName).join(', ') + "\n" +
 "- **Top Financial Exposures:**\n" + finesLines + "\n\n" +
 "---\n\n" +
@@ -5726,7 +5730,7 @@ function generateSOWMarkdown(clientDisplay, score, label, penalties, pillarData,
   md += "### 1. Executive Summary & Diagnostic Context\n\n";
   md += "Following the formal diagnostic assessment executed via **Posture IQ v" + BANK.meta.version + "**, " + clientDisplay + " achieved an Overall Posture Defensibility score of **" + score + "/100** (" + label.t + " maturity tier).\n\n";
   md += "The assessment audited operations across **" + STATE.regulations.length + " statutory frameworks** (" + regs + ") against a declared corporate turnover of **" + turnoverFormatted + "**.\n\n";
-  md += "- **Aggregate Statutory Value at Stake:** **" + exposureFormatted + "** (Calculated theoretical liability ceiling across EU AI Act Art. 99, GDPR Art. 83, DORA Art. 35, and NIS2 Art. 34).\n";
+  md += "- **Largest Single Statutory Ceiling:** **" + exposureFormatted + "** (the maximum fine under the most severe applicable regime; regimes are not summed, and actual penalties are usually far lower).\n";
   md += "- **Contradiction Probes Triggered:** **" + probes.length + " substantive architectural contradictions** detected between operational claims and technical controls.\n";
   md += "- **Statutory Findings Count:** " + findings.filter(function(f){ return f.severity==='critical'; }).length + " Critical, " + findings.filter(function(f){ return f.severity==='high'; }).length + " High severity compliance gaps.\n\n";
 

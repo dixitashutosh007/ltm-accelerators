@@ -156,3 +156,10 @@ These documents contradicted the on-screen report.
 | Golden, invariant, contract and E2E suites pass in CI for every archetype | Met for the six accelerators above |
 | No "undefined", "NaN" or "null" in any rendered report | Checked by each accelerator's browser test on its report screen |
 | Every bug closed with a test that reproduces it | Met: each regression test fails on the pre-Phase-2 code |
+
+## Decisions taken after Phase 2 (product owner, 6 Oct 2026)
+
+- The golden outputs above are the approved baseline. Subject-matter review continues in Phase 3 (scoring audit) and
+  Phase 4 (sources), through golden-file diffs. See `docs/IMPROVEMENT_PLAN.md`.
+- Posture IQ assesses critical ICT third-party providers (question A2, `ict-ctpp`); DORA Art. 35 applies to them.
+- The "Advisory Hedge Ratio" is now an illustrative comparison, and the largest single fine is no longer called an "aggregate".

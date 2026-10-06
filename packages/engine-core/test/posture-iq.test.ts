@@ -121,7 +121,8 @@ describe('Posture IQ invariants (500 random questionnaires)', () => {
       const ceiling: Record<string, number> = {
         gdpr: Math.max(20e6, tEUR * 0.04) * EUR_TO_USD,
         nis2: Math.max(10e6, tEUR * 0.02) * EUR_TO_USD,
-        aiact: Math.max(15e6, tEUR * 0.03) * EUR_TO_USD
+        aiact: Math.max(15e6, tEUR * 0.03) * EUR_TO_USD,
+        dora: (input.org.turnover / 365) * 0.01 * 180
       };
       for (const f of r.penalties.fines as any[]) {
         if (f.capUSD === null) continue;
@@ -145,6 +146,18 @@ describe('Posture IQ regressions fixed in Phase 2', () => {
     expect(dora.capFormatted).toBe('Set under national law');
     expect(r.penalties.totalValueAtStake).toBe(0);
     expect(r.penalties.riskHedgeRatio).toBe('n/a');
+  });
+
+  it('a critical ICT third-party provider gets the DORA Art. 35 periodic-penalty ceiling (1% of daily turnover x 180 days)', () => {
+    const r = evaluatePostureIq({ answers: { A2: 'ict-ctpp' }, org: { turnover: 10e9 }, regulations: ['dora'] });
+    const dora = r.penalties.fines.find((f: any) => f.regId === 'dora') as any;
+    expect(dora.capUSD).toBe(Math.round((10e9 / 365) * 0.01 * 180));
+    expect(r.penalties.totalValueAtStake).toBe(dora.capUSD);
+    expect(r.findings.some((f: any) => f.qid === 'A2' && /critical ICT third-party/.test(f.title))).toBe(true);
+  });
+
+  it('the page no longer calls the largest single fine an "aggregate" or the fee comparison a "hedge ratio"', () => {
+    expect(page).not.toMatch(/Aggregate (Exposure|Statutory)|Hedge Ratio/i);
   });
 
   it('with DORA and GDPR in scope, exposure is the GDPR cap (DORA no longer contributes 1% x 180 days of turnover)', () => {

@@ -722,7 +722,7 @@
       ],
       "answers": {
         "A1": "important",
-        "A2": "na",
+        "A2": "ict-ctpp",
         "B1": [
           "financial",
           "pii",
@@ -1083,6 +1083,27 @@
               "steps": [
                 "Confirm entity type and any simplified regime",
                 "Document proportionality decisions"
+              ]
+            }
+          ]
+        },
+        {
+          "value": "ict-ctpp",
+          "label": "ICT third-party service provider designated (or likely to be designated) as critical under DORA (CTPP)",
+          "sev": "high",
+          "findings": [
+            {
+              "reg": "dora",
+              "a": "Art. 31–35",
+              "severity": "high",
+              "title": "DORA oversight framework for critical ICT third-party providers applies",
+              "detail": "Designated critical ICT third-party providers are overseen directly by a Lead Overseer (EBA, EIOPA or ESMA), with information requests, general investigations, inspections and recommendations. Failure to comply can lead to periodic penalty payments of up to 1% of average daily worldwide turnover, for up to six months (Art. 35(6)–(8)).",
+              "phase": 1,
+              "remedy": "Prepare for Lead Overseer engagement and the annual oversight plan.",
+              "steps": [
+                "Confirm designation status and the Lead Overseer",
+                "Map services that support critical or important functions of financial-entity clients",
+                "Prepare the oversight evidence pack (ICT risk framework, sub-outsourcing chain, exit support)"
               ]
             }
           ]
