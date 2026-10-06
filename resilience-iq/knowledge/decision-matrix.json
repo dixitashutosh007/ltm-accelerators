@@ -1,0 +1,172 @@
+{
+  "schema_version": "1.0",
+  "last_reviewed": "2026-10-04",
+  "purpose": "Decision matrix for shortlisting, eliminating and ranking resilience patterns.",
+  "decision_inputs": [
+    "business_criticality",
+    "impact_tolerance",
+    "required_rto",
+    "required_rpo",
+    "environment",
+    "regulatory_constraints",
+    "data_residency",
+    "technology_constraints",
+    "cyber_risk",
+    "dependency_risk",
+    "concentration_risk",
+    "cost_tolerance"
+  ],
+  "strategy_ladder": [
+    [
+      "S1",
+      "Backup and Restore",
+      [
+        "DR-01"
+      ],
+      "hours-days",
+      "hours-days",
+      "low"
+    ],
+    [
+      "S2",
+      "Pilot Light / Rebuild",
+      [
+        "DR-02",
+        "INF-06",
+        "INF-07"
+      ],
+      "tens-minutes-hours",
+      "minutes-hours",
+      "medium"
+    ],
+    [
+      "S3",
+      "Warm Standby",
+      [
+        "DR-03",
+        "INF-04"
+      ],
+      "minutes-hours",
+      "minutes",
+      "high"
+    ],
+    [
+      "S4",
+      "Hot Standby / Active-Passive",
+      [
+        "DR-04"
+      ],
+      "minutes",
+      "near-zero-minutes",
+      "very-high"
+    ],
+    [
+      "S5",
+      "Active-Active / Multi-Site",
+      [
+        "DR-05"
+      ],
+      "near-zero",
+      "near-zero",
+      "very-high"
+    ]
+  ],
+  "selection_rules": [
+    "Establish business criticality, impact tolerance, required RTO and required RPO first.",
+    "Do not infer achievable RTO/RPO from existing technology.",
+    "Eliminate candidates that cannot credibly meet the business target unless an explicit risk exception is accepted.",
+    "Prefer the lowest-complexity pattern that credibly meets the requirement and threat model.",
+    "Increase resilience when cyber compromise, correlated failure, concentration risk or regulation requires it.",
+    "Use tiering for portfolios; do not force one recovery pattern across all workloads.",
+    "Use dependency-aware recovery for shared platforms, identity, network, data and integration dependencies.",
+    "Use cyber recovery patterns when compromise can affect production and ordinary recovery infrastructure.",
+    "Use third-party patterns when critical recovery depends on an external provider.",
+    "Select vendor implementation only after the vendor-neutral strategy is chosen.",
+    "Every recommendation must provide an alternative, rationale, assumptions and testing/evidence plan."
+  ],
+  "elimination_rules": [
+    [
+      "required_rto=near-zero",
+      "eliminate",
+      "DR-01,DR-02"
+    ],
+    [
+      "required_rpo=near-zero",
+      "eliminate",
+      "DR-01,DR-02"
+    ],
+    [
+      "low_criticality_and_no_regulatory_requirement",
+      "prefer",
+      "DR-01,DR-06"
+    ],
+    [
+      "critical_service_and_cyber_scope",
+      "require_any",
+      "DATA-01,DATA-02,CYBER-01,CYBER-02,CYBER-03"
+    ],
+    [
+      "shared_provider_region_or_facility_across_critical_services",
+      "require_any",
+      "TP-05,TP-03,INF-04,INF-03"
+    ],
+    [
+      "complex_application_dependencies",
+      "require_any",
+      "DR-07,APP-04,DR-08"
+    ],
+    [
+      "recovery_never_tested",
+      "risk",
+      "evidence_confidence_low"
+    ],
+    [
+      "backup_only_for_mission_critical_service",
+      "risk",
+      "strategy_mismatch"
+    ]
+  ],
+  "ranking_dimensions": [
+    [
+      "requirement_fit",
+      0.3
+    ],
+    [
+      "risk_reduction",
+      0.2
+    ],
+    [
+      "technology_feasibility",
+      0.15
+    ],
+    [
+      "cyber_resilience",
+      0.1
+    ],
+    [
+      "operational_complexity",
+      0.1
+    ],
+    [
+      "cost_efficiency",
+      0.1
+    ],
+    [
+      "testing_evidence",
+      0.05
+    ]
+  ],
+  "output_contract": [
+    "preferred_pattern",
+    "alternative_patterns",
+    "decision_summary",
+    "requirement_fit",
+    "key_assumptions",
+    "key_risks",
+    "prerequisites",
+    "implementation_variants",
+    "testing_requirements",
+    "evidence_gaps",
+    "roadmap_actions"
+  ]
+}

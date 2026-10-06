@@ -45,13 +45,6 @@ test.describe('Portal sign-in and access control', () => {
     expect(await page.evaluate(() => (window as any).isSuperAdmin())).toBe(false);
   });
 
-  test('Cost IQ stays disabled while its feature flag is off', async ({ page }) => {
-    await page.goto('/');
-    const costIq = page.locator('#btnLaunchCostIq');
-    await expect(costIq).toBeDisabled();
-    await expect(costIq).toHaveText(/Temporarily Unavailable/);
-  });
-
   test('forgot password uses Cognito codes, not a direct reset', async ({ page, world }) => {
     await page.goto('/');
     await page.evaluate(() => { (window as any).openLoginModal(); (window as any).showPasswordResetView(true); });

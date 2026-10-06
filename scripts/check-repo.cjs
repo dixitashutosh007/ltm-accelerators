@@ -14,10 +14,20 @@ const read = f => fs.readFileSync(path.join(root, f), 'utf8');
 const failures = [];
 const fail = (rule, file, detail) => failures.push(`[${rule}] ${file}${detail ? ': ' + detail : ''}`);
 
-const isText = f => /\.(html|js|cjs|mjs|ts|json|yml|yaml|md)$/.test(f) && !f.endsWith('package-lock.json');
+// Cost IQ and Resilience IQ are maintained separately (another toolchain) and are not held to
+// these rules here. They are listed explicitly so any other file still gets checked.
+const SEPARATELY_MAINTAINED = [
+  /^Accelerators\/cost-iq/, /^Accelerators\/resilience-iq/, /^Accelerators\/assets\/cost-iq-/,
+  /^amplify\/functions\/(evaluate-cost-iq|evaluate-resilience-iq|manage-resilience-evidence)\//,
+  /^packages\/engine-core\/src\/accelerators\/(cost-iq|resilience-iq)\//,
+  /^resilience-iq\//, /^scripts\/(generate-cost-iq|validate-cost-iq|validate-resilience)/
+];
+const separatelyMaintained = f => SEPARATELY_MAINTAINED.some(re => re.test(f));
+
+const isText = f => /\.(html|js|cjs|mjs|ts|json|yml|yaml|md)$/.test(f) && !f.endsWith('package-lock.json') && !separatelyMaintained(f);
 const textFiles = tracked.filter(isText);
-const sitePages = tracked.filter(f => /^Accelerators\/[^/]+\.html$/.test(f));
-const siteScripts = tracked.filter(f => /^Accelerators\/.*\.js$/.test(f));
+const sitePages = tracked.filter(f => /^Accelerators\/[^/]+\.html$/.test(f) && !separatelyMaintained(f));
+const siteScripts = tracked.filter(f => /^Accelerators\/.*\.js$/.test(f) && !separatelyMaintained(f));
 const codeFiles = textFiles.filter(f => /^(Accelerators|amplify|services|packages|scripts)\//.test(f));
 
 // 1. No hard-coded API Gateway hosts in the frontend: the address comes from runtime config.

@@ -1,0 +1,76 @@
+{
+  "schema_version": "1.0",
+  "name": "resilience-iq-executive-report",
+  "phase": "4",
+  "purpose": "Convert Executive Scan results into an evidence-aware CIO/CTO advisory report without overstating certainty.",
+  "sections": [
+    "executive_summary",
+    "assessment_scope",
+    "posture_scorecard",
+    "business_requirement_baseline",
+    "critical_exposure",
+    "critical_gaps",
+    "recovery_strategy",
+    "decision_rationale",
+    "supporting_controls",
+    "technology_mapping",
+    "evidence_validation",
+    "target_state",
+    "roadmap",
+    "governance_metrics",
+    "decision_points",
+    "recommendation_sensitivity"
+  ],
+  "rules": {
+    "executive_scan_is_initial_assessment": true,
+    "final_architecture_requires_validation": true,
+    "vendor_neutral_before_provider_mapping": true,
+    "recovery_strategy_separate_from_supporting_controls": true,
+    "unknown_requirements_are_never_inferred": true,
+    "evidence_gaps_must_be_visible": true
+  },
+  "recommendation_sensitivity": {
+    "purpose": "Explain conditions that could change the preferred recovery strategy.",
+    "fields": ["id","trigger","current_assumption","impact","affected_decision","action"],
+    "triggers": [
+      "measured RTO misses target",
+      "measured RPO misses target",
+      "business impact tolerance changes",
+      "dependency topology changes",
+      "cyber recovery cannot be isolated",
+      "concentration cannot be mitigated",
+      "cost or operating-model constraints change"
+    ]
+  },
+  "decision_points": [
+    "Approve immediate risk-treatment priorities",
+    "Validate target RTO/RPO and impact tolerance",
+    "Approve preferred recovery strategy for detailed design",
+    "Approve cyber recovery and identity recovery controls",
+    "Approve dependency and third-party resilience remediation"
+  ],
+  "output_contract": {
+    "top_risks": 5,
+    "roadmap_waves": 4,
+    "recommendation_alternatives": 2,
+    "evidence_requests_grouped": true,
+    "evidence_register": true,
+    "evidence_status_values": ["not_requested","requested","provided","validated","rejected"],
+    "evidence_register_fields": ["id","evidence","type","status","purpose","validation_criteria","affected_gaps","affects_recommendation"],
+    "evidence_types": ["business_requirement","architecture","recovery_test","backup_restore","cyber_recovery","third_party","dependency","governance","other"],
+    "evidence_maturity_is_distinct_from_question_confidence": true,
+    "evidence_lifecycle": {
+      "status_transitions": {
+        "not_requested": ["requested"],
+        "requested": ["provided","rejected"],
+        "provided": ["validated","rejected"],
+        "validated": ["validated"],
+        "rejected": ["requested","rejected"]
+      },
+      "validation_rule": "Only evidence explicitly validated against validation_criteria may increase evidence maturity or recommendation confidence.",
+      "recommendation_rule": "Evidence marked provided, validated or rejected must be reflected in the assessment decision log; validated material evidence may trigger recommendation sensitivity and reassessment.",
+      "material_evidence_rule": "Evidence affects recommendation confidence only when its status is validated and affects_recommendation is true; provided evidence remains unvalidated.",
+      "decision_log_rule": "Every evidence status change must create or update a decision-log entry identifying the affected assumption, gaps, recommendation impact and validation outcome."
+    }
+  }
+}

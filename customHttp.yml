@@ -4,13 +4,14 @@
 # Notes:
 # - 'unsafe-inline' is still required: pages use inline scripts and handlers. Phase 5 moves them
 #   into modules so it can be dropped.
+# - *.appsync-api is used by Cost IQ assessment persistence (Amplify Data).
 # - api.openai.com / api.anthropic.com / generativelanguage.googleapis.com remain only for the
 #   "bring your own key" AI features; Phase 4 moves AI calls server-side and removes them.
 customHeaders:
   - pattern: '**'
     headers:
       - key: 'Content-Security-Policy'
-        value: "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob: https://www.ltm.com https://ltm-core.s3.us-east-1.amazonaws.com; connect-src 'self' blob: data: https://*.execute-api.ap-south-1.amazonaws.com https://cognito-idp.ap-south-1.amazonaws.com https://api.openai.com https://api.anthropic.com https://generativelanguage.googleapis.com; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'"
+        value: "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob: https://www.ltm.com https://ltm-core.s3.us-east-1.amazonaws.com; connect-src 'self' blob: data: https://*.execute-api.ap-south-1.amazonaws.com https://cognito-idp.ap-south-1.amazonaws.com https://*.appsync-api.ap-south-1.amazonaws.com https://api.openai.com https://api.anthropic.com https://generativelanguage.googleapis.com; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'"
       - key: 'Strict-Transport-Security'
         value: 'max-age=31536000; includeSubDomains'
       - key: 'X-Content-Type-Options'

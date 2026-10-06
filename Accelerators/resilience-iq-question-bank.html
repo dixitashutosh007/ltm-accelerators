@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Question Bank Studio | Resilience IQ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f8fafc;--panel:#fff;--line:#cbd5e1;--ink:#0f172a;--muted:#64748b;--red:#ff5e4f;--red2:#e54536;--green:#35754d;--amber:#b7791f}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:14px 'Plus Jakarta Sans',sans-serif}
+.top{height:62px;background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 24px;position:sticky;top:0;z-index:10}.brand{display:flex;align-items:center;gap:10px;font-weight:800}.logo{width:34px;height:34px;border-radius:8px;background:linear-gradient(135deg,var(--red),var(--red2));color:#fff;display:grid;place-items:center}.mono{font:10px 'JetBrains Mono';color:var(--muted);letter-spacing:.08em;text-transform:uppercase}
+.actions{display:flex;gap:8px}.btn{border:1px solid var(--line);background:#fff;border-radius:6px;padding:9px 13px;font-weight:700;cursor:pointer}.btn.primary{background:var(--red);border-color:var(--red);color:#fff}.btn:hover{filter:brightness(.97)}
+.layout{max-width:1320px;margin:auto;padding:24px;display:grid;grid-template-columns:270px 1fr;gap:20px}.side,.editor,.preview{background:var(--panel);border:1px solid var(--line);border-radius:8px}.side{padding:16px;height:calc(100vh - 110px);position:sticky;top:86px;overflow:auto}.side h3{margin:4px 0 14px;font-size:13px}.qitem{padding:11px;border:1px solid transparent;border-radius:6px;cursor:pointer;margin-bottom:4px}.qitem:hover{background:#f8fafc}.qitem.active{background:#fff4f2;border-color:#ffd0ca}.qitem small{display:block;color:var(--muted);font:10px 'JetBrains Mono';margin-top:3px}.main{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:20px}.editor{padding:24px}.field{margin-bottom:18px}.field label{display:block;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:7px}.field input,.field textarea,.field select{width:100%;border:1px solid var(--line);border-radius:6px;padding:10px 11px;font:inherit;background:#fff;color:var(--ink)}textarea{min-height:92px;resize:vertical}.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}.chips{display:flex;flex-wrap:wrap;gap:7px}.chip{border:1px solid var(--line);padding:6px 9px;border-radius:5px;font-size:11px}.option-row{display:flex;gap:7px;margin-bottom:7px}.option-row input{flex:1}.iconbtn{width:36px;border:1px solid var(--line);background:#fff;border-radius:6px;cursor:pointer}.check{display:flex;align-items:center;gap:8px;font-size:13px}.status{padding:10px 12px;border-radius:6px;background:#f1f5f9;color:var(--muted);font-size:12px}.status.ok{background:#edf7f0;color:var(--green)}.status.warn{background:#fff8e8;color:var(--amber)}.preview{padding:18px;height:max-content;position:sticky;top:86px}.preview h3{margin:0 0 16px}.pvq{font-size:18px;font-weight:800;line-height:1.35;margin-bottom:12px}.pvo{padding:9px;border:1px solid var(--line);border-radius:5px;margin:6px 0;font-size:12px}.empty{color:var(--muted);padding:30px;text-align:center}@media(max-width:950px){.layout{grid-template-columns:1fr}.side{height:auto;position:static}.main{grid-template-columns:1fr}.preview{position:static}.qitem{display:inline-block;width:180px;vertical-align:top}.side{white-space:nowrap}.row2{grid-template-columns:1fr}}
+</style></head>
+<body>
+<header class="top"><div class="brand"><span class="logo">L</span><span>LTM Advisory<br><span class="mono">Resilience IQ · Question Bank Studio</span></span></div><div class="actions"><button class="btn" id="validate">Validate Bank</button><button class="btn" id="import">Import JSON</button><button class="btn primary" id="export">Export JSON</button><input id="file" type="file" accept=".json" hidden></div></header>
+<div class="layout"><aside class="side"><h3>Executive Questions <span id="count"></span></h3><div id="list"></div></aside>
+<section class="main"><div class="editor"><div id="editor"></div></div><aside class="preview"><h3>Live Preview</h3><div id="preview"></div></aside></section></div>
+<script>
+const BANK_URL='../resilience-iq/knowledge/question-bank.json'; const SCORE_URL='../resilience-iq/knowledge/scoring-model.json'; const TREE_URL='../resilience-iq/knowledge/decision-tree.json'; let bank=null,scoreModel=null,decisionTree=null,selected=0;
+const $=id=>document.getElementById(id);
+function esc(v){return String(v??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
+function questions(){return bank?.executive_questions||[]}
+function renderList(){ $('count').textContent=questions().length; $('list').innerHTML=questions().map((q,i)=>'<div class="qitem '+(i===selected?'active':'')+'" data-i="'+i+'"><b>'+esc(q.id)+'</b> · '+esc(q.domain)+'<small>'+esc(q.type)+' · '+esc(q.status||'active')+'</small></div>').join('');document.querySelectorAll('.qitem').forEach(x=>x.onclick=()=>{selected=+x.dataset.i;render()})}
+function render(){
+ const q=questions()[selected]; renderList(); if(!q){$('editor').innerHTML='<div class="empty">No questions in this bank.</div>';return}
+ const ui=q.ui||{}; const scoring=q.scoring||{};
+ $('editor').innerHTML=
+ '<div class="field"><label>Question ID · immutable</label><input id="qid" value="'+esc(q.id)+'" disabled></div>'+
+ '<div class="row2"><div class="field"><label>Domain</label><input id="domain" value="'+esc(q.domain)+'"></div><div class="field"><label>Taxonomy</label><input id="taxonomy" value="'+esc(q.taxonomy)+'"></div></div>'+
+ '<div class="field"><label>Question text</label><textarea id="text">'+esc(q.text)+'</textarea></div>'+
+ '<div class="row2"><div class="field"><label>Interaction type</label><select id="type">'+['single_select','multi_select','slider_choice','matrix','ranking','scenario','number','text','yes_no','evidence_select'].map(x=>'<option '+(q.type===x?'selected':'')+'>'+x+'</option>').join('')+'</select></div><div class="field"><label>Status</label><select id="status">'+['draft','active','deprecated'].map(x=>'<option '+((q.status||'active')===x?'selected':'')+'>'+x+'</option>').join('')+'</select></div></div>'+
+ '<div class="field"><label>Options</label><div id="opts">'+(q.options||[]).map((o,i)=>'<div class="option-row"><input data-opt="'+i+'" value="'+esc(o)+'"><button class="iconbtn" data-del="'+i+'">×</button></div>').join('')+'</div><button class="btn" id="addopt">+ Add option</button></div>'+
+ '<div class="row2"><div class="field"><label>Evidence required</label><input id="evidence" value="'+esc((q.evidence||[]).join(', '))"></div><div class="field"><label>Version</label><input id="version" value="'+esc(q.version||'1.0')+'"></div></div>'+
+ '<div class="field"><label>UI instruction</label><input id="instruction" value="'+esc(ui.instruction||'')+'"></div>'+
+ '<div class="row2"><div class="field"><label>Scoring metadata · JSON</label><textarea id="scoring" style="min-height:120px">'+esc(JSON.stringify(q.scoring||{},null,2))+'</textarea></div><div class="field"><label>Branching metadata · JSON</label><textarea id="branching" style="min-height:120px">'+esc(JSON.stringify(q.branching||{},null,2))+'</textarea></div></div>'+
+ '<div class="field"><label>Framework mappings · JSON</label><textarea id="frameworks" style="min-height:100px">'+esc(JSON.stringify(q.framework_mappings||{},null,2))+'</textarea></div>'+
+ '<div class="field"><label>Required</label><label class="check"><input id="required" type="checkbox" '+(q.required?'checked':'')+'> This question must be answered</label></div>'+
+ '<div class="status" id="saveState">Edits are local to this browser until exported.</div>';
+ document.querySelectorAll('#opts input').forEach(x=>x.oninput=e=>{q.options[+x.dataset.opt]=e.target.value;refreshPreview()});
+ document.querySelectorAll('[data-del]').forEach(x=>x.onclick=()=>{q.options.splice(+x.dataset.del,1);render()});
+ $('addopt').onclick=()=>{q.options=q.options||[];q.options.push('New option');render()};
+ ['domain','taxonomy','text','type','status','evidence','version','instruction','scoring','branching','frameworks','required'].forEach(id=>$(id).addEventListener('input',()=>sync(q)));
+ refreshPreview();
+}
+function sync(q){
+ q.domain=$('domain').value;q.taxonomy=$('taxonomy').value;q.text=$('text').value;q.type=$('type').value;q.status=$('status').value;q.evidence=$('evidence').value.split(',').map(x=>x.trim()).filter(Boolean);q.version=$('version').value;q.required=$('required').checked;q.ui=q.ui||{};q.ui.instruction=$('instruction').value;for(const [id,key] of [['scoring','scoring'],['branching','branching'],['frameworks','framework_mappings']]){try{q[key]=$('#'+id).value.trim()?JSON.parse($('#'+id).value):{};$('#'+id).style.borderColor='var(--line)'}catch(e){$('#'+id).style.borderColor='var(--red)'}}refreshPreview()
+}
+function refreshPreview(){const q=questions()[selected];if(!q)return;$('preview').innerHTML='<div class="mono">'+esc(q.id)+' · '+esc(q.type)+'</div><div class="pvq">'+esc(q.text)+'</div>'+(q.ui?.instruction?'<p style="color:#64748b;font-size:12px">'+esc(q.ui.instruction)+'</p>':'')+(q.options||[]).map(o=>'<div class="pvo">'+esc(o)+'</div>').join('')}
+function validate(){
+ const errors=[];const ids=new Set();questions().forEach((q,i)=>{if(!q.id||ids.has(q.id))errors.push('Question '+(i+1)+': ID missing or duplicate');ids.add(q.id);if(!q.domain)errors.push(q.id+': domain missing');if(!q.text)errors.push(q.id+': text missing');if(!q.type)errors.push(q.id+': type missing');if(q.required&&!q.scoring&&!scoreModel?.question_scoring?.[q.id])errors.push(q.id+': required question has no scoring metadata');if(['ranking','slider_choice','matrix','scenario'].includes(q.ui?.interaction)&&!q.ui?.instruction)errors.push(q.id+': interactive question should have a UI instruction');if(['ranking','slider_choice','matrix','scenario'].includes(q.ui?.interaction)&&!q.ui)errors.push(q.id+': interactive question missing UI metadata')});
+ if(scoreModel) for(const q of questions()) if(q.required&&!scoreModel.question_scoring?.[q.id]) errors.push(q.id+': missing governed scoring-model entry'); if(decisionTree){for(const id of decisionTree.entry_sequence||[])if(!questions().some(q=>q.id===id))errors.push('Decision tree entry references unknown question: '+id);for(const rule of decisionTree.branching_rules||[])for(const id of rule.then?.add_questions||[])if(!questions().some(q=>q.id===id))errors.push(rule.id+': unknown advisory question '+id)} const el=$('saveState');el.className='status '+(errors.length?'warn':'ok');el.textContent=errors.length?errors.join(' · '):'Validation passed — question bank and governed scoring/branching references are structurally ready for review/export.';
+}
+function download(){
+ const blob=new Blob([JSON.stringify(bank,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='question-bank.json';a.click();URL.revokeObjectURL(a.href)
+}
+$('validate').onclick=validate;$('export').onclick=download;$('import').onclick=()=>$('file').click();
+$('file').onchange=async e=>{const f=e.target.files[0];if(!f)return;try{bank=JSON.parse(await f.text());selected=0;render()}catch(err){alert('Invalid JSON: '+err.message)}};
+async function init(){try{const [b,s,t]=await Promise.all([fetch(BANK_URL,{cache:'no-store'}),fetch(SCORE_URL,{cache:'no-store'}),fetch(TREE_URL,{cache:'no-store'})]);if(!b.ok)throw Error('Question bank HTTP '+b.status);bank=await b.json();scoreModel=s.ok?await s.json():null;decisionTree=t.ok?await t.json():null}catch(e){const saved=localStorage.getItem('resilience-iq-question-bank');if(saved)bank=JSON.parse(saved);else{$('editor').innerHTML='<div class="empty">Question bank could not be loaded. Use Import JSON to open a bank file.</div>';return}}render()}
+window.addEventListener('beforeunload',()=>{if(bank)localStorage.setItem('resilience-iq-question-bank',JSON.stringify(bank))});init();
+</script></body></html>

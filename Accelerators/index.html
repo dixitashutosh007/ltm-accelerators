@@ -1338,6 +1338,19 @@
       </div>
 
       <div class="acc-grid">
+<div class="acc-card" onclick="window.location.href='resilience-iq.html'">
+  <div class="acc-header">
+    <div class="acc-title">Resilience IQ</div>
+    <span class="pill pill-green">Executive Scan</span>
+  </div>
+  <p class="acc-desc">Evidence-aware resilience assessment covering BCP, DR, cyber recovery, operational resilience, third-party dependency and infrastructure resilience.</p>
+  <div style="display:flex;justify-content:space-between;align-items:center;">
+    <span class="pill">20 Questions · CIO/CTO Resilience</span>
+    <div style="display:flex;gap:8px;align-items:center"><a href="resilience-iq-question-bank.html" onclick="event.stopPropagation()" style="font-size:12px;font-weight:700;color:#64748B;text-decoration:none;border:1px solid #CBD5E1;border-radius:6px;padding:8px 10px;">Question Bank Studio</a><button class="btn btn-primary" style="padding:8px 16px;font-size:13px;">Launch Assessment →</button></div>
+  </div>
+</div>
+
+
         <!-- Strategy IQ -->
         <div class="acc-card card-strategy-iq">
           <div class="card-top">
@@ -1452,7 +1465,7 @@
           <div class="card-footer" style="justify-content:flex-end;">
             <div class="card-actions">
               <button class="btn-action-edit" data-tool="cost-iq" onclick="handleEditClick('cost-iq')">Edit</button>
-              <button class="btn-action-launch" id="btnLaunchCostIq" data-tool="cost-iq" disabled title="Cost IQ is temporarily unavailable while its scoring service is being restored." style="opacity:0.55;cursor:not-allowed;">Temporarily Unavailable</button>
+              <button class="btn-action-launch" data-tool="cost-iq" onclick="handleLaunchClick('cost-iq', '/cost-iq-v10')">Take Assessment &rarr;</button>
             </div>
           </div>
         </div>
@@ -2099,7 +2112,6 @@
        generated at build time). LTM_API (ltm-api.js) attaches and silently renews the
        user's token. Identity and permissions are always decided server-side. */
     const COGNITO_CONFIG = (window.LTM_CONFIG && window.LTM_CONFIG.cognito) || {};
-    const FEATURES = (window.LTM_CONFIG && window.LTM_CONFIG.features) || {};
 
     let AUTH_USER = null;
 
@@ -2161,18 +2173,7 @@
     }
 
     /* ---------- Authentication & RBAC ---------- */
-    function applyFeatureFlags() {
-      const costIq = document.getElementById('btnLaunchCostIq');
-      if (costIq && FEATURES.costIq) {
-        costIq.disabled = false;
-        costIq.removeAttribute('style');
-        costIq.removeAttribute('title');
-        costIq.setAttribute('onclick', "handleLaunchClick('cost-iq', '/cost-iq-v10')");
-      }
-    }
-
     function initAuth() {
-      applyFeatureFlags();
       try {
         if (LTM_API.hasUsableSession()) {
           AUTH_USER = LTM_API.readSession();

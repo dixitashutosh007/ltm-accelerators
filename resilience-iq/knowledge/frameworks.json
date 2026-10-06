@@ -1,0 +1,117 @@
+{
+  "schema_version": "1.0",
+  "last_reviewed": "2026-10-04",
+  "frameworks": [
+    {
+      "id": "ISO-22301",
+      "name": "ISO 22301:2019",
+      "domain": "business_continuity",
+      "status": "current",
+      "purpose": "Business continuity management system requirements covering establishment, implementation, operation, monitoring, review, maintenance and continual improvement.",
+      "resilience_iq_use": ["BCMS maturity", "governance", "BIA", "continuity planning", "exercise and improvement"],
+      "source": "https://www.iso.org/standard/75106.html",
+      "notes": "ISO lists the 2019 second edition as the current published standard; monitor the next edition because standards content changes."
+    },
+    {
+      "id": "ISO-27031-2025",
+      "name": "ISO/IEC 27031:2025",
+      "domain": "ict_continuity",
+      "status": "current",
+      "purpose": "Guidance for ICT readiness to support business continuity and recover from ICT-related disruption.",
+      "resilience_iq_use": ["ICT readiness", "technology continuity", "cloud/hybrid dependencies", "recovery capability"],
+      "source": "https://www.iso.org/standard/27031",
+      "notes": "Second edition published May 2025. Treat this as a primary ICT-continuity reference."
+    },
+    {
+      "id": "NIST-SP-800-34",
+      "name": "NIST SP 800-34 Rev. 1",
+      "domain": "contingency_planning",
+      "status": "reference",
+      "purpose": "Structured contingency planning including BIA, preventive controls, recovery strategies, plans, testing/training/exercises and maintenance.",
+      "resilience_iq_use": ["contingency planning", "BIA", "recovery strategy", "exercise design"],
+      "source": "https://csrc.nist.gov/pubs/sp/800/34/r1/upd1/final"
+    },
+    {
+      "id": "NIST-CSF-2.0",
+      "name": "NIST Cybersecurity Framework 2.0",
+      "domain": "cyber_resilience",
+      "status": "current",
+      "purpose": "Outcome-based cybersecurity risk management taxonomy usable across sectors and maturity levels.",
+      "resilience_iq_use": ["cyber recovery", "governance", "identify/protect/detect/respond/recover outcomes", "risk communication"],
+      "source": "https://www.nist.gov/publications/nist-cybersecurity-framework-csf-20"
+    },
+    {
+      "id": "BCBS-POR",
+      "name": "Basel Committee Principles for Operational Resilience",
+      "domain": "operational_resilience",
+      "status": "current_reference",
+      "purpose": "Principles for banks to deliver critical operations through disruption, including governance, BCP/testing, dependency mapping, third parties, incident management and resilient ICT.",
+      "resilience_iq_use": ["important/critical operations", "scenario testing", "dependency mapping", "third-party resilience", "ICT resilience"],
+      "source": "https://www.bis.org/committees/bcbs/basel_consolidated_guidelines/module/orr/20"
+    },
+    {
+      "id": "EU-DORA",
+      "name": "Digital Operational Resilience Act (EU) 2022/2554",
+      "domain": "operational_resilience",
+      "status": "regulatory",
+      "purpose": "ICT risk management, ICT business continuity, response/recovery, testing, backup/recovery and ICT third-party risk requirements for covered financial entities.",
+      "resilience_iq_use": ["regulatory gap assessment", "ICT BCP", "testing", "cyber scenarios", "third-party dependency", "backup isolation"],
+      "source": "https://eur-lex.europa.eu/eli/reg/2022/2554/oj?eliuri=eli:reg:2022:2554:oj"
+    },
+    {
+      "id": "FCA-OR",
+      "name": "FCA Operational Resilience",
+      "domain": "operational_resilience",
+      "status": "regulatory_reference",
+      "purpose": "Important business services, impact tolerances, mapping, severe-but-plausible scenario testing, vulnerabilities, response/recovery and third-party dependencies.",
+      "resilience_iq_use": ["impact tolerance", "important business services", "scenario testing", "dependency mapping"],
+      "source": "https://www.fca.org.uk/firms/operational-resilience"
+    },
+    {
+      "id": "FCA-SCENARIO",
+      "name": "FCA Operational Resilience Insights",
+      "domain": "operational_resilience",
+      "status": "guidance_reference",
+      "purpose": "Practical observations on impact tolerances, scenario testing, mapping and resilience improvement.",
+      "resilience_iq_use": ["question design", "scenario library", "maturity indicators", "evidence expectations"],
+      "source": "https://www.fca.org.uk/firms/operational-resilience/insights-observations"
+    },
+    {
+      "id": "AWS-DR",
+      "name": "AWS disaster recovery strategy guidance",
+      "domain": "cloud_dr",
+      "status": "implementation_reference",
+      "purpose": "Maps recovery objectives to Backup and Restore, Pilot Light, Warm Standby and Multi-site/Active-Active strategies.",
+      "resilience_iq_use": ["AWS implementation mapping", "RTO/RPO strategy selection", "cost/complexity comparison"],
+      "source": "https://docs.aws.amazon.com/prescriptive-guidance/latest/strategy-database-disaster-recovery/defining.html"
+    },
+    {
+      "id": "AZURE-DR",
+      "name": "Azure Well-Architected disaster recovery guidance",
+      "domain": "cloud_dr",
+      "status": "implementation_reference",
+      "purpose": "Business-impact-driven DR design, thresholds, recovery-aware architecture, backups, drills and actionable plans.",
+      "resilience_iq_use": ["Azure implementation mapping", "DR design controls", "testing"],
+      "source": "https://learn.microsoft.com/en-us/azure/well-architected/reliability/disaster-recovery"
+    },
+    {
+      "id": "GCP-DR",
+      "name": "Google Cloud disaster recovery planning guidance",
+      "domain": "cloud_dr",
+      "status": "implementation_reference",
+      "purpose": "DR planning based on business impact, RTO/RPO, end-to-end recovery, specific procedures, testing and cloud infrastructure outage planning.",
+      "resilience_iq_use": ["GCP implementation mapping", "recovery objectives", "reference architectures", "testing"],
+      "source": "https://docs.cloud.google.com/architecture/dr-scenarios-planning-guide"
+    }
+  ],
+  "cross_framework_principles": [
+    "Start from critical business services and business impact.",
+    "Map people, process, technology, information, facilities and third parties.",
+    "Define recovery/impact objectives before selecting technology.",
+    "Design end-to-end recovery, not only backup.",
+    "Test severe-but-plausible scenarios and record evidence.",
+    "Separate cyber recovery from ordinary availability/DR where compromise can propagate into backups or recovery environments.",
+    "Review plans after material change and on a defined cadence.",
+    "Treat third-party and concentration risk as part of enterprise resilience."
+  ]
+}

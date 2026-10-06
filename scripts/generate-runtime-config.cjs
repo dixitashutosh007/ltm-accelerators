@@ -18,8 +18,10 @@ if (!fs.existsSync(outputsPath)) {
 }
 const outputs = JSON.parse(fs.readFileSync(outputsPath, 'utf8'));
 const custom = (outputs && outputs.custom) || {};
-if (typeof custom.apiUrl !== 'string' || !/^https:\/\//.test(custom.apiUrl)) {
-  throw new Error('Amplify custom.apiUrl output is missing or not an https URL.');
+// custom.apiUrl is the Accelerators API used by Cost IQ / Resilience IQ; the portal uses the Advisory API.
+const apiUrl = custom.advisoryApiUrl;
+if (typeof apiUrl !== 'string' || !/^https:\/\//.test(apiUrl)) {
+  throw new Error('Amplify custom.advisoryApiUrl output is missing or not an https URL.');
 }
 const cognito = custom.cognito || {};
 for (const key of ['region', 'userPoolId', 'clientId']) {
@@ -27,16 +29,12 @@ for (const key of ['region', 'userPoolId', 'clientId']) {
 }
 
 const config = {
-  apiBase: custom.apiUrl.replace(/\/+$/, ''),
+  apiBase: apiUrl.replace(/\/+$/, ''),
   cognito: { region: cognito.region, userPoolId: cognito.userPoolId, clientId: cognito.clientId },
-  features: {
-    // Cost IQ stays hidden until its scoring and AI routes are verified on the new API.
-    costIq: String(process.env.LTM_FEATURE_COST_IQ || 'false').toLowerCase() === 'true'
-  },
   generatedAt: new Date().toISOString()
 };
 
 fs.writeFileSync(target,
   '// Generated at build time by scripts/generate-runtime-config.cjs. Do not edit by hand.\n' +
   'window.LTM_CONFIG = ' + JSON.stringify(config, null, 2) + ';\n');
-console.log('Generated frontend runtime config:', config.apiBase, `(Cost IQ ${config.features.costIq ? 'enabled' : 'hidden'})`);
+console.log('Generated frontend runtime config:', config.apiBase);

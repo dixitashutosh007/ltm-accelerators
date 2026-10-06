@@ -17,6 +17,8 @@ import { evaluateCostIqFunction } from './functions/evaluate-cost-iq/resource';
 import { evaluateStrategyIqFunction } from './functions/evaluate-strategy-iq/resource';
 import { evaluateModernizationIqFunction } from './functions/evaluate-modernization-iq/resource';
 import { reportsServiceFunction } from './functions/reports-service/resource';
+import { evaluateResilienceIqFunction } from './functions/evaluate-resilience-iq/resource';
+import { manageResilienceEvidenceFunction } from './functions/manage-resilience-evidence/resource';
 import {
   ALLOWED_ORIGINS, API_BURST_LIMIT, API_RATE_LIMIT, COGNITO_ISSUER, KEEP_LEGACY_API,
   REGION, REPORTS_BUCKET, USER_POOL_CLIENT_ID, USER_POOL_ID
@@ -33,7 +35,9 @@ export const backend = defineBackend({
   evaluateCostIqFunction,
   evaluateStrategyIqFunction,
   evaluateModernizationIqFunction,
-  reportsServiceFunction
+  reportsServiceFunction,
+  evaluateResilienceIqFunction,
+  manageResilienceEvidenceFunction
 });
 
 const apiStack = backend.createStack('AcceleratorsApiStack');
@@ -88,7 +92,6 @@ const integrations = {
   posture: integrate('AdvisoryPostureIq', backend.evaluatePostureIqFunction),
   sovereign: integrate('AdvisorySovereignIq', backend.evaluateSovereignIqFunction),
   cloud: integrate('AdvisoryCloudIq', backend.evaluateCloudIqFunction),
-  costIq: integrate('AdvisoryCostIq', backend.evaluateCostIqFunction),
   strategy: integrate('AdvisoryStrategyIq', backend.evaluateStrategyIqFunction),
   modernization: integrate('AdvisoryModernizationIq', backend.evaluateModernizationIqFunction),
   reports: integrate('AdvisoryReportsService', backend.reportsServiceFunction)
@@ -105,12 +108,6 @@ route('/api/evaluate/sovereign-iq', [HttpMethod.POST], integrations.sovereign);
 route('/api/evaluate/cloud-iq', [HttpMethod.POST], integrations.cloud);
 route('/api/evaluate/strategy-iq', [HttpMethod.POST], integrations.strategy);
 route('/api/evaluate/modernization-iq', [HttpMethod.POST], integrations.modernization);
-route('/api/evaluate/cost-iq', [HttpMethod.POST], integrations.costIq);
-route('/api/evaluate/cost-iq/metadata', [HttpMethod.GET], integrations.costIq);
-route('/api/evaluate/cost-iq/questions', [HttpMethod.GET], integrations.costIq);
-route('/api/evaluate/cost-iq/orchestrate', [HttpMethod.POST], integrations.costIq);
-route('/api/evaluate/cost-iq/ai-review', [HttpMethod.POST], integrations.costIq);
-route('/api/evaluate/cost-iq/ai-report', [HttpMethod.POST], integrations.costIq);
 
 // Identity, user administration and the reports archive
 route('/api/me', [HttpMethod.GET], integrations.reports);
@@ -135,9 +132,7 @@ stage.routeSettings = {
   'POST /api/users/create': tight,
   'POST /api/users/set-password': tight,
   'POST /api/users/permissions': tight,
-  'POST /api/reports/delete': tight,
-  'POST /api/evaluate/cost-iq/ai-review': tight,
-  'POST /api/evaluate/cost-iq/ai-report': tight
+  'POST /api/reports/delete': tight
 };
 stage.accessLogSettings = {
   destinationArn: accessLogs.logGroupArn,
@@ -155,43 +150,44 @@ stage.accessLogSettings = {
 };
 
 /* ------------------------------------------------------------------
- * Legacy API (pre-Phase-1, no authorizer). Kept only during cutover so the
- * currently deployed frontend keeps working; remove by setting
- * LTM_KEEP_LEGACY_API=false in the Amplify console and redeploying.
+ * Accelerators API (pre-Phase-1, no authorizer).
+ * - Cost IQ and Resilience IQ are served here, unchanged, and are maintained
+ *   separately; their pages read this API's URL from custom.apiUrl.
+ * - The seven accelerators that moved to the Advisory API keep their old routes
+ *   here only during cutover: set LTM_KEEP_LEGACY_API=false to remove those routes.
  * ------------------------------------------------------------------ */
-let legacyApiUrl: string | undefined;
+const acceleratorsApi = new HttpApi(apiStack, 'AcceleratorsHttpApi', { apiName: 'ltm-accelerators-api' });
+const legacyRoute = (path: string, methods: HttpMethod[], integration: HttpLambdaIntegration) =>
+  acceleratorsApi.addRoutes({ path, methods, integration });
+
+// Cost IQ and Resilience IQ (as on main)
+const costIqIntegration = integrate('EvaluateCostIqIntegration', backend.evaluateCostIqFunction);
+const resilienceIntegration = integrate('EvaluateResilienceIqIntegration', backend.evaluateResilienceIqFunction);
+const resilienceEvidenceIntegration = integrate('ManageResilienceEvidenceIntegration', backend.manageResilienceEvidenceFunction);
+legacyRoute('/api/evaluate/resilience-iq', [HttpMethod.POST, HttpMethod.OPTIONS], resilienceIntegration);
+legacyRoute('/api/resilience-iq/evidence', [HttpMethod.POST, HttpMethod.OPTIONS], resilienceEvidenceIntegration);
+legacyRoute('/api/evaluate/cost-iq', [HttpMethod.POST, HttpMethod.OPTIONS], costIqIntegration);
+legacyRoute('/api/evaluate/cost-iq/{proxy+}', [HttpMethod.GET, HttpMethod.POST, HttpMethod.OPTIONS], costIqIntegration);
+legacyRoute('/api/evaluate/cost-iq/ai-review', [HttpMethod.POST, HttpMethod.OPTIONS], costIqIntegration);
+legacyRoute('/api/evaluate/cost-iq/ai-report', [HttpMethod.POST, HttpMethod.OPTIONS], costIqIntegration);
+
+// Seven Advisory-API accelerators: old unauthenticated routes, kept only during cutover.
 if (KEEP_LEGACY_API) {
-  const legacyApi = new HttpApi(apiStack, 'AcceleratorsHttpApi', { apiName: 'ltm-accelerators-api' });
-  const legacy = {
-    finops: integrate('EvaluateFinOpsIntegration', backend.evaluateFinOpsFunction),
-    finopsIq: integrate('EvaluateFinOpsIqIntegration', backend.evaluateFinOpsIqFunction),
-    posture: integrate('EvaluatePostureIqIntegration', backend.evaluatePostureIqFunction),
-    sovereign: integrate('EvaluateSovereignIqIntegration', backend.evaluateSovereignIqFunction),
-    cloud: integrate('EvaluateCloudIqIntegration', backend.evaluateCloudIqFunction),
-    costIq: integrate('EvaluateCostIqIntegration', backend.evaluateCostIqFunction),
-    strategy: integrate('EvaluateStrategyIqIntegration', backend.evaluateStrategyIqFunction),
-    modernization: integrate('EvaluateModernizationIqIntegration', backend.evaluateModernizationIqFunction)
-  };
-  const legacyRoute = (path: string, methods: HttpMethod[], integration: HttpLambdaIntegration) =>
-    legacyApi.addRoutes({ path, methods, integration });
-  legacyRoute('/api/evaluate/finops-value-case', [HttpMethod.POST, HttpMethod.OPTIONS], legacy.finops);
-  legacyRoute('/api/evaluate/finops-iq', [HttpMethod.POST, HttpMethod.OPTIONS], legacy.finopsIq);
-  legacyRoute('/api/evaluate/posture-iq', [HttpMethod.POST, HttpMethod.OPTIONS], legacy.posture);
-  legacyRoute('/api/evaluate/sovereign-iq', [HttpMethod.POST, HttpMethod.OPTIONS], legacy.sovereign);
-  legacyRoute('/api/evaluate/cloud-iq', [HttpMethod.POST, HttpMethod.OPTIONS], legacy.cloud);
-  legacyRoute('/api/evaluate/strategy-iq', [HttpMethod.POST, HttpMethod.OPTIONS], legacy.strategy);
-  legacyRoute('/api/evaluate/modernization-iq', [HttpMethod.POST, HttpMethod.OPTIONS], legacy.modernization);
-  legacyRoute('/api/evaluate/cost-iq', [HttpMethod.POST, HttpMethod.OPTIONS], legacy.costIq);
-  legacyRoute('/api/evaluate/cost-iq/{proxy+}', [HttpMethod.GET, HttpMethod.POST, HttpMethod.OPTIONS], legacy.costIq);
-  legacyRoute('/api/evaluate/cost-iq/ai-review', [HttpMethod.POST, HttpMethod.OPTIONS], legacy.costIq);
-  legacyRoute('/api/evaluate/cost-iq/ai-report', [HttpMethod.POST, HttpMethod.OPTIONS], legacy.costIq);
-  legacyApiUrl = legacyApi.url;
+  legacyRoute('/api/evaluate/finops-value-case', [HttpMethod.POST, HttpMethod.OPTIONS], integrate('EvaluateFinOpsIntegration', backend.evaluateFinOpsFunction));
+  legacyRoute('/api/evaluate/finops-iq', [HttpMethod.POST, HttpMethod.OPTIONS], integrate('EvaluateFinOpsIqIntegration', backend.evaluateFinOpsIqFunction));
+  legacyRoute('/api/evaluate/posture-iq', [HttpMethod.POST, HttpMethod.OPTIONS], integrate('EvaluatePostureIqIntegration', backend.evaluatePostureIqFunction));
+  legacyRoute('/api/evaluate/sovereign-iq', [HttpMethod.POST, HttpMethod.OPTIONS], integrate('EvaluateSovereignIqIntegration', backend.evaluateSovereignIqFunction));
+  legacyRoute('/api/evaluate/cloud-iq', [HttpMethod.POST, HttpMethod.OPTIONS], integrate('EvaluateCloudIqIntegration', backend.evaluateCloudIqFunction));
+  legacyRoute('/api/evaluate/strategy-iq', [HttpMethod.POST, HttpMethod.OPTIONS], integrate('EvaluateStrategyIqIntegration', backend.evaluateStrategyIqFunction));
+  legacyRoute('/api/evaluate/modernization-iq', [HttpMethod.POST, HttpMethod.OPTIONS], integrate('EvaluateModernizationIqIntegration', backend.evaluateModernizationIqFunction));
 }
 
 backend.addOutput({
   custom: {
-    apiUrl: advisoryApi.url,
-    ...(legacyApiUrl ? { legacyApiUrl } : {}),
+    // Read by scripts/generate-cost-iq-runtime-config.cjs (Cost IQ and Resilience IQ pages).
+    apiUrl: acceleratorsApi.url,
+    // Read by scripts/generate-runtime-config.cjs (portal and the seven Advisory-API accelerators).
+    advisoryApiUrl: advisoryApi.url,
     cognito: { region: REGION, userPoolId: USER_POOL_ID, clientId: USER_POOL_CLIENT_ID }
   }
 });

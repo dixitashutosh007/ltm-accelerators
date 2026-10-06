@@ -51,7 +51,14 @@ check(!!advisory, 'Advisory API (ltm-advisory-api) is missing');
 
 if (advisory) {
   const routes = ofType('AWS::ApiGatewayV2::Route').filter(r => r.Properties.ApiId?.Ref === advisory.id);
-  check(routes.length >= 20, `expected the full Advisory API route set, found ${routes.length} routes`);
+  // 7 scoring routes + identity, user administration and reports archive routes.
+  const required = ['POST /api/evaluate/finops-value-case', 'POST /api/evaluate/finops-iq', 'POST /api/evaluate/posture-iq',
+    'POST /api/evaluate/sovereign-iq', 'POST /api/evaluate/cloud-iq', 'POST /api/evaluate/strategy-iq',
+    'POST /api/evaluate/modernization-iq', 'GET /api/me', 'GET /api/users', 'POST /api/users/create',
+    'POST /api/users/set-password', 'POST /api/users/permissions', 'GET /api/reports/list',
+    'POST /api/reports/save', 'POST /api/reports/delete', 'POST /api/reports/rename'];
+  const keys = routes.map(r => r.Properties.RouteKey);
+  for (const k of required) check(keys.includes(k), `Advisory API is missing route ${k}`);
   for (const r of routes) {
     check(r.Properties.AuthorizationType === 'JWT', `route ${r.Properties.RouteKey} does not require the JWT authorizer`);
     check(!/^OPTIONS /.test(r.Properties.RouteKey), `explicit OPTIONS route ${r.Properties.RouteKey} would bypass API Gateway CORS handling`);
@@ -71,14 +78,22 @@ if (advisory) {
   check(!!stage?.Properties.AccessLogSettings?.DestinationArn, 'Advisory API stage has no access logging');
 }
 
+// The Accelerators API stays (it serves Cost IQ and Resilience IQ). After cutover it must no
+// longer expose unauthenticated routes for the seven Advisory-API accelerators.
 const legacyApi = apis.find(a => a.Properties.Name === 'ltm-accelerators-api');
-if (String(legacy).toLowerCase() === 'false') check(!legacyApi, 'legacy API still present although LTM_KEEP_LEGACY_API=false');
+if (legacyApi && String(legacy).toLowerCase() === 'false') {
+  const moved = /^(POST|OPTIONS) \/api\/evaluate\/(finops-value-case|finops-iq|posture-iq|sovereign-iq|cloud-iq|strategy-iq|modernization-iq)$/;
+  const leftovers = ofType('AWS::ApiGatewayV2::Route')
+    .filter(r => r.Properties.ApiId?.Ref === legacyApi.id && moved.test(r.Properties.RouteKey))
+    .map(r => r.Properties.RouteKey);
+  check(leftovers.length === 0, `unauthenticated legacy routes remain after cutover: ${leftovers.join(', ')}`);
+}
 
 for (const policy of ofType('AWS::IAM::Policy')) {
   for (const st of policy.Properties.PolicyDocument?.Statement || []) {
     const res = [].concat(st.Resource || []);
     const actions = [].concat(st.Action || []).join(',');
-    // Amplify's own SSM/env plumbing is scoped by the framework; check our own grants.
+    // Amplify's own SSM/env plumbing is scoped by the framework; check S3 and Cognito grants.
     if (/s3:|cognito-idp:/.test(actions)) {
       check(!res.includes('*'), `IAM policy ${policy.id} grants ${actions} on "*"`);
     }

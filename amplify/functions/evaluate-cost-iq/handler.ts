@@ -1,10 +1,13 @@
 import type { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
-import { corsHeaders } from '../_shared/http';
+import { createHash } from 'node:crypto';
 import { evaluateCostIq, metadata, questions, orchestrate } from '../../../packages/engine-core/src/accelerators/cost-iq/evaluate.cjs';
 
-// Per-request CORS headers (origin allowlist). Lambda handles one request at a time,
-// so this module-level value is safe.
-let CORS_HEADERS: Record<string, string> = corsHeaders();
+const CORS_HEADERS = {
+  'Content-Type': 'application/json',
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'Content-Type,Authorization,X-Amz-Date,X-Api-Key,X-Amz-Security-Token,X-Request-Id',
+  'Access-Control-Allow-Methods': 'OPTIONS,GET,POST'
+};
 
 function response(statusCode: number, body: unknown, id: string): APIGatewayProxyResultV2 {
   return { statusCode, headers: { ...CORS_HEADERS, 'X-Request-Id': id }, body: JSON.stringify(body) };
@@ -14,7 +17,6 @@ function makeRequestId(event: APIGatewayProxyEventV2): string {
 }
 
 export const handler = async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> => {
-  CORS_HEADERS = corsHeaders(event, 'OPTIONS,GET,POST', 'X-Request-Id');
   const id = makeRequestId(event);
   const method = event.requestContext?.http?.method || (event as any).httpMethod || 'GET';
   const path = event.requestContext?.http?.path || (event as any).path || '';
@@ -29,9 +31,20 @@ export const handler = async (event: APIGatewayProxyEventV2): Promise<APIGateway
 
     let body: any = {};
     if (event.body) {
-      body = event.isBase64Encoded
-        ? JSON.parse(Buffer.from(event.body, 'base64').toString('utf-8'))
-        : JSON.parse(event.body);
+      const rawBody = event.isBase64Encoded
+        ? Buffer.from(event.body, 'base64').toString('utf-8')
+        : event.body;
+      if (rawBody.length > 256 * 1024) {
+        return response(413, { error: 'payload_too_large', requestId: id }, id);
+      }
+      try {
+        body = JSON.parse(rawBody);
+      } catch {
+        return response(400, { error: 'invalid_json', requestId: id }, id);
+      }
+    }
+    if (!body || typeof body !== 'object' || Array.isArray(body)) {
+      return response(400, { error: 'json_object_required', requestId: id }, id);
     }
     if (method === 'POST' && path.endsWith('/ai-review')) {
       return response(200, await aiReview(body), id);
@@ -42,6 +55,21 @@ export const handler = async (event: APIGatewayProxyEventV2): Promise<APIGateway
 
     if (!body.answers || typeof body.answers !== 'object' || Array.isArray(body.answers)) {
       return response(400, { error: 'answers_object_required', requestId: id }, id);
+    }
+    if (Object.keys(body.answers).length > 500) {
+      return response(400, { error: 'too_many_answers', requestId: id }, id);
+    }
+    for (const [key, value] of Object.entries(body.answers)) {
+      if (key.length > 128) {
+        return response(400, { error: 'invalid_answer_key', requestId: id }, id);
+      }
+      if (Array.isArray(value)) {
+        if (value.length > 100 || value.some(v => typeof v === 'object' && v !== null)) {
+          return response(400, { error: 'invalid_answer_value', requestId: id }, id);
+        }
+      } else if (value !== null && typeof value === 'object') {
+        return response(400, { error: 'invalid_answer_value', requestId: id }, id);
+      }
     }
     if (path.endsWith('/orchestrate')) {
       return response(200, orchestrate({ answers: body.answers, options: body.options || {} }), id);
@@ -57,7 +85,11 @@ export const handler = async (event: APIGatewayProxyEventV2): Promise<APIGateway
     });
     return response(200, result, id);
   } catch (error) {
-    console.error('[EvaluateCostIq] Request failed', { requestId: id });
+    console.error('[EvaluateCostIq] Request failed', {
+      requestId: id,
+      errorName: error instanceof Error ? error.name : 'UnknownError',
+      errorMessage: error instanceof Error ? error.message : String(error)
+    });
     return response(500, {
       error: 'internal_evaluation_error',
       message: 'An internal error occurred while processing the Cost IQ request.',
@@ -66,33 +98,24 @@ export const handler = async (event: APIGatewayProxyEventV2): Promise<APIGateway
   }
 };
 
-
-async function callOpenAI(instruction: string, input: string) {
-  const key = process.env.OPENAI_API_KEY;
-  if (!key) throw new Error('AI service is not configured. Add the OPENAI_API_KEY Amplify secret.');
-  const resp = await fetch('https://api.openai.com/v1/responses', {
+async function callGemini(instruction: string, input: string) {
+  const key = process.env.GEMINI_API_KEY;
+  if (!key) throw new Error('AI service is not configured. Add the GEMINI_API_KEY Amplify secret.');
+  const model = process.env.GEMINI_MODEL || 'gemini-3.8-flash';
+  const fingerprint = createHash('sha256').update(key).digest('hex').slice(0, 12);
+  console.log('[CostIQ Gemini] key diagnostic', { present: true, length: key.length, fingerprint, model });
+  const resp = await fetch('https://generativelanguage.googleapis.com/v1beta/models/' + encodeURIComponent(model) + ':generateContent', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${key}` },
+    headers: { 'Content-Type': 'application/json', 'x-goog-api-key': key },
     body: JSON.stringify({
-      model: 'gpt-6-sol',
-      input: [
-        { role: 'system', content: [{ type: 'input_text', text: instruction }] },
-        { role: 'user', content: [{ type: 'input_text', text: input }] }
-      ],
-      max_output_tokens: 5000
+      contents: [{ role: 'user', parts: [{ text: instruction + '\n\nINPUT:\n' + input }] }],
+      generationConfig: { responseMimeType: 'application/json', temperature: 0.2 }
     })
   });
   const data:any = await resp.json();
-  if (!resp.ok) throw new Error(data?.error?.message || `OpenAI HTTP ${resp.status}`);
-  const extracted = data?.output_text ||
-    (Array.isArray(data?.output)
-      ? data.output
-          .flatMap((item:any) => Array.isArray(item?.content) ? item.content : [])
-          .filter((item:any) => item?.type === 'output_text' && typeof item?.text === 'string')
-          .map((item:any) => item.text)
-          .join('\n')
-      : '');
-  if (!extracted) throw new Error('OpenAI returned no output text.');
+  if (!resp.ok) throw new Error(data?.error?.message || ('Gemini HTTP ' + resp.status));
+  const extracted = data?.candidates?.[0]?.content?.parts?.map((part:any) => typeof part?.text === 'string' ? part.text : '').join('') || '';
+  if (!extracted) throw new Error('Gemini returned no output text.');
   return extracted;
 }
 
@@ -113,7 +136,7 @@ Review answers for contradictions, ambiguity, missing critical context and suspi
 Do NOT change deterministic scores. Return ONLY JSON:
 {"needsClarification":true|false,"questions":[{"id":"AI-1","reason":"...","question":"...","options":["...","...","..."]}],"observations":["..."]}
 Ask at most 3 high-value questions. Do not ask for information already provided. Prefer questions that materially affect interpretation.`;
-  return safeJsonText(await callOpenAI(instruction, payload));
+  return safeJsonText(await callGemini(instruction, payload));
 }
 
 async function aiReport(body:any) {
@@ -127,6 +150,6 @@ async function aiReport(body:any) {
   const instruction = `You are a senior LTM technology economics advisor. Produce an executive Cost IQ report using the supplied deterministic assessment as the source of truth.
 Do not invent scores, savings, facts or findings. Clearly distinguish evidence-backed observations from hypotheses.
 Return ONLY JSON:
-{"executiveSummary":"...","keyMessages":["..."],"priorityAreas":[{"name":"...","score":0,"why":"...","action":"..."}],"opportunities":[{"title":"...","description":"...","evidence":"...","confidence":"High|Medium|Low","nextStep":"..."}],"roadmap":[{"horizon":"0-30 days","actions":["..."]},{"horizon":"30-90 days","actions":["..."]},{"horizon":"90-180+ days","actions":["..."]}],"consultingRecommendations":["..."],"limitations":"..."}.`;
-  return safeJsonText(await callOpenAI(instruction, payload));
+{"executiveSummary":"...","keyMessages":["..."],"priorityAreas":[{"name":"...","score":0,"why":"...","action":"..."}],"opportunities":[{"title":"...","description":"...","evidence":"...","confidence":"High|Medium|Low","nextStep":"..."}],"roadmap":[{"horizon":"0-30 days","actions":["..."]},{"horizon":"30-90 days","actions":["..."]},{"horizon":"90-180+ days","actions":["..."]}],"consultingRecommendations":["..."],"limitations":"..." }.`;
+  return safeJsonText(await callGemini(instruction, payload));
 }

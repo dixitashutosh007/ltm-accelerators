@@ -1,0 +1,51 @@
+{
+  "schema_version": "1.0",
+  "name": "resilience-iq-assessment-persistence",
+  "purpose": "Govern persistent Resilience IQ assessments as reproducible, versioned consulting records.",
+  "status_values": ["draft", "in_progress", "completed", "archived"],
+  "version_manifest": {
+    "engine": "engineVersion",
+    "question_bank": "questionBankVersion",
+    "scoring_model": "scoringModelVersion",
+    "decision_tree": "decisionTreeVersion",
+    "blueprint_engine": "blueprintEngineVersion",
+    "executive_report": "executiveReportVersion"
+  },
+  "required_snapshot_fields": [
+    "assessmentId",
+    "clientName",
+    "respondentEmail",
+    "status",
+    "questionBankVersion",
+    "scoringModelVersion",
+    "decisionTreeVersion",
+    "blueprintEngineVersion",
+    "executiveReportVersion",
+    "engineVersion",
+    "answersJson",
+    "startedAt"
+  ],
+  "final_snapshot_fields": [
+    "resultJson",
+    "decisionLogJson",
+    "recommendationSensitivityJson",
+    "completedAt",
+    "finalizedAt"
+  ],
+  "lifecycle": {
+    "draft": ["draft", "in_progress", "archived"],
+    "in_progress": ["in_progress", "completed", "archived"],
+    "completed": ["completed", "archived"],
+    "archived": ["archived"]
+  },
+  "immutability": {
+    "completed": "Result and assessment answers are immutable; administrative archival remains permitted.",
+    "archived": "All assessment content is immutable."
+  },
+  "reproducibility": "A completed assessment must be re-evaluable from its stored answers and version manifest.",
+  "security": {
+    "required_authentication": "Cognito user pool",
+    "allowed_groups": ["Admin", "Consultant"],
+    "public_persistence": false
+  }
+}

@@ -5,11 +5,32 @@
 (function(window) {
   // All calls go through the shared API client (assets/ltm-api.js), which attaches and
   // renews the signed-in user's Cognito token.
-  function reportsFetch(path, options) {
-    if (!window.LTM_API) {
-      return Promise.reject(new Error('Please sign in to the LTM Advisory portal to archive or view reports.'));
+  // Pages that do not include runtime-config.js / ltm-api.js themselves get them loaded on demand.
+  function loadScript(src) {
+    return new Promise(function (resolve, reject) {
+      var el = document.createElement('script');
+      el.src = src;
+      el.onload = resolve;
+      el.onerror = function () { reject(new Error('Could not load ' + src)); };
+      document.head.appendChild(el);
+    });
+  }
+
+  let clientReady = null;
+  function ensureClient() {
+    if (window.LTM_API) return Promise.resolve(window.LTM_API);
+    if (!clientReady) {
+      clientReady = (window.LTM_CONFIG ? Promise.resolve() : loadScript('/assets/runtime-config.js'))
+        .then(function () { return window.LTM_API ? null : loadScript('/assets/ltm-api.js'); })
+        .then(function () { return window.LTM_API; });
     }
-    return window.LTM_API.fetch('/api/reports' + path, options);
+    return clientReady;
+  }
+
+  async function reportsFetch(path, options) {
+    const api = await ensureClient().catch(() => null);
+    if (!api) throw new Error('Please sign in to the LTM Advisory portal to archive or view reports.');
+    return api.fetch('/api/reports' + path, options);
   }
 
   function escapeHtml(value) {

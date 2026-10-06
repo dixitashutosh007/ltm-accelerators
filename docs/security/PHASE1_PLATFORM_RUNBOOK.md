@@ -39,7 +39,6 @@ Amplify console → App settings → **Environment variables**. All have safe de
 | `LTM_USER_POOL_ID` / `LTM_USER_POOL_CLIENT_ID` | `ap-south-1_91amN2bz4` / current client | Only if the portal should use a different pool |
 | `LTM_ALLOWED_ORIGINS` | Amplify main + branch previews | When adding a custom domain |
 | `LTM_KEEP_LEGACY_API` | `true` | Set to `false` in step 5 |
-| `LTM_FEATURE_COST_IQ` | `false` | Set to `true` in step 7 |
 | `LTM_API_RATE_LIMIT` / `LTM_API_BURST_LIMIT` | 25 / 50 per second | If workshops hit throttling |
 
 ## 2. Merge to `main` and watch the Amplify build
@@ -84,12 +83,18 @@ GitHub → Settings → Branches → add a rule for `main`:
 - Require status checks: **Typecheck, unit tests, repository guards**, **Backend synthesis and security assertions**, **Browser tests (Playwright)**, **Secret scan**
 - Do not allow force pushes
 
-## 5. Retire the old API
+## 5. Retire the old unauthenticated routes
 
-1. Set `LTM_KEEP_LEGACY_API=false` and redeploy. This deletes the pre-Phase-1 Amplify API, which has no authorizer.
-2. If `zvnmwxa9sf` still answers after that, it was created by hand. Delete it in API Gateway, along with the
-   hand-deployed reports Lambda behind it.
-3. Check: `curl https://zvnmwxa9sf.execute-api.ap-south-1.amazonaws.com/api/users` fails to resolve or returns 404.
+The old Accelerators API (`ltm-accelerators-api`) **stays**: Cost IQ and Resilience IQ, maintained
+separately, are served from it unchanged. Only the seven accelerators that moved to the Advisory API
+lose their old, unauthenticated routes there.
+
+1. Set `LTM_KEEP_LEGACY_API=false` and redeploy. This removes only the old FinOps Value Case, FinOps IQ,
+   Posture IQ, Sovereign IQ, Cloud IQ, Strategy IQ and Modernize IQ routes from the Accelerators API.
+2. The hand-made routes on `zvnmwxa9sf` (`/api/users`, `/api/reports/*`, `/api/auth/reset-password`)
+   are not managed by Amplify. Delete them in API Gateway, together with the hand-deployed reports Lambda
+   behind them. (Check first whether `zvnmwxa9sf` is the Accelerators API itself; if it is, delete only those routes.)
+3. Check: `curl -s -o /dev/null -w '%{http_code}' https://zvnmwxa9sf.execute-api.ap-south-1.amazonaws.com/api/users` returns 404.
 
 ## 6. Move admin rights to a Cognito group
 
@@ -98,17 +103,10 @@ GitHub → Settings → Branches → add a rule for `main`:
 3. Set `LTM_SUPER_ADMIN_EMAILS=none` and redeploy. The personal bootstrap address no longer grants anything.
 4. Enable MFA for the `Admin` group's users (if not already done in Phase 0).
 
-## 7. Re-enable Cost IQ (when ready)
-
-1. Make sure the `OPENAI_API_KEY` Amplify secret exists (Cost IQ's AI review uses it), and confirm the model
-   ID in `amplify/functions/evaluate-cost-iq/handler.ts` is valid for your account.
-2. Signed in, open `/cost-iq-v10`. The question bank must load.
-3. Set `LTM_FEATURE_COST_IQ=true` and redeploy. The portal button turns on.
-
 ## Rollback
 
 - **Frontend:** Amplify console → redeploy the previous build.
-- **Backend:** revert the merge commit. The legacy API keeps serving until step 5 has been done.
+- **Backend:** revert the merge commit. The old routes keep serving until step 5 has been done.
 
 ---
 
@@ -116,7 +114,7 @@ GitHub → Settings → Branches → add a rule for `main`:
 
 | Area | Change |
 |---|---|
-| API | One Advisory API in code (`amplify/backend.ts`): 22 routes, all behind a Cognito JWT authorizer; CORS limited to portal origins; throttling (tighter on admin and paid-AI routes); JSON access logs kept 1 year |
+| API | One Advisory API in code (`amplify/backend.ts`): 16 routes (7 scoring engines + identity, users, reports), all behind a Cognito JWT authorizer; CORS limited to portal origins; throttling (tighter on admin and paid-AI routes); JSON access logs kept 1 year |
 | Reports & users service | Built and deployed by Amplify (no more hand-uploaded zip); IAM limited to the reports bucket's `reports/` folder and permissions file, plus three Cognito admin actions |
 | Configuration | `amplify/config.ts` is the only place for pool IDs, origins, admins, bucket and feature flags, and every value can be overridden in the Amplify console. The frontend reads `assets/runtime-config.js`, generated at build time |
 | Frontend | Shared client `assets/ltm-api.js`: token on every call, silent renewal with the refresh token, sign-out revokes the token. Portal, Studio and every accelerator use it, with no hard-coded API URLs, client IDs or admin emails |
@@ -131,3 +129,14 @@ GitHub → Settings → Branches → add a rule for `main`:
 - Moving permissions from the S3 JSON file to DynamoDB: Phase 2, alongside server-side scoring.
 - The engagement data model: Phase 4, with the engagement workspace.
 - AWS WAF: it can't attach to HTTP APIs. Throttling covers rate limiting for now; WAF needs CloudFront in front of the API, which is a Phase 6 decision.
+
+## Scope note: Cost IQ and Resilience IQ
+
+Cost IQ and Resilience IQ are developed separately (another tool pushes them to `main`) and are out of
+scope for this programme. The Phase 1 merge keeps every live Cost IQ and Resilience IQ file byte-identical to
+`main` (the only Cost IQ change: four superseded, unreferenced old versions under `Accelerators/cost-iq/v*`
+were moved to `archive/` so they are no longer publicly served) and keeps their routes on the Accelerators API (Amplify output `custom.apiUrl`, read by
+`scripts/generate-cost-iq-runtime-config.cjs`). The portal and the seven accelerators read the new
+`custom.advisoryApiUrl`. Shared scripts (`rbac-guard.js`, `s3-reports.js`) also work on pages that do
+not load the new API client. CI type checks, repository guards and browser tests exclude the two
+separately maintained accelerators; their own `test:costiq*` / `test:resilience*` scripts are unaffected.

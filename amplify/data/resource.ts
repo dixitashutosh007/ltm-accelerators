@@ -6,7 +6,9 @@ import { type ClientSchema, a, defineData } from '@aws-amplify/backend';
  * 2. QuestionBank: Versioned questions for each accelerator
  * 3. ScoringModel: Private scoring models, weights, and rules
  * 4. AssessmentSubmission: Client answers and computed boardroom results
- * 5. UserAllowlist: Pre-approved email directory with RBAC roles
+ * 5. ResilienceEvidence: Governed evidence metadata and validation lifecycle for Resilience IQ
+ * 6. UserAllowlist: Pre-approved email directory with RBAC roles
+
  */
 const schema = a.schema({
   Accelerator: a
@@ -53,6 +55,56 @@ const schema = a.schema({
       allow.group('Consultant').to(['read'])
     ]),
 
+  ResilienceAssessment: a
+    .model({
+      assessmentId: a.string().required(),
+      clientName: a.string().required(),
+      clientSector: a.string(),
+      respondentEmail: a.string().required(),
+      status: a.string().required(),
+      questionBankVersion: a.string().required(),
+      scoringModelVersion: a.string().required(),
+      decisionTreeVersion: a.string().required(),
+      blueprintEngineVersion: a.string().required(),
+      executiveReportVersion: a.string().required(),
+      engineVersion: a.string().required(),
+      answersJson: a.string().required(),
+      resultJson: a.string(),
+      decisionLogJson: a.string(),
+      recommendationSensitivityJson: a.string(),
+      startedAt: a.datetime().required(),
+      completedAt: a.datetime(),
+      finalizedAt: a.datetime()
+    })
+    .authorization(allow => [
+      allow.groups(['Admin', 'Consultant']).to(['create', 'read', 'update'])
+    ]),
+
+  CostIqAssessment: a
+    .model({
+      assessmentId: a.string().required(),
+      acceleratorId: a.string().required(),
+      releaseId: a.string().required(),
+      methodologyVersion: a.string().required(),
+      status: a.string().required(),
+      clientName: a.string(),
+      clientSector: a.string(),
+      clientCurrency: a.string(),
+      selectedAreasJson: a.string().required(),
+      answersJson: a.string().required(),
+      subjectiveJson: a.string(),
+      resultJson: a.string(),
+      startedAt: a.datetime().required(),
+      updatedAt: a.datetime().required(),
+      completedAt: a.datetime()
+    })
+    .identifier(['assessmentId'])
+    .authorization(allow => [
+      allow.group('Admin').to(['create', 'read', 'update', 'delete']),
+      allow.group('Consultant').to(['create', 'read', 'update', 'delete']),
+      allow.owner().to(['create', 'read', 'update'])
+    ]),
+
   AssessmentSubmission: a
     .model({
       acceleratorId: a.string().required(),
@@ -67,6 +119,30 @@ const schema = a.schema({
       allow.group('Admin').to(['create', 'read', 'update', 'delete']),
       allow.group('Consultant').to(['create', 'read', 'update', 'delete']),
       allow.owner().to(['create', 'read'])
+    ]),
+
+  ResilienceEvidence: a
+    .model({
+      assessmentId: a.string().required(),
+      evidenceId: a.string().required(),
+      evidence: a.string().required(),
+      type: a.string().required(),
+      status: a.string().required(),
+      purpose: a.string().required(),
+      validationCriteriaJson: a.string().required(),
+      affectedGapsJson: a.string().required(),
+      affectsRecommendation: a.boolean().required(),
+      evidenceLocation: a.string(),
+      evidenceChecksum: a.string(),
+      validationOutcome: a.string(),
+      submittedBy: a.string(),
+      validatedBy: a.string(),
+      validatedAt: a.datetime(),
+      rejectedReason: a.string()
+    })
+    .authorization(allow => [
+      allow.group('Admin').to(['create', 'read', 'update', 'delete']),
+      allow.group('Consultant').to(['create', 'read', 'update', 'delete'])
     ]),
 
   UserAllowlist: a

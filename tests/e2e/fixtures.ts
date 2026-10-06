@@ -61,7 +61,7 @@ export class MockWorld {
     // Point the frontend at the fake API regardless of the committed runtime config.
     await context.route(/\/assets\/runtime-config\.js$/, route => route.fulfill({
       contentType: 'application/javascript',
-      body: `window.LTM_CONFIG=${JSON.stringify({ apiBase: TEST_API, cognito: { region: 'ap-south-1', userPoolId: 'ap-south-1_test', clientId: 'test-client' }, features: { costIq: false } })};`
+      body: `window.LTM_CONFIG=${JSON.stringify({ apiBase: TEST_API, cognito: { region: 'ap-south-1', userPoolId: 'ap-south-1_test', clientId: 'test-client' } })};`
     }));
   }
 

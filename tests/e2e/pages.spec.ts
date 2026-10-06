@@ -1,8 +1,9 @@
 import { test, expect, makeIdToken, signedIn } from './fixtures';
 
 // Every hosted page, opened as an administrator under the production security headers.
+// (Cost IQ and Resilience IQ are maintained separately and have their own test suites.)
 const PAGES = [
-  '/', '/strategy-iq', '/modernization-iq', '/finops-value-case', '/finops-iq', '/cost-iq-v10',
+  '/', '/strategy-iq', '/modernization-iq', '/finops-value-case', '/finops-iq',
   '/cloud-iq', '/sovereign-iq', '/posture-iq', '/ai-readiness-iq', '/studio',
   '/cloud-iq-sample-report', '/sovereign-iq-sample-report', '/finops-iq-sample-report', '/portal'
 ];

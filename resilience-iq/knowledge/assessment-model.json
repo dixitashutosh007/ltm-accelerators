@@ -1,0 +1,78 @@
+{
+  "schema_version": "1.0",
+  "last_reviewed": "2026-10-04",
+  "assessment_levels": {
+    "executive_scan": {
+      "target_questions": 20,
+      "future_target_questions": 45,
+      "duration_minutes": "15-20",
+      "purpose": "Current Executive Scan implementation uses 20 required questions; the 45-question target is reserved for a future expanded executive baseline."
+    },
+    "advisory_assessment": {
+      "question_pool": "100-150 dynamic questions",
+      "duration_minutes": "45-90",
+      "purpose": "Evidence-backed resilience diagnosis and strategy recommendation."
+    },
+    "enterprise_assessment": {
+      "future_phase": true,
+      "purpose": "Multi-stakeholder assessment with business, technology, security, risk and third-party evidence."
+    }
+  },
+  "domains": [
+    {"id":"BCP","name":"Business Continuity","weight":0.18,"subdomains":["BCMS governance","business impact analysis","continuity strategies","people/workplace","crisis management","communications","exercise/improvement"]},
+    {"id":"DR","name":"Disaster Recovery","weight":0.20,"subdomains":["recovery objectives","application recovery","data recovery","infrastructure recovery","network recovery","runbooks","failover/failback","testing"]},
+    {"id":"CYBER","name":"Cyber Recovery","weight":0.18,"subdomains":["immutable backup","isolation","identity recovery","clean recovery","ransomware scenarios","recovery-point trust","security monitoring"]},
+    {"id":"OPS","name":"Operational Resilience","weight":0.16,"subdomains":["important business services","impact tolerance","dependency mapping","scenario testing","incident response","continuous validation"]},
+    {"id":"TP","name":"Third-Party Resilience","weight":0.12,"subdomains":["critical suppliers","SaaS","CSP","network providers","MSP","contractual controls","concentration","exit strategy"]},
+    {"id":"INFRA","name":"IT / Infrastructure Resilience","weight":0.16,"subdomains":["failure domains","site/region resilience","compute","storage","network","identity","automation","observability"]}
+  ],
+  "common_evidence_types": [
+    "policy/document",
+    "BIA",
+    "application inventory",
+    "dependency map",
+    "architecture diagram",
+    "RTO/RPO register",
+    "DR runbook",
+    "backup evidence",
+    "restore test evidence",
+    "failover test evidence",
+    "cyber recovery test evidence",
+    "supplier SLA/contract",
+    "risk register",
+    "audit finding",
+    "incident/postmortem",
+    "observability/control evidence"
+  ],
+  "question_taxonomy": [
+    "business_service_criticality",
+    "impact_tolerance",
+    "RTO",
+    "RPO",
+    "MTPD",
+    "dependency",
+    "single_point_of_failure",
+    "recovery_capability",
+    "recovery_testing",
+    "backup_integrity",
+    "cyber_recovery",
+    "third_party",
+    "regulatory",
+    "people_and_roles",
+    "governance",
+    "investment_constraints",
+    "technology_constraints"
+  ],
+  "dynamic_question_rules": [
+    "If a service is critical, expand application/data/infrastructure/cyber questions.",
+    "If required RTO or RPO is tighter than current capability, create a quantified recovery gap.",
+    "If third-party dependency is critical, ask about provider SLA, concentration, evidence and exit strategy.",
+    "If ransomware/destructive attack is in scope, expand immutable backup, isolation, identity and clean-room questions.",
+    "If cloud is in scope, ask about zone/region strategy, control-plane dependency, quotas, service dependencies and data residency.",
+    "If on-prem is in scope, ask about site, power, network, storage, hypervisor, facility and hardware dependencies.",
+    "If regulated, add applicable framework/regulatory evidence questions.",
+    "If a recovery test has never been performed, score evidence maturity separately from documented-plan maturity.",
+    "If RTO/RPO are unknown, do not infer them from technical architecture; mark business requirement as undefined and flag for BIA.",
+    "If multiple critical services share the same provider, region, facility or identity plane, generate concentration-risk questions."
+  ]
+}
