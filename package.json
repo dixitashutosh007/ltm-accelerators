@@ -33,7 +33,8 @@
     "test:costiq:persistence:http": "tsx amplify/functions/evaluate-cost-iq/persistence-handler.test.ts",
     "test:costiq:persistence:amplify": "node packages/engine-core/src/accelerators/cost-iq/persistence-amplify-adapter.test.mjs",
     "test:costiq:persistence:browser": "node packages/engine-core/src/accelerators/cost-iq/persistence-browser.test.cjs",
-    "test:costiq:report-fallback": "node packages/engine-core/src/accelerators/cost-iq/report-fallback.test.cjs"
+    "test:costiq:report-fallback": "node packages/engine-core/src/accelerators/cost-iq/report-fallback.test.cjs",
+    "audit:engines": "tsx packages/engine-core/audit/run.ts"
   },
   "dependencies": {
     "@aws-sdk/client-cognito-identity-provider": "^3.1146.0",
