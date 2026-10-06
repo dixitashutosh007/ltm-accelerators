@@ -1,0 +1,140 @@
+{
+  "sample-investment-bank": {
+    "signals": {
+      "visibility": 100,
+      "predictability": 68,
+      "ownership": null,
+      "control": 77,
+      "value": null
+    },
+    "gapIndex": 18,
+    "urgencyIndex": 43,
+    "needIndex": 28,
+    "wasteBand": {
+      "low": 0.08,
+      "high": 0.155,
+      "label": "Established controls",
+      "isBfsi": true
+    },
+    "exposureY1": [
+      280000,
+      542325
+    ],
+    "exposureY3": [
+      1220800,
+      2364537
+    ],
+    "verdict": "Establish foundations now",
+    "confidence": "Low confidence",
+    "blindSpots": 0,
+    "streams": [
+      "governance 58 High (P2) £28k – £54k",
+      "rate 61 High (P2) £90k – £174k",
+      "hygiene 79 Foundational £78k – £152k",
+      "attribution 90 Foundational £34k – £65k",
+      "architecture 93 Foundational £50k – £98k"
+    ]
+  },
+  "immature-bfsi-inr": {
+    "signals": {
+      "visibility": 0,
+      "predictability": 0,
+      "ownership": 0,
+      "control": 0,
+      "value": 9
+    },
+    "gapIndex": 99,
+    "urgencyIndex": 34,
+    "needIndex": 73,
+    "wasteBand": {
+      "low": 0.3,
+      "high": 0.45,
+      "label": "No effective cost management",
+      "isBfsi": true
+    },
+    "exposureY1": [
+      6000000,
+      9000000
+    ],
+    "exposureY3": [
+      30960000,
+      46440000
+    ],
+    "verdict": "Material exposure — act this year",
+    "confidence": "Reasonable confidence",
+    "blindSpots": 0,
+    "streams": [
+      "hygiene 0 Critical (P1) ₹1.7m – ₹2.5m",
+      "architecture 0 Critical (P1) ₹1.1m – ₹1.6m",
+      "attribution 0 Critical (P1) ₹720k – ₹1.1m",
+      "rate 12 Critical (P1) ₹1.9m – ₹2.9m",
+      "governance 30 Critical (P1) ₹600k – ₹900k"
+    ]
+  },
+  "mature-general-usd": {
+    "signals": {
+      "visibility": 100,
+      "predictability": 100,
+      "ownership": 100,
+      "control": 100,
+      "value": 100
+    },
+    "gapIndex": 0,
+    "urgencyIndex": 2,
+    "needIndex": 1,
+    "wasteBand": {
+      "low": 0.08,
+      "high": 0.14,
+      "label": "Established controls",
+      "isBfsi": false
+    },
+    "exposureY1": [
+      400000,
+      700000
+    ],
+    "exposureY3": [
+      1324000,
+      2317000
+    ],
+    "verdict": "Lightweight practices sufficient",
+    "confidence": "Reasonable confidence",
+    "blindSpots": 0,
+    "streams": [
+      "rate 52 High (P2) $128k – $224k",
+      "governance 87 Foundational $40k – $70k",
+      "hygiene 100 Foundational $112k – $196k",
+      "architecture 100 Foundational $72k – $126k",
+      "attribution 100 Foundational $48k – $84k"
+    ]
+  },
+  "all-unknown": {
+    "signals": {
+      "visibility": 0,
+      "predictability": 0,
+      "ownership": null,
+      "control": 0,
+      "value": 0
+    },
+    "gapIndex": 100,
+    "urgencyIndex": 0,
+    "needIndex": 60,
+    "wasteBand": {
+      "low": 0.3,
+      "high": 0.4,
+      "label": "No effective cost management",
+      "isBfsi": false
+    },
+    "exposureY1": null,
+    "exposureY3": null,
+    "verdict": "Material exposure — act this year",
+    "confidence": "Low confidence",
+    "blindSpots": 7,
+    "streams": [
+      "architecture 0 Critical (P1) —",
+      "attribution 10 Critical (P1) —",
+      "rate 12 Critical (P1) —",
+      "hygiene 15 Critical (P1) —",
+      "governance 27 Critical (P1) —"
+    ]
+  }
+}

@@ -33,6 +33,8 @@ export class MockWorld {
   calls: string[] = [];
   cspViolations: string[] = [];
   pageErrors: string[] = [];
+  /** Same-site requests that failed (missing assets such as fonts or images). */
+  missingFiles: string[] = [];
   private handlers: { method: string; path: string | RegExp; fn: ApiHandler }[] = [];
   /** Email -> password accepted by the fake Cognito. */
   users: Record<string, string> = { 'consultant@ltm.com': 'Passw0rd!', 'admin@ltm.com': 'Passw0rd!' };
@@ -70,6 +72,9 @@ export class MockWorld {
       if (msg.type() === 'error' && /Content Security Policy/i.test(msg.text())) this.cspViolations.push(msg.text());
     });
     page.on('pageerror', err => this.pageErrors.push(err.message));
+    page.on('response', res => {
+      if (res.status() >= 400 && new URL(res.url()).host === new URL(page.url() || res.url()).host) this.missingFiles.push(`${res.status()} ${res.url()}`);
+    });
     page.on('dialog', dialog => dialog.accept().catch(() => {}));
   }
 

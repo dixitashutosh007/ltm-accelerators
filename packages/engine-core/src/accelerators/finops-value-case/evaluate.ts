@@ -91,7 +91,8 @@ export function qScore(q: any, a: any): number | null {
 }
 
 export function getCurrencySymbol(currencyId: string = 'gbp', currencies: any[] = defaultKb.meta.currencies): string {
-  const c = currencies.find((cur: any) => cur.id === currencyId);
+  const id = String(currencyId || '').toLowerCase();
+  const c = currencies.find((cur: any) => cur.id === id);
   return c ? c.symbol : '£';
 }
 
@@ -186,7 +187,11 @@ export function evaluateFinOpsValueCase(
     kb.meta.waste_model.bands.find((b: any) => cap <= b.max_capability) ||
     kb.meta.waste_model.bands[kb.meta.waste_model.bands.length - 1];
   const mods = kb.meta.benchmarks.bfsi_modifiers;
-  const isBfsi = Boolean(org.sector_class === 'bfsi' || org.sector?.toLowerCase().includes('banking') || org.sector?.toLowerCase().includes('financial'));
+  // The explicit classification wins; the free-text sector is only a fallback when none was given.
+  const sectorText = String(org.sector || '').toLowerCase();
+  const isBfsi = org.sector_class
+    ? org.sector_class === 'bfsi'
+    : sectorText.includes('banking') || sectorText.includes('financial');
   const full = mods.factors.reduce((a: number, f: any) => a + f.pts, 0);
   const uplift = isBfsi ? full * (1 - cap / 100) : 0;
 
@@ -302,16 +307,23 @@ export function evaluateFinOpsValueCase(
   const relevantCaseStudies = scoredCaseStudies.map((x: any) => x.cs);
 
   // 12. FinOps Optimization Streams (Roadmap)
-  const sigV = signals.visibility || 50;
-  const sigP = signals.predictability || 50;
-  const sigO = signals.ownership || 50;
-  const sigC = signals.control || 50;
-  const sigVal = signals.value || 50;
+  // A signal with no answers counts as neutral (50); a genuine score of 0 stays 0.
+  const sigV = signals.visibility ?? 50;
+  const sigP = signals.predictability ?? 50;
+  const sigO = signals.ownership ?? 50;
+  const sigC = signals.control ?? 50;
+  const sigVal = signals.value ?? 50;
 
+  // Answer scores come from the knowledge base (an unknown answer scores 0); unanswered uses the default.
+  const answerScore = (id: string, unanswered: number): number => {
+    const q = kb.questions.find((x: any) => x.id === id);
+    const sc = q ? qScore(q, answers[id]) : null;
+    return sc ?? unanswered;
+  };
   const commitCov = typeof answers['C2'] === 'number' ? answers['C2'] : 20;
-  const decommission = answers['C3'] !== undefined ? (answers['C3'] === '__DK__' ? 0 : [100, 80, 55, 20, 0][answers['C3']] || 30) : 30;
-  const netGovernance = answers['C5'] !== undefined ? (answers['C5'] === '__DK__' ? 0 : [100, 65, 30, 0][answers['C5']] || 25) : 30;
-  const costAttr = answers['V1'] !== undefined ? (answers['V1'] === '__DK__' ? 0 : [100, 70, 35, 0][answers['V1']] || 30) : 30;
+  const decommission = answerScore('C3', 30);
+  const netGovernance = answerScore('C5', 30);
+  const costAttr = answerScore('V1', 30);
   const variance = typeof answers['P1'] === 'number' ? answers['P1'] : 15;
 
   const rateScore = Math.round(0.6 * commitCov + 0.4 * sigC);
