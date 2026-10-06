@@ -29,7 +29,7 @@ The reports/users service is deployed manually, outside Amplify. Moving it into 
    |---|---|---|
    | `SUPER_ADMIN_EMAILS` | *(none; required)* | Comma-separated admin addresses. The code no longer has a built-in admin |
    | `ADMIN_GROUP` | `Admin` | Members of this Cognito group are admins |
-   | `ALLOWED_ORIGINS` | `https://main.d1xnevzszm0ehs.amplifyapp.com,https://*.d1xnevzszm0ehs.amplifyapp.com` | Browser origins allowed by CORS |
+   | `ALLOWED_ORIGINS` | `https://main.d199dq940iqyj2.amplifyapp.com,https://*.d199dq940iqyj2.amplifyapp.com` | Browser origins allowed by CORS |
    | `USER_POOL_ID` / `COGNITO_CLIENT_ID` | current pool and client | Used to verify tokens |
    | `REPORTS_BUCKET` | current bucket | |
 

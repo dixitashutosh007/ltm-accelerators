@@ -66,6 +66,10 @@ if (advisory) {
   const cors = advisory.Properties.CorsConfiguration || {};
   check(Array.isArray(cors.AllowOrigins) && cors.AllowOrigins.length > 0, 'Advisory API has no CORS origin allowlist');
   check(!(cors.AllowOrigins || []).includes('*'), 'Advisory API CORS allows "*"');
+  // API Gateway HTTP APIs reject partial wildcards such as https://*.example.com at deploy time.
+  for (const origin of cors.AllowOrigins || []) {
+    check(/^https?:\/\/[a-z0-9.-]+(:\d+)?$/i.test(origin), `Advisory API CORS origin "${origin}" is not an exact origin (API Gateway rejects it)`);
+  }
 
   const authorizers = ofType('AWS::ApiGatewayV2::Authorizer').filter(a => a.Properties.ApiId?.Ref === advisory.id);
   check(authorizers.length === 1 && authorizers[0].Properties.AuthorizerType === 'JWT', 'Advisory API must have exactly one JWT authorizer');
@@ -76,6 +80,12 @@ if (advisory) {
   const stage = ofType('AWS::ApiGatewayV2::Stage').find(s => s.Properties.ApiId?.Ref === advisory.id);
   check(!!stage?.Properties.DefaultRouteSettings?.ThrottlingRateLimit, 'Advisory API stage is not throttled');
   check(!!stage?.Properties.AccessLogSettings?.DestinationArn, 'Advisory API stage has no access logging');
+  // Per-route settings fail at deploy time unless the stage is created after those routes.
+  const routeIdByKey = Object.fromEntries(routes.map(r => [r.Properties.RouteKey, r.id]));
+  const dependsOn = [].concat(stage?.DependsOn || []);
+  for (const key of Object.keys(stage?.Properties.RouteSettings || {})) {
+    check(dependsOn.includes(routeIdByKey[key]), `stage RouteSettings names "${key}" but the stage does not DependsOn that route (deploy-time race)`);
+  }
 }
 
 // The Accelerators API stays (it serves Cost IQ and Resilience IQ). After cutover it must no
