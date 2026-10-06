@@ -116,3 +116,43 @@ FinOps IQ already scored through the API. The fixes are in how the page used the
 - Approve the golden outputs in `packages/engine-core/test/golden/finops-iq.json`.
 - Value at stake: 25–35% of spend at stages 0–1, falling to 2–4% at stage 5. Cite the source (FinOps Foundation State of FinOps?).
 - A domain with no answers shows 0 on the domain chart. Should it show "not assessed" instead?
+
+## Posture IQ and Sovereign IQ (Wave 4): what Phase 2 changed
+
+Both pages already scored their on-screen report through the API. The other views (PDF export, slides, SOW, TIA,
+supervisory defence binder, emails, AI briefing payloads) still ran the browser copy of the engine. That copy works on
+the page's public question bank, which has no scoring data. A side-by-side run on random questionnaires showed the result:
+
+- **Posture IQ:** zero findings, and pillar scores from defaults (60–95) rather than answers.
+- **Sovereign IQ:** no regulations in scope, no fines, and default pillar scores.
+
+These documents contradicted the on-screen report.
+
+| Issue | Fix |
+|---|---|
+| Report documents ran the browser engine | All of them read the server result; without one they show an error. The browser engines are deleted (Posture IQ ~220 lines, Sovereign IQ 9 functions) |
+| Posture IQ silently fell back to the browser engine when the API failed | Error banner; no local results |
+| Posture IQ: DORA showed a turnover-based ceiling (1% of daily turnover × 180 days) for every financial entity | Art. 35 periodic penalties apply only to critical ICT third-party providers. Financial entities (everyone question A2 covers) face national penalties under Art. 50–51 with no EU-wide cap, so DORA now reads "Set under national law" and is excluded from the exposure figure |
+| Posture IQ: every triggered probe showed "Required Technical Safeguard: undefined" on the live results page (the server's probe data lacked the field) | Safeguard text added to the knowledge base; a test requires every probe field |
+| Posture IQ demo data: about 60 answers did not match the current question bank (renamed options, a matrix answered with one word, an option that no longer exists) and were silently ignored | Mapped to the nearest current option, conservative on "partial"; demo results now reflect every answer |
+| Pages sent client, respondent and consultant details to the scoring API | Posture IQ sends name and turnover; Sovereign IQ sends answers only |
+
+### Open questions for the legal / regulatory reviewer (Phase 3)
+
+- Approve the golden outputs in `packages/engine-core/test/golden/posture-iq.json` and `sovereign-iq.json`,
+  including the remapped demo answers (each mapping is visible in the knowledge-base diff).
+- The SaaS demo was meant to be a **critical ICT third-party provider**, but question A2 has no such option. Should
+  Posture IQ assess CTPPs (where DORA Art. 35 penalties would apply)?
+- The "Advisory Hedge Ratio" (engagement fee as a % of the maximum fine) is commercial framing, not a risk measure.
+  Keep, reword or drop?
+- Inline per-question findings while answering (Posture IQ) cannot show, because the public question bank carries no
+  findings. Show them from the server, or drop the feature?
+
+## Gate 2 status
+
+| Gate 2 criterion | Status |
+|---|---|
+| Every accelerator scores only through the API | Met for FinOps Value Case, Strategy IQ, Cloud IQ, FinOps IQ, Posture IQ, Sovereign IQ (Cost IQ and Resilience IQ are maintained separately) |
+| Golden, invariant, contract and E2E suites pass in CI for every archetype | Met for the six accelerators above |
+| No "undefined", "NaN" or "null" in any rendered report | Checked by each accelerator's browser test on its report screen |
+| Every bug closed with a test that reproduces it | Met: each regression test fails on the pre-Phase-2 code |

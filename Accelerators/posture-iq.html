@@ -3789,191 +3789,284 @@ var BANK = {
 var FLASH_QUESTIONS = ['A1', 'A2', 'B1', 'C1', 'D1', 'E1', 'G1', 'H1'];
 
 var DEMO_ARCHETYPES = {
-  bank: {
-    key: "bank",
-    name: "Meridian Pan-European Universal Bank",
-    badge: "BFSI · DORA",
-    lead: "Chief Risk Officer / Head of Operational Resilience",
-    hq: "Germany",
-    resp: "Dr. Maximilian Weber",
-    role: "Chief Operational Risk Officer",
-    footprint: "EEA / EU only",
-    size: "> 20,000",
-    turnover: 8000000000,
-    sectors: ["finserv", "diginfra"],
-    regulations: ["dora", "gdpr", "nis2", "dataact"],
-    answers: {
-      A1: "essential",
-      A2: "credit",
-      B1: ["financial", "pii", "special"],
-      C1: ["aws-eu", "azure-eu", "onprem", "saas"],
-      C2: "multi",
-      C3: "partial",
-      D1: "sccs",
-      D2: "tier1",
-      D3: "partial",
-      E1: "most",
-      E2: "yes",
-      E3: "yes",
-      E4: "partial",
-      F1: "eu",
-      F2: "provider",
-      F3: "no",
-      F4: "yes",
-      F5: "partial",
-      G1: "highrisk",
-      G2: "mixed",
-      G3: "partial",
-      G4: "planned",
-      H1: "us-eubound",
-      H2: "no",
-      H3: "medium",
-      I1: "limited",
-      I2: "yes",
-      I3: "partial",
-      J1: "partial",
-      K1: "strict",
-      K2: "high",
-      K3: "performance"
+  "bank": {
+    "key": "bank",
+    "name": "Meridian Pan-European Universal Bank",
+    "badge": "BFSI · DORA",
+    "lead": "Chief Risk Officer / Head of Operational Resilience",
+    "hq": "Germany",
+    "resp": "Dr. Maximilian Weber",
+    "role": "Chief Operational Risk Officer",
+    "footprint": "EEA / EU only",
+    "size": "> 20,000",
+    "turnover": 8000000000,
+    "sectors": [
+      "finserv",
+      "diginfra"
+    ],
+    "regulations": [
+      "dora",
+      "gdpr",
+      "nis2",
+      "dataact"
+    ],
+    "answers": {
+      "A1": "essential",
+      "A2": "credit",
+      "B1": [
+        "financial",
+        "pii",
+        "special"
+      ],
+      "C1": [
+        "aws-eu",
+        "azure-eu",
+        "onprem",
+        "salesforce"
+      ],
+      "C2": {
+        "financial": "multi",
+        "pii": "multi",
+        "special": "multi"
+      },
+      "C3": "partial",
+      "D1": "sccs",
+      "D2": "yes",
+      "D3": "customer",
+      "E1": "most",
+      "E2": "yes",
+      "E3": "full",
+      "E4": "no",
+      "F1": "eu",
+      "F2": "provider",
+      "F3": "no",
+      "F4": "yes",
+      "F5": "partial",
+      "G1": "highrisk",
+      "G2": "mixed",
+      "G3": "downstream",
+      "G4": "partial",
+      "H1": "us-eubound",
+      "H2": "none",
+      "H3": [
+        "eu-personnel",
+        "eu-subprocessors"
+      ],
+      "I1": "limited",
+      "I2": "exec",
+      "I3": "unsure",
+      "J1": "partial",
+      "K1": "zero",
+      "K2": "high",
+      "K3": [
+        "performance"
+      ]
     }
   },
-  health: {
-    key: "health",
-    name: "Aethel MedTech & Pan-European Hospital Network",
-    badge: "MedTech · AI Act",
-    lead: "CISO / Data Protection Officer",
-    hq: "France",
-    resp: "Claire Delacroix",
-    role: "Chief Information Security Officer & DPO",
-    footprint: "EEA / EU only",
-    size: "5,000–20,000",
-    turnover: 1200000000,
-    sectors: ["health", "pharma"],
-    regulations: ["nis2", "gdpr", "aiact"],
-    answers: {
-      A1: "essential",
-      B1: ["special", "pii", "aitraining"],
-      C1: ["azure-eu", "saas"],
-      C2: "single",
-      C3: "no",
-      D1: "sccs",
-      D2: "ad-hoc",
-      D3: "no",
-      E1: "most",
-      E2: "partial",
-      E3: "no",
-      E4: "no",
-      F1: "eu-enc",
-      F2: "provider",
-      F3: "no",
-      F4: "planned",
-      F5: "no",
-      G1: "highrisk",
-      G2: "us-dpf",
-      G3: "no",
-      G4: "no",
-      H1: "us",
-      H2: "no",
-      H3: "high",
-      I1: "limited",
-      I2: "no",
-      I3: "no",
-      J1: "partial",
-      K1: "strict",
-      K2: "medium",
-      K3: "compliance"
+  "health": {
+    "key": "health",
+    "name": "Aethel MedTech & Pan-European Hospital Network",
+    "badge": "MedTech · AI Act",
+    "lead": "CISO / Data Protection Officer",
+    "hq": "France",
+    "resp": "Claire Delacroix",
+    "role": "Chief Information Security Officer & DPO",
+    "footprint": "EEA / EU only",
+    "size": "5,000–20,000",
+    "turnover": 1200000000,
+    "sectors": [
+      "health",
+      "pharma"
+    ],
+    "regulations": [
+      "nis2",
+      "gdpr",
+      "aiact"
+    ],
+    "answers": {
+      "A1": "essential",
+      "B1": [
+        "special",
+        "pii",
+        "aitraining"
+      ],
+      "C1": [
+        "azure-eu",
+        "salesforce"
+      ],
+      "C2": {
+        "special": "eu-only",
+        "pii": "eu-only",
+        "aitraining": "eu-only"
+      },
+      "C3": "convention",
+      "D1": "sccs",
+      "D2": "partial",
+      "D3": "na",
+      "E1": "most",
+      "E2": "partial",
+      "E3": "none",
+      "E4": "no",
+      "F1": "eu-enc",
+      "F2": "provider",
+      "F3": "no",
+      "F4": "planned",
+      "F5": "no",
+      "G1": "highrisk",
+      "G2": "us-dpf",
+      "G3": "none",
+      "G4": "none",
+      "H1": "us",
+      "H2": "none",
+      "H3": [
+        "none"
+      ],
+      "I1": "limited",
+      "I2": "none",
+      "I3": "no",
+      "J1": "partial",
+      "K1": "zero",
+      "K2": "medium",
+      "K3": [
+        "compliance"
+      ]
     }
   },
-  utility: {
-    key: "utility",
-    name: "Consortium Energy & Power Grid Utility",
-    badge: "Critical Infra · NIS2",
-    lead: "Head of IT/OT Cybersecurity & Critical Infrastructure",
-    hq: "Nordics",
-    resp: "Henrik Lindqvist",
-    role: "Head of Critical Cyber Infrastructure",
-    footprint: "EEA / EU only",
-    size: "1,000–5,000",
-    turnover: 3500000000,
-    sectors: ["energy", "diginfra"],
-    regulations: ["nis2", "gdpr", "eucs"],
-    answers: {
-      A1: "essential",
-      B1: ["government", "pii"],
-      C1: ["onprem", "aws-eu"],
-      C2: "hybrid",
-      C3: "partial",
-      D1: "no",
-      D2: "none",
-      D3: "yes",
-      E1: "all",
-      E2: "yes",
-      E3: "partial",
-      E4: "partial",
-      F1: "eu",
-      F2: "cmk-eu",
-      F3: "yes",
-      F4: "yes",
-      F5: "yes",
-      G1: "none",
-      H1: "us",
-      H2: "yes",
-      H3: "low",
-      I1: "full",
-      I2: "yes",
-      I3: "yes",
-      J1: "yes",
-      K1: "balanced",
-      K2: "high",
-      K3: "security"
+  "utility": {
+    "key": "utility",
+    "name": "Consortium Energy & Power Grid Utility",
+    "badge": "Critical Infra · NIS2",
+    "lead": "Head of IT/OT Cybersecurity & Critical Infrastructure",
+    "hq": "Nordics",
+    "resp": "Henrik Lindqvist",
+    "role": "Head of Critical Cyber Infrastructure",
+    "footprint": "EEA / EU only",
+    "size": "1,000–5,000",
+    "turnover": 3500000000,
+    "sectors": [
+      "energy",
+      "diginfra"
+    ],
+    "regulations": [
+      "nis2",
+      "gdpr",
+      "eucs"
+    ],
+    "answers": {
+      "A1": "essential",
+      "B1": [
+        "government",
+        "pii"
+      ],
+      "C1": [
+        "onprem",
+        "aws-eu"
+      ],
+      "C2": {
+        "government": "eu-only",
+        "pii": "eu-backup"
+      },
+      "C3": "partial",
+      "D1": "no",
+      "D2": "no",
+      "D3": "customer",
+      "E1": "all",
+      "E2": "yes",
+      "E3": "partial",
+      "E4": "no",
+      "F1": "eu",
+      "F2": "cmk-eu",
+      "F3": "yes",
+      "F4": "yes",
+      "F5": "yes",
+      "G1": "none",
+      "H1": "us",
+      "H2": "substantial",
+      "H3": [
+        "eu-personnel",
+        "hyok",
+        "local-entity"
+      ],
+      "I1": "full",
+      "I2": "exec",
+      "I3": "yes",
+      "J1": "yes",
+      "K1": "moderate",
+      "K2": "high",
+      "K3": [
+        "resilience"
+      ]
     }
   },
-  saas: {
-    key: "saas",
-    name: "Enterprise B2B SaaS & Payment Gateway",
-    badge: "SaaS · Global",
-    lead: "VP Information Security & Compliance",
-    hq: "Ireland",
-    resp: "Sean O'Connor",
-    role: "VP Information Security & DPO",
-    footprint: "EU + US / global",
-    size: "250–1,000",
-    turnover: 300000000,
-    sectors: ["tech", "finserv"],
-    regulations: ["gdpr", "ukgdpr", "dora", "dataact"],
-    answers: {
-      A1: "important",
-      A2: "ict_ctpp",
-      B1: ["financial", "pii", "behavioural"],
-      C1: ["aws-global", "saas"],
-      C2: "multi",
-      C3: "no",
-      D1: "adequate",
-      D2: "tier1",
-      D3: "partial",
-      E1: "most",
-      E2: "partial",
-      E3: "yes",
-      E4: "no",
-      F1: "us-dpf",
-      F2: "provider",
-      F3: "no",
-      F4: "planned",
-      F5: "no",
-      G1: "embedded",
-      G2: "mixed",
-      G3: "partial",
-      G4: "no",
-      H1: "us",
-      H2: "no",
-      H3: "high",
-      I1: "limited",
-      I2: "partial",
-      I3: "no",
-      J1: "partial",
-      K1: "flexible",
-      K2: "medium",
-      K3: "performance"
+  "saas": {
+    "key": "saas",
+    "name": "Enterprise B2B SaaS & Payment Gateway",
+    "badge": "SaaS · Global",
+    "lead": "VP Information Security & Compliance",
+    "hq": "Ireland",
+    "resp": "Sean O'Connor",
+    "role": "VP Information Security & DPO",
+    "footprint": "EU + US / global",
+    "size": "250–1,000",
+    "turnover": 300000000,
+    "sectors": [
+      "tech",
+      "finserv"
+    ],
+    "regulations": [
+      "gdpr",
+      "ukgdpr",
+      "dora",
+      "dataact"
+    ],
+    "answers": {
+      "A1": "important",
+      "A2": "na",
+      "B1": [
+        "financial",
+        "pii",
+        "behavioural"
+      ],
+      "C1": [
+        "aws-global",
+        "salesforce"
+      ],
+      "C2": {
+        "financial": "multi",
+        "pii": "multi",
+        "behavioural": "multi"
+      },
+      "C3": "convention",
+      "D1": "adequate",
+      "D2": "yes",
+      "D3": "provider",
+      "E1": "most",
+      "E2": "partial",
+      "E3": "full",
+      "E4": "no",
+      "F1": "us-dpf",
+      "F2": "provider",
+      "F3": "no",
+      "F4": "planned",
+      "F5": "no",
+      "G1": "internal",
+      "G2": "mixed",
+      "G3": "integrator",
+      "G4": "none",
+      "H1": "us",
+      "H2": "none",
+      "H3": [
+        "none"
+      ],
+      "I1": "limited",
+      "I2": "diffuse",
+      "I3": "no",
+      "J1": "partial",
+      "K1": "flexible",
+      "K2": "medium",
+      "K3": [
+        "performance"
+      ]
     }
   }
 };
@@ -4088,9 +4181,6 @@ var DYNAMIC_PROBES = [
   }
 ];
 
-function getTriggeredProbes(answers, state){
-  return DYNAMIC_PROBES.filter(function(p){ return p.trigger(answers, state); });
-}
 function getTriggeredProbesForQuestion(qid, answers, state){
   return DYNAMIC_PROBES.filter(function(p){
     return p.relevantQids.includes(qid) && p.trigger(answers, state);
@@ -4184,111 +4274,6 @@ function formatCurrency(n){
   return '$' + Math.round(n);
 }
 
-function calculateStatutoryPenalties(turnover, inScopeRegs, answers, findings){
-  var EUR_TO_USD = 1.08;
-  var tUSD = turnover || 250000000;
-  var tEUR = tUSD / EUR_TO_USD;
-  
-  var fines = [];
-  var maxSinglePenalty = 0;
-  
-  if(inScopeRegs.includes('gdpr') || inScopeRegs.includes('ukgdpr')){
-    var capEUR = Math.max(20000000, tEUR * 0.04);
-    var capUSD = Math.round(capEUR * EUR_TO_USD);
-    var hasGap = findings.some(function(f){ return f.reg === 'gdpr' || f.reg === 'ukgdpr'; });
-    var isCrit = findings.some(function(f){ return (f.reg === 'gdpr' || f.reg === 'ukgdpr') && f.severity === 'critical'; });
-    fines.push({
-      regId: 'gdpr',
-      regName: 'GDPR / UK GDPR (Art. 83 Statutory Cap)',
-      statuteBasis: 'Up to €20M / £17.5M or 4% worldwide annual turnover, whichever is higher (Chapter V transfers & processor duties).',
-      capUSD: capUSD,
-      capFormatted: formatCurrency(capUSD),
-      status: hasGap ? (isCrit ? 'Critical Breach Exposure' : 'High Regulatory Exposure') : 'Defensible / Managed',
-      statusColor: hasGap ? (isCrit ? 'var(--rag-red)' : '#E39A2E') : 'var(--rag-green)'
-    });
-    maxSinglePenalty = Math.max(maxSinglePenalty, capUSD);
-  }
-
-  if(inScopeRegs.includes('nis2')){
-    var isEssential = answers['A1'] === 'essential';
-    var rate = isEssential ? 0.02 : 0.014;
-    var baseEUR = isEssential ? 10000000 : 7000000;
-    var capEUR = Math.max(baseEUR, tEUR * rate);
-    var capUSD = Math.round(capEUR * EUR_TO_USD);
-    var hasGap = findings.some(function(f){ return f.reg === 'nis2'; });
-    fines.push({
-      regId: 'nis2',
-      regName: isEssential ? 'NIS2 Directive (Essential Entity · Art. 34)' : 'NIS2 Directive (Important Entity · Art. 34)',
-      statuteBasis: isEssential 
-        ? 'Up to €10M or 2% worldwide annual turnover + direct management liability and operational bans.' 
-        : 'Up to €7M or 1.4% worldwide annual turnover (ex-post supervisory enforcement).',
-      capUSD: capUSD,
-      capFormatted: formatCurrency(capUSD),
-      status: hasGap ? 'Direct Enforcement Risk' : 'Baseline Met',
-      statusColor: hasGap ? 'var(--rag-red)' : 'var(--rag-green)'
-    });
-    maxSinglePenalty = Math.max(maxSinglePenalty, capUSD);
-  }
-
-  if(inScopeRegs.includes('aiact') || inScopeRegs.includes('ukai')){
-    // EU AI Act Art. 99(4): EUR 15M or 3% (whichever is higher) for high-risk / Art. 10 data-governance breaches.
-    // The EUR 35M / 7% tier (Art. 99(3)) applies only to prohibited practices, which this diagnostic does not assess.
-    var capEUR = Math.max(15000000, tEUR * 0.03);
-    var capUSD = Math.round(capEUR * EUR_TO_USD);
-    var hasGap = findings.some(function(f){ return f.reg === 'aiact'; });
-    fines.push({
-      regId: 'aiact',
-      regName: 'EU AI Act (Art. 99 Statutory Ceiling)',
-      statuteBasis: 'Up to €15M or 3% of worldwide turnover, whichever is higher, for high-risk system and Art. 10 data-governance obligations (Art. 99(4)).',
-      capUSD: capUSD,
-      capFormatted: formatCurrency(capUSD),
-      status: hasGap ? 'Severe Non-Compliance' : 'Governance Aligned',
-      statusColor: hasGap ? 'var(--rag-red)' : 'var(--rag-green)'
-    });
-    maxSinglePenalty = Math.max(maxSinglePenalty, capUSD);
-  }
-
-  if(inScopeRegs.includes('dora')){
-    var dailyUSD = tUSD / 365;
-    var capUSD = Math.round(dailyUSD * 0.01 * 180);
-    var hasGap = findings.some(function(f){ return f.reg === 'dora'; });
-    fines.push({
-      regId: 'dora',
-      regName: 'DORA (Art. 35 Periodic Penalty Payments & CTPP Oversight)',
-      statuteBasis: 'Daily periodic fines up to 1% avg. daily global turnover for up to 6 months + ESA public disclosure & sanctions.',
-      capUSD: capUSD,
-      capFormatted: formatCurrency(capUSD),
-      status: hasGap ? 'Supervisory Sanction Exposure' : 'Compliant Architecture',
-      statusColor: hasGap ? 'var(--rag-red)' : 'var(--rag-green)'
-    });
-    maxSinglePenalty = Math.max(maxSinglePenalty, capUSD);
-  }
-
-  if(!fines.length){
-    var defaultCapUSD = Math.round(Math.max(20000000, tEUR * 0.04) * EUR_TO_USD);
-    fines.push({
-      regId: 'gdpr',
-      regName: 'Statutory Compliance Baseline (GDPR Art. 83)',
-      statuteBasis: 'Up to €20M or 4% global turnover baseline.',
-      capUSD: defaultCapUSD,
-      capFormatted: formatCurrency(defaultCapUSD),
-      status: 'In Scope',
-      statusColor: '#E39A2E'
-    });
-    maxSinglePenalty = defaultCapUSD;
-  }
-
-  var advisoryFeeEstimate = 185000;
-  var riskHedgeRatio = ((advisoryFeeEstimate / (maxSinglePenalty || 1)) * 100).toFixed(2);
-
-  return {
-    turnover: tUSD,
-    fines: fines,
-    totalValueAtStake: maxSinglePenalty,
-    advisoryFeeEstimate: advisoryFeeEstimate,
-    riskHedgeRatio: riskHedgeRatio
-  };
-}
 
 /* ---------- 5-pillar normalized scoring model ---------- */
 var PILLAR_CONFIG = [
@@ -4324,114 +4309,7 @@ var PILLAR_CONFIG = [
   }
 ];
 
-function evaluateQuestionScore(q, ans){
-  if(ans === undefined || ans === null) return null;
-  if(q.type === 'single'){
-    var opt = (q.options || []).find(function(o){ return o.value === ans; });
-    if(!opt) return null;
-    if(opt.sev === 'positive') return 100;
-    if(opt.sev === 'low') return 75;
-    if(opt.sev === 'medium') return 50;
-    if(opt.sev === 'high') return 25;
-    if(opt.sev === 'critical') return 0;
-    return 60;
-  }
-  if(q.type === 'scale'){
-    var sOpt = (q.scale || []).find(function(s){ return s.v === ans; });
-    if(!sOpt) return null;
-    if(sOpt.sev === 'positive') return 100;
-    if(sOpt.sev === 'low') return 75;
-    if(sOpt.sev === 'medium') return 50;
-    if(sOpt.sev === 'high') return 25;
-    if(sOpt.sev === 'critical') return 0;
-    return 60;
-  }
-  if(q.type === 'multi'){
-    var arr = Array.isArray(ans) ? ans : [];
-    if(!arr.length) return 80;
-    var tFindings = [];
-    (q.options || []).forEach(function(o){
-      if(arr.includes(o.value) && o.findings){
-        tFindings = tFindings.concat(o.findings);
-      }
-    });
-    if(tFindings.some(function(f){ return f.severity === 'critical'; })) return 15;
-    if(tFindings.some(function(f){ return f.severity === 'high'; })) return 35;
-    if(tFindings.some(function(f){ return f.severity === 'medium'; })) return 60;
-    if(tFindings.some(function(f){ return f.severity === 'low'; })) return 80;
-    return 95;
-  }
-  if(q.type === 'matrix'){
-    if(typeof ans !== 'object' || !ans) return null;
-    var entries = Object.entries(ans);
-    if(!entries.length) return null;
-    var worst = 100;
-    entries.forEach(function(pair){
-      var k = pair[0] + ':' + pair[1];
-      var f = q.cellFindings ? q.cellFindings[k] : null;
-      if(f){
-        if(f.severity === 'critical') worst = Math.min(worst, 10);
-        else if(f.severity === 'high') worst = Math.min(worst, 30);
-        else if(f.severity === 'medium') worst = Math.min(worst, 55);
-        else if(f.severity === 'low') worst = Math.min(worst, 75);
-      }
-    });
-    return worst;
-  }
-  return 70;
-}
 
-function computePillarScores(answers, activeQuestions){
-  var pillars = PILLAR_CONFIG.map(function(p){
-    var qList = activeQuestions.filter(function(q){ return p.sections.includes(q.section); });
-    var total = 0;
-    var scored = 0;
-    qList.forEach(function(q){
-      var s = evaluateQuestionScore(q, answers[q.id]);
-      if(s !== null){
-        total += s;
-        scored++;
-      }
-    });
-    var score = scored > 0 ? Math.round(total / scored) : 55;
-    var status = 'Managed';
-    var color = '#226882';
-    var bg = '#EDF5F8';
-    if(score >= 85){ status = 'Defensible'; color = 'var(--rag-green)'; bg = '#EDF7F1'; }
-    else if(score >= 65){ status = 'Managed'; color = '#226882'; bg = '#EDF5F8'; }
-    else if(score >= 40){ status = 'Exposed'; color = '#E39A2E'; bg = '#FFF9E6'; }
-    else { status = 'Critical Risk'; color = 'var(--rag-red)'; bg = '#FFEBEE'; }
-
-    return {
-      id: p.id,
-      num: p.num,
-      name: p.name,
-      desc: p.desc,
-      weight: p.weight,
-      score: score,
-      status: status,
-      color: color,
-      bg: bg,
-      qCount: qList.length,
-      answeredCount: scored
-    };
-  });
-
-  var weightedSum = 0;
-  var weightSum = 0;
-  pillars.forEach(function(p){
-    weightedSum += p.score * p.weight;
-    weightSum += p.weight;
-  });
-  var overall = Math.round(weightedSum / (weightSum || 1));
-  var label = postureLabel(overall);
-
-  return {
-    pillars: pillars,
-    overallScore: overall,
-    label: label
-  };
-}
 
 /* ---------- init ---------- */
 function init(){
@@ -4794,11 +4672,6 @@ function collectFindingsForQuestion(q){
   }
   return list;
 }
-function collectAllFindings(){
-  let all=[];
-  STATE.activeQuestions.forEach(q=>{ all=all.concat(collectFindingsForQuestion(q)); });
-  return all.filter(f=>f.severity!=='positive');
-}
 
 /* ---------- RAG rollup ---------- */
 function ragForRegulation(regId, findings){
@@ -4814,11 +4687,6 @@ function ragForRegulation(regId, findings){
 }
 
 /* ---------- posture score & labels ---------- */
-function postureScore(findings){
-  const w={critical:26,high:13,medium:5,low:1};
-  let deduct=0; findings.forEach(f=>{ deduct+=w[f.severity]||0; });
-  return Math.max(0, 100-deduct);
-}
 function postureLabel(s){
   if(s>=85) return {t:'Defensible', c:'var(--rag-green)', grade:'A'};
   if(s>=65) return {t:'Improving / Managed', c:'#226882', grade:'B'};
@@ -4841,11 +4709,15 @@ function businessImpactBand(){
 // Scoring runs on the Advisory API; LTM_API attaches the signed-in user's token.
 const EVALUATE_API_PATH = "/api/evaluate/posture-iq";
 
+// Returns the server's evaluation, or null (and shows an error). Never keeps a stale result.
 async function fetchPostureIqEvaluation() {
+  STATE.evaluation = null;
+  hideScoringError();
   try {
     const payload = {
       answers: STATE.answers,
-      org: STATE.org,
+      // The engine needs only turnover; respondent details stay in the browser.
+      org: { name: STATE.org.name || '', turnover: STATE.org.turnover },
       regulations: STATE.regulations,
       sectors: STATE.sectors,
       mode: STATE.mode
@@ -4854,25 +4726,39 @@ async function fetchPostureIqEvaluation() {
       method: 'POST',
       body: JSON.stringify(payload)
     });
-    if (!res.ok) {
-      console.error('[Posture IQ Cloud Eval] Error:', res.status, await res.text());
-      return null;
-    }
-    const json = await res.json();
-    if (json && json.ok && json.data) {
+    const json = await res.json().catch(() => null);
+    if (res.ok && json && json.ok && json.data) {
       STATE.evaluation = json.data;
       return STATE.evaluation;
     }
+    console.error('[Posture IQ Cloud Eval] Error:', res.status, json);
   } catch (err) {
     console.error('[Posture IQ Cloud Eval] Connection failed:', err);
   }
+  showScoringError();
   return null;
+}
+
+function showScoringError() {
+  if (document.getElementById('scoringError')) return;
+  const el = document.createElement('div');
+  el.id = 'scoringError';
+  el.setAttribute('role', 'alert');
+  el.style.cssText = 'position:fixed;top:16px;left:50%;transform:translateX(-50%);z-index:9999;max-width:min(640px,calc(100% - 32px));display:flex;gap:12px;align-items:center;background:#FEF2F2;border:1px solid #DC2626;color:#111827;padding:12px 16px;border-radius:10px;font-size:14px;box-shadow:0 8px 30px rgba(0,0,0,.18)';
+  el.innerHTML = "<span><b>We couldn't calculate your results.</b> Your answers are kept. Please try again in a moment.</span>"
+    + '<button type="button" onclick="hideScoringError()" style="border:1px solid #DC2626;background:#fff;border-radius:6px;padding:4px 10px;cursor:pointer">Dismiss</button>';
+  document.body.appendChild(el);
+}
+function hideScoringError() {
+  const el = document.getElementById('scoringError');
+  if (el) el.remove();
 }
 
 async function computeAndShowResults(){
   await fetchPostureIqEvaluation();
+  if(!STATE.evaluation) return;
   let findings, pillarData, score, label, penalties, triggeredProbes, counts;
-  if(STATE.evaluation){
+  {
     findings = STATE.evaluation.findings;
     pillarData = STATE.evaluation.pillarScores;
     score = STATE.evaluation.overallScore;
@@ -4880,16 +4766,6 @@ async function computeAndShowResults(){
     penalties = STATE.evaluation.penalties;
     triggeredProbes = STATE.evaluation.triggeredProbes;
     counts = STATE.evaluation.counts;
-  } else {
-    findings = collectAllFindings();
-    findings.sort((a,b)=>(SEV_ORDER[b.severity]-SEV_ORDER[a.severity])||(a.phase-b.phase));
-    pillarData = computePillarScores(STATE.answers, STATE.activeQuestions);
-    score = pillarData.overallScore;
-    label = pillarData.label;
-    penalties = calculateStatutoryPenalties(STATE.org.turnover, STATE.regulations, STATE.answers, findings);
-    triggeredProbes = getTriggeredProbes(STATE.answers, STATE);
-    counts = {critical:0,high:0,medium:0,low:0};
-    findings.forEach(f=>counts[f.severity]=(counts[f.severity]||0)+1);
   }
 
   const isUnlocked = !!STATE.isUnlocked;
@@ -5193,12 +5069,13 @@ function pillarBreakdownBlock(pillarData){
 }
 
 function toggleAINarrative(){
+  if(!STATE.evaluation){ showScoringError(); return; }
   STATE._showBaselineNarrative = !STATE._showBaselineNarrative;
   var container = document.getElementById('exec-narrative-container');
   if(container){
-    var findings = collectAllFindings();
-    var pillarData = computePillarScores(STATE.answers, STATE.activeQuestions);
-    var penalties = calculateStatutoryPenalties(STATE.org.turnover, STATE.regulations, STATE.answers, findings);
+    var findings = STATE.evaluation.findings.slice();
+    var pillarData = STATE.evaluation.pillarScores;
+    var penalties = STATE.evaluation.penalties;
     var counts = {critical:0,high:0,medium:0,low:0};
     findings.forEach(function(f){ counts[f.severity]=(counts[f.severity]||0)+1; });
     container.outerHTML = execSummary(findings, counts, pillarData.overallScore, penalties);
@@ -5563,12 +5440,13 @@ document.addEventListener('keydown', function(e){
 });
 
 function renderSlide(idx){
-  var findings = collectAllFindings();
-  var pillarData = computePillarScores(STATE.answers, STATE.activeQuestions);
+  if(!STATE.evaluation){ showScoringError(); return; }
+  var findings = STATE.evaluation.findings.slice();
+  var pillarData = STATE.evaluation.pillarScores;
   var score = pillarData.overallScore;
   var label = pillarData.label;
-  var penalties = calculateStatutoryPenalties(STATE.org.turnover, STATE.regulations, STATE.answers, findings);
-  var probes = getTriggeredProbes(STATE.answers, STATE);
+  var penalties = STATE.evaluation.penalties;
+  var probes = STATE.evaluation.triggeredProbes;
   var counts = { critical: 0, high: 0, medium: 0, low: 0 };
   findings.forEach(function(f){ counts[f.severity] = (counts[f.severity] || 0) + 1; });
   var clientDisplay = STATE.org.name || 'Client Enterprise';
@@ -5725,10 +5603,11 @@ function renderSlide(idx){
 }
 
 function copyMarpDeck(){
-  var findings = collectAllFindings();
-  var pillarData = computePillarScores(STATE.answers, STATE.activeQuestions);
-  var penalties = calculateStatutoryPenalties(STATE.org.turnover, STATE.regulations, STATE.answers, findings);
-  var probes = getTriggeredProbes(STATE.answers, STATE);
+  if(!STATE.evaluation){ showScoringError(); return; }
+  var findings = STATE.evaluation.findings.slice();
+  var pillarData = STATE.evaluation.pillarScores;
+  var penalties = STATE.evaluation.penalties;
+  var probes = STATE.evaluation.triggeredProbes;
   var clientDisplay = STATE.org.name || 'Client Enterprise';
   var turnoverFormatted = formatCurrency(STATE.org.turnover);
   var exposureFormatted = formatCurrency(penalties.totalValueAtStake);
@@ -5787,10 +5666,11 @@ pillarLines + "\n\n" +
 
 /* ---------- Statement of Work (SOW) Controller ---------- */
 function openSOWModal(){
-  var findings = collectAllFindings();
-  var pillarData = computePillarScores(STATE.answers, STATE.activeQuestions);
-  var penalties = calculateStatutoryPenalties(STATE.org.turnover, STATE.regulations, STATE.answers, findings);
-  var probes = getTriggeredProbes(STATE.answers, STATE);
+  if(!STATE.evaluation){ showScoringError(); return; }
+  var findings = STATE.evaluation.findings.slice();
+  var pillarData = STATE.evaluation.pillarScores;
+  var penalties = STATE.evaluation.penalties;
+  var probes = STATE.evaluation.triggeredProbes;
   var clientDisplay = STATE.org.name || 'Client Enterprise';
 
   var sow = generateSOWMarkdown(clientDisplay, pillarData.overallScore, pillarData.label, penalties, pillarData, findings, probes);
@@ -5928,18 +5808,19 @@ function generateSOWMarkdown(clientDisplay, score, label, penalties, pillarData,
 
 /* ---------- High-Fidelity Vector jsPDF Export ---------- */
 function downloadPostureExecutivePDF(isArchiveOnly){
+  if(!STATE.evaluation){ showScoringError(); return; }
   if(typeof window.jspdf === "undefined" || !window.jspdf.jsPDF){
     alert("jsPDF library is still loading. Please try again in a moment.");
     return;
   }
 
-  var findings = collectAllFindings();
+  var findings = STATE.evaluation.findings.slice();
   findings.sort(function(a,b){ return (SEV_ORDER[b.severity]-SEV_ORDER[a.severity])||(a.phase-b.phase); });
-  var pillarData = computePillarScores(STATE.answers, STATE.activeQuestions);
+  var pillarData = STATE.evaluation.pillarScores;
   var score = pillarData.overallScore;
   var label = pillarData.label;
-  var penalties = calculateStatutoryPenalties(STATE.org.turnover, STATE.regulations, STATE.answers, findings);
-  var probes = getTriggeredProbes(STATE.answers, STATE);
+  var penalties = STATE.evaluation.penalties;
+  var probes = STATE.evaluation.triggeredProbes;
   var clientDisplay = STATE.org.name || 'Client Enterprise';
   var cleanClient = clientDisplay.replace(/[^a-zA-Z0-9]/g, '_');
   var now = new Date().toLocaleDateString('en-GB', {day:'numeric', month:'long', year:'numeric'});
@@ -6660,8 +6541,9 @@ async function executeAICall(cfg, prompt, systemInstruction, timeoutMs){
 }
 
 /* ---------- 4. Anomaly Discovery & Adaptive Clarification Controller ---------- */
-function startClarificationStage(){
-  var probes = getTriggeredProbes(STATE.answers, STATE);
+async function startClarificationStage(){
+  if(!(await fetchPostureIqEvaluation())) return;
+  var probes = STATE.evaluation.triggeredProbes;
   if(!probes || probes.length === 0){
     // No contradictions detected, proceed straight to results
     computeAndShowResults();
@@ -6959,15 +6841,16 @@ function closeBookingModal(){
 }
 
 function submitBookingRequest(){
+  if(!STATE.evaluation){ showScoringError(); return; }
   var name = (document.getElementById('book-name') || {}).value || STATE.org.resp || 'Executive';
   var role = (document.getElementById('book-role') || {}).value || STATE.org.role || 'Executive';
   var email = (document.getElementById('book-email') || {}).value || '';
   var comp = (document.getElementById('book-company') || {}).value || STATE.org.name || 'Enterprise';
   var timeframe = (document.getElementById('book-timeframe') || {}).value || 'Next 7 business days';
 
-  var findings = collectAllFindings();
-  var pillarData = computePillarScores(STATE.answers, STATE.activeQuestions);
-  var penalties = calculateStatutoryPenalties(STATE.org.turnover, STATE.regulations, STATE.answers, findings);
+  var findings = STATE.evaluation.findings.slice();
+  var pillarData = STATE.evaluation.pillarScores;
+  var penalties = STATE.evaluation.penalties;
 
   var subject = "Posture IQ Executive Briefing Request — " + comp;
   var body = [
@@ -7019,10 +6902,11 @@ function closeEmailModal(){
 }
 
 function sendTeaserEmail(){
+  if(!STATE.evaluation){ showScoringError(); return; }
   var to = (document.getElementById('teaser-email') || {}).value || '';
-  var findings = collectAllFindings();
-  var pillarData = computePillarScores(STATE.answers, STATE.activeQuestions);
-  var penalties = calculateStatutoryPenalties(STATE.org.turnover, STATE.regulations, STATE.answers, findings);
+  var findings = STATE.evaluation.findings.slice();
+  var pillarData = STATE.evaluation.pillarScores;
+  var penalties = STATE.evaluation.penalties;
   var comp = STATE.org.name || 'Our Enterprise';
 
   var subject = "Executive Teaser: Posture IQ Defensibility & Statutory Value at Stake (" + comp + ")";

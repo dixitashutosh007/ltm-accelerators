@@ -1,0 +1,220 @@
+{
+  "demo-bank": {
+    "overallScore": 62,
+    "label": "Material Exposure",
+    "pillars": [
+      "P1 28 Critical Risk",
+      "P2 70 Managed",
+      "P3 75 Managed",
+      "P4 65 Managed",
+      "P5 59 Exposed"
+    ],
+    "counts": {
+      "critical": 0,
+      "high": 7,
+      "medium": 11,
+      "low": 1
+    },
+    "findings": [
+      "A1 high nis2",
+      "A2 high dora",
+      "B1 high dora",
+      "B1 high gdpr",
+      "F3 high gdpr",
+      "G1 high aiact",
+      "G2 high gdpr",
+      "E1 medium gdpr",
+      "B1 medium gdpr",
+      "C1 medium gdpr",
+      "C3 medium gdpr",
+      "D1 medium gdpr",
+      "E4 medium gdpr",
+      "F2 medium gdpr",
+      "H1 medium eucs",
+      "H2 medium eucs",
+      "I1 medium dora",
+      "J1 medium nis2",
+      "D3 low dataact"
+    ],
+    "fines": [
+      "gdpr 320000000 High Regulatory Exposure",
+      "nis2 160000000 Direct Enforcement Risk",
+      "dora null Supervisory Sanction Exposure"
+    ],
+    "totalValueAtStake": 320000000,
+    "riskHedgeRatio": "0.06",
+    "probes": [
+      "PROBE_1_RESIDENCY_ILLUSION",
+      "PROBE_3_DORA_EXIT",
+      "PROBE_4_AI_DRIFT",
+      "PROBE_5_ONPREM_BACKDOOR"
+    ]
+  },
+  "demo-health": {
+    "overallScore": 47,
+    "label": "Material Exposure",
+    "pillars": [
+      "P1 30 Critical Risk",
+      "P2 49 Exposed",
+      "P3 40 Exposed",
+      "P4 50 Exposed",
+      "P5 70 Managed"
+    ],
+    "counts": {
+      "critical": 0,
+      "high": 10,
+      "medium": 11,
+      "low": 1
+    },
+    "findings": [
+      "A1 high nis2",
+      "B1 high gdpr",
+      "C3 high gdpr",
+      "E3 high dora",
+      "F3 high gdpr",
+      "G1 high aiact",
+      "H3 high eucs",
+      "I2 high nis2",
+      "B1 high aiact",
+      "H1 high gdpr",
+      "E1 medium gdpr",
+      "B1 medium gdpr",
+      "C1 medium gdpr",
+      "D1 medium gdpr",
+      "D2 medium gdpr",
+      "E4 medium gdpr",
+      "F2 medium gdpr",
+      "G2 medium gdpr",
+      "H2 medium eucs",
+      "I1 medium dora",
+      "J1 medium nis2",
+      "F1 low gdpr"
+    ],
+    "fines": [
+      "gdpr 48000000 High Regulatory Exposure",
+      "nis2 24000000 Direct Enforcement Risk",
+      "aiact 36000000 Severe Non-Compliance"
+    ],
+    "totalValueAtStake": 48000000,
+    "riskHedgeRatio": "0.39",
+    "probes": [
+      "PROBE_1_RESIDENCY_ILLUSION",
+      "PROBE_4_AI_DRIFT"
+    ]
+  },
+  "demo-utility": {
+    "overallScore": 74,
+    "label": "Improving / Managed",
+    "pillars": [
+      "P1 20 Critical Risk",
+      "P2 71 Managed",
+      "P3 80 Managed",
+      "P4 100 Defensible",
+      "P5 86 Defensible"
+    ],
+    "counts": {
+      "critical": 1,
+      "high": 3,
+      "medium": 4,
+      "low": 1
+    },
+    "findings": [
+      "B1 critical eucs",
+      "A1 high nis2",
+      "D2 high gdpr",
+      "H1 high gdpr",
+      "B1 medium gdpr",
+      "C3 medium gdpr",
+      "E3 medium dora",
+      "E4 medium gdpr",
+      "H2 low eucs"
+    ],
+    "fines": [
+      "gdpr 140000000 High Regulatory Exposure",
+      "nis2 70000000 Direct Enforcement Risk"
+    ],
+    "totalValueAtStake": 140000000,
+    "riskHedgeRatio": "0.13",
+    "probes": [
+      "PROBE_5_ONPREM_BACKDOOR"
+    ]
+  },
+  "demo-saas": {
+    "overallScore": 58,
+    "label": "Material Exposure",
+    "pillars": [
+      "P1 68 Managed",
+      "P2 53 Exposed",
+      "P3 58 Exposed",
+      "P4 50 Exposed",
+      "P5 69 Managed"
+    ],
+    "counts": {
+      "critical": 0,
+      "high": 8,
+      "medium": 11,
+      "low": 3
+    },
+    "findings": [
+      "B1 high dora",
+      "C1 high gdpr",
+      "C3 high gdpr",
+      "D3 high dataact",
+      "F3 high gdpr",
+      "H3 high eucs",
+      "G2 high gdpr",
+      "H1 high gdpr",
+      "E1 medium gdpr",
+      "E2 medium dora",
+      "B1 medium gdpr",
+      "B1 medium gdpr",
+      "C1 medium gdpr",
+      "E4 medium gdpr",
+      "F2 medium gdpr",
+      "F4 medium dora",
+      "I1 medium dora",
+      "I2 medium nis2",
+      "J1 medium nis2",
+      "D1 low gdpr",
+      "F1 low gdpr",
+      "G1 low aiact"
+    ],
+    "fines": [
+      "gdpr 21600000 High Regulatory Exposure",
+      "dora null Supervisory Sanction Exposure"
+    ],
+    "totalValueAtStake": 21600000,
+    "riskHedgeRatio": "0.86",
+    "probes": [
+      "PROBE_3_DORA_EXIT",
+      "PROBE_4_AI_DRIFT"
+    ]
+  },
+  "unanswered-default-scope": {
+    "overallScore": 55,
+    "label": "Material Exposure",
+    "pillars": [
+      "P1 55 Exposed",
+      "P2 55 Exposed",
+      "P3 55 Exposed",
+      "P4 55 Exposed",
+      "P5 55 Exposed"
+    ],
+    "counts": {
+      "critical": 0,
+      "high": 0,
+      "medium": 0,
+      "low": 0
+    },
+    "findings": [],
+    "fines": [
+      "gdpr 21600000 Defensible / Managed",
+      "nis2 7560000 Baseline Met",
+      "aiact 16200000 Governance Aligned",
+      "dora null Compliant Architecture"
+    ],
+    "totalValueAtStake": 21600000,
+    "riskHedgeRatio": "0.86",
+    "probes": []
+  }
+}
