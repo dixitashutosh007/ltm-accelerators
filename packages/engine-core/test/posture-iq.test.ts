@@ -187,6 +187,12 @@ describe('Posture IQ regressions fixed in Phase 2', () => {
     }
   });
 
+  it('high-risk AI with no control gaps shows that AI Act obligations apply, not "Governance Aligned"', () => {
+    const r = evaluatePostureIq({ answers: { G1: 'highrisk' }, org: { turnover: 1e9 }, regulations: ['aiact'] });
+    const ai = r.penalties.fines.find((f: any) => f.regId === 'aiact') as any;
+    expect(ai.status).toBe('High-Risk Obligations Apply');
+  });
+
   it('the page sends only the client name and turnover', () => {
     expect(page).toContain("org: { name: STATE.org.name || '', turnover: STATE.org.turnover }");
   });

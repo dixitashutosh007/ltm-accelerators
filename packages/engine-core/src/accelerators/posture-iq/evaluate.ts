@@ -427,8 +427,9 @@ export function evaluatePostureIq(
         statuteBasis: 'Up to €15M or 3% of worldwide turnover, whichever is higher, for high-risk system and Art. 10 data-governance obligations (Art. 99(4)).',
         capUSD,
         capFormatted: formatCurrency(capUSD),
-        status: hasGap ? 'Severe Non-Compliance' : 'Governance Aligned',
-        statusColor: hasGap ? '#B93829' : '#1B5B34'
+        // High-risk AI (G1) is scope, not a gap: obligations apply even when no control gap was found.
+        status: hasGap ? 'Severe Non-Compliance' : answers['G1'] === 'highrisk' ? 'High-Risk Obligations Apply' : 'Governance Aligned',
+        statusColor: hasGap ? '#B93829' : answers['G1'] === 'highrisk' ? '#E39A2E' : '#1B5B34'
       });
     }
   }
