@@ -42,7 +42,7 @@ export interface PostureIqEvaluation {
       regId: string;
       regName: string;
       statuteBasis: string;
-      capUSD: number;
+      capUSD: number | null; // null when the statute sets no quantified cap (e.g. DORA for financial entities)
       capFormatted: string;
       status: string;
       statusColor: string;
@@ -324,19 +324,19 @@ export function evaluatePostureIq(
   }
 
   if (inScopeRegs.includes('dora')) {
-    const dailyUSD = tUSD / 365;
-    const capUSD = Math.round(dailyUSD * 0.01 * 180);
+    // DORA Art. 35 periodic penalty payments (1% of average daily turnover, up to 6 months) are imposed by the
+    // Lead Overseer on critical ICT third-party providers only. Financial entities (everyone this diagnostic
+    // assesses: see question A2) face penalties set under national law (Art. 50-51), with no harmonised cap.
     const hasGap = findings.some((f: any) => f.reg === 'dora');
     fines.push({
       regId: 'dora',
-      regName: 'DORA (Art. 35 Periodic Penalty Payments & CTPP Oversight)',
-      statuteBasis: 'Daily periodic fines up to 1% avg. daily global turnover for up to 6 months + ESA public disclosure & sanctions.',
-      capUSD: capUSD,
-      capFormatted: formatCurrency(capUSD),
+      regName: 'DORA (Art. 50–51 National Administrative Penalties)',
+      statuteBasis: 'Penalties for financial entities are set by each member state; DORA sets no EU-wide turnover cap. Art. 35 periodic penalties apply only to critical ICT third-party providers.',
+      capUSD: null,
+      capFormatted: 'Set under national law',
       status: hasGap ? 'Supervisory Sanction Exposure' : 'Compliant Architecture',
       statusColor: hasGap ? '#B93829' : '#1B5B34'
     });
-    maxSinglePenalty = Math.max(maxSinglePenalty, capUSD);
   }
 
   if (!fines.length) {
@@ -354,7 +354,8 @@ export function evaluatePostureIq(
   }
 
   const advisoryFeeEstimate = 185000;
-  const riskHedgeRatio = ((advisoryFeeEstimate / (maxSinglePenalty || 1)) * 100).toFixed(2);
+  // Only meaningful against a quantified statutory cap.
+  const riskHedgeRatio = maxSinglePenalty > 0 ? ((advisoryFeeEstimate / maxSinglePenalty) * 100).toFixed(2) : 'n/a';
 
   // Counts of findings
   const counts = { critical: 0, high: 0, medium: 0, low: 0 };

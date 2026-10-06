@@ -3523,414 +3523,13 @@ var CONSULTING_PROBES = [
    DIAGNOSTIC & CONSULTING SCORING ENGINES
    ============================================================ */
 
-function computeFacts(answers) {
-  var F = {};
-  QUESTIONS.forEach(function(q) {
-    var a = answers[q.id];
-    if (a === undefined || a === null) return;
-    if (q.type === "single" || q.type === "scen") {
-      var opt = q.opts[a];
-      if (opt && opt.fact) Object.assign(F, opt.fact);
-    } else if (q.type === "multi") {
-      if (Array.isArray(a)) {
-        a.forEach(function(idx) {
-          var opt = q.opts[idx];
-          if (opt && opt.fact) Object.assign(F, opt.fact);
-        });
-      }
-    }
-  });
-  return F;
-}
 
-function evaluateRegimes(facts) {
-  var results = [];
 
-  REGIMES.forEach(function(reg) {
-    var inScope = false;
-    var grade = "not_applicable";
-    var rationale = "";
 
-    // 1. EU & UK Regimes
-    if (reg.id === "DORA") {
-      if (facts.sector === "bfsi" && (facts.geo_eu || facts.geo_uk)) {
-        inScope = true; grade = "applies";
-        rationale = "Directly applicable to regulated financial entities operating in or into the EU under DORA Art. 2.";
-      } else if (facts.data_financial && facts.geo_eu) {
-        inScope = true; grade = "likely_confirm";
-        rationale = "Financial data processing in the EU indicates material likelihood of DORA in-scope financial services.";
-      }
-    } else if (reg.id === "NIS2") {
-      if (facts.geo_eu && ["energy", "health", "public", "telco", "mfg"].includes(facts.sector)) {
-        inScope = true; grade = "applies";
-        rationale = "Enterprise falls under NIS2 Essential or Important entity sectors across critical infrastructure.";
-      } else if (facts.geo_eu) {
-        inScope = true; grade = "advisory";
-        rationale = "Residual corporate cyber hygiene and digital supply chain rules may apply in specific EU Member States.";
-      }
-    } else if (reg.id === "EU_AI_ACT") {
-      if (facts.geo_eu && facts.ai_high_risk) {
-        inScope = true; grade = "applies";
-        rationale = "High-risk AI systems in credit scoring, insurance risk, biometrics, or employment engage Annex III statutory duties.";
-      } else if (facts.geo_eu && (facts.ai_operational || facts.ai_gpai_provider)) {
-        inScope = true; grade = "likely_confirm";
-        rationale = "Operational AI or GPAI deployment requires transparency, documentation, and copyright compliance under Chapter V.";
-      }
-    } else if (reg.id === "EU_DATA_ACT") {
-      if (facts.geo_eu && (facts.uses_cloud || facts.uses_saas)) {
-        inScope = true; grade = "applies";
-        rationale = "Users and providers of cloud/SaaS data-processing services in the EU must meet switching and foreign-access protection rules.";
-      }
-    } else if (reg.id === "EU_GDPR") {
-      if (facts.geo_eu) {
-        inScope = true; grade = "applies";
-        rationale = "Processing personal data with EU establishment or targeting EU data subjects engages GDPR and Chapter V transfer rules.";
-      }
-    } else if (reg.id === "UK_GDPR") {
-      if (facts.geo_uk) {
-        inScope = true; grade = "applies";
-        rationale = "Processing personal data with UK establishment engages UK GDPR, DPA 2018, and Data (Use & Access) Act 2025 reforms.";
-      }
-    } else if (reg.id === "UK_OPRES") {
-      if (facts.geo_uk && facts.sector === "bfsi") {
-        inScope = true; grade = "applies";
-        rationale = "FCA/PRA regulated firm subject to operational resilience rules, impact tolerances, and mapping (PS21/3, SS2/21).";
-      }
-    } else if (reg.id === "UK_CTP") {
-      if (facts.geo_uk && (facts.uses_cloud || facts.uses_saas)) {
-        inScope = true; grade = "advisory";
-        rationale = "Dependency on designated UK Critical Third Parties engages HM Treasury oversight and statutory notification obligations.";
-      }
-    } else if (reg.id === "SECNUM_C5_EUCS") {
-      if (facts.geo_eu && (facts.sector === "public" || facts.sector === "energy" || facts.data_national_sec)) {
-        inScope = true; grade = "likely_confirm";
-        rationale = "High-assurance public sector and critical infrastructure procurements mandate SecNumCloud, BSI C5, or EUCS High compliance.";
-      }
-    } else if (reg.id === "CRR_EBA") {
-      if (facts.geo_eu && facts.sector === "bfsi") {
-        inScope = true; grade = "applies";
-        rationale = "Credit institutions outsourcing to cloud must maintain EBA Register of Outsourcing and prior regulatory notifications.";
-      }
 
-    // 2. Middle East (KSA, UAE, Qatar)
-    } else if (reg.id === "KSA_PDPL") {
-      if (facts.geo_ksa) {
-        inScope = true; grade = "applies";
-        rationale = "Processing personal data of KSA residents subject to KSA Personal Data Protection Law (PDPL) and SDAIA regulations.";
-      }
-    } else if (reg.id === "KSA_NCA") {
-      if (facts.geo_ksa && (facts.sector === "public" || facts.sector === "energy" || facts.sector === "bfsi" || facts.sector === "telco")) {
-        inScope = true; grade = "applies";
-        rationale = "National Critical Infrastructure & government agencies subject to NCA Essential Cybersecurity Controls (ECC) and CSCC.";
-      }
-    } else if (reg.id === "KSA_SAMA_CITC") {
-      if (facts.geo_ksa && (facts.sector === "bfsi" || facts.data_financial)) {
-        inScope = true; grade = "applies";
-        rationale = "Saudi financial institutions must comply with SAMA Cybersecurity Framework and CITC Class A/B/C cloud restrictions.";
-      }
-    } else if (reg.id === "UAE_PDPL") {
-      if (facts.geo_uae) {
-        inScope = true; grade = "applies";
-        rationale = "UAE Federal Decree-Law No. 45/2021 sets strict cross-border transfer adequacy and data subject protection obligations.";
-      }
-    } else if (reg.id === "UAE_DESC_CBUAE") {
-      if (facts.geo_uae && (facts.sector === "bfsi" || facts.sector === "public" || facts.data_financial)) {
-        inScope = true; grade = "applies";
-        rationale = "Dubai Electronic Security Centre (DESC) standards and CBUAE outsourcing frameworks govern cloud and CII estates.";
-      }
-    } else if (reg.id === "QATAR_QCB_NCSA") {
-      if (facts.geo_gcc) {
-        inScope = true; grade = "likely_confirm";
-        rationale = "GCC and Qatar financial and government bodies require in-country hosting under QCB and NCSA data classification.";
-      }
 
-    // 3. APAC (Singapore, Australia, India, HK, Japan)
-    } else if (reg.id === "SG_MAS_TRM") {
-      if (facts.geo_sg && (facts.sector === "bfsi" || facts.data_financial)) {
-        inScope = true; grade = "applies";
-        rationale = "Monetary Authority of Singapore (MAS) TRM guidelines enforce strict cloud risk management and 4-hour disaster recovery RTO.";
-      }
-    } else if (reg.id === "SG_PDPA_CSA") {
-      if (facts.geo_sg) {
-        inScope = true; grade = "applies";
-        rationale = "Singapore Personal Data Protection Act (PDPA) transfer limitation obligations and CSA Critical Information Infrastructure rules.";
-      }
-    } else if (reg.id === "AU_APRA_CPS230") {
-      if (facts.geo_au && (facts.sector === "bfsi" || facts.data_financial)) {
-        inScope = true; grade = "applies";
-        rationale = "APRA CPS 230 operational resilience standard mandates end-to-end material service provider monitoring and exit plans.";
-      }
-    } else if (reg.id === "AU_PRIVACY_SOCI") {
-      if (facts.geo_au) {
-        inScope = true; grade = "applies";
-        rationale = "Australian Privacy Principles (APP 8) cross-border accountability and SOCI Act critical infrastructure risk registers.";
-      }
-    } else if (reg.id === "IN_DPDP_RBI") {
-      if (facts.geo_in) {
-        inScope = true; grade = "applies";
-        rationale = "India DPDP Act 2023 transfer rules and mandatory RBI domestic data localization for payments and financial transactions.";
-      }
-    } else if (reg.id === "HK_HKMA_SPM") {
-      if (facts.geo_jphk && (facts.sector === "bfsi" || facts.data_financial)) {
-        inScope = true; grade = "likely_confirm";
-        rationale = "HKMA Supervisory Policy Manual (OR-1 / TM-E-1) governs operational resilience and pre-implementation cloud notification.";
-      }
-    } else if (reg.id === "JP_APPI_ISMAP") {
-      if (facts.geo_jphk) {
-        inScope = true; grade = "likely_confirm";
-        rationale = "Japan APPI cross-border transfer consent rules and ISMAP government cloud security certification benchmarks.";
-      }
 
-    // 4. Extraterritorial & Cross-Border Conflict
-    } else if (reg.id === "US_CLOUD_ACT") {
-      if (facts.uses_us_hq || facts.uses_cloud || facts.uses_saas) {
-        inScope = true; grade = "advisory";
-        rationale = "Reliance on US-headquartered tech providers engages extraterritorial subpoena exposure under 18 U.S.C. § 2713 (CLOUD Act).";
-      }
-    } else if (reg.id === "US_FISA_702") {
-      if ((facts.geo_eu || facts.geo_uk) && (facts.uses_cloud || facts.uses_saas)) {
-        inScope = true; grade = "needs_legal_review";
-        rationale = "Schrems II Transfer Impact Assessment required to assess FISA §702 surveillance risks and verify supplementary technical measures.";
-      }
-    } else if (reg.id === "CHINA_PIPL") {
-      if (facts.geo_jphk) {
-        inScope = true; grade = "advisory";
-        rationale = "Cross-border data flows touching mainland China subject to mandatory Cyberspace Administration of China (CAC) assessments.";
-      }
-    }
 
-    if (inScope) {
-      results.push({
-        regime: reg,
-        grade: grade,
-        rationale: rationale,
-        impact: reg.impact
-      });
-    }
-  });
-
-  return results;
-}
-
-function computePillarScores(answers, facts) {
-  var scores = { P1: 60, P2: 50, P3: 55, P4: 45, P5: 50 }; // default baseline
-
-  // Helper to extract score from question options
-  function getScore(qid) {
-    var a = answers[qid];
-    if (a === undefined || a === null) return null;
-    var q = QUESTIONS.find(function(item) { return item.id === qid; });
-    if (!q || !q.opts || !q.opts[a]) return null;
-    return typeof q.opts[a].score === "number" ? q.opts[a].score : null;
-  }
-
-  // P1: Data Sovereignty & Localization
-  var p1Scores = [getScore("Q3.2"), getScore("Q3.3")].filter(function(s) { return s !== null; });
-  if (facts.data_national_sec) p1Scores.push(30);
-  if (facts.hosting_domestic) p1Scores.push(90);
-  if (p1Scores.length) scores.P1 = Math.round(p1Scores.reduce(function(a,b){return a+b;},0) / p1Scores.length);
-
-  // P2: Jurisdictional Reach & Extraterritoriality
-  var p2Scores = [getScore("Q4.1"), getScore("Q4.2"), getScore("Q4.3")].filter(function(s) { return s !== null; });
-  if (facts.uses_us_hq && !facts.crypto_hyok) p2Scores.push(25);
-  if (facts.tia_complete) p2Scores.push(95);
-  if (p2Scores.length) scores.P2 = Math.round(p2Scores.reduce(function(a,b){return a+b;},0) / p2Scores.length);
-
-  // P3: Operational & Personnel Sovereignty
-  var p3Scores = [getScore("Q5.1"), getScore("Q5.2"), getScore("Q5.3")].filter(function(s) { return s !== null; });
-  if (facts.ops_sovereign_support) p3Scores.push(95);
-  if (facts.oob_connected) p3Scores.push(35);
-  if (p3Scores.length) scores.P3 = Math.round(p3Scores.reduce(function(a,b){return a+b;},0) / p3Scores.length);
-
-  // P4: Cryptographic & Technical Autonomy
-  var p4Scores = [getScore("Q6.1"), getScore("Q6.2"), getScore("Q6.3")].filter(function(s) { return s !== null; });
-  if (facts.crypto_hyok) p4Scores.push(100);
-  if (facts.conf_compute_prod) p4Scores.push(95);
-  if (facts.crypto_provider_kms) p4Scores.push(20);
-  if (p4Scores.length) scores.P4 = Math.round(p4Scores.reduce(function(a,b){return a+b;},0) / p4Scores.length);
-
-  // P5: Software, Vendor & Supply Chain Sovereignty
-  var p5Scores = [getScore("Q7.1"), getScore("Q7.2"), getScore("Q7.3")].filter(function(s) { return s !== null; });
-  if (facts.exit_under_3m) p5Scores.push(95);
-  if (facts.exit_impossible) p5Scores.push(15);
-  if (facts.hw_audited) p5Scores.push(90);
-  if (p5Scores.length) scores.P5 = Math.round(p5Scores.reduce(function(a,b){return a+b;},0) / p5Scores.length);
-
-  return scores;
-}
-
-function computeOverallMaturity(pillarScores) {
-  var total = (pillarScores.P1 * 0.25) +
-              (pillarScores.P2 * 0.25) +
-              (pillarScores.P3 * 0.15) +
-              (pillarScores.P4 * 0.20) +
-              (pillarScores.P5 * 0.15);
-  var overall = Math.round(total);
-
-  var stage = MATURITY_STAGES[0];
-  for (var i = 0; i < MATURITY_STAGES.length; i++) {
-    var s = MATURITY_STAGES[i];
-    if (overall >= s.band[0] && overall <= s.band[1]) {
-      stage = s;
-      break;
-    }
-  }
-  return { score: overall, stage: stage };
-}
-
-function generateConsultingProbes(answers, facts) {
-  var triggered = [];
-  CONSULTING_PROBES.forEach(function(probe) {
-    if (probe.trigger(answers, facts)) {
-      triggered.push(probe);
-    }
-  });
-  return triggered;
-}
-
-function calculateFinancialExposure(answers, inScopeRegimes, facts) {
-  // Enterprise turnover sizing
-  var revOpt = answers["Q1.3"];
-  var turnover = 3000000000; // default $3B
-  if (revOpt !== undefined && QUESTIONS.find(function(q){return q.id==="Q1.3";})) {
-    var qObj = QUESTIONS.find(function(q){return q.id==="Q1.3";});
-    if (qObj.opts[revOpt] && qObj.opts[revOpt].val) turnover = qObj.opts[revOpt].val;
-  }
-
-  // Statutory fines
-  var maxSingleFine = 0;
-  var hasGDPR = inScopeRegimes.some(function(r){ return r.regime.id === "EU_GDPR" || r.regime.id === "UK_GDPR"; });
-  var hasAIAct = inScopeRegimes.some(function(r){ return r.regime.id === "EU_AI_ACT"; });
-  var hasDORA = inScopeRegimes.some(function(r){ return r.regime.id === "DORA"; });
-  var hasKSA = inScopeRegimes.some(function(r){ return r.regime.id === "KSA_PDPL"; });
-  var hasAU = inScopeRegimes.some(function(r){ return r.regime.id === "AU_PRIVACY_SOCI"; });
-
-  var fineComponents = [];
-  if (hasAIAct && facts.ai_high_risk) {
-    var aiFine = Math.min(35000000, turnover * 0.07);
-    fineComponents.push({ law: "EU AI Act (7% global turnover)", amt: aiFine });
-    maxSingleFine = Math.max(maxSingleFine, aiFine);
-  }
-  if (hasGDPR) {
-    var gdprFine = Math.min(20000000, turnover * 0.04);
-    fineComponents.push({ law: "GDPR Ch. V (4% global turnover)", amt: gdprFine });
-    maxSingleFine = Math.max(maxSingleFine, gdprFine);
-  }
-  if (hasKSA) {
-    fineComponents.push({ law: "KSA PDPL (Statutory max)", amt: 1330000 }); // SAR 5M in USD
-  }
-  if (hasAU) {
-    fineComponents.push({ law: "AU Privacy Act / APRA (Max penalty)", amt: 33000000 }); // AUD 50M
-  }
-
-  if (maxSingleFine === 0) maxSingleFine = 20000000;
-
-  // Operational downtime risk: estimate $250k / hr for enterprise core outage
-  var hourlyDowntime = (turnover / (365 * 24)) * 1.5;
-  var downtimeRisk24h = Math.round(hourlyDowntime * 24);
-
-  // Remediation investment estimate: 12-week advisory & engineering sprint
-  var remediationEst = Math.round(Math.min(2500000, Math.max(350000, turnover * 0.0004)));
-
-  return {
-    turnover: turnover,
-    statutoryCeiling: maxSingleFine,
-    downtimeRisk24h: downtimeRisk24h,
-    remediationEst: remediationEst,
-    components: fineComponents
-  };
-}
-
-function generateStrategicHeatmap(inScopeRegimes, pillarScores) {
-  // Classifies into 4x4 matrix:
-  // Impact: 4 (Catastrophic), 3 (Major), 2 (Moderate), 1 (Minor)
-  // Exposure: 4 (Critical Exposure), 3 (High Vulnerability), 2 (Managed), 1 (High Assurance)
-  var cells = {
-    "4-4": [], "4-3": [], "4-2": [], "4-1": [],
-    "3-4": [], "3-3": [], "3-2": [], "3-1": [],
-    "2-4": [], "2-3": [], "2-2": [], "2-1": [],
-    "1-4": [], "1-3": [], "1-2": [], "1-1": []
-  };
-
-  inScopeRegimes.forEach(function(item) {
-    var impact = item.regime.impact || 3;
-    var exp = 2; // default managed
-
-    if (item.grade === "applies" || item.grade === "needs_legal_review") {
-      exp = pillarScores.P2 < 50 || pillarScores.P4 < 50 ? 4 : 3;
-    } else if (item.grade === "likely_confirm") {
-      exp = pillarScores.P1 < 50 ? 3 : 2;
-    } else {
-      exp = 1;
-    }
-
-    var key = impact + "-" + exp;
-    var badgeClass = exp >= 4 ? "b-red" : (exp === 3 ? "b-amber" : (exp === 2 ? "b-blue" : "b-green"));
-    if (cells[key]) {
-      cells[key].push({
-        id: item.regime.id,
-        name: item.regime.short || item.regime.name,
-        badgeClass: badgeClass,
-        jurisdiction: item.regime.jurisdiction
-      });
-    }
-  });
-
-  return cells;
-}
-
-function generateRoadmap(pillarScores, inScopeRegimes, answers) {
-  return [
-    {
-      wave: 1,
-      name: "Wave 1: Triage & Immediate Safeguards",
-      horizon: "0 – 90 Days",
-      badge: "Quick Wins & Legal Defensibility",
-      actions: [
-        { title: "Schrems II & Foreign Access TIAs", desc: "Execute formal Transfer Impact Assessments for all US Hyperscalers and SaaS providers." },
-        { title: "DORA & APRA Register of Information", desc: "Complete comprehensive inventory of all ICT third-party contracts and sub-processors." },
-        { title: "Out-of-Band Remote Access Audit", desc: "Block active vendor call-home telemetry on on-premise storage and server controllers (iDRAC/iLO)." },
-        { title: "AI Inventory & High-Risk Triage", desc: "Catalog all production AI and LLM APIs to isolate Annex III high-risk classification under EU AI Act." }
-      ]
-    },
-    {
-      wave: 2,
-      name: "Wave 2: Cryptographic & Contractual Boundary",
-      horizon: "3 – 6 Months",
-      badge: "Architectural Controls",
-      actions: [
-        { title: "Hold-Your-Own-Key (HYOK) Deployment", desc: "Integrate External Key Managers (EKM/HSM) to decouple encryption key custody from cloud hypervisors." },
-        { title: "SaaS Tenant Encryption & Lockbox", desc: "Deploy Customer Key for Microsoft 365, Salesforce Shield Cache Key, and enforce customer lockbox approvals." },
-        { title: "Sovereign Contractual Entity Re-negotiation", desc: "Novate cloud contracts to local/in-country operating entities governed strictly by domestic courts." },
-        { title: "DORA & APRA Exit Strategy Playbooks", desc: "Draft tested, step-by-step exit and transition playbooks for primary CTPP dependencies." }
-      ]
-    },
-    {
-      wave: 3,
-      name: "Wave 3: Architecture Segregation & Sovereign Enclaves",
-      horizon: "6 – 12 Months",
-      badge: "Core Estate Modernization",
-      actions: [
-        { title: "Confidential Computing Enclaves", desc: "Deploy hardware-rooted confidential VMs (AMD SEV-SNP / Intel SGX) for data-in-use protection." },
-        { title: "Sovereign Cloud Migration for Core Workloads", desc: "Migrate regulated data to certified Sovereign Cloud Enclaves (AWS Sovereign, MS Sovereignty, Google/T-Systems)." },
-        { title: "Multi-Cloud Container Portability", desc: "Refactor critical services to Kubernetes/OpenShift to eliminate single-provider PaaS lock-in." },
-        { title: "Domestic Disaster Recovery Repatriation", desc: "Re-route cross-border backup archives to domestic in-country secondary availability zones." }
-      ]
-    },
-    {
-      wave: 4,
-      name: "Wave 4: Target Operating Model & Continuous Assurance",
-      horizon: "12 – 18 Months",
-      badge: "Sovereign-by-Design",
-      actions: [
-        { title: "Automated Sovereignty Posture in CI/CD", desc: "Embed automated CSPM policy gates preventing deployment of non-sovereign regions or unencrypted buckets." },
-        { title: "SecNumCloud / C5 / EUCS High Certification", desc: "Obtain formal third-party audit assurance for sovereign cloud hosting environments." },
-        { title: "Boardroom Sovereignty Governance Dashboard", desc: "Establish quarterly executive reporting on geopolitical exposure, supply chain risk, and CTPP health." },
-        { title: "Annual Threat-Led Penetration Testing (TLPT)", desc: "Conduct multi-vector adversary simulation including cloud administrative compromise scenarios." }
-      ]
-    }
-  ];
-}
 
 function generateArchetypes(answers) {
   return [
@@ -4766,18 +4365,16 @@ function nextSection() {
     renderScreen();
     window.scrollTo(0, 0);
   } else {
-    // Check if any consulting probes are triggered
-    var facts = computeFacts(STATE.answers);
-    var probes = generateConsultingProbes(STATE.answers, facts);
-    if (probes.length > 0) {
-      STATE.screen = "probes";
-    } else {
-      STATE.screen = "clarity";
-    }
-    renderScreen();
-    window.scrollTo(0, 0);
+    // Check if any consulting probes are triggered (server-side evaluation)
+    fetchSovereignIqEvaluation().then(function(ev) {
+      if (!ev) { showSovereignScoringError(); return; }
+      STATE.screen = (ev.probes || []).length > 0 ? "probes" : "clarity";
+      renderScreen();
+      window.scrollTo(0, 0);
+    });
   }
 }
+
 
 function jumpToSection(idx) {
   STATE.currentSecIndex = idx;
@@ -4786,8 +4383,9 @@ function jumpToSection(idx) {
 }
 
 function renderProbesScreen() {
-  var facts = computeFacts(STATE.answers);
-  var probes = generateConsultingProbes(STATE.answers, facts);
+  if (!STATE.evaluation) { showSovereignScoringError(); return; }
+  var facts = STATE.evaluation.facts;
+  var probes = STATE.evaluation.probes || [];
 
   var probesHtml = probes.map(function(probe) {
     var userChoice = STATE.probeAnswers[probe.id];
@@ -4858,100 +4456,11 @@ function updateProbeNote(probeId, text) {
    AI ANOMALY DETECTION & DYNAMIC CLARITY INTERVIEW
    ============================================================ */
 
-function analyzeEstateAnomalies(answers, facts) {
-  var anomalies = [];
-
-  // 1. The Residency Illusion
-  if ((facts.hosting_domestic || facts.geo_eu || facts.geo_ksa || facts.geo_uae) && facts.uses_us_hq && !facts.crypto_hyok) {
-    anomalies.push({
-      id: "ANOM_RESIDENCY",
-      severity: "critical",
-      title: "The Residency Illusion",
-      summary: "Domestic data localization claimed, but infrastructure hosted on a US-headquartered hyperscaler without Hold-Your-Own-Key (HYOK). Under the US CLOUD Act, the provider can be legally compelled to produce data regardless of physical region.",
-      clarityQ: "Has your board formally assessed and accepted the residual jurisdictional exposure from hosting on a US-headquartered provider without HYOK?",
-      options: [
-        "No formal assessment — assumed region selection was sufficient",
-        "Risk committee accepted residual risk with contractual protections",
-        "HYOK / External Key Store deployment planned for next budget cycle",
-        "Migration to sovereign cloud or certified sovereign enclave underway"
-      ]
-    });
-  }
-
-  // 2. AI Reclassification Risk
-  if (facts.ai_high_risk || facts.ai_gpai_provider) {
-    anomalies.push({
-      id: "ANOM_AI_RECLASS",
-      severity: "high",
-      title: "AI Provider Reclassification",
-      summary: "Enterprise integrating third-party GPAI models (OpenAI, Anthropic) into high-risk workflows. Under EU AI Act Art. 25, this can legally reclassify your organization as an AI Provider with full conformity obligations.",
-      clarityQ: "Have you secured technical provenance files and training data summaries from your AI model vendors?",
-      options: [
-        "No provenance files secured — using commercial APIs under standard terms",
-        "Impact assessments underway prior to production rollout",
-        "Human-in-the-loop validation with automated model audit logging in place",
-        "Transitioning to self-hosted open-weight models in sovereign enclaves"
-      ]
-    });
-  }
-
-  // 3. SaaS Sub-processor Blindspot
-  if (facts.uses_saas && (facts.saas_standard || facts.saas_unmonitored || !facts.crypto_hyok)) {
-    anomalies.push({
-      id: "ANOM_SAAS_BLIND",
-      severity: "high",
-      title: "SaaS Sub-processor Blindspot",
-      summary: "Core enterprise workflows rely on SaaS platforms (M365, Salesforce, ServiceNow) where the vendor manages encryption keys and global SRE teams operate outside your jurisdiction.",
-      clarityQ: "Can you technically prevent disclosure if a foreign court issues a production order to your SaaS provider?",
-      options: [
-        "No technical prevention — relying on vendor pushback and notifications",
-        "Evaluating SaaS Customer Key solutions (e.g. M365 Customer Key)",
-        "Considering dedicated sovereign private cloud instances for sensitive data",
-        "SaaS used only for non-regulated, non-confidential communications"
-      ]
-    });
-  }
-
-  // 4. CTPP Concentration Cliff
-  if ((facts.sector === "bfsi" || facts.sector === "energy" || facts.data_financial) && facts.conc_critical && !facts.exit_under_3m) {
-    anomalies.push({
-      id: "ANOM_CTPP_CLIFF",
-      severity: "critical",
-      title: "CTPP Concentration Cliff",
-      summary: "Under DORA Art. 28, APRA CPS 230, and MAS Outsourcing rules, financial institutions must maintain tested exit plans from critical ICT third parties. Severe single-vendor concentration detected with exit timeline exceeding 6-18 months.",
-      clarityQ: "When was an actual operational exit drill or live cutover last simulated?",
-      options: [
-        "Never tested — exit strategy exists only as a policy document",
-        "Desktop walkthrough within 12 months but no technical cutover tested",
-        "DR tested within same hyperscaler but alternative provider migration untested",
-        "Multi-cloud portability project budgeted to reduce dependency"
-      ]
-    });
-  }
-
-  // 5. Cross-Border Backup Replication Leak
-  if (facts.hosting_domestic && (facts.dr_regional || facts.dr_cross_border)) {
-    anomalies.push({
-      id: "ANOM_DR_LEAK",
-      severity: "medium",
-      title: "Cross-Border Backup Replication Leak",
-      summary: "Primary production data is localized domestically, but disaster recovery, snapshot archives, or database replication traverse national borders — representing a potential statutory breach in strict localization jurisdictions.",
-      clarityQ: "Is secondary replication encrypted with independent domestic keys, or does it rely on provider-managed encryption across borders?",
-      options: [
-        "Provider-managed encryption — secondary region sits in foreign jurisdiction",
-        "Legal counsel cleared cross-border replication under transfer mechanisms",
-        "Re-architecting backup policies to force local secondary availability zones",
-        "DR data fully pseudonymized/tokenized prior to cross-border replication"
-      ]
-    });
-  }
-
-  return anomalies;
-}
 
 function renderClarityScreen() {
-  var facts = computeFacts(STATE.answers);
-  var anomalies = analyzeEstateAnomalies(STATE.answers, facts);
+  if (!STATE.evaluation) { showSovereignScoringError(); return; }
+  var facts = STATE.evaluation.facts;
+  var anomalies = STATE.evaluation.anomalies || [];
 
   // Initialize clarity answers storage if not present
   if (!STATE.clarityAnswers) STATE.clarityAnswers = {};
@@ -5040,12 +4549,13 @@ function selectClarityOption(anomId, idx) {
 }
 
 async function formulateAiGapQuestions() {
+  if (!STATE.evaluation) { showSovereignScoringError(); return ''; }
   var btn = document.getElementById("btnAiGapScan");
   var box = document.getElementById("aiDynamicGapBox");
   var content = document.getElementById("aiDynamicGapContent");
   if (btn) btn.textContent = "AI Scanning Estate...";
 
-  var facts = computeFacts(STATE.answers);
+  var facts = STATE.evaluation.facts;
   var prompt = "You are a Digital Sovereignty Advisory Partner. The client answered: Sector: " + facts.sector + ", Hosting domestic: " + facts.hosting_domestic + ", Uses US cloud: " + facts.uses_us_hq + ", HYOK: " + facts.crypto_hyok + ", AI high risk: " + facts.ai_high_risk + ", SaaS: " + facts.uses_saas + ". Formulate 2 sharp, high-priority gap clarification questions the CIO should answer to resolve ambiguity before the boardroom report.";
 
   var provider = (INTERNAL_AI_CONFIG && INTERNAL_AI_CONFIG.provider) || "heuristic";
@@ -5261,10 +4771,8 @@ const EVALUATE_API_PATH = "/api/evaluate/sovereign-iq";
 async function fetchSovereignIqEvaluation() {
   STATE.evaluation = null;
   try {
-    const payload = {
-      answers: STATE.answers,
-      session: SESSION
-    };
+    // The engine uses answers only; client and consultant details stay in the browser.
+    const payload = { answers: STATE.answers };
     const res = await LTM_API.fetch(EVALUATE_API_PATH, {
       method: 'POST',
       body: JSON.stringify(payload)
@@ -5282,6 +4790,17 @@ async function fetchSovereignIqEvaluation() {
     console.error('[Sovereign IQ Cloud Eval] Connection failed:', err);
   }
   return null;
+}
+
+function showSovereignScoringError() {
+  if (document.getElementById('scoringError')) return;
+  var el = document.createElement('div');
+  el.id = 'scoringError';
+  el.setAttribute('role', 'alert');
+  el.style.cssText = 'position:fixed;top:16px;left:50%;transform:translateX(-50%);z-index:9999;max-width:min(640px,calc(100% - 32px));display:flex;gap:12px;align-items:center;background:#FEF2F2;border:1px solid #DC2626;color:#111827;padding:12px 16px;border-radius:10px;font-size:14px;box-shadow:0 8px 30px rgba(0,0,0,.18)';
+  el.innerHTML = "<span><b>We couldn't calculate your results.</b> Your answers are kept. Please try again in a moment.</span>"
+    + '<button type="button" onclick="this.parentNode.remove()" style="border:1px solid #DC2626;background:#fff;border-radius:6px;padding:4px 10px;cursor:pointer">Dismiss</button>';
+  document.body.appendChild(el);
 }
 
 function renderReport() {
@@ -5845,11 +5364,12 @@ function closeAiDrawer() {
 }
 
 function buildSovereignPromptPayload() {
-  var facts = computeFacts(STATE.answers);
-  var inScope = evaluateRegimes(facts);
-  var pillarScores = computePillarScores(STATE.answers, facts);
-  var maturity = computeOverallMaturity(pillarScores);
-  var fin = calculateFinancialExposure(STATE.answers, inScope, facts);
+  if (!STATE.evaluation) { showSovereignScoringError(); return ''; }
+  var facts = STATE.evaluation.facts;
+  var inScope = STATE.evaluation.inScopeRegimes;
+  var pillarScores = STATE.evaluation.pillarScores;
+  var maturity = STATE.evaluation.maturity;
+  var fin = STATE.evaluation.fin;
   var bench = getActiveBenchmark();
   var clientDisplay = SESSION.anonymize ? "Client Enterprise [Confidential]" : SESSION.clientName;
 
@@ -5970,11 +5490,12 @@ function formatMarkdownToHtml(text) {
 }
 
 function generateRuleBasedSovereignMemo() {
-  var facts = computeFacts(STATE.answers);
-  var inScope = evaluateRegimes(facts);
-  var pillarScores = computePillarScores(STATE.answers, facts);
-  var maturity = computeOverallMaturity(pillarScores);
-  var fin = calculateFinancialExposure(STATE.answers, inScope, facts);
+  if (!STATE.evaluation) { showSovereignScoringError(); return ''; }
+  var facts = STATE.evaluation.facts;
+  var inScope = STATE.evaluation.inScopeRegimes;
+  var pillarScores = STATE.evaluation.pillarScores;
+  var maturity = STATE.evaluation.maturity;
+  var fin = STATE.evaluation.fin;
   var bench = getActiveBenchmark();
   var clientDisplay = SESSION.anonymize ? "Client Enterprise [Confidential]" : SESSION.clientName;
 
@@ -7659,11 +7180,12 @@ function bookExecutiveBriefing() {
 }
 
 function openEmailModal() {
-  var facts = computeFacts(STATE.answers);
-  var inScope = evaluateRegimes(facts);
-  var pillarScores = computePillarScores(STATE.answers, facts);
-  var maturity = computeOverallMaturity(pillarScores);
-  var fin = calculateFinancialExposure(STATE.answers, inScope, facts);
+  if (!STATE.evaluation) { showSovereignScoringError(); return ''; }
+  var facts = STATE.evaluation.facts;
+  var inScope = STATE.evaluation.inScopeRegimes;
+  var pillarScores = STATE.evaluation.pillarScores;
+  var maturity = STATE.evaluation.maturity;
+  var fin = STATE.evaluation.fin;
   var bench = getActiveBenchmark();
   var clientDisplay = SESSION.anonymize ? "Client Enterprise [Confidential]" : SESSION.clientName;
 
@@ -7875,8 +7397,9 @@ function getActiveBenchmark() {
 }
 
 function renderPeerGapBanner(facts, pillarScores) {
+  if (!STATE.evaluation) return '';
   var bench = getActiveBenchmark();
-  var maturity = computeOverallMaturity(pillarScores);
+  var maturity = STATE.evaluation.maturity;
   var diff = maturity.score - bench.overall;
   var sign = diff > 0 ? "+" : "";
   var color = diff >= 0 ? "var(--green)" : "var(--red)";
@@ -7898,10 +7421,11 @@ function renderPeerGapBanner(facts, pillarScores) {
 }
 
 function changePeerBenchmark(val) {
+  if (!STATE.evaluation) { showSovereignScoringError(); return ''; }
   STATE.selectedPeerBenchmark = val;
   saveState();
-  var facts = computeFacts(STATE.answers);
-  var pillarScores = computePillarScores(STATE.answers, facts);
+  var facts = STATE.evaluation.facts;
+  var pillarScores = STATE.evaluation.pillarScores;
   
   if (STATE.radarChartInstance) {
     var bench = getActiveBenchmark();
@@ -7919,11 +7443,12 @@ function changePeerBenchmark(val) {
 }
 
 function initRadarChart() {
+  if (!STATE.evaluation) { showSovereignScoringError(); return ''; }
   var canvas = document.getElementById("radarChart");
   if (!canvas) return;
 
-  var facts = computeFacts(STATE.answers);
-  var pillarScores = computePillarScores(STATE.answers, facts);
+  var facts = STATE.evaluation.facts;
+  var pillarScores = STATE.evaluation.pillarScores;
   var bench = getActiveBenchmark();
   var mode = STATE.targetStateMode || "baseline";
 
@@ -7970,7 +7495,7 @@ function initRadarChart() {
     });
   } else if (mode === "compare") {
     datasets.push({
-      label: "Current Baseline (" + computeOverallMaturity(pillarScores).score + "/100)",
+      label: "Current Baseline (" + STATE.evaluation.maturity.score + "/100)",
       data: baselinePillars,
       backgroundColor: 'rgba(255, 94, 79, 0.18)',
       borderColor: '#FF5E4F',
@@ -8228,20 +7753,22 @@ function renderDataFlowMatrix(facts, answers) {
 }
 
 function selectDataFlowHop(hopNum) {
+  if (!STATE.evaluation) { showSovereignScoringError(); return ''; }
   STATE.selectedDataFlowHop = hopNum;
   var root = document.getElementById("dataFlowMatrixContainer");
   if (root) {
-    var facts = computeFacts(STATE.answers);
+    var facts = STATE.evaluation.facts;
     root.outerHTML = renderDataFlowMatrix(facts, STATE.answers);
   }
 }
 
 function toggleHopSTM(hopNum) {
+  if (!STATE.evaluation) { showSovereignScoringError(); return ''; }
   STATE.simulatedStmHops = STATE.simulatedStmHops || {};
   STATE.simulatedStmHops[hopNum] = !STATE.simulatedStmHops[hopNum];
   var root = document.getElementById("dataFlowMatrixContainer");
   if (root) {
-    var facts = computeFacts(STATE.answers);
+    var facts = STATE.evaluation.facts;
     root.outerHTML = renderDataFlowMatrix(facts, STATE.answers);
   }
 }
@@ -8275,11 +7802,12 @@ function nextSlide() {
 }
 
 function renderSlide(idx) {
-  var facts = computeFacts(STATE.answers);
-  var inScopeRegimes = evaluateRegimes(facts);
-  var pillarScores = computePillarScores(STATE.answers, facts);
-  var maturity = computeOverallMaturity(pillarScores);
-  var fin = calculateFinancialExposure(STATE.answers, inScopeRegimes, facts);
+  if (!STATE.evaluation) { showSovereignScoringError(); return ''; }
+  var facts = STATE.evaluation.facts;
+  var inScopeRegimes = STATE.evaluation.inScopeRegimes;
+  var pillarScores = STATE.evaluation.pillarScores;
+  var maturity = STATE.evaluation.maturity;
+  var fin = STATE.evaluation.fin;
 
   var clientDisplay = SESSION.anonymize ? "Client Enterprise [Confidential]" : SESSION.clientName;
 
@@ -8498,11 +8026,12 @@ window.addEventListener('keydown', function(e) {
    ============================================================ */
 
 function generateMarpMarkdown() {
-  var facts = computeFacts(STATE.answers);
-  var inScopeRegimes = evaluateRegimes(facts);
-  var pillarScores = computePillarScores(STATE.answers, facts);
-  var maturity = computeOverallMaturity(pillarScores);
-  var fin = calculateFinancialExposure(STATE.answers, inScopeRegimes, facts);
+  if (!STATE.evaluation) { showSovereignScoringError(); return ''; }
+  var facts = STATE.evaluation.facts;
+  var inScopeRegimes = STATE.evaluation.inScopeRegimes;
+  var pillarScores = STATE.evaluation.pillarScores;
+  var maturity = STATE.evaluation.maturity;
+  var fin = STATE.evaluation.fin;
   var clientDisplay = SESSION.anonymize ? "Client Enterprise [Confidential]" : SESSION.clientName;
 
   var isUnlocked = !!SESSION.isUnlocked;
@@ -8796,8 +8325,9 @@ Enables warrantless surveillance of non-US persons located abroad via electronic
 }
 
 function openTIAModal() {
-  var facts = computeFacts(STATE.answers);
-  var inScope = evaluateRegimes(facts);
+  if (!STATE.evaluation) { showSovereignScoringError(); return ''; }
+  var facts = STATE.evaluation.facts;
+  var inScope = STATE.evaluation.inScopeRegimes;
   var dossier = generateTIADossier(facts, inScope, STATE.answers);
   document.getElementById("tiaTextarea").value = dossier;
   document.getElementById("tiaModal").classList.add("open");
@@ -8854,17 +8384,18 @@ function exportSIQ() {
    ============================================================ */
 
 function downloadSovereignExecutivePDF(isArchiveOnly) {
+  if (!STATE.evaluation) { showSovereignScoringError(); return ''; }
   if (typeof jspdf === "undefined" || !jspdf.jsPDF) {
     alert("jsPDF library is still loading. Please try again in a moment.");
     return;
   }
 
-  var facts = computeFacts(STATE.answers);
-  var inScopeRegimes = evaluateRegimes(facts);
-  var pillarScores = computePillarScores(STATE.answers, facts);
-  var maturity = computeOverallMaturity(pillarScores);
-  var fin = calculateFinancialExposure(STATE.answers, inScopeRegimes, facts);
-  var roadmap = generateRoadmap(pillarScores, inScopeRegimes, STATE.answers);
+  var facts = STATE.evaluation.facts;
+  var inScopeRegimes = STATE.evaluation.inScopeRegimes;
+  var pillarScores = STATE.evaluation.pillarScores;
+  var maturity = STATE.evaluation.maturity;
+  var fin = STATE.evaluation.fin;
+  var roadmap = STATE.evaluation.roadmap;
   var clientDisplay = SESSION.anonymize ? "Client Enterprise [Confidential]" : SESSION.clientName;
 
   var doc = new jspdf.jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
@@ -9265,12 +8796,13 @@ function closePlaybookModal() {
 }
 
 function openSOWModal() {
-  var facts = computeFacts(STATE.answers);
-  var inScopeRegimes = evaluateRegimes(facts);
-  var pillarScores = computePillarScores(STATE.answers, facts);
-  var maturity = computeOverallMaturity(pillarScores);
-  var fin = calculateFinancialExposure(STATE.answers, inScopeRegimes, facts);
-  var roadmap = generateRoadmap(pillarScores, inScopeRegimes, STATE.answers);
+  if (!STATE.evaluation) { showSovereignScoringError(); return ''; }
+  var facts = STATE.evaluation.facts;
+  var inScopeRegimes = STATE.evaluation.inScopeRegimes;
+  var pillarScores = STATE.evaluation.pillarScores;
+  var maturity = STATE.evaluation.maturity;
+  var fin = STATE.evaluation.fin;
+  var roadmap = STATE.evaluation.roadmap;
   var clientDisplay = SESSION.anonymize ? "Client Enterprise [Confidential]" : SESSION.clientName;
 
   var isUnlocked = !!SESSION.isUnlocked;
@@ -9692,20 +9224,22 @@ function renderGeopoliticalWargameSimulator(facts) {
 }
 
 function selectWargameScenario(scenId) {
+  if (!STATE.evaluation) { showSovereignScoringError(); return ''; }
   STATE.selectedWargameId = scenId;
   var root = document.getElementById("wargameSimulatorSection");
   if (root) {
-    var facts = computeFacts(STATE.answers);
+    var facts = STATE.evaluation.facts;
     root.outerHTML = renderGeopoliticalWargameSimulator(facts);
   }
 }
 
 function openWargameModal() {
+  if (!STATE.evaluation) { showSovereignScoringError(); return ''; }
   var overlay = document.getElementById("wargameModalOverlay");
   var container = document.getElementById("wargameModalContent");
   if (overlay) overlay.style.display = "flex";
   if (container) {
-    var facts = computeFacts(STATE.answers);
+    var facts = STATE.evaluation.facts;
     container.innerHTML = renderGeopoliticalWargameSimulator(facts);
   }
 }
@@ -9949,11 +9483,12 @@ function renderSovereignRFPScorecard(facts) {
 }
 
 function openRFPModal() {
+  if (!STATE.evaluation) { showSovereignScoringError(); return ''; }
   var overlay = document.getElementById("rfpModalOverlay");
   var container = document.getElementById("rfpModalContent");
   if (overlay) overlay.style.display = "flex";
   if (container) {
-    var facts = computeFacts(STATE.answers);
+    var facts = STATE.evaluation.facts;
     container.innerHTML = renderSovereignRFPScorecard(facts);
   }
 }
@@ -10460,20 +9995,22 @@ function renderSupervisoryExamSimulator(facts) {
 }
 
 function toggleExamSimulation() {
+  if (!STATE.evaluation) { showSovereignScoringError(); return ''; }
   STATE.examSimulated = !STATE.examSimulated;
   var root = document.getElementById("examSimulatorSection");
   if (root) {
-    var facts = computeFacts(STATE.answers);
+    var facts = STATE.evaluation.facts;
     root.outerHTML = renderSupervisoryExamSimulator(facts);
   }
 }
 
 function openExamModal() {
+  if (!STATE.evaluation) { showSovereignScoringError(); return ''; }
   var overlay = document.getElementById("examModalOverlay");
   var container = document.getElementById("examModalContent");
   if (overlay) overlay.style.display = "flex";
   if (container) {
-    var facts = computeFacts(STATE.answers);
+    var facts = STATE.evaluation.facts;
     container.innerHTML = renderSupervisoryExamSimulator(facts);
   }
 }
@@ -10484,8 +10021,9 @@ function closeExamModal() {
 }
 
 function downloadSupervisoryDefenseBinder() {
-  var facts = computeFacts(STATE.answers);
-  var inScope = evaluateRegimes(facts);
+  if (!STATE.evaluation) { showSovereignScoringError(); return ''; }
+  var facts = STATE.evaluation.facts;
+  var inScope = STATE.evaluation.inScopeRegimes;
   var summary = computeExamSummary(facts, !!STATE.examSimulated);
   var clientDisplay = SESSION.anonymize ? "Client Enterprise [Confidential]" : SESSION.clientName;
   var dateStr = SESSION.engagementDate || new Date().toISOString().split("T")[0];
