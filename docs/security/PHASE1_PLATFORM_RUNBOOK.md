@@ -25,7 +25,7 @@ AWS Console → Lambda → the function behind `zvnmwxa9sf` → **Upload .zip** 
 | Key | Value |
 |---|---|
 | `SUPER_ADMIN_EMAILS` | your admin address(es), comma-separated. **Required**: the code no longer has a built-in admin |
-| `ALLOWED_ORIGINS` | `https://main.d1xnevzszm0ehs.amplifyapp.com,https://*.d1xnevzszm0ehs.amplifyapp.com` |
+| `ALLOWED_ORIGINS` | `https://main.d199dq940iqyj2.amplifyapp.com,https://*.d199dq940iqyj2.amplifyapp.com` |
 
 Check: `curl -s -o /dev/null -w '%{http_code}\n' https://zvnmwxa9sf.execute-api.ap-south-1.amazonaws.com/api/users` → `401`.
 
@@ -58,7 +58,7 @@ Amplify console → App settings → **Environment variables**. All have safe de
 ## 3. Verify the new API
 
 Find the new API address: Amplify console → the branch → **Deployed backend resources**, or open
-`https://main.d1xnevzszm0ehs.amplifyapp.com/assets/runtime-config.js` and read `apiBase`.
+`https://main.d199dq940iqyj2.amplifyapp.com/assets/runtime-config.js` and read `apiBase`.
 
 ```bash
 API=<apiBase from runtime-config.js>

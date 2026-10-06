@@ -25,10 +25,10 @@ const SUPER_ADMIN_EMAILS = (process.env.SUPER_ADMIN_EMAILS || '')
 const ADMIN_GROUP = process.env.ADMIN_GROUP || 'Admin';
 
 // Browser origins allowed to call this API (comma-separated). 'https://*.domain' allows sub-domains (branch previews).
-const ALLOWED_ORIGINS = (process.env.ALLOWED_ORIGINS || 'https://main.d1xnevzszm0ehs.amplifyapp.com,https://*.d1xnevzszm0ehs.amplifyapp.com')
+const ALLOWED_ORIGINS = (process.env.ALLOWED_ORIGINS || 'https://main.d199dq940iqyj2.amplifyapp.com,https://*.d199dq940iqyj2.amplifyapp.com')
   .split(',').map(o => o.trim()).filter(Boolean);
 
-const APP_BASE_URL = process.env.APP_BASE_URL || 'https://main.d1xnevzszm0ehs.amplifyapp.com';
+const APP_BASE_URL = process.env.APP_BASE_URL || 'https://main.d199dq940iqyj2.amplifyapp.com';
 const DOWNLOAD_URL_TTL_SECONDS = 900; // 15 minutes
 const MAX_PDF_BYTES = 5 * 1024 * 1024;
 const REPORT_KEY_PATTERN = /^reports\/[A-Za-z0-9_-]+\/[A-Za-z0-9_.-]+\.pdf$/;
