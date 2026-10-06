@@ -63,11 +63,15 @@ async function graphql(query:string, variables:Record<string,unknown>){
 function claims(event:APIGatewayProxyEventV2){
   return event.requestContext?.authorizer?.jwt?.claims || {};
 }
-function authorized(event:APIGatewayProxyEventV2){
+function groups(event:APIGatewayProxyEventV2){
   const groupsRaw=claims(event)['cognito:groups'];
-  const groups=Array.isArray(groupsRaw)?groupsRaw:String(groupsRaw||'').split(',').map(x=>x.trim()).filter(Boolean);
-  return groups.includes('Admin') || groups.includes('Consultant');
+  return Array.isArray(groupsRaw)?groupsRaw.map(String):String(groupsRaw||'').split(',').map(x=>x.trim()).filter(Boolean);
 }
+function authorized(event:APIGatewayProxyEventV2){
+  const g=groups(event);
+  return g.includes('Admin') || g.includes('Consultant');
+}
+function isAdmin(event:APIGatewayProxyEventV2){ return groups(event).includes('Admin'); }
 function userEmail(event:APIGatewayProxyEventV2){
   return String(claims(event).email || claims(event).username || '');
 }
@@ -105,13 +109,14 @@ export const handler=async(event:APIGatewayProxyEventV2):Promise<APIGatewayProxy
     const assessmentId=String(snapshot.assessmentId||'');
     if(!assessmentId || !snapshot.clientName || !snapshot.respondentEmail || !snapshot.startedAt) return response(400,{ok:false,error:'assessmentId, clientName, respondentEmail and startedAt are required.',requestId},requestId);
     if(!statuses.has(snapshot.status)) return response(400,{ok:false,error:'Invalid assessment status.',requestId},requestId);
-    if(snapshot.respondentEmail!==userEmail(event) && !String(userEmail(event)).endsWith('@ltimindtree.com')) return response(403,{ok:false,error:'respondent_email_mismatch',requestId},requestId);
+    if(!isAdmin(event) && snapshot.respondentEmail!==userEmail(event)) return response(403,{ok:false,error:'respondent_email_mismatch',requestId},requestId);
 
     const existing=await getAssessment(assessmentId);
     if(existing && !canUpdate(existing.status as ResilienceAssessmentStatus, snapshot.status as ResilienceAssessmentStatus)) {
       return response(409,{ok:false,error:'invalid_assessment_status_transition',message:`${existing.status} -> ${snapshot.status}`,requestId},requestId);
     }
-    if(existing && ['completed','archived'].includes(existing.status)) return response(409,{ok:false,error:'assessment_immutable',requestId},requestId);
+    if(existing?.status==='archived') return response(409,{ok:false,error:'assessment_immutable',requestId},requestId);
+    if(existing?.status==='completed' && snapshot.status!=='archived') return response(409,{ok:false,error:'assessment_immutable',requestId},requestId);
     if(action==='complete' && snapshot.status!=='completed') return response(400,{ok:false,error:'complete action requires completed status.',requestId},requestId);
     if(action==='archive' && snapshot.status!=='archived') return response(400,{ok:false,error:'archive action requires archived status.',requestId},requestId);
 
