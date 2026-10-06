@@ -36,6 +36,8 @@ test.describe('Strategy IQ', () => {
       expect(text).toContain(expected.overall.toFixed(1));
       expect(text).toContain(expected.band);
       expect(text).toContain('Operating Model Maturity');
+      expect(text).toContain('Indicative tech-debt drag (LTM heuristic)');
+      expect(text).not.toMatch(/unhedged/i);
       expect(text).not.toMatch(/Velocity Multiple|\bundefined\b|\bNaN\b/);
       expect(world.pageErrors).toEqual([]);
     });
@@ -50,6 +52,19 @@ test.describe('Strategy IQ', () => {
     expect(await page.evaluate(`STATE.answers['${qid}']`)).toBe(3);
     await expect(page.locator(`.opt-row[onclick*="selectSingleChoice('${qid}', 3)"]`)).toHaveClass(/selected/);
     await expect(page.locator(`.opt-row.selected[onclick*="selectSingleChoice('${qid}',"]`)).toHaveCount(1);
+  });
+
+  test('untouched sliders are not answers; "None of these are in place" is', async ({ page }) => {
+    await page.goto('/strategy-iq');
+    await page.evaluate(() => (window as any).startAssessment());
+    expect(await page.evaluate(`STATE.answers['S1.2']`)).toBeUndefined();
+    expect(await page.evaluate(`isQuestionAnswered('S1.2')`)).toBe(false);
+    await page.locator('#qcard-S1\\.2').getByRole('button', { name: /^Keep / }).click();
+    expect(await page.evaluate(`STATE.answers['S1.2']`)).toBe(3);
+    expect(await page.evaluate(`isQuestionAnswered('S1.4')`)).toBe(false);
+    await page.locator('#qcard-S1\\.4').getByText('None of these are in place').click();
+    expect(await page.evaluate(`STATE.answers['S1.4']`)).toEqual([]);
+    expect(await page.evaluate(`isQuestionAnswered('S1.4')`)).toBe(true);
   });
 
   test('if scoring fails, an error is shown and no readout is computed locally', async ({ page, world }) => {
