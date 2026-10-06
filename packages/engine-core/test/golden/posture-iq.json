@@ -1,40 +1,43 @@
 {
   "demo-bank": {
-    "overallScore": 62,
+    "overallScore": 60,
     "label": "Material Exposure",
+    "coverage": "21/23",
     "pillars": [
-      "P1 28 Critical Risk",
-      "P2 70 Managed",
+      "P1 null Not assessed",
+      "P2 61 Exposed",
       "P3 75 Managed",
       "P4 65 Managed",
-      "P5 59 Exposed"
+      "P5 25 Critical Risk"
     ],
     "counts": {
       "critical": 0,
-      "high": 7,
-      "medium": 11,
+      "high": 5,
+      "medium": 8,
       "low": 1
     },
     "findings": [
-      "A1 high nis2",
-      "A2 high dora",
-      "B1 high dora",
-      "B1 high gdpr",
+      "C2 high gdpr financial",
+      "C2 high gdpr pii",
+      "C2 high gdpr special",
       "F3 high gdpr",
-      "G1 high aiact",
       "G2 high gdpr",
       "E1 medium gdpr",
-      "B1 medium gdpr",
       "C1 medium gdpr",
       "C3 medium gdpr",
       "D1 medium gdpr",
       "E4 medium gdpr",
       "F2 medium gdpr",
-      "H1 medium eucs",
-      "H2 medium eucs",
       "I1 medium dora",
       "J1 medium nis2",
       "D3 low dataact"
+    ],
+    "obligations": [
+      "A1 high nis2",
+      "A2 high dora",
+      "B1 high dora",
+      "B1 high gdpr",
+      "B1 medium gdpr"
     ],
     "fines": [
       "gdpr 320000000 High Regulatory Exposure",
@@ -45,93 +48,98 @@
     "riskHedgeRatio": "0.06",
     "probes": [
       "PROBE_1_RESIDENCY_ILLUSION",
-      "PROBE_3_DORA_EXIT",
+      "PROBE_2_SAAS_BLINDSPOT",
       "PROBE_4_AI_DRIFT",
-      "PROBE_5_ONPREM_BACKDOOR"
+      "PROBE_5_ONPREM_BACKDOOR",
+      "PROBE_6_KMS_BYOK_ILLUSION"
     ]
   },
   "demo-health": {
-    "overallScore": 47,
+    "overallScore": 51,
     "label": "Material Exposure",
+    "coverage": "19/21",
     "pillars": [
-      "P1 30 Critical Risk",
-      "P2 49 Exposed",
+      "P1 null Not assessed",
+      "P2 47 Exposed",
       "P3 40 Exposed",
       "P4 50 Exposed",
-      "P5 70 Managed"
+      "P5 75 Managed"
     ],
     "counts": {
       "critical": 0,
-      "high": 10,
-      "medium": 11,
+      "high": 4,
+      "medium": 8,
       "low": 1
     },
     "findings": [
-      "A1 high nis2",
-      "B1 high gdpr",
       "C3 high gdpr",
-      "E3 high dora",
       "F3 high gdpr",
-      "G1 high aiact",
-      "H3 high eucs",
       "I2 high nis2",
-      "B1 high aiact",
       "H1 high gdpr",
       "E1 medium gdpr",
-      "B1 medium gdpr",
       "C1 medium gdpr",
       "D1 medium gdpr",
       "D2 medium gdpr",
       "E4 medium gdpr",
       "F2 medium gdpr",
       "G2 medium gdpr",
-      "H2 medium eucs",
-      "I1 medium dora",
       "J1 medium nis2",
       "F1 low gdpr"
+    ],
+    "obligations": [
+      "A1 high nis2",
+      "B1 high gdpr",
+      "G1 high aiact",
+      "B1 high aiact",
+      "B1 medium gdpr"
     ],
     "fines": [
       "gdpr 48000000 High Regulatory Exposure",
       "nis2 24000000 Direct Enforcement Risk",
-      "aiact 36000000 Severe Non-Compliance"
+      "aiact 36000000 Governance Aligned"
     ],
     "totalValueAtStake": 48000000,
     "riskHedgeRatio": "0.39",
     "probes": [
       "PROBE_1_RESIDENCY_ILLUSION",
-      "PROBE_4_AI_DRIFT"
+      "PROBE_2_SAAS_BLINDSPOT",
+      "PROBE_4_AI_DRIFT",
+      "PROBE_6_KMS_BYOK_ILLUSION"
     ]
   },
   "demo-utility": {
-    "overallScore": 74,
+    "overallScore": 82,
     "label": "Improving / Managed",
+    "coverage": "17/20",
     "pillars": [
-      "P1 20 Critical Risk",
-      "P2 71 Managed",
+      "P1 null Not assessed",
+      "P2 69 Managed",
       "P3 80 Managed",
       "P4 100 Defensible",
-      "P5 86 Defensible"
+      "P5 null Not assessed"
     ],
     "counts": {
-      "critical": 1,
-      "high": 3,
-      "medium": 4,
-      "low": 1
+      "critical": 0,
+      "high": 2,
+      "medium": 2,
+      "low": 2
     },
     "findings": [
-      "B1 critical eucs",
-      "A1 high nis2",
       "D2 high gdpr",
       "H1 high gdpr",
-      "B1 medium gdpr",
       "C3 medium gdpr",
-      "E3 medium dora",
       "E4 medium gdpr",
+      "C2 low gdpr pii",
       "H2 low eucs"
+    ],
+    "obligations": [
+      "B1 critical eucs",
+      "A1 high nis2",
+      "B1 medium gdpr"
     ],
     "fines": [
       "gdpr 140000000 High Regulatory Exposure",
-      "nis2 70000000 Direct Enforcement Risk"
+      "nis2 70000000 Baseline Met"
     ],
     "totalValueAtStake": 140000000,
     "riskHedgeRatio": "0.13",
@@ -140,45 +148,47 @@
     ]
   },
   "demo-saas": {
-    "overallScore": 53,
+    "overallScore": 45,
     "label": "Material Exposure",
+    "coverage": "20/22",
     "pillars": [
-      "P1 30 Critical Risk",
-      "P2 53 Exposed",
+      "P1 null Not assessed",
+      "P2 41 Exposed",
       "P3 58 Exposed",
       "P4 50 Exposed",
-      "P5 69 Managed"
+      "P5 25 Critical Risk"
     ],
     "counts": {
       "critical": 0,
       "high": 9,
-      "medium": 11,
-      "low": 3
+      "medium": 7,
+      "low": 2
     },
     "findings": [
-      "A2 high dora",
-      "B1 high dora",
       "C1 high gdpr",
+      "C2 high gdpr financial",
+      "C2 high gdpr pii",
+      "C2 high gdpr behavioural",
       "C3 high gdpr",
       "D3 high dataact",
       "F3 high gdpr",
-      "H3 high eucs",
       "G2 high gdpr",
       "H1 high gdpr",
       "E1 medium gdpr",
       "E2 medium dora",
-      "B1 medium gdpr",
-      "B1 medium gdpr",
       "C1 medium gdpr",
       "E4 medium gdpr",
       "F2 medium gdpr",
       "F4 medium dora",
       "I1 medium dora",
-      "I2 medium nis2",
-      "J1 medium nis2",
       "D1 low gdpr",
-      "F1 low gdpr",
-      "G1 low aiact"
+      "F1 low gdpr"
+    ],
+    "obligations": [
+      "A2 high dora",
+      "B1 high dora",
+      "B1 medium gdpr",
+      "B1 medium gdpr"
     ],
     "fines": [
       "gdpr 21600000 High Regulatory Exposure",
@@ -187,19 +197,22 @@
     "totalValueAtStake": 21600000,
     "riskHedgeRatio": "0.86",
     "probes": [
+      "PROBE_2_SAAS_BLINDSPOT",
       "PROBE_3_DORA_EXIT",
-      "PROBE_4_AI_DRIFT"
+      "PROBE_4_AI_DRIFT",
+      "PROBE_6_KMS_BYOK_ILLUSION"
     ]
   },
   "unanswered-default-scope": {
-    "overallScore": 55,
-    "label": "Material Exposure",
+    "overallScore": 0,
+    "label": "Not assessed",
+    "coverage": "0/23 low-confidence",
     "pillars": [
-      "P1 55 Exposed",
-      "P2 55 Exposed",
-      "P3 55 Exposed",
-      "P4 55 Exposed",
-      "P5 55 Exposed"
+      "P1 null Not assessed",
+      "P2 null Not assessed",
+      "P3 null Not assessed",
+      "P4 null Not assessed",
+      "P5 null Not assessed"
     ],
     "counts": {
       "critical": 0,
@@ -208,9 +221,10 @@
       "low": 0
     },
     "findings": [],
+    "obligations": [],
     "fines": [
       "gdpr 21600000 Defensible / Managed",
-      "nis2 7560000 Baseline Met",
+      "nis2 null Classification pending",
       "aiact 16200000 Governance Aligned",
       "dora null Compliant Architecture"
     ],

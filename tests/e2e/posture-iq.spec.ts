@@ -32,7 +32,10 @@ test.describe('Posture IQ', () => {
     const results = page.locator('#screen-results');
     await expect(results).toContainText(String(expected.overallScore), { timeout: 15_000 });
     const text = await results.innerText();
-    expect(text).not.toMatch(/\bundefined\b|\bNaN\b|\[object Object\]/);
+    expect(text).not.toMatch(/\bundefined\b|\bNaN\b|\bnull\b|\[object Object\]/);
+    // Phase 3: coverage is shown next to the score, and no peer benchmark is claimed.
+    expect(text).toContain(`Coverage: ${expected.coverage.answered} of ${expected.coverage.total} scored questions answered`);
+    expect(text).not.toMatch(/peer (radar )?benchmark/i);
     expect(world.calls).toContain(`POST ${PATH} auth=bearer`);
 
     // A report view that used to run the browser engine (zero findings, default scores).
