@@ -51,6 +51,28 @@ test.describe('FinOps Value Case', () => {
     expect(world.missingFiles).toEqual([]);
   });
 
+  test('a "we don\'t know" answer is listed as a blind spot and the report renders (was a TypeError on b.q.text)', async ({ page, world }) => {
+    const questionText = await page.evaluate(`(() => {
+      S.answers.V1 = '__DK__';
+      return S.kb.questions.find(x => x.id === 'V1').text;
+    })()`) as string;
+    // The explanation lives only in the server's knowledge base.
+    const blindText = evaluateFinOpsValueCase({ V1: '__DK__' }).blindSpots[0].text;
+    await page.getByRole('button', { name: /Complete Assessment/ }).click();
+    await page.locator('[data-a="generateEngineReport"]').click();
+    await expect(page.locator('[data-a="saveS3Report"]')).toBeVisible({ timeout: 15_000 });
+
+    const last = requests[requests.length - 1];
+    expect(last.answers.V1).toBe('__DK__');
+    await expect(page.getByRole('heading', { name: 'Your blind spots' })).toBeVisible();
+    const blind = page.locator('.blind').first();
+    await expect(blind.locator('.blindq')).toHaveText(questionText);
+    await expect(blind.locator('.blindt')).toHaveText(blindText);
+    const text = await page.locator('#app').innerText();
+    expect(text).not.toMatch(/\bundefined\b|\bNaN\b|\bnull\b|\[object Object\]/);
+    expect(world.pageErrors).toEqual([]);
+  });
+
   test('if scoring fails, the user stays on their answers and sees an error, not a placeholder report', async ({ page, world }) => {
     world.on('POST', PATH, () => ({ status: 503, body: { ok: false } }));
     await page.getByRole('button', { name: /Complete Assessment/ }).click();

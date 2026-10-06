@@ -1458,12 +1458,37 @@ function logPos(val,sl){ const min=Math.log(sl.min),max=Math.log(sl.max);
 const EVALUATE_API_PATH = "/api/evaluate/finops-value-case";
 
 // Returns the server's evaluation, or null if scoring failed. Never falls back to local or stale results.
+/* Scales an allocation to whole numbers totalling exactly 100 (largest remainder); null if nothing allocated.
+   Same rule as the engine's normaliseAllocation, so the API always receives a total of 100. */
+function normaliseAlloc(al){
+  if(!al||typeof al!=="object"||Array.isArray(al))return null;
+  const keys=Object.keys(al).filter(k=>typeof al[k]==="number"&&isFinite(al[k])&&al[k]>=0);
+  const total=keys.reduce((t,k)=>t+al[k],0);
+  if(!keys.length||total<=0)return null;
+  const raw=keys.map(k=>({k:k,v:al[k]/total*100}));
+  const out={};
+  raw.forEach(r=>{out[r.k]=Math.floor(r.v);});
+  let left=100-raw.reduce((t,r)=>t+out[r.k],0);
+  raw.slice().sort((x,y)=>(y.v-Math.floor(y.v))-(x.v-Math.floor(x.v))).forEach(r=>{if(left>0){out[r.k]++;left--;}});
+  return out;
+}
+/* The answers as sent to the scoring API: allocation splits are scaled to total 100. */
+function answersForScoring(){
+  const out=Object.assign({},S.answers);
+  (S.kb.questions||[]).forEach(q=>{
+    if(q.answer_type!=="allocation_100"||out[q.id]===undefined||out[q.id]==="__DK__")return;
+    const n=normaliseAlloc(out[q.id]);
+    if(n)out[q.id]=n;else delete out[q.id];
+  });
+  return out;
+}
+
 async function fetchCloudEvaluation() {
   S.evaluation = null;
   hideScoringError();
   try {
     const payload = {
-      answers: S.answers,
+      answers: answersForScoring(),
       org: {
         name: S.org.name || "",
         sector: S.org.sector || "",
@@ -1511,6 +1536,19 @@ function signalScores(){
 function blindSpots(){
   return (S.evaluation && S.evaluation.blindSpots) || [];
 }
+/* The question a blind spot came from (the engine returns { questionId, text }). */
+function blindSpotQuestion(b){
+  const q=(S.kb.questions||[]).find(x=>x.id===b.questionId);
+  return q?q.text:String(b.questionId||"");
+}
+const NOT_ASSESSED_MSG="Not assessed — answer the visibility and control questions to estimate waste";
+function wasteAssessed(){
+  const wb=S.evaluation&&S.evaluation.wasteBand;
+  return !!(wb&&wb.assessed!==false&&wb.low!==null&&wb.high!==null);
+}
+function projectionGrowth(){
+  return (S.evaluation && typeof S.evaluation.projectionGrowthRate==="number") ? S.evaluation.projectionGrowthRate : growth();
+}
 function annualSpend(){
   return (S.evaluation && S.evaluation.annualSpend !== undefined) ? S.evaluation.annualSpend : null;
 }
@@ -1527,7 +1565,7 @@ function needIndex(){
   return (S.evaluation && S.evaluation.needIndex !== undefined) ? S.evaluation.needIndex : null;
 }
 function wasteBand(sig){
-  return (S.evaluation && S.evaluation.wasteBand) || { low: 0.2, high: 0.3, label: "Evaluating", anchor: "", uplift: 0, cap: 0, isBfsi: false };
+  return (S.evaluation && S.evaluation.wasteBand) || { assessed: false, low: null, high: null, label: "Evaluating", anchor: "", uplift: 0, cap: 0, isBfsi: false };
 }
 function exposure(){
   return (S.evaluation && S.evaluation.exposure) || { band: wasteBand(), y1: null, y3: null };
@@ -1733,8 +1771,8 @@ function viewCheckpoint(){
 
       + '<div style="background:var(--ground);border:1px solid var(--line);border-radius:10px;padding:16px;display:flex;flex-direction:column;gap:6px">'
         + '<div style="font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--mutd);font-weight:600">Estimated Unrealised Value (12M)</div>'
-        + '<div style="font-size:24px;font-weight:700;color:var(--ink)">' + (ex.y1 ? money(ex.y1[0]) + ' – ' + money(ex.y1[1]) : 'Spend Not Specified') + '</div>'
-        + '<div style="font-size:12px;color:var(--mut)">3-Year Cost of Inaction: <b style="color:var(--red)">' + (ex.y3 ? money(ex.y3[0]) + ' – ' + money(ex.y3[1]) : '—') + '</b></div>'
+        + '<div style="font-size:24px;font-weight:700;color:var(--ink)">' + (!wasteAssessed() ? 'Not assessed' : ex.y1 ? money(ex.y1[0]) + ' – ' + money(ex.y1[1]) : 'Spend Not Specified') + '</div>'
+        + (wasteAssessed() ? '<div style="font-size:12px;color:var(--mut)">3-Year Cost of Inaction: <b style="color:var(--red)">' + (ex.y3 ? money(ex.y3[0]) + ' – ' + money(ex.y3[1]) : '—') + '</b>' + (ex.y3 ? ' <span style="font-size:11px">(at today\'s waste rates, spend growth ' + projectionGrowth() + '% a year, capped)</span>' : '') + '</div>' : '<div style="font-size:12px;color:var(--mut)">' + esc(NOT_ASSESSED_MSG) + '</div>')
       + '</div>'
     + '</div>'
 
@@ -1881,7 +1919,7 @@ function renderQ(q){
      +q.buckets.map(bk=>'<div class="allocrow"><div class="alloclabel"><span class="allocdot" style="background:'+bk.color+'"></span>'+esc(bk.label)+'</div>'
      +'<input class="sl" type="range" min="0" max="100" step="5" value="'+(al[bk.id]||0)+'" data-a="ansAlloc" data-q="'+q.id+'" data-b="'+bk.id+'"/>'
      +'<div class="allocnum">'+(al[bk.id]||0)+'</div></div>').join("")
-     +'<div class="alloctotal '+(tot===100?"ok":"off")+'">Total: '+tot+' / 100'+(tot===100?' ✓':' — adjust to reach 100')+'</div></div>';
+     +'<div class="alloctotal '+(tot===100?"ok":"off")+'">Total: '+tot+' / 100'+(tot===100?' ✓':' — adjust to reach 100, or we will scale your split to 100 when scoring')+'</div></div>';
   } else if(q.answer_type==="drag_order"){
     const ord=Array.isArray(a)?a:q.options.slice();
     b='<ol class="drag">'+ord.map((it,i)=>'<li class="dragitem"><span class="dragrank">'+(i+1)+'</span><span class="draglabel">'+esc(it)+'</span>'
@@ -1914,20 +1952,31 @@ function viewReport(){
     opener='<p style="color:#5B5B5B;font-size:13.5px;margin:0 0 18px">You told us a good outcome in 12 months looks like: '+esc(txt)+'. The estimate below is what stands between you and that.</p>';
   }
 
-  const moneyBlock = ex.y1
+  const pgr=projectionGrowth();
+  const growthTxt=(pgr>0?'+':'')+pgr+'% a year';
+  const bfsiTxt=ex.band.isBfsi
+    ? ' A BFSI sector adjustment of +'+(ex.band.uplift*100).toFixed(1)+' percentage points is applied to the upper bound only — scaled to your demonstrated capability, since mature controls largely resolve structural inefficiencies'
+      +((ex.band.upliftUncapped||0)>ex.band.uplift+1e-9?', and limited so the upper bound does not exceed '+Math.round(ex.band.high*100)+'%.':'.')
+    : ' No sector-specific adjustment applied (customer classified as non-BFSI).';
+  const moneyBlock = !wasteAssessed()
+    ? '<div class="moneybox"><div class="moneylab">Estimated unrealised value</div><div class="moneyval">Not assessed</div>'
+      +'<div class="moneysub">'+esc(NOT_ASSESSED_MSG)+'.</div>'
+      +'<div class="conf" style="background:'+cf.color+'22;color:'+cf.color+';border:1px solid '+cf.color+'55">'+cf.label+'</div></div>'
+    : ex.y1
     ? '<div class="moneybox"><div class="moneylab">Estimated unrealised value · next 12 months</div>'
       +'<div class="moneyval">'+money(ex.y1[0])+' – '+money(ex.y1[1])+'</div>'
       +'<div class="moneysub">Based on '+money(annualSpend())+' annual cloud spend at a '+Math.round(ex.band.low*100)+'–'+Math.round(ex.band.high*100)+'% waste band.</div>'
       +'<div class="money3y"><span class="moneylab" style="color:#93A8BD">Cumulative cost of a three-year delay</span><span class="money3yval">'+money(ex.y3[0])+' – '+money(ex.y3[1])+'</span></div>'
+      +'<div class="moneysub" style="margin-top:6px">The three-year figure assumes today\'s waste rates persist and spend grows '+esc(growthTxt)+' (your stated growth, capped to between −25% and +60% a year).</div>'
       +'<div class="conf" style="background:'+cf.color+'22;color:'+cf.color+';border:1px solid '+cf.color+'55">'+cf.label+'</div></div>'
-      +'<div class="basis"><b>How this is derived.</b> Your answers place you in the <b>'+esc(ex.band.label)+'</b> band (capability '+ex.band.cap+'/100). '+esc(ex.band.anchor)+(ex.band.isBfsi?' A BFSI sector adjustment of +'+(ex.band.uplift*100).toFixed(1)+' percentage points is applied to the upper bound only — scaled to your demonstrated capability, since mature controls largely resolve structural inefficiencies.':' No sector-specific adjustment applied (customer classified as non-BFSI).')+' '+esc(cf.note)+'</div>'
+      +'<div class="basis"><b>How this is derived.</b> Your answers place you in the <b>'+esc(ex.band.label)+'</b> band (capability '+ex.band.cap+'/100). '+esc(ex.band.anchor)+bfsiTxt+' '+esc(cf.note)+'</div>'
     : '<div class="moneybox"><div class="moneylab">Estimated unrealised value</div><div class="moneyval">Not calculable</div>'
       +'<div class="moneysub">Annual cloud spend was not provided, so exposure cannot be quantified. An organisation that cannot state its cloud spend cannot govern it.</div></div>';
 
   const blindBlock = bs.length
     ? '<div class="repsec"><h3>Your blind spots</h3>'
       +'<p style="color:#5B5B5B;font-size:13.5px;margin-top:0">You answered \"we don\'t know\" '+bs.length+' time'+(bs.length>1?'s':'')+'. Each one is a decision being made without data.</p>'
-      +bs.map(b=>'<div class="blind"><div class="blindq">'+esc(b.q.text)+'</div><div class="blindt">'+esc(b.text)+'</div></div>').join("")+'</div>'
+      +bs.map(b=>'<div class="blind"><div class="blindq">'+esc(blindSpotQuestion(b))+'</div><div class="blindt">'+esc(b.text)+'</div></div>').join("")+'</div>'
     : '';
 
   const sigBlock=M.signals.map(s=>{
@@ -2051,7 +2100,7 @@ function viewReport(){
    +blindBlock
 
    +'<div class="repsec"><h3>'+(bs.length?4:3)+' · Diagnostic Signal Breakdown</h3>'
-   +'<p style="color:#5B5B5B;font-size:13px;margin-top:0">Higher is better. These core signals reflect governance maturity and calibrate your addressable waste band.</p>'+sigBlock+'</div>'
+   +'<p style="color:#5B5B5B;font-size:13px;margin-top:0">Higher is better. These core signals reflect governance maturity. Cost visibility and controls set your addressable waste band; all five shape the need index and the streams below.</p>'+sigBlock+'</div>'
 
    +'<div class="repsec"><h3>'+(bs.length?5:4)+' · Strategic Optimization Streams</h3>'
    +'<p style="color:#5B5B5B;font-size:13.5px;margin-top:0">Prioritized breakdown of where your cloud estate is leaking value, and where immediate capital can be reclaimed.</p>'
@@ -2280,7 +2329,7 @@ document.addEventListener("click",e=>{
   else if(a==="exportRes"){dl("finops-valuecase-results-"+today()+".json",JSON.stringify({
       org:S.org,respondent:S.respondent,answers:S.answers,
       signals:signalScores(),needIndex:needIndex(),urgency:urgencyIndex(),
-      exposure:exposure(),blindSpots:blindSpots().map(b=>b.q.id),
+      exposure:exposure(),blindSpots:blindSpots().map(b=>b.questionId),
       services:recommendedServices().map(s=>s.id)},null,2));toast("Results exported");}
   else if(a==="upOrg"){$("#fileOrg").click();}
   else if(a==="clrOrg"){S.org.logo=null;render();}
