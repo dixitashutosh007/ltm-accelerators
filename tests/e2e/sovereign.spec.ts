@@ -14,9 +14,30 @@ test.describe('Sovereign IQ demo clients', () => {
     await expect(page.getByText('Binding Regimes', { exact: false })).toBeVisible({ timeout: 15_000 });
     const text = await page.locator('body').innerText();
     expect(world.calls).toContain('POST /api/evaluate/sovereign-iq auth=bearer');
-    expect(text).toMatch(/\b5\s*\n?\s*\/ 30\+/);
+    // Four binding regimes: PDPL, NCA, SAMA, Qatar. The CLOUD Act no longer counts: the bank uses a sovereign
+    // partner cloud, not a US-headquartered provider (Phase 3 fix).
+    expect(text).toMatch(/\b4\s*\n?\s*\/ 30\+/);
     expect(text).toContain('KSA PDPL');
-    expect(text).not.toMatch(/undefined|NaN/);
+    expect(text).toContain('Illustrative cost of a 24-hour outage (turnover-based)');
+    expect(text).not.toMatch(/undefined|NaN|\bnull\b/);
+  });
+
+  test('an almost empty questionnaire shows unassessed pillars instead of default scores', async ({ page }) => {
+    await page.goto('/sovereign-iq');
+    await page.evaluate(async () => {
+      const w = window as any;
+      w.STATE.answers = { 'Q1.1': 0, 'Q1.2': [2] };
+      await w.fetchSovereignIqEvaluation();
+      w.SESSION.isUnlocked = true;
+      w.STATE.screen = 'report';
+      w.renderScreen();
+    });
+    await expect(page.getByText('Binding Regimes', { exact: false })).toBeVisible({ timeout: 15_000 });
+    const text = await page.locator('body').innerText();
+    expect(text).toContain('Not assessed');
+    expect(text).toContain('Low confidence');
+    expect(text).toContain('(assumes $3B turnover)');
+    expect(text).not.toMatch(/undefined|NaN|\bnull\b/);
   });
 
   test('report documents use the server result (the browser engine found no regulations)', async ({ page }) => {

@@ -4078,21 +4078,27 @@ var DEMO_ARCHETYPES = {
 /* ============================================================
    Dynamic Contradiction Probing Engine (Consultant Facilitator)
    ============================================================ */
+/* Probe triggers: the same condition table the scoring engine uses (keep in sync with evaluate.ts PROBE_CONDITIONS). */
+var PROBE_CONDITIONS = {"PROBE_1_RESIDENCY_ILLUSION":[{"q":"C1","any":["aws-eu","azure-eu","gcp-eu"]},{"q":"H1","any":["us","us-eubound"]},{"q":"F2","none":["cmk-eu"]}],"PROBE_2_SAAS_BLINDSPOT":[{"q":"C1","any":["salesforce","snowflake","databricks"]},{"q":"B1","any":["special","financial","pii"]},{"q":"F2","none":["cmk-eu"]}],"PROBE_3_DORA_EXIT":[{"q":"F4","any":["no","planned"]},{"reg":"dora"}],"PROBE_4_AI_DRIFT":[{"q":"G1","any":["internal","highrisk"]},{"q":"G2","any":["mixed","us-dpf","us","unknown"]}],"PROBE_5_ONPREM_BACKDOOR":[{"q":"C1","any":["onprem"]},{"q":"H1","any":["us","us-eubound","other"]}],"PROBE_6_KMS_BYOK_ILLUSION":[{"q":"F2","any":["cmk-eu","provider"]},{"q":"H1","any":["us","us-eubound"]},{"q":"H3","none":["hyok"]}]};
+function probeMatch(id, answers, state){
+  var conds = PROBE_CONDITIONS[id] || [];
+  if(!conds.length) return false;
+  return conds.every(function(c){
+    if(c.reg) return !!(state && state.regulations && state.regulations.includes(c.reg));
+    var a = answers[c.q];
+    var vals = Array.isArray(a) ? a : (a === undefined || a === null ? [] : [a]);
+    if(c.any) return vals.some(function(v){ return c.any.includes(v); });
+    return !vals.some(function(v){ return c.none.includes(v); });
+  });
+}
+
 var DYNAMIC_PROBES = [
   {
     id: "PROBE_1_RESIDENCY_ILLUSION",
     name: "The Residency Illusion Anomaly",
     badge: "Extraterritorial Jurisdiction Risk",
     relevantQids: ["C1", "H1", "F2"],
-    trigger: function(answers, state) {
-      var c1 = answers["C1"] || [];
-      var h1 = answers["H1"];
-      var f2 = answers["F2"];
-      var usesEUCloud = Array.isArray(c1) && c1.some(function(x){ return ["aws-eu", "azure-eu", "gcp-eu"].includes(x); });
-      var usParent = ["us", "us-eubound"].includes(h1);
-      var noHYOK = f2 !== "cmk-eu";
-      return usesEUCloud && usParent && noHYOK;
-    },
+    trigger: function(answers, state) { return probeMatch("PROBE_1_RESIDENCY_ILLUSION", answers, state); },
     clientAssertion: "We host all production workloads in AWS Frankfurt / Azure Dublin, so GDPR Chapter V and DORA residency are fully satisfied.",
     statutoryConflict: "Physical localization in Frankfurt or Dublin satisfies the territorial criterion, but leaves extraterritorial reach unmitigated. Under the US CLOUD Act (18 U.S.C. § 2713) and FISA §702, US law enforcement can issue lawful access orders directly to the US parent entity. Absent Hold-Your-Own-Key (HYOK) with client-held HSMs, the cloud provider can be compelled to decrypt data without client notice, directly conflicting with GDPR Art. 48 and EU Data Act Art. 32.",
     interrogationScript: "Physical localization in Frankfurt satisfies half the equation, but leaves legal reach completely unmitigated. Under the US CLOUD Act, your contract with a US-headquartered parent entity means US courts have legal reach over the data, regardless of physical location. If a lawful access order is served, can you technically prevent the provider from decrypting data? Who on your executive risk committee has formally approved this residual legal exposure?",
@@ -4103,15 +4109,7 @@ var DYNAMIC_PROBES = [
     name: "The Enterprise SaaS Administrative Blindspot",
     badge: "Supply Chain & Shadow Egress",
     relevantQids: ["C1", "B1", "F2", "E1"],
-    trigger: function(answers, state) {
-      var c1 = answers["C1"] || [];
-      var b1 = answers["B1"] || [];
-      var f2 = answers["F2"];
-      var usesSaaS = Array.isArray(c1) && c1.includes("saas");
-      var hasSensitive = Array.isArray(b1) && b1.some(function(x){ return ["special", "financial", "pii"].includes(x); });
-      var noTenantKey = f2 !== "cmk-eu";
-      return usesSaaS && hasSensitive && noTenantKey;
-    },
+    trigger: function(answers, state) { return probeMatch("PROBE_2_SAAS_BLINDSPOT", answers, state); },
     clientAssertion: "Microsoft 365, Salesforce, and ServiceNow are standard enterprise SaaS tools covered by our corporate SOC 2 and ISO 27001 certifications.",
     statutoryConflict: "Enterprise SaaS represents the largest unmapped data leakage channel in modern enterprises. Multi-tenant SaaS environments routinely grant global SREs and support engineers follow-the-sun privileged access to diagnose incidents. Tenant data is encrypted with vendor-managed keys, violating DORA Art. 28 and NIS2 Art. 21 supply chain obligations.",
     interrogationScript: "Enterprise SaaS represents the single largest unmapped data leakage channel in modern enterprises. While customer data sits in regional datacenters, vendor support engineers operating out of follow-the-sun global centers possess privileged access to diagnose incidents. Have you implemented Customer Lockbox to mandate explicit approval for every vendor session, and deployed tenant-held cache keys (such as M365 Customer Key or Salesforce Shield) to enforce cryptographic opacity?",
@@ -4122,11 +4120,7 @@ var DYNAMIC_PROBES = [
     name: "The DORA & APRA Concentration Cliff (The Exit Strategy Myth)",
     badge: "Operational Resilience Non-Compliance",
     relevantQids: ["F3", "F4", "C1"],
-    trigger: function(answers, state) {
-      var f3 = answers["F3"];
-      var hasDora = state.regulations && state.regulations.includes("dora");
-      return (f3 === "no" || f3 === "partial") && hasDora;
-    },
+    trigger: function(answers, state) { return probeMatch("PROBE_3_DORA_EXIT", answers, state); },
     clientAssertion: "Our primary cloud provider has four Availability Zones and a 99.99% SLA. Our exit plan is documented in our annual Disaster Recovery handbook.",
     statutoryConflict: "DORA Art. 28(8), UK CTP (FSMA 2023 Part 9), and APRA CPS 230 explicitly mandate tested, feasible exit strategies from Critical ICT Third-Party Providers (CTPPs). A Disaster Recovery plan within the same hyperscaler does not qualify as an exit strategy. If the provider suffers a systemic outage, sanctions, or contractual dispute, moving proprietary PaaS services takes 18–24+ months without containerized portability.",
     interrogationScript: "Regulators distinguish sharply between high availability and vendor exitability. DORA and APRA require an auditable playbook to migrate critical functions away from a concentrated provider without operational disruption. When was the last time you simulated an actual technical cutover of a core business service to an alternative provider or private cloud enclave? If your primary provider experienced a systemic lockout, what is your verified cutover timeline?",
@@ -4137,13 +4131,7 @@ var DYNAMIC_PROBES = [
     name: "Unregulated AI Training Data Drift",
     badge: "EU AI Act Art. 10 Statutory Exposure",
     relevantQids: ["G1", "G2"],
-    trigger: function(answers, state) {
-      var g1 = answers["G1"];
-      var g2 = answers["G2"];
-      var usesAI = ["highrisk", "internal", "embedded"].includes(g1);
-      var mixedData = ["mixed", "us-dpf", "unknown"].includes(g2);
-      return usesAI && mixedData;
-    },
+    trigger: function(answers, state) { return probeMatch("PROBE_4_AI_DRIFT", answers, state); },
     clientAssertion: "Our AI models were trained internally on enterprise data, and we access external LLMs via enterprise APIs with zero-retention contractual clauses.",
     statutoryConflict: "EU AI Act Art. 10 imposes strict governance mandates on high-risk AI data provenance, bias mitigation, and training validation. Processing European customer data through out-of-region compute instances or fine-tuning models without auditable training lineage can trigger penalties of up to €15M or 3% of worldwide turnover under Art. 99(4).",
     interrogationScript: "The EU AI Act and GDPR treat AI inference and fine-tuning as restricted data processing. If prompt tokens or fine-tuning datasets traverse out-of-EEA compute nodes, you face compounding penalties under both GDPR Chapter V and AI Act Art. 10. Do you possess an immutable provenance register verifying exactly which training epochs touched customer data, and are your GenAI workloads confined to certified EU sovereign AI fabrics?",
@@ -4154,13 +4142,7 @@ var DYNAMIC_PROBES = [
     name: "The Remote Management Telemetry Backdoor",
     badge: "Hardware Supply Chain Egress",
     relevantQids: ["C1", "H1", "E4"],
-    trigger: function(answers, state) {
-      var c1 = answers["C1"] || [];
-      var h1 = answers["H1"];
-      var usesOnPrem = Array.isArray(c1) && c1.includes("onprem");
-      var foreignTech = ["us", "us-eubound", "other"].includes(h1);
-      return usesOnPrem && foreignTech;
-    },
+    trigger: function(answers, state) { return probeMatch("PROBE_5_ONPREM_BACKDOOR", answers, state); },
     clientAssertion: "Our critical core runs on-premises in our own private data center; therefore, we have zero foreign access exposure.",
     statutoryConflict: "Modern enterprise server management controllers (Dell iDRAC, HPE iLO), storage arrays, and network firewalls frequently maintain active telemetry and remote diagnostic tunnels (call-home) connected to foreign vendor support clouds. This creates an unmonitored management plane backdoor bypassing perimeter controls under NIS2 Art. 21.",
     interrogationScript: "While physical servers sit inside your perimeter, the management plane often connects outbound to foreign vendor telemetry centers. Are your out-of-band management controllers strictly air-gapped on isolated VLANs with all phone-home diagnostic telemetry blocked? Has the hardware bill of materials been audited against clean supply chain standards (such as NDAA Section 889)?",
@@ -4171,13 +4153,7 @@ var DYNAMIC_PROBES = [
     name: "The Cloud-Native KMS Lock-In (The BYOK Illusion)",
     badge: "Cryptographic Custody Risk",
     relevantQids: ["F2", "H1"],
-    trigger: function(answers, state) {
-      var f2 = answers["F2"];
-      var h1 = answers["H1"];
-      var hasCloudKms = f2 === "byok-cloud";
-      var usParent = ["us", "us-eubound"].includes(h1);
-      return hasCloudKms && usParent;
-    },
+    trigger: function(answers, state) { return probeMatch("PROBE_6_KMS_BYOK_ILLUSION", answers, state); },
     clientAssertion: "We use AWS KMS and Azure Key Vault with our own Customer Managed Keys (CMK), so the cloud provider cannot decrypt our data.",
     statutoryConflict: "A cloud-native CMK is still hosted inside the cloud provider's hardware security modules (HSMs). The provider's hypervisor executes cryptographic operations in plaintext in volatile RAM. Under FISA §702 or CLOUD Act direct subpoenas, the provider can be compelled to decrypt workloads in memory without client involvement, failing EDPB Schrems II supplementary measure requirements.",
     interrogationScript: "Cloud-managed keys (CMK) protect against external hackers, but provide zero legal protection against the cloud provider itself. Under cloud-native KMS, the provider controls the hypervisor and the HSM where your key is instantiated. If the provider is compelled under a lawful access warrant, they possess the technical ability to decrypt your workloads in volatile RAM. True technical defensibility requires Hold-Your-Own-Key (HYOK)—where the root of trust resides in external HSMs under your exclusive physical control.",
@@ -4667,7 +4643,7 @@ function collectFindingsForQuestion(q){
   } else if(q.type==='matrix'){
     const cur=ans||{};
     Object.entries(cur).forEach(([row,col])=>{
-      const key=`${row}:${col}`;
+      const key=col; // cell findings are keyed by column; the row stays on the finding
       if(q.cellFindings&&q.cellFindings[key]){
         const f=q.cellFindings[key];
         list.push(Object.assign({qid:q.id, row, col}, f));
@@ -4790,7 +4766,7 @@ async function computeAndShowResults(){
       <div class="gate-overlay-badge">Confidential Diagnostic · Advisory Preview</div>
       <h3 style="font-size:20px;margin-bottom:6px">Request Full Statutory Diagnostic &amp; Executive Dossier</h3>
       <p style="font-size:13px;color:#5B5B5B;line-height:1.55;max-width:760px">
-        Your preliminary maturity score and peer radar benchmark are disclosed above. Complete your details or schedule an executive session with our practice leadership to unlock the bespoke <b>28-Page Technical Sovereignty Dossier</b>, <b>Granular Statutory Penalty Schedules</b>, <b>Transfer Impact Assessment (TIA)</b>, and <b>3-Horizon Modernization Roadmap</b>.
+        Your preliminary maturity score and pillar breakdown are disclosed above. Complete your details or schedule an executive session with our practice leadership to unlock the bespoke <b>28-Page Technical Sovereignty Dossier</b>, <b>Granular Statutory Penalty Schedules</b>, <b>Transfer Impact Assessment (TIA)</b>, and <b>3-Horizon Modernization Roadmap</b>.
       </p>
       <div style="display:flex;gap:12px;margin-top:18px;align-items:center;flex-wrap:wrap">
         <button class="btn btn-primary" onclick="openBookingModal()" style="padding:11px 22px;font-size:13.5px;font-weight:700">📅 Book Executive Briefing with Ashutosh Dixit →</button>
@@ -4804,10 +4780,11 @@ async function computeAndShowResults(){
     statutoryExposureBlock(penalties) +
     probesDossierBlock(triggeredProbes) +
     findingsBlock(findings) +
+    obligationsBlock(STATE.evaluation.obligations || []) +
     advisoryServicesBlock();
 
   function _renderResults(){
-    const lowConfBanner = STATE._lowConfidence ?
+    const lowConfBanner = (STATE._lowConfidence || (STATE.evaluation && STATE.evaluation.lowConfidence)) ?
       '<div class="low-confidence-banner">&#9888;&#65039; <b>Limited Data Confidence:</b> Report generated with partial assessment data. Results are indicative only &#8212; complete all sections for maximum diagnostic fidelity.</div>' : '';
     const body=document.getElementById('results-body');
     body.innerHTML =
@@ -4851,7 +4828,7 @@ async function computeAndShowResults(){
 function coverBlock(score,label,counts,findings,pillarData,penalties,probes,isUnlocked){
   const o=STATE.org; const now=new Date().toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'});
   const regs=STATE.regulations.map(regName).join(' · ');
-  const turnoverFormatted = formatCurrency(o.turnover);
+  const turnoverFormatted = formatCurrency(penalties.turnover) + (penalties.turnoverAssumed ? ' (assumed)' : '');
   const exposureFormatted = formatCurrency(penalties.totalValueAtStake);
   const modeTag = STATE.mode === 'flash' ? '⚡ 10-Minute Executive Flash Readout' : '🔬 45-Minute Advisory Diagnostic Readout';
 
@@ -4877,7 +4854,8 @@ function coverBlock(score,label,counts,findings,pillarData,penalties,probes,isUn
       <div class="score-ring">
         <div><div class="mono" style="font-size:11px;color:var(--ink3);letter-spacing:.08em">OVERALL DEFENSIBILITY</div>
           <div class="big-score" style="color:${label.c}">${score}<small>/100</small></div>
-          <div style="font-family:var(--font-h);font-weight:700;color:${label.c};font-size:15px">${label.t}</div></div>
+          <div style="font-family:var(--font-h);font-weight:700;color:${label.c};font-size:15px">${label.t}</div>
+          ${STATE.evaluation && STATE.evaluation.coverage ? `<div class="mono" id="score-coverage" style="font-size:10.5px;color:var(--ink3);margin-top:4px">Coverage: ${STATE.evaluation.coverage.answered} of ${STATE.evaluation.coverage.total} scored questions answered${STATE.evaluation.lowConfidence ? ' · low confidence' : ''}</div>` : ''}</div>
       </div>
       
       <div style="border-left:1px solid rgba(255,94,79,0.3);padding-left:18px">
@@ -4977,7 +4955,7 @@ function statutoryExposureBlock(penalties){
       <div class="stat-penalty-basis">${f.statuteBasis}</div>
       <div style="margin-top:8px;display:flex;justify-content:space-between;align-items:center">
         <span style="font-size:10.5px;font-weight:700;color:${f.statusColor}">${f.status}</span>
-        <span class="mono" style="font-size:10px;color:var(--ink3)">Statutory Cap</span>
+        ${f.capUSD === null ? '' : '<span class="mono" style="font-size:10px;color:var(--ink3)">Statutory Cap</span>'}
       </div>
     </div>`).join('');
 
@@ -4987,7 +4965,7 @@ function statutoryExposureBlock(penalties){
       <div>
         <div style="font-family:var(--font-m);font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#FF5E4F">Statutory Penalty Exposure Ceiling</div>
         <h3 style="font-size:20px;margin-top:4px;color:#282828">Financial Value at Stake under Assessed Regulations</h3>
-        <p style="font-size:13px;color:#5B5B5B;margin-top:3px">Calculated against declared enterprise turnover of <b>${formatCurrency(penalties.turnover)}</b>.</p>
+        <p style="font-size:13px;color:#5B5B5B;margin-top:3px">Calculated against ${penalties.turnoverAssumed ? 'an assumed turnover' : 'declared enterprise turnover'} of <b>${formatCurrency(penalties.turnover)}</b>${penalties.turnoverAssumed ? ' (no turnover was provided; enter it for a client-specific ceiling)' : ''}.</p>
       </div>
       <div style="text-align:right">
         <div style="font-family:var(--font-m);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:#8E8E8E">Largest Single Statutory Ceiling</div>
@@ -5049,11 +5027,11 @@ function pillarBreakdownBlock(pillarData){
       <div>
         <div class="pillar-hd">
           <span class="pillar-num">${p.num} · ${(p.weight*100).toFixed(0)}% WT</span>
-          <span class="pillar-score" style="color:${p.color}">${p.score}</span>
+          <span class="pillar-score" style="color:${p.color}">${p.score === null ? 'n/a' : p.score}</span>
         </div>
         <div class="pillar-name">${p.name}</div>
         <div class="pillar-bar-wrap">
-          <div class="pillar-bar-fill" style="width:${p.score}%;background:${p.color}"></div>
+          <div class="pillar-bar-fill" style="width:${p.score || 0}%;background:${p.color}"></div>
         </div>
         <p style="font-size:11.5px;color:var(--ink3);line-height:1.45;margin-bottom:10px">${p.desc}</p>
       </div>
@@ -5093,14 +5071,17 @@ function execSummary(findings,counts,score,penalties){
   const fineStr = penalties ? formatCurrency(penalties.totalValueAtStake) : '';
   
   let deterministicNarr;
-  if(counts.critical>0){
-    deterministicNarr=`The assessment identifies <b>${counts.critical} critical</b> and <b>${counts.high} high</b>-severity regulatory findings, exposing ${STATE.org.name} to a statutory liability ceiling of <b>${fineStr}</b>. The current data-residency and extraterritorial transfer posture is <b>not defensible</b> against ${topReg.map(o=>regName(o.r)).join(', ')||'the assessed regulations'} and requires immediate Phase 1 containment.`;
-  } else if(counts.high>0){
-    deterministicNarr=`The assessment identifies <b>${counts.high} high</b>-severity findings requiring near-term remediation alongside ${counts.medium} medium-severity gaps, representing an exposure ceiling of <b>${fineStr}</b>. The posture is <b>improving but exposed</b>; a prioritized 3-horizon programme will bring it to a fully defensible baseline.`;
-  } else if(counts.medium>0){
-    deterministicNarr=`No critical or high-severity gaps were found. <b>${counts.medium} medium</b>-severity items should be addressed to reach full compliance, satisfy supervisory audit expectations, and reduce residual transfer risk.`;
+  // Branch on the score band (the same bands as the label), not on raw finding counts.
+  const gapStr = `${counts.critical} critical, ${counts.high} high and ${counts.medium} medium-severity findings`;
+  const ceilingStr = penalties && penalties.totalValueAtStake > 0 ? `, against a largest single statutory ceiling of <b>${fineStr}</b>` : '';
+  if(score<40){
+    deterministicNarr=`${STATE.org.name} scores <b>${score}/100 (${label.t})</b>, with ${gapStr}${ceilingStr}. The current data-residency and extraterritorial transfer posture is <b>not defensible</b> against ${topReg.map(o=>regName(o.r)).join(', ')||'the assessed regulations'} and requires immediate Phase 1 containment.`;
+  } else if(score<65){
+    deterministicNarr=`${STATE.org.name} scores <b>${score}/100 (${label.t})</b>, with ${gapStr}${ceilingStr}. The posture is <b>materially exposed</b>; a prioritised 3-horizon programme, starting with the highest-severity items, is needed to reach a defensible baseline.`;
+  } else if(score<85){
+    deterministicNarr=`${STATE.org.name} scores <b>${score}/100 (${label.t})</b>, with ${gapStr}. The posture is <b>managed but not yet defensible</b>; closing the remaining gaps will satisfy supervisory audit expectations and reduce residual transfer risk.`;
   } else {
-    deterministicNarr=`No material residency or transfer gaps were identified across the assessed regulations. Focus can shift to institutionalising governance, embedding Continuous Assurance, and pursuing sovereign accreditation as a commercial differentiator.`;
+    deterministicNarr=`${STATE.org.name} scores <b>${score}/100 (${label.t})</b>${counts.critical+counts.high+counts.medium ? `, with ${gapStr} still to close` : ''}. Focus can shift to institutionalising governance, embedding Continuous Assurance, and pursuing sovereign accreditation as a commercial differentiator.`;
   }
 
   const hasAI = !!(STATE._aiSynthesis && STATE._aiSynthesis.narrative);
@@ -5177,6 +5158,18 @@ function findingsBlock(findings){
       <div class="f-remedy"><b>Recommended action:</b> ${f.remedy}</div>
     </div>`).join('');
   return `<div class="section-title"><span class="st-num">07</span><h2>Detailed Statutory Findings</h2><span class="st-line"></span></div>${items}`;
+}
+
+function obligationsBlock(obligations){
+  if(!obligations.length) return '';
+  const items=obligations.map(f=>`
+    <div class="finding low">
+      <div class="f-head"><div class="f-title">${f.title}</div><span class="osev">Obligation</span></div>
+      <div class="f-meta"><span class="ref-pill">${regName(f.reg)} · ${f.a}</span></div>
+      <div class="f-body">${f.detail}</div>
+    </div>`).join('');
+  return `<div class="section-title"><span class="st-num">08</span><h2>Obligations in Scope</h2><span class="st-line"></span></div>
+  <div class="card" style="margin-bottom:14px"><p style="font-size:13px;color:var(--ink2)">These follow from your entity classification, the data you hold and your AI use. They describe what applies to you, not how mature you are, so they are not scored or counted as findings.</p></div>${items}`;
 }
 
 function roadmapBlock(findings){
@@ -5519,11 +5512,11 @@ function renderSlide(idx){
     }
 
     var pillarListHtml = pillarData.pillars.map(function(p){
-      var color = p.score >= 70 ? '#4ade80' : (p.score >= 45 ? '#fbbf24' : '#f87171');
+      var color = p.score === null ? '#94a3b8' : (p.score >= 70 ? '#4ade80' : (p.score >= 45 ? '#fbbf24' : '#f87171'));
       return '<div style="display:flex;justify-content:space-between;align-items:center;background:rgba(255,255,255,0.06);padding:6px 10px;border-radius:4px">' +
         '<span style="font-size:12px;color:#e2e8f0">' + (p.shortName || p.name) + '</span>' +
         '<div style="display:flex;align-items:center;gap:6px">' +
-          '<span style="font-family:var(--font-m);font-weight:700;font-size:12px;color:' + color + '">' + p.score + '/100</span>' +
+          '<span style="font-family:var(--font-m);font-weight:700;font-size:12px;color:' + color + '">' + (p.score === null ? 'n/a' : p.score + '/100') + '</span>' +
           '<span style="font-size:10px;color:#94a3b8">(' + p.weight + '%)</span>' +
         '</div>' +
       '</div>';
@@ -5621,8 +5614,8 @@ function copyMarpDeck(){
   }).join("\n");
 
   var pillarLines = pillarData.pillars.map(function(p){
-    var bm = p.score >= 70 ? 'Defensible' : (p.score >= 45 ? 'Managed' : 'Material Exposure');
-    return "| " + p.name + " | " + p.weight + "% | " + p.score + "/100 | " + bm + " |";
+    var bm = p.score === null ? 'Not assessed' : (p.score >= 70 ? 'Defensible' : (p.score >= 45 ? 'Managed' : 'Material Exposure'));
+    return "| " + p.name + " | " + p.weight + "% | " + (p.score === null ? "n/a" : p.score + "/100") + " | " + bm + " |";
   }).join("\n");
 
   var probeLines = probes.slice(0,3).map(function(p){
@@ -6005,8 +5998,8 @@ function downloadPostureExecutivePDF(isArchiveOnly){
 
   // 5 Pillars Scorecard Table
   var pillarRows = pillarData.pillars.map(function(p){
-    var status = p.score >= 85 ? "Defensible" : (p.score >= 65 ? "Managed" : (p.score >= 40 ? "Exposed" : "Critical Risk"));
-    return [p.name + " (" + p.weight + "%)", p.score + " / 100", status, p.desc || "Statutory evaluation domain."];
+    var status = p.score === null ? "Not assessed" : (p.score >= 85 ? "Defensible" : (p.score >= 65 ? "Managed" : (p.score >= 40 ? "Exposed" : "Critical Risk")));
+    return [p.name + " (" + p.weight + "%)", p.score === null ? "n/a" : p.score + " / 100", status, p.desc || "Statutory evaluation domain."];
   });
 
   var pillarTableY = hasVisuals ? (chartBoxY + 82) : 90;
@@ -6688,7 +6681,7 @@ function showReportGenerationAnimation(callback) {
     '<div class="rg-brand">LTM CIS · Infrastructure Tech Advisory · Statutory Diagnostic Engine</div>' +
     '<div class="rg-pulse-container"><div class="rg-pulse-ring"></div><div class="rg-pulse-ring"></div><div class="rg-pulse-ring"></div><div class="rg-core-dot"></div></div>' +
     '<div class="rg-title">Generating Executive Diagnostic</div>' +
-    '<div class="rg-subtitle">Correlating answers against 10 statutory mandates, 35 risk dimensions, and peer benchmarks across your sector</div>' +
+    '<div class="rg-subtitle">Correlating answers against 10 statutory mandates and 35 risk dimensions</div>' +
     '<ul class="rg-step-list">' +
       steps.map(function(s,i){ return '<li class="rg-step" id="rg-step-'+i+'"><div class="rg-step-icon">'+(i+1)+'</div><span>'+s+'</span></li>'; }).join('') +
     '</ul>' +

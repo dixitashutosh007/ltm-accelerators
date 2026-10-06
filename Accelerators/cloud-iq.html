@@ -1010,7 +1010,7 @@ var QUESTIONS = [
   // ---- D7: Governance, Security & Zero Trust ----
   {id:"Q8.1",sec:"Governance & Security",dim:"D7",q:"Maturity of cloud landing zones & security guardrails?",type:"single",mode:"both",
    opts:[["No landing zones — flat network topology"],["Basic perimeter security and reactive scans"],["Well-Architected landing zone baseline deployed"],["Automated preventative guardrails & policy-as-code"],["Continuous real-time posture management (CSPM) with auto-remediation"]],maturity:true},
-  {id:"Q8.2",sec:"Governance & Security",dim:"D7",q:"Do you have binding digital sovereignty or data-residency mandates?",type:"tf",mode:"both",sovFlagTF:true,maturityTF:true},
+  {id:"Q8.2",sec:"Governance & Security",q:"Do you have binding digital sovereignty or data-residency mandates?",hint:"Sets the sovereignty requirement for the roadmap. It is context, not a governance maturity score.",type:"tf",mode:"both",sovFlagTF:true},
   {id:"Q8.3",sec:"Governance & Security",dim:"D7",q:"Identity, Zero Trust & IAM blast-radius containment?",type:"single",mode:"workshop",
    opts:[["Overprivileged shared admin credentials"],["Federated AD/Okta but wide internal network trust"],["Role-based access (RBAC) with MFA enforced"],["Least-privilege JIT (Just-In-Time) access & microsegmentation"],["Zero Trust architecture with continuous identity verification"]],maturity:true},
 
@@ -1165,7 +1165,7 @@ function start(){
       </div>
       <h1 style="font-size:34px;line-height:1.2;margin-bottom:12px">Enterprise Cloud &amp; Hybrid Estate Diagnostic</h1>
       <p class="lead">
-        A rigorous, consultant-led diagnostic platform scanning on-premises data centre footprint, VMware renewal cliffs, and public-cloud maturity across 8 core dimensions. Outputs an executive <b>Maturity Scorecard</b>, <b>2D Strategic Risk Heatmap</b>, <b>4-Phase Modernization Roadmap</b>, and <b>Decomposed Value-at-Stake Hook</b>.
+        A rigorous, consultant-led diagnostic platform scanning on-premises data centre footprint, VMware renewal cliffs, and public-cloud maturity across 8 core dimensions. Outputs an executive <b>Maturity Scorecard</b>, <b>2D Strategic Risk Heatmap</b>, <b>4-Phase Modernization Roadmap</b>, and <b>indicative estimate of annual cost leakage</b>.
       </p>
 
       <div style="margin:16px 0">
@@ -1431,10 +1431,11 @@ function renderCards(Q){
 }
 
 function renderSlider(Q){
-  if(A[Q.id] === undefined) A[Q.id] = Math.floor(Q.scale.length / 2);
-  const v = A[Q.id];
+  // The thumb starts in the middle, but no answer is stored until the user moves it.
+  const set = A[Q.id] !== undefined && A[Q.id] !== null;
+  const v = set ? A[Q.id] : Math.floor(Q.scale.length / 2);
   return `<div class="slider-wrap">
-    <div class="slider-val" id="sv_${Q.id}">${Q.scale[v]}</div>
+    <div class="slider-val" id="sv_${Q.id}">${set ? Q.scale[v] : "Not answered yet: move the slider"}</div>
     <input type="range" min="0" max="${Q.scale.length-1}" value="${v}" oninput="setSlider('${Q.id}',this.value)">
     <div class="slider-labels"><span>${Q.scale[0]}</span><span>${Q.scale[Q.scale.length-1]}</span></div>
   </div>`;
@@ -1828,19 +1829,22 @@ function fmt(n){ return "$" + Number(n).toLocaleString(); }
    Results Screen Presentation with Gating / Teaser Mode
    ============================================================ */
 
+// The quality gate counts maturity-scored questions only: context questions (role, sector, spend, ranking) are
+// often pre-filled and say nothing about maturity.
+function isMaturityScored(Q){
+  return !!(Q && Q.dim && (Q.maturity || Q.maturityCount || Q.maturityTF) && !shouldSkip(Q));
+}
 function checkCloudAnswerThreshold(){
-  var total = GROUPS.reduce(function(acc, g){ return acc + (g.qs ? g.qs.length : 0); }, 0);
+  var scored = QUESTIONS.filter(isMaturityScored);
+  var total = scored.length;
   var answered = 0;
-  GROUPS.forEach(function(g){
-    if(g.qs){
-      g.qs.forEach(function(qid){
-        if(A[qid] !== undefined && A[qid] !== null && A[qid] !== "") answered++;
-      });
-    }
+  scored.forEach(function(Q){
+    var v = A[Q.id];
+    if(v !== undefined && v !== null && v !== "" && !(Array.isArray(v) && v.length === 0)) answered++;
   });
   var pct = total > 0 ? (answered / total) : 0;
   if(pct < 0.25){
-    alert("Diagnostic Quality Gate: You have answered " + answered + " of " + total + " questions (" + Math.round(pct*100) + "%).\n\nPlease complete at least 25% of the assessment questions to generate a statistically reliable maturity diagnostic.");
+    alert("Diagnostic Quality Gate: You have answered " + answered + " of " + total + " maturity questions (" + Math.round(pct*100) + "%).\n\nPlease answer at least 25% of the maturity questions to generate a statistically reliable maturity diagnostic.");
     return false;
   }
   return true;
@@ -1913,14 +1917,14 @@ function showPreliminaryScorecard(R){
             <span class="kavach-big-num" style="color:${R.peerDelta>=0?'var(--green)':'var(--coral)'}">${R.peerDelta>=0?'+':''}${R.peerDelta.toFixed(1)}</span>
             <span class="kavach-sub-unit">vs Peer Median</span>
           </div>
-          <div style="font-size:11.5px;color:var(--mut);margin-top:8px">Sector: ${R.industryKey.split(' ')[0]} (${Number(R.peer||3.0).toFixed(1)} baseline)</div>
+          <div style="font-size:11.5px;color:var(--mut);margin-top:8px">Sector: ${R.industryKey.split(' ')[0]} (${R.peerBenchmark.overall.toFixed(1)} baseline)</div>
         </div>
 
         <!-- Metric 4: Annual Cost Leakage -->
         <div class="kavach-stat-card accent-amber">
           <div class="kavach-stat-head">
-            <span class="kavach-stat-label">Addressable Waste</span>
-            <span class="kavach-stat-pill" style="background:var(--coral-tint);color:var(--coral-dkr)">Value at Stake</span>
+            <span class="kavach-stat-label">Estimated annual cost leakage (indicative)</span>
+            <span class="kavach-stat-pill" style="background:var(--coral-tint);color:var(--coral-dkr)">Indicative</span>
           </div>
           <div class="kavach-num-row">
             <span class="kavach-big-num" style="color:var(--coral)">${fmt(R.totalLeakage)}</span>
@@ -1934,7 +1938,7 @@ function showPreliminaryScorecard(R){
         <div style="background:#FFF3E0;border:1px solid #FFE082;border-radius:var(--radius-md);padding:16px;margin:20px 0">
           <div style="font-weight:700;font-size:13px;color:#E65100;margin-bottom:6px">Critical Operational Signals &amp; Bottlenecks Detected:</div>
           <ul style="font-size:12.5px;color:#5D4037;padding-left:18px;line-height:1.6">
-            ${R.vmwareRisk ? `<li><b>VMware Renewal Cliff:</b> Anticipated Broadcom 2.5x–3.5x licensing cost escalation requires emergency hypervisor strategy.</li>` : ""}
+            ${R.vmwareRisk ? `<li><b>VMware Renewal Cliff:</b> A steep Broadcom renewal price increase is expected; a hypervisor strategy is needed before renewal.</li>` : ""}
             ${R.leaseCliff ? `<li><b>Facility Lease Expiration (<12 Months):</b> Impending colocation contract cliff forces hard migration factory velocity.</li>` : ""}
             ${R.secnumFlag ? `<li><b>SecNumCloud European Sovereign Boundary:</b> French/EU Cloud de Confiance requirements mandate segregated hosting for regulated workloads.</li>` : ""}
             ${dangerDims.length > 0 ? `<li><b>High-Urgency Architectural Deficits:</b> Immediate remediation required in: <u>${dangerNames}</u>.</li>` : ""}
@@ -2360,8 +2364,8 @@ function showResults(R){
       <!-- 2. Addressable Financial Leakage -->
       <div class="kavach-stat-card accent-amber">
         <div class="kavach-stat-head">
-          <span class="kavach-stat-label">Addressable Waste</span>
-          <span class="kavach-stat-pill" style="background:var(--coral-tint);color:var(--coral-dkr)">Value at Stake</span>
+          <span class="kavach-stat-label">Estimated annual cost leakage (indicative)</span>
+          <span class="kavach-stat-pill" style="background:var(--coral-tint);color:var(--coral-dkr)">Indicative</span>
         </div>
         <div class="kavach-num-row">
           <span class="kavach-big-num" style="color:var(--coral)">${fmt(R.totalLeakage)}</span>
@@ -2402,8 +2406,8 @@ function showResults(R){
           </div>
           <div class="kavach-bar-row">
             <span class="kavach-bar-label">Sector Median</span>
-            <div class="kavach-bar-track"><div class="kavach-bar-fill" style="width:${Math.round(((R.peer.overall||3.0)/5)*100)}%;background:var(--blue)"></div></div>
-            <span class="kavach-bar-val">${(R.peer.overall||3.0).toFixed(1)}</span>
+            <div class="kavach-bar-track"><div class="kavach-bar-fill" style="width:${Math.round((R.peerBenchmark.overall/5)*100)}%;background:var(--blue)"></div></div>
+            <span class="kavach-bar-val">${R.peerBenchmark.overall.toFixed(1)}</span>
           </div>
         </div>
       </div>
@@ -2420,7 +2424,7 @@ function showResults(R){
           ${R.vmwareRisk ? "VMware Broadcom Renewal Cliff" : (R.leaseCliff ? "Colocation Lease Expiration Deadline" : (R.secnumFlag ? "SecNumCloud European Sovereign Boundary" : "Cloud Value Realization & FinOps Drag"))}
         </div>
         <p style="font-size:11.5px;color:var(--mut);line-height:1.4">
-          ${R.vmwareRisk ? "Impending 2.5x–3.5x licensing cost escalation mandates immediate hypervisor alternative triage." : (R.leaseCliff ? "Facility deadline <12 months requires accelerated migration factory throughput." : "Targeted operating model and FinOps rate arbitrage required to achieve EBITDA mandates.")}
+          ${R.vmwareRisk ? "An impending renewal price increase makes hypervisor alternative triage urgent." : (R.leaseCliff ? "Facility deadline <12 months requires accelerated migration factory throughput." : "Targeted operating model and FinOps rate arbitrage required to achieve EBITDA mandates.")}
         </p>
       </div>
     </div>
@@ -2437,7 +2441,7 @@ function showResults(R){
           </p>
           <div style="font-size:12.5px;color:var(--coral-dkr);font-weight:700;margin-top:4px">Sector Benchmark: ${deltaText}</div>
           <div style="font-size:13px;color:var(--ink);margin-top:8px">
-            <b>Annual Value-at-Stake:</b> Estimated <span style="color:var(--coral);font-weight:800">${fmt(R.leakLow)} – ${fmt(R.leakHigh)}</span> in reclaimable leakage
+            <b>Estimated annual cost leakage (indicative):</b> <span style="color:var(--coral);font-weight:800">${fmt(R.leakLow)} – ${fmt(R.leakHigh)}</span>
           </div>
         </div>
         <div style="display:flex;gap:8px;flex-wrap:wrap">
@@ -2467,7 +2471,7 @@ function showResults(R){
         </div>
         <div style="display:flex;justify-content:center;gap:16px;margin-top:10px;font-size:11.5px;font-family:var(--font-display)">
           <span style="display:inline-flex;align-items:center;gap:5px"><span style="width:10px;height:10px;background:#FF5E4F;border-radius:2px"></span> Estate (${R.overall.toFixed(1)})</span>
-          <span style="display:inline-flex;align-items:center;gap:5px"><span style="width:10px;height:10px;background:#226882;border-radius:2px"></span> ${R.industryKey.split(" ")[0]} Median (${(R.peer.overall||3.0).toFixed(1)})</span>
+          <span style="display:inline-flex;align-items:center;gap:5px"><span style="width:10px;height:10px;background:#226882;border-radius:2px"></span> ${R.industryKey.split(" ")[0]} Median (${R.peerBenchmark.overall.toFixed(1)})</span>
         </div>
       </div>
 
@@ -2508,11 +2512,11 @@ function showResults(R){
         <div>
           <div class="sec-label">Economic Business Case</div>
           <h3 style="font-size:18px">Quantified Financial Value Hook</h3>
-          <p style="font-size:12.5px;color:var(--mut)">Evidence-based annual cost leakage decomposition across cloud &amp; infrastructure</p>
+          <p style="font-size:12.5px;color:var(--mut)">Indicative split of estimated annual cost leakage across cloud &amp; infrastructure</p>
         </div>
         <div style="text-align:right">
           <div style="font-size:24px;font-weight:800;color:var(--coral);font-family:var(--font-display)">${fmt(R.leakLow)} – ${fmt(R.leakHigh)}</div>
-          <div style="font-size:11px;color:var(--mut)">Estimated addressable annual leak</div>
+          <div style="font-size:11px;color:var(--mut)">Estimated annual cost leakage (indicative)</div>
         </div>
       </div>
       <div class="decomp-grid">
@@ -2538,7 +2542,7 @@ function showResults(R){
         </div>
       </div>
       <div style="margin-top:14px;background:var(--panel2);border:1px solid var(--line);border-radius:var(--radius-sm);padding:12px 16px;font-size:12.5px;color:var(--ink)">
-        <b>CFO Self-Funding Realization:</b> Capturing quick wins in compute rightsizing and commitment discounts directly self-funds the application modernization factory and DC exit.
+        <b>CFO Self-Funding Potential:</b> Savings captured from compute rightsizing and commitment discounts can help fund the application modernization factory and DC exit.
       </div>
     </div>
 
@@ -2632,7 +2636,7 @@ function drawSpiderChart(R){
   if(!ctx) return;
   const labels = Object.keys(DIM_NAMES);
   const dataScores = labels.map(d => R.dimScores[d]);
-  const peerScores = labels.map(d => R.peer[d] || R.peer.overall || 3.0);
+  const peerScores = labels.map(d => R.peerBenchmark[d] ?? R.peerBenchmark.overall);
 
   if(spiderChartInstance) spiderChartInstance.destroy();
   spiderChartInstance = new Chart(ctx, {
@@ -2719,7 +2723,7 @@ ${Object.keys(DIM_NAMES).map(d => `  * ${d} ${DIM_NAMES[d]}: ${R.dimScores[d].to
 - Data Centre Lease Expiration: ${R.leaseCliff ? "CRITICAL (<12 months facility exit cliff)" : "Managed"}
 - SecNumCloud Mandate: ${R.secnumFlag ? "YES (French/EU Cloud de Confiance requirements active)" : "No"}
 - Stated #1 Objective: "${R.topObj}"
-- Estimated Annual Financial Leakage: $${(R.leakLow/1000).toFixed(0)}k – $${(R.leakHigh/1000).toFixed(0)}k (Compute: $${(R.decomp.compute/1000).toFixed(0)}k, Commitments: $${(R.decomp.commit/1000).toFixed(0)}k)
+- Estimated Annual Cost Leakage (indicative): $${(R.leakLow/1000).toFixed(0)}k – $${(R.leakHigh/1000).toFixed(0)}k (Compute: $${(R.decomp.compute/1000).toFixed(0)}k, Commitments: $${(R.decomp.commit/1000).toFixed(0)}k)
 
 ## CONSULTING DEPTH READ & ANOMALY RESPONSES
 ${formatConsultingProbesForPrompt()}
@@ -2728,7 +2732,7 @@ ${formatConsultingProbesForPrompt()}
 You are an elite Senior Partner in LTM Infrastructure Tech Advisory. Author a bespoke, 3-part Executive Advisory Memo:
 1. EXECUTIVE DIAGNOSTIC: Pinpoint the client's single binding constraint. Expose the contradiction between their stated objective ("${R.topObj}") and their operational metrics.
 2. ARCHITECTURAL & COMMERCIAL IMPERATIVES: Name non-negotiable moves across Phase 1 (Immediate 0-30d), Phase 2 (Short-Term 30-90d), Phase 3 (Mid-Term 3-9m), and Phase 4 (Long-Term 9-18m).
-3. VALUE AT STAKE: Detail how the $${(R.totalLeakage/1000).toFixed(0)}k cost leakage will be reclaimed.
+3. ESTIMATED ANNUAL COST LEAKAGE (INDICATIVE): Explain how up to an estimated $${(R.totalLeakage/1000).toFixed(0)}k of cost leakage could be reduced. Treat the figure as an indicative estimate, not a forecast.
 Maintain a crisp, boardroom tone (McKinsey / Big 4 style). Absolutely zero generic consulting platitudes.
 `;
 }
@@ -2825,7 +2829,7 @@ function generateRuleBasedMemo(){
   if(SESSION.consultingProbes && Object.keys(SESSION.consultingProbes).length > 0){
     probesFindings = "\n\nCONSULTING FIELD CALIBRATION & ANOMALY FINDINGS:\n";
     if(SESSION.consultingProbes["P_FINOPS"]){
-      probesFindings += `• FINOPS ANOMALY: Leadership confirmed: "${SESSION.consultingProbes["P_FINOPS"]}". This operational visibility gap explains the ${fmt(R.decomp.commit)} commitment leakage.\n`;
+      probesFindings += `• FINOPS ANOMALY: Leadership confirmed: "${SESSION.consultingProbes["P_FINOPS"]}". This visibility gap is consistent with an estimated, up to ${fmt(R.decomp.commit)} of commitment leakage.\n`;
     }
     if(SESSION.consultingProbes["P_DC_EXIT"]){
       probesFindings += `• DC EXIT TIMELINE: Client verified: "${SESSION.consultingProbes["P_DC_EXIT"]}". Failure to vacate within contractual notice windows triggers severe lease extension penalties.\n`;
@@ -2845,6 +2849,34 @@ function generateRuleBasedMemo(){
     }
   }
 
+  // Each sentence appears only when its flag or score supports it; money figures are estimates ("estimated, up to").
+  const commitLow = [0, 1, 2].includes(A["Q0.9"]);
+  const finopsReactive = R.dimAssessed && R.dimAssessed.D3 && R.dimScores.D3 < 3.0;
+  const lines = [];
+  if(R.vmwareRisk) lines.push("• HYPERVISOR RENEWAL CLIFF: You reported an impending VMware renewal with a steep price increase. Without a validated alternative hypervisor (KVM/Nutanix/Cloud Native), cost reduction targets are at risk.");
+  if(R.leaseCliff) lines.push("• DC FACILITY DEADLINE: A data centre lease or hardware deadline sets a hard timeline. Moving workloads without disposition mapping risks carrying today's inefficiencies into the cloud.");
+  if(R.secnumFlag) lines.push("• SECNUMCLOUD BOUNDARY: SecNumCloud requirements call for segregated enclaves for sensitive regulated workloads.");
+  else if(R.sovFlag) lines.push("• SOVEREIGNTY REQUIREMENT: Binding residency or sovereignty obligations constrain where regulated workloads can run.");
+  if(commitLow && finopsReactive) lines.push(`• EXECUTION GAP: With commitment discount coverage under 40% and largely reactive FinOps practice, cloud spend is leaking an estimated ${fmt(R.leakLow)}–${fmt(R.leakHigh)} a year.`);
+  else if(commitLow) lines.push(`• COMMITMENT GAP: Commitment discount coverage is under 40%; estimated annual cost leakage is an estimated ${fmt(R.leakLow)}–${fmt(R.leakHigh)}.`);
+  else if(finopsReactive) lines.push(`• FINOPS GAP: Cost & FinOps maturity is ${R.dimScores.D3.toFixed(1)}/5; estimated annual cost leakage is an estimated ${fmt(R.leakLow)}–${fmt(R.leakHigh)}.`);
+  else lines.push(`• COST LEAKAGE: Estimated annual cost leakage is an estimated ${fmt(R.leakLow)}–${fmt(R.leakHigh)} (indicative).`);
+  const constraints = lines.join("\n");
+  const phaseLine = (label, moves) => moves.length
+    ? `• ${label}: ${moves.map(m => `${m.title} (LTM Offering ${m.code})`).join("; ")}.`
+    : `• ${label}: No moves triggered by this diagnostic.`;
+  const phases = [
+    phaseLine("PHASE 1 (IMMEDIATE 0–30 DAYS)", R.movesPhase1),
+    phaseLine("PHASE 2 (SHORT-TERM 30–90 DAYS)", R.movesPhase2),
+    phaseLine("PHASE 3 (MID-TERM 3–9 MONTHS)", R.movesPhase3),
+    phaseLine("PHASE 4 (LONG-TERM 9–18+ MONTHS)", R.movesPhase4)
+  ].join("\n");
+  const outcomes = [];
+  if(R.leaseCliff || R.movesPhase4.some(m => m.code === "03.5")) outcomes.push("reduce facility lease overhead for the sites exited");
+  if(R.vmwareRisk) outcomes.push("contain hypervisor licensing costs");
+  outcomes.push(`reduce cloud cost leakage by an estimated, up to ${fmt(R.totalLeakage)} a year`);
+  const valueLines = `Executing this roadmap could help ${client} ${outcomes.join(", ")}. This figure is indicative and should be validated against billing data.`;
+
   return `EXECUTIVE ADVISORY MEMO
 To: ${persona}, ${client}
 From: Ashutosh Dixit, LTM Infrastructure Tech Advisory (ashutosh.dixit@ltm.com)
@@ -2852,18 +2884,15 @@ Date: ${new Date().toLocaleDateString()}
 Subject: Strategic Estate Diagnostic & 4-Phase Modernization Blueprint (${R.trackName})
 
 1. EXECUTIVE DIAGNOSTIC & BINDING CONSTRAINT
-${client}'s estate is currently operating at an overall maturity of ${R.overall.toFixed(1)}/5.0 (${R.band}). While your leadership team has designated "${R.topObj}" as the preeminent strategic mandate, operational reality exposes a severe binding constraint:
+${client}'s estate is currently operating at an overall maturity of ${R.overall.toFixed(1)}/5.0 (${R.band}). Your leadership team has designated "${R.topObj}" as the primary strategic mandate. The diagnostic highlights these constraints:
 
-${R.vmwareRisk ? "• CRITICAL HYPERVISOR CLIFF: You face an impending VMware Broadcom renewal with anticipated 2.5x–3.5x licensing cost escalations. Operating on-premises without a validated alternative hypervisor (KVM/Nutanix/Cloud Native) invalidates cost reduction targets.\n" : ""}${R.leaseCliff ? "• DC FACILITY LEASE CLIFF: Imminent data centre lease expiration (<12 months) imposes a hard physical timeline. Lifting-and-shifting without disposition mapping will inflate public cloud operational costs by an estimated 35%.\n" : ""}${R.secnumFlag ? "• SECNUMCLOUD BOUNDARY: European sovereign data regulations mandate segregated enclaves for sensitive regulated workloads.\n" : ""}• DISCONNECT IN EXECUTION: With discount commitment coverage hovering at low levels and FinOps visibility largely reactive, public cloud spend is leaking an estimated ${fmt(R.leakLow)}–${fmt(R.leakHigh)} annually across oversized compute and unmanaged storage.${probesFindings}
+${constraints}${probesFindings}
 
 2. FOUR-PHASE MODERNIZATION BLUEPRINT
-• PHASE 1 (IMMEDIATE 0–30 DAYS): Execute emergency FinOps compute rightsizing to harvest ~$${Math.round(R.decomp.compute*0.35/1000)}k in zombie asset waste, while conducting an immediate VMware core entitlement audit (LTM Offering 03.3 & 03.5).
-• PHASE 2 (SHORT-TERM 30–90 DAYS): Execute 1-yr/3-yr Savings Plans commitment coverage and deploy automated discovery tooling across the application estate (LTM Offering 03.3 & 03.5).
-• PHASE 3 (MID-TERM 3–9 MONTHS): Launch a programmatic Migration Factory for top application clusters and establish CI/CD Golden Paths with automated policy-as-code landing zone guardrails (LTM Offering 03.4 & 03.6).
-• PHASE 4 (LONG-TERM 9–18+ MONTHS): Complete physical data centre decommissioning, decouple core legacy monoliths, and instantiate a sovereign AI data boundary (LTM Offering 03.5 & 04.4).
+${phases}
 
-3. VALUE AT STAKE
-Through structured execution of this 4-phase roadmap, ${client} will permanently eliminate facility lease overhead, stabilize hypervisor unit costs, and reclaim an addressable ${fmt(R.totalLeakage)} in annual cloud waste.`;
+3. ESTIMATED ANNUAL COST LEAKAGE (INDICATIVE)
+${valueLines}`;
 }
 
 function copyMemoText(){
@@ -2957,7 +2986,7 @@ function renderSlide(idx){
             <h3 style="color:#FFB74D;font-size:18px;margin-bottom:10px">Acute Operational Pressures</h3>
             <p>${R.vmwareRisk ? "<b>VMware Renewal Cliff:</b> Steep price escalations require immediate hypervisor triage." : "VMware licensing within standard governance."}</p>
             <p style="margin-top:8px">${R.leaseCliff ? "<b>Data Centre Lease Expiration:</b> Facility deadline forces hard migration milestones." : "DC lease timeline manageable."}</p>
-            <p style="margin-top:8px"><b>Annual Value-at-Stake:</b> Estimated <b>${fmt(R.leakLow)}–${fmt(R.leakHigh)}</b> in reclaimable leakage.</p>
+            <p style="margin-top:8px"><b>Estimated annual cost leakage (indicative):</b> <b>${fmt(R.leakLow)}–${fmt(R.leakHigh)}</b>.</p>
           </div>
         </div>
       </div>
@@ -2982,7 +3011,7 @@ function renderSlide(idx){
   } else if(idx === 3){
     container.innerHTML = `
       <div class="br-slide">
-        <h2>Quantified Value at Stake: ${fmt(R.leakLow)} – ${fmt(R.leakHigh)}</h2>
+        <h2>Estimated annual cost leakage (indicative): ${fmt(R.leakLow)} – ${fmt(R.leakHigh)}</h2>
         <p>Annual cost leakage decomposed across operational domains:</p>
         <div class="two-col" style="margin-top:24px">
           <div style="background:#282828;padding:20px;border-radius:10px">
@@ -3167,7 +3196,7 @@ function downloadExecutivePDF(){
 
   doc.setFillColor(...cream); doc.roundedRect(M, y, W - 2*M, 46, 6, 6, "F");
   doc.setFont("helvetica", "bold"); doc.setFontSize(10); doc.setTextColor(...dark);
-  doc.text(`ANNUAL VALUE AT STAKE: ${fmt(R.leakLow)} – ${fmt(R.leakHigh)}`, M + 16, y + 20);
+  doc.text(`ESTIMATED ANNUAL COST LEAKAGE (INDICATIVE): ${fmt(R.leakLow)} – ${fmt(R.leakHigh)}`, M + 16, y + 20);
   doc.setFont("helvetica", "normal"); doc.setFontSize(9); doc.setTextColor(100, 100, 100);
   doc.text(`Decomposed into: Compute Rightsizing (${fmt(R.decomp.compute)}) · Commitments (${fmt(R.decomp.commit)}) · Storage (${fmt(R.decomp.storage)})`, M + 16, y + 34);
   y += 60;

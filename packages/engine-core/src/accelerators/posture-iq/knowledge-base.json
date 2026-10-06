@@ -473,8 +473,7 @@
       "name": "AI & Data Provenance Governance",
       "desc": "EU AI Act Art. 10 compliance, model training residency, data provenance documentation, and human oversight.",
       "sections": [
-        "ai",
-        "outcomes"
+        "ai"
       ],
       "weight": 0.15
     }
@@ -861,6 +860,7 @@
       "id": "A1",
       "section": "scope",
       "type": "single",
+      "scoring": "obligation",
       "text": "Under NIS2, how is your entity classified?",
       "help": "NIS2 splits organisations into 'essential' and 'important' entities, each with different supervisory and penalty regimes. Classification usually follows sector and size.",
       "refs": [
@@ -949,6 +949,7 @@
       "id": "A2",
       "section": "scope",
       "type": "single",
+      "scoring": "obligation",
       "text": "Under DORA, which type of financial entity are you?",
       "help": "DORA applies to a broad set of financial entities and to the ICT providers serving them. The obligations scale with entity type and systemic importance.",
       "refs": [
@@ -1258,6 +1259,7 @@
       "id": "B1",
       "section": "inventory",
       "type": "multi",
+      "scoring": "obligation",
       "text": "Which categories of sensitive data does your organisation process?",
       "help": "Special-category and financial data carry heightened residency and security expectations across all regimes.",
       "refs": [
@@ -1417,6 +1419,7 @@
       "id": "B2",
       "section": "inventory",
       "type": "scale",
+      "scoring": "obligation",
       "text": "Approximately what volume of sensitive data (personal, financial, special-category) do you hold?",
       "help": "Volume scales both regulatory exposure and remediation effort. Breach impact and notification burden grow with volume.",
       "refs": [
@@ -2918,6 +2921,7 @@
       "id": "G1",
       "section": "ai",
       "type": "single",
+      "scoring": "obligation",
       "text": "Do you develop, deploy or fine-tune AI/ML systems on personal or sensitive data?",
       "help": "AI processing frequently defaults to non-EU compute regions and raises training-data governance obligations.",
       "refs": [
@@ -3783,6 +3787,7 @@
       "id": "K1",
       "section": "outcomes",
       "type": "single",
+      "scoring": "none",
       "text": "What is your compliance tolerance for this assessment?",
       "help": "Shapes how aggressively the roadmap sequences remediation.",
       "refs": [],
@@ -3818,6 +3823,7 @@
       "id": "K2",
       "section": "outcomes",
       "type": "single",
+      "scoring": "none",
       "text": "What is your investment appetite for remediation across Phases 1–3?",
       "help": "Used to frame the roadmap's ambition and sequencing.",
       "refs": [],
@@ -3853,6 +3859,7 @@
       "id": "K3",
       "section": "outcomes",
       "type": "multi",
+      "scoring": "none",
       "text": "Which outcomes matter most for the target architecture?",
       "help": "Frames the strategic narrative in the report's roadmap.",
       "refs": [],

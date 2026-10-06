@@ -2790,7 +2790,7 @@ var SESSION = {
 // 5 Pillars of Digital Sovereignty
 var PILLARS = [
   { id: "P1", code: "P1", name: "Data Sovereignty & Localization", weight: 0.25, desc: "Data at rest, in transit, and in-memory residency across borders." },
-  { id: "P2", code: "P2", name: "Jurisdictional Reach & Extraterritoriality", weight: 0.25, desc: "Immunity to foreign subpoenas, CLOUD Act reach & conflict of laws." },
+  { id: "P2", code: "P2", name: "Jurisdictional Reach & Extraterritoriality", weight: 0.25, desc: "Exposure to foreign subpoenas, CLOUD Act reach & conflict of laws." },
   { id: "P3", code: "P3", name: "Operational & Personnel Sovereignty", weight: 0.15, desc: "Local clearance, 24/7 follow-the-sun admin bounds & out-of-band telemetry." },
   { id: "P4", code: "P4", name: "Cryptographic & Technical Autonomy", weight: 0.20, desc: "HYOK/External Key Management, HSM isolation & Confidential Computing." },
   { id: "P5", code: "P5", name: "Software, Vendor & Supply Chain Sovereignty", weight: 0.15, desc: "CTPP concentration, exitability, open standards & hardware provenance." }
@@ -2802,13 +2802,13 @@ var MATURITY_STAGES = [
   { stage: 2, label: "Aware", band: [21, 40], color: "#B8860B", desc: "Obligations identified; residency addressed on paper but operational and jurisdictional controls patchy." },
   { stage: 3, label: "Structured", band: [41, 60], color: "#226882", desc: "Defined policies and ownership; residency localized, but vendor-held encryption keys and SaaS blindspots remain." },
   { stage: 4, label: "Managed", band: [61, 80], color: "#482475", desc: "Controls tested and evidenced; HYOK/BYOK deployed, sub-processor chains audited, and exit strategies documented." },
-  { stage: 5, label: "Sovereign-by-Design", band: [81, 100], color: "#35754D", desc: "Sovereignty embedded in architecture, procurement & CI/CD; provably immune to extraterritorial overreach." }
+  { stage: 5, label: "Sovereign-by-Design", band: [81, 100], color: "#35754D", desc: "Sovereignty embedded in architecture, procurement & CI/CD; engineered to minimise exposure to extraterritorial access." }
 ];
 
 // 30 Global Regimes Across EU, UK, Middle East, APAC & Cross-Border
 var REGIMES = [
   // --- EU & UK ---
-  { id: "DORA", name: "Digital Operational Resilience Act (DORA)", short: "EU · Financial ICT Resilience", jurisdiction: "EU", citation: "Regulation (EU) 2022/2554", url: "https://eur-lex.europa.eu/eli/reg/2022/2554/oj", impact: 4, penalty_rule: "Periodic penalty payments up to 1% daily global turnover for CTPPs; severe supervisory sanctions.",
+  { id: "DORA", name: "Digital Operational Resilience Act (DORA)", short: "EU · Financial ICT Resilience", jurisdiction: "EU", citation: "Regulation (EU) 2022/2554", url: "https://eur-lex.europa.eu/eli/reg/2022/2554/oj", impact: 4, penalty_rule: "Financial entities: administrative penalties and remedial measures set under national law (Art. 50-51), with no EU-wide cap. Critical ICT third-party providers only: periodic penalty payments up to 1% of average daily worldwide turnover (Art. 35(8)).",
     duties: ["Board ICT risk governance", "Major incident reporting within 4h", "Threat-Led Penetration Testing (TLPT) >= 3 yrs", "Register of Information for all ICT contracts", "Documented & tested exit strategies for critical functions"] },
   { id: "NIS2", name: "NIS2 Directive & CER", short: "EU · Critical Infrastructure Cyber", jurisdiction: "EU", citation: "Directive (EU) 2022/2555", url: "https://eur-lex.europa.eu/eli/dir/2022/2555/oj", impact: 4, penalty_rule: "Up to €10M or 2% global turnover for essential entities; €7M or 1.4% for important entities.",
     duties: ["Corporate cyber hygiene (MFA, asset inventory, patching)", "Supply chain security assessments", "24h early warning incident reporting", "Direct management body liability for non-compliance"] },
@@ -2971,7 +2971,7 @@ var QUESTIONS = [
     "mode": "workshop",
     "type": "single",
     "q": "What is your enterprise annual global revenue / operating turnover?",
-    "hint": "Required to accurately size statutory turnover penalty ceilings (GDPR 4%, AI Act 7%, NIS2 2%, APRA 30%).",
+    "hint": "Used to size turnover-based statutory penalty ceilings (GDPR 4%, AI Act 3% for high-risk AI systems, NIS2 2%). If left blank, $3B is assumed.",
     "opts": [
       {
         "text": "Over $10 Billion USD / \u20ac9B / SAR 37B (Tier-1 Global Multilateral)",
@@ -3560,7 +3560,7 @@ function generateArchetypes(answers) {
     {
       tag: "Archetype 04",
       name: "Air-Gapped / Disconnected Enclave",
-      desc: "Fully air-gapped infrastructure with zero outbound internet connectivity, local identity management, and physical perimeter controls. Total immunity to remote overreach.",
+      desc: "Fully air-gapped infrastructure with zero outbound internet connectivity, local identity management, and physical perimeter controls. The strongest available isolation from remote access.",
       fit: "Recommended exclusively for Classified Defense, Intelligence, and Critical Nuclear/Grid SCADA.",
       badge: "Air-Gapped",
       rec: false
@@ -4768,6 +4768,29 @@ function generateGapTailoredRoadmap(facts, anomalies, answers) {
 // Scoring runs on the Advisory API; LTM_API attaches the signed-in user's token.
 const EVALUATE_API_PATH = "/api/evaluate/sovereign-iq";
 
+// Display helpers. With no pillar assessed the engine returns maturity.stage = null; the page shows "Not assessed".
+var NOT_ASSESSED_STAGE = { stage: 0, label: "Not assessed", band: "No scored questions answered", color: "#6B7280", desc: "No scored questions have been answered yet, so no maturity stage is given." };
+function normalizeSovereignEvaluation(ev) {
+  if (ev && ev.maturity && !ev.maturity.stage) ev.maturity.stage = NOT_ASSESSED_STAGE;
+  return ev;
+}
+function stageForScore(score) {
+  score = Math.max(0, Math.min(100, Math.round(score)));
+  for (var i = 0; i < MATURITY_STAGES.length; i++) {
+    var st = MATURITY_STAGES[i];
+    if (score >= st.band[0] && score <= st.band[1]) return st;
+  }
+  return MATURITY_STAGES[0];
+}
+/** "72/100", or "Not assessed" for a pillar with no answered questions. */
+function pillarText(ps, id) {
+  return ps && ps[id] !== null && ps[id] !== undefined ? ps[id] + "/100" : "Not assessed";
+}
+/** Turnover note shown next to the penalty ceiling when Q1.3 was not answered. */
+function turnoverNote(fin) {
+  return fin && fin.turnoverAssumed ? " (assumes $" + (fin.turnover / 1000000000).toFixed(0) + "B turnover)" : "";
+}
+
 async function fetchSovereignIqEvaluation() {
   STATE.evaluation = null;
   try {
@@ -4783,7 +4806,7 @@ async function fetchSovereignIqEvaluation() {
     }
     const json = await res.json();
     if (json && json.ok && json.data) {
-      STATE.evaluation = json.data;
+      STATE.evaluation = normalizeSovereignEvaluation(json.data);
       return STATE.evaluation;
     }
   } catch (err) {
@@ -4848,16 +4871,18 @@ function renderReport() {
   var displayFineColor = "red";
   var fineLaws = (fin.components || []).slice().sort(function(a, b) { return (b.amt || 0) - (a.amt || 0); })
     .slice(0, 3).map(function(c) { return escapeHtml(c.law); });
-  var displayFineDesc = fineLaws.length ? fineLaws.join(" &middot; ") : "Largest single in-scope statutory maximum";
+  var displayFineDesc = (fineLaws.length ? fineLaws.join(" &middot; ") : "Largest single in-scope statutory maximum") + (fin.statutoryCeiling > 0 ? turnoverNote(fin) : "");
   var displayLockout = "$" + (fin.downtimeRisk24h/1000000).toFixed(1);
   var displayLockoutColor = "amber";
-  var displayLockoutDesc = "Operational disruption under cloud subpoena";
+  var displayLockoutDesc = "Illustrative cost of a 24-hour outage (turnover-based)";
+  var TARGET_SCORE = 88;
+  var targetStage = stageForScore(TARGET_SCORE);
   var displayGaugeOffset = 213.6 - (213.6 * maturity.score / 100);
 
   if (mode === "target") {
     displayScore = 88;
     displayScoreColor = "var(--green)";
-    displayStageLabel = "Stage 4 &middot; Sovereign-by-Design";
+    displayStageLabel = "Stage " + targetStage.stage + " &middot; " + targetStage.label;
     displayPercentile = null;
     displayFine = "Reduced";
     displayFineColor = "green";
@@ -4869,7 +4894,7 @@ function renderReport() {
   } else if (mode === "compare") {
     displayScore = maturity.score + " &rarr; 88";
     displayScoreColor = "var(--ink)";
-    displayStageLabel = maturity.stage.label + " &rarr; Sovereign-by-Design (+" + Math.max(0, 88 - maturity.score) + " pts)";
+    displayStageLabel = maturity.stage.label + " &rarr; " + targetStage.label + " (+" + Math.max(0, TARGET_SCORE - maturity.score) + " pts)";
     displayPercentile = null;
     displayFine = "$" + (fin.statutoryCeiling/1000000).toFixed(0) + "M &rarr; Reduced";
     displayFineColor = "green";
@@ -5057,6 +5082,7 @@ function renderReport() {
         </div>
       </div>
       <p style="font-size:13.5px;color:var(--mut);line-height:1.5">${maturity.stage.desc}</p>
+      ${STATE.evaluation.lowConfidence ? `<p role="note" style="font-size:12.5px;color:var(--amber);margin-top:8px"><strong>Low confidence:</strong> ${STATE.evaluation.completeness ? STATE.evaluation.completeness.answered + ' of ' + STATE.evaluation.completeness.total : 'fewer than half of the'} questions answered. Pillars with no answers are shown as "Not assessed" and left out of the maturity score.</p>` : ''}
     </div>
 
     <!-- KAVACH-INSPIRED LIVE STATS COUNTER BAR -->
@@ -5099,7 +5125,7 @@ function renderReport() {
             <span class="stat-number ${displayLockoutColor}">${displayLockout}</span>
             <span class="stat-suffix">M</span>
           </div>
-          <div class="stat-label">24h Lockout Risk</div>
+          <div class="stat-label">24h Outage Cost (Illustrative)</div>
           <div class="stat-desc">${displayLockoutDesc}</div>
         </div>
 
@@ -5148,10 +5174,12 @@ function renderReport() {
             var sc = pillarScores[p.id];
             var tgtSc = targetPillarsMap[p.id];
             var pScore = (mode === 'target') ? tgtSc : sc;
+            var notAssessed = (sc === null || sc === undefined) && mode !== 'target';
             var color = (mode === 'target') ? "var(--green)" : (sc >= 75 ? "var(--green)" : (sc >= 50 ? "var(--amber)" : "var(--red)"));
             var valDisplay = (mode === 'compare') 
               ? `<span>${sc} &rarr; <strong style="color:var(--green)">${tgtSc}</strong> <span class="pill green" style="font-size:9.5px;padding:1px 5px">+${tgtSc - sc}</span></span>` 
               : `<span style="font-weight:700;color:${color}">${pScore}/100</span>`;
+            if (notAssessed) valDisplay = '<span style="font-weight:700;color:var(--mutd)">Not assessed</span>';
             return `
               <div>
                 <div style="display:flex;justify-content:space-between;align-items:center;font-size:13px;margin-bottom:4px">
@@ -5383,15 +5411,15 @@ LEAD PARTNER: ${SESSION.consultantLead}, LTM Infrastructure Tech Advisory
 - Peer Benchmark: ${bench.name} (Peer Median: ${bench.overall}/100)
 - Benchmark Variance: ${maturity.score - bench.overall >= 0 ? "+" : ""}${maturity.score - bench.overall} points
 - Pillar Breakdown:
-  * P1 (Data Sovereignty & Localization): ${pillarScores.P1}/100
-  * P2 (Jurisdictional Reach & Extraterritoriality): ${pillarScores.P2}/100
-  * P3 (Operational & Personnel Sovereignty): ${pillarScores.P3}/100
-  * P4 (Cryptographic & Technical Autonomy): ${pillarScores.P4}/100
-  * P5 (Software, Vendor & Supply Chain): ${pillarScores.P5}/100
+  * P1 (Data Sovereignty & Localization): ${pillarText(pillarScores, "P1")}
+  * P2 (Jurisdictional Reach & Extraterritoriality): ${pillarText(pillarScores, "P2")}
+  * P3 (Operational & Personnel Sovereignty): ${pillarText(pillarScores, "P3")}
+  * P4 (Cryptographic & Technical Autonomy): ${pillarText(pillarScores, "P4")}
+  * P5 (Software, Vendor & Supply Chain): ${pillarText(pillarScores, "P5")}
 
 ## 2. QUANTIFIED VALUE AT STAKE
-- Maximum Statutory Penalty Ceiling: $${(fin.statutoryCeiling/1000000).toFixed(1)}M USD (largest single in-scope statutory maximum)
-- 24h Geopolitical Lockout Disruption: $${(fin.downtimeRisk24h/1000000).toFixed(1)}M USD
+- Maximum Statutory Penalty Ceiling: ${(fin.statutoryCeiling/1000000).toFixed(1)}M USD (largest single in-scope statutory maximum)${turnoverNote(fin)}
+- Illustrative cost of a 24-hour outage (turnover-based): ${(fin.downtimeRisk24h/1000000).toFixed(1)}M USD
 - Remediation Sizing Estimate: ~$${(fin.remediationEst/1000).toFixed(0)}k USD (12-week sprint)
 - In-Scope Binding Regimes: ${inScope.length} Global Laws (${inScope.map(function(r){ return r.regime.name; }).join(", ")})
 
@@ -5399,7 +5427,7 @@ LEAD PARTNER: ${SESSION.consultantLead}, LTM Infrastructure Tech Advisory
 - Primary Hyperscaler US Parent Nexus: ${facts.uses_us_hq ? "YES (18 U.S.C. § 2713 Subpoena Exposure Active)" : "No"}
 - Key Custody: ${facts.crypto_hyok ? "Hold-Your-Own-Key (HYOK) with external HSM" : (facts.crypto_byok ? "BYOK in Cloud KMS" : "Provider-Managed Keys (Cleartext exposed)")}
 - SaaS Operator Access: ${facts.saas_lockbox ? "Customer Lockbox Enforced" : "Unmonitored Vendor SRE Break-Glass"}
-- On-Prem DC Telemetry: ${facts.onprem_oob_connected ? "Active Out-of-Band Telemetry Phone-Home Detected" : "Isolated / Air-Gapped"}
+- On-Prem DC Telemetry: ${facts.oob_connected ? "Active Out-of-Band Telemetry Phone-Home Detected" : (facts.oob_airgap ? "Isolated / Air-Gapped" : (facts.oob_na ? "Not applicable (no on-premises estate)" : "Not assessed"))}
 - High-Risk AI Models: ${facts.ai_high_risk ? "EU AI Act Annex III Models Deployed (Conformity Required)" : "Standard Operational AI"}
 
 ## 4. ADVISORY INSTRUCTIONS
@@ -5511,7 +5539,7 @@ PART 1: EXECUTIVE DIAGNOSTIC · THE RESIDENCY FALLACY
 ================================================================================
 Our forensic diagnostic of ${clientDisplay}'s hybrid estate indicates an Overall Sovereignty Maturity Score of ${maturity.score}/100 (${maturity.stage.label.toUpperCase()}), placing the organization at a ${maturity.score - bench.overall >= 0 ? "+" : ""}${maturity.score - bench.overall} point variance against the ${bench.name} median (${bench.overall}/100).
 
-The estate's primary risk concentration is concentrated in Pillar 4 (Cryptographic Autonomy: ${pillarScores.P4}/100) and Pillar 2 (Jurisdictional Reach: ${pillarScores.P2}/100). 
+The estate's primary risk concentration is concentrated in Pillar 4 (Cryptographic Autonomy: ${pillarText(pillarScores, "P4")}) and Pillar 2 (Jurisdictional Reach: ${pillarText(pillarScores, "P2")}). 
 
 While workloads are physically hosted in regional facilities (London / Dublin / Frankfurt), contracts are executed under US corporate parent paper without Hold-Your-Own-Key (HYOK) external encryption. Under the US CLOUD Act (18 U.S.C. § 2713) and FISA Section 702, foreign server localization provides zero legal immunity against extraterritorial production orders. Provider-managed keys allow cleartext extraction directly from cloud KMS without client notification, failing European Data Protection Board (EDPB) Recommendations 01/2020 Use Case 1 criteria.
 
@@ -5538,7 +5566,7 @@ PART 2: ARCHITECTURAL & LEGAL NON-NEGOTIABLES (4-PHASE EXECUTION)
 PART 3: QUANTIFIED VALUE AT STAKE & CAPITAL PRESERVATION
 ================================================================================
 - Maximum Statutory Fine Exposure: $${(fin.statutoryCeiling/1000000).toFixed(1)}M USD (driven by ${inScope.length} in-scope binding statutory regimes).
-- 24-Hour Geopolitical Lockout Disruption: $${(fin.downtimeRisk24h/1000000).toFixed(1)}M USD.
+- Illustrative cost of a 24-hour outage (turnover-based): ${(fin.downtimeRisk24h/1000000).toFixed(1)}M USD.
 - Remediation Sizing: Fixed-price advisory sprint sized at ~$${(fin.remediationEst/1000).toFixed(0)}k USD, yielding a 7.3x capital protection ratio against immediate regulatory enforcement.`;
 }
 
@@ -5730,7 +5758,7 @@ async function generateAiBriefing() {
 function renderSovereignTopologyMap(facts, answers) {
   var isHYOK = !!facts.crypto_hyok;
   var isLockbox = !!facts.saas_lockbox;
-  var isOOBConnected = !!facts.onprem_oob_connected;
+  var isOOBConnected = !!facts.oob_connected;
   var isUSCloud = !!facts.uses_us_hq;
 
   var kmsStatusColor = isHYOK ? "#35754D" : "#D32F2F";
@@ -6344,7 +6372,7 @@ var FORENSIC_REGIME_DOSSIERS = {
     citation: "Regulation (EU) 2022/2554 (DORA Articles 28–30)",
     authority: "European Supervisory Authorities (EBA, EIOPA, ESMA)",
     title: "Digital Operational Resilience for Financial Critical Third Parties",
-    fineFormula: "Periodic penalty payments up to 1% of average daily worldwide turnover for critical ICT third-party providers (CTPPs); supervisory capital add-ons for non-compliant financial entities.",
+    fineFormula: "Financial entities: administrative penalties and remedial measures set under national law (Art. 50-51), with no EU-wide cap. Critical ICT third-party providers only: periodic penalty payments up to 1% of average daily worldwide turnover (Art. 35(8)).",
     failureMode: "Sole dependence on AWS London & Azure Dublin for wealth advisory PaaS without container abstraction (<90d cutover) or complete sub-processor mapping; cloud agreements contracted under Delaware parent paper without HYOK.",
     auditEvidence: [
       "Article 28 Register of Information (RoI) compliant with ESA Implementing Technical Standards.",
@@ -6823,6 +6851,9 @@ function downloadCovenantsMarkdown() {
    PHASE 6: STATUTORY CLAUSE-BY-CLAUSE AUDIT GAP REGISTER
    ============================================================ */
 
+// A clause whose underlying answer is missing is "Not assessed", never "Compliant".
+function NOT_ASSESSED(reason) { return { status: "Not assessed", color: "grey", gap: reason }; }
+
 var CLAUSE_DATASET = [
   {
     id: "DORA_28_8",
@@ -6832,6 +6863,7 @@ var CLAUSE_DATASET = [
     requirement: "ICT contracts for critical functions must contain tested, non-disruptive exit plans to migrate to alternative providers or on-premises.",
     eval: function(facts, answers) {
       var time = answers["Q7.2"];
+      if (time === undefined || time === null) return NOT_ASSESSED("Exit timeline (Q7.2) not answered.");
       if (time === 0) return { status: "Compliant", color: "green", gap: "Tested cutover under 90 days with verifiable runbook." };
       if (time === 1) return { status: "Partial Deficiency", color: "amber", gap: "Cutover timeline (6-12m) exceeds supervisory tolerance without container abstraction." };
       return { status: "Critical Gap", color: "red", gap: "Cutover timeline >18 months creates acute lock-in vulnerability." };
@@ -6846,10 +6878,9 @@ var CLAUSE_DATASET = [
     title: "Register of Information on ICT Third Parties",
     requirement: "Maintain complete, audited register of all ICT contractual arrangements covering functions supported, direct providers, and 4th-party sub-processors.",
     eval: function(facts, answers) {
-      var aud = answers["Q7.3"];
-      if (aud === 0) return { status: "Compliant", color: "green", gap: "Complete register with audited 4th-party sub-processor chain." };
-      if (aud === 1) return { status: "Partial Deficiency", color: "amber", gap: "Direct cloud providers mapped, but 4th-party SaaS sub-processor chain unverified." };
-      return { status: "Critical Gap", color: "red", gap: "No formal register maintained; immediate supervisory inspection penalty." };
+      // No question in this assessment covers the Register of Information (Q7.3 is hardware provenance),
+      // so no verdict is given. Confirm in the workshop.
+      return NOT_ASSESSED("No question in this assessment covers the Register of Information; confirm in the workshop.");
     },
     evidence: "Article 28 Excel/JSON register compliant with ESA Implementing Technical Standards (ITS).",
     action: "Wave 1 initiative 07.1: Assemble and audit DORA Register of Information."
@@ -6861,9 +6892,10 @@ var CLAUSE_DATASET = [
     title: "Supply Chain & Multi-Vendor Cybersecurity",
     requirement: "Essential entities must evaluate cybersecurity practices of direct suppliers and ensure contractual security guarantees.",
     eval: function(facts, answers) {
-      return facts.ctpp_critical ? 
+      if (answers["Q7.1"] === undefined || answers["Q7.1"] === null) return NOT_ASSESSED("Vendor concentration (Q7.1) not answered.");
+      return facts.conc_critical ?
         { status: "Critical Gap", color: "red", gap: "Critical concentration on single hyperscaler without independent supply chain audit." } :
-        { status: "Compliant", color: "green", gap: "Multi-vendor supply chain controls verified." };
+        { status: "Compliant", color: "green", gap: "No critical single-vendor concentration reported; supplier audits to be evidenced." };
     },
     evidence: "Vendor SOC2 Type II, ISO 27001 certifications; bilateral audit rights covenants in MSAs.",
     action: "Wave 1 initiative 04.1: Contract review and supplier risk profiling."
@@ -6875,6 +6907,7 @@ var CLAUSE_DATASET = [
     title: "High-Risk AI Governance & Post-Market Surveillance",
     requirement: "Deployers of Annex III high-risk models (credit, wealth, insurance) must maintain technical files, data governance, and human oversight logs.",
     eval: function(facts, answers) {
+      if (answers["Q2.3"] === undefined || answers["Q2.3"] === null) return NOT_ASSESSED("AI use (Q2.3) not answered.");
       if (facts.ai_high_risk) return { status: "Critical Gap", color: "red", gap: "Proprietary recommendation algorithms require mandatory CE marking & conformity assessment before Aug 2026." };
       if (facts.ai_operational) return { status: "Partial Deficiency", color: "amber", gap: "Standard operational AI requires documentation and copyright transparency files." };
       return { status: "Compliant", color: "green", gap: "No high-risk AI models currently in active production." };
@@ -6889,21 +6922,23 @@ var CLAUSE_DATASET = [
     title: "Extraterritorial Judicial Compulsion Immunity",
     requirement: "Protect European and domestic citizen cleartext data against foreign extraterritorial warrants served on US parent technology providers.",
     eval: function(facts, answers) {
-      if (facts.crypto_hyok) return { status: "Compliant", color: "green", gap: "Hold-Your-Own-Key (HYOK) blinds foreign parents; cleartext disclosure impossible." };
-      if (facts.uses_us_hq) return { status: "Critical Gap", color: "red", gap: "US parent entity subject to 18 U.S.C. § 2713; provider holds KMS keys." };
-      return { status: "Compliant", color: "green", gap: "Hosted solely with domestic sovereign entity without US parent nexus." };
+      if (facts.crypto_hyok) return { status: "Compliant", color: "green", gap: "Hold-Your-Own-Key (HYOK): keys stay outside the provider, so a compelled provider cannot produce readable data without them (subject to key-management design)." };
+      if (facts.uses_us_hq) return { status: "Critical Gap", color: "red", gap: "US parent entity subject to 18 U.S.C. § 2713; keys are not held outside the provider." };
+      if (answers["Q4.1"] === undefined || answers["Q4.1"] === null) return NOT_ASSESSED("Provider headquarters (Q4.1) not answered.");
+      return { status: "Compliant", color: "green", gap: "Primary providers reported without a US parent nexus." };
     },
     evidence: "Transfer Impact Assessment (TIA); independent external HSM certificate; EDPB STM audit report.",
     action: "Wave 2 initiative 06.1: Deploy external HSM / Hold-Your-Own-Key architecture."
   },
   {
     id: "APRA_CPS230",
-    regimeId: "APRA_CPS230",
+    regimeId: "AU_APRA_CPS230",
     citation: "APRA CPS 230 (Paras 24-38)",
     title: "Material Service Provider Management & Disruption Tolerance",
     requirement: "Regulated entities must ensure critical operations can remain within impact tolerances during systemic outages of 4th-party providers.",
     eval: function(facts, answers) {
-      return facts.ctpp_critical ?
+      if (answers["Q7.1"] === undefined || answers["Q7.1"] === null) return NOT_ASSESSED("Vendor concentration (Q7.1) not answered.");
+      return facts.conc_critical ?
         { status: "Critical Gap", color: "red", gap: "Single provider dependency for core wealth portal exceeds APRA disruption tolerance limits." } :
         { status: "Compliant", color: "green", gap: "Dual-provider redundancy and documented impact tolerances." };
     },
@@ -6918,7 +6953,9 @@ var CLAUSE_DATASET = [
     requirement: "Personal and national critical data must not be transferred or remotely managed from outside the Kingdom without SDAIA exemption.",
     eval: function(facts, answers) {
       if (facts.dr_cross_border) return { status: "Critical Gap", color: "red", gap: "Cross-border database replication target outside KSA violates Article 29." };
-      if (facts.onprem_oob_connected) return { status: "Partial Deficiency", color: "amber", gap: "Foreign remote hardware management telemetry detected; domestic SOC required." };
+      if (facts.oob_connected) return { status: "Partial Deficiency", color: "amber", gap: "Foreign remote hardware management telemetry detected; domestic SOC required." };
+      if (answers["Q3.3"] === undefined || answers["Q3.3"] === null || answers["Q5.2"] === undefined || answers["Q5.2"] === null)
+        return NOT_ASSESSED("Backup location (Q3.3) or out-of-band management (Q5.2) not answered.");
       return { status: "Compliant", color: "green", gap: "Data hosted in-country; foreign remote maintenance severed." };
     },
     evidence: "SDAIA Transfer Impact Assessment; KSA in-country datacenter audit; domestic SOC clearance certificate.",
@@ -6935,18 +6972,24 @@ function renderClauseAuditRegister(facts, inScopeRegimes) {
     { id: "NIS2", label: "NIS2 (Art. 21)" },
     { id: "EU_AI_ACT", label: "EU AI Act" },
     { id: "US_CLOUD_ACT", label: "US CLOUD Act" },
-    { id: "APRA_CPS230", label: "APRA CPS 230" },
+    { id: "AU_APRA_CPS230", label: "APRA CPS 230" },
     { id: "KSA_PDPL", label: "KSA PDPL" }
   ];
 
-  var filtered = CLAUSE_DATASET.filter(function(item) {
+  // Only clauses of regimes that are in scope for this client.
+  var inScopeIds = (inScopeRegimes || []).map(function(r) { return r.regime.id; });
+  var applicable = CLAUSE_DATASET.filter(function(item) { return inScopeIds.indexOf(item.regimeId) >= 0; });
+  filterTabs = filterTabs.filter(function(tab) {
+    return tab.id === "ALL" || applicable.some(function(item) { return item.regimeId === tab.id; });
+  });
+  var filtered = applicable.filter(function(item) {
     if (CURRENT_CLAUSE_FILTER === "ALL") return true;
     return item.regimeId === CURRENT_CLAUSE_FILTER;
   });
 
   var rowsHtml = filtered.map(function(item) {
     var res = item.eval(facts, STATE.answers);
-    var statusClass = res.color === "green" ? "pill green" : (res.color === "amber" ? "pill amber" : "pill red");
+    var statusClass = res.color === "green" ? "pill green" : (res.color === "amber" ? "pill amber" : (res.color === "grey" ? "pill" : "pill red"));
     return `
       <tr>
         <td style="padding:10px 12px;border:1px solid var(--line);font-weight:700;font-size:12px;color:var(--ink)">
@@ -6968,7 +7011,7 @@ function renderClauseAuditRegister(facts, inScopeRegimes) {
         </td>
       </tr>
     `;
-  }).join("");
+  }).join("") || '<tr><td colspan="5" style="padding:12px;border:1px solid var(--line);font-size:12px;color:var(--mut)">No clauses in this register apply to the regimes in scope for this client.</td></tr>';
 
   return `
     <div class="card">
@@ -7249,14 +7292,14 @@ function openEmailModal() {
     "• Peer Benchmark: " + bench.name + " (Baseline: " + bench.overall + "/100)\n" +
     "• Variance: " + (maturity.score - bench.overall >= 0 ? "+" : "") + (maturity.score - bench.overall) + " pts\n\n" +
     "2. 5 PILLARS OF DIGITAL SOVEREIGNTY\n" +
-    "• P1: Data Sovereignty & Localization: " + pillarScores.P1 + "/100\n" +
-    "• P2: Jurisdictional Reach & Extraterritoriality: " + pillarScores.P2 + "/100\n" +
-    "• P3: Operational & Personnel Sovereignty: " + pillarScores.P3 + "/100\n" +
-    "• P4: Cryptographic & Technical Autonomy: " + pillarScores.P4 + "/100\n" +
-    "• P5: Software, Vendor & Supply Chain: " + pillarScores.P5 + "/100\n\n" +
+    "• P1: Data Sovereignty & Localization: " + pillarText(pillarScores, "P1") + "\n" +
+    "• P2: Jurisdictional Reach & Extraterritoriality: " + pillarText(pillarScores, "P2") + "\n" +
+    "• P3: Operational & Personnel Sovereignty: " + pillarText(pillarScores, "P3") + "\n" +
+    "• P4: Cryptographic & Technical Autonomy: " + pillarText(pillarScores, "P4") + "\n" +
+    "• P5: Software, Vendor & Supply Chain: " + pillarText(pillarScores, "P5") + "\n\n" +
     "3. FINANCIAL VALUE AT STAKE & RISK EXPOSURE\n" +
     "• Max Statutory Penalty Ceiling: $" + (fin.statutoryCeiling/1000000).toFixed(1) + "M USD (largest single in-scope statutory maximum)\n" +
-    "• 24h Geopolitical Lockout Disruption: $" + (fin.downtimeRisk24h/1000000).toFixed(1) + "M USD\n" +
+    "• Illustrative cost of a 24-hour outage (turnover-based): $" + (fin.downtimeRisk24h/1000000).toFixed(1) + "M USD\n" +
     "• In-Scope Binding Regimes: " + inScope.length + " Applicable Global Laws\n" +
     "• 12-Week Sovereign Remediation Sizing: ~$" + (fin.remediationEst/1000).toFixed(0) + "k USD\n\n" +
     "4. MANDATORY NEXT STEPS\n" +
@@ -7613,7 +7656,7 @@ function renderDataFlowMatrix(facts, answers) {
       flow: "Ingress Gateway → Public Cloud Workloads (AWS / Azure / GCP)",
       origin: facts.hosting_domestic ? "Domestic Hyperscaler Region" : "Foreign Multi-Tenant Region",
       jurisdiction: facts.uses_us_hq ? "United States (18 U.S.C. § 2713 CLOUD Act)" : "Local Sovereign Partner Jurisdiction",
-      conflict: facts.uses_us_hq ? "US extraterritorial subpoena reach compels cleartext disclosure." : "Immune to non-domestic judicial compulsion.",
+      conflict: facts.uses_us_hq ? "US extraterritorial subpoena reach compels cleartext disclosure." : "No foreign-parent nexus reported; residual exposure to non-domestic judicial compulsion is low.",
       status: isHop2Hardened ? "Mitigated" : (facts.uses_us_hq ? "Critical Exposure" : "Managed"),
       statusClass: isHop2Hardened ? "pill green" : (facts.uses_us_hq ? "pill red" : "pill amber"),
       stmStatus: isHop2Hardened ? "VERIFIED COMPLIANT (HYOK)" : "NON-COMPLIANT (SUBPOENA RISK)",
@@ -7874,17 +7917,17 @@ function renderSlide(idx) {
             <div style="font-size:36px;font-weight:800;color:var(--coral);margin:6px 0">${maturity.score}/100 &middot; ${maturity.stage.label}</div>
             <p style="font-size:13px;line-height:1.45">${maturity.stage.desc}</p>
             <div style="margin-top:14px;background:rgba(255,255,255,0.08);padding:10px;border-radius:6px">
-              <b>Statutory Penalty Ceiling:</b> $${(fin.statutoryCeiling/1000000).toFixed(1)}M USD (AI Act / GDPR)
+              <b>Statutory Penalty Ceiling:</b> $${(fin.statutoryCeiling/1000000).toFixed(1)}M USD (largest single in-scope statutory maximum)${turnoverNote(fin)}
             </div>
           </div>
           <div>
             <div style="font-size:12px;color:rgba(255,255,255,0.7);text-transform:uppercase">5-Pillar Scorecard</div>
             <ul style="margin-top:8px">
-              <li><b>P1 Data Sovereignty &amp; Residency:</b> ${pillarScores.P1}/100</li>
-              <li><b>P2 Jurisdictional Reach (CLOUD Act):</b> ${pillarScores.P2}/100</li>
-              <li><b>P3 Operational &amp; Support Bounds:</b> ${pillarScores.P3}/100</li>
-              <li><b>P4 Cryptographic HYOK / Keys:</b> ${pillarScores.P4}/100</li>
-              <li><b>P5 Supply Chain &amp; Exitability:</b> ${pillarScores.P5}/100</li>
+              <li><b>P1 Data Sovereignty &amp; Residency:</b> ${pillarText(pillarScores, "P1")}</li>
+              <li><b>P2 Jurisdictional Reach (CLOUD Act):</b> ${pillarText(pillarScores, "P2")}</li>
+              <li><b>P3 Operational &amp; Support Bounds:</b> ${pillarText(pillarScores, "P3")}</li>
+              <li><b>P4 Cryptographic HYOK / Keys:</b> ${pillarText(pillarScores, "P4")}</li>
+              <li><b>P5 Supply Chain &amp; Exitability:</b> ${pillarText(pillarScores, "P5")}</li>
             </ul>
           </div>
         </div>
@@ -7972,7 +8015,7 @@ function renderSlide(idx) {
           <div>
             <div style="font-size:12px;color:rgba(255,255,255,0.7);text-transform:uppercase">Financial Loss Ceilings</div>
             <div style="font-size:32px;font-weight:800;color:var(--coral);margin:6px 0">$${(fin.statutoryCeiling/1000000).toFixed(1)}M USD</div>
-            <div style="font-size:12px;color:rgba(255,255,255,0.8);margin-bottom:12px">Maximum statutory turnover penalty exposure (AI Act 7% / GDPR 4%)</div>
+            <div style="font-size:12px;color:rgba(255,255,255,0.8);margin-bottom:12px">Largest single in-scope statutory maximum${turnoverNote(fin)}</div>
             <div style="font-size:22px;font-weight:700;color:#fff">$${(fin.downtimeRisk24h/1000000).toFixed(1)}M USD / day</div>
             <div style="font-size:12px;color:rgba(255,255,255,0.8)">24-Hour Geopolitical / Subpoena Lockout Downtime Exposure</div>
           </div>
@@ -8108,11 +8151,11 @@ footer: 'LTM Infrastructure Tech Advisory · Confidential'
 
 | Sovereign Pillar | Score | Benchmark | Status |
 | :--- | :--- | :--- | :--- |
-| **P1: Data Residency & Localization** | ${pillarScores.P1} / 100 | ${bench.pillars.P1} | ${pillarScores.P1 >= bench.pillars.P1 ? "LEADER" : "LAGGING"} |
-| **P2: Jurisdictional & Legal Reach** | ${pillarScores.P2} / 100 | ${bench.pillars.P2} | ${pillarScores.P2 >= bench.pillars.P2 ? "LEADER" : "LAGGING"} |
-| **P3: Operational & Personnel Bounds** | ${pillarScores.P3} / 100 | ${bench.pillars.P3} | ${pillarScores.P3 >= bench.pillars.P3 ? "LEADER" : "LAGGING"} |
-| **P4: Cryptographic & Tech Autonomy** | ${pillarScores.P4} / 100 | ${bench.pillars.P4} | ${pillarScores.P4 >= bench.pillars.P4 ? "LEADER" : "LAGGING"} |
-| **P5: Software, Supply Chain & Exit** | ${pillarScores.P5} / 100 | ${bench.pillars.P5} | ${pillarScores.P5 >= bench.pillars.P5 ? "LEADER" : "LAGGING"} |
+| **P1: Data Residency & Localization** | ${pillarText(pillarScores, "P1")} | ${bench.pillars.P1} | ${pillarScores.P1 == null ? "NOT ASSESSED" : (pillarScores.P1 >= bench.pillars.P1 ? "LEADER" : "LAGGING")} |
+| **P2: Jurisdictional & Legal Reach** | ${pillarText(pillarScores, "P2")} | ${bench.pillars.P2} | ${pillarScores.P2 == null ? "NOT ASSESSED" : (pillarScores.P2 >= bench.pillars.P2 ? "LEADER" : "LAGGING")} |
+| **P3: Operational & Personnel Bounds** | ${pillarText(pillarScores, "P3")} | ${bench.pillars.P3} | ${pillarScores.P3 == null ? "NOT ASSESSED" : (pillarScores.P3 >= bench.pillars.P3 ? "LEADER" : "LAGGING")} |
+| **P4: Cryptographic & Tech Autonomy** | ${pillarText(pillarScores, "P4")} | ${bench.pillars.P4} | ${pillarScores.P4 == null ? "NOT ASSESSED" : (pillarScores.P4 >= bench.pillars.P4 ? "LEADER" : "LAGGING")} |
+| **P5: Software, Supply Chain & Exit** | ${pillarText(pillarScores, "P5")} | ${bench.pillars.P5} | ${pillarScores.P5 == null ? "NOT ASSESSED" : (pillarScores.P5 >= bench.pillars.P5 ? "LEADER" : "LAGGING")} |
 
 ---
 
@@ -8138,8 +8181,8 @@ footer: 'LTM Infrastructure Tech Advisory · Confidential'
 
 # Quantified Value at Stake & Financial Exposure
 
-* **Max Statutory Penalty Exposure:** **$${(fin.statutoryCeiling/1000000).toFixed(1)}M USD** (AI Act 7% / GDPR 4% Turnover)
-* **24-Hour Geopolitical Lockout Downtime:** **$${(fin.downtimeRisk24h/1000000).toFixed(1)}M USD**
+* **Max Statutory Penalty Exposure:** **$${(fin.statutoryCeiling/1000000).toFixed(1)}M USD** (largest single in-scope statutory maximum)${turnoverNote(fin)}
+* **Illustrative cost of a 24-hour outage (turnover-based):** **$${(fin.downtimeRisk24h/1000000).toFixed(1)}M USD**
 * **Target 12-Week Remediation Investment:** **~$${(fin.remediationEst/1000).toFixed(0)}k USD**
 * **Advisory Return on Investment (ROI):** **${(fin.statutoryCeiling / (fin.remediationEst || 480000)).toFixed(1)}x Statutory Protection Ratio**
 
@@ -8444,8 +8487,8 @@ function downloadSovereignExecutivePDF(isArchiveOnly) {
 
   // Value at Stake Table
   var valueData = [
-    ["Statutory Penalty Ceiling", "$" + (fin.statutoryCeiling/1000000).toFixed(1) + "M USD (AI Act 7% / GDPR 4% / APRA)"],
-    ["24-Hour Geopolitical Lockout Risk", "$" + (fin.downtimeRisk24h/1000000).toFixed(1) + "M USD operational impact"],
+    ["Statutory Penalty Ceiling", "$" + (fin.statutoryCeiling/1000000).toFixed(1) + "M USD (largest single in-scope statutory maximum)" + turnoverNote(fin)],
+    ["Illustrative 24-hour outage cost", "$" + (fin.downtimeRisk24h/1000000).toFixed(1) + "M USD (turnover-based)"],
     ["In-Scope Regulatory Regimes", inScopeRegimes.length + " Laws (EU, UK, Middle East, APAC)"],
     ["Remediation Investment Sizing", "~$" + (fin.remediationEst/1000).toFixed(0) + "k USD (12-week advisory sprint)"]
   ];
@@ -8462,11 +8505,11 @@ function downloadSovereignExecutivePDF(isArchiveOnly) {
 
   // 5 Pillars Scorecard Table
   var pillarData = [
-    ["P1: Data Sovereignty & Localization", pillarScores.P1 + "/100", "Data at rest, transit, and memory boundaries."],
-    ["P2: Jurisdictional Reach & Extraterritoriality", pillarScores.P2 + "/100", "CLOUD Act, FISA 702, subpoena immunity."],
-    ["P3: Operational & Personnel Sovereignty", pillarScores.P3 + "/100", "Follow-the-sun admin bounds, OOB telemetry."],
-    ["P4: Cryptographic & Technical Autonomy", pillarScores.P4 + "/100", "HYOK, external HSMs, confidential computing."],
-    ["P5: Software, Vendor & Supply Chain", pillarScores.P5 + "/100", "CTPP concentration, exitability, hardware origin."]
+    ["P1: Data Sovereignty & Localization", pillarText(pillarScores, "P1"), "Data at rest, transit, and memory boundaries."],
+    ["P2: Jurisdictional Reach & Extraterritoriality", pillarText(pillarScores, "P2"), "CLOUD Act, FISA 702, subpoena exposure."],
+    ["P3: Operational & Personnel Sovereignty", pillarText(pillarScores, "P3"), "Follow-the-sun admin bounds, OOB telemetry."],
+    ["P4: Cryptographic & Technical Autonomy", pillarText(pillarScores, "P4"), "HYOK, external HSMs, confidential computing."],
+    ["P5: Software, Vendor & Supply Chain", pillarText(pillarScores, "P5"), "CTPP concentration, exitability, hardware origin."]
   ];
 
   doc.autoTable({
@@ -9411,7 +9454,7 @@ var SOVEREIGN_VENDOR_BENCHMARKS = [
     disconnectedAutonomy: "Indefinite Disconnected Autonomy",
     auditRights: "Unrestricted Physical On-Site Audit",
     pricingPremium: "+55% (High Capex & DC Sizing)",
-    pros: "100% immune to foreign CLOUD Act subpoenas; total operational and hardware control.",
+    pros: "No US parent nexus, so CLOUD Act exposure is minimal; full operational and hardware control.",
     cons: "High initial capex; requires client operational staffing and manual patch cadence."
   }
 ];
@@ -9717,7 +9760,7 @@ function renderTargetStateDelta(maturity, fin, facts) {
       <div class="delta-stat-box">
         <div class="delta-stat-label">Sovereignty Maturity Elevation</div>
         <div class="delta-stat-val" style="color:var(--green)">+${scoreDelta} pts</div>
-        <div class="delta-stat-sub">From ${baselineScore}/100 (${maturity.stage.label}) to ${targetScore}/100 (Sovereign-by-Design)</div>
+        <div class="delta-stat-sub">From ${baselineScore}/100 (${maturity.stage.label}) to ${targetScore}/100 (${stageForScore(targetScore).label})</div>
       </div>
       <div class="delta-stat-box">
         <div class="delta-stat-label">Statutory Fine Mitigation</div>
@@ -9782,7 +9825,7 @@ var SUPERVISORY_EXAM_CHALLENGES = [
     passVerdict: "SATISFIED (PASS): Comprehensive 4th-party cascade mapped into DORA Article 28 Consolidated Register of Information with contractual pass-through audit rights.",
     conditionalVerdict: "SUPERVISORY CONCERN (CONDITIONAL): 4th-party SaaS sub-processors identified in vendor questionnaires, but critical exit transition SLAs and downstream audit rights not contractually bound.",
     failVerdict: "INJUNCTION NOTICE (FAIL): Statutory opacity regarding downstream sub-contractors violating DORA Art. 28(4). Supervisory mandate to novate contracts or cease use within 60 days under daily penalty compounding.",
-    penalty: "Periodic penalty payments up to 1% of average daily global turnover under DORA Article 35 until remedied",
+    penalty: "Administrative penalties and remedial measures set under national law (DORA Art. 50-51); Art. 35 periodic penalty payments apply only to critical ICT third-party providers",
     evidence: "DORA Article 28 Consolidated Information Register, CTPP Concentration Assessment Matrix, and Material Sub-contracting Notification Clauses."
   },
   {
@@ -9846,7 +9889,7 @@ var SUPERVISORY_EXAM_CHALLENGES = [
     question: "Does the domestic or co-located data center footprint contain telecommunications or server hardware from designated prohibited entities, or active unmonitored BMC/IPMI out-of-band management channels connecting outside sovereign borders?",
     evaluator: function(facts, isSimulated) {
       if (isSimulated) return "PASS";
-      if (facts.onprem_oob_connected) return "CONDITIONAL";
+      if (facts.oob_connected) return "CONDITIONAL";
       return "PASS";
     },
     passVerdict: "SATISFIED (PASS): 100% silicon BOM audited clean of prohibited microcontrollers; OOB BMC ports isolated on dedicated air-gapped management network with zero internet routing.",

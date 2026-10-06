@@ -46,6 +46,8 @@ function answerError(q: any, a: unknown): string | null {
       return isFiniteNumber(a) && (a as number) >= sl.min && (a as number) <= sl.max ? null : `expected a number ${sl.min}-${sl.max}`;
     }
     case 'allocation_100': {
+      // Deliberately lenient on the total: the page's sliders can sum to anything, so the page scales the
+      // split to 100 before sending and the engine scales any other total too. Rejecting would 400 real users.
       if (!a || typeof a !== 'object' || Array.isArray(a)) return 'expected an allocation object';
       const vals = Object.values(a as Record<string, unknown>);
       return vals.every(v => isFiniteNumber(v) && (v as number) >= 0 && (v as number) <= 100) ? null : 'expected allocation values 0-100';

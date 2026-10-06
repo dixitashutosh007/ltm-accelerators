@@ -122,15 +122,22 @@ describe('Strategy IQ invariants (500 random questionnaires)', () => {
         expect(v, `seed ${seed}`).toBeGreaterThanOrEqual(1);
         expect(v, `seed ${seed}`).toBeLessThanOrEqual(5);
       }
-      expect(r.debtDragPct, `seed ${seed}`).toBeGreaterThanOrEqual(8);
+      expect(r.debtDragPct, `seed ${seed}`).toBeGreaterThanOrEqual(0);
       expect(r.debtDragPct, `seed ${seed}`).toBeLessThanOrEqual(45);
-      for (const v of [r.alignmentIndex, r.resilienceScore]) expect(v).toBeGreaterThanOrEqual(20), expect(v).toBeLessThanOrEqual(100);
+      for (const v of [r.alignmentIndex, r.resilienceScore]) expect(v).toBeGreaterThanOrEqual(0), expect(v).toBeLessThanOrEqual(100);
+      expect(r.completeness.answered, `seed ${seed}`).toBe(Object.values(r.sectionAnswered).reduce((a, b) => a + b, 0));
+      expect(r.completeness.answered, `seed ${seed}`).toBeLessThanOrEqual(r.completeness.total);
     }
   });
 
-  it('the band always matches the overall score', () => {
+  it('the band always matches the unrounded overall score, and each section band its section score', () => {
     const expected = (o: number) => (o < 2 ? 'band-nascent' : o < 3 ? 'band-emerging' : o < 4 ? 'band-established' : o < 4.6 ? 'band-advanced' : 'band-leading');
-    for (const { seed, r } of runs) expect(r.bandClass, `seed ${seed}`).toBe(expected(r.overall));
+    const short = (o: number) => ({ 'band-nascent': 'Nascent', 'band-emerging': 'Emerging', 'band-established': 'Established', 'band-advanced': 'Advanced', 'band-leading': 'Leading' })[expected(o)];
+    for (const { seed, r } of runs) {
+      const scores = Object.values(r.sectionScores);
+      expect(r.bandClass, `seed ${seed}`).toBe(expected(scores.reduce((a, b) => a + b, 0) / scores.length));
+      for (const [id, v] of Object.entries(r.sectionScores)) expect(r.sectionBands[id], `seed ${seed} ${id}`).toBe(short(v));
+    }
   });
 
   it('a more mature option never lowers its section score; rankings never change any score', () => {
@@ -157,9 +164,9 @@ describe('Strategy IQ regressions fixed in Phase 2', () => {
     expect(computeQuestionScore(q, 4)).toBe(5);
   });
 
-  it('an unanswered slider scores its default on the 1-5 scale (was the raw value, e.g. 65)', () => {
+  it('an answered slider is scored on the 1-5 scale (was the raw value, e.g. 65)', () => {
     for (const q of Q.filter(q => q.type === 'slider')) {
-      const v = computeQuestionScore(q, undefined)!;
+      const v = computeQuestionScore(q, q.sliderConfig.defaultVal)!;
       expect(v, q.id).toBeGreaterThanOrEqual(1);
       expect(v, q.id).toBeLessThanOrEqual(5);
     }
@@ -181,5 +188,168 @@ describe('Strategy IQ regressions fixed in Phase 2', () => {
     expect(r.deliveryVelocity).toBeUndefined();
     expect(r.deliveryMaturity).toBe(Math.round(r.sectionScores.S2 * 10) / 10);
     expect(page).not.toMatch(/Velocity Multiple|x acceleration/);
+  });
+});
+
+/** Extracts `function NAME(...) {...}` from the page source. */
+function pageFunctionSource(name: string) {
+  const start = page.indexOf('function ' + name + '(');
+  if (start < 0) throw new Error('No function ' + name + ' on the page');
+  let depth = 0, end = page.indexOf('{', start);
+  for (; end < page.length; end++) { if (page[end] === '{') depth++; else if (page[end] === '}' && --depth === 0) break; }
+  return page.slice(start, end + 1);
+}
+
+/** Runs a page function with the given globals in scope. */
+function pageFunction(name: string, globals: Record<string, unknown>) {
+  const keys = Object.keys(globals);
+  return new Function(...keys, pageFunctionSource(name) + '\nreturn ' + name + ';')(...keys.map(k => globals[k]));
+}
+
+/** Least (or most) mature answer to every scored question. */
+function extremeAnswers(best: boolean, section?: string) {
+  const answers: Record<string, unknown> = {};
+  for (const q of Q.filter(q => !section || q.section === section)) {
+    if (q.type === 'single_select') {
+      const scores = q.opts.map((o: any) => o.score);
+      answers[q.id] = scores.indexOf(best ? Math.max(...scores) : Math.min(...scores));
+    } else if (q.type === 'multi_select') answers[q.id] = best ? q.opts.map((_: any, i: number) => i) : [];
+    else if (q.type === 'slider') answers[q.id] = best ? q.sliderConfig.max : q.sliderConfig.min;
+    else if (q.type === 'rating_matrix') answers[q.id] = Object.fromEntries(q.subItems.map((s: any) => [s.id, best ? 5 : 1]));
+  }
+  return answers;
+}
+
+describe('Strategy IQ regressions fixed in Phase 3', () => {
+  it('an unanswered question no longer flatters: skipping reads the same as an honest "none" (was 3.0 vs 1.0)', () => {
+    const honest = evaluateStrategyIq({ answers: extremeAnswers(false, 'S1') });
+    const { ['S1.4']: _none, ...skipped } = extremeAnswers(false, 'S1');
+    const skippedR = evaluateStrategyIq({ answers: skipped });
+    expect(honest.sectionScores.S1).toBe(1);
+    expect(skippedR.sectionScores.S1).toBe(1);
+    expect(computeQuestionScore(byId('S1.2'), undefined)).toBeNull();
+    expect(computeQuestionScore(byId('S2.2'), {})).toBeNull();
+    expect(honest.sectionAnswered.S1).toBe(4);
+    expect(skippedR.sectionAnswered.S1).toBe(3);
+  });
+
+  it('reports completeness over scored questions; a section with no answers stays at a neutral 3.0', () => {
+    const scored = Q.filter(q => q.type !== 'drag_rank');
+    const none = evaluateStrategyIq({ answers: {} });
+    expect(none.completeness).toEqual({ answered: 0, total: scored.length });
+    for (const sec of (kb as any).sections) {
+      expect(none.sectionScores[sec.id]).toBe(3);
+      expect(none.sectionAnswered[sec.id]).toBe(0);
+    }
+    const all = evaluateStrategyIq({ answers: extremeAnswers(true) });
+    expect(all.completeness).toEqual({ answered: scored.length, total: scored.length });
+  });
+
+  it('the page offers "None of these are in place", stored as [] and counted as answered', () => {
+    const STATE: any = { answers: {} };
+    const noop = () => {};
+    const selectNone = pageFunction('selectNoneMultiChoice', { STATE, renderCurrentSectionQuestions: noop, renderSectionNavRail: noop });
+    const toggle = pageFunction('toggleMultiChoice', { STATE, renderCurrentSectionQuestions: noop, renderSectionNavRail: noop });
+    const isAnswered = pageFunction('isQuestionAnswered', { STATE, STRATEGY_QUESTIONS: pageLiteral('STRATEGY_QUESTIONS', '[') });
+    expect(page).toContain('None of these are in place');
+    expect(isAnswered('S1.4')).toBe(false);
+    selectNone('S1.4');
+    expect(STATE.answers['S1.4']).toEqual([]);
+    expect(isAnswered('S1.4')).toBe(true);
+    toggle('S1.4', 0);
+    toggle('S1.4', 0); // unticking the last practice is not the same as choosing "None"
+    expect(isAnswered('S1.4')).toBe(false);
+  });
+
+  it('untouched sliders and rating matrices are not stored or counted as answered (were pre-filled)', () => {
+    const questions = pageLiteral('STRATEGY_QUESTIONS', '[');
+    const STATE: any = { answers: {} };
+    pageFunction('initializeDefaultAnswers', { STATE, STRATEGY_QUESTIONS: questions })();
+    const isAnswered = pageFunction('isQuestionAnswered', { STATE, STRATEGY_QUESTIONS: questions });
+    for (const q of questions.filter((q: any) => q.type === 'slider' || q.type === 'rating_matrix')) {
+      expect(STATE.answers[q.id], q.id).toBeUndefined();
+      expect(isAnswered(q.id), q.id).toBe(false);
+    }
+    STATE.answers['S2.2'] = { p1: 4 };
+    expect(isAnswered('S2.2'), 'a partly rated matrix').toBe(false);
+    STATE.answers['S2.2'] = { p1: 4, p2: 4, p3: 4, p4: 4 };
+    expect(isAnswered('S2.2')).toBe(true);
+    STATE.answers['S1.2'] = 3;
+    expect(isAnswered('S1.2')).toBe(true);
+    // Demo archetypes carry explicit values and are complete.
+    for (const [k, a] of Object.entries<any>(pageLiteral('ARCHETYPES', '{'))) {
+      const S: any = { answers: a.scores };
+      const answered = pageFunction('isQuestionAnswered', { STATE: S, STRATEGY_QUESTIONS: questions });
+      expect(questions.filter((q: any) => !answered(q.id)).map((q: any) => q.id), k).toEqual([]);
+    }
+  });
+
+  it('alignment and resilience map 1-5 onto 0-100% (the worst client read 20%)', () => {
+    const worst = evaluateStrategyIq({ answers: extremeAnswers(false) });
+    const best = evaluateStrategyIq({ answers: extremeAnswers(true) });
+    expect([worst.alignmentIndex, worst.resilienceScore]).toEqual([0, 0]);
+    expect([best.alignmentIndex, best.resilienceScore]).toEqual([100, 100]);
+    expect(page).toContain('const pct = Math.round(((s - 1) / 4) * 100);');
+  });
+
+  it('tech-debt drag has no 8% floor, keeps the 45% cap, and is labelled a heuristic', () => {
+    expect(evaluateStrategyIq({ answers: extremeAnswers(true) }).debtDragPct).toBe(2);
+    expect(evaluateStrategyIq({ answers: extremeAnswers(false) }).debtDragPct).toBe(36);
+    expect(page).toContain('Indicative tech-debt drag (LTM heuristic)');
+    expect(page).toMatch(/Illustrative split/);
+    expect(page).not.toMatch(/unhedged/i);
+  });
+
+  it('no unsourced peer-benchmark claims; the top band is plain "Leading"', () => {
+    expect(evaluateStrategyIq({ answers: extremeAnswers(true) }).band).toBe('Leading');
+    expect(page).toContain('Illustrative target profile (LTM practice heuristic, not peer data)');
+    expect(page).not.toMatch(/Top-Quartile Industry Benchmark|Industry Benchmark|statistically sound peer benchmarks|peer benchmark percentiles/);
+  });
+
+  it('narrative claims depend on the scores behind them', () => {
+    const brief = pageFunction('generateDeterministicBrief', {
+      STATE: { intake: { orgName: 'Client', itSpend: 60_000_000 } },
+      STRATEGY_SECTIONS: (kb as any).sections,
+      escapeHtml: (x: string) => x
+    });
+    const strong = evaluateStrategyIq({ answers: extremeAnswers(true) });
+    const weak = evaluateStrategyIq({ answers: extremeAnswers(false) });
+    const strongText = brief(strong), weakText = brief(weak);
+    expect(strongText).not.toMatch(/ring-fenced refactoring capacity|single points of human dependency|rarely reconciled/);
+    expect(weakText).toMatch(/ring-fenced refactoring capacity and single points of human dependency/);
+    expect(weakText).toMatch(/rarely reconciled/);
+    for (const t of [strongText, weakText]) {
+      expect(t).not.toMatch(/most direct way to lift operating-model maturity/);
+      expect(t).toMatch(/release change capacity/);
+    }
+    // Only S6 weak: the value-tracking claim appears, the S4/S5 sentence does not.
+    const onlyS6 = evaluateStrategyIq({ answers: { ...extremeAnswers(true), ...extremeAnswers(false, 'S6') } });
+    expect(brief(onlyS6)).toMatch(/rarely reconciled/);
+    expect(brief(onlyS6)).not.toMatch(/ring-fenced refactoring capacity/);
+  });
+
+  it('the S4.2 slider no longer labels 20% as "Recommended" (the level descriptions rate >35% as Level 5)', () => {
+    expect(byId('S4.2').sliderConfig.ticks.join(' ')).not.toMatch(/Recommended/);
+    const pageQ = pageLiteral('STRATEGY_QUESTIONS', '[').find((q: any) => q.id === 'S4.2');
+    expect(pageQ.sliderConfig.ticks.join(' ')).not.toMatch(/Recommended/);
+  });
+
+  it('PDF section labels use the engine\'s bands (were their own 3.0/4.0 thresholds)', () => {
+    const r = evaluateStrategyIq({ answers: { ...extremeAnswers(true), ...extremeAnswers(false, 'S4') } });
+    expect(r.sectionBands).toMatchObject({ S1: 'Leading', S4: 'Nascent' });
+    const pdf = pageFunctionSource('downloadStrategyPDF');
+    expect(pdf).toContain('R.sectionBands[s.id]');
+    expect(pdf).not.toMatch(/"High Risk"/);
+  });
+
+  it('the band comes from the unrounded score (3.96 shows as 4.0 but is Established)', () => {
+    const customKb = {
+      sections: [{ id: 'S1' }],
+      questions: [{ id: 'X', section: 'S1', type: 'single_select', opts: [{ score: 3.96 }, { score: 4.6 }] }]
+    };
+    const r = evaluateStrategyIq({ answers: { X: 0 } }, customKb);
+    expect(r.overall).toBe(4);
+    expect(r.band).toBe('Established (Operational)');
+    expect(evaluateStrategyIq({ answers: { X: 1 } }, customKb).band).toBe('Leading');
   });
 });

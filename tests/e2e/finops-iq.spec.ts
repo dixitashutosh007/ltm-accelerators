@@ -33,13 +33,31 @@ test.describe('FinOps IQ', () => {
     expect(Object.keys(last.org).sort()).toEqual(['name', 'sector']);
 
     const r = evaluateFinOpsIq((parsed as any).value);
-    const expectedBlockers = Object.values(r.stageCriticals).flatMap(c => c.failing.filter((f: any) => f.score !== null)).length;
-    const kpi = page.locator('.kpi-card', { hasText: 'Gate Blockers Outstanding' }).locator('.kpi-value');
-    await expect(kpi).toHaveText(String(expectedBlockers));
+    // Every failing critical gate counts, answered below its minimum or not yet answered.
+    const failing = Object.values(r.stageCriticals).flatMap(c => c.failing);
+    const unanswered = failing.filter((f: any) => f.score === null).length;
+    const card = page.locator('.kpi-card', { hasText: 'Gate Blockers Outstanding' });
+    await expect(card.locator('.kpi-value')).toHaveText(String(failing.length));
+    await expect(card).toContainText(`${failing.length - unanswered} below minimum · ${unanswered} not yet answered`);
+    await expect(page.getByTestId('coverage')).toHaveText(`Based on ${r.coverage.answered} of ${r.coverage.total} questions`);
+    await expect(page.getByTestId('vas-basis')).toHaveText('Based on your estimate of waste');
 
     const text = await page.locator('#main-app').innerText();
     expect(text).not.toMatch(/\bundefined\b|\bNaN\b|\[object Object\]/);
     expect(world.pageErrors).toEqual([]);
+  });
+
+  test('with no answers, unanswered critical gates are blockers and domains read "Not assessed"', async ({ page }) => {
+    await page.evaluate(`STATE.answers = {}; saveState(); switchTab('report')`);
+    const card = page.locator('.kpi-card', { hasText: 'Gate Blockers Outstanding' });
+    await expect(card.locator('.kpi-value')).toHaveText('17', { timeout: 15_000 });
+    await expect(card).toContainText('0 below minimum · 17 not yet answered');
+    await expect(card).not.toContainText('All critical gates cleared');
+    await expect(page.getByTestId('coverage')).toHaveText('Based on 0 of 44 questions');
+    await expect(page.getByText('Not assessed')).toHaveCount(5);
+    await expect(page.getByTestId('vas-basis')).toHaveText('Based on maturity stage benchmark (LTM heuristic)');
+    const text = await page.locator('#main-app').innerText();
+    expect(text).not.toMatch(/\bundefined\b|\bNaN\b|\bnull\b|Stage 0/);
   });
 
   test('answer options show no point values', async ({ page }) => {

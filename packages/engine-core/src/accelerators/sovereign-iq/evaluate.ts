@@ -15,21 +15,32 @@ export interface SovereignIqInput {
 export interface SovereignIqEvaluation {
   facts: Record<string, any>;
   inScopeRegimes: any[];
+  /** 0–100 per pillar, or null when none of the pillar's questions is answered ("not assessed"). */
   pillarScores: {
-    P1: number;
-    P2: number;
-    P3: number;
-    P4: number;
-    P5: number;
+    P1: number | null;
+    P2: number | null;
+    P3: number | null;
+    P4: number | null;
+    P5: number | null;
   };
+  /** Whether each pillar has at least one answered question. Unassessed pillars are left out of maturity. */
+  pillarAssessed: { P1: boolean; P2: boolean; P3: boolean; P4: boolean; P5: boolean };
+  /** Questions answered out of the questions in the knowledge base. */
+  completeness: { answered: number; total: number };
+  /** True when fewer than half of the questions are answered. */
+  lowConfidence: boolean;
   maturity: {
+    /** Weighted over assessed pillars only; 0 when no pillar is assessed. */
     score: number;
     /** Not computed yet: peer percentiles need a sourced benchmark dataset (Phase 3). */
     percentile?: number;
+    /** Maturity stage for the score, or null when no pillar is assessed. */
     stage: any;
   };
   fin: {
     turnover: number;
+    /** True when Q1.3 is unanswered and the default turnover ($3B) is used. */
+    turnoverAssumed: boolean;
     /** Largest single statutory maximum among in-scope regimes (0 when none is quantified). */
     statutoryCeiling: number;
     downtimeRisk24h: number;
@@ -45,6 +56,16 @@ export interface SovereignIqEvaluation {
   timestamp: string;
 }
 
+
+// Currency conversion for statutory floors set in local currency. Fines are reported in USD (turnover is in USD).
+// Indicative rates, reviewed with the claims register; change here only.
+export const EUR_TO_USD = 1.08;
+export const GBP_TO_USD = 1.27;
+export const AUD_TO_USD = 0.65;
+export const INR_TO_USD = 0.012;
+export const SAR_TO_USD = 1 / 3.75; // SAR is pegged to USD at 3.75
+/** Turnover used when Q1.3 is unanswered (flagged as turnoverAssumed). */
+export const DEFAULT_TURNOVER_USD = 3000000000;
 
 // Global reference holders for execution context
 let QUESTIONS: any[] = defaultKb.questions;
@@ -82,12 +103,17 @@ function evaluateRegimes(facts: Record<string, any>) {
 
     // 1. EU & UK Regimes
     if (reg.id === "DORA") {
-      if (facts.sector === "bfsi" && (facts.geo_eu || facts.geo_uk)) {
+      // DORA Art. 2 applies to EU financial entities. A UK-only firm is not directly in scope (the UK has its own
+      // operational resilience and critical third party regimes), so it is flagged as advisory only.
+      if (facts.sector === "bfsi" && facts.geo_eu) {
         inScope = true; grade = "applies";
-        rationale = "Directly applicable to regulated financial entities operating in or into the EU under DORA Art. 2.";
+        rationale = "Directly applicable to regulated financial entities operating in the EU under DORA Art. 2.";
       } else if (facts.data_financial && facts.geo_eu) {
         inScope = true; grade = "likely_confirm";
         rationale = "Financial data processing in the EU indicates material likelihood of DORA in-scope financial services.";
+      } else if (facts.sector === "bfsi" && facts.geo_uk) {
+        inScope = true; grade = "advisory";
+        rationale = "DORA applies to EU financial entities. A UK-only firm is not directly in scope; confirm whether any group entity is EU-authorised or provides ICT services to EU financial entities.";
       }
     } else if (reg.id === "NIS2") {
       if (facts.geo_eu && ["energy", "health", "public", "telco", "mfg"].includes(facts.sector)) {
@@ -153,7 +179,8 @@ function evaluateRegimes(facts: Record<string, any>) {
         rationale = "National Critical Infrastructure & government agencies subject to NCA Essential Cybersecurity Controls (ECC) and CSCC.";
       }
     } else if (reg.id === "KSA_SAMA_CITC") {
-      if (facts.geo_ksa && (facts.sector === "bfsi" || facts.data_financial)) {
+      // SAMA regulates financial institutions; holding financial data alone does not bring a firm into scope.
+      if (facts.geo_ksa && facts.sector === "bfsi") {
         inScope = true; grade = "applies";
         rationale = "Saudi financial institutions must comply with SAMA Cybersecurity Framework and CITC Class A/B/C cloud restrictions.";
       }
@@ -163,7 +190,9 @@ function evaluateRegimes(facts: Record<string, any>) {
         rationale = "UAE Federal Decree-Law No. 45/2021 sets strict cross-border transfer adequacy and data subject protection obligations.";
       }
     } else if (reg.id === "UAE_DESC_CBUAE") {
-      if (facts.geo_uae && (facts.sector === "bfsi" || facts.sector === "public" || facts.data_financial)) {
+      // CBUAE outsourcing rules cover licensed financial institutions; DESC standards cover Dubai government entities.
+      // Holding financial data alone does not bring a firm into scope.
+      if (facts.geo_uae && (facts.sector === "bfsi" || facts.sector === "public")) {
         inScope = true; grade = "applies";
         rationale = "Dubai Electronic Security Centre (DESC) standards and CBUAE outsourcing frameworks govern cloud and CII estates.";
       }
@@ -175,7 +204,8 @@ function evaluateRegimes(facts: Record<string, any>) {
 
     // 3. APAC (Singapore, Australia, India, HK, Japan)
     } else if (reg.id === "SG_MAS_TRM") {
-      if (facts.geo_sg && (facts.sector === "bfsi" || facts.data_financial)) {
+      // MAS guidelines apply to MAS-regulated financial institutions, not to any firm holding financial data.
+      if (facts.geo_sg && facts.sector === "bfsi") {
         inScope = true; grade = "applies";
         rationale = "Monetary Authority of Singapore (MAS) TRM guidelines enforce strict cloud risk management and 4-hour disaster recovery RTO.";
       }
@@ -185,7 +215,8 @@ function evaluateRegimes(facts: Record<string, any>) {
         rationale = "Singapore Personal Data Protection Act (PDPA) transfer limitation obligations and CSA Critical Information Infrastructure rules.";
       }
     } else if (reg.id === "AU_APRA_CPS230") {
-      if (facts.geo_au && (facts.sector === "bfsi" || facts.data_financial)) {
+      // CPS 230 applies to APRA-regulated entities (banks, insurers, superannuation), not to any firm holding financial data.
+      if (facts.geo_au && facts.sector === "bfsi") {
         inScope = true; grade = "applies";
         rationale = "APRA CPS 230 operational resilience standard mandates end-to-end material service provider monitoring and exit plans.";
       }
@@ -212,12 +243,13 @@ function evaluateRegimes(facts: Record<string, any>) {
 
     // 4. Extraterritorial & Cross-Border Conflict
     } else if (reg.id === "US_CLOUD_ACT") {
-      if (facts.uses_us_hq || facts.uses_cloud || facts.uses_saas) {
+      // Keyed to the use of a US-headquartered provider (Q4.1), not to cloud or SaaS use as such.
+      if (facts.uses_us_hq) {
         inScope = true; grade = "advisory";
         rationale = "Reliance on US-headquartered tech providers engages extraterritorial subpoena exposure under 18 U.S.C. § 2713 (CLOUD Act).";
       }
     } else if (reg.id === "US_FISA_702") {
-      if ((facts.geo_eu || facts.geo_uk) && (facts.uses_cloud || facts.uses_saas)) {
+      if ((facts.geo_eu || facts.geo_uk) && facts.uses_us_hq) {
         inScope = true; grade = "needs_legal_review";
         rationale = "Schrems II Transfer Impact Assessment required to assess FISA §702 surveillance risks and verify supplementary technical measures.";
       }
@@ -241,8 +273,30 @@ function evaluateRegimes(facts: Record<string, any>) {
   return results;
 }
 
+// Scored questions per pillar. Each answer counts once: the option's own score from the knowledge base.
+var PILLAR_QUESTIONS: Record<string, string[]> = {
+  P1: ["Q3.2", "Q3.3"],
+  P2: ["Q4.1", "Q4.2", "Q4.3"],
+  P3: ["Q5.1", "Q5.2", "Q5.3"],
+  P4: ["Q6.1", "Q6.2", "Q6.3"],
+  P5: ["Q7.1", "Q7.2", "Q7.3"]
+};
+var PILLAR_IDS = ["P1", "P2", "P3", "P4", "P5"];
+
+function isAnswered(a: any) {
+  if (a === undefined || a === null) return false;
+  if (Array.isArray(a)) return a.length > 0;
+  return true;
+}
+
+function computeCompleteness(answers: any) {
+  var answered = QUESTIONS.filter(function(q: any) { return isAnswered(answers[q.id]); }).length;
+  return { answered: answered, total: QUESTIONS.length };
+}
+
 function computePillarScores(answers: any, facts: any) {
-  var scores = { P1: 60, P2: 50, P3: 55, P4: 45, P5: 50 }; // default baseline
+  var scores: any = { P1: null, P2: null, P3: null, P4: null, P5: null };
+  var assessed: any = { P1: false, P2: false, P3: false, P4: false, P5: false };
 
   // Helper to extract score from question options
   function getScore(qid: any) {
@@ -253,99 +307,100 @@ function computePillarScores(answers: any, facts: any) {
     return typeof q.opts[a].score === "number" ? q.opts[a].score : null;
   }
 
-  // P1: Data Sovereignty & Localization
-  var p1Scores = [getScore("Q3.2"), getScore("Q3.3")].filter(function(s: any) { return s !== null; });
-  if (facts.data_national_sec) p1Scores.push(30);
-  if (facts.hosting_domestic) p1Scores.push(90);
-  if (p1Scores.length) scores.P1 = Math.round(p1Scores.reduce(function(a,b){return a+b;},0) / p1Scores.length);
+  PILLAR_IDS.forEach(function(pid) {
+    var list: number[] = PILLAR_QUESTIONS[pid].map(getScore).filter(function(s: any) { return s !== null; }) as number[];
+    if (!list.length) return; // not assessed: no default score is invented
+    assessed[pid] = true;
+    // P2 interaction penalty: a US-headquartered provider (Q4.1) without HYOK (Q6.1). Applied only when Q6.1 is
+    // answered, so a missing answer is not read as "no HYOK".
+    if (pid === "P2" && facts.uses_us_hq && isAnswered(answers["Q6.1"]) && !facts.crypto_hyok) list.push(25);
+    scores[pid] = Math.round(list.reduce(function(a, b) { return a + b; }, 0) / list.length);
+  });
+  // Holding national-security data (Q3.1) is scope and obligation, not maturity: it does not change P1.
 
-  // P2: Jurisdictional Reach & Extraterritoriality
-  var p2Scores = [getScore("Q4.1"), getScore("Q4.2"), getScore("Q4.3")].filter(function(s: any) { return s !== null; });
-  if (facts.uses_us_hq && !facts.crypto_hyok) p2Scores.push(25);
-  if (facts.tia_complete) p2Scores.push(95);
-  if (p2Scores.length) scores.P2 = Math.round(p2Scores.reduce(function(a,b){return a+b;},0) / p2Scores.length);
-
-  // P3: Operational & Personnel Sovereignty
-  var p3Scores = [getScore("Q5.1"), getScore("Q5.2"), getScore("Q5.3")].filter(function(s: any) { return s !== null; });
-  if (facts.ops_sovereign_support) p3Scores.push(95);
-  if (facts.oob_connected) p3Scores.push(35);
-  if (p3Scores.length) scores.P3 = Math.round(p3Scores.reduce(function(a,b){return a+b;},0) / p3Scores.length);
-
-  // P4: Cryptographic & Technical Autonomy
-  var p4Scores = [getScore("Q6.1"), getScore("Q6.2"), getScore("Q6.3")].filter(function(s: any) { return s !== null; });
-  if (facts.crypto_hyok) p4Scores.push(100);
-  if (facts.conf_compute_prod) p4Scores.push(95);
-  if (facts.crypto_provider_kms) p4Scores.push(20);
-  if (p4Scores.length) scores.P4 = Math.round(p4Scores.reduce(function(a,b){return a+b;},0) / p4Scores.length);
-
-  // P5: Software, Vendor & Supply Chain Sovereignty
-  var p5Scores = [getScore("Q7.1"), getScore("Q7.2"), getScore("Q7.3")].filter(function(s: any) { return s !== null; });
-  if (facts.exit_under_3m) p5Scores.push(95);
-  if (facts.exit_impossible) p5Scores.push(15);
-  if (facts.hw_audited) p5Scores.push(90);
-  if (p5Scores.length) scores.P5 = Math.round(p5Scores.reduce(function(a,b){return a+b;},0) / p5Scores.length);
-
-  return scores;
+  return { scores: scores, assessed: assessed };
 }
 
-function computeOverallMaturity(pillarScores: any) {
-  var total = (pillarScores.P1 * 0.25) +
-              (pillarScores.P2 * 0.25) +
-              (pillarScores.P3 * 0.15) +
-              (pillarScores.P4 * 0.20) +
-              (pillarScores.P5 * 0.15);
-  var overall = Math.round(total);
+export const MIN_PILLARS_FOR_STAGE = 3;
 
-  var stage = MATURITY_STAGES[0];
-  for (var i = 0; i < MATURITY_STAGES.length; i++) {
-    var s = MATURITY_STAGES[i];
-    if (overall >= s.band[0] && overall <= s.band[1]) {
-      stage = s;
-      break;
-    }
+export function stageForScore(score: number, stages: any[] = MATURITY_STAGES) {
+  for (var i = 0; i < stages.length; i++) {
+    var s = stages[i];
+    if (score >= s.band[0] && score <= s.band[1]) return s;
   }
-  return { score: overall, stage: stage };
+  return stages[0];
+}
+
+function computeOverallMaturity(pillarScores: any, assessed: any) {
+  // Weighted over assessed pillars only, with the weights renormalised.
+  var weights: Record<string, number> = { P1: 0.25, P2: 0.25, P3: 0.15, P4: 0.20, P5: 0.15 };
+  var total = 0, weight = 0;
+  PILLAR_IDS.forEach(function(pid) {
+    if (!assessed[pid]) return;
+    total += pillarScores[pid] * weights[pid];
+    weight += weights[pid];
+  });
+  if (weight === 0) return { score: 0, stage: null };
+  var overall = Math.round(total / weight);
+  // A maturity stage needs evidence across the estate: at least three of the five pillars assessed.
+  var assessedCount = PILLAR_IDS.filter(function(pid) { return assessed[pid]; }).length;
+  return { score: overall, stage: assessedCount >= MIN_PILLARS_FOR_STAGE ? stageForScore(overall) : null };
 }
 
 function calculateFinancialExposure(answers: any, inScopeRegimes: any, facts: any) {
-  // Enterprise turnover sizing
+  // Enterprise turnover sizing (USD). Unanswered Q1.3 keeps the default and is flagged.
+  var turnover = DEFAULT_TURNOVER_USD;
+  var turnoverAssumed = true;
   var revOpt = answers["Q1.3"];
-  var turnover = 3000000000; // default $3B
-  if (revOpt !== undefined && QUESTIONS.find(function(q: any){return q.id==="Q1.3";})) {
-    var qObj = QUESTIONS.find(function(q: any){return q.id==="Q1.3";});
-    if (qObj.opts[revOpt] && qObj.opts[revOpt].val) turnover = qObj.opts[revOpt].val;
+  var qObj = QUESTIONS.find(function(q: any){ return q.id === "Q1.3"; });
+  if (revOpt !== undefined && revOpt !== null && qObj && qObj.opts && qObj.opts[revOpt] && qObj.opts[revOpt].val) {
+    turnover = qObj.opts[revOpt].val;
+    turnoverAssumed = false;
   }
 
-  // Statutory fines
-  var maxSingleFine = 0;
-  var hasGDPR = inScopeRegimes.some(function(r: any){ return r.regime.id === "EU_GDPR" || r.regime.id === "UK_GDPR"; });
-  var hasAIAct = inScopeRegimes.some(function(r: any){ return r.regime.id === "EU_AI_ACT"; });
-  var hasDORA = inScopeRegimes.some(function(r: any){ return r.regime.id === "DORA"; });
-  var hasKSA = inScopeRegimes.some(function(r: any){ return r.regime.id === "KSA_PDPL"; });
-  var hasAU = inScopeRegimes.some(function(r: any){ return r.regime.id === "AU_PRIVACY_SOCI"; });
+  // Statutory fines, all in USD. Floors set in local currency are converted with the constants above.
+  var inScope = function(id: string) { return inScopeRegimes.some(function(r: any){ return r.regime.id === id; }); };
+  var hasEUGDPR = inScope("EU_GDPR");
+  var hasUKGDPR = inScope("UK_GDPR");
+  var hasAIAct = inScope("EU_AI_ACT");
+  var hasKSA = inScope("KSA_PDPL");
+  var hasAU = inScope("AU_PRIVACY_SOCI");
+  var hasIN = inScope("IN_DPDP_RBI");
 
-  var fineComponents = [];
+  var fineComponents: { law: string; amt: number }[] = [];
   if (hasAIAct && facts.ai_high_risk) {
     // EU AI Act Art. 99(4): high-risk obligations up to EUR 15M or 3% of worldwide turnover, whichever is higher.
     // (The EUR 35M / 7% tier in Art. 99(3) applies only to prohibited practices under Art. 5.)
-    var aiFine = Math.max(15000000, turnover * 0.03);
-    fineComponents.push({ law: "EU AI Act Art. 99(4) (3% global turnover)", amt: aiFine });
+    fineComponents.push({ law: "EU AI Act Art. 99(4) (3% global turnover)", amt: Math.max(15000000 * EUR_TO_USD, turnover * 0.03) });
   }
-  if (hasGDPR) {
+  if (hasEUGDPR) {
     // GDPR Art. 83(5): up to EUR 20M or 4% of worldwide annual turnover, whichever is higher.
-    var gdprFine = Math.max(20000000, turnover * 0.04);
-    fineComponents.push({ law: "GDPR Art. 83(5) (4% global turnover)", amt: gdprFine });
+    fineComponents.push({ law: "EU GDPR Art. 83(5) (4% global turnover)", amt: Math.max(20000000 * EUR_TO_USD, turnover * 0.04) });
+  }
+  if (hasUKGDPR) {
+    // UK GDPR Art. 83(5) / DPA 2018 s.157: up to GBP 17.5M or 4% of worldwide annual turnover, whichever is higher.
+    fineComponents.push({ law: "UK GDPR Art. 83(5) (4% global turnover)", amt: Math.max(17500000 * GBP_TO_USD, turnover * 0.04) });
   }
   if (hasKSA) {
-    fineComponents.push({ law: "KSA PDPL (Statutory max)", amt: 1330000 }); // SAR 5M in USD
+    // KSA PDPL Art. 35-36: fines up to SAR 5M (doubling on repeat offences is not modelled).
+    fineComponents.push({ law: "KSA PDPL (Statutory max)", amt: 5000000 * SAR_TO_USD });
   }
   if (hasAU) {
-    fineComponents.push({ law: "AU Privacy Act / APRA (Max penalty)", amt: 33000000 }); // AUD 50M
+    // Privacy Act 1988 s.13G as amended by the Privacy Legislation Amendment Act 2022: the greater of AUD 50M,
+    // 3x the benefit obtained, or 30% of "adjusted turnover" (Australian turnover over the breach period).
+    // Neither the benefit nor Australian turnover is captured, and global turnover would overstate it badly,
+    // so only the AUD 50M figure is quantified.
+    fineComponents.push({ law: "Privacy Act 1988 (as amended 2022) · AUD 50M figure; 30% of Australian adjusted turnover not quantified", amt: 50000000 * AUD_TO_USD });
   }
-  // Largest single statutory maximum among in-scope regimes (0 when none is quantified).
+  if (hasIN) {
+    // India DPDP Act 2023 Schedule: up to INR 250 crore per breach.
+    fineComponents.push({ law: "India DPDP Act 2023 (INR 250 crore max)", amt: 2500000000 * INR_TO_USD });
+  }
+  // Largest single statutory maximum among in-scope regimes (0 when none is quantified). Never a sum.
+  var maxSingleFine = 0;
   fineComponents.forEach(function(c: any) { maxSingleFine = Math.max(maxSingleFine, c.amt); });
 
-  // Operational downtime risk: estimate $250k / hr for enterprise core outage
+  // Illustrative cost of a 24-hour outage: daily turnover x 1.5 (turnover-based heuristic, not a statutory figure).
   var hourlyDowntime = (turnover / (365 * 24)) * 1.5;
   var downtimeRisk24h = Math.round(hourlyDowntime * 24);
 
@@ -354,6 +409,7 @@ function calculateFinancialExposure(answers: any, inScopeRegimes: any, facts: an
 
   return {
     turnover: turnover,
+    turnoverAssumed: turnoverAssumed,
     statutoryCeiling: maxSingleFine,
     downtimeRisk24h: downtimeRisk24h,
     remediationEst: remediationEst,
@@ -375,11 +431,13 @@ function generateStrategicHeatmap(inScopeRegimes: any, pillarScores: any) {
   inScopeRegimes.forEach(function(item: any) {
     var impact = item.regime.impact || 3;
     var exp = 2; // default managed
+    // A pillar that is not assessed is not evidenced, so it is treated like a weak pillar (conservative).
+    var low = function(v: any) { return v === null || v === undefined || v < 50; };
 
     if (item.grade === "applies" || item.grade === "needs_legal_review") {
-      exp = pillarScores.P2 < 50 || pillarScores.P4 < 50 ? 4 : 3;
+      exp = low(pillarScores.P2) || low(pillarScores.P4) ? 4 : 3;
     } else if (item.grade === "likely_confirm") {
-      exp = pillarScores.P1 < 50 ? 3 : 2;
+      exp = low(pillarScores.P1) ? 3 : 2;
     } else {
       exp = 1;
     }
@@ -428,7 +486,7 @@ function generateArchetypes(answers: any) {
     {
       tag: "Archetype 04",
       name: "Air-Gapped / Disconnected Enclave",
-      desc: "Fully air-gapped infrastructure with zero outbound internet connectivity, local identity management, and physical perimeter controls. Total immunity to remote overreach.",
+      desc: "Fully air-gapped infrastructure with zero outbound internet connectivity, local identity management, and physical perimeter controls. The strongest available isolation from remote access.",
       fit: "Recommended exclusively for Classified Defense, Intelligence, and Critical Nuclear/Grid SCADA.",
       badge: "Air-Gapped",
       rec: false
@@ -647,8 +705,12 @@ export function evaluateSovereignIq(
   const answers = input.answers || {};
   const facts = computeFacts(answers);
   const inScopeRegimes = evaluateRegimes(facts);
-  const pillarScores = computePillarScores(answers, facts);
-  const maturity = computeOverallMaturity(pillarScores);
+  const pillars = computePillarScores(answers, facts);
+  const pillarScores = pillars.scores;
+  const pillarAssessed = pillars.assessed;
+  const completeness = computeCompleteness(answers);
+  const lowConfidence = completeness.answered < completeness.total / 2;
+  const maturity = computeOverallMaturity(pillarScores, pillarAssessed);
   const fin = calculateFinancialExposure(answers, inScopeRegimes, facts);
   const heatmap = generateStrategicHeatmap(inScopeRegimes, pillarScores);
   const anomalies = analyzeEstateAnomalies(answers, facts);
@@ -661,6 +723,9 @@ export function evaluateSovereignIq(
     facts,
     inScopeRegimes,
     pillarScores,
+    pillarAssessed,
+    completeness,
+    lowConfidence,
     maturity,
     fin,
     heatmap,

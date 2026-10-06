@@ -16,8 +16,8 @@
 | 0 | Containment | ✅ Done | Unauthenticated user, password and report routes closed. Cognito self sign-up disabled. The old open API (`zvnmwxa9sf`) and orphaned stacks deleted |
 | 1 | Platform foundation | ✅ Done (owner actions open) | One authenticated API in code; Cognito JWT on every route; CI (typecheck, tests, backend assertions, browser tests, secret scan); site-wide security headers |
 | 2 | Engine consolidation & correctness | ✅ Done | All six accelerators score only on the server, through validated request contracts. Golden, invariant, contract, regression and browser tests for each. 20+ scoring and report bugs fixed (see `docs/phase2/ACCELERATOR_TEMPLATE.md`) |
-| 3 | **Scoring model audit & recalibration** (new) | ⏭ Next | See below |
-| 4 | Fact-check & methodology | Not started (groundwork done) | 323 candidate claims extracted (`docs/claims-register/`); several unsupported claims already removed in Phase 2 |
+| 3 | **Scoring model audit & recalibration** (new) | ✅ Engine work done (lead review open) | Automated audit of all six engines (`npm run audit:engines`). About 70 findings fixed with regression tests: FinOps IQ stages reachable, blank answers no longer flatter Strategy IQ, Posture IQ matrix and probes work, Sovereign IQ double counting and regime scope fixed, FinOps Value Case blind-spot crash fixed. 15 decisions for practice and legal leads (`docs/phase3/SCORING_AUDIT.md`) |
+| 4 | Fact-check & methodology | ⏭ Next (groundwork done) | 323 candidate claims extracted (`docs/claims-register/`); several unsupported claims already removed in Phase 2 |
 | 5 | Functional upgrades | Not started | — |
 | 6 | UI/UX & design system | Not started (partial) | Standard error states added to every accelerator in Phase 2 |
 | 7 | Validation & pilot | Not started | — |
