@@ -32,6 +32,8 @@ test.describe('Cloud IQ', () => {
     const expected = evaluateCloudIq((parsed as any).value);
     const text = await page.locator('#app').innerText();
     expect(text).toContain(expected.overall.toFixed(1));
+    // The peer baseline comes from the server's full sector benchmark (it used to fall back to 3.0).
+    expect(text).toContain(`${expected.peerBenchmark.overall.toFixed(1)} baseline`);
     expect(text).not.toMatch(/\bundefined\b|\bNaN\b|\[object Object\]/);
     expect(world.pageErrors).toEqual([]);
   });

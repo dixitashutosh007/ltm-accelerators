@@ -1,7 +1,7 @@
 {
   "sample-bfsi": {
-    "trackCode": "A",
-    "overall": 2.9,
+    "trackCode": "Hybrid",
+    "overall": 2.84,
     "band": "Established",
     "dimScores": {
       "D1": 2.667,
@@ -10,8 +10,18 @@
       "D4": 3.167,
       "D5": 2.667,
       "D6": 3,
-      "D7": 3.5,
+      "D7": 3,
       "D8": 3
+    },
+    "dimAssessed": {
+      "D1": true,
+      "D2": true,
+      "D3": true,
+      "D4": true,
+      "D5": true,
+      "D6": true,
+      "D7": true,
+      "D8": true
     },
     "topObj": "Cost reduction & FinOps",
     "topDim": "D3",
@@ -29,10 +39,10 @@
       1146000
     ],
     "decomp": {
-      "compute": 366720,
-      "commit": 256704,
-      "storage": 165024,
-      "licensing": 128352
+      "compute": 339556,
+      "commit": 305600,
+      "storage": 152800,
+      "licensing": 118844
     },
     "urgencyMap": {
       "D1": 2,
@@ -75,11 +85,11 @@
       "03.5"
     ],
     "peer": 3.2,
-    "peerDelta": -0.3,
+    "peerDelta": -0.36,
     "industryKey": "BFSI (Banking & Financial Services)"
   },
   "unanswered": {
-    "trackCode": "A",
+    "trackCode": "Hybrid",
     "overall": 2.5,
     "band": "Emerging",
     "dimScores": {
@@ -92,6 +102,16 @@
       "D7": 2.5,
       "D8": 2.5
     },
+    "dimAssessed": {
+      "D1": false,
+      "D2": false,
+      "D3": false,
+      "D4": false,
+      "D5": false,
+      "D6": false,
+      "D7": false,
+      "D8": false
+    },
     "topObj": "Cost reduction & FinOps",
     "topDim": "D3",
     "flags": {
@@ -103,15 +123,15 @@
     },
     "leakage": [
       12000000,
-      2595000,
-      2076000,
-      3243750
+      3438000,
+      2750400,
+      4297500
     ],
     "decomp": {
-      "compute": 1038000,
-      "commit": 726600,
-      "storage": 467100,
-      "licensing": 363300
+      "compute": 1273333,
+      "commit": 1146000,
+      "storage": 573000,
+      "licensing": 445667
     },
     "urgencyMap": {
       "D1": 2,
@@ -125,40 +145,24 @@
     },
     "roadmap": [
       [
-        "Zombie Asset Cleanup & Dev/QA Shutdown",
-        "Cloud Landing Zone MFA & IAM Hardening"
+        "Zombie Asset Cleanup & Dev/QA Shutdown"
       ],
       [
-        "Commitment Discount Arbitrage (Savings Plans/RIs)",
-        "Automated Estate Discovery & Dependency Mapping",
-        "Top-20 Application 6-R Disposition Scoring"
+        "Automated Landing Zone IaC Baseline"
       ],
-      [
-        "Industrialized 6-R Migration Factory",
-        "Internal Developer Platform (IDP) & Golden Paths",
-        "Hybrid Interconnect Fabric & Unified Telemetry"
-      ],
-      [
-        "Full Data Centre Decommissioning & Facility Handback",
-        "Core Legacy Monolith Decoupling",
-        "Enterprise AI Lakehouse & TokenOps Platform"
-      ]
+      [],
+      []
     ],
     "offers": [
-      "03.3",
-      "03.2",
-      "03.6",
-      "03.1",
-      "03.4",
-      "03.5"
+      "03.3"
     ],
-    "peer": 3.2,
-    "peerDelta": -0.7,
-    "industryKey": "BFSI (Banking & Financial Services)"
+    "peer": 2.9,
+    "peerDelta": -0.4,
+    "industryKey": "Other"
   },
   "flash-mode-sample": {
-    "trackCode": "A",
-    "overall": 2.97,
+    "trackCode": "Hybrid",
+    "overall": 2.88,
     "band": "Established",
     "dimScores": {
       "D1": 2.5,
@@ -167,8 +171,18 @@
       "D4": 3.75,
       "D5": 3,
       "D6": 3,
-      "D7": 3.75,
+      "D7": 3,
       "D8": 3
+    },
+    "dimAssessed": {
+      "D1": true,
+      "D2": true,
+      "D3": true,
+      "D4": true,
+      "D5": true,
+      "D6": true,
+      "D7": true,
+      "D8": true
     },
     "topObj": "Cost reduction & FinOps",
     "topDim": "D3",
@@ -186,10 +200,10 @@
       1146000
     ],
     "decomp": {
-      "compute": 366720,
-      "commit": 256704,
-      "storage": 165024,
-      "licensing": 128352
+      "compute": 339556,
+      "commit": 305600,
+      "storage": 152800,
+      "licensing": 118844
     },
     "urgencyMap": {
       "D1": 2,
@@ -230,12 +244,12 @@
       "03.5"
     ],
     "peer": 3.2,
-    "peerDelta": -0.23,
+    "peerDelta": -0.32,
     "industryKey": "BFSI (Banking & Financial Services)"
   },
   "random-seed-42": {
     "trackCode": "A",
-    "overall": 3.38,
+    "overall": 3.41,
     "band": "Established",
     "dimScores": {
       "D1": 4.5,
@@ -244,8 +258,18 @@
       "D4": 1.75,
       "D5": 3.5,
       "D6": 5,
-      "D7": 1.75,
+      "D7": 2,
       "D8": 4
+    },
+    "dimAssessed": {
+      "D1": true,
+      "D2": true,
+      "D3": true,
+      "D4": true,
+      "D5": true,
+      "D6": true,
+      "D7": true,
+      "D8": true
     },
     "topObj": "Cost reduction & FinOps",
     "topDim": "D3",
@@ -263,10 +287,10 @@
       29750
     ],
     "decomp": {
-      "compute": 9520,
-      "commit": 6664,
-      "storage": 4284,
-      "licensing": 3332
+      "compute": 12526,
+      "commit": 1253,
+      "storage": 5637,
+      "licensing": 4384
     },
     "urgencyMap": {
       "D1": 2,
@@ -299,7 +323,7 @@
       "03.2"
     ],
     "peer": 2.6,
-    "peerDelta": 0.78,
+    "peerDelta": 0.81,
     "industryKey": "Public Sector & Government"
   }
 }
