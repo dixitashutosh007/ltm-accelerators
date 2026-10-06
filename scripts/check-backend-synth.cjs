@@ -83,6 +83,11 @@ if (advisory) {
   // Per-route settings fail at deploy time unless the stage is created after those routes.
   const routeIdByKey = Object.fromEntries(routes.map(r => [r.Properties.RouteKey, r.id]));
   const dependsOn = [].concat(stage?.DependsOn || []);
+  // CloudFormation rejects camelCase keys here ("Unrecognized field throttlingBurstLimit").
+  const allowedRouteSettingKeys = ['ThrottlingBurstLimit', 'ThrottlingRateLimit', 'LoggingLevel', 'DetailedMetricsEnabled', 'DataTraceEnabled'];
+  for (const settings of [stage?.Properties.DefaultRouteSettings || {}, ...Object.values(stage?.Properties.RouteSettings || {})]) {
+    for (const k of Object.keys(settings)) check(allowedRouteSettingKeys.includes(k), `stage route setting key "${k}" is not a CloudFormation property name`);
+  }
   for (const key of Object.keys(stage?.Properties.RouteSettings || {})) {
     check(dependsOn.includes(routeIdByKey[key]), `stage RouteSettings names "${key}" but the stage does not DependsOn that route (deploy-time race)`);
   }
