@@ -1893,6 +1893,30 @@
                     <label><input type="checkbox" id="perm_create_modernization-iq_archive" onchange="syncAccFull('create', 'modernization-iq')"> View Archive</label>
                   </div>
                 </div>
+                <!-- Cost IQ -->
+                <div class="granular-acc-card">
+                  <div class="granular-acc-head">
+                    <span class="granular-acc-name">💡 Cost IQ</span>
+                    <label class="full-perm-label"><input type="checkbox" id="perm_create_cost-iq_full" onchange="toggleAccFull('create', 'cost-iq', this.checked)"> Full</label>
+                  </div>
+                  <div class="granular-acc-options">
+                    <label><input type="checkbox" id="perm_create_cost-iq_take" onchange="syncAccFull('create', 'cost-iq')" checked> Take Assessment</label>
+                    <label><input type="checkbox" id="perm_create_cost-iq_edit" onchange="syncAccFull('create', 'cost-iq')"> Edit Engine</label>
+                    <label><input type="checkbox" id="perm_create_cost-iq_archive" onchange="syncAccFull('create', 'cost-iq')"> View Archive</label>
+                  </div>
+                </div>
+                <!-- Resilience IQ -->
+                <div class="granular-acc-card">
+                  <div class="granular-acc-head">
+                    <span class="granular-acc-name">🧭 Resilience IQ</span>
+                    <label class="full-perm-label"><input type="checkbox" id="perm_create_resilience-iq_full" onchange="toggleAccFull('create', 'resilience-iq', this.checked)"> Full</label>
+                  </div>
+                  <div class="granular-acc-options">
+                    <label><input type="checkbox" id="perm_create_resilience-iq_take" onchange="syncAccFull('create', 'resilience-iq')" checked> Take Assessment</label>
+                    <label><input type="checkbox" id="perm_create_resilience-iq_edit" onchange="syncAccFull('create', 'resilience-iq')"> Edit Engine</label>
+                    <label><input type="checkbox" id="perm_create_resilience-iq_archive" onchange="syncAccFull('create', 'resilience-iq')"> View Archive</label>
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -2073,6 +2097,30 @@
               <label><input type="checkbox" id="perm_editperm_modernization-iq_take" onchange="syncAccFull('editperm', 'modernization-iq')"> Take Assessment</label>
               <label><input type="checkbox" id="perm_editperm_modernization-iq_edit" onchange="syncAccFull('editperm', 'modernization-iq')"> Edit Engine</label>
               <label><input type="checkbox" id="perm_editperm_modernization-iq_archive" onchange="syncAccFull('editperm', 'modernization-iq')"> View Archive</label>
+            </div>
+          </div>
+          <!-- Cost IQ -->
+          <div class="granular-acc-card">
+            <div class="granular-acc-head">
+              <span class="granular-acc-name">💡 Cost IQ</span>
+              <label class="full-perm-label"><input type="checkbox" id="perm_editperm_cost-iq_full" onchange="toggleAccFull('editperm', 'cost-iq', this.checked)"> Full</label>
+            </div>
+            <div class="granular-acc-options">
+              <label><input type="checkbox" id="perm_editperm_cost-iq_take" onchange="syncAccFull('editperm', 'cost-iq')"> Take Assessment</label>
+              <label><input type="checkbox" id="perm_editperm_cost-iq_edit" onchange="syncAccFull('editperm', 'cost-iq')"> Edit Engine</label>
+              <label><input type="checkbox" id="perm_editperm_cost-iq_archive" onchange="syncAccFull('editperm', 'cost-iq')"> View Archive</label>
+            </div>
+          </div>
+          <!-- Resilience IQ -->
+          <div class="granular-acc-card">
+            <div class="granular-acc-head">
+              <span class="granular-acc-name">🧭 Resilience IQ</span>
+              <label class="full-perm-label"><input type="checkbox" id="perm_editperm_resilience-iq_full" onchange="toggleAccFull('editperm', 'resilience-iq', this.checked)"> Full</label>
+            </div>
+            <div class="granular-acc-options">
+              <label><input type="checkbox" id="perm_editperm_resilience-iq_take" onchange="syncAccFull('editperm', 'resilience-iq')"> Take Assessment</label>
+              <label><input type="checkbox" id="perm_editperm_resilience-iq_edit" onchange="syncAccFull('editperm', 'resilience-iq')"> Edit Engine</label>
+              <label><input type="checkbox" id="perm_editperm_resilience-iq_archive" onchange="syncAccFull('editperm', 'resilience-iq')"> View Archive</label>
             </div>
           </div>
         </div>
@@ -2787,7 +2835,8 @@
       { id: 'posture-iq', name: 'Posture IQ', icon: '⚡' },
       { id: 'cloud-iq', name: 'Cloud IQ', icon: '☁️' },
       { id: 'modernization-iq', name: 'Modernize IQ', icon: '🏗️' },
-      { id: 'cost-iq', name: 'Cost IQ', icon: '💡' }
+      { id: 'cost-iq', name: 'Cost IQ', icon: '💡' },
+      { id: 'resilience-iq', name: 'Resilience IQ', icon: '🧭' }
     ];
 
     function toggleAccFull(prefix, toolId, checked) {
