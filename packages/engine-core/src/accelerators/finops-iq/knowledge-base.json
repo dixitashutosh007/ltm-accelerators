@@ -29,7 +29,7 @@
         "short_name": "Chaos",
         "color": "#FF5E4F",
         "threshold": 60,
-        "crit_min": 70,
+        "crit_min": 65,
         "desc": "Foundational governance, security root boundaries, and raw billing data ingestion must exist before meaningful FinOps work can begin.",
         "aim": "Establish who owns what, eliminate rogue unallocated spend, and ingest trustworthy raw billing data.",
         "leap_guide": "To graduate from Chaos to Informed: (1) Formalize an account registry with a single named owner per subscription; (2) Ingest raw cloud billing exports into central S3/Blob storage; (3) Mandate the 3 core tags (CostCenter, Owner, App) on all compute resources."
@@ -41,7 +41,7 @@
         "short_name": "Informed",
         "color": "#B26A00",
         "threshold": 65,
-        "crit_min": 70,
+        "crit_min": 65,
         "desc": "Cost visibility, tagging discipline (≥80%), scheduled showback cadence, and anomaly detection are established across business units.",
         "aim": "Make spend visible and attributable, detect unexpected cost anomalies within 24h, and build regular monthly review cadences.",
         "leap_guide": "To graduate from Informed to Optimized: (1) Shift from mere reporting to active waste elimination; (2) Establish a centralized commitment discount strategy (RIs/Savings Plans coverage ≥ 70%); (3) Allocate shared container and Kubernetes clusters by namespace."
@@ -199,6 +199,12 @@
         "stage": "optimized",
         "title": "Spot & Transient Compute Workload Adoption",
         "desc": "Eligible stateless, batch, or non-critical workloads leverage Spot/Preemptible instances with automated eviction handling."
+      },
+      {
+        "id": "chk-o5",
+        "stage": "optimized",
+        "title": "Cost-Aware Architecture & Engineering Recognition",
+        "desc": "Unit cost is a mandatory architecture-review criterion and engineers are recognised for eliminating waste."
       },
       {
         "id": "chk-a1",
@@ -1536,19 +1542,35 @@
       "options": [
         {
           "label": "< 4% of total spend — lean, autonomous estate with continuous self-healing guardrails",
-          "score": 100
+          "score": 100,
+          "waste_pct_range": [
+            2,
+            4
+          ]
         },
         {
           "label": "4% – 9% waste — healthy posture with minor occasional drift",
-          "score": 65
+          "score": 65,
+          "waste_pct_range": [
+            4,
+            9
+          ]
         },
         {
           "label": "10% – 20% waste — regular cleanups required to keep spend in check",
-          "score": 30
+          "score": 30,
+          "waste_pct_range": [
+            10,
+            20
+          ]
         },
         {
           "label": "> 20% waste — significant ongoing waste across multiple accounts",
-          "score": 0
+          "score": 0,
+          "waste_pct_range": [
+            20,
+            35
+          ]
         }
       ],
       "remediation": "Implement automated self-healing guardrails (e.g. auto-quarantine unattached disks after 7 days) to sustain a world-class <4% waste baseline."
