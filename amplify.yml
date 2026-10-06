@@ -16,6 +16,7 @@ frontend:
         - npm run validate:costiq
         - npm run validate:resilience-bank
         - npm run validate:resilience-deployment
+        - npm run validate:resilience-persistence
         - npm run build:costiq-config
         - echo "Packaging Accelerators for Amplify Hosting..."
   artifacts:
