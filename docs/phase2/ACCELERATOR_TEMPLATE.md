@@ -96,3 +96,23 @@ Before Phase 2 the page scored in the browser with `compute()` and never called 
 - Roadmap impact lines such as "Accelerates migration velocity by 40%", "Improves release cycle frequency by 5x" and
   "Averts 2.5x–3.5x licensing cost escalation" need a source or softer wording (Phase 3 claims register).
 - The leakage model (waste rate × spend × (1 − 0.45 × commitment coverage), split 40/28/18/14) needs a cited basis.
+
+## FinOps IQ (Wave 3): what Phase 2 changed
+
+FinOps IQ already scored through the API. The fixes are in how the page used the result.
+
+| Issue | Effect | Fix |
+|---|---|---|
+| Every option showed "undefined pts" | The page ships no scores (correctly), so the label was always broken | Label removed |
+| The "Gate Blockers Outstanding" KPI and the AI briefing's blocker list used a local `qScore` that read the option position (0–4) as the score, then tested it against 70 | **Every answered critical question counted as a blocker**, however well answered | Blockers are the server's failing critical gates; the local scorer is removed |
+| A stage that failed showed "2/3 critical minimums" but not which gate | Consultants had to hunt for the blocking question | The stage banner names each blocking gate and its score against the minimum |
+| With no stage passed (maturity −1), the export and the AI prompt said "Stage 0 · Chaos / Crawl Baseline" | Contradicted the report's "Below Stage 1" | One label everywhere: "Below Stage 1 (no stage passed yet)" |
+| On scoring failure, a previous result stayed on screen and no error appeared | Stale or placeholder results | The result is cleared before each call; an error banner appears; the report and checkpoint screens say results are unavailable |
+| The page sent the whole `org` object, including consultant names, to the scoring API | Data the engine never uses left the browser | Only the client name and sector are sent |
+| Checkpoint coverage judged critical questions against a flat 70, while stage gates use each stage's minimum (70–80) | Latent: no option scores between 70 and 80 today, but a Studio edit would have shown a checkpoint as "met" while its stage failed | Uses the stage's minimum |
+
+### Open questions for the FinOps lead (Phase 3)
+
+- Approve the golden outputs in `packages/engine-core/test/golden/finops-iq.json`.
+- Value at stake: 25–35% of spend at stages 0–1, falling to 2–4% at stage 5. Cite the source (FinOps Foundation State of FinOps?).
+- A domain with no answers shows 0 on the domain chart. Should it show "not assessed" instead?

@@ -3752,10 +3752,10 @@
       const st = KB.meta.stages[mIdx >= 0 ? mIdx : 0];
       const sc = overallScore();
       const spend = formatSpend(STATE.org.annualSpend);
-      const blockers = KB.questions.filter(q => q.critical && (qScore(q, STATE.answers[q.id]) || 0) < 70).map(q => q.text).slice(0, 4);
+      const blockers = criticalBlockers().map(f => f.q.text).slice(0, 4);
 
       const sysPrompt = 'You are a Senior Engagement Partner at LTM Infrastructure Tech Advisory. Synthesize a 3-paragraph executive board-level FinOps diagnostic in McKinsey/Deloitte advisory style. Return strictly valid JSON: { "executive_briefing": "3 paragraphs of sharp C-suite advisory analysis", "top_risks": ["Risk 1", "Risk 2", "Risk 3"], "h1_focus": "Immediate 30-day priority", "h2_focus": "90-day structural priority", "h3_focus": "180+ day unit economics goal" }';
-      const userPrompt = 'Client Enterprise: ' + (STATE.org.name || 'Enterprise') + '\nIndustry Sector: ' + (STATE.org.sector || 'Enterprise') + '\nAnnual Cloud Spend: ' + spend + '\nCurrent Maturity Stage: Stage ' + (mIdx + 1) + ' · ' + st.name + '\nOverall FinOps Score: ' + sc + '/100\nKey Critical Control Blockers:\n' + blockers.join('\n');
+      const userPrompt = 'Client Enterprise: ' + (STATE.org.name || 'Enterprise') + '\nIndustry Sector: ' + (STATE.org.sector || 'Enterprise') + '\nAnnual Cloud Spend: ' + spend + '\nCurrent Maturity Stage: ' + maturityLabel(mIdx) + '\nOverall FinOps Score: ' + sc + '/100\nKey Critical Control Blockers:\n' + blockers.join('\n');
 
       try {
         const raw = await executeAICall(cfg, userPrompt, sysPrompt, 12000);
@@ -3776,36 +3776,58 @@
     // Scoring runs on the Advisory API; LTM_API attaches the signed-in user's token.
 const EVALUATE_API_PATH = "/api/evaluate/finops-iq";
 
+    // Returns the server's evaluation, or null (and shows an error) if scoring failed. Never keeps a stale result.
     async function fetchCloudEvaluation() {
+      STATE.evaluation = null;
+      hideScoringError();
       try {
         const payload = {
           answers: STATE.answers,
           annualSpend: STATE.org.annualSpend || 0,
-          org: STATE.org
+          // Only what the engine may use; consultant details stay in the browser.
+          org: { name: STATE.org.name || '', sector: STATE.org.sector || '' }
         };
         const res = await LTM_API.fetch(EVALUATE_API_PATH, {
           method: 'POST',
           body: JSON.stringify(payload)
         });
-        if (!res.ok) {
-          console.error('[FinOps IQ Cloud Eval] Error:', res.status, await res.text());
-          return null;
-        }
-        const json = await res.json();
-        if (json && json.ok && json.data) {
+        const json = await res.json().catch(() => null);
+        if (res.ok && json && json.ok && json.data) {
           STATE.evaluation = json.data;
           return STATE.evaluation;
         }
+        console.error('[FinOps IQ Cloud Eval] Error:', res.status, json);
       } catch (err) {
         console.error('[FinOps IQ Cloud Eval] Connection failed:', err);
       }
+      showScoringError();
       return null;
     }
 
-    function qScore(q, a) {
-      if (a === undefined || a === null || a === '__NA__') return null;
-      if (typeof a === 'number') return a;
-      return null;
+    function showScoringError() {
+      if (document.getElementById('scoringError')) return;
+      const el = document.createElement('div');
+      el.id = 'scoringError';
+      el.setAttribute('role', 'alert');
+      el.style.cssText = 'position:fixed;top:16px;left:50%;transform:translateX(-50%);z-index:9999;max-width:min(640px,calc(100% - 32px));display:flex;gap:12px;align-items:center;background:#FEF2F2;border:1px solid #DC2626;color:#111827;padding:12px 16px;border-radius:10px;font-size:14px;box-shadow:0 8px 30px rgba(0,0,0,.18)';
+      el.innerHTML = "<span><b>We couldn't calculate your results.</b> Your answers are kept. Please try again in a moment.</span>"
+        + '<button type="button" onclick="hideScoringError()" style="border:1px solid #DC2626;background:#fff;border-radius:6px;padding:4px 10px;cursor:pointer">Dismiss</button>';
+      document.body.appendChild(el);
+    }
+    function hideScoringError() {
+      const el = document.getElementById('scoringError');
+      if (el) el.remove();
+    }
+
+    // Critical questions answered below their stage's minimum, as judged by the server.
+    function criticalBlockers() {
+      const crit = (STATE.evaluation && STATE.evaluation.stageCriticals) || {};
+      return Object.values(crit).flatMap(c => (c.failing || []).filter(f => f.score !== null && f.score !== undefined));
+    }
+
+    // "Stage N · Name", or "Below Stage 1" when no stage has been passed yet.
+    function maturityLabel(mIdx) {
+      return mIdx >= 0 ? 'Stage ' + (mIdx + 1) + ' · ' + KB.meta.stages[mIdx].name : 'Below Stage 1 (no stage passed yet)';
     }
 
     function stageQuestions(stageId) {
@@ -4192,6 +4214,10 @@ const EVALUATE_API_PATH = "/api/evaluate/finops-iq";
         + '<span class="stat-chip"><b>' + cr.pass + '/' + cr.total + '</b>Critical Prerequisite Minimums ≥ ' + curStage.crit_min + '</span>'
         + '<span class="stat-chip"><b>' + sc.answered + '/' + sc.total + '</b>Questions Answered</span>'
         + '</div>'
+        + (stt === 'failed' && cr.failing.length
+            ? '<div class="stage-blockers" style="margin-top:12px;font-size:13px;color:#B91C1C"><b>Stage not passed. Blocked by critical gate' + (cr.failing.length > 1 ? 's' : '') + ':</b> '
+              + cr.failing.map(f => f.q.id + ' (' + (f.score === null || f.score === undefined ? 'unanswered' : f.score + ' of ' + f.target + ' needed') + ')').join(', ') + '</div>'
+            : '')
         + '</div>'
         + '<div class="questions-list">';
 
@@ -4219,7 +4245,6 @@ const EVALUATE_API_PATH = "/api/evaluate/finops-iq";
           mainHtml += '<button type="button" class="opt-btn' + (isSel ? ' selected' : '') + '" data-qid="' + q.id + '" data-opt="' + oIdx + '" onclick="selectAnswer(this.dataset.qid, parseInt(this.dataset.opt, 10))">'
             + '<span class="opt-radio"></span>'
             + '<span>' + opt.label + '</span>'
-            + '<span style="margin-left:auto;font-family:var(--font-mono);font-size:11px;opacity:0.6">' + opt.score + ' pts</span>'
             + '</button>';
         });
 
@@ -4307,6 +4332,7 @@ const EVALUATE_API_PATH = "/api/evaluate/finops-iq";
     // SCREEN 3: Checkpoints & Maturity Leap Matrix
     function renderCheckpoints() {
       const app = document.getElementById('main-app');
+      if (!STATE.evaluation) return resultsUnavailable(app);
       const checkpoints = KB.meta.checkpoints || [];
       const stages = KB.meta.stages;
       const coverage = checkpointCoverage();
@@ -4359,8 +4385,13 @@ const EVALUATE_API_PATH = "/api/evaluate/finops-iq";
     }
 
     // SCREEN 4: Advisory Report & Modernization Roadmap
+    function resultsUnavailable(app) {
+      app.innerHTML = '<div class="card" role="status"><h3>Results are not available yet</h3><p>Scoring runs on the LTM Advisory service and could not be reached. Your answers are kept. Please try again in a moment.</p></div>';
+    }
+
     function renderReport() {
       const app = document.getElementById('main-app');
+      if (!STATE.evaluation) return resultsUnavailable(app);
       const stages = KB.meta.stages;
       const mIdx = maturity();
       const curStage = stages[mIdx >= 0 ? mIdx : 0];
@@ -4369,7 +4400,7 @@ const EVALUATE_API_PATH = "/api/evaluate/finops-iq";
       const vas = calculateValueAtStake();
       const rm = buildRoadmap();
       const o = STATE.org;
-      const blockers = KB.questions.filter(q => q.critical && (qScore(q, STATE.answers[q.id]) || 0) < 70).length;
+      const blockers = criticalBlockers().length;
 
       let modeBanner = STATE.consultantMode
         ? '<div class="report-mode-banner consultant"><div><strong>🔓 Consultant Advisory Mode Active</strong> — All deep-dive technical findings, granular checkpoints, and 3-horizon SOW are completely unmasked. Full PDF download is enabled.</div><button class="btn secondary" style="padding:4px 10px;font-size:11px" onclick="toggleConsultantMode()">Switch to Client Masked View</button></div>'
@@ -4681,7 +4712,7 @@ const EVALUATE_API_PATH = "/api/evaluate/finops-iq";
         "  Executive Lead:     " + (name || "—"),
         "  Work Email:         " + (email || "—"),
         "  Annual Cloud Spend: " + formatSpend(STATE.org.annualSpend),
-        "  Maturity Level:     Stage " + (mIdx + 1) + " · " + curStage.name,
+        "  Maturity Level:     " + maturityLabel(mIdx),
         "  Overall Score:      " + (overallScore() || "—") + " / 100",
         "  Value at Stake:     " + formatCurrency(vas.minSavings) + " – " + formatCurrency(vas.maxSavings) + " annual waste",
         "  Primary Focus:      " + (priority || "Deep-dive roadmap and billable SOW"),
