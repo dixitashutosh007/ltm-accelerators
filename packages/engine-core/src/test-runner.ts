@@ -188,7 +188,7 @@ const strategyIqResult = evaluateStrategyIq({
 console.log('Overall Score:', strategyIqResult.overall, `(${strategyIqResult.band})`);
 console.log('Section Scores:', strategyIqResult.sectionScores);
 console.log('Alignment Index:', strategyIqResult.alignmentIndex + '%', '| Tech Debt Drag:', strategyIqResult.debtDragPct + '%', '($' + (strategyIqResult.debtDollarWaste / 1000000).toFixed(1) + 'M)');
-console.log('Delivery Velocity:', strategyIqResult.deliveryVelocity + 'x', '| Resilience Score:', strategyIqResult.resilienceScore + '%');
+console.log('Operating Model Maturity:', strategyIqResult.deliveryMaturity + '/5', '| Resilience Score:', strategyIqResult.resilienceScore + '%');
 console.log('--- Strategy IQ Assertions Passed! ---\n');
 
 console.log('--- 7. Testing Modernize IQ Headless Engine ---');
