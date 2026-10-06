@@ -24,6 +24,7 @@ for (const path of PAGES) {
     await page.waitForTimeout(500);
     expect(world.cspViolations, 'CSP violations').toEqual([]);
     expect(world.pageErrors, 'uncaught page errors').toEqual([]);
+    expect(world.missingFiles, 'missing same-site files').toEqual([]);
     expect(page.url()).not.toContain('require_login');
   });
 }
