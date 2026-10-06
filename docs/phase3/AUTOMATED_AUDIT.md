@@ -19,7 +19,7 @@ How to read it:
 | Waste band high (% of spend) | 0–100 | 14 | 45 | 0 | 0 |
 | Year-1 exposure high ($) | 0–InfinityM | 7k | 45.0M | 0 | 275 |
 
-**Bands** (share of random questionnaires; best answers → **Lightweight practices sufficient**, worst answers → **Material exposure — act this year**):
+**Bands** (share of random questionnaires; best answers → **Lightweight practices sufficient**, worst answers → **Urgent — significant value leaking**):
 
 | Band | Share |
 |---|---|
@@ -44,40 +44,40 @@ How to read it:
 
 | Headline | Mean shift, 30% unanswered | Worst profile, half unanswered |
 |---|---|---|
-| Need index | +3.97 | -1 |
-| Gap index | +0 | -1 |
-| Urgency index | +9.88 | +0 |
-| Waste band high (% of spend) | +0.04 | +0 |
+| Need index | +3.97 | +25 |
+| Gap index | +0 | +10 |
+| Urgency index | +9.88 | +48 |
+| Waste band high (% of spend) | +0.04 | +2.73 |
 
 ## Strategy IQ
 
 | Headline | Scale | Observed min | Observed max | Out of scale | Null |
 |---|---|---|---|---|---|
-| Overall maturity (1-5) | 1–5 | 1.9 | 3.8 | 0 | 0 |
-| Alignment index (%) | 0–100 | 20 | 95 | 0 | 0 |
-| Tech-debt drag (% of IT spend) | 0–100 | 8 | 34 | 0 | 0 |
+| Overall maturity (1-5) | 1–5 | 1.8 | 4.1 | 0 | 0 |
+| Alignment index (%) | 0–100 | 0 | 100 | 0 | 0 |
+| Tech-debt drag (% of IT spend) | 0–100 | 2 | 36 | 0 | 0 |
 | Operating model maturity (1-5) | 1–5 | 1 | 5 | 0 | 0 |
-| Resilience (%) | 0–100 | 20 | 100 | 0 | 0 |
+| Resilience (%) | 0–100 | 0 | 100 | 0 | 0 |
 
-**Bands** (share of random questionnaires; best answers → **Leading (Industry Benchmark)**, worst answers → **Nascent (At Severe Risk)**; never reached: Advanced (Product-Led)):
+**Bands** (share of random questionnaires; best answers → **Leading**, worst answers → **Nascent (At Severe Risk)**):
 
 | Band | Share |
 |---|---|
-| Nascent (At Severe Risk) | 0.1% |
-| Emerging (Friction & Drift) | 59.6% |
-| Established (Operational) | 40.3% |
-| Advanced (Product-Led) | 0.0% |
-| Leading (Industry Benchmark) | 0.0% |
+| Nascent (At Severe Risk) | 0.5% |
+| Emerging (Friction & Drift) | 63.8% |
+| Established (Operational) | 35.6% |
+| Advanced (Product-Led) | 0.1% |
+| Leading | 0.0% |
 
 **Sensitivity**
 
 | Headline | Largest single-answer swing (question: swing) | Share of range |
 |---|---|---|
-| Overall maturity (1-5) | S2.1: 0.3, S2.2: 0.3, S2.4: 0.3, S3.1: 0.3, S3.4: 0.3 | 0.16 |
-| Alignment index (%) | S1.1: 20, S1.2: 20, S1.3: 20, S1.4: 20, S2.1: 0 | 0.27 |
-| Tech-debt drag (% of IT spend) | S4.1: 9, S4.2: 9, S4.3: 9, S4.4: 9, S1.1: 0 | 0.35 |
-| Operating model maturity (1-5) | S2.1: 1.4, S2.2: 1.4, S2.4: 1.4, S1.1: 0, S1.2: 0 | 0.35 |
-| Resilience (%) | S5.1: 20, S5.2: 20, S5.3: 20, S5.4: 20, S1.1: 0 | 0.25 |
+| Overall maturity (1-5) | S2.1: 0.7, S2.2: 0.7, S2.4: 0.7, S3.3: 0.7, S6.3: 0.7 | 0.30 |
+| Alignment index (%) | S1.1: 50, S1.2: 50, S1.3: 50, S1.4: 50, S2.1: 0 | 0.50 |
+| Tech-debt drag (% of IT spend) | S4.1: 17, S4.2: 17, S4.4: 17, S4.3: 12, S1.1: 0 | 0.50 |
+| Operating model maturity (1-5) | S2.1: 4, S2.2: 4, S2.4: 4, S1.1: 0, S1.2: 0 | 1.00 |
+| Resilience (%) | S5.1: 50, S5.2: 50, S5.3: 50, S5.4: 50, S1.1: 0 | 0.50 |
 
 **Dead questions** (no effect on any headline): S2.3, S3.2, S6.1
 
@@ -85,62 +85,62 @@ How to read it:
 
 | Headline | Mean shift, 30% unanswered | Worst profile, half unanswered |
 |---|---|---|
-| Overall maturity (1-5) | +0.03 | +1 |
-| Alignment index (%) | +0.97 | +20 |
-| Tech-debt drag (% of IT spend) | -0.02 | +7 |
-| Operating model maturity (1-5) | +0.02 | +1.3 |
-| Resilience (%) | +0.98 | +20 |
+| Overall maturity (1-5) | -0.01 | +0 |
+| Alignment index (%) | -1.15 | +0 |
+| Tech-debt drag (% of IT spend) | -0.09 | +0 |
+| Operating model maturity (1-5) | -0.06 | +0 |
+| Resilience (%) | +0.28 | +0 |
 
 ## Cloud IQ
 
 | Headline | Scale | Observed min | Observed max | Out of scale | Null |
 |---|---|---|---|---|---|
-| Overall maturity (1-5) | 1–5 | 1.72 | 3.96 | 0 | 0 |
+| Overall maturity (1-5) | 1–5 | 1.75 | 3.99 | 0 | 0 |
 | Annual cost leakage ($) | 0–InfinityM | 24k | 57.3M | 0 | 0 |
-| Peer delta | -4–4 | -1.58 | 1.32 | 0 | 0 |
+| Peer delta | -4–4 | -1.55 | 1.29 | 0 | 0 |
 
 **Bands** (share of random questionnaires; best answers → **Leading**, worst answers → **Nascent**):
 
 | Band | Share |
 |---|---|
 | Nascent | 0.5% |
-| Emerging | 36.1% |
-| Established | 62.6% |
-| Advanced | 0.8% |
+| Emerging | 37.8% |
+| Established | 60.8% |
+| Advanced | 1.0% |
 | Leading | 0.0% |
 
 **Sensitivity**
 
 | Headline | Largest single-answer swing (question: swing) | Share of range |
 |---|---|---|
-| Overall maturity (1-5) | Q4.1: 0.71, Q4.4: 0.71, Q9.1: 0.71, Q9.3: 0.7, Q3.1: 0.47 | 0.32 |
+| Overall maturity (1-5) | Q4.1: 0.71, Q9.1: 0.71, Q4.4: 0.7, Q9.3: 0.7, Q8.1: 0.48 | 0.32 |
 | Annual cost leakage ($) | Q0.8: 57.1M, Q4.3: 45.8M, Q0.9: 21.6M, Q0.1: 0, Q0.2: 0 | 1.00 |
-| Peer delta | Q4.1: 0.71, Q4.4: 0.71, Q9.1: 0.71, Q0.2: 0.7, Q9.3: 0.7 | 0.24 |
+| Peer delta | Q4.1: 0.71, Q9.1: 0.71, Q0.2: 0.7, Q4.4: 0.7, Q9.3: 0.7 | 0.25 |
 
-**Dead questions** (no effect on any headline): Q0.1, Q0.3, Q0.4, Q0.5, Q0.7, Q0.10, Q0.11, Q0.12, Q0.13, Q1.1, Q1.2, Q9.2
+**Dead questions** (no effect on any headline): Q0.1, Q0.3, Q0.4, Q0.5, Q0.7, Q0.10, Q0.11, Q0.12, Q0.13, Q1.1, Q1.2, Q8.2, Q9.2
 
 **Missing data** (positive = leaving answers blank flatters the result)
 
 | Headline | Mean shift, 30% unanswered | Worst profile, half unanswered |
 |---|---|---|
-| Overall maturity (1-5) | -0.04 | +0.02 |
-| Peer delta | -0.13 | +0.02 |
+| Overall maturity (1-5) | -0.04 | +0.04 |
+| Peer delta | -0.04 | +0.04 |
 
 ## FinOps IQ
 
 | Headline | Scale | Observed min | Observed max | Out of scale | Null |
 |---|---|---|---|---|---|
-| Maturity stage (-1..4) | -1–4 | -1 | -1 | 0 | 0 |
+| Maturity stage (-1..4) | -1–4 | -1 | 1 | 0 | 0 |
 | Overall score (0-100) | 0–100 | 26 | 67 | 0 | 0 |
-| Value at stake high ($) | 0–InfinityM | 3.5M | 3.5M | 0 | 0 |
+| Value at stake high ($) | 0–InfinityM | 400k | 3.5M | 0 | 0 |
 
-**Bands** (share of random questionnaires; best answers → **Transparent / Unit Economics**, worst answers → **Below Stage 1**; never reached: Chaos / Crawl Baseline, Informed / Walk Foundation, Optimized / Rate & Usage, Automated / Run Practice):
+**Bands** (share of random questionnaires; best answers → **Transparent / Unit Economics**, worst answers → **Below Stage 1**; never reached: Optimized / Rate & Usage, Automated / Run Practice):
 
 | Band | Share |
 |---|---|
-| Below Stage 1 | 100.0% |
-| Chaos / Crawl Baseline | 0.0% |
-| Informed / Walk Foundation | 0.0% |
+| Below Stage 1 | 97.9% |
+| Chaos / Crawl Baseline | 2.0% |
+| Informed / Walk Foundation | 0.1% |
 | Optimized / Rate & Usage | 0.0% |
 | Automated / Run Practice | 0.0% |
 | Transparent / Unit Economics | 0.0% |
@@ -149,9 +149,9 @@ How to read it:
 
 | Headline | Largest single-answer swing (question: swing) | Share of range |
 |---|---|---|
-| Maturity stage (-1..4) | C1: 0, C2: 0, C3: 0, C4: 0, C5: 0 | 0.00 |
+| Maturity stage (-1..4) | C1: 1, C2: 1, C3: 1, C4: 1, C5: 1 | 0.50 |
 | Overall score (0-100) | I1: 5, I2: 5, I8: 5, O3: 5, A1: 5 | 0.12 |
-| Value at stake high ($) | C1: 0, C2: 0, C3: 0, C4: 0, C5: 0 | 0.00 |
+| Value at stake high ($) | T6: 3.1M, C1: 0, C2: 0, C3: 0, C4: 0 | 1.00 |
 
 **Dead questions** (no effect on any headline): none
 
@@ -159,15 +159,15 @@ How to read it:
 
 | Headline | Mean shift, 30% unanswered | Worst profile, half unanswered |
 |---|---|---|
-| Maturity stage (-1..4) | +0 | +0 |
+| Maturity stage (-1..4) | -0.02 | +0 |
 | Overall score (0-100) | -0.35 | +0 |
 
 ## Posture IQ
 
 | Headline | Scale | Observed min | Observed max | Out of scale | Null |
 |---|---|---|---|---|---|
-| Posture score (0-100) | 0–100 | 42 | 81 | 0 | 0 |
-| Critical + high findings | 0–InfinityM | 2 | 18 | 0 | 0 |
+| Posture score (0-100) | 0–100 | 35 | 82 | 0 | 0 |
+| Critical + high findings | 0–InfinityM | 0 | 21 | 0 | 0 |
 | Largest statutory ceiling ($) | 0–InfinityM | 40.0M | 40.0M | 0 | 0 |
 
 **Bands** (share of random questionnaires; best answers → **Defensible**, worst answers → **Critical Non-Compliance**):
@@ -175,32 +175,32 @@ How to read it:
 | Band | Share |
 |---|---|
 | Defensible | 0.0% |
-| Improving / Managed | 28.0% |
-| Material Exposure | 72.0% |
-| Critical Non-Compliance | 0.0% |
+| Improving / Managed | 27.4% |
+| Material Exposure | 72.4% |
+| Critical Non-Compliance | 0.3% |
 
 **Sensitivity**
 
 | Headline | Largest single-answer swing (question: swing) | Share of range |
 |---|---|---|
-| Posture score (0-100) | G2: 8, F1: 7, F2: 7, C3: 6, D1: 6 | 0.21 |
-| Critical + high findings | C1: 5, B1: 4, A1: 1, A2: 1, A4: 1 | 0.31 |
+| Posture score (0-100) | G2: 15, A4: 12, G3: 12, A3: 8, C2: 8 | 0.32 |
+| Critical + high findings | C2: 6, C1: 5, A2: 3, A4: 1, C3: 1 | 0.29 |
 | Largest statutory ceiling ($) | A1: 0, A2: 0, A3: 0, A4: 0, B1: 0 | 0.00 |
 
-**Dead questions** (no effect on any headline): D3, F5, G4, I3
+**Dead questions** (no effect on any headline): A1, B1, B2, D3, F5, G1, G4, I3, K1, K2, K3
 
 **Missing data** (positive = leaving answers blank flatters the result)
 
 | Headline | Mean shift, 30% unanswered | Worst profile, half unanswered |
 |---|---|---|
-| Posture score (0-100) | -0.07 | -2 |
-| Critical + high findings | +2.24 | +13 |
+| Posture score (0-100) | -0.01 | +0 |
+| Critical + high findings | +2.09 | +15 |
 
 ## Sovereign IQ
 
 | Headline | Scale | Observed min | Observed max | Out of scale | Null |
 |---|---|---|---|---|---|
-| Sovereignty maturity (0-100) | 0–100 | 23 | 86 | 0 | 0 |
+| Sovereignty maturity (0-100) | 0–100 | 20 | 85 | 0 | 0 |
 | Regimes in scope (applies) | 0–InfinityM | 0 | 17 | 0 | 0 |
 | Statutory ceiling ($) | 0–InfinityM | 0 | 400.0M | 0 | 0 |
 
@@ -208,25 +208,25 @@ How to read it:
 
 | Band | Share |
 |---|---|
-| Reactive | 0.0% |
-| Aware | 5.1% |
-| Structured | 60.6% |
-| Managed | 33.4% |
-| Sovereign-by-Design | 0.9% |
+| Reactive | 0.1% |
+| Aware | 6.8% |
+| Structured | 64.0% |
+| Managed | 28.4% |
+| Sovereign-by-Design | 0.8% |
 
 **Sensitivity**
 
 | Headline | Largest single-answer swing (question: swing) | Share of range |
 |---|---|---|
-| Sovereignty maturity (0-100) | Q3.3: 23, Q4.3: 22, Q4.2: 19, Q3.2: 18, Q6.2: 17 | 0.37 |
-| Regimes in scope (applies) | Q1.2: 16, Q1.1: 8, Q3.1: 4, Q2.1: 1, Q2.3: 1 | 0.94 |
-| Statutory ceiling ($) | Q1.2: 400.0M, Q1.3: 380.0M, Q1.1: 0, Q2.1: 0, Q2.2: 0 | 1.00 |
+| Sovereignty maturity (0-100) | Q3.3: 23, Q4.3: 23, Q4.2: 19, Q3.2: 18, Q6.1: 18 | 0.35 |
+| Regimes in scope (applies) | Q1.2: 16, Q1.1: 8, Q2.1: 1, Q2.3: 1, Q1.3: 0 | 0.94 |
+| Statutory ceiling ($) | Q1.2: 400.0M, Q1.3: 378.4M, Q1.1: 0, Q2.1: 0, Q2.2: 0 | 1.00 |
 
-**Dead questions** (no effect on any headline): Q2.2
+**Dead questions** (no effect on any headline): Q2.2, Q3.1
 
 **Missing data** (positive = leaving answers blank flatters the result)
 
 | Headline | Mean shift, 30% unanswered | Worst profile, half unanswered |
 |---|---|---|
-| Sovereignty maturity (0-100) | -0.37 | -4 |
+| Sovereignty maturity (0-100) | +0.36 | -4 |
 

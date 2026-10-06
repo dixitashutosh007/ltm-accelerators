@@ -78,8 +78,12 @@ const fvcBest = (worst: boolean) => {
     if (q.answer_type !== 'single_select' && q.answer_type !== 'card_select') continue;
     const scored = (q.options || []).map((o: any, i: number) => ({ i, s: o.score })).filter((x: any) => typeof x.s === 'number');
     if (scored.length) answers[q.id] = scored.reduce((m: any, x: any) => ((worst ? x.s < m.s : x.s > m.s) ? x : m)).i;
+    // Urgency comes from drivers (growth, migration ahead), not maturity: the worst case has the strongest drivers.
+    const drive = (q.options || []).map((o: any, i: number) => ({ i, u: (o.urgency || 0) + (o.migration_ahead || 0) * 18 }));
+    if (drive.some((x: any) => x.u > 0)) answers[q.id] = drive.reduce((m: any, x: any) => ((worst ? x.u > m.u : x.u < m.u) ? x : m)).i;
   }
-  return { answers: { ...answers, E3: 5_000_000 }, org: { sector_class: 'other', currency: 'usd' } };
+  for (const q of FVC.questions) if (worst && String(q.answer_type).startsWith('slider') && q.id !== 'E3') answers[q.id] = q.slider.max;
+  return { answers: { ...answers, E3: 5_000_000 }, org: { sector_class: worst ? 'bfsi' : 'other', currency: 'usd' } };
 };
 
 /* ------------------------------- Strategy IQ ------------------------------- */
@@ -215,7 +219,7 @@ export const ADAPTERS: Adapter[] = [
       { name: 'Operating model maturity (1-5)', scale: [1, 5], higherIsBetter: true, get: r => r.deliveryMaturity },
       { name: 'Resilience (%)', scale: [0, 100], higherIsBetter: true, get: r => r.resilienceScore }
     ],
-    band: { get: r => r.band, all: ['Nascent (At Severe Risk)', 'Emerging (Friction & Drift)', 'Established (Operational)', 'Advanced (Product-Led)', 'Leading (Industry Benchmark)'] },
+    band: { get: r => r.band, all: ['Nascent (At Severe Risk)', 'Emerging (Friction & Drift)', 'Established (Operational)', 'Advanced (Product-Led)', 'Leading'] },
     extremes: { best: () => strExtreme(true), worst: () => strExtreme(false) }
   },
   {

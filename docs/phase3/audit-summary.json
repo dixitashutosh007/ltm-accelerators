@@ -67,7 +67,7 @@
         "Urgent — significant value leaking": 4
       },
       "best": "Lightweight practices sufficient",
-      "worst": "Material exposure — act this year",
+      "worst": "Urgent — significant value leaking",
       "unreachable": []
     },
     "sensitivity": [
@@ -212,22 +212,22 @@
       {
         "headline": "Need index",
         "meanShift": 3.97,
-        "worstProfileShift": -1
+        "worstProfileShift": 25
       },
       {
         "headline": "Gap index",
         "meanShift": 0,
-        "worstProfileShift": -1
+        "worstProfileShift": 10
       },
       {
         "headline": "Urgency index",
         "meanShift": 9.88,
-        "worstProfileShift": 0
+        "worstProfileShift": 48
       },
       {
         "headline": "Waste band high (% of spend)",
         "meanShift": 0.04099999999999982,
-        "worstProfileShift": 0
+        "worstProfileShift": 2.729999999999997
       }
     ]
   },
@@ -241,8 +241,8 @@
           1,
           5
         ],
-        "min": 1.9,
-        "max": 3.8,
+        "min": 1.8,
+        "max": 4.1,
         "outOfScale": 0,
         "nulls": 0
       },
@@ -252,8 +252,8 @@
           0,
           100
         ],
-        "min": 20,
-        "max": 95,
+        "min": 0,
+        "max": 100,
         "outOfScale": 0,
         "nulls": 0
       },
@@ -263,8 +263,8 @@
           0,
           100
         ],
-        "min": 8,
-        "max": 34,
+        "min": 2,
+        "max": 36,
         "outOfScale": 0,
         "nulls": 0
       },
@@ -285,7 +285,7 @@
           0,
           100
         ],
-        "min": 20,
+        "min": 0,
         "max": 100,
         "outOfScale": 0,
         "nulls": 0
@@ -293,17 +293,15 @@
     ],
     "bands": {
       "counts": {
-        "Nascent (At Severe Risk)": 1,
-        "Emerging (Friction & Drift)": 477,
-        "Established (Operational)": 322,
-        "Advanced (Product-Led)": 0,
-        "Leading (Industry Benchmark)": 0
+        "Nascent (At Severe Risk)": 4,
+        "Emerging (Friction & Drift)": 510,
+        "Established (Operational)": 285,
+        "Advanced (Product-Led)": 1,
+        "Leading": 0
       },
-      "best": "Leading (Industry Benchmark)",
+      "best": "Leading",
       "worst": "Nascent (At Severe Risk)",
-      "unreachable": [
-        "Advanced (Product-Led)"
-      ]
+      "unreachable": []
     },
     "sensitivity": [
       {
@@ -311,93 +309,93 @@
         "top": [
           {
             "qid": "S2.1",
-            "swing": 0.30000000000000027
+            "swing": 0.7000000000000002
           },
           {
             "qid": "S2.2",
-            "swing": 0.30000000000000027
+            "swing": 0.7000000000000002
           },
           {
             "qid": "S2.4",
-            "swing": 0.30000000000000027
+            "swing": 0.7000000000000002
           },
           {
-            "qid": "S3.1",
-            "swing": 0.30000000000000027
+            "qid": "S3.3",
+            "swing": 0.7000000000000002
           },
           {
-            "qid": "S3.4",
-            "swing": 0.30000000000000027
+            "qid": "S6.3",
+            "swing": 0.7000000000000002
           }
         ],
-        "share": 0.15789473684210542
+        "share": 0.3043478260869566
       },
       {
         "headline": "Alignment index (%)",
         "top": [
           {
             "qid": "S1.1",
-            "swing": 20
+            "swing": 50
           },
           {
             "qid": "S1.2",
-            "swing": 20
+            "swing": 50
           },
           {
             "qid": "S1.3",
-            "swing": 20
+            "swing": 50
           },
           {
             "qid": "S1.4",
-            "swing": 20
+            "swing": 50
           },
           {
             "qid": "S2.1",
             "swing": 0
           }
         ],
-        "share": 0.26666666666666666
+        "share": 0.5
       },
       {
         "headline": "Tech-debt drag (% of IT spend)",
         "top": [
           {
             "qid": "S4.1",
-            "swing": 9
+            "swing": 17
           },
           {
             "qid": "S4.2",
-            "swing": 9
-          },
-          {
-            "qid": "S4.3",
-            "swing": 9
+            "swing": 17
           },
           {
             "qid": "S4.4",
-            "swing": 9
+            "swing": 17
+          },
+          {
+            "qid": "S4.3",
+            "swing": 12
           },
           {
             "qid": "S1.1",
             "swing": 0
           }
         ],
-        "share": 0.34615384615384615
+        "share": 0.5
       },
       {
         "headline": "Operating model maturity (1-5)",
         "top": [
           {
             "qid": "S2.1",
-            "swing": 1.4000000000000004
+            "swing": 4
           },
           {
             "qid": "S2.2",
-            "swing": 1.4000000000000004
+            "swing": 4
           },
           {
             "qid": "S2.4",
-            "swing": 1.4000000000000004
+            "swing": 4
           },
           {
             "qid": "S1.1",
@@ -408,33 +406,33 @@
             "swing": 0
           }
         ],
-        "share": 0.3500000000000001
+        "share": 1
       },
       {
         "headline": "Resilience (%)",
         "top": [
           {
             "qid": "S5.1",
-            "swing": 20
+            "swing": 50
           },
           {
             "qid": "S5.2",
-            "swing": 20
+            "swing": 50
           },
           {
             "qid": "S5.3",
-            "swing": 20
+            "swing": 50
           },
           {
             "qid": "S5.4",
-            "swing": 20
+            "swing": 50
           },
           {
             "qid": "S1.1",
             "swing": 0
           }
         ],
-        "share": 0.25
+        "share": 0.5
       }
     ],
     "dead": [
@@ -445,28 +443,28 @@
     "missing": [
       {
         "headline": "Overall maturity (1-5)",
-        "meanShift": 0.0325,
-        "worstProfileShift": 1
+        "meanShift": -0.011499999999999979,
+        "worstProfileShift": 0
       },
       {
         "headline": "Alignment index (%)",
-        "meanShift": 0.97,
-        "worstProfileShift": 20
+        "meanShift": -1.155,
+        "worstProfileShift": 0
       },
       {
         "headline": "Tech-debt drag (% of IT spend)",
-        "meanShift": -0.02,
-        "worstProfileShift": 7
+        "meanShift": -0.09,
+        "worstProfileShift": 0
       },
       {
         "headline": "Operating model maturity (1-5)",
-        "meanShift": 0.017999999999999988,
-        "worstProfileShift": 1.2999999999999998
+        "meanShift": -0.05549999999999997,
+        "worstProfileShift": 0
       },
       {
         "headline": "Resilience (%)",
-        "meanShift": 0.975,
-        "worstProfileShift": 20
+        "meanShift": 0.28,
+        "worstProfileShift": 0
       }
     ]
   },
@@ -480,8 +478,8 @@
           1,
           5
         ],
-        "min": 1.72,
-        "max": 3.96,
+        "min": 1.75,
+        "max": 3.99,
         "outOfScale": 0,
         "nulls": 0
       },
@@ -502,8 +500,8 @@
           -4,
           4
         ],
-        "min": -1.58,
-        "max": 1.32,
+        "min": -1.55,
+        "max": 1.29,
         "outOfScale": 0,
         "nulls": 0
       }
@@ -511,9 +509,9 @@
     "bands": {
       "counts": {
         "Nascent": 4,
-        "Emerging": 289,
-        "Established": 501,
-        "Advanced": 6,
+        "Emerging": 302,
+        "Established": 486,
+        "Advanced": 8,
         "Leading": 0
       },
       "best": "Leading",
@@ -529,20 +527,20 @@
             "swing": 0.71
           },
           {
-            "qid": "Q4.4",
+            "qid": "Q9.1",
             "swing": 0.71
           },
           {
-            "qid": "Q9.1",
-            "swing": 0.71
+            "qid": "Q4.4",
+            "swing": 0.7000000000000002
           },
           {
             "qid": "Q9.3",
             "swing": 0.7000000000000002
           },
           {
-            "qid": "Q3.1",
-            "swing": 0.4700000000000002
+            "qid": "Q8.1",
+            "swing": 0.48
           }
         ],
         "share": 0.31696428571428564
@@ -578,11 +576,7 @@
         "top": [
           {
             "qid": "Q4.1",
-            "swing": 0.71
-          },
-          {
-            "qid": "Q4.4",
-            "swing": 0.71
+            "swing": 0.7100000000000001
           },
           {
             "qid": "Q9.1",
@@ -593,11 +587,15 @@
             "swing": 0.7000000000000001
           },
           {
+            "qid": "Q4.4",
+            "swing": 0.7
+          },
+          {
             "qid": "Q9.3",
             "swing": 0.7
           }
         ],
-        "share": 0.2448275862068965
+        "share": 0.25000000000000006
       }
     ],
     "dead": [
@@ -612,18 +610,19 @@
       "Q0.13",
       "Q1.1",
       "Q1.2",
+      "Q8.2",
       "Q9.2"
     ],
     "missing": [
       {
         "headline": "Overall maturity (1-5)",
-        "meanShift": -0.04055000000000002,
-        "worstProfileShift": 0.020000000000000018
+        "meanShift": -0.037500000000000006,
+        "worstProfileShift": 0.040000000000000036
       },
       {
         "headline": "Peer delta",
-        "meanShift": -0.12504999999999994,
-        "worstProfileShift": 0.020000000000000018
+        "meanShift": -0.03800000000000003,
+        "worstProfileShift": 0.039999999999999813
       }
     ]
   },
@@ -638,7 +637,7 @@
           4
         ],
         "min": -1,
-        "max": -1,
+        "max": 1,
         "outOfScale": 0,
         "nulls": 0
       },
@@ -659,7 +658,7 @@
           0,
           null
         ],
-        "min": 3500000,
+        "min": 400000,
         "max": 3500000,
         "outOfScale": 0,
         "nulls": 0
@@ -667,9 +666,9 @@
     ],
     "bands": {
       "counts": {
-        "Below Stage 1": 800,
-        "Chaos / Crawl Baseline": 0,
-        "Informed / Walk Foundation": 0,
+        "Below Stage 1": 783,
+        "Chaos / Crawl Baseline": 16,
+        "Informed / Walk Foundation": 1,
         "Optimized / Rate & Usage": 0,
         "Automated / Run Practice": 0,
         "Transparent / Unit Economics": 0
@@ -677,8 +676,6 @@
       "best": "Transparent / Unit Economics",
       "worst": "Below Stage 1",
       "unreachable": [
-        "Chaos / Crawl Baseline",
-        "Informed / Walk Foundation",
         "Optimized / Rate & Usage",
         "Automated / Run Practice"
       ]
@@ -689,26 +686,26 @@
         "top": [
           {
             "qid": "C1",
-            "swing": 0
+            "swing": 1
           },
           {
             "qid": "C2",
-            "swing": 0
+            "swing": 1
           },
           {
             "qid": "C3",
-            "swing": 0
+            "swing": 1
           },
           {
             "qid": "C4",
-            "swing": 0
+            "swing": 1
           },
           {
             "qid": "C5",
-            "swing": 0
+            "swing": 1
           }
         ],
-        "share": 0
+        "share": 0.5
       },
       {
         "headline": "Overall score (0-100)",
@@ -740,6 +737,10 @@
         "headline": "Value at stake high ($)",
         "top": [
           {
+            "qid": "T6",
+            "swing": 3100000
+          },
+          {
             "qid": "C1",
             "swing": 0
           },
@@ -754,20 +755,16 @@
           {
             "qid": "C4",
             "swing": 0
-          },
-          {
-            "qid": "C5",
-            "swing": 0
           }
         ],
-        "share": 0
+        "share": 1
       }
     ],
     "dead": [],
     "missing": [
       {
         "headline": "Maturity stage (-1..4)",
-        "meanShift": 0,
+        "meanShift": -0.02,
         "worstProfileShift": 0
       },
       {
@@ -787,8 +784,8 @@
           0,
           100
         ],
-        "min": 42,
-        "max": 81,
+        "min": 35,
+        "max": 82,
         "outOfScale": 0,
         "nulls": 0
       },
@@ -798,8 +795,8 @@
           0,
           null
         ],
-        "min": 2,
-        "max": 18,
+        "min": 0,
+        "max": 21,
         "outOfScale": 0,
         "nulls": 0
       },
@@ -818,9 +815,9 @@
     "bands": {
       "counts": {
         "Defensible": 0,
-        "Improving / Managed": 224,
-        "Material Exposure": 576,
-        "Critical Non-Compliance": 0
+        "Improving / Managed": 219,
+        "Material Exposure": 579,
+        "Critical Non-Compliance": 2
       },
       "best": "Defensible",
       "worst": "Critical Non-Compliance",
@@ -832,52 +829,52 @@
         "top": [
           {
             "qid": "G2",
+            "swing": 15
+          },
+          {
+            "qid": "A4",
+            "swing": 12
+          },
+          {
+            "qid": "G3",
+            "swing": 12
+          },
+          {
+            "qid": "A3",
             "swing": 8
           },
           {
-            "qid": "F1",
-            "swing": 7
-          },
-          {
-            "qid": "F2",
-            "swing": 7
-          },
-          {
-            "qid": "C3",
-            "swing": 6
-          },
-          {
-            "qid": "D1",
-            "swing": 6
+            "qid": "C2",
+            "swing": 8
           }
         ],
-        "share": 0.20512820512820512
+        "share": 0.3191489361702128
       },
       {
         "headline": "Critical + high findings",
         "top": [
           {
+            "qid": "C2",
+            "swing": 6
+          },
+          {
             "qid": "C1",
             "swing": 5
           },
           {
-            "qid": "B1",
-            "swing": 4
-          },
-          {
-            "qid": "A1",
-            "swing": 1
-          },
-          {
             "qid": "A2",
-            "swing": 1
+            "swing": 3
           },
           {
             "qid": "A4",
             "swing": 1
+          },
+          {
+            "qid": "C3",
+            "swing": 1
           }
         ],
-        "share": 0.3125
+        "share": 0.2857142857142857
       },
       {
         "headline": "Largest statutory ceiling ($)",
@@ -907,21 +904,28 @@
       }
     ],
     "dead": [
+      "A1",
+      "B1",
+      "B2",
       "D3",
       "F5",
+      "G1",
       "G4",
-      "I3"
+      "I3",
+      "K1",
+      "K2",
+      "K3"
     ],
     "missing": [
       {
         "headline": "Posture score (0-100)",
-        "meanShift": -0.075,
-        "worstProfileShift": -2
+        "meanShift": -0.015,
+        "worstProfileShift": 0
       },
       {
         "headline": "Critical + high findings",
-        "meanShift": 2.235,
-        "worstProfileShift": 13
+        "meanShift": 2.085,
+        "worstProfileShift": 15
       }
     ]
   },
@@ -935,8 +939,8 @@
           0,
           100
         ],
-        "min": 23,
-        "max": 86,
+        "min": 20,
+        "max": 85,
         "outOfScale": 0,
         "nulls": 0
       },
@@ -965,11 +969,11 @@
     ],
     "bands": {
       "counts": {
-        "Reactive": 0,
-        "Aware": 41,
-        "Structured": 485,
-        "Managed": 267,
-        "Sovereign-by-Design": 7
+        "Reactive": 1,
+        "Aware": 54,
+        "Structured": 512,
+        "Managed": 227,
+        "Sovereign-by-Design": 6
       },
       "best": "Sovereign-by-Design",
       "worst": "Reactive",
@@ -985,7 +989,7 @@
           },
           {
             "qid": "Q4.3",
-            "swing": 22
+            "swing": 23
           },
           {
             "qid": "Q4.2",
@@ -996,11 +1000,11 @@
             "swing": 18
           },
           {
-            "qid": "Q6.2",
-            "swing": 17
+            "qid": "Q6.1",
+            "swing": 18
           }
         ],
-        "share": 0.36507936507936506
+        "share": 0.35384615384615387
       },
       {
         "headline": "Regimes in scope (applies)",
@@ -1014,16 +1018,16 @@
             "swing": 8
           },
           {
-            "qid": "Q3.1",
-            "swing": 4
-          },
-          {
             "qid": "Q2.1",
             "swing": 1
           },
           {
             "qid": "Q2.3",
             "swing": 1
+          },
+          {
+            "qid": "Q1.3",
+            "swing": 0
           }
         ],
         "share": 0.9411764705882353
@@ -1037,7 +1041,7 @@
           },
           {
             "qid": "Q1.3",
-            "swing": 380000000
+            "swing": 378400000
           },
           {
             "qid": "Q1.1",
@@ -1056,12 +1060,13 @@
       }
     ],
     "dead": [
-      "Q2.2"
+      "Q2.2",
+      "Q3.1"
     ],
     "missing": [
       {
         "headline": "Sovereignty maturity (0-100)",
-        "meanShift": -0.37,
+        "meanShift": 0.355,
         "worstProfileShift": -4
       }
     ]
