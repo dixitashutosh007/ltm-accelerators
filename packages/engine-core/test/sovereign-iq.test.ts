@@ -110,6 +110,20 @@ describe('Sovereign IQ invariants (500 random questionnaires)', () => {
   });
 });
 
+describe('Sovereign IQ: Phase 3 integration fixes', () => {
+  it('the Australian Privacy Act component is the AUD 50M figure, not 30% of global turnover', () => {
+    const au = Object.values<any>(K.demoArchetypes).find(a => a.id === 'au_super');
+    const r = evaluateSovereignIq({ answers: au.answers }) as any;
+    const c = r.fin.components.find((x: any) => /Privacy Act 1988/.test(x.law));
+    expect(c.amt).toBeCloseTo(50e6 * 0.65, 0);
+  });
+
+  it('answers in fewer than three pillars give a score but no maturity stage', () => {
+    const r = evaluateSovereignIq({ answers: { 'Q4.1': 0 } }) as any;
+    expect(r.maturity.stage).toBeNull();
+  });
+});
+
 describe('Sovereign IQ regressions fixed in Phase 2', () => {
   it('every report view on the page reads the server result (the browser engine found no regimes and no fines)', () => {
     for (const fn of ['buildSovereignPromptPayload', 'generateRuleBasedSovereignMemo', 'openEmailModal', 'renderSlide', 'generateMarpMarkdown',
@@ -276,12 +290,15 @@ describe('Sovereign IQ Phase 3: exposure', () => {
     expect(fine(r, 'EU AI Act').amt).toBeCloseTo(15000000 * EUR_TO_USD);
   });
 
-  it('Australia: Privacy Act 1988 (as amended 2022), greater of AUD 50M or 30% of turnover, no "APRA"', () => {
-    const small = run({ 'Q1.2': [6], 'Q1.3': 3 });
-    expect(fine(small, 'Privacy Act 1988 (as amended 2022)').amt).toBeCloseTo(Math.max(50000000 * AUD_TO_USD, 100000000 * 0.3));
-    const big = run({ 'Q1.2': [6], 'Q1.3': 0 });
-    expect(fine(big, 'Privacy Act 1988').amt).toBeCloseTo(10000000000 * 0.3);
-    expect(big.fin.components.map((c: any) => c.law).join()).not.toContain('APRA');
+  it('Australia: Privacy Act 1988 (as amended 2022) is quantified at the AUD 50M figure only, no "APRA"', () => {
+    // The 30%-of-adjusted-turnover limb needs Australian turnover, which we do not collect.
+    for (const rev of [3, 0]) {
+      const r = run({ 'Q1.2': [6], 'Q1.3': rev });
+      const c = fine(r, 'Privacy Act 1988 (as amended 2022)');
+      expect(c.amt).toBeCloseTo(50000000 * AUD_TO_USD);
+      expect(c.law).toContain('not quantified');
+      expect(r.fin.components.map((x: any) => x.law).join()).not.toContain('APRA');
+    }
   });
 
   it('India DPDP is quantified at INR 250 crore when it applies', () => {

@@ -321,6 +321,8 @@ function computePillarScores(answers: any, facts: any) {
   return { scores: scores, assessed: assessed };
 }
 
+export const MIN_PILLARS_FOR_STAGE = 3;
+
 export function stageForScore(score: number, stages: any[] = MATURITY_STAGES) {
   for (var i = 0; i < stages.length; i++) {
     var s = stages[i];
@@ -340,7 +342,9 @@ function computeOverallMaturity(pillarScores: any, assessed: any) {
   });
   if (weight === 0) return { score: 0, stage: null };
   var overall = Math.round(total / weight);
-  return { score: overall, stage: stageForScore(overall) };
+  // A maturity stage needs evidence across the estate: at least three of the five pillars assessed.
+  var assessedCount = PILLAR_IDS.filter(function(pid) { return assessed[pid]; }).length;
+  return { score: overall, stage: assessedCount >= MIN_PILLARS_FOR_STAGE ? stageForScore(overall) : null };
 }
 
 function calculateFinancialExposure(answers: any, inScopeRegimes: any, facts: any) {
@@ -383,9 +387,10 @@ function calculateFinancialExposure(answers: any, inScopeRegimes: any, facts: an
   }
   if (hasAU) {
     // Privacy Act 1988 s.13G as amended by the Privacy Legislation Amendment Act 2022: the greater of AUD 50M,
-    // 3x the benefit obtained, or 30% of adjusted turnover. Benefit is not known; turnover here is global turnover,
-    // which overstates "adjusted turnover" (Australian turnover over the breach period) for multinationals.
-    fineComponents.push({ law: "Privacy Act 1988 (as amended 2022)", amt: Math.max(50000000 * AUD_TO_USD, turnover * 0.30) });
+    // 3x the benefit obtained, or 30% of "adjusted turnover" (Australian turnover over the breach period).
+    // Neither the benefit nor Australian turnover is captured, and global turnover would overstate it badly,
+    // so only the AUD 50M figure is quantified.
+    fineComponents.push({ law: "Privacy Act 1988 (as amended 2022) · AUD 50M figure; 30% of Australian adjusted turnover not quantified", amt: 50000000 * AUD_TO_USD });
   }
   if (hasIN) {
     // India DPDP Act 2023 Schedule: up to INR 250 crore per breach.
