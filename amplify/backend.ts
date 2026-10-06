@@ -14,6 +14,7 @@ import { manageResilienceEvidenceFunction } from './functions/manage-resilience-
 import { manageResilienceAssessmentFunction } from './functions/manage-resilience-assessment/resource';
 import { HttpApi, HttpMethod } from 'aws-cdk-lib/aws-apigatewayv2';
 import { HttpLambdaIntegration } from 'aws-cdk-lib/aws-apigatewayv2-integrations';
+import { HttpUserPoolAuthorizer } from 'aws-cdk-lib/aws-apigatewayv2-authorizers';
 
 export const backend = defineBackend({
   auth,
@@ -58,7 +59,6 @@ httpApi.addRoutes({ path: '/api/evaluate/modernization-iq', methods: [HttpMethod
 httpApi.addRoutes({ path: '/api/evaluate/resilience-iq', methods: [HttpMethod.POST, HttpMethod.OPTIONS], integration: integrations.resilience });
 httpApi.addRoutes({ path: '/api/resilience-iq/evidence', methods: [HttpMethod.POST, HttpMethod.OPTIONS], integration: integrations.resilienceEvidence });
 
-import { HttpUserPoolAuthorizer } from 'aws-cdk-lib/aws-apigatewayv2-authorizers';
 const resilienceAssessmentAuthorizer = new HttpUserPoolAuthorizer(
   'ResilienceAssessmentUserPoolAuthorizer',
   backend.auth.resources.userPool,
