@@ -467,67 +467,51 @@ export function evaluateCloudIq(
       code: '02.1',
       size: 'M',
       title: 'Sovereign Cloud & SecNumCloud Compliance Boundary',
-      desc: 'Partition sensitive data workloads into qualified local sovereign clouds with dedicated HSM key isolation.',
-      impact: 'Satisfies statutory and regulatory data boundary mandates'
+      desc: 'Partition sensitive data into sovereign European / local cloud enclaves with strict key management.',
+      // A single infrastructure move supports compliance; it cannot by itself make a client compliant.
+      impact: 'Supports SecNumCloud / DORA data-boundary requirements'
     });
   }
-  if (!movesPhase3.length) {
-    movesPhase3.push({
-      code: '03.4',
-      size: 'M',
-      title: 'Core Workload Containerization Wave',
-      desc: 'Migrate legacy VM stacks into managed Kubernetes (EKS/AKS).',
-      impact: 'Improves deployment agility and portability'
-    });
-  }
-
-  // Phase 4: Long-Term Horizon Optimization (9–18+ Months)
-  if (dimScores.D8 < 3.8 || aiFlag) {
-    movesPhase4.push({
-      code: '03.7',
-      size: 'L',
-      title: 'Enterprise AI Data Platform & TokenOps Guardrails',
-      desc: 'Modernize data lakehouse architecture for GenAI inference, feature stores, and TokenOps cost allocation.',
-      impact: 'Unlocks enterprise AI monetization with strict governance'
-    });
-  }
-  if (leaseCliff || dimScores.D6 < 3.5) {
+  // Phase 4: Long-Term Transformation & AI (9–18+ Months). Same rules as the live page before Phase 2.
+  if (dimScores.D6 < 3.8 || leaseCliff) {
     movesPhase4.push({
       code: '03.5',
-      size: 'L',
-      title: 'Full Physical Data Centre Decommissioning',
-      desc: 'Execute final bare-metal asset liquidation, colocation lease termination, and clean exit.',
-      impact: 'Completely eliminates multi-million dollar annual facility run-rate'
+      size: 'XL',
+      title: 'Full Data Centre Decommissioning & Facility Handback',
+      desc: 'Physical server decommissioning, lease termination, and hardware asset liquidation.',
+      impact: 'Permanently eliminates facility lease overhead'
     });
   }
-  movesPhase4.push({
-    code: '03.1',
-    size: 'M',
-    title: 'Autonomous Multi-Cloud FinOps & Unit Economics',
-    desc: 'Integrate real-time cloud unit cost metrics directly into engineering delivery KPIs and executive P&L.',
-    impact: 'Institutionalizes financial accountability into engineering culture'
-  });
+  if (dimScores.D2 < 4.2) {
+    movesPhase4.push({
+      code: '03.4',
+      size: 'L',
+      title: 'Core Legacy Monolith Decoupling',
+      desc: 'Refactor core monolithic applications into microservices or serverless event-driven architecture.',
+      impact: 'Improves release cycle frequency by 5x'
+    });
+  }
+  if (aiFlag || dimScores.D8 < 3.8) {
+    movesPhase4.push({
+      code: '04.4',
+      size: 'M',
+      title: 'Enterprise AI Lakehouse & TokenOps Platform',
+      desc: 'Governed feature store, model routing gateway, and private data boundary for generative AI.',
+      impact: 'Scalable, cost-governed GenAI adoption'
+    });
+  }
 
-  // 7. Recommended Offerings (Catalog cross-reference)
-  const offersRaw: any[] = [];
-  if (trackCode === 'A' || trackCode === 'Hybrid') {
-    if (KB.offerings['03.3']) offersRaw.push({ code: '03.3', ...KB.offerings['03.3'] });
-    if (KB.offerings['03.1']) offersRaw.push({ code: '03.1', ...KB.offerings['03.1'] });
-  }
-  if (trackCode === 'B' || trackCode === 'Hybrid') {
-    if (KB.offerings['03.4']) offersRaw.push({ code: '03.4', ...KB.offerings['03.4'] });
-    if (KB.offerings['03.5']) offersRaw.push({ code: '03.5', ...KB.offerings['03.5'] });
-  }
-  if (dimScores.D5 < 3.2 || dimScores.D4 < 3.2) {
-    if (KB.offerings['03.6']) offersRaw.push({ code: '03.6', ...KB.offerings['03.6'] });
-  }
-  if (dimScores.D8 < 3.0 && aiFlag) {
-    if (KB.offerings['03.1']) offersRaw.push({ code: '03.1', ...KB.offerings['03.1'] });
-  }
-  // Deduplicate offers
-  const offersDedup = offersRaw.filter(
-    (o, idx, arr) => o && arr.findIndex((x) => x && x.code === o.code) === idx
-  );
+  // 7. Recommended Offerings: { code, why } plus the catalogue entry. Same rules as the live page before Phase 2.
+  const offersRaw: Array<{ code: string; why: string }> = [];
+  if (dimScores.D3 <= 3.2 || wasteRate >= 0.15) offersRaw.push({ code: '03.3', why: 'Cost allocation, waste leakage & FinOps unit economics' });
+  if (dimScores.D4 <= 3.2) offersRaw.push({ code: '03.2', why: 'Inconsistent hybrid / multi-cloud operating model' });
+  if (dimScores.D5 <= 3.2) offersRaw.push({ code: '03.6', why: 'Platform automation, golden paths & developer experience' });
+  if (dimScores.D1 <= 3.2 || trackCode === 'B') offersRaw.push({ code: '03.1', why: 'Workload placement, cloud strategy & business case' });
+  if (dimScores.D2 <= 3.2) offersRaw.push({ code: '03.4', why: 'Application modernization & migration factory execution' });
+  if (dimScores.D6 <= 3.2 || leaseCliff) offersRaw.push({ code: '03.5', why: 'Data centre consolidation, facility exit & compute capacity' });
+  const offersDedup = offersRaw
+    .filter((o, idx, arr) => arr.findIndex(x => x.code === o.code) === idx)
+    .map(o => ({ ...(KB.offerings?.[o.code] || {}), ...o }));
 
   // 8. Sector Peer Benchmark Comparison
   const q02 = KB.questions.find((x: any) => x.id === 'Q0.2');
