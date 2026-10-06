@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { evaluateFinOpsValueCase } from '../src/accelerators/finops-value-case/evaluate';
 import { evaluateFinOpsIq } from '../src/accelerators/finops-iq/evaluate';
 import { evaluatePostureIq } from '../src/accelerators/posture-iq/evaluate';
-import { evaluateSovereignIq } from '../src/accelerators/sovereign-iq/evaluate';
+import { evaluateSovereignIq, EUR_TO_USD } from '../src/accelerators/sovereign-iq/evaluate';
 import { evaluateCloudIq } from '../src/accelerators/cloud-iq/evaluate';
 import { evaluateStrategyIq } from '../src/accelerators/strategy-iq/evaluate';
 import { evaluateModernizationIq } from '../src/accelerators/modernization-iq/evaluate';
@@ -118,9 +118,10 @@ describe('Sovereign IQ regulatory scope', () => {
   });
 
   it('EU archetype: GDPR cap is at least EUR 20M (the higher of EUR 20M or 4%)', () => {
-    const gdpr = runSovereign('eu_pharma').fin.components.find(c => c.law.startsWith('GDPR'));
+    // Phase 3: the component is labelled "EU GDPR" (UK GDPR is a separate component) and the EUR floor is in USD.
+    const gdpr = runSovereign('eu_pharma').fin.components.find(c => c.law.startsWith('EU GDPR'));
     expect(gdpr).toBeTruthy();
-    expect(gdpr!.amt).toBeGreaterThanOrEqual(20_000_000);
+    expect(gdpr!.amt).toBeGreaterThanOrEqual(20_000_000 * EUR_TO_USD);
   });
 
   it.each(Object.keys(sovereignArchetypes))('%s: every archetype has at least one regime in scope', key => {
