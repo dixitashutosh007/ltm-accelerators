@@ -78,8 +78,7 @@ const schema = a.schema({
       finalizedAt: a.datetime()
     })
     .authorization(allow => [
-      allow.groups(['Admin', 'Consultant']).to(['create', 'read', 'update']),
-      allow.resource(manageResilienceAssessmentFunction).to(['query', 'mutate'])
+      allow.groups(['Admin', 'Consultant']).to(['create', 'read', 'update'])
     ]),
 
   AssessmentSubmission: a
@@ -132,7 +131,9 @@ const schema = a.schema({
     .authorization(allow => [
       allow.group('Admin').to(['create', 'read', 'update', 'delete'])
     ])
-});
+}).authorization(allow => [
+  allow.resource(manageResilienceAssessmentFunction).to(['query', 'mutate'])
+]);
 
 export type Schema = ClientSchema<typeof schema>;
 
