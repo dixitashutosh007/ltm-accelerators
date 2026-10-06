@@ -1,14 +1,14 @@
 import type { PreSignUpTriggerHandler } from 'aws-lambda';
 
-// Pre-configured allowlist (Master admin + default corporate domain)
-const DEFAULT_ALLOWED_EMAILS = [
-  'dixitashutosh007@gmail.com',
-  'ashutosh.dixit@ltm.com'
-];
+// Corporate domain allowed by default. Individual addresses and extra domains come from the
+// ALLOWED_EMAILS / ALLOWED_DOMAINS environment variables (set in amplify/config.ts), never code.
+const DEFAULT_ALLOWED_EMAILS: string[] = [];
 
 const DEFAULT_ALLOWED_DOMAINS = [
   'ltm.com'
 ];
+
+const ACCESS_CONTACT = process.env.ACCESS_CONTACT_EMAIL || 'your LTM Advisory administrator';
 
 export const handler: PreSignUpTriggerHandler = async (event) => {
   const email = (event.request.userAttributes.email || '').toLowerCase().trim();
@@ -35,15 +35,19 @@ export const handler: PreSignUpTriggerHandler = async (event) => {
   if (!isEmailAllowed && !isDomainAllowed) {
     console.warn(`[PreSignUp] Blocked registration attempt from unauthorized email: ${email}`);
     throw new Error(
-      `Access denied: The email '${email}' is not authorized to access this platform. Please contact ashutosh.dixit@ltm.com for access.`
+      `Access denied: The email '${email}' is not authorized to access this platform. Please contact ${ACCESS_CONTACT} for access.`
     );
   }
 
   console.info(`[PreSignUp] Authorized registration for email: ${email}`);
   
-  // Auto-confirm verified allowed users
-  event.response.autoConfirmUser = true;
-  event.response.autoVerifyEmail = true;
+  // Only accounts created by an administrator are confirmed automatically. Self-registered
+  // accounts must prove they own the address via Cognito's emailed verification code;
+  // otherwise anyone could register an unclaimed allow-listed address (e.g. any @ltm.com).
+  if (event.triggerSource === 'PreSignUp_AdminCreateUser') {
+    event.response.autoConfirmUser = true;
+    event.response.autoVerifyEmail = true;
+  }
 
   return event;
 };

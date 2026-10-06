@@ -1,3 +1,4 @@
+import assert from 'node:assert/strict';
 import { evaluateFinOpsValueCase } from './accelerators/finops-value-case/evaluate';
 import { evaluateFinOpsIq } from './accelerators/finops-iq/evaluate';
 import { evaluatePostureIq } from './accelerators/posture-iq/evaluate';
@@ -76,6 +77,15 @@ console.log('Pillars Evaluated:', postureResult.pillarScores.pillars.map(p => `$
 console.log('Total Statutory Exposure:', postureResult.penalties.totalValueAtStake, 'Hedge Ratio:', postureResult.penalties.riskHedgeRatio + '%');
 console.log('Triggered Findings Count:', postureResult.findings.length, 'Severity Breakdown:', postureResult.counts);
 console.log('Triggered Facilitator Probes:', postureResult.triggeredProbes.map((p: any) => p.name).join(' | '));
+// GDPR Art. 83(5): EUR 20M or 4% of turnover, whichever is higher; the headline is the largest single cap, never a sum.
+const postureGdpr = postureResult.penalties.fines.find((f: any) => f.regId === 'gdpr');
+assert.ok(postureGdpr, 'GDPR exposure expected for the EU bank archetype');
+assert.equal(postureResult.penalties.totalValueAtStake, Math.max(...postureResult.penalties.fines.map((f: any) => f.capUSD)), 'headline exposure must equal the largest single statutory cap');
+assert.ok(postureResult.penalties.totalValueAtStake <= bankArch.turnover * 0.05, 'headline exposure must stay within a realistic share of turnover');
+const postureAi = evaluatePostureIq({ answers: bankArch.answers, org: { turnover: 1000000000 }, regulations: ['aiact'] });
+const aiCap = postureAi.penalties.fines.find((f: any) => f.regId === 'aiact');
+assert.ok(aiCap, 'AI Act exposure expected when the regulation is in scope');
+assert.equal(aiCap!.capUSD, Math.round(Math.max(15000000, (1000000000 / 1.08) * 0.03) * 1.08), 'AI Act high-risk cap must use Art. 99(4) (EUR 15M / 3%)');
 console.log('--- Posture IQ Assertions Passed! ---\n');
 
 console.log('--- 4. Testing Sovereign IQ Headless Engine ---');
@@ -90,10 +100,24 @@ const sovereignResult = evaluateSovereignIq({
 
 console.log('Sovereign Maturity Score:', sovereignResult.maturity.score, sovereignResult.maturity.stage.label);
 console.log('Sovereign Pillars:', sovereignResult.pillarScores);
-console.log('In-Scope Regimes Count:', sovereignResult.inScopeRegimes.filter((r: any) => r.inScope).length);
+console.log('In-Scope Regimes Count:', sovereignResult.inScopeRegimes.length, sovereignResult.inScopeRegimes.map((r: any) => r.regime.id).join(', '));
 console.log('Financial Statutory Ceiling:', '$' + (sovereignResult.fin.statutoryCeiling / 1000000).toFixed(1) + 'M');
 console.log('Anomalies Identified:', sovereignResult.anomalies.map((a: any) => a.title).join(' | '));
 console.log('Consulting Probes Triggered:', sovereignResult.probes.map((p: any) => p.badge).join(' | '));
+const ksaRegimes = sovereignResult.inScopeRegimes.map((r: any) => r.regime.id);
+for (const id of ['KSA_PDPL', 'KSA_NCA', 'KSA_SAMA_CITC']) {
+  assert.ok(ksaRegimes.includes(id), `Saudi bank archetype must have ${id} in scope`);
+}
+for (const id of ['DORA', 'EU_GDPR', 'EU_AI_ACT']) {
+  assert.ok(!ksaRegimes.includes(id), `Saudi bank archetype (no EU footprint) must not have ${id} in scope`);
+}
+const ksaComponents = (sovereignResult.fin as any).components as { law: string; amt: number }[];
+assert.equal(sovereignResult.fin.statutoryCeiling, Math.max(0, ...ksaComponents.map(c => c.amt)), 'ceiling must be the largest in-scope statutory maximum, not a placeholder');
+const euArch = (sovereignKb as any).demoArchetypes['eu_pharma'];
+const euResult = evaluateSovereignIq({ answers: euArch.answers, session: { clientName: euArch.clientName, mode: 'workshop' } });
+const euGdpr = ((euResult.fin as any).components as { law: string; amt: number }[]).find(c => c.law.startsWith('GDPR'));
+assert.ok(euGdpr, 'EU archetype must carry a GDPR exposure');
+assert.ok(euGdpr!.amt >= 20000000, 'GDPR cap is the HIGHER of EUR 20M or 4% of turnover');
 console.log('--- Sovereign IQ Assertions Passed! ---\n');
 
 console.log('--- 5. Testing Cloud IQ Headless Engine ---');
@@ -209,5 +233,5 @@ console.log('Triggered Probes:', modernizationIqResult.triggeredProbes.map(p => 
 console.log('Roadmap Phases Count:', modernizationIqResult.roadmapPhases.length);
 console.log('--- Modernize IQ Assertions Passed! ---\n');
 
-console.log('🎉 ALL 7 ACCELERATOR ENGINES VALIDATED AND FUNCTIONING FLAWLESSLY!');
 
+console.log('All engine checks completed. (Posture IQ and Sovereign IQ carry assertions; the other engines are smoke-run only until Phase 2 adds golden tests.)');

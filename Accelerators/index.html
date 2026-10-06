@@ -8,6 +8,8 @@
   <!-- CDNs for Visual Charting -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   <!-- S3 Customer Reports Client -->
+  <script src="/assets/runtime-config.js"></script>
+  <script src="/assets/ltm-api.js"></script>
   <script src="/assets/s3-reports.js"></script>
 
   <!-- Google Fonts -->
@@ -1276,7 +1278,7 @@
        HEADER: UNIFIED EXECUTIVE COMMAND BAR
        ============================================================ -->
   <header>
-    <a href="/portal" class="brand" title="Infrastructure Tech Advisory">
+    <a href="/" class="brand" title="Infrastructure Tech Advisory">
       <img src="/assets/ltm-logo.png" alt="LTM" style="height: 34px; width: auto; object-fit: contain; filter: drop-shadow(0 2px 8px rgba(255, 94, 79, 0.4));">
       <div class="brand-text">
         <div class="brand-name">Infrastructure Tech Advisory</div>
@@ -1606,15 +1608,15 @@
             RBAC ACCESS GATE
           </div>
           <h3 class="modal-title">Administrator Authentication</h3>
-          <p class="modal-desc">Sign in with authorized administrator credentials (<b>dixitashutosh007@gmail.com</b>) to manage question banks and client deliverables.</p>
+          <p class="modal-desc">Sign in with your LTM Advisory account to run assessments, manage question banks and access client deliverables.</p>
         </div>
 
         <div class="error-banner" id="loginError"></div>
 
         <form onsubmit="handleCognitoLogin(event)">
           <div class="form-group">
-            <label class="form-label">Authorized Admin Email</label>
-            <input type="email" id="loginEmail" class="form-input" value="dixitashutosh007@gmail.com" required>
+            <label class="form-label">Email</label>
+            <input type="email" id="loginEmail" class="form-input" placeholder="name@ltm.com" autocomplete="username" required>
           </div>
 
           <div class="form-group">
@@ -1629,7 +1631,7 @@
 
         <div style="text-align:center;margin-top:16px;border-top:1px solid rgba(255,255,255,0.06);padding-top:14px;">
           <button type="button" onclick="showPasswordResetView(true)" style="background:none;border:none;color:var(--text-muted);font-size:12px;cursor:pointer;text-decoration:underline;">
-            Reset or Change Password from this Page &rarr;
+            Forgot password? &rarr;
           </button>
         </div>
       </div>
@@ -1640,8 +1642,8 @@
           <div style="font-family:var(--font-mono);font-size:11px;font-weight:700;color:#10B981;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:6px">
             PASSWORD RECOVERY &amp; RESET
           </div>
-          <h3 class="modal-title">Reset Admin Password</h3>
-          <p class="modal-desc">Set a new permanent password directly for <b>dixitashutosh007@gmail.com</b>.</p>
+          <h3 class="modal-title">Forgot Password</h3>
+          <p class="modal-desc">We will email a verification code to your registered address. Enter it below with your new password.</p>
         </div>
 
         <div class="error-banner" id="resetError"></div>
@@ -1649,8 +1651,16 @@
 
         <form onsubmit="handleDirectPasswordReset(event)">
           <div class="form-group">
-            <label class="form-label">Admin Email</label>
-            <input type="email" id="resetEmail" class="form-input" value="dixitashutosh007@gmail.com" readonly style="opacity:0.8;background:#060A0F;">
+            <label class="form-label">Email</label>
+            <div style="display:flex;gap:8px;">
+              <input type="email" id="resetEmail" class="form-input" placeholder="name@ltm.com" required autocomplete="username" style="flex:1;">
+              <button type="button" id="btnSendResetCode" class="btn-auth" onclick="sendPasswordResetCode()" style="white-space:nowrap;">Send code</button>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Verification Code (from email)</label>
+            <input type="text" id="resetCode" class="form-input" placeholder="6-digit code" required inputmode="numeric" autocomplete="one-time-code">
           </div>
 
           <div class="form-group">
@@ -1664,7 +1674,7 @@
           </div>
 
           <button type="submit" id="btnSubmitReset" class="btn-auth primary" style="width:100%;justify-content:center;padding:11px;font-size:13.5px;margin-top:8px;">
-            Set New Password Now &rarr;
+            Reset Password &rarr;
           </button>
         </form>
 
@@ -2087,7 +2097,7 @@
   <footer>
     <div>&copy; 2026 <b>LTM Infrastructure Tech Advisory</b> &middot; Enterprise Platform Architecture</div>
     <div style="display:flex;gap:18px;">
-      <a href="/portal" style="color:inherit;text-decoration:none;">Showcase Portal</a>
+      <a href="/" style="color:inherit;text-decoration:none;">Showcase Portal</a>
       <a href="/studio" style="color:inherit;text-decoration:none;">Question Bank Studio</a>
       <span style="color:#10B981;">&#9679; Advisory Engine Online</span>
     </div>
@@ -2097,15 +2107,27 @@
        CLIENT JAVASCRIPT: SPLASH, RBAC & STUDIO ROUTING
        ============================================================ -->
   <script>
-    /* ---------- Cognito RBAC Config (ap-south-1) ---------- */
-    const COGNITO_CONFIG = {
-      region: "ap-south-1",
-      userPoolId: "ap-south-1_91amN2bz4",
-      clientId: "4iiqcsgvsm0b4ngpps94ho4c67",
-      superAdminEmail: "dixitashutosh007@gmail.com"
-    };
+    /* ---------- Configuration & authenticated API access ----------
+       Cognito settings and the API address come from window.LTM_CONFIG (runtime-config.js,
+       generated at build time). LTM_API (ltm-api.js) attaches and silently renews the
+       user's token. Identity and permissions are always decided server-side. */
+    const COGNITO_CONFIG = (window.LTM_CONFIG && window.LTM_CONFIG.cognito) || {};
 
     let AUTH_USER = null;
+
+    async function apiFetch(path, options = {}) {
+      return LTM_API.fetch(path, options);
+    }
+
+    // Called by LTM_API when the session cannot be renewed.
+    function handleSessionExpired() {
+      AUTH_USER = null;
+      LTM_API.clearSession();
+      renderAuthWidget();
+      openLoginModal();
+      toast("Session expired. Please sign in again.", "🔐");
+    }
+    window.LTM_onSessionExpired = handleSessionExpired;
 
     /* ---------- Splash Screen Controller ---------- */
     function initSplash() {
@@ -2153,16 +2175,18 @@
     /* ---------- Authentication & RBAC ---------- */
     function initAuth() {
       try {
-        const stored = sessionStorage.getItem('ltm_auth_user');
-        if (stored) {
-          AUTH_USER = JSON.parse(stored);
+        if (LTM_API.hasUsableSession()) {
+          AUTH_USER = LTM_API.readSession();
+        } else {
+          LTM_API.clearSession();
         }
       } catch(e) {}
       renderAuthWidget();
     }
 
     function isSuperAdmin() {
-      return AUTH_USER && AUTH_USER.email && AUTH_USER.email.toLowerCase() === COGNITO_CONFIG.superAdminEmail.toLowerCase();
+      // UI hint only: the API enforces admin rights from the verified token.
+      return !!(AUTH_USER && AUTH_USER.role === 'super_admin');
     }
 
     function canUserTakeAssessment(toolId) {
@@ -2229,7 +2253,7 @@
       const w = document.getElementById('authWidget');
       const btnAC = document.getElementById('btnNavAccessControl');
       const editBtns = document.querySelectorAll('.btn-action-edit');
-      const launchBtns = document.querySelectorAll('.btn-action-launch');
+      const launchBtns = document.querySelectorAll('.btn-action-launch:not([disabled])');
 
       if (isSuperAdmin()) {
         if (btnAC) btnAC.style.display = 'inline-flex';
@@ -2342,7 +2366,12 @@
         if (signInView) signInView.style.display = 'none';
         if (resetView) resetView.style.display = 'block';
         const newPass = document.getElementById('resetNewPass');
-        if (newPass) { newPass.value = ''; newPass.focus(); }
+        if (newPass) newPass.value = '';
+        const code = document.getElementById('resetCode');
+        if (code) code.value = '';
+        const resetEmail = document.getElementById('resetEmail');
+        const loginEmail = document.getElementById('loginEmail');
+        if (resetEmail) { resetEmail.value = (loginEmail && loginEmail.value) || ''; resetEmail.focus(); }
         const confirmPass = document.getElementById('resetConfirmPass');
         if (confirmPass) confirmPass.value = '';
       } else {
@@ -2351,9 +2380,41 @@
       }
     }
 
+    function cognitoRequest(target, payload) {
+      return LTM_API.cognitoCall(target, payload);
+    }
+
+    async function sendPasswordResetCode() {
+      const email = document.getElementById('resetEmail').value.trim().toLowerCase();
+      const errDiv = document.getElementById('resetError');
+      const successDiv = document.getElementById('resetSuccess');
+      const btn = document.getElementById('btnSendResetCode');
+      errDiv.style.display = 'none';
+      successDiv.style.display = 'none';
+      if (!email) {
+        errDiv.textContent = 'Enter your email address first.';
+        errDiv.style.display = 'block';
+        return;
+      }
+      btn.disabled = true;
+      btn.textContent = 'Sending...';
+      try {
+        await cognitoRequest("ForgotPassword", { Username: email });
+      } catch (err) {
+        // Do not reveal whether the account exists.
+        console.warn('ForgotPassword:', err.message);
+      } finally {
+        successDiv.textContent = 'If this email is registered, a verification code has been sent.';
+        successDiv.style.display = 'block';
+        btn.disabled = false;
+        btn.textContent = 'Resend code';
+      }
+    }
+
     async function handleDirectPasswordReset(e) {
       e.preventDefault();
-      const email = document.getElementById('resetEmail').value.trim();
+      const email = document.getElementById('resetEmail').value.trim().toLowerCase();
+      const code = document.getElementById('resetCode').value.trim();
       const newPass = document.getElementById('resetNewPass').value;
       const confirmPass = document.getElementById('resetConfirmPass').value;
       const errDiv = document.getElementById('resetError');
@@ -2376,37 +2437,26 @@
       }
 
       btn.disabled = true;
-      btn.textContent = 'Updating Password...';
+      btn.textContent = 'Resetting Password...';
 
       try {
-        const res = await fetch("https://zvnmwxa9sf.execute-api.ap-south-1.amazonaws.com/api/auth/reset-password", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email, newPassword: newPass })
-        });
-        const data = await res.json();
-        if (data.ok) {
-          successDiv.textContent = 'Password successfully updated! Redirecting to sign in...';
-          successDiv.style.display = 'block';
-          toast("Admin password updated successfully", "✅");
-          setTimeout(() => {
-            showPasswordResetView(false);
-            const loginPass = document.getElementById('loginPassword');
-            if (loginPass) {
-              loginPass.value = newPass;
-              loginPass.focus();
-            }
-          }, 1500);
-        } else {
-          errDiv.textContent = data.error || 'Failed to update password.';
-          errDiv.style.display = 'block';
-        }
+        await cognitoRequest("ConfirmForgotPassword", { Username: email, ConfirmationCode: code, Password: newPass });
+        successDiv.textContent = 'Password reset. Please sign in with your new password.';
+        successDiv.style.display = 'block';
+        toast("Password reset successfully", "✅");
+        setTimeout(() => {
+          showPasswordResetView(false);
+          const loginEmail = document.getElementById('loginEmail');
+          if (loginEmail) loginEmail.value = email;
+          const loginPass = document.getElementById('loginPassword');
+          if (loginPass) { loginPass.value = ''; loginPass.focus(); }
+        }, 1500);
       } catch(err) {
-        errDiv.textContent = 'Network or API error: ' + err.message;
+        errDiv.textContent = err.message || 'Failed to reset password.';
         errDiv.style.display = 'block';
       } finally {
         btn.disabled = false;
-        btn.textContent = 'Set New Password Now →';
+        btn.textContent = 'Reset Password →';
       }
     }
 
@@ -2422,70 +2472,37 @@
       errDiv.style.display = 'none';
 
       try {
-        const res = await fetch("https://cognito-idp." + COGNITO_CONFIG.region + ".amazonaws.com/", {
-          method: "POST",
-          headers: {
-            "X-Amz-Target": "AWSCognitoIdentityProviderService.InitiateAuth",
-            "Content-Type": "application/x-amz-json-1.1"
-          },
-          body: JSON.stringify({
-            AuthFlow: "USER_PASSWORD_AUTH",
-            ClientId: COGNITO_CONFIG.clientId,
-            AuthParameters: {
-              USERNAME: email,
-              PASSWORD: password
+        const session = await LTM_API.signIn(email, password);
+
+        // Role and permissions are resolved server-side from the verified token.
+        try {
+          const meRes = await LTM_API.fetch("/api/me");
+          if (meRes.ok) {
+            const me = await meRes.json();
+            if (me.ok) {
+              session.role = me.role;
+              session.permissions = me.permissions;
+              LTM_API.writeSession(session);
             }
-          })
-        });
-
-        const data = await res.json();
-        if (data.AuthenticationResult) {
-          const token = data.AuthenticationResult.IdToken;
-          const payload = JSON.parse(atob(token.split('.')[1]));
-          const cleanEmail = (payload.email || email).toLowerCase();
-          const isSuper = cleanEmail === COGNITO_CONFIG.superAdminEmail.toLowerCase();
-
-          AUTH_USER = {
-            email: cleanEmail,
-            sub: payload.sub,
-            token: token,
-            role: isSuper ? 'super_admin' : 'advisor_viewer',
-            permissions: {
-              view: ['strategy-iq', 'modernization-iq', 'finops-value-case', 'finops-iq', 'sovereign-iq', 'posture-iq', 'cloud-iq', 'cost-iq', isSuper ? 'reports' : ''],
-              edit: isSuper ? ['strategy-iq', 'modernization-iq', 'finops-value-case', 'finops-iq', 'sovereign-iq', 'posture-iq', 'cloud-iq', 'cost-iq'] : []
-            }
-          };
-
-          // Fetch latest permissions config
-          try {
-            const uRes = await fetch("https://zvnmwxa9sf.execute-api.ap-south-1.amazonaws.com/api/users");
-            const uData = await uRes.json();
-            if (uData.ok && Array.isArray(uData.users)) {
-              const matched = uData.users.find(u => u.email.toLowerCase() === cleanEmail);
-              if (matched) {
-                AUTH_USER.role = matched.role;
-                AUTH_USER.permissions = matched.permissions;
-              }
-            }
-          } catch(err) {}
-
-          sessionStorage.setItem("ltm_auth_user", JSON.stringify(AUTH_USER));
-          closeLoginModal();
-          renderAuthWidget();
-          toast("Welcome " + AUTH_USER.email + (isSuper ? " (Super Admin Granted)" : " (Logged In)"), "👑");
-
-          const urlParams = new URLSearchParams(window.location.search);
-          const redirectTarget = urlParams.get('redirect');
-          if (redirectTarget) {
-            window.location.href = redirectTarget;
-            return;
           }
-        } else {
-          errDiv.textContent = data.message || "Invalid credentials. Check email and password.";
-          errDiv.style.display = 'block';
+        } catch(err) {
+          console.warn('Could not load permissions:', err.message);
+        }
+
+        AUTH_USER = session;
+        closeLoginModal();
+        renderAuthWidget();
+        toast("Welcome " + AUTH_USER.email + (isSuperAdmin() ? " (Administrator)" : ""), "👑");
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const redirectTarget = urlParams.get('redirect');
+        // Only follow same-site relative paths (no open redirects).
+        if (redirectTarget && /^\/(?!\/)[\w\-./?=&%]*$/.test(redirectTarget)) {
+          window.location.href = redirectTarget;
+          return;
         }
       } catch(err) {
-        errDiv.textContent = "Authentication connection failed: " + err.message;
+        errDiv.textContent = err.message || "Sign-in failed. Check email and password.";
         errDiv.style.display = 'block';
       } finally {
         btn.disabled = false;
@@ -2495,7 +2512,7 @@
 
     function logout() {
       AUTH_USER = null;
-      sessionStorage.removeItem("ltm_auth_user");
+      LTM_API.signOut();
       renderAuthWidget();
       toast("Signed out of session", "ℹ️");
     }
@@ -2668,7 +2685,7 @@
 
       toast("Renaming report...", "⏳");
       try {
-        const res = await window.LTM_S3.renameReportInS3(key, newName.trim(), AUTH_USER ? AUTH_USER.email : '');
+        const res = await window.LTM_S3.renameReportInS3(key, newName.trim());
         if (res.ok) {
           toast("Report renamed successfully", "✅");
           fetchAndRenderReports();
@@ -2689,7 +2706,7 @@
 
       toast("Deleting report from secured storage...", "⏳");
       try {
-        const res = await window.LTM_S3.deleteReportFromS3(key, AUTH_USER ? AUTH_USER.email : '');
+        const res = await window.LTM_S3.deleteReportFromS3(key);
         if (res.ok) {
           toast("Report permanently deleted", "🗑️");
           fetchAndRenderReports();
@@ -2882,7 +2899,7 @@
       `;
 
       try {
-        const res = await fetch("https://zvnmwxa9sf.execute-api.ap-south-1.amazonaws.com/api/users");
+        const res = await apiFetch("/api/users");
         const data = await res.json();
         if (data.ok && Array.isArray(data.users)) {
           CACHED_APP_USERS = data.users;
@@ -2913,7 +2930,7 @@
       }
 
       const rows = CACHED_APP_USERS.map(u => {
-        const isSuper = u.email.toLowerCase() === COGNITO_CONFIG.superAdminEmail.toLowerCase();
+        const isSuper = u.role === 'super_admin';
         let roleBadge = `<span class="role-badge viewer">Member</span>`;
         if (isSuper) roleBadge = `<span class="role-badge super">Super Admin</span>`;
 
@@ -3017,13 +3034,11 @@
       btn.textContent = 'Saving Changes...';
 
       try {
-        const res = await fetch("https://zvnmwxa9sf.execute-api.ap-south-1.amazonaws.com/api/users/permissions", {
+        const res = await apiFetch("/api/users/permissions", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             email,
-            permissions: perms,
-            requesterEmail: AUTH_USER ? AUTH_USER.email : ''
+            permissions: perms
           })
         });
         const data = await res.json();
@@ -3065,16 +3080,14 @@
       btn.textContent = 'Provisioning User...';
 
       try {
-        const res = await fetch("https://zvnmwxa9sf.execute-api.ap-south-1.amazonaws.com/api/users/create", {
+        const res = await apiFetch("/api/users/create", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             email,
             password,
             name,
             role,
-            permissions: perms,
-            requesterEmail: AUTH_USER ? AUTH_USER.email : ''
+            permissions: perms
           })
         });
 
@@ -3146,13 +3159,11 @@
       btn.textContent = 'Updating Password...';
 
       try {
-        const res = await fetch("https://zvnmwxa9sf.execute-api.ap-south-1.amazonaws.com/api/users/set-password", {
+        const res = await apiFetch("/api/users/set-password", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             email,
-            newPassword: newPass,
-            requesterEmail: AUTH_USER ? AUTH_USER.email : ''
+            newPassword: newPass
           })
         });
 

@@ -4,6 +4,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>FinOps Value Case — Do you need FinOps? · LTM</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<script src="/assets/runtime-config.js"></script>
+<script src="/assets/ltm-api.js"></script>
 <script src="/assets/s3-reports.js"></script>
 <script src="/assets/rbac-guard.js" data-tool="finops-value-case"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -1720,7 +1722,8 @@ function logPos(val,sl){ const min=Math.log(sl.min),max=Math.log(sl.max);
   return Math.round(((Math.log(Math.max(sl.min,val))-min)/(max-min))*sl.steps); }
 
 /* ---------------- scoring (Bridge to AWS Lambda ap-south-1) ---------------- */
-const EVALUATE_API_ENDPOINT = "https://zvnmwxa9sf.execute-api.ap-south-1.amazonaws.com/api/evaluate/finops-value-case";
+// Scoring runs on the Advisory API; LTM_API attaches the signed-in user's token.
+const EVALUATE_API_PATH = "/api/evaluate/finops-value-case";
 
 async function fetchCloudEvaluation() {
   try {
@@ -1732,9 +1735,8 @@ async function fetchCloudEvaluation() {
         industry: S.org ? S.org.sector : ""
       }
     };
-    const res = await fetch(EVALUATE_API_ENDPOINT, {
+    const res = await LTM_API.fetch(EVALUATE_API_PATH, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload)
     });
     if (!res.ok) {
@@ -2328,7 +2330,7 @@ function viewBank(){
   return '<main class="wrap"><div class="eyebrow">Admin Portal</div><h1 class="h1 sm">Question Bank &amp; Engine</h1>'
    + '<p class="lead" style="margin-bottom:20px">Live question schema synchronized with AWS Amplify Backend (ap-south-1).</p>'
    + '<div class="panelcard"><h2 class="h2" style="font-size:16px;margin-bottom:12px">Security &amp; Engine Architecture</h2>'
-   + '<p style="font-size:13px;color:var(--text-muted);line-height:1.6">Proprietary scoring models, BFSI modifiers, and waste algorithms are encapsulated inside AWS Lambda in ap-south-1 (API: <code>' + EVALUATE_API_ENDPOINT + '</code>). Access to edit scoring models requires Admin RBAC permissions.</p><div style="margin-top:14px"><a href="studio.html?tool=finops-value-case" class="btn primary sm" style="text-decoration:none;display:inline-flex;align-items:center;gap:6px">⚙️ Open Question Bank &amp; Weight Studio →</a></div></div>'
+   + '<p style="font-size:13px;color:var(--text-muted);line-height:1.6">Proprietary scoring models, BFSI modifiers, and waste algorithms are encapsulated inside AWS Lambda in ap-south-1 (endpoint: <code>' + EVALUATE_API_PATH + '</code>). Access to edit scoring models requires Admin RBAC permissions.</p><div style="margin-top:14px"><a href="studio.html?tool=finops-value-case" class="btn primary sm" style="text-decoration:none;display:inline-flex;align-items:center;gap:6px">⚙️ Open Question Bank &amp; Weight Studio →</a></div></div>'
    + '<div class="panelcard"><h2 class="h2" style="font-size:16px;margin-bottom:12px">Active Questions (' + kb.questions.length + ')</h2>'
    + '<div style="overflow-x:auto"><table class="banktable"><thead><tr><th>ID</th><th>Section</th><th>Type</th><th>Scoring Engine</th><th>DK</th><th>Question</th></tr></thead>'
    + '<tbody>' + rows + '</tbody></table></div></div></main>';

@@ -14,6 +14,8 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
   <!-- S3 Customer Reports Client -->
+  <script src="/assets/runtime-config.js"></script>
+  <script src="/assets/ltm-api.js"></script>
   <script src="/assets/s3-reports.js"></script>
   <script src="/assets/rbac-guard.js" data-tool="posture-iq"></script>
   <style>
@@ -4046,7 +4048,7 @@ var DYNAMIC_PROBES = [
       return usesAI && mixedData;
     },
     clientAssertion: "Our AI models were trained internally on enterprise data, and we access external LLMs via enterprise APIs with zero-retention contractual clauses.",
-    statutoryConflict: "EU AI Act Art. 10 imposes strict governance mandates on high-risk AI data provenance, bias mitigation, and training validation. Processing European customer data through out-of-region compute instances or fine-tuning models without auditable training lineage triggers compounding penalties up to €35M or 7% of worldwide turnover under Art. 99.",
+    statutoryConflict: "EU AI Act Art. 10 imposes strict governance mandates on high-risk AI data provenance, bias mitigation, and training validation. Processing European customer data through out-of-region compute instances or fine-tuning models without auditable training lineage can trigger penalties of up to €15M or 3% of worldwide turnover under Art. 99(4).",
     interrogationScript: "The EU AI Act and GDPR treat AI inference and fine-tuning as restricted data processing. If prompt tokens or fine-tuning datasets traverse out-of-EEA compute nodes, you face compounding penalties under both GDPR Chapter V and AI Act Art. 10. Do you possess an immutable provenance register verifying exactly which training epochs touched customer data, and are your GenAI workloads confined to certified EU sovereign AI fabrics?",
     technicalSafeguard: "Establish a Sovereign AI Enclave with verifiable training-data provenance registers, zero-data-retention execution boundaries, and EU-only confidential GPU compute."
   },
@@ -4229,13 +4231,15 @@ function calculateStatutoryPenalties(turnover, inScopeRegs, answers, findings){
   }
 
   if(inScopeRegs.includes('aiact') || inScopeRegs.includes('ukai')){
-    var capEUR = Math.max(35000000, tEUR * 0.07);
+    // EU AI Act Art. 99(4): EUR 15M or 3% (whichever is higher) for high-risk / Art. 10 data-governance breaches.
+    // The EUR 35M / 7% tier (Art. 99(3)) applies only to prohibited practices, which this diagnostic does not assess.
+    var capEUR = Math.max(15000000, tEUR * 0.03);
     var capUSD = Math.round(capEUR * EUR_TO_USD);
     var hasGap = findings.some(function(f){ return f.reg === 'aiact'; });
     fines.push({
       regId: 'aiact',
       regName: 'EU AI Act (Art. 99 Statutory Ceiling)',
-      statuteBasis: 'Up to €35M or 7% global turnover (prohibited practices) / €15M or 3% (Art. 10 training-data governance & provenance).',
+      statuteBasis: 'Up to €15M or 3% of worldwide turnover, whichever is higher, for high-risk system and Art. 10 data-governance obligations (Art. 99(4)).',
       capUSD: capUSD,
       capFormatted: formatCurrency(capUSD),
       status: hasGap ? 'Severe Non-Compliance' : 'Governance Aligned',
@@ -4834,7 +4838,8 @@ function businessImpactBand(){
 /* ---------- results rendering ---------- */
 
 /* ---------- Cloud Scoring Engine Bridge (AWS Lambda ap-south-1) ---------- */
-const EVALUATE_API_ENDPOINT = "https://zvnmwxa9sf.execute-api.ap-south-1.amazonaws.com/api/evaluate/posture-iq";
+// Scoring runs on the Advisory API; LTM_API attaches the signed-in user's token.
+const EVALUATE_API_PATH = "/api/evaluate/posture-iq";
 
 async function fetchPostureIqEvaluation() {
   try {
@@ -4845,9 +4850,8 @@ async function fetchPostureIqEvaluation() {
       sectors: STATE.sectors,
       mode: STATE.mode
     };
-    const res = await fetch(EVALUATE_API_ENDPOINT, {
+    const res = await LTM_API.fetch(EVALUATE_API_PATH, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload)
     });
     if (!res.ok) {
@@ -4974,7 +4978,7 @@ function coverBlock(score,label,counts,findings,pillarData,penalties,probes,isUn
   return `<div class="print-cover">
     <div class="cover-bg-glow no-print"></div>
     <div style="display:flex;align-items:center;gap:14px;margin-bottom:14px;">
-      <a href="/portal" style="display:flex;align-items:center;text-decoration:none;" title="Back to Advisory Accelerators Portal">
+      <a href="/" style="display:flex;align-items:center;text-decoration:none;" title="Back to Advisory Accelerators Portal">
         <img src="/assets/ltm-logo.png" alt="LTM - A Larsen & Toubro Group Company" style="height:36px;width:auto;border-radius:6px;object-fit:contain;box-shadow:0 2px 10px rgba(0,0,0,0.2);">
       </a>
     </div>
@@ -5432,7 +5436,7 @@ function caseStudiesBlock(){
       <h4 style="font-size:16px;margin-bottom:10px">EU AI Act Art. 10 &amp; Cross-Border Genomic Data Governance</h4>
       <p style="font-size:12.5px;color:var(--ink2);line-height:1.6;margin-bottom:8px"><b>Challenge:</b> Diagnostic ML algorithms training on European patient genomic sequences hosted in US hyperscaler regions, creating immediate GDPR Chapter V and EU AI Act high-risk exposure.</p>
       <p style="font-size:12.5px;color:var(--ink2);line-height:1.6;margin-bottom:8px"><b>LTM Approach:</b> Re-architected training pipelines into an EU Sovereign Cloud enclave with Hold-Your-Own-Key (HYOK) and automated data lineage provenance tracking under Art. 10.</p>
-      <p style="font-size:12.5px;color:var(--teal);line-height:1.6"><b>Outcome:</b> Completely mitigated €35M / 7% AI Act penalty exposure; secured board and DPO sign-off for next-gen diagnostic clinical trials.</p>
+      <p style="font-size:12.5px;color:var(--teal);line-height:1.6"><b>Outcome:</b> Materially reduced AI Act Art. 99(4) penalty exposure; secured board and DPO sign-off for next-gen diagnostic clinical trials.</p>
     </div>
   </div>`;
 }
