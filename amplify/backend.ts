@@ -1,6 +1,6 @@
 import { defineBackend } from '@aws-amplify/backend';
 import { Stack, Duration, RemovalPolicy } from 'aws-cdk-lib';
-import { CorsHttpMethod, HttpApi, HttpMethod, CfnStage } from 'aws-cdk-lib/aws-apigatewayv2';
+import { CorsHttpMethod, HttpApi, HttpMethod, CfnStage, CfnRoute } from 'aws-cdk-lib/aws-apigatewayv2';
 import { HttpJwtAuthorizer } from 'aws-cdk-lib/aws-apigatewayv2-authorizers';
 import { HttpLambdaIntegration } from 'aws-cdk-lib/aws-apigatewayv2-integrations';
 import { PolicyStatement } from 'aws-cdk-lib/aws-iam';
@@ -134,6 +134,11 @@ stage.routeSettings = {
   'POST /api/users/permissions': tight,
   'POST /api/reports/delete': tight
 };
+// API Gateway rejects RouteSettings that name a route which does not exist yet, and CloudFormation
+// has no implicit ordering between the stage and the routes: make the stage wait for every route.
+advisoryApi.node.findAll()
+  .filter((c): c is CfnRoute => c instanceof CfnRoute)
+  .forEach(cfnRoute => stage.addDependency(cfnRoute));
 stage.accessLogSettings = {
   destinationArn: accessLogs.logGroupArn,
   format: JSON.stringify({

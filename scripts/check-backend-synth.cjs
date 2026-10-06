@@ -76,6 +76,12 @@ if (advisory) {
   const stage = ofType('AWS::ApiGatewayV2::Stage').find(s => s.Properties.ApiId?.Ref === advisory.id);
   check(!!stage?.Properties.DefaultRouteSettings?.ThrottlingRateLimit, 'Advisory API stage is not throttled');
   check(!!stage?.Properties.AccessLogSettings?.DestinationArn, 'Advisory API stage has no access logging');
+  // Per-route settings fail at deploy time unless the stage is created after those routes.
+  const routeIdByKey = Object.fromEntries(routes.map(r => [r.Properties.RouteKey, r.id]));
+  const dependsOn = [].concat(stage?.DependsOn || []);
+  for (const key of Object.keys(stage?.Properties.RouteSettings || {})) {
+    check(dependsOn.includes(routeIdByKey[key]), `stage RouteSettings names "${key}" but the stage does not DependsOn that route (deploy-time race)`);
+  }
 }
 
 // The Accelerators API stays (it serves Cost IQ and Resilience IQ). After cutover it must no
