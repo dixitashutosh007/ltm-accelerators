@@ -2,6 +2,8 @@ const fs = require("fs");
 const path = require("path");
 
 const root = path.resolve("resilience-iq/knowledge");
+const backendPath = path.resolve("amplify/backend.ts");
+const handlerPath = path.resolve("amplify/functions/manage-resilience-assessment/handler.ts");
 const file = path.join(root, "assessment-persistence.json");
 const contract = JSON.parse(fs.readFileSync(file, "utf8"));
 
@@ -30,3 +32,13 @@ if (!Array.isArray(contract.security.allowed_groups) ||
 }
 
 console.log("Resilience IQ assessment persistence contract passed");
+
+const backend = fs.readFileSync(backendPath, "utf8");
+const handler = fs.readFileSync(handlerPath, "utf8");
+if (!backend.includes("manageResilienceAssessmentFunction")) throw new Error("Assessment persistence function is not registered.");
+if (!backend.includes("/api/resilience-iq/assessment")) throw new Error("Assessment persistence route is not registered.");
+if (!backend.includes("HttpUserPoolAuthorizer")) throw new Error("Assessment persistence route must use Cognito authorization.");
+if (!handler.includes("assessment_immutable")) throw new Error("Assessment persistence handler must enforce immutability.");
+if (!handler.includes("respondent_email_mismatch")) throw new Error("Assessment persistence handler must enforce respondent ownership.");
+if (!handler.includes("createResilienceAssessment") || !handler.includes("updateResilienceAssessment")) throw new Error("Assessment persistence handler must support create and update.");
+console.log("Resilience IQ assessment persistence deployment contract passed.");
