@@ -74,3 +74,25 @@ disagreed with the page in several places.
 - S6.1 (what drives funding) could be scored by how high "quantified economic value" ranks. Should it be?
 - Tech-debt drag = (5.2 − S4) × 8.5%, clamped to 8–45% of IT spend; alignment and resilience = section score ÷ 5. These
   formulas need a cited basis or a "heuristic" label.
+
+## Cloud IQ (Wave 2): what Phase 2 changed
+
+Before Phase 2 the page scored in the browser with `compute()` and never called the API.
+
+- **Verified before switching.** The server engine was run against the page's browser engine on 300 random
+  questionnaires covering every question type. Scores, track, dimensions, flags, leakage, urgency and roadmap phases
+  1–2 were identical. Roadmap phases 3–4 and the recommended offerings differed: the server had a rewritten version
+  that no client had seen. The server now uses the page's rules, so the switch changes no client's result.
+- **One wording change.** The sovereign-cloud move's impact line "Fulfills ANSSI/DORA regulatory compliance" became
+  "Supports SecNumCloud / DORA data-boundary requirements": one infrastructure move cannot make a client compliant.
+- **The page now** posts to `/api/evaluate/cloud-iq`, caches the result for the report, boardroom and PDF views, and
+  shows an error (no local fallback) if scoring fails.
+- **Test data fix.** The shared sample answers gave two multi-select questions single values, which the page never
+  sends. The contract caught it, including the per-question pick limit.
+
+### Open questions for the cloud lead (Phase 3)
+
+- Approve the golden outputs in `packages/engine-core/test/golden/cloud-iq.json`.
+- Roadmap impact lines such as "Accelerates migration velocity by 40%", "Improves release cycle frequency by 5x" and
+  "Averts 2.5x–3.5x licensing cost escalation" need a source or softer wording (Phase 3 claims register).
+- The leakage model (waste rate × spend × (1 − 0.45 × commitment coverage), split 40/28/18/14) needs a cited basis.

@@ -35,9 +35,9 @@ export const cloudIqAnswers: Record<string, any> = {
   'Q0.10': 1,
   'Q0.11': 2, // VMware renewal cliff
   'Q0.12': 3, // Imminent DC lease cliff
-  'Q0.13': 1,
+  'Q0.13': [1],
   'Q1.1': [0],
-  'Q1.2': 2,
+  'Q1.2': [2],
   'Q2.1': 1, 'Q2.2': 2, 'Q2.3': 2,
   'Q3.1': 1, 'Q3.2': 2, 'Q3.3': 2,
   'Q4.1': 2, 'Q4.2': [0, 1], 'Q4.3': 1, 'Q4.4': 2,
