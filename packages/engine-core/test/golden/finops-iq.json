@@ -1,0 +1,796 @@
+{
+  "archetype-saas": {
+    "maturity": -1,
+    "overallScore": 48,
+    "stageScores": {
+      "chaos": {
+        "score": 88,
+        "answered": 8,
+        "total": 8
+      },
+      "informed": {
+        "score": 65,
+        "answered": 9,
+        "total": 9
+      },
+      "optimized": {
+        "score": 35,
+        "answered": 10,
+        "total": 10
+      },
+      "automated": {
+        "score": 35,
+        "answered": 9,
+        "total": 9
+      },
+      "transparent": {
+        "score": 20,
+        "answered": 8,
+        "total": 8
+      }
+    },
+    "stageStatuses": {
+      "chaos": "failed",
+      "informed": "failed",
+      "optimized": "failed",
+      "automated": "failed",
+      "transparent": "failed"
+    },
+    "failingCriticals": {
+      "chaos": [
+        "C4"
+      ],
+      "informed": [
+        "I1",
+        "I2",
+        "I8"
+      ],
+      "optimized": [
+        "O1",
+        "O2",
+        "O5"
+      ],
+      "automated": [
+        "A1",
+        "A6",
+        "A8"
+      ],
+      "transparent": [
+        "T1",
+        "T2",
+        "T3",
+        "T6"
+      ]
+    },
+    "domainScores": {
+      "understanding_usage": 60,
+      "business_value": 44,
+      "optimizing_cost": 35,
+      "managing_practice": 52,
+      "modern_workloads": 51
+    },
+    "checkpoints": {
+      "chk-c1": "met 88",
+      "chk-c2": "met 100",
+      "chk-c3": "met 100",
+      "chk-c4": "partial 65",
+      "chk-c5": "partial 65",
+      "chk-i1": "partial 48",
+      "chk-i2": "partial 65",
+      "chk-i3": "met 83",
+      "chk-i4": "met 83",
+      "chk-i5": "partial 65",
+      "chk-o1": "blocker 30",
+      "chk-o2": "blocker 30",
+      "chk-o3": "partial 65",
+      "chk-o4": "blocker 30",
+      "chk-a1": "blocker 30",
+      "chk-a2": "blocker 30",
+      "chk-a3": "partial 65",
+      "chk-a4": "blocker 30",
+      "chk-t1": "blocker 0",
+      "chk-t2": "blocker 30",
+      "chk-t3": "blocker 15",
+      "chk-t4": "blocker 30"
+    },
+    "valueAtStake": {
+      "annualSpend": 10000000,
+      "minSavings": 2500000,
+      "maxSavings": 3500000,
+      "minPct": 25,
+      "maxPct": 35
+    },
+    "roadmap": [
+      [
+        "C4"
+      ],
+      [
+        "I2",
+        "I1",
+        "I8"
+      ],
+      [
+        "T1",
+        "T2",
+        "T3",
+        "T6",
+        "O1",
+        "O2",
+        "O5",
+        "A1",
+        "A6",
+        "A8",
+        "A4",
+        "O3",
+        "T5",
+        "T7",
+        "T4",
+        "T8",
+        "A2",
+        "A7",
+        "A9",
+        "O4",
+        "O6",
+        "O7",
+        "O8",
+        "O9",
+        "O10",
+        "A3",
+        "A5"
+      ]
+    ]
+  },
+  "archetype-banking": {
+    "maturity": 0,
+    "overallScore": 61,
+    "stageScores": {
+      "chaos": {
+        "score": 100,
+        "answered": 8,
+        "total": 8
+      },
+      "informed": {
+        "score": 77,
+        "answered": 9,
+        "total": 9
+      },
+      "optimized": {
+        "score": 43,
+        "answered": 10,
+        "total": 10
+      },
+      "automated": {
+        "score": 47,
+        "answered": 9,
+        "total": 9
+      },
+      "transparent": {
+        "score": 45,
+        "answered": 8,
+        "total": 8
+      }
+    },
+    "stageStatuses": {
+      "chaos": "passed",
+      "informed": "failed",
+      "optimized": "failed",
+      "automated": "failed",
+      "transparent": "failed"
+    },
+    "failingCriticals": {
+      "chaos": [],
+      "informed": [
+        "I2",
+        "I8"
+      ],
+      "optimized": [
+        "O1",
+        "O2",
+        "O5"
+      ],
+      "automated": [
+        "A1",
+        "A6",
+        "A8"
+      ],
+      "transparent": [
+        "T1",
+        "T2",
+        "T3",
+        "T6"
+      ]
+    },
+    "domainScores": {
+      "understanding_usage": 83,
+      "business_value": 55,
+      "optimizing_cost": 42,
+      "managing_practice": 74,
+      "modern_workloads": 30
+    },
+    "checkpoints": {
+      "chk-c1": "met 100",
+      "chk-c2": "met 100",
+      "chk-c3": "met 100",
+      "chk-c4": "met 100",
+      "chk-c5": "met 100",
+      "chk-i1": "partial 83",
+      "chk-i2": "partial 65",
+      "chk-i3": "met 83",
+      "chk-i4": "partial 65",
+      "chk-i5": "partial 83",
+      "chk-o1": "partial 65",
+      "chk-o2": "partial 42",
+      "chk-o3": "blocker 30",
+      "chk-o4": "blocker 0",
+      "chk-a1": "partial 56",
+      "chk-a2": "blocker 15",
+      "chk-a3": "partial 48",
+      "chk-a4": "blocker 30",
+      "chk-t1": "partial 65",
+      "chk-t2": "blocker 30",
+      "chk-t3": "partial 48",
+      "chk-t4": "blocker 30"
+    },
+    "valueAtStake": {
+      "annualSpend": 35000000,
+      "minSavings": 8750000,
+      "maxSavings": 12250000,
+      "minPct": 25,
+      "maxPct": 35
+    },
+    "roadmap": [
+      [
+        "I2",
+        "I8"
+      ],
+      [
+        "O2",
+        "O1",
+        "O5"
+      ],
+      [
+        "T2",
+        "T6",
+        "T1",
+        "T3",
+        "A1",
+        "A6",
+        "A8",
+        "A4",
+        "O3",
+        "A7",
+        "O4",
+        "O8",
+        "T4",
+        "T7",
+        "T8",
+        "A2",
+        "A5",
+        "A9",
+        "O9",
+        "T5",
+        "A3",
+        "O6",
+        "O7",
+        "O10"
+      ]
+    ]
+  },
+  "archetype-healthcare": {
+    "maturity": -1,
+    "overallScore": 33,
+    "stageScores": {
+      "chaos": {
+        "score": 83,
+        "answered": 8,
+        "total": 8
+      },
+      "informed": {
+        "score": 36,
+        "answered": 9,
+        "total": 9
+      },
+      "optimized": {
+        "score": 24,
+        "answered": 10,
+        "total": 10
+      },
+      "automated": {
+        "score": 16,
+        "answered": 9,
+        "total": 9
+      },
+      "transparent": {
+        "score": 10,
+        "answered": 8,
+        "total": 8
+      }
+    },
+    "stageStatuses": {
+      "chaos": "failed",
+      "informed": "failed",
+      "optimized": "failed",
+      "automated": "failed",
+      "transparent": "failed"
+    },
+    "failingCriticals": {
+      "chaos": [
+        "C4",
+        "C5"
+      ],
+      "informed": [
+        "I1",
+        "I2",
+        "I8"
+      ],
+      "optimized": [
+        "O1",
+        "O2",
+        "O5"
+      ],
+      "automated": [
+        "A1",
+        "A6",
+        "A8"
+      ],
+      "transparent": [
+        "T1",
+        "T2",
+        "T3",
+        "T6"
+      ]
+    },
+    "domainScores": {
+      "understanding_usage": 48,
+      "business_value": 22,
+      "optimizing_cost": 24,
+      "managing_practice": 37,
+      "modern_workloads": 30
+    },
+    "checkpoints": {
+      "chk-c1": "partial 77",
+      "chk-c2": "met 100",
+      "chk-c3": "partial 65",
+      "chk-c4": "partial 65",
+      "chk-c5": "met 100",
+      "chk-i1": "partial 48",
+      "chk-i2": "blocker 30",
+      "chk-i3": "blocker 30",
+      "chk-i4": "blocker 30",
+      "chk-i5": "blocker 30",
+      "chk-o1": "blocker 30",
+      "chk-o2": "blocker 20",
+      "chk-o3": "blocker 30",
+      "chk-o4": "blocker 0",
+      "chk-a1": "blocker 8",
+      "chk-a2": "blocker 15",
+      "chk-a3": "blocker 30",
+      "chk-a4": "blocker 30",
+      "chk-t1": "blocker 0",
+      "chk-t2": "blocker 0",
+      "chk-t3": "blocker 8",
+      "chk-t4": "blocker 30"
+    },
+    "valueAtStake": {
+      "annualSpend": 14000000,
+      "minSavings": 3500000,
+      "maxSavings": 4900000,
+      "minPct": 25,
+      "maxPct": 35
+    },
+    "roadmap": [
+      [
+        "C4",
+        "C5"
+      ],
+      [
+        "I2",
+        "I8",
+        "I1"
+      ],
+      [
+        "T1",
+        "T2",
+        "A1",
+        "A6",
+        "T3",
+        "T6",
+        "O1",
+        "O2",
+        "O5",
+        "A8",
+        "A4",
+        "O3",
+        "T4",
+        "T5",
+        "T7",
+        "T8",
+        "A7",
+        "A9",
+        "O4",
+        "O8",
+        "O9",
+        "A2",
+        "A3",
+        "A5",
+        "O6",
+        "O7",
+        "O10",
+        "I3",
+        "I4",
+        "I5",
+        "I6",
+        "I7",
+        "I9"
+      ]
+    ]
+  },
+  "archetype-retail": {
+    "maturity": 1,
+    "overallScore": 81,
+    "stageScores": {
+      "chaos": {
+        "score": 100,
+        "answered": 8,
+        "total": 8
+      },
+      "informed": {
+        "score": 94,
+        "answered": 9,
+        "total": 9
+      },
+      "optimized": {
+        "score": 75,
+        "answered": 10,
+        "total": 10
+      },
+      "automated": {
+        "score": 76,
+        "answered": 9,
+        "total": 9
+      },
+      "transparent": {
+        "score": 62,
+        "answered": 8,
+        "total": 8
+      }
+    },
+    "stageStatuses": {
+      "chaos": "passed",
+      "informed": "passed",
+      "optimized": "failed",
+      "automated": "failed",
+      "transparent": "failed"
+    },
+    "failingCriticals": {
+      "chaos": [],
+      "informed": [],
+      "optimized": [
+        "O2",
+        "O5"
+      ],
+      "automated": [
+        "A6",
+        "A8"
+      ],
+      "transparent": [
+        "T1",
+        "T2",
+        "T3",
+        "T6"
+      ]
+    },
+    "domainScores": {
+      "understanding_usage": 91,
+      "business_value": 72,
+      "optimizing_cost": 79,
+      "managing_practice": 85,
+      "modern_workloads": 65
+    },
+    "checkpoints": {
+      "chk-c1": "met 100",
+      "chk-c2": "met 100",
+      "chk-c3": "met 100",
+      "chk-c4": "met 100",
+      "chk-c5": "met 100",
+      "chk-i1": "met 100",
+      "chk-i2": "partial 65",
+      "chk-i3": "met 100",
+      "chk-i4": "met 83",
+      "chk-i5": "met 100",
+      "chk-o1": "met 100",
+      "chk-o2": "partial 65",
+      "chk-o3": "partial 65",
+      "chk-o4": "partial 65",
+      "chk-a1": "partial 74",
+      "chk-a2": "met 83",
+      "chk-a3": "met 83",
+      "chk-a4": "partial 65",
+      "chk-t1": "partial 65",
+      "chk-t2": "partial 65",
+      "chk-t3": "partial 56",
+      "chk-t4": "partial 65"
+    },
+    "valueAtStake": {
+      "annualSpend": 22000000,
+      "minSavings": 3960000,
+      "maxSavings": 6160000,
+      "minPct": 18,
+      "maxPct": 28
+    },
+    "roadmap": [
+      [
+        "O2",
+        "O5"
+      ],
+      [
+        "A6",
+        "A8",
+        "O3",
+        "O4",
+        "O7",
+        "O8",
+        "O9"
+      ],
+      [
+        "T1",
+        "T2",
+        "T3",
+        "T6",
+        "A4",
+        "T7",
+        "T4",
+        "T5",
+        "T8",
+        "A5",
+        "A7",
+        "A9"
+      ]
+    ]
+  },
+  "unanswered": {
+    "maturity": -1,
+    "overallScore": null,
+    "stageScores": {
+      "chaos": {
+        "score": null,
+        "answered": 0,
+        "total": 8
+      },
+      "informed": {
+        "score": null,
+        "answered": 0,
+        "total": 9
+      },
+      "optimized": {
+        "score": null,
+        "answered": 0,
+        "total": 10
+      },
+      "automated": {
+        "score": null,
+        "answered": 0,
+        "total": 9
+      },
+      "transparent": {
+        "score": null,
+        "answered": 0,
+        "total": 8
+      }
+    },
+    "stageStatuses": {
+      "chaos": "unanswered",
+      "informed": "unanswered",
+      "optimized": "unanswered",
+      "automated": "unanswered",
+      "transparent": "unanswered"
+    },
+    "failingCriticals": {
+      "chaos": [
+        "C1",
+        "C2",
+        "C4",
+        "C5"
+      ],
+      "informed": [
+        "I1",
+        "I2",
+        "I8"
+      ],
+      "optimized": [
+        "O1",
+        "O2",
+        "O5"
+      ],
+      "automated": [
+        "A1",
+        "A6",
+        "A8"
+      ],
+      "transparent": [
+        "T1",
+        "T2",
+        "T3",
+        "T6"
+      ]
+    },
+    "domainScores": {
+      "understanding_usage": 0,
+      "business_value": 0,
+      "optimizing_cost": 0,
+      "managing_practice": 0,
+      "modern_workloads": 0
+    },
+    "checkpoints": {
+      "chk-c1": "blocker 0",
+      "chk-c2": "blocker 0",
+      "chk-c3": "blocker 0",
+      "chk-c4": "blocker 0",
+      "chk-c5": "blocker 0",
+      "chk-i1": "blocker 0",
+      "chk-i2": "blocker 0",
+      "chk-i3": "blocker 0",
+      "chk-i4": "blocker 0",
+      "chk-i5": "blocker 0",
+      "chk-o1": "blocker 0",
+      "chk-o2": "blocker 0",
+      "chk-o3": "blocker 0",
+      "chk-o4": "blocker 0",
+      "chk-a1": "blocker 0",
+      "chk-a2": "blocker 0",
+      "chk-a3": "blocker 0",
+      "chk-a4": "blocker 0",
+      "chk-t1": "blocker 0",
+      "chk-t2": "blocker 0",
+      "chk-t3": "blocker 0",
+      "chk-t4": "blocker 0"
+    },
+    "valueAtStake": {
+      "annualSpend": 0,
+      "minSavings": 0,
+      "maxSavings": 0,
+      "minPct": 25,
+      "maxPct": 35
+    },
+    "roadmap": [
+      [
+        "C1",
+        "C2",
+        "C4",
+        "C5"
+      ],
+      [
+        "I1",
+        "I2",
+        "I8",
+        "C3",
+        "C6",
+        "C7",
+        "C8"
+      ],
+      [
+        "O1",
+        "O2",
+        "O5",
+        "A1",
+        "A6",
+        "A8",
+        "T1",
+        "T2",
+        "T3",
+        "T6",
+        "O3",
+        "A4",
+        "I3",
+        "I4",
+        "I5",
+        "I6",
+        "I7",
+        "I9",
+        "O4",
+        "O6",
+        "O7",
+        "O8",
+        "O9",
+        "O10",
+        "A2",
+        "A3",
+        "A5",
+        "A7",
+        "A9",
+        "T4",
+        "T5",
+        "T7",
+        "T8"
+      ]
+    ]
+  },
+  "all-best": {
+    "maturity": 4,
+    "overallScore": 100,
+    "stageScores": {
+      "chaos": {
+        "score": 100,
+        "answered": 8,
+        "total": 8
+      },
+      "informed": {
+        "score": 100,
+        "answered": 9,
+        "total": 9
+      },
+      "optimized": {
+        "score": 100,
+        "answered": 10,
+        "total": 10
+      },
+      "automated": {
+        "score": 100,
+        "answered": 9,
+        "total": 9
+      },
+      "transparent": {
+        "score": 100,
+        "answered": 8,
+        "total": 8
+      }
+    },
+    "stageStatuses": {
+      "chaos": "passed",
+      "informed": "passed",
+      "optimized": "passed",
+      "automated": "passed",
+      "transparent": "passed"
+    },
+    "failingCriticals": {
+      "chaos": [],
+      "informed": [],
+      "optimized": [],
+      "automated": [],
+      "transparent": []
+    },
+    "domainScores": {
+      "understanding_usage": 100,
+      "business_value": 100,
+      "optimizing_cost": 100,
+      "managing_practice": 100,
+      "modern_workloads": 100
+    },
+    "checkpoints": {
+      "chk-c1": "met 100",
+      "chk-c2": "met 100",
+      "chk-c3": "met 100",
+      "chk-c4": "met 100",
+      "chk-c5": "met 100",
+      "chk-i1": "met 100",
+      "chk-i2": "met 100",
+      "chk-i3": "met 100",
+      "chk-i4": "met 100",
+      "chk-i5": "met 100",
+      "chk-o1": "met 100",
+      "chk-o2": "met 100",
+      "chk-o3": "met 100",
+      "chk-o4": "met 100",
+      "chk-a1": "met 100",
+      "chk-a2": "met 100",
+      "chk-a3": "met 100",
+      "chk-a4": "met 100",
+      "chk-t1": "met 100",
+      "chk-t2": "met 100",
+      "chk-t3": "met 100",
+      "chk-t4": "met 100"
+    },
+    "valueAtStake": {
+      "annualSpend": 5000000,
+      "minSavings": 100000,
+      "maxSavings": 200000,
+      "minPct": 2,
+      "maxPct": 4
+    },
+    "roadmap": [
+      [],
+      [],
+      []
+    ]
+  }
+}

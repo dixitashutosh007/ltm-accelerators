@@ -160,7 +160,9 @@ export function evaluateFinOpsIq(
         if (s !== null) {
           totalScore += s;
           count++;
-          if (q.critical && s < 70) hasCriticalFailure = true;
+          // Same bar as the stage gate: the question's stage minimum (70-80), not a flat 70.
+          const critMin = KB.meta.stages.find((st: any) => st.id === q.stage)?.crit_min ?? 70;
+          if (q.critical && s < critMin) hasCriticalFailure = true;
         }
       });
       const avg = count ? Math.round(totalScore / count) : 0;
