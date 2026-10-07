@@ -13,8 +13,7 @@ import { evaluateResilienceIqFunction } from './functions/evaluate-resilience-iq
 import { manageResilienceEvidenceFunction } from './functions/manage-resilience-evidence/resource';
 import { manageResilienceAssessmentFunction } from './functions/manage-resilience-assessment/resource';
 import { HttpApi, HttpMethod } from 'aws-cdk-lib/aws-apigatewayv2';
-import { HttpUserPoolAuthorizer } from 'aws-cdk-lib/aws-apigatewayv2-authorizers';
-import { UserPool, UserPoolClient } from 'aws-cdk-lib/aws-cognito';
+import { HttpJwtAuthorizer } from 'aws-cdk-lib/aws-apigatewayv2-authorizers';
 import { HttpLambdaIntegration } from 'aws-cdk-lib/aws-apigatewayv2-integrations';
 
 export const backend = defineBackend({
@@ -68,22 +67,14 @@ httpApi.addRoutes({ path: '/api/evaluate/resilience-iq', methods: [HttpMethod.PO
 httpApi.addRoutes({ path: '/api/resilience-iq/evidence', methods: [HttpMethod.POST, HttpMethod.OPTIONS], integration: integrations.resilienceEvidence });
 
 // Reuse the platform's existing Cognito identity. Resilience IQ has no separate login.
-// The platform login is backed by the existing User Pool/client below; do not use
-// Amplify's generated backend.auth pool here, because that can be a different pool.
-const platformUserPool = UserPool.fromUserPoolId(
-  apiStack,
-  'PlatformCognitoUserPool',
-  'ap-south-1_91amN2bz4'
-);
-const platformUserPoolClient = UserPoolClient.fromUserPoolClientId(
-  apiStack,
-  'PlatformCognitoUserPoolClient',
-  '4iiqcsgvsm0b4ngpps94ho4c67'
-);
-const resilienceAssessmentAuthorizer = new HttpUserPoolAuthorizer(
-  'ResilienceAssessmentUserPoolAuthorizer',
-  platformUserPool,
-  { userPoolClients: [platformUserPoolClient] }
+// Use an explicit JWT issuer/audience so API Gateway validates the same token
+// issued by the platform login, independent of Amplify-managed auth resources.
+const resilienceAssessmentAuthorizer = new HttpJwtAuthorizer(
+  'ResilienceAssessmentJwtAuthorizer',
+  'https://cognito-idp.ap-south-1.amazonaws.com/ap-south-1_91amN2bz4',
+  {
+    jwtAudience: ['4iiqcsgvsm0b4ngpps94ho4c67']
+  }
 );
 
 httpApi.addRoutes({
