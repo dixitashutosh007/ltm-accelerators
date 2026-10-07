@@ -112,6 +112,7 @@ async function startAssessment(){
  assessment={assessmentId:crypto.randomUUID(),clientName,clientSector,respondentEmail,startedAt:new Date().toISOString(),status:'draft'};
  try{
   await saveAssessment('draft','save');
+  history.replaceState(null,'',window.location.pathname+'?assessmentId='+encodeURIComponent(assessment.assessmentId));
   render();
  }catch(e){
   assessment=null;
@@ -264,9 +265,75 @@ async function loadQuestionBank(){
   render();
  }catch(e){console.warn('Using embedded Resilience IQ question fallback:',e.message);}
 }
-if(!requireAppLogin()){
- document.getElementById('app').innerHTML='<div class="panel"><h2>Sign-in required</h2><p class="hint">Please sign in through the LTM Advisory platform. Resilience IQ uses the same application session; there is no separate login.</p></div>';
+async function restoreAssessmentFromServer(){
+ const assessmentId=new URLSearchParams(window.location.search).get('assessmentId');
+ if(!assessmentId)return false;
+ try{
+  const token=appAuthToken();
+  const res=await fetch(ASSESSMENT_API+'?assessmentId='+encodeURIComponent(assessmentId),{
+   headers:{'Authorization':'Bearer '+token}
+  });
+  const j=await res.json();
+  if(!res.ok||!j.ok)throw new Error(j.message||j.error||('Unable to load assessment (HTTP '+res.status+').'));
+  const saved=j.data||{};
+  assessment={
+   assessmentId:String(saved.assessmentId||assessmentId),
+   clientName:String(saved.clientName||''),
+   clientSector:String(saved.clientSector||''),
+   respondentEmail:String(saved.respondentEmail||''),
+   startedAt:String(saved.startedAt||''),
+   status:String(saved.status||'draft'),
+   completedAt:saved.completedAt||undefined,
+   finalizedAt:saved.finalizedAt||undefined
+  };
+  const rawAnswers=saved.answersJson?JSON.parse(saved.answersJson):{};
+  answers={};
+  for(const q of questions){
+   const value=rawAnswers[q.id];
+   if(value===undefined)continue;
+   if(q.type==='slider'){
+    const pos=q.o.indexOf(String(value));
+    answers[q.id]=pos>=0?pos:undefined;
+   }else if(q.type==='multi'||q.type==='rank'){
+    answers[q.id]=Array.isArray(value)?value.map(v=>q.o.indexOf(String(v))).filter(i=>i>=0):[];
+   }else if(q.type==='matrix'){
+    const m={};
+    if(value&&typeof value==='object'){
+     for(const [row,column] of Object.entries(value)){
+      const ri=q.rows.indexOf(row), ci=q.cols.indexOf(String(column));
+      if(ri>=0&&ci>=0)m[ri]=ci;
+     }
+    }
+    answers[q.id]=m;
+   }else if(q.type==='number') answers[q.id]=Number(value);
+   else if(q.type==='text') answers[q.id]=String(value);
+   else {
+    const pos=q.o.indexOf(String(value));
+    answers[q.id]=pos>=0?pos:undefined;
+   }
+  }
+  if(saved.resultJson){
+   try{result=JSON.parse(saved.resultJson);}catch{result=null;}
+  }
+  if(result||assessment.status==='completed')return true;
+  const savedCount=Object.values(answers).filter(v=>v!==undefined).length;
+  idx=Math.min(savedCount,questions.length-1);
+  return true;
+ }catch(e){
+  console.warn('Unable to restore Resilience IQ assessment:',e.message);
+  return false;
+ }
 }
-setTimeout(()=>{const splash=document.getElementById("splash");if(splash){splash.classList.add("fadeout");setTimeout(()=>splash.remove(),600);}},1400);render();
+async function bootstrapResilienceIq(){
+ if(!requireAppLogin()){
+  document.getElementById('app').innerHTML='<div class="panel"><h2>Sign-in required</h2><p class="hint">Please sign in through the LTM Advisory platform. Resilience IQ uses the same application session; there is no separate login.</p></div>';
+  return;
+ }
+ await loadQuestionBank();
+ await restoreAssessmentFromServer();
+ render();
+}
+setTimeout(()=>{const splash=document.getElementById("splash");if(splash){splash.classList.add("fadeout");setTimeout(()=>splash.remove(),600);}},1400);
+bootstrapResilienceIq();
 </script>
 </body></html>
