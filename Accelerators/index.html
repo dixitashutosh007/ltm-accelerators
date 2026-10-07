@@ -2873,6 +2873,8 @@
       });
     }
 
+    const ADVISORY_API_BASE = "https://zvnmwxa9sf.execute-api.ap-south-1.amazonaws.com";
+
     async function apiFetch(path, options = {}) {
       if (!AUTH_USER || !AUTH_USER.token) {
         throw new Error('Authentication required. Please sign in again.');
@@ -2880,9 +2882,7 @@
       const headers = Object.assign({ 'Content-Type': 'application/json' }, options.headers || {}, {
         'Authorization': 'Bearer ' + AUTH_USER.token
       });
-      const apiBase = (window.RESILIENCE_IQ_API || '').replace(/\/$/, '');
-      if (!apiBase) throw new Error('Advisory API is not configured. Please refresh the application.');
-      const res = await fetch(apiBase + path, Object.assign({}, options, { headers }));
+      const res = await fetch(ADVISORY_API_BASE + path, Object.assign({}, options, { headers }));
       if (res.status === 401) throw new Error('Unauthorized. Please sign in again.');
       return res;
     }
