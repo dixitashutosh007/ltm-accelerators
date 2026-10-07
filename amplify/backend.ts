@@ -33,7 +33,14 @@ export const backend = defineBackend({
 });
 
 const apiStack = backend.createStack('AcceleratorsApiStack');
-const httpApi = new HttpApi(apiStack, 'AcceleratorsHttpApi', { apiName: 'ltm-accelerators-api' });
+const httpApi = new HttpApi(apiStack, 'AcceleratorsHttpApi', {
+  apiName: 'ltm-accelerators-api',
+  corsPreflight: {
+    allowOrigins: ['*'],
+    allowHeaders: ['Content-Type', 'Authorization', 'X-Request-Id'],
+    allowMethods: [HttpMethod.GET, HttpMethod.POST, HttpMethod.OPTIONS]
+  }
+});
 
 const integrations = {
   finops: new HttpLambdaIntegration('EvaluateFinOpsIntegration', backend.evaluateFinOpsFunction.resources.lambda),
@@ -68,7 +75,7 @@ const resilienceAssessmentAuthorizer = new HttpUserPoolAuthorizer(
 
 httpApi.addRoutes({
   path: '/api/resilience-iq/assessment',
-  methods: [HttpMethod.GET, HttpMethod.POST, HttpMethod.OPTIONS],
+  methods: [HttpMethod.GET, HttpMethod.POST],
   integration: integrations.resilienceAssessment,
   authorizer: resilienceAssessmentAuthorizer
 });
