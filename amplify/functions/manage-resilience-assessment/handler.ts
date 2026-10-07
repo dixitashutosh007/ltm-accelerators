@@ -68,12 +68,15 @@ function groups(event:APIGatewayProxyEventV2){
   return Array.isArray(groupsRaw)?groupsRaw.map(String):String(groupsRaw||'').split(',').map(x=>x.trim()).filter(Boolean);
 }
 function authorized(event:APIGatewayProxyEventV2){
-  const g=groups(event);
-  return g.includes('Admin') || g.includes('Consultant');
+  // API Gateway has already validated the platform Cognito JWT.
+  // The platform RBAC role is stored in the application session, not as a
+  // Cognito group claim, so do not require Admin/Consultant groups here.
+  const c=claims(event);
+  return Boolean(c.sub || c.email || c.username);
 }
 function isAdmin(event:APIGatewayProxyEventV2){ return groups(event).includes('Admin'); }
 function userEmail(event:APIGatewayProxyEventV2){
-  return String(claims(event).email || claims(event).username || '');
+  return String(claims(event).email || claims(event).username || '').trim().toLowerCase();
 }
 function parseBody(event:APIGatewayProxyEventV2){
   if(!event.body) return {};
@@ -99,7 +102,11 @@ export const handler=async(event:APIGatewayProxyEventV2):Promise<APIGatewayProxy
       const assessmentId=event.queryStringParameters?.assessmentId;
       if(!assessmentId) return response(400,{ok:false,error:'assessmentId is required.',requestId},requestId);
       const item=await getAssessment(assessmentId);
-      return item ? response(200,{ok:true,data:item,requestId},requestId) : response(404,{ok:false,error:'assessment_not_found',requestId},requestId);
+      if(!item) return response(404,{ok:false,error:'assessment_not_found',requestId},requestId);
+      if(!isAdmin(event) && String(item.respondentEmail||'').trim().toLowerCase()!==userEmail(event)) {
+        return response(403,{ok:false,error:'assessment_access_denied',requestId},requestId);
+      }
+      return response(200,{ok:true,data:item,requestId},requestId);
     }
     if(method!=='POST') return response(405,{ok:false,error:'method_not_allowed',requestId},requestId);
     const body=parseBody(event);
@@ -109,7 +116,7 @@ export const handler=async(event:APIGatewayProxyEventV2):Promise<APIGatewayProxy
     const assessmentId=String(snapshot.assessmentId||'');
     if(!assessmentId || !snapshot.clientName || !snapshot.respondentEmail || !snapshot.startedAt) return response(400,{ok:false,error:'assessmentId, clientName, respondentEmail and startedAt are required.',requestId},requestId);
     if(!statuses.has(snapshot.status)) return response(400,{ok:false,error:'Invalid assessment status.',requestId},requestId);
-    if(!isAdmin(event) && snapshot.respondentEmail!==userEmail(event)) return response(403,{ok:false,error:'respondent_email_mismatch',requestId},requestId);
+    if(!isAdmin(event) && String(snapshot.respondentEmail).trim().toLowerCase()!==userEmail(event)) return response(403,{ok:false,error:'respondent_email_mismatch',requestId},requestId);
 
     const existing=await getAssessment(assessmentId);
     if(existing && !canUpdate(existing.status as ResilienceAssessmentStatus, snapshot.status as ResilienceAssessmentStatus)) {
