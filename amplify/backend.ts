@@ -12,7 +12,9 @@ import { evaluateModernizationIqFunction } from './functions/evaluate-modernizat
 import { evaluateResilienceIqFunction } from './functions/evaluate-resilience-iq/resource';
 import { manageResilienceEvidenceFunction } from './functions/manage-resilience-evidence/resource';
 import { manageResilienceAssessmentFunction } from './functions/manage-resilience-assessment/resource';
+import { reportsServiceFunction } from './functions/reports-service/resource';
 import { HttpApi, HttpMethod } from 'aws-cdk-lib/aws-apigatewayv2';
+import { PolicyStatement } from 'aws-cdk-lib/aws-iam';
 import { HttpJwtAuthorizer } from 'aws-cdk-lib/aws-apigatewayv2-authorizers';
 import { HttpLambdaIntegration } from 'aws-cdk-lib/aws-apigatewayv2-integrations';
 
@@ -29,7 +31,8 @@ export const backend = defineBackend({
   evaluateModernizationIqFunction,
   evaluateResilienceIqFunction,
   manageResilienceEvidenceFunction,
-  manageResilienceAssessmentFunction
+  manageResilienceAssessmentFunction,
+  reportsServiceFunction
 });
 
 const apiStack = backend.createStack('AcceleratorsApiStack');
@@ -53,8 +56,28 @@ const integrations = {
   modernization: new HttpLambdaIntegration('EvaluateModernizationIqIntegration', backend.evaluateModernizationIqFunction.resources.lambda),
   resilience: new HttpLambdaIntegration('EvaluateResilienceIqIntegration', backend.evaluateResilienceIqFunction.resources.lambda),
   resilienceEvidence: new HttpLambdaIntegration('ManageResilienceEvidenceIntegration', backend.manageResilienceEvidenceFunction.resources.lambda),
-  resilienceAssessment: new HttpLambdaIntegration('ManageResilienceAssessmentIntegration', backend.manageResilienceAssessmentFunction.resources.lambda)
+  resilienceAssessment: new HttpLambdaIntegration('ManageResilienceAssessmentIntegration', backend.manageResilienceAssessmentFunction.resources.lambda),
+  reports: new HttpLambdaIntegration('ReportsServiceIntegration', backend.reportsServiceFunction.resources.lambda)
 };
+
+// The reports service uses the existing platform Cognito pool and reports bucket.
+// Keep its IAM scope limited to the RBAC config/reports objects and user-admin calls.
+const reportsLambda = backend.reportsServiceFunction.resources.lambda;
+reportsLambda.addToRolePolicy(new PolicyStatement({
+  actions: ['s3:GetObject', 's3:PutObject', 's3:DeleteObject'],
+  resources: [
+    'arn:aws:s3:::ltm-advisory-reports-223833501993/reports/*',
+    'arn:aws:s3:::ltm-advisory-reports-223833501993/config/rbac-permissions.json'
+  ]
+}));
+reportsLambda.addToRolePolicy(new PolicyStatement({
+  actions: ['s3:ListBucket'],
+  resources: ['arn:aws:s3:::ltm-advisory-reports-223833501993']
+}));
+reportsLambda.addToRolePolicy(new PolicyStatement({
+  actions: ['cognito-idp:ListUsers', 'cognito-idp:AdminCreateUser', 'cognito-idp:AdminSetUserPassword'],
+  resources: ['arn:aws:cognito-idp:ap-south-1:*:userpool/ap-south-1_91amN2bz4']
+}));
 
 httpApi.addRoutes({ path: '/api/evaluate/finops-value-case', methods: [HttpMethod.POST, HttpMethod.OPTIONS], integration: integrations.finops });
 httpApi.addRoutes({ path: '/api/evaluate/finops-iq', methods: [HttpMethod.POST, HttpMethod.OPTIONS], integration: integrations.finopsIq });
@@ -81,6 +104,32 @@ httpApi.addRoutes({
   path: '/api/resilience-iq/assessment',
   methods: [HttpMethod.GET, HttpMethod.POST],
   integration: integrations.resilienceAssessment,
+  authorizer: resilienceAssessmentAuthorizer
+});
+
+// User administration uses the same platform Cognito JWT and the same API/CORS boundary.
+httpApi.addRoutes({
+  path: '/api/users',
+  methods: [HttpMethod.GET],
+  integration: integrations.reports,
+  authorizer: resilienceAssessmentAuthorizer
+});
+httpApi.addRoutes({
+  path: '/api/users/create',
+  methods: [HttpMethod.POST],
+  integration: integrations.reports,
+  authorizer: resilienceAssessmentAuthorizer
+});
+httpApi.addRoutes({
+  path: '/api/users/set-password',
+  methods: [HttpMethod.POST],
+  integration: integrations.reports,
+  authorizer: resilienceAssessmentAuthorizer
+});
+httpApi.addRoutes({
+  path: '/api/users/permissions',
+  methods: [HttpMethod.POST],
+  integration: integrations.reports,
   authorizer: resilienceAssessmentAuthorizer
 });
 
