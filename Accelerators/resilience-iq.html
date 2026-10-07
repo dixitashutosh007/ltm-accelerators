@@ -59,10 +59,12 @@ let questions=[
 {id:'EX-19',t:'Can privileged identity and access be recovered if the primary identity/control plane is compromised?',type:'single',o:['Yes, isolated alternate path exists','Partially','No','Unknown']},
 {id:'EX-20',t:'How confident are you that documented recovery procedures meet the stated business objectives?',type:'single',o:['High — independently validated','High — tested','Medium — documented but not fully tested','Low','Unknown']}
 ];
-let answers={},idx=0,result=null;
+let answers={},idx=0,result=null,assessment=null,assessmentSaving=false;
+const ASSESSMENT_VERSIONS={questionBank:'1.0',scoringModel:'1.0',decisionTree:'1.0',blueprintEngine:'1.0',executiveReport:'1.0',engine:'1.0.0'};
 function esc(s){return String(s??'').replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]));}
 function render(){
  if(result){renderReport();return}
+ if(!assessment){renderAssessmentSetup();return}
  const q=questions[idx], cur=answers[q.id];
  const pct=Math.round(((idx+1)/questions.length)*100);
  let body='';
@@ -77,6 +79,62 @@ function render(){
    const selected=Array.isArray(cur)?cur:[cur]; body='<div class="options">'+q.o.map((x,i)=>'<button class="option '+(selected.includes(i)?'selected':'')+'" onclick="pick('+i+')">'+esc(x)+'</button>').join('')+'</div>';
  }
  document.getElementById('app').innerHTML='<div class="hero"><div class="eyebrow">LTM ADVISORY · EXECUTIVE RESILIENCE DIAGNOSTIC</div><h1>Resilience IQ</h1><p>Assess the enterprise ability to sustain critical business services through disruption — before technology choices are made.</p></div><div class="panel"><div class="progress"><span>Question '+(idx+1)+' of '+questions.length+'</span><span class="mono">'+q.id+' · '+pct+'%</span></div><div class="progressbar"><i style="width:'+pct+'%"></i></div><div class="interaction-note">'+(q.type==='multi'?'Multiple selection':q.type==='slider'?'Slider assessment':q.type==='matrix'?'Dependency matrix':q.type==='rank'?'Priority ranking':q.type==='scenario'?'Scenario decision':'Single selection')+'</div><div class="q">'+esc(q.t)+'</div><div class="hint">Answer from the current state. The assessment separates business requirements, recovery strategy and supporting resilience controls.</div>'+body+'<div class="bar"><button class="btn secondary" onclick="back()" '+(idx===0?'disabled':'')+'>← Previous</button><button class="btn primary" onclick="next()">'+(idx===questions.length-1?'Run Resilience Assessment →':'Next →')+'</button></div></div>';
+}
+function renderAssessmentSetup(){
+ const email=appAuthToken()?JSON.parse(sessionStorage.getItem('ltm_auth_user')).email||'':'';
+ document.getElementById('app').innerHTML=
+ '<div class="hero"><div class="eyebrow">LTM ADVISORY · RESILIENCE IQ</div>'+
+ '<h1>Start Resilience Assessment</h1>'+
+ '<p>Set the client context once. Resilience IQ will then save the assessment securely as you progress.</p></div>'+
+ '<div class="panel"><div class="section">'+
+ '<h2>Assessment Context</h2>'+
+ '<p class="hint">This is the working record for the current assessment. Your existing platform identity is used for access.</p>'+
+ '<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:22px">'+
+ '<label>Client / Organisation<input id="assessmentClient" class="text-input" placeholder="e.g. ACME Bank"></label>'+
+ '<label>Sector<input id="assessmentSector" class="text-input" placeholder="e.g. Banking"></label>'+
+ '</div>'+
+ '<label style="display:block;margin-top:16px">Respondent email<input id="assessmentEmail" class="text-input" value="'+esc(email)+'"></label>'+
+ '<div id="assessmentStartError" class="danger" style="display:none;margin-top:14px"></div>'+
+ '<div class="bar"><button class="btn primary" id="startAssessmentBtn" onclick="startAssessment()">Start Assessment →</button></div>'+
+ '</div></div>';
+}
+async function startAssessment(){
+ if(!requireAppLogin())return;
+ const clientName=(document.getElementById('assessmentClient')?.value||'').trim();
+ const clientSector=(document.getElementById('assessmentSector')?.value||'').trim();
+ const respondentEmail=(document.getElementById('assessmentEmail')?.value||'').trim().toLowerCase();
+ const err=document.getElementById('assessmentStartError');
+ if(!clientName||!respondentEmail){err.textContent='Client / Organisation and respondent email are required.';err.style.display='block';return;}
+ const btn=document.getElementById('startAssessmentBtn'); btn.disabled=true; btn.textContent='Creating Assessment...';
+ assessment={assessmentId:crypto.randomUUID(),clientName,clientSector,respondentEmail,startedAt:new Date().toISOString(),status:'draft'};
+ try{
+  await saveAssessment('draft','save');
+  render();
+ }catch(e){
+  assessment=null;
+  err.textContent='Unable to create the assessment record: '+e.message;
+  err.style.display='block';
+  btn.disabled=false; btn.textContent='Start Assessment →';
+ }
+}
+async function saveAssessment(status,action='save'){
+ if(!assessment)return;
+ assessment.status=status;
+ assessmentSaving=true;
+ const snapshot={
+  ...assessment,
+  version:ASSESSMENT_VERSIONS,
+  answers:mapAnswers(),
+  result:result||undefined,
+  completedAt:status==='completed'?(assessment.completedAt||new Date().toISOString()):assessment.completedAt,
+  finalizedAt:assessment.finalizedAt
+ };
+ const token=appAuthToken();
+ const res=await fetch(ASSESSMENT_API,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},body:JSON.stringify({action,snapshot})});
+ let j; try{j=await res.json();}catch{throw new Error('Persistence service returned an invalid response.');}
+ if(!res.ok||!j.ok)throw new Error(j.message||j.error||('Persistence failed (HTTP '+res.status+').'));
+ assessmentSaving=false;
+ return j.data;
 }
 function numberPick(v){answers[questions[idx].id]=v===''?undefined:Number(v);}
 function textPick(v){answers[questions[idx].id]=v;}
@@ -99,7 +157,9 @@ function next(){
  const q=questions[idx];
  if(q.type==='rank'&&answers[q.id]===undefined)answers[q.id]=q.o.map((_,i)=>i);
  if(!answerProvided(q)){alert(q.type==='matrix'?'Please complete the dependency matrix before continuing.':'Please provide an answer before continuing.');return;}
- if(idx<questions.length-1){idx++;render();}else evaluate();
+ if(idx<questions.length-1){
+  saveAssessment('in_progress','save').then(()=>{idx++;render();}).catch(e=>alert('Progress could not be saved: '+e.message));
+ }else evaluate();
 }
 async function evaluate(){
  if(!requireAppLogin())return;
@@ -115,6 +175,8 @@ async function evaluate(){
     await loadAdvisoryQuestions(result.nextQuestions);
     return;
   }
+  assessment.completedAt=new Date().toISOString();
+  await saveAssessment('completed','complete');
   renderReport();
  }catch(e){document.getElementById('app').innerHTML='<div class="panel"><h2>Evaluation failed</h2><p class="danger">'+esc(e.message)+'</p><button class="btn primary" onclick="render()">Retry</button></div>';}}
 async function loadAdvisoryQuestions(nextQuestions){
@@ -201,7 +263,6 @@ async function loadQuestionBank(){
 if(!requireAppLogin()){
  document.getElementById('app').innerHTML='<div class="panel"><h2>Sign-in required</h2><p class="hint">Please sign in through the LTM Advisory platform. Resilience IQ uses the same application session; there is no separate login.</p></div>';
 }
-loadQuestionBank();
 setTimeout(()=>{const splash=document.getElementById("splash");if(splash){splash.classList.add("fadeout");setTimeout(()=>splash.remove(),600);}},1400);render();
 </script>
 </body></html>
