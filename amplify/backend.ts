@@ -13,6 +13,7 @@ import { evaluateResilienceIqFunction } from './functions/evaluate-resilience-iq
 import { manageResilienceEvidenceFunction } from './functions/manage-resilience-evidence/resource';
 import { manageResilienceAssessmentFunction } from './functions/manage-resilience-assessment/resource';
 import { HttpApi, HttpMethod } from 'aws-cdk-lib/aws-apigatewayv2';
+import { HttpUserPoolAuthorizer } from 'aws-cdk-lib/aws-apigatewayv2-authorizers';
 import { HttpLambdaIntegration } from 'aws-cdk-lib/aws-apigatewayv2-integrations';
 
 export const backend = defineBackend({
@@ -44,7 +45,8 @@ const integrations = {
   strategy: new HttpLambdaIntegration('EvaluateStrategyIqIntegration', backend.evaluateStrategyIqFunction.resources.lambda),
   modernization: new HttpLambdaIntegration('EvaluateModernizationIqIntegration', backend.evaluateModernizationIqFunction.resources.lambda),
   resilience: new HttpLambdaIntegration('EvaluateResilienceIqIntegration', backend.evaluateResilienceIqFunction.resources.lambda),
-  resilienceEvidence: new HttpLambdaIntegration('ManageResilienceEvidenceIntegration', backend.manageResilienceEvidenceFunction.resources.lambda)
+  resilienceEvidence: new HttpLambdaIntegration('ManageResilienceEvidenceIntegration', backend.manageResilienceEvidenceFunction.resources.lambda),
+  resilienceAssessment: new HttpLambdaIntegration('ManageResilienceAssessmentIntegration', backend.manageResilienceAssessmentFunction.resources.lambda)
 };
 
 httpApi.addRoutes({ path: '/api/evaluate/finops-value-case', methods: [HttpMethod.POST, HttpMethod.OPTIONS], integration: integrations.finops });
@@ -56,6 +58,20 @@ httpApi.addRoutes({ path: '/api/evaluate/strategy-iq', methods: [HttpMethod.POST
 httpApi.addRoutes({ path: '/api/evaluate/modernization-iq', methods: [HttpMethod.POST, HttpMethod.OPTIONS], integration: integrations.modernization });
 httpApi.addRoutes({ path: '/api/evaluate/resilience-iq', methods: [HttpMethod.POST, HttpMethod.OPTIONS], integration: integrations.resilience });
 httpApi.addRoutes({ path: '/api/resilience-iq/evidence', methods: [HttpMethod.POST, HttpMethod.OPTIONS], integration: integrations.resilienceEvidence });
+
+// Reuse the platform's existing Cognito identity. Resilience IQ has no separate login.
+const resilienceAssessmentAuthorizer = new HttpUserPoolAuthorizer(
+  'ResilienceAssessmentUserPoolAuthorizer',
+  backend.auth.resources.userPool,
+  { userPoolClients: [backend.auth.resources.userPoolClient] }
+);
+
+httpApi.addRoutes({
+  path: '/api/resilience-iq/assessment',
+  methods: [HttpMethod.GET, HttpMethod.POST, HttpMethod.OPTIONS],
+  integration: integrations.resilienceAssessment,
+  authorizer: resilienceAssessmentAuthorizer
+});
 
 httpApi.addRoutes({
   path: '/api/evaluate/cost-iq',
