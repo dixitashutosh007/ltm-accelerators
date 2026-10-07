@@ -190,6 +190,7 @@ async function loadAdvisoryQuestions(nextQuestions){
     return {id:q.id,t:q.text,type:typeMap[interaction]||'single',o:q.options||[],rows:q.ui?.rows||[],cols:q.ui?.columns||[],required:true};
   }).filter(q=>!questions.some(existing=>existing.id===q.id));
   if(!additions.length){renderReport();return;}
+  result=null;
   questions=[...questions,...additions];
   for(const q of additions) answers[q.id]=undefined;
   idx=questions.length-additions.length;
