@@ -11,6 +11,7 @@ import { evaluateStrategyIqFunction } from './functions/evaluate-strategy-iq/res
 import { evaluateModernizationIqFunction } from './functions/evaluate-modernization-iq/resource';
 import { evaluateResilienceIqFunction } from './functions/evaluate-resilience-iq/resource';
 import { manageResilienceEvidenceFunction } from './functions/manage-resilience-evidence/resource';
+import { manageResilienceAssessmentFunction } from './functions/manage-resilience-assessment/resource';
 import { HttpApi, HttpMethod } from 'aws-cdk-lib/aws-apigatewayv2';
 import { HttpLambdaIntegration } from 'aws-cdk-lib/aws-apigatewayv2-integrations';
 
@@ -26,7 +27,8 @@ export const backend = defineBackend({
   evaluateStrategyIqFunction,
   evaluateModernizationIqFunction,
   evaluateResilienceIqFunction,
-  manageResilienceEvidenceFunction
+  manageResilienceEvidenceFunction,
+  manageResilienceAssessmentFunction
 });
 
 const apiStack = backend.createStack('AcceleratorsApiStack');
