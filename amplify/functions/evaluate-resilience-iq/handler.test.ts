@@ -19,6 +19,22 @@ const valid = await handler(event({ answers: validAnswers }));
 if (valid.statusCode !== 200) throw new Error(`Valid payload should return 200, got ${valid.statusCode}`);
 if (!json(valid).ok) throw new Error("Valid payload should return ok=true");
 
+const validMatrix = await handler(event({
+  answers: {
+    ...validAnswers,
+    "EX-05": {
+      Applications: "Validated",
+      Data: "Validated",
+      Infrastructure: "Partial",
+      People: "Validated",
+      "Third parties": "Stale"
+    }
+  }
+}));
+if (validMatrix.statusCode !== 200 || !json(validMatrix).ok) {
+  throw new Error("Valid EX-05 matrix answer should return 200");
+}
+
 const unknown = await handler(event({ answers: { ...validAnswers, "EX-99": "x" } }));
 if (unknown.statusCode !== 400 || json(unknown).ok) throw new Error("Unknown question ID should return 400");
 
