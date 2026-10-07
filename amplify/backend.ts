@@ -13,6 +13,7 @@ import { evaluateResilienceIqFunction } from './functions/evaluate-resilience-iq
 import { manageResilienceEvidenceFunction } from './functions/manage-resilience-evidence/resource';
 import { manageResilienceAssessmentFunction } from './functions/manage-resilience-assessment/resource';
 import { HttpApi, HttpMethod } from 'aws-cdk-lib/aws-apigatewayv2';
+import * as cdk from 'aws-cdk-lib';
 import { HttpJwtAuthorizer } from 'aws-cdk-lib/aws-apigatewayv2-authorizers';
 import { HttpLambdaIntegration } from 'aws-cdk-lib/aws-apigatewayv2-integrations';
 
@@ -31,6 +32,17 @@ export const backend = defineBackend({
   manageResilienceEvidenceFunction,
   manageResilienceAssessmentFunction
 });
+
+// Allow the assessment persistence Lambda to call the Amplify Data AppSync API with IAM.
+backend.manageResilienceAssessmentFunction.addEnvironment(
+  'AMPLIFY_DATA_GRAPHQL_ENDPOINT',
+  backend.data.resources.cfnResources.cfnGraphqlApi.attrGraphQlUrl
+);
+backend.data.resources.graphqlApi.grant(
+  backend.manageResilienceAssessmentFunction.resources.lambda,
+  cdk.aws_appsync.IamResource.all(),
+  'appsync:GraphQL'
+);
 
 const apiStack = backend.createStack('AcceleratorsApiStack');
 const httpApi = new HttpApi(apiStack, 'AcceleratorsHttpApi', {
