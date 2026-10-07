@@ -45,7 +45,8 @@ function validateAnswersPayload(answers: unknown): { ok: true } | { ok: false; e
     if (typeof value === 'number' && !Number.isFinite(value)) return { ok: false, error: `Answer ${key} must contain a finite number.` };
     if (value !== null && typeof value === 'object' && JSON.stringify(value).length > MAX_TEXT_LENGTH) return { ok: false, error: `Answer ${key} is too large.` };
 
-    const type = q.type;
+    // The UI interaction contract can override the legacy question type (for example EX-05 is stored as single_select but rendered as a matrix).
+    const type = q.ui?.interaction || q.type;
     const options = Array.isArray(q.options) ? q.options.map(String) : [];
     const allowed = new Set(options);
     const values = Array.isArray(value) ? value.map(String) : [String(value)];
