@@ -14,6 +14,7 @@ import { manageResilienceEvidenceFunction } from './functions/manage-resilience-
 import { manageResilienceAssessmentFunction } from './functions/manage-resilience-assessment/resource';
 import { HttpApi, HttpMethod } from 'aws-cdk-lib/aws-apigatewayv2';
 import { HttpUserPoolAuthorizer } from 'aws-cdk-lib/aws-apigatewayv2-authorizers';
+import { UserPool, UserPoolClient } from 'aws-cdk-lib/aws-cognito';
 import { HttpLambdaIntegration } from 'aws-cdk-lib/aws-apigatewayv2-integrations';
 
 export const backend = defineBackend({
@@ -67,10 +68,22 @@ httpApi.addRoutes({ path: '/api/evaluate/resilience-iq', methods: [HttpMethod.PO
 httpApi.addRoutes({ path: '/api/resilience-iq/evidence', methods: [HttpMethod.POST, HttpMethod.OPTIONS], integration: integrations.resilienceEvidence });
 
 // Reuse the platform's existing Cognito identity. Resilience IQ has no separate login.
+// The platform login is backed by the existing User Pool/client below; do not use
+// Amplify's generated backend.auth pool here, because that can be a different pool.
+const platformUserPool = UserPool.fromUserPoolId(
+  apiStack,
+  'PlatformCognitoUserPool',
+  'ap-south-1_91amN2bz4'
+);
+const platformUserPoolClient = UserPoolClient.fromUserPoolClientId(
+  apiStack,
+  'PlatformCognitoUserPoolClient',
+  '4iiqcsgvsm0b4ngpps94ho4c67'
+);
 const resilienceAssessmentAuthorizer = new HttpUserPoolAuthorizer(
   'ResilienceAssessmentUserPoolAuthorizer',
-  backend.auth.resources.userPool,
-  { userPoolClients: [backend.auth.resources.userPoolClient] }
+  platformUserPool,
+  { userPoolClients: [platformUserPoolClient] }
 );
 
 httpApi.addRoutes({
