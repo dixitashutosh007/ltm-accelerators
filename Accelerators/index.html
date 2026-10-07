@@ -9,6 +9,7 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   <!-- S3 Customer Reports Client -->
   <script src="/assets/s3-reports.js"></script>
+  <script src="/cost-iq-runtime-config.js"></script>
 
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -3029,14 +3030,9 @@
       btn.textContent = 'Saving Changes...';
 
       try {
-        const res = await fetch("https://zvnmwxa9sf.execute-api.ap-south-1.amazonaws.com/api/users/permissions", {
+        const res = await apiFetch("/api/users/permissions", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            email,
-            permissions: perms,
-            requesterEmail: AUTH_USER ? AUTH_USER.email : ''
-          })
+          body: JSON.stringify({ email, permissions: perms })
         });
         const data = await res.json();
         if (data.ok) {
@@ -3077,22 +3073,14 @@
       btn.textContent = 'Provisioning User...';
 
       try {
-        const res = await fetch("https://zvnmwxa9sf.execute-api.ap-south-1.amazonaws.com/api/users/create", {
+        const res = await apiFetch("/api/users/create", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            email,
-            password,
-            name,
-            role,
-            permissions: perms,
-            requesterEmail: AUTH_USER ? AUTH_USER.email : ''
-          })
+          body: JSON.stringify({ email, password, name, role, permissions: perms })
         });
 
         const data = await res.json();
         if (data.ok) {
-          const directLink = `https://main.d1xnevzszm0ehs.amplifyapp.com/?portal_user=${encodeURIComponent(email)}`;
+          const directLink = `${window.location.origin}/?portal_user=${encodeURIComponent(email)}`;
           succDiv.innerHTML = `
             <b>✅ User Provisioned Successfully!</b>
             <div style="font-size:12px;margin-top:6px;">
@@ -3124,7 +3112,7 @@
       document.getElementById('quickResetEmail').value = email;
       document.getElementById('quickResetDesc').innerHTML = `Set new credentials or generate access link for <b>${email}</b>.`;
       
-      const directLink = `https://main.d1xnevzszm0ehs.amplifyapp.com/?portal_user=${encodeURIComponent(email)}`;
+      const directLink = `${window.location.origin}/?portal_user=${encodeURIComponent(email)}`;
       document.getElementById('quickResetLink').value = directLink;
 
       document.getElementById('quickResetNewPass').value = '';
@@ -3158,14 +3146,9 @@
       btn.textContent = 'Updating Password...';
 
       try {
-        const res = await fetch("https://zvnmwxa9sf.execute-api.ap-south-1.amazonaws.com/api/users/set-password", {
+        const res = await apiFetch("/api/users/set-password", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            email,
-            newPassword: newPass,
-            requesterEmail: AUTH_USER ? AUTH_USER.email : ''
-          })
+          body: JSON.stringify({ email, newPassword: newPass })
         });
 
         const data = await res.json();
