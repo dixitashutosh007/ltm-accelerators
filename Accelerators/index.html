@@ -2882,7 +2882,7 @@
       `;
 
       try {
-        const res = await fetch("https://zvnmwxa9sf.execute-api.ap-south-1.amazonaws.com/api/users");
+        const res = await apiFetch("/api/users");
         const data = await res.json();
         if (data.ok && Array.isArray(data.users)) {
           CACHED_APP_USERS = data.users;
