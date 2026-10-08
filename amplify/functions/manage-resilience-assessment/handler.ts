@@ -85,6 +85,11 @@ function parseBody(event:APIGatewayProxyEventV2){
 
 const fields=`id assessmentId clientName clientSector respondentEmail status questionBankVersion scoringModelVersion decisionTreeVersion blueprintEngineVersion executiveReportVersion engineVersion answersJson resultJson decisionLogJson recommendationSensitivityJson startedAt completedAt finalizedAt createdAt updatedAt`;
 
+async function listAssessments(email:string){
+  const data=await graphql(`query ListResilienceAssessments($filter: ModelResilienceAssessmentFilterInput) { listResilienceAssessments(filter:$filter, limit:100) { items { ${fields} } } }`,{filter:{respondentEmail:{eq:email}}});
+  return (data.listResilienceAssessments.items||[]).sort((a:any,b:any)=>String(b.updatedAt||b.startedAt||'').localeCompare(String(a.updatedAt||a.startedAt||'')));
+}
+
 async function getAssessment(assessmentId:string){
   const data=await graphql(`query GetResilienceAssessment($filter: ModelResilienceAssessmentFilterInput) {
     listResilienceAssessments(filter:$filter) { items { ${fields} } }
