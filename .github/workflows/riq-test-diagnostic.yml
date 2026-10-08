@@ -1,0 +1,25 @@
+name: RIQ Test Diagnostic
+
+on:
+  pull_request:
+    branches:
+      - resilience-iq-dev
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: evaluate
+        run: npx tsx packages/engine-core/src/accelerators/resilience-iq/evaluate.test.ts
+      - name: evidence
+        run: npx tsx packages/engine-core/src/accelerators/resilience-iq/evidence-lifecycle.test.ts
+      - name: assessment
+        run: npx tsx packages/engine-core/src/accelerators/resilience-iq/assessment-lifecycle.test.ts
+      - name: persistence
+        run: npx tsx packages/engine-core/src/accelerators/resilience-iq/assessment-persistence.test.ts
