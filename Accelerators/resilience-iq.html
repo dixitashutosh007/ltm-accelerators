@@ -99,7 +99,8 @@ function renderAssessmentSetup(){
  '<label style="display:block;margin-top:16px">Respondent email<input id="assessmentEmail" class="text-input" value="'+esc(email)+'"></label>'+
  '<div id="assessmentStartError" class="danger" style="display:none;margin-top:14px"></div>'+
  '<div class="bar"><button class="btn primary" id="startAssessmentBtn" onclick="startAssessment()">Start Assessment →</button></div>'+
- '</div></div>'+insertion;
+ '</div></div>'+
+ '</div><div class="panel"><div class="section"><h2>Previous Assessments</h2><div id="assessmentHistory"><p class="hint">Loading...</p></div></div></div>';
 }
 async function loadAssessmentHistory(){
  const host=document.getElementById('assessmentHistory');
