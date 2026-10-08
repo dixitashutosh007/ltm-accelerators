@@ -55,6 +55,16 @@ const integrations = {
   resilienceEvidence: new HttpLambdaIntegration('ManageResilienceEvidenceIntegration', backend.manageResilienceEvidenceFunction.resources.lambda),
   resilienceAssessment: new HttpLambdaIntegration('ManageResilienceAssessmentIntegration', backend.manageResilienceAssessmentFunction.resources.lambda)};
 
+httpApi.addRoutes({ path: '/api/evaluate/finops-value-case', methods: [HttpMethod.POST, HttpMethod.OPTIONS], integration: integrations.finops });
+httpApi.addRoutes({ path: '/api/evaluate/finops-iq', methods: [HttpMethod.POST, HttpMethod.OPTIONS], integration: integrations.finopsIq });
+httpApi.addRoutes({ path: '/api/evaluate/posture-iq', methods: [HttpMethod.POST, HttpMethod.OPTIONS], integration: integrations.posture });
+httpApi.addRoutes({ path: '/api/evaluate/sovereign-iq', methods: [HttpMethod.POST, HttpMethod.OPTIONS], integration: integrations.sovereign });
+httpApi.addRoutes({ path: '/api/evaluate/cloud-iq', methods: [HttpMethod.POST, HttpMethod.OPTIONS], integration: integrations.cloud });
+httpApi.addRoutes({ path: '/api/evaluate/strategy-iq', methods: [HttpMethod.POST, HttpMethod.OPTIONS], integration: integrations.strategy });
+httpApi.addRoutes({ path: '/api/evaluate/modernization-iq', methods: [HttpMethod.POST, HttpMethod.OPTIONS], integration: integrations.modernization });
+httpApi.addRoutes({ path: '/api/evaluate/resilience-iq', methods: [HttpMethod.POST, HttpMethod.OPTIONS], integration: integrations.resilience });
+httpApi.addRoutes({ path: '/api/resilience-iq/evidence', methods: [HttpMethod.POST, HttpMethod.OPTIONS], integration: integrations.resilienceEvidence });
+
 // Reuse the platform's existing Cognito identity. Resilience IQ has no separate login.
 // Use an explicit JWT issuer/audience so API Gateway validates the same token
 // issued by the platform login, independent of Amplify-managed auth resources.
@@ -65,16 +75,6 @@ const resilienceAssessmentAuthorizer = new HttpJwtAuthorizer(
     jwtAudience: ['4iiqcsgvsm0b4ngpps94ho4c67']
   }
 );
-
-httpApi.addRoutes({ path: '/api/evaluate/finops-value-case', methods: [HttpMethod.POST, HttpMethod.OPTIONS], integration: integrations.finops });
-httpApi.addRoutes({ path: '/api/evaluate/finops-iq', methods: [HttpMethod.POST, HttpMethod.OPTIONS], integration: integrations.finopsIq });
-httpApi.addRoutes({ path: '/api/evaluate/posture-iq', methods: [HttpMethod.POST, HttpMethod.OPTIONS], integration: integrations.posture });
-httpApi.addRoutes({ path: '/api/evaluate/sovereign-iq', methods: [HttpMethod.POST, HttpMethod.OPTIONS], integration: integrations.sovereign });
-httpApi.addRoutes({ path: '/api/evaluate/cloud-iq', methods: [HttpMethod.POST, HttpMethod.OPTIONS], integration: integrations.cloud });
-httpApi.addRoutes({ path: '/api/evaluate/strategy-iq', methods: [HttpMethod.POST, HttpMethod.OPTIONS], integration: integrations.strategy });
-httpApi.addRoutes({ path: '/api/evaluate/modernization-iq', methods: [HttpMethod.POST, HttpMethod.OPTIONS], integration: integrations.modernization });
-httpApi.addRoutes({ path: '/api/evaluate/resilience-iq', methods: [HttpMethod.POST, HttpMethod.OPTIONS], integration: integrations.resilience, authorizer: resilienceAssessmentAuthorizer });
-httpApi.addRoutes({ path: '/api/resilience-iq/evidence', methods: [HttpMethod.POST, HttpMethod.OPTIONS], integration: integrations.resilienceEvidence });
 
 httpApi.addRoutes({
   path: '/api/resilience-iq/assessment',
