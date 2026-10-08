@@ -258,7 +258,7 @@ function renderReport(){
    '</div></div>'+
    '<div class="panel"><div class="section"><h2>Target State</h2>'+
      (arr(target.targetPrinciples).length?'<div class="report-card-title">Principles</div><ul class="report-list">'+arr(target.targetPrinciples).map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul>':'')+
-     (arr(target.architectureLayers).length?'<div class="report-card-title" style="margin-top:18px">Architecture layers</div><p>'+target.architectureLayers.map(x=>'<span class="pill" style="margin:0 5px 5px 0">'+esc(x)+'</span>').join('')+'</p>':'')+
+     (arr(target.architectureLayers).length?'<div class="report-card-title" style="margin-top:18px">Architecture layers</div><p>'+target.architectureLayers.map(x=>'<span class="pill" style="margin:0 5px 5px 0">'+esc(x)+'</span>').join('')+'</p>':'')+(arr(target.architectureDecisions).length?'<div class="report-card-title" style="margin-top:12px">Architecture decisions</div><ul class="report-list">'+arr(target.architectureDecisions).map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul>':'')+
      (arr(target.blueprintIds).length?'<div class="report-card-title" style="margin-top:12px">Blueprints</div><p>'+target.blueprintIds.map(x=>'<span class="pill" style="margin:0 5px 5px 0">'+esc(x)+'</span>').join('')+'</p>':'<p class="hint">Target-state blueprint not available.</p>')+
    '</div>'+
  '</div>'+
