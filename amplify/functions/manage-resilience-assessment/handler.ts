@@ -105,7 +105,10 @@ export const handler=async(event:APIGatewayProxyEventV2):Promise<APIGatewayProxy
   try {
     if(method==='GET'){
       const assessmentId=event.queryStringParameters?.assessmentId;
-      if(!assessmentId) return response(400,{ok:false,error:'assessmentId is required.',requestId},requestId);
+      if(!assessmentId){
+        const items=await listAssessments(userEmail(event));
+        return response(200,{ok:true,data:items,requestId},requestId);
+      }
       const item=await getAssessment(assessmentId);
       if(!item) return response(404,{ok:false,error:'assessment_not_found',requestId},requestId);
       if(!isAdmin(event) && String(item.respondentEmail||'').trim().toLowerCase()!==userEmail(event)) {
