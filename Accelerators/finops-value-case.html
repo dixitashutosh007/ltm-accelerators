@@ -2,7 +2,7 @@
 <html lang="en"><head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>FinOps Value Case — Do you need FinOps? · LTM</title>
+<title>FinOps Value Case — Do you need FinOps? · LTM Vantage</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <script src="/assets/runtime-config.js"></script>
 <script src="/assets/ltm-api.js"></script>
@@ -544,7 +544,7 @@ table.qtable th{font-family:'Manrope',sans-serif;font-size:10.5px;letter-spacing
       </div>
     </div>
 
-    <div class="fvs-brand-badge">&bull; LTM INFRASTRUCTURE TECH ADVISORY &bull;</div>
+    <div class="fvs-brand-badge">&bull; LTM VANTAGE &bull; RESPONSIBLE ADVISORY &bull;</div>
     <h1 class="fvs-title">FinOps Value Case</h1>
     <p class="fvs-sub">Pre-Maturity Qualification &amp; Cloud Financial Exposure Diagnostic</p>
 
@@ -1684,7 +1684,7 @@ function showReportGenerationAnimation(callback) {
     'Compiling Executive CIO Value Case & Board Readout…'
   ];
   overlay.innerHTML =
-    '<div class="rg-brand">LTM · Infrastructure Tech Advisory · FinOps Value Engine</div>' +
+    '<div class="rg-brand">LTM Vantage · Responsible Advisory · FinOps Value Engine</div>' +
     '<div class="rg-pulse-container"><div class="rg-pulse-ring"></div><div class="rg-pulse-ring"></div><div class="rg-pulse-ring"></div><div class="rg-core-dot"></div></div>' +
     '<div class="rg-title">Synthesizing Cloud Financial Diagnostic</div>' +
     '<div class="rg-subtitle">Correlating estate declarations against 40+ FinOps capabilities, published benchmarks, and peer patterns</div>' +
@@ -1789,7 +1789,7 @@ function viewCheckpoint(){
 
     // Engine Launch Action Box
     + '<div style="background:linear-gradient(135deg, #1B3440 0%, #282828 100%);color:#fff;border-radius:12px;padding:28px 24px;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,0.12)">'
-      + '<div style="display:inline-block;background:rgba(255,94,79,0.2);color:#FF8A7A;border:1px solid rgba(255,94,79,0.4);padding:4px 14px;border-radius:999px;font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;margin-bottom:12px">LTM CIS FinOps Diagnostic Engine</div>'
+      + '<div style="display:inline-block;background:rgba(255,94,79,0.2);color:#FF8A7A;border:1px solid rgba(255,94,79,0.4);padding:4px 14px;border-radius:999px;font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;margin-bottom:12px">LTM Vantage · Responsible Advisory · FinOps Diagnostic Engine</div>'
       + '<h2 style="font-size:22px;color:#fff;margin-bottom:8px">Ready to Synthesize Detailed Value Case &amp; Roadmap?</h2>'
       + '<p style="font-size:14px;color:rgba(255,255,255,0.78);max-width:58ch;margin:0 auto 22px;line-height:1.5">The engine will correlate your diagnostic profile, quantify individual optimization stream yields, construct your phased 30-60-90 day execution roadmap, and compile your CIO readout.</p>'
       + '<div style="display:flex;gap:12px;align-items:center;justify-content:center;flex-wrap:wrap">'
@@ -1806,7 +1806,7 @@ function render(){
   document.querySelectorAll("#topnav .navbtn").forEach(b=>b.classList.toggle("on",b.dataset.nav===S.tab));
   $("#ltmLogo").innerHTML = S.ltmLogo
     ? '<img src="'+S.ltmLogo+'" alt="LTM"/>'
-    : '<div style="display:flex;align-items:center;gap:12px">' + DEFAULT_LTM_LOGO + '<div style="border-left:1px solid var(--line);padding-left:10px;line-height:1.2"><b style="font-size:13.5px;color:var(--ink)">FinOps Value Case</b><span style="display:block;font-size:9.5px;letter-spacing:.12em;color:var(--steel);text-transform:uppercase">Infrastructure Tech Advisory</span></div></div>';
+    : '<div style="display:flex;align-items:center;gap:12px">' + DEFAULT_LTM_LOGO + '<div style="border-left:1px solid var(--line);padding-left:10px;line-height:1.2"><b style="font-size:13.5px;color:var(--ink)">FinOps Value Case</b><span style="display:block;font-size:9.5px;letter-spacing:.12em;color:var(--steel);text-transform:uppercase">LTM Vantage · Responsible Advisory</span></div></div>';
   if(S.tab==="bank"){app.innerHTML=viewBank();return;}
   if(S.screen==="intro"){app.innerHTML=viewIntro();return;}
   if(S.screen==="org"){app.innerHTML=viewOrg();return;}
@@ -1938,7 +1938,7 @@ function viewReport(){
   const o=S.org, r=S.respondent, M=S.kb.meta;
   const ltm=S.ltmLogo
     ? '<img src="'+S.ltmLogo+'" alt="LTM"/>'
-    : '<div style="display:flex;align-items:center;gap:12px">' + DEFAULT_LTM_LOGO + '<div style="border-left:1px solid var(--line);padding-left:12px;line-height:1.2"><b style="font-size:14px;color:var(--ink)">FinOps Value Case</b><span style="display:block;font-size:9.5px;letter-spacing:.12em;color:var(--steel);text-transform:uppercase">Infrastructure Tech Advisory</span></div></div>';
+    : '<div style="display:flex;align-items:center;gap:12px">' + DEFAULT_LTM_LOGO + '<div style="border-left:1px solid var(--line);padding-left:12px;line-height:1.2"><b style="font-size:14px;color:var(--ink)">FinOps Value Case</b><span style="display:block;font-size:9.5px;letter-spacing:.12em;color:var(--steel);text-transform:uppercase">LTM Vantage · Responsible Advisory</span></div></div>';
   const orgId=(o.logo?'<img src="'+o.logo+'"/>':'')+'<div><div class="mval">'+esc(o.name||"—")+'</div><div class="mline">'+esc(o.sector)+'</div></div>';
 
   const streams = computeStreams(sig, annualSpend(), S.answers);
@@ -2114,7 +2114,7 @@ function viewReport(){
    +M.benchmarks.sources.map(s=>'<p style="color:#5B5B5B;font-size:12.5px;margin:0 0 8px"><b>'+esc(s.label)+'</b> — '+esc(s.note)+'</p>').join("")
    +'<p style="color:#8E8E8E;font-size:12px;margin-top:12px">'+esc(M.benchmarks.honesty_note)+'</p></div>'
 
-   +'</div><div class="repfoot">Prepared with the LTM FinOps Value Case accelerator.<div style="margin-top:8px">'+esc(M.disclaimer)+'</div></div></div></div>';
+   +'</div><div class="repfoot">Prepared with the FinOps Value Case accelerator · LTM Vantage · Responsible Advisory.<div style="margin-top:8px">'+esc(M.disclaimer)+'</div></div></div></div>';
 }
 
 /* ---------------- bank ---------------- */
