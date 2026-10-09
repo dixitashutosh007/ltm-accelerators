@@ -100,6 +100,16 @@ for (const f of textFiles) {
   for (const re of secretPatterns) if (re.test(s)) fail('secret', f, re.source);
 }
 
+// 9. One platform brand: every page is titled "… LTM Vantage", and retired brand variants stay retired.
+//    The practice that delivers the work is named "LTM Infrastructure Tech Advisory" (docs/BRAND.md).
+for (const f of sitePages) {
+  const s = read(f);
+  const title = (s.match(/<title>([^<]*)<\/title>/i) || [])[1] || '';
+  if (!/LTM Vantage/.test(title)) fail('brand-title', f, `title "${title}" should name LTM Vantage`);
+  const m = s.match(/LTM CIS\b|LTM · CIS|Infrastructure Tech Advisory \(CIS\)|Advisory Accelerators Platform/);
+  if (m) fail('brand-retired', f, m[0]);
+}
+
 if (failures.length) {
   console.error(`Repository checks failed (${failures.length}):\n` + failures.map(x => '  - ' + x).join('\n'));
   process.exit(1);
