@@ -8,8 +8,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="generator" content="Strategy IQ v2.2 · LTM Infrastructure Tech Advisory">
-  <title>Strategy IQ — Enterprise IT Strategy &amp; Modernization Diagnostic · LTM</title>
+  <meta name="generator" content="Strategy IQ v2.2 · LTM Vantage">
+  <title>Strategy IQ — Enterprise IT Strategy &amp; Modernization Diagnostic · LTM Vantage</title>
   
   <!-- CDNs for Visual Charting & PDF Dossier -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
@@ -1260,7 +1260,7 @@
       </div>
     </div>
 
-    <div class="splash-brand"><span class="dot"></span> LTM INFRASTRUCTURE TECH ADVISORY</div>
+    <div class="splash-brand"><span class="dot"></span> LTM VANTAGE · RESPONSIBLE ADVISORY</div>
     <h1 class="splash-title">Strategy IQ</h1>
     <p class="splash-subtitle">Enterprise IT Strategy &amp; Modernization Advisory Platform</p>
 
@@ -1286,7 +1286,7 @@
       <span class="brand-badge">LTM</span>
       <div>
         <div class="brand-title">Strategy IQ</div>
-        <div class="brand-sub">Infrastructure Tech Advisory &middot; CIO Modernization</div>
+        <div class="brand-sub">LTM Vantage &middot; Responsible Advisory</div>
       </div>
     </a>
     <div class="topbar-actions">
@@ -1687,7 +1687,7 @@
   <div class="modal-content" style="max-width:860px">
     <div class="modal-head">
       <div>
-        <div class="eyebrow" style="color:var(--ltm-coral)">LTM ADVISORY COMMERCIAL BLUEPRINT</div>
+        <div class="eyebrow" style="color:var(--ltm-coral)">LTM VANTAGE &middot; COMMERCIAL BLUEPRINT</div>
         <h3 style="font-size:18px;margin-top:2px">Statement of Work (SOW) &middot; Advisory Proposal</h3>
       </div>
       <button class="modal-close-btn" onclick="closeSOWModal()">&times;</button>
@@ -2898,7 +2898,7 @@ function executeReportGenerationAnimation(callback) {
   ];
 
   overlay.innerHTML = `
-    <div class="rg-brand">LTM &middot; Infrastructure Tech Advisory &middot; Strategy Diagnostic Engine</div>
+    <div class="rg-brand">LTM Vantage &middot; Responsible Advisory &middot; Strategy Diagnostic Engine</div>
     <div class="rg-pulse-container">
       <div class="rg-pulse-ring"></div>
       <div class="rg-pulse-ring"></div>
@@ -3266,7 +3266,7 @@ function renderResultsScreen() {
             Generate Detailed Executive Report &rarr;
           </button>
           <button class="btn btn-ghost" onclick="openBookingModal()" style="background:transparent;color:rgba(255,255,255,0.85);border-color:rgba(255,255,255,0.3)">
-            Schedule Strategic Readout with LTM Advisory
+            Schedule Strategic Readout with LTM Infrastructure Tech Advisory
           </button>
         </div>
       </div>
@@ -3727,7 +3727,7 @@ function downloadStrategyPDF() {
   doc.setFont("helvetica", "normal");
   doc.setFontSize(9);
   doc.setTextColor(255, 94, 79);
-  doc.text("INFRASTRUCTURE TECH ADVISORY · STRATEGY PRACTICE", M, 52);
+  doc.text("LTM VANTAGE · RESPONSIBLE ADVISORY", M, 52);
 
   doc.setTextColor(200, 200, 200);
   doc.text(new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }), W - M, 52, { align: 'right' });
@@ -3787,7 +3787,7 @@ function downloadStrategyPDF() {
 
   doc.setFontSize(8);
   doc.setTextColor(148, 163, 184);
-  doc.text("LTM Infrastructure Tech Advisory · Strategy IQ Diagnostic Platform · Confidential Enterprise Briefing", M, H - 25);
+  doc.text("LTM Vantage · Responsible Advisory · Strategy IQ · Confidential Enterprise Briefing", M, H - 25);
 
   doc.save(`Strategy_IQ_Executive_Dossier_${STATE.intake.orgName.replace(/\s+/g,'_')}.pdf`);
 
