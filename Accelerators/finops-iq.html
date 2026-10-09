@@ -2,14 +2,14 @@
 <!--
   Copyright © 2026 LTM Limited. All rights reserved.
   FinOps IQ v2.2 — Production Cloud Financial Management & Maturity Platform
-  Infrastructure Tech Advisory (CIS) · Cloud Advisory Practice Lead: Ashutosh Dixit
+  LTM Infrastructure Tech Advisory · Cloud Advisory Practice Lead: Ashutosh Dixit
 -->
 <html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="generator" content="FinOps IQ v2.2 · LTM Infrastructure Tech Advisory">
-  <title>FinOps IQ — Cloud Financial Management &amp; Maturity Accelerator · LTM</title>
+  <meta name="generator" content="FinOps IQ v2.2 · LTM Vantage">
+  <title>FinOps IQ — Cloud Financial Management &amp; Maturity Accelerator · LTM Vantage</title>
   
   <!-- CDNs for Visual Charting & Boardroom PDF Generation -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
@@ -189,6 +189,18 @@
       font-weight: 800;
       color: var(--ltm-dark);
       letter-spacing: -0.02em;
+    }
+    .app-brand-lockup {
+      display: flex;
+      flex-direction: column;
+      line-height: 1.15;
+    }
+    .app-brand-sub {
+      font-size: 10px;
+      font-weight: 600;
+      color: #6B7280;
+      letter-spacing: 0.04em;
+      white-space: nowrap;
     }
     .app-brand .badge-tag {
       background: #FFF1F0;
@@ -1526,7 +1538,7 @@
         </div>
         <div class="splash-org-tag">
           <span class="splash-ltm">LTM</span>
-          <span class="splash-div">INFRASTRUCTURE TECH ADVISORY</span>
+          <span class="splash-div">VANTAGE · RESPONSIBLE ADVISORY</span>
         </div>
         <h1 class="splash-title-text">FINOPS <span class="splash-iq-highlight">IQ</span></h1>
         <div class="splash-subtitle">CLOUD FINANCIAL INTELLIGENCE &amp; MATURITY PLATFORM</div>
@@ -1554,7 +1566,10 @@
           <img src="/assets/ltm-logo.png" alt="LTM" style="height:32px;width:auto;margin-right:12px;border-radius:4px;vertical-align:middle;">
         </a>
         <div class="app-brand" onclick="playSplashScreen(true)" style="cursor:pointer" title="FinOps IQ v2.2 · Click to replay intro animation">
-          <h1>FinOps IQ</h1>
+          <div class="app-brand-lockup">
+            <h1>FinOps IQ</h1>
+            <span class="app-brand-sub">LTM Vantage · Responsible Advisory</span>
+          </div>
           <span class="badge-tag">Advisory v2.2</span>
         </div>
         <button type="button" class="session-badge" onclick="openSessionModal()" title="Manage Sessions &amp; Drafts">
@@ -3428,7 +3443,7 @@
           footprint: [],
           techStack: [],
           consultantName: '',
-          consultantRole: 'LTM CIS Advisory Lead',
+          consultantRole: 'LTM Infrastructure Tech Advisory Lead',
           date: new Date().toISOString().slice(0, 10)
         },
         stageIdx: 0,
@@ -4407,7 +4422,7 @@ const EVALUATE_API_PATH = "/api/evaluate/finops-iq";
 
     // SCREEN 4: Advisory Report & Modernization Roadmap
     function resultsUnavailable(app) {
-      app.innerHTML = '<div class="card" role="status"><h3>Results are not available yet</h3><p>Scoring runs on the LTM Advisory service and could not be reached. Your answers are kept. Please try again in a moment.</p></div>';
+      app.innerHTML = '<div class="card" role="status"><h3>Results are not available yet</h3><p>Scoring runs on the LTM Vantage service and could not be reached. Your answers are kept. Please try again in a moment.</p></div>';
     }
 
     function renderReport() {
@@ -4434,7 +4449,7 @@ const EVALUATE_API_PATH = "/api/evaluate/finops-iq";
       let html = modeBanner
         + '<div class="card" style="border-top: 4px solid var(--ltm-red)">'
         + '<div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:16px;margin-bottom:20px">'
-        + '<div><span style="font-family:var(--font-mono);font-size:11px;font-weight:700;color:var(--ltm-red);text-transform:uppercase">LTM Infrastructure Tech Advisory</span>'
+        + '<div><span style="font-family:var(--font-mono);font-size:11px;font-weight:700;color:var(--ltm-red);text-transform:uppercase">LTM Vantage · Responsible Advisory</span>'
         + '<h1 style="font-family:var(--font-heading);font-size:24px;font-weight:800;color:var(--ltm-dark);margin:4px 0">' + (o.name || 'Client Enterprise') + ' · FinOps Maturity Diagnostic</h1>'
         + '<div style="font-size:13px;color:#6B7280">' + [o.sector, formatSpend(o.annualSpend), (o.footprint || []).join(' · ')].filter(Boolean).join(' · ') + '</div>'
         + '</div>'
@@ -4754,7 +4769,7 @@ const EVALUATE_API_PATH = "/api/evaluate/finops-iq";
         name || "Client Lead"
       ];
 
-      const subject = "Infrastructure Tech Advisory — FinOps IQ Readout Request — " + (comp || "Enterprise");
+      const subject = "LTM Vantage — FinOps IQ Readout Request — " + (comp || "Enterprise");
       const href = "mailto:ashutosh.dixit@ltm.com?subject=" + encodeURIComponent(subject) + "&body=" + encodeURIComponent(lines.join("\n"));
       window.location.href = href;
       closeAdvisoryModal();
@@ -4788,7 +4803,7 @@ const EVALUATE_API_PATH = "/api/evaluate/finops-iq";
         doc.text("LTM", 20, 30);
         doc.setFontSize(10);
         doc.setTextColor(200, 200, 200);
-        doc.text("INFRASTRUCTURE TECH ADVISORY", 20, 36);
+        doc.text("VANTAGE · RESPONSIBLE ADVISORY", 20, 36);
 
         // Title
         doc.setTextColor(255, 255, 255);
@@ -4868,7 +4883,7 @@ const EVALUATE_API_PATH = "/api/evaluate/finops-iq";
         // Footer
         doc.setTextColor(140, 140, 140);
         doc.setFontSize(8);
-        doc.text("CONFIDENTIAL · PREPARED FOR " + (o.name || "CLIENT") + " · LTM CIS TECH ADVISORY", 20, 285);
+        doc.text("CONFIDENTIAL · PREPARED FOR " + (o.name || "CLIENT") + " · LTM VANTAGE · RESPONSIBLE ADVISORY", 20, 285);
 
         // Page 2: Stage & Roadmap Table
         doc.addPage();

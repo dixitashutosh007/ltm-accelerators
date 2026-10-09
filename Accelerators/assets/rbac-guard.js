@@ -1,5 +1,5 @@
 /**
- * LTM Infrastructure Tech Advisory — page guard.
+ * LTM Vantage — page guard.
  * Redirects signed-out or unauthorized users away from accelerator pages.
  * UX only: data access is enforced server-side (API Gateway Cognito authorizer + service checks).
  * Uses /assets/ltm-api.js when the page loads it; otherwise checks the stored session directly.

@@ -1,5 +1,5 @@
 /**
- * LTM Infrastructure Tech Advisory — Customer Reports Archive Utility
+ * LTM Vantage — Customer Reports Archive Utility
  * Talks to the Advisory API's /api/reports routes (Cognito-authenticated).
  */
 (function(window) {
@@ -29,7 +29,7 @@
 
   async function reportsFetch(path, options) {
     const api = await ensureClient().catch(() => null);
-    if (!api) throw new Error('Please sign in to the LTM Advisory portal to archive or view reports.');
+    if (!api) throw new Error('Please sign in to LTM Vantage to archive or view reports.');
     return api.fetch('/api/reports' + path, options);
   }
 

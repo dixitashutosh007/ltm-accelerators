@@ -1,5 +1,5 @@
 /**
- * LTM Advisory — shared API client for the portal and every accelerator page.
+ * LTM Vantage — shared API client for the portal and every accelerator page.
  *
  * - Reads the API address and Cognito settings from window.LTM_CONFIG
  *   (assets/runtime-config.js, generated from Amplify outputs at build time).

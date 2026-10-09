@@ -8,7 +8,7 @@ const DEFAULT_ALLOWED_DOMAINS = [
   'ltm.com'
 ];
 
-const ACCESS_CONTACT = process.env.ACCESS_CONTACT_EMAIL || 'your LTM Advisory administrator';
+const ACCESS_CONTACT = process.env.ACCESS_CONTACT_EMAIL || 'your LTM Vantage administrator';
 
 export const handler: PreSignUpTriggerHandler = async (event) => {
   const email = (event.request.userAttributes.email || '').toLowerCase().trim();
