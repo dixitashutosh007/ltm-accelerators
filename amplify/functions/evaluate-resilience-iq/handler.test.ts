@@ -93,13 +93,23 @@ const get = await handler({
 } as any);
 if (get.statusCode !== 405) throw new Error("Unsupported methods should return 405");
 
-process.env.RESILIENCE_IQ_ALLOWED_ORIGIN = "https://example.com";
-const restrictedOrigin = await handler({
+process.env.ALLOWED_ORIGINS = "https://example.com,https://*.preview.example";
+const allowedOrigin = await handler({
   requestContext: { http: { method: "OPTIONS" } },
   headers: { origin: "https://example.com" }
 } as any);
-if (restrictedOrigin.headers?.["Access-Control-Allow-Origin"] !== "https://example.com") throw new Error("Configured CORS origin should be emitted");
-delete process.env.RESILIENCE_IQ_ALLOWED_ORIGIN;
+if (allowedOrigin.headers?.["Access-Control-Allow-Origin"] !== "https://example.com") throw new Error("An allowed origin should be echoed");
+const previewOrigin = await handler({
+  requestContext: { http: { method: "OPTIONS" } },
+  headers: { origin: "https://branch.preview.example" }
+} as any);
+if (previewOrigin.headers?.["Access-Control-Allow-Origin"] !== "https://branch.preview.example") throw new Error("A wildcard preview origin should be echoed");
+const otherOrigin = await handler({
+  requestContext: { http: { method: "OPTIONS" } },
+  headers: { origin: "https://evil.example" }
+} as any);
+if (otherOrigin.headers?.["Access-Control-Allow-Origin"] !== undefined) throw new Error("Origins that are not allowed must get no CORS header (never '*')");
+delete process.env.ALLOWED_ORIGINS;
 
 const traceable = await handler(event({ answers: validAnswers }));
 if (!traceable.headers?.["X-Request-Id"]) throw new Error("Responses should include a request ID");

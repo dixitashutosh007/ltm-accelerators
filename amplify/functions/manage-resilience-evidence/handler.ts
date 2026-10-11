@@ -3,14 +3,11 @@ import {
   assertEvidenceStatusTransition,
   type ResilienceEvidenceStatus
 } from '../../../packages/engine-core/src/accelerators/resilience-iq/evidence-lifecycle';
+import { corsHeaders } from '../_shared/http';
 
-const ALLOWED_ORIGIN = process.env.RESILIENCE_IQ_ALLOWED_ORIGIN || '*';
-const HEADERS = {
-  'Content-Type': 'application/json',
-  'Access-Control-Allow-Origin': ALLOWED_ORIGIN,
-  'Access-Control-Allow-Headers': 'Content-Type,Authorization,X-Amz-Date,X-Api-Key,X-Amz-Security-Token,X-Request-Id',
-  'Access-Control-Allow-Methods': 'OPTIONS,POST'
-};
+// Lambdas run one request at a time per container, so the current request's headers are kept here for
+// response() to echo an allowed origin (see _shared/http.ts). Origins not in ALLOWED_ORIGINS get no CORS header.
+let requestHeaders: Record<string, string | undefined> | undefined;
 
 const statuses = new Set<ResilienceEvidenceStatus>([
   'not_requested', 'requested', 'provided', 'validated', 'rejected'
@@ -19,12 +16,13 @@ const statuses = new Set<ResilienceEvidenceStatus>([
 function response(statusCode: number, body: unknown, requestId: string): APIGatewayProxyResultV2 {
   return {
     statusCode,
-    headers: { ...HEADERS, 'X-Request-Id': requestId },
+    headers: { ...corsHeaders({ headers: requestHeaders }, 'OPTIONS,POST', 'X-Request-Id'), 'X-Request-Id': requestId },
     body: JSON.stringify(body)
   };
 }
 
 export const handler = async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> => {
+  requestHeaders = event.headers;
   const requestId = event.requestContext?.requestId || crypto.randomUUID();
   const method = event.requestContext?.http?.method || (event as any).httpMethod || 'POST';
 
