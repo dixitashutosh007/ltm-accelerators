@@ -1,4 +1,4 @@
-import type { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
+import type { APIGatewayProxyEventV2, APIGatewayProxyEventV2WithJWTAuthorizer, APIGatewayProxyResultV2 } from 'aws-lambda';
 import { createHash, createHmac, randomUUID } from 'node:crypto';
 import { assertAssessmentStatusTransition, type ResilienceAssessmentStatus } from '../../../packages/engine-core/src/accelerators/resilience-iq/assessment-lifecycle';
 
@@ -61,7 +61,8 @@ async function graphql(query:string, variables:Record<string,unknown>){
 }
 
 function claims(event:APIGatewayProxyEventV2){
-  return event.requestContext?.authorizer?.jwt?.claims || {};
+  // The route's JWT authorizer populates these claims; requests without it carry none.
+  return (event as APIGatewayProxyEventV2WithJWTAuthorizer).requestContext?.authorizer?.jwt?.claims || {};
 }
 function groups(event:APIGatewayProxyEventV2){
   const groupsRaw=claims(event)['cognito:groups'];

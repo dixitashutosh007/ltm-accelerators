@@ -473,8 +473,7 @@
       "name": "AI & Data Provenance Governance",
       "desc": "EU AI Act Art. 10 compliance, model training residency, data provenance documentation, and human oversight.",
       "sections": [
-        "ai",
-        "outcomes"
+        "ai"
       ],
       "weight": 0.15
     }
@@ -523,17 +522,21 @@
           "aws-eu",
           "azure-eu",
           "onprem",
-          "saas"
+          "salesforce"
         ],
-        "C2": "multi",
+        "C2": {
+          "financial": "multi",
+          "pii": "multi",
+          "special": "multi"
+        },
         "C3": "partial",
         "D1": "sccs",
-        "D2": "tier1",
-        "D3": "partial",
+        "D2": "yes",
+        "D3": "customer",
         "E1": "most",
         "E2": "yes",
-        "E3": "yes",
-        "E4": "partial",
+        "E3": "full",
+        "E4": "no",
         "F1": "eu",
         "F2": "provider",
         "F3": "no",
@@ -541,18 +544,23 @@
         "F5": "partial",
         "G1": "highrisk",
         "G2": "mixed",
-        "G3": "partial",
-        "G4": "planned",
+        "G3": "downstream",
+        "G4": "partial",
         "H1": "us-eubound",
-        "H2": "no",
-        "H3": "medium",
+        "H2": "none",
+        "H3": [
+          "eu-personnel",
+          "eu-subprocessors"
+        ],
         "I1": "limited",
-        "I2": "yes",
-        "I3": "partial",
+        "I2": "exec",
+        "I3": "unsure",
         "J1": "partial",
-        "K1": "strict",
+        "K1": "zero",
         "K2": "high",
-        "K3": "performance"
+        "K3": [
+          "performance"
+        ]
       }
     },
     "health": {
@@ -584,16 +592,20 @@
         ],
         "C1": [
           "azure-eu",
-          "saas"
+          "salesforce"
         ],
-        "C2": "single",
-        "C3": "no",
+        "C2": {
+          "special": "eu-only",
+          "pii": "eu-only",
+          "aitraining": "eu-only"
+        },
+        "C3": "convention",
         "D1": "sccs",
-        "D2": "ad-hoc",
-        "D3": "no",
+        "D2": "partial",
+        "D3": "na",
         "E1": "most",
         "E2": "partial",
-        "E3": "no",
+        "E3": "none",
         "E4": "no",
         "F1": "eu-enc",
         "F2": "provider",
@@ -602,18 +614,22 @@
         "F5": "no",
         "G1": "highrisk",
         "G2": "us-dpf",
-        "G3": "no",
-        "G4": "no",
+        "G3": "none",
+        "G4": "none",
         "H1": "us",
-        "H2": "no",
-        "H3": "high",
+        "H2": "none",
+        "H3": [
+          "none"
+        ],
         "I1": "limited",
-        "I2": "no",
+        "I2": "none",
         "I3": "no",
         "J1": "partial",
-        "K1": "strict",
+        "K1": "zero",
         "K2": "medium",
-        "K3": "compliance"
+        "K3": [
+          "compliance"
+        ]
       }
     },
     "utility": {
@@ -646,15 +662,18 @@
           "onprem",
           "aws-eu"
         ],
-        "C2": "hybrid",
+        "C2": {
+          "government": "eu-only",
+          "pii": "eu-backup"
+        },
         "C3": "partial",
         "D1": "no",
-        "D2": "none",
-        "D3": "yes",
+        "D2": "no",
+        "D3": "customer",
         "E1": "all",
         "E2": "yes",
         "E3": "partial",
-        "E4": "partial",
+        "E4": "no",
         "F1": "eu",
         "F2": "cmk-eu",
         "F3": "yes",
@@ -662,15 +681,21 @@
         "F5": "yes",
         "G1": "none",
         "H1": "us",
-        "H2": "yes",
-        "H3": "low",
+        "H2": "substantial",
+        "H3": [
+          "eu-personnel",
+          "hyok",
+          "local-entity"
+        ],
         "I1": "full",
-        "I2": "yes",
+        "I2": "exec",
         "I3": "yes",
         "J1": "yes",
-        "K1": "balanced",
+        "K1": "moderate",
         "K2": "high",
-        "K3": "security"
+        "K3": [
+          "resilience"
+        ]
       }
     },
     "saas": {
@@ -696,7 +721,7 @@
       ],
       "answers": {
         "A1": "important",
-        "A2": "ict_ctpp",
+        "A2": "ict-ctpp",
         "B1": [
           "financial",
           "pii",
@@ -704,36 +729,44 @@
         ],
         "C1": [
           "aws-global",
-          "saas"
+          "salesforce"
         ],
-        "C2": "multi",
-        "C3": "no",
+        "C2": {
+          "financial": "multi",
+          "pii": "multi",
+          "behavioural": "multi"
+        },
+        "C3": "convention",
         "D1": "adequate",
-        "D2": "tier1",
-        "D3": "partial",
+        "D2": "yes",
+        "D3": "provider",
         "E1": "most",
         "E2": "partial",
-        "E3": "yes",
+        "E3": "full",
         "E4": "no",
         "F1": "us-dpf",
         "F2": "provider",
         "F3": "no",
         "F4": "planned",
         "F5": "no",
-        "G1": "embedded",
+        "G1": "internal",
         "G2": "mixed",
-        "G3": "partial",
-        "G4": "no",
+        "G3": "integrator",
+        "G4": "none",
         "H1": "us",
-        "H2": "no",
-        "H3": "high",
+        "H2": "none",
+        "H3": [
+          "none"
+        ],
         "I1": "limited",
-        "I2": "partial",
+        "I2": "diffuse",
         "I3": "no",
         "J1": "partial",
         "K1": "flexible",
         "K2": "medium",
-        "K3": "performance"
+        "K3": [
+          "performance"
+        ]
       }
     }
   },
@@ -749,7 +782,8 @@
       ],
       "clientAssertion": "We host all production workloads in AWS Frankfurt / Azure Dublin, so GDPR Chapter V and DORA residency are fully satisfied.",
       "statutoryConflict": "Physical localization in Frankfurt or Dublin satisfies the territorial criterion, but leaves extraterritorial reach unmitigated. Under the US CLOUD Act (18 U.S.C. § 2713) and FISA §702, US law enforcement can issue lawful access orders directly to the US parent entity. Absent Hold-Your-Own-Key (HYOK) with client-held HSMs, the cloud provider can be compelled to decrypt data without client notice, directly conflicting with GDPR Art. 48 and EU Data Act Art. 32.",
-      "interrogationScript": "Physical localization in Frankfurt satisfies half the equation, but leaves legal reach completely unmitigated. Under the US CLOUD Act, your contract with a US-headquartered parent entity means US courts have legal reach over the data, regardless of physical location. If a lawful access order is served, can you technically prevent the provider from decrypting data? Who on your executive risk committee has formally approved this residual legal exposure?"
+      "interrogationScript": "Physical localization in Frankfurt satisfies half the equation, but leaves legal reach completely unmitigated. Under the US CLOUD Act, your contract with a US-headquartered parent entity means US courts have legal reach over the data, regardless of physical location. If a lawful access order is served, can you technically prevent the provider from decrypting data? Who on your executive risk committee has formally approved this residual legal exposure?",
+      "technicalSafeguard": "Deploy Hold-Your-Own-Key (HYOK) with external HSMs and Confidential Computing VMs (AMD SEV-SNP / Intel SGX) to achieve cryptographic opacity from the cloud provider."
     },
     {
       "id": "PROBE_2_SAAS_BLINDSPOT",
@@ -763,7 +797,8 @@
       ],
       "clientAssertion": "Microsoft 365, Salesforce, and ServiceNow are standard enterprise SaaS tools covered by our corporate SOC 2 and ISO 27001 certifications.",
       "statutoryConflict": "Enterprise SaaS represents the largest unmapped data leakage channel in modern enterprises. Multi-tenant SaaS environments routinely grant global SREs and support engineers follow-the-sun privileged access to diagnose incidents. Tenant data is encrypted with vendor-managed keys, violating DORA Art. 28 and NIS2 Art. 21 supply chain obligations.",
-      "interrogationScript": "Enterprise SaaS represents the single largest unmapped data leakage channel in modern enterprises. While customer data sits in regional datacenters, vendor support engineers operating out of follow-the-sun global centers possess privileged access to diagnose incidents. Have you implemented Customer Lockbox to mandate explicit approval for every vendor session, and deployed tenant-held cache keys (such as M365 Customer Key or Salesforce Shield) to enforce cryptographic opacity?"
+      "interrogationScript": "Enterprise SaaS represents the single largest unmapped data leakage channel in modern enterprises. While customer data sits in regional datacenters, vendor support engineers operating out of follow-the-sun global centers possess privileged access to diagnose incidents. Have you implemented Customer Lockbox to mandate explicit approval for every vendor session, and deployed tenant-held cache keys (such as M365 Customer Key or Salesforce Shield) to enforce cryptographic opacity?",
+      "technicalSafeguard": "Mandate Customer Lockbox for all vendor diagnostic sessions and implement tenant-held encryption keys (e.g. Microsoft 365 Customer Key, Salesforce Shield Cache Key)."
     },
     {
       "id": "PROBE_3_DORA_EXIT",
@@ -776,7 +811,8 @@
       ],
       "clientAssertion": "Our primary cloud provider has four Availability Zones and a 99.99% SLA. Our exit plan is documented in our annual Disaster Recovery handbook.",
       "statutoryConflict": "DORA Art. 28(8), UK CTP (FSMA 2023 Part 9), and APRA CPS 230 explicitly mandate tested, feasible exit strategies from Critical ICT Third-Party Providers (CTPPs). A Disaster Recovery plan within the same hyperscaler does not qualify as an exit strategy. If the provider suffers a systemic outage, sanctions, or contractual dispute, moving proprietary PaaS services takes 18–24+ months without containerized portability.",
-      "interrogationScript": "Regulators distinguish sharply between high availability and vendor exitability. DORA and APRA require an auditable playbook to migrate critical functions away from a concentrated provider without operational disruption. When was the last time you simulated an actual technical cutover of a core business service to an alternative provider or private cloud enclave? If your primary provider experienced a systemic lockout, what is your verified cutover timeline?"
+      "interrogationScript": "Regulators distinguish sharply between high availability and vendor exitability. DORA and APRA require an auditable playbook to migrate critical functions away from a concentrated provider without operational disruption. When was the last time you simulated an actual technical cutover of a core business service to an alternative provider or private cloud enclave? If your primary provider experienced a systemic lockout, what is your verified cutover timeline?",
+      "technicalSafeguard": "Build an auditable DORA Art. 28 Exit Strategy Playbook with containerized workload portability (OpenShift/Kubernetes) and cross-cloud database replication to neutral sovereign enclaves."
     },
     {
       "id": "PROBE_4_AI_DRIFT",
@@ -787,8 +823,9 @@
         "G2"
       ],
       "clientAssertion": "Our AI models were trained internally on enterprise data, and we access external LLMs via enterprise APIs with zero-retention contractual clauses.",
-      "statutoryConflict": "EU AI Act Art. 10 imposes strict governance mandates on high-risk AI data provenance, bias mitigation, and training validation. Processing European customer data through out-of-region compute instances or fine-tuning models without auditable training lineage triggers compounding penalties up to €35M or 7% of worldwide turnover under Art. 99.",
-      "interrogationScript": "The EU AI Act and GDPR treat AI inference and fine-tuning as restricted data processing. If prompt tokens or fine-tuning datasets traverse out-of-EEA compute nodes, you face compounding penalties under both GDPR Chapter V and AI Act Art. 10. Do you possess an immutable provenance register verifying exactly which training epochs touched customer data, and are your GenAI workloads confined to certified EU sovereign AI fabrics?"
+      "statutoryConflict": "EU AI Act Art. 10 imposes strict governance mandates on high-risk AI data provenance, bias mitigation, and training validation. Processing European customer data through out-of-region compute instances or fine-tuning models without auditable training lineage can trigger penalties of up to €15M or 3% of worldwide turnover under Art. 99(4).",
+      "interrogationScript": "The EU AI Act and GDPR treat AI inference and fine-tuning as restricted data processing. If prompt tokens or fine-tuning datasets traverse out-of-EEA compute nodes, you face compounding penalties under both GDPR Chapter V and AI Act Art. 10. Do you possess an immutable provenance register verifying exactly which training epochs touched customer data, and are your GenAI workloads confined to certified EU sovereign AI fabrics?",
+      "technicalSafeguard": "Establish a Sovereign AI Enclave with verifiable training-data provenance registers, zero-data-retention execution boundaries, and EU-only confidential GPU compute."
     },
     {
       "id": "PROBE_5_ONPREM_BACKDOOR",
@@ -801,7 +838,8 @@
       ],
       "clientAssertion": "Our critical core runs on-premises in our own private data center; therefore, we have zero foreign access exposure.",
       "statutoryConflict": "Modern enterprise server management controllers (Dell iDRAC, HPE iLO), storage arrays, and network firewalls frequently maintain active telemetry and remote diagnostic tunnels (call-home) connected to foreign vendor support clouds. This creates an unmonitored management plane backdoor bypassing perimeter controls under NIS2 Art. 21.",
-      "interrogationScript": "While physical servers sit inside your perimeter, the management plane often connects outbound to foreign vendor telemetry centers. Are your out-of-band management controllers strictly air-gapped on isolated VLANs with all phone-home diagnostic telemetry blocked? Has the hardware bill of materials been audited against clean supply chain standards (such as NDAA Section 889)?"
+      "interrogationScript": "While physical servers sit inside your perimeter, the management plane often connects outbound to foreign vendor telemetry centers. Are your out-of-band management controllers strictly air-gapped on isolated VLANs with all phone-home diagnostic telemetry blocked? Has the hardware bill of materials been audited against clean supply chain standards (such as NDAA Section 889)?",
+      "technicalSafeguard": "Strictly air-gap out-of-band management networks (iDRAC/iLO), suppress vendor call-home diagnostic telemetry, and audit server hardware bills of materials."
     },
     {
       "id": "PROBE_6_KMS_BYOK_ILLUSION",
@@ -813,7 +851,8 @@
       ],
       "clientAssertion": "We use AWS KMS and Azure Key Vault with our own Customer Managed Keys (CMK), so the cloud provider cannot decrypt our data.",
       "statutoryConflict": "A cloud-native CMK is still hosted inside the cloud provider's hardware security modules (HSMs). The provider's hypervisor executes cryptographic operations in plaintext in volatile RAM. Under FISA §702 or CLOUD Act direct subpoenas, the provider can be compelled to decrypt workloads in memory without client involvement, failing EDPB Schrems II supplementary measure requirements.",
-      "interrogationScript": "Cloud-managed keys (CMK) protect against external hackers, but provide zero legal protection against the cloud provider itself. Under cloud-native KMS, the provider controls the hypervisor and the HSM where your key is instantiated. If the provider is compelled under a lawful access warrant, they possess the technical ability to decrypt your workloads in volatile RAM. True technical defensibility requires Hold-Your-Own-Key (HYOK)—where the root of trust resides in external HSMs under your exclusive physical control."
+      "interrogationScript": "Cloud-managed keys (CMK) protect against external hackers, but provide zero legal protection against the cloud provider itself. Under cloud-native KMS, the provider controls the hypervisor and the HSM where your key is instantiated. If the provider is compelled under a lawful access warrant, they possess the technical ability to decrypt your workloads in volatile RAM. True technical defensibility requires Hold-Your-Own-Key (HYOK)—where the root of trust resides in external HSMs under your exclusive physical control.",
+      "technicalSafeguard": "Transition from cloud-native KMS to External Key Management (EKM) / Hold-Your-Own-Key (HYOK) leveraging external HSMs on sovereign infrastructure."
     }
   ],
   "questions": [
@@ -821,6 +860,7 @@
       "id": "A1",
       "section": "scope",
       "type": "single",
+      "scoring": "obligation",
       "text": "Under NIS2, how is your entity classified?",
       "help": "NIS2 splits organisations into 'essential' and 'important' entities, each with different supervisory and penalty regimes. Classification usually follows sector and size.",
       "refs": [
@@ -909,6 +949,7 @@
       "id": "A2",
       "section": "scope",
       "type": "single",
+      "scoring": "obligation",
       "text": "Under DORA, which type of financial entity are you?",
       "help": "DORA applies to a broad set of financial entities and to the ICT providers serving them. The obligations scale with entity type and systemic importance.",
       "refs": [
@@ -1043,6 +1084,27 @@
               "steps": [
                 "Confirm entity type and any simplified regime",
                 "Document proportionality decisions"
+              ]
+            }
+          ]
+        },
+        {
+          "value": "ict-ctpp",
+          "label": "ICT third-party service provider designated (or likely to be designated) as critical under DORA (CTPP)",
+          "sev": "high",
+          "findings": [
+            {
+              "reg": "dora",
+              "a": "Art. 31–35",
+              "severity": "high",
+              "title": "DORA oversight framework for critical ICT third-party providers applies",
+              "detail": "Designated critical ICT third-party providers are overseen directly by a Lead Overseer (EBA, EIOPA or ESMA), with information requests, general investigations, inspections and recommendations. Failure to comply can lead to periodic penalty payments of up to 1% of average daily worldwide turnover, for up to six months (Art. 35(6)–(8)).",
+              "phase": 1,
+              "remedy": "Prepare for Lead Overseer engagement and the annual oversight plan.",
+              "steps": [
+                "Confirm designation status and the Lead Overseer",
+                "Map services that support critical or important functions of financial-entity clients",
+                "Prepare the oversight evidence pack (ICT risk framework, sub-outsourcing chain, exit support)"
               ]
             }
           ]
@@ -1197,6 +1259,7 @@
       "id": "B1",
       "section": "inventory",
       "type": "multi",
+      "scoring": "obligation",
       "text": "Which categories of sensitive data does your organisation process?",
       "help": "Special-category and financial data carry heightened residency and security expectations across all regimes.",
       "refs": [
@@ -1356,6 +1419,7 @@
       "id": "B2",
       "section": "inventory",
       "type": "scale",
+      "scoring": "obligation",
       "text": "Approximately what volume of sensitive data (personal, financial, special-category) do you hold?",
       "help": "Volume scales both regulatory exposure and remediation effort. Breach impact and notification burden grow with volume.",
       "refs": [
@@ -2857,6 +2921,7 @@
       "id": "G1",
       "section": "ai",
       "type": "single",
+      "scoring": "obligation",
       "text": "Do you develop, deploy or fine-tune AI/ML systems on personal or sensitive data?",
       "help": "AI processing frequently defaults to non-EU compute regions and raises training-data governance obligations.",
       "refs": [
@@ -3722,6 +3787,7 @@
       "id": "K1",
       "section": "outcomes",
       "type": "single",
+      "scoring": "none",
       "text": "What is your compliance tolerance for this assessment?",
       "help": "Shapes how aggressively the roadmap sequences remediation.",
       "refs": [],
@@ -3757,6 +3823,7 @@
       "id": "K2",
       "section": "outcomes",
       "type": "single",
+      "scoring": "none",
       "text": "What is your investment appetite for remediation across Phases 1–3?",
       "help": "Used to frame the roadmap's ambition and sequencing.",
       "refs": [],
@@ -3792,6 +3859,7 @@
       "id": "K3",
       "section": "outcomes",
       "type": "multi",
+      "scoring": "none",
       "text": "Which outcomes matter most for the target architecture?",
       "help": "Frames the strategic narrative in the report's roadmap.",
       "refs": [],

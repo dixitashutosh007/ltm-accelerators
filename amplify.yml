@@ -1,5 +1,7 @@
 version: 1
 
+# Redeploy trigger: 2026-10-05 Cost IQ diagnostic environment refresh
+
 backend:
   phases:
     build:
@@ -9,6 +11,7 @@ backend:
         - npm run test:resilience-all
         - npx ampx pipeline-deploy --branch $AWS_BRANCH --app-id $AWS_APP_ID --outputs-out-dir . --outputs-version 1
         - npx ampx generate outputs --branch $AWS_BRANCH --app-id $AWS_APP_ID --out-dir . --outputs-version 1
+        - cp amplify_outputs.json Accelerators/amplify_outputs.json
 
 frontend:
   phases:
@@ -16,6 +19,7 @@ frontend:
       commands:
         - npm run validate:costiq
         - npm run build:costiq-config
+        - npm run build:runtime-config
         - echo "Packaging Accelerators for Amplify Hosting..."
   artifacts:
     baseDirectory: Accelerators

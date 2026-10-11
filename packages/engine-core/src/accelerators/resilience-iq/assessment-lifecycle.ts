@@ -34,5 +34,5 @@ export function isAssessmentFinal(status: ResilienceAssessmentStatus): boolean {
 export function assessmentStatusTransitions(): Record<ResilienceAssessmentStatus, readonly ResilienceAssessmentStatus[]> {
   return Object.fromEntries(
     Object.entries(transitions).map(([status, next]) => [status, [...next]])
-  ) as Record<ResilienceAssessmentStatus, readonly ResilienceAssessmentStatus[]>;
+  ) as unknown as Record<ResilienceAssessmentStatus, readonly ResilienceAssessmentStatus[]>;
 }

@@ -3,13 +3,14 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<meta name="generator" content="Cloud IQ v2.2 · LTM Infrastructure Tech Advisory" />
-<meta http-equiv="Content-Security-Policy" content="default-src 'self' blob: data:; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https://www.ltm.com; connect-src 'self' blob: data: https://api.openai.com https://api.anthropic.com https://generativelanguage.googleapis.com https://zvnmwxa9sf.execute-api.ap-south-1.amazonaws.com https://*.amazonaws.com; frame-ancestors 'self';">
-<title>Cloud IQ — Enterprise Infrastructure Diagnostic Platform · LTM</title>
+<meta name="generator" content="Cloud IQ v2.2 · LTM Vantage" />
+<title>Cloud IQ — Enterprise Infrastructure Diagnostic Platform · LTM Vantage</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
 <!-- S3 Customer Reports Client & RBAC Guard -->
+<script src="/assets/runtime-config.js"></script>
+<script src="/assets/ltm-api.js"></script>
 <script src="/assets/s3-reports.js"></script>
 <script src="/assets/rbac-guard.js" data-tool="cloud-iq"></script>
 <style>
@@ -596,7 +597,7 @@ footer.foot{text-align:center;color:var(--mutd);font-size:12px;padding:28px 0 44
       </div>
     </div>
 
-    <div class="splash-brand"><span class="dot"></span> LTM · INFRASTRUCTURE TECH ADVISORY</div>
+    <div class="splash-brand"><span class="dot"></span> LTM VANTAGE · RESPONSIBLE ADVISORY</div>
     <h1 class="splash-title">Cloud IQ</h1>
     <p class="splash-subtitle">Enterprise Hybrid Cloud &amp; Infrastructure Diagnostic Platform</p>
 
@@ -732,7 +733,7 @@ footer.foot{text-align:center;color:var(--mutd);font-size:12px;padding:28px 0 44
       <img src="assets/ltm-logo.png" onerror="this.onerror=null;this.src='/assets/ltm-logo.png'" alt="LTM - A Larsen & Toubro Group Company" style="height:32px;width:auto;border-radius:4px;object-fit:contain;vertical-align:middle;">
       <div>
         <div class="name">Cloud IQ</div>
-        <div class="sub">Infrastructure Tech Advisory · Public Cloud &amp; Modernization</div>
+        <div class="sub">LTM Vantage · Responsible Advisory</div>
       </div>
     </div>
     <div class="topbar-actions">
@@ -771,7 +772,7 @@ footer.foot{text-align:center;color:var(--mutd);font-size:12px;padding:28px 0 44
 <div class="wrap screen" id="app"></div>
 
 <footer class="foot">
-  LTM &middot; Infrastructure Tech Advisory &middot; Public Cloud &amp; Modernization &nbsp;&middot;&nbsp; Cloud IQ Enterprise v2.1
+  LTM Vantage &middot; Responsible Advisory &nbsp;&middot;&nbsp; Cloud IQ Enterprise v2.1
 </footer>
 
 <!-- LTM Advisory Studio Drawer -->
@@ -779,7 +780,7 @@ footer.foot{text-align:center;color:var(--mutd);font-size:12px;padding:28px 0 44
 <div class="ai-drawer" id="aiDrawer">
   <div class="ai-drawer-header">
     <div>
-      <h3 style="font-size:18px;font-weight:800">LTM Advisory Studio</h3>
+      <h3 style="font-size:18px;font-weight:800">LTM Vantage Studio</h3>
       <p style="font-size:12px;color:var(--mut)">Grounded executive briefing engine powered by Gemini, OpenAI, Claude, Offline LTM or LTM SLM</p>
     </div>
     <button class="btn ghost small" onclick="closeAiDrawer()">&times;</button>
@@ -795,7 +796,7 @@ footer.foot{text-align:center;color:var(--mutd);font-size:12px;padding:28px 0 44
             <option value="openai">OpenAI (GPT-4o)</option>
             <option value="anthropic">Anthropic (Claude 3.5 Sonnet)</option>
             <option value="heuristic">Offline LTM Grounded Heuristic</option>
-            <option value="slm" disabled>LTM Advisory SLM (Roadmap · Private Enterprise / On-Prem)</option>
+            <option value="slm" disabled>LTM Vantage SLM (Roadmap · Private Enterprise / On-Prem)</option>
           </select>
         </div>
         <div>
@@ -823,7 +824,7 @@ footer.foot{text-align:center;color:var(--mutd);font-size:12px;padding:28px 0 44
 <div id="boardroom-modal">
   <div class="br-nav">
     <div style="display:flex;align-items:center;gap:12px">
-      <span style="font-family:var(--font-display);font-weight:800;color:var(--coral);font-size:15px">LTM ADVISORY</span>
+      <span style="font-family:var(--font-display);font-weight:800;color:var(--coral);font-size:15px">LTM VANTAGE</span>
       <span style="color:#666">|</span>
       <span id="brClientHeader" style="font-weight:600;font-size:13px">Executive Diagnostic Readout</span>
     </div>
@@ -1009,7 +1010,7 @@ var QUESTIONS = [
   // ---- D7: Governance, Security & Zero Trust ----
   {id:"Q8.1",sec:"Governance & Security",dim:"D7",q:"Maturity of cloud landing zones & security guardrails?",type:"single",mode:"both",
    opts:[["No landing zones — flat network topology"],["Basic perimeter security and reactive scans"],["Well-Architected landing zone baseline deployed"],["Automated preventative guardrails & policy-as-code"],["Continuous real-time posture management (CSPM) with auto-remediation"]],maturity:true},
-  {id:"Q8.2",sec:"Governance & Security",dim:"D7",q:"Do you have binding digital sovereignty or data-residency mandates?",type:"tf",mode:"both",sovFlagTF:true,maturityTF:true},
+  {id:"Q8.2",sec:"Governance & Security",q:"Do you have binding digital sovereignty or data-residency mandates?",hint:"Sets the sovereignty requirement for the roadmap. It is context, not a governance maturity score.",type:"tf",mode:"both",sovFlagTF:true},
   {id:"Q8.3",sec:"Governance & Security",dim:"D7",q:"Identity, Zero Trust & IAM blast-radius containment?",type:"single",mode:"workshop",
    opts:[["Overprivileged shared admin credentials"],["Federated AD/Okta but wide internal network trust"],["Role-based access (RBAC) with MFA enforced"],["Least-privilege JIT (Just-In-Time) access & microsegmentation"],["Zero Trust architecture with continuous identity verification"]],maturity:true},
 
@@ -1159,12 +1160,12 @@ function start(){
     ${resumeHtml}
     <div class="card">
       <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:8px">
-        <div class="sec-label">LTM Infrastructure Tech Advisory · Diagnostic Platform</div>
+        <div class="sec-label">LTM Vantage · Diagnostic Platform</div>
         <a href="cloud-iq-sample-report.html" class="btn ghost small" style="text-decoration:none">View Finished Sample Report →</a>
       </div>
       <h1 style="font-size:34px;line-height:1.2;margin-bottom:12px">Enterprise Cloud &amp; Hybrid Estate Diagnostic</h1>
       <p class="lead">
-        A rigorous, consultant-led diagnostic platform scanning on-premises data centre footprint, VMware renewal cliffs, and public-cloud maturity across 8 core dimensions. Outputs an executive <b>Maturity Scorecard</b>, <b>2D Strategic Risk Heatmap</b>, <b>4-Phase Modernization Roadmap</b>, and <b>Decomposed Value-at-Stake Hook</b>.
+        A rigorous, consultant-led diagnostic platform scanning on-premises data centre footprint, VMware renewal cliffs, and public-cloud maturity across 8 core dimensions. Outputs an executive <b>Maturity Scorecard</b>, <b>2D Strategic Risk Heatmap</b>, <b>4-Phase Modernization Roadmap</b>, and <b>indicative estimate of annual cost leakage</b>.
       </p>
 
       <div style="margin:16px 0">
@@ -1430,10 +1431,11 @@ function renderCards(Q){
 }
 
 function renderSlider(Q){
-  if(A[Q.id] === undefined) A[Q.id] = Math.floor(Q.scale.length / 2);
-  const v = A[Q.id];
+  // The thumb starts in the middle, but no answer is stored until the user moves it.
+  const set = A[Q.id] !== undefined && A[Q.id] !== null;
+  const v = set ? A[Q.id] : Math.floor(Q.scale.length / 2);
   return `<div class="slider-wrap">
-    <div class="slider-val" id="sv_${Q.id}">${Q.scale[v]}</div>
+    <div class="slider-val" id="sv_${Q.id}">${set ? Q.scale[v] : "Not answered yet: move the slider"}</div>
     <input type="range" min="0" max="${Q.scale.length-1}" value="${v}" oninput="setSlider('${Q.id}',this.value)">
     <div class="slider-labels"><span>${Q.scale[0]}</span><span>${Q.scale[Q.scale.length-1]}</span></div>
   </div>`;
@@ -1513,8 +1515,9 @@ function prevGroup(){
 /* ============================================================
    LTM Advisory · Dynamic Consulting Depth Read Inquiries
    ============================================================ */
-function startConsultingDepthStep(){
-  const R = compute();
+async function startConsultingDepthStep(){
+  const R = await fetchCloudIqEvaluation();
+  if(!R) return;
   const probes = generateConsultingProbes(A, R);
   if(!probes || probes.length === 0){
     saveState();
@@ -1702,13 +1705,13 @@ function renderConsultingDepthStep(probes, R){
     <div class="card" style="border-top:4px solid var(--coral)">
       <div class="card-header-row">
         <div>
-          <div class="sec-label">LTM Infrastructure Tech Advisory · Consulting Depth Read</div>
+          <div class="sec-label">LTM Vantage · Consulting Depth Read</div>
           <h1 style="font-size:26px;margin-bottom:6px">Estate Signals &amp; Targeted Follow-Up Inquiries</h1>
         </div>
         <span class="qcount">${probes.length} Dynamic Inquiries Generated</span>
       </div>
       <p class="lead" style="font-size:14px;margin-bottom:20px">
-        Our diagnostic engine detected <b>${probes.length} specific estate signals, cost anomalies, and compliance anchors</b> based on your responses. Providing these details will give forensic precision to your scoring and feed directly into your bespoke <b>LTM Advisory Studio</b> Boardroom Memo.
+        Our diagnostic engine detected <b>${probes.length} specific estate signals, cost anomalies, and compliance anchors</b> based on your responses. Providing these details will give forensic precision to your scoring and feed directly into your bespoke <b>LTM Vantage Studio</b> Boardroom Memo.
       </p>
 
       ${probeCardsHtml}
@@ -1744,14 +1747,17 @@ function submitConsultingProbes(){
     }
   });
   saveState();
-  const R = compute();
-  showPreliminaryScorecard(R);
+  showScoredScorecard();
 }
 
 function skipConsultingProbes(){
   saveState();
-  const R = compute();
-  showPreliminaryScorecard(R);
+  showScoredScorecard();
+}
+
+async function showScoredScorecard(){
+  const R = await fetchCloudIqEvaluation();
+  if(R) showPreliminaryScorecard(R);
 }
 
 function formatConsultingProbesForPrompt(){
@@ -1769,192 +1775,44 @@ function formatConsultingProbesForPrompt(){
 /* ============================================================
    Scoring, Analytical & Heatmap Computation Engine
    ============================================================ */
-function compute(){
-  // 1. Strategic Transformation Track Routing
-  let JA = 0, JB = 0;
-  const r04 = QUESTIONS.find(x => x.id === "Q0.4").route[A["Q0.4"]] || {};
-  JA += r04.A || 0; JB += r04.B || 0;
-  const Q11 = QUESTIONS.find(x => x.id === "Q1.1");
-  const a11 = Array.isArray(A["Q1.1"]) ? A["Q1.1"] : (A["Q1.1"] !== undefined && A["Q1.1"] !== null ? [A["Q1.1"]] : []);
-  a11.forEach(i => { if(Q11 && Q11.opts[i]){ const j = Q11.opts[i].j; JA += j.A || 0; JB += j.B || 0; } });
-  const Q06 = QUESTIONS.find(x => x.id === "Q0.6");
-  const a06 = Array.isArray(A["Q0.6"]) ? A["Q0.6"] : (A["Q0.6"] !== undefined && A["Q0.6"] !== null ? [A["Q0.6"]] : []);
-  const topObj = a06[0] || "Cost reduction & FinOps";
-  const oj = Q06 ? Q06.objJourney[topObj] : null;
-  if(oj === "A") JA += 2; if(oj === "B") JB += 2;
+/* Scoring runs only on the Advisory API (LTM_API attaches the user's token). No local fallback. */
+const EVALUATE_API_PATH = "/api/evaluate/cloud-iq";
 
-  const isHybrid = Math.abs(JA - JB) <= 1;
-  const trackCode = isHybrid ? "Hybrid" : (JA >= JB ? "A" : "B");
-  const trackName = isHybrid ? "Dual-Horizon Transformation Track" :
-                    (trackCode === "A" ? "Cloud Value Optimization Track" : "Estate Modernization & DC Exit Track");
-
-  // 2. Calibrated Maturity per Dimension (D1–D8)
-  const dimAcc = {};
-  function add(dim, val){ if(!dimAcc[dim]) dimAcc[dim] = []; dimAcc[dim].push(val); }
-
-  QUESTIONS.forEach(Q => {
-    if(!Q.dim || shouldSkip(Q)) return;
-    const v = A[Q.id];
-    if(v === undefined || v === null) return;
-    if(Q.maturity && Q.type === "single") add(Q.dim, v + 1);
-    else if(Q.maturity && Q.type === "slider") add(Q.dim, v + 1);
-    else if(Q.maturityCount){
-      const n = (v || []).length;
-      add(Q.dim, Math.max(1, Math.round(n / Q.opts.length * 5)));
+// Sets RESULT to the server's evaluation and returns it, or returns null and shows an error.
+async function fetchCloudIqEvaluation(){
+  RESULT = null;
+  hideScoringError();
+  try {
+    const res = await LTM_API.fetch(EVALUATE_API_PATH, {
+      method: "POST",
+      body: JSON.stringify({ answers: A, session: { mode: SESSION.mode } })
+    });
+    const json = await res.json().catch(() => null);
+    if(res.ok && json && json.ok && json.data){
+      RESULT = json.data;
+      return RESULT;
     }
-    else if(Q.maturityTF){ add(Q.dim, v === true ? 4.5 : 1.5); }
-  });
-
-  const dimScores = {};
-  Object.keys(DIM_NAMES).forEach(d => {
-    dimScores[d] = dimAcc[d] && dimAcc[d].length ? (dimAcc[d].reduce((a,b)=>a+b,0) / dimAcc[d].length) : 2.5;
-  });
-
-  const topDim = Q06.objDim[topObj] || "D3";
-  let wsum = 0, wtot = 0;
-  Object.keys(dimScores).forEach(d => {
-    const w = (d === topDim) ? 1.5 : 1.0;
-    wsum += dimScores[d] * w;
-    wtot += w;
-  });
-  const overall = wsum / wtot;
-  const band = scoreBand(overall);
-
-  // 3. Flags & Critical Risks
-  const asArr = (v) => Array.isArray(v) ? v : (v !== undefined && v !== null ? [v] : []);
-  const Q03 = QUESTIONS.find(x => x.id === "Q0.3");
-  const sov03 = asArr(A["Q0.3"]).some(i => Q03 && Q03.opts[i] && Q03.opts[i][0] !== Q03.sovFlagExcept);
-  const sov82 = A["Q8.2"] === true;
-  const sovFlag = sov03 || sov82;
-  const secnumFlag = asArr(A["Q0.3"]).includes(9); // SecNumCloud checked
-  const aiFlag = asArr(A["Q9.2"]).some(i => {
-    const q92 = QUESTIONS.find(x => x.id === "Q9.2");
-    return q92 && q92.opts[i] && q92.opts[i][0] !== "None yet / monitoring only";
-  });
-  const vmwareRisk = A["Q0.11"] === 2; // VMware renewal cliff
-  const leaseCliff = [2,3,4].includes(A["Q0.12"]); // Imminent DC lease or EOL cliff
-
-  // 4. Decomposed Financial Value Hook ($ Leakage Breakdown)
-  const wasteRate = (QUESTIONS.find(x => x.id === "Q4.3").waste[A["Q4.3"]]) || 0.25;
-  const Q08 = QUESTIONS.find(x => x.id === "Q0.8");
-  const spendMidM = (Q08.midM[A["Q0.8"]] !== undefined) ? Q08.midM[A["Q0.8"]] : 12;
-  const Q09 = QUESTIONS.find(x => x.id === "Q0.9");
-  const commitMid = (Q09.midPct[A["Q0.9"]] !== undefined) ? Q09.midPct[A["Q0.9"]] : 0.3;
-  const apps = QUESTIONS.find(x => x.id === "Q0.5").apps[A["Q0.5"]] || 350;
-
-  const totalCloudSpend = spendMidM * 1000000;
-  const totalLeakage = Math.round(totalCloudSpend * wasteRate * (1 - commitMid * 0.45));
-  const leakLow = Math.round(totalLeakage * 0.8);
-  const leakHigh = Math.round(totalLeakage * 1.25);
-
-  const decomp = {
-    compute: Math.round(totalLeakage * 0.40),     // Rightsizing & Zombie VMs
-    commit: Math.round(totalLeakage * 0.28),      // Commitment discount arbitrage
-    storage: Math.round(totalLeakage * 0.18),     // Cold storage tiering & egress
-    licensing: Math.round(totalLeakage * 0.14)    // Hypervisor / BYOL inefficiency
-  };
-
-  // 5. 2D Heatmap Urgency & Criticality Calculation
-  const urgencyMap = {};
-  Object.keys(DIM_NAMES).forEach(d => {
-    let u = 2; // Default Medium
-    if(d === topDim) u = 3;
-    if(d === "D3" && wasteRate >= 0.25) u = 3;
-    if(d === "D6" && (leaseCliff || vmwareRisk)) u = 3;
-    if(d === "D7" && (sovFlag || secnumFlag)) u = 3;
-    if(d === "D2" && trackCode === "B") u = 3;
-    if(d === "D8" && aiFlag && dimScores.D8 < 2.5) u = 2;
-    urgencyMap[d] = u;
-  });
-
-  // 6. Explicit 4-Phase Horizon Modernization Roadmap
-  const movesPhase1 = []; // Immediate (0-30 Days)
-  const movesPhase2 = []; // Short-Term (30-90 Days)
-  const movesPhase3 = []; // Mid-Term (3-9 Months)
-  const movesPhase4 = []; // Long-Term (9-18+ Months)
-
-  // Phase 1: Immediate Triage (0–30 Days)
-  if(vmwareRisk){
-    movesPhase1.push({code:"03.5", size:"S", title:"VMware Broadcom Renewal Defense & Sizing", desc:"Audit vSphere core allocations, assess Nutanix/Hyper-V/cloud alternative licensing before renewal lock-in.", impact:"Averts 2.5x–3.5x licensing cost escalation"});
+    console.error("Cloud IQ evaluation error:", res.status, json);
+  } catch(err) {
+    console.error("Cloud IQ evaluation failed:", err);
   }
-  if(dimScores.D3 < 3.2 || wasteRate >= 0.20){
-    movesPhase1.push({code:"03.3", size:"S", title:"Zombie Asset Cleanup & Dev/QA Shutdown", desc:"Automate shutdown of unattached EBS/managed disks and idle non-production compute.", impact:"Immediate reclamation of ~$"+(Math.round(decomp.compute*0.35/1000))+"k"});
-  }
-  if(dimScores.D7 < 3.0){
-    movesPhase1.push({code:"03.6", size:"S", title:"Cloud Landing Zone MFA & IAM Hardening", desc:"Remediate open storage buckets, enforce MFA on privileged accounts, and isolate blast radius.", impact:"Closes critical compliance/audit exposure"});
-  }
-  if(!movesPhase1.length){
-    movesPhase1.push({code:"03.3", size:"S", title:"Baseline Cost Visibility & Tagging Enforcement", desc:"Establish centralized billing view and initial attribution tags.", impact:"Immediate visibility for IT leadership"});
-  }
+  showScoringError();
+  return null;
+}
 
-  // Phase 2: Short-Term Quick Wins (30–90 Days)
-  if(dimScores.D3 < 3.5){
-    movesPhase2.push({code:"03.3", size:"M", title:"Commitment Discount Arbitrage (Savings Plans/RIs)", desc:"Model stable baseline compute and execute 1-yr/3-yr discount coverage up to 60–70%.", impact:"Locks in ~$"+(Math.round(decomp.commit/1000))+"k annual recurring savings"});
-  }
-  if(leaseCliff || dimScores.D6 < 3.0){
-    movesPhase2.push({code:"03.5", size:"M", title:"Automated Estate Discovery & Dependency Mapping", desc:"Deploy discovery agents (Device42/Dynatrace) to catalog all on-prem assets and network flows.", impact:"Eliminates migration blind spots"});
-  }
-  if(dimScores.D2 < 3.5){
-    movesPhase2.push({code:"03.4", size:"M", title:"Top-20 Application 6-R Disposition Scoring", desc:"Assess first wave of critical workloads against Rehost, Replatform, Refactor, Retire.", impact:"Defensible migration business case"});
-  }
-  if(!movesPhase2.length){
-    movesPhase2.push({code:"03.6", size:"M", title:"Automated Landing Zone IaC Baseline", desc:"Standardize Terraform/Bicep baseline repositories across cloud subscriptions.", impact:"Prevents architectural drift"});
-  }
-
-  // Phase 3: Mid-Term Programmatic Modernization (3–9 Months)
-  if(dimScores.D2 < 3.8 || trackCode === "B"){
-    movesPhase3.push({code:"03.4", size:"L", title:"Industrialized 6-R Migration Factory", desc:"Launch automated migration pipeline with reusable refactoring and containerization patterns.", impact:"Accelerates migration velocity by 40%"});
-  }
-  if(dimScores.D5 < 3.4){
-    movesPhase3.push({code:"03.6", size:"M", title:"Internal Developer Platform (IDP) & Golden Paths", desc:"Build self-service infrastructure blueprints with CI/CD and security guardrails baked in.", impact:"Reduces provisioning time from weeks to hours"});
-  }
-  if(dimScores.D4 < 3.4){
-    movesPhase3.push({code:"03.2", size:"M", title:"Hybrid Interconnect Fabric & Unified Telemetry", desc:"Deploy redundant DirectConnect/ExpressRoute circuits and cross-environment observability mesh.", impact:"Eliminates multi-cloud operational silos"});
-  }
-  if(secnumFlag || sovFlag){
-    movesPhase3.push({code:"02.1", size:"M", title:"Sovereign Cloud & SecNumCloud Compliance Boundary", desc:"Partition sensitive data into sovereign European / local cloud enclaves with strict key management.", impact:"Fulfills ANSSI/DORA regulatory compliance"});
-  }
-
-  // Phase 4: Long-Term Transformation & AI (9–18+ Months)
-  if(dimScores.D6 < 3.8 || leaseCliff){
-    movesPhase4.push({code:"03.5", size:"XL", title:"Full Data Centre Decommissioning & Facility Handback", desc:"Physical server decommissioning, lease termination, and hardware asset liquidation.", impact:"Permanently eliminates facility lease overhead"});
-  }
-  if(dimScores.D2 < 4.2){
-    movesPhase4.push({code:"03.4", size:"L", title:"Core Legacy Monolith Decoupling", desc:"Refactor core monolithic applications into microservices or serverless event-driven architecture.", impact:"Improves release cycle frequency by 5x"});
-  }
-  if(aiFlag || dimScores.D8 < 3.8){
-    movesPhase4.push({code:"04.4", size:"M", title:"Enterprise AI Lakehouse & TokenOps Platform", desc:"Governed feature store, model routing gateway, and private data boundary for generative AI.", impact:"Scalable, cost-governed GenAI adoption"});
-  }
-
-  // 7. Recommended Offerings
-  const offers = [];
-  if(dimScores.D3 <= 3.2 || wasteRate >= 0.15) offers.push({code:"03.3", why:"Cost allocation, waste leakage & FinOps unit economics"});
-  if(dimScores.D4 <= 3.2) offers.push({code:"03.2", why:"Inconsistent hybrid / multi-cloud operating model"});
-  if(dimScores.D5 <= 3.2) offers.push({code:"03.6", why:"Platform automation, golden paths & developer experience"});
-  if(dimScores.D1 <= 3.2 || trackCode === "B") offers.push({code:"03.1", why:"Workload placement, cloud strategy & business case"});
-  if(dimScores.D2 <= 3.2) offers.push({code:"03.4", why:"Application modernization & migration factory execution"});
-  if(dimScores.D6 <= 3.2 || leaseCliff) offers.push({code:"03.5", why:"Data centre consolidation, facility exit & compute capacity"});
-
-  const offersDedup = [];
-  const seenOffers = new Set();
-  offers.forEach(o => {
-    if(!seenOffers.has(o.code)){
-      seenOffers.add(o.code);
-      offersDedup.push(o);
-    }
-  });
-
-  const industryKey = QUESTIONS.find(x => x.id === "Q0.2").opts[A["Q0.2"] || 0][0];
-  const peer = INDUSTRY_BENCHMARKS[industryKey] || INDUSTRY_BENCHMARKS["Other"];
-  const peerDelta = overall - peer.overall;
-
-  return {
-    trackCode, trackName, isHybrid, dimScores, overall, band,
-    topObj, topDim, sovFlag, secnumFlag, aiFlag, vmwareRisk, leaseCliff,
-    totalCloudSpend, totalLeakage, leakLow, leakHigh, decomp,
-    urgencyMap, movesPhase1, movesPhase2, movesPhase3, movesPhase4,
-    offers: offersDedup, peer, peerDelta, industryKey
-  };
+function showScoringError(){
+  if(document.getElementById("scoringError")) return;
+  const el = document.createElement("div");
+  el.id = "scoringError";
+  el.setAttribute("role", "alert");
+  el.style.cssText = "position:fixed;top:16px;left:50%;transform:translateX(-50%);z-index:9999;max-width:min(640px,calc(100% - 32px));display:flex;gap:12px;align-items:center;background:#FEF2F2;border:1px solid #DC2626;color:#111827;padding:12px 16px;border-radius:10px;font-size:14px;box-shadow:0 8px 30px rgba(0,0,0,.18)";
+  el.innerHTML = "<span><b>We couldn't calculate your results.</b> Your answers are kept. Please try again in a moment.</span>"
+    + '<button type="button" onclick="hideScoringError()" style="border:1px solid #DC2626;background:#fff;border-radius:6px;padding:4px 10px;cursor:pointer">Dismiss</button>';
+  document.body.appendChild(el);
+}
+function hideScoringError(){
+  const el = document.getElementById("scoringError");
+  if(el) el.remove();
 }
 
 function scoreBand(s){
@@ -1971,32 +1829,36 @@ function fmt(n){ return "$" + Number(n).toLocaleString(); }
    Results Screen Presentation with Gating / Teaser Mode
    ============================================================ */
 
+// The quality gate counts maturity-scored questions only: context questions (role, sector, spend, ranking) are
+// often pre-filled and say nothing about maturity.
+function isMaturityScored(Q){
+  return !!(Q && Q.dim && (Q.maturity || Q.maturityCount || Q.maturityTF) && !shouldSkip(Q));
+}
 function checkCloudAnswerThreshold(){
-  var total = GROUPS.reduce(function(acc, g){ return acc + (g.qs ? g.qs.length : 0); }, 0);
+  var scored = QUESTIONS.filter(isMaturityScored);
+  var total = scored.length;
   var answered = 0;
-  GROUPS.forEach(function(g){
-    if(g.qs){
-      g.qs.forEach(function(qid){
-        if(A[qid] !== undefined && A[qid] !== null && A[qid] !== "") answered++;
-      });
-    }
+  scored.forEach(function(Q){
+    var v = A[Q.id];
+    if(v !== undefined && v !== null && v !== "" && !(Array.isArray(v) && v.length === 0)) answered++;
   });
   var pct = total > 0 ? (answered / total) : 0;
   if(pct < 0.25){
-    alert("Diagnostic Quality Gate: You have answered " + answered + " of " + total + " questions (" + Math.round(pct*100) + "%).\n\nPlease complete at least 25% of the assessment questions to generate a statistically reliable maturity diagnostic.");
+    alert("Diagnostic Quality Gate: You have answered " + answered + " of " + total + " maturity questions (" + Math.round(pct*100) + "%).\n\nPlease answer at least 25% of the maturity questions to generate a statistically reliable maturity diagnostic.");
     return false;
   }
   return true;
 }
 
-function computeAndShow(){
+async function computeAndShow(){
   if(typeof checkCloudAnswerThreshold === 'function' && !checkCloudAnswerThreshold()) return;
-  RESULT = compute();
-  showPreliminaryScorecard(RESULT);
+  const R = await fetchCloudIqEvaluation();
+  if(R) showPreliminaryScorecard(R);
 }
 
 function showPreliminaryScorecard(R){
-  if(!R) R = compute();
+  R = R || RESULT;
+  if(!R){ showScoringError(); return; }
   RESULT = R;
   pfill.style.width = "100%";
   
@@ -2055,14 +1917,14 @@ function showPreliminaryScorecard(R){
             <span class="kavach-big-num" style="color:${R.peerDelta>=0?'var(--green)':'var(--coral)'}">${R.peerDelta>=0?'+':''}${R.peerDelta.toFixed(1)}</span>
             <span class="kavach-sub-unit">vs Peer Median</span>
           </div>
-          <div style="font-size:11.5px;color:var(--mut);margin-top:8px">Sector: ${R.industryKey.split(' ')[0]} (${(R.peer.overall||3.0).toFixed(1)} baseline)</div>
+          <div style="font-size:11.5px;color:var(--mut);margin-top:8px">Sector: ${R.industryKey.split(' ')[0]} (${R.peerBenchmark.overall.toFixed(1)} baseline)</div>
         </div>
 
         <!-- Metric 4: Annual Cost Leakage -->
         <div class="kavach-stat-card accent-amber">
           <div class="kavach-stat-head">
-            <span class="kavach-stat-label">Addressable Waste</span>
-            <span class="kavach-stat-pill" style="background:var(--coral-tint);color:var(--coral-dkr)">Value at Stake</span>
+            <span class="kavach-stat-label">Estimated annual cost leakage (indicative)</span>
+            <span class="kavach-stat-pill" style="background:var(--coral-tint);color:var(--coral-dkr)">Indicative</span>
           </div>
           <div class="kavach-num-row">
             <span class="kavach-big-num" style="color:var(--coral)">${fmt(R.totalLeakage)}</span>
@@ -2076,7 +1938,7 @@ function showPreliminaryScorecard(R){
         <div style="background:#FFF3E0;border:1px solid #FFE082;border-radius:var(--radius-md);padding:16px;margin:20px 0">
           <div style="font-weight:700;font-size:13px;color:#E65100;margin-bottom:6px">Critical Operational Signals &amp; Bottlenecks Detected:</div>
           <ul style="font-size:12.5px;color:#5D4037;padding-left:18px;line-height:1.6">
-            ${R.vmwareRisk ? `<li><b>VMware Renewal Cliff:</b> Anticipated Broadcom 2.5x–3.5x licensing cost escalation requires emergency hypervisor strategy.</li>` : ""}
+            ${R.vmwareRisk ? `<li><b>VMware Renewal Cliff:</b> A steep Broadcom renewal price increase is expected; a hypervisor strategy is needed before renewal.</li>` : ""}
             ${R.leaseCliff ? `<li><b>Facility Lease Expiration (<12 Months):</b> Impending colocation contract cliff forces hard migration factory velocity.</li>` : ""}
             ${R.secnumFlag ? `<li><b>SecNumCloud European Sovereign Boundary:</b> French/EU Cloud de Confiance requirements mandate segregated hosting for regulated workloads.</li>` : ""}
             ${dangerDims.length > 0 ? `<li><b>High-Urgency Architectural Deficits:</b> Immediate remediation required in: <u>${dangerNames}</u>.</li>` : ""}
@@ -2113,9 +1975,10 @@ function reviewAssessmentAnswers(){
   window.scrollTo({top:0, behavior:'smooth'});
 }
 
-function startCinematicReportGeneration(){
+async function startCinematicReportGeneration(){
+  const R = await fetchCloudIqEvaluation();
+  if(!R) return;
   showReportGenerationAnimation(function(){
-    RESULT = compute();
     if(!SESSION.memoText){
       SESSION.memoText = generateRuleBasedMemo();
     }
@@ -2142,7 +2005,7 @@ function showReportGenerationAnimation(callback){
   ];
 
   overlay.innerHTML = `
-    <div class="rg-brand">LTM CIS · Infrastructure Tech Advisory · Cloud Diagnostic Engine</div>
+    <div class="rg-brand">LTM Vantage · Responsible Advisory · Cloud Diagnostic Engine</div>
     <div class="rg-pulse-container">
       <div class="rg-pulse-ring"></div>
       <div class="rg-pulse-ring"></div>
@@ -2442,7 +2305,7 @@ function showResults(R){
       <div style="font-size:12px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--coral);margin-bottom:8px">Restricted Advisory Deliverable</div>
       <h3>Unlock Complete Executive Transformation Pack</h3>
       <p>
-        Your visual maturity score, radar benchmark, 2D risk heatmap, and financial leakage are displayed above. Enter your business email to unlock your bespoke <b>4-Phase Modernization Roadmap</b>, <b>Migration Wave Schedule</b>, <b>LTM Advisory Studio Boardroom Memo</b>, and <b>Downloadable 3-Page Executive PDF Pack</b>.
+        Your visual maturity score, radar benchmark, 2D risk heatmap, and financial leakage are displayed above. Enter your business email to unlock your bespoke <b>4-Phase Modernization Roadmap</b>, <b>Migration Wave Schedule</b>, <b>LTM Vantage Studio Boardroom Memo</b>, and <b>Downloadable 3-Page Executive PDF Pack</b>.
       </p>
       <div class="gate-form">
         <div>
@@ -2501,8 +2364,8 @@ function showResults(R){
       <!-- 2. Addressable Financial Leakage -->
       <div class="kavach-stat-card accent-amber">
         <div class="kavach-stat-head">
-          <span class="kavach-stat-label">Addressable Waste</span>
-          <span class="kavach-stat-pill" style="background:var(--coral-tint);color:var(--coral-dkr)">Value at Stake</span>
+          <span class="kavach-stat-label">Estimated annual cost leakage (indicative)</span>
+          <span class="kavach-stat-pill" style="background:var(--coral-tint);color:var(--coral-dkr)">Indicative</span>
         </div>
         <div class="kavach-num-row">
           <span class="kavach-big-num" style="color:var(--coral)">${fmt(R.totalLeakage)}</span>
@@ -2543,8 +2406,8 @@ function showResults(R){
           </div>
           <div class="kavach-bar-row">
             <span class="kavach-bar-label">Sector Median</span>
-            <div class="kavach-bar-track"><div class="kavach-bar-fill" style="width:${Math.round(((R.peer.overall||3.0)/5)*100)}%;background:var(--blue)"></div></div>
-            <span class="kavach-bar-val">${(R.peer.overall||3.0).toFixed(1)}</span>
+            <div class="kavach-bar-track"><div class="kavach-bar-fill" style="width:${Math.round((R.peerBenchmark.overall/5)*100)}%;background:var(--blue)"></div></div>
+            <span class="kavach-bar-val">${R.peerBenchmark.overall.toFixed(1)}</span>
           </div>
         </div>
       </div>
@@ -2561,7 +2424,7 @@ function showResults(R){
           ${R.vmwareRisk ? "VMware Broadcom Renewal Cliff" : (R.leaseCliff ? "Colocation Lease Expiration Deadline" : (R.secnumFlag ? "SecNumCloud European Sovereign Boundary" : "Cloud Value Realization & FinOps Drag"))}
         </div>
         <p style="font-size:11.5px;color:var(--mut);line-height:1.4">
-          ${R.vmwareRisk ? "Impending 2.5x–3.5x licensing cost escalation mandates immediate hypervisor alternative triage." : (R.leaseCliff ? "Facility deadline <12 months requires accelerated migration factory throughput." : "Targeted operating model and FinOps rate arbitrage required to achieve EBITDA mandates.")}
+          ${R.vmwareRisk ? "An impending renewal price increase makes hypervisor alternative triage urgent." : (R.leaseCliff ? "Facility deadline <12 months requires accelerated migration factory throughput." : "Targeted operating model and FinOps rate arbitrage required to achieve EBITDA mandates.")}
         </p>
       </div>
     </div>
@@ -2578,12 +2441,12 @@ function showResults(R){
           </p>
           <div style="font-size:12.5px;color:var(--coral-dkr);font-weight:700;margin-top:4px">Sector Benchmark: ${deltaText}</div>
           <div style="font-size:13px;color:var(--ink);margin-top:8px">
-            <b>Annual Value-at-Stake:</b> Estimated <span style="color:var(--coral);font-weight:800">${fmt(R.leakLow)} – ${fmt(R.leakHigh)}</span> in reclaimable leakage
+            <b>Estimated annual cost leakage (indicative):</b> <span style="color:var(--coral);font-weight:800">${fmt(R.leakLow)} – ${fmt(R.leakHigh)}</span>
           </div>
         </div>
         <div style="display:flex;gap:8px;flex-wrap:wrap">
           ${isUnlocked ? `
-            <button class="btn" onclick="openAiDrawer()">LTM Advisory Studio</button>
+            <button class="btn" onclick="openAiDrawer()">LTM Vantage Studio</button>
             <button class="btn secondary" onclick="launchBoardroom()">Boardroom Mode</button>
           ` : `
             <button class="btn" onclick="document.getElementById('leadEmail')?.focus()">Unlock Full Pack</button>
@@ -2608,7 +2471,7 @@ function showResults(R){
         </div>
         <div style="display:flex;justify-content:center;gap:16px;margin-top:10px;font-size:11.5px;font-family:var(--font-display)">
           <span style="display:inline-flex;align-items:center;gap:5px"><span style="width:10px;height:10px;background:#FF5E4F;border-radius:2px"></span> Estate (${R.overall.toFixed(1)})</span>
-          <span style="display:inline-flex;align-items:center;gap:5px"><span style="width:10px;height:10px;background:#226882;border-radius:2px"></span> ${R.industryKey.split(" ")[0]} Median (${(R.peer.overall||3.0).toFixed(1)})</span>
+          <span style="display:inline-flex;align-items:center;gap:5px"><span style="width:10px;height:10px;background:#226882;border-radius:2px"></span> ${R.industryKey.split(" ")[0]} Median (${R.peerBenchmark.overall.toFixed(1)})</span>
         </div>
       </div>
 
@@ -2649,11 +2512,11 @@ function showResults(R){
         <div>
           <div class="sec-label">Economic Business Case</div>
           <h3 style="font-size:18px">Quantified Financial Value Hook</h3>
-          <p style="font-size:12.5px;color:var(--mut)">Evidence-based annual cost leakage decomposition across cloud &amp; infrastructure</p>
+          <p style="font-size:12.5px;color:var(--mut)">Indicative split of estimated annual cost leakage across cloud &amp; infrastructure</p>
         </div>
         <div style="text-align:right">
           <div style="font-size:24px;font-weight:800;color:var(--coral);font-family:var(--font-display)">${fmt(R.leakLow)} – ${fmt(R.leakHigh)}</div>
-          <div style="font-size:11px;color:var(--mut)">Estimated addressable annual leak</div>
+          <div style="font-size:11px;color:var(--mut)">Estimated annual cost leakage (indicative)</div>
         </div>
       </div>
       <div class="decomp-grid">
@@ -2679,7 +2542,7 @@ function showResults(R){
         </div>
       </div>
       <div style="margin-top:14px;background:var(--panel2);border:1px solid var(--line);border-radius:var(--radius-sm);padding:12px 16px;font-size:12.5px;color:var(--ink)">
-        <b>CFO Self-Funding Realization:</b> Capturing quick wins in compute rightsizing and commitment discounts directly self-funds the application modernization factory and DC exit.
+        <b>CFO Self-Funding Potential:</b> Savings captured from compute rightsizing and commitment discounts can help fund the application modernization factory and DC exit.
       </div>
     </div>
 
@@ -2737,7 +2600,7 @@ function showResults(R){
           </div>
           <div id="reportMemoText" style="white-space:pre-wrap;font-family:var(--font-mono, monospace);font-size:12.5px;line-height:1.6;background:var(--panel2);padding:18px;border-radius:var(--radius-sm);border:1px solid var(--line);max-height:480px;overflow-y:auto;color:var(--ink)">${SESSION.memoText || generateRuleBasedMemo()}</div>
           <div style="display:flex;justify-content:space-between;align-items:center;margin-top:12px;font-size:11.5px;color:var(--mut);flex-wrap:wrap;gap:8px">
-            <span>Author: <b>Ashutosh Dixit</b>, Infrastructure Tech Advisory (ashutosh.dixit@ltm.com)</span>
+            <span>Author: <b>Ashutosh Dixit</b>, LTM Infrastructure Tech Advisory (ashutosh.dixit@ltm.com)</span>
             <span>Grounding: 8 Architecture Dimensions · FinOps Models · Consulting Field Probes</span>
           </div>
         </div>
@@ -2749,7 +2612,7 @@ function showResults(R){
           <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
             <button class="btn big" onclick="downloadExecutivePDF()">Download Executive PDF Pack</button>
             <button class="btn secondary" onclick="launchBoardroom()">Boardroom Presentation Mode</button>
-            <button class="btn secondary" onclick="openAiDrawer()">LTM Advisory Studio</button>
+            <button class="btn secondary" onclick="openAiDrawer()">LTM Vantage Studio</button>
             <a href="mailto:ashutosh.dixit@ltm.com?subject=Cloud%20IQ%20Readout%20Request%20—%20${encodeURIComponent(client)}&body=Hi%20Advisory%20Team,%0A%0AWe%20completed%20our%20Cloud%20IQ%20diagnostic%20for%20${encodeURIComponent(client)}%20and%20would%20like%20to%20schedule%20a%2030-minute%20readout%20session.%0A%0AScore:%20${R.overall.toFixed(1)}/5.0%20(${R.band})%0AValue%20at%20Stake:%20${fmt(R.leakLow)}%20-%20${fmt(R.leakHigh)}" class="btn secondary" style="text-decoration:none">
               Book Readout with Our Advisory Team
             </a>
@@ -2773,7 +2636,7 @@ function drawSpiderChart(R){
   if(!ctx) return;
   const labels = Object.keys(DIM_NAMES);
   const dataScores = labels.map(d => R.dimScores[d]);
-  const peerScores = labels.map(d => R.peer[d] || R.peer.overall || 3.0);
+  const peerScores = labels.map(d => R.peerBenchmark[d] ?? R.peerBenchmark.overall);
 
   if(spiderChartInstance) spiderChartInstance.destroy();
   spiderChartInstance = new Chart(ctx, {
@@ -2833,13 +2696,13 @@ function closeAiDrawer(){
 }
 
 function buildGroundedPromptPayload(){
-  if(!RESULT) RESULT = compute();
+  if(!RESULT){ showScoringError(); return ""; }
   const R = RESULT;
   const client = SESSION.anonymize ? "Confidential Client" : SESSION.clientName;
   const persona = QUESTIONS.find(x => x.id === "Q0.1").opts[A["Q0.1"]||0][0];
 
   return `
-# LTM INFRASTRUCTURE TECH ADVISORY BRIEFING SPECIFICATION
+# LTM VANTAGE · RESPONSIBLE ADVISORY · BRIEFING SPECIFICATION
 
 ## CLIENT & ENGAGEMENT METADATA
 - Client: ${client}
@@ -2860,7 +2723,7 @@ ${Object.keys(DIM_NAMES).map(d => `  * ${d} ${DIM_NAMES[d]}: ${R.dimScores[d].to
 - Data Centre Lease Expiration: ${R.leaseCliff ? "CRITICAL (<12 months facility exit cliff)" : "Managed"}
 - SecNumCloud Mandate: ${R.secnumFlag ? "YES (French/EU Cloud de Confiance requirements active)" : "No"}
 - Stated #1 Objective: "${R.topObj}"
-- Estimated Annual Financial Leakage: $${(R.leakLow/1000).toFixed(0)}k – $${(R.leakHigh/1000).toFixed(0)}k (Compute: $${(R.decomp.compute/1000).toFixed(0)}k, Commitments: $${(R.decomp.commit/1000).toFixed(0)}k)
+- Estimated Annual Cost Leakage (indicative): $${(R.leakLow/1000).toFixed(0)}k – $${(R.leakHigh/1000).toFixed(0)}k (Compute: $${(R.decomp.compute/1000).toFixed(0)}k, Commitments: $${(R.decomp.commit/1000).toFixed(0)}k)
 
 ## CONSULTING DEPTH READ & ANOMALY RESPONSES
 ${formatConsultingProbesForPrompt()}
@@ -2869,7 +2732,7 @@ ${formatConsultingProbesForPrompt()}
 You are an elite Senior Partner in LTM Infrastructure Tech Advisory. Author a bespoke, 3-part Executive Advisory Memo:
 1. EXECUTIVE DIAGNOSTIC: Pinpoint the client's single binding constraint. Expose the contradiction between their stated objective ("${R.topObj}") and their operational metrics.
 2. ARCHITECTURAL & COMMERCIAL IMPERATIVES: Name non-negotiable moves across Phase 1 (Immediate 0-30d), Phase 2 (Short-Term 30-90d), Phase 3 (Mid-Term 3-9m), and Phase 4 (Long-Term 9-18m).
-3. VALUE AT STAKE: Detail how the $${(R.totalLeakage/1000).toFixed(0)}k cost leakage will be reclaimed.
+3. ESTIMATED ANNUAL COST LEAKAGE (INDICATIVE): Explain how up to an estimated $${(R.totalLeakage/1000).toFixed(0)}k of cost leakage could be reduced. Treat the figure as an indicative estimate, not a forecast.
 Maintain a crisp, boardroom tone (McKinsey / Big 4 style). Absolutely zero generic consulting platitudes.
 `;
 }
@@ -2877,7 +2740,7 @@ Maintain a crisp, boardroom tone (McKinsey / Big 4 style). Absolutely zero gener
 function copyAiPromptPack(){
   const prompt = buildGroundedPromptPayload();
   navigator.clipboard.writeText(prompt).then(() => {
-    alert("LTM Advisory Studio Prompt Pack copied to clipboard! Paste into ChatGPT Enterprise, Claude, or Gemini.");
+    alert("LTM Vantage Studio Prompt Pack copied to clipboard! Paste into ChatGPT Enterprise, Claude, or Gemini.");
   });
 }
 
@@ -2906,7 +2769,7 @@ async function generateAiBriefing(){
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          contents: [{ parts: [{ text: "You are an elite Infrastructure Tech Advisory partner at LTM. Write a concise, high-impact, evidenced C-level advisory memo.\n\n" + prompt }] }]
+          contents: [{ parts: [{ text: "You are an elite partner in LTM Infrastructure Tech Advisory. Write a concise, high-impact, evidenced C-level advisory memo.\n\n" + prompt }] }]
         })
       });
       if(!resp.ok) throw new Error("HTTP " + resp.status);
@@ -2920,7 +2783,7 @@ async function generateAiBriefing(){
         body: JSON.stringify({
           model: "gpt-4o",
           messages: [
-            {role:"system", content:"You are an elite Infrastructure Tech Advisory partner at LTM. Write concise, high-impact, evidenced advisory memos for CIOs."},
+            {role:"system", content:"You are an elite partner in LTM Infrastructure Tech Advisory. Write concise, high-impact, evidenced advisory memos for CIOs."},
             {role:"user", content:prompt}
           ],
           temperature: 0.2
@@ -2957,7 +2820,7 @@ async function generateAiBriefing(){
 }
 
 function generateRuleBasedMemo(){
-  if(!RESULT) RESULT = compute();
+  if(!RESULT){ showScoringError(); return ""; }
   const R = RESULT;
   const client = SESSION.anonymize ? "Confidential Client" : SESSION.clientName;
   const persona = QUESTIONS.find(x => x.id === "Q0.1").opts[A["Q0.1"]||0][0];
@@ -2966,7 +2829,7 @@ function generateRuleBasedMemo(){
   if(SESSION.consultingProbes && Object.keys(SESSION.consultingProbes).length > 0){
     probesFindings = "\n\nCONSULTING FIELD CALIBRATION & ANOMALY FINDINGS:\n";
     if(SESSION.consultingProbes["P_FINOPS"]){
-      probesFindings += `• FINOPS ANOMALY: Leadership confirmed: "${SESSION.consultingProbes["P_FINOPS"]}". This operational visibility gap explains the ${fmt(R.decomp.commit)} commitment leakage.\n`;
+      probesFindings += `• FINOPS ANOMALY: Leadership confirmed: "${SESSION.consultingProbes["P_FINOPS"]}". This visibility gap is consistent with an estimated, up to ${fmt(R.decomp.commit)} of commitment leakage.\n`;
     }
     if(SESSION.consultingProbes["P_DC_EXIT"]){
       probesFindings += `• DC EXIT TIMELINE: Client verified: "${SESSION.consultingProbes["P_DC_EXIT"]}". Failure to vacate within contractual notice windows triggers severe lease extension penalties.\n`;
@@ -2986,6 +2849,34 @@ function generateRuleBasedMemo(){
     }
   }
 
+  // Each sentence appears only when its flag or score supports it; money figures are estimates ("estimated, up to").
+  const commitLow = [0, 1, 2].includes(A["Q0.9"]);
+  const finopsReactive = R.dimAssessed && R.dimAssessed.D3 && R.dimScores.D3 < 3.0;
+  const lines = [];
+  if(R.vmwareRisk) lines.push("• HYPERVISOR RENEWAL CLIFF: You reported an impending VMware renewal with a steep price increase. Without a validated alternative hypervisor (KVM/Nutanix/Cloud Native), cost reduction targets are at risk.");
+  if(R.leaseCliff) lines.push("• DC FACILITY DEADLINE: A data centre lease or hardware deadline sets a hard timeline. Moving workloads without disposition mapping risks carrying today's inefficiencies into the cloud.");
+  if(R.secnumFlag) lines.push("• SECNUMCLOUD BOUNDARY: SecNumCloud requirements call for segregated enclaves for sensitive regulated workloads.");
+  else if(R.sovFlag) lines.push("• SOVEREIGNTY REQUIREMENT: Binding residency or sovereignty obligations constrain where regulated workloads can run.");
+  if(commitLow && finopsReactive) lines.push(`• EXECUTION GAP: With commitment discount coverage under 40% and largely reactive FinOps practice, cloud spend is leaking an estimated ${fmt(R.leakLow)}–${fmt(R.leakHigh)} a year.`);
+  else if(commitLow) lines.push(`• COMMITMENT GAP: Commitment discount coverage is under 40%; estimated annual cost leakage is an estimated ${fmt(R.leakLow)}–${fmt(R.leakHigh)}.`);
+  else if(finopsReactive) lines.push(`• FINOPS GAP: Cost & FinOps maturity is ${R.dimScores.D3.toFixed(1)}/5; estimated annual cost leakage is an estimated ${fmt(R.leakLow)}–${fmt(R.leakHigh)}.`);
+  else lines.push(`• COST LEAKAGE: Estimated annual cost leakage is an estimated ${fmt(R.leakLow)}–${fmt(R.leakHigh)} (indicative).`);
+  const constraints = lines.join("\n");
+  const phaseLine = (label, moves) => moves.length
+    ? `• ${label}: ${moves.map(m => `${m.title} (LTM Offering ${m.code})`).join("; ")}.`
+    : `• ${label}: No moves triggered by this diagnostic.`;
+  const phases = [
+    phaseLine("PHASE 1 (IMMEDIATE 0–30 DAYS)", R.movesPhase1),
+    phaseLine("PHASE 2 (SHORT-TERM 30–90 DAYS)", R.movesPhase2),
+    phaseLine("PHASE 3 (MID-TERM 3–9 MONTHS)", R.movesPhase3),
+    phaseLine("PHASE 4 (LONG-TERM 9–18+ MONTHS)", R.movesPhase4)
+  ].join("\n");
+  const outcomes = [];
+  if(R.leaseCliff || R.movesPhase4.some(m => m.code === "03.5")) outcomes.push("reduce facility lease overhead for the sites exited");
+  if(R.vmwareRisk) outcomes.push("contain hypervisor licensing costs");
+  outcomes.push(`reduce cloud cost leakage by an estimated, up to ${fmt(R.totalLeakage)} a year`);
+  const valueLines = `Executing this roadmap could help ${client} ${outcomes.join(", ")}. This figure is indicative and should be validated against billing data.`;
+
   return `EXECUTIVE ADVISORY MEMO
 To: ${persona}, ${client}
 From: Ashutosh Dixit, LTM Infrastructure Tech Advisory (ashutosh.dixit@ltm.com)
@@ -2993,18 +2884,15 @@ Date: ${new Date().toLocaleDateString()}
 Subject: Strategic Estate Diagnostic & 4-Phase Modernization Blueprint (${R.trackName})
 
 1. EXECUTIVE DIAGNOSTIC & BINDING CONSTRAINT
-${client}'s estate is currently operating at an overall maturity of ${R.overall.toFixed(1)}/5.0 (${R.band}). While your leadership team has designated "${R.topObj}" as the preeminent strategic mandate, operational reality exposes a severe binding constraint:
+${client}'s estate is currently operating at an overall maturity of ${R.overall.toFixed(1)}/5.0 (${R.band}). Your leadership team has designated "${R.topObj}" as the primary strategic mandate. The diagnostic highlights these constraints:
 
-${R.vmwareRisk ? "• CRITICAL HYPERVISOR CLIFF: You face an impending VMware Broadcom renewal with anticipated 2.5x–3.5x licensing cost escalations. Operating on-premises without a validated alternative hypervisor (KVM/Nutanix/Cloud Native) invalidates cost reduction targets.\n" : ""}${R.leaseCliff ? "• DC FACILITY LEASE CLIFF: Imminent data centre lease expiration (<12 months) imposes a hard physical timeline. Lifting-and-shifting without disposition mapping will inflate public cloud operational costs by an estimated 35%.\n" : ""}${R.secnumFlag ? "• SECNUMCLOUD BOUNDARY: European sovereign data regulations mandate segregated enclaves for sensitive regulated workloads.\n" : ""}• DISCONNECT IN EXECUTION: With discount commitment coverage hovering at low levels and FinOps visibility largely reactive, public cloud spend is leaking an estimated ${fmt(R.leakLow)}–${fmt(R.leakHigh)} annually across oversized compute and unmanaged storage.${probesFindings}
+${constraints}${probesFindings}
 
 2. FOUR-PHASE MODERNIZATION BLUEPRINT
-• PHASE 1 (IMMEDIATE 0–30 DAYS): Execute emergency FinOps compute rightsizing to harvest ~$${Math.round(R.decomp.compute*0.35/1000)}k in zombie asset waste, while conducting an immediate VMware core entitlement audit (LTM Offering 03.3 & 03.5).
-• PHASE 2 (SHORT-TERM 30–90 DAYS): Execute 1-yr/3-yr Savings Plans commitment coverage and deploy automated discovery tooling across the application estate (LTM Offering 03.3 & 03.5).
-• PHASE 3 (MID-TERM 3–9 MONTHS): Launch a programmatic Migration Factory for top application clusters and establish CI/CD Golden Paths with automated policy-as-code landing zone guardrails (LTM Offering 03.4 & 03.6).
-• PHASE 4 (LONG-TERM 9–18+ MONTHS): Complete physical data centre decommissioning, decouple core legacy monoliths, and instantiate a sovereign AI data boundary (LTM Offering 03.5 & 04.4).
+${phases}
 
-3. VALUE AT STAKE
-Through structured execution of this 4-phase roadmap, ${client} will permanently eliminate facility lease overhead, stabilize hypervisor unit costs, and reclaim an addressable ${fmt(R.totalLeakage)} in annual cloud waste.`;
+3. ESTIMATED ANNUAL COST LEAKAGE (INDICATIVE)
+${valueLines}`;
 }
 
 function copyMemoText(){
@@ -3042,7 +2930,7 @@ function regenerateReportMemo(){
    Boardroom Presentation Mode (Interactive Slide Show)
    ============================================================ */
 function launchBoardroom(){
-  if(!RESULT) RESULT = compute();
+  if(!RESULT){ showScoringError(); return ""; }
   document.getElementById('boardroom-modal').classList.add('open');
   currentSlide = 0;
   renderSlide(currentSlide);
@@ -3098,7 +2986,7 @@ function renderSlide(idx){
             <h3 style="color:#FFB74D;font-size:18px;margin-bottom:10px">Acute Operational Pressures</h3>
             <p>${R.vmwareRisk ? "<b>VMware Renewal Cliff:</b> Steep price escalations require immediate hypervisor triage." : "VMware licensing within standard governance."}</p>
             <p style="margin-top:8px">${R.leaseCliff ? "<b>Data Centre Lease Expiration:</b> Facility deadline forces hard migration milestones." : "DC lease timeline manageable."}</p>
-            <p style="margin-top:8px"><b>Annual Value-at-Stake:</b> Estimated <b>${fmt(R.leakLow)}–${fmt(R.leakHigh)}</b> in reclaimable leakage.</p>
+            <p style="margin-top:8px"><b>Estimated annual cost leakage (indicative):</b> <b>${fmt(R.leakLow)}–${fmt(R.leakHigh)}</b>.</p>
           </div>
         </div>
       </div>
@@ -3123,7 +3011,7 @@ function renderSlide(idx){
   } else if(idx === 3){
     container.innerHTML = `
       <div class="br-slide">
-        <h2>Quantified Value at Stake: ${fmt(R.leakLow)} – ${fmt(R.leakHigh)}</h2>
+        <h2>Estimated annual cost leakage (indicative): ${fmt(R.leakLow)} – ${fmt(R.leakHigh)}</h2>
         <p>Annual cost leakage decomposed across operational domains:</p>
         <div class="two-col" style="margin-top:24px">
           <div style="background:#282828;padding:20px;border-radius:10px">
@@ -3263,7 +3151,7 @@ function loadSessionFile(event){
    Enhanced 3-Page Executive PDF Export Engine
    ============================================================ */
 function downloadExecutivePDF(){
-  if(!RESULT) RESULT = compute();
+  if(!RESULT){ showScoringError(); return ""; }
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF({ unit: "pt", format: "a4" });
   const W = doc.internal.pageSize.getWidth();
@@ -3276,7 +3164,7 @@ function downloadExecutivePDF(){
   function header(title){
     doc.setFillColor(...dark); doc.rect(0, 0, W, 58, "F");
     doc.setFont("helvetica", "bold"); doc.setFontSize(16); doc.setTextColor(255, 255, 255);
-    doc.text("LTM ADVISORY", M, 34);
+    doc.text("LTM VANTAGE", M, 34);
     doc.setFont("helvetica", "normal"); doc.setFontSize(9); doc.setTextColor(200, 200, 200);
     doc.text("Cloud IQ Enterprise Diagnostic", M + 130, 34);
     doc.text(title.toUpperCase(), W - M, 34, { align: "right" });
@@ -3285,7 +3173,7 @@ function downloadExecutivePDF(){
   function footer(pageNum){
     doc.setDrawColor(220, 220, 220); doc.setLineWidth(1); doc.line(M, H - 36, W - M, H - 36);
     doc.setFont("helvetica", "normal"); doc.setFontSize(8); doc.setTextColor(140, 140, 140);
-    doc.text("LTM CIS · Infrastructure Tech Advisory · Lead: ashutosh.dixit@ltm.com", M, H - 22);
+    doc.text("LTM Vantage · Responsible Advisory · Lead: ashutosh.dixit@ltm.com", M, H - 22);
     doc.text(`Page ${pageNum} of ${totalPages} · Engagement: ${client}`, W - M, H - 22, { align: "right" });
   }
 
@@ -3308,7 +3196,7 @@ function downloadExecutivePDF(){
 
   doc.setFillColor(...cream); doc.roundedRect(M, y, W - 2*M, 46, 6, 6, "F");
   doc.setFont("helvetica", "bold"); doc.setFontSize(10); doc.setTextColor(...dark);
-  doc.text(`ANNUAL VALUE AT STAKE: ${fmt(R.leakLow)} – ${fmt(R.leakHigh)}`, M + 16, y + 20);
+  doc.text(`ESTIMATED ANNUAL COST LEAKAGE (INDICATIVE): ${fmt(R.leakLow)} – ${fmt(R.leakHigh)}`, M + 16, y + 20);
   doc.setFont("helvetica", "normal"); doc.setFontSize(9); doc.setTextColor(100, 100, 100);
   doc.text(`Decomposed into: Compute Rightsizing (${fmt(R.decomp.compute)}) · Commitments (${fmt(R.decomp.commit)}) · Storage (${fmt(R.decomp.storage)})`, M + 16, y + 34);
   y += 60;
@@ -3415,7 +3303,7 @@ function downloadExecutivePDF(){
   y = doc.lastAutoTable.finalY + 24;
 
   doc.setFont("helvetica", "bold"); doc.setFontSize(12); doc.setTextColor(...dark);
-  doc.text("4. Recommended LTM Advisory Offerings", M, y);
+  doc.text("4. Recommended LTM Infrastructure Tech Advisory Offerings", M, y);
   y += 14;
 
   const offerRows = R.offers.map(o => [o.code, OFFERINGS[o.code]?.name, OFFERINGS[o.code]?.door, o.why]);

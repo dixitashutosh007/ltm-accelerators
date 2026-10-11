@@ -7,7 +7,7 @@ function scoreQuestion(q,a,overrides={}){
  if(!hasAnswer({x:a},'x'))return null;
  if(q.signalOnly||['signal-only','hypothesis-signal','tradeoff-signal','constraint-signal'].includes(q.scoring?.method))return null;
  const o=overrides[q.id],s=q.scoring||{};
- if(o?.method==='scale'){const n=Number(a),max=Number(o.scaleMax||5);if(!Number.isFinite(n)||max<=1)return null;const p=(n-1)/(max-1)*100;return clamp(o.direction==='invert'?100-p:p);}
+ if(o?.method==='scale'||s.method==='scale'||s.scaleMax!=null){const n=Number(a),max=Number(o?.scaleMax||s.scaleMax||5),direction=o?.direction||s.direction;if(!Number.isFinite(n)||max<=1)return null;const p=(n-1)/(max-1)*100;return clamp(direction==='invert'?100-p:p);}
  if(s.normalize==='direct-0-100')return clamp(Number(a));
  if(s.normalize==='invert-0-100')return clamp(100-Number(a));
  if(s.normalize==='range-band')return typeof a==='number'?clamp(a):null;

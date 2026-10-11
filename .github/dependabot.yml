@@ -1,0 +1,20 @@
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      aws:
+        patterns: ['@aws-amplify/*', '@aws-sdk/*', 'aws-cdk-lib', 'constructs']
+      testing:
+        patterns: ['vitest', '@playwright/test', 'tsx', 'typescript']
+    open-pull-requests-limit: 5
+  - package-ecosystem: npm
+    directory: /services/reports-service
+    schedule:
+      interval: monthly
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly

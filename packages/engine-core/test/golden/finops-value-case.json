@@ -1,0 +1,185 @@
+{
+  "sample-investment-bank": {
+    "signals": {
+      "visibility": 100,
+      "predictability": 68,
+      "ownership": null,
+      "control": 77,
+      "value": null
+    },
+    "gapIndex": 18,
+    "urgencyIndex": 43,
+    "needIndex": 28,
+    "wasteBand": {
+      "assessed": true,
+      "low": 0.08,
+      "high": 0.155,
+      "label": "Established controls",
+      "isBfsi": true,
+      "uplift": 0.0149
+    },
+    "projectionGrowthRate": 40,
+    "exposureY1": [
+      280000,
+      542325
+    ],
+    "exposureY3": [
+      1220800,
+      2364537
+    ],
+    "verdict": "Establish foundations now",
+    "confidence": "Low confidence",
+    "blindSpots": 0,
+    "streams": [
+      "rate 61 High (P2) £142k – £275k",
+      "governance 62 High (P2) £43k – £84k",
+      "hygiene 79 Foundational £67k – £130k",
+      "attribution 90 Foundational £14k – £26k",
+      "architecture 93 Foundational £14k – £28k"
+    ]
+  },
+  "immature-bfsi-inr": {
+    "signals": {
+      "visibility": 0,
+      "predictability": 0,
+      "ownership": 0,
+      "control": 0,
+      "value": 9
+    },
+    "gapIndex": 99,
+    "urgencyIndex": 34,
+    "needIndex": 73,
+    "wasteBand": {
+      "assessed": true,
+      "low": 0.3,
+      "high": 0.45,
+      "label": "No effective cost management",
+      "isBfsi": true,
+      "uplift": 0.05
+    },
+    "projectionGrowthRate": 60,
+    "exposureY1": [
+      6000000,
+      9000000
+    ],
+    "exposureY3": [
+      30960000,
+      46440000
+    ],
+    "verdict": "Material exposure — act this year",
+    "confidence": "Moderate confidence",
+    "blindSpots": 0,
+    "streams": [
+      "hygiene 0 Critical (P1) ₹1.8m – ₹2.7m",
+      "architecture 0 Critical (P1) ₹1.2m – ₹1.7m",
+      "attribution 0 Critical (P1) ₹775k – ₹1.2m",
+      "rate 12 Critical (P1) ₹1.8m – ₹2.7m",
+      "governance 33 Critical (P1) ₹433k – ₹649k"
+    ]
+  },
+  "mature-general-usd": {
+    "signals": {
+      "visibility": 100,
+      "predictability": 100,
+      "ownership": 100,
+      "control": 100,
+      "value": 100
+    },
+    "gapIndex": 0,
+    "urgencyIndex": 2,
+    "needIndex": 1,
+    "wasteBand": {
+      "assessed": true,
+      "low": 0.08,
+      "high": 0.14,
+      "label": "Established controls",
+      "isBfsi": false,
+      "uplift": 0
+    },
+    "projectionGrowthRate": 10,
+    "exposureY1": [
+      400000,
+      700000
+    ],
+    "exposureY3": [
+      1324000,
+      2317000
+    ],
+    "verdict": "Lightweight practices sufficient",
+    "confidence": "Moderate confidence",
+    "blindSpots": 0,
+    "streams": [
+      "rate 52 High (P2) $376k – $657k",
+      "governance 90 Foundational $24k – $43k",
+      "hygiene 100 Foundational —",
+      "architecture 100 Foundational —",
+      "attribution 100 Foundational —"
+    ]
+  },
+  "all-unknown": {
+    "signals": {
+      "visibility": 0,
+      "predictability": 0,
+      "ownership": null,
+      "control": 0,
+      "value": 0
+    },
+    "gapIndex": 100,
+    "urgencyIndex": 0,
+    "needIndex": 60,
+    "wasteBand": {
+      "assessed": true,
+      "low": 0.3,
+      "high": 0.4,
+      "label": "No effective cost management",
+      "isBfsi": false,
+      "uplift": 0
+    },
+    "projectionGrowthRate": 25,
+    "exposureY1": null,
+    "exposureY3": null,
+    "verdict": "Material exposure — act this year",
+    "confidence": "Low confidence",
+    "blindSpots": 7,
+    "streams": [
+      "architecture 0 Critical (P1) —",
+      "attribution 10 Critical (P1) —",
+      "rate 12 Critical (P1) —",
+      "hygiene 15 Critical (P1) —",
+      "governance 30 Critical (P1) —"
+    ]
+  },
+  "context-only-fast-growth": {
+    "signals": {
+      "visibility": null,
+      "predictability": null,
+      "ownership": null,
+      "control": null,
+      "value": null
+    },
+    "gapIndex": null,
+    "urgencyIndex": 48,
+    "needIndex": null,
+    "wasteBand": {
+      "assessed": false,
+      "low": null,
+      "high": null,
+      "label": "Not assessed",
+      "isBfsi": false,
+      "uplift": 0
+    },
+    "projectionGrowthRate": 60,
+    "exposureY1": null,
+    "exposureY3": null,
+    "verdict": null,
+    "confidence": "Low confidence",
+    "blindSpots": 0,
+    "streams": [
+      "rate 32 Critical (P1) —",
+      "hygiene 40 Critical (P1) —",
+      "architecture 40 Critical (P1) —",
+      "attribution 40 Critical (P1) —",
+      "governance 60 High (P2) —"
+    ]
+  }
+}

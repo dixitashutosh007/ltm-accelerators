@@ -1,13 +1,22 @@
 {
   "name": "ltm-accelerators",
   "version": "1.0.0",
-  "description": "Enterprise cloud advisory accelerators with headless scoring engines and role-based access control",
+  "description": "LTM Vantage — Responsible Advisory: enterprise advisory accelerators with headless scoring engines and role-based access control",
   "private": true,
   "type": "module",
   "scripts": {
-    "test:engine": "tsx packages/engine-core/src/test-runner.ts",
+    "test:engine": "vitest run",
     "amplify": "ampx",
     "validate:costiq": "node scripts/validate-cost-iq.cjs",
+    "build:runtime-config": "node scripts/generate-runtime-config.cjs",
+    "test:reports": "npm --prefix services/reports-service test",
+    "typecheck": "tsc --noEmit -p tsconfig.typecheck.json",
+    "demo:engine": "tsx packages/engine-core/src/test-runner.ts",
+    "test:e2e": "playwright test",
+    "test": "npm run typecheck && npm run test:engine && npm run test:reports && npm run check:repo",
+    "check:repo": "node scripts/check-repo.cjs",
+    "check:backend": "node scripts/check-backend-synth.cjs",
+    "claims:extract": "node scripts/extract-claims.cjs",
     "build:costiq-config": "node scripts/generate-cost-iq-runtime-config.cjs",
     "test:resilience": "tsx packages/engine-core/src/accelerators/resilience-iq/evaluate.test.ts && tsx packages/engine-core/src/accelerators/resilience-iq/evidence-lifecycle.test.ts && tsx packages/engine-core/src/accelerators/resilience-iq/assessment-lifecycle.test.ts && tsx packages/engine-core/src/accelerators/resilience-iq/assessment-persistence.test.ts",
     "validate:resilience-bank": "node scripts/validate-resilience-question-bank.cjs",
@@ -15,18 +24,40 @@
     "validate:resilience-deployment": "node scripts/validate-resilience-deployment.cjs",
     "validate:resilience-persistence": "node scripts/validate-resilience-assessment-persistence.cjs",
     "test:resilience-persistence-api": "tsx amplify/functions/manage-resilience-assessment/handler.test.ts",
-    "test:resilience-all": "npm run validate:resilience-bank && npm run validate:resilience-deployment && npm run validate:resilience-persistence && npm run test:resilience && npm run test:resilience-api && npm run test:resilience-persistence-api"
+    "test:resilience-all": "npm run validate:resilience-bank && npm run validate:resilience-deployment && npm run validate:resilience-persistence && npm run test:resilience && npm run test:resilience-api && npm run test:resilience-persistence-api",
+    "test:costiq": "node packages/engine-core/src/accelerators/cost-iq/baseline.test.cjs",
+    "test:costiq:hardening": "node packages/engine-core/src/accelerators/cost-iq/assessment-hardening.test.cjs",
+    "test:costiq:persistence": "node packages/engine-core/src/accelerators/cost-iq/persistence-contract.test.cjs",
+    "test:costiq:persistence:lifecycle": "node packages/engine-core/src/accelerators/cost-iq/persistence-lifecycle.test.cjs",
+    "test:costiq:persistence:adapter": "node packages/engine-core/src/accelerators/cost-iq/persistence-adapter.test.cjs",
+    "test:costiq:persistence:api": "node packages/engine-core/src/accelerators/cost-iq/persistence-api-contract.test.cjs",
+    "test:costiq:persistence:service": "node packages/engine-core/src/accelerators/cost-iq/persistence-service.test.cjs",
+    "test:costiq:persistence:http": "tsx amplify/functions/evaluate-cost-iq/persistence-handler.test.ts",
+    "test:costiq:persistence:amplify": "node packages/engine-core/src/accelerators/cost-iq/persistence-amplify-adapter.test.mjs",
+    "test:costiq:persistence:browser": "node packages/engine-core/src/accelerators/cost-iq/persistence-browser.test.cjs",
+    "test:costiq:report-fallback": "node packages/engine-core/src/accelerators/cost-iq/report-fallback.test.cjs",
+    "audit:engines": "tsx packages/engine-core/audit/run.ts"
   },
   "dependencies": {
-    "@aws-amplify/backend": "^1.14.0",
-    "@aws-amplify/backend-cli": "^1.4.0",
-    "aws-cdk-lib": "^2.170.0",
-    "constructs": "^10.4.0"
+    "@aws-sdk/client-cognito-identity-provider": "^3.1146.0",
+    "@aws-sdk/client-s3": "^3.1146.0",
+    "@aws-sdk/s3-request-presigner": "^3.1146.0"
   },
   "devDependencies": {
+    "@aws-amplify/backend": "^1.14.0",
+    "@aws-amplify/backend-cli": "^1.4.0",
+    "@playwright/test": "1.56.1",
     "@types/aws-lambda": "^8.10.147",
     "@types/node": "^22.10.0",
+    "aws-cdk-lib": "^2.170.0",
+    "chart.js": "4.4.1",
+    "constructs": "^10.4.0",
+    "html2pdf.js": "0.10.1",
+    "jspdf": "2.5.1",
+    "jspdf-autotable": "3.8.2",
     "tsx": "^4.19.0",
-    "typescript": "^5.7.0"
+    "typescript": "^5.7.0",
+    "vitest": "^3.2.7",
+    "yaml": "^2.9.1"
   }
 }
