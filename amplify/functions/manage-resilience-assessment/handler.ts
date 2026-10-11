@@ -1,18 +1,15 @@
 import type { APIGatewayProxyEventV2, APIGatewayProxyEventV2WithJWTAuthorizer, APIGatewayProxyResultV2 } from 'aws-lambda';
 import { createHash, createHmac, randomUUID } from 'node:crypto';
 import { assertAssessmentStatusTransition, type ResilienceAssessmentStatus } from '../../../packages/engine-core/src/accelerators/resilience-iq/assessment-lifecycle';
+import { corsHeaders } from '../_shared/http';
 
-const ALLOWED_ORIGIN = process.env.RESILIENCE_IQ_ALLOWED_ORIGIN || '*';
-const HEADERS = {
-  'Content-Type': 'application/json',
-  'Access-Control-Allow-Origin': ALLOWED_ORIGIN,
-  'Access-Control-Allow-Headers': 'Content-Type,Authorization,X-Amz-Date,X-Amz-Security-Token,X-Request-Id',
-  'Access-Control-Allow-Methods': 'OPTIONS,GET,POST'
-};
+// Lambdas run one request at a time per container, so the current request's headers are kept here for
+// response() to echo an allowed origin (see _shared/http.ts). Origins not in ALLOWED_ORIGINS get no CORS header.
+let requestHeaders: Record<string, string | undefined> | undefined;
 const statuses = new Set<ResilienceAssessmentStatus>(['draft','in_progress','completed','archived']);
 
 function response(statusCode:number, body:unknown, requestId:string):APIGatewayProxyResultV2 {
-  return { statusCode, headers:{...HEADERS,'X-Request-Id':requestId}, body:JSON.stringify(body) };
+  return { statusCode, headers:{...corsHeaders({ headers: requestHeaders },'OPTIONS,GET,POST','X-Request-Id'),'X-Request-Id':requestId}, body:JSON.stringify(body) };
 }
 function sha256(value:string){ return createHash('sha256').update(value).digest('hex'); }
 function hmac(key:Buffer|string, value:string){ return createHmac('sha256', key).update(value).digest(); }
@@ -99,6 +96,7 @@ async function getAssessment(assessmentId:string){
 }
 
 export const handler=async(event:APIGatewayProxyEventV2):Promise<APIGatewayProxyResultV2>=>{
+  requestHeaders=event.headers;
   const requestId=event.requestContext?.requestId || randomUUID();
   const method=event.requestContext?.http?.method || 'POST';
   if(method==='OPTIONS') return response(200,{},requestId);
@@ -128,6 +126,10 @@ export const handler=async(event:APIGatewayProxyEventV2):Promise<APIGatewayProxy
     if(!isAdmin(event) && String(snapshot.respondentEmail).trim().toLowerCase()!==userEmail(event)) return response(403,{ok:false,error:'respondent_email_mismatch',requestId},requestId);
 
     const existing=await getAssessment(assessmentId);
+    // An existing record belongs to its respondent: a non-admin may not overwrite (and so take over) someone else's.
+    if(existing && !isAdmin(event) && String(existing.respondentEmail||'').trim().toLowerCase()!==userEmail(event)) {
+      return response(403,{ok:false,error:'assessment_access_denied',requestId},requestId);
+    }
     if(existing && !canUpdate(existing.status as ResilienceAssessmentStatus, snapshot.status as ResilienceAssessmentStatus)) {
       return response(409,{ok:false,error:'invalid_assessment_status_transition',message:`${existing.status} -> ${snapshot.status}`,requestId},requestId);
     }

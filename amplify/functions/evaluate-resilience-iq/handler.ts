@@ -1,15 +1,12 @@
 import type { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
 import { evaluateResilienceIq } from '../../../packages/engine-core/src/accelerators/resilience-iq/evaluate';
 import { resilienceKnowledge } from '../../../packages/engine-core/src/accelerators/resilience-iq/knowledge';
+import { corsHeaders as sharedCors } from '../_shared/http';
 
-// Read per request so a configured origin always applies. The '*' fallback is kept for now because the
-// deployed API and page rely on it; restricting origins is part of the move onto the authenticated API.
-const corsHeaders = () => ({
-  'Content-Type': 'application/json',
-  'Access-Control-Allow-Origin': process.env.RESILIENCE_IQ_ALLOWED_ORIGIN || '*',
-  'Access-Control-Allow-Headers': 'Content-Type,Authorization,X-Amz-Date,X-Api-Key,X-Amz-Security-Token,X-Request-Id',
-  'Access-Control-Allow-Methods': 'OPTIONS,POST'
-});
+// Lambdas run one request at a time per container, so the current request's headers are kept here for
+// response() to echo an allowed origin (see _shared/http.ts). Origins not in ALLOWED_ORIGINS get no CORS header.
+let requestHeaders: Record<string, string | undefined> | undefined;
+const corsHeaders = () => sharedCors({ headers: requestHeaders }, 'OPTIONS,POST', 'X-Request-Id');
 
 function makeRequestId(event: APIGatewayProxyEventV2): string {
   return event.requestContext?.requestId || crypto.randomUUID();
@@ -79,6 +76,7 @@ function validateAnswersPayload(answers: unknown): { ok: true } | { ok: false; e
 }
 
 export const handler = async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> => {
+  requestHeaders = event.headers;
   const requestId = makeRequestId(event);
   const method = event.requestContext?.http?.method || (event as any).httpMethod || 'POST';
   if (method === 'OPTIONS') return { statusCode: 200, headers: { ...corsHeaders(), 'X-Request-Id': requestId }, body: '' };

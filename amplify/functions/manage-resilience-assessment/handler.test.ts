@@ -76,5 +76,9 @@ if(otherOwner.statusCode!==403) throw new Error("A non-admin must not read anoth
 const adminRead=await handler(event('GET',undefined,{email:'admin@example.com','cognito:groups':['Admin']}));
 if(adminRead.statusCode!==200) throw new Error('An admin may read any assessment');
 
+// Taking over: a non-admin posts a snapshot naming themselves for an ID another respondent owns.
+const takeover=await handler(event('POST',{action:'save',snapshot:{assessmentId:'RIQ-001',status:'in_progress',clientName:'Hijack',respondentEmail:'consultant@example.com',answers:{},startedAt:'2026-10-06T00:00:00.000Z'}},{email:'consultant@example.com'}));
+if(takeover.statusCode!==403) throw new Error("A non-admin must not overwrite another respondent's assessment");
+
 globalThis.fetch=originalFetch;
 console.log('Resilience IQ assessment persistence handler tests passed');
