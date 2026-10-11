@@ -2,13 +2,14 @@ import type { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda
 import { evaluateResilienceIq } from '../../../packages/engine-core/src/accelerators/resilience-iq/evaluate';
 import { resilienceKnowledge } from '../../../packages/engine-core/src/accelerators/resilience-iq/knowledge';
 
-const ALLOWED_ORIGIN = process.env.RESILIENCE_IQ_ALLOWED_ORIGIN || '*';
-const CORS_HEADERS = {
+// Read per request so a configured origin always applies. The '*' fallback is kept for now because the
+// deployed API and page rely on it; restricting origins is part of the move onto the authenticated API.
+const corsHeaders = () => ({
   'Content-Type': 'application/json',
-  'Access-Control-Allow-Origin': ALLOWED_ORIGIN,
+  'Access-Control-Allow-Origin': process.env.RESILIENCE_IQ_ALLOWED_ORIGIN || '*',
   'Access-Control-Allow-Headers': 'Content-Type,Authorization,X-Amz-Date,X-Api-Key,X-Amz-Security-Token,X-Request-Id',
   'Access-Control-Allow-Methods': 'OPTIONS,POST'
-};
+});
 
 function makeRequestId(event: APIGatewayProxyEventV2): string {
   return event.requestContext?.requestId || crypto.randomUUID();
@@ -17,7 +18,7 @@ function makeRequestId(event: APIGatewayProxyEventV2): string {
 function response(statusCode: number, body: unknown, requestId: string): APIGatewayProxyResultV2 {
   return {
     statusCode,
-    headers: { ...CORS_HEADERS, 'X-Request-Id': requestId },
+    headers: { ...corsHeaders(), 'X-Request-Id': requestId },
     body: JSON.stringify(body)
   };
 }
@@ -80,7 +81,7 @@ function validateAnswersPayload(answers: unknown): { ok: true } | { ok: false; e
 export const handler = async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> => {
   const requestId = makeRequestId(event);
   const method = event.requestContext?.http?.method || (event as any).httpMethod || 'POST';
-  if (method === 'OPTIONS') return { statusCode: 200, headers: { ...CORS_HEADERS, 'X-Request-Id': requestId }, body: '' };
+  if (method === 'OPTIONS') return { statusCode: 200, headers: { ...corsHeaders(), 'X-Request-Id': requestId }, body: '' };
   if (method !== 'POST') return response(405, { ok: false, error: 'method_not_allowed', requestId }, requestId);
 
   try {
@@ -93,7 +94,7 @@ export const handler = async (event: APIGatewayProxyEventV2): Promise<APIGateway
       } catch {
         return {
           statusCode: 400,
-          headers: { ...CORS_HEADERS, 'X-Request-Id': requestId },
+          headers: { ...corsHeaders(), 'X-Request-Id': requestId },
           body: JSON.stringify({ ok: false, error: 'Request body must contain valid JSON.', requestId })
         };
       }
@@ -112,7 +113,7 @@ export const handler = async (event: APIGatewayProxyEventV2): Promise<APIGateway
     if (!validation.ok) {
       return {
         statusCode: 400,
-        headers: { ...CORS_HEADERS, 'X-Request-Id': requestId },
+        headers: { ...corsHeaders(), 'X-Request-Id': requestId },
         body: JSON.stringify({ ok: false, error: validation.error, requestId })
       };
     }
@@ -120,7 +121,7 @@ export const handler = async (event: APIGatewayProxyEventV2): Promise<APIGateway
     const result = evaluateResilienceIq(answers);
     return {
       statusCode: 200,
-      headers: { ...CORS_HEADERS, 'X-Request-Id': requestId },
+      headers: { ...corsHeaders(), 'X-Request-Id': requestId },
       body: JSON.stringify({ ok: true, data: result })
     };
   } catch (error: any) {

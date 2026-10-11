@@ -13,7 +13,9 @@
     "validate:resilience-bank": "node scripts/validate-resilience-question-bank.cjs",
     "test:resilience-api": "tsx amplify/functions/evaluate-resilience-iq/handler.test.ts",
     "validate:resilience-deployment": "node scripts/validate-resilience-deployment.cjs",
-    "validate:resilience-persistence": "node scripts/validate-resilience-assessment-persistence.cjs"
+    "validate:resilience-persistence": "node scripts/validate-resilience-assessment-persistence.cjs",
+    "test:resilience-persistence-api": "tsx amplify/functions/manage-resilience-assessment/handler.test.ts",
+    "test:resilience-all": "npm run validate:resilience-bank && npm run validate:resilience-deployment && npm run validate:resilience-persistence && npm run test:resilience && npm run test:resilience-api && npm run test:resilience-persistence-api"
   },
   "dependencies": {
     "@aws-amplify/backend": "^1.14.0",

@@ -2,12 +2,13 @@ name: Resilience IQ Runtime
 
 on:
   push:
-    branches: [main]
+    branches: [main, resilience-iq-dev]
     paths:
       - "resilience-iq/**"
       - "packages/engine-core/src/accelerators/resilience-iq/**"
       - "packages/engine-core/src/index.ts"
       - "amplify/functions/evaluate-resilience-iq/**"
+      - "amplify/functions/manage-resilience-assessment/**"
       - "amplify/backend.ts"
       - "package.json"
       - "tsconfig.json"
@@ -15,12 +16,13 @@ on:
       - "Accelerators/resilience-iq.html"
       - "Accelerators/cost-iq-runtime-config.js"
   pull_request:
-    branches: [main]
+    branches: [main, resilience-iq-dev]
     paths:
       - "resilience-iq/**"
       - "packages/engine-core/src/accelerators/resilience-iq/**"
       - "packages/engine-core/src/index.ts"
       - "amplify/functions/evaluate-resilience-iq/**"
+      - "amplify/functions/manage-resilience-assessment/**"
       - "amplify/backend.ts"
       - "package.json"
       - "tsconfig.json"
@@ -44,3 +46,4 @@ jobs:
       - run: npm run validate:resilience-persistence
       - run: npm run test:resilience
       - run: npm run test:resilience-api
+      - run: npm run test:resilience-persistence-api
