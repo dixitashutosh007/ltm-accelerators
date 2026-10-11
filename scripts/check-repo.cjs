@@ -17,10 +17,10 @@ const fail = (rule, file, detail) => failures.push(`[${rule}] ${file}${detail ? 
 // Cost IQ and Resilience IQ are maintained separately (another toolchain) and are not held to
 // these rules here. They are listed explicitly so any other file still gets checked.
 const SEPARATELY_MAINTAINED = [
-  /^Accelerators\/cost-iq/, /^Accelerators\/resilience-iq/, /^Accelerators\/assets\/cost-iq-/,
-  /^amplify\/functions\/(evaluate-cost-iq|evaluate-resilience-iq|manage-resilience-evidence)\//,
-  /^packages\/engine-core\/src\/accelerators\/(cost-iq|resilience-iq)\//,
-  /^resilience-iq\//, /^scripts\/(generate-cost-iq|validate-cost-iq|validate-resilience)/
+  /^Accelerators\/cost-iq/, /^Accelerators\/assets\/cost-iq-/,
+  /^amplify\/functions\/evaluate-cost-iq\//,
+  /^packages\/engine-core\/src\/accelerators\/cost-iq\//,
+  /^scripts\/(generate-cost-iq|validate-cost-iq)/
 ];
 const separatelyMaintained = f => SEPARATELY_MAINTAINED.some(re => re.test(f));
 

@@ -42,8 +42,8 @@
       ],
       "required": true,
       "ui": {
-        "interaction": "ranking",
-        "instruction": "Drag to arrange by business criticality. Most critical first.",
+        "interaction": "multi_select",
+        "instruction": "Select every type of service the business cannot operate without.",
         "multi": true
       }
     },
@@ -67,7 +67,7 @@
       "required": true,
       "ui": {
         "interaction": "slider_choice",
-        "instruction": "Move the scale to the closest current business tolerance."
+        "instruction": "Move the scale to the closest current business tolerance. No value is assumed: choose a point on the scale, or Unknown."
       }
     },
     {
@@ -91,7 +91,7 @@
       "required": true,
       "ui": {
         "interaction": "slider_choice",
-        "instruction": "Select the recovery objective on the scale."
+        "instruction": "Select the recovery objective on the scale. No value is assumed: choose a point on the scale, or Unknown."
       }
     },
     {
@@ -116,7 +116,7 @@
       "required": true,
       "ui": {
         "interaction": "slider_choice",
-        "instruction": "Select the maximum acceptable data loss on the scale."
+        "instruction": "Select the maximum acceptable data loss on the scale. No value is assumed: choose a point on the scale, or Unknown."
       }
     },
     {
