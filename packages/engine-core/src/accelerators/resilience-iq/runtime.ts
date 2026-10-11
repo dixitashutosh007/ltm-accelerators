@@ -485,7 +485,9 @@ function gapRegister(a: ResilienceAnswers, flags: Set<string>, score: number) {
   if (flags.has("recovery_capability_gap") || ["Never", ">2 years ago", "Unknown"].includes(str(a["EX-07"]))) add("G-02");
   if (flags.has("backup_resilience_gap")) add("G-03");
   if (flags.has("concentration_risk") || str(a["EX-12"]) === "Critical SPOFs exist") add("G-04");
-  if (["Yes", "Potentially"].includes(str(a["EX-08"]))) add("G-05");
+  // Untested cyber recovery or no clean-restore method (advisory AF-CY-04/05) is a cyber recovery gap even when
+  // ransomware was not declared in scope; the same flag already mandates CYBER-01/DATA-01.
+  if (["Yes", "Potentially"].includes(str(a["EX-08"])) || flags.has("cyber_recovery_gap")) add("G-05");
   if (flags.has("identity_recovery_gap")) add("G-06");
   if (flags.has("dependency_mapping_gap") || ["No", "Documented but stale"].includes(str(normalizedScoringValue("EX-05", a["EX-05"])))) add("G-07");
   if (str(a["EX-10"]) === "Yes, with no viable alternative" || flags.has("concentration_risk")) add("G-08");
@@ -820,10 +822,13 @@ export function evaluateResilienceIq(a: ResilienceAnswers): ResilienceResult {
     evidenceValidation,
     evidenceRegister,
     targetState: blueprint,
-    roadmap,
+    // Was the roadmap function itself (dropped from JSON); the report carries the computed waves.
+    roadmap: roadmap(gaps, preferred, cyberRisk(a)),
     governanceMetrics: (k.blueprintEngine.section_rules?.governance_and_metrics?.required_metrics ?? []) as string[],
     decisionPoints: (k.executiveReport.decision_points ?? []) as string[],
-    recommendationConfidence: recommendationConfidenceResult
+    recommendationConfidence: recommendationConfidenceResult,
+    // Declared on the report type and read by the page, but was never populated.
+    recommendationSensitivity
   };
 
   return {
@@ -851,6 +856,8 @@ export function evaluateResilienceIq(a: ResilienceAnswers): ResilienceResult {
     roadmap: roadmap(gaps, preferred, cyberRisk(a)),
     executiveSummary,
     executiveReport,
+    // Declared on ResilienceResult and read first by the page, but was never returned.
+    recommendationConfidence: recommendationConfidenceResult,
     decisionLog: [
       "Vendor-neutral strategy is selected before provider implementation mapping.",
       "RTO/RPO are treated as business requirements and are never inferred from technology.",
