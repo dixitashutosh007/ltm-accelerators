@@ -374,7 +374,6 @@ if (!advisoryLifecycle.preferredPattern) throw new Error("Completed advisory lif
 if (!advisoryLifecycle.blueprint) throw new Error("Completed advisory lifecycle should produce a target-state blueprint");
 
 if (advisoryLifecycle.executiveReport.postureScore !== advisoryLifecycle.postureScore) throw new Error("Executive report posture score must match runtime posture score");
-if (advisoryLifecycle.executiveReport.preferredPattern !== undefined && advisoryLifecycle.executiveReport.recoveryStrategy.preferred !== advisoryLifecycle.preferredPattern) throw new Error("Executive report preferred strategy must match runtime");
 if (advisoryLifecycle.executiveReport.recoveryStrategy.preferred !== advisoryLifecycle.preferredPattern) throw new Error("Recovery strategy report must match runtime preferred pattern");
 if (advisoryLifecycle.executiveReport.targetState !== advisoryLifecycle.blueprint) throw new Error("Executive report target state must match runtime blueprint");
 if (advisoryLifecycle.executiveReport.recommendationConfidence.level !== advisoryLifecycle.recommendationConfidence.level) throw new Error("Executive report recommendation confidence must match runtime");

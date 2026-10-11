@@ -1,4 +1,7 @@
-import { handler } from "./handler";
+import type { APIGatewayProxyStructuredResultV2 } from 'aws-lambda';
+import { handler as rawHandler } from './handler';
+
+const handler = async (e: any) => (await rawHandler(e)) as APIGatewayProxyStructuredResultV2;
 
 const event = (body: unknown) => ({
   requestContext: { http: { method: "POST" } },

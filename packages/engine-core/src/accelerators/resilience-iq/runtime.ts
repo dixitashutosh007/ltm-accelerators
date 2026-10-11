@@ -48,6 +48,16 @@ export interface EvidenceRegisterItem {
   affectsRecommendation: boolean;
 }
 
+/** The target-state blueprint, as targetStateBlueprint() builds it (the result's blueprint and the report's targetState). */
+export interface TargetStateBlueprint {
+  environment: string;
+  recoveryPattern: string;
+  principles: string[];
+  architectureLayers: string[];
+  architectureDecisions: string[];
+  blueprintIds: string[];
+}
+
 export interface ResilienceExecutiveReport {
   assessmentType: "Executive Scan";
   advisoryStatus: "initial" | "requirements_incomplete";
@@ -71,14 +81,7 @@ export interface ResilienceExecutiveReport {
   technologyMapping: Record<string, string[]>;
   evidenceValidation: Array<{ evidence: string; purpose: string }>;
   evidenceRegister: EvidenceRegisterItem[];
-  targetState: {
-    environment: string;
-    recoveryPattern: string;
-    principles: string[];
-    architectureLayers: string[];
-    architectureDecisions: string[];
-    blueprintIds: string[];
-  } | null;
+  targetState: TargetStateBlueprint | null;
   roadmap: Array<{ wave: string; window: string; actions: string[] }>;
   governanceMetrics: string[];
   decisionPoints: string[];
@@ -107,11 +110,7 @@ export interface ResilienceResult {
   evidenceRequests: string[];
   evidenceRegister: EvidenceRegisterItem[];
   technologyOptions: Record<string, string[]>;
-  blueprint: {
-    targetPrinciples: string[];
-    architectureLayers: string[];
-    blueprintIds: string[];
-  } | null;
+  blueprint: TargetStateBlueprint | null;
   roadmap: Array<{ wave: string; window: string; actions: string[] }>;
   decisionLog: string[];
   executiveSummary: string;
@@ -638,7 +637,7 @@ function targetStateBlueprint(
   if (mandatoryControls.includes("TP-05")) architectureDecisions.push("Reduce or explicitly govern concentration across providers, regions, networks and critical SaaS dependencies.");
   if (mandatoryControls.includes("DR-07")) architectureDecisions.push("Make dependency-aware recovery sequencing an explicit architectural control.");
 
-  const blueprintIds = ((k.blueprintEngine.recommendation_to_blueprint_mapping as any)[preferred] ?? []).slice();
+  const blueprintIds: string[] = ((k.blueprintEngine.recommendation_to_blueprint_mapping as any)[preferred] ?? []).slice();
   for (const g of gaps) {
     if (g.id === "G-05" && !blueprintIds.includes("BP-07")) blueprintIds.push("BP-07");
     if (g.id === "G-08" && !blueprintIds.includes("BP-08")) blueprintIds.push("BP-08");

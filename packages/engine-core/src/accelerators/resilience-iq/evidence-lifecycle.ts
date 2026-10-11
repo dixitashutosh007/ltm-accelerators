@@ -32,5 +32,5 @@ export function assertEvidenceStatusTransition(
 export function evidenceStatusTransitions(): Record<ResilienceEvidenceStatus, readonly ResilienceEvidenceStatus[]> {
   return Object.fromEntries(
     Object.entries(transitions).map(([status, next]) => [status, [...next]])
-  ) as Record<ResilienceEvidenceStatus, readonly ResilienceEvidenceStatus[]>;
+  ) as unknown as Record<ResilienceEvidenceStatus, readonly ResilienceEvidenceStatus[]>;
 }
