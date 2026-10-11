@@ -1,10 +1,54 @@
 /**
- * LTM Infrastructure Tech Advisory — Customer Reports Archive Utility
- * Region: ap-south-1 (Mumbai)
- * Bucket: ltm-advisory-reports-223833501993
+ * LTM Vantage — Customer Reports Archive Utility
+ * Talks to the Advisory API's /api/reports routes (Cognito-authenticated).
  */
 (function(window) {
-  const REPORTS_API_BASE = 'https://zvnmwxa9sf.execute-api.ap-south-1.amazonaws.com/api/reports';
+  // All calls go through the shared API client (assets/ltm-api.js), which attaches and
+  // renews the signed-in user's Cognito token.
+  // Pages that do not include runtime-config.js / ltm-api.js themselves get them loaded on demand.
+  function loadScript(src) {
+    return new Promise(function (resolve, reject) {
+      var el = document.createElement('script');
+      el.src = src;
+      el.onload = resolve;
+      el.onerror = function () { reject(new Error('Could not load ' + src)); };
+      document.head.appendChild(el);
+    });
+  }
+
+  let clientReady = null;
+  function ensureClient() {
+    if (window.LTM_API) return Promise.resolve(window.LTM_API);
+    if (!clientReady) {
+      clientReady = (window.LTM_CONFIG ? Promise.resolve() : loadScript('/assets/runtime-config.js'))
+        .then(function () { return window.LTM_API ? null : loadScript('/assets/ltm-api.js'); })
+        .then(function () { return window.LTM_API; });
+    }
+    return clientReady;
+  }
+
+  async function reportsFetch(path, options) {
+    const api = await ensureClient().catch(() => null);
+    if (!api) throw new Error('Please sign in to LTM Vantage to archive or view reports.');
+    return api.fetch('/api/reports' + path, options);
+  }
+
+  function escapeHtml(value) {
+    return String(value == null ? '' : value)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  }
+
+  async function checkAuth(resp) {
+    if (resp.status === 401) {
+      throw new Error('Your session has expired. Please sign in to the portal again.');
+    }
+    if (resp.status === 403) {
+      const data = await resp.json().catch(() => ({}));
+      throw new Error(data.error || 'You do not have permission for this action.');
+    }
+    return resp;
+  }
 
   function extractCleanBase64(pdfBase64) {
     let clean = (pdfBase64 || '').trim();
@@ -28,18 +72,15 @@
       throw new Error('PDF data string is empty or invalid.');
     }
 
-    const resp = await fetch(`${REPORTS_API_BASE}/save`, {
+    const resp = await checkAuth(await reportsFetch('/save', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
       body: JSON.stringify({
         acceleratorId,
         clientName: clientName || 'Enterprise Client',
         pdfBase64: cleanBase64,
         metadata: metadata || {}
       })
-    });
+    }));
 
     if (!resp.ok) {
       const errText = await resp.text();
@@ -50,14 +91,8 @@
   }
 
   async function listReportsFromS3(acceleratorId) {
-    const url = acceleratorId 
-      ? `${REPORTS_API_BASE}/list?acceleratorId=${encodeURIComponent(acceleratorId)}`
-      : `${REPORTS_API_BASE}/list`;
-
-    const resp = await fetch(url, {
-      method: 'GET',
-      headers: { 'Content-Type': 'application/json' }
-    });
+    const query = acceleratorId ? `?acceleratorId=${encodeURIComponent(acceleratorId)}` : '';
+    const resp = await checkAuth(await reportsFetch('/list' + query, { method: 'GET' }));
 
     if (!resp.ok) {
       throw new Error(`Failed to list reports (${resp.status})`);
@@ -66,25 +101,23 @@
     return await resp.json();
   }
 
-  async function deleteReportFromS3(key, requesterEmail) {
+  async function deleteReportFromS3(key) {
     if (!key) throw new Error('Report key is required.');
-    const resp = await fetch(`${REPORTS_API_BASE}/delete`, {
+    const resp = await checkAuth(await reportsFetch('/delete', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ key, requesterEmail: requesterEmail || '' })
-    });
+      body: JSON.stringify({ key })
+    }));
     const data = await resp.json();
     if (!data.ok) throw new Error(data.error || 'Failed to delete report.');
     return data;
   }
 
-  async function renameReportInS3(key, newClientName, requesterEmail) {
+  async function renameReportInS3(key, newClientName) {
     if (!key || !newClientName) throw new Error('Key and new name are required.');
-    const resp = await fetch(`${REPORTS_API_BASE}/rename`, {
+    const resp = await checkAuth(await reportsFetch('/rename', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ key, newClientName, requesterEmail: requesterEmail || '' })
-    });
+      body: JSON.stringify({ key, newClientName })
+    }));
     const data = await resp.json();
     if (!data.ok) throw new Error(data.error || 'Failed to rename report.');
     return data;
@@ -121,12 +154,12 @@
         <div style="padding: 20px 28px; background: rgba(255,255,255,0.015);">
           <div style="margin-bottom: 14px;">
             <div style="font-size: 11px; color: #64748B; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px;">Diagnostic Instrument</div>
-            <div style="color: #FFFFFF; font-size: 13.5px; font-weight: 600;">${accTitle}</div>
+            <div style="color: #FFFFFF; font-size: 13.5px; font-weight: 600;">${escapeHtml(accTitle)}</div>
           </div>
 
           <div style="margin-bottom: 16px;">
             <div style="font-size: 11px; color: #64748B; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px;">Client Organization / Label</div>
-            <input type="text" id="consentClientName" value="${clientName.replace(/"/g, '&quot;')}" style="width: 100%; box-sizing: border-box; background: #06090E; border: 1px solid #1E293B; border-radius: 8px; padding: 10px 14px; font-size: 13px; color: #FFFFFF; outline: none;">
+            <input type="text" id="consentClientName" value="${escapeHtml(clientName)}" style="width: 100%; box-sizing: border-box; background: #06090E; border: 1px solid #1E293B; border-radius: 8px; padding: 10px 14px; font-size: 13px; color: #FFFFFF; outline: none;">
           </div>
 
           <div style="background: rgba(16, 185, 129, 0.06); border: 1px solid rgba(16, 185, 129, 0.22); border-radius: 10px; padding: 12px 14px;">
@@ -195,11 +228,11 @@
         <button onclick="this.parentElement.parentElement.remove()" style="background:none;border:none;color:#9CA3AF;font-size:18px;cursor:pointer;">&times;</button>
       </div>
       <div style="font-size:13px;font-weight:600;color:#FFFFFF;margin-bottom:4px;">
-        ${result.clientName || 'Client Report'}
+        ${escapeHtml(result.clientName || 'Client Report')}
       </div>
       <div style="display:flex;gap:8px;margin-top:12px;">
-        <a href="${result.downloadUrl}" target="_blank" style="flex:1;text-align:center;text-decoration:none;background:#10B981;color:#042114;padding:7px 12px;border-radius:6px;font-size:11.5px;font-weight:700;">Open PDF &rarr;</a>
-        <button onclick="this.textContent='Copied!';setTimeout(()=>this.textContent='Copy Link',2000);navigator.clipboard.writeText('${result.downloadUrl}');" style="background:rgba(255,255,255,0.08);border:1px solid #374151;color:#D1D5DB;padding:7px 12px;border-radius:6px;font-size:11.5px;cursor:pointer;">Copy Link</button>
+        <a href="${escapeHtml(result.downloadUrl)}" target="_blank" style="flex:1;text-align:center;text-decoration:none;background:#10B981;color:#042114;padding:7px 12px;border-radius:6px;font-size:11.5px;font-weight:700;">Open PDF &rarr;</a>
+        <button onclick="this.textContent='Copied!';setTimeout(()=>this.textContent='Copy Link',2000);navigator.clipboard.writeText(this.dataset.url);" data-url="${escapeHtml(result.downloadUrl)}" style="background:rgba(255,255,255,0.08);border:1px solid #374151;color:#D1D5DB;padding:7px 12px;border-radius:6px;font-size:11.5px;cursor:pointer;">Copy Link</button>
       </div>
     `;
 

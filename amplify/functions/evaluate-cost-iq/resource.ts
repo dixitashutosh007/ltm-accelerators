@@ -4,6 +4,7 @@ export const evaluateCostIqFunction = defineFunction({
   name: 'evaluate-cost-iq',
   entry: './handler.ts',
   environment: {
-    OPENAI_API_KEY: secret('OPENAI_API_KEY')
+    GEMINI_API_KEY: secret('GEMINI_API_KEY'),
+    GEMINI_MODEL: 'gemini-3.8-flash'
   }
 });

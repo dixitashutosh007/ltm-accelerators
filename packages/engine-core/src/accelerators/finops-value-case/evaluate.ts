@@ -18,13 +18,21 @@ export interface EvaluationResult {
   urgencyIndex: number;
   needIndex: number | null;
   annualSpend: number | null;
+  /** Annual spend growth stated by the client (E5), or the default when not given as a number. */
   growthRate: number;
+  /** The growth used for the 3-year projection: growthRate capped to the knowledge base's range. */
+  projectionGrowthRate: number;
   wasteBand: {
-    low: number;
-    high: number;
+    /** False when neither visibility nor control was answered: waste is then not quantified. */
+    assessed: boolean;
+    low: number | null;
+    high: number | null;
     label: string;
     anchor: string;
+    /** The BFSI uplift actually applied to the upper bound (after the cap). */
     uplift: number;
+    /** The BFSI uplift before the cap. */
+    upliftUncapped: number;
     cap: number;
     isBfsi: boolean;
   };
@@ -46,9 +54,38 @@ export interface EvaluationResult {
   timestamp: string;
 }
 
+/** "We don't know": '__DK__' for any question, or 'dk' on a yes / no / don't-know question. */
+export function isDontKnow(q: any, a: any): boolean {
+  return a === '__DK__' || (q?.answer_type === 'boolean_dk' && a === 'dk');
+}
+
+/**
+ * Scales an allocation to whole numbers that total exactly 100 (largest remainder).
+ * Returns null when nothing was allocated. The page sends the same normalised values.
+ */
+export function normaliseAllocation(a: any): Record<string, number> | null {
+  if (!a || typeof a !== 'object' || Array.isArray(a)) return null;
+  const keys = Object.keys(a).filter(k => typeof a[k] === 'number' && Number.isFinite(a[k]) && a[k] >= 0);
+  const total = keys.reduce((t, k) => t + a[k], 0);
+  if (!keys.length || total <= 0) return null;
+  const raw = keys.map(k => ({ k, v: (a[k] / total) * 100 }));
+  const out: Record<string, number> = {};
+  raw.forEach(r => (out[r.k] = Math.floor(r.v)));
+  let left = 100 - raw.reduce((t, r) => t + out[r.k], 0);
+  [...raw]
+    .sort((x, y) => y.v - Math.floor(y.v) - (x.v - Math.floor(x.v)))
+    .forEach(r => {
+      if (left > 0) {
+        out[r.k]++;
+        left--;
+      }
+    });
+  return out;
+}
+
 export function qScore(q: any, a: any): number | null {
   if (a === undefined || a === null) return null;
-  if (a === '__DK__') return 0;
+  if (isDontKnow(q, a)) return 0;
 
   switch (q.answer_type) {
     case 'single_select': {
@@ -76,10 +113,11 @@ export function qScore(q: any, a: any): number | null {
       return Math.max(0, Math.min(100, p));
     }
     case 'allocation_100': {
-      const vals: number[] = Object.values(a || {});
-      const total = vals.reduce((x, y) => x + y, 0);
-      if (total !== 100) return null;
-      const nb = (a && a.nobody) || 0;
+      // A split that does not total 100 is scaled to 100 rather than ignored.
+      const al = normaliseAllocation(a);
+      if (!al) return null;
+      const vals: number[] = Object.values(al);
+      const nb = al.nobody || 0;
       let sc = 100 - nb * 1.6;
       const mx = Math.max(...vals, 0);
       if (mx > 70) sc -= (mx - 70) * 0.6;
@@ -91,7 +129,8 @@ export function qScore(q: any, a: any): number | null {
 }
 
 export function getCurrencySymbol(currencyId: string = 'gbp', currencies: any[] = defaultKb.meta.currencies): string {
-  const c = currencies.find((cur: any) => cur.id === currencyId);
+  const id = String(currencyId || '').toLowerCase();
+  const c = currencies.find((cur: any) => cur.id === id);
   return c ? c.symbol : '£';
 }
 
@@ -135,7 +174,13 @@ export function evaluateFinOpsValueCase(
   // 2. Spend & Growth
   const rawSpend = answers['E3'];
   const spend = rawSpend === undefined || rawSpend === '__DK__' ? null : rawSpend;
-  const growth = answers['E5'] === undefined ? 25 : answers['E5'];
+  const DEFAULT_GROWTH = 25;
+  const rawGrowth = answers['E5'];
+  const growth: number = typeof rawGrowth === 'number' && Number.isFinite(rawGrowth) ? rawGrowth : DEFAULT_GROWTH;
+  const pg = kb.meta.waste_model.projection_growth || {};
+  const growthMin = typeof pg.min === 'number' ? pg.min : -25;
+  const growthMax = typeof pg.max === 'number' ? pg.max : 60;
+  const projectionGrowth = Math.max(growthMin, Math.min(growthMax, growth));
 
   // 3. Urgency Index
   let urgency = 0;
@@ -181,24 +226,46 @@ export function evaluateFinOpsValueCase(
   const v = signals.visibility;
   const c = signals.control;
   const parts = [v, c].filter(x => x !== null) as number[];
-  const cap = parts.length ? parts.reduce((a, b) => a + b, 0) / parts.length : 0;
+  // Waste is only quantified when something feeding visibility or control was answered.
+  const assessed = parts.length > 0;
+  const cap = assessed ? parts.reduce((a, b) => a + b, 0) / parts.length : 0;
   const band =
     kb.meta.waste_model.bands.find((b: any) => cap <= b.max_capability) ||
     kb.meta.waste_model.bands[kb.meta.waste_model.bands.length - 1];
   const mods = kb.meta.benchmarks.bfsi_modifiers;
-  const isBfsi = Boolean(org.sector_class === 'bfsi' || org.sector?.toLowerCase().includes('banking') || org.sector?.toLowerCase().includes('financial'));
+  // The explicit classification wins; the free-text sector is only a fallback when none was given.
+  const sectorText = String(org.sector || '').toLowerCase();
+  const isBfsi = org.sector_class
+    ? org.sector_class === 'bfsi'
+    : sectorText.includes('banking') || sectorText.includes('financial');
   const full = mods.factors.reduce((a: number, f: any) => a + f.pts, 0);
-  const uplift = isBfsi ? full * (1 - cap / 100) : 0;
+  const upliftUncapped = isBfsi && assessed ? full * (1 - cap / 100) : 0;
+  const high = Math.min(mods.cap, band.high + upliftUncapped);
 
-  const wasteBandResult = {
-    low: band.low,
-    high: Math.min(mods.cap, band.high + uplift),
-    label: band.label,
-    anchor: band.anchor,
-    uplift,
-    cap: Math.round(cap),
-    isBfsi
-  };
+  const wasteBandResult: EvaluationResult['wasteBand'] = assessed
+    ? {
+        assessed: true,
+        low: band.low,
+        high,
+        label: band.label,
+        anchor: band.anchor,
+        // The uplift actually applied, so the page quotes what was used.
+        uplift: Math.max(0, high - band.high),
+        upliftUncapped,
+        cap: Math.round(cap),
+        isBfsi
+      }
+    : {
+        assessed: false,
+        low: null,
+        high: null,
+        label: 'Not assessed',
+        anchor: 'No visibility or control questions were answered, so the waste band cannot be estimated.',
+        uplift: 0,
+        upliftUncapped: 0,
+        cap: 0,
+        isBfsi
+      };
 
   let exposureResult: { band: any; y1: [number, number] | null; y3: [number, number] | null } = {
     band: wasteBandResult,
@@ -206,15 +273,18 @@ export function evaluateFinOpsValueCase(
     y3: null
   };
 
-  if (spend !== null) {
-    const gRate = Math.max(0, growth) / 100;
-    const y1: [number, number] = [spend * wasteBandResult.low, spend * wasteBandResult.high];
+  const wasteLow = wasteBandResult.low;
+  const wasteHigh = wasteBandResult.high;
+  if (spend !== null && wasteLow !== null && wasteHigh !== null) {
+    // Assumes today's waste rates persist and spend grows at the capped rate (which can be negative).
+    const gRate = projectionGrowth / 100;
+    const y1: [number, number] = [spend * wasteLow, spend * wasteHigh];
     let cl = 0;
     let ch = 0;
     let s = spend;
     for (let i = 0; i < 3; i++) {
-      cl += s * wasteBandResult.low;
-      ch += s * wasteBandResult.high;
+      cl += s * wasteLow;
+      ch += s * wasteHigh;
       s *= 1 + gRate;
     }
     exposureResult = {
@@ -234,11 +304,11 @@ export function evaluateFinOpsValueCase(
   // 8. Blind Spots
   const blindSpotsList: Array<{ questionId: string; text: string }> = [];
   kb.questions.forEach((q: any) => {
-    if (answers[q.id] === '__DK__' && q.dk_blind) {
+    if (q.dk_blind && isDontKnow(q, answers[q.id])) {
       blindSpotsList.push({ questionId: q.id, text: q.dk_blind });
     }
   });
-  const alloc = answers['O2'];
+  const alloc = normaliseAllocation(answers['O2']);
   if (alloc && alloc.nobody > 20) {
     blindSpotsList.push({
       questionId: 'O2',
@@ -246,17 +316,22 @@ export function evaluateFinOpsValueCase(
     });
   }
 
-  // 9. Confidence
+  // 9. Confidence: the share of scored questions (those that feed a signal) answered with something other
+  // than "don't know". Unscored context questions and don't-knows do not count.
   const bsCount = blindSpotsList.length;
-  const answeredCount = Object.keys(answers).length;
+  const scoredQuestions = kb.questions.filter((q: any) => q.signals && q.signals.length);
+  const answeredScored = scoredQuestions.filter(
+    (q: any) => !isDontKnow(q, answers[q.id]) && qScore(q, answers[q.id]) !== null
+  ).length;
+  const answeredShare = scoredQuestions.length ? answeredScored / scoredQuestions.length : 0;
   let confidenceResult: { label: string; color: string; note: string };
-  if (bsCount >= 6 || answeredCount < 12) {
+  if (bsCount >= 6 || answeredShare < 0.4) {
     confidenceResult = {
       label: 'Low confidence',
       color: '#FF5E4F',
       note: 'A high number of unknowns means these figures are directional only. A billing-data baseline is required before they can be relied upon.'
     };
-  } else if (bsCount >= 3) {
+  } else if (bsCount >= 3 || answeredShare < 0.7) {
     confidenceResult = {
       label: 'Moderate confidence',
       color: '#B26A00',
@@ -302,23 +377,34 @@ export function evaluateFinOpsValueCase(
   const relevantCaseStudies = scoredCaseStudies.map((x: any) => x.cs);
 
   // 12. FinOps Optimization Streams (Roadmap)
-  const sigV = signals.visibility || 50;
-  const sigP = signals.predictability || 50;
-  const sigO = signals.ownership || 50;
-  const sigC = signals.control || 50;
-  const sigVal = signals.value || 50;
+  // A signal with no answers counts as neutral (50); a genuine score of 0 stays 0.
+  const sigV = signals.visibility ?? 50;
+  const sigP = signals.predictability ?? 50;
+  const sigO = signals.ownership ?? 50;
+  const sigC = signals.control ?? 50;
+  const sigVal = signals.value ?? 50;
 
+  // Answer scores come from the knowledge base (an unknown answer scores 0); unanswered uses the default.
+  const answerScore = (id: string, unanswered: number): number => {
+    const q = kb.questions.find((x: any) => x.id === id);
+    const sc = q ? qScore(q, answers[id]) : null;
+    return sc ?? unanswered;
+  };
   const commitCov = typeof answers['C2'] === 'number' ? answers['C2'] : 20;
-  const decommission = answers['C3'] !== undefined ? (answers['C3'] === '__DK__' ? 0 : [100, 80, 55, 20, 0][answers['C3']] || 30) : 30;
-  const netGovernance = answers['C5'] !== undefined ? (answers['C5'] === '__DK__' ? 0 : [100, 65, 30, 0][answers['C5']] || 25) : 30;
-  const costAttr = answers['V1'] !== undefined ? (answers['V1'] === '__DK__' ? 0 : [100, 70, 35, 0][answers['V1']] || 30) : 30;
-  const variance = typeof answers['P1'] === 'number' ? answers['P1'] : 15;
+  const decommission = answerScore('C3', 30);
+  const netGovernance = answerScore('C5', 30);
+  const costAttr = answerScore('V1', 30);
+  // Forecast variance scored on the P1 question's own scale (0-60%, inverted). Unanswered or "don't know"
+  // uses the question's default variance, as before.
+  const qP1 = kb.questions.find((x: any) => x.id === 'P1');
+  const p1Answer = typeof answers['P1'] === 'number' ? answers['P1'] : (qP1?.slider?.default ?? 15);
+  const varianceScore = (qP1 ? qScore(qP1, p1Answer) : null) ?? 0;
 
   const rateScore = Math.round(0.6 * commitCov + 0.4 * sigC);
   const hygieneScore = Math.round(0.5 * decommission + 0.5 * sigC);
   const archScore = Math.round(0.5 * netGovernance + 0.3 * sigC + 0.2 * sigV);
   const attrScore = Math.round(0.5 * costAttr + 0.3 * sigV + 0.2 * sigO);
-  const govScore = Math.round(Math.max(0, 100 - variance * 2.2) * 0.4 + 0.3 * sigP + 0.3 * sigVal);
+  const govScore = Math.round(0.4 * varianceScore + 0.3 * sigP + 0.3 * sigVal);
 
   const rawStreams = [
     {
@@ -428,17 +514,22 @@ export function evaluateFinOpsValueCase(
     }
   ];
 
+  // Each stream's share of the waste range is its benchmark weight scaled by its gap, renormalised so the
+  // shares still sum to the whole range. A stream with no gap has no addressable value.
+  const weightedGap = rawStreams.reduce((t, st) => t + st.weight * Math.max(0, 100 - st.score), 0);
   const streams = rawStreams
     .map(st => {
       const gap = 100 - st.score;
+      const valueShare = weightedGap > 0 ? (st.weight * Math.max(0, gap)) / weightedGap : 0;
       let priority = 'Foundational';
       let priorityClass = 'p-found';
       let priorityOrder = 3;
-      if (st.score < 45 || gap >= 55) {
+      // Scores are whole numbers, so these equal the former "score < 45 || gap >= 55" and "score < 68 || gap >= 32".
+      if (st.score <= 45) {
         priority = 'Critical (P1)';
         priorityClass = 'p-crit';
         priorityOrder = 1;
-      } else if (st.score < 68 || gap >= 32) {
+      } else if (st.score <= 68) {
         priority = 'High (P2)';
         priorityClass = 'p-high';
         priorityOrder = 2;
@@ -446,16 +537,15 @@ export function evaluateFinOpsValueCase(
 
       let savingsShareLow: number | null = null;
       let savingsShareHigh: number | null = null;
-      if (spend !== null) {
-        const lowTotal = spend * wasteBandResult.low;
-        const highTotal = spend * wasteBandResult.high;
-        savingsShareLow = Math.round(lowTotal * st.weight);
-        savingsShareHigh = Math.round(highTotal * st.weight);
+      if (spend !== null && wasteLow !== null && wasteHigh !== null && valueShare > 0) {
+        savingsShareLow = Math.round(spend * wasteLow * valueShare);
+        savingsShareHigh = Math.round(spend * wasteHigh * valueShare);
       }
 
       return {
         ...st,
         gap,
+        valueShare,
         priority,
         priorityClass,
         priorityOrder,
@@ -474,6 +564,7 @@ export function evaluateFinOpsValueCase(
     needIndex,
     annualSpend: spend,
     growthRate: growth,
+    projectionGrowthRate: projectionGrowth,
     wasteBand: wasteBandResult,
     exposure: exposureResult,
     verdict,

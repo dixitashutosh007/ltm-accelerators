@@ -8,15 +8,16 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="generator" content="Strategy IQ v2.2 · LTM Infrastructure Tech Advisory">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self' blob: data:; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https://www.ltm.com; connect-src 'self' blob: data: https://api.openai.com https://api.anthropic.com https://generativelanguage.googleapis.com https://zvnmwxa9sf.execute-api.ap-south-1.amazonaws.com https://*.amazonaws.com; frame-ancestors 'self';">
-  <title>Strategy IQ — Enterprise IT Strategy &amp; Modernization Diagnostic · LTM</title>
+  <meta name="generator" content="Strategy IQ v2.2 · LTM Vantage">
+  <title>Strategy IQ — Enterprise IT Strategy &amp; Modernization Diagnostic · LTM Vantage</title>
   
   <!-- CDNs for Visual Charting & PDF Dossier -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
   <!-- S3 Customer Reports Client & RBAC Guard -->
+  <script src="/assets/runtime-config.js"></script>
+  <script src="/assets/ltm-api.js"></script>
   <script src="/assets/s3-reports.js"></script>
   <script src="/assets/rbac-guard.js" data-tool="strategy-iq"></script>
 
@@ -625,6 +626,22 @@
       color: #FFFFFF;
       box-shadow: 0 2px 6px rgba(34, 104, 130, 0.3);
     }
+    /* Visual default for a row not yet rated: shown, but not stored or counted until clicked */
+    .rating-btn.default {
+      border-style: dashed;
+      border-color: var(--ltm-blue);
+      color: var(--ltm-blue);
+    }
+    .unanswered-hint {
+      font-size: 11.5px;
+      color: var(--ink3);
+      margin-top: 6px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .opt-row.none-row .opt-title { font-style: italic; }
 
     /* Drag & Rank */
     .rank-list-wrap {
@@ -1243,7 +1260,7 @@
       </div>
     </div>
 
-    <div class="splash-brand"><span class="dot"></span> LTM INFRASTRUCTURE TECH ADVISORY</div>
+    <div class="splash-brand"><span class="dot"></span> LTM VANTAGE · RESPONSIBLE ADVISORY</div>
     <h1 class="splash-title">Strategy IQ</h1>
     <p class="splash-subtitle">Enterprise IT Strategy &amp; Modernization Advisory Platform</p>
 
@@ -1269,7 +1286,7 @@
       <span class="brand-badge">LTM</span>
       <div>
         <div class="brand-title">Strategy IQ</div>
-        <div class="brand-sub">Infrastructure Tech Advisory &middot; CIO Modernization</div>
+        <div class="brand-sub">LTM Vantage &middot; Responsible Advisory</div>
       </div>
     </a>
     <div class="topbar-actions">
@@ -1307,7 +1324,7 @@
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;flex-wrap:wrap;gap:10px">
         <div>
           <h2 style="font-size:19px;color:var(--ink);margin-bottom:3px">Enterprise Diagnostic Scope</h2>
-          <p style="font-size:13px;color:var(--ink3)">Calibrates peer benchmark percentiles, tech-debt risk sizing, and modernization roadmap.</p>
+          <p style="font-size:13px;color:var(--ink3)">Sets the context for the maturity readout, the indicative tech-debt sizing, and the modernization roadmap.</p>
         </div>
         <button class="btn btn-ghost btn-sm" onclick="openArchetypeModal()">Load Sample Archetype</button>
       </div>
@@ -1451,7 +1468,7 @@
     </div>
     <div class="modal-body">
       <p style="font-size:13.5px;color:var(--ink2);line-height:1.55;margin-bottom:14px">
-        The Strategy IQ Diagnostic requires all key sections to be completed to calculate statistically sound peer benchmarks, technical debt sizing, and actionable modernization roadmaps.
+        The Strategy IQ Diagnostic requires every scored question to be answered so that the maturity readout, indicative tech-debt sizing and modernization roadmap reflect your answers rather than defaults.
       </p>
       
       <div style="background:var(--bg2);border:1px solid var(--line);border-radius:var(--radius-sm);padding:14px;margin-bottom:18px">
@@ -1481,7 +1498,7 @@
     </div>
     <div class="modal-body">
       <p style="font-size:13px;color:var(--ink3);margin-bottom:16px">
-        Load a realistic pre-configured enterprise archetype to test the diagnostic engine, explore radar benchmarks, and see immediate CIO readouts.
+        Load a realistic pre-configured enterprise archetype to test the diagnostic engine, explore the maturity radar, and see immediate CIO readouts.
       </p>
 
       <div class="grid2">
@@ -1618,7 +1635,7 @@
     </div>
     <div class="modal-body">
       <p style="font-size:13px;color:var(--ink2);line-height:1.5;margin-bottom:16px">
-        Schedule a 30-minute executive briefing with <b>LTM Infrastructure Tech Advisory</b> practice leadership to review your complete 24-page IT Strategy Dossier, peer radar benchmarks, and customized 3-Horizon modernization roadmap.
+        Schedule a 30-minute executive briefing with <b>LTM Infrastructure Tech Advisory</b> practice leadership to review your complete 24-page IT Strategy Dossier, maturity radar, and customized 3-Horizon modernization roadmap.
       </p>
 
       <div class="grid2" style="margin-bottom:14px">
@@ -1670,7 +1687,7 @@
   <div class="modal-content" style="max-width:860px">
     <div class="modal-head">
       <div>
-        <div class="eyebrow" style="color:var(--ltm-coral)">LTM ADVISORY COMMERCIAL BLUEPRINT</div>
+        <div class="eyebrow" style="color:var(--ltm-coral)">LTM VANTAGE &middot; COMMERCIAL BLUEPRINT</div>
         <h3 style="font-size:18px;margin-top:2px">Statement of Work (SOW) &middot; Advisory Proposal</h3>
       </div>
       <button class="modal-close-btn" onclick="closeSOWModal()">&times;</button>
@@ -1729,11 +1746,11 @@ const STRATEGY_QUESTIONS = [
     q: "How intentionally is IT strategy coupled with enterprise business strategy?",
     hint: "Evaluates whether technology is treated as a back-office cost center or a co-author of market differentiation.",
     opts: [
-      { text: "<b>Level 1 · Nascent:</b> Isolated IT roadmap with zero reference to business P&L outcomes", score: 1 },
-      { text: "<b>Level 2 · Emerging:</b> Periodic presentation of IT plans with loose references to corporate goals", score: 2 },
-      { text: "<b>Level 3 · Established:</b> Documented alignment matrices mapping projects to strategic priorities", score: 3 },
-      { text: "<b>Level 4 · Advanced:</b> Shared OKRs and joint accountability between IT and business executives", score: 4 },
-      { text: "<b>Level 5 · Leading:</b> Continuous co-design where technology directly originates new revenue models", score: 5 }
+      { text: "<b>Level 1 · Nascent:</b> Isolated IT roadmap with zero reference to business P&L outcomes" },
+      { text: "<b>Level 2 · Emerging:</b> Periodic presentation of IT plans with loose references to corporate goals" },
+      { text: "<b>Level 3 · Established:</b> Documented alignment matrices mapping projects to strategic priorities" },
+      { text: "<b>Level 4 · Advanced:</b> Shared OKRs and joint accountability between IT and business executives" },
+      { text: "<b>Level 5 · Leading:</b> Continuous co-design where technology directly originates new revenue models" }
     ]
   },
   {
@@ -1757,11 +1774,11 @@ const STRATEGY_QUESTIONS = [
     q: "How is the digital/technology value proposition perceived by the Board and CEO?",
     hint: "Strategic posture of IT in boardroom capital allocation decisions.",
     opts: [
-      { text: "<b>Level 1 · Utility Cost Center:</b> Subject to arbitrary across-the-board budget reduction targets", score: 1 },
-      { text: "<b>Level 2 · Operational Enabler:</b> Funded primarily to keep the lights on and satisfy compliance mandates", score: 2 },
-      { text: "<b>Level 3 · Respected Service Partner:</b> Dedicated funding allocated for business process automation", score: 3 },
-      { text: "<b>Level 4 · Strategic Growth Driver:</b> Primary driver of customer experience, retention, and speed-to-market", score: 4 },
-      { text: "<b>Level 5 · Core Business Multiplier:</b> Foundational board-level value multiplier and competitive differentiator", score: 5 }
+      { text: "<b>Level 1 · Utility Cost Center:</b> Subject to arbitrary across-the-board budget reduction targets" },
+      { text: "<b>Level 2 · Operational Enabler:</b> Funded primarily to keep the lights on and satisfy compliance mandates" },
+      { text: "<b>Level 3 · Respected Service Partner:</b> Dedicated funding allocated for business process automation" },
+      { text: "<b>Level 4 · Strategic Growth Driver:</b> Primary driver of customer experience, retention, and speed-to-market" },
+      { text: "<b>Level 5 · Core Business Multiplier:</b> Foundational board-level value multiplier and competitive differentiator" }
     ]
   },
   {
@@ -1769,11 +1786,11 @@ const STRATEGY_QUESTIONS = [
     q: "Which Business Architecture & Strategic Mapping artifacts are active in practice?",
     hint: "Select all that are maintained, actively used, and reviewed with business stakeholders.",
     opts: [
-      { text: "Documented Enterprise Business Capability Model (Level 1–3 capabilities defined)", score: 1 },
-      { text: "Value Stream Mapping tying customer journeys to underlying IT systems", score: 1 },
-      { text: "Systems-to-Capability Heatmap highlighting technical health and redundancy", score: 1 },
-      { text: "Domain Data Architecture models governed by designated business data stewards", score: 1 },
-      { text: "Dynamic runtime telemetry linking business KPIs directly to system performance", score: 1 }
+      { text: "Documented Enterprise Business Capability Model (Level 1–3 capabilities defined)" },
+      { text: "Value Stream Mapping tying customer journeys to underlying IT systems" },
+      { text: "Systems-to-Capability Heatmap highlighting technical health and redundancy" },
+      { text: "Domain Data Architecture models governed by designated business data stewards" },
+      { text: "Dynamic runtime telemetry linking business KPIs directly to system performance" }
     ]
   },
 
@@ -1783,11 +1800,11 @@ const STRATEGY_QUESTIONS = [
     q: "What is the primary structure of your technology delivery operating model?",
     hint: "Distinction between project-based handoff silos and dedicated cross-functional product squads.",
     opts: [
-      { text: "<b>Level 1 · Siloed Waterfall:</b> Rigid project-mode silos with painful cross-departmental handover chains", score: 1 },
-      { text: "<b>Level 2 · Component Teams:</b> Component-based delivery teams with fragmented accountability and ticketing queues", score: 2 },
-      { text: "<b>Level 3 · Hybrid Matrix:</b> Product squads piloted in digital channels, while core platforms remain in waterfall silos", score: 3 },
-      { text: "<b>Level 4 · Product & Platform TOM:</b> Standardized product-and-platform operating model across core business domains", score: 4 },
-      { text: "<b>Level 5 · Scaled Product Flow:</b> Scaled team topologies with autonomous squads, golden paths, and flow telemetry", score: 5 }
+      { text: "<b>Level 1 · Siloed Waterfall:</b> Rigid project-mode silos with painful cross-departmental handover chains" },
+      { text: "<b>Level 2 · Component Teams:</b> Component-based delivery teams with fragmented accountability and ticketing queues" },
+      { text: "<b>Level 3 · Hybrid Matrix:</b> Product squads piloted in digital channels, while core platforms remain in waterfall silos" },
+      { text: "<b>Level 4 · Product & Platform TOM:</b> Standardized product-and-platform operating model across core business domains" },
+      { text: "<b>Level 5 · Scaled Product Flow:</b> Scaled team topologies with autonomous squads, golden paths, and flow telemetry" }
     ]
   },
   {
@@ -1817,11 +1834,11 @@ const STRATEGY_QUESTIONS = [
     q: "How seamlessly do business product owners and engineering squads collaborate?",
     hint: "Proximity of software engineering to end customer feedback and commercial decision-makers.",
     opts: [
-      { text: "<b>Level 1 · Adversarial Handover:</b> Business writes heavy specs and throws them over the wall to IT", score: 1 },
-      { text: "<b>Level 2 · Intermediated:</b> Business analysts act as intermediaries with delayed feedback and mismatched intent", score: 2 },
-      { text: "<b>Level 3 · Nominal Participation:</b> Product owners present in ceremonies but engineers remain insulated from customers", score: 3 },
-      { text: "<b>Level 4 · Co-Located Squads:</b> True cross-functional product squads with shared customer empathy and weekly releases", score: 4 },
-      { text: "<b>Level 5 · Autonomous Commercial Squads:</b> Empowered teams with direct authority to experiment, measure, and pivot", score: 5 }
+      { text: "<b>Level 1 · Adversarial Handover:</b> Business writes heavy specs and throws them over the wall to IT" },
+      { text: "<b>Level 2 · Intermediated:</b> Business analysts act as intermediaries with delayed feedback and mismatched intent" },
+      { text: "<b>Level 3 · Nominal Participation:</b> Product owners present in ceremonies but engineers remain insulated from customers" },
+      { text: "<b>Level 4 · Co-Located Squads:</b> True cross-functional product squads with shared customer empathy and weekly releases" },
+      { text: "<b>Level 5 · Autonomous Commercial Squads:</b> Empowered teams with direct authority to experiment, measure, and pivot" }
     ]
   },
 
@@ -1831,11 +1848,11 @@ const STRATEGY_QUESTIONS = [
     q: "How structured is your Application Portfolio Management (APM) & TIME scoring?",
     hint: "Tolerate, Invest, Migrate, Eliminate methodology applied across systems.",
     opts: [
-      { text: "<b>Level 1 · Untracked:</b> No central inventory; applications tracked across disparate informal spreadsheets", score: 1 },
-      { text: "<b>Level 2 · Static CMDB:</b> CMDB contains system names but lacks business value, cost, or fitness ratings", score: 2 },
-      { text: "<b>Level 3 · Periodic Survey:</b> Annual APM survey categorizing applications by high-level lifecycle tags", score: 3 },
-      { text: "<b>Level 4 · Active TIME Governance:</b> Rigorous TIME framework actively driving retirement and modernization budgets", score: 4 },
-      { text: "<b>Level 5 · Real-Time Observability:</b> Continuous real-time APM telemetry scoring cost, technical risk, and business fitness", score: 5 }
+      { text: "<b>Level 1 · Untracked:</b> No central inventory; applications tracked across disparate informal spreadsheets" },
+      { text: "<b>Level 2 · Static CMDB:</b> CMDB contains system names but lacks business value, cost, or fitness ratings" },
+      { text: "<b>Level 3 · Periodic Survey:</b> Annual APM survey categorizing applications by high-level lifecycle tags" },
+      { text: "<b>Level 4 · Active TIME Governance:</b> Rigorous TIME framework actively driving retirement and modernization budgets" },
+      { text: "<b>Level 5 · Real-Time Observability:</b> Continuous real-time APM telemetry scoring cost, technical risk, and business fitness" }
     ]
   },
   {
@@ -1870,11 +1887,11 @@ const STRATEGY_QUESTIONS = [
     q: "What is the architectural maturity of your enterprise integration backbone?",
     hint: "Decoupling between systems via APIs/events versus point-to-point batch files.",
     opts: [
-      { text: "<b>Level 1 · Point-to-Point Spaghetti:</b> Fragile direct database links, batch CSV exports, and scheduled FTP scripts", score: 1 },
-      { text: "<b>Level 2 · Monolithic ESB:</b> Legacy on-prem Enterprise Service Bus creating an operational bottleneck", score: 2 },
-      { text: "<b>Level 3 · Hybrid APIs:</b> Central API gateway with REST endpoints exposed for high-priority systems", score: 3 },
-      { text: "<b>Level 4 · Governed Event Architecture:</b> Standardized API catalog combined with an enterprise event-driven backbone", score: 4 },
-      { text: "<b>Level 5 · Composable Mesh:</b> Enterprise event mesh with published developer contracts, schema registries, and SLOs", score: 5 }
+      { text: "<b>Level 1 · Point-to-Point Spaghetti:</b> Fragile direct database links, batch CSV exports, and scheduled FTP scripts" },
+      { text: "<b>Level 2 · Monolithic ESB:</b> Legacy on-prem Enterprise Service Bus creating an operational bottleneck" },
+      { text: "<b>Level 3 · Hybrid APIs:</b> Central API gateway with REST endpoints exposed for high-priority systems" },
+      { text: "<b>Level 4 · Governed Event Architecture:</b> Standardized API catalog combined with an enterprise event-driven backbone" },
+      { text: "<b>Level 5 · Composable Mesh:</b> Enterprise event mesh with published developer contracts, schema registries, and SLOs" }
     ]
   },
 
@@ -1884,11 +1901,11 @@ const STRATEGY_QUESTIONS = [
     q: "How quantitatively is technical debt measured and sized across the enterprise?",
     hint: "Financial and operational quantification of architectural compromises.",
     opts: [
-      { text: "<b>Level 1 · Unmeasured:</b> Tech debt is dismissed as engineer complaining; zero visibility into liability", score: 1 },
-      { text: "<b>Level 2 · Anecdotal Register:</b> Informally maintained lists of legacy grievances with no financial sizing", score: 2 },
-      { text: "<b>Level 3 · Risk-Weighted Backlog:</b> Documented tech-debt backlog with qualitative risk severity ratings", score: 3 },
-      { text: "<b>Level 4 · Quantified Balance Sheet:</b> Fully sized debt register with estimated business remediation costs and outage risks", score: 4 },
-      { text: "<b>Level 5 · Boardroom Index:</b> Tech Debt Index integrated directly into corporate risk registers and capital governance", score: 5 }
+      { text: "<b>Level 1 · Unmeasured:</b> Tech debt is dismissed as engineer complaining; zero visibility into liability" },
+      { text: "<b>Level 2 · Anecdotal Register:</b> Informally maintained lists of legacy grievances with no financial sizing" },
+      { text: "<b>Level 3 · Risk-Weighted Backlog:</b> Documented tech-debt backlog with qualitative risk severity ratings" },
+      { text: "<b>Level 4 · Quantified Balance Sheet:</b> Fully sized debt register with estimated business remediation costs and outage risks" },
+      { text: "<b>Level 5 · Boardroom Index:</b> Tech Debt Index integrated directly into corporate risk registers and capital governance" }
     ]
   },
   {
@@ -1897,7 +1914,7 @@ const STRATEGY_QUESTIONS = [
     hint: "Dedicated capacity allocated for refactoring, architectural upgrades, and deprecation.",
     sliderConfig: {
       min: 0, max: 40, step: 5, defaultVal: 10,
-      ticks: ["0% (Firefighting)", "10%", "20% (Recommended)", "30%", "40%+ (Deep Refactoring)"],
+      ticks: ["0% (Firefighting)", "10%", "20%", "30%", "40%+ (Deep Refactoring)"],
       descs: [
         "Level 1 (0%): Zero capacity; 100% of bandwidth hijacked by emergency firefighting and feature demands",
         "Level 2 (5-10%): Stealth refactoring performed by engineers informally during feature delivery",
@@ -1912,11 +1929,11 @@ const STRATEGY_QUESTIONS = [
     q: "Which Modernization & Decoupling Patterns are actively utilized in production?",
     hint: "Select all patterns currently executed with verified production workloads:",
     opts: [
-      { text: "Strangler Fig Pattern systematically hollowing out legacy monolithic systems", score: 1 },
-      { text: "Domain Microservices with independent databases and deployment pipelines", score: 1 },
-      { text: "Infrastructure-as-Code (Terraform/CloudFormation) with automated immutable staging", score: 1 },
-      { text: "Automated Regression Test Suites preventing deployment regressions without manual QA", score: 1 },
-      { text: "Anti-Corruption Layers protecting new cloud architectures from legacy database schemas", score: 1 }
+      { text: "Strangler Fig Pattern systematically hollowing out legacy monolithic systems" },
+      { text: "Domain Microservices with independent databases and deployment pipelines" },
+      { text: "Infrastructure-as-Code (Terraform/CloudFormation) with automated immutable staging" },
+      { text: "Automated Regression Test Suites preventing deployment regressions without manual QA" },
+      { text: "Anti-Corruption Layers protecting new cloud architectures from legacy database schemas" }
     ]
   },
   {
@@ -1924,11 +1941,11 @@ const STRATEGY_QUESTIONS = [
     q: "How is cloud modernization structured across your infrastructure estate?",
     hint: "Evolution from legacy on-premises data centers to cloud-native managed architectures.",
     opts: [
-      { text: "<b>Level 1 · Data Center Lock-in:</b> Legacy on-prem colocation with aging hardware and no cloud exit strategy", score: 1 },
-      { text: "<b>Level 2 · Unoptimized Lift-and-Shift:</b> Virtual machines migrated to public cloud with inflated run costs", score: 2 },
-      { text: "<b>Level 3 · Hybrid Replatforming:</b> Managed cloud services utilized for new initiatives; core estate on IaaS", score: 3 },
-      { text: "<b>Level 4 · Cloud-Native Containers:</b> Containerized microservices, serverless components, and automated IaC", score: 4 },
-      { text: "<b>Level 5 · Sovereign & Multi-Cloud:</b> Architecturally decoupled workloads optimizing cost, latency, and compliance", score: 5 }
+      { text: "<b>Level 1 · Data Center Lock-in:</b> Legacy on-prem colocation with aging hardware and no cloud exit strategy" },
+      { text: "<b>Level 2 · Unoptimized Lift-and-Shift:</b> Virtual machines migrated to public cloud with inflated run costs" },
+      { text: "<b>Level 3 · Hybrid Replatforming:</b> Managed cloud services utilized for new initiatives; core estate on IaaS" },
+      { text: "<b>Level 4 · Cloud-Native Containers:</b> Containerized microservices, serverless components, and automated IaC" },
+      { text: "<b>Level 5 · Sovereign & Multi-Cloud:</b> Architecturally decoupled workloads optimizing cost, latency, and compliance" }
     ]
   },
 
@@ -1938,11 +1955,11 @@ const STRATEGY_QUESTIONS = [
     q: "How deliberate is your strategic sourcing model (In-House vs. SIs vs. SaaS)?",
     hint: "Clear segregation between strategic differentiating core and commoditized context capabilities.",
     opts: [
-      { text: "<b>Level 1 · Accidental Sourcing:</b> Reactive reliance on short-term contractor body-shopping without IP retention", score: 1 },
-      { text: "<b>Level 2 · Vendor Lock-in:</b> Heavy dependence on a single systems integrator with no knowledge transfer", score: 2 },
-      { text: "<b>Level 3 · Documented Guidelines:</b> Clear sourcing policy defining build vs. buy criteria for new projects", score: 3 },
-      { text: "<b>Level 4 · Core-vs-Context Segregation:</b> Differentiating IP built in-house; context capabilities sourced via SaaS/partners", score: 4 },
-      { text: "<b>Level 5 · Dynamic Partner Ecosystem:</b> Multi-vendor leverage with transparent benchmarking and continuous knowledge capture", score: 5 }
+      { text: "<b>Level 1 · Accidental Sourcing:</b> Reactive reliance on short-term contractor body-shopping without IP retention" },
+      { text: "<b>Level 2 · Vendor Lock-in:</b> Heavy dependence on a single systems integrator with no knowledge transfer" },
+      { text: "<b>Level 3 · Documented Guidelines:</b> Clear sourcing policy defining build vs. buy criteria for new projects" },
+      { text: "<b>Level 4 · Core-vs-Context Segregation:</b> Differentiating IP built in-house; context capabilities sourced via SaaS/partners" },
+      { text: "<b>Level 5 · Dynamic Partner Ecosystem:</b> Multi-vendor leverage with transparent benchmarking and continuous knowledge capture" }
     ]
   },
   {
@@ -1961,11 +1978,11 @@ const STRATEGY_QUESTIONS = [
     q: "How effectively are critical software and cloud vendor renewals managed?",
     hint: "Commercial leverage, audit defense, and mitigation of punitive price escalation.",
     opts: [
-      { text: "<b>Level 1 · Passive Renewals:</b> Automatic renewals with zero leverage and frequent vendor audit true-up penalties", score: 1 },
-      { text: "<b>Level 2 · Last-Minute Sourcing:</b> Procurement steps in 30 days prior with minimal time for architecture leverage", score: 2 },
-      { text: "<b>Level 3 · Centralized VMO:</b> Vendor Management Office tracking renewal calendars and major license spend tiers", score: 3 },
-      { text: "<b>Level 4 · Strategic Vendor Governance:</b> Proactive roadmaps, competitive benchmarks, and multi-cloud architectural leverage", score: 4 },
-      { text: "<b>Level 5 · Continuous Commercial Optimization:</b> Real-time consumption telemetry, aggressive price gating, and exit options", score: 5 }
+      { text: "<b>Level 1 · Passive Renewals:</b> Automatic renewals with zero leverage and frequent vendor audit true-up penalties" },
+      { text: "<b>Level 2 · Last-Minute Sourcing:</b> Procurement steps in 30 days prior with minimal time for architecture leverage" },
+      { text: "<b>Level 3 · Centralized VMO:</b> Vendor Management Office tracking renewal calendars and major license spend tiers" },
+      { text: "<b>Level 4 · Strategic Vendor Governance:</b> Proactive roadmaps, competitive benchmarks, and multi-cloud architectural leverage" },
+      { text: "<b>Level 5 · Continuous Commercial Optimization:</b> Real-time consumption telemetry, aggressive price gating, and exit options" }
     ]
   },
   {
@@ -1973,11 +1990,11 @@ const STRATEGY_QUESTIONS = [
     q: "Which Technical Talent & Engineering Retention structures are established?",
     hint: "Select all active mechanisms in your engineering organization:",
     opts: [
-      { text: "Dedicated Fellow/Principal Technical Career Ladder (growth without managerial overhead)", score: 1 },
-      { text: "Market-Benchmarked Compensation Parity for elite software and cloud architects", score: 1 },
-      { text: "Internal Engineering Academy with protected hours for certifications and cross-skilling", score: 1 },
-      { text: "Rotational Guilds & Communities of Practice sharing architectural standards", score: 1 },
-      { text: "Active Open-Source contribution policy and engineering brand visibility", score: 1 }
+      { text: "Dedicated Fellow/Principal Technical Career Ladder (growth without managerial overhead)" },
+      { text: "Market-Benchmarked Compensation Parity for elite software and cloud architects" },
+      { text: "Internal Engineering Academy with protected hours for certifications and cross-skilling" },
+      { text: "Rotational Guilds & Communities of Practice sharing architectural standards" },
+      { text: "Active Open-Source contribution policy and engineering brand visibility" }
     ]
   },
 
@@ -1998,11 +2015,11 @@ const STRATEGY_QUESTIONS = [
     q: "How rigorously is business value tracked after modernizations go live?",
     hint: "Post-implementation review and verified realization of P&L benefits.",
     opts: [
-      { text: "<b>Level 1 · Unaudited:</b> Zero tracking post-launch; project success is declared purely if it goes live", score: 1 },
-      { text: "<b>Level 2 · Delivery Retrospective:</b> One-time project close meeting focused strictly on schedule and cost variance", score: 2 },
-      { text: "<b>Level 3 · Qualitative Confirmation:</b> Business sponsor submits an informal benefit memo after 6 months", score: 3 },
-      { text: "<b>Level 4 · Formal Finance Reconciliation:</b> 12-month post-launch value realization audit reconciled against P&L results", score: 4 },
-      { text: "<b>Level 5 · Automated Telemetry:</b> Continuous real-time value realization metrics directly linking software releases to revenue", score: 5 }
+      { text: "<b>Level 1 · Unaudited:</b> Zero tracking post-launch; project success is declared purely if it goes live" },
+      { text: "<b>Level 2 · Delivery Retrospective:</b> One-time project close meeting focused strictly on schedule and cost variance" },
+      { text: "<b>Level 3 · Qualitative Confirmation:</b> Business sponsor submits an informal benefit memo after 6 months" },
+      { text: "<b>Level 4 · Formal Finance Reconciliation:</b> 12-month post-launch value realization audit reconciled against P&L results" },
+      { text: "<b>Level 5 · Automated Telemetry:</b> Continuous real-time value realization metrics directly linking software releases to revenue" }
     ]
   },
   {
@@ -2026,11 +2043,11 @@ const STRATEGY_QUESTIONS = [
     q: "How disciplined is your enterprise at terminating underperforming technology initiatives?",
     hint: "Stage-gate kill switches preventing zombie projects from consuming valuable capital.",
     opts: [
-      { text: "<b>Level 1 · Sunk Cost Fallacy:</b> Zombie projects funded indefinitely because 'we already invested too much'", score: 1 },
-      { text: "<b>Level 2 · Crisis Intervention:</b> Projects cancelled only after multi-million dollar overruns trigger public embarrassment", score: 2 },
-      { text: "<b>Level 3 · Annual De-Scoping:</b> Yearly portfolio reviews periodically pause or trim underperforming projects", score: 3 },
-      { text: "<b>Level 4 · Disciplined Stage Gates:</b> Explicit off-ramps and criteria for project termination enforced at stage gates", score: 4 },
-      { text: "<b>Level 5 · Venture Capital Model:</b> Fast milestones, fail-fast culture, and rapid redeployment of engineering capital", score: 5 }
+      { text: "<b>Level 1 · Sunk Cost Fallacy:</b> Zombie projects funded indefinitely because 'we already invested too much'" },
+      { text: "<b>Level 2 · Crisis Intervention:</b> Projects cancelled only after multi-million dollar overruns trigger public embarrassment" },
+      { text: "<b>Level 3 · Annual De-Scoping:</b> Yearly portfolio reviews periodically pause or trim underperforming projects" },
+      { text: "<b>Level 4 · Disciplined Stage Gates:</b> Explicit off-ramps and criteria for project termination enforced at stage gates" },
+      { text: "<b>Level 5 · Venture Capital Model:</b> Fast milestones, fail-fast culture, and rapid redeployment of engineering capital" }
     ]
   }
 ];
@@ -2113,7 +2130,7 @@ const STATE = {
   const steps = [
     { p: 18, text: "Initializing Strategic IT Governance Diagnostic Engine (v2.2)..." },
     { p: 42, text: "Calibrating 6 Strategic Anchors & Enterprise TOM Models..." },
-    { p: 68, text: "Benchmarking Business-IT Co-Design & Architecture Health..." },
+    { p: 68, text: "Scoring Business-IT Co-Design & Architecture Health..." },
     { p: 88, text: "Synthesizing C-Suite Investment & Tech Debt Exposure Matrices..." },
     { p: 100, text: "IT Strategy Diagnostic Ready · Launching Strategy IQ..." }
   ];
@@ -2150,17 +2167,14 @@ function showScreen(screenId) {
   }
 }
 
+// Only rankings get a stored default (their order is the answer and they are not scored). Sliders and rating
+// matrices show a visual default but are stored only when the user interacts, so an untouched control never
+// counts as an answer.
 function initializeDefaultAnswers() {
   STRATEGY_QUESTIONS.forEach(q => {
     if (STATE.answers[q.id] === undefined || STATE.answers[q.id] === null) {
-      if (q.type === 'slider' && q.sliderConfig) {
-        STATE.answers[q.id] = q.sliderConfig.defaultVal;
-      } else if (q.type === 'drag_rank' && q.rankItems) {
+      if (q.type === 'drag_rank' && q.rankItems) {
         STATE.answers[q.id] = q.rankItems.map(i => i.id);
-      } else if (q.type === 'rating_matrix' && q.subItems) {
-        const mat = {};
-        q.subItems.forEach(item => { mat[item.id] = 3; });
-        STATE.answers[q.id] = mat;
       }
     }
   });
@@ -2203,12 +2217,12 @@ const ARCHETYPES = {
     execName: "Alexander Vance",
     execRole: "Group Chief Information Officer",
     scores: {
-      "S1.1": 2, "S1.2": 2, "S1.3": 2, "S1.4": [0, 1],
-      "S2.1": 1, "S2.2": { p1: 2, p2: 2, p3: 3, p4: 1 }, "S2.3": ["r1", "r2", "r3", "r4"], "S2.4": 2,
-      "S3.1": 2, "S3.2": ["d1", "d2", "d4", "d3"], "S3.3": 35, "S3.4": 2,
-      "S4.1": 2, "S4.2": 5, "S4.3": [0, 4], "S4.4": 1,
-      "S5.1": 2, "S5.2": { k1: 1, k2: 2, k3: 1, k4: 2 }, "S5.3": 2, "S5.4": [1],
-      "S6.1": ["f1", "f2", "f3", "f4"], "S6.2": 1, "S6.3": 20, "S6.4": 1
+      "S1.1": 1, "S1.2": 2, "S1.3": 1, "S1.4": [0, 1],
+      "S2.1": 0, "S2.2": { p1: 2, p2: 2, p3: 3, p4: 1 }, "S2.3": ["r1", "r2", "r3", "r4"], "S2.4": 1,
+      "S3.1": 1, "S3.2": ["d1", "d2", "d4", "d3"], "S3.3": 35, "S3.4": 1,
+      "S4.1": 1, "S4.2": 5, "S4.3": [0, 4], "S4.4": 0,
+      "S5.1": 1, "S5.2": { k1: 1, k2: 2, k3: 1, k4: 2 }, "S5.3": 1, "S5.4": [1],
+      "S6.1": ["f1", "f2", "f3", "f4"], "S6.2": 0, "S6.3": 20, "S6.4": 0
     },
     notes: {
       "S1.1": "IT plans are reviewed annually with risk committee; business pushes hard for regulatory features.",
@@ -2224,12 +2238,12 @@ const ARCHETYPES = {
     execName: "Dr. Evelyn Marcus",
     execRole: "Chief Digital & Information Officer",
     scores: {
-      "S1.1": 3, "S1.2": 3, "S1.3": 3, "S1.4": [0, 2],
-      "S2.1": 2, "S2.2": { p1: 2, p2: 3, p3: 2, p4: 2 }, "S2.3": ["r3", "r1", "r2", "r4"], "S2.4": 3,
-      "S3.1": 2, "S3.2": ["d2", "d1", "d3", "d4"], "S3.3": 50, "S3.4": 1,
-      "S4.1": 2, "S4.2": 10, "S4.3": [1, 3], "S4.4": 2,
-      "S5.1": 3, "S5.2": { k1: 2, k2: 3, k3: 1, k4: 2 }, "S5.3": 2, "S5.4": [1, 2],
-      "S6.1": ["f2", "f1", "f3", "f4"], "S6.2": 2, "S6.3": 40, "S6.4": 2
+      "S1.1": 2, "S1.2": 3, "S1.3": 2, "S1.4": [0, 2],
+      "S2.1": 1, "S2.2": { p1: 2, p2: 3, p3: 2, p4: 2 }, "S2.3": ["r3", "r1", "r2", "r4"], "S2.4": 2,
+      "S3.1": 1, "S3.2": ["d2", "d1", "d3", "d4"], "S3.3": 50, "S3.4": 0,
+      "S4.1": 1, "S4.2": 10, "S4.3": [1, 3], "S4.4": 1,
+      "S5.1": 2, "S5.2": { k1: 2, k2: 3, k3: 1, k4: 2 }, "S5.3": 1, "S5.4": [1, 2],
+      "S6.1": ["f2", "f1", "f3", "f4"], "S6.2": 1, "S6.3": 40, "S6.4": 1
     },
     notes: {
       "S3.4": "Point-to-point HL7 interfaces link clinic labs to diagnostic portals; prone to weekend batch delays.",
@@ -2244,12 +2258,12 @@ const ARCHETYPES = {
     execName: "Marcus Thorne",
     execRole: "SVP, Technology & Digital Strategy",
     scores: {
-      "S1.1": 3, "S1.2": 3, "S1.3": 3, "S1.4": [0, 1, 2],
-      "S2.1": 3, "S2.2": { p1: 3, p2: 3, p3: 2, p4: 3 }, "S2.3": ["r1", "r3", "r4", "r2"], "S2.4": 3,
-      "S3.1": 3, "S3.2": ["d1", "d3", "d2", "d4"], "S3.3": 65, "S3.4": 3,
-      "S4.1": 3, "S4.2": 15, "S4.3": [0, 1, 3], "S4.4": 3,
-      "S5.1": 3, "S5.2": { k1: 3, k2: 3, k3: 2, k4: 3 }, "S5.3": 2, "S5.4": [0, 2],
-      "S6.1": ["f1", "f3", "f2", "f4"], "S6.2": 2, "S6.3": 50, "S6.4": 2
+      "S1.1": 2, "S1.2": 3, "S1.3": 2, "S1.4": [0, 1, 2],
+      "S2.1": 2, "S2.2": { p1: 3, p2: 3, p3: 2, p4: 3 }, "S2.3": ["r1", "r3", "r4", "r2"], "S2.4": 2,
+      "S3.1": 2, "S3.2": ["d1", "d3", "d2", "d4"], "S3.3": 65, "S3.4": 2,
+      "S4.1": 2, "S4.2": 15, "S4.3": [0, 1, 3], "S4.4": 2,
+      "S5.1": 2, "S5.2": { k1: 3, k2: 3, k3: 2, k4: 3 }, "S5.3": 1, "S5.4": [0, 2],
+      "S6.1": ["f1", "f3", "f2", "f4"], "S6.2": 1, "S6.3": 50, "S6.4": 1
     },
     notes: {
       "S2.1": "Transitioning to product squads for customer apps, but supply chain and ERP remain legacy waterfall.",
@@ -2264,12 +2278,12 @@ const ARCHETYPES = {
     execName: "Siddharth Rao",
     execRole: "Chief Technology Officer",
     scores: {
-      "S1.1": 4, "S1.2": 4, "S1.3": 4, "S1.4": [0, 1, 2, 3],
-      "S2.1": 4, "S2.2": { p1: 5, p2: 4, p3: 4, p4: 4 }, "S2.3": ["r4", "r2", "r1", "r3"], "S2.4": 4,
-      "S3.1": 4, "S3.2": ["d3", "d4", "d2", "d1"], "S3.3": 90, "S3.4": 4,
-      "S4.1": 4, "S4.2": 25, "S4.3": [0, 1, 2, 3, 4], "S4.4": 4,
-      "S5.1": 4, "S5.2": { k1: 4, k2: 4, k3: 4, k4: 4 }, "S5.3": 3, "S5.4": [0, 1, 2, 4],
-      "S6.1": ["f4", "f2", "f3", "f1"], "S6.2": 4, "S6.3": 85, "S6.4": 4
+      "S1.1": 3, "S1.2": 4, "S1.3": 3, "S1.4": [0, 1, 2, 3],
+      "S2.1": 3, "S2.2": { p1: 5, p2: 4, p3: 4, p4: 4 }, "S2.3": ["r4", "r2", "r1", "r3"], "S2.4": 3,
+      "S3.1": 3, "S3.2": ["d3", "d4", "d2", "d1"], "S3.3": 90, "S3.4": 3,
+      "S4.1": 3, "S4.2": 25, "S4.3": [0, 1, 2, 3, 4], "S4.4": 3,
+      "S5.1": 3, "S5.2": { k1: 4, k2: 4, k3: 4, k4: 4 }, "S5.3": 2, "S5.4": [0, 1, 2, 4],
+      "S6.1": ["f4", "f2", "f3", "f1"], "S6.2": 3, "S6.3": 85, "S6.4": 3
     },
     notes: {
       "S2.2": "Internal developer portal offers golden paths with automated Terraform and Kubernetes deployments.",
@@ -2305,33 +2319,27 @@ function loadArchetype(key, instantReadout) {
   closeArchetypeModal();
 
   if (instantReadout) {
-    STATE.computedResults = computeStrategyScores();
-    STATE.unlocked = false;
-    renderResultsScreen();
-    showScreen('results');
+    showScoredResults();
   } else {
     startAssessment();
   }
 }
 
 /* MANDATORY QUESTION COMPLETENESS QUALITY GATE */
+// An answer counts only once the user (or a demo archetype) has set it. Untouched sliders and matrices are
+// unanswered even though they show a default. A multi-select stored as [] means "None of these are in place"
+// was chosen explicitly (an untouched one is undefined), so it counts.
 function isQuestionAnswered(qId) {
-  const val = STATE.answers[qId];
-  if (val !== undefined && val !== null) {
-    if (Array.isArray(val)) return val.length > 0;
-    if (typeof val === 'object') {
-      const keys = Object.keys(val);
-      return keys.length > 0 && keys.every(k => val[k] !== undefined && val[k] !== null);
-    }
-    return true;
-  }
-  // If not explicitly set in STATE.answers, check if question has an inherent default
   const q = STRATEGY_QUESTIONS.find(x => x.id === qId);
-  if (!q) return false;
-  if (q.type === 'slider' || q.type === 'drag_rank' || q.type === 'rating_matrix') {
-    return true;
+  const val = STATE.answers[qId];
+  if (!q || val === undefined || val === null) return false;
+  if (q.type === 'multi_select') return Array.isArray(val);
+  if (q.type === 'drag_rank') return Array.isArray(val) && val.length > 0;
+  if (q.type === 'rating_matrix') {
+    return typeof val === 'object' && q.subItems.every(item => Number.isInteger(val[item.id]));
   }
-  return false;
+  if (q.type === 'slider') return typeof val === 'number' && Number.isFinite(val);
+  return true;
 }
 
 function getUnansweredQuestions() {
@@ -2498,9 +2506,9 @@ function renderQuestionBody(q) {
       <div class="opts-list">
         ${q.opts.map((opt, idx) => {
           const letter = LETTERS[idx] || (idx + 1);
-          const isSel = curVal === opt.score;
+          const isSel = curVal === idx;
           return `
-            <div class="opt-row ${isSel ? 'selected' : ''}" onclick="selectSingleChoice('${q.id}', ${opt.score})">
+            <div class="opt-row ${isSel ? 'selected' : ''}" onclick="selectSingleChoice('${q.id}', ${idx})">
               <span class="opt-score-badge">${letter}</span>
               <div class="opt-text-wrap">
                 <div class="opt-title">${opt.text}</div>
@@ -2528,13 +2536,21 @@ function renderQuestionBody(q) {
             </div>
           `;
         }).join('')}
+        <div class="opt-row none-row ${Array.isArray(curVal) && curVal.length === 0 ? 'selected' : ''}" onclick="selectNoneMultiChoice('${q.id}')">
+          <span class="opt-score-badge" style="border-radius:4px">&ndash;</span>
+          <div class="opt-text-wrap">
+            <div class="opt-title">None of these are in place</div>
+          </div>
+        </div>
       </div>
     `;
   }
 
   if (q.type === 'slider') {
     const cfg = q.sliderConfig;
-    const val = (curVal !== undefined) ? curVal : cfg.defaultVal;
+    const touched = typeof curVal === 'number';
+    const val = touched ? curVal : cfg.defaultVal;
+    const unit = cfg.max === 100 || cfg.max === 40 ? '%' : '';
     const descIdx = Math.min(Math.floor(((val - cfg.min) / (cfg.max - cfg.min)) * cfg.descs.length), cfg.descs.length - 1);
     const liveDesc = cfg.descs[descIdx] || "";
 
@@ -2542,30 +2558,37 @@ function renderQuestionBody(q) {
       <div class="slider-container">
         <div class="slider-header">
           <span style="font-size:12px;font-weight:700;color:var(--ink3)">DRAG SLIDER TO CALIBRATE POSITION:</span>
-          <span class="slider-val-badge" id="slider-badge-${q.id}">${val}${cfg.max === 100 || cfg.max === 40 ? '%' : ''}</span>
+          <span class="slider-val-badge" id="slider-badge-${q.id}">${val}${unit}</span>
         </div>
         <input type="range" class="custom-range-slider" min="${cfg.min}" max="${cfg.max}" step="${cfg.step}" value="${val}"
-          oninput="handleSliderChange('${q.id}', this.value)">
+          oninput="handleSliderChange('${q.id}', this.value)" onchange="handleSliderChange('${q.id}', this.value); renderCurrentSectionQuestions();">
         <div class="slider-ticks">
           ${cfg.ticks.map(t => `<span>${t}</span>`).join('')}
         </div>
         <div class="slider-live-desc" id="slider-desc-${q.id}">${liveDesc}</div>
+        ${touched ? '' : `
+          <div class="unanswered-hint" id="slider-hint-${q.id}">
+            Not answered yet: the position shown is a default and is not counted until you move the slider.
+            <button type="button" class="btn btn-ghost btn-sm" onclick="handleSliderChange('${q.id}', ${val}); renderCurrentSectionQuestions();">Keep ${val}${unit}</button>
+          </div>`}
       </div>
     `;
   }
 
   if (q.type === 'rating_matrix') {
     const matrixState = (typeof curVal === 'object' && curVal !== null) ? curVal : {};
+    const allRated = q.subItems.every(item => Number.isInteger(matrixState[item.id]));
     return `
       <div class="rating-matrix-wrap">
         ${q.subItems.map(item => {
-          const itemVal = matrixState[item.id] || 3;
+          const rated = Number.isInteger(matrixState[item.id]);
+          const itemVal = rated ? matrixState[item.id] : 3;
           return `
             <div class="rating-matrix-row">
               <div class="rating-row-title">${item.name}</div>
               <div class="rating-stepper-group">
                 ${[1, 2, 3, 4, 5].map(pt => `
-                  <button type="button" class="rating-btn ${itemVal === pt ? 'active' : ''}"
+                  <button type="button" class="rating-btn ${itemVal === pt ? (rated ? 'active' : 'default') : ''}"
                     onclick="handleRatingMatrixChange('${q.id}', '${item.id}', ${pt})">
                     ${pt}
                   </button>
@@ -2574,6 +2597,7 @@ function renderQuestionBody(q) {
             </div>
           `;
         }).join('')}
+        ${allRated ? '' : `<div class="unanswered-hint">Rate every row to complete this question. A dashed 3 is a default and is not counted until you choose.</div>`}
       </div>
     `;
   }
@@ -2606,8 +2630,8 @@ function renderQuestionBody(q) {
   return '';
 }
 
-function selectSingleChoice(qId, score) {
-  STATE.answers[qId] = score;
+function selectSingleChoice(qId, optIdx) {
+  STATE.answers[qId] = optIdx;
   renderCurrentSectionQuestions();
   renderSectionNavRail();
 }
@@ -2616,7 +2640,18 @@ function toggleMultiChoice(qId, optIdx) {
   let arr = Array.isArray(STATE.answers[qId]) ? [...STATE.answers[qId]] : [];
   if (arr.includes(optIdx)) arr = arr.filter(x => x !== optIdx);
   else arr.push(optIdx);
-  STATE.answers[qId] = arr;
+  // Unticking the last practice returns the question to unanswered; [] is reserved for an explicit "None".
+  if (arr.length === 0) delete STATE.answers[qId];
+  else STATE.answers[qId] = arr;
+  renderCurrentSectionQuestions();
+  renderSectionNavRail();
+}
+
+/** "None of these are in place": an explicit answer, stored as [] and scored as no practices. */
+function selectNoneMultiChoice(qId) {
+  const cur = STATE.answers[qId];
+  if (Array.isArray(cur) && cur.length === 0) delete STATE.answers[qId];
+  else STATE.answers[qId] = [];
   renderCurrentSectionQuestions();
   renderSectionNavRail();
 }
@@ -2624,6 +2659,8 @@ function toggleMultiChoice(qId, optIdx) {
 function handleSliderChange(qId, val) {
   const num = parseFloat(val);
   STATE.answers[qId] = num;
+  const hint = document.getElementById('slider-hint-' + qId);
+  if (hint) hint.remove();
   const q = STRATEGY_QUESTIONS.find(x => x.id === qId);
   if (!q) return;
 
@@ -2843,10 +2880,7 @@ function handleClarityText(cqId, text) {
 }
 
 function proceedFromClarificationToPreliminaryScore() {
-  STATE.computedResults = computeStrategyScores();
-  STATE.unlocked = false;
-  renderResultsScreen();
-  showScreen('results');
+  return showScoredResults();
 }
 
 /* FLASHING CINEMATIC ENGINE ANIMATION BEFORE DETAILED REPORT */
@@ -2864,7 +2898,7 @@ function executeReportGenerationAnimation(callback) {
   ];
 
   overlay.innerHTML = `
-    <div class="rg-brand">LTM &middot; Infrastructure Tech Advisory &middot; Strategy Diagnostic Engine</div>
+    <div class="rg-brand">LTM Vantage &middot; Responsible Advisory &middot; Strategy Diagnostic Engine</div>
     <div class="rg-pulse-container">
       <div class="rg-pulse-ring"></div>
       <div class="rg-pulse-ring"></div>
@@ -2873,7 +2907,7 @@ function executeReportGenerationAnimation(callback) {
     </div>
     <div class="rg-title">Generating Executive IT Strategy Diagnostic</div>
     <div class="rg-subtitle">
-      Compiling deep C-suite dossier for ${escapeHtml(STATE.intake.orgName)} across $${Math.round(STATE.intake.itSpend/1000000)}M IT spend parameters, architectural debt registers, and peer benchmarks.
+      Compiling deep C-suite dossier for ${escapeHtml(STATE.intake.orgName)} across $${Math.round(STATE.intake.itSpend/1000000)}M IT spend parameters, and architectural debt registers.
     </div>
     <ul class="rg-step-list">
       ${steps.map((s, i) => `
@@ -2939,76 +2973,61 @@ function executeReportGenerationAnimation(callback) {
   }, totalDuration);
 }
 
-/* SCORING ENGINE */
-function computeQuestionScore(q) {
-  const val = STATE.answers[q.id];
-  if (val === undefined || val === null) return 3.0;
+/* SCORING: runs only on the Advisory API (LTM_API attaches the user's token) */
+const EVALUATE_API_PATH = '/api/evaluate/strategy-iq';
 
-  if (q.type === 'single_select') return typeof val === 'number' ? val : 3.0;
-  if (q.type === 'multi_select') {
-    const arr = Array.isArray(val) ? val : [];
-    return Math.min(1 + (arr.length * 0.8), 5.0);
-  }
-  if (q.type === 'slider') {
-    const cfg = q.sliderConfig;
-    const norm = (val - cfg.min) / (cfg.max - cfg.min);
-    return 1.0 + (norm * 4.0);
-  }
-  if (q.type === 'rating_matrix') {
-    if (typeof val === 'object' && val !== null) {
-      const vals = Object.values(val);
-      if (vals.length > 0) return vals.reduce((a, b) => a + b, 0) / vals.length;
+// Returns the server's evaluation, or null (with an error shown) if scoring failed. No local fallback.
+async function fetchStrategyEvaluation() {
+  STATE.computedResults = null;
+  hideScoringError();
+  try {
+    const res = await LTM_API.fetch(EVALUATE_API_PATH, {
+      method: 'POST',
+      body: JSON.stringify({
+        answers: STATE.answers,
+        intake: {
+          orgName: STATE.intake.orgName,
+          sector: STATE.intake.sector,
+          itSpend: STATE.intake.itSpend,
+          execRole: STATE.intake.execRole
+        }
+      })
+    });
+    const json = await res.json().catch(() => null);
+    if (res.ok && json && json.ok && json.data) {
+      STATE.computedResults = json.data;
+      return json.data;
     }
-    return 3.0;
+    console.error('Strategy IQ evaluation error:', res.status, json);
+  } catch (err) {
+    console.error('Strategy IQ evaluation failed:', err);
   }
-  if (q.type === 'drag_rank') return 3.2;
-  return 3.0;
+  showScoringError();
+  return null;
 }
 
-function computeStrategyScores() {
-  const sectionScores = {};
-  STRATEGY_SECTIONS.forEach(sec => {
-    const qList = STRATEGY_QUESTIONS.filter(q => q.section === sec.id);
-    let sum = 0;
-    qList.forEach(q => { sum += computeQuestionScore(q); });
-    sectionScores[sec.id] = sum / qList.length;
-  });
+function showScoringError() {
+  if (document.getElementById('scoringError')) return;
+  const el = document.createElement('div');
+  el.id = 'scoringError';
+  el.setAttribute('role', 'alert');
+  el.style.cssText = 'position:fixed;top:16px;left:50%;transform:translateX(-50%);z-index:9999;max-width:min(640px,calc(100% - 32px));display:flex;gap:12px;align-items:center;background:#FEF2F2;border:1px solid #DC2626;color:#111827;padding:12px 16px;border-radius:10px;font-size:14px;box-shadow:0 8px 30px rgba(0,0,0,.18)';
+  el.innerHTML = '<span><b>We couldn\'t calculate your results.</b> Your answers are kept. Please try again in a moment.</span>'
+    + '<button type="button" onclick="hideScoringError()" style="border:1px solid #DC2626;background:#fff;border-radius:6px;padding:4px 10px;cursor:pointer">Dismiss</button>';
+  document.body.appendChild(el);
+}
+function hideScoringError() {
+  const el = document.getElementById('scoringError');
+  if (el) el.remove();
+}
 
-  const overall = Object.values(sectionScores).reduce((a, b) => a + b, 0) / STRATEGY_SECTIONS.length;
-
-  let band = "Emerging";
-  let bandClass = "band-emerging";
-  if (overall < 2.0) { band = "Nascent (At Severe Risk)"; bandClass = "band-nascent"; }
-  else if (overall < 3.0) { band = "Emerging (Friction & Drift)"; bandClass = "band-emerging"; }
-  else if (overall < 4.0) { band = "Established (Operational)"; bandClass = "band-established"; }
-  else if (overall < 4.6) { band = "Advanced (Product-Led)"; bandClass = "band-advanced"; }
-  else { band = "Leading (Industry Benchmark)"; bandClass = "band-leading"; }
-
-  const spend = STATE.intake.itSpend || 60000000;
-  const s4Score = sectionScores["S4"] || 3.0;
-  const debtDragPct = Math.max(8, Math.min(45, Math.round((5.2 - s4Score) * 8.5)));
-  const debtDollarWaste = Math.round(spend * (debtDragPct / 100));
-
-  const s1Score = sectionScores["S1"] || 3.0;
-  const alignmentIndex = Math.round((s1Score / 5) * 100);
-
-  const s2Score = sectionScores["S2"] || 3.0;
-  const deliveryVelocity = (s2Score * 0.85).toFixed(1);
-
-  const s5Score = sectionScores["S5"] || 3.0;
-  const resilienceScore = Math.round((s5Score / 5) * 100);
-
-  return {
-    sectionScores,
-    overall,
-    band,
-    bandClass,
-    alignmentIndex,
-    debtDragPct,
-    debtDollarWaste,
-    deliveryVelocity,
-    resilienceScore
-  };
+async function showScoredResults() {
+  const result = await fetchStrategyEvaluation();
+  if (!result) return false;
+  STATE.unlocked = false;
+  renderResultsScreen();
+  showScreen('results');
+  return true;
 }
 
 /* AI NARRATIVE GENERATOR */
@@ -3082,8 +3101,8 @@ ${secDetails}
 
 Key Metrics:
 - Strategic Alignment Index: ${R.alignmentIndex}%
-- Technical Debt Drag: ${R.debtDragPct}% of annual IT budget (~$${Math.round(R.debtDollarWaste/1000000)}M USD unhedged exposure)
-- Operating Velocity Multiple: ${R.deliveryVelocity}x
+- Indicative tech-debt drag (LTM heuristic, not a measured figure): ${R.debtDragPct}% of annual IT budget (~$${Math.round(R.debtDollarWaste/1000000)}M USD)
+- Operating Model Maturity: ${R.deliveryMaturity.toFixed(1)} / 5
 - Sourcing Resilience: ${R.resilienceScore}%
 
 Qualitative Executive Observations provided by client:
@@ -3101,30 +3120,51 @@ Format with clean HTML tags (<h4>, <p>, <ul>, <li>, <b>). Do not use emojis. Do 
 `;
 }
 
+/** A section is "weak" below 3.0, i.e. in the Nascent or Emerging band. Narrative claims are made only when the scores behind them support it. */
 function generateDeterministicBrief(R) {
+  const WEAK_SECTION = 3.0;
   const intake = STATE.intake;
-  const lowestPillarId = Object.keys(R.sectionScores).sort((a,b) => R.sectionScores[a] - R.sectionScores[b])[0];
+  const S = R.sectionScores;
+  const weak = id => S[id] < WEAK_SECTION;
+  const lowestPillarId = Object.keys(S).sort((a,b) => S[a] - S[b])[0];
   const lowestPillar = STRATEGY_SECTIONS.find(s => s.id === lowestPillarId);
+  const debtM = Math.round(R.debtDollarWaste/1000000);
+
+  const suppressors = [];
+  if (weak('S4')) suppressors.push('lack of ring-fenced refactoring capacity');
+  if (weak('S5')) suppressors.push('single points of human dependency in core systems of record');
+  const suppressorSentence = suppressors.length
+    ? ` Delivery is held back by ${suppressors.join(' and ')}.`
+    : '';
+
+  const findings = [];
+  if (weak('S2')) findings.push('<li><b>Capital Allocation Drift:</b> Discretionary change spend remains tilted toward reactive feature delivery rather than foundational platform-as-a-product capabilities.</li>');
+  if (weak('S4')) findings.push('<li><b>Tech Debt Drag:</b> Unfunded architectural liabilities create compounding delivery delays and operational fragility across critical business flows.</li>');
+  if (weak('S6')) findings.push('<li><b>Value Tracking Disconnect:</b> While project deployment milestones are celebrated, post-launch P&amp;L realization is rarely reconciled with CFO metrics.</li>');
+  const findingsHtml = findings.length
+    ? `<ul>${findings.join('')}</ul>`
+    : '<p>No strategic anchor scored below 3.0 (Established); the priority is to sustain and extend current practices rather than remediate.</p>';
+
+  const pitchModel = weak('S2')
+    ? `must pivot from treating IT as a back-office project utility to funding an autonomous product-and-platform operating model (operating-model maturity today: ${R.deliveryMaturity.toFixed(1)} / 5).`
+    : `should keep funding its product-and-platform operating model (operating-model maturity today: ${R.deliveryMaturity.toFixed(1)} / 5).`;
+  const pitchDebt = ` Systematically paying down our indicative $${debtM}M annual tech-debt drag would release change capacity that legacy friction absorbs today${weak('S5') ? ', and reducing key-person dependency would remove critical operational liabilities' : ''}.`;
 
   return `
     <h4>Executive Diagnostic Verdict</h4>
     <p>
-      <b>${escapeHtml(intake.orgName)}</b> demonstrates an overall IT Strategy Maturity index of <b>${R.overall.toFixed(1)} / 5.0</b> (<b>${R.band}</b>). At an annual technology spend of <b>$${Math.round(intake.itSpend/1000000)}M USD</b>, our diagnostic estimates that <b>${R.debtDragPct}%</b> (~<b>$${Math.round(R.debtDollarWaste/1000000)}M USD</b>) is actively consumed by legacy friction, unquantified technical debt, and fragmented delivery handoffs.
+      <b>${escapeHtml(intake.orgName)}</b> demonstrates an overall IT Strategy Maturity index of <b>${R.overall.toFixed(1)} / 5.0</b> (<b>${R.band}</b>). At an annual technology spend of <b>$${Math.round(intake.itSpend/1000000)}M USD</b>, the indicative tech-debt drag (an LTM heuristic based on your tech-debt maturity score, not a measured figure) is <b>${R.debtDragPct}%</b> (~<b>$${debtM}M USD</b>) of spend.
     </p>
 
     <h4>Primary Architectural &amp; Operating Bottlenecks</h4>
     <p>
-      The critical modernization bottleneck centers on <b>${lowestPillar ? lowestPillar.title : 'Application Architecture & Debt'}</b> (scored at <b>${R.sectionScores[lowestPillarId].toFixed(1)}/5.0</b>). While technology leadership aspires toward product agility, delivery velocity is suppressed by lack of ring-fenced refactoring capacity and single points of human dependency in core systems of record.
+      The lowest-scoring strategic anchor is <b>${lowestPillar ? lowestPillar.title : 'Application Architecture & Debt'}</b> (scored at <b>${S[lowestPillarId].toFixed(1)}/5.0</b>).${suppressorSentence}
     </p>
-    <ul>
-      <li><b>Capital Allocation Drift:</b> Discretionary change spend remains heavily tilted toward reactive feature delivery, neglecting foundational platform-as-a-product capabilities.</li>
-      <li><b>Tech Debt Drag:</b> Unfunded architectural liabilities create compounding delivery delays and operational fragility across critical business flows.</li>
-      <li><b>Value Tracking Disconnect:</b> While project deployment milestones are celebrated, subsequent post-launch P&L realization is rarely reconciled with CFO metrics.</li>
-    </ul>
+    ${findingsHtml}
 
     <h4>Boardroom Elevator Pitch for Executive Modernization</h4>
     <p>
-      <i>&ldquo;To protect enterprise margins and accelerate digital capability delivery, ${escapeHtml(intake.orgName)} must pivot from treating IT as a back-office project utility to funding an autonomous product-and-platform operating model. Reallocating 20% of discretionary spend to systematically pay down our $${Math.round(R.debtDollarWaste/1000000)}M tech debt drag will unlock an estimated ${R.deliveryVelocity}x acceleration in cycle times while eliminating critical key-person operational liabilities.&rdquo;</i>
+      <i>&ldquo;To protect enterprise margins and accelerate digital capability delivery, ${escapeHtml(intake.orgName)} ${pitchModel}${pitchDebt}&rdquo;</i>
     </p>
   `;
 }
@@ -3171,15 +3211,15 @@ function renderResultsScreen() {
       </div>
 
       <div class="kpi-card blue">
-        <span class="kpi-label">Tech Debt Annual Drag</span>
+        <span class="kpi-label">Indicative tech-debt drag (LTM heuristic)</span>
         <div class="kpi-val" data-kpi-target="${R.debtDragPct}" data-kpi-suffix="%">0%</div>
-        <span class="kpi-sub">~$${Math.round(R.debtDollarWaste/1000000)}M unhedged spend drag</span>
+        <span class="kpi-sub">~$${Math.round(R.debtDollarWaste/1000000)}M of annual IT spend (indicative)</span>
       </div>
 
       <div class="kpi-card green">
-        <span class="kpi-label">Operating Velocity Multiple</span>
-        <div class="kpi-val" data-kpi-target="${Math.round(R.deliveryVelocity * 10)}" data-kpi-multiplier="0.1" data-kpi-suffix="x">0.0x</div>
-        <span class="kpi-sub">Product squad flow capacity</span>
+        <span class="kpi-label">Operating Model Maturity</span>
+        <div class="kpi-val" data-kpi-target="${Math.round(R.deliveryMaturity * 10)}" data-kpi-multiplier="0.1" data-kpi-suffix=" / 5">0.0 / 5</div>
+        <span class="kpi-sub">Delivery operating model, 1&ndash;5 scale</span>
       </div>
 
       <div class="kpi-card violet">
@@ -3195,7 +3235,8 @@ function renderResultsScreen() {
       <div style="display:flex;flex-direction:column;gap:12px">
         ${STRATEGY_SECTIONS.map(sec => {
           const s = R.sectionScores[sec.id];
-          const pct = Math.round((s / 5) * 100);
+          // Same mapping as the engine's percentages: 1.0 is 0%, 5.0 is 100%.
+          const pct = Math.round(((s - 1) / 4) * 100);
           return `
             <div>
               <div style="display:flex;justify-content:space-between;font-size:13px;font-weight:700;margin-bottom:4px">
@@ -3203,7 +3244,7 @@ function renderResultsScreen() {
                 <span style="font-family:var(--font-mono);color:var(--ltm-coral)">${s.toFixed(1)} / 5.0</span>
               </div>
               <div class="progress-track" style="height:8px">
-                <div class="progress-fill" style="width:${pct}%;background:${pct > 65 ? 'var(--ltm-green)' : pct > 45 ? 'var(--ltm-coral)' : '#DC2626'}"></div>
+                <div class="progress-fill" style="width:${pct}%;background:${s >= 4.0 ? 'var(--ltm-green)' : s >= 3.0 ? 'var(--ltm-coral)' : '#DC2626'}"></div>
               </div>
             </div>
           `;
@@ -3217,7 +3258,7 @@ function renderResultsScreen() {
         <div class="gate-overlay-badge">Preliminary Diagnostic Complete</div>
         <h3 style="font-size:22px;margin-bottom:8px">Ready to Generate Detailed C-Suite Diagnostic &amp; Modernization Roadmap?</h3>
         <p style="font-size:13.5px;color:rgba(255,255,255,0.85);max-width:780px;line-height:1.6">
-          Your preliminary diagnostic score of <b>${R.overall.toFixed(1)} / 5.0</b> and benchmark radar are computed above. Generate your bespoke 24-page executive report featuring AI narrative synthesis, TIME application portfolio quadrants, granular tech debt balance sheet, and prioritized 3-Horizon modernization roadmap.
+          Your preliminary diagnostic score of <b>${R.overall.toFixed(1)} / 5.0</b> and maturity radar are computed above. Generate your bespoke 24-page executive report featuring AI narrative synthesis, TIME application portfolio quadrants, granular tech debt balance sheet, and prioritized 3-Horizon modernization roadmap.
         </p>
 
         <div style="display:flex;gap:14px;margin-top:22px;align-items:center;flex-wrap:wrap">
@@ -3225,7 +3266,7 @@ function renderResultsScreen() {
             Generate Detailed Executive Report &rarr;
           </button>
           <button class="btn btn-ghost" onclick="openBookingModal()" style="background:transparent;color:rgba(255,255,255,0.85);border-color:rgba(255,255,255,0.3)">
-            Schedule Strategic Readout with LTM Advisory
+            Schedule Strategic Readout with LTM Infrastructure Tech Advisory
           </button>
         </div>
       </div>
@@ -3332,7 +3373,8 @@ function renderResultsScreen() {
           <div class="card">
             <h3 style="font-size:20px;margin-bottom:6px">Enterprise Technical Debt Balance Sheet</h3>
             <p style="font-size:13px;color:var(--ink3)">
-              Quantified architectural liabilities draining change capacity across your annual $${Math.round(STATE.intake.itSpend/1000000)}M IT budget.
+              Indicative tech-debt drag (LTM heuristic) of ~$${Math.round(R.debtDollarWaste/1000000)}M a year across your annual $${Math.round(STATE.intake.itSpend/1000000)}M IT budget.
+              <b>Illustrative split:</b> the 38% / 28% / 20% / 14% allocation below is a fixed illustration, not derived from your answers or a debt register.
             </p>
 
             <div class="debt-streams-wrap">
@@ -3486,7 +3528,8 @@ function initRadarChart() {
   const R = STATE.computedResults;
   const labels = STRATEGY_SECTIONS.map(s => s.num + ". " + s.title.split('&')[0].trim());
   const clientData = STRATEGY_SECTIONS.map(s => R.sectionScores[s.id]);
-  const benchmarkData = [3.8, 3.5, 3.6, 3.4, 3.7, 3.5];
+  // An illustrative target profile from LTM practice experience. It is not peer data or a measured benchmark.
+  const targetProfile = [3.8, 3.5, 3.6, 3.4, 3.7, 3.5];
 
   _strategyChart = new Chart(ctx, {
     type: 'radar',
@@ -3503,8 +3546,8 @@ function initRadarChart() {
           pointRadius: 4
         },
         {
-          label: 'Top-Quartile Industry Benchmark',
-          data: benchmarkData,
+          label: 'Illustrative target profile (LTM practice heuristic, not peer data)',
+          data: targetProfile,
           backgroundColor: 'rgba(34, 104, 130, 0.1)',
           borderColor: '#226882',
           borderWidth: 1.5,
@@ -3611,12 +3654,12 @@ function openSOWModal() {
 
 ## 1. Executive Summary & Context
 Following the Strategy IQ Diagnostic, ${intake.orgName} demonstrated an overall strategic maturity score of **${R.overall.toFixed(1)} / 5.0** (${R.band}).
-At an annual spend of **$${Math.round(intake.itSpend/1000000)}M USD**, an estimated **${R.debtDragPct}%** (~$${Math.round(R.debtDollarWaste/1000000)}M USD) is actively compromised by legacy tech-debt drag, fragmented delivery handoffs, and misaligned governance.
+At an annual spend of **$${Math.round(intake.itSpend/1000000)}M USD**, an indicative **${R.debtDragPct}%** (~$${Math.round(R.debtDollarWaste/1000000)}M USD) is estimated to be absorbed by tech-debt drag (LTM heuristic based on the tech-debt maturity score, not a measured figure).
 
 ## 2. In-Scope Advisory Workstreams
 ### Workstream 1: Target Operating Model (TOM) & Product Topologies
 - Transition from functional project silos to autonomous product and platform squads.
-- Design internal Developer Platform (IDP) golden paths to accelerate delivery velocity from ${R.deliveryVelocity}x toward top-quartile velocity.
+- Design internal Developer Platform (IDP) golden paths to raise operating-model maturity from ${R.deliveryMaturity.toFixed(1)} / 5 toward the Advanced level (4.0+).
 - Formalize lightweight Architectural Decision Records (ADRs).
 
 ### Workstream 2: Application Portfolio Rationalization (TIME Framework)
@@ -3684,7 +3727,7 @@ function downloadStrategyPDF() {
   doc.setFont("helvetica", "normal");
   doc.setFontSize(9);
   doc.setTextColor(255, 94, 79);
-  doc.text("INFRASTRUCTURE TECH ADVISORY · STRATEGY PRACTICE", M, 52);
+  doc.text("LTM VANTAGE · RESPONSIBLE ADVISORY", M, 52);
 
   doc.setTextColor(200, 200, 200);
   doc.text(new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }), W - M, 52, { align: 'right' });
@@ -3720,14 +3763,14 @@ function downloadStrategyPDF() {
   doc.setFont("helvetica", "normal");
   doc.setFontSize(9);
   doc.setTextColor(100, 116, 139);
-  doc.text(`Tech Debt Drag: ${R.debtDragPct}%  |  Velocity: ${R.deliveryVelocity}x  |  Alignment: ${R.alignmentIndex}%`, M + 120, y + 40);
+  doc.text(`Indicative tech-debt drag: ${R.debtDragPct}%  |  Operating model: ${R.deliveryMaturity.toFixed(1)}/5  |  Alignment: ${R.alignmentIndex}%`, M + 120, y + 40);
 
   y += 74;
 
   const tableData = STRATEGY_SECTIONS.map(s => [
     s.num + ". " + s.title,
     R.sectionScores[s.id].toFixed(1) + " / 5.0",
-    R.sectionScores[s.id] >= 4.0 ? "Leading" : R.sectionScores[s.id] >= 3.0 ? "Operational" : "High Risk",
+    R.sectionBands[s.id],
     R.sectionScores[s.id] < 3.0 ? "Requires Immediate Modernization Sprint" : "Meets baseline operational standards"
   ]);
 
@@ -3744,7 +3787,7 @@ function downloadStrategyPDF() {
 
   doc.setFontSize(8);
   doc.setTextColor(148, 163, 184);
-  doc.text("LTM Infrastructure Tech Advisory · Strategy IQ Diagnostic Platform · Confidential Enterprise Briefing", M, H - 25);
+  doc.text("LTM Vantage · Responsible Advisory · Strategy IQ · Confidential Enterprise Briefing", M, H - 25);
 
   doc.save(`Strategy_IQ_Executive_Dossier_${STATE.intake.orgName.replace(/\s+/g,'_')}.pdf`);
 

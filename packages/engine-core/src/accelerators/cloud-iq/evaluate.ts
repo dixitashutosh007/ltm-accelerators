@@ -19,6 +19,8 @@ export interface CloudIqEvaluation {
   overall: number;
   band: string;
   dimScores: Record<string, number>;
+  /** True when the dimension has at least one scored answer; false means its score is the 2.5 placeholder. */
+  dimAssessed: Record<string, boolean>;
   topObj: string;
   topDim: string;
   sovFlag: boolean;
@@ -43,6 +45,8 @@ export interface CloudIqEvaluation {
   movesPhase4: Array<{ code: string; size: string; title: string; desc: string; impact: string }>;
   offers: any[];
   peer: number;
+  /** The full sector benchmark (overall, D1..D8, note) the page draws its peer bars and radar from. */
+  peerBenchmark: { overall: number; note: string; [dim: string]: number | string };
   peerDelta: number;
   industryKey: string;
   probes: Array<{
@@ -120,7 +124,7 @@ export function generateCloudIqProbes(
       id: 'P_VMWARE',
       badge: 'VMware Renewal Price Shock',
       badgeClass: 'amber',
-      q: 'VMware Broadcom subscription pricing shifts are increasing on-premise run-rates by 2x to 4x. What percentage of your on-premises virtualized workloads can be rapidly containerized vs. migrated to native cloud VMs?',
+      q: 'VMware Broadcom subscription pricing changes are sharply increasing on-premise run-rates for many clients. What percentage of your on-premises virtualized workloads can be rapidly containerized vs. migrated to native cloud VMs?',
       options: [
         '<10% container-ready; over 90% require full VM rehosting or bare-metal hypervisor alternatives (Nutanix/KVM/OpenShift)',
         '25–50% can be containerized within 6 months; remaining legacy apps require temporary cloud IaaS hosting',
@@ -258,7 +262,9 @@ export function evaluateCloudIq(
   if (oj === 'A') JA += 2;
   if (oj === 'B') JB += 2;
 
-  const isHybrid = Math.abs(JA - JB) <= 1;
+  // Every routing signal moves JA − JB by an even amount (±2, or +1/+1 for a hybrid estate), so a gap of 2 is
+  // one signal apart. `<= 1` only caught exact ties; `<= 2` routes near-balanced clients to the hybrid track.
+  const isHybrid = Math.abs(JA - JB) <= 2;
   const trackCode: 'A' | 'B' | 'Hybrid' = isHybrid ? 'Hybrid' : (JA >= JB ? 'A' : 'B');
   const trackName = isHybrid
     ? 'Dual-Horizon Transformation Track'
@@ -284,6 +290,7 @@ export function evaluateCloudIq(
       add(Q.dim, v === true ? 4.5 : 1.5);
     }
   });
+  // Q8.2 (binding residency mandate) is a sovereignty flag, not a maturity answer: it carries no maturityTF.
 
   const dimScores: Record<string, number> = {};
   Object.keys(KB.dimensions).forEach((d) => {
@@ -291,6 +298,12 @@ export function evaluateCloudIq(
       ? dimAcc[d].reduce((a, b) => a + b, 0) / dimAcc[d].length
       : 2.5;
   });
+  const dimAssessed: Record<string, boolean> = {};
+  Object.keys(KB.dimensions).forEach((d) => { dimAssessed[d] = !!(dimAcc[d] && dimAcc[d].length); });
+  // A roadmap move or offer triggered by a dimension threshold fires only when that dimension was assessed;
+  // an unanswered dimension sits at the 2.5 placeholder and would otherwise trigger every "< 3" rule.
+  const below = (d: string, t: number) => dimAssessed[d] && dimScores[d] < t;
+  const atOrBelow = (d: string, t: number) => dimAssessed[d] && dimScores[d] <= t;
 
   const topDim = (Q06 && Q06.objDim && Q06.objDim[topObj]) || 'D3';
   let wsum = 0;
@@ -321,23 +334,28 @@ export function evaluateCloudIq(
 
   // 4. Decomposed Financial Value Hook ($ Leakage Breakdown)
   const q43 = KB.questions.find((x: any) => x.id === 'Q4.3');
-  const wasteRate = (q43 && q43.waste && q43.waste[A['Q4.3']]) || 0.25;
+  // Unanswered waste and commitment use the same values as their "Don't know" options (index 0), so an unanswered
+  // question and "Don't know" give the same result.
+  const wasteRate = q43?.waste?.[A['Q4.3']] ?? q43?.waste?.[0] ?? 0.3;
   const Q08 = KB.questions.find((x: any) => x.id === 'Q0.8');
   const spendMidM = Q08 && Q08.midM && Q08.midM[A['Q0.8']] !== undefined ? Q08.midM[A['Q0.8']] : 12;
   const Q09 = KB.questions.find((x: any) => x.id === 'Q0.9');
-  const commitMid = Q09 && Q09.midPct && Q09.midPct[A['Q0.9']] !== undefined ? Q09.midPct[A['Q0.9']] : 0.3;
+  const commitMid = Q09?.midPct?.[A['Q0.9']] ?? Q09?.midPct?.[0] ?? 0.1;
 
   const totalCloudSpend = spendMidM * 1000000;
   const totalLeakage = Math.round(totalCloudSpend * wasteRate * (1 - commitMid * 0.45));
   const leakLow = Math.round(totalLeakage * 0.8);
   const leakHigh = Math.round(totalLeakage * 1.25);
 
-  const decomp = {
-    compute: Math.round(totalLeakage * 0.4),
-    commit: Math.round(totalLeakage * 0.28),
-    storage: Math.round(totalLeakage * 0.18),
-    licensing: Math.round(totalLeakage * 0.14)
-  };
+  // Commitment coverage already discounts the total above, so the commitment share shrinks with coverage: 28% at the
+  // 30% reference coverage, scaled by the uncovered share (1 − commitMid) / 0.7. The four weights are renormalised so
+  // the parts still sum to the total (licensing takes the rounding remainder).
+  const weights = { compute: 0.4, commit: 0.28 * (1 - commitMid) / 0.7, storage: 0.18, licensing: 0.14 };
+  const wTotal = weights.compute + weights.commit + weights.storage + weights.licensing;
+  const compute = Math.round(totalLeakage * weights.compute / wTotal);
+  const commit = Math.round(totalLeakage * weights.commit / wTotal);
+  const storage = Math.round(totalLeakage * weights.storage / wTotal);
+  const decomp = { compute, commit, storage, licensing: totalLeakage - compute - commit - storage };
 
   // 5. 2D Heatmap Urgency & Criticality Calculation
   const urgencyMap: Record<string, number> = {};
@@ -348,7 +366,8 @@ export function evaluateCloudIq(
     if (d === 'D6' && (leaseCliff || vmwareRisk)) u = 3;
     if (d === 'D7' && (sovFlag || secnumFlag)) u = 3;
     if (d === 'D2' && trackCode === 'B') u = 3;
-    if (d === 'D8' && aiFlag && dimScores.D8 < 2.5) u = 2;
+    // AI ambitions on a weak data platform are urgent (this rule used to set 2, the default, so it did nothing).
+    if (d === 'D8' && aiFlag && dimScores.D8 < 2.5) u = 3;
     urgencyMap[d] = u;
   });
 
@@ -365,10 +384,10 @@ export function evaluateCloudIq(
       size: 'S',
       title: 'VMware Broadcom Renewal Defense & Sizing',
       desc: 'Audit vSphere core allocations, assess Nutanix/Hyper-V/cloud alternative licensing before renewal lock-in.',
-      impact: 'Averts 2.5x–3.5x licensing cost escalation'
+      impact: 'Reduces exposure to renewal licensing increases'
     });
   }
-  if (dimScores.D3 < 3.2 || wasteRate >= 0.2) {
+  if (below('D3', 3.2) || wasteRate >= 0.2) {
     movesPhase1.push({
       code: '03.3',
       size: 'S',
@@ -377,7 +396,7 @@ export function evaluateCloudIq(
       impact: `Immediate reclamation of ~$${Math.round((decomp.compute * 0.35) / 1000)}k`
     });
   }
-  if (dimScores.D7 < 3.0) {
+  if (below('D7', 3.0)) {
     movesPhase1.push({
       code: '03.6',
       size: 'S',
@@ -397,7 +416,7 @@ export function evaluateCloudIq(
   }
 
   // Phase 2: Short-Term Quick Wins (30–90 Days)
-  if (dimScores.D3 < 3.5) {
+  if (below('D3', 3.5)) {
     movesPhase2.push({
       code: '03.3',
       size: 'M',
@@ -406,7 +425,7 @@ export function evaluateCloudIq(
       impact: `Locks in ~$${Math.round(decomp.commit / 1000)}k annual recurring savings`
     });
   }
-  if (leaseCliff || dimScores.D6 < 3.0) {
+  if (leaseCliff || below('D6', 3.0)) {
     movesPhase2.push({
       code: '03.5',
       size: 'M',
@@ -415,7 +434,7 @@ export function evaluateCloudIq(
       impact: 'Eliminates migration blind spots'
     });
   }
-  if (dimScores.D2 < 3.5) {
+  if (below('D2', 3.5)) {
     movesPhase2.push({
       code: '03.4',
       size: 'M',
@@ -435,16 +454,16 @@ export function evaluateCloudIq(
   }
 
   // Phase 3: Mid-Term Programmatic Modernization (3–9 Months)
-  if (dimScores.D2 < 3.8 || trackCode === 'B') {
+  if (below('D2', 3.8) || trackCode === 'B') {
     movesPhase3.push({
       code: '03.4',
       size: 'L',
       title: 'Industrialized 6-R Migration Factory',
       desc: 'Launch automated migration pipeline with reusable refactoring and containerization patterns.',
-      impact: 'Accelerates migration velocity by 40%'
+      impact: 'Typically raises migration throughput through reusable patterns'
     });
   }
-  if (dimScores.D5 < 3.4) {
+  if (below('D5', 3.4)) {
     movesPhase3.push({
       code: '03.6',
       size: 'M',
@@ -453,7 +472,7 @@ export function evaluateCloudIq(
       impact: 'Reduces provisioning time from weeks to hours'
     });
   }
-  if (dimScores.D4 < 3.4) {
+  if (below('D4', 3.4)) {
     movesPhase3.push({
       code: '03.2',
       size: 'M',
@@ -467,73 +486,59 @@ export function evaluateCloudIq(
       code: '02.1',
       size: 'M',
       title: 'Sovereign Cloud & SecNumCloud Compliance Boundary',
-      desc: 'Partition sensitive data workloads into qualified local sovereign clouds with dedicated HSM key isolation.',
-      impact: 'Satisfies statutory and regulatory data boundary mandates'
+      desc: 'Partition sensitive data into sovereign European / local cloud enclaves with strict key management.',
+      // A single infrastructure move supports compliance; it cannot by itself make a client compliant.
+      impact: 'Supports SecNumCloud / DORA data-boundary requirements'
     });
   }
-  if (!movesPhase3.length) {
-    movesPhase3.push({
-      code: '03.4',
-      size: 'M',
-      title: 'Core Workload Containerization Wave',
-      desc: 'Migrate legacy VM stacks into managed Kubernetes (EKS/AKS).',
-      impact: 'Improves deployment agility and portability'
-    });
-  }
-
-  // Phase 4: Long-Term Horizon Optimization (9–18+ Months)
-  if (dimScores.D8 < 3.8 || aiFlag) {
-    movesPhase4.push({
-      code: '03.7',
-      size: 'L',
-      title: 'Enterprise AI Data Platform & TokenOps Guardrails',
-      desc: 'Modernize data lakehouse architecture for GenAI inference, feature stores, and TokenOps cost allocation.',
-      impact: 'Unlocks enterprise AI monetization with strict governance'
-    });
-  }
-  if (leaseCliff || dimScores.D6 < 3.5) {
+  // Phase 4: Long-Term Transformation & AI (9–18+ Months). Same rules as the live page before Phase 2.
+  if (below('D6', 3.8) || leaseCliff) {
     movesPhase4.push({
       code: '03.5',
-      size: 'L',
-      title: 'Full Physical Data Centre Decommissioning',
-      desc: 'Execute final bare-metal asset liquidation, colocation lease termination, and clean exit.',
-      impact: 'Completely eliminates multi-million dollar annual facility run-rate'
+      size: 'XL',
+      title: 'Full Data Centre Decommissioning & Facility Handback',
+      desc: 'Physical server decommissioning, lease termination, and hardware asset liquidation.',
+      impact: 'Removes facility lease overhead for the exited sites'
     });
   }
-  movesPhase4.push({
-    code: '03.1',
-    size: 'M',
-    title: 'Autonomous Multi-Cloud FinOps & Unit Economics',
-    desc: 'Integrate real-time cloud unit cost metrics directly into engineering delivery KPIs and executive P&L.',
-    impact: 'Institutionalizes financial accountability into engineering culture'
-  });
+  if (below('D2', 4.2)) {
+    movesPhase4.push({
+      code: '03.4',
+      size: 'L',
+      title: 'Core Legacy Monolith Decoupling',
+      desc: 'Refactor core monolithic applications into microservices or serverless event-driven architecture.',
+      impact: 'Typically enables more frequent, independent releases'
+    });
+  }
+  if (aiFlag || below('D8', 3.8)) {
+    movesPhase4.push({
+      code: '04.4',
+      size: 'M',
+      title: 'Enterprise AI Lakehouse & TokenOps Platform',
+      desc: 'Governed feature store, model routing gateway, and private data boundary for generative AI.',
+      impact: 'Scalable, cost-governed GenAI adoption'
+    });
+  }
 
-  // 7. Recommended Offerings (Catalog cross-reference)
-  const offersRaw: any[] = [];
-  if (trackCode === 'A' || trackCode === 'Hybrid') {
-    if (KB.offerings['03.3']) offersRaw.push({ code: '03.3', ...KB.offerings['03.3'] });
-    if (KB.offerings['03.1']) offersRaw.push({ code: '03.1', ...KB.offerings['03.1'] });
-  }
-  if (trackCode === 'B' || trackCode === 'Hybrid') {
-    if (KB.offerings['03.4']) offersRaw.push({ code: '03.4', ...KB.offerings['03.4'] });
-    if (KB.offerings['03.5']) offersRaw.push({ code: '03.5', ...KB.offerings['03.5'] });
-  }
-  if (dimScores.D5 < 3.2 || dimScores.D4 < 3.2) {
-    if (KB.offerings['03.6']) offersRaw.push({ code: '03.6', ...KB.offerings['03.6'] });
-  }
-  if (dimScores.D8 < 3.0 && aiFlag) {
-    if (KB.offerings['03.1']) offersRaw.push({ code: '03.1', ...KB.offerings['03.1'] });
-  }
-  // Deduplicate offers
-  const offersDedup = offersRaw.filter(
-    (o, idx, arr) => o && arr.findIndex((x) => x && x.code === o.code) === idx
-  );
+  // 7. Recommended Offerings: { code, why } plus the catalogue entry. Same rules as the live page before Phase 2.
+  const offersRaw: Array<{ code: string; why: string }> = [];
+  if (atOrBelow('D3', 3.2) || wasteRate >= 0.15) offersRaw.push({ code: '03.3', why: 'Cost allocation, waste leakage & FinOps unit economics' });
+  if (atOrBelow('D4', 3.2)) offersRaw.push({ code: '03.2', why: 'Inconsistent hybrid / multi-cloud operating model' });
+  if (atOrBelow('D5', 3.2)) offersRaw.push({ code: '03.6', why: 'Platform automation, golden paths & developer experience' });
+  if (atOrBelow('D1', 3.2) || trackCode === 'B') offersRaw.push({ code: '03.1', why: 'Workload placement, cloud strategy & business case' });
+  if (atOrBelow('D2', 3.2)) offersRaw.push({ code: '03.4', why: 'Application modernization & migration factory execution' });
+  if (atOrBelow('D6', 3.2) || leaseCliff) offersRaw.push({ code: '03.5', why: 'Data centre consolidation, facility exit & compute capacity' });
+  const offersDedup = offersRaw
+    .filter((o, idx, arr) => arr.findIndex(x => x.code === o.code) === idx)
+    .map(o => ({ ...(KB.offerings?.[o.code] || {}), ...o }));
 
   // 8. Sector Peer Benchmark Comparison
   const q02 = KB.questions.find((x: any) => x.id === 'Q0.2');
-  const industryKey =
-    q02 && q02.opts && q02.opts[A['Q0.2'] || 0] ? q02.opts[A['Q0.2'] || 0][0] : 'Other';
-  const peer = KB.benchmarks[industryKey] || 3.1;
+  // Unanswered industry falls back to 'Other' (it used to read option 0, BFSI).
+  const industryKey = q02?.opts?.[A['Q0.2']]?.[0] ?? 'Other';
+  // Benchmarks are objects ({ overall, D1..D8, note }); compare against the overall median.
+  const peerBenchmark = KB.benchmarks[industryKey] || KB.benchmarks.Other;
+  const peer = typeof peerBenchmark?.overall === 'number' ? peerBenchmark.overall : 3.1;
   const peerDelta = overall - peer;
 
   // 9. Generate Dynamic Consulting Probes
@@ -554,6 +559,7 @@ export function evaluateCloudIq(
     overall: Math.round(overall * 100) / 100,
     band,
     dimScores,
+    dimAssessed,
     topObj,
     topDim,
     sovFlag,
@@ -573,6 +579,7 @@ export function evaluateCloudIq(
     movesPhase4,
     offers: offersDedup,
     peer,
+    peerBenchmark,
     peerDelta: Math.round(peerDelta * 100) / 100,
     industryKey,
     probes,

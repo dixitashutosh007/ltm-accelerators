@@ -1,17 +1,23 @@
 import { defineFunction } from '@aws-amplify/backend';
+import {
+  REGION, USER_POOL_ID, USER_POOL_CLIENT_ID, ADMIN_GROUP, SUPER_ADMIN_EMAILS,
+  ALLOWED_ORIGINS, REPORTS_BUCKET, APP_BASE_URL
+} from '../../config';
 
+/** Reports archive and user administration API (verifies the Cognito ID token itself as well). */
 export const reportsServiceFunction = defineFunction({
   name: 'reports-service',
   entry: './handler.ts',
   timeoutSeconds: 30,
   memoryMB: 512,
   environment: {
-    COGNITO_REGION: 'ap-south-1',
-    USER_POOL_ID: 'ap-south-1_91amN2bz4',
-    COGNITO_CLIENT_ID: '4iiqcsgvsm0b4ngpps94ho4c67',
-    ADMIN_GROUP: 'Admin',
-    SUPER_ADMIN_EMAILS: 'dixitashutosh007@gmail.com',
-    REPORTS_BUCKET: 'ltm-advisory-reports-223833501993',
-    APP_BASE_URL: 'https://main.d199dq940iqyj2.amplifyapp.com'
+    COGNITO_REGION: REGION,
+    USER_POOL_ID,
+    COGNITO_CLIENT_ID: USER_POOL_CLIENT_ID,
+    ADMIN_GROUP,
+    SUPER_ADMIN_EMAILS,
+    ALLOWED_ORIGINS: ALLOWED_ORIGINS.join(','),
+    REPORTS_BUCKET,
+    APP_BASE_URL
   }
 });

@@ -2,20 +2,22 @@
 <!--
   Copyright © 2026 LTM Limited. All rights reserved.
   FinOps IQ v2.2 — Production Cloud Financial Management & Maturity Platform
-  Infrastructure Tech Advisory (CIS) · Cloud Advisory Practice Lead: Ashutosh Dixit
+  LTM Infrastructure Tech Advisory · Cloud Advisory Practice Lead: Ashutosh Dixit
 -->
 <html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="generator" content="FinOps IQ v2.2 · LTM Infrastructure Tech Advisory">
-  <title>FinOps IQ — Cloud Financial Management &amp; Maturity Accelerator · LTM</title>
+  <meta name="generator" content="FinOps IQ v2.2 · LTM Vantage">
+  <title>FinOps IQ — Cloud Financial Management &amp; Maturity Accelerator · LTM Vantage</title>
   
   <!-- CDNs for Visual Charting & Boardroom PDF Generation -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
   <!-- S3 Customer Reports Client & Authentic Logo Data -->
+  <script src="/assets/runtime-config.js"></script>
+  <script src="/assets/ltm-api.js"></script>
   <script src="/assets/s3-reports.js"></script>
   <script src="/assets/ltm-logo-data.js"></script>
   <script src="/assets/rbac-guard.js" data-tool="finops-iq"></script>
@@ -187,6 +189,18 @@
       font-weight: 800;
       color: var(--ltm-dark);
       letter-spacing: -0.02em;
+    }
+    .app-brand-lockup {
+      display: flex;
+      flex-direction: column;
+      line-height: 1.15;
+    }
+    .app-brand-sub {
+      font-size: 10px;
+      font-weight: 600;
+      color: #6B7280;
+      letter-spacing: 0.04em;
+      white-space: nowrap;
     }
     .app-brand .badge-tag {
       background: #FFF1F0;
@@ -1524,7 +1538,7 @@
         </div>
         <div class="splash-org-tag">
           <span class="splash-ltm">LTM</span>
-          <span class="splash-div">INFRASTRUCTURE TECH ADVISORY</span>
+          <span class="splash-div">VANTAGE · RESPONSIBLE ADVISORY</span>
         </div>
         <h1 class="splash-title-text">FINOPS <span class="splash-iq-highlight">IQ</span></h1>
         <div class="splash-subtitle">CLOUD FINANCIAL INTELLIGENCE &amp; MATURITY PLATFORM</div>
@@ -1548,11 +1562,14 @@
   <header class="advisory-subbar" role="banner">
     <div class="subbar-inner">
       <div class="subbar-left">
-        <a href="/portal" style="display:flex;align-items:center;text-decoration:none;" title="Back to Advisory Accelerators Portal">
+        <a href="/" style="display:flex;align-items:center;text-decoration:none;" title="Back to Advisory Accelerators Portal">
           <img src="/assets/ltm-logo.png" alt="LTM" style="height:32px;width:auto;margin-right:12px;border-radius:4px;vertical-align:middle;">
         </a>
         <div class="app-brand" onclick="playSplashScreen(true)" style="cursor:pointer" title="FinOps IQ v2.2 · Click to replay intro animation">
-          <h1>FinOps IQ</h1>
+          <div class="app-brand-lockup">
+            <h1>FinOps IQ</h1>
+            <span class="app-brand-sub">LTM Vantage · Responsible Advisory</span>
+          </div>
           <span class="badge-tag">Advisory v2.2</span>
         </div>
         <button type="button" class="session-badge" onclick="openSessionModal()" title="Manage Sessions &amp; Drafts">
@@ -1773,7 +1790,7 @@
         "short_name": "Chaos",
         "color": "#FF5E4F",
         "threshold": 60,
-        "crit_min": 70,
+        "crit_min": 65,
         "desc": "Foundational governance, security root boundaries, and raw billing data ingestion must exist before meaningful FinOps work can begin.",
         "aim": "Establish who owns what, eliminate rogue unallocated spend, and ingest trustworthy raw billing data.",
         "leap_guide": "To graduate from Chaos to Informed: (1) Formalize an account registry with a single named owner per subscription; (2) Ingest raw cloud billing exports into central S3/Blob storage; (3) Mandate the 3 core tags (CostCenter, Owner, App) on all compute resources."
@@ -1785,7 +1802,7 @@
         "short_name": "Informed",
         "color": "#B26A00",
         "threshold": 65,
-        "crit_min": 70,
+        "crit_min": 65,
         "desc": "Cost visibility, tagging discipline (\u226580%), scheduled showback cadence, and anomaly detection are established across business units.",
         "aim": "Make spend visible and attributable, detect unexpected cost anomalies within 24h, and build regular monthly review cadences.",
         "leap_guide": "To graduate from Informed to Optimized: (1) Shift from mere reporting to active waste elimination; (2) Establish a centralized commitment discount strategy (RIs/Savings Plans coverage \u2265 70%); (3) Allocate shared container and Kubernetes clusters by namespace."
@@ -1943,6 +1960,12 @@
         "stage": "optimized",
         "title": "Spot & Transient Compute Workload Adoption",
         "desc": "Eligible stateless, batch, or non-critical workloads leverage Spot/Preemptible instances with automated eviction handling."
+      },
+      {
+        "id": "chk-o5",
+        "stage": "optimized",
+        "title": "Cost-Aware Architecture & Engineering Recognition",
+        "desc": "Unit cost is a mandatory architecture-review criterion and engineers are recognised for eliminating waste."
       },
       {
         "id": "chk-a1",
@@ -3420,7 +3443,7 @@
           footprint: [],
           techStack: [],
           consultantName: '',
-          consultantRole: 'LTM CIS Advisory Lead',
+          consultantRole: 'LTM Infrastructure Tech Advisory Lead',
           date: new Date().toISOString().slice(0, 10)
         },
         stageIdx: 0,
@@ -3750,10 +3773,10 @@
       const st = KB.meta.stages[mIdx >= 0 ? mIdx : 0];
       const sc = overallScore();
       const spend = formatSpend(STATE.org.annualSpend);
-      const blockers = KB.questions.filter(q => q.critical && (qScore(q, STATE.answers[q.id]) || 0) < 70).map(q => q.text).slice(0, 4);
+      const blockers = criticalBlockers().map(f => f.q.text).slice(0, 4);
 
       const sysPrompt = 'You are a Senior Engagement Partner at LTM Infrastructure Tech Advisory. Synthesize a 3-paragraph executive board-level FinOps diagnostic in McKinsey/Deloitte advisory style. Return strictly valid JSON: { "executive_briefing": "3 paragraphs of sharp C-suite advisory analysis", "top_risks": ["Risk 1", "Risk 2", "Risk 3"], "h1_focus": "Immediate 30-day priority", "h2_focus": "90-day structural priority", "h3_focus": "180+ day unit economics goal" }';
-      const userPrompt = 'Client Enterprise: ' + (STATE.org.name || 'Enterprise') + '\nIndustry Sector: ' + (STATE.org.sector || 'Enterprise') + '\nAnnual Cloud Spend: ' + spend + '\nCurrent Maturity Stage: Stage ' + (mIdx + 1) + ' · ' + st.name + '\nOverall FinOps Score: ' + sc + '/100\nKey Critical Control Blockers:\n' + blockers.join('\n');
+      const userPrompt = 'Client Enterprise: ' + (STATE.org.name || 'Enterprise') + '\nIndustry Sector: ' + (STATE.org.sector || 'Enterprise') + '\nAnnual Cloud Spend: ' + spend + '\nCurrent Maturity Stage: ' + maturityLabel(mIdx) + '\nOverall FinOps Score: ' + sc + '/100\nKey Critical Control Blockers:\n' + blockers.join('\n');
 
       try {
         const raw = await executeAICall(cfg, userPrompt, sysPrompt, 12000);
@@ -3771,39 +3794,75 @@
 
     // Scoring & Gating Engine
     /* ---------- Cloud Scoring Engine Bridge (AWS Lambda ap-south-1) ---------- */
-    const EVALUATE_API_ENDPOINT = "https://zvnmwxa9sf.execute-api.ap-south-1.amazonaws.com/api/evaluate/finops-iq";
+    // Scoring runs on the Advisory API; LTM_API attaches the signed-in user's token.
+const EVALUATE_API_PATH = "/api/evaluate/finops-iq";
 
+    // Returns the server's evaluation, or null (and shows an error) if scoring failed. Never keeps a stale result.
     async function fetchCloudEvaluation() {
+      STATE.evaluation = null;
+      hideScoringError();
       try {
         const payload = {
           answers: STATE.answers,
           annualSpend: STATE.org.annualSpend || 0,
-          org: STATE.org
+          // Only what the engine may use; consultant details stay in the browser.
+          org: { name: STATE.org.name || '', sector: STATE.org.sector || '' }
         };
-        const res = await fetch(EVALUATE_API_ENDPOINT, {
+        const res = await LTM_API.fetch(EVALUATE_API_PATH, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload)
         });
-        if (!res.ok) {
-          console.error('[FinOps IQ Cloud Eval] Error:', res.status, await res.text());
-          return null;
-        }
-        const json = await res.json();
-        if (json && json.ok && json.data) {
+        const json = await res.json().catch(() => null);
+        if (res.ok && json && json.ok && json.data) {
           STATE.evaluation = json.data;
           return STATE.evaluation;
         }
+        console.error('[FinOps IQ Cloud Eval] Error:', res.status, json);
       } catch (err) {
         console.error('[FinOps IQ Cloud Eval] Connection failed:', err);
       }
+      showScoringError();
       return null;
     }
 
-    function qScore(q, a) {
-      if (a === undefined || a === null || a === '__NA__') return null;
-      if (typeof a === 'number') return a;
-      return null;
+    function showScoringError() {
+      if (document.getElementById('scoringError')) return;
+      const el = document.createElement('div');
+      el.id = 'scoringError';
+      el.setAttribute('role', 'alert');
+      el.style.cssText = 'position:fixed;top:16px;left:50%;transform:translateX(-50%);z-index:9999;max-width:min(640px,calc(100% - 32px));display:flex;gap:12px;align-items:center;background:#FEF2F2;border:1px solid #DC2626;color:#111827;padding:12px 16px;border-radius:10px;font-size:14px;box-shadow:0 8px 30px rgba(0,0,0,.18)';
+      el.innerHTML = "<span><b>We couldn't calculate your results.</b> Your answers are kept. Please try again in a moment.</span>"
+        + '<button type="button" onclick="hideScoringError()" style="border:1px solid #DC2626;background:#fff;border-radius:6px;padding:4px 10px;cursor:pointer">Dismiss</button>';
+      document.body.appendChild(el);
+    }
+    function hideScoringError() {
+      const el = document.getElementById('scoringError');
+      if (el) el.remove();
+    }
+
+    // Every failing critical gate, as judged by the server: answered below the stage minimum, or not yet answered.
+    function criticalBlockers() {
+      const crit = (STATE.evaluation && STATE.evaluation.stageCriticals) || {};
+      return Object.values(crit).flatMap(c => c.failing || []);
+    }
+    function blockerBreakdown() {
+      const all = criticalBlockers();
+      const unanswered = all.filter(f => f.score === null || f.score === undefined).length;
+      return { total: all.length, belowMinimum: all.length - unanswered, unanswered: unanswered };
+    }
+    function blockerSummary(b) {
+      if (!b.total) return 'All critical gates cleared';
+      return b.belowMinimum + ' below minimum · ' + b.unanswered + ' not yet answered';
+    }
+
+    // Where the value-at-stake percentage range comes from.
+    function valueBasisLabel(vas) {
+      return vas && vas.basis === 'client-estimate' ? 'Based on your estimate of waste' : 'Based on maturity stage benchmark (LTM heuristic)';
+    }
+
+    // "Stage N · Name", or "Below Stage 1" when no stage has been passed yet.
+    function maturityLabel(mIdx) {
+      return mIdx >= 0 ? 'Stage ' + (mIdx + 1) + ' · ' + KB.meta.stages[mIdx].name : 'Below Stage 1 (no stage passed yet)';
     }
 
     function stageQuestions(stageId) {
@@ -3856,7 +3915,7 @@
         return STATE.evaluation.domainScores;
       }
       const out = {};
-      KB.meta.domains.forEach(d => out[d.id] = 0);
+      KB.meta.domains.forEach(d => out[d.id] = null);
       return out;
     }
 
@@ -3881,7 +3940,8 @@
         minSavings: Math.round(spend * 0.25),
         maxSavings: Math.round(spend * 0.35),
         minPct: 25,
-        maxPct: 35
+        maxPct: 35,
+        basis: 'maturity-stage'
       };
     }
 
@@ -4190,6 +4250,10 @@
         + '<span class="stat-chip"><b>' + cr.pass + '/' + cr.total + '</b>Critical Prerequisite Minimums ≥ ' + curStage.crit_min + '</span>'
         + '<span class="stat-chip"><b>' + sc.answered + '/' + sc.total + '</b>Questions Answered</span>'
         + '</div>'
+        + (stt === 'failed' && cr.failing.length
+            ? '<div class="stage-blockers" style="margin-top:12px;font-size:13px;color:#B91C1C"><b>Stage not passed. Blocked by critical gate' + (cr.failing.length > 1 ? 's' : '') + ':</b> '
+              + cr.failing.map(f => f.q.id + ' (' + (f.score === null || f.score === undefined ? 'unanswered' : f.score + ' of ' + f.target + ' needed') + ')').join(', ') + '</div>'
+            : '')
         + '</div>'
         + '<div class="questions-list">';
 
@@ -4217,7 +4281,6 @@
           mainHtml += '<button type="button" class="opt-btn' + (isSel ? ' selected' : '') + '" data-qid="' + q.id + '" data-opt="' + oIdx + '" onclick="selectAnswer(this.dataset.qid, parseInt(this.dataset.opt, 10))">'
             + '<span class="opt-radio"></span>'
             + '<span>' + opt.label + '</span>'
-            + '<span style="margin-left:auto;font-family:var(--font-mono);font-size:11px;opacity:0.6">' + opt.score + ' pts</span>'
             + '</button>';
         });
 
@@ -4305,6 +4368,7 @@
     // SCREEN 3: Checkpoints & Maturity Leap Matrix
     function renderCheckpoints() {
       const app = document.getElementById('main-app');
+      if (!STATE.evaluation) return resultsUnavailable(app);
       const checkpoints = KB.meta.checkpoints || [];
       const stages = KB.meta.stages;
       const coverage = checkpointCoverage();
@@ -4314,7 +4378,7 @@
 
       let html = '<div class="maturity-leap-card">'
         + '<span class="leap-badge">Maturity Elevation Blueprint</span>'
-        + '<h4>Current Maturity Standing: Stage ' + (mIdx >= 0 ? mIdx + 1 : 0) + ' · ' + (mIdx >= 0 ? curStage.name : 'Below Stage 1 Baseline') + '</h4>'
+        + '<h4>Current Maturity Standing: ' + maturityLabel(mIdx) + '</h4>'
         + '<p>' + (curStage.leap_guide || 'Work to close foundational prerequisite checkpoints before advancing to higher automation tiers.') + '</p>'
         + '</div>'
         + '<div class="checkpoint-matrix-grid">';
@@ -4340,7 +4404,7 @@
         stChecks.forEach(c => {
           const cv = coverage[c.id] || { status: 'blocker', pct: 0 };
           const badgeClass = cv.status;
-          const badgeLabel = cv.status === 'met' ? 'MET' : (cv.status === 'partial' ? 'IN PROGRESS' : 'BLOCKER');
+          const badgeLabel = cv.status === 'met' ? 'MET' : (cv.status === 'partial' ? 'IN PROGRESS' : (cv.status === 'na' ? 'N/A' : 'BLOCKER'));
 
           html += '<tr>'
             + '<td><span class="chk-badge ' + badgeClass + '">' + badgeLabel + '</span></td>'
@@ -4357,8 +4421,13 @@
     }
 
     // SCREEN 4: Advisory Report & Modernization Roadmap
+    function resultsUnavailable(app) {
+      app.innerHTML = '<div class="card" role="status"><h3>Results are not available yet</h3><p>Scoring runs on the LTM Vantage service and could not be reached. Your answers are kept. Please try again in a moment.</p></div>';
+    }
+
     function renderReport() {
       const app = document.getElementById('main-app');
+      if (!STATE.evaluation) return resultsUnavailable(app);
       const stages = KB.meta.stages;
       const mIdx = maturity();
       const curStage = stages[mIdx >= 0 ? mIdx : 0];
@@ -4367,7 +4436,11 @@
       const vas = calculateValueAtStake();
       const rm = buildRoadmap();
       const o = STATE.org;
-      const blockers = KB.questions.filter(q => q.critical && (qScore(q, STATE.answers[q.id]) || 0) < 70).length;
+      const bk = blockerBreakdown();
+      const blockers = bk.total;
+      const cov = STATE.evaluation.coverage;
+      const coverageText = cov ? 'Based on ' + cov.answered + ' of ' + cov.total + ' questions' + (cov.notApplicable ? ' (' + cov.notApplicable + ' not applicable)' : '') : '';
+      const stageKpi = mIdx >= 0 ? 'Stage ' + (mIdx + 1) : 'Below Stage 1';
 
       let modeBanner = STATE.consultantMode
         ? '<div class="report-mode-banner consultant"><div><strong>🔓 Consultant Advisory Mode Active</strong> — All deep-dive technical findings, granular checkpoints, and 3-horizon SOW are completely unmasked. Full PDF download is enabled.</div><button class="btn secondary" style="padding:4px 10px;font-size:11px" onclick="toggleConsultantMode()">Switch to Client Masked View</button></div>'
@@ -4376,7 +4449,7 @@
       let html = modeBanner
         + '<div class="card" style="border-top: 4px solid var(--ltm-red)">'
         + '<div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:16px;margin-bottom:20px">'
-        + '<div><span style="font-family:var(--font-mono);font-size:11px;font-weight:700;color:var(--ltm-red);text-transform:uppercase">LTM Infrastructure Tech Advisory</span>'
+        + '<div><span style="font-family:var(--font-mono);font-size:11px;font-weight:700;color:var(--ltm-red);text-transform:uppercase">LTM Vantage · Responsible Advisory</span>'
         + '<h1 style="font-family:var(--font-heading);font-size:24px;font-weight:800;color:var(--ltm-dark);margin:4px 0">' + (o.name || 'Client Enterprise') + ' · FinOps Maturity Diagnostic</h1>'
         + '<div style="font-size:13px;color:#6B7280">' + [o.sector, formatSpend(o.annualSpend), (o.footprint || []).join(' · ')].filter(Boolean).join(' · ') + '</div>'
         + '</div>'
@@ -4388,29 +4461,32 @@
         + '</div>'
         + '<div class="executive-dashboard-grid">'
         + '<div class="kpi-card"><div class="kpi-label">Assessed Maturity Stage</div>'
-        + '<div class="kpi-value" style="color:' + curStage.color + '">Stage ' + (mIdx >= 0 ? mIdx + 1 : 0) + '</div>'
-        + '<div class="kpi-sub">' + (mIdx >= 0 ? curStage.name : 'Below Stage 1 Baseline') + '</div></div>'
+        + '<div class="kpi-value" style="color:' + curStage.color + '">' + stageKpi + '</div>'
+        + '<div class="kpi-sub">' + (mIdx >= 0 ? curStage.name : 'No stage passed yet') + '</div></div>'
         + '<div class="kpi-card"><div class="kpi-label">FinOps Defensibility Score</div>'
         + '<div class="kpi-value">' + (overall !== null ? overall : '—') + '<span style="font-size:14px;color:#9CA3AF">/100</span></div>'
-        + '<div class="kpi-sub">' + (overall >= 75 ? 'Healthy Optimization Posture' : (overall >= 50 ? 'Developing Capabilities' : 'Substantial Value Leakage')) + '</div></div>'
+        + '<div class="kpi-sub">' + (overall === null ? 'Not yet assessed' : (overall >= 75 ? 'Healthy Optimization Posture' : (overall >= 50 ? 'Developing Capabilities' : 'Substantial Value Leakage'))) + '</div>'
+        + '<div class="kpi-sub" data-testid="coverage">' + coverageText + '</div></div>'
         + '<div class="kpi-card"><div class="kpi-label">Estimated Waste Savings at Stake</div>'
-        + '<div class="kpi-value" style="color:#047857">' + formatCurrency(vas.minSavings) + '</div>'
-        + '<div class="kpi-sub">Potential ' + vas.minPct + '% – ' + vas.maxPct + '% annual cloud bill recovery</div></div>'
+        + '<div class="kpi-value" style="color:#047857;font-size:22px">' + formatCurrency(vas.minSavings) + ' – ' + formatCurrency(vas.maxSavings) + '</div>'
+        + '<div class="kpi-sub">Potential ' + vas.minPct + '% – ' + vas.maxPct + '% annual cloud bill recovery</div>'
+        + '<div class="kpi-sub" data-testid="vas-basis">' + valueBasisLabel(vas) + '</div></div>'
         + '<div class="kpi-card"><div class="kpi-label">Gate Blockers Outstanding</div>'
         + '<div class="kpi-value" style="color:' + (blockers > 0 ? '#B91C1C' : '#047857') + '">' + blockers + '</div>'
-        + '<div class="kpi-sub">' + (blockers > 0 ? 'Critical controls below threshold' : 'All critical gates cleared') + '</div></div>'
+        + '<div class="kpi-sub">' + blockerSummary(bk) + '</div></div>'
         + '</div>'
         + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:24px">'
         + '<div><h3 style="font-family:var(--font-heading);font-size:15px;font-weight:800;margin-bottom:12px">FinOps Foundation Domain Performance</h3>'
         + KB.meta.domains.map(d => {
-            const sc = doms[d.id] || 0;
+            const sc = doms[d.id];
+            const assessed = sc !== null && sc !== undefined;
             return '<div style="margin-bottom:12px">'
               + '<div style="display:flex;justify-content:space-between;font-size:12.5px;font-weight:600;margin-bottom:4px">'
               + '<span>' + d.icon + ' ' + d.label + '</span>'
-              + '<span style="font-family:var(--font-mono)">' + sc + '/100</span>'
+              + '<span style="font-family:var(--font-mono)' + (assessed ? '' : ';color:#9CA3AF') + '">' + (assessed ? sc + '/100' : 'Not assessed') + '</span>'
               + '</div>'
               + '<div style="height:6px;background:#F3F4F6;border-radius:3px;overflow:hidden">'
-              + '<div style="height:100%;width:' + sc + '%;background:' + d.color + '"></div>'
+              + '<div style="height:100%;width:' + (assessed ? sc : 0) + '%;background:' + d.color + '"></div>'
               + '</div></div>';
           }).join('')
         + '</div>'
@@ -4426,7 +4502,7 @@
         + '<p style="font-size:13.5px;color:#4C1D95;line-height:1.6">'
         + (STATE.aiSynthesis && STATE.aiSynthesis.executive_briefing
           ? STATE.aiSynthesis.executive_briefing.replace(/\n/g, '<br><br>')
-          : 'The assessment establishes that ' + (o.name || 'the enterprise') + ' is currently operating at Stage ' + (mIdx >= 0 ? mIdx + 1 : 0) + ' (' + (mIdx >= 0 ? curStage.name : 'Below Stage 1 Baseline') + '). With an estimated annual cloud spend of ' + formatSpend(o.annualSpend) + ', the organization exhibits recoverable cost leakages between ' + formatCurrency(vas.minSavings) + ' and ' + formatCurrency(vas.maxSavings) + '. Immediate focus must target clearing critical prerequisite blockers.')
+          : 'The assessment establishes that ' + (o.name || 'the enterprise') + ' is currently at ' + maturityLabel(mIdx) + '. With an estimated annual cloud spend of ' + formatSpend(o.annualSpend) + ', the organization exhibits recoverable cost leakages between ' + formatCurrency(vas.minSavings) + ' and ' + formatCurrency(vas.maxSavings) + '. Immediate focus must target clearing critical prerequisite blockers.')
         + '</p>'
         + '</div>'
         + '</div>';
@@ -4450,13 +4526,14 @@
           html += '<div style="font-size:12px;color:#9CA3AF">No outstanding blockers in this horizon.</div>';
         } else {
           h.items.slice(0, 6).forEach(g => {
-            html += '<div class="action-item">'
+            html += '<div class="action-item"' + (g.toAssess ? ' style="opacity:0.75"' : '') + '>'
               + '<div class="action-top">'
               + '<span class="action-badge' + (g.q.critical ? ' crit' : '') + '">' + (g.q.critical ? 'CRIT GATE' : 'S0' + g.stage.n) + '</span>'
+              + (g.toAssess ? '<span class="action-badge" style="background:#F3F4F6;color:#4B5563">TO ASSESS</span>' : '')
               + '<span style="font-size:11px;color:#6B7280;margin-left:auto">' + g.q.id + '</span>'
               + '</div>'
               + '<div class="action-text">' + (g.q.remediation || g.q.text) + '</div>'
-              + '<div class="action-meta">Stage ' + g.stage.n + ' · ' + g.stage.name + ' · Scored ' + (g.score !== null ? g.score : 'unanswered') + ' / ' + g.target + '</div>'
+              + '<div class="action-meta">Stage ' + g.stage.n + ' · ' + g.stage.name + (g.toAssess || g.score === null ? ' · To assess (not yet answered)' : ' · Scored ' + g.score + ' / ' + g.target) + '</div>'
               + '</div>';
           });
         }
@@ -4466,7 +4543,7 @@
       html += '</div></div>'
         + '<div class="card">'
         + '<div class="card-header"><h3 class="card-title">📋 Detailed Checkpoint Audit Trail</h3></div>'
-        + '<p style="font-size:13px;color:#6B7280;margin-bottom:14px">Granular audit verification across all 22 FinOps Foundation maturity checkpoints:</p>'
+        + '<p style="font-size:13px;color:#6B7280;margin-bottom:14px">Self-reported answers mapped against LTM\'s ' + (KB.meta.checkpoints || []).length + ' FinOps maturity checkpoints (not an independent audit):</p>'
         + '<div id="detailed-checkpoint-table-slot"></div>'
         + '</div>'
         + '</div>';
@@ -4506,7 +4583,7 @@
       checkpoints.forEach(c => {
         const cv = coverage[c.id] || { status: 'blocker', pct: 0 };
         const badgeClass = cv.status;
-        const badgeLabel = cv.status === 'met' ? 'MET' : (cv.status === 'partial' ? 'IN PROG' : 'BLOCKER');
+        const badgeLabel = cv.status === 'met' ? 'MET' : (cv.status === 'partial' ? 'IN PROG' : (cv.status === 'na' ? 'N/A' : 'BLOCKER'));
         t += '<tr>'
           + '<td><span class="chk-badge ' + badgeClass + '">' + badgeLabel + '</span></td>'
           + '<td><b>' + c.title + '</b></td>'
@@ -4525,8 +4602,10 @@
       if (radarChartInstance) radarChartInstance.destroy();
 
       const doms = domainScores();
-      const labels = KB.meta.domains.map(d => d.label.replace('Understanding Cloud ', '').replace('Modern Workloads ', ''));
-      const data = KB.meta.domains.map(d => doms[d.id] || 0);
+      // A domain with no answers is plotted at 0 and labelled "(not assessed)", so it is not read as a score of 0.
+      const assessed = d => doms[d.id] !== null && doms[d.id] !== undefined;
+      const labels = KB.meta.domains.map(d => d.label.replace('Understanding Cloud ', '').replace('Modern Workloads ', '') + (assessed(d) ? '' : ' (not assessed)'));
+      const data = KB.meta.domains.map(d => assessed(d) ? doms[d.id] : 0);
 
       radarChartInstance = new Chart(canvas, {
         type: 'radar',
@@ -4654,7 +4733,7 @@
       const o = STATE.org;
       document.getElementById('contact-name').value = o.consultantName || '';
       document.getElementById('contact-company').value = o.name || '';
-      document.getElementById('contact-priority').value = 'Discuss full FinOps modernization roadmap, stage ' + (maturity() + 1) + ' elevation, and recover estimated ' + formatCurrency(calculateValueAtStake().minSavings) + ' in cloud waste.';
+      document.getElementById('contact-priority').value = 'Discuss full FinOps modernization roadmap, elevation to Stage ' + Math.min(maturity() + 2, KB.meta.stages.length) + ', and recover an estimated ' + formatCurrency(calculateValueAtStake().minSavings) + ' – ' + formatCurrency(calculateValueAtStake().maxSavings) + ' in cloud waste.';
       document.getElementById('advisoryBookingModal').classList.add('open');
     }
     function closeAdvisoryModal() {
@@ -4679,8 +4758,8 @@
         "  Executive Lead:     " + (name || "—"),
         "  Work Email:         " + (email || "—"),
         "  Annual Cloud Spend: " + formatSpend(STATE.org.annualSpend),
-        "  Maturity Level:     Stage " + (mIdx + 1) + " · " + curStage.name,
-        "  Overall Score:      " + (overallScore() || "—") + " / 100",
+        "  Maturity Level:     " + maturityLabel(mIdx),
+        "  Overall Score:      " + (overallScore() !== null ? overallScore() : "—") + " / 100",
         "  Value at Stake:     " + formatCurrency(vas.minSavings) + " – " + formatCurrency(vas.maxSavings) + " annual waste",
         "  Primary Focus:      " + (priority || "Deep-dive roadmap and billable SOW"),
         "",
@@ -4690,7 +4769,7 @@
         name || "Client Lead"
       ];
 
-      const subject = "Infrastructure Tech Advisory — FinOps IQ Readout Request — " + (comp || "Enterprise");
+      const subject = "LTM Vantage — FinOps IQ Readout Request — " + (comp || "Enterprise");
       const href = "mailto:ashutosh.dixit@ltm.com?subject=" + encodeURIComponent(subject) + "&body=" + encodeURIComponent(lines.join("\n"));
       window.location.href = href;
       closeAdvisoryModal();
@@ -4724,7 +4803,7 @@
         doc.text("LTM", 20, 30);
         doc.setFontSize(10);
         doc.setTextColor(200, 200, 200);
-        doc.text("INFRASTRUCTURE TECH ADVISORY", 20, 36);
+        doc.text("VANTAGE · RESPONSIBLE ADVISORY", 20, 36);
 
         // Title
         doc.setTextColor(255, 255, 255);
@@ -4758,9 +4837,9 @@
         doc.setFontSize(9);
         doc.text("MATURITY STAGE", 25, 145);
         doc.setFontSize(18);
-        doc.text("Stage " + (mIdx + 1), 25, 155);
+        doc.text(mIdx >= 0 ? "Stage " + (mIdx + 1) : "Below Stage 1", 25, 155);
         doc.setFontSize(9);
-        doc.text(curStage.short_name, 25, 163);
+        doc.text(mIdx >= 0 ? curStage.short_name : "No stage passed yet", 25, 163);
 
         doc.setFillColor(40, 40, 40);
         doc.roundedRect(79, 136, 52, 36, 3, 3, 'F');
@@ -4769,9 +4848,10 @@
         doc.text("DEFENSIBILITY SCORE", 84, 145);
         doc.setTextColor(255, 255, 255);
         doc.setFontSize(18);
-        doc.text((sc || "—") + " / 100", 84, 155);
+        doc.text((sc !== null && sc !== undefined ? sc : "—") + " / 100", 84, 155);
         doc.setFontSize(9);
-        doc.text("Normalized Benchmark", 84, 163);
+        const pcov = STATE.evaluation && STATE.evaluation.coverage;
+        doc.text(pcov ? "Based on " + pcov.answered + " of " + pcov.total + " questions" : "Self-reported answers", 84, 163);
 
         doc.setFillColor(40, 40, 40);
         doc.roundedRect(138, 136, 52, 36, 3, 3, 'F');
@@ -4780,10 +4860,13 @@
         doc.text("RECOVERABLE WASTE", 143, 145);
         doc.setTextColor(53, 117, 77);
         doc.setFontSize(16);
-        doc.text(formatCurrency(vas.minSavings), 143, 155);
+        doc.setFontSize(11);
+        doc.text(formatCurrency(vas.minSavings) + " – " + formatCurrency(vas.maxSavings), 143, 155);
         doc.setTextColor(200, 200, 200);
         doc.setFontSize(9);
-        doc.text(vas.minPct + "% – " + vas.maxPct + "% of Annual Spend", 143, 163);
+        doc.text(vas.minPct + "% – " + vas.maxPct + "% of Annual Spend", 143, 161);
+        doc.setFontSize(7);
+        doc.text(doc.splitTextToSize(valueBasisLabel(vas), 44), 143, 166);
 
         // Executive Synthesis
         doc.setTextColor(255, 255, 255);
@@ -4793,14 +4876,14 @@
         doc.setFontSize(10);
         const synthText = (STATE.aiSynthesis && STATE.aiSynthesis.executive_briefing)
           ? STATE.aiSynthesis.executive_briefing
-          : "The organization currently sits at Stage " + (mIdx + 1) + " (" + curStage.name + "). Progression to subsequent stages is gated by outstanding prerequisite checkpoints. Priority actions must immediately resolve critical prerequisite gaps to capture recoverable cloud waste.";
+          : "The organization currently sits at " + maturityLabel(mIdx) + ". Progression to subsequent stages is gated by outstanding prerequisite checkpoints. Priority actions must immediately resolve critical prerequisite gaps to capture recoverable cloud waste.";
         const splitText = doc.splitTextToSize(synthText, 170);
         doc.text(splitText.slice(0, 12), 20, 200);
 
         // Footer
         doc.setTextColor(140, 140, 140);
         doc.setFontSize(8);
-        doc.text("CONFIDENTIAL · PREPARED FOR " + (o.name || "CLIENT") + " · LTM CIS TECH ADVISORY", 20, 285);
+        doc.text("CONFIDENTIAL · PREPARED FOR " + (o.name || "CLIENT") + " · LTM VANTAGE · RESPONSIBLE ADVISORY", 20, 285);
 
         // Page 2: Stage & Roadmap Table
         doc.addPage();
@@ -4846,7 +4929,7 @@
                 clientName: confirmedClient,
                 pdfBase64: pdfBase64,
                 metadata: {
-                  stage: curStage ? curStage.name : 'Baseline',
+                  stage: maturityLabel(mIdx),
                   overallScore: sc,
                   annualSpend: o.annualSpend
                 }

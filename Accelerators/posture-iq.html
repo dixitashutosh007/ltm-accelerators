@@ -8,12 +8,14 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="generator" content="Posture IQ v2.1 · LTM Infrastructure Tech Advisory">
-  <title>Posture IQ — Regulatory &amp; Technical Sovereignty Diagnostic · LTM</title>
+  <meta name="generator" content="Posture IQ v2.1 · LTM Vantage">
+  <title>Posture IQ — Regulatory &amp; Technical Sovereignty Diagnostic · LTM Vantage</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
   <!-- S3 Customer Reports Client -->
+  <script src="/assets/runtime-config.js"></script>
+  <script src="/assets/ltm-api.js"></script>
   <script src="/assets/s3-reports.js"></script>
   <script src="/assets/rbac-guard.js" data-tool="posture-iq"></script>
   <style>
@@ -1627,7 +1629,7 @@ a:hover{color:var(--ltm-darkred)}
     /* Contact Us tab (vertical, right-rail) */
     var tab = document.createElement("button");
     tab.id = "ltm-cu-tab"; tab.className = "ltm-cu-tab"; tab.type = "button";
-    tab.setAttribute("aria-label", "Contact Infrastructure Tech Advisory");
+    tab.setAttribute("aria-label", "Contact LTM Infrastructure Tech Advisory");
     tab.innerHTML = "<span class='ltm-cu-tab-icon'>✉</span>Contact Us";
     tab.onclick = openModal;
     document.body.appendChild(tab);
@@ -1697,7 +1699,7 @@ a:hover{color:var(--ltm-darkred)}
     dlg.id = "ltm-cu-modal"; dlg.className = "ltm-cu-modal";
     dlg.innerHTML =
       "<form method='dialog'>"
-      + "<header><strong>Contact Infrastructure Tech Advisory</strong>"
+      + "<header><strong>Contact LTM Infrastructure Tech Advisory</strong>"
       +   "<button value='cancel' aria-label='Close' type='button' id='ltm-cu-close'>×</button></header>"
       + "<div class='ltm-cu-body'>"
       +   "<div class='ltm-cu-note'>We'll draft an email to <strong>ashutosh.dixit@ltm.com</strong> with your details and a short summary of your report. You can review and edit it in your email app before sending.</div>"
@@ -1722,7 +1724,7 @@ a:hover{color:var(--ltm-darkred)}
       var r = state.report || {};
       var lines = [
         "Hi Ashutosh,","",
-        "I've just completed the " + CFG.accelerator + " assessment on the LTM Infrastructure Tech Advisory site and would like to walk through the results.","",
+        "I've just completed the " + CFG.accelerator + " assessment on the LTM Vantage site and would like to walk through the results.","",
         "My details:",
         "  Name:    " + (fd.get("name")||""),
         "  Company: " + (fd.get("company")||""),
@@ -1741,7 +1743,7 @@ a:hover{color:var(--ltm-darkred)}
         "Please get in touch to set up a 30-minute readout.","",
         "Thanks,", (fd.get("name")||"")
       ];
-      var subject = "Infrastructure Tech Advisory — " + CFG.accelerator + " — " + (fd.get("company")||"");
+      var subject = "LTM Vantage — " + CFG.accelerator + " — " + (fd.get("company")||"");
       var href = "mailto:" + encodeURIComponent(CFG.to)
         + "?subject=" + encodeURIComponent(subject)
         + "&body=" + encodeURIComponent(lines.join("\n"));
@@ -1921,7 +1923,7 @@ a:hover{color:var(--ltm-darkred)}
       </div>
     </div>
 
-    <div class="splash-brand"><span class="dot"></span> LTM · CIS TECH ADVISORY</div>
+    <div class="splash-brand"><span class="dot"></span> LTM VANTAGE · RESPONSIBLE ADVISORY</div>
     <h1 class="splash-title">Posture IQ</h1>
     <p class="splash-subtitle">Enterprise Digital Sovereignty &amp; Statutory Posture Accelerator</p>
 
@@ -2059,7 +2061,7 @@ a:hover{color:var(--ltm-darkred)}
 </div>
   <div id="jra-root">Loading Posture IQ…</div>
   <script>
-var APP_HTML = "\n<div class=\"topbar no-print\">\n  <div class=\"wrap\">\n    <div class=\"brand\">\n      <span class=\"brand-badge\">LTM</span>\n      <div>\n        <div class=\"name\">Posture IQ <span style=\"font-size:10px;font-weight:700;color:#FF5E4F;background:#FCF0EE;padding:2px 6px;border-radius:4px;border:1px solid #FF5E4F;margin-left:6px\">STATUTORY DIAGNOSTIC</span></div>\n        <div class=\"sub\">Infrastructure Tech Advisory \u00b7 Digital Sovereignty</div>\n      </div>\n    </div>\n    <div class=\"topbar-actions\">\n      <a href=\"/studio.html?tool=posture-iq\" class=\"btn btn-ghost btn-sm\" style=\"text-decoration:none;font-weight:700;color:var(--steel)\">⚙️ Question Bank Studio</a>\n      <button class=\"btn btn-ghost btn-sm\" onclick=\"openDrawer()\"><span>Question bank</span></button>\n      <button class=\"btn btn-ghost btn-sm\" id=\"btn-restart\" onclick=\"restart()\" style=\"display:none\">Restart</button>\n    </div>\n  </div>\n</div>\n\n<!-- ============ SCREEN 1: INTAKE ============ -->\n<section class=\"screen active\" id=\"screen-intake\">\n  <div class=\"wrap\">\n\n    <!-- EXECUTIVE HERO BANNER -->\n    <div class=\"cio-executive-banner\">\n      <div class=\"banner-top-row\">\n        <span class=\"banner-tag\">CIO &amp; CISO EXECUTIVE COMPLIANCE BRIEFING</span>\n        <span class=\"mono banner-version\">FRAMEWORK v2.1 \u00b7 UPDATED 2026</span>\n      </div>\n      <h1 class=\"banner-title\">Enterprise Digital Sovereignty &amp; Statutory Posture Accelerator</h1>\n      <p class=\"banner-desc\">\n        A strategic advisory diagnostic auditing cloud concentration risk, extraterritorial legal exposure, and technical defensibility across <b>DORA, NIS2, EU AI Act, GDPR, and UK Operational Resilience</b>. Built for technology executives navigating hybrid modernization.\n      </p>\n      <div class=\"banner-pills\">\n        <div class=\"bp-item\"><span class=\"bp-icon\">\u2696\ufe0f</span> <b>10</b> Statutory Mandates</div>\n        <div class=\"bp-item\"><span class=\"bp-icon\">\ud83c\udfdb\ufe0f</span> <b>5</b> Compliance Pillars</div>\n        <div class=\"bp-item\"><span class=\"bp-icon\">\u23f1\ufe0f</span> <b>15 Min</b> Adaptive Diagnostic</div>\n        <div class=\"bp-item\"><span class=\"bp-icon\">\ud83d\udd0d</span> <b>Statutory</b> Anomaly Discovery</div>\n      </div>\n    </div>\n\n    <!-- STREAMLINED CIO INTAKE CARD -->\n    <div class=\"card intake-card-clean\">\n      <div class=\"intake-head\">\n        <div>\n          <h3 style=\"font-size:18px;margin-bottom:3px\">Enterprise Scope &amp; Organization Profile</h3>\n          <p class=\"card-sub\" style=\"margin-bottom:0\">Calibrates statutory penalty ceilings, applicable mandates, and technical discovery probes.</p>\n        </div>\n        <button class=\"btn btn-ghost btn-sm\" onclick=\"openArchetypeModal()\" style=\"font-size:12px;color:var(--ltm-navy);font-weight:700;border:1.5px solid var(--line);background:#fff;padding:6px 14px;border-radius:6px;display:inline-flex;align-items:center;gap:6px\">📋 Load Sample Archetype</button>\n      </div>\n\n      <div class=\"grid2\" style=\"margin-top:16px;row-gap:16px\">\n        <div class=\"field\">\n          <label>Enterprise / Client Name</label>\n          <input type=\"text\" id=\"org-name\" placeholder=\"e.g. Meridian Global Financial plc\">\n        </div>\n        \n        <div class=\"field\">\n          <label>Primary Industry Sector</label>\n          <select id=\"org-sector-select\" onchange=\"handleSectorSelect(this.value)\">\n            <option value=\"\">Select your sector\u2026</option>\n            <option value=\"finserv\">Banking &amp; Capital Markets (DORA \u00b7 UK Op Res)</option>\n            <option value=\"insurance\">Insurance &amp; Pensions (DORA \u00b7 NIS2)</option>\n            <option value=\"health\">Healthcare Providers (NIS2 \u00b7 GDPR)</option>\n            <option value=\"pharma\">Pharma &amp; Life Sciences (AI Act \u00b7 GDPR)</option>\n            <option value=\"telecom\">Telecom &amp; Connectivity (NIS2 Essential)</option>\n            <option value=\"energy\">Energy &amp; Utilities (NIS2 Critical Infra)</option>\n            <option value=\"water\">Water &amp; Waste Management (NIS2)</option>\n            <option value=\"transport\">Transport &amp; Logistics (NIS2)</option>\n            <option value=\"diginfra\">Digital Infrastructure &amp; Cloud (EUCS \u00b7 NIS2)</option>\n            <option value=\"public\">Public Sector &amp; Government (Sovereign)</option>\n            <option value=\"tech\">Technology &amp; B2B SaaS (DORA CTPP \u00b7 EUCS)</option>\n            <option value=\"manuf\">Manufacturing &amp; Industrial (NIS2)</option>\n            <option value=\"retail\">Retail &amp; Consumer Goods (GDPR \u00b7 PECR)</option>\n          </select>\n        </div>\n\n        <div class=\"field\">\n          <label>Primary Data Subject &amp; Customer Footprint</label>\n          <select id=\"org-footprint\">\n            <option value=\"\">Select footprint\u2026</option>\n            <option value=\"EEA / EU only\">EEA / EU only</option>\n            <option value=\"UK only\">UK only</option>\n            <option value=\"EU + UK\">EU + UK (Dual Regime)</option>\n            <option value=\"EU + US / global\">EU + US / Global (Cross-Border Transfer Scope)</option>\n            <option value=\"UK + US / global\">UK + US / Global (IDTA Scope)</option>\n            <option value=\"Global \u2014 multi-region\">Global \u2014 Multi-Region Enterprise</option>\n          </select>\n        </div>\n\n        <div class=\"field\">\n          <label>Annual Global Turnover / Revenue ($ USD)</label>\n          <select id=\"org-turnover\">\n            <option value=\"50000000\">&lt; $100M USD</option>\n            <option value=\"250000000\" selected>$100M \u2013 $500M USD</option>\n            <option value=\"750000000\">$500M \u2013 $1B USD</option>\n            <option value=\"2500000000\">$1B \u2013 $5B USD</option>\n            <option value=\"10000000000\">$5B \u2013 $20B USD</option>\n            <option value=\"35000000000\">&gt; $20B USD</option>\n          </select>\n        </div>\n\n        <div class=\"field\">\n          <label>Executive Sponsor Name (Optional)</label>\n          <input type=\"text\" id=\"resp-name\" placeholder=\"Full name\">\n        </div>\n\n        <div class=\"field\">\n          <label>Executive Role / Title</label>\n          <input type=\"text\" id=\"resp-role\" placeholder=\"e.g. Chief Information Officer (CIO) / CISO\">\n        </div>\n      </div>\n\n      <!-- Collapsible Advanced Scope Accordion -->\n      <div class=\"scope-accordion\" style=\"margin-top:18px\">\n        <div class=\"scope-acc-hd\" onclick=\"toggleScopeAccordion()\">\n          <span style=\"display:flex;align-items:center;gap:8px\">\n            <span style=\"font-size:13px\">\u2699\ufe0f</span>\n            <b>Applicable Statutory Frameworks</b>\n            <span id=\"scope-count-badge\" class=\"scope-badge\">Mapped to Sector</span>\n          </span>\n          <span id=\"scope-acc-arrow\" style=\"font-size:12px;color:var(--ink3)\">\u25bc Customize</span>\n        </div>\n        <div id=\"scope-acc-body\" style=\"display:none;padding-top:12px\">\n          <p style=\"font-size:12px;color:var(--ink3);margin-bottom:8px\">Statutory frameworks are automatically selected based on your chosen sector. You may toggle individual acts below:</p>\n          <div class=\"reg-grid\" id=\"reg-grid\"></div>\n        </div>\n      </div>\n\n      <div class=\"intake-actions-row\" style=\"margin-top:22px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px\">\n        <div style=\"font-size:12px;color:var(--ink3)\">\n          \ud83d\udd12 In-Browser Execution \u00b7 Zero External Data Storage \u00b7 Non-Legal Advisory\n        </div>\n        <button class=\"btn btn-primary\" onclick=\"startAssessment()\" style=\"padding:12px 28px;font-size:15px;font-weight:700\">\n          Begin Diagnostic Assessment \u2192\n        </button>\n      </div>\n    </div>\n\n    <!-- Hidden elements required by existing engine (managed programmatically) -->\n    <div style=\"display:none\">\n      <select id=\"org-hq\"><option>EU \u2014 multiple</option></select>\n      <select id=\"org-size\"><option>1,000\u20135,000</option></select>\n      <div id=\"sector-grid\"></div>\n    </div>\n\n    <div style=\"display:flex;align-items:center;gap:14px;margin-top:44px;padding-top:22px;border-top:1px solid var(--line)\">\n      <span class=\"brand-badge\" style=\"font-size:11px;padding:2px 8px\">LTM CIS</span>\n      <span style=\"font-size:11.5px;color:var(--ink3)\">Digital Sovereignty Accelerator \u00b7 Infrastructure Tech Advisory \u00b7 A Larsen &amp; Toubro Group Company</span>\n    </div>\n  </div>\n</section>\n\n<!-- ============ SCREEN 2: ASSESSMENT ============ -->\n<section class=\"screen\" id=\"screen-assess\">\n  <div class=\"wrap\" style=\"max-width:1040px\">\n    <div class=\"assess-head\">\n      <div>\n        <div class=\"eyebrow\" style=\"margin-bottom:4px\">STATUTORY POSTURE DIAGNOSTIC \u00b7 IN PROGRESS</div>\n        <h1 style=\"font-size:26px;color:#0F172A;font-weight:800;letter-spacing:-0.02em\" id=\"assess-org\">\u2014</h1>\n      </div>\n      <button class=\"btn btn-ghost btn-sm no-print\" onclick=\"jumpToResults()\" style=\"border:1px solid var(--line);background:#fff;font-weight:600\">Skip to results \u2192</button>\n    </div>\n    <div class=\"assess-progress-card\">\n      <div class=\"progress-meta-row\">\n        <span class=\"progress-label\" id=\"progress-count\">0 answered</span>\n        <span class=\"progress-val\" id=\"progress-pct\">0% Complete</span>\n      </div>\n      <div class=\"progress-track\"><div class=\"progress-fill\" id=\"progress-fill\"></div></div>\n    </div>\n    <div class=\"section-rail-wrap\">\n      <div class=\"rail\" id=\"section-nav\"></div>\n    </div>\n    <div id=\"assess-body\"></div>\n    <div class=\"assess-foot no-print\">\n      <button class=\"btn btn-ghost\" id=\"btn-prev\" onclick=\"prevSection()\" style=\"font-weight:600;padding:12px 24px\">\u2190 Previous Section</button>\n      <button class=\"btn btn-primary\" id=\"btn-next\" onclick=\"nextSection()\" style=\"font-weight:700;padding:12px 30px\">Next Section \u2192</button>\n    </div>\n  </div>\n</section>\n\n<!-- ============ SCREEN CLARIFY: AI ANOMALY AUDITOR ============ -->\n<section class=\"screen\" id=\"screen-clarify\">\n  <div class=\"wrap\">\n    <div class=\"clarify-header\">\n      <span class=\"clarify-badge\">\ud83e\udd16 AI Posture Auditor \u00b7 Adaptive Discovery</span>\n      <h2 style=\"font-size:24px;margin-bottom:6px;color:#fff\">Architectural Ambiguity &amp; Anomaly Review</h2>\n      <p style=\"font-size:13.5px;color:rgba(255,255,255,0.85);max-width:780px;line-height:1.5\">Our discovery engine identified potential statutory contradictions between declared operational practices and regulatory mandates. Please clarify the following before finalizing your executive report:</p>\n    </div>\n    <div id=\"clarify-questions-mount\"></div>\n    <div style=\"display:flex;justify-content:space-between;align-items:center;margin-top:20px;flex-wrap:wrap;gap:12px\" class=\"no-print\">\n      <button class=\"btn btn-ghost\" onclick=\"showScreen('assess')\">&larr; Back to Questions</button>\n      <button class=\"btn btn-primary\" onclick=\"submitClarificationsAndShowResults()\" style=\"padding:11px 24px;font-size:14px;font-weight:700\">Confirm Clarifications &amp; Generate Teaser Report &rarr;</button>\n    </div>\n  </div>\n</section>\n\n<!-- ============ SCREEN 3: RESULTS ============ -->\n<section class=\"screen\" id=\"screen-results\">\n  <div class=\"wrap\" id=\"results-body\"></div>\n</section>\n\n<!-- ============ DRAWER: QUESTION BANK ============ -->\n<div class=\"drawer-overlay\" id=\"drawer-overlay\" onclick=\"closeDrawer()\"></div>\n<div class=\"drawer\" id=\"drawer\">\n  <button class=\"drawer-close\" onclick=\"closeDrawer()\">\u00d7</button>\n  <h3>Question bank</h3>\n  <p class=\"d-sub\">This accelerator's canonical, editable question bank. Export to version it; re-import to update scoring parameters without touching the tool code.</p>\n  <div class=\"field\">\n    <label>Bank summary</label>\n    <div id=\"bank-summary\" class=\"mono\" style=\"font-size:12px;color:var(--ink2);background:var(--bg2);border:1px solid var(--line);border-radius:6px;padding:12px;line-height:1.7\"></div>\n  </div>\n  <div style=\"display:flex;gap:8px;flex-wrap:wrap;margin-top:8px\">\n    <button class=\"btn btn-sm\" onclick=\"exportBankJSON()\">Export JSON</button>\n    <button class=\"btn btn-sm\" onclick=\"exportBankCSV()\">Export CSV</button>\n    <button class=\"btn btn-sm\" onclick=\"document.getElementById('import-json').click()\">Import JSON</button>\n    <input type=\"file\" id=\"import-json\" accept=\".json\" class=\"hidden\" onchange=\"importBankJSON(event)\">\n  </div>\n  <div class=\"disclaimer\" style=\"margin-top:22px\">\n    <b>Architectural note.</b> Scoring <i>parameters</i> \u2014 weights, thresholds, severities, Article references and remediation text \u2014 live in this bank. Scoring <i>algorithms</i> (5-pillar rollup, statutory penalty sizing, contradiction probing, heat-map placement) remain in the tool as code. This keeps the bank portable across the accelerator suite via Question Bank Studio.\n  </div>\n</div>\n\n<div class=\"toast\" id=\"toast\"></div>\n<!-- ============ BOARDROOM SLIDES MODAL ============ -->\n<div class=\"modal-overlay\" id=\"boardModal\" onclick=\"if(event.target===this)closeSlideDeck()\">\n  <div class=\"modal-content\" style=\"max-width:920px\">\n    <div class=\"modal-head\">\n      <div>\n        <div style=\"font-size:11px;font-family:var(--font-m);font-weight:700;color:#FF5E4F;text-transform:uppercase;letter-spacing:.12em\">LTM Board Advisory Practice \u00b7 3-Slide Executive Briefing</div>\n        <h3 style=\"font-family:var(--font-h);font-size:18px;margin:2px 0 0\">Boardroom Executive Readout &middot; Slide Deck</h3>\n      </div>\n      <div style=\"display:flex;gap:8px;align-items:center\">\n        <button class=\"btn btn-ghost btn-sm\" onclick=\"copyMarpDeck()\">Copy Deck (.md)</button>\n        <button class=\"btn btn-ghost btn-sm\" onclick=\"closeSlideDeck()\">Close &times;</button>\n      </div>\n    </div>\n    <div class=\"modal-body\">\n      <div id=\"slideMount\"></div>\n      <div style=\"display:flex;justify-content:space-between;align-items:center;margin-top:14px;flex-wrap:wrap;gap:10px\">\n        <div style=\"display:flex;gap:8px\">\n          <button class=\"btn btn-ghost btn-sm\" onclick=\"prevSlide()\">&larr; Previous Slide</button>\n          <button class=\"btn btn-ghost btn-sm\" onclick=\"nextSlide()\">Next Slide &rarr;</button>\n        </div>\n        <span style=\"font-size:12px;color:var(--ink3);font-family:var(--font-m)\" id=\"slideCounter\">Slide 1 of 3 &middot; Use &larr; &rarr; Keys to Navigate</span>\n        <button class=\"btn btn-primary btn-sm\" onclick=\"downloadPostureExecutivePDF()\">Download Executive PDF Pack &darr;</button>\n      </div>\n    </div>\n  </div>\n</div>\n\n\n<!-- ============ SAMPLE ARCHETYPES MODAL ============ -->\n<div class=\"modal-overlay\" id=\"archetypeModal\" onclick=\"if(event.target===this)closeArchetypeModal()\">\n  <div class=\"modal-content\" style=\"max-width:920px\">\n    <div class=\"modal-head\">\n      <div>\n        <div style=\"font-size:11px;font-family:var(--font-m);font-weight:700;color:#226882;text-transform:uppercase;letter-spacing:.12em\">Sample Reference Profiles &middot; Pre-Calibrated Baselines</div>\n        <h3 style=\"font-family:var(--font-h);font-size:18px;margin:2px 0 0\">Sample Enterprise Archetypes</h3>\n      </div>\n      <button class=\"btn btn-ghost btn-sm\" onclick=\"closeArchetypeModal()\">Close &times;</button>\n    </div>\n    <div class=\"modal-body\">\n      <p style=\"font-size:13px;color:var(--ink3);margin-bottom:16px\">Load a sample enterprise posture profile to test the diagnostic engine, explore statutory findings, or benchmark defensibility in seconds.</p>\n      <div class=\"grid2\" style=\"gap:14px\">\n        <!-- Archetype 1 -->\n        <div class=\"archetype-card\" style=\"margin:0\">\n          <div>\n            <div class=\"arch-badge\">BFSI \u00b7 DORA</div>\n            <div class=\"arch-name\">Tier-1 Pan-European Universal Bank</div>\n            <div class=\"arch-meta\">\u20ac8B Turnover \u00b7 AWS/Azure Hybrid \u00b7 Mainframe \u00b7 DORA &amp; NIS2</div>\n          </div>\n          <div class=\"arch-actions\">\n            <button class=\"btn btn-sm btn-ghost\" onclick=\"loadArchetype('bank', false); closeArchetypeModal()\">Load Sample &amp; Step</button>\n            <button class=\"btn btn-sm btn-primary\" onclick=\"loadArchetype('bank', true); closeArchetypeModal()\">\u26a1 Readout</button>\n          </div>\n        </div>\n        <!-- Archetype 2 -->\n        <div class=\"archetype-card\" style=\"margin:0\">\n          <div>\n            <div class=\"arch-badge\" style=\"background:#F3EDF9;color:#482475;border-color:#D8C4EE\">MedTech \u00b7 AI Act</div>\n            <div class=\"arch-name\">National Healthcare &amp; Diagnostic Network</div>\n            <div class=\"arch-meta\">\u20ac1.2B Turnover \u00b7 Azure EU \u00b7 GenAI Imaging \u00b7 NIS2 Essential</div>\n          </div>\n          <div class=\"arch-actions\">\n            <button class=\"btn btn-sm btn-ghost\" onclick=\"loadArchetype('health', false); closeArchetypeModal()\">Load Sample &amp; Step</button>\n            <button class=\"btn btn-sm btn-primary\" onclick=\"loadArchetype('health', true); closeArchetypeModal()\">\u26a1 Readout</button>\n          </div>\n        </div>\n        <!-- Archetype 3 -->\n        <div class=\"archetype-card\" style=\"margin:0\">\n          <div>\n            <div class=\"arch-badge\" style=\"background:#EDF7F1;color:#35754D;border-color:#A3D3B5\">Critical Infra \u00b7 NIS2</div>\n            <div class=\"arch-name\">Consortium Energy &amp; Power Grid Utility</div>\n            <div class=\"arch-meta\">\u20ac3.5B Turnover \u00b7 On-Prem/AWS \u00b7 OT/IT Boundary \u00b7 EUCS</div>\n          </div>\n          <div class=\"arch-actions\">\n            <button class=\"btn btn-sm btn-ghost\" onclick=\"loadArchetype('utility', false); closeArchetypeModal()\">Load Sample &amp; Step</button>\n            <button class=\"btn btn-sm btn-primary\" onclick=\"loadArchetype('utility', true); closeArchetypeModal()\">\u26a1 Readout</button>\n          </div>\n        </div>\n        <!-- Archetype 4 -->\n        <div class=\"archetype-card\" style=\"margin:0\">\n          <div>\n            <div class=\"arch-badge\" style=\"background:#FFF9E6;color:#8A6500;border-color:#FFE58F\">SaaS \u00b7 Global</div>\n            <div class=\"arch-name\">Enterprise B2B SaaS &amp; Payment Gateway</div>\n            <div class=\"arch-meta\">\u20ac300M Turnover \u00b7 Multi-Tenant AWS \u00b7 US Parent \u00b7 DORA CTPP</div>\n          </div>\n          <div class=\"arch-actions\">\n            <button class=\"btn btn-sm btn-ghost\" onclick=\"loadArchetype('saas', false); closeArchetypeModal()\">Load Sample &amp; Step</button>\n            <button class=\"btn btn-sm btn-primary\" onclick=\"loadArchetype('saas', true); closeArchetypeModal()\">\u26a1 Readout</button>\n          </div>\n        </div>\n      </div>\n    </div>\n  </div>\n</div>\n\n<!-- ============ BYOK AI CONFIG MODAL ============ -->\n<div class=\"modal-overlay\" id=\"aiConfigModal\" onclick=\"if(event.target===this)closeAIConfigModal()\">\n  <div class=\"modal-content\" style=\"max-width:680px\">\n    <div class=\"modal-head\">\n      <div>\n        <div style=\"font-size:11px;font-family:var(--font-m);font-weight:700;color:#35754D;text-transform:uppercase;letter-spacing:.12em\">Autonomous Advisory Engine \u00b7 BYOK</div>\n        <h3 style=\"font-family:var(--font-h);font-size:18px;margin:2px 0 0\">AI Model Configuration</h3>\n      </div>\n      <button class=\"btn btn-ghost btn-sm\" onclick=\"closeAIConfigModal()\">Close &times;</button>\n    </div>\n    <div class=\"modal-body\">\n      <p style=\"font-size:13px;color:var(--ink2);line-height:1.5;margin-bottom:16px\">Connect your preferred frontier AI model to power real-time anomaly discovery, tailored clarification questioning, and C-suite executive summary synthesis. Your key is stored strictly in your browser's local storage.</p>\n      \n      <div class=\"field\" style=\"margin-bottom:12px\">\n        <label>Select AI Provider</label>\n        <select id=\"ai-provider-select\" onchange=\"handleAIProviderChange(this.value)\">\n          <option value=\"gemini\">Google Gemini (Recommended \u2014 Gemini 2.0 Flash / 1.5 Pro)</option>\n          <option value=\"claude\">Anthropic Claude (Claude 3.5 Sonnet)</option>\n          <option value=\"openai\">OpenAI (GPT-4o / GPT-4o-mini)</option>\n        </select>\n      </div>\n\n      <div class=\"field\" style=\"margin-bottom:12px\">\n        <label>Model Identifier</label>\n        <select id=\"ai-model-select\">\n          <option value=\"gemini-2.0-flash\">gemini-2.0-flash (Ultra fast, reasoning)</option>\n          <option value=\"gemini-1.5-pro\">gemini-1.5-pro (Deep analysis)</option>\n        </select>\n      </div>\n\n      <div class=\"field\" style=\"margin-bottom:16px\">\n        <label>API Key</label>\n        <div style=\"display:flex;gap:8px\">\n          <input type=\"password\" id=\"ai-api-key\" placeholder=\"Paste your API key here (e.g. AIzaSy... or sk-ant...)\" style=\"flex:1\">\n          <button class=\"btn btn-ghost btn-sm\" type=\"button\" onclick=\"toggleAPIKeyVisibility()\">Show/Hide</button>\n        </div>\n      </div>\n\n      <div style=\"background:var(--bg2);border:1px solid var(--line);border-radius:6px;padding:12px;font-size:12px;color:var(--ink3);margin-bottom:18px;line-height:1.5\">\n        <b>Privacy &amp; Data Sovereignty Guarantee:</b> Requests travel directly from your browser to the provider endpoint over TLS. No prompts or keys are sent to LTM servers. If no key is set, the accelerator executes using its deterministic built-in rules engine.\n      </div>\n\n      <div style=\"display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px\">\n        <button class=\"btn btn-ghost btn-sm\" onclick=\"testAIConnection()\">\u26a1 Test Connection</button>\n        <div style=\"display:flex;gap:8px\">\n          <button class=\"btn btn-ghost btn-sm\" onclick=\"clearAIConfig()\">Clear Key</button>\n          <button class=\"btn btn-primary btn-sm\" onclick=\"saveAIConfigFromUI()\">Save &amp; Activate</button>\n        </div>\n      </div>\n    </div>\n  </div>\n</div>\n\n<!-- ============ BOOKING REQUEST MODAL ============ -->\n<div class=\"modal-overlay\" id=\"bookingModal\" onclick=\"if(event.target===this)closeBookingModal()\">\n  <div class=\"modal-content\" style=\"max-width:720px\">\n    <div class=\"modal-head\">\n      <div>\n        <div style=\"font-size:11px;font-family:var(--font-m);font-weight:700;color:#FF5E4F;text-transform:uppercase;letter-spacing:.12em\">LTM Infrastructure Tech Advisory \u00b7 Executive Briefing</div>\n        <h3 style=\"font-family:var(--font-h);font-size:18px;margin:2px 0 0\">Schedule Strategic Readout &amp; Unlock Dossier</h3>\n      </div>\n      <button class=\"btn btn-ghost btn-sm\" onclick=\"closeBookingModal()\">Close &times;</button>\n    </div>\n    <div class=\"modal-body\">\n      <p style=\"font-size:13px;color:var(--ink2);line-height:1.5;margin-bottom:16px\">Schedule a 30-minute executive briefing with practice leadership to review your full 28-page statutory dossier, peer benchmark analysis, and customized 3-Horizon modernization roadmap.</p>\n      \n      <div class=\"grid2\" style=\"gap:14px;margin-bottom:12px\">\n        <div class=\"field\">\n          <label>Executive Name</label>\n          <input type=\"text\" id=\"book-name\" placeholder=\"Full name\">\n        </div>\n        <div class=\"field\">\n          <label>Executive Role / Title</label>\n          <input type=\"text\" id=\"book-role\" placeholder=\"e.g. CIO, CISO, Head of Enterprise Arch\">\n        </div>\n        <div class=\"field\">\n          <label>Corporate Work Email</label>\n          <input type=\"email\" id=\"book-email\" placeholder=\"name@company.com\">\n        </div>\n        <div class=\"field\">\n          <label>Organization / Enterprise</label>\n          <input type=\"text\" id=\"book-company\" placeholder=\"Company name\">\n        </div>\n      </div>\n\n      <div class=\"field\" style=\"margin-bottom:16px\">\n        <label>Preferred Timeframe for 30-Minute Briefing</label>\n        <select id=\"book-timeframe\">\n          <option>Within the next 7 business days</option>\n          <option>Next 2–3 weeks</option>\n          <option>Next month (Q-planning alignment)</option>\n        </select>\n      </div>\n\n      <div style=\"background:#FCF0EE;border:1px solid #FF5E4F;border-radius:6px;padding:12px 14px;font-size:12px;color:#CC2B1C;margin-bottom:18px\">\n        <b>Instant Access:</b> Submitting your request will immediately unlock the unmasked 28-page dossier and vector PDF download on this screen.\n      </div>\n\n      <div style=\"display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px\">\n        <a href=\"javascript:void(0)\" onclick=\"toggleConsultantUnlock(); closeBookingModal()\" style=\"font-size:11px;color:var(--ink3);text-decoration:underline\">LTM Consultant Immediate Bypass</a>\n        <button class=\"btn btn-primary\" onclick=\"submitBookingRequest()\" style=\"padding:10px 22px;font-weight:700\">Submit Request &amp; Unlock Dossier &rarr;</button>\n      </div>\n    </div>\n  </div>\n</div>\n\n<!-- ============ EMAIL TEASER MODAL ============ -->\n<div class=\"modal-overlay\" id=\"emailModal\" onclick=\"if(event.target===this)closeEmailModal()\">\n  <div class=\"modal-content\" style=\"max-width:600px\">\n    <div class=\"modal-head\">\n      <div>\n        <div style=\"font-size:11px;font-family:var(--font-m);font-weight:700;color:#226882;text-transform:uppercase;letter-spacing:.12em\">Executive Summary</div>\n        <h3 style=\"font-family:var(--font-h);font-size:18px;margin:2px 0 0\">Email Teaser Briefing</h3>\n      </div>\n      <button class=\"btn btn-ghost btn-sm\" onclick=\"closeEmailModal()\">Close &times;</button>\n    </div>\n    <div class=\"modal-body\">\n      <p style=\"font-size:13px;color:var(--ink2);margin-bottom:14px\">Draft an email containing your high-level defensibility score and statutory Value at Stake to share internally with your leadership team.</p>\n      <div class=\"field\" style=\"margin-bottom:14px\">\n        <label>Recipient Email</label>\n        <input type=\"email\" id=\"teaser-email\" placeholder=\"e.g. colleague@company.com\">\n      </div>\n      <div style=\"display:flex;justify-content:flex-end;gap:8px\">\n        <button class=\"btn btn-ghost btn-sm\" onclick=\"closeEmailModal()\">Cancel</button>\n        <button class=\"btn btn-primary btn-sm\" onclick=\"sendTeaserEmail()\">Open Draft in Mail App &rarr;</button>\n      </div>\n    </div>\n  </div>\n</div>\n<!-- ============ ADVISORY SOW GENERATOR MODAL ============ -->\n<div class=\"modal-overlay\" id=\"sowModal\" onclick=\"if(event.target===this)closeSOWModal()\">\n  <div class=\"modal-content\" style=\"max-width:880px\">\n    <div class=\"modal-head\">\n      <div>\n        <div style=\"font-size:11px;font-family:var(--font-m);font-weight:700;color:#FF5E4F;text-transform:uppercase;letter-spacing:.12em\">LTM Infrastructure Tech Advisory \u00b7 Commercial Scoping</div>\n        <h3 style=\"font-family:var(--font-h);font-size:18px;margin:2px 0 0\">Statement of Work (SOW) \u00b7 Advisory Proposal Blueprint</h3>\n      </div>\n      <button class=\"btn btn-ghost btn-sm\" onclick=\"closeSOWModal()\">Close &times;</button>\n    </div>\n    <div class=\"modal-body\">\n      <div style=\"display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px\">\n        <span style=\"font-size:12px;color:var(--ink2)\">Auto-generated from live diagnostic findings, pillar scores &amp; statutory exposure</span>\n        <div style=\"display:flex;gap:8px\">\n          <button class=\"btn btn-ghost btn-sm\" onclick=\"copySOWToClipboard()\">Copy Markdown</button>\n          <button class=\"btn btn-primary btn-sm\" onclick=\"downloadSOWMarkdown()\">Download .md SOW &darr;</button>\n        </div>\n      </div>\n      <textarea id=\"sowTextarea\" style=\"width:100%;height:380px;font-family:var(--font-m);font-size:12px;line-height:1.55;padding:14px;border:1px solid var(--line);border-radius:6px;background:var(--bg2);color:var(--ink)\" readonly></textarea>\n    </div>\n  </div>\n</div>\n<!-- ============ INSUFFICIENT DATA MODAL ============ -->\n<div class=\"modal-overlay\" id=\"insufficientDataModal\" onclick=\"if(event.target===this)closeInsufModal()\">\n  <div class=\"modal-content\" style=\"max-width:640px\">\n    <div class=\"modal-head\" style=\"background:linear-gradient(135deg,#FCF0EE,#FFF4F2);border-bottom:1px solid #FF5E4F\">\n      <div>\n        <div style=\"font-size:11px;font-family:var(--font-m);font-weight:700;color:#CC2B1C;text-transform:uppercase;letter-spacing:.12em\">⚠️ Diagnostic Quality Gate</div>\n        <h3 style=\"font-family:var(--font-h);font-size:18px;margin:2px 0 0;color:#B21203\">Insufficient Data for Reliable Diagnostic</h3>\n      </div>\n      <button class=\"btn btn-ghost btn-sm\" onclick=\"closeInsufModal()\">Close &times;</button>\n    </div>\n    <div class=\"modal-body\">\n      <p style=\"font-size:13.5px;color:var(--ink2);line-height:1.6;margin-bottom:16px\">The statutory diagnostic engine requires a minimum of <b>60% question completion</b> to generate a statistically reliable executive report. Please complete additional sections to proceed.</p>\n      <div class=\"insuf-stats\" id=\"insuf-stats-mount\"></div>\n      <div style=\"margin-bottom:12px\">\n        <div class=\"mono\" style=\"font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3);margin-bottom:8px\">Section Completion Breakdown</div>\n        <ul class=\"insuf-section-list\" id=\"insuf-section-list-mount\"></ul>\n      </div>\n      <div style=\"display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-top:20px\">\n        <button class=\"btn btn-ghost\" onclick=\"jumpToFirstUnanswered(); closeInsufModal()\">&larr; Return to Assessment</button>\n        <button class=\"btn btn-primary\" onclick=\"forceGeneratePartialReport()\">Generate Partial Report with Warning &rarr;</button>\n      </div>\n    </div>\n  </div>\n</div>\n";
+var APP_HTML = "\n<div class=\"topbar no-print\">\n  <div class=\"wrap\">\n    <div class=\"brand\">\n      <span class=\"brand-badge\">LTM</span>\n      <div>\n        <div class=\"name\">Posture IQ <span style=\"font-size:10px;font-weight:700;color:#FF5E4F;background:#FCF0EE;padding:2px 6px;border-radius:4px;border:1px solid #FF5E4F;margin-left:6px\">STATUTORY DIAGNOSTIC</span></div>\n        <div class=\"sub\">LTM Vantage \u00b7 Responsible Advisory</div>\n      </div>\n    </div>\n    <div class=\"topbar-actions\">\n      <a href=\"/studio.html?tool=posture-iq\" class=\"btn btn-ghost btn-sm\" style=\"text-decoration:none;font-weight:700;color:var(--steel)\">⚙️ Question Bank Studio</a>\n      <button class=\"btn btn-ghost btn-sm\" onclick=\"openDrawer()\"><span>Question bank</span></button>\n      <button class=\"btn btn-ghost btn-sm\" id=\"btn-restart\" onclick=\"restart()\" style=\"display:none\">Restart</button>\n    </div>\n  </div>\n</div>\n\n<!-- ============ SCREEN 1: INTAKE ============ -->\n<section class=\"screen active\" id=\"screen-intake\">\n  <div class=\"wrap\">\n\n    <!-- EXECUTIVE HERO BANNER -->\n    <div class=\"cio-executive-banner\">\n      <div class=\"banner-top-row\">\n        <span class=\"banner-tag\">CIO &amp; CISO EXECUTIVE COMPLIANCE BRIEFING</span>\n        <span class=\"mono banner-version\">FRAMEWORK v2.1 \u00b7 UPDATED 2026</span>\n      </div>\n      <h1 class=\"banner-title\">Enterprise Digital Sovereignty &amp; Statutory Posture Accelerator</h1>\n      <p class=\"banner-desc\">\n        A strategic advisory diagnostic auditing cloud concentration risk, extraterritorial legal exposure, and technical defensibility across <b>DORA, NIS2, EU AI Act, GDPR, and UK Operational Resilience</b>. Built for technology executives navigating hybrid modernization.\n      </p>\n      <div class=\"banner-pills\">\n        <div class=\"bp-item\"><span class=\"bp-icon\">\u2696\ufe0f</span> <b>10</b> Statutory Mandates</div>\n        <div class=\"bp-item\"><span class=\"bp-icon\">\ud83c\udfdb\ufe0f</span> <b>5</b> Compliance Pillars</div>\n        <div class=\"bp-item\"><span class=\"bp-icon\">\u23f1\ufe0f</span> <b>15 Min</b> Adaptive Diagnostic</div>\n        <div class=\"bp-item\"><span class=\"bp-icon\">\ud83d\udd0d</span> <b>Statutory</b> Anomaly Discovery</div>\n      </div>\n    </div>\n\n    <!-- STREAMLINED CIO INTAKE CARD -->\n    <div class=\"card intake-card-clean\">\n      <div class=\"intake-head\">\n        <div>\n          <h3 style=\"font-size:18px;margin-bottom:3px\">Enterprise Scope &amp; Organization Profile</h3>\n          <p class=\"card-sub\" style=\"margin-bottom:0\">Calibrates statutory penalty ceilings, applicable mandates, and technical discovery probes.</p>\n        </div>\n        <button class=\"btn btn-ghost btn-sm\" onclick=\"openArchetypeModal()\" style=\"font-size:12px;color:var(--ltm-navy);font-weight:700;border:1.5px solid var(--line);background:#fff;padding:6px 14px;border-radius:6px;display:inline-flex;align-items:center;gap:6px\">📋 Load Sample Archetype</button>\n      </div>\n\n      <div class=\"grid2\" style=\"margin-top:16px;row-gap:16px\">\n        <div class=\"field\">\n          <label>Enterprise / Client Name</label>\n          <input type=\"text\" id=\"org-name\" placeholder=\"e.g. Meridian Global Financial plc\">\n        </div>\n        \n        <div class=\"field\">\n          <label>Primary Industry Sector</label>\n          <select id=\"org-sector-select\" onchange=\"handleSectorSelect(this.value)\">\n            <option value=\"\">Select your sector\u2026</option>\n            <option value=\"finserv\">Banking &amp; Capital Markets (DORA \u00b7 UK Op Res)</option>\n            <option value=\"insurance\">Insurance &amp; Pensions (DORA \u00b7 NIS2)</option>\n            <option value=\"health\">Healthcare Providers (NIS2 \u00b7 GDPR)</option>\n            <option value=\"pharma\">Pharma &amp; Life Sciences (AI Act \u00b7 GDPR)</option>\n            <option value=\"telecom\">Telecom &amp; Connectivity (NIS2 Essential)</option>\n            <option value=\"energy\">Energy &amp; Utilities (NIS2 Critical Infra)</option>\n            <option value=\"water\">Water &amp; Waste Management (NIS2)</option>\n            <option value=\"transport\">Transport &amp; Logistics (NIS2)</option>\n            <option value=\"diginfra\">Digital Infrastructure &amp; Cloud (EUCS \u00b7 NIS2)</option>\n            <option value=\"public\">Public Sector &amp; Government (Sovereign)</option>\n            <option value=\"tech\">Technology &amp; B2B SaaS (DORA CTPP \u00b7 EUCS)</option>\n            <option value=\"manuf\">Manufacturing &amp; Industrial (NIS2)</option>\n            <option value=\"retail\">Retail &amp; Consumer Goods (GDPR \u00b7 PECR)</option>\n          </select>\n        </div>\n\n        <div class=\"field\">\n          <label>Primary Data Subject &amp; Customer Footprint</label>\n          <select id=\"org-footprint\">\n            <option value=\"\">Select footprint\u2026</option>\n            <option value=\"EEA / EU only\">EEA / EU only</option>\n            <option value=\"UK only\">UK only</option>\n            <option value=\"EU + UK\">EU + UK (Dual Regime)</option>\n            <option value=\"EU + US / global\">EU + US / Global (Cross-Border Transfer Scope)</option>\n            <option value=\"UK + US / global\">UK + US / Global (IDTA Scope)</option>\n            <option value=\"Global \u2014 multi-region\">Global \u2014 Multi-Region Enterprise</option>\n          </select>\n        </div>\n\n        <div class=\"field\">\n          <label>Annual Global Turnover / Revenue ($ USD)</label>\n          <select id=\"org-turnover\">\n            <option value=\"50000000\">&lt; $100M USD</option>\n            <option value=\"250000000\" selected>$100M \u2013 $500M USD</option>\n            <option value=\"750000000\">$500M \u2013 $1B USD</option>\n            <option value=\"2500000000\">$1B \u2013 $5B USD</option>\n            <option value=\"10000000000\">$5B \u2013 $20B USD</option>\n            <option value=\"35000000000\">&gt; $20B USD</option>\n          </select>\n        </div>\n\n        <div class=\"field\">\n          <label>Executive Sponsor Name (Optional)</label>\n          <input type=\"text\" id=\"resp-name\" placeholder=\"Full name\">\n        </div>\n\n        <div class=\"field\">\n          <label>Executive Role / Title</label>\n          <input type=\"text\" id=\"resp-role\" placeholder=\"e.g. Chief Information Officer (CIO) / CISO\">\n        </div>\n      </div>\n\n      <!-- Collapsible Advanced Scope Accordion -->\n      <div class=\"scope-accordion\" style=\"margin-top:18px\">\n        <div class=\"scope-acc-hd\" onclick=\"toggleScopeAccordion()\">\n          <span style=\"display:flex;align-items:center;gap:8px\">\n            <span style=\"font-size:13px\">\u2699\ufe0f</span>\n            <b>Applicable Statutory Frameworks</b>\n            <span id=\"scope-count-badge\" class=\"scope-badge\">Mapped to Sector</span>\n          </span>\n          <span id=\"scope-acc-arrow\" style=\"font-size:12px;color:var(--ink3)\">\u25bc Customize</span>\n        </div>\n        <div id=\"scope-acc-body\" style=\"display:none;padding-top:12px\">\n          <p style=\"font-size:12px;color:var(--ink3);margin-bottom:8px\">Statutory frameworks are automatically selected based on your chosen sector. You may toggle individual acts below:</p>\n          <div class=\"reg-grid\" id=\"reg-grid\"></div>\n        </div>\n      </div>\n\n      <div class=\"intake-actions-row\" style=\"margin-top:22px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px\">\n        <div style=\"font-size:12px;color:var(--ink3)\">\n          \ud83d\udd12 In-Browser Execution \u00b7 Zero External Data Storage \u00b7 Non-Legal Advisory\n        </div>\n        <button class=\"btn btn-primary\" onclick=\"startAssessment()\" style=\"padding:12px 28px;font-size:15px;font-weight:700\">\n          Begin Diagnostic Assessment \u2192\n        </button>\n      </div>\n    </div>\n\n    <!-- Hidden elements required by existing engine (managed programmatically) -->\n    <div style=\"display:none\">\n      <select id=\"org-hq\"><option>EU \u2014 multiple</option></select>\n      <select id=\"org-size\"><option>1,000\u20135,000</option></select>\n      <div id=\"sector-grid\"></div>\n    </div>\n\n    <div style=\"display:flex;align-items:center;gap:14px;margin-top:44px;padding-top:22px;border-top:1px solid var(--line)\">\n      <span class=\"brand-badge\" style=\"font-size:11px;padding:2px 8px\">LTM Vantage</span>\n      <span style=\"font-size:11.5px;color:var(--ink3)\">Digital Sovereignty Accelerator \u00b7 Responsible Advisory \u00b7 A Larsen &amp; Toubro Group Company</span>\n    </div>\n  </div>\n</section>\n\n<!-- ============ SCREEN 2: ASSESSMENT ============ -->\n<section class=\"screen\" id=\"screen-assess\">\n  <div class=\"wrap\" style=\"max-width:1040px\">\n    <div class=\"assess-head\">\n      <div>\n        <div class=\"eyebrow\" style=\"margin-bottom:4px\">STATUTORY POSTURE DIAGNOSTIC \u00b7 IN PROGRESS</div>\n        <h1 style=\"font-size:26px;color:#0F172A;font-weight:800;letter-spacing:-0.02em\" id=\"assess-org\">\u2014</h1>\n      </div>\n      <button class=\"btn btn-ghost btn-sm no-print\" onclick=\"jumpToResults()\" style=\"border:1px solid var(--line);background:#fff;font-weight:600\">Skip to results \u2192</button>\n    </div>\n    <div class=\"assess-progress-card\">\n      <div class=\"progress-meta-row\">\n        <span class=\"progress-label\" id=\"progress-count\">0 answered</span>\n        <span class=\"progress-val\" id=\"progress-pct\">0% Complete</span>\n      </div>\n      <div class=\"progress-track\"><div class=\"progress-fill\" id=\"progress-fill\"></div></div>\n    </div>\n    <div class=\"section-rail-wrap\">\n      <div class=\"rail\" id=\"section-nav\"></div>\n    </div>\n    <div id=\"assess-body\"></div>\n    <div class=\"assess-foot no-print\">\n      <button class=\"btn btn-ghost\" id=\"btn-prev\" onclick=\"prevSection()\" style=\"font-weight:600;padding:12px 24px\">\u2190 Previous Section</button>\n      <button class=\"btn btn-primary\" id=\"btn-next\" onclick=\"nextSection()\" style=\"font-weight:700;padding:12px 30px\">Next Section \u2192</button>\n    </div>\n  </div>\n</section>\n\n<!-- ============ SCREEN CLARIFY: AI ANOMALY AUDITOR ============ -->\n<section class=\"screen\" id=\"screen-clarify\">\n  <div class=\"wrap\">\n    <div class=\"clarify-header\">\n      <span class=\"clarify-badge\">\ud83e\udd16 AI Posture Auditor \u00b7 Adaptive Discovery</span>\n      <h2 style=\"font-size:24px;margin-bottom:6px;color:#fff\">Architectural Ambiguity &amp; Anomaly Review</h2>\n      <p style=\"font-size:13.5px;color:rgba(255,255,255,0.85);max-width:780px;line-height:1.5\">Our discovery engine identified potential statutory contradictions between declared operational practices and regulatory mandates. Please clarify the following before finalizing your executive report:</p>\n    </div>\n    <div id=\"clarify-questions-mount\"></div>\n    <div style=\"display:flex;justify-content:space-between;align-items:center;margin-top:20px;flex-wrap:wrap;gap:12px\" class=\"no-print\">\n      <button class=\"btn btn-ghost\" onclick=\"showScreen('assess')\">&larr; Back to Questions</button>\n      <button class=\"btn btn-primary\" onclick=\"submitClarificationsAndShowResults()\" style=\"padding:11px 24px;font-size:14px;font-weight:700\">Confirm Clarifications &amp; Generate Teaser Report &rarr;</button>\n    </div>\n  </div>\n</section>\n\n<!-- ============ SCREEN 3: RESULTS ============ -->\n<section class=\"screen\" id=\"screen-results\">\n  <div class=\"wrap\" id=\"results-body\"></div>\n</section>\n\n<!-- ============ DRAWER: QUESTION BANK ============ -->\n<div class=\"drawer-overlay\" id=\"drawer-overlay\" onclick=\"closeDrawer()\"></div>\n<div class=\"drawer\" id=\"drawer\">\n  <button class=\"drawer-close\" onclick=\"closeDrawer()\">\u00d7</button>\n  <h3>Question bank</h3>\n  <p class=\"d-sub\">This accelerator's canonical, editable question bank. Export to version it; re-import to update scoring parameters without touching the tool code.</p>\n  <div class=\"field\">\n    <label>Bank summary</label>\n    <div id=\"bank-summary\" class=\"mono\" style=\"font-size:12px;color:var(--ink2);background:var(--bg2);border:1px solid var(--line);border-radius:6px;padding:12px;line-height:1.7\"></div>\n  </div>\n  <div style=\"display:flex;gap:8px;flex-wrap:wrap;margin-top:8px\">\n    <button class=\"btn btn-sm\" onclick=\"exportBankJSON()\">Export JSON</button>\n    <button class=\"btn btn-sm\" onclick=\"exportBankCSV()\">Export CSV</button>\n    <button class=\"btn btn-sm\" onclick=\"document.getElementById('import-json').click()\">Import JSON</button>\n    <input type=\"file\" id=\"import-json\" accept=\".json\" class=\"hidden\" onchange=\"importBankJSON(event)\">\n  </div>\n  <div class=\"disclaimer\" style=\"margin-top:22px\">\n    <b>Architectural note.</b> Scoring <i>parameters</i> \u2014 weights, thresholds, severities, Article references and remediation text \u2014 live in this bank. Scoring <i>algorithms</i> (5-pillar rollup, statutory penalty sizing, contradiction probing, heat-map placement) remain in the tool as code. This keeps the bank portable across the accelerator suite via Question Bank Studio.\n  </div>\n</div>\n\n<div class=\"toast\" id=\"toast\"></div>\n<!-- ============ BOARDROOM SLIDES MODAL ============ -->\n<div class=\"modal-overlay\" id=\"boardModal\" onclick=\"if(event.target===this)closeSlideDeck()\">\n  <div class=\"modal-content\" style=\"max-width:920px\">\n    <div class=\"modal-head\">\n      <div>\n        <div style=\"font-size:11px;font-family:var(--font-m);font-weight:700;color:#FF5E4F;text-transform:uppercase;letter-spacing:.12em\">LTM Infrastructure Tech Advisory \u00b7 3-Slide Executive Briefing</div>\n        <h3 style=\"font-family:var(--font-h);font-size:18px;margin:2px 0 0\">Boardroom Executive Readout &middot; Slide Deck</h3>\n      </div>\n      <div style=\"display:flex;gap:8px;align-items:center\">\n        <button class=\"btn btn-ghost btn-sm\" onclick=\"copyMarpDeck()\">Copy Deck (.md)</button>\n        <button class=\"btn btn-ghost btn-sm\" onclick=\"closeSlideDeck()\">Close &times;</button>\n      </div>\n    </div>\n    <div class=\"modal-body\">\n      <div id=\"slideMount\"></div>\n      <div style=\"display:flex;justify-content:space-between;align-items:center;margin-top:14px;flex-wrap:wrap;gap:10px\">\n        <div style=\"display:flex;gap:8px\">\n          <button class=\"btn btn-ghost btn-sm\" onclick=\"prevSlide()\">&larr; Previous Slide</button>\n          <button class=\"btn btn-ghost btn-sm\" onclick=\"nextSlide()\">Next Slide &rarr;</button>\n        </div>\n        <span style=\"font-size:12px;color:var(--ink3);font-family:var(--font-m)\" id=\"slideCounter\">Slide 1 of 3 &middot; Use &larr; &rarr; Keys to Navigate</span>\n        <button class=\"btn btn-primary btn-sm\" onclick=\"downloadPostureExecutivePDF()\">Download Executive PDF Pack &darr;</button>\n      </div>\n    </div>\n  </div>\n</div>\n\n\n<!-- ============ SAMPLE ARCHETYPES MODAL ============ -->\n<div class=\"modal-overlay\" id=\"archetypeModal\" onclick=\"if(event.target===this)closeArchetypeModal()\">\n  <div class=\"modal-content\" style=\"max-width:920px\">\n    <div class=\"modal-head\">\n      <div>\n        <div style=\"font-size:11px;font-family:var(--font-m);font-weight:700;color:#226882;text-transform:uppercase;letter-spacing:.12em\">Sample Reference Profiles &middot; Pre-Calibrated Baselines</div>\n        <h3 style=\"font-family:var(--font-h);font-size:18px;margin:2px 0 0\">Sample Enterprise Archetypes</h3>\n      </div>\n      <button class=\"btn btn-ghost btn-sm\" onclick=\"closeArchetypeModal()\">Close &times;</button>\n    </div>\n    <div class=\"modal-body\">\n      <p style=\"font-size:13px;color:var(--ink3);margin-bottom:16px\">Load a sample enterprise posture profile to test the diagnostic engine, explore statutory findings, or benchmark defensibility in seconds.</p>\n      <div class=\"grid2\" style=\"gap:14px\">\n        <!-- Archetype 1 -->\n        <div class=\"archetype-card\" style=\"margin:0\">\n          <div>\n            <div class=\"arch-badge\">BFSI \u00b7 DORA</div>\n            <div class=\"arch-name\">Tier-1 Pan-European Universal Bank</div>\n            <div class=\"arch-meta\">\u20ac8B Turnover \u00b7 AWS/Azure Hybrid \u00b7 Mainframe \u00b7 DORA &amp; NIS2</div>\n          </div>\n          <div class=\"arch-actions\">\n            <button class=\"btn btn-sm btn-ghost\" onclick=\"loadArchetype('bank', false); closeArchetypeModal()\">Load Sample &amp; Step</button>\n            <button class=\"btn btn-sm btn-primary\" onclick=\"loadArchetype('bank', true); closeArchetypeModal()\">\u26a1 Readout</button>\n          </div>\n        </div>\n        <!-- Archetype 2 -->\n        <div class=\"archetype-card\" style=\"margin:0\">\n          <div>\n            <div class=\"arch-badge\" style=\"background:#F3EDF9;color:#482475;border-color:#D8C4EE\">MedTech \u00b7 AI Act</div>\n            <div class=\"arch-name\">National Healthcare &amp; Diagnostic Network</div>\n            <div class=\"arch-meta\">\u20ac1.2B Turnover \u00b7 Azure EU \u00b7 GenAI Imaging \u00b7 NIS2 Essential</div>\n          </div>\n          <div class=\"arch-actions\">\n            <button class=\"btn btn-sm btn-ghost\" onclick=\"loadArchetype('health', false); closeArchetypeModal()\">Load Sample &amp; Step</button>\n            <button class=\"btn btn-sm btn-primary\" onclick=\"loadArchetype('health', true); closeArchetypeModal()\">\u26a1 Readout</button>\n          </div>\n        </div>\n        <!-- Archetype 3 -->\n        <div class=\"archetype-card\" style=\"margin:0\">\n          <div>\n            <div class=\"arch-badge\" style=\"background:#EDF7F1;color:#35754D;border-color:#A3D3B5\">Critical Infra \u00b7 NIS2</div>\n            <div class=\"arch-name\">Consortium Energy &amp; Power Grid Utility</div>\n            <div class=\"arch-meta\">\u20ac3.5B Turnover \u00b7 On-Prem/AWS \u00b7 OT/IT Boundary \u00b7 EUCS</div>\n          </div>\n          <div class=\"arch-actions\">\n            <button class=\"btn btn-sm btn-ghost\" onclick=\"loadArchetype('utility', false); closeArchetypeModal()\">Load Sample &amp; Step</button>\n            <button class=\"btn btn-sm btn-primary\" onclick=\"loadArchetype('utility', true); closeArchetypeModal()\">\u26a1 Readout</button>\n          </div>\n        </div>\n        <!-- Archetype 4 -->\n        <div class=\"archetype-card\" style=\"margin:0\">\n          <div>\n            <div class=\"arch-badge\" style=\"background:#FFF9E6;color:#8A6500;border-color:#FFE58F\">SaaS \u00b7 Global</div>\n            <div class=\"arch-name\">Enterprise B2B SaaS &amp; Payment Gateway</div>\n            <div class=\"arch-meta\">\u20ac300M Turnover \u00b7 Multi-Tenant AWS \u00b7 US Parent \u00b7 DORA CTPP</div>\n          </div>\n          <div class=\"arch-actions\">\n            <button class=\"btn btn-sm btn-ghost\" onclick=\"loadArchetype('saas', false); closeArchetypeModal()\">Load Sample &amp; Step</button>\n            <button class=\"btn btn-sm btn-primary\" onclick=\"loadArchetype('saas', true); closeArchetypeModal()\">\u26a1 Readout</button>\n          </div>\n        </div>\n      </div>\n    </div>\n  </div>\n</div>\n\n<!-- ============ BYOK AI CONFIG MODAL ============ -->\n<div class=\"modal-overlay\" id=\"aiConfigModal\" onclick=\"if(event.target===this)closeAIConfigModal()\">\n  <div class=\"modal-content\" style=\"max-width:680px\">\n    <div class=\"modal-head\">\n      <div>\n        <div style=\"font-size:11px;font-family:var(--font-m);font-weight:700;color:#35754D;text-transform:uppercase;letter-spacing:.12em\">Autonomous Advisory Engine \u00b7 BYOK</div>\n        <h3 style=\"font-family:var(--font-h);font-size:18px;margin:2px 0 0\">AI Model Configuration</h3>\n      </div>\n      <button class=\"btn btn-ghost btn-sm\" onclick=\"closeAIConfigModal()\">Close &times;</button>\n    </div>\n    <div class=\"modal-body\">\n      <p style=\"font-size:13px;color:var(--ink2);line-height:1.5;margin-bottom:16px\">Connect your preferred frontier AI model to power real-time anomaly discovery, tailored clarification questioning, and C-suite executive summary synthesis. Your key is stored strictly in your browser's local storage.</p>\n      \n      <div class=\"field\" style=\"margin-bottom:12px\">\n        <label>Select AI Provider</label>\n        <select id=\"ai-provider-select\" onchange=\"handleAIProviderChange(this.value)\">\n          <option value=\"gemini\">Google Gemini (Recommended \u2014 Gemini 2.0 Flash / 1.5 Pro)</option>\n          <option value=\"claude\">Anthropic Claude (Claude 3.5 Sonnet)</option>\n          <option value=\"openai\">OpenAI (GPT-4o / GPT-4o-mini)</option>\n        </select>\n      </div>\n\n      <div class=\"field\" style=\"margin-bottom:12px\">\n        <label>Model Identifier</label>\n        <select id=\"ai-model-select\">\n          <option value=\"gemini-2.0-flash\">gemini-2.0-flash (Ultra fast, reasoning)</option>\n          <option value=\"gemini-1.5-pro\">gemini-1.5-pro (Deep analysis)</option>\n        </select>\n      </div>\n\n      <div class=\"field\" style=\"margin-bottom:16px\">\n        <label>API Key</label>\n        <div style=\"display:flex;gap:8px\">\n          <input type=\"password\" id=\"ai-api-key\" placeholder=\"Paste your API key here (e.g. AIzaSy... or sk-ant...)\" style=\"flex:1\">\n          <button class=\"btn btn-ghost btn-sm\" type=\"button\" onclick=\"toggleAPIKeyVisibility()\">Show/Hide</button>\n        </div>\n      </div>\n\n      <div style=\"background:var(--bg2);border:1px solid var(--line);border-radius:6px;padding:12px;font-size:12px;color:var(--ink3);margin-bottom:18px;line-height:1.5\">\n        <b>Privacy &amp; Data Sovereignty Guarantee:</b> Requests travel directly from your browser to the provider endpoint over TLS. No prompts or keys are sent to LTM servers. If no key is set, the accelerator executes using its deterministic built-in rules engine.\n      </div>\n\n      <div style=\"display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px\">\n        <button class=\"btn btn-ghost btn-sm\" onclick=\"testAIConnection()\">\u26a1 Test Connection</button>\n        <div style=\"display:flex;gap:8px\">\n          <button class=\"btn btn-ghost btn-sm\" onclick=\"clearAIConfig()\">Clear Key</button>\n          <button class=\"btn btn-primary btn-sm\" onclick=\"saveAIConfigFromUI()\">Save &amp; Activate</button>\n        </div>\n      </div>\n    </div>\n  </div>\n</div>\n\n<!-- ============ BOOKING REQUEST MODAL ============ -->\n<div class=\"modal-overlay\" id=\"bookingModal\" onclick=\"if(event.target===this)closeBookingModal()\">\n  <div class=\"modal-content\" style=\"max-width:720px\">\n    <div class=\"modal-head\">\n      <div>\n        <div style=\"font-size:11px;font-family:var(--font-m);font-weight:700;color:#FF5E4F;text-transform:uppercase;letter-spacing:.12em\">LTM Infrastructure Tech Advisory \u00b7 Executive Briefing</div>\n        <h3 style=\"font-family:var(--font-h);font-size:18px;margin:2px 0 0\">Schedule Strategic Readout &amp; Unlock Dossier</h3>\n      </div>\n      <button class=\"btn btn-ghost btn-sm\" onclick=\"closeBookingModal()\">Close &times;</button>\n    </div>\n    <div class=\"modal-body\">\n      <p style=\"font-size:13px;color:var(--ink2);line-height:1.5;margin-bottom:16px\">Schedule a 30-minute executive briefing with practice leadership to review your full 28-page statutory dossier, peer benchmark analysis, and customized 3-Horizon modernization roadmap.</p>\n      \n      <div class=\"grid2\" style=\"gap:14px;margin-bottom:12px\">\n        <div class=\"field\">\n          <label>Executive Name</label>\n          <input type=\"text\" id=\"book-name\" placeholder=\"Full name\">\n        </div>\n        <div class=\"field\">\n          <label>Executive Role / Title</label>\n          <input type=\"text\" id=\"book-role\" placeholder=\"e.g. CIO, CISO, Head of Enterprise Arch\">\n        </div>\n        <div class=\"field\">\n          <label>Corporate Work Email</label>\n          <input type=\"email\" id=\"book-email\" placeholder=\"name@company.com\">\n        </div>\n        <div class=\"field\">\n          <label>Organization / Enterprise</label>\n          <input type=\"text\" id=\"book-company\" placeholder=\"Company name\">\n        </div>\n      </div>\n\n      <div class=\"field\" style=\"margin-bottom:16px\">\n        <label>Preferred Timeframe for 30-Minute Briefing</label>\n        <select id=\"book-timeframe\">\n          <option>Within the next 7 business days</option>\n          <option>Next 2–3 weeks</option>\n          <option>Next month (Q-planning alignment)</option>\n        </select>\n      </div>\n\n      <div style=\"background:#FCF0EE;border:1px solid #FF5E4F;border-radius:6px;padding:12px 14px;font-size:12px;color:#CC2B1C;margin-bottom:18px\">\n        <b>Instant Access:</b> Submitting your request will immediately unlock the unmasked 28-page dossier and vector PDF download on this screen.\n      </div>\n\n      <div style=\"display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px\">\n        <a href=\"javascript:void(0)\" onclick=\"toggleConsultantUnlock(); closeBookingModal()\" style=\"font-size:11px;color:var(--ink3);text-decoration:underline\">LTM Consultant Immediate Bypass</a>\n        <button class=\"btn btn-primary\" onclick=\"submitBookingRequest()\" style=\"padding:10px 22px;font-weight:700\">Submit Request &amp; Unlock Dossier &rarr;</button>\n      </div>\n    </div>\n  </div>\n</div>\n\n<!-- ============ EMAIL TEASER MODAL ============ -->\n<div class=\"modal-overlay\" id=\"emailModal\" onclick=\"if(event.target===this)closeEmailModal()\">\n  <div class=\"modal-content\" style=\"max-width:600px\">\n    <div class=\"modal-head\">\n      <div>\n        <div style=\"font-size:11px;font-family:var(--font-m);font-weight:700;color:#226882;text-transform:uppercase;letter-spacing:.12em\">Executive Summary</div>\n        <h3 style=\"font-family:var(--font-h);font-size:18px;margin:2px 0 0\">Email Teaser Briefing</h3>\n      </div>\n      <button class=\"btn btn-ghost btn-sm\" onclick=\"closeEmailModal()\">Close &times;</button>\n    </div>\n    <div class=\"modal-body\">\n      <p style=\"font-size:13px;color:var(--ink2);margin-bottom:14px\">Draft an email containing your high-level defensibility score and statutory Value at Stake to share internally with your leadership team.</p>\n      <div class=\"field\" style=\"margin-bottom:14px\">\n        <label>Recipient Email</label>\n        <input type=\"email\" id=\"teaser-email\" placeholder=\"e.g. colleague@company.com\">\n      </div>\n      <div style=\"display:flex;justify-content:flex-end;gap:8px\">\n        <button class=\"btn btn-ghost btn-sm\" onclick=\"closeEmailModal()\">Cancel</button>\n        <button class=\"btn btn-primary btn-sm\" onclick=\"sendTeaserEmail()\">Open Draft in Mail App &rarr;</button>\n      </div>\n    </div>\n  </div>\n</div>\n<!-- ============ ADVISORY SOW GENERATOR MODAL ============ -->\n<div class=\"modal-overlay\" id=\"sowModal\" onclick=\"if(event.target===this)closeSOWModal()\">\n  <div class=\"modal-content\" style=\"max-width:880px\">\n    <div class=\"modal-head\">\n      <div>\n        <div style=\"font-size:11px;font-family:var(--font-m);font-weight:700;color:#FF5E4F;text-transform:uppercase;letter-spacing:.12em\">LTM Infrastructure Tech Advisory \u00b7 Commercial Scoping</div>\n        <h3 style=\"font-family:var(--font-h);font-size:18px;margin:2px 0 0\">Statement of Work (SOW) \u00b7 Advisory Proposal Blueprint</h3>\n      </div>\n      <button class=\"btn btn-ghost btn-sm\" onclick=\"closeSOWModal()\">Close &times;</button>\n    </div>\n    <div class=\"modal-body\">\n      <div style=\"display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px\">\n        <span style=\"font-size:12px;color:var(--ink2)\">Auto-generated from live diagnostic findings, pillar scores &amp; statutory exposure</span>\n        <div style=\"display:flex;gap:8px\">\n          <button class=\"btn btn-ghost btn-sm\" onclick=\"copySOWToClipboard()\">Copy Markdown</button>\n          <button class=\"btn btn-primary btn-sm\" onclick=\"downloadSOWMarkdown()\">Download .md SOW &darr;</button>\n        </div>\n      </div>\n      <textarea id=\"sowTextarea\" style=\"width:100%;height:380px;font-family:var(--font-m);font-size:12px;line-height:1.55;padding:14px;border:1px solid var(--line);border-radius:6px;background:var(--bg2);color:var(--ink)\" readonly></textarea>\n    </div>\n  </div>\n</div>\n<!-- ============ INSUFFICIENT DATA MODAL ============ -->\n<div class=\"modal-overlay\" id=\"insufficientDataModal\" onclick=\"if(event.target===this)closeInsufModal()\">\n  <div class=\"modal-content\" style=\"max-width:640px\">\n    <div class=\"modal-head\" style=\"background:linear-gradient(135deg,#FCF0EE,#FFF4F2);border-bottom:1px solid #FF5E4F\">\n      <div>\n        <div style=\"font-size:11px;font-family:var(--font-m);font-weight:700;color:#CC2B1C;text-transform:uppercase;letter-spacing:.12em\">⚠️ Diagnostic Quality Gate</div>\n        <h3 style=\"font-family:var(--font-h);font-size:18px;margin:2px 0 0;color:#B21203\">Insufficient Data for Reliable Diagnostic</h3>\n      </div>\n      <button class=\"btn btn-ghost btn-sm\" onclick=\"closeInsufModal()\">Close &times;</button>\n    </div>\n    <div class=\"modal-body\">\n      <p style=\"font-size:13.5px;color:var(--ink2);line-height:1.6;margin-bottom:16px\">The statutory diagnostic engine requires a minimum of <b>60% question completion</b> to generate a statistically reliable executive report. Please complete additional sections to proceed.</p>\n      <div class=\"insuf-stats\" id=\"insuf-stats-mount\"></div>\n      <div style=\"margin-bottom:12px\">\n        <div class=\"mono\" style=\"font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3);margin-bottom:8px\">Section Completion Breakdown</div>\n        <ul class=\"insuf-section-list\" id=\"insuf-section-list-mount\"></ul>\n      </div>\n      <div style=\"display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-top:20px\">\n        <button class=\"btn btn-ghost\" onclick=\"jumpToFirstUnanswered(); closeInsufModal()\">&larr; Return to Assessment</button>\n        <button class=\"btn btn-primary\" onclick=\"forceGeneratePartialReport()\">Generate Partial Report with Warning &rarr;</button>\n      </div>\n    </div>\n  </div>\n</div>\n";
 
 var BANK = {
   "meta": {
@@ -2630,6 +2632,10 @@ var BANK = {
         {
           "value": "other-fin",
           "label": "Other financial entity (crowdfunding, credit rating agency, benchmark administrator, etc.)"
+        },
+        {
+          "value": "ict-ctpp",
+          "label": "ICT third-party service provider designated (or likely to be designated) as critical under DORA (CTPP)"
         },
         {
           "value": "na",
@@ -3787,191 +3793,284 @@ var BANK = {
 var FLASH_QUESTIONS = ['A1', 'A2', 'B1', 'C1', 'D1', 'E1', 'G1', 'H1'];
 
 var DEMO_ARCHETYPES = {
-  bank: {
-    key: "bank",
-    name: "Meridian Pan-European Universal Bank",
-    badge: "BFSI · DORA",
-    lead: "Chief Risk Officer / Head of Operational Resilience",
-    hq: "Germany",
-    resp: "Dr. Maximilian Weber",
-    role: "Chief Operational Risk Officer",
-    footprint: "EEA / EU only",
-    size: "> 20,000",
-    turnover: 8000000000,
-    sectors: ["finserv", "diginfra"],
-    regulations: ["dora", "gdpr", "nis2", "dataact"],
-    answers: {
-      A1: "essential",
-      A2: "credit",
-      B1: ["financial", "pii", "special"],
-      C1: ["aws-eu", "azure-eu", "onprem", "saas"],
-      C2: "multi",
-      C3: "partial",
-      D1: "sccs",
-      D2: "tier1",
-      D3: "partial",
-      E1: "most",
-      E2: "yes",
-      E3: "yes",
-      E4: "partial",
-      F1: "eu",
-      F2: "provider",
-      F3: "no",
-      F4: "yes",
-      F5: "partial",
-      G1: "highrisk",
-      G2: "mixed",
-      G3: "partial",
-      G4: "planned",
-      H1: "us-eubound",
-      H2: "no",
-      H3: "medium",
-      I1: "limited",
-      I2: "yes",
-      I3: "partial",
-      J1: "partial",
-      K1: "strict",
-      K2: "high",
-      K3: "performance"
+  "bank": {
+    "key": "bank",
+    "name": "Meridian Pan-European Universal Bank",
+    "badge": "BFSI · DORA",
+    "lead": "Chief Risk Officer / Head of Operational Resilience",
+    "hq": "Germany",
+    "resp": "Dr. Maximilian Weber",
+    "role": "Chief Operational Risk Officer",
+    "footprint": "EEA / EU only",
+    "size": "> 20,000",
+    "turnover": 8000000000,
+    "sectors": [
+      "finserv",
+      "diginfra"
+    ],
+    "regulations": [
+      "dora",
+      "gdpr",
+      "nis2",
+      "dataact"
+    ],
+    "answers": {
+      "A1": "essential",
+      "A2": "credit",
+      "B1": [
+        "financial",
+        "pii",
+        "special"
+      ],
+      "C1": [
+        "aws-eu",
+        "azure-eu",
+        "onprem",
+        "salesforce"
+      ],
+      "C2": {
+        "financial": "multi",
+        "pii": "multi",
+        "special": "multi"
+      },
+      "C3": "partial",
+      "D1": "sccs",
+      "D2": "yes",
+      "D3": "customer",
+      "E1": "most",
+      "E2": "yes",
+      "E3": "full",
+      "E4": "no",
+      "F1": "eu",
+      "F2": "provider",
+      "F3": "no",
+      "F4": "yes",
+      "F5": "partial",
+      "G1": "highrisk",
+      "G2": "mixed",
+      "G3": "downstream",
+      "G4": "partial",
+      "H1": "us-eubound",
+      "H2": "none",
+      "H3": [
+        "eu-personnel",
+        "eu-subprocessors"
+      ],
+      "I1": "limited",
+      "I2": "exec",
+      "I3": "unsure",
+      "J1": "partial",
+      "K1": "zero",
+      "K2": "high",
+      "K3": [
+        "performance"
+      ]
     }
   },
-  health: {
-    key: "health",
-    name: "Aethel MedTech & Pan-European Hospital Network",
-    badge: "MedTech · AI Act",
-    lead: "CISO / Data Protection Officer",
-    hq: "France",
-    resp: "Claire Delacroix",
-    role: "Chief Information Security Officer & DPO",
-    footprint: "EEA / EU only",
-    size: "5,000–20,000",
-    turnover: 1200000000,
-    sectors: ["health", "pharma"],
-    regulations: ["nis2", "gdpr", "aiact"],
-    answers: {
-      A1: "essential",
-      B1: ["special", "pii", "aitraining"],
-      C1: ["azure-eu", "saas"],
-      C2: "single",
-      C3: "no",
-      D1: "sccs",
-      D2: "ad-hoc",
-      D3: "no",
-      E1: "most",
-      E2: "partial",
-      E3: "no",
-      E4: "no",
-      F1: "eu-enc",
-      F2: "provider",
-      F3: "no",
-      F4: "planned",
-      F5: "no",
-      G1: "highrisk",
-      G2: "us-dpf",
-      G3: "no",
-      G4: "no",
-      H1: "us",
-      H2: "no",
-      H3: "high",
-      I1: "limited",
-      I2: "no",
-      I3: "no",
-      J1: "partial",
-      K1: "strict",
-      K2: "medium",
-      K3: "compliance"
+  "health": {
+    "key": "health",
+    "name": "Aethel MedTech & Pan-European Hospital Network",
+    "badge": "MedTech · AI Act",
+    "lead": "CISO / Data Protection Officer",
+    "hq": "France",
+    "resp": "Claire Delacroix",
+    "role": "Chief Information Security Officer & DPO",
+    "footprint": "EEA / EU only",
+    "size": "5,000–20,000",
+    "turnover": 1200000000,
+    "sectors": [
+      "health",
+      "pharma"
+    ],
+    "regulations": [
+      "nis2",
+      "gdpr",
+      "aiact"
+    ],
+    "answers": {
+      "A1": "essential",
+      "B1": [
+        "special",
+        "pii",
+        "aitraining"
+      ],
+      "C1": [
+        "azure-eu",
+        "salesforce"
+      ],
+      "C2": {
+        "special": "eu-only",
+        "pii": "eu-only",
+        "aitraining": "eu-only"
+      },
+      "C3": "convention",
+      "D1": "sccs",
+      "D2": "partial",
+      "D3": "na",
+      "E1": "most",
+      "E2": "partial",
+      "E3": "none",
+      "E4": "no",
+      "F1": "eu-enc",
+      "F2": "provider",
+      "F3": "no",
+      "F4": "planned",
+      "F5": "no",
+      "G1": "highrisk",
+      "G2": "us-dpf",
+      "G3": "none",
+      "G4": "none",
+      "H1": "us",
+      "H2": "none",
+      "H3": [
+        "none"
+      ],
+      "I1": "limited",
+      "I2": "none",
+      "I3": "no",
+      "J1": "partial",
+      "K1": "zero",
+      "K2": "medium",
+      "K3": [
+        "compliance"
+      ]
     }
   },
-  utility: {
-    key: "utility",
-    name: "Consortium Energy & Power Grid Utility",
-    badge: "Critical Infra · NIS2",
-    lead: "Head of IT/OT Cybersecurity & Critical Infrastructure",
-    hq: "Nordics",
-    resp: "Henrik Lindqvist",
-    role: "Head of Critical Cyber Infrastructure",
-    footprint: "EEA / EU only",
-    size: "1,000–5,000",
-    turnover: 3500000000,
-    sectors: ["energy", "diginfra"],
-    regulations: ["nis2", "gdpr", "eucs"],
-    answers: {
-      A1: "essential",
-      B1: ["government", "pii"],
-      C1: ["onprem", "aws-eu"],
-      C2: "hybrid",
-      C3: "partial",
-      D1: "no",
-      D2: "none",
-      D3: "yes",
-      E1: "all",
-      E2: "yes",
-      E3: "partial",
-      E4: "partial",
-      F1: "eu",
-      F2: "cmk-eu",
-      F3: "yes",
-      F4: "yes",
-      F5: "yes",
-      G1: "none",
-      H1: "us",
-      H2: "yes",
-      H3: "low",
-      I1: "full",
-      I2: "yes",
-      I3: "yes",
-      J1: "yes",
-      K1: "balanced",
-      K2: "high",
-      K3: "security"
+  "utility": {
+    "key": "utility",
+    "name": "Consortium Energy & Power Grid Utility",
+    "badge": "Critical Infra · NIS2",
+    "lead": "Head of IT/OT Cybersecurity & Critical Infrastructure",
+    "hq": "Nordics",
+    "resp": "Henrik Lindqvist",
+    "role": "Head of Critical Cyber Infrastructure",
+    "footprint": "EEA / EU only",
+    "size": "1,000–5,000",
+    "turnover": 3500000000,
+    "sectors": [
+      "energy",
+      "diginfra"
+    ],
+    "regulations": [
+      "nis2",
+      "gdpr",
+      "eucs"
+    ],
+    "answers": {
+      "A1": "essential",
+      "B1": [
+        "government",
+        "pii"
+      ],
+      "C1": [
+        "onprem",
+        "aws-eu"
+      ],
+      "C2": {
+        "government": "eu-only",
+        "pii": "eu-backup"
+      },
+      "C3": "partial",
+      "D1": "no",
+      "D2": "no",
+      "D3": "customer",
+      "E1": "all",
+      "E2": "yes",
+      "E3": "partial",
+      "E4": "no",
+      "F1": "eu",
+      "F2": "cmk-eu",
+      "F3": "yes",
+      "F4": "yes",
+      "F5": "yes",
+      "G1": "none",
+      "H1": "us",
+      "H2": "substantial",
+      "H3": [
+        "eu-personnel",
+        "hyok",
+        "local-entity"
+      ],
+      "I1": "full",
+      "I2": "exec",
+      "I3": "yes",
+      "J1": "yes",
+      "K1": "moderate",
+      "K2": "high",
+      "K3": [
+        "resilience"
+      ]
     }
   },
-  saas: {
-    key: "saas",
-    name: "Enterprise B2B SaaS & Payment Gateway",
-    badge: "SaaS · Global",
-    lead: "VP Information Security & Compliance",
-    hq: "Ireland",
-    resp: "Sean O'Connor",
-    role: "VP Information Security & DPO",
-    footprint: "EU + US / global",
-    size: "250–1,000",
-    turnover: 300000000,
-    sectors: ["tech", "finserv"],
-    regulations: ["gdpr", "ukgdpr", "dora", "dataact"],
-    answers: {
-      A1: "important",
-      A2: "ict_ctpp",
-      B1: ["financial", "pii", "behavioural"],
-      C1: ["aws-global", "saas"],
-      C2: "multi",
-      C3: "no",
-      D1: "adequate",
-      D2: "tier1",
-      D3: "partial",
-      E1: "most",
-      E2: "partial",
-      E3: "yes",
-      E4: "no",
-      F1: "us-dpf",
-      F2: "provider",
-      F3: "no",
-      F4: "planned",
-      F5: "no",
-      G1: "embedded",
-      G2: "mixed",
-      G3: "partial",
-      G4: "no",
-      H1: "us",
-      H2: "no",
-      H3: "high",
-      I1: "limited",
-      I2: "partial",
-      I3: "no",
-      J1: "partial",
-      K1: "flexible",
-      K2: "medium",
-      K3: "performance"
+  "saas": {
+    "key": "saas",
+    "name": "Enterprise B2B SaaS & Payment Gateway",
+    "badge": "SaaS · Global",
+    "lead": "VP Information Security & Compliance",
+    "hq": "Ireland",
+    "resp": "Sean O'Connor",
+    "role": "VP Information Security & DPO",
+    "footprint": "EU + US / global",
+    "size": "250–1,000",
+    "turnover": 300000000,
+    "sectors": [
+      "tech",
+      "finserv"
+    ],
+    "regulations": [
+      "gdpr",
+      "ukgdpr",
+      "dora",
+      "dataact"
+    ],
+    "answers": {
+      "A1": "important",
+      "A2": "ict-ctpp",
+      "B1": [
+        "financial",
+        "pii",
+        "behavioural"
+      ],
+      "C1": [
+        "aws-global",
+        "salesforce"
+      ],
+      "C2": {
+        "financial": "multi",
+        "pii": "multi",
+        "behavioural": "multi"
+      },
+      "C3": "convention",
+      "D1": "adequate",
+      "D2": "yes",
+      "D3": "provider",
+      "E1": "most",
+      "E2": "partial",
+      "E3": "full",
+      "E4": "no",
+      "F1": "us-dpf",
+      "F2": "provider",
+      "F3": "no",
+      "F4": "planned",
+      "F5": "no",
+      "G1": "internal",
+      "G2": "mixed",
+      "G3": "integrator",
+      "G4": "none",
+      "H1": "us",
+      "H2": "none",
+      "H3": [
+        "none"
+      ],
+      "I1": "limited",
+      "I2": "diffuse",
+      "I3": "no",
+      "J1": "partial",
+      "K1": "flexible",
+      "K2": "medium",
+      "K3": [
+        "performance"
+      ]
     }
   }
 };
@@ -3979,21 +4078,27 @@ var DEMO_ARCHETYPES = {
 /* ============================================================
    Dynamic Contradiction Probing Engine (Consultant Facilitator)
    ============================================================ */
+/* Probe triggers: the same condition table the scoring engine uses (keep in sync with evaluate.ts PROBE_CONDITIONS). */
+var PROBE_CONDITIONS = {"PROBE_1_RESIDENCY_ILLUSION":[{"q":"C1","any":["aws-eu","azure-eu","gcp-eu"]},{"q":"H1","any":["us","us-eubound"]},{"q":"F2","none":["cmk-eu"]}],"PROBE_2_SAAS_BLINDSPOT":[{"q":"C1","any":["salesforce","snowflake","databricks"]},{"q":"B1","any":["special","financial","pii"]},{"q":"F2","none":["cmk-eu"]}],"PROBE_3_DORA_EXIT":[{"q":"F4","any":["no","planned"]},{"reg":"dora"}],"PROBE_4_AI_DRIFT":[{"q":"G1","any":["internal","highrisk"]},{"q":"G2","any":["mixed","us-dpf","us","unknown"]}],"PROBE_5_ONPREM_BACKDOOR":[{"q":"C1","any":["onprem"]},{"q":"H1","any":["us","us-eubound","other"]}],"PROBE_6_KMS_BYOK_ILLUSION":[{"q":"F2","any":["cmk-eu","provider"]},{"q":"H1","any":["us","us-eubound"]},{"q":"H3","none":["hyok"]}]};
+function probeMatch(id, answers, state){
+  var conds = PROBE_CONDITIONS[id] || [];
+  if(!conds.length) return false;
+  return conds.every(function(c){
+    if(c.reg) return !!(state && state.regulations && state.regulations.includes(c.reg));
+    var a = answers[c.q];
+    var vals = Array.isArray(a) ? a : (a === undefined || a === null ? [] : [a]);
+    if(c.any) return vals.some(function(v){ return c.any.includes(v); });
+    return !vals.some(function(v){ return c.none.includes(v); });
+  });
+}
+
 var DYNAMIC_PROBES = [
   {
     id: "PROBE_1_RESIDENCY_ILLUSION",
     name: "The Residency Illusion Anomaly",
     badge: "Extraterritorial Jurisdiction Risk",
     relevantQids: ["C1", "H1", "F2"],
-    trigger: function(answers, state) {
-      var c1 = answers["C1"] || [];
-      var h1 = answers["H1"];
-      var f2 = answers["F2"];
-      var usesEUCloud = Array.isArray(c1) && c1.some(function(x){ return ["aws-eu", "azure-eu", "gcp-eu"].includes(x); });
-      var usParent = ["us", "us-eubound"].includes(h1);
-      var noHYOK = f2 !== "cmk-eu";
-      return usesEUCloud && usParent && noHYOK;
-    },
+    trigger: function(answers, state) { return probeMatch("PROBE_1_RESIDENCY_ILLUSION", answers, state); },
     clientAssertion: "We host all production workloads in AWS Frankfurt / Azure Dublin, so GDPR Chapter V and DORA residency are fully satisfied.",
     statutoryConflict: "Physical localization in Frankfurt or Dublin satisfies the territorial criterion, but leaves extraterritorial reach unmitigated. Under the US CLOUD Act (18 U.S.C. § 2713) and FISA §702, US law enforcement can issue lawful access orders directly to the US parent entity. Absent Hold-Your-Own-Key (HYOK) with client-held HSMs, the cloud provider can be compelled to decrypt data without client notice, directly conflicting with GDPR Art. 48 and EU Data Act Art. 32.",
     interrogationScript: "Physical localization in Frankfurt satisfies half the equation, but leaves legal reach completely unmitigated. Under the US CLOUD Act, your contract with a US-headquartered parent entity means US courts have legal reach over the data, regardless of physical location. If a lawful access order is served, can you technically prevent the provider from decrypting data? Who on your executive risk committee has formally approved this residual legal exposure?",
@@ -4004,15 +4109,7 @@ var DYNAMIC_PROBES = [
     name: "The Enterprise SaaS Administrative Blindspot",
     badge: "Supply Chain & Shadow Egress",
     relevantQids: ["C1", "B1", "F2", "E1"],
-    trigger: function(answers, state) {
-      var c1 = answers["C1"] || [];
-      var b1 = answers["B1"] || [];
-      var f2 = answers["F2"];
-      var usesSaaS = Array.isArray(c1) && c1.includes("saas");
-      var hasSensitive = Array.isArray(b1) && b1.some(function(x){ return ["special", "financial", "pii"].includes(x); });
-      var noTenantKey = f2 !== "cmk-eu";
-      return usesSaaS && hasSensitive && noTenantKey;
-    },
+    trigger: function(answers, state) { return probeMatch("PROBE_2_SAAS_BLINDSPOT", answers, state); },
     clientAssertion: "Microsoft 365, Salesforce, and ServiceNow are standard enterprise SaaS tools covered by our corporate SOC 2 and ISO 27001 certifications.",
     statutoryConflict: "Enterprise SaaS represents the largest unmapped data leakage channel in modern enterprises. Multi-tenant SaaS environments routinely grant global SREs and support engineers follow-the-sun privileged access to diagnose incidents. Tenant data is encrypted with vendor-managed keys, violating DORA Art. 28 and NIS2 Art. 21 supply chain obligations.",
     interrogationScript: "Enterprise SaaS represents the single largest unmapped data leakage channel in modern enterprises. While customer data sits in regional datacenters, vendor support engineers operating out of follow-the-sun global centers possess privileged access to diagnose incidents. Have you implemented Customer Lockbox to mandate explicit approval for every vendor session, and deployed tenant-held cache keys (such as M365 Customer Key or Salesforce Shield) to enforce cryptographic opacity?",
@@ -4023,11 +4120,7 @@ var DYNAMIC_PROBES = [
     name: "The DORA & APRA Concentration Cliff (The Exit Strategy Myth)",
     badge: "Operational Resilience Non-Compliance",
     relevantQids: ["F3", "F4", "C1"],
-    trigger: function(answers, state) {
-      var f3 = answers["F3"];
-      var hasDora = state.regulations && state.regulations.includes("dora");
-      return (f3 === "no" || f3 === "partial") && hasDora;
-    },
+    trigger: function(answers, state) { return probeMatch("PROBE_3_DORA_EXIT", answers, state); },
     clientAssertion: "Our primary cloud provider has four Availability Zones and a 99.99% SLA. Our exit plan is documented in our annual Disaster Recovery handbook.",
     statutoryConflict: "DORA Art. 28(8), UK CTP (FSMA 2023 Part 9), and APRA CPS 230 explicitly mandate tested, feasible exit strategies from Critical ICT Third-Party Providers (CTPPs). A Disaster Recovery plan within the same hyperscaler does not qualify as an exit strategy. If the provider suffers a systemic outage, sanctions, or contractual dispute, moving proprietary PaaS services takes 18–24+ months without containerized portability.",
     interrogationScript: "Regulators distinguish sharply between high availability and vendor exitability. DORA and APRA require an auditable playbook to migrate critical functions away from a concentrated provider without operational disruption. When was the last time you simulated an actual technical cutover of a core business service to an alternative provider or private cloud enclave? If your primary provider experienced a systemic lockout, what is your verified cutover timeline?",
@@ -4038,15 +4131,9 @@ var DYNAMIC_PROBES = [
     name: "Unregulated AI Training Data Drift",
     badge: "EU AI Act Art. 10 Statutory Exposure",
     relevantQids: ["G1", "G2"],
-    trigger: function(answers, state) {
-      var g1 = answers["G1"];
-      var g2 = answers["G2"];
-      var usesAI = ["highrisk", "internal", "embedded"].includes(g1);
-      var mixedData = ["mixed", "us-dpf", "unknown"].includes(g2);
-      return usesAI && mixedData;
-    },
+    trigger: function(answers, state) { return probeMatch("PROBE_4_AI_DRIFT", answers, state); },
     clientAssertion: "Our AI models were trained internally on enterprise data, and we access external LLMs via enterprise APIs with zero-retention contractual clauses.",
-    statutoryConflict: "EU AI Act Art. 10 imposes strict governance mandates on high-risk AI data provenance, bias mitigation, and training validation. Processing European customer data through out-of-region compute instances or fine-tuning models without auditable training lineage triggers compounding penalties up to €35M or 7% of worldwide turnover under Art. 99.",
+    statutoryConflict: "EU AI Act Art. 10 imposes strict governance mandates on high-risk AI data provenance, bias mitigation, and training validation. Processing European customer data through out-of-region compute instances or fine-tuning models without auditable training lineage can trigger penalties of up to €15M or 3% of worldwide turnover under Art. 99(4).",
     interrogationScript: "The EU AI Act and GDPR treat AI inference and fine-tuning as restricted data processing. If prompt tokens or fine-tuning datasets traverse out-of-EEA compute nodes, you face compounding penalties under both GDPR Chapter V and AI Act Art. 10. Do you possess an immutable provenance register verifying exactly which training epochs touched customer data, and are your GenAI workloads confined to certified EU sovereign AI fabrics?",
     technicalSafeguard: "Establish a Sovereign AI Enclave with verifiable training-data provenance registers, zero-data-retention execution boundaries, and EU-only confidential GPU compute."
   },
@@ -4055,13 +4142,7 @@ var DYNAMIC_PROBES = [
     name: "The Remote Management Telemetry Backdoor",
     badge: "Hardware Supply Chain Egress",
     relevantQids: ["C1", "H1", "E4"],
-    trigger: function(answers, state) {
-      var c1 = answers["C1"] || [];
-      var h1 = answers["H1"];
-      var usesOnPrem = Array.isArray(c1) && c1.includes("onprem");
-      var foreignTech = ["us", "us-eubound", "other"].includes(h1);
-      return usesOnPrem && foreignTech;
-    },
+    trigger: function(answers, state) { return probeMatch("PROBE_5_ONPREM_BACKDOOR", answers, state); },
     clientAssertion: "Our critical core runs on-premises in our own private data center; therefore, we have zero foreign access exposure.",
     statutoryConflict: "Modern enterprise server management controllers (Dell iDRAC, HPE iLO), storage arrays, and network firewalls frequently maintain active telemetry and remote diagnostic tunnels (call-home) connected to foreign vendor support clouds. This creates an unmonitored management plane backdoor bypassing perimeter controls under NIS2 Art. 21.",
     interrogationScript: "While physical servers sit inside your perimeter, the management plane often connects outbound to foreign vendor telemetry centers. Are your out-of-band management controllers strictly air-gapped on isolated VLANs with all phone-home diagnostic telemetry blocked? Has the hardware bill of materials been audited against clean supply chain standards (such as NDAA Section 889)?",
@@ -4072,13 +4153,7 @@ var DYNAMIC_PROBES = [
     name: "The Cloud-Native KMS Lock-In (The BYOK Illusion)",
     badge: "Cryptographic Custody Risk",
     relevantQids: ["F2", "H1"],
-    trigger: function(answers, state) {
-      var f2 = answers["F2"];
-      var h1 = answers["H1"];
-      var hasCloudKms = f2 === "byok-cloud";
-      var usParent = ["us", "us-eubound"].includes(h1);
-      return hasCloudKms && usParent;
-    },
+    trigger: function(answers, state) { return probeMatch("PROBE_6_KMS_BYOK_ILLUSION", answers, state); },
     clientAssertion: "We use AWS KMS and Azure Key Vault with our own Customer Managed Keys (CMK), so the cloud provider cannot decrypt our data.",
     statutoryConflict: "A cloud-native CMK is still hosted inside the cloud provider's hardware security modules (HSMs). The provider's hypervisor executes cryptographic operations in plaintext in volatile RAM. Under FISA §702 or CLOUD Act direct subpoenas, the provider can be compelled to decrypt workloads in memory without client involvement, failing EDPB Schrems II supplementary measure requirements.",
     interrogationScript: "Cloud-managed keys (CMK) protect against external hackers, but provide zero legal protection against the cloud provider itself. Under cloud-native KMS, the provider controls the hypervisor and the HSM where your key is instantiated. If the provider is compelled under a lawful access warrant, they possess the technical ability to decrypt your workloads in volatile RAM. True technical defensibility requires Hold-Your-Own-Key (HYOK)—where the root of trust resides in external HSMs under your exclusive physical control.",
@@ -4086,9 +4161,6 @@ var DYNAMIC_PROBES = [
   }
 ];
 
-function getTriggeredProbes(answers, state){
-  return DYNAMIC_PROBES.filter(function(p){ return p.trigger(answers, state); });
-}
 function getTriggeredProbesForQuestion(qid, answers, state){
   return DYNAMIC_PROBES.filter(function(p){
     return p.relevantQids.includes(qid) && p.trigger(answers, state);
@@ -4182,109 +4254,6 @@ function formatCurrency(n){
   return '$' + Math.round(n);
 }
 
-function calculateStatutoryPenalties(turnover, inScopeRegs, answers, findings){
-  var EUR_TO_USD = 1.08;
-  var tUSD = turnover || 250000000;
-  var tEUR = tUSD / EUR_TO_USD;
-  
-  var fines = [];
-  var maxSinglePenalty = 0;
-  
-  if(inScopeRegs.includes('gdpr') || inScopeRegs.includes('ukgdpr')){
-    var capEUR = Math.max(20000000, tEUR * 0.04);
-    var capUSD = Math.round(capEUR * EUR_TO_USD);
-    var hasGap = findings.some(function(f){ return f.reg === 'gdpr' || f.reg === 'ukgdpr'; });
-    var isCrit = findings.some(function(f){ return (f.reg === 'gdpr' || f.reg === 'ukgdpr') && f.severity === 'critical'; });
-    fines.push({
-      regId: 'gdpr',
-      regName: 'GDPR / UK GDPR (Art. 83 Statutory Cap)',
-      statuteBasis: 'Up to €20M / £17.5M or 4% worldwide annual turnover, whichever is higher (Chapter V transfers & processor duties).',
-      capUSD: capUSD,
-      capFormatted: formatCurrency(capUSD),
-      status: hasGap ? (isCrit ? 'Critical Breach Exposure' : 'High Regulatory Exposure') : 'Defensible / Managed',
-      statusColor: hasGap ? (isCrit ? 'var(--rag-red)' : '#E39A2E') : 'var(--rag-green)'
-    });
-    maxSinglePenalty = Math.max(maxSinglePenalty, capUSD);
-  }
-
-  if(inScopeRegs.includes('nis2')){
-    var isEssential = answers['A1'] === 'essential';
-    var rate = isEssential ? 0.02 : 0.014;
-    var baseEUR = isEssential ? 10000000 : 7000000;
-    var capEUR = Math.max(baseEUR, tEUR * rate);
-    var capUSD = Math.round(capEUR * EUR_TO_USD);
-    var hasGap = findings.some(function(f){ return f.reg === 'nis2'; });
-    fines.push({
-      regId: 'nis2',
-      regName: isEssential ? 'NIS2 Directive (Essential Entity · Art. 34)' : 'NIS2 Directive (Important Entity · Art. 34)',
-      statuteBasis: isEssential 
-        ? 'Up to €10M or 2% worldwide annual turnover + direct management liability and operational bans.' 
-        : 'Up to €7M or 1.4% worldwide annual turnover (ex-post supervisory enforcement).',
-      capUSD: capUSD,
-      capFormatted: formatCurrency(capUSD),
-      status: hasGap ? 'Direct Enforcement Risk' : 'Baseline Met',
-      statusColor: hasGap ? 'var(--rag-red)' : 'var(--rag-green)'
-    });
-    maxSinglePenalty = Math.max(maxSinglePenalty, capUSD);
-  }
-
-  if(inScopeRegs.includes('aiact') || inScopeRegs.includes('ukai')){
-    var capEUR = Math.max(35000000, tEUR * 0.07);
-    var capUSD = Math.round(capEUR * EUR_TO_USD);
-    var hasGap = findings.some(function(f){ return f.reg === 'aiact'; });
-    fines.push({
-      regId: 'aiact',
-      regName: 'EU AI Act (Art. 99 Statutory Ceiling)',
-      statuteBasis: 'Up to €35M or 7% global turnover (prohibited practices) / €15M or 3% (Art. 10 training-data governance & provenance).',
-      capUSD: capUSD,
-      capFormatted: formatCurrency(capUSD),
-      status: hasGap ? 'Severe Non-Compliance' : 'Governance Aligned',
-      statusColor: hasGap ? 'var(--rag-red)' : 'var(--rag-green)'
-    });
-    maxSinglePenalty = Math.max(maxSinglePenalty, capUSD);
-  }
-
-  if(inScopeRegs.includes('dora')){
-    var dailyUSD = tUSD / 365;
-    var capUSD = Math.round(dailyUSD * 0.01 * 180);
-    var hasGap = findings.some(function(f){ return f.reg === 'dora'; });
-    fines.push({
-      regId: 'dora',
-      regName: 'DORA (Art. 35 Periodic Penalty Payments & CTPP Oversight)',
-      statuteBasis: 'Daily periodic fines up to 1% avg. daily global turnover for up to 6 months + ESA public disclosure & sanctions.',
-      capUSD: capUSD,
-      capFormatted: formatCurrency(capUSD),
-      status: hasGap ? 'Supervisory Sanction Exposure' : 'Compliant Architecture',
-      statusColor: hasGap ? 'var(--rag-red)' : 'var(--rag-green)'
-    });
-    maxSinglePenalty = Math.max(maxSinglePenalty, capUSD);
-  }
-
-  if(!fines.length){
-    var defaultCapUSD = Math.round(Math.max(20000000, tEUR * 0.04) * EUR_TO_USD);
-    fines.push({
-      regId: 'gdpr',
-      regName: 'Statutory Compliance Baseline (GDPR Art. 83)',
-      statuteBasis: 'Up to €20M or 4% global turnover baseline.',
-      capUSD: defaultCapUSD,
-      capFormatted: formatCurrency(defaultCapUSD),
-      status: 'In Scope',
-      statusColor: '#E39A2E'
-    });
-    maxSinglePenalty = defaultCapUSD;
-  }
-
-  var advisoryFeeEstimate = 185000;
-  var riskHedgeRatio = ((advisoryFeeEstimate / (maxSinglePenalty || 1)) * 100).toFixed(2);
-
-  return {
-    turnover: tUSD,
-    fines: fines,
-    totalValueAtStake: maxSinglePenalty,
-    advisoryFeeEstimate: advisoryFeeEstimate,
-    riskHedgeRatio: riskHedgeRatio
-  };
-}
 
 /* ---------- 5-pillar normalized scoring model ---------- */
 var PILLAR_CONFIG = [
@@ -4320,114 +4289,7 @@ var PILLAR_CONFIG = [
   }
 ];
 
-function evaluateQuestionScore(q, ans){
-  if(ans === undefined || ans === null) return null;
-  if(q.type === 'single'){
-    var opt = (q.options || []).find(function(o){ return o.value === ans; });
-    if(!opt) return null;
-    if(opt.sev === 'positive') return 100;
-    if(opt.sev === 'low') return 75;
-    if(opt.sev === 'medium') return 50;
-    if(opt.sev === 'high') return 25;
-    if(opt.sev === 'critical') return 0;
-    return 60;
-  }
-  if(q.type === 'scale'){
-    var sOpt = (q.scale || []).find(function(s){ return s.v === ans; });
-    if(!sOpt) return null;
-    if(sOpt.sev === 'positive') return 100;
-    if(sOpt.sev === 'low') return 75;
-    if(sOpt.sev === 'medium') return 50;
-    if(sOpt.sev === 'high') return 25;
-    if(sOpt.sev === 'critical') return 0;
-    return 60;
-  }
-  if(q.type === 'multi'){
-    var arr = Array.isArray(ans) ? ans : [];
-    if(!arr.length) return 80;
-    var tFindings = [];
-    (q.options || []).forEach(function(o){
-      if(arr.includes(o.value) && o.findings){
-        tFindings = tFindings.concat(o.findings);
-      }
-    });
-    if(tFindings.some(function(f){ return f.severity === 'critical'; })) return 15;
-    if(tFindings.some(function(f){ return f.severity === 'high'; })) return 35;
-    if(tFindings.some(function(f){ return f.severity === 'medium'; })) return 60;
-    if(tFindings.some(function(f){ return f.severity === 'low'; })) return 80;
-    return 95;
-  }
-  if(q.type === 'matrix'){
-    if(typeof ans !== 'object' || !ans) return null;
-    var entries = Object.entries(ans);
-    if(!entries.length) return null;
-    var worst = 100;
-    entries.forEach(function(pair){
-      var k = pair[0] + ':' + pair[1];
-      var f = q.cellFindings ? q.cellFindings[k] : null;
-      if(f){
-        if(f.severity === 'critical') worst = Math.min(worst, 10);
-        else if(f.severity === 'high') worst = Math.min(worst, 30);
-        else if(f.severity === 'medium') worst = Math.min(worst, 55);
-        else if(f.severity === 'low') worst = Math.min(worst, 75);
-      }
-    });
-    return worst;
-  }
-  return 70;
-}
 
-function computePillarScores(answers, activeQuestions){
-  var pillars = PILLAR_CONFIG.map(function(p){
-    var qList = activeQuestions.filter(function(q){ return p.sections.includes(q.section); });
-    var total = 0;
-    var scored = 0;
-    qList.forEach(function(q){
-      var s = evaluateQuestionScore(q, answers[q.id]);
-      if(s !== null){
-        total += s;
-        scored++;
-      }
-    });
-    var score = scored > 0 ? Math.round(total / scored) : 55;
-    var status = 'Managed';
-    var color = '#226882';
-    var bg = '#EDF5F8';
-    if(score >= 85){ status = 'Defensible'; color = 'var(--rag-green)'; bg = '#EDF7F1'; }
-    else if(score >= 65){ status = 'Managed'; color = '#226882'; bg = '#EDF5F8'; }
-    else if(score >= 40){ status = 'Exposed'; color = '#E39A2E'; bg = '#FFF9E6'; }
-    else { status = 'Critical Risk'; color = 'var(--rag-red)'; bg = '#FFEBEE'; }
-
-    return {
-      id: p.id,
-      num: p.num,
-      name: p.name,
-      desc: p.desc,
-      weight: p.weight,
-      score: score,
-      status: status,
-      color: color,
-      bg: bg,
-      qCount: qList.length,
-      answeredCount: scored
-    };
-  });
-
-  var weightedSum = 0;
-  var weightSum = 0;
-  pillars.forEach(function(p){
-    weightedSum += p.score * p.weight;
-    weightSum += p.weight;
-  });
-  var overall = Math.round(weightedSum / (weightSum || 1));
-  var label = postureLabel(overall);
-
-  return {
-    pillars: pillars,
-    overallScore: overall,
-    label: label
-  };
-}
 
 /* ---------- init ---------- */
 function init(){
@@ -4781,7 +4643,7 @@ function collectFindingsForQuestion(q){
   } else if(q.type==='matrix'){
     const cur=ans||{};
     Object.entries(cur).forEach(([row,col])=>{
-      const key=`${row}:${col}`;
+      const key=col; // cell findings are keyed by column; the row stays on the finding
       if(q.cellFindings&&q.cellFindings[key]){
         const f=q.cellFindings[key];
         list.push(Object.assign({qid:q.id, row, col}, f));
@@ -4789,11 +4651,6 @@ function collectFindingsForQuestion(q){
     });
   }
   return list;
-}
-function collectAllFindings(){
-  let all=[];
-  STATE.activeQuestions.forEach(q=>{ all=all.concat(collectFindingsForQuestion(q)); });
-  return all.filter(f=>f.severity!=='positive');
 }
 
 /* ---------- RAG rollup ---------- */
@@ -4810,11 +4667,6 @@ function ragForRegulation(regId, findings){
 }
 
 /* ---------- posture score & labels ---------- */
-function postureScore(findings){
-  const w={critical:26,high:13,medium:5,low:1};
-  let deduct=0; findings.forEach(f=>{ deduct+=w[f.severity]||0; });
-  return Math.max(0, 100-deduct);
-}
 function postureLabel(s){
   if(s>=85) return {t:'Defensible', c:'var(--rag-green)', grade:'A'};
   if(s>=65) return {t:'Improving / Managed', c:'#226882', grade:'B'};
@@ -4834,41 +4686,59 @@ function businessImpactBand(){
 /* ---------- results rendering ---------- */
 
 /* ---------- Cloud Scoring Engine Bridge (AWS Lambda ap-south-1) ---------- */
-const EVALUATE_API_ENDPOINT = "https://zvnmwxa9sf.execute-api.ap-south-1.amazonaws.com/api/evaluate/posture-iq";
+// Scoring runs on the Advisory API; LTM_API attaches the signed-in user's token.
+const EVALUATE_API_PATH = "/api/evaluate/posture-iq";
 
+// Returns the server's evaluation, or null (and shows an error). Never keeps a stale result.
 async function fetchPostureIqEvaluation() {
+  STATE.evaluation = null;
+  hideScoringError();
   try {
     const payload = {
       answers: STATE.answers,
-      org: STATE.org,
+      // The engine needs only turnover; respondent details stay in the browser.
+      org: { name: STATE.org.name || '', turnover: STATE.org.turnover },
       regulations: STATE.regulations,
       sectors: STATE.sectors,
       mode: STATE.mode
     };
-    const res = await fetch(EVALUATE_API_ENDPOINT, {
+    const res = await LTM_API.fetch(EVALUATE_API_PATH, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload)
     });
-    if (!res.ok) {
-      console.error('[Posture IQ Cloud Eval] Error:', res.status, await res.text());
-      return null;
-    }
-    const json = await res.json();
-    if (json && json.ok && json.data) {
+    const json = await res.json().catch(() => null);
+    if (res.ok && json && json.ok && json.data) {
       STATE.evaluation = json.data;
       return STATE.evaluation;
     }
+    console.error('[Posture IQ Cloud Eval] Error:', res.status, json);
   } catch (err) {
     console.error('[Posture IQ Cloud Eval] Connection failed:', err);
   }
+  showScoringError();
   return null;
+}
+
+function showScoringError() {
+  if (document.getElementById('scoringError')) return;
+  const el = document.createElement('div');
+  el.id = 'scoringError';
+  el.setAttribute('role', 'alert');
+  el.style.cssText = 'position:fixed;top:16px;left:50%;transform:translateX(-50%);z-index:9999;max-width:min(640px,calc(100% - 32px));display:flex;gap:12px;align-items:center;background:#FEF2F2;border:1px solid #DC2626;color:#111827;padding:12px 16px;border-radius:10px;font-size:14px;box-shadow:0 8px 30px rgba(0,0,0,.18)';
+  el.innerHTML = "<span><b>We couldn't calculate your results.</b> Your answers are kept. Please try again in a moment.</span>"
+    + '<button type="button" onclick="hideScoringError()" style="border:1px solid #DC2626;background:#fff;border-radius:6px;padding:4px 10px;cursor:pointer">Dismiss</button>';
+  document.body.appendChild(el);
+}
+function hideScoringError() {
+  const el = document.getElementById('scoringError');
+  if (el) el.remove();
 }
 
 async function computeAndShowResults(){
   await fetchPostureIqEvaluation();
+  if(!STATE.evaluation) return;
   let findings, pillarData, score, label, penalties, triggeredProbes, counts;
-  if(STATE.evaluation){
+  {
     findings = STATE.evaluation.findings;
     pillarData = STATE.evaluation.pillarScores;
     score = STATE.evaluation.overallScore;
@@ -4876,16 +4746,6 @@ async function computeAndShowResults(){
     penalties = STATE.evaluation.penalties;
     triggeredProbes = STATE.evaluation.triggeredProbes;
     counts = STATE.evaluation.counts;
-  } else {
-    findings = collectAllFindings();
-    findings.sort((a,b)=>(SEV_ORDER[b.severity]-SEV_ORDER[a.severity])||(a.phase-b.phase));
-    pillarData = computePillarScores(STATE.answers, STATE.activeQuestions);
-    score = pillarData.overallScore;
-    label = pillarData.label;
-    penalties = calculateStatutoryPenalties(STATE.org.turnover, STATE.regulations, STATE.answers, findings);
-    triggeredProbes = getTriggeredProbes(STATE.answers, STATE);
-    counts = {critical:0,high:0,medium:0,low:0};
-    findings.forEach(f=>counts[f.severity]=(counts[f.severity]||0)+1);
   }
 
   const isUnlocked = !!STATE.isUnlocked;
@@ -4895,7 +4755,7 @@ async function computeAndShowResults(){
       <div style="display:flex;align-items:center;gap:10px">
         <span style="font-size:18px;color:#1B5B34">✓</span>
         <div>
-          <b style="color:#1B5B34;font-size:14px">Full Executive Dossier Unlocked · LTM Infrastructure Tech Advisory</b>
+          <b style="color:#1B5B34;font-size:14px">Full Executive Dossier Unlocked · LTM Vantage</b>
           <div style="font-size:12px;color:var(--ink3)">Complete 28-page statutory schedule, 35-point findings register, and unmasked 3-Horizon SOW available below.</div>
         </div>
       </div>
@@ -4906,7 +4766,7 @@ async function computeAndShowResults(){
       <div class="gate-overlay-badge">Confidential Diagnostic · Advisory Preview</div>
       <h3 style="font-size:20px;margin-bottom:6px">Request Full Statutory Diagnostic &amp; Executive Dossier</h3>
       <p style="font-size:13px;color:#5B5B5B;line-height:1.55;max-width:760px">
-        Your preliminary maturity score and peer radar benchmark are disclosed above. Complete your details or schedule an executive session with our practice leadership to unlock the bespoke <b>28-Page Technical Sovereignty Dossier</b>, <b>Granular Statutory Penalty Schedules</b>, <b>Transfer Impact Assessment (TIA)</b>, and <b>3-Horizon Modernization Roadmap</b>.
+        Your preliminary maturity score and pillar breakdown are disclosed above. Complete your details or schedule an executive session with our practice leadership to unlock the bespoke <b>28-Page Technical Sovereignty Dossier</b>, <b>Granular Statutory Penalty Schedules</b>, <b>Transfer Impact Assessment (TIA)</b>, and <b>3-Horizon Modernization Roadmap</b>.
       </p>
       <div style="display:flex;gap:12px;margin-top:18px;align-items:center;flex-wrap:wrap">
         <button class="btn btn-primary" onclick="openBookingModal()" style="padding:11px 22px;font-size:13.5px;font-weight:700">📅 Book Executive Briefing with Ashutosh Dixit →</button>
@@ -4920,10 +4780,11 @@ async function computeAndShowResults(){
     statutoryExposureBlock(penalties) +
     probesDossierBlock(triggeredProbes) +
     findingsBlock(findings) +
+    obligationsBlock(STATE.evaluation.obligations || []) +
     advisoryServicesBlock();
 
   function _renderResults(){
-    const lowConfBanner = STATE._lowConfidence ?
+    const lowConfBanner = (STATE._lowConfidence || (STATE.evaluation && STATE.evaluation.lowConfidence)) ?
       '<div class="low-confidence-banner">&#9888;&#65039; <b>Limited Data Confidence:</b> Report generated with partial assessment data. Results are indicative only &#8212; complete all sections for maximum diagnostic fidelity.</div>' : '';
     const body=document.getElementById('results-body');
     body.innerHTML =
@@ -4967,18 +4828,18 @@ async function computeAndShowResults(){
 function coverBlock(score,label,counts,findings,pillarData,penalties,probes,isUnlocked){
   const o=STATE.org; const now=new Date().toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'});
   const regs=STATE.regulations.map(regName).join(' · ');
-  const turnoverFormatted = formatCurrency(o.turnover);
+  const turnoverFormatted = formatCurrency(penalties.turnover) + (penalties.turnoverAssumed ? ' (assumed)' : '');
   const exposureFormatted = formatCurrency(penalties.totalValueAtStake);
   const modeTag = STATE.mode === 'flash' ? '⚡ 10-Minute Executive Flash Readout' : '🔬 45-Minute Advisory Diagnostic Readout';
 
   return `<div class="print-cover">
     <div class="cover-bg-glow no-print"></div>
     <div style="display:flex;align-items:center;gap:14px;margin-bottom:14px;">
-      <a href="/portal" style="display:flex;align-items:center;text-decoration:none;" title="Back to Advisory Accelerators Portal">
+      <a href="/" style="display:flex;align-items:center;text-decoration:none;" title="Back to LTM Vantage Accelerators Portal">
         <img src="/assets/ltm-logo.png" alt="LTM - A Larsen & Toubro Group Company" style="height:36px;width:auto;border-radius:6px;object-fit:contain;box-shadow:0 2px 10px rgba(0,0,0,0.2);">
       </a>
     </div>
-    <div class="eyebrow">Infrastructure Tech Advisory · Digital Sovereignty · ${modeTag}</div>
+    <div class="eyebrow">LTM Vantage · Responsible Advisory · Digital Sovereignty · ${modeTag}</div>
     <h1 style="font-size:34px;margin:6px 0 10px">Posture IQ</h1>
     <div class="mono" style="font-size:11px;color:var(--ink3);letter-spacing:.08em;margin:-2px 0 8px">FRAMEWORK v${BANK.meta.version} · REVIEWED ${BANK.meta.updated} · ${STATE.mode.toUpperCase()} MODE</div>
     <p class="lede" style="color:var(--ink2);max-width:720px">A production-grade, regulator-aware technical audit of data location, extraterritorial transfer exposure, and phased statutory remediation for <b>${o.name}</b>.</p>
@@ -4993,7 +4854,8 @@ function coverBlock(score,label,counts,findings,pillarData,penalties,probes,isUn
       <div class="score-ring">
         <div><div class="mono" style="font-size:11px;color:var(--ink3);letter-spacing:.08em">OVERALL DEFENSIBILITY</div>
           <div class="big-score" style="color:${label.c}">${score}<small>/100</small></div>
-          <div style="font-family:var(--font-h);font-weight:700;color:${label.c};font-size:15px">${label.t}</div></div>
+          <div style="font-family:var(--font-h);font-weight:700;color:${label.c};font-size:15px">${label.t}</div>
+          ${STATE.evaluation && STATE.evaluation.coverage ? `<div class="mono" id="score-coverage" style="font-size:10.5px;color:var(--ink3);margin-top:4px">Coverage: ${STATE.evaluation.coverage.answered} of ${STATE.evaluation.coverage.total} scored questions answered${STATE.evaluation.lowConfidence ? ' · low confidence' : ''}</div>` : ''}</div>
       </div>
       
       <div style="border-left:1px solid rgba(255,94,79,0.3);padding-left:18px">
@@ -5093,7 +4955,7 @@ function statutoryExposureBlock(penalties){
       <div class="stat-penalty-basis">${f.statuteBasis}</div>
       <div style="margin-top:8px;display:flex;justify-content:space-between;align-items:center">
         <span style="font-size:10.5px;font-weight:700;color:${f.statusColor}">${f.status}</span>
-        <span class="mono" style="font-size:10px;color:var(--ink3)">Statutory Cap</span>
+        ${f.capUSD === null ? '' : '<span class="mono" style="font-size:10px;color:var(--ink3)">Statutory Cap</span>'}
       </div>
     </div>`).join('');
 
@@ -5103,19 +4965,19 @@ function statutoryExposureBlock(penalties){
       <div>
         <div style="font-family:var(--font-m);font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#FF5E4F">Statutory Penalty Exposure Ceiling</div>
         <h3 style="font-size:20px;margin-top:4px;color:#282828">Financial Value at Stake under Assessed Regulations</h3>
-        <p style="font-size:13px;color:#5B5B5B;margin-top:3px">Calculated against declared enterprise turnover of <b>${formatCurrency(penalties.turnover)}</b>.</p>
+        <p style="font-size:13px;color:#5B5B5B;margin-top:3px">Calculated against ${penalties.turnoverAssumed ? 'an assumed turnover' : 'declared enterprise turnover'} of <b>${formatCurrency(penalties.turnover)}</b>${penalties.turnoverAssumed ? ' (no turnover was provided; enter it for a client-specific ceiling)' : ''}.</p>
       </div>
       <div style="text-align:right">
-        <div style="font-family:var(--font-m);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:#8E8E8E">Aggregate Exposure Ceiling</div>
+        <div style="font-family:var(--font-m);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:#8E8E8E">Largest Single Statutory Ceiling</div>
         <div style="font-family:var(--font-h);font-size:32px;font-weight:800;color:#CC2B1C;line-height:1.1">${formatCurrency(penalties.totalValueAtStake)}</div>
-        <div style="font-size:11.5px;color:#5B5B5B;margin-top:2px">Unhedged downside regulatory risk</div>
+        <div style="font-size:11.5px;color:#5B5B5B;margin-top:2px">Maximum fine under the most severe applicable regime (not a sum; actual penalties are usually far lower)</div>
       </div>
     </div>
     <div class="grid2" style="gap:12px;margin:16px 0">
       ${cards}
     </div>
     <div style="margin-top:14px;padding-top:12px;border-top:1px solid rgba(255,94,79,0.2);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;font-size:12px;color:#5B5B5B">
-      <div><b style="color:#282828">Advisory Hedge Ratio:</b> A typical LTM CIS advisory engagement (~${formatCurrency(penalties.advisoryFeeEstimate)}) represents <b>&lt; ${penalties.riskHedgeRatio}%</b> of the unhedged statutory penalty ceiling.</div>
+      <div><b style="color:#282828">For scale:</b> ${penalties.riskHedgeRatio === 'n/a' ? 'no quantified statutory ceiling applies to the regimes in scope.' : 'an indicative LTM advisory engagement (~' + formatCurrency(penalties.advisoryFeeEstimate) + ') is about <b>' + penalties.riskHedgeRatio + '%</b> of the largest single statutory ceiling. An illustrative comparison, not a measure of risk reduction.'}</div>
       <div style="font-family:var(--font-m);font-size:11px;color:#8A6500;background:#FFF9E6;padding:4px 8px;border-radius:4px;border:1px solid #FFE58F">Statutory Articles 83, 34, 99 &amp; 35</div>
     </div>
   </div>`;
@@ -5165,11 +5027,11 @@ function pillarBreakdownBlock(pillarData){
       <div>
         <div class="pillar-hd">
           <span class="pillar-num">${p.num} · ${(p.weight*100).toFixed(0)}% WT</span>
-          <span class="pillar-score" style="color:${p.color}">${p.score}</span>
+          <span class="pillar-score" style="color:${p.color}">${p.score === null ? 'n/a' : p.score}</span>
         </div>
         <div class="pillar-name">${p.name}</div>
         <div class="pillar-bar-wrap">
-          <div class="pillar-bar-fill" style="width:${p.score}%;background:${p.color}"></div>
+          <div class="pillar-bar-fill" style="width:${p.score || 0}%;background:${p.color}"></div>
         </div>
         <p style="font-size:11.5px;color:var(--ink3);line-height:1.45;margin-bottom:10px">${p.desc}</p>
       </div>
@@ -5189,12 +5051,13 @@ function pillarBreakdownBlock(pillarData){
 }
 
 function toggleAINarrative(){
+  if(!STATE.evaluation){ showScoringError(); return; }
   STATE._showBaselineNarrative = !STATE._showBaselineNarrative;
   var container = document.getElementById('exec-narrative-container');
   if(container){
-    var findings = collectAllFindings();
-    var pillarData = computePillarScores(STATE.answers, STATE.activeQuestions);
-    var penalties = calculateStatutoryPenalties(STATE.org.turnover, STATE.regulations, STATE.answers, findings);
+    var findings = STATE.evaluation.findings.slice();
+    var pillarData = STATE.evaluation.pillarScores;
+    var penalties = STATE.evaluation.penalties;
     var counts = {critical:0,high:0,medium:0,low:0};
     findings.forEach(function(f){ counts[f.severity]=(counts[f.severity]||0)+1; });
     container.outerHTML = execSummary(findings, counts, pillarData.overallScore, penalties);
@@ -5208,14 +5071,17 @@ function execSummary(findings,counts,score,penalties){
   const fineStr = penalties ? formatCurrency(penalties.totalValueAtStake) : '';
   
   let deterministicNarr;
-  if(counts.critical>0){
-    deterministicNarr=`The assessment identifies <b>${counts.critical} critical</b> and <b>${counts.high} high</b>-severity regulatory findings, exposing ${STATE.org.name} to a statutory liability ceiling of <b>${fineStr}</b>. The current data-residency and extraterritorial transfer posture is <b>not defensible</b> against ${topReg.map(o=>regName(o.r)).join(', ')||'the assessed regulations'} and requires immediate Phase 1 containment.`;
-  } else if(counts.high>0){
-    deterministicNarr=`The assessment identifies <b>${counts.high} high</b>-severity findings requiring near-term remediation alongside ${counts.medium} medium-severity gaps, representing an exposure ceiling of <b>${fineStr}</b>. The posture is <b>improving but exposed</b>; a prioritized 3-horizon programme will bring it to a fully defensible baseline.`;
-  } else if(counts.medium>0){
-    deterministicNarr=`No critical or high-severity gaps were found. <b>${counts.medium} medium</b>-severity items should be addressed to reach full compliance, satisfy supervisory audit expectations, and reduce residual transfer risk.`;
+  // Branch on the score band (the same bands as the label), not on raw finding counts.
+  const gapStr = `${counts.critical} critical, ${counts.high} high and ${counts.medium} medium-severity findings`;
+  const ceilingStr = penalties && penalties.totalValueAtStake > 0 ? `, against a largest single statutory ceiling of <b>${fineStr}</b>` : '';
+  if(score<40){
+    deterministicNarr=`${STATE.org.name} scores <b>${score}/100 (${label.t})</b>, with ${gapStr}${ceilingStr}. The current data-residency and extraterritorial transfer posture is <b>not defensible</b> against ${topReg.map(o=>regName(o.r)).join(', ')||'the assessed regulations'} and requires immediate Phase 1 containment.`;
+  } else if(score<65){
+    deterministicNarr=`${STATE.org.name} scores <b>${score}/100 (${label.t})</b>, with ${gapStr}${ceilingStr}. The posture is <b>materially exposed</b>; a prioritised 3-horizon programme, starting with the highest-severity items, is needed to reach a defensible baseline.`;
+  } else if(score<85){
+    deterministicNarr=`${STATE.org.name} scores <b>${score}/100 (${label.t})</b>, with ${gapStr}. The posture is <b>managed but not yet defensible</b>; closing the remaining gaps will satisfy supervisory audit expectations and reduce residual transfer risk.`;
   } else {
-    deterministicNarr=`No material residency or transfer gaps were identified across the assessed regulations. Focus can shift to institutionalising governance, embedding Continuous Assurance, and pursuing sovereign accreditation as a commercial differentiator.`;
+    deterministicNarr=`${STATE.org.name} scores <b>${score}/100 (${label.t})</b>${counts.critical+counts.high+counts.medium ? `, with ${gapStr} still to close` : ''}. Focus can shift to institutionalising governance, embedding Continuous Assurance, and pursuing sovereign accreditation as a commercial differentiator.`;
   }
 
   const hasAI = !!(STATE._aiSynthesis && STATE._aiSynthesis.narrative);
@@ -5292,6 +5158,18 @@ function findingsBlock(findings){
       <div class="f-remedy"><b>Recommended action:</b> ${f.remedy}</div>
     </div>`).join('');
   return `<div class="section-title"><span class="st-num">07</span><h2>Detailed Statutory Findings</h2><span class="st-line"></span></div>${items}`;
+}
+
+function obligationsBlock(obligations){
+  if(!obligations.length) return '';
+  const items=obligations.map(f=>`
+    <div class="finding low">
+      <div class="f-head"><div class="f-title">${f.title}</div><span class="osev">Obligation</span></div>
+      <div class="f-meta"><span class="ref-pill">${regName(f.reg)} · ${f.a}</span></div>
+      <div class="f-body">${f.detail}</div>
+    </div>`).join('');
+  return `<div class="section-title"><span class="st-num">08</span><h2>Obligations in Scope</h2><span class="st-line"></span></div>
+  <div class="card" style="margin-bottom:14px"><p style="font-size:13px;color:var(--ink2)">These follow from your entity classification, the data you hold and your AI use. They describe what applies to you, not how mature you are, so they are not scored or counted as findings.</p></div>${items}`;
 }
 
 function roadmapBlock(findings){
@@ -5432,13 +5310,13 @@ function caseStudiesBlock(){
       <h4 style="font-size:16px;margin-bottom:10px">EU AI Act Art. 10 &amp; Cross-Border Genomic Data Governance</h4>
       <p style="font-size:12.5px;color:var(--ink2);line-height:1.6;margin-bottom:8px"><b>Challenge:</b> Diagnostic ML algorithms training on European patient genomic sequences hosted in US hyperscaler regions, creating immediate GDPR Chapter V and EU AI Act high-risk exposure.</p>
       <p style="font-size:12.5px;color:var(--ink2);line-height:1.6;margin-bottom:8px"><b>LTM Approach:</b> Re-architected training pipelines into an EU Sovereign Cloud enclave with Hold-Your-Own-Key (HYOK) and automated data lineage provenance tracking under Art. 10.</p>
-      <p style="font-size:12.5px;color:var(--teal);line-height:1.6"><b>Outcome:</b> Completely mitigated €35M / 7% AI Act penalty exposure; secured board and DPO sign-off for next-gen diagnostic clinical trials.</p>
+      <p style="font-size:12.5px;color:var(--teal);line-height:1.6"><b>Outcome:</b> Materially reduced AI Act Art. 99(4) penalty exposure; secured board and DPO sign-off for next-gen diagnostic clinical trials.</p>
     </div>
   </div>`;
 }
 
 function disclaimerBlock(){
-  return `<div class="disclaimer">${BANK.meta.disclaimer}<br><br><b>Understand → Ideate → Accelerate.</b> Generated by Posture IQ v2.1 · Infrastructure Tech Advisory · LTM.</div>
+  return `<div class="disclaimer">${BANK.meta.disclaimer}<br><br><b>Understand → Ideate → Accelerate.</b> Generated by Posture IQ v2.1 · LTM Vantage · Responsible Advisory.</div>
   <div style="height:40px" class="no-print"></div>`;
 }
 
@@ -5559,12 +5437,13 @@ document.addEventListener('keydown', function(e){
 });
 
 function renderSlide(idx){
-  var findings = collectAllFindings();
-  var pillarData = computePillarScores(STATE.answers, STATE.activeQuestions);
+  if(!STATE.evaluation){ showScoringError(); return; }
+  var findings = STATE.evaluation.findings.slice();
+  var pillarData = STATE.evaluation.pillarScores;
   var score = pillarData.overallScore;
   var label = pillarData.label;
-  var penalties = calculateStatutoryPenalties(STATE.org.turnover, STATE.regulations, STATE.answers, findings);
-  var probes = getTriggeredProbes(STATE.answers, STATE);
+  var penalties = STATE.evaluation.penalties;
+  var probes = STATE.evaluation.triggeredProbes;
   var counts = { critical: 0, high: 0, medium: 0, low: 0 };
   findings.forEach(function(f){ counts[f.severity] = (counts[f.severity] || 0) + 1; });
   var clientDisplay = STATE.org.name || 'Client Enterprise';
@@ -5603,14 +5482,14 @@ function renderSlide(idx){
             <div style="font-family:var(--font-h);font-size:34px;font-weight:800;color:#FF5E4F;line-height:1.1;margin-bottom:6px">
               ` + exposureFormatted + `
             </div>
-            <div style="font-size:11px;color:#94a3b8;margin-bottom:12px">Aggregate statutory penalty exposure across assessed mandates</div>
+            <div style="font-size:11px;color:#94a3b8;margin-bottom:12px">Largest single statutory ceiling among the assessed regimes (not a sum)</div>
             <ul>
               ` + penalties.fines.slice(0,3).map(function(f){
                 return "<li><b>" + f.regName + ":</b> " + f.capFormatted + " (" + f.statuteBasis + ")</li>";
               }).join("") + `
             </ul>
             <div style="margin-top:10px;font-size:11.5px;color:#93c5fd;background:rgba(34,104,130,0.25);padding:8px 12px;border-radius:6px">
-              <b>Advisory Hedge Ratio:</b> Remediation sprint represents &lt; ` + penalties.riskHedgeRatio + `% of unhedged statutory exposure.
+              <b>For scale:</b> ` + (penalties.riskHedgeRatio === 'n/a' ? 'no quantified statutory ceiling applies.' : 'an indicative engagement is about ' + penalties.riskHedgeRatio + '% of the largest single statutory ceiling (illustrative, not a risk measure).') + `
             </div>
           </div>
         </div>
@@ -5633,11 +5512,11 @@ function renderSlide(idx){
     }
 
     var pillarListHtml = pillarData.pillars.map(function(p){
-      var color = p.score >= 70 ? '#4ade80' : (p.score >= 45 ? '#fbbf24' : '#f87171');
+      var color = p.score === null ? '#94a3b8' : (p.score >= 70 ? '#4ade80' : (p.score >= 45 ? '#fbbf24' : '#f87171'));
       return '<div style="display:flex;justify-content:space-between;align-items:center;background:rgba(255,255,255,0.06);padding:6px 10px;border-radius:4px">' +
         '<span style="font-size:12px;color:#e2e8f0">' + (p.shortName || p.name) + '</span>' +
         '<div style="display:flex;align-items:center;gap:6px">' +
-          '<span style="font-family:var(--font-m);font-weight:700;font-size:12px;color:' + color + '">' + p.score + '/100</span>' +
+          '<span style="font-family:var(--font-m);font-weight:700;font-size:12px;color:' + color + '">' + (p.score === null ? 'n/a' : p.score + '/100') + '</span>' +
           '<span style="font-size:10px;color:#94a3b8">(' + p.weight + '%)</span>' +
         '</div>' +
       '</div>';
@@ -5721,10 +5600,11 @@ function renderSlide(idx){
 }
 
 function copyMarpDeck(){
-  var findings = collectAllFindings();
-  var pillarData = computePillarScores(STATE.answers, STATE.activeQuestions);
-  var penalties = calculateStatutoryPenalties(STATE.org.turnover, STATE.regulations, STATE.answers, findings);
-  var probes = getTriggeredProbes(STATE.answers, STATE);
+  if(!STATE.evaluation){ showScoringError(); return; }
+  var findings = STATE.evaluation.findings.slice();
+  var pillarData = STATE.evaluation.pillarScores;
+  var penalties = STATE.evaluation.penalties;
+  var probes = STATE.evaluation.triggeredProbes;
   var clientDisplay = STATE.org.name || 'Client Enterprise';
   var turnoverFormatted = formatCurrency(STATE.org.turnover);
   var exposureFormatted = formatCurrency(penalties.totalValueAtStake);
@@ -5734,8 +5614,8 @@ function copyMarpDeck(){
   }).join("\n");
 
   var pillarLines = pillarData.pillars.map(function(p){
-    var bm = p.score >= 70 ? 'Defensible' : (p.score >= 45 ? 'Managed' : 'Material Exposure');
-    return "| " + p.name + " | " + p.weight + "% | " + p.score + "/100 | " + bm + " |";
+    var bm = p.score === null ? 'Not assessed' : (p.score >= 70 ? 'Defensible' : (p.score >= 45 ? 'Managed' : 'Material Exposure'));
+    return "| " + p.name + " | " + p.weight + "% | " + (p.score === null ? "n/a" : p.score + "/100") + " | " + bm + " |";
   }).join("\n");
 
   var probeLines = probes.slice(0,3).map(function(p){
@@ -5753,11 +5633,11 @@ function copyMarpDeck(){
 "# Posture IQ Executive Readout\n" +
 "### Enterprise Statutory Defensibility & Value at Stake\n" +
 "**Client:** " + clientDisplay + " | **Turnover:** " + turnoverFormatted + "\n" +
-"**LTM Infrastructure Tech Advisory**\n\n" +
+"**LTM Vantage · Responsible Advisory**\n\n" +
 "---\n\n" +
 "## 01. Posture Defensibility & Value at Stake\n\n" +
 "- **Overall Defensibility:** " + pillarData.overallScore + "/100 (" + pillarData.label.t + ")\n" +
-"- **Aggregate Statutory Penalty Ceiling:** " + exposureFormatted + "\n" +
+"- **Largest Single Statutory Ceiling:** " + exposureFormatted + " (not a sum of regimes)\n" +
 "- **Assessed Regulations:** " + STATE.regulations.map(regName).join(', ') + "\n" +
 "- **Top Financial Exposures:**\n" + finesLines + "\n\n" +
 "---\n\n" +
@@ -5783,10 +5663,11 @@ pillarLines + "\n\n" +
 
 /* ---------- Statement of Work (SOW) Controller ---------- */
 function openSOWModal(){
-  var findings = collectAllFindings();
-  var pillarData = computePillarScores(STATE.answers, STATE.activeQuestions);
-  var penalties = calculateStatutoryPenalties(STATE.org.turnover, STATE.regulations, STATE.answers, findings);
-  var probes = getTriggeredProbes(STATE.answers, STATE);
+  if(!STATE.evaluation){ showScoringError(); return; }
+  var findings = STATE.evaluation.findings.slice();
+  var pillarData = STATE.evaluation.pillarScores;
+  var penalties = STATE.evaluation.penalties;
+  var probes = STATE.evaluation.triggeredProbes;
   var clientDisplay = STATE.org.name || 'Client Enterprise';
 
   var sow = generateSOWMarkdown(clientDisplay, pillarData.overallScore, pillarData.label, penalties, pillarData, findings, probes);
@@ -5834,7 +5715,7 @@ function generateSOWMarkdown(clientDisplay, score, label, penalties, pillarData,
   md += "# STATEMENT OF WORK (SOW)\n";
   md += "## Enterprise Statutory Posture Hardening & Technical Sovereignty Program\n\n";
   md += "**Client Organization:** " + clientDisplay + "\n";
-  md += "**Prepared By:** LTM Infrastructure Tech Advisory (CIS Practice)\n";
+  md += "**Prepared By:** LTM Infrastructure Tech Advisory\n";
   md += "**Lead Practice Partner:** Ashutosh Dixit\n";
   md += "**Date:** " + now + "\n";
   md += "**Engagement Scope:** 3-Horizon Statutory Posture Remediation\n\n";
@@ -5842,7 +5723,7 @@ function generateSOWMarkdown(clientDisplay, score, label, penalties, pillarData,
   md += "### 1. Executive Summary & Diagnostic Context\n\n";
   md += "Following the formal diagnostic assessment executed via **Posture IQ v" + BANK.meta.version + "**, " + clientDisplay + " achieved an Overall Posture Defensibility score of **" + score + "/100** (" + label.t + " maturity tier).\n\n";
   md += "The assessment audited operations across **" + STATE.regulations.length + " statutory frameworks** (" + regs + ") against a declared corporate turnover of **" + turnoverFormatted + "**.\n\n";
-  md += "- **Aggregate Statutory Value at Stake:** **" + exposureFormatted + "** (Calculated theoretical liability ceiling across EU AI Act Art. 99, GDPR Art. 83, DORA Art. 35, and NIS2 Art. 34).\n";
+  md += "- **Largest Single Statutory Ceiling:** **" + exposureFormatted + "** (the maximum fine under the most severe applicable regime; regimes are not summed, and actual penalties are usually far lower).\n";
   md += "- **Contradiction Probes Triggered:** **" + probes.length + " substantive architectural contradictions** detected between operational claims and technical controls.\n";
   md += "- **Statutory Findings Count:** " + findings.filter(function(f){ return f.severity==='critical'; }).length + " Critical, " + findings.filter(function(f){ return f.severity==='high'; }).length + " High severity compliance gaps.\n\n";
 
@@ -5903,7 +5784,7 @@ function generateSOWMarkdown(clientDisplay, score, label, penalties, pillarData,
   md += "### 5. Staffing & Governance Operating Model\n\n";
   md += "| Role | Practice Area | Responsibilities | Allocation |\n";
   md += "| :--- | :--- | :--- | :--- |\n";
-  md += "| **Engagement Partner** | Infrastructure Tech Advisory | Executive sponsorship, C-suite & board readout | 15% |\n";
+  md += "| **Engagement Partner** | LTM Infrastructure Tech Advisory | Executive sponsorship, C-suite & board readout | 15% |\n";
   md += "| **Lead Cloud Sovereignty Architect** | Digital Sovereignty & Cloud | HYOK, EKM, multi-cloud isolation, and technical safeguards | 100% |\n";
   md += "| **Regulatory Compliance SME** | Tech Law & Compliance | Statutory mapping, TIAs, DORA Art. 28, and audit defense | 50% |\n";
   md += "| **Cloud Security Engineer** | Cyber & Infrastructure | Key vault automation, lockbox policies, and telemetry scripts | 100% |\n\n";
@@ -5924,18 +5805,19 @@ function generateSOWMarkdown(clientDisplay, score, label, penalties, pillarData,
 
 /* ---------- High-Fidelity Vector jsPDF Export ---------- */
 function downloadPostureExecutivePDF(isArchiveOnly){
+  if(!STATE.evaluation){ showScoringError(); return; }
   if(typeof window.jspdf === "undefined" || !window.jspdf.jsPDF){
     alert("jsPDF library is still loading. Please try again in a moment.");
     return;
   }
 
-  var findings = collectAllFindings();
+  var findings = STATE.evaluation.findings.slice();
   findings.sort(function(a,b){ return (SEV_ORDER[b.severity]-SEV_ORDER[a.severity])||(a.phase-b.phase); });
-  var pillarData = computePillarScores(STATE.answers, STATE.activeQuestions);
+  var pillarData = STATE.evaluation.pillarScores;
   var score = pillarData.overallScore;
   var label = pillarData.label;
-  var penalties = calculateStatutoryPenalties(STATE.org.turnover, STATE.regulations, STATE.answers, findings);
-  var probes = getTriggeredProbes(STATE.answers, STATE);
+  var penalties = STATE.evaluation.penalties;
+  var probes = STATE.evaluation.triggeredProbes;
   var clientDisplay = STATE.org.name || 'Client Enterprise';
   var cleanClient = clientDisplay.replace(/[^a-zA-Z0-9]/g, '_');
   var now = new Date().toLocaleDateString('en-GB', {day:'numeric', month:'long', year:'numeric'});
@@ -5985,7 +5867,7 @@ function downloadPostureExecutivePDF(isArchiveOnly){
     doc.setFont("helvetica", "normal");
     doc.setFontSize(7.5);
     doc.setTextColor(120, 120, 120);
-    doc.text("Confidential · Prepared for " + clientDisplay + " · LTM Infrastructure Tech Advisory", 14, pageH - 7);
+    doc.text("Confidential · Prepared for " + clientDisplay + " · LTM Vantage · Responsible Advisory", 14, pageH - 7);
     doc.text("Page " + pageNum + " of " + totalPages, pageW - 14, pageH - 7, { align: "right" });
   }
 
@@ -6116,8 +5998,8 @@ function downloadPostureExecutivePDF(isArchiveOnly){
 
   // 5 Pillars Scorecard Table
   var pillarRows = pillarData.pillars.map(function(p){
-    var status = p.score >= 85 ? "Defensible" : (p.score >= 65 ? "Managed" : (p.score >= 40 ? "Exposed" : "Critical Risk"));
-    return [p.name + " (" + p.weight + "%)", p.score + " / 100", status, p.desc || "Statutory evaluation domain."];
+    var status = p.score === null ? "Not assessed" : (p.score >= 85 ? "Defensible" : (p.score >= 65 ? "Managed" : (p.score >= 40 ? "Exposed" : "Critical Risk")));
+    return [p.name + " (" + p.weight + "%)", p.score === null ? "n/a" : p.score + " / 100", status, p.desc || "Statutory evaluation domain."];
   });
 
   var pillarTableY = hasVisuals ? (chartBoxY + 82) : 90;
@@ -6656,8 +6538,9 @@ async function executeAICall(cfg, prompt, systemInstruction, timeoutMs){
 }
 
 /* ---------- 4. Anomaly Discovery & Adaptive Clarification Controller ---------- */
-function startClarificationStage(){
-  var probes = getTriggeredProbes(STATE.answers, STATE);
+async function startClarificationStage(){
+  if(!(await fetchPostureIqEvaluation())) return;
+  var probes = STATE.evaluation.triggeredProbes;
   if(!probes || probes.length === 0){
     // No contradictions detected, proceed straight to results
     computeAndShowResults();
@@ -6701,7 +6584,7 @@ function startClarificationStage(){
             <input type="radio" name="clarify_${p.id}" value="review" ${curVal === 'review' ? 'checked' : ''} style="accent-color:#E39A2E">
             <div>
               <div style="font-size:13px;font-weight:700;color:var(--ink)">Currently Under Audit / In Scope for Advisory Sprint</div>
-              <div style="font-size:11.5px;color:var(--ink3)">Position requires formal legal and architectural determination by LTM Advisory.</div>
+              <div style="font-size:11.5px;color:var(--ink3)">Position requires formal legal and architectural determination by LTM Infrastructure Tech Advisory.</div>
             </div>
           </label>
         </div>
@@ -6795,10 +6678,10 @@ function showReportGenerationAnimation(callback) {
     'Compiling C-Suite Executive Readout…'
   ];
   overlay.innerHTML =
-    '<div class="rg-brand">LTM CIS · Infrastructure Tech Advisory · Statutory Diagnostic Engine</div>' +
+    '<div class="rg-brand">LTM Vantage · Responsible Advisory · Statutory Diagnostic Engine</div>' +
     '<div class="rg-pulse-container"><div class="rg-pulse-ring"></div><div class="rg-pulse-ring"></div><div class="rg-pulse-ring"></div><div class="rg-core-dot"></div></div>' +
     '<div class="rg-title">Generating Executive Diagnostic</div>' +
-    '<div class="rg-subtitle">Correlating answers against 10 statutory mandates, 35 risk dimensions, and peer benchmarks across your sector</div>' +
+    '<div class="rg-subtitle">Correlating answers against 10 statutory mandates and 35 risk dimensions</div>' +
     '<ul class="rg-step-list">' +
       steps.map(function(s,i){ return '<li class="rg-step" id="rg-step-'+i+'"><div class="rg-step-icon">'+(i+1)+'</div><span>'+s+'</span></li>'; }).join('') +
     '</ul>' +
@@ -6955,15 +6838,16 @@ function closeBookingModal(){
 }
 
 function submitBookingRequest(){
+  if(!STATE.evaluation){ showScoringError(); return; }
   var name = (document.getElementById('book-name') || {}).value || STATE.org.resp || 'Executive';
   var role = (document.getElementById('book-role') || {}).value || STATE.org.role || 'Executive';
   var email = (document.getElementById('book-email') || {}).value || '';
   var comp = (document.getElementById('book-company') || {}).value || STATE.org.name || 'Enterprise';
   var timeframe = (document.getElementById('book-timeframe') || {}).value || 'Next 7 business days';
 
-  var findings = collectAllFindings();
-  var pillarData = computePillarScores(STATE.answers, STATE.activeQuestions);
-  var penalties = calculateStatutoryPenalties(STATE.org.turnover, STATE.regulations, STATE.answers, findings);
+  var findings = STATE.evaluation.findings.slice();
+  var pillarData = STATE.evaluation.pillarScores;
+  var penalties = STATE.evaluation.penalties;
 
   var subject = "Posture IQ Executive Briefing Request — " + comp;
   var body = [
@@ -7015,10 +6899,11 @@ function closeEmailModal(){
 }
 
 function sendTeaserEmail(){
+  if(!STATE.evaluation){ showScoringError(); return; }
   var to = (document.getElementById('teaser-email') || {}).value || '';
-  var findings = collectAllFindings();
-  var pillarData = computePillarScores(STATE.answers, STATE.activeQuestions);
-  var penalties = calculateStatutoryPenalties(STATE.org.turnover, STATE.regulations, STATE.answers, findings);
+  var findings = STATE.evaluation.findings.slice();
+  var pillarData = STATE.evaluation.pillarScores;
+  var penalties = STATE.evaluation.penalties;
   var comp = STATE.org.name || 'Our Enterprise';
 
   var subject = "Executive Teaser: Posture IQ Defensibility & Statutory Value at Stake (" + comp + ")";

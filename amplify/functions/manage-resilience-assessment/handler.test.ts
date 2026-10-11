@@ -1,4 +1,7 @@
-import { handler } from './handler';
+import type { APIGatewayProxyStructuredResultV2 } from 'aws-lambda';
+import { handler as rawHandler } from './handler';
+
+const handler = async (e: any) => (await rawHandler(e)) as APIGatewayProxyStructuredResultV2;
 
 process.env.AWS_ACCESS_KEY_ID='test';
 process.env.AWS_SECRET_ACCESS_KEY='test-secret';

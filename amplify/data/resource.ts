@@ -81,6 +81,31 @@ const schema = a.schema({
       allow.groups(['Admin', 'Consultant']).to(['create', 'read', 'update'])
     ]),
 
+  CostIqAssessment: a
+    .model({
+      assessmentId: a.string().required(),
+      acceleratorId: a.string().required(),
+      releaseId: a.string().required(),
+      methodologyVersion: a.string().required(),
+      status: a.string().required(),
+      clientName: a.string(),
+      clientSector: a.string(),
+      clientCurrency: a.string(),
+      selectedAreasJson: a.string().required(),
+      answersJson: a.string().required(),
+      subjectiveJson: a.string(),
+      resultJson: a.string(),
+      startedAt: a.datetime().required(),
+      updatedAt: a.datetime().required(),
+      completedAt: a.datetime()
+    })
+    .identifier(['assessmentId'])
+    .authorization(allow => [
+      allow.group('Admin').to(['create', 'read', 'update', 'delete']),
+      allow.group('Consultant').to(['create', 'read', 'update', 'delete']),
+      allow.owner().to(['create', 'read', 'update'])
+    ]),
+
   AssessmentSubmission: a
     .model({
       acceleratorId: a.string().required(),

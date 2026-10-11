@@ -1,14 +1,14 @@
 import type { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
+import { corsHeaders } from '../_shared/http';
 import { evaluateFinOpsIq } from '../../../packages/engine-core/src/accelerators/finops-iq/evaluate';
+import { parseFinOpsIqRequest } from '../../../packages/engine-core/src/accelerators/finops-iq/contract';
 
-const CORS_HEADERS = {
-  'Content-Type': 'application/json',
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'Content-Type,Authorization,X-Amz-Date,X-Api-Key,X-Amz-Security-Token',
-  'Access-Control-Allow-Methods': 'OPTIONS,POST'
-};
+// Per-request CORS headers (origin allowlist). Lambda handles one request at a time,
+// so this module-level value is safe.
+let CORS_HEADERS: Record<string, string> = corsHeaders();
 
 export const handler = async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> => {
+  CORS_HEADERS = corsHeaders(event, 'OPTIONS,POST');
   const method = event.requestContext?.http?.method || (event as any).httpMethod;
   if (method === 'OPTIONS') {
     return {
@@ -20,30 +20,24 @@ export const handler = async (event: APIGatewayProxyEventV2): Promise<APIGateway
 
   try {
     let body: any = {};
-    if (event.body) {
-      body = event.isBase64Encoded
-        ? JSON.parse(Buffer.from(event.body, 'base64').toString('utf-8'))
-        : JSON.parse(event.body);
+    try {
+      if (event.body) {
+        body = JSON.parse(event.isBase64Encoded ? Buffer.from(event.body, 'base64').toString('utf-8') : event.body);
+      }
+    } catch {
+      return { statusCode: 400, headers: CORS_HEADERS, body: JSON.stringify({ ok: false, error: 'Request body is not valid JSON.' }) };
     }
 
-    const { answers, annualSpend, org } = body;
-    if (!answers || typeof answers !== 'object') {
+    const parsed = parseFinOpsIqRequest(body);
+    if (!parsed.ok) {
       return {
         statusCode: 400,
         headers: CORS_HEADERS,
-        body: JSON.stringify({
-          ok: false,
-          error: 'Missing or invalid "answers" payload in request body.'
-        })
+        body: JSON.stringify({ ok: false, error: 'Invalid assessment payload.', details: parsed.errors.slice(0, 20) })
       };
     }
 
-    // Execute private FinOps IQ maturity engine securely on AWS
-    const result = evaluateFinOpsIq({
-      answers,
-      annualSpend: typeof annualSpend === 'number' ? annualSpend : (org && org.annualSpend ? org.annualSpend : 0),
-      org: org || {}
-    });
+    const result = evaluateFinOpsIq(parsed.value);
 
     return {
       statusCode: 200,
