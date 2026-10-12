@@ -133,7 +133,7 @@ async function loadAssessmentHistory(){
     const score=x.resultJson?(()=>{try{return JSON.parse(x.resultJson).postureScore??'—'}catch{return '—'}})():'—';
     const status=String(x.status||'draft');
     const action=status==='completed'?'View Report':'Resume';
-    return '<div class="history-item"><div><div class="history-title">'+esc(x.clientName||'Unnamed assessment')+'</div><div class="history-meta">'+esc(x.clientSector||'')+' · '+esc(date)+' · <span class="status-'+esc(status)+'">'+esc(status.replace('_',' '))+'</span>'+(score!=='—'?' · Posture '+esc(score):'')+'</div></div><button class="btn secondary" onclick="openAssessmentHistory('+JSON.stringify(String(x.assessmentId||''))+')">'+action+' →</button></div>';
+    return '<div class="history-item"><div><div class="history-title">'+esc(x.clientName||'Unnamed assessment')+'</div><div class="history-meta">'+esc(x.clientSector||'')+' · '+esc(date)+' · <span class="status-'+esc(status)+'">'+esc(status.replace('_',' '))+'</span>'+(score!=='—'?' · Posture '+esc(score):'')+'</div></div><button class="btn secondary" data-id="'+esc(String(x.assessmentId||''))+'" onclick="openAssessmentHistory(this.dataset.id)">'+action+' →</button></div>';
   }).join('')+'</div>';
  }catch(e){host.innerHTML='<p class="danger">Unable to load assessment history: '+esc(e.message)+'</p>';}
 }
@@ -169,7 +169,6 @@ async function saveAssessment(status,action='save'){
   ...assessment,
   version:ASSESSMENT_VERSIONS,
   answers:mapAnswers(),
-  result:result||undefined,
   completedAt:status==='completed'?(assessment.completedAt||new Date().toISOString()):assessment.completedAt,
   finalizedAt:assessment.finalizedAt
  };
@@ -218,22 +217,31 @@ async function evaluate(){
     return;
   }
   assessment.completedAt=new Date().toISOString();
-  await saveAssessment('completed','complete');
+  const saved=await saveAssessment('completed','complete');
+  // Show exactly what was stored: the server computes the result it saves.
+  if(saved&&saved.resultJson){try{result=JSON.parse(saved.resultJson);}catch{}}
   renderReport();
  }catch(e){result=null;document.getElementById('app').innerHTML='<div class="panel" role="alert"><h2>We couldn\'t calculate your results</h2><p class="danger">'+esc(e.message)+'</p><button class="btn primary" onclick="render()">Retry</button></div>';}}
+// Adds advisory questions (from the hosted bank) to the assessment; used when the engine asks for them and
+// when an assessment that already has advisory answers is resumed.
+async function appendAdvisoryQuestions(ids){
+ if(!ids.length)return [];
+ const bank=await fetch('./resilience-iq/knowledge/question-bank.json',{cache:'no-store'}).then(r=>r.ok?r.json():null);
+ if(!bank)throw new Error('Question bank unavailable');
+ const byId=new Map((bank.advisory_questions||[]).map(q=>[q.id,q]));
+ const typeMap={multi_select:'multi',slider_choice:'slider',ranking:'rank',matrix:'matrix',scenario:'scenario',single_select:'single',yes_no:'single',evidence_select:'multi',number:'number',text:'text'};
+ const additions=ids.map(id=>byId.get(id)).filter(Boolean).map(q=>{
+   const interaction=q.ui?.interaction||q.type;
+   return {id:q.id,t:q.text,type:typeMap[interaction]||'single',o:q.options||[],rows:q.ui?.rows||[],cols:q.ui?.columns||[],required:true};
+ }).filter(q=>!questions.some(existing=>existing.id===q.id));
+ questions=[...questions,...additions];
+ return additions;
+}
 async function loadAdvisoryQuestions(nextQuestions){
  try{
-  const bank=await fetch('./resilience-iq/knowledge/question-bank.json',{cache:'no-store'}).then(r=>r.ok?r.json():null);
-  if(!bank)throw new Error('Question bank unavailable');
-  const byId=new Map((bank.advisory_questions||[]).map(q=>[q.id,q]));
-  const additions=nextQuestions.map(n=>byId.get(n.id)).filter(Boolean).map(q=>{
-    const interaction=q.ui?.interaction||q.type;
-    const typeMap={multi_select:'multi',slider_choice:'slider',ranking:'rank',matrix:'matrix',scenario:'scenario',single_select:'single',yes_no:'single',evidence_select:'multi',number:'number',text:'text'};
-    return {id:q.id,t:q.text,type:typeMap[interaction]||'single',o:q.options||[],rows:q.ui?.rows||[],cols:q.ui?.columns||[],required:true};
-  }).filter(q=>!questions.some(existing=>existing.id===q.id));
+  const additions=await appendAdvisoryQuestions(nextQuestions.map(n=>n.id));
   if(!additions.length){renderReport();return;}
   result=null;
-  questions=[...questions,...additions];
   for(const q of additions) answers[q.id]=undefined;
   idx=questions.length-additions.length;
   document.querySelector('.badge').textContent='ADVISORY DEEP DIVE';
@@ -355,6 +363,8 @@ async function restoreAssessmentFromServer(){
    finalizedAt:saved.finalizedAt||undefined
   };
   const rawAnswers=saved.answersJson?JSON.parse(saved.answersJson):{};
+  // Advisory answers are restored too: their questions are added before the answers are mapped back.
+  await appendAdvisoryQuestions(Object.keys(rawAnswers).filter(id=>id.startsWith('AF-')));
   answers={};
   for(const q of questions){
    const value=rawAnswers[q.id];
