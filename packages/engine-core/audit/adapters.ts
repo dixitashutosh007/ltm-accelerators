@@ -15,6 +15,8 @@ import { evaluatePostureIq } from '../src/accelerators/posture-iq/evaluate';
 import postureKb from '../src/accelerators/posture-iq/knowledge-base.json' with { type: 'json' };
 import { evaluateSovereignIq } from '../src/accelerators/sovereign-iq/evaluate';
 import sovereignKb from '../src/accelerators/sovereign-iq/knowledge-base.json' with { type: 'json' };
+import { evaluateResilienceIq } from '../src/accelerators/resilience-iq/evaluate';
+import { resilienceKnowledge } from '../src/accelerators/resilience-iq/knowledge';
 
 export type Rng = () => number;
 export function rng(seed: number): Rng {
@@ -183,6 +185,37 @@ const sovExtreme = (best: boolean) => ({
   }))
 });
 
+/* ------------------------------ Resilience IQ ------------------------------ */
+// A completed assessment: every executive question answered (as the page requires) and, because the engine
+// withholds a result until triggered follow-ups are answered, each advisory question answered with probability 0.8.
+const RIQ_BANK: any = resilienceKnowledge.questionBank;
+const RIQ_SCORES: any = (resilienceKnowledge.scoringModel as any).question_scoring;
+const RIQ_QUESTIONS: any[] = [...RIQ_BANK.executive_questions, ...RIQ_BANK.advisory_questions];
+function riqVariants(q: any): unknown[] {
+  const type = q.ui?.interaction || q.type;
+  if (type === 'matrix') return q.ui.columns.map((c: string) => Object.fromEntries(q.ui.rows.map((row: string) => [row, c])));
+  if (type === 'multi_select') return [...q.options.map((o: string) => [o]), q.options.slice()];
+  return q.options.slice();
+}
+function riqRandom(r: Rng) {
+  const answers: Record<string, unknown> = {};
+  for (const q of RIQ_BANK.executive_questions) answers[q.id] = pick(r, riqVariants(q));
+  for (const q of RIQ_BANK.advisory_questions) if (r() < 0.8) answers[q.id] = pick(r, riqVariants(q));
+  return { answers };
+}
+function riqExtreme(best: boolean) {
+  const answers: Record<string, unknown> = {};
+  for (const q of RIQ_BANK.executive_questions) {
+    const table = RIQ_SCORES[q.id]?.scores;
+    const opts: string[] = q.options.filter((o: string) => o !== 'Unknown' || !/EX-0[234]/.test(q.id));
+    if ((q.ui?.interaction || q.type) === 'matrix') answers[q.id] = Object.fromEntries(q.ui.rows.map((row: string) => [row, best ? 'Validated' : 'No mapping']));
+    else if (q.type === 'multi_select') answers[q.id] = [q.options[0]];
+    else if (table) answers[q.id] = opts.reduce((m, o) => ((best ? (table[o] ?? 0) > (table[m] ?? 0) : (table[o] ?? 100) < (table[m] ?? 100)) ? o : m));
+    else answers[q.id] = opts[0];
+  }
+  return { answers };
+}
+
 export const ADAPTERS: Adapter[] = [
   {
     id: 'finops-value-case', name: 'FinOps Value Case',
@@ -284,5 +317,19 @@ export const ADAPTERS: Adapter[] = [
     ],
     band: { get: r => r.maturity.stage?.label ?? '(none)', all: SOV.maturityStages.map((s: any) => s.label) },
     extremes: { best: () => sovExtreme(true), worst: () => sovExtreme(false) }
+  },
+  {
+    id: 'resilience-iq', name: 'Resilience IQ',
+    questions: RIQ_QUESTIONS.map((q: any) => ({ id: q.id, label: q.text })),
+    random: riqRandom,
+    variants: id => riqVariants(RIQ_QUESTIONS.find((q: any) => q.id === id)),
+    withAnswer: setAnswer, withoutAnswer: dropAnswer,
+    evaluate: i => evaluateResilienceIq(i.answers),
+    headlines: [
+      { name: 'Resilience posture (0-100)', scale: [0, 100], higherIsBetter: true, get: r => r.postureScore },
+      { name: 'Risk-adjusted score (0-100)', scale: [0, 100], higherIsBetter: true, get: r => r.score }
+    ],
+    band: { get: r => r.rating ?? 'Withheld (incomplete)', all: ['Withheld (incomplete)', 'Critical Exposure', 'Fragile', 'Managed', 'Resilient', 'Adaptive'] },
+    extremes: { best: () => riqExtreme(true), worst: () => riqExtreme(false) }
   }
 ];

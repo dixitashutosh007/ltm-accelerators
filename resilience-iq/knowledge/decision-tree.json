@@ -202,7 +202,7 @@
       "id": "BR-10",
       "when": {
         "question": "EX-08",
-        "condition": "yes_or_potentially"
+        "condition": "yes_potentially_or_unknown"
       },
       "then": {
         "add_questions": [
@@ -221,7 +221,8 @@
           "CYBER-02",
           "CYBER-03",
           "CYBER-04"
-        ]
+        ],
+        "flag": "cyber_exposure"
       }
     },
     {
@@ -272,7 +273,7 @@
       "id": "BR-13",
       "when": {
         "question": "EX-11",
-        "condition": "moderate_or_high_concentration"
+        "condition": "moderate_high_or_unknown"
       },
       "then": {
         "flag": "concentration_risk",
@@ -467,17 +468,17 @@
       "id": "BR-A01",
       "when": {
         "question": "AF-DR-04",
-        "condition": "advisory_recovery_not_proven"
+        "condition": "advisory_recovery_correlated"
       },
       "then": {
-        "flag": "recovery_capability_gap",
+        "flag": "recovery_correlation_gap",
         "require_evidence": [
-          "failover test evidence",
-          "restore test evidence"
+          "failure-domain separation evidence",
+          "failover test evidence"
         ],
         "candidate_patterns": [
           "DR-07",
-          "DR-08"
+          "INF-03"
         ]
       }
     },
@@ -502,18 +503,15 @@
       "id": "BR-A03",
       "when": {
         "question": "AF-CY-03",
-        "condition": "advisory_backup_weak"
+        "condition": "advisory_identity_weak"
       },
       "then": {
-        "flag": "backup_resilience_gap",
+        "flag": "identity_recovery_gap",
         "candidate_patterns": [
-          "DATA-01",
-          "DATA-02",
-          "CYBER-03"
+          "CYBER-02"
         ],
         "require_evidence": [
-          "backup evidence",
-          "restore test evidence"
+          "identity recovery test evidence"
         ]
       }
     },

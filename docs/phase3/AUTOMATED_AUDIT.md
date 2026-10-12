@@ -230,3 +230,37 @@ How to read it:
 |---|---|---|
 | Sovereignty maturity (0-100) | +0.36 | -4 |
 
+## Resilience IQ
+
+| Headline | Scale | Observed min | Observed max | Out of scale | Null |
+|---|---|---|---|---|---|
+| Resilience posture (0-100) | 0–100 | 18 | 68 | 0 | 537 |
+| Risk-adjusted score (0-100) | 0–100 | 0 | 43 | 0 | 537 |
+
+**Bands** (share of random questionnaires; best answers → **Adaptive**, worst answers → **Withheld (incomplete)**; never reached: Resilient):
+
+| Band | Share |
+|---|---|
+| Withheld (incomplete) | 67.1% |
+| Critical Exposure | 12.6% |
+| Fragile | 19.9% |
+| Managed | 0.4% |
+| Resilient | 0.0% |
+| Adaptive | 0.0% |
+
+**Sensitivity**
+
+| Headline | Largest single-answer swing (question: swing) | Share of range |
+|---|---|---|
+| Resilience posture (0-100) | EX-12: 12, EX-20: 9, EX-07: 8, EX-08: 5, EX-09: 5 | 0.24 |
+| Risk-adjusted score (0-100) | EX-12: 13, EX-19: 11, AF-DR-04: 11, EX-09: 10, AF-OP-01: 10 | 0.30 |
+
+**Dead questions** (no effect on any headline): EX-01, EX-03, EX-04, EX-18, AF-BIA-01, AF-BIA-02, AF-BIA-03, AF-BIA-04, AF-DR-03, AF-DR-06, AF-TP-01, AF-TP-04, AF-CL-02, AF-CL-03, AF-CL-04, AF-TS-01, AF-TS-02, AF-GV-03
+
+**Missing data** (positive = leaving answers blank flatters the result)
+
+| Headline | Mean shift, 30% unanswered | Worst profile, half unanswered |
+|---|---|---|
+| Resilience posture (0-100) | +6 | +0 |
+| Risk-adjusted score (0-100) | +7 | +0 |
+

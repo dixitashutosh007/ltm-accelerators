@@ -1,22 +1,22 @@
 {
   "regulated-bank-tested": {
     "status": "ready",
-    "score": 79,
-    "postureScore": 85,
-    "rating": "Resilient",
+    "score": 80,
+    "postureScore": 86,
+    "rating": "Managed",
     "maturity": {
-      "level": 4,
-      "label": "Tested"
+      "level": 3,
+      "label": "Defined"
     },
     "evidenceConfidence": "independently_validated",
     "criticalExposure": "High",
     "domainScores": {
       "BCP": 95,
-      "DR": 96,
+      "DR": 92,
       "CYBER": 72,
       "OPS": 80,
       "TP": 77,
-      "INFRA": 88
+      "INFRA": 95
     },
     "preferredPattern": "DR-05",
     "alternatives": [
@@ -85,11 +85,11 @@
       "AF-DR-01",
       "AF-DR-03",
       "AF-DR-02",
-      "AF-TP-02",
-      "AF-DR-04",
+      "AF-CY-01",
+      "AF-CY-02",
       "AF-CY-03",
       "AF-CY-04",
-      "AF-BIA-02"
+      "AF-CY-05"
     ],
     "evidenceRequests": [
       "supplier SLA/contract",
@@ -142,7 +142,7 @@
         "New evidence showing cyber recovery, identity recovery or third-party recovery is less isolated than assumed."
       ]
     },
-    "executiveSummary": "The assessment indicates a resilient resilience posture with high critical exposure. DR-05 is the preferred primary recovery strategy based on the stated recovery objectives and risk profile."
+    "executiveSummary": "The assessment indicates a managed resilience posture with high critical exposure. DR-05 is the preferred primary recovery strategy based on the stated recovery objectives and risk profile."
   },
   "retailer-untested-gated": {
     "status": "requirements_incomplete",
@@ -150,15 +150,15 @@
     "postureScore": null,
     "rating": null,
     "maturity": null,
-    "evidenceConfidence": "tested",
+    "evidenceConfidence": "documented",
     "criticalExposure": null,
     "domainScores": {
-      "BCP": 54,
+      "BCP": 60,
       "DR": 69,
-      "CYBER": 54,
-      "OPS": 54,
-      "TP": 30,
-      "INFRA": 52
+      "CYBER": 53,
+      "OPS": 49,
+      "TP": 29,
+      "INFRA": 24
     },
     "preferredPattern": null,
     "alternatives": [
@@ -233,10 +233,10 @@
       "AF-DR-05",
       "AF-DR-02",
       "AF-DR-03",
-      "AF-TP-02",
-      "AF-TS-02",
-      "AF-TS-03",
-      "AF-CY-03"
+      "AF-CY-01",
+      "AF-CY-02",
+      "AF-CY-03",
+      "AF-CY-04"
     ],
     "evidenceRequests": [
       "failover test evidence",
@@ -304,9 +304,9 @@
       "BCP": 23,
       "DR": 18,
       "CYBER": 18,
-      "OPS": 31,
+      "OPS": 20,
       "TP": 20,
-      "INFRA": 45
+      "INFRA": 18
     },
     "preferredPattern": null,
     "alternatives": [
@@ -319,6 +319,8 @@
         "whyNot": "Strict near-zero RTO/RPO",
         "decisionFactors": [
           "Business criticality: high",
+          "Cyber risk: high",
+          "Concentration risk: medium",
           "Dependency risk: high"
         ]
       },
@@ -331,22 +333,28 @@
         "whyNot": "Low criticality workloads",
         "decisionFactors": [
           "Business criticality: high",
+          "Cyber risk: high",
+          "Concentration risk: medium",
           "Dependency risk: high"
         ]
       }
     ],
     "eliminatedPatterns": [],
     "patternRanking": [
+      "CYBER-01:76",
+      "CYBER-04:70",
+      "CYBER-03:68",
+      "CYBER-02:66",
+      "DATA-01:64",
       "DR-01:58",
       "DR-02:58",
-      "DR-03:58",
-      "DR-04:58",
-      "DR-05:58",
-      "CYBER-01:58",
-      "CYBER-02:58",
-      "CYBER-03:58"
+      "DR-03:58"
     ],
     "mandatoryControls": [
+      "DATA-01",
+      "DATA-02",
+      "CYBER-01",
+      "CYBER-02",
       "DR-07",
       "APP-04",
       "DR-08"
@@ -355,8 +363,11 @@
       "G-01",
       "G-02",
       "G-03",
+      "G-04",
+      "G-05",
       "G-06",
       "G-07",
+      "G-08",
       "G-10"
     ],
     "nextQuestions": [
@@ -364,10 +375,10 @@
       "AF-DR-02",
       "AF-DR-03",
       "AF-DR-05",
-      "AF-TS-01",
-      "AF-TS-02",
-      "AF-TS-03",
-      "AF-CY-03"
+      "AF-CY-01",
+      "AF-CY-02",
+      "AF-CY-03",
+      "AF-CY-04"
     ],
     "evidenceRequests": [
       "BIA",
@@ -384,22 +395,24 @@
           "Run BIA workshop for critical services",
           "Execute end-to-end recovery test",
           "Implement protected backup and restore validation",
-          "Implement isolated identity recovery path"
+          "Remove critical shared failure domain"
         ]
       },
       {
         "wave": "W1",
         "window": "31-90 days",
         "actions": [
+          "Build cyber recovery vault/clean recovery capability",
+          "Implement isolated identity recovery path",
           "Complete critical service dependency map",
-          "Establish severe-but-plausible exercise calendar"
+          "Create third-party resilience/exit plan"
         ]
       },
       {
         "wave": "W2",
         "window": "3-6 months",
         "actions": [
-          "Engineer target-state recovery capability"
+          "Validate cyber recovery isolation and clean restore before production recovery migration"
         ]
       },
       {
@@ -420,7 +433,7 @@
         "Complete required questions and evidence validation before approving a target-state strategy."
       ]
     },
-    "executiveSummary": "Resilience assessment requires defined recovery objectives before a final target-state recommendation can be issued."
+    "executiveSummary": "Resilience assessment requires advisory-depth validation of the triggered critical-service, cyber-recovery and recovery-capability risks before a final target-state recommendation can be issued."
   },
   "empty": {
     "status": "requirements_incomplete",
@@ -530,25 +543,41 @@
   },
   "retailer-advisory-complete": {
     "status": "ready",
-    "score": 0,
-    "postureScore": 50,
+    "score": 6,
+    "postureScore": 48,
     "rating": "Fragile",
     "maturity": {
       "level": 2,
       "label": "Documented"
     },
-    "evidenceConfidence": "tested",
+    "evidenceConfidence": "documented",
     "criticalExposure": "Severe",
     "domainScores": {
-      "BCP": 54,
-      "DR": 52,
-      "CYBER": 54,
-      "OPS": 54,
-      "TP": 30,
-      "INFRA": 47
+      "BCP": 60,
+      "DR": 64,
+      "CYBER": 53,
+      "OPS": 49,
+      "TP": 29,
+      "INFRA": 19
     },
     "preferredPattern": "DR-03",
     "alternatives": [
+      {
+        "id": "DR-04",
+        "name": "Hot Standby / Active-Passive",
+        "score": 62,
+        "fit": "Conditional fit",
+        "rationale": "Hot Standby / Active-Passive is ranked against the stated recovery objectives, business criticality and operating constraints.",
+        "whyNot": "Cost or application constraints outweigh downtime risk",
+        "decisionFactors": [
+          "Required RTO: 1-4 hours",
+          "Required RPO: 15-60 minutes",
+          "Business criticality: very_high",
+          "Cyber risk: high",
+          "Concentration risk: high",
+          "Dependency risk: high"
+        ]
+      },
       {
         "id": "DR-02",
         "name": "Pilot Light",
@@ -565,34 +594,18 @@
           "Dependency risk: high",
           "Pilot Light provides a faster recovery path than backup/rebuild without assuming active-active complexity."
         ]
-      },
-      {
-        "id": "DR-05",
-        "name": "Multi-Site Active-Active",
-        "score": 58,
-        "fit": "Conditional fit",
-        "rationale": "Multi-Site Active-Active is ranked against the stated recovery objectives, business criticality and operating constraints.",
-        "whyNot": "When application/data consistency or cost makes it impractical",
-        "decisionFactors": [
-          "Required RTO: 1-4 hours",
-          "Required RPO: 15-60 minutes",
-          "Business criticality: very_high",
-          "Cyber risk: high",
-          "Concentration risk: high",
-          "Dependency risk: high"
-        ]
       }
     ],
     "eliminatedPatterns": [],
     "patternRanking": [
-      "DR-08:100",
-      "INF-06:84",
+      "DR-08:90",
+      "DR-03:79",
       "TP-05:78",
       "TP-03:78",
       "INF-03:78",
       "INF-04:78",
       "CYBER-01:76",
-      "DR-07:76"
+      "INF-06:72"
     ],
     "mandatoryControls": [
       "DATA-01",
@@ -662,7 +675,7 @@
     ],
     "recommendationConfidence": {
       "level": "Low",
-      "score": 50,
+      "score": 35,
       "reasons": [
         "Recovery strategy ranking is sensitive because the leading options are closely matched.",
         "Material resilience gaps remain unresolved.",
@@ -678,22 +691,22 @@
   },
   "saas-cloud-native": {
     "status": "ready",
-    "score": 80,
-    "postureScore": 86,
-    "rating": "Resilient",
+    "score": 81,
+    "postureScore": 87,
+    "rating": "Managed",
     "maturity": {
-      "level": 4,
-      "label": "Tested"
+      "level": 3,
+      "label": "Defined"
     },
     "evidenceConfidence": "tested",
     "criticalExposure": "High",
     "domainScores": {
       "BCP": 94,
-      "DR": 92,
+      "DR": 90,
       "CYBER": 94,
       "OPS": 79,
       "TP": 64,
-      "INFRA": 86
+      "INFRA": 94
     },
     "preferredPattern": "DR-04",
     "alternatives": [
@@ -812,6 +825,6 @@
         "New evidence showing cyber recovery, identity recovery or third-party recovery is less isolated than assumed."
       ]
     },
-    "executiveSummary": "The assessment indicates a resilient resilience posture with high critical exposure. DR-04 is the preferred primary recovery strategy based on the stated recovery objectives and risk profile."
+    "executiveSummary": "The assessment indicates a managed resilience posture with high critical exposure. DR-04 is the preferred primary recovery strategy based on the stated recovery objectives and risk profile."
   }
 }

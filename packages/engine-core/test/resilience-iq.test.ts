@@ -113,10 +113,13 @@ describe('Resilience IQ invariants (500 random questionnaires)', () => {
     }
   });
 
-  it('a ready result has integer scores in 0-100, a rating matching its posture band and a recovery strategy', () => {
+  it('a ready result has integer scores in 0-100, a rating = posture band capped by critical exposure, and a strategy', () => {
+    const order = ['Critical Exposure', 'Fragile', 'Managed', 'Resilient', 'Adaptive'];
+    const cap: Record<string, number> = { Severe: 1, High: 2, Moderate: 4, Low: 4 };
     for (const { seed, r } of runs.filter(x => x.r.status === 'ready')) {
       for (const v of [r.score, r.postureScore]) expect(Number.isInteger(v) && v! >= 0 && v! <= 100, `seed ${seed}`).toBe(true);
-      expect(r.rating, `seed ${seed}`).toBe(RATINGS.find(([min]) => r.postureScore! >= min)![1]);
+      const band = RATINGS.find(([min]) => r.postureScore! >= min)![1];
+      expect(r.rating, `seed ${seed}`).toBe(order[Math.min(order.indexOf(band), cap[r.criticalExposure!])]);
       expect(r.preferredPattern, `seed ${seed}`).toMatch(/^DR-0[1-5]$/);
       expect(r.eliminatedPatterns, `seed ${seed}`).not.toContain(r.preferredPattern);
       expect(r.blueprint, `seed ${seed}`).not.toBeNull();
@@ -127,6 +130,13 @@ describe('Resilience IQ invariants (500 random questionnaires)', () => {
     for (const { seed, r } of runs.filter(x => x.r.status !== 'ready')) {
       expect([r.score, r.postureScore, r.preferredPattern, r.blueprint], `seed ${seed}`).toEqual([null, null, null, null]);
       expect(r.nextQuestions.length + (r.evidenceRequests.length ? 1 : 0), `seed ${seed}`).toBeGreaterThan(0);
+    }
+  });
+
+  it('maturity "Tested" or above only with recent, scenario-based recovery testing', () => {
+    for (const { seed, answers, r } of runs.filter(x => x.r.status === 'ready' && x.r.maturity!.level >= 4)) {
+      expect(['Within 3 months', '3-12 months ago'], `seed ${seed}`).toContain(answers['EX-07']);
+      expect(['Yes, regularly', 'Yes, occasionally'], `seed ${seed}`).toContain(answers['EX-16']);
     }
   });
 
@@ -200,5 +210,78 @@ describe('Resilience IQ regression tests', () => {
     expect(Array.isArray(r.executiveReport.roadmap) && r.executiveReport.roadmap.length).toBe(4);
     expect(r.executiveReport.recommendationSensitivity.map(s => s.id)).toContain('SENS-01');
     expect(r.recommendationConfidence).toBeDefined();
+  });
+});
+
+describe('Resilience IQ scoring audit fixes (R3)', () => {
+  const bank = ARCHETYPES['regulated-bank-tested'];
+  const run = (extra: Record<string, unknown>) => evaluateResilienceIq({ ...bank, ...extra } as any);
+  const gaps = (r: ResilienceResult) => r.gapRegister.map(g => g.id);
+
+  it('AF-DR-04: recovery that fails with production ("Yes") is the gap; independent recovery ("No") is not penalised', () => {
+    const independent = run({ 'AF-DR-04': 'No' }), correlated = run({ 'AF-DR-04': 'Yes' });
+    expect(gaps(correlated)).toContain('G-04');
+    expect(correlated.score!).toBeLessThan(independent.score!);
+    expect(independent.score).toBe(run({}).score);
+  });
+
+  it('AF-CL-01: separating failure domains is not penalised; "None" is', () => {
+    expect(run({ 'AF-CL-01': ['Identity plane', 'Cloud provider'] }).score).toBe(run({}).score);
+    expect(run({ 'AF-CL-01': ['None'] }).score!).toBeLessThan(run({}).score!);
+  });
+
+  it('AF-CY-03: no isolated identity recovery path is an identity gap (G-06), not "unrecoverable data" (G-03)', () => {
+    const r = run({ 'AF-CY-03': 'No' });
+    expect(gaps(r)).toContain('G-06');
+    expect(gaps(r)).not.toContain('G-03');
+  });
+
+  it('AF-CY-01: backups that production credentials can destroy are a backup gap (was never read)', () => {
+    expect(gaps(run({ 'AF-CY-01': 'Yes' }))).toContain('G-03');
+    expect(gaps(run({ 'AF-CY-01': 'No' }))).not.toContain('G-03');
+  });
+
+  it('AF-TP-04 options match the question bank ("Provider test evidence" was never recognised)', () => {
+    expect(run({ 'AF-TP-04': 'Provider test evidence' }).score!).toBeLessThan(run({ 'AF-TP-04': 'Independent validation' }).score!);
+  });
+
+  it('EX-20 "Medium — documented but not fully tested" is "documented" evidence, not "tested"', () => {
+    expect(run({ 'EX-20': 'Medium — documented but not fully tested' }).evidenceConfidence).toBe('documented');
+  });
+
+  it('EX-08 "Unknown" is treated like "Potentially": cyber gap, cyber controls and the advisory gate apply', () => {
+    const unknown = run({ 'EX-08': 'Unknown', 'EX-06': 'Likely, but not recently tested' });
+    const potentially = run({ 'EX-08': 'Potentially', 'EX-06': 'Likely, but not recently tested' });
+    expect(unknown.status).toBe(potentially.status);
+    const ready = run({ 'EX-08': 'Unknown' });
+    expect(gaps(ready)).toContain('G-05');
+    expect(ready.mandatoryControls).toContain('CYBER-01');
+  });
+
+  it('a critical gap caps the headline: no "Resilient" or "Adaptive" rating with high or severe critical exposure', () => {
+    const r = run({ 'EX-09': 'No' }); // no recoverable backup
+    expect(['High', 'Severe']).toContain(r.criticalExposure);
+    expect(['Resilient', 'Adaptive']).not.toContain(r.rating);
+  });
+
+  it('maturity "Tested" needs recent scenario testing: a never-tested estate claiming independent validation is at most "Defined"', () => {
+    const r = run({ 'EX-07': 'Never', 'EX-16': 'No', 'EX-20': 'High — independently validated' });
+    expect(r.maturity!.level).toBeLessThanOrEqual(3);
+  });
+
+  it('scope inputs (critical services, environments) do not move the posture score; governance (EX-15) does', () => {
+    expect(run({ 'EX-18': ['On-premises'] }).postureScore).toBe(run({ 'EX-18': ['AWS', 'SaaS', 'Azure'] }).postureScore);
+    expect(run({ 'EX-01': ['Other'] }).postureScore).toBe(run({}).postureScore);
+    expect(run({ 'EX-15': 'No' }).postureScore!).toBeLessThan(run({}).postureScore!);
+  });
+
+  it('demanding recovery objectives are requirements, not capability: they do not raise the posture score', () => {
+    expect(run({ 'EX-03': '4-24 hours', 'EX-04': '1-4 hours' }).postureScore).toBe(run({}).postureScore);
+  });
+
+  it('a withheld result does not leak the posture score in its decision log', () => {
+    const r = evaluateResilienceIq(ARCHETYPES['retailer-untested-gated'] as any);
+    expect(r.status).toBe('requirements_incomplete');
+    expect(r.decisionLog.join(' ')).not.toMatch(/posture score: \d/);
   });
 });

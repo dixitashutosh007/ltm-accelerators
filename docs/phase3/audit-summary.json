@@ -1070,5 +1070,134 @@
         "worstProfileShift": -4
       }
     ]
+  },
+  {
+    "id": "resilience-iq",
+    "name": "Resilience IQ",
+    "ranges": [
+      {
+        "headline": "Resilience posture (0-100)",
+        "scale": [
+          0,
+          100
+        ],
+        "min": 18,
+        "max": 68,
+        "outOfScale": 0,
+        "nulls": 537
+      },
+      {
+        "headline": "Risk-adjusted score (0-100)",
+        "scale": [
+          0,
+          100
+        ],
+        "min": 0,
+        "max": 43,
+        "outOfScale": 0,
+        "nulls": 537
+      }
+    ],
+    "bands": {
+      "counts": {
+        "Withheld (incomplete)": 537,
+        "Critical Exposure": 101,
+        "Fragile": 159,
+        "Managed": 3,
+        "Resilient": 0,
+        "Adaptive": 0
+      },
+      "best": "Adaptive",
+      "worst": "Withheld (incomplete)",
+      "unreachable": [
+        "Resilient"
+      ]
+    },
+    "sensitivity": [
+      {
+        "headline": "Resilience posture (0-100)",
+        "top": [
+          {
+            "qid": "EX-12",
+            "swing": 12
+          },
+          {
+            "qid": "EX-20",
+            "swing": 9
+          },
+          {
+            "qid": "EX-07",
+            "swing": 8
+          },
+          {
+            "qid": "EX-08",
+            "swing": 5
+          },
+          {
+            "qid": "EX-09",
+            "swing": 5
+          }
+        ],
+        "share": 0.24
+      },
+      {
+        "headline": "Risk-adjusted score (0-100)",
+        "top": [
+          {
+            "qid": "EX-12",
+            "swing": 13
+          },
+          {
+            "qid": "EX-19",
+            "swing": 11
+          },
+          {
+            "qid": "AF-DR-04",
+            "swing": 11
+          },
+          {
+            "qid": "EX-09",
+            "swing": 10
+          },
+          {
+            "qid": "AF-OP-01",
+            "swing": 10
+          }
+        ],
+        "share": 0.3023255813953488
+      }
+    ],
+    "dead": [
+      "EX-01",
+      "EX-03",
+      "EX-04",
+      "EX-18",
+      "AF-BIA-01",
+      "AF-BIA-02",
+      "AF-BIA-03",
+      "AF-BIA-04",
+      "AF-DR-03",
+      "AF-DR-06",
+      "AF-TP-01",
+      "AF-TP-04",
+      "AF-CL-02",
+      "AF-CL-03",
+      "AF-CL-04",
+      "AF-TS-01",
+      "AF-TS-02",
+      "AF-GV-03"
+    ],
+    "missing": [
+      {
+        "headline": "Resilience posture (0-100)",
+        "meanShift": 6,
+        "worstProfileShift": 0
+      },
+      {
+        "headline": "Risk-adjusted score (0-100)",
+        "meanShift": 7,
+        "worstProfileShift": 0
+      }
+    ]
   }
 ]
