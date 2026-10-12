@@ -12,10 +12,10 @@
 | R1 | Security baseline | ✅ Done (PRs #26, #27; Amplify jobs 55–56) | Main merged in: authenticated Advisory API, CI and guard rails. Every Resilience IQ route except the CORS preflight needs the Cognito JWT, checked live (401 without a token). CORS is limited to allowed origins. Assessment takeover is closed. The page uses the shared session client and renews tokens |
 | R2 | Engine and correctness (the Phase 2 template) | ✅ Done (PR #28; Amplify job 57) | Details below |
 | R3 | Scoring audit and recalibration | ✅ Done (PR #29; Amplify job 58) | Engine and knowledge-base fixes below; lead decisions logged |
-| R4 | Persistence and workspace | ✅ Done (PR #30) | Details below |
-| R5 | Content fact-check and brand | 🔄 In review | Details below (brand done in R1) |
-| R6 | Merge to main and production launch | Not started | Dev → main PR with full CI. Drop Cost IQ-style exemptions. Production smoke test |
-| V | Validation report | After R6 | Written sign-off against these gates |
+| R4 | Persistence and workspace | ✅ Done (PR #30; Amplify job 59) | Details below |
+| R5 | Content fact-check and brand | ✅ Done (PR #31; Amplify job 60) | Details below (brand done in R1) |
+| R6 | Merge to main and production launch | ✅ Done (PR #32; production Amplify job 104) | Exemptions dropped in R2. Production smoke test passed: every Resilience IQ route except the preflight returns 401 without a token |
+| V | Validation report | ✅ Done | [VALIDATION.md](VALIDATION.md): conditionally approved for consultant-led use |
 
 ## R2: what changed
 
