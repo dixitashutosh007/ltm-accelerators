@@ -33,7 +33,12 @@ test.describe('Resilience IQ', () => {
       return { body: { ok: true, data: evaluateResilienceIq(parsed.value.answers) } };
     });
     world.on('GET', ASSESSMENT, () => ({ body: { ok: true, data: [] } }));
-    world.on('POST', ASSESSMENT, ({ body }) => ({ body: { ok: true, data: { ...body.snapshot } } }));
+    // Like the persistence Lambda: the result is computed on completion, never taken from the browser.
+    world.on('POST', ASSESSMENT, ({ body }) => {
+      const s = body.snapshot;
+      const resultJson = s.status === 'completed' ? JSON.stringify(evaluateResilienceIq(s.answers)) : undefined;
+      return { body: { ok: true, data: { ...s, answersJson: JSON.stringify(s.answers), resultJson } } };
+    });
   });
 
   test('a signed-out user is sent to sign in', async ({ page }) => {
@@ -86,8 +91,17 @@ test.describe('Resilience IQ', () => {
     const plan = ARCHETYPES['regulated-bank-tested'];
     let evaluations: any[];
 
+    let saves: any[];
+
     test.beforeEach(async ({ page, context, world }) => {
       evaluations = [];
+      saves = [];
+      world.on('POST', ASSESSMENT, ({ body }) => {
+        saves.push(body);
+        const s = body.snapshot;
+        const resultJson = s.status === 'completed' ? JSON.stringify(evaluateResilienceIq(s.answers)) : undefined;
+        return { body: { ok: true, data: { ...s, answersJson: JSON.stringify(s.answers), resultJson } } };
+      });
       world.on('POST', EVALUATE, ({ body }) => {
         evaluations.push(body);
         const parsed = parseResilienceIqRequest(body);
@@ -133,6 +147,9 @@ test.describe('Resilience IQ', () => {
       const sent = evaluations[evaluations.length - 1];
       expect(sent.answers).toEqual(plan); // nothing defaulted, nothing invented
       expect(parseResilienceIqRequest(sent).ok).toBe(true);
+      const completion = saves.find(x => x.action === 'complete');
+      expect(completion.snapshot.answers).toEqual(plan);
+      expect(completion.snapshot.result).toBeUndefined(); // the server computes the stored result
 
       const text = await page.locator('#app').innerText();
       expect(text).toContain('Acme Bank');
@@ -167,6 +184,37 @@ test.describe('Resilience IQ', () => {
       await expect(page.getByRole('alert')).toContainText("We couldn't calculate your results");
       await expect(page.getByRole('heading', { name: 'Transformation Roadmap' })).toHaveCount(0);
       expect(await page.evaluate('result')).toBeNull();
+    });
+  });
+
+  test.describe('history and resume', () => {
+    const stored = {
+      assessmentId: 'RIQ-"quoted"-01', clientName: 'Acme Bank', clientSector: 'Banking', respondentEmail: 'consultant@ltm.com',
+      startedAt: '2026-10-01T00:00:00.000Z', status: 'in_progress', updatedAt: '2026-10-02T00:00:00.000Z',
+      answersJson: JSON.stringify({ ...ARCHETYPES['retailer-untested-gated'], 'AF-DR-04': 'Yes', 'AF-CY-03': 'No' })
+    };
+
+    test.beforeEach(async ({ context, world }) => {
+      await signedIn(context, permitted(makeIdToken('consultant@ltm.com')));
+      world.on('GET', ASSESSMENT, () => ({ body: { ok: true, data: [stored] } }));
+    });
+
+    test('the history list opens an assessment, even one whose ID contains quotes (the button was broken)', async ({ page, world }) => {
+      await page.goto('/resilience-iq');
+      await page.getByRole('button', { name: 'Resume' }).click();
+      await expect(page).toHaveURL(/assessmentId=RIQ-%22quoted%22-01/);
+      expect(world.pageErrors).toEqual([]);
+    });
+
+    test('resuming restores executive and advisory answers', async ({ page, world }) => {
+      world.on('GET', ASSESSMENT, () => ({ body: { ok: true, data: stored } }));
+      await page.goto('/resilience-iq?assessmentId=' + encodeURIComponent(stored.assessmentId));
+      await expect.poll(() => page.evaluate('questions.some(q => q.id === "AF-CY-03")')).toBe(true);
+      const restored = await page.evaluate('mapAnswers()') as Record<string, unknown>;
+      expect(restored['AF-DR-04']).toBe('Yes');
+      expect(restored['AF-CY-03']).toBe('No');
+      expect(restored['EX-08']).toBe('Potentially');
+      expect(world.pageErrors).toEqual([]);
     });
   });
 });

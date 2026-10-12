@@ -11,8 +11,8 @@
 | R0 | Stabilise the dev build | ✅ Done (PRs #24, #25; Amplify jobs 53–54) | The build failed on invalid YAML in `amplify.yml`. Persistence was never the cause; job 49 had deployed it. Every Resilience IQ test now runs before the backend deploys. Three engine bugs that the stale tests had hidden are fixed |
 | R1 | Security baseline | ✅ Done (PRs #26, #27; Amplify jobs 55–56) | Main merged in: authenticated Advisory API, CI and guard rails. Every Resilience IQ route except the CORS preflight needs the Cognito JWT, checked live (401 without a token). CORS is limited to allowed origins. Assessment takeover is closed. The page uses the shared session client and renews tokens |
 | R2 | Engine and correctness (the Phase 2 template) | ✅ Done (PR #28; Amplify job 57) | Details below |
-| R3 | Scoring audit and recalibration | 🔄 In review | Engine and knowledge-base fixes below; lead decisions logged |
-| R4 | Persistence and workspace | Not started | Server-computed result on completion; lookups past 100 records; history and resume |
+| R3 | Scoring audit and recalibration | ✅ Done (PR #29; Amplify job 58) | Engine and knowledge-base fixes below; lead decisions logged |
+| R4 | Persistence and workspace | 🔄 In review | Details below |
 | R5 | Content fact-check and brand | Not started (brand done in R1) | Source or label scoring constants. AWS/Azure/GCP mapping and neutrality fixes |
 | R6 | Merge to main and production launch | Not started | Dev → main PR with full CI. Drop Cost IQ-style exemptions. Production smoke test |
 | V | Validation report | After R6 | Written sign-off against these gates |
@@ -111,6 +111,37 @@ Resilience IQ is now in the automated audit (`npm run audit:engines`, `packages/
    - GCP lists Terraform;
    - framework links;
    - all scoring constants need a source or an "LTM heuristic" label.
+
+## R4: persistence and workspace
+
+| # | Before | After |
+|---|---|---|
+| 1 | **The stored result came from the browser.** A signed-in user could save a fabricated score or report | On completion the Lambda scores the answers itself and stores that result. Drafts store no result. Completing an assessment the engine cannot score returns 409 `assessment_incomplete` |
+| 2 | **Answers were stored unchecked** | Saves validate answers with the shared request contract and return 400 listing every problem |
+| 3 | **Lookups and history read only the first page.** AppSync filters after reading a page, so past about 100 records, existing assessments looked missing; that caused duplicates and skipped the immutability checks | Both lookups and history follow `nextToken` (pages of 200, up to 50 pages) |
+| 4 | **Archiving rewrote the stored answers** and other fields | Archive changes only `status` and `finalizedAt` |
+| 5 | **Raw database errors reached the browser** | A generic message is returned; the details go to the logs |
+| 6 | **The history "Resume" / "View Report" buttons were broken.** `JSON.stringify` inside a double-quoted `onclick` broke the HTML, and an ID could inject attributes | An escaped `data-id` |
+| 7 | **Resuming dropped advisory answers** | Advisory questions are re-added from the hosted bank and their answers restored |
+| 8 | **The report after completion used the browser's result** | It shows the result the server stored |
+
+**Known limit (accepted):** Amplify Gen 2 grants function data access for the whole schema (`allow.resource` cannot be set per model). The Lambda's code only touches `ResilienceAssessment`.
+
+**Tests:**
+- **Persistence handler tests:**
+  - a forged result is ignored;
+  - an incomplete assessment is refused;
+  - invalid answers are rejected;
+  - drafts store no result;
+  - a record on page two is found;
+  - archiving is immutable;
+  - database errors are sanitised.
+
+  These fail against the previous handler.
+- **Browser tests:**
+  - history opens an ID containing quotes;
+  - resume restores executive and advisory answers;
+  - the completion save carries no result.
 
 ## Decisions taken (product owner)
 

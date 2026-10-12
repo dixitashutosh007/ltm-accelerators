@@ -2,6 +2,9 @@ import type { APIGatewayProxyEventV2, APIGatewayProxyEventV2WithJWTAuthorizer, A
 import { createHash, createHmac, randomUUID } from 'node:crypto';
 import { assertAssessmentStatusTransition, type ResilienceAssessmentStatus } from '../../../packages/engine-core/src/accelerators/resilience-iq/assessment-lifecycle';
 import { corsHeaders } from '../_shared/http';
+import { evaluateResilienceIq } from '../../../packages/engine-core/src/accelerators/resilience-iq/evaluate';
+import { parseResilienceIqRequest } from '../../../packages/engine-core/src/accelerators/resilience-iq/contract';
+import { RESILIENCE_IQ_VERSION } from '../../../packages/engine-core/src/accelerators/resilience-iq/version';
 
 // Lambdas run one request at a time per container, so the current request's headers are kept here for
 // response() to echo an allowed origin (see _shared/http.ts). Origins not in ALLOWED_ORIGINS get no CORS header.
@@ -83,16 +86,30 @@ function parseBody(event:APIGatewayProxyEventV2){
 
 const fields=`id assessmentId clientName clientSector respondentEmail status questionBankVersion scoringModelVersion decisionTreeVersion blueprintEngineVersion executiveReportVersion engineVersion answersJson resultJson decisionLogJson recommendationSensitivityJson startedAt completedAt finalizedAt createdAt updatedAt`;
 
+// AppSync list queries filter after reading a page, so a filter can match nothing on page one and still have
+// matches later: always follow nextToken. MAX_PAGES bounds the work per request.
+const PAGE_SIZE=200, MAX_PAGES=50;
+async function listWhere(filter:Record<string,unknown>, stopAtFirst=false){
+  const items:any[]=[];
+  let nextToken:string|null=null;
+  for(let page=0; page<MAX_PAGES; page++){
+    const data:any=await graphql(`query ListResilienceAssessments($filter: ModelResilienceAssessmentFilterInput, $limit: Int, $nextToken: String) {
+      listResilienceAssessments(filter:$filter, limit:$limit, nextToken:$nextToken) { items { ${fields} } nextToken }
+    }`,{filter,limit:PAGE_SIZE,nextToken});
+    items.push(...(data.listResilienceAssessments.items||[]));
+    nextToken=data.listResilienceAssessments.nextToken||null;
+    if(!nextToken || (stopAtFirst && items.length)) break;
+  }
+  return items;
+}
+
 async function listAssessments(email:string){
-  const data=await graphql(`query ListResilienceAssessments($filter: ModelResilienceAssessmentFilterInput) { listResilienceAssessments(filter:$filter, limit:100) { items { ${fields} } } }`,{filter:{respondentEmail:{eq:email}}});
-  return (data.listResilienceAssessments.items||[]).sort((a:any,b:any)=>String(b.updatedAt||b.startedAt||'').localeCompare(String(a.updatedAt||a.startedAt||'')));
+  const items=await listWhere({respondentEmail:{eq:email}});
+  return items.sort((a:any,b:any)=>String(b.updatedAt||b.startedAt||'').localeCompare(String(a.updatedAt||a.startedAt||'')));
 }
 
 async function getAssessment(assessmentId:string){
-  const data=await graphql(`query GetResilienceAssessment($filter: ModelResilienceAssessmentFilterInput) {
-    listResilienceAssessments(filter:$filter) { items { ${fields} } }
-  }`,{filter:{assessmentId:{eq:assessmentId}}});
-  return data.listResilienceAssessments.items?.[0] || null;
+  return (await listWhere({assessmentId:{eq:assessmentId}},true))[0] || null;
 }
 
 export const handler=async(event:APIGatewayProxyEventV2):Promise<APIGatewayProxyResultV2>=>{
@@ -138,6 +155,24 @@ export const handler=async(event:APIGatewayProxyEventV2):Promise<APIGatewayProxy
     if(action==='complete' && snapshot.status!=='completed') return response(400,{ok:false,error:'complete action requires completed status.',requestId},requestId);
     if(action==='archive' && snapshot.status!=='archived') return response(400,{ok:false,error:'archive action requires archived status.',requestId},requestId);
 
+    // Archiving a completed assessment changes only its status: answers and result stay as completed.
+    if(action==='archive' && existing){
+      const data=await graphql(`mutation UpdateResilienceAssessment($input: UpdateResilienceAssessmentInput!) { updateResilienceAssessment(input:$input) { ${fields} } }`,
+        {input:{id:existing.id,status:'archived',finalizedAt:snapshot.finalizedAt?String(snapshot.finalizedAt):new Date().toISOString()}});
+      return response(200,{ok:true,data:data.updateResilienceAssessment,requestId},requestId);
+    }
+
+    // Answers are checked with the same contract as the scoring API.
+    const parsed=parseResilienceIqRequest({answers:snapshot.answers||{}});
+    if(!parsed.ok) return response(400,{ok:false,error:parsed.errors[0],details:parsed.errors,requestId},requestId);
+
+    // The stored result is computed here, never taken from the browser, and only on completion.
+    let result:ReturnType<typeof evaluateResilienceIq>|undefined;
+    if(snapshot.status==='completed'){
+      result=evaluateResilienceIq(parsed.value.answers);
+      if(result.status!=='ready') return response(409,{ok:false,error:'assessment_incomplete',message:'The assessment cannot be completed until the engine can issue a result.',nextQuestions:result.nextQuestions.map(q=>q.id),requestId},requestId);
+    }
+
     const input={
       ...(existing?.id ? {id:existing.id} : {}),
       assessmentId,
@@ -150,13 +185,13 @@ export const handler=async(event:APIGatewayProxyEventV2):Promise<APIGatewayProxy
       decisionTreeVersion:String(snapshot.version?.decisionTree||'1.0'),
       blueprintEngineVersion:String(snapshot.version?.blueprintEngine||'1.0'),
       executiveReportVersion:String(snapshot.version?.executiveReport||'1.0'),
-      engineVersion:String(snapshot.version?.engine||'1.0.0'),
-      answersJson:JSON.stringify(snapshot.answers||{}),
-      resultJson:snapshot.result ? JSON.stringify(snapshot.result) : undefined,
-      decisionLogJson:snapshot.result?.decisionLog ? JSON.stringify(snapshot.result.decisionLog) : undefined,
-      recommendationSensitivityJson:snapshot.result?.recommendationSensitivity ? JSON.stringify(snapshot.result.recommendationSensitivity) : undefined,
+      engineVersion:result ? String(result.version||RESILIENCE_IQ_VERSION) : String(snapshot.version?.engine||RESILIENCE_IQ_VERSION),
+      answersJson:JSON.stringify(parsed.value.answers),
+      resultJson:result ? JSON.stringify(result) : undefined,
+      decisionLogJson:result ? JSON.stringify(result.decisionLog) : undefined,
+      recommendationSensitivityJson:result ? JSON.stringify(result.executiveReport.recommendationSensitivity) : undefined,
       startedAt:String(snapshot.startedAt),
-      completedAt:snapshot.completedAt ? String(snapshot.completedAt) : undefined,
+      completedAt:snapshot.status==='completed' ? String(snapshot.completedAt||new Date().toISOString()) : undefined,
       finalizedAt:snapshot.finalizedAt ? String(snapshot.finalizedAt) : undefined
     };
     const mutation=existing ? `mutation UpdateResilienceAssessment($input: UpdateResilienceAssessmentInput!) { updateResilienceAssessment(input:$input) { ${fields} } }` : `mutation CreateResilienceAssessment($input: CreateResilienceAssessmentInput!) { createResilienceAssessment(input:$input) { ${fields} } }`;
@@ -164,7 +199,8 @@ export const handler=async(event:APIGatewayProxyEventV2):Promise<APIGatewayProxy
     return response(200,{ok:true,data:existing?data.updateResilienceAssessment:data.createResilienceAssessment,requestId},requestId);
   } catch(error:any) {
     console.error('[ManageResilienceAssessment]',{requestId,error});
-    return response(500,{ok:false,error:'internal_assessment_persistence_error',message:error?.message||'Persistence failed.',requestId},requestId);
+    // Details stay in the logs: database errors are not returned to the browser.
+    return response(500,{ok:false,error:'internal_assessment_persistence_error',message:'The assessment could not be saved. Please try again.',requestId},requestId);
   }
 };
 
