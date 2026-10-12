@@ -615,10 +615,13 @@ function patternScore(id: string, a: ResilienceAnswers, eliminated: Set<string>,
 }
 
 function technologyOptions(patternIds: string[], a: ResilienceAnswers): Record<string, string[]> {
-  const provider = environment(a);
   const source = k.implementationMappings as any;
   const result: Record<string, string[]> = {};
-  const providers = provider === "unknown" ? ["aws", "azure", "gcp", "on_prem"] : [provider];
+  // Every environment the client runs gets its own mappings (a multi-cloud estate saw only the first provider).
+  const selected = arr(a["EX-18"]);
+  const named: Array<[string, string]> = [["AWS", "aws"], ["Azure", "azure"], ["GCP", "gcp"], ["On-premises", "on_prem"]];
+  const mapped = named.filter(([label]) => selected.includes(label)).map(([, key]) => key);
+  const providers = mapped.length ? mapped : ["aws", "azure", "gcp", "on_prem"];
   for (const p of patternIds) {
     for (const x of providers) {
       const values = source[x]?.[p];

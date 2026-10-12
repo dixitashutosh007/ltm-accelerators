@@ -157,6 +157,7 @@ test.describe('Resilience IQ', () => {
       const expected = evaluateResilienceIq(plan as any);
       expect(text).toContain(String(expected.preferredPattern));
       expect(text).toContain(expected.executiveReport.recommendationSensitivity[0].trigger);
+      expect(text).toContain('LTM heuristics reviewed by the BCP/DR practice');
       expect(world.pageErrors).toEqual([]);
       expect(world.missingFiles).toEqual([]);
     });

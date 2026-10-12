@@ -285,3 +285,27 @@ describe('Resilience IQ scoring audit fixes (R3)', () => {
     expect(r.decisionLog.join(' ')).not.toMatch(/posture score: \d/);
   });
 });
+
+describe('Resilience IQ content and neutrality (R5)', () => {
+  const bank = ARCHETYPES['regulated-bank-tested'];
+
+  it('a multi-cloud estate sees implementation options for every provider it runs, not just the first', () => {
+    const r = evaluateResilienceIq({ ...bank, 'EX-18': ['AWS', 'Azure', 'GCP'] } as any);
+    const providers = new Set(Object.keys(r.technologyOptions).map(k => k.split(':')[1]));
+    expect([...providers].sort()).toEqual(['aws', 'azure', 'gcp']);
+  });
+
+  it('cyber clean-room (CYBER-01) mappings are isolated vaults, never replication services', () => {
+    const mappings: any = resilienceKnowledge.implementationMappings;
+    for (const env of ['aws', 'azure', 'gcp']) {
+      expect(mappings[env]['CYBER-01'].join(' '), env).not.toMatch(/Elastic Disaster Recovery|Site Recovery/);
+      expect(mappings[env]['CYBER-01'].join(' '), env).toMatch(/vault/i);
+    }
+    expect(mappings.gcp['INF-06'].join(' ')).not.toMatch(/Terraform/);
+  });
+
+  it('the scoring model states its basis as an LTM heuristic, not a benchmark', () => {
+    expect((resilienceKnowledge.scoringModel as any).basis).toMatch(/LTM heuristic/);
+  });
+});
+

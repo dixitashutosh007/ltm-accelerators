@@ -12,8 +12,8 @@
 | R1 | Security baseline | ✅ Done (PRs #26, #27; Amplify jobs 55–56) | Main merged in: authenticated Advisory API, CI and guard rails. Every Resilience IQ route except the CORS preflight needs the Cognito JWT, checked live (401 without a token). CORS is limited to allowed origins. Assessment takeover is closed. The page uses the shared session client and renews tokens |
 | R2 | Engine and correctness (the Phase 2 template) | ✅ Done (PR #28; Amplify job 57) | Details below |
 | R3 | Scoring audit and recalibration | ✅ Done (PR #29; Amplify job 58) | Engine and knowledge-base fixes below; lead decisions logged |
-| R4 | Persistence and workspace | 🔄 In review | Details below |
-| R5 | Content fact-check and brand | Not started (brand done in R1) | Source or label scoring constants. AWS/Azure/GCP mapping and neutrality fixes |
+| R4 | Persistence and workspace | ✅ Done (PR #30) | Details below |
+| R5 | Content fact-check and brand | 🔄 In review | Details below (brand done in R1) |
 | R6 | Merge to main and production launch | Not started | Dev → main PR with full CI. Drop Cost IQ-style exemptions. Production smoke test |
 | V | Validation report | After R6 | Written sign-off against these gates |
 
@@ -142,6 +142,25 @@ Resilience IQ is now in the automated audit (`npm run audit:engines`, `packages/
   - history opens an ID containing quotes;
   - resume restores executive and advisory answers;
   - the completion save carries no result.
+
+## R5: content fact-check and neutrality
+
+Sources were checked on 12 Oct 2026 by web search. Direct fetches from this environment are blocked.
+
+| # | Before | After |
+|---|---|---|
+| 1 | **CYBER-01 "Cyber Recovery Clean Room"** mapped to AWS Elastic Disaster Recovery and Azure Site Recovery. These replication services copy a compromised state, so they are not an isolated clean room | Maps to isolated backup vaults restored into an isolated account, subscription or project: AWS Backup logically air-gapped vault, Azure Backup immutable vault and Google Cloud Backup and DR backup vault. Azure availability could only be confirmed from secondary sources, so the mapping says "confirm regional availability" |
+| 2 | **GCP INF-06 named Terraform**, a third-party product, where AWS and Azure list native tools | "Infrastructure Manager or another infrastructure-as-code tool", Cloud Build and CI/CD |
+| 3 | **The AWS-DR citation** linked to database DR prescriptive guidance | The "Disaster Recovery of Workloads on AWS" whitepaper, which covers backup and restore, pilot light, warm standby and multi-site |
+| 4 | **A multi-cloud estate saw only one provider's mappings**, in the order AWS > Azure > GCP | Every selected environment gets its mappings |
+| 5 | **The assessment model claimed "100-150 dynamic questions" taking "45-90" minutes** | 32 advisory questions asked by branch (up to 8 at a time). The duration is indicative |
+| 6 | **Scoring constants had no stated basis** | `scoring-model.json` states they are LTM heuristics reviewed by the BCP/DR practice, not a benchmark. The report ends with an "About this assessment" note saying the same, naming the frameworks the questions draw on, and calling the technology options indicative |
+
+**Verified and unchanged:**
+- **ISO/IEC 27031:2025:** ISO lists the second edition as published in May 2025.
+- **GCP DR guide:** `cloud.google.com/architecture/dr-scenarios-planning-guide` now redirects (301) to `docs.cloud.google.com`, so the existing link is the canonical one.
+
+**For the SME:** review every implementation mapping per engagement; the mappings file says so.
 
 ## Decisions taken (product owner)
 
