@@ -11,7 +11,9 @@ const checks=[
   ['Resilience IQ page loads shared runtime config', html.includes('cost-iq-runtime-config.js')],
   ['Resilience IQ page reads RESILIENCE_IQ_API', html.includes('RESILIENCE_IQ_API')],
   ['Amplify backend exposes Resilience IQ route', backend.includes("/api/evaluate/resilience-iq")],
-  ['Runtime config generator declares RESILIENCE_IQ_API', generator.includes("window.RESILIENCE_IQ_API='")]
+  ['Runtime config generator declares RESILIENCE_IQ_API', generator.includes("window.RESILIENCE_IQ_API='")],
+  ['Resilience IQ advisory bank is packaged into hosted assets', generator.includes("path.resolve('resilience-iq/knowledge/question-bank.json')") && generator.includes("path.resolve('Accelerators/resilience-iq/knowledge')")],
+  ['Resilience IQ page loads advisory bank from hosted assets', html.includes("./resilience-iq/knowledge/question-bank.json")]
 ];
 const failed=checks.filter(([,ok])=>!ok);
 for(const [name,ok] of checks) console.log((ok?'PASS':'FAIL')+' '+name);

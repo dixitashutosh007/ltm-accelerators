@@ -1339,7 +1339,7 @@
       </div>
 
       <div class="acc-grid">
-<div class="acc-card" onclick="window.location.href='resilience-iq.html'">
+<div class="acc-card" onclick="handleLaunchClick('resilience-iq','resilience-iq.html')">
   <div class="acc-header">
     <div class="acc-title">Resilience IQ</div>
     <span class="pill pill-green">Executive Scan</span>
@@ -1347,7 +1347,7 @@
   <p class="acc-desc">Evidence-aware resilience assessment covering BCP, DR, cyber recovery, operational resilience, third-party dependency and infrastructure resilience.</p>
   <div style="display:flex;justify-content:space-between;align-items:center;">
     <span class="pill">20 Questions · CIO/CTO Resilience</span>
-    <div style="display:flex;gap:8px;align-items:center"><a href="resilience-iq-question-bank.html" onclick="event.stopPropagation()" style="font-size:12px;font-weight:700;color:#64748B;text-decoration:none;border:1px solid #CBD5E1;border-radius:6px;padding:8px 10px;">Question Bank Studio</a><button class="btn btn-primary" style="padding:8px 16px;font-size:13px;">Launch Assessment →</button></div>
+    <div style="display:flex;gap:8px;align-items:center"><a href="resilience-iq-question-bank.html" onclick="event.stopPropagation()" style="font-size:12px;font-weight:700;color:#64748B;text-decoration:none;border:1px solid #CBD5E1;border-radius:6px;padding:8px 10px;">Question Bank Studio</a><button class="btn-action-launch" data-tool="resilience-iq" onclick="event.stopPropagation();handleLaunchClick('resilience-iq','resilience-iq.html')">Take Assessment &rarr;</button></div>
   </div>
 </div>
 

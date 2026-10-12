@@ -1,16 +1,12 @@
 {
-  // CI type check for the platform and the seven Advisory-API accelerators.
-  // Cost IQ and Resilience IQ are maintained separately (another toolchain) and are
-  // excluded here; they keep their own test scripts (npm run test:costiq*, test:resilience*).
+  // CI type check for the platform and every accelerator except Cost IQ, which is maintained
+  // separately (another toolchain) and keeps its own test scripts (npm run test:costiq*).
   "extends": "./tsconfig.json",
   "exclude": [
     "node_modules",
     "dist",
     "amplify/functions/evaluate-cost-iq/**",
-    "amplify/functions/evaluate-resilience-iq/**",
-    "amplify/functions/manage-resilience-evidence/**",
     "packages/engine-core/src/accelerators/cost-iq/**",
-    "packages/engine-core/src/accelerators/resilience-iq/**",
     "packages/engine-core/src/index.ts"
   ]
 }

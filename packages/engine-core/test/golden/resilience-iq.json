@@ -1,0 +1,830 @@
+{
+  "regulated-bank-tested": {
+    "status": "ready",
+    "score": 80,
+    "postureScore": 86,
+    "rating": "Managed",
+    "maturity": {
+      "level": 3,
+      "label": "Defined"
+    },
+    "evidenceConfidence": "independently_validated",
+    "criticalExposure": "High",
+    "domainScores": {
+      "BCP": 95,
+      "DR": 92,
+      "CYBER": 72,
+      "OPS": 80,
+      "TP": 77,
+      "INFRA": 95
+    },
+    "preferredPattern": "DR-05",
+    "alternatives": [
+      {
+        "id": "DR-04",
+        "name": "Hot Standby / Active-Passive",
+        "score": 80,
+        "fit": "Good fit",
+        "rationale": "Hot Standby / Active-Passive is ranked against the stated recovery objectives, business criticality and operating constraints.",
+        "whyNot": "Cost or application constraints outweigh downtime risk",
+        "decisionFactors": [
+          "Required RTO: <15 minutes",
+          "Required RPO: Near-zero",
+          "Business criticality: very_high",
+          "Cyber risk: destructive",
+          "Concentration risk: medium",
+          "Dependency risk: medium",
+          "Hot Standby becomes justified when recovery objectives demand near-continuous readiness."
+        ]
+      },
+      {
+        "id": "DR-03",
+        "name": "Warm Standby",
+        "score": 79,
+        "fit": "Good fit",
+        "rationale": "Warm Standby is ranked against the stated recovery objectives, business criticality and operating constraints.",
+        "whyNot": "Low criticality workloads",
+        "decisionFactors": [
+          "Required RTO: <15 minutes",
+          "Required RPO: Near-zero",
+          "Business criticality: very_high",
+          "Cyber risk: destructive",
+          "Concentration risk: medium",
+          "Dependency risk: medium",
+          "Warm Standby improves recovery speed and readiness, but carries greater continuous operating cost."
+        ]
+      }
+    ],
+    "eliminatedPatterns": [
+      "DR-01",
+      "DR-02"
+    ],
+    "patternRanking": [
+      "DR-05:94",
+      "CYBER-01:82",
+      "DR-04:80",
+      "DR-03:79",
+      "CYBER-04:74",
+      "CYBER-03:70",
+      "CYBER-02:68",
+      "DATA-01:66"
+    ],
+    "mandatoryControls": [
+      "DATA-01",
+      "DATA-02",
+      "CYBER-01",
+      "CYBER-02"
+    ],
+    "gaps": [
+      "G-04",
+      "G-05",
+      "G-07",
+      "G-08"
+    ],
+    "nextQuestions": [
+      "AF-DR-01",
+      "AF-DR-03",
+      "AF-DR-02",
+      "AF-CY-01",
+      "AF-CY-02",
+      "AF-CY-03",
+      "AF-CY-04",
+      "AF-CY-05"
+    ],
+    "evidenceRequests": [
+      "supplier SLA/contract",
+      "dependency map"
+    ],
+    "roadmap": [
+      {
+        "wave": "W0",
+        "window": "0-30 days",
+        "actions": [
+          "Remove critical shared failure domain",
+          "Build cyber recovery vault/clean recovery capability"
+        ]
+      },
+      {
+        "wave": "W1",
+        "window": "31-90 days",
+        "actions": [
+          "Complete critical service dependency map",
+          "Create third-party resilience/exit plan",
+          "Validate cyber recovery isolation and clean restore before production recovery migration",
+          "Validate and implement DR-05 against measured RTO/RPO"
+        ]
+      },
+      {
+        "wave": "W2",
+        "window": "3-6 months",
+        "actions": [
+          "Validate cyber recovery isolation and clean restore before production recovery migration",
+          "Validate and implement DR-05 against measured RTO/RPO"
+        ]
+      },
+      {
+        "wave": "W3",
+        "window": "6-18 months",
+        "actions": [
+          "Scale testing, dependency resilience and continuous validation"
+        ]
+      }
+    ],
+    "recommendationConfidence": {
+      "level": "High",
+      "score": 85,
+      "reasons": [
+        "Material resilience gaps remain unresolved."
+      ],
+      "decisionSensitivity": [
+        "Measured RTO/RPO results that miss the stated objectives.",
+        "Material change to business impact tolerance or critical-service dependency topology.",
+        "New evidence showing cyber recovery, identity recovery or third-party recovery is less isolated than assumed."
+      ]
+    },
+    "executiveSummary": "The assessment indicates a managed resilience posture with high critical exposure. DR-05 is the preferred primary recovery strategy based on the stated recovery objectives and risk profile."
+  },
+  "retailer-untested-gated": {
+    "status": "requirements_incomplete",
+    "score": null,
+    "postureScore": null,
+    "rating": null,
+    "maturity": null,
+    "evidenceConfidence": "documented",
+    "criticalExposure": null,
+    "domainScores": {
+      "BCP": 60,
+      "DR": 69,
+      "CYBER": 53,
+      "OPS": 49,
+      "TP": 29,
+      "INFRA": 24
+    },
+    "preferredPattern": null,
+    "alternatives": [
+      {
+        "id": "DR-04",
+        "name": "Hot Standby / Active-Passive",
+        "score": 66,
+        "fit": "Conditional fit",
+        "rationale": "Hot Standby / Active-Passive is ranked against the stated recovery objectives, business criticality and operating constraints.",
+        "whyNot": "Cost or application constraints outweigh downtime risk",
+        "decisionFactors": [
+          "Required RTO: 1-4 hours",
+          "Required RPO: 15-60 minutes",
+          "Business criticality: very_high",
+          "Cyber risk: high",
+          "Concentration risk: high",
+          "Dependency risk: high"
+        ]
+      },
+      {
+        "id": "DR-02",
+        "name": "Pilot Light",
+        "score": 58,
+        "fit": "Conditional fit",
+        "rationale": "Pilot Light is ranked against the stated recovery objectives, business criticality and operating constraints.",
+        "whyNot": "Strict near-zero RTO/RPO",
+        "decisionFactors": [
+          "Required RTO: 1-4 hours",
+          "Required RPO: 15-60 minutes",
+          "Business criticality: very_high",
+          "Cyber risk: high",
+          "Concentration risk: high",
+          "Dependency risk: high",
+          "Pilot Light provides a faster recovery path than backup/rebuild without assuming active-active complexity."
+        ]
+      }
+    ],
+    "eliminatedPatterns": [],
+    "patternRanking": [
+      "DR-03:83",
+      "TP-05:78",
+      "TP-03:78",
+      "INF-03:78",
+      "INF-04:78",
+      "CYBER-01:76",
+      "CYBER-04:70",
+      "CYBER-03:68"
+    ],
+    "mandatoryControls": [
+      "DATA-01",
+      "DATA-02",
+      "CYBER-01",
+      "CYBER-02",
+      "TP-03",
+      "TP-05",
+      "INF-04",
+      "DR-07",
+      "APP-04",
+      "DR-08"
+    ],
+    "gaps": [
+      "G-02",
+      "G-03",
+      "G-04",
+      "G-05",
+      "G-07",
+      "G-08",
+      "G-10"
+    ],
+    "nextQuestions": [
+      "AF-DR-01",
+      "AF-DR-05",
+      "AF-DR-02",
+      "AF-DR-03",
+      "AF-CY-01",
+      "AF-CY-02",
+      "AF-CY-03",
+      "AF-CY-04"
+    ],
+    "evidenceRequests": [
+      "failover test evidence",
+      "restore test evidence",
+      "backup evidence",
+      "supplier SLA/contract"
+    ],
+    "roadmap": [
+      {
+        "wave": "W0",
+        "window": "0-30 days",
+        "actions": [
+          "Execute end-to-end recovery test",
+          "Implement protected backup and restore validation",
+          "Remove critical shared failure domain",
+          "Build cyber recovery vault/clean recovery capability"
+        ]
+      },
+      {
+        "wave": "W1",
+        "window": "31-90 days",
+        "actions": [
+          "Complete critical service dependency map",
+          "Create third-party resilience/exit plan",
+          "Establish severe-but-plausible exercise calendar",
+          "Validate cyber recovery isolation and clean restore before production recovery migration"
+        ]
+      },
+      {
+        "wave": "W2",
+        "window": "3-6 months",
+        "actions": [
+          "Validate cyber recovery isolation and clean restore before production recovery migration"
+        ]
+      },
+      {
+        "wave": "W3",
+        "window": "6-18 months",
+        "actions": [
+          "Scale testing, dependency resilience and continuous validation"
+        ]
+      }
+    ],
+    "recommendationConfidence": {
+      "level": "Blocked",
+      "score": 0,
+      "reasons": [
+        "Required business objectives or advisory validation are incomplete."
+      ],
+      "decisionSensitivity": [
+        "Complete required questions and evidence validation before approving a target-state strategy."
+      ]
+    },
+    "executiveSummary": "Resilience assessment requires advisory-depth validation of the triggered critical-service, cyber-recovery and recovery-capability risks before a final target-state recommendation can be issued."
+  },
+  "objectives-unknown": {
+    "status": "requirements_incomplete",
+    "score": null,
+    "postureScore": null,
+    "rating": null,
+    "maturity": null,
+    "evidenceConfidence": "self_declared",
+    "criticalExposure": null,
+    "domainScores": {
+      "BCP": 23,
+      "DR": 18,
+      "CYBER": 18,
+      "OPS": 20,
+      "TP": 20,
+      "INFRA": 18
+    },
+    "preferredPattern": null,
+    "alternatives": [
+      {
+        "id": "DR-02",
+        "name": "Pilot Light",
+        "score": 58,
+        "fit": "Conditional fit",
+        "rationale": "Pilot Light is ranked against the stated recovery objectives, business criticality and operating constraints.",
+        "whyNot": "Strict near-zero RTO/RPO",
+        "decisionFactors": [
+          "Business criticality: high",
+          "Cyber risk: high",
+          "Concentration risk: medium",
+          "Dependency risk: high"
+        ]
+      },
+      {
+        "id": "DR-03",
+        "name": "Warm Standby",
+        "score": 58,
+        "fit": "Conditional fit",
+        "rationale": "Warm Standby is ranked against the stated recovery objectives, business criticality and operating constraints.",
+        "whyNot": "Low criticality workloads",
+        "decisionFactors": [
+          "Business criticality: high",
+          "Cyber risk: high",
+          "Concentration risk: medium",
+          "Dependency risk: high"
+        ]
+      }
+    ],
+    "eliminatedPatterns": [],
+    "patternRanking": [
+      "CYBER-01:76",
+      "CYBER-04:70",
+      "CYBER-03:68",
+      "CYBER-02:66",
+      "DATA-01:64",
+      "DR-01:58",
+      "DR-02:58",
+      "DR-03:58"
+    ],
+    "mandatoryControls": [
+      "DATA-01",
+      "DATA-02",
+      "CYBER-01",
+      "CYBER-02",
+      "DR-07",
+      "APP-04",
+      "DR-08"
+    ],
+    "gaps": [
+      "G-01",
+      "G-02",
+      "G-03",
+      "G-04",
+      "G-05",
+      "G-06",
+      "G-07",
+      "G-08",
+      "G-10"
+    ],
+    "nextQuestions": [
+      "AF-DR-01",
+      "AF-DR-02",
+      "AF-DR-03",
+      "AF-DR-05",
+      "AF-CY-01",
+      "AF-CY-02",
+      "AF-CY-03",
+      "AF-CY-04"
+    ],
+    "evidenceRequests": [
+      "BIA",
+      "failover test evidence",
+      "restore test evidence",
+      "backup evidence",
+      "RTO/RPO register"
+    ],
+    "roadmap": [
+      {
+        "wave": "W0",
+        "window": "0-30 days",
+        "actions": [
+          "Run BIA workshop for critical services",
+          "Execute end-to-end recovery test",
+          "Implement protected backup and restore validation",
+          "Remove critical shared failure domain"
+        ]
+      },
+      {
+        "wave": "W1",
+        "window": "31-90 days",
+        "actions": [
+          "Build cyber recovery vault/clean recovery capability",
+          "Implement isolated identity recovery path",
+          "Complete critical service dependency map",
+          "Create third-party resilience/exit plan"
+        ]
+      },
+      {
+        "wave": "W2",
+        "window": "3-6 months",
+        "actions": [
+          "Validate cyber recovery isolation and clean restore before production recovery migration"
+        ]
+      },
+      {
+        "wave": "W3",
+        "window": "6-18 months",
+        "actions": [
+          "Scale testing, dependency resilience and continuous validation"
+        ]
+      }
+    ],
+    "recommendationConfidence": {
+      "level": "Blocked",
+      "score": 0,
+      "reasons": [
+        "Required business objectives or advisory validation are incomplete."
+      ],
+      "decisionSensitivity": [
+        "Complete required questions and evidence validation before approving a target-state strategy."
+      ]
+    },
+    "executiveSummary": "Resilience assessment requires advisory-depth validation of the triggered critical-service, cyber-recovery and recovery-capability risks before a final target-state recommendation can be issued."
+  },
+  "empty": {
+    "status": "requirements_incomplete",
+    "score": null,
+    "postureScore": null,
+    "rating": null,
+    "maturity": null,
+    "evidenceConfidence": "self_declared",
+    "criticalExposure": null,
+    "domainScores": {
+      "BCP": 45,
+      "DR": 45,
+      "CYBER": 45,
+      "OPS": 45,
+      "TP": 45,
+      "INFRA": 45
+    },
+    "preferredPattern": null,
+    "alternatives": [
+      {
+        "id": "DR-02",
+        "name": "Pilot Light",
+        "score": 55,
+        "fit": "Conditional fit",
+        "rationale": "Pilot Light is ranked against the stated recovery objectives, business criticality and operating constraints.",
+        "whyNot": "Strict near-zero RTO/RPO",
+        "decisionFactors": []
+      },
+      {
+        "id": "DR-03",
+        "name": "Warm Standby",
+        "score": 55,
+        "fit": "Conditional fit",
+        "rationale": "Warm Standby is ranked against the stated recovery objectives, business criticality and operating constraints.",
+        "whyNot": "Low criticality workloads",
+        "decisionFactors": []
+      }
+    ],
+    "eliminatedPatterns": [],
+    "patternRanking": [
+      "DR-01:55",
+      "DR-02:55",
+      "DR-03:55",
+      "DR-04:55",
+      "DR-05:55",
+      "CYBER-01:55",
+      "CYBER-02:55",
+      "CYBER-03:55"
+    ],
+    "mandatoryControls": [],
+    "gaps": [
+      "G-01"
+    ],
+    "nextQuestions": [
+      "EX-01",
+      "EX-02",
+      "EX-03",
+      "EX-04",
+      "EX-05",
+      "EX-06",
+      "EX-07",
+      "EX-08"
+    ],
+    "evidenceRequests": [
+      "BIA",
+      "RTO/RPO register"
+    ],
+    "roadmap": [
+      {
+        "wave": "W0",
+        "window": "0-30 days",
+        "actions": [
+          "Run BIA workshop for critical services"
+        ]
+      },
+      {
+        "wave": "W1",
+        "window": "31-90 days",
+        "actions": []
+      },
+      {
+        "wave": "W2",
+        "window": "3-6 months",
+        "actions": [
+          "Engineer target-state recovery capability"
+        ]
+      },
+      {
+        "wave": "W3",
+        "window": "6-18 months",
+        "actions": [
+          "Scale testing, dependency resilience and continuous validation"
+        ]
+      }
+    ],
+    "recommendationConfidence": {
+      "level": "Blocked",
+      "score": 0,
+      "reasons": [
+        "Required business objectives or advisory validation are incomplete."
+      ],
+      "decisionSensitivity": [
+        "Complete required questions and evidence validation before approving a target-state strategy."
+      ]
+    },
+    "executiveSummary": "Resilience assessment requires defined recovery objectives before a final target-state recommendation can be issued."
+  },
+  "retailer-advisory-complete": {
+    "status": "ready",
+    "score": 6,
+    "postureScore": 48,
+    "rating": "Fragile",
+    "maturity": {
+      "level": 2,
+      "label": "Documented"
+    },
+    "evidenceConfidence": "documented",
+    "criticalExposure": "Severe",
+    "domainScores": {
+      "BCP": 60,
+      "DR": 64,
+      "CYBER": 53,
+      "OPS": 49,
+      "TP": 29,
+      "INFRA": 19
+    },
+    "preferredPattern": "DR-03",
+    "alternatives": [
+      {
+        "id": "DR-04",
+        "name": "Hot Standby / Active-Passive",
+        "score": 62,
+        "fit": "Conditional fit",
+        "rationale": "Hot Standby / Active-Passive is ranked against the stated recovery objectives, business criticality and operating constraints.",
+        "whyNot": "Cost or application constraints outweigh downtime risk",
+        "decisionFactors": [
+          "Required RTO: 1-4 hours",
+          "Required RPO: 15-60 minutes",
+          "Business criticality: very_high",
+          "Cyber risk: high",
+          "Concentration risk: high",
+          "Dependency risk: high"
+        ]
+      },
+      {
+        "id": "DR-02",
+        "name": "Pilot Light",
+        "score": 58,
+        "fit": "Conditional fit",
+        "rationale": "Pilot Light is ranked against the stated recovery objectives, business criticality and operating constraints.",
+        "whyNot": "Strict near-zero RTO/RPO",
+        "decisionFactors": [
+          "Required RTO: 1-4 hours",
+          "Required RPO: 15-60 minutes",
+          "Business criticality: very_high",
+          "Cyber risk: high",
+          "Concentration risk: high",
+          "Dependency risk: high",
+          "Pilot Light provides a faster recovery path than backup/rebuild without assuming active-active complexity."
+        ]
+      }
+    ],
+    "eliminatedPatterns": [],
+    "patternRanking": [
+      "DR-08:90",
+      "DR-03:79",
+      "TP-05:78",
+      "TP-03:78",
+      "INF-03:78",
+      "INF-04:78",
+      "CYBER-01:76",
+      "INF-06:72"
+    ],
+    "mandatoryControls": [
+      "DATA-01",
+      "DATA-02",
+      "CYBER-01",
+      "CYBER-02",
+      "TP-03",
+      "TP-05",
+      "INF-04",
+      "DR-07",
+      "APP-04",
+      "DR-08"
+    ],
+    "gaps": [
+      "G-02",
+      "G-03",
+      "G-04",
+      "G-05",
+      "G-07",
+      "G-08",
+      "G-10"
+    ],
+    "nextQuestions": [],
+    "evidenceRequests": [
+      "failover test evidence",
+      "restore test evidence",
+      "backup evidence",
+      "supplier SLA/contract",
+      "recovery orchestration evidence"
+    ],
+    "roadmap": [
+      {
+        "wave": "W0",
+        "window": "0-30 days",
+        "actions": [
+          "Execute end-to-end recovery test",
+          "Implement protected backup and restore validation",
+          "Remove critical shared failure domain",
+          "Build cyber recovery vault/clean recovery capability"
+        ]
+      },
+      {
+        "wave": "W1",
+        "window": "31-90 days",
+        "actions": [
+          "Complete critical service dependency map",
+          "Create third-party resilience/exit plan",
+          "Establish severe-but-plausible exercise calendar",
+          "Validate cyber recovery isolation and clean restore before production recovery migration"
+        ]
+      },
+      {
+        "wave": "W2",
+        "window": "3-6 months",
+        "actions": [
+          "Validate cyber recovery isolation and clean restore before production recovery migration",
+          "Validate and implement DR-03 against measured RTO/RPO"
+        ]
+      },
+      {
+        "wave": "W3",
+        "window": "6-18 months",
+        "actions": [
+          "Scale testing, dependency resilience and continuous validation"
+        ]
+      }
+    ],
+    "recommendationConfidence": {
+      "level": "Low",
+      "score": 35,
+      "reasons": [
+        "Recovery strategy ranking is sensitive because the leading options are closely matched.",
+        "Material resilience gaps remain unresolved.",
+        "Recovery capability is not supported by recent successful testing."
+      ],
+      "decisionSensitivity": [
+        "Measured RTO/RPO results that miss the stated objectives.",
+        "Material change to business impact tolerance or critical-service dependency topology.",
+        "New evidence showing cyber recovery, identity recovery or third-party recovery is less isolated than assumed."
+      ]
+    },
+    "executiveSummary": "The assessment indicates a fragile resilience posture with severe critical exposure. DR-03 is the preferred primary recovery strategy based on the stated recovery objectives and risk profile."
+  },
+  "saas-cloud-native": {
+    "status": "ready",
+    "score": 81,
+    "postureScore": 87,
+    "rating": "Managed",
+    "maturity": {
+      "level": 3,
+      "label": "Defined"
+    },
+    "evidenceConfidence": "tested",
+    "criticalExposure": "High",
+    "domainScores": {
+      "BCP": 94,
+      "DR": 90,
+      "CYBER": 94,
+      "OPS": 79,
+      "TP": 64,
+      "INFRA": 94
+    },
+    "preferredPattern": "DR-04",
+    "alternatives": [
+      {
+        "id": "DR-03",
+        "name": "Warm Standby",
+        "score": 83,
+        "fit": "Good fit",
+        "rationale": "Warm Standby is ranked against the stated recovery objectives, business criticality and operating constraints.",
+        "whyNot": "Low criticality workloads",
+        "decisionFactors": [
+          "Required RTO: 15-60 minutes",
+          "Required RPO: <15 minutes",
+          "Business criticality: very_high",
+          "Concentration risk: high",
+          "Dependency risk: medium",
+          "Warm Standby improves recovery speed and readiness, but carries greater continuous operating cost."
+        ]
+      },
+      {
+        "id": "DR-02",
+        "name": "Pilot Light",
+        "score": 58,
+        "fit": "Conditional fit",
+        "rationale": "Pilot Light is ranked against the stated recovery objectives, business criticality and operating constraints.",
+        "whyNot": "Strict near-zero RTO/RPO",
+        "decisionFactors": [
+          "Required RTO: 15-60 minutes",
+          "Required RPO: <15 minutes",
+          "Business criticality: very_high",
+          "Concentration risk: high",
+          "Dependency risk: medium",
+          "Pilot Light provides a faster recovery path than backup/rebuild without assuming active-active complexity."
+        ]
+      }
+    ],
+    "eliminatedPatterns": [
+      "DR-01"
+    ],
+    "patternRanking": [
+      "DR-04:84",
+      "DR-03:83",
+      "TP-05:78",
+      "TP-03:78",
+      "INF-03:78",
+      "INF-04:78",
+      "DR-02:58",
+      "DR-05:58"
+    ],
+    "mandatoryControls": [
+      "TP-03",
+      "TP-05",
+      "INF-04"
+    ],
+    "gaps": [
+      "G-04",
+      "G-07",
+      "G-08"
+    ],
+    "nextQuestions": [
+      "AF-DR-01",
+      "AF-DR-05",
+      "AF-TP-02",
+      "AF-BIA-02",
+      "AF-BIA-04",
+      "AF-TP-01",
+      "AF-TP-03",
+      "AF-TP-04"
+    ],
+    "evidenceRequests": [
+      "supplier SLA/contract",
+      "dependency map"
+    ],
+    "roadmap": [
+      {
+        "wave": "W0",
+        "window": "0-30 days",
+        "actions": [
+          "Remove critical shared failure domain"
+        ]
+      },
+      {
+        "wave": "W1",
+        "window": "31-90 days",
+        "actions": [
+          "Complete critical service dependency map",
+          "Create third-party resilience/exit plan",
+          "Validate and implement DR-04 against measured RTO/RPO"
+        ]
+      },
+      {
+        "wave": "W2",
+        "window": "3-6 months",
+        "actions": [
+          "Validate and implement DR-04 against measured RTO/RPO"
+        ]
+      },
+      {
+        "wave": "W3",
+        "window": "6-18 months",
+        "actions": [
+          "Scale testing, dependency resilience and continuous validation"
+        ]
+      }
+    ],
+    "recommendationConfidence": {
+      "level": "Moderate",
+      "score": 60,
+      "reasons": [
+        "Recovery strategy ranking is sensitive because the leading options are closely matched.",
+        "Material resilience gaps remain unresolved."
+      ],
+      "decisionSensitivity": [
+        "Measured RTO/RPO results that miss the stated objectives.",
+        "Material change to business impact tolerance or critical-service dependency topology.",
+        "New evidence showing cyber recovery, identity recovery or third-party recovery is less isolated than assumed."
+      ]
+    },
+    "executiveSummary": "The assessment indicates a managed resilience posture with high critical exposure. DR-04 is the preferred primary recovery strategy based on the stated recovery objectives and risk profile."
+  }
+}

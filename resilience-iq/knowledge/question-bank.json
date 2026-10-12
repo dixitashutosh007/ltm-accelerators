@@ -42,8 +42,8 @@
       ],
       "required": true,
       "ui": {
-        "interaction": "ranking",
-        "instruction": "Drag to arrange by business criticality. Most critical first.",
+        "interaction": "multi_select",
+        "instruction": "Select every type of service the business cannot operate without.",
         "multi": true
       }
     },
@@ -67,7 +67,7 @@
       "required": true,
       "ui": {
         "interaction": "slider_choice",
-        "instruction": "Move the scale to the closest current business tolerance."
+        "instruction": "Move the scale to the closest current business tolerance. No value is assumed: choose a point on the scale, or Unknown."
       }
     },
     {
@@ -91,7 +91,7 @@
       "required": true,
       "ui": {
         "interaction": "slider_choice",
-        "instruction": "Select the recovery objective on the scale."
+        "instruction": "Select the recovery objective on the scale. No value is assumed: choose a point on the scale, or Unknown."
       }
     },
     {
@@ -116,7 +116,7 @@
       "required": true,
       "ui": {
         "interaction": "slider_choice",
-        "instruction": "Select the maximum acceptable data loss on the scale."
+        "instruction": "Select the maximum acceptable data loss on the scale. No value is assumed: choose a point on the scale, or Unknown."
       }
     },
     {
@@ -173,7 +173,8 @@
       ],
       "required": true,
       "ui": {
-        "interaction": "single_select"
+        "interaction": "single_select",
+        "instruction": "Select the answer that best reflects whether recovery capability is proven against the stated RTO."
       }
     },
     {
@@ -195,7 +196,8 @@
       ],
       "required": true,
       "ui": {
-        "interaction": "single_select"
+        "interaction": "single_select",
+        "instruction": "Select the most recent successful end-to-end recovery test interval."
       }
     },
     {
@@ -239,7 +241,8 @@
       ],
       "required": true,
       "ui": {
-        "interaction": "single_select"
+        "interaction": "single_select",
+        "instruction": "Select the answer that best reflects the current immutability and recoverability of critical backups."
       }
     },
     {
@@ -260,7 +263,8 @@
       ],
       "required": true,
       "ui": {
-        "interaction": "single_select"
+        "interaction": "single_select",
+        "instruction": "Select the answer that best reflects the current critical third-party dependency and available alternatives."
       }
     },
     {
@@ -281,7 +285,8 @@
       ],
       "required": true,
       "ui": {
-        "interaction": "single_select"
+        "interaction": "single_select",
+        "instruction": "Select the answer that best reflects the current concentration of critical services on shared providers or failure domains."
       }
     },
     {
@@ -302,7 +307,8 @@
       ],
       "required": true,
       "ui": {
-        "interaction": "single_select"
+        "interaction": "single_select",
+        "instruction": "Select the answer that best reflects known single points of failure affecting critical services or recovery."
       }
     },
     {
@@ -324,7 +330,8 @@
       ],
       "required": true,
       "ui": {
-        "interaction": "single_select"
+        "interaction": "single_select",
+        "instruction": "Select the answer that best reflects the ability to continue critical processes when key people or the primary workplace are unavailable."
       }
     },
     {
@@ -345,12 +352,13 @@
       ],
       "required": true,
       "ui": {
-        "interaction": "single_select"
+        "interaction": "single_select",
+        "instruction": "Select the answer that best reflects the current maturity of crisis management, executive decision-making and communications."
       }
     },
     {
       "id": "EX-15",
-      "domain": "GOV",
+      "domain": "BCP",
       "taxonomy": "governance",
       "text": "Is resilience performance reviewed regularly by accountable business and technology leadership?",
       "type": "single_select",
@@ -366,7 +374,8 @@
       ],
       "required": true,
       "ui": {
-        "interaction": "single_select"
+        "interaction": "single_select",
+        "instruction": "Select the answer that best reflects how resilience performance is governed and reviewed by accountable leadership."
       }
     },
     {
@@ -388,7 +397,8 @@
       ],
       "required": true,
       "ui": {
-        "interaction": "single_select"
+        "interaction": "single_select",
+        "instruction": "Select the answer that best reflects the current use of severe-but-plausible exercises across business and technology teams."
       }
     },
     {
@@ -410,7 +420,8 @@
       ],
       "required": true,
       "ui": {
-        "interaction": "single_select"
+        "interaction": "single_select",
+        "instruction": "Select the answer that best reflects the current continuity and exit arrangements for critical third parties."
       }
     },
     {
@@ -455,7 +466,8 @@
       ],
       "required": true,
       "ui": {
-        "interaction": "single_select"
+        "interaction": "single_select",
+        "instruction": "Select the answer that best reflects the ability to recover privileged identity and access after compromise of the primary control plane."
       }
     },
     {
@@ -477,7 +489,8 @@
       ],
       "required": true,
       "ui": {
-        "interaction": "single_select"
+        "interaction": "single_select",
+        "instruction": "Select the answer that best reflects the current confidence level in documented recovery procedures against business objectives."
       }
     }
   ],

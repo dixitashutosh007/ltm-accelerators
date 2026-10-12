@@ -48,6 +48,16 @@ export interface EvidenceRegisterItem {
   affectsRecommendation: boolean;
 }
 
+/** The target-state blueprint, as targetStateBlueprint() builds it (the result's blueprint and the report's targetState). */
+export interface TargetStateBlueprint {
+  environment: string;
+  recoveryPattern: string;
+  principles: string[];
+  architectureLayers: string[];
+  architectureDecisions: string[];
+  blueprintIds: string[];
+}
+
 export interface ResilienceExecutiveReport {
   assessmentType: "Executive Scan";
   advisoryStatus: "initial" | "requirements_incomplete";
@@ -71,14 +81,7 @@ export interface ResilienceExecutiveReport {
   technologyMapping: Record<string, string[]>;
   evidenceValidation: Array<{ evidence: string; purpose: string }>;
   evidenceRegister: EvidenceRegisterItem[];
-  targetState: {
-    environment: string;
-    recoveryPattern: string;
-    principles: string[];
-    architectureLayers: string[];
-    architectureDecisions: string[];
-    blueprintIds: string[];
-  } | null;
+  targetState: TargetStateBlueprint | null;
   roadmap: Array<{ wave: string; window: string; actions: string[] }>;
   governanceMetrics: string[];
   decisionPoints: string[];
@@ -107,11 +110,7 @@ export interface ResilienceResult {
   evidenceRequests: string[];
   evidenceRegister: EvidenceRegisterItem[];
   technologyOptions: Record<string, string[]>;
-  blueprint: {
-    targetPrinciples: string[];
-    architectureLayers: string[];
-    blueprintIds: string[];
-  } | null;
+  blueprint: TargetStateBlueprint | null;
   roadmap: Array<{ wave: string; window: string; actions: string[] }>;
   decisionLog: string[];
   executiveSummary: string;
@@ -153,16 +152,16 @@ function criticality(a: ResilienceAnswers): string {
 function cyberRisk(a: ResilienceAnswers): string {
   const v = str(a["EX-08"]);
   if (v === "Yes") return "destructive";
-  if (v === "Potentially") return "high";
-  if (v === "Unknown") return "unknown";
+  // Not knowing whether ransomware can reach recovery is treated like "Potentially", never as safer.
+  if (v === "Potentially" || v === "Unknown") return "high";
   return "low";
 }
 
 function concentrationRisk(a: ResilienceAnswers): string {
   const v = str(a["EX-11"]);
   if (v === "High concentration") return "high";
-  if (v === "Moderate concentration") return "medium";
-  if (v === "Unknown") return "unknown";
+  // Unknown concentration is treated like moderate concentration, never as safer.
+  if (v === "Moderate concentration" || v === "Unknown") return "medium";
   return "low";
 }
 
@@ -207,11 +206,15 @@ function environment(a: ResilienceAnswers): string {
 }
 
 function evidenceConfidence(a: ResilienceAnswers): string {
+  // Explicit option -> label table: a text match read "documented but not fully tested" as "tested".
+  const byOption: Record<string, string> = {
+    "High — independently validated": "independently_validated",
+    "High — tested": "tested",
+    "Medium — documented but not fully tested": "documented",
+    "Low": "self_declared"
+  };
   const v = str(a["EX-20"]);
-  if (/independently/i.test(v)) return "independently_validated";
-  if (/tested/i.test(v)) return "tested";
-  if (/documented/i.test(v)) return "documented";
-  if (v === "Low") return "self_declared";
+  if (byOption[v]) return byOption[v];
   const test = str(a["EX-07"]);
   if (test === "Within 3 months") return "tested";
   if (test === "3-12 months ago") return "documented";
@@ -228,7 +231,7 @@ function ruleMatches(rule: any, a: ResilienceAnswers): boolean {
   if (rule.when?.multiple) {
     return rule.when.multiple.every((x: string) => {
       if (x === "critical_service") return criticality(a) !== "unknown";
-      if (x === "ransomware_in_scope") return ["Yes", "Potentially"].includes(str(a["EX-08"]));
+      if (x === "ransomware_in_scope") return ["Yes", "Potentially", "Unknown"].includes(str(a["EX-08"]));
       if (x === "no_proven_recovery") return ["No", "Unknown", "Likely, but not recently tested"].includes(str(a["EX-06"]));
       return false;
     });
@@ -245,6 +248,10 @@ function ruleMatches(rule: any, a: ResilienceAnswers): boolean {
   if (condition === "not_proven_or_no") return ["No", "Unknown", "Likely, but not recently tested"].includes(v);
   if (condition === "never_or_gt_2y") return ["Never", ">2 years ago", "Unknown"].includes(v);
   if (condition === "yes_or_potentially") return ["Yes", "Potentially"].includes(v);
+  if (condition === "yes_potentially_or_unknown") return ["Yes", "Potentially", "Unknown"].includes(v);
+  if (condition === "moderate_high_or_unknown") return ["Moderate concentration", "High concentration", "Unknown"].includes(v);
+  if (condition === "advisory_recovery_correlated") return ["Yes", "Partially", "Unknown"].includes(v);
+  if (condition === "advisory_identity_weak") return ["No", "Unknown"].includes(v);
   if (condition === "not_immutable_or_not_recoverable") return ["Immutable but restore not proven", "Recoverable but not immutable", "No", "Unknown"].includes(v);
   if (condition === "critical_third_party") return ["Yes, with no viable alternative", "Yes, but alternatives exist"].includes(v);
   if (condition === "moderate_or_high_concentration") return ["Moderate concentration", "High concentration"].includes(v);
@@ -299,7 +306,8 @@ function scoreDomains(a: ResilienceAnswers, confidence: number): Record<string, 
     if (rule?.scores && typeof v === "string" && typeof rule.scores[v] === "number") {
       s = rule.scores[v];
     } else if (rule?.type === "criticality_presence" || rule?.type === "environment_presence") {
-      s = Number(rule.default ?? 60);
+      // Scope inputs (which services, which environments) shape the strategy but carry no maturity signal.
+      continue;
     } else if (rule?.scores && Array.isArray(v)) {
       const values = v.map(String).map((item: string) => Number(rule.scores[item])).filter(Number.isFinite);
       s = values.length ? values.reduce((sum: number, value: number) => sum + value, 0) / values.length : Number(rule.default ?? 60);
@@ -432,13 +440,26 @@ function criticalExposure(gaps: Array<{ severity: string }>): "Low" | "Moderate"
   return "Low";
 }
 
-function rating(score: number): string {
+const RATING_ORDER = ["Critical Exposure", "Fragile", "Managed", "Resilient", "Adaptive"];
+/** Highest rating index (and maturity level - 1) the critical exposure allows: a critical gap caps the headline. */
+const EXPOSURE_CAP: Record<string, number> = { Severe: 1, High: 2, Moderate: 4, Low: 4 };
+function rating(score: number, exposure: string): string {
   const band = (k.scoringModel.rating_bands as any[]).find(x => score >= x.min && score <= x.max);
-  return band?.label ?? "Unknown";
+  const label = band?.label ?? "Unknown";
+  const i = RATING_ORDER.indexOf(label);
+  const cap = EXPOSURE_CAP[exposure] ?? 4;
+  return i > cap ? RATING_ORDER[cap] : label;
+}
+/** Recovery was exercised recently and with business scenarios, not only claimed. */
+function testedEvidence(a: ResilienceAnswers): boolean {
+  return ["Within 3 months", "3-12 months ago"].includes(str(a["EX-07"])) && ["Yes, regularly", "Yes, occasionally"].includes(str(a["EX-16"]));
 }
 
-function maturity(score: number) {
-  const level = score >= 90 ? 5 : score >= 75 ? 4 : score >= 60 ? 3 : score >= 40 ? 2 : 1;
+function maturity(score: number, exposure: string, a: ResilienceAnswers) {
+  let level = score >= 90 ? 5 : score >= 75 ? 4 : score >= 60 ? 3 : score >= 40 ? 2 : 1;
+  level = Math.min(level, (EXPOSURE_CAP[exposure] ?? 4) + 1);
+  // "Tested" and "Adaptive" are claims about testing: they need recent scenario-based test evidence.
+  if (level >= 4 && !testedEvidence(a)) level = 3;
   const labels: Record<number, string> = {
     1: "Reactive", 2: "Documented", 3: "Defined", 4: "Tested", 5: "Adaptive"
   };
@@ -450,21 +471,31 @@ function advisorySignals(a: ResilienceAnswers): Set<string> {
   const v = (id: string) => str(a[id]);
   const vals = (id: string) => arr(a[id]).map(String);
 
-  // Advisory answers refine the executive branch rather than replacing it.
-  if (["No", "Partially", "Unknown"].includes(v("AF-DR-04"))) flags.add("recovery_capability_gap");
+  // Advisory answers refine the executive branch rather than replacing it. Each condition follows the
+  // question's wording: the flagged answers are the ones that describe a weakness.
+  // AF-DR-04 "Does recovery depend on services that fail with production?" Yes = correlated failure.
+  if (["Yes", "Partially", "Unknown"].includes(v("AF-DR-04"))) flags.add("recovery_correlation_gap");
+  if (v("AF-DR-01") === "Not proven" || v("AF-DR-02") === "Not proven") flags.add("recovery_capability_gap");
   if (["Manual runbook", "Partially automated", "Unknown"].includes(v("AF-DR-05"))) flags.add("recovery_automation_gap");
-  if (["No", "Unknown"].includes(v("AF-CY-03"))) flags.add("backup_resilience_gap");
+  // AF-CY-01 "Can attackers modify, encrypt or delete backups using production credentials?"
+  if (["Yes", "Potentially", "Unknown"].includes(v("AF-CY-01"))) flags.add("backup_resilience_gap");
+  if (["No formal validation", "Unknown"].includes(v("AF-CY-02"))) flags.add("cyber_recovery_gap");
+  // AF-CY-03 asks about an isolated identity recovery path, not backups.
+  if (["No", "Unknown"].includes(v("AF-CY-03"))) flags.add("identity_recovery_gap");
   if (["No", "Unknown", "Tabletop only"].includes(v("AF-CY-04"))) flags.add("cyber_recovery_gap");
   if (["No defined method", "Unknown"].includes(v("AF-CY-05"))) flags.add("cyber_recovery_gap");
   if (["High — no practical alternative", "Unknown"].includes(v("AF-TP-02"))) flags.add("concentration_risk");
   if (["No viable exit", "Unknown"].includes(v("AF-TP-03"))) flags.add("third_party_exit_gap");
-  if (["Provider test evidence only", "Contractual assertion only", "No evidence"].includes(v("AF-TP-04"))) flags.add("low_test_evidence");
-  if (vals("AF-CL-01").some(x => ["Identity plane", "Cloud provider"].includes(x))) flags.add("concentration_risk");
+  if (["Provider test evidence", "Contractual assertion only", "No evidence"].includes(v("AF-TP-04"))) flags.add("low_test_evidence");
+  // AF-CL-01 lists the failure domains that ARE separated: only "None" is a weakness.
+  if (vals("AF-CL-01").includes("None")) flags.add("concentration_risk");
   if (["No", "Unknown", "Partially"].includes(v("AF-CL-04"))) flags.add("low_test_evidence");
-  if (["Limited capacity", "No", "Unknown"].includes(v("AF-OP-01"))) flags.add("people_continuity_gap");
-  if (["Partially", "No", "Unknown"].includes(v("AF-OP-02"))) flags.add("crisis_management_gap");
-  if (["Partially", "No", "Unknown"].includes(v("AF-OP-03"))) flags.add("governance_gap");
+  // AF-OP-01 recovery site capacity, AF-OP-02 network path diversity, AF-OP-03 rebuilding configurations.
+  if (["Limited capacity", "No", "Unknown"].includes(v("AF-OP-01"))) flags.add("recovery_capability_gap");
+  if (["Partially", "No", "Unknown"].includes(v("AF-OP-02"))) flags.add("concentration_risk");
+  if (["Partially", "No", "Unknown"].includes(v("AF-OP-03"))) flags.add("recovery_automation_gap");
   if (["No", "Unknown"].includes(v("AF-TS-02")) || ["Never", "Ad hoc"].includes(v("AF-TS-03"))) flags.add("low_test_evidence");
+  if (["Shared but informal", "No clear owner"].includes(v("AF-GV-01")) || ["Informal acceptance", "Not governed"].includes(v("AF-GV-02"))) flags.add("governance_gap");
   return flags;
 }
 
@@ -484,8 +515,10 @@ function gapRegister(a: ResilienceAnswers, flags: Set<string>, score: number) {
   if (str(a["EX-03"]) === "Unknown" || str(a["EX-04"]) === "Unknown" || !a["EX-03"] || !a["EX-04"]) add("G-01");
   if (flags.has("recovery_capability_gap") || ["Never", ">2 years ago", "Unknown"].includes(str(a["EX-07"]))) add("G-02");
   if (flags.has("backup_resilience_gap")) add("G-03");
-  if (flags.has("concentration_risk") || str(a["EX-12"]) === "Critical SPOFs exist") add("G-04");
-  if (["Yes", "Potentially"].includes(str(a["EX-08"]))) add("G-05");
+  if (flags.has("concentration_risk") || flags.has("recovery_correlation_gap") || str(a["EX-12"]) === "Critical SPOFs exist") add("G-04");
+  // Untested cyber recovery or no clean-restore method (advisory AF-CY-04/05) is a cyber recovery gap even when
+  // ransomware was not declared in scope; the same flag already mandates CYBER-01/DATA-01.
+  if (["destructive", "high"].includes(cyberRisk(a)) || flags.has("cyber_recovery_gap")) add("G-05");
   if (flags.has("identity_recovery_gap")) add("G-06");
   if (flags.has("dependency_mapping_gap") || ["No", "Documented but stale"].includes(str(normalizedScoringValue("EX-05", a["EX-05"])))) add("G-07");
   if (str(a["EX-10"]) === "Yes, with no viable alternative" || flags.has("concentration_risk")) add("G-08");
@@ -582,10 +615,13 @@ function patternScore(id: string, a: ResilienceAnswers, eliminated: Set<string>,
 }
 
 function technologyOptions(patternIds: string[], a: ResilienceAnswers): Record<string, string[]> {
-  const provider = environment(a);
   const source = k.implementationMappings as any;
   const result: Record<string, string[]> = {};
-  const providers = provider === "unknown" ? ["aws", "azure", "gcp", "on_prem"] : [provider];
+  // Every environment the client runs gets its own mappings (a multi-cloud estate saw only the first provider).
+  const selected = arr(a["EX-18"]);
+  const named: Array<[string, string]> = [["AWS", "aws"], ["Azure", "azure"], ["GCP", "gcp"], ["On-premises", "on_prem"]];
+  const mapped = named.filter(([label]) => selected.includes(label)).map(([, key]) => key);
+  const providers = mapped.length ? mapped : ["aws", "azure", "gcp", "on_prem"];
   for (const p of patternIds) {
     for (const x of providers) {
       const values = source[x]?.[p];
@@ -636,7 +672,7 @@ function targetStateBlueprint(
   if (mandatoryControls.includes("TP-05")) architectureDecisions.push("Reduce or explicitly govern concentration across providers, regions, networks and critical SaaS dependencies.");
   if (mandatoryControls.includes("DR-07")) architectureDecisions.push("Make dependency-aware recovery sequencing an explicit architectural control.");
 
-  const blueprintIds = ((k.blueprintEngine.recommendation_to_blueprint_mapping as any)[preferred] ?? []).slice();
+  const blueprintIds: string[] = ((k.blueprintEngine.recommendation_to_blueprint_mapping as any)[preferred] ?? []).slice();
   for (const g of gaps) {
     if (g.id === "G-05" && !blueprintIds.includes("BP-07")) blueprintIds.push("BP-07");
     if (g.id === "G-08" && !blueprintIds.includes("BP-08")) blueprintIds.push("BP-08");
@@ -691,6 +727,7 @@ export function evaluateResilienceIq(a: ResilienceAnswers): ResilienceResult {
   if (effectiveFlags.has("critical_spof")) score -= 10;
   if (effectiveFlags.has("backup_resilience_gap")) score -= 15;
   if (effectiveFlags.has("identity_recovery_gap")) score -= 8;
+  if (effectiveFlags.has("recovery_correlation_gap")) score -= 8;
   if (effectiveFlags.has("concentration_risk")) score -= 6;
   if (effectiveFlags.has("recovery_capability_gap")) score -= 8;
   score = Math.max(0, Math.min(100, score));
@@ -713,6 +750,9 @@ export function evaluateResilienceIq(a: ResilienceAnswers): ResilienceResult {
   const advisoryQuestions = k.questionBank.advisory_questions as any[];
   const decisionImpact: Record<string, number> = {
     recovery_capability_gap: 100,
+    recovery_correlation_gap: 98,
+    cyber_exposure: 96,
+    identity_recovery_gap: 92,
     cyber_recovery_gap: 96,
     backup_resilience_gap: 94,
     third_party_exit_gap: 90,
@@ -764,7 +804,7 @@ export function evaluateResilienceIq(a: ResilienceAnswers): ResilienceResult {
     ? advisoryDepthRequired && advisoryMissing.length > 0
       ? "Resilience assessment requires advisory-depth validation of the triggered critical-service, cyber-recovery and recovery-capability risks before a final target-state recommendation can be issued."
       : "Resilience assessment requires defined recovery objectives before a final target-state recommendation can be issued."
-    : `The assessment indicates a ${rating(postureScore).toLowerCase()} resilience posture with ${criticalExposure(gaps).toLowerCase()} critical exposure. ${preferred ? preferred + " is the preferred primary recovery strategy based on the stated recovery objectives and risk profile." : "A primary recovery strategy remains undefined."}`;
+    : `The assessment indicates a ${rating(postureScore, criticalExposure(gaps)).toLowerCase()} resilience posture with ${criticalExposure(gaps).toLowerCase()} critical exposure. ${preferred ? preferred + " is the preferred primary recovery strategy based on the stated recovery objectives and risk profile." : "A primary recovery strategy remains undefined."}`;
 
   const topRisks = gaps.slice().sort((x, y) => {
     const rank: Record<string, number> = { critical: 4, "medium-high": 3, high: 3, medium: 2, low: 1 };
@@ -797,8 +837,8 @@ export function evaluateResilienceIq(a: ResilienceAnswers): ResilienceResult {
     executiveSummary,
     assessmentScope: "20-question executive resilience scan covering business continuity, disaster recovery, cyber recovery, operational resilience, third-party resilience and infrastructure resilience.",
     postureScore: assessmentIncomplete ? null : postureScore,
-    rating: assessmentIncomplete ? null : rating(postureScore),
-    maturity: assessmentIncomplete ? null : maturity(postureScore),
+    rating: assessmentIncomplete ? null : rating(postureScore, criticalExposure(gaps)),
+    maturity: assessmentIncomplete ? null : maturity(postureScore, criticalExposure(gaps), a),
     evidenceConfidence: confidenceLabel,
     criticalExposure: assessmentIncomplete ? null : criticalExposure(gaps),
     topRisks,
@@ -820,10 +860,13 @@ export function evaluateResilienceIq(a: ResilienceAnswers): ResilienceResult {
     evidenceValidation,
     evidenceRegister,
     targetState: blueprint,
-    roadmap,
+    // Was the roadmap function itself (dropped from JSON); the report carries the computed waves.
+    roadmap: roadmap(gaps, preferred, effectiveFlags.has("cyber_recovery_gap") && cyberRisk(a) === "low" ? "high" : cyberRisk(a)),
     governanceMetrics: (k.blueprintEngine.section_rules?.governance_and_metrics?.required_metrics ?? []) as string[],
     decisionPoints: (k.executiveReport.decision_points ?? []) as string[],
-    recommendationConfidence: recommendationConfidenceResult
+    recommendationConfidence: recommendationConfidenceResult,
+    // Declared on the report type and read by the page, but was never populated.
+    recommendationSensitivity
   };
 
   return {
@@ -832,8 +875,8 @@ export function evaluateResilienceIq(a: ResilienceAnswers): ResilienceResult {
     score: assessmentIncomplete ? null : score,
     postureScore: assessmentIncomplete ? null : postureScore,
     criticalExposure: assessmentIncomplete ? null : criticalExposure(gaps),
-    rating: assessmentIncomplete ? null : rating(postureScore),
-    maturity: assessmentIncomplete ? null : maturity(postureScore),
+    rating: assessmentIncomplete ? null : rating(postureScore, criticalExposure(gaps)),
+    maturity: assessmentIncomplete ? null : maturity(postureScore, criticalExposure(gaps), a),
     evidenceConfidence: confidenceLabel,
     domainScores: domains,
     preferredPattern: preferred,
@@ -848,16 +891,18 @@ export function evaluateResilienceIq(a: ResilienceAnswers): ResilienceResult {
     evidenceRegister,
     technologyOptions: preferred ? technologyOptions([preferred, ...recoveryRanking.slice(1,3).map(x => x.id), ...(cyberRisk(a) === "destructive" || cyberRisk(a) === "high" ? ["CYBER-01"] : [])], a) : {},
     blueprint,
-    roadmap: roadmap(gaps, preferred, cyberRisk(a)),
+    roadmap: roadmap(gaps, preferred, effectiveFlags.has("cyber_recovery_gap") && cyberRisk(a) === "low" ? "high" : cyberRisk(a)),
     executiveSummary,
     executiveReport,
+    // Declared on ResilienceResult and read first by the page, but was never returned.
+    recommendationConfidence: recommendationConfidenceResult,
     decisionLog: [
       "Vendor-neutral strategy is selected before provider implementation mapping.",
       "RTO/RPO are treated as business requirements and are never inferred from technology.",
       requirementsIncomplete ? "Final recommendation blocked until required RTO/RPO are defined." :
         advisoryDepthRequired && advisoryMissing.length > 0 ? "Final recommendation blocked until triggered advisory-depth questions are completed." :
         "Final recommendation permitted because required executive baseline is complete.",
-      `Resilience posture score: ${postureScore}; critical exposure: ${requirementsIncomplete ? "not assessed" : criticalExposure(gaps)}.`,
+      assessmentIncomplete ? "Resilience posture score and critical exposure are withheld until the assessment is complete." : `Resilience posture score: ${postureScore}; critical exposure: ${criticalExposure(gaps)}.`,
       `Evidence confidence: ${confidenceLabel}.`,
       `Evidence register: ${evidenceRegister.length} requested item(s); validation is required before material evidence can affect recommendation confidence.`,
       evidenceRegister.some(x => x.affectsRecommendation)

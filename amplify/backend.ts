@@ -19,6 +19,7 @@ import { evaluateModernizationIqFunction } from './functions/evaluate-modernizat
 import { reportsServiceFunction } from './functions/reports-service/resource';
 import { evaluateResilienceIqFunction } from './functions/evaluate-resilience-iq/resource';
 import { manageResilienceEvidenceFunction } from './functions/manage-resilience-evidence/resource';
+import { manageResilienceAssessmentFunction } from './functions/manage-resilience-assessment/resource';
 import {
   API_GATEWAY_CORS_ORIGINS, API_BURST_LIMIT, API_RATE_LIMIT, COGNITO_ISSUER, KEEP_LEGACY_API,
   REGION, REPORTS_BUCKET, USER_POOL_CLIENT_ID, USER_POOL_ID
@@ -37,7 +38,8 @@ export const backend = defineBackend({
   evaluateModernizationIqFunction,
   reportsServiceFunction,
   evaluateResilienceIqFunction,
-  manageResilienceEvidenceFunction
+  manageResilienceEvidenceFunction,
+  manageResilienceAssessmentFunction
 });
 
 const apiStack = backend.createStack('AcceleratorsApiStack');
@@ -167,12 +169,35 @@ const acceleratorsApi = new HttpApi(apiStack, 'AcceleratorsHttpApi', { apiName: 
 const legacyRoute = (path: string, methods: HttpMethod[], integration: HttpLambdaIntegration) =>
   acceleratorsApi.addRoutes({ path, methods, integration });
 
+// Resilience IQ assessment persistence. Same platform Cognito identity as the Advisory API (no separate
+// login); API Gateway validates the ID token before the Lambda runs. OPTIONS stays open so the browser's
+// CORS preflight reaches the Lambda, which answers it. Construct IDs match the earlier dev deployment.
+const resilienceAssessmentAuthorizer = new HttpJwtAuthorizer('ResilienceAssessmentJwtAuthorizer', COGNITO_ISSUER, {
+  jwtAudience: [USER_POOL_CLIENT_ID],
+  identitySource: ['$request.header.Authorization']
+});
+const resilienceAssessmentIntegration = integrate('ManageResilienceAssessmentIntegration', backend.manageResilienceAssessmentFunction);
+acceleratorsApi.addRoutes({
+  path: '/api/resilience-iq/assessment',
+  methods: [HttpMethod.GET, HttpMethod.POST],
+  integration: resilienceAssessmentIntegration,
+  authorizer: resilienceAssessmentAuthorizer
+});
+legacyRoute('/api/resilience-iq/assessment', [HttpMethod.OPTIONS], resilienceAssessmentIntegration);
+
 // Cost IQ and Resilience IQ (as on main)
 const costIqIntegration = integrate('EvaluateCostIqIntegration', backend.evaluateCostIqFunction);
 const resilienceIntegration = integrate('EvaluateResilienceIqIntegration', backend.evaluateResilienceIqFunction);
 const resilienceEvidenceIntegration = integrate('ManageResilienceEvidenceIntegration', backend.manageResilienceEvidenceFunction);
-legacyRoute('/api/evaluate/resilience-iq', [HttpMethod.POST, HttpMethod.OPTIONS], resilienceIntegration);
-legacyRoute('/api/resilience-iq/evidence', [HttpMethod.POST, HttpMethod.OPTIONS], resilienceEvidenceIntegration);
+// Resilience IQ scoring and evidence: POST needs the platform Cognito token (the page already sends it);
+// OPTIONS stays open for the preflight, which the Lambdas answer.
+for (const [path, integration] of [
+  ['/api/evaluate/resilience-iq', resilienceIntegration],
+  ['/api/resilience-iq/evidence', resilienceEvidenceIntegration]
+] as const) {
+  acceleratorsApi.addRoutes({ path, methods: [HttpMethod.POST], integration, authorizer: resilienceAssessmentAuthorizer });
+  legacyRoute(path, [HttpMethod.OPTIONS], integration);
+}
 legacyRoute('/api/evaluate/cost-iq', [HttpMethod.POST, HttpMethod.OPTIONS], costIqIntegration);
 legacyRoute('/api/evaluate/cost-iq/{proxy+}', [HttpMethod.GET, HttpMethod.POST, HttpMethod.OPTIONS], costIqIntegration);
 legacyRoute('/api/evaluate/cost-iq/ai-review', [HttpMethod.POST, HttpMethod.OPTIONS], costIqIntegration);

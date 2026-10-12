@@ -10,10 +10,14 @@
 
 /* Resilience IQ suite visual system */
 @import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap");
-:root{--bg:#F8FAFC;--panel:#fff;--line:#CBD5E1;--ink:#0F172A;--ink2:#334155;--ink3:#64748B;--red:#FF5E4F;--red2:#E54536;--navy:#00354F;--green:#35754D;--amber:#E39A2E;--font-h:'Plus Jakarta Sans',sans-serif;--font-m:'JetBrains Mono',monospace}
+:root{--bg:#080C10;--panel:#131A24;--line:#1E2836;--ink:#F3F4F6;--ink2:#CBD5E1;--ink3:#9CA3AF;--red:#FF5E4F;--red2:#E5412F;--navy:#00354F;--green:#10B981;--amber:#F59E0B;--font-h:'Plus Jakarta Sans',sans-serif;--font-m:'JetBrains Mono',monospace}
 html,body{background:var(--bg)!important;color:var(--ink)!important;font-family:var(--font-h)!important}.topbar{position:sticky;top:0;z-index:20;background:rgba(255,255,255,.94);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
-.suitebar{height:62px;display:flex;align-items:center;justify-content:space-between;max-width:1120px;margin:auto;padding:0 24px}.suitebrand{display:flex;align-items:center;gap:11px;font-weight:700}.suite-logo{width:34px;height:34px;border-radius:8px;background:linear-gradient(135deg,var(--red),var(--red2));color:#fff;display:grid;place-items:center;font-weight:800}.suite-sub{font:10px var(--font-m);color:var(--ink3);letter-spacing:.08em;text-transform:uppercase}.wrap{max-width:1120px!important;padding:0 24px!important}.hero{padding:38px 0 10px}.eyebrow{font:11px var(--font-m);letter-spacing:.16em;text-transform:uppercase;color:var(--red);margin-bottom:12px}.hero h1{font-size:40px!important;letter-spacing:-.03em}.hero p{color:var(--ink2)!important;max-width:780px}.panel{background:#fff!important;border:1px solid var(--line)!important;border-radius:8px!important;box-shadow:0 1px 2px rgba(15,23,42,.03);padding:28px!important}.progressbar{height:5px;background:#E2E8F0;border-radius:4px;overflow:hidden;margin:8px 0 25px}.progressbar i{display:block;height:100%;background:var(--red);transition:width .35s ease}.progress{color:var(--ink3)!important}.q{font-size:25px!important;letter-spacing:-.02em;color:var(--ink)}.hint{color:var(--ink3)!important}.options{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.option{background:#fff!important;border:1px solid var(--line)!important;color:var(--ink)!important;border-radius:6px!important;transition:.15s}.option:hover{border-color:#94A3B8!important;transform:translateY(-1px)}.option.selected{border-color:var(--red)!important;background:#FFF4F2!important;box-shadow:0 0 0 1px rgba(255,94,79,.08)}.text-input{width:100%;box-sizing:border-box;border:1px solid var(--line);border-radius:6px;padding:13px;font:15px var(--font-h);color:var(--ink);background:#fff}.text-input:focus{outline:none;border-color:var(--red);box-shadow:0 0 0 2px rgba(255,94,79,.12)}.btn.primary{background:var(--red)!important;color:#fff!important}.btn.secondary{background:#fff!important;color:var(--ink)!important;border:1px solid var(--line)}.interaction-note{font:10px var(--font-m);color:var(--ink3);text-transform:uppercase;letter-spacing:.08em;margin:0 0 12px}.slider-wrap{padding:24px 8px 8px}.slider{width:100%;accent-color:var(--red)}.slider-value{text-align:center;font-size:30px;font-weight:800;margin-bottom:16px}.slider-scale{display:flex;justify-content:space-between;color:var(--ink3);font-size:11px}.matrix{display:grid;grid-template-columns:1.5fr repeat(4,1fr);border:1px solid var(--line);border-radius:6px;overflow:hidden}.matrix>div{padding:11px;border-right:1px solid var(--line);border-bottom:1px solid var(--line);font-size:12px}.matrix .mh{font:10px var(--font-m);text-transform:uppercase;color:var(--ink3);background:#F8FAFC}.matrix button{width:100%;border:0;background:transparent;cursor:pointer;padding:7px;border-radius:4px}.matrix button.selected{background:#FFF0ED;box-shadow:inset 0 0 0 1px var(--red)}.rank-list{display:grid;gap:8px}.rank-item{display:flex;align-items:center;gap:12px;background:#fff;border:1px solid var(--line);border-radius:6px;padding:13px;cursor:grab}.rank-item .handle{font:12px var(--font-m);color:var(--ink3)}.rank-item .ranknum{width:25px;height:25px;border-radius:50%;background:#F1F5F9;display:grid;place-items:center;font:11px var(--font-m)}.rank-item.dragging{opacity:.5;border-color:var(--red)}.splash{position:fixed;inset:0;background:#07111F;color:#fff;z-index:999;display:grid;place-items:center;overflow:hidden}.splash:before{content:"";position:absolute;width:650px;height:650px;border-radius:50%;background:radial-gradient(circle,rgba(255,94,79,.18),transparent 68%);animation:pulse 2s ease-in-out infinite}.splash-inner{position:relative;text-align:center;max-width:700px;padding:30px}.splash-mark{font:800 13px var(--font-m);letter-spacing:.18em;color:#FF8A80}.splash-title{font-size:58px;line-height:1;margin:18px 0 14px;letter-spacing:-.05em}.splash-copy{color:#A9B8CA;font-size:15px;line-height:1.7}.splash-line{width:180px;height:2px;background:#FF5E4F;margin:28px auto 0;animation:loadline 1.4s ease forwards}.fadeout{animation:fadeout .55s ease forwards}@keyframes pulse{50%{transform:scale(1.15);opacity:.7}}@keyframes loadline{from{width:0}to{width:180px}}@keyframes fadeout{to{opacity:0;visibility:hidden}}@media(max-width:700px){.options{grid-template-columns:1fr}.splash-title{font-size:42px}.matrix{grid-template-columns:1.1fr repeat(4,1fr);font-size:10px}}
+.suitebar{height:62px;display:flex;align-items:center;justify-content:space-between;max-width:1120px;margin:auto;padding:0 24px}.suitebrand{display:flex;align-items:center;gap:11px;font-weight:700}.suite-logo{width:34px;height:34px;border-radius:8px;background:linear-gradient(135deg,var(--red),var(--red2));color:#fff;display:grid;place-items:center;font-weight:800}.suite-sub{font:10px var(--font-m);color:var(--ink3);letter-spacing:.08em;text-transform:uppercase}.wrap{max-width:1120px!important;padding:0 24px!important}.hero{padding:38px 0 10px}.eyebrow{font:11px var(--font-m);letter-spacing:.16em;text-transform:uppercase;color:var(--red);margin-bottom:12px}.hero h1{font-size:40px!important;letter-spacing:-.03em}.hero p{color:var(--ink2)!important;max-width:780px}.panel{background:var(--panel)!important;border:1px solid var(--line)!important;border-radius:8px!important;box-shadow:0 1px 2px rgba(0,0,0,.25);padding:28px!important}.progressbar{height:5px;background:#E2E8F0;border-radius:4px;overflow:hidden;margin:8px 0 25px}.progressbar i{display:block;height:100%;background:var(--red);transition:width .35s ease}.progress{color:var(--ink3)!important}.q{font-size:25px!important;letter-spacing:-.02em;color:var(--ink)}.hint{color:var(--ink3)!important}.options{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.option{background:#0E141C!important;border:1px solid var(--line)!important;color:var(--ink)!important;border-radius:8px!important;transition:.15s}.option:hover{border-color:#94A3B8!important;transform:translateY(-1px)}.option.selected{border-color:var(--red)!important;background:rgba(255,94,79,.12)!important;box-shadow:0 0 0 1px rgba(255,94,79,.08)}.text-input{width:100%;box-sizing:border-box;border:1px solid #94A3B8;border-radius:6px;padding:13px 14px;font:600 16px Inter,Arial,sans-serif;color:#111827!important;background:#fff!important;line-height:1.4}.text-input::placeholder{color:#64748B;opacity:1}.text-input:focus{outline:none;border-color:var(--red);box-shadow:0 0 0 2px rgba(255,94,79,.12)}.text-input:focus{outline:none;border-color:var(--red);box-shadow:0 0 0 2px rgba(255,94,79,.12)}.btn.primary{background:var(--red)!important;color:#fff!important}.btn.secondary{background:rgba(255,255,255,.05)!important;color:var(--ink)!important;border:1px solid #2B3848}.interaction-note{font:10px var(--font-m);color:var(--ink3);text-transform:uppercase;letter-spacing:.08em;margin:0 0 12px}.slider-wrap{padding:24px 8px 8px}.slider{width:100%;accent-color:var(--red)}.slider-value{text-align:center;font-size:30px;font-weight:800;margin-bottom:16px}.slider-scale{display:flex;justify-content:space-between;color:var(--ink3);font-size:11px}
+.scale-pick{background:none;border:0;padding:4px 2px;color:inherit;font:inherit;cursor:pointer;border-radius:4px}.scale-pick:hover,.scale-pick:focus-visible{color:var(--ink);text-decoration:underline}.scale-pick.selected{color:var(--red);font-weight:700}.slider-wrap.unset .slider-value{color:var(--ink3);font-size:20px}.slider-wrap.unset .slider{opacity:.45}.matrix{display:grid;grid-template-columns:1.5fr repeat(4,1fr);border:1px solid var(--line);border-radius:6px;overflow:hidden}.matrix>div{padding:11px;border-right:1px solid var(--line);border-bottom:1px solid var(--line);font-size:12px}.matrix .mh{font:10px var(--font-m);text-transform:uppercase;color:var(--ink3);background:#0E141C}.matrix button{width:100%;border:0;background:transparent;cursor:pointer;padding:7px;border-radius:4px}.matrix button.selected{background:#FFF0ED;box-shadow:inset 0 0 0 1px var(--red)}.rank-list{display:grid;gap:8px}.rank-item{display:flex;align-items:center;gap:12px;background:#0E141C;border:1px solid var(--line);border-radius:6px;padding:13px;cursor:grab}.rank-item .handle{font:12px var(--font-m);color:var(--ink3)}.rank-item .ranknum{width:25px;height:25px;border-radius:50%;background:#1E2836;display:grid;place-items:center;font:11px var(--font-m)}.rank-item.dragging{opacity:.5;border-color:var(--red)}.result-highlight{font-size:28px;font-weight:800;color:var(--red);margin:8px 0 0}.history-grid{display:grid;gap:8px}.history-item{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:15px;border:1px solid var(--line);border-radius:8px;background:#0E141C}.history-title{font-weight:700}.history-meta{font-size:12px;color:var(--ink3);margin-top:4px}.status-draft{color:var(--amber)}.status-completed{color:var(--green)}.status-in_progress{color:#60A5FA}.report-cover{background:linear-gradient(135deg,#111B29 0%,#0D141E 58%,#17202C 100%);border:1px solid #2A394C!important;padding:34px!important}.report-meta{display:flex;justify-content:space-between;gap:18px;align-items:flex-start}.report-kicker{font:10px var(--font-m);letter-spacing:.16em;text-transform:uppercase;color:#FF8A80}.report-title{font-size:34px;font-weight:800;letter-spacing:-.04em;margin:8px 0}.report-client{font-size:15px;color:var(--ink2)}.report-date{font:11px var(--font-m);color:var(--ink3);text-align:right}.report-lead{font-size:17px;line-height:1.7;color:#E5EAF0;max-width:900px;margin:24px 0 0}.report-grid{display:grid;grid-template-columns:1.25fr .75fr;gap:16px}.report-stat{background:#0D151F;border:1px solid var(--line);border-radius:8px;padding:20px}.report-stat .value{font-size:30px}.report-score{font-size:48px!important;color:var(--red)}.report-card-title{font:10px var(--font-m);letter-spacing:.12em;text-transform:uppercase;color:var(--ink3);margin-bottom:10px}.report-list{margin:0;padding-left:19px}.report-list li{padding:7px 0;color:var(--ink2);line-height:1.5}.risk-severe{border-left:3px solid var(--danger);padding-left:14px}.risk-high{border-left:3px solid var(--amber);padding-left:14px}.confidence{display:inline-flex;align-items:center;padding:5px 9px;border-radius:999px;background:#172437;color:var(--ink2);font:10px var(--font-m)}.roadmap{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.wave{background:#0D151F;border:1px solid var(--line);border-radius:8px;padding:16px}.wave-num{font:10px var(--font-m);color:var(--red);text-transform:uppercase}.wave h3{font-size:15px;margin:7px 0}.wave p{color:var(--ink3);font-size:12px;line-height:1.5}.print-actions{display:flex;gap:10px;margin-top:24px}@media(max-width:800px){.report-grid,.roadmap{grid-template-columns:1fr}.report-meta{display:block}.report-date{text-align:left;margin-top:10px}}@media print{body{background:#fff!important;color:#111827!important}.topbar,.splash,.print-actions{display:none!important}.wrap{max-width:none!important;padding:0!important}.panel,.report-cover,.report-stat,.wave{background:#fff!important;color:#111827!important;border:1px solid #CBD5E1!important;box-shadow:none!important;break-inside:avoid}.hero{padding-top:0}.hero p,.hint,.report-client,.report-date,.report-lead,.report-list li,.wave p{color:#475569!important}.value,.report-title,.report-kicker,.report-card-title,.wave-num{color:#111827!important}.report-score{color:#B42318!important}.row{border-color:#E2E8F0!important}.pill,.confidence{background:#F1F5F9!important;color:#334155!important}}.splash{position:fixed;inset:0;background:#07111F;color:#fff;z-index:999;display:grid;place-items:center;overflow:hidden}.splash:before{content:"";position:absolute;width:650px;height:650px;border-radius:50%;background:radial-gradient(circle,rgba(255,94,79,.18),transparent 68%);animation:pulse 2s ease-in-out infinite}.splash-inner{position:relative;text-align:center;max-width:700px;padding:30px}.splash-mark{font:800 13px var(--font-m);letter-spacing:.18em;color:#FF8A80}.splash-title{font-size:58px;line-height:1;margin:18px 0 14px;letter-spacing:-.05em}.splash-copy{color:#A9B8CA;font-size:15px;line-height:1.7}.splash-line{width:180px;height:2px;background:#FF5E4F;margin:28px auto 0;animation:loadline 1.4s ease forwards}.fadeout{animation:fadeout .55s ease forwards}@keyframes pulse{50%{transform:scale(1.15);opacity:.7}}@keyframes loadline{from{width:0}to{width:180px}}@keyframes fadeout{to{opacity:0;visibility:hidden}}@media(max-width:700px){.options{grid-template-columns:1fr}.splash-title{font-size:42px}.matrix{grid-template-columns:1.1fr repeat(4,1fr);font-size:10px}}
 </style>
+<script src="/assets/runtime-config.js"></script>
+<script src="/assets/ltm-api.js"></script>
+<script src="/assets/rbac-guard.js" data-tool="resilience-iq"></script>
 <script src="./cost-iq-runtime-config.js"></script>
 </head>
 <body>
@@ -24,8 +28,33 @@ html,body{background:var(--bg)!important;color:var(--ink)!important;font-family:
 <script>
 const API_BASE=(window.RESILIENCE_IQ_API||'').replace(/\/$/,'');
 const API=API_BASE+'/api/evaluate/resilience-iq';
+const ASSESSMENT_API=API_BASE+'/api/resilience-iq/assessment';
+function appAuthToken(){
+ try { const raw=sessionStorage.getItem('ltm_auth_user'); return raw ? JSON.parse(raw).token || '' : ''; }
+ catch { return ''; }
+}
+// Calls the Resilience IQ API with the platform session's ID token. LTM_API renews an expiring token with the
+// refresh token, so long assessments do not fail after an hour; a 401 is retried once with a renewed token.
+async function authFetch(url,options={}){
+ const api=window.LTM_API;
+ const token=api?await api.getIdToken():appAuthToken();
+ if(!token){requireAppLogin();throw new Error('Your session has expired. Please sign in again.');}
+ const send=t=>fetch(url,Object.assign({},options,{headers:Object.assign({},options.headers||{},{'Authorization':'Bearer '+t})}));
+ let res=await send(token);
+ if(res.status===401&&api){const renewed=await api.refreshIdToken();if(renewed)res=await send(renewed);}
+ if(res.status===401){requireAppLogin(true);throw new Error('Your session has expired. Please sign in again.');}
+ return res;
+}
+function requireAppLogin(force){
+ if(force||!(window.LTM_API?window.LTM_API.hasUsableSession():appAuthToken())){
+   const target=encodeURIComponent(window.location.pathname+window.location.search);
+   window.location.href='/?require_login=1&redirect='+target;
+   return false;
+ }
+ return true;
+}
 let questions=[
-{id:'EX-01',t:'Which business services are most critical to the enterprise?',type:'rank',o:['Customer-facing services','Revenue-generating services','Regulatory/financial reporting','Workforce-critical services','Supply-chain/operations services','Other']},
+{id:'EX-01',t:'Which business services are most critical to the enterprise?',type:'multi',o:['Customer-facing services','Revenue-generating services','Regulatory/financial reporting','Workforce-critical services','Supply-chain/operations services','Other']},
 {id:'EX-02',t:'For the most critical service, how long can the business tolerate material disruption before impact becomes unacceptable?',type:'slider',o:['<15 minutes','15-60 minutes','1-4 hours','4-24 hours','>24 hours','Unknown']},
 {id:'EX-03',t:'What is the required recovery time for the most critical service?',type:'slider',o:['<15 minutes','15-60 minutes','1-4 hours','4-24 hours','>24 hours','Unknown']},
 {id:'EX-04',t:'What is the maximum acceptable data loss for the most critical service?',type:'slider',o:['Near-zero','<15 minutes','15-60 minutes','1-4 hours','4-24 hours','>24 hours','Unknown']},
@@ -46,16 +75,20 @@ let questions=[
 {id:'EX-19',t:'Can privileged identity and access be recovered if the primary identity/control plane is compromised?',type:'single',o:['Yes, isolated alternate path exists','Partially','No','Unknown']},
 {id:'EX-20',t:'How confident are you that documented recovery procedures meet the stated business objectives?',type:'single',o:['High — independently validated','High — tested','Medium — documented but not fully tested','Low','Unknown']}
 ];
-let answers={},idx=0,result=null;
+let answers={},idx=0,result=null,assessment=null,assessmentSaving=false;
+const ASSESSMENT_VERSIONS={questionBank:'1.0',scoringModel:'1.0',decisionTree:'1.0',blueprintEngine:'1.0',executiveReport:'1.0',engine:'1.0.0'};
 function esc(s){return String(s??'').replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]));}
 function render(){
  if(result){renderReport();return}
- const q=questions[idx], cur=answers[q.id];
+ if(!assessment){renderAssessmentSetup();loadAssessmentHistory();return}
+ const q=questions[idx];
+ const cur=answers[q.id];
  const pct=Math.round(((idx+1)/questions.length)*100);
  let body='';
  if(q.type==='slider'){
-   const vals=q.o; const pos=cur===undefined?2:cur;
-   body='<div class="slider-wrap"><div class="slider-value" id="sliderVal">'+esc(vals[pos])+'</div><input class="slider" type="range" min="0" max="'+(vals.length-1)+'" step="1" value="'+pos+'" oninput="slide(this.value)"><div class="slider-scale">'+vals.map(x=>'<span>'+esc(x)+'</span>').join('')+'</div></div>';
+   // No value is assumed: recovery objectives and tolerances are business decisions, never defaulted.
+   const vals=q.o; const unset=cur===undefined; const pos=unset?Math.floor((vals.length-1)/2):cur;
+   body='<div class="slider-wrap'+(unset?' unset':'')+'"><div class="slider-value" id="sliderVal">'+(unset?'Not set — choose a value':esc(vals[pos]))+'</div><input class="slider" type="range" min="0" max="'+(vals.length-1)+'" step="1" value="'+pos+'" aria-label="'+esc(q.t)+'" oninput="slide(this.value)" onchange="slide(this.value)"><div class="slider-scale">'+vals.map((x,i)=>'<button type="button" class="scale-pick'+(cur===i?' selected':'')+'" onclick="slide('+i+');render()">'+esc(x)+'</button>').join('')+'</div></div>';
  } else if(q.type==='matrix'){
    const m=answers[q.id]||{}; body='<div class="matrix"><div class="mh">Dependency</div>'+q.cols.map(x=>'<div class="mh">'+esc(x)+'</div>').join('')+q.rows.map((r,ri)=>'<div><b>'+esc(r)+'</b></div>'+q.cols.map((c,ci)=>'<div><button class="'+(m[ri]===ci?'selected':'')+'" onclick="matrixPick('+ri+','+ci+')">'+(m[ri]===ci?'●':'○')+'</button></div>').join('')).join('')+'</div>';
  } else if(q.type==='rank'){
@@ -65,10 +98,90 @@ function render(){
  }
  document.getElementById('app').innerHTML='<div class="hero"><div class="eyebrow">LTM VANTAGE · EXECUTIVE RESILIENCE DIAGNOSTIC</div><h1>Resilience IQ</h1><p>Assess the enterprise ability to sustain critical business services through disruption — before technology choices are made.</p></div><div class="panel"><div class="progress"><span>Question '+(idx+1)+' of '+questions.length+'</span><span class="mono">'+q.id+' · '+pct+'%</span></div><div class="progressbar"><i style="width:'+pct+'%"></i></div><div class="interaction-note">'+(q.type==='multi'?'Multiple selection':q.type==='slider'?'Slider assessment':q.type==='matrix'?'Dependency matrix':q.type==='rank'?'Priority ranking':q.type==='scenario'?'Scenario decision':'Single selection')+'</div><div class="q">'+esc(q.t)+'</div><div class="hint">Answer from the current state. The assessment separates business requirements, recovery strategy and supporting resilience controls.</div>'+body+'<div class="bar"><button class="btn secondary" onclick="back()" '+(idx===0?'disabled':'')+'>← Previous</button><button class="btn primary" onclick="next()">'+(idx===questions.length-1?'Run Resilience Assessment →':'Next →')+'</button></div></div>';
 }
+function renderAssessmentSetup(){
+ let email='';try{email=(JSON.parse(sessionStorage.getItem('ltm_auth_user')||'{}').email)||'';}catch{email='';}
+ document.getElementById('app').innerHTML=
+ '<div class="hero"><div class="eyebrow">LTM VANTAGE · RESILIENCE IQ</div>'+
+ '<h1>Start Resilience Assessment</h1>'+
+ '<p>Set the client context once. Resilience IQ will then save the assessment securely as you progress.</p></div>'+
+ '<div class="panel"><div class="section">'+
+ '<h2>Assessment Context</h2>'+
+ '<p class="hint">This is the working record for the current assessment. Your existing platform identity is used for access.</p>'+
+ '<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:22px">'+
+ '<label>Client / Organisation<input id="assessmentClient" class="text-input" placeholder="e.g. ACME Bank"></label>'+
+ '<label>Sector<input id="assessmentSector" class="text-input" placeholder="e.g. Banking"></label>'+
+ '</div>'+
+ '<label style="display:block;margin-top:16px">Respondent email<input id="assessmentEmail" class="text-input" value="'+esc(email)+'"></label>'+
+ '<div id="assessmentStartError" class="danger" style="display:none;margin-top:14px"></div>'+
+ '<div class="bar"><button class="btn primary" id="startAssessmentBtn" onclick="startAssessment()">Start Assessment →</button></div>'+
+ '</div></div>'+
+ '</div><div class="panel"><div class="section"><h2>Previous Assessments</h2><div id="assessmentHistory"><p class="hint">Loading...</p></div></div></div>';
+}
+async function loadAssessmentHistory(){
+ const host=document.getElementById('assessmentHistory');
+ if(!host)return;
+ host.innerHTML='<p class="hint">Loading previous assessments...</p>';
+ try{
+  const res=await authFetch(ASSESSMENT_API);
+  const j=await res.json();
+  if(!res.ok||!j.ok)throw new Error(j.message||j.error||('Unable to load history (HTTP '+res.status+').'));
+  const items=Array.isArray(j.data)?j.data:[];
+  if(!items.length){host.innerHTML='<p class="hint">No previous Resilience IQ assessments found for this account.</p>';return;}
+  host.innerHTML='<div class="history-grid">'+items.map(x=>{
+    const dt=x.updatedAt||x.completedAt||x.startedAt;
+    const date=dt?new Date(dt).toLocaleDateString(undefined,{day:'2-digit',month:'short',year:'numeric'}):'—';
+    const score=x.resultJson?(()=>{try{return JSON.parse(x.resultJson).postureScore??'—'}catch{return '—'}})():'—';
+    const status=String(x.status||'draft');
+    const action=status==='completed'?'View Report':'Resume';
+    return '<div class="history-item"><div><div class="history-title">'+esc(x.clientName||'Unnamed assessment')+'</div><div class="history-meta">'+esc(x.clientSector||'')+' · '+esc(date)+' · <span class="status-'+esc(status)+'">'+esc(status.replace('_',' '))+'</span>'+(score!=='—'?' · Posture '+esc(score):'')+'</div></div><button class="btn secondary" data-id="'+esc(String(x.assessmentId||''))+'" onclick="openAssessmentHistory(this.dataset.id)">'+action+' →</button></div>';
+  }).join('')+'</div>';
+ }catch(e){host.innerHTML='<p class="danger">Unable to load assessment history: '+esc(e.message)+'</p>';}
+}
+function openAssessmentHistory(id){
+ if(!id)return;
+ window.location.href=window.location.pathname+'?assessmentId='+encodeURIComponent(id);
+}
+async function startAssessment(){
+ if(!requireAppLogin())return;
+ const clientName=(document.getElementById('assessmentClient')?.value||'').trim();
+ const clientSector=(document.getElementById('assessmentSector')?.value||'').trim();
+ const respondentEmail=(document.getElementById('assessmentEmail')?.value||'').trim().toLowerCase();
+ const err=document.getElementById('assessmentStartError');
+ if(!clientName||!respondentEmail){err.textContent='Client / Organisation and respondent email are required.';err.style.display='block';return;}
+ const btn=document.getElementById('startAssessmentBtn'); btn.disabled=true; btn.textContent='Creating Assessment...';
+ assessment={assessmentId:crypto.randomUUID(),clientName,clientSector,respondentEmail,startedAt:new Date().toISOString(),status:'draft'};
+ try{
+  await saveAssessment('draft','save');
+  history.replaceState(null,'',window.location.pathname+'?assessmentId='+encodeURIComponent(assessment.assessmentId));
+  render();
+ }catch(e){
+  assessment=null;
+  err.textContent='Unable to create the assessment record: '+e.message;
+  err.style.display='block';
+  btn.disabled=false; btn.textContent='Start Assessment →';
+ }
+}
+async function saveAssessment(status,action='save'){
+ if(!assessment)return;
+ assessment.status=status;
+ assessmentSaving=true;
+ const snapshot={
+  ...assessment,
+  version:ASSESSMENT_VERSIONS,
+  answers:mapAnswers(),
+  completedAt:status==='completed'?(assessment.completedAt||new Date().toISOString()):assessment.completedAt,
+  finalizedAt:assessment.finalizedAt
+ };
+ const res=await authFetch(ASSESSMENT_API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action,snapshot})});
+ let j; try{j=await res.json();}catch{throw new Error('Persistence service returned an invalid response.');}
+ if(!res.ok||!j.ok)throw new Error(j.message||j.error||('Persistence failed (HTTP '+res.status+').'));
+ assessmentSaving=false;
+ return j.data;
+}
 function numberPick(v){answers[questions[idx].id]=v===''?undefined:Number(v);}
 function textPick(v){answers[questions[idx].id]=v;}
 function pick(i){const q=questions[idx];if(q.type==='multi'){const cur=Array.isArray(answers[q.id])?[...answers[q.id]]:[];const p=cur.indexOf(i);p>=0?cur.splice(p,1):cur.push(i);answers[q.id]=cur;}else answers[q.id]=i;render();}
-function slide(v){answers[questions[idx].id]=Number(v);const q=questions[idx];const el=document.getElementById('sliderVal');if(el)el.textContent=q.o[Number(v)];}
+function slide(v){answers[questions[idx].id]=Number(v);const q=questions[idx];const el=document.getElementById('sliderVal');if(el)el.textContent=q.o[Number(v)];const w=el&&el.closest('.slider-wrap');if(w)w.classList.remove('unset');}
 function matrixPick(r,c){const q=questions[idx];const m=answers[q.id]||{};m[r]=c;answers[q.id]=m;render();}
 let dragFrom=null;
 function dragStart(e){dragFrom=Number(e.currentTarget.dataset.i);e.currentTarget.classList.add('dragging');}
@@ -86,13 +199,16 @@ function next(){
  const q=questions[idx];
  if(q.type==='rank'&&answers[q.id]===undefined)answers[q.id]=q.o.map((_,i)=>i);
  if(!answerProvided(q)){alert(q.type==='matrix'?'Please complete the dependency matrix before continuing.':'Please provide an answer before continuing.');return;}
- if(idx<questions.length-1){idx++;render();}else evaluate();
+ if(idx<questions.length-1){
+  saveAssessment('in_progress','save').then(()=>{idx++;render();}).catch(e=>alert('Progress could not be saved: '+e.message));
+ }else evaluate();
 }
 async function evaluate(){
+ if(!requireAppLogin())return;
  document.getElementById('app').innerHTML='<div class="panel" style="text-align:center;padding:70px"><h2>Running Resilience IQ...</h2><p style="color:var(--muted)">Applying decision branches, evidence confidence, hard constraints, pattern ranking and blueprint logic.</p></div>';
  try{
   if(!API_BASE)throw new Error('Resilience IQ API is not configured. Refresh the application or contact the platform administrator.');
-  const res=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({answers:mapAnswers()})});
+  const res=await authFetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({answers:mapAnswers()})});
   let j;
   try{j=await res.json();}catch{throw new Error('The evaluation service returned an invalid response.');}
   if(!res.ok||!j.ok)throw new Error(j.error||j.message||('Evaluation failed (HTTP '+res.status+').'));result=j.data;
@@ -100,20 +216,32 @@ async function evaluate(){
     await loadAdvisoryQuestions(result.nextQuestions);
     return;
   }
+  assessment.completedAt=new Date().toISOString();
+  const saved=await saveAssessment('completed','complete');
+  // Show exactly what was stored: the server computes the result it saves.
+  if(saved&&saved.resultJson){try{result=JSON.parse(saved.resultJson);}catch{}}
   renderReport();
- }catch(e){document.getElementById('app').innerHTML='<div class="panel"><h2>Evaluation failed</h2><p class="danger">'+esc(e.message)+'</p><button class="btn primary" onclick="render()">Retry</button></div>';}}
+ }catch(e){result=null;document.getElementById('app').innerHTML='<div class="panel" role="alert"><h2>We couldn\'t calculate your results</h2><p class="danger">'+esc(e.message)+'</p><button class="btn primary" onclick="render()">Retry</button></div>';}}
+// Adds advisory questions (from the hosted bank) to the assessment; used when the engine asks for them and
+// when an assessment that already has advisory answers is resumed.
+async function appendAdvisoryQuestions(ids){
+ if(!ids.length)return [];
+ const bank=await fetch('./resilience-iq/knowledge/question-bank.json',{cache:'no-store'}).then(r=>r.ok?r.json():null);
+ if(!bank)throw new Error('Question bank unavailable');
+ const byId=new Map((bank.advisory_questions||[]).map(q=>[q.id,q]));
+ const typeMap={multi_select:'multi',slider_choice:'slider',ranking:'rank',matrix:'matrix',scenario:'scenario',single_select:'single',yes_no:'single',evidence_select:'multi',number:'number',text:'text'};
+ const additions=ids.map(id=>byId.get(id)).filter(Boolean).map(q=>{
+   const interaction=q.ui?.interaction||q.type;
+   return {id:q.id,t:q.text,type:typeMap[interaction]||'single',o:q.options||[],rows:q.ui?.rows||[],cols:q.ui?.columns||[],required:true};
+ }).filter(q=>!questions.some(existing=>existing.id===q.id));
+ questions=[...questions,...additions];
+ return additions;
+}
 async function loadAdvisoryQuestions(nextQuestions){
  try{
-  const bank=await fetch('../resilience-iq/knowledge/question-bank.json',{cache:'no-store'}).then(r=>r.ok?r.json():null);
-  if(!bank)throw new Error('Question bank unavailable');
-  const byId=new Map((bank.advisory_questions||[]).map(q=>[q.id,q]));
-  const additions=nextQuestions.map(n=>byId.get(n.id)).filter(Boolean).map(q=>{
-    const interaction=q.ui?.interaction||q.type;
-    const typeMap={multi_select:'multi',slider_choice:'slider',ranking:'rank',matrix:'matrix',scenario:'scenario',single_select:'single',yes_no:'single',evidence_select:'multi',number:'number',text:'text'};
-    return {id:q.id,t:q.text,type:typeMap[interaction]||'single',o:q.options||[],rows:q.ui?.rows||[],cols:q.ui?.columns||[],required:true};
-  }).filter(q=>!questions.some(existing=>existing.id===q.id));
+  const additions=await appendAdvisoryQuestions(nextQuestions.map(n=>n.id));
   if(!additions.length){renderReport();return;}
-  questions=[...questions,...additions];
+  result=null;
   for(const q of additions) answers[q.id]=undefined;
   idx=questions.length-additions.length;
   document.querySelector('.badge').textContent='ADVISORY DEEP DIVE';
@@ -122,47 +250,85 @@ async function loadAdvisoryQuestions(nextQuestions){
   document.getElementById('app').innerHTML='<div class="panel"><h2>Advisory questions unavailable</h2><p class="danger">'+esc(e.message)+'</p><button class="btn primary" onclick="evaluate()">Retry</button></div>';
  }}
 function mapAnswers(){const out={};for(const q of questions){const v=answers[q.id];if(q.type==='multi')out[q.id]=(v||[]).map(i=>q.o[i]);else if(q.type==='slider')out[q.id]=q.o[v];else if(q.type==='rank')out[q.id]=(v||q.o.map((_,i)=>i)).map(i=>q.o[i]);else if(q.type==='matrix'){const m=v||{};out[q.id]=Object.fromEntries(Object.entries(m).map(([row,i])=>[q.rows[row],q.cols[i]]));}else if(q.type==='number'||q.type==='text')out[q.id]=v;else out[q.id]=q.o[v];}return out;}
-function renderReport(){const d=result;const blocked=d.status!=='ready';const advisoryBlocked=blocked&&d.executiveReport?.advisoryStatus==='requirements_incomplete';document.getElementById('app').innerHTML=`
-<div class="hero"><h1>Resilience IQ Results</h1><p>${blocked?(advisoryBlocked?'Final recommendation is blocked until the triggered advisory deep dive is completed.':'Final recommendation is blocked until required business objectives and baseline questions are complete.'):'Resilience assessment complete. The recommendation reflects the completed executive and advisory assessment.'}</p></div>
-<div class="grid">
-<div class="stat"><div class="label">Resilience Posture</div><div class="value">${d.postureScore??'—'}</div></div>
-<div class="stat"><div class="label">Critical Exposure</div><div class="value" style="font-size:20px">${esc(d.criticalExposure||'—')}</div></div>
-<div class="stat"><div class="label">Rating</div><div class="value" style="font-size:20px">${esc(d.rating||'Incomplete')}</div></div>
-<div class="stat"><div class="label">Maturity</div><div class="value" style="font-size:20px">${d.maturity?esc(d.maturity.label):'—'}</div></div>
-<div class="stat"><div class="label">Evidence</div><div class="value" style="font-size:17px">${esc(d.evidenceConfidence)}</div></div><div class="stat"><div class="label">Recommendation Confidence</div><div class="value" style="font-size:17px">${esc(d.recommendationConfidence?.level||"Blocked")}</div><div style="color:var(--muted);margin-top:4px">${esc(d.recommendationConfidence?.score ?? 0)}/100</div></div>
-</div>
-<div class="panel"><div class="section"><h2>Executive Advisory Report</h2><div class="pill">${d.status==='ready'?'Executive Scan · Advisory Validated':'Executive Scan · Initial Advisory'}</div><p style="color:var(--muted);margin-top:10px">This is an initial executive posture assessment. Final target-state architecture and investment decisions should be validated through the evidence requests and advisory questions identified below.</p></div><div class="section"><h2>Executive Summary</h2><p style="font-size:18px;line-height:1.6">${esc(d.executiveSummary||"")}</p></div></div>
-<div class="panel" style="border-color:var(--accent)">
-<div class="section"><h2>Executive Decision View</h2><p style="color:var(--muted)">The decision view translates the assessment into the actions a CIO/CTO can take now. It deliberately separates the recovery strategy from supporting resilience controls and keeps unresolved evidence visible.</p></div>
-<div class="section"><h2>What is the situation?</h2><p style="font-size:18px;line-height:1.55">${esc(d.executiveReport?.executiveSummary||d.executiveSummary||'Initial resilience posture assessment completed.')}</p></div>
-<div class="section"><h2>Top 5 Risks</h2>${(d.executiveReport?.topRisks||[]).slice(0,5).map((x,i)=>`<div class="row"><span class="pill">${i+1}</span> <b>${esc(x.name||x.risk||x)}</b><div style="color:var(--muted);margin-top:5px">${esc(x.action||x.impact||'Requires validation and risk treatment.')}</div></div>`).join('')||'<p style="color:var(--muted)">No ranked risks returned.</p>'}</div>
-<div class="section"><h2>What should we do?</h2>${(d.roadmap||[]).slice(0,4).map(w=>`<div class="row"><b>${esc(w.wave)} · ${esc(w.window)}</b><div style="color:var(--muted);margin-top:6px">${(w.actions||[]).slice(0,4).map(esc).join(' · ')}</div></div>`).join('')}</div>
-<div class="section"><h2>Why this strategy?</h2><p style="color:var(--muted)">${esc(d.executiveReport?.recoveryStrategy?.rationale||'The preferred recovery strategy is driven by stated business recovery objectives, then constrained by cyber, dependency, concentration and technology risks.')}</p><div class="row"><b>Preferred recovery strategy</b><span style="float:right">${esc(d.preferredPattern||'Not yet determined')}</span></div>${(d.executiveReport?.recoveryStrategy?.alternatives||[]).slice(0,2).map(x=>`<div class="row"><b>Alternative</b><span style="float:right">${esc(typeof x==='string'?x:(x.name||x.id||''))}</span></div>`).join('')}</div>
-<div class="section"><h2>Investment decisions</h2>${(d.executiveReport?.decisionPoints||[]).slice(0,5).map(x=>`<div class="row">${esc(x)}</div>`).join('')||'<div class="row">Validate the target recovery objectives, protected recovery capability, identity recovery and third-party resilience before committing major investment.</div>'}</div>
-<div class="section"><h2>Evidence Traceability</h2>${(d.evidenceRegister||[]).slice(0,10).map(x=>`<div class="row"><b>${esc(x.id||"Evidence")}</b><span class="pill" style="float:right">${esc(x.status)}</span><div style="margin-top:6px"><b>${esc(x.evidence)}</b> · ${esc((x.type||"other").replace(/_/g," "))}</div><div style="color:var(--muted);margin-top:5px">${esc(x.purpose||"Validate the assessment assumption and supporting control.")}<br>Affects: ${(x.affectedGaps||[]).map(esc).join(" · ")||"assessment assumption only"}${x.affectsRecommendation?" · can change recommendation":""}${(x.validationCriteria||[]).length?'<br><b>Validation:</b> '+x.validationCriteria.map(esc).join(' · '):''}</div></div>`).join("")||"<p style="color:var(--muted)">No evidence register items returned.</p>"}</div></div>
-<div class="section"><h2>Missing evidence</h2>${(d.executiveReport?.evidenceValidation||[]).slice(0,8).map(x=>`<div class="row"><b>${esc(x.evidence)}</b><div style="color:var(--muted);margin-top:5px">${esc(x.purpose)}</div></div>`).join('')||'<div class="row">No additional evidence was returned.</div>'}</div>
-<div class="section"><h2>Recommendation Confidence</h2><p style="color:var(--muted)">${esc((d.recommendationConfidence?.reasons||[]).join(" · ")||"Confidence is based on evidence quality, strategy separation and unresolved risk.")}</p>${(d.recommendationConfidence?.decisionSensitivity||[]).map(x=>`<div class="row">${esc(x)}</div>`).join("")}</div><div class="section"><h2>What could change the recommendation?</h2>${(d.recommendationSensitivity||[]).map(x=>`<div class="row"><span class="pill">${esc(x.id)}</span> <b>${esc(x.trigger)}</b><div style="color:var(--muted);margin-top:6px"><b>Current assumption:</b> ${esc(x.currentAssumption)}<br><b>Impact:</b> ${esc(x.impact)}<br><b>Affected decision:</b> ${esc(x.affectedDecision)}<br><b>Action:</b> ${esc(x.action)}</div></div>`).join("")||'<div class="row">Measured recovery results, business objectives, dependency topology, cyber recovery isolation and concentration constraints could change the strategy.</div>'}</div></div>
-</div>
-<div class="panel"><div class="section"><h2>Business Requirement Baseline</h2><div class="row"><b>Critical Services</b><div style="color:var(--muted);margin-top:5px">${esc((d.executiveReport?.businessRequirements?.criticalServices||[]).join(' · ')||'Not defined')}</div></div><div class="row"><b>Impact Tolerance</b><div style="color:var(--muted);margin-top:5px">${esc(d.executiveReport?.businessRequirements?.impactTolerance||'Unknown')}</div></div><div class="row"><b>Required RTO / RPO</b><div style="color:var(--muted);margin-top:5px">${esc(d.executiveReport?.businessRequirements?.requiredRto||'Unknown')} / ${esc(d.executiveReport?.businessRequirements?.requiredRpo||'Unknown')}</div></div></div></div>
-<div class="panel">
-<div class="section"><h2>Recovery Strategy</h2><p style="font-size:24px;font-weight:800">${esc(d.preferredPattern||'No final strategy yet')}</p><p style="color:var(--muted)">Primary recovery strategy is selected separately from cyber-recovery and supporting controls.</p></div>
-<div class="section"><h2>Domain Scorecard</h2>${Object.entries(d.domainScores||{}).map(([k,v])=>`<div class="row"><b>${k}</b><span style="float:right">${v}/100</span></div>`).join('')}</div>
-<div class="section"><h2>Critical Gaps</h2>${(d.gapRegister||[]).map(g=>`<div class="row"><span class="pill">${esc(g.severity)}</span> <b>${esc(g.name)}</b><div style="color:var(--muted);margin-top:5px">${esc(g.action)}</div></div>`).join('')||'<p>No material gaps returned.</p>'}</div>
-<div class="section"><h2>Recovery Strategy Ranking</h2><p style="color:var(--muted)">These are the primary business recovery strategies. Cyber recovery, concentration and dependency controls are shown separately so they are not confused with the DR strategy.</p>${(d.patternRanking||[]).filter(p=>/^DR-/.test(p.id)).map(p=>`<div class="row"><b>${esc(p.id)} — ${esc(p.name)}</b><span style="float:right">${p.score}/100</span><div style="color:var(--muted);margin-top:5px">${esc(p.fit)}</div></div>`).join('')}</div>
-<div class="section"><h2>Supporting Resilience Controls</h2>${(d.patternRanking||[]).filter(p=>!/^DR-/.test(p.id)).slice(0,5).map(p=>`<div class="row"><b>${esc(p.id)} — ${esc(p.name)}</b><span style="float:right">${p.score}/100</span><div style="color:var(--muted);margin-top:5px">${esc(p.fit)}</div></div>`).join('')||'<p style="color:var(--muted)">No additional supporting controls were ranked.</p>'}</div>
-<div class="section"><h2>Decision Rationale</h2><p style="color:var(--muted)">The preferred strategy is selected from business recovery objectives first, then adjusted for criticality, cyber risk, dependency risk and concentration. Higher-complexity patterns are not preferred unless the recovery objectives justify them.</p>
-${(d.patternRanking||[]).filter(p=>/^DR-/.test(p.id)).slice(0,3).map(p=>`<div class="row"><b>${esc(p.id)} — ${esc(p.name)}</b><div style="color:var(--muted);margin-top:5px">${(p.decisionFactors||[]).slice(-2).map(esc).join(" · ")}</div></div>`).join("")}</div>
-<div class="section"><h2>Technology Options</h2>${Object.entries(d.technologyOptions||{}).map(([k,v])=>`<div class="row"><b>${esc(k)}</b><div style="color:var(--muted);margin-top:5px">${v.map(esc).join(' · ')}</div></div>`).join('')||'<p style="color:var(--muted)">Provider mapping becomes available after a final pattern is selected.</p>'}</div>
-<div class="section"><h2>Evidence & Validation</h2>${(d.executiveReport?.evidenceValidation||[]).map(x=>`<div class="row"><b>${esc(x.evidence)}</b><div style="color:var(--muted);margin-top:5px">${esc(x.purpose)}</div></div>`).join('')||'<p style="color:var(--muted)">No additional validation evidence requested.</p>'}</div>
-<div class="section"><h2>What Could Change This Recommendation?</h2>${(d.executiveReport?.recoveryStrategy?.sensitivity||[]).map(x=>`<div class="row">${esc(x)}</div>`).join('')}</div>
-<div class="section"><h2>CIO / CTO Decision Points</h2>${(d.executiveReport?.decisionPoints||[]).map(x=>`<div class="row">${esc(x)}</div>`).join('')}</div>
-<div class="section"><h2>Evidence Requests</h2><p>${(d.evidenceRequests||[]).map(x=>'<span class="pill" style="margin:3px">'+esc(x)+'</span>').join(' ')||'None'}</p></div>
-<div class="section"><h2>Roadmap</h2>${(d.roadmap||[]).map(w=>`<div class="row"><b>${esc(w.wave)} · ${esc(w.window)}</b><div style="color:var(--muted);margin-top:6px">${(w.actions||[]).map(esc).join(' · ')}</div></div>`).join('')}</div>
-<div class="bar"><button class="btn secondary" onclick="location.reload()">← Back to Assessment</button></div>
-</div>`;}
+function renderReport(){
+ const d=result||{};
+ const er=d.executiveReport||{};
+ const blocked=d.status!=='ready';
+ const risks=(er.topRisks||[]).slice(0,5);
+ const roadmapRows=(d.roadmap||[]).slice(0,4);
+ const recovery=er.recoveryStrategy||{};
+ const ranking=(d.patternRanking||[]).filter(p=>/^DR-/.test(p.id)).slice(0,5);
+ const gaps=(d.gapRegister||[]).slice(0,8);
+ const evidence=(d.evidenceRegister||[]).slice(0,8);
+ const criticalServices=er.businessRequirements?.criticalServices||[];
+ const target=er.targetState||d.blueprint||{};
+ const confidence=d.recommendationConfidence||er.recommendationConfidence||{};
+ const sensitivity=er.recommendationSensitivity||d.recommendationSensitivity||{};
+ const assessmentDate=assessment?.completedAt||new Date().toISOString();
+ const dateLabel=new Date(assessmentDate).toLocaleDateString(undefined,{day:'2-digit',month:'short',year:'numeric'});
+ const riskClass=x=>String(x.severity||x.level||'').toLowerCase().includes('severe')?'risk-severe':String(x.severity||x.level||'').toLowerCase().includes('high')?'risk-high':'';
+ const arr=x=>Array.isArray(x)?x.filter(Boolean):[];
+ const confidenceText=confidence.overall||confidence.level||confidence.label||'Not stated';
+ const sensitivityItems=arr(sensitivity.items||sensitivity.drivers||sensitivity);
+ const html=
+ '<div class="hero"><div class="eyebrow">LTM VANTAGE · EXECUTIVE RESILIENCE DIAGNOSTIC</div></div>'+
+ '<div class="panel report-cover">'+
+   '<div class="report-meta"><div><div class="report-kicker">Executive Resilience Assessment</div><div class="report-title">'+esc(assessment?.clientName||'Enterprise Assessment')+'</div><div class="report-client">'+esc(assessment?.clientSector||'Enterprise')+' · Resilience IQ</div></div><div class="report-date">Assessment date<br><b>'+esc(dateLabel)+'</b><br><span class="confidence">'+esc(blocked?'Assessment depth incomplete':'Assessment complete')+'</span></div></div>'+
+   '<p class="report-lead">'+esc(er.executiveSummary||d.executiveSummary||'Resilience posture assessment completed.')+'</p>'+
+   '<div class="print-actions"><button class="btn primary" onclick="window.print()">Print / Save Executive Report</button><button class="btn secondary" onclick="location.reload()">← Back to Assessment</button></div>'+
+ '</div>'+
+ '<div class="grid" style="margin-top:16px">'+
+   '<div class="report-stat"><div class="label">Resilience Posture</div><div class="value report-score">'+esc(d.postureScore??d.score??'—')+'</div></div>'+
+   '<div class="report-stat"><div class="label">Critical Exposure</div><div class="value">'+esc(d.criticalExposure||'—')+'</div></div>'+
+   '<div class="report-stat"><div class="label">Rating</div><div class="value">'+esc(d.rating||'Incomplete')+'</div></div>'+
+   '<div class="report-stat"><div class="label">Maturity</div><div class="value">'+esc(d.maturity?.label||'—')+'</div></div>'+
+ '</div>'+
+ '<div class="report-grid" style="margin-top:16px">'+
+   '<div class="panel"><div class="report-card-title">Executive decision</div><h2 style="margin-top:0">'+esc(d.preferredPattern||'Recommendation not yet determined')+'</h2><p class="hint">'+esc(recovery.rationale||'The recovery strategy is derived from business objectives, recovery requirements and resilience constraints.')+'</p>'+
+   (recovery.principles?'<ul class="report-list">'+arr(recovery.principles).slice(0,5).map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul>':'')+
+   '</div>'+
+   '<div class="panel"><div class="report-card-title">Recommendation confidence</div><div class="value">'+esc(confidenceText)+'</div><p class="hint">'+esc((Array.isArray(confidence.reasons)&&confidence.reasons.length?confidence.reasons.join(' '):'')||confidence.rationale||confidence.reason||'Confidence reflects the strength and completeness of the evidence supporting the recommendation.')+'</p></div>'+
+ '</div>'+
+ '<div class="panel"><div class="section"><h2>Business Requirement Baseline</h2>'+
+   '<div class="report-grid"><div><div class="report-card-title">Critical services</div><ul class="report-list">'+(criticalServices.length?criticalServices.map(x=>'<li>'+esc(x)+'</li>').join(''):'<li>Not defined</li>')+'</ul></div>'+
+   '<div><div class="report-card-title">Impact tolerance</div><p>'+esc(er.businessRequirements?.impactTolerance||'Unknown')+'</p><div class="report-card-title">Required RTO / RPO</div><p><b>'+esc(er.businessRequirements?.requiredRto||'Unknown')+'</b> / <b>'+esc(er.businessRequirements?.requiredRpo||'Unknown')+'</b></p></div></div>'+
+ '</div></div>'+
+ '<div class="panel"><div class="section"><h2>Top Risks & Critical Gaps</h2>'+
+   (risks.length?risks.map((x,i)=>'<div class="row '+riskClass(x)+'"><span class="pill">'+(i+1)+'</span> <b>'+esc(x.name||x.risk||x)+'</b>'+(x.severity?'<span class="pill" style="float:right">'+esc(x.severity)+'</span>':'')+'<div class="hint">'+esc(x.action||x.impact||x.description||'Risk treatment requires validation.')+'</div></div>').join(''):'<div class="row">No ranked risks returned.</div>')+
+   '<h3 style="margin-top:26px">Critical gaps</h3>'+
+   (gaps.length?gaps.map(g=>'<div class="row"><span class="pill">'+esc(g.severity||'Gap')+'</span> <b>'+esc(g.name||g.id)+'</b><div class="hint">'+esc(g.action||'Treatment required.')+'</div></div>').join(''):'<div class="row">No material gaps returned.</div>')+
+ '</div></div>'+
+ '<div class="report-grid">'+
+   '<div class="panel"><div class="section"><h2>Recovery Strategy Ranking</h2>'+
+     (ranking.length?ranking.map((p,i)=>'<div class="row"><span class="pill">'+(i+1)+'</span> <b>'+esc(p.id)+' — '+esc(p.name)+'</b><span style="float:right"><b>'+esc(p.score)+'</b>/100</span><div class="hint">'+esc(p.fit||p.rationale||'')+'</div></div>').join(''):'<div class="row">No recovery strategy ranking returned.</div>')+
+   '</div></div>'+
+   '<div class="panel"><div class="section"><h2>Target State</h2>'+
+     (arr(target.principles||target.targetPrinciples).length?'<div class="report-card-title">Principles</div><ul class="report-list">'+arr(target.principles||target.targetPrinciples).map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul>':'')+
+     (arr(target.architectureLayers).length?'<div class="report-card-title" style="margin-top:18px">Architecture layers</div><p>'+target.architectureLayers.map(x=>'<span class="pill" style="margin:0 5px 5px 0">'+esc(x)+'</span>').join('')+'</p>':'')+(arr(target.architectureDecisions).length?'<div class="report-card-title" style="margin-top:12px">Architecture decisions</div><ul class="report-list">'+arr(target.architectureDecisions).map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul>':'')+
+     (arr(target.blueprintIds).length?'<div class="report-card-title" style="margin-top:12px">Blueprints</div><p>'+target.blueprintIds.map(x=>'<span class="pill" style="margin:0 5px 5px 0">'+esc(x)+'</span>').join('')+'</p>':'<p class="hint">Target-state blueprint not available.</p>')+
+   '</div>'+
+ '</div>'+
+ '<div class="panel"><div class="section"><h2>Transformation Roadmap</h2>'+
+   (roadmapRows.length?'<div class="roadmap">'+roadmapRows.map(w=>'<div class="wave"><div class="wave-num">'+esc(w.wave)+'</div><h3>'+esc(w.window)+'</h3><p>'+esc((w.actions||[]).join(' · '))+'</p></div>').join('')+'</div>':'<div class="row">No roadmap returned.</div>')+
+ '</div></div>'+
+ '<div class="report-grid">'+
+   '<div class="panel"><div class="section"><h2>Evidence Traceability</h2><p class="hint">Evidence register items identify where the recommendation still needs validation.</p>'+
+     (evidence.length?evidence.map(x=>'<div class="row"><b>'+esc(x.evidence||x.id)+'</b><span class="pill" style="float:right">'+esc(x.status||'Required')+'</span><div class="hint">'+esc(x.purpose||x.description||'Validation required.')+'</div></div>').join(''):'<div class="row">No evidence register items returned.</div>')+
+   '</div></div>'+
+   '<div class="panel"><div class="section"><h2>Recommendation Sensitivity</h2>'+
+     (sensitivityItems.length?sensitivityItems.map(x=>typeof x==='string'?'<div class="row">'+esc(x)+'</div>':'<div class="row"><b>'+esc(x.trigger||x.name||x.id||'')+'</b>'+(x.affectedDecision?'<span class="pill" style="float:right">'+esc(x.affectedDecision)+'</span>':'')+'<div class="hint">'+esc([x.impact,x.action].filter(Boolean).join(' Action: '))+'</div></div>').join(''):'<p class="hint">'+esc(sensitivity.summary||'No material sensitivity items returned.')+'</p>')+
+   '</div></div>'+
+ '</div>'+
+ '<div class="panel"><div class="section"><h2>Governance & Decision Points</h2>'+
+   (arr(er.governanceMetrics).length?'<ul class="report-list">'+arr(er.governanceMetrics).map(x=>'<li>'+esc(typeof x==='string'?x:(x.name||x.metric||JSON.stringify(x)))+'</li>').join('')+'</ul>':'<p class="hint">Governance metrics were not returned by the assessment engine.</p>')+
+   (arr(er.decisionPoints).length?'<h3>Decision points</h3><ul class="report-list">'+arr(er.decisionPoints).map(x=>'<li>'+esc(typeof x==='string'?x:(x.name||x.decision||JSON.stringify(x)))+'</li>').join('')+'</ul>':'')+
+ '</div></div>'+
+ '<div class="panel"><div class="section"><h2>About this assessment</h2><p class="hint">Resilience IQ is vendor-neutral: the recovery strategy is chosen from your business requirements before any provider is mapped. Question scores, domain weights, penalties and rating bands are LTM heuristics reviewed by the BCP/DR practice, not an industry benchmark; the questions draw on ISO 22301, ISO/IEC 27031, NIST SP 800-34 and the cloud providers\' disaster-recovery guidance. Technology options are indicative and must be validated against current provider capabilities, regions and costs.</p></div></div>';
+ document.getElementById('app').innerHTML=html;
+}
 async function loadQuestionBank(){
  try{
-  const r=await fetch('../resilience-iq/knowledge/question-bank.json',{cache:'no-store'});
+  const r=await fetch('./resilience-iq/knowledge/question-bank.json',{cache:'no-store'});
   if(!r.ok)throw new Error('Question bank unavailable');
   const bank=await r.json();
   const byId=Object.fromEntries((bank.executive_questions||[]).map(q=>[q.id,q]));
@@ -179,7 +345,74 @@ async function loadQuestionBank(){
   render();
  }catch(e){console.warn('Using embedded Resilience IQ question fallback:',e.message);}
 }
-loadQuestionBank();
-setTimeout(()=>{const splash=document.getElementById("splash");if(splash){splash.classList.add("fadeout");setTimeout(()=>splash.remove(),600);}},1400);render();
+async function restoreAssessmentFromServer(){
+ const assessmentId=new URLSearchParams(window.location.search).get('assessmentId');
+ if(!assessmentId)return false;
+ try{
+  const res=await authFetch(ASSESSMENT_API+'?assessmentId='+encodeURIComponent(assessmentId));
+  const j=await res.json();
+  if(!res.ok||!j.ok)throw new Error(j.message||j.error||('Unable to load assessment (HTTP '+res.status+').'));
+  const saved=j.data||{};
+  assessment={
+   assessmentId:String(saved.assessmentId||assessmentId),
+   clientName:String(saved.clientName||''),
+   clientSector:String(saved.clientSector||''),
+   respondentEmail:String(saved.respondentEmail||''),
+   startedAt:String(saved.startedAt||''),
+   status:String(saved.status||'draft'),
+   completedAt:saved.completedAt||undefined,
+   finalizedAt:saved.finalizedAt||undefined
+  };
+  const rawAnswers=saved.answersJson?JSON.parse(saved.answersJson):{};
+  // Advisory answers are restored too: their questions are added before the answers are mapped back.
+  await appendAdvisoryQuestions(Object.keys(rawAnswers).filter(id=>id.startsWith('AF-')));
+  answers={};
+  for(const q of questions){
+   const value=rawAnswers[q.id];
+   if(value===undefined)continue;
+   if(q.type==='slider'){
+    const pos=q.o.indexOf(String(value));
+    answers[q.id]=pos>=0?pos:undefined;
+   }else if(q.type==='multi'||q.type==='rank'){
+    answers[q.id]=Array.isArray(value)?value.map(v=>q.o.indexOf(String(v))).filter(i=>i>=0):[];
+   }else if(q.type==='matrix'){
+    const m={};
+    if(value&&typeof value==='object'){
+     for(const [row,column] of Object.entries(value)){
+      const ri=q.rows.indexOf(row), ci=q.cols.indexOf(String(column));
+      if(ri>=0&&ci>=0)m[ri]=ci;
+     }
+    }
+    answers[q.id]=m;
+   }else if(q.type==='number') answers[q.id]=Number(value);
+   else if(q.type==='text') answers[q.id]=String(value);
+   else {
+    const pos=q.o.indexOf(String(value));
+    answers[q.id]=pos>=0?pos:undefined;
+   }
+  }
+  if(saved.resultJson){
+   try{result=JSON.parse(saved.resultJson);}catch{result=null;}
+  }
+  if(result||assessment.status==='completed')return true;
+  const savedCount=Object.values(answers).filter(v=>v!==undefined).length;
+  idx=Math.min(savedCount,questions.length-1);
+  return true;
+ }catch(e){
+  console.warn('Unable to restore Resilience IQ assessment:',e.message);
+  return false;
+ }
+}
+async function bootstrapResilienceIq(){
+ if(!requireAppLogin()){
+  document.getElementById('app').innerHTML='<div class="panel"><h2>Sign-in required</h2><p class="hint">Please sign in through the LTM Vantage platform. Resilience IQ uses the same application session; there is no separate login.</p></div>';
+  return;
+ }
+ await loadQuestionBank();
+ await restoreAssessmentFromServer();
+ render();
+}
+setTimeout(()=>{const splash=document.getElementById("splash");if(splash){splash.classList.add("fadeout");setTimeout(()=>splash.remove(),600);}},1400);
+bootstrapResilienceIq();
 </script>
 </body></html>

@@ -9,7 +9,7 @@ if (incomplete.status !== "requirements_incomplete") throw new Error("Missing ob
 if (incomplete.preferredPattern !== null) throw new Error("Incomplete requirements must not produce a preferred pattern");
 if (!incomplete.evidenceRequests.includes("BIA")) throw new Error("Missing objectives should request BIA evidence");
 
-const result = evaluateResilienceIq({
+const executiveBaseline = {
   "EX-01": ["Customer-facing services", "Revenue-generating services"],
   "EX-02": "15-60 minutes",
   "EX-03": "15-60 minutes",
@@ -30,10 +30,47 @@ const result = evaluateResilienceIq({
   "EX-18": ["AWS", "SaaS"],
   "EX-19": "Partially",
   "EX-20": "Medium — documented but not fully tested"
+};
+
+// Critical service + ransomware in scope + recovery never proven triggers the advisory-depth gate:
+// no recommendation until the triggered advisory questions are answered.
+const gated = evaluateResilienceIq(executiveBaseline);
+if (gated.status !== "requirements_incomplete") throw new Error("Advisory-depth gate should block a recommendation until triggered advisory questions are answered");
+if (gated.preferredPattern !== null) throw new Error("A gated assessment must not produce a preferred pattern");
+if (!/advisory-depth validation/.test(gated.executiveSummary)) throw new Error("Gated summary should explain the advisory-depth requirement");
+if (!gated.nextQuestions.some(q => q.id.startsWith("AF-"))) throw new Error("Decision tree should produce advisory questions");
+
+// The triggered advisory questions cascade (answers can trigger further questions), so this is the
+// full set across three rounds.
+const result = evaluateResilienceIq({
+  ...executiveBaseline,
+  "AF-DR-01": "15-60 minutes",
+  "AF-DR-02": "<15 minutes",
+  "AF-DR-03": ["Application failover", "Database recovery"],
+  "AF-DR-05": "Partially automated",
+  "AF-TP-01": ["RTO", "RPO"],
+  "AF-TP-02": "Medium — migration required",
+  "AF-TP-03": "Within days",
+  "AF-TP-04": "Customer test",
+  "AF-TS-01": ["Business disruption risk", "Cost"],
+  "AF-TS-02": "Partially",
+  "AF-TS-03": "Per major change",
+  "AF-CY-01": "Potentially",
+  "AF-CY-02": "Regular manual validation",
+  "AF-CY-03": "Yes, documented",
+  "AF-CY-04": "Partially",
+  "AF-CY-05": "Manual investigation",
+  "AF-BIA-02": ["People", "Process"],
+  "AF-CL-01": ["Availability Zone", "Region"],
+  "AF-CL-02": ["Identity", "DNS"],
+  "AF-CL-03": "Yes — regions constrained",
+  "AF-CL-04": "Yes, documented",
+  "AF-GV-01": "Technology owner only",
+  "AF-GV-02": "Formal approval without expiry"
 });
-if (result.status !== "ready") throw new Error("Expected complete executive baseline to be ready");
+if (result.status !== "ready") throw new Error("Expected executive baseline plus triggered advisory answers to be ready");
 if (!result.eliminatedPatterns.includes("DR-01")) throw new Error("DR-01 should be eliminated");
-if (!result.nextQuestions.some(q => q.id.startsWith("AF-"))) throw new Error("Decision tree should produce advisory questions");
+if (result.nextQuestions.some(q => q.id.startsWith("AF-"))) throw new Error("Once the triggered advisory questions are answered, none should remain outstanding");
 if (!result.mandatoryControls.includes("DATA-01")) throw new Error("Cyber exposure should require protected recovery");
 if (!result.technologyOptions["DR-03:aws"]) throw new Error("Preferred/alternative strategy should map to AWS implementation options");
 if (result.gapRegister.length === 0) throw new Error("Expected evidence/risk gaps");
@@ -224,7 +261,8 @@ const advisoryGateCase = evaluateResilienceIq({
 });
 if (advisoryGateCase.status !== "requirements_incomplete") throw new Error("Critical cyber exposure with unproven recovery should require advisory depth");
 if (advisoryGateCase.preferredPattern !== null) throw new Error("Advisory depth gate should block the final recovery strategy");
-if (!advisoryGateCase.nextQuestions.some(q => q.id === "AF-CY-01")) throw new Error("Advisory gate should surface cyber deep-dive questions");
+// Only the 8 highest-impact questions are shown at a time (recovery capability outranks cyber), so check the family.
+if (!advisoryGateCase.nextQuestions.some(q => q.id.startsWith("AF-CY-"))) throw new Error("Advisory gate should surface cyber deep-dive questions");
 
 
 const advisorySignalCase = evaluateResilienceIq({
@@ -248,7 +286,9 @@ const advisorySignalCase = evaluateResilienceIq({
   "EX-18": ["AWS"],
   "EX-19": "Yes, current",
   "EX-20": "High — tested",
-  "AF-DR-04": "No",
+  // AF-DR-04 asks whether recovery depends on services that fail with production: "Yes" is the weak answer.
+  "AF-DR-04": "Yes",
+  "AF-DR-01": "Not proven",
   "AF-DR-05": "Manual runbook",
   "AF-CY-03": "No",
   "AF-CY-04": "No",
@@ -256,6 +296,7 @@ const advisorySignalCase = evaluateResilienceIq({
   "AF-CL-04": "No"
 });
 if (!advisorySignalCase.gapRegister.some(g => g.id === "G-02")) throw new Error("Advisory recovery evidence should create a recovery capability gap");
+if (!advisorySignalCase.gapRegister.some(g => g.id === "G-04")) throw new Error("Recovery that fails with production should create a recovery-production correlation gap");
 if (!advisorySignalCase.gapRegister.some(g => g.id === "G-05")) throw new Error("Advisory cyber evidence should create a cyber recovery gap");
 if (!advisorySignalCase.mandatoryControls.includes("CYBER-01")) throw new Error("Advisory cyber evidence should require isolated cyber recovery");
 if (!advisorySignalCase.mandatoryControls.includes("DATA-01")) throw new Error("Advisory cyber evidence should require protected backup");
@@ -269,7 +310,7 @@ const advisoryBranchCase = evaluateResilienceIq({
   "EX-09":"Immutable and restore proven","EX-10":"Yes, with alternatives","EX-11":"Low concentration","EX-12":"No known SPOFs",
   "EX-13":"Yes, current","EX-14":"Yes, current","EX-15":"Yes, periodic review","EX-16":"Scenario-based tests","EX-17":"Yes",
   "EX-18":["AWS"],"EX-19":"Yes, current","EX-20":"High — tested",
-  "AF-DR-04":"No","AF-DR-05":"Manual runbook","AF-CY-03":"No","AF-CY-04":"No","AF-TS-02":"No"
+  "AF-DR-04":"Yes","AF-DR-01":"Not proven","AF-DR-05":"Manual runbook","AF-CY-03":"No","AF-CY-04":"No","AF-TS-02":"No"
 });
 if (!advisoryBranchCase.evidenceRequests.includes("cyber recovery exercise evidence")) throw new Error("Advisory cyber branch should request cyber exercise evidence");
 if (!advisoryBranchCase.evidenceRequests.includes("recovery orchestration evidence")) throw new Error("Advisory recovery automation branch should request orchestration evidence");
@@ -280,7 +321,7 @@ const advisoryRanking = evaluateResilienceIq({
   "EX-09":"Immutable and restore proven","EX-10":"Yes, with alternatives","EX-11":"Low concentration","EX-12":"No known SPOFs",
   "EX-13":"Yes, current","EX-14":"Yes, current","EX-15":"Yes, periodic review","EX-16":"Scenario-based tests","EX-17":"Yes",
   "EX-18":["AWS"],"EX-19":"Yes, current","EX-20":"High — tested",
-  "AF-DR-04":"No","AF-DR-05":"Manual runbook","AF-CY-03":"No","AF-CY-04":"No","AF-CY-05":"No defined method",
+  "AF-DR-04":"Yes","AF-DR-01":"Not proven","AF-DR-05":"Manual runbook","AF-CY-03":"No","AF-CY-04":"No","AF-CY-05":"No defined method",
   "AF-TS-02":"No"
 });
 if (!advisoryRanking.patternRanking.some(p => p.id === "CYBER-01" && p.score >= 70)) throw new Error("Cyber advisory weakness should materially rank isolated cyber recovery");
@@ -288,19 +329,24 @@ if (!advisoryRanking.patternRanking.some(p => p.id === "DR-08" && p.score >= 60)
 
 const advisoryPriorityCase = evaluateResilienceIq({
   "EX-01":["Revenue-generating services"],"EX-02":"<15 minutes","EX-03":"<15 minutes","EX-04":"<15 minutes",
-  "EX-05":"Yes, current and validated","EX-06":"No, recovery capability is not proven","EX-07":"Never",
+  "EX-05":"Yes, current and validated","EX-06":"No","EX-07":"Never",
   "EX-08":"Yes","EX-09":"No","EX-10":"Yes, with no viable alternative","EX-11":"High concentration",
   "EX-12":"Critical SPOFs exist","EX-13":"Partially","EX-14":"No","EX-15":"No","EX-16":"Technical tests only",
-  "EX-17":"No","EX-18":["AWS"],"EX-19":"Unknown","EX-20":"Low — uncertain",
-  "AF-DR-04":"No","AF-DR-05":"Manual runbook","AF-CY-03":"No","AF-CY-04":"No",
+  "EX-17":"No","EX-18":["AWS"],"EX-19":"Unknown","EX-20":"Low",
+  "AF-DR-04":"Yes","AF-DR-01":"Not proven","AF-DR-05":"Manual runbook","AF-CY-03":"No","AF-CY-04":"No",
   "AF-CY-05":"No defined method","AF-TP-02":"High — no practical alternative","AF-TP-03":"No viable exit",
   "AF-TS-02":"No","AF-TS-03":"Never"
 });
 if (advisoryPriorityCase.nextQuestions.length > 8) throw new Error("Advisory rounds should be capped at 8 questions");
-if (advisoryPriorityCase.nextQuestions[0]?.id !== "AF-DR-04") throw new Error("Highest-impact recovery validation question should be prioritized first");
+// Answered questions are skipped, so the highest-impact open recovery validation question leads, and with
+// ransomware in scope the cyber deep-dive (BR-10, now flagged) ranks in the first batch rather than last.
+if (!/^AF-DR-0/.test(advisoryPriorityCase.nextQuestions[0]?.id ?? "")) throw new Error("Highest-impact open recovery validation question should be prioritized first");
+if (!advisoryPriorityCase.nextQuestions.some(q => q.id === "AF-CY-01")) throw new Error("Cyber deep-dive questions should rank in the first batch when ransomware is in scope");
+if (advisoryPriorityCase.nextQuestions.some(q => q.id in { "AF-DR-01": 1, "AF-DR-04": 1, "AF-DR-05": 1, "AF-CY-03": 1, "AF-CY-04": 1 })) throw new Error("Answered advisory questions must not be asked again");
 
-if (!advisoryPriorityCase.recommendationSensitivity.some(s => s.id === "SENS-01" && s.affectedDecision)) throw new Error("Recommendation sensitivity should identify the affected decision");
-if (!advisoryPriorityCase.recommendationSensitivity.some(s => s.id === "SENS-03")) throw new Error("Cyber recovery sensitivity should be explicit");
+// Sensitivity names the affected decision once a strategy is recommended (the gated case above has none).
+if (!result.executiveReport.recommendationSensitivity.some(s => s.id === "SENS-01" && s.affectedDecision === result.preferredPattern)) throw new Error("Recommendation sensitivity should identify the affected decision");
+if (!result.executiveReport.recommendationSensitivity.some(s => s.id === "SENS-03")) throw new Error("Cyber recovery sensitivity should be explicit");
 
 const advisoryLifecycleAnswers: any = {
   "EX-01": advisoryGateCase ? ["Customer-facing services", "Revenue-generating services"] : [],
@@ -333,7 +379,6 @@ if (!advisoryLifecycle.preferredPattern) throw new Error("Completed advisory lif
 if (!advisoryLifecycle.blueprint) throw new Error("Completed advisory lifecycle should produce a target-state blueprint");
 
 if (advisoryLifecycle.executiveReport.postureScore !== advisoryLifecycle.postureScore) throw new Error("Executive report posture score must match runtime posture score");
-if (advisoryLifecycle.executiveReport.preferredPattern !== undefined && advisoryLifecycle.executiveReport.recoveryStrategy.preferred !== advisoryLifecycle.preferredPattern) throw new Error("Executive report preferred strategy must match runtime");
 if (advisoryLifecycle.executiveReport.recoveryStrategy.preferred !== advisoryLifecycle.preferredPattern) throw new Error("Recovery strategy report must match runtime preferred pattern");
 if (advisoryLifecycle.executiveReport.targetState !== advisoryLifecycle.blueprint) throw new Error("Executive report target state must match runtime blueprint");
 if (advisoryLifecycle.executiveReport.recommendationConfidence.level !== advisoryLifecycle.recommendationConfidence.level) throw new Error("Executive report recommendation confidence must match runtime");

@@ -104,6 +104,22 @@ if (legacyApi && String(legacy).toLowerCase() === 'false') {
   check(leftovers.length === 0, `unauthenticated legacy routes remain after cutover: ${leftovers.join(', ')}`);
 }
 
+// Resilience IQ: scoring, evidence and assessment persistence need the platform Cognito token on every
+// method except the CORS preflight.
+if (legacyApi) {
+  const resilienceRoutes = ofType('AWS::ApiGatewayV2::Route')
+    .filter(r => r.Properties.ApiId?.Ref === legacyApi.id && /\/api\/(evaluate\/resilience-iq|resilience-iq\/)/.test(r.Properties.RouteKey));
+  check(resilienceRoutes.length > 0, 'no Resilience IQ routes found on the Accelerators API');
+  for (const r of resilienceRoutes) {
+    const key = r.Properties.RouteKey;
+    if (key.startsWith('OPTIONS ')) {
+      check(!r.Properties.AuthorizationType || r.Properties.AuthorizationType === 'NONE', `${key} must stay open for the CORS preflight`);
+    } else {
+      check(r.Properties.AuthorizationType === 'JWT' && !!r.Properties.AuthorizerId, `${key} must require the Cognito JWT`);
+    }
+  }
+}
+
 for (const policy of ofType('AWS::IAM::Policy')) {
   for (const st of policy.Properties.PolicyDocument?.Statement || []) {
     const res = [].concat(st.Resource || []);

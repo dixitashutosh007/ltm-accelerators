@@ -141,36 +141,39 @@
     "EX-02": {
       "type": "impact_tolerance_defined",
       "scores": {
-        "<15 minutes": 95,
-        "15-60 minutes": 90,
-        "1-4 hours": 80,
-        "4-24 hours": 70,
-        ">24 hours": 60,
+        "<15 minutes": 85,
+        "15-60 minutes": 85,
+        "1-4 hours": 85,
+        "4-24 hours": 85,
+        ">24 hours": 85,
         "Unknown": 20
-      }
+      },
+      "note": "A defined objective is a business requirement, not a capability: every defined value scores the same; only Unknown scores low."
     },
     "EX-03": {
       "type": "requirement_definition",
       "scores": {
-        "<15 minutes": 95,
-        "15-60 minutes": 90,
-        "1-4 hours": 80,
-        "4-24 hours": 70,
-        ">24 hours": 60,
+        "<15 minutes": 85,
+        "15-60 minutes": 85,
+        "1-4 hours": 85,
+        "4-24 hours": 85,
+        ">24 hours": 85,
         "Unknown": 20
-      }
+      },
+      "note": "A defined objective is a business requirement, not a capability: every defined value scores the same; only Unknown scores low."
     },
     "EX-04": {
       "type": "requirement_definition",
       "scores": {
-        "Near-zero": 95,
-        "<15 minutes": 90,
-        "15-60 minutes": 80,
-        "1-4 hours": 70,
-        "4-24 hours": 60,
-        ">24 hours": 50,
+        "Near-zero": 85,
+        "<15 minutes": 85,
+        "15-60 minutes": 85,
+        "1-4 hours": 85,
+        "4-24 hours": 85,
+        ">24 hours": 85,
         "Unknown": 20
-      }
+      },
+      "note": "A defined objective is a business requirement, not a capability: every defined value scores the same; only Unknown scores low."
     },
     "EX-05": {
       "type": "dependency_mapping",
@@ -386,6 +389,19 @@
         "OPS": -8
       },
       "overall": -3
+    },
+    "recovery_correlation_gap": {
+      "domains": {
+        "DR": -12,
+        "INFRA": -5
+      },
+      "overall": -8
+    },
+    "identity_recovery_gap": {
+      "domains": {
+        "CYBER": -10
+      },
+      "overall": -5
     }
   },
   "advisory_adjustment_rules": {
@@ -394,5 +410,6 @@
     "max_overall_penalty": 20,
     "method": "sum_matching_flag_adjustments_then_cap",
     "rationale": "Advisory findings are diagnostic refinements. They adjust posture through explicit risk signals while executive question scoring remains governed by question_scoring."
-  }
+  },
+  "basis": "LTM heuristic, reviewed by the BCP/DR practice. Question scores, domain weights, penalties, confidence multipliers and rating bands are expert judgements, not an industry benchmark; frameworks.json lists the standards the questions draw on."
 }

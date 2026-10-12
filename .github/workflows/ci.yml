@@ -1,11 +1,12 @@
 name: CI
 
-# Required checks for every pull request into main (configure branch protection to require them).
+# Required checks for every pull request into main (configure branch protection to require them),
+# and into resilience-iq-dev while Resilience IQ is developed there.
 on:
   pull_request:
-    branches: [main]
+    branches: [main, resilience-iq-dev]
   push:
-    branches: [main]
+    branches: [main, resilience-iq-dev]
   workflow_dispatch:
 
 permissions:
