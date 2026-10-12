@@ -322,7 +322,8 @@ function renderReport(){
  '<div class="panel"><div class="section"><h2>Governance & Decision Points</h2>'+
    (arr(er.governanceMetrics).length?'<ul class="report-list">'+arr(er.governanceMetrics).map(x=>'<li>'+esc(typeof x==='string'?x:(x.name||x.metric||JSON.stringify(x)))+'</li>').join('')+'</ul>':'<p class="hint">Governance metrics were not returned by the assessment engine.</p>')+
    (arr(er.decisionPoints).length?'<h3>Decision points</h3><ul class="report-list">'+arr(er.decisionPoints).map(x=>'<li>'+esc(typeof x==='string'?x:(x.name||x.decision||JSON.stringify(x)))+'</li>').join('')+'</ul>':'')+
- '</div></div>';
+ '</div></div>'+
+ '<div class="panel"><div class="section"><h2>About this assessment</h2><p class="hint">Resilience IQ is vendor-neutral: the recovery strategy is chosen from your business requirements before any provider is mapped. Question scores, domain weights, penalties and rating bands are LTM heuristics reviewed by the BCP/DR practice, not an industry benchmark; the questions draw on ISO 22301, ISO/IEC 27031, NIST SP 800-34 and the cloud providers\' disaster-recovery guidance. Technology options are indicative and must be validated against current provider capabilities, regions and costs.</p></div></div>';
  document.getElementById('app').innerHTML=html;
 }
 async function loadQuestionBank(){

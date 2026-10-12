@@ -1,7 +1,7 @@
 {
   "schema_version": "1.0",
   "last_reviewed": "2026-10-04",
-  "note": "Service mappings are advisory families and must be validated against current provider capabilities, region availability, quotas, pricing, licensing and workload compatibility.",
+  "note": "Service mappings are advisory families and must be validated against current provider capabilities, region availability, quotas, pricing, licensing and workload compatibility. Clean-room (CYBER-01) options are isolated, immutable backup vaults restored into an isolated environment; replication services are excluded because they copy a compromised state. Mappings are indicative and need SME review per engagement.",
   "aws": {
     "DR-01": [
       "AWS Backup",
@@ -57,8 +57,8 @@
     ],
     "CYBER-01": [
       "isolated recovery account/landing zone",
-      "AWS Elastic Disaster Recovery",
-      "AWS Backup"
+      "AWS Backup logically air-gapped vault",
+      "clean-room restore and validation inside the isolated account"
     ],
     "CYBER-02": [
       "IAM emergency access design",
@@ -152,8 +152,8 @@
     ],
     "CYBER-01": [
       "isolated recovery subscription",
-      "Azure Site Recovery",
-      "Azure Backup"
+      "Azure Backup immutable vault (confirm regional availability)",
+      "clean-room restore and validation inside the isolated subscription"
     ],
     "CYBER-02": [
       "break-glass identity design",
@@ -241,8 +241,8 @@
     ],
     "CYBER-01": [
       "isolated recovery project",
-      "Backup and DR Service",
-      "Compute Engine"
+      "Backup and DR Service backup vault",
+      "clean-room restore and validation inside the isolated project"
     ],
     "CYBER-02": [
       "Cloud IAM recovery controls",
@@ -266,7 +266,8 @@
       "Cloud Load Balancing"
     ],
     "INF-06": [
-      "Terraform",
+      "Infrastructure Manager or another infrastructure-as-code tool",
+      "Cloud Build",
       "CI/CD"
     ],
     "INF-07": [
