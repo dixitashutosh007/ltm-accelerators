@@ -45,6 +45,18 @@ S0 starts now and does not wait for any decision. S2 content research can run be
 
 **Gate S0:** a test asserts no LLM vendor hostname appears in either page or the CSP; golden outputs unchanged except for corrected text fields; the owner confirms the banner.
 
+**Status (13 Oct 2026): done, pending merge.**
+
+| # | Result |
+|---|---|
+| 1 | Browser AI removed from both pages; Posture IQ also clears any key a browser stored earlier. `check:repo` fails if either page references an LLM vendor API host. **The CSP still lists the three vendor hosts**, because Cloud IQ and Strategy IQ still use browser AI; they come out of the CSP when WS-S1 replaces browser AI on every page |
+| 2 | Hidden from Sovereign IQ: conflict-of-laws and severance simulators, supervisory exam, war game, CBOM/PQC horizon, vendor RFP scorecard, TCO model and target-state delta (both invented figures), legal TIA and covenants, SOW, slides, the forensic dossier flyout and the peer percentile. The CBOM page is removed from the PDF. The public sample report repeated the incorrect statements and is replaced by a notice |
+| 3 | Corrected in the knowledge bases and engine text: AI Act (2026/1744 dates), Data Act (Art. 29 charges to 12 Jan 2027; Art. 32 scope), CLOUD Act and GDPR Art. 48, FISA 702 status and the Data Privacy Framework and UK data bridge, PRA SS1/21 vs SS2/21, the UK critical third parties designated from 13 Jul 2026, the DUAA in force 5 Feb 2026, and the India DPDP phase-in to 13 May 2027. Statements left only in hidden modules are deleted in S5 |
+| 4 | Review banner on both pages; disclaimer on every page of both Sovereign IQ PDFs (Posture IQ's PDF already had one) |
+| 5 | Removed from client views: Posture IQ fees, hedge ratio, investment sizing and the Big 4 claim; Sovereign IQ's sprint sizing and '7.3x protection ratio', and 'attorney-drafted'. The briefing buttons say 'Schedule a briefing with LTM'. The practice-lead name and address are kept as the owner's contact |
+| 6 | Both handlers return a generic 500; details go to the logs |
+| 7 | `POSTURE_IQ_CONSULTANT_PLAYBOOK.md` marked superseded |
+
 ---
 
 ## S1: Merge design

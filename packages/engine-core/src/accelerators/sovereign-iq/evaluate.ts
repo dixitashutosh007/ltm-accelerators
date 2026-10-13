@@ -149,12 +149,12 @@ function evaluateRegimes(facts: Record<string, any>) {
     } else if (reg.id === "UK_OPRES") {
       if (facts.geo_uk && facts.sector === "bfsi") {
         inScope = true; grade = "applies";
-        rationale = "FCA/PRA regulated firm subject to operational resilience rules, impact tolerances, and mapping (PS21/3, SS2/21).";
+        rationale = "FCA/PRA regulated firm subject to operational resilience rules, impact tolerances and mapping (FCA PS21/3, PRA SS1/21), and outsourcing rules (PRA SS2/21).";
       }
     } else if (reg.id === "UK_CTP") {
       if (facts.geo_uk && (facts.uses_cloud || facts.uses_saas)) {
         inScope = true; grade = "advisory";
-        rationale = "Dependency on designated UK Critical Third Parties engages HM Treasury oversight and statutory notification obligations.";
+        rationale = "HM Treasury designated AWS EMEA, Google Cloud EMEA, Microsoft Ireland Operations and Oracle Corporation UK as Critical Third Parties from 13 Jul 2026. Oversight binds the providers; the firm keeps its own outsourcing and operational resilience duties.";
       }
     } else if (reg.id === "SECNUM_C5_EUCS") {
       if (facts.geo_eu && (facts.sector === "public" || facts.sector === "energy" || facts.data_national_sec)) {

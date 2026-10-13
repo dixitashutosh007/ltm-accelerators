@@ -54,7 +54,9 @@ export const handler = async (event: APIGatewayProxyEventV2): Promise<APIGateway
       headers: CORS_HEADERS,
       body: JSON.stringify({
         ok: false,
-        error: 'Evaluation error: ' + (error.message || String(error))
+        // Details stay in the logs; internals are not returned to the browser.
+        error: 'internal_evaluation_error',
+        message: 'The assessment could not be scored. Please try again.'
       })
     };
   }

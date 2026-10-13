@@ -1,3 +1,5 @@
+> **Superseded (13 Oct 2026). Do not use with clients.** This playbook contradicts the Posture IQ engine: for example, it quotes €35M / 7% as the AI Act ceiling, which applies only to prohibited practices. Posture IQ is being merged into Sovereign IQ; see `docs/cio-readiness/sovereign-iq/PLAN.md` and the findings in `docs/cio-readiness/sovereign-iq/VALIDATION.md`. A new consultant guide comes with the merged accelerator.
+
 # PostureIQ Consultant Facilitator Playbook & Workshop Guide
 **LTM Infrastructure Tech Advisory (CIS)**  
 *Document Version: 2.1 · Production Practice Enablement · Practice Lead: Ashutosh Dixit*

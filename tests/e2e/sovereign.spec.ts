@@ -8,6 +8,20 @@ test.describe('Sovereign IQ demo clients', () => {
     world.on('POST', '/api/evaluate/sovereign-iq', ({ body }) => ({ body: { ok: true, data: evaluateSovereignIq(body) } }));
   });
 
+  test('S0 containment: review banner shown, no browser AI, no retired modules or invented percentile', async ({ page, world }) => {
+    await page.goto('/sovereign-iq');
+    await expect(page.locator('#review-banner')).toContainText('not legal advice');
+    await page.evaluate(`loadDemoArchetype('uk_meridian', true)`);
+    await expect(page.getByText('Digital Sovereignty Scorecard')).toBeVisible({ timeout: 15_000 });
+    const text = await page.locator('body').innerText();
+    for (const retired of ['Conflict-of-Laws Simulator', 'Supervisory Regulatory Exam', 'Wargame', 'RFP Matrix', 'Percentile', 'legally void', 'INJUNCTION', 'Attorney-drafted']) {
+      expect(text, retired).not.toContain(retired);
+    }
+    await page.evaluate('generateAiBriefing()');
+    expect(world.calls.filter(c => c.startsWith('BLOCKED-AI'))).toEqual([]);
+    expect(world.pageErrors).toEqual([]);
+  });
+
   test('Saudi bank is scored by the server with Saudi regulations in scope', async ({ page, world }) => {
     await page.goto('/sovereign-iq');
     await page.evaluate(() => (window as any).loadDemoArchetype('saudi_bank', true));
