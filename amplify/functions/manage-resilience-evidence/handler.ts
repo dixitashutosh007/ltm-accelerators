@@ -1,9 +1,12 @@
 import type { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
 import {
-  assertEvidenceStatusTransition,
+  canTransitionEvidenceStatus,
   type ResilienceEvidenceStatus
 } from '../../../packages/engine-core/src/accelerators/resilience-iq/evidence-lifecycle';
+import { evaluateResilienceIq } from '../../../packages/engine-core/src/accelerators/resilience-iq/evaluate';
+import type { EvidenceRegisterItem } from '../../../packages/engine-core/src/accelerators/resilience-iq/runtime';
 import { corsHeaders } from '../_shared/http';
+import { authorized, canAccess, getAssessment, graphql, listWhere, parseBody, userEmail } from '../_shared/resilience-data';
 
 // Lambdas run one request at a time per container, so the current request's headers are kept here for
 // response() to echo an allowed origin (see _shared/http.ts). Origins not in ALLOWED_ORIGINS get no CORS header.
@@ -12,13 +15,32 @@ let requestHeaders: Record<string, string | undefined> | undefined;
 const statuses = new Set<ResilienceEvidenceStatus>([
   'not_requested', 'requested', 'provided', 'validated', 'rejected'
 ]);
+const MAX_TEXT = 2000;
+
+const EVIDENCE_FIELDS = `id assessmentId evidenceId evidence type status purpose validationCriteriaJson affectedGapsJson affectsRecommendation evidenceLocation validationOutcome submittedBy validatedBy validatedAt rejectedReason createdAt updatedAt`;
 
 function response(statusCode: number, body: unknown, requestId: string): APIGatewayProxyResultV2 {
   return {
     statusCode,
-    headers: { ...corsHeaders({ headers: requestHeaders }, 'OPTIONS,POST', 'X-Request-Id'), 'X-Request-Id': requestId },
+    headers: { ...corsHeaders({ headers: requestHeaders }, 'OPTIONS,GET,POST', 'X-Request-Id'), 'X-Request-Id': requestId },
     body: JSON.stringify(body)
   };
+}
+
+const text = (v: unknown) => typeof v === 'string' && v.trim().length > 0 && v.length <= MAX_TEXT;
+
+/**
+ * The evidence the engine asks for on this assessment. The stored result is used once the assessment is
+ * completed; before that the register is computed from the saved answers. Evidence details always come from
+ * here, never from the browser.
+ */
+function evidenceRegister(assessment: any): EvidenceRegisterItem[] {
+  if (assessment.resultJson) return JSON.parse(assessment.resultJson).evidenceRegister || [];
+  return evaluateResilienceIq(JSON.parse(assessment.answersJson || '{}')).evidenceRegister;
+}
+
+async function listEvidence(assessmentId: string) {
+  return listWhere('ResilienceEvidence', EVIDENCE_FIELDS, { assessmentId: { eq: assessmentId } });
 }
 
 export const handler = async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> => {
@@ -27,76 +49,113 @@ export const handler = async (event: APIGatewayProxyEventV2): Promise<APIGateway
   const method = event.requestContext?.http?.method || (event as any).httpMethod || 'POST';
 
   if (method === 'OPTIONS') return response(200, {}, requestId);
-  if (method !== 'POST') return response(405, { ok: false, error: 'method_not_allowed', requestId }, requestId);
+  if (method !== 'GET' && method !== 'POST') return response(405, { ok: false, error: 'method_not_allowed', requestId }, requestId);
+  if (!authorized(event)) return response(403, { ok: false, error: 'forbidden', requestId }, requestId);
 
   try {
-    if (!event.body) return response(400, { ok: false, error: 'Request body is required.', requestId }, requestId);
-
-    let body: any;
-    try {
-      body = event.isBase64Encoded
-        ? JSON.parse(Buffer.from(event.body, 'base64').toString('utf-8'))
-        : JSON.parse(event.body);
-    } catch {
-      return response(400, { ok: false, error: 'Request body must contain valid JSON.', requestId }, requestId);
+    let body: any = {};
+    if (method === 'POST') {
+      if (!event.body) return response(400, { ok: false, error: 'Request body is required.', requestId }, requestId);
+      try { body = parseBody(event); } catch {
+        return response(400, { ok: false, error: 'Request body must contain valid JSON.', requestId }, requestId);
+      }
+      if (!body || typeof body !== 'object' || Array.isArray(body)) {
+        return response(400, { ok: false, error: 'Request body must be a JSON object.', requestId }, requestId);
+      }
     }
 
-    if (!body || typeof body !== 'object' || Array.isArray(body)) {
-      return response(400, { ok: false, error: 'Request body must be a JSON object.', requestId }, requestId);
+    const assessmentId = method === 'GET' ? event.queryStringParameters?.assessmentId : body.assessmentId;
+    if (typeof assessmentId !== 'string' || !assessmentId.trim()) {
+      return response(400, { ok: false, error: 'assessmentId is required.', requestId }, requestId);
     }
 
-    const { assessmentId, evidenceId, fromStatus, toStatus, validationOutcome, evidenceLocation } = body;
-
-    if (typeof assessmentId !== 'string' || !assessmentId.trim() ||
-        typeof evidenceId !== 'string' || !evidenceId.trim()) {
-      return response(400, { ok: false, error: 'assessmentId and evidenceId are required.', requestId }, requestId);
+    // Evidence belongs to the assessment's respondent; Admins may act on any assessment.
+    const assessment = await getAssessment(assessmentId);
+    if (!assessment) return response(404, { ok: false, error: 'assessment_not_found', requestId }, requestId);
+    if (!canAccess(event, assessment.respondentEmail)) {
+      return response(403, { ok: false, error: 'assessment_access_denied', requestId }, requestId);
     }
 
-    if (!statuses.has(fromStatus) || !statuses.has(toStatus)) {
+    const register = evidenceRegister(assessment);
+    const stored = await listEvidence(assessmentId);
+
+    if (method === 'GET') {
+      // Every requested item with its current status; items never touched are "requested".
+      const data = register.map(item => {
+        const record = stored.find(r => r.evidenceId === item.id);
+        return {
+          ...item,
+          status: (record?.status || 'requested') as ResilienceEvidenceStatus,
+          evidenceLocation: record?.evidenceLocation ?? null,
+          validationOutcome: record?.validationOutcome ?? null,
+          rejectedReason: record?.rejectedReason ?? null,
+          submittedBy: record?.submittedBy ?? null,
+          validatedBy: record?.validatedBy ?? null,
+          validatedAt: record?.validatedAt ?? null
+        };
+      });
+      return response(200, { ok: true, data, requestId }, requestId);
+    }
+
+    const { evidenceId, fromStatus, toStatus, evidenceLocation, validationOutcome, rejectedReason } = body;
+    if (typeof evidenceId !== 'string' || !evidenceId.trim()) {
+      return response(400, { ok: false, error: 'evidenceId is required.', requestId }, requestId);
+    }
+    if (!statuses.has(toStatus) || (fromStatus !== undefined && !statuses.has(fromStatus))) {
       return response(400, { ok: false, error: 'Invalid evidence lifecycle status.', requestId }, requestId);
     }
-
-    try {
-      assertEvidenceStatusTransition(fromStatus, toStatus);
-    } catch (error: any) {
-      return response(409, {
-        ok: false,
-        error: 'invalid_evidence_status_transition',
-        message: error.message,
-        requestId
-      }, requestId);
+    if (assessment.status === 'archived') {
+      return response(409, { ok: false, error: 'assessment_immutable', requestId }, requestId);
     }
 
-    if (toStatus === 'validated' && (typeof validationOutcome !== 'string' || !validationOutcome.trim())) {
-      return response(400, {
-        ok: false,
-        error: 'validationOutcome is required when evidence is validated.',
-        requestId
-      }, requestId);
+    const item = register.find(x => x.id === evidenceId);
+    if (!item) return response(400, { ok: false, error: 'evidence_not_requested', message: `${evidenceId} is not in this assessment's evidence register.`, requestId }, requestId);
+
+    // The current status is the stored one. A client that sends fromStatus is told when it is out of date.
+    const record = stored.find(r => r.evidenceId === evidenceId);
+    const current = (record?.status || 'requested') as ResilienceEvidenceStatus;
+    if (fromStatus !== undefined && fromStatus !== current) {
+      return response(409, { ok: false, error: 'evidence_status_changed', message: `Evidence is ${current}, not ${fromStatus}.`, status: current, requestId }, requestId);
+    }
+    if (!canTransitionEvidenceStatus(current, toStatus)) {
+      return response(409, { ok: false, error: 'invalid_evidence_status_transition', message: `Invalid evidence status transition: ${current} -> ${toStatus}`, requestId }, requestId);
     }
 
-    if (evidenceLocation !== undefined && typeof evidenceLocation !== 'string') {
-      return response(400, { ok: false, error: 'evidenceLocation must be a string.', requestId }, requestId);
+    if (toStatus === 'provided' && !text(evidenceLocation)) {
+      return response(400, { ok: false, error: 'evidenceLocation is required when evidence is provided.', requestId }, requestId);
+    }
+    if (toStatus === 'validated' && !text(validationOutcome)) {
+      return response(400, { ok: false, error: 'validationOutcome is required when evidence is validated.', requestId }, requestId);
+    }
+    if (toStatus === 'rejected' && !text(rejectedReason)) {
+      return response(400, { ok: false, error: 'rejectedReason is required when evidence is rejected.', requestId }, requestId);
     }
 
-    // Stub until roadmap R10 (docs/resilience-iq/ROADMAP.md): it validates the status change and saves nothing.
-    // It does not check that the caller owns assessmentId; R10 must add that check before adding storage.
-    return response(501, {
-      ok: false,
-      error: 'evidence_persistence_not_configured',
-      message: 'Evidence lifecycle validation succeeded, but persistence is not configured.',
+    const actor = userEmail(event);
+    const now = new Date().toISOString();
+    const input: Record<string, unknown> = {
+      ...(record?.id ? { id: record.id } : {}),
       assessmentId,
       evidenceId,
-      fromStatus,
-      toStatus,
-      requestId
-    }, requestId);
+      evidence: item.evidence,
+      type: item.type,
+      status: toStatus,
+      purpose: item.purpose,
+      validationCriteriaJson: JSON.stringify(item.validationCriteria || []),
+      affectedGapsJson: JSON.stringify(item.affectedGaps || []),
+      affectsRecommendation: Boolean(item.affectsRecommendation),
+      ...(toStatus === 'provided' ? { evidenceLocation: String(evidenceLocation).trim(), submittedBy: actor, validationOutcome: null, rejectedReason: null, validatedBy: null, validatedAt: null } : {}),
+      ...(toStatus === 'validated' ? { validationOutcome: String(validationOutcome).trim(), validatedBy: actor, validatedAt: now } : {}),
+      ...(toStatus === 'rejected' ? { rejectedReason: String(rejectedReason).trim(), validatedBy: actor, validatedAt: now } : {})
+    };
+    const mutation = record
+      ? `mutation UpdateResilienceEvidence($input: UpdateResilienceEvidenceInput!) { updateResilienceEvidence(input:$input) { ${EVIDENCE_FIELDS} } }`
+      : `mutation CreateResilienceEvidence($input: CreateResilienceEvidenceInput!) { createResilienceEvidence(input:$input) { ${EVIDENCE_FIELDS} } }`;
+    const data = await graphql(mutation, { input });
+    return response(200, { ok: true, data: record ? data.updateResilienceEvidence : data.createResilienceEvidence, requestId }, requestId);
   } catch (error) {
     console.error('[ManageResilienceEvidence] Error', { requestId, error });
-    return response(500, {
-      ok: false,
-      error: 'internal_evidence_error',
-      requestId
-    }, requestId);
+    // Details stay in the logs: database errors are not returned to the browser.
+    return response(500, { ok: false, error: 'internal_evidence_error', message: 'The evidence could not be saved. Please try again.', requestId }, requestId);
   }
 };

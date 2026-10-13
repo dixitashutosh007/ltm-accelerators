@@ -1,7 +1,8 @@
-import type { APIGatewayProxyEventV2, APIGatewayProxyEventV2WithJWTAuthorizer, APIGatewayProxyResultV2 } from 'aws-lambda';
-import { createHash, createHmac, randomUUID } from 'node:crypto';
+import type { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
+import { randomUUID } from 'node:crypto';
 import { assertAssessmentStatusTransition, type ResilienceAssessmentStatus } from '../../../packages/engine-core/src/accelerators/resilience-iq/assessment-lifecycle';
 import { corsHeaders } from '../_shared/http';
+import { ASSESSMENT_FIELDS as fields, authorized, canAccess, getAssessment, graphql, isAdmin, listWhere, parseBody, userEmail } from '../_shared/resilience-data';
 import { evaluateResilienceIq } from '../../../packages/engine-core/src/accelerators/resilience-iq/evaluate';
 import { parseResilienceIqRequest } from '../../../packages/engine-core/src/accelerators/resilience-iq/contract';
 import { RESILIENCE_IQ_VERSION } from '../../../packages/engine-core/src/accelerators/resilience-iq/version';
@@ -14,102 +15,9 @@ const statuses = new Set<ResilienceAssessmentStatus>(['draft','in_progress','com
 function response(statusCode:number, body:unknown, requestId:string):APIGatewayProxyResultV2 {
   return { statusCode, headers:{...corsHeaders({ headers: requestHeaders },'OPTIONS,GET,POST','X-Request-Id'),'X-Request-Id':requestId}, body:JSON.stringify(body) };
 }
-function sha256(value:string){ return createHash('sha256').update(value).digest('hex'); }
-function hmac(key:Buffer|string, value:string){ return createHmac('sha256', key).update(value).digest(); }
-
-function credentials(){
-  const accessKeyId=process.env.AWS_ACCESS_KEY_ID;
-  const secretAccessKey=process.env.AWS_SECRET_ACCESS_KEY;
-  const sessionToken=process.env.AWS_SESSION_TOKEN;
-  const region=process.env.AWS_REGION;
-  if(!accessKeyId||!secretAccessKey||!sessionToken||!region) throw new Error('AWS runtime credentials are unavailable.');
-  return {accessKeyId,secretAccessKey,sessionToken,region};
-}
-
-async function graphql(query:string, variables:Record<string,unknown>){
-  const endpoint=process.env.AMPLIFY_DATA_GRAPHQL_ENDPOINT;
-  if(!endpoint) throw new Error('Amplify Data GraphQL endpoint is unavailable.');
-  const {accessKeyId,secretAccessKey,sessionToken,region}=credentials();
-  const url=new URL(endpoint);
-  const body=JSON.stringify({query,variables});
-  const payloadHash=sha256(body);
-  const now=new Date();
-  const amzDate=now.toISOString().replace(/[:-]|\.\d{3}/g,'');
-  const dateStamp=amzDate.slice(0,8);
-  const service='appsync';
-  const credentialScope=`${dateStamp}/${region}/${service}/aws4_request`;
-  const headers:{[key:string]:string}={
-    'content-type':'application/json',
-    host:url.host,
-    'x-amz-date':amzDate,
-    'x-amz-security-token':sessionToken
-  };
-  const canonicalHeaders=Object.keys(headers).sort().map(k=>`${k}:${headers[k].trim()}\n`).join('');
-  const signedHeaders=Object.keys(headers).sort().join(';');
-  const canonicalRequest=['POST','/graphql','',canonicalHeaders,signedHeaders,payloadHash].join('\n');
-  const stringToSign=['AWS4-HMAC-SHA256',amzDate,credentialScope,sha256(canonicalRequest)].join('\n');
-  const kDate=hmac('AWS4'+secretAccessKey,dateStamp);
-  const kRegion=hmac(kDate,region);
-  const kService=hmac(kRegion,service);
-  const kSigning=hmac(kService,'aws4_request');
-  const signature=createHmac('sha256',kSigning).update(stringToSign).digest('hex');
-  headers.authorization=`AWS4-HMAC-SHA256 Credential=${accessKeyId}/${credentialScope}, SignedHeaders=${signedHeaders}, Signature=${signature}`;
-  const res=await fetch(endpoint,{method:'POST',headers,body});
-  const json=await res.json() as any;
-  if(!res.ok || json.errors?.length) throw new Error(json.errors?.map((e:any)=>e.message).join('; ') || `GraphQL request failed with ${res.status}`);
-  return json.data;
-}
-
-function claims(event:APIGatewayProxyEventV2){
-  // The route's JWT authorizer populates these claims; requests without it carry none.
-  return (event as APIGatewayProxyEventV2WithJWTAuthorizer).requestContext?.authorizer?.jwt?.claims || {};
-}
-function groups(event:APIGatewayProxyEventV2){
-  const groupsRaw=claims(event)['cognito:groups'];
-  return Array.isArray(groupsRaw)?groupsRaw.map(String):String(groupsRaw||'').split(',').map(x=>x.trim()).filter(Boolean);
-}
-function authorized(event:APIGatewayProxyEventV2){
-  // API Gateway has already validated the platform Cognito JWT.
-  // The platform RBAC role is stored in the application session, not as a
-  // Cognito group claim, so do not require Admin/Consultant groups here.
-  const c=claims(event);
-  return Boolean(c.sub || c.email || c.username);
-}
-function isAdmin(event:APIGatewayProxyEventV2){ return groups(event).includes('Admin'); }
-function userEmail(event:APIGatewayProxyEventV2){
-  return String(claims(event).email || claims(event).username || '').trim().toLowerCase();
-}
-function parseBody(event:APIGatewayProxyEventV2){
-  if(!event.body) return {};
-  return JSON.parse(event.isBase64Encoded ? Buffer.from(event.body,'base64').toString('utf8') : event.body);
-}
-
-const fields=`id assessmentId clientName clientSector respondentEmail status questionBankVersion scoringModelVersion decisionTreeVersion blueprintEngineVersion executiveReportVersion engineVersion answersJson resultJson decisionLogJson recommendationSensitivityJson startedAt completedAt finalizedAt createdAt updatedAt`;
-
-// AppSync list queries filter after reading a page, so a filter can match nothing on page one and still have
-// matches later: always follow nextToken. MAX_PAGES bounds the work per request.
-const PAGE_SIZE=200, MAX_PAGES=50;
-async function listWhere(filter:Record<string,unknown>, stopAtFirst=false){
-  const items:any[]=[];
-  let nextToken:string|null=null;
-  for(let page=0; page<MAX_PAGES; page++){
-    const data:any=await graphql(`query ListResilienceAssessments($filter: ModelResilienceAssessmentFilterInput, $limit: Int, $nextToken: String) {
-      listResilienceAssessments(filter:$filter, limit:$limit, nextToken:$nextToken) { items { ${fields} } nextToken }
-    }`,{filter,limit:PAGE_SIZE,nextToken});
-    items.push(...(data.listResilienceAssessments.items||[]));
-    nextToken=data.listResilienceAssessments.nextToken||null;
-    if(!nextToken || (stopAtFirst && items.length)) break;
-  }
-  return items;
-}
-
 async function listAssessments(email:string){
-  const items=await listWhere({respondentEmail:{eq:email}});
+  const items=await listWhere('ResilienceAssessment',fields,{respondentEmail:{eq:email}});
   return items.sort((a:any,b:any)=>String(b.updatedAt||b.startedAt||'').localeCompare(String(a.updatedAt||a.startedAt||'')));
-}
-
-async function getAssessment(assessmentId:string){
-  return (await listWhere({assessmentId:{eq:assessmentId}},true))[0] || null;
 }
 
 export const handler=async(event:APIGatewayProxyEventV2):Promise<APIGatewayProxyResultV2>=>{
@@ -127,7 +35,7 @@ export const handler=async(event:APIGatewayProxyEventV2):Promise<APIGatewayProxy
       }
       const item=await getAssessment(assessmentId);
       if(!item) return response(404,{ok:false,error:'assessment_not_found',requestId},requestId);
-      if(!isAdmin(event) && String(item.respondentEmail||'').trim().toLowerCase()!==userEmail(event)) {
+      if(!canAccess(event,item.respondentEmail)) {
         return response(403,{ok:false,error:'assessment_access_denied',requestId},requestId);
       }
       return response(200,{ok:true,data:item,requestId},requestId);
@@ -144,7 +52,7 @@ export const handler=async(event:APIGatewayProxyEventV2):Promise<APIGatewayProxy
 
     const existing=await getAssessment(assessmentId);
     // An existing record belongs to its respondent: a non-admin may not overwrite (and so take over) someone else's.
-    if(existing && !isAdmin(event) && String(existing.respondentEmail||'').trim().toLowerCase()!==userEmail(event)) {
+    if(existing && !canAccess(event,existing.respondentEmail)) {
       return response(403,{ok:false,error:'assessment_access_denied',requestId},requestId);
     }
     if(existing && !canUpdate(existing.status as ResilienceAssessmentStatus, snapshot.status as ResilienceAssessmentStatus)) {

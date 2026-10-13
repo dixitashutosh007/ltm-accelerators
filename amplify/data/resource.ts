@@ -1,5 +1,6 @@
 import { type ClientSchema, a, defineData } from '@aws-amplify/backend';
 import { manageResilienceAssessmentFunction } from '../functions/manage-resilience-assessment/resource';
+import { manageResilienceEvidenceFunction } from '../functions/manage-resilience-evidence/resource';
 
 /**
  * Defines DynamoDB tables via Amplify Data Schema:
@@ -158,7 +159,8 @@ const schema = a.schema({
     ])
 })
 .authorization(allow => [
-  allow.resource(manageResilienceAssessmentFunction).to(['query', 'mutate'])
+  allow.resource(manageResilienceAssessmentFunction).to(['query', 'mutate']),
+  allow.resource(manageResilienceEvidenceFunction).to(['query', 'mutate'])
 ]);
 
 export type Schema = ClientSchema<typeof schema>;
