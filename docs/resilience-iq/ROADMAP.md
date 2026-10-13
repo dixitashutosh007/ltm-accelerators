@@ -11,7 +11,7 @@
 | R7 | Release close-out (engineering item done; owner items open) | — | Owner, engineering | Live journey checked on production; owner actions closed; stale handover docs retired |
 | R8 | Engine hygiene ✅ Done | — | Engineering | No silent defaults, deterministic strategy, every knowledge file used or removed; golden outputs unchanged or each diff explained |
 | R9 | Practice-lead review and recalibration | R8 | Practice lead, engineering | Lead signs off the open model decisions and the golden outputs |
-| R10 | Evidence workflow, BIA and platform playbook (part 1 done: evidence storage, ownership, page) | R8 (R9 for scoring effects) | Engineering, practice lead | Evidence can be requested, uploaded and validated, and changes confidence; BR-01 implemented; technology options served from the shared platform playbook |
+| R10 | Evidence workflow, BIA and platform playbook (part 1 done: evidence storage and file upload, ownership, page) | R8 (R9 for scoring effects) | Engineering, practice lead | Evidence can be requested, uploaded and validated, and changes confidence; BR-01 implemented; technology options served from the shared platform playbook |
 | R11 | Back-testing and consultant pilot | R9, R10 | Practice lead, consultants | Back-test report published; pilot feedback closed |
 | R12 | Operate and client self-service | R11 | Engineering, owner | Monitoring live; dev separated from production; self-service approved |
 
@@ -116,7 +116,7 @@ R7 and R8 can run in parallel. R10's engineering can start alongside R9, but its
 
 | # | Status |
 |---|---|
-| 1 | **Done, as references.** Evidence is recorded as a location or reference (document, link or system record) on the existing `ResilienceEvidence` model, not as an uploaded file. File upload to the reports bucket is still to do |
+| 1 | **Done.** Evidence is provided as an uploaded file or as a location or reference. Files (PDF, images, text, CSV, Word, Excel, PowerPoint; up to 4 MB) go through the evidence API, which checks the type and size, records a SHA-256 checksum and stores the file encrypted under `resilience-iq/evidence/<assessment>/<evidence>/` in the reports bucket. The Lambda may read and write only that prefix. Downloads use a 5-minute presigned link, for the respondent or an Admin only. Going through the Lambda means the bucket needs no browser CORS rule, at the cost of the 4 MB limit; larger files are recorded by reference |
 | 2 | **Done.** The evidence API checks that the caller is the assessment's respondent or an Admin before reading or changing anything. Item details come from the server's evidence register, never from the browser. The stored status is authoritative, and a stale `fromStatus` is reported. Archived assessments are refused. A GET lists an assessment's evidence. The database client is shared with the assessment API (`amplify/functions/_shared/resilience-data.ts`) |
 | 3 | **Done in the report.** The report's Evidence Traceability panel shows live statuses and lets the consultant mark items provided, validated, rejected or requested again. Validation is open to the respondent or an Admin: the platform's Consultant role is held in the app session, not in a Cognito claim, so the server cannot check it yet. This is acceptable for consultant-led use; client self-service (R12) needs a server-checkable role |
 | 4 | **Not started; waits on R9.** Validated evidence does not change confidence or the score yet; the report says so |

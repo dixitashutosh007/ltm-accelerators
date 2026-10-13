@@ -1,5 +1,6 @@
 import type { APIGatewayProxyStructuredResultV2 } from 'aws-lambda';
-import { handler as rawHandler } from './handler';
+import { handler as rawHandler, deps } from './handler';
+import { createHash } from 'node:crypto';
 import { evaluateResilienceIq } from '../../../packages/engine-core/src/accelerators/resilience-iq/evaluate';
 import { ARCHETYPES } from '../../../packages/engine-core/test/resilience-iq-samples';
 
@@ -132,6 +133,60 @@ const listed = json(r).data;
 expect(r.statusCode === 200 && listed.length === register.length, 'GET lists the whole register');
 expect(listed.find((x: any) => x.id === EVIDENCE_ID).status === 'provided' && listed.filter((x: any) => x.id !== EVIDENCE_ID).every((x: any) => x.status === 'requested'),
   'Stored statuses are merged into the register; untouched items are requested');
+
+// File upload: checked on the server, stored under the evidence prefix, linked to the record.
+const puts: Array<{ key: string; body: Buffer; contentType: string; metadata: Record<string, string> }> = [];
+deps.storage = {
+  async put(key, body, contentType, metadata) { puts.push({ key, body, contentType, metadata }); },
+  async downloadUrl(key, fileName) { return `https://signed.example/${encodeURIComponent(key)}?name=${encodeURIComponent(fileName)}`; }
+};
+const pdf = Buffer.from('%PDF-1.7 restore test report');
+const upload = (file: Record<string, unknown>, extra: Record<string, unknown> = {}, claims?: Record<string, unknown>) =>
+  post({ toStatus: 'provided', file: { name: 'DR test/../report "Q3".pdf', contentType: 'application/pdf', contentBase64: pdf.toString('base64'), ...file }, ...extra }, claims);
+
+reset(); puts.length = 0;
+r = await upload({});
+expect(r.statusCode === 200 && json(r).data.status === 'provided', 'Evidence can be provided by uploading a file');
+expect(puts.length === 1 && puts[0].key.startsWith(`resilience-iq/evidence/RIQ-001/${encodeURIComponent(EVIDENCE_ID)}/`) && puts[0].body.equals(pdf), 'The file is stored under the assessment and evidence prefix');
+expect(!puts[0].key.includes('..') && !puts[0].key.includes('"') && puts[0].key.endsWith('report _Q3_.pdf'), 'The stored file name is sanitised (no path segments or quotes)');
+const sha = createHash('sha256').update(pdf).digest('hex');
+expect(mutations[0].evidenceChecksum === sha && puts[0].metadata.sha256 === sha && mutations[0].evidenceFileKey === puts[0].key, 'The SHA-256 checksum and file key are recorded');
+expect(mutations[0].evidenceLocation === 'Uploaded file: report _Q3_.pdf' && mutations[0].evidenceFileName === 'report _Q3_.pdf', 'The location names the uploaded file');
+
+// Download: a short-lived link, only for the owner or an Admin.
+r = await handler({ ...event('GET'), queryStringParameters: { assessmentId: 'RIQ-001', evidenceId: EVIDENCE_ID, download: '1' } });
+expect(r.statusCode === 200 && json(r).data.url.startsWith('https://signed.example/') && json(r).data.expiresInSeconds === 300, 'The owner gets a short-lived download link');
+r = await handler({ ...event('GET'), queryStringParameters: { assessmentId: 'RIQ-001', evidenceId: register[1]?.id ?? 'none', download: '1' } });
+expect(r.statusCode === 404 && json(r).error === 'evidence_file_not_found', 'An item without a file has no download');
+assessment.respondentEmail = 'someone.else@example.com';
+r = await handler({ ...event('GET'), queryStringParameters: { assessmentId: 'RIQ-001', evidenceId: EVIDENCE_ID, download: '1' } });
+expect(r.statusCode === 403, "A user cannot download another user's evidence");
+
+// Refused uploads store nothing.
+for (const [label, file, extra] of [
+  ['an executable type', { contentType: 'application/x-msdownload' }, {}],
+  ['an empty file', { contentBase64: '' }, {}],
+  ['a file over 4 MB', { contentBase64: Buffer.alloc(4 * 1024 * 1024 + 1).toString('base64') }, {}],
+  ['content that is not base64', { contentBase64: 'not base64!' }, {}],
+  ['a file with a status other than provided', {}, { toStatus: 'rejected', rejectedReason: 'x' }]
+] as const) {
+  reset(); puts.length = 0;
+  r = await upload(file, extra);
+  expect(r.statusCode === 400 && puts.length === 0 && mutations.length === 0, `Upload of ${label} is refused and nothing is stored`);
+}
+reset({ respondentEmail: 'someone.else@example.com' }); puts.length = 0;
+r = await upload({});
+expect(r.statusCode === 403 && puts.length === 0, "Nothing is stored for another user's assessment");
+reset(); puts.length = 0;
+r = await upload({}, { fromStatus: 'provided' });
+expect(r.statusCode === 409 && puts.length === 0, 'Nothing is stored when the status has changed');
+
+// Providing again with a reference clears the earlier file link.
+reset(); await upload({});
+await post({ fromStatus: 'provided', toStatus: 'rejected', rejectedReason: 'Wrong period' });
+await post({ fromStatus: 'rejected', toStatus: 'requested' });
+r = await post({ fromStatus: 'requested', toStatus: 'provided', evidenceLocation: 'SharePoint: DR test Q4' });
+expect(r.statusCode === 200 && json(r).data.evidenceFileKey === null && json(r).data.evidenceLocation === 'SharePoint: DR test Q4', 'A reference replaces the earlier file');
 
 // Errors and malformed requests.
 reset(); failDatabase = true;

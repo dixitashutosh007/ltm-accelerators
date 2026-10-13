@@ -313,7 +313,7 @@ function renderReport(){
    (roadmapRows.length?'<div class="roadmap">'+roadmapRows.map(w=>'<div class="wave"><div class="wave-num">'+esc(w.wave)+'</div><h3>'+esc(w.window)+'</h3><p>'+esc((w.actions||[]).join(' · '))+'</p></div>').join('')+'</div>':'<div class="row">No roadmap returned.</div>')+
  '</div></div>'+
  '<div class="report-grid">'+
-   '<div class="panel"><div class="section"><h2>Evidence Traceability</h2><p class="hint">Evidence register items identify where the recommendation still needs validation. Record where each item is held, then validate or reject it. Validated evidence is recorded against the assessment; it does not change the score yet.</p>'+
+   '<div class="panel"><div class="section"><h2>Evidence Traceability</h2><p class="hint">Evidence register items identify where the recommendation still needs validation. Upload each item (up to 4 MB) or record where it is held, then validate or reject it. Validated evidence is recorded against the assessment; it does not change the score yet.</p>'+
      '<div id="evidenceList">'+(evidence.length?evidence.map(x=>'<div class="row"><b>'+esc(x.evidence||x.id)+'</b><span class="pill" style="float:right">'+esc(x.status||'Required')+'</span><div class="hint">'+esc(x.purpose||x.description||'Validation required.')+'</div></div>').join(''):'<div class="row">No evidence register items returned.</div>')+'</div>'+
    '</div></div>'+
    '<div class="panel"><div class="section"><h2>Recommendation Sensitivity</h2>'+
@@ -331,13 +331,17 @@ function renderReport(){
 // Evidence lifecycle (requested -> provided -> validated or rejected). The server owns each item's details and
 // status; the page sends only the change. Items are identified by data attributes, never by inline script.
 const EV_LABEL={requested:'Requested',provided:'Provided',validated:'Validated',rejected:'Rejected'};
+// Matches the evidence API: up to 4 MB, documents, spreadsheets, presentations, images and plain text.
+const EV_MAX_BYTES=4*1024*1024;
+const EV_ACCEPT='.pdf,.png,.jpg,.jpeg,.txt,.csv,.docx,.xlsx,.pptx';
 let evidenceItems=[];
 function evidenceRow(x){
- const actions=x.status==='requested'?'<input type="text" maxlength="2000" placeholder="Where is it held? (document, link or reference)" aria-label="Evidence location for '+esc(x.evidence)+'"><button class="btn primary" data-ev="'+esc(x.id)+'" data-to="provided">Mark provided</button><button class="btn secondary" data-ev="'+esc(x.id)+'" data-to="rejected">Not available</button>'
+ const actions=x.status==='requested'?'<input type="text" maxlength="2000" placeholder="Where is it held? (document, link or reference)" aria-label="Evidence location for '+esc(x.evidence)+'"><button class="btn primary" data-ev="'+esc(x.id)+'" data-to="provided">Mark provided</button><label class="btn secondary">Upload file<input type="file" hidden accept="'+EV_ACCEPT+'" data-ev-file="'+esc(x.id)+'" aria-label="Upload evidence file for '+esc(x.evidence)+'"></label><button class="btn secondary" data-ev="'+esc(x.id)+'" data-to="rejected">Not available</button>'
   :x.status==='provided'?'<button class="btn primary" data-ev="'+esc(x.id)+'" data-to="validated">Validate</button><button class="btn secondary" data-ev="'+esc(x.id)+'" data-to="rejected">Reject</button>'
   :x.status==='rejected'?'<button class="btn secondary" data-ev="'+esc(x.id)+'" data-to="requested">Request again</button>':'';
- const detail=[x.evidenceLocation?'Held at: '+x.evidenceLocation:'',x.validationOutcome?'Outcome: '+x.validationOutcome:'',x.rejectedReason?'Reason: '+x.rejectedReason:'',x.validatedBy?(x.status==='rejected'?'Rejected by ':'Validated by ')+x.validatedBy:''].filter(Boolean).join(' · ');
- return '<div class="row" data-ev-row="'+esc(x.id)+'"><b>'+esc(x.evidence||x.id)+'</b><span class="pill" style="float:right">'+esc(EV_LABEL[x.status]||x.status)+'</span><div class="hint">'+esc(x.purpose||'Validation required.')+'</div>'+(detail?'<div class="ev-detail">'+esc(detail)+'</div>':'')+(actions?'<div class="ev-actions">'+actions+'</div>':'')+'</div>';
+ const download=x.evidenceFileName?'<button class="btn secondary" data-ev-download="'+esc(x.id)+'">Download '+esc(x.evidenceFileName)+'</button>':'';
+ const detail=[x.evidenceLocation&&!x.evidenceFileName?'Held at: '+x.evidenceLocation:'',x.evidenceFileName?'File: '+x.evidenceFileName:'',x.validationOutcome?'Outcome: '+x.validationOutcome:'',x.rejectedReason?'Reason: '+x.rejectedReason:'',x.validatedBy?(x.status==='rejected'?'Rejected by ':'Validated by ')+x.validatedBy:''].filter(Boolean).join(' · ');
+ return '<div class="row" data-ev-row="'+esc(x.id)+'"><b>'+esc(x.evidence||x.id)+'</b><span class="pill" style="float:right">'+esc(EV_LABEL[x.status]||x.status)+'</span><div class="hint">'+esc(x.purpose||'Validation required.')+'</div>'+(detail?'<div class="ev-detail">'+esc(detail)+'</div>':'')+(actions||download?'<div class="ev-actions">'+actions+download+'</div>':'')+'</div>';
 }
 async function loadEvidence(){
  const list=document.getElementById('evidenceList');
@@ -350,11 +354,12 @@ async function loadEvidence(){
   list.innerHTML=evidenceItems.length?evidenceItems.map(evidenceRow).join(''):'<div class="row">No evidence register items returned.</div>';
  }catch(e){list.insertAdjacentHTML('beforeend','<p class="hint danger" role="alert">Evidence status could not be loaded: '+esc(e.message)+'</p>');}
 }
-async function changeEvidence(id,toStatus,row){
+async function changeEvidence(id,toStatus,row,file){
  const item=evidenceItems.find(x=>x.id===id);
  if(!item)return;
  const body={assessmentId:assessment.assessmentId,evidenceId:id,fromStatus:item.status,toStatus};
- if(toStatus==='provided'){const v=(row.querySelector('input')?.value||'').trim();if(!v){alert('Say where the evidence is held before marking it provided.');return;}body.evidenceLocation=v;}
+ if(file)body.file=file;
+ else if(toStatus==='provided'){const v=(row.querySelector('input[type=text]')?.value||'').trim();if(!v){alert('Say where the evidence is held, or upload a file, before marking it provided.');return;}body.evidenceLocation=v;}
  if(toStatus==='validated'){const v=(prompt('Validation outcome: what did the evidence show against the criteria?')||'').trim();if(!v)return;body.validationOutcome=v;}
  if(toStatus==='rejected'){const v=(prompt('Why is this evidence rejected or not available?')||'').trim();if(!v)return;body.rejectedReason=v;}
  row.querySelectorAll('button').forEach(b=>b.disabled=true);
@@ -365,9 +370,34 @@ async function changeEvidence(id,toStatus,row){
  }catch(e){alert('Evidence could not be updated: '+e.message);}
  loadEvidence();
 }
+function readAsBase64(f){
+ return new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>resolve(String(r.result).split(',')[1]||'');r.onerror=()=>reject(new Error('The file could not be read.'));r.readAsDataURL(f);});
+}
+async function downloadEvidence(id){
+ try{
+  const res=await authFetch(EVIDENCE_API+'?assessmentId='+encodeURIComponent(assessment.assessmentId)+'&evidenceId='+encodeURIComponent(id)+'&download=1');
+  const j=await res.json();
+  if(!res.ok||!j.ok)throw new Error(j.message||j.error||('HTTP '+res.status));
+  // The link is short-lived and served as an attachment, so the report stays open.
+  window.location.assign(j.data.url);
+ }catch(e){alert('The file could not be downloaded: '+e.message);}
+}
 document.addEventListener('click',e=>{
  const b=e.target.closest('button[data-ev]');
  if(b)changeEvidence(b.dataset.ev,b.dataset.to,b.closest('[data-ev-row]'));
+ const d=e.target.closest('button[data-ev-download]');
+ if(d)downloadEvidence(d.dataset.evDownload);
+});
+document.addEventListener('change',async e=>{
+ const input=e.target.closest('input[data-ev-file]');
+ if(!input||!input.files?.length)return;
+ const f=input.files[0];
+ input.value='';
+ if(f.size>EV_MAX_BYTES){alert('The file is larger than 4 MB. Store it elsewhere and record where it is held instead.');return;}
+ try{
+  const contentBase64=await readAsBase64(f);
+  await changeEvidence(input.dataset.evFile,'provided',input.closest('[data-ev-row]'),{name:f.name,contentType:f.type,contentBase64});
+ }catch(err){alert('Evidence could not be uploaded: '+err.message);}
 });
 async function loadQuestionBank(){
  try{

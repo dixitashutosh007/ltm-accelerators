@@ -7,6 +7,11 @@ import { evaluateResilienceIq } from '../../../packages/engine-core/src/accelera
 import type { EvidenceRegisterItem } from '../../../packages/engine-core/src/accelerators/resilience-iq/runtime';
 import { corsHeaders } from '../_shared/http';
 import { authorized, canAccess, getAssessment, graphql, listWhere, parseBody, userEmail } from '../_shared/resilience-data';
+import { ALLOWED_TYPES, DOWNLOAD_URL_SECONDS, EVIDENCE_PREFIX, MAX_FILE_BYTES, s3EvidenceStorage, type EvidenceStorage } from './storage';
+import { createHash, randomUUID } from 'node:crypto';
+
+/** Replaceable in tests. */
+export const deps: { storage: EvidenceStorage } = { storage: s3EvidenceStorage };
 
 // Lambdas run one request at a time per container, so the current request's headers are kept here for
 // response() to echo an allowed origin (see _shared/http.ts). Origins not in ALLOWED_ORIGINS get no CORS header.
@@ -17,7 +22,7 @@ const statuses = new Set<ResilienceEvidenceStatus>([
 ]);
 const MAX_TEXT = 2000;
 
-const EVIDENCE_FIELDS = `id assessmentId evidenceId evidence type status purpose validationCriteriaJson affectedGapsJson affectsRecommendation evidenceLocation validationOutcome submittedBy validatedBy validatedAt rejectedReason createdAt updatedAt`;
+const EVIDENCE_FIELDS = `id assessmentId evidenceId evidence type status purpose validationCriteriaJson affectedGapsJson affectsRecommendation evidenceLocation evidenceChecksum evidenceFileKey evidenceFileName validationOutcome submittedBy validatedBy validatedAt rejectedReason createdAt updatedAt`;
 
 function response(statusCode: number, body: unknown, requestId: string): APIGatewayProxyResultV2 {
   return {
@@ -28,6 +33,28 @@ function response(statusCode: number, body: unknown, requestId: string): APIGate
 }
 
 const text = (v: unknown) => typeof v === 'string' && v.trim().length > 0 && v.length <= MAX_TEXT;
+
+/** A file name safe to store and to offer back as a download name. */
+function safeFileName(name: string) {
+  const base = name.split(/[\\/]/).pop() || 'evidence';
+  return base.replace(/[^A-Za-z0-9._ -]/g, '_').replace(/^\.+/, '').slice(0, 120) || 'evidence';
+}
+
+type UploadedFile = { name: string; contentType: string; bytes: Buffer };
+
+/** Checks an uploaded file (type, size, base64). Returns the decoded file or an error message. */
+function readFile(file: any): UploadedFile | string {
+  if (!file || typeof file !== 'object' || Array.isArray(file)) return 'file must be an object with name, contentType and contentBase64.';
+  if (typeof file.name !== 'string' || !file.name.trim() || file.name.length > 255) return 'file.name is required.';
+  if (typeof file.contentType !== 'string' || !ALLOWED_TYPES[file.contentType]) {
+    return `file.contentType must be one of: ${Object.keys(ALLOWED_TYPES).join(', ')}.`;
+  }
+  if (typeof file.contentBase64 !== 'string' || !/^[A-Za-z0-9+/]*={0,2}$/.test(file.contentBase64)) return 'file.contentBase64 must be base64.';
+  const bytes = Buffer.from(file.contentBase64, 'base64');
+  if (!bytes.length) return 'The file is empty.';
+  if (bytes.length > MAX_FILE_BYTES) return `The file is larger than ${MAX_FILE_BYTES / (1024 * 1024)} MB.`;
+  return { name: safeFileName(file.name), contentType: file.contentType, bytes };
+}
 
 /**
  * The evidence the engine asks for on this assessment. The stored result is used once the assessment is
@@ -45,7 +72,7 @@ async function listEvidence(assessmentId: string) {
 
 export const handler = async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> => {
   requestHeaders = event.headers;
-  const requestId = event.requestContext?.requestId || crypto.randomUUID();
+  const requestId = event.requestContext?.requestId || randomUUID();
   const method = event.requestContext?.http?.method || (event as any).httpMethod || 'POST';
 
   if (method === 'OPTIONS') return response(200, {}, requestId);
@@ -79,6 +106,14 @@ export const handler = async (event: APIGatewayProxyEventV2): Promise<APIGateway
     const register = evidenceRegister(assessment);
     const stored = await listEvidence(assessmentId);
 
+    if (method === 'GET' && event.queryStringParameters?.download) {
+      // A short-lived link to an uploaded file, for the respondent or an Admin only (checked above).
+      const record = stored.find(r => r.evidenceId === event.queryStringParameters?.evidenceId);
+      if (!record?.evidenceFileKey) return response(404, { ok: false, error: 'evidence_file_not_found', requestId }, requestId);
+      const url = await deps.storage.downloadUrl(record.evidenceFileKey, record.evidenceFileName || 'evidence');
+      return response(200, { ok: true, data: { url, fileName: record.evidenceFileName, expiresInSeconds: DOWNLOAD_URL_SECONDS }, requestId }, requestId);
+    }
+
     if (method === 'GET') {
       // Every requested item with its current status; items never touched are "requested".
       const data = register.map(item => {
@@ -87,6 +122,8 @@ export const handler = async (event: APIGatewayProxyEventV2): Promise<APIGateway
           ...item,
           status: (record?.status || 'requested') as ResilienceEvidenceStatus,
           evidenceLocation: record?.evidenceLocation ?? null,
+          evidenceFileName: record?.evidenceFileName ?? null,
+          evidenceChecksum: record?.evidenceChecksum ?? null,
           validationOutcome: record?.validationOutcome ?? null,
           rejectedReason: record?.rejectedReason ?? null,
           submittedBy: record?.submittedBy ?? null,
@@ -98,6 +135,13 @@ export const handler = async (event: APIGatewayProxyEventV2): Promise<APIGateway
     }
 
     const { evidenceId, fromStatus, toStatus, evidenceLocation, validationOutcome, rejectedReason } = body;
+    let file: UploadedFile | undefined;
+    if (body.file !== undefined) {
+      if (toStatus !== 'provided') return response(400, { ok: false, error: 'A file can only be uploaded when evidence is provided.', requestId }, requestId);
+      const read = readFile(body.file);
+      if (typeof read === 'string') return response(400, { ok: false, error: read, requestId }, requestId);
+      file = read;
+    }
     if (typeof evidenceId !== 'string' || !evidenceId.trim()) {
       return response(400, { ok: false, error: 'evidenceId is required.', requestId }, requestId);
     }
@@ -121,8 +165,11 @@ export const handler = async (event: APIGatewayProxyEventV2): Promise<APIGateway
       return response(409, { ok: false, error: 'invalid_evidence_status_transition', message: `Invalid evidence status transition: ${current} -> ${toStatus}`, requestId }, requestId);
     }
 
-    if (toStatus === 'provided' && !text(evidenceLocation)) {
-      return response(400, { ok: false, error: 'evidenceLocation is required when evidence is provided.', requestId }, requestId);
+    if (toStatus === 'provided' && !file && !text(evidenceLocation)) {
+      return response(400, { ok: false, error: 'A file or an evidenceLocation is required when evidence is provided.', requestId }, requestId);
+    }
+    if (evidenceLocation !== undefined && evidenceLocation !== null && !text(evidenceLocation)) {
+      return response(400, { ok: false, error: 'evidenceLocation must be text of up to 2000 characters.', requestId }, requestId);
     }
     if (toStatus === 'validated' && !text(validationOutcome)) {
       return response(400, { ok: false, error: 'validationOutcome is required when evidence is validated.', requestId }, requestId);
@@ -133,6 +180,15 @@ export const handler = async (event: APIGatewayProxyEventV2): Promise<APIGateway
 
     const actor = userEmail(event);
     const now = new Date().toISOString();
+
+    // Every check has passed: store the file before recording it.
+    let uploaded: { key: string; name: string; checksum: string } | undefined;
+    if (file) {
+      const checksum = createHash('sha256').update(file.bytes).digest('hex');
+      const key = `${EVIDENCE_PREFIX}${encodeURIComponent(assessmentId)}/${encodeURIComponent(evidenceId)}/${randomUUID()}-${file.name}`;
+      await deps.storage.put(key, file.bytes, file.contentType, { assessmentid: assessmentId, evidenceid: evidenceId, uploadedby: actor, sha256: checksum });
+      uploaded = { key, name: file.name, checksum };
+    }
     const input: Record<string, unknown> = {
       ...(record?.id ? { id: record.id } : {}),
       assessmentId,
@@ -144,7 +200,13 @@ export const handler = async (event: APIGatewayProxyEventV2): Promise<APIGateway
       validationCriteriaJson: JSON.stringify(item.validationCriteria || []),
       affectedGapsJson: JSON.stringify(item.affectedGaps || []),
       affectsRecommendation: Boolean(item.affectsRecommendation),
-      ...(toStatus === 'provided' ? { evidenceLocation: String(evidenceLocation).trim(), submittedBy: actor, validationOutcome: null, rejectedReason: null, validatedBy: null, validatedAt: null } : {}),
+      ...(toStatus === 'provided' ? {
+        evidenceLocation: text(evidenceLocation) ? String(evidenceLocation).trim() : `Uploaded file: ${uploaded!.name}`,
+        evidenceFileKey: uploaded?.key ?? null,
+        evidenceFileName: uploaded?.name ?? null,
+        evidenceChecksum: uploaded?.checksum ?? null,
+        submittedBy: actor, validationOutcome: null, rejectedReason: null, validatedBy: null, validatedAt: null
+      } : {}),
       ...(toStatus === 'validated' ? { validationOutcome: String(validationOutcome).trim(), validatedBy: actor, validatedAt: now } : {}),
       ...(toStatus === 'rejected' ? { rejectedReason: String(rejectedReason).trim(), validatedBy: actor, validatedAt: now } : {})
     };
