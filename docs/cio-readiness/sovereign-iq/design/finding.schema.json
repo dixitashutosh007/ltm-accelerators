@@ -1,0 +1,209 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:ltm:sovereign-iq:v4:finding",
+  "title": "Sovereign IQ v4 finding (and result and archetype shapes)",
+  "description": "A finding is created from a required control below full, a likely-confirm regime, a conflict between answers, or a board decision (DESIGN.md section 8). This file also defines the headline and regime-result shapes, and the archetype record used by archetypes.json. Draft for owner approval (S1).",
+  "$ref": "#/$defs/finding",
+  "$defs": {
+    "severity": { "enum": ["Critical", "High", "Medium", "Low"] },
+    "findingType": { "enum": ["control_gap", "scope_confirmation", "conflict", "decision"] },
+    "offeringId": { "enum": ["OFF.SOV.ASSESS", "OFF.REG.PROGRAMME", "OFF.SOV.LZ", "OFF.DATA.RESIDENCY", "OFF.SOV.MIGRATION", "OFF.SOV.AI", "REF.RESILIENCE_IQ"] },
+    "regimeId": { "type": "string", "pattern": "^(EU|UK|FR|DE|US|SG|AU|NZ|IN|JP|HK|KR|CN)_[A-Z0-9_]+$" },
+    "timeFrame": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["label"],
+      "properties": {
+        "label": { "enum": ["0-3 months", "3-6 months", "6-12 months", "12-24 months", "by date", "overdue"] },
+        "by": { "type": "string", "format": "date" },
+        "since": { "type": "string", "format": "date" },
+        "drivenBy": { "type": "string", "description": "Regime and article when a dated obligation overrides the default." }
+      }
+    },
+    "finding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "type", "severity", "title", "businessConsequence", "ownerRole", "timeFrame", "mode"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^F-(SOV\\.[A-Z]+\\.[A-Z_]+|SCOPE-[A-Z0-9_]+|CONFLICT-[0-9]+|DECISION-[0-9]+)$" },
+        "type": { "$ref": "#/$defs/findingType" },
+        "control": { "$ref": "urn:ltm:sovereign-iq:v4:facts#/$defs/controlId" },
+        "dataClasses": { "type": "array", "items": { "$ref": "urn:ltm:sovereign-iq:v4:facts#/$defs/dataClass" } },
+        "requiredLevel": { "$ref": "urn:ltm:sovereign-iq:v4:facts#/$defs/level" },
+        "state": { "$ref": "urn:ltm:sovereign-iq:v4:facts#/$defs/controlState" },
+        "unconfirmed": { "type": "boolean", "description": "true if the state is unknown or not_answered." },
+        "upcoming": { "type": "boolean", "description": "true if the only driver applies from a later date." },
+        "regimes": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["regime", "grade"],
+            "properties": {
+              "regime": { "$ref": "#/$defs/regimeId" },
+              "grade": { "$ref": "urn:ltm:sovereign-iq:v4:regime#/$defs/grade" },
+              "article": { "type": "string" }
+            }
+          }
+        },
+        "severity": { "$ref": "#/$defs/severity" },
+        "title": { "type": "string" },
+        "businessConsequence": { "type": "string" },
+        "ownerRole": { "type": "string" },
+        "timeFrame": { "$ref": "#/$defs/timeFrame" },
+        "remedy": { "type": "string" },
+        "playbookRefs": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["control", "platform", "level"],
+            "properties": {
+              "control": { "$ref": "urn:ltm:sovereign-iq:v4:facts#/$defs/controlId" },
+              "platform": { "$ref": "urn:ltm:sovereign-iq:v4:facts#/$defs/platform" },
+              "level": { "enum": ["platform", "tech_stack", "application"] },
+              "needsDiscovery": { "type": "boolean", "description": "Application-level entries need technical discovery beyond the questionnaire." }
+            }
+          }
+        },
+        "offeringRefs": { "type": "array", "items": { "$ref": "#/$defs/offeringId" } },
+        "sources": { "type": "array", "items": { "type": "string", "pattern": "^(CLM-SOV-[0-9]{3,}|S[0-9]+)$" } },
+        "mode": { "enum": ["executive", "workshop"] }
+      },
+      "allOf": [
+        { "if": { "properties": { "type": { "const": "control_gap" } } }, "then": { "required": ["control", "state", "unconfirmed", "remedy", "offeringRefs"] } },
+        { "if": { "properties": { "type": { "const": "scope_confirmation" } } }, "then": { "required": ["regimes"] } }
+      ]
+    },
+    "band": { "enum": ["Exposed", "Developing", "Managed", "Sovereign-ready"] },
+    "maturityHeadline": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["score", "band", "controlsAssessed"],
+      "properties": {
+        "score": { "type": "integer", "minimum": 0, "maximum": 100 },
+        "band": { "$ref": "#/$defs/band" },
+        "controlsAssessed": { "type": "integer", "minimum": 0 },
+        "coverage": { "type": "number", "minimum": 0, "maximum": 1 },
+        "provisional": { "type": "boolean" },
+        "unconfirmed": { "type": "array", "items": { "$ref": "urn:ltm:sovereign-iq:v4:facts#/$defs/controlId" } }
+      }
+    },
+    "regimeResult": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["regime", "grade", "rule", "why"],
+      "properties": {
+        "regime": { "$ref": "#/$defs/regimeId" },
+        "grade": { "$ref": "urn:ltm:sovereign-iq:v4:regime#/$defs/grade" },
+        "rule": { "type": "string", "pattern": "^[A-Z][A-Z0-9_]*\\.[0-9]+$" },
+        "why": { "type": "string" }
+      }
+    },
+    "exposureResult": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["regime", "rag", "why"],
+      "properties": {
+        "regime": { "$ref": "#/$defs/regimeId" },
+        "rag": { "enum": ["red", "amber", "green", "not_rated"] },
+        "why": { "type": "string" }
+      }
+    },
+    "cap": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["regime", "article", "basis", "label"],
+      "properties": {
+        "regime": { "$ref": "#/$defs/regimeId" },
+        "article": { "type": "string" },
+        "basis": { "type": "string" },
+        "amount": { "type": "number", "minimum": 0 },
+        "currency": { "type": "string", "pattern": "^[A-Z]{3}$" },
+        "label": { "type": "string", "pattern": "^cap, not expected fine" }
+      }
+    },
+    "gapSummary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["control", "severity", "classes", "regimes", "why"],
+      "properties": {
+        "control": { "$ref": "urn:ltm:sovereign-iq:v4:facts#/$defs/controlId" },
+        "severity": { "$ref": "#/$defs/severity" },
+        "classes": { "type": "array", "items": { "$ref": "urn:ltm:sovereign-iq:v4:facts#/$defs/dataClass" } },
+        "regimes": { "type": "array", "items": { "$ref": "#/$defs/regimeId" } },
+        "why": { "type": "string" }
+      }
+    },
+    "expectedOutcome": {
+      "description": "Expected result for an archetype, written before the engine exists (DESIGN.md section 10).",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["requiredLevels", "regimes", "maturity", "exposure", "largestCap", "topGaps", "scopeConfirmations", "decisions"],
+      "properties": {
+        "requiredLevels": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["executive", "workshop"],
+          "properties": {
+            "executive": { "type": "object", "propertyNames": { "$ref": "urn:ltm:sovereign-iq:v4:facts#/$defs/dataClass" }, "additionalProperties": { "$ref": "urn:ltm:sovereign-iq:v4:facts#/$defs/level" } },
+            "workshop": { "type": "object", "propertyNames": { "$ref": "urn:ltm:sovereign-iq:v4:facts#/$defs/dataClass" }, "additionalProperties": { "$ref": "urn:ltm:sovereign-iq:v4:facts#/$defs/level" } }
+          }
+        },
+        "regimes": { "type": "array", "items": { "$ref": "#/$defs/regimeResult" } },
+        "maturity": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["executive", "workshop"],
+          "properties": {
+            "executive": { "$ref": "#/$defs/maturityHeadline" },
+            "workshop": { "$ref": "#/$defs/maturityHeadline" }
+          }
+        },
+        "exposure": { "type": "array", "items": { "$ref": "#/$defs/exposureResult" } },
+        "largestCap": { "$ref": "#/$defs/cap" },
+        "topGaps": { "type": "array", "maxItems": 5, "items": { "$ref": "#/$defs/gapSummary" } },
+        "scopeConfirmations": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["regime", "severity", "why"],
+            "properties": {
+              "regime": { "$ref": "#/$defs/regimeId" },
+              "severity": { "$ref": "#/$defs/severity" },
+              "why": { "type": "string" }
+            }
+          }
+        },
+        "decisions": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "archetype": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "name", "summary", "answers", "expected"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^ARC[1-9]_[A-Z0-9_]+$" },
+        "name": { "type": "string" },
+        "summary": { "type": "string" },
+        "answers": { "$ref": "urn:ltm:sovereign-iq:v4:question#/$defs/answerSet" },
+        "expected": { "$ref": "#/$defs/expectedOutcome" },
+        "reasoning": { "type": "string" },
+        "sources": { "type": "array", "items": { "type": "string", "pattern": "^S[0-9]+$" } }
+      }
+    },
+    "archetypeFile": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["version", "statusAsOf", "note", "archetypes"],
+      "properties": {
+        "$schema": { "type": "string" },
+        "version": { "type": "string" },
+        "statusAsOf": { "type": "string", "format": "date" },
+        "note": { "type": "string" },
+        "archetypes": { "type": "array", "minItems": 5, "items": { "$ref": "#/$defs/archetype" } }
+      }
+    }
+  }
+}

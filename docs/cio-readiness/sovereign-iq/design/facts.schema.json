@@ -1,0 +1,236 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:ltm:sovereign-iq:v4:facts",
+  "title": "Sovereign IQ v4 fact model",
+  "description": "One set of facts drives regime applicability, required levels, control scoring and the playbook (DESIGN.md section 2). Scope facts are never scored; control facts (ctl) are the only inputs to maturity; derived facts are computed by the engine and never answered directly. Draft for owner approval (S1).",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "org": { "$ref": "#/$defs/org" },
+    "ent": { "$ref": "#/$defs/ent" },
+    "data": { "$ref": "#/$defs/data" },
+    "plat": { "$ref": "#/$defs/plat" },
+    "prov": { "$ref": "#/$defs/prov" },
+    "xfer": { "$ref": "#/$defs/xfer" },
+    "ctl": { "$ref": "#/$defs/ctl" },
+    "pref": { "$ref": "#/$defs/pref" },
+    "derived": { "$ref": "#/$defs/derived" },
+    "overrides": {
+      "description": "Consultant overrides of any fact, each logged with a reason.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["fact", "value", "reason", "by", "at"],
+        "properties": {
+          "fact": { "type": "string", "pattern": "^(org|ent|data|plat|prov|xfer|ctl)\\.[A-Za-z0-9_.]+$" },
+          "value": {},
+          "reason": { "type": "string", "minLength": 5 },
+          "by": { "type": "string" },
+          "at": { "type": "string", "format": "date-time" }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "zone": {
+      "description": "Where data may sit. The EEA is one zone for personal data.",
+      "enum": ["eea", "uk", "ch", "us", "ca", "in", "sg", "au", "nz", "jp", "hk", "kr", "cn", "other"]
+    },
+    "zoneOrUnknown": {
+      "anyOf": [ { "$ref": "#/$defs/zone" }, { "const": "unknown" } ]
+    },
+    "zoneSet": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/zoneOrUnknown" }
+    },
+    "eeaMemberState": {
+      "enum": ["AT", "BE", "BG", "HR", "CY", "CZ", "DK", "EE", "FI", "FR", "DE", "GR", "HU", "IE", "IT", "LV", "LT", "LU", "MT", "NL", "PL", "PT", "RO", "SK", "SI", "ES", "SE", "IS", "LI", "NO", "unknown"]
+    },
+    "dataClass": {
+      "enum": ["personal", "special", "financial", "ai_training", "proprietary", "government", "ot_ci"]
+    },
+    "level": {
+      "description": "Sovereignty requirement level (DESIGN.md 3.1). Ordered L0 < L1 < L2 < L3 < L4.",
+      "enum": ["L0", "L1", "L2", "L3", "L4"],
+      "x-order": ["L0", "L1", "L2", "L3", "L4"]
+    },
+    "levelOrUnknown": {
+      "anyOf": [ { "$ref": "#/$defs/level" }, { "const": "unknown" } ]
+    },
+    "platform": {
+      "enum": ["onprem", "colo", "aws", "azure", "gcp", "oci", "ibm", "hyperscaler_sovereign_offering", "partner_operated_cloud", "eu_sovereign_provider", "apac_national_cloud", "cn_cloud", "saas_major", "ai_api_provider", "other", "unknown"]
+    },
+    "sector": {
+      "enum": ["banking", "financial_market_infra", "insurance", "other_financial", "energy", "transport", "health", "water", "digital_infrastructure", "ict_service_management_b2b", "public_administration", "space", "postal", "waste_management", "chemicals", "food", "manufacturing_critical", "digital_providers", "research", "professional_services", "retail_consumer", "other", "unknown"]
+    },
+    "staffBand": {
+      "enum": ["lt50", "50_249", "250plus", "unknown"],
+      "x-order": ["lt50", "50_249", "250plus"]
+    },
+    "turnoverBandEur": {
+      "enum": ["lt10m", "10m_50m", "50m_250m", "250m_1bn", "1bn_10bn", "gt10bn", "not_given"],
+      "x-order": ["lt10m", "10m_50m", "50m_250m", "250m_1bn", "1bn_10bn", "gt10bn"]
+    },
+    "balanceSheetBandEur": {
+      "enum": ["le10m", "10m_43m", "gt43m", "unknown"],
+      "x-order": ["le10m", "10m_43m", "gt43m"]
+    },
+    "personalVolume": {
+      "enum": ["lt10k", "10k_100k", "100k_1m", "gt1m", "unknown"],
+      "x-order": ["lt10k", "10k_100k", "100k_1m", "gt1m"]
+    },
+    "money": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["amount", "currency"],
+      "properties": {
+        "amount": { "type": "number", "exclusiveMinimum": 0 },
+        "currency": { "type": "string", "pattern": "^[A-Z]{3}$" }
+      }
+    },
+    "entFlag": {
+      "enum": ["eu_credit_institution", "eu_investment_firm", "eu_insurer", "eu_payment_emi", "eu_casp", "eu_other_financial", "ict_provider_to_eu_fs", "dora_ctpp_designated", "uk_pra_regulated", "uk_fca_solo_regulated", "uk_ctp_designated", "sg_mas_licensed", "au_apra_regulated", "hk_hkma_authorised", "in_rbi_payment_operator", "in_sebi_irdai_regulated", "us_nydfs_licensed", "us_sec_registrant", "us_hipaa_covered_or_ba", "us_glba_fi", "us_federal_cloud_supplier", "critical_infrastructure_operator", "cloud_or_data_processing_provider", "digital_product_vendor_eu", "public_sector_body", "none", "unknown"]
+    },
+    "controlId": {
+      "enum": ["SOV.GOV.OWNER", "SOV.DATA.MAP", "SOV.RES.LOCATION", "SOV.RES.REGION_LOCK", "SOV.BACKUP.LOCATION", "SOV.XFER.BASIS", "SOV.XFER.TIA", "SOV.XFER.US_BULK", "SOV.KEY.CUSTODY", "SOV.KEY.REVOCATION", "SOV.ENC.BASELINE", "SOV.OPS.ADMIN_ACCESS", "SOV.OPS.PERSONNEL_ZONE", "SOV.OPS.OOB_MGMT", "SOV.CC.DATA_IN_USE", "SOV.TP.DPA", "SOV.SAAS.SUBPROCESSOR", "SOV.TP.VISIBILITY", "SOV.TP.REGISTER", "SOV.TP.AUDIT", "SOV.EXIT.PLAN", "SOV.CONC.PROVIDER", "SOV.CERT.ASSURANCE", "SOV.JUR.IMMUNITY", "SOV.AI.DATA_LOCATION", "SOV.AI.GOVERNANCE", "SOV.IR.REPORTING", "SOV.HW.PROVENANCE"]
+    },
+    "controlState": {
+      "description": "3 full, 2 largely, 1 partial, 0 absent; unknown and not_answered score 0 and are labelled; na only from a scope answer.",
+      "anyOf": [
+        { "type": "integer", "minimum": 0, "maximum": 3 },
+        { "enum": ["unknown", "not_answered", "na"] }
+      ]
+    },
+    "org": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "hq": { "$ref": "#/$defs/zone" },
+        "establishments": { "type": "array", "uniqueItems": true, "items": { "$ref": "#/$defs/zone" } },
+        "eea_member_states": { "type": "array", "uniqueItems": true, "items": { "$ref": "#/$defs/eeaMemberState" } },
+        "us_states": { "type": "array", "uniqueItems": true, "items": { "enum": ["CA", "NY", "other_comprehensive", "none", "unknown"] } },
+        "staff_band": { "$ref": "#/$defs/staffBand" },
+        "turnover_band_eur": { "$ref": "#/$defs/turnoverBandEur" },
+        "turnover_amount": { "$ref": "#/$defs/money" },
+        "balance_sheet_band_eur": { "$ref": "#/$defs/balanceSheetBandEur" },
+        "sector": { "$ref": "#/$defs/sector" }
+      }
+    },
+    "ent": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "flags": { "type": "array", "uniqueItems": true, "items": { "$ref": "#/$defs/entFlag" } },
+        "nis2_self_class": { "enum": ["essential", "important", "not_in_scope", "not_assessed"] },
+        "nis2_special_type": { "enum": ["qtsp", "non_qualified_tsp", "tld_registry", "dns_provider", "public_ecomms", "none", "unknown"] },
+        "ci_regimes": { "type": "array", "uniqueItems": true, "items": { "enum": ["au_soci_responsible_entity", "uk_nis_oes", "uk_nis_rdsp", "sg_cii_owner", "cn_ciio", "none", "unknown"] } },
+        "ai_roles": { "type": "array", "uniqueItems": true, "items": { "enum": ["none", "deployer_internal", "deployer_high_impact", "provider_ai_system", "gpai_provider", "integrator_own_name", "unknown"] } }
+      }
+    },
+    "data": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "classes": { "type": "array", "uniqueItems": true, "items": { "anyOf": [ { "$ref": "#/$defs/dataClass" }, { "const": "unknown" } ] } },
+        "subject_regions": { "$ref": "#/$defs/zoneSet" },
+        "personal_volume": { "$ref": "#/$defs/personalVolume" },
+        "us_sensitive_categories": { "type": "array", "uniqueItems": true, "items": { "enum": ["genomic", "biometric", "precise_geolocation", "health", "financial", "identifiers", "government_related", "none", "unknown"] } },
+        "location": {
+          "description": "Per class: zones of primary storage and processing, and of backups and DR copies (D3).",
+          "type": "object",
+          "propertyNames": { "$ref": "#/$defs/dataClass" },
+          "additionalProperties": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["primary", "backup"],
+            "properties": {
+              "primary": { "$ref": "#/$defs/zoneSet" },
+              "backup": { "$ref": "#/$defs/zoneSet" }
+            }
+          }
+        },
+        "choice_level": {
+          "description": "Client choice of level per class (L1 for all classes; L2 per class).",
+          "type": "object",
+          "propertyNames": { "$ref": "#/$defs/dataClass" },
+          "additionalProperties": { "$ref": "#/$defs/levelOrUnknown" }
+        },
+        "allowed_zone": {
+          "description": "Allowed zone per class (L2 or the default in DESIGN.md 2.6).",
+          "type": "object",
+          "propertyNames": { "$ref": "#/$defs/dataClass" },
+          "additionalProperties": { "type": "array", "uniqueItems": true, "items": { "$ref": "#/$defs/zone" } }
+        },
+        "class_platforms": {
+          "description": "Platforms holding each class (L2). When absent, all P1 platforms are assumed (never flatters).",
+          "type": "object",
+          "propertyNames": { "$ref": "#/$defs/dataClass" },
+          "additionalProperties": { "type": "array", "uniqueItems": true, "items": { "$ref": "#/$defs/platform" } }
+        }
+      }
+    },
+    "plat": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "in_scope": { "type": "array", "uniqueItems": true, "items": { "$ref": "#/$defs/platform" } }
+      }
+    },
+    "prov": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "parent_jurisdictions": {
+          "description": "Derived from P1 (DESIGN.md 2.4) and overridable by P2. A fact, never a maturity score (D3).",
+          "$ref": "#/$defs/zoneSet"
+        }
+      }
+    },
+    "xfer": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "mechanisms": { "type": "array", "uniqueItems": true, "items": { "enum": ["no_transfer", "adequacy", "eu_us_dpf", "uk_data_bridge", "sccs", "idta_or_addendum", "bcr", "apac_contract_or_consent", "derogation", "undocumented", "unknown"] } }
+      }
+    },
+    "ctl": {
+      "description": "Control states keyed by control ID. Class-scope controls hold a state per data class.",
+      "type": "object",
+      "propertyNames": { "$ref": "#/$defs/controlId" },
+      "additionalProperties": {
+        "anyOf": [
+          { "$ref": "#/$defs/controlState" },
+          {
+            "type": "object",
+            "propertyNames": { "$ref": "#/$defs/dataClass" },
+            "additionalProperties": { "$ref": "#/$defs/controlState" }
+          }
+        ]
+      }
+    },
+    "pref": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "compliance_tolerance": { "enum": ["zero", "minimal", "moderate", "flexible"] },
+        "investment_appetite": { "enum": ["high", "medium", "low", "tbd"] },
+        "outcomes": { "type": "array", "uniqueItems": true, "maxItems": 3, "items": { "enum": ["compliance", "sovereignty_differentiator", "resilience", "cost", "performance", "speed"] } }
+      }
+    },
+    "derived": {
+      "description": "Computed by the engine (DESIGN.md 2.6); never answered.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "size_class_eu": { "enum": ["large", "medium_or_large", "medium", "small_or_micro", "uncertain"] },
+        "personal_transfer": { "type": "boolean" },
+        "foreign_parent": { "type": "object", "propertyNames": { "$ref": "#/$defs/dataClass" }, "additionalProperties": { "type": "boolean" } },
+        "out_of_zone": { "type": "object", "propertyNames": { "$ref": "#/$defs/dataClass" }, "additionalProperties": { "type": "boolean" } },
+        "required_level": { "type": "object", "propertyNames": { "$ref": "#/$defs/dataClass" }, "additionalProperties": { "$ref": "#/$defs/level" } },
+        "us_coc_link": { "enum": [true, false, "unknown"] }
+      }
+    }
+  }
+}
