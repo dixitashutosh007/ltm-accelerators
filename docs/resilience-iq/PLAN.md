@@ -17,6 +17,8 @@
 | R6 | Merge to main and production launch | ✅ Done (PR #32; production Amplify job 104) | Exemptions dropped in R2. Production smoke test passed: every Resilience IQ route except the preflight returns 401 without a token |
 | V | Validation report | ✅ Done | [VALIDATION.md](VALIDATION.md): conditionally approved for consultant-led use |
 
+**Next:** phases R7–R12, towards client self-service, are in [ROADMAP.md](ROADMAP.md).
+
 ## R2: what changed
 
 ### Request contract
