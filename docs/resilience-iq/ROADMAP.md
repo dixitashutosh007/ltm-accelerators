@@ -11,7 +11,7 @@
 | R7 | Release close-out (engineering item done; owner items open) | — | Owner, engineering | Live journey checked on production; owner actions closed; stale handover docs retired |
 | R8 | Engine hygiene ✅ Done | — | Engineering | No silent defaults, deterministic strategy, every knowledge file used or removed; golden outputs unchanged or each diff explained |
 | R9 | Practice-lead review and recalibration | R8 | Practice lead, engineering | Lead signs off the open model decisions and the golden outputs |
-| R10 | Evidence workflow, BIA and platform playbook | R8 (R9 for scoring effects) | Engineering, practice lead | Evidence can be requested, uploaded and validated, and changes confidence; BR-01 implemented; technology options served from the shared platform playbook |
+| R10 | Evidence workflow, BIA and platform playbook (part 1 done: evidence storage, ownership, page) | R8 (R9 for scoring effects) | Engineering, practice lead | Evidence can be requested, uploaded and validated, and changes confidence; BR-01 implemented; technology options served from the shared platform playbook |
 | R11 | Back-testing and consultant pilot | R9, R10 | Practice lead, consultants | Back-test report published; pilot feedback closed |
 | R12 | Operate and client self-service | R11 | Engineering, owner | Monitoring live; dev separated from production; self-service approved |
 
@@ -111,6 +111,20 @@ R7 and R8 can run in parallel. R10's engineering can start alongside R9, but its
 - `check:backend` asserts that the evidence route keeps its authorizer.
 - Golden archetypes include an evidenced case; the lead reviews its diff.
 - Golden outputs are unchanged by the move to the shared playbook.
+
+**Status (13 Oct 2026): engineering part 1 done.**
+
+| # | Status |
+|---|---|
+| 1 | **Done, as references.** Evidence is recorded as a location or reference (document, link or system record) on the existing `ResilienceEvidence` model, not as an uploaded file. File upload to the reports bucket is still to do |
+| 2 | **Done.** The evidence API checks that the caller is the assessment's respondent or an Admin before reading or changing anything. Item details come from the server's evidence register, never from the browser. The stored status is authoritative, and a stale `fromStatus` is reported. Archived assessments are refused. A GET lists an assessment's evidence. The database client is shared with the assessment API (`amplify/functions/_shared/resilience-data.ts`) |
+| 3 | **Done in the report.** The report's Evidence Traceability panel shows live statuses and lets the consultant mark items provided, validated, rejected or requested again. Validation is open to the respondent or an Admin: the platform's Consultant role is held in the app session, not in a Cognito claim, so the server cannot check it yet. This is acceptable for consultant-led use; client self-service (R12) needs a server-checkable role |
+| 4 | **Not started; waits on R9.** Validated evidence does not change confidence or the score yet; the report says so |
+| 5 | **Not started; waits on R9 decision 1.** BR-01 adds advisory questions, and how blank advisory answers count is decision 1 |
+| 6 | **Done.** Evidence is stored beside the assessment; a completed assessment's stored result is never rewritten |
+| 7 | **Not started; waits on Phase 5.1 step 1.** The catalogue format is to be agreed with the practice leads before the mappings move |
+
+The evidence API tests had never run in CI. They are now in `test:resilience-all` (run by the Amplify build) and in the Resilience IQ workflow.
 
 ---
 

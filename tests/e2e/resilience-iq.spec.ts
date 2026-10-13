@@ -2,6 +2,7 @@ import { join } from 'node:path';
 import { test, expect, makeIdToken, signedIn } from './fixtures';
 import { evaluateResilienceIq } from '../../packages/engine-core/src/accelerators/resilience-iq/evaluate';
 import { parseResilienceIqRequest } from '../../packages/engine-core/src/accelerators/resilience-iq/contract';
+import { canTransitionEvidenceStatus } from '../../packages/engine-core/src/accelerators/resilience-iq/evidence-lifecycle';
 import { ARCHETYPES } from '../../packages/engine-core/test/resilience-iq-samples';
 
 // Resilience IQ reads its API from cost-iq-runtime-config.js and its question bank from the hosted copy;
@@ -9,6 +10,7 @@ import { ARCHETYPES } from '../../packages/engine-core/test/resilience-iq-sample
 const RESILIENCE_API = 'https://resilience-test.execute-api.ap-south-1.amazonaws.com';
 const EVALUATE = '/api/evaluate/resilience-iq';
 const ASSESSMENT = '/api/resilience-iq/assessment';
+const EVIDENCE = '/api/resilience-iq/evidence';
 const BANK = join(process.cwd(), 'resilience-iq/knowledge/question-bank.json');
 
 const permitted = (token: string, refreshToken?: string) => ({
@@ -185,6 +187,49 @@ test.describe('Resilience IQ', () => {
       await expect(page.getByRole('alert')).toContainText("We couldn't calculate your results");
       await expect(page.getByRole('heading', { name: 'Transformation Roadmap' })).toHaveCount(0);
       expect(await page.evaluate('result')).toBeNull();
+    });
+
+    test('evidence on the report can be provided, validated and rejected, and the page sends only the change', async ({ page, world }) => {
+      // A fake evidence API that keeps statuses and applies the real lifecycle, as the Lambda does.
+      const register = evaluateResilienceIq(plan as any).evidenceRegister;
+      const status: Record<string, string> = {};
+      const changes: any[] = [];
+      world.on('GET', EVIDENCE, () => ({ body: { ok: true, data: register.map(x => ({ ...x, status: status[x.id] || 'requested', evidenceLocation: status[x.id] ? 'SharePoint: DR test report' : null })) } }));
+      world.on('POST', EVIDENCE, ({ body }) => {
+        changes.push(body);
+        const current = status[body.evidenceId] || 'requested';
+        if (body.fromStatus !== current || !canTransitionEvidenceStatus(current as any, body.toStatus)) return { status: 409, body: { ok: false, error: 'invalid_evidence_status_transition' } };
+        status[body.evidenceId] = body.toStatus;
+        return { body: { ok: true, data: {} } };
+      });
+      await page.evaluate(`result = evaluateResilienceIq_fixture; renderReport();`.replace('evaluateResilienceIq_fixture', JSON.stringify(evaluateResilienceIq(plan as any))));
+      const first = page.locator(`[data-ev-row="${register[0].id}"]`);
+      await expect(first.getByRole('button', { name: 'Mark provided' })).toBeVisible();
+
+      // Provide: a location is required, then sent with the change.
+      await first.getByRole('textbox').fill('SharePoint: DR test report');
+      await first.getByRole('button', { name: 'Mark provided' }).click();
+      await expect(first.getByRole('button', { name: 'Validate' })).toBeVisible();
+      expect(changes[0]).toEqual({ assessmentId: await page.evaluate('assessment.assessmentId'), evidenceId: register[0].id, fromStatus: 'requested', toStatus: 'provided', evidenceLocation: 'SharePoint: DR test report' });
+      await expect(first).toContainText('Held at: SharePoint: DR test report');
+
+      // Validate: the outcome comes from the consultant.
+      await page.evaluate(`window.prompt = () => 'Restore met the RTO.'`);
+      await first.getByRole('button', { name: 'Validate' }).click();
+      await expect(first.locator('.pill')).toHaveText('Validated');
+      expect(changes[1]).toMatchObject({ evidenceId: register[0].id, fromStatus: 'provided', toStatus: 'validated', validationOutcome: 'Restore met the RTO.' });
+      await expect(first.getByRole('button')).toHaveCount(0);
+
+      // Reject another item as not available; it can then be requested again.
+      const second = page.locator(`[data-ev-row="${register[1].id}"]`);
+      await page.evaluate(`window.prompt = () => 'No test has been run.'`);
+      await second.getByRole('button', { name: 'Not available' }).click();
+      await expect(second.getByRole('button', { name: 'Request again' })).toBeVisible();
+      expect(changes[2]).toMatchObject({ toStatus: 'rejected', rejectedReason: 'No test has been run.' });
+      // Only the change is sent: never the item's type, purpose or recommendation impact.
+      for (const c of changes) expect(Object.keys(c).sort()).not.toContain('type');
+      expect(world.calls.filter(c => c.startsWith(`POST ${EVIDENCE}`)).every(c => c.endsWith('auth=bearer'))).toBe(true);
+      expect(world.pageErrors).toEqual([]);
     });
   });
 
