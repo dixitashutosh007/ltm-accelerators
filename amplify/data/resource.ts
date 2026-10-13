@@ -136,6 +136,8 @@ const schema = a.schema({
       affectsRecommendation: a.boolean().required(),
       evidenceLocation: a.string(),
       evidenceChecksum: a.string(),
+      evidenceFileKey: a.string(),
+      evidenceFileName: a.string(),
       validationOutcome: a.string(),
       submittedBy: a.string(),
       validatedBy: a.string(),

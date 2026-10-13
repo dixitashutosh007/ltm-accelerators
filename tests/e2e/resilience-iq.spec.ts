@@ -231,6 +231,49 @@ test.describe('Resilience IQ', () => {
       expect(world.calls.filter(c => c.startsWith(`POST ${EVIDENCE}`)).every(c => c.endsWith('auth=bearer'))).toBe(true);
       expect(world.pageErrors).toEqual([]);
     });
+
+    test('an evidence file can be uploaded and downloaded from the report', async ({ page, world }) => {
+      const register = evaluateResilienceIq(plan as any).evidenceRegister;
+      const uploads: any[] = [];
+      let fileName: string | null = null;
+      // Routed here (not through the fake API) so the test can see query strings and serve the signed link.
+      await page.route(/\/api\/resilience-iq\/evidence/, async route => {
+        const req = route.request();
+        const url = new URL(req.url());
+        const reply = (body: unknown) => route.fulfill({ status: 200, contentType: 'application/json', headers: { 'access-control-allow-origin': '*' }, body: JSON.stringify(body) });
+        if (req.method() === 'OPTIONS') return route.fulfill({ status: 204, headers: { 'access-control-allow-origin': '*', 'access-control-allow-headers': 'content-type,authorization', 'access-control-allow-methods': 'GET,POST,OPTIONS' } });
+        expect(req.headers()['authorization']).toMatch(/^Bearer /);
+        if (req.method() === 'POST') {
+          const body = JSON.parse(req.postData() || '{}');
+          uploads.push(body);
+          fileName = body.file.name;
+          return reply({ ok: true, data: {} });
+        }
+        if (url.searchParams.get('download')) return reply({ ok: true, data: { url: 'https://files.example/signed/report.pdf', fileName, expiresInSeconds: 300 } });
+        return reply({ ok: true, data: register.map((x, i) => ({ ...x, status: i === 0 && fileName ? 'provided' : 'requested', evidenceFileName: i === 0 ? fileName : null, evidenceLocation: i === 0 && fileName ? `Uploaded file: ${fileName}` : null })) });
+      });
+      await page.route('https://files.example/**', route => route.fulfill({ status: 200, contentType: 'application/pdf', headers: { 'content-disposition': 'attachment; filename="report.pdf"' }, body: '%PDF-1.7 test' }));
+
+      await page.evaluate(`result = ${JSON.stringify(evaluateResilienceIq(plan as any))}; renderReport();`);
+      const first = page.locator(`[data-ev-row="${register[0].id}"]`);
+      await first.locator('input[type=file]').setInputFiles({ name: 'DR test report.pdf', mimeType: 'application/pdf', buffer: Buffer.from('%PDF-1.7 restore test') });
+      await expect(first.getByRole('button', { name: 'Download DR test report.pdf' })).toBeVisible();
+      expect(uploads[0]).toMatchObject({ evidenceId: register[0].id, fromStatus: 'requested', toStatus: 'provided', file: { name: 'DR test report.pdf', contentType: 'application/pdf', contentBase64: Buffer.from('%PDF-1.7 restore test').toString('base64') } });
+      expect(uploads[0].evidenceLocation).toBeUndefined();
+      await expect(first).toContainText('File: DR test report.pdf');
+
+      // The download opens the signed link as an attachment; the report stays open.
+      const download = page.waitForEvent('download');
+      await first.getByRole('button', { name: 'Download DR test report.pdf' }).click();
+      expect((await download).suggestedFilename()).toBe('report.pdf');
+      await expect(page.getByRole('heading', { name: 'Evidence Traceability' })).toBeVisible();
+
+      // A file over 4 MB is refused in the page and never sent.
+      const second = page.locator(`[data-ev-row="${register[1].id}"]`);
+      await second.locator('input[type=file]').setInputFiles({ name: 'big.pdf', mimeType: 'application/pdf', buffer: Buffer.alloc(4 * 1024 * 1024 + 1) });
+      await expect.poll(() => uploads.length).toBe(1);
+      expect(world.pageErrors).toEqual([]);
+    });
   });
 
   test.describe('history and resume', () => {

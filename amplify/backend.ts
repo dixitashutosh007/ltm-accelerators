@@ -63,6 +63,12 @@ reportsLambda.addToRolePolicy(new PolicyStatement({
   resources: [`arn:aws:cognito-idp:${REGION}:${account}:userpool/${USER_POOL_ID}`]
 }));
 
+// Resilience IQ evidence files: read and write only under resilience-iq/evidence/ in the same bucket.
+backend.manageResilienceEvidenceFunction.resources.lambda.addToRolePolicy(new PolicyStatement({
+  actions: ['s3:GetObject', 's3:PutObject'],
+  resources: [`arn:aws:s3:::${REPORTS_BUCKET}/resilience-iq/evidence/*`]
+}));
+
 /* ------------------------------------------------------------------
  * Advisory API: every route requires a valid Cognito ID token, checked by
  * API Gateway before any Lambda runs. CORS is answered by API Gateway
