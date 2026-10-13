@@ -277,9 +277,9 @@ Scope ranges appear only in the consultant SOW draft (D7). The client sees type,
 
 | # | Item | Detail |
 |---|---|---|
-| 1 | Data minimisation | Respondent work email only; client name optional and pseudonymised by default; no free-text personal data |
+| 1 | Data collected (D11 decided) | All data the assessment needs is collected and kept, client name included. The privacy notice lists what is held and why |
 | 2 | Transfer basis | EU SCCs (Decision (EU) 2021/914) and UK IDTA or Addendum between the LTM contracting entity and the India hosting entity as counsel advises; transfer impact assessment covering Indian law-enforcement access |
-| 3 | No-store option | EU/UK sessions can run without saving (D11) |
+| 3 | ~~No-store option~~ | Not offered (D11 decided) |
 | 4 | Privacy notice and hosting statement | Validation report section 6 wording, approved by counsel |
 | 5 | Retention and deletion | Assessments and logs deleted after an agreed period (proposal: 24 months, or at client request) |
 | 6 | Counsel review | EU/UK, US and APAC (SG, AU, IN) counsel review the registry, the findings text and the disclaimer (D9). Their comments go into the claims register |
@@ -320,7 +320,10 @@ Scope ranges appear only in the consultant SOW draft (D7). The client sees type,
 
 ---
 
-## Decisions the owner must take
+## Decisions (taken by the product owner, 13 Oct 2026)
+
+All recommended defaults are **accepted**, with one change: **D11**. The owner decided to collect and keep all the data the assessment needs, including the client name, rather than minimise and pseudonymise it. There is no no-store session. The transfer basis for Mumbai hosting (S10 items 2, 4–6) still applies.
+
 
 | # | Decision | Recommended default | Needed by |
 |---|---|---|---|
@@ -334,7 +337,7 @@ Scope ranges appear only in the consultant SOW draft (D7). The client sees type,
 | D8 | Volatile claims | 90-day review with "status as of" on screen | S2 |
 | D9 | Counsel | EU/UK, US and APAC counsel before external use; internal consultant use until then | S10 |
 | D10 | Posture IQ URL and API | Redirect the page; alias the API for one release, then remove | S3 |
-| D11 | EU/UK client data while hosted in Mumbai | Minimise, pseudonymise client name, offer a no-store session | S5, S10 |
+| D11 | EU/UK client data while hosted in Mumbai | ~~Minimise, pseudonymise client name, offer a no-store session~~ **Decided: collect and keep all required data, client name included; no no-store session.** Transfer basis, privacy notice and retention still required | S5, S10 |
 | D12 | Sovereignty level vocabulary | Align with EU Cloud Sovereignty Framework SEAL objectives, with LTM wording | S1 |
 | D13 | Boundary with Resilience IQ | Sovereign IQ flags exit and concentration; Resilience IQ owns exit testing | S1 |
 | D14 | Bedrock region | ap-south-1 only, no cross-region inference without approval | S9 |
