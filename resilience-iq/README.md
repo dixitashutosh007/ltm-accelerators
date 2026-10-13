@@ -6,20 +6,26 @@ Resilience IQ is the Enterprise Resilience & Continuity Advisory Suite for CIO/C
 
 Assess an enterprise's ability to sustain critical business services through disruption; identify resilience gaps; recommend BCP, DR, cyber-recovery, operational-resilience and third-party-resilience patterns; map the selected strategy to on-premises, AWS, Azure and GCP implementation options; and produce a target-state blueprint and roadmap.
 
-## Phase 1 assets
+## Knowledge the engine reads (`knowledge/`)
 
-- `knowledge/decision-matrix.json` — pattern shortlist/elimination/ranking logic
-- `knowledge/implementation-mappings.json` — AWS/Azure/GCP/on-prem implementation mappings
-- `knowledge/question-bank.json` — executive and dynamic advisory questions
-- `knowledge/decision-tree.json` — assessment branching and evidence triggers
-- `knowledge/recommendation-model.json` — pattern recommendation engine
-- `knowledge/blueprint-engine.json` — target-state, gap-analysis and roadmap generation logic
+- `question-bank.json` — executive and dynamic advisory questions
+- `decision-tree.json` — assessment branching and evidence triggers
+- `scoring-model.json` — domain weights, question scoring and advisory adjustments (LTM heuristics, not a benchmark)
+- `patterns.json` — resilience pattern library
+- `implementation-mappings.json` — AWS/Azure/GCP/on-prem implementation mappings (indicative; SME review per engagement)
+- `blueprint-engine.json` — target-state, gap-analysis and roadmap generation logic
+- `executive-report.json` — executive report structure
+- `assessment-persistence.json` — stored assessment contract (read by the persistence validation and tests)
 
-- `knowledge/frameworks.json` — framework and standards catalog
-- `knowledge/patterns.json` — initial resilience pattern library
-- `knowledge/blueprints.json` — blueprint catalog
-- `knowledge/assessment-model.json` — assessment domains, evidence model and question taxonomy
-- `knowledge/scoring-model.json` — scoring and recommendation principles
+## Design references (`design/`)
+
+The engine does not read these. They record the intended model and are inputs to the practice-lead review (roadmap R9); anything adopted moves into `knowledge/` together with the engine change and tests.
+
+- `recommendation-model.json` — intended recommendation pipeline
+- `decision-matrix.json` — intended strategy ladder, shortlist and ranking rules
+- `assessment-model.json` — assessment domains, evidence model and question taxonomy
+- `frameworks.json` — framework and standards catalogue
+- `blueprints.json` — blueprint catalogue
 
 ## Design principles
 

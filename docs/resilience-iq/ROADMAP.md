@@ -8,8 +8,8 @@
 
 | # | Phase | Depends on | Who | Exit gate |
 |---|---|---|---|---|
-| R7 | Release close-out | — | Owner, engineering | Live journey checked on production; owner actions closed; stale handover docs retired |
-| R8 | Engine hygiene | — | Engineering | No silent defaults, deterministic strategy, every knowledge file used or removed; golden outputs unchanged or each diff explained |
+| R7 | Release close-out (engineering item done; owner items open) | — | Owner, engineering | Live journey checked on production; owner actions closed; stale handover docs retired |
+| R8 | Engine hygiene ✅ Done | — | Engineering | No silent defaults, deterministic strategy, every knowledge file used or removed; golden outputs unchanged or each diff explained |
 | R9 | Practice-lead review and recalibration | R8 | Practice lead, engineering | Lead signs off the open model decisions and the golden outputs |
 | R10 | Evidence workflow, BIA and platform playbook | R8 (R9 for scoring effects) | Engineering, practice lead | Evidence can be requested, uploaded and validated, and changes confidence; BR-01 implemented; technology options served from the shared platform playbook |
 | R11 | Back-testing and consultant pilot | R9, R10 | Practice lead, consultants | Back-test report published; pilot feedback closed |
@@ -33,6 +33,8 @@ R7 and R8 can run in parallel. R10's engineering can start alongside R9, but its
 
 **Gate R7:** item 1 passes, or its failures become R7 fixes; items 2–5 done.
 
+**Status (13 Oct 2026):** item 5 done. `RESILIENCE-IQ-HANDOVER.md` is removed (it stays in Git history) and `AGENT.md` is a short current guide pointing to this roadmap, PLAN.md and VALIDATION.md. Items 1–4 are owner actions and still open.
+
 ---
 
 ## R8: Engine hygiene
@@ -51,6 +53,17 @@ R7 and R8 can run in parallel. R10's engineering can start alongside R9, but its
 **Gate R8:**
 - `npm run audit:engines` shows no regression against the R3 numbers.
 - The golden outputs are unchanged, or each diff is explained in the PR and goes into the R9 review pack.
+
+**Result (13 Oct 2026):**
+
+| # | Outcome |
+|---|---|
+| 1 | A domain with no scored answers scores 0, is listed in a new `unassessedDomains` field, and is named in the decision log. Golden diff: only the "empty" sample changes, from 45 in every domain to 0 |
+| 2 | Equal scores are ranked by lower cost, then lower complexity, then id; the decision log says when a tie decided the recommendation. Golden diff: equally scored patterns are reordered in `patternRanking` for five samples. No recommended strategy, alternative or score changes |
+| 3 | `recommendation-model.json`, `decision-matrix.json`, `assessment-model.json`, `frameworks.json` and `blueprints.json` were not read by the engine. They move to `resilience-iq/design/` as design references for R9. `knowledge/` now holds only files that drive behaviour |
+| 4 | Every fixture in `evaluate.test.ts` now goes through the request contract and uses current labels (EX-05 as the dependency grid). All of the file's earlier assertions still hold |
+| 5 | Not dead. Against a strong client, a weak AF-CL-04 or AF-TS-02 answer lowers the score (80 → 73) and adds failover and restore test evidence requests. The random audit misses this because other answers usually raise the same "low test evidence" flag first. A test records it. Nothing to list for R9 |
+| 6 | The evidence handler is marked in code as a stub until R10, including the missing ownership check |
 
 ---
 

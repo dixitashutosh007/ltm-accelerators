@@ -1,4 +1,12 @@
-import { evaluateResilienceIq } from "./evaluate";
+import { evaluateResilienceIq as evaluateUnchecked } from "./evaluate";
+import { parseResilienceIqRequest } from "./contract";
+
+// Every fixture must be a request the API would accept, so retired option labels cannot creep back in.
+function evaluateResilienceIq(answers: Record<string, unknown>) {
+  const parsed = parseResilienceIqRequest({ answers });
+  if (!parsed.ok) throw new Error(`Fixture rejected by the request contract: ${parsed.errors.join("; ")}`);
+  return evaluateUnchecked(answers as any);
+}
 
 const incomplete = evaluateResilienceIq({
   "EX-01": ["Revenue-generating services"],
@@ -14,7 +22,7 @@ const executiveBaseline = {
   "EX-02": "15-60 minutes",
   "EX-03": "15-60 minutes",
   "EX-04": "<15 minutes",
-  "EX-05": "No",
+  "EX-05": { Applications: "No mapping", Data: "No mapping", Infrastructure: "No mapping", People: "No mapping", "Third parties": "No mapping" },
   "EX-06": "Likely, but not recently tested",
   "EX-07": ">2 years ago",
   "EX-08": "Potentially",
@@ -85,45 +93,45 @@ const nearZero = evaluateResilienceIq({
   "EX-02": "<15 minutes",
   "EX-03": "<15 minutes",
   "EX-04": "Near-zero",
-  "EX-05": "Yes, current",
+  "EX-05": { Applications: "Validated", Data: "Validated", Infrastructure: "Validated", People: "Validated", "Third parties": "Validated" },
   "EX-06": "Yes, proven by testing",
   "EX-07": "Within 3 months",
-  "EX-08": "No",
-  "EX-09": "Immutable and restore proven",
+  "EX-08": "No, recovery is isolated",
+  "EX-09": "Yes, tested",
   "EX-10": "No",
-  "EX-11": "Low concentration",
+  "EX-11": "No material concentration",
   "EX-12": "No known SPOFs",
-  "EX-13": "Yes, current",
-  "EX-14": "Yes, current",
+  "EX-13": "Yes, proven",
+  "EX-14": "Yes, exercised",
   "EX-15": "Yes, periodic review",
-  "EX-16": "Scenario-based tests",
-  "EX-17": "Yes",
+  "EX-16": "Yes, regularly",
+  "EX-17": "Yes, tested",
   "EX-18": ["AWS"],
-  "EX-19": "Yes, current",
+  "EX-19": "Yes, isolated alternate path exists",
   "EX-20": "High — tested"
 });
 if (nearZero.preferredPattern !== "DR-05") throw new Error("Near-zero RTO/RPO should prefer active-active recovery");
 
 const lowCriticality = evaluateResilienceIq({
-  "EX-01": ["Internal workforce services"],
+  "EX-01": ["Workforce-critical services"],
   "EX-02": ">24 hours",
   "EX-03": ">24 hours",
   "EX-04": ">24 hours",
-  "EX-05": "Yes, current",
+  "EX-05": { Applications: "Validated", Data: "Validated", Infrastructure: "Validated", People: "Validated", "Third parties": "Validated" },
   "EX-06": "Yes, proven by testing",
   "EX-07": "Within 3 months",
-  "EX-08": "No",
-  "EX-09": "Immutable and restore proven",
+  "EX-08": "No, recovery is isolated",
+  "EX-09": "Yes, tested",
   "EX-10": "No",
-  "EX-11": "Low concentration",
+  "EX-11": "No material concentration",
   "EX-12": "No known SPOFs",
-  "EX-13": "Yes, current",
-  "EX-14": "Yes, current",
+  "EX-13": "Yes, proven",
+  "EX-14": "Yes, exercised",
   "EX-15": "Yes, periodic review",
-  "EX-16": "Scenario-based tests",
+  "EX-16": "Yes, regularly",
   "EX-17": "No",
   "EX-18": ["On-premises"],
-  "EX-19": "Yes, current",
+  "EX-19": "Yes, isolated alternate path exists",
   "EX-20": "High — tested"
 });
 if (lowCriticality.preferredPattern !== "DR-01") throw new Error("Low-criticality, relaxed objectives should prefer backup and restore");
@@ -133,7 +141,7 @@ const cyberCase = evaluateResilienceIq({
   "EX-02": "1-4 hours",
   "EX-03": "1-4 hours",
   "EX-04": "15-60 minutes",
-  "EX-05": "Yes, current",
+  "EX-05": { Applications: "Validated", Data: "Validated", Infrastructure: "Validated", People: "Validated", "Third parties": "Validated" },
   "EX-06": "Yes, proven by testing",
   "EX-07": "Within 3 months",
   "EX-08": "Yes",
@@ -160,19 +168,19 @@ const onPremCase = evaluateResilienceIq({
   "EX-02": "1-4 hours",
   "EX-03": "1-4 hours",
   "EX-04": "15-60 minutes",
-  "EX-05": "Yes, current",
+  "EX-05": { Applications: "Validated", Data: "Validated", Infrastructure: "Validated", People: "Validated", "Third parties": "Validated" },
   "EX-06": "Yes, proven by testing",
   "EX-07": "Within 3 months",
-  "EX-08": "No",
-  "EX-09": "Immutable and restore proven",
+  "EX-08": "No, recovery is isolated",
+  "EX-09": "Yes, tested",
   "EX-10": "No",
-  "EX-11": "Low concentration",
+  "EX-11": "No material concentration",
   "EX-12": "No known SPOFs",
   "EX-13": "Partially",
-  "EX-14": "Yes, current",
+  "EX-14": "Yes, exercised",
   "EX-15": "Yes, periodic review",
-  "EX-16": "Scenario-based tests",
-  "EX-17": "Yes",
+  "EX-16": "Yes, regularly",
+  "EX-17": "Yes, tested",
   "EX-18": ["On-premises"],
   "EX-19": "Partially",
   "EX-20": "High — tested"
@@ -184,18 +192,18 @@ const cloudConcentration = evaluateResilienceIq({
   "EX-02": "15-60 minutes",
   "EX-03": "15-60 minutes",
   "EX-04": "15-60 minutes",
-  "EX-05": "Yes, current",
+  "EX-05": { Applications: "Validated", Data: "Validated", Infrastructure: "Validated", People: "Validated", "Third parties": "Validated" },
   "EX-06": "Yes, proven by testing",
   "EX-07": "Within 3 months",
-  "EX-08": "No",
-  "EX-09": "Immutable and restore proven",
+  "EX-08": "No, recovery is isolated",
+  "EX-09": "Yes, tested",
   "EX-10": "Yes, but alternatives exist",
   "EX-11": "High concentration",
   "EX-12": "Critical SPOFs exist",
   "EX-13": "Partially",
   "EX-14": "Partially",
   "EX-15": "Yes, periodic review",
-  "EX-16": "Scenario-based tests",
+  "EX-16": "Yes, regularly",
   "EX-17": "No",
   "EX-18": ["AWS"],
   "EX-19": "Partially",
@@ -218,7 +226,7 @@ const matrixCase = evaluateResilienceIq({
   },
   "EX-06": "Yes, proven by testing",
   "EX-07": "Within 3 months",
-  "EX-08": "No",
+  "EX-08": "No, recovery is isolated",
   "EX-09": "Yes, tested",
   "EX-10": "No",
   "EX-11": "No material concentration",
@@ -242,7 +250,7 @@ const advisoryGateCase = evaluateResilienceIq({
   "EX-02": "1-4 hours",
   "EX-03": "1-4 hours",
   "EX-04": "15-60 minutes",
-  "EX-05": "Yes, current and validated",
+  "EX-05": { Applications: "Validated", Data: "Validated", Infrastructure: "Validated", People: "Validated", "Third parties": "Validated" },
   "EX-06": "Likely, but not recently tested",
   "EX-07": "1-2 years ago",
   "EX-08": "Potentially",
@@ -270,21 +278,21 @@ const advisorySignalCase = evaluateResilienceIq({
   "EX-02": "<15 minutes",
   "EX-03": "<15 minutes",
   "EX-04": "<15 minutes",
-  "EX-05": "Yes, current and validated",
+  "EX-05": { Applications: "Validated", Data: "Validated", Infrastructure: "Validated", People: "Validated", "Third parties": "Validated" },
   "EX-06": "Yes, proven by testing",
   "EX-07": "Within 3 months",
-  "EX-08": "No",
-  "EX-09": "Immutable and restore proven",
+  "EX-08": "No, recovery is isolated",
+  "EX-09": "Yes, tested",
   "EX-10": "No",
-  "EX-11": "Low concentration",
+  "EX-11": "No material concentration",
   "EX-12": "No known SPOFs",
-  "EX-13": "Yes, current",
-  "EX-14": "Yes, current",
+  "EX-13": "Yes, proven",
+  "EX-14": "Yes, exercised",
   "EX-15": "Yes, periodic review",
-  "EX-16": "Scenario-based tests",
-  "EX-17": "Yes",
+  "EX-16": "Yes, regularly",
+  "EX-17": "Yes, tested",
   "EX-18": ["AWS"],
-  "EX-19": "Yes, current",
+  "EX-19": "Yes, isolated alternate path exists",
   "EX-20": "High — tested",
   // AF-DR-04 asks whether recovery depends on services that fail with production: "Yes" is the weak answer.
   "AF-DR-04": "Yes",
@@ -306,10 +314,10 @@ if (advisorySignalCase.domainScores.CYBER >= 70) throw new Error("Advisory cyber
 if (advisorySignalCase.domainScores.DR >= 70) throw new Error("Advisory recovery weakness should reduce DR posture");
 const advisoryBranchCase = evaluateResilienceIq({
   "EX-01":["Revenue-generating services"],"EX-02":"1-4 hours","EX-03":"1-4 hours","EX-04":"15-60 minutes",
-  "EX-05":"Yes, current and validated","EX-06":"Yes, proven by testing","EX-07":"Within 3 months","EX-08":"Yes",
-  "EX-09":"Immutable and restore proven","EX-10":"Yes, with alternatives","EX-11":"Low concentration","EX-12":"No known SPOFs",
-  "EX-13":"Yes, current","EX-14":"Yes, current","EX-15":"Yes, periodic review","EX-16":"Scenario-based tests","EX-17":"Yes",
-  "EX-18":["AWS"],"EX-19":"Yes, current","EX-20":"High — tested",
+  "EX-05":{ Applications: "Validated", Data: "Validated", Infrastructure: "Validated", People: "Validated", "Third parties": "Validated" },"EX-06":"Yes, proven by testing","EX-07":"Within 3 months","EX-08":"Yes",
+  "EX-09":"Yes, tested","EX-10":"Yes, but alternatives exist","EX-11":"No material concentration","EX-12":"No known SPOFs",
+  "EX-13":"Yes, proven","EX-14":"Yes, exercised","EX-15":"Yes, periodic review","EX-16":"Yes, regularly","EX-17":"Yes, tested",
+  "EX-18":["AWS"],"EX-19":"Yes, isolated alternate path exists","EX-20":"High — tested",
   "AF-DR-04":"Yes","AF-DR-01":"Not proven","AF-DR-05":"Manual runbook","AF-CY-03":"No","AF-CY-04":"No","AF-TS-02":"No"
 });
 if (!advisoryBranchCase.evidenceRequests.includes("cyber recovery exercise evidence")) throw new Error("Advisory cyber branch should request cyber exercise evidence");
@@ -317,10 +325,10 @@ if (!advisoryBranchCase.evidenceRequests.includes("recovery orchestration eviden
 if (!advisoryBranchCase.mandatoryControls.includes("DATA-01")) throw new Error("Advisory backup weakness should require protected backup");
 const advisoryRanking = evaluateResilienceIq({
   "EX-01":["Revenue-generating services"],"EX-02":"1-4 hours","EX-03":"1-4 hours","EX-04":"15-60 minutes",
-  "EX-05":"Yes, current and validated","EX-06":"Yes, proven by testing","EX-07":"Within 3 months","EX-08":"Yes",
-  "EX-09":"Immutable and restore proven","EX-10":"Yes, with alternatives","EX-11":"Low concentration","EX-12":"No known SPOFs",
-  "EX-13":"Yes, current","EX-14":"Yes, current","EX-15":"Yes, periodic review","EX-16":"Scenario-based tests","EX-17":"Yes",
-  "EX-18":["AWS"],"EX-19":"Yes, current","EX-20":"High — tested",
+  "EX-05":{ Applications: "Validated", Data: "Validated", Infrastructure: "Validated", People: "Validated", "Third parties": "Validated" },"EX-06":"Yes, proven by testing","EX-07":"Within 3 months","EX-08":"Yes",
+  "EX-09":"Yes, tested","EX-10":"Yes, but alternatives exist","EX-11":"No material concentration","EX-12":"No known SPOFs",
+  "EX-13":"Yes, proven","EX-14":"Yes, exercised","EX-15":"Yes, periodic review","EX-16":"Yes, regularly","EX-17":"Yes, tested",
+  "EX-18":["AWS"],"EX-19":"Yes, isolated alternate path exists","EX-20":"High — tested",
   "AF-DR-04":"Yes","AF-DR-01":"Not proven","AF-DR-05":"Manual runbook","AF-CY-03":"No","AF-CY-04":"No","AF-CY-05":"No defined method",
   "AF-TS-02":"No"
 });
@@ -329,7 +337,7 @@ if (!advisoryRanking.patternRanking.some(p => p.id === "DR-08" && p.score >= 60)
 
 const advisoryPriorityCase = evaluateResilienceIq({
   "EX-01":["Revenue-generating services"],"EX-02":"<15 minutes","EX-03":"<15 minutes","EX-04":"<15 minutes",
-  "EX-05":"Yes, current and validated","EX-06":"No","EX-07":"Never",
+  "EX-05":{ Applications: "Validated", Data: "Validated", Infrastructure: "Validated", People: "Validated", "Third parties": "Validated" },"EX-06":"No","EX-07":"Never",
   "EX-08":"Yes","EX-09":"No","EX-10":"Yes, with no viable alternative","EX-11":"High concentration",
   "EX-12":"Critical SPOFs exist","EX-13":"Partially","EX-14":"No","EX-15":"No","EX-16":"Technical tests only",
   "EX-17":"No","EX-18":["AWS"],"EX-19":"Unknown","EX-20":"Low",
@@ -351,7 +359,7 @@ if (!result.executiveReport.recommendationSensitivity.some(s => s.id === "SENS-0
 const advisoryLifecycleAnswers: any = {
   "EX-01": advisoryGateCase ? ["Customer-facing services", "Revenue-generating services"] : [],
   "EX-02": "1-4 hours", "EX-03": "1-4 hours", "EX-04": "15-60 minutes",
-  "EX-05": "Yes, current and validated", "EX-06": "Likely, but not recently tested", "EX-07": "1-2 years ago",
+  "EX-05": { Applications: "Validated", Data: "Validated", Infrastructure: "Validated", People: "Validated", "Third parties": "Validated" }, "EX-06": "Likely, but not recently tested", "EX-07": "1-2 years ago",
   "EX-08": "Potentially", "EX-09": "Immutable but restore not proven", "EX-10": "Yes, with no viable alternative",
   "EX-11": "High concentration", "EX-12": "Critical SPOFs exist", "EX-13": "Partially", "EX-14": "Partially",
   "EX-15": "Yes, periodic review", "EX-16": "Technical tests only", "EX-17": "No", "EX-18": ["AWS"],
@@ -371,7 +379,7 @@ const advisoryLifecycleAnswers: any = {
   "AF-OP-01": "Yes, tested", "AF-OP-02": "Yes, tested", "AF-OP-03": "Yes, automated",
   "AF-TS-01": ["No blocker"], "AF-TS-02": "Yes", "AF-TS-03": "Automatically/continuously",
   "AF-GV-01": "Named business owner with technology counterpart", "AF-GV-02": "Formal approval and expiry",
-  "AF-GV-03": ["Business impact and risk reduction"]
+  "AF-GV-03": "Business impact and risk reduction"
 };
 const advisoryLifecycle = evaluateResilienceIq(advisoryLifecycleAnswers);
 if (advisoryLifecycle.status !== "ready") throw new Error("Completing triggered advisory questions should release the advisory-depth gate");

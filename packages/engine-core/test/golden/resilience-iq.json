@@ -18,6 +18,7 @@
       "TP": 77,
       "INFRA": 95
     },
+    "unassessedDomains": [],
     "preferredPattern": "DR-05",
     "alternatives": [
       {
@@ -160,6 +161,7 @@
       "TP": 29,
       "INFRA": 24
     },
+    "unassessedDomains": [],
     "preferredPattern": null,
     "alternatives": [
       {
@@ -199,10 +201,10 @@
     "eliminatedPatterns": [],
     "patternRanking": [
       "DR-03:83",
-      "TP-05:78",
-      "TP-03:78",
-      "INF-03:78",
       "INF-04:78",
+      "TP-05:78",
+      "INF-03:78",
+      "TP-03:78",
       "CYBER-01:76",
       "CYBER-04:70",
       "CYBER-03:68"
@@ -308,6 +310,7 @@
       "TP": 20,
       "INFRA": 18
     },
+    "unassessedDomains": [],
     "preferredPattern": null,
     "alternatives": [
       {
@@ -347,8 +350,8 @@
       "CYBER-02:66",
       "DATA-01:64",
       "DR-01:58",
-      "DR-02:58",
-      "DR-03:58"
+      "TEST-01:58",
+      "BCP-03:58"
     ],
     "mandatoryControls": [
       "DATA-01",
@@ -444,13 +447,21 @@
     "evidenceConfidence": "self_declared",
     "criticalExposure": null,
     "domainScores": {
-      "BCP": 45,
-      "DR": 45,
-      "CYBER": 45,
-      "OPS": 45,
-      "TP": 45,
-      "INFRA": 45
+      "BCP": 0,
+      "DR": 0,
+      "CYBER": 0,
+      "OPS": 0,
+      "TP": 0,
+      "INFRA": 0
     },
+    "unassessedDomains": [
+      "BCP",
+      "DR",
+      "CYBER",
+      "OPS",
+      "TP",
+      "INFRA"
+    ],
     "preferredPattern": null,
     "alternatives": [
       {
@@ -475,13 +486,13 @@
     "eliminatedPatterns": [],
     "patternRanking": [
       "DR-01:55",
+      "DATA-01:55",
       "DR-02:55",
-      "DR-03:55",
-      "DR-04:55",
-      "DR-05:55",
-      "CYBER-01:55",
+      "CYBER-04:55",
       "CYBER-02:55",
-      "CYBER-03:55"
+      "CYBER-03:55",
+      "DR-03:55",
+      "CYBER-01:55"
     ],
     "mandatoryControls": [],
     "gaps": [
@@ -560,6 +571,7 @@
       "TP": 29,
       "INFRA": 19
     },
+    "unassessedDomains": [],
     "preferredPattern": "DR-03",
     "alternatives": [
       {
@@ -600,10 +612,10 @@
     "patternRanking": [
       "DR-08:90",
       "DR-03:79",
-      "TP-05:78",
-      "TP-03:78",
-      "INF-03:78",
       "INF-04:78",
+      "TP-05:78",
+      "INF-03:78",
+      "TP-03:78",
       "CYBER-01:76",
       "INF-06:72"
     ],
@@ -708,6 +720,7 @@
       "TP": 64,
       "INFRA": 94
     },
+    "unassessedDomains": [],
     "preferredPattern": "DR-04",
     "alternatives": [
       {
@@ -749,12 +762,12 @@
     "patternRanking": [
       "DR-04:84",
       "DR-03:83",
-      "TP-05:78",
-      "TP-03:78",
-      "INF-03:78",
       "INF-04:78",
-      "DR-02:58",
-      "DR-05:58"
+      "TP-05:78",
+      "INF-03:78",
+      "TP-03:78",
+      "TP-04:58",
+      "TP-01:58"
     ],
     "mandatoryControls": [
       "TP-03",
