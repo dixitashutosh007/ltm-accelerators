@@ -84,6 +84,8 @@ R7 and R8 can run in parallel. R10's engineering can start alongside R9, but its
 
 **Engineering:** implement each decision with a regression test, re-run the audit and present the golden-file diff for sign-off.
 
+**Status (13 Oct 2026):** review pack ready: [R9_REVIEW_PACK.md](R9_REVIEW_PACK.md), with worked examples from the engine. It adds decision 6 (moderate concentration raising a critical gap) and refines decision 4: the strategy is not only Active-Active for near-zero RPO with a relaxed RTO, it is non-monotonic (RTO 1–4 hours gives Warm Standby, but 4–24 hours goes back to Active-Active). Waiting on the practice lead.
+
 **Gate R9:**
 - Written lead sign-off on decisions 1–6 and on the new golden outputs.
 - Validation gate 8 ("missing answers never flatter the result") moves from Partial to Pass.
