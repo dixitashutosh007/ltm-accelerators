@@ -45,6 +45,24 @@ test.describe('Posture IQ', () => {
     expect(world.pageErrors).toEqual([]);
   });
 
+  test('every question in the bank renders options to answer', async ({ page }) => {
+    // Regression: 'boolean' questions (A4, D2, E4, F3) rendered with no options, so they could not be answered.
+    const unanswerable = await page.evaluate(`BANK.questions
+      .filter(q => !/onclick="answer(Single|Scale|Multi|Matrix)\\(/.test(renderQuestion(q)))
+      .map(q => q.id + ' (' + q.type + ')')`);
+    expect(unanswerable).toEqual([]);
+
+    // Regression: C2's grid had no rows or columns in the page's bank, so section C failed to render.
+    // Every cell the page offers must be one the server's contract accepts.
+    const c2 = await page.evaluate(`(() => {
+      const q = BANK.questions.find(q => q.id === 'C2');
+      q.rows.forEach((r, i) => answerMatrix('C2', r.id, q.cols[i % q.cols.length].id));
+      return STATE.answers.C2;
+    })()`);
+    expect(Object.keys(c2 as object).length).toBeGreaterThan(0);
+    expect(parsePostureIqRequest({ answers: { C2: c2 } })).toMatchObject({ ok: true });
+  });
+
   test('if scoring fails, an error is shown and no results are computed locally', async ({ page, world }) => {
     world.on('POST', PATH, () => ({ status: 503, body: { ok: false } }));
     await page.evaluate(`loadArchetype('bank', true)`);

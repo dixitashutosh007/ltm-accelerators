@@ -2885,6 +2885,62 @@ var BANK = {
           "reg": "dora",
           "a": "Art. 5"
         }
+      ],
+      "rows": [
+        {
+          "id": "pii",
+          "label": "Personal data"
+        },
+        {
+          "id": "special",
+          "label": "Special-category data"
+        },
+        {
+          "id": "financial",
+          "label": "Financial data"
+        },
+        {
+          "id": "behavioural",
+          "label": "Behavioural / analytics data"
+        },
+        {
+          "id": "aitraining",
+          "label": "AI / ML training data"
+        },
+        {
+          "id": "government",
+          "label": "Government / classified / restricted data"
+        }
+      ],
+      "cols": [
+        {
+          "id": "eu-only",
+          "label": "EU region only"
+        },
+        {
+          "id": "uk-only",
+          "label": "UK region only"
+        },
+        {
+          "id": "eu-backup",
+          "label": "EU + encrypted non-EU backup"
+        },
+        {
+          "id": "us-dpf",
+          "label": "US cloud with DPF-certified processor"
+        },
+        {
+          "id": "us-cloud",
+          "label": "US / non-EU cloud (no DPF)"
+        },
+        {
+          "id": "multi",
+          "label": "Multi-region global"
+        },
+        {
+          "id": "unknown",
+          "label": "Unknown"
+        }
       ]
     },
     {
@@ -4503,7 +4559,8 @@ function renderQuestion(q){
   let inputHtml='';
   const letters=['A','B','C','D','E','F','G','H'];
 
-  if(q.type==='single'){
+  // 'boolean' questions (A4, D2, E4, F3) carry their own option list, so they render and score like 'single'.
+  if(q.type==='single'||q.type==='boolean'){
     inputHtml = `<div class="opts-vert">${q.options.map((o, idx)=>{
       const letter = letters[idx] || (idx+1);
       const isSel = ans === o.value;
@@ -4533,7 +4590,7 @@ function renderQuestion(q){
       </div>`;
     }).join('')}</div>`;
   } else if(q.type==='matrix'){
-    const rows=q.matrix.rows; const cols=q.matrix.cols;
+    const rows=q.rows||[]; const cols=q.cols||[];
     const cur=ans||{};
     inputHtml = `<div style="overflow-x:auto"><table class="matrix">
       <thead><tr><th>Data category</th>${cols.map(c=>`<th>${c.label}</th>`).join('')}</tr></thead>
@@ -4628,7 +4685,7 @@ function collectFindingsForQuestion(q){
   const list=[];
   if(ans===undefined) return list;
 
-  if(q.type==='single'){
+  if(q.type==='single'||q.type==='boolean'){
     const opt=(q.options||[]).find(o=>o.value===ans);
     if(opt&&opt.findings) opt.findings.forEach(f=>list.push(Object.assign({qid:q.id}, f)));
   } else if(q.type==='scale'){
