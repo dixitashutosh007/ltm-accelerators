@@ -68,7 +68,7 @@ ARCHETYPES['saas-cloud-native'] = {
 function goldenView(r: ResilienceResult) {
   return {
     status: r.status, score: r.score, postureScore: r.postureScore, rating: r.rating, maturity: r.maturity,
-    evidenceConfidence: r.evidenceConfidence, criticalExposure: r.criticalExposure, domainScores: r.domainScores,
+    evidenceConfidence: r.evidenceConfidence, criticalExposure: r.criticalExposure, domainScores: r.domainScores, unassessedDomains: r.unassessedDomains,
     preferredPattern: r.preferredPattern, alternatives: r.alternatives, eliminatedPatterns: r.eliminatedPatterns,
     patternRanking: r.patternRanking.map(p => `${p.id}:${p.score}`), mandatoryControls: r.mandatoryControls,
     gaps: r.gapRegister.map(g => g.id), nextQuestions: r.nextQuestions.map(q => q.id), evidenceRequests: r.evidenceRequests,
@@ -156,6 +156,20 @@ describe('Resilience IQ invariants (500 random questionnaires)', () => {
     }
   });
 
+  it('equally scored patterns are ranked by lower cost, then lower complexity, then id (R8)', () => {
+    const rank: Record<string, number> = { low: 1, 'low-medium': 2, medium: 3, optimized: 3, 'medium-high': 4, high: 5, 'very-high': 6 };
+    const byId = new Map(((resilienceKnowledge as any).patterns.patterns as any[]).map(p => [p.id, p]));
+    const key = (id: string) => [rank[byId.get(id).cost_profile], rank[byId.get(id).complexity]];
+    for (const { r } of runs) {
+      r.patternRanking.forEach((x, i) => {
+        const y = r.patternRanking[i + 1];
+        if (!y || y.score !== x.score) return;
+        const [xc, xx] = key(x.id); const [yc, yx] = key(y.id);
+        expect(xc < yc || (xc === yc && (xx < yx || (xx === yx && x.id < y.id)))).toBe(true);
+      });
+    }
+  });
+
   it('a result is deterministic', () => {
     for (const { answers, r } of runs.slice(0, 50)) expect(evaluateResilienceIq(answers as any)).toEqual(r);
   });
@@ -192,6 +206,15 @@ describe('Resilience IQ request contract', () => {
 });
 
 describe('Resilience IQ regression tests', () => {
+  it('a domain with no scored answers is unassessed and scores 0, not a neutral 50 (R8)', () => {
+    const { 'EX-13': _a, 'EX-14': _b, 'EX-15': _c, ...noBcp } = ARCHETYPES['regulated-bank-tested'] as any;
+    const r = evaluateResilienceIq(noBcp);
+    expect(r.unassessedDomains).toEqual(['BCP']);
+    expect(r.domainScores.BCP).toBe(0);
+    expect(r.decisionLog.join(' ')).toContain('Unassessed domains (no scored answers, scored 0): BCP.');
+    expect(evaluateResilienceIq(ARCHETYPES['regulated-bank-tested'] as any).unassessedDomains).toEqual([]);
+  });
+
   it('EX-01 is a multi-select of critical services, not a ranking of every option (always "very high")', () => {
     const ex01 = EXEC.find(q => q.id === 'EX-01');
     expect(ex01.ui.interaction).toBe('multi_select');
@@ -277,6 +300,17 @@ describe('Resilience IQ scoring audit fixes (R3)', () => {
 
   it('demanding recovery objectives are requirements, not capability: they do not raise the posture score', () => {
     expect(run({ 'EX-03': '4-24 hours', 'EX-04': '1-4 hours' }).postureScore).toBe(run({}).postureScore);
+  });
+
+  it('AF-CL-04 and AF-TS-02 are live: they only look dead in the audit because other answers raise the same flag (R8)', () => {
+    const base: any = ARCHETYPES['regulated-bank-tested'];
+    for (const [q, good, weak] of [['AF-CL-04', 'Yes, tested', 'No'], ['AF-TS-02', 'Yes', 'No']]) {
+      const g = evaluateResilienceIq({ ...base, [q]: good });
+      const w = evaluateResilienceIq({ ...base, [q]: weak });
+      expect(w.score!, q).toBeLessThan(g.score!);
+      expect(w.evidenceRequests, q).toContain('restore test evidence');
+      expect(g.evidenceRequests, q).not.toContain('restore test evidence');
+    }
   });
 
   it('a withheld result does not leak the posture score in its decision log', () => {

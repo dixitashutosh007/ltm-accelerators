@@ -79,6 +79,8 @@ export const handler = async (event: APIGatewayProxyEventV2): Promise<APIGateway
       return response(400, { ok: false, error: 'evidenceLocation must be a string.', requestId }, requestId);
     }
 
+    // Stub until roadmap R10 (docs/resilience-iq/ROADMAP.md): it validates the status change and saves nothing.
+    // It does not check that the caller owns assessmentId; R10 must add that check before adding storage.
     return response(501, {
       ok: false,
       error: 'evidence_persistence_not_configured',

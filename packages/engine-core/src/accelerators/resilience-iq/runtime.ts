@@ -99,6 +99,8 @@ export interface ResilienceResult {
   postureScore: number | null;
   criticalExposure: "Low" | "Moderate" | "High" | "Severe" | null;
   domainScores: Record<string, number>;
+  /** Weighted domains with no scored answer. They score 0 rather than a neutral default. */
+  unassessedDomains: string[];
   preferredPattern: string | null;
   alternatives: PatternDecision[];
   patternRanking: PatternDecision[];
@@ -291,6 +293,21 @@ function dynamicBranch(a: ResilienceAnswers) {
   return { questions, evidence, eliminate, candidates, flags };
 }
 
+const isBlank = (v: unknown) => v === undefined || v === null || v === "";
+
+/** Weighted domains in which no executive question that carries a score has been answered. */
+function unassessedDomainIds(a: ResilienceAnswers): string[] {
+  const scoring = (k.scoringModel as any).question_scoring ?? {};
+  // Scope inputs carry no maturity signal (see scoreDomains), so they do not make a domain assessed.
+  const scopeTypes = new Set(["criticality_presence", "environment_presence"]);
+  const answered = new Set(
+    (k.questionBank.executive_questions as any[])
+      .filter(x => !isBlank(a[x.id]) && !scopeTypes.has(scoring[x.id]?.type))
+      .map(x => x.domain)
+  );
+  return Object.keys(k.scoringModel.domain_weights).filter(d => !answered.has(d));
+}
+
 function scoreDomains(a: ResilienceAnswers, confidence: number): Record<string, number> {
   const q = k.questionBank.executive_questions as any[];
   const scoring = (k.scoringModel as any).question_scoring ?? {};
@@ -323,7 +340,8 @@ function scoreDomains(a: ResilienceAnswers, confidence: number): Record<string, 
 
   const result: Record<string, number> = {};
   for (const d of Object.keys(k.scoringModel.domain_weights)) {
-    const raw = scores[d] ? scores[d].sum / scores[d].n : 50;
+    // A domain with no scored answers is unassessed: it scores 0 so missing answers can never raise the posture.
+    const raw = scores[d] ? scores[d].sum / scores[d].n : 0;
     result[d] = Math.round(Math.max(0, Math.min(100, raw * (0.7 + confidence * 0.3))));
   }
   return result;
@@ -531,6 +549,20 @@ function gapRegister(a: ResilienceAnswers, flags: Set<string>, score: number) {
   return gaps;
 }
 
+// Ties between equally scored patterns go to the lower cost, then the lower complexity, then the pattern id,
+// so the recommendation never depends on the order candidates happen to be listed in.
+const effortRank: Record<string, number> = { low: 1, "low-medium": 2, medium: 3, optimized: 3, "medium-high": 4, high: 5, "very-high": 6 };
+function patternTieKey(id: string): [number, number, string] {
+  const p = (k.patterns.patterns as any[]).find(x => x.id === id);
+  return [effortRank[p?.cost_profile] ?? 99, effortRank[p?.complexity] ?? 99, id];
+}
+function comparePatterns(x: PatternDecision, y: PatternDecision): number {
+  if (y.score !== x.score) return y.score - x.score;
+  const [xc, xx, xi] = patternTieKey(x.id);
+  const [yc, yx, yi] = patternTieKey(y.id);
+  return xc - yc || xx - yx || xi.localeCompare(yi);
+}
+
 function patternScore(id: string, a: ResilienceAnswers, eliminated: Set<string>, advisoryFlags: Set<string> = new Set()): PatternDecision | null {
   if (eliminated.has(id)) return null;
   const p = (k.patterns.patterns as any[]).find(x => x.id === id);
@@ -719,6 +751,7 @@ export function evaluateResilienceIq(a: ResilienceAnswers): ResilienceResult {
   const confidenceLabel = evidenceConfidence(a);
   const confidence = Number((k.scoringModel.evidence_confidence as any)[confidenceLabel] ?? 0.7);
   const baseDomains = scoreDomains(a, confidence);
+  const unassessedDomains = unassessedDomainIds(a);
   const advisoryPosture = applyAdvisoryPostureAdjustments(baseDomains, advisory);
   const domains = advisoryPosture.domains;
   const postureScore = Math.round(Object.entries(domains).reduce((s, [d, v]) => s + v * Number((k.scoringModel.domain_weights as any)[d] ?? 0), 0));
@@ -741,9 +774,10 @@ export function evaluateResilienceIq(a: ResilienceAnswers): ResilienceResult {
   const candidateIds = ["DR-01","DR-02","DR-03","DR-04","DR-05","CYBER-01","CYBER-02","CYBER-03","CYBER-04","DATA-01",...branch.candidates];
   const unique = [...new Set(candidateIds)];
   const ranking = unique.map(id => patternScore(id, a, eliminated, advisory)).filter(Boolean) as PatternDecision[];
-  ranking.sort((x, y) => y.score - x.score);
+  ranking.sort(comparePatterns);
   const recoveryRanking = ranking.filter(x => ["DR-01","DR-02","DR-03","DR-04","DR-05"].includes(x.id));
   const preferred = assessmentIncomplete ? null : recoveryRanking[0]?.id ?? null;
+  const preferredByTieBreak = preferred !== null && recoveryRanking[1]?.score === recoveryRanking[0]?.score;
   const recommendationConfidenceResult = recommendationConfidence(a, preferred, ranking, gaps, confidenceLabel, assessmentIncomplete);
 
   const nextQuestions: NextQuestion[] = [];
@@ -879,6 +913,7 @@ export function evaluateResilienceIq(a: ResilienceAnswers): ResilienceResult {
     maturity: assessmentIncomplete ? null : maturity(postureScore, criticalExposure(gaps), a),
     evidenceConfidence: confidenceLabel,
     domainScores: domains,
+    unassessedDomains,
     preferredPattern: preferred,
     alternatives: recoveryRanking.slice(1, 3),
     patternRanking: ranking.slice(0, 8),
@@ -903,6 +938,12 @@ export function evaluateResilienceIq(a: ResilienceAnswers): ResilienceResult {
         advisoryDepthRequired && advisoryMissing.length > 0 ? "Final recommendation blocked until triggered advisory-depth questions are completed." :
         "Final recommendation permitted because required executive baseline is complete.",
       assessmentIncomplete ? "Resilience posture score and critical exposure are withheld until the assessment is complete." : `Resilience posture score: ${postureScore}; critical exposure: ${criticalExposure(gaps)}.`,
+      unassessedDomains.length
+        ? `Unassessed domains (no scored answers, scored 0): ${unassessedDomains.join(", ")}.`
+        : "Every weighted domain has at least one scored answer.",
+      ...(preferredByTieBreak
+        ? [`${preferred} and ${recoveryRanking[1].id} scored equally (${recoveryRanking[0].score}); ${preferred} is preferred by the tie-break rule (lower cost, then lower complexity).`]
+        : []),
       `Evidence confidence: ${confidenceLabel}.`,
       `Evidence register: ${evidenceRegister.length} requested item(s); validation is required before material evidence can affect recommendation confidence.`,
       evidenceRegister.some(x => x.affectsRecommendation)
