@@ -1987,6 +1987,10 @@ h1,h2,h3,h4{font-family:var(--font-display);letter-spacing:-.015em;color:var(--i
 </style>
 </head>
 <body>
+<!-- Sovereign IQ plan S0, item 4: shown until the content is verified and passes the counsel gate (S10). -->
+<div id="review-banner" role="note" style="position:relative;z-index:1000;background:#3B2A0B;color:#FDE7B0;border-bottom:1px solid #8A6500;font:600 12px/1.5 system-ui,-apple-system,'Segoe UI',sans-serif;text-align:center;padding:7px 16px">
+  Internal consultant use only: content under review. Advisory guidance, not legal advice; confirm regulatory interpretations with qualified counsel.
+</div>
 
 <div id="ltm-splash" role="status" aria-label="Initializing Sovereign IQ Accelerator">
   <style>
@@ -4809,7 +4813,7 @@ function renderReport() {
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px">
         <div style="background:var(--panel2);border:1px solid var(--line2);border-radius:var(--radius-sm);padding:12px">
           <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--mutd);font-family:var(--font-display);margin-bottom:4px">Full Report Includes</div>
-          <div style="font-size:12px;color:var(--ink);line-height:1.6">4-Phase Gap Roadmap<br>Clause-by-Clause Audit Register<br>CBOM &amp; Post-Quantum Readiness<br>Geopolitical Wargame Runbook<br>Sovereign Cloud RFP Matrix</div>
+          <div style="font-size:12px;color:var(--ink);line-height:1.6">Prioritised transformation roadmap<br>Clause-by-clause audit register<br>Cross-border data flow matrix</div>
         </div>
         <div style="background:var(--panel2);border:1px solid var(--line2);border-radius:var(--radius-sm);padding:12px">
           <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--mutd);font-family:var(--font-display);margin-bottom:4px">Practice Lead</div>
@@ -4865,7 +4869,8 @@ function renderReport() {
       var items = heatmap[key] || [];
       var zoneClass = (row.level >= 3 && exp >= 3) ? "danger-zone" : ((row.level >= 2 && exp >= 2) ? "watch-zone" : "strength-zone");
       var badges = items.map(function(it) {
-        return '<span class="hm-badge ' + it.badgeClass + '" title="Click for Forensic Audit: ' + it.name + '" onclick="openForensicFlyout(\'' + it.id + '\')">' + it.name + '</span>';
+        // The forensic dossier flyout is retired (Sovereign IQ plan S0): its text was unsourced and fell back to DORA for other regimes.
+        return '<span class="hm-badge ' + it.badgeClass + '">' + it.name + '</span>';
       }).join("");
       return '<div class="hm-cell ' + zoneClass + '">' + badges + '</div>';
     }).join("");
@@ -5446,8 +5451,7 @@ PART 2: ARCHITECTURAL & LEGAL NON-NEGOTIABLES (4-PHASE EXECUTION)
 PART 3: QUANTIFIED VALUE AT STAKE & CAPITAL PRESERVATION
 ================================================================================
 - Maximum Statutory Fine Exposure: $${(fin.statutoryCeiling/1000000).toFixed(1)}M USD (driven by ${inScope.length} in-scope binding statutory regimes).
-- Illustrative cost of a 24-hour outage (turnover-based): ${(fin.downtimeRisk24h/1000000).toFixed(1)}M USD.
-- Remediation Sizing: Fixed-price advisory sprint sized at ~$${(fin.remediationEst/1000).toFixed(0)}k USD, yielding a 7.3x capital protection ratio against immediate regulatory enforcement.`;
+- Illustrative cost of a 24-hour outage (turnover-based): ${(fin.downtimeRisk24h/1000000).toFixed(1)}M USD.`;
 }
 
 function copyMemoText() {
@@ -7037,7 +7041,7 @@ function openEmailModal() {
       </div>
       <div class="gate-sub-actions">
         <button class="btn ghost small" onclick="bookExecutiveBriefing()" style="text-decoration:none">
-          Schedule Briefing with ashutosh.dixit@ltm.com
+          Schedule a briefing with LTM
         </button>
         <div style="display:flex;align-items:center;gap:12px">
           <button class="btn secondary small" onclick="openEmailModal()">Email Teaser</button>
@@ -7124,7 +7128,7 @@ function sendEmailViaClient() {
       </div>
       <div class="gate-sub-actions">
         <button class="btn ghost small" onclick="bookExecutiveBriefing()" style="text-decoration:none">
-          Schedule Briefing with ashutosh.dixit@ltm.com
+          Schedule a briefing with LTM
         </button>
         <div style="display:flex;align-items:center;gap:12px">
           <button class="btn secondary small" onclick="openEmailModal()">Email Teaser</button>
@@ -7659,7 +7663,7 @@ function renderSlide(idx) {
       </div>
       <div class="gate-sub-actions">
         <button class="btn ghost small" onclick="bookExecutiveBriefing()" style="text-decoration:none">
-          Schedule Briefing with ashutosh.dixit@ltm.com
+          Schedule a briefing with LTM
         </button>
         <div style="display:flex;align-items:center;gap:12px">
           <button class="btn secondary small" onclick="openEmailModal()">Email Teaser</button>
@@ -7882,7 +7886,7 @@ function generateMarpMarkdown() {
       </div>
       <div class="gate-sub-actions">
         <button class="btn ghost small" onclick="bookExecutiveBriefing()" style="text-decoration:none">
-          Schedule Briefing with ashutosh.dixit@ltm.com
+          Schedule a briefing with LTM
         </button>
         <div style="display:flex;align-items:center;gap:12px">
           <button class="btn secondary small" onclick="openEmailModal()">Email Teaser</button>
@@ -8033,7 +8037,7 @@ function generateTIADossier(facts, inScopeRegimes, answers) {
       </div>
       <div class="gate-sub-actions">
         <button class="btn ghost small" onclick="bookExecutiveBriefing()" style="text-decoration:none">
-          Schedule Briefing with ashutosh.dixit@ltm.com
+          Schedule a briefing with LTM
         </button>
         <div style="display:flex;align-items:center;gap:12px">
           <button class="btn secondary small" onclick="openEmailModal()">Email Teaser</button>
@@ -8194,6 +8198,19 @@ function exportSIQ() {
    VECTOR JSPDF REPORT GENERATION
    ============================================================ */
 
+// Every page of every Sovereign IQ PDF carries the disclaimer (Sovereign IQ plan S0, item 4).
+function stampSovereignDisclaimer(doc) {
+  var n = doc.getNumberOfPages();
+  var w = doc.internal.pageSize.getWidth(), h = doc.internal.pageSize.getHeight();
+  for (var i = 1; i <= n; i++) {
+    doc.setPage(i);
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(7);
+    doc.setTextColor(100, 116, 139);
+    doc.text("Advisory guidance, not legal advice. Confirm regulatory interpretations with qualified counsel. Internal consultant use only: content under review.", w / 2, h - 6, { align: "center" });
+  }
+}
+
 function downloadSovereignExecutivePDF(isArchiveOnly) {
   if (!STATE.evaluation) { showSovereignScoringError(); return ''; }
   if (typeof jspdf === "undefined" || !jspdf.jsPDF) {
@@ -8341,7 +8358,7 @@ function downloadSovereignExecutivePDF(isArchiveOnly) {
     doc.setFontSize(9.5);
     doc.text("[SECTION GATED: 2D Extraterritorial Risk Heatmap & Cross-Border Data Flow Matrix]", pageW / 2, gateY + 18, { align: "center" });
 
-    // Elevated Big 4 Callout Box
+    // Executive briefing callout
     var ctaY = gateY + 42;
     doc.setFillColor(248, 250, 252);
     doc.setDrawColor(255, 94, 79);
@@ -8357,19 +8374,17 @@ function downloadSovereignExecutivePDF(isArchiveOnly) {
     doc.setFont("helvetica", "normal");
     doc.setFontSize(8.8);
     var ctaText = "This document represents an executive teaser preview. The complete unmasked Sovereign-IQ deliverable includes:\n\n" +
-      "1. Granular 2D Extraterritorial Strategic Risk Heatmap (Danger Zone / Watch Area breakdown)\n" +
-      "2. Complete Multi-Jurisdiction Cross-Border Data Flow Matrix (Hops 1-4 with mandatory STMs)\n" +
-      "3. Prioritized 4-Phase Transformation Roadmap (Waves 1-4 with sprint estimates)\n" +
-      "4. Boardroom Governance RACI Operating Model (TOM across 6 strategic sovereign decisions)\n" +
-      "5. Geopolitical Severance & 60-Second Failover Drill (PRA SS2/21 RTO/RPO tested runbook)\n" +
-      "6. Sovereign Legal Addendum Pack (Attorney-drafted covenants for hyperscaler MSAs)\n" +
-      "7. Cryptographic Bill of Materials (CBOM / PQC Quantum Readiness Audit)\n\n" +
-      "To receive the complete unmasked 28-page pack or schedule an executive readout, contact practice leadership:\n" +
-      "Ashutosh Dixit · Partner, Digital Sovereignty Practice · ashutosh.dixit@ltm.com";
+      "1. 2D extraterritorial and regulatory risk heatmap\n" +
+      "2. Cross-border data flow matrix\n" +
+      "3. Prioritised transformation roadmap\n" +
+      "4. Governance RACI operating model\n\n" +
+      "To receive the complete report or schedule an executive readout, contact LTM Infrastructure Tech Advisory: ashutosh.dixit@ltm.com\n\n" +
+      "This assessment is advisory guidance, not legal advice. Confirm regulatory interpretations with qualified counsel.";
 
     var splitCta = doc.splitTextToSize(ctaText, pageW - 40);
     doc.text(splitCta, 20, ctaY + 18);
 
+    stampSovereignDisclaimer(doc);
     doc.save("Sovereign_IQ_Executive_Teaser_" + clientDisplay.replace(/[^a-zA-Z0-9]/g, "_") + ".pdf");
   } else {
     // --- FULL UNLOCKED PDF (Pages 2, 3, 4, 5) ---
@@ -8442,25 +8457,9 @@ function downloadSovereignExecutivePDF(isArchiveOnly) {
     });
 
     // Page 5: Geopolitical Severance Protocol & Cryptographic BOM Summary
-    doc.addPage();
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(13);
-    doc.text("Emergency Geopolitical Decoupling & Cryptographic BOM (CBOM)", 14, 18);
+    // The CBOM / PQC page is retired with its module (Sovereign IQ plan S0, decision D5).
 
-    var cbomPdfData = SAMPLE_CBOM_DATASET.map(function(c) {
-      return [c.layer, c.product, c.provenance, c.pqcStatus, c.ndaa889];
-    });
-
-    doc.autoTable({
-      startY: 24,
-      margin: { left: 14, right: 14 },
-      head: [["Layer", "Product / Appliance", "Provenance", "PQC Quantum Status", "NDAA 889"]],
-      body: cbomPdfData,
-      theme: "striped",
-      headStyles: { fillColor: [30, 41, 59], textColor: [255, 255, 255] },
-      styles: { fontSize: 8 }
-    });
-
+    stampSovereignDisclaimer(doc);
     if (!isArchiveOnly) {
       doc.save("Sovereign_IQ_Executive_Pack_" + clientDisplay.replace(/[^a-zA-Z0-9]/g, "_") + ".pdf");
       return;
@@ -8653,7 +8652,7 @@ function openSOWModal() {
       </div>
       <div class="gate-sub-actions">
         <button class="btn ghost small" onclick="bookExecutiveBriefing()" style="text-decoration:none">
-          Schedule Briefing with ashutosh.dixit@ltm.com
+          Schedule a briefing with LTM
         </button>
         <div style="display:flex;align-items:center;gap:12px">
           <button class="btn secondary small" onclick="openEmailModal()">Email Teaser</button>

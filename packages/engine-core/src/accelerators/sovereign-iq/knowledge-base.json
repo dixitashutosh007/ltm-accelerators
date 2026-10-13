@@ -189,16 +189,16 @@
       "duties": [
         "UK GDPR compliance & ICO registration",
         "International Data Transfer Agreement (IDTA) or UK Addendum",
-        "Monitoring phased reforms under the Data (Use and Access) Act 2025",
+        "Data (Use and Access) Act 2025: main data protection changes in force since 5 Feb 2026, including the new test for international transfers",
         "PECR compliance for electronic communications"
       ]
     },
     {
       "id": "UK_OPRES",
       "name": "UK Operational Resilience & Outsourcing",
-      "short": "UK · FCA PS21/3; PRA SS2/21",
+      "short": "UK · FCA PS21/3; PRA SS1/21 and SS2/21",
       "jurisdiction": "UK",
-      "citation": "FCA PS21/3; PRA SS2/21",
+      "citation": "FCA PS21/3; PRA SS1/21 (operational resilience); PRA SS2/21 (outsourcing and third-party risk management)",
       "url": "https://www.fca.org.uk/publications/policy-statements/ps21-3-building-operational-resilience",
       "impact": 4,
       "penalty_rule": "Supervisory capital add-ons, business restrictions, and public enforcement sanctions.",
@@ -470,9 +470,9 @@
       "impact": 4,
       "penalty_rule": "Contempt of court citations and severe criminal penalties for US corporate parents refusing compliance.",
       "duties": [
-        "Obliges US-headquartered tech firms (and subsidiaries) to provide data under US warrants regardless of physical location",
-        "Directly conflicts with GDPR Art. 48, EU Data Act Art. 32, and KSA PDPL",
-        "Requires technical encryption key custody isolation (HYOK) to render data unreadable in transit/rest"
+        "Obliges US-headquartered providers (and subsidiaries) to disclose data in their possession, custody or control under US legal process, wherever it is stored (18 U.S.C. § 2713)",
+        "Can conflict with GDPR Art. 48 (a foreign court order is recognised only through an international agreement) and EU Data Act Art. 32 (safeguards against unlawful third-country access to non-personal data). Holding data at a US provider is not in itself a breach; disclosure risk is assessed in a transfer impact assessment",
+        "Customer-held keys (HYOK) limit what a provider can technically produce; they do not remove the provider's legal obligation"
       ]
     },
     {
@@ -483,11 +483,11 @@
       "citation": "50 U.S. Code § 1881a; Executive Order 14086",
       "url": "https://www.dni.gov/index.php/fisa",
       "impact": 4,
-      "penalty_rule": "Invalidates standard cross-border transfer mechanisms without supplementary technical safeguards.",
+      "penalty_rule": "Status as of 13 Oct 2026: the statutory authority lapsed at the 12 Jun 2026 sunset; collection under existing certifications continues until the FISA Court's next approval; reauthorisation is pending. Transfers to US recipients certified under the EU-US Data Privacy Framework (Decision (EU) 2023/1795, upheld by the General Court in T-553/23; appeal C-703/25 P pending) or the UK-US data bridge do not need supplementary measures.",
       "duties": [
-        "Permits warrantless electronic surveillance of non-US persons outside the United States",
-        "Drives Schrems II requirement for Supplementary Technical Measures (end-to-end encryption with external keys)",
-        "Requires ongoing Transfer Impact Assessment (TIA) review of US cloud hosting"
+        "Permits targeting of non-US persons reasonably believed to be outside the United States, without an individual warrant (50 U.S.C. § 1881a)",
+        "Considered in transfer impact assessments for transfers not covered by the Data Privacy Framework or the UK-US data bridge; supplementary measures such as encryption with customer-held keys where needed (EDPB Recommendations 01/2020)",
+        "Re-check status regularly: reauthorisation and the Data Privacy Framework appeal can change the assessment"
       ]
     },
     {
@@ -566,11 +566,11 @@
     {
       "regimeId": "UK_OPRES",
       "code": "UK OpRes",
-      "name": "UK Operational Resilience (PS21/3 / SS2/21)",
+      "name": "UK Operational Resilience (FCA PS21/3, PRA SS1/21)",
       "jurisdiction": "United Kingdom",
       "deadlineStr": "31 Mar 2025",
       "deadline": "2025-03-31T00:00:00.000Z",
-      "citation": "FCA PS21/3 & PRA SS2/21",
+      "citation": "FCA PS21/3 & PRA SS1/21",
       "statusText": "IN FORCE · Transition Closes",
       "statusClass": "pill red",
       "boardAction": "Important Business Services (IBS) must operate within severe-but-plausible impact tolerances; mapping mandatory."
@@ -592,10 +592,10 @@
       "code": "EU AI Act",
       "name": "EU AI Act · High-Risk Systems (Annex III)",
       "jurisdiction": "European Union",
-      "deadlineStr": "02 Aug 2026",
-      "deadline": "2026-08-02T00:00:00.000Z",
-      "citation": "Regulation (EU) 2024/1689",
-      "statusText": "HARD STATUTORY CLIFF",
+      "deadlineStr": "02 Dec 2027",
+      "deadline": "2027-12-02T00:00:00.000Z",
+      "citation": "Regulation (EU) 2024/1689, as amended by Regulation (EU) 2026/1744",
+      "statusText": "DEFERRED · Annex III from 2 Dec 2027",
       "statusClass": "pill amber",
       "boardAction": "Mandatory CE marking, risk management files, and post-market monitoring for credit & health models."
     },
@@ -604,12 +604,12 @@
       "code": "EU Data Act",
       "name": "EU Data Act · Cloud Switching & Subpoenas",
       "jurisdiction": "European Union",
-      "deadlineStr": "12 Sep 2025",
-      "deadline": "2025-09-12T00:00:00.000Z",
-      "citation": "Regulation (EU) 2023/2854 (Art. 32)",
-      "statusText": "IN FORCE · Active Application",
+      "deadlineStr": "12 Jan 2027",
+      "deadline": "2027-01-12T00:00:00.000Z",
+      "citation": "Regulation (EU) 2023/2854 (Art. 23–31 switching; Art. 32 third-country access)",
+      "statusText": "IN FORCE · Switching charges end 12 Jan 2027",
       "statusClass": "pill amber",
-      "boardAction": "Abolition of cloud switching egress charges and mandatory safeguards against foreign non-EU warrants."
+      "boardAction": "Switching rights apply since 12 Sep 2025. Switching charges may only cover cost until 12 Jan 2027 and are abolished from then (Art. 29). Safeguards against unlawful third-country governmental access to non-personal data (Art. 32)."
     },
     {
       "regimeId": "KSA_PDPL",
@@ -628,12 +628,12 @@
       "code": "India DPDP & RBI",
       "name": "India DPDP Act & RBI Master Direction",
       "jurisdiction": "India",
-      "deadlineStr": "Active 2025",
-      "deadline": "2025-06-01T00:00:00.000Z",
-      "citation": "DPDP Act 2023 & RBI IT Directives",
-      "statusText": "ENFORCED · Strict Mandate",
+      "deadlineStr": "13 May 2027",
+      "deadline": "2027-05-13T00:00:00.000Z",
+      "citation": "DPDP Act 2023 and DPDP Rules 2025; RBI payment data storage directive; CERT-In Directions 2022",
+      "statusText": "PHASED · Most DPDP duties from 13 May 2027",
       "statusClass": "pill red",
-      "boardAction": "100% domestic payment transaction storage; mandatory 6-hour CERT-In incident notification."
+      "boardAction": "DPDP Rules notified 13 Nov 2025; notice, consent, rights and transfer duties apply from 13 May 2027. RBI requires payment system data to be stored only in India (payment system operators). CERT-In: report cyber incidents within 6 hours."
     },
     {
       "regimeId": "US_CLOUD_ACT",
@@ -645,7 +645,7 @@
       "citation": "18 U.S. Code § 2713",
       "statusText": "ACTIVE EXPOSURE",
       "statusClass": "pill red",
-      "boardAction": "Conflicts directly with GDPR Art. 48 and local privacy laws; requires HYOK technical mitigation."
+      "boardAction": "Can conflict with GDPR Art. 48; assess disclosure risk in transfer impact assessments. Customer-held keys limit what a provider can produce; they do not remove its legal obligation."
     }
   ],
   "peerBenchmarks": {

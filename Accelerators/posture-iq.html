@@ -1786,6 +1786,10 @@ a:hover{color:var(--ltm-darkred)}
 </script>
 </head>
 <body>
+<!-- Sovereign IQ plan S0, item 4: shown until the content is verified and passes the counsel gate (S10). -->
+<div id="review-banner" role="note" style="position:relative;z-index:1000;background:#3B2A0B;color:#FDE7B0;border-bottom:1px solid #8A6500;font:600 12px/1.5 system-ui,-apple-system,'Segoe UI',sans-serif;text-align:center;padding:7px 16px">
+  Internal consultant use only: content under review. Advisory guidance, not legal advice; confirm regulatory interpretations with qualified counsel.
+</div>
 <div id="ltm-splash" role="status" aria-label="Initializing Posture IQ Accelerator">
   <style>
     #ltm-splash {
@@ -2215,7 +2219,7 @@ var BANK = {
     {
       "id": "ukopres",
       "name": "UK Op Res",
-      "full": "FCA PS21/3; PRA SS2/21 \u2014 Operational Resilience",
+      "full": "FCA PS21/3; PRA SS1/21 \u2014 Operational Resilience",
       "tag": "UK \u00b7 financial services resilience",
       "desc": "Impact tolerances for important business services, mapping, scenario testing, self-assessment and outsourcing / third-party risk expectations.",
       "sources": [
@@ -2224,7 +2228,7 @@ var BANK = {
           "url": "https://www.fca.org.uk/publications/policy-statements/ps21-3-building-operational-resilience"
         },
         {
-          "name": "PRA SS2/21 \u2014 Operational resilience",
+          "name": "PRA SS1/21 \u2014 Operational resilience",
           "url": "https://www.bankofengland.co.uk/prudential-regulation/publication/2021/march/operational-resilience-impact-tolerances-for-important-business-services-ss"
         },
         {
@@ -3337,11 +3341,11 @@ var BANK = {
       "section": "resilience",
       "type": "single",
       "text": "For UK-regulated financial firms: are impact tolerances set for important business services (UK Operational Resilience)?",
-      "help": "FCA PS21/3 and PRA SS2/21 require identification of important business services, impact tolerances, mapping and scenario testing. Since March 2025, firms must be able to remain within tolerances for severe-but-plausible scenarios.",
+      "help": "FCA PS21/3 and PRA SS1/21 require identification of important business services, impact tolerances, mapping and scenario testing. Since March 2025, firms must be able to remain within tolerances for severe-but-plausible scenarios.",
       "refs": [
         {
           "reg": "ukopres",
-          "a": "FCA PS21/3; PRA SS2/21"
+          "a": "FCA PS21/3; PRA SS1/21"
         }
       ],
       "appliesTo": {
@@ -3690,7 +3694,7 @@ var BANK = {
       "id": "I3",
       "section": "governance",
       "type": "single",
-      "text": "For UK-regulated financial firms: do you rely on providers that may be designated Critical Third Parties (CTPs) under FSMA 2023?",
+      "text": "For UK-regulated financial firms: do you rely on providers designated as Critical Third Parties (CTPs) under FSMA 2023? From 13 Jul 2026 these are Amazon Web Services EMEA, Google Cloud EMEA, Microsoft Ireland Operations and Oracle Corporation UK.",
       "help": "HM Treasury (on recommendation of FCA / PRA / BoE) designates CTPs. Designated CTPs are subject to six Fundamental Rules and joint FCA / PRA / BoE oversight. The rules bind the provider, but your own resilience accountability is undiminished.",
       "refs": [
         {
@@ -5034,7 +5038,7 @@ function statutoryExposureBlock(penalties){
       ${cards}
     </div>
     <div style="margin-top:14px;padding-top:12px;border-top:1px solid rgba(255,94,79,0.2);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;font-size:12px;color:#5B5B5B">
-      <div><b style="color:#282828">For scale:</b> ${penalties.riskHedgeRatio === 'n/a' ? 'no quantified statutory ceiling applies to the regimes in scope.' : 'an indicative LTM advisory engagement (~' + formatCurrency(penalties.advisoryFeeEstimate) + ') is about <b>' + penalties.riskHedgeRatio + '%</b> of the largest single statutory ceiling. An illustrative comparison, not a measure of risk reduction.'}</div>
+      <div>Statutory maximums are caps set by law, not expected fines.</div>
       <div style="font-family:var(--font-m);font-size:11px;color:#8A6500;background:#FFF9E6;padding:4px 8px;border-radius:4px;border:1px solid #FFE58F">Statutory Articles 83, 34, 99 &amp; 35</div>
     </div>
   </div>`;
@@ -5073,7 +5077,7 @@ function probesDossierBlock(probes){
 
   return `<div class="section-title"><span class="st-num">02</span><h2>Triggered Contradiction Probes &amp; Interrogation Dossier</h2><span class="st-line"></span></div>
   <div class="card" style="margin-bottom:14px">
-    <p style="font-size:13.5px;color:var(--ink2)">During the diagnostic, client assertions triggered <b>${probes.length} dynamic contradiction probes</b>. In Big 4 advisory workshops, these probes prevent false compliance assumptions and expose unhedged legal exposure before regulators intervene.</p>
+    <p style="font-size:13.5px;color:var(--ink2)">During the diagnostic, client assertions triggered <b>${probes.length} dynamic contradiction probes</b>. These probes test the answers given against how the estate actually works, so the findings rest on how things operate rather than on assumptions.</p>
   </div>
   ${cards}`;
 }
@@ -5298,10 +5302,6 @@ function advisoryServicesBlock(){
           </ul>
         </div>
       </div>
-      <div style="margin-top:16px;padding-top:12px;border-top:1px solid var(--line);display:flex;justify-content:space-between;align-items:center">
-        <span style="font-family:var(--font-m);font-size:11px;color:var(--ink3)">Indicative Fee</span>
-        <b style="font-size:14px;color:var(--ink)">$160K – $240K</b>
-      </div>
     </div>
 
     <div class="card" style="display:flex;flex-direction:column;justify-content:space-between;border-top:3px solid #FF5E4F">
@@ -5319,10 +5319,6 @@ function advisoryServicesBlock(){
           </ul>
         </div>
       </div>
-      <div style="margin-top:16px;padding-top:12px;border-top:1px solid var(--line);display:flex;justify-content:space-between;align-items:center">
-        <span style="font-family:var(--font-m);font-size:11px;color:var(--ink3)">Indicative Fee</span>
-        <b style="font-size:14px;color:var(--ink)">$260K – $380K</b>
-      </div>
     </div>
 
     <div class="card" style="display:flex;flex-direction:column;justify-content:space-between;border-top:3px solid #482475">
@@ -5339,10 +5335,6 @@ function advisoryServicesBlock(){
             <li>Statutory Transfer Impact Assessment (TIA) memo</li>
           </ul>
         </div>
-      </div>
-      <div style="margin-top:16px;padding-top:12px;border-top:1px solid var(--line);display:flex;justify-content:space-between;align-items:center">
-        <span style="font-family:var(--font-m);font-size:11px;color:var(--ink3)">Indicative Fee</span>
-        <b style="font-size:14px;color:var(--ink)">$220K – $320K</b>
       </div>
     </div>
   </div>
@@ -5545,9 +5537,6 @@ function renderSlide(idx){
                 return "<li><b>" + f.regName + ":</b> " + f.capFormatted + " (" + f.statuteBasis + ")</li>";
               }).join("") + `
             </ul>
-            <div style="margin-top:10px;font-size:11.5px;color:#93c5fd;background:rgba(34,104,130,0.25);padding:8px 12px;border-radius:6px">
-              <b>For scale:</b> ` + (penalties.riskHedgeRatio === 'n/a' ? 'no quantified statutory ceiling applies.' : 'an indicative engagement is about ' + penalties.riskHedgeRatio + '% of the largest single statutory ceiling (illustrative, not a risk measure).') + `
-            </div>
           </div>
         </div>
       </div>
@@ -5637,11 +5626,7 @@ function renderSlide(idx){
             <div style="font-size:11px;font-family:var(--font-m);color:#FF5E4F;text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px">COMMERCIAL ADVISORY ENGAGEMENT</div>
             <div style="background:rgba(255,255,255,0.08);padding:12px;border-radius:6px;border:1px solid rgba(255,94,79,0.3)">
               <div style="font-size:13px;font-weight:700;color:#fff">Target Package: Digital Sovereignty &amp; Posture Remediation</div>
-              <div style="font-size:11.5px;color:#94a3b8;margin-top:4px">12-Week Strategic Advisory Sprint · Fixed-Fee Milestone Delivery</div>
-              <div style="margin:10px 0;padding:8px 0;border-top:1px solid rgba(255,255,255,0.1);border-bottom:1px solid rgba(255,255,255,0.1);display:flex;justify-content:space-between">
-                <span style="font-size:11px;color:#cbd5e1">Advisory Investment Sizing:</span>
-                <span style="font-family:var(--font-m);font-weight:700;color:#4ade80">~$175k – $280k USD</span>
-              </div>
+              <div style="font-size:11.5px;color:#94a3b8;margin-top:4px">12-week advisory engagement</div>
               <div style="font-size:11px;color:#cbd5e1;line-height:1.45">
                 • Lead Partner &amp; Cloud Security SME governance<br>
                 • Complete technical HYOK &amp; DORA CTPP architecture<br>

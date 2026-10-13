@@ -45,6 +45,21 @@ test.describe('Posture IQ', () => {
     expect(world.pageErrors).toEqual([]);
   });
 
+  test('S0 containment: review banner shown; a stored AI key is cleared and never used; no fees in the report', async ({ page, world }) => {
+    await expect(page.locator('#review-banner')).toContainText('not legal advice');
+    // A key saved by the old browser-AI feature must not be used.
+    await page.evaluate(`localStorage.setItem('posture_iq_ai_config', JSON.stringify({ provider: 'openai', key: 'test-key-not-real', model: 'gpt-4o' }))`);
+    await page.reload();
+    await page.waitForLoadState('networkidle');
+    expect(await page.evaluate(`localStorage.getItem('posture_iq_ai_config')`)).toBeNull();
+    await page.evaluate(`loadArchetype('bank', true)`);
+    await expect.poll(() => requests.length, { timeout: 15_000 }).toBeGreaterThan(0);
+    await expect(page.locator('#screen-results')).toBeVisible({ timeout: 15_000 });
+    const text = await page.locator('#screen-results').innerText();
+    for (const banned of ['Indicative Fee', 'For scale', 'Big 4', 'Investment Sizing']) expect(text, banned).not.toContain(banned);
+    expect(world.calls.filter(c => c.startsWith('BLOCKED-AI'))).toEqual([]);
+  });
+
   test('every question in the bank renders options to answer', async ({ page }) => {
     // Regression: 'boolean' questions (A4, D2, E4, F3) rendered with no options, so they could not be answered.
     const unanswerable = await page.evaluate(`BANK.questions
