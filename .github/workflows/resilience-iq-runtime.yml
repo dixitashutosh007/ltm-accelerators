@@ -9,6 +9,8 @@ on:
       - "packages/engine-core/src/index.ts"
       - "amplify/functions/evaluate-resilience-iq/**"
       - "amplify/functions/manage-resilience-assessment/**"
+      - "amplify/functions/manage-resilience-evidence/**"
+      - "amplify/functions/_shared/**"
       - "amplify/backend.ts"
       - "package.json"
       - "tsconfig.json"
@@ -23,6 +25,8 @@ on:
       - "packages/engine-core/src/index.ts"
       - "amplify/functions/evaluate-resilience-iq/**"
       - "amplify/functions/manage-resilience-assessment/**"
+      - "amplify/functions/manage-resilience-evidence/**"
+      - "amplify/functions/_shared/**"
       - "amplify/backend.ts"
       - "package.json"
       - "tsconfig.json"
@@ -47,3 +51,4 @@ jobs:
       - run: npm run test:resilience
       - run: npm run test:resilience-api
       - run: npm run test:resilience-persistence-api
+      - run: npm run test:resilience-evidence-api

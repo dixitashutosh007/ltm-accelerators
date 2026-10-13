@@ -189,13 +189,13 @@ legacyRoute('/api/resilience-iq/assessment', [HttpMethod.OPTIONS], resilienceAss
 const costIqIntegration = integrate('EvaluateCostIqIntegration', backend.evaluateCostIqFunction);
 const resilienceIntegration = integrate('EvaluateResilienceIqIntegration', backend.evaluateResilienceIqFunction);
 const resilienceEvidenceIntegration = integrate('ManageResilienceEvidenceIntegration', backend.manageResilienceEvidenceFunction);
-// Resilience IQ scoring and evidence: POST needs the platform Cognito token (the page already sends it);
-// OPTIONS stays open for the preflight, which the Lambdas answer.
-for (const [path, integration] of [
-  ['/api/evaluate/resilience-iq', resilienceIntegration],
-  ['/api/resilience-iq/evidence', resilienceEvidenceIntegration]
+// Resilience IQ scoring (POST) and evidence (GET lists an assessment's evidence, POST changes its status) need
+// the platform Cognito token (the page already sends it); OPTIONS stays open for the preflight, which the Lambdas answer.
+for (const [path, integration, methods] of [
+  ['/api/evaluate/resilience-iq', resilienceIntegration, [HttpMethod.POST]],
+  ['/api/resilience-iq/evidence', resilienceEvidenceIntegration, [HttpMethod.GET, HttpMethod.POST]]
 ] as const) {
-  acceleratorsApi.addRoutes({ path, methods: [HttpMethod.POST], integration, authorizer: resilienceAssessmentAuthorizer });
+  acceleratorsApi.addRoutes({ path, methods: [...methods], integration, authorizer: resilienceAssessmentAuthorizer });
   legacyRoute(path, [HttpMethod.OPTIONS], integration);
 }
 legacyRoute('/api/evaluate/cost-iq', [HttpMethod.POST, HttpMethod.OPTIONS], costIqIntegration);
