@@ -2,7 +2,7 @@
 
 **Goal:** secure, accurate and defensible accelerators that can be put in front of CIOs: consultant-led first, client-facing later.
 **In scope:** FinOps Value Case, Strategy IQ, Cloud IQ, FinOps IQ, Posture IQ, Sovereign IQ (Modernization IQ and AI Readiness IQ join later).
-**Out of scope:** Cost IQ and Resilience IQ, which are maintained separately.
+**Out of scope:** Cost IQ and Resilience IQ, which are maintained separately. Exception: Resilience IQ joins the shared platform playbook (5.1) as a pilot.
 
 **What changed in this revision:**
 - A new **Phase 3, Scoring model audit & recalibration**, checks that every engine's scoring system works as intended and fixes the engines and reports where it doesn't.
@@ -18,7 +18,7 @@
 | 2 | Engine consolidation & correctness | ✅ Done | All six accelerators score only on the server, through validated request contracts. Golden, invariant, contract, regression and browser tests for each. 20+ scoring and report bugs fixed (see `docs/phase2/ACCELERATOR_TEMPLATE.md`) |
 | 3 | **Scoring model audit & recalibration** (new) | ✅ Engine work done (lead review open) | Automated audit of all six engines (`npm run audit:engines`). About 70 findings fixed with regression tests: FinOps IQ stages reachable, blank answers no longer flatter Strategy IQ, Posture IQ matrix and probes work, Sovereign IQ double counting and regime scope fixed, FinOps Value Case blind-spot crash fixed. 15 decisions for practice and legal leads (`docs/phase3/SCORING_AUDIT.md`) |
 | 4 | Fact-check & methodology | ⏭ Next (groundwork done) | 323 candidate claims extracted (`docs/claims-register/`); several unsupported claims already removed in Phase 2 |
-| 5 | Functional upgrades | Not started | — |
+| 5 | Functional upgrades | Not started (scope added 13 Oct) | Adds 5.1 Platform playbook: platform-specific technical actions (on-premises, AWS, Azure, GCP) for every finding, piloted on Posture IQ and Resilience IQ |
 | 6 | UI/UX & design system | Not started (partial) | Standard error states added to every accelerator in Phase 2 |
 | 7 | Validation & pilot | Not started | — |
 | 8 | Operate & scale | Partly in place | CI on every PR, API access logs, rate limits; monitoring and versioning to come |
@@ -162,12 +162,68 @@ Engines reference claims by `id`, so nothing is hard-coded without a source. CI 
    - Every export carries the methodology panel and version stamp (engine version plus claims-register version).
 6. **Question Bank Studio:** versioned question banks with draft → review → publish states and an audit trail. Publishing needs Practice Lead approval and re-runs the golden tests.
 7. **Re-assessment and trends:** compare a client's current assessment against a previous one (progress tracking). This is a strong reason for repeat engagements.
+8. **Platform playbook and technical action plan:** every finding comes with the actions to take on each platform the client runs. See 5.1.
+
+### 5.1 Platform playbook (added 13 Oct 2026)
+
+**Objective:** LTM is a technology company, so a report should end with concrete technical actions on the client's own platforms, not only findings. The actions must be accurate, vendor-neutral and traceable to the finding that justifies them.
+
+**Approach: one shared layer, not a new questionnaire.** The diagnostic accelerators stay executive-length. A shared catalogue turns their findings into platform actions. A separate technical-discovery accelerator is considered later (Layer 3), only if engagements need application-level plans.
+
+| Layer | Where it lives | What it does |
+|---|---|---|
+| **1. Diagnosis** | Each accelerator, same length as today | Findings carry a stable control ID. One question records the platforms in scope: on-premises, AWS, Azure, GCP, SaaS. Resilience IQ already asks this (EX-18) |
+| **2. Platform playbook** | One versioned catalogue in `packages/engine-core`, read by every engine | Maps control × platform × level to actions. The engine selects the entries for the client's findings and platforms. The report shows them as a "Technical action plan", and they export as a backlog |
+| **3. Technical discovery** (later, separate) | A consultant-only accelerator | Reads real estate data (AWS Config, Azure Resource Graph, GCP Cloud Asset Inventory, CMDB or IaC exports) to produce application-level execution and wave plans. Built only when engagements ask for it |
+
+**Levels:**
+- **Platform / cloud:** landing zone, organisation policies, identity, network, region controls.
+- **Tech stack:** databases, middleware, backup, observability, CI/CD, infrastructure as code.
+- **Application:** per-workload changes. From questionnaire answers the playbook can only give patterns at this level; specific application plans need Layer 3 data, and the report says so.
+
+**Catalogue entry (one per control × platform × level):**
+
+| Field | Example |
+|---|---|
+| `control` | `POSTURE.RESIDENCY.NON_EU_PERSONAL_DATA` |
+| `platform` | `aws` / `azure` / `gcp` / `on_prem` / `any` |
+| `level` | `platform` / `stack` / `application` |
+| Action | "Restrict personal-data workloads to EU regions and block other regions by policy" |
+| Approach first, then options | Region guardrail policy. AWS: Organizations SCP region restriction. Azure: Policy "allowed locations" and the EU Data Boundary. GCP: resource-locations organisation policy and Assured Workloads |
+| Effort, owner role | M · cloud platform team |
+| Verification | Policy compliance report shows zero non-EU resources holding personal data |
+| Source, owner, last reviewed, next review | Provider documentation URL · cloud practice SME · 2026-10-20 / 2027-01-20 |
+| Confidence | High / Medium / Low; "confirm regional availability" where needed |
+
+**Rules:**
+- **Traceable:** every action names the finding and control it comes from. An action without a finding is not shown.
+- **Vendor-neutral:** the approach first, then the native option for each provider in scope, plus on-premises and third-party options where relevant. Every platform the client selected gets its options (the rule applied in Resilience IQ R5).
+- **Reviewed like a claim:** every entry has a source, an owner and a review date, and is held in the claims register (Phase 4). CI fails when an entry passes its review date.
+- **Indicative:** the report says that options must be validated per engagement against current availability, pricing and licensing.
+- **Engine-produced:** AI text may summarise the plan but may not add actions or services that are not in the catalogue (the Phase 5 grounding guardrail).
+
+**Pilot: Posture IQ and Resilience IQ.** Both produce findings that map directly to platforms. Resilience IQ's `implementation-mappings.json` becomes the first part of the shared catalogue, and Resilience IQ reads it from there (see `docs/resilience-iq/ROADMAP.md`, R10). Posture IQ adds residency, transfer, encryption, supplier and concentration controls (sections C–H), plus the platform-in-scope question. The other accelerators follow once the pilot passes its gate: Cloud IQ, Modernization IQ and Sovereign IQ first, because their findings are the most technical.
+
+**Steps:**
+1. Agree the catalogue schema and the control-ID scheme with the cloud and security practice leads.
+2. Move Resilience IQ's mappings into the catalogue with no change to its output (golden outputs unchanged).
+3. Write the Posture IQ entries for AWS, Azure, GCP and on-premises; SME review of each entry.
+4. Engine: select entries by finding and platform; report section "Technical action plan"; CSV backlog export (Jira later).
+5. Pilot with two consultant-led engagements; collect which actions consultants kept, changed or removed.
+6. Extend to the other accelerators.
+
+**Gate 5.1:**
+- Every pilot finding that has a technical remedy has catalogue entries for each platform in scope, or an explicit "no platform action" note.
+- 100% of entries have a source, an owner and a review date, and pass SME review.
+- Golden outputs for both pilot accelerators include the action plan, and the practice leads sign off on them.
+- A test confirms that no report shows an action without a finding, or misses a platform the client selected.
 
 **Gate 5:**
 - Each feature has E2E coverage.
 - The AI grounding check passes on 100% of the eval set.
 - No client data reaches the browser-side AI (CSP `connect-src` excludes LLM vendors).
 - PDF and PPTX exports pass visual review for all 7 tools.
+- Gate 5.1 (platform playbook) passed for the pilot accelerators.
 
 ---
 

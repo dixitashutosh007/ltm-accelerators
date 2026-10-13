@@ -11,7 +11,7 @@
 | R7 | Release close-out | — | Owner, engineering | Live journey checked on production; owner actions closed; stale handover docs retired |
 | R8 | Engine hygiene | — | Engineering | No silent defaults, deterministic strategy, every knowledge file used or removed; golden outputs unchanged or each diff explained |
 | R9 | Practice-lead review and recalibration | R8 | Practice lead, engineering | Lead signs off the open model decisions and the golden outputs |
-| R10 | Evidence workflow and BIA | R8 (R9 for scoring effects) | Engineering, practice lead | Evidence can be requested, uploaded and validated, and changes confidence; BR-01 implemented |
+| R10 | Evidence workflow, BIA and platform playbook | R8 (R9 for scoring effects) | Engineering, practice lead | Evidence can be requested, uploaded and validated, and changes confidence; BR-01 implemented; technology options served from the shared platform playbook |
 | R11 | Back-testing and consultant pilot | R9, R10 | Practice lead, consultants | Back-test report published; pilot feedback closed |
 | R12 | Operate and client self-service | R11 | Engineering, owner | Monitoring live; dev separated from production; self-service approved |
 
@@ -77,7 +77,7 @@ R7 and R8 can run in parallel. R10's engineering can start alongside R9, but its
 
 ---
 
-## R10: Evidence workflow and BIA
+## R10: Evidence workflow, BIA and platform playbook
 
 **Objective:** make the assessment rest on evidence, not only self-reported answers, and add the business-impact questions the decision tree already describes.
 
@@ -89,11 +89,13 @@ R7 and R8 can run in parallel. R10's engineering can start alongside R9, but its
 | 4 | **Evidence changes the result** | Validated evidence raises evidence confidence for the gaps it covers. Rejected or missing evidence keeps them at self-reported. The report shows which findings are evidenced |
 | 5 | **BR-01 BIA questions** | Implement `critical_service_identified`, so naming critical services adds the BIA questions to the advisory branch |
 | 6 | **Completed assessments stay immutable** | Evidence added after completion is attached to a new version of the assessment, not written into the completed one |
+| 7 | **Shared platform playbook** | `implementation-mappings.json` moves into the shared platform playbook ([IMPROVEMENT_PLAN.md](../IMPROVEMENT_PLAN.md) §5.1), and Resilience IQ reads its technology options from there. The move itself must not change any output. After it, each option gains a verification step, an owner role and a review date, and the report's options become a "Technical action plan" per platform in scope |
 
 **Gate R10:**
 - Handler and browser tests cover upload, ownership (including another user's assessment), every lifecycle transition, and the effect on confidence.
 - `check:backend` asserts that the evidence route keeps its authorizer.
 - Golden archetypes include an evidenced case; the lead reviews its diff.
+- Golden outputs are unchanged by the move to the shared playbook.
 
 ---
 
