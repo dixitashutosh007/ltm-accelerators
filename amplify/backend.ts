@@ -209,10 +209,9 @@ legacyRoute('/api/evaluate/cost-iq/{proxy+}', [HttpMethod.GET, HttpMethod.POST, 
 legacyRoute('/api/evaluate/cost-iq/ai-review', [HttpMethod.POST, HttpMethod.OPTIONS], costIqIntegration);
 legacyRoute('/api/evaluate/cost-iq/ai-report', [HttpMethod.POST, HttpMethod.OPTIONS], costIqIntegration);
 
-// Seven Advisory-API accelerators: old unauthenticated routes, kept only during cutover.
+// Advisory-API accelerators: old unauthenticated routes, kept only during cutover. FinOps IQ and FinOps Value
+// Case are already off (CIO-readiness F0, decision D11): their pages use the Advisory API only.
 if (KEEP_LEGACY_API) {
-  legacyRoute('/api/evaluate/finops-value-case', [HttpMethod.POST, HttpMethod.OPTIONS], integrate('EvaluateFinOpsIntegration', backend.evaluateFinOpsFunction));
-  legacyRoute('/api/evaluate/finops-iq', [HttpMethod.POST, HttpMethod.OPTIONS], integrate('EvaluateFinOpsIqIntegration', backend.evaluateFinOpsIqFunction));
   legacyRoute('/api/evaluate/posture-iq', [HttpMethod.POST, HttpMethod.OPTIONS], integrate('EvaluatePostureIqIntegration', backend.evaluatePostureIqFunction));
   legacyRoute('/api/evaluate/sovereign-iq', [HttpMethod.POST, HttpMethod.OPTIONS], integrate('EvaluateSovereignIqIntegration', backend.evaluateSovereignIqFunction));
   legacyRoute('/api/evaluate/cloud-iq', [HttpMethod.POST, HttpMethod.OPTIONS], integrate('EvaluateCloudIqIntegration', backend.evaluateCloudIqFunction));

@@ -132,7 +132,7 @@ How to read it:
 |---|---|---|---|---|---|
 | Maturity stage (-1..4) | -1–4 | -1 | 1 | 0 | 0 |
 | Overall score (0-100) | 0–100 | 26 | 67 | 0 | 0 |
-| Value at stake high ($) | 0–InfinityM | 400k | 3.5M | 0 | 0 |
+| Value at stake high ($) | 0–InfinityM | 0 | 3.5M | 0 | 0 |
 
 **Bands** (share of random questionnaires; best answers → **Transparent / Unit Economics**, worst answers → **Below Stage 1**; never reached: Optimized / Rate & Usage, Automated / Run Practice):
 
@@ -151,7 +151,7 @@ How to read it:
 |---|---|---|
 | Maturity stage (-1..4) | C1: 1, C2: 1, C3: 1, C4: 1, C5: 1 | 0.50 |
 | Overall score (0-100) | I1: 5, I2: 5, I8: 5, O3: 5, A1: 5 | 0.12 |
-| Value at stake high ($) | T6: 3.1M, C1: 0, C2: 0, C3: 0, C4: 0 | 1.00 |
+| Value at stake high ($) | T6: 3.5M, C1: 0, C2: 0, C3: 0, C4: 0 | 1.00 |
 
 **Dead questions** (no effect on any headline): none
 

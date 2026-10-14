@@ -2,7 +2,7 @@
 <!--
   Copyright © 2026 LTM Limited. All rights reserved.
   FinOps IQ v2.2 — Production Cloud Financial Management & Maturity Platform
-  LTM Infrastructure Tech Advisory · Cloud Advisory Practice Lead: Ashutosh Dixit
+  LTM Infrastructure Tech Advisory
 -->
 <html lang="en">
 <head>
@@ -1498,6 +1498,9 @@
   </style>
 </head>
 <body>
+<div id="review-banner" role="note" style="position:relative;z-index:1000;background:#3B2A0B;color:#FDE7B0;border-bottom:1px solid #8A6500;font:600 12px/1.5 system-ui,-apple-system,'Segoe UI',sans-serif;text-align:center;padding:7px 16px">
+  Internal consultant use only: content under review. Indicative figures from self-reported inputs, not a savings commitment.
+</div>
 
   <!-- Fancy First-Time Flash / Splash Screen Animation Overlay -->
   <div id="finops-splash-screen" class="splash-screen-overlay" aria-hidden="true" onclick="dismissSplashScreen()">
@@ -1545,12 +1548,12 @@
       </div>
 
       <div class="splash-telemetry-hud">
-        <div class="splash-telemetry-log" id="splash-status-text">INITIALIZING TELEMETRY ENGINE...</div>
+        <div class="splash-telemetry-log" id="splash-status-text">STARTING...</div>
         <div class="splash-progress-track">
           <div class="splash-progress-bar" id="splash-progress-bar"></div>
         </div>
         <div class="splash-telemetry-meta">
-          <span>FOCUS 1.0 COMPLIANT</span>
+          <span>FINOPS IQ</span>
           <span id="splash-pct-display">0%</span>
           <span>44 DIAGNOSTIC PROBES</span>
         </div>
@@ -1586,11 +1589,7 @@
       <div class="subbar-right">
         <!-- Masked Mode Toggle Button -->
         <button type="button" class="mode-toggle-btn client-mode" id="mode-toggle-btn" onclick="toggleConsultantMode()" title="Toggle between Client Masked Teaser and Full Consultant Advisory View">
-          🔒 Client Mode (Masked)
-        </button>
-        <!-- BYOK AI Button -->
-        <button type="button" class="ai-pill-btn" id="ai-status-pill" onclick="openAIModal()">
-          🤖 AI Engine (BYOK)
+          Client view
         </button>
       </div>
     </div>
@@ -1677,82 +1676,18 @@
     </div>
   </div>
 
-  <!-- BYOK AI Configuration Modal -->
-  <div class="modal-overlay" id="aiConfigModal">
-    <div class="modal-card">
-      <div class="modal-header">
-        <h3>AI Advisory Engine (BYOK)</h3>
-        <button type="button" class="modal-close-btn" onclick="closeAIModal()">×</button>
-      </div>
-      <div class="modal-body">
-        <p style="font-size:13px;color:#4B5563;margin-bottom:14px">
-          Connect your API key to enable <strong>AI Subjective Translation</strong> of interview notes and automated <strong>Executive Briefing Synthesis</strong>. Your key is stored securely in your browser's local storage and never transmitted to our servers.
-        </p>
-        <div class="form-group">
-          <label>Provider</label>
-          <select class="form-control" id="ai-provider-select" onchange="handleAIProviderChange()">
-            <option value="gemini">Google Gemini (Recommended)</option>
-            <option value="claude">Anthropic Claude</option>
-            <option value="openai">OpenAI</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>Model</label>
-          <select class="form-control" id="ai-model-select">
-            <option value="gemini-2.0-flash">gemini-2.0-flash (Fast &amp; Accurate)</option>
-            <option value="gemini-1.5-pro">gemini-1.5-pro (Deep Reasoning)</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>API Key</label>
-          <div style="display:flex;gap:8px">
-            <input type="password" class="form-control" id="ai-api-key" placeholder="Enter your provider API key">
-            <button class="btn secondary" type="button" onclick="toggleKeyVisibility()">👁️</button>
-          </div>
-        </div>
-        <div style="display:flex;gap:10px">
-          <button class="btn secondary" type="button" onclick="testAIConnection()">Test Connection</button>
-          <button class="btn ghost" type="button" onclick="clearAIConfig()">Clear Key</button>
-        </div>
-      </div>
-      <div class="modal-footer">
-        <button class="btn secondary" onclick="closeAIModal()">Cancel</button>
-        <button class="btn primary" onclick="saveAIConfigFromUI()">Save &amp; Activate AI</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Contact & Book Advisory Readout Modal -->
+  <!-- Discuss with LTM -->
   <div class="modal-overlay" id="advisoryBookingModal">
     <div class="modal-card">
       <div class="modal-header">
-        <h3>Schedule FinOps Advisory Readout</h3>
+        <h3>Discuss with LTM</h3>
         <button type="button" class="modal-close-btn" onclick="closeAdvisoryModal()">×</button>
       </div>
       <div class="modal-body">
-        <p style="font-size:13px;color:#4B5563;margin-bottom:14px">
-          Connect with <strong>Ashutosh Dixit</strong> and the <strong>LTM Infrastructure Tech Advisory</strong> leadership team to review your detailed assessment findings, unit-economics bridge, and prioritized transformation roadmap.
-        </p>
-        <div class="form-group">
-          <label>Your Name</label>
-          <input type="text" class="form-control" id="contact-name" placeholder="Executive Name">
-        </div>
-        <div class="form-group">
-          <label>Company / Organization</label>
-          <input type="text" class="form-control" id="contact-company" placeholder="Enterprise Name">
-        </div>
-        <div class="form-group">
-          <label>Work Email</label>
-          <input type="email" class="form-control" id="contact-email" placeholder="name@company.com">
-        </div>
-        <div class="form-group">
-          <label>Primary Transformation Priority</label>
-          <textarea class="form-control" id="contact-priority" rows="3" placeholder="e.g. Rightsizing commitment portfolio, Kubernetes cost allocation, or unit economics modeling"></textarea>
-        </div>
+        <p style="font-size:13px;color:#4B5563" id="advisory-contact-text">Please contact your LTM engagement lead to discuss these results.</p>
       </div>
       <div class="modal-footer">
-        <button class="btn secondary" onclick="closeAdvisoryModal()">Cancel</button>
-        <button class="btn primary" onclick="submitAdvisoryContact()">Send Meeting Request →</button>
+        <button class="btn primary" onclick="closeAdvisoryModal()">Close</button>
       </div>
     </div>
   </div>
@@ -1766,11 +1701,11 @@
     "edition": "Production Consulting & Advisory Edition",
     "last_reviewed": "2026-09",
     "scale": "0-100 normalised",
-    "disclaimer": "Indicative FinOps maturity screen based on self-reported inputs and consultant diagnostic probes. Scores reflect responses given and are intended to prioritize advisory action, not to certify compliance. Aligned with FinOps Foundation Framework (Inform, Optimize, Operate) and FOCUS 1.0 specifications. 'FinOps' is a trademark of the FinOps Foundation.",
+    "disclaimer": "Indicative FinOps maturity screen based on self-reported inputs and consultant diagnostic probes. Scores reflect the responses given and are intended to prioritize advisory action, not to certify compliance or commit to savings. Not a financial audit. Adapted in part from the FinOps Framework by the FinOps Foundation (CC BY 4.0), with changes by LTM; not endorsed by the FinOps Foundation.",
     "gating_note": "Maturity is the highest stage passed with all preceding stages also passed. A stage passes only when its weighted score meets the threshold AND every critical checkpoint question meets the critical minimum threshold.",
     "sources": [
       {
-        "name": "FinOps Foundation \u2014 FinOps Framework 2026",
+        "name": "FinOps Framework, FinOps Foundation (CC BY 4.0), adapted",
         "url": "https://www.finops.org/framework/"
       },
       {
@@ -1778,7 +1713,7 @@
         "url": "https://focus.finops.org/"
       },
       {
-        "name": "State of FinOps 2026 Benchmark",
+        "name": "State of FinOps 2026 (FinOps Foundation practitioner survey)",
         "url": "https://www.finops.org/insights/state-of-finops/"
       }
     ],
@@ -2274,7 +2209,7 @@
           "label": "< 30% tagged; spend cannot be reliably mapped to teams"
         }
       ],
-      "consultant_probe": "Run or ask for a Cost Allocation Tag coverage report. Many clients think they are at 90%, but untagged disks, snapshots, and networking bring actual coverage below 50%.",
+      "consultant_probe": "Run or ask for a cost allocation tag coverage report. Check untagged disks, snapshots and networking, which self-assessments often miss.",
       "subjective_prompt": "Record actual tag coverage percentage, hardest resources to tag, and untagged spend dollar value.",
       "remediation": "Establish a sprint goal to achieve \u226580% tag coverage on compute and storage, focusing on the top 20% of resources that generate 80% of spend."
     },
@@ -2302,7 +2237,7 @@
       ],
       "consultant_probe": "Ask how they compare AWS EC2 vs Azure VM vs GCP Compute Engine costs. Is there a normalized data model, or do analysts write bespoke SQL scripts for each provider?",
       "subjective_prompt": "Note multi-cloud data pipeline tools (e.g. Snowflake, Databricks, CloudHealth, Apptio) and FOCUS adoption plans.",
-      "remediation": "Adopt the FinOps Foundation FOCUS 1.0 schema to normalize multi-cloud billing into consistent dimensions (BilledCost, EffectiveCost, Provider, ChargeSubcategory)."
+      "remediation": "Adopt the FOCUS specification (FinOps Open Cost and Usage Specification, latest ratified version) to normalize multi-cloud billing into common columns such as BilledCost, EffectiveCost, ServiceName and ChargeCategory."
     },
     {
       "id": "I4",
@@ -2404,7 +2339,7 @@
           "label": "Orphaned and idle resources are never scanned or tracked"
         }
       ],
-      "consultant_probe": "Inspect their storage bill. In almost every unmanaged environment, 10-25% of storage cost comes from abandoned snapshots and detached disks from terminated instances.",
+      "consultant_probe": "Inspect their storage bill for snapshots and detached disks left behind by terminated instances, and ask who owns their clean-up.",
       "subjective_prompt": "Estimate dollar value of idle resources and frequency of cleanup sprints.",
       "remediation": "Schedule an immediate 'Cloud Janitor' cleanup sprint to delete unattached volumes, idle load balancers, and snapshots older than 90 days."
     },
@@ -2482,9 +2417,9 @@
           "label": "< 25% coverage; vast majority running on expensive on-demand rates"
         }
       ],
-      "consultant_probe": "Ask for their Compute Savings Plans / RI coverage and utilization percentages. Elite FinOps practitioners maintain 75\u201385% coverage with >98% utilization.",
+      "consultant_probe": "Ask for their Compute Savings Plans and RI coverage and utilization percentages, and how they set the target coverage for steady-state workloads.",
       "subjective_prompt": "Capture current commitment coverage %, utilization %, commitment expiration calendar, and purchasing policy.",
-      "remediation": "Centralize commitment purchasing at the master payer level and execute a 1-year / 3-year Compute Savings Plan to cover steady-state baseline, yielding immediate 20-35% savings."
+      "remediation": "Centralize commitment purchasing at the management (payer) account and buy 1-year or 3-year Compute Savings Plans or reservations sized to the verified steady-state baseline."
     },
     {
       "id": "O2",
@@ -2562,7 +2497,7 @@
       ],
       "consultant_probe": "Inspect CI/CD runners, batch processing, and non-prod Kubernetes worker nodes. Are they paying full on-demand pricing for disposable compute?",
       "subjective_prompt": "Document Spot utilization, auto-scaler configuration (e.g. Karpenter), and interruption tolerance.",
-      "remediation": "Migrate CI/CD runners and dev Kubernetes node pools to Spot instances using Karpenter / Spot Ocean, cutting compute costs by up to 70%."
+      "remediation": "Move fault-tolerant workloads such as CI/CD runners and dev Kubernetes node pools to Spot capacity, using an autoscaler such as Karpenter with interruption handling."
     },
     {
       "id": "O5",
@@ -2612,7 +2547,7 @@
           "label": "No tracking of commitment expirations or utilization"
         }
       ],
-      "consultant_probe": "Ask who tracks expiring 1-year and 3-year commitments. Have commitments ever expired unnoticed, causing spend to spike by 30% overnight?",
+      "consultant_probe": "Ask who tracks expiring 1-year and 3-year commitments, and whether a commitment has ever expired unnoticed and caused an on-demand spend spike.",
       "subjective_prompt": "Review commitment renewal calendar and portfolio hedging strategy.",
       "remediation": "Implement a rolling commitment strategy with staggered expirations every quarter to smooth budget impact and prevent cliff-edge renewals."
     },
@@ -2638,7 +2573,7 @@
           "label": "Data transfer and cross-AZ traffic are unmonitored and unoptimized"
         }
       ],
-      "consultant_probe": "Look at the NAT Gateway and Cross-AZ Inter-Region data transfer line items. In modern microservices, inter-AZ traffic often accounts for 15-25% of the total network bill.",
+      "consultant_probe": "Look at the NAT Gateway, cross-AZ and inter-region data transfer line items, and ask whether anyone owns network cost for microservices traffic.",
       "subjective_prompt": "Document network topology, VPC endpoints, CloudFront caching, and cross-AZ traffic patterns.",
       "remediation": "Deploy VPC Gateway Endpoints for S3 and DynamoDB and configure zonal DNS routing to eliminate expensive NAT Gateway and cross-AZ transfer charges."
     },
@@ -2768,9 +2703,9 @@
           "label": "All non-production environments run 24/7 by default"
         }
       ],
-      "consultant_probe": "Check if non-prod compute runs 24/7 (744 hours/month) or is on a 50-hour weekly schedule (10 hours x 5 days). Automated parking immediately cuts 65% of non-prod compute spend.",
+      "consultant_probe": "Check whether non-prod compute runs 24/7 (about 730 hours a month) or on a business-hours schedule, and whether parking is automated.",
       "subjective_prompt": "Document auto-parking tools (AWS Instance Scheduler, Cloud Custodian, Azure Automation) and opt-out rate.",
-      "remediation": "Deploy automated environment schedulers across all dev/staging accounts to power down compute outside core business hours, reclaiming 65% of non-prod cost."
+      "remediation": "Deploy automated environment schedulers across all dev and staging accounts to power down compute outside core business hours."
     },
     {
       "id": "A3",
@@ -2846,7 +2781,7 @@
           "label": "No pod requests/limits configured; nodes run in unbalanced, unoptimized states"
         }
       ],
-      "consultant_probe": "Inspect their Kubernetes Pod Resource Requests vs Actual Utilization ratio. Across the industry, pods are provisioned for 4x their average memory/CPU need.",
+      "consultant_probe": "Compare Kubernetes pod resource requests with actual CPU and memory utilization, and ask how requests are set and reviewed.",
       "subjective_prompt": "Evaluate VPA/Karpenter adoption, namespace quota enforcement, and node pool bin-packing efficiency.",
       "remediation": "Deploy Vertical Pod Autoscaler in recommendation mode to rightsize container CPU/Memory requests, eliminating massive cluster slack."
     },
@@ -3106,9 +3041,9 @@
           "label": "> 20% waste \u2014 significant ongoing waste across multiple accounts"
         }
       ],
-      "consultant_probe": "Verify client's total unallocated and idle spend. Best-in-class Stage 5 organizations hold waste strictly below 4% of total cloud spend.",
+      "consultant_probe": "Verify the client's estimate against their idle and unallocated spend reports, and ask how the estimate was produced.",
       "subjective_prompt": "Analyze client's waste percentage and ongoing posture defense mechanisms.",
-      "remediation": "Implement automated self-healing guardrails (e.g. auto-quarantine unattached disks after 7 days) to sustain a world-class <4% waste baseline."
+      "remediation": "Implement automated guardrails (for example, quarantine unattached disks after 7 days) and track idle and unallocated spend as a KPI with an agreed target."
     },
     {
       "id": "T7",
@@ -3449,9 +3384,7 @@
         stageIdx: 0,
         answers: {},
         notes: {},
-        evaluation: null,
-        aiInterpretations: {},
-        aiSynthesis: null
+        evaluation: null
       };
     }
 
@@ -3553,244 +3486,9 @@
       setTimeout(() => el.classList.remove('show'), 2600);
     }
 
-    // BYOK AI Engine Configuration
-    function getAIConfig() {
-      try {
-        return JSON.parse(localStorage.getItem(AI_KEY)) || { provider: 'gemini', model: 'gemini-2.0-flash', key: '' };
-      } catch(e) {
-        return { provider: 'gemini', model: 'gemini-2.0-flash', key: '' };
-      }
-    }
-
-    function saveAIConfig(cfg) {
-      try {
-        localStorage.setItem(AI_KEY, JSON.stringify(cfg));
-        updateAIStatusPill();
-      } catch(e) {}
-    }
-
-    function updateAIStatusPill() {
-      const cfg = getAIConfig();
-      const el = document.getElementById('ai-status-pill');
-      if (!el) return;
-      if (cfg.key && cfg.key.trim().length > 4) {
-        const label = cfg.provider === 'gemini' ? 'Gemini 2.0' : (cfg.provider === 'claude' ? 'Claude 3.5' : 'GPT-4o');
-        el.innerHTML = '🤖 AI: ' + label + ' Active';
-        el.classList.add('active');
-      } else {
-        el.innerHTML = '🤖 AI Engine (BYOK)';
-        el.classList.remove('active');
-      }
-    }
-
-    function openAIModal() {
-      const cfg = getAIConfig();
-      document.getElementById('ai-provider-select').value = cfg.provider || 'gemini';
-      handleAIProviderChange();
-      document.getElementById('ai-model-select').value = cfg.model || 'gemini-2.0-flash';
-      document.getElementById('ai-api-key').value = cfg.key || '';
-      document.getElementById('aiConfigModal').classList.add('open');
-    }
-
-    function closeAIModal() {
-      document.getElementById('aiConfigModal').classList.remove('open');
-    }
-
-    function handleAIProviderChange() {
-      const prov = document.getElementById('ai-provider-select').value;
-      const mod = document.getElementById('ai-model-select');
-      if (prov === 'gemini') {
-        mod.innerHTML = '<option value="gemini-2.0-flash">gemini-2.0-flash (Fast &amp; Accurate)</option><option value="gemini-1.5-pro">gemini-1.5-pro (Deep Reasoning)</option>';
-      } else if (prov === 'claude') {
-        mod.innerHTML = '<option value="claude-3-5-sonnet-20241022">claude-3-5-sonnet-20241022 (Elite Advisory)</option><option value="claude-3-5-haiku-20241022">claude-3-5-haiku-20241022 (Fast Triage)</option>';
-      } else if (prov === 'openai') {
-        mod.innerHTML = '<option value="gpt-4o">gpt-4o (Omni Frontier)</option><option value="gpt-4o-mini">gpt-4o-mini (Lightweight)</option>';
-      }
-    }
-
-    function toggleKeyVisibility() {
-      const el = document.getElementById('ai-api-key');
-      el.type = el.type === 'password' ? 'text' : 'password';
-    }
-
-    function saveAIConfigFromUI() {
-      const prov = document.getElementById('ai-provider-select').value;
-      const mod = document.getElementById('ai-model-select').value;
-      const key = document.getElementById('ai-api-key').value.trim();
-      saveAIConfig({ provider: prov, model: mod, key: key });
-      closeAIModal();
-      toast('AI Engine Activated!');
-    }
-
-    function clearAIConfig() {
-      saveAIConfig({ provider: 'gemini', model: 'gemini-2.0-flash', key: '' });
-      document.getElementById('ai-api-key').value = '';
-      closeAIModal();
-      toast('AI Configuration Cleared');
-    }
-
-    async function testAIConnection() {
-      const prov = document.getElementById('ai-provider-select').value;
-      const mod = document.getElementById('ai-model-select').value;
-      const key = document.getElementById('ai-api-key').value.trim();
-      if (!key) { alert('Please enter an API key to test.'); return; }
-      try {
-        toast('Testing AI connection to ' + prov + '...');
-        const res = await executeAICall({ provider: prov, model: mod, key: key }, 'Respond with exactly: "OK"', 'You are a connection tester.', 6000);
-        if (res && res.includes('OK')) {
-          alert('Connection Successful! Model response: ' + res.trim());
-        } else {
-          alert('Model replied: ' + res.trim());
-        }
-      } catch(e) {
-        alert('Connection failed: ' + e.message);
-      }
-    }
-
-    async function executeAICall(cfg, prompt, systemInstruction, timeoutMs) {
-      timeoutMs = timeoutMs || 10000;
-      const controller = new AbortController();
-      const timer = setTimeout(() => controller.abort(), timeoutMs);
-
-      try {
-        if (cfg.provider === 'gemini') {
-          const url = 'https://generativelanguage.googleapis.com/v1beta/models/' + (cfg.model || 'gemini-2.0-flash') + ':generateContent?key=' + encodeURIComponent(cfg.key);
-          const payload = {
-            contents: [{ role: 'user', parts: [{ text: prompt }] }]
-          };
-          if (systemInstruction) payload.systemInstruction = { parts: [{ text: systemInstruction }] };
-          const resp = await fetch(url, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload),
-            signal: controller.signal
-          });
-          clearTimeout(timer);
-          if (!resp.ok) {
-            const err = await resp.json().catch(() => ({}));
-            throw new Error((err.error && err.error.message) || ('Gemini HTTP error ' + resp.status));
-          }
-          const data = await resp.json();
-          return data.candidates[0].content.parts[0].text;
-        } else if (cfg.provider === 'claude') {
-          const url = 'https://api.anthropic.com/v1/messages';
-          const payload = {
-            model: cfg.model || 'claude-3-5-sonnet-20241022',
-            max_tokens: 1200,
-            messages: [{ role: 'user', content: prompt }]
-          };
-          if (systemInstruction) payload.system = systemInstruction;
-          const resp = await fetch(url, {
-            method: 'POST',
-            headers: {
-              'x-api-key': cfg.key,
-              'anthropic-version': '2023-06-01',
-              'content-type': 'application/json',
-              'anthropic-dangerous-direct-browser-access': 'true'
-            },
-            body: JSON.stringify(payload),
-            signal: controller.signal
-          });
-          clearTimeout(timer);
-          if (!resp.ok) throw new Error('Claude HTTP error ' + resp.status);
-          const data = await resp.json();
-          return data.content[0].text;
-        } else if (cfg.provider === 'openai') {
-          const url = 'https://api.openai.com/v1/chat/completions';
-          const messages = [];
-          if (systemInstruction) messages.push({ role: 'system', content: systemInstruction });
-          messages.push({ role: 'user', content: prompt });
-          const resp = await fetch(url, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': 'Bearer ' + cfg.key
-            },
-            body: JSON.stringify({
-              model: cfg.model || 'gpt-4o',
-              messages: messages,
-              temperature: 0.2
-            }),
-            signal: controller.signal
-          });
-          clearTimeout(timer);
-          if (!resp.ok) throw new Error('OpenAI HTTP error ' + resp.status);
-          const data = await resp.json();
-          return data.choices[0].message.content;
-        }
-      } catch (err) {
-        clearTimeout(timer);
-        throw err;
-      }
-    }
-
-    // AI Subjective Interpretation
-    async function interpretQuestionWithAI(qId) {
-      const cfg = getAIConfig();
-      if (!cfg.key || cfg.key.trim().length < 5) {
-        alert('Please connect your AI API key in the top bar (AI Engine BYOK) first.');
-        openAIModal();
-        return;
-      }
-      const note = STATE.notes[qId];
-      if (!note || note.trim().length < 5) {
-        alert('Please enter consultant discussion notes or client evidence for this question first.');
-        return;
-      }
-      const q = KB.questions.find(x => x.id === qId);
-      if (!q) return;
-
-      toast('AI interpreting discussion notes...');
-      const sysPrompt = 'You are a Senior Principal FinOps Consultant at LTM Infrastructure Tech Advisory. Evaluate the qualitative discussion notes against the 4 options (Option 0: High maturity score 100; Option 1: Moderate score 65; Option 2: Low score 30; Option 3: Zero maturity score 0). Return strictly valid JSON: { "suggested_option_index": 0|1|2|3, "reasoning": "2 sentences explaining the match", "key_finding": "1 sentence executive takeaway", "remediation": "1 specific immediate action" }';
-      const userPrompt = 'Question: ' + q.text + '\n\nOptions:\n' + q.options.map((o, i) => i + ': ' + o.label + ' (score: ' + o.score + ')').join('\n') + '\n\nConsultant Interview Notes & Qualitative Evidence:\n' + note;
-
-      try {
-        const raw = await executeAICall(cfg, userPrompt, sysPrompt, 8000);
-        let clean = raw.trim();
-        if (clean.includes('```json')) clean = clean.split('```json')[1].split('```')[0].trim();
-        else if (clean.includes('```')) clean = clean.split('```')[1].split('```')[0].trim();
-        const res = JSON.parse(clean);
-        STATE.aiInterpretations[qId] = res;
-        saveState();
-        renderAssess();
-        toast('AI interpretation complete!');
-      } catch(e) {
-        alert('AI interpretation error: ' + e.message);
-      }
-    }
-
-    // AI Executive Briefing Synthesizer
-    async function synthesizeExecutiveBriefing() {
-      const cfg = getAIConfig();
-      if (!cfg.key || cfg.key.trim().length < 5) {
-        alert('Please connect your AI API key in the top bar (AI Engine BYOK) first.');
-        openAIModal();
-        return;
-      }
-
-      toast('Synthesizing executive briefing with AI...');
-      const mIdx = maturity();
-      const st = KB.meta.stages[mIdx >= 0 ? mIdx : 0];
-      const sc = overallScore();
-      const spend = formatSpend(STATE.org.annualSpend);
-      const blockers = criticalBlockers().map(f => f.q.text).slice(0, 4);
-
-      const sysPrompt = 'You are a Senior Engagement Partner at LTM Infrastructure Tech Advisory. Synthesize a 3-paragraph executive board-level FinOps diagnostic in McKinsey/Deloitte advisory style. Return strictly valid JSON: { "executive_briefing": "3 paragraphs of sharp C-suite advisory analysis", "top_risks": ["Risk 1", "Risk 2", "Risk 3"], "h1_focus": "Immediate 30-day priority", "h2_focus": "90-day structural priority", "h3_focus": "180+ day unit economics goal" }';
-      const userPrompt = 'Client Enterprise: ' + (STATE.org.name || 'Enterprise') + '\nIndustry Sector: ' + (STATE.org.sector || 'Enterprise') + '\nAnnual Cloud Spend: ' + spend + '\nCurrent Maturity Stage: ' + maturityLabel(mIdx) + '\nOverall FinOps Score: ' + sc + '/100\nKey Critical Control Blockers:\n' + blockers.join('\n');
-
-      try {
-        const raw = await executeAICall(cfg, userPrompt, sysPrompt, 12000);
-        let clean = raw.trim();
-        if (clean.includes('```json')) clean = clean.split('```json')[1].split('```')[0].trim();
-        else if (clean.includes('```')) clean = clean.split('```')[1].split('```')[0].trim();
-        STATE.aiSynthesis = JSON.parse(clean);
-        saveState();
-        renderReport();
-        toast('Executive briefing synthesized!');
-      } catch(e) {
-        alert('Synthesis error: ' + e.message);
-      }
-    }
+    // Browser AI removed (CIO-readiness F0). AI narrative will come from the shared server-side service (WS-S1), off by default.
+    try { localStorage.removeItem('finops_iq_ai_config'); } catch (e) {}
+    function updateAIStatusPill() {}
 
     // Scoring & Gating Engine
     /* ---------- Cloud Scoring Engine Bridge (AWS Lambda ap-south-1) ---------- */
@@ -3856,8 +3554,17 @@ const EVALUATE_API_PATH = "/api/evaluate/finops-iq";
     }
 
     // Where the value-at-stake percentage range comes from.
+    // Only the client's own estimate (T6) is quantified; there is no default band.
     function valueBasisLabel(vas) {
-      return vas && vas.basis === 'client-estimate' ? 'Based on your estimate of waste' : 'Based on maturity stage benchmark (LTM heuristic)';
+      return vas && vas.basis === 'client-estimate'
+        ? "Client's own estimate of waste (question T6) applied to the annual spend given. Not a savings commitment."
+        : 'Not quantified: answer T6 (estimated waste) and give annual spend to see an indicative range.';
+    }
+    function wasteRangeText(vas) {
+      return vas && vas.basis === 'client-estimate' ? formatCurrency(vas.minSavings) + ' – ' + formatCurrency(vas.maxSavings) : 'Not quantified';
+    }
+    function wastePctText(vas) {
+      return vas && vas.basis === 'client-estimate' ? vas.minPct + '% – ' + vas.maxPct + '% of annual cloud spend (client estimate)' : 'No estimate given';
     }
 
     // "Stage N · Name", or "Below Stage 1" when no stage has been passed yet.
@@ -3934,15 +3641,7 @@ const EVALUATE_API_PATH = "/api/evaluate/finops-iq";
       if (STATE.evaluation && STATE.evaluation.valueAtStake) {
         return STATE.evaluation.valueAtStake;
       }
-      const spend = STATE.org.annualSpend || 0;
-      return {
-        annualSpend: spend,
-        minSavings: Math.round(spend * 0.25),
-        maxSavings: Math.round(spend * 0.35),
-        minPct: 25,
-        maxPct: 35,
-        basis: 'maturity-stage'
-      };
+      return { annualSpend: STATE.org.annualSpend || 0, minSavings: null, maxSavings: null, minPct: null, maxPct: null, basis: 'not-quantified' };
     }
 
     function buildRoadmap() {
@@ -3956,6 +3655,11 @@ const EVALUATE_API_PATH = "/api/evaluate/finops-iq";
           { name: "Long Term", when: "9–24 Months", color: "#226882", aim: "Achieve unit economics", items: [] }
         ]
       };
+    }
+
+    // Escape user-entered or imported text before it goes into HTML.
+    function escapeHtml(v) {
+      return String(v == null ? '' : v).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
     }
 
     function formatCurrency(val) {
@@ -3976,12 +3680,12 @@ const EVALUATE_API_PATH = "/api/evaluate/finops-iq";
       if (btn) {
         if (STATE.consultantMode) {
           btn.className = 'mode-toggle-btn consultant-mode';
-          btn.innerHTML = '🔓 Consultant Mode (Full Access)';
-          toast('Switched to Consultant Mode (Unmasked Full Access)');
+          btn.innerHTML = 'Consultant view';
+          toast('Switched to consultant view');
         } else {
           btn.className = 'mode-toggle-btn client-mode';
-          btn.innerHTML = '🔒 Client Mode (Masked)';
-          toast('Switched to Client Presentation Mode (Masked)');
+          btn.innerHTML = 'Client view';
+          toast('Switched to client view');
         }
       }
       saveState();
@@ -4021,8 +3725,8 @@ const EVALUATE_API_PATH = "/api/evaluate/finops-iq";
       const stacks = ['Kubernetes', 'Microservices', 'Generative AI / LLMs', 'Serverless', 'Legacy Enterprise VMs'];
 
       let html = '<div class="archetype-banner">'
-        + '<h3>⚡ Load Benchmark Archetype</h3>'
-        + '<p>Pre-calibrate the assessment with empirical industry benchmarks to accelerate workshop discovery:</p>'
+        + '<h3>Load a demo profile</h3>'
+        + '<p>Fill the assessment with an illustrative, fictional profile for demonstration. Demo profiles are not benchmarks or client data.</p>'
         + '<div class="archetype-buttons">';
 
       KB.archetypes.forEach(a => {
@@ -4037,7 +3741,7 @@ const EVALUATE_API_PATH = "/api/evaluate/finops-iq";
         + '<div class="card">'
         + '<div class="card-header"><h2 class="card-title">🏢 Enterprise Profile</h2></div>'
         + '<div class="form-group"><label>Enterprise / Client Name</label>'
-        + '<input type="text" class="form-control" id="org-name" value="' + (o.name || '') + '" placeholder="e.g. Global Financial Corp" data-field="name" onchange="updateOrgField(this.dataset.field, this.value)"></div>'
+        + '<input type="text" class="form-control" id="org-name" value="' + escapeHtml(o.name) + '" placeholder="e.g. Global Financial Corp" data-field="name" onchange="updateOrgField(this.dataset.field, this.value)"></div>'
         + '<div class="form-group"><label>Industry Sector</label>'
         + '<select class="form-control" id="org-sector" data-field="sector" onchange="updateOrgField(this.dataset.field, this.value)">'
         + '<option value="">Select industry sector...</option>'
@@ -4061,105 +3765,14 @@ const EVALUATE_API_PATH = "/api/evaluate/finops-iq";
         + '<div class="checkbox-group">'
         + stacks.map(s => '<span class="check-chip' + ((o.techStack || []).includes(s) ? ' selected' : '') + '" data-stack="' + s + '" onclick="toggleStackChip(this.dataset.stack)">' + ((o.techStack || []).includes(s) ? '✓ ' : '+ ') + s + '</span>').join('')
         + '</div></div>'
-        + '<div class="form-group"><label>Consultant Advisory Partner</label>'
-        + '<input type="text" class="form-control" value="' + (o.consultantName || '') + '" placeholder="e.g. Ashutosh Dixit" data-field="consultantName" onchange="updateOrgField(this.dataset.field, this.value)"></div>'
+        + '<div class="form-group"><label>LTM engagement lead</label>'
+        + '<input type="text" class="form-control" value="' + escapeHtml(o.consultantName) + '" placeholder="Name of the LTM engagement lead" data-field="consultantName" onchange="updateOrgField(this.dataset.field, this.value)"></div>'
         + '<div style="margin-top:20px;display:flex;justify-content:flex-end">'
         + '<button class="btn primary" data-tabtarget="assess" onclick="switchTab(this.dataset.tabtarget)">Proceed to Assessment Discovery →</button>'
         + '</div></div></div>'
-        + '<details class="card" style="margin-top:20px;cursor:pointer">'
-        + '<summary style="font-family:var(--font-heading);font-size:14px;font-weight:700;color:var(--ltm-dark);list-style:none;display:flex;align-items:center;justify-content:space-between">'
-        + '<span>📁 Empirical Data Verification — FOCUS 1.0 / Billing CSV Upload (Optional)</span>'
-        + '<span style="font-size:11px;font-weight:600;color:var(--ltm-red);background:#FFF1F0;padding:2px 8px;border-radius:4px">Collapsible ▾</span>'
-        + '</summary>'
-        + '<div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--border-light);cursor:default">'
-        + '<p style="font-size:12.5px;color:var(--text-muted);margin-bottom:12px">'
-        + 'Optionally drop a 1-month sample CSV (FOCUS 1.0, AWS CUR summary, or Azure Cost Export) to auto-verify empirical tag coverage % and commitment metrics. Processing is 100% local in your browser.'
-        + '</p>'
-        + '<div id="csv-drop-zone" style="border:2px dashed #D1D5DB;border-radius:8px;padding:20px;text-align:center;background:#F9FAFB">'
-        + '<div style="font-size:22px;margin-bottom:4px">📊</div>'
-        + '<div style="font-size:13px;font-weight:600;color:#374151">Drag &amp; drop billing CSV here, or <label style="color:var(--ltm-red);cursor:pointer;text-decoration:underline">browse files<input type="file" id="empirical-csv-file" accept=".csv" style="display:none" onchange="handleEmpiricalCSV(event)"></label></div>'
-        + '<div style="font-size:11px;color:#9CA3AF;margin-top:4px">Supports FOCUS 1.0, AWS Cost &amp; Usage Report, and Azure Cost Management exports.</div>'
-        + '</div>'
-        + '<div id="empirical-results" style="display:none;margin-top:14px;background:#EDF7F1;border:1px solid #A7F3D0;border-radius:6px;padding:12px 14px"></div>'
-        + '</div></details>';
+
 
       app.innerHTML = html;
-    }
-
-    function handleEmpiricalCSV(ev) {
-      const file = ev.target.files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = function(e) {
-        try {
-          const content = e.target.result;
-          const lines = content.split('\n').filter(l => l.trim().length > 0);
-          if (lines.length < 2) return;
-          const headers = lines[0].toLowerCase().split(',').map(h => h.replace(/["']/g, '').trim());
-          
-          let costCol = headers.findIndex(h => h.includes('billedcost') || h.includes('cost') || h.includes('lineitem/unblendedcost'));
-          let tagCol = headers.findIndex(h => h.includes('tag') || h.includes('resourcetags') || h.includes('tags'));
-          let chargeTypeCol = headers.findIndex(h => h.includes('chargesubcategory') || h.includes('pricingterm') || h.includes('pricing/term'));
-
-          let totalSampleCost = 0;
-          let taggedCount = 0;
-          let committedCount = 0;
-          let sampleRows = Math.min(lines.length - 1, 3000);
-
-          for (let i = 1; i <= sampleRows; i++) {
-            const row = lines[i].split(',');
-            if (costCol >= 0 && row[costCol]) {
-              const c = parseFloat(row[costCol].replace(/["']/g, '')) || 0;
-              totalSampleCost += c;
-            }
-            if (tagCol >= 0 && row[tagCol] && row[tagCol].trim().length > 2 && !row[tagCol].includes('{}')) {
-              taggedCount++;
-            }
-            if (chargeTypeCol >= 0 && row[chargeTypeCol]) {
-              const val = row[chargeTypeCol].toLowerCase();
-              if (val.includes('reserved') || val.includes('savings') || val.includes('commitment')) {
-                committedCount++;
-              }
-            }
-          }
-
-          const tagPct = Math.round((taggedCount / sampleRows) * 100);
-          const commitPct = Math.round((committedCount / sampleRows) * 100);
-
-          const resBox = document.getElementById('empirical-results');
-          if (resBox) {
-            resBox.style.display = 'block';
-            resBox.innerHTML = '<div style="font-weight:700;color:#065F46;margin-bottom:4px">✓ Empirical Data Verified from ' + (file.name || 'CSV') + ' (' + sampleRows + ' sampled records)</div>'
-              + '<div style="font-size:12px;color:#047857;display:flex;gap:16px;flex-wrap:wrap;margin-bottom:8px">'
-              + '<span>Tag Coverage: <b>' + tagPct + '%</b></span>'
-              + '<span>Commitment Coverage: <b>' + commitPct + '%</b></span>'
-              + '</div>'
-              + '<button type="button" class="btn primary" style="padding:4px 10px;font-size:11px" onclick="applyEmpiricalData(' + tagPct + ', ' + commitPct + ')">Apply Findings to Assessment Answers</button>';
-          }
-          toast('Empirical billing file parsed!');
-        } catch(err) {
-          alert('Error parsing CSV: ' + err.message);
-        }
-      };
-      reader.readAsText(file.slice(0, 1024 * 1024));
-    }
-
-    function applyEmpiricalData(tagPct, commitPct) {
-      if (tagPct >= 85) STATE.answers['I2'] = 0;
-      else if (tagPct >= 60) STATE.answers['I2'] = 1;
-      else if (tagPct >= 30) STATE.answers['I2'] = 2;
-      else STATE.answers['I2'] = 3;
-
-      if (commitPct >= 75) STATE.answers['O1'] = 0;
-      else if (commitPct >= 50) STATE.answers['O1'] = 1;
-      else if (commitPct >= 25) STATE.answers['O1'] = 2;
-      else STATE.answers['O1'] = 3;
-
-      STATE.notes['I2'] = (STATE.notes['I2'] ? STATE.notes['I2'] + '\n' : '') + 'Empirically verified from billing export: ' + tagPct + '% tag coverage.';
-      STATE.notes['O1'] = (STATE.notes['O1'] ? STATE.notes['O1'] + '\n' : '') + 'Empirically verified from billing export: ' + commitPct + '% commitment coverage.';
-
-      saveState();
-      toast('Empirical metrics applied to questions I2 and O1!');
     }
 
     function updateOrgField(f, v) {
@@ -4203,7 +3816,7 @@ const EVALUATE_API_PATH = "/api/evaluate/finops-iq";
       STATE.org.techStack = arch.tech_stack.slice();
       STATE.answers = Object.assign({}, arch.sample_answers);
       saveState();
-      toast('Loaded ' + arch.name + ' benchmark!');
+      toast('Loaded demo profile: ' + arch.name);
       switchTab('assess');
     }
 
@@ -4260,7 +3873,6 @@ const EVALUATE_API_PATH = "/api/evaluate/finops-iq";
       qs.forEach((q, idx) => {
         const curAns = STATE.answers[q.id];
         const curNote = STATE.notes[q.id] || '';
-        const aiInterp = STATE.aiInterpretations[q.id];
         const dom = KB.meta.domains.find(d => d.id === q.domain) || { label: q.domain };
 
         mainHtml += '<div class="question-card" id="qcard-' + q.id + '">'
@@ -4290,7 +3902,7 @@ const EVALUATE_API_PATH = "/api/evaluate/finops-iq";
           + '</div>';
 
         // Consultant Interrogation Probe Box
-        if (q.consultant_probe) {
+        if (q.consultant_probe && STATE.consultantMode) {
           mainHtml += '<div class="consultant-probe-box">'
             + '<span style="font-size:15px">🔍</span>'
             + '<div><strong>Consultant Interrogation Probe:</strong> ' + q.consultant_probe + '</div>'
@@ -4301,22 +3913,9 @@ const EVALUATE_API_PATH = "/api/evaluate/finops-iq";
         mainHtml += '<div class="evidence-area">'
           + '<div class="evidence-header">'
           + '<span class="evidence-title">📝 Qualitative Discussion &amp; Client Evidence Notes</span>'
-          + '<button type="button" class="ai-interpret-btn" data-qid="' + q.id + '" onclick="interpretQuestionWithAI(this.dataset.qid)">'
-          + '✨ Interpret with AI'
-          + '</button>'
           + '</div>'
-          + '<textarea class="evidence-textarea" placeholder="Record interview notes, client quotes, architectural blockers, and exceptions for this question..." data-qid="' + q.id + '" oninput="updateQuestionNote(this.dataset.qid, this.value)">' + curNote + '</textarea>';
+          + '<textarea class="evidence-textarea" placeholder="Record interview notes, client quotes, architectural blockers, and exceptions for this question..." data-qid="' + q.id + '" oninput="updateQuestionNote(this.dataset.qid, this.value)">' + escapeHtml(curNote) + '</textarea>';
 
-        if (aiInterp) {
-          mainHtml += '<div class="ai-interpretation-card">'
-            + '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">'
-            + '<strong>🤖 AI Analysis &amp; Suggested Score: Option ' + (aiInterp.suggested_option_index !== undefined ? aiInterp.suggested_option_index : '—') + '</strong>'
-            + '<button class="btn secondary" style="padding:2px 8px;font-size:11px" data-qid="' + q.id + '" data-opt="' + aiInterp.suggested_option_index + '" onclick="selectAnswer(this.dataset.qid, parseInt(this.dataset.opt, 10))">Accept Recommendation</button>'
-            + '</div>'
-            + '<div>' + (aiInterp.reasoning || '') + '</div>'
-            + '<div style="margin-top:4px;font-weight:600">Observation: ' + (aiInterp.key_finding || '') + '</div>'
-            + '</div>';
-        }
 
         mainHtml += '</div></div>';
       });
@@ -4443,15 +4042,15 @@ const EVALUATE_API_PATH = "/api/evaluate/finops-iq";
       const stageKpi = mIdx >= 0 ? 'Stage ' + (mIdx + 1) : 'Below Stage 1';
 
       let modeBanner = STATE.consultantMode
-        ? '<div class="report-mode-banner consultant"><div><strong>🔓 Consultant Advisory Mode Active</strong> — All deep-dive technical findings, granular checkpoints, and 3-horizon SOW are completely unmasked. Full PDF download is enabled.</div><button class="btn secondary" style="padding:4px 10px;font-size:11px" onclick="toggleConsultantMode()">Switch to Client Masked View</button></div>'
-        : '<div class="report-mode-banner client"><div><strong>🔒 Client Presentation Mode Active</strong> — Deep-dive checkpoint audits and the granular 3-horizon technical SOW are shielded with an advisory booking CTA.</div><button class="btn secondary" style="padding:4px 10px;font-size:11px" onclick="toggleConsultantMode()">Advisory Partner Unlock</button></div>';
+        ? '<div class="report-mode-banner consultant"><div><strong>Consultant view</strong>: consultant probes are shown.</div><button class="btn secondary" style="padding:4px 10px;font-size:11px" onclick="toggleConsultantMode()">Switch to client view</button></div>'
+        : '<div class="report-mode-banner client"><div><strong>Client view</strong>: consultant probes are hidden.</div><button class="btn secondary" style="padding:4px 10px;font-size:11px" onclick="toggleConsultantMode()">Switch to consultant view</button></div>';
 
       let html = modeBanner
         + '<div class="card" style="border-top: 4px solid var(--ltm-red)">'
         + '<div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:16px;margin-bottom:20px">'
         + '<div><span style="font-family:var(--font-mono);font-size:11px;font-weight:700;color:var(--ltm-red);text-transform:uppercase">LTM Vantage · Responsible Advisory</span>'
-        + '<h1 style="font-family:var(--font-heading);font-size:24px;font-weight:800;color:var(--ltm-dark);margin:4px 0">' + (o.name || 'Client Enterprise') + ' · FinOps Maturity Diagnostic</h1>'
-        + '<div style="font-size:13px;color:#6B7280">' + [o.sector, formatSpend(o.annualSpend), (o.footprint || []).join(' · ')].filter(Boolean).join(' · ') + '</div>'
+        + '<h1 style="font-family:var(--font-heading);font-size:24px;font-weight:800;color:var(--ltm-dark);margin:4px 0">' + escapeHtml(o.name || 'Client Enterprise') + ' · FinOps Maturity Diagnostic</h1>'
+        + '<div style="font-size:13px;color:#6B7280">' + escapeHtml([o.sector, formatSpend(o.annualSpend), (o.footprint || []).join(' · ')].filter(Boolean).join(' · ')) + '</div>'
         + '</div>'
         + '<div style="display:flex;gap:10px;flex-wrap:wrap;">'
         + '<button class="btn secondary" onclick="exportSessionJSON()">Export Audit JSON</button>'
@@ -4467,16 +4066,16 @@ const EVALUATE_API_PATH = "/api/evaluate/finops-iq";
         + '<div class="kpi-value">' + (overall !== null ? overall : '—') + '<span style="font-size:14px;color:#9CA3AF">/100</span></div>'
         + '<div class="kpi-sub">' + (overall === null ? 'Not yet assessed' : (overall >= 75 ? 'Healthy Optimization Posture' : (overall >= 50 ? 'Developing Capabilities' : 'Substantial Value Leakage'))) + '</div>'
         + '<div class="kpi-sub" data-testid="coverage">' + coverageText + '</div></div>'
-        + '<div class="kpi-card"><div class="kpi-label">Estimated Waste Savings at Stake</div>'
-        + '<div class="kpi-value" style="color:#047857;font-size:22px">' + formatCurrency(vas.minSavings) + ' – ' + formatCurrency(vas.maxSavings) + '</div>'
-        + '<div class="kpi-sub">Potential ' + vas.minPct + '% – ' + vas.maxPct + '% annual cloud bill recovery</div>'
+        + '<div class="kpi-card"><div class="kpi-label">Indicative waste range (client estimate), not a savings commitment</div>'
+        + '<div class="kpi-value" style="color:#047857;font-size:22px" data-testid="vas-range">' + wasteRangeText(vas) + '</div>'
+        + '<div class="kpi-sub">' + wastePctText(vas) + '</div>'
         + '<div class="kpi-sub" data-testid="vas-basis">' + valueBasisLabel(vas) + '</div></div>'
         + '<div class="kpi-card"><div class="kpi-label">Gate Blockers Outstanding</div>'
         + '<div class="kpi-value" style="color:' + (blockers > 0 ? '#B91C1C' : '#047857') + '">' + blockers + '</div>'
         + '<div class="kpi-sub">' + blockerSummary(bk) + '</div></div>'
         + '</div>'
         + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:24px">'
-        + '<div><h3 style="font-family:var(--font-heading);font-size:15px;font-weight:800;margin-bottom:12px">FinOps Foundation Domain Performance</h3>'
+        + '<div><h3 style="font-family:var(--font-heading);font-size:15px;font-weight:800;margin-bottom:12px">Practice areas (LTM)</h3>'
         + KB.meta.domains.map(d => {
             const sc = doms[d.id];
             const assessed = sc !== null && sc !== undefined;
@@ -4496,20 +4095,17 @@ const EVALUATE_API_PATH = "/api/evaluate/finops-iq";
         + '</div>'
         + '<div style="background:#FAF5FF;border:1px solid #E9D5FF;border-radius:8px;padding:20px;margin-bottom:24px">'
         + '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">'
-        + '<h3 style="font-family:var(--font-heading);font-size:15px;font-weight:800;color:#581C87">🤖 Executive Advisory Briefing</h3>'
-        + '<button class="btn secondary" style="font-size:11px" onclick="synthesizeExecutiveBriefing()">✨ Synthesize with AI</button>'
+        + '<h3 style="font-family:var(--font-heading);font-size:15px;font-weight:800;color:#581C87">Executive briefing</h3>'
         + '</div>'
         + '<p style="font-size:13.5px;color:#4C1D95;line-height:1.6">'
-        + (STATE.aiSynthesis && STATE.aiSynthesis.executive_briefing
-          ? STATE.aiSynthesis.executive_briefing.replace(/\n/g, '<br><br>')
-          : 'The assessment establishes that ' + (o.name || 'the enterprise') + ' is currently at ' + maturityLabel(mIdx) + '. With an estimated annual cloud spend of ' + formatSpend(o.annualSpend) + ', the organization exhibits recoverable cost leakages between ' + formatCurrency(vas.minSavings) + ' and ' + formatCurrency(vas.maxSavings) + '. Immediate focus must target clearing critical prerequisite blockers.')
+        + 'On its self-reported answers, ' + escapeHtml(o.name || 'the organization') + ' is at ' + maturityLabel(mIdx) + '. Annual cloud spend given: ' + formatSpend(o.annualSpend) + '. ' + (vas.basis === 'client-estimate' ? 'On the client\'s own estimate, indicative waste is ' + wasteRangeText(vas) + ' a year; this is not a savings commitment. ' : 'Waste has not been quantified because no estimate was given. ') + 'The first priority is to clear the outstanding critical prerequisite gates.'
         + '</p>'
         + '</div>'
         + '</div>';
 
       // Deep-Dive Sections Wrapper (Masked in Client Mode)
       html += '<div class="masked-section-wrapper">'
-        + '<div class="' + (!STATE.consultantMode ? 'masked-content-blur' : '') + '">'
+        + '<div>'
         + '<div class="card">'
         + '<div class="card-header"><h3 class="card-title">🗺️ Prioritized 3-Horizon Modernization Roadmap</h3></div>'
         + '<div class="horizon-grid">';
@@ -4548,20 +4144,8 @@ const EVALUATE_API_PATH = "/api/evaluate/finops-iq";
         + '</div>'
         + '</div>';
 
-      // Mask Overlay Shield (Active in Client Mode)
-      if (!STATE.consultantMode) {
-        html += '<div class="mask-overlay-shield">'
-          + '<div class="mask-cta-box">'
-          + '<div class="mask-lock-icon">🔒</div>'
-          + '<h3>Unlock Complete FinOps Transformation Blueprint &amp; Granular SOW</h3>'
-          + '<p>The detailed 3-horizon modernization roadmap, granular checkpoint audit trail, unit-economics model, and tailored consulting SOW have been synthesized for this engagement. Schedule an executive readout session with the LTM Infrastructure Tech Advisory leadership team to unlock the unmasked report and customized action plan.</p>'
-          + '<button type="button" class="btn-advisory-cta" onclick="openAdvisoryModal()">'
-          + 'Schedule Advisory Session with Ashutosh Dixit →'
-          + '</button>'
-          + '<span class="unlock-toggle-link" onclick="toggleConsultantMode()">Consultant / Advisory Partner Passkey Unlock</span>'
-          + '</div>'
-          + '</div>';
-      }
+      html += '<div style="margin:18px 0;text-align:center"><button type="button" class="btn secondary" onclick="openAdvisoryModal()">Discuss with LTM</button></div>'
+        + '<p data-testid="disclaimer" style="font-size:11.5px;color:#6B7280;line-height:1.5;margin:8px 0 0">' + escapeHtml(KB.meta.disclaimer) + '</p>';
 
       html += '</div>';
       app.innerHTML = html;
@@ -4652,7 +4236,7 @@ const EVALUATE_API_PATH = "/api/evaluate/finops-iq";
         + '<button class="btn secondary" onclick="exportBankJSON()">Export JSON ↓</button>'
         + '</div>'
         + '</div>'
-        + '<p style="font-size:13px;color:#6B7280;margin-bottom:16px">FinOps IQ Framework v' + KB.meta.schema_version + ' contains ' + KB.questions.length + ' production-grade assessment questions across 5 stages and 5 FinOps Foundation domains.</p>'
+        + '<p style="font-size:13px;color:#6B7280;margin-bottom:16px">FinOps IQ Framework v' + KB.meta.schema_version + ' contains ' + KB.questions.length + ' assessment questions across 5 stages and 5 LTM practice areas.</p>'
         + '<table class="checkpoint-table">'
         + '<thead><tr><th>ID</th><th>Stage</th><th>Domain</th><th>Critical</th><th>Question Prompt</th></tr></thead>'
         + '<tbody>';
@@ -4728,52 +4312,35 @@ const EVALUATE_API_PATH = "/api/evaluate/finops-iq";
       resetToFresh(true);
     }
 
-    // Contact & Advisory Booking
+    // Discuss with LTM: points to the engagement lead named in the session. No form, no email is sent from the page.
     function openAdvisoryModal() {
-      const o = STATE.org;
-      document.getElementById('contact-name').value = o.consultantName || '';
-      document.getElementById('contact-company').value = o.name || '';
-      document.getElementById('contact-priority').value = 'Discuss full FinOps modernization roadmap, elevation to Stage ' + Math.min(maturity() + 2, KB.meta.stages.length) + ', and recover an estimated ' + formatCurrency(calculateValueAtStake().minSavings) + ' – ' + formatCurrency(calculateValueAtStake().maxSavings) + ' in cloud waste.';
+      const lead = (STATE.org.consultantName || '').trim();
+      document.getElementById('advisory-contact-text').textContent = lead
+        ? 'Please contact your LTM engagement lead, ' + lead + ', to discuss these results.'
+        : 'Please contact your LTM engagement lead to discuss these results.';
       document.getElementById('advisoryBookingModal').classList.add('open');
     }
     function closeAdvisoryModal() {
       document.getElementById('advisoryBookingModal').classList.remove('open');
     }
-    function submitAdvisoryContact() {
-      const name = document.getElementById('contact-name').value.trim();
-      const comp = document.getElementById('contact-company').value.trim();
-      const email = document.getElementById('contact-email').value.trim();
-      const priority = document.getElementById('contact-priority').value.trim();
-      const mIdx = maturity();
-      const curStage = KB.meta.stages[mIdx >= 0 ? mIdx : 0];
-      const vas = calculateValueAtStake();
 
-      const lines = [
-        "Hi Ashutosh,",
-        "",
-        "I've completed the FinOps IQ maturity screen for " + (comp || "our enterprise") + " and would like to schedule a 45-minute advisory readout with the LTM Infrastructure Tech Advisory team.",
-        "",
-        "Engagement Context:",
-        "  Client Name:        " + (comp || "—"),
-        "  Executive Lead:     " + (name || "—"),
-        "  Work Email:         " + (email || "—"),
-        "  Annual Cloud Spend: " + formatSpend(STATE.org.annualSpend),
-        "  Maturity Level:     " + maturityLabel(mIdx),
-        "  Overall Score:      " + (overallScore() !== null ? overallScore() : "—") + " / 100",
-        "  Value at Stake:     " + formatCurrency(vas.minSavings) + " – " + formatCurrency(vas.maxSavings) + " annual waste",
-        "  Primary Focus:      " + (priority || "Deep-dive roadmap and billable SOW"),
-        "",
-        "Please get in touch to coordinate the executive readout session.",
-        "",
-        "Thanks,",
-        name || "Client Lead"
-      ];
+    // jsPDF's standard fonts have no glyphs for these characters.
+    function pdfSafe(t) {
+      return String(t || '').replace(/≥/g, '>=').replace(/≤/g, '<=').replace(/±/g, '+/-').replace(/[–—]/g, '-');
+    }
 
-      const subject = "LTM Vantage — FinOps IQ Readout Request — " + (comp || "Enterprise");
-      const href = "mailto:ashutosh.dixit@ltm.com?subject=" + encodeURIComponent(subject) + "&body=" + encodeURIComponent(lines.join("\n"));
-      window.location.href = href;
-      closeAdvisoryModal();
-      toast('Advisory request drafted in email client');
+    // KB disclaimer and review status on every PDF page.
+    function stampFinOpsDisclaimer(doc) {
+      const n = doc.getNumberOfPages();
+      const w = doc.internal.pageSize.getWidth(), h = doc.internal.pageSize.getHeight();
+      const lines = doc.splitTextToSize(pdfSafe(KB.meta.disclaimer) + ' Internal consultant use only: content under review.', w - 30);
+      for (let i = 1; i <= n; i++) {
+        doc.setPage(i);
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(6.5);
+        doc.setTextColor(120, 120, 120);
+        doc.text(lines, w / 2, h - 4 - (lines.length - 1) * 2.6, { align: 'center' });
+      }
     }
 
     // Boardroom PDF Generation (jsPDF + autoTable)
@@ -4857,14 +4424,14 @@ const EVALUATE_API_PATH = "/api/evaluate/finops-iq";
         doc.roundedRect(138, 136, 52, 36, 3, 3, 'F');
         doc.setTextColor(200, 200, 200);
         doc.setFontSize(9);
-        doc.text("RECOVERABLE WASTE", 143, 145);
+        doc.text("INDICATIVE WASTE RANGE", 143, 145);
         doc.setTextColor(53, 117, 77);
         doc.setFontSize(16);
         doc.setFontSize(11);
-        doc.text(formatCurrency(vas.minSavings) + " – " + formatCurrency(vas.maxSavings), 143, 155);
+        doc.text(wasteRangeText(vas), 143, 155);
         doc.setTextColor(200, 200, 200);
         doc.setFontSize(9);
-        doc.text(vas.minPct + "% – " + vas.maxPct + "% of Annual Spend", 143, 161);
+        doc.text(vas.basis === 'client-estimate' ? vas.minPct + "% - " + vas.maxPct + "% of spend (client estimate)" : "No estimate given", 143, 161);
         doc.setFontSize(7);
         doc.text(doc.splitTextToSize(valueBasisLabel(vas), 44), 143, 166);
 
@@ -4874,16 +4441,14 @@ const EVALUATE_API_PATH = "/api/evaluate/finops-iq";
         doc.text("Executive Diagnostic Synthesis", 20, 190);
         doc.setTextColor(190, 190, 190);
         doc.setFontSize(10);
-        const synthText = (STATE.aiSynthesis && STATE.aiSynthesis.executive_briefing)
-          ? STATE.aiSynthesis.executive_briefing
-          : "The organization currently sits at " + maturityLabel(mIdx) + ". Progression to subsequent stages is gated by outstanding prerequisite checkpoints. Priority actions must immediately resolve critical prerequisite gaps to capture recoverable cloud waste.";
+        const synthText = "On its self-reported answers, the organization is at " + maturityLabel(mIdx) + ". Progression to later stages is gated by outstanding critical prerequisite checkpoints, which are the first priority. Indicative waste: " + wasteRangeText(vas) + (vas.basis === 'client-estimate' ? " a year (client estimate, not a savings commitment)." : " (no estimate given).");
         const splitText = doc.splitTextToSize(synthText, 170);
         doc.text(splitText.slice(0, 12), 20, 200);
 
         // Footer
         doc.setTextColor(140, 140, 140);
         doc.setFontSize(8);
-        doc.text("CONFIDENTIAL · PREPARED FOR " + (o.name || "CLIENT") + " · LTM VANTAGE · RESPONSIBLE ADVISORY", 20, 285);
+        doc.text("CONFIDENTIAL · PREPARED FOR " + (o.name || "CLIENT") + " · LTM VANTAGE", 20, 280);
 
         // Page 2: Stage & Roadmap Table
         doc.addPage();
@@ -4895,18 +4460,20 @@ const EVALUATE_API_PATH = "/api/evaluate/finops-iq";
         const rows = [];
         rm.horizons.forEach(h => {
           h.items.forEach(item => {
-            rows.push([h.name + " (" + h.when + ")", item.q.id, item.q.critical ? "CRITICAL" : "STANDARD", item.q.remediation || item.q.text]);
+            rows.push([h.name + " (" + h.when + ")", item.q.id, item.q.critical ? "CRITICAL" : "STANDARD", pdfSafe(item.q.remediation || item.q.text)]);
           });
         });
 
         doc.autoTable({
           startY: 28,
           head: [["Horizon", "ID", "Type", "Remediation Action"]],
-          body: rows.slice(0, 18),
+          body: rows,
           styles: { font: "helvetica", fontSize: 9 },
           headStyles: { fillColor: [255, 94, 79] },
           theme: 'grid'
         });
+
+        stampFinOpsDisclaimer(doc);
 
         if (!isArchiveOnly) {
           doc.save('FinOps-IQ-Executive-Readout-' + (o.name || 'Client').replace(/\s+/g, '-') + '.pdf');
@@ -4985,14 +4552,14 @@ const EVALUATE_API_PATH = "/api/evaluate/finops-iq";
 
       if (bar) bar.style.width = '0%';
       if (pct) pct.textContent = '0%';
-      if (log) log.textContent = 'INITIALIZING TELEMETRY ENGINE...';
+      if (log) log.textContent = 'STARTING...';
 
       const phases = [
-        { time: 150, pct: 24, msg: 'LOADING FOCUS 1.0 SCHEMA ENGINE...' },
+        { time: 150, pct: 24, msg: 'LOADING QUESTION BANK...' },
         { time: 550, pct: 48, msg: 'CALIBRATING 5-STAGE FINOPS MATURITY GATES...' },
-        { time: 980, pct: 75, msg: 'SYNTHESIZING 44 CONSULTANT PROBES...' },
-        { time: 1400, pct: 92, msg: 'ARMING VALUE-AT-STAKE ENGINE...' },
-        { time: 1750, pct: 100, msg: 'SYSTEM READY · LAUNCHING ADVISORY WORKSPACE' }
+        { time: 980, pct: 75, msg: 'LOADING CONSULTANT PROBES...' },
+        { time: 1400, pct: 92, msg: 'PREPARING WORKSPACE...' },
+        { time: 1750, pct: 100, msg: 'READY' }
       ];
 
       phases.forEach(p => {
@@ -5051,7 +4618,7 @@ const EVALUATE_API_PATH = "/api/evaluate/finops-iq";
       const btn = document.getElementById('mode-toggle-btn');
       if (btn) {
         btn.className = 'mode-toggle-btn client-mode';
-        btn.innerHTML = '🔒 Client Mode (Masked)';
+        btn.innerHTML = 'Client view';
       }
 
       renderApp();

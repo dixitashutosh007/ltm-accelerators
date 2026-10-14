@@ -280,7 +280,7 @@ export const ADAPTERS: Adapter[] = [
     headlines: [
       { name: 'Maturity stage (-1..4)', scale: [-1, 4], higherIsBetter: true, get: r => r.maturity },
       { name: 'Overall score (0-100)', scale: [0, 100], higherIsBetter: true, get: r => r.overallScore },
-      { name: 'Value at stake high ($)', scale: [0, Infinity], higherIsBetter: null, get: r => r.valueAtStake.maxSavings }
+      { name: 'Value at stake high ($)', scale: [0, Infinity], higherIsBetter: null, get: r => r.valueAtStake.maxSavings ?? 0 }
     ],
     band: { get: r => (r.maturity >= 0 ? FIQ.meta.stages[r.maturity].name : 'Below Stage 1'), all: ['Below Stage 1', ...FIQ.meta.stages.map((s: any) => s.name)] },
     extremes: { best: () => fiqExtreme(true), worst: () => fiqExtreme(false) }

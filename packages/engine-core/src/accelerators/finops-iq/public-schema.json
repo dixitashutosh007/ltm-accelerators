@@ -5,11 +5,11 @@
     "edition": "Production Consulting & Advisory Edition",
     "last_reviewed": "2026-09",
     "scale": "0-100 normalised",
-    "disclaimer": "Indicative FinOps maturity screen based on self-reported inputs and consultant diagnostic probes. Scores reflect responses given and are intended to prioritize advisory action, not to certify compliance. Aligned with FinOps Foundation Framework (Inform, Optimize, Operate) and FOCUS 1.0 specifications. 'FinOps' is a trademark of the FinOps Foundation.",
+    "disclaimer": "Indicative FinOps maturity screen based on self-reported inputs and consultant diagnostic probes. Scores reflect the responses given and are intended to prioritize advisory action, not to certify compliance or commit to savings. Not a financial audit. Adapted in part from the FinOps Framework by the FinOps Foundation (CC BY 4.0), with changes by LTM; not endorsed by the FinOps Foundation.",
     "gating_note": "Maturity is the highest stage passed with all preceding stages also passed. A stage passes only when its weighted score meets the threshold AND every critical checkpoint question meets the critical minimum threshold.",
     "sources": [
       {
-        "name": "FinOps Foundation — FinOps Framework 2026",
+        "name": "FinOps Framework, FinOps Foundation (CC BY 4.0), adapted",
         "url": "https://www.finops.org/framework/"
       },
       {
@@ -17,7 +17,7 @@
         "url": "https://focus.finops.org/"
       },
       {
-        "name": "State of FinOps 2026 Benchmark",
+        "name": "State of FinOps 2026 (FinOps Foundation practitioner survey)",
         "url": "https://www.finops.org/insights/state-of-finops/"
       }
     ],
@@ -507,7 +507,7 @@
           "label": "< 30% tagged; spend cannot be reliably mapped to teams"
         }
       ],
-      "consultant_probe": "Run or ask for a Cost Allocation Tag coverage report. Many clients think they are at 90%, but untagged disks, snapshots, and networking bring actual coverage below 50%.",
+      "consultant_probe": "Run or ask for a cost allocation tag coverage report. Check untagged disks, snapshots and networking, which self-assessments often miss.",
       "subjective_prompt": "Record actual tag coverage percentage, hardest resources to tag, and untagged spend dollar value.",
       "remediation": "Establish a sprint goal to achieve ≥80% tag coverage on compute and storage, focusing on the top 20% of resources that generate 80% of spend."
     },
@@ -535,7 +535,7 @@
       ],
       "consultant_probe": "Ask how they compare AWS EC2 vs Azure VM vs GCP Compute Engine costs. Is there a normalized data model, or do analysts write bespoke SQL scripts for each provider?",
       "subjective_prompt": "Note multi-cloud data pipeline tools (e.g. Snowflake, Databricks, CloudHealth, Apptio) and FOCUS adoption plans.",
-      "remediation": "Adopt the FinOps Foundation FOCUS 1.0 schema to normalize multi-cloud billing into consistent dimensions (BilledCost, EffectiveCost, Provider, ChargeSubcategory)."
+      "remediation": "Adopt the FOCUS specification (FinOps Open Cost and Usage Specification, latest ratified version) to normalize multi-cloud billing into common columns such as BilledCost, EffectiveCost, ServiceName and ChargeCategory."
     },
     {
       "id": "I4",
@@ -637,7 +637,7 @@
           "label": "Orphaned and idle resources are never scanned or tracked"
         }
       ],
-      "consultant_probe": "Inspect their storage bill. In almost every unmanaged environment, 10-25% of storage cost comes from abandoned snapshots and detached disks from terminated instances.",
+      "consultant_probe": "Inspect their storage bill for snapshots and detached disks left behind by terminated instances, and ask who owns their clean-up.",
       "subjective_prompt": "Estimate dollar value of idle resources and frequency of cleanup sprints.",
       "remediation": "Schedule an immediate 'Cloud Janitor' cleanup sprint to delete unattached volumes, idle load balancers, and snapshots older than 90 days."
     },
@@ -715,9 +715,9 @@
           "label": "< 25% coverage; vast majority running on expensive on-demand rates"
         }
       ],
-      "consultant_probe": "Ask for their Compute Savings Plans / RI coverage and utilization percentages. Elite FinOps practitioners maintain 75–85% coverage with >98% utilization.",
+      "consultant_probe": "Ask for their Compute Savings Plans and RI coverage and utilization percentages, and how they set the target coverage for steady-state workloads.",
       "subjective_prompt": "Capture current commitment coverage %, utilization %, commitment expiration calendar, and purchasing policy.",
-      "remediation": "Centralize commitment purchasing at the master payer level and execute a 1-year / 3-year Compute Savings Plan to cover steady-state baseline, yielding immediate 20-35% savings."
+      "remediation": "Centralize commitment purchasing at the management (payer) account and buy 1-year or 3-year Compute Savings Plans or reservations sized to the verified steady-state baseline."
     },
     {
       "id": "O2",
@@ -795,7 +795,7 @@
       ],
       "consultant_probe": "Inspect CI/CD runners, batch processing, and non-prod Kubernetes worker nodes. Are they paying full on-demand pricing for disposable compute?",
       "subjective_prompt": "Document Spot utilization, auto-scaler configuration (e.g. Karpenter), and interruption tolerance.",
-      "remediation": "Migrate CI/CD runners and dev Kubernetes node pools to Spot instances using Karpenter / Spot Ocean, cutting compute costs by up to 70%."
+      "remediation": "Move fault-tolerant workloads such as CI/CD runners and dev Kubernetes node pools to Spot capacity, using an autoscaler such as Karpenter with interruption handling."
     },
     {
       "id": "O5",
@@ -845,7 +845,7 @@
           "label": "No tracking of commitment expirations or utilization"
         }
       ],
-      "consultant_probe": "Ask who tracks expiring 1-year and 3-year commitments. Have commitments ever expired unnoticed, causing spend to spike by 30% overnight?",
+      "consultant_probe": "Ask who tracks expiring 1-year and 3-year commitments, and whether a commitment has ever expired unnoticed and caused an on-demand spend spike.",
       "subjective_prompt": "Review commitment renewal calendar and portfolio hedging strategy.",
       "remediation": "Implement a rolling commitment strategy with staggered expirations every quarter to smooth budget impact and prevent cliff-edge renewals."
     },
@@ -871,7 +871,7 @@
           "label": "Data transfer and cross-AZ traffic are unmonitored and unoptimized"
         }
       ],
-      "consultant_probe": "Look at the NAT Gateway and Cross-AZ Inter-Region data transfer line items. In modern microservices, inter-AZ traffic often accounts for 15-25% of the total network bill.",
+      "consultant_probe": "Look at the NAT Gateway, cross-AZ and inter-region data transfer line items, and ask whether anyone owns network cost for microservices traffic.",
       "subjective_prompt": "Document network topology, VPC endpoints, CloudFront caching, and cross-AZ traffic patterns.",
       "remediation": "Deploy VPC Gateway Endpoints for S3 and DynamoDB and configure zonal DNS routing to eliminate expensive NAT Gateway and cross-AZ transfer charges."
     },
@@ -1001,9 +1001,9 @@
           "label": "All non-production environments run 24/7 by default"
         }
       ],
-      "consultant_probe": "Check if non-prod compute runs 24/7 (744 hours/month) or is on a 50-hour weekly schedule (10 hours x 5 days). Automated parking immediately cuts 65% of non-prod compute spend.",
+      "consultant_probe": "Check whether non-prod compute runs 24/7 (about 730 hours a month) or on a business-hours schedule, and whether parking is automated.",
       "subjective_prompt": "Document auto-parking tools (AWS Instance Scheduler, Cloud Custodian, Azure Automation) and opt-out rate.",
-      "remediation": "Deploy automated environment schedulers across all dev/staging accounts to power down compute outside core business hours, reclaiming 65% of non-prod cost."
+      "remediation": "Deploy automated environment schedulers across all dev and staging accounts to power down compute outside core business hours."
     },
     {
       "id": "A3",
@@ -1079,7 +1079,7 @@
           "label": "No pod requests/limits configured; nodes run in unbalanced, unoptimized states"
         }
       ],
-      "consultant_probe": "Inspect their Kubernetes Pod Resource Requests vs Actual Utilization ratio. Across the industry, pods are provisioned for 4x their average memory/CPU need.",
+      "consultant_probe": "Compare Kubernetes pod resource requests with actual CPU and memory utilization, and ask how requests are set and reviewed.",
       "subjective_prompt": "Evaluate VPA/Karpenter adoption, namespace quota enforcement, and node pool bin-packing efficiency.",
       "remediation": "Deploy Vertical Pod Autoscaler in recommendation mode to rightsize container CPU/Memory requests, eliminating massive cluster slack."
     },
@@ -1339,9 +1339,9 @@
           "label": "> 20% waste — significant ongoing waste across multiple accounts"
         }
       ],
-      "consultant_probe": "Verify client's total unallocated and idle spend. Best-in-class Stage 5 organizations hold waste strictly below 4% of total cloud spend.",
+      "consultant_probe": "Verify the client's estimate against their idle and unallocated spend reports, and ask how the estimate was produced.",
       "subjective_prompt": "Analyze client's waste percentage and ongoing posture defense mechanisms.",
-      "remediation": "Implement automated self-healing guardrails (e.g. auto-quarantine unattached disks after 7 days) to sustain a world-class <4% waste baseline."
+      "remediation": "Implement automated guardrails (for example, quarantine unattached disks after 7 days) and track idle and unallocated spend as a KPI with an agreed target."
     },
     {
       "id": "T7",
