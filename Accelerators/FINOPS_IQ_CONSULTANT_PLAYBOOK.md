@@ -1,3 +1,5 @@
+> **Superseded (14 Oct 2026). Do not use with clients.** This playbook does not match the FinOps IQ page or engine. Among other things it says client data is "100% in-memory" and never transmitted (scoring runs on the LTM Vantage service), quotes fees, scripts a teaser-to-paid-SOW flow and describes features that do not exist. See `docs/cio-readiness/finops-iq/PLAN.md` and `docs/cio-readiness/finops-iq/VALIDATION.md`. A new consultant guide comes with the consolidated accelerator.
+
 # FinOps IQ Consultant Facilitator Playbook & Workshop Guide
 **LTM Infrastructure Tech Advisory (CIS)**  
 *Document Version: 2.2 · Production Practice Enablement · Practice Lead: Ashutosh Dixit*

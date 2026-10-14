@@ -124,21 +124,21 @@ describe('FinOps IQ invariants (500 random questionnaires)', () => {
     }
   });
 
-  it('value at stake is a share of spend: the client estimate when given, else a band that shrinks as maturity rises', () => {
+  it("value at stake is the client's own waste estimate applied to spend, and is not quantified without one", () => {
     const t6 = Q.find(q => q.id === 'T6');
     for (const { seed, input, r } of runs) {
       const v = r.valueAtStake;
-      expect(v.minSavings, `seed ${seed}`).toBeLessThanOrEqual(v.maxSavings);
-      expect(v.maxSavings, `seed ${seed}`).toBeLessThanOrEqual((input.annualSpend || 0) * 0.35 + 1);
       const a = input.answers.T6;
       if (typeof a === 'number') {
         expect(v.basis, `seed ${seed}`).toBe('client-estimate');
         expect([v.minPct, v.maxPct], `seed ${seed}`).toEqual(t6.options[a].waste_pct_range);
-      } else expect(v.basis, `seed ${seed}`).toBe('maturity-stage');
+        expect(v.minSavings!, `seed ${seed}`).toBeLessThanOrEqual(v.maxSavings!);
+        expect(v.maxSavings!, `seed ${seed}`).toBeLessThanOrEqual((input.annualSpend || 0) * 0.35 + 1);
+      } else {
+        // F0: no stage-band default. Without the client's estimate there is no dollar range.
+        expect(v, `seed ${seed}`).toMatchObject({ basis: 'not-quantified', minSavings: null, maxSavings: null, minPct: null, maxPct: null });
+      }
     }
-    const pct = (m: number) => runs.find(x => x.r.maturity === m && x.r.valueAtStake.basis === 'maturity-stage')?.r.valueAtStake.maxPct;
-    const seen = [-1, 0, 1, 2, 3, 4].map(pct).filter((p): p is number => p !== undefined);
-    for (let i = 1; i < seen.length; i++) expect(seen[i]).toBeLessThanOrEqual(seen[i - 1]);
   });
 });
 
@@ -184,7 +184,7 @@ describe('FinOps IQ regressions fixed in Phase 3 (scoring audit)', () => {
     expect(ids).not.toContain('C1');
   });
 
-  it("value at stake uses the client's own waste estimate (T6) when given, else the maturity benchmark", () => {
+  it("value at stake uses the client's own waste estimate (T6) when given, else is not quantified", () => {
     const banking = K.archetypes.find((a: any) => a.id === 'banking');
     const withEstimate = evaluateFinOpsIq({ answers: { ...banking.sample_answers, T6: 2 }, annualSpend: 1_000_000 });
     expect(withEstimate.valueAtStake).toMatchObject({ basis: 'client-estimate', minPct: 10, maxPct: 20, minSavings: 100_000, maxSavings: 200_000 });
@@ -193,7 +193,9 @@ describe('FinOps IQ regressions fixed in Phase 3 (scoring audit)', () => {
     const heavy = evaluateFinOpsIq({ answers: { T6: 3 }, annualSpend: 1_000_000 });
     expect(heavy.valueAtStake).toMatchObject({ basis: 'client-estimate', minPct: 20, maxPct: 35 });
     const noEstimate = evaluateFinOpsIq({ answers: { ...banking.sample_answers, T6: NOT_APPLICABLE }, annualSpend: 1_000_000 });
-    expect(noEstimate.valueAtStake.basis).toBe('maturity-stage');
+    expect(noEstimate.valueAtStake).toMatchObject({ basis: 'not-quantified', minSavings: null, maxSavings: null });
+    const blank = evaluateFinOpsIq({ answers: { ...banking.sample_answers, T6: undefined as any }, annualSpend: 1_000_000 });
+    expect(blank.valueAtStake.basis).toBe('not-quantified');
     // The ranges follow the option labels, not their position.
     const t6 = Q.find(q => q.id === 'T6');
     expect(t6.options.map((o: any) => o.label.slice(0, 9))).toEqual(['< 4% of t', '4% – 9% w', '10% – 20%', '> 20% was']);
@@ -249,8 +251,46 @@ describe('FinOps IQ regressions fixed in Phase 3 (scoring audit)', () => {
     expect(page).not.toMatch(/\(sc \|\| "—"\)|\(overallScore\(\) \|\| "—"\)/);
     expect(page).not.toContain('doc.text("Stage " + (mIdx + 1)');
     expect(page).not.toContain('"The organization currently sits at Stage " + (mIdx + 1)');
-    expect(page).toContain("formatCurrency(vas.minSavings) + ' – ' + formatCurrency(vas.maxSavings)");
-    expect(page).toContain('Based on your estimate of waste');
-    expect(page).toContain('Based on maturity stage benchmark (LTM heuristic)');
+    expect(page).toContain("formatCurrency(vas.minSavings) + ' – ' + formatCurrency(vas.maxSavings) : 'Not quantified'");
+    expect(page).not.toContain('maturity stage benchmark');
+  });
+});
+
+describe('FinOps IQ containment (CIO-readiness F0)', () => {
+  const sample = readFileSync(join(__dirname, '../../../Accelerators/finops-iq-sample-report.html'), 'utf8');
+  const playbook = readFileSync(join(__dirname, '../../../Accelerators/FINOPS_IQ_CONSULTANT_PLAYBOOK.md'), 'utf8');
+
+  it('no browser AI, false claims, savings promises or FinOps Foundation misattribution in the page or sample', () => {
+    for (const [name, text] of [['page', page], ['sample', sample]]) {
+      for (const banned of [/api\.openai\.com|api\.anthropic\.com|generativelanguage\.googleapis\.com/, /BYOK/, /recoverable/i, /guarantee/i,
+        /FinOps Foundation Domain/, /Passkey/i, /™/, /trademark/i, /handleEmpiricalCSV|applyEmpiricalData/, /empirical/i,
+        /VALUE-AT-STAKE ENGINE|FOCUS 1\.0 SCHEMA ENGINE/, /ashutosh\.dixit@|mailto:/i, /Advisory Partner/, /cloud bill recovery/]) {
+        expect(text, `${name} contains ${banned}`).not.toMatch(banned);
+      }
+    }
+  });
+
+  it('the page clears any stored AI key and is covered by the repository browser-AI check', () => {
+    expect(page).toContain("localStorage.removeItem('finops_iq_ai_config')");
+    expect(readFileSync(join(__dirname, '../../../scripts/check-repo.cjs'), 'utf8')).toContain("'Accelerators/finops-iq.html'");
+  });
+
+  it('remediations and probes carry no unsourced savings figures, in the engine and on the page', () => {
+    const p = pageKb();
+    for (const bank of [K, p]) {
+      for (const q of bank.questions) {
+        const t = [q.remediation, q.consultant_probe].join(' ');
+        expect(t, q.id).not.toMatch(/\d+\s*[-–]\s*\d+\s*% (savings|of)|up to \d+%|reclaiming|cuts \d+%|world-class|best-in-class|Elite|across the industry/i);
+      }
+    }
+    expect(p.meta.disclaimer).toBe(K.meta.disclaimer);
+    expect(K.meta.disclaimer).toContain('Adapted in part from the FinOps Framework by the FinOps Foundation (CC BY 4.0)');
+  });
+
+  it('the playbook is marked superseded, and the PDF stamps the disclaimer on every page with no row cap', () => {
+    expect(playbook.startsWith('> **Superseded')).toBe(true);
+    expect(page).toContain('stampFinOpsDisclaimer(doc);');
+    expect(page).not.toContain('rows.slice(0, 18)');
+    expect(page).toContain('id="review-banner"');
   });
 });

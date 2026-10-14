@@ -104,6 +104,14 @@ if (legacyApi && String(legacy).toLowerCase() === 'false') {
   check(leftovers.length === 0, `unauthenticated legacy routes remain after cutover: ${leftovers.join(', ')}`);
 }
 
+// FinOps IQ and FinOps Value Case never have an unauthenticated route (F0, D11), whatever LTM_KEEP_LEGACY_API says.
+if (legacyApi) {
+  const finops = ofType('AWS::ApiGatewayV2::Route')
+    .filter(r => r.Properties.ApiId?.Ref === legacyApi.id && /\/api\/evaluate\/finops-(iq|value-case)\b/.test(r.Properties.RouteKey))
+    .map(r => r.Properties.RouteKey);
+  check(finops.length === 0, `FinOps routes on the unauthenticated Accelerators API: ${finops.join(', ')}`);
+}
+
 // Resilience IQ: scoring, evidence and assessment persistence need the platform Cognito token on every
 // method except the CORS preflight.
 if (legacyApi) {

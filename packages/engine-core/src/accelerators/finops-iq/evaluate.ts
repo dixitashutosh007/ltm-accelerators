@@ -28,12 +28,16 @@ export interface FinOpsIqEvaluation {
   coverage: { answered: number; total: number; notApplicable: number };
   valueAtStake: {
     annualSpend: number;
-    minSavings: number;
-    maxSavings: number;
-    minPct: number;
-    maxPct: number;
-    /** client-estimate: the client's own waste range from T6. maturity-stage: LTM's band for the assessed stage. */
-    basis: 'client-estimate' | 'maturity-stage';
+    /** null when not quantified. */
+    minSavings: number | null;
+    maxSavings: number | null;
+    minPct: number | null;
+    maxPct: number | null;
+    /**
+     * client-estimate: the client's own waste range from T6, applied to the spend they gave.
+     * not-quantified: no estimate was given. No stage-based default is applied: there is no published source for one.
+     */
+    basis: 'client-estimate' | 'not-quantified';
   };
   roadmap: {
     horizons: Array<{
@@ -203,30 +207,21 @@ export function evaluateFinOpsIq(
     return Array.isArray(range) && range.length === 2 ? [range[0], range[1]] : null;
   }
 
+  // Indicative waste range from the client's own estimate (T6). Not a savings commitment.
   function calculateValueAtStake(): FinOpsIqEvaluation['valueAtStake'] {
     const spend = annualSpend || 0;
     const estimate = clientWasteEstimate();
-    let minPct = 25, maxPct = 35;
-    let basis: 'client-estimate' | 'maturity-stage' = 'maturity-stage';
-    if (estimate) {
-      [minPct, maxPct] = estimate;
-      basis = 'client-estimate';
-    } else {
-      // LTM heuristic band per assessed stage. "Below Stage 1" (-1) and Stage 1 (0) share 25-35%.
-      const mIdx = maturity();
-      if (mIdx === 1) { minPct = 18; maxPct = 28; }
-      else if (mIdx === 2) { minPct = 10; maxPct = 18; }
-      else if (mIdx === 3) { minPct = 5; maxPct = 9; }
-      else if (mIdx === 4) { minPct = 2; maxPct = 4; }
+    if (!estimate) {
+      return { annualSpend: spend, minSavings: null, maxSavings: null, minPct: null, maxPct: null, basis: 'not-quantified' };
     }
-
+    const [minPct, maxPct] = estimate;
     return {
       annualSpend: spend,
       minSavings: Math.round((spend * minPct) / 100),
       maxSavings: Math.round((spend * maxPct) / 100),
       minPct,
       maxPct,
-      basis
+      basis: 'client-estimate'
     };
   }
 

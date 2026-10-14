@@ -53,7 +53,7 @@ console.log('Maturity Stage:', iqResult.maturityStage?.name || 'Chaos Baseline')
 console.log('Overall Score:', iqResult.overallScore);
 console.log('Chaos Stage Status:', iqResult.stageStatuses['chaos']);
 console.log('Reactive Stage Status:', iqResult.stageStatuses['reactive']);
-console.log('Value at Stake Min Savings:', iqResult.valueAtStake.minSavings);
+console.log('Value at Stake Min Savings:', iqResult.valueAtStake.minSavings ?? 'not quantified');
 console.log('Roadmap Horizons:', iqResult.roadmap.horizons.map(h => `${h.name}: ${h.items.length} actions`).join(' | '));
 console.log('--- FinOps IQ Assertions Passed! ---\n');
 

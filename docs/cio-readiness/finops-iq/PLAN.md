@@ -65,6 +65,13 @@ F0 starts now and does not wait for any decision. F2 research can run beside F1.
 
 **Dependencies:** none. AI removal does not wait for WS-S1: AI is simply unavailable until F10.
 
+**Status (14 Oct 2026): built, awaiting merge.** Items 1–12 done. Notes:
+- Item 4: the engine's value-at-stake `basis` is now `client-estimate` or `not-quantified`; without T6 every amount is `null` and the page shows "Not quantified". The golden diff is the `unanswered` case only (the archetypes all answer T6).
+- Item 10: client view no longer blurs the roadmap or audit trail; it hides consultant probes instead. "Discuss with LTM" names the engagement lead entered in the session; nothing is sent from the page.
+- Item 11: the legacy routes are removed outright, and `check:backend` fails if either FinOps route reappears on the unauthenticated API.
+- Item 12: no row cap; `≥`, `±` and dashes are converted to ASCII in PDF text.
+- Gate: unit tests (`finops-iq.test.ts`, "containment") and browser tests (`finops-iq.spec.ts`) cover every gate item except the owner's banner confirmation. Banner text: "Internal consultant use only: content under review. Indicative figures from self-reported inputs, not a savings commitment."
+
 **Gate F0:**
 - a test asserts no LLM vendor host, "BYOK", "recoverable", "guaranteed", "FinOps Foundation Domain" or "Passkey" string in the page or sample;
 - a test asserts value at stake is "not quantified" when T6 is blank;
