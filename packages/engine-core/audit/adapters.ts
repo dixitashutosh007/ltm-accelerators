@@ -10,6 +10,7 @@ import strategyKb from '../src/accelerators/strategy-iq/knowledge-base.json' wit
 import { evaluateCloudIq } from '../src/accelerators/cloud-iq/evaluate';
 import cloudKb from '../src/accelerators/cloud-iq/knowledge-base.json' with { type: 'json' };
 import { evaluateFinOpsIq } from '../src/accelerators/finops-iq/evaluate';
+import { evaluateFinOpsIqV3, QUESTIONS as FIQ3_QUESTIONS, type Facts as Fiq3Facts, type Mode as Fiq3Mode } from '../src/accelerators/finops-iq/v3';
 import finopsIqKb from '../src/accelerators/finops-iq/knowledge-base.json' with { type: 'json' };
 import { evaluatePostureIq } from '../src/accelerators/posture-iq/evaluate';
 import postureKb from '../src/accelerators/posture-iq/knowledge-base.json' with { type: 'json' };
@@ -146,6 +147,64 @@ const fiqExtreme = (best: boolean) => ({
   })),
   annualSpend: 10_000_000
 });
+
+/* ------------------------------ FinOps IQ v3 ------------------------------- */
+// Facts are fixed per mode so the audit varies answers only. The workshop estate selects every scope, and leaves
+// commitment coverage unknown, so every maturity question (including scope-conditional and follow-up ones) can be asked.
+const FIQ3_FACTS: Record<Fiq3Mode, Fiq3Facts> = {
+  executive: {
+    org: { currency: 'USD', consumingUnits: '5-19' },
+    footprint: { publicCloudProviders: ['aws'], scopes: ['public_cloud'] },
+    spend: { byScope: { aws: { exact: 20_000_000 } }, growth12m: 10 }
+  },
+  workshop: {
+    org: { currency: 'USD', consumingUnits: '20+' },
+    footprint: { publicCloudProviders: ['aws', 'azure'], scopes: ['public_cloud', 'data_centre', 'kubernetes', 'ai_api', 'saas', 'licensing'] },
+    spend: { byScope: { aws: { exact: 40_000_000 }, azure: { exact: 20_000_000 } }, growth12m: 10 }
+  }
+};
+const FIQ3_REPORTS = ['cost_by_owner', 'forecast', 'anomaly_alerts', 'unit_cost_trend', 'commitment_coverage'];
+const fiq3Questions = (mode: Fiq3Mode) => FIQ3_QUESTIONS.filter((q: any) => q.modes.includes(mode) && (q.kind === 'maturity' || q.kind === 'hypothesis'));
+function fiq3Variants(q: any): unknown[] {
+  if (q.id === 'UN-08') return [[], FIQ3_REPORTS.slice(0, 1), FIQ3_REPORTS.slice(0, 3), FIQ3_REPORTS, 'unknown'];
+  const values = (q.options || []).map((o: any) => o.value);
+  switch (q.answerType) {
+    case 'single_select': return values;
+    case 'multi_select': return [[], values.slice(0, 1), values];
+    case 'rank': return [values, values.slice().reverse()];
+    case 'allocation_100': return [{ engineering: 100 }, { nobody: 100 }];
+    case 'open_text': return ['Notes'];
+    default: return [];
+  }
+}
+const fiq3Extreme = (mode: Fiq3Mode, level: 'run' | 'not_yet') => ({
+  mode, facts: FIQ3_FACTS[mode],
+  answers: Object.fromEntries(fiq3Questions(mode).filter((q: any) => q.kind === 'maturity')
+    .map((q: any) => [q.id, q.id === 'UN-08' ? (level === 'run' ? FIQ3_REPORTS : []) : level]))
+});
+function fiq3Adapter(mode: Fiq3Mode): Adapter {
+  const qs = fiq3Questions(mode);
+  const byId = new Map(qs.map((q: any) => [q.id, q]));
+  const capabilities = mode === 'executive' ? 8 : 22;
+  const gapFindings = (r: any, severities: string[]) => r.findings.filter((f: any) => severities.includes(f.severity)).length;
+  const headlines: Headline[] = [
+    { name: `Capabilities at or above target (0-${capabilities})`, scale: [0, capabilities], higherIsBetter: true, get: r => r.headline.atOrAboveTarget },
+    { name: 'Critical + high findings', scale: [0, capabilities], higherIsBetter: false, get: r => gapFindings(r, ['Critical', 'High']) },
+    { name: 'Capability-gap findings', scale: [0, capabilities], higherIsBetter: false, get: r => r.findings.length }
+  ];
+  if (mode === 'executive') headlines.unshift({ name: 'Need index (0-100)', scale: [0, 100], higherIsBetter: false, get: r => r.needVerdict.needIndex });
+  return {
+    id: `finops-iq-v3-${mode}`, name: `FinOps IQ v3 (${mode} mode)`,
+    questions: qs.map((q: any) => ({ id: q.id, label: q.text })),
+    random: r => ({ mode, facts: FIQ3_FACTS[mode], answers: Object.fromEntries(qs.filter(() => r() < 0.85).map((q: any) => [q.id, pick(r, fiq3Variants(q))])) }),
+    variants: id => fiq3Variants(byId.get(id)),
+    withAnswer: setAnswer, withoutAnswer: dropAnswer,
+    evaluate: i => evaluateFinOpsIqV3(i),
+    headlines,
+    ...(mode === 'executive' ? { band: { get: (r: any) => r.needVerdict.bandLabel, all: ['Lightweight practices sufficient at current scale', 'Targeted improvements needed now', 'Material exposure: act this year', 'Act now'] } } : {}),
+    extremes: { best: () => fiq3Extreme(mode, 'run'), worst: () => fiq3Extreme(mode, 'not_yet') }
+  };
+}
 
 /* ------------------------------- Posture IQ -------------------------------- */
 const PST: any = postureKb;
@@ -285,6 +344,8 @@ export const ADAPTERS: Adapter[] = [
     band: { get: r => (r.maturity >= 0 ? FIQ.meta.stages[r.maturity].name : 'Below Stage 1'), all: ['Below Stage 1', ...FIQ.meta.stages.map((s: any) => s.name)] },
     extremes: { best: () => fiqExtreme(true), worst: () => fiqExtreme(false) }
   },
+  fiq3Adapter('executive'),
+  fiq3Adapter('workshop'),
   {
     id: 'posture-iq', name: 'Posture IQ',
     questions: PST.questions.map((q: any) => ({ id: q.id, label: q.text })),

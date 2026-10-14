@@ -162,6 +162,70 @@ How to read it:
 | Maturity stage (-1..4) | -0.02 | +0 |
 | Overall score (0-100) | -0.35 | +0 |
 
+## FinOps IQ v3 (executive mode)
+
+| Headline | Scale | Observed min | Observed max | Out of scale | Null |
+|---|---|---|---|---|---|
+| Need index (0-100) | 0–100 | 18.3 | 72.5 | 0 | 0 |
+| Capabilities at or above target (0-8) | 0–8 | 0 | 6 | 0 | 0 |
+| Critical + high findings | 0–8 | 0 | 7 | 0 | 0 |
+| Capability-gap findings | 0–8 | 0 | 8 | 0 | 0 |
+
+**Bands** (share of random questionnaires; best answers → **Lightweight practices sufficient at current scale**, worst answers → **Material exposure: act this year**; never reached: Act now):
+
+| Band | Share |
+|---|---|
+| Lightweight practices sufficient at current scale | 0.4% |
+| Targeted improvements needed now | 45.8% |
+| Material exposure: act this year | 53.9% |
+| Act now | 0.0% |
+
+**Sensitivity**
+
+| Headline | Largest single-answer swing (question: swing) | Share of range |
+|---|---|---|
+| Need index (0-100) | UN-04: 8.4, UN-10: 8.4, UN-11: 8.4, QV-01: 8.4, OP-01: 8.4 | 0.15 |
+| Capabilities at or above target (0-8) | UN-04: 1, UN-10: 1, UN-11: 1, QV-01: 1, QV-05: 1 | 0.17 |
+| Critical + high findings | UN-04: 1, UN-10: 1, UN-11: 1, QV-01: 1, OP-01: 1 | 0.14 |
+| Capability-gap findings | UN-04: 1, UN-10: 1, UN-11: 1, QV-01: 1, QV-05: 1 | 0.13 |
+
+**Dead questions** (no effect on any headline): HY-01, HY-07
+
+**Missing data** (positive = leaving answers blank flatters the result)
+
+| Headline | Mean shift, 30% unanswered | Worst profile, half unanswered |
+|---|---|---|
+| Need index (0-100) | -7.35 | +0 |
+| Capabilities at or above target (0-8) | -0.73 | +0 |
+| Critical + high findings | +1.01 | +3 |
+| Capability-gap findings | +1.38 | +3 |
+
+## FinOps IQ v3 (workshop mode)
+
+| Headline | Scale | Observed min | Observed max | Out of scale | Null |
+|---|---|---|---|---|---|
+| Capabilities at or above target (0-22) | 0–22 | 0 | 9 | 0 | 0 |
+| Critical + high findings | 0–22 | 4 | 19 | 0 | 0 |
+| Capability-gap findings | 0–22 | 8 | 21 | 0 | 0 |
+
+**Sensitivity**
+
+| Headline | Largest single-answer swing (question: swing) | Share of range |
+|---|---|---|
+| Capabilities at or above target (0-22) | UN-02: 1, UN-04: 1, UN-05: 1, UN-09: 1, UN-07: 1 | 0.11 |
+| Critical + high findings | UN-01: 1, UN-02: 1, UN-03: 1, UN-04: 1, UN-05: 1 | 0.07 |
+| Capability-gap findings | UN-01: 1, UN-02: 1, UN-03: 1, UN-04: 1, UN-05: 1 | 0.08 |
+
+**Dead questions** (no effect on any headline): HY-01, HY-02, HY-03, HY-04, HY-05, HY-06, HY-07
+
+**Missing data** (positive = leaving answers blank flatters the result)
+
+| Headline | Mean shift, 30% unanswered | Worst profile, half unanswered |
+|---|---|---|
+| Capabilities at or above target (0-22) | -1.39 | +0 |
+| Critical + high findings | +3.02 | +5 |
+| Capability-gap findings | +3.63 | +5 |
+
 ## Posture IQ
 
 | Headline | Scale | Observed min | Observed max | Out of scale | Null |

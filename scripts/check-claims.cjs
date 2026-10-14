@@ -21,14 +21,18 @@ const SCHEMA = 'packages/engine-core/src/claims/claim.schema.json';
 const FINOPS_REGISTRY = [
   'capabilities.json', 'levers.json', 'thresholds.json', 'market-data.json', 'provider-statements.json'
 ].map(f => `packages/engine-core/src/accelerators/finops-iq/registry/${f}`);
+// FinOps IQ v3 engine content (plan F3): the merged question bank and the engine's wording and rules.
+const FINOPS_V3 = ['question-bank.json', 'engine-rules.json'].map(f => `packages/engine-core/src/accelerators/finops-iq/v3/${f}`);
 const REFERENCING_FILES = [
   'packages/engine-core/src/accelerators/sovereign-iq/registry/regimes.json',
-  ...FINOPS_REGISTRY
+  ...FINOPS_REGISTRY,
+  ...FINOPS_V3
 ];
 // Client-facing files checked for banned phrases (decision D8 / plan S2 item 7). Add pages as they are rebuilt.
 const LANGUAGE_CHECKED = [
   'packages/engine-core/src/accelerators/sovereign-iq/registry/regimes.json',
-  ...FINOPS_REGISTRY
+  ...FINOPS_REGISTRY,
+  ...FINOPS_V3
 ];
 const BANNED = [
   /legally void/i, /\bunenforceable\b/i, /injunction notice/i, /zero legal immunity/i, /\bguarantee[sd]?\b/i, /100% compliant/i, /attorney-drafted/i,

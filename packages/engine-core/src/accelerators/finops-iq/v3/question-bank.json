@@ -224,7 +224,13 @@
           "status": "LTM_heuristic"
         }
       ],
-      "legacy": []
+      "legacy": [
+        {
+          "id": "FVC.E2",
+          "disposition": "rewritten",
+          "note": "The private or hosted cloud option moves here as a scope"
+        }
+      ]
     },
     {
       "id": "SC-04",
@@ -2127,6 +2133,11 @@
           "id": "FIQ.C3",
           "disposition": "split",
           "note": "Static alerts = Crawl here; budgets go to QV-03"
+        },
+        {
+          "id": "FVC.C1",
+          "disposition": "split",
+          "note": "Anomaly or budget alerts option"
         }
       ]
     },

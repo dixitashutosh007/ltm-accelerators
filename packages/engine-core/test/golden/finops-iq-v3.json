@@ -1,0 +1,839 @@
+{
+  "RS1": {
+    "versions": {
+      "engine": "3.0.0",
+      "kb": "questions 3.0.0; capabilities 3.0.0; levers 1.0.0; thresholds 1.0.0; rules 1.0.0",
+      "questionSet": "3.0.0",
+      "capabilityModel": "3.0.0",
+      "leverLibrary": "1.0.0",
+      "thresholds": "1.0.0",
+      "engineRules": "1.0.0",
+      "valueModel": "not-built (F4)",
+      "claimsRegister": "0.1.0"
+    },
+    "tier": {
+      "tier": 2,
+      "points": 4,
+      "trace": [
+        "spend about USD 25.0M -> 2",
+        "private_cloud_or_dc -> +1",
+        "consuming_units_5_plus -> +1"
+      ]
+    },
+    "asked": 20,
+    "profile": {
+      "DATA_INGESTION": "not_assessed / walk / - / workshop",
+      "ALLOCATION": "walk / walk / 0 / at target",
+      "REPORTING_ANALYTICS": "not_assessed / walk / - / workshop",
+      "ANOMALY_MANAGEMENT": "walk / walk / 0 / at target",
+      "PLANNING_ESTIMATING": "not_assessed / walk / - / workshop",
+      "FORECASTING": "crawl / walk / 1",
+      "BUDGETING": "not_assessed / walk / - / workshop",
+      "KPIS_BENCHMARKING": "not_assessed / crawl / - / workshop",
+      "UNIT_ECONOMICS": "not_yet / crawl / 1",
+      "ARCHITECTING_WORKLOAD_PLACEMENT": "not_assessed / walk / - / workshop",
+      "USAGE_OPTIMIZATION": "crawl / walk / 1",
+      "RATE_OPTIMIZATION": "walk / walk / 0 / at target",
+      "LICENSING_SAAS": "not_in_scope / - / -",
+      "SUSTAINABILITY": "not_assessed / crawl / - / workshop",
+      "EXECUTIVE_STRATEGY_ALIGNMENT": "crawl / walk / 1",
+      "FINOPS_PRACTICE_OPERATIONS": "run / walk / -1 / at target",
+      "GOVERNANCE_POLICY_RISK": "not_assessed / walk / - / workshop",
+      "FINOPS_EDUCATION_ENABLEMENT": "not_assessed / crawl / - / workshop",
+      "INVOICING_CHARGEBACK": "not_assessed / crawl / - / workshop",
+      "FINOPS_ASSESSMENT": "not_assessed / crawl / - / workshop",
+      "AUTOMATION_TOOLS_SERVICES": "not_assessed / walk / - / workshop",
+      "INTERSECTING_DISCIPLINES": "not_assessed / crawl / - / workshop"
+    },
+    "headline": {
+      "atOrAboveTarget": 4,
+      "inScope": 8,
+      "assessed": 8,
+      "statement": "4 of 8 in-scope capabilities with a target are at or above LTM's default target for a Tier 2 estate (executive mode: 8 capabilities assessed; the rest in the workshop)"
+    },
+    "findings": [
+      "F-FIN-FORECASTING Medium [gap_1] wave 2 | FP&A lead | 6-12 months | levers - | offerings OFF.FIN.UNITECON,OFF.FIN.OPMODEL",
+      "F-FIN-USAGE_OPTIMIZATION Medium [gap_1] wave 2 | Engineering leads | 6-12 months | levers LEV-02,LEV-03,LEV-04,LEV-05,LEV-08 | offerings OFF.FIN.SPRINT,OFF.FIN.MANAGED,OFF.FIN.ASSESS",
+      "F-FIN-UNIT_ECONOMICS Medium [gap_1] wave 3 | Product owners | 6-12 months | levers - | offerings OFF.FIN.UNITECON,OFF.FIN.OPMODEL",
+      "F-FIN-EXECUTIVE_STRATEGY_ALIGNMENT Medium [gap_1] wave 3 | CIO | 6-12 months | levers - | offerings OFF.FIN.OPMODEL,OFF.FIN.MANAGED"
+    ],
+    "topFindingIds": [
+      "F-FIN-FORECASTING",
+      "F-FIN-USAGE_OPTIMIZATION",
+      "F-FIN-UNIT_ECONOMICS",
+      "F-FIN-EXECUTIVE_STRATEGY_ALIGNMENT"
+    ],
+    "needVerdict": {
+      "needIndex": 26.7,
+      "baseIndex": 16.7,
+      "modifiers": [
+        {
+          "id": "tier_2",
+          "points": 10
+        }
+      ],
+      "pending": [
+        {
+          "id": "expected_value_ge_5pct_of_P",
+          "reason": "needs the value model (F4)"
+        }
+      ],
+      "band": "foundations",
+      "bandLabel": "Targeted improvements needed now",
+      "confidence": "Medium",
+      "blindSpots": [
+        {
+          "fact": "spend.byScope.data_centre",
+          "reason": "unknown"
+        }
+      ],
+      "basisLine": "Based on your answers to 18 questions; LTM's targets for a Tier 2 estate; not a FinOps Foundation assessment"
+    },
+    "coverage": {
+      "asked": 11,
+      "answered": 11,
+      "unknown": 0,
+      "blank": 0,
+      "blankQuestions": [],
+      "unknownQuestions": [],
+      "ignoredAnswers": [],
+      "unconfirmedPrefill": [],
+      "unconfirmedCapabilities": []
+    },
+    "conflicts": []
+  },
+  "RS2": {
+    "versions": {
+      "engine": "3.0.0",
+      "kb": "questions 3.0.0; capabilities 3.0.0; levers 1.0.0; thresholds 1.0.0; rules 1.0.0",
+      "questionSet": "3.0.0",
+      "capabilityModel": "3.0.0",
+      "leverLibrary": "1.0.0",
+      "thresholds": "1.0.0",
+      "engineRules": "1.0.0",
+      "valueModel": "not-built (F4)",
+      "claimsRegister": "0.1.0"
+    },
+    "tier": {
+      "tier": 3,
+      "points": 7,
+      "trace": [
+        "spend about USD 199.8M -> 3",
+        "kubernetes_material -> +1",
+        "saas_or_licensing -> +1",
+        "private_cloud_or_dc -> +1",
+        "consuming_units_5_plus -> +1"
+      ]
+    },
+    "asked": 65,
+    "profile": {
+      "DATA_INGESTION": "crawl (lowered) / run / 2",
+      "ALLOCATION": "crawl (lowered) / run / 2",
+      "REPORTING_ANALYTICS": "walk / run / 1",
+      "ANOMALY_MANAGEMENT": "walk / run / 1",
+      "PLANNING_ESTIMATING": "crawl / walk / 1",
+      "FORECASTING": "walk / run / 1",
+      "BUDGETING": "walk / walk / 0 / at target",
+      "KPIS_BENCHMARKING": "walk / walk / 0 / at target",
+      "UNIT_ECONOMICS": "crawl / walk / 1",
+      "ARCHITECTING_WORKLOAD_PLACEMENT": "walk / walk / 0 / at target",
+      "USAGE_OPTIMIZATION": "crawl (lowered) / run / 2",
+      "RATE_OPTIMIZATION": "walk (lowered) / run / 1",
+      "LICENSING_SAAS": "walk / walk / 0 / at target",
+      "SUSTAINABILITY": "crawl / crawl / 0 / at target",
+      "EXECUTIVE_STRATEGY_ALIGNMENT": "crawl / walk / 1",
+      "FINOPS_PRACTICE_OPERATIONS": "walk / run / 1",
+      "GOVERNANCE_POLICY_RISK": "walk / run / 1",
+      "FINOPS_EDUCATION_ENABLEMENT": "crawl / walk / 1",
+      "INVOICING_CHARGEBACK": "walk / walk / 0 / at target",
+      "FINOPS_ASSESSMENT": "walk / walk / 0 / at target",
+      "AUTOMATION_TOOLS_SERVICES": "walk / walk / 0 / at target",
+      "INTERSECTING_DISCIPLINES": "crawl / walk / 1"
+    },
+    "headline": {
+      "atOrAboveTarget": 8,
+      "inScope": 22,
+      "assessed": 22,
+      "statement": "8 of 22 in-scope capabilities with a target are at or above LTM's default target for a Tier 3 estate"
+    },
+    "findings": [
+      "F-FIN-DATA_INGESTION Critical [gap_2,foundation_uplift] wave 1 | Head of Cloud / CCoE | 0-3 months | levers - | offerings OFF.FIN.TOOLING,OFF.FIN.ASSESS",
+      "F-FIN-ALLOCATION Critical [gap_2,foundation_uplift] wave 1 | FinOps lead | 0-3 months | levers - | offerings OFF.FIN.TOOLING,OFF.FIN.OPMODEL",
+      "F-FIN-FINOPS_PRACTICE_OPERATIONS High [gap_1,foundation_uplift] wave 1 | CIO | 3-6 months | levers - | offerings OFF.FIN.OPMODEL,OFF.FIN.MANAGED",
+      "F-FIN-USAGE_OPTIMIZATION High [gap_2] wave 2 after F-FIN-ALLOCATION | Engineering leads | 3-6 months | levers LEV-02,LEV-03,LEV-04,LEV-05,LEV-07,LEV-08 | offerings OFF.FIN.SPRINT,OFF.FIN.MANAGED,OFF.FIN.ASSESS",
+      "F-FIN-ANOMALY_MANAGEMENT Medium [gap_1] wave 1 after F-FIN-DATA_INGESTION | Platform / SRE lead | 6-12 months | levers - | offerings OFF.FIN.TOOLING,OFF.FIN.ASSESS",
+      "F-FIN-REPORTING_ANALYTICS Medium [gap_1] wave 2 after F-FIN-DATA_INGESTION | FinOps lead | 6-12 months | levers - | offerings OFF.FIN.TOOLING,OFF.FIN.ASSESS",
+      "F-FIN-PLANNING_ESTIMATING Medium [gap_1] wave 2 | Engineering leads | 6-12 months | levers - | offerings OFF.FIN.UNITECON,OFF.FIN.OPMODEL",
+      "F-FIN-FORECASTING Medium [gap_1] wave 2 after F-FIN-DATA_INGESTION | FP&A lead | 6-12 months | levers - | offerings OFF.FIN.UNITECON,OFF.FIN.OPMODEL",
+      "F-FIN-RATE_OPTIMIZATION Medium [gap_1] wave 2 | FinOps lead | 6-12 months | levers LEV-01,LEV-06 | offerings OFF.FIN.SPRINT,OFF.FIN.MANAGED,OFF.FIN.ASSESS",
+      "F-FIN-GOVERNANCE_POLICY_RISK Medium [gap_1] wave 2 | Head of Cloud / CCoE | 6-12 months | levers - | offerings OFF.FIN.OPMODEL,OFF.FIN.MANAGED",
+      "F-FIN-UNIT_ECONOMICS Medium [gap_1] wave 3 after F-FIN-ALLOCATION | Product owners | 6-12 months | levers - | offerings OFF.FIN.UNITECON,OFF.FIN.OPMODEL",
+      "F-FIN-EXECUTIVE_STRATEGY_ALIGNMENT Medium [gap_1] wave 3 | CIO | 6-12 months | levers - | offerings OFF.FIN.OPMODEL,OFF.FIN.MANAGED",
+      "F-FIN-FINOPS_EDUCATION_ENABLEMENT Medium [gap_1] wave 3 | FinOps lead | 6-12 months | levers - | offerings OFF.FIN.OPMODEL,OFF.FIN.MANAGED",
+      "F-FIN-INTERSECTING_DISCIPLINES Medium [gap_1] wave 3 | FinOps lead | 6-12 months | levers - | offerings OFF.FIN.OPMODEL,OFF.FIN.MANAGED"
+    ],
+    "topFindingIds": [
+      "F-FIN-DATA_INGESTION",
+      "F-FIN-ALLOCATION",
+      "F-FIN-FINOPS_PRACTICE_OPERATIONS",
+      "F-FIN-USAGE_OPTIMIZATION",
+      "F-FIN-ANOMALY_MANAGEMENT"
+    ],
+    "needVerdict": null,
+    "coverage": {
+      "asked": 43,
+      "answered": 43,
+      "unknown": 0,
+      "blank": 0,
+      "blankQuestions": [],
+      "unknownQuestions": [],
+      "ignoredAnswers": [],
+      "unconfirmedPrefill": [],
+      "unconfirmedCapabilities": []
+    },
+    "conflicts": []
+  },
+  "RS3": {
+    "versions": {
+      "engine": "3.0.0",
+      "kb": "questions 3.0.0; capabilities 3.0.0; levers 1.0.0; thresholds 1.0.0; rules 1.0.0",
+      "questionSet": "3.0.0",
+      "capabilityModel": "3.0.0",
+      "leverLibrary": "1.0.0",
+      "thresholds": "1.0.0",
+      "engineRules": "1.0.0",
+      "valueModel": "not-built (F4)",
+      "claimsRegister": "0.1.0"
+    },
+    "tier": {
+      "tier": 2,
+      "points": 5,
+      "trace": [
+        "spend about USD 21.5M -> 2",
+        "kubernetes_material -> +1",
+        "ai_material -> +1",
+        "saas_or_licensing -> +1"
+      ]
+    },
+    "asked": 64,
+    "profile": {
+      "DATA_INGESTION": "walk / walk / 0 / at target",
+      "ALLOCATION": "not_yet (lowered) / walk / 2",
+      "REPORTING_ANALYTICS": "crawl / walk / 1",
+      "ANOMALY_MANAGEMENT": "walk / walk / 0 / at target",
+      "PLANNING_ESTIMATING": "walk / walk / 0 / at target",
+      "FORECASTING": "crawl / walk / 1",
+      "BUDGETING": "crawl / walk / 1",
+      "KPIS_BENCHMARKING": "crawl / crawl / 0 / at target",
+      "UNIT_ECONOMICS": "not_yet (lowered) / crawl / 1",
+      "ARCHITECTING_WORKLOAD_PLACEMENT": "walk / walk / 0 / at target",
+      "USAGE_OPTIMIZATION": "crawl (lowered) / walk / 1",
+      "RATE_OPTIMIZATION": "crawl / walk / 1",
+      "LICENSING_SAAS": "crawl / crawl / 0 / at target",
+      "SUSTAINABILITY": "not_in_scope / - / -",
+      "EXECUTIVE_STRATEGY_ALIGNMENT": "crawl / walk / 1",
+      "FINOPS_PRACTICE_OPERATIONS": "crawl / walk / 1",
+      "GOVERNANCE_POLICY_RISK": "crawl / walk / 1",
+      "FINOPS_EDUCATION_ENABLEMENT": "crawl / crawl / 0 / at target",
+      "INVOICING_CHARGEBACK": "not_yet / crawl / 1",
+      "FINOPS_ASSESSMENT": "not_yet / crawl / 1",
+      "AUTOMATION_TOOLS_SERVICES": "crawl / walk / 1",
+      "INTERSECTING_DISCIPLINES": "not_yet / crawl / 1"
+    },
+    "headline": {
+      "atOrAboveTarget": 7,
+      "inScope": 21,
+      "assessed": 21,
+      "statement": "7 of 21 in-scope capabilities with a target are at or above LTM's default target for a Tier 2 estate"
+    },
+    "findings": [
+      "F-FIN-ALLOCATION Critical [gap_2,foundation_uplift] wave 1 | FinOps lead | 0-3 months | levers - | offerings OFF.FIN.TOOLING,OFF.FIN.OPMODEL",
+      "F-FIN-FINOPS_PRACTICE_OPERATIONS High [gap_1,foundation_uplift] wave 1 | CIO | 3-6 months | levers - | offerings OFF.FIN.OPMODEL,OFF.FIN.MANAGED",
+      "F-FIN-REPORTING_ANALYTICS Medium [gap_1] wave 2 | FinOps lead | 6-12 months | levers - | offerings OFF.FIN.TOOLING,OFF.FIN.ASSESS",
+      "F-FIN-FORECASTING Medium [gap_1] wave 2 | FP&A lead | 6-12 months | levers - | offerings OFF.FIN.UNITECON,OFF.FIN.OPMODEL",
+      "F-FIN-BUDGETING Medium [gap_1] wave 2 | FP&A lead | 6-12 months | levers - | offerings OFF.FIN.UNITECON,OFF.FIN.OPMODEL",
+      "F-FIN-USAGE_OPTIMIZATION Medium [gap_1] wave 2 after F-FIN-ALLOCATION | Engineering leads | 6-12 months | levers LEV-02,LEV-03,LEV-04,LEV-05,LEV-07,LEV-08,LEV-10 | offerings OFF.FIN.SPRINT,OFF.FIN.MANAGED,OFF.FIN.ASSESS",
+      "F-FIN-RATE_OPTIMIZATION Medium [gap_1] wave 2 | FinOps lead | 6-12 months | levers LEV-01,LEV-06 | offerings OFF.FIN.SPRINT,OFF.FIN.MANAGED,OFF.FIN.ASSESS",
+      "F-FIN-GOVERNANCE_POLICY_RISK Medium [gap_1] wave 2 | Head of Cloud / CCoE | 6-12 months | levers - | offerings OFF.FIN.OPMODEL,OFF.FIN.MANAGED",
+      "F-FIN-AUTOMATION_TOOLS_SERVICES Medium [gap_1] wave 2 | FinOps lead | 6-12 months | levers - | offerings OFF.FIN.TOOLING,OFF.FIN.ASSESS",
+      "F-FIN-UNIT_ECONOMICS Medium [gap_1] wave 3 after F-FIN-ALLOCATION | Product owners | 6-12 months | levers - | offerings OFF.FIN.UNITECON,OFF.FIN.OPMODEL",
+      "F-FIN-EXECUTIVE_STRATEGY_ALIGNMENT Medium [gap_1] wave 3 | CIO | 6-12 months | levers - | offerings OFF.FIN.OPMODEL,OFF.FIN.MANAGED",
+      "F-FIN-INVOICING_CHARGEBACK Medium [gap_1] wave 3 after F-FIN-ALLOCATION | CFO | 6-12 months | levers - | offerings OFF.FIN.UNITECON,OFF.FIN.OPMODEL",
+      "F-FIN-FINOPS_ASSESSMENT Medium [gap_1] wave 3 | FinOps lead | 6-12 months | levers - | offerings OFF.FIN.OPMODEL,OFF.FIN.MANAGED",
+      "F-FIN-INTERSECTING_DISCIPLINES Medium [gap_1] wave 3 | FinOps lead | 6-12 months | levers - | offerings OFF.FIN.OPMODEL,OFF.FIN.MANAGED"
+    ],
+    "topFindingIds": [
+      "F-FIN-ALLOCATION",
+      "F-FIN-FINOPS_PRACTICE_OPERATIONS",
+      "F-FIN-REPORTING_ANALYTICS",
+      "F-FIN-FORECASTING",
+      "F-FIN-BUDGETING"
+    ],
+    "needVerdict": null,
+    "coverage": {
+      "asked": 41,
+      "answered": 41,
+      "unknown": 0,
+      "blank": 0,
+      "blankQuestions": [],
+      "unknownQuestions": [],
+      "ignoredAnswers": [],
+      "unconfirmedPrefill": [],
+      "unconfirmedCapabilities": []
+    },
+    "conflicts": []
+  },
+  "RS4": {
+    "versions": {
+      "engine": "3.0.0",
+      "kb": "questions 3.0.0; capabilities 3.0.0; levers 1.0.0; thresholds 1.0.0; rules 1.0.0",
+      "questionSet": "3.0.0",
+      "capabilityModel": "3.0.0",
+      "leverLibrary": "1.0.0",
+      "thresholds": "1.0.0",
+      "engineRules": "1.0.0",
+      "valueModel": "not-built (F4)",
+      "claimsRegister": "0.1.0"
+    },
+    "tier": {
+      "tier": 3,
+      "points": 7,
+      "trace": [
+        "spend about USD 78.8M -> 3",
+        "providers_two -> +1",
+        "saas_or_licensing -> +1",
+        "private_cloud_or_dc -> +1",
+        "consuming_units_5_plus -> +1"
+      ]
+    },
+    "asked": 62,
+    "profile": {
+      "DATA_INGESTION": "not_yet / run / 3",
+      "ALLOCATION": "crawl / run / 2",
+      "REPORTING_ANALYTICS": "crawl / run / 2",
+      "ANOMALY_MANAGEMENT": "unknown / run / 3 / unconfirmed",
+      "PLANNING_ESTIMATING": "crawl / walk / 1",
+      "FORECASTING": "crawl / run / 2",
+      "BUDGETING": "walk / walk / 0 / at target",
+      "KPIS_BENCHMARKING": "crawl / walk / 1",
+      "UNIT_ECONOMICS": "not_yet / walk / 2",
+      "ARCHITECTING_WORKLOAD_PLACEMENT": "crawl / walk / 1",
+      "USAGE_OPTIMIZATION": "not_yet (lowered) / run / 3",
+      "RATE_OPTIMIZATION": "not_yet (lowered) / run / 3",
+      "LICENSING_SAAS": "walk / walk / 0 / at target",
+      "SUSTAINABILITY": "crawl / crawl / 0 / at target",
+      "EXECUTIVE_STRATEGY_ALIGNMENT": "not_yet / walk / 2",
+      "FINOPS_PRACTICE_OPERATIONS": "not_yet / run / 3",
+      "GOVERNANCE_POLICY_RISK": "not_yet / run / 3",
+      "FINOPS_EDUCATION_ENABLEMENT": "not_yet / walk / 2",
+      "INVOICING_CHARGEBACK": "crawl / walk / 1",
+      "FINOPS_ASSESSMENT": "not_yet / walk / 2",
+      "AUTOMATION_TOOLS_SERVICES": "crawl / walk / 1",
+      "INTERSECTING_DISCIPLINES": "walk / walk / 0 / at target"
+    },
+    "headline": {
+      "atOrAboveTarget": 4,
+      "inScope": 22,
+      "assessed": 22,
+      "statement": "4 of 22 in-scope capabilities with a target are at or above LTM's default target for a Tier 3 estate"
+    },
+    "findings": [
+      "F-FIN-DATA_INGESTION Critical [gap_3] wave 1 | Head of Cloud / CCoE | 0-3 months | levers - | offerings OFF.FIN.TOOLING,OFF.FIN.ASSESS",
+      "F-FIN-ANOMALY_MANAGEMENT Critical [gap_3] wave 1 after F-FIN-DATA_INGESTION | Platform / SRE lead | 0-3 months | levers - | offerings OFF.FIN.TOOLING,OFF.FIN.ASSESS | unconfirmed",
+      "F-FIN-FINOPS_PRACTICE_OPERATIONS Critical [gap_3] wave 1 | CIO | 0-3 months | levers - | offerings OFF.FIN.OPMODEL,OFF.FIN.MANAGED",
+      "F-FIN-ALLOCATION Critical [gap_2,foundation_uplift] wave 1 | FinOps lead | 0-3 months | levers - | offerings OFF.FIN.TOOLING,OFF.FIN.OPMODEL",
+      "F-FIN-USAGE_OPTIMIZATION Critical [gap_3] wave 2 after F-FIN-ALLOCATION | Engineering leads | 0-3 months | levers LEV-02,LEV-03,LEV-04,LEV-05,LEV-08 | offerings OFF.FIN.SPRINT,OFF.FIN.MANAGED,OFF.FIN.ASSESS",
+      "F-FIN-RATE_OPTIMIZATION Critical [gap_3] wave 2 | FinOps lead | 0-3 months | levers LEV-01,LEV-06 | offerings OFF.FIN.SPRINT,OFF.FIN.MANAGED,OFF.FIN.ASSESS",
+      "F-FIN-GOVERNANCE_POLICY_RISK Critical [gap_3] wave 2 | Head of Cloud / CCoE | 0-3 months | levers - | offerings OFF.FIN.OPMODEL,OFF.FIN.MANAGED",
+      "F-FIN-REPORTING_ANALYTICS High [gap_2] wave 2 after F-FIN-DATA_INGESTION | FinOps lead | 3-6 months | levers - | offerings OFF.FIN.TOOLING,OFF.FIN.ASSESS",
+      "F-FIN-FORECASTING High [gap_2] wave 2 after F-FIN-DATA_INGESTION | FP&A lead | 3-6 months | levers - | offerings OFF.FIN.UNITECON,OFF.FIN.OPMODEL",
+      "F-FIN-UNIT_ECONOMICS High [gap_2] wave 3 after F-FIN-ALLOCATION | Product owners | 3-6 months | levers - | offerings OFF.FIN.UNITECON,OFF.FIN.OPMODEL",
+      "F-FIN-EXECUTIVE_STRATEGY_ALIGNMENT High [gap_2] wave 3 | CIO | 3-6 months | levers - | offerings OFF.FIN.OPMODEL,OFF.FIN.MANAGED",
+      "F-FIN-FINOPS_EDUCATION_ENABLEMENT High [gap_2] wave 3 | FinOps lead | 3-6 months | levers - | offerings OFF.FIN.OPMODEL,OFF.FIN.MANAGED",
+      "F-FIN-FINOPS_ASSESSMENT High [gap_2] wave 3 | FinOps lead | 3-6 months | levers - | offerings OFF.FIN.OPMODEL,OFF.FIN.MANAGED",
+      "F-FIN-PLANNING_ESTIMATING Medium [gap_1] wave 2 | Engineering leads | 6-12 months | levers - | offerings OFF.FIN.UNITECON,OFF.FIN.OPMODEL",
+      "F-FIN-ARCHITECTING_WORKLOAD_PLACEMENT Medium [gap_1] wave 2 | Head of Cloud / CCoE | 6-12 months | levers - | offerings OFF.CT.PLACEMENT,OFF.FIN.SPRINT",
+      "F-FIN-AUTOMATION_TOOLS_SERVICES Medium [gap_1] wave 2 | FinOps lead | 6-12 months | levers - | offerings OFF.FIN.TOOLING,OFF.FIN.ASSESS",
+      "F-FIN-KPIS_BENCHMARKING Medium [gap_1] wave 3 after F-FIN-ALLOCATION | FinOps lead | 6-12 months | levers - | offerings OFF.FIN.OPMODEL,OFF.FIN.MANAGED",
+      "F-FIN-INVOICING_CHARGEBACK Medium [gap_1] wave 3 after F-FIN-ALLOCATION | CFO | 6-12 months | levers - | offerings OFF.FIN.UNITECON,OFF.FIN.OPMODEL"
+    ],
+    "topFindingIds": [
+      "F-FIN-DATA_INGESTION",
+      "F-FIN-ANOMALY_MANAGEMENT",
+      "F-FIN-FINOPS_PRACTICE_OPERATIONS",
+      "F-FIN-ALLOCATION",
+      "F-FIN-USAGE_OPTIMIZATION"
+    ],
+    "needVerdict": null,
+    "coverage": {
+      "asked": 41,
+      "answered": 41,
+      "unknown": 1,
+      "blank": 0,
+      "blankQuestions": [],
+      "unknownQuestions": [
+        "UN-11"
+      ],
+      "ignoredAnswers": [],
+      "unconfirmedPrefill": [],
+      "unconfirmedCapabilities": [
+        "ANOMALY_MANAGEMENT"
+      ]
+    },
+    "conflicts": []
+  },
+  "RS5": {
+    "versions": {
+      "engine": "3.0.0",
+      "kb": "questions 3.0.0; capabilities 3.0.0; levers 1.0.0; thresholds 1.0.0; rules 1.0.0",
+      "questionSet": "3.0.0",
+      "capabilityModel": "3.0.0",
+      "leverLibrary": "1.0.0",
+      "thresholds": "1.0.0",
+      "engineRules": "1.0.0",
+      "valueModel": "not-built (F4)",
+      "claimsRegister": "0.1.0"
+    },
+    "tier": {
+      "tier": 1,
+      "points": 1,
+      "trace": [
+        "spend about USD 3.8M -> 1"
+      ]
+    },
+    "asked": 20,
+    "profile": {
+      "DATA_INGESTION": "not_assessed / walk / - / workshop",
+      "ALLOCATION": "not_yet / crawl / 1",
+      "REPORTING_ANALYTICS": "not_assessed / crawl / - / workshop",
+      "ANOMALY_MANAGEMENT": "crawl / crawl / 0 / at target",
+      "PLANNING_ESTIMATING": "not_assessed / crawl / - / workshop",
+      "FORECASTING": "unknown / crawl / 1 / unconfirmed",
+      "BUDGETING": "not_assessed / crawl / - / workshop",
+      "KPIS_BENCHMARKING": "not_assessed / crawl / - / workshop",
+      "UNIT_ECONOMICS": "not_yet / - / -",
+      "ARCHITECTING_WORKLOAD_PLACEMENT": "not_assessed / crawl / - / workshop",
+      "USAGE_OPTIMIZATION": "not_yet / crawl / 1",
+      "RATE_OPTIMIZATION": "crawl / crawl / 0 / at target",
+      "LICENSING_SAAS": "not_in_scope / - / -",
+      "SUSTAINABILITY": "not_in_scope / - / -",
+      "EXECUTIVE_STRATEGY_ALIGNMENT": "not_yet / crawl / 1",
+      "FINOPS_PRACTICE_OPERATIONS": "crawl / crawl / 0 / at target",
+      "GOVERNANCE_POLICY_RISK": "not_assessed / crawl / - / workshop",
+      "FINOPS_EDUCATION_ENABLEMENT": "not_assessed / crawl / - / workshop",
+      "INVOICING_CHARGEBACK": "not_assessed / - / - / workshop",
+      "FINOPS_ASSESSMENT": "not_assessed / crawl / - / workshop",
+      "AUTOMATION_TOOLS_SERVICES": "not_assessed / crawl / - / workshop",
+      "INTERSECTING_DISCIPLINES": "not_assessed / crawl / - / workshop"
+    },
+    "headline": {
+      "atOrAboveTarget": 3,
+      "inScope": 7,
+      "assessed": 8,
+      "statement": "3 of 7 in-scope capabilities with a target are at or above LTM's default target for a Tier 1 estate (executive mode: 8 capabilities assessed; the rest in the workshop)"
+    },
+    "findings": [
+      "F-FIN-ALLOCATION Medium [gap_1] wave 1 | FinOps lead | 6-12 months | levers - | offerings OFF.FIN.TOOLING,OFF.FIN.OPMODEL",
+      "F-FIN-FORECASTING Medium [gap_1] wave 2 | FP&A lead | 6-12 months | levers - | offerings OFF.FIN.UNITECON,OFF.FIN.OPMODEL | unconfirmed",
+      "F-FIN-USAGE_OPTIMIZATION Medium [gap_1] wave 2 after F-FIN-ALLOCATION | Engineering leads | 6-12 months | levers LEV-02,LEV-03,LEV-04,LEV-05,LEV-08 | offerings OFF.FIN.SPRINT,OFF.FIN.MANAGED,OFF.FIN.ASSESS",
+      "F-FIN-EXECUTIVE_STRATEGY_ALIGNMENT Medium [gap_1] wave 3 | CIO | 6-12 months | levers - | offerings OFF.FIN.OPMODEL,OFF.FIN.MANAGED"
+    ],
+    "topFindingIds": [
+      "F-FIN-ALLOCATION",
+      "F-FIN-FORECASTING",
+      "F-FIN-USAGE_OPTIMIZATION",
+      "F-FIN-EXECUTIVE_STRATEGY_ALIGNMENT"
+    ],
+    "needVerdict": {
+      "needIndex": 29,
+      "baseIndex": 19,
+      "modifiers": [
+        {
+          "id": "growth_ge_20pct",
+          "points": 10
+        }
+      ],
+      "pending": [
+        {
+          "id": "expected_value_ge_5pct_of_P",
+          "reason": "needs the value model (F4)"
+        }
+      ],
+      "band": "foundations",
+      "bandLabel": "Targeted improvements needed now",
+      "confidence": "Low",
+      "blindSpots": [
+        {
+          "questionId": "QV-01",
+          "capability": "FORECASTING",
+          "reason": "unknown"
+        }
+      ],
+      "basisLine": "Based on your answers to 18 questions; LTM's targets for a Tier 1 estate; not a FinOps Foundation assessment"
+    },
+    "coverage": {
+      "asked": 11,
+      "answered": 11,
+      "unknown": 1,
+      "blank": 0,
+      "blankQuestions": [],
+      "unknownQuestions": [
+        "QV-01"
+      ],
+      "ignoredAnswers": [],
+      "unconfirmedPrefill": [],
+      "unconfirmedCapabilities": [
+        "FORECASTING"
+      ]
+    },
+    "conflicts": []
+  },
+  "unanswered-executive": {
+    "versions": {
+      "engine": "3.0.0",
+      "kb": "questions 3.0.0; capabilities 3.0.0; levers 1.0.0; thresholds 1.0.0; rules 1.0.0",
+      "questionSet": "3.0.0",
+      "capabilityModel": "3.0.0",
+      "leverLibrary": "1.0.0",
+      "thresholds": "1.0.0",
+      "engineRules": "1.0.0",
+      "valueModel": "not-built (F4)",
+      "claimsRegister": "0.1.0"
+    },
+    "tier": {
+      "tier": 1,
+      "points": 2,
+      "trace": [
+        "spend about USD 20.0M -> 2"
+      ]
+    },
+    "asked": 20,
+    "profile": {
+      "DATA_INGESTION": "not_assessed / walk / - / workshop",
+      "ALLOCATION": "not_assessed / crawl / - / incomplete",
+      "REPORTING_ANALYTICS": "not_assessed / crawl / - / workshop",
+      "ANOMALY_MANAGEMENT": "not_assessed / crawl / - / incomplete",
+      "PLANNING_ESTIMATING": "not_assessed / crawl / - / workshop",
+      "FORECASTING": "not_assessed / crawl / - / incomplete",
+      "BUDGETING": "not_assessed / crawl / - / workshop",
+      "KPIS_BENCHMARKING": "not_assessed / crawl / - / workshop",
+      "UNIT_ECONOMICS": "not_assessed / - / - / incomplete",
+      "ARCHITECTING_WORKLOAD_PLACEMENT": "not_assessed / crawl / - / workshop",
+      "USAGE_OPTIMIZATION": "not_assessed / crawl / - / incomplete",
+      "RATE_OPTIMIZATION": "not_assessed / crawl / - / incomplete",
+      "LICENSING_SAAS": "not_in_scope / - / -",
+      "SUSTAINABILITY": "not_in_scope / - / -",
+      "EXECUTIVE_STRATEGY_ALIGNMENT": "not_assessed / crawl / - / incomplete",
+      "FINOPS_PRACTICE_OPERATIONS": "not_assessed / crawl / - / incomplete",
+      "GOVERNANCE_POLICY_RISK": "not_assessed / crawl / - / workshop",
+      "FINOPS_EDUCATION_ENABLEMENT": "not_assessed / crawl / - / workshop",
+      "INVOICING_CHARGEBACK": "not_assessed / - / - / workshop",
+      "FINOPS_ASSESSMENT": "not_assessed / crawl / - / workshop",
+      "AUTOMATION_TOOLS_SERVICES": "not_assessed / crawl / - / workshop",
+      "INTERSECTING_DISCIPLINES": "not_assessed / crawl / - / workshop"
+    },
+    "headline": {
+      "atOrAboveTarget": 0,
+      "inScope": 7,
+      "assessed": 0,
+      "statement": "0 of 7 in-scope capabilities with a target are at or above LTM's default target for a Tier 1 estate (executive mode: 0 capabilities assessed; the rest in the workshop)"
+    },
+    "findings": [],
+    "topFindingIds": [],
+    "needVerdict": {
+      "needIndex": 33.3,
+      "baseIndex": 33.3,
+      "modifiers": [],
+      "pending": [
+        {
+          "id": "expected_value_ge_5pct_of_P",
+          "reason": "needs the value model (F4)"
+        }
+      ],
+      "band": "foundations",
+      "bandLabel": "Targeted improvements needed now",
+      "confidence": "Low",
+      "blindSpots": [
+        {
+          "questionId": "UN-04",
+          "capability": "ALLOCATION",
+          "reason": "blank"
+        },
+        {
+          "questionId": "UN-10",
+          "capability": "ANOMALY_MANAGEMENT",
+          "reason": "blank"
+        },
+        {
+          "questionId": "UN-11",
+          "capability": "ANOMALY_MANAGEMENT",
+          "reason": "blank"
+        },
+        {
+          "questionId": "QV-01",
+          "capability": "FORECASTING",
+          "reason": "blank"
+        },
+        {
+          "questionId": "QV-05",
+          "capability": "UNIT_ECONOMICS",
+          "reason": "blank"
+        },
+        {
+          "questionId": "OP-01",
+          "capability": "RATE_OPTIMIZATION",
+          "reason": "blank"
+        },
+        {
+          "questionId": "OP-04",
+          "capability": "USAGE_OPTIMIZATION",
+          "reason": "blank"
+        },
+        {
+          "questionId": "OP-05",
+          "capability": "USAGE_OPTIMIZATION",
+          "reason": "blank"
+        },
+        {
+          "questionId": "OP-06",
+          "capability": "USAGE_OPTIMIZATION",
+          "reason": "blank"
+        },
+        {
+          "questionId": "MP-01",
+          "capability": "FINOPS_PRACTICE_OPERATIONS",
+          "reason": "blank"
+        },
+        {
+          "questionId": "MP-04",
+          "capability": "EXECUTIVE_STRATEGY_ALIGNMENT",
+          "reason": "blank"
+        },
+        {
+          "fact": "base.computeShare",
+          "reason": "unknown"
+        },
+        {
+          "fact": "base.steadyStateShare",
+          "reason": "unknown"
+        },
+        {
+          "fact": "base.nonProdShare",
+          "reason": "unknown"
+        },
+        {
+          "fact": "base.eligibleCoverage",
+          "reason": "unknown"
+        }
+      ],
+      "basisLine": "Based on your answers to 18 questions; LTM's targets for a Tier 1 estate; not a FinOps Foundation assessment"
+    },
+    "coverage": {
+      "asked": 11,
+      "answered": 0,
+      "unknown": 0,
+      "blank": 11,
+      "blankQuestions": [
+        "UN-04",
+        "UN-10",
+        "UN-11",
+        "QV-01",
+        "QV-05",
+        "OP-01",
+        "OP-04",
+        "OP-05",
+        "OP-06",
+        "MP-01",
+        "MP-04"
+      ],
+      "unknownQuestions": [],
+      "ignoredAnswers": [],
+      "unconfirmedPrefill": [],
+      "unconfirmedCapabilities": []
+    },
+    "conflicts": []
+  },
+  "unanswered-workshop": {
+    "versions": {
+      "engine": "3.0.0",
+      "kb": "questions 3.0.0; capabilities 3.0.0; levers 1.0.0; thresholds 1.0.0; rules 1.0.0",
+      "questionSet": "3.0.0",
+      "capabilityModel": "3.0.0",
+      "leverLibrary": "1.0.0",
+      "thresholds": "1.0.0",
+      "engineRules": "1.0.0",
+      "valueModel": "not-built (F4)",
+      "claimsRegister": "0.1.0"
+    },
+    "tier": {
+      "tier": 2,
+      "points": 4,
+      "trace": [
+        "spend about USD 20.0M -> 2",
+        "kubernetes_material -> +1",
+        "saas_or_licensing -> +1"
+      ]
+    },
+    "asked": 59,
+    "profile": {
+      "DATA_INGESTION": "not_assessed / walk / - / incomplete",
+      "ALLOCATION": "not_assessed / walk / - / incomplete",
+      "REPORTING_ANALYTICS": "not_assessed / walk / - / incomplete",
+      "ANOMALY_MANAGEMENT": "not_assessed / walk / - / incomplete",
+      "PLANNING_ESTIMATING": "not_assessed / walk / - / incomplete",
+      "FORECASTING": "not_assessed / walk / - / incomplete",
+      "BUDGETING": "not_assessed / walk / - / incomplete",
+      "KPIS_BENCHMARKING": "not_assessed / crawl / - / incomplete",
+      "UNIT_ECONOMICS": "not_assessed / crawl / - / incomplete",
+      "ARCHITECTING_WORKLOAD_PLACEMENT": "not_assessed / walk / - / incomplete",
+      "USAGE_OPTIMIZATION": "not_assessed / walk / - / incomplete",
+      "RATE_OPTIMIZATION": "not_assessed / walk / - / incomplete",
+      "LICENSING_SAAS": "not_assessed / crawl / - / incomplete",
+      "SUSTAINABILITY": "not_in_scope / - / -",
+      "EXECUTIVE_STRATEGY_ALIGNMENT": "not_assessed / walk / - / incomplete",
+      "FINOPS_PRACTICE_OPERATIONS": "not_assessed / walk / - / incomplete",
+      "GOVERNANCE_POLICY_RISK": "not_assessed / walk / - / incomplete",
+      "FINOPS_EDUCATION_ENABLEMENT": "not_assessed / crawl / - / incomplete",
+      "INVOICING_CHARGEBACK": "not_assessed / crawl / - / incomplete",
+      "FINOPS_ASSESSMENT": "not_assessed / crawl / - / incomplete",
+      "AUTOMATION_TOOLS_SERVICES": "not_assessed / walk / - / incomplete",
+      "INTERSECTING_DISCIPLINES": "not_assessed / crawl / - / incomplete"
+    },
+    "headline": {
+      "atOrAboveTarget": 0,
+      "inScope": 21,
+      "assessed": 0,
+      "statement": "0 of 21 in-scope capabilities with a target are at or above LTM's default target for a Tier 2 estate"
+    },
+    "findings": [],
+    "topFindingIds": [],
+    "needVerdict": null,
+    "coverage": {
+      "asked": 39,
+      "answered": 0,
+      "unknown": 0,
+      "blank": 39,
+      "blankQuestions": [
+        "UN-01",
+        "UN-04",
+        "UN-05",
+        "UN-09",
+        "UN-07",
+        "UN-08",
+        "UN-10",
+        "UN-11",
+        "QV-01",
+        "QV-02",
+        "QV-03",
+        "QV-04",
+        "QV-05",
+        "QV-08",
+        "OP-01",
+        "OP-02",
+        "OP-03",
+        "OP-08",
+        "OP-04",
+        "OP-05",
+        "OP-06",
+        "OP-07",
+        "OP-09",
+        "OP-11",
+        "OP-10",
+        "OP-13",
+        "MP-01",
+        "MP-02",
+        "MP-03",
+        "MP-04",
+        "MP-05",
+        "MP-06",
+        "MP-07",
+        "MP-08",
+        "MP-09",
+        "MP-10",
+        "MP-11",
+        "MP-12",
+        "MP-13"
+      ],
+      "unknownQuestions": [],
+      "ignoredAnswers": [],
+      "unconfirmedPrefill": [],
+      "unconfirmedCapabilities": []
+    },
+    "conflicts": []
+  },
+  "all-run-workshop": {
+    "versions": {
+      "engine": "3.0.0",
+      "kb": "questions 3.0.0; capabilities 3.0.0; levers 1.0.0; thresholds 1.0.0; rules 1.0.0",
+      "questionSet": "3.0.0",
+      "capabilityModel": "3.0.0",
+      "leverLibrary": "1.0.0",
+      "thresholds": "1.0.0",
+      "engineRules": "1.0.0",
+      "valueModel": "not-built (F4)",
+      "claimsRegister": "0.1.0"
+    },
+    "tier": {
+      "tier": 3,
+      "points": 7,
+      "trace": [
+        "spend about USD 78.8M -> 3",
+        "providers_two -> +1",
+        "saas_or_licensing -> +1",
+        "private_cloud_or_dc -> +1",
+        "consuming_units_5_plus -> +1"
+      ]
+    },
+    "asked": 62,
+    "profile": {
+      "DATA_INGESTION": "run / run / 0 / at target",
+      "ALLOCATION": "run / run / 0 / at target",
+      "REPORTING_ANALYTICS": "run / run / 0 / at target",
+      "ANOMALY_MANAGEMENT": "run / run / 0 / at target",
+      "PLANNING_ESTIMATING": "run / walk / -1 / at target",
+      "FORECASTING": "run / run / 0 / at target",
+      "BUDGETING": "run / walk / -1 / at target",
+      "KPIS_BENCHMARKING": "run / walk / -1 / at target",
+      "UNIT_ECONOMICS": "run / walk / -1 / at target",
+      "ARCHITECTING_WORKLOAD_PLACEMENT": "run / walk / -1 / at target",
+      "USAGE_OPTIMIZATION": "run / run / 0 / at target",
+      "RATE_OPTIMIZATION": "run / run / 0 / at target",
+      "LICENSING_SAAS": "run / walk / -1 / at target",
+      "SUSTAINABILITY": "run / crawl / -2 / at target",
+      "EXECUTIVE_STRATEGY_ALIGNMENT": "run / walk / -1 / at target",
+      "FINOPS_PRACTICE_OPERATIONS": "run / run / 0 / at target",
+      "GOVERNANCE_POLICY_RISK": "run / run / 0 / at target",
+      "FINOPS_EDUCATION_ENABLEMENT": "run / walk / -1 / at target",
+      "INVOICING_CHARGEBACK": "run / walk / -1 / at target",
+      "FINOPS_ASSESSMENT": "run / walk / -1 / at target",
+      "AUTOMATION_TOOLS_SERVICES": "run / walk / -1 / at target",
+      "INTERSECTING_DISCIPLINES": "run / walk / -1 / at target"
+    },
+    "headline": {
+      "atOrAboveTarget": 22,
+      "inScope": 22,
+      "assessed": 22,
+      "statement": "22 of 22 in-scope capabilities with a target are at or above LTM's default target for a Tier 3 estate"
+    },
+    "findings": [],
+    "topFindingIds": [],
+    "needVerdict": null,
+    "coverage": {
+      "asked": 42,
+      "answered": 42,
+      "unknown": 0,
+      "blank": 0,
+      "blankQuestions": [],
+      "unknownQuestions": [],
+      "ignoredAnswers": [
+        "UN-09",
+        "QV-07",
+        "OP-11",
+        "OP-12"
+      ],
+      "unconfirmedPrefill": [],
+      "unconfirmedCapabilities": []
+    },
+    "conflicts": []
+  }
+}

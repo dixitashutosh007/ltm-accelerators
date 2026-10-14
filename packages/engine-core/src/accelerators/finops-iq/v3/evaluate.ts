@@ -63,7 +63,7 @@ export interface CapabilityProfile {
   loweredByDepth: boolean;
   target: { level: Level | null; source: 'tier_default' | 'consultant_override'; reason?: string };
   gap: number | null;
-  /** null when the capability has no target, is out of scope, or (executive mode) is assessed in the workshop. */
+  /** False without a target (never counted); null when out of scope or (executive mode) assessed in the workshop. */
   atOrAboveTarget: boolean | null;
   unconfirmed: boolean;
   /** Every asked question answered (a blank never flatters the headline). */
@@ -408,7 +408,7 @@ function capabilityProfile(cap: any, input: FinOpsIqV3Input, tier: number, state
   const knownLevel = (LEVELS as string[]).includes(rated.rating);
   return {
     ...base, ...rated, ratingLabel: label(rated.rating), gap, complete,
-    atOrAboveTarget: target.level === null ? null : knownLevel && complete && gap !== null && gap <= 0,
+    atOrAboveTarget: target.level !== null && knownLevel && complete && gap !== null && gap <= 0,
     claimIds: [...base.claimIds, ...RULES.ratingLabels[rated.rating].claimIds]
   };
 }

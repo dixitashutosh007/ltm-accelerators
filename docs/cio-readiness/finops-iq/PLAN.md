@@ -202,6 +202,59 @@ Every maturity question gets "Unknown", scored as risk (D5). Every question carr
 - golden outputs for the five reference scenarios;
 - no FinOps IQ or FinOps Value Case behaviour lost without a recorded reason.
 
+**F3 status (14 Oct 2026): built, awaiting owner review.** Not committed. The live page and Lambda still use v2; F6 switches them.
+- **Engine** in `packages/engine-core/src/accelerators/finops-iq/v3/`, beside v2, which is unchanged:
+  - `question-bank.json`: 69 questions (7 scope, 9 value-base, 46 maturity, 7 hypothesis), each with basis claim IDs. It validates against `question.schema.json`.
+  - `engine-rules.json`: rating labels, finding wording, owner roles, severity, need verdict, and FIQ.C8's moved reason.
+  - `contract.ts`, `evaluate.ts`, `index.ts`.
+- **Contract:** one request for both modes: `mode`, `facts` (checked against the facts schema, with readable reasons), `answers`, target overrides and Cost IQ pre-fill flags. Scope and value-base questions are answered through `facts`.
+- **Result:**
+  - capability profile with target and gap;
+  - capability-gap findings with severity, owner role, time frame, wave by dependency, lever links and claim IDs;
+  - executive need verdict;
+  - coverage, with Unknown flagged unconfirmed and blanks listed;
+  - consultant-only conflict probes;
+  - HY-01 echoed and never scored;
+  - version stamp, with the value model shown as `not-built (F4)`.
+
+  It contains no money figure, stage or archetype.
+- **Register:** three LTM-heuristic claims added:
+  - CLM-FIN-162: waves and owner roles;
+  - CLM-FIN-163: blanks, coverage and verdict confidence;
+  - CLM-FIN-164: question-set rules.
+
+  `scripts/check-claims.cjs` now also checks the two v3 JSON files.
+- **Blanks:** a blank is excluded from the rating. Any capability with a blank asked question is never counted at target, and counts as the maximum gap in the need index.
+- **Tests:** `test/finops-iq-v3.test.ts` has 88 tests:
+  - contract tests for both modes, positive and negative;
+  - each rating-rule branch, and each scope and answer trigger, positive and negative;
+  - invariants over 300 random questionnaires;
+  - claim IDs on every client-visible string;
+  - schema validation with ajv;
+  - goldens in `test/golden/finops-iq-v3.json`;
+  - legacy coverage: all 44 FIQ and 29 FVC questions map to a v3 question or a recorded reason.
+
+  `npm test`: 385 tests pass, up from 297, and `check:repo` passes.
+- **Audit:** two adapters, for executive and workshop mode, added to `audit/adapters.ts`; `npm run audit:engines` covers v3. It confirms:
+  - no out-of-scale values;
+  - only the HY questions are dead (they are unscored by design, D4);
+  - blanks never flatter the headline or the need index.
+
+  One flag for F5: blanks lower the finding count, because DESIGN 3.2 says a not-assessed capability creates no finding.
+- **Scenarios** (see [F3-scenario-diffs.md](design/F3-scenario-diffs.md)). All five match exactly on tier, every capability rating, target and gap, the headline, and owner role and wave per finding. Four recorded differences, all from work outside F3:
+  - D1: no lever or decision findings yet (F4).
+  - D2: no severity value uplift (F4).
+  - D3: no "value at least 5% of P" need modifier, so RS1 reads 26.7 (expected 36.7) and RS5 reads 29.0 (expected 39.0), in the same band (F4).
+  - D4: Q14's reworded band label.
+- **Departures from DESIGN for the owner:**
+  1. A depth answer with no answered core question leaves the capability "not assessed"; DESIGN 3.3 is silent on this case.
+  2. Owner roles for capabilities the scenarios do not cover are LTM defaults (CLM-FIN-162).
+  3. The need verdict is executive-only, as in the scenarios, so the HY-03 and HY-05 modifiers never fire.
+  4. A follow-up trigger can move a second capability: UN-04 at Walk or better asks QV-06 (DESIGN 7.5).
+  5. The Cost IQ option-to-level pre-fill table (DESIGN 7.8) is not built; it is left for F6. Pre-fill confirmation is in the contract.
+- **Left for F4:** lever values, lever and scope-confirmation findings, the value uplift and the value urgency modifier.
+- **Left for F6:** route switch, page, Cost IQ pre-fill table, and the client-mode omission of conflicts.
+
 ---
 
 ## F4: Value model, trace and inflation guard (area 13)
