@@ -1,0 +1,2402 @@
+{
+  "registryVersion": "1.0.0",
+  "statusAsOf": "2026-10-14",
+  "predicates": {
+    "eu_financial_entity": {
+      "fact": "ent.flags",
+      "op": "includes_any",
+      "value": [
+        "eu_credit_institution",
+        "eu_investment_firm",
+        "eu_insurer",
+        "eu_payment_emi",
+        "eu_casp",
+        "eu_other_financial"
+      ]
+    },
+    "nis2_annex_i": {
+      "fact": "org.sector",
+      "op": "in",
+      "value": [
+        "energy",
+        "transport",
+        "banking",
+        "financial_market_infra",
+        "health",
+        "water",
+        "digital_infrastructure",
+        "ict_service_management_b2b",
+        "public_administration",
+        "space"
+      ]
+    },
+    "nis2_annex_ii": {
+      "fact": "org.sector",
+      "op": "in",
+      "value": [
+        "postal",
+        "waste_management",
+        "chemicals",
+        "food",
+        "manufacturing_critical",
+        "digital_providers",
+        "research"
+      ]
+    },
+    "nis2_sector": {
+      "any": [
+        {
+          "derived": "nis2_annex_i"
+        },
+        {
+          "derived": "nis2_annex_ii"
+        }
+      ]
+    },
+    "financial_sector": {
+      "fact": "org.sector",
+      "op": "in",
+      "value": [
+        "banking",
+        "financial_market_infra",
+        "insurance",
+        "other_financial"
+      ]
+    },
+    "us_person_org": {
+      "any": [
+        {
+          "fact": "org.hq",
+          "op": "eq",
+          "value": "us"
+        },
+        {
+          "fact": "org.establishments",
+          "op": "includes",
+          "value": "us"
+        }
+      ]
+    },
+    "us_coc_link": {
+      "any": [
+        {
+          "fact": "derived.all_location_zones",
+          "op": "includes_any",
+          "value": [
+            "cn",
+            "hk"
+          ]
+        },
+        {
+          "fact": "prov.parent_jurisdictions",
+          "op": "includes",
+          "value": "cn"
+        },
+        {
+          "fact": "org.establishments",
+          "op": "includes_any",
+          "value": [
+            "cn",
+            "hk"
+          ]
+        },
+        {
+          "fact": "plat.in_scope",
+          "op": "includes",
+          "value": "cn_cloud"
+        }
+      ]
+    },
+    "us_coc_link_possible": {
+      "fact": "derived.all_location_zones",
+      "op": "includes",
+      "value": "other"
+    },
+    "uses_us_parent_provider": {
+      "fact": "prov.parent_jurisdictions",
+      "op": "includes",
+      "value": "us"
+    },
+    "non_us_people": {
+      "fact": "data.subject_regions",
+      "op": "includes_any",
+      "value": [
+        "eea",
+        "uk",
+        "ch",
+        "ca",
+        "in",
+        "sg",
+        "au",
+        "nz",
+        "jp",
+        "hk",
+        "kr",
+        "cn",
+        "other"
+      ]
+    }
+  },
+  "regimes": [
+    {
+      "id": "EU_GDPR",
+      "name": "General Data Protection Regulation",
+      "jurisdiction": "eu",
+      "market": "eu_uk",
+      "citation": {
+        "text": "Regulation (EU) 2016/679 [CLM-SOV-001]",
+        "url": "https://eur-lex.europa.eu/eli/reg/2016/679/oj"
+      },
+      "kind": "obligation",
+      "status": "in_force",
+      "statusAsOf": "2026-10-14",
+      "dates": [
+        {
+          "label": "Applies",
+          "date": "2018-05-25",
+          "status": "in_force",
+          "claims": [
+            "CLM-SOV-001"
+          ]
+        }
+      ],
+      "applicability": {
+        "rules": [
+          {
+            "id": "EU_GDPR.1",
+            "when": {
+              "fact": "org.establishments",
+              "op": "includes",
+              "value": "eea"
+            },
+            "grade": "applies",
+            "reason": "You have an establishment in the EEA, so the GDPR applies to processing in the context of its activities.",
+            "basis": "Art. 3(1)",
+            "claims": [
+              "CLM-SOV-002"
+            ],
+            "verification": {
+              "status": "P",
+              "checked": "2026-10-14",
+              "by": "sovereignty-compliance-lead (agent)"
+            }
+          },
+          {
+            "id": "EU_GDPR.2",
+            "when": {
+              "fact": "data.subject_regions",
+              "op": "includes",
+              "value": "eea"
+            },
+            "grade": "likely_confirm",
+            "reason": "You hold personal data of people in the EEA without an EEA establishment; the GDPR applies if you offer them goods or services or monitor their behaviour. Confirm with counsel.",
+            "basis": "Art. 3(2); EDPB Guidelines 3/2018",
+            "claims": [
+              "CLM-SOV-003"
+            ],
+            "verification": {
+              "status": "S",
+              "checked": "2026-10-14",
+              "by": "sovereignty-compliance-lead (agent)"
+            }
+          }
+        ],
+        "default": "not_applicable"
+      },
+      "requiredControls": [
+        {
+          "control": "SOV.XFER.BASIS",
+          "when": {
+            "fact": "derived.personal_transfer",
+            "op": "eq",
+            "value": true
+          },
+          "basis": "GDPR Art. 44-46, 49 [CLM-SOV-008]; DPF adequacy for certified US recipients [CLM-SOV-013]; UK adequacy [CLM-SOV-015]",
+          "verification": {
+            "status": "P",
+            "checked": "2026-10-14",
+            "by": "sovereignty-compliance-lead (agent)"
+          }
+        },
+        {
+          "control": "SOV.XFER.TIA",
+          "when": {
+            "fact": "xfer.mechanisms",
+            "op": "includes_any",
+            "value": [
+              "sccs",
+              "bcr"
+            ]
+          },
+          "basis": "GDPR Art. 46; CJEU C-311/18 [CLM-SOV-011]; EDPB Recommendations 01/2020 [CLM-SOV-012]",
+          "verification": {
+            "status": "S",
+            "checked": "2026-10-14",
+            "by": "sovereignty-compliance-lead (agent)"
+          }
+        },
+        {
+          "control": "SOV.TP.DPA",
+          "basis": "GDPR Art. 28(3) [CLM-SOV-004]",
+          "verification": {
+            "status": "P",
+            "checked": "2026-10-14",
+            "by": "sovereignty-compliance-lead (agent)"
+          }
+        },
+        {
+          "control": "SOV.SAAS.SUBPROCESSOR",
+          "basis": "GDPR Art. 28(2) and (4) [CLM-SOV-004]",
+          "verification": {
+            "status": "P",
+            "checked": "2026-10-14",
+            "by": "sovereignty-compliance-lead (agent)"
+          }
+        },
+        {
+          "control": "SOV.DATA.MAP",
+          "basis": "GDPR Art. 30 [CLM-SOV-005]",
+          "verification": {
+            "status": "P",
+            "checked": "2026-10-14",
+            "by": "sovereignty-compliance-lead (agent)"
+          }
+        },
+        {
+          "control": "SOV.ENC.BASELINE",
+          "basis": "GDPR Art. 32(1)(a) [CLM-SOV-006]",
+          "verification": {
+            "status": "P",
+            "checked": "2026-10-14",
+            "by": "sovereignty-compliance-lead (agent)"
+          }
+        },
+        {
+          "control": "SOV.IR.REPORTING",
+          "basis": "GDPR Art. 33 (72 hours) [CLM-SOV-007]",
+          "verification": {
+            "status": "V",
+            "checked": "2026-10-14",
+            "by": "sovereignty-compliance-lead (agent)"
+          }
+        }
+      ],
+      "obligations": [
+        {
+          "id": "EU_GDPR.TRANSFERS",
+          "article": "Art. 44-49",
+          "summary": "Every transfer outside the EEA, including remote access, needs adequacy, an Art. 46 safeguard (SCCs, BCRs) with a transfer impact assessment, or an Art. 49 derogation. SCCs remain valid; the DPF covers certified US recipients while appeal C-703/25 P is pending.",
+          "controls": [
+            "SOV.XFER.BASIS",
+            "SOV.XFER.TIA"
+          ],
+          "claims": [
+            "CLM-SOV-008",
+            "CLM-SOV-011",
+            "CLM-SOV-012",
+            "CLM-SOV-013",
+            "CLM-SOV-014",
+            "CLM-SOV-015"
+          ]
+        },
+        {
+          "id": "EU_GDPR.NO_LOCALISATION",
+          "article": "Chapter V",
+          "summary": "No data-localisation requirement; location is a matter of transfer basis, not a legal floor.",
+          "claims": [
+            "CLM-SOV-009"
+          ]
+        },
+        {
+          "id": "EU_GDPR.FOREIGN_ORDERS",
+          "article": "Art. 48",
+          "summary": "Foreign orders are recognised only through an international agreement; disclosure risk is assessed under Art. 6 and Chapter V. Holding data at a foreign-parented provider is not itself a breach.",
+          "claims": [
+            "CLM-SOV-010"
+          ]
+        },
+        {
+          "id": "EU_GDPR.PROCESSORS",
+          "article": "Art. 28",
+          "summary": "Processor contracts with Art. 28(3) content; sub-processors only with prior authorisation and flow-down.",
+          "controls": [
+            "SOV.TP.DPA",
+            "SOV.SAAS.SUBPROCESSOR"
+          ],
+          "claims": [
+            "CLM-SOV-004"
+          ]
+        },
+        {
+          "id": "EU_GDPR.RECORDS",
+          "article": "Art. 30",
+          "summary": "Records of processing activities.",
+          "controls": [
+            "SOV.DATA.MAP"
+          ],
+          "claims": [
+            "CLM-SOV-005"
+          ]
+        },
+        {
+          "id": "EU_GDPR.SECURITY",
+          "article": "Art. 32",
+          "summary": "Appropriate security, including encryption where appropriate.",
+          "controls": [
+            "SOV.ENC.BASELINE"
+          ],
+          "claims": [
+            "CLM-SOV-006"
+          ]
+        },
+        {
+          "id": "EU_GDPR.BREACH",
+          "article": "Art. 33",
+          "summary": "Notify the supervisory authority within 72 hours where feasible.",
+          "controls": [
+            "SOV.IR.REPORTING"
+          ],
+          "claims": [
+            "CLM-SOV-007"
+          ]
+        }
+      ],
+      "penalty": {
+        "model": "turnover_greater_of",
+        "tiers": [
+          {
+            "label": "Transfers (Chapter V), principles, data subject rights",
+            "fixedAmount": 20000000,
+            "currency": "EUR",
+            "turnoverPercent": 4,
+            "turnoverBasis": "worldwide_prior_year",
+            "article": "Art. 83(5)",
+            "claims": [
+              "CLM-SOV-016"
+            ]
+          },
+          {
+            "label": "Controller and processor obligations (incl. Art. 28, 30, 32, 33)",
+            "fixedAmount": 10000000,
+            "currency": "EUR",
+            "turnoverPercent": 2,
+            "turnoverBasis": "worldwide_prior_year",
+            "article": "Art. 83(4)",
+            "claims": [
+              "CLM-SOV-017"
+            ]
+          }
+        ],
+        "appliesTo": "Controllers and processors (undertakings)",
+        "note": "Statutory maximum, not an expected fine. Exposure view uses Art. 83(5) where transfers are in scope.",
+        "verification": {
+          "status": "V",
+          "checked": "2026-10-14",
+          "by": "sovereignty-compliance-lead (agent)"
+        }
+      },
+      "volatile": false,
+      "reviewDays": 180,
+      "verification": {
+        "status": "P",
+        "checked": "2026-10-14",
+        "by": "sovereignty-compliance-lead (agent)",
+        "note": "Worst status across citation and applicability claims. All 17 claims referenced by this regime: 5 V, 3 S, 9 P."
+      },
+      "claims": [
+        "CLM-SOV-001",
+        "CLM-SOV-002",
+        "CLM-SOV-003",
+        "CLM-SOV-004",
+        "CLM-SOV-005",
+        "CLM-SOV-006",
+        "CLM-SOV-007",
+        "CLM-SOV-008",
+        "CLM-SOV-009",
+        "CLM-SOV-010",
+        "CLM-SOV-011",
+        "CLM-SOV-012",
+        "CLM-SOV-013",
+        "CLM-SOV-014",
+        "CLM-SOV-015",
+        "CLM-SOV-016",
+        "CLM-SOV-017"
+      ]
+    },
+    {
+      "id": "EU_NIS2",
+      "name": "NIS2 Directive",
+      "jurisdiction": "eu",
+      "market": "eu_uk",
+      "citation": {
+        "text": "Directive (EU) 2022/2555, as transposed by each member state [CLM-SOV-018]",
+        "url": "https://eur-lex.europa.eu/eli/dir/2022/2555/oj"
+      },
+      "kind": "obligation",
+      "status": "in_force",
+      "statusAsOf": "2026-10-14",
+      "dates": [
+        {
+          "label": "Transposition deadline",
+          "date": "2024-10-17",
+          "status": "in_force",
+          "claims": [
+            "CLM-SOV-018"
+          ]
+        },
+        {
+          "label": "Member-state measures apply",
+          "date": "2024-10-18",
+          "status": "in_force",
+          "appliesTo": "Where national law is in force; transposition incomplete in some member states (status as of 14 Oct 2026)",
+          "claims": [
+            "CLM-SOV-018",
+            "CLM-SOV-019"
+          ]
+        },
+        {
+          "label": "Commission referral of IE, ES, FR, NL to the Court of Justice",
+          "date": "2026-07-08",
+          "status": "in_force",
+          "claims": [
+            "CLM-SOV-019"
+          ]
+        }
+      ],
+      "applicability": {
+        "rules": [
+          {
+            "id": "EU_NIS2.1",
+            "when": {
+              "all": [
+                {
+                  "not": {
+                    "fact": "org.establishments",
+                    "op": "includes",
+                    "value": "eea"
+                  }
+                },
+                {
+                  "fact": "org.sector",
+                  "op": "in",
+                  "value": [
+                    "digital_infrastructure",
+                    "ict_service_management_b2b",
+                    "digital_providers"
+                  ]
+                },
+                {
+                  "any": [
+                    {
+                      "fact": "data.subject_regions",
+                      "op": "includes",
+                      "value": "eea"
+                    },
+                    {
+                      "fact": "ent.flags",
+                      "op": "includes",
+                      "value": "ict_provider_to_eu_fs"
+                    }
+                  ]
+                }
+              ]
+            },
+            "grade": "likely_confirm",
+            "reason": "You provide digital infrastructure, managed ICT or digital services to the EU without an EU establishment. Such providers must designate a representative in a member state where they offer services and fall under its law; the medium-size test still applies. Confirm.",
+            "basis": "Art. 26(1)(b), 26(3); Art. 2(1)",
+            "claims": [
+              "CLM-SOV-025",
+              "CLM-SOV-020",
+              "CLM-SOV-026"
+            ],
+            "verification": {
+              "status": "S",
+              "checked": "2026-10-14",
+              "by": "sovereignty-compliance-lead (agent)"
+            }
+          },
+          {
+            "id": "EU_NIS2.2",
+            "when": {
+              "not": {
+                "fact": "org.establishments",
+                "op": "includes",
+                "value": "eea"
+              }
+            },
+            "grade": "not_applicable",
+            "reason": "No EU establishment and no EU-facing digital infrastructure or managed service.",
+            "basis": "Art. 2(1), 26",
+            "claims": [
+              "CLM-SOV-020",
+              "CLM-SOV-025"
+            ],
+            "verification": {
+              "status": "S",
+              "checked": "2026-10-14",
+              "by": "sovereignty-compliance-lead (agent)"
+            }
+          },
+          {
+            "id": "EU_NIS2.3",
+            "when": {
+              "fact": "ent.nis2_self_class",
+              "op": "in",
+              "value": [
+                "essential",
+                "important"
+              ]
+            },
+            "grade": "applies",
+            "reason": "You have classified yourself as an essential or important entity.",
+            "basis": "Art. 3",
+            "claims": [
+              "CLM-SOV-022"
+            ],
+            "annotations": {
+              "nis2_class": "higher of the stated class and the class rules EU_NIS2.4-8 derive; a self-classification never downgrades"
+            },
+            "verification": {
+              "status": "S",
+              "checked": "2026-10-14",
+              "by": "sovereignty-compliance-lead (agent)"
+            }
+          },
+          {
+            "id": "EU_NIS2.4",
+            "when": {
+              "fact": "ent.nis2_special_type",
+              "op": "in",
+              "value": [
+                "qtsp",
+                "tld_registry",
+                "dns_provider"
+              ]
+            },
+            "grade": "applies",
+            "reason": "Qualified trust service providers, TLD registries and DNS service providers are essential entities regardless of size.",
+            "basis": "Art. 2(2)(a), 3(1)(b)",
+            "claims": [
+              "CLM-SOV-023"
+            ],
+            "annotations": {
+              "nis2_class": "essential"
+            },
+            "verification": {
+              "status": "S",
+              "checked": "2026-10-14",
+              "by": "sovereignty-compliance-lead (agent)"
+            }
+          },
+          {
+            "id": "EU_NIS2.5",
+            "when": {
+              "fact": "ent.nis2_special_type",
+              "op": "in",
+              "value": [
+                "non_qualified_tsp",
+                "public_ecomms"
+              ]
+            },
+            "grade": "applies",
+            "reason": "Public electronic communications providers and trust service providers are in scope regardless of size; essential if medium-sized or larger, otherwise important.",
+            "basis": "Art. 2(2)(a), 3(1)(c)",
+            "claims": [
+              "CLM-SOV-023"
+            ],
+            "annotations": {
+              "nis2_class": "essential if derived.size_class_eu in [large, medium, medium_or_large], else important"
+            },
+            "verification": {
+              "status": "S",
+              "checked": "2026-10-14",
+              "by": "sovereignty-compliance-lead (agent)"
+            }
+          },
+          {
+            "id": "EU_NIS2.6",
+            "when": {
+              "fact": "org.sector",
+              "op": "in",
+              "value": [
+                "public_administration"
+              ]
+            },
+            "grade": "likely_confirm",
+            "reason": "Public administration entities are in scope as identified by the member state, regardless of size. Confirm national identification.",
+            "basis": "Art. 2(2)(f)",
+            "claims": [
+              "CLM-SOV-024"
+            ],
+            "verification": {
+              "status": "P",
+              "checked": "2026-10-14",
+              "by": "sovereignty-compliance-lead (agent)"
+            }
+          },
+          {
+            "id": "EU_NIS2.7",
+            "when": {
+              "all": [
+                {
+                  "derived": "eu_financial_entity"
+                },
+                {
+                  "fact": "org.sector",
+                  "op": "in",
+                  "value": [
+                    "banking",
+                    "financial_market_infra"
+                  ]
+                }
+              ]
+            },
+            "grade": "advisory",
+            "reason": "DORA is the sector-specific act for your ICT risk management and incident reporting, so the NIS2 equivalents do not apply to you; registration and national provisions may still reach you. Confirm the national position.",
+            "basis": "NIS2 Art. 4; DORA Art. 1(2), recital 16",
+            "claims": [
+              "CLM-SOV-027",
+              "CLM-SOV-028"
+            ],
+            "verification": {
+              "status": "S",
+              "checked": "2026-10-14",
+              "by": "sovereignty-compliance-lead (agent)"
+            }
+          },
+          {
+            "id": "EU_NIS2.8",
+            "when": {
+              "all": [
+                {
+                  "derived": "nis2_sector"
+                },
+                {
+                  "fact": "derived.size_class_eu",
+                  "op": "in",
+                  "value": [
+                    "large",
+                    "medium",
+                    "medium_or_large"
+                  ]
+                }
+              ]
+            },
+            "grade": "applies",
+            "reason": "Your sector is in NIS2 Annex I or II and you are at least a medium-sized enterprise.",
+            "basis": "Art. 2(1), 3(1)(a), 3(2)",
+            "claims": [
+              "CLM-SOV-020",
+              "CLM-SOV-021",
+              "CLM-SOV-022"
+            ],
+            "annotations": {
+              "nis2_class": "essential if Annex I and large; important if Annex II or medium; \"essential or important - confirm balance sheet\" if Annex I and medium_or_large"
+            },
+            "verification": {
+              "status": "S",
+              "checked": "2026-10-14",
+              "by": "sovereignty-compliance-lead (agent)"
+            }
+          },
+          {
+            "id": "EU_NIS2.9",
+            "when": {
+              "all": [
+                {
+                  "derived": "nis2_sector"
+                },
+                {
+                  "fact": "derived.size_class_eu",
+                  "op": "eq",
+                  "value": "uncertain"
+                }
+              ]
+            },
+            "grade": "likely_confirm",
+            "reason": "Your sector is in NIS2 Annex I or II but your size is not established. Confirm headcount, turnover and balance sheet, including group aggregation.",
+            "basis": "Art. 2(1); Recommendation 2003/361/EC",
+            "claims": [
+              "CLM-SOV-020",
+              "CLM-SOV-021"
+            ],
+            "verification": {
+              "status": "S",
+              "checked": "2026-10-14",
+              "by": "sovereignty-compliance-lead (agent)"
+            }
+          },
+          {
+            "id": "EU_NIS2.10",
+            "when": {
+              "all": [
+                {
+                  "derived": "nis2_sector"
+                },
+                {
+                  "fact": "derived.size_class_eu",
+                  "op": "eq",
+                  "value": "small_or_micro"
+                }
+              ]
+            },
+            "grade": "not_applicable",
+            "reason": "Below the size cap, unless a member state designates you.",
+            "basis": "Art. 2(1), 2(2)(b)-(e)",
+            "claims": [
+              "CLM-SOV-020",
+              "CLM-SOV-024"
+            ],
+            "verification": {
+              "status": "P",
+              "checked": "2026-10-14",
+              "by": "sovereignty-compliance-lead (agent)"
+            }
+          },
+          {
+            "id": "EU_NIS2.11",
+            "when": {
+              "fact": "org.sector",
+              "op": "is_unknown"
+            },
+            "grade": "advisory",
+            "reason": "Sector not stated; NIS2 scope cannot be assessed. Confirm your sector.",
+            "basis": "Art. 2(1); Annexes I-II",
+            "claims": [
+              "CLM-SOV-020"
+            ],
+            "verification": {
+              "status": "S",
+              "checked": "2026-10-14",
+              "by": "sovereignty-compliance-lead (agent)"
+            }
+          }
+        ],
+        "default": "not_applicable"
+      },
+      "requiredControls": [
+        {
+          "control": "SOV.IR.REPORTING",
+          "basis": "NIS2 Art. 23(4): 24 h, 72 h, 1 month [CLM-SOV-031]",
+          "verification": {
+            "status": "V",
+            "checked": "2026-10-14",
+            "by": "sovereignty-compliance-lead (agent)"
+          }
+        },
+        {
+          "control": "SOV.TP.VISIBILITY",
+          "basis": "NIS2 Art. 21(2)(d) supply-chain security [CLM-SOV-030]",
+          "verification": {
+            "status": "P",
+            "checked": "2026-10-14",
+            "by": "sovereignty-compliance-lead (agent)"
+          }
+        },
+        {
+          "control": "SOV.ENC.BASELINE",
+          "basis": "NIS2 Art. 21(2)(h) cryptography and encryption [CLM-SOV-030]",
+          "verification": {
+            "status": "P",
+            "checked": "2026-10-14",
+            "by": "sovereignty-compliance-lead (agent)"
+          }
+        },
+        {
+          "control": "SOV.GOV.OWNER",
+          "basis": "NIS2 Art. 20 management bodies [CLM-SOV-029]",
+          "verification": {
+            "status": "P",
+            "checked": "2026-10-14",
+            "by": "sovereignty-compliance-lead (agent)"
+          }
+        }
+      ],
+      "obligations": [
+        {
+          "id": "EU_NIS2.RISK",
+          "article": "Art. 21",
+          "summary": "Cybersecurity risk-management measures, including supply-chain security and encryption.",
+          "controls": [
+            "SOV.TP.VISIBILITY",
+            "SOV.ENC.BASELINE"
+          ],
+          "claims": [
+            "CLM-SOV-030"
+          ]
+        },
+        {
+          "id": "EU_NIS2.GOV",
+          "article": "Art. 20",
+          "summary": "Management bodies approve and oversee the measures.",
+          "controls": [
+            "SOV.GOV.OWNER"
+          ],
+          "claims": [
+            "CLM-SOV-029"
+          ]
+        },
+        {
+          "id": "EU_NIS2.REPORT",
+          "article": "Art. 23",
+          "summary": "Early warning 24 h, notification 72 h, final report one month.",
+          "controls": [
+            "SOV.IR.REPORTING"
+          ],
+          "claims": [
+            "CLM-SOV-031"
+          ]
+        },
+        {
+          "id": "EU_NIS2.TRANSPOSITION",
+          "article": "Art. 41",
+          "summary": "Duties reach you through national law; transposition is incomplete in some member states (status as of 14 Oct 2026).",
+          "claims": [
+            "CLM-SOV-019"
+          ]
+        },
+        {
+          "id": "EU_NIS2.NO_LOCALISATION",
+          "article": "-",
+          "summary": "No general data-location requirement found (unsourced negative; counsel to confirm).",
+          "claims": [
+            "CLM-SOV-046"
+          ]
+        }
+      ],
+      "penalty": {
+        "model": "national_minimum_maximum",
+        "tiers": [
+          {
+            "label": "Essential entities: national maximum at least",
+            "fixedAmount": 10000000,
+            "currency": "EUR",
+            "turnoverPercent": 2,
+            "turnoverBasis": "worldwide_prior_year",
+            "article": "Art. 34(4)",
+            "claims": [
+              "CLM-SOV-032"
+            ]
+          },
+          {
+            "label": "Important entities: national maximum at least",
+            "fixedAmount": 7000000,
+            "currency": "EUR",
+            "turnoverPercent": 1.4,
+            "turnoverBasis": "worldwide_prior_year",
+            "article": "Art. 34(5)",
+            "claims": [
+              "CLM-SOV-032"
+            ]
+          }
+        ],
+        "appliesTo": "Essential and important entities; tier from the rule annotation",
+        "note": "Minimum level of the national maximum; national law may set higher. Cap, not expected fine.",
+        "verification": {
+          "status": "V",
+          "checked": "2026-10-14",
+          "by": "sovereignty-compliance-lead (agent)"
+        }
+      },
+      "volatile": true,
+      "reviewDays": 90,
+      "verification": {
+        "status": "P",
+        "checked": "2026-10-14",
+        "by": "sovereignty-compliance-lead (agent)",
+        "note": "Worst status across citation and applicability claims. All 16 claims referenced by this regime: 2 V, 9 S, 4 P, 1 UNSOURCED."
+      },
+      "claims": [
+        "CLM-SOV-018",
+        "CLM-SOV-019",
+        "CLM-SOV-020",
+        "CLM-SOV-021",
+        "CLM-SOV-022",
+        "CLM-SOV-023",
+        "CLM-SOV-024",
+        "CLM-SOV-025",
+        "CLM-SOV-026",
+        "CLM-SOV-027",
+        "CLM-SOV-028",
+        "CLM-SOV-029",
+        "CLM-SOV-030",
+        "CLM-SOV-031",
+        "CLM-SOV-032",
+        "CLM-SOV-046"
+      ]
+    },
+    {
+      "id": "EU_DORA",
+      "name": "Digital Operational Resilience Act",
+      "jurisdiction": "eu",
+      "market": "eu_uk",
+      "citation": {
+        "text": "Regulation (EU) 2022/2554 [CLM-SOV-033]",
+        "url": "https://eur-lex.europa.eu/eli/reg/2022/2554/oj"
+      },
+      "kind": "obligation",
+      "status": "in_force",
+      "statusAsOf": "2026-10-14",
+      "dates": [
+        {
+          "label": "Applies",
+          "date": "2025-01-17",
+          "status": "in_force",
+          "claims": [
+            "CLM-SOV-033"
+          ]
+        },
+        {
+          "label": "Sub-contracting RTS (EU) 2025/532 applies",
+          "date": "2025-07-22",
+          "status": "in_force",
+          "claims": [
+            "CLM-SOV-042"
+          ]
+        }
+      ],
+      "applicability": {
+        "rules": [
+          {
+            "id": "EU_DORA.1",
+            "when": {
+              "fact": "ent.flags",
+              "op": "includes",
+              "value": "dora_ctpp_designated"
+            },
+            "grade": "applies",
+            "reason": "You are designated as a critical ICT third-party service provider and are subject to the EU oversight framework.",
+            "basis": "Art. 31-35",
+            "claims": [
+              "CLM-SOV-043"
+            ],
+            "verification": {
+              "status": "P",
+              "checked": "2026-10-14",
+              "by": "sovereignty-compliance-lead (agent)"
+            }
+          },
+          {
+            "id": "EU_DORA.2",
+            "when": {
+              "all": [
+                {
+                  "fact": "org.establishments",
+                  "op": "includes",
+                  "value": "eea"
+                },
+                {
+                  "derived": "eu_financial_entity"
+                }
+              ]
+            },
+            "grade": "applies",
+            "reason": "You are an EU financial entity of a type listed in DORA. Narrow exclusions exist (for example small insurance intermediaries and small occupational pension funds); confirm if relevant.",
+            "basis": "Art. 2(1), 2(3)",
+            "claims": [
+              "CLM-SOV-034",
+              "CLM-SOV-035"
+            ],
+            "verification": {
+              "status": "S",
+              "checked": "2026-10-14",
+              "by": "sovereignty-compliance-lead (agent)"
+            }
+          },
+          {
+            "id": "EU_DORA.3",
+            "when": {
+              "all": [
+                {
+                  "derived": "eu_financial_entity"
+                },
+                {
+                  "not": {
+                    "fact": "org.establishments",
+                    "op": "includes",
+                    "value": "eea"
+                  }
+                }
+              ]
+            },
+            "grade": "likely_confirm",
+            "reason": "Your answers conflict: an EU financial licence but no EU establishment. Confirm.",
+            "basis": "Art. 2(1)",
+            "claims": [
+              "CLM-SOV-034"
+            ],
+            "verification": {
+              "status": "S",
+              "checked": "2026-10-14",
+              "by": "sovereignty-compliance-lead (agent)"
+            }
+          },
+          {
+            "id": "EU_DORA.4",
+            "when": {
+              "all": [
+                {
+                  "fact": "org.establishments",
+                  "op": "includes",
+                  "value": "eea"
+                },
+                {
+                  "derived": "financial_sector"
+                }
+              ]
+            },
+            "grade": "likely_confirm",
+            "reason": "You provide financial services in the EU but have not stated a licence type. Confirm whether you are a DORA financial entity.",
+            "basis": "Art. 2(1)",
+            "claims": [
+              "CLM-SOV-034"
+            ],
+            "verification": {
+              "status": "S",
+              "checked": "2026-10-14",
+              "by": "sovereignty-compliance-lead (agent)"
+            }
+          },
+          {
+            "id": "EU_DORA.5",
+            "when": {
+              "fact": "ent.flags",
+              "op": "includes",
+              "value": "ict_provider_to_eu_fs"
+            },
+            "grade": "advisory",
+            "reason": "As an ICT provider to EU financial entities, DORA Art. 30 contract terms flow down from your clients, and CTPP designation is possible.",
+            "basis": "Art. 30; Art. 31",
+            "claims": [
+              "CLM-SOV-041",
+              "CLM-SOV-043"
+            ],
+            "verification": {
+              "status": "P",
+              "checked": "2026-10-14",
+              "by": "sovereignty-compliance-lead (agent)"
+            }
+          }
+        ],
+        "default": "not_applicable"
+      },
+      "requiredControls": [
+        {
+          "control": "SOV.TP.REGISTER",
+          "basis": "DORA Art. 28(3) register of information [CLM-SOV-038]",
+          "verification": {
+            "status": "V",
+            "checked": "2026-10-14",
+            "by": "sovereignty-compliance-lead (agent)"
+          }
+        },
+        {
+          "control": "SOV.EXIT.PLAN",
+          "basis": "DORA Art. 28(8) exit strategies [CLM-SOV-039]",
+          "verification": {
+            "status": "V",
+            "checked": "2026-10-14",
+            "by": "sovereignty-compliance-lead (agent)"
+          }
+        },
+        {
+          "control": "SOV.CONC.PROVIDER",
+          "basis": "DORA Art. 29 ICT concentration risk [CLM-SOV-040]",
+          "verification": {
+            "status": "S",
+            "checked": "2026-10-14",
+            "by": "sovereignty-compliance-lead (agent)"
+          }
+        },
+        {
+          "control": "SOV.TP.AUDIT",
+          "basis": "DORA Art. 30 access, inspection and audit rights [CLM-SOV-041]",
+          "verification": {
+            "status": "S",
+            "checked": "2026-10-14",
+            "by": "sovereignty-compliance-lead (agent)"
+          }
+        },
+        {
+          "control": "SOV.SAAS.SUBPROCESSOR",
+          "basis": "Delegated Regulation (EU) 2025/532 on sub-contracting [CLM-SOV-042]",
+          "verification": {
+            "status": "V",
+            "checked": "2026-10-14",
+            "by": "sovereignty-compliance-lead (agent)"
+          }
+        },
+        {
+          "control": "SOV.IR.REPORTING",
+          "basis": "DORA Art. 19; Delegated Regulation (EU) 2025/301: 4 h / 24 h initial notification [CLM-SOV-036]",
+          "verification": {
+            "status": "V",
+            "checked": "2026-10-14",
+            "by": "sovereignty-compliance-lead (agent)"
+          }
+        }
+      ],
+      "obligations": [
+        {
+          "id": "EU_DORA.REGISTER",
+          "article": "Art. 28(3)",
+          "summary": "Register of information on all ICT third-party arrangements.",
+          "controls": [
+            "SOV.TP.REGISTER"
+          ],
+          "claims": [
+            "CLM-SOV-038"
+          ]
+        },
+        {
+          "id": "EU_DORA.EXIT",
+          "article": "Art. 28(8)",
+          "summary": "Exit strategies for ICT services supporting critical or important functions.",
+          "controls": [
+            "SOV.EXIT.PLAN"
+          ],
+          "claims": [
+            "CLM-SOV-039"
+          ]
+        },
+        {
+          "id": "EU_DORA.CONCENTRATION",
+          "article": "Art. 29",
+          "summary": "Assess ICT concentration risk before contracting.",
+          "controls": [
+            "SOV.CONC.PROVIDER"
+          ],
+          "claims": [
+            "CLM-SOV-040"
+          ]
+        },
+        {
+          "id": "EU_DORA.CONTRACTS",
+          "article": "Art. 30",
+          "summary": "Key contractual provisions, including data location, access, inspection, audit and exit support.",
+          "controls": [
+            "SOV.TP.AUDIT"
+          ],
+          "claims": [
+            "CLM-SOV-041"
+          ]
+        },
+        {
+          "id": "EU_DORA.SUBCONTRACTING",
+          "article": "Delegated Regulation (EU) 2025/532",
+          "summary": "Conditions for sub-contracting ICT services supporting critical or important functions.",
+          "controls": [
+            "SOV.SAAS.SUBPROCESSOR"
+          ],
+          "appliesFrom": "2025-07-22",
+          "claims": [
+            "CLM-SOV-042"
+          ]
+        },
+        {
+          "id": "EU_DORA.INCIDENTS",
+          "article": "Art. 19; Delegated Regulation (EU) 2025/301",
+          "summary": "Major ICT incidents: initial 4 h after classification (max 24 h after awareness), intermediate 72 h, final one month.",
+          "controls": [
+            "SOV.IR.REPORTING"
+          ],
+          "claims": [
+            "CLM-SOV-036"
+          ]
+        },
+        {
+          "id": "EU_DORA.TLPT",
+          "article": "Art. 26",
+          "summary": "Threat-led penetration testing only if identified by the competent authority, at least every three years.",
+          "claims": [
+            "CLM-SOV-037"
+          ]
+        },
+        {
+          "id": "EU_DORA.NO_LOCALISATION",
+          "article": "-",
+          "summary": "No general data-location requirement found (unsourced negative; counsel to confirm).",
+          "claims": [
+            "CLM-SOV-046"
+          ]
+        }
+      ],
+      "penalty": {
+        "model": "national",
+        "tiers": [
+          {
+            "label": "Designated CTPP: periodic penalty per day, up to six months",
+            "turnoverPercent": 1,
+            "turnoverBasis": "average_daily_worldwide",
+            "article": "Art. 35(7)-(8)",
+            "claims": [
+              "CLM-SOV-045"
+            ]
+          }
+        ],
+        "appliesTo": "Financial entities: national penalties (Art. 50-51). Designated CTPPs: periodic penalty payments",
+        "note": "Financial entities: set by national law, no EU maximum [CLM-SOV-044]. The CTPP periodic penalty is a daily rate and is never multiplied out.",
+        "verification": {
+          "status": "V",
+          "checked": "2026-10-14",
+          "by": "sovereignty-compliance-lead (agent)"
+        }
+      },
+      "volatile": false,
+      "reviewDays": 180,
+      "verification": {
+        "status": "P",
+        "checked": "2026-10-14",
+        "by": "sovereignty-compliance-lead (agent)",
+        "note": "Worst status across citation and applicability claims. All 14 claims referenced by this regime: 8 V, 4 S, 1 P, 1 UNSOURCED."
+      },
+      "claims": [
+        "CLM-SOV-033",
+        "CLM-SOV-034",
+        "CLM-SOV-035",
+        "CLM-SOV-036",
+        "CLM-SOV-037",
+        "CLM-SOV-038",
+        "CLM-SOV-039",
+        "CLM-SOV-040",
+        "CLM-SOV-041",
+        "CLM-SOV-042",
+        "CLM-SOV-043",
+        "CLM-SOV-044",
+        "CLM-SOV-045",
+        "CLM-SOV-046"
+      ]
+    },
+    {
+      "id": "EU_AI_ACT",
+      "name": "AI Act",
+      "jurisdiction": "eu",
+      "market": "eu_uk",
+      "citation": {
+        "text": "Regulation (EU) 2024/1689, as amended by Regulation (EU) 2026/1744 [CLM-SOV-047]",
+        "url": "https://eur-lex.europa.eu/eli/reg/2024/1689/oj"
+      },
+      "kind": "obligation",
+      "status": "phased",
+      "statusAsOf": "2026-10-14",
+      "dates": [
+        {
+          "label": "Prohibited practices and AI literacy (Chapters I-II)",
+          "date": "2025-02-02",
+          "status": "in_force",
+          "claims": [
+            "CLM-SOV-048"
+          ]
+        },
+        {
+          "label": "General-purpose AI model obligations (Chapter V)",
+          "date": "2025-08-02",
+          "status": "in_force",
+          "claims": [
+            "CLM-SOV-049"
+          ]
+        },
+        {
+          "label": "Art. 50 transparency obligations; general application; Art. 101 GPAI fines",
+          "date": "2026-08-02",
+          "status": "in_force",
+          "claims": [
+            "CLM-SOV-050",
+            "CLM-SOV-049"
+          ]
+        },
+        {
+          "label": "Art. 50(2) marking for generative systems already on the market; two new Art. 5 prohibitions",
+          "date": "2026-12-02",
+          "status": "future",
+          "claims": [
+            "CLM-SOV-050",
+            "CLM-SOV-053"
+          ]
+        },
+        {
+          "label": "High-risk obligations, Annex III systems (deferred from 2 Aug 2026)",
+          "date": "2027-12-02",
+          "status": "deferred",
+          "claims": [
+            "CLM-SOV-051"
+          ]
+        },
+        {
+          "label": "High-risk obligations, Annex I product systems (deferred from 2 Aug 2027)",
+          "date": "2028-08-02",
+          "status": "deferred",
+          "claims": [
+            "CLM-SOV-052"
+          ]
+        }
+      ],
+      "applicability": {
+        "rules": [
+          {
+            "id": "EU_AI_ACT.1",
+            "when": {
+              "all": [
+                {
+                  "fact": "ent.ai_roles",
+                  "op": "includes",
+                  "value": "none"
+                },
+                {
+                  "not": {
+                    "fact": "ent.ai_roles",
+                    "op": "includes_any",
+                    "value": [
+                      "deployer_internal",
+                      "deployer_high_impact",
+                      "provider_ai_system",
+                      "gpai_provider",
+                      "integrator_own_name",
+                      "unknown"
+                    ]
+                  }
+                }
+              ]
+            },
+            "grade": "not_applicable",
+            "reason": "You do not develop, supply or use AI systems.",
+            "basis": "Art. 2(1)",
+            "claims": [
+              "CLM-SOV-054"
+            ],
+            "verification": {
+              "status": "V",
+              "checked": "2026-10-14",
+              "by": "sovereignty-compliance-lead (agent)"
+            }
+          },
+          {
+            "id": "EU_AI_ACT.2",
+            "when": {
+              "all": [
+                {
+                  "fact": "ent.ai_roles",
+                  "op": "includes_any",
+                  "value": [
+                    "provider_ai_system",
+                    "gpai_provider",
+                    "integrator_own_name"
+                  ]
+                },
+                {
+                  "fact": "org.establishments",
+                  "op": "includes",
+                  "value": "eea"
+                }
+              ]
+            },
+            "grade": "applies",
+            "reason": "You place AI systems or models on the EU market, or put your name on an AI system, from an EU establishment.",
+            "basis": "Art. 2(1)(a); Art. 25(1)",
+            "claims": [
+              "CLM-SOV-054",
+              "CLM-SOV-055"
+            ],
+            "verification": {
+              "status": "V",
+              "checked": "2026-10-14",
+              "by": "sovereignty-compliance-lead (agent)"
+            }
+          },
+          {
+            "id": "EU_AI_ACT.3",
+            "when": {
+              "all": [
+                {
+                  "fact": "ent.ai_roles",
+                  "op": "includes_any",
+                  "value": [
+                    "provider_ai_system",
+                    "gpai_provider",
+                    "integrator_own_name"
+                  ]
+                },
+                {
+                  "fact": "data.subject_regions",
+                  "op": "includes",
+                  "value": "eea"
+                }
+              ]
+            },
+            "grade": "likely_confirm",
+            "reason": "You provide AI systems or models from outside the EU and serve people in the EU; the Act applies if you place them on the EU market or their output is used in the EU. Confirm.",
+            "basis": "Art. 2(1)(a), (c)",
+            "claims": [
+              "CLM-SOV-054",
+              "CLM-SOV-055"
+            ],
+            "verification": {
+              "status": "V",
+              "checked": "2026-10-14",
+              "by": "sovereignty-compliance-lead (agent)"
+            }
+          },
+          {
+            "id": "EU_AI_ACT.4",
+            "when": {
+              "all": [
+                {
+                  "fact": "ent.ai_roles",
+                  "op": "includes_any",
+                  "value": [
+                    "deployer_internal",
+                    "deployer_high_impact"
+                  ]
+                },
+                {
+                  "fact": "org.establishments",
+                  "op": "includes",
+                  "value": "eea"
+                }
+              ]
+            },
+            "grade": "applies",
+            "reason": "You use AI systems as a deployer established in the EU.",
+            "basis": "Art. 2(1)(b)",
+            "claims": [
+              "CLM-SOV-054"
+            ],
+            "verification": {
+              "status": "V",
+              "checked": "2026-10-14",
+              "by": "sovereignty-compliance-lead (agent)"
+            }
+          },
+          {
+            "id": "EU_AI_ACT.5",
+            "when": {
+              "all": [
+                {
+                  "fact": "ent.ai_roles",
+                  "op": "includes_any",
+                  "value": [
+                    "deployer_internal",
+                    "deployer_high_impact"
+                  ]
+                },
+                {
+                  "fact": "data.subject_regions",
+                  "op": "includes",
+                  "value": "eea"
+                }
+              ]
+            },
+            "grade": "likely_confirm",
+            "reason": "You use AI systems outside the EU whose output may be used in the EU. Confirm.",
+            "basis": "Art. 2(1)(c)",
+            "claims": [
+              "CLM-SOV-054"
+            ],
+            "verification": {
+              "status": "V",
+              "checked": "2026-10-14",
+              "by": "sovereignty-compliance-lead (agent)"
+            }
+          },
+          {
+            "id": "EU_AI_ACT.6",
+            "when": {
+              "all": [
+                {
+                  "fact": "ent.ai_roles",
+                  "op": "includes",
+                  "value": "unknown"
+                },
+                {
+                  "any": [
+                    {
+                      "fact": "org.establishments",
+                      "op": "includes",
+                      "value": "eea"
+                    },
+                    {
+                      "fact": "data.subject_regions",
+                      "op": "includes",
+                      "value": "eea"
+                    }
+                  ]
+                }
+              ]
+            },
+            "grade": "advisory",
+            "reason": "Your AI roles are not yet mapped; with an EU footprint the AI Act may apply. Map each AI system's role and risk class.",
+            "basis": "Art. 2, 3",
+            "claims": [
+              "CLM-SOV-054"
+            ],
+            "verification": {
+              "status": "V",
+              "checked": "2026-10-14",
+              "by": "sovereignty-compliance-lead (agent)"
+            }
+          }
+        ],
+        "default": "not_applicable"
+      },
+      "requiredControls": [
+        {
+          "control": "SOV.AI.GOVERNANCE",
+          "basis": "AI Act provider and deployer obligations (Art. 16, 26), transparency (Art. 50), GPAI (Art. 53-55) [CLM-SOV-056]; dates [CLM-SOV-050] [CLM-SOV-051]",
+          "verification": {
+            "status": "P",
+            "checked": "2026-10-14",
+            "by": "sovereignty-compliance-lead (agent)"
+          }
+        }
+      ],
+      "obligations": [
+        {
+          "id": "EU_AI_ACT.PROHIBITED",
+          "article": "Art. 5",
+          "summary": "Prohibited practices apply from 2 Feb 2025; two further prohibitions from 2 Dec 2026.",
+          "claims": [
+            "CLM-SOV-048",
+            "CLM-SOV-053"
+          ]
+        },
+        {
+          "id": "EU_AI_ACT.GPAI",
+          "article": "Art. 53-55",
+          "summary": "GPAI model provider duties from 2 Aug 2025.",
+          "controls": [
+            "SOV.AI.GOVERNANCE"
+          ],
+          "appliesFrom": "2025-08-02",
+          "claims": [
+            "CLM-SOV-049",
+            "CLM-SOV-056"
+          ]
+        },
+        {
+          "id": "EU_AI_ACT.TRANSPARENCY",
+          "article": "Art. 50",
+          "summary": "Transparency duties from 2 Aug 2026 (marking for existing generative systems by 2 Dec 2026).",
+          "controls": [
+            "SOV.AI.GOVERNANCE"
+          ],
+          "appliesFrom": "2026-08-02",
+          "claims": [
+            "CLM-SOV-050",
+            "CLM-SOV-056"
+          ]
+        },
+        {
+          "id": "EU_AI_ACT.HIGH_RISK_III",
+          "article": "Art. 6(2), 16, 26; Annex III",
+          "summary": "High-risk obligations for Annex III systems from 2 Dec 2027.",
+          "controls": [
+            "SOV.AI.GOVERNANCE"
+          ],
+          "appliesFrom": "2027-12-02",
+          "claims": [
+            "CLM-SOV-051",
+            "CLM-SOV-056"
+          ]
+        },
+        {
+          "id": "EU_AI_ACT.HIGH_RISK_I",
+          "article": "Art. 6(1); Annex I",
+          "summary": "High-risk obligations for Annex I product systems from 2 Aug 2028.",
+          "controls": [
+            "SOV.AI.GOVERNANCE"
+          ],
+          "appliesFrom": "2028-08-02",
+          "claims": [
+            "CLM-SOV-052",
+            "CLM-SOV-056"
+          ]
+        },
+        {
+          "id": "EU_AI_ACT.PROVIDER_SHIFT",
+          "article": "Art. 25(1)",
+          "summary": "Own name or trademark, substantial modification or change of intended purpose makes you the provider; integration alone does not.",
+          "claims": [
+            "CLM-SOV-055"
+          ]
+        }
+      ],
+      "penalty": {
+        "model": "turnover_greater_of",
+        "tiers": [
+          {
+            "label": "Prohibited practices (Art. 5) - only if a prohibited practice is confirmed",
+            "fixedAmount": 35000000,
+            "currency": "EUR",
+            "turnoverPercent": 7,
+            "turnoverBasis": "worldwide_prior_year",
+            "article": "Art. 99(3)",
+            "claims": [
+              "CLM-SOV-057",
+              "CLM-SOV-058"
+            ]
+          },
+          {
+            "label": "Operator obligations (high-risk, Art. 50, others)",
+            "fixedAmount": 15000000,
+            "currency": "EUR",
+            "turnoverPercent": 3,
+            "turnoverBasis": "worldwide_prior_year",
+            "article": "Art. 99(4)",
+            "claims": [
+              "CLM-SOV-057",
+              "CLM-SOV-058"
+            ]
+          },
+          {
+            "label": "Incorrect, incomplete or misleading information",
+            "fixedAmount": 7500000,
+            "currency": "EUR",
+            "turnoverPercent": 1,
+            "turnoverBasis": "worldwide_prior_year",
+            "article": "Art. 99(5)",
+            "claims": [
+              "CLM-SOV-057"
+            ]
+          }
+        ],
+        "appliesTo": "Operators (providers, deployers, importers, distributors)",
+        "smeRule": "SMEs and start-ups: the lower of the fixed amount and the percentage (Art. 99(6), turnover_lower_of)",
+        "quantifyWhen": {
+          "fact": "ent.ai_roles",
+          "op": "includes_any",
+          "value": [
+            "deployer_high_impact",
+            "provider_ai_system",
+            "gpai_provider",
+            "integrator_own_name"
+          ]
+        },
+        "note": "Exposure view uses Art. 99(4), never Art. 99(3) unless a prohibited practice is confirmed [CLM-SOV-058]. Cap, not expected fine.",
+        "verification": {
+          "status": "V",
+          "checked": "2026-10-14",
+          "by": "sovereignty-compliance-lead (agent)"
+        }
+      },
+      "volatile": true,
+      "reviewDays": 90,
+      "verification": {
+        "status": "S",
+        "checked": "2026-10-14",
+        "by": "sovereignty-compliance-lead (agent)",
+        "note": "Worst status across citation and applicability claims. All 12 claims referenced by this regime: 4 V, 7 S, 1 P."
+      },
+      "claims": [
+        "CLM-SOV-047",
+        "CLM-SOV-048",
+        "CLM-SOV-049",
+        "CLM-SOV-050",
+        "CLM-SOV-051",
+        "CLM-SOV-052",
+        "CLM-SOV-053",
+        "CLM-SOV-054",
+        "CLM-SOV-055",
+        "CLM-SOV-056",
+        "CLM-SOV-057",
+        "CLM-SOV-058"
+      ]
+    },
+    {
+      "id": "EU_DATA_ACT",
+      "name": "Data Act",
+      "jurisdiction": "eu",
+      "market": "eu_uk",
+      "citation": {
+        "text": "Regulation (EU) 2023/2854 [CLM-SOV-059]",
+        "url": "https://eur-lex.europa.eu/eli/reg/2023/2854/oj"
+      },
+      "kind": "obligation",
+      "status": "phased",
+      "statusAsOf": "2026-10-14",
+      "dates": [
+        {
+          "label": "Applies",
+          "date": "2025-09-12",
+          "status": "in_force",
+          "claims": [
+            "CLM-SOV-059"
+          ]
+        },
+        {
+          "label": "Switching charges abolished (reduced cost-based charges until then)",
+          "date": "2027-01-12",
+          "status": "future",
+          "claims": [
+            "CLM-SOV-061"
+          ]
+        }
+      ],
+      "applicability": {
+        "rules": [
+          {
+            "id": "EU_DATA_ACT.1",
+            "when": {
+              "all": [
+                {
+                  "fact": "ent.flags",
+                  "op": "includes",
+                  "value": "cloud_or_data_processing_provider"
+                },
+                {
+                  "any": [
+                    {
+                      "fact": "org.establishments",
+                      "op": "includes",
+                      "value": "eea"
+                    },
+                    {
+                      "fact": "data.subject_regions",
+                      "op": "includes",
+                      "value": "eea"
+                    }
+                  ]
+                }
+              ]
+            },
+            "grade": "applies",
+            "reason": "As a provider of data processing services to EU customers, you carry the Chapter VI switching duties and the Art. 32 safeguards against unlawful third-country access to non-personal data.",
+            "basis": "Art. 23-31, 32",
+            "claims": [
+              "CLM-SOV-060",
+              "CLM-SOV-062"
+            ],
+            "verification": {
+              "status": "V",
+              "checked": "2026-10-14",
+              "by": "sovereignty-compliance-lead (agent)"
+            }
+          },
+          {
+            "id": "EU_DATA_ACT.2",
+            "when": {
+              "all": [
+                {
+                  "fact": "org.establishments",
+                  "op": "includes",
+                  "value": "eea"
+                },
+                {
+                  "fact": "plat.in_scope",
+                  "op": "includes_any",
+                  "value": [
+                    "aws",
+                    "azure",
+                    "gcp",
+                    "oci",
+                    "ibm",
+                    "hyperscaler_sovereign_offering",
+                    "partner_operated_cloud",
+                    "eu_sovereign_provider",
+                    "saas_major"
+                  ]
+                }
+              ]
+            },
+            "grade": "advisory",
+            "reason": "As a customer you have switching rights: providers may charge only reduced, cost-based switching charges until 12 Jan 2027 and none after.",
+            "basis": "Art. 23, 29",
+            "claims": [
+              "CLM-SOV-060",
+              "CLM-SOV-061"
+            ],
+            "verification": {
+              "status": "V",
+              "checked": "2026-10-14",
+              "by": "sovereignty-compliance-lead (agent)"
+            }
+          }
+        ],
+        "default": "not_applicable"
+      },
+      "obligations": [
+        {
+          "id": "EU_DATA_ACT.SWITCHING",
+          "article": "Art. 23-31",
+          "summary": "Providers must enable switching; customers have rights.",
+          "claims": [
+            "CLM-SOV-060"
+          ]
+        },
+        {
+          "id": "EU_DATA_ACT.CHARGES",
+          "article": "Art. 29",
+          "summary": "Reduced cost-based switching charges until 12 Jan 2027; none from then.",
+          "claims": [
+            "CLM-SOV-061"
+          ]
+        },
+        {
+          "id": "EU_DATA_ACT.ACCESS",
+          "article": "Art. 32",
+          "summary": "Providers safeguard non-personal data against unlawful third-country governmental access.",
+          "claims": [
+            "CLM-SOV-062"
+          ]
+        }
+      ],
+      "penalty": {
+        "model": "national",
+        "appliesTo": "Set by member states",
+        "note": "Data Act Art. 40: national penalties [CLM-SOV-063].",
+        "verification": {
+          "status": "S",
+          "checked": "2026-10-14",
+          "by": "sovereignty-compliance-lead (agent)"
+        }
+      },
+      "volatile": false,
+      "reviewDays": 180,
+      "verification": {
+        "status": "V",
+        "checked": "2026-10-14",
+        "by": "sovereignty-compliance-lead (agent)",
+        "note": "Worst status across citation and applicability claims. All 5 claims referenced by this regime: 4 V, 1 S."
+      },
+      "claims": [
+        "CLM-SOV-059",
+        "CLM-SOV-060",
+        "CLM-SOV-061",
+        "CLM-SOV-062",
+        "CLM-SOV-063"
+      ]
+    },
+    {
+      "id": "EU_CRA",
+      "name": "Cyber Resilience Act",
+      "jurisdiction": "eu",
+      "market": "eu_uk",
+      "citation": {
+        "text": "Regulation (EU) 2024/2847 [CLM-SOV-064]",
+        "url": "https://eur-lex.europa.eu/eli/reg/2024/2847/oj"
+      },
+      "kind": "obligation",
+      "status": "phased",
+      "statusAsOf": "2026-10-14",
+      "dates": [
+        {
+          "label": "Entry into force",
+          "date": "2024-12-10",
+          "status": "in_force",
+          "claims": [
+            "CLM-SOV-064"
+          ]
+        },
+        {
+          "label": "Manufacturer reporting obligations (Art. 14)",
+          "date": "2026-09-11",
+          "status": "in_force",
+          "claims": [
+            "CLM-SOV-064",
+            "CLM-SOV-065"
+          ]
+        },
+        {
+          "label": "Full application",
+          "date": "2027-12-11",
+          "status": "future",
+          "claims": [
+            "CLM-SOV-064"
+          ]
+        }
+      ],
+      "applicability": {
+        "rules": [
+          {
+            "id": "EU_CRA.1",
+            "when": {
+              "fact": "ent.flags",
+              "op": "includes",
+              "value": "digital_product_vendor_eu"
+            },
+            "grade": "advisory",
+            "reason": "You place products with digital elements on the EU market: reporting of actively exploited vulnerabilities and severe incidents applies from 11 Sep 2026 and the full Act from 11 Dec 2027. Product security is outside Sovereign IQ's controls.",
+            "basis": "Art. 14, 71",
+            "claims": [
+              "CLM-SOV-064",
+              "CLM-SOV-065"
+            ],
+            "verification": {
+              "status": "S",
+              "checked": "2026-10-14",
+              "by": "sovereignty-compliance-lead (agent)"
+            }
+          }
+        ],
+        "default": "not_applicable"
+      },
+      "obligations": [
+        {
+          "id": "EU_CRA.REPORTING",
+          "article": "Art. 14",
+          "summary": "Early warning 24 h, notification 72 h, final report 14 days or one month, via ENISA.",
+          "appliesFrom": "2026-09-11",
+          "claims": [
+            "CLM-SOV-065"
+          ]
+        }
+      ],
+      "penalty": {
+        "model": "turnover_greater_of",
+        "tiers": [
+          {
+            "label": "Essential requirements (Annex I), Art. 13-14",
+            "fixedAmount": 15000000,
+            "currency": "EUR",
+            "turnoverPercent": 2.5,
+            "turnoverBasis": "worldwide_prior_year",
+            "article": "Art. 64(2)",
+            "claims": [
+              "CLM-SOV-066"
+            ]
+          },
+          {
+            "label": "Other obligations",
+            "fixedAmount": 10000000,
+            "currency": "EUR",
+            "turnoverPercent": 2,
+            "turnoverBasis": "worldwide_prior_year",
+            "article": "Art. 64(3)",
+            "claims": [
+              "CLM-SOV-066"
+            ]
+          },
+          {
+            "label": "Incorrect or misleading information",
+            "fixedAmount": 5000000,
+            "currency": "EUR",
+            "turnoverPercent": 1,
+            "turnoverBasis": "worldwide_prior_year",
+            "article": "Art. 64(4)",
+            "claims": [
+              "CLM-SOV-066"
+            ]
+          }
+        ],
+        "appliesTo": "Manufacturers, importers, distributors",
+        "note": "Advisory regime: never used in the largest-cap headline. Cap, not expected fine.",
+        "verification": {
+          "status": "S",
+          "checked": "2026-10-14",
+          "by": "sovereignty-compliance-lead (agent)"
+        }
+      },
+      "volatile": false,
+      "reviewDays": 180,
+      "verification": {
+        "status": "S",
+        "checked": "2026-10-14",
+        "by": "sovereignty-compliance-lead (agent)",
+        "note": "Worst status across citation and applicability claims. All 3 claims referenced by this regime: 3 S."
+      },
+      "claims": [
+        "CLM-SOV-064",
+        "CLM-SOV-065",
+        "CLM-SOV-066"
+      ]
+    },
+    {
+      "id": "EU_CSF_SEAL",
+      "name": "EU Cloud Sovereignty Framework (SEAL)",
+      "jurisdiction": "eu",
+      "market": "eu_uk",
+      "citation": {
+        "text": "European Commission, Cloud Sovereignty Framework v1.2.1 (Oct 2025) [CLM-SOV-067]",
+        "url": "https://commission.europa.eu/news-and-media/news/commission-advances-cloud-sovereignty-through-strategic-procurement-2026-04-17_en"
+      },
+      "kind": "framework",
+      "status": "in_force",
+      "statusAsOf": "2026-10-14",
+      "applicability": {
+        "rules": [
+          {
+            "id": "EU_CSF_SEAL.1",
+            "when": {
+              "all": [
+                {
+                  "fact": "ent.flags",
+                  "op": "includes",
+                  "value": "public_sector_body"
+                },
+                {
+                  "fact": "org.establishments",
+                  "op": "includes",
+                  "value": "eea"
+                }
+              ]
+            },
+            "grade": "advisory",
+            "reason": "EU public buyers may set minimum SEAL levels per sovereignty objective in cloud tenders; the Commission used the framework in its 2026 cloud procurement.",
+            "basis": "Framework v1.2.1",
+            "claims": [
+              "CLM-SOV-067"
+            ],
+            "verification": {
+              "status": "S",
+              "checked": "2026-10-14",
+              "by": "sovereignty-compliance-lead (agent)"
+            }
+          }
+        ],
+        "default": "not_applicable"
+      },
+      "obligations": [
+        {
+          "id": "EU_CSF_SEAL.EUCS",
+          "article": "-",
+          "summary": "No EUCS scheme adopted as of 14 Oct 2026; certification questions do not reference EUCS levels.",
+          "claims": [
+            "CLM-SOV-068"
+          ]
+        }
+      ],
+      "penalty": {
+        "model": "not_quantified",
+        "note": "Procurement framework; no penalty [CLM-SOV-067].",
+        "verification": {
+          "status": "S",
+          "checked": "2026-10-14",
+          "by": "sovereignty-compliance-lead (agent)"
+        }
+      },
+      "volatile": false,
+      "reviewDays": 180,
+      "verification": {
+        "status": "S",
+        "checked": "2026-10-14",
+        "by": "sovereignty-compliance-lead (agent)",
+        "note": "Worst status across citation and applicability claims. All 2 claims referenced by this regime: 2 S."
+      },
+      "claims": [
+        "CLM-SOV-067",
+        "CLM-SOV-068"
+      ]
+    },
+    {
+      "id": "FR_SECNUMCLOUD",
+      "name": "ANSSI SecNumCloud",
+      "jurisdiction": "fr",
+      "market": "eu_uk",
+      "citation": {
+        "text": "ANSSI SecNumCloud qualification (v3.2); Law no. 2024-449 (SREN) Art. 31 [CLM-SOV-069] [CLM-SOV-070]",
+        "url": "https://technical-regulation-information-system.ec.europa.eu/fr/notification/26621/print"
+      },
+      "kind": "scheme",
+      "status": "in_force",
+      "statusAsOf": "2026-10-14",
+      "dates": [
+        {
+          "label": "SREN implementing decree (list of public interest groupings) reported published",
+          "date": "2026-04-16",
+          "status": "in_force",
+          "claims": [
+            "CLM-SOV-070"
+          ]
+        }
+      ],
+      "applicability": {
+        "rules": [
+          {
+            "id": "FR_SECNUMCLOUD.1",
+            "when": {
+              "all": [
+                {
+                  "fact": "org.establishments",
+                  "op": "includes",
+                  "value": "eea"
+                },
+                {
+                  "any": [
+                    {
+                      "fact": "org.eea_member_states",
+                      "op": "includes",
+                      "value": "FR"
+                    },
+                    {
+                      "fact": "org.eea_member_states",
+                      "op": "is_unknown"
+                    }
+                  ]
+                },
+                {
+                  "fact": "ent.flags",
+                  "op": "includes",
+                  "value": "public_sector_body"
+                }
+              ]
+            },
+            "grade": "advisory",
+            "reason": "French State administrations and certain State operators must use SecNumCloud-qualified (or equivalent European) cloud services for data of particular sensitivity (SREN Art. 31; \"cloud au centre\" circular).",
+            "basis": "Law 2024-449 Art. 31; circular of 5 Jul 2021 updated 31 May 2023",
+            "claims": [
+              "CLM-SOV-070",
+              "CLM-SOV-071"
+            ],
+            "verification": {
+              "status": "S",
+              "checked": "2026-10-14",
+              "by": "sovereignty-compliance-lead (agent)"
+            }
+          },
+          {
+            "id": "FR_SECNUMCLOUD.2",
+            "when": {
+              "all": [
+                {
+                  "fact": "org.establishments",
+                  "op": "includes",
+                  "value": "eea"
+                },
+                {
+                  "any": [
+                    {
+                      "fact": "org.eea_member_states",
+                      "op": "includes",
+                      "value": "FR"
+                    },
+                    {
+                      "fact": "org.eea_member_states",
+                      "op": "is_unknown"
+                    }
+                  ]
+                },
+                {
+                  "fact": "org.sector",
+                  "op": "in",
+                  "value": [
+                    "health"
+                  ]
+                }
+              ]
+            },
+            "grade": "advisory",
+            "reason": "A French government circular of 5 Feb 2026 reaffirms SecNumCloud hosting for health data covered by State policy. Confirm whether it reaches you.",
+            "basis": "Circular of 5 Feb 2026",
+            "claims": [
+              "CLM-SOV-072"
+            ],
+            "verification": {
+              "status": "S",
+              "checked": "2026-10-14",
+              "by": "sovereignty-compliance-lead (agent)"
+            }
+          },
+          {
+            "id": "FR_SECNUMCLOUD.3",
+            "when": {
+              "all": [
+                {
+                  "fact": "org.establishments",
+                  "op": "includes",
+                  "value": "eea"
+                },
+                {
+                  "any": [
+                    {
+                      "fact": "org.eea_member_states",
+                      "op": "includes",
+                      "value": "FR"
+                    },
+                    {
+                      "fact": "org.eea_member_states",
+                      "op": "is_unknown"
+                    }
+                  ]
+                },
+                {
+                  "fact": "ent.flags",
+                  "op": "includes",
+                  "value": "critical_infrastructure_operator"
+                }
+              ]
+            },
+            "grade": "advisory",
+            "reason": "Requirement pending source: whether French operators of vital importance must use SecNumCloud services is not yet sourced (consultant only).",
+            "basis": "Pending source",
+            "claims": [
+              "CLM-SOV-073"
+            ],
+            "verification": {
+              "status": "UNSOURCED",
+              "checked": "2026-10-14",
+              "by": "sovereignty-compliance-lead (agent)"
+            }
+          }
+        ],
+        "default": "not_applicable"
+      },
+      "penalty": {
+        "model": "not_quantified",
+        "note": "Qualification scheme; no penalty on the client [CLM-SOV-069].",
+        "verification": {
+          "status": "V",
+          "checked": "2026-10-14",
+          "by": "sovereignty-compliance-lead (agent)"
+        }
+      },
+      "volatile": false,
+      "reviewDays": 180,
+      "verification": {
+        "status": "UNSOURCED",
+        "checked": "2026-10-14",
+        "by": "sovereignty-compliance-lead (agent)",
+        "note": "Worst status across citation and applicability claims. All 5 claims referenced by this regime: 1 V, 3 S, 1 UNSOURCED."
+      },
+      "claims": [
+        "CLM-SOV-069",
+        "CLM-SOV-070",
+        "CLM-SOV-071",
+        "CLM-SOV-072",
+        "CLM-SOV-073"
+      ]
+    },
+    {
+      "id": "DE_C5",
+      "name": "BSI C5 (Cloud Computing Compliance Criteria Catalogue)",
+      "jurisdiction": "de",
+      "market": "eu_uk",
+      "citation": {
+        "text": "BSI C5; SGB V § 393 for health-sector cloud use [CLM-SOV-074]",
+        "url": "https://www.gesetze-im-internet.de/sgb_5/__393.html"
+      },
+      "kind": "scheme",
+      "status": "in_force",
+      "statusAsOf": "2026-10-14",
+      "dates": [
+        {
+          "label": "SGB V § 393: C5 Type 2 attestation required",
+          "date": "2025-07-01",
+          "status": "in_force",
+          "claims": [
+            "CLM-SOV-074"
+          ]
+        }
+      ],
+      "applicability": {
+        "rules": [
+          {
+            "id": "DE_C5.1",
+            "when": {
+              "all": [
+                {
+                  "fact": "org.establishments",
+                  "op": "includes",
+                  "value": "eea"
+                },
+                {
+                  "any": [
+                    {
+                      "fact": "org.eea_member_states",
+                      "op": "includes",
+                      "value": "DE"
+                    },
+                    {
+                      "fact": "org.eea_member_states",
+                      "op": "is_unknown"
+                    }
+                  ]
+                },
+                {
+                  "fact": "org.sector",
+                  "op": "in",
+                  "value": [
+                    "health"
+                  ]
+                }
+              ]
+            },
+            "grade": "advisory",
+            "reason": "German healthcare providers, statutory health and care insurers and their processors may process health and social data in the cloud only with a current C5 Type 2 attestation for the cloud systems (SGB V § 393). Confirm whether you or your processors fall under it.",
+            "basis": "SGB V § 393(3)-(4)",
+            "claims": [
+              "CLM-SOV-074"
+            ],
+            "verification": {
+              "status": "S",
+              "checked": "2026-10-14",
+              "by": "sovereignty-compliance-lead (agent)"
+            }
+          },
+          {
+            "id": "DE_C5.2",
+            "when": {
+              "all": [
+                {
+                  "fact": "org.establishments",
+                  "op": "includes",
+                  "value": "eea"
+                },
+                {
+                  "any": [
+                    {
+                      "fact": "org.eea_member_states",
+                      "op": "includes",
+                      "value": "DE"
+                    },
+                    {
+                      "fact": "org.eea_member_states",
+                      "op": "is_unknown"
+                    }
+                  ]
+                },
+                {
+                  "fact": "ent.flags",
+                  "op": "includes",
+                  "value": "public_sector_body"
+                }
+              ]
+            },
+            "grade": "advisory",
+            "reason": "Requirement pending source: whether German public-sector bodies must use C5-attested services is not yet sourced (consultant only).",
+            "basis": "Pending source",
+            "claims": [
+              "CLM-SOV-075"
+            ],
+            "verification": {
+              "status": "UNSOURCED",
+              "checked": "2026-10-14",
+              "by": "sovereignty-compliance-lead (agent)"
+            }
+          }
+        ],
+        "default": "not_applicable"
+      },
+      "obligations": [
+        {
+          "id": "DE_C5.CATALOGUE",
+          "article": "C5:2026",
+          "summary": "Revised C5 catalogue; C5:2020 attestations accepted during a transition (reported to June 2027).",
+          "claims": [
+            "CLM-SOV-076"
+          ]
+        }
+      ],
+      "penalty": {
+        "model": "not_quantified",
+        "note": "Attestation scheme; no penalty on the client modelled [CLM-SOV-074].",
+        "verification": {
+          "status": "S",
+          "checked": "2026-10-14",
+          "by": "sovereignty-compliance-lead (agent)"
+        }
+      },
+      "volatile": false,
+      "reviewDays": 180,
+      "verification": {
+        "status": "UNSOURCED",
+        "checked": "2026-10-14",
+        "by": "sovereignty-compliance-lead (agent)",
+        "note": "Worst status across citation and applicability claims. All 3 claims referenced by this regime: 2 S, 1 UNSOURCED."
+      },
+      "claims": [
+        "CLM-SOV-074",
+        "CLM-SOV-075",
+        "CLM-SOV-076"
+      ]
+    }
+  ]
+}
