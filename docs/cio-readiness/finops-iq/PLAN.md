@@ -65,12 +65,12 @@ F0 starts now and does not wait for any decision. F2 research can run beside F1.
 
 **Dependencies:** none. AI removal does not wait for WS-S1: AI is simply unavailable until F10.
 
-**Status (14 Oct 2026): built, awaiting merge.** Items 1–12 done. Notes:
+**Status (14 Oct 2026): done (merged in PR #43; banner confirmed).** Items 1–12 done. Notes:
 - Item 4: the engine's value-at-stake `basis` is now `client-estimate` or `not-quantified`; without T6 every amount is `null` and the page shows "Not quantified". The golden diff is the `unanswered` case only (the archetypes all answer T6).
 - Item 10: client view no longer blurs the roadmap or audit trail; it hides consultant probes instead. "Discuss with LTM" names the engagement lead entered in the session; nothing is sent from the page.
 - Item 11: the legacy routes are removed outright, and `check:backend` fails if either FinOps route reappears on the unauthenticated API.
 - Item 12: no row cap; `≥`, `±` and dashes are converted to ASCII in PDF text.
-- Gate: unit tests (`finops-iq.test.ts`, "containment") and browser tests (`finops-iq.spec.ts`) cover every gate item except the owner's banner confirmation. Banner text: "Internal consultant use only: content under review. Indicative figures from self-reported inputs, not a savings commitment."
+- Gate: unit tests (`finops-iq.test.ts`, "containment") and browser tests (`finops-iq.spec.ts`) cover every gate item. The owner confirmed the banner text on 14 Oct 2026, so the F0 gate is closed. Banner text: "Internal consultant use only: content under review. Indicative figures from self-reported inputs, not a savings commitment."
 
 **Gate F0:**
 - a test asserts no LLM vendor host, "BYOK", "recoverable", "guaranteed", "FinOps Foundation Domain" or "Passkey" string in the page or sample;
@@ -201,6 +201,77 @@ Every maturity question gets "Unknown", scored as risk (D5). Every question carr
 - unit tests per capability rating and per trigger (positive and negative);
 - golden outputs for the five reference scenarios;
 - no FinOps IQ or FinOps Value Case behaviour lost without a recorded reason.
+
+**F3 status (14 Oct 2026): built; practice-lead review and re-review ([F3-review.md](design/F3-review.md)) applied; approved by the practice lead, awaiting owner decisions.** Review fixes committed in `dae4457`; the re-review fixes (R1, R3, R4, R5) are not yet committed. The live page and Lambda still use v2; F6 switches them.
+- **Engine** in `packages/engine-core/src/accelerators/finops-iq/v3/` (engine 3.1.0), beside v2, which is unchanged:
+  - `question-bank.json` (3.1.0): 69 questions (7 scope, 9 value-base, 46 maturity, 7 hypothesis), each with basis claim IDs. It validates against `question.schema.json`.
+  - `engine-rules.json` (1.2.0): rating labels, finding wording, per-capability business consequences and evidence lines, owner roles, severity, schedule, DECISION-01, need verdict, and FIQ.C8's moved reason.
+  - `contract.ts`, `evaluate.ts`, `index.ts`.
+- **Contract:** one request for both modes: `mode`, `facts` (checked against the facts schema, with readable reasons), `answers`, target overrides (duplicates rejected) and Cost IQ pre-fill flags. Scope and value-base questions are answered through `facts`.
+- **Result:**
+  - capability profile with target and gap;
+  - findings: one per capability gap, plus DECISION-01 when MP-01 shows no accountable owner. Each has severity, owner role, a start month (wave window, never before each dependency's first milestone: 3 months, or its duration if shorter) and a target duration, a count of blank questions behind it, lever links, named evidence and claim IDs. Its "Today" text quotes the client's own weakest answers;
+  - executive need verdict;
+  - coverage, with Unknown flagged unconfirmed and blanks listed;
+  - consultant-only conflict probes;
+  - HY-01 echoed and never scored;
+  - version stamp, with the value model shown as `not-built (F4)`.
+
+  It contains no money figure, stage or archetype.
+- **Review fixes applied:**
+  - H1: a blank on an asked maturity question is rated like "Don't know", labelled "Not answered" and creates an unconfirmed finding ("Answer and evidence: ..."). Headline and need index are unchanged. Only the workshop's "not assessed" remains.
+  - H2: "Today" text from the client's own answers, plus a business consequence per capability (CLM-FIN-165).
+  - H3: `timeFrame` replaced by `start` and `targetDuration`; `finding.schema.json` extended to match.
+  - M1: a depth "Don't know" lowers by one level at most.
+  - M2: QV-06 follows QV-05, so no answer moves another capability.
+  - M3: FinOps-lead findings read "to be appointed; interim: Head of Cloud / CCoE" when MP-01 shows no owner.
+  - M4: DECISION-01 built (CLM-FIN-166).
+  - M5: option wording fixed, and the "Choose the highest option" instruction added.
+  - M7: named evidence lines.
+  - M8: CLM-FIN-122, 127, 141, 162 and 163 aligned with the engine and set to P "pending owner decision".
+  - M9: the audit reaches "Act now".
+  - L1–L4, L6, L7: done. L8: this note.
+  - L5 (the page must not send `[]` for UN-08) is F6.
+  - Re-review: R1, a finding waits only for its dependency's first milestone, so RS5 Usage Optimization starts at month 3, not 12. R3, DECISION-01's consequence is reworded. R4, a test shows each Usage Optimization depth question can lower the rating from an all-at-core baseline. R5, "not answered" findings sort by a `notAnsweredCount` field. R2 (merge the decision and Practice Operations findings in the executive top five) is left for F7.
+  - M6 ("below 70%" reads Not yet) is unchanged: it is an owner decision.
+- **Register:** CLM-FIN-162 to 166 (LTM heuristics). 165 and 166 are new in the review fixes. `scripts/check-claims.cjs` also checks the two v3 JSON files.
+- **Tests:** `test/finops-iq-v3.test.ts` has 98 tests:
+  - contract tests for both modes, positive and negative;
+  - each rating-rule branch, and each scope and answer trigger, positive and negative;
+  - invariants over 300 random questionnaires: better answers never score worse on any capability, the headline or the need index, with no exemptions; blanks never yield fewer or less severe findings;
+  - schedule checks: no start before the wave window or a dependency's first milestone, and none past the wave window's end unless it waits on a Critical or High dependency;
+  - claim IDs on every client-visible string;
+  - schema validation with ajv;
+  - goldens;
+  - legacy coverage.
+
+  `npm test`: 395 tests pass, and `check:repo` passes.
+- **Audit:** `npm run audit:engines` covers both v3 modes. It shows:
+  - no out-of-scale values;
+  - every verdict band reached;
+  - leaving answers blank flatters none of the five headlines (missing-data shift at most 0).
+
+  Dead questions: only the HY questions in executive mode. In workshop mode, also the Usage Optimization depth questions OP-05 to OP-12: under the one-level rule, one depth answer moves the rating only when every other depth answer is at the core level, which random answers rarely produce. A test from an all-at-core baseline shows each one is live (R4).
+- **Scenarios** (see [F3-scenario-diffs.md](design/F3-scenario-diffs.md)). All five match exactly on tier, every capability rating, target and gap, the headline, owner role and wave per finding, and DECISION-01. Recorded differences:
+  - D1: no lever findings and no DECISION-02 yet (F4).
+  - D2: no severity value uplift (F4).
+  - D3: no "value at least 5% of P" need modifier, so RS1 reads 26.7 (expected 36.7) and RS5 reads 29.0 (expected 39.0), in the same band (F4).
+  - D4: Q14's reworded band label.
+  - D5: offerings and lever links are a superset of those expected.
+  - D6: `timeFrame` replaced by start and duration.
+
+  RS3 is now also asked QV-06, which it leaves blank. Its rating is unchanged.
+- **Departures from DESIGN awaiting the owner:**
+  - the H1, H3, M1 and M2 rule changes;
+  - the twelve default owner roles and the interim owner;
+  - DECISION-01's severity rule;
+  - retiring the HY-03 and HY-05 urgency points;
+  - the per-capability consequence and evidence wording.
+
+  The reviewer will amend DESIGN 3.2, 3.3, 4.4, 5.3, 5.4, 7.5 and 9.
+- **Left for F4:** lever values, lever and scope-confirmation findings, DECISION-02, the value uplift and the value urgency modifier.
+- **Left for F6:** route switch, page (including L5), the Cost IQ option-to-level pre-fill table, and the client-mode omission of conflicts.
+- **Left for F7:** spreading Critical work by delivery capacity, plain-language executive titles, and presenting DECISION-01 with the Practice Operations finding (R2).
 
 ---
 

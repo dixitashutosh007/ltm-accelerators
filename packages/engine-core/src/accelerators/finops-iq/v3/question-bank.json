@@ -1,0 +1,5219 @@
+{
+  "questionSetVersion": "3.1.0",
+  "executiveSet": [
+    "SC-02",
+    "SC-03",
+    "SC-04",
+    "SC-05",
+    "SC-07",
+    "VB-01",
+    "VB-02",
+    "UN-04",
+    "UN-10",
+    "UN-11",
+    "QV-01",
+    "QV-05",
+    "OP-01",
+    "OP-04",
+    "OP-05",
+    "OP-06",
+    "MP-01",
+    "MP-04",
+    "HY-01",
+    "HY-07"
+  ],
+  "questions": [
+    {
+      "id": "SC-01",
+      "kind": "scope",
+      "modes": [
+        "workshop"
+      ],
+      "text": "Which best describes your infrastructure today?",
+      "answerType": "single_select",
+      "options": [
+        {
+          "value": "on_premises_only",
+          "label": "On-premises only"
+        },
+        {
+          "value": "mostly_dc",
+          "label": "Mostly data centre"
+        },
+        {
+          "value": "balanced_hybrid",
+          "label": "Balanced hybrid"
+        },
+        {
+          "value": "mostly_cloud",
+          "label": "Mostly cloud"
+        },
+        {
+          "value": "cloud_native",
+          "label": "Cloud-native"
+        },
+        {
+          "value": "unknown",
+          "label": "Don't know"
+        }
+      ],
+      "sets": [
+        "footprint.infrastructureMix"
+      ],
+      "basis": [
+        {
+          "claimId": "CLM-FIN-006",
+          "citation": "The FinOps Framework defines a Scope as a segment of technology spending (for example public cloud, SaaS, data centre, AI) that frames which personas, domains and capabilities apply [CLM-FIN-006]",
+          "status": "V"
+        },
+        {
+          "claimId": "CLM-FIN-164",
+          "citation": "FinOps IQ v3 merged question set (LTM wording) [CLM-FIN-164]",
+          "status": "LTM_heuristic"
+        }
+      ],
+      "legacy": [
+        {
+          "id": "FVC.E1",
+          "disposition": "kept",
+          "note": "Workshop only; the executive mode infers the mix from SC-03"
+        }
+      ]
+    },
+    {
+      "id": "SC-02",
+      "kind": "scope",
+      "modes": [
+        "executive",
+        "workshop"
+      ],
+      "text": "Which public cloud providers do you use or plan to use?",
+      "answerType": "multi_select",
+      "options": [
+        {
+          "value": "aws",
+          "label": "AWS"
+        },
+        {
+          "value": "azure",
+          "label": "Azure"
+        },
+        {
+          "value": "gcp",
+          "label": "Google Cloud"
+        },
+        {
+          "value": "oci",
+          "label": "Oracle Cloud (OCI)"
+        },
+        {
+          "value": "ibm",
+          "label": "IBM Cloud"
+        },
+        {
+          "value": "alibaba",
+          "label": "Alibaba Cloud"
+        },
+        {
+          "value": "other_public",
+          "label": "Other public cloud"
+        },
+        {
+          "value": "none_yet",
+          "label": "None yet"
+        }
+      ],
+      "sets": [
+        "footprint.publicCloudProviders"
+      ],
+      "basis": [
+        {
+          "claimId": "CLM-FIN-006",
+          "citation": "The FinOps Framework defines a Scope as a segment of technology spending (for example public cloud, SaaS, data centre, AI) that frames which personas, domains and capabilities apply [CLM-FIN-006]",
+          "status": "V"
+        },
+        {
+          "claimId": "CLM-FIN-120",
+          "citation": "LTM complexity tier: points for in-scope annual spend (USD-equivalent, for tiering only: under 1M = 0, 1-10M = 1, 10-50M = 2, over 50M = 3), public cloud providers (2 = +1, 3 or more = +2), material Kubernetes (10%... [CLM-FIN-120]",
+          "status": "LTM_heuristic"
+        },
+        {
+          "claimId": "CLM-FIN-164",
+          "citation": "FinOps IQ v3 merged question set (LTM wording) [CLM-FIN-164]",
+          "status": "LTM_heuristic"
+        }
+      ],
+      "legacy": [
+        {
+          "id": "FVC.E2",
+          "disposition": "rewritten",
+          "note": "Private or hosted cloud moves to SC-03 scopes; IBM and other providers added"
+        }
+      ]
+    },
+    {
+      "id": "SC-03",
+      "kind": "scope",
+      "modes": [
+        "executive",
+        "workshop"
+      ],
+      "text": "Which of these are part of the spend you want FinOps to cover?",
+      "help": "Public cloud is covered whenever a provider is selected in SC-02.",
+      "answerType": "multi_select",
+      "options": [
+        {
+          "value": "private_cloud",
+          "label": "Private cloud"
+        },
+        {
+          "value": "data_centre",
+          "label": "Own data centre"
+        },
+        {
+          "value": "colocation",
+          "label": "Colocation"
+        },
+        {
+          "value": "kubernetes",
+          "label": "Kubernetes / containers"
+        },
+        {
+          "value": "ai_api",
+          "label": "AI APIs (tokens)"
+        },
+        {
+          "value": "ai_platform_gpu",
+          "label": "AI platforms or GPUs"
+        },
+        {
+          "value": "saas",
+          "label": "SaaS"
+        },
+        {
+          "value": "licensing",
+          "label": "Software licensing"
+        },
+        {
+          "value": "data_cloud_platform",
+          "label": "Data cloud platforms"
+        }
+      ],
+      "sets": [
+        "footprint.scopes"
+      ],
+      "basis": [
+        {
+          "claimId": "CLM-FIN-006",
+          "citation": "The FinOps Framework defines a Scope as a segment of technology spending (for example public cloud, SaaS, data centre, AI) that frames which personas, domains and capabilities apply [CLM-FIN-006]",
+          "status": "V"
+        },
+        {
+          "claimId": "CLM-FIN-045",
+          "citation": "State of FinOps 2026 (n = 1,192): nine in ten respondents (90%) are asked to manage SaaS spend, 64% software licensing and 48% data centre spend [CLM-FIN-045]",
+          "status": "V"
+        },
+        {
+          "claimId": "CLM-FIN-120",
+          "citation": "LTM complexity tier: points for in-scope annual spend (USD-equivalent, for tiering only: under 1M = 0, 1-10M = 1, 10-50M = 2, over 50M = 3), public cloud providers (2 = +1, 3 or more = +2), material Kubernetes (10%... [CLM-FIN-120]",
+          "status": "LTM_heuristic"
+        },
+        {
+          "claimId": "CLM-FIN-164",
+          "citation": "FinOps IQ v3 merged question set (LTM wording) [CLM-FIN-164]",
+          "status": "LTM_heuristic"
+        }
+      ],
+      "legacy": [
+        {
+          "id": "FVC.E2",
+          "disposition": "rewritten",
+          "note": "The private or hosted cloud option moves here as a scope"
+        }
+      ]
+    },
+    {
+      "id": "SC-04",
+      "kind": "scope",
+      "modes": [
+        "executive",
+        "workshop"
+      ],
+      "text": "Roughly what is your annual spend in each of these areas, and in which currency?",
+      "answerType": "matrix",
+      "fields": [
+        {
+          "key": "row",
+          "label": "Annual spend, one row per selected provider or scope",
+          "type": "amount",
+          "fact": "spend.byScope",
+          "allowBand": true,
+          "allowUnknown": true
+        },
+        {
+          "key": "currency",
+          "label": "Currency (ISO 4217)",
+          "type": "select",
+          "fact": "org.currency"
+        }
+      ],
+      "sets": [
+        "spend.byScope",
+        "org.currency"
+      ],
+      "basis": [
+        {
+          "claimId": "CLM-FIN-120",
+          "citation": "LTM complexity tier: points for in-scope annual spend (USD-equivalent, for tiering only: under 1M = 0, 1-10M = 1, 10-50M = 2, over 50M = 3), public cloud providers (2 = +1, 3 or more = +2), material Kubernetes (10%... [CLM-FIN-120]",
+          "status": "LTM_heuristic"
+        },
+        {
+          "claimId": "CLM-FIN-164",
+          "citation": "FinOps IQ v3 merged question set (LTM wording) [CLM-FIN-164]",
+          "status": "LTM_heuristic"
+        }
+      ],
+      "legacy": [
+        {
+          "id": "FVC.E3",
+          "disposition": "rewritten",
+          "note": "One slider becomes spend by scope (exact, band or don't know) so levers have bases"
+        }
+      ]
+    },
+    {
+      "id": "SC-05",
+      "kind": "scope",
+      "modes": [
+        "executive",
+        "workshop"
+      ],
+      "text": "How do you expect this spend to change over the next 12 months?",
+      "answerType": "percent",
+      "fields": [
+        {
+          "key": "growth",
+          "label": "Percent change, -25 to +200",
+          "type": "percent",
+          "fact": "spend.growth12m",
+          "allowUnknown": true
+        }
+      ],
+      "sets": [
+        "spend.growth12m"
+      ],
+      "basis": [
+        {
+          "claimId": "CLM-FIN-127",
+          "citation": "LTM need verdict (executive mode only): need index 0-100 = mean over executive capabilities with a target of (gap / 3) x 100, with Unknown, and any capability with a question left blank, counted as the maximum gap... [CLM-FIN-127]",
+          "status": "LTM_heuristic"
+        },
+        {
+          "claimId": "CLM-FIN-139",
+          "citation": "No spend growth is applied to value figures [CLM-FIN-139]",
+          "status": "LTM_heuristic"
+        },
+        {
+          "claimId": "CLM-FIN-164",
+          "citation": "FinOps IQ v3 merged question set (LTM wording) [CLM-FIN-164]",
+          "status": "LTM_heuristic"
+        }
+      ],
+      "legacy": [
+        {
+          "id": "FVC.E5",
+          "disposition": "kept"
+        }
+      ]
+    },
+    {
+      "id": "SC-06",
+      "kind": "scope",
+      "modes": [
+        "workshop"
+      ],
+      "text": "Where are you in moving workloads to cloud, and how much is still to move in the next 24 months?",
+      "answerType": "compound",
+      "fields": [
+        {
+          "key": "stage",
+          "label": "Migration stage",
+          "type": "select",
+          "fact": "footprint.migration.stage",
+          "allowUnknown": true,
+          "options": [
+            {
+              "value": "planning",
+              "label": "Planning"
+            },
+            {
+              "value": "early",
+              "label": "Early"
+            },
+            {
+              "value": "in_flight",
+              "label": "In flight"
+            },
+            {
+              "value": "largely",
+              "label": "Largely done"
+            },
+            {
+              "value": "complete",
+              "label": "Complete"
+            }
+          ]
+        },
+        {
+          "key": "remaining",
+          "label": "Share of the estate still to move in 24 months",
+          "type": "share",
+          "fact": "footprint.migration.remainingShare24m",
+          "allowBand": true,
+          "bands": [
+            [
+              0,
+              0.25
+            ],
+            [
+              0.25,
+              0.49
+            ],
+            [
+              0.5,
+              0.74
+            ],
+            [
+              0.75,
+              1
+            ]
+          ],
+          "allowUnknown": true
+        }
+      ],
+      "sets": [
+        "footprint.migration"
+      ],
+      "basis": [
+        {
+          "claimId": "CLM-FIN-127",
+          "citation": "LTM need verdict (executive mode only): need index 0-100 = mean over executive capabilities with a target of (gap / 3) x 100, with Unknown, and any capability with a question left blank, counted as the maximum gap... [CLM-FIN-127]",
+          "status": "LTM_heuristic"
+        },
+        {
+          "claimId": "CLM-FIN-164",
+          "citation": "FinOps IQ v3 merged question set (LTM wording) [CLM-FIN-164]",
+          "status": "LTM_heuristic"
+        }
+      ],
+      "legacy": [
+        {
+          "id": "FVC.E4",
+          "disposition": "merged",
+          "note": "With E6"
+        },
+        {
+          "id": "FVC.E6",
+          "disposition": "merged",
+          "note": "With E4"
+        }
+      ]
+    },
+    {
+      "id": "SC-07",
+      "kind": "scope",
+      "modes": [
+        "executive",
+        "workshop"
+      ],
+      "text": "About your organisation: sector, markets, and how many business units or products consume cloud",
+      "answerType": "compound",
+      "fields": [
+        {
+          "key": "sector",
+          "label": "Sector",
+          "type": "select",
+          "fact": "org.sector"
+        },
+        {
+          "key": "markets",
+          "label": "Markets",
+          "type": "multi_select",
+          "fact": "org.markets"
+        },
+        {
+          "key": "units",
+          "label": "Business units or products that consume cloud",
+          "type": "select",
+          "fact": "org.consumingUnits",
+          "allowUnknown": true,
+          "options": [
+            {
+              "value": "u1",
+              "label": "1",
+              "sets": {
+                "org.consumingUnits": "1"
+              }
+            },
+            {
+              "value": "u2_4",
+              "label": "2-4",
+              "sets": {
+                "org.consumingUnits": "2-4"
+              }
+            },
+            {
+              "value": "u5_19",
+              "label": "5-19",
+              "sets": {
+                "org.consumingUnits": "5-19"
+              }
+            },
+            {
+              "value": "u20_plus",
+              "label": "20 or more",
+              "sets": {
+                "org.consumingUnits": "20+"
+              }
+            }
+          ]
+        }
+      ],
+      "sets": [
+        "org.sector",
+        "org.markets",
+        "org.consumingUnits"
+      ],
+      "basis": [
+        {
+          "claimId": "CLM-FIN-120",
+          "citation": "LTM complexity tier: points for in-scope annual spend (USD-equivalent, for tiering only: under 1M = 0, 1-10M = 1, 10-50M = 2, over 50M = 3), public cloud providers (2 = +1, 3 or more = +2), material Kubernetes (10%... [CLM-FIN-120]",
+          "status": "LTM_heuristic"
+        },
+        {
+          "claimId": "CLM-FIN-164",
+          "citation": "FinOps IQ v3 merged question set (LTM wording) [CLM-FIN-164]",
+          "status": "LTM_heuristic"
+        }
+      ],
+      "legacy": []
+    },
+    {
+      "id": "VB-01",
+      "kind": "value_base",
+      "modes": [
+        "executive",
+        "workshop"
+      ],
+      "askWhen": {
+        "any": [
+          {
+            "fact": "footprint.publicCloudProviders",
+            "countAtLeast": 1
+          },
+          {
+            "fact": "footprint.scopes",
+            "contains": "public_cloud"
+          }
+        ]
+      },
+      "text": "Of your public cloud spend, roughly what share is compute; of that, how much runs steadily most of the month; and how much is non-production?",
+      "help": "Bands: below 25%, 25-49%, 50-74%, 75% or more, or don't know; exact values allowed in the workshop.",
+      "answerType": "compound",
+      "fields": [
+        {
+          "key": "compute",
+          "label": "Compute share of public cloud spend",
+          "type": "share",
+          "fact": "base.computeShare",
+          "allowBand": true,
+          "bands": [
+            [
+              0,
+              0.25
+            ],
+            [
+              0.25,
+              0.49
+            ],
+            [
+              0.5,
+              0.74
+            ],
+            [
+              0.75,
+              1
+            ]
+          ],
+          "allowUnknown": true
+        },
+        {
+          "key": "steady",
+          "label": "Share of compute that runs steadily most of the month",
+          "type": "share",
+          "fact": "base.steadyStateShare",
+          "allowBand": true,
+          "bands": [
+            [
+              0,
+              0.25
+            ],
+            [
+              0.25,
+              0.49
+            ],
+            [
+              0.5,
+              0.74
+            ],
+            [
+              0.75,
+              1
+            ]
+          ],
+          "allowUnknown": true
+        },
+        {
+          "key": "nonprod",
+          "label": "Share of compute that is non-production",
+          "type": "share",
+          "fact": "base.nonProdShare",
+          "allowBand": true,
+          "bands": [
+            [
+              0,
+              0.25
+            ],
+            [
+              0.25,
+              0.49
+            ],
+            [
+              0.5,
+              0.74
+            ],
+            [
+              0.75,
+              1
+            ]
+          ],
+          "allowUnknown": true
+        }
+      ],
+      "sets": [
+        "base.computeShare",
+        "base.steadyStateShare",
+        "base.nonProdShare"
+      ],
+      "basis": [
+        {
+          "claimId": "CLM-FIN-142",
+          "citation": "Value-base answer bands for shares (compute, steady-state, non-production, eligible commitment coverage) [CLM-FIN-142]",
+          "status": "V"
+        },
+        {
+          "claimId": "CLM-FIN-150",
+          "citation": "LEV-01 commitment discounts: addressable base = provider compute spend x max(0, steady-state share - eligible coverage - unscheduled non-production share - Spot-moved share), reduced by compute removed by usage levers [CLM-FIN-150]",
+          "status": "LTM_heuristic"
+        },
+        {
+          "claimId": "CLM-FIN-153",
+          "citation": "LEV-04 non-production scheduling: addressable base = (provider compute spend - Kubernetes cluster spend - GPU spend) x non-production share x (1 - share already scheduled), hourly-billed resources only [CLM-FIN-153]",
+          "status": "LTM_heuristic"
+        },
+        {
+          "claimId": "CLM-FIN-164",
+          "citation": "FinOps IQ v3 merged question set (LTM wording) [CLM-FIN-164]",
+          "status": "LTM_heuristic"
+        }
+      ],
+      "legacy": []
+    },
+    {
+      "id": "VB-02",
+      "kind": "value_base",
+      "modes": [
+        "executive",
+        "workshop"
+      ],
+      "askWhen": {
+        "any": [
+          {
+            "fact": "footprint.publicCloudProviders",
+            "countAtLeast": 1
+          },
+          {
+            "fact": "footprint.scopes",
+            "contains": "public_cloud"
+          }
+        ]
+      },
+      "text": "What share of commitment-eligible usage is covered by commitments today (Savings Plans, reservations, committed use discounts), measured by cost?",
+      "answerType": "percent",
+      "fields": [
+        {
+          "key": "coverage",
+          "label": "Eligible commitment coverage, by cost",
+          "type": "share",
+          "fact": "base.eligibleCoverage",
+          "allowBand": true,
+          "bands": [
+            [
+              0,
+              0.25
+            ],
+            [
+              0.25,
+              0.49
+            ],
+            [
+              0.5,
+              0.74
+            ],
+            [
+              0.75,
+              1
+            ]
+          ],
+          "allowUnknown": true
+        }
+      ],
+      "sets": [
+        "base.eligibleCoverage"
+      ],
+      "basis": [
+        {
+          "claimId": "CLM-FIN-142",
+          "citation": "Value-base answer bands for shares (compute, steady-state, non-production, eligible commitment coverage) [CLM-FIN-142]",
+          "status": "V"
+        },
+        {
+          "claimId": "CLM-FIN-036",
+          "citation": "FinOps Foundation sample goals for commitment discount coverage, current maturity-model page [CLM-FIN-036]",
+          "status": "S"
+        },
+        {
+          "claimId": "CLM-FIN-137",
+          "citation": "Approximation: commitment coverage reports usually use on-demand-equivalent cost while spend shares are billed cost [CLM-FIN-137]",
+          "status": "LTM_heuristic"
+        },
+        {
+          "claimId": "CLM-FIN-164",
+          "citation": "FinOps IQ v3 merged question set (LTM wording) [CLM-FIN-164]",
+          "status": "LTM_heuristic"
+        }
+      ],
+      "legacy": [
+        {
+          "id": "FIQ.O1",
+          "disposition": "split",
+          "note": "Coverage percentage part; the practice part is OP-01"
+        },
+        {
+          "id": "FVC.C2",
+          "disposition": "merged",
+          "note": "Coverage % is a value base"
+        }
+      ]
+    },
+    {
+      "id": "VB-03",
+      "kind": "value_base",
+      "modes": [
+        "workshop"
+      ],
+      "askWhen": {
+        "all": [
+          {
+            "any": [
+              {
+                "fact": "footprint.publicCloudProviders",
+                "countAtLeast": 1
+              },
+              {
+                "fact": "footprint.scopes",
+                "contains": "public_cloud"
+              }
+            ]
+          },
+          {
+            "any": [
+              {
+                "answer": "OP-06",
+                "answered": true
+              },
+              {
+                "answer": "OP-08",
+                "answered": true
+              }
+            ]
+          }
+        ]
+      },
+      "text": "Of non-production compute, what share is already switched off outside working hours? What share of compute could tolerate interruption, and how much of that already runs on Spot / preemptible capacity?",
+      "answerType": "compound",
+      "fields": [
+        {
+          "key": "scheduled",
+          "label": "Share of non-production compute scheduled off",
+          "type": "share",
+          "fact": "base.nonProdScheduledShare",
+          "allowBand": true,
+          "bands": [
+            [
+              0,
+              0.25
+            ],
+            [
+              0.25,
+              0.49
+            ],
+            [
+              0.5,
+              0.74
+            ],
+            [
+              0.75,
+              1
+            ]
+          ],
+          "allowUnknown": true
+        },
+        {
+          "key": "tolerant",
+          "label": "Share of compute that could tolerate interruption",
+          "type": "share",
+          "fact": "base.interruptionTolerantShare",
+          "allowBand": true,
+          "bands": [
+            [
+              0,
+              0.25
+            ],
+            [
+              0.25,
+              0.49
+            ],
+            [
+              0.5,
+              0.74
+            ],
+            [
+              0.75,
+              1
+            ]
+          ],
+          "allowUnknown": true
+        },
+        {
+          "key": "spot",
+          "label": "Share of compute already on Spot / preemptible",
+          "type": "share",
+          "fact": "base.spotShare",
+          "allowBand": true,
+          "bands": [
+            [
+              0,
+              0.25
+            ],
+            [
+              0.25,
+              0.49
+            ],
+            [
+              0.5,
+              0.74
+            ],
+            [
+              0.75,
+              1
+            ]
+          ],
+          "allowUnknown": true
+        }
+      ],
+      "sets": [
+        "base.nonProdScheduledShare",
+        "base.interruptionTolerantShare",
+        "base.spotShare"
+      ],
+      "basis": [
+        {
+          "claimId": "CLM-FIN-153",
+          "citation": "LEV-04 non-production scheduling: addressable base = (provider compute spend - Kubernetes cluster spend - GPU spend) x non-production share x (1 - share already scheduled), hourly-billed resources only [CLM-FIN-153]",
+          "status": "LTM_heuristic"
+        },
+        {
+          "claimId": "CLM-FIN-155",
+          "citation": "LEV-06 Spot and preemptible capacity: addressable base = provider compute spend x max(0, interruption-tolerant share - share already on Spot) [CLM-FIN-155]",
+          "status": "LTM_heuristic"
+        },
+        {
+          "claimId": "CLM-FIN-164",
+          "citation": "FinOps IQ v3 merged question set (LTM wording) [CLM-FIN-164]",
+          "status": "LTM_heuristic"
+        }
+      ],
+      "legacy": [
+        {
+          "id": "FIQ.O4",
+          "disposition": "split",
+          "note": "Share part; the practice part is OP-08"
+        }
+      ]
+    },
+    {
+      "id": "VB-04",
+      "kind": "value_base",
+      "modes": [
+        "workshop"
+      ],
+      "askWhen": {
+        "any": [
+          {
+            "fact": "footprint.publicCloudProviders",
+            "countAtLeast": 1
+          },
+          {
+            "fact": "footprint.scopes",
+            "contains": "public_cloud"
+          }
+        ]
+      },
+      "text": "What share of public cloud spend is storage, and data transfer? What share of hot-tier data is rarely accessed (from your storage analytics)?",
+      "answerType": "compound",
+      "fields": [
+        {
+          "key": "storage",
+          "label": "Storage share of public cloud spend",
+          "type": "share",
+          "fact": "base.storageShare",
+          "allowBand": true,
+          "bands": [
+            [
+              0,
+              0.25
+            ],
+            [
+              0.25,
+              0.49
+            ],
+            [
+              0.5,
+              0.74
+            ],
+            [
+              0.75,
+              1
+            ]
+          ],
+          "allowUnknown": true
+        },
+        {
+          "key": "transfer",
+          "label": "Data transfer share of public cloud spend",
+          "type": "share",
+          "fact": "base.dataTransferShare",
+          "allowBand": true,
+          "bands": [
+            [
+              0,
+              0.25
+            ],
+            [
+              0.25,
+              0.49
+            ],
+            [
+              0.5,
+              0.74
+            ],
+            [
+              0.75,
+              1
+            ]
+          ],
+          "allowUnknown": true
+        },
+        {
+          "key": "cold",
+          "label": "Share of hot-tier data rarely accessed",
+          "type": "share",
+          "fact": "base.coldDataShare",
+          "allowBand": true,
+          "bands": [
+            [
+              0,
+              0.25
+            ],
+            [
+              0.25,
+              0.49
+            ],
+            [
+              0.5,
+              0.74
+            ],
+            [
+              0.75,
+              1
+            ]
+          ],
+          "allowUnknown": true
+        }
+      ],
+      "sets": [
+        "base.storageShare",
+        "base.dataTransferShare",
+        "base.coldDataShare"
+      ],
+      "basis": [
+        {
+          "claimId": "CLM-FIN-154",
+          "citation": "LEV-05 storage tiering and lifecycle: quantified from the client's provider-tool storage estimate [CLM-FIN-154]",
+          "status": "LTM_heuristic"
+        },
+        {
+          "claimId": "CLM-FIN-157",
+          "citation": "LEV-08 data transfer: identified when in scope but not quantified in version 1; it needs architecture discovery [CLM-FIN-157]",
+          "status": "LTM_heuristic"
+        },
+        {
+          "claimId": "CLM-FIN-164",
+          "citation": "FinOps IQ v3 merged question set (LTM wording) [CLM-FIN-164]",
+          "status": "LTM_heuristic"
+        }
+      ],
+      "legacy": []
+    },
+    {
+      "id": "VB-05",
+      "kind": "value_base",
+      "modes": [
+        "workshop"
+      ],
+      "askWhen": {
+        "all": [
+          {
+            "any": [
+              {
+                "fact": "footprint.publicCloudProviders",
+                "countAtLeast": 1
+              },
+              {
+                "fact": "footprint.scopes",
+                "contains": "public_cloud"
+              }
+            ]
+          },
+          {
+            "any": [
+              {
+                "answer": "OP-04",
+                "levelAtMost": "walk"
+              },
+              {
+                "answer": "OP-05",
+                "levelAtMost": "walk"
+              }
+            ]
+          }
+        ]
+      },
+      "text": "Do you have current savings estimates from your provider tools, by type? (for example AWS Cost Optimization Hub or Compute Optimizer, Azure Advisor, Google Cloud Recommender, OCI Cloud Advisor)",
+      "answerType": "matrix",
+      "fields": [
+        {
+          "key": "type",
+          "label": "Recommendation type",
+          "type": "select",
+          "fact": "evidence.providerRecommendations.type",
+          "options": [
+            {
+              "value": "rightsizing",
+              "label": "Rightsizing"
+            },
+            {
+              "value": "modernisation",
+              "label": "Modernisation"
+            },
+            {
+              "value": "idle",
+              "label": "Idle or unused"
+            },
+            {
+              "value": "storage",
+              "label": "Storage"
+            },
+            {
+              "value": "commitments",
+              "label": "Commitments"
+            },
+            {
+              "value": "other",
+              "label": "Other"
+            }
+          ]
+        },
+        {
+          "key": "tool",
+          "label": "Tool",
+          "type": "text",
+          "fact": "evidence.providerRecommendations.tool"
+        },
+        {
+          "key": "estimate",
+          "label": "Annual estimate",
+          "type": "amount",
+          "fact": "evidence.providerRecommendations.annualEstimate"
+        },
+        {
+          "key": "date",
+          "label": "Export date",
+          "type": "date",
+          "fact": "evidence.providerRecommendations.exportDate"
+        }
+      ],
+      "sets": [
+        "evidence.providerRecommendations"
+      ],
+      "basis": [
+        {
+          "claimId": "CLM-FIN-151",
+          "citation": "LEV-02 rightsizing and modernisation: quantified only from the client's provider-tool estimate of annual rightsizing savings (no older than 90 days), up to 100% of the estimate and capped at provider compute spend [CLM-FIN-151]",
+          "status": "LTM_heuristic"
+        },
+        {
+          "claimId": "CLM-FIN-152",
+          "citation": "LEV-03 idle and orphaned resources: quantified only from the client's provider-tool estimate for idle or unused resources (no older than 90 days), up to 100% of the estimate and capped at in-scope public cloud spend [CLM-FIN-152]",
+          "status": "LTM_heuristic"
+        },
+        {
+          "claimId": "CLM-FIN-136",
+          "citation": "Provider-tool savings estimates older than 90 days are not used to quantify a lever [CLM-FIN-136]",
+          "status": "LTM_heuristic"
+        },
+        {
+          "claimId": "CLM-FIN-082",
+          "citation": "AWS Cost Optimization Hub consolidates cost recommendations (for example rightsizing and idle resources from Compute Optimizer, Savings Plans and Reserved Instance purchases) in one place, estimates savings using the... [CLM-FIN-082]",
+          "status": "V"
+        },
+        {
+          "claimId": "CLM-FIN-092",
+          "citation": "Azure Advisor cost recommendations use utilisation data to recommend shutting down or resizing under-used virtual machines and scale sets, with estimated savings and a configurable lookback period (7 to 90 days) [CLM-FIN-092]",
+          "status": "V"
+        },
+        {
+          "claimId": "CLM-FIN-101",
+          "citation": "Google Cloud Recommender provides idle VM recommendations for Compute Engine (VMs with low CPU and network use over a configurable observation period, default 14 days, free of charge) and machine type rightsizing... [CLM-FIN-101]",
+          "status": "V"
+        },
+        {
+          "claimId": "CLM-FIN-164",
+          "citation": "FinOps IQ v3 merged question set (LTM wording) [CLM-FIN-164]",
+          "status": "LTM_heuristic"
+        }
+      ],
+      "legacy": []
+    },
+    {
+      "id": "VB-06",
+      "kind": "value_base",
+      "modes": [
+        "workshop"
+      ],
+      "askWhen": {
+        "fact": "footprint.scopes",
+        "contains": "kubernetes"
+      },
+      "text": "Annual cluster spend, and measured average used-versus-requested CPU and memory",
+      "answerType": "compound",
+      "fields": [
+        {
+          "key": "spend",
+          "label": "Annual cluster spend",
+          "type": "amount",
+          "fact": "base.kubernetesSpend",
+          "allowBand": true,
+          "allowUnknown": true
+        },
+        {
+          "key": "utilisation",
+          "label": "Lower of used / requested CPU and memory",
+          "type": "share",
+          "fact": "base.kubernetesRequestUtilisation",
+          "allowBand": false,
+          "bands": [
+            [
+              0,
+              0.25
+            ],
+            [
+              0.25,
+              0.49
+            ],
+            [
+              0.5,
+              0.74
+            ],
+            [
+              0.75,
+              1
+            ]
+          ],
+          "allowUnknown": true
+        }
+      ],
+      "sets": [
+        "base.kubernetesSpend",
+        "base.kubernetesRequestUtilisation"
+      ],
+      "basis": [
+        {
+          "claimId": "CLM-FIN-156",
+          "citation": "LEV-07 Kubernetes efficiency: addressable base = annual cluster spend [CLM-FIN-156]",
+          "status": "LTM_heuristic"
+        },
+        {
+          "claimId": "CLM-FIN-132",
+          "citation": "Target utilisation of 65% for Kubernetes requests and GPUs [CLM-FIN-132]",
+          "status": "LTM_heuristic"
+        },
+        {
+          "claimId": "CLM-FIN-164",
+          "citation": "FinOps IQ v3 merged question set (LTM wording) [CLM-FIN-164]",
+          "status": "LTM_heuristic"
+        }
+      ],
+      "legacy": []
+    },
+    {
+      "id": "VB-07",
+      "kind": "value_base",
+      "modes": [
+        "workshop"
+      ],
+      "askWhen": {
+        "any": [
+          {
+            "fact": "footprint.scopes",
+            "contains": "ai_api"
+          },
+          {
+            "fact": "footprint.scopes",
+            "contains": "ai_platform_gpu"
+          }
+        ]
+      },
+      "text": "GPU and model-serving spend, measured average GPU utilisation, and spend on idle endpoints",
+      "answerType": "compound",
+      "fields": [
+        {
+          "key": "gpu",
+          "label": "GPU and model-serving spend",
+          "type": "amount",
+          "fact": "evidence.aiGpu.gpuSpend",
+          "allowBand": true,
+          "allowUnknown": true
+        },
+        {
+          "key": "util",
+          "label": "Average GPU utilisation",
+          "type": "share",
+          "fact": "evidence.aiGpu.gpuUtilisation",
+          "allowBand": false,
+          "bands": [
+            [
+              0,
+              0.25
+            ],
+            [
+              0.25,
+              0.49
+            ],
+            [
+              0.5,
+              0.74
+            ],
+            [
+              0.75,
+              1
+            ]
+          ],
+          "allowUnknown": true
+        },
+        {
+          "key": "idle",
+          "label": "Spend on idle endpoints",
+          "type": "amount",
+          "fact": "evidence.aiGpu.idleEndpointSpend",
+          "allowBand": true,
+          "allowUnknown": true
+        }
+      ],
+      "sets": [
+        "evidence.aiGpu"
+      ],
+      "basis": [
+        {
+          "claimId": "CLM-FIN-159",
+          "citation": "LEV-10 AI and GPU: addressable base = measured idle endpoint spend plus remaining GPU spend [CLM-FIN-159]",
+          "status": "LTM_heuristic"
+        },
+        {
+          "claimId": "CLM-FIN-132",
+          "citation": "Target utilisation of 65% for Kubernetes requests and GPUs [CLM-FIN-132]",
+          "status": "LTM_heuristic"
+        },
+        {
+          "claimId": "CLM-FIN-164",
+          "citation": "FinOps IQ v3 merged question set (LTM wording) [CLM-FIN-164]",
+          "status": "LTM_heuristic"
+        }
+      ],
+      "legacy": []
+    },
+    {
+      "id": "VB-08",
+      "kind": "value_base",
+      "modes": [
+        "workshop"
+      ],
+      "askWhen": {
+        "any": [
+          {
+            "fact": "footprint.scopes",
+            "contains": "saas"
+          },
+          {
+            "fact": "footprint.scopes",
+            "contains": "licensing"
+          }
+        ]
+      },
+      "text": "Measured unused or under-used licences and seats, with annual cost",
+      "answerType": "compound",
+      "fields": [
+        {
+          "key": "cost",
+          "label": "Annual cost of unused licences",
+          "type": "amount",
+          "fact": "evidence.saasLicence.unusedAnnualCost",
+          "allowUnknown": true
+        },
+        {
+          "key": "source",
+          "label": "Source",
+          "type": "text",
+          "fact": "evidence.saasLicence.source"
+        },
+        {
+          "key": "date",
+          "label": "Measured on",
+          "type": "date",
+          "fact": "evidence.saasLicence.measuredOn"
+        }
+      ],
+      "sets": [
+        "evidence.saasLicence"
+      ],
+      "basis": [
+        {
+          "claimId": "CLM-FIN-158",
+          "citation": "LEV-09 SaaS and licensing: quantified only from client-measured unused or under-used licence cost, up to 100% of that amount and realisable at renewal [CLM-FIN-158]",
+          "status": "LTM_heuristic"
+        },
+        {
+          "claimId": "CLM-FIN-164",
+          "citation": "FinOps IQ v3 merged question set (LTM wording) [CLM-FIN-164]",
+          "status": "LTM_heuristic"
+        }
+      ],
+      "legacy": []
+    },
+    {
+      "id": "VB-09",
+      "kind": "value_base",
+      "modes": [
+        "workshop"
+      ],
+      "text": "Loaded internal cost per FTE-month, and annual FinOps tooling cost (current and planned)",
+      "answerType": "compound",
+      "fields": [
+        {
+          "key": "rate",
+          "label": "Loaded internal cost per FTE-month",
+          "type": "amount",
+          "fact": "cost.internalRate",
+          "allowBand": true,
+          "allowUnknown": true
+        },
+        {
+          "key": "tooling",
+          "label": "Annual FinOps tooling cost",
+          "type": "amount",
+          "fact": "cost.tooling",
+          "allowBand": true,
+          "allowUnknown": true
+        }
+      ],
+      "sets": [
+        "cost.internalRate",
+        "cost.tooling"
+      ],
+      "basis": [
+        {
+          "claimId": "CLM-FIN-134",
+          "citation": "One-off effort per lever in FTE-months (Tier 1 / 2 / 3) [CLM-FIN-134]",
+          "status": "LTM_heuristic"
+        },
+        {
+          "claimId": "CLM-FIN-135",
+          "citation": "Ongoing lever effort = 20% of the lever's one-off effort per year (monitoring, renewals, re-tuning), plus client-provided tooling cost [CLM-FIN-135]",
+          "status": "LTM_heuristic"
+        },
+        {
+          "claimId": "CLM-FIN-164",
+          "citation": "FinOps IQ v3 merged question set (LTM wording) [CLM-FIN-164]",
+          "status": "LTM_heuristic"
+        }
+      ],
+      "legacy": []
+    },
+    {
+      "id": "UN-01",
+      "kind": "maturity",
+      "capability": "DATA_INGESTION",
+      "role": "core",
+      "modes": [
+        "workshop"
+      ],
+      "text": "Is detailed billing and usage data for all accounts and subscriptions exported automatically to one central store you control?",
+      "help": "Choose the highest option that fully describes you today. For example AWS Data Exports, Azure Cost Management exports, Google Cloud Billing export.",
+      "answerType": "single_select",
+      "options": [
+        {
+          "value": "run",
+          "label": "All accounts, at least daily, in a common schema, with completeness checks",
+          "level": "run"
+        },
+        {
+          "value": "walk",
+          "label": "All major accounts, automated, gaps known",
+          "level": "walk"
+        },
+        {
+          "value": "crawl",
+          "label": "Some accounts, or manual downloads",
+          "level": "crawl"
+        },
+        {
+          "value": "not_yet",
+          "label": "Console views only",
+          "level": "not_yet"
+        },
+        {
+          "value": "unknown",
+          "label": "Don't know",
+          "level": "unknown"
+        }
+      ],
+      "basis": [
+        {
+          "claimId": "CLM-FIN-011",
+          "citation": "FinOps Framework capability 'Data Ingestion', adapted under CC BY 4.0 [CLM-FIN-011]",
+          "status": "V"
+        },
+        {
+          "claimId": "CLM-FIN-080",
+          "citation": "AWS Data Exports delivers billing data as CUR 2.0 (AWS's most granular cost and usage export, fixed column set) and as a FOCUS 1.2 export with AWS columns, generally available since November 2025 and covering all... [CLM-FIN-080]",
+          "status": "V"
+        },
+        {
+          "claimId": "CLM-FIN-090",
+          "citation": "Microsoft Cost Management exports can deliver cost and usage data in the FOCUS format (one dataset combining actual and amortised cost), alongside price sheet and reservation datasets [CLM-FIN-090]",
+          "status": "S"
+        },
+        {
+          "claimId": "CLM-FIN-100",
+          "citation": "Google Cloud Billing can export detailed usage cost data to BigQuery [CLM-FIN-100]",
+          "status": "V"
+        },
+        {
+          "claimId": "CLM-FIN-107",
+          "citation": "Oracle Cloud Infrastructure provides cost reports in its own format and in FOCUS format, generated every six hours at one row per resource per hour, downloadable from the Cost and Usage Reports page [CLM-FIN-107]",
+          "status": "V"
+        },
+        {
+          "claimId": "CLM-FIN-164",
+          "citation": "FinOps IQ v3 merged question set (LTM wording) [CLM-FIN-164]",
+          "status": "LTM_heuristic"
+        }
+      ],
+      "legacy": [
+        {
+          "id": "FIQ.C2",
+          "disposition": "kept",
+          "note": "Provider-neutral wording; adds all accounts and completeness"
+        }
+      ]
+    },
+    {
+      "id": "UN-02",
+      "kind": "maturity",
+      "capability": "DATA_INGESTION",
+      "role": "scope_conditional",
+      "modes": [
+        "workshop"
+      ],
+      "askWhen": {
+        "any": [
+          {
+            "fact": "footprint.scopes",
+            "contains": "private_cloud"
+          },
+          {
+            "fact": "footprint.scopes",
+            "contains": "data_centre"
+          },
+          {
+            "fact": "footprint.scopes",
+            "contains": "colocation"
+          }
+        ]
+      },
+      "text": "Do private cloud and data centre costs reach the same cost model as cloud (from virtualisation, CMDB and finance data)?",
+      "help": "Choose the highest option that fully describes you today.",
+      "answerType": "single_select",
+      "options": [
+        {
+          "value": "run",
+          "label": "Same model, refreshed monthly or better",
+          "level": "run"
+        },
+        {
+          "value": "walk",
+          "label": "Same model, quarterly",
+          "level": "walk"
+        },
+        {
+          "value": "crawl",
+          "label": "Separate spreadsheet",
+          "level": "crawl"
+        },
+        {
+          "value": "not_yet",
+          "label": "Not costed",
+          "level": "not_yet"
+        },
+        {
+          "value": "unknown",
+          "label": "Don't know",
+          "level": "unknown"
+        }
+      ],
+      "basis": [
+        {
+          "claimId": "CLM-FIN-011",
+          "citation": "FinOps Framework capability 'Data Ingestion', adapted under CC BY 4.0 [CLM-FIN-011]",
+          "status": "V"
+        },
+        {
+          "claimId": "CLM-FIN-006",
+          "citation": "The FinOps Framework defines a Scope as a segment of technology spending (for example public cloud, SaaS, data centre, AI) that frames which personas, domains and capabilities apply [CLM-FIN-006]",
+          "status": "V"
+        },
+        {
+          "claimId": "CLM-FIN-164",
+          "citation": "FinOps IQ v3 merged question set (LTM wording) [CLM-FIN-164]",
+          "status": "LTM_heuristic"
+        }
+      ],
+      "legacy": []
+    },
+    {
+      "id": "UN-03",
+      "kind": "maturity",
+      "capability": "DATA_INGESTION",
+      "role": "core",
+      "modes": [
+        "workshop"
+      ],
+      "askWhen": {
+        "any": [
+          {
+            "fact": "footprint.publicCloudProviders",
+            "countAtLeast": 2
+          },
+          {
+            "all": [
+              {
+                "any": [
+                  {
+                    "fact": "footprint.publicCloudProviders",
+                    "countAtLeast": 1
+                  },
+                  {
+                    "fact": "footprint.scopes",
+                    "contains": "public_cloud"
+                  }
+                ]
+              },
+              {
+                "any": [
+                  {
+                    "fact": "footprint.scopes",
+                    "contains": "private_cloud"
+                  },
+                  {
+                    "fact": "footprint.scopes",
+                    "contains": "data_centre"
+                  },
+                  {
+                    "fact": "footprint.scopes",
+                    "contains": "colocation"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "coreWhen": {
+        "any": [
+          {
+            "fact": "footprint.publicCloudProviders",
+            "countAtLeast": 2
+          },
+          {
+            "all": [
+              {
+                "any": [
+                  {
+                    "fact": "footprint.publicCloudProviders",
+                    "countAtLeast": 1
+                  },
+                  {
+                    "fact": "footprint.scopes",
+                    "contains": "public_cloud"
+                  }
+                ]
+              },
+              {
+                "any": [
+                  {
+                    "fact": "footprint.scopes",
+                    "contains": "private_cloud"
+                  },
+                  {
+                    "fact": "footprint.scopes",
+                    "contains": "data_centre"
+                  },
+                  {
+                    "fact": "footprint.scopes",
+                    "contains": "colocation"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "text": "Is cost data from different providers normalised into one model, for example the FOCUS specification?",
+      "help": "Choose the highest option that fully describes you today.",
+      "answerType": "single_select",
+      "options": [
+        {
+          "value": "run",
+          "label": "FOCUS (current ratified version) or an equivalent model for all sources",
+          "level": "run"
+        },
+        {
+          "value": "walk",
+          "label": "Most sources normalised",
+          "level": "walk"
+        },
+        {
+          "value": "crawl",
+          "label": "Per-provider data reconciled by hand",
+          "level": "crawl"
+        },
+        {
+          "value": "not_yet",
+          "label": "Not comparable",
+          "level": "not_yet"
+        },
+        {
+          "value": "unknown",
+          "label": "Don't know",
+          "level": "unknown"
+        }
+      ],
+      "basis": [
+        {
+          "claimId": "CLM-FIN-011",
+          "citation": "FinOps Framework capability 'Data Ingestion', adapted under CC BY 4.0 [CLM-FIN-011]",
+          "status": "V"
+        },
+        {
+          "claimId": "CLM-FIN-008",
+          "citation": "FOCUS (FinOps Open Cost and Usage Specification) version 1.4 was ratified on 4 June 2026. It adds an Invoice Detail dataset (charges as they appear on invoices, for reconciliation) and a Billing Period dataset, and... [CLM-FIN-008]",
+          "status": "V"
+        },
+        {
+          "claimId": "CLM-FIN-164",
+          "citation": "FinOps IQ v3 merged question set (LTM wording) [CLM-FIN-164]",
+          "status": "LTM_heuristic"
+        }
+      ],
+      "legacy": [
+        {
+          "id": "FIQ.I3",
+          "disposition": "rewritten",
+          "note": "\"FOCUS 1.0\" was outdated; core only for multi-source estates"
+        }
+      ],
+      "prefillFrom": [
+        "CIQ.FIN-01"
+      ]
+    },
+    {
+      "id": "UN-04",
+      "kind": "maturity",
+      "capability": "ALLOCATION",
+      "role": "core",
+      "modes": [
+        "executive",
+        "workshop"
+      ],
+      "text": "What share of spend, measured by cost, is allocated to an accountable owner (team, product or cost centre) by agreed rules: tags or labels, account structure, shared-cost rules?",
+      "help": "Choose the highest option that fully describes you today.",
+      "answerType": "single_select",
+      "options": [
+        {
+          "value": "run",
+          "label": "More than 90%",
+          "level": "run"
+        },
+        {
+          "value": "walk",
+          "label": "85% to 90%",
+          "level": "walk"
+        },
+        {
+          "value": "crawl",
+          "label": "70% to under 85%",
+          "level": "crawl"
+        },
+        {
+          "value": "not_yet",
+          "label": "Below 70%, or not measured",
+          "level": "not_yet"
+        },
+        {
+          "value": "unknown",
+          "label": "Don't know",
+          "level": "unknown"
+        }
+      ],
+      "basis": [
+        {
+          "claimId": "CLM-FIN-012",
+          "citation": "FinOps Framework capability 'Allocation', adapted under CC BY 4.0 [CLM-FIN-012]",
+          "status": "V"
+        },
+        {
+          "claimId": "CLM-FIN-124",
+          "citation": "UN-04 allocation bands, measured by cost [CLM-FIN-124]",
+          "status": "S",
+          "assumptionId": "ASM-FIN-020"
+        },
+        {
+          "claimId": "CLM-FIN-035",
+          "citation": "FinOps Foundation sample goals for allocation (share of cost allocated to a known owner), current maturity-model page [CLM-FIN-035]",
+          "status": "S"
+        },
+        {
+          "claimId": "CLM-FIN-164",
+          "citation": "FinOps IQ v3 merged question set (LTM wording) [CLM-FIN-164]",
+          "status": "LTM_heuristic"
+        }
+      ],
+      "legacy": [
+        {
+          "id": "FIQ.I2",
+          "disposition": "merged",
+          "note": "Coverage now measured by cost; bands from THR-FIN-01"
+        },
+        {
+          "id": "FVC.V1",
+          "disposition": "merged",
+          "note": "Attribution is allocation"
+        },
+        {
+          "id": "FVC.V2",
+          "disposition": "merged",
+          "note": "Measured by cost, not resource count"
+        }
+      ]
+    },
+    {
+      "id": "UN-05",
+      "kind": "maturity",
+      "capability": "ALLOCATION",
+      "role": "core",
+      "modes": [
+        "workshop"
+      ],
+      "text": "Is there a documented allocation policy (mandatory tags or labels, account and subscription hierarchy with named owners, rules for shared costs) and is it kept current?",
+      "help": "Choose the highest option that fully describes you today.",
+      "answerType": "single_select",
+      "options": [
+        {
+          "value": "run",
+          "label": "Documented, owners for every account, shared-cost rules applied automatically, reviewed",
+          "level": "run"
+        },
+        {
+          "value": "walk",
+          "label": "Documented and mostly applied",
+          "level": "walk"
+        },
+        {
+          "value": "crawl",
+          "label": "Informal conventions",
+          "level": "crawl"
+        },
+        {
+          "value": "not_yet",
+          "label": "None",
+          "level": "not_yet"
+        },
+        {
+          "value": "unknown",
+          "label": "Don't know",
+          "level": "unknown"
+        }
+      ],
+      "basis": [
+        {
+          "claimId": "CLM-FIN-012",
+          "citation": "FinOps Framework capability 'Allocation', adapted under CC BY 4.0 [CLM-FIN-012]",
+          "status": "V"
+        },
+        {
+          "claimId": "CLM-FIN-164",
+          "citation": "FinOps IQ v3 merged question set (LTM wording) [CLM-FIN-164]",
+          "status": "LTM_heuristic"
+        }
+      ],
+      "legacy": [
+        {
+          "id": "FIQ.I1",
+          "disposition": "merged",
+          "note": "Policy part of allocation"
+        },
+        {
+          "id": "FIQ.C5",
+          "disposition": "merged",
+          "note": "Ownership registry is part of the allocation policy"
+        },
+        {
+          "id": "FIQ.C1",
+          "disposition": "merged",
+          "note": "Owner part; the billing-access part moves to Cloud IQ (Q6)"
+        }
+      ],
+      "prefillFrom": [
+        "CIQ.FIN-07"
+      ]
+    },
+    {
+      "id": "UN-09",
+      "kind": "maturity",
+      "capability": "ALLOCATION",
+      "role": "scope_conditional",
+      "modes": [
+        "workshop"
+      ],
+      "askWhen": {
+        "fact": "footprint.scopes",
+        "contains": "kubernetes"
+      },
+      "text": "Are container platform costs allocated to teams or products (by namespace, label or workload), including idle and shared cluster cost?",
+      "help": "Choose the highest option that fully describes you today.",
+      "answerType": "single_select",
+      "options": [
+        {
+          "value": "run",
+          "label": "Allocated including idle and shared, reconciled to the bill",
+          "level": "run"
+        },
+        {
+          "value": "walk",
+          "label": "Allocated by namespace, idle unallocated",
+          "level": "walk"
+        },
+        {
+          "value": "crawl",
+          "label": "Rough splits",
+          "level": "crawl"
+        },
+        {
+          "value": "not_yet",
+          "label": "One shared pool",
+          "level": "not_yet"
+        },
+        {
+          "value": "unknown",
+          "label": "Don't know",
+          "level": "unknown"
+        }
+      ],
+      "basis": [
+        {
+          "claimId": "CLM-FIN-012",
+          "citation": "FinOps Framework capability 'Allocation', adapted under CC BY 4.0 [CLM-FIN-012]",
+          "status": "V"
+        },
+        {
+          "claimId": "CLM-FIN-084",
+          "citation": "AWS split cost allocation data for Amazon EKS allocates the amortised cost of shared EC2 instances to Kubernetes pods by their share of CPU and memory (and accelerators) and writes it to the Cost and Usage Report [CLM-FIN-084]",
+          "status": "V"
+        },
+        {
+          "claimId": "CLM-FIN-094",
+          "citation": "The cost analysis add-on for Azure Kubernetes Service, built on OpenCost, breaks cluster infrastructure cost down by Kubernetes constructs such as namespace in Cost Management for Standard and Premium tier clusters [CLM-FIN-094]",
+          "status": "S"
+        },
+        {
+          "claimId": "CLM-FIN-103",
+          "citation": "GKE cost allocation adds cluster, namespace and Kubernetes label detail to the Cloud Billing detailed export [CLM-FIN-103]",
+          "status": "V"
+        },
+        {
+          "claimId": "CLM-FIN-164",
+          "citation": "FinOps IQ v3 merged question set (LTM wording) [CLM-FIN-164]",
+          "status": "LTM_heuristic"
+        }
+      ],
+      "legacy": [
+        {
+          "id": "FIQ.O3",
+          "disposition": "kept",
+          "note": "Now scope-conditional (Kubernetes)"
+        }
+      ]
+    },
+    {
+      "id": "UN-07",
+      "kind": "maturity",
+      "capability": "REPORTING_ANALYTICS",
+      "role": "core",
+      "modes": [
+        "workshop"
+      ],
+      "text": "Can engineering, product and finance teams see their own cost data themselves, without raising a request?",
+      "help": "Choose the highest option that fully describes you today.",
+      "answerType": "single_select",
+      "options": [
+        {
+          "value": "run",
+          "label": "Self-service, filtered to their scope, all three groups",
+          "level": "run"
+        },
+        {
+          "value": "walk",
+          "label": "Self-service for some groups",
+          "level": "walk"
+        },
+        {
+          "value": "crawl",
+          "label": "Periodic reports on request",
+          "level": "crawl"
+        },
+        {
+          "value": "not_yet",
+          "label": "No visibility",
+          "level": "not_yet"
+        },
+        {
+          "value": "unknown",
+          "label": "Don't know",
+          "level": "unknown"
+        }
+      ],
+      "basis": [
+        {
+          "claimId": "CLM-FIN-013",
+          "citation": "FinOps Framework capability 'Reporting & Analytics', adapted under CC BY 4.0 [CLM-FIN-013]",
+          "status": "V"
+        },
+        {
+          "claimId": "CLM-FIN-007",
+          "citation": "The FinOps Framework describes three iterative phases, Inform, Optimize and Operate, and six FinOps Principles [CLM-FIN-007]",
+          "status": "P"
+        },
+        {
+          "claimId": "CLM-FIN-164",
+          "citation": "FinOps IQ v3 merged question set (LTM wording) [CLM-FIN-164]",
+          "status": "LTM_heuristic"
+        }
+      ],
+      "legacy": [
+        {
+          "id": "FIQ.I4",
+          "disposition": "merged",
+          "note": "Self-service visibility"
+        },
+        {
+          "id": "FIQ.C4",
+          "disposition": "merged",
+          "note": "Finance self-service is part of self-service visibility"
+        },
+        {
+          "id": "FVC.O3",
+          "disposition": "merged"
+        }
+      ]
+    },
+    {
+      "id": "UN-08",
+      "kind": "maturity",
+      "capability": "REPORTING_ANALYTICS",
+      "role": "core",
+      "modes": [
+        "workshop"
+      ],
+      "text": "Which of these do the relevant owners receive on a regular schedule?",
+      "help": "Select every report received on a schedule; none selected means none. All five = Run, three or four = Walk, one or two = Crawl, none = Not yet.",
+      "answerType": "multi_select",
+      "options": [
+        {
+          "value": "cost_by_owner",
+          "label": "Cost by team or product"
+        },
+        {
+          "value": "forecast",
+          "label": "Forecast"
+        },
+        {
+          "value": "anomaly_alerts",
+          "label": "Anomaly alerts"
+        },
+        {
+          "value": "unit_cost_trend",
+          "label": "Unit cost trend"
+        },
+        {
+          "value": "commitment_coverage",
+          "label": "Commitment coverage and utilisation"
+        },
+        {
+          "value": "unknown",
+          "label": "Don't know",
+          "level": "unknown"
+        }
+      ],
+      "basis": [
+        {
+          "claimId": "CLM-FIN-013",
+          "citation": "FinOps Framework capability 'Reporting & Analytics', adapted under CC BY 4.0 [CLM-FIN-013]",
+          "status": "V"
+        },
+        {
+          "claimId": "CLM-FIN-125",
+          "citation": "UN-08 scheduled report count rule: of five report types (cost by team or product, forecast, anomaly alerts, unit cost trend, commitment coverage and utilisation) owners receive all five = Run, three or four = Walk,... [CLM-FIN-125]",
+          "status": "LTM_heuristic",
+          "assumptionId": "ASM-FIN-021"
+        },
+        {
+          "claimId": "CLM-FIN-164",
+          "citation": "FinOps IQ v3 merged question set (LTM wording) [CLM-FIN-164]",
+          "status": "LTM_heuristic"
+        }
+      ],
+      "legacy": [
+        {
+          "id": "FVC.V5",
+          "disposition": "merged"
+        },
+        {
+          "id": "FIQ.I5",
+          "disposition": "merged",
+          "note": "Scheduled report set"
+        }
+      ],
+      "multiSelectLevelRule": [
+        {
+          "minCount": 5,
+          "level": "run"
+        },
+        {
+          "minCount": 3,
+          "level": "walk"
+        },
+        {
+          "minCount": 1,
+          "level": "crawl"
+        },
+        {
+          "minCount": 0,
+          "level": "not_yet"
+        }
+      ]
+    },
+    {
+      "id": "UN-10",
+      "kind": "maturity",
+      "capability": "ANOMALY_MANAGEMENT",
+      "role": "core",
+      "modes": [
+        "executive",
+        "workshop"
+      ],
+      "text": "How are unexpected cost increases detected and acted on?",
+      "help": "Choose the highest option that fully describes you today.",
+      "answerType": "single_select",
+      "options": [
+        {
+          "value": "run",
+          "label": "Automated detection on all accounts, routed to the owner, triaged within one business day",
+          "level": "run"
+        },
+        {
+          "value": "walk",
+          "label": "Automated detection on major accounts, reviewed at least weekly",
+          "level": "walk"
+        },
+        {
+          "value": "crawl",
+          "label": "Static budget or threshold alerts only",
+          "level": "crawl"
+        },
+        {
+          "value": "not_yet",
+          "label": "Found on the invoice",
+          "level": "not_yet"
+        },
+        {
+          "value": "unknown",
+          "label": "Don't know",
+          "level": "unknown"
+        }
+      ],
+      "basis": [
+        {
+          "claimId": "CLM-FIN-014",
+          "citation": "FinOps Framework capability 'Anomaly Management', adapted under CC BY 4.0 [CLM-FIN-014]",
+          "status": "V"
+        },
+        {
+          "claimId": "CLM-FIN-123",
+          "citation": "LTM anomaly thresholds: UN-10 Run = automated detection on all accounts, routed to the owner and triaged within one business day [CLM-FIN-123]",
+          "status": "LTM_heuristic",
+          "assumptionId": "ASM-FIN-022"
+        },
+        {
+          "claimId": "CLM-FIN-081",
+          "citation": "AWS Cost Anomaly Detection uses machine learning to detect unusual spend through cost monitors (AWS-managed, or customer-managed by linked account, cost allocation tag or cost category) and sends alerts through... [CLM-FIN-081]",
+          "status": "V"
+        },
+        {
+          "claimId": "CLM-FIN-091",
+          "citation": "Microsoft Cost Management supports budget alerts and cost anomaly alerts [CLM-FIN-091]",
+          "status": "V"
+        },
+        {
+          "claimId": "CLM-FIN-102",
+          "citation": "Google Cloud Cost Anomaly Detection compares actual spend with expected spend per project, is on by default for all customers at no charge (generally available November 2025), and notifies by email and Pub/Sub [CLM-FIN-102]",
+          "status": "V"
+        },
+        {
+          "claimId": "CLM-FIN-164",
+          "citation": "FinOps IQ v3 merged question set (LTM wording) [CLM-FIN-164]",
+          "status": "LTM_heuristic"
+        }
+      ],
+      "legacy": [
+        {
+          "id": "FIQ.I6",
+          "disposition": "merged",
+          "note": "With C3's alert part"
+        },
+        {
+          "id": "FIQ.C3",
+          "disposition": "split",
+          "note": "Static alerts = Crawl here; budgets go to QV-03"
+        },
+        {
+          "id": "FVC.C1",
+          "disposition": "split",
+          "note": "Anomaly or budget alerts option"
+        }
+      ]
+    },
+    {
+      "id": "UN-11",
+      "kind": "maturity",
+      "capability": "ANOMALY_MANAGEMENT",
+      "role": "core",
+      "modes": [
+        "executive",
+        "workshop"
+      ],
+      "text": "When the bill goes up, how long does it take to explain why, with the business or technical cause?",
+      "help": "Choose the highest option that fully describes you today.",
+      "answerType": "single_select",
+      "options": [
+        {
+          "value": "run",
+          "label": "Same day",
+          "level": "run"
+        },
+        {
+          "value": "walk",
+          "label": "A few days",
+          "level": "walk"
+        },
+        {
+          "value": "crawl",
+          "label": "A week or more, or the explanation is disputed",
+          "level": "crawl"
+        },
+        {
+          "value": "not_yet",
+          "label": "We cannot reliably explain it",
+          "level": "not_yet"
+        },
+        {
+          "value": "unknown",
+          "label": "Don't know",
+          "level": "unknown"
+        }
+      ],
+      "basis": [
+        {
+          "claimId": "CLM-FIN-014",
+          "citation": "FinOps Framework capability 'Anomaly Management', adapted under CC BY 4.0 [CLM-FIN-014]",
+          "status": "V"
+        },
+        {
+          "claimId": "CLM-FIN-123",
+          "citation": "LTM anomaly thresholds: UN-10 Run = automated detection on all accounts, routed to the owner and triaged within one business day [CLM-FIN-123]",
+          "status": "LTM_heuristic",
+          "assumptionId": "ASM-FIN-022"
+        },
+        {
+          "claimId": "CLM-FIN-038",
+          "citation": "An earlier version of the Foundation's anomaly capability page related maturity to how quickly teams become aware of unexpected cost increases, from State of FinOps 2024 practitioner responses [CLM-FIN-038]",
+          "status": "S"
+        },
+        {
+          "claimId": "CLM-FIN-164",
+          "citation": "FinOps IQ v3 merged question set (LTM wording) [CLM-FIN-164]",
+          "status": "LTM_heuristic"
+        }
+      ],
+      "legacy": [
+        {
+          "id": "FVC.V3",
+          "disposition": "merged"
+        },
+        {
+          "id": "FIQ.I8",
+          "disposition": "merged",
+          "note": "Same intent as FVC.V3 (time to explain)"
+        }
+      ]
+    },
+    {
+      "id": "QV-01",
+      "kind": "maturity",
+      "capability": "FORECASTING",
+      "role": "core",
+      "modes": [
+        "executive",
+        "workshop"
+      ],
+      "text": "Over the last 12 months, how far did actual spend differ from forecast or budget, on average per quarter?",
+      "help": "Choose the highest option that fully describes you today.",
+      "answerType": "single_select",
+      "options": [
+        {
+          "value": "run",
+          "label": "Within ±5%",
+          "level": "run"
+        },
+        {
+          "value": "walk",
+          "label": "More than ±5%, up to ±10%",
+          "level": "walk"
+        },
+        {
+          "value": "crawl",
+          "label": "More than ±10%, up to ±20%",
+          "level": "crawl"
+        },
+        {
+          "value": "not_yet",
+          "label": "More than ±20%, or no forecast",
+          "level": "not_yet"
+        },
+        {
+          "value": "unknown",
+          "label": "Don't know",
+          "level": "unknown"
+        }
+      ],
+      "basis": [
+        {
+          "claimId": "CLM-FIN-016",
+          "citation": "FinOps Framework capability 'Forecasting', adapted under CC BY 4.0 [CLM-FIN-016]",
+          "status": "V"
+        },
+        {
+          "claimId": "CLM-FIN-126",
+          "citation": "QV-01 forecast variance bands (average quarterly difference between actual and forecast or budget, last 12 months) [CLM-FIN-126]",
+          "status": "S",
+          "assumptionId": "ASM-FIN-023"
+        },
+        {
+          "claimId": "CLM-FIN-037",
+          "citation": "FinOps Foundation sample goals for forecast variance (actual against forecast), current maturity-model page [CLM-FIN-037]",
+          "status": "S"
+        },
+        {
+          "claimId": "CLM-FIN-164",
+          "citation": "FinOps IQ v3 merged question set (LTM wording) [CLM-FIN-164]",
+          "status": "LTM_heuristic"
+        }
+      ],
+      "legacy": [
+        {
+          "id": "FIQ.A8",
+          "disposition": "merged",
+          "note": "Ladder from the Foundation sample goals, adapted by LTM"
+        },
+        {
+          "id": "FVC.P1",
+          "disposition": "merged"
+        }
+      ]
+    },
+    {
+      "id": "QV-02",
+      "kind": "maturity",
+      "capability": "FORECASTING",
+      "role": "core",
+      "modes": [
+        "workshop"
+      ],
+      "text": "How is the forecast built?",
+      "help": "Choose the highest option that fully describes you today.",
+      "answerType": "single_select",
+      "options": [
+        {
+          "value": "run",
+          "label": "Driver-based (business volumes, migrations, launches), reviewed monthly with finance",
+          "level": "run"
+        },
+        {
+          "value": "walk",
+          "label": "Trend plus known changes, quarterly",
+          "level": "walk"
+        },
+        {
+          "value": "crawl",
+          "label": "Last year plus a percentage",
+          "level": "crawl"
+        },
+        {
+          "value": "not_yet",
+          "label": "None",
+          "level": "not_yet"
+        },
+        {
+          "value": "unknown",
+          "label": "Don't know",
+          "level": "unknown"
+        }
+      ],
+      "basis": [
+        {
+          "claimId": "CLM-FIN-016",
+          "citation": "FinOps Framework capability 'Forecasting', adapted under CC BY 4.0 [CLM-FIN-016]",
+          "status": "V"
+        },
+        {
+          "claimId": "CLM-FIN-164",
+          "citation": "FinOps IQ v3 merged question set (LTM wording) [CLM-FIN-164]",
+          "status": "LTM_heuristic"
+        }
+      ],
+      "legacy": [
+        {
+          "id": "FVC.P3",
+          "disposition": "merged",
+          "note": "Self-rated confidence replaced by forecasting method"
+        }
+      ],
+      "prefillFrom": [
+        "CIQ.FIN-05"
+      ]
+    },
+    {
+      "id": "QV-03",
+      "kind": "maturity",
+      "capability": "BUDGETING",
+      "role": "core",
+      "modes": [
+        "workshop"
+      ],
+      "text": "Do teams have budgets for their cloud spend, with alerts and a review when they are exceeded?",
+      "help": "Choose the highest option that fully describes you today.",
+      "answerType": "single_select",
+      "options": [
+        {
+          "value": "run",
+          "label": "Budgets per owner, alerts, variance reviewed monthly, linked to forecasts",
+          "level": "run"
+        },
+        {
+          "value": "walk",
+          "label": "Budgets for major owners with alerts",
+          "level": "walk"
+        },
+        {
+          "value": "crawl",
+          "label": "One central budget",
+          "level": "crawl"
+        },
+        {
+          "value": "not_yet",
+          "label": "None",
+          "level": "not_yet"
+        },
+        {
+          "value": "unknown",
+          "label": "Don't know",
+          "level": "unknown"
+        }
+      ],
+      "basis": [
+        {
+          "claimId": "CLM-FIN-017",
+          "citation": "FinOps Framework capability 'Budgeting', adapted under CC BY 4.0 [CLM-FIN-017]",
+          "status": "V"
+        },
+        {
+          "claimId": "CLM-FIN-085",
+          "citation": "AWS Budgets lets customers set cost and usage budgets and receive alerts when actual or forecast amounts exceed thresholds [CLM-FIN-085]",
+          "status": "P"
+        },
+        {
+          "claimId": "CLM-FIN-091",
+          "citation": "Microsoft Cost Management supports budget alerts and cost anomaly alerts [CLM-FIN-091]",
+          "status": "V"
+        },
+        {
+          "claimId": "CLM-FIN-164",
+          "citation": "FinOps IQ v3 merged question set (LTM wording) [CLM-FIN-164]",
+          "status": "LTM_heuristic"
+        }
+      ],
+      "legacy": [
+        {
+          "id": "FVC.C1",
+          "disposition": "split",
+          "note": "Budgets option"
+        },
+        {
+          "id": "FIQ.C3",
+          "disposition": "split",
+          "note": "Budget part"
+        }
+      ],
+      "prefillFrom": [
+        "CIQ.FIN-05"
+      ]
+    },
+    {
+      "id": "QV-04",
+      "kind": "maturity",
+      "capability": "PLANNING_ESTIMATING",
+      "role": "core",
+      "modes": [
+        "workshop"
+      ],
+      "text": "Before a new workload or major change goes ahead, is its running cost estimated and approved?",
+      "help": "Choose the highest option that fully describes you today.",
+      "answerType": "single_select",
+      "options": [
+        {
+          "value": "run",
+          "label": "Estimate required and automated in the delivery pipeline, compared with actuals after launch",
+          "level": "run"
+        },
+        {
+          "value": "walk",
+          "label": "Required for major changes",
+          "level": "walk"
+        },
+        {
+          "value": "crawl",
+          "label": "Occasional",
+          "level": "crawl"
+        },
+        {
+          "value": "not_yet",
+          "label": "Not done",
+          "level": "not_yet"
+        },
+        {
+          "value": "unknown",
+          "label": "Don't know",
+          "level": "unknown"
+        }
+      ],
+      "basis": [
+        {
+          "claimId": "CLM-FIN-015",
+          "citation": "FinOps Framework capability 'Planning & Estimating', adapted under CC BY 4.0 [CLM-FIN-015]",
+          "status": "V"
+        },
+        {
+          "claimId": "CLM-FIN-164",
+          "citation": "FinOps IQ v3 merged question set (LTM wording) [CLM-FIN-164]",
+          "status": "LTM_heuristic"
+        }
+      ],
+      "legacy": [
+        {
+          "id": "FIQ.A9",
+          "disposition": "merged",
+          "note": "Pull-request cost feedback is one way to meet the Run option"
+        }
+      ],
+      "prefillFrom": [
+        "CIQ.FIN-05"
+      ]
+    },
+    {
+      "id": "QV-05",
+      "kind": "maturity",
+      "capability": "UNIT_ECONOMICS",
+      "role": "core",
+      "modes": [
+        "executive",
+        "workshop"
+      ],
+      "text": "Do you know what it costs to serve one customer, transaction or unit of output, and is it trended?",
+      "help": "Choose the highest option that fully describes you today.",
+      "answerType": "single_select",
+      "options": [
+        {
+          "value": "run",
+          "label": "Defined unit costs for key products, trended monthly, used in decisions",
+          "level": "run"
+        },
+        {
+          "value": "walk",
+          "label": "Defined and reported quarterly",
+          "level": "walk"
+        },
+        {
+          "value": "crawl",
+          "label": "Calculated once or ad hoc",
+          "level": "crawl"
+        },
+        {
+          "value": "not_yet",
+          "label": "Not known",
+          "level": "not_yet"
+        },
+        {
+          "value": "unknown",
+          "label": "Don't know",
+          "level": "unknown"
+        }
+      ],
+      "basis": [
+        {
+          "claimId": "CLM-FIN-019",
+          "citation": "FinOps Framework capability 'Unit Economics', adapted under CC BY 4.0 [CLM-FIN-019]",
+          "status": "V"
+        },
+        {
+          "claimId": "CLM-FIN-164",
+          "citation": "FinOps IQ v3 merged question set (LTM wording) [CLM-FIN-164]",
+          "status": "LTM_heuristic"
+        }
+      ],
+      "legacy": [
+        {
+          "id": "FIQ.T2",
+          "disposition": "merged",
+          "note": "With FVC.V4"
+        },
+        {
+          "id": "FVC.V4",
+          "disposition": "merged"
+        }
+      ],
+      "prefillFrom": [
+        "CIQ.FIN-02",
+        "CIQ.FIN-04"
+      ]
+    },
+    {
+      "id": "QV-06",
+      "kind": "maturity",
+      "capability": "UNIT_ECONOMICS",
+      "role": "follow_up",
+      "modes": [
+        "workshop"
+      ],
+      "askWhen": {
+        "answer": "QV-05",
+        "levelAtLeast": "crawl"
+      },
+      "text": "Do unit costs inform pricing, product roadmap or architecture decisions?",
+      "help": "Choose the highest option that fully describes you today.",
+      "answerType": "single_select",
+      "options": [
+        {
+          "value": "run",
+          "label": "Routinely, with cost-to-serve per customer or tenant",
+          "level": "run"
+        },
+        {
+          "value": "walk",
+          "label": "In major decisions",
+          "level": "walk"
+        },
+        {
+          "value": "crawl",
+          "label": "Occasionally",
+          "level": "crawl"
+        },
+        {
+          "value": "not_yet",
+          "label": "Never",
+          "level": "not_yet"
+        },
+        {
+          "value": "unknown",
+          "label": "Don't know",
+          "level": "unknown"
+        }
+      ],
+      "basis": [
+        {
+          "claimId": "CLM-FIN-019",
+          "citation": "FinOps Framework capability 'Unit Economics', adapted under CC BY 4.0 [CLM-FIN-019]",
+          "status": "V"
+        },
+        {
+          "claimId": "CLM-FIN-164",
+          "citation": "FinOps IQ v3 merged question set (LTM wording) [CLM-FIN-164]",
+          "status": "LTM_heuristic"
+        }
+      ],
+      "legacy": [
+        {
+          "id": "FIQ.T4",
+          "disposition": "merged",
+          "note": "With T8"
+        },
+        {
+          "id": "FIQ.T8",
+          "disposition": "merged"
+        }
+      ]
+    },
+    {
+      "id": "QV-07",
+      "kind": "maturity",
+      "capability": "UNIT_ECONOMICS",
+      "role": "scope_conditional",
+      "modes": [
+        "workshop"
+      ],
+      "askWhen": {
+        "any": [
+          {
+            "fact": "footprint.scopes",
+            "contains": "ai_api"
+          },
+          {
+            "fact": "footprint.scopes",
+            "contains": "ai_platform_gpu"
+          }
+        ]
+      },
+      "text": "Do you know the cost per inference, per 1,000 tokens or per AI use case?",
+      "help": "Choose the highest option that fully describes you today.",
+      "answerType": "single_select",
+      "options": [
+        {
+          "value": "run",
+          "label": "Per use case, trended, compared with value",
+          "level": "run"
+        },
+        {
+          "value": "walk",
+          "label": "Per use case, occasionally",
+          "level": "walk"
+        },
+        {
+          "value": "crawl",
+          "label": "Total AI spend only",
+          "level": "crawl"
+        },
+        {
+          "value": "not_yet",
+          "label": "Not known",
+          "level": "not_yet"
+        },
+        {
+          "value": "unknown",
+          "label": "Don't know",
+          "level": "unknown"
+        }
+      ],
+      "basis": [
+        {
+          "claimId": "CLM-FIN-019",
+          "citation": "FinOps Framework capability 'Unit Economics', adapted under CC BY 4.0 [CLM-FIN-019]",
+          "status": "V"
+        },
+        {
+          "claimId": "CLM-FIN-006",
+          "citation": "The FinOps Framework defines a Scope as a segment of technology spending (for example public cloud, SaaS, data centre, AI) that frames which personas, domains and capabilities apply [CLM-FIN-006]",
+          "status": "V"
+        },
+        {
+          "claimId": "CLM-FIN-044",
+          "citation": "State of FinOps 2026 (n = 1,192): 98% of respondents' FinOps teams manage AI spend, up from 31% two years earlier [CLM-FIN-044]",
+          "status": "V"
+        },
+        {
+          "claimId": "CLM-FIN-164",
+          "citation": "FinOps IQ v3 merged question set (LTM wording) [CLM-FIN-164]",
+          "status": "LTM_heuristic"
+        }
+      ],
+      "legacy": [
+        {
+          "id": "FIQ.A4",
+          "disposition": "rewritten",
+          "note": "Token part; \"no AI\" is now a scope fact"
+        }
+      ]
+    },
+    {
+      "id": "QV-08",
+      "kind": "maturity",
+      "capability": "KPIS_BENCHMARKING",
+      "role": "core",
+      "modes": [
+        "workshop"
+      ],
+      "text": "Is there an agreed set of FinOps KPIs (for example allocation %, eligible commitment coverage and utilisation, forecast variance, unit cost) reviewed by leaders, and compared with published benchmarks?",
+      "help": "Choose the highest option that fully describes you today.",
+      "answerType": "single_select",
+      "options": [
+        {
+          "value": "run",
+          "label": "KPI set with targets, reviewed monthly by executives, benchmarked against published data",
+          "level": "run"
+        },
+        {
+          "value": "walk",
+          "label": "KPI set reviewed quarterly",
+          "level": "walk"
+        },
+        {
+          "value": "crawl",
+          "label": "A few metrics, ad hoc",
+          "level": "crawl"
+        },
+        {
+          "value": "not_yet",
+          "label": "None",
+          "level": "not_yet"
+        },
+        {
+          "value": "unknown",
+          "label": "Don't know",
+          "level": "unknown"
+        }
+      ],
+      "basis": [
+        {
+          "claimId": "CLM-FIN-018",
+          "citation": "FinOps Framework capability 'KPIs & Benchmarking', adapted under CC BY 4.0 [CLM-FIN-018]",
+          "status": "V"
+        },
+        {
+          "claimId": "CLM-FIN-164",
+          "citation": "FinOps IQ v3 merged question set (LTM wording) [CLM-FIN-164]",
+          "status": "LTM_heuristic"
+        }
+      ],
+      "legacy": [
+        {
+          "id": "FIQ.T5",
+          "disposition": "rewritten",
+          "note": "\"Peer leaderboards\" replaced by published benchmarks (no LTM peer data exists)"
+        }
+      ],
+      "prefillFrom": [
+        "CIQ.FIN-02",
+        "CIQ.FIN-04"
+      ]
+    },
+    {
+      "id": "OP-01",
+      "kind": "maturity",
+      "capability": "RATE_OPTIMIZATION",
+      "role": "core",
+      "modes": [
+        "executive",
+        "workshop"
+      ],
+      "text": "How are commitment discounts (Savings Plans, reservations, committed use discounts) managed?",
+      "help": "Choose the highest option that fully describes you today.",
+      "answerType": "single_select",
+      "options": [
+        {
+          "value": "run",
+          "label": "One central portfolio, purchases sized from forecasts, utilisation and expiry managed continuously",
+          "level": "run"
+        },
+        {
+          "value": "walk",
+          "label": "Central, reviewed at least quarterly",
+          "level": "walk"
+        },
+        {
+          "value": "crawl",
+          "label": "Ad hoc purchases by individual teams",
+          "level": "crawl"
+        },
+        {
+          "value": "not_yet",
+          "label": "None bought",
+          "level": "not_yet"
+        },
+        {
+          "value": "unknown",
+          "label": "Don't know",
+          "level": "unknown"
+        }
+      ],
+      "basis": [
+        {
+          "claimId": "CLM-FIN-022",
+          "citation": "FinOps Framework capability 'Rate Optimization', adapted under CC BY 4.0 [CLM-FIN-022]",
+          "status": "V"
+        },
+        {
+          "claimId": "CLM-FIN-009",
+          "citation": "In the 2026 Framework, the Rate Optimization capability covers commitment discounts (spend-based, such as Savings Plans; resource-based, such as Reserved Instances and Committed Use Discounts, typically for one or... [CLM-FIN-009]",
+          "status": "V"
+        },
+        {
+          "claimId": "CLM-FIN-060",
+          "citation": "AWS: EC2 Instance Savings Plans provide savings of up to 72% off On-Demand prices (similar to Standard Reserved Instances) [CLM-FIN-060]",
+          "status": "V"
+        },
+        {
+          "claimId": "CLM-FIN-062",
+          "citation": "Microsoft Azure: reservations reduce costs by up to 72% compared with pay-as-you-go prices for Windows and Linux virtual machines [CLM-FIN-062]",
+          "status": "V"
+        },
+        {
+          "claimId": "CLM-FIN-065",
+          "citation": "Google Cloud: resource-based committed use discounts give up to 55% for most machine series and GPUs and up to 70% for memory-optimised machine series [CLM-FIN-065]",
+          "status": "V"
+        },
+        {
+          "claimId": "CLM-FIN-164",
+          "citation": "FinOps IQ v3 merged question set (LTM wording) [CLM-FIN-164]",
+          "status": "LTM_heuristic"
+        }
+      ],
+      "legacy": [
+        {
+          "id": "FIQ.O1",
+          "disposition": "split",
+          "note": "Practice part; the coverage percentage is VB-02"
+        },
+        {
+          "id": "FVC.C1",
+          "disposition": "split",
+          "note": "Commitments option"
+        }
+      ],
+      "prefillFrom": [
+        "CIQ.FIN-12"
+      ]
+    },
+    {
+      "id": "OP-02",
+      "kind": "maturity",
+      "capability": "RATE_OPTIMIZATION",
+      "role": "follow_up",
+      "modes": [
+        "workshop"
+      ],
+      "askWhen": {
+        "all": [
+          {
+            "any": [
+              {
+                "fact": "footprint.publicCloudProviders",
+                "countAtLeast": 1
+              },
+              {
+                "fact": "footprint.scopes",
+                "contains": "public_cloud"
+              }
+            ]
+          },
+          {
+            "any": [
+              {
+                "fact": "base.eligibleCoverage",
+                "isUnknown": true
+              },
+              {
+                "fact": "base.eligibleCoverage",
+                "lt": 0.5
+              },
+              {
+                "answer": "OP-01",
+                "levelAtMost": "crawl"
+              }
+            ]
+          }
+        ]
+      },
+      "text": "How is the commitment portfolio's lifecycle handled: expiry dates, utilisation drift, renewals?",
+      "help": "Choose the highest option that fully describes you today.",
+      "answerType": "single_select",
+      "options": [
+        {
+          "value": "run",
+          "label": "Staggered terms, alerts on utilisation and expiry, renewal decisions planned",
+          "level": "run"
+        },
+        {
+          "value": "walk",
+          "label": "Tracked in a register, reviewed quarterly",
+          "level": "walk"
+        },
+        {
+          "value": "crawl",
+          "label": "Renewed reactively; some lapse unnoticed",
+          "level": "crawl"
+        },
+        {
+          "value": "not_yet",
+          "label": "Not tracked",
+          "level": "not_yet"
+        },
+        {
+          "value": "unknown",
+          "label": "Don't know",
+          "level": "unknown"
+        }
+      ],
+      "basis": [
+        {
+          "claimId": "CLM-FIN-022",
+          "citation": "FinOps Framework capability 'Rate Optimization', adapted under CC BY 4.0 [CLM-FIN-022]",
+          "status": "V"
+        },
+        {
+          "claimId": "CLM-FIN-143",
+          "citation": "Follow-up trigger: the commitment lifecycle question (OP-02) is asked when eligible coverage is unknown or below 50%, or commitment management (OP-01) is at Crawl or below [CLM-FIN-143]",
+          "status": "V",
+          "assumptionId": "ASM-FIN-025"
+        },
+        {
+          "claimId": "CLM-FIN-164",
+          "citation": "FinOps IQ v3 merged question set (LTM wording) [CLM-FIN-164]",
+          "status": "LTM_heuristic"
+        }
+      ],
+      "legacy": [
+        {
+          "id": "FIQ.O6",
+          "disposition": "kept",
+          "note": "Now an answer-triggered follow-up"
+        }
+      ]
+    },
+    {
+      "id": "OP-03",
+      "kind": "maturity",
+      "capability": "RATE_OPTIMIZATION",
+      "role": "scope_conditional",
+      "modes": [
+        "workshop"
+      ],
+      "askWhen": {
+        "any": [
+          {
+            "fact": "footprint.publicCloudProviders",
+            "countAtLeast": 1
+          },
+          {
+            "fact": "footprint.scopes",
+            "contains": "public_cloud"
+          }
+        ]
+      },
+      "text": "Are enterprise agreements and negotiated pricing with providers managed against usage forecasts?",
+      "help": "Choose the highest option that fully describes you today.",
+      "answerType": "single_select",
+      "options": [
+        {
+          "value": "run",
+          "label": "Negotiated with forecasts, commitments tracked, renewal planned 6+ months ahead",
+          "level": "run"
+        },
+        {
+          "value": "walk",
+          "label": "Negotiated at renewal with usage data",
+          "level": "walk"
+        },
+        {
+          "value": "crawl",
+          "label": "Renewed as offered",
+          "level": "crawl"
+        },
+        {
+          "value": "not_yet",
+          "label": "List prices only",
+          "level": "not_yet"
+        },
+        {
+          "value": "unknown",
+          "label": "Don't know",
+          "level": "unknown"
+        }
+      ],
+      "basis": [
+        {
+          "claimId": "CLM-FIN-022",
+          "citation": "FinOps Framework capability 'Rate Optimization', adapted under CC BY 4.0 [CLM-FIN-022]",
+          "status": "V"
+        },
+        {
+          "claimId": "CLM-FIN-164",
+          "citation": "FinOps IQ v3 merged question set (LTM wording) [CLM-FIN-164]",
+          "status": "LTM_heuristic"
+        }
+      ],
+      "legacy": [],
+      "prefillFrom": [
+        "CIQ.FIN-12"
+      ]
+    },
+    {
+      "id": "OP-08",
+      "kind": "maturity",
+      "capability": "RATE_OPTIMIZATION",
+      "role": "scope_conditional",
+      "modes": [
+        "workshop"
+      ],
+      "askWhen": {
+        "any": [
+          {
+            "fact": "footprint.publicCloudProviders",
+            "countAtLeast": 1
+          },
+          {
+            "fact": "footprint.scopes",
+            "contains": "public_cloud"
+          }
+        ]
+      },
+      "text": "Is Spot or preemptible capacity used for workloads that tolerate interruption, with automated handling of interruptions?",
+      "help": "Choose the highest option that fully describes you today.",
+      "answerType": "single_select",
+      "options": [
+        {
+          "value": "run",
+          "label": "Default for tolerant workloads, automated draining and diversified capacity",
+          "level": "run"
+        },
+        {
+          "value": "walk",
+          "label": "Used for selected batch or CI with handling",
+          "level": "walk"
+        },
+        {
+          "value": "crawl",
+          "label": "Occasional, manual",
+          "level": "crawl"
+        },
+        {
+          "value": "not_yet",
+          "label": "Not used",
+          "level": "not_yet"
+        },
+        {
+          "value": "unknown",
+          "label": "Don't know",
+          "level": "unknown"
+        }
+      ],
+      "basis": [
+        {
+          "claimId": "CLM-FIN-022",
+          "citation": "FinOps Framework capability 'Rate Optimization', adapted under CC BY 4.0 [CLM-FIN-022]",
+          "status": "V"
+        },
+        {
+          "claimId": "CLM-FIN-009",
+          "citation": "In the 2026 Framework, the Rate Optimization capability covers commitment discounts (spend-based, such as Savings Plans; resource-based, such as Reserved Instances and Committed Use Discounts, typically for one or... [CLM-FIN-009]",
+          "status": "V"
+        },
+        {
+          "claimId": "CLM-FIN-061",
+          "citation": "AWS: Amazon EC2 Spot Instances use spare EC2 capacity and are available at up to a 90% discount compared with On-Demand prices [CLM-FIN-061]",
+          "status": "V"
+        },
+        {
+          "claimId": "CLM-FIN-064",
+          "citation": "Microsoft Azure: Spot Virtual Machines provide unused Azure compute capacity at discounts of up to 90% compared with pay-as-you-go prices [CLM-FIN-064]",
+          "status": "V"
+        },
+        {
+          "claimId": "CLM-FIN-067",
+          "citation": "Google Cloud: Spot VMs are offered at up to 91% off on-demand prices (Google's launch post stated 60% to 91%) [CLM-FIN-067]",
+          "status": "V"
+        },
+        {
+          "claimId": "CLM-FIN-089",
+          "citation": "Amazon EC2 issues a Spot Instance interruption notice two minutes before it stops or terminates a Spot Instance, readable from instance metadata, and may send an earlier rebalance recommendation when interruption... [CLM-FIN-089]",
+          "status": "S"
+        },
+        {
+          "claimId": "CLM-FIN-164",
+          "citation": "FinOps IQ v3 merged question set (LTM wording) [CLM-FIN-164]",
+          "status": "LTM_heuristic"
+        }
+      ],
+      "legacy": [
+        {
+          "id": "FIQ.A7",
+          "disposition": "merged",
+          "note": "Practice part of Spot"
+        },
+        {
+          "id": "FIQ.O4",
+          "disposition": "split",
+          "note": "Practice part; the share is VB-03"
+        }
+      ]
+    },
+    {
+      "id": "OP-04",
+      "kind": "maturity",
+      "capability": "USAGE_OPTIMIZATION",
+      "role": "core",
+      "modes": [
+        "executive",
+        "workshop"
+      ],
+      "text": "How often are rightsizing and modernisation recommendations (for example newer instance generations) reviewed and acted on?",
+      "help": "Choose the highest option that fully describes you today.",
+      "answerType": "single_select",
+      "options": [
+        {
+          "value": "run",
+          "label": "At least monthly, tracked to verified savings, part of normal engineering work",
+          "level": "run"
+        },
+        {
+          "value": "walk",
+          "label": "Quarterly, some actioned",
+          "level": "walk"
+        },
+        {
+          "value": "crawl",
+          "label": "Ad hoc",
+          "level": "crawl"
+        },
+        {
+          "value": "not_yet",
+          "label": "Rarely or never",
+          "level": "not_yet"
+        },
+        {
+          "value": "unknown",
+          "label": "Don't know",
+          "level": "unknown"
+        }
+      ],
+      "basis": [
+        {
+          "claimId": "CLM-FIN-021",
+          "citation": "FinOps Framework capability 'Usage Optimization', adapted under CC BY 4.0 [CLM-FIN-021]",
+          "status": "V"
+        },
+        {
+          "claimId": "CLM-FIN-082",
+          "citation": "AWS Cost Optimization Hub consolidates cost recommendations (for example rightsizing and idle resources from Compute Optimizer, Savings Plans and Reserved Instance purchases) in one place, estimates savings using the... [CLM-FIN-082]",
+          "status": "V"
+        },
+        {
+          "claimId": "CLM-FIN-092",
+          "citation": "Azure Advisor cost recommendations use utilisation data to recommend shutting down or resizing under-used virtual machines and scale sets, with estimated savings and a configurable lookback period (7 to 90 days) [CLM-FIN-092]",
+          "status": "V"
+        },
+        {
+          "claimId": "CLM-FIN-101",
+          "citation": "Google Cloud Recommender provides idle VM recommendations for Compute Engine (VMs with low CPU and network use over a configurable observation period, default 14 days, free of charge) and machine type rightsizing... [CLM-FIN-101]",
+          "status": "V"
+        },
+        {
+          "claimId": "CLM-FIN-164",
+          "citation": "FinOps IQ v3 merged question set (LTM wording) [CLM-FIN-164]",
+          "status": "LTM_heuristic"
+        }
+      ],
+      "legacy": [
+        {
+          "id": "FIQ.O2",
+          "disposition": "merged",
+          "note": "AWS-specific example (Graviton) generalised"
+        },
+        {
+          "id": "FIQ.O10",
+          "disposition": "merged",
+          "note": "Dropped as a separate question: its text (\"rank by ROI\") did not match its options; each lever is now asked once in its own question"
+        },
+        {
+          "id": "FVC.C1",
+          "disposition": "split",
+          "note": "Rightsizing option"
+        }
+      ],
+      "prefillFrom": [
+        "CIQ.FIN-11"
+      ]
+    },
+    {
+      "id": "OP-05",
+      "kind": "maturity",
+      "capability": "USAGE_OPTIMIZATION",
+      "role": "scope_conditional",
+      "modes": [
+        "executive",
+        "workshop"
+      ],
+      "askWhen": {
+        "any": [
+          {
+            "fact": "footprint.publicCloudProviders",
+            "countAtLeast": 1
+          },
+          {
+            "fact": "footprint.scopes",
+            "contains": "public_cloud"
+          }
+        ]
+      },
+      "text": "When did you last systematically remove idle or orphaned resources (unattached disks, old snapshots, idle load balancers, unused IPs)?",
+      "help": "Choose the highest option that fully describes you today.",
+      "answerType": "single_select",
+      "options": [
+        {
+          "value": "run",
+          "label": "Continuously, automated",
+          "level": "run"
+        },
+        {
+          "value": "walk",
+          "label": "Within the last quarter, by routine",
+          "level": "walk"
+        },
+        {
+          "value": "crawl",
+          "label": "Over a quarter ago, or only during clean-ups",
+          "level": "crawl"
+        },
+        {
+          "value": "not_yet",
+          "label": "Never, or not known to have happened",
+          "level": "not_yet"
+        },
+        {
+          "value": "unknown",
+          "label": "Don't know",
+          "level": "unknown"
+        }
+      ],
+      "basis": [
+        {
+          "claimId": "CLM-FIN-021",
+          "citation": "FinOps Framework capability 'Usage Optimization', adapted under CC BY 4.0 [CLM-FIN-021]",
+          "status": "V"
+        },
+        {
+          "claimId": "CLM-FIN-083",
+          "citation": "AWS Compute Optimizer analyses configuration and utilisation metrics to produce rightsizing recommendations and identify idle resources for resources including EC2 instances, EC2 Auto Scaling groups, EBS volumes and... [CLM-FIN-083]",
+          "status": "V"
+        },
+        {
+          "claimId": "CLM-FIN-101",
+          "citation": "Google Cloud Recommender provides idle VM recommendations for Compute Engine (VMs with low CPU and network use over a configurable observation period, default 14 days, free of charge) and machine type rightsizing... [CLM-FIN-101]",
+          "status": "V"
+        },
+        {
+          "claimId": "CLM-FIN-164",
+          "citation": "FinOps IQ v3 merged question set (LTM wording) [CLM-FIN-164]",
+          "status": "LTM_heuristic"
+        }
+      ],
+      "legacy": [
+        {
+          "id": "FIQ.I7",
+          "disposition": "merged",
+          "note": "Same intent as FVC.C3"
+        },
+        {
+          "id": "FVC.C3",
+          "disposition": "merged"
+        }
+      ]
+    },
+    {
+      "id": "OP-06",
+      "kind": "maturity",
+      "capability": "USAGE_OPTIMIZATION",
+      "role": "scope_conditional",
+      "modes": [
+        "executive",
+        "workshop"
+      ],
+      "askWhen": {
+        "any": [
+          {
+            "fact": "footprint.publicCloudProviders",
+            "countAtLeast": 1
+          },
+          {
+            "fact": "footprint.scopes",
+            "contains": "public_cloud"
+          }
+        ]
+      },
+      "text": "Are non-production environments switched off outside working hours by default?",
+      "help": "Choose the highest option that fully describes you today.",
+      "answerType": "single_select",
+      "options": [
+        {
+          "value": "run",
+          "label": "Default schedule on all non-production, exceptions approved",
+          "level": "run"
+        },
+        {
+          "value": "walk",
+          "label": "For some teams",
+          "level": "walk"
+        },
+        {
+          "value": "crawl",
+          "label": "Manual requests to engineers",
+          "level": "crawl"
+        },
+        {
+          "value": "not_yet",
+          "label": "Run 24/7",
+          "level": "not_yet"
+        },
+        {
+          "value": "unknown",
+          "label": "Don't know",
+          "level": "unknown"
+        }
+      ],
+      "basis": [
+        {
+          "claimId": "CLM-FIN-021",
+          "citation": "FinOps Framework capability 'Usage Optimization', adapted under CC BY 4.0 [CLM-FIN-021]",
+          "status": "V"
+        },
+        {
+          "claimId": "CLM-FIN-086",
+          "citation": "Instance Scheduler on AWS is an AWS solution that stops and starts Amazon EC2, EC2 Auto Scaling groups and Amazon RDS instances on tag-driven schedules across accounts and Regions [CLM-FIN-086]",
+          "status": "V"
+        },
+        {
+          "claimId": "CLM-FIN-096",
+          "citation": "Start/Stop VMs v2 (Microsoft) schedules Azure virtual machines to start and stop, for example outside working hours [CLM-FIN-096]",
+          "status": "P"
+        },
+        {
+          "claimId": "CLM-FIN-105",
+          "citation": "Compute Engine instance schedules start and stop VMs at set times [CLM-FIN-105]",
+          "status": "P"
+        },
+        {
+          "claimId": "CLM-FIN-164",
+          "citation": "FinOps IQ v3 merged question set (LTM wording) [CLM-FIN-164]",
+          "status": "LTM_heuristic"
+        }
+      ],
+      "legacy": [
+        {
+          "id": "FIQ.A2",
+          "disposition": "kept"
+        },
+        {
+          "id": "FVC.C1",
+          "disposition": "split",
+          "note": "Shutdown option"
+        }
+      ]
+    },
+    {
+      "id": "OP-07",
+      "kind": "maturity",
+      "capability": "USAGE_OPTIMIZATION",
+      "role": "scope_conditional",
+      "modes": [
+        "workshop"
+      ],
+      "askWhen": {
+        "any": [
+          {
+            "fact": "footprint.publicCloudProviders",
+            "countAtLeast": 1
+          },
+          {
+            "fact": "footprint.scopes",
+            "contains": "public_cloud"
+          }
+        ]
+      },
+      "text": "Do automated lifecycle policies move data to cheaper storage tiers and expire old snapshots and backups?",
+      "help": "Choose the highest option that fully describes you today.",
+      "answerType": "single_select",
+      "options": [
+        {
+          "value": "run",
+          "label": "On all storage, reviewed",
+          "level": "run"
+        },
+        {
+          "value": "walk",
+          "label": "On primary stores",
+          "level": "walk"
+        },
+        {
+          "value": "crawl",
+          "label": "Occasional manual clean-up",
+          "level": "crawl"
+        },
+        {
+          "value": "not_yet",
+          "label": "None",
+          "level": "not_yet"
+        },
+        {
+          "value": "unknown",
+          "label": "Don't know",
+          "level": "unknown"
+        }
+      ],
+      "basis": [
+        {
+          "claimId": "CLM-FIN-021",
+          "citation": "FinOps Framework capability 'Usage Optimization', adapted under CC BY 4.0 [CLM-FIN-021]",
+          "status": "V"
+        },
+        {
+          "claimId": "CLM-FIN-087",
+          "citation": "Amazon S3 Lifecycle rules transition objects to lower-cost storage classes and expire them by age or prefix [CLM-FIN-087]",
+          "status": "P"
+        },
+        {
+          "claimId": "CLM-FIN-097",
+          "citation": "Azure Blob Storage lifecycle management runs rules daily to move blobs to cooler tiers (hot to cool, cold or archive) or delete them, scoped by account, container or prefix [CLM-FIN-097]",
+          "status": "S"
+        },
+        {
+          "claimId": "CLM-FIN-104",
+          "citation": "Google Cloud Storage Object Lifecycle Management sets rules to change storage class or delete objects [CLM-FIN-104]",
+          "status": "S"
+        },
+        {
+          "claimId": "CLM-FIN-164",
+          "citation": "FinOps IQ v3 merged question set (LTM wording) [CLM-FIN-164]",
+          "status": "LTM_heuristic"
+        }
+      ],
+      "legacy": [
+        {
+          "id": "FIQ.A3",
+          "disposition": "kept"
+        }
+      ]
+    },
+    {
+      "id": "OP-09",
+      "kind": "maturity",
+      "capability": "USAGE_OPTIMIZATION",
+      "role": "scope_conditional",
+      "modes": [
+        "workshop"
+      ],
+      "askWhen": {
+        "any": [
+          {
+            "fact": "footprint.publicCloudProviders",
+            "countAtLeast": 1
+          },
+          {
+            "fact": "footprint.scopes",
+            "contains": "public_cloud"
+          }
+        ]
+      },
+      "text": "Is data transfer (between zones and regions, to the internet and on-premises) monitored and designed for cost?",
+      "help": "Choose the highest option that fully describes you today.",
+      "answerType": "single_select",
+      "options": [
+        {
+          "value": "run",
+          "label": "Monitored per service, private endpoints and local routing by design",
+          "level": "run"
+        },
+        {
+          "value": "walk",
+          "label": "Top flows optimised",
+          "level": "walk"
+        },
+        {
+          "value": "crawl",
+          "label": "Known to be high, not reviewed",
+          "level": "crawl"
+        },
+        {
+          "value": "not_yet",
+          "label": "Not monitored",
+          "level": "not_yet"
+        },
+        {
+          "value": "unknown",
+          "label": "Don't know",
+          "level": "unknown"
+        }
+      ],
+      "basis": [
+        {
+          "claimId": "CLM-FIN-021",
+          "citation": "FinOps Framework capability 'Usage Optimization', adapted under CC BY 4.0 [CLM-FIN-021]",
+          "status": "V"
+        },
+        {
+          "claimId": "CLM-FIN-164",
+          "citation": "FinOps IQ v3 merged question set (LTM wording) [CLM-FIN-164]",
+          "status": "LTM_heuristic"
+        }
+      ],
+      "legacy": [
+        {
+          "id": "FIQ.O7",
+          "disposition": "merged",
+          "note": "Same intent as FVC.C5"
+        },
+        {
+          "id": "FVC.C5",
+          "disposition": "merged"
+        }
+      ]
+    },
+    {
+      "id": "OP-11",
+      "kind": "maturity",
+      "capability": "USAGE_OPTIMIZATION",
+      "role": "scope_conditional",
+      "modes": [
+        "workshop"
+      ],
+      "askWhen": {
+        "fact": "footprint.scopes",
+        "contains": "kubernetes"
+      },
+      "text": "Are container resource requests and cluster capacity tuned to actual use (autoscaling, request rightsizing)?",
+      "help": "Choose the highest option that fully describes you today.",
+      "answerType": "single_select",
+      "options": [
+        {
+          "value": "run",
+          "label": "Automated request tuning and node autoscaling, utilisation reviewed",
+          "level": "run"
+        },
+        {
+          "value": "walk",
+          "label": "Autoscaling, requests tuned occasionally",
+          "level": "walk"
+        },
+        {
+          "value": "crawl",
+          "label": "Static, generous requests",
+          "level": "crawl"
+        },
+        {
+          "value": "not_yet",
+          "label": "No requests or limits set",
+          "level": "not_yet"
+        },
+        {
+          "value": "unknown",
+          "label": "Don't know",
+          "level": "unknown"
+        }
+      ],
+      "basis": [
+        {
+          "claimId": "CLM-FIN-021",
+          "citation": "FinOps Framework capability 'Usage Optimization', adapted under CC BY 4.0 [CLM-FIN-021]",
+          "status": "V"
+        },
+        {
+          "claimId": "CLM-FIN-112",
+          "citation": "Karpenter is an open-source Kubernetes node autoscaler that provisions right-sized nodes for pending pods, consolidates empty or under-used nodes (deleting them or replacing them with cheaper ones) and can use Spot... [CLM-FIN-112]",
+          "status": "S"
+        },
+        {
+          "claimId": "CLM-FIN-113",
+          "citation": "The Kubernetes Vertical Pod Autoscaler recommends CPU and memory requests from observed usage and can apply them [CLM-FIN-113]",
+          "status": "V"
+        },
+        {
+          "claimId": "CLM-FIN-164",
+          "citation": "FinOps IQ v3 merged question set (LTM wording) [CLM-FIN-164]",
+          "status": "LTM_heuristic"
+        }
+      ],
+      "legacy": [
+        {
+          "id": "FIQ.A5",
+          "disposition": "kept",
+          "note": "Scope-conditional"
+        }
+      ]
+    },
+    {
+      "id": "OP-12",
+      "kind": "maturity",
+      "capability": "USAGE_OPTIMIZATION",
+      "role": "scope_conditional",
+      "modes": [
+        "workshop"
+      ],
+      "askWhen": {
+        "any": [
+          {
+            "fact": "footprint.scopes",
+            "contains": "ai_api"
+          },
+          {
+            "fact": "footprint.scopes",
+            "contains": "ai_platform_gpu"
+          }
+        ]
+      },
+      "text": "Are AI and GPU costs managed: GPU utilisation tracked, idle endpoints shut down, model choice reviewed for cost?",
+      "help": "Choose the highest option that fully describes you today.",
+      "answerType": "single_select",
+      "options": [
+        {
+          "value": "run",
+          "label": "All three, with owners",
+          "level": "run"
+        },
+        {
+          "value": "walk",
+          "label": "Tracked, some action",
+          "level": "walk"
+        },
+        {
+          "value": "crawl",
+          "label": "AI spend visible as a total only",
+          "level": "crawl"
+        },
+        {
+          "value": "not_yet",
+          "label": "Not managed",
+          "level": "not_yet"
+        },
+        {
+          "value": "unknown",
+          "label": "Don't know",
+          "level": "unknown"
+        }
+      ],
+      "basis": [
+        {
+          "claimId": "CLM-FIN-021",
+          "citation": "FinOps Framework capability 'Usage Optimization', adapted under CC BY 4.0 [CLM-FIN-021]",
+          "status": "V"
+        },
+        {
+          "claimId": "CLM-FIN-006",
+          "citation": "The FinOps Framework defines a Scope as a segment of technology spending (for example public cloud, SaaS, data centre, AI) that frames which personas, domains and capabilities apply [CLM-FIN-006]",
+          "status": "V"
+        },
+        {
+          "claimId": "CLM-FIN-044",
+          "citation": "State of FinOps 2026 (n = 1,192): 98% of respondents' FinOps teams manage AI spend, up from 31% two years earlier [CLM-FIN-044]",
+          "status": "V"
+        },
+        {
+          "claimId": "CLM-FIN-164",
+          "citation": "FinOps IQ v3 merged question set (LTM wording) [CLM-FIN-164]",
+          "status": "LTM_heuristic"
+        }
+      ],
+      "legacy": [
+        {
+          "id": "FIQ.A4",
+          "disposition": "rewritten",
+          "note": "\"No AI\" is now a scope fact"
+        }
+      ]
+    },
+    {
+      "id": "OP-10",
+      "kind": "maturity",
+      "capability": "ARCHITECTING_WORKLOAD_PLACEMENT",
+      "role": "core",
+      "modes": [
+        "workshop"
+      ],
+      "text": "Is expected cost (and unit cost) a required criterion in architecture reviews and workload placement decisions (cloud, private cloud, data centre)?",
+      "help": "Choose the highest option that fully describes you today.",
+      "answerType": "single_select",
+      "options": [
+        {
+          "value": "run",
+          "label": "Required, with a cost model, compared after go-live",
+          "level": "run"
+        },
+        {
+          "value": "walk",
+          "label": "Required for major designs",
+          "level": "walk"
+        },
+        {
+          "value": "crawl",
+          "label": "Discussed informally",
+          "level": "crawl"
+        },
+        {
+          "value": "not_yet",
+          "label": "Not considered",
+          "level": "not_yet"
+        },
+        {
+          "value": "unknown",
+          "label": "Don't know",
+          "level": "unknown"
+        }
+      ],
+      "basis": [
+        {
+          "claimId": "CLM-FIN-020",
+          "citation": "FinOps Framework capability 'Architecting & Workload Placement', adapted under CC BY 4.0 [CLM-FIN-020]",
+          "status": "V"
+        },
+        {
+          "claimId": "CLM-FIN-010",
+          "citation": "The 2026 Framework replaces 'Architecting for Cloud' with Architecting & Workload Placement and renames 'Policy & Governance' to Governance, Policy & Risk [CLM-FIN-010]",
+          "status": "S"
+        },
+        {
+          "claimId": "CLM-FIN-164",
+          "citation": "FinOps IQ v3 merged question set (LTM wording) [CLM-FIN-164]",
+          "status": "LTM_heuristic"
+        }
+      ],
+      "legacy": [
+        {
+          "id": "FIQ.O5",
+          "disposition": "kept",
+          "note": "Adds placement across cloud, private cloud and data centre"
+        }
+      ]
+    },
+    {
+      "id": "OP-13",
+      "kind": "maturity",
+      "capability": "LICENSING_SAAS",
+      "role": "scope_conditional",
+      "modes": [
+        "workshop"
+      ],
+      "askWhen": {
+        "any": [
+          {
+            "fact": "footprint.scopes",
+            "contains": "saas"
+          },
+          {
+            "fact": "footprint.scopes",
+            "contains": "licensing"
+          }
+        ]
+      },
+      "text": "Is there a current inventory of SaaS subscriptions and licences with owners, usage and renewal dates?",
+      "help": "Choose the highest option that fully describes you today.",
+      "answerType": "single_select",
+      "options": [
+        {
+          "value": "run",
+          "label": "Complete, usage-based, renewals planned",
+          "level": "run"
+        },
+        {
+          "value": "walk",
+          "label": "Major vendors covered",
+          "level": "walk"
+        },
+        {
+          "value": "crawl",
+          "label": "Partial list",
+          "level": "crawl"
+        },
+        {
+          "value": "not_yet",
+          "label": "None",
+          "level": "not_yet"
+        },
+        {
+          "value": "unknown",
+          "label": "Don't know",
+          "level": "unknown"
+        }
+      ],
+      "basis": [
+        {
+          "claimId": "CLM-FIN-023",
+          "citation": "FinOps Framework capability 'Licensing & SaaS', adapted under CC BY 4.0 [CLM-FIN-023]",
+          "status": "V"
+        },
+        {
+          "claimId": "CLM-FIN-045",
+          "citation": "State of FinOps 2026 (n = 1,192): nine in ten respondents (90%) are asked to manage SaaS spend, 64% software licensing and 48% data centre spend [CLM-FIN-045]",
+          "status": "V"
+        },
+        {
+          "claimId": "CLM-FIN-164",
+          "citation": "FinOps IQ v3 merged question set (LTM wording) [CLM-FIN-164]",
+          "status": "LTM_heuristic"
+        }
+      ],
+      "legacy": []
+    },
+    {
+      "id": "OP-14",
+      "kind": "maturity",
+      "capability": "LICENSING_SAAS",
+      "role": "scope_conditional",
+      "modes": [
+        "workshop"
+      ],
+      "askWhen": {
+        "fact": "footprint.scopes",
+        "contains": "licensing"
+      },
+      "text": "Are licence entitlements in cloud tracked and used (bring-your-own-licence, hybrid benefits, licence-included versus BYOL choices)?",
+      "help": "Choose the highest option that fully describes you today.",
+      "answerType": "single_select",
+      "options": [
+        {
+          "value": "run",
+          "label": "Tracked and optimised per workload",
+          "level": "run"
+        },
+        {
+          "value": "walk",
+          "label": "Tracked for major products",
+          "level": "walk"
+        },
+        {
+          "value": "crawl",
+          "label": "Known, not tracked",
+          "level": "crawl"
+        },
+        {
+          "value": "not_yet",
+          "label": "Not considered",
+          "level": "not_yet"
+        },
+        {
+          "value": "unknown",
+          "label": "Don't know",
+          "level": "unknown"
+        }
+      ],
+      "basis": [
+        {
+          "claimId": "CLM-FIN-023",
+          "citation": "FinOps Framework capability 'Licensing & SaaS', adapted under CC BY 4.0 [CLM-FIN-023]",
+          "status": "V"
+        },
+        {
+          "claimId": "CLM-FIN-095",
+          "citation": "Azure Hybrid Benefit lets customers with Windows Server or SQL Server core licences covered by Software Assurance or qualifying subscriptions use them on Azure instead of paying for licence-included rates [CLM-FIN-095]",
+          "status": "V"
+        },
+        {
+          "claimId": "CLM-FIN-164",
+          "citation": "FinOps IQ v3 merged question set (LTM wording) [CLM-FIN-164]",
+          "status": "LTM_heuristic"
+        }
+      ],
+      "legacy": []
+    },
+    {
+      "id": "OP-15",
+      "kind": "maturity",
+      "capability": "SUSTAINABILITY",
+      "role": "scope_conditional",
+      "modes": [
+        "workshop"
+      ],
+      "askWhen": {
+        "any": [
+          {
+            "fact": "footprint.scopes",
+            "contains": "private_cloud"
+          },
+          {
+            "fact": "footprint.scopes",
+            "contains": "data_centre"
+          },
+          {
+            "fact": "footprint.scopes",
+            "contains": "colocation"
+          }
+        ]
+      },
+      "text": "Is carbon or energy data reviewed alongside cost in optimisation and placement decisions?",
+      "help": "Choose the highest option that fully describes you today.",
+      "answerType": "single_select",
+      "options": [
+        {
+          "value": "run",
+          "label": "Routinely, with targets",
+          "level": "run"
+        },
+        {
+          "value": "walk",
+          "label": "For major decisions",
+          "level": "walk"
+        },
+        {
+          "value": "crawl",
+          "label": "Reported, not used",
+          "level": "crawl"
+        },
+        {
+          "value": "not_yet",
+          "label": "Not considered",
+          "level": "not_yet"
+        },
+        {
+          "value": "unknown",
+          "label": "Don't know",
+          "level": "unknown"
+        }
+      ],
+      "basis": [
+        {
+          "claimId": "CLM-FIN-024",
+          "citation": "FinOps Framework capability 'Sustainability', adapted under CC BY 4.0 [CLM-FIN-024]",
+          "status": "V"
+        },
+        {
+          "claimId": "CLM-FIN-164",
+          "citation": "FinOps IQ v3 merged question set (LTM wording) [CLM-FIN-164]",
+          "status": "LTM_heuristic"
+        }
+      ],
+      "legacy": [],
+      "prefillFrom": [
+        "CIQ.FIN-03"
+      ]
+    },
+    {
+      "id": "MP-01",
+      "kind": "maturity",
+      "capability": "FINOPS_PRACTICE_OPERATIONS",
+      "role": "core",
+      "modes": [
+        "executive",
+        "workshop"
+      ],
+      "text": "Who is formally accountable for cloud and technology spend governance?",
+      "help": "Choose the highest option that fully describes you today.",
+      "answerType": "single_select",
+      "options": [
+        {
+          "value": "run",
+          "label": "A named FinOps lead or team with a written mandate and executive sponsor",
+          "level": "run"
+        },
+        {
+          "value": "walk",
+          "label": "A named owner (full- or part-time) without a written mandate or sponsor",
+          "level": "walk"
+        },
+        {
+          "value": "crawl",
+          "label": "Shared and unclear, or the CIO by default",
+          "level": "crawl"
+        },
+        {
+          "value": "not_yet",
+          "label": "No one",
+          "level": "not_yet"
+        },
+        {
+          "value": "unknown",
+          "label": "Don't know",
+          "level": "unknown"
+        }
+      ],
+      "basis": [
+        {
+          "claimId": "CLM-FIN-026",
+          "citation": "FinOps Framework capability 'FinOps Practice Operations', adapted under CC BY 4.0 [CLM-FIN-026]",
+          "status": "V"
+        },
+        {
+          "claimId": "CLM-FIN-164",
+          "citation": "FinOps IQ v3 merged question set (LTM wording) [CLM-FIN-164]",
+          "status": "LTM_heuristic"
+        }
+      ],
+      "legacy": [
+        {
+          "id": "FIQ.C7",
+          "disposition": "merged",
+          "note": "Same intent as FVC.O1"
+        },
+        {
+          "id": "FVC.O1",
+          "disposition": "merged"
+        }
+      ],
+      "prefillFrom": [
+        "CIQ.FIN-06"
+      ]
+    },
+    {
+      "id": "MP-02",
+      "kind": "maturity",
+      "capability": "FINOPS_PRACTICE_OPERATIONS",
+      "role": "core",
+      "modes": [
+        "workshop"
+      ],
+      "text": "Is there a regular cost review with engineering and finance, and who explains the bill to the CFO?",
+      "help": "Choose the highest option that fully describes you today.",
+      "answerType": "single_select",
+      "options": [
+        {
+          "value": "run",
+          "label": "Monthly review at team and executive level; a cost owner explains with data",
+          "level": "run"
+        },
+        {
+          "value": "walk",
+          "label": "Quarterly; central IT explains on request",
+          "level": "walk"
+        },
+        {
+          "value": "crawl",
+          "label": "Ad hoc, when budgets are exceeded",
+          "level": "crawl"
+        },
+        {
+          "value": "not_yet",
+          "label": "None; finance interprets the bill alone",
+          "level": "not_yet"
+        },
+        {
+          "value": "unknown",
+          "label": "Don't know",
+          "level": "unknown"
+        }
+      ],
+      "basis": [
+        {
+          "claimId": "CLM-FIN-026",
+          "citation": "FinOps Framework capability 'FinOps Practice Operations', adapted under CC BY 4.0 [CLM-FIN-026]",
+          "status": "V"
+        },
+        {
+          "claimId": "CLM-FIN-164",
+          "citation": "FinOps IQ v3 merged question set (LTM wording) [CLM-FIN-164]",
+          "status": "LTM_heuristic"
+        }
+      ],
+      "legacy": [
+        {
+          "id": "FIQ.I9",
+          "disposition": "merged",
+          "note": "With FVC.P4"
+        },
+        {
+          "id": "FVC.P4",
+          "disposition": "merged"
+        }
+      ]
+    },
+    {
+      "id": "MP-03",
+      "kind": "maturity",
+      "capability": "FINOPS_PRACTICE_OPERATIONS",
+      "role": "core",
+      "modes": [
+        "workshop"
+      ],
+      "text": "Is cost optimisation work planned in engineering backlogs with estimated value?",
+      "help": "Choose the highest option that fully describes you today.",
+      "answerType": "single_select",
+      "options": [
+        {
+          "value": "run",
+          "label": "Dedicated items with value, prioritised alongside features, tracked to verified savings",
+          "level": "run"
+        },
+        {
+          "value": "walk",
+          "label": "Items created, often deprioritised",
+          "level": "walk"
+        },
+        {
+          "value": "crawl",
+          "label": "Only when finance escalates",
+          "level": "crawl"
+        },
+        {
+          "value": "not_yet",
+          "label": "None",
+          "level": "not_yet"
+        },
+        {
+          "value": "unknown",
+          "label": "Don't know",
+          "level": "unknown"
+        }
+      ],
+      "basis": [
+        {
+          "claimId": "CLM-FIN-026",
+          "citation": "FinOps Framework capability 'FinOps Practice Operations', adapted under CC BY 4.0 [CLM-FIN-026]",
+          "status": "V"
+        },
+        {
+          "claimId": "CLM-FIN-164",
+          "citation": "FinOps IQ v3 merged question set (LTM wording) [CLM-FIN-164]",
+          "status": "LTM_heuristic"
+        }
+      ],
+      "legacy": [
+        {
+          "id": "FIQ.O9",
+          "disposition": "kept"
+        }
+      ]
+    },
+    {
+      "id": "MP-04",
+      "kind": "maturity",
+      "capability": "EXECUTIVE_STRATEGY_ALIGNMENT",
+      "role": "core",
+      "modes": [
+        "executive",
+        "workshop"
+      ],
+      "text": "Can leadership show the board that cloud spend is delivering the value in its business case, and are cost, speed and value trade-offs made explicitly?",
+      "help": "Choose the highest option that fully describes you today.",
+      "answerType": "single_select",
+      "options": [
+        {
+          "value": "run",
+          "label": "Quantified, trended evidence; trade-offs decided at an executive forum",
+          "level": "run"
+        },
+        {
+          "value": "walk",
+          "label": "Partly, by project",
+          "level": "walk"
+        },
+        {
+          "value": "crawl",
+          "label": "Anecdotal",
+          "level": "crawl"
+        },
+        {
+          "value": "not_yet",
+          "label": "Not currently, or never asked",
+          "level": "not_yet"
+        },
+        {
+          "value": "unknown",
+          "label": "Don't know",
+          "level": "unknown"
+        }
+      ],
+      "basis": [
+        {
+          "claimId": "CLM-FIN-025",
+          "citation": "FinOps Framework capability 'Executive Strategy Alignment', adapted under CC BY 4.0 [CLM-FIN-025]",
+          "status": "V"
+        },
+        {
+          "claimId": "CLM-FIN-003",
+          "citation": "The FinOps Framework 2026 update was published on 19 March 2026. It adds Executive Strategy Alignment as a new capability in the Manage the FinOps Practice domain, deepens the Scopes construct, adds technology... [CLM-FIN-003]",
+          "status": "V"
+        },
+        {
+          "claimId": "CLM-FIN-164",
+          "citation": "FinOps IQ v3 merged question set (LTM wording) [CLM-FIN-164]",
+          "status": "LTM_heuristic"
+        }
+      ],
+      "legacy": [
+        {
+          "id": "FVC.L1",
+          "disposition": "merged",
+          "note": "Executive Strategy Alignment (new in 2026)"
+        },
+        {
+          "id": "FVC.L2",
+          "disposition": "merged"
+        }
+      ],
+      "prefillFrom": [
+        "CIQ.FIN-09"
+      ]
+    },
+    {
+      "id": "MP-05",
+      "kind": "maturity",
+      "capability": "EXECUTIVE_STRATEGY_ALIGNMENT",
+      "role": "core",
+      "modes": [
+        "workshop"
+      ],
+      "text": "Is cost efficiency written into objectives for engineering teams and senior leaders?",
+      "help": "Choose the highest option that fully describes you today.",
+      "answerType": "single_select",
+      "options": [
+        {
+          "value": "run",
+          "label": "In team objectives and leadership performance measures",
+          "level": "run"
+        },
+        {
+          "value": "walk",
+          "label": "In leadership objectives only",
+          "level": "walk"
+        },
+        {
+          "value": "crawl",
+          "label": "Informally",
+          "level": "crawl"
+        },
+        {
+          "value": "not_yet",
+          "label": "Not at all",
+          "level": "not_yet"
+        },
+        {
+          "value": "unknown",
+          "label": "Don't know",
+          "level": "unknown"
+        }
+      ],
+      "basis": [
+        {
+          "claimId": "CLM-FIN-025",
+          "citation": "FinOps Framework capability 'Executive Strategy Alignment', adapted under CC BY 4.0 [CLM-FIN-025]",
+          "status": "V"
+        },
+        {
+          "claimId": "CLM-FIN-003",
+          "citation": "The FinOps Framework 2026 update was published on 19 March 2026. It adds Executive Strategy Alignment as a new capability in the Manage the FinOps Practice domain, deepens the Scopes construct, adds technology... [CLM-FIN-003]",
+          "status": "V"
+        },
+        {
+          "claimId": "CLM-FIN-164",
+          "citation": "FinOps IQ v3 merged question set (LTM wording) [CLM-FIN-164]",
+          "status": "LTM_heuristic"
+        }
+      ],
+      "legacy": [
+        {
+          "id": "FIQ.A6",
+          "disposition": "merged",
+          "note": "With T7 and FVC.O4"
+        },
+        {
+          "id": "FIQ.T7",
+          "disposition": "merged"
+        },
+        {
+          "id": "FVC.O4",
+          "disposition": "merged"
+        }
+      ]
+    },
+    {
+      "id": "MP-06",
+      "kind": "maturity",
+      "capability": "GOVERNANCE_POLICY_RISK",
+      "role": "core",
+      "modes": [
+        "workshop"
+      ],
+      "text": "Are cost policies enforced automatically (for example mandatory tags, allowed regions and sizes, budget guardrails) through policy as code?",
+      "help": "Choose the highest option that fully describes you today.",
+      "answerType": "single_select",
+      "options": [
+        {
+          "value": "run",
+          "label": "Preventive controls on all accounts",
+          "level": "run"
+        },
+        {
+          "value": "walk",
+          "label": "Detective (audit mode) with follow-up",
+          "level": "walk"
+        },
+        {
+          "value": "crawl",
+          "label": "Some repositories or accounts",
+          "level": "crawl"
+        },
+        {
+          "value": "not_yet",
+          "label": "None",
+          "level": "not_yet"
+        },
+        {
+          "value": "unknown",
+          "label": "Don't know",
+          "level": "unknown"
+        }
+      ],
+      "basis": [
+        {
+          "claimId": "CLM-FIN-027",
+          "citation": "FinOps Framework capability 'Governance, Policy & Risk', adapted under CC BY 4.0 [CLM-FIN-027]",
+          "status": "V"
+        },
+        {
+          "claimId": "CLM-FIN-088",
+          "citation": "AWS Organizations tag policies standardise tags on resources across an organisation's accounts [CLM-FIN-088]",
+          "status": "V"
+        },
+        {
+          "claimId": "CLM-FIN-093",
+          "citation": "Azure Policy can require, add or inherit tags on resources and resource groups through built-in tag policy definitions [CLM-FIN-093]",
+          "status": "P"
+        },
+        {
+          "claimId": "CLM-FIN-164",
+          "citation": "FinOps IQ v3 merged question set (LTM wording) [CLM-FIN-164]",
+          "status": "LTM_heuristic"
+        }
+      ],
+      "legacy": [
+        {
+          "id": "FIQ.A1",
+          "disposition": "merged",
+          "note": "With FVC.C1's enforced tagging"
+        },
+        {
+          "id": "FVC.C1",
+          "disposition": "split",
+          "note": "Enforced tagging option"
+        }
+      ],
+      "prefillFrom": [
+        "CIQ.FIN-08"
+      ]
+    },
+    {
+      "id": "MP-07",
+      "kind": "maturity",
+      "capability": "GOVERNANCE_POLICY_RISK",
+      "role": "core",
+      "modes": [
+        "workshop"
+      ],
+      "text": "Are production and non-production separated into distinct accounts or subscriptions with clear billing boundaries?",
+      "help": "Choose the highest option that fully describes you today.",
+      "answerType": "single_select",
+      "options": [
+        {
+          "value": "run",
+          "label": "Strictly separated",
+          "level": "run"
+        },
+        {
+          "value": "walk",
+          "label": "Separated by resource group or network within shared accounts",
+          "level": "walk"
+        },
+        {
+          "value": "crawl",
+          "label": "Partly mixed",
+          "level": "crawl"
+        },
+        {
+          "value": "not_yet",
+          "label": "Shared",
+          "level": "not_yet"
+        },
+        {
+          "value": "unknown",
+          "label": "Don't know",
+          "level": "unknown"
+        }
+      ],
+      "basis": [
+        {
+          "claimId": "CLM-FIN-027",
+          "citation": "FinOps Framework capability 'Governance, Policy & Risk', adapted under CC BY 4.0 [CLM-FIN-027]",
+          "status": "V"
+        },
+        {
+          "claimId": "CLM-FIN-164",
+          "citation": "FinOps IQ v3 merged question set (LTM wording) [CLM-FIN-164]",
+          "status": "LTM_heuristic"
+        }
+      ],
+      "legacy": [
+        {
+          "id": "FIQ.C6",
+          "disposition": "kept",
+          "note": "Governance boundary"
+        }
+      ]
+    },
+    {
+      "id": "MP-08",
+      "kind": "maturity",
+      "capability": "FINOPS_EDUCATION_ENABLEMENT",
+      "role": "core",
+      "modes": [
+        "workshop"
+      ],
+      "text": "Do engineers, product owners and finance staff get FinOps training and recognition for cost improvements?",
+      "help": "Choose the highest option that fully describes you today.",
+      "answerType": "single_select",
+      "options": [
+        {
+          "value": "run",
+          "label": "Role-based training for all three groups, recognition built into team rituals",
+          "level": "run"
+        },
+        {
+          "value": "walk",
+          "label": "Training for some groups",
+          "level": "walk"
+        },
+        {
+          "value": "crawl",
+          "label": "Occasional sessions",
+          "level": "crawl"
+        },
+        {
+          "value": "not_yet",
+          "label": "None",
+          "level": "not_yet"
+        },
+        {
+          "value": "unknown",
+          "label": "Don't know",
+          "level": "unknown"
+        }
+      ],
+      "basis": [
+        {
+          "claimId": "CLM-FIN-028",
+          "citation": "FinOps Framework capability 'FinOps Education & Enablement', adapted under CC BY 4.0 [CLM-FIN-028]",
+          "status": "V"
+        },
+        {
+          "claimId": "CLM-FIN-164",
+          "citation": "FinOps IQ v3 merged question set (LTM wording) [CLM-FIN-164]",
+          "status": "LTM_heuristic"
+        }
+      ],
+      "legacy": [
+        {
+          "id": "FIQ.O8",
+          "disposition": "rewritten",
+          "note": "\"Gamification\" wording removed"
+        }
+      ],
+      "prefillFrom": [
+        "CIQ.FIN-06"
+      ]
+    },
+    {
+      "id": "MP-09",
+      "kind": "maturity",
+      "capability": "INVOICING_CHARGEBACK",
+      "role": "core",
+      "modes": [
+        "workshop"
+      ],
+      "text": "Is cloud cost shown back or charged back to business units' P&L?",
+      "help": "Choose the highest option that fully describes you today.",
+      "answerType": "single_select",
+      "options": [
+        {
+          "value": "run",
+          "label": "Automated chargeback with monthly journal entries",
+          "level": "run"
+        },
+        {
+          "value": "walk",
+          "label": "Showback with budget accountability",
+          "level": "walk"
+        },
+        {
+          "value": "crawl",
+          "label": "Rough percentage splits",
+          "level": "crawl"
+        },
+        {
+          "value": "not_yet",
+          "label": "Absorbed centrally",
+          "level": "not_yet"
+        },
+        {
+          "value": "unknown",
+          "label": "Don't know",
+          "level": "unknown"
+        }
+      ],
+      "basis": [
+        {
+          "claimId": "CLM-FIN-029",
+          "citation": "FinOps Framework capability 'Invoicing & Chargeback', adapted under CC BY 4.0 [CLM-FIN-029]",
+          "status": "V"
+        },
+        {
+          "claimId": "CLM-FIN-164",
+          "citation": "FinOps IQ v3 merged question set (LTM wording) [CLM-FIN-164]",
+          "status": "LTM_heuristic"
+        }
+      ],
+      "legacy": [
+        {
+          "id": "FIQ.T1",
+          "disposition": "kept"
+        },
+        {
+          "id": "FVC.C1",
+          "disposition": "split",
+          "note": "Showback option"
+        }
+      ],
+      "prefillFrom": [
+        "CIQ.FIN-07"
+      ]
+    },
+    {
+      "id": "MP-10",
+      "kind": "maturity",
+      "capability": "INVOICING_CHARGEBACK",
+      "role": "core",
+      "modes": [
+        "workshop"
+      ],
+      "text": "Are provider invoices reconciled to the cost data, and does cost data flow into finance systems (ERP, BI, planning)?",
+      "help": "Choose the highest option that fully describes you today.",
+      "answerType": "single_select",
+      "options": [
+        {
+          "value": "run",
+          "label": "Automated reconciliation and integration",
+          "level": "run"
+        },
+        {
+          "value": "walk",
+          "label": "Reconciled monthly, BI integrated",
+          "level": "walk"
+        },
+        {
+          "value": "crawl",
+          "label": "Manual, partial",
+          "level": "crawl"
+        },
+        {
+          "value": "not_yet",
+          "label": "Separate",
+          "level": "not_yet"
+        },
+        {
+          "value": "unknown",
+          "label": "Don't know",
+          "level": "unknown"
+        }
+      ],
+      "basis": [
+        {
+          "claimId": "CLM-FIN-029",
+          "citation": "FinOps Framework capability 'Invoicing & Chargeback', adapted under CC BY 4.0 [CLM-FIN-029]",
+          "status": "V"
+        },
+        {
+          "claimId": "CLM-FIN-008",
+          "citation": "FOCUS (FinOps Open Cost and Usage Specification) version 1.4 was ratified on 4 June 2026. It adds an Invoice Detail dataset (charges as they appear on invoices, for reconciliation) and a Billing Period dataset, and... [CLM-FIN-008]",
+          "status": "V"
+        },
+        {
+          "claimId": "CLM-FIN-164",
+          "citation": "FinOps IQ v3 merged question set (LTM wording) [CLM-FIN-164]",
+          "status": "LTM_heuristic"
+        }
+      ],
+      "legacy": [
+        {
+          "id": "FIQ.T3",
+          "disposition": "kept",
+          "note": "Adds invoice reconciliation (FOCUS 1.4 Invoice Detail)"
+        }
+      ],
+      "prefillFrom": [
+        "CIQ.FIN-07"
+      ]
+    },
+    {
+      "id": "MP-11",
+      "kind": "maturity",
+      "capability": "FINOPS_ASSESSMENT",
+      "role": "core",
+      "modes": [
+        "workshop"
+      ],
+      "text": "Does the organisation periodically assess its FinOps practice against a framework and act on the results?",
+      "help": "Choose the highest option that fully describes you today.",
+      "answerType": "single_select",
+      "options": [
+        {
+          "value": "run",
+          "label": "At least annually, with a tracked improvement plan",
+          "level": "run"
+        },
+        {
+          "value": "walk",
+          "label": "Assessed once, partly acted on",
+          "level": "walk"
+        },
+        {
+          "value": "crawl",
+          "label": "Informal",
+          "level": "crawl"
+        },
+        {
+          "value": "not_yet",
+          "label": "Never",
+          "level": "not_yet"
+        },
+        {
+          "value": "unknown",
+          "label": "Don't know",
+          "level": "unknown"
+        }
+      ],
+      "basis": [
+        {
+          "claimId": "CLM-FIN-030",
+          "citation": "FinOps Framework capability 'FinOps Assessment', adapted under CC BY 4.0 [CLM-FIN-030]",
+          "status": "V"
+        },
+        {
+          "claimId": "CLM-FIN-164",
+          "citation": "FinOps IQ v3 merged question set (LTM wording) [CLM-FIN-164]",
+          "status": "LTM_heuristic"
+        }
+      ],
+      "legacy": [],
+      "prefillFrom": [
+        "CIQ.FIN-06"
+      ]
+    },
+    {
+      "id": "MP-12",
+      "kind": "maturity",
+      "capability": "AUTOMATION_TOOLS_SERVICES",
+      "role": "core",
+      "modes": [
+        "workshop"
+      ],
+      "text": "Are FinOps tools selected against requirements and integrated (data, allocation, anomaly, commitment management, automation of routine actions)?",
+      "help": "Choose the highest option that fully describes you today.",
+      "answerType": "single_select",
+      "options": [
+        {
+          "value": "run",
+          "label": "Integrated tool set, routine actions automated",
+          "level": "run"
+        },
+        {
+          "value": "walk",
+          "label": "Tools for most needs, some integration",
+          "level": "walk"
+        },
+        {
+          "value": "crawl",
+          "label": "Native consoles and spreadsheets",
+          "level": "crawl"
+        },
+        {
+          "value": "not_yet",
+          "label": "None",
+          "level": "not_yet"
+        },
+        {
+          "value": "unknown",
+          "label": "Don't know",
+          "level": "unknown"
+        }
+      ],
+      "basis": [
+        {
+          "claimId": "CLM-FIN-031",
+          "citation": "FinOps Framework capability 'FinOps Tools & Services', adapted under CC BY 4.0 [CLM-FIN-031]",
+          "status": "P"
+        },
+        {
+          "claimId": "CLM-FIN-164",
+          "citation": "FinOps IQ v3 merged question set (LTM wording) [CLM-FIN-164]",
+          "status": "LTM_heuristic"
+        }
+      ],
+      "legacy": [],
+      "prefillFrom": [
+        "CIQ.FIN-08",
+        "CIQ.FIN-11"
+      ]
+    },
+    {
+      "id": "MP-13",
+      "kind": "maturity",
+      "capability": "INTERSECTING_DISCIPLINES",
+      "role": "core",
+      "modes": [
+        "workshop"
+      ],
+      "text": "Does FinOps work with ITAM, ITFM, procurement, security, sustainability and architecture on shared data and decisions?",
+      "help": "Choose the highest option that fully describes you today.",
+      "answerType": "single_select",
+      "options": [
+        {
+          "value": "run",
+          "label": "Joint processes and shared data with most",
+          "level": "run"
+        },
+        {
+          "value": "walk",
+          "label": "With some",
+          "level": "walk"
+        },
+        {
+          "value": "crawl",
+          "label": "Informal contact",
+          "level": "crawl"
+        },
+        {
+          "value": "not_yet",
+          "label": "None",
+          "level": "not_yet"
+        },
+        {
+          "value": "unknown",
+          "label": "Don't know",
+          "level": "unknown"
+        }
+      ],
+      "basis": [
+        {
+          "claimId": "CLM-FIN-032",
+          "citation": "FinOps Framework capability 'Intersecting Disciplines', adapted under CC BY 4.0 [CLM-FIN-032]",
+          "status": "V"
+        },
+        {
+          "claimId": "CLM-FIN-164",
+          "citation": "FinOps IQ v3 merged question set (LTM wording) [CLM-FIN-164]",
+          "status": "LTM_heuristic"
+        }
+      ],
+      "legacy": [],
+      "prefillFrom": [
+        "CIQ.FIN-10"
+      ]
+    },
+    {
+      "id": "HY-01",
+      "kind": "hypothesis",
+      "modes": [
+        "executive",
+        "workshop"
+      ],
+      "text": "What share of your cloud spend do you believe is wasted (idle, oversized or unused)? Unallocated spend is not counted as waste.",
+      "help": "Optional. Shown beside the value range with the difference explained; never an input.",
+      "answerType": "single_select",
+      "options": [
+        {
+          "value": "lt_5",
+          "label": "Below 5%"
+        },
+        {
+          "value": "p5_9",
+          "label": "5-9%"
+        },
+        {
+          "value": "p10_19",
+          "label": "10-19%"
+        },
+        {
+          "value": "p20_29",
+          "label": "20-29%"
+        },
+        {
+          "value": "ge_30",
+          "label": "30% or more"
+        },
+        {
+          "value": "dont_know",
+          "label": "Don't know"
+        }
+      ],
+      "basis": [
+        {
+          "claimId": "CLM-FIN-144",
+          "citation": "Client waste hypothesis bands (not scored, never a value input) [CLM-FIN-144]",
+          "status": "V",
+          "assumptionId": "ASM-FIN-026"
+        },
+        {
+          "claimId": "CLM-FIN-040",
+          "citation": "Flexera 2026 State of the Cloud Report (published 18 March 2026; 753 cloud decision-makers and users, 62% in the US) [CLM-FIN-040]",
+          "status": "V"
+        },
+        {
+          "claimId": "CLM-FIN-164",
+          "citation": "FinOps IQ v3 merged question set (LTM wording) [CLM-FIN-164]",
+          "status": "LTM_heuristic"
+        }
+      ],
+      "legacy": [
+        {
+          "id": "FIQ.T6",
+          "disposition": "moved",
+          "note": "Hypothesis only, never scored or used as a value input (D4); unallocated spend separated from waste"
+        }
+      ]
+    },
+    {
+      "id": "HY-02",
+      "kind": "hypothesis",
+      "modes": [
+        "workshop"
+      ],
+      "text": "Rank these cost concerns, most concerning first",
+      "answerType": "rank",
+      "options": [
+        {
+          "value": "unpredictable_bills",
+          "label": "Unpredictable or rising bills"
+        },
+        {
+          "value": "attribution",
+          "label": "Inability to attribute cost to teams"
+        },
+        {
+          "value": "unused_resources",
+          "label": "Paying for resources nobody uses"
+        },
+        {
+          "value": "migration_cost",
+          "label": "Cost of the migration itself"
+        },
+        {
+          "value": "skills",
+          "label": "Lack of internal skills"
+        },
+        {
+          "value": "board_value",
+          "label": "Justifying cloud value to the board"
+        }
+      ],
+      "basis": [
+        {
+          "claimId": "CLM-FIN-164",
+          "citation": "FinOps IQ v3 merged question set (LTM wording) [CLM-FIN-164]",
+          "status": "LTM_heuristic"
+        }
+      ],
+      "legacy": [
+        {
+          "id": "FVC.C4",
+          "disposition": "kept",
+          "note": "Moved to the hypothesis group; orders the summary's emphasis"
+        }
+      ]
+    },
+    {
+      "id": "HY-03",
+      "kind": "hypothesis",
+      "modes": [
+        "workshop"
+      ],
+      "text": "How often has an unexpected cloud bill needed explaining to finance or the board in the last year?",
+      "answerType": "single_select",
+      "options": [
+        {
+          "value": "never",
+          "label": "Never"
+        },
+        {
+          "value": "once",
+          "label": "Once"
+        },
+        {
+          "value": "a_few_times",
+          "label": "A few times"
+        },
+        {
+          "value": "recurring",
+          "label": "It is a recurring conversation"
+        },
+        {
+          "value": "dont_know",
+          "label": "Don't know"
+        }
+      ],
+      "useInVerdict": true,
+      "basis": [
+        {
+          "claimId": "CLM-FIN-127",
+          "citation": "LTM need verdict (executive mode only): need index 0-100 = mean over executive capabilities with a target of (gap / 3) x 100, with Unknown, and any capability with a question left blank, counted as the maximum gap... [CLM-FIN-127]",
+          "status": "LTM_heuristic"
+        },
+        {
+          "claimId": "CLM-FIN-164",
+          "citation": "FinOps IQ v3 merged question set (LTM wording) [CLM-FIN-164]",
+          "status": "LTM_heuristic"
+        }
+      ],
+      "legacy": [
+        {
+          "id": "FVC.P2",
+          "disposition": "moved",
+          "note": "Outcome signal for urgency, not a capability rating"
+        }
+      ]
+    },
+    {
+      "id": "HY-04",
+      "kind": "hypothesis",
+      "modes": [
+        "workshop"
+      ],
+      "text": "Distribute 100 points across where responsibility for cloud cost actually sits today",
+      "answerType": "allocation_100",
+      "options": [
+        {
+          "value": "engineering",
+          "label": "Engineering"
+        },
+        {
+          "value": "finance",
+          "label": "Finance"
+        },
+        {
+          "value": "central_it",
+          "label": "Central IT"
+        },
+        {
+          "value": "nobody",
+          "label": "Nobody"
+        }
+      ],
+      "basis": [
+        {
+          "claimId": "CLM-FIN-164",
+          "citation": "FinOps IQ v3 merged question set (LTM wording) [CLM-FIN-164]",
+          "status": "LTM_heuristic"
+        }
+      ],
+      "legacy": [
+        {
+          "id": "FVC.O2",
+          "disposition": "moved",
+          "note": "Shown in the report; the \"nobody\" share is an urgency signal"
+        }
+      ]
+    },
+    {
+      "id": "HY-05",
+      "kind": "hypothesis",
+      "modes": [
+        "workshop"
+      ],
+      "text": "If finance asked today whether cloud spend is under control, how comfortable would you be answering?",
+      "answerType": "single_select",
+      "options": [
+        {
+          "value": "very_comfortable",
+          "label": "Very comfortable"
+        },
+        {
+          "value": "comfortable",
+          "label": "Comfortable"
+        },
+        {
+          "value": "unsure",
+          "label": "Unsure"
+        },
+        {
+          "value": "uncomfortable",
+          "label": "Uncomfortable"
+        },
+        {
+          "value": "dont_know",
+          "label": "Don't know"
+        }
+      ],
+      "useInVerdict": true,
+      "basis": [
+        {
+          "claimId": "CLM-FIN-127",
+          "citation": "LTM need verdict (executive mode only): need index 0-100 = mean over executive capabilities with a target of (gap / 3) x 100, with Unknown, and any capability with a question left blank, counted as the maximum gap... [CLM-FIN-127]",
+          "status": "LTM_heuristic"
+        },
+        {
+          "claimId": "CLM-FIN-164",
+          "citation": "FinOps IQ v3 merged question set (LTM wording) [CLM-FIN-164]",
+          "status": "LTM_heuristic"
+        }
+      ],
+      "legacy": [
+        {
+          "id": "FVC.L3",
+          "disposition": "moved",
+          "note": "Urgency signal"
+        }
+      ]
+    },
+    {
+      "id": "HY-06",
+      "kind": "hypothesis",
+      "modes": [
+        "workshop"
+      ],
+      "text": "What would a good outcome look like in 12 months?",
+      "answerType": "multi_select",
+      "options": [
+        {
+          "value": "predictable_bill",
+          "label": "A bill we can predict"
+        },
+        {
+          "value": "lower_unit_cost",
+          "label": "Lower cost per unit of output"
+        },
+        {
+          "value": "faster_decisions",
+          "label": "Faster, better-informed decisions"
+        },
+        {
+          "value": "defensible_position",
+          "label": "A position we can defend to finance"
+        },
+        {
+          "value": "funding_freed",
+          "label": "Funding freed up for innovation"
+        },
+        {
+          "value": "accelerate_migration",
+          "label": "Confidence to accelerate migration"
+        }
+      ],
+      "basis": [
+        {
+          "claimId": "CLM-FIN-121",
+          "citation": "LTM default target level per capability and complexity tier (table in DESIGN.md 3.4) [CLM-FIN-121]",
+          "status": "LTM_heuristic"
+        },
+        {
+          "claimId": "CLM-FIN-164",
+          "citation": "FinOps IQ v3 merged question set (LTM wording) [CLM-FIN-164]",
+          "status": "LTM_heuristic"
+        }
+      ],
+      "legacy": [
+        {
+          "id": "FVC.L4",
+          "disposition": "moved",
+          "note": "Ambition; the consultant may raise related targets by one level, recorded as an override"
+        }
+      ]
+    },
+    {
+      "id": "HY-07",
+      "kind": "hypothesis",
+      "modes": [
+        "executive",
+        "workshop"
+      ],
+      "text": "Anything else about your cost position we should understand?",
+      "help": "Optional free text, consultant view only.",
+      "answerType": "open_text",
+      "basis": [
+        {
+          "claimId": "CLM-FIN-164",
+          "citation": "FinOps IQ v3 merged question set (LTM wording) [CLM-FIN-164]",
+          "status": "LTM_heuristic"
+        }
+      ],
+      "legacy": [
+        {
+          "id": "FVC.X1",
+          "disposition": "kept",
+          "note": "Consultant view only; never sent to AI (F10)"
+        }
+      ]
+    }
+  ],
+  "conflictProbes": [
+    {
+      "id": "CP-1",
+      "when": {
+        "all": [
+          {
+            "answer": "UN-04",
+            "in": [
+              "run"
+            ]
+          },
+          {
+            "answer": "UN-11",
+            "in": [
+              "crawl",
+              "not_yet"
+            ]
+          }
+        ]
+      },
+      "probe": "Allocation is above 90% but increases cannot be explained: check how allocation is measured (by cost, not resource count) [CLM-FIN-124, CLM-FIN-123]",
+      "consultantOnly": true
+    },
+    {
+      "id": "CP-2",
+      "when": {
+        "all": [
+          {
+            "answer": "OP-01",
+            "in": [
+              "run"
+            ]
+          },
+          {
+            "fact": "base.eligibleCoverage",
+            "isUnknown": true
+          }
+        ]
+      },
+      "probe": "Central portfolio claimed but coverage unknown: ask for the coverage and utilisation report [CLM-FIN-142]",
+      "consultantOnly": true
+    },
+    {
+      "id": "CP-3",
+      "when": {
+        "all": [
+          {
+            "answer": "UN-10",
+            "levelAtLeast": "walk"
+          },
+          {
+            "answer": "HY-03",
+            "in": [
+              "recurring"
+            ]
+          }
+        ]
+      },
+      "probe": "Detection claimed, yet unexpected bills recur: check routing and response [CLM-FIN-123]",
+      "consultantOnly": true
+    },
+    {
+      "id": "CP-4",
+      "when": {
+        "all": [
+          {
+            "answer": "QV-01",
+            "in": [
+              "run"
+            ]
+          },
+          {
+            "answer": "QV-02",
+            "in": [
+              "crawl",
+              "not_yet"
+            ]
+          }
+        ]
+      },
+      "probe": "Variance within 5% with a last-year-plus-percentage method: check the comparison period [CLM-FIN-126]",
+      "consultantOnly": true
+    },
+    {
+      "id": "CP-5",
+      "when": {
+        "all": [
+          {
+            "answer": "MP-06",
+            "in": [
+              "run"
+            ]
+          },
+          {
+            "answer": "UN-04",
+            "levelAtMost": "crawl"
+          }
+        ]
+      },
+      "probe": "Preventive tag policies but low allocation: check coverage of shared and untaggable costs [CLM-FIN-124]",
+      "consultantOnly": true
+    }
+  ]
+}
