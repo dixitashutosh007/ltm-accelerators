@@ -1,0 +1,37 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ltm-vantage/claims/claim.schema.json",
+  "title": "Claims register entry",
+  "description": "One statement a client could ask 'where is this from?' about: a regulation, date, threshold, penalty, provider capability, framework requirement, market figure, exchange rate or LTM heuristic. Engines and knowledge files refer to claims by id. Checked by scripts/check-claims.cjs (run in npm run check:repo).",
+  "type": "object",
+  "required": ["id", "accelerators", "kind", "statement", "verification", "owner", "lastReviewed", "nextReview"],
+  "additionalProperties": false,
+  "properties": {
+    "id": { "type": "string", "pattern": "^CLM-[A-Z]{2,5}-[0-9]{3,}$", "description": "CLM-<accelerator>-nnn, e.g. CLM-SOV-001" },
+    "accelerators": { "type": "array", "minItems": 1, "items": { "type": "string" } },
+    "kind": { "enum": ["regulation", "date", "threshold", "penalty", "obligation", "provider", "framework", "market_data", "exchange_rate", "heuristic"] },
+    "jurisdiction": { "type": "string", "description": "e.g. EU, UK, US, US-CA, SG, AU, IN, global" },
+    "statement": { "type": "string", "minLength": 10, "description": "The claim exactly as the product relies on it, in plain English" },
+    "source": {
+      "type": "object",
+      "required": ["url", "title"],
+      "additionalProperties": false,
+      "properties": {
+        "url": { "type": "string", "pattern": "^https://" },
+        "title": { "type": "string" },
+        "article": { "type": "string", "description": "Article, section or page" },
+        "publisher": { "type": "string" },
+        "secondaryUrls": { "type": "array", "items": { "type": "string", "pattern": "^https://" } }
+      }
+    },
+    "verification": { "enum": ["V", "S", "P", "UNSOURCED", "COUNSEL"], "description": "V verified against text quoting the official source; S secondary only; P primary URL given, article not re-read; UNSOURCED not verified; COUNSEL reviewed by qualified counsel" },
+    "checkedOn": { "type": "string", "format": "date" },
+    "volatile": { "type": "boolean", "description": "Fast-changing (decision D8): reviewed at least every 90 days and shown with 'status as of'" },
+    "clientVisible": { "type": "boolean", "description": "False keeps the claim out of client mode (design Q7: unsourced content is consultant-only)" },
+    "owner": { "type": "string", "description": "Accountable reviewer, e.g. sovereignty-compliance-lead (agent) / product owner" },
+    "lastReviewed": { "type": "string", "format": "date" },
+    "nextReview": { "type": "string", "format": "date" },
+    "basisNote": { "type": "string", "description": "For heuristics: the reasoning; for UNSOURCED: what would settle it" },
+    "notes": { "type": "string" }
+  }
+}
