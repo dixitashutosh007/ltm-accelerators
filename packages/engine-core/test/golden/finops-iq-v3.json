@@ -1,13 +1,13 @@
 {
   "RS1": {
     "versions": {
-      "engine": "3.0.0",
-      "kb": "questions 3.0.0; capabilities 3.0.0; levers 1.0.0; thresholds 1.0.0; rules 1.0.0",
-      "questionSet": "3.0.0",
+      "engine": "3.1.0",
+      "kb": "questions 3.1.0; capabilities 3.0.0; levers 1.0.0; thresholds 1.0.0; rules 1.1.0",
+      "questionSet": "3.1.0",
       "capabilityModel": "3.0.0",
       "leverLibrary": "1.0.0",
       "thresholds": "1.0.0",
-      "engineRules": "1.0.0",
+      "engineRules": "1.1.0",
       "valueModel": "not-built (F4)",
       "claimsRegister": "0.1.0"
     },
@@ -52,10 +52,10 @@
       "statement": "4 of 8 in-scope capabilities with a target are at or above LTM's default target for a Tier 2 estate (executive mode: 8 capabilities assessed; the rest in the workshop)"
     },
     "findings": [
-      "F-FIN-FORECASTING Medium [gap_1] wave 2 | FP&A lead | 6-12 months | levers - | offerings OFF.FIN.UNITECON,OFF.FIN.OPMODEL",
-      "F-FIN-USAGE_OPTIMIZATION Medium [gap_1] wave 2 | Engineering leads | 6-12 months | levers LEV-02,LEV-03,LEV-04,LEV-05,LEV-08 | offerings OFF.FIN.SPRINT,OFF.FIN.MANAGED,OFF.FIN.ASSESS",
-      "F-FIN-UNIT_ECONOMICS Medium [gap_1] wave 3 | Product owners | 6-12 months | levers - | offerings OFF.FIN.UNITECON,OFF.FIN.OPMODEL",
-      "F-FIN-EXECUTIVE_STRATEGY_ALIGNMENT Medium [gap_1] wave 3 | CIO | 6-12 months | levers - | offerings OFF.FIN.OPMODEL,OFF.FIN.MANAGED"
+      "F-FIN-FORECASTING Medium [gap_1] wave 2 | FP&A lead | from month 3, within 12 months | levers - | offerings OFF.FIN.UNITECON,OFF.FIN.OPMODEL",
+      "F-FIN-USAGE_OPTIMIZATION Medium [gap_1] wave 2 | Engineering leads | from month 3, within 12 months | levers LEV-02,LEV-03,LEV-04,LEV-05,LEV-08 | offerings OFF.FIN.SPRINT,OFF.FIN.MANAGED,OFF.FIN.ASSESS",
+      "F-FIN-UNIT_ECONOMICS Medium [gap_1] wave 3 | Product owners | from month 9, within 12 months | levers - | offerings OFF.FIN.UNITECON,OFF.FIN.OPMODEL",
+      "F-FIN-EXECUTIVE_STRATEGY_ALIGNMENT Medium [gap_1] wave 3 | CIO | from month 9, within 12 months | levers - | offerings OFF.FIN.OPMODEL,OFF.FIN.MANAGED"
     ],
     "topFindingIds": [
       "F-FIN-FORECASTING",
@@ -87,7 +87,7 @@
           "reason": "unknown"
         }
       ],
-      "basisLine": "Based on your answers to 18 questions; LTM's targets for a Tier 2 estate; not a FinOps Foundation assessment"
+      "basisLine": "Based on 18 of 18 questions answered; LTM's targets for a Tier 2 estate; not a FinOps Foundation assessment"
     },
     "coverage": {
       "asked": 11,
@@ -104,13 +104,13 @@
   },
   "RS2": {
     "versions": {
-      "engine": "3.0.0",
-      "kb": "questions 3.0.0; capabilities 3.0.0; levers 1.0.0; thresholds 1.0.0; rules 1.0.0",
-      "questionSet": "3.0.0",
+      "engine": "3.1.0",
+      "kb": "questions 3.1.0; capabilities 3.0.0; levers 1.0.0; thresholds 1.0.0; rules 1.1.0",
+      "questionSet": "3.1.0",
       "capabilityModel": "3.0.0",
       "leverLibrary": "1.0.0",
       "thresholds": "1.0.0",
-      "engineRules": "1.0.0",
+      "engineRules": "1.1.0",
       "valueModel": "not-built (F4)",
       "claimsRegister": "0.1.0"
     },
@@ -157,20 +157,20 @@
       "statement": "8 of 22 in-scope capabilities with a target are at or above LTM's default target for a Tier 3 estate"
     },
     "findings": [
-      "F-FIN-DATA_INGESTION Critical [gap_2,foundation_uplift] wave 1 | Head of Cloud / CCoE | 0-3 months | levers - | offerings OFF.FIN.TOOLING,OFF.FIN.ASSESS",
-      "F-FIN-ALLOCATION Critical [gap_2,foundation_uplift] wave 1 | FinOps lead | 0-3 months | levers - | offerings OFF.FIN.TOOLING,OFF.FIN.OPMODEL",
-      "F-FIN-FINOPS_PRACTICE_OPERATIONS High [gap_1,foundation_uplift] wave 1 | CIO | 3-6 months | levers - | offerings OFF.FIN.OPMODEL,OFF.FIN.MANAGED",
-      "F-FIN-USAGE_OPTIMIZATION High [gap_2] wave 2 after F-FIN-ALLOCATION | Engineering leads | 3-6 months | levers LEV-02,LEV-03,LEV-04,LEV-05,LEV-07,LEV-08 | offerings OFF.FIN.SPRINT,OFF.FIN.MANAGED,OFF.FIN.ASSESS",
-      "F-FIN-ANOMALY_MANAGEMENT Medium [gap_1] wave 1 after F-FIN-DATA_INGESTION | Platform / SRE lead | 6-12 months | levers - | offerings OFF.FIN.TOOLING,OFF.FIN.ASSESS",
-      "F-FIN-REPORTING_ANALYTICS Medium [gap_1] wave 2 after F-FIN-DATA_INGESTION | FinOps lead | 6-12 months | levers - | offerings OFF.FIN.TOOLING,OFF.FIN.ASSESS",
-      "F-FIN-PLANNING_ESTIMATING Medium [gap_1] wave 2 | Engineering leads | 6-12 months | levers - | offerings OFF.FIN.UNITECON,OFF.FIN.OPMODEL",
-      "F-FIN-FORECASTING Medium [gap_1] wave 2 after F-FIN-DATA_INGESTION | FP&A lead | 6-12 months | levers - | offerings OFF.FIN.UNITECON,OFF.FIN.OPMODEL",
-      "F-FIN-RATE_OPTIMIZATION Medium [gap_1] wave 2 | FinOps lead | 6-12 months | levers LEV-01,LEV-06 | offerings OFF.FIN.SPRINT,OFF.FIN.MANAGED,OFF.FIN.ASSESS",
-      "F-FIN-GOVERNANCE_POLICY_RISK Medium [gap_1] wave 2 | Head of Cloud / CCoE | 6-12 months | levers - | offerings OFF.FIN.OPMODEL,OFF.FIN.MANAGED",
-      "F-FIN-UNIT_ECONOMICS Medium [gap_1] wave 3 after F-FIN-ALLOCATION | Product owners | 6-12 months | levers - | offerings OFF.FIN.UNITECON,OFF.FIN.OPMODEL",
-      "F-FIN-EXECUTIVE_STRATEGY_ALIGNMENT Medium [gap_1] wave 3 | CIO | 6-12 months | levers - | offerings OFF.FIN.OPMODEL,OFF.FIN.MANAGED",
-      "F-FIN-FINOPS_EDUCATION_ENABLEMENT Medium [gap_1] wave 3 | FinOps lead | 6-12 months | levers - | offerings OFF.FIN.OPMODEL,OFF.FIN.MANAGED",
-      "F-FIN-INTERSECTING_DISCIPLINES Medium [gap_1] wave 3 | FinOps lead | 6-12 months | levers - | offerings OFF.FIN.OPMODEL,OFF.FIN.MANAGED"
+      "F-FIN-DATA_INGESTION Critical [gap_2,foundation_uplift] wave 1 | Head of Cloud / CCoE | from month 0, within 3 months | levers - | offerings OFF.FIN.TOOLING,OFF.FIN.ASSESS",
+      "F-FIN-ALLOCATION Critical [gap_2,foundation_uplift] wave 1 | FinOps lead | from month 0, within 3 months | levers - | offerings OFF.FIN.TOOLING,OFF.FIN.OPMODEL",
+      "F-FIN-FINOPS_PRACTICE_OPERATIONS High [gap_1,foundation_uplift] wave 1 | CIO | from month 0, within 6 months | levers - | offerings OFF.FIN.OPMODEL,OFF.FIN.MANAGED",
+      "F-FIN-USAGE_OPTIMIZATION High [gap_2] wave 2 after F-FIN-ALLOCATION | Engineering leads | from month 3, within 6 months | levers LEV-02,LEV-03,LEV-04,LEV-05,LEV-07,LEV-08 | offerings OFF.FIN.SPRINT,OFF.FIN.MANAGED,OFF.FIN.ASSESS",
+      "F-FIN-ANOMALY_MANAGEMENT Medium [gap_1] wave 1 after F-FIN-DATA_INGESTION | Platform / SRE lead | from month 3, within 12 months | levers - | offerings OFF.FIN.TOOLING,OFF.FIN.ASSESS",
+      "F-FIN-REPORTING_ANALYTICS Medium [gap_1] wave 2 after F-FIN-DATA_INGESTION | FinOps lead | from month 3, within 12 months | levers - | offerings OFF.FIN.TOOLING,OFF.FIN.ASSESS",
+      "F-FIN-PLANNING_ESTIMATING Medium [gap_1] wave 2 | Engineering leads | from month 3, within 12 months | levers - | offerings OFF.FIN.UNITECON,OFF.FIN.OPMODEL",
+      "F-FIN-FORECASTING Medium [gap_1] wave 2 after F-FIN-DATA_INGESTION | FP&A lead | from month 3, within 12 months | levers - | offerings OFF.FIN.UNITECON,OFF.FIN.OPMODEL",
+      "F-FIN-RATE_OPTIMIZATION Medium [gap_1] wave 2 | FinOps lead | from month 3, within 12 months | levers LEV-01,LEV-06 | offerings OFF.FIN.SPRINT,OFF.FIN.MANAGED,OFF.FIN.ASSESS",
+      "F-FIN-GOVERNANCE_POLICY_RISK Medium [gap_1] wave 2 | Head of Cloud / CCoE | from month 3, within 12 months | levers - | offerings OFF.FIN.OPMODEL,OFF.FIN.MANAGED",
+      "F-FIN-UNIT_ECONOMICS Medium [gap_1] wave 3 after F-FIN-ALLOCATION | Product owners | from month 9, within 12 months | levers - | offerings OFF.FIN.UNITECON,OFF.FIN.OPMODEL",
+      "F-FIN-EXECUTIVE_STRATEGY_ALIGNMENT Medium [gap_1] wave 3 | CIO | from month 9, within 12 months | levers - | offerings OFF.FIN.OPMODEL,OFF.FIN.MANAGED",
+      "F-FIN-FINOPS_EDUCATION_ENABLEMENT Medium [gap_1] wave 3 | FinOps lead | from month 9, within 12 months | levers - | offerings OFF.FIN.OPMODEL,OFF.FIN.MANAGED",
+      "F-FIN-INTERSECTING_DISCIPLINES Medium [gap_1] wave 3 | FinOps lead | from month 9, within 12 months | levers - | offerings OFF.FIN.OPMODEL,OFF.FIN.MANAGED"
     ],
     "topFindingIds": [
       "F-FIN-DATA_INGESTION",
@@ -195,13 +195,13 @@
   },
   "RS3": {
     "versions": {
-      "engine": "3.0.0",
-      "kb": "questions 3.0.0; capabilities 3.0.0; levers 1.0.0; thresholds 1.0.0; rules 1.0.0",
-      "questionSet": "3.0.0",
+      "engine": "3.1.0",
+      "kb": "questions 3.1.0; capabilities 3.0.0; levers 1.0.0; thresholds 1.0.0; rules 1.1.0",
+      "questionSet": "3.1.0",
       "capabilityModel": "3.0.0",
       "leverLibrary": "1.0.0",
       "thresholds": "1.0.0",
-      "engineRules": "1.0.0",
+      "engineRules": "1.1.0",
       "valueModel": "not-built (F4)",
       "claimsRegister": "0.1.0"
     },
@@ -215,7 +215,7 @@
         "saas_or_licensing -> +1"
       ]
     },
-    "asked": 64,
+    "asked": 65,
     "profile": {
       "DATA_INGESTION": "walk / walk / 0 / at target",
       "ALLOCATION": "not_yet (lowered) / walk / 2",
@@ -225,7 +225,7 @@
       "FORECASTING": "crawl / walk / 1",
       "BUDGETING": "crawl / walk / 1",
       "KPIS_BENCHMARKING": "crawl / crawl / 0 / at target",
-      "UNIT_ECONOMICS": "not_yet (lowered) / crawl / 1",
+      "UNIT_ECONOMICS": "not_yet (lowered) / crawl / 1 / unconfirmed / incomplete",
       "ARCHITECTING_WORKLOAD_PLACEMENT": "walk / walk / 0 / at target",
       "USAGE_OPTIMIZATION": "crawl (lowered) / walk / 1",
       "RATE_OPTIMIZATION": "crawl / walk / 1",
@@ -247,20 +247,20 @@
       "statement": "7 of 21 in-scope capabilities with a target are at or above LTM's default target for a Tier 2 estate"
     },
     "findings": [
-      "F-FIN-ALLOCATION Critical [gap_2,foundation_uplift] wave 1 | FinOps lead | 0-3 months | levers - | offerings OFF.FIN.TOOLING,OFF.FIN.OPMODEL",
-      "F-FIN-FINOPS_PRACTICE_OPERATIONS High [gap_1,foundation_uplift] wave 1 | CIO | 3-6 months | levers - | offerings OFF.FIN.OPMODEL,OFF.FIN.MANAGED",
-      "F-FIN-REPORTING_ANALYTICS Medium [gap_1] wave 2 | FinOps lead | 6-12 months | levers - | offerings OFF.FIN.TOOLING,OFF.FIN.ASSESS",
-      "F-FIN-FORECASTING Medium [gap_1] wave 2 | FP&A lead | 6-12 months | levers - | offerings OFF.FIN.UNITECON,OFF.FIN.OPMODEL",
-      "F-FIN-BUDGETING Medium [gap_1] wave 2 | FP&A lead | 6-12 months | levers - | offerings OFF.FIN.UNITECON,OFF.FIN.OPMODEL",
-      "F-FIN-USAGE_OPTIMIZATION Medium [gap_1] wave 2 after F-FIN-ALLOCATION | Engineering leads | 6-12 months | levers LEV-02,LEV-03,LEV-04,LEV-05,LEV-07,LEV-08,LEV-10 | offerings OFF.FIN.SPRINT,OFF.FIN.MANAGED,OFF.FIN.ASSESS",
-      "F-FIN-RATE_OPTIMIZATION Medium [gap_1] wave 2 | FinOps lead | 6-12 months | levers LEV-01,LEV-06 | offerings OFF.FIN.SPRINT,OFF.FIN.MANAGED,OFF.FIN.ASSESS",
-      "F-FIN-GOVERNANCE_POLICY_RISK Medium [gap_1] wave 2 | Head of Cloud / CCoE | 6-12 months | levers - | offerings OFF.FIN.OPMODEL,OFF.FIN.MANAGED",
-      "F-FIN-AUTOMATION_TOOLS_SERVICES Medium [gap_1] wave 2 | FinOps lead | 6-12 months | levers - | offerings OFF.FIN.TOOLING,OFF.FIN.ASSESS",
-      "F-FIN-UNIT_ECONOMICS Medium [gap_1] wave 3 after F-FIN-ALLOCATION | Product owners | 6-12 months | levers - | offerings OFF.FIN.UNITECON,OFF.FIN.OPMODEL",
-      "F-FIN-EXECUTIVE_STRATEGY_ALIGNMENT Medium [gap_1] wave 3 | CIO | 6-12 months | levers - | offerings OFF.FIN.OPMODEL,OFF.FIN.MANAGED",
-      "F-FIN-INVOICING_CHARGEBACK Medium [gap_1] wave 3 after F-FIN-ALLOCATION | CFO | 6-12 months | levers - | offerings OFF.FIN.UNITECON,OFF.FIN.OPMODEL",
-      "F-FIN-FINOPS_ASSESSMENT Medium [gap_1] wave 3 | FinOps lead | 6-12 months | levers - | offerings OFF.FIN.OPMODEL,OFF.FIN.MANAGED",
-      "F-FIN-INTERSECTING_DISCIPLINES Medium [gap_1] wave 3 | FinOps lead | 6-12 months | levers - | offerings OFF.FIN.OPMODEL,OFF.FIN.MANAGED"
+      "F-FIN-ALLOCATION Critical [gap_2,foundation_uplift] wave 1 | FinOps lead | from month 0, within 3 months | levers - | offerings OFF.FIN.TOOLING,OFF.FIN.OPMODEL",
+      "F-FIN-FINOPS_PRACTICE_OPERATIONS High [gap_1,foundation_uplift] wave 1 | CIO | from month 0, within 6 months | levers - | offerings OFF.FIN.OPMODEL,OFF.FIN.MANAGED",
+      "F-FIN-REPORTING_ANALYTICS Medium [gap_1] wave 2 | FinOps lead | from month 3, within 12 months | levers - | offerings OFF.FIN.TOOLING,OFF.FIN.ASSESS",
+      "F-FIN-FORECASTING Medium [gap_1] wave 2 | FP&A lead | from month 3, within 12 months | levers - | offerings OFF.FIN.UNITECON,OFF.FIN.OPMODEL",
+      "F-FIN-BUDGETING Medium [gap_1] wave 2 | FP&A lead | from month 3, within 12 months | levers - | offerings OFF.FIN.UNITECON,OFF.FIN.OPMODEL",
+      "F-FIN-USAGE_OPTIMIZATION Medium [gap_1] wave 2 after F-FIN-ALLOCATION | Engineering leads | from month 3, within 12 months | levers LEV-02,LEV-03,LEV-04,LEV-05,LEV-07,LEV-08,LEV-10 | offerings OFF.FIN.SPRINT,OFF.FIN.MANAGED,OFF.FIN.ASSESS",
+      "F-FIN-RATE_OPTIMIZATION Medium [gap_1] wave 2 | FinOps lead | from month 3, within 12 months | levers LEV-01,LEV-06 | offerings OFF.FIN.SPRINT,OFF.FIN.MANAGED,OFF.FIN.ASSESS",
+      "F-FIN-GOVERNANCE_POLICY_RISK Medium [gap_1] wave 2 | Head of Cloud / CCoE | from month 3, within 12 months | levers - | offerings OFF.FIN.OPMODEL,OFF.FIN.MANAGED",
+      "F-FIN-AUTOMATION_TOOLS_SERVICES Medium [gap_1] wave 2 | FinOps lead | from month 3, within 12 months | levers - | offerings OFF.FIN.TOOLING,OFF.FIN.ASSESS",
+      "F-FIN-EXECUTIVE_STRATEGY_ALIGNMENT Medium [gap_1] wave 3 | CIO | from month 9, within 12 months | levers - | offerings OFF.FIN.OPMODEL,OFF.FIN.MANAGED",
+      "F-FIN-INVOICING_CHARGEBACK Medium [gap_1] wave 3 after F-FIN-ALLOCATION | CFO | from month 9, within 12 months | levers - | offerings OFF.FIN.UNITECON,OFF.FIN.OPMODEL",
+      "F-FIN-FINOPS_ASSESSMENT Medium [gap_1] wave 3 | FinOps lead | from month 9, within 12 months | levers - | offerings OFF.FIN.OPMODEL,OFF.FIN.MANAGED",
+      "F-FIN-INTERSECTING_DISCIPLINES Medium [gap_1] wave 3 | FinOps lead | from month 9, within 12 months | levers - | offerings OFF.FIN.OPMODEL,OFF.FIN.MANAGED",
+      "F-FIN-UNIT_ECONOMICS Medium [gap_1] wave 3 after F-FIN-ALLOCATION | Product owners | from month 9, within 12 months | levers - | offerings OFF.FIN.UNITECON,OFF.FIN.OPMODEL | unconfirmed"
     ],
     "topFindingIds": [
       "F-FIN-ALLOCATION",
@@ -271,27 +271,31 @@
     ],
     "needVerdict": null,
     "coverage": {
-      "asked": 41,
+      "asked": 42,
       "answered": 41,
       "unknown": 0,
-      "blank": 0,
-      "blankQuestions": [],
+      "blank": 1,
+      "blankQuestions": [
+        "QV-06"
+      ],
       "unknownQuestions": [],
       "ignoredAnswers": [],
       "unconfirmedPrefill": [],
-      "unconfirmedCapabilities": []
+      "unconfirmedCapabilities": [
+        "UNIT_ECONOMICS"
+      ]
     },
     "conflicts": []
   },
   "RS4": {
     "versions": {
-      "engine": "3.0.0",
-      "kb": "questions 3.0.0; capabilities 3.0.0; levers 1.0.0; thresholds 1.0.0; rules 1.0.0",
-      "questionSet": "3.0.0",
+      "engine": "3.1.0",
+      "kb": "questions 3.1.0; capabilities 3.0.0; levers 1.0.0; thresholds 1.0.0; rules 1.1.0",
+      "questionSet": "3.1.0",
       "capabilityModel": "3.0.0",
       "leverLibrary": "1.0.0",
       "thresholds": "1.0.0",
-      "engineRules": "1.0.0",
+      "engineRules": "1.1.0",
       "valueModel": "not-built (F4)",
       "claimsRegister": "0.1.0"
     },
@@ -338,31 +342,32 @@
       "statement": "4 of 22 in-scope capabilities with a target are at or above LTM's default target for a Tier 3 estate"
     },
     "findings": [
-      "F-FIN-DATA_INGESTION Critical [gap_3] wave 1 | Head of Cloud / CCoE | 0-3 months | levers - | offerings OFF.FIN.TOOLING,OFF.FIN.ASSESS",
-      "F-FIN-ANOMALY_MANAGEMENT Critical [gap_3] wave 1 after F-FIN-DATA_INGESTION | Platform / SRE lead | 0-3 months | levers - | offerings OFF.FIN.TOOLING,OFF.FIN.ASSESS | unconfirmed",
-      "F-FIN-FINOPS_PRACTICE_OPERATIONS Critical [gap_3] wave 1 | CIO | 0-3 months | levers - | offerings OFF.FIN.OPMODEL,OFF.FIN.MANAGED",
-      "F-FIN-ALLOCATION Critical [gap_2,foundation_uplift] wave 1 | FinOps lead | 0-3 months | levers - | offerings OFF.FIN.TOOLING,OFF.FIN.OPMODEL",
-      "F-FIN-USAGE_OPTIMIZATION Critical [gap_3] wave 2 after F-FIN-ALLOCATION | Engineering leads | 0-3 months | levers LEV-02,LEV-03,LEV-04,LEV-05,LEV-08 | offerings OFF.FIN.SPRINT,OFF.FIN.MANAGED,OFF.FIN.ASSESS",
-      "F-FIN-RATE_OPTIMIZATION Critical [gap_3] wave 2 | FinOps lead | 0-3 months | levers LEV-01,LEV-06 | offerings OFF.FIN.SPRINT,OFF.FIN.MANAGED,OFF.FIN.ASSESS",
-      "F-FIN-GOVERNANCE_POLICY_RISK Critical [gap_3] wave 2 | Head of Cloud / CCoE | 0-3 months | levers - | offerings OFF.FIN.OPMODEL,OFF.FIN.MANAGED",
-      "F-FIN-REPORTING_ANALYTICS High [gap_2] wave 2 after F-FIN-DATA_INGESTION | FinOps lead | 3-6 months | levers - | offerings OFF.FIN.TOOLING,OFF.FIN.ASSESS",
-      "F-FIN-FORECASTING High [gap_2] wave 2 after F-FIN-DATA_INGESTION | FP&A lead | 3-6 months | levers - | offerings OFF.FIN.UNITECON,OFF.FIN.OPMODEL",
-      "F-FIN-UNIT_ECONOMICS High [gap_2] wave 3 after F-FIN-ALLOCATION | Product owners | 3-6 months | levers - | offerings OFF.FIN.UNITECON,OFF.FIN.OPMODEL",
-      "F-FIN-EXECUTIVE_STRATEGY_ALIGNMENT High [gap_2] wave 3 | CIO | 3-6 months | levers - | offerings OFF.FIN.OPMODEL,OFF.FIN.MANAGED",
-      "F-FIN-FINOPS_EDUCATION_ENABLEMENT High [gap_2] wave 3 | FinOps lead | 3-6 months | levers - | offerings OFF.FIN.OPMODEL,OFF.FIN.MANAGED",
-      "F-FIN-FINOPS_ASSESSMENT High [gap_2] wave 3 | FinOps lead | 3-6 months | levers - | offerings OFF.FIN.OPMODEL,OFF.FIN.MANAGED",
-      "F-FIN-PLANNING_ESTIMATING Medium [gap_1] wave 2 | Engineering leads | 6-12 months | levers - | offerings OFF.FIN.UNITECON,OFF.FIN.OPMODEL",
-      "F-FIN-ARCHITECTING_WORKLOAD_PLACEMENT Medium [gap_1] wave 2 | Head of Cloud / CCoE | 6-12 months | levers - | offerings OFF.CT.PLACEMENT,OFF.FIN.SPRINT",
-      "F-FIN-AUTOMATION_TOOLS_SERVICES Medium [gap_1] wave 2 | FinOps lead | 6-12 months | levers - | offerings OFF.FIN.TOOLING,OFF.FIN.ASSESS",
-      "F-FIN-KPIS_BENCHMARKING Medium [gap_1] wave 3 after F-FIN-ALLOCATION | FinOps lead | 6-12 months | levers - | offerings OFF.FIN.OPMODEL,OFF.FIN.MANAGED",
-      "F-FIN-INVOICING_CHARGEBACK Medium [gap_1] wave 3 after F-FIN-ALLOCATION | CFO | 6-12 months | levers - | offerings OFF.FIN.UNITECON,OFF.FIN.OPMODEL"
+      "F-FIN-DATA_INGESTION Critical [gap_3] wave 1 | Head of Cloud / CCoE | from month 0, within 3 months | levers - | offerings OFF.FIN.TOOLING,OFF.FIN.ASSESS",
+      "F-FIN-ANOMALY_MANAGEMENT Critical [gap_3] wave 1 after F-FIN-DATA_INGESTION | Platform / SRE lead | from month 3, within 3 months | levers - | offerings OFF.FIN.TOOLING,OFF.FIN.ASSESS | unconfirmed",
+      "F-FIN-FINOPS_PRACTICE_OPERATIONS Critical [gap_3] wave 1 | CIO | from month 0, within 3 months | levers - | offerings OFF.FIN.OPMODEL,OFF.FIN.MANAGED",
+      "F-FIN-ALLOCATION Critical [gap_2,foundation_uplift] wave 1 | FinOps lead (to be appointed; interim: Head of Cloud / CCoE) | from month 0, within 3 months | levers - | offerings OFF.FIN.TOOLING,OFF.FIN.OPMODEL",
+      "F-FIN-DECISION-01 Critical [decision_rule,foundation_uplift] wave 1 | CIO | from month 0, within 3 months | levers - | offerings OFF.FIN.OPMODEL,OFF.FIN.MANAGED",
+      "F-FIN-USAGE_OPTIMIZATION Critical [gap_3] wave 2 after F-FIN-ALLOCATION | Engineering leads | from month 3, within 3 months | levers LEV-02,LEV-03,LEV-04,LEV-05,LEV-08 | offerings OFF.FIN.SPRINT,OFF.FIN.MANAGED,OFF.FIN.ASSESS",
+      "F-FIN-RATE_OPTIMIZATION Critical [gap_3] wave 2 | FinOps lead (to be appointed; interim: Head of Cloud / CCoE) | from month 3, within 3 months | levers LEV-01,LEV-06 | offerings OFF.FIN.SPRINT,OFF.FIN.MANAGED,OFF.FIN.ASSESS",
+      "F-FIN-GOVERNANCE_POLICY_RISK Critical [gap_3] wave 2 | Head of Cloud / CCoE | from month 3, within 3 months | levers - | offerings OFF.FIN.OPMODEL,OFF.FIN.MANAGED",
+      "F-FIN-REPORTING_ANALYTICS High [gap_2] wave 2 after F-FIN-DATA_INGESTION | FinOps lead (to be appointed; interim: Head of Cloud / CCoE) | from month 3, within 6 months | levers - | offerings OFF.FIN.TOOLING,OFF.FIN.ASSESS",
+      "F-FIN-FORECASTING High [gap_2] wave 2 after F-FIN-DATA_INGESTION | FP&A lead | from month 3, within 6 months | levers - | offerings OFF.FIN.UNITECON,OFF.FIN.OPMODEL",
+      "F-FIN-UNIT_ECONOMICS High [gap_2] wave 3 after F-FIN-ALLOCATION | Product owners | from month 9, within 6 months | levers - | offerings OFF.FIN.UNITECON,OFF.FIN.OPMODEL",
+      "F-FIN-EXECUTIVE_STRATEGY_ALIGNMENT High [gap_2] wave 3 | CIO | from month 9, within 6 months | levers - | offerings OFF.FIN.OPMODEL,OFF.FIN.MANAGED",
+      "F-FIN-FINOPS_EDUCATION_ENABLEMENT High [gap_2] wave 3 | FinOps lead (to be appointed; interim: Head of Cloud / CCoE) | from month 9, within 6 months | levers - | offerings OFF.FIN.OPMODEL,OFF.FIN.MANAGED",
+      "F-FIN-FINOPS_ASSESSMENT High [gap_2] wave 3 | FinOps lead (to be appointed; interim: Head of Cloud / CCoE) | from month 9, within 6 months | levers - | offerings OFF.FIN.OPMODEL,OFF.FIN.MANAGED",
+      "F-FIN-PLANNING_ESTIMATING Medium [gap_1] wave 2 | Engineering leads | from month 3, within 12 months | levers - | offerings OFF.FIN.UNITECON,OFF.FIN.OPMODEL",
+      "F-FIN-ARCHITECTING_WORKLOAD_PLACEMENT Medium [gap_1] wave 2 | Head of Cloud / CCoE | from month 3, within 12 months | levers - | offerings OFF.CT.PLACEMENT,OFF.FIN.SPRINT",
+      "F-FIN-AUTOMATION_TOOLS_SERVICES Medium [gap_1] wave 2 | FinOps lead (to be appointed; interim: Head of Cloud / CCoE) | from month 3, within 12 months | levers - | offerings OFF.FIN.TOOLING,OFF.FIN.ASSESS",
+      "F-FIN-KPIS_BENCHMARKING Medium [gap_1] wave 3 after F-FIN-ALLOCATION | FinOps lead (to be appointed; interim: Head of Cloud / CCoE) | from month 9, within 12 months | levers - | offerings OFF.FIN.OPMODEL,OFF.FIN.MANAGED",
+      "F-FIN-INVOICING_CHARGEBACK Medium [gap_1] wave 3 after F-FIN-ALLOCATION | CFO | from month 9, within 12 months | levers - | offerings OFF.FIN.UNITECON,OFF.FIN.OPMODEL"
     ],
     "topFindingIds": [
       "F-FIN-DATA_INGESTION",
       "F-FIN-ANOMALY_MANAGEMENT",
       "F-FIN-FINOPS_PRACTICE_OPERATIONS",
       "F-FIN-ALLOCATION",
-      "F-FIN-USAGE_OPTIMIZATION"
+      "F-FIN-DECISION-01"
     ],
     "needVerdict": null,
     "coverage": {
@@ -384,13 +389,13 @@
   },
   "RS5": {
     "versions": {
-      "engine": "3.0.0",
-      "kb": "questions 3.0.0; capabilities 3.0.0; levers 1.0.0; thresholds 1.0.0; rules 1.0.0",
-      "questionSet": "3.0.0",
+      "engine": "3.1.0",
+      "kb": "questions 3.1.0; capabilities 3.0.0; levers 1.0.0; thresholds 1.0.0; rules 1.1.0",
+      "questionSet": "3.1.0",
       "capabilityModel": "3.0.0",
       "leverLibrary": "1.0.0",
       "thresholds": "1.0.0",
-      "engineRules": "1.0.0",
+      "engineRules": "1.1.0",
       "valueModel": "not-built (F4)",
       "claimsRegister": "0.1.0"
     },
@@ -433,12 +438,14 @@
       "statement": "3 of 7 in-scope capabilities with a target are at or above LTM's default target for a Tier 1 estate (executive mode: 8 capabilities assessed; the rest in the workshop)"
     },
     "findings": [
-      "F-FIN-ALLOCATION Medium [gap_1] wave 1 | FinOps lead | 6-12 months | levers - | offerings OFF.FIN.TOOLING,OFF.FIN.OPMODEL",
-      "F-FIN-FORECASTING Medium [gap_1] wave 2 | FP&A lead | 6-12 months | levers - | offerings OFF.FIN.UNITECON,OFF.FIN.OPMODEL | unconfirmed",
-      "F-FIN-USAGE_OPTIMIZATION Medium [gap_1] wave 2 after F-FIN-ALLOCATION | Engineering leads | 6-12 months | levers LEV-02,LEV-03,LEV-04,LEV-05,LEV-08 | offerings OFF.FIN.SPRINT,OFF.FIN.MANAGED,OFF.FIN.ASSESS",
-      "F-FIN-EXECUTIVE_STRATEGY_ALIGNMENT Medium [gap_1] wave 3 | CIO | 6-12 months | levers - | offerings OFF.FIN.OPMODEL,OFF.FIN.MANAGED"
+      "F-FIN-DECISION-01 High [decision_rule] wave 1 | CIO | from month 0, within 6 months | levers - | offerings OFF.FIN.OPMODEL,OFF.FIN.MANAGED",
+      "F-FIN-ALLOCATION Medium [gap_1] wave 1 | FinOps lead (to be appointed; interim: Head of Cloud / CCoE) | from month 0, within 12 months | levers - | offerings OFF.FIN.TOOLING,OFF.FIN.OPMODEL",
+      "F-FIN-FORECASTING Medium [gap_1] wave 2 | FP&A lead | from month 3, within 12 months | levers - | offerings OFF.FIN.UNITECON,OFF.FIN.OPMODEL | unconfirmed",
+      "F-FIN-USAGE_OPTIMIZATION Medium [gap_1] wave 2 after F-FIN-ALLOCATION | Engineering leads | from month 12, within 12 months | levers LEV-02,LEV-03,LEV-04,LEV-05,LEV-08 | offerings OFF.FIN.SPRINT,OFF.FIN.MANAGED,OFF.FIN.ASSESS",
+      "F-FIN-EXECUTIVE_STRATEGY_ALIGNMENT Medium [gap_1] wave 3 | CIO | from month 9, within 12 months | levers - | offerings OFF.FIN.OPMODEL,OFF.FIN.MANAGED"
     ],
     "topFindingIds": [
+      "F-FIN-DECISION-01",
       "F-FIN-ALLOCATION",
       "F-FIN-FORECASTING",
       "F-FIN-USAGE_OPTIMIZATION",
@@ -469,7 +476,7 @@
           "reason": "unknown"
         }
       ],
-      "basisLine": "Based on your answers to 18 questions; LTM's targets for a Tier 1 estate; not a FinOps Foundation assessment"
+      "basisLine": "Based on 18 of 18 questions answered; LTM's targets for a Tier 1 estate; not a FinOps Foundation assessment"
     },
     "coverage": {
       "asked": 11,
@@ -490,13 +497,13 @@
   },
   "unanswered-executive": {
     "versions": {
-      "engine": "3.0.0",
-      "kb": "questions 3.0.0; capabilities 3.0.0; levers 1.0.0; thresholds 1.0.0; rules 1.0.0",
-      "questionSet": "3.0.0",
+      "engine": "3.1.0",
+      "kb": "questions 3.1.0; capabilities 3.0.0; levers 1.0.0; thresholds 1.0.0; rules 1.1.0",
+      "questionSet": "3.1.0",
       "capabilityModel": "3.0.0",
       "leverLibrary": "1.0.0",
       "thresholds": "1.0.0",
-      "engineRules": "1.0.0",
+      "engineRules": "1.1.0",
       "valueModel": "not-built (F4)",
       "claimsRegister": "0.1.0"
     },
@@ -510,21 +517,21 @@
     "asked": 20,
     "profile": {
       "DATA_INGESTION": "not_assessed / walk / - / workshop",
-      "ALLOCATION": "not_assessed / crawl / - / incomplete",
+      "ALLOCATION": "unknown / crawl / 1 / unconfirmed / incomplete",
       "REPORTING_ANALYTICS": "not_assessed / crawl / - / workshop",
-      "ANOMALY_MANAGEMENT": "not_assessed / crawl / - / incomplete",
+      "ANOMALY_MANAGEMENT": "unknown / crawl / 1 / unconfirmed / incomplete",
       "PLANNING_ESTIMATING": "not_assessed / crawl / - / workshop",
-      "FORECASTING": "not_assessed / crawl / - / incomplete",
+      "FORECASTING": "unknown / crawl / 1 / unconfirmed / incomplete",
       "BUDGETING": "not_assessed / crawl / - / workshop",
       "KPIS_BENCHMARKING": "not_assessed / crawl / - / workshop",
-      "UNIT_ECONOMICS": "not_assessed / - / - / incomplete",
+      "UNIT_ECONOMICS": "unknown / - / - / unconfirmed / incomplete",
       "ARCHITECTING_WORKLOAD_PLACEMENT": "not_assessed / crawl / - / workshop",
-      "USAGE_OPTIMIZATION": "not_assessed / crawl / - / incomplete",
-      "RATE_OPTIMIZATION": "not_assessed / crawl / - / incomplete",
+      "USAGE_OPTIMIZATION": "unknown / crawl / 1 / unconfirmed / incomplete",
+      "RATE_OPTIMIZATION": "unknown / crawl / 1 / unconfirmed / incomplete",
       "LICENSING_SAAS": "not_in_scope / - / -",
       "SUSTAINABILITY": "not_in_scope / - / -",
-      "EXECUTIVE_STRATEGY_ALIGNMENT": "not_assessed / crawl / - / incomplete",
-      "FINOPS_PRACTICE_OPERATIONS": "not_assessed / crawl / - / incomplete",
+      "EXECUTIVE_STRATEGY_ALIGNMENT": "unknown / crawl / 1 / unconfirmed / incomplete",
+      "FINOPS_PRACTICE_OPERATIONS": "unknown / crawl / 1 / unconfirmed / incomplete",
       "GOVERNANCE_POLICY_RISK": "not_assessed / crawl / - / workshop",
       "FINOPS_EDUCATION_ENABLEMENT": "not_assessed / crawl / - / workshop",
       "INVOICING_CHARGEBACK": "not_assessed / - / - / workshop",
@@ -538,8 +545,23 @@
       "assessed": 0,
       "statement": "0 of 7 in-scope capabilities with a target are at or above LTM's default target for a Tier 1 estate (executive mode: 0 capabilities assessed; the rest in the workshop)"
     },
-    "findings": [],
-    "topFindingIds": [],
+    "findings": [
+      "F-FIN-DECISION-01 High [decision_rule] wave 1 | CIO | from month 0, within 6 months | levers - | offerings OFF.FIN.OPMODEL,OFF.FIN.MANAGED | unconfirmed",
+      "F-FIN-ALLOCATION Medium [gap_1] wave 1 | FinOps lead (to be appointed; interim: Head of Cloud / CCoE) | from month 0, within 12 months | levers - | offerings OFF.FIN.TOOLING,OFF.FIN.OPMODEL | unconfirmed",
+      "F-FIN-ANOMALY_MANAGEMENT Medium [gap_1] wave 1 | Platform / SRE lead | from month 0, within 12 months | levers - | offerings OFF.FIN.TOOLING,OFF.FIN.ASSESS | unconfirmed",
+      "F-FIN-FINOPS_PRACTICE_OPERATIONS Medium [gap_1] wave 1 | CIO | from month 0, within 12 months | levers - | offerings OFF.FIN.OPMODEL,OFF.FIN.MANAGED | unconfirmed",
+      "F-FIN-FORECASTING Medium [gap_1] wave 2 | FP&A lead | from month 3, within 12 months | levers - | offerings OFF.FIN.UNITECON,OFF.FIN.OPMODEL | unconfirmed",
+      "F-FIN-USAGE_OPTIMIZATION Medium [gap_1] wave 2 after F-FIN-ALLOCATION | Engineering leads | from month 12, within 12 months | levers LEV-02,LEV-03,LEV-04,LEV-05,LEV-08 | offerings OFF.FIN.SPRINT,OFF.FIN.MANAGED,OFF.FIN.ASSESS | unconfirmed",
+      "F-FIN-RATE_OPTIMIZATION Medium [gap_1] wave 2 | FinOps lead (to be appointed; interim: Head of Cloud / CCoE) | from month 3, within 12 months | levers LEV-01,LEV-06 | offerings OFF.FIN.SPRINT,OFF.FIN.MANAGED,OFF.FIN.ASSESS | unconfirmed",
+      "F-FIN-EXECUTIVE_STRATEGY_ALIGNMENT Medium [gap_1] wave 3 | CIO | from month 9, within 12 months | levers - | offerings OFF.FIN.OPMODEL,OFF.FIN.MANAGED | unconfirmed"
+    ],
+    "topFindingIds": [
+      "F-FIN-DECISION-01",
+      "F-FIN-ALLOCATION",
+      "F-FIN-ANOMALY_MANAGEMENT",
+      "F-FIN-FINOPS_PRACTICE_OPERATIONS",
+      "F-FIN-FORECASTING"
+    ],
     "needVerdict": {
       "needIndex": 33.3,
       "baseIndex": 33.3,
@@ -626,7 +648,7 @@
           "reason": "unknown"
         }
       ],
-      "basisLine": "Based on your answers to 18 questions; LTM's targets for a Tier 1 estate; not a FinOps Foundation assessment"
+      "basisLine": "Based on 4 of 18 questions answered; LTM's targets for a Tier 1 estate; not a FinOps Foundation assessment"
     },
     "coverage": {
       "asked": 11,
@@ -649,19 +671,28 @@
       "unknownQuestions": [],
       "ignoredAnswers": [],
       "unconfirmedPrefill": [],
-      "unconfirmedCapabilities": []
+      "unconfirmedCapabilities": [
+        "ALLOCATION",
+        "ANOMALY_MANAGEMENT",
+        "FORECASTING",
+        "UNIT_ECONOMICS",
+        "USAGE_OPTIMIZATION",
+        "RATE_OPTIMIZATION",
+        "EXECUTIVE_STRATEGY_ALIGNMENT",
+        "FINOPS_PRACTICE_OPERATIONS"
+      ]
     },
     "conflicts": []
   },
   "unanswered-workshop": {
     "versions": {
-      "engine": "3.0.0",
-      "kb": "questions 3.0.0; capabilities 3.0.0; levers 1.0.0; thresholds 1.0.0; rules 1.0.0",
-      "questionSet": "3.0.0",
+      "engine": "3.1.0",
+      "kb": "questions 3.1.0; capabilities 3.0.0; levers 1.0.0; thresholds 1.0.0; rules 1.1.0",
+      "questionSet": "3.1.0",
       "capabilityModel": "3.0.0",
       "leverLibrary": "1.0.0",
       "thresholds": "1.0.0",
-      "engineRules": "1.0.0",
+      "engineRules": "1.1.0",
       "valueModel": "not-built (F4)",
       "claimsRegister": "0.1.0"
     },
@@ -676,28 +707,28 @@
     },
     "asked": 59,
     "profile": {
-      "DATA_INGESTION": "not_assessed / walk / - / incomplete",
-      "ALLOCATION": "not_assessed / walk / - / incomplete",
-      "REPORTING_ANALYTICS": "not_assessed / walk / - / incomplete",
-      "ANOMALY_MANAGEMENT": "not_assessed / walk / - / incomplete",
-      "PLANNING_ESTIMATING": "not_assessed / walk / - / incomplete",
-      "FORECASTING": "not_assessed / walk / - / incomplete",
-      "BUDGETING": "not_assessed / walk / - / incomplete",
-      "KPIS_BENCHMARKING": "not_assessed / crawl / - / incomplete",
-      "UNIT_ECONOMICS": "not_assessed / crawl / - / incomplete",
-      "ARCHITECTING_WORKLOAD_PLACEMENT": "not_assessed / walk / - / incomplete",
-      "USAGE_OPTIMIZATION": "not_assessed / walk / - / incomplete",
-      "RATE_OPTIMIZATION": "not_assessed / walk / - / incomplete",
-      "LICENSING_SAAS": "not_assessed / crawl / - / incomplete",
+      "DATA_INGESTION": "unknown / walk / 2 / unconfirmed / incomplete",
+      "ALLOCATION": "unknown / walk / 2 / unconfirmed / incomplete",
+      "REPORTING_ANALYTICS": "unknown / walk / 2 / unconfirmed / incomplete",
+      "ANOMALY_MANAGEMENT": "unknown / walk / 2 / unconfirmed / incomplete",
+      "PLANNING_ESTIMATING": "unknown / walk / 2 / unconfirmed / incomplete",
+      "FORECASTING": "unknown / walk / 2 / unconfirmed / incomplete",
+      "BUDGETING": "unknown / walk / 2 / unconfirmed / incomplete",
+      "KPIS_BENCHMARKING": "unknown / crawl / 1 / unconfirmed / incomplete",
+      "UNIT_ECONOMICS": "unknown / crawl / 1 / unconfirmed / incomplete",
+      "ARCHITECTING_WORKLOAD_PLACEMENT": "unknown / walk / 2 / unconfirmed / incomplete",
+      "USAGE_OPTIMIZATION": "unknown / walk / 2 / unconfirmed / incomplete",
+      "RATE_OPTIMIZATION": "unknown / walk / 2 / unconfirmed / incomplete",
+      "LICENSING_SAAS": "unknown / crawl / 1 / unconfirmed / incomplete",
       "SUSTAINABILITY": "not_in_scope / - / -",
-      "EXECUTIVE_STRATEGY_ALIGNMENT": "not_assessed / walk / - / incomplete",
-      "FINOPS_PRACTICE_OPERATIONS": "not_assessed / walk / - / incomplete",
-      "GOVERNANCE_POLICY_RISK": "not_assessed / walk / - / incomplete",
-      "FINOPS_EDUCATION_ENABLEMENT": "not_assessed / crawl / - / incomplete",
-      "INVOICING_CHARGEBACK": "not_assessed / crawl / - / incomplete",
-      "FINOPS_ASSESSMENT": "not_assessed / crawl / - / incomplete",
-      "AUTOMATION_TOOLS_SERVICES": "not_assessed / walk / - / incomplete",
-      "INTERSECTING_DISCIPLINES": "not_assessed / crawl / - / incomplete"
+      "EXECUTIVE_STRATEGY_ALIGNMENT": "unknown / walk / 2 / unconfirmed / incomplete",
+      "FINOPS_PRACTICE_OPERATIONS": "unknown / walk / 2 / unconfirmed / incomplete",
+      "GOVERNANCE_POLICY_RISK": "unknown / walk / 2 / unconfirmed / incomplete",
+      "FINOPS_EDUCATION_ENABLEMENT": "unknown / crawl / 1 / unconfirmed / incomplete",
+      "INVOICING_CHARGEBACK": "unknown / crawl / 1 / unconfirmed / incomplete",
+      "FINOPS_ASSESSMENT": "unknown / crawl / 1 / unconfirmed / incomplete",
+      "AUTOMATION_TOOLS_SERVICES": "unknown / walk / 2 / unconfirmed / incomplete",
+      "INTERSECTING_DISCIPLINES": "unknown / crawl / 1 / unconfirmed / incomplete"
     },
     "headline": {
       "atOrAboveTarget": 0,
@@ -705,8 +736,37 @@
       "assessed": 0,
       "statement": "0 of 21 in-scope capabilities with a target are at or above LTM's default target for a Tier 2 estate"
     },
-    "findings": [],
-    "topFindingIds": [],
+    "findings": [
+      "F-FIN-DECISION-01 Critical [decision_rule,foundation_uplift] wave 1 | CIO | from month 0, within 3 months | levers - | offerings OFF.FIN.OPMODEL,OFF.FIN.MANAGED | unconfirmed",
+      "F-FIN-DATA_INGESTION Critical [gap_2,foundation_uplift] wave 1 | Head of Cloud / CCoE | from month 0, within 3 months | levers - | offerings OFF.FIN.TOOLING,OFF.FIN.ASSESS | unconfirmed",
+      "F-FIN-ALLOCATION Critical [gap_2,foundation_uplift] wave 1 | FinOps lead (to be appointed; interim: Head of Cloud / CCoE) | from month 0, within 3 months | levers - | offerings OFF.FIN.TOOLING,OFF.FIN.OPMODEL | unconfirmed",
+      "F-FIN-FINOPS_PRACTICE_OPERATIONS Critical [gap_2,foundation_uplift] wave 1 | CIO | from month 0, within 3 months | levers - | offerings OFF.FIN.OPMODEL,OFF.FIN.MANAGED | unconfirmed",
+      "F-FIN-ANOMALY_MANAGEMENT High [gap_2] wave 1 after F-FIN-DATA_INGESTION | Platform / SRE lead | from month 3, within 6 months | levers - | offerings OFF.FIN.TOOLING,OFF.FIN.ASSESS | unconfirmed",
+      "F-FIN-REPORTING_ANALYTICS High [gap_2] wave 2 after F-FIN-DATA_INGESTION | FinOps lead (to be appointed; interim: Head of Cloud / CCoE) | from month 3, within 6 months | levers - | offerings OFF.FIN.TOOLING,OFF.FIN.ASSESS | unconfirmed",
+      "F-FIN-PLANNING_ESTIMATING High [gap_2] wave 2 | Engineering leads | from month 3, within 6 months | levers - | offerings OFF.FIN.UNITECON,OFF.FIN.OPMODEL | unconfirmed",
+      "F-FIN-FORECASTING High [gap_2] wave 2 after F-FIN-DATA_INGESTION | FP&A lead | from month 3, within 6 months | levers - | offerings OFF.FIN.UNITECON,OFF.FIN.OPMODEL | unconfirmed",
+      "F-FIN-BUDGETING High [gap_2] wave 2 | FP&A lead | from month 3, within 6 months | levers - | offerings OFF.FIN.UNITECON,OFF.FIN.OPMODEL | unconfirmed",
+      "F-FIN-ARCHITECTING_WORKLOAD_PLACEMENT High [gap_2] wave 2 | Head of Cloud / CCoE | from month 3, within 6 months | levers - | offerings OFF.CT.PLACEMENT,OFF.FIN.SPRINT | unconfirmed",
+      "F-FIN-USAGE_OPTIMIZATION High [gap_2] wave 2 after F-FIN-ALLOCATION | Engineering leads | from month 3, within 6 months | levers LEV-02,LEV-03,LEV-04,LEV-05,LEV-07,LEV-08 | offerings OFF.FIN.SPRINT,OFF.FIN.MANAGED,OFF.FIN.ASSESS | unconfirmed",
+      "F-FIN-RATE_OPTIMIZATION High [gap_2] wave 2 | FinOps lead (to be appointed; interim: Head of Cloud / CCoE) | from month 3, within 6 months | levers LEV-01,LEV-06 | offerings OFF.FIN.SPRINT,OFF.FIN.MANAGED,OFF.FIN.ASSESS | unconfirmed",
+      "F-FIN-GOVERNANCE_POLICY_RISK High [gap_2] wave 2 | Head of Cloud / CCoE | from month 3, within 6 months | levers - | offerings OFF.FIN.OPMODEL,OFF.FIN.MANAGED | unconfirmed",
+      "F-FIN-AUTOMATION_TOOLS_SERVICES High [gap_2] wave 2 | FinOps lead (to be appointed; interim: Head of Cloud / CCoE) | from month 3, within 6 months | levers - | offerings OFF.FIN.TOOLING,OFF.FIN.ASSESS | unconfirmed",
+      "F-FIN-EXECUTIVE_STRATEGY_ALIGNMENT High [gap_2] wave 3 | CIO | from month 9, within 6 months | levers - | offerings OFF.FIN.OPMODEL,OFF.FIN.MANAGED | unconfirmed",
+      "F-FIN-KPIS_BENCHMARKING Medium [gap_1] wave 3 after F-FIN-ALLOCATION | FinOps lead (to be appointed; interim: Head of Cloud / CCoE) | from month 9, within 12 months | levers - | offerings OFF.FIN.OPMODEL,OFF.FIN.MANAGED | unconfirmed",
+      "F-FIN-UNIT_ECONOMICS Medium [gap_1] wave 3 after F-FIN-ALLOCATION | Product owners | from month 9, within 12 months | levers - | offerings OFF.FIN.UNITECON,OFF.FIN.OPMODEL | unconfirmed",
+      "F-FIN-LICENSING_SAAS Medium [gap_1] wave 3 | ITAM lead | from month 9, within 12 months | levers LEV-09 | offerings OFF.FIN.SPRINT,REF.COST_IQ | unconfirmed",
+      "F-FIN-FINOPS_EDUCATION_ENABLEMENT Medium [gap_1] wave 3 | FinOps lead (to be appointed; interim: Head of Cloud / CCoE) | from month 9, within 12 months | levers - | offerings OFF.FIN.OPMODEL,OFF.FIN.MANAGED | unconfirmed",
+      "F-FIN-INVOICING_CHARGEBACK Medium [gap_1] wave 3 after F-FIN-ALLOCATION | CFO | from month 9, within 12 months | levers - | offerings OFF.FIN.UNITECON,OFF.FIN.OPMODEL | unconfirmed",
+      "F-FIN-FINOPS_ASSESSMENT Medium [gap_1] wave 3 | FinOps lead (to be appointed; interim: Head of Cloud / CCoE) | from month 9, within 12 months | levers - | offerings OFF.FIN.OPMODEL,OFF.FIN.MANAGED | unconfirmed",
+      "F-FIN-INTERSECTING_DISCIPLINES Medium [gap_1] wave 3 | FinOps lead (to be appointed; interim: Head of Cloud / CCoE) | from month 9, within 12 months | levers - | offerings OFF.FIN.OPMODEL,OFF.FIN.MANAGED | unconfirmed"
+    ],
+    "topFindingIds": [
+      "F-FIN-DECISION-01",
+      "F-FIN-DATA_INGESTION",
+      "F-FIN-ALLOCATION",
+      "F-FIN-FINOPS_PRACTICE_OPERATIONS",
+      "F-FIN-ANOMALY_MANAGEMENT"
+    ],
     "needVerdict": null,
     "coverage": {
       "asked": 39,
@@ -757,19 +817,41 @@
       "unknownQuestions": [],
       "ignoredAnswers": [],
       "unconfirmedPrefill": [],
-      "unconfirmedCapabilities": []
+      "unconfirmedCapabilities": [
+        "DATA_INGESTION",
+        "ALLOCATION",
+        "REPORTING_ANALYTICS",
+        "ANOMALY_MANAGEMENT",
+        "PLANNING_ESTIMATING",
+        "FORECASTING",
+        "BUDGETING",
+        "KPIS_BENCHMARKING",
+        "UNIT_ECONOMICS",
+        "ARCHITECTING_WORKLOAD_PLACEMENT",
+        "USAGE_OPTIMIZATION",
+        "RATE_OPTIMIZATION",
+        "LICENSING_SAAS",
+        "EXECUTIVE_STRATEGY_ALIGNMENT",
+        "FINOPS_PRACTICE_OPERATIONS",
+        "GOVERNANCE_POLICY_RISK",
+        "FINOPS_EDUCATION_ENABLEMENT",
+        "INVOICING_CHARGEBACK",
+        "FINOPS_ASSESSMENT",
+        "AUTOMATION_TOOLS_SERVICES",
+        "INTERSECTING_DISCIPLINES"
+      ]
     },
     "conflicts": []
   },
   "all-run-workshop": {
     "versions": {
-      "engine": "3.0.0",
-      "kb": "questions 3.0.0; capabilities 3.0.0; levers 1.0.0; thresholds 1.0.0; rules 1.0.0",
-      "questionSet": "3.0.0",
+      "engine": "3.1.0",
+      "kb": "questions 3.1.0; capabilities 3.0.0; levers 1.0.0; thresholds 1.0.0; rules 1.1.0",
+      "questionSet": "3.1.0",
       "capabilityModel": "3.0.0",
       "leverLibrary": "1.0.0",
       "thresholds": "1.0.0",
-      "engineRules": "1.0.0",
+      "engineRules": "1.1.0",
       "valueModel": "not-built (F4)",
       "claimsRegister": "0.1.0"
     },

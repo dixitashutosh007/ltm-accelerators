@@ -253,6 +253,7 @@ export function parseFinOpsIqV3Request(body: unknown): FinOpsIqV3ParseResult {
       if (!CAPABILITY_IDS.has(o.capability)) errors.push(`${p}.capability: unknown capability`);
       if (!(LEVELS as string[]).includes(o.level)) errors.push(`${p}.level: expected one of ${list(LEVELS)}`);
       if (typeof o.reason !== 'string' || o.reason.trim().length < 10 || o.reason.length > 500) errors.push(`${p}.reason: expected a recorded reason of 10 to 500 characters`);
+      if (isObject(o) && b.targetOverrides.slice(0, i).some((x: any) => isObject(x) && x.capability === o.capability)) errors.push(`${p}.capability: ${o.capability} already has a target override`);
     });
   }
   checkQuestionList(b.prefilled, 'prefilled', errors);

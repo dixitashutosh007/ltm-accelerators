@@ -11,7 +11,7 @@ import leverLibrary from '../registry/levers.json' with { type: 'json' };
 import thresholds from '../registry/thresholds.json' with { type: 'json' };
 import claimsRegister from '../../../claims/claims-register.json' with { type: 'json' };
 
-export const ENGINE_VERSION = '3.0.0';
+export const ENGINE_VERSION = '3.1.0';
 export const VALUE_MODEL_VERSION = 'not-built (F4)';
 
 export type Mode = 'executive' | 'workshop';
@@ -68,6 +68,8 @@ export interface CapabilityProfile {
   unconfirmed: boolean;
   /** Every asked question answered (a blank never flatters the headline). */
   complete: boolean;
+  /** Asked questions left blank; they are rated like "Don't know" (shown as "Not answered"). */
+  notAnswered: string[];
   asked: number;
   answered: number;
   blank: number;
@@ -79,13 +81,13 @@ export interface CapabilityProfile {
 
 export interface Finding {
   id: string;
-  type: 'capability_gap';
+  type: 'capability_gap' | 'decision';
   capability: string;
   scopes: string[];
-  current: Rating;
-  target: Level;
-  targetSource: 'tier_default' | 'consultant_override';
-  gap: number;
+  current?: Rating;
+  target?: Level;
+  targetSource?: 'tier_default' | 'consultant_override';
+  gap?: number;
   unconfirmed: boolean;
   severity: 'Critical' | 'High' | 'Medium' | 'Low';
   severityTrace: string[];
@@ -93,7 +95,13 @@ export interface Finding {
   businessConsequence: string;
   decisionOrAction: string;
   ownerRole: string;
-  timeFrame: string;
+  /** The owner as shown; differs from ownerRole when the FinOps lead is still to be appointed. */
+  ownerLabel: string;
+  interimOwnerRole?: string;
+  /** Earliest start: the wave window, never before every finding in dependsOn is due to complete. */
+  start: { month: number; label: string };
+  /** Time to complete once started, from severity. */
+  targetDuration: { months: number; label: string };
   wave: 1 | 2 | 3;
   dependsOn: string[];
   leverIds: string[];
@@ -316,22 +324,24 @@ export function complexityTier(f: Facts): FinOpsIqV3Result['tier'] {
 export interface RatedCapability { rating: Rating; coreRating: Rating; loweredByDepth: boolean; unconfirmed: boolean }
 
 /**
- * DESIGN.md 3.3: the weakest answered core question, lowered by at most one level when an answered depth question
- * (scope-conditional or follow-up) is lower. Any Unknown makes it Unknown, unless the known answers already rate it
- * Not yet (then Not yet, partly unconfirmed). No answered core question: not assessed.
+ * DESIGN.md 3.3 as amended by the F3 review (H1, M1): the weakest answered core question, lowered by at most one
+ * level when a depth question (scope-conditional or follow-up) is lower. Pass blanks as 'unknown'.
+ * A depth Unknown counts as Not yet for the one-level rule and flags the rating unconfirmed.
+ * A core Unknown makes the capability Unknown, unless the known answers already rate it Not yet.
  */
 export function rateCapability(answers: Array<{ level: AnswerLevel; core: boolean }>): RatedCapability {
   const core = answers.filter(a => a.core);
   if (!core.length) return { rating: 'not_assessed', coreRating: 'not_assessed', loweredByDepth: false, unconfirmed: false };
   const knownCore = core.filter(a => a.level !== 'unknown').map(a => levelIndex(a.level));
-  const knownDepth = answers.filter(a => !a.core && a.level !== 'unknown').map(a => levelIndex(a.level));
-  const anyUnknown = answers.some(a => a.level === 'unknown');
+  const coreUnknown = knownCore.length < core.length;
+  const depth = answers.filter(a => !a.core);
+  const depthUnknown = depth.some(a => a.level === 'unknown');
   if (!knownCore.length) return { rating: 'unknown', coreRating: 'unknown', loweredByDepth: false, unconfirmed: true };
   const c = Math.min(...knownCore);
-  const lowered = knownDepth.length > 0 && Math.min(...knownDepth) < c;
+  const lowered = depth.length > 0 && Math.min(...depth.map(a => levelIndex(a.level))) < c;
   const known = LEVELS[lowered ? c - 1 : c];
-  if (anyUnknown) return { rating: known === 'not_yet' ? 'not_yet' : 'unknown', coreRating: LEVELS[c], loweredByDepth: lowered, unconfirmed: true };
-  return { rating: known, coreRating: LEVELS[c], loweredByDepth: lowered, unconfirmed: false };
+  if (coreUnknown) return { rating: known === 'not_yet' ? 'not_yet' : 'unknown', coreRating: LEVELS[c], loweredByDepth: lowered, unconfirmed: true };
+  return { rating: known, coreRating: LEVELS[c], loweredByDepth: lowered, unconfirmed: depthUnknown };
 }
 
 /* ------------------------------ Asked questions ----------------------------- */
@@ -350,27 +360,28 @@ function resolveAnswers(input: FinOpsIqV3Input): AnswerState {
     const q = QUESTION.get(id);
     if (q && inMode(q, input.mode) && a !== undefined && a !== null && !unconfirmedPrefill.includes(id)) raw.set(id, a);
   }
+  const levelsOf = (values: Map<string, AnswerValue>) => {
+    const levels = new Map<string, AnswerLevel>();
+    for (const [id, a] of values) { const l = answerLevel(QUESTION.get(id), a); if (l) levels.set(id, l); }
+    return levels;
+  };
   let asked = new Set<string>();
   for (let i = 0; i < 5; i++) {
     const values = new Map([...raw].filter(([id]) => i === 0 || asked.has(id)));
-    const levels = new Map<string, AnswerLevel>();
-    for (const [id, a] of values) { const l = answerLevel(QUESTION.get(id), a); if (l) levels.set(id, l); }
-    const ctx: Context = { facts: input.facts, levels, values };
+    const ctx: Context = { facts: input.facts, levels: levelsOf(values), values };
     const next = new Set(QUESTIONS.filter(q => inMode(q, input.mode) && testCondition(q.askWhen, ctx)).map(q => q.id));
     const stable = next.size === asked.size && [...next].every(id => asked.has(id));
     asked = next;
     if (stable) break;
   }
   const values = new Map([...raw].filter(([id]) => asked.has(id)));
-  const levels = new Map<string, AnswerLevel>();
-  for (const [id, a] of values) { const l = answerLevel(QUESTION.get(id), a); if (l) levels.set(id, l); }
   const ignored = Object.keys(input.answers ?? {}).filter(id => QUESTION.has(id) && !values.has(id) && !unconfirmedPrefill.includes(id) && input.answers[id] !== undefined);
-  return { asked, values, levels, ignored, unconfirmedPrefill };
+  return { asked, values, levels: levelsOf(values), ignored, unconfirmedPrefill };
 }
 
 /* ------------------------------- Capabilities ------------------------------- */
 
-const label = (r: Rating) => RULES.ratingLabels[r].label as string;
+const label = (r: Rating | 'not_answered') => RULES.ratingLabels[r].label as string;
 
 function capabilityProfile(cap: any, input: FinOpsIqV3Input, tier: number, state: AnswerState): CapabilityProfile {
   const ctx: Context = { facts: input.facts, levels: state.levels, values: state.values };
@@ -380,44 +391,45 @@ function capabilityProfile(cap: any, input: FinOpsIqV3Input, tier: number, state
     : { level: cap.defaultTargets[`tier${tier}`] ?? null, source: 'tier_default' };
   const qs = QUESTIONS.filter(q => q.kind === 'maturity' && q.capability === cap.id);
   const askedQs = qs.filter(q => state.asked.has(q.id));
-  const answered = askedQs.filter(q => state.levels.has(q.id));
+  const notAnswered = askedQs.filter(q => !state.levels.has(q.id)).map(q => q.id);
   const base = {
     capability: cap.id, domain: cap.domain, displayName: cap.displayName, target,
-    asked: askedQs.length, answered: answered.length, blank: askedQs.length - answered.length,
+    asked: askedQs.length, answered: askedQs.length - notAnswered.length, blank: notAnswered.length,
     questionIds: askedQs.map(q => q.id), claimIds: [...cap.claimIds]
   };
   const inScope = cap.relevance === 'always' || testCondition(cap.scopeTrigger, ctx);
   const workshopOnly = input.mode === 'executive' && !EXECUTIVE_CAPABILITIES.has(cap.id);
   // N/A only from scope (D5): out of scope by the capability trigger, or because every question's scope is absent.
-  const noQuestions = !workshopOnly && askedQs.length === 0;
-  if (!inScope || noQuestions) {
+  if (!inScope || (!workshopOnly && askedQs.length === 0)) {
     return { ...base, rating: 'not_in_scope', ratingLabel: label('not_in_scope'), coreRating: 'not_in_scope', loweredByDepth: false,
-      target: { ...target, level: null }, gap: null, atOrAboveTarget: null, unconfirmed: false, complete: true,
+      target: { ...target, level: null }, gap: null, atOrAboveTarget: null, unconfirmed: false, complete: true, notAnswered: [],
       claimIds: [...base.claimIds, ...RULES.ratingLabels.not_in_scope.claimIds] };
   }
   if (workshopOnly) {
     return { ...base, rating: 'not_assessed', ratingLabel: label('not_assessed'), coreRating: 'not_assessed', loweredByDepth: false,
-      gap: null, atOrAboveTarget: null, unconfirmed: false, complete: true, assessedIn: 'workshop', note: RULES.workshopOnly.label,
+      gap: null, atOrAboveTarget: null, unconfirmed: false, complete: true, notAnswered: [], assessedIn: 'workshop', note: RULES.workshopOnly.label,
       claimIds: [...base.claimIds, ...RULES.workshopOnly.claimIds] };
   }
-  // A question that is core only in some estates (UN-03) is core whenever it is asked; with no core question asked, all count as core.
+  // A blank is rated like "Don't know" (F3 review H1). A question that is core only in some estates (UN-03) is core
+  // whenever it is asked; with no core question asked, all count as core.
   const hasCore = askedQs.some(q => q.role === 'core');
-  const rated = rateCapability(answered.map(q => ({ level: state.levels.get(q.id)!, core: !hasCore || q.role === 'core' })));
-  const gap = target.level === null || rated.rating === 'not_assessed' ? null : LEVELS.indexOf(target.level) - levelIndex(rated.rating as AnswerLevel);
-  const complete = base.blank === 0;
+  const rated = rateCapability(askedQs.map(q => ({ level: state.levels.get(q.id) ?? 'unknown', core: !hasCore || q.role === 'core' })));
+  const realUnknown = askedQs.some(q => state.levels.get(q.id) === 'unknown');
+  const labelKey = rated.rating === 'unknown' && !realUnknown ? 'not_answered' : rated.rating;
+  const gap = target.level === null ? null : LEVELS.indexOf(target.level) - levelIndex(rated.rating as AnswerLevel);
+  const complete = notAnswered.length === 0;
   const knownLevel = (LEVELS as string[]).includes(rated.rating);
   return {
-    ...base, ...rated, ratingLabel: label(rated.rating), gap, complete,
-    atOrAboveTarget: target.level !== null && knownLevel && complete && gap !== null && gap <= 0,
-    claimIds: [...base.claimIds, ...RULES.ratingLabels[rated.rating].claimIds]
+    ...base, ...rated, ratingLabel: label(labelKey), gap, complete, notAnswered,
+    atOrAboveTarget: target.level !== null && knownLevel && complete && !rated.unconfirmed && gap !== null && gap <= 0,
+    claimIds: [...base.claimIds, ...RULES.ratingLabels[labelKey].claimIds]
   };
 }
 
 /* --------------------------------- Findings --------------------------------- */
 
 function guidance(cap: any, level: Level): string {
-  const key = level === 'not_yet' ? 'notYet' : level;
-  return cap.maturityGuidance[key];
+  return cap.maturityGuidance[level === 'not_yet' ? 'notYet' : level];
 }
 
 const fill = (template: string, values: Record<string, string | number>) =>
@@ -444,56 +456,144 @@ function leverLinks(cap: any, f: Facts): string[] {
   return (cap.leverIds ?? []).filter((id: string) => testCondition(LEVERS.levers.find((l: any) => l.id === id)?.scopeWhen, ctx));
 }
 
-function buildFindings(input: FinOpsIqV3Input, tier: number, profile: CapabilityProfile[]): Finding[] {
+/** How one asked question was answered, quoting the client's own option (F3 review H2). */
+function describeAnswer(q: any, state: AnswerState): string {
+  const t = RULES.findingText;
+  const level = state.levels.get(q.id);
+  if (level === undefined) return fill(t.answerBlank, { question: q.id });
+  if (level === 'unknown') return fill(t.answerUnknown, { question: q.id });
+  const v = state.values.get(q.id);
+  const optionLabel = Array.isArray(v) ? `${v.length} of ${q.options.filter((o: any) => !o.level).length} report types` : q.options.find((o: any) => o.value === v)?.label;
+  return fill(t.answer, { label: optionLabel, question: q.id });
+}
+
+/** The answers that set the rating: the weakest known core answer, every unknown or blank core answer, and the depth answer that lowered it. */
+function ratingAnswers(p: CapabilityProfile, state: AnswerState): any[] {
+  const qs = p.questionIds.map(id => QUESTION.get(id));
+  const hasCore = qs.some(q => q.role === 'core');
+  const isCore = (q: any) => !hasCore || q.role === 'core';
+  const idx = (q: any) => { const l = state.levels.get(q.id); return l === undefined || l === 'unknown' ? -1 : levelIndex(l); };
+  const core = qs.filter(isCore);
+  const knownCore = core.filter(q => idx(q) >= 0).sort((a, b) => idx(a) - idx(b));
+  const out = [...knownCore.slice(0, 1), ...core.filter(q => idx(q) < 0)];
+  if (p.loweredByDepth) out.push(qs.filter(q => !isCore(q)).sort((a, b) => idx(a) - idx(b))[0]);
+  return out;
+}
+
+function ownerFor(role: string, mp01: string | undefined) {
+  const t = RULES.ownerRoles.toBeAppointed;
+  if (role === t.role && mp01 !== undefined && t.levels.includes(mp01)) return { ownerRole: role, ownerLabel: t.label, interimOwnerRole: t.interimRole };
+  return { ownerRole: role, ownerLabel: role };
+}
+
+/** MP-01 as asked: its level, 'not_answered' when blank, undefined when not asked. */
+function mp01Status(state: AnswerState): string | undefined {
+  if (!state.asked.has('MP-01')) return undefined;
+  return state.levels.get('MP-01') ?? 'not_answered';
+}
+
+function buildFindings(input: FinOpsIqV3Input, tier: number, profile: CapabilityProfile[], state: AnswerState): Finding[] {
   const text = RULES.findingText;
-  const ruleBasis = [...new Set<string>([...text.claimIds, ...RULES.severity.claimIds, ...RULES.ownerRoles.claimIds])].map(citation);
+  const ruleBasis = [...new Set<string>([...text.claimIds, ...RULES.severity.claimIds, ...RULES.ownerRoles.claimIds, ...RULES.schedule.claimIds])].map(citation);
+  const mp01 = mp01Status(state);
   const findings: Finding[] = [];
+  const questionBasis = (qs: any[]) => qs.flatMap(q => q.basis).filter((b: any, i: number, all: any[]) => all.findIndex(x => x.claimId === b.claimId) === i);
   for (const p of profile) {
     if (p.gap === null || p.gap < 1 || p.target.level === null) continue;
     const cap = CAPABILITIES[CAPABILITY_INDEX.get(p.capability)!];
     const { severity, trace } = severityOf(cap, p, tier);
+    const ct = RULES.capabilityText.byCapability[cap.id];
+    const contributing = ratingAnswers(p, state);
     const values = {
       capability: cap.displayName, current: p.ratingLabel, target: label(p.target.level),
-      currentGuidance: p.rating === 'unknown' ? '' : guidance(cap, p.rating as Level), targetGuidance: guidance(cap, p.target.level),
-      questions: p.questionIds.join(', ')
+      targetGuidance: guidance(cap, p.target.level), questions: p.notAnswered.join(', '),
+      answers: contributing.map(q => describeAnswer(q, state)).join('; ')
     };
+    const action = p.notAnswered.length ? text.actionNotAnswered : p.unconfirmed ? text.actionUnconfirmed : text.action;
     findings.push({
       id: `F-FIN-${cap.id}`, type: 'capability_gap', capability: cap.id, scopes: findingScopes(cap, input.facts),
-      current: p.rating, target: p.target.level, targetSource: p.target.source, gap: p.gap, unconfirmed: p.unconfirmed,
+      current: p.rating, target: p.target.level, targetSource: p.target.source, gap: p.gap, unconfirmed: p.unconfirmed || p.notAnswered.length > 0,
       severity, severityTrace: trace,
-      title: fill(p.unconfirmed ? text.titleUnconfirmed : text.title, values),
-      businessConsequence: fill(p.rating === 'unknown' ? text.consequenceUnknown : text.consequence, values),
-      decisionOrAction: fill(p.unconfirmed ? text.actionUnconfirmed : text.action, values),
-      ownerRole: RULES.ownerRoles.byCapability[cap.id],
-      timeFrame: RULES.severity.timeFrames[severity],
+      title: fill(p.unconfirmed && p.rating !== 'unknown' ? text.titleUnconfirmed : text.title, values),
+      businessConsequence: `${fill(text.today, values)} ${ct.consequence}`,
+      decisionOrAction: fill(action, values),
+      ...ownerFor(RULES.ownerRoles.byCapability[cap.id], mp01),
+      start: { month: 0, label: '' }, targetDuration: { months: 0, label: '' },
       wave: cap.wave, dependsOn: [], leverIds: leverLinks(cap, input.facts),
-      evidenceToConfirm: fill(text.evidenceToConfirm, values),
+      evidenceToConfirm: ct.evidence,
       offeringIds: [...cap.offeringIds],
-      basis: [...cap.basis, ...cap.maturityGuidance.claimIds.filter((id: string) => !cap.claimIds.includes(id)).map(citation), ...ruleBasis],
+      basis: [...cap.basis, ...cap.maturityGuidance.claimIds.filter((id: string) => !cap.claimIds.includes(id)).map(citation),
+        ...questionBasis(contributing).filter((b: any) => !cap.claimIds.includes(b.claimId)), ...ruleBasis],
       mode: [input.mode]
     });
   }
-  // Waves by dependency: a finding never sits in an earlier wave than a finding it depends on (DESIGN.md 5.4).
-  const byCap = new Map(findings.map(f => [f.capability, f]));
-  for (const f of findings) {
-    for (const dep of CAPABILITIES[CAPABILITY_INDEX.get(f.capability)!].dependsOn ?? []) {
-      const d = byCap.get(dep);
-      if (!d) continue;
-      f.dependsOn.push(d.id);
-      f.wave = Math.max(f.wave, d.wave) as Finding['wave'];
-    }
+  // DECISION-01 (F3 review M4): no accountable owner for cloud spend.
+  for (const d of RULES.decisions) {
+    if (mp01 === undefined || !d.levels.includes(mp01)) continue;
+    const up = tier >= d.tierUplift.minTier;
+    const severity = SEVERITIES[Math.min(3, SEVERITIES.indexOf(d.severity) + (up ? 1 : 0))];
+    const q = QUESTION.get(d.question);
+    const unconfirmed = mp01 === 'unknown' || mp01 === 'not_answered';
+    findings.push({
+      id: d.id, type: 'decision', capability: d.capability, scopes: [], unconfirmed, severity,
+      severityTrace: up ? ['decision_rule', 'foundation_uplift'] : ['decision_rule'],
+      title: d.title, businessConsequence: `${fill(text.today, { answers: describeAnswer(q, state) })} ${d.consequence}`,
+      decisionOrAction: unconfirmed ? d.actionUnconfirmed : d.action,
+      ownerRole: d.ownerRole, ownerLabel: d.ownerRole,
+      start: { month: 0, label: '' }, targetDuration: { months: 0, label: '' },
+      wave: d.wave, dependsOn: [], leverIds: [], evidenceToConfirm: d.evidence, offeringIds: [...d.offeringIds],
+      basis: [...d.claimIds.map(citation), ...questionBasis([q]), ...ruleBasis.filter(b => b.claimId !== 'CLM-FIN-141')],
+      mode: [input.mode]
+    });
   }
+  // Waves by dependency (DESIGN.md 5.4), then the schedule: a finding starts at its wave window and never before
+  // every finding it depends on is due to complete (F3 review H3).
+  const byCap = new Map(findings.filter(f => f.type === 'capability_gap').map(f => [f.capability, f]));
+  const sch = RULES.schedule;
+  const scheduled = new Set<string>();
+  const schedule = (f: Finding) => {
+    if (scheduled.has(f.id)) return;
+    let month = sch.waveStartMonth[String(f.wave)];
+    if (f.type === 'capability_gap') {
+      for (const dep of CAPABILITIES[CAPABILITY_INDEX.get(f.capability)!].dependsOn ?? []) {
+        const d = byCap.get(dep);
+        if (!d) continue;
+        schedule(d);
+        f.dependsOn.push(d.id);
+        f.wave = Math.max(f.wave, d.wave) as Finding['wave'];
+        month = Math.max(month, sch.waveStartMonth[String(f.wave)], d.start.month + d.targetDuration.months);
+      }
+    }
+    const months = sch.durationMonths[f.severity];
+    f.start = { month, label: fill(sch.startLabel, { month }) };
+    f.targetDuration = { months, label: fill(sch.durationLabel, { months }) };
+    scheduled.add(f.id);
+  };
+  findings.forEach(schedule);
+  // Findings from real answers come before "not answered" ones of the same severity (F3 review H1).
+  const blankDriven = (f: Finding) => (f.decisionOrAction.startsWith('Answer and evidence') ? 1 : 0);
   return findings.sort((a, b) =>
-    SEVERITIES.indexOf(b.severity) - SEVERITIES.indexOf(a.severity) || a.wave - b.wave || b.gap - a.gap ||
-    CAPABILITY_INDEX.get(a.capability)! - CAPABILITY_INDEX.get(b.capability)!);
+    SEVERITIES.indexOf(b.severity) - SEVERITIES.indexOf(a.severity) || blankDriven(a) - blankDriven(b) || a.wave - b.wave ||
+    (b.gap ?? 0) - (a.gap ?? 0) || CAPABILITY_INDEX.get(a.capability)! - CAPABILITY_INDEX.get(b.capability)! || (a.type === 'decision' ? 1 : -1));
 }
 
 /* ------------------------------- Need verdict ------------------------------- */
 
+/** A scope or value-base question counts as answered when every fact it sets is given. */
+function factsGiven(q: any, f: Facts): boolean {
+  return (q.sets ?? []).every((path: string) => {
+    const v = factAt(f, path);
+    if (v === undefined || v === 'unknown') return false;
+    if (Array.isArray(v) || typeof v !== 'object') return true;
+    if ('exact' in (v as any) || 'band' in (v as any) || 'unknown' in (v as any)) return amountValue(v) !== undefined;
+    return Object.values(v as any).some(x => amountValue(x) !== undefined || (typeof x === 'string'));
+  });
+}
+
 function needVerdict(input: FinOpsIqV3Input, tier: number, profile: CapabilityProfile[], state: AnswerState): NeedVerdict {
   const nv = RULES.needVerdict;
   const f = input.facts;
-  // Blank (not assessed, or any asked question left blank) counts as the maximum gap, so a blank never lowers need.
+  // Blank (any asked question left blank) counts as the maximum gap, so a blank never lowers need.
   const targeted = profile.filter(p => EXECUTIVE_CAPABILITIES.has(p.capability) && p.target.level !== null && p.rating !== 'not_in_scope');
   const gaps = targeted.map(p => {
     const max = LEVELS.indexOf(p.target.level!);
@@ -501,39 +601,38 @@ function needVerdict(input: FinOpsIqV3Input, tier: number, profile: CapabilityPr
   });
   const baseIndex = gaps.length ? (gaps.reduce((t, g) => t + g, 0) / gaps.length / 3) * 100 : 0;
   const modifiers: NeedVerdict['modifiers'] = [];
-  const pending: NeedVerdict['pending'] = [];
   const points = (id: string) => nv.modifiers.find((m: any) => m.id === id);
   if (tier === 2) modifiers.push({ id: 'tier_2', points: points('tier_2').points });
   if (tier === 3) modifiers.push({ id: 'tier_3', points: points('tier_3').points });
-  pending.push({ id: 'expected_value_ge_5pct_of_P', reason: 'needs the value model (F4)' });
   const growth = f.spend.growth12m;
   if (typeof growth === 'number' && growth >= points('growth_ge_20pct').threshold) modifiers.push({ id: 'growth_ge_20pct', points: points('growth_ge_20pct').points });
-  const remaining = amountValue(f.footprint.migration?.remainingShare24m);
-  const ai = f.footprint.scopes.includes('ai_api') || f.footprint.scopes.includes('ai_platform_gpu');
-  if (ai || (remaining !== undefined && remaining >= points('migration_or_ai').threshold)) modifiers.push({ id: 'migration_or_ai', points: points('migration_or_ai').points });
+  // Executive mode: AI scope only; the migration share comes from SC-06, a workshop question (F3 review L6).
+  if (f.footprint.scopes.includes('ai_api') || f.footprint.scopes.includes('ai_platform_gpu')) modifiers.push({ id: 'ai_in_scope', points: points('ai_in_scope').points });
   const round1 = (x: number) => Math.round(x * 10) / 10;
   const needIndex = round1(Math.min(nv.cap, baseIndex + modifiers.reduce((t, m) => t + m.points, 0)));
   const band = nv.bands.find((b: any) => needIndex <= b.max) ?? nv.bands[nv.bands.length - 1];
 
-  const maturityAsked = [...state.asked].filter(id => QUESTION.get(id).kind === 'maturity');
   const blindSpots: NeedVerdict['blindSpots'] = [];
-  for (const id of maturityAsked) {
+  for (const id of [...state.asked].filter(x => QUESTION.get(x).kind === 'maturity')) {
     const l = state.levels.get(id);
     if (l === undefined) blindSpots.push({ questionId: id, capability: QUESTION.get(id).capability, reason: 'blank' });
     else if (l === 'unknown') blindSpots.push({ questionId: id, capability: QUESTION.get(id).capability, reason: 'unknown' });
   }
   for (const [scope, a] of Object.entries(f.spend.byScope)) if (amountValue(a) === undefined) blindSpots.push({ fact: `spend.byScope.${scope}`, reason: 'unknown' });
+  if (typeof growth !== 'number') blindSpots.push({ fact: 'spend.growth12m', reason: 'unknown' });
   if (hasPublicCloud(f)) {
     for (const q of QUESTIONS.filter(x => x.kind === 'value_base' && state.asked.has(x.id))) {
       for (const path of q.sets ?? []) if (amountValue(factAt(f, path)) === undefined) blindSpots.push({ fact: path, reason: 'unknown' });
     }
   }
-  const allAnswered = blindSpots.every(b => !b.questionId);
-  const questionCount = [...state.asked].filter(id => QUESTION.get(id).kind !== 'hypothesis').length;
+  const scored = [...state.asked].map(id => QUESTION.get(id)).filter(q => q.kind !== 'hypothesis');
+  const answered = scored.filter(q => (q.kind === 'maturity' ? state.levels.has(q.id) : factsGiven(q, f))).length;
   return {
-    needIndex, baseIndex: round1(baseIndex), modifiers, pending, band: band.id, bandLabel: band.label,
-    confidence: allAnswered ? 'Medium' : 'Low', blindSpots,
-    basisLine: fill(nv.basisLine, { questions: questionCount, tier }),
+    needIndex, baseIndex: round1(baseIndex), modifiers,
+    pending: [{ id: 'expected_value_ge_5pct_of_P', reason: 'needs the value model (F4)' }],
+    band: band.id, bandLabel: band.label,
+    confidence: blindSpots.some(b => b.questionId) ? 'Low' : 'Medium', blindSpots,
+    basisLine: fill(nv.basisLine, { answered, questions: scored.length, tier }),
     claimIds: [...nv.claimIds, ...nv.basisClaimIds.filter((id: string) => !nv.claimIds.includes(id)), ...nv.confidenceClaimIds]
   };
 }
@@ -550,12 +649,14 @@ export function evaluateFinOpsIqV3(input: FinOpsIqV3Input): FinOpsIqV3Result {
   const counted = capabilities.filter(p => p.rating !== 'not_in_scope' && !p.assessedIn);
   const withTarget = counted.filter(p => p.target.level !== null);
   const atOrAbove = withTarget.filter(p => p.atOrAboveTarget).length;
-  const assessed = counted.filter(p => p.rating !== 'not_assessed').length;
+  const assessed = counted.filter(p => p.answered > 0).length;
+  const overrides = withTarget.filter(p => p.target.source === 'consultant_override').length;
   const h = RULES.headline;
   const statement = fill(h.statement, { atOrAbove, inScope: withTarget.length, tier: tier.tier }) +
+    (overrides ? fill(h.overrideSuffix, { overrides: overrides === 1 ? '1 target' : `${overrides} targets` }) : '') +
     (input.mode === 'executive' ? fill(h.executiveSuffix, { assessed }) : '');
 
-  const findings = buildFindings(input, tier.tier, capabilities);
+  const findings = buildFindings(input, tier.tier, capabilities, state);
 
   const maturityAsked = QUESTIONS.filter(q => q.kind === 'maturity' && state.asked.has(q.id)).map(q => q.id);
   const answeredIds = maturityAsked.filter(id => state.levels.has(id));

@@ -216,13 +216,14 @@ describe('FinOps IQ v3 contract', () => {
   it('rejects target overrides without a capability, level or recorded reason, and unknown pre-fill ids', () => {
     const res = parseFinOpsIqV3Request({
       mode: 'workshop', facts: facts(), answers: {},
-      targetOverrides: [{ capability: 'CLOUD', level: 'sprint', reason: 'short' }], prefilled: ['ZZ-01']
+      targetOverrides: [{ capability: 'CLOUD', level: 'sprint', reason: 'short' }, { capability: 'ALLOCATION', level: 'walk', reason: 'Board asked for it' }, { capability: 'ALLOCATION', level: 'run', reason: 'Board asked for it' }], prefilled: ['ZZ-01']
     });
     const errors = res.ok ? '' : res.errors.join('\n');
     expect(errors).toContain('targetOverrides[0].capability: unknown capability');
     expect(errors).toContain('targetOverrides[0].level: expected one of not_yet, crawl, walk, run');
     expect(errors).toContain('targetOverrides[0].reason: expected a recorded reason');
     expect(errors).toContain('prefilled: expected a list of question ids');
+    expect(errors).toContain('targetOverrides[2].capability: ALLOCATION already has a target override');
   });
 });
 
@@ -266,9 +267,15 @@ describe('FinOps IQ v3 question bank', () => {
       'FORECASTING', 'RATE_OPTIMIZATION', 'UNIT_ECONOMICS', 'USAGE_OPTIMIZATION']);
   });
 
-  it('uses the F2 thresholds in the UN-04 and QV-01 options (THR-FIN-01, THR-FIN-05)', () => {
-    expect(Q.get('UN-04').options.map((o: any) => o.label).slice(0, 4)).toEqual(['More than 90%', '85-90%', '70-84%', 'Below 70%, or not measured']);
-    expect(Q.get('QV-01').options.map((o: any) => o.label).slice(0, 4)).toEqual(['Within plus or minus 5%', '5-10%', '10-20%', 'More than 20%, or no forecast']);
+  it('uses the F2 thresholds in the UN-04 and QV-01 options without gaps or overlaps (THR-FIN-01, THR-FIN-05; review M5)', () => {
+    expect(Q.get('UN-04').options.map((o: any) => o.label).slice(0, 4)).toEqual(['More than 90%', '85% to 90%', '70% to under 85%', 'Below 70%, or not measured']);
+    expect(Q.get('QV-01').options.map((o: any) => o.label).slice(0, 4)).toEqual(['Within \u00b15%', 'More than \u00b15%, up to \u00b110%', 'More than \u00b110%, up to \u00b120%', 'More than \u00b120%, or no forecast']);
+    expect(Q.get('UN-11').options[2].label).toBe('A week or more, or the explanation is disputed');
+    expect(Q.get('MP-01').options[1].label).toBe('A named owner (full- or part-time) without a written mandate or sponsor');
+  });
+
+  it('tells the respondent on every single-choice maturity question to choose the highest option that fully applies (review M5)', () => {
+    for (const q of MATURITY.filter(x => x.answerType === 'single_select')) expect(q.help, q.id).toMatch(/^Choose the highest option that fully describes you today\./);
   });
 });
 
@@ -292,10 +299,18 @@ describe('FinOps IQ v3 rating rule (DESIGN.md 3.3)', () => {
     expect(rateCapability([a('walk'), a('walk', false)])).toMatchObject({ rating: 'walk', loweredByDepth: false });
   });
 
-  it('an Unknown makes the capability Unknown and unconfirmed', () => {
+  it('a core Unknown makes the capability Unknown and unconfirmed', () => {
     expect(rateCapability([a('crawl'), a('unknown')])).toMatchObject({ rating: 'unknown', unconfirmed: true });
-    expect(rateCapability([a('run'), a('unknown', false)])).toMatchObject({ rating: 'unknown', unconfirmed: true });
     expect(rateCapability([a('unknown')])).toMatchObject({ rating: 'unknown', unconfirmed: true });
+  });
+
+  it('a depth Unknown counts as Not yet for the one-level rule and flags the rating unconfirmed (review M1)', () => {
+    expect(rateCapability([a('run'), a('unknown', false)])).toMatchObject({ rating: 'walk', loweredByDepth: true, unconfirmed: true });
+    expect(rateCapability([a('not_yet'), a('unknown', false)])).toMatchObject({ rating: 'not_yet', loweredByDepth: false, unconfirmed: true });
+    // Tier 2, commitments at Run, Spot not known: Walk (at target level, but unconfirmed), not a High finding.
+    const r = run(facts({}, { org: { currency: 'USD', consumingUnits: '5-19' } }), { 'OP-01': 'run', 'OP-03': 'run', 'OP-08': 'unknown' });
+    expect(cap(r, 'RATE_OPTIMIZATION')).toMatchObject({ rating: 'walk', gap: 0, unconfirmed: true, atOrAboveTarget: false });
+    expect(r.findings.find(f => f.capability === 'RATE_OPTIMIZATION')).toBeUndefined();
   });
 
   it('unless the known answers already rate it Not yet (then Not yet, partly unconfirmed)', () => {
@@ -303,9 +318,11 @@ describe('FinOps IQ v3 rating rule (DESIGN.md 3.3)', () => {
     expect(rateCapability([a('crawl'), a('not_yet', false), a('unknown', false)])).toMatchObject({ rating: 'not_yet', unconfirmed: true });
   });
 
-  it('no answered core question means not assessed, even with depth answers', () => {
+  it('a capability is never rated from depth answers alone: a blank core reads "Not answered" (review H1)', () => {
     expect(rateCapability([]).rating).toBe('not_assessed');
     expect(rateCapability([a('run', false)]).rating).toBe('not_assessed');
+    const r = run(facts(), { 'OP-05': 'run', 'OP-06': 'run' });
+    expect(cap(r, 'USAGE_OPTIMIZATION')).toMatchObject({ rating: 'unknown', ratingLabel: 'Not answered', notAnswered: ['OP-04', 'OP-07', 'OP-09'], complete: false });
   });
 
   it('a capability with no core question for the client rates all its asked questions as core (Licensing & SaaS)', () => {
@@ -320,6 +337,17 @@ describe('FinOps IQ v3 rating rule (DESIGN.md 3.3)', () => {
     expect(cap(r, 'DATA_INGESTION').rating).toBe('not_yet');
   });
 
+  it('the finding quotes the client\'s own weakest answers and states a business consequence (review H2)', () => {
+    const r = run(facts(), { 'UN-10': 'not_yet', 'UN-11': 'run' });
+    const f = r.findings.find(x => x.capability === 'ANOMALY_MANAGEMENT')!;
+    expect(f.businessConsequence).toBe(`Today: \u201cFound on the invoice\u201d (UN-10). ${R.capabilityText.byCapability.ANOMALY_MANAGEMENT.consequence}`);
+    expect(f.businessConsequence).not.toMatch(/weeks|same day/i);
+    const lowered = run(facts(), { 'OP-04': 'run', 'OP-05': 'run', 'OP-06': 'not_yet', 'OP-07': 'run', 'OP-08': 'run', 'OP-09': 'run' }, 'workshop', { targetOverrides: [{ capability: 'USAGE_OPTIMIZATION', level: 'run', reason: 'Largest lever base for this client' }] });
+    expect(lowered.findings.find(x => x.capability === 'USAGE_OPTIMIZATION')!.businessConsequence).toMatch(/^Today: \u201cAt least monthly[^\u201d]*\u201d \(OP-04\); \u201cRun 24\/7\u201d \(OP-06\)\./);
+    expect(f.evidenceToConfirm).toBe(R.capabilityText.byCapability.ANOMALY_MANAGEMENT.evidence);
+    expect(f.evidenceToConfirm).not.toMatch(/[A-Z]{2}-\d{2}/);
+  });
+
   it('Unknown counts as risk: gap as if Not yet, finding unconfirmed with "confirm" as its first action', () => {
     const r = run(facts(), { 'UN-10': 'crawl', 'UN-11': 'unknown' });
     expect(cap(r, 'ANOMALY_MANAGEMENT')).toMatchObject({ rating: 'unknown', gap: 1, unconfirmed: true, atOrAboveTarget: false });
@@ -328,10 +356,18 @@ describe('FinOps IQ v3 rating rule (DESIGN.md 3.3)', () => {
     expect(f.decisionOrAction).toMatch(/^Confirm the current practice/);
   });
 
-  it('a blank is excluded from the rating but keeps the capability from counting at target', () => {
+  it('a blank is rated like "Don\'t know", shown as "Not answered", and creates an unconfirmed finding (review H1)', () => {
     const r = run(facts(), { 'UN-04': 'run' });
-    expect(cap(r, 'ALLOCATION')).toMatchObject({ rating: 'run', complete: false, blank: 1, atOrAboveTarget: false });
+    expect(cap(r, 'ALLOCATION')).toMatchObject({ rating: 'unknown', ratingLabel: 'Not answered', complete: false, blank: 1, notAnswered: ['UN-05'], atOrAboveTarget: false, gap: 1 });
     expect(r.coverage.blankQuestions).toContain('UN-05');
+    expect(r.coverage.unknownQuestions).not.toContain('UN-05');
+    const f = r.findings.find(x => x.capability === 'ALLOCATION')!;
+    expect(f).toMatchObject({ unconfirmed: true, current: 'unknown', title: 'Allocation: Not answered, target Crawl' });
+    expect(f.decisionOrAction).toMatch(/^Answer and evidence: UN-05; then move Allocation to Crawl/);
+    expect(f.businessConsequence).toMatch(/^Today: \u201cMore than 90%\u201d \(UN-04\); not answered \(UN-05\)\./);
+    // A blank depth question lowers by one level like "Don't know".
+    const depth = run(facts(), { 'OP-04': 'walk', 'OP-05': 'walk', 'OP-06': 'walk', 'OP-07': 'walk' });
+    expect(cap(depth, 'USAGE_OPTIMIZATION')).toMatchObject({ rating: 'crawl', loweredByDepth: true, unconfirmed: true, notAnswered: ['OP-09'] });
     const full = run(facts(), { 'UN-04': 'run', 'UN-05': 'run' });
     expect(cap(full, 'ALLOCATION')).toMatchObject({ rating: 'run', complete: true, atOrAboveTarget: true });
   });
@@ -412,14 +448,15 @@ describe('FinOps IQ v3 scope triggers (DESIGN.md 4.4 and 7.5)', () => {
     expect(asked(run(withCoverage({ exact: 0.5 })), 'OP-02')).toBe(false);
   });
 
-  it('QV-06 follows allocation at Walk or better', () => {
-    expect(asked(run(facts(), { 'UN-04': 'walk' }), 'QV-06')).toBe(true);
-    expect(asked(run(facts(), { 'UN-04': 'run' }), 'QV-06')).toBe(true);
-    expect(asked(run(facts(), { 'UN-04': 'crawl' }), 'QV-06')).toBe(false);
-    expect(asked(run(facts(), { 'UN-04': 'unknown' }), 'QV-06')).toBe(false);
+  it('QV-06 follows its own capability\'s core answer, QV-05 at Crawl or better (review M2)', () => {
+    expect(asked(run(facts(), { 'QV-05': 'crawl' }), 'QV-06')).toBe(true);
+    expect(asked(run(facts(), { 'QV-05': 'run' }), 'QV-06')).toBe(true);
+    expect(asked(run(facts(), { 'QV-05': 'not_yet' }), 'QV-06')).toBe(false);
+    expect(asked(run(facts(), { 'QV-05': 'unknown' }), 'QV-06')).toBe(false);
+    expect(asked(run(facts(), { 'UN-04': 'run' }), 'QV-06')).toBe(false);
     // An answer to a follow-up that did not fire is ignored, not scored.
-    const r = run(facts(), { 'UN-04': 'crawl', 'QV-05': 'run', 'QV-06': 'not_yet' });
-    expect(cap(r, 'UNIT_ECONOMICS').rating).toBe('run');
+    const r = run(facts(), { 'QV-05': 'not_yet', 'QV-06': 'run' });
+    expect(cap(r, 'UNIT_ECONOMICS').rating).toBe('not_yet');
     expect(r.coverage.ignoredAnswers).toEqual(['QV-06']);
   });
 
@@ -463,7 +500,7 @@ describe('FinOps IQ v3 scope triggers (DESIGN.md 4.4 and 7.5)', () => {
       targetOverrides: [{ capability: 'UNIT_ECONOMICS', level: 'walk', reason: 'Board asked for cost per customer' }]
     });
     expect(cap(r, 'UNIT_ECONOMICS').target).toEqual({ level: 'walk', source: 'consultant_override', reason: 'Board asked for cost per customer' });
-    expect(r.findings.find(f => f.capability === 'UNIT_ECONOMICS')).toMatchObject({ severity: 'Low', severityTrace: ['scope_low'], timeFrame: '12-24 months', targetSource: 'consultant_override' });
+    expect(r.findings.find(f => f.capability === 'UNIT_ECONOMICS')).toMatchObject({ severity: 'Low', severityTrace: ['scope_low'], targetDuration: { months: 24 }, targetSource: 'consultant_override' });
     expect(cap(r, 'INVOICING_CHARGEBACK')).toMatchObject({ target: { level: null }, gap: null, atOrAboveTarget: false });
     expect(r.findings.find(f => f.capability === 'INVOICING_CHARGEBACK')).toBeUndefined();
   });
@@ -488,18 +525,18 @@ describe('FinOps IQ v3 findings (DESIGN.md 5)', () => {
 
   it('come from gaps only, one per capability below target, and validate against finding.schema.json', () => {
     const valid = validator('urn:ltm:finops-iq:v3:finding');
-    expect(r.findings.map(f => f.capability).sort()).toEqual(r.capabilities.filter(c => (c.gap ?? 0) >= 1).map(c => c.capability).sort());
+    expect(r.findings.filter(f => f.type === 'capability_gap').map(f => f.capability).sort()).toEqual(r.capabilities.filter(c => (c.gap ?? 0) >= 1).map(c => c.capability).sort());
     for (const f of r.findings) expect(valid(f), `${f.id}: ${JSON.stringify(valid.errors)}`).toBe(true);
     expect(run(big, Object.fromEntries(MATURITY.map(q => [q.id, answerFor(q.id, 'run')]))).findings).toEqual([]);
   });
 
-  it('sets severity from the gap with the foundation uplift at Tier 2 and 3, and the time frame from severity', () => {
+  it('sets severity from the gap with the foundation uplift at Tier 2 and 3, and the target duration from severity', () => {
     expect(r.tier.tier).toBe(3);
     const di = r.findings.find(f => f.capability === 'DATA_INGESTION')!;
-    expect(di).toMatchObject({ gap: 3, severity: 'Critical', severityTrace: ['gap_3'], timeFrame: '0-3 months', ownerRole: 'Head of Cloud / CCoE' });
+    expect(di).toMatchObject({ gap: 3, severity: 'Critical', severityTrace: ['gap_3'], targetDuration: { months: 3 }, ownerRole: 'Head of Cloud / CCoE' });
     const kpi = r.findings.find(f => f.capability === 'KPIS_BENCHMARKING')!;
-    expect(kpi).toMatchObject({ gap: 2, severity: 'High', severityTrace: ['gap_2'], timeFrame: '3-6 months' });
-    const t2 = run(facts({}, { org: { currency: 'USD', consumingUnits: '5-19' }, spend: { byScope: { aws: { exact: 20_000_000 } } } }), { 'UN-04': 'crawl', 'UN-05': 'crawl', 'OP-04': 'crawl' });
+    expect(kpi).toMatchObject({ gap: 2, severity: 'High', severityTrace: ['gap_2'], targetDuration: { months: 6 } });
+    const t2 = run(facts({}, { org: { currency: 'USD', consumingUnits: '5-19' }, spend: { byScope: { aws: { exact: 20_000_000 } } } }), { 'UN-04': 'crawl', 'UN-05': 'crawl', 'OP-04': 'crawl', 'OP-05': 'crawl', 'OP-06': 'crawl', 'OP-07': 'crawl', 'OP-09': 'crawl' });
     expect(t2.tier.tier).toBe(2);
     expect(t2.findings.find(f => f.capability === 'ALLOCATION')).toMatchObject({ severity: 'High', severityTrace: ['gap_1', 'foundation_uplift'] });
     expect(t2.findings.find(f => f.capability === 'USAGE_OPTIMIZATION')).toMatchObject({ severity: 'Medium', severityTrace: ['gap_1'] });
@@ -513,6 +550,46 @@ describe('FinOps IQ v3 findings (DESIGN.md 5)', () => {
     for (const f of r.findings) for (const d of f.dependsOn) expect(f.wave, `${f.id} after ${d}`).toBeGreaterThanOrEqual(r.findings.find(x => x.id === d)!.wave);
     expect(byCap.get('DATA_INGESTION')!.wave).toBe(1);
     expect(byCap.get('UNIT_ECONOMICS')!.wave).toBe(3);
+  });
+
+  it('never starts a finding before its wave window or before the findings it depends on are due to complete (review H3)', () => {
+    const waveStart = R.schedule.waveStartMonth;
+    const all = [r, ...SCENARIOS.map(s => evaluateFinOpsIqV3(scenarioInput(s)))];
+    for (const res of all) {
+      for (const f of res.findings) {
+        expect(f.start.month, f.id).toBeGreaterThanOrEqual(waveStart[String(f.wave)]);
+        expect(f.targetDuration.months, f.id).toBe(R.schedule.durationMonths[f.severity]);
+        for (const d of f.dependsOn) {
+          const dep = res.findings.find(x => x.id === d)!;
+          expect(f.start.month, `${f.id} after ${d}`).toBeGreaterThanOrEqual(dep.start.month + dep.targetDuration.months);
+        }
+      }
+    }
+    // Critical work is spread by dependency: in RS4 the seven Critical findings do not all start at once.
+    const rs4 = all[4].findings.filter(f => f.severity === 'Critical');
+    expect(rs4.length).toBeGreaterThanOrEqual(7);
+    expect(new Set(rs4.map(f => f.start.month)).size).toBeGreaterThan(1);
+    expect(rs4.filter(f => f.start.month === 0).length).toBeLessThan(rs4.length);
+  });
+
+  it('show the FinOps lead as "to be appointed" with an interim owner when MP-01 shows no accountable owner (review M3)', () => {
+    const al = r.findings.find(f => f.capability === 'ALLOCATION')!;
+    expect(al).toMatchObject({ ownerRole: 'FinOps lead', ownerLabel: 'FinOps lead (to be appointed; interim: Head of Cloud / CCoE)', interimOwnerRole: 'Head of Cloud / CCoE' });
+    expect(r.findings.find(f => f.capability === 'DATA_INGESTION')!.ownerLabel).toBe('Head of Cloud / CCoE');
+    const named = run(big, { ...allNotYet, 'MP-01': 'walk' });
+    expect(named.findings.find(f => f.capability === 'ALLOCATION')).toMatchObject({ ownerLabel: 'FinOps lead' });
+    expect(named.findings.find(f => f.capability === 'ALLOCATION')!.interimOwnerRole).toBeUndefined();
+  });
+
+  it('raise DECISION-01 when MP-01 shows no accountable owner: High, one level higher at Tier 2 or 3 (review M4)', () => {
+    const tier1 = facts();
+    for (const level of ['not_yet', 'crawl', 'unknown']) {
+      const d = run(tier1, { 'MP-01': level }, 'executive').findings.find(f => f.id === 'F-FIN-DECISION-01')!;
+      expect(d, level).toMatchObject({ type: 'decision', severity: 'High', ownerRole: 'CIO', wave: 1, unconfirmed: level === 'unknown' });
+    }
+    expect(run(tier1, {}, 'executive').findings.find(f => f.id === 'F-FIN-DECISION-01')).toMatchObject({ unconfirmed: true });
+    for (const level of ['walk', 'run']) expect(run(tier1, { 'MP-01': level }).findings.find(f => f.id === 'F-FIN-DECISION-01'), level).toBeUndefined();
+    expect(r.findings.find(f => f.id === 'F-FIN-DECISION-01')).toMatchObject({ severity: 'Critical', severityTrace: ['decision_rule', 'foundation_uplift'] });
   });
 
   it('link levers in scope and carry offerings, owner role and claim IDs', () => {
@@ -529,7 +606,7 @@ describe('FinOps IQ v3 findings (DESIGN.md 5)', () => {
     const sev = ['Critical', 'High', 'Medium', 'Low'];
     for (let i = 1; i < r.findings.length; i++) {
       const [a, b] = [r.findings[i - 1], r.findings[i]];
-      expect(sev.indexOf(a.severity) < sev.indexOf(b.severity) || (a.severity === b.severity && (a.wave < b.wave || (a.wave === b.wave && a.gap >= b.gap)))).toBe(true);
+      expect(sev.indexOf(a.severity) < sev.indexOf(b.severity) || (a.severity === b.severity && (a.wave < b.wave || (a.wave === b.wave && (a.gap ?? 0) >= (b.gap ?? 0))))).toBe(true);
     }
     expect(r.topFindingIds).toEqual(r.findings.slice(0, 5).map(f => f.id));
   });
@@ -553,14 +630,14 @@ describe('FinOps IQ v3 need verdict (DESIGN.md 9, executive mode)', () => {
     expect(exec(allExec('run'))).toMatchObject({ baseIndex: 0, needIndex: 0, band: 'lightweight', confidence: 'Medium' });
   });
 
-  it('adds the urgency modifiers: tier, growth of 20% or more, AI in scope or 25% still to move', () => {
+  it('adds the urgency modifiers: tier, growth of 20% or more, AI in scope (executive mode: no migration share, review L6)', () => {
     const f = facts({ scopes: ['public_cloud', 'ai_api'] }, { org: { currency: 'USD', consumingUnits: '20+' }, spend: { byScope: { aws: { exact: 60_000_000 } }, growth12m: 25 } });
     const v = exec(allExec('run'), f);
-    expect(v.modifiers.map(m => m.id)).toEqual(['tier_2', 'growth_ge_20pct', 'migration_or_ai']);
+    expect(v.modifiers.map(m => m.id)).toEqual(['tier_2', 'growth_ge_20pct', 'ai_in_scope']);
     expect(v.needIndex).toBe(30);
     expect(v.pending).toEqual([{ id: 'expected_value_ge_5pct_of_P', reason: 'needs the value model (F4)' }]);
     const moving = exec(allExec('run'), facts({ migration: { remainingShare24m: { exact: 0.3 } } }));
-    expect(moving.modifiers.map(m => m.id)).toEqual(['migration_or_ai']);
+    expect(moving.modifiers.map(m => m.id)).toEqual([]);
   });
 
   it('uses the register bands with Q14\'s reworded 26-50 band, and never shows money', () => {
@@ -571,6 +648,13 @@ describe('FinOps IQ v3 need verdict (DESIGN.md 9, executive mode)', () => {
     expect(worst).toMatchObject({ baseIndex: 91.7, needIndex: 100, band: 'act_now', bandLabel: 'Act now' });
     expect(exec(allExec('not_yet'))).toMatchObject({ baseIndex: 33.3, band: 'foundations', bandLabel: 'Targeted improvements needed now' });
     expect(JSON.stringify(worst)).not.toMatch(/[$£€]|USD|EUR|GBP/);
+  });
+
+  it('lists unknown growth as a blind spot and counts answered questions in the basis line (review L1, L2)', () => {
+    const v = exec({}, facts({}, { spend: { byScope: { aws: { exact: 20_000_000 } }, growth12m: 'unknown' } }));
+    expect(v.blindSpots).toContainEqual({ fact: 'spend.growth12m', reason: 'unknown' });
+    expect(v.basisLine).toMatch(/^Based on 3 of 18 questions answered;/);
+    expect(exec(allExec('run')).basisLine).toMatch(/^Based on 15 of 18 questions answered;/);
   });
 
   it('Unknown counts as the maximum gap and is a blind spot', () => {
@@ -584,8 +668,6 @@ describe('FinOps IQ v3 need verdict (DESIGN.md 9, executive mode)', () => {
 /* -------------------------------- Invariants -------------------------------- */
 
 const ORDER: AnswerLevel[] = ['unknown', 'not_yet', 'crawl', 'walk', 'run'];
-/** Questions whose answer can trigger another question (DESIGN.md 7.5): they may move a second capability by design. */
-const TRIGGER_SOURCES = new Set<string>(JSON.stringify(QUESTIONS.map(q => q.askWhen ?? null)).match(/"answer":"[A-Z]{2}-\d{2}"/g)!.map(m => m.slice(10, 15)));
 
 function walk(v: any, path: string, visit: (path: string, v: any) => void) {
   visit(path, v);
@@ -607,17 +689,22 @@ describe('FinOps IQ v3 invariants (random questionnaires, both modes)', () => {
     }
   });
 
-  it('a better answer never lowers its capability (Unknown ranks lowest)', () => {
-    for (const { mode, seed, input, r } of runs.slice(0, 60).concat(runs.slice(150, 210))) {
+  it('a better answer never scores worse: no capability, headline or need index moves the wrong way (Unknown ranks lowest)', () => {
+    for (const { mode, seed, input, r } of runs.slice(0, 40).concat(runs.slice(150, 190))) {
       for (const id of r.questions.asked.filter(x => Q.get(x).kind === 'maturity')) {
-        const c = Q.get(id).capability;
-        const idx = ORDER.map(level => ratingIndex(cap(evaluateFinOpsIqV3({ ...input, answers: { ...input.answers, [id]: answerFor(id, level) } }), c).rating));
-        for (let i = 1; i < idx.length; i++) expect(idx[i], `${mode} seed ${seed} ${id}: ${idx}`).toBeGreaterThanOrEqual(idx[i - 1]);
+        const results = ORDER.map(level => evaluateFinOpsIqV3({ ...input, answers: { ...input.answers, [id]: answerFor(id, level) } }));
+        for (let i = 1; i < results.length; i++) {
+          const [lo, hi] = [results[i - 1], results[i]];
+          const msg = `${mode} seed ${seed} ${id}: ${ORDER[i - 1]} -> ${ORDER[i]}`;
+          for (const c of hi.capabilities) expect(ratingIndex(c.rating), `${msg} ${c.capability}`).toBeGreaterThanOrEqual(ratingIndex(cap(lo, c.capability).rating));
+          expect(hi.headline.atOrAboveTarget, msg).toBeGreaterThanOrEqual(lo.headline.atOrAboveTarget);
+          if (mode === 'executive') expect(hi.needVerdict!.needIndex, msg).toBeLessThanOrEqual(lo.needVerdict!.needIndex);
+        }
       }
     }
   }, 300_000);
 
-  it('a blank never scores better than any answered option (capability, headline and need index)', () => {
+  it('a blank never scores better than any answered option: capability, headline, need index and findings (review H1)', () => {
     for (const { mode, seed, input, r } of runs.slice(0, 40).concat(runs.slice(150, 190))) {
       for (const id of r.questions.asked.filter(x => Q.get(x).kind === 'maturity')) {
         const c = Q.get(id).capability;
@@ -627,15 +714,22 @@ describe('FinOps IQ v3 invariants (random questionnaires, both modes)', () => {
           const a = evaluateFinOpsIqV3({ ...input, answers: { ...rest, [id]: answerFor(id, level) } });
           const msg = `${mode} seed ${seed} ${id}=${level}`;
           expect(effective(blank, c), msg).toBeLessThanOrEqual(effective(a, c));
-          if (!TRIGGER_SOURCES.has(id)) expect(blank.headline.atOrAboveTarget, msg).toBeLessThanOrEqual(a.headline.atOrAboveTarget);
+          expect(blank.headline.atOrAboveTarget, msg).toBeLessThanOrEqual(a.headline.atOrAboveTarget);
           if (mode === 'executive') expect(blank.needVerdict!.needIndex, msg).toBeGreaterThanOrEqual(a.needVerdict!.needIndex);
+          // Never fewer or less severe findings.
+          expect(blank.findings.length, msg).toBeGreaterThanOrEqual(a.findings.length);
+          for (const f of a.findings) {
+            const b = blank.findings.find(x => x.id === f.id);
+            expect(b, `${msg} ${f.id}`).toBeDefined();
+            expect(SEV.indexOf(b!.severity), `${msg} ${f.id}`).toBeGreaterThanOrEqual(SEV.indexOf(f.severity));
+          }
         }
       }
     }
   }, 300_000);
 
   it('every client-visible string carries claim IDs that exist in the register and are client-visible', () => {
-    const TEXT = ['title', 'businessConsequence', 'decisionOrAction', 'statement', 'bandLabel', 'basisLine', 'ratingLabel', 'displayName', 'note', 'evidenceToConfirm'];
+    const TEXT = ['title', 'businessConsequence', 'decisionOrAction', 'statement', 'bandLabel', 'basisLine', 'ratingLabel', 'displayName', 'note', 'evidenceToConfirm', 'ownerLabel'];
     for (const { mode, seed, r } of runs.slice(0, 50).concat(runs.slice(150, 200))) {
       walk({ ...r, conflicts: [] }, 'result', (p, v) => {
         if (!v || typeof v !== 'object' || Array.isArray(v) || !TEXT.some(k => typeof v[k] === 'string')) return;
@@ -685,8 +779,8 @@ describe('FinOps IQ v3 invariants (random questionnaires, both modes)', () => {
  * docs/cio-readiness/finops-iq/design/F3-scenario-diffs.md. Everything not listed must match exactly.
  */
 const RECORDED = {
-  /** D1: lever and decision findings carry or depend on value (F4); F3 builds capability-gap findings only. */
-  deferredFindings: { RS1: ['F-FIN-LEV-04', 'F-FIN-LEV-01'], RS2: [], RS3: ['F-FIN-DECISION-02'], RS4: ['F-FIN-DECISION-01'], RS5: ['F-FIN-DECISION-01', 'F-FIN-LEV-01'] } as Record<string, string[]>,
+  /** D1: lever findings and DECISION-02 carry or depend on value (F4). DECISION-01 is built (review M4). */
+  deferredFindings: { RS1: ['F-FIN-LEV-04', 'F-FIN-LEV-01'], RS2: [], RS3: ['F-FIN-DECISION-02'], RS4: [], RS5: ['F-FIN-LEV-01'] } as Record<string, string[]>,
   /** D1: findings counted in findingCount but not itemised in topFindings (RS2: one lever, scope or decision finding). */
   unlistedDeferred: { RS2: 1 } as Record<string, number>,
   /** D2: the value uplift (THR-FIN-13) needs the value model, so these read one severity lower in F3. */
@@ -702,7 +796,7 @@ function withoutValueUplift(x: any) {
   const severityTrace = x.severityTrace.filter((t: string) => t !== 'value_uplift');
   let i = SEV.indexOf(R.severity.byGap[String(x.gap)]);
   if (severityTrace.includes('foundation_uplift')) i = Math.min(3, i + 1);
-  return { severity: SEV[i], severityTrace, timeFrame: R.severity.timeFrames[SEV[i]] };
+  return { severity: SEV[i], severityTrace };
 }
 
 function goldenView(r: FinOpsIqV3Result) {
@@ -713,7 +807,7 @@ function goldenView(r: FinOpsIqV3Result) {
     profile: Object.fromEntries(r.capabilities.map(c => [c.capability,
       `${c.rating}${c.loweredByDepth ? ' (lowered)' : ''} / ${c.target.level ?? '-'} / ${c.gap ?? '-'}${c.atOrAboveTarget ? ' / at target' : ''}${c.unconfirmed ? ' / unconfirmed' : ''}${c.complete ? '' : ' / incomplete'}${c.assessedIn ? ' / workshop' : ''}`])),
     headline: { atOrAboveTarget: r.headline.atOrAboveTarget, inScope: r.headline.inScope, assessed: r.headline.assessed, statement: r.headline.statement },
-    findings: r.findings.map(f => `${f.id} ${f.severity} [${f.severityTrace}] wave ${f.wave}${f.dependsOn.length ? ` after ${f.dependsOn}` : ''} | ${f.ownerRole} | ${f.timeFrame} | levers ${f.leverIds.join(',') || '-'} | offerings ${f.offeringIds.join(',')}${f.unconfirmed ? ' | unconfirmed' : ''}`),
+    findings: r.findings.map(f => `${f.id} ${f.severity} [${f.severityTrace}] wave ${f.wave}${f.dependsOn.length ? ` after ${f.dependsOn}` : ''} | ${f.ownerLabel} | from month ${f.start.month}, within ${f.targetDuration.months} months | levers ${f.leverIds.join(',') || '-'} | offerings ${f.offeringIds.join(',')}${f.unconfirmed ? ' | unconfirmed' : ''}`),
     topFindingIds: r.topFindingIds,
     needVerdict: r.needVerdict && { ...r.needVerdict, claimIds: undefined },
     coverage: { ...r.coverage, claimIds: undefined },
@@ -746,10 +840,15 @@ describe('FinOps IQ v3 reference scenarios against their written expectations', 
           const f = r.findings.find(y => y.id === x.id);
           if (deferred.includes(x.id)) { expect(f, `${x.id} is deferred to F4`).toBeUndefined(); expect(['lever_opportunity', 'decision']).toContain(x.type); continue; }
           expect(f, x.id).toBeDefined();
-          expect(x.type).toBe('capability_gap');
-          const want = uplift.includes(x.id) ? withoutValueUplift(x) : { severity: x.severity, severityTrace: x.severityTrace, timeFrame: x.timeFrame };
-          if (uplift.includes(x.id)) expect(x.severityTrace, x.id).toContain('value_uplift');
-          expect(f, x.id).toMatchObject({ capability: x.capability, current: x.current, target: x.target, gap: x.gap, ownerRole: x.ownerRole, wave: x.wave, ...want, ...(x.unconfirmed ? { unconfirmed: true } : {}) });
+          expect(f!.type, x.id).toBe(x.type);
+          if (x.type === 'decision') {
+            expect(f, x.id).toMatchObject({ capability: x.capability, severity: x.severity, ownerRole: x.ownerRole, wave: x.wave });
+          } else {
+            // D5: timeFrame is replaced by start and targetDuration (review H3), so it is not compared.
+            const want = uplift.includes(x.id) ? withoutValueUplift(x) : { severity: x.severity, severityTrace: x.severityTrace };
+            if (uplift.includes(x.id)) expect(x.severityTrace, x.id).toContain('value_uplift');
+            expect(f, x.id).toMatchObject({ capability: x.capability, current: x.current, target: x.target, gap: x.gap, ownerRole: x.ownerRole, wave: x.wave, ...want, ...(x.unconfirmed ? { unconfirmed: true } : {}) });
+          }
           for (const o of x.offeringIds) expect(f!.offeringIds, `${x.id} offering ${o}`).toContain(o);
           for (const l of x.leverIds ?? []) expect(f!.leverIds, `${x.id} lever ${l}`).toContain(l);
         }
@@ -789,9 +888,10 @@ describe('FinOps IQ v3 golden outputs (approved)', () => {
   const approved = JSON.parse(readFileSync(file, 'utf8'));
   for (const name of Object.keys(inputs)) it(`${name} matches its approved output`, () => expect(actual[name]).toEqual(approved[name]));
 
-  it('the workshop asks 64 questions (41 maturity) for the Tier 2 reference estate RS3', () => {
+  it('the workshop asks 65 questions (42 maturity) for the Tier 2 reference estate RS3', () => {
     const r = evaluateFinOpsIqV3(inputs.RS3);
-    expect([r.questions.asked.length, r.coverage.asked]).toEqual([64, 41]);
+    expect([r.questions.asked.length, r.coverage.asked]).toEqual([65, 42]);
+    expect(r.coverage.blankQuestions).toEqual(['QV-06']); // asked since review M2 (QV-05 at Crawl); the scenario predates it
   });
 });
 

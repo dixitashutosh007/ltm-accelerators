@@ -1,5 +1,5 @@
 {
-  "questionSetVersion": "3.0.0",
+  "questionSetVersion": "3.1.0",
   "executiveSet": [
     "SC-02",
     "SC-03",
@@ -305,7 +305,7 @@
       "basis": [
         {
           "claimId": "CLM-FIN-127",
-          "citation": "LTM need verdict (executive mode): need index 0-100 = mean over executive capabilities with a target of (gap / 3) x 100, Unknown counted as gap = target index and blank as the maximum gap [CLM-FIN-127]",
+          "citation": "LTM need verdict (executive mode only): need index 0-100 = mean over executive capabilities with a target of (gap / 3) x 100, with Unknown, and any capability with a question left blank, counted as the maximum gap... [CLM-FIN-127]",
           "status": "LTM_heuristic"
         },
         {
@@ -397,7 +397,7 @@
       "basis": [
         {
           "claimId": "CLM-FIN-127",
-          "citation": "LTM need verdict (executive mode): need index 0-100 = mean over executive capabilities with a target of (gap / 3) x 100, Unknown counted as gap = target index and blank as the maximum gap [CLM-FIN-127]",
+          "citation": "LTM need verdict (executive mode only): need index 0-100 = mean over executive capabilities with a target of (gap / 3) x 100, with Unknown, and any capability with a question left blank, counted as the maximum gap... [CLM-FIN-127]",
           "status": "LTM_heuristic"
         },
         {
@@ -1389,7 +1389,7 @@
         "workshop"
       ],
       "text": "Is detailed billing and usage data for all accounts and subscriptions exported automatically to one central store you control?",
-      "help": "For example AWS Data Exports, Azure Cost Management exports, Google Cloud Billing export.",
+      "help": "Choose the highest option that fully describes you today. For example AWS Data Exports, Azure Cost Management exports, Google Cloud Billing export.",
       "answerType": "single_select",
       "options": [
         {
@@ -1440,6 +1440,11 @@
           "status": "V"
         },
         {
+          "claimId": "CLM-FIN-107",
+          "citation": "Oracle Cloud Infrastructure provides cost reports in its own format and in FOCUS format, generated every six hours at one row per resource per hour, downloadable from the Cost and Usage Reports page [CLM-FIN-107]",
+          "status": "V"
+        },
+        {
           "claimId": "CLM-FIN-164",
           "citation": "FinOps IQ v3 merged question set (LTM wording) [CLM-FIN-164]",
           "status": "LTM_heuristic"
@@ -1478,6 +1483,7 @@
         ]
       },
       "text": "Do private cloud and data centre costs reach the same cost model as cloud (from virtualisation, CMDB and finance data)?",
+      "help": "Choose the highest option that fully describes you today.",
       "answerType": "single_select",
       "options": [
         {
@@ -1614,6 +1620,7 @@
         ]
       },
       "text": "Is cost data from different providers normalised into one model, for example the FOCUS specification?",
+      "help": "Choose the highest option that fully describes you today.",
       "answerType": "single_select",
       "options": [
         {
@@ -1680,6 +1687,7 @@
         "workshop"
       ],
       "text": "What share of spend, measured by cost, is allocated to an accountable owner (team, product or cost centre) by agreed rules: tags or labels, account structure, shared-cost rules?",
+      "help": "Choose the highest option that fully describes you today.",
       "answerType": "single_select",
       "options": [
         {
@@ -1689,12 +1697,12 @@
         },
         {
           "value": "walk",
-          "label": "85-90%",
+          "label": "85% to 90%",
           "level": "walk"
         },
         {
           "value": "crawl",
-          "label": "70-84%",
+          "label": "70% to under 85%",
           "level": "crawl"
         },
         {
@@ -1758,6 +1766,7 @@
         "workshop"
       ],
       "text": "Is there a documented allocation policy (mandatory tags or labels, account and subscription hierarchy with named owners, rules for shared costs) and is it kept current?",
+      "help": "Choose the highest option that fully describes you today.",
       "answerType": "single_select",
       "options": [
         {
@@ -1832,6 +1841,7 @@
         "contains": "kubernetes"
       },
       "text": "Are container platform costs allocated to teams or products (by namespace, label or workload), including idle and shared cluster cost?",
+      "help": "Choose the highest option that fully describes you today.",
       "answerType": "single_select",
       "options": [
         {
@@ -1904,6 +1914,7 @@
         "workshop"
       ],
       "text": "Can engineering, product and finance teams see their own cost data themselves, without raising a request?",
+      "help": "Choose the highest option that fully describes you today.",
       "answerType": "single_select",
       "options": [
         {
@@ -1975,6 +1986,7 @@
         "workshop"
       ],
       "text": "Which of these do the relevant owners receive on a regular schedule?",
+      "help": "Select every report received on a schedule; none selected means none. All five = Run, three or four = Walk, one or two = Crawl, none = Not yet.",
       "answerType": "multi_select",
       "options": [
         {
@@ -2049,8 +2061,7 @@
           "minCount": 0,
           "level": "not_yet"
         }
-      ],
-      "help": "Select every report received on a schedule; none selected means none. All five = Run, three or four = Walk, one or two = Crawl, none = Not yet."
+      ]
     },
     {
       "id": "UN-10",
@@ -2062,6 +2073,7 @@
         "workshop"
       ],
       "text": "How are unexpected cost increases detected and acted on?",
+      "help": "Choose the highest option that fully describes you today.",
       "answerType": "single_select",
       "options": [
         {
@@ -2151,6 +2163,7 @@
         "workshop"
       ],
       "text": "When the bill goes up, how long does it take to explain why, with the business or technical cause?",
+      "help": "Choose the highest option that fully describes you today.",
       "answerType": "single_select",
       "options": [
         {
@@ -2165,7 +2178,7 @@
         },
         {
           "value": "crawl",
-          "label": "Weeks, and the answer is contested",
+          "label": "A week or more, or the explanation is disputed",
           "level": "crawl"
         },
         {
@@ -2224,26 +2237,27 @@
         "workshop"
       ],
       "text": "Over the last 12 months, how far did actual spend differ from forecast or budget, on average per quarter?",
+      "help": "Choose the highest option that fully describes you today.",
       "answerType": "single_select",
       "options": [
         {
           "value": "run",
-          "label": "Within plus or minus 5%",
+          "label": "Within ±5%",
           "level": "run"
         },
         {
           "value": "walk",
-          "label": "5-10%",
+          "label": "More than ±5%, up to ±10%",
           "level": "walk"
         },
         {
           "value": "crawl",
-          "label": "10-20%",
+          "label": "More than ±10%, up to ±20%",
           "level": "crawl"
         },
         {
           "value": "not_yet",
-          "label": "More than 20%, or no forecast",
+          "label": "More than ±20%, or no forecast",
           "level": "not_yet"
         },
         {
@@ -2296,6 +2310,7 @@
         "workshop"
       ],
       "text": "How is the forecast built?",
+      "help": "Choose the highest option that fully describes you today.",
       "answerType": "single_select",
       "options": [
         {
@@ -2356,6 +2371,7 @@
         "workshop"
       ],
       "text": "Do teams have budgets for their cloud spend, with alerts and a review when they are exceeded?",
+      "help": "Choose the highest option that fully describes you today.",
       "answerType": "single_select",
       "options": [
         {
@@ -2431,6 +2447,7 @@
         "workshop"
       ],
       "text": "Before a new workload or major change goes ahead, is its running cost estimated and approved?",
+      "help": "Choose the highest option that fully describes you today.",
       "answerType": "single_select",
       "options": [
         {
@@ -2492,6 +2509,7 @@
         "workshop"
       ],
       "text": "Do you know what it costs to serve one customer, transaction or unit of output, and is it trended?",
+      "help": "Choose the highest option that fully describes you today.",
       "answerType": "single_select",
       "options": [
         {
@@ -2557,10 +2575,11 @@
         "workshop"
       ],
       "askWhen": {
-        "answer": "UN-04",
-        "levelAtLeast": "walk"
+        "answer": "QV-05",
+        "levelAtLeast": "crawl"
       },
       "text": "Do unit costs inform pricing, product roadmap or architecture decisions?",
+      "help": "Choose the highest option that fully describes you today.",
       "answerType": "single_select",
       "options": [
         {
@@ -2634,6 +2653,7 @@
         ]
       },
       "text": "Do you know the cost per inference, per 1,000 tokens or per AI use case?",
+      "help": "Choose the highest option that fully describes you today.",
       "answerType": "single_select",
       "options": [
         {
@@ -2701,6 +2721,7 @@
         "workshop"
       ],
       "text": "Is there an agreed set of FinOps KPIs (for example allocation %, eligible commitment coverage and utilisation, forecast variance, unit cost) reviewed by leaders, and compared with published benchmarks?",
+      "help": "Choose the highest option that fully describes you today.",
       "answerType": "single_select",
       "options": [
         {
@@ -2763,6 +2784,7 @@
         "workshop"
       ],
       "text": "How are commitment discounts (Savings Plans, reservations, committed use discounts) managed?",
+      "help": "Choose the highest option that fully describes you today.",
       "answerType": "single_select",
       "options": [
         {
@@ -2880,6 +2902,7 @@
         ]
       },
       "text": "How is the commitment portfolio's lifecycle handled: expiry dates, utilisation drift, renewals?",
+      "help": "Choose the highest option that fully describes you today.",
       "answerType": "single_select",
       "options": [
         {
@@ -2955,6 +2978,7 @@
         ]
       },
       "text": "Are enterprise agreements and negotiated pricing with providers managed against usage forecasts?",
+      "help": "Choose the highest option that fully describes you today.",
       "answerType": "single_select",
       "options": [
         {
@@ -3021,6 +3045,7 @@
         ]
       },
       "text": "Is Spot or preemptible capacity used for workloads that tolerate interruption, with automated handling of interruptions?",
+      "help": "Choose the highest option that fully describes you today.",
       "answerType": "single_select",
       "options": [
         {
@@ -3109,6 +3134,7 @@
         "workshop"
       ],
       "text": "How often are rightsizing and modernisation recommendations (for example newer instance generations) reviewed and acted on?",
+      "help": "Choose the highest option that fully describes you today.",
       "answerType": "single_select",
       "options": [
         {
@@ -3207,6 +3233,7 @@
         ]
       },
       "text": "When did you last systematically remove idle or orphaned resources (unattached disks, old snapshots, idle load balancers, unused IPs)?",
+      "help": "Choose the highest option that fully describes you today.",
       "answerType": "single_select",
       "options": [
         {
@@ -3291,6 +3318,7 @@
         ]
       },
       "text": "Are non-production environments switched off outside working hours by default?",
+      "help": "Choose the highest option that fully describes you today.",
       "answerType": "single_select",
       "options": [
         {
@@ -3379,6 +3407,7 @@
         ]
       },
       "text": "Do automated lifecycle policies move data to cheaper storage tiers and expire old snapshots and backups?",
+      "help": "Choose the highest option that fully describes you today.",
       "answerType": "single_select",
       "options": [
         {
@@ -3462,6 +3491,7 @@
         ]
       },
       "text": "Is data transfer (between zones and regions, to the internet and on-premises) monitored and designed for cost?",
+      "help": "Choose the highest option that fully describes you today.",
       "answerType": "single_select",
       "options": [
         {
@@ -3527,6 +3557,7 @@
         "contains": "kubernetes"
       },
       "text": "Are container resource requests and cluster capacity tuned to actual use (autoscaling, request rightsizing)?",
+      "help": "Choose the highest option that fully describes you today.",
       "answerType": "single_select",
       "options": [
         {
@@ -3606,6 +3637,7 @@
         ]
       },
       "text": "Are AI and GPU costs managed: GPU utilisation tracked, idle endpoints shut down, model choice reviewed for cost?",
+      "help": "Choose the highest option that fully describes you today.",
       "answerType": "single_select",
       "options": [
         {
@@ -3673,6 +3705,7 @@
         "workshop"
       ],
       "text": "Is expected cost (and unit cost) a required criterion in architecture reviews and workload placement decisions (cloud, private cloud, data centre)?",
+      "help": "Choose the highest option that fully describes you today.",
       "answerType": "single_select",
       "options": [
         {
@@ -3747,6 +3780,7 @@
         ]
       },
       "text": "Is there a current inventory of SaaS subscriptions and licences with owners, usage and renewal dates?",
+      "help": "Choose the highest option that fully describes you today.",
       "answerType": "single_select",
       "options": [
         {
@@ -3807,6 +3841,7 @@
         "contains": "licensing"
       },
       "text": "Are licence entitlements in cloud tracked and used (bring-your-own-licence, hybrid benefits, licence-included versus BYOL choices)?",
+      "help": "Choose the highest option that fully describes you today.",
       "answerType": "single_select",
       "options": [
         {
@@ -3879,6 +3914,7 @@
         ]
       },
       "text": "Is carbon or energy data reviewed alongside cost in optimisation and placement decisions?",
+      "help": "Choose the highest option that fully describes you today.",
       "answerType": "single_select",
       "options": [
         {
@@ -3934,6 +3970,7 @@
         "workshop"
       ],
       "text": "Who is formally accountable for cloud and technology spend governance?",
+      "help": "Choose the highest option that fully describes you today.",
       "answerType": "single_select",
       "options": [
         {
@@ -3943,7 +3980,7 @@
         },
         {
           "value": "walk",
-          "label": "A named owner, part-time",
+          "label": "A named owner (full- or part-time) without a written mandate or sponsor",
           "level": "walk"
         },
         {
@@ -3966,11 +4003,6 @@
         {
           "claimId": "CLM-FIN-026",
           "citation": "FinOps Framework capability 'FinOps Practice Operations', adapted under CC BY 4.0 [CLM-FIN-026]",
-          "status": "V"
-        },
-        {
-          "claimId": "CLM-FIN-042",
-          "citation": "Flexera 2026 State of the Cloud Report (n = 753) [CLM-FIN-042]",
           "status": "V"
         },
         {
@@ -4003,6 +4035,7 @@
         "workshop"
       ],
       "text": "Is there a regular cost review with engineering and finance, and who explains the bill to the CFO?",
+      "help": "Choose the highest option that fully describes you today.",
       "answerType": "single_select",
       "options": [
         {
@@ -4064,6 +4097,7 @@
         "workshop"
       ],
       "text": "Is cost optimisation work planned in engineering backlogs with estimated value?",
+      "help": "Choose the highest option that fully describes you today.",
       "answerType": "single_select",
       "options": [
         {
@@ -4121,6 +4155,7 @@
         "workshop"
       ],
       "text": "Can leadership show the board that cloud spend is delivering the value in its business case, and are cost, speed and value trade-offs made explicitly?",
+      "help": "Choose the highest option that fully describes you today.",
       "answerType": "single_select",
       "options": [
         {
@@ -4190,6 +4225,7 @@
         "workshop"
       ],
       "text": "Is cost efficiency written into objectives for engineering teams and senior leaders?",
+      "help": "Choose the highest option that fully describes you today.",
       "answerType": "single_select",
       "options": [
         {
@@ -4260,6 +4296,7 @@
         "workshop"
       ],
       "text": "Are cost policies enforced automatically (for example mandatory tags, allowed regions and sizes, budget guardrails) through policy as code?",
+      "help": "Choose the highest option that fully describes you today.",
       "answerType": "single_select",
       "options": [
         {
@@ -4335,6 +4372,7 @@
         "workshop"
       ],
       "text": "Are production and non-production separated into distinct accounts or subscriptions with clear billing boundaries?",
+      "help": "Choose the highest option that fully describes you today.",
       "answerType": "single_select",
       "options": [
         {
@@ -4392,6 +4430,7 @@
         "workshop"
       ],
       "text": "Do engineers, product owners and finance staff get FinOps training and recognition for cost improvements?",
+      "help": "Choose the highest option that fully describes you today.",
       "answerType": "single_select",
       "options": [
         {
@@ -4452,6 +4491,7 @@
         "workshop"
       ],
       "text": "Is cloud cost shown back or charged back to business units' P&L?",
+      "help": "Choose the highest option that fully describes you today.",
       "answerType": "single_select",
       "options": [
         {
@@ -4516,6 +4556,7 @@
         "workshop"
       ],
       "text": "Are provider invoices reconciled to the cost data, and does cost data flow into finance systems (ERP, BI, planning)?",
+      "help": "Choose the highest option that fully describes you today.",
       "answerType": "single_select",
       "options": [
         {
@@ -4581,6 +4622,7 @@
         "workshop"
       ],
       "text": "Does the organisation periodically assess its FinOps practice against a framework and act on the results?",
+      "help": "Choose the highest option that fully describes you today.",
       "answerType": "single_select",
       "options": [
         {
@@ -4635,6 +4677,7 @@
         "workshop"
       ],
       "text": "Are FinOps tools selected against requirements and integrated (data, allocation, anomaly, commitment management, automation of routine actions)?",
+      "help": "Choose the highest option that fully describes you today.",
       "answerType": "single_select",
       "options": [
         {
@@ -4670,11 +4713,6 @@
           "status": "P"
         },
         {
-          "claimId": "CLM-FIN-110",
-          "citation": "OpenCost is an open-source, vendor-neutral Kubernetes cost allocation project that reached CNCF Incubating status in October 2024; it is the cost allocation engine used by Kubecost [CLM-FIN-110]",
-          "status": "V"
-        },
-        {
           "claimId": "CLM-FIN-164",
           "citation": "FinOps IQ v3 merged question set (LTM wording) [CLM-FIN-164]",
           "status": "LTM_heuristic"
@@ -4695,6 +4733,7 @@
         "workshop"
       ],
       "text": "Does FinOps work with ITAM, ITFM, procurement, security, sustainability and architecture on shared data and decisions?",
+      "help": "Choose the highest option that fully describes you today.",
       "answerType": "single_select",
       "options": [
         {
@@ -4885,7 +4924,7 @@
       "basis": [
         {
           "claimId": "CLM-FIN-127",
-          "citation": "LTM need verdict (executive mode): need index 0-100 = mean over executive capabilities with a target of (gap / 3) x 100, Unknown counted as gap = target index and blank as the maximum gap [CLM-FIN-127]",
+          "citation": "LTM need verdict (executive mode only): need index 0-100 = mean over executive capabilities with a target of (gap / 3) x 100, with Unknown, and any capability with a question left blank, counted as the maximum gap... [CLM-FIN-127]",
           "status": "LTM_heuristic"
         },
         {
@@ -4977,7 +5016,7 @@
       "basis": [
         {
           "claimId": "CLM-FIN-127",
-          "citation": "LTM need verdict (executive mode): need index 0-100 = mean over executive capabilities with a target of (gap / 3) x 100, Unknown counted as gap = target index and blank as the maximum gap [CLM-FIN-127]",
+          "citation": "LTM need verdict (executive mode only): need index 0-100 = mean over executive capabilities with a target of (gap / 3) x 100, with Unknown, and any capability with a question left blank, counted as the maximum gap... [CLM-FIN-127]",
           "status": "LTM_heuristic"
         },
         {

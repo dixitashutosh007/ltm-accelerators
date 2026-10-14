@@ -1,19 +1,70 @@
 {
-  "rulesVersion": "1.0.0",
+  "rulesVersion": "1.1.0",
   "statusAsOf": "2026-10-14",
-  "rule": "FinOps IQ v3 engine rules that are not in the F2 registries: rating labels, finding wording, owner roles, severity, need verdict, headline and the legacy questions retired without a v3 question. Every client-visible string here carries claim IDs from the WS-S2 register. Waves, dependencies, targets, offerings and lever links come from registry/capabilities.json and registry/levers.json.",
+  "rule": "FinOps IQ v3 engine rules that are not in the F2 registries: rating labels, finding wording, owner roles, severity, schedule, decisions, need verdict, headline and the legacy questions retired without a v3 question. Every client-visible string here carries claim IDs from the WS-S2 register. Waves, dependencies, targets, offerings and lever links come from registry/capabilities.json and registry/levers.json.",
   "ratingLabels": {
-    "not_yet": { "label": "Not yet", "claimIds": ["CLM-FIN-005"] },
-    "crawl": { "label": "Crawl", "claimIds": ["CLM-FIN-004", "CLM-FIN-005"] },
-    "walk": { "label": "Walk", "claimIds": ["CLM-FIN-004", "CLM-FIN-005"] },
-    "run": { "label": "Run", "claimIds": ["CLM-FIN-004", "CLM-FIN-005"] },
-    "unknown": { "label": "Unknown", "claimIds": ["CLM-FIN-141"] },
-    "not_in_scope": { "label": "Not in scope", "claimIds": ["CLM-FIN-006"] },
-    "not_assessed": { "label": "Not assessed", "claimIds": ["CLM-FIN-163"] }
+    "not_yet": {
+      "label": "Not yet",
+      "claimIds": [
+        "CLM-FIN-005"
+      ]
+    },
+    "crawl": {
+      "label": "Crawl",
+      "claimIds": [
+        "CLM-FIN-004",
+        "CLM-FIN-005"
+      ]
+    },
+    "walk": {
+      "label": "Walk",
+      "claimIds": [
+        "CLM-FIN-004",
+        "CLM-FIN-005"
+      ]
+    },
+    "run": {
+      "label": "Run",
+      "claimIds": [
+        "CLM-FIN-004",
+        "CLM-FIN-005"
+      ]
+    },
+    "unknown": {
+      "label": "Unknown",
+      "claimIds": [
+        "CLM-FIN-141"
+      ]
+    },
+    "not_in_scope": {
+      "label": "Not in scope",
+      "claimIds": [
+        "CLM-FIN-006"
+      ]
+    },
+    "not_assessed": {
+      "label": "Not assessed",
+      "claimIds": [
+        "CLM-FIN-163"
+      ]
+    },
+    "not_answered": {
+      "label": "Not answered",
+      "claimIds": [
+        "CLM-FIN-163"
+      ]
+    }
   },
-  "workshopOnly": { "label": "Assessed in the workshop", "claimIds": ["CLM-FIN-164"] },
+  "workshopOnly": {
+    "label": "Assessed in the workshop",
+    "claimIds": [
+      "CLM-FIN-164"
+    ]
+  },
   "ownerRoles": {
-    "claimIds": ["CLM-FIN-162"],
+    "claimIds": [
+      "CLM-FIN-162"
+    ],
     "byCapability": {
       "DATA_INGESTION": "Head of Cloud / CCoE",
       "ALLOCATION": "FinOps lead",
@@ -37,52 +88,143 @@
       "FINOPS_ASSESSMENT": "FinOps lead",
       "AUTOMATION_TOOLS_SERVICES": "FinOps lead",
       "INTERSECTING_DISCIPLINES": "FinOps lead"
+    },
+    "toBeAppointed": {
+      "role": "FinOps lead",
+      "interimRole": "Head of Cloud / CCoE",
+      "label": "FinOps lead (to be appointed; interim: Head of Cloud / CCoE)",
+      "question": "MP-01",
+      "levels": [
+        "not_yet",
+        "crawl",
+        "unknown",
+        "not_answered"
+      ],
+      "claimIds": [
+        "CLM-FIN-162"
+      ]
     }
   },
   "severity": {
     "assumptionId": "ASM-FIN-005",
-    "claimIds": ["CLM-FIN-122"],
-    "byGap": { "1": "Medium", "2": "High", "3": "Critical" },
-    "foundationUplift": { "capabilities": ["DATA_INGESTION", "ALLOCATION", "FINOPS_PRACTICE_OPERATIONS"], "minTier": 2 },
-    "valueUplift": { "pending": "F4", "note": "At least High when a linked lever's expected net run-rate value is 2% or more of in-scope spend (THR-FIN-13). Not applied in F3: there is no value model yet." },
-    "lowWhenNoDefaultTarget": true,
-    "timeFrames": { "Critical": "0-3 months", "High": "3-6 months", "Medium": "6-12 months", "Low": "12-24 months" }
+    "claimIds": [
+      "CLM-FIN-122"
+    ],
+    "byGap": {
+      "1": "Medium",
+      "2": "High",
+      "3": "Critical"
+    },
+    "foundationUplift": {
+      "capabilities": [
+        "DATA_INGESTION",
+        "ALLOCATION",
+        "FINOPS_PRACTICE_OPERATIONS"
+      ],
+      "minTier": 2
+    },
+    "valueUplift": {
+      "pending": "F4",
+      "note": "At least High when a linked lever's expected net run-rate value is 2% or more of in-scope spend (THR-FIN-13). Not applied in F3: there is no value model yet."
+    },
+    "lowWhenNoDefaultTarget": true
   },
   "findingText": {
-    "claimIds": ["CLM-FIN-005", "CLM-FIN-141", "CLM-FIN-121", "CLM-FIN-122", "CLM-FIN-162"],
+    "claimIds": [
+      "CLM-FIN-005",
+      "CLM-FIN-141",
+      "CLM-FIN-121",
+      "CLM-FIN-122",
+      "CLM-FIN-162",
+      "CLM-FIN-163",
+      "CLM-FIN-165"
+    ],
     "title": "{capability}: {current}, target {target}",
     "titleUnconfirmed": "{capability}: {current} (not confirmed), target {target}",
-    "consequence": "Today: {currentGuidance}",
-    "consequenceUnknown": "Not confirmed: the answer was 'Don't know', so this is treated as a gap until it is confirmed.",
+    "today": "Today: {answers}.",
+    "answer": "“{label}” ({question})",
+    "answerUnknown": "“Don't know” ({question})",
+    "answerBlank": "not answered ({question})",
     "action": "Move {capability} to {target}: {targetGuidance}",
     "actionUnconfirmed": "Confirm the current practice with evidence, then move {capability} to {target}: {targetGuidance}",
-    "evidenceToConfirm": "Evidence behind the answers to {questions}"
+    "actionNotAnswered": "Answer and evidence: {questions}; then move {capability} to {target}: {targetGuidance}"
   },
   "headline": {
-    "claimIds": ["CLM-FIN-121", "CLM-FIN-163", "CLM-FIN-033"],
+    "claimIds": [
+      "CLM-FIN-121",
+      "CLM-FIN-163",
+      "CLM-FIN-033"
+    ],
     "statement": "{atOrAbove} of {inScope} in-scope capabilities with a target are at or above LTM's default target for a Tier {tier} estate",
-    "executiveSuffix": " (executive mode: {assessed} capabilities assessed; the rest in the workshop)"
+    "executiveSuffix": " (executive mode: {assessed} capabilities assessed; the rest in the workshop)",
+    "overrideSuffix": " ({overrides} set by the consultant)"
   },
   "needVerdict": {
-    "claimIds": ["CLM-FIN-127"],
-    "assumptionIds": ["ASM-FIN-030", "ASM-FIN-031", "ASM-FIN-032", "ASM-FIN-033"],
+    "claimIds": [
+      "CLM-FIN-127"
+    ],
+    "assumptionIds": [
+      "ASM-FIN-030",
+      "ASM-FIN-031",
+      "ASM-FIN-032",
+      "ASM-FIN-033"
+    ],
     "cap": 100,
     "modifiers": [
-      { "id": "tier_2", "points": 10 },
-      { "id": "tier_3", "points": 20 },
-      { "id": "expected_value_ge_5pct_of_P", "points": 10, "pending": "F4" },
-      { "id": "growth_ge_20pct", "points": 10, "threshold": 20 },
-      { "id": "migration_or_ai", "points": 10, "threshold": 0.25 }
+      {
+        "id": "tier_2",
+        "points": 10
+      },
+      {
+        "id": "tier_3",
+        "points": 20
+      },
+      {
+        "id": "expected_value_ge_5pct_of_P",
+        "points": 10,
+        "pending": "F4"
+      },
+      {
+        "id": "growth_ge_20pct",
+        "points": 10,
+        "threshold": 20
+      },
+      {
+        "id": "ai_in_scope",
+        "points": 10
+      }
     ],
     "bands": [
-      { "id": "lightweight", "max": 25, "label": "Lightweight practices sufficient at current scale" },
-      { "id": "foundations", "max": 50, "label": "Targeted improvements needed now" },
-      { "id": "material", "max": 75, "label": "Material exposure: act this year" },
-      { "id": "act_now", "max": 100, "label": "Act now" }
+      {
+        "id": "lightweight",
+        "max": 25,
+        "label": "Lightweight practices sufficient at current scale"
+      },
+      {
+        "id": "foundations",
+        "max": 50,
+        "label": "Targeted improvements needed now"
+      },
+      {
+        "id": "material",
+        "max": 75,
+        "label": "Material exposure: act this year"
+      },
+      {
+        "id": "act_now",
+        "max": 100,
+        "label": "Act now"
+      }
     ],
-    "basisLine": "Based on your answers to {questions} questions; LTM's targets for a Tier {tier} estate; not a FinOps Foundation assessment",
-    "basisClaimIds": ["CLM-FIN-127", "CLM-FIN-121", "CLM-FIN-033"],
-    "confidenceClaimIds": ["CLM-FIN-163"]
+    "basisLine": "Based on {answered} of {questions} questions answered; LTM's targets for a Tier {tier} estate; not a FinOps Foundation assessment",
+    "basisClaimIds": [
+      "CLM-FIN-127",
+      "CLM-FIN-121",
+      "CLM-FIN-033"
+    ],
+    "confidenceClaimIds": [
+      "CLM-FIN-163"
+    ]
   },
   "retiredLegacy": [
     {
@@ -90,6 +232,153 @@
       "disposition": "moved",
       "to": "Cloud IQ security baseline",
       "reason": "Root MFA and payer-account security is a security control, not a FinOps capability (PLAN.md F1). Owner accepted Q6, subject to the Cloud IQ owner; if declined, it is dropped from FinOps IQ."
+    }
+  ],
+  "capabilityText": {
+    "claimIds": [
+      "CLM-FIN-165"
+    ],
+    "byCapability": {
+      "DATA_INGESTION": {
+        "consequence": "Without complete, timely cost data every other FinOps decision rests on partial numbers, and gaps surface only when the bill arrives.",
+        "evidence": "Billing exports (for example FOCUS or the provider's detailed export) for every account and subscription for the last 3 months, with a completeness check."
+      },
+      "ALLOCATION": {
+        "consequence": "Spend that is not allocated has no owner, so it cannot be charged back, costed per unit or reduced by the team that causes it.",
+        "evidence": "Share of last month's cost allocated to an owner, measured by cost, with the allocation policy and the unallocated remainder."
+      },
+      "REPORTING_ANALYTICS": {
+        "consequence": "Teams that cannot see their own cost cannot act on it, so decisions wait for central reports.",
+        "evidence": "The cost views each group uses (engineering, product, finance) and the scheduled report list with its recipients."
+      },
+      "ANOMALY_MANAGEMENT": {
+        "consequence": "Unexpected increases keep running until someone notices them, so the cost of a spike grows with the time it takes to detect and explain it.",
+        "evidence": "The anomaly alert set-up and the last three alerts, with the time to triage and the cause found."
+      },
+      "PLANNING_ESTIMATING": {
+        "consequence": "The running cost of new workloads is discovered after go-live, when changing the design is most expensive.",
+        "evidence": "Cost estimates for two recent launches or changes, compared with their actual cost after launch."
+      },
+      "FORECASTING": {
+        "consequence": "Forecast misses become budget surprises for finance and the board and weaken confidence in technology spend plans.",
+        "evidence": "Forecast against actual by quarter for the last 12 months, and the forecasting method."
+      },
+      "BUDGETING": {
+        "consequence": "Without owner budgets and alerts, overspend is found at month end and nobody is accountable for the variance.",
+        "evidence": "Budgets by owner, the alert rules and the last variance review."
+      },
+      "KPIS_BENCHMARKING": {
+        "consequence": "Without agreed measures, leaders cannot tell whether the practice is improving or compare progress with published data.",
+        "evidence": "The KPI set with targets, and the last two leadership reviews of it."
+      },
+      "UNIT_ECONOMICS": {
+        "consequence": "Without unit costs, spend growth cannot be separated from business growth, and pricing and product decisions ignore the cost to serve.",
+        "evidence": "Unit cost definitions and their trend for the main products or services."
+      },
+      "ARCHITECTING_WORKLOAD_PLACEMENT": {
+        "consequence": "Design and placement choices fix most of the running cost before anyone reviews it.",
+        "evidence": "Architecture review records for recent designs showing the cost estimate and the comparison after go-live."
+      },
+      "USAGE_OPTIMIZATION": {
+        "consequence": "Idle, oversized and always-on resources keep costing money every hour until someone acts on them.",
+        "evidence": "Provider-tool recommendation exports (rightsizing, idle) no older than 90 days, and the actions taken on them."
+      },
+      "RATE_OPTIMIZATION": {
+        "consequence": "Steady usage paid at on-demand prices, or commitments that lapse or go unused, cost more per unit than necessary.",
+        "evidence": "Commitment coverage and utilisation reports, the commitment register with expiry dates, and Spot usage."
+      },
+      "LICENSING_SAAS": {
+        "consequence": "Unused licences and unmanaged renewals keep charging until the next renewal date has passed.",
+        "evidence": "The SaaS and licence inventory with owners, usage and renewal dates."
+      },
+      "SUSTAINABILITY": {
+        "consequence": "Carbon and energy goals cannot be weighed against cost when the data is not used in decisions.",
+        "evidence": "Carbon or energy reports used in recent optimisation or placement decisions."
+      },
+      "EXECUTIVE_STRATEGY_ALIGNMENT": {
+        "consequence": "Leadership cannot show the board that technology spend delivers its business case, so funding decisions rest on cost alone.",
+        "evidence": "Board or executive material linking cloud spend to business outcomes, and recorded trade-off decisions."
+      },
+      "FINOPS_PRACTICE_OPERATIONS": {
+        "consequence": "Without an accountable owner and a regular review, cost actions depend on individual effort and stall when priorities change.",
+        "evidence": "The FinOps mandate, the named owner and sponsor, and the minutes of the last cost reviews."
+      },
+      "GOVERNANCE_POLICY_RISK": {
+        "consequence": "Without enforced guardrails, the same cost problems recur in every new account and team.",
+        "evidence": "Policy definitions (tags, regions, sizes, budgets) and their enforcement mode per account."
+      },
+      "FINOPS_EDUCATION_ENABLEMENT": {
+        "consequence": "Engineers and product owners who are not trained in cost make decisions that undo the practice's gains.",
+        "evidence": "Training records by role, and examples of recognised cost improvements."
+      },
+      "INVOICING_CHARGEBACK": {
+        "consequence": "When cost is not reconciled and charged back, business units do not see what they spend and finance cannot rely on the numbers.",
+        "evidence": "Invoice reconciliation for the last month, and the chargeback or showback journal."
+      },
+      "FINOPS_ASSESSMENT": {
+        "consequence": "Without periodic assessment, gaps in the practice are found by accident rather than by plan.",
+        "evidence": "The last practice assessment and its tracked improvement plan."
+      },
+      "AUTOMATION_TOOLS_SERVICES": {
+        "consequence": "Manual tools and spreadsheets limit how much of the estate the practice can cover and how fast it can act.",
+        "evidence": "The FinOps tool inventory with its integrations, and the routine actions that are automated."
+      },
+      "INTERSECTING_DISCIPLINES": {
+        "consequence": "Procurement, asset management, security and architecture decide without cost data, and cost decisions are made without theirs.",
+        "evidence": "Shared processes or data feeds with ITAM, procurement, security, sustainability and architecture."
+      }
+    }
+  },
+  "schedule": {
+    "claimIds": [
+      "CLM-FIN-122",
+      "CLM-FIN-162"
+    ],
+    "waveStartMonth": {
+      "1": 0,
+      "2": 3,
+      "3": 9
+    },
+    "durationMonths": {
+      "Critical": 3,
+      "High": 6,
+      "Medium": 12,
+      "Low": 24
+    },
+    "startLabel": "From month {month}",
+    "durationLabel": "Complete within {months} months of starting",
+    "note": "A finding starts at its wave's window (DESIGN.md 5.4: wave 1 from month 0, wave 2 from month 3, wave 3 from month 9) and never before every finding it depends on is due to complete. Spreading Critical work by delivery capacity is F7."
+  },
+  "decisions": [
+    {
+      "id": "F-FIN-DECISION-01",
+      "capability": "FINOPS_PRACTICE_OPERATIONS",
+      "question": "MP-01",
+      "levels": [
+        "not_yet",
+        "crawl",
+        "unknown",
+        "not_answered"
+      ],
+      "severity": "High",
+      "tierUplift": {
+        "minTier": 2
+      },
+      "ownerRole": "CIO",
+      "wave": 1,
+      "offeringIds": [
+        "OFF.FIN.OPMODEL",
+        "OFF.FIN.MANAGED"
+      ],
+      "title": "Appoint an accountable FinOps owner with a mandate",
+      "consequence": "Until someone is accountable for cloud and technology spend, no finding in this report has an owner who can see it through.",
+      "action": "Appoint an accountable FinOps owner with a written mandate and an executive sponsor",
+      "evidence": "The appointment and the written mandate, with the executive sponsor named.",
+      "claimIds": [
+        "CLM-FIN-166",
+        "CLM-FIN-026"
+      ],
+      "actionUnconfirmed": "Confirm who is accountable for cloud and technology spend; if no one is, appoint an accountable FinOps owner with a written mandate and an executive sponsor"
     }
   ]
 }

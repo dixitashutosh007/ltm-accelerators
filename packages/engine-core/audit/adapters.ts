@@ -151,6 +151,13 @@ const fiqExtreme = (best: boolean) => ({
 /* ------------------------------ FinOps IQ v3 ------------------------------- */
 // Facts are fixed per mode so the audit varies answers only. The workshop estate selects every scope, and leaves
 // commitment coverage unknown, so every maturity question (including scope-conditional and follow-up ones) can be asked.
+// Executive mode also uses a Tier 3 estate with AI in scope and fast growth (F3 review M9), so every verdict band,
+// including "Act now", is reachable; random questionnaires draw from both executive estates.
+const FIQ3_EXEC_TIER3: Fiq3Facts = {
+  org: { currency: 'USD', consumingUnits: '20+' },
+  footprint: { publicCloudProviders: ['aws', 'azure'], scopes: ['public_cloud', 'ai_api', 'saas'] },
+  spend: { byScope: { aws: { exact: 60_000_000 }, azure: { exact: 20_000_000 } }, growth12m: 30 }
+};
 const FIQ3_FACTS: Record<Fiq3Mode, Fiq3Facts> = {
   executive: {
     org: { currency: 'USD', consumingUnits: '5-19' },
@@ -178,7 +185,7 @@ function fiq3Variants(q: any): unknown[] {
   }
 }
 const fiq3Extreme = (mode: Fiq3Mode, level: 'run' | 'not_yet') => ({
-  mode, facts: FIQ3_FACTS[mode],
+  mode, facts: mode === 'executive' && level === 'not_yet' ? FIQ3_EXEC_TIER3 : FIQ3_FACTS[mode],
   answers: Object.fromEntries(fiq3Questions(mode).filter((q: any) => q.kind === 'maturity')
     .map((q: any) => [q.id, q.id === 'UN-08' ? (level === 'run' ? FIQ3_REPORTS : []) : level]))
 });
@@ -189,14 +196,16 @@ function fiq3Adapter(mode: Fiq3Mode): Adapter {
   const gapFindings = (r: any, severities: string[]) => r.findings.filter((f: any) => severities.includes(f.severity)).length;
   const headlines: Headline[] = [
     { name: `Capabilities at or above target (0-${capabilities})`, scale: [0, capabilities], higherIsBetter: true, get: r => r.headline.atOrAboveTarget },
-    { name: 'Critical + high findings', scale: [0, capabilities], higherIsBetter: false, get: r => gapFindings(r, ['Critical', 'High']) },
-    { name: 'Capability-gap findings', scale: [0, capabilities], higherIsBetter: false, get: r => r.findings.length }
+    { name: 'Total capability gap (levels)', scale: [0, 3 * capabilities], higherIsBetter: false, get: r => r.capabilities.reduce((t: number, c: any) => t + Math.max(0, c.gap ?? 0), 0) },
+    // Findings: one per capability gap plus DECISION-01.
+    { name: 'Critical + high findings', scale: [0, capabilities + 1], higherIsBetter: false, get: r => gapFindings(r, ['Critical', 'High']) },
+    { name: 'Findings', scale: [0, capabilities + 1], higherIsBetter: false, get: r => r.findings.length }
   ];
   if (mode === 'executive') headlines.unshift({ name: 'Need index (0-100)', scale: [0, 100], higherIsBetter: false, get: r => r.needVerdict.needIndex });
   return {
     id: `finops-iq-v3-${mode}`, name: `FinOps IQ v3 (${mode} mode)`,
     questions: qs.map((q: any) => ({ id: q.id, label: q.text })),
-    random: r => ({ mode, facts: FIQ3_FACTS[mode], answers: Object.fromEntries(qs.filter(() => r() < 0.85).map((q: any) => [q.id, pick(r, fiq3Variants(q))])) }),
+    random: r => ({ mode, facts: mode === 'executive' && r() < 0.5 ? FIQ3_EXEC_TIER3 : FIQ3_FACTS[mode], answers: Object.fromEntries(qs.filter(() => r() < 0.85).map((q: any) => [q.id, pick(r, fiq3Variants(q))])) }),
     variants: id => fiq3Variants(byId.get(id)),
     withAnswer: setAnswer, withoutAnswer: dropAnswer,
     evaluate: i => evaluateFinOpsIqV3(i),
