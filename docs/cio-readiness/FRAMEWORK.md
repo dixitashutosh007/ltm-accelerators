@@ -24,6 +24,7 @@ The phase reviews each accelerator against one scorecard, then fixes it to a CIO
 | Hosting | **Stays in AWS Mumbai (ap-south-1).** EU and UK client data is therefore transferred to India, which has no adequacy decision. Workstream S6 covers the transfer basis |
 | Sovereign IQ and Posture IQ | **Merged into one accelerator named Sovereign IQ.** "Posture" becomes its compliance-exposure view |
 | Order | 1 Sovereign IQ (merged), 2 Cost IQ, 3 Cloud IQ, 4 Strategy IQ, 5 Resilience IQ, then FinOps IQ, FinOps Value Case, Modernization IQ, AI Readiness IQ |
+| Reprioritisation (14 Oct 2026) | **FinOps IQ moves to the front.** Sovereign IQ finishes S2 (regulatory sourcing) and then pauses at S3. The FinOps IQ review also maps its overlap with Cost IQ and FinOps Value Case and recommends whether to consolidate them |
 | Cost IQ | Fully in scope; no longer maintained separately |
 | Practice lead | No human practice leads yet. **One AI practice-lead agent per domain** reviews and advises; the product owner approves. Most review work is automated |
 | Data | No LTM engagement history yet. Use **published market data** with source, year and sample size, never presented as LTM peer benchmarks. Back-testing uses **reference scenarios** built from public case studies and regulatory examples |
