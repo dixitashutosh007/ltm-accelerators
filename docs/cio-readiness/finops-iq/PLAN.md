@@ -374,7 +374,10 @@ Scope ranges appear only in the consultant SOW draft. The client sees type, purp
 
 ---
 
-## Decisions (for the product owner)
+## Decisions (taken by the product owner, 14 Oct 2026)
+
+All recommended defaults **accepted** (D1–D15). D1 = option C: FinOps Value Case is folded into FinOps IQ as its executive mode; Cost IQ stays as the whole-estate technology cost diagnostic and hands cloud findings to FinOps IQ.
+
 
 | # | Decision | Recommended default | Needed by |
 |---|---|---|---|
