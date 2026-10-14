@@ -296,3 +296,74 @@ UN-10 crawl + UN-11 run: "Today: Static budget or threshold alerts only; explain
 | DESIGN.md and reference-scenarios.json (LTM, owner-approved 14 Oct 2026) | `docs/cio-readiness/finops-iq/design/` | Read 14 Oct 2026 | Specification checked against |
 
 Everything else in this review is a reading of the code, the tests, the audit output or the probe output, cited by file and line above. The recommendations are my judgement as practice lead and are labelled as such. The owner decides.
+
+---
+
+## 7. Re-review (14 Oct 2026, commit `dae4457`)
+
+**What I checked:**
+- the diff `380ccd6..dae4457`: engine 3.1.0, question bank 3.1.0, engine rules 1.1.0, claims, audit adapter, `finding.schema.json`, the goldens, F3-scenario-diffs.md and the PLAN F3 status;
+- the v3 test file: 95 of 95 pass;
+- `npm run audit:engines`;
+- probe `probe3.ts` in the session scratchpad.
+
+I did not edit code and did not commit. I amended DESIGN.md 3.2, 3.3, 4.4, 5.3, 5.4, 7.5 and 9, each change marked "F3 review, pending owner confirmation". I also amended the QV-06 row in 7.3 so that it matches 7.5.
+
+### Verdict
+
+**Approve, with one change (R1) to make before the owner merges.**
+
+Every High and Medium item I asked to be fixed is fixed and verified. One new Medium (R1) comes from the H3 schedule rule and shows in a reference scenario (RS5), so it should be corrected before the goldens are approved. The rest are Low or need an owner decision.
+
+### Item-by-item
+
+| Item | Status | Evidence |
+|---|---|---|
+| H1 Blanks reduce findings | **Fixed** | `evaluate.ts` passes a blank to `rateCapability` as `unknown` and labels it "Not answered"; the action reads "Answer and evidence: …". Audit missing-data shift is **+0 worst** on all five headlines in both modes (it was +3 executive and +5 workshop). Golden `unanswered-executive` now has 8 unconfirmed findings, including DECISION-01; it had 0. Basis line: "Based on 4 of 18 questions answered" |
+| H2 "Today" text | **Fixed** | Probe with UN-10 Crawl and UN-11 Run: *"Today: 'Static budget or threshold alerts only' (UN-10). Unexpected increases keep running until someone notices them…"*. It quotes only the answer that set the rating. Per-capability consequence text is in CLM-FIN-165, money/risk/decision-speed wording, no figures |
+| H3 Wave vs time frame | **Fixed, with a new issue R1** | `start` and `targetDuration` replace `timeFrame` (schema updated). No finding now starts before its wave window or before a dependency is due to complete. RS4: wave 3 items start from month 9 |
+| M1 Depth "Don't know" | **Fixed** | Probe at Tier 2 with OP-01 Run and OP-08 Not yet / Don't know / blank: all read Walk with no finding; Don't know and blank are also not at target (unconfirmed). It was a High finding before |
+| M2 QV-06 trigger | **Fixed** | `question-bank.json`: QV-06 now asked when QV-05 ≥ Crawl. The `TRIGGER_SOURCES` exemption is gone; invariants hold with no exemptions. RS3 now asks QV-06 (blank), and its rating is unchanged (recorded in the scenario diffs) |
+| M3 Interim owner | **Fixed; I accept the builder's choice** | Builder's choice: findings owned by the FinOps lead show "FinOps lead (to be appointed; interim: Head of Cloud / CCoE)" with **no** dependency on DECISION-01. I had suggested the dependency. The builder's version is better delivery advice: the work starts under the interim owner while the appointment runs in parallel at month 0, instead of every FinOps-lead item waiting for a hire. Recorded in DESIGN 5.4 |
+| M4 DECISION-01 | **Fixed** | CLM-FIN-166: High, one level higher at Tier 2 or 3. RS4 Critical and RS5 High, as written in the scenarios |
+| M5 Option wording | **Fixed** | QV-01 is now "Within ±5%" / "More than ±5%, up to ±10%" / "More than ±10%, up to ±20%" / "More than ±20%, or no forecast". UN-11 Crawl: "A week or more, or the explanation is disputed". MP-01 Walk now covers a full- or part-time owner without a mandate. UN-04 bands are now "85% to 90%" and "70% to under 85%". The "Choose the highest option that fully describes you today" help text is on every maturity question |
+| M6 "Not yet" below 70% | Open, owner decision | Unchanged, as agreed |
+| M7 Named evidence | **Fixed** | Per-capability evidence lines, for example Anomaly Management: "The anomaly alert set-up and the last three alerts, with the time to triage and the cause found" |
+| M8 Claims | **Fixed** | CLM-FIN-122, 127, 141, 162, 163, 165 and 166 match the engine and are set to P, with a note that they await the owner. CLM-FIN-127 drops the HY points and marks the value modifier "from F4" |
+| M9 "Act now" reachable | **Fixed** | The audit adds a Tier 3 executive estate; every band is now reached. The random mix is now 49% "Act now", which reflects the mix of test estates, not a calibration result |
+| L1–L4, L6, L7 | Fixed | Growth blind spot; "N of 18 answered"; override suffix; duplicate overrides rejected; migration share dropped in executive mode; citations tidied (OCI added to UN-01, Flexera removed from MP-01) |
+| L5 (UN-08 `[]` on the page) | F6 | Correctly deferred |
+
+### Remaining items
+
+**R1. Medium; fix before the goldens are approved. The schedule waits for dependencies to *complete*, so Usage Optimization can start at month 12.**
+- **Evidence:** golden RS5 and `unanswered-executive` show `F-FIN-USAGE_OPTIMIZATION` in wave 2 "from month 12, within 12 months", because Allocation (Medium, 12 months) must finish first.
+- **Why it matters:** DESIGN 5.4 puts the idle (LEV-03) and scheduling (LEV-04) quick wins in wave 1, and makes only LEV-02 and LEV-07 depend on Allocation. Telling a Tier 1 retailer's CIO to wait a year before cleaning up idle resources is poor advice. The CIO would also see a wave 2 item (months 3–12) starting at month 12.
+- **Recommended fix:** a dependent finding starts no earlier than its dependency's start **plus its first milestone**: 3 months, or the dependency's `targetDuration` if shorter. It still never starts before its own wave window. Add a test that no start exceeds the end of its wave window unless a dependency is Critical or High and still in progress.
+- RS2 and RS4 do not change (their dependencies are Critical, 3 months). RS5 Usage Optimization would start at month 3.
+- F4 then links the quick-win levers to wave 1 directly. DESIGN 5.4 records R1 as open.
+
+**R2. Low. Two findings on the same issue.** In RS4 and in the unanswered goldens, `F-FIN-FINOPS_PRACTICE_OPERATIONS` and `F-FIN-DECISION-01` both appear, which uses two of the executive top-five slots on accountability. The scenarios expect both, so this is not a defect. Recommendation for F7: present them together (the decision first, with the capability gap as its detail), or let the executive top five show only the decision.
+
+**R3. Low. DECISION-01 overstates its consequence.** "No finding in this report has an owner who can see it through" is not true: other findings are owned by the CIO, FP&A and others. Suggested wording: "Until someone is accountable for cloud and technology spend, no one is responsible for seeing this programme through."
+
+**R4. Low, owner awareness. Workshop audit lists the Usage Optimization depth questions OP-05 to OP-12 as "dead".** This follows from the owner-approved one-level rule (Q9) combined with M1. With seven depth questions and random answers, one is almost always already below the core level, so changing another rarely moves the rating. The questions are not truly dead: each lowers the rating when the others sit at the core level, and they feed the lever bases (F4) and the playbook (F8). Recommendation: add an audit or test check from an all-at-core baseline, so that liveness is demonstrated rather than explained, and record the owner's acceptance under area 5.
+
+**R5. Low, robustness.** Two internal checks are fragile:
+- the "not answered last" sort detects blank-driven findings by the text prefix "Answer and evidence" (`evaluate.ts`, `blankDriven`); use `p.notAnswered.length` carried on the finding instead;
+- a blank or "Don't know" depth answer on a capability above target leaves it "not at target" with no finding. This is correct and conservative, and it is listed in coverage. The F7 report should show the open questions next to the headline so the count can be explained.
+
+### Departures (final position)
+
+| Departure | Position |
+|---|---|
+| H1 rule (blank = "Don't know", "Not answered") | Endorse |
+| H3 schedule (`start` + `targetDuration`) | Endorse, with R1 |
+| M1 (depth Unknown lowers one level) | Endorse |
+| M2 (QV-06 follows QV-05) | Endorse |
+| Twelve default owner roles + interim owner without a DECISION-01 dependency | Endorse |
+| DECISION-01 severity rule | Endorse |
+| Retire the HY-03 and HY-05 urgency points; verdict executive-only | Endorse |
+| Per-capability consequence and evidence wording (CLM-FIN-165) | Endorse. It is LTM wording with no figures; re-read it in the F7 presentation review |
+
+All of these are recorded in DESIGN.md as "F3 review, pending owner confirmation". The owner decides.
