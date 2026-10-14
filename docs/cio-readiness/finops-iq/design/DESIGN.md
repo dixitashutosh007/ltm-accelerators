@@ -2,7 +2,7 @@
 
 **Date:** 14 Oct 2026  **Author:** `finops-cost-lead` (AI practice-lead agent). I advise; I do not sign off. The product owner approves this pack (gate F1 in [PLAN.md](../PLAN.md)).
 
-**Status:** draft for owner approval. Internal consultant use only. Nothing in this pack is a savings commitment, and no figure in it may go to a client before the F4 gate.
+**Status:** approved by the product owner on 14 Oct 2026 with every recommended default (Q1–Q14 in section 13, and the departures from PLAN.md flagged in this pack). Internal consultant use only. Nothing in this pack is a savings commitment, and no figure in it may go to a client before the F4 gate.
 
 **What this pack fixes before any code is written:**
 - the decision, buyer and edge;
