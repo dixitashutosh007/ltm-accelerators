@@ -2,7 +2,7 @@
 
 **Date:** 13 Oct 2026  **Author:** `sovereignty-compliance-lead` (AI practice-lead agent). I advise; I do not sign off. The product owner approves this pack (gate S1 in [PLAN.md](../PLAN.md)); qualified counsel reviews every regulatory statement before external use (S10).
 
-**Status:** draft for owner approval. Not legal advice. Internal consultant use only.
+**Status:** **approved by the product owner on 14 Oct 2026**, with the recommended defaults for open questions Q1–Q11 (section 13). Not legal advice. Internal consultant use only.
 
 **What this pack fixes before any code is written:** the decision, buyer and edge; one fact model; sovereignty requirement levels L0–L4; the control catalogue (`SOV.*`); one regime registry schema and the v1 regime list with applicability rules as data; the merged question set; the two headlines; the findings model; modes; five reference archetypes with expected outcomes; the boundary with Resilience IQ and Cloud IQ; open questions.
 
@@ -1222,6 +1222,9 @@ Managed IT services provider headquartered in India, 60,000 staff, USD 2bn reven
 ---
 
 ## 13. Open questions for the owner
+
+**Decided 14 Oct 2026: all recommended defaults accepted (Q1–Q11).**
+
 
 Each has a recommended default the owner can accept or change.
 
