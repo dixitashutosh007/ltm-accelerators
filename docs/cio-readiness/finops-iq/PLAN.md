@@ -154,6 +154,29 @@ Every maturity question gets "Unknown", scored as risk (D5). Every question carr
 
 **Gate F2:** 100% of client-visible statements carry a claim ID. No row of the validation claims table remains Incorrect, Outdated or Unsourced: each is corrected, sourced, labelled as a heuristic or removed.
 
+**F2 status (14 Oct 2026): built, awaiting owner review.** Not committed.
+- **Registry** in `packages/engine-core/src/accelerators/finops-iq/registry/`: `capabilities.json` (4 domains, 22 capabilities, LTM descriptions, Not yet / Crawl / Walk / Run guidance, scope triggers, tiers, CC BY 4.0 attribution with changes), `levers.json` (LEV-01 to LEV-10), `thresholds.json` (17), `market-data.json`, `provider-statements.json` (32 tools and services, each with alternatives). Capabilities and levers validate against the F1 schemas; every client-visible item carries a claim ID and none cites a consultant-only claim.
+- **Register:** 125 new `CLM-FIN` claims. 61 checked against external sources: V 61, S 18, P 8. 36 are LTM heuristics or design rules, sourced to the approved design pack. UNSOURCED 2, both consultant-only. 29 are volatile (90-day review). Verification is through search results only: finops.org, provider sites and flexera.com are blocked from this environment, and no workaround was tried.
+- **Language lint:** the five files are in `scripts/check-claims.cjs`. BANNED now also covers the item 6 list plus "savings at stake" and "waste recovery". Sovereign's registry contains none of the new phrases, so one global list is enough. Pages join the lint in F6/F7.
+- **Thresholds:** the Foundation's maturity page publishes sample goals per stage, and DESIGN 3.5 provided that these replace LTM's ladders.
+  - Allocation becomes >90 / 85 / 70% (it was 40/70/90).
+  - Forecast variance becomes <5 / <10 / <20% (it was 5/15/30).
+  - Both are status S: the table itself could not be read.
+  - The 80/85 and 70/75 inconsistencies came from mixing the earlier and current Foundation goals. Allocation now has one ladder. Coverage stays a value input, not a maturity rating.
+  - Anomaly latency remains an LTM heuristic, cross-checked against the Foundation's descriptions.
+- **Validation table (rows 1–53):**
+  - Corrected and sourced: 2–8, 10, 21, 22, 53.
+  - Labelled heuristic: 20, 24, 25, 27, 28, 31.
+  - Removed (listed in `market-data.json` `notUsed`, or withdrawn by F0/D8/D10/D13): 9, 11–19, 23, 26, 29, 30, 32–37, 39–52.
+  - Correct: 1, 38 (not used), 49.
+- **Still UNSOURCED (consultant-only):** OCI, IBM and Alibaba commitment maxima (CLM-FIN-069); storage tier price ratios (CLM-FIN-070). OCI preemptible 50% (P, provider blog only) and private-cloud share 57% (S) are also consultant-only.
+- **Departures from F1 for the owner:**
+  1. Optional fields added to `capability.schema.json` (description, maturity guidance, claim IDs, maturity scale) and `lever.schema.json` (claim IDs).
+  2. UN-04 and QV-01 bands changed as above. The reference scenarios record levels, so their outputs are unchanged.
+  3. Azure (90%) and Google Cloud (91%) Spot maxima are now verified, so LEV-06 is quantifiable for them (Q8). RS2 and RS4 gain an Azure LEV-06 value when F3 builds golden outputs. For RS1 and RS5 (executive mode) only the not-quantified reason changes.
+  4. Display name "FinOps Tools & Services" (Q2), status P.
+  5. Waves set for four capabilities that DESIGN 5.4 left open: Planning & Estimating, Architecting & Workload Placement and Tools & Services in wave 2; FinOps Assessment in wave 3.
+
 ---
 
 ## F3: Engine build (FinOps IQ v3)
