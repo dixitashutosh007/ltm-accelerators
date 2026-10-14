@@ -704,7 +704,7 @@ The verdict never contains a money figure. The value range sits beside it with i
 | `n_u` = 25% (unscheduled non-production treated as part of steady usage and removed); LEV-01 raw base = 6.0M × max(0, 60% − 30% − 25%) = 0.30M | | | |
 | Reduce LEV-01 base by compute removed by LEV-02, 03, 07 (none quantified here; LEV-04 is already removed through `n_u`, 10.4) | 0.300M | 0.300M | 0.300M |
 | LEV-01 = base × 72% × (¼, ½, 1) | 0.054M | 0.108M | 0.216M |
-| **Total gross run-rate** | **0.317M (3.2%)** | **0.635M (6.4%)** | **1.269M (12.7%)** |
+| **Total gross run-rate** | **0.317M (3.2%)** | **0.635M (6.3%)** | **1.269M (12.7%)** |
 | Global cap check: expected ≤ 29% × 10.0M = 2.9M | pass | pass | n/a |
 
 The example shows the intended behaviour: with only two levers quantifiable from executive answers, the expected figure is small and conservative, and the report says which further levers are "identified, not quantified" and what evidence would quantify them.
@@ -846,13 +846,28 @@ Five illustrative scenarios with expected outcomes written **before** any engine
 
 ### 10.15 F4 build notes (pending owner confirmation)
 
-The value model is built in `v3/value-model.ts` (value model 1.0.0). It follows 10.1 to 10.12, with these interpretations, each registered as an LTM heuristic (CLM-FIN-167 to 172, ASM-FIN-042 and 054 to 059) and listed in PLAN F4's status note:
-- **Caps (10.5).** The 29% cap applies to the conservative, expected and upper cases. The evidence lift is not built, so the cap always applies.
-- **Phasing (10.6).** A lower case's year 1 never exceeds the year 1 of the case above; it is lowered pro rata.
-- **Bands (10.1 item 4).** The midpoint is a candidate for the conservative and upper cases. At most eight banded inputs are searched; the narrowest are held at their midpoints.
-- **No base, no number (10.1 item 2).** LEV-04 needs the cluster and GPU spend when those scopes are selected. LEV-02 needs the compute share for its cap. Every public cloud lever needs every provider's spend, because the cap needs P. Provider-tool estimates need an assessment date to check their age.
-- **Findings (5.1).** A lever finding is raised only when the lever's capability has no gap finding; otherwise the value sits on that gap finding. Scope-confirmation findings are raised for unknown inputs that block a lever the mode quantifies. DECISION-02 is raised when the usage and Spot moves remove all steady usage above coverage.
-- **Scoring (5.3 step 3, 9).** The 2% and 5% thresholds compare with P. In executive mode, scoring takes the highest value at the client's OP-06 answer or a more mature one.
+The value model is built in `v3/value-model.ts`. Version 1.1.0 applies the practice-lead review ([F4-review.md](F4-review.md)). It follows 10.1 to 10.12, with these interpretations, each registered as an LTM heuristic (CLM-FIN-167 to 176; ASM-FIN-042 and 054 to 064) and listed in PLAN F4's status note:
+- **Caps (10.5; review H1, H4).** The 29% cap applies to the conservative, expected and upper cases and is not lifted by evidence in version 1.0. The registry (`appliesTo`, `liftedBy`), CLM-FIN-138, ASM-FIN-050 and the output say the same. The headline "% of P" and the cap compare public cloud levers with public cloud spend only. LEV-09 is shown on its own line, against SaaS and licensing spend.
+- **Spot (10.2 and 10.4; review H2).** LEV-06 counts only tolerant usage not covered by commitments: (tolerant − Spot) × (1 − C). The same share leaves LEV-01 as t_u. Moving covered usage would strand its commitment (Azure limits reservation refunds, CLM-FIN-174).
+- **Commitment instrument (10.2; review M6).** VB-02 asks for the main instrument per provider. When it is not stated, LEV-01 uses the lower published maximum: AWS 66%, Azure 65%, Google Cloud 55%. The 10.3 worked example states EC2 Instance Savings Plans (72%).
+- **Costs and headline (10.6; review M1).**
+  - Effort is counted only for levers with a positive expected value.
+  - A lever whose expected 3-year value at the margin does not exceed its effort is shown as not worth pursuing at this scale, with its figures, and is left out of the headline totals.
+  - The blank rule holds on gross and on expected net.
+- **Ramp (10.6; review M3).** Each year's share is the lever's ramp share times the part of the year left after the owning finding's roadmap start month.
+- **Phasing safeguard (10.6).** A lower case's year 1 never exceeds the year 1 of the case above; it is lowered pro rata.
+- **Bands (10.1 item 4; review M5).** The midpoint is a candidate for the conservative and upper cases. At most eight banded inputs are searched; the narrowest are held at their midpoints. In-scope spend is shown once, as a band. Each case's "% of P" is of the band corner that case uses, and it is labelled so.
+- **No base, no number (10.1 item 2).**
+  - LEV-04 needs the cluster and GPU spend when those scopes are selected.
+  - LEV-02 needs the compute share for its cap.
+  - LEV-06 needs the commitment coverage.
+  - Every public cloud lever needs every provider's spend, because the cap needs P.
+  - Provider-tool estimates need an assessment date to check their age.
+- **Findings (5.1; review M2).** A lever finding is raised only when the lever's capability has no gap finding. Otherwise the value sits on that gap finding, which carries each lever's own action, evidence and zero-value advice (`leverActions`), for example RS2's "stop buying commitments". Scope-confirmation findings are raised for unknown inputs that block a lever the mode quantifies. DECISION-02 is raised when the usage and Spot moves remove all steady usage above coverage.
+- **Scoring (5.3 step 3, 9; review H3, M4).**
+  - The 2% uplift compares a lever's shown expected net run-rate with its own base: P for public cloud levers; for LEV-09, SaaS and licensing spend, else total in-scope spend. The 5% need modifier compares the shown expected public cloud value with P.
+  - Both use only figures the report shows, at the client's own answers. The finding (`valueBasis`) and the verdict name the figure. With no value shown (no rate, or the lever not quantified), neither applies.
+  - The answer invariants hold on the scores before the value step (`severityBeforeValue`; need index without the value modifier), which are monotone. The value step is checked separately against the shown figures.
 - **Team cost (Q12).** The FinOps team cost shown beside the value is 0.5 / 1 / 2 FTE by tier.
 
 The reference scenarios against the engine are in [F4-scenario-diffs.md](F4-scenario-diffs.md).

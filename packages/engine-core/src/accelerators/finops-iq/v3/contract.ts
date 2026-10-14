@@ -23,6 +23,8 @@ const MIXES = ['on_premises_only', 'mostly_dc', 'balanced_hybrid', 'mostly_cloud
 const MIGRATION_STAGES = ['planning', 'early', 'in_flight', 'largely', 'complete', 'unknown'];
 const SHARE_FACTS = ['computeShare', 'steadyStateShare', 'eligibleCoverage', 'nonProdShare', 'nonProdScheduledShare', 'interruptionTolerantShare', 'spotShare', 'storageShare', 'coldDataShare', 'dataTransferShare', 'kubernetesRequestUtilisation'];
 const RECOMMENDATION_TYPES = ['rightsizing', 'modernisation', 'idle', 'storage', 'commitments', 'other'];
+/** Main commitment instrument per provider (VB-02, F4 review M6). */
+const INSTRUMENTS: Record<string, string[]> = { aws: ['ec2_instance_sp_or_ri', 'compute_sp'], azure: ['reservations', 'savings_plan'], gcp: ['resource_cud', 'memory_optimised_cud'] };
 
 const isObject = (v: unknown): v is Record<string, any> => !!v && typeof v === 'object' && !Array.isArray(v);
 const isNumber = (v: unknown): v is number => typeof v === 'number' && Number.isFinite(v);
@@ -106,7 +108,16 @@ function checkFacts(f: unknown, errors: Errors) {
   if (f.base !== undefined) {
     if (!isObject(f.base)) errors.push('facts.base: expected an object');
     else {
-      checkKeys(f.base, [...SHARE_FACTS, 'kubernetesSpend', 'nonProdScheduledShareSource'], 'facts.base', errors);
+      checkKeys(f.base, [...SHARE_FACTS, 'kubernetesSpend', 'nonProdScheduledShareSource', 'commitmentInstrument'], 'facts.base', errors);
+      const ci = f.base.commitmentInstrument;
+      if (ci !== undefined) {
+        if (!isObject(ci)) errors.push('facts.base.commitmentInstrument: expected an object by provider');
+        else for (const [k, v] of Object.entries(ci)) {
+          const allowed = INSTRUMENTS[k];
+          if (!allowed) errors.push(`facts.base.commitmentInstrument.${k}: expected one of ${list(Object.keys(INSTRUMENTS))}`);
+          else if (!allowed.includes(v as string)) errors.push(`facts.base.commitmentInstrument.${k}: expected one of ${list(allowed)}`);
+        }
+      }
       for (const k of SHARE_FACTS) if (f.base[k] !== undefined) checkAmount(f.base[k], `facts.base.${k}`, errors, 1);
       if (f.base.kubernetesSpend !== undefined) checkAmount(f.base.kubernetesSpend, 'facts.base.kubernetesSpend', errors);
       const src = f.base.nonProdScheduledShareSource;

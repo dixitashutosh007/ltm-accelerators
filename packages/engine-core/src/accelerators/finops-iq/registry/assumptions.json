@@ -1061,7 +1061,7 @@
     {
       "id": "ASM-FIN-045",
       "title": "Ramp: year-1 share of run-rate value per lever",
-      "value": "LEV-01, 03, 04 0.5; LEV-02, 05, 10 0.33; LEV-06, 07 0.25; LEV-09 the share of contracts renewing in year 1, else 0.25; years 2 and 3 = 1.0",
+      "value": "LEV-01, 03, 04 0.5; LEV-02, 05, 10 0.33; LEV-06, 07 0.25; LEV-09 the share of contracts renewing in year 1, else 0.25; years 2 and 3 = 1.0; each from the start month of the finding that owns the lever (ASM-FIN-064)",
       "basis": "ltm_heuristic",
       "claimIds": [
         "CLM-FIN-133"
@@ -1209,7 +1209,7 @@
         "CLM-FIN-134",
         "CLM-FIN-170"
       ],
-      "reasoning": "Proportional to the number of teams and platforms that must change; counted for every lever with a positive upper value.",
+      "reasoning": "Proportional to the number of teams and platforms that must change; counted only for levers with a positive expected value (F4 review M1).",
       "confidence": "Low",
       "sensitivity": "Net figures: each FTE-month moves net by one internal rate",
       "usedBy": [
@@ -1451,7 +1451,7 @@
     {
       "id": "ASM-FIN-050",
       "title": "Global cap",
-      "value": "29% of in-scope public cloud spend, on the conservative, expected and upper cases; LEV-09 outside the base; not lifted by evidence in this version",
+      "value": "29% of in-scope public cloud spend, on the conservative, expected and upper cases; the headline % of P is public cloud only; LEV-09 outside the base and shown on its own; not lifted by evidence in version 1.0",
       "basis": "published_source",
       "claimIds": [
         "CLM-FIN-138",
@@ -1472,9 +1472,14 @@
         {
           "ref": "levers:globalCap.appliesTo",
           "value": [
+            "conservative",
             "expected",
             "upper"
           ]
+        },
+        {
+          "ref": "levers:globalCap.liftedBy",
+          "value": "none (v1.0)"
         },
         {
           "ref": "levers:globalCap.excludedLevers",
@@ -1663,14 +1668,14 @@
     {
       "id": "ASM-FIN-056",
       "title": "Value thresholds in scoring",
-      "value": "Severity uplift at 2% of P (expected net run-rate per lever; gross without a rate); need modifier at 5% of P (expected gross); executive mode uses the highest value at the OP-06 answer or a more mature one",
+      "value": "Severity uplift when a lever's shown expected net run-rate is 2% or more of its base (P for public cloud levers; SaaS and licensing spend, else total in-scope spend, for LEV-09); need modifier when the shown expected public cloud value is 5% or more of P; only shown figures at the client's own answers, named on the finding and the verdict",
       "basis": "ltm_heuristic",
       "claimIds": [
         "CLM-FIN-122",
         "CLM-FIN-127",
         "CLM-FIN-172"
       ],
-      "reasoning": "High-value levers come first; Unknown counts as risk and a better answer never raises need.",
+      "reasoning": "High-value levers come first; a CIO asking why a finding is High is pointed to a number in the report (F4 review H3).",
       "confidence": "Low",
       "sensitivity": "A finding moves one severity level; the need index moves 10 points",
       "usedBy": [
@@ -1753,7 +1758,7 @@
         "CLM-FIN-067",
         "CLM-FIN-069"
       ],
-      "reasoning": "Read from the provider pricing pages on 14 Oct 2026; volatile, reviewed every 90 days (D14). A maximum on covered usage, not a bill-level saving.",
+      "reasoning": "Read on 14 Oct 2026 through web-search results quoting the provider pricing pages (direct fetches are blocked from the build environment), as the claims register records; volatile, reviewed every 90 days (D14). A maximum on covered usage, not a bill-level saving.",
       "confidence": "High",
       "sensitivity": "LEV-01 and LEV-06 in proportion; a lower Spot maximum also shifts usage back to LEV-01",
       "usedBy": [
@@ -1784,8 +1789,139 @@
         {
           "ref": "levers:levers[LEV-06].maxRate.byProvider.gcp.value",
           "value": 0.91
+        },
+        {
+          "ref": "levers:levers[LEV-01].maxRate.byProvider.aws.instruments",
+          "value": {
+            "ec2_instance_sp_or_ri": {
+              "value": 0.72,
+              "claimId": "CLM-FIN-060",
+              "label": "EC2 Instance Savings Plans or Standard Reserved Instances"
+            },
+            "compute_sp": {
+              "value": 0.66,
+              "claimId": "CLM-FIN-060",
+              "label": "Compute Savings Plans"
+            }
+          }
+        },
+        {
+          "ref": "levers:levers[LEV-01].maxRate.byProvider.azure.instruments",
+          "value": {
+            "reservations": {
+              "value": 0.72,
+              "claimId": "CLM-FIN-062",
+              "label": "Azure reservations"
+            },
+            "savings_plan": {
+              "value": 0.65,
+              "claimId": "CLM-FIN-063",
+              "label": "Azure savings plan for compute"
+            }
+          }
+        },
+        {
+          "ref": "levers:levers[LEV-01].maxRate.byProvider.gcp.instruments",
+          "value": {
+            "resource_cud": {
+              "value": 0.55,
+              "claimId": "CLM-FIN-065",
+              "label": "Resource-based committed use discounts"
+            },
+            "memory_optimised_cud": {
+              "value": 0.7,
+              "claimId": "CLM-FIN-065",
+              "label": "Resource-based CUDs on memory-optimised series"
+            }
+          }
         }
       ]
+    },
+    {
+      "id": "ASM-FIN-061",
+      "title": "Spot independent of commitment coverage",
+      "value": "Spot-movable usage = (interruption-tolerant share - share on Spot) x (1 - eligible coverage); the same share leaves LEV-01",
+      "basis": "ltm_heuristic",
+      "claimIds": [
+        "CLM-FIN-155",
+        "CLM-FIN-174"
+      ],
+      "reasoning": "Tolerant usage already covered by commitments is billed below on-demand and its commitment cannot simply be released; without data on which usage the commitments cover, coverage is assumed to fall evenly (F4 review H2).",
+      "confidence": "Low",
+      "sensitivity": "LEV-06 in proportion to (1 - coverage); at high coverage Spot value falls sharply",
+      "usedBy": [
+        "value model"
+      ],
+      "ownerApproval": "pending owner approval at the F4 gate",
+      "constants": []
+    },
+    {
+      "id": "ASM-FIN-062",
+      "title": "Commitment instrument default",
+      "value": "The lower published maximum per provider when the client does not state its main instrument: AWS 66% (Compute Savings Plans), Azure 65% (savings plan for compute), Google Cloud 55% (resource-based CUDs)",
+      "basis": "ltm_heuristic",
+      "claimIds": [
+        "CLM-FIN-176",
+        "CLM-FIN-060",
+        "CLM-FIN-062",
+        "CLM-FIN-063",
+        "CLM-FIN-065"
+      ],
+      "reasoning": "The higher maxima apply only to specific instruments; the conservative maximum avoids overstating LEV-01 (F4 review M6).",
+      "confidence": "Medium",
+      "sensitivity": "LEV-01 by up to 6 to 7 percentage points of rate",
+      "usedBy": [
+        "value model"
+      ],
+      "ownerApproval": "pending owner approval at the F4 gate",
+      "constants": [
+        {
+          "ref": "levers:levers[LEV-01].maxRate.byProvider.aws.defaultInstrument",
+          "value": "compute_sp"
+        },
+        {
+          "ref": "levers:levers[LEV-01].maxRate.byProvider.azure.defaultInstrument",
+          "value": "savings_plan"
+        },
+        {
+          "ref": "levers:levers[LEV-01].maxRate.byProvider.gcp.defaultInstrument",
+          "value": "resource_cud"
+        }
+      ]
+    },
+    {
+      "id": "ASM-FIN-063",
+      "title": "Levers not worth pursuing are left out of the headline",
+      "value": "A lever whose expected 3-year value at the margin (after the levers it interacts with) does not exceed its one-off and 3 years of ongoing effort is shown, with its figures, and left out of the totals",
+      "basis": "ltm_heuristic",
+      "claimIds": [
+        "CLM-FIN-170"
+      ],
+      "reasoning": "A CFO should not see effort spent on a lever that does not pay back in three years; at the margin, so a lever that mostly displaces another (Spot replacing commitments) is judged on what it adds (F4 review M1).",
+      "confidence": "Medium",
+      "sensitivity": "Headline net only; gross figures of the excluded lever are shown beside it",
+      "usedBy": [
+        "value model"
+      ],
+      "ownerApproval": "pending owner approval at the F4 gate",
+      "constants": []
+    },
+    {
+      "id": "ASM-FIN-064",
+      "title": "Ramp starts at the roadmap start",
+      "value": "Year-N share = ramp share x the part of year N left after the owning finding's start month",
+      "basis": "ltm_heuristic",
+      "claimIds": [
+        "CLM-FIN-175"
+      ],
+      "reasoning": "Value cannot arrive before the work starts; ties the phasing to the roadmap (F4 review M3).",
+      "confidence": "Medium",
+      "sensitivity": "Year-1 and 3-year figures fall for wave 2 and 3 levers; run-rate unchanged",
+      "usedBy": [
+        "value model"
+      ],
+      "ownerApproval": "pending owner approval at the F4 gate",
+      "constants": []
     },
     {
       "id": "ASM-FIN-080",

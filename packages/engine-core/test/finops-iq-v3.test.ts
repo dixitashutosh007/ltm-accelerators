@@ -689,7 +689,7 @@ describe('FinOps IQ v3 need verdict (DESIGN.md 9, executive mode)', () => {
     expect(v.modifiers.map(m => m.id)).toEqual(['tier_2', 'growth_ge_20pct', 'ai_in_scope']);
     expect(v.needIndex).toBe(30);
     // No value bases given, so the value modifier cannot be applied (F4).
-    expect(v.pending).toEqual([{ id: 'expected_value_ge_5pct_of_P', reason: 'value not quantified from the inputs given' }]);
+    expect(v.pending).toEqual([{ id: 'expected_value_ge_5pct_of_P', reason: 'no value figure shown (no lever quantified, or no internal cost rate)' }]);
     const moving = exec(allExec('run'), facts({ migration: { remainingShare24m: { exact: 0.3 } } }));
     expect(moving.modifiers.map(m => m.id)).toEqual([]);
   });
@@ -722,6 +722,16 @@ describe('FinOps IQ v3 need verdict (DESIGN.md 9, executive mode)', () => {
 /* -------------------------------- Invariants -------------------------------- */
 
 const ORDER: AnswerLevel[] = ['unknown', 'not_yet', 'crawl', 'walk', 'run'];
+/**
+ * F4 review H3: the value steps (severity uplift, need modifier) use only figures the report shows at the client's
+ * own answers, so a blank (value not quantified) can remove them. The answer invariants hold on the scores before the
+ * value step, which are monotone; finops-iq-v3-value.test.ts checks that every value step rests on a shown figure.
+ */
+const VALUE_MODIFIER = 'expected_value_ge_5pct_of_P';
+const needBeforeValue = (r: FinOpsIqV3Result) => {
+  const v = r.needVerdict!;
+  return Math.round(Math.min(100, v.baseIndex + v.modifiers.filter(m => m.id !== VALUE_MODIFIER).reduce((t, m) => t + m.points, 0)) * 10) / 10;
+};
 
 function walk(v: any, path: string, visit: (path: string, v: any) => void) {
   visit(path, v);
@@ -743,7 +753,7 @@ describe('FinOps IQ v3 invariants (random questionnaires, both modes)', () => {
     }
   });
 
-  it('a better answer never scores worse: no capability, headline or need index moves the wrong way (Unknown ranks lowest)', () => {
+  it('a better answer never scores worse: no capability, headline or need index (before the value step) moves the wrong way (Unknown ranks lowest)', () => {
     for (const { mode, seed, input, r } of runs.slice(0, 40).concat(runs.slice(150, 190))) {
       for (const id of r.questions.asked.filter(x => Q.get(x).kind === 'maturity')) {
         const results = ORDER.map(level => evaluateFinOpsIqV3({ ...input, answers: { ...input.answers, [id]: answerFor(id, level) } }));
@@ -752,13 +762,13 @@ describe('FinOps IQ v3 invariants (random questionnaires, both modes)', () => {
           const msg = `${mode} seed ${seed} ${id}: ${ORDER[i - 1]} -> ${ORDER[i]}`;
           for (const c of hi.capabilities) expect(ratingIndex(c.rating), `${msg} ${c.capability}`).toBeGreaterThanOrEqual(ratingIndex(cap(lo, c.capability).rating));
           expect(hi.headline.atOrAboveTarget, msg).toBeGreaterThanOrEqual(lo.headline.atOrAboveTarget);
-          if (mode === 'executive') expect(hi.needVerdict!.needIndex, msg).toBeLessThanOrEqual(lo.needVerdict!.needIndex);
+          if (mode === 'executive') expect(needBeforeValue(hi), msg).toBeLessThanOrEqual(needBeforeValue(lo));
         }
       }
     }
   }, 300_000);
 
-  it('a blank never scores better than any answered option: capability, headline, need index and findings (review H1)', () => {
+  it('a blank never scores better than any answered option: capability, headline, need index and finding severity before the value step (review H1, F4 review H3)', () => {
     for (const { mode, seed, input, r } of runs.slice(0, 40).concat(runs.slice(150, 190))) {
       for (const id of r.questions.asked.filter(x => Q.get(x).kind === 'maturity')) {
         const c = Q.get(id).capability;
@@ -769,14 +779,14 @@ describe('FinOps IQ v3 invariants (random questionnaires, both modes)', () => {
           const msg = `${mode} seed ${seed} ${id}=${level}`;
           expect(effective(blank, c), msg).toBeLessThanOrEqual(effective(a, c));
           expect(blank.headline.atOrAboveTarget, msg).toBeLessThanOrEqual(a.headline.atOrAboveTarget);
-          if (mode === 'executive') expect(blank.needVerdict!.needIndex, msg).toBeGreaterThanOrEqual(a.needVerdict!.needIndex);
+          if (mode === 'executive') expect(needBeforeValue(blank), msg).toBeGreaterThanOrEqual(needBeforeValue(a));
           // Never fewer or less severe findings. A lever finding (F4) may instead sit on its capability's gap finding,
           // which the blank creates: the lever then appears there, at a severity at least as high (CLM-FIN-167).
           for (const f of a.findings) {
             const b = blank.findings.find(x => x.id === f.id) ??
               (f.type === 'lever_opportunity' ? blank.findings.find(x => x.type === 'capability_gap' && x.capability === f.capability && f.leverIds.every(l => x.leverIds.includes(l))) : undefined);
             expect(b, `${msg} ${f.id}`).toBeDefined();
-            expect(SEV.indexOf(b!.severity), `${msg} ${f.id}`).toBeGreaterThanOrEqual(SEV.indexOf(f.severity));
+            expect(SEV.indexOf(b!.severityBeforeValue), `${msg} ${f.id}`).toBeGreaterThanOrEqual(SEV.indexOf(f.severityBeforeValue));
           }
           const absorbed = a.findings.filter(f => f.type === 'lever_opportunity' && !blank.findings.some(x => x.id === f.id)).length;
           expect(blank.findings.length + absorbed, msg).toBeGreaterThanOrEqual(a.findings.length);
@@ -845,8 +855,8 @@ const RECORDED = {
   extra: { RS3: 1, RS4: 1 } as Record<string, number>,
   /** V3: lever findings carry the value uplift (CLM-FIN-167): RS5 LEV-01 is High, written as Medium. */
   severity: { RS5: { 'F-FIN-LEV-01': 'High' } } as Record<string, Record<string, string>>,
-  /** V3 and V4: top-finding order changes with V3 (RS5) and with the Azure Spot maximum sourced in F2 (RS2 Rate Optimization High). */
-  orderDiffers: ['RS2', 'RS5'],
+  /** V3: top-finding order changes with V3 (RS5). V4 (RS2) is resolved by the F4 review's Spot base (H2): RS2's order matches again. */
+  orderDiffers: ['RS5'],
   /** D4: Q14 rewording adopted in F2 (THR-FIN-14, CLM-FIN-127) after the scenarios were written. */
   bandLabel: { from: 'Establish foundations now', to: 'Targeted improvements needed now' }
 };

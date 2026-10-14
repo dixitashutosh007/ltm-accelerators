@@ -68,6 +68,7 @@
         "nonProdShare": { "$ref": "#/$defs/share", "description": "Share of compute." },
         "nonProdScheduledShare": { "$ref": "#/$defs/share", "description": "Share of non-production compute already scheduled off. In executive mode derived from OP-06 (ASM-FIN-052)." },
         "nonProdScheduledShareSource": { "enum": ["answer", "derived_from_OP-06"] },
+        "commitmentInstrument": { "type": "object", "additionalProperties": false, "description": "Main commitment instrument per provider (VB-02, optional; F4 review M6). When not stated, LEV-01 uses the lower published maximum (CLM-FIN-176).", "properties": { "aws": { "enum": ["ec2_instance_sp_or_ri", "compute_sp"] }, "azure": { "enum": ["reservations", "savings_plan"] }, "gcp": { "enum": ["resource_cud", "memory_optimised_cud"] } } },
         "interruptionTolerantShare": { "$ref": "#/$defs/share", "description": "Share of compute." },
         "spotShare": { "$ref": "#/$defs/share", "description": "Share of compute already on Spot / preemptible." },
         "storageShare": { "$ref": "#/$defs/share" },

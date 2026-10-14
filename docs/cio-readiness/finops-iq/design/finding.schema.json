@@ -34,7 +34,7 @@
         "gap": { "type": "integer", "minimum": 1, "maximum": 3 },
         "unconfirmed": { "type": "boolean" },
         "severity": { "$ref": "#/$defs/severity" },
-        "severityTrace": { "type": "array", "items": { "enum": ["gap_1", "gap_2", "gap_3", "foundation_uplift", "value_uplift", "scope_low", "decision_rule", "lever_base", "lever_zero", "scope_material"] }, "description": "Which ASM-FIN-005 steps produced the severity; lever_base, lever_zero and scope_material are the F4 lever and scope-confirmation rules (CLM-FIN-167)." },
+        "severityTrace": { "type": "array", "items": { "enum": ["gap_1", "gap_2", "gap_3", "foundation_uplift", "value_uplift", "scope_low", "decision_rule", "lever_base", "lever_zero", "lever_excluded", "scope_material"] }, "description": "Which ASM-FIN-005 steps produced the severity; lever_base, lever_zero and scope_material are the F4 lever and scope-confirmation rules (CLM-FIN-167)." },
         "title": { "type": "string" },
         "businessConsequence": { "type": "string" },
         "decisionOrAction": { "type": "string" },
@@ -84,6 +84,9 @@
           "items": { "$ref": "urn:ltm:finops-iq:v3:question#/$defs/basis" }
         },
         "mode": { "type": "array", "minItems": 1, "items": { "enum": ["executive", "workshop"] } },
+        "severityBeforeValue": { "$ref": "#/$defs/severity", "description": "F4 review H3: severity before the value uplift; monotone in the answers." },
+        "valueBasis": { "description": "F4 review H3: the shown figures a value_uplift rests on.", "oneOf": [{ "type": "null" }, { "type": "object", "required": ["fields", "thresholdField"], "properties": { "fields": { "type": "array", "items": { "type": "string" } }, "thresholdField": { "type": "string" } } }] },
+        "leverActions": { "type": "array", "description": "F4 review M2: levers whose value sits on this gap finding, with their own action, evidence and zero-value advice.", "items": { "type": "object", "required": ["leverId", "title", "action", "evidence", "zeroValue", "inHeadline", "claimIds"] } },
         "value": {
           "description": "F4: the run-rate value of the quantified levers this finding owns (each lever on exactly one finding, so finding values sum to the headline); null when it owns none or no money figure is shown (Q4). Each case is a traceable figure.",
           "oneOf": [

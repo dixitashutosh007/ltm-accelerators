@@ -1,15 +1,15 @@
 {
   "RS1": {
     "versions": {
-      "engine": "3.2.0",
-      "kb": "questions 3.1.0; capabilities 3.0.0; levers 1.0.0; thresholds 1.0.0; rules 1.3.0; value rules 1.0.0",
+      "engine": "3.3.0",
+      "kb": "questions 3.1.0; capabilities 3.0.0; levers 1.1.0; thresholds 1.0.0; rules 1.3.0; value rules 1.1.0",
       "questionSet": "3.1.0",
       "capabilityModel": "3.0.0",
-      "leverLibrary": "1.0.0",
+      "leverLibrary": "1.1.0",
       "thresholds": "1.0.0",
       "engineRules": "1.3.0",
-      "valueRules": "1.0.0",
-      "valueModel": "1.0.0",
+      "valueRules": "1.1.0",
+      "valueModel": "1.1.0",
       "claimsRegister": "0.1.0"
     },
     "tier": {
@@ -80,6 +80,10 @@
         }
       ],
       "pending": [],
+      "valueBasis": {
+        "field": "value.totals.expected.pctOfP",
+        "thresholdField": "value.scoring.needModifierShareOfP"
+      },
       "band": "foundations",
       "bandLabel": "Targeted improvements needed now",
       "confidence": "Medium",
@@ -117,9 +121,9 @@
         "LEV-08": "not_quantified_in_v1"
       },
       "totals": {
-        "conservative": "gross 548735 (2.2% of 25000000), year 1 274367, one-off 45000, run 9000, net year 1 220367, net run-rate 539735, net 3-year 1299837",
-        "expected": "gross 2014077 (8.1% of 25000000), year 1 1007038, one-off 45000, run 9000, net year 1 953038, net run-rate 2005077, net 3-year 4963192",
-        "upper": "gross 6367083 (25.5% of 25000000), year 1 3183541, one-off 45000, run 9000, net year 1 3129541, net run-rate 6358083, net 3-year 15845707"
+        "conservative": "gross 548735 (2.2% of 25000000), year 1 205775, one-off 45000, run 9000, net year 1 151775, net run-rate 539735, net 3-year 1231245",
+        "expected": "gross 2014077 (8.1% of 25000000), year 1 755278, one-off 45000, run 9000, net year 1 701278, net run-rate 2005077, net 3-year 4711432",
+        "upper": "gross 6367083 (25.5% of 25000000), year 1 2387656, one-off 45000, run 9000, net year 1 2333656, net run-rate 6358083, net 3-year 15049822"
       },
       "finopsTeam": null,
       "hypothesis": null
@@ -127,15 +131,15 @@
   },
   "RS2": {
     "versions": {
-      "engine": "3.2.0",
-      "kb": "questions 3.1.0; capabilities 3.0.0; levers 1.0.0; thresholds 1.0.0; rules 1.3.0; value rules 1.0.0",
+      "engine": "3.3.0",
+      "kb": "questions 3.1.0; capabilities 3.0.0; levers 1.1.0; thresholds 1.0.0; rules 1.3.0; value rules 1.1.0",
       "questionSet": "3.1.0",
       "capabilityModel": "3.0.0",
-      "leverLibrary": "1.0.0",
+      "leverLibrary": "1.1.0",
       "thresholds": "1.0.0",
       "engineRules": "1.3.0",
-      "valueRules": "1.0.0",
-      "valueModel": "1.0.0",
+      "valueRules": "1.1.0",
+      "valueModel": "1.1.0",
       "claimsRegister": "0.1.0"
     },
     "tier": {
@@ -185,11 +189,11 @@
       "F-FIN-ALLOCATION Critical [gap_2,foundation_uplift] wave 1 | FinOps lead | from month 0, within 3 months | levers - | offerings OFF.FIN.TOOLING,OFF.FIN.OPMODEL",
       "F-FIN-FINOPS_PRACTICE_OPERATIONS High [gap_1,foundation_uplift] wave 1 | CIO | from month 0, within 6 months | levers - | offerings OFF.FIN.OPMODEL,OFF.FIN.MANAGED",
       "F-FIN-USAGE_OPTIMIZATION High [gap_2] wave 2 after F-FIN-ALLOCATION | Engineering leads | from month 3, within 6 months | levers LEV-02,LEV-03,LEV-04,LEV-05,LEV-07,LEV-08 | offerings OFF.FIN.SPRINT,OFF.FIN.MANAGED,OFF.FIN.ASSESS",
-      "F-FIN-RATE_OPTIMIZATION High [gap_1,value_uplift] wave 2 | FinOps lead | from month 3, within 6 months | levers LEV-01,LEV-06 | offerings OFF.FIN.SPRINT,OFF.FIN.MANAGED,OFF.FIN.ASSESS",
       "F-FIN-ANOMALY_MANAGEMENT Medium [gap_1] wave 1 after F-FIN-DATA_INGESTION | Platform / SRE lead | from month 3, within 12 months | levers - | offerings OFF.FIN.TOOLING,OFF.FIN.ASSESS",
       "F-FIN-REPORTING_ANALYTICS Medium [gap_1] wave 2 after F-FIN-DATA_INGESTION | FinOps lead | from month 3, within 12 months | levers - | offerings OFF.FIN.TOOLING,OFF.FIN.ASSESS",
       "F-FIN-PLANNING_ESTIMATING Medium [gap_1] wave 2 | Engineering leads | from month 3, within 12 months | levers - | offerings OFF.FIN.UNITECON,OFF.FIN.OPMODEL",
       "F-FIN-FORECASTING Medium [gap_1] wave 2 after F-FIN-DATA_INGESTION | FP&A lead | from month 3, within 12 months | levers - | offerings OFF.FIN.UNITECON,OFF.FIN.OPMODEL",
+      "F-FIN-RATE_OPTIMIZATION Medium [gap_1] wave 2 | FinOps lead | from month 3, within 12 months | levers LEV-01,LEV-06 | offerings OFF.FIN.SPRINT,OFF.FIN.MANAGED,OFF.FIN.ASSESS",
       "F-FIN-GOVERNANCE_POLICY_RISK Medium [gap_1] wave 2 | Head of Cloud / CCoE | from month 3, within 12 months | levers - | offerings OFF.FIN.OPMODEL,OFF.FIN.MANAGED",
       "F-FIN-UNIT_ECONOMICS Medium [gap_1] wave 3 after F-FIN-ALLOCATION | Product owners | from month 9, within 12 months | levers - | offerings OFF.FIN.UNITECON,OFF.FIN.OPMODEL",
       "F-FIN-EXECUTIVE_STRATEGY_ALIGNMENT Medium [gap_1] wave 3 | CIO | from month 9, within 12 months | levers - | offerings OFF.FIN.OPMODEL,OFF.FIN.MANAGED",
@@ -202,7 +206,7 @@
       "F-FIN-ALLOCATION",
       "F-FIN-FINOPS_PRACTICE_OPERATIONS",
       "F-FIN-USAGE_OPTIMIZATION",
-      "F-FIN-RATE_OPTIMIZATION"
+      "F-FIN-ANOMALY_MANAGEMENT"
     ],
     "needVerdict": null,
     "coverage": {
@@ -227,15 +231,15 @@
         "LEV-03": "300000 / 600000 / 1200000",
         "LEV-04": "1659375 / 3318750 / 6637500",
         "LEV-05": "no_estimate_of_type",
-        "LEV-06": "1320863 / 2563141 / 4825054",
+        "LEV-06": "330215 / 640785 / 1206263",
         "LEV-07": "769230 / 1538461 / 3076923",
         "LEV-08": "not_quantified_in_v1",
         "LEV-09": "missing_input (evidence.saasLicence)"
       },
       "totals": {
-        "conservative": "gross 4775178 (4.3% of 110000000), year 1 1741693, one-off 532000, run 406400, net year 1 803293, net run-rate 4368778, net 3-year 9540849",
-        "expected": "gross 9423192 (8.6% of 110000000), year 1 3447712, one-off 532000, run 406400, net year 1 2509312, net run-rate 9016792, net 3-year 20542896",
-        "upper": "gross 18350840 (16.7% of 110000000), year 1 6755992, one-off 532000, run 406400, net year 1 5817592, net run-rate 17944440, net 3-year 41706472"
+        "conservative": "gross 3784530 (3.4% of 110000000), year 1 1120523, one-off 532000, run 406400, net year 1 182123, net run-rate 3378130, net 3-year 6938383",
+        "expected": "gross 7500836 (6.8% of 110000000), year 1 2225341, one-off 532000, run 406400, net year 1 1286941, net run-rate 7094436, net 3-year 15475813",
+        "upper": "gross 14732049 (13.4% of 110000000), year 1 4388471, one-off 532000, run 406400, net year 1 3450071, net run-rate 14325649, net 3-year 32101369"
       },
       "finopsTeam": null,
       "hypothesis": null
@@ -243,15 +247,15 @@
   },
   "RS3": {
     "versions": {
-      "engine": "3.2.0",
-      "kb": "questions 3.1.0; capabilities 3.0.0; levers 1.0.0; thresholds 1.0.0; rules 1.3.0; value rules 1.0.0",
+      "engine": "3.3.0",
+      "kb": "questions 3.1.0; capabilities 3.0.0; levers 1.1.0; thresholds 1.0.0; rules 1.3.0; value rules 1.1.0",
       "questionSet": "3.1.0",
       "capabilityModel": "3.0.0",
-      "leverLibrary": "1.0.0",
+      "leverLibrary": "1.1.0",
       "thresholds": "1.0.0",
       "engineRules": "1.3.0",
-      "valueRules": "1.0.0",
-      "valueModel": "1.0.0",
+      "valueRules": "1.1.0",
+      "valueModel": "1.1.0",
       "claimsRegister": "0.1.0"
     },
     "tier": {
@@ -343,20 +347,20 @@
       "confidence": "Medium",
       "levers": {
         "LEV-01": "0 / 0 / 0",
-        "LEV-02": "225000 / 450000 / 663129",
-        "LEV-03": "100000 / 200000 / 294724",
-        "LEV-04": "47761 / 95523 / 140765",
+        "LEV-02": "225000 / 450000 / 699595",
+        "LEV-03": "100000 / 200000 / 310931",
+        "LEV-04": "47761 / 95523 / 148506",
         "LEV-05": "no_estimate_of_type",
-        "LEV-06": "460817 / 790269 / 777392",
-        "LEV-07": "807692 / 1615384 / 2380465",
+        "LEV-06": "299531 / 513675 / 533091",
+        "LEV-07": "807692 / 1615384 / 2511368",
         "LEV-08": "not_quantified_in_v1",
         "LEV-09": "missing_input (evidence.saasLicence)",
-        "LEV-10": "326923 / 653846 / 963521"
+        "LEV-10": "326923 / 653846 / 1016506"
       },
       "totals": {
-        "conservative": "gross 1968193 (10.9% of 18000000), year 1 573141, one-off 352000, run 190400, net year 1 30741, net run-rate 1777793, net 3-year 3586327",
-        "expected": "gross 3805022 (21.1% of 18000000), year 1 1113443, one-off 352000, run 190400, net year 1 571043, net run-rate 3614622, net 3-year 7800287",
-        "upper": "gross 5219996 (29% of 18000000), year 1 1544001, one-off 352000, run 190400, net year 1 1001601, net run-rate 5029596, net 3-year 11060793, capped from 7084586"
+        "conservative": "gross 1806907 (10% of 18000000), year 1 399614, one-off 352000, run 190400, net year 1 -142786, net run-rate 1616507, net 3-year 3090228",
+        "expected": "gross 3528428 (19.6% of 18000000), year 1 783220, one-off 352000, run 190400, net year 1 240820, net run-rate 3338028, net 3-year 6916876",
+        "upper": "gross 5219997 (29% of 18000000), year 1 1167857, one-off 352000, run 190400, net year 1 625457, net run-rate 5029597, net 3-year 10684651, capped from 6715309"
       },
       "finopsTeam": null,
       "hypothesis": null
@@ -364,15 +368,15 @@
   },
   "RS4": {
     "versions": {
-      "engine": "3.2.0",
-      "kb": "questions 3.1.0; capabilities 3.0.0; levers 1.0.0; thresholds 1.0.0; rules 1.3.0; value rules 1.0.0",
+      "engine": "3.3.0",
+      "kb": "questions 3.1.0; capabilities 3.0.0; levers 1.1.0; thresholds 1.0.0; rules 1.3.0; value rules 1.1.0",
       "questionSet": "3.1.0",
       "capabilityModel": "3.0.0",
-      "leverLibrary": "1.0.0",
+      "leverLibrary": "1.1.0",
       "thresholds": "1.0.0",
       "engineRules": "1.3.0",
-      "valueRules": "1.0.0",
-      "valueModel": "1.0.0",
+      "valueRules": "1.1.0",
+      "valueModel": "1.1.0",
       "claimsRegister": "0.1.0"
     },
     "tier": {
@@ -468,19 +472,19 @@
       "moneyShown": true,
       "confidence": "Medium",
       "levers": {
-        "LEV-01": "359766 / 696534 / 1317078",
+        "LEV-01": "435659 / 843468 / 1594916",
         "LEV-02": "400301 / 751207 / 1304829",
         "LEV-03": "75000 / 150000 / 300000",
         "LEV-04": "726964 / 1453928 / 2907857",
         "LEV-05": "no_estimate_of_type",
-        "LEV-06": "149902 / 290222 / 548782",
+        "LEV-06": "null",
         "LEV-08": "not_quantified_in_v1",
         "LEV-09": "350000 / 700000 / 1400000"
       },
       "totals": {
-        "conservative": "gross 2061933 (9% of 23000000), year 1 890439, one-off 480000, run 246000, net year 1 164439, net run-rate 1815933, net 3-year 3796305",
-        "expected": "gross 4041891 (17.6% of 23000000), year 1 1750684, one-off 480000, run 246000, net year 1 1024684, net run-rate 3795891, net 3-year 8616466",
-        "upper": "gross 7778546 (33.8% of 23000000), year 1 3390255, one-off 480000, run 246000, net year 1 2664255, net run-rate 7532546, net 3-year 17729347"
+        "conservative": "gross 1987924 (7.1% of 23000000), year 1 598182, one-off 384000, run 226800, net year 1 -12618, net run-rate 1761124, net 3-year 3509630",
+        "expected": "gross 3898603 (13.9% of 23000000), year 1 1173696, one-off 384000, run 226800, net year 1 562896, net run-rate 3671803, net 3-year 7906502",
+        "upper": "gross 7507602 (26.6% of 23000000), year 1 2263984, one-off 384000, run 226800, net year 1 1653184, net run-rate 7280802, net 3-year 16214788"
       },
       "finopsTeam": 288000,
       "hypothesis": null
@@ -488,15 +492,15 @@
   },
   "RS5": {
     "versions": {
-      "engine": "3.2.0",
-      "kb": "questions 3.1.0; capabilities 3.0.0; levers 1.0.0; thresholds 1.0.0; rules 1.3.0; value rules 1.0.0",
+      "engine": "3.3.0",
+      "kb": "questions 3.1.0; capabilities 3.0.0; levers 1.1.0; thresholds 1.0.0; rules 1.3.0; value rules 1.1.0",
       "questionSet": "3.1.0",
       "capabilityModel": "3.0.0",
-      "leverLibrary": "1.0.0",
+      "leverLibrary": "1.1.0",
       "thresholds": "1.0.0",
       "engineRules": "1.3.0",
-      "valueRules": "1.0.0",
-      "valueModel": "1.0.0",
+      "valueRules": "1.1.0",
+      "valueModel": "1.1.0",
       "claimsRegister": "0.1.0"
     },
     "tier": {
@@ -566,6 +570,10 @@
         }
       ],
       "pending": [],
+      "valueBasis": {
+        "field": "value.totals.expected.pctOfP",
+        "thresholdField": "value.scoring.needModifierShareOfP"
+      },
       "band": "foundations",
       "bandLabel": "Targeted improvements needed now",
       "confidence": "Low",
@@ -608,9 +616,9 @@
         "LEV-08": "not_quantified_in_v1"
       },
       "totals": {
-        "conservative": "gross 25781 (2.6% of 1000000), year 1 12890, one-off 18000, run 3600, net year 1 -8710, net run-rate 22181, net 3-year 35652",
-        "expected": "gross 382327 (12.7% of 3000000), year 1 191163, one-off 18000, run 3600, net year 1 169563, net run-rate 378727, net 3-year 927017",
-        "upper": "gross 1449999 (29% of 5000000), year 1 724999, one-off 18000, run 3600, net year 1 703399, net run-rate 1446399, net 3-year 3596197, capped from 2225476"
+        "conservative": "gross 25781 (2.6% of 1000000), year 1 9667, one-off 18000, run 3600, net year 1 -11933, net run-rate 22181, net 3-year 32429",
+        "expected": "gross 382327 (12.7% of 3000000), year 1 143371, one-off 18000, run 3600, net year 1 121771, net run-rate 378727, net 3-year 879225",
+        "upper": "gross 1449999 (29% of 5000000), year 1 543749, one-off 18000, run 3600, net year 1 522149, net run-rate 1446399, net 3-year 3414947, capped from 2225476"
       },
       "finopsTeam": 54000,
       "hypothesis": null
@@ -618,15 +626,15 @@
   },
   "unanswered-executive": {
     "versions": {
-      "engine": "3.2.0",
-      "kb": "questions 3.1.0; capabilities 3.0.0; levers 1.0.0; thresholds 1.0.0; rules 1.3.0; value rules 1.0.0",
+      "engine": "3.3.0",
+      "kb": "questions 3.1.0; capabilities 3.0.0; levers 1.1.0; thresholds 1.0.0; rules 1.3.0; value rules 1.1.0",
       "questionSet": "3.1.0",
       "capabilityModel": "3.0.0",
-      "leverLibrary": "1.0.0",
+      "leverLibrary": "1.1.0",
       "thresholds": "1.0.0",
       "engineRules": "1.3.0",
-      "valueRules": "1.0.0",
-      "valueModel": "1.0.0",
+      "valueRules": "1.1.0",
+      "valueModel": "1.1.0",
       "claimsRegister": "0.1.0"
     },
     "tier": {
@@ -696,9 +704,10 @@
       "pending": [
         {
           "id": "expected_value_ge_5pct_of_P",
-          "reason": "value not quantified from the inputs given"
+          "reason": "no value figure shown (no lever quantified, or no internal cost rate)"
         }
       ],
+      "valueBasis": null,
       "band": "foundations",
       "bandLabel": "Targeted improvements needed now",
       "confidence": "Low",
@@ -830,15 +839,15 @@
   },
   "unanswered-workshop": {
     "versions": {
-      "engine": "3.2.0",
-      "kb": "questions 3.1.0; capabilities 3.0.0; levers 1.0.0; thresholds 1.0.0; rules 1.3.0; value rules 1.0.0",
+      "engine": "3.3.0",
+      "kb": "questions 3.1.0; capabilities 3.0.0; levers 1.1.0; thresholds 1.0.0; rules 1.3.0; value rules 1.1.0",
       "questionSet": "3.1.0",
       "capabilityModel": "3.0.0",
-      "leverLibrary": "1.0.0",
+      "leverLibrary": "1.1.0",
       "thresholds": "1.0.0",
       "engineRules": "1.3.0",
-      "valueRules": "1.0.0",
-      "valueModel": "1.0.0",
+      "valueRules": "1.1.0",
+      "valueModel": "1.1.0",
       "claimsRegister": "0.1.0"
     },
     "tier": {
@@ -900,7 +909,7 @@
       "F-FIN-SCOPE-KUBERNETES_SPEND Medium [scope_material] wave 1 | FinOps lead (to be appointed; interim: Head of Cloud / CCoE) | from month 0, within 3 months | levers LEV-04,LEV-07 | offerings OFF.FIN.ASSESS | unconfirmed",
       "F-FIN-SCOPE-NON_PROD_SCHEDULED_SHARE Medium [scope_material] wave 1 | FinOps lead (to be appointed; interim: Head of Cloud / CCoE) | from month 0, within 3 months | levers LEV-04 | offerings OFF.FIN.ASSESS | unconfirmed",
       "F-FIN-SCOPE-COMPUTE_SHARE Medium [scope_material] wave 1 | FinOps lead (to be appointed; interim: Head of Cloud / CCoE) | from month 0, within 3 months | levers LEV-01,LEV-02,LEV-04,LEV-06 | offerings OFF.FIN.ASSESS | unconfirmed",
-      "F-FIN-SCOPE-ELIGIBLE_COVERAGE Medium [scope_material] wave 1 | FinOps lead (to be appointed; interim: Head of Cloud / CCoE) | from month 0, within 3 months | levers LEV-01 | offerings OFF.FIN.ASSESS | unconfirmed",
+      "F-FIN-SCOPE-ELIGIBLE_COVERAGE Medium [scope_material] wave 1 | FinOps lead (to be appointed; interim: Head of Cloud / CCoE) | from month 0, within 3 months | levers LEV-01,LEV-06 | offerings OFF.FIN.ASSESS | unconfirmed",
       "F-FIN-SCOPE-NON_PROD_SHARE Medium [scope_material] wave 1 | FinOps lead (to be appointed; interim: Head of Cloud / CCoE) | from month 0, within 3 months | levers LEV-01,LEV-04 | offerings OFF.FIN.ASSESS | unconfirmed",
       "F-FIN-SCOPE-STEADY_STATE_SHARE Medium [scope_material] wave 1 | FinOps lead (to be appointed; interim: Head of Cloud / CCoE) | from month 0, within 3 months | levers LEV-01 | offerings OFF.FIN.ASSESS | unconfirmed",
       "F-FIN-KPIS_BENCHMARKING Medium [gap_1] wave 3 after F-FIN-ALLOCATION | FinOps lead (to be appointed; interim: Head of Cloud / CCoE) | from month 9, within 12 months | levers - | offerings OFF.FIN.OPMODEL,OFF.FIN.MANAGED | unconfirmed",
@@ -1008,7 +1017,7 @@
         "LEV-03": "missing_input (evidence.providerRecommendations)",
         "LEV-04": "missing_input (base.computeShare, base.nonProdShare, base.nonProdScheduledShare, base.kubernetesSpend)",
         "LEV-05": "missing_input (evidence.providerRecommendations)",
-        "LEV-06": "missing_input (base.computeShare, base.interruptionTolerantShare, base.spotShare)",
+        "LEV-06": "missing_input (base.computeShare, base.interruptionTolerantShare, base.spotShare, base.eligibleCoverage)",
         "LEV-07": "missing_input (base.kubernetesSpend, base.kubernetesRequestUtilisation)",
         "LEV-08": "not_quantified_in_v1",
         "LEV-09": "missing_input (evidence.saasLicence)"
@@ -1020,15 +1029,15 @@
   },
   "all-run-workshop": {
     "versions": {
-      "engine": "3.2.0",
-      "kb": "questions 3.1.0; capabilities 3.0.0; levers 1.0.0; thresholds 1.0.0; rules 1.3.0; value rules 1.0.0",
+      "engine": "3.3.0",
+      "kb": "questions 3.1.0; capabilities 3.0.0; levers 1.1.0; thresholds 1.0.0; rules 1.3.0; value rules 1.1.0",
       "questionSet": "3.1.0",
       "capabilityModel": "3.0.0",
-      "leverLibrary": "1.0.0",
+      "leverLibrary": "1.1.0",
       "thresholds": "1.0.0",
       "engineRules": "1.3.0",
-      "valueRules": "1.0.0",
-      "valueModel": "1.0.0",
+      "valueRules": "1.1.0",
+      "valueModel": "1.1.0",
       "claimsRegister": "0.1.0"
     },
     "tier": {
@@ -1077,7 +1086,7 @@
       "F-FIN-LEV-04 High [lever_base,value_uplift] wave 1 | Engineering leads | from month 0, within 6 months | levers LEV-04 | offerings OFF.FIN.SPRINT",
       "F-FIN-LEV-01 High [lever_base,value_uplift] wave 2 | FinOps lead | from month 3, within 6 months | levers LEV-01 | offerings OFF.FIN.SPRINT,OFF.FIN.MANAGED,OFF.FIN.ASSESS",
       "F-FIN-LEV-09 High [lever_base,value_uplift] wave 3 | ITAM lead | from month 9, within 6 months | levers LEV-09 | offerings OFF.FIN.SPRINT,REF.COST_IQ",
-      "F-FIN-LEV-06 Medium [lever_base] wave 2 | FinOps lead | from month 3, within 12 months | levers LEV-06 | offerings OFF.FIN.SPRINT"
+      "F-FIN-LEV-06 Low [lever_excluded] wave 2 | FinOps lead | from month 3, within 24 months | levers LEV-06 | offerings OFF.FIN.SPRINT"
     ],
     "topFindingIds": [
       "F-FIN-LEV-04",
@@ -1108,19 +1117,19 @@
       "moneyShown": true,
       "confidence": "Medium",
       "levers": {
-        "LEV-01": "372600 / 745200 / 1490400",
+        "LEV-01": "451200 / 902400 / 1804800",
         "LEV-02": "evidence_needs_assessment_date",
         "LEV-03": "evidence_needs_assessment_date",
         "LEV-04": "726964 / 1453928 / 2907857",
         "LEV-05": "no_estimate_of_type",
-        "LEV-06": "155250 / 310500 / 621000",
+        "LEV-06": "null",
         "LEV-08": "not_quantified_in_v1",
         "LEV-09": "350000 / 700000 / 1400000"
       },
       "totals": {
-        "conservative": "gross 1604814 (7% of 23000000), year 1 728594, one-off 288000, run 207600, net year 1 232994, net run-rate 1397214, net 3-year 3027422",
-        "expected": "gross 3209628 (14% of 23000000), year 1 1457189, one-off 288000, run 207600, net year 1 961589, net run-rate 3002028, net 3-year 6965645",
-        "upper": "gross 6419257 (27.9% of 23000000), year 1 2914378, one-off 288000, run 207600, net year 1 2418778, net run-rate 6211657, net 3-year 14842092"
+        "conservative": "gross 1528164 (5.1% of 23000000), year 1 567682, one-off 192000, run 188400, net year 1 187282, net run-rate 1339764, net 3-year 2866810",
+        "expected": "gross 3056328 (10.2% of 23000000), year 1 1135364, one-off 192000, run 188400, net year 1 754964, net run-rate 2867928, net 3-year 6490820",
+        "upper": "gross 6112657 (20.5% of 23000000), year 1 2270728, one-off 192000, run 188400, net year 1 1890328, net run-rate 5924257, net 3-year 13738842"
       },
       "finopsTeam": null,
       "hypothesis": null

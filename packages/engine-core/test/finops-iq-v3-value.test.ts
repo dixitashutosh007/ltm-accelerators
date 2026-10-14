@@ -232,7 +232,7 @@ const REQUIRED: Record<string, (f: Facts) => string[]> = {
   'LEV-03': () => ['evidence.providerRecommendations'],
   'LEV-04': f => ['base.computeShare', 'base.nonProdShare', ...(f.footprint.scopes.includes('kubernetes') ? ['base.kubernetesSpend'] : [])],
   'LEV-05': () => ['evidence.providerRecommendations'],
-  'LEV-06': () => ['base.computeShare', 'base.interruptionTolerantShare', 'base.spotShare'],
+  'LEV-06': () => ['base.computeShare', 'base.interruptionTolerantShare', 'base.spotShare', 'base.eligibleCoverage'],
   'LEV-07': () => ['base.kubernetesSpend', 'base.kubernetesRequestUtilisation'],
   'LEV-08': () => ['never'],
   'LEV-09': () => ['evidence.saasLicence'],
@@ -509,7 +509,8 @@ describe('FinOps IQ v3 value: model rules (DESIGN.md 10)', () => {
     mode: 'executive', assessmentDate: ASSESSED, answers,
     facts: { org: { currency: 'USD', consumingUnits: '2-4' }, footprint: { publicCloudProviders: ['aws'], scopes: ['public_cloud'] }, spend: { byScope: { aws: { exact: 10_000_000 } } }, cost: { internalRate: { exact: 10_000 } }, ...facts } as Facts
   });
-  const worked = { base: { computeShare: { exact: 0.6 }, steadyStateShare: { exact: 0.6 }, eligibleCoverage: { exact: 0.3 }, nonProdShare: { exact: 0.25 } } };
+  // DESIGN.md 10.3 uses AWS's 72% maximum, so the worked example states that instrument (F4 review M6).
+  const worked = { base: { computeShare: { exact: 0.6 }, steadyStateShare: { exact: 0.6 }, eligibleCoverage: { exact: 0.3 }, nonProdShare: { exact: 0.25 }, commitmentInstrument: { aws: 'ec2_instance_sp_or_ri' } } } as any;
 
   it('reproduces the DESIGN.md 10.3 worked example (AWS 10M, compute 60%, steady 60%, coverage 30%, non-production 25%, OP-06 Crawl)', () => {
     const r = exec(worked);
@@ -613,12 +614,18 @@ describe('FinOps IQ v3 value: model rules (DESIGN.md 10)', () => {
 /* -------------------- Reference scenarios: value figures -------------------- */
 
 /**
- * Value differences from the F1 expectations, each justified in F4-scenario-diffs.md. Everything else must be within
- * 1% (the scenarios' stated tolerance). V5: Azure Spot was sourced in F2 (CLM-FIN-064), so LEV-06 is quantified for
- * Azure (RS2, RS4) and its Spot-movable share leaves LEV-01 (RS4).
+ * Value differences from the F1 expectations, each justified in F4-scenario-diffs.md. Run-rate figures, one-off and
+ * run costs must be within 1% (the scenarios' stated tolerance) apart from these. Year-1 and 3-year figures are not
+ * compared: since the F4 review (M3, V9) the ramp starts at the owning finding's roadmap start month, which F1 did not
+ * apply, so year-1 figures are lower by design.
+ * V5: Azure Spot sourced in F2 (RS2, RS4). V10: Spot counts only usage not covered by commitments (H2: RS2, RS3, RS4).
+ * V11: LEV-01 at the lower published maximum when the instrument is not stated (M6: RS4). V12: a lever whose marginal
+ * net is not positive leaves the headline (M1: RS4 LEV-06, with its effort).
  */
-const VALUE_DIFFS: Record<string, { levers: string[]; totals: boolean }> = {
+const VALUE_DIFFS: Record<string, { levers: string[]; totals: boolean; cases?: string[] }> = {
   RS2: { levers: ['LEV-06'], totals: true },
+  // RS3's upper case is capped: a smaller LEV-06 changes the pro-rata cap scale of every lever (the capped total is unchanged).
+  RS3: { levers: ['LEV-06'], totals: true, cases: ['upper'] },
   RS4: { levers: ['LEV-01', 'LEV-06'], totals: true }
 };
 const within = (a: number, b: number, rel = 0.01) => Math.abs(a - b) <= Math.max(2, Math.abs(b) * rel);
@@ -628,19 +635,19 @@ describe('FinOps IQ v3 value: reference scenarios against the ranges written in 
     const r = scenarioRuns.find(x => x.label === s.id)!.r;
     const e = s.expected.value;
     const diff = VALUE_DIFFS[s.id];
-    it(`${s.id}: lever and total figures match within 1%, apart from the recorded differences`, () => {
+    it(`${s.id}: lever and total run-rate figures match within 1%, apart from the recorded differences`, () => {
       expect(r.value.moneyShown).toBe(true);
       for (const c of CASES) {
         const t = total(r, c);
         for (const [id, want] of Object.entries<number>(e[c].levers)) {
           const l = r.value.levers.find(x => x.id === id)!;
           const got = l.cases ? l.cases[c].runRate.value : 0;
-          if (diff?.levers.includes(id)) continue;
+          if (diff?.levers.includes(id) || diff?.cases?.includes(c)) continue;
           expect(within(got, want), `${s.id} ${c} ${id}: ${got} vs ${want}`).toBe(true);
         }
         for (const id of leverCases(r).map(l => l.id)) if (!(id in e[c].levers)) expect(diff?.levers, `${s.id} ${c}: ${id} not in the scenario`).toContain(id);
         if (diff?.totals) continue;
-        for (const k of ['grossRunRate', 'grossYear1', 'oneOffCost', 'annualRunCost', 'netYear1', 'netRunRate', 'net3Year'] as const) {
+        for (const k of ['grossRunRate', 'oneOffCost', 'annualRunCost', 'netRunRate'] as const) {
           expect(within(t[k].value, e[c][k]), `${s.id} ${c} ${k}: ${t[k].value} vs ${e[c][k]}`).toBe(true);
         }
         expect(t.P.value).toBe(e[c].P ?? e.expected.P);
@@ -653,14 +660,186 @@ describe('FinOps IQ v3 value: reference scenarios against the ranges written in 
     });
   }
 
-  it('RS2: the recorded difference comes only from the Azure Spot maximum sourced in F2', () => {
-    // RS2 is Azure-only: with no Spot-movable usage the engine reproduces every F1 total within 1%.
+  it('RS2: the recorded difference comes only from Spot (Azure sourced in F2, base net of coverage)', () => {
+    // RS2 is Azure-only: with no Spot-movable usage the engine reproduces every F1 run-rate total within 1%.
     const s = SCENARIOS.find(x => x.id === 'RS2')!;
     const input = JSON.parse(JSON.stringify(scenarioInput(s)));
     input.facts.base.interruptionTolerantShare = { exact: 0 };
     const r = evaluateFinOpsIqV3(input);
-    for (const c of CASES) for (const k of ['grossRunRate', 'grossYear1', 'oneOffCost', 'annualRunCost', 'net3Year'] as const) {
+    for (const c of CASES) for (const k of ['grossRunRate', 'oneOffCost', 'annualRunCost'] as const) {
       expect(within(total(r, c)[k].value, s.expected.value[c][k]), `RS2 ${c} ${k}: ${total(r, c)[k].value} vs ${s.expected.value[c][k]}`).toBe(true);
     }
+    // With Spot net of coverage, the review's figure (H2): about EUR 7.50M expected, 6.8% of P.
+    const rs2 = scenarioRuns.find(x => x.label === 'RS2')!.r;
+    expect(within(total(rs2, 'expected').grossRunRate.value, 7_500_000, 0.005)).toBe(true);
+    expect(total(rs2, 'expected').pctOfP.value).toBe(6.8);
+  });
+});
+
+/* ----------------------------- F4 review fixes ------------------------------ */
+
+const lever = (r: FinOpsIqV3Result, id: string) => r.value.levers.find(l => l.id === id)!;
+
+describe('FinOps IQ v3 value: F4 review fixes', () => {
+  it('H1: the cap metadata matches the code: all three cases, no evidence lift', () => guard((x, fail) => {
+    const g = x.r.value.globalCap;
+    if (g.appliesTo.join() !== CASES.join()) fail(`appliesTo ${g.appliesTo}`);
+    if (!/^none/.test(g.liftedBy)) fail(`liftedBy ${g.liftedBy}`);
+    for (const c of CASES) if (!g.statement.includes(c)) fail(`statement omits ${c}`);
+    if (!x.r.value.moneyShown) return;
+    for (const c of CASES) {
+      const t = total(x.r, c);
+      const binds = t.cloudBeforeCap.value > t.cap.value + 1;
+      if (binds && (!t.capBinding || t.capScale.value >= 1)) fail(`${c}: cap ${t.cap.value}, before ${t.cloudBeforeCap.value}, binding ${t.capBinding}`);
+      if (t.capBinding && t.cloudBeforeCap.value < t.cap.value) fail(`${c}: binding below the cap`);
+    }
+  }));
+
+  it('H1: the register and the claim say the same as the code', () => {
+    expect((levers as any).globalCap).toMatchObject({ appliesTo: [...CASES], liftedBy: 'none (v1.0)' });
+    expect(ASM.find(a => a.id === 'ASM-FIN-050').constants.find((c: any) => c.ref === 'levers:globalCap.appliesTo').value).toEqual([...CASES]);
+    const c138 = (register as any).claims.find((c: any) => c.id === 'CLM-FIN-138');
+    expect(c138.statement).toMatch(/conservative, expected and upper/);
+    expect(c138.statement).toMatch(/not lifted by evidence/);
+  });
+
+  it('H2: Spot counts only tolerant usage not covered by commitments, and the same share leaves LEV-01', () => {
+    const wf = (C: number) => evaluateFinOpsIqV3({
+      mode: 'workshop', answers: {}, assessmentDate: ASSESSED,
+      facts: { org: { currency: 'USD' }, footprint: { publicCloudProviders: ['aws'], scopes: ['public_cloud'] }, spend: { byScope: { aws: { exact: 10_000_000 } } },
+        base: { computeShare: { exact: 0.5 }, steadyStateShare: { exact: 0.9 }, eligibleCoverage: { exact: C }, nonProdShare: { exact: 0 }, nonProdScheduledShare: { exact: 0 }, interruptionTolerantShare: { exact: 0.4 }, spotShare: { exact: 0 } },
+        cost: { internalRate: { exact: 1000 } } } as Facts
+    });
+    expect(lever(wf(0), 'LEV-06').cases!.upper.base.value).toBe(2_000_000);
+    expect(lever(wf(0.5), 'LEV-06').cases!.upper.base.value).toBe(1_000_000);
+    // 5M x (0.9 - 0.5 - 0 - 0.4 x 0.5) = 1.0M.
+    expect(lever(wf(0.5), 'LEV-01').cases!.upper.base.value).toBe(1_000_000);
+  });
+
+  it('H3: every value uplift and value need modifier rests on a figure the report shows, at the client\'s own answers', () => guard((x, fail) => {
+    const threshold = (field: string) => resolveField(x.r, field)?.value;
+    for (const f of x.r.findings) {
+      const up = f.severityTrace.includes('value_uplift');
+      if (up !== !!f.valueBasis) fail(`${f.id}: uplift ${up} but valueBasis ${JSON.stringify(f.valueBasis)}`);
+      if (!f.valueBasis) continue;
+      if (!x.r.value.moneyShown) fail(`${f.id}: uplift without any value shown`);
+      for (const field of f.valueBasis.fields) {
+        const fg = resolveField(x.r, field);
+        if (!fg || typeof fg.value !== 'number') fail(`${f.id}: ${field} is not a shown figure`);
+        else if (fg.value < threshold(f.valueBasis.thresholdField)) fail(`${f.id}: ${field} ${fg.value} below the threshold`);
+      }
+    }
+    // A finding that owns a lever at or above the threshold is at least High (unless it is a zero or excluded lever finding).
+    for (const f of x.r.findings.filter(y => y.type === 'capability_gap' || y.type === 'lever_opportunity')) {
+      const hit = f.leverIds.some(id => lever(x.r, id)?.scoring?.upliftReached);
+      if (hit && !['High', 'Critical'].includes(f.severity)) fail(`${f.id}: a shown lever reaches the uplift but severity is ${f.severity}`);
+    }
+    const v = x.r.needVerdict;
+    if (v) {
+      const has = v.modifiers.some(m => m.id === 'expected_value_ge_5pct_of_P');
+      if (has !== !!v.valueBasis) fail('need modifier without its valueBasis');
+      const shown = x.r.value.moneyShown && total(x.r, 'expected').pctOfP.value >= 5;
+      if (has !== shown) fail(`need modifier ${has}, shown value at 5% of P ${shown}`);
+    }
+  }));
+
+  it('H4: the headline % of P and the cap are public cloud only; SaaS and licensing are shown on their own base', () => guard((x, fail) => {
+    if (!x.r.value.moneyShown) return;
+    for (const c of CASES) {
+      const t = total(x.r, c);
+      if (t.pctOfP.value > CAP_SHARE * 100 + 0.05) fail(`${c}: ${t.pctOfP.value}% of P above the cap`);
+      const saas = lever(x.r, 'LEV-09')?.cases?.[c].runRate.value ?? 0;
+      if (t.cloudRunRate.value + saas !== t.grossRunRate.value) fail(`${c}: cloud + SaaS != gross`);
+      if (saas && t.saasLicensing?.runRate.value !== saas) fail(`${c}: SaaS line ${t.saasLicensing?.runRate.value} != ${saas}`);
+    }
+  }));
+
+  it('M1: effort only for levers with a positive expected value; a lever not worth pursuing is shown but left out of the headline', () => {
+    expect(SHOWN.some(x => x.r.value.levers.some(l => l.exclusion))).toBe(true);
+    guard((x, fail) => {
+      if (!x.r.value.moneyShown) return;
+      for (const l of x.r.value.levers.filter(y => y.status === 'quantified')) {
+        if (l.exclusion) {
+          if (l.inHeadline || l.cases) fail(`${l.id}: excluded but in the headline`);
+          if (l.exclusion.marginalNet3Year.value > 0) fail(`${l.id}: excluded with a positive marginal net`);
+        } else if (l.cases && l.cases.expected.runRate.value === 0 && l.effortFteMonths!.value !== 0) fail(`${l.id}: effort on a lever with no expected value`);
+      }
+    });
+  });
+
+  it('M1: a blank fact never raises the expected net 3-year value', () => guard((x, fail) => {
+    const f = x.input.facts;
+    const net = (r: FinOpsIqV3Result) => (r.value.moneyShown ? total(r, 'expected').net3Year.value : -Infinity);
+    const answered = net(x.r);
+    const paths = ['base.computeShare', 'base.steadyStateShare', 'base.eligibleCoverage', 'base.nonProdShare', 'base.nonProdScheduledShare', 'base.interruptionTolerantShare', 'base.spotShare', 'base.kubernetesSpend', 'base.kubernetesRequestUtilisation', 'evidence.providerRecommendations', 'evidence.aiGpu.gpuSpend', 'evidence.aiGpu.gpuUtilisation', 'evidence.saasLicence'];
+    for (const p of paths.filter(q => given(f, q))) {
+      const copy = JSON.parse(JSON.stringify(f));
+      const keys = p.split('.');
+      delete keys.slice(0, -1).reduce((o: any, k) => o[k], copy)[keys[keys.length - 1]];
+      const b = net(evaluateFinOpsIqV3({ ...x.input, facts: copy }));
+      if (b > answered + sumTol) fail(`blank ${p}: net 3-year ${b} > ${answered}`);
+    }
+  }, [...scenarioRuns, ...randomRuns.filter((_, i) => i % 10 === 0)].filter(x => x.r.value.moneyShown)), 300_000);
+
+  it('M2: a gap finding that owns levers carries their action, evidence and zero-value advice (RS2: stop buying commitments)', () => {
+    const rs2 = scenarioRuns.find(x => x.label === 'RS2')!.r;
+    const rate = rs2.findings.find(f => f.id === 'F-FIN-RATE_OPTIMIZATION')!;
+    const l01 = rate.leverActions.find(a => a.leverId === 'LEV-01')!;
+    expect(l01).toMatchObject({ zeroValue: true });
+    expect(l01.title).toMatch(/stop buying commitments/);
+    expect(l01.action).toMatch(/Do not buy further commitments/);
+    guard((x, fail) => {
+      for (const f of x.r.findings.filter(y => y.type === 'capability_gap')) {
+        const owned = f.leverIds.filter(id => lever(x.r, id)?.status === 'quantified');
+        if (owned.join() !== f.leverActions.map(a => a.leverId).join()) fail(`${f.id}: leverActions ${f.leverActions.map(a => a.leverId)} != ${owned}`);
+      }
+    });
+  });
+
+  it('M3: the ramp starts at the start month of the finding that owns the lever', () => guard((x, fail) => {
+    if (!x.r.value.moneyShown) return;
+    for (const l of leverCases(x.r)) {
+      const owner = x.r.findings.find(f => f.value?.leverIds.includes(l.id));
+      if (!owner) { fail(`${l.id}: no owning finding`); continue; }
+      if (l.startMonth!.value !== owner.start.month) fail(`${l.id}: ramp from month ${l.startMonth!.value}, finding ${owner.id} starts ${owner.start.month}`);
+      const left = Math.max(0, Math.min(1, (12 - owner.start.month) / 12));
+      const ramp = (levers as any).levers.find((y: any) => y.id === l.id).ramp.year1Share;
+      if (typeof ramp === 'number' && !l.cases!.expected.year1Share.assumptionIds.includes('ASM-FIN-042') && Math.abs(l.cases!.expected.year1Share.value - ramp * left) > 1e-4) fail(`${l.id}: year-1 share ${l.cases!.expected.year1Share.value} != ${ramp} x ${left}`);
+      if (owner.start.month >= 12 && l.cases!.expected.year1.value !== 0) fail(`${l.id}: year 1 before its start`);
+    }
+  }));
+
+  it('M4: LEV-09 is compared with its own base, not public cloud spend', () => {
+    const rs4 = scenarioRuns.find(x => x.label === 'RS4')!.r;
+    const l9 = lever(rs4, 'LEV-09');
+    expect(l9.scoring).toMatchObject({ comparisonBaseLabel: 'SaaS and licensing spend in scope', comparisonBase: { value: 20_000_000 } });
+    expect(total(rs4, 'expected').saasLicensing).toMatchObject({ runRate: { value: 700_000 }, base: { value: 20_000_000 }, pctOfBase: { value: 3.5 } });
+  });
+
+  it('M5: in-scope spend is shown once, as a band when banded, and each case\'s P is within it', () => guard((x, fail) => {
+    if (!x.r.value.moneyShown) return;
+    const sp = x.r.value.spend;
+    if (!sp) return; // only SaaS and licensing quantified: no public cloud spend to show
+    for (const c of CASES) {
+      const P = total(x.r, c).P.value;
+      if (sp.banded ? P < sp.low!.value - 1 || P > sp.high!.value + 1 : Math.abs(P - sp.P.value) > 1) fail(`${c}: P ${P} outside the spend shown`);
+    }
+    if (Math.abs(total(x.r, 'expected').P.value - sp.P.value) > 1) fail('expected case P is not the midpoint');
+  }));
+
+  it('M6: LEV-01 uses the stated commitment instrument, and the lower published maximum when it is not stated', () => {
+    const r = (ci?: any) => evaluateFinOpsIqV3({
+      mode: 'executive', answers: { 'OP-06': 'crawl' }, assessmentDate: ASSESSED,
+      facts: { org: { currency: 'USD' }, footprint: { publicCloudProviders: ['aws', 'azure'], scopes: ['public_cloud'] }, spend: { byScope: { aws: { exact: 5_000_000 }, azure: { exact: 5_000_000 } } },
+        base: { computeShare: { exact: 0.6 }, steadyStateShare: { exact: 0.6 }, eligibleCoverage: { exact: 0.1 }, nonProdShare: { exact: 0.1 }, ...(ci ? { commitmentInstrument: ci } : {}) }, cost: { internalRate: { exact: 1000 } } } as Facts
+    });
+    const rates = (x: FinOpsIqV3Result) => Object.fromEntries(lever(x, 'LEV-01').maxRate.map(m => [m.provider, [m.rate.value, m.instrumentStated]]));
+    expect(rates(r())).toEqual({ aws: [0.66, false], azure: [0.65, false] });
+    expect(rates(r({ aws: 'ec2_instance_sp_or_ri', azure: 'reservations' }))).toEqual({ aws: [0.72, true], azure: [0.72, true] });
+    expect(lever(r(), 'LEV-01').cases!.upper.runRate.value).toBeLessThan(lever(r({ aws: 'ec2_instance_sp_or_ri' }), 'LEV-01').cases!.upper.runRate.value);
+  });
+
+  it('M7: the provider maxima entry says they were read through search results', () => {
+    expect(ASM.find(a => a.id === 'ASM-FIN-060').reasoning).toMatch(/search results/);
   });
 });

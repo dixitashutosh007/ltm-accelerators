@@ -676,6 +676,39 @@
             ]
           ],
           "allowUnknown": true
+        },
+        {
+          "key": "instrument",
+          "label": "Main commitment instrument per provider (optional; the lower published maximum is used when not stated)",
+          "type": "select",
+          "fact": "base.commitmentInstrument",
+          "allowUnknown": true,
+          "options": [
+            {
+              "value": "ec2_instance_sp_or_ri",
+              "label": "AWS: EC2 Instance Savings Plans or Standard Reserved Instances"
+            },
+            {
+              "value": "compute_sp",
+              "label": "AWS: Compute Savings Plans"
+            },
+            {
+              "value": "reservations",
+              "label": "Azure: reservations"
+            },
+            {
+              "value": "savings_plan",
+              "label": "Azure: savings plan for compute"
+            },
+            {
+              "value": "resource_cud",
+              "label": "Google Cloud: resource-based CUDs"
+            },
+            {
+              "value": "memory_optimised_cud",
+              "label": "Google Cloud: resource-based CUDs, memory-optimised series"
+            }
+          ]
         }
       ],
       "sets": [

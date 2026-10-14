@@ -1,5 +1,5 @@
 {
-  "rulesVersion": "1.0.0",
+  "rulesVersion": "1.1.0",
   "statusAsOf": "2026-10-14",
   "rule": "Wording and F4 rules of the FinOps IQ v3 value model (DESIGN.md section 10). Numbers here are LTM heuristics registered in registry/assumptions.json; published maxima, ranges, ramps and effort come from registry/levers.json. Nothing here is a market fact.",
   "labels": {
@@ -7,23 +7,39 @@
     "detail": "Conservative, expected and upper cases, net of estimated internal implementation effort and tooling. External support is not included.",
     "withheld": "No value figure is shown without your internal cost rate per FTE-month: net value cannot be computed without it. The levers below show what would be quantified.",
     "notQuantifiedAtAll": "No lever can be quantified from the inputs given; the levers below show what would quantify them.",
-    "claimIds": ["CLM-FIN-173", "CLM-FIN-170", "CLM-FIN-161"]
+    "claimIds": [
+      "CLM-FIN-173",
+      "CLM-FIN-170",
+      "CLM-FIN-161"
+    ]
   },
   "derivations": {
     "nonProdScheduledShareFromOp06": {
       "question": "OP-06",
       "fact": "base.nonProdScheduledShare",
-      "byLevel": { "run": 1, "walk": 0.5, "crawl": 0, "not_yet": 0 },
-      "modes": ["executive"],
+      "byLevel": {
+        "run": 1,
+        "walk": 0.5,
+        "crawl": 0,
+        "not_yet": 0
+      },
+      "modes": [
+        "executive"
+      ],
       "assumptionId": "ASM-FIN-052",
-      "claimIds": ["CLM-FIN-140"]
+      "claimIds": [
+        "CLM-FIN-140"
+      ]
     }
   },
   "bandSearch": {
     "maxBandedInputs": 8,
     "midpointIsCandidate": true,
     "assumptionId": "ASM-FIN-042",
-    "claimIds": ["CLM-FIN-130", "CLM-FIN-172"]
+    "claimIds": [
+      "CLM-FIN-130",
+      "CLM-FIN-172"
+    ]
   },
   "scoring": {
     "severityUpliftShareOfP": 0.02,
@@ -31,23 +47,45 @@
     "needModifierId": "expected_value_ge_5pct_of_P",
     "needModifierShareOfP": 0.05,
     "needModifierThresholdId": "THR-FIN-14",
+    "rule": "The uplift and the need modifier use only figures the report shows, at the client's own answers: a lever's expected net run-rate as a share of its comparison base, and the expected public cloud value as a share of P. Without a shown figure (no internal rate, or the lever not quantified) neither applies.",
+    "comparisonBases": {
+      "cloud": "in-scope public cloud spend (P, at the midpoints)",
+      "saasLicensing": "SaaS and licensing spend in scope",
+      "totalInScope": "total in-scope spend (SaaS or licensing spend not given)"
+    },
     "assumptionId": "ASM-FIN-056",
-    "claimIds": ["CLM-FIN-122", "CLM-FIN-127", "CLM-FIN-172"]
+    "claimIds": [
+      "CLM-FIN-122",
+      "CLM-FIN-127",
+      "CLM-FIN-172"
+    ]
   },
   "finopsTeam": {
-    "fteByTier": { "1": 0.5, "2": 1, "3": 2 },
+    "fteByTier": {
+      "1": 0.5,
+      "2": 1,
+      "3": 2
+    },
     "monthsPerYear": 12,
     "statement": "Cost of an accountable FinOps lead or team, shown beside the value as its own decision (DECISION-01). It is not netted against the levers, because it also enables levers that are not yet quantified.",
     "notRaised": "Not shown: the answers show an accountable owner for cloud spend already.",
     "noRate": "Not shown: needs your internal cost rate per FTE-month.",
     "assumptionId": "ASM-FIN-054",
-    "claimIds": ["CLM-FIN-171", "CLM-FIN-170", "CLM-FIN-166"]
+    "claimIds": [
+      "CLM-FIN-171",
+      "CLM-FIN-170",
+      "CLM-FIN-166"
+    ]
   },
   "costs": {
     "toolingNotProvided": "Tooling cost not provided: net figures exclude it.",
     "toolingProvided": "Tooling cost as you provided it.",
     "externalSupport": "External support is not included: net covers internal effort and tooling only (Q10).",
-    "claimIds": ["CLM-FIN-170", "CLM-FIN-134", "CLM-FIN-135"]
+    "claimIds": [
+      "CLM-FIN-170",
+      "CLM-FIN-134",
+      "CLM-FIN-135"
+    ]
   },
   "confidence": {
     "reasons": {
@@ -58,7 +96,9 @@
       "executiveCap": "Executive mode: never above Medium",
       "none": "No lever is quantified"
     },
-    "claimIds": ["CLM-FIN-169"]
+    "claimIds": [
+      "CLM-FIN-169"
+    ]
   },
   "notQuantifiedReasons": {
     "executive_mode": "Quantified in the workshop: executive mode quantifies commitments (LEV-01) and scheduling (LEV-04) only",
@@ -69,28 +109,105 @@
     "evidence_needs_assessment_date": "Identified, not quantified: the assessment date is needed to check the age of the provider-tool export",
     "evidence_older_than_90_days": "Identified, not quantified: the provider-tool export is more than 90 days old",
     "public_cloud_spend_unknown": "Identified, not quantified: in-scope public cloud spend is needed for every public cloud lever and for the global cap",
-    "claimIds": ["CLM-FIN-161", "CLM-FIN-136", "CLM-FIN-069", "CLM-FIN-157"]
+    "claimIds": [
+      "CLM-FIN-161",
+      "CLM-FIN-136",
+      "CLM-FIN-069",
+      "CLM-FIN-157"
+    ]
   },
   "inputs": {
-    "spend.byScope": { "id": "SPEND", "label": "annual spend with each public cloud provider", "question": "SC-04" },
-    "base.computeShare": { "id": "COMPUTE_SHARE", "label": "the compute share of public cloud spend", "question": "VB-01" },
-    "base.steadyStateShare": { "id": "STEADY_STATE_SHARE", "label": "the steady-state share of compute", "question": "VB-01" },
-    "base.nonProdShare": { "id": "NON_PROD_SHARE", "label": "the non-production share of compute", "question": "VB-01" },
-    "base.eligibleCoverage": { "id": "ELIGIBLE_COVERAGE", "label": "today's commitment coverage of eligible usage", "question": "VB-02" },
-    "base.nonProdScheduledShare": { "id": "NON_PROD_SCHEDULED_SHARE", "label": "the share of non-production already scheduled off", "question": "VB-03", "executiveQuestion": "OP-06" },
-    "base.interruptionTolerantShare": { "id": "INTERRUPTION_TOLERANT_SHARE", "label": "the share of compute that tolerates interruption", "question": "VB-03" },
-    "base.spotShare": { "id": "SPOT_SHARE", "label": "the share of tolerant compute already on Spot", "question": "VB-03" },
-    "base.kubernetesSpend": { "id": "KUBERNETES_SPEND", "label": "annual Kubernetes cluster spend", "question": "VB-06" },
-    "base.kubernetesRequestUtilisation": { "id": "KUBERNETES_REQUEST_UTILISATION", "label": "measured used-versus-requested CPU and memory in clusters", "question": "VB-06" },
-    "evidence.providerRecommendations": { "id": "PROVIDER_RECOMMENDATIONS", "label": "a current provider-tool savings export by recommendation type", "question": "VB-05" },
-    "evidence.aiGpu.gpuSpend": { "id": "GPU_SPEND", "label": "annual GPU and model-serving spend", "question": "VB-07" },
-    "evidence.aiGpu.gpuUtilisation": { "id": "GPU_UTILISATION", "label": "measured average GPU utilisation", "question": "VB-07" },
-    "evidence.aiGpu.idleEndpointSpend": { "id": "IDLE_ENDPOINT_SPEND", "label": "spend on idle model endpoints", "question": "VB-07" },
-    "evidence.saasLicence": { "id": "SAAS_LICENCE", "label": "measured unused licence and seat cost", "question": "VB-08" }
+    "spend.byScope": {
+      "id": "SPEND",
+      "label": "annual spend with each public cloud provider",
+      "question": "SC-04"
+    },
+    "base.computeShare": {
+      "id": "COMPUTE_SHARE",
+      "label": "the compute share of public cloud spend",
+      "question": "VB-01"
+    },
+    "base.steadyStateShare": {
+      "id": "STEADY_STATE_SHARE",
+      "label": "the steady-state share of compute",
+      "question": "VB-01"
+    },
+    "base.nonProdShare": {
+      "id": "NON_PROD_SHARE",
+      "label": "the non-production share of compute",
+      "question": "VB-01"
+    },
+    "base.eligibleCoverage": {
+      "id": "ELIGIBLE_COVERAGE",
+      "label": "today's commitment coverage of eligible usage",
+      "question": "VB-02"
+    },
+    "base.nonProdScheduledShare": {
+      "id": "NON_PROD_SCHEDULED_SHARE",
+      "label": "the share of non-production already scheduled off",
+      "question": "VB-03",
+      "executiveQuestion": "OP-06"
+    },
+    "base.interruptionTolerantShare": {
+      "id": "INTERRUPTION_TOLERANT_SHARE",
+      "label": "the share of compute that tolerates interruption",
+      "question": "VB-03"
+    },
+    "base.spotShare": {
+      "id": "SPOT_SHARE",
+      "label": "the share of tolerant compute already on Spot",
+      "question": "VB-03"
+    },
+    "base.kubernetesSpend": {
+      "id": "KUBERNETES_SPEND",
+      "label": "annual Kubernetes cluster spend",
+      "question": "VB-06"
+    },
+    "base.kubernetesRequestUtilisation": {
+      "id": "KUBERNETES_REQUEST_UTILISATION",
+      "label": "measured used-versus-requested CPU and memory in clusters",
+      "question": "VB-06"
+    },
+    "evidence.providerRecommendations": {
+      "id": "PROVIDER_RECOMMENDATIONS",
+      "label": "a current provider-tool savings export by recommendation type",
+      "question": "VB-05"
+    },
+    "evidence.aiGpu.gpuSpend": {
+      "id": "GPU_SPEND",
+      "label": "annual GPU and model-serving spend",
+      "question": "VB-07"
+    },
+    "evidence.aiGpu.gpuUtilisation": {
+      "id": "GPU_UTILISATION",
+      "label": "measured average GPU utilisation",
+      "question": "VB-07"
+    },
+    "evidence.aiGpu.idleEndpointSpend": {
+      "id": "IDLE_ENDPOINT_SPEND",
+      "label": "spend on idle model endpoints",
+      "question": "VB-07"
+    },
+    "evidence.saasLicence": {
+      "id": "SAAS_LICENCE",
+      "label": "measured unused licence and seat cost",
+      "question": "VB-08"
+    },
+    "base.commitmentInstrument": {
+      "id": "COMMITMENT_INSTRUMENT",
+      "label": "the main commitment instrument per provider",
+      "question": "VB-02"
+    }
   },
   "leverFindings": {
-    "severity": { "base": "Medium", "zero": "Low" },
-    "waveByLever": { "LEV-03": 1, "LEV-04": 1 },
+    "severity": {
+      "base": "Medium",
+      "zero": "Low"
+    },
+    "waveByLever": {
+      "LEV-03": 1,
+      "LEV-04": 1
+    },
     "zero": {
       "title": "{lever}: no further value at today's inputs",
       "consequence": "At the inputs given, this lever adds nothing once the levers before it in the sequence are applied.",
@@ -104,7 +221,8 @@
         "zeroTitle": "Commitment discounts: no further commitments until usage changes land",
         "zeroConsequence": "Today's coverage already meets the steady usage that remains once unscheduled non-production and Spot-movable usage are taken out; buying more now would commit to usage the plan removes.",
         "zeroAction": "Do not buy further commitments until scheduling and other usage changes land; re-baseline coverage then",
-        "evidence": "Commitment coverage and utilisation reports for the last 3 months, by provider."
+        "evidence": "Commitment coverage and utilisation reports for the last 3 months, by provider.",
+        "overCoverage": "Coverage is above the steady usage that remains: review commitment renewals and exchanges before buying more."
       },
       "LEV-02": {
         "title": "Rightsizing and modernisation: indicative value from your provider-tool estimate",
@@ -161,20 +279,40 @@
         "evidence": "GPU utilisation and endpoint traffic metrics, last 30 days."
       }
     },
-    "claimIds": ["CLM-FIN-167", "CLM-FIN-122", "CLM-FIN-162"]
+    "claimIds": [
+      "CLM-FIN-167",
+      "CLM-FIN-122",
+      "CLM-FIN-162"
+    ],
+    "excluded": {
+      "title": "{lever}: not worth pursuing at this scale",
+      "action": "Do not start this lever now; re-check it when spend or the inputs change"
+    },
+    "overCoverageTitle": "Commitment coverage above steady usage: stop buying commitments"
   },
   "scopeConfirmation": {
-    "materialLevers": ["LEV-01", "LEV-04"],
-    "severity": { "material": "Medium", "other": "Low" },
+    "materialLevers": [
+      "LEV-01",
+      "LEV-04"
+    ],
+    "severity": {
+      "material": "Medium",
+      "other": "Low"
+    },
     "wave": 1,
     "targetDurationMonths": 3,
     "ownerRole": "FinOps lead",
-    "offeringIds": ["OFF.FIN.ASSESS"],
+    "offeringIds": [
+      "OFF.FIN.ASSESS"
+    ],
     "title": "Confirm {input}",
     "consequence": "Without {input}, {levers} cannot be quantified, so the value range leaves {them} out.",
     "action": "Confirm {input} ({question}) with evidence, then re-run the value range",
     "evidence": "{input}, from billing data or provider reports.",
-    "claimIds": ["CLM-FIN-167", "CLM-FIN-161"]
+    "claimIds": [
+      "CLM-FIN-167",
+      "CLM-FIN-161"
+    ]
   },
   "decision02": {
     "id": "F-FIN-DECISION-02",
@@ -182,20 +320,42 @@
     "severity": "High",
     "ownerRole": "FinOps lead",
     "wave": 2,
-    "offeringIds": ["OFF.FIN.SPRINT", "OFF.FIN.MANAGED"],
+    "offeringIds": [
+      "OFF.FIN.SPRINT",
+      "OFF.FIN.MANAGED"
+    ],
     "title": "Sequence commitments after scheduling and Spot moves",
     "consequence": "Steady usage exceeds today's commitment coverage, but the scheduling and Spot moves in the plan remove all of it; commitments bought now would lock in usage the plan removes.",
     "action": "Agree the sequence: scheduling and Spot moves first, then re-baseline commitment coverage on the usage that remains",
     "evidence": "Commitment coverage and utilisation reports, and the scheduling and Spot plan with dates.",
-    "claimIds": ["CLM-FIN-167", "CLM-FIN-150", "CLM-FIN-160"]
+    "claimIds": [
+      "CLM-FIN-167",
+      "CLM-FIN-150",
+      "CLM-FIN-160"
+    ]
   },
   "hypothesis": {
     "bands": {
-      "lt_5": [0, 0.05],
-      "p5_9": [0.05, 0.09],
-      "p10_19": [0.1, 0.19],
-      "p20_29": [0.2, 0.29],
-      "ge_30": [0.3, null]
+      "lt_5": [
+        0,
+        0.05
+      ],
+      "p5_9": [
+        0.05,
+        0.09
+      ],
+      "p10_19": [
+        0.1,
+        0.19
+      ],
+      "p20_29": [
+        0.2,
+        0.29
+      ],
+      "ge_30": [
+        0.3,
+        null
+      ]
     },
     "explanations": {
       "levers_not_quantified": "Some levers are identified but not quantified; the evidence listed with them would quantify them.",
@@ -204,6 +364,34 @@
       "estimate_at_or_below_model": "Your estimate is at or below the model's expected case; the model rests on the shares and evidence you gave, which validation would confirm."
     },
     "statement": "Your own estimate, shown beside the model for comparison. It is never an input and changes no number.",
-    "claimIds": ["CLM-FIN-168", "CLM-FIN-144"]
+    "claimIds": [
+      "CLM-FIN-168",
+      "CLM-FIN-144"
+    ]
+  },
+  "ramp": {
+    "fromRoadmapStart": true,
+    "rule": "Year-N share = the lever's ramp share x the share of year N left after the month its owning finding starts.",
+    "assumptionId": "ASM-FIN-064",
+    "claimIds": [
+      "CLM-FIN-175",
+      "CLM-FIN-133"
+    ]
+  },
+  "headline": {
+    "rule": "Only levers whose expected net 3-year value, at the margin, is above zero count in the headline; the others are shown as not worth pursuing at this scale, with their figures, and are left out of the totals.",
+    "assumptionId": "ASM-FIN-063",
+    "claimIds": [
+      "CLM-FIN-170"
+    ],
+    "excludedText": "Not worth pursuing at this scale: at the margin its expected 3-year value does not exceed its estimated effort, so it is left out of the headline."
+  },
+  "spend": {
+    "banded": "In-scope public cloud spend is a band; each case uses the band corner that gives its value, so its percentage is of that corner's spend.",
+    "exact": "In-scope public cloud spend as given.",
+    "claimIds": [
+      "CLM-FIN-130",
+      "CLM-FIN-172"
+    ]
   }
 }

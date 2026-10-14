@@ -9,13 +9,19 @@
  * Every number in the value block is a Figure: { field, value, unit, claimIds, assumptionIds }, where `field` is
  * the figure's own path in the result (resolveField(result, field) returns it), so reports can trace each number.
  * Every constant comes from the registries through K(), which records the read for the assumption-register test.
+ * 1.1.0 applies the F4 practice-lead review (F4-review.md): the cap metadata matches the code (H1); Spot counts only
+ * tolerant usage not covered by commitments (H2); scoring uses only figures the report shows (H3); the headline % and
+ * the cap are public cloud only, with SaaS and licensing on their own base (H4, M4); effort only for levers with a
+ * positive expected value, and levers whose marginal net is not positive are left out of the headline (M1); the ramp
+ * starts at the owning finding's start month (M3); the commitment instrument is an input, defaulting to the lower
+ * published maximum (M6).
  */
 import leverLibrary from '../registry/levers.json' with { type: 'json' };
 import thresholds from '../registry/thresholds.json' with { type: 'json' };
 import valueRules from './value-rules.json' with { type: 'json' };
 import type { AnswerLevel, Facts, Mode } from './evaluate';
 
-export const VALUE_MODEL_VERSION = '1.0.0';
+export const VALUE_MODEL_VERSION = '1.1.0';
 
 /* --------------------------------- Constants -------------------------------- */
 
@@ -74,7 +80,8 @@ const SCHEDULE_RATE = 1 - C.scheduleHours / HOURS_IN_WEEK;
 interface LeverConst {
   id: string; name: string; type: string; capability: string; quantifiedIn: string[]; label: string; formula: string; rateFormula: string;
   claimIds: string[]; offeringIds: string[]; ramp: { year1: number | 'renewal_share'; year2: number; year3: number };
-  effort: Record<string, number>; ongoing: number; rateByProvider: Record<string, { rate: number; claimId: string; instrument: string } | null>;
+  effort: Record<string, number>; ongoing: number;
+  rateByProvider: Record<string, { rate: number; claimId: string; instrument: string; instruments?: Record<string, { value: number; claimId: string; label: string }>; defaultInstrument?: string } | null>;
   rate: number | null; rateClaimId: string | null; rampAssumption: string; effortAssumption: string;
 }
 const L = new Map<string, LeverConst>(LEVER_IDS.map(id => {
@@ -84,7 +91,11 @@ const L = new Map<string, LeverConst>(LEVER_IDS.map(id => {
   if (kind === 'published_by_provider') {
     for (const prov of Object.keys(K('levers', `${p}.maxRate.byProvider`))) {
       const q = K('levers', `${p}.maxRate.byProvider.${prov}.quantified`);
-      byProvider[prov] = q ? { rate: K('levers', `${p}.maxRate.byProvider.${prov}.value`), claimId: K('levers', `${p}.maxRate.byProvider.${prov}.source.claimId`), instrument: K('levers', `${p}.maxRate.byProvider.${prov}.instrument`) } : null;
+      const bp = `${p}.maxRate.byProvider.${prov}`;
+      byProvider[prov] = q ? {
+        rate: K('levers', `${bp}.value`), claimId: K('levers', `${bp}.source.claimId`), instrument: K('levers', `${bp}.instrument`),
+        ...(pathGet(leverLibrary, `${bp}.instruments`) ? { instruments: K('levers', `${bp}.instruments`), defaultInstrument: K('levers', `${bp}.defaultInstrument`) } : {})
+      } : null;
     }
   }
   const rate = kind === 'evidence' ? K('levers', `${p}.maxRate.value`) : kind === 'arithmetic' ? SCHEDULE_RATE : null;
@@ -150,6 +161,8 @@ export interface ValueModelContext {
   hypothesis: string | undefined;
   /** DECISION-01 is raised: no accountable owner, so the team cost is shown beside the value (Q12). */
   decision01Raised: boolean;
+  /** Roadmap start month of the finding that owns each lever (F4 review M3); the ramp starts there. */
+  leverStartMonth: Record<string, number>;
 }
 
 type Status = { ok: true } | { ok: false; reason: string; blockedBy: string[]; detail?: string[] };
@@ -167,6 +180,10 @@ interface Prepared {
   gpuInsideK8s: boolean;
   /** Inputs each quantified lever reads (for corners and confidence). */
   uses: Map<string, string[]>;
+  /** LEV-01 rate per provider: the stated instrument's published maximum, else the lower one (F4 review M6). */
+  commitRate: Map<string, { rate: number; claimId: string; instrument: string; stated: boolean }>;
+  /** Quantified levers left out of the headline: their marginal net is not positive (F4 review M1). */
+  excluded: Set<string>;
 }
 
 const RECOMMENDATION_GROUPS: Record<string, string[]> = { 'LEV-02': ['rightsizing', 'modernisation'], 'LEV-03': ['idle'], 'LEV-05': ['storage'] };
@@ -250,7 +267,7 @@ function prepare(ctx: ValueModelContext, schedLevel?: AnswerLevel): Prepared {
         if (gpuOutsideK8s) need.push('evidence.aiGpu.gpuSpend');
         break;
       case 'LEV-02': need.push('base.computeShare'); break;
-      case 'LEV-06': need.push('base.computeShare', 'base.interruptionTolerantShare', 'base.spotShare'); break;
+      case 'LEV-06': need.push('base.computeShare', 'base.interruptionTolerantShare', 'base.spotShare', 'base.eligibleCoverage'); break;
       case 'LEV-07': need.push('base.kubernetesSpend', 'base.kubernetesRequestUtilisation'); break;
       case 'LEV-10':
         if (gpuInsideK8s) need.push('evidence.aiGpu.idleEndpointSpend');
@@ -265,7 +282,16 @@ function prepare(ctx: ValueModelContext, schedLevel?: AnswerLevel): Prepared {
     status.set(id, { ok: true });
     uses.set(id, [...(isCloud ? spendPaths : []), ...need, ...optional.filter(p => inputs.has(p))]);
   }
-  return { ctx, providers, inputs, status, ratedProviders, unsourcedProviders, evidence, k8sInScope, gpuOutsideK8s, gpuInsideK8s, uses };
+  const commitRate: Prepared['commitRate'] = new Map();
+  const stated: any = base.commitmentInstrument ?? {};
+  for (const p of ratedProviders.get('LEV-01') ?? []) {
+    const r = L.get('LEV-01')!.rateByProvider[p]!;
+    const chosen = r.instruments?.[stated[p]];
+    const fallback = r.instruments?.[r.defaultInstrument!];
+    const pick = chosen ?? fallback;
+    commitRate.set(p, pick ? { rate: pick.value, claimId: pick.claimId, instrument: pick.label, stated: !!chosen } : { rate: r.rate, claimId: r.claimId, instrument: r.instrument, stated: false });
+  }
+  return { ctx, providers, inputs, status, ratedProviders, unsourcedProviders, evidence, k8sInScope, gpuOutsideK8s, gpuInsideK8s, uses, commitRate, excluded: new Set() };
 }
 
 /* -------------------------------- Calculation ------------------------------- */
@@ -277,7 +303,7 @@ const clamp01 = (x: number) => Math.min(1, Math.max(0, x));
 
 /** One case at one point (DESIGN.md 10.4): usage levers, then Spot, then commitments on what remains. */
 function compute(pp: Prepared, point: Record<string, number>, factor: number): CaseRaw {
-  const q = (id: string) => pp.status.get(id)?.ok === true;
+  const q = (id: string) => pp.status.get(id)?.ok === true && !pp.excluded.has(id);
   const v = (path: string) => point[path];
   const levers = new Map<string, LeverRaw>();
   const P = pp.providers.reduce((t, p) => t + (v(`spend.byScope.${p}`) ?? 0), 0);
@@ -323,7 +349,9 @@ function compute(pp: Prepared, point: Record<string, number>, factor: number): C
   // Rate levers on compute left after the usage levers that remove compute (LEV-02, 03, 07, 10), spread pro rata to P_c.
   const removed = val('LEV-02') + val('LEV-03') + val('LEV-07') + val('LEV-10');
   const left = Pc > 0 ? clamp01(1 - removed / Pc) : 0;
-  const tol = Math.max(0, (v('base.interruptionTolerantShare') ?? 0) - (v('base.spotShare') ?? 0));
+  // Only tolerant usage not already covered by commitments moves to Spot (F4 review H2, ASM-FIN-061): covered usage
+  // is billed below on-demand and its commitment cannot simply be released.
+  const tol = Math.max(0, (v('base.interruptionTolerantShare') ?? 0) - (v('base.spotShare') ?? 0)) * (1 - (v('base.eligibleCoverage') ?? 0));
   const spotFor = new Set(q('LEV-06') ? pp.ratedProviders.get('LEV-06') : []);
   if (q('LEV-06')) {
     const rates = pp.ratedProviders.get('LEV-06')!.map(p => ({ provider: p, rate: L.get('LEV-06')!.rateByProvider[p]!.rate, base: (v(`spend.byScope.${p}`) * cs) * tol * left }));
@@ -335,7 +363,7 @@ function compute(pp: Prepared, point: Record<string, number>, factor: number): C
     const nu = np * (1 - (sched ?? 0));
     const S = v('base.steadyStateShare'), Cv = v('base.eligibleCoverage');
     const rates = pp.ratedProviders.get('LEV-01')!.map(p => ({
-      provider: p, rate: L.get('LEV-01')!.rateByProvider[p]!.rate,
+      provider: p, rate: pp.commitRate.get(p)!.rate,
       base: (v(`spend.byScope.${p}`) * cs) * Math.max(0, S - Cv - nu - (spotFor.has(p) ? tol : 0)) * left
     }));
     set('LEV-01', rates.reduce((t, r) => t + r.base, 0), rates.reduce((t, r) => t + r.base * r.rate, 0), rates.map(r => ({ provider: r.provider, rate: r.rate })));
@@ -391,17 +419,26 @@ export interface LeverCase {
 export interface LeverValue {
   id: string; name: string; type: string; capability: string;
   status: 'quantified' | 'not_quantified'; reason: string | null; reasonText: string | null; blockedBy: string[];
+  /** Counted in the headline totals (false for a lever not worth pursuing at this scale, M1). */
+  inHeadline: boolean;
+  exclusion: { statement: string; expectedRunRate: Figure; oneOffCost: Figure; marginalNet3Year: Figure } | null;
   formula: string; rateFormula: string; basisLine: string;
   inputs: Array<{ fact: string; kind: InputKind; value: Figure; low: Figure | null; high: Figure | null }>;
-  maxRate: Array<{ provider: string; rate: Figure; instrument: string | null }>;
+  maxRate: Array<{ provider: string; rate: Figure; instrument: string | null; instrumentStated: boolean | null }>;
   unsourcedProviders: string[];
+  /** Roadmap start month of the finding that owns the lever; the ramp starts there (M3). */
+  startMonth: Figure | null;
   cases: Record<Case, LeverCase> | null;
   effortFteMonths: Figure | null;
+  /** What the severity uplift compares (H3, M4): the shown expected net run-rate as a share of the lever's base. */
+  scoring: { comparisonBase: Figure; comparisonBaseLabel: string; netShareOfBase: Figure; upliftReached: boolean } | null;
   confidence: 'High' | 'Medium' | 'Low' | null; confidenceReason: string | null;
   claimIds: string[]; assumptionIds: string[]; offeringIds: string[];
 }
 export interface CaseTotals {
-  P: Figure; grossRunRate: Figure; pctOfP: Figure; grossYear1: Figure; grossYear2: Figure; grossYear3: Figure; gross3Year: Figure;
+  P: Figure; grossRunRate: Figure; cloudRunRate: Figure; pctOfP: Figure;
+  saasLicensing: { runRate: Figure; base: Figure | null; baseLabel: string; pctOfBase: Figure | null } | null;
+  grossYear1: Figure; grossYear2: Figure; grossYear3: Figure; gross3Year: Figure;
   oneOffCost: Figure; leverRunCost: Figure; toolingCost: Figure; annualRunCost: Figure;
   netYear1: Figure; netYear2: Figure; netYear3: Figure; netRunRate: Figure; net3Year: Figure;
   cloudBeforeCap: Figure; cap: Figure; capBinding: boolean; capScale: Figure;
@@ -410,12 +447,14 @@ export interface ValueBlock {
   version: string;
   status: 'quantified' | 'not_quantified';
   moneyShown: boolean;
-  label: string; detail: string; notice: string | null;
+  label: string; detail: string; notice: string | null; headlineRule: string;
   currency: string;
+  /** In-scope public cloud spend once, as a band when banded (M5); each case's P is the corner that case uses. */
+  spend: { P: Figure; low: Figure | null; high: Figure | null; banded: boolean; statement: string; claimIds: string[] } | null;
   levers: LeverValue[];
   totals: Record<Case, CaseTotals> | null;
   globalCap: {
-    share: Figure; appliesTo: string[]; excludedLevers: string[]; statement: string;
+    share: Figure; appliesTo: string[]; liftedBy: string; excludedLevers: string[]; statement: string;
     source: { claimId: string; citation: string; url: string; year: string; sample: string; checked: string; assumptionId: string };
     claimIds: string[];
   };
@@ -429,18 +468,17 @@ export interface ValueBlock {
   };
   notQuantified: Array<{ lever: string; name: string; reason: string; reasonText: string; blockedBy: string[]; evidenceNeeded: string; claimIds: string[] }>;
   bands: { searched: string[]; fixedAtMidpoint: string[]; corners: Record<'conservative' | 'upper', Array<{ fact: string; value: Figure }>> | null; claimIds: string[] };
-  scoring: { severityUpliftShareOfP: Figure; needModifierShareOfP: Figure; moreMatureOptions: boolean; claimIds: string[] };
+  scoring: { severityUpliftShareOfP: Figure; needModifierShareOfP: Figure; rule: string; claimIds: string[] };
   claimIds: string[];
 }
 
+/** What scoring may use: only figures the report shows, at the client's own answers (F4 review H3). */
 export interface Scoring {
-  /** In-scope public cloud spend at the midpoints (P), when known. */
-  P: number | null;
-  /** Expected run-rate value per lever after the cap, gross and net of the lever's run cost (gross without a rate). */
-  byLever: Map<string, { gross: number; net: number }>;
-  totalExpected: number | null;
-  upliftShare: number;
-  needShare: number;
+  /** Per headline lever: whether its shown net share of base reaches the uplift, and the figure that says so. */
+  byLever: Map<string, { reached: boolean; field: string }>;
+  /** The need modifier: reached on the shown expected public cloud % of P; null when no value is shown. */
+  need: { reached: boolean; field: string; thresholdField: string } | null;
+  upliftThresholdField: string;
 }
 export interface ValueModelOutput {
   value: ValueBlock;
@@ -449,7 +487,14 @@ export interface ValueModelOutput {
   decision02: boolean;
   /** Levers blocked by an unknown input, keyed by the input (for scope-confirmation findings). */
   blocking: Map<string, string[]>;
+  /** Quantified levers (headline and excluded). */
   quantified: string[];
+  /** Quantified levers left out of the headline (M1). */
+  excluded: string[];
+  /** Quantified levers with no value at the client's inputs (expected zero), for the finding wording. */
+  zero: string[];
+  /** Coverage above steady usage (LEV-01 advice, M2). */
+  overCoverage: boolean;
 }
 
 const fill = (template: string, values: Record<string, string | number>) => template.replace(/\{(\w+)\}/g, (_, k) => String(values[k] ?? ''));
@@ -476,6 +521,13 @@ function leverConfidence(pp: Prepared, id: string): { level: 'High' | 'Medium' |
   return { level, reason };
 }
 
+/** Share of year N (1, 2, 3) a lever earns: its ramp share times the part of that year left after it starts (M3). */
+function yearShare(id: string, year: 1 | 2 | 3, start: number, y1: number): number {
+  const lc = L.get(id)!;
+  const ramp = year === 1 ? y1 : year === 2 ? lc.ramp.year2 : lc.ramp.year3;
+  return ramp * clamp01((12 * year - start) / 12);
+}
+
 /** Builds the value block, the scoring values and DECISION-02 (DESIGN.md 10). */
 export function buildValueModel(ctx: ValueModelContext): ValueModelOutput {
   const pp = prepare(ctx);
@@ -484,52 +536,98 @@ export function buildValueModel(ctx: ValueModelContext): ValueModelOutput {
   const rate = pp.inputs.get('cost.internalRate');
   const tooling = pp.inputs.get('cost.tooling');
   const moneyShown = !!rate && quantified.length > 0;
+  const V = 'value';
+  const tier = String(ctx.tier);
+  const effortOf = (id: string) => L.get(id)!.effort[tier];
+  const startOf = (id: string) => ctx.leverStartMonth[id] ?? 0;
+  const ramp1 = (id: string, c: Case) => { const y = L.get(id)!.ramp.year1; return y === 'renewal_share' ? renewalShare(pp, c) : y; };
+  const scaled = (raw: CaseRaw, id: string) => (raw.levers.get(id)?.value ?? 0) * (CLOUD_EXCLUDED.has(id) ? 1 : raw.scale);
+
+  // M1: a lever whose expected 3-year value at the margin does not exceed its effort is left out of the headline.
+  // Greedy: remove the lever with the lowest marginal net while it is not positive. Levers worth zero stay (no cost).
+  const exclusions = new Map<string, { value: number; oneOff: number; marginal: number }>();
+  if (moneyShown) {
+    const mid = midpoint(pp);
+    const netOf = (excl: Set<string>) => {
+      const raw = compute({ ...pp, excluded: excl }, mid, C.expectedFactor);
+      let net = 0;
+      for (const id of raw.levers.keys()) {
+        const v = scaled(raw, id);
+        const s = startOf(id);
+        net += v * (yearShare(id, 1, s, ramp1(id, 'expected')) + yearShare(id, 2, s, 0) + yearShare(id, 3, s, 0));
+        if (v > 0) net -= effortOf(id) * rate!.mid * (1 + 3 * L.get(id)!.ongoing);
+      }
+      return { net, raw };
+    };
+    for (;;) {
+      const { net, raw } = netOf(pp.excluded);
+      let worst: { id: string; marginal: number } | null = null;
+      for (const id of raw.levers.keys()) {
+        if (scaled(raw, id) <= 0) continue;
+        const marginal = net - netOf(new Set([...pp.excluded, id])).net;
+        if (!worst || marginal < worst.marginal) worst = { id, marginal };
+      }
+      if (!worst || worst.marginal > 0) break;
+      exclusions.set(worst.id, { value: scaled(raw, worst.id), oneOff: effortOf(worst.id) * rate!.mid, marginal: worst.marginal });
+      pp.excluded.add(worst.id);
+    }
+  }
+  const headline = quantified.filter(id => !pp.excluded.has(id));
   const solved = moneyShown ? solve(pp) : null;
   const mid = compute(pp, midpoint(pp), C.expectedFactor);
-  const V = 'value';
 
-  // Costs (10.6): effort for every lever with a positive upper value; banded rate: conservative high, upper low.
-  const tier = String(ctx.tier);
-  const active = solved ? quantified.filter(id => (solved.upper.levers.get(id)?.upper ?? 0) > 0) : [];
-  const effortOf = (id: string) => L.get(id)!.effort[tier];
+  // Costs (10.6, M1): effort only for headline levers with a positive expected value; banded rate: conservative high.
+  const active = solved ? headline.filter(id => scaled(solved.expected, id) > 0) : [];
   const rateFor = (c: Case) => (!rate ? 0 : c === 'conservative' ? rate.high : c === 'upper' ? rate.low : rate.mid);
   const toolingFor = (c: Case) => (!tooling ? 0 : c === 'conservative' ? tooling.high : c === 'upper' ? tooling.low : tooling.mid);
 
-  // Phasing safeguard (ASM-FIN-042): corners are chosen on run-rate, so a lower case could ramp faster than the case
-  // above it. Its year-1 figures are then lowered pro rata to the year-1 of the case above, never raised.
-  const ramp1 = (id: string, c: Case) => { const y = L.get(id)!.ramp.year1; return y === 'renewal_share' ? renewalShare(pp, c) : y; };
+  // Phasing safeguard (ASM-FIN-042): a lower case's year 1 never exceeds the year 1 of the case above (lowered pro rata).
   const y1Scale: Record<Case, number> = { conservative: 1, expected: 1, upper: 1 };
   if (solved) {
-    const y1Of = (c: Case, m: number) => quantified.reduce((t, id) => {
-      const l = solved[c].levers.get(id)!;
-      return t + money(money(l.value * (CLOUD_EXCLUDED.has(id) ? 1 : solved[c].scale)) * ramp1(id, c) * m);
-    }, 0);
+    const y1Of = (c: Case, m: number) => headline.reduce((t, id) => t + money(money(money(scaled(solved[c], id)) * yearShare(id, 1, startOf(id), ramp1(id, c))) * m), 0);
     const up = y1Of('upper', 1), ex = y1Of('expected', 1);
     if (ex > up && ex > 0) y1Scale.expected = up / ex;
     const ex2 = y1Of('expected', y1Scale.expected), co = y1Of('conservative', 1);
     if (co > ex2 && co > 0) y1Scale.conservative = ex2 / co;
   }
 
+  // Comparison bases for the severity uplift (M4): P for public cloud levers; SaaS and licensing spend for LEV-09.
+  const Pmid = solved ? solved.expected.P : mid.P;
+  const saasBase = saasLicensingBase(f);
+
   const levers: LeverValue[] = LEVER_IDS.filter(id => ctx.leversInScope.includes(id)).map(id => {
     const lc = L.get(id)!;
     const st = pp.status.get(id)!;
     const path = `${V}.levers[${id}]`;
-    const asm = uniq(['ASM-FIN-040', 'ASM-FIN-041', 'ASM-FIN-042', lc.rampAssumption, lc.effortAssumption, ...(id === 'LEV-04' ? ['ASM-FIN-043'] : []), ...(['LEV-07', 'LEV-10'].includes(id) ? ['ASM-FIN-044'] : []), ...(['LEV-02', 'LEV-03', 'LEV-05'].includes(id) ? ['ASM-FIN-048'] : []), ...(id === 'LEV-01' ? ['ASM-FIN-049'] : []), ...(id === 'LEV-01' || id === 'LEV-04' ? (ctx.mode === 'executive' ? ['ASM-FIN-052'] : []) : []), ...(CLOUD_EXCLUDED.has(id) ? [] : ['ASM-FIN-050'])]);
-    const claims = uniq([...lc.claimIds, 'CLM-FIN-128', 'CLM-FIN-129', 'CLM-FIN-130', 'CLM-FIN-160', 'CLM-FIN-161']);
-    // Published (rate levers, per provider), arithmetic (LEV-04) or evidence (100%) maxima; LEV-07 and LEV-10 use a
-    // formula on measured utilisation, so their rate is shown per case.
+    const asm = uniq(['ASM-FIN-040', 'ASM-FIN-041', 'ASM-FIN-042', lc.rampAssumption, 'ASM-FIN-064', lc.effortAssumption, ...(id === 'LEV-04' ? ['ASM-FIN-043'] : []), ...(['LEV-07', 'LEV-10'].includes(id) ? ['ASM-FIN-044'] : []), ...(['LEV-02', 'LEV-03', 'LEV-05'].includes(id) ? ['ASM-FIN-048'] : []), ...(id === 'LEV-01' ? ['ASM-FIN-049', 'ASM-FIN-062'] : []), ...(id === 'LEV-06' || id === 'LEV-01' ? ['ASM-FIN-061'] : []), ...(id === 'LEV-01' || id === 'LEV-04' ? (ctx.mode === 'executive' ? ['ASM-FIN-052'] : []) : []), ...(CLOUD_EXCLUDED.has(id) ? [] : ['ASM-FIN-050'])]);
+    const claims = uniq([...lc.claimIds, 'CLM-FIN-128', 'CLM-FIN-129', 'CLM-FIN-130', 'CLM-FIN-160', 'CLM-FIN-161', ...(id === 'LEV-06' ? ['CLM-FIN-174'] : []), ...(id === 'LEV-01' ? ['CLM-FIN-176'] : [])]);
+    // Published (rate levers, per provider; LEV-01 at the stated or the lower instrument), arithmetic (LEV-04) or
+    // evidence (100%) maxima; LEV-07 and LEV-10 use a formula on measured utilisation, so their rate is shown per case.
     const maxRate: LeverValue['maxRate'] = lc.type === 'rate'
-      ? (pp.ratedProviders.get(id) ?? []).map(p => ({ provider: p, rate: fig(`${path}.maxRate[${p}].rate`, lc.rateByProvider[p]!.rate, 'share', [lc.rateByProvider[p]!.claimId, ...claims], asm), instrument: lc.rateByProvider[p]!.instrument }))
-      : lc.rate !== null ? [{ provider: 'all', rate: fig(`${path}.maxRate[all].rate`, share(lc.rate), 'share', [lc.rateClaimId ?? lc.claimIds[0], ...claims], asm), instrument: null }]
+      ? (pp.ratedProviders.get(id) ?? []).map(p => {
+        const cr = id === 'LEV-01' ? pp.commitRate.get(p)! : null;
+        const r = lc.rateByProvider[p]!;
+        return { provider: p, rate: fig(`${path}.maxRate[${p}].rate`, cr ? cr.rate : r.rate, 'share', [cr ? cr.claimId : r.claimId, ...claims], asm), instrument: cr ? cr.instrument : r.instrument, instrumentStated: cr ? cr.stated : null };
+      })
+      : lc.rate !== null ? [{ provider: 'all', rate: fig(`${path}.maxRate[all].rate`, share(lc.rate), 'share', [lc.rateClaimId ?? lc.claimIds[0], ...claims], asm), instrument: null, instrumentStated: null }]
       : [];
+    const ex = exclusions.get(id);
     const out: LeverValue = {
       id, name: lc.name, type: lc.type, capability: lc.capability,
-      status: st.ok ? 'quantified' : 'not_quantified', reason: st.ok ? null : st.reason, reasonText: st.ok ? null : reasonText(st, id),
+      status: st.ok ? 'quantified' : 'not_quantified', reason: st.ok ? null : st.reason, reasonText: st.ok ? null : reasonText(st),
       blockedBy: st.ok ? [] : st.blockedBy,
+      inHeadline: st.ok && !ex,
+      exclusion: ex ? {
+        statement: VR.headline.excludedText,
+        expectedRunRate: fig(`${path}.exclusion.expectedRunRate`, money(ex.value), 'currency', claims, asm),
+        oneOffCost: fig(`${path}.exclusion.oneOffCost`, cost(ex.oneOff), 'currency', ['CLM-FIN-134', 'CLM-FIN-170'], [lc.effortAssumption, 'ASM-FIN-063']),
+        marginalNet3Year: fig(`${path}.exclusion.marginalNet3Year`, Math.round(ex.marginal), 'currency', ['CLM-FIN-170'], ['ASM-FIN-063', lc.effortAssumption, lc.rampAssumption])
+      } : null,
       formula: lc.formula, rateFormula: lc.rateFormula, basisLine: lc.label,
       inputs: [], maxRate,
       unsourcedProviders: pp.unsourcedProviders.get(id) ?? [],
-      cases: null, effortFteMonths: null, confidence: null, confidenceReason: null,
+      startMonth: st.ok ? fig(`${path}.startMonth`, startOf(id), 'ratio', ['CLM-FIN-175', 'CLM-FIN-122'], ['ASM-FIN-064', 'ASM-FIN-005']) : null,
+      cases: null, effortFteMonths: null, scoring: null, confidence: null, confidenceReason: null,
       claimIds: claims, assumptionIds: asm, offeringIds: [...lc.offeringIds]
     };
     if (!st.ok) return out;
@@ -544,7 +642,7 @@ export function buildValueModel(ctx: ValueModelContext): ValueModelOutput {
       return { fact: p, kind: i.kind, value: fig(`${ip}.value`, r(i.mid), unit, ids, ['ASM-FIN-042']),
         low: banded(i) ? fig(`${ip}.low`, r(i.low), unit, ids, ['ASM-FIN-042']) : null, high: banded(i) ? fig(`${ip}.high`, r(i.high), unit, ids, ['ASM-FIN-042']) : null };
     });
-    if (!solved) return out;
+    if (!solved || ex) return out;
     out.effortFteMonths = fig(`${path}.effortFteMonths`, active.includes(id) ? effortOf(id) : 0, 'fte_months', ['CLM-FIN-134', 'CLM-FIN-170'], [lc.effortAssumption]);
     const cases = {} as Record<Case, LeverCase>;
     for (const c of CASES) {
@@ -553,9 +651,11 @@ export function buildValueModel(ctx: ValueModelContext): ValueModelOutput {
       const cp = `${path}.cases.${c}`;
       const scale = CLOUD_EXCLUDED.has(id) ? 1 : raw.scale;
       const runRate = money(l.value * scale);
-      const y1 = ramp1(id, c) * y1Scale[c];
-      const ramp = ['CLM-FIN-133', ...claims];
-      const year1 = money(money(runRate * ramp1(id, c)) * y1Scale[c]), year2 = money(runRate * lc.ramp.year2), year3 = money(runRate * lc.ramp.year3);
+      const s = startOf(id);
+      const y1 = yearShare(id, 1, s, ramp1(id, c)) * y1Scale[c];
+      const ramp = ['CLM-FIN-133', 'CLM-FIN-175', ...claims];
+      const year1 = money(money(runRate * yearShare(id, 1, s, ramp1(id, c))) * y1Scale[c]);
+      const year2 = money(runRate * yearShare(id, 2, s, 0)), year3 = money(runRate * yearShare(id, 3, s, 0));
       const runCost = rate && active.includes(id) ? cost(effortOf(id) * lc.ongoing * rateFor(c)) : 0;
       cases[c] = {
         factor: fig(`${cp}.factor`, raw.factor, 'ratio', ['CLM-FIN-128', 'CLM-FIN-129'], ['ASM-FIN-040', 'ASM-FIN-041']),
@@ -565,7 +665,7 @@ export function buildValueModel(ctx: ValueModelContext): ValueModelOutput {
         beforeGlobalCap: fig(`${cp}.beforeGlobalCap`, money(l.value), 'currency', claims, asm),
         globalCapScale: fig(`${cp}.globalCapScale`, share(scale), 'ratio', ['CLM-FIN-138', 'CLM-FIN-040'], ['ASM-FIN-050']),
         runRate: fig(`${cp}.runRate`, runRate, 'currency', claims, asm),
-        year1Share: fig(`${cp}.year1Share`, share(y1), 'share', ramp, [lc.rampAssumption, ...(y1Scale[c] < 1 ? ['ASM-FIN-042'] : [])]),
+        year1Share: fig(`${cp}.year1Share`, share(y1), 'share', ramp, [lc.rampAssumption, 'ASM-FIN-064', ...(y1Scale[c] < 1 ? ['ASM-FIN-042'] : [])]),
         year1: fig(`${cp}.year1`, year1, 'currency', ramp, [...asm, lc.rampAssumption]),
         year2: fig(`${cp}.year2`, year2, 'currency', ramp, [...asm, lc.rampAssumption]),
         year3: fig(`${cp}.year3`, year3, 'currency', ramp, [...asm, lc.rampAssumption]),
@@ -575,10 +675,23 @@ export function buildValueModel(ctx: ValueModelContext): ValueModelOutput {
       };
     }
     out.cases = cases;
+    // H3, M4: the uplift compares the shown expected net run-rate with the lever's own base, as a shown share.
+    const isSaas = CLOUD_EXCLUDED.has(id);
+    const baseValue = isSaas ? saasBase?.value ?? null : Pmid;
+    if (baseValue !== null && baseValue > 0) {
+      const sp = `${path}.scoring`;
+      const netShare = share(cases.expected.netRunRate!.value / baseValue);
+      out.scoring = {
+        comparisonBase: fig(`${sp}.comparisonBase`, money(baseValue), 'currency', ['CLM-FIN-172', 'CLM-FIN-122'], ['ASM-FIN-056']),
+        comparisonBaseLabel: isSaas ? saasBase!.label : VR.scoring.comparisonBases.cloud,
+        netShareOfBase: fig(`${sp}.netShareOfBase`, netShare, 'share', ['CLM-FIN-172', 'CLM-FIN-122', ...claims], ['ASM-FIN-056', 'ASM-FIN-005']),
+        upliftReached: netShare >= C.upliftShare
+      };
+    }
     return out;
   });
 
-  // Totals per case, with the global cap shown with its source.
+  // Totals per case: the headline levers; the 29% cap and the % of P on public cloud levers only (H4).
   let totals: ValueBlock['totals'] = null;
   if (solved) {
     totals = {} as Record<Case, CaseTotals>;
@@ -586,24 +699,36 @@ export function buildValueModel(ctx: ValueModelContext): ValueModelOutput {
     for (const c of CASES) {
       const tp = `${V}.totals.${c}`;
       const raw = solved[c];
-      const sumOf = (k: keyof LeverCase) => levers.reduce((t, l) => t + (l.cases ? (l.cases[c][k] as Figure | null)?.value ?? 0 : 0), 0);
+      const inHead = levers.filter(l => l.cases);
+      const sumOf = (k: keyof LeverCase, ls = inHead) => ls.reduce((t, l) => t + ((l.cases![c][k] as Figure | null)?.value ?? 0), 0);
       const gross = sumOf('runRate'), y1 = sumOf('year1'), y2 = sumOf('year2'), y3 = sumOf('year3');
+      const cloudLevers = inHead.filter(l => !CLOUD_EXCLUDED.has(l.id));
+      const saasLevers = inHead.filter(l => CLOUD_EXCLUDED.has(l.id));
+      const cloud = sumOf('runRate', cloudLevers);
       const oneOff = active.reduce((t, id) => t + cost(effortOf(id) * rateFor(c)), 0);
       const leverRun = sumOf('runCost');
       const tool = cost(toolingFor(c));
       const run = leverRun + tool;
-      const all = uniq(levers.flatMap(l => (l.cases ? l.claimIds : [])));
-      const allAsm = uniq(levers.flatMap(l => (l.cases ? l.assumptionIds : [])));
+      const all = uniq(['CLM-FIN-160', 'CLM-FIN-161', 'CLM-FIN-170', ...inHead.flatMap(l => l.claimIds)]);
+      const allAsm = uniq(['ASM-FIN-063', ...inHead.flatMap(l => l.assumptionIds)]);
       const costIds = ['CLM-FIN-134', 'CLM-FIN-135', 'CLM-FIN-170'];
+      const saasRun = sumOf('runRate', saasLevers);
       totals[c] = {
-        P: fig(`${tp}.P`, money(raw.P), 'currency', ['CLM-FIN-150', 'CLM-FIN-130'], ['ASM-FIN-042']),
+        P: fig(`${tp}.P`, money(raw.P), 'currency', ['CLM-FIN-150', 'CLM-FIN-130'], ['ASM-FIN-042', 'ASM-FIN-082']),
         grossRunRate: fig(`${tp}.grossRunRate`, gross, 'currency', all, allAsm),
-        pctOfP: fig(`${tp}.pctOfP`, pct(gross, raw.P), 'percent', all, allAsm),
-        grossYear1: fig(`${tp}.grossYear1`, y1, 'currency', ['CLM-FIN-133', ...all], ['ASM-FIN-045', ...allAsm]),
-        grossYear2: fig(`${tp}.grossYear2`, y2, 'currency', ['CLM-FIN-133', ...all], ['ASM-FIN-045', ...allAsm]),
-        grossYear3: fig(`${tp}.grossYear3`, y3, 'currency', ['CLM-FIN-133', ...all], ['ASM-FIN-045', ...allAsm]),
+        cloudRunRate: fig(`${tp}.cloudRunRate`, cloud, 'currency', [...all, ...capClaims], allAsm),
+        pctOfP: fig(`${tp}.pctOfP`, pct(cloud, raw.P), 'percent', [...all, ...capClaims], allAsm),
+        saasLicensing: saasLevers.length ? {
+          runRate: fig(`${tp}.saasLicensing.runRate`, saasRun, 'currency', ['CLM-FIN-158'], ['ASM-FIN-085']),
+          base: saasBase ? fig(`${tp}.saasLicensing.base`, money(saasBase.value), 'currency', ['CLM-FIN-158', 'CLM-FIN-172'], ['ASM-FIN-056']) : null,
+          baseLabel: saasBase?.label ?? 'not given',
+          pctOfBase: saasBase && saasBase.value > 0 ? fig(`${tp}.saasLicensing.pctOfBase`, pct(saasRun, saasBase.value), 'percent', ['CLM-FIN-158', 'CLM-FIN-172'], ['ASM-FIN-056']) : null
+        } : null,
+        grossYear1: fig(`${tp}.grossYear1`, y1, 'currency', ['CLM-FIN-133', 'CLM-FIN-175', ...all], ['ASM-FIN-045', 'ASM-FIN-064', ...allAsm]),
+        grossYear2: fig(`${tp}.grossYear2`, y2, 'currency', ['CLM-FIN-133', 'CLM-FIN-175', ...all], ['ASM-FIN-045', 'ASM-FIN-064', ...allAsm]),
+        grossYear3: fig(`${tp}.grossYear3`, y3, 'currency', ['CLM-FIN-133', 'CLM-FIN-175', ...all], ['ASM-FIN-045', 'ASM-FIN-064', ...allAsm]),
         gross3Year: fig(`${tp}.gross3Year`, y1 + y2 + y3, 'currency', ['CLM-FIN-133', 'CLM-FIN-139', ...all], ['ASM-FIN-045', 'ASM-FIN-051', ...allAsm]),
-        oneOffCost: fig(`${tp}.oneOffCost`, oneOff, 'currency', costIds, ['ASM-FIN-046', 'ASM-FIN-059']),
+        oneOffCost: fig(`${tp}.oneOffCost`, oneOff, 'currency', costIds, ['ASM-FIN-046', 'ASM-FIN-059', 'ASM-FIN-063']),
         leverRunCost: fig(`${tp}.leverRunCost`, leverRun, 'currency', costIds, ['ASM-FIN-047', 'ASM-FIN-059']),
         toolingCost: fig(`${tp}.toolingCost`, tool, 'currency', costIds, ['ASM-FIN-081']),
         annualRunCost: fig(`${tp}.annualRunCost`, run, 'currency', costIds, ['ASM-FIN-047', 'ASM-FIN-081']),
@@ -620,21 +745,28 @@ export function buildValueModel(ctx: ValueModelContext): ValueModelOutput {
     }
   }
 
-  // Confidence (10.7): the levers carrying more than half of the expected value.
   const confidence = overallConfidence(levers, ctx.mode);
 
-  // Scoring values (5.3 step 3, 9): executive mode takes the highest value at the OP-06 answer or a more mature one.
-  const scoring = scoringValues(pp, mid, rate, ctx);
+  // Scoring (H3): only shown figures at the client's own answers.
+  const byLever = new Map<string, { reached: boolean; field: string }>();
+  for (const l of levers) if (l.scoring) byLever.set(l.id, { reached: l.scoring.upliftReached, field: l.scoring.netShareOfBase.field });
+  const scoring: Scoring = {
+    byLever,
+    need: totals ? { reached: totals.expected.pctOfP.value >= C.needShare * 100, field: totals.expected.pctOfP.field, thresholdField: `${V}.scoring.needModifierShareOfP` } : null,
+    upliftThresholdField: `${V}.scoring.severityUpliftShareOfP`
+  };
 
   // DECISION-02 at the midpoints: steady usage above coverage exists, but n_u and t_u remove all of it for a provider.
-  let decision02 = false;
+  let decision02 = false, overCoverage = false;
   if (pp.status.get('LEV-01')?.ok) {
     const m = midpoint(pp);
     const S = m['base.steadyStateShare'], Cv = m['base.eligibleCoverage'];
     const nu = m['base.nonProdShare'] * (1 - (m['base.nonProdScheduledShare'] ?? 0));
-    const tol = pp.status.get('LEV-06')?.ok ? Math.max(0, (m['base.interruptionTolerantShare'] ?? 0) - (m['base.spotShare'] ?? 0)) : 0;
-    const spot = new Set(pp.status.get('LEV-06')?.ok ? pp.ratedProviders.get('LEV-06') : []);
+    const spotOk = pp.status.get('LEV-06')?.ok && !pp.excluded.has('LEV-06');
+    const tol = spotOk ? Math.max(0, (m['base.interruptionTolerantShare'] ?? 0) - (m['base.spotShare'] ?? 0)) * (1 - Cv) : 0;
+    const spot = new Set(spotOk ? pp.ratedProviders.get('LEV-06') : []);
     decision02 = S - Cv > 0 && pp.ratedProviders.get('LEV-01')!.some(p => S - Cv - nu - (spot.has(p) ? tol : 0) <= 0);
+    overCoverage = Cv > S;
   }
 
   // Unknown inputs that block a lever this mode quantifies (scope-confirmation findings).
@@ -652,10 +784,26 @@ export function buildValueModel(ctx: ValueModelContext): ValueModelOutput {
     return { fact: p, value: fig(`${V}.bands.corners.${c}[${p}].value`, unit === 'currency' ? money(x) : share(x), unit, ['CLM-FIN-130', 'CLM-FIN-172'], ['ASM-FIN-042']) };
   })])) as ValueBlock['bands']['corners'] : null;
 
+  // M5: P once, as a band when banded.
+  const spendIns = pp.providers.map(p => pp.inputs.get(`spend.byScope.${p}`));
+  const spend = moneyShown && spendIns.every(Boolean) ? (() => {
+    const lo = spendIns.reduce((t, i) => t + i!.low, 0), hi = spendIns.reduce((t, i) => t + i!.high, 0), md = spendIns.reduce((t, i) => t + i!.mid, 0);
+    const isBand = hi > lo;
+    const ids = ['CLM-FIN-130', 'CLM-FIN-172'];
+    return {
+      P: fig(`${V}.spend.P`, money(md), 'currency', ids, ['ASM-FIN-082', 'ASM-FIN-042']),
+      low: isBand ? fig(`${V}.spend.low`, money(lo), 'currency', ids, ['ASM-FIN-082', 'ASM-FIN-042']) : null,
+      high: isBand ? fig(`${V}.spend.high`, money(hi), 'currency', ids, ['ASM-FIN-082', 'ASM-FIN-042']) : null,
+      banded: isBand, statement: isBand ? VR.spend.banded : VR.spend.exact, claimIds: [...VR.spend.claimIds]
+    };
+  })() : null;
+
   const cap = C.capSource;
   const team = finopsTeam(ctx, rate);
-  const hypothesis = hypothesisPanel(ctx, solved, totals, notQuantified.length > 0, moneyShown);
+  const hypothesis = hypothesisPanel(ctx, solved, totals, notQuantified.length > 0 || exclusions.size > 0, moneyShown);
   const labels = VR.labels;
+  const appliesTo: string[] = K('levers', 'globalCap.appliesTo');
+  const zero = quantified.filter(id => !pp.excluded.has(id) && (solved ? scaled(solved.expected, id) : scaled(mid, id)) <= 0);
   return {
     value: {
       version: VALUE_MODEL_VERSION,
@@ -663,13 +811,15 @@ export function buildValueModel(ctx: ValueModelContext): ValueModelOutput {
       moneyShown,
       label: labels.headline, detail: labels.detail,
       notice: !quantified.length ? labels.notQuantifiedAtAll : !rate ? labels.withheld : null,
+      headlineRule: VR.headline.rule,
       currency: f.org.currency,
+      spend,
       levers,
       totals,
       globalCap: {
         share: fig(`${V}.globalCap.share`, C.capShare, 'share', ['CLM-FIN-138', 'CLM-FIN-040'], ['ASM-FIN-050']),
-        appliesTo: K('levers', 'globalCap.appliesTo'), excludedLevers: [...CLOUD_EXCLUDED],
-        statement: 'Public cloud levers are capped at 29% of in-scope public cloud spend in every case, scaled pro rata when the cap binds; LEV-09 is outside this base',
+        appliesTo, liftedBy: K('levers', 'globalCap.liftedBy'), excludedLevers: [...CLOUD_EXCLUDED],
+        statement: `Public cloud levers are capped at 29% of in-scope public cloud spend in the ${appliesTo.join(', ')} cases, scaled pro rata when the cap binds; the cap is not lifted by evidence in this version; LEV-09 is outside this base and shown on its own`,
         source: { claimId: cap.claimId, citation: cap.citation, url: cap.url, year: String(cap.year), sample: `n = ${cap.sample}`, checked: cap.checked, assumptionId: cap.assumptionId },
         claimIds: ['CLM-FIN-138', 'CLM-FIN-040']
       },
@@ -677,7 +827,7 @@ export function buildValueModel(ctx: ValueModelContext): ValueModelOutput {
         internalRateProvided: !!rate, toolingProvided: !!tooling,
         toolingNote: tooling ? VR.costs.toolingProvided : VR.costs.toolingNotProvided,
         externalSupportIncluded: false, externalSupportNote: VR.costs.externalSupport,
-        effortFteMonths: solved ? fig(`${V}.costs.effortFteMonths`, active.reduce((t, id) => t + effortOf(id), 0), 'fte_months', ['CLM-FIN-134', 'CLM-FIN-170'], ['ASM-FIN-046']) : null,
+        effortFteMonths: solved ? fig(`${V}.costs.effortFteMonths`, active.reduce((t, id) => t + effortOf(id), 0), 'fte_months', ['CLM-FIN-134', 'CLM-FIN-170'], ['ASM-FIN-046', 'ASM-FIN-063']) : null,
         claimIds: [...VR.costs.claimIds]
       },
       finopsTeam: team,
@@ -688,24 +838,33 @@ export function buildValueModel(ctx: ValueModelContext): ValueModelOutput {
       scoring: {
         severityUpliftShareOfP: fig(`${V}.scoring.severityUpliftShareOfP`, C.upliftShare, 'share', ['CLM-FIN-122', 'CLM-FIN-172'], ['ASM-FIN-005', 'ASM-FIN-056']),
         needModifierShareOfP: fig(`${V}.scoring.needModifierShareOfP`, C.needShare, 'share', ['CLM-FIN-127', 'CLM-FIN-172'], ['ASM-FIN-031', 'ASM-FIN-056']),
-        moreMatureOptions: ctx.mode === 'executive' && ctx.op06.asked,
+        rule: VR.scoring.rule,
         claimIds: [...VR.scoring.claimIds]
       },
       claimIds: uniq([...labels.claimIds, 'CLM-FIN-128', 'CLM-FIN-129', 'CLM-FIN-130', 'CLM-FIN-138', 'CLM-FIN-160'])
     },
-    scoring, decision02, blocking, quantified
+    scoring, decision02, blocking, quantified, excluded: [...pp.excluded], zero, overCoverage
   };
 }
 
 /* --------------------------------- Helpers ---------------------------------- */
 
-function reasonText(st: Extract<Status, { ok: false }>, id: string): string {
+function reasonText(st: Extract<Status, { ok: false }>): string {
   const t = VR.notQuantifiedReasons;
   if (st.reason === 'rate_unsourced_for_provider') return fill(t.rate_unsourced_for_provider, { providers: (st.detail ?? []).map(p => p.toUpperCase()).join(', ') || 'the selected providers' });
   if (st.reason === 'no_estimate_of_type') return fill(t.no_estimate_of_type, { types: (st.detail ?? []).join(' or ') });
   if (st.reason === 'missing_input') return fill(t.missing_input, { inputs: st.blockedBy.map(inputLabel).join(', ') });
-  void id;
   return t[st.reason];
+}
+
+/** LEV-09's comparison base (M4): SaaS and licensing spend in scope where every row is given, else total in-scope spend. */
+function saasLicensingBase(f: Facts): { value: number; label: string } | null {
+  const mid = (a: any) => (a && typeof a.exact === 'number' ? a.exact : a && Array.isArray(a.band) ? (a.band[0] + a.band[1]) / 2 : undefined);
+  const rows = ['saas', 'licensing'].filter(s => f.footprint.scopes.includes(s)).map(s => mid(f.spend.byScope[s]));
+  if (rows.length && rows.every(x => x !== undefined)) return { value: rows.reduce((t, x) => t + x!, 0), label: VR.scoring.comparisonBases.saasLicensing };
+  const all = Object.values(f.spend.byScope).map(mid);
+  if (all.length && all.every(x => x !== undefined)) return { value: all.reduce((t, x) => t + x!, 0), label: VR.scoring.comparisonBases.totalInScope };
+  return null;
 }
 
 function renewalShare(pp: Prepared, c: Case): number {
@@ -716,7 +875,7 @@ function renewalShare(pp: Prepared, c: Case): number {
 
 function overallConfidence(levers: LeverValue[], mode: Mode): ValueBlock['confidence'] {
   const t = VR.confidence;
-  const q = levers.filter(l => l.status === 'quantified');
+  const q = levers.filter(l => l.status === 'quantified' && l.inHeadline);
   if (!q.length) return { overall: null, reason: t.reasons.none, claimIds: [...t.claimIds] };
   const ev = (l: LeverValue) => l.cases?.expected.runRate.value ?? 0;
   const total = q.reduce((s, l) => s + ev(l), 0);
@@ -729,38 +888,6 @@ function overallConfidence(levers: LeverValue[], mode: Mode): ValueBlock['confid
   if (mode === 'executive' && overall === 'High') overall = 'Medium';
   const reason = `${overall}: ${pickFrom.map(l => `${l.id} ${l.confidence}`).join(', ')}${mode === 'executive' ? `. ${t.reasons.executiveCap}` : ''}`;
   return { overall, reason, claimIds: [...t.claimIds] };
-}
-
-function scoringValues(pp: Prepared, mid: CaseRaw, rate: In | undefined, ctx: ValueModelContext): Scoring {
-  const known = pp.providers.length > 0 && pp.providers.every(p => pp.inputs.has(`spend.byScope.${p}`));
-  const P = known ? mid.P : null;
-  const runCost = (id: string, gross: number) => (rate && gross > 0 ? L.get(id)!.effort[String(ctx.tier)] * L.get(id)!.ongoing * rate.mid : 0);
-  const byLever = new Map<string, { gross: number; net: number }>();
-  let totalExpected: number | null = null;
-  const take = (raw: CaseRaw) => {
-    for (const [id, l] of raw.levers) {
-      const gross = l.value * (CLOUD_EXCLUDED.has(id) ? 1 : raw.scale);
-      const prev = byLever.get(id);
-      const net = gross - runCost(id, gross);
-      if (!prev || gross > prev.gross) byLever.set(id, { gross, net });
-    }
-    totalExpected = Math.max(totalExpected ?? 0, raw.total);
-  };
-  const anyOk = (x: Prepared) => [...x.status.values()].some(st => st.ok);
-  if (P !== null) {
-    if (anyOk(pp)) take(mid);
-    // Executive mode: the value at the OP-06 answer or any more mature one, so a better or blank answer never lowers the score.
-    if (ctx.mode === 'executive' && ctx.op06.asked) {
-      const order: AnswerLevel[] = ['not_yet', 'crawl', 'walk', 'run'];
-      const from = ctx.op06.level === undefined || ctx.op06.level === 'unknown' ? 0 : order.indexOf(ctx.op06.level);
-      for (const lvl of order.slice(from)) {
-        if (lvl === ctx.op06.level) continue;
-        const alt = prepare(ctx, lvl);
-        if (anyOk(alt)) take(compute(alt, midpoint(alt), C.expectedFactor));
-      }
-    }
-  }
-  return { P, byLever, totalExpected, upliftShare: C.upliftShare, needShare: C.needShare };
 }
 
 function finopsTeam(ctx: ValueModelContext, rate: In | undefined): ValueBlock['finopsTeam'] {
@@ -777,6 +904,7 @@ function finopsTeam(ctx: ValueModelContext, rate: In | undefined): ValueBlock['f
   };
 }
 
+/** HY-01 beside the model's public cloud range (it is a share of cloud spend), never an input. */
 function hypothesisPanel(ctx: ValueModelContext, solved: ReturnType<typeof solve> | null, totals: ValueBlock['totals'], anyNotQuantified: boolean, moneyShown: boolean): ValueBlock['hypothesis'] {
   const t = VR.hypothesis;
   const p = 'value.hypothesis';
@@ -787,7 +915,7 @@ function hypothesisPanel(ctx: ValueModelContext, solved: ReturnType<typeof solve
   const P = solved.expected.P;
   const low = P * range[0], high = range[1] === null ? null : P * range[1];
   const midH = high === null ? low : (low + high) / 2;
-  const exp = totals.expected.grossRunRate.value, up = totals.upper.grossRunRate.value;
+  const exp = totals.expected.cloudRunRate.value, up = totals.upper.cloudRunRate.value;
   const position = low > up ? 'above_upper' : midH > exp ? 'above_expected' : 'at_or_below_expected';
   const ids: string[] = position === 'at_or_below_expected' ? ['estimate_at_or_below_model']
     : [...(anyNotQuantified ? ['levers_not_quantified'] : []), 'expected_is_half_of_maximum', ...(position === 'above_upper' ? ['unallocated_not_waste'] : [])];

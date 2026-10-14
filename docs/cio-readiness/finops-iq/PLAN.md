@@ -311,50 +311,74 @@ Every maturity question gets "Unknown", scored as risk (D5). Every question carr
 - this agent's review of each lever's source recorded;
 - owner approval of the global cap and ramp defaults.
 
-**F4 status (14 Oct 2026): built in v3; not committed; awaiting the practice-lead review and owner approval at the gate.** The live page and Lambda still use v2.
-- **Value model** (`v3/value-model.ts`, value model 1.0.0; engine 3.2.0): wording and F4 rules in `v3/value-rules.json` (1.0.0).
-  - Per lever: base, inputs, formula, published or arithmetic maximum, conservative / expected / upper, cap applied, ramp, year-1, run-rate and 3-year figures, run cost and net, confidence, claim and assumption IDs, or a not-quantified reason with the blocking input.
-  - Totals per case with the 29% cap and its source; costs; the FinOps team cost beside the value (Q12); confidence; the HY-01 panel; label "Indicative value range: not a savings commitment; evidence validation required".
+**F4 status (14 Oct 2026): built in v3 (`dc7f4aa`); the practice-lead review ([F4-review.md](design/F4-review.md)) says "approve with changes", and its fixes are applied but not yet committed. Awaiting owner approval at the gate.** The live page and Lambda still use v2.
+- **Value model:** `v3/value-model.ts` (value model 1.1.0, engine 3.3.0), with wording and rules in `v3/value-rules.json` (1.1.0).
+  - Per lever: base, inputs, formula, published or arithmetic maximum, conservative / expected / upper, cap applied, ramp from the roadmap start, year-1, run-rate and 3-year figures, run cost and net, confidence, the figure scoring uses, and claim and assumption IDs. A lever not quantified shows the input that blocks it.
+  - Totals per case: public cloud % of P against the 29% cap, with its source; SaaS and licensing on their own base; costs.
+  - Beside the totals: the FinOps team cost (Q12), confidence, the HY-01 panel and the label.
   - No money figure without an internal cost rate (Q4). Executive mode quantifies LEV-01 and LEV-04 only (Q7).
-- **Wire-up** (closes F3 D1 to D3): lever findings (only where the lever's capability has no gap finding), scope-confirmation findings for unknown inputs that block a lever, DECISION-02, the severity value uplift (DESIGN 5.3 step 3) and the need modifier (DESIGN 9). Each finding carries the value of the levers it owns.
-- **Trace:** every number in the value block and on findings is a figure with its own `field` path (`resolveField` returns it), claim IDs and assumption IDs. The engine-level trace test walks the result; F7 extends it to the screen and PDF.
-- **Assumption register:** `registry/assumptions.json`, 43 entries (`ASM-FIN-001` to `-085`) with value, basis, claim IDs, confidence and sensitivity, covering 162 registry constants. A test checks that every constant the value model reads is listed with the same value, and that every scoring constant is covered. New claims: CLM-FIN-167 to 173.
-- **Tests:** `test/finops-iq-v3-value.test.ts`, 41 tests:
-  - reconciliation: levers and findings sum to the headline; the phasing sums; gross minus cost equals net;
-  - inflation guard: the 5 reference scenarios and 1,000 seeded random questionnaires per mode, with any breach printed with its case;
-  - trace; language lint; assumption register;
-  - model rules, including DESIGN 10.3's worked example;
-  - the scenario value comparison.
+- **Wire-up (closes F3 D1 to D3):**
+  - lever findings, scope-confirmation findings and DECISION-02;
+  - the severity value uplift and the need modifier, on shown figures only (`valueBasis`);
+  - finding values summing to the headline;
+  - gap findings that carry their levers' actions (`leverActions`).
+- **Trace:** every number in the value block and on findings is a figure with its own `field` path, claim IDs and assumption IDs. F7 extends the engine-level trace test to the screen and PDF.
+- **Assumption register:** `registry/assumptions.json`, 47 entries covering 169 registry constants, with tests on reads, drift and scoring coverage. Claims: CLM-FIN-167 to 176; 138, 150, 155, 170 and 172 are reworded and set to P.
+- **Review fixes:**
+  - H1: the cap metadata, claim, register and output all say "all three cases, no evidence lift".
+  - H2: Spot is net of commitment coverage; RS2 is EUR 7.50M expected (6.8% of P).
+  - H3: the executive "OP-06 or better" rule is removed. Scoring uses only shown figures at the client's own answers. The answer invariants are tested on the scores before the value step.
+  - H4: the headline % and the cap are public cloud only, and no headline % exceeds 29%.
+  - M1: effort is counted only for levers with a positive expected value. Levers whose marginal 3-year net is not positive are shown but left out of the headline (RS4 LEV-06). A blank never raises expected net.
+  - M2: the actions of absorbed levers are carried onto their gap finding.
+  - M3: the ramp starts at the owning finding's start month.
+  - M4: LEV-09 is compared with SaaS and licensing spend.
+  - M5: spend is shown once, as a band. Each case keeps its corner, as the review recommends.
+  - M6: the commitment instrument is an input, defaulting to the lower maximum.
+  - M7: ASM-FIN-060's wording is corrected.
+  - L3: DESIGN 10.3 now prints 6.3%.
+- **Tests:**
+  - `test/finops-iq-v3-value.test.ts`: 54 tests (reconciliation, inflation guard over the 5 scenarios and 1,000 seeded questionnaires per mode, trace, language lint, assumption register, model rules, scenario values, and a test per review fix);
+  - `test/finops-iq-v3.test.ts`: 98 tests.
 
-  `test/finops-iq-v3.test.ts` is updated for F4 (98 tests). `npm test`: 436 tests pass; `check:repo` and `npm run audit:engines` pass. The audit adds expected and upper value headlines; blanks never raise them (executive mean shift −554k, worst profile 0).
+  `npm test`: 449 tests pass; `check:repo` and `npm run audit:engines` pass. The audit's value and need-index missing-data worst profile is 0.
 - **Scenarios** ([F4-scenario-diffs.md](design/F4-scenario-diffs.md)). Expected gross run-rate, engine against written:
-  - RS1 2.01M / 2.01M; RS3 3.81M / 3.81M (upper capped at 5.22M); RS5 0.38M / 0.38M (upper capped at 1.45M);
-  - RS4 4.04M / 4.01M (+0.9%);
-  - RS2 9.42M / 6.86M: F2 sourced the Azure Spot maximum after F1, so LEV-06 is quantified (V5).
+  - RS1 2.01M / 2.01M;
+  - RS2 7.50M / 6.86M (Azure Spot sourced in F2, now net of coverage);
+  - RS3 3.53M / 3.81M (Spot net of coverage; upper capped at 5.22M);
+  - RS4 3.90M / 4.01M (lower instrument maximum; LEV-06 not worth pursuing);
+  - RS5 0.38M / 0.38M (upper capped at 1.45M).
 
-  The need verdicts now match exactly (36.7 and 39.0). Finding differences V1 to V3 are expectation inconsistencies resolved by one rule. No engine bug was found.
-- **Departures from DESIGN awaiting the owner** (all LTM heuristics, CLM-FIN-167 to 172, verification P):
-  - the cap applies to all three cases and is not lifted by evidence in this version (stricter than 10.5);
-  - year-1 phasing safeguard; band search limited to eight banded inputs, with the midpoint as a candidate;
-  - LEV-04 is not quantified when Kubernetes or GPU spend is in scope but unknown;
-  - provider-tool evidence needs an assessment date;
-  - the 2% and 5% thresholds compare with in-scope public cloud spend P;
-  - executive scoring uses the highest value at the OP-06 answer or a more mature one;
-  - lever findings appear only where their capability has no gap finding;
-  - the blank rule is enforced on gross value: a blank that removes a lever also removes its effort, so net can rise;
-  - the F3 blank-findings invariant accepts a lever finding absorbed into its capability's gap finding.
-- **Defaults needing owner approval at the gate:**
-  - **Global cap:** 29% of in-scope public cloud spend (Flexera 2026, n = 753) on the conservative, expected and upper cases, LEV-09 outside, no evidence lift (ASM-FIN-050; D15 and Q11).
-  - **Ramp per lever** (year-1 share of run-rate): LEV-01, 03, 04 0.5; LEV-02, 05, 10 0.33; LEV-06, 07 0.25; LEV-09 the renewal share, else 0.25. Years 2 and 3: 1.0. Plus the phasing safeguard (ASM-FIN-045, ASM-FIN-042).
+  Year-1 figures are lower by design (ramp from the roadmap start). The need verdicts match exactly (36.7 and 39.0). No engine bug was found.
+- **Departures from DESIGN awaiting the owner:** listed in DESIGN 10.15 (CLM-FIN-167 to 176, verification P).
+- **Defaults needing owner approval at the gate** (the review's recommendation in brackets):
+  - **Global cap:** 29% of in-scope public cloud spend (Flexera 2026, n = 753) on all three cases. Public cloud only; LEV-09 outside and shown on its own base; no evidence lift in v1.0 (ASM-FIN-050) [approve; revisit the lift after F5].
+  - **Ramp per lever** (year-1 share of run-rate) [approve]:
+    - 0.5 for LEV-01, 03 and 04;
+    - 0.33 for LEV-02, 05 and 10;
+    - 0.25 for LEV-06 and 07;
+    - LEV-09: the renewal share, else 0.25;
+    - years 2 and 3: 1.0;
+    - each pro-rated from the owning finding's start month (ASM-FIN-045, 064), plus the phasing safeguard (ASM-FIN-042).
   - **Effort and tooling:**
-    - one-off effort per lever by tier (ASM-FIN-046), counted for every lever with a positive upper value;
-    - ongoing effort 20% of one-off per year (ASM-FIN-047);
-    - tooling as a client input; when it is not provided, net excludes it and says so (ASM-FIN-081);
+    - one-off effort per lever by tier, counted only for levers with a positive expected value, and levers not worth pursuing left out of the headline (ASM-FIN-046, 063) [approve, changed as built];
+    - ongoing effort 20% of one-off (ASM-FIN-047);
+    - tooling as a client input, with net stated to exclude it when missing (ASM-FIN-081);
     - a banded rate is high in the conservative case (ASM-FIN-059);
     - external support is not included until WS-S5 (Q10);
-    - FinOps team cost: 0.5 / 1 / 2 FTE by tier, shown beside the value (ASM-FIN-054, Q12).
-  - Also: the F4 finding rules (ASM-FIN-055) and the value thresholds in scoring (ASM-FIN-056).
-- **Left for F7:** the screen, PDF and backlog trace (binding to `field`); the "How we calculated this" appendix from the assumption register; the screen = PDF = backlog = engine reconciliation. **For F5:** the band-to-exact check (DESIGN 10.9) and the value monotonicity audit.
+    - FinOps team cost 0.5 / 1 / 2 FTE by tier, beside the value (ASM-FIN-054).
+  - **Also:**
+    - the F4 finding rules (ASM-FIN-055) and the value thresholds in scoring (ASM-FIN-056, without the OP-06 rule);
+    - Spot net of coverage (ASM-FIN-061);
+    - the commitment-instrument default (ASM-FIN-062);
+    - Azure and Google Cloud Spot at 90% / 91% [approve, with the H2 base].
+- **Left for F7:**
+  - the screen, PDF and backlog trace (binding to `field`);
+  - the "How we calculated this" appendix from the register;
+  - the screen = PDF = backlog = engine reconciliation;
+  - the sensitivity table;
+  - separating evidence-based from modelled value (review section 6, question 10).
+- **For F5:** the band-to-exact check (DESIGN 10.9), the value monotonicity audit, and a back-test before any evidence lift of the cap.
 
 ---
 
