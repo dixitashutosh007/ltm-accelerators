@@ -6775,11 +6775,11 @@
       ],
       "kind": "heuristic",
       "jurisdiction": "global",
-      "statement": "LTM severity and schedule rules: gap 1 = Medium, 2 = High, 3 = Critical; +1 level for Data Ingestion, Allocation and FinOps Practice Operations at Tier 2 or 3; at least High when a linked lever's expected net run-rate value is 2% or more of in-scope spend (applied from F4); a consultant-set target where there is no default target gives Low. Each finding starts at its wave's window (wave 1 from month 0, wave 2 from month 3, wave 3 from month 9) and never before the findings it depends on are due to complete; its target duration once started is 3 months (Critical), 6 (High), 12 (Medium) or 24 (Low).",
+      "statement": "LTM severity and schedule rules: gap 1 = Medium, 2 = High, 3 = Critical; +1 level for Data Ingestion, Allocation and FinOps Practice Operations at Tier 2 or 3; at least High when a linked lever's expected net run-rate value is 2% or more of in-scope spend (applied from F4); a consultant-set target where there is no default target gives Low. Each finding starts at its wave's window (wave 1 from month 0, wave 2 from month 3, wave 3 from month 9) and never before each finding it depends on has reached its first milestone (3 months after it starts, or its whole target duration if shorter); its target duration once started is 3 months (Critical), 6 (High), 12 (Medium) or 24 (Low).",
       "source": {
         "url": "https://github.com/dixitashutosh007/ltm-accelerators/blob/main/docs/cio-readiness/finops-iq/design/DESIGN.md",
         "title": "LTM FinOps IQ F1 design pack (approved by the product owner, 14 Oct 2026)",
-        "article": "5.3 (ASM-FIN-005) and 5.4; F3 review H3",
+        "article": "5.3 (ASM-FIN-005) and 5.4; F3 review H3 and re-review R1",
         "publisher": "LTM"
       },
       "verification": "P",

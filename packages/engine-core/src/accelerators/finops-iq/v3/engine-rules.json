@@ -1,5 +1,5 @@
 {
-  "rulesVersion": "1.1.0",
+  "rulesVersion": "1.2.0",
   "statusAsOf": "2026-10-14",
   "rule": "FinOps IQ v3 engine rules that are not in the F2 registries: rating labels, finding wording, owner roles, severity, schedule, decisions, need verdict, headline and the legacy questions retired without a v3 question. Every client-visible string here carries claim IDs from the WS-S2 register. Waves, dependencies, targets, offerings and lever links come from registry/capabilities.json and registry/levers.json.",
   "ratingLabels": {
@@ -347,7 +347,8 @@
     },
     "startLabel": "From month {month}",
     "durationLabel": "Complete within {months} months of starting",
-    "note": "A finding starts at its wave's window (DESIGN.md 5.4: wave 1 from month 0, wave 2 from month 3, wave 3 from month 9) and never before every finding it depends on is due to complete. Spreading Critical work by delivery capacity is F7."
+    "note": "A finding starts at its wave's window (DESIGN.md 5.4: wave 1 from month 0, wave 2 from month 3, wave 3 from month 9) and never before every finding it depends on has reached its first milestone: 3 months after that finding starts, or its whole target duration if shorter (F3 re-review R1). Spreading Critical work by delivery capacity is F7.",
+    "firstMilestoneMonths": 3
   },
   "decisions": [
     {
@@ -371,7 +372,7 @@
         "OFF.FIN.MANAGED"
       ],
       "title": "Appoint an accountable FinOps owner with a mandate",
-      "consequence": "Until someone is accountable for cloud and technology spend, no finding in this report has an owner who can see it through.",
+      "consequence": "Until someone is accountable for cloud and technology spend, no one is responsible for seeing this programme through.",
       "action": "Appoint an accountable FinOps owner with a written mandate and an executive sponsor",
       "evidence": "The appointment and the written mandate, with the executive sponsor named.",
       "claimIds": [

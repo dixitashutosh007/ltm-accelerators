@@ -561,8 +561,12 @@ describe('FinOps IQ v3 findings (DESIGN.md 5)', () => {
         expect(f.targetDuration.months, f.id).toBe(R.schedule.durationMonths[f.severity]);
         for (const d of f.dependsOn) {
           const dep = res.findings.find(x => x.id === d)!;
-          expect(f.start.month, `${f.id} after ${d}`).toBeGreaterThanOrEqual(dep.start.month + dep.targetDuration.months);
+          expect(f.start.month, `${f.id} after ${d}`).toBeGreaterThanOrEqual(dep.start.month + Math.min(3, dep.targetDuration.months));
         }
+        // No start beyond its wave window's end (wave 1 month 6, wave 2 month 12, wave 3 month 24) unless it waits on
+        // a Critical or High dependency still in progress (re-review R1).
+        const waitsOnUrgent = f.dependsOn.some(d => ['Critical', 'High'].includes(res.findings.find(x => x.id === d)!.severity));
+        if (!waitsOnUrgent) expect(f.start.month, `${f.id} within wave ${f.wave}`).toBeLessThanOrEqual({ 1: 6, 2: 12, 3: 24 }[f.wave]);
       }
     }
     // Critical work is spread by dependency: in RS4 the seven Critical findings do not all start at once.
@@ -570,6 +574,20 @@ describe('FinOps IQ v3 findings (DESIGN.md 5)', () => {
     expect(rs4.length).toBeGreaterThanOrEqual(7);
     expect(new Set(rs4.map(f => f.start.month)).size).toBeGreaterThan(1);
     expect(rs4.filter(f => f.start.month === 0).length).toBeLessThan(rs4.length);
+  });
+
+  it('let a finding start after its dependency\'s first milestone, not its completion (re-review R1)', () => {
+    // RS5 (Tier 1): Allocation is Medium (12 months); Usage Optimization (idle, scheduling) still starts at month 3.
+    const rs5 = evaluateFinOpsIqV3(scenarioInput(SCENARIOS[4]));
+    const al = rs5.findings.find(f => f.capability === 'ALLOCATION')!;
+    const usage = rs5.findings.find(f => f.capability === 'USAGE_OPTIMIZATION')!;
+    expect(al).toMatchObject({ start: { month: 0 }, targetDuration: { months: 12 } });
+    expect(usage.dependsOn).toEqual(['F-FIN-ALLOCATION']);
+    expect(usage.start.month).toBeGreaterThanOrEqual(0);
+    expect(usage.start.month).toBeLessThanOrEqual(3);
+    // A short dependency (Critical, 3 months) gives the same month-3 start: the milestone is capped at its duration.
+    const di = r.findings.find(f => f.capability === 'ANOMALY_MANAGEMENT')!;
+    expect(di.start.month).toBe(3);
   });
 
   it('show the FinOps lead as "to be appointed" with an interim owner when MP-01 shows no accountable owner (review M3)', () => {
@@ -609,6 +627,33 @@ describe('FinOps IQ v3 findings (DESIGN.md 5)', () => {
       expect(sev.indexOf(a.severity) < sev.indexOf(b.severity) || (a.severity === b.severity && (a.wave < b.wave || (a.wave === b.wave && (a.gap ?? 0) >= (b.gap ?? 0))))).toBe(true);
     }
     expect(r.topFindingIds).toEqual(r.findings.slice(0, 5).map(f => f.id));
+  });
+
+  it('sort findings from real answers before "not answered" ones of the same severity, by the blank count (re-review R5)', () => {
+    const res = run(facts(), { 'UN-04': 'not_yet', 'UN-05': 'not_yet', 'UN-10': 'not_yet' });
+    const al = res.findings.find(f => f.capability === 'ALLOCATION')!;
+    const am = res.findings.find(f => f.capability === 'ANOMALY_MANAGEMENT')!;
+    expect([al.notAnsweredCount, am.notAnsweredCount]).toEqual([0, 1]);
+    expect(al.severity).toBe(am.severity);
+    expect(res.findings.indexOf(al)).toBeLessThan(res.findings.indexOf(am));
+    for (let i = 1; i < res.findings.length; i++) {
+      const [a, b] = [res.findings[i - 1], res.findings[i]];
+      if (a.severity === b.severity) expect(a.notAnsweredCount > 0 && b.notAnsweredCount === 0, `${a.id} before ${b.id}`).toBe(false);
+    }
+  });
+
+  it('every Usage Optimization depth question can lower the rating from an all-at-core baseline (re-review R4)', () => {
+    const scope = facts({ scopes: ['public_cloud', 'kubernetes', 'ai_api'] });
+    const usage = QUESTIONS.filter(q => q.kind === 'maturity' && q.capability === 'USAGE_OPTIMIZATION');
+    const baseline = Object.fromEntries(usage.map(q => [q.id, 'walk']));
+    expect(cap(run(scope, baseline), 'USAGE_OPTIMIZATION')).toMatchObject({ rating: 'walk', loweredByDepth: false, complete: true });
+    const depth = usage.filter(q => q.role !== 'core').map(q => q.id);
+    expect(depth).toEqual(['OP-05', 'OP-06', 'OP-07', 'OP-09', 'OP-11', 'OP-12']);
+    for (const id of depth) {
+      for (const level of ['crawl', 'not_yet', 'unknown']) {
+        expect(cap(run(scope, { ...baseline, [id]: level }), 'USAGE_OPTIMIZATION'), `${id}=${level}`).toMatchObject({ rating: 'crawl', loweredByDepth: true });
+      }
+    }
   });
 });
 

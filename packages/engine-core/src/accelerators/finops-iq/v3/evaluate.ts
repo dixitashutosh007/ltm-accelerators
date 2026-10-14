@@ -98,7 +98,9 @@ export interface Finding {
   /** The owner as shown; differs from ownerRole when the FinOps lead is still to be appointed. */
   ownerLabel: string;
   interimOwnerRole?: string;
-  /** Earliest start: the wave window, never before every finding in dependsOn is due to complete. */
+  /** Asked questions behind this finding left blank (rated like "Don't know"). */
+  notAnsweredCount: number;
+  /** Earliest start: the wave window, never before every finding in dependsOn has reached its first milestone. */
   start: { month: number; label: string };
   /** Time to complete once started, from severity. */
   targetDuration: { months: number; label: string };
@@ -513,6 +515,7 @@ function buildFindings(input: FinOpsIqV3Input, tier: number, profile: Capability
     findings.push({
       id: `F-FIN-${cap.id}`, type: 'capability_gap', capability: cap.id, scopes: findingScopes(cap, input.facts),
       current: p.rating, target: p.target.level, targetSource: p.target.source, gap: p.gap, unconfirmed: p.unconfirmed || p.notAnswered.length > 0,
+      notAnsweredCount: p.notAnswered.length,
       severity, severityTrace: trace,
       title: fill(p.unconfirmed && p.rating !== 'unknown' ? text.titleUnconfirmed : text.title, values),
       businessConsequence: `${fill(text.today, values)} ${ct.consequence}`,
@@ -535,7 +538,7 @@ function buildFindings(input: FinOpsIqV3Input, tier: number, profile: Capability
     const q = QUESTION.get(d.question);
     const unconfirmed = mp01 === 'unknown' || mp01 === 'not_answered';
     findings.push({
-      id: d.id, type: 'decision', capability: d.capability, scopes: [], unconfirmed, severity,
+      id: d.id, type: 'decision', capability: d.capability, scopes: [], unconfirmed, notAnsweredCount: mp01 === 'not_answered' ? 1 : 0, severity,
       severityTrace: up ? ['decision_rule', 'foundation_uplift'] : ['decision_rule'],
       title: d.title, businessConsequence: `${fill(text.today, { answers: describeAnswer(q, state) })} ${d.consequence}`,
       decisionOrAction: unconfirmed ? d.actionUnconfirmed : d.action,
@@ -547,7 +550,7 @@ function buildFindings(input: FinOpsIqV3Input, tier: number, profile: Capability
     });
   }
   // Waves by dependency (DESIGN.md 5.4), then the schedule: a finding starts at its wave window and never before
-  // every finding it depends on is due to complete (F3 review H3).
+  // every finding it depends on has reached its first milestone (F3 review H3, re-review R1).
   const byCap = new Map(findings.filter(f => f.type === 'capability_gap').map(f => [f.capability, f]));
   const sch = RULES.schedule;
   const scheduled = new Set<string>();
@@ -561,7 +564,7 @@ function buildFindings(input: FinOpsIqV3Input, tier: number, profile: Capability
         schedule(d);
         f.dependsOn.push(d.id);
         f.wave = Math.max(f.wave, d.wave) as Finding['wave'];
-        month = Math.max(month, sch.waveStartMonth[String(f.wave)], d.start.month + d.targetDuration.months);
+        month = Math.max(month, sch.waveStartMonth[String(f.wave)], d.start.month + Math.min(sch.firstMilestoneMonths, d.targetDuration.months));
       }
     }
     const months = sch.durationMonths[f.severity];
@@ -571,7 +574,7 @@ function buildFindings(input: FinOpsIqV3Input, tier: number, profile: Capability
   };
   findings.forEach(schedule);
   // Findings from real answers come before "not answered" ones of the same severity (F3 review H1).
-  const blankDriven = (f: Finding) => (f.decisionOrAction.startsWith('Answer and evidence') ? 1 : 0);
+  const blankDriven = (f: Finding) => (f.notAnsweredCount > 0 ? 1 : 0);
   return findings.sort((a, b) =>
     SEVERITIES.indexOf(b.severity) - SEVERITIES.indexOf(a.severity) || blankDriven(a) - blankDriven(b) || a.wave - b.wave ||
     (b.gap ?? 0) - (a.gap ?? 0) || CAPABILITY_INDEX.get(a.capability)! - CAPABILITY_INDEX.get(b.capability)! || (a.type === 'decision' ? 1 : -1));

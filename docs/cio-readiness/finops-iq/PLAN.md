@@ -202,15 +202,15 @@ Every maturity question gets "Unknown", scored as risk (D5). Every question carr
 - golden outputs for the five reference scenarios;
 - no FinOps IQ or FinOps Value Case behaviour lost without a recorded reason.
 
-**F3 status (14 Oct 2026): built; practice-lead review ([F3-review.md](design/F3-review.md)) applied, awaiting re-review and owner decisions.** Engine committed in `b7eb6a8`; the review fixes are not yet committed. The live page and Lambda still use v2; F6 switches them.
+**F3 status (14 Oct 2026): built; practice-lead review and re-review ([F3-review.md](design/F3-review.md)) applied; approved by the practice lead, awaiting owner decisions.** Review fixes committed in `dae4457`; the re-review fixes (R1, R3, R4, R5) are not yet committed. The live page and Lambda still use v2; F6 switches them.
 - **Engine** in `packages/engine-core/src/accelerators/finops-iq/v3/` (engine 3.1.0), beside v2, which is unchanged:
   - `question-bank.json` (3.1.0): 69 questions (7 scope, 9 value-base, 46 maturity, 7 hypothesis), each with basis claim IDs. It validates against `question.schema.json`.
-  - `engine-rules.json` (1.1.0): rating labels, finding wording, per-capability business consequences and evidence lines, owner roles, severity, schedule, DECISION-01, need verdict, and FIQ.C8's moved reason.
+  - `engine-rules.json` (1.2.0): rating labels, finding wording, per-capability business consequences and evidence lines, owner roles, severity, schedule, DECISION-01, need verdict, and FIQ.C8's moved reason.
   - `contract.ts`, `evaluate.ts`, `index.ts`.
 - **Contract:** one request for both modes: `mode`, `facts` (checked against the facts schema, with readable reasons), `answers`, target overrides (duplicates rejected) and Cost IQ pre-fill flags. Scope and value-base questions are answered through `facts`.
 - **Result:**
   - capability profile with target and gap;
-  - findings: one per capability gap, plus DECISION-01 when MP-01 shows no accountable owner. Each has severity, owner role, a start month (wave window, never before its dependencies are due) and a target duration, lever links, named evidence and claim IDs. Its "Today" text quotes the client's own weakest answers;
+  - findings: one per capability gap, plus DECISION-01 when MP-01 shows no accountable owner. Each has severity, owner role, a start month (wave window, never before each dependency's first milestone: 3 months, or its duration if shorter) and a target duration, a count of blank questions behind it, lever links, named evidence and claim IDs. Its "Today" text quotes the client's own weakest answers;
   - executive need verdict;
   - coverage, with Unknown flagged unconfirmed and blanks listed;
   - consultant-only conflict probes;
@@ -232,25 +232,26 @@ Every maturity question gets "Unknown", scored as risk (D5). Every question carr
   - M9: the audit reaches "Act now".
   - L1–L4, L6, L7: done. L8: this note.
   - L5 (the page must not send `[]` for UN-08) is F6.
+  - Re-review: R1, a finding waits only for its dependency's first milestone, so RS5 Usage Optimization starts at month 3, not 12. R3, DECISION-01's consequence is reworded. R4, a test shows each Usage Optimization depth question can lower the rating from an all-at-core baseline. R5, "not answered" findings sort by a `notAnsweredCount` field. R2 (merge the decision and Practice Operations findings in the executive top five) is left for F7.
   - M6 ("below 70%" reads Not yet) is unchanged: it is an owner decision.
 - **Register:** CLM-FIN-162 to 166 (LTM heuristics). 165 and 166 are new in the review fixes. `scripts/check-claims.cjs` also checks the two v3 JSON files.
-- **Tests:** `test/finops-iq-v3.test.ts` has 95 tests:
+- **Tests:** `test/finops-iq-v3.test.ts` has 98 tests:
   - contract tests for both modes, positive and negative;
   - each rating-rule branch, and each scope and answer trigger, positive and negative;
   - invariants over 300 random questionnaires: better answers never score worse on any capability, the headline or the need index, with no exemptions; blanks never yield fewer or less severe findings;
-  - schedule checks;
+  - schedule checks: no start before the wave window or a dependency's first milestone, and none past the wave window's end unless it waits on a Critical or High dependency;
   - claim IDs on every client-visible string;
   - schema validation with ajv;
   - goldens;
   - legacy coverage.
 
-  `npm test`: 392 tests pass, and `check:repo` passes.
+  `npm test`: 395 tests pass, and `check:repo` passes.
 - **Audit:** `npm run audit:engines` covers both v3 modes. It shows:
   - no out-of-scale values;
   - every verdict band reached;
   - leaving answers blank flatters none of the five headlines (missing-data shift at most 0).
 
-  Dead questions: only the HY questions in executive mode. In workshop mode, also the Usage Optimization depth questions OP-05 to OP-12: under the one-level rule, one depth answer moves the rating only when every other depth answer is at the core level, which random answers rarely produce.
+  Dead questions: only the HY questions in executive mode. In workshop mode, also the Usage Optimization depth questions OP-05 to OP-12: under the one-level rule, one depth answer moves the rating only when every other depth answer is at the core level, which random answers rarely produce. A test from an all-at-core baseline shows each one is live (R4).
 - **Scenarios** (see [F3-scenario-diffs.md](design/F3-scenario-diffs.md)). All five match exactly on tier, every capability rating, target and gap, the headline, owner role and wave per finding, and DECISION-01. Recorded differences:
   - D1: no lever findings and no DECISION-02 yet (F4).
   - D2: no severity value uplift (F4).
@@ -270,7 +271,7 @@ Every maturity question gets "Unknown", scored as risk (D5). Every question carr
   The reviewer will amend DESIGN 3.2, 3.3, 4.4, 5.3, 5.4, 7.5 and 9.
 - **Left for F4:** lever values, lever and scope-confirmation findings, DECISION-02, the value uplift and the value urgency modifier.
 - **Left for F6:** route switch, page (including L5), the Cost IQ option-to-level pre-fill table, and the client-mode omission of conflicts.
-- **Left for F7:** spreading Critical work by delivery capacity, and plain-language executive titles.
+- **Left for F7:** spreading Critical work by delivery capacity, plain-language executive titles, and presenting DECISION-01 with the Practice Operations finding (R2).
 
 ---
 
