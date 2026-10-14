@@ -1,6 +1,6 @@
 # Sovereign IQ (merged with Posture IQ): plan
 
-**Date:** 13 Oct 2026  **Author:** `sovereignty-compliance-lead` (advises; the product owner approves).  **Starting point:** the [validation report](VALIDATION.md). Sovereign IQ scores 0 Pass / 6 Partial / 6 Fail and Posture IQ 0 / 7 / 5 on the 12-area scorecard. 34 incorrect, 5 outdated and 16 unsourced regulatory and provider statements.  **Goal:** one accelerator, Sovereign IQ, that passes all 12 areas, with "posture" as its compliance-exposure view.
+**Date:** 13 Oct 2026  **Author:** `sovereignty-compliance-lead` (advises; the product owner approves).  **Starting point:** the [validation report](VALIDATION.md). Sovereign IQ scores 0 Pass / 6 Partial / 6 Fail and Posture IQ 0 / 7 / 5 on the 12-area scorecard. 34 incorrect, 5 outdated and 16 unsourced regulatory and provider statements.  **Goal:** one accelerator, Sovereign IQ, that passes all 13 areas (area 13, report defensibility, added 14 Oct 2026), with "posture" as its compliance-exposure view.
 
 **Naming:** phases are **S0–S11**. To avoid a clash, the shared workstreams from [FRAMEWORK.md](../FRAMEWORK.md) are written **WS-S1 to WS-S8** here (WS-S1 Bedrock AI, WS-S2 claims register, WS-S3 platform playbook, WS-S4 outputs, WS-S5 How LTM can help, WS-S6 client-data protection, WS-S7 modes, WS-S8 practice-lead agents).
 
@@ -21,7 +21,7 @@
 | S8 | How LTM can help and SOW | S7; WS-S5 | Every finding mapped to a typed offering with scope range and execution outline; consultant-only SOW export |
 | S9 | AI on Bedrock with toggle | S6; WS-S1 | Off by default; per-engagement toggle; grounding check passes 100% of the eval set; prompts and outputs logged |
 | S10 | Client-data protection and legal counsel gate | S2–S9; WS-S6 | Transfer basis, TIA, privacy notice, retention live; counsel sign-off for EU/UK, US and APAC |
-| S11 | Re-score against all 12 areas | S0–S10 | Validation report re-issued with all 12 Pass, or Partials accepted in writing |
+| S11 | Re-score against all 13 areas | S0–S10 | Validation report re-issued with all 13 Pass, or Partials accepted in writing |
 
 S0 starts now and does not wait for any decision. S2 content research can run beside S1. S5–S8 can run in parallel once S3's contract is fixed. S9 needs WS-S1; S10 needs WS-S6.
 
@@ -305,13 +305,13 @@ Scope ranges appear only in the consultant SOW draft (D7). The client sees type,
 
 ---
 
-## S11: Re-score against all 12 areas
+## S11: Re-score against all 13 areas
 
 **Objective:** re-issue the validation report for the merged accelerator.
 
 | # | Item |
 |---|---|
-| 1 | Re-run this agent's review against the 12 areas with fresh evidence (tests, audit, register, PDFs, counsel sign-off) |
+| 1 | Re-run this agent's review against the 13 areas with fresh evidence (tests, audit, register, PDFs, counsel sign-off) |
 | 2 | Re-verify every volatile claim (90-day items) on the re-score date |
 | 3 | Consultant dry run with two internal "hostile CIO" sessions: "where is this number from?", "is this legal advice?", "why should I trust a tool hosted in India?" |
 | 4 | Owner decision on CIO pilots (booked after all accelerators improve, per FRAMEWORK.md) |

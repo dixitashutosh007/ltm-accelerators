@@ -2397,6 +2397,2225 @@
         "CLM-SOV-075",
         "CLM-SOV-076"
       ]
+    },
+    {
+      "id": "UK_GDPR",
+      "name": "UK GDPR and Data Protection Act 2018 (as amended by the Data (Use and Access) Act 2025)",
+      "jurisdiction": "uk",
+      "market": "eu_uk",
+      "citation": {
+        "text": "UK GDPR; Data Protection Act 2018; Data (Use and Access) Act 2025 [CLM-SOV-077]",
+        "url": "https://www.legislation.gov.uk/eur/2016/679/contents"
+      },
+      "kind": "obligation",
+      "status": "in_force",
+      "statusAsOf": "2026-10-14",
+      "dates": [
+        {
+          "label": "UK Extension to the DPF (UK-US data bridge) applies",
+          "date": "2023-10-12",
+          "status": "in_force",
+          "claims": [
+            "CLM-SOV-082"
+          ]
+        },
+        {
+          "label": "DUAA data protection changes commence (incl. transfers)",
+          "date": "2026-02-05",
+          "status": "in_force",
+          "claims": [
+            "CLM-SOV-077"
+          ]
+        }
+      ],
+      "applicability": {
+        "rules": [
+          {
+            "id": "UK_GDPR.1",
+            "when": {
+              "fact": "org.establishments",
+              "op": "includes",
+              "value": "uk"
+            },
+            "grade": "applies",
+            "reason": "You have an establishment in the UK.",
+            "basis": "UK GDPR Art. 3(1)",
+            "claims": [
+              "CLM-SOV-078"
+            ],
+            "verification": {
+              "status": "P",
+              "checked": "2026-10-14",
+              "by": "sovereignty-compliance-lead (agent)"
+            }
+          },
+          {
+            "id": "UK_GDPR.2",
+            "when": {
+              "fact": "data.subject_regions",
+              "op": "includes",
+              "value": "uk"
+            },
+            "grade": "likely_confirm",
+            "reason": "You hold personal data of people in the UK without a UK establishment; UK GDPR applies if you offer them goods or services or monitor them. Confirm.",
+            "basis": "UK GDPR Art. 3(2)",
+            "claims": [
+              "CLM-SOV-078"
+            ],
+            "verification": {
+              "status": "P",
+              "checked": "2026-10-14",
+              "by": "sovereignty-compliance-lead (agent)"
+            }
+          }
+        ],
+        "default": "not_applicable"
+      },
+      "requiredControls": [
+        {
+          "control": "SOV.XFER.BASIS",
+          "when": {
+            "fact": "derived.personal_transfer",
+            "op": "eq",
+            "value": true
+          },
+          "basis": "UK GDPR transfer provisions as replaced by DUAA Sch. 7 [CLM-SOV-079]; IDTA/Addendum [CLM-SOV-080]; UK-US data bridge [CLM-SOV-082]",
+          "verification": {
+            "status": "P",
+            "checked": "2026-10-14",
+            "by": "sovereignty-compliance-lead (agent)"
+          }
+        },
+        {
+          "control": "SOV.XFER.TIA",
+          "when": {
+            "fact": "xfer.mechanisms",
+            "op": "includes_any",
+            "value": [
+              "idta_or_addendum",
+              "bcr"
+            ]
+          },
+          "basis": "ICO transfer risk assessment guidance [CLM-SOV-081]",
+          "verification": {
+            "status": "V",
+            "checked": "2026-10-14",
+            "by": "sovereignty-compliance-lead (agent)"
+          }
+        },
+        {
+          "control": "SOV.TP.DPA",
+          "basis": "UK GDPR Art. 28 [CLM-SOV-083]",
+          "verification": {
+            "status": "P",
+            "checked": "2026-10-14",
+            "by": "sovereignty-compliance-lead (agent)"
+          }
+        },
+        {
+          "control": "SOV.SAAS.SUBPROCESSOR",
+          "basis": "UK GDPR Art. 28(2), (4) [CLM-SOV-083]",
+          "verification": {
+            "status": "P",
+            "checked": "2026-10-14",
+            "by": "sovereignty-compliance-lead (agent)"
+          }
+        },
+        {
+          "control": "SOV.DATA.MAP",
+          "basis": "UK GDPR Art. 30 [CLM-SOV-083]",
+          "verification": {
+            "status": "P",
+            "checked": "2026-10-14",
+            "by": "sovereignty-compliance-lead (agent)"
+          }
+        },
+        {
+          "control": "SOV.ENC.BASELINE",
+          "basis": "UK GDPR Art. 32 [CLM-SOV-083]",
+          "verification": {
+            "status": "P",
+            "checked": "2026-10-14",
+            "by": "sovereignty-compliance-lead (agent)"
+          }
+        },
+        {
+          "control": "SOV.IR.REPORTING",
+          "basis": "UK GDPR Art. 33 (72 hours) [CLM-SOV-083]",
+          "verification": {
+            "status": "P",
+            "checked": "2026-10-14",
+            "by": "sovereignty-compliance-lead (agent)"
+          }
+        }
+      ],
+      "obligations": [
+        {
+          "id": "UK_GDPR.TRANSFERS",
+          "article": "UK GDPR Art. 44A ff. (DUAA Sch. 7)",
+          "summary": "Transfers need UK adequacy regulations (including the UK-US data bridge for certified recipients), an appropriate safeguard meeting the data protection test (IDTA, Addendum, BCRs) with a transfer risk assessment, or an exception. EEA-to-UK transfers are covered by EU adequacy until 27 Dec 2031.",
+          "controls": [
+            "SOV.XFER.BASIS",
+            "SOV.XFER.TIA"
+          ],
+          "claims": [
+            "CLM-SOV-079",
+            "CLM-SOV-080",
+            "CLM-SOV-081",
+            "CLM-SOV-082",
+            "CLM-SOV-015"
+          ]
+        },
+        {
+          "id": "UK_GDPR.PROCESSING",
+          "article": "UK GDPR Art. 28, 30, 32, 33",
+          "summary": "Processor contracts, records, security and 72-hour breach notification.",
+          "controls": [
+            "SOV.TP.DPA",
+            "SOV.SAAS.SUBPROCESSOR",
+            "SOV.DATA.MAP",
+            "SOV.ENC.BASELINE",
+            "SOV.IR.REPORTING"
+          ],
+          "claims": [
+            "CLM-SOV-083"
+          ]
+        }
+      ],
+      "penalty": {
+        "model": "turnover_greater_of",
+        "tiers": [
+          {
+            "label": "Higher maximum (incl. transfers, principles)",
+            "fixedAmount": 17500000,
+            "currency": "GBP",
+            "turnoverPercent": 4,
+            "turnoverBasis": "worldwide_prior_year",
+            "article": "UK GDPR Art. 83(5); DPA 2018 s.157",
+            "claims": [
+              "CLM-SOV-084"
+            ]
+          },
+          {
+            "label": "Standard maximum",
+            "fixedAmount": 8700000,
+            "currency": "GBP",
+            "turnoverPercent": 2,
+            "turnoverBasis": "worldwide_prior_year",
+            "article": "UK GDPR Art. 83(4); DPA 2018 s.157",
+            "claims": [
+              "CLM-SOV-084"
+            ]
+          }
+        ],
+        "appliesTo": "Controllers and processors",
+        "note": "Cap, not expected fine.",
+        "verification": {
+          "status": "V",
+          "checked": "2026-10-14",
+          "by": "sovereignty-compliance-lead (agent)"
+        }
+      },
+      "volatile": false,
+      "reviewDays": 180,
+      "verification": {
+        "status": "P",
+        "checked": "2026-10-14",
+        "by": "sovereignty-compliance-lead (agent)",
+        "note": "Worst status across citation and applicability claims. All 9 claims referenced by this regime: 5 V, 1 S, 3 P."
+      },
+      "claims": [
+        "CLM-SOV-015",
+        "CLM-SOV-077",
+        "CLM-SOV-078",
+        "CLM-SOV-079",
+        "CLM-SOV-080",
+        "CLM-SOV-081",
+        "CLM-SOV-082",
+        "CLM-SOV-083",
+        "CLM-SOV-084"
+      ]
+    },
+    {
+      "id": "UK_OPRES",
+      "name": "UK operational resilience (PRA SS1/21, FCA PS21/3 / SYSC 15A)",
+      "jurisdiction": "uk",
+      "market": "eu_uk",
+      "citation": {
+        "text": "PRA SS1/21; FCA SYSC 15A [CLM-SOV-085] [CLM-SOV-086]",
+        "url": "https://www.bankofengland.co.uk/prudential-regulation/publication/2021/march/operational-resilience-impact-tolerances-for-important-business-services-ss"
+      },
+      "kind": "obligation",
+      "status": "in_force",
+      "statusAsOf": "2026-10-14",
+      "dates": [
+        {
+          "label": "Firms must remain within impact tolerances",
+          "date": "2025-03-31",
+          "status": "in_force",
+          "claims": [
+            "CLM-SOV-085"
+          ]
+        }
+      ],
+      "applicability": {
+        "rules": [
+          {
+            "id": "UK_OPRES.1",
+            "when": {
+              "fact": "ent.flags",
+              "op": "includes",
+              "value": "uk_pra_regulated"
+            },
+            "grade": "applies",
+            "reason": "As a PRA-regulated firm you must keep important business services within your impact tolerances. Impact-tolerance maturity is assessed in Resilience IQ.",
+            "basis": "PRA SS1/21",
+            "claims": [
+              "CLM-SOV-085"
+            ],
+            "verification": {
+              "status": "V",
+              "checked": "2026-10-14",
+              "by": "sovereignty-compliance-lead (agent)"
+            }
+          },
+          {
+            "id": "UK_OPRES.2",
+            "when": {
+              "fact": "ent.flags",
+              "op": "includes",
+              "value": "uk_fca_solo_regulated"
+            },
+            "grade": "likely_confirm",
+            "reason": "SYSC 15A covers certain FCA solo-regulated firms, including enhanced scope SM&CR firms, payment and e-money institutions. Confirm your firm type.",
+            "basis": "FCA SYSC 15A.1",
+            "claims": [
+              "CLM-SOV-086"
+            ],
+            "verification": {
+              "status": "V",
+              "checked": "2026-10-14",
+              "by": "sovereignty-compliance-lead (agent)"
+            }
+          },
+          {
+            "id": "UK_OPRES.3",
+            "when": {
+              "all": [
+                {
+                  "fact": "org.establishments",
+                  "op": "includes",
+                  "value": "uk"
+                },
+                {
+                  "derived": "financial_sector"
+                }
+              ]
+            },
+            "grade": "likely_confirm",
+            "reason": "You provide financial services in the UK but have not stated a PRA or FCA authorisation. Confirm.",
+            "basis": "PRA SS1/21; FCA SYSC 15A.1",
+            "claims": [
+              "CLM-SOV-085",
+              "CLM-SOV-086"
+            ],
+            "verification": {
+              "status": "V",
+              "checked": "2026-10-14",
+              "by": "sovereignty-compliance-lead (agent)"
+            }
+          }
+        ],
+        "default": "not_applicable"
+      },
+      "obligations": [
+        {
+          "id": "UK_OPRES.TOLERANCES",
+          "article": "SS1/21; SYSC 15A",
+          "summary": "Identify important business services, set impact tolerances, remain within them (firms set their own tolerances). Assessed in Resilience IQ.",
+          "claims": [
+            "CLM-SOV-085",
+            "CLM-SOV-086"
+          ]
+        }
+      ],
+      "penalty": {
+        "model": "not_quantified",
+        "note": "Supervisory enforcement; no statutory maximum identified [CLM-SOV-087].",
+        "verification": {
+          "status": "UNSOURCED",
+          "checked": "2026-10-14",
+          "by": "sovereignty-compliance-lead (agent)"
+        }
+      },
+      "volatile": false,
+      "reviewDays": 180,
+      "verification": {
+        "status": "V",
+        "checked": "2026-10-14",
+        "by": "sovereignty-compliance-lead (agent)",
+        "note": "Worst status across citation and applicability claims. All 3 claims referenced by this regime: 2 V, 1 UNSOURCED."
+      },
+      "claims": [
+        "CLM-SOV-085",
+        "CLM-SOV-086",
+        "CLM-SOV-087"
+      ]
+    },
+    {
+      "id": "UK_PRA_SS2_21",
+      "name": "PRA SS2/21 Outsourcing and third party risk management",
+      "jurisdiction": "uk",
+      "market": "eu_uk",
+      "citation": {
+        "text": "PRA Supervisory Statement SS2/21 (Nov 2024 update) [CLM-SOV-088]",
+        "url": "https://www.bankofengland.co.uk/-/media/boe/files/prudential-regulation/supervisory-statement/2024/ss221-november-2024-update.pdf"
+      },
+      "kind": "obligation",
+      "status": "in_force",
+      "statusAsOf": "2026-10-14",
+      "dates": [
+        {
+          "label": "Applies",
+          "date": "2022-03-31",
+          "status": "in_force",
+          "claims": [
+            "CLM-SOV-088"
+          ]
+        }
+      ],
+      "applicability": {
+        "rules": [
+          {
+            "id": "UK_PRA_SS2_21.1",
+            "when": {
+              "fact": "ent.flags",
+              "op": "includes",
+              "value": "uk_pra_regulated"
+            },
+            "grade": "applies",
+            "reason": "As a PRA-regulated firm you must manage outsourcing and third-party risk under SS2/21.",
+            "basis": "PRA SS2/21",
+            "claims": [
+              "CLM-SOV-088"
+            ],
+            "verification": {
+              "status": "V",
+              "checked": "2026-10-14",
+              "by": "sovereignty-compliance-lead (agent)"
+            }
+          }
+        ],
+        "default": "not_applicable"
+      },
+      "requiredControls": [
+        {
+          "control": "SOV.TP.REGISTER",
+          "basis": "SS2/21 outsourcing register [CLM-SOV-089]",
+          "verification": {
+            "status": "P",
+            "checked": "2026-10-14",
+            "by": "sovereignty-compliance-lead (agent)"
+          }
+        },
+        {
+          "control": "SOV.EXIT.PLAN",
+          "basis": "SS2/21 exit plans for material outsourcing [CLM-SOV-089]",
+          "verification": {
+            "status": "P",
+            "checked": "2026-10-14",
+            "by": "sovereignty-compliance-lead (agent)"
+          }
+        },
+        {
+          "control": "SOV.TP.AUDIT",
+          "basis": "SS2/21 access, audit and information rights [CLM-SOV-089]",
+          "verification": {
+            "status": "P",
+            "checked": "2026-10-14",
+            "by": "sovereignty-compliance-lead (agent)"
+          }
+        },
+        {
+          "control": "SOV.CONC.PROVIDER",
+          "basis": "SS2/21 concentration risk [CLM-SOV-089]",
+          "verification": {
+            "status": "P",
+            "checked": "2026-10-14",
+            "by": "sovereignty-compliance-lead (agent)"
+          }
+        }
+      ],
+      "obligations": [
+        {
+          "id": "UK_PRA_SS2_21.TPRM",
+          "article": "SS2/21",
+          "summary": "Outsourcing register, materiality and concentration assessment, access and audit rights, exit plans.",
+          "controls": [
+            "SOV.TP.REGISTER",
+            "SOV.EXIT.PLAN",
+            "SOV.TP.AUDIT",
+            "SOV.CONC.PROVIDER"
+          ],
+          "claims": [
+            "CLM-SOV-089"
+          ]
+        }
+      ],
+      "penalty": {
+        "model": "not_quantified",
+        "note": "Supervisory enforcement; no statutory maximum identified [CLM-SOV-087].",
+        "verification": {
+          "status": "UNSOURCED",
+          "checked": "2026-10-14",
+          "by": "sovereignty-compliance-lead (agent)"
+        }
+      },
+      "volatile": false,
+      "reviewDays": 180,
+      "verification": {
+        "status": "V",
+        "checked": "2026-10-14",
+        "by": "sovereignty-compliance-lead (agent)",
+        "note": "Worst status across citation and applicability claims. All 3 claims referenced by this regime: 1 V, 1 P, 1 UNSOURCED."
+      },
+      "claims": [
+        "CLM-SOV-087",
+        "CLM-SOV-088",
+        "CLM-SOV-089"
+      ]
+    },
+    {
+      "id": "UK_CTP",
+      "name": "UK critical third parties regime",
+      "jurisdiction": "uk",
+      "market": "eu_uk",
+      "citation": {
+        "text": "FSMA 2000 ss.312L-312Z, inserted by the Financial Services and Markets Act 2023 [CLM-SOV-090]",
+        "url": "https://www.legislation.gov.uk/ukpga/2000/8/section/312L"
+      },
+      "kind": "obligation",
+      "status": "in_force",
+      "statusAsOf": "2026-10-14",
+      "dates": [
+        {
+          "label": "First four designations effective",
+          "date": "2026-07-13",
+          "status": "in_force",
+          "claims": [
+            "CLM-SOV-091"
+          ]
+        }
+      ],
+      "applicability": {
+        "rules": [
+          {
+            "id": "UK_CTP.1",
+            "when": {
+              "fact": "ent.flags",
+              "op": "includes",
+              "value": "uk_ctp_designated"
+            },
+            "grade": "applies",
+            "reason": "You are designated by HM Treasury as a critical third party and are subject to the CTP rules and oversight.",
+            "basis": "FSMA 2000 s.312L",
+            "claims": [
+              "CLM-SOV-090"
+            ],
+            "verification": {
+              "status": "S",
+              "checked": "2026-10-14",
+              "by": "sovereignty-compliance-lead (agent)"
+            }
+          },
+          {
+            "id": "UK_CTP.2",
+            "when": {
+              "all": [
+                {
+                  "fact": "ent.flags",
+                  "op": "includes_any",
+                  "value": [
+                    "uk_pra_regulated",
+                    "uk_fca_solo_regulated"
+                  ]
+                },
+                {
+                  "fact": "plat.in_scope",
+                  "op": "includes_any",
+                  "value": [
+                    "aws",
+                    "azure",
+                    "gcp",
+                    "oci",
+                    "hyperscaler_sovereign_offering"
+                  ]
+                }
+              ]
+            },
+            "grade": "advisory",
+            "reason": "HM Treasury designated Amazon Web Services EMEA SARL, Google Cloud EMEA Ltd, Microsoft Ireland Operations Ltd and Oracle Corporation UK Ltd, effective 13 Jul 2026. The regime binds them; your own outsourcing and resilience duties remain.",
+            "basis": "FSMA 2000 s.312L; PS16/24",
+            "claims": [
+              "CLM-SOV-091",
+              "CLM-SOV-092"
+            ],
+            "verification": {
+              "status": "S",
+              "checked": "2026-10-14",
+              "by": "sovereignty-compliance-lead (agent)"
+            }
+          }
+        ],
+        "default": "not_applicable"
+      },
+      "obligations": [
+        {
+          "id": "UK_CTP.DESIGNATIONS",
+          "article": "FSMA 2000 s.312L",
+          "summary": "Designated CTPs as of 14 Oct 2026: AWS EMEA SARL, Google Cloud EMEA Ltd, Microsoft Ireland Operations Ltd, Oracle Corporation UK Ltd (90-day review).",
+          "claims": [
+            "CLM-SOV-091"
+          ]
+        },
+        {
+          "id": "UK_CTP.FIRMS",
+          "article": "PS16/24",
+          "summary": "Firms keep their own duties; the designation creates none for them. Sovereign IQ shows SOV.CONC.PROVIDER (B6) as context.",
+          "claims": [
+            "CLM-SOV-092"
+          ]
+        }
+      ],
+      "penalty": {
+        "model": "not_quantified",
+        "appliesTo": "Designated CTPs only; no penalty on firms that rely on them",
+        "note": "Regulators' disciplinary powers over CTPs (FSMA 2000 ss.312Q-312R) [CLM-SOV-090]; amounts not quantified.",
+        "verification": {
+          "status": "S",
+          "checked": "2026-10-14",
+          "by": "sovereignty-compliance-lead (agent)"
+        }
+      },
+      "volatile": true,
+      "reviewDays": 90,
+      "verification": {
+        "status": "S",
+        "checked": "2026-10-14",
+        "by": "sovereignty-compliance-lead (agent)",
+        "note": "Worst status across citation and applicability claims. All 3 claims referenced by this regime: 1 V, 2 S."
+      },
+      "claims": [
+        "CLM-SOV-090",
+        "CLM-SOV-091",
+        "CLM-SOV-092"
+      ]
+    },
+    {
+      "id": "UK_NIS",
+      "name": "Network and Information Systems Regulations 2018",
+      "jurisdiction": "uk",
+      "market": "eu_uk",
+      "citation": {
+        "text": "SI 2018/506 [CLM-SOV-093]",
+        "url": "https://www.legislation.gov.uk/uksi/2018/506"
+      },
+      "kind": "obligation",
+      "status": "in_force",
+      "statusAsOf": "2026-10-14",
+      "dates": [
+        {
+          "label": "In force",
+          "date": "2018-05-10",
+          "status": "in_force",
+          "claims": [
+            "CLM-SOV-093"
+          ]
+        }
+      ],
+      "applicability": {
+        "rules": [
+          {
+            "id": "UK_NIS.1",
+            "when": {
+              "fact": "ent.ci_regimes",
+              "op": "includes_any",
+              "value": [
+                "uk_nis_oes",
+                "uk_nis_rdsp"
+              ]
+            },
+            "grade": "applies",
+            "reason": "You are an operator of essential services or a relevant digital service provider under the NIS Regulations.",
+            "basis": "NIS Regulations 2018 regs. 8, 14",
+            "claims": [
+              "CLM-SOV-093"
+            ],
+            "verification": {
+              "status": "S",
+              "checked": "2026-10-14",
+              "by": "sovereignty-compliance-lead (agent)"
+            }
+          },
+          {
+            "id": "UK_NIS.2",
+            "when": {
+              "all": [
+                {
+                  "fact": "org.establishments",
+                  "op": "includes",
+                  "value": "uk"
+                },
+                {
+                  "fact": "org.sector",
+                  "op": "in",
+                  "value": [
+                    "energy",
+                    "transport",
+                    "water",
+                    "health",
+                    "digital_infrastructure"
+                  ]
+                },
+                {
+                  "fact": "ent.ci_regimes",
+                  "op": "is_unknown"
+                }
+              ]
+            },
+            "grade": "likely_confirm",
+            "reason": "Your UK sector is covered by the NIS Regulations. Confirm whether you are designated as an operator of essential services or are a relevant digital service provider (small and micro digital providers are excluded).",
+            "basis": "NIS Regulations 2018 regs. 8, 14",
+            "claims": [
+              "CLM-SOV-093"
+            ],
+            "verification": {
+              "status": "S",
+              "checked": "2026-10-14",
+              "by": "sovereignty-compliance-lead (agent)"
+            }
+          }
+        ],
+        "default": "not_applicable"
+      },
+      "requiredControls": [
+        {
+          "control": "SOV.IR.REPORTING",
+          "basis": "NIS Regulations 2018 regs. 11-12: notify within 72 hours [CLM-SOV-094]",
+          "verification": {
+            "status": "P",
+            "checked": "2026-10-14",
+            "by": "sovereignty-compliance-lead (agent)"
+          }
+        }
+      ],
+      "obligations": [
+        {
+          "id": "UK_NIS.REPORT",
+          "article": "regs. 11-12",
+          "summary": "Notify NIS incidents without undue delay, no later than 72 hours.",
+          "controls": [
+            "SOV.IR.REPORTING"
+          ],
+          "claims": [
+            "CLM-SOV-094"
+          ]
+        }
+      ],
+      "penalty": {
+        "model": "fixed",
+        "tiers": [
+          {
+            "label": "Not a material contravention",
+            "fixedAmount": 1000000,
+            "currency": "GBP",
+            "article": "reg. 18(6)",
+            "claims": [
+              "CLM-SOV-095"
+            ]
+          },
+          {
+            "label": "Material contravention",
+            "fixedAmount": 8500000,
+            "currency": "GBP",
+            "article": "reg. 18(6)",
+            "claims": [
+              "CLM-SOV-095"
+            ]
+          },
+          {
+            "label": "Material contravention with significant risk or impact",
+            "fixedAmount": 17000000,
+            "currency": "GBP",
+            "article": "reg. 18(6)",
+            "claims": [
+              "CLM-SOV-095"
+            ]
+          }
+        ],
+        "appliesTo": "OES and RDSPs",
+        "note": "Cap, not expected fine.",
+        "verification": {
+          "status": "S",
+          "checked": "2026-10-14",
+          "by": "sovereignty-compliance-lead (agent)"
+        }
+      },
+      "volatile": false,
+      "reviewDays": 180,
+      "verification": {
+        "status": "S",
+        "checked": "2026-10-14",
+        "by": "sovereignty-compliance-lead (agent)",
+        "note": "Worst status across citation and applicability claims. All 3 claims referenced by this regime: 2 S, 1 P."
+      },
+      "claims": [
+        "CLM-SOV-093",
+        "CLM-SOV-094",
+        "CLM-SOV-095"
+      ]
+    },
+    {
+      "id": "UK_CSR_BILL",
+      "name": "Cyber Security and Resilience (Network and Information Systems) Bill",
+      "jurisdiction": "uk",
+      "market": "eu_uk",
+      "citation": {
+        "text": "Bill 4035, before Parliament [CLM-SOV-096]",
+        "url": "https://bills.parliament.uk/bills/4035"
+      },
+      "kind": "obligation",
+      "status": "pending",
+      "statusAsOf": "2026-10-14",
+      "dates": [
+        {
+          "label": "Lords committee stage concluded",
+          "date": "2026-09-07",
+          "status": "in_force",
+          "claims": [
+            "CLM-SOV-096"
+          ]
+        },
+        {
+          "label": "Lords report stage (scheduled)",
+          "date": "2026-10-26",
+          "status": "future",
+          "claims": [
+            "CLM-SOV-096"
+          ]
+        }
+      ],
+      "applicability": {
+        "rules": [
+          {
+            "id": "UK_CSR_BILL.1",
+            "when": {
+              "all": [
+                {
+                  "any": [
+                    {
+                      "fact": "org.establishments",
+                      "op": "includes",
+                      "value": "uk"
+                    },
+                    {
+                      "fact": "data.subject_regions",
+                      "op": "includes",
+                      "value": "uk"
+                    }
+                  ]
+                },
+                {
+                  "any": [
+                    {
+                      "fact": "org.sector",
+                      "op": "in",
+                      "value": [
+                        "digital_infrastructure",
+                        "ict_service_management_b2b"
+                      ]
+                    },
+                    {
+                      "fact": "ent.ci_regimes",
+                      "op": "includes_any",
+                      "value": [
+                        "uk_nis_oes",
+                        "uk_nis_rdsp"
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            "grade": "advisory",
+            "reason": "A Bill before Parliament (not yet law as of 14 Oct 2026) would bring data centres and medium and large managed service providers into the NIS regime and raise maximum penalties.",
+            "basis": "Bill 4035",
+            "claims": [
+              "CLM-SOV-096",
+              "CLM-SOV-097"
+            ],
+            "verification": {
+              "status": "S",
+              "checked": "2026-10-14",
+              "by": "sovereignty-compliance-lead (agent)"
+            }
+          }
+        ],
+        "default": "not_applicable"
+      },
+      "penalty": {
+        "model": "not_quantified",
+        "note": "Not law. As introduced, maximum would be the higher of GBP 17 million or 4% of turnover [CLM-SOV-097].",
+        "verification": {
+          "status": "S",
+          "checked": "2026-10-14",
+          "by": "sovereignty-compliance-lead (agent)"
+        }
+      },
+      "volatile": true,
+      "reviewDays": 90,
+      "verification": {
+        "status": "S",
+        "checked": "2026-10-14",
+        "by": "sovereignty-compliance-lead (agent)",
+        "note": "Worst status across citation and applicability claims. All 2 claims referenced by this regime: 1 V, 1 S."
+      },
+      "claims": [
+        "CLM-SOV-096",
+        "CLM-SOV-097"
+      ]
+    },
+    {
+      "id": "US_CLOUD_ACT",
+      "name": "CLOUD Act",
+      "jurisdiction": "us",
+      "market": "us",
+      "citation": {
+        "text": "18 U.S.C. § 2713, § 2703(h), § 2523 [CLM-SOV-098]",
+        "url": "https://www.law.cornell.edu/uscode/text/18/2713"
+      },
+      "kind": "exposure",
+      "status": "in_force",
+      "statusAsOf": "2026-10-14",
+      "dates": [
+        {
+          "label": "UK-US CLOUD Act agreement in force",
+          "date": "2022-10-03",
+          "status": "in_force",
+          "claims": [
+            "CLM-SOV-100"
+          ]
+        },
+        {
+          "label": "Australia-US CLOUD Act agreement in force",
+          "date": "2024-01-31",
+          "status": "in_force",
+          "claims": [
+            "CLM-SOV-100"
+          ]
+        }
+      ],
+      "applicability": {
+        "rules": [
+          {
+            "id": "US_CLOUD_ACT.1",
+            "when": {
+              "derived": "uses_us_parent_provider"
+            },
+            "grade": "advisory",
+            "reason": "A US provider must produce data in its possession, custody or control wherever it is stored. Keys you hold outside the provider's control limit what it can technically produce, but not its legal duty.",
+            "basis": "18 U.S.C. § 2713",
+            "claims": [
+              "CLM-SOV-098",
+              "CLM-SOV-101"
+            ],
+            "verification": {
+              "status": "S",
+              "checked": "2026-10-14",
+              "by": "sovereignty-compliance-lead (agent)"
+            }
+          }
+        ],
+        "default": "not_applicable"
+      },
+      "obligations": [
+        {
+          "id": "US_CLOUD_ACT.QUASH",
+          "article": "18 U.S.C. § 2703(h)",
+          "summary": "Providers may move to quash only where a qualifying foreign government (executive agreement) is involved.",
+          "claims": [
+            "CLM-SOV-099",
+            "CLM-SOV-100"
+          ]
+        }
+      ],
+      "penalty": {
+        "model": "not_applicable_to_client",
+        "note": "No penalty on you; disclosure exposure [CLM-SOV-098].",
+        "verification": {
+          "status": "V",
+          "checked": "2026-10-14",
+          "by": "sovereignty-compliance-lead (agent)"
+        }
+      },
+      "volatile": false,
+      "reviewDays": 180,
+      "verification": {
+        "status": "S",
+        "checked": "2026-10-14",
+        "by": "sovereignty-compliance-lead (agent)",
+        "note": "Worst status across citation and applicability claims. All 4 claims referenced by this regime: 1 V, 3 S."
+      },
+      "claims": [
+        "CLM-SOV-098",
+        "CLM-SOV-099",
+        "CLM-SOV-100",
+        "CLM-SOV-101"
+      ]
+    },
+    {
+      "id": "US_FISA_702",
+      "name": "FISA Section 702",
+      "jurisdiction": "us",
+      "market": "us",
+      "citation": {
+        "text": "50 U.S.C. § 1881a [CLM-SOV-102]",
+        "url": "https://www.law.cornell.edu/uscode/text/50/1881a"
+      },
+      "kind": "exposure",
+      "status": "volatile",
+      "statusAsOf": "2026-10-14",
+      "dates": [
+        {
+          "label": "Statutory authority lapsed at the June 2026 sunset; existing certifications continue",
+          "date": "2026-06-12",
+          "status": "lapsed",
+          "claims": [
+            "CLM-SOV-103",
+            "CLM-SOV-104"
+          ]
+        }
+      ],
+      "applicability": {
+        "rules": [
+          {
+            "id": "US_FISA_702.1",
+            "when": {
+              "all": [
+                {
+                  "derived": "uses_us_parent_provider"
+                },
+                {
+                  "derived": "non_us_people"
+                }
+              ]
+            },
+            "grade": "advisory",
+            "reason": "Section 702 targets non-US persons outside the US through US electronic communication service providers. Its statutory authority lapsed in June 2026 and reauthorisation is pending; collection continues under existing certifications (status as of 14 Oct 2026).",
+            "basis": "50 U.S.C. § 1881a",
+            "claims": [
+              "CLM-SOV-102",
+              "CLM-SOV-103",
+              "CLM-SOV-104"
+            ],
+            "verification": {
+              "status": "P",
+              "checked": "2026-10-14",
+              "by": "sovereignty-compliance-lead (agent)"
+            }
+          }
+        ],
+        "default": "not_applicable"
+      },
+      "penalty": {
+        "model": "not_applicable_to_client",
+        "note": "No penalty on you; disclosure exposure [CLM-SOV-102].",
+        "verification": {
+          "status": "P",
+          "checked": "2026-10-14",
+          "by": "sovereignty-compliance-lead (agent)"
+        }
+      },
+      "volatile": true,
+      "reviewDays": 90,
+      "verification": {
+        "status": "P",
+        "checked": "2026-10-14",
+        "by": "sovereignty-compliance-lead (agent)",
+        "note": "Worst status across citation and applicability claims. All 3 claims referenced by this regime: 1 V, 1 S, 1 P."
+      },
+      "claims": [
+        "CLM-SOV-102",
+        "CLM-SOV-103",
+        "CLM-SOV-104"
+      ]
+    },
+    {
+      "id": "US_DOJ_DSP",
+      "name": "DOJ Data Security Program (bulk sensitive data)",
+      "jurisdiction": "us",
+      "market": "us",
+      "citation": {
+        "text": "28 CFR Part 202 [CLM-SOV-105]",
+        "url": "https://www.ecfr.gov/current/title-28/chapter-I/part-202"
+      },
+      "kind": "obligation",
+      "status": "in_force",
+      "statusAsOf": "2026-10-14",
+      "dates": [
+        {
+          "label": "Effective",
+          "date": "2025-04-08",
+          "status": "in_force",
+          "claims": [
+            "CLM-SOV-105"
+          ]
+        },
+        {
+          "label": "Limited-enforcement period ended",
+          "date": "2025-07-08",
+          "status": "in_force",
+          "claims": [
+            "CLM-SOV-105"
+          ]
+        }
+      ],
+      "applicability": {
+        "rules": [
+          {
+            "id": "US_DOJ_DSP.1",
+            "when": {
+              "all": [
+                {
+                  "derived": "us_person_org"
+                },
+                {
+                  "derived": "us_coc_link"
+                },
+                {
+                  "any": [
+                    {
+                      "fact": "data.us_sensitive_categories",
+                      "op": "includes",
+                      "value": "government_related"
+                    },
+                    {
+                      "all": [
+                        {
+                          "fact": "data.us_sensitive_categories",
+                          "op": "includes_any",
+                          "value": [
+                            "genomic",
+                            "biometric",
+                            "precise_geolocation",
+                            "health",
+                            "financial"
+                          ]
+                        },
+                        {
+                          "fact": "data.personal_volume",
+                          "op": "gte",
+                          "value": "10k_100k"
+                        }
+                      ]
+                    },
+                    {
+                      "all": [
+                        {
+                          "fact": "data.us_sensitive_categories",
+                          "op": "includes",
+                          "value": "identifiers"
+                        },
+                        {
+                          "fact": "data.personal_volume",
+                          "op": "gte",
+                          "value": "100k_1m"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            "grade": "applies",
+            "reason": "You are a US person with links to a country of concern and hold US sensitive personal data above the bulk thresholds (or government-related data). Transactions giving access to it must be screened, blocked or licensed.",
+            "basis": "28 CFR 202.205, 202.601",
+            "claims": [
+              "CLM-SOV-105",
+              "CLM-SOV-106",
+              "CLM-SOV-107"
+            ],
+            "verification": {
+              "status": "S",
+              "checked": "2026-10-14",
+              "by": "sovereignty-compliance-lead (agent)"
+            }
+          },
+          {
+            "id": "US_DOJ_DSP.2",
+            "when": {
+              "all": [
+                {
+                  "derived": "us_person_org"
+                },
+                {
+                  "any": [
+                    {
+                      "derived": "us_coc_link"
+                    },
+                    {
+                      "derived": "us_coc_link_possible"
+                    }
+                  ]
+                },
+                {
+                  "fact": "data.classes",
+                  "op": "includes_any",
+                  "value": [
+                    "personal",
+                    "special",
+                    "financial"
+                  ]
+                }
+              ]
+            },
+            "grade": "likely_confirm",
+            "reason": "You are a US person with possible links to a country of concern and hold personal data; confirm categories and volumes against the bulk thresholds.",
+            "basis": "28 CFR 202.205, 202.601",
+            "claims": [
+              "CLM-SOV-106",
+              "CLM-SOV-107"
+            ],
+            "verification": {
+              "status": "S",
+              "checked": "2026-10-14",
+              "by": "sovereignty-compliance-lead (agent)"
+            }
+          },
+          {
+            "id": "US_DOJ_DSP.3",
+            "when": {
+              "all": [
+                {
+                  "derived": "us_person_org"
+                },
+                {
+                  "fact": "data.subject_regions",
+                  "op": "includes",
+                  "value": "us"
+                },
+                {
+                  "fact": "data.classes",
+                  "op": "includes_any",
+                  "value": [
+                    "personal",
+                    "special",
+                    "financial"
+                  ]
+                }
+              ]
+            },
+            "grade": "advisory",
+            "reason": "Screen data brokerage, vendor, employment and investment agreements for access by countries of concern or covered persons.",
+            "basis": "28 CFR Part 202",
+            "claims": [
+              "CLM-SOV-105"
+            ],
+            "verification": {
+              "status": "S",
+              "checked": "2026-10-14",
+              "by": "sovereignty-compliance-lead (agent)"
+            }
+          }
+        ],
+        "default": "not_applicable"
+      },
+      "requiredControls": [
+        {
+          "control": "SOV.XFER.US_BULK",
+          "basis": "28 CFR Part 202 prohibited and restricted transactions [CLM-SOV-105]",
+          "verification": {
+            "status": "S",
+            "checked": "2026-10-14",
+            "by": "sovereignty-compliance-lead (agent)"
+          }
+        }
+      ],
+      "obligations": [
+        {
+          "id": "US_DOJ_DSP.TRANSACTIONS",
+          "article": "28 CFR Part 202 Subparts C-D",
+          "summary": "Prohibited and restricted covered data transactions with countries of concern and covered persons.",
+          "controls": [
+            "SOV.XFER.US_BULK"
+          ],
+          "claims": [
+            "CLM-SOV-105",
+            "CLM-SOV-106",
+            "CLM-SOV-107"
+          ]
+        }
+      ],
+      "penalty": {
+        "model": "per_violation",
+        "tiers": [
+          {
+            "label": "Civil penalty per violation (or twice the transaction value, if greater)",
+            "fixedAmount": 368136,
+            "currency": "USD",
+            "perViolation": true,
+            "article": "28 CFR 202.1301(b)",
+            "claims": [
+              "CLM-SOV-108"
+            ]
+          }
+        ],
+        "appliesTo": "US persons",
+        "note": "Inflation-adjusted; wilful violations are criminal (up to USD 1,000,000; up to 20 years for individuals) [CLM-SOV-108]. Per-violation amount only; never multiplied by a guessed count.",
+        "verification": {
+          "status": "V",
+          "checked": "2026-10-14",
+          "by": "sovereignty-compliance-lead (agent)"
+        }
+      },
+      "volatile": false,
+      "reviewDays": 180,
+      "verification": {
+        "status": "S",
+        "checked": "2026-10-14",
+        "by": "sovereignty-compliance-lead (agent)",
+        "note": "Worst status across citation and applicability claims. All 4 claims referenced by this regime: 1 V, 3 S."
+      },
+      "claims": [
+        "CLM-SOV-105",
+        "CLM-SOV-106",
+        "CLM-SOV-107",
+        "CLM-SOV-108"
+      ]
+    },
+    {
+      "id": "US_CCPA",
+      "name": "California Consumer Privacy Act, as amended by the CPRA",
+      "jurisdiction": "us_ca",
+      "market": "us",
+      "citation": {
+        "text": "Cal. Civ. Code § 1798.100 ff. [CLM-SOV-109]",
+        "url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?sectionNum=1798.100.&lawCode=CIV"
+      },
+      "kind": "obligation",
+      "status": "in_force",
+      "statusAsOf": "2026-10-14",
+      "dates": [
+        {
+          "label": "Current CPI-adjusted thresholds and fines apply",
+          "date": "2025-01-01",
+          "status": "in_force",
+          "claims": [
+            "CLM-SOV-109",
+            "CLM-SOV-110"
+          ]
+        }
+      ],
+      "applicability": {
+        "rules": [
+          {
+            "id": "US_CCPA.1",
+            "when": {
+              "all": [
+                {
+                  "fact": "data.subject_regions",
+                  "op": "includes",
+                  "value": "us"
+                },
+                {
+                  "fact": "org.us_states",
+                  "op": "includes",
+                  "value": "CA"
+                },
+                {
+                  "fact": "org.turnover_band_eur",
+                  "op": "gte",
+                  "value": "50m_250m"
+                }
+              ]
+            },
+            "grade": "applies",
+            "reason": "You do business in California and your revenue is above the CCPA threshold (USD 26,625,000 from 1 Jan 2025).",
+            "basis": "Cal. Civ. Code § 1798.140(d)",
+            "claims": [
+              "CLM-SOV-109"
+            ],
+            "verification": {
+              "status": "V",
+              "checked": "2026-10-14",
+              "by": "sovereignty-compliance-lead (agent)"
+            }
+          },
+          {
+            "id": "US_CCPA.2",
+            "when": {
+              "all": [
+                {
+                  "fact": "data.subject_regions",
+                  "op": "includes",
+                  "value": "us"
+                },
+                {
+                  "fact": "org.us_states",
+                  "op": "includes",
+                  "value": "CA"
+                }
+              ]
+            },
+            "grade": "likely_confirm",
+            "reason": "You do business in California; confirm the revenue, 100,000-consumer or 50%-revenue-from-selling tests.",
+            "basis": "Cal. Civ. Code § 1798.140(d)",
+            "claims": [
+              "CLM-SOV-109"
+            ],
+            "verification": {
+              "status": "V",
+              "checked": "2026-10-14",
+              "by": "sovereignty-compliance-lead (agent)"
+            }
+          },
+          {
+            "id": "US_CCPA.3",
+            "when": {
+              "all": [
+                {
+                  "fact": "data.subject_regions",
+                  "op": "includes",
+                  "value": "us"
+                },
+                {
+                  "fact": "org.us_states",
+                  "op": "is_unknown"
+                },
+                {
+                  "fact": "org.turnover_band_eur",
+                  "op": "gte",
+                  "value": "50m_250m"
+                }
+              ]
+            },
+            "grade": "likely_confirm",
+            "reason": "You serve US consumers above the CCPA revenue threshold; confirm whether you do business in California.",
+            "basis": "Cal. Civ. Code § 1798.140(d)",
+            "claims": [
+              "CLM-SOV-109"
+            ],
+            "verification": {
+              "status": "V",
+              "checked": "2026-10-14",
+              "by": "sovereignty-compliance-lead (agent)"
+            }
+          }
+        ],
+        "default": "not_applicable"
+      },
+      "requiredControls": [
+        {
+          "control": "SOV.TP.DPA",
+          "basis": "Cal. Civ. Code § 1798.100(d) contracts with service providers, contractors and third parties [CLM-SOV-111]",
+          "verification": {
+            "status": "S",
+            "checked": "2026-10-14",
+            "by": "sovereignty-compliance-lead (agent)"
+          }
+        },
+        {
+          "control": "SOV.ENC.BASELINE",
+          "basis": "Cal. Civ. Code § 1798.100(e) reasonable security; § 1798.150 [CLM-SOV-112]",
+          "verification": {
+            "status": "S",
+            "checked": "2026-10-14",
+            "by": "sovereignty-compliance-lead (agent)"
+          }
+        }
+      ],
+      "obligations": [
+        {
+          "id": "US_CCPA.CONTRACTS",
+          "article": "§ 1798.100(d)",
+          "summary": "Contracts with service providers, contractors and third parties.",
+          "controls": [
+            "SOV.TP.DPA"
+          ],
+          "claims": [
+            "CLM-SOV-111"
+          ]
+        },
+        {
+          "id": "US_CCPA.SECURITY",
+          "article": "§ 1798.100(e); § 1798.150",
+          "summary": "Reasonable security; private right of action for breaches of non-encrypted data.",
+          "controls": [
+            "SOV.ENC.BASELINE"
+          ],
+          "claims": [
+            "CLM-SOV-112"
+          ]
+        }
+      ],
+      "penalty": {
+        "model": "per_violation",
+        "tiers": [
+          {
+            "label": "Per violation",
+            "fixedAmount": 2663,
+            "currency": "USD",
+            "perViolation": true,
+            "article": "§ 1798.155; § 1798.199.90",
+            "claims": [
+              "CLM-SOV-110"
+            ]
+          },
+          {
+            "label": "Per intentional violation or violation involving minors under 16",
+            "fixedAmount": 7988,
+            "currency": "USD",
+            "perViolation": true,
+            "article": "§ 1798.155; § 1798.199.90",
+            "claims": [
+              "CLM-SOV-110"
+            ]
+          },
+          {
+            "label": "Private right of action (data breach): statutory damages per consumer per incident, up to",
+            "fixedAmount": 750,
+            "currency": "USD",
+            "perViolation": true,
+            "article": "§ 1798.150(a)",
+            "claims": [
+              "CLM-SOV-112"
+            ]
+          }
+        ],
+        "appliesTo": "Businesses",
+        "note": "Per-violation amounts only; never multiplied by a guessed count. Amounts CPI-adjusted (next adjustment January 2027) [CLM-SOV-110].",
+        "verification": {
+          "status": "S",
+          "checked": "2026-10-14",
+          "by": "sovereignty-compliance-lead (agent)"
+        }
+      },
+      "volatile": false,
+      "reviewDays": 180,
+      "verification": {
+        "status": "V",
+        "checked": "2026-10-14",
+        "by": "sovereignty-compliance-lead (agent)",
+        "note": "Worst status across citation and applicability claims. All 4 claims referenced by this regime: 2 V, 2 S."
+      },
+      "claims": [
+        "CLM-SOV-109",
+        "CLM-SOV-110",
+        "CLM-SOV-111",
+        "CLM-SOV-112"
+      ]
+    },
+    {
+      "id": "US_STATE_PRIVACY",
+      "name": "Other US state comprehensive privacy laws",
+      "jurisdiction": "us",
+      "market": "us",
+      "citation": {
+        "text": "State statutes (about 20 in effect in 2026) [CLM-SOV-113]",
+        "url": "https://iapp.org/resources/article/us-state-privacy-legislation-tracker/"
+      },
+      "kind": "obligation",
+      "status": "in_force",
+      "statusAsOf": "2026-10-14",
+      "applicability": {
+        "rules": [
+          {
+            "id": "US_STATE_PRIVACY.1",
+            "when": {
+              "all": [
+                {
+                  "fact": "data.subject_regions",
+                  "op": "includes",
+                  "value": "us"
+                },
+                {
+                  "any": [
+                    {
+                      "fact": "org.us_states",
+                      "op": "includes",
+                      "value": "other_comprehensive"
+                    },
+                    {
+                      "fact": "org.us_states",
+                      "op": "is_unknown"
+                    }
+                  ]
+                }
+              ]
+            },
+            "grade": "advisory",
+            "reason": "About 20 US states have comprehensive privacy laws with different thresholds; confirm state by state.",
+            "basis": "State statutes",
+            "claims": [
+              "CLM-SOV-113"
+            ],
+            "verification": {
+              "status": "S",
+              "checked": "2026-10-14",
+              "by": "sovereignty-compliance-lead (agent)"
+            }
+          }
+        ],
+        "default": "not_applicable"
+      },
+      "penalty": {
+        "model": "not_quantified",
+        "note": "Varies by state; not modelled [CLM-SOV-113].",
+        "verification": {
+          "status": "S",
+          "checked": "2026-10-14",
+          "by": "sovereignty-compliance-lead (agent)"
+        }
+      },
+      "volatile": false,
+      "reviewDays": 180,
+      "verification": {
+        "status": "S",
+        "checked": "2026-10-14",
+        "by": "sovereignty-compliance-lead (agent)",
+        "note": "Worst status across citation and applicability claims. All 1 claims referenced by this regime: 1 S."
+      },
+      "claims": [
+        "CLM-SOV-113"
+      ]
+    },
+    {
+      "id": "US_HIPAA",
+      "name": "HIPAA Privacy, Security and Breach Notification Rules",
+      "jurisdiction": "us",
+      "market": "us",
+      "citation": {
+        "text": "45 CFR Parts 160 and 164 [CLM-SOV-114]",
+        "url": "https://www.ecfr.gov/current/title-45/subtitle-A/subchapter-C"
+      },
+      "kind": "obligation",
+      "status": "in_force",
+      "statusAsOf": "2026-10-14",
+      "applicability": {
+        "rules": [
+          {
+            "id": "US_HIPAA.1",
+            "when": {
+              "fact": "ent.flags",
+              "op": "includes",
+              "value": "us_hipaa_covered_or_ba"
+            },
+            "grade": "applies",
+            "reason": "You are a HIPAA covered entity or business associate.",
+            "basis": "45 CFR 160.103",
+            "claims": [
+              "CLM-SOV-114"
+            ],
+            "verification": {
+              "status": "S",
+              "checked": "2026-10-14",
+              "by": "sovereignty-compliance-lead (agent)"
+            }
+          },
+          {
+            "id": "US_HIPAA.2",
+            "when": {
+              "all": [
+                {
+                  "fact": "org.sector",
+                  "op": "in",
+                  "value": [
+                    "health"
+                  ]
+                },
+                {
+                  "any": [
+                    {
+                      "fact": "org.establishments",
+                      "op": "includes",
+                      "value": "us"
+                    },
+                    {
+                      "fact": "data.subject_regions",
+                      "op": "includes",
+                      "value": "us"
+                    }
+                  ]
+                },
+                {
+                  "fact": "data.classes",
+                  "op": "includes",
+                  "value": "special"
+                }
+              ]
+            },
+            "grade": "likely_confirm",
+            "reason": "You handle US health data; confirm whether you are a covered entity or business associate.",
+            "basis": "45 CFR 160.103",
+            "claims": [
+              "CLM-SOV-114"
+            ],
+            "verification": {
+              "status": "S",
+              "checked": "2026-10-14",
+              "by": "sovereignty-compliance-lead (agent)"
+            }
+          }
+        ],
+        "default": "not_applicable"
+      },
+      "requiredControls": [
+        {
+          "control": "SOV.TP.DPA",
+          "basis": "Business associate agreements, 45 CFR 164.502(e), 164.504(e) [CLM-SOV-115]",
+          "verification": {
+            "status": "P",
+            "checked": "2026-10-14",
+            "by": "sovereignty-compliance-lead (agent)"
+          }
+        },
+        {
+          "control": "SOV.ENC.BASELINE",
+          "basis": "Security Rule, 45 CFR Part 164 Subpart C [CLM-SOV-115]",
+          "verification": {
+            "status": "P",
+            "checked": "2026-10-14",
+            "by": "sovereignty-compliance-lead (agent)"
+          }
+        },
+        {
+          "control": "SOV.IR.REPORTING",
+          "basis": "Breach Notification Rule, 45 CFR Part 164 Subpart D [CLM-SOV-115]",
+          "verification": {
+            "status": "P",
+            "checked": "2026-10-14",
+            "by": "sovereignty-compliance-lead (agent)"
+          }
+        }
+      ],
+      "obligations": [
+        {
+          "id": "US_HIPAA.RULES",
+          "article": "45 CFR Part 164",
+          "summary": "Business associate agreements, Security Rule safeguards, breach notification.",
+          "controls": [
+            "SOV.TP.DPA",
+            "SOV.ENC.BASELINE",
+            "SOV.IR.REPORTING"
+          ],
+          "claims": [
+            "CLM-SOV-115"
+          ]
+        }
+      ],
+      "penalty": {
+        "model": "not_quantified",
+        "note": "Tiered, per-violation, inflation-adjusted amounts in 45 CFR 102.3; current figures not read in S2 [CLM-SOV-116].",
+        "verification": {
+          "status": "P",
+          "checked": "2026-10-14",
+          "by": "sovereignty-compliance-lead (agent)"
+        }
+      },
+      "volatile": false,
+      "reviewDays": 180,
+      "verification": {
+        "status": "S",
+        "checked": "2026-10-14",
+        "by": "sovereignty-compliance-lead (agent)",
+        "note": "Worst status across citation and applicability claims. All 3 claims referenced by this regime: 1 S, 2 P."
+      },
+      "claims": [
+        "CLM-SOV-114",
+        "CLM-SOV-115",
+        "CLM-SOV-116"
+      ]
+    },
+    {
+      "id": "US_GLBA",
+      "name": "Gramm-Leach-Bliley Act and FTC Safeguards Rule",
+      "jurisdiction": "us",
+      "market": "us",
+      "citation": {
+        "text": "15 U.S.C. § 6801 ff.; 16 CFR Part 314 [CLM-SOV-117]",
+        "url": "https://www.ecfr.gov/current/title-16/chapter-I/subchapter-C/part-314"
+      },
+      "kind": "obligation",
+      "status": "in_force",
+      "statusAsOf": "2026-10-14",
+      "dates": [
+        {
+          "label": "FTC breach notification amendment effective",
+          "date": "2024-05-13",
+          "status": "in_force",
+          "claims": [
+            "CLM-SOV-118"
+          ]
+        }
+      ],
+      "applicability": {
+        "rules": [
+          {
+            "id": "US_GLBA.1",
+            "when": {
+              "fact": "ent.flags",
+              "op": "includes",
+              "value": "us_glba_fi"
+            },
+            "grade": "applies",
+            "reason": "You are a financial institution under the GLBA.",
+            "basis": "15 U.S.C. § 6801; 16 CFR Part 314",
+            "claims": [
+              "CLM-SOV-117"
+            ],
+            "verification": {
+              "status": "P",
+              "checked": "2026-10-14",
+              "by": "sovereignty-compliance-lead (agent)"
+            }
+          },
+          {
+            "id": "US_GLBA.2",
+            "when": {
+              "all": [
+                {
+                  "fact": "org.establishments",
+                  "op": "includes",
+                  "value": "us"
+                },
+                {
+                  "derived": "financial_sector"
+                }
+              ]
+            },
+            "grade": "likely_confirm",
+            "reason": "You provide financial services in the US; confirm whether you are a GLBA financial institution and which safeguards rule applies.",
+            "basis": "15 U.S.C. § 6801",
+            "claims": [
+              "CLM-SOV-117"
+            ],
+            "verification": {
+              "status": "P",
+              "checked": "2026-10-14",
+              "by": "sovereignty-compliance-lead (agent)"
+            }
+          }
+        ],
+        "default": "not_applicable"
+      },
+      "requiredControls": [
+        {
+          "control": "SOV.TP.DPA",
+          "basis": "16 CFR 314.4(f) service provider oversight [CLM-SOV-118]",
+          "verification": {
+            "status": "S",
+            "checked": "2026-10-14",
+            "by": "sovereignty-compliance-lead (agent)"
+          }
+        },
+        {
+          "control": "SOV.ENC.BASELINE",
+          "basis": "16 CFR 314.4(c)(3) encryption [CLM-SOV-118]",
+          "verification": {
+            "status": "S",
+            "checked": "2026-10-14",
+            "by": "sovereignty-compliance-lead (agent)"
+          }
+        },
+        {
+          "control": "SOV.IR.REPORTING",
+          "basis": "16 CFR 314.4(j) FTC notification within 30 days [CLM-SOV-118]",
+          "verification": {
+            "status": "S",
+            "checked": "2026-10-14",
+            "by": "sovereignty-compliance-lead (agent)"
+          }
+        }
+      ],
+      "obligations": [
+        {
+          "id": "US_GLBA.SAFEGUARDS",
+          "article": "16 CFR 314.4",
+          "summary": "Encryption, service provider oversight, 30-day FTC notification for 500+ consumers.",
+          "controls": [
+            "SOV.TP.DPA",
+            "SOV.ENC.BASELINE",
+            "SOV.IR.REPORTING"
+          ],
+          "claims": [
+            "CLM-SOV-118"
+          ]
+        }
+      ],
+      "penalty": {
+        "model": "not_quantified",
+        "note": "FTC and banking-agency enforcement; amounts not sourced [CLM-SOV-117].",
+        "verification": {
+          "status": "P",
+          "checked": "2026-10-14",
+          "by": "sovereignty-compliance-lead (agent)"
+        }
+      },
+      "volatile": false,
+      "reviewDays": 180,
+      "verification": {
+        "status": "P",
+        "checked": "2026-10-14",
+        "by": "sovereignty-compliance-lead (agent)",
+        "note": "Worst status across citation and applicability claims. All 2 claims referenced by this regime: 1 S, 1 P."
+      },
+      "claims": [
+        "CLM-SOV-117",
+        "CLM-SOV-118"
+      ]
+    },
+    {
+      "id": "US_NYDFS_500",
+      "name": "NYDFS Cybersecurity Regulation (23 NYCRR Part 500)",
+      "jurisdiction": "us_ny",
+      "market": "us",
+      "citation": {
+        "text": "23 NYCRR Part 500 [CLM-SOV-120]",
+        "url": "https://www.dfs.ny.gov/industry_guidance/cybersecurity"
+      },
+      "kind": "obligation",
+      "status": "in_force",
+      "statusAsOf": "2026-10-14",
+      "dates": [
+        {
+          "label": "Second Amendment finalised",
+          "date": "2023-11-01",
+          "status": "in_force",
+          "claims": [
+            "CLM-SOV-120"
+          ]
+        },
+        {
+          "label": "Expanded incident reporting (500.17)",
+          "date": "2023-12-01",
+          "status": "in_force",
+          "claims": [
+            "CLM-SOV-121"
+          ]
+        },
+        {
+          "label": "Amended encryption requirement (500.15)",
+          "date": "2024-11-01",
+          "status": "in_force",
+          "claims": [
+            "CLM-SOV-122"
+          ]
+        }
+      ],
+      "applicability": {
+        "rules": [
+          {
+            "id": "US_NYDFS_500.1",
+            "when": {
+              "all": [
+                {
+                  "fact": "ent.flags",
+                  "op": "includes",
+                  "value": "us_nydfs_licensed"
+                },
+                {
+                  "fact": "org.staff_band",
+                  "op": "eq",
+                  "value": "lt50"
+                },
+                {
+                  "fact": "org.turnover_band_eur",
+                  "op": "eq",
+                  "value": "lt10m"
+                }
+              ]
+            },
+            "grade": "likely_confirm",
+            "reason": "The limited exemption in 500.19(a) may apply (fewer than 20 employees and contractors, or under USD 7.5 million New York revenue in each of the last three years, or under USD 15 million year-end assets). Exempt firms keep some duties and must file a notice.",
+            "basis": "23 NYCRR 500.19(a)",
+            "claims": [
+              "CLM-SOV-119"
+            ],
+            "verification": {
+              "status": "S",
+              "checked": "2026-10-14",
+              "by": "sovereignty-compliance-lead (agent)"
+            }
+          },
+          {
+            "id": "US_NYDFS_500.2",
+            "when": {
+              "fact": "ent.flags",
+              "op": "includes",
+              "value": "us_nydfs_licensed"
+            },
+            "grade": "applies",
+            "reason": "You are licensed or authorised by NYDFS and covered by Part 500.",
+            "basis": "23 NYCRR 500.1",
+            "claims": [
+              "CLM-SOV-120"
+            ],
+            "verification": {
+              "status": "S",
+              "checked": "2026-10-14",
+              "by": "sovereignty-compliance-lead (agent)"
+            }
+          }
+        ],
+        "default": "not_applicable"
+      },
+      "requiredControls": [
+        {
+          "control": "SOV.IR.REPORTING",
+          "basis": "23 NYCRR 500.17: 72 hours [CLM-SOV-121]",
+          "verification": {
+            "status": "S",
+            "checked": "2026-10-14",
+            "by": "sovereignty-compliance-lead (agent)"
+          }
+        },
+        {
+          "control": "SOV.ENC.BASELINE",
+          "basis": "23 NYCRR 500.15 [CLM-SOV-122]",
+          "verification": {
+            "status": "S",
+            "checked": "2026-10-14",
+            "by": "sovereignty-compliance-lead (agent)"
+          }
+        },
+        {
+          "control": "SOV.TP.DPA",
+          "basis": "23 NYCRR 500.11 third-party service provider policy [CLM-SOV-123]",
+          "verification": {
+            "status": "S",
+            "checked": "2026-10-14",
+            "by": "sovereignty-compliance-lead (agent)"
+          }
+        },
+        {
+          "control": "SOV.GOV.OWNER",
+          "basis": "23 NYCRR 500.4 governance (requirement pending source) [CLM-SOV-124]",
+          "verification": {
+            "status": "UNSOURCED",
+            "checked": "2026-10-14",
+            "by": "sovereignty-compliance-lead (agent)"
+          }
+        }
+      ],
+      "obligations": [
+        {
+          "id": "US_NYDFS_500.NOTICE",
+          "article": "500.17",
+          "summary": "72-hour incident notice; 24-hour extortion payment notice.",
+          "controls": [
+            "SOV.IR.REPORTING"
+          ],
+          "claims": [
+            "CLM-SOV-121"
+          ]
+        },
+        {
+          "id": "US_NYDFS_500.ENCRYPTION",
+          "article": "500.15",
+          "summary": "Encryption of nonpublic information in transit and at rest.",
+          "controls": [
+            "SOV.ENC.BASELINE"
+          ],
+          "claims": [
+            "CLM-SOV-122"
+          ]
+        },
+        {
+          "id": "US_NYDFS_500.TPSP",
+          "article": "500.11",
+          "summary": "Third-party service provider security policy and due diligence.",
+          "controls": [
+            "SOV.TP.DPA"
+          ],
+          "claims": [
+            "CLM-SOV-123"
+          ]
+        }
+      ],
+      "penalty": {
+        "model": "not_quantified",
+        "note": "Penalty basis pending source [CLM-SOV-125].",
+        "verification": {
+          "status": "UNSOURCED",
+          "checked": "2026-10-14",
+          "by": "sovereignty-compliance-lead (agent)"
+        }
+      },
+      "volatile": false,
+      "reviewDays": 180,
+      "verification": {
+        "status": "S",
+        "checked": "2026-10-14",
+        "by": "sovereignty-compliance-lead (agent)",
+        "note": "Worst status across citation and applicability claims. All 7 claims referenced by this regime: 5 S, 2 UNSOURCED."
+      },
+      "claims": [
+        "CLM-SOV-119",
+        "CLM-SOV-120",
+        "CLM-SOV-121",
+        "CLM-SOV-122",
+        "CLM-SOV-123",
+        "CLM-SOV-124",
+        "CLM-SOV-125"
+      ]
+    },
+    {
+      "id": "US_SEC_CYBER",
+      "name": "SEC cybersecurity disclosure rules",
+      "jurisdiction": "us",
+      "market": "us",
+      "citation": {
+        "text": "Form 8-K Item 1.05; Regulation S-K Item 106 [CLM-SOV-126]",
+        "url": "https://www.sec.gov/files/rules/final/2023/33-11216.pdf"
+      },
+      "kind": "obligation",
+      "status": "in_force",
+      "statusAsOf": "2026-10-14",
+      "applicability": {
+        "rules": [
+          {
+            "id": "US_SEC_CYBER.1",
+            "when": {
+              "fact": "ent.flags",
+              "op": "includes",
+              "value": "us_sec_registrant"
+            },
+            "grade": "applies",
+            "reason": "As an SEC registrant you must disclose material cybersecurity incidents within four business days of the materiality determination and report on cybersecurity governance annually.",
+            "basis": "Form 8-K Item 1.05; Reg. S-K Item 106",
+            "claims": [
+              "CLM-SOV-126",
+              "CLM-SOV-127"
+            ],
+            "verification": {
+              "status": "P",
+              "checked": "2026-10-14",
+              "by": "sovereignty-compliance-lead (agent)"
+            }
+          }
+        ],
+        "default": "not_applicable"
+      },
+      "requiredControls": [
+        {
+          "control": "SOV.IR.REPORTING",
+          "basis": "Form 8-K Item 1.05 [CLM-SOV-126]",
+          "verification": {
+            "status": "V",
+            "checked": "2026-10-14",
+            "by": "sovereignty-compliance-lead (agent)"
+          }
+        }
+      ],
+      "obligations": [
+        {
+          "id": "US_SEC_CYBER.8K",
+          "article": "Form 8-K Item 1.05",
+          "summary": "Disclose material incidents within four business days after the materiality determination.",
+          "controls": [
+            "SOV.IR.REPORTING"
+          ],
+          "claims": [
+            "CLM-SOV-126"
+          ]
+        },
+        {
+          "id": "US_SEC_CYBER.106",
+          "article": "Reg. S-K Item 106",
+          "summary": "Annual risk management, strategy and governance disclosure.",
+          "claims": [
+            "CLM-SOV-127"
+          ]
+        }
+      ],
+      "penalty": {
+        "model": "not_quantified",
+        "note": "SEC enforcement under the securities laws; not quantified [CLM-SOV-126].",
+        "verification": {
+          "status": "V",
+          "checked": "2026-10-14",
+          "by": "sovereignty-compliance-lead (agent)"
+        }
+      },
+      "volatile": false,
+      "reviewDays": 180,
+      "verification": {
+        "status": "P",
+        "checked": "2026-10-14",
+        "by": "sovereignty-compliance-lead (agent)",
+        "note": "Worst status across citation and applicability claims. All 2 claims referenced by this regime: 1 V, 1 P."
+      },
+      "claims": [
+        "CLM-SOV-126",
+        "CLM-SOV-127"
+      ]
+    },
+    {
+      "id": "US_FEDRAMP",
+      "name": "FedRAMP",
+      "jurisdiction": "us",
+      "market": "us",
+      "citation": {
+        "text": "FedRAMP Authorization Act, 44 U.S.C. §§ 3607-3616 [CLM-SOV-128]",
+        "url": "https://www.fedramp.gov/"
+      },
+      "kind": "framework",
+      "status": "in_force",
+      "statusAsOf": "2026-10-14",
+      "applicability": {
+        "rules": [
+          {
+            "id": "US_FEDRAMP.1",
+            "when": {
+              "fact": "ent.flags",
+              "op": "includes",
+              "value": "us_federal_cloud_supplier"
+            },
+            "grade": "advisory",
+            "reason": "Cloud services sold to US federal agencies need FedRAMP authorisation.",
+            "basis": "44 U.S.C. §§ 3607-3616; OMB M-24-15",
+            "claims": [
+              "CLM-SOV-128"
+            ],
+            "verification": {
+              "status": "S",
+              "checked": "2026-10-14",
+              "by": "sovereignty-compliance-lead (agent)"
+            }
+          }
+        ],
+        "default": "not_applicable"
+      },
+      "penalty": {
+        "model": "not_quantified",
+        "note": "Procurement framework; no penalty [CLM-SOV-128].",
+        "verification": {
+          "status": "S",
+          "checked": "2026-10-14",
+          "by": "sovereignty-compliance-lead (agent)"
+        }
+      },
+      "volatile": false,
+      "reviewDays": 180,
+      "verification": {
+        "status": "S",
+        "checked": "2026-10-14",
+        "by": "sovereignty-compliance-lead (agent)",
+        "note": "Worst status across citation and applicability claims. All 1 claims referenced by this regime: 1 S."
+      },
+      "claims": [
+        "CLM-SOV-128"
+      ]
     }
   ]
 }
