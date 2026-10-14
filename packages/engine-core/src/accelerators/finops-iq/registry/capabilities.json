@@ -1,0 +1,1783 @@
+{
+  "modelVersion": "3.0.0",
+  "frameworkEdition": "FinOps Framework 2026 (published 19 Mar 2026) [CLM-FIN-003]",
+  "statusAsOf": "2026-10-14",
+  "attribution": {
+    "text": "Adapted from the FinOps Framework by the FinOps Foundation [CLM-FIN-001, CLM-FIN-033].",
+    "licence": "CC BY 4.0",
+    "sourceUrl": "https://www.finops.org/framework/",
+    "changes": "LTM rates each capability per scope with its own question sets, adds 'Not yet' and 'Unknown' ratings, sets default targets by complexity tier (LTM heuristics) and computes no organisation-level stage. Descriptions and maturity guidance are LTM's wording, not quotations. Not endorsed by the FinOps Foundation; not a FinOps Foundation assessment or certification [CLM-FIN-033].",
+    "noEndorsement": true
+  },
+  "maturityScale": [
+    {
+      "rating": "not_yet",
+      "index": 0,
+      "meaning": "The capability is not performed in any deliberate way.",
+      "ltmAddition": true,
+      "claimIds": [
+        "CLM-FIN-005"
+      ]
+    },
+    {
+      "rating": "crawl",
+      "index": 1,
+      "meaning": "Basic processes and KPIs, little reporting or tooling; not yet followed by all major teams; focus on easy wins (LTM paraphrase).",
+      "claimIds": [
+        "CLM-FIN-004",
+        "CLM-FIN-005"
+      ]
+    },
+    {
+      "rating": "walk",
+      "index": 2,
+      "meaning": "Understood and followed within the organisation; automation and processes cover most requirements; some difficult edge cases still open (LTM paraphrase).",
+      "claimIds": [
+        "CLM-FIN-004",
+        "CLM-FIN-005"
+      ]
+    },
+    {
+      "rating": "run",
+      "index": 3,
+      "meaning": "Understood and followed by all relevant teams; edge cases handled; high KPIs; automation preferred (LTM paraphrase). Run is not the goal everywhere: the right level depends on the environment.",
+      "claimIds": [
+        "CLM-FIN-004",
+        "CLM-FIN-005"
+      ]
+    },
+    {
+      "rating": "unknown",
+      "index": 0,
+      "meaning": "The respondent does not know. Counted as risk (gap as if Not yet) and flagged unconfirmed, with 'confirm' as the first action.",
+      "ltmAddition": true,
+      "claimIds": [
+        "CLM-FIN-141"
+      ]
+    },
+    {
+      "rating": "not_in_scope",
+      "index": null,
+      "meaning": "Set only by scope facts, never by an answer.",
+      "ltmAddition": true,
+      "claimIds": [
+        "CLM-FIN-006"
+      ]
+    },
+    {
+      "rating": "not_assessed",
+      "index": null,
+      "meaning": "No mapped question answered; counts as not at target and lowers coverage.",
+      "ltmAddition": true,
+      "claimIds": [
+        "CLM-FIN-141"
+      ]
+    }
+  ],
+  "domains": [
+    {
+      "id": "D1",
+      "name": "Understand Usage & Cost",
+      "capabilities": [
+        "DATA_INGESTION",
+        "ALLOCATION",
+        "REPORTING_ANALYTICS",
+        "ANOMALY_MANAGEMENT"
+      ]
+    },
+    {
+      "id": "D2",
+      "name": "Quantify Business Value",
+      "capabilities": [
+        "PLANNING_ESTIMATING",
+        "FORECASTING",
+        "BUDGETING",
+        "KPIS_BENCHMARKING",
+        "UNIT_ECONOMICS"
+      ]
+    },
+    {
+      "id": "D3",
+      "name": "Optimize Usage & Cost",
+      "capabilities": [
+        "ARCHITECTING_WORKLOAD_PLACEMENT",
+        "USAGE_OPTIMIZATION",
+        "RATE_OPTIMIZATION",
+        "LICENSING_SAAS",
+        "SUSTAINABILITY"
+      ]
+    },
+    {
+      "id": "D4",
+      "name": "Manage the FinOps Practice",
+      "capabilities": [
+        "EXECUTIVE_STRATEGY_ALIGNMENT",
+        "FINOPS_PRACTICE_OPERATIONS",
+        "GOVERNANCE_POLICY_RISK",
+        "FINOPS_EDUCATION_ENABLEMENT",
+        "INVOICING_CHARGEBACK",
+        "FINOPS_ASSESSMENT",
+        "AUTOMATION_TOOLS_SERVICES",
+        "INTERSECTING_DISCIPLINES"
+      ]
+    }
+  ],
+  "capabilities": [
+    {
+      "id": "DATA_INGESTION",
+      "domain": "D1",
+      "displayName": "Data Ingestion",
+      "displayNameStatus": "V",
+      "relevance": "always",
+      "description": "Collect cost, usage and related data from every account, provider and on-premises source into one store the organisation controls, completely and on time.",
+      "defaultTargets": {
+        "tier1": "walk",
+        "tier2": "walk",
+        "tier3": "run",
+        "assumptionId": "ASM-FIN-004",
+        "runReason": "Everything else depends on complete, timely data"
+      },
+      "questions": [
+        {
+          "id": "UN-01",
+          "role": "core"
+        },
+        {
+          "id": "UN-02",
+          "role": "scope_conditional"
+        },
+        {
+          "id": "UN-03",
+          "role": "core"
+        }
+      ],
+      "maturityGuidance": {
+        "notYet": "Cost is seen only in provider consoles.",
+        "crawl": "Some accounts exported, or data downloaded by hand.",
+        "walk": "All major accounts exported automatically; known gaps are listed.",
+        "run": "All accounts at least daily in a common schema (for example FOCUS) with completeness checks; private cloud and data centre costs in the same model.",
+        "source": "ltm_paraphrase",
+        "claimIds": [
+          "CLM-FIN-008",
+          "CLM-FIN-005"
+        ]
+      },
+      "offeringIds": [
+        "OFF.FIN.TOOLING",
+        "OFF.FIN.ASSESS"
+      ],
+      "costIqPrefill": [
+        "CIQ.FIN-01"
+      ],
+      "wave": 1,
+      "claimIds": [
+        "CLM-FIN-011",
+        "CLM-FIN-008",
+        "CLM-FIN-080"
+      ],
+      "basis": [
+        {
+          "claimId": "CLM-FIN-011",
+          "citation": "FinOps Framework capability 'Data Ingestion', adapted under CC BY 4.0 [CLM-FIN-011]",
+          "status": "V"
+        },
+        {
+          "assumptionId": "ASM-FIN-004",
+          "citation": "LTM default targets by complexity tier (DESIGN.md 3.4) [CLM-FIN-121]",
+          "status": "LTM_heuristic",
+          "claimId": "CLM-FIN-121"
+        },
+        {
+          "claimId": "CLM-FIN-008",
+          "citation": "FOCUS 1.4 ratified 4 Jun 2026 [CLM-FIN-008]",
+          "status": "V"
+        },
+        {
+          "claimId": "CLM-FIN-080",
+          "citation": "AWS Data Exports: CUR 2.0 and FOCUS 1.2 [CLM-FIN-080]",
+          "status": "V"
+        }
+      ]
+    },
+    {
+      "id": "ALLOCATION",
+      "domain": "D1",
+      "displayName": "Allocation",
+      "displayNameStatus": "V",
+      "relevance": "always",
+      "description": "Assign every cost to an accountable owner (team, product or cost centre) using account structure, tags or labels and rules for shared costs, measured by cost.",
+      "defaultTargets": {
+        "tier1": "crawl",
+        "tier2": "walk",
+        "tier3": "run",
+        "assumptionId": "ASM-FIN-004",
+        "runReason": "Unallocated spend cannot be owned, charged back or unit-costed"
+      },
+      "questions": [
+        {
+          "id": "UN-04",
+          "role": "core",
+          "executive": true
+        },
+        {
+          "id": "UN-05",
+          "role": "core"
+        },
+        {
+          "id": "UN-09",
+          "role": "scope_conditional"
+        }
+      ],
+      "maturityGuidance": {
+        "notYet": "Below 70% of spend allocated by cost, or not measured; no allocation policy.",
+        "crawl": "70-84% of spend allocated; informal conventions.",
+        "walk": "85-90% allocated under a documented policy that is mostly applied.",
+        "run": "More than 90% allocated; owners for every account; shared and container costs allocated by rule and reconciled to the bill.",
+        "source": "ltm_paraphrase",
+        "claimIds": [
+          "CLM-FIN-035",
+          "CLM-FIN-124",
+          "CLM-FIN-005"
+        ]
+      },
+      "offeringIds": [
+        "OFF.FIN.TOOLING",
+        "OFF.FIN.OPMODEL"
+      ],
+      "costIqPrefill": [
+        "CIQ.FIN-07"
+      ],
+      "wave": 1,
+      "claimIds": [
+        "CLM-FIN-012",
+        "CLM-FIN-124",
+        "CLM-FIN-035"
+      ],
+      "basis": [
+        {
+          "claimId": "CLM-FIN-012",
+          "citation": "FinOps Framework capability 'Allocation', adapted under CC BY 4.0 [CLM-FIN-012]",
+          "status": "V"
+        },
+        {
+          "assumptionId": "ASM-FIN-004",
+          "citation": "LTM default targets by complexity tier (DESIGN.md 3.4) [CLM-FIN-121]",
+          "status": "LTM_heuristic",
+          "claimId": "CLM-FIN-121"
+        },
+        {
+          "claimId": "CLM-FIN-124",
+          "assumptionId": "ASM-FIN-020",
+          "citation": "Allocation bands adopt the Foundation's sample goals (70 / 85 / >90%) [CLM-FIN-124, CLM-FIN-035]",
+          "status": "S"
+        },
+        {
+          "claimId": "CLM-FIN-035",
+          "citation": "FinOps Foundation sample allocation goals [CLM-FIN-035]",
+          "status": "S"
+        }
+      ]
+    },
+    {
+      "id": "REPORTING_ANALYTICS",
+      "domain": "D1",
+      "displayName": "Reporting & Analytics",
+      "displayNameStatus": "V",
+      "relevance": "always",
+      "description": "Give engineering, product and finance the cost views they need, ideally self-service and filtered to their scope, on a regular schedule.",
+      "defaultTargets": {
+        "tier1": "crawl",
+        "tier2": "walk",
+        "tier3": "run",
+        "assumptionId": "ASM-FIN-004",
+        "runReason": "Many consumers of cost data at this scale"
+      },
+      "questions": [
+        {
+          "id": "UN-07",
+          "role": "core"
+        },
+        {
+          "id": "UN-08",
+          "role": "core"
+        }
+      ],
+      "maturityGuidance": {
+        "notYet": "No regular cost visibility outside the central team.",
+        "crawl": "Periodic reports on request; one or two report types.",
+        "walk": "Self-service for some groups; three or four report types on schedule.",
+        "run": "Self-service for engineering, product and finance; all five report types (cost by owner, forecast, anomalies, unit cost, commitment coverage and utilisation).",
+        "source": "ltm_paraphrase",
+        "claimIds": [
+          "CLM-FIN-125",
+          "CLM-FIN-005"
+        ]
+      },
+      "offeringIds": [
+        "OFF.FIN.TOOLING",
+        "OFF.FIN.ASSESS"
+      ],
+      "costIqPrefill": [
+        "CIQ.FIN-01"
+      ],
+      "dependsOn": [
+        "DATA_INGESTION"
+      ],
+      "wave": 2,
+      "claimIds": [
+        "CLM-FIN-013",
+        "CLM-FIN-125"
+      ],
+      "basis": [
+        {
+          "claimId": "CLM-FIN-013",
+          "citation": "FinOps Framework capability 'Reporting & Analytics', adapted under CC BY 4.0 [CLM-FIN-013]",
+          "status": "V"
+        },
+        {
+          "assumptionId": "ASM-FIN-004",
+          "citation": "LTM default targets by complexity tier (DESIGN.md 3.4) [CLM-FIN-121]",
+          "status": "LTM_heuristic",
+          "claimId": "CLM-FIN-121"
+        },
+        {
+          "claimId": "CLM-FIN-125",
+          "assumptionId": "ASM-FIN-021",
+          "citation": "Report count rule (LTM heuristic) [CLM-FIN-125]",
+          "status": "LTM_heuristic"
+        }
+      ]
+    },
+    {
+      "id": "ANOMALY_MANAGEMENT",
+      "domain": "D1",
+      "displayName": "Anomaly Management",
+      "displayNameStatus": "V",
+      "relevance": "always",
+      "description": "Detect unexpected cost changes quickly, route them to the owner and explain and resolve them.",
+      "defaultTargets": {
+        "tier1": "crawl",
+        "tier2": "walk",
+        "tier3": "run",
+        "assumptionId": "ASM-FIN-004",
+        "runReason": "Absolute cost of an undetected spike scales with spend"
+      },
+      "questions": [
+        {
+          "id": "UN-10",
+          "role": "core",
+          "executive": true
+        },
+        {
+          "id": "UN-11",
+          "role": "core",
+          "executive": true
+        }
+      ],
+      "maturityGuidance": {
+        "notYet": "Increases are found on the invoice and cannot reliably be explained.",
+        "crawl": "Static budget or threshold alerts only; explaining an increase takes weeks.",
+        "walk": "Automated detection on major accounts, reviewed at least weekly; explained within a few days.",
+        "run": "Automated detection on all accounts, routed to the owner, triaged within one business day and explained the same day; outcomes recorded.",
+        "source": "ltm_paraphrase",
+        "claimIds": [
+          "CLM-FIN-014",
+          "CLM-FIN-038",
+          "CLM-FIN-123",
+          "CLM-FIN-005"
+        ]
+      },
+      "offeringIds": [
+        "OFF.FIN.TOOLING",
+        "OFF.FIN.ASSESS"
+      ],
+      "dependsOn": [
+        "DATA_INGESTION"
+      ],
+      "wave": 1,
+      "claimIds": [
+        "CLM-FIN-014",
+        "CLM-FIN-123"
+      ],
+      "basis": [
+        {
+          "claimId": "CLM-FIN-014",
+          "citation": "FinOps Framework capability 'Anomaly Management', adapted under CC BY 4.0 [CLM-FIN-014]",
+          "status": "V"
+        },
+        {
+          "assumptionId": "ASM-FIN-004",
+          "citation": "LTM default targets by complexity tier (DESIGN.md 3.4) [CLM-FIN-121]",
+          "status": "LTM_heuristic",
+          "claimId": "CLM-FIN-121"
+        },
+        {
+          "claimId": "CLM-FIN-123",
+          "assumptionId": "ASM-FIN-022",
+          "citation": "Anomaly thresholds (LTM heuristic, consistent with Foundation descriptions) [CLM-FIN-123]",
+          "status": "LTM_heuristic"
+        }
+      ]
+    },
+    {
+      "id": "PLANNING_ESTIMATING",
+      "domain": "D2",
+      "displayName": "Planning & Estimating",
+      "displayNameStatus": "V",
+      "relevance": "always",
+      "description": "Estimate and approve the running cost of new workloads and major changes before they go ahead, and compare with actuals after launch.",
+      "defaultTargets": {
+        "tier1": "crawl",
+        "tier2": "walk",
+        "tier3": "walk",
+        "assumptionId": "ASM-FIN-004"
+      },
+      "questions": [
+        {
+          "id": "QV-04",
+          "role": "core"
+        }
+      ],
+      "maturityGuidance": {
+        "notYet": "Running cost is not estimated before changes.",
+        "crawl": "Occasional estimates.",
+        "walk": "Estimates required for major changes.",
+        "run": "Estimates required and automated in the delivery pipeline, compared with actuals after launch.",
+        "source": "ltm_paraphrase",
+        "claimIds": [
+          "CLM-FIN-005"
+        ]
+      },
+      "offeringIds": [
+        "OFF.FIN.UNITECON",
+        "OFF.FIN.OPMODEL"
+      ],
+      "costIqPrefill": [
+        "CIQ.FIN-05"
+      ],
+      "wave": 2,
+      "claimIds": [
+        "CLM-FIN-015"
+      ],
+      "basis": [
+        {
+          "claimId": "CLM-FIN-015",
+          "citation": "FinOps Framework capability 'Planning & Estimating', adapted under CC BY 4.0 [CLM-FIN-015]",
+          "status": "V"
+        },
+        {
+          "assumptionId": "ASM-FIN-004",
+          "citation": "LTM default targets by complexity tier (DESIGN.md 3.4) [CLM-FIN-121]",
+          "status": "LTM_heuristic",
+          "claimId": "CLM-FIN-121"
+        }
+      ]
+    },
+    {
+      "id": "FORECASTING",
+      "domain": "D2",
+      "displayName": "Forecasting",
+      "displayNameStatus": "V",
+      "relevance": "always",
+      "description": "Predict future spend from business drivers and planned changes, review it with finance and track how far actuals differ.",
+      "defaultTargets": {
+        "tier1": "crawl",
+        "tier2": "walk",
+        "tier3": "run",
+        "assumptionId": "ASM-FIN-004",
+        "runReason": "Board-level budget exposure"
+      },
+      "questions": [
+        {
+          "id": "QV-01",
+          "role": "core",
+          "executive": true
+        },
+        {
+          "id": "QV-02",
+          "role": "core"
+        }
+      ],
+      "maturityGuidance": {
+        "notYet": "No forecast, or actuals differ by more than 20% on average per quarter.",
+        "crawl": "Last year plus a percentage; variance 10-20%.",
+        "walk": "Trend plus known changes, reviewed quarterly; variance 5-10%.",
+        "run": "Driver-based forecast reviewed monthly with finance; variance within 5%.",
+        "source": "ltm_paraphrase",
+        "claimIds": [
+          "CLM-FIN-037",
+          "CLM-FIN-126",
+          "CLM-FIN-005"
+        ]
+      },
+      "offeringIds": [
+        "OFF.FIN.UNITECON",
+        "OFF.FIN.OPMODEL"
+      ],
+      "costIqPrefill": [
+        "CIQ.FIN-05"
+      ],
+      "dependsOn": [
+        "DATA_INGESTION"
+      ],
+      "wave": 2,
+      "claimIds": [
+        "CLM-FIN-016",
+        "CLM-FIN-126"
+      ],
+      "basis": [
+        {
+          "claimId": "CLM-FIN-016",
+          "citation": "FinOps Framework capability 'Forecasting', adapted under CC BY 4.0 [CLM-FIN-016]",
+          "status": "V"
+        },
+        {
+          "assumptionId": "ASM-FIN-004",
+          "citation": "LTM default targets by complexity tier (DESIGN.md 3.4) [CLM-FIN-121]",
+          "status": "LTM_heuristic",
+          "claimId": "CLM-FIN-121"
+        },
+        {
+          "claimId": "CLM-FIN-126",
+          "assumptionId": "ASM-FIN-023",
+          "citation": "Forecast variance bands adopt the Foundation's sample goals (<20 / <10 / <5%) [CLM-FIN-126, CLM-FIN-037]",
+          "status": "S"
+        }
+      ]
+    },
+    {
+      "id": "BUDGETING",
+      "domain": "D2",
+      "displayName": "Budgeting",
+      "displayNameStatus": "V",
+      "relevance": "always",
+      "description": "Set budgets per owner, alert when they are at risk and review variances against forecasts.",
+      "defaultTargets": {
+        "tier1": "crawl",
+        "tier2": "walk",
+        "tier3": "walk",
+        "assumptionId": "ASM-FIN-004"
+      },
+      "questions": [
+        {
+          "id": "QV-03",
+          "role": "core"
+        }
+      ],
+      "maturityGuidance": {
+        "notYet": "No budgets for cloud spend.",
+        "crawl": "One central budget.",
+        "walk": "Budgets for major owners with alerts.",
+        "run": "Budgets per owner with alerts, variances reviewed monthly and linked to forecasts.",
+        "source": "ltm_paraphrase",
+        "claimIds": [
+          "CLM-FIN-005"
+        ]
+      },
+      "offeringIds": [
+        "OFF.FIN.UNITECON",
+        "OFF.FIN.OPMODEL"
+      ],
+      "costIqPrefill": [
+        "CIQ.FIN-05"
+      ],
+      "wave": 2,
+      "claimIds": [
+        "CLM-FIN-017",
+        "CLM-FIN-085",
+        "CLM-FIN-091"
+      ],
+      "basis": [
+        {
+          "claimId": "CLM-FIN-017",
+          "citation": "FinOps Framework capability 'Budgeting', adapted under CC BY 4.0 [CLM-FIN-017]",
+          "status": "V"
+        },
+        {
+          "assumptionId": "ASM-FIN-004",
+          "citation": "LTM default targets by complexity tier (DESIGN.md 3.4) [CLM-FIN-121]",
+          "status": "LTM_heuristic",
+          "claimId": "CLM-FIN-121"
+        },
+        {
+          "claimId": "CLM-FIN-085",
+          "citation": "AWS Budgets [CLM-FIN-085]",
+          "status": "P"
+        },
+        {
+          "claimId": "CLM-FIN-091",
+          "citation": "Microsoft Cost Management budget and anomaly alerts [CLM-FIN-091]",
+          "status": "V"
+        }
+      ]
+    },
+    {
+      "id": "KPIS_BENCHMARKING",
+      "domain": "D2",
+      "displayName": "KPIs & Benchmarking",
+      "displayNameStatus": "V",
+      "relevance": "always",
+      "description": "Agree a small set of FinOps measures with targets, review them with leaders and compare them with published data (never presented as peer benchmarks).",
+      "defaultTargets": {
+        "tier1": "crawl",
+        "tier2": "crawl",
+        "tier3": "walk",
+        "assumptionId": "ASM-FIN-004"
+      },
+      "questions": [
+        {
+          "id": "QV-08",
+          "role": "core"
+        }
+      ],
+      "maturityGuidance": {
+        "notYet": "No agreed measures.",
+        "crawl": "A few metrics, used ad hoc.",
+        "walk": "A KPI set reviewed quarterly.",
+        "run": "A KPI set with targets, reviewed monthly by executives and compared with published data.",
+        "source": "ltm_paraphrase",
+        "claimIds": [
+          "CLM-FIN-005"
+        ]
+      },
+      "offeringIds": [
+        "OFF.FIN.OPMODEL",
+        "OFF.FIN.MANAGED"
+      ],
+      "costIqPrefill": [
+        "CIQ.FIN-02",
+        "CIQ.FIN-04"
+      ],
+      "dependsOn": [
+        "ALLOCATION"
+      ],
+      "wave": 3,
+      "claimIds": [
+        "CLM-FIN-018",
+        "CLM-FIN-035"
+      ],
+      "basis": [
+        {
+          "claimId": "CLM-FIN-018",
+          "citation": "FinOps Framework capability 'KPIs & Benchmarking', adapted under CC BY 4.0 [CLM-FIN-018]",
+          "status": "V"
+        },
+        {
+          "assumptionId": "ASM-FIN-004",
+          "citation": "LTM default targets by complexity tier (DESIGN.md 3.4) [CLM-FIN-121]",
+          "status": "LTM_heuristic",
+          "claimId": "CLM-FIN-121"
+        },
+        {
+          "claimId": "CLM-FIN-035",
+          "citation": "Foundation sample goals usable as published KPI context [CLM-FIN-035]",
+          "status": "S"
+        }
+      ]
+    },
+    {
+      "id": "UNIT_ECONOMICS",
+      "domain": "D2",
+      "displayName": "Unit Economics",
+      "displayNameStatus": "V",
+      "relevance": "always",
+      "description": "Express cost per unit of business output (customer, transaction, inference) and use it in pricing, product and architecture decisions.",
+      "defaultTargets": {
+        "tier1": null,
+        "tier2": "crawl",
+        "tier3": "walk",
+        "assumptionId": "ASM-FIN-004"
+      },
+      "questions": [
+        {
+          "id": "QV-05",
+          "role": "core",
+          "executive": true
+        },
+        {
+          "id": "QV-06",
+          "role": "follow_up"
+        },
+        {
+          "id": "QV-07",
+          "role": "scope_conditional"
+        }
+      ],
+      "maturityGuidance": {
+        "notYet": "Cost to serve is not known.",
+        "crawl": "Unit cost calculated once or ad hoc; AI known only as a total.",
+        "walk": "Unit costs defined and reported quarterly.",
+        "run": "Unit costs for key products trended monthly and used routinely in pricing, roadmap and architecture decisions, including per AI use case.",
+        "source": "ltm_paraphrase",
+        "claimIds": [
+          "CLM-FIN-005"
+        ]
+      },
+      "offeringIds": [
+        "OFF.FIN.UNITECON",
+        "OFF.FIN.OPMODEL"
+      ],
+      "costIqPrefill": [
+        "CIQ.FIN-02",
+        "CIQ.FIN-04"
+      ],
+      "dependsOn": [
+        "ALLOCATION"
+      ],
+      "wave": 3,
+      "claimIds": [
+        "CLM-FIN-019"
+      ],
+      "basis": [
+        {
+          "claimId": "CLM-FIN-019",
+          "citation": "FinOps Framework capability 'Unit Economics', adapted under CC BY 4.0 [CLM-FIN-019]",
+          "status": "V"
+        },
+        {
+          "assumptionId": "ASM-FIN-004",
+          "citation": "LTM default targets by complexity tier (DESIGN.md 3.4) [CLM-FIN-121]",
+          "status": "LTM_heuristic",
+          "claimId": "CLM-FIN-121"
+        }
+      ]
+    },
+    {
+      "id": "ARCHITECTING_WORKLOAD_PLACEMENT",
+      "domain": "D3",
+      "displayName": "Architecting & Workload Placement",
+      "displayNameStatus": "V",
+      "relevance": "always",
+      "description": "Make expected cost and unit cost a required criterion in architecture reviews and in placing workloads across public cloud, private cloud and data centre.",
+      "defaultTargets": {
+        "tier1": "crawl",
+        "tier2": "walk",
+        "tier3": "walk",
+        "assumptionId": "ASM-FIN-004"
+      },
+      "questions": [
+        {
+          "id": "OP-10",
+          "role": "core"
+        }
+      ],
+      "maturityGuidance": {
+        "notYet": "Cost is not considered in design or placement.",
+        "crawl": "Discussed informally.",
+        "walk": "Required for major designs.",
+        "run": "Required with a cost model and compared with actuals after go-live.",
+        "source": "ltm_paraphrase",
+        "claimIds": [
+          "CLM-FIN-005"
+        ]
+      },
+      "offeringIds": [
+        "OFF.CT.PLACEMENT",
+        "OFF.FIN.SPRINT"
+      ],
+      "wave": 2,
+      "claimIds": [
+        "CLM-FIN-020",
+        "CLM-FIN-010"
+      ],
+      "basis": [
+        {
+          "claimId": "CLM-FIN-020",
+          "citation": "FinOps Framework capability 'Architecting & Workload Placement', adapted under CC BY 4.0 [CLM-FIN-020]",
+          "status": "V"
+        },
+        {
+          "assumptionId": "ASM-FIN-004",
+          "citation": "LTM default targets by complexity tier (DESIGN.md 3.4) [CLM-FIN-121]",
+          "status": "LTM_heuristic",
+          "claimId": "CLM-FIN-121"
+        },
+        {
+          "claimId": "CLM-FIN-010",
+          "citation": "2026 capability changes (Architecting & Workload Placement) [CLM-FIN-010]",
+          "status": "S"
+        }
+      ]
+    },
+    {
+      "id": "USAGE_OPTIMIZATION",
+      "domain": "D3",
+      "displayName": "Usage Optimization",
+      "displayNameStatus": "V",
+      "relevance": "always",
+      "description": "Match the resources used to the resources needed: remove idle resources, schedule non-production, rightsize and modernise, tier storage, tune containers and GPUs, and design data transfer for cost.",
+      "defaultTargets": {
+        "tier1": "crawl",
+        "tier2": "walk",
+        "tier3": "run",
+        "assumptionId": "ASM-FIN-004",
+        "runReason": "Largest usage-lever base"
+      },
+      "questions": [
+        {
+          "id": "OP-04",
+          "role": "core",
+          "executive": true
+        },
+        {
+          "id": "OP-05",
+          "role": "scope_conditional",
+          "executive": true
+        },
+        {
+          "id": "OP-06",
+          "role": "scope_conditional",
+          "executive": true
+        },
+        {
+          "id": "OP-07",
+          "role": "scope_conditional"
+        },
+        {
+          "id": "OP-09",
+          "role": "scope_conditional"
+        },
+        {
+          "id": "OP-11",
+          "role": "scope_conditional"
+        },
+        {
+          "id": "OP-12",
+          "role": "scope_conditional"
+        }
+      ],
+      "maturityGuidance": {
+        "notYet": "Recommendations rarely reviewed; resources run 24/7; idle resources never removed.",
+        "crawl": "Ad hoc reviews and manual clean-ups.",
+        "walk": "Quarterly reviews with some action; schedules and lifecycle policies for some teams.",
+        "run": "Monthly reviews tracked to verified savings as normal engineering work; idle clean-up, scheduling, storage lifecycle and container tuning automated.",
+        "source": "ltm_paraphrase",
+        "claimIds": [
+          "CLM-FIN-005"
+        ]
+      },
+      "leverIds": [
+        "LEV-02",
+        "LEV-03",
+        "LEV-04",
+        "LEV-05",
+        "LEV-07",
+        "LEV-08",
+        "LEV-10"
+      ],
+      "offeringIds": [
+        "OFF.FIN.SPRINT",
+        "OFF.FIN.MANAGED",
+        "OFF.FIN.ASSESS"
+      ],
+      "costIqPrefill": [
+        "CIQ.FIN-11"
+      ],
+      "dependsOn": [
+        "ALLOCATION"
+      ],
+      "wave": 2,
+      "claimIds": [
+        "CLM-FIN-021",
+        "CLM-FIN-082",
+        "CLM-FIN-092",
+        "CLM-FIN-101"
+      ],
+      "basis": [
+        {
+          "claimId": "CLM-FIN-021",
+          "citation": "FinOps Framework capability 'Usage Optimization', adapted under CC BY 4.0 [CLM-FIN-021]",
+          "status": "V"
+        },
+        {
+          "assumptionId": "ASM-FIN-004",
+          "citation": "LTM default targets by complexity tier (DESIGN.md 3.4) [CLM-FIN-121]",
+          "status": "LTM_heuristic",
+          "claimId": "CLM-FIN-121"
+        },
+        {
+          "claimId": "CLM-FIN-082",
+          "citation": "AWS Cost Optimization Hub [CLM-FIN-082]",
+          "status": "V"
+        },
+        {
+          "claimId": "CLM-FIN-092",
+          "citation": "Azure Advisor [CLM-FIN-092]",
+          "status": "V"
+        },
+        {
+          "claimId": "CLM-FIN-101",
+          "citation": "Google Cloud Recommender [CLM-FIN-101]",
+          "status": "V"
+        }
+      ]
+    },
+    {
+      "id": "RATE_OPTIMIZATION",
+      "domain": "D3",
+      "displayName": "Rate Optimization",
+      "displayNameStatus": "V",
+      "relevance": "always",
+      "description": "Pay less per unit of usage through commitment discounts, negotiated agreements and Spot capacity, managed as one portfolio with utilisation and expiry tracked.",
+      "defaultTargets": {
+        "tier1": "crawl",
+        "tier2": "walk",
+        "tier3": "run",
+        "assumptionId": "ASM-FIN-004",
+        "runReason": "Several commitment portfolios to manage"
+      },
+      "questions": [
+        {
+          "id": "OP-01",
+          "role": "core",
+          "executive": true
+        },
+        {
+          "id": "OP-02",
+          "role": "follow_up"
+        },
+        {
+          "id": "OP-03",
+          "role": "scope_conditional"
+        },
+        {
+          "id": "OP-08",
+          "role": "scope_conditional"
+        }
+      ],
+      "maturityGuidance": {
+        "notYet": "No commitments bought; list prices only.",
+        "crawl": "Ad hoc purchases by individual teams; renewals reactive.",
+        "walk": "Central portfolio reviewed at least quarterly; commitments in a register.",
+        "run": "One central portfolio sized from forecasts, utilisation and expiry managed continuously, staggered terms, Spot the default for tolerant workloads with automated interruption handling.",
+        "source": "ltm_paraphrase",
+        "claimIds": [
+          "CLM-FIN-009",
+          "CLM-FIN-036",
+          "CLM-FIN-005"
+        ]
+      },
+      "leverIds": [
+        "LEV-01",
+        "LEV-06"
+      ],
+      "offeringIds": [
+        "OFF.FIN.SPRINT",
+        "OFF.FIN.MANAGED",
+        "OFF.FIN.ASSESS"
+      ],
+      "costIqPrefill": [
+        "CIQ.FIN-12"
+      ],
+      "wave": 2,
+      "claimIds": [
+        "CLM-FIN-022",
+        "CLM-FIN-009",
+        "CLM-FIN-036"
+      ],
+      "basis": [
+        {
+          "claimId": "CLM-FIN-022",
+          "citation": "FinOps Framework capability 'Rate Optimization', adapted under CC BY 4.0 [CLM-FIN-022]",
+          "status": "V"
+        },
+        {
+          "assumptionId": "ASM-FIN-004",
+          "citation": "LTM default targets by complexity tier (DESIGN.md 3.4) [CLM-FIN-121]",
+          "status": "LTM_heuristic",
+          "claimId": "CLM-FIN-121"
+        },
+        {
+          "claimId": "CLM-FIN-009",
+          "citation": "Rate Optimization covers commitment discounts and Spot [CLM-FIN-009]",
+          "status": "V"
+        },
+        {
+          "claimId": "CLM-FIN-036",
+          "citation": "Foundation sample coverage goals, shown as KPI context only [CLM-FIN-036]",
+          "status": "S"
+        }
+      ]
+    },
+    {
+      "id": "LICENSING_SAAS",
+      "domain": "D3",
+      "displayName": "Licensing & SaaS",
+      "displayNameStatus": "V",
+      "relevance": "scope",
+      "scopeTrigger": {
+        "any": [
+          {
+            "fact": "footprint.scopes",
+            "contains": "saas"
+          },
+          {
+            "fact": "footprint.scopes",
+            "contains": "licensing"
+          }
+        ]
+      },
+      "description": "Know which software and SaaS is licensed, used and renewing, with owners, and right-size entitlements, including licences used in cloud.",
+      "defaultTargets": {
+        "tier1": "crawl",
+        "tier2": "crawl",
+        "tier3": "walk",
+        "assumptionId": "ASM-FIN-004"
+      },
+      "questions": [
+        {
+          "id": "OP-13",
+          "role": "scope_conditional"
+        },
+        {
+          "id": "OP-14",
+          "role": "scope_conditional"
+        }
+      ],
+      "maturityGuidance": {
+        "notYet": "No inventory of subscriptions or licence entitlements.",
+        "crawl": "Partial list; entitlements known but not tracked.",
+        "walk": "Major vendors covered and tracked.",
+        "run": "Complete, usage-based inventory with renewals planned; entitlements tracked and optimised per workload.",
+        "source": "ltm_paraphrase",
+        "claimIds": [
+          "CLM-FIN-005"
+        ]
+      },
+      "leverIds": [
+        "LEV-09"
+      ],
+      "offeringIds": [
+        "OFF.FIN.SPRINT",
+        "REF.COST_IQ"
+      ],
+      "wave": 3,
+      "claimIds": [
+        "CLM-FIN-023",
+        "CLM-FIN-045",
+        "CLM-FIN-095"
+      ],
+      "basis": [
+        {
+          "claimId": "CLM-FIN-023",
+          "citation": "FinOps Framework capability 'Licensing & SaaS', adapted under CC BY 4.0 [CLM-FIN-023]",
+          "status": "V"
+        },
+        {
+          "assumptionId": "ASM-FIN-004",
+          "citation": "LTM default targets by complexity tier (DESIGN.md 3.4) [CLM-FIN-121]",
+          "status": "LTM_heuristic",
+          "claimId": "CLM-FIN-121"
+        },
+        {
+          "claimId": "CLM-FIN-045",
+          "citation": "State of FinOps 2026 scope shares (SaaS, licensing) [CLM-FIN-045]",
+          "status": "V"
+        },
+        {
+          "claimId": "CLM-FIN-095",
+          "citation": "Azure Hybrid Benefit [CLM-FIN-095]",
+          "status": "V"
+        }
+      ]
+    },
+    {
+      "id": "SUSTAINABILITY",
+      "domain": "D3",
+      "displayName": "Sustainability",
+      "displayNameStatus": "V",
+      "relevance": "scope",
+      "scopeTrigger": {
+        "any": [
+          {
+            "fact": "footprint.scopes",
+            "contains": "private_cloud"
+          },
+          {
+            "fact": "footprint.scopes",
+            "contains": "data_centre"
+          },
+          {
+            "fact": "footprint.scopes",
+            "contains": "colocation"
+          }
+        ]
+      },
+      "description": "Use carbon and energy data alongside cost in optimisation and placement decisions.",
+      "defaultTargets": {
+        "tier1": null,
+        "tier2": "crawl",
+        "tier3": "crawl",
+        "assumptionId": "ASM-FIN-004"
+      },
+      "questions": [
+        {
+          "id": "OP-15",
+          "role": "scope_conditional"
+        }
+      ],
+      "maturityGuidance": {
+        "notYet": "Carbon and energy data not considered.",
+        "crawl": "Reported, not used.",
+        "walk": "Used for major decisions.",
+        "run": "Used routinely, with targets.",
+        "source": "ltm_paraphrase",
+        "claimIds": [
+          "CLM-FIN-005"
+        ]
+      },
+      "offeringIds": [
+        "OFF.FIN.OPMODEL",
+        "OFF.CT.PLACEMENT"
+      ],
+      "costIqPrefill": [
+        "CIQ.FIN-03"
+      ],
+      "wave": 3,
+      "claimIds": [
+        "CLM-FIN-024"
+      ],
+      "basis": [
+        {
+          "claimId": "CLM-FIN-024",
+          "citation": "FinOps Framework capability 'Sustainability', adapted under CC BY 4.0 [CLM-FIN-024]",
+          "status": "V"
+        },
+        {
+          "assumptionId": "ASM-FIN-004",
+          "citation": "LTM default targets by complexity tier (DESIGN.md 3.4) [CLM-FIN-121]",
+          "status": "LTM_heuristic",
+          "claimId": "CLM-FIN-121"
+        }
+      ]
+    },
+    {
+      "id": "EXECUTIVE_STRATEGY_ALIGNMENT",
+      "domain": "D4",
+      "displayName": "Executive Strategy Alignment",
+      "displayNameStatus": "V",
+      "newIn2026": true,
+      "relevance": "always",
+      "description": "Connect technology spend to business strategy: show the board that spend delivers the value in its business case, make cost, speed and value trade-offs explicitly, and write cost efficiency into objectives.",
+      "defaultTargets": {
+        "tier1": "crawl",
+        "tier2": "walk",
+        "tier3": "walk",
+        "assumptionId": "ASM-FIN-004"
+      },
+      "questions": [
+        {
+          "id": "MP-04",
+          "role": "core",
+          "executive": true
+        },
+        {
+          "id": "MP-05",
+          "role": "core"
+        }
+      ],
+      "maturityGuidance": {
+        "notYet": "Value of cloud spend not shown; cost efficiency not in objectives.",
+        "crawl": "Anecdotal evidence; informal objectives.",
+        "walk": "Evidence by project; cost efficiency in leadership objectives.",
+        "run": "Quantified, trended evidence; trade-offs decided at an executive forum; cost efficiency in team and leadership objectives.",
+        "source": "ltm_paraphrase",
+        "claimIds": [
+          "CLM-FIN-005"
+        ]
+      },
+      "offeringIds": [
+        "OFF.FIN.OPMODEL",
+        "OFF.FIN.MANAGED"
+      ],
+      "costIqPrefill": [
+        "CIQ.FIN-09"
+      ],
+      "wave": 3,
+      "claimIds": [
+        "CLM-FIN-025"
+      ],
+      "basis": [
+        {
+          "claimId": "CLM-FIN-025",
+          "citation": "FinOps Framework capability 'Executive Strategy Alignment', adapted under CC BY 4.0 [CLM-FIN-025]",
+          "status": "V"
+        },
+        {
+          "assumptionId": "ASM-FIN-004",
+          "citation": "LTM default targets by complexity tier (DESIGN.md 3.4) [CLM-FIN-121]",
+          "status": "LTM_heuristic",
+          "claimId": "CLM-FIN-121"
+        }
+      ]
+    },
+    {
+      "id": "FINOPS_PRACTICE_OPERATIONS",
+      "domain": "D4",
+      "displayName": "FinOps Practice Operations",
+      "displayNameStatus": "V",
+      "relevance": "always",
+      "description": "Run FinOps as a standing practice: an accountable owner with a mandate and sponsor, a regular review with engineering and finance, and optimisation work planned in backlogs.",
+      "defaultTargets": {
+        "tier1": "crawl",
+        "tier2": "walk",
+        "tier3": "run",
+        "assumptionId": "ASM-FIN-004",
+        "runReason": "A standing practice is needed at this scale"
+      },
+      "questions": [
+        {
+          "id": "MP-01",
+          "role": "core",
+          "executive": true
+        },
+        {
+          "id": "MP-02",
+          "role": "core"
+        },
+        {
+          "id": "MP-03",
+          "role": "core"
+        }
+      ],
+      "maturityGuidance": {
+        "notYet": "No one accountable; no regular review; finance interprets the bill alone.",
+        "crawl": "Accountability shared and unclear; reviews only when budgets are exceeded.",
+        "walk": "A named part-time owner; quarterly reviews; optimisation items created but often deprioritised.",
+        "run": "A named FinOps lead or team with a written mandate and executive sponsor; monthly team and executive reviews; optimisation work prioritised with features and tracked to verified savings.",
+        "source": "ltm_paraphrase",
+        "claimIds": [
+          "CLM-FIN-005"
+        ]
+      },
+      "offeringIds": [
+        "OFF.FIN.OPMODEL",
+        "OFF.FIN.MANAGED"
+      ],
+      "costIqPrefill": [
+        "CIQ.FIN-06"
+      ],
+      "wave": 1,
+      "claimIds": [
+        "CLM-FIN-026"
+      ],
+      "basis": [
+        {
+          "claimId": "CLM-FIN-026",
+          "citation": "FinOps Framework capability 'FinOps Practice Operations', adapted under CC BY 4.0 [CLM-FIN-026]",
+          "status": "V"
+        },
+        {
+          "assumptionId": "ASM-FIN-004",
+          "citation": "LTM default targets by complexity tier (DESIGN.md 3.4) [CLM-FIN-121]",
+          "status": "LTM_heuristic",
+          "claimId": "CLM-FIN-121"
+        }
+      ]
+    },
+    {
+      "id": "GOVERNANCE_POLICY_RISK",
+      "domain": "D4",
+      "displayName": "Governance, Policy & Risk",
+      "displayNameStatus": "V",
+      "relevance": "always",
+      "description": "Set and enforce the rules that guide technology spend (mandatory tags, allowed regions and sizes, budget guardrails, account boundaries), preferably as policy as code.",
+      "defaultTargets": {
+        "tier1": "crawl",
+        "tier2": "walk",
+        "tier3": "run",
+        "assumptionId": "ASM-FIN-004",
+        "runReason": "Guardrails must be automated across many teams"
+      },
+      "questions": [
+        {
+          "id": "MP-06",
+          "role": "core"
+        },
+        {
+          "id": "MP-07",
+          "role": "core"
+        }
+      ],
+      "maturityGuidance": {
+        "notYet": "No cost policies; production and non-production share accounts.",
+        "crawl": "Policies in some accounts; partly mixed environments.",
+        "walk": "Detective (audit-mode) policies with follow-up; environments separated within shared accounts.",
+        "run": "Preventive policies on all accounts; production and non-production strictly separated.",
+        "source": "ltm_paraphrase",
+        "claimIds": [
+          "CLM-FIN-027",
+          "CLM-FIN-005"
+        ]
+      },
+      "offeringIds": [
+        "OFF.FIN.OPMODEL",
+        "OFF.FIN.MANAGED"
+      ],
+      "costIqPrefill": [
+        "CIQ.FIN-08"
+      ],
+      "wave": 2,
+      "claimIds": [
+        "CLM-FIN-027",
+        "CLM-FIN-088",
+        "CLM-FIN-093"
+      ],
+      "basis": [
+        {
+          "claimId": "CLM-FIN-027",
+          "citation": "FinOps Framework capability 'Governance, Policy & Risk', adapted under CC BY 4.0 [CLM-FIN-027]",
+          "status": "V"
+        },
+        {
+          "assumptionId": "ASM-FIN-004",
+          "citation": "LTM default targets by complexity tier (DESIGN.md 3.4) [CLM-FIN-121]",
+          "status": "LTM_heuristic",
+          "claimId": "CLM-FIN-121"
+        },
+        {
+          "claimId": "CLM-FIN-088",
+          "citation": "AWS Organizations tag policies [CLM-FIN-088]",
+          "status": "V"
+        },
+        {
+          "claimId": "CLM-FIN-093",
+          "citation": "Azure Policy tag definitions [CLM-FIN-093]",
+          "status": "P"
+        }
+      ]
+    },
+    {
+      "id": "FINOPS_EDUCATION_ENABLEMENT",
+      "domain": "D4",
+      "displayName": "FinOps Education & Enablement",
+      "displayNameStatus": "V",
+      "relevance": "always",
+      "description": "Give engineers, product owners and finance staff role-based FinOps training and recognise cost improvements.",
+      "defaultTargets": {
+        "tier1": "crawl",
+        "tier2": "crawl",
+        "tier3": "walk",
+        "assumptionId": "ASM-FIN-004"
+      },
+      "questions": [
+        {
+          "id": "MP-08",
+          "role": "core"
+        }
+      ],
+      "maturityGuidance": {
+        "notYet": "No FinOps training.",
+        "crawl": "Occasional sessions.",
+        "walk": "Training for some groups.",
+        "run": "Role-based training for all three groups; recognition built into team routines.",
+        "source": "ltm_paraphrase",
+        "claimIds": [
+          "CLM-FIN-005"
+        ]
+      },
+      "offeringIds": [
+        "OFF.FIN.OPMODEL",
+        "OFF.FIN.MANAGED"
+      ],
+      "costIqPrefill": [
+        "CIQ.FIN-06"
+      ],
+      "wave": 3,
+      "claimIds": [
+        "CLM-FIN-028"
+      ],
+      "basis": [
+        {
+          "claimId": "CLM-FIN-028",
+          "citation": "FinOps Framework capability 'FinOps Education & Enablement', adapted under CC BY 4.0 [CLM-FIN-028]",
+          "status": "V"
+        },
+        {
+          "assumptionId": "ASM-FIN-004",
+          "citation": "LTM default targets by complexity tier (DESIGN.md 3.4) [CLM-FIN-121]",
+          "status": "LTM_heuristic",
+          "claimId": "CLM-FIN-121"
+        }
+      ]
+    },
+    {
+      "id": "INVOICING_CHARGEBACK",
+      "domain": "D4",
+      "displayName": "Invoicing & Chargeback",
+      "displayNameStatus": "V",
+      "relevance": "always",
+      "description": "Reconcile provider invoices to cost data, feed finance systems and show back or charge back cost to business units.",
+      "defaultTargets": {
+        "tier1": null,
+        "tier2": "crawl",
+        "tier3": "walk",
+        "assumptionId": "ASM-FIN-004"
+      },
+      "questions": [
+        {
+          "id": "MP-09",
+          "role": "core"
+        },
+        {
+          "id": "MP-10",
+          "role": "core"
+        }
+      ],
+      "maturityGuidance": {
+        "notYet": "Cost absorbed centrally; invoices not reconciled to cost data.",
+        "crawl": "Rough percentage splits; manual, partial reconciliation.",
+        "walk": "Showback with budget accountability; monthly reconciliation and BI integration.",
+        "run": "Automated chargeback with monthly journal entries; automated reconciliation and integration with ERP and planning.",
+        "source": "ltm_paraphrase",
+        "claimIds": [
+          "CLM-FIN-005"
+        ]
+      },
+      "offeringIds": [
+        "OFF.FIN.UNITECON",
+        "OFF.FIN.OPMODEL"
+      ],
+      "costIqPrefill": [
+        "CIQ.FIN-07"
+      ],
+      "dependsOn": [
+        "ALLOCATION"
+      ],
+      "wave": 3,
+      "claimIds": [
+        "CLM-FIN-029",
+        "CLM-FIN-008"
+      ],
+      "basis": [
+        {
+          "claimId": "CLM-FIN-029",
+          "citation": "FinOps Framework capability 'Invoicing & Chargeback', adapted under CC BY 4.0 [CLM-FIN-029]",
+          "status": "V"
+        },
+        {
+          "assumptionId": "ASM-FIN-004",
+          "citation": "LTM default targets by complexity tier (DESIGN.md 3.4) [CLM-FIN-121]",
+          "status": "LTM_heuristic",
+          "claimId": "CLM-FIN-121"
+        },
+        {
+          "claimId": "CLM-FIN-008",
+          "citation": "FOCUS 1.4 Invoice Detail dataset [CLM-FIN-008]",
+          "status": "V"
+        }
+      ]
+    },
+    {
+      "id": "FINOPS_ASSESSMENT",
+      "domain": "D4",
+      "displayName": "FinOps Assessment",
+      "displayNameStatus": "V",
+      "relevance": "always",
+      "description": "Periodically assess the FinOps practice against a framework and act on the results.",
+      "defaultTargets": {
+        "tier1": "crawl",
+        "tier2": "crawl",
+        "tier3": "walk",
+        "assumptionId": "ASM-FIN-004"
+      },
+      "questions": [
+        {
+          "id": "MP-11",
+          "role": "core"
+        }
+      ],
+      "maturityGuidance": {
+        "notYet": "Never assessed.",
+        "crawl": "Informal views only.",
+        "walk": "Assessed once and partly acted on.",
+        "run": "Assessed at least annually with a tracked improvement plan.",
+        "source": "ltm_paraphrase",
+        "claimIds": [
+          "CLM-FIN-005"
+        ]
+      },
+      "offeringIds": [
+        "OFF.FIN.OPMODEL",
+        "OFF.FIN.MANAGED"
+      ],
+      "costIqPrefill": [
+        "CIQ.FIN-06"
+      ],
+      "wave": 3,
+      "claimIds": [
+        "CLM-FIN-030"
+      ],
+      "basis": [
+        {
+          "claimId": "CLM-FIN-030",
+          "citation": "FinOps Framework capability 'FinOps Assessment', adapted under CC BY 4.0 [CLM-FIN-030]",
+          "status": "V"
+        },
+        {
+          "assumptionId": "ASM-FIN-004",
+          "citation": "LTM default targets by complexity tier (DESIGN.md 3.4) [CLM-FIN-121]",
+          "status": "LTM_heuristic",
+          "claimId": "CLM-FIN-121"
+        }
+      ]
+    },
+    {
+      "id": "AUTOMATION_TOOLS_SERVICES",
+      "domain": "D4",
+      "displayName": "FinOps Tools & Services",
+      "displayNameStatus": "P",
+      "relevance": "always",
+      "description": "Select FinOps tools and services against requirements and integrate them (data, allocation, anomaly, commitment management, automation of routine actions).",
+      "defaultTargets": {
+        "tier1": "crawl",
+        "tier2": "walk",
+        "tier3": "walk",
+        "assumptionId": "ASM-FIN-004"
+      },
+      "questions": [
+        {
+          "id": "MP-12",
+          "role": "core"
+        }
+      ],
+      "maturityGuidance": {
+        "notYet": "No FinOps tooling.",
+        "crawl": "Native consoles and spreadsheets.",
+        "walk": "Tools for most needs, some integration.",
+        "run": "An integrated tool set selected against requirements, with routine actions automated.",
+        "source": "ltm_paraphrase",
+        "claimIds": [
+          "CLM-FIN-031",
+          "CLM-FIN-005"
+        ]
+      },
+      "offeringIds": [
+        "OFF.FIN.TOOLING",
+        "OFF.FIN.ASSESS"
+      ],
+      "costIqPrefill": [
+        "CIQ.FIN-08"
+      ],
+      "wave": 2,
+      "claimIds": [
+        "CLM-FIN-031",
+        "CLM-FIN-110"
+      ],
+      "basis": [
+        {
+          "claimId": "CLM-FIN-031",
+          "citation": "FinOps Framework capability 'FinOps Tools & Services', adapted under CC BY 4.0 [CLM-FIN-031]",
+          "status": "P"
+        },
+        {
+          "assumptionId": "ASM-FIN-004",
+          "citation": "LTM default targets by complexity tier (DESIGN.md 3.4) [CLM-FIN-121]",
+          "status": "LTM_heuristic",
+          "claimId": "CLM-FIN-121"
+        },
+        {
+          "claimId": "CLM-FIN-110",
+          "citation": "OpenCost (example open-source option) [CLM-FIN-110]",
+          "status": "V"
+        }
+      ]
+    },
+    {
+      "id": "INTERSECTING_DISCIPLINES",
+      "domain": "D4",
+      "displayName": "Intersecting Disciplines",
+      "displayNameStatus": "V",
+      "relevance": "always",
+      "description": "Work with IT asset management, IT financial management, procurement, security, sustainability and architecture on shared data and decisions.",
+      "defaultTargets": {
+        "tier1": "crawl",
+        "tier2": "crawl",
+        "tier3": "walk",
+        "assumptionId": "ASM-FIN-004"
+      },
+      "questions": [
+        {
+          "id": "MP-13",
+          "role": "core"
+        }
+      ],
+      "maturityGuidance": {
+        "notYet": "No contact with related disciplines.",
+        "crawl": "Informal contact.",
+        "walk": "Joint work with some disciplines.",
+        "run": "Joint processes and shared data with most disciplines.",
+        "source": "ltm_paraphrase",
+        "claimIds": [
+          "CLM-FIN-005"
+        ]
+      },
+      "offeringIds": [
+        "OFF.FIN.OPMODEL",
+        "OFF.FIN.MANAGED"
+      ],
+      "costIqPrefill": [
+        "CIQ.FIN-10"
+      ],
+      "wave": 3,
+      "claimIds": [
+        "CLM-FIN-032"
+      ],
+      "basis": [
+        {
+          "claimId": "CLM-FIN-032",
+          "citation": "FinOps Framework capability 'Intersecting Disciplines', adapted under CC BY 4.0 [CLM-FIN-032]",
+          "status": "V"
+        },
+        {
+          "assumptionId": "ASM-FIN-004",
+          "citation": "LTM default targets by complexity tier (DESIGN.md 3.4) [CLM-FIN-121]",
+          "status": "LTM_heuristic",
+          "claimId": "CLM-FIN-121"
+        }
+      ]
+    }
+  ],
+  "tiers": {
+    "assumptionIds": [
+      "ASM-FIN-001",
+      "ASM-FIN-002",
+      "ASM-FIN-003"
+    ],
+    "spendBandsUsd": [
+      {
+        "min": 0,
+        "max": 1000000,
+        "points": 0
+      },
+      {
+        "min": 1000000,
+        "max": 10000000,
+        "points": 1
+      },
+      {
+        "min": 10000000,
+        "max": 50000000,
+        "points": 2
+      },
+      {
+        "min": 50000000,
+        "points": 3
+      }
+    ],
+    "points": [
+      {
+        "id": "providers_two",
+        "when": {
+          "all": [
+            {
+              "fact": "footprint.publicCloudProviders",
+              "countAtLeast": 2
+            },
+            {
+              "not": {
+                "fact": "footprint.publicCloudProviders",
+                "countAtLeast": 3
+              }
+            }
+          ]
+        },
+        "points": 1
+      },
+      {
+        "id": "providers_three_plus",
+        "when": {
+          "fact": "footprint.publicCloudProviders",
+          "countAtLeast": 3
+        },
+        "points": 2
+      },
+      {
+        "id": "kubernetes_material",
+        "when": {
+          "fact": "footprint.scopes",
+          "contains": "kubernetes"
+        },
+        "points": 1
+      },
+      {
+        "id": "ai_material",
+        "when": {
+          "any": [
+            {
+              "fact": "footprint.scopes",
+              "contains": "ai_platform_gpu"
+            },
+            {
+              "fact": "footprint.scopes",
+              "contains": "ai_api"
+            }
+          ]
+        },
+        "points": 1
+      },
+      {
+        "id": "saas_or_licensing",
+        "when": {
+          "any": [
+            {
+              "fact": "footprint.scopes",
+              "contains": "saas"
+            },
+            {
+              "fact": "footprint.scopes",
+              "contains": "licensing"
+            }
+          ]
+        },
+        "points": 1
+      },
+      {
+        "id": "private_cloud_or_dc",
+        "when": {
+          "any": [
+            {
+              "fact": "footprint.scopes",
+              "contains": "private_cloud"
+            },
+            {
+              "fact": "footprint.scopes",
+              "contains": "data_centre"
+            }
+          ]
+        },
+        "points": 1
+      },
+      {
+        "id": "consuming_units_5_plus",
+        "when": {
+          "fact": "org.consumingUnits",
+          "in": [
+            "5-19",
+            "20+"
+          ]
+        },
+        "points": 1
+      }
+    ],
+    "bands": [
+      {
+        "tier": 1,
+        "label": "Focused",
+        "minPoints": 0,
+        "maxPoints": 2
+      },
+      {
+        "tier": 2,
+        "label": "Scaling",
+        "minPoints": 3,
+        "maxPoints": 5
+      },
+      {
+        "tier": 3,
+        "label": "Complex",
+        "minPoints": 6
+      }
+    ]
+  }
+}
