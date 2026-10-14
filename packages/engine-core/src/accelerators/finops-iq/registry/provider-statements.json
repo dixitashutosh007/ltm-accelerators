@@ -1,0 +1,743 @@
+{
+  "registryVersion": "1.0.0",
+  "statusAsOf": "2026-10-14",
+  "rule": "Every tool or service named in a remediation, playbook entry or offering outline. Providers and tools appear only as options chosen from the client's requirements, always with alternatives; no partner claims (FRAMEWORK.md). Statements with status S or P are re-read on the provider page before external use.",
+  "statements": [
+    {
+      "id": "PRV-FIN-01",
+      "provider": "aws",
+      "name": "AWS Data Exports (CUR 2.0 and FOCUS 1.2 export)",
+      "category": "cost_data_export",
+      "capabilities": [
+        "DATA_INGESTION",
+        "INVOICING_CHARGEBACK"
+      ],
+      "statement": "Exports detailed AWS cost and usage as CUR 2.0 or in FOCUS 1.2 format; EKS and ECS split cost data is in CUR 2.0 only.",
+      "claimId": "CLM-FIN-080",
+      "status": "V",
+      "checked": "2026-10-14",
+      "volatile": true,
+      "reviewBy": "2027-01-12",
+      "clientVisible": true,
+      "alternatives": [
+        "PRV-FIN-20",
+        "PRV-FIN-40",
+        "PRV-FIN-50"
+      ]
+    },
+    {
+      "id": "PRV-FIN-02",
+      "provider": "aws",
+      "name": "AWS Cost Anomaly Detection",
+      "category": "anomaly_detection",
+      "capabilities": [
+        "ANOMALY_MANAGEMENT"
+      ],
+      "statement": "Machine-learning anomaly detection with monitors by account, tag or cost category and threshold-based alert subscriptions.",
+      "claimId": "CLM-FIN-081",
+      "status": "V",
+      "checked": "2026-10-14",
+      "volatile": false,
+      "reviewBy": "2027-04-14",
+      "clientVisible": true,
+      "alternatives": [
+        "PRV-FIN-21",
+        "PRV-FIN-42"
+      ]
+    },
+    {
+      "id": "PRV-FIN-03",
+      "provider": "aws",
+      "name": "AWS Cost Optimization Hub",
+      "category": "recommendations",
+      "capabilities": [
+        "USAGE_OPTIMIZATION",
+        "RATE_OPTIMIZATION"
+      ],
+      "leverIds": [
+        "LEV-01",
+        "LEV-02",
+        "LEV-03",
+        "LEV-05"
+      ],
+      "statement": "Consolidates cost recommendations, priced on your own discounts, with overlap between types removed.",
+      "claimId": "CLM-FIN-082",
+      "status": "V",
+      "checked": "2026-10-14",
+      "volatile": false,
+      "reviewBy": "2027-04-14",
+      "clientVisible": true,
+      "alternatives": [
+        "PRV-FIN-22",
+        "PRV-FIN-41",
+        "PRV-FIN-51"
+      ]
+    },
+    {
+      "id": "PRV-FIN-04",
+      "provider": "aws",
+      "name": "AWS Compute Optimizer",
+      "category": "recommendations",
+      "capabilities": [
+        "USAGE_OPTIMIZATION"
+      ],
+      "leverIds": [
+        "LEV-02",
+        "LEV-03"
+      ],
+      "statement": "Rightsizing and idle-resource recommendations from utilisation, for EC2, Auto Scaling groups, EBS and Lambda.",
+      "claimId": "CLM-FIN-083",
+      "status": "V",
+      "checked": "2026-10-14",
+      "volatile": false,
+      "reviewBy": "2027-04-14",
+      "clientVisible": true,
+      "alternatives": [
+        "PRV-FIN-22",
+        "PRV-FIN-41",
+        "PRV-FIN-51"
+      ]
+    },
+    {
+      "id": "PRV-FIN-05",
+      "provider": "aws",
+      "name": "Split cost allocation data for Amazon EKS",
+      "category": "kubernetes_allocation",
+      "capabilities": [
+        "ALLOCATION"
+      ],
+      "leverIds": [
+        "LEV-07"
+      ],
+      "statement": "Allocates shared EC2 instance cost to Kubernetes pods by CPU and memory share in the Cost and Usage Report.",
+      "claimId": "CLM-FIN-084",
+      "status": "V",
+      "checked": "2026-10-14",
+      "volatile": false,
+      "reviewBy": "2027-04-14",
+      "clientVisible": true,
+      "alternatives": [
+        "PRV-FIN-24",
+        "PRV-FIN-43",
+        "PRV-FIN-60"
+      ]
+    },
+    {
+      "id": "PRV-FIN-06",
+      "provider": "aws",
+      "name": "AWS Budgets",
+      "category": "budgets",
+      "capabilities": [
+        "BUDGETING"
+      ],
+      "statement": "Cost and usage budgets with alerts on actual or forecast amounts.",
+      "claimId": "CLM-FIN-085",
+      "status": "P",
+      "checked": "2026-10-14",
+      "volatile": false,
+      "reviewBy": "2027-04-14",
+      "clientVisible": true,
+      "alternatives": [
+        "PRV-FIN-21",
+        "PRV-FIN-42"
+      ]
+    },
+    {
+      "id": "PRV-FIN-07",
+      "provider": "aws",
+      "name": "Instance Scheduler on AWS",
+      "category": "scheduling",
+      "capabilities": [
+        "USAGE_OPTIMIZATION"
+      ],
+      "leverIds": [
+        "LEV-04"
+      ],
+      "statement": "Tag-driven start and stop schedules for EC2, Auto Scaling groups and RDS across accounts and Regions.",
+      "claimId": "CLM-FIN-086",
+      "status": "V",
+      "checked": "2026-10-14",
+      "volatile": false,
+      "reviewBy": "2027-04-14",
+      "clientVisible": true,
+      "alternatives": [
+        "PRV-FIN-26",
+        "PRV-FIN-45"
+      ]
+    },
+    {
+      "id": "PRV-FIN-08",
+      "provider": "aws",
+      "name": "Amazon S3 Lifecycle and S3 Intelligent-Tiering",
+      "category": "storage_lifecycle",
+      "capabilities": [
+        "USAGE_OPTIMIZATION"
+      ],
+      "leverIds": [
+        "LEV-05"
+      ],
+      "statement": "Rules that move objects to cheaper storage classes or expire them; a storage class that tiers by access automatically.",
+      "claimId": "CLM-FIN-087",
+      "status": "P",
+      "checked": "2026-10-14",
+      "volatile": false,
+      "reviewBy": "2027-04-14",
+      "clientVisible": true,
+      "alternatives": [
+        "PRV-FIN-27",
+        "PRV-FIN-44"
+      ]
+    },
+    {
+      "id": "PRV-FIN-09",
+      "provider": "aws",
+      "name": "AWS Organizations tag policies (with service control policies)",
+      "category": "policy_as_code",
+      "capabilities": [
+        "GOVERNANCE_POLICY_RISK",
+        "ALLOCATION"
+      ],
+      "statement": "Standardise tags across accounts; combine with service control policies to require tags at creation.",
+      "claimId": "CLM-FIN-088",
+      "status": "V",
+      "checked": "2026-10-14",
+      "volatile": false,
+      "reviewBy": "2027-04-14",
+      "clientVisible": true,
+      "alternatives": [
+        "PRV-FIN-23"
+      ]
+    },
+    {
+      "id": "PRV-FIN-10",
+      "provider": "aws",
+      "name": "EC2 Spot interruption notices",
+      "category": "spot_interruption",
+      "capabilities": [
+        "RATE_OPTIMIZATION"
+      ],
+      "leverIds": [
+        "LEV-06"
+      ],
+      "statement": "Two-minute warning before a Spot Instance is reclaimed, plus earlier rebalance recommendations.",
+      "claimId": "CLM-FIN-089",
+      "status": "S",
+      "checked": "2026-10-14",
+      "volatile": false,
+      "reviewBy": "2027-04-14",
+      "clientVisible": true,
+      "alternatives": [
+        "PRV-FIN-28",
+        "PRV-FIN-46"
+      ]
+    },
+    {
+      "id": "PRV-FIN-20",
+      "provider": "azure",
+      "name": "Microsoft Cost Management exports (FOCUS dataset)",
+      "category": "cost_data_export",
+      "capabilities": [
+        "DATA_INGESTION",
+        "INVOICING_CHARGEBACK"
+      ],
+      "statement": "Exports Azure cost and usage in FOCUS format (actual and amortised cost in one dataset).",
+      "claimId": "CLM-FIN-090",
+      "status": "S",
+      "checked": "2026-10-14",
+      "volatile": true,
+      "reviewBy": "2027-01-12",
+      "clientVisible": true,
+      "alternatives": [
+        "PRV-FIN-01",
+        "PRV-FIN-40",
+        "PRV-FIN-50"
+      ]
+    },
+    {
+      "id": "PRV-FIN-21",
+      "provider": "azure",
+      "name": "Microsoft Cost Management budgets and anomaly alerts",
+      "category": "anomaly_detection",
+      "capabilities": [
+        "ANOMALY_MANAGEMENT",
+        "BUDGETING"
+      ],
+      "statement": "Budget alerts and cost anomaly alerts; budgets notify but do not stop spending.",
+      "claimId": "CLM-FIN-091",
+      "status": "V",
+      "checked": "2026-10-14",
+      "volatile": false,
+      "reviewBy": "2027-04-14",
+      "clientVisible": true,
+      "alternatives": [
+        "PRV-FIN-02",
+        "PRV-FIN-06",
+        "PRV-FIN-42"
+      ]
+    },
+    {
+      "id": "PRV-FIN-22",
+      "provider": "azure",
+      "name": "Azure Advisor cost recommendations",
+      "category": "recommendations",
+      "capabilities": [
+        "USAGE_OPTIMIZATION"
+      ],
+      "leverIds": [
+        "LEV-02",
+        "LEV-03"
+      ],
+      "statement": "Shut-down and resize recommendations for under-used virtual machines and scale sets, with estimated savings.",
+      "claimId": "CLM-FIN-092",
+      "status": "V",
+      "checked": "2026-10-14",
+      "volatile": false,
+      "reviewBy": "2027-04-14",
+      "clientVisible": true,
+      "alternatives": [
+        "PRV-FIN-03",
+        "PRV-FIN-04",
+        "PRV-FIN-41",
+        "PRV-FIN-51"
+      ]
+    },
+    {
+      "id": "PRV-FIN-23",
+      "provider": "azure",
+      "name": "Azure Policy tag definitions",
+      "category": "policy_as_code",
+      "capabilities": [
+        "GOVERNANCE_POLICY_RISK",
+        "ALLOCATION"
+      ],
+      "statement": "Built-in policies to require, add or inherit tags.",
+      "claimId": "CLM-FIN-093",
+      "status": "P",
+      "checked": "2026-10-14",
+      "volatile": false,
+      "reviewBy": "2027-04-14",
+      "clientVisible": true,
+      "alternatives": [
+        "PRV-FIN-09"
+      ]
+    },
+    {
+      "id": "PRV-FIN-24",
+      "provider": "azure",
+      "name": "AKS cost analysis add-on",
+      "category": "kubernetes_allocation",
+      "capabilities": [
+        "ALLOCATION"
+      ],
+      "leverIds": [
+        "LEV-07"
+      ],
+      "statement": "Breaks AKS cluster cost down by namespace and other Kubernetes constructs (built on OpenCost).",
+      "claimId": "CLM-FIN-094",
+      "status": "S",
+      "checked": "2026-10-14",
+      "volatile": false,
+      "reviewBy": "2027-04-14",
+      "clientVisible": true,
+      "alternatives": [
+        "PRV-FIN-05",
+        "PRV-FIN-43",
+        "PRV-FIN-60"
+      ]
+    },
+    {
+      "id": "PRV-FIN-25",
+      "provider": "azure",
+      "name": "Azure Hybrid Benefit",
+      "category": "licence_entitlements",
+      "capabilities": [
+        "LICENSING_SAAS"
+      ],
+      "leverIds": [
+        "LEV-09"
+      ],
+      "statement": "Use eligible Windows Server and SQL Server licences with Software Assurance on Azure instead of licence-included rates.",
+      "claimId": "CLM-FIN-095",
+      "status": "V",
+      "checked": "2026-10-14",
+      "volatile": false,
+      "reviewBy": "2027-04-14",
+      "clientVisible": true,
+      "alternatives": []
+    },
+    {
+      "id": "PRV-FIN-26",
+      "provider": "azure",
+      "name": "Start/Stop VMs v2",
+      "category": "scheduling",
+      "capabilities": [
+        "USAGE_OPTIMIZATION"
+      ],
+      "leverIds": [
+        "LEV-04"
+      ],
+      "statement": "Scheduled start and stop of Azure virtual machines.",
+      "claimId": "CLM-FIN-096",
+      "status": "P",
+      "checked": "2026-10-14",
+      "volatile": false,
+      "reviewBy": "2027-04-14",
+      "clientVisible": true,
+      "alternatives": [
+        "PRV-FIN-07",
+        "PRV-FIN-45"
+      ]
+    },
+    {
+      "id": "PRV-FIN-27",
+      "provider": "azure",
+      "name": "Azure Blob Storage lifecycle management",
+      "category": "storage_lifecycle",
+      "capabilities": [
+        "USAGE_OPTIMIZATION"
+      ],
+      "leverIds": [
+        "LEV-05"
+      ],
+      "statement": "Daily rules that move blobs to cooler tiers or delete them.",
+      "claimId": "CLM-FIN-097",
+      "status": "S",
+      "checked": "2026-10-14",
+      "volatile": false,
+      "reviewBy": "2027-04-14",
+      "clientVisible": true,
+      "alternatives": [
+        "PRV-FIN-08",
+        "PRV-FIN-44"
+      ]
+    },
+    {
+      "id": "PRV-FIN-28",
+      "provider": "azure",
+      "name": "Azure Spot eviction notice",
+      "category": "spot_interruption",
+      "capabilities": [
+        "RATE_OPTIMIZATION"
+      ],
+      "leverIds": [
+        "LEV-06"
+      ],
+      "statement": "About 30 seconds' notice before a Spot VM is evicted.",
+      "claimId": "CLM-FIN-098",
+      "status": "S",
+      "checked": "2026-10-14",
+      "volatile": false,
+      "reviewBy": "2027-04-14",
+      "clientVisible": true,
+      "alternatives": [
+        "PRV-FIN-10",
+        "PRV-FIN-46"
+      ]
+    },
+    {
+      "id": "PRV-FIN-40",
+      "provider": "gcp",
+      "name": "Cloud Billing export to BigQuery (detailed and FOCUS, preview)",
+      "category": "cost_data_export",
+      "capabilities": [
+        "DATA_INGESTION"
+      ],
+      "statement": "Exports detailed usage cost to BigQuery; a FOCUS-normalised export is in preview.",
+      "claimId": "CLM-FIN-100",
+      "status": "V",
+      "checked": "2026-10-14",
+      "volatile": true,
+      "reviewBy": "2027-01-12",
+      "clientVisible": true,
+      "alternatives": [
+        "PRV-FIN-01",
+        "PRV-FIN-20",
+        "PRV-FIN-50"
+      ]
+    },
+    {
+      "id": "PRV-FIN-41",
+      "provider": "gcp",
+      "name": "Google Cloud Recommender (idle VM and machine type recommendations)",
+      "category": "recommendations",
+      "capabilities": [
+        "USAGE_OPTIMIZATION"
+      ],
+      "leverIds": [
+        "LEV-02",
+        "LEV-03"
+      ],
+      "statement": "Idle VM recommendations (configurable observation period, no charge) and machine type rightsizing.",
+      "claimId": "CLM-FIN-101",
+      "status": "V",
+      "checked": "2026-10-14",
+      "volatile": false,
+      "reviewBy": "2027-04-14",
+      "clientVisible": true,
+      "alternatives": [
+        "PRV-FIN-03",
+        "PRV-FIN-04",
+        "PRV-FIN-22",
+        "PRV-FIN-51"
+      ]
+    },
+    {
+      "id": "PRV-FIN-42",
+      "provider": "gcp",
+      "name": "Google Cloud Cost Anomaly Detection and budgets",
+      "category": "anomaly_detection",
+      "capabilities": [
+        "ANOMALY_MANAGEMENT",
+        "BUDGETING"
+      ],
+      "statement": "Anomaly detection on by default at no charge, alongside Cloud Billing budgets and alerts.",
+      "claimId": "CLM-FIN-102",
+      "status": "V",
+      "checked": "2026-10-14",
+      "volatile": false,
+      "reviewBy": "2027-04-14",
+      "clientVisible": true,
+      "alternatives": [
+        "PRV-FIN-02",
+        "PRV-FIN-21"
+      ]
+    },
+    {
+      "id": "PRV-FIN-43",
+      "provider": "gcp",
+      "name": "GKE cost allocation",
+      "category": "kubernetes_allocation",
+      "capabilities": [
+        "ALLOCATION"
+      ],
+      "leverIds": [
+        "LEV-07"
+      ],
+      "statement": "Adds namespace and label detail for GKE clusters to the billing export.",
+      "claimId": "CLM-FIN-103",
+      "status": "V",
+      "checked": "2026-10-14",
+      "volatile": false,
+      "reviewBy": "2027-04-14",
+      "clientVisible": true,
+      "alternatives": [
+        "PRV-FIN-05",
+        "PRV-FIN-24",
+        "PRV-FIN-60"
+      ]
+    },
+    {
+      "id": "PRV-FIN-44",
+      "provider": "gcp",
+      "name": "Cloud Storage Object Lifecycle Management and Autoclass",
+      "category": "storage_lifecycle",
+      "capabilities": [
+        "USAGE_OPTIMIZATION"
+      ],
+      "leverIds": [
+        "LEV-05"
+      ],
+      "statement": "Rules to change storage class or delete objects; automatic tiering by last access.",
+      "claimId": "CLM-FIN-104",
+      "status": "S",
+      "checked": "2026-10-14",
+      "volatile": false,
+      "reviewBy": "2027-04-14",
+      "clientVisible": true,
+      "alternatives": [
+        "PRV-FIN-08",
+        "PRV-FIN-27"
+      ]
+    },
+    {
+      "id": "PRV-FIN-45",
+      "provider": "gcp",
+      "name": "Compute Engine instance schedules",
+      "category": "scheduling",
+      "capabilities": [
+        "USAGE_OPTIMIZATION"
+      ],
+      "leverIds": [
+        "LEV-04"
+      ],
+      "statement": "Start and stop VMs at set times.",
+      "claimId": "CLM-FIN-105",
+      "status": "P",
+      "checked": "2026-10-14",
+      "volatile": false,
+      "reviewBy": "2027-04-14",
+      "clientVisible": true,
+      "alternatives": [
+        "PRV-FIN-07",
+        "PRV-FIN-26"
+      ]
+    },
+    {
+      "id": "PRV-FIN-46",
+      "provider": "gcp",
+      "name": "Spot VM preemption notice",
+      "category": "spot_interruption",
+      "capabilities": [
+        "RATE_OPTIMIZATION"
+      ],
+      "leverIds": [
+        "LEV-06"
+      ],
+      "statement": "About 30 seconds' notice before a Spot VM is preempted.",
+      "claimId": "CLM-FIN-106",
+      "status": "S",
+      "checked": "2026-10-14",
+      "volatile": false,
+      "reviewBy": "2027-04-14",
+      "clientVisible": true,
+      "alternatives": [
+        "PRV-FIN-10",
+        "PRV-FIN-28"
+      ]
+    },
+    {
+      "id": "PRV-FIN-50",
+      "provider": "oci",
+      "name": "OCI cost reports (FOCUS format)",
+      "category": "cost_data_export",
+      "capabilities": [
+        "DATA_INGESTION"
+      ],
+      "statement": "Cost reports in OCI and FOCUS formats, generated every six hours.",
+      "claimId": "CLM-FIN-107",
+      "status": "V",
+      "checked": "2026-10-14",
+      "volatile": true,
+      "reviewBy": "2027-01-12",
+      "clientVisible": true,
+      "alternatives": [
+        "PRV-FIN-01",
+        "PRV-FIN-20",
+        "PRV-FIN-40"
+      ]
+    },
+    {
+      "id": "PRV-FIN-51",
+      "provider": "oci",
+      "name": "OCI Cloud Advisor cost management recommendations",
+      "category": "recommendations",
+      "capabilities": [
+        "USAGE_OPTIMIZATION"
+      ],
+      "leverIds": [
+        "LEV-02",
+        "LEV-03"
+      ],
+      "statement": "Recommendations to delete idle and downsize under-used compute instances, with estimated monthly savings.",
+      "claimId": "CLM-FIN-107",
+      "status": "V",
+      "checked": "2026-10-14",
+      "volatile": true,
+      "reviewBy": "2027-01-12",
+      "clientVisible": true,
+      "alternatives": [
+        "PRV-FIN-03",
+        "PRV-FIN-22",
+        "PRV-FIN-41"
+      ]
+    },
+    {
+      "id": "PRV-FIN-60",
+      "provider": "open_source",
+      "name": "OpenCost",
+      "category": "kubernetes_allocation",
+      "capabilities": [
+        "ALLOCATION",
+        "AUTOMATION_TOOLS_SERVICES"
+      ],
+      "leverIds": [
+        "LEV-07"
+      ],
+      "statement": "Open-source, vendor-neutral Kubernetes cost allocation (CNCF Incubating).",
+      "claimId": "CLM-FIN-110",
+      "status": "V",
+      "checked": "2026-10-14",
+      "volatile": false,
+      "reviewBy": "2027-04-14",
+      "clientVisible": true,
+      "alternatives": [
+        "PRV-FIN-05",
+        "PRV-FIN-24",
+        "PRV-FIN-43",
+        "PRV-FIN-61"
+      ]
+    },
+    {
+      "id": "PRV-FIN-61",
+      "provider": "commercial",
+      "name": "Kubecost",
+      "category": "kubernetes_allocation",
+      "capabilities": [
+        "ALLOCATION",
+        "AUTOMATION_TOOLS_SERVICES"
+      ],
+      "leverIds": [
+        "LEV-07"
+      ],
+      "statement": "Commercial Kubernetes cost monitoring (IBM since 2024), built on OpenCost.",
+      "claimId": "CLM-FIN-111",
+      "status": "V",
+      "checked": "2026-10-14",
+      "volatile": false,
+      "reviewBy": "2027-04-14",
+      "clientVisible": true,
+      "alternatives": [
+        "PRV-FIN-60",
+        "PRV-FIN-05",
+        "PRV-FIN-24",
+        "PRV-FIN-43"
+      ]
+    },
+    {
+      "id": "PRV-FIN-62",
+      "provider": "open_source",
+      "name": "Karpenter",
+      "category": "kubernetes_autoscaling",
+      "capabilities": [
+        "USAGE_OPTIMIZATION",
+        "RATE_OPTIMIZATION"
+      ],
+      "leverIds": [
+        "LEV-07",
+        "LEV-06"
+      ],
+      "statement": "Open-source node autoscaler that right-sizes and consolidates nodes and can use Spot capacity.",
+      "claimId": "CLM-FIN-112",
+      "status": "S",
+      "checked": "2026-10-14",
+      "volatile": false,
+      "reviewBy": "2027-04-14",
+      "clientVisible": true,
+      "alternatives": [
+        "PRV-FIN-63"
+      ]
+    },
+    {
+      "id": "PRV-FIN-63",
+      "provider": "open_source",
+      "name": "Kubernetes Vertical Pod Autoscaler, Horizontal Pod Autoscaler and Cluster Autoscaler",
+      "category": "kubernetes_autoscaling",
+      "capabilities": [
+        "USAGE_OPTIMIZATION"
+      ],
+      "leverIds": [
+        "LEV-07"
+      ],
+      "statement": "Request recommendations from observed use (can run recommendation-only) and replica and node scaling.",
+      "claimId": "CLM-FIN-113",
+      "status": "V",
+      "checked": "2026-10-14",
+      "volatile": false,
+      "reviewBy": "2027-04-14",
+      "clientVisible": true,
+      "alternatives": [
+        "PRV-FIN-62"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,404 @@
+{
+  "registryVersion": "1.0.0",
+  "statusAsOf": "2026-10-14",
+  "rule": "Every percentage, count or time used in an answer option, trigger, verdict or value rule. Each is a published figure, a Foundation sample goal adapted by LTM, or an LTM heuristic with its reasoning; the label travels with it into the report's assumption register.",
+  "basisValues": {
+    "foundation_sample_goals_adapted": "FinOps Foundation sample goals used as band floors; the adaptation is LTM's",
+    "published_market_data_as_ceiling": "Published survey figure used only as a ceiling",
+    "arithmetic_with_ltm_schedule": "Arithmetic on an LTM-chosen schedule",
+    "ltm_heuristic": "LTM heuristic with reasoning; not a market fact"
+  },
+  "resolvedInconsistencies": [
+    {
+      "issue": "Allocation (tagging) 80% vs 85%",
+      "validationRow": 25,
+      "cause": "The legacy KB mixed the earlier Foundation Walk sample goal (80%) with the current one (85%) [CLM-FIN-035]",
+      "resolution": "One ladder on allocation by cost: more than 90 / 85 / 70% (THR-FIN-01)"
+    },
+    {
+      "issue": "Commitment coverage 70% vs 75%",
+      "validationRow": 24,
+      "cause": "The legacy KB mixed the earlier Foundation Walk sample goal (about 70%) with the current one (more than 75%) [CLM-FIN-036]",
+      "resolution": "No maturity threshold on coverage; coverage is a value input in quartile bands, with the Foundation goals shown as published context (THR-FIN-02)"
+    }
+  ],
+  "thresholds": [
+    {
+      "id": "THR-FIN-01",
+      "topic": "Allocation coverage (tagging and other allocation rules), measured by cost",
+      "appliesTo": [
+        "UN-04",
+        "CP-1",
+        "CP-5"
+      ],
+      "rule": {
+        "run": "more than 90% of spend allocated",
+        "walk": "85-90%",
+        "crawl": "70-84%",
+        "not_yet": "below 70%, or not measured"
+      },
+      "basis": "foundation_sample_goals_adapted",
+      "assumptionId": "ASM-FIN-020",
+      "claimIds": [
+        "CLM-FIN-124",
+        "CLM-FIN-035"
+      ],
+      "status": "S",
+      "reasoning": "Band floors adopt the FinOps Foundation's current sample goals (about 70% Crawl, 85% Walk, more than 90% Run). Measured by cost, not resource count: tagging is one allocation mechanism alongside account structure and shared-cost rules, so FinOps IQ asks for allocation coverage rather than tag coverage.",
+      "supersedes": {
+        "value": "40 / 70 / 90 (F1 design); legacy 80% and 85% tagging",
+        "why": "DESIGN.md 3.5 and 14: Foundation example KPIs replace the LTM ladder when found"
+      },
+      "clientVisible": true
+    },
+    {
+      "id": "THR-FIN-02",
+      "topic": "Commitment coverage of eligible usage",
+      "appliesTo": [
+        "VB-02"
+      ],
+      "rule": {
+        "bands": "below 25%, 25-49%, 50-74%, 75% or more, don't know (exact allowed in workshop)",
+        "maturity": "none: coverage is a value input, not a maturity rating",
+        "kpiContext": "Foundation sample goals about 60% (Crawl), more than 75% (Walk), more than 80% (Run), shown as published context only"
+      },
+      "basis": "ltm_heuristic",
+      "assumptionId": "ASM-FIN-024",
+      "claimIds": [
+        "CLM-FIN-142",
+        "CLM-FIN-036"
+      ],
+      "status": "V",
+      "reasoning": "The right coverage depends on how steady the workload is, so a maturity score on coverage would reward over-commitment. Quartile bands feed LEV-01 and its band corners.",
+      "supersedes": {
+        "value": "legacy 70% (checkpoint) and 75% (O1 top option)",
+        "why": "VALIDATION.md row 24; the two figures are the earlier and current Foundation Walk sample goals"
+      },
+      "clientVisible": true
+    },
+    {
+      "id": "THR-FIN-03",
+      "topic": "Commitment lifecycle follow-up trigger",
+      "appliesTo": [
+        "OP-02"
+      ],
+      "rule": {
+        "askWhen": "eligible coverage unknown or below 50%, or OP-01 at Crawl or below"
+      },
+      "basis": "ltm_heuristic",
+      "assumptionId": "ASM-FIN-025",
+      "claimIds": [
+        "CLM-FIN-143"
+      ],
+      "status": "V",
+      "reasoning": "An extra question cannot raise a score, so a generous trigger is safe; 50% is a VB-02 band boundary.",
+      "clientVisible": true
+    },
+    {
+      "id": "THR-FIN-04",
+      "topic": "Commitment utilisation",
+      "appliesTo": [
+        "OP-01",
+        "OP-02"
+      ],
+      "rule": {
+        "numeric": "none in v3; utilisation and expiry are assessed as practices (tracked, alerted, renewed by plan)"
+      },
+      "basis": "ltm_heuristic",
+      "claimIds": [],
+      "status": "n/a",
+      "reasoning": "No trusted source found for a utilisation percentage per maturity level; the legacy 'more than 95%' and 'more than 98%' figures are withdrawn (VALIDATION.md rows 23, 24).",
+      "clientVisible": false
+    },
+    {
+      "id": "THR-FIN-05",
+      "topic": "Forecast variance",
+      "appliesTo": [
+        "QV-01",
+        "CP-4"
+      ],
+      "rule": {
+        "run": "within plus or minus 5% average per quarter",
+        "walk": "5-10%",
+        "crawl": "10-20%",
+        "not_yet": "more than 20%, or no forecast"
+      },
+      "basis": "foundation_sample_goals_adapted",
+      "assumptionId": "ASM-FIN-023",
+      "claimIds": [
+        "CLM-FIN-126",
+        "CLM-FIN-037"
+      ],
+      "status": "S",
+      "reasoning": "Band floors adopt the Foundation's current sample goals (under 20% Crawl, under 10% Walk, under 5% Run).",
+      "supersedes": {
+        "value": "5 / 15 / 30 (F1 design and legacy A8)",
+        "why": "DESIGN.md 3.5 and 14; VALIDATION.md row 28"
+      },
+      "clientVisible": true
+    },
+    {
+      "id": "THR-FIN-06",
+      "topic": "Anomaly detection and triage latency",
+      "appliesTo": [
+        "UN-10",
+        "CP-3"
+      ],
+      "rule": {
+        "run": "automated detection on all accounts, routed to the owner, triaged within one business day",
+        "walk": "automated detection on major accounts, reviewed at least weekly",
+        "crawl": "static budget or threshold alerts only",
+        "not_yet": "found on the invoice"
+      },
+      "basis": "ltm_heuristic",
+      "assumptionId": "ASM-FIN-022",
+      "claimIds": [
+        "CLM-FIN-123",
+        "CLM-FIN-014",
+        "CLM-FIN-038"
+      ],
+      "status": "LTM_heuristic",
+      "reasoning": "No Foundation numeric target; consistent with the Foundation's Crawl description (budget alerts, reacting after more than a week) and the earlier hours / days / week-or-more awareness ladder.",
+      "supersedes": {
+        "value": "legacy 'within 24 hours' Stage 2 standard",
+        "why": "VALIDATION.md row 27"
+      },
+      "clientVisible": true
+    },
+    {
+      "id": "THR-FIN-07",
+      "topic": "Time to explain a bill increase",
+      "appliesTo": [
+        "UN-11",
+        "CP-1"
+      ],
+      "rule": {
+        "run": "same day",
+        "walk": "a few days",
+        "crawl": "weeks, and the answer is contested",
+        "not_yet": "cannot reliably explain"
+      },
+      "basis": "ltm_heuristic",
+      "assumptionId": "ASM-FIN-022",
+      "claimIds": [
+        "CLM-FIN-123",
+        "CLM-FIN-038"
+      ],
+      "status": "LTM_heuristic",
+      "reasoning": "Mirrors the hours / days / week-or-more awareness ladder (CLM-FIN-038).",
+      "clientVisible": true
+    },
+    {
+      "id": "THR-FIN-08",
+      "topic": "Scheduled cost reports",
+      "appliesTo": [
+        "UN-08"
+      ],
+      "rule": {
+        "run": "all five report types",
+        "walk": "three or four",
+        "crawl": "one or two",
+        "not_yet": "none"
+      },
+      "basis": "ltm_heuristic",
+      "assumptionId": "ASM-FIN-021",
+      "claimIds": [
+        "CLM-FIN-125"
+      ],
+      "status": "LTM_heuristic",
+      "reasoning": "Equal weight per report type; evenly spaced levels.",
+      "clientVisible": true
+    },
+    {
+      "id": "THR-FIN-09",
+      "topic": "Client waste hypothesis bands (not scored, never a value input)",
+      "appliesTo": [
+        "HY-01"
+      ],
+      "rule": {
+        "bands": "below 5%, 5-9%, 10-19%, 20-29%, 30% or more, don't know",
+        "exclusion": "unallocated spend is not waste"
+      },
+      "basis": "ltm_heuristic",
+      "assumptionId": "ASM-FIN-026",
+      "claimIds": [
+        "CLM-FIN-144",
+        "CLM-FIN-040"
+      ],
+      "status": "V",
+      "reasoning": "Brackets the published self-estimate (29%) without implying a normal level.",
+      "supersedes": {
+        "value": "legacy 'below 4%' best-in-class and 20-35% waste bands",
+        "why": "VALIDATION.md rows 18, 19, 20"
+      },
+      "clientVisible": true
+    },
+    {
+      "id": "THR-FIN-10",
+      "topic": "Global value cap (waste-based ceiling)",
+      "appliesTo": [
+        "value model: expected and upper cases"
+      ],
+      "rule": {
+        "cap": "29% of in-scope public cloud spend",
+        "appliesTo": "expected and upper",
+        "liftedBy": "provider-tool or billing evidence for every capped lever",
+        "excludes": "LEV-09"
+      },
+      "basis": "published_market_data_as_ceiling",
+      "assumptionId": "ASM-FIN-050",
+      "claimIds": [
+        "CLM-FIN-138",
+        "CLM-FIN-040"
+      ],
+      "status": "LTM_heuristic",
+      "reasoning": "A self-estimate used only as a ceiling, never as a target (D15, Q11).",
+      "clientVisible": true
+    },
+    {
+      "id": "THR-FIN-11",
+      "topic": "Evidence freshness",
+      "appliesTo": [
+        "LEV-02",
+        "LEV-03",
+        "LEV-05",
+        "confidence"
+      ],
+      "rule": {
+        "maxAgeDays": 90
+      },
+      "basis": "ltm_heuristic",
+      "assumptionId": "ASM-FIN-048",
+      "claimIds": [
+        "CLM-FIN-136"
+      ],
+      "status": "LTM_heuristic",
+      "reasoning": "Matches the 90-day review of volatile items (D14).",
+      "clientVisible": true
+    },
+    {
+      "id": "THR-FIN-12",
+      "topic": "Complexity tier materiality",
+      "appliesTo": [
+        "tiers"
+      ],
+      "rule": {
+        "spendBandsUsd": "under 1M = 0, 1-10M = 1, 10-50M = 2, over 50M = 3",
+        "kubernetesMaterial": "10% or more of compute, or most new workloads",
+        "aiMaterial": "any GPU or model-serving spend, or AI API spend of 5% or more of in-scope spend",
+        "consumingUnits": "5 or more"
+      },
+      "basis": "ltm_heuristic",
+      "assumptionId": "ASM-FIN-001",
+      "claimIds": [
+        "CLM-FIN-120"
+      ],
+      "status": "LTM_heuristic",
+      "reasoning": "capabilities.json encodes the scope preconditions; the engine (F3) applies the 10% and 5% materiality tests when the spend inputs exist and otherwise treats a selected scope as material.",
+      "clientVisible": true
+    },
+    {
+      "id": "THR-FIN-13",
+      "topic": "Severity value uplift",
+      "appliesTo": [
+        "findings"
+      ],
+      "rule": {
+        "rule": "at least High when a linked lever's expected net run-rate value is 2% or more of in-scope spend"
+      },
+      "basis": "ltm_heuristic",
+      "assumptionId": "ASM-FIN-005",
+      "claimIds": [
+        "CLM-FIN-122"
+      ],
+      "status": "LTM_heuristic",
+      "reasoning": "High-value levers come first.",
+      "clientVisible": true
+    },
+    {
+      "id": "THR-FIN-14",
+      "topic": "Need verdict bands and urgency thresholds",
+      "appliesTo": [
+        "executive verdict"
+      ],
+      "rule": {
+        "bands": "0-25 Lightweight practices sufficient at current scale; 26-50 Targeted improvements needed now; 51-75 Material exposure: act this year; 76-100 Act now",
+        "urgency": "value 5% or more of P; growth 20% or more; 25% or more of estate still to move; Tier 2 +10, Tier 3 +20"
+      },
+      "basis": "ltm_heuristic",
+      "assumptionId": "ASM-FIN-030",
+      "claimIds": [
+        "CLM-FIN-127"
+      ],
+      "status": "LTM_heuristic",
+      "reasoning": "FinOps Value Case carry-over, 26-50 band reworded (Q14).",
+      "clientVisible": true
+    },
+    {
+      "id": "THR-FIN-15",
+      "topic": "Non-production on-schedule hours",
+      "appliesTo": [
+        "LEV-04"
+      ],
+      "rule": {
+        "hoursPerWeek": 50,
+        "maxRate": 0.702
+      },
+      "basis": "arithmetic_with_ltm_schedule",
+      "assumptionId": "ASM-FIN-043",
+      "claimIds": [
+        "CLM-FIN-131",
+        "CLM-FIN-086"
+      ],
+      "status": "LTM_heuristic",
+      "reasoning": "A 10-hour, 5-day week; AWS uses the same 168-to-50-hour example.",
+      "supersedes": {
+        "value": "legacy '65% immediately'",
+        "why": "VALIDATION.md row 31"
+      },
+      "clientVisible": true
+    },
+    {
+      "id": "THR-FIN-16",
+      "topic": "Target utilisation for Kubernetes requests and GPUs",
+      "appliesTo": [
+        "LEV-07",
+        "LEV-10"
+      ],
+      "rule": {
+        "target": 0.65
+      },
+      "basis": "ltm_heuristic",
+      "assumptionId": "ASM-FIN-044",
+      "claimIds": [
+        "CLM-FIN-132"
+      ],
+      "status": "LTM_heuristic",
+      "reasoning": "Headroom for peaks; replaces the unsourced '4x' over-provisioning claim.",
+      "supersedes": {
+        "value": "legacy 'pods provisioned at 4x need'",
+        "why": "VALIDATION.md row 32"
+      },
+      "clientVisible": true
+    },
+    {
+      "id": "THR-FIN-17",
+      "topic": "Executive mode duration",
+      "appliesTo": [
+        "executive set"
+      ],
+      "rule": {
+        "secondsPerQuestion": "45-60",
+        "minutes": "14-18 for 18 questions"
+      },
+      "basis": "ltm_heuristic",
+      "assumptionId": "ASM-FIN-053",
+      "claimIds": [
+        "CLM-FIN-145"
+      ],
+      "status": "LTM_heuristic",
+      "reasoning": "To be measured in F6 browser tests.",
+      "clientVisible": true
+    }
+  ]
+}

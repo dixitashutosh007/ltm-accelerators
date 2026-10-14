@@ -1,0 +1,502 @@
+{
+  "registryVersion": "1.0.0",
+  "statusAsOf": "2026-10-14",
+  "displayRule": "Published market data is shown with source, year and sample, labelled 'published market data'. It is never presented as an LTM peer benchmark, as the client's position or as a target. LTM has no engagement history to benchmark against (FRAMEWORK.md, Data).",
+  "surveys": [
+    {
+      "id": "MKT-FIN-FLEXERA-2026",
+      "publisher": "Flexera",
+      "title": "2026 State of the Cloud Report",
+      "published": "2026-03-18",
+      "year": 2026,
+      "sample": 753,
+      "sampleNote": "Cloud decision-makers and users; 62% in the US; self-reported",
+      "url": "https://www.flexera.com/about-us/press-center/flexera-finds-cloud-value-is-rising-while-ai-waste-grows",
+      "claimIds": [
+        "CLM-FIN-040",
+        "CLM-FIN-041",
+        "CLM-FIN-042"
+      ],
+      "figures": [
+        {
+          "id": "MKT-FIN-01",
+          "label": "Respondents' average estimate of wasted IaaS and PaaS spend",
+          "value": 0.29,
+          "unit": "share",
+          "claimId": "CLM-FIN-040",
+          "status": "V",
+          "checked": "2026-10-14",
+          "reviewBy": "2027-01-12",
+          "clientVisible": true,
+          "use": [
+            "global_cap",
+            "market_panel",
+            "hypothesis_panel"
+          ],
+          "caveat": "Self-estimate across all maturities; not measured, not a realisable saving, not a target"
+        },
+        {
+          "id": "MKT-FIN-02",
+          "label": "Same estimate in the 2025 report",
+          "value": 0.27,
+          "unit": "share",
+          "claimId": "CLM-FIN-041",
+          "status": "V",
+          "checked": "2026-10-14",
+          "reviewBy": "2027-01-12",
+          "clientVisible": true,
+          "use": [
+            "market_panel"
+          ],
+          "caveat": "Prior-year comparison only; 2025 sample not re-checked"
+        },
+        {
+          "id": "MKT-FIN-03",
+          "label": "Organisations with an established FinOps team",
+          "value": 0.63,
+          "unit": "share",
+          "claimId": "CLM-FIN-042",
+          "status": "V",
+          "checked": "2026-10-14",
+          "reviewBy": "2027-01-12",
+          "clientVisible": true,
+          "use": [
+            "market_panel"
+          ],
+          "caveat": "Respondents' organisations"
+        },
+        {
+          "id": "MKT-FIN-04",
+          "label": "Name managing cloud spend as a top challenge",
+          "value": 0.85,
+          "unit": "share",
+          "claimId": "CLM-FIN-042",
+          "status": "V",
+          "checked": "2026-10-14",
+          "reviewBy": "2027-01-12",
+          "clientVisible": true,
+          "use": [
+            "market_panel"
+          ],
+          "caveat": "Question wording not read"
+        }
+      ]
+    },
+    {
+      "id": "MKT-FIN-SOF-2026",
+      "publisher": "FinOps Foundation (Linux Foundation)",
+      "title": "State of FinOps 2026",
+      "published": "2026-02-19",
+      "year": 2026,
+      "sample": 1192,
+      "sampleNote": "FinOps practitioners; respondents represent more than USD 83 billion of annual cloud spend",
+      "url": "https://www.linuxfoundation.org/press/state-of-finops-survey-ai-value-and-skills-top-priorities-as-finops-matures-across-technology-value-98-manage-ai-90-saas-64-licensing-48-data-center-1",
+      "claimIds": [
+        "CLM-FIN-043",
+        "CLM-FIN-044",
+        "CLM-FIN-045",
+        "CLM-FIN-046",
+        "CLM-FIN-047"
+      ],
+      "figures": [
+        {
+          "id": "MKT-FIN-10",
+          "label": "FinOps teams managing AI spend",
+          "value": 0.98,
+          "unit": "share",
+          "claimId": "CLM-FIN-044",
+          "status": "V",
+          "checked": "2026-10-14",
+          "reviewBy": "2027-01-12",
+          "clientVisible": true,
+          "use": [
+            "market_panel",
+            "scope_context"
+          ],
+          "caveat": "Up from 31% two years earlier"
+        },
+        {
+          "id": "MKT-FIN-11",
+          "label": "FinOps teams asked to manage SaaS spend",
+          "value": 0.9,
+          "unit": "share",
+          "claimId": "CLM-FIN-045",
+          "status": "V",
+          "checked": "2026-10-14",
+          "reviewBy": "2027-01-12",
+          "clientVisible": true,
+          "use": [
+            "market_panel",
+            "scope_context"
+          ],
+          "caveat": "Release says 'nine of 10'; show as about nine in ten"
+        },
+        {
+          "id": "MKT-FIN-12",
+          "label": "FinOps teams managing software licensing",
+          "value": 0.64,
+          "unit": "share",
+          "claimId": "CLM-FIN-045",
+          "status": "V",
+          "checked": "2026-10-14",
+          "reviewBy": "2027-01-12",
+          "clientVisible": true,
+          "use": [
+            "market_panel",
+            "scope_context"
+          ],
+          "caveat": ""
+        },
+        {
+          "id": "MKT-FIN-13",
+          "label": "FinOps teams managing data centre spend",
+          "value": 0.48,
+          "unit": "share",
+          "claimId": "CLM-FIN-045",
+          "status": "V",
+          "checked": "2026-10-14",
+          "reviewBy": "2027-01-12",
+          "clientVisible": true,
+          "use": [
+            "market_panel",
+            "scope_context"
+          ],
+          "caveat": ""
+        },
+        {
+          "id": "MKT-FIN-14",
+          "label": "FinOps teams managing private cloud spend",
+          "value": 0.57,
+          "unit": "share",
+          "claimId": "CLM-FIN-046",
+          "status": "S",
+          "checked": "2026-10-14",
+          "reviewBy": "2027-01-12",
+          "clientVisible": false,
+          "use": [
+            "consultant_context"
+          ],
+          "caveat": "Secondary source only; consultant-only"
+        },
+        {
+          "id": "MKT-FIN-15",
+          "label": "Top current priority: workload optimisation and waste reduction, with diminishing returns reported; top forward priority: FinOps for AI",
+          "value": null,
+          "unit": "text",
+          "claimId": "CLM-FIN-047",
+          "status": "S",
+          "checked": "2026-10-14",
+          "reviewBy": "2027-01-12",
+          "clientVisible": true,
+          "use": [
+            "market_panel"
+          ],
+          "caveat": "Wording from secondary summaries citing the report"
+        }
+      ]
+    },
+    {
+      "id": "MKT-FIN-FOUNDATION-KPI",
+      "publisher": "FinOps Foundation",
+      "title": "FinOps Maturity Model: sample goals/KPIs from the FinOps community (data.finops.org)",
+      "published": null,
+      "year": 2026,
+      "sample": null,
+      "sampleNote": "Sample goals, not survey results or requirements; two versions exist (earlier and current)",
+      "url": "https://www.finops.org/framework/maturity-model/",
+      "claimIds": [
+        "CLM-FIN-035",
+        "CLM-FIN-036",
+        "CLM-FIN-037",
+        "CLM-FIN-038"
+      ],
+      "figures": [
+        {
+          "id": "MKT-FIN-20",
+          "label": "Allocation to a known owner: Crawl / Walk / Run",
+          "value": "70% / 85% / more than 90%",
+          "unit": "text",
+          "claimId": "CLM-FIN-035",
+          "status": "S",
+          "checked": "2026-10-14",
+          "reviewBy": "2027-01-12",
+          "clientVisible": true,
+          "use": [
+            "threshold_basis",
+            "kpi_context"
+          ],
+          "caveat": "Earlier version 50% / 80% / more than 90%"
+        },
+        {
+          "id": "MKT-FIN-21",
+          "label": "Commitment discount coverage: Crawl / Walk / Run",
+          "value": "about 60% / more than 75% / more than 80%",
+          "unit": "text",
+          "claimId": "CLM-FIN-036",
+          "status": "S",
+          "checked": "2026-10-14",
+          "reviewBy": "2027-01-12",
+          "clientVisible": true,
+          "use": [
+            "kpi_context"
+          ],
+          "caveat": "Earlier version about 60% / 70% / 80%; not a maturity rating in FinOps IQ"
+        },
+        {
+          "id": "MKT-FIN-22",
+          "label": "Forecast variance: Crawl / Walk / Run",
+          "value": "under 20% / under 10% / under 5%",
+          "unit": "text",
+          "claimId": "CLM-FIN-037",
+          "status": "S",
+          "checked": "2026-10-14",
+          "reviewBy": "2027-01-12",
+          "clientVisible": true,
+          "use": [
+            "threshold_basis",
+            "kpi_context"
+          ],
+          "caveat": "Earlier version 20% / 15% / 12%"
+        }
+      ]
+    }
+  ],
+  "providerDiscountMaxima": [
+    {
+      "provider": "aws",
+      "instrument": "EC2 Instance Savings Plans and Standard Reserved Instances",
+      "maxDiscount": 0.72,
+      "basis": "Maximum on covered usage versus on-demand / pay-as-you-go; not a bill-level saving",
+      "claimId": "CLM-FIN-060",
+      "status": "V",
+      "checked": "2026-10-14",
+      "reviewBy": "2027-01-12",
+      "clientVisible": true,
+      "usedFor": [
+        "LEV-01"
+      ]
+    },
+    {
+      "provider": "aws",
+      "instrument": "Compute Savings Plans",
+      "maxDiscount": 0.66,
+      "basis": "Maximum on covered usage versus on-demand / pay-as-you-go; not a bill-level saving",
+      "claimId": "CLM-FIN-060",
+      "status": "V",
+      "checked": "2026-10-14",
+      "reviewBy": "2027-01-12",
+      "clientVisible": true,
+      "usedFor": [
+        "LEV-01"
+      ]
+    },
+    {
+      "provider": "aws",
+      "instrument": "EC2 Spot Instances",
+      "maxDiscount": 0.9,
+      "basis": "Maximum on covered usage versus on-demand / pay-as-you-go; not a bill-level saving",
+      "claimId": "CLM-FIN-061",
+      "status": "V",
+      "checked": "2026-10-14",
+      "reviewBy": "2027-01-12",
+      "clientVisible": true,
+      "usedFor": [
+        "LEV-06"
+      ]
+    },
+    {
+      "provider": "azure",
+      "instrument": "Reservations (Windows and Linux VMs)",
+      "maxDiscount": 0.72,
+      "basis": "Maximum on covered usage versus on-demand / pay-as-you-go; not a bill-level saving",
+      "claimId": "CLM-FIN-062",
+      "status": "V",
+      "checked": "2026-10-14",
+      "reviewBy": "2027-01-12",
+      "clientVisible": true,
+      "usedFor": [
+        "LEV-01"
+      ]
+    },
+    {
+      "provider": "azure",
+      "instrument": "Savings plan for compute (range 11-65%)",
+      "maxDiscount": 0.65,
+      "basis": "Maximum on covered usage versus on-demand / pay-as-you-go; not a bill-level saving",
+      "claimId": "CLM-FIN-063",
+      "status": "V",
+      "checked": "2026-10-14",
+      "reviewBy": "2027-01-12",
+      "clientVisible": true,
+      "usedFor": [
+        "LEV-01"
+      ]
+    },
+    {
+      "provider": "azure",
+      "instrument": "Spot Virtual Machines",
+      "maxDiscount": 0.9,
+      "basis": "Maximum on covered usage versus on-demand / pay-as-you-go; not a bill-level saving",
+      "claimId": "CLM-FIN-064",
+      "status": "V",
+      "checked": "2026-10-14",
+      "reviewBy": "2027-01-12",
+      "clientVisible": true,
+      "usedFor": [
+        "LEV-06"
+      ]
+    },
+    {
+      "provider": "gcp",
+      "instrument": "Resource-based committed use discounts (most series)",
+      "maxDiscount": 0.55,
+      "basis": "Maximum on covered usage versus on-demand / pay-as-you-go; not a bill-level saving",
+      "claimId": "CLM-FIN-065",
+      "status": "V",
+      "checked": "2026-10-14",
+      "reviewBy": "2027-01-12",
+      "clientVisible": true,
+      "usedFor": [
+        "LEV-01"
+      ]
+    },
+    {
+      "provider": "gcp",
+      "instrument": "Resource-based committed use discounts (memory-optimised)",
+      "maxDiscount": 0.7,
+      "basis": "Maximum on covered usage versus on-demand / pay-as-you-go; not a bill-level saving",
+      "claimId": "CLM-FIN-065",
+      "status": "V",
+      "checked": "2026-10-14",
+      "reviewBy": "2027-01-12",
+      "clientVisible": true,
+      "usedFor": [
+        "LEV-01"
+      ]
+    },
+    {
+      "provider": "gcp",
+      "instrument": "Flexible committed use discounts, 1 year (listed series)",
+      "maxDiscount": 0.28,
+      "basis": "Maximum on covered usage versus on-demand / pay-as-you-go; not a bill-level saving",
+      "claimId": "CLM-FIN-066",
+      "status": "V",
+      "checked": "2026-10-14",
+      "reviewBy": "2027-01-12",
+      "clientVisible": true,
+      "usedFor": [
+        "cross-check"
+      ]
+    },
+    {
+      "provider": "gcp",
+      "instrument": "Flexible committed use discounts, 3 years (listed series)",
+      "maxDiscount": 0.46,
+      "basis": "Maximum on covered usage versus on-demand / pay-as-you-go; not a bill-level saving",
+      "claimId": "CLM-FIN-066",
+      "status": "V",
+      "checked": "2026-10-14",
+      "reviewBy": "2027-01-12",
+      "clientVisible": true,
+      "usedFor": [
+        "cross-check"
+      ]
+    },
+    {
+      "provider": "gcp",
+      "instrument": "Spot VMs",
+      "maxDiscount": 0.91,
+      "basis": "Maximum on covered usage versus on-demand / pay-as-you-go; not a bill-level saving",
+      "claimId": "CLM-FIN-067",
+      "status": "V",
+      "checked": "2026-10-14",
+      "reviewBy": "2027-01-12",
+      "clientVisible": true,
+      "usedFor": [
+        "LEV-06"
+      ]
+    },
+    {
+      "provider": "oci",
+      "instrument": "Preemptible instances (fixed discount)",
+      "maxDiscount": 0.5,
+      "basis": "Maximum on covered usage versus on-demand / pay-as-you-go; not a bill-level saving",
+      "claimId": "CLM-FIN-068",
+      "status": "P",
+      "checked": "2026-10-14",
+      "reviewBy": "2027-01-12",
+      "clientVisible": false,
+      "usedFor": [
+        "not used until confirmed"
+      ]
+    },
+    {
+      "provider": "oci, ibm, alibaba",
+      "instrument": "Commitment discounts",
+      "maxDiscount": null,
+      "basis": "Maximum on covered usage versus on-demand / pay-as-you-go; not a bill-level saving",
+      "claimId": "CLM-FIN-069",
+      "status": "UNSOURCED",
+      "checked": "2026-10-14",
+      "reviewBy": "2027-01-12",
+      "clientVisible": false,
+      "usedFor": [
+        "not quantified"
+      ]
+    }
+  ],
+  "notUsed": [
+    {
+      "figure": "Legacy value-at-stake bands 25-35%, 18-28%, 10-18%, 5-9%, 2-4% by stage",
+      "validationRows": [
+        13,
+        14,
+        15,
+        16,
+        17,
+        35,
+        46
+      ],
+      "reason": "No source; stage-band model removed (F0, F1)"
+    },
+    {
+      "figure": "'Recovery' shares by value stream (25-35%, 20-30%, 15-20%)",
+      "validationRows": [],
+      "reason": "No source; wording banned (DESIGN.md 8.3)"
+    },
+    {
+      "figure": "Commitments yielding 20-35% immediately; Spot up to 70%",
+      "validationRows": [
+        21,
+        22
+      ],
+      "reason": "Replaced by provider maxima on covered usage (CLM-FIN-060 to 067)"
+    },
+    {
+      "figure": "Coverage 75-85% with more than 98% utilisation for advanced practitioners",
+      "validationRows": [
+        23
+      ],
+      "reason": "No source found"
+    },
+    {
+      "figure": "Abandoned snapshots 10-25% of storage; inter-zone traffic 15-25% of network or total bill; unallocated 30-50%; tag decay 15-25% a quarter; 30-40% spend jump at commitment expiry; GPU daily prices",
+      "validationRows": [
+        29,
+        30,
+        33,
+        34,
+        36,
+        37
+      ],
+      "reason": "No source found; levers use client evidence instead"
+    },
+    {
+      "figure": "State of FinOps described as a maturity or waste benchmark",
+      "validationRows": [
+        10
+      ],
+      "reason": "It is a practitioner survey of priorities and scope"
+    }
+  ]
+}

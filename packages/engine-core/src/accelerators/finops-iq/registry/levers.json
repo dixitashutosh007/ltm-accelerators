@@ -1,0 +1,845 @@
+{
+  "libraryVersion": "1.0.0",
+  "statusAsOf": "2026-10-14",
+  "rangeRule": {
+    "expectedFactor": 0.5,
+    "conservativeFactor": 0.25,
+    "bandHandling": "midpoint_for_expected_corners_for_conservative_and_upper",
+    "assumptionIds": [
+      "ASM-FIN-040",
+      "ASM-FIN-041",
+      "ASM-FIN-042"
+    ]
+  },
+  "globalCap": {
+    "shareOfPublicCloudSpend": 0.29,
+    "appliesTo": [
+      "expected",
+      "upper"
+    ],
+    "liftedBy": "evidence_for_every_capped_lever",
+    "excludedLevers": [
+      "LEV-09"
+    ],
+    "source": {
+      "claimId": "CLM-FIN-040",
+      "citation": "Flexera 2026 State of the Cloud Report: respondents' average self-estimate of wasted IaaS/PaaS spend (used as a ceiling only) [CLM-FIN-040, CLM-FIN-138]",
+      "url": "https://www.flexera.com/about-us/press-center/flexera-finds-cloud-value-is-rising-while-ai-waste-grows",
+      "status": "V",
+      "checked": "2026-10-14",
+      "assumptionId": "ASM-FIN-050",
+      "year": 2026,
+      "sample": 753,
+      "reviewBy": "2027-01-12"
+    }
+  },
+  "levers": [
+    {
+      "id": "LEV-01",
+      "name": "Commitment discounts",
+      "type": "rate",
+      "capability": "RATE_OPTIMIZATION",
+      "scopeWhen": {
+        "fact": "footprint.publicCloudProviders",
+        "countAtLeast": 1
+      },
+      "interactionOrder": 9,
+      "addressableBase": {
+        "formula": "P_c x max(0, S - C - n_u - t_u) x (1 - computeRemoved(LEV-02, LEV-03, LEV-07, LEV-10) / P_c), per provider",
+        "inputs": [
+          "spend.byScope",
+          "base.computeShare",
+          "base.steadyStateShare",
+          "base.eligibleCoverage",
+          "base.nonProdShare",
+          "base.nonProdScheduledShare"
+        ],
+        "reducedBy": [
+          "LEV-02",
+          "LEV-03",
+          "LEV-04",
+          "LEV-06",
+          "LEV-07",
+          "LEV-10"
+        ]
+      },
+      "maxRate": {
+        "kind": "published_by_provider",
+        "byProvider": {
+          "aws": {
+            "quantified": true,
+            "value": 0.72,
+            "instrument": "EC2 Instance Savings Plans and Standard Reserved Instances (use 0.66 where the client relies on Compute Savings Plans)",
+            "source": {
+              "claimId": "CLM-FIN-060",
+              "citation": "AWS Savings Plans FAQs: up to 72% (Compute Savings Plans up to 66%)",
+              "url": "https://aws.amazon.com/savingsplans/faq/",
+              "status": "V",
+              "checked": "2026-10-14",
+              "reviewBy": "2027-01-12"
+            }
+          },
+          "azure": {
+            "quantified": true,
+            "value": 0.72,
+            "instrument": "Azure reservations for virtual machines (use 0.65 where the client relies on the savings plan for compute)",
+            "source": {
+              "claimId": "CLM-FIN-062",
+              "citation": "Azure Reservations: up to 72% versus pay-as-you-go (example configuration); savings plan for compute up to 65% (CLM-FIN-063)",
+              "url": "https://azure.microsoft.com/en-us/pricing/offers/reservations/",
+              "status": "V",
+              "checked": "2026-10-14",
+              "reviewBy": "2027-01-12"
+            }
+          },
+          "gcp": {
+            "quantified": true,
+            "value": 0.55,
+            "instrument": "Resource-based committed use discounts (0.70 only where the client states memory-optimised series dominate)",
+            "source": {
+              "claimId": "CLM-FIN-065",
+              "citation": "Google Cloud committed use discounts: up to 55% (70% memory-optimised)",
+              "url": "https://docs.cloud.google.com/compute/docs/instances/committed-use-discounts-overview",
+              "status": "V",
+              "checked": "2026-10-14",
+              "reviewBy": "2027-01-12"
+            }
+          },
+          "oci": {
+            "quantified": false,
+            "source": {
+              "claimId": "CLM-FIN-069",
+              "citation": "No published maximum read yet",
+              "status": "UNSOURCED",
+              "checked": "2026-10-14",
+              "reviewBy": "2027-01-12"
+            }
+          },
+          "ibm": {
+            "quantified": false,
+            "source": {
+              "claimId": "CLM-FIN-069",
+              "citation": "No published maximum read yet",
+              "status": "UNSOURCED",
+              "checked": "2026-10-14",
+              "reviewBy": "2027-01-12"
+            }
+          },
+          "alibaba": {
+            "quantified": false,
+            "source": {
+              "claimId": "CLM-FIN-069",
+              "citation": "No published maximum read yet",
+              "status": "UNSOURCED",
+              "checked": "2026-10-14",
+              "reviewBy": "2027-01-12"
+            }
+          },
+          "other_public": {
+            "quantified": false
+          }
+        }
+      },
+      "neverWith": [
+        "LEV-06"
+      ],
+      "quantifiedIn": [
+        "executive",
+        "workshop"
+      ],
+      "ramp": {
+        "year1Share": 0.5,
+        "year2Share": 1,
+        "year3Share": 1,
+        "assumptionId": "ASM-FIN-045"
+      },
+      "effortFteMonths": {
+        "tier1": 1,
+        "tier2": 2,
+        "tier3": 4,
+        "ongoingShareOfOneOff": 0.2,
+        "assumptionId": "ASM-FIN-046"
+      },
+      "confidenceRule": "High when every input is provider-tool or billing evidence no older than 90 days; Medium when every input is an exact client figure; Low when any input is a band or derived from an answer mapping (DESIGN.md 10.7).",
+      "offeringIds": [
+        "OFF.FIN.SPRINT",
+        "OFF.FIN.MANAGED",
+        "OFF.FIN.ASSESS"
+      ],
+      "label": "Steady compute not yet covered by commitments, after usage levers, x up to the provider's published maximum discount (checked 14 Oct 2026); expected case is half of the maximum.",
+      "claimIds": [
+        "CLM-FIN-150",
+        "CLM-FIN-060",
+        "CLM-FIN-062",
+        "CLM-FIN-063",
+        "CLM-FIN-065",
+        "CLM-FIN-066",
+        "CLM-FIN-137",
+        "CLM-FIN-140",
+        "CLM-FIN-128",
+        "CLM-FIN-129",
+        "CLM-FIN-130",
+        "CLM-FIN-160",
+        "CLM-FIN-161",
+        "CLM-FIN-133",
+        "CLM-FIN-134",
+        "CLM-FIN-135",
+        "CLM-FIN-139"
+      ]
+    },
+    {
+      "id": "LEV-02",
+      "name": "Rightsizing and modernisation",
+      "type": "usage",
+      "capability": "USAGE_OPTIMIZATION",
+      "scopeWhen": {
+        "fact": "footprint.publicCloudProviders",
+        "countAtLeast": 1
+      },
+      "interactionOrder": 3,
+      "addressableBase": {
+        "formula": "Provider-tool annual savings estimate, types 'rightsizing' and 'modernisation', reduced pro rata by LEV-03 and LEV-04 when the estimate pre-dates them; Kubernetes node spend excluded",
+        "inputs": [
+          "evidence.providerRecommendations"
+        ],
+        "reducedBy": [
+          "LEV-03",
+          "LEV-04"
+        ],
+        "excludes": [
+          "base.kubernetesSpend"
+        ],
+        "cap": "P_c"
+      },
+      "maxRate": {
+        "kind": "evidence",
+        "value": 1
+      },
+      "quantifiedIn": [
+        "workshop"
+      ],
+      "evidenceFreshnessDays": 90,
+      "ramp": {
+        "year1Share": 0.33,
+        "year2Share": 1,
+        "year3Share": 1,
+        "assumptionId": "ASM-FIN-045"
+      },
+      "effortFteMonths": {
+        "tier1": 2,
+        "tier2": 6,
+        "tier3": 12,
+        "ongoingShareOfOneOff": 0.2,
+        "assumptionId": "ASM-FIN-046"
+      },
+      "confidenceRule": "High when every input is provider-tool or billing evidence no older than 90 days; Medium when every input is an exact client figure; Low when any input is a band or derived from an answer mapping (DESIGN.md 10.7).",
+      "offeringIds": [
+        "OFF.FIN.SPRINT",
+        "OFF.FIN.ASSESS"
+      ],
+      "label": "Your provider tools' rightsizing estimate (no older than 90 days), up to 100%; expected case is half.",
+      "claimIds": [
+        "CLM-FIN-151",
+        "CLM-FIN-082",
+        "CLM-FIN-083",
+        "CLM-FIN-092",
+        "CLM-FIN-101",
+        "CLM-FIN-107",
+        "CLM-FIN-136",
+        "CLM-FIN-128",
+        "CLM-FIN-129",
+        "CLM-FIN-130",
+        "CLM-FIN-160",
+        "CLM-FIN-161",
+        "CLM-FIN-133",
+        "CLM-FIN-134",
+        "CLM-FIN-135",
+        "CLM-FIN-139"
+      ]
+    },
+    {
+      "id": "LEV-03",
+      "name": "Idle and orphaned resources",
+      "type": "usage",
+      "capability": "USAGE_OPTIMIZATION",
+      "scopeWhen": {
+        "fact": "footprint.publicCloudProviders",
+        "countAtLeast": 1
+      },
+      "interactionOrder": 1,
+      "addressableBase": {
+        "formula": "Provider-tool annual savings estimate, type 'idle or unused'",
+        "inputs": [
+          "evidence.providerRecommendations"
+        ],
+        "cap": "P"
+      },
+      "maxRate": {
+        "kind": "evidence",
+        "value": 1
+      },
+      "quantifiedIn": [
+        "workshop"
+      ],
+      "evidenceFreshnessDays": 90,
+      "ramp": {
+        "year1Share": 0.5,
+        "year2Share": 1,
+        "year3Share": 1,
+        "assumptionId": "ASM-FIN-045"
+      },
+      "effortFteMonths": {
+        "tier1": 1,
+        "tier2": 2,
+        "tier3": 4,
+        "ongoingShareOfOneOff": 0.2,
+        "assumptionId": "ASM-FIN-046"
+      },
+      "confidenceRule": "High when every input is provider-tool or billing evidence no older than 90 days; Medium when every input is an exact client figure; Low when any input is a band or derived from an answer mapping (DESIGN.md 10.7).",
+      "offeringIds": [
+        "OFF.FIN.SPRINT",
+        "OFF.FIN.ASSESS"
+      ],
+      "label": "Your provider tools' idle-resource estimate (no older than 90 days), up to 100%; expected case is half.",
+      "claimIds": [
+        "CLM-FIN-152",
+        "CLM-FIN-082",
+        "CLM-FIN-083",
+        "CLM-FIN-092",
+        "CLM-FIN-101",
+        "CLM-FIN-107",
+        "CLM-FIN-136",
+        "CLM-FIN-128",
+        "CLM-FIN-129",
+        "CLM-FIN-130",
+        "CLM-FIN-160",
+        "CLM-FIN-161",
+        "CLM-FIN-133",
+        "CLM-FIN-134",
+        "CLM-FIN-135",
+        "CLM-FIN-139"
+      ]
+    },
+    {
+      "id": "LEV-04",
+      "name": "Non-production scheduling",
+      "type": "usage",
+      "capability": "USAGE_OPTIMIZATION",
+      "scopeWhen": {
+        "fact": "footprint.publicCloudProviders",
+        "countAtLeast": 1
+      },
+      "interactionOrder": 2,
+      "addressableBase": {
+        "formula": "(P_c - kubernetesSpend - gpuSpend) x nonProdShare x (1 - nonProdScheduledShare); hourly-billed resources only",
+        "inputs": [
+          "spend.byScope",
+          "base.computeShare",
+          "base.nonProdShare",
+          "base.nonProdScheduledShare"
+        ],
+        "excludes": [
+          "base.kubernetesSpend",
+          "evidence.aiGpu.gpuSpend"
+        ]
+      },
+      "maxRate": {
+        "kind": "arithmetic",
+        "formula": "1 - 50/168",
+        "value": 0.702,
+        "source": {
+          "claimId": "CLM-FIN-131",
+          "citation": "50-hour weekly schedule against 168 hours (LTM heuristic); AWS Instance Scheduler uses the same example (CLM-FIN-086)",
+          "url": "https://github.com/dixitashutosh007/ltm-accelerators/blob/main/docs/cio-readiness/finops-iq/design/DESIGN.md",
+          "status": "LTM_heuristic",
+          "checked": "2026-10-14",
+          "assumptionId": "ASM-FIN-043"
+        }
+      },
+      "quantifiedIn": [
+        "executive",
+        "workshop"
+      ],
+      "ramp": {
+        "year1Share": 0.5,
+        "year2Share": 1,
+        "year3Share": 1,
+        "assumptionId": "ASM-FIN-045"
+      },
+      "effortFteMonths": {
+        "tier1": 1,
+        "tier2": 3,
+        "tier3": 6,
+        "ongoingShareOfOneOff": 0.2,
+        "assumptionId": "ASM-FIN-046"
+      },
+      "confidenceRule": "High when every input is provider-tool or billing evidence no older than 90 days; Medium when every input is an exact client figure; Low when any input is a band or derived from an answer mapping (DESIGN.md 10.7).",
+      "offeringIds": [
+        "OFF.FIN.SPRINT"
+      ],
+      "label": "Unscheduled non-production compute x up to 70.2% (a 50-hour week against 168 hours); expected case is half.",
+      "claimIds": [
+        "CLM-FIN-153",
+        "CLM-FIN-131",
+        "CLM-FIN-086",
+        "CLM-FIN-096",
+        "CLM-FIN-105",
+        "CLM-FIN-140",
+        "CLM-FIN-128",
+        "CLM-FIN-129",
+        "CLM-FIN-130",
+        "CLM-FIN-160",
+        "CLM-FIN-161",
+        "CLM-FIN-133",
+        "CLM-FIN-134",
+        "CLM-FIN-135",
+        "CLM-FIN-139"
+      ]
+    },
+    {
+      "id": "LEV-05",
+      "name": "Storage tiering and lifecycle",
+      "type": "usage",
+      "capability": "USAGE_OPTIMIZATION",
+      "scopeWhen": {
+        "fact": "footprint.publicCloudProviders",
+        "countAtLeast": 1
+      },
+      "interactionOrder": 5,
+      "addressableBase": {
+        "formula": "Provider-tool annual savings estimate, type 'storage'. Alternative P x storageShare x coldDataShare is not used until regional tier prices are read (CLM-FIN-070)",
+        "inputs": [
+          "evidence.providerRecommendations"
+        ]
+      },
+      "maxRate": {
+        "kind": "evidence",
+        "value": 1
+      },
+      "quantifiedIn": [
+        "workshop"
+      ],
+      "evidenceFreshnessDays": 90,
+      "ramp": {
+        "year1Share": 0.33,
+        "year2Share": 1,
+        "year3Share": 1,
+        "assumptionId": "ASM-FIN-045"
+      },
+      "effortFteMonths": {
+        "tier1": 1,
+        "tier2": 2,
+        "tier3": 4,
+        "ongoingShareOfOneOff": 0.2,
+        "assumptionId": "ASM-FIN-046"
+      },
+      "confidenceRule": "High when every input is provider-tool or billing evidence no older than 90 days; Medium when every input is an exact client figure; Low when any input is a band or derived from an answer mapping (DESIGN.md 10.7).",
+      "offeringIds": [
+        "OFF.FIN.SPRINT"
+      ],
+      "label": "Your provider tools' storage estimate (no older than 90 days), up to 100%; expected case is half.",
+      "claimIds": [
+        "CLM-FIN-154",
+        "CLM-FIN-087",
+        "CLM-FIN-097",
+        "CLM-FIN-104",
+        "CLM-FIN-136",
+        "CLM-FIN-128",
+        "CLM-FIN-129",
+        "CLM-FIN-130",
+        "CLM-FIN-160",
+        "CLM-FIN-161",
+        "CLM-FIN-133",
+        "CLM-FIN-134",
+        "CLM-FIN-135",
+        "CLM-FIN-139"
+      ]
+    },
+    {
+      "id": "LEV-06",
+      "name": "Spot and preemptible capacity",
+      "type": "rate",
+      "capability": "RATE_OPTIMIZATION",
+      "scopeWhen": {
+        "fact": "footprint.publicCloudProviders",
+        "countAtLeast": 1
+      },
+      "interactionOrder": 8,
+      "addressableBase": {
+        "formula": "P_c x max(0, interruptionTolerantShare - spotShare) x (1 - computeRemoved(LEV-02, LEV-03, LEV-07, LEV-10) / P_c), per provider",
+        "inputs": [
+          "spend.byScope",
+          "base.computeShare",
+          "base.interruptionTolerantShare",
+          "base.spotShare"
+        ],
+        "reducedBy": [
+          "LEV-02",
+          "LEV-03",
+          "LEV-07",
+          "LEV-10"
+        ]
+      },
+      "maxRate": {
+        "kind": "published_by_provider",
+        "byProvider": {
+          "aws": {
+            "quantified": true,
+            "value": 0.9,
+            "instrument": "Amazon EC2 Spot Instances",
+            "source": {
+              "claimId": "CLM-FIN-061",
+              "citation": "Amazon EC2 Spot: up to 90% off On-Demand",
+              "url": "https://aws.amazon.com/ec2/spot/pricing/",
+              "status": "V",
+              "checked": "2026-10-14",
+              "reviewBy": "2027-01-12"
+            }
+          },
+          "azure": {
+            "quantified": true,
+            "value": 0.9,
+            "instrument": "Azure Spot Virtual Machines",
+            "source": {
+              "claimId": "CLM-FIN-064",
+              "citation": "Azure Spot Virtual Machines: up to 90% off pay-as-you-go",
+              "url": "https://azure.microsoft.com/en-us/pricing/spot/",
+              "status": "V",
+              "checked": "2026-10-14",
+              "reviewBy": "2027-01-12"
+            }
+          },
+          "gcp": {
+            "quantified": true,
+            "value": 0.91,
+            "instrument": "Google Cloud Spot VMs",
+            "source": {
+              "claimId": "CLM-FIN-067",
+              "citation": "Google Cloud Spot VMs: up to 91% off on-demand",
+              "url": "https://cloud.google.com/spot-vms/pricing",
+              "status": "V",
+              "checked": "2026-10-14",
+              "reviewBy": "2027-01-12"
+            }
+          },
+          "oci": {
+            "quantified": false
+          },
+          "ibm": {
+            "quantified": false
+          },
+          "alibaba": {
+            "quantified": false
+          },
+          "other_public": {
+            "quantified": false
+          }
+        }
+      },
+      "neverWith": [
+        "LEV-01"
+      ],
+      "quantifiedIn": [
+        "workshop"
+      ],
+      "ramp": {
+        "year1Share": 0.25,
+        "year2Share": 1,
+        "year3Share": 1,
+        "assumptionId": "ASM-FIN-045"
+      },
+      "effortFteMonths": {
+        "tier1": 2,
+        "tier2": 4,
+        "tier3": 8,
+        "ongoingShareOfOneOff": 0.2,
+        "assumptionId": "ASM-FIN-046"
+      },
+      "confidenceRule": "High when every input is provider-tool or billing evidence no older than 90 days; Medium when every input is an exact client figure; Low when any input is a band or derived from an answer mapping (DESIGN.md 10.7).",
+      "offeringIds": [
+        "OFF.FIN.SPRINT"
+      ],
+      "label": "Interruption-tolerant compute not yet on Spot x up to the provider's published maximum discount (checked 14 Oct 2026); expected case is half.",
+      "claimIds": [
+        "CLM-FIN-155",
+        "CLM-FIN-061",
+        "CLM-FIN-064",
+        "CLM-FIN-067",
+        "CLM-FIN-009",
+        "CLM-FIN-089",
+        "CLM-FIN-098",
+        "CLM-FIN-106",
+        "CLM-FIN-128",
+        "CLM-FIN-129",
+        "CLM-FIN-130",
+        "CLM-FIN-160",
+        "CLM-FIN-161",
+        "CLM-FIN-133",
+        "CLM-FIN-134",
+        "CLM-FIN-135",
+        "CLM-FIN-139"
+      ]
+    },
+    {
+      "id": "LEV-07",
+      "name": "Kubernetes efficiency",
+      "type": "usage",
+      "capability": "USAGE_OPTIMIZATION",
+      "scopeWhen": {
+        "fact": "footprint.scopes",
+        "contains": "kubernetes"
+      },
+      "interactionOrder": 4,
+      "addressableBase": {
+        "formula": "kubernetesSpend",
+        "inputs": [
+          "base.kubernetesSpend",
+          "base.kubernetesRequestUtilisation"
+        ]
+      },
+      "maxRate": {
+        "kind": "ltm_heuristic_formula",
+        "formula": "max(0, 1 - r / 0.65), r = lower of measured used/requested CPU and memory",
+        "source": {
+          "claimId": "CLM-FIN-132",
+          "citation": "Target utilisation 65% (LTM heuristic)",
+          "url": "https://github.com/dixitashutosh007/ltm-accelerators/blob/main/docs/cio-readiness/finops-iq/design/DESIGN.md",
+          "status": "LTM_heuristic",
+          "checked": "2026-10-14",
+          "assumptionId": "ASM-FIN-044"
+        }
+      },
+      "quantifiedIn": [
+        "workshop"
+      ],
+      "ramp": {
+        "year1Share": 0.25,
+        "year2Share": 1,
+        "year3Share": 1,
+        "assumptionId": "ASM-FIN-045"
+      },
+      "effortFteMonths": {
+        "tier1": 2,
+        "tier2": 4,
+        "tier3": 8,
+        "ongoingShareOfOneOff": 0.2,
+        "assumptionId": "ASM-FIN-046"
+      },
+      "confidenceRule": "High when every input is provider-tool or billing evidence no older than 90 days; Medium when every input is an exact client figure; Low when any input is a band or derived from an answer mapping (DESIGN.md 10.7).",
+      "offeringIds": [
+        "OFF.FIN.SPRINT"
+      ],
+      "label": "Cluster spend x the gap between measured request utilisation and a 65% target (LTM heuristic); expected case is half.",
+      "claimIds": [
+        "CLM-FIN-156",
+        "CLM-FIN-132",
+        "CLM-FIN-084",
+        "CLM-FIN-094",
+        "CLM-FIN-103",
+        "CLM-FIN-110",
+        "CLM-FIN-112",
+        "CLM-FIN-113",
+        "CLM-FIN-128",
+        "CLM-FIN-129",
+        "CLM-FIN-130",
+        "CLM-FIN-160",
+        "CLM-FIN-161",
+        "CLM-FIN-133",
+        "CLM-FIN-134",
+        "CLM-FIN-135",
+        "CLM-FIN-139"
+      ]
+    },
+    {
+      "id": "LEV-08",
+      "name": "Data transfer",
+      "type": "usage",
+      "capability": "USAGE_OPTIMIZATION",
+      "scopeWhen": {
+        "fact": "footprint.publicCloudProviders",
+        "countAtLeast": 1
+      },
+      "interactionOrder": 10,
+      "addressableBase": {
+        "formula": "Not quantified in version 1: needs architecture discovery",
+        "inputs": []
+      },
+      "maxRate": {
+        "kind": "not_quantified"
+      },
+      "quantifiedIn": [
+        "none"
+      ],
+      "ramp": {
+        "year1Share": 0,
+        "year2Share": 1,
+        "year3Share": 1,
+        "assumptionId": "ASM-FIN-045"
+      },
+      "effortFteMonths": {
+        "tier1": 0,
+        "tier2": 0,
+        "tier3": 0,
+        "ongoingShareOfOneOff": 0.2,
+        "assumptionId": "ASM-FIN-046"
+      },
+      "confidenceRule": "High when every input is provider-tool or billing evidence no older than 90 days; Medium when every input is an exact client figure; Low when any input is a band or derived from an answer mapping (DESIGN.md 10.7).",
+      "offeringIds": [
+        "OFF.CT.PLACEMENT",
+        "OFF.FIN.SPRINT"
+      ],
+      "label": "Identified, not quantified: data transfer needs architecture discovery.",
+      "claimIds": [
+        "CLM-FIN-157",
+        "CLM-FIN-128",
+        "CLM-FIN-129",
+        "CLM-FIN-130",
+        "CLM-FIN-160",
+        "CLM-FIN-161",
+        "CLM-FIN-133",
+        "CLM-FIN-134",
+        "CLM-FIN-135",
+        "CLM-FIN-139"
+      ]
+    },
+    {
+      "id": "LEV-09",
+      "name": "SaaS and licensing",
+      "type": "usage",
+      "capability": "LICENSING_SAAS",
+      "scopeWhen": {
+        "any": [
+          {
+            "fact": "footprint.scopes",
+            "contains": "saas"
+          },
+          {
+            "fact": "footprint.scopes",
+            "contains": "licensing"
+          }
+        ]
+      },
+      "interactionOrder": 7,
+      "addressableBase": {
+        "formula": "Client-measured unused or under-used licence cost; marketplace SaaS billed through a cloud provider is excluded from P when identified",
+        "inputs": [
+          "evidence.saasLicence.unusedAnnualCost"
+        ]
+      },
+      "maxRate": {
+        "kind": "evidence",
+        "value": 1
+      },
+      "quantifiedIn": [
+        "workshop"
+      ],
+      "ramp": {
+        "year1Share": "renewal_share",
+        "year2Share": 1,
+        "year3Share": 1,
+        "assumptionId": "ASM-FIN-045"
+      },
+      "effortFteMonths": {
+        "tier1": 1,
+        "tier2": 3,
+        "tier3": 6,
+        "ongoingShareOfOneOff": 0.2,
+        "assumptionId": "ASM-FIN-046"
+      },
+      "confidenceRule": "High when every input is provider-tool or billing evidence no older than 90 days; Medium when every input is an exact client figure; Low when any input is a band or derived from an answer mapping (DESIGN.md 10.7).",
+      "offeringIds": [
+        "OFF.FIN.SPRINT",
+        "REF.COST_IQ"
+      ],
+      "label": "Your measured unused licence cost, up to 100%, realisable at renewal; expected case is half.",
+      "claimIds": [
+        "CLM-FIN-158",
+        "CLM-FIN-095",
+        "CLM-FIN-128",
+        "CLM-FIN-129",
+        "CLM-FIN-130",
+        "CLM-FIN-160",
+        "CLM-FIN-161",
+        "CLM-FIN-133",
+        "CLM-FIN-134",
+        "CLM-FIN-135",
+        "CLM-FIN-139"
+      ]
+    },
+    {
+      "id": "LEV-10",
+      "name": "AI and GPU",
+      "type": "usage",
+      "capability": "USAGE_OPTIMIZATION",
+      "scopeWhen": {
+        "any": [
+          {
+            "fact": "footprint.scopes",
+            "contains": "ai_platform_gpu"
+          },
+          {
+            "fact": "footprint.scopes",
+            "contains": "ai_api"
+          }
+        ]
+      },
+      "interactionOrder": 6,
+      "addressableBase": {
+        "formula": "idleEndpointSpend + (gpuSpend - idleEndpointSpend); if footprint.gpuInsideKubernetes, idle endpoints only (LEV-07 covers GPU nodes)",
+        "inputs": [
+          "evidence.aiGpu.gpuSpend",
+          "evidence.aiGpu.gpuUtilisation",
+          "evidence.aiGpu.idleEndpointSpend"
+        ]
+      },
+      "maxRate": {
+        "kind": "ltm_heuristic_formula",
+        "formula": "idle endpoints: 1; remaining GPU: max(0, 1 - u / 0.65), u = measured average GPU utilisation",
+        "source": {
+          "claimId": "CLM-FIN-132",
+          "citation": "Target utilisation 65% (LTM heuristic)",
+          "url": "https://github.com/dixitashutosh007/ltm-accelerators/blob/main/docs/cio-readiness/finops-iq/design/DESIGN.md",
+          "status": "LTM_heuristic",
+          "checked": "2026-10-14",
+          "assumptionId": "ASM-FIN-044"
+        }
+      },
+      "quantifiedIn": [
+        "workshop"
+      ],
+      "ramp": {
+        "year1Share": 0.33,
+        "year2Share": 1,
+        "year3Share": 1,
+        "assumptionId": "ASM-FIN-045"
+      },
+      "effortFteMonths": {
+        "tier1": 1,
+        "tier2": 3,
+        "tier3": 6,
+        "ongoingShareOfOneOff": 0.2,
+        "assumptionId": "ASM-FIN-046"
+      },
+      "confidenceRule": "High when every input is provider-tool or billing evidence no older than 90 days; Medium when every input is an exact client figure; Low when any input is a band or derived from an answer mapping (DESIGN.md 10.7).",
+      "offeringIds": [
+        "OFF.DAI.AICOST",
+        "OFF.FIN.TOOLING"
+      ],
+      "label": "Measured idle endpoint spend, plus GPU spend x the gap between measured utilisation and a 65% target (LTM heuristic); expected case is half.",
+      "claimIds": [
+        "CLM-FIN-159",
+        "CLM-FIN-132",
+        "CLM-FIN-044",
+        "CLM-FIN-128",
+        "CLM-FIN-129",
+        "CLM-FIN-130",
+        "CLM-FIN-160",
+        "CLM-FIN-161",
+        "CLM-FIN-133",
+        "CLM-FIN-134",
+        "CLM-FIN-135",
+        "CLM-FIN-139"
+      ]
+    }
+  ]
+}

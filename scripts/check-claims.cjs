@@ -18,14 +18,24 @@ const root = path.resolve(__dirname, '..');
 const REGISTER = 'packages/engine-core/src/claims/claims-register.json';
 const SCHEMA = 'packages/engine-core/src/claims/claim.schema.json';
 // Knowledge files whose claim references must resolve. Add each accelerator's registry as it is sourced.
+const FINOPS_REGISTRY = [
+  'capabilities.json', 'levers.json', 'thresholds.json', 'market-data.json', 'provider-statements.json'
+].map(f => `packages/engine-core/src/accelerators/finops-iq/registry/${f}`);
 const REFERENCING_FILES = [
-  'packages/engine-core/src/accelerators/sovereign-iq/registry/regimes.json'
+  'packages/engine-core/src/accelerators/sovereign-iq/registry/regimes.json',
+  ...FINOPS_REGISTRY
 ];
 // Client-facing files checked for banned phrases (decision D8 / plan S2 item 7). Add pages as they are rebuilt.
 const LANGUAGE_CHECKED = [
-  'packages/engine-core/src/accelerators/sovereign-iq/registry/regimes.json'
+  'packages/engine-core/src/accelerators/sovereign-iq/registry/regimes.json',
+  ...FINOPS_REGISTRY
 ];
-const BANNED = [/legally void/i, /\bunenforceable\b/i, /injunction notice/i, /zero legal immunity/i, /\bguarantee[sd]?\b/i, /100% compliant/i, /attorney-drafted/i];
+const BANNED = [
+  /legally void/i, /\bunenforceable\b/i, /injunction notice/i, /zero legal immunity/i, /\bguarantee[sd]?\b/i, /100% compliant/i, /attorney-drafted/i,
+  // FinOps IQ plan F2 item 6 and DESIGN.md 10.12 (overclaiming, endorsement and hype language).
+  /\brecoverable\b/i, /world[- ]class/i, /\belite\b/i, /\bBig (4|Four)\b/i, /McKinsey/i, /Deloitte/i, /passkey/i, /empirical benchmarks?/i,
+  /FinOps Foundation (audit|checkpoint)/i, /™/, /savings at stake/i, /waste recovery/i
+];
 
 function checkClaims({ today = new Date().toISOString().slice(0, 10), register: registerOverride, files } = {}) {
   const failures = [];
