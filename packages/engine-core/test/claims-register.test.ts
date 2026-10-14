@@ -15,7 +15,9 @@ const good = {
   verification: 'V', checkedOn: '2026-10-14', volatile: true, clientVisible: true,
   owner: 'sovereignty-compliance-lead', lastReviewed: '2026-10-14', nextReview: '2027-01-12'
 };
-const run = (claims: any[], extra: any = {}) => checkClaims({ today: '2026-10-14', register: { claims }, files: extra });
+// Test registers are checked in isolation: the live registry files are replaced by empty ones unless a test supplies them.
+const isolated = Object.fromEntries([...REFERENCING_FILES, ...LANGUAGE_CHECKED].map((f: string) => [f, '{}']));
+const run = (claims: any[], extra: any = {}) => checkClaims({ today: '2026-10-14', register: { claims }, files: { ...isolated, ...extra } });
 const regimes = REFERENCING_FILES[0];
 
 describe('claims register checks', () => {
