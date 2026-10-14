@@ -1,0 +1,199 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:ltm:finops-iq:v3:facts",
+  "title": "FinOps IQ v3 facts (scope model, value bases, evidence and cost inputs)",
+  "description": "Client footprint facts set by scope (SC) and value-base (VB) questions and by the consultant (DESIGN.md section 4). Facts are never scored. They switch capabilities, questions, levers and playbook entries, and supply the addressable bases for the value model (DESIGN.md section 10). All amounts are annual and in org.currency (D9: no FX in value figures). Draft for owner approval (F1).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["org", "footprint", "spend"],
+  "properties": {
+    "org": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["currency"],
+      "properties": {
+        "sector": { "$ref": "#/$defs/sector" },
+        "markets": { "type": "array", "uniqueItems": true, "items": { "enum": ["eu", "uk", "us", "apac", "other"] } },
+        "consumingUnits": { "enum": ["1", "2-4", "5-19", "20+", "unknown"] },
+        "currency": { "type": "string", "pattern": "^[A-Z]{3}$", "description": "ISO 4217 code." },
+        "tierFxRate": { "type": "number", "exclusiveMinimum": 0, "description": "USD per unit of org.currency, consultant-confirmed, used ONLY to place spend in a complexity-tier band (DESIGN.md 3.4). Never applied to value figures." }
+      }
+    },
+    "footprint": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["publicCloudProviders", "scopes"],
+      "properties": {
+        "infrastructureMix": { "enum": ["on_premises_only", "mostly_dc", "balanced_hybrid", "mostly_cloud", "cloud_native", "unknown"] },
+        "publicCloudProviders": { "type": "array", "uniqueItems": true, "items": { "$ref": "#/$defs/providerId" } },
+        "scopes": { "type": "array", "uniqueItems": true, "items": { "$ref": "#/$defs/scopeId" } },
+        "gpuInsideKubernetes": { "type": "boolean", "description": "If true, LEV-07 covers GPU nodes and LEV-10 applies to idle endpoints only (DESIGN.md 10.2)." },
+        "migration": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "stage": { "enum": ["planning", "early", "in_flight", "largely", "complete", "unknown"] },
+            "remainingShare24m": { "$ref": "#/$defs/share" }
+          }
+        }
+      }
+    },
+    "spend": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["byScope"],
+      "properties": {
+        "byScope": {
+          "type": "object",
+          "description": "Keys are provider IDs (public cloud rows) or scope IDs (other rows). Public cloud spend P in the value model is the sum of the provider rows.",
+          "propertyNames": { "anyOf": [ { "$ref": "#/$defs/providerId" }, { "$ref": "#/$defs/scopeId" } ] },
+          "additionalProperties": { "$ref": "#/$defs/amount" }
+        },
+        "growth12m": {
+          "oneOf": [
+            { "type": "number", "minimum": -25, "maximum": 200, "description": "Percent." },
+            { "const": "unknown" }
+          ]
+        }
+      }
+    },
+    "base": {
+      "type": "object",
+      "description": "Value bases (DESIGN.md 4.3). Every share is of public cloud spend unless stated. 'unknown' means the levers that need it are not quantified; there is no default.",
+      "additionalProperties": false,
+      "properties": {
+        "computeShare": { "$ref": "#/$defs/share" },
+        "steadyStateShare": { "$ref": "#/$defs/share", "description": "Share of compute that runs most hours of the month at a predictable level (includes non-production that runs 24/7)." },
+        "eligibleCoverage": { "$ref": "#/$defs/share", "description": "Share of commitment-eligible usage covered by commitments, cost-weighted (ASM-FIN-049 approximation)." },
+        "nonProdShare": { "$ref": "#/$defs/share", "description": "Share of compute." },
+        "nonProdScheduledShare": { "$ref": "#/$defs/share", "description": "Share of non-production compute already scheduled off. In executive mode derived from OP-06 (ASM-FIN-052)." },
+        "nonProdScheduledShareSource": { "enum": ["answer", "derived_from_OP-06"] },
+        "interruptionTolerantShare": { "$ref": "#/$defs/share", "description": "Share of compute." },
+        "spotShare": { "$ref": "#/$defs/share", "description": "Share of compute already on Spot / preemptible." },
+        "storageShare": { "$ref": "#/$defs/share" },
+        "coldDataShare": { "$ref": "#/$defs/share", "description": "Share of hot-tier stored data rarely accessed (from provider storage analytics)." },
+        "dataTransferShare": { "$ref": "#/$defs/share" },
+        "kubernetesSpend": { "$ref": "#/$defs/amount" },
+        "kubernetesRequestUtilisation": { "$ref": "#/$defs/share", "description": "Lower of measured used/requested CPU and memory." }
+      }
+    },
+    "evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "providerRecommendations": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["type", "tool", "annualEstimate", "exportDate"],
+            "properties": {
+              "type": { "enum": ["rightsizing", "modernisation", "idle", "storage", "commitments", "other"] },
+              "provider": { "$ref": "#/$defs/providerId" },
+              "tool": { "type": "string", "description": "For example AWS Cost Optimization Hub, AWS Compute Optimizer, Azure Advisor, Google Cloud Recommender, OCI Cloud Advisor." },
+              "deduplicated": { "type": "boolean", "description": "true when the tool states its estimates are deduplicated across types and net of existing discounts (for example AWS Cost Optimization Hub)." },
+              "annualEstimate": { "type": "number", "minimum": 0 },
+              "exportDate": { "type": "string", "format": "date", "description": "Older than 90 days on the assessment date: not used for quantification (ASM-FIN-048)." }
+            }
+          }
+        },
+        "saasLicence": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["unusedAnnualCost", "source", "measuredOn"],
+          "properties": {
+            "unusedAnnualCost": { "type": "number", "minimum": 0 },
+            "source": { "type": "string" },
+            "measuredOn": { "type": "string", "format": "date" },
+            "renewingYear1Share": { "$ref": "#/$defs/share", "description": "Share of the unused cost whose contracts renew in year 1 (ramp for LEV-09)." }
+          }
+        },
+        "aiGpu": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "gpuSpend": { "$ref": "#/$defs/amount", "description": "Part of public cloud compute unless gpuInsideKubernetes." },
+            "gpuUtilisation": { "$ref": "#/$defs/share" },
+            "idleEndpointSpend": { "$ref": "#/$defs/amount", "description": "Included in gpuSpend; removed from the GPU base before the utilisation formula." },
+            "aiApiSpend": { "$ref": "#/$defs/amount", "description": "Token-based spend; not quantified by any v1 lever." }
+          }
+        },
+        "billingData": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "Reserved for the optional FOCUS-based evidence step (D13). Never overwrites answers.",
+          "properties": {
+            "format": { "enum": ["focus", "provider_native"] },
+            "focusVersion": { "type": "string" },
+            "periodFrom": { "type": "string", "format": "date" },
+            "periodTo": { "type": "string", "format": "date" }
+          }
+        }
+      }
+    },
+    "cost": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "internalRate": { "$ref": "#/$defs/amount", "description": "Loaded internal cost per FTE-month. Without it, no money figure is shown (DESIGN.md 10.6, Q4)." },
+        "tooling": { "$ref": "#/$defs/amount", "description": "Annual FinOps tooling cost. 'unknown' is stated in the report, never silently zero." }
+      }
+    },
+    "consultant": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "complexityTierOverride": { "enum": [1, 2, 3] },
+        "overrideReason": { "type": "string" }
+      }
+    }
+  },
+  "$defs": {
+    "providerId": { "enum": ["aws", "azure", "gcp", "oci", "ibm", "alibaba", "other_public"] },
+    "scopeId": {
+      "description": "FinOps IQ scopes. Mapping to the Cost IQ overlay technologyCategories: public_cloud=PUBLIC_CLOUD, private_cloud=PRIVATE_CLOUD, data_centre=DATA_CENTER, colocation=COLOCATION, kubernetes=(PUBLIC_CLOUD or PRIVATE_CLOUD platform), ai_api and ai_platform_gpu=AI, saas=SAAS, licensing=LICENSES, data_cloud_platform=DATA_CLOUD_PLATFORM.",
+      "enum": ["public_cloud", "private_cloud", "data_centre", "colocation", "kubernetes", "ai_api", "ai_platform_gpu", "saas", "licensing", "data_cloud_platform"]
+    },
+    "sector": { "enum": ["banking", "insurance", "capital_markets", "public_sector", "healthcare", "retail", "manufacturing", "telecom_media", "technology_saas", "energy_utilities", "professional_services", "other"] },
+    "amount": {
+      "description": "An exact figure, a band, or unknown. Bands are evaluated at their midpoint (expected) and at their corners (conservative and upper), DESIGN.md 10.1 item 4.",
+      "oneOf": [
+        { "type": "object", "additionalProperties": false, "required": ["exact"], "properties": { "exact": { "type": "number", "minimum": 0 } } },
+        {
+          "type": "object", "additionalProperties": false, "required": ["band"],
+          "properties": { "band": { "type": "array", "prefixItems": [ { "type": "number", "minimum": 0 }, { "type": "number", "minimum": 0 } ], "minItems": 2, "maxItems": 2 } }
+        },
+        { "type": "object", "additionalProperties": false, "required": ["unknown"], "properties": { "unknown": { "const": true } } }
+      ]
+    },
+    "share": {
+      "description": "A share between 0 and 1: exact, band or unknown.",
+      "oneOf": [
+        { "type": "object", "additionalProperties": false, "required": ["exact"], "properties": { "exact": { "type": "number", "minimum": 0, "maximum": 1 } } },
+        {
+          "type": "object", "additionalProperties": false, "required": ["band"],
+          "properties": { "band": { "type": "array", "prefixItems": [ { "type": "number", "minimum": 0, "maximum": 1 }, { "type": "number", "minimum": 0, "maximum": 1 } ], "minItems": 2, "maxItems": 2 } }
+        },
+        { "type": "object", "additionalProperties": false, "required": ["unknown"], "properties": { "unknown": { "const": true } } }
+      ]
+    },
+    "capabilityId": {
+      "description": "Shared with the Cost IQ overlay v7.1.0 frameworkDomains.",
+      "enum": [
+        "DATA_INGESTION", "ALLOCATION", "REPORTING_ANALYTICS", "ANOMALY_MANAGEMENT",
+        "PLANNING_ESTIMATING", "FORECASTING", "BUDGETING", "KPIS_BENCHMARKING", "UNIT_ECONOMICS",
+        "ARCHITECTING_WORKLOAD_PLACEMENT", "USAGE_OPTIMIZATION", "RATE_OPTIMIZATION", "LICENSING_SAAS", "SUSTAINABILITY",
+        "EXECUTIVE_STRATEGY_ALIGNMENT", "FINOPS_PRACTICE_OPERATIONS", "GOVERNANCE_POLICY_RISK", "FINOPS_EDUCATION_ENABLEMENT",
+        "INVOICING_CHARGEBACK", "FINOPS_ASSESSMENT", "AUTOMATION_TOOLS_SERVICES", "INTERSECTING_DISCIPLINES"
+      ]
+    },
+    "leverId": { "enum": ["LEV-01", "LEV-02", "LEV-03", "LEV-04", "LEV-05", "LEV-06", "LEV-07", "LEV-08", "LEV-09", "LEV-10"] },
+    "rating": { "enum": ["not_yet", "crawl", "walk", "run", "unknown", "not_in_scope", "not_assessed"] },
+    "level": { "enum": ["not_yet", "crawl", "walk", "run"] },
+    "offeringId": { "enum": ["OFF.FIN.ASSESS", "OFF.FIN.OPMODEL", "OFF.FIN.TOOLING", "OFF.FIN.SPRINT", "OFF.FIN.UNITECON", "OFF.FIN.MANAGED", "OFF.CT.PLACEMENT", "OFF.DAI.AICOST", "REF.COST_IQ", "REF.CLOUD_IQ"] },
+    "assumptionId": { "type": "string", "pattern": "^ASM-FIN-[0-9]{3}$" },
+    "claimId": { "type": "string", "pattern": "^CLM-FIN-[0-9]{3,}$" },
+    "sourceRef": { "type": "string", "pattern": "^S[0-9]+$", "description": "DESIGN.md section 15 reference; replaced by claim IDs in F2." },
+    "verificationStatus": { "enum": ["V", "P", "S", "LTM_heuristic", "UNSOURCED"] }
+  }
+}

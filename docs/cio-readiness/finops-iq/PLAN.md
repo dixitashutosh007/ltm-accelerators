@@ -133,6 +133,8 @@ Every maturity question gets "Unknown", scored as risk (D5). Every question carr
 
 **Gate F1:** owner approves the design pack in writing.
 
+**Status (14 Oct 2026): approved.** The owner accepted every recommended default (Q1–Q14) and the flagged departures: T5 maps to KPIs & Benchmarking; Spot sits under Rate Optimization pending F2 confirmation; FIQ.C8 moves to Cloud IQ; ongoing cost is 20% of one-off effort per year (LTM heuristic); the FinOps team cost is shown beside the value, not netted; the 29% cap also applies to the upper case. [design/DESIGN.md](design/DESIGN.md), five JSON Schemas and five reference scenarios with expected outputs. Open questions Q1–Q14 are in DESIGN section 13, each with a recommended default. Sources that the agent could reach only through search results are labelled P or S, and listed in section 14 for F2.
+
 ---
 
 ## F2: Content and claims register
