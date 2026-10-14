@@ -7643,6 +7643,78 @@
       "nextReview": "2027-04-14",
       "basisNote": "Prevents invented percentages; area 13(d) of the scorecard.",
       "notes": "LTM design rule, not a market fact. Verification V here means the statement matches LTM's owner-approved design pack (the source); shown in the 'How we calculated this' appendix with this reasoning."
+    },
+    {
+      "id": "CLM-FIN-162",
+      "accelerators": [
+        "finops-iq"
+      ],
+      "kind": "heuristic",
+      "jurisdiction": "global",
+      "statement": "LTM roadmap waves and owner roles for capability-gap findings. Wave 1 Foundations: FinOps Practice Operations, Data Ingestion, Allocation, Anomaly Management. Wave 2 Optimise: Usage Optimization, Rate Optimization, Reporting & Analytics, Forecasting, Budgeting, Governance, Policy & Risk, Planning & Estimating, Architecting & Workload Placement, FinOps Tools & Services. Wave 3 Value and scale: Unit Economics, Invoicing & Chargeback, KPIs & Benchmarking, Executive Strategy Alignment, Licensing & SaaS, Sustainability, Intersecting Disciplines, FinOps Education & Enablement, FinOps Assessment. A finding never sits in an earlier wave than a finding it depends on (Anomaly Management, Reporting & Analytics and Forecasting depend on Data Ingestion; Usage Optimization, Unit Economics, KPIs & Benchmarking and Invoicing & Chargeback depend on Allocation). Default owner roles: CIO for FinOps Practice Operations and Executive Strategy Alignment; CFO for Invoicing & Chargeback; FP&A lead for Forecasting and Budgeting; Head of Cloud / CCoE for Data Ingestion, Architecting & Workload Placement and Governance, Policy & Risk; Platform / SRE lead for Anomaly Management; Engineering leads for Usage Optimization and Planning & Estimating; Product owners for Unit Economics; ITAM lead for Licensing & SaaS; Sustainability lead for Sustainability; FinOps lead for the rest.",
+      "source": {
+        "url": "https://github.com/dixitashutosh007/ltm-accelerators/blob/main/docs/cio-readiness/finops-iq/design/DESIGN.md",
+        "title": "LTM FinOps IQ F1 design pack (approved by the product owner, 14 Oct 2026)",
+        "article": "5.2 and 5.4 (ASM-FIN-005); PLAN.md F2 status, departure 5",
+        "publisher": "LTM"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-14",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "finops-cost-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-14",
+      "nextReview": "2027-04-14",
+      "basisNote": "Follows the Framework's Inform, Optimize, Operate flow: foundations other capabilities depend on come first. Owner roles are planning defaults from the DESIGN.md 5.2 role list; the consultant can change them with a reason.",
+      "notes": "LTM heuristic, not a market fact. Verification V here means the statement matches LTM's owner-approved design pack (the source); it is shown in the report's assumption register as 'LTM heuristic' with this reasoning."
+    },
+    {
+      "id": "CLM-FIN-163",
+      "accelerators": [
+        "finops-iq"
+      ],
+      "kind": "heuristic",
+      "jurisdiction": "global",
+      "statement": "Coverage, blanks and verdict confidence: a blank answer is excluded from the rating and listed in coverage; a capability with any asked question left blank is never counted at or above target and counts as the maximum gap in the need index; a capability with no answered core question is 'not assessed', counts as not at target and creates no finding; an unconfirmed Cost IQ pre-fill counts as blank. Need verdict confidence (executive mode): Medium when every asked maturity question is answered with a level, Low when any is blank or 'Don't know'; never High in executive mode.",
+      "source": {
+        "url": "https://github.com/dixitashutosh007/ltm-accelerators/blob/main/docs/cio-readiness/finops-iq/design/DESIGN.md",
+        "title": "LTM FinOps IQ F1 design pack (approved by the product owner, 14 Oct 2026)",
+        "article": "3.2, 3.4, 9 and 2.3",
+        "publisher": "LTM"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-14",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "finops-cost-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-14",
+      "nextReview": "2027-04-14",
+      "basisNote": "A blank must never flatter the headline or lower the need index (D5). Executive mode rests on few answers and no evidence, so its confidence is capped at Medium (DESIGN.md 10.7).",
+      "notes": "LTM heuristic, not a market fact. Verification V here means the statement matches LTM's owner-approved design pack (the source); it is shown in the report's assumption register as 'LTM heuristic' with this reasoning."
+    },
+    {
+      "id": "CLM-FIN-164",
+      "accelerators": [
+        "finops-iq"
+      ],
+      "kind": "heuristic",
+      "jurisdiction": "global",
+      "statement": "FinOps IQ v3 merged question set (LTM wording): scope and value-base questions set facts and are never scored; each maturity question rates exactly one FinOps Framework capability, offers 'Don't know' (counted as risk) and has no 'not applicable' option, which comes only from scope facts; hypothesis and outcome questions are never scored and never feed value. Executive mode asks 18 questions plus the optional HY-01 and HY-07 and rates 8 capabilities; the others are assessed in the workshop.",
+      "source": {
+        "url": "https://github.com/dixitashutosh007/ltm-accelerators/blob/main/docs/cio-readiness/finops-iq/design/DESIGN.md",
+        "title": "LTM FinOps IQ F1 design pack (approved by the product owner, 14 Oct 2026)",
+        "article": "7.1, 7.4 and 7.7",
+        "publisher": "LTM"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-14",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "finops-cost-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-14",
+      "nextReview": "2027-04-14",
+      "basisNote": "One question set for both modes; the mode selects questions, never scoring (DESIGN.md 6).",
+      "notes": "LTM heuristic, not a market fact. Verification V here means the statement matches LTM's owner-approved design pack (the source); it is shown in the report's assumption register as 'LTM heuristic' with this reasoning."
     }
   ]
 }
