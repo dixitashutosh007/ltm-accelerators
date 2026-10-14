@@ -211,7 +211,8 @@ Every maturity question gets "Unknown", scored as risk and shown as "unconfirmed
 |---|---|---|
 | 1 | Executive PDF (WS-S4) | Server-rendered, LTM Vantage brand. Structure: executive summary (decision, exposure, top five actions), findings, roadmap, How LTM can help, technical execution, methodology and sources (claim IDs, versions, "data provided by", disclaimer, hosting statement) |
 | 2 | Backlog CSV | One row per playbook action: finding, control, platform, level, action, verification, owner role, effort, source; Jira later |
-| 3 | Trace test | Every number in the PDF maps to an engine field |
+| 3 | Trace test | Every number in the PDF maps to an engine field and to a claim or assumption ID |
+| 3a | Report defensibility (area 13, added 14 Oct 2026) | "How we calculated this" appendix and assumption register in the PDF; statutory caps shown as caps with their basis, never summed; roadmap with activities, owner role, duration, dependencies, effort, milestones, KPIs and risks; the practice-lead agent's CIO challenge test (ten hardest questions) answered from the report for the five archetypes |
 | 4 | Retire | jsPDF client generation, markdown "MARP" deck, TIA markdown export, RoI CSV (a sourced DORA register template can return later from the engine) |
 
 **Dependencies:** S3; WS-S4; S7 and S8 for their sections.
@@ -315,7 +316,7 @@ Scope ranges appear only in the consultant SOW draft (D7). The client sees type,
 | 3 | Consultant dry run with two internal "hostile CIO" sessions: "where is this number from?", "is this legal advice?", "why should I trust a tool hosted in India?" |
 | 4 | Owner decision on CIO pilots (booked after all accelerators improve, per FRAMEWORK.md) |
 
-**Gate S11:** all 12 areas Pass, or each Partial accepted in writing by the owner.
+**Gate S11:** all 13 areas Pass, or each Partial accepted in writing by the owner.
 
 | # | Area | Target evidence |
 |---|---|---|
@@ -331,6 +332,7 @@ Scope ranges appear only in the consultant SOW draft (D7). The client sees type,
 | 10 | AI scope and toggle | Bedrock only; eval 100% |
 | 11 | Technical execution | Playbook per selected platform with verification |
 | 12 | Commercial pull-through | Every finding in How LTM can help; SOW consultant-only |
+| 13 | Report defensibility | Number trace and assumption register complete; no inflated figure; delivery-grade roadmap; CIO challenge test passed for all five archetypes |
 
 ---
 

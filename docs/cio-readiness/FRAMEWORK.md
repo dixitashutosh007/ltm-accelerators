@@ -30,9 +30,9 @@ The phase reviews each accelerator against one scorecard, then fixes it to a CIO
 | Data | No LTM engagement history yet. Use **published market data** with source, year and sample size, never presented as LTM peer benchmarks. Back-testing uses **reference scenarios** built from public case studies and regulatory examples |
 | CIO pilots | Booked **after** all accelerators are improved |
 
-## Scorecard (12 areas)
+## Scorecard (13 areas)
 
-Each accelerator is rated **Pass / Partial / Fail** in every area, with evidence. "CIO ready" means Pass in all twelve, or a Partial the owner has accepted in writing.
+Each accelerator is rated **Pass / Partial / Fail** in every area, with evidence. "CIO ready" means Pass in all thirteen, or a Partial the owner has accepted in writing.
 
 | # | Area | Pass criteria |
 |---|---|---|
@@ -48,14 +48,15 @@ Each accelerator is rated **Pass / Partial / Fail** in every area, with evidence
 | 10 | **AI scope and toggle** | Uses the shared Bedrock service only. Off by default, with a per-engagement toggle. Grounding check passes on the eval set. Prompts and outputs are logged. No browser AI and no API keys in the page |
 | 11 | **Technical execution** | Findings map to platform playbook entries for each platform the client selected (on-premises, AWS, Azure, GCP, sovereign and other providers) at platform, tech-stack and application level, each with a verification step. Application level states the extra discovery it needs |
 | 12 | **Commercial pull-through** | Every finding appears in "How LTM can help", typed advisory, implementation or transformation, with indicative scope and a technical execution outline. A consultant-only SOW draft can be exported. Reads as advice, not sales |
+| 13 | **Report defensibility** (added 14 Oct 2026) | A CIO can challenge any number and get a written answer. In detail: (a) **every number traces** to its inputs, formula and source in a "How we calculated this" appendix; (b) **every assumption is in an assumption register** with value, basis (client input / published source with year and sample / LTM heuristic with reasoning), confidence and what changes if it is wrong; (c) **savings and value are ranges** (conservative / expected / upper) with confidence, the expected case is conservative, net of implementation cost, phased over a realistic ramp (not all in year 1) and never called guaranteed; (d) **no inflation**: each lever is capped at the addressable spend and at the published range for that lever, levers don't double count, totals reconcile, and an automated inflation guard in CI fails any output above those caps; (e) **the roadmap is delivery-grade**: workstreams with activities, owner role, duration, dependencies, effort, milestones, KPIs, prerequisites and risks; (f) **consulting-grade presentation**: an executive summary that states situation, issue, recommendation and value with its basis, consistent structure, citations, methodology, version, date, "data provided by" and disclaimers, and no hype language; (g) **CIO challenge test passed**: the practice-lead agent writes the ten hardest questions a CIO would ask of the report (for example "on what basis is this $X saving?") and the report answers each one from its own pages |
 
 ## How each accelerator is reviewed
 
-1. **Review.** The domain practice-lead agent reviews the accelerator against the scorecard using trusted sources only. Output: a validation report with Pass / Partial / Fail per area, evidence and cited sources.
+1. **Review.** The domain practice-lead agent reviews the accelerator against the scorecard using trusted sources only. Output: a validation report with Pass / Partial / Fail per area, evidence and cited sources. For area 13 it generates sample reports from the reference clients and audits them as a sceptical CIO would.
 2. **Plan.** A phased plan per accelerator (`docs/cio-readiness/<accelerator>/PLAN.md`), in the same form as the Resilience IQ roadmap.
 3. **Build.** Each phase lands as a PR with full CI, golden-file diffs and the practice-lead agent's review of the diff.
 4. **Approve.** The product owner approves each phase. Regulatory content waits for the counsel gate (area 9) before external use.
-5. **Re-review.** The accelerator is re-scored. It is CIO ready when all twelve areas pass.
+5. **Re-review.** The accelerator is re-scored. It is CIO ready when all thirteen areas pass.
 
 ## Shared workstreams
 
