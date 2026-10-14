@@ -1,6 +1,6 @@
 # Sovereign IQ (merged with Posture IQ): plan
 
-**Date:** 13 Oct 2026  **Author:** `sovereignty-compliance-lead` (advises; the product owner approves).  **Starting point:** the [validation report](VALIDATION.md). Sovereign IQ scores 0 Pass / 6 Partial / 6 Fail and Posture IQ 0 / 7 / 5 on the 12-area scorecard. 34 incorrect, 5 outdated and 16 unsourced regulatory and provider statements.  **Goal:** one accelerator, Sovereign IQ, that passes all 12 areas, with "posture" as its compliance-exposure view.
+**Date:** 13 Oct 2026  **Author:** `sovereignty-compliance-lead` (advises; the product owner approves).  **Starting point:** the [validation report](VALIDATION.md). Sovereign IQ scores 0 Pass / 6 Partial / 6 Fail and Posture IQ 0 / 7 / 5 on the 12-area scorecard. 34 incorrect, 5 outdated and 16 unsourced regulatory and provider statements.  **Goal:** one accelerator, Sovereign IQ, that passes all 13 areas (area 13, report defensibility, added 14 Oct 2026), with "posture" as its compliance-exposure view.
 
 **Naming:** phases are **S0–S11**. To avoid a clash, the shared workstreams from [FRAMEWORK.md](../FRAMEWORK.md) are written **WS-S1 to WS-S8** here (WS-S1 Bedrock AI, WS-S2 claims register, WS-S3 platform playbook, WS-S4 outputs, WS-S5 How LTM can help, WS-S6 client-data protection, WS-S7 modes, WS-S8 practice-lead agents).
 
@@ -21,7 +21,7 @@
 | S8 | How LTM can help and SOW | S7; WS-S5 | Every finding mapped to a typed offering with scope range and execution outline; consultant-only SOW export |
 | S9 | AI on Bedrock with toggle | S6; WS-S1 | Off by default; per-engagement toggle; grounding check passes 100% of the eval set; prompts and outputs logged |
 | S10 | Client-data protection and legal counsel gate | S2–S9; WS-S6 | Transfer basis, TIA, privacy notice, retention live; counsel sign-off for EU/UK, US and APAC |
-| S11 | Re-score against all 12 areas | S0–S10 | Validation report re-issued with all 12 Pass, or Partials accepted in writing |
+| S11 | Re-score against all 13 areas | S0–S10 | Validation report re-issued with all 13 Pass, or Partials accepted in writing |
 
 S0 starts now and does not wait for any decision. S2 content research can run beside S1. S5–S8 can run in parallel once S3's contract is fixed. S9 needs WS-S1; S10 needs WS-S6.
 
@@ -142,7 +142,110 @@ Every maturity question gets "Unknown", scored as risk and shown as "unconfirmed
 
 **Gate S2:** 100% of registry fields have a claim ID with source; this agent's review recorded per regime; CI fails on an overdue review date; no row of the validation table remains Incorrect, Outdated or Unsourced (each is corrected, sourced or removed).
 
+**Status (14 Oct 2026): content complete, for the owner's review.** Prepared by `sovereignty-compliance-lead` (advises; the owner approves; counsel reviews before external use, S10). Not legal advice.
+
+| Measure | Result |
+|---|---|
+| Regime registry | [`regimes.json`](../../../packages/engine-core/src/accelerators/sovereign-iq/registry/regimes.json): **42 regimes** (15 EU and UK, 10 US, 17 APAC; no GCC), 94 applicability rules, 76 regime-required control rows, 3 legal level floors, version 1.0.0, status as of 14 Oct 2026. Validates against `design/regime.schema.json` (with `facts.schema.json`). Every rule, required control, floor, obligation, date and penalty tier carries claim IDs, and each has a computed verification status. The five archetypes in `archetypes.json` give the same 52 expected regime grades and rule IDs, and no rule fires that is not expected |
+| Claims register | [`claims-register.json`](../../../packages/engine-core/src/claims/claims-register.json): **200 claims, CLM-SOV-001 to 200**: **V 67, S 92, P 28, UNSOURCED 13**. Of these, 26 are volatile with review by 12 Jan 2027: FISA 702, the DPF appeal, AI Act Omnibus dates, NIS2 transposition, the UK CTP list, DPDP phase-in, the CSR Bill, MAS consultations, US state laws and the 10 ECB rates. The CCPA amounts are also reviewed by 12 Jan 2027, because the CPPA adjusts them in January 2027. All other claims are reviewed by 14 Oct 2027. `node scripts/check-claims.cjs` and `npm run check:repo` pass |
+| Verification by regime | Worst status across the citation and the sourced applicability rules: V 7, S 24, P 11. Three rules are UNSOURCED and are consultant-only: `FR_SECNUMCLOUD.3` (OIV), `DE_C5.2` (public sector) and `KR_PIPA.2` (foreign businesses). One required-control row is pending a source: `US_NYDFS_500` / `SOV.GOV.OWNER`. One floor is provisional: the `CN_PIPL` volume floor |
+| Exchange rates (Q10) | ECB reference rates of 12 Oct 2026 for USD, GBP, JPY, AUD, CNY, HKD, INR, KRW, NZD and SGD. Each non-EUR penalty note cites its rate |
+| Method | EUR-Lex, legislation.gov.uk, eCFR, gov.uk and regulator sites refuse direct fetches from this environment (proxy policy). Verification therefore uses web-search results that quote or link the official text, and each claim's notes say so |
+
+**Corrections against S1 or the old knowledge bases (most important):**
+- The UK CSR Bill is at **Lords report stage (26 Oct 2026)**, after Lords committee stage ended on 7 Sep 2026. It is not law. S1 had it at Commons third reading.
+- The UK CTP regime is in **FSMA 2000 ss.312L–312Z**, inserted by FSMA 2023. It is not "FSMA 2023 Part 9" (row 44).
+- The UK NIS fines are **£1M / £8.5M / £17M** (reg. 18(6)). The £3.4M tier is not in the current text and has been removed.
+- Post-DUAA, UK transfers rest on a new **Art. 44A and the "data protection test"** (DUAA Sch. 7). The 4.3 reference "Art. 44–49" is out of date for the UK.
+- NIS2 Art. 4 and DORA as lex specialis (DORA Art. 1(2), recital 16) are sourced at S. NIS2 registration and national provisions can still reach DORA entities. Q6 (advisory) stands.
+- NIS2 Art. 6(30) and recital 33 cover SaaS as a cloud computing service (S), which supports Q9. Cloud providers stay subject to the size cap.
+- NIS2 transposition: the Commission referred IE, ES, FR and NL to the Court of Justice on 8 Jul 2026. About 21–24 of 27 member states have a law in force (trackers conflict).
+- The **SecNumCloud trigger** is SREN Art. 31 for State bodies and listed public interest groupings, plus the "cloud au centre" circular, plus a 5 Feb 2026 circular on health data. The **C5 trigger** is SGB V § 393 for German healthcare providers, insurers and their processors (Type 2 attestation from 1 Jul 2025). OIV and German public-sector triggers stay UNSOURCED.
+- The **CRA** is now sourced (S): reporting from 11 Sep 2026, full application from 11 Dec 2027, fines €15M/2.5%, €10M/2% and €5M/1%.
+- AI Act GPAI duties applied from 2 Aug 2025 and Art. 101 GPAI fines from 2 Aug 2026. Two new Art. 5 prohibitions apply from 2 Dec 2026.
+- FISA 702: still no reauthorisation as of 14 Oct 2026. The House passed a bill in April 2026. Existing certifications are reportedly valid to about Mar 2027.
+- The DPF appeal C-703/25 P is pending, with no hearing date reported. The decision stays in force.
+- The **DOJ DSP penalty** is the greater of $368,136 or twice the transaction, and wilful violations are criminal (28 CFR 202.1301). It is now modelled as per-violation.
+- **CCPA, GLBA and NYDFS** required controls are now sourced (S) and will score: § 1798.100(d)–(e) and § 1798.150; 16 CFR 314.4(c)(3), (f) and (j); 23 NYCRR 500.11, 500.15 and 500.17. NYDFS 500.4 stays pending.
+- **MAS**: Notice 658 and the Guidelines on Outsourcing (Banks) took effect on 11 Dec 2024 (V). Their content is sourced at S. The amended TRM Notices (consulted 10 Jun 2026) and the TPRM Guidelines (consulted Mar 2026) are not final.
+- **HKMA** (row 67): the relevant modules are SPM TM-G-1, SA-2 and OR-2 plus the cloud guidance of 31 Aug 2022. TM-E-1 is e-banking.
+- **Singapore Cybersecurity Act**: amendment provisions came into force on 31 Oct 2025. The new penalty regime is not yet in force.
+- PIPL Art. 66: RMB 50M or 5% of prior-year turnover (row 69, now S). The law does not say whether turnover means worldwide or China-only.
+- **CAC 2024 Provisions**: a security assessment is needed above 1M individuals, or 10k individuals for sensitive data. Below 100k non-sensitive, no mechanism is needed. These thresholds are not the Art. 40 storage threshold, which stays UNSOURCED.
+- **India SEBI**: the 2023 cloud framework requires data, logs and DC/DR copies to stay in India (S). The CSCRF localisation standard is in abeyance. CERT-In requires logs to be kept 180 days within Indian jurisdiction (P).
+- **India DPDP**: Rules notified 13 Nov 2025. The main duties apply from 13 May 2027 (14 May on the later reading). There is a ₹200 crore tier for failing to notify a breach.
+
+**Validation table (section 7) disposition, as far as the registry is concerned.**
+- **Corrected in the registry:** rows 4–7, 11, 13, 19, 21, 23, 25–28, 31, 32, 34, 36, 38, 40–45, 47, 49, 51, 53, 56, 57, 62–64, 67, 70, 71 and 82.
+- **Sourced:** rows 44 and 69 (at S).
+- **Removed, not in the registry:** rows 15 (CER), 22, 35, 46 (SS1/23), 50 and 83 (default turnover, D4).
+- **Kept as UNSOURCED and consultant-only:**
+  - row 52 (NDAA § 889, a candidate basis for `SOV.HW.PROVENANCE`, which stays unscored);
+  - row 54 (MAS penalties).
+- **Outside the registry:**
+  - rows 73–74 (GCC, D1);
+  - rows 75–81 (cryptography and provider statements). S0 hid or removed them; any reuse is sourced in S7.
+
+**UNSOURCED (13 claims, consultant-only, each with what settles it):**
+
+| Claim | What it says | Why it is unsourced |
+|---|---|---|
+| CLM-SOV-046 | No localisation in DORA, NIS2, CPS 230/234 or MAS TRM | A negative statement, for counsel to confirm |
+| CLM-SOV-073 | French OIV must use SecNumCloud | No legal text found |
+| CLM-SOV-075 | German public sector must use C5 | No legal text found |
+| CLM-SOV-087 | No statutory maximum for PRA breaches | FSMA penalty provisions not retrieved |
+| CLM-SOV-124 | NYDFS 500.4 | Text not retrieved |
+| CLM-SOV-125 | NYDFS penalty basis | Text not retrieved |
+| CLM-SOV-129 | NDAA § 889 | Not verified |
+| CLM-SOV-140 | MAS penalties | Not verified |
+| CLM-SOV-142 | Singapore CII reporting window | Not verified |
+| CLM-SOV-156 | SOCI penalties | Sources conflict |
+| CLM-SOV-171 | CERT-In fine amount | Possible Jan Vishwas amendment |
+| CLM-SOV-183 | Korea PIPA extraterritorial reach | Not verified |
+| CLM-SOV-189 | PIPL Art. 40 volume threshold | Not verified |
+
+The 28 P claims cite a primary URL whose article text was not re-read. They are mainly GDPR Art. 28/30/32, NIS2 Art. 20/21 and 2(2)(f), the AI Act operator articles, DORA Art. 31–35, UK GDPR articles post-DUAA, UK NIS reg. 11, SS2/21 chapters, HIPAA Part 164 and 102.3, GLBA, SEC Item 106, EO 14086, the MAS TRM Guidelines, the Australian NDB scheme, CPS 230 service-provider paragraphs, DPDP s.8, CERT-In scope and PIPL Art. 3. The 92 S claims rest on secondary sources. All of them need counsel review at S10.
+
+**Changes to the approved design (DESIGN.md not edited; each needs the owner's decision):**
+1. **New derived fact `derived.all_location_zones`.** This is the union of primary and backup zones across classes. The `us_coc_link` predicate needs it, because the condition language cannot iterate the `data.location` map. It is to be added to `facts.schema.json` in S3. New named predicates: `nis2_sector`, `us_coc_link_possible` (a location of `other`) and `non_us_people`.
+2. **Rule-level and floor-level UNSOURCED guard.** DESIGN 4.3 says unsourced required-control rows do not score. S2 extends this: an UNSOURCED rule (`FR_SECNUMCLOUD.3`, `DE_C5.2`, `KR_PIPA.2`) or floor (the `CN_PIPL` volume floor) is consultant-only and hidden in client mode, and the floor is shown as provisional. Recommended: accept.
+3. **Possible new legal floor for `IN_SEBI_IRDAI`.** The SEBI 2023 cloud framework requires data to stay in India (S). The regime stays advisory in v1 with no floor, because the CSCRF localisation standard is in abeyance and the IRDAI wording is unclear. Recommended: keep advisory until counsel confirms.
+4. **Rule shape changes:**
+   - `FR_SECNUMCLOUD` is split into three rules (public sector, health, OIV), each advisory.
+   - `DE_C5` is split into two (health, public sector).
+   - `SG_CYBERSECURITY_ACT.1` is raised from advisory to **applies** for designated CII owners, with `SOV.IR.REPORTING` required. The reporting window is pending.
+   - `US_DOJ_DSP.1` also covers genomic, biometric and precise-geolocation data at ≥10k volume.
+   - No archetype outcome changes.
+5. **Required-control changes against 4.3:**
+   - Rows that now score: US_CCPA, US_GLBA, US_NYDFS_500 (except GOV.OWNER) and the MAS outsourcing rows. They were UNSOURCED in 4.3 and are sourced now.
+   - New rows: IN_DPDP `SOV.ENC.BASELINE` and `SOV.IR.REPORTING` from 13 May 2027 (s.8(5)–(6)); SG_CYBERSECURITY_ACT `SOV.IR.REPORTING`.
+6. **Penalty model changes against 5.4:**
+
+   | Regime | Change |
+   |---|---|
+   | UK_NIS | Tiers revised (see corrections) |
+   | HK_PDPO | `fixed` HK$50,000 (s.50A criminal fine) instead of not quantified |
+   | US_DOJ_DSP | `per_violation` instead of not quantified |
+   | EU_CRA | `turnover_greater_of` (advisory, never used in the headline) |
+   | IN_DPDP | ₹200 crore tier added |
+   | UK_CTP | One `not_quantified` model with an "applies to CTPs only" note (the schema allows one model) |
+   | EU_DORA | `national`, with the CTPP periodic tier listed |
+
+7. **Schema gaps for S3.**
+   - `requiredControl`, `levelFloor` and `penalty` have no `claims` array, so their claim IDs sit in the `basis` and `note` text. Recommended: add `claims` arrays.
+   - Claim IDs also appear in square brackets in `citation.text` and `basis`. The page should strip them when rendering.
+   - The registry file uses the schema's top-level fields (`registryVersion`, `statusAsOf`, `predicates`), not a `version` / `asOf` shape.
+8. **Review cadence.** Regimes keep `reviewDays` 90/180 as the schema requires. Claims follow the 90-day / 12-month cycle given for S2. CI enforces the claim dates.
+
+**Gate S2 check.**
+- Every registry field has a claim ID: yes.
+- A per-regime review is recorded in each `verification` block: yes.
+- CI fails on an overdue review: yes (`check-claims.cjs`).
+- No validation row is left Incorrect, Outdated or Unsourced: rows 52 and 54 stay UNSOURCED and consultant-only. Rows 75–81 belong to S7, not the registry. **The owner decides whether that meets the gate.**
+
 ---
+
+> **Paused here (14 Oct 2026).** The owner prioritised FinOps IQ. Sovereign IQ resumes at S3; the S2 design changes listed above are decided when it resumes.
 
 ## S3: Engine build (Sovereign IQ v4)
 
@@ -211,7 +314,8 @@ Every maturity question gets "Unknown", scored as risk and shown as "unconfirmed
 |---|---|---|
 | 1 | Executive PDF (WS-S4) | Server-rendered, LTM Vantage brand. Structure: executive summary (decision, exposure, top five actions), findings, roadmap, How LTM can help, technical execution, methodology and sources (claim IDs, versions, "data provided by", disclaimer, hosting statement) |
 | 2 | Backlog CSV | One row per playbook action: finding, control, platform, level, action, verification, owner role, effort, source; Jira later |
-| 3 | Trace test | Every number in the PDF maps to an engine field |
+| 3 | Trace test | Every number in the PDF maps to an engine field and to a claim or assumption ID |
+| 3a | Report defensibility (area 13, added 14 Oct 2026) | "How we calculated this" appendix and assumption register in the PDF; statutory caps shown as caps with their basis, never summed; roadmap with activities, owner role, duration, dependencies, effort, milestones, KPIs and risks; the practice-lead agent's CIO challenge test (ten hardest questions) answered from the report for the five archetypes |
 | 4 | Retire | jsPDF client generation, markdown "MARP" deck, TIA markdown export, RoI CSV (a sourced DORA register template can return later from the engine) |
 
 **Dependencies:** S3; WS-S4; S7 and S8 for their sections.
@@ -304,18 +408,18 @@ Scope ranges appear only in the consultant SOW draft (D7). The client sees type,
 
 ---
 
-## S11: Re-score against all 12 areas
+## S11: Re-score against all 13 areas
 
 **Objective:** re-issue the validation report for the merged accelerator.
 
 | # | Item |
 |---|---|
-| 1 | Re-run this agent's review against the 12 areas with fresh evidence (tests, audit, register, PDFs, counsel sign-off) |
+| 1 | Re-run this agent's review against the 13 areas with fresh evidence (tests, audit, register, PDFs, counsel sign-off) |
 | 2 | Re-verify every volatile claim (90-day items) on the re-score date |
 | 3 | Consultant dry run with two internal "hostile CIO" sessions: "where is this number from?", "is this legal advice?", "why should I trust a tool hosted in India?" |
 | 4 | Owner decision on CIO pilots (booked after all accelerators improve, per FRAMEWORK.md) |
 
-**Gate S11:** all 12 areas Pass, or each Partial accepted in writing by the owner.
+**Gate S11:** all 13 areas Pass, or each Partial accepted in writing by the owner.
 
 | # | Area | Target evidence |
 |---|---|---|
@@ -331,6 +435,7 @@ Scope ranges appear only in the consultant SOW draft (D7). The client sees type,
 | 10 | AI scope and toggle | Bedrock only; eval 100% |
 | 11 | Technical execution | Playbook per selected platform with verification |
 | 12 | Commercial pull-through | Every finding in How LTM can help; SOW consultant-only |
+| 13 | Report defensibility | Number trace and assumption register complete; no inflated figure; delivery-grade roadmap; CIO challenge test passed for all five archetypes |
 
 ---
 
