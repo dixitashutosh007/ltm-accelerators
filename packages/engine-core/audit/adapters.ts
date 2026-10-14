@@ -153,23 +153,39 @@ const fiqExtreme = (best: boolean) => ({
 // commitment coverage unknown, so every maturity question (including scope-conditional and follow-up ones) can be asked.
 // Executive mode also uses a Tier 3 estate with AI in scope and fast growth (F3 review M9), so every verdict band,
 // including "Act now", is reachable; random questionnaires draw from both executive estates.
+// Value bases (F4) are exact and fixed too, so the value headlines vary with the answers only (OP-06 in executive mode).
+const FIQ3_BASE = { computeShare: { exact: 0.6 }, steadyStateShare: { exact: 0.65 }, eligibleCoverage: { exact: 0.3 }, nonProdShare: { exact: 0.3 } };
+const FIQ3_COST = { internalRate: { exact: 12_000 } };
 const FIQ3_EXEC_TIER3: Fiq3Facts = {
   org: { currency: 'USD', consumingUnits: '20+' },
   footprint: { publicCloudProviders: ['aws', 'azure'], scopes: ['public_cloud', 'ai_api', 'saas'] },
-  spend: { byScope: { aws: { exact: 60_000_000 }, azure: { exact: 20_000_000 } }, growth12m: 30 }
+  spend: { byScope: { aws: { exact: 60_000_000 }, azure: { exact: 20_000_000 } }, growth12m: 30 },
+  base: FIQ3_BASE, cost: FIQ3_COST
 };
 const FIQ3_FACTS: Record<Fiq3Mode, Fiq3Facts> = {
   executive: {
     org: { currency: 'USD', consumingUnits: '5-19' },
     footprint: { publicCloudProviders: ['aws'], scopes: ['public_cloud'] },
-    spend: { byScope: { aws: { exact: 20_000_000 } }, growth12m: 10 }
+    spend: { byScope: { aws: { exact: 20_000_000 } }, growth12m: 10 },
+    base: FIQ3_BASE, cost: FIQ3_COST
   },
   workshop: {
     org: { currency: 'USD', consumingUnits: '20+' },
     footprint: { publicCloudProviders: ['aws', 'azure'], scopes: ['public_cloud', 'data_centre', 'kubernetes', 'ai_api', 'saas', 'licensing'] },
-    spend: { byScope: { aws: { exact: 40_000_000 }, azure: { exact: 20_000_000 } }, growth12m: 10 }
+    spend: { byScope: { aws: { exact: 40_000_000 }, azure: { exact: 20_000_000 } }, growth12m: 10 },
+    base: { ...FIQ3_BASE, nonProdScheduledShare: { exact: 0.2 }, interruptionTolerantShare: { exact: 0.2 }, spotShare: { exact: 0.05 }, kubernetesSpend: { exact: 8_000_000 }, kubernetesRequestUtilisation: { exact: 0.4 } },
+    evidence: {
+      providerRecommendations: [
+        { type: 'rightsizing', provider: 'aws', tool: 'AWS Cost Optimization Hub', deduplicated: true, annualEstimate: 1_200_000, exportDate: '2026-09-30' },
+        { type: 'idle', provider: 'aws', tool: 'AWS Cost Optimization Hub', deduplicated: true, annualEstimate: 500_000, exportDate: '2026-09-30' }
+      ],
+      saasLicence: { unusedAnnualCost: 900_000, source: 'SaaS management report', measuredOn: '2026-09-30' }
+    },
+    cost: { ...FIQ3_COST, tooling: { exact: 200_000 } }
   }
 };
+/** Provider-tool exports are checked for age against the assessment date (THR-FIN-11). */
+const FIQ3_DATE = '2026-10-14';
 const FIQ3_REPORTS = ['cost_by_owner', 'forecast', 'anomaly_alerts', 'unit_cost_trend', 'commitment_coverage'];
 const fiq3Questions = (mode: Fiq3Mode) => FIQ3_QUESTIONS.filter((q: any) => q.modes.includes(mode) && (q.kind === 'maturity' || q.kind === 'hypothesis'));
 function fiq3Variants(q: any): unknown[] {
@@ -185,7 +201,7 @@ function fiq3Variants(q: any): unknown[] {
   }
 }
 const fiq3Extreme = (mode: Fiq3Mode, level: 'run' | 'not_yet') => ({
-  mode, facts: mode === 'executive' && level === 'not_yet' ? FIQ3_EXEC_TIER3 : FIQ3_FACTS[mode],
+  mode, assessmentDate: FIQ3_DATE, facts: mode === 'executive' && level === 'not_yet' ? FIQ3_EXEC_TIER3 : FIQ3_FACTS[mode],
   answers: Object.fromEntries(fiq3Questions(mode).filter((q: any) => q.kind === 'maturity')
     .map((q: any) => [q.id, q.id === 'UN-08' ? (level === 'run' ? FIQ3_REPORTS : []) : level]))
 });
@@ -197,15 +213,19 @@ function fiq3Adapter(mode: Fiq3Mode): Adapter {
   const headlines: Headline[] = [
     { name: `Capabilities at or above target (0-${capabilities})`, scale: [0, capabilities], higherIsBetter: true, get: r => r.headline.atOrAboveTarget },
     { name: 'Total capability gap (levels)', scale: [0, 3 * capabilities], higherIsBetter: false, get: r => r.capabilities.reduce((t: number, c: any) => t + Math.max(0, c.gap ?? 0), 0) },
-    // Findings: one per capability gap plus DECISION-01.
-    { name: 'Critical + high findings', scale: [0, capabilities + 1], higherIsBetter: false, get: r => gapFindings(r, ['Critical', 'High']) },
-    { name: 'Findings', scale: [0, capabilities + 1], higherIsBetter: false, get: r => r.findings.length }
+    // Findings: one per capability gap, DECISION-01 and -02, and (F4) lever and scope-confirmation findings.
+    { name: 'Critical + high findings', scale: [0, capabilities + 12], higherIsBetter: false, get: r => gapFindings(r, ['Critical', 'High']) },
+    { name: 'Findings', scale: [0, capabilities + 12], higherIsBetter: false, get: r => r.findings.length },
+    // Value (F4), on a scale of the 29% global cap on the largest estate's spend. Marked higher-is-better only so the
+    // missing-data check flags any blank that raises the value (a blank must never flatter the value, DESIGN.md 10.9).
+    { name: 'Value expected (gross run-rate)', scale: [0, 0.29 * 80_000_000], higherIsBetter: true, get: r => (r.value.moneyShown ? r.value.totals.expected.grossRunRate.value : null) },
+    { name: 'Value upper (gross run-rate)', scale: [0, 0.29 * 80_000_000], higherIsBetter: true, get: r => (r.value.moneyShown ? r.value.totals.upper.grossRunRate.value : null) }
   ];
   if (mode === 'executive') headlines.unshift({ name: 'Need index (0-100)', scale: [0, 100], higherIsBetter: false, get: r => r.needVerdict.needIndex });
   return {
     id: `finops-iq-v3-${mode}`, name: `FinOps IQ v3 (${mode} mode)`,
     questions: qs.map((q: any) => ({ id: q.id, label: q.text })),
-    random: r => ({ mode, facts: mode === 'executive' && r() < 0.5 ? FIQ3_EXEC_TIER3 : FIQ3_FACTS[mode], answers: Object.fromEntries(qs.filter(() => r() < 0.85).map((q: any) => [q.id, pick(r, fiq3Variants(q))])) }),
+    random: r => ({ mode, assessmentDate: FIQ3_DATE, facts: mode === 'executive' && r() < 0.5 ? FIQ3_EXEC_TIER3 : FIQ3_FACTS[mode], answers: Object.fromEntries(qs.filter(() => r() < 0.85).map((q: any) => [q.id, pick(r, fiq3Variants(q))])) }),
     variants: id => fiq3Variants(byId.get(id)),
     withAnswer: setAnswer, withoutAnswer: dropAnswer,
     evaluate: i => evaluateFinOpsIqV3(i),

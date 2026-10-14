@@ -1760,6 +1760,16 @@
         "points": 1
       }
     ],
+    "materiality": {
+      "kubernetesShareOfCompute": 0.1,
+      "aiApiShareOfSpend": 0.05,
+      "thresholdId": "THR-FIN-12",
+      "assumptionId": "ASM-FIN-002",
+      "claimIds": [
+        "CLM-FIN-120"
+      ],
+      "note": "Kubernetes counts when cluster spend is 10% or more of compute; AI counts with any GPU or model-serving spend, or AI API spend of 5% or more of in-scope spend. Applied only when the inputs exist; otherwise a selected scope counts as material."
+    },
     "bands": [
       {
         "tier": 1,

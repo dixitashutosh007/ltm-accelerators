@@ -1,0 +1,1918 @@
+{
+  "registryVersion": "1.0.0",
+  "statusAsOf": "2026-10-14",
+  "rule": "Assumption register (FRAMEWORK.md area 13(b)): every constant the FinOps IQ v3 value model and scoring use, and the client inputs they rest on, each with value, basis (client input / published source with claim ID / LTM heuristic with reasoning), confidence and sensitivity (what changes if it is wrong). 'constants' lists the registry values each entry covers; the test packages/engine-core/test/finops-iq-v3-value.test.ts checks that every constant the code reads is listed here with the same value. The report's 'How we calculated this' appendix (F7) lists them all.",
+  "basisValues": {
+    "client_input": "Given by the client (exact, band or evidence)",
+    "published_source": "Published source with a claim ID in the claims register",
+    "ltm_heuristic": "LTM heuristic with reasoning; not a market fact"
+  },
+  "assumptions": [
+    {
+      "id": "ASM-FIN-001",
+      "title": "Complexity tier points: spend bands and scope points",
+      "value": "Spend under USD 1M = 0, 1-10M = 1, 10-50M = 2, over 50M = 3; +1 or +2 for providers, +1 each for Kubernetes, AI, SaaS or licensing, private cloud or data centre, 5 or more consuming units",
+      "basis": "ltm_heuristic",
+      "claimIds": [
+        "CLM-FIN-120"
+      ],
+      "reasoning": "Scale and the number of platforms drive how much practice an estate needs; points keep the tier explainable.",
+      "confidence": "Low",
+      "sensitivity": "Targets shift one level, so the gap count changes; the value model is unchanged",
+      "usedBy": [
+        "scoring"
+      ],
+      "ownerApproval": "approved by the owner (F1, D1-D15 and Q1-Q14 defaults accepted)",
+      "constants": [
+        {
+          "ref": "capabilities:tiers.spendBandsUsd",
+          "value": [
+            {
+              "min": 0,
+              "max": 1000000,
+              "points": 0
+            },
+            {
+              "min": 1000000,
+              "max": 10000000,
+              "points": 1
+            },
+            {
+              "min": 10000000,
+              "max": 50000000,
+              "points": 2
+            },
+            {
+              "min": 50000000,
+              "points": 3
+            }
+          ]
+        },
+        {
+          "ref": "capabilities:tiers.points",
+          "value": [
+            {
+              "id": "providers_two",
+              "when": {
+                "all": [
+                  {
+                    "fact": "footprint.publicCloudProviders",
+                    "countAtLeast": 2
+                  },
+                  {
+                    "not": {
+                      "fact": "footprint.publicCloudProviders",
+                      "countAtLeast": 3
+                    }
+                  }
+                ]
+              },
+              "points": 1
+            },
+            {
+              "id": "providers_three_plus",
+              "when": {
+                "fact": "footprint.publicCloudProviders",
+                "countAtLeast": 3
+              },
+              "points": 2
+            },
+            {
+              "id": "kubernetes_material",
+              "when": {
+                "fact": "footprint.scopes",
+                "contains": "kubernetes"
+              },
+              "points": 1
+            },
+            {
+              "id": "ai_material",
+              "when": {
+                "any": [
+                  {
+                    "fact": "footprint.scopes",
+                    "contains": "ai_platform_gpu"
+                  },
+                  {
+                    "fact": "footprint.scopes",
+                    "contains": "ai_api"
+                  }
+                ]
+              },
+              "points": 1
+            },
+            {
+              "id": "saas_or_licensing",
+              "when": {
+                "any": [
+                  {
+                    "fact": "footprint.scopes",
+                    "contains": "saas"
+                  },
+                  {
+                    "fact": "footprint.scopes",
+                    "contains": "licensing"
+                  }
+                ]
+              },
+              "points": 1
+            },
+            {
+              "id": "private_cloud_or_dc",
+              "when": {
+                "any": [
+                  {
+                    "fact": "footprint.scopes",
+                    "contains": "private_cloud"
+                  },
+                  {
+                    "fact": "footprint.scopes",
+                    "contains": "data_centre"
+                  }
+                ]
+              },
+              "points": 1
+            },
+            {
+              "id": "consuming_units_5_plus",
+              "when": {
+                "fact": "org.consumingUnits",
+                "in": [
+                  "5-19",
+                  "20+"
+                ]
+              },
+              "points": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ASM-FIN-002",
+      "title": "Complexity tier materiality tests",
+      "value": "Kubernetes counts at 10% or more of compute; AI API at 5% or more of in-scope spend (any GPU spend counts)",
+      "basis": "ltm_heuristic",
+      "claimIds": [
+        "CLM-FIN-120"
+      ],
+      "reasoning": "A token use of a scope should not move the tier; applied only when the inputs exist.",
+      "confidence": "Low",
+      "sensitivity": "A borderline estate moves one tier",
+      "usedBy": [
+        "scoring"
+      ],
+      "ownerApproval": "approved by the owner (F1, D1-D15 and Q1-Q14 defaults accepted)",
+      "constants": [
+        {
+          "ref": "capabilities:tiers.materiality.kubernetesShareOfCompute",
+          "value": 0.1
+        },
+        {
+          "ref": "capabilities:tiers.materiality.aiApiShareOfSpend",
+          "value": 0.05
+        }
+      ]
+    },
+    {
+      "id": "ASM-FIN-003",
+      "title": "Complexity tier bands",
+      "value": "0-2 points Tier 1, 3-5 Tier 2, 6 or more Tier 3",
+      "basis": "ltm_heuristic",
+      "claimIds": [
+        "CLM-FIN-120"
+      ],
+      "reasoning": "Three tiers are enough to vary targets and effort without false precision.",
+      "confidence": "Low",
+      "sensitivity": "Targets, effort per lever and the FinOps team size shift with the tier",
+      "usedBy": [
+        "scoring",
+        "value model"
+      ],
+      "ownerApproval": "approved by the owner (F1, D1-D15 and Q1-Q14 defaults accepted)",
+      "constants": [
+        {
+          "ref": "capabilities:tiers.bands",
+          "value": [
+            {
+              "tier": 1,
+              "label": "Focused",
+              "minPoints": 0,
+              "maxPoints": 2
+            },
+            {
+              "tier": 2,
+              "label": "Scaling",
+              "minPoints": 3,
+              "maxPoints": 5
+            },
+            {
+              "tier": 3,
+              "label": "Complex",
+              "minPoints": 6
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ASM-FIN-004",
+      "title": "Default target per capability and tier",
+      "value": "Table in DESIGN.md 3.4 (capabilities.json defaultTargets)",
+      "basis": "ltm_heuristic",
+      "claimIds": [
+        "CLM-FIN-121",
+        "CLM-FIN-004"
+      ],
+      "reasoning": "After the Foundation's guidance that each capability should be at the level the business needs, not Run everywhere.",
+      "confidence": "Low-Medium",
+      "sensitivity": "Gaps, findings and the need index move one level per changed target",
+      "usedBy": [
+        "scoring"
+      ],
+      "ownerApproval": "approved by the owner (F1, D1-D15 and Q1-Q14 defaults accepted)",
+      "constants": [
+        {
+          "ref": "capabilities:capabilities[DATA_INGESTION].defaultTargets",
+          "value": {
+            "tier1": "walk",
+            "tier2": "walk",
+            "tier3": "run",
+            "assumptionId": "ASM-FIN-004",
+            "runReason": "Everything else depends on complete, timely data"
+          }
+        },
+        {
+          "ref": "capabilities:capabilities[ALLOCATION].defaultTargets",
+          "value": {
+            "tier1": "crawl",
+            "tier2": "walk",
+            "tier3": "run",
+            "assumptionId": "ASM-FIN-004",
+            "runReason": "Unallocated spend cannot be owned, charged back or unit-costed"
+          }
+        },
+        {
+          "ref": "capabilities:capabilities[REPORTING_ANALYTICS].defaultTargets",
+          "value": {
+            "tier1": "crawl",
+            "tier2": "walk",
+            "tier3": "run",
+            "assumptionId": "ASM-FIN-004",
+            "runReason": "Many consumers of cost data at this scale"
+          }
+        },
+        {
+          "ref": "capabilities:capabilities[ANOMALY_MANAGEMENT].defaultTargets",
+          "value": {
+            "tier1": "crawl",
+            "tier2": "walk",
+            "tier3": "run",
+            "assumptionId": "ASM-FIN-004",
+            "runReason": "Absolute cost of an undetected spike scales with spend"
+          }
+        },
+        {
+          "ref": "capabilities:capabilities[PLANNING_ESTIMATING].defaultTargets",
+          "value": {
+            "tier1": "crawl",
+            "tier2": "walk",
+            "tier3": "walk",
+            "assumptionId": "ASM-FIN-004"
+          }
+        },
+        {
+          "ref": "capabilities:capabilities[FORECASTING].defaultTargets",
+          "value": {
+            "tier1": "crawl",
+            "tier2": "walk",
+            "tier3": "run",
+            "assumptionId": "ASM-FIN-004",
+            "runReason": "Board-level budget exposure"
+          }
+        },
+        {
+          "ref": "capabilities:capabilities[BUDGETING].defaultTargets",
+          "value": {
+            "tier1": "crawl",
+            "tier2": "walk",
+            "tier3": "walk",
+            "assumptionId": "ASM-FIN-004"
+          }
+        },
+        {
+          "ref": "capabilities:capabilities[KPIS_BENCHMARKING].defaultTargets",
+          "value": {
+            "tier1": "crawl",
+            "tier2": "crawl",
+            "tier3": "walk",
+            "assumptionId": "ASM-FIN-004"
+          }
+        },
+        {
+          "ref": "capabilities:capabilities[UNIT_ECONOMICS].defaultTargets",
+          "value": {
+            "tier1": null,
+            "tier2": "crawl",
+            "tier3": "walk",
+            "assumptionId": "ASM-FIN-004"
+          }
+        },
+        {
+          "ref": "capabilities:capabilities[ARCHITECTING_WORKLOAD_PLACEMENT].defaultTargets",
+          "value": {
+            "tier1": "crawl",
+            "tier2": "walk",
+            "tier3": "walk",
+            "assumptionId": "ASM-FIN-004"
+          }
+        },
+        {
+          "ref": "capabilities:capabilities[USAGE_OPTIMIZATION].defaultTargets",
+          "value": {
+            "tier1": "crawl",
+            "tier2": "walk",
+            "tier3": "run",
+            "assumptionId": "ASM-FIN-004",
+            "runReason": "Largest usage-lever base"
+          }
+        },
+        {
+          "ref": "capabilities:capabilities[RATE_OPTIMIZATION].defaultTargets",
+          "value": {
+            "tier1": "crawl",
+            "tier2": "walk",
+            "tier3": "run",
+            "assumptionId": "ASM-FIN-004",
+            "runReason": "Several commitment portfolios to manage"
+          }
+        },
+        {
+          "ref": "capabilities:capabilities[LICENSING_SAAS].defaultTargets",
+          "value": {
+            "tier1": "crawl",
+            "tier2": "crawl",
+            "tier3": "walk",
+            "assumptionId": "ASM-FIN-004"
+          }
+        },
+        {
+          "ref": "capabilities:capabilities[SUSTAINABILITY].defaultTargets",
+          "value": {
+            "tier1": null,
+            "tier2": "crawl",
+            "tier3": "crawl",
+            "assumptionId": "ASM-FIN-004"
+          }
+        },
+        {
+          "ref": "capabilities:capabilities[EXECUTIVE_STRATEGY_ALIGNMENT].defaultTargets",
+          "value": {
+            "tier1": "crawl",
+            "tier2": "walk",
+            "tier3": "walk",
+            "assumptionId": "ASM-FIN-004"
+          }
+        },
+        {
+          "ref": "capabilities:capabilities[FINOPS_PRACTICE_OPERATIONS].defaultTargets",
+          "value": {
+            "tier1": "crawl",
+            "tier2": "walk",
+            "tier3": "run",
+            "assumptionId": "ASM-FIN-004",
+            "runReason": "A standing practice is needed at this scale"
+          }
+        },
+        {
+          "ref": "capabilities:capabilities[GOVERNANCE_POLICY_RISK].defaultTargets",
+          "value": {
+            "tier1": "crawl",
+            "tier2": "walk",
+            "tier3": "run",
+            "assumptionId": "ASM-FIN-004",
+            "runReason": "Guardrails must be automated across many teams"
+          }
+        },
+        {
+          "ref": "capabilities:capabilities[FINOPS_EDUCATION_ENABLEMENT].defaultTargets",
+          "value": {
+            "tier1": "crawl",
+            "tier2": "crawl",
+            "tier3": "walk",
+            "assumptionId": "ASM-FIN-004"
+          }
+        },
+        {
+          "ref": "capabilities:capabilities[INVOICING_CHARGEBACK].defaultTargets",
+          "value": {
+            "tier1": null,
+            "tier2": "crawl",
+            "tier3": "walk",
+            "assumptionId": "ASM-FIN-004"
+          }
+        },
+        {
+          "ref": "capabilities:capabilities[FINOPS_ASSESSMENT].defaultTargets",
+          "value": {
+            "tier1": "crawl",
+            "tier2": "crawl",
+            "tier3": "walk",
+            "assumptionId": "ASM-FIN-004"
+          }
+        },
+        {
+          "ref": "capabilities:capabilities[AUTOMATION_TOOLS_SERVICES].defaultTargets",
+          "value": {
+            "tier1": "crawl",
+            "tier2": "walk",
+            "tier3": "walk",
+            "assumptionId": "ASM-FIN-004"
+          }
+        },
+        {
+          "ref": "capabilities:capabilities[INTERSECTING_DISCIPLINES].defaultTargets",
+          "value": {
+            "tier1": "crawl",
+            "tier2": "crawl",
+            "tier3": "walk",
+            "assumptionId": "ASM-FIN-004"
+          }
+        }
+      ]
+    },
+    {
+      "id": "ASM-FIN-005",
+      "title": "Severity and schedule rules",
+      "value": "Gap 1/2/3 = Medium/High/Critical; +1 for Data Ingestion, Allocation and Practice Operations at Tier 2-3; at least High when a linked lever is 2% or more of P; waves from months 0/3/9; durations 3/6/12/24 months; first milestone 3 months; DECISION-01 High, +1 at Tier 2-3; executive view shows the top five",
+      "basis": "ltm_heuristic",
+      "claimIds": [
+        "CLM-FIN-122",
+        "CLM-FIN-162",
+        "CLM-FIN-166"
+      ],
+      "reasoning": "Foundations other capabilities depend on, and high-value levers, come first. Planning defaults the consultant can change with a reason.",
+      "confidence": "Medium",
+      "sensitivity": "The order of the roadmap; no value figure changes",
+      "usedBy": [
+        "scoring"
+      ],
+      "ownerApproval": "pending owner decision (F3 review departure)",
+      "constants": [
+        {
+          "ref": "engineRules:severity.byGap",
+          "value": {
+            "1": "Medium",
+            "2": "High",
+            "3": "Critical"
+          }
+        },
+        {
+          "ref": "engineRules:severity.foundationUplift",
+          "value": {
+            "capabilities": [
+              "DATA_INGESTION",
+              "ALLOCATION",
+              "FINOPS_PRACTICE_OPERATIONS"
+            ],
+            "minTier": 2
+          }
+        },
+        {
+          "ref": "engineRules:schedule.waveStartMonth",
+          "value": {
+            "1": 0,
+            "2": 3,
+            "3": 9
+          }
+        },
+        {
+          "ref": "engineRules:schedule.durationMonths",
+          "value": {
+            "Critical": 3,
+            "High": 6,
+            "Medium": 12,
+            "Low": 24
+          }
+        },
+        {
+          "ref": "engineRules:schedule.firstMilestoneMonths",
+          "value": 3
+        },
+        {
+          "ref": "engineRules:decisions[F-FIN-DECISION-01].severity",
+          "value": "High"
+        },
+        {
+          "ref": "engineRules:decisions[F-FIN-DECISION-01].tierUplift",
+          "value": {
+            "minTier": 2
+          }
+        },
+        {
+          "ref": "engineRules:decisions[F-FIN-DECISION-01].wave",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "id": "ASM-FIN-006",
+      "title": "Capability rating rule",
+      "value": "Weakest answered core question, lowered by at most one level by a depth answer; Unknown counts as the lowest level",
+      "basis": "ltm_heuristic",
+      "claimIds": [
+        "CLM-FIN-141"
+      ],
+      "reasoning": "Monotone and explainable; one depth answer does not collapse a mature core practice (Q9).",
+      "confidence": "Medium",
+      "sensitivity": "One capability moves one level",
+      "usedBy": [
+        "scoring"
+      ],
+      "ownerApproval": "pending owner decision (F3 review departure)",
+      "constants": []
+    },
+    {
+      "id": "ASM-FIN-020",
+      "title": "Allocation coverage bands (UN-04)",
+      "value": "Run more than 90%, Walk 85-90%, Crawl 70-84%, Not yet below 70% of spend allocated",
+      "basis": "ltm_heuristic",
+      "claimIds": [
+        "CLM-FIN-124",
+        "CLM-FIN-035"
+      ],
+      "reasoning": "Band floors adopt the Foundation's current sample goals; the adaptation is LTM's.",
+      "confidence": "Low",
+      "sensitivity": "Allocation moves one level",
+      "usedBy": [
+        "scoring"
+      ],
+      "ownerApproval": "approved by the owner (F1, D1-D15 and Q1-Q14 defaults accepted)",
+      "constants": [
+        {
+          "ref": "thresholds:thresholds[THR-FIN-01].rule",
+          "value": {
+            "run": "more than 90% of spend allocated",
+            "walk": "85-90%",
+            "crawl": "70-84%",
+            "not_yet": "below 70%, or not measured"
+          }
+        }
+      ]
+    },
+    {
+      "id": "ASM-FIN-021",
+      "title": "Scheduled report count (UN-08)",
+      "value": "5 report types = Run, 3-4 = Walk, 1-2 = Crawl, none = Not yet",
+      "basis": "ltm_heuristic",
+      "claimIds": [
+        "CLM-FIN-125"
+      ],
+      "reasoning": "Equal weight per report type; evenly spaced levels.",
+      "confidence": "Low",
+      "sensitivity": "Reporting & Analytics moves one level",
+      "usedBy": [
+        "scoring"
+      ],
+      "ownerApproval": "approved by the owner (F1, D1-D15 and Q1-Q14 defaults accepted)",
+      "constants": [
+        {
+          "ref": "thresholds:thresholds[THR-FIN-08].rule",
+          "value": {
+            "run": "all five report types",
+            "walk": "three or four",
+            "crawl": "one or two",
+            "not_yet": "none"
+          }
+        },
+        {
+          "ref": "questionBank:questions[UN-08].multiSelectLevelRule",
+          "value": [
+            {
+              "minCount": 5,
+              "level": "run"
+            },
+            {
+              "minCount": 3,
+              "level": "walk"
+            },
+            {
+              "minCount": 1,
+              "level": "crawl"
+            },
+            {
+              "minCount": 0,
+              "level": "not_yet"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ASM-FIN-022",
+      "title": "Anomaly triage and bill-explanation thresholds (UN-10, UN-11)",
+      "value": "Run: triaged within one business day / explained the same day; Walk: weekly / a few days; Crawl: static alerts / weeks",
+      "basis": "ltm_heuristic",
+      "claimIds": [
+        "CLM-FIN-123",
+        "CLM-FIN-038"
+      ],
+      "reasoning": "Mirrors the hours / days / week-or-more awareness ladder.",
+      "confidence": "Low",
+      "sensitivity": "Anomaly Management moves one level",
+      "usedBy": [
+        "scoring"
+      ],
+      "ownerApproval": "approved by the owner (F1, D1-D15 and Q1-Q14 defaults accepted)",
+      "constants": [
+        {
+          "ref": "thresholds:thresholds[THR-FIN-06].rule",
+          "value": {
+            "run": "automated detection on all accounts, routed to the owner, triaged within one business day",
+            "walk": "automated detection on major accounts, reviewed at least weekly",
+            "crawl": "static budget or threshold alerts only",
+            "not_yet": "found on the invoice"
+          }
+        },
+        {
+          "ref": "thresholds:thresholds[THR-FIN-07].rule",
+          "value": {
+            "run": "same day",
+            "walk": "a few days",
+            "crawl": "weeks, and the answer is contested",
+            "not_yet": "cannot reliably explain"
+          }
+        }
+      ]
+    },
+    {
+      "id": "ASM-FIN-023",
+      "title": "Forecast variance bands (QV-01)",
+      "value": "Run within 5%, Walk 5-10%, Crawl 10-20%, Not yet more than 20%",
+      "basis": "ltm_heuristic",
+      "claimIds": [
+        "CLM-FIN-126",
+        "CLM-FIN-037"
+      ],
+      "reasoning": "Band floors adopt the Foundation's current sample goals.",
+      "confidence": "Low",
+      "sensitivity": "Forecasting moves one level",
+      "usedBy": [
+        "scoring"
+      ],
+      "ownerApproval": "approved by the owner (F1, D1-D15 and Q1-Q14 defaults accepted)",
+      "constants": [
+        {
+          "ref": "thresholds:thresholds[THR-FIN-05].rule",
+          "value": {
+            "run": "within plus or minus 5% average per quarter",
+            "walk": "5-10%",
+            "crawl": "10-20%",
+            "not_yet": "more than 20%, or no forecast"
+          }
+        }
+      ]
+    },
+    {
+      "id": "ASM-FIN-024",
+      "title": "Commitment coverage bands (VB-02)",
+      "value": "Below 25%, 25-49%, 50-74%, 75% or more, or exact",
+      "basis": "ltm_heuristic",
+      "claimIds": [
+        "CLM-FIN-142",
+        "CLM-FIN-036"
+      ],
+      "reasoning": "Coverage is a value input, not a maturity score; quartile bands feed LEV-01 and its band corners.",
+      "confidence": "Medium",
+      "sensitivity": "LEV-01 range width",
+      "usedBy": [
+        "value model"
+      ],
+      "ownerApproval": "approved by the owner (F1, D1-D15 and Q1-Q14 defaults accepted)",
+      "constants": [
+        {
+          "ref": "thresholds:thresholds[THR-FIN-02].rule",
+          "value": {
+            "bands": "below 25%, 25-49%, 50-74%, 75% or more, don't know (exact allowed in workshop)",
+            "maturity": "none: coverage is a value input, not a maturity rating",
+            "kpiContext": "Foundation sample goals about 60% (Crawl), more than 75% (Walk), more than 80% (Run), shown as published context only"
+          }
+        }
+      ]
+    },
+    {
+      "id": "ASM-FIN-025",
+      "title": "Commitment lifecycle follow-up trigger (OP-02)",
+      "value": "Asked when coverage is unknown or below 50%, or OP-01 at Crawl or below",
+      "basis": "ltm_heuristic",
+      "claimIds": [
+        "CLM-FIN-143"
+      ],
+      "reasoning": "An extra question cannot raise a score, so a generous trigger is safe.",
+      "confidence": "High",
+      "sensitivity": "One more question asked",
+      "usedBy": [
+        "scoring"
+      ],
+      "ownerApproval": "approved by the owner (F1, D1-D15 and Q1-Q14 defaults accepted)",
+      "constants": [
+        {
+          "ref": "thresholds:thresholds[THR-FIN-03].rule",
+          "value": {
+            "askWhen": "eligible coverage unknown or below 50%, or OP-01 at Crawl or below"
+          }
+        },
+        {
+          "ref": "questionBank:questions[OP-02].askWhen",
+          "value": {
+            "all": [
+              {
+                "any": [
+                  {
+                    "fact": "footprint.publicCloudProviders",
+                    "countAtLeast": 1
+                  },
+                  {
+                    "fact": "footprint.scopes",
+                    "contains": "public_cloud"
+                  }
+                ]
+              },
+              {
+                "any": [
+                  {
+                    "fact": "base.eligibleCoverage",
+                    "isUnknown": true
+                  },
+                  {
+                    "fact": "base.eligibleCoverage",
+                    "lt": 0.5
+                  },
+                  {
+                    "answer": "OP-01",
+                    "levelAtMost": "crawl"
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "ASM-FIN-026",
+      "title": "Client waste hypothesis bands (HY-01)",
+      "value": "Below 5%, 5-9%, 10-19%, 20-29%, 30% or more, or don't know; shown beside the model, never an input",
+      "basis": "ltm_heuristic",
+      "claimIds": [
+        "CLM-FIN-144",
+        "CLM-FIN-168"
+      ],
+      "reasoning": "Brackets the published self-estimate without implying a normal level.",
+      "confidence": "High",
+      "sensitivity": "Only the hypothesis panel; no number changes (D4)",
+      "usedBy": [
+        "value model"
+      ],
+      "ownerApproval": "approved by the owner (F1, D1-D15 and Q1-Q14 defaults accepted)",
+      "constants": [
+        {
+          "ref": "thresholds:thresholds[THR-FIN-09].rule",
+          "value": {
+            "bands": "below 5%, 5-9%, 10-19%, 20-29%, 30% or more, don't know",
+            "exclusion": "unallocated spend is not waste"
+          }
+        },
+        {
+          "ref": "valueRules:hypothesis.bands",
+          "value": {
+            "lt_5": [
+              0,
+              0.05
+            ],
+            "p5_9": [
+              0.05,
+              0.09
+            ],
+            "p10_19": [
+              0.1,
+              0.19
+            ],
+            "p20_29": [
+              0.2,
+              0.29
+            ],
+            "ge_30": [
+              0.3,
+              null
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "ASM-FIN-030",
+      "title": "Need index and verdict bands",
+      "value": "Mean of (gap / 3) x 100 over executive capabilities with a target, blank or Unknown at the maximum gap, capped at 100; bands 0-25 / 26-50 / 51-75 / 76-100",
+      "basis": "ltm_heuristic",
+      "claimIds": [
+        "CLM-FIN-127",
+        "CLM-FIN-163"
+      ],
+      "reasoning": "FinOps Value Case carry-over, reworded for Q14.",
+      "confidence": "Low",
+      "sensitivity": "The verdict band",
+      "usedBy": [
+        "scoring"
+      ],
+      "ownerApproval": "pending owner decision (F3 review departure)",
+      "constants": [
+        {
+          "ref": "engineRules:needVerdict.cap",
+          "value": 100
+        },
+        {
+          "ref": "engineRules:needVerdict.bands",
+          "value": [
+            {
+              "id": "lightweight",
+              "max": 25,
+              "label": "Lightweight practices sufficient at current scale"
+            },
+            {
+              "id": "foundations",
+              "max": 50,
+              "label": "Targeted improvements needed now"
+            },
+            {
+              "id": "material",
+              "max": 75,
+              "label": "Material exposure: act this year"
+            },
+            {
+              "id": "act_now",
+              "max": 100,
+              "label": "Act now"
+            }
+          ]
+        },
+        {
+          "ref": "thresholds:thresholds[THR-FIN-14].rule",
+          "value": {
+            "bands": "0-25 Lightweight practices sufficient at current scale; 26-50 Targeted improvements needed now; 51-75 Material exposure: act this year; 76-100 Act now",
+            "urgency": "value 5% or more of P; growth 20% or more; 25% or more of estate still to move; Tier 2 +10, Tier 3 +20"
+          }
+        }
+      ]
+    },
+    {
+      "id": "ASM-FIN-031",
+      "title": "Need urgency modifiers",
+      "value": "+10 at Tier 2, +20 at Tier 3, +10 when the expected gross run-rate value is 5% or more of P, +10 for growth of 20% or more, +10 when AI is in scope",
+      "basis": "ltm_heuristic",
+      "claimIds": [
+        "CLM-FIN-127",
+        "CLM-FIN-172"
+      ],
+      "reasoning": "Gaps cost more at scale, in a growing estate, with AI spend and where the value at stake is material.",
+      "confidence": "Low",
+      "sensitivity": "The verdict band, by 10 points per modifier",
+      "usedBy": [
+        "scoring"
+      ],
+      "ownerApproval": "pending owner decision (F3 review departure)",
+      "constants": [
+        {
+          "ref": "engineRules:needVerdict.modifiers",
+          "value": [
+            {
+              "id": "tier_2",
+              "points": 10
+            },
+            {
+              "id": "tier_3",
+              "points": 20
+            },
+            {
+              "id": "expected_value_ge_5pct_of_P",
+              "points": 10,
+              "thresholdId": "THR-FIN-14",
+              "note": "Share of P in value-rules.json (scoring.needModifierShareOfP), applied from F4"
+            },
+            {
+              "id": "growth_ge_20pct",
+              "points": 10,
+              "threshold": 20
+            },
+            {
+              "id": "ai_in_scope",
+              "points": 10
+            }
+          ]
+        },
+        {
+          "ref": "valueRules:scoring.needModifierShareOfP",
+          "value": 0.05
+        }
+      ]
+    },
+    {
+      "id": "ASM-FIN-032",
+      "title": "Verdict confidence",
+      "value": "Medium when every asked maturity question has a level; Low with any blank or Don't know; never High in executive mode",
+      "basis": "ltm_heuristic",
+      "claimIds": [
+        "CLM-FIN-163"
+      ],
+      "reasoning": "Executive mode rests on few answers and no evidence.",
+      "confidence": "Medium",
+      "sensitivity": "The confidence label only",
+      "usedBy": [
+        "scoring"
+      ],
+      "ownerApproval": "pending owner decision (F3 review departure)",
+      "constants": []
+    },
+    {
+      "id": "ASM-FIN-040",
+      "title": "Expected case = half of the upper case",
+      "value": "0.5",
+      "basis": "ltm_heuristic",
+      "claimIds": [
+        "CLM-FIN-128",
+        "CLM-FIN-066"
+      ],
+      "reasoning": "PLAN F4 requires expected at most half of upper unless a sourced capture rate exists; Google's 1-year flexible CUD (28%) is close to half its 55% maximum.",
+      "confidence": "Medium",
+      "sensitivity": "Every expected figure moves in proportion",
+      "usedBy": [
+        "value model"
+      ],
+      "ownerApproval": "approved by the owner (F1, D1-D15 and Q1-Q14 defaults accepted)",
+      "constants": [
+        {
+          "ref": "levers:rangeRule.expectedFactor",
+          "value": 0.5
+        }
+      ]
+    },
+    {
+      "id": "ASM-FIN-041",
+      "title": "Conservative case = a quarter of the upper case",
+      "value": "0.25",
+      "basis": "ltm_heuristic",
+      "claimIds": [
+        "CLM-FIN-129"
+      ],
+      "reasoning": "Half of the expected case; a floor a CFO can hold the programme to.",
+      "confidence": "Medium",
+      "sensitivity": "Every conservative figure moves in proportion",
+      "usedBy": [
+        "value model"
+      ],
+      "ownerApproval": "approved by the owner (F1, D1-D15 and Q1-Q14 defaults accepted)",
+      "constants": [
+        {
+          "ref": "levers:rangeRule.conservativeFactor",
+          "value": 0.25
+        }
+      ]
+    },
+    {
+      "id": "ASM-FIN-042",
+      "title": "Band handling",
+      "value": "Expected at every band midpoint; conservative the lowest and upper the highest total over the band corners (at most 8 banded inputs, widest first; the midpoint is also a candidate); a lower case's year-1 is lowered pro rata so it never exceeds the year-1 of the case above",
+      "basis": "ltm_heuristic",
+      "claimIds": [
+        "CLM-FIN-130",
+        "CLM-FIN-172"
+      ],
+      "reasoning": "Bands widen the range and never inflate it; one value per input in each case keeps the upper case a consistent scenario.",
+      "confidence": "High",
+      "sensitivity": "Range width only",
+      "usedBy": [
+        "value model"
+      ],
+      "ownerApproval": "pending owner approval at the F4 gate",
+      "constants": [
+        {
+          "ref": "valueRules:bandSearch.maxBandedInputs",
+          "value": 8
+        },
+        {
+          "ref": "valueRules:bandSearch.midpointIsCandidate",
+          "value": true
+        }
+      ]
+    },
+    {
+      "id": "ASM-FIN-043",
+      "title": "Non-production on-schedule hours",
+      "value": "50 of 168 hours a week (LEV-04 maximum 1 - 50/168 = 70.24%; the registry shows it rounded as 0.702)",
+      "basis": "ltm_heuristic",
+      "claimIds": [
+        "CLM-FIN-131",
+        "CLM-FIN-086"
+      ],
+      "reasoning": "A 10-hour, 5-day week; AWS uses the same 168-to-50-hour example.",
+      "confidence": "Medium",
+      "sensitivity": "LEV-04 moves about 6% for every 10 hours of schedule",
+      "usedBy": [
+        "value model"
+      ],
+      "ownerApproval": "approved by the owner (F1, D1-D15 and Q1-Q14 defaults accepted)",
+      "constants": [
+        {
+          "ref": "thresholds:thresholds[THR-FIN-15].rule.hoursPerWeek",
+          "value": 50
+        },
+        {
+          "ref": "thresholds:thresholds[THR-FIN-15].rule.maxRate",
+          "value": 0.702
+        },
+        {
+          "ref": "levers:levers[LEV-04].maxRate.value",
+          "value": 0.702
+        }
+      ]
+    },
+    {
+      "id": "ASM-FIN-044",
+      "title": "Target utilisation for Kubernetes requests and GPUs",
+      "value": "0.65",
+      "basis": "ltm_heuristic",
+      "claimIds": [
+        "CLM-FIN-132"
+      ],
+      "reasoning": "Headroom for peaks; replaces the unsourced 4x over-provisioning claim.",
+      "confidence": "Low",
+      "sensitivity": "LEV-07 and LEV-10 (at 35% measured use, a 0.75 target raises the maximum from 46% to 53%)",
+      "usedBy": [
+        "value model"
+      ],
+      "ownerApproval": "approved by the owner (F1, D1-D15 and Q1-Q14 defaults accepted)",
+      "constants": [
+        {
+          "ref": "thresholds:thresholds[THR-FIN-16].rule.target",
+          "value": 0.65
+        }
+      ]
+    },
+    {
+      "id": "ASM-FIN-045",
+      "title": "Ramp: year-1 share of run-rate value per lever",
+      "value": "LEV-01, 03, 04 0.5; LEV-02, 05, 10 0.33; LEV-06, 07 0.25; LEV-09 the share of contracts renewing in year 1, else 0.25; years 2 and 3 = 1.0",
+      "basis": "ltm_heuristic",
+      "claimIds": [
+        "CLM-FIN-133"
+      ],
+      "reasoning": "Commitments in quarterly tranches; clean-up and scheduling are quick; rightsizing, storage, Spot and Kubernetes need engineering cycles; licences at renewal.",
+      "confidence": "Low-Medium",
+      "sensitivity": "Year-1 and 3-year figures; never the run-rate",
+      "usedBy": [
+        "value model"
+      ],
+      "ownerApproval": "pending owner approval at the F4 gate",
+      "constants": [
+        {
+          "ref": "levers:levers[LEV-01].ramp.year1Share",
+          "value": 0.5
+        },
+        {
+          "ref": "levers:levers[LEV-02].ramp.year1Share",
+          "value": 0.33
+        },
+        {
+          "ref": "levers:levers[LEV-03].ramp.year1Share",
+          "value": 0.5
+        },
+        {
+          "ref": "levers:levers[LEV-04].ramp.year1Share",
+          "value": 0.5
+        },
+        {
+          "ref": "levers:levers[LEV-05].ramp.year1Share",
+          "value": 0.33
+        },
+        {
+          "ref": "levers:levers[LEV-06].ramp.year1Share",
+          "value": 0.25
+        },
+        {
+          "ref": "levers:levers[LEV-07].ramp.year1Share",
+          "value": 0.25
+        },
+        {
+          "ref": "levers:levers[LEV-08].ramp.year1Share",
+          "value": 0
+        },
+        {
+          "ref": "levers:levers[LEV-09].ramp.year1Share",
+          "value": "renewal_share"
+        },
+        {
+          "ref": "levers:levers[LEV-10].ramp.year1Share",
+          "value": 0.33
+        },
+        {
+          "ref": "levers:levers[LEV-01].ramp.year2Share",
+          "value": 1
+        },
+        {
+          "ref": "levers:levers[LEV-02].ramp.year2Share",
+          "value": 1
+        },
+        {
+          "ref": "levers:levers[LEV-03].ramp.year2Share",
+          "value": 1
+        },
+        {
+          "ref": "levers:levers[LEV-04].ramp.year2Share",
+          "value": 1
+        },
+        {
+          "ref": "levers:levers[LEV-05].ramp.year2Share",
+          "value": 1
+        },
+        {
+          "ref": "levers:levers[LEV-06].ramp.year2Share",
+          "value": 1
+        },
+        {
+          "ref": "levers:levers[LEV-07].ramp.year2Share",
+          "value": 1
+        },
+        {
+          "ref": "levers:levers[LEV-08].ramp.year2Share",
+          "value": 1
+        },
+        {
+          "ref": "levers:levers[LEV-09].ramp.year2Share",
+          "value": 1
+        },
+        {
+          "ref": "levers:levers[LEV-10].ramp.year2Share",
+          "value": 1
+        },
+        {
+          "ref": "levers:levers[LEV-01].ramp.year3Share",
+          "value": 1
+        },
+        {
+          "ref": "levers:levers[LEV-02].ramp.year3Share",
+          "value": 1
+        },
+        {
+          "ref": "levers:levers[LEV-03].ramp.year3Share",
+          "value": 1
+        },
+        {
+          "ref": "levers:levers[LEV-04].ramp.year3Share",
+          "value": 1
+        },
+        {
+          "ref": "levers:levers[LEV-05].ramp.year3Share",
+          "value": 1
+        },
+        {
+          "ref": "levers:levers[LEV-06].ramp.year3Share",
+          "value": 1
+        },
+        {
+          "ref": "levers:levers[LEV-07].ramp.year3Share",
+          "value": 1
+        },
+        {
+          "ref": "levers:levers[LEV-08].ramp.year3Share",
+          "value": 1
+        },
+        {
+          "ref": "levers:levers[LEV-09].ramp.year3Share",
+          "value": 1
+        },
+        {
+          "ref": "levers:levers[LEV-10].ramp.year3Share",
+          "value": 1
+        },
+        {
+          "ref": "levers:levers[LEV-09].ramp.year1ShareWithoutRenewalData",
+          "value": 0.25
+        }
+      ]
+    },
+    {
+      "id": "ASM-FIN-046",
+      "title": "One-off effort per lever (FTE-months, Tier 1 / 2 / 3)",
+      "value": "LEV-01 1/2/4; LEV-02 2/6/12; LEV-03 1/2/4; LEV-04 1/3/6; LEV-05 1/2/4; LEV-06 2/4/8; LEV-07 2/4/8; LEV-09 1/3/6; LEV-10 1/3/6",
+      "basis": "ltm_heuristic",
+      "claimIds": [
+        "CLM-FIN-134",
+        "CLM-FIN-170"
+      ],
+      "reasoning": "Proportional to the number of teams and platforms that must change; counted for every lever with a positive upper value.",
+      "confidence": "Low",
+      "sensitivity": "Net figures: each FTE-month moves net by one internal rate",
+      "usedBy": [
+        "value model"
+      ],
+      "ownerApproval": "pending owner approval at the F4 gate",
+      "constants": [
+        {
+          "ref": "levers:levers[LEV-01].effortFteMonths.tier1",
+          "value": 1
+        },
+        {
+          "ref": "levers:levers[LEV-02].effortFteMonths.tier1",
+          "value": 2
+        },
+        {
+          "ref": "levers:levers[LEV-03].effortFteMonths.tier1",
+          "value": 1
+        },
+        {
+          "ref": "levers:levers[LEV-04].effortFteMonths.tier1",
+          "value": 1
+        },
+        {
+          "ref": "levers:levers[LEV-05].effortFteMonths.tier1",
+          "value": 1
+        },
+        {
+          "ref": "levers:levers[LEV-06].effortFteMonths.tier1",
+          "value": 2
+        },
+        {
+          "ref": "levers:levers[LEV-07].effortFteMonths.tier1",
+          "value": 2
+        },
+        {
+          "ref": "levers:levers[LEV-08].effortFteMonths.tier1",
+          "value": 0
+        },
+        {
+          "ref": "levers:levers[LEV-09].effortFteMonths.tier1",
+          "value": 1
+        },
+        {
+          "ref": "levers:levers[LEV-10].effortFteMonths.tier1",
+          "value": 1
+        },
+        {
+          "ref": "levers:levers[LEV-01].effortFteMonths.tier2",
+          "value": 2
+        },
+        {
+          "ref": "levers:levers[LEV-02].effortFteMonths.tier2",
+          "value": 6
+        },
+        {
+          "ref": "levers:levers[LEV-03].effortFteMonths.tier2",
+          "value": 2
+        },
+        {
+          "ref": "levers:levers[LEV-04].effortFteMonths.tier2",
+          "value": 3
+        },
+        {
+          "ref": "levers:levers[LEV-05].effortFteMonths.tier2",
+          "value": 2
+        },
+        {
+          "ref": "levers:levers[LEV-06].effortFteMonths.tier2",
+          "value": 4
+        },
+        {
+          "ref": "levers:levers[LEV-07].effortFteMonths.tier2",
+          "value": 4
+        },
+        {
+          "ref": "levers:levers[LEV-08].effortFteMonths.tier2",
+          "value": 0
+        },
+        {
+          "ref": "levers:levers[LEV-09].effortFteMonths.tier2",
+          "value": 3
+        },
+        {
+          "ref": "levers:levers[LEV-10].effortFteMonths.tier2",
+          "value": 3
+        },
+        {
+          "ref": "levers:levers[LEV-01].effortFteMonths.tier3",
+          "value": 4
+        },
+        {
+          "ref": "levers:levers[LEV-02].effortFteMonths.tier3",
+          "value": 12
+        },
+        {
+          "ref": "levers:levers[LEV-03].effortFteMonths.tier3",
+          "value": 4
+        },
+        {
+          "ref": "levers:levers[LEV-04].effortFteMonths.tier3",
+          "value": 6
+        },
+        {
+          "ref": "levers:levers[LEV-05].effortFteMonths.tier3",
+          "value": 4
+        },
+        {
+          "ref": "levers:levers[LEV-06].effortFteMonths.tier3",
+          "value": 8
+        },
+        {
+          "ref": "levers:levers[LEV-07].effortFteMonths.tier3",
+          "value": 8
+        },
+        {
+          "ref": "levers:levers[LEV-08].effortFteMonths.tier3",
+          "value": 0
+        },
+        {
+          "ref": "levers:levers[LEV-09].effortFteMonths.tier3",
+          "value": 6
+        },
+        {
+          "ref": "levers:levers[LEV-10].effortFteMonths.tier3",
+          "value": 6
+        }
+      ]
+    },
+    {
+      "id": "ASM-FIN-047",
+      "title": "Ongoing lever effort",
+      "value": "20% of the lever's one-off effort per year",
+      "basis": "ltm_heuristic",
+      "claimIds": [
+        "CLM-FIN-135"
+      ],
+      "reasoning": "Levers decay without upkeep: commitments expire, schedules drift, requests creep.",
+      "confidence": "Low",
+      "sensitivity": "Net run-rate and 3-year net",
+      "usedBy": [
+        "value model"
+      ],
+      "ownerApproval": "pending owner approval at the F4 gate",
+      "constants": [
+        {
+          "ref": "levers:levers[LEV-01].effortFteMonths.ongoingShareOfOneOff",
+          "value": 0.2
+        },
+        {
+          "ref": "levers:levers[LEV-02].effortFteMonths.ongoingShareOfOneOff",
+          "value": 0.2
+        },
+        {
+          "ref": "levers:levers[LEV-03].effortFteMonths.ongoingShareOfOneOff",
+          "value": 0.2
+        },
+        {
+          "ref": "levers:levers[LEV-04].effortFteMonths.ongoingShareOfOneOff",
+          "value": 0.2
+        },
+        {
+          "ref": "levers:levers[LEV-05].effortFteMonths.ongoingShareOfOneOff",
+          "value": 0.2
+        },
+        {
+          "ref": "levers:levers[LEV-06].effortFteMonths.ongoingShareOfOneOff",
+          "value": 0.2
+        },
+        {
+          "ref": "levers:levers[LEV-07].effortFteMonths.ongoingShareOfOneOff",
+          "value": 0.2
+        },
+        {
+          "ref": "levers:levers[LEV-08].effortFteMonths.ongoingShareOfOneOff",
+          "value": 0.2
+        },
+        {
+          "ref": "levers:levers[LEV-09].effortFteMonths.ongoingShareOfOneOff",
+          "value": 0.2
+        },
+        {
+          "ref": "levers:levers[LEV-10].effortFteMonths.ongoingShareOfOneOff",
+          "value": 0.2
+        }
+      ]
+    },
+    {
+      "id": "ASM-FIN-048",
+      "title": "Evidence freshness",
+      "value": "90 days",
+      "basis": "ltm_heuristic",
+      "claimIds": [
+        "CLM-FIN-136"
+      ],
+      "reasoning": "Provider recommendations change with usage, prices and commitments; matches the register's 90-day review of volatile items (D14).",
+      "confidence": "Medium",
+      "sensitivity": "Whether LEV-02, LEV-03 and LEV-05 are quantified",
+      "usedBy": [
+        "value model"
+      ],
+      "ownerApproval": "approved by the owner (F1, D1-D15 and Q1-Q14 defaults accepted)",
+      "constants": [
+        {
+          "ref": "thresholds:thresholds[THR-FIN-11].rule.maxAgeDays",
+          "value": 90
+        },
+        {
+          "ref": "levers:levers[LEV-02].evidenceFreshnessDays",
+          "value": 90
+        },
+        {
+          "ref": "levers:levers[LEV-03].evidenceFreshnessDays",
+          "value": 90
+        },
+        {
+          "ref": "levers:levers[LEV-05].evidenceFreshnessDays",
+          "value": 90
+        }
+      ]
+    },
+    {
+      "id": "ASM-FIN-049",
+      "title": "Coverage basis approximation",
+      "value": "Coverage (on-demand-equivalent) treated as a share of billed compute",
+      "basis": "ltm_heuristic",
+      "claimIds": [
+        "CLM-FIN-137"
+      ],
+      "reasoning": "Avoids asking for a second coverage measure in an executive session.",
+      "confidence": "Medium",
+      "sensitivity": "LEV-01 slightly high when coverage is already above 50%",
+      "usedBy": [
+        "value model"
+      ],
+      "ownerApproval": "approved by the owner (F1, D1-D15 and Q1-Q14 defaults accepted)",
+      "constants": []
+    },
+    {
+      "id": "ASM-FIN-050",
+      "title": "Global cap",
+      "value": "29% of in-scope public cloud spend, on the conservative, expected and upper cases; LEV-09 outside the base; not lifted by evidence in this version",
+      "basis": "published_source",
+      "claimIds": [
+        "CLM-FIN-138",
+        "CLM-FIN-040"
+      ],
+      "reasoning": "Flexera 2026 State of the Cloud (n = 753): respondents' average self-estimate of wasted IaaS and PaaS spend, used only as a ceiling (D15, Q11).",
+      "confidence": "Medium",
+      "sensitivity": "Binding only at extreme inputs (RS3 and RS5 upper cases); a lower cap lowers those upper cases",
+      "usedBy": [
+        "value model"
+      ],
+      "ownerApproval": "pending owner approval at the F4 gate",
+      "constants": [
+        {
+          "ref": "levers:globalCap.shareOfPublicCloudSpend",
+          "value": 0.29
+        },
+        {
+          "ref": "levers:globalCap.appliesTo",
+          "value": [
+            "expected",
+            "upper"
+          ]
+        },
+        {
+          "ref": "levers:globalCap.excludedLevers",
+          "value": [
+            "LEV-09"
+          ]
+        },
+        {
+          "ref": "levers:globalCap.source",
+          "value": {
+            "claimId": "CLM-FIN-040",
+            "citation": "Flexera 2026 State of the Cloud Report: respondents' average self-estimate of wasted IaaS/PaaS spend (used as a ceiling only) [CLM-FIN-040, CLM-FIN-138]",
+            "url": "https://www.flexera.com/about-us/press-center/flexera-finds-cloud-value-is-rising-while-ai-waste-grows",
+            "status": "V",
+            "checked": "2026-10-14",
+            "assumptionId": "ASM-FIN-050",
+            "year": 2026,
+            "sample": 753,
+            "reviewBy": "2027-01-12"
+          }
+        }
+      ]
+    },
+    {
+      "id": "ASM-FIN-051",
+      "title": "No spend growth applied",
+      "value": "0%",
+      "basis": "ltm_heuristic",
+      "claimIds": [
+        "CLM-FIN-139"
+      ],
+      "reasoning": "Values are on today's spend; conservative when spend grows.",
+      "confidence": "High",
+      "sensitivity": "Understates value in a growing estate; overstates it if spend falls",
+      "usedBy": [
+        "value model"
+      ],
+      "ownerApproval": "approved by the owner (F1, D1-D15 and Q1-Q14 defaults accepted)",
+      "constants": []
+    },
+    {
+      "id": "ASM-FIN-052",
+      "title": "Executive mode: scheduled share from OP-06",
+      "value": "Run 1.0, Walk 0.5, Crawl or Not yet 0; Unknown leaves LEV-04 unquantified and treats all non-production as unscheduled for LEV-01",
+      "basis": "ltm_heuristic",
+      "claimIds": [
+        "CLM-FIN-140"
+      ],
+      "reasoning": "Lets executive mode quantify LEV-04 without another question; Unknown takes the most conservative path.",
+      "confidence": "Low",
+      "sensitivity": "LEV-04 and LEV-01 in executive mode",
+      "usedBy": [
+        "value model"
+      ],
+      "ownerApproval": "approved by the owner (F1, D1-D15 and Q1-Q14 defaults accepted)",
+      "constants": [
+        {
+          "ref": "valueRules:derivations.nonProdScheduledShareFromOp06.byLevel",
+          "value": {
+            "run": 1,
+            "walk": 0.5,
+            "crawl": 0,
+            "not_yet": 0
+          }
+        }
+      ]
+    },
+    {
+      "id": "ASM-FIN-053",
+      "title": "Executive mode duration",
+      "value": "45-60 seconds per question",
+      "basis": "ltm_heuristic",
+      "claimIds": [
+        "CLM-FIN-145"
+      ],
+      "reasoning": "To be measured in F6 browser tests.",
+      "confidence": "Low",
+      "sensitivity": "Session length only",
+      "usedBy": [
+        "presentation"
+      ],
+      "ownerApproval": "approved by the owner (F1, D1-D15 and Q1-Q14 defaults accepted)",
+      "constants": [
+        {
+          "ref": "thresholds:thresholds[THR-FIN-17].rule",
+          "value": {
+            "secondsPerQuestion": "45-60",
+            "minutes": "14-18 for 18 questions"
+          }
+        }
+      ]
+    },
+    {
+      "id": "ASM-FIN-054",
+      "title": "FinOps team cost beside the value",
+      "value": "0.5 / 1 / 2 FTE at Tier 1 / 2 / 3, x 12 months x the internal rate; shown when DECISION-01 is raised, never netted",
+      "basis": "ltm_heuristic",
+      "claimIds": [
+        "CLM-FIN-171",
+        "CLM-FIN-170"
+      ],
+      "reasoning": "A part-time lead in a focused estate, a full-time lead at scale, a lead and an analyst in a complex estate (Q12).",
+      "confidence": "Low",
+      "sensitivity": "The operating-model cost shown beside the value; no value figure changes",
+      "usedBy": [
+        "value model"
+      ],
+      "ownerApproval": "pending owner approval at the F4 gate",
+      "constants": [
+        {
+          "ref": "valueRules:finopsTeam.fteByTier",
+          "value": {
+            "1": 0.5,
+            "2": 1,
+            "3": 2
+          }
+        },
+        {
+          "ref": "valueRules:finopsTeam.monthsPerYear",
+          "value": 12
+        }
+      ]
+    },
+    {
+      "id": "ASM-FIN-055",
+      "title": "Lever, scope-confirmation and DECISION-02 finding rules",
+      "value": "Lever finding Medium (Low at zero, High with the value uplift) when its capability has no gap finding; LEV-03 and LEV-04 in wave 1; scope confirmation Medium when it blocks LEV-01 or LEV-04, else Low, wave 1, within 3 months; DECISION-02 High, wave 2",
+      "basis": "ltm_heuristic",
+      "claimIds": [
+        "CLM-FIN-167"
+      ],
+      "reasoning": "Value is counted once and shown on the finding that owns it; missing inputs are asked for; commitments follow usage changes.",
+      "confidence": "Medium",
+      "sensitivity": "Finding count and order; no value figure changes",
+      "usedBy": [
+        "scoring"
+      ],
+      "ownerApproval": "pending owner approval at the F4 gate",
+      "constants": [
+        {
+          "ref": "valueRules:leverFindings.severity",
+          "value": {
+            "base": "Medium",
+            "zero": "Low"
+          }
+        },
+        {
+          "ref": "valueRules:leverFindings.waveByLever",
+          "value": {
+            "LEV-03": 1,
+            "LEV-04": 1
+          }
+        },
+        {
+          "ref": "valueRules:scopeConfirmation.severity",
+          "value": {
+            "material": "Medium",
+            "other": "Low"
+          }
+        },
+        {
+          "ref": "valueRules:scopeConfirmation.materialLevers",
+          "value": [
+            "LEV-01",
+            "LEV-04"
+          ]
+        },
+        {
+          "ref": "valueRules:scopeConfirmation.wave",
+          "value": 1
+        },
+        {
+          "ref": "valueRules:scopeConfirmation.targetDurationMonths",
+          "value": 3
+        },
+        {
+          "ref": "valueRules:decision02.severity",
+          "value": "High"
+        },
+        {
+          "ref": "valueRules:decision02.wave",
+          "value": 2
+        }
+      ]
+    },
+    {
+      "id": "ASM-FIN-056",
+      "title": "Value thresholds in scoring",
+      "value": "Severity uplift at 2% of P (expected net run-rate per lever; gross without a rate); need modifier at 5% of P (expected gross); executive mode uses the highest value at the OP-06 answer or a more mature one",
+      "basis": "ltm_heuristic",
+      "claimIds": [
+        "CLM-FIN-122",
+        "CLM-FIN-127",
+        "CLM-FIN-172"
+      ],
+      "reasoning": "High-value levers come first; Unknown counts as risk and a better answer never raises need.",
+      "confidence": "Low",
+      "sensitivity": "A finding moves one severity level; the need index moves 10 points",
+      "usedBy": [
+        "scoring"
+      ],
+      "ownerApproval": "pending owner approval at the F4 gate",
+      "constants": [
+        {
+          "ref": "valueRules:scoring.severityUpliftShareOfP",
+          "value": 0.02
+        },
+        {
+          "ref": "valueRules:scoring.needModifierShareOfP",
+          "value": 0.05
+        }
+      ]
+    },
+    {
+      "id": "ASM-FIN-057",
+      "title": "Rounding",
+      "value": "Value figures rounded down, costs rounded up, to whole currency units",
+      "basis": "ltm_heuristic",
+      "claimIds": [
+        "CLM-FIN-170"
+      ],
+      "reasoning": "Rounding never flatters the net.",
+      "confidence": "High",
+      "sensitivity": "At most one currency unit per figure",
+      "usedBy": [
+        "value model"
+      ],
+      "ownerApproval": "pending owner approval at the F4 gate",
+      "constants": []
+    },
+    {
+      "id": "ASM-FIN-058",
+      "title": "Money shown only with an internal rate; external support not included",
+      "value": "No value figure without cost.internalRate (Q4); net covers internal effort and tooling only until WS-S5 sets external support ranges (Q10)",
+      "basis": "ltm_heuristic",
+      "claimIds": [
+        "CLM-FIN-170"
+      ],
+      "reasoning": "A net figure needs a cost; an assumed salary would be unsourced.",
+      "confidence": "High",
+      "sensitivity": "Net would fall by the external support cost once included",
+      "usedBy": [
+        "value model"
+      ],
+      "ownerApproval": "approved by the owner (F1, D1-D15 and Q1-Q14 defaults accepted)",
+      "constants": []
+    },
+    {
+      "id": "ASM-FIN-059",
+      "title": "Banded cost inputs",
+      "value": "A banded internal rate or tooling cost uses its high end in the conservative case and its low end in the upper case",
+      "basis": "ltm_heuristic",
+      "claimIds": [
+        "CLM-FIN-170"
+      ],
+      "reasoning": "The conservative case should be conservative on cost as well as on value.",
+      "confidence": "High",
+      "sensitivity": "Net range width only",
+      "usedBy": [
+        "value model"
+      ],
+      "ownerApproval": "pending owner approval at the F4 gate",
+      "constants": []
+    },
+    {
+      "id": "ASM-FIN-060",
+      "title": "Provider published maximum discounts",
+      "value": "AWS 72% (Savings Plans / RIs), Azure 72% (reservations), Google Cloud 55% (resource-based CUD); Spot AWS 90%, Azure 90%, Google Cloud 91%; OCI, IBM, Alibaba not quantified",
+      "basis": "published_source",
+      "claimIds": [
+        "CLM-FIN-060",
+        "CLM-FIN-061",
+        "CLM-FIN-062",
+        "CLM-FIN-064",
+        "CLM-FIN-065",
+        "CLM-FIN-067",
+        "CLM-FIN-069"
+      ],
+      "reasoning": "Read from the provider pricing pages on 14 Oct 2026; volatile, reviewed every 90 days (D14). A maximum on covered usage, not a bill-level saving.",
+      "confidence": "High",
+      "sensitivity": "LEV-01 and LEV-06 in proportion; a lower Spot maximum also shifts usage back to LEV-01",
+      "usedBy": [
+        "value model"
+      ],
+      "ownerApproval": "approved by the owner (F1, D1-D15 and Q1-Q14 defaults accepted)",
+      "constants": [
+        {
+          "ref": "levers:levers[LEV-01].maxRate.byProvider.aws.value",
+          "value": 0.72
+        },
+        {
+          "ref": "levers:levers[LEV-01].maxRate.byProvider.azure.value",
+          "value": 0.72
+        },
+        {
+          "ref": "levers:levers[LEV-01].maxRate.byProvider.gcp.value",
+          "value": 0.55
+        },
+        {
+          "ref": "levers:levers[LEV-06].maxRate.byProvider.aws.value",
+          "value": 0.9
+        },
+        {
+          "ref": "levers:levers[LEV-06].maxRate.byProvider.azure.value",
+          "value": 0.9
+        },
+        {
+          "ref": "levers:levers[LEV-06].maxRate.byProvider.gcp.value",
+          "value": 0.91
+        }
+      ]
+    },
+    {
+      "id": "ASM-FIN-080",
+      "title": "Internal cost rate per FTE-month",
+      "value": "Client input (VB-09; the consultant sets it at executive setup)",
+      "basis": "client_input",
+      "claimIds": [
+        "CLM-FIN-170"
+      ],
+      "reasoning": "Only the client knows its loaded cost; no default is assumed (Q4).",
+      "confidence": "As given",
+      "sensitivity": "Every cost and net figure and the FinOps team cost in proportion",
+      "usedBy": [
+        "value model"
+      ],
+      "ownerApproval": "approved by the owner (F1, D1-D15 and Q1-Q14 defaults accepted)",
+      "constants": []
+    },
+    {
+      "id": "ASM-FIN-081",
+      "title": "Annual tooling cost",
+      "value": "Client input (VB-09); when not provided, net excludes it and says so",
+      "basis": "client_input",
+      "claimIds": [
+        "CLM-FIN-170",
+        "CLM-FIN-135"
+      ],
+      "reasoning": "Never assumed zero silently.",
+      "confidence": "As given",
+      "sensitivity": "Net run-rate and 3-year net by the tooling cost",
+      "usedBy": [
+        "value model"
+      ],
+      "ownerApproval": "approved by the owner (F1, D1-D15 and Q1-Q14 defaults accepted)",
+      "constants": []
+    },
+    {
+      "id": "ASM-FIN-082",
+      "title": "In-scope public cloud spend by provider (P)",
+      "value": "Client input (SC-04), exact or band",
+      "basis": "client_input",
+      "claimIds": [
+        "CLM-FIN-150",
+        "CLM-FIN-138"
+      ],
+      "reasoning": "The base of every public cloud lever and of the global cap.",
+      "confidence": "As given (Low when banded)",
+      "sensitivity": "Every public cloud lever and the cap in proportion",
+      "usedBy": [
+        "value model"
+      ],
+      "ownerApproval": "approved by the owner (F1, D1-D15 and Q1-Q14 defaults accepted)",
+      "constants": []
+    },
+    {
+      "id": "ASM-FIN-083",
+      "title": "Value-base shares",
+      "value": "Client inputs (VB-01 to VB-04, VB-06): compute, steady-state, non-production, coverage, scheduled, interruption-tolerant, Spot, cluster spend and utilisation",
+      "basis": "client_input",
+      "claimIds": [
+        "CLM-FIN-142",
+        "CLM-FIN-161"
+      ],
+      "reasoning": "No default share without a published source: a missing share leaves its lever unquantified.",
+      "confidence": "As given (Low when banded or derived)",
+      "sensitivity": "The levers that use them; see each lever's formula",
+      "usedBy": [
+        "value model"
+      ],
+      "ownerApproval": "approved by the owner (F1, D1-D15 and Q1-Q14 defaults accepted)",
+      "constants": []
+    },
+    {
+      "id": "ASM-FIN-084",
+      "title": "Provider-tool savings estimates",
+      "value": "Client evidence (VB-05) by recommendation type, no older than 90 days; used as given when deduplicated, otherwise reduced pro rata for idle clean-up and scheduling",
+      "basis": "client_input",
+      "claimIds": [
+        "CLM-FIN-151",
+        "CLM-FIN-152",
+        "CLM-FIN-154",
+        "CLM-FIN-082"
+      ],
+      "reasoning": "The provider tools see utilisation that a questionnaire cannot.",
+      "confidence": "High (evidence)",
+      "sensitivity": "LEV-02, LEV-03 and LEV-05 in proportion",
+      "usedBy": [
+        "value model"
+      ],
+      "ownerApproval": "approved by the owner (F1, D1-D15 and Q1-Q14 defaults accepted)",
+      "constants": [
+        {
+          "ref": "levers:levers[LEV-02].maxRate.value",
+          "value": 1
+        },
+        {
+          "ref": "levers:levers[LEV-03].maxRate.value",
+          "value": 1
+        },
+        {
+          "ref": "levers:levers[LEV-05].maxRate.value",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "id": "ASM-FIN-085",
+      "title": "Measured AI, GPU and SaaS evidence",
+      "value": "Client evidence (VB-07, VB-08): GPU spend and utilisation, idle endpoints, unused licence cost and renewal share",
+      "basis": "client_input",
+      "claimIds": [
+        "CLM-FIN-158",
+        "CLM-FIN-159"
+      ],
+      "reasoning": "Measured by the client's own tools.",
+      "confidence": "High (evidence)",
+      "sensitivity": "LEV-09 and LEV-10 in proportion",
+      "usedBy": [
+        "value model"
+      ],
+      "ownerApproval": "approved by the owner (F1, D1-D15 and Q1-Q14 defaults accepted)",
+      "constants": [
+        {
+          "ref": "levers:levers[LEV-09].maxRate.value",
+          "value": 1
+        }
+      ]
+    }
+  ]
+}

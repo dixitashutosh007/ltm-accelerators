@@ -166,30 +166,34 @@ How to read it:
 
 | Headline | Scale | Observed min | Observed max | Out of scale | Null |
 |---|---|---|---|---|---|
-| Need index (0-100) | 0–100 | 18.3 | 100 | 0 | 0 |
+| Need index (0-100) | 0–100 | 28.3 | 100 | 0 | 0 |
 | Capabilities at or above target (0-8) | 0–8 | 0 | 6 | 0 | 0 |
 | Total capability gap (levels) | 0–24 | 2 | 22 | 0 | 0 |
-| Critical + high findings | 0–9 | 1 | 9 | 0 | 0 |
-| Findings | 0–9 | 1 | 9 | 0 | 0 |
+| Critical + high findings | 0–20 | 2 | 9 | 0 | 0 |
+| Findings | 0–20 | 3 | 10 | 0 | 0 |
+| Value expected (gross run-rate) | 0–23.2M | 216k | 6.0M | 0 | 0 |
+| Value upper (gross run-rate) | 0–23.2M | 432k | 12.1M | 0 | 0 |
 
 **Bands** (share of random questionnaires; best answers → **Lightweight practices sufficient at current scale**, worst answers → **Act now**):
 
 | Band | Share |
 |---|---|
-| Lightweight practices sufficient at current scale | 0.4% |
-| Targeted improvements needed now | 25.0% |
-| Material exposure: act this year | 25.6% |
-| Act now | 49.0% |
+| Lightweight practices sufficient at current scale | 0.0% |
+| Targeted improvements needed now | 11.4% |
+| Material exposure: act this year | 37.3% |
+| Act now | 51.4% |
 
 **Sensitivity**
 
 | Headline | Largest single-answer swing (question: swing) | Share of range |
 |---|---|---|
-| Need index (0-100) | UN-04: 12.5, QV-01: 12.5, OP-01: 12.5, MP-01: 12.5, UN-10: 8.4 | 0.15 |
+| Need index (0-100) | UN-04: 8.4, UN-10: 8.4, UN-11: 8.4, QV-01: 8.4, OP-01: 8.4 | 0.12 |
 | Capabilities at or above target (0-8) | UN-04: 1, UN-10: 1, UN-11: 1, QV-01: 1, QV-05: 1 | 0.17 |
 | Total capability gap (levels) | UN-04: 3, UN-10: 3, UN-11: 3, QV-01: 3, OP-01: 3 | 0.15 |
-| Critical + high findings | MP-01: 2, UN-04: 1, UN-10: 1, UN-11: 1, QV-01: 1 | 0.25 |
-| Findings | MP-01: 2, UN-04: 1, UN-10: 1, UN-11: 1, QV-01: 1 | 0.25 |
+| Critical + high findings | MP-01: 2, UN-04: 1, UN-10: 1, UN-11: 1, QV-01: 1 | 0.29 |
+| Findings | MP-01: 2, UN-04: 1, UN-10: 1, UN-11: 1, QV-01: 1 | 0.29 |
+| Value expected (gross run-rate) | OP-06: 5.2M, UN-04: 0, UN-10: 0, UN-11: 0, QV-01: 0 | 0.89 |
+| Value upper (gross run-rate) | OP-06: 10.4M, UN-04: 0, UN-10: 0, UN-11: 0, QV-01: 0 | 0.89 |
 
 **Dead questions** (no effect on any headline): HY-01, HY-07
 
@@ -197,11 +201,13 @@ How to read it:
 
 | Headline | Mean shift, 30% unanswered | Worst profile, half unanswered |
 |---|---|---|
-| Need index (0-100) | -5.18 | +0 |
+| Need index (0-100) | -4.29 | +0 |
 | Capabilities at or above target (0-8) | -0.63 | +0 |
 | Total capability gap (levels) | -1.93 | +0 |
-| Critical + high findings | -0.92 | +0 |
-| Findings | -0.7 | +0 |
+| Critical + high findings | -0.74 | +0 |
+| Findings | -0.76 | +0 |
+| Value expected (gross run-rate) | -554k | +0 |
+| Value upper (gross run-rate) | -1.1M | +0 |
 
 ## FinOps IQ v3 (workshop mode)
 
@@ -209,8 +215,10 @@ How to read it:
 |---|---|---|---|---|---|
 | Capabilities at or above target (0-22) | 0–22 | 0 | 9 | 0 | 0 |
 | Total capability gap (levels) | 0–66 | 28 | 51 | 0 | 0 |
-| Critical + high findings | 0–23 | 9 | 21 | 0 | 0 |
-| Findings | 0–23 | 14 | 23 | 0 | 0 |
+| Critical + high findings | 0–34 | 11 | 22 | 0 | 0 |
+| Findings | 0–34 | 17 | 26 | 0 | 0 |
+| Value expected (gross run-rate) | 0–23.2M | 7.5M | 7.5M | 0 | 0 |
+| Value upper (gross run-rate) | 0–23.2M | 14.6M | 14.6M | 0 | 0 |
 
 **Sensitivity**
 
@@ -218,8 +226,10 @@ How to read it:
 |---|---|---|
 | Capabilities at or above target (0-22) | UN-02: 1, UN-04: 1, UN-05: 1, UN-09: 1, UN-07: 1 | 0.11 |
 | Total capability gap (levels) | UN-04: 3, UN-05: 3, UN-07: 3, UN-08: 3, UN-10: 3 | 0.13 |
-| Critical + high findings | MP-01: 2, UN-02: 1, UN-04: 1, UN-05: 1, UN-09: 1 | 0.17 |
+| Critical + high findings | MP-01: 2, UN-02: 1, UN-04: 1, UN-05: 1, UN-09: 1 | 0.18 |
 | Findings | MP-01: 2, UN-02: 1, UN-04: 1, UN-05: 1, UN-09: 1 | 0.22 |
+| Value expected (gross run-rate) | UN-01: 0, UN-02: 0, UN-03: 0, UN-04: 0, UN-05: 0 | 0.00 |
+| Value upper (gross run-rate) | UN-01: 0, UN-02: 0, UN-03: 0, UN-04: 0, UN-05: 0 | 0.00 |
 
 **Dead questions** (no effect on any headline): OP-05, OP-06, OP-07, OP-09, OP-11, OP-12, HY-01, HY-02, HY-03, HY-04, HY-05, HY-06, HY-07
 
@@ -229,8 +239,10 @@ How to read it:
 |---|---|---|
 | Capabilities at or above target (0-22) | -1.4 | +0 |
 | Total capability gap (levels) | -4.71 | +0 |
-| Critical + high findings | -2.35 | +0 |
-| Findings | -1.53 | +0 |
+| Critical + high findings | -2.24 | +0 |
+| Findings | -1.46 | +0 |
+| Value expected (gross run-rate) | +0 | +0 |
+| Value upper (gross run-rate) | +0 | +0 |
 
 ## Posture IQ
 

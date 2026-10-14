@@ -843,6 +843,20 @@ Five illustrative scenarios with expected outcomes written **before** any engine
 
 **What the scenarios are designed to test:** LEV-01 at zero when coverage already meets the steady share (RS1, RS2, RS3), so the advice becomes "schedule and move to Spot first, then re-baseline commitments"; LEV-01 positive when coverage is low (RS4, RS5); Unknown as risk (RS4 Anomaly Management, RS5 Forecasting); the one-level depth rule (RS2 Rate Optimization reads Walk, not Crawl); band corners and the upper cap (RS3, RS5); provider maxima not yet sourced (Azure and Google Spot); evidence-based levers with and without deduplication (RS3 Cost Optimization Hub; RS2 and RS4 Advisor and Compute Optimizer); renewal-driven ramp for SaaS (RS4); a negative conservative year-1 net in a small estate (RS5). F3 turns these into golden outputs; F4 and F5 compare the engine with them, with the tolerance stated in each record.
 
+
+### 10.15 F4 build notes (pending owner confirmation)
+
+The value model is built in `v3/value-model.ts` (value model 1.0.0). It follows 10.1 to 10.12, with these interpretations, each registered as an LTM heuristic (CLM-FIN-167 to 172, ASM-FIN-042 and 054 to 059) and listed in PLAN F4's status note:
+- **Caps (10.5).** The 29% cap applies to the conservative, expected and upper cases. The evidence lift is not built, so the cap always applies.
+- **Phasing (10.6).** A lower case's year 1 never exceeds the year 1 of the case above; it is lowered pro rata.
+- **Bands (10.1 item 4).** The midpoint is a candidate for the conservative and upper cases. At most eight banded inputs are searched; the narrowest are held at their midpoints.
+- **No base, no number (10.1 item 2).** LEV-04 needs the cluster and GPU spend when those scopes are selected. LEV-02 needs the compute share for its cap. Every public cloud lever needs every provider's spend, because the cap needs P. Provider-tool estimates need an assessment date to check their age.
+- **Findings (5.1).** A lever finding is raised only when the lever's capability has no gap finding; otherwise the value sits on that gap finding. Scope-confirmation findings are raised for unknown inputs that block a lever the mode quantifies. DECISION-02 is raised when the usage and Spot moves remove all steady usage above coverage.
+- **Scoring (5.3 step 3, 9).** The 2% and 5% thresholds compare with P. In executive mode, scoring takes the highest value at the client's OP-06 answer or a more mature one.
+- **Team cost (Q12).** The FinOps team cost shown beside the value is 0.5 / 1 / 2 FTE by tier.
+
+The reference scenarios against the engine are in [F4-scenario-diffs.md](F4-scenario-diffs.md).
+
 ---
 
 ## 11. How LTM can help (WS-S5 mapping)
