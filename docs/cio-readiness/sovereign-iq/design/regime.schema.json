@@ -1,0 +1,240 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:ltm:sovereign-iq:v4:regime",
+  "title": "Sovereign IQ v4 regime registry",
+  "description": "One regulation model (DESIGN.md section 5). A registry file holds named predicates and one record per regime. Applicability rules are data: an ordered list, first matching rule wins, default not_applicable. Full obligations, penalties and dates are filled and sourced in S2. Draft for owner approval (S1).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["registryVersion", "statusAsOf", "predicates", "regimes"],
+  "properties": {
+    "registryVersion": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$" },
+    "statusAsOf": { "type": "string", "format": "date" },
+    "predicates": {
+      "description": "Named predicates defined once (DESIGN.md 5.2), e.g. eu_financial_entity, nis2_annex_I, us_coc_link.",
+      "type": "object",
+      "propertyNames": { "pattern": "^[a-z][a-z0-9_]*$" },
+      "additionalProperties": { "$ref": "#/$defs/condition" }
+    },
+    "regimes": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/regime" }
+    }
+  },
+  "$defs": {
+    "grade": {
+      "enum": ["applies", "likely_confirm", "advisory", "not_applicable"]
+    },
+    "verificationStatus": {
+      "description": "V verified; S secondary only; P primary URL, article not re-read; UNSOURCED (DESIGN.md 0.1).",
+      "enum": ["V", "S", "P", "UNSOURCED"]
+    },
+    "verification": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "checked"],
+      "properties": {
+        "status": { "$ref": "#/$defs/verificationStatus" },
+        "checked": { "type": "string", "format": "date" },
+        "by": { "type": "string" },
+        "note": { "type": "string" }
+      }
+    },
+    "claimId": { "type": "string", "pattern": "^CLM-SOV-[0-9]{3,}$" },
+    "factPath": {
+      "type": "string",
+      "pattern": "^(org|ent|data|plat|prov|xfer|ctl|derived)\\.[a-z0-9_.]+$"
+    },
+    "condition": {
+      "description": "Condition language (DESIGN.md 5.2). No free code.",
+      "oneOf": [
+        {
+          "type": "object", "additionalProperties": false, "required": ["all"],
+          "properties": { "all": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/condition" } } }
+        },
+        {
+          "type": "object", "additionalProperties": false, "required": ["any"],
+          "properties": { "any": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/condition" } } }
+        },
+        {
+          "type": "object", "additionalProperties": false, "required": ["not"],
+          "properties": { "not": { "$ref": "#/$defs/condition" } }
+        },
+        {
+          "type": "object", "additionalProperties": false, "required": ["derived"],
+          "properties": { "derived": { "type": "string", "pattern": "^[a-z][a-z0-9_]*$" } }
+        },
+        {
+          "type": "object", "additionalProperties": false, "required": ["fact", "op", "value"],
+          "properties": {
+            "fact": { "$ref": "#/$defs/factPath" },
+            "op": { "enum": ["eq", "neq", "in", "includes", "includes_any", "includes_all", "gte", "lte"] },
+            "value": {}
+          }
+        },
+        {
+          "type": "object", "additionalProperties": false, "required": ["fact", "op"],
+          "properties": {
+            "fact": { "$ref": "#/$defs/factPath" },
+            "op": { "enum": ["is_unknown", "is_answered"] }
+          }
+        }
+      ]
+    },
+    "rule": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "when", "grade", "reason", "basis"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^[A-Z][A-Z0-9_]*\\.[0-9]+$" },
+        "when": { "$ref": "#/$defs/condition" },
+        "grade": { "$ref": "#/$defs/grade" },
+        "reason": { "type": "string", "description": "Plain English shown to the client." },
+        "basis": { "type": "string", "description": "Article or section." },
+        "annotations": {
+          "type": "object",
+          "description": "e.g. { \"nis2_class\": \"essential\" }",
+          "additionalProperties": { "type": ["string", "number", "boolean"] }
+        },
+        "claims": { "type": "array", "items": { "$ref": "#/$defs/claimId" } },
+        "verification": { "$ref": "#/$defs/verification" }
+      }
+    },
+    "dateEntry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["label", "date"],
+      "properties": {
+        "label": { "type": "string" },
+        "date": { "type": "string", "format": "date" },
+        "appliesTo": { "type": "string" },
+        "status": { "enum": ["in_force", "future", "deferred", "lapsed"] },
+        "claims": { "type": "array", "items": { "$ref": "#/$defs/claimId" } }
+      }
+    },
+    "levelFloor": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["dataClasses", "level", "zone"],
+      "properties": {
+        "dataClasses": { "type": "array", "minItems": 1, "items": { "$ref": "urn:ltm:sovereign-iq:v4:facts#/$defs/dataClass" } },
+        "level": { "$ref": "urn:ltm:sovereign-iq:v4:facts#/$defs/level" },
+        "zone": { "type": "array", "minItems": 1, "items": { "$ref": "urn:ltm:sovereign-iq:v4:facts#/$defs/zone" } },
+        "when": { "$ref": "#/$defs/condition" },
+        "basis": { "type": "string" },
+        "verification": { "$ref": "#/$defs/verification" }
+      }
+    },
+    "requiredControl": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["control", "basis", "verification"],
+      "properties": {
+        "control": { "$ref": "urn:ltm:sovereign-iq:v4:facts#/$defs/controlId" },
+        "when": { "$ref": "#/$defs/condition" },
+        "dataClasses": { "type": "array", "items": { "$ref": "urn:ltm:sovereign-iq:v4:facts#/$defs/dataClass" } },
+        "appliesFrom": { "type": "string", "format": "date", "description": "Excluded from maturity and RAG before this date; creates an 'upcoming' finding." },
+        "basis": { "type": "string" },
+        "verification": { "$ref": "#/$defs/verification", "description": "UNSOURCED rows are shown as 'requirement pending source' and do not score (DESIGN.md 4.3)." }
+      }
+    },
+    "obligation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "article", "summary"],
+      "properties": {
+        "id": { "type": "string" },
+        "article": { "type": "string" },
+        "summary": { "type": "string" },
+        "controls": { "type": "array", "items": { "$ref": "urn:ltm:sovereign-iq:v4:facts#/$defs/controlId" } },
+        "appliesFrom": { "type": "string", "format": "date" },
+        "claims": { "type": "array", "items": { "$ref": "#/$defs/claimId" } }
+      }
+    },
+    "penaltyTier": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["label", "article"],
+      "properties": {
+        "label": { "type": "string" },
+        "fixedAmount": { "type": "number", "minimum": 0 },
+        "currency": { "type": "string", "pattern": "^[A-Z]{3}$" },
+        "turnoverPercent": { "type": "number", "minimum": 0, "maximum": 100 },
+        "turnoverBasis": { "enum": ["worldwide_annual", "worldwide_prior_year", "average_daily_worldwide", "national_annual", "adjusted_turnover", "total_revenue_excluding_unrelated"] },
+        "perViolation": { "type": "boolean" },
+        "article": { "type": "string" },
+        "claims": { "type": "array", "items": { "$ref": "#/$defs/claimId" } }
+      }
+    },
+    "penalty": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["model"],
+      "properties": {
+        "model": { "enum": ["turnover_greater_of", "turnover_lower_of", "national_minimum_maximum", "either_or", "turnover_percent", "periodic", "per_violation", "fixed", "national", "not_quantified", "not_applicable_to_client"] },
+        "tiers": { "type": "array", "items": { "$ref": "#/$defs/penaltyTier" } },
+        "appliesTo": { "type": "string" },
+        "smeRule": { "type": "string" },
+        "quantifyWhen": { "$ref": "#/$defs/condition", "description": "e.g. AI Act: only where high-risk or Art. 50 duties apply." },
+        "note": { "type": "string" },
+        "verification": { "$ref": "#/$defs/verification" }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "model": { "enum": ["turnover_greater_of", "turnover_lower_of", "national_minimum_maximum", "either_or", "turnover_percent", "periodic", "per_violation", "fixed"] } } },
+          "then": { "required": ["tiers"] }
+        }
+      ]
+    },
+    "regime": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "name", "jurisdiction", "market", "citation", "kind", "status", "statusAsOf", "applicability", "penalty", "volatile", "reviewDays", "verification"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^(EU|UK|FR|DE|US|SG|AU|NZ|IN|JP|HK|KR|CN)_[A-Z0-9_]+$" },
+        "name": { "type": "string" },
+        "jurisdiction": { "enum": ["eu", "uk", "fr", "de", "us", "us_ca", "us_ny", "sg", "au", "nz", "in", "jp", "hk", "kr", "cn"] },
+        "market": { "enum": ["eu_uk", "us", "apac"] },
+        "citation": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["text", "url"],
+          "properties": {
+            "text": { "type": "string" },
+            "url": { "type": "string", "format": "uri" }
+          }
+        },
+        "kind": { "enum": ["obligation", "exposure", "scheme", "framework"] },
+        "status": { "enum": ["in_force", "phased", "pending", "volatile"] },
+        "statusAsOf": { "type": "string", "format": "date" },
+        "dates": { "type": "array", "items": { "$ref": "#/$defs/dateEntry" } },
+        "applicability": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["rules", "default"],
+          "properties": {
+            "rules": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/rule" } },
+            "default": { "const": "not_applicable" }
+          }
+        },
+        "levelFloors": { "type": "array", "items": { "$ref": "#/$defs/levelFloor" } },
+        "requiredControls": { "type": "array", "items": { "$ref": "#/$defs/requiredControl" } },
+        "obligations": { "type": "array", "items": { "$ref": "#/$defs/obligation" } },
+        "penalty": { "$ref": "#/$defs/penalty" },
+        "volatile": { "type": "boolean" },
+        "reviewDays": { "enum": [90, 180] },
+        "verification": { "$ref": "#/$defs/verification" },
+        "claims": { "type": "array", "items": { "$ref": "#/$defs/claimId" } }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "volatile": { "const": true } } },
+          "then": { "properties": { "reviewDays": { "const": 90 } } }
+        },
+        {
+          "if": { "properties": { "kind": { "enum": ["exposure", "scheme", "framework"] } } },
+          "then": { "properties": { "requiredControls": { "maxItems": 0 } } }
+        }
+      ]
+    }
+  }
+}

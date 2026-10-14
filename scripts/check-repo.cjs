@@ -118,6 +118,9 @@ for (const f of sitePages) {
   if (m) fail('brand-retired', f, m[0]);
 }
 
+// 10. Claims register: sources, owners, review dates, references and banned phrases (scripts/check-claims.cjs).
+for (const f of require('./check-claims.cjs').checkClaims()) failures.push(f);
+
 if (failures.length) {
   console.error(`Repository checks failed (${failures.length}):\n` + failures.map(x => '  - ' + x).join('\n'));
   process.exit(1);

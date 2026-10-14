@@ -1,0 +1,1776 @@
+{
+  "$schema": "finding.schema.json#/$defs/archetypeFile",
+  "version": "0.1.0-s1-draft",
+  "statusAsOf": "2026-10-13",
+  "note": "Expected outcomes written before any engine exists (DESIGN.md section 10). Question IDs and option values are those in DESIGN.md section 6. Maturity follows DESIGN.md 7.1 and top gaps follow the ranking rule in 8.3; S4 may recalibrate weights with an approved golden diff. Not legal advice; internal consultant use only.",
+  "archetypes": [
+    {
+      "id": "ARC1_EU_BANK_DORA",
+      "name": "EU retail bank under DORA",
+      "summary": "Mid-size retail and SME bank headquartered in the EU (Germany and the Netherlands), 4,000 staff, Azure plus own data centres, Microsoft 365 and a US AI API; uses AI for credit decisions.",
+      "answers": {
+        "A1": "eea",
+        "A2": {
+          "entity": [
+            "eea"
+          ],
+          "people": [
+            "eea"
+          ]
+        },
+        "A3": "banking",
+        "A4": {
+          "staff_band": "250plus",
+          "turnover_band_eur": "1bn_10bn"
+        },
+        "A5": {
+          "turnover_amount": {
+            "amount": 3200000000,
+            "currency": "EUR"
+          },
+          "balance_sheet_band_eur": "gt43m"
+        },
+        "A6": [
+          "DE",
+          "NL"
+        ],
+        "B1": [
+          "eu_credit_institution"
+        ],
+        "B2": {
+          "self_class": "not_in_scope",
+          "special_type": "none"
+        },
+        "B4": [
+          "deployer_internal",
+          "deployer_high_impact"
+        ],
+        "D1": [
+          "personal",
+          "financial",
+          "proprietary"
+        ],
+        "D2": "gt1m",
+        "D3": {
+          "personal": {
+            "primary": [
+              "eea"
+            ],
+            "backup": [
+              "eea"
+            ]
+          },
+          "financial": {
+            "primary": [
+              "eea"
+            ],
+            "backup": [
+              "eea"
+            ]
+          },
+          "proprietary": {
+            "primary": [
+              "eea",
+              "us"
+            ],
+            "backup": [
+              "eea",
+              "us"
+            ]
+          }
+        },
+        "D4": "partial",
+        "P1": [
+          "onprem",
+          "azure",
+          "saas_major",
+          "ai_api_provider"
+        ],
+        "P2": [
+          "us"
+        ],
+        "L1": "L2",
+        "L2": {
+          "personal": {
+            "level": "L2",
+            "zones": [
+              "eea"
+            ],
+            "platforms": [
+              "onprem",
+              "azure",
+              "saas_major"
+            ]
+          },
+          "financial": {
+            "level": "L3",
+            "zones": [
+              "eea"
+            ],
+            "platforms": [
+              "onprem",
+              "azure"
+            ]
+          },
+          "proprietary": {
+            "level": "L1",
+            "zones": [
+              "eea",
+              "us"
+            ],
+            "platforms": [
+              "saas_major"
+            ]
+          }
+        },
+        "R1": "partial",
+        "T1": [
+          "sccs",
+          "eu_us_dpf"
+        ],
+        "T2": "partial",
+        "K1": "byok",
+        "K2": "possible_untested",
+        "K3": "most",
+        "K4": "none",
+        "O1": "log_only",
+        "O2": "zone_staff_foreign_entity",
+        "O3": "partial",
+        "V1": "all",
+        "V2": "partial",
+        "V3": "partial",
+        "V4": "full",
+        "B5": "partial",
+        "X1": "partial",
+        "X2": "concentrated_aware",
+        "I1": "in_zone_unclear",
+        "I2": "partial",
+        "G1": "exec_forum",
+        "G2": "tested",
+        "G3": "baseline",
+        "W1": "minimal",
+        "W2": "medium",
+        "W3": [
+          "compliance",
+          "resilience"
+        ]
+      },
+      "expected": {
+        "requiredLevels": {
+          "executive": {
+            "personal": "L2",
+            "financial": "L2",
+            "proprietary": "L2"
+          },
+          "workshop": {
+            "personal": "L2",
+            "financial": "L3",
+            "proprietary": "L1"
+          }
+        },
+        "regimes": [
+          {
+            "regime": "EU_DORA",
+            "grade": "applies",
+            "rule": "EU_DORA.2",
+            "why": "EU credit institution established in the EU (DORA Art. 2(1))"
+          },
+          {
+            "regime": "EU_GDPR",
+            "grade": "applies",
+            "rule": "EU_GDPR.1",
+            "why": "EU establishment (GDPR Art. 3(1))"
+          },
+          {
+            "regime": "EU_AI_ACT",
+            "grade": "applies",
+            "rule": "EU_AI_ACT.4",
+            "why": "Deployer established in the EU; credit-scoring AI is Annex III 5(b) high-risk, duties from 2 Dec 2027"
+          },
+          {
+            "regime": "EU_NIS2",
+            "grade": "advisory",
+            "rule": "EU_NIS2.7",
+            "why": "Banking entity under DORA; client assessed itself as not in NIS2 scope; DORA treated as the sector-specific act (to confirm)"
+          },
+          {
+            "regime": "EU_DATA_ACT",
+            "grade": "advisory",
+            "rule": "EU_DATA_ACT.2",
+            "why": "Customer of cloud services in the EU: switching rights, charges abolished from 12 Jan 2027"
+          },
+          {
+            "regime": "US_CLOUD_ACT",
+            "grade": "advisory",
+            "rule": "US_CLOUD_ACT.1",
+            "why": "Azure, Microsoft 365 and the AI API have US parents"
+          },
+          {
+            "regime": "US_FISA_702",
+            "grade": "advisory",
+            "rule": "US_FISA_702.1",
+            "why": "US-parent providers hold data of non-US persons; status volatile"
+          }
+        ],
+        "maturity": {
+          "executive": {
+            "score": 50,
+            "band": "Developing",
+            "controlsAssessed": 9
+          },
+          "workshop": {
+            "score": 55,
+            "band": "Developing",
+            "controlsAssessed": 24
+          }
+        },
+        "exposure": [
+          {
+            "regime": "EU_GDPR",
+            "rag": "amber",
+            "why": "TIA partial, sub-processor control partial, data map partial; nothing absent"
+          },
+          {
+            "regime": "EU_DORA",
+            "rag": "amber",
+            "why": "Register of information and exit plans partial; concentration assessed but high"
+          },
+          {
+            "regime": "EU_AI_ACT",
+            "rag": "amber",
+            "why": "AI Act role and risk mapping partial"
+          }
+        ],
+        "largestCap": {
+          "regime": "EU_GDPR",
+          "article": "Art. 83(5)",
+          "basis": "4% of EUR 3.2bn worldwide turnover",
+          "amount": 128000000,
+          "currency": "EUR",
+          "label": "cap, not expected fine"
+        },
+        "topGaps": [
+          {
+            "control": "SOV.KEY.CUSTODY",
+            "severity": "High",
+            "classes": [
+              "personal",
+              "financial"
+            ],
+            "regimes": [],
+            "why": "BYOK leaves the provider operating the keys for L2 and L3 data"
+          },
+          {
+            "control": "SOV.OPS.ADMIN_ACCESS",
+            "severity": "High",
+            "classes": [
+              "personal",
+              "financial"
+            ],
+            "regimes": [],
+            "why": "Provider access is logged but needs no approval"
+          },
+          {
+            "control": "SOV.SAAS.SUBPROCESSOR",
+            "severity": "Medium",
+            "classes": [],
+            "regimes": [
+              "EU_GDPR",
+              "EU_DORA"
+            ],
+            "why": "Sub-processor notice and objection rights for some providers only (GDPR Art. 28(2), (4); DORA subcontracting RTS (EU) 2025/532)"
+          },
+          {
+            "control": "SOV.DATA.MAP",
+            "severity": "Medium",
+            "classes": [],
+            "regimes": [
+              "EU_GDPR"
+            ],
+            "why": "Data-flow map and records of processing partial or out of date (GDPR Art. 30)"
+          },
+          {
+            "control": "SOV.EXIT.PLAN",
+            "severity": "Medium",
+            "classes": [],
+            "regimes": [
+              "EU_DORA"
+            ],
+            "why": "DORA Art. 28(8) exit plans for some services only; the Art. 28(3) register of information (also partial) ranks sixth"
+          }
+        ],
+        "scopeConfirmations": [],
+        "decisions": []
+      },
+      "reasoning": "DORA applies to EU credit institutions from 17 Jan 2025 (Art. 2(1); validation rows 16, 20) [S7]. GDPR applies through the EU establishment (Art. 3(1)) [S8]. Credit scoring is an Annex III 5(b) use (validation row 8), so the bank is a deployer of a high-risk system with duties from 2 Dec 2027 under Regulation (EU) 2026/1744 [S12]; the AI Act cap is quantified because a high-risk duty applies (H4). NIS2 is advisory, not `applies`: banking is an Annex I sector, but the bank is a DORA financial entity and has assessed itself out of NIS2 scope; the DORA-as-sector-specific-act position (NIS2 Art. 4) is UNSOURCED in this session and must be confirmed in S2. No legal level floor applies (3.3): the L2/L3 requirement is the board's choice, which is typical for EU banks but is not a DORA requirement. The headline gaps are therefore key custody and provider access (L2 controls), then sub-processor control (required by both GDPR Art. 28 and the DORA subcontracting RTS), the data map and DORA exit plans (Art. 28(8)); the DORA register of information (Art. 28(3)) is also partial and ranks sixth under the tie-break rule in 8.3 (validation rows 21, 23, 85). Executive mode is lower (50) than workshop (55) because, with one L2 level for every class, source code in a US SaaS counts as outside the zone; the workshop sets proprietary data to L1 with the US allowed. Largest cap: GDPR Art. 83(5), 4% of EUR 3.2bn = EUR 128M, above the AI Act Art. 99(4) figure of 3% = EUR 96M; DORA penalties for financial entities are national (Art. 50–51), so they are not quantified. Never summed.",
+      "sources": [
+        "S7",
+        "S8",
+        "S12"
+      ]
+    },
+    {
+      "id": "ARC2_UK_INSURER_OPRES_CTP",
+      "name": "UK insurer under PRA operational resilience, using designated critical third parties",
+      "summary": "UK life and health insurer (PRA and FCA regulated), 2,500 staff, AWS and Azure plus own data centre and SaaS; uses AI in pricing; backups of some data in EU regions.",
+      "answers": {
+        "A1": "uk",
+        "A2": {
+          "entity": [
+            "uk"
+          ],
+          "people": [
+            "uk"
+          ]
+        },
+        "A3": "insurance",
+        "A4": {
+          "staff_band": "250plus",
+          "turnover_band_eur": "1bn_10bn"
+        },
+        "A5": {
+          "turnover_amount": {
+            "amount": 2500000000,
+            "currency": "GBP"
+          },
+          "balance_sheet_band_eur": "gt43m"
+        },
+        "B1": [
+          "uk_pra_regulated"
+        ],
+        "B4": [
+          "deployer_internal",
+          "deployer_high_impact"
+        ],
+        "D1": [
+          "personal",
+          "special",
+          "financial"
+        ],
+        "D2": "gt1m",
+        "D3": {
+          "personal": {
+            "primary": [
+              "uk",
+              "eea"
+            ],
+            "backup": [
+              "uk",
+              "eea"
+            ]
+          },
+          "special": {
+            "primary": [
+              "uk"
+            ],
+            "backup": [
+              "uk",
+              "eea"
+            ]
+          },
+          "financial": {
+            "primary": [
+              "uk"
+            ],
+            "backup": [
+              "uk"
+            ]
+          }
+        },
+        "D4": "current",
+        "P1": [
+          "onprem",
+          "aws",
+          "azure",
+          "saas_major"
+        ],
+        "P2": [
+          "us"
+        ],
+        "L1": "L2",
+        "L2": {
+          "personal": {
+            "level": "L1",
+            "zones": [
+              "uk",
+              "eea"
+            ],
+            "platforms": [
+              "aws",
+              "saas_major"
+            ]
+          },
+          "special": {
+            "level": "L2",
+            "zones": [
+              "uk"
+            ],
+            "platforms": [
+              "aws",
+              "onprem"
+            ]
+          },
+          "financial": {
+            "level": "L2",
+            "zones": [
+              "uk"
+            ],
+            "platforms": [
+              "aws",
+              "azure"
+            ]
+          }
+        },
+        "R1": "enforced",
+        "T1": [
+          "adequacy",
+          "uk_data_bridge",
+          "idta_or_addendum"
+        ],
+        "T2": "none",
+        "K1": "dedicated_hsm",
+        "K3": "all",
+        "O1": "approve_log",
+        "V1": "all",
+        "V2": "yes",
+        "V3": "full",
+        "V4": "full",
+        "B5": "complete",
+        "B6": "partial",
+        "X1": "documented",
+        "X2": "managed",
+        "I1": "out_of_zone_contract",
+        "I2": "partial",
+        "G1": "exec_forum",
+        "G2": "tested",
+        "W1": "minimal",
+        "W2": "medium",
+        "W3": [
+          "compliance",
+          "resilience",
+          "cost"
+        ]
+      },
+      "expected": {
+        "requiredLevels": {
+          "executive": {
+            "personal": "L2",
+            "special": "L2",
+            "financial": "L2"
+          },
+          "workshop": {
+            "personal": "L1",
+            "special": "L2",
+            "financial": "L2"
+          }
+        },
+        "regimes": [
+          {
+            "regime": "UK_GDPR",
+            "grade": "applies",
+            "rule": "UK_GDPR.1",
+            "why": "UK establishment"
+          },
+          {
+            "regime": "UK_OPRES",
+            "grade": "applies",
+            "rule": "UK_OPRES.1",
+            "why": "PRA-regulated insurer: SS1/21 and PS21/3; impact tolerances assessed in Resilience IQ"
+          },
+          {
+            "regime": "UK_PRA_SS2_21",
+            "grade": "applies",
+            "rule": "UK_PRA_SS2_21.1",
+            "why": "PRA-regulated firm: outsourcing and third-party risk management"
+          },
+          {
+            "regime": "UK_CTP",
+            "grade": "advisory",
+            "rule": "UK_CTP.2",
+            "why": "Uses AWS and Azure, whose UK-relevant entities were designated CTPs from 13 Jul 2026; the firm's own duties remain"
+          },
+          {
+            "regime": "US_CLOUD_ACT",
+            "grade": "advisory",
+            "rule": "US_CLOUD_ACT.1",
+            "why": "US-parent providers"
+          },
+          {
+            "regime": "US_FISA_702",
+            "grade": "advisory",
+            "rule": "US_FISA_702.1",
+            "why": "US-parent providers hold data of non-US persons; status volatile"
+          }
+        ],
+        "maturity": {
+          "executive": {
+            "score": 67,
+            "band": "Managed",
+            "controlsAssessed": 9
+          },
+          "workshop": {
+            "score": 84,
+            "band": "Sovereign-ready",
+            "controlsAssessed": 19
+          }
+        },
+        "exposure": [
+          {
+            "regime": "UK_GDPR",
+            "rag": "red",
+            "why": "No transfer risk assessment for transfers under the IDTA or Addendum"
+          },
+          {
+            "regime": "UK_PRA_SS2_21",
+            "rag": "amber",
+            "why": "Exit plans not rehearsed; dependency on designated CTPs only partly mapped"
+          },
+          {
+            "regime": "UK_OPRES",
+            "rag": "not_rated",
+            "why": "No Sovereign IQ control maps to impact tolerances; assessed in Resilience IQ"
+          }
+        ],
+        "largestCap": {
+          "regime": "UK_GDPR",
+          "article": "Art. 83(5) UK GDPR; DPA 2018 s.157",
+          "basis": "4% of GBP 2.5bn worldwide turnover",
+          "amount": 100000000,
+          "currency": "GBP",
+          "label": "cap, not expected fine"
+        },
+        "topGaps": [
+          {
+            "control": "SOV.BACKUP.LOCATION",
+            "severity": "High",
+            "classes": [
+              "special"
+            ],
+            "regimes": [],
+            "why": "Special-category backups in EU regions; lawful under UK adequacy regulations, but outside the UK-only zone the board set"
+          },
+          {
+            "control": "SOV.XFER.TIA",
+            "severity": "High",
+            "classes": [],
+            "regimes": [
+              "UK_GDPR"
+            ],
+            "why": "IDTA/Addendum transfers without a transfer risk assessment (UK GDPR Art. 46; ICO TRA guidance)"
+          },
+          {
+            "control": "SOV.KEY.CUSTODY",
+            "severity": "Medium",
+            "classes": [
+              "special",
+              "financial"
+            ],
+            "regimes": [],
+            "why": "Single-tenant HSM in the provider's data centre, not external key custody"
+          },
+          {
+            "control": "SOV.AI.DATA_LOCATION",
+            "severity": "Medium",
+            "classes": [],
+            "regimes": [],
+            "why": "Pricing AI runs on a US AI API under no-training terms, outside the allowed zone"
+          },
+          {
+            "control": "SOV.EXIT.PLAN",
+            "severity": "Low",
+            "classes": [],
+            "regimes": [
+              "UK_PRA_SS2_21"
+            ],
+            "why": "Exit plans documented but not rehearsed (SS2/21); dependency on designated CTPs, only partly mapped, ranks sixth (SOV.CONC.PROVIDER, Low)"
+          }
+        ],
+        "scopeConfirmations": [],
+        "decisions": []
+      },
+      "reasoning": "UK GDPR applies through the UK establishment [S15, S18]. A Solvency II insurer is PRA-regulated, so SS1/21 operational resilience (with FCA PS21/3) and SS2/21 outsourcing apply (validation rows 38–40) [S19, S20]. The UK CTP regime binds the designated providers, not the insurer; it is advisory here because the insurer uses AWS and Azure, whose UK-relevant entities were designated with effect from 13 Jul 2026 (validation rows 42–43) [S21]. EU GDPR, the EU AI Act and the Data Act are not applicable: no EU establishment and no EU data subjects; EU-region backups are processed by EU-established providers, whose own GDPR duties fall on them (a model limit to note for counsel). This archetype shows why there are two headlines: maturity is high (84, Sovereign-ready) because the controls for the chosen L1/L2 levels are largely in place, while the UK GDPR exposure is red because IDTA and Addendum transfers have no transfer risk assessment, which ICO guidance requires for Art. 46 transfers [S16]. Special-category backups in EU regions are lawful under the UK's adequacy regulations for the EEA, so the backup finding is against the board's own UK-only choice, and the finding text says so. UK operational resilience is graded but not RAG-rated: impact tolerances are assessed in Resilience IQ (section 11). Largest cap: 4% of GBP 2.5bn = GBP 100M (above GBP 17.5M), UK GDPR Art. 83(5) and DPA 2018 s.157 (validation row 37).",
+      "sources": [
+        "S15",
+        "S16",
+        "S18",
+        "S19",
+        "S20",
+        "S21"
+      ]
+    },
+    {
+      "id": "ARC3_US_HEALTHTECH_EU_CUSTOMERS",
+      "name": "US health-tech SaaS with EU and UK customers",
+      "summary": "US-headquartered clinical SaaS provider with an Irish subsidiary, 180 staff, USD 75M revenue, on AWS; HIPAA business associate; builds AI features into its product; EU customer data hosted in the EU with US backups.",
+      "answers": {
+        "A1": "us",
+        "A2": {
+          "entity": [
+            "us",
+            "eea"
+          ],
+          "people": [
+            "us",
+            "eea",
+            "uk"
+          ]
+        },
+        "A3": "digital_infrastructure",
+        "A4": {
+          "staff_band": "50_249",
+          "turnover_band_eur": "50m_250m"
+        },
+        "A5": {
+          "turnover_amount": {
+            "amount": 75000000,
+            "currency": "USD"
+          },
+          "balance_sheet_band_eur": "unknown"
+        },
+        "A6": [
+          "IE"
+        ],
+        "A7": [
+          "CA",
+          "NY",
+          "other_comprehensive"
+        ],
+        "B1": [
+          "us_hipaa_covered_or_ba",
+          "cloud_or_data_processing_provider"
+        ],
+        "B2": {
+          "self_class": "not_assessed",
+          "special_type": "none"
+        },
+        "B4": [
+          "deployer_internal",
+          "provider_ai_system"
+        ],
+        "D1": [
+          "personal",
+          "special",
+          "ai_training",
+          "proprietary"
+        ],
+        "D2": "100k_1m",
+        "D3": {
+          "personal": {
+            "primary": [
+              "us",
+              "eea"
+            ],
+            "backup": [
+              "us"
+            ]
+          },
+          "special": {
+            "primary": [
+              "us",
+              "eea"
+            ],
+            "backup": [
+              "us"
+            ]
+          },
+          "ai_training": {
+            "primary": [
+              "us"
+            ],
+            "backup": [
+              "us"
+            ]
+          },
+          "proprietary": {
+            "primary": [
+              "us"
+            ],
+            "backup": [
+              "us"
+            ]
+          }
+        },
+        "D4": "partial",
+        "P1": [
+          "aws",
+          "saas_major",
+          "ai_api_provider"
+        ],
+        "P2": [
+          "us"
+        ],
+        "L1": "L1",
+        "L2": {
+          "personal": {
+            "level": "L1",
+            "zones": [
+              "us",
+              "eea"
+            ],
+            "platforms": [
+              "aws"
+            ]
+          },
+          "special": {
+            "level": "L2",
+            "zones": [
+              "us",
+              "eea"
+            ],
+            "platforms": [
+              "aws",
+              "ai_api_provider"
+            ]
+          },
+          "ai_training": {
+            "level": "L1",
+            "zones": [
+              "us"
+            ],
+            "platforms": [
+              "aws"
+            ]
+          },
+          "proprietary": {
+            "level": "L0",
+            "zones": [],
+            "platforms": [
+              "aws",
+              "saas_major"
+            ]
+          }
+        },
+        "R1": "partial",
+        "T1": [
+          "eu_us_dpf",
+          "sccs"
+        ],
+        "T2": "none",
+        "K1": "provider",
+        "K3": "most",
+        "O1": "standard",
+        "V1": "most",
+        "V2": "partial",
+        "V3": "partial",
+        "V4": "reports_only",
+        "X1": "partial",
+        "X2": "concentrated",
+        "I1": "out_of_zone_contract",
+        "I2": "none",
+        "G1": "shared",
+        "G2": "documented_untested",
+        "W1": "moderate",
+        "W2": "medium",
+        "W3": [
+          "speed",
+          "compliance",
+          "sovereignty_differentiator"
+        ]
+      },
+      "expected": {
+        "requiredLevels": {
+          "executive": {
+            "personal": "L1",
+            "special": "L1",
+            "ai_training": "L1",
+            "proprietary": "L1"
+          },
+          "workshop": {
+            "personal": "L1",
+            "special": "L2",
+            "ai_training": "L1",
+            "proprietary": "L0"
+          }
+        },
+        "regimes": [
+          {
+            "regime": "EU_GDPR",
+            "grade": "applies",
+            "rule": "EU_GDPR.1",
+            "why": "Irish subsidiary (Art. 3(1))"
+          },
+          {
+            "regime": "US_HIPAA",
+            "grade": "applies",
+            "rule": "US_HIPAA.1",
+            "why": "Business associate"
+          },
+          {
+            "regime": "EU_NIS2",
+            "grade": "applies",
+            "rule": "EU_NIS2.8",
+            "why": "Cloud computing service provider (Annex I digital infrastructure) with an EU establishment, at least medium-sized; essential or important depends on the balance sheet. Assumes the SaaS counts as a cloud computing service (to confirm)"
+          },
+          {
+            "regime": "EU_AI_ACT",
+            "grade": "applies",
+            "rule": "EU_AI_ACT.2",
+            "why": "Provider of AI features, EU establishment; if the AI is part of a regulated medical device, Annex I duties apply from 2 Aug 2028"
+          },
+          {
+            "regime": "EU_DATA_ACT",
+            "grade": "applies",
+            "rule": "EU_DATA_ACT.1",
+            "why": "Provider of data processing services to EU customers: Chapter VI switching duties, Art. 32 safeguards"
+          },
+          {
+            "regime": "US_CCPA",
+            "grade": "applies",
+            "rule": "US_CCPA.1",
+            "why": "California data subjects and revenue above USD 26.625M"
+          },
+          {
+            "regime": "UK_GDPR",
+            "grade": "likely_confirm",
+            "rule": "UK_GDPR.2",
+            "why": "UK data subjects without a UK establishment (Art. 3(2))"
+          },
+          {
+            "regime": "US_STATE_PRIVACY",
+            "grade": "advisory",
+            "rule": "US_STATE_PRIVACY.1",
+            "why": "Customers in other states with comprehensive laws"
+          },
+          {
+            "regime": "US_DOJ_DSP",
+            "grade": "advisory",
+            "rule": "US_DOJ_DSP.3",
+            "why": "US person holding US health data at volume; no country-of-concern link reported, screening advised"
+          },
+          {
+            "regime": "UK_CSR_BILL",
+            "grade": "advisory",
+            "rule": "UK_CSR_BILL.1",
+            "why": "Digital infrastructure provider serving UK customers; Bill pending"
+          },
+          {
+            "regime": "US_CLOUD_ACT",
+            "grade": "advisory",
+            "rule": "US_CLOUD_ACT.1",
+            "why": "The company and its providers are US-parented"
+          },
+          {
+            "regime": "US_FISA_702",
+            "grade": "advisory",
+            "rule": "US_FISA_702.1",
+            "why": "US providers hold EU and UK persons' data; status volatile"
+          }
+        ],
+        "maturity": {
+          "executive": {
+            "score": 52,
+            "band": "Developing",
+            "controlsAssessed": 6
+          },
+          "workshop": {
+            "score": 37,
+            "band": "Exposed",
+            "controlsAssessed": 17
+          }
+        },
+        "exposure": [
+          {
+            "regime": "EU_GDPR",
+            "rag": "red",
+            "why": "No transfer impact assessment for SCC transfers; UK route missing lowers the transfer-basis control"
+          },
+          {
+            "regime": "EU_AI_ACT",
+            "rag": "red",
+            "why": "No AI Act role or risk assessment"
+          },
+          {
+            "regime": "EU_NIS2",
+            "rag": "amber",
+            "why": "Incident reporting untested; supplier visibility partial"
+          },
+          {
+            "regime": "US_HIPAA",
+            "rag": "amber",
+            "why": "Business associate agreements with most, not all, subcontractors; incident process untested"
+          },
+          {
+            "regime": "UK_GDPR",
+            "rag": "amber",
+            "why": "Transfer basis for UK data to the US not selected"
+          },
+          {
+            "regime": "EU_DATA_ACT",
+            "rag": "not_rated",
+            "why": "Provider switching duties not in the v1 control catalogue"
+          },
+          {
+            "regime": "US_CCPA",
+            "rag": "not_rated",
+            "why": "Required controls pending source (4.3 guard)"
+          }
+        ],
+        "largestCap": {
+          "regime": "EU_GDPR",
+          "article": "Art. 83(5)",
+          "basis": "EUR 20M fixed limb (4% of USD 75M is lower)",
+          "amount": 20000000,
+          "currency": "EUR",
+          "label": "cap, not expected fine"
+        },
+        "topGaps": [
+          {
+            "control": "SOV.KEY.CUSTODY",
+            "severity": "Critical",
+            "classes": [
+              "special"
+            ],
+            "regimes": [],
+            "why": "Provider-managed keys for health data the business set at L2"
+          },
+          {
+            "control": "SOV.OPS.ADMIN_ACCESS",
+            "severity": "Critical",
+            "classes": [
+              "special"
+            ],
+            "regimes": [],
+            "why": "Provider staff access under standard terms, no visibility"
+          },
+          {
+            "control": "SOV.XFER.BASIS",
+            "severity": "High",
+            "classes": [],
+            "regimes": [
+              "EU_GDPR",
+              "UK_GDPR"
+            ],
+            "why": "EU routes in place (DPF, SCCs) but no UK route (UK Extension or IDTA/Addendum) for UK data in the US"
+          },
+          {
+            "control": "SOV.AI.GOVERNANCE",
+            "severity": "High",
+            "classes": [],
+            "regimes": [
+              "EU_AI_ACT"
+            ],
+            "why": "AI features placed on the EU market without a role and risk assessment"
+          },
+          {
+            "control": "SOV.XFER.TIA",
+            "severity": "High",
+            "classes": [],
+            "regimes": [
+              "EU_GDPR"
+            ],
+            "why": "No transfer impact assessment for SCC transfers (EDPB Recs 01/2020)"
+          }
+        ],
+        "scopeConfirmations": [
+          {
+            "regime": "UK_GDPR",
+            "severity": "High",
+            "why": "Confirm UK GDPR Art. 3(2) targeting and whether a UK representative is needed"
+          }
+        ],
+        "decisions": []
+      },
+      "reasoning": "The Irish subsidiary brings GDPR in under Art. 3(1) [S8]; UK data subjects without a UK establishment give `likely_confirm` for UK GDPR (Art. 3(2)). HIPAA applies because the company is a business associate (45 CFR 160.103) [S28]. CCPA applies: California data subjects and revenue above USD 26,625,000 (CPPA, from 1 Jan 2025) [S27]. NIS2: a SaaS provider is treated as a cloud computing service provider (Annex I, digital infrastructure) because the client chose that sector; at 180 staff it is at least medium-sized, and whether it is large (essential) depends on the balance sheet, which is unknown, so the grade is `applies` with the class to confirm (2.6 `medium_or_large`) [S5, S6]; whether every SaaS is a \"cloud computing service\" is to be confirmed in S2. The AI Act applies to the company as a provider placing AI features on the EU market (Art. 2(1)(a)) [S12]. The Data Act applies because it provides data processing services to EU customers (Chapter VI) (validation rows 24–27). The DOJ rule is advisory: the company is a US person holding US health data at volume, but no country-of-concern link is reported, so only screening is advised (28 CFR 202.205, 202.601) [S26]. Maturity is Exposed (37): provider-managed keys and unapproved provider access for health data set at L2 are critical gaps, and the transfer-basis control scores 1 because EU routes exist (DPF and SCCs) but no UK route is selected for UK data in the US (the UK Extension needs separate certification; validation row 47). Executive mode reads higher (52) because L1 applies to every class there, so key custody and provider access are not required; the workshop's L2 for health data adds them. Largest cap: GDPR EUR 20M fixed limb, since 4% of USD 75M is lower; the AI Act cap depends on SME status, which is uncertain (balance sheet unknown), so it is shown as a formula.",
+      "sources": [
+        "S5",
+        "S6",
+        "S8",
+        "S12",
+        "S26",
+        "S27",
+        "S28"
+      ]
+    },
+    {
+      "id": "ARC4_SG_AU_FINANCIAL_GROUP",
+      "name": "Singapore-headquartered banking group with Australian and Hong Kong operations",
+      "summary": "MAS-licensed bank with an APRA-regulated Australian bank (a SOCI responsible entity), an HKMA-authorised branch and a captive operations centre in India; on-premises plus AWS and Azure.",
+      "answers": {
+        "A1": "sg",
+        "A2": {
+          "entity": [
+            "sg",
+            "au",
+            "hk",
+            "in"
+          ],
+          "people": [
+            "sg",
+            "au",
+            "hk",
+            "in"
+          ]
+        },
+        "A3": "banking",
+        "A4": {
+          "staff_band": "250plus",
+          "turnover_band_eur": "1bn_10bn"
+        },
+        "A5": {
+          "turnover_amount": {
+            "amount": 4000000000,
+            "currency": "SGD"
+          },
+          "balance_sheet_band_eur": "gt43m"
+        },
+        "B1": [
+          "sg_mas_licensed",
+          "au_apra_regulated",
+          "hk_hkma_authorised",
+          "critical_infrastructure_operator"
+        ],
+        "B3": [
+          "au_soci_responsible_entity"
+        ],
+        "B4": [
+          "deployer_internal",
+          "deployer_high_impact"
+        ],
+        "D1": [
+          "personal",
+          "financial",
+          "proprietary"
+        ],
+        "D2": "gt1m",
+        "D3": {
+          "personal": {
+            "primary": [
+              "sg",
+              "au",
+              "hk",
+              "in"
+            ],
+            "backup": [
+              "sg",
+              "au"
+            ]
+          },
+          "financial": {
+            "primary": [
+              "sg",
+              "au",
+              "in"
+            ],
+            "backup": [
+              "sg",
+              "au"
+            ]
+          },
+          "proprietary": {
+            "primary": [
+              "sg",
+              "us"
+            ],
+            "backup": [
+              "sg"
+            ]
+          }
+        },
+        "D4": "current",
+        "P1": [
+          "onprem",
+          "aws",
+          "azure",
+          "saas_major"
+        ],
+        "P2": [
+          "us"
+        ],
+        "L1": "L2",
+        "L2": {
+          "personal": {
+            "level": "L2",
+            "zones": [
+              "sg",
+              "au",
+              "hk",
+              "in"
+            ],
+            "platforms": [
+              "onprem",
+              "aws"
+            ]
+          },
+          "financial": {
+            "level": "L3",
+            "zones": [
+              "sg",
+              "au"
+            ],
+            "platforms": [
+              "onprem",
+              "aws"
+            ]
+          },
+          "proprietary": {
+            "level": "L1",
+            "zones": [
+              "sg",
+              "us"
+            ],
+            "platforms": [
+              "saas_major",
+              "azure"
+            ]
+          }
+        },
+        "R1": "enforced",
+        "T1": [
+          "apac_contract_or_consent"
+        ],
+        "K1": "external",
+        "K2": "tested",
+        "K3": "all",
+        "K4": "poc",
+        "O1": "approve_log",
+        "O2": "zone_staff_foreign_entity",
+        "O3": "isolated",
+        "V1": "all",
+        "V2": "yes",
+        "V3": "full",
+        "V4": "full",
+        "B5": "complete",
+        "X1": "documented",
+        "X2": "managed",
+        "I1": "in_zone_unclear",
+        "G1": "exec_forum",
+        "G2": "documented_untested",
+        "G3": "recognised_high",
+        "H1": "partial",
+        "W1": "minimal",
+        "W2": "high",
+        "W3": [
+          "resilience",
+          "compliance"
+        ]
+      },
+      "expected": {
+        "requiredLevels": {
+          "executive": {
+            "personal": "L2",
+            "financial": "L2",
+            "proprietary": "L2"
+          },
+          "workshop": {
+            "personal": "L2",
+            "financial": "L3",
+            "proprietary": "L1"
+          }
+        },
+        "regimes": [
+          {
+            "regime": "SG_MAS_TRM",
+            "grade": "applies",
+            "rule": "SG_MAS_TRM.1",
+            "why": "MAS-licensed: TRM Guidelines and the TRM Notice for its licence type"
+          },
+          {
+            "regime": "SG_PDPA",
+            "grade": "applies",
+            "rule": "SG_PDPA.1",
+            "why": "Singapore establishment"
+          },
+          {
+            "regime": "AU_APRA_CPS230",
+            "grade": "applies",
+            "rule": "AU_APRA_CPS230.1",
+            "why": "APRA-regulated; pre-existing service contracts compliant by the earlier of renewal or 1 Jul 2026"
+          },
+          {
+            "regime": "AU_APRA_CPS234",
+            "grade": "applies",
+            "rule": "AU_APRA_CPS234.1",
+            "why": "APRA-regulated"
+          },
+          {
+            "regime": "AU_SOCI",
+            "grade": "applies",
+            "rule": "AU_SOCI.1",
+            "why": "Responsible entity for a critical infrastructure asset"
+          },
+          {
+            "regime": "AU_PRIVACY",
+            "grade": "applies",
+            "rule": "AU_PRIVACY.2",
+            "why": "Australian establishment above the small-business threshold"
+          },
+          {
+            "regime": "HK_PDPO",
+            "grade": "applies",
+            "rule": "HK_PDPO.1",
+            "why": "Hong Kong establishment; s.33 transfer restriction not in operation"
+          },
+          {
+            "regime": "IN_DPDP",
+            "grade": "applies",
+            "rule": "IN_DPDP.1",
+            "why": "Captive centre in India processing Indian employees' data; most duties from 13 May 2027"
+          },
+          {
+            "regime": "IN_CERT_IN",
+            "grade": "applies",
+            "rule": "IN_CERT_IN.1",
+            "why": "Body corporate in India: 6-hour incident reporting"
+          },
+          {
+            "regime": "HK_HKMA",
+            "grade": "advisory",
+            "rule": "HK_HKMA.1",
+            "why": "HKMA-authorised; SPM modules to be sourced"
+          },
+          {
+            "regime": "US_CLOUD_ACT",
+            "grade": "advisory",
+            "rule": "US_CLOUD_ACT.1",
+            "why": "AWS, Azure and SaaS have US parents"
+          },
+          {
+            "regime": "US_FISA_702",
+            "grade": "advisory",
+            "rule": "US_FISA_702.1",
+            "why": "US-parent providers hold data of non-US persons; status volatile"
+          }
+        ],
+        "maturity": {
+          "executive": {
+            "score": 85,
+            "band": "Sovereign-ready",
+            "controlsAssessed": 8
+          },
+          "workshop": {
+            "score": 85,
+            "band": "Sovereign-ready",
+            "controlsAssessed": 21
+          }
+        },
+        "exposure": [
+          {
+            "regime": "SG_MAS_TRM",
+            "rag": "amber",
+            "why": "Incident reporting documented but untested against the 1-hour notice window (outsourcing rows pending source)"
+          },
+          {
+            "regime": "AU_APRA_CPS230",
+            "rag": "amber",
+            "why": "Incident process untested; exit plans not rehearsed"
+          },
+          {
+            "regime": "AU_APRA_CPS234",
+            "rag": "amber",
+            "why": "Incident process untested"
+          },
+          {
+            "regime": "AU_SOCI",
+            "rag": "amber",
+            "why": "12-hour reporting untested"
+          },
+          {
+            "regime": "SG_PDPA",
+            "rag": "amber",
+            "why": "Breach notification process untested"
+          },
+          {
+            "regime": "AU_PRIVACY",
+            "rag": "amber",
+            "why": "Breach notification process untested"
+          },
+          {
+            "regime": "IN_CERT_IN",
+            "rag": "amber",
+            "why": "6-hour reporting untested"
+          },
+          {
+            "regime": "IN_DPDP",
+            "rag": "not_rated",
+            "why": "Obligations apply from 13 May 2027 (upcoming)"
+          },
+          {
+            "regime": "HK_PDPO",
+            "rag": "not_rated",
+            "why": "No binding transfer control in operation"
+          }
+        ],
+        "largestCap": {
+          "regime": "AU_PRIVACY",
+          "article": "s.13G",
+          "basis": "AUD 50M fixed limb; 30% of adjusted turnover not computed (Australian adjusted turnover not given)",
+          "amount": 50000000,
+          "currency": "AUD",
+          "label": "cap, not expected fine (at least)"
+        },
+        "topGaps": [
+          {
+            "control": "SOV.RES.LOCATION",
+            "severity": "Critical",
+            "classes": [
+              "financial"
+            ],
+            "regimes": [],
+            "why": "Account and payment data processed at the India operations centre, outside the Singapore and Australia zone the board set for L3 data"
+          },
+          {
+            "control": "SOV.IR.REPORTING",
+            "severity": "Medium",
+            "classes": [],
+            "regimes": [
+              "SG_MAS_TRM",
+              "AU_APRA_CPS230",
+              "AU_SOCI",
+              "IN_CERT_IN",
+              "SG_PDPA"
+            ],
+            "why": "Process untested against the shortest windows (MAS 1 hour, CERT-In 6 hours, SOCI 12 hours)"
+          },
+          {
+            "control": "SOV.AI.DATA_LOCATION",
+            "severity": "Medium",
+            "classes": [],
+            "regimes": [],
+            "why": "Credit-decision AI runs in region, but provider training-use terms are not confirmed"
+          },
+          {
+            "control": "SOV.OPS.PERSONNEL_ZONE",
+            "severity": "Medium",
+            "classes": [
+              "financial"
+            ],
+            "regimes": [],
+            "why": "In-region provider staff, but the operating companies are foreign-parented"
+          },
+          {
+            "control": "SOV.EXIT.PLAN",
+            "severity": "Low",
+            "classes": [],
+            "regimes": [
+              "AU_APRA_CPS230"
+            ],
+            "why": "Exit plans documented, not rehearsed"
+          }
+        ],
+        "scopeConfirmations": [],
+        "decisions": []
+      },
+      "reasoning": "The group's licences drive the regimes: MAS TRM (validation row 53, FSM-N09 [S32]), APRA CPS 230 and CPS 234 (validation rows 57–58) [S33], SOCI for the Australian bank's critical infrastructure asset (validation row 60) [S35], PDPA, the Australian Privacy Act, Hong Kong's PDPO (s.33 not in operation) [S31, S34, S41], and in India both the DPDP Act (Indian employees' data at the captive centre; duties from 13 May 2027) and the CERT-In directions (6-hour reporting) [S37, S39]. HKMA is advisory until S2 sources the SPM modules (validation row 67). No EU, UK or US obligation regimes apply. No legal level floor applies: none of these regimes requires data to stay in a country (3.3, negative statement UNSOURCED until counsel confirms); the board's choice of L3 for financial data in Singapore and Australia creates the critical finding, because the India operations centre processes that data. Maturity is high in both modes (85) because keys, access approval, enforcement and registers are strong; exposure is amber across the board because the incident process is untested against the shortest windows (MAS 1 hour, CERT-In 6 hours, SOCI 12 hours). Rows for MAS outsourcing are UNSOURCED and do not score (4.3 guard). Largest cap: Australian Privacy Act s.13G, at least AUD 50M (30% of adjusted turnover not computed without Australian turnover; validation row 59); PDPA's 10% limb needs Singapore turnover, which is not given; DPDP penalties are upcoming.",
+      "sources": [
+        "S31",
+        "S32",
+        "S33",
+        "S34",
+        "S35",
+        "S37",
+        "S39",
+        "S41"
+      ]
+    },
+    {
+      "id": "ARC5_IN_SERVICES_EU_CLIENTS",
+      "name": "India-headquartered IT services firm with EU clients",
+      "summary": "Managed IT services provider headquartered in India, 60,000 staff, USD 2bn revenue, NYSE-listed (ADRs), subsidiaries in Germany, Ireland, the UK and the US; serves EU banks; offshore delivery from India.",
+      "answers": {
+        "A1": "in",
+        "A2": {
+          "entity": [
+            "in",
+            "eea",
+            "uk",
+            "us"
+          ],
+          "people": [
+            "in",
+            "eea",
+            "uk",
+            "us"
+          ]
+        },
+        "A3": "ict_service_management_b2b",
+        "A4": {
+          "staff_band": "250plus",
+          "turnover_band_eur": "1bn_10bn"
+        },
+        "A5": {
+          "turnover_amount": {
+            "amount": 2000000000,
+            "currency": "USD"
+          },
+          "balance_sheet_band_eur": "gt43m"
+        },
+        "A6": [
+          "DE",
+          "IE"
+        ],
+        "A7": [
+          "CA",
+          "other_comprehensive"
+        ],
+        "B1": [
+          "ict_provider_to_eu_fs",
+          "us_sec_registrant"
+        ],
+        "B2": {
+          "self_class": "important",
+          "special_type": "none"
+        },
+        "B4": [
+          "deployer_internal",
+          "provider_ai_system"
+        ],
+        "D1": [
+          "personal",
+          "special",
+          "financial",
+          "proprietary"
+        ],
+        "D2": "gt1m",
+        "D3": {
+          "personal": {
+            "primary": [
+              "in",
+              "eea",
+              "uk",
+              "us"
+            ],
+            "backup": [
+              "in"
+            ]
+          },
+          "special": {
+            "primary": [
+              "in"
+            ],
+            "backup": [
+              "in"
+            ]
+          },
+          "financial": {
+            "primary": [
+              "eea",
+              "in"
+            ],
+            "backup": [
+              "in"
+            ]
+          },
+          "proprietary": {
+            "primary": [
+              "in",
+              "us"
+            ],
+            "backup": [
+              "in"
+            ]
+          }
+        },
+        "D4": "partial",
+        "P1": [
+          "onprem",
+          "aws",
+          "azure",
+          "saas_major",
+          "ai_api_provider"
+        ],
+        "P2": [
+          "us"
+        ],
+        "L1": "L1",
+        "L2": {
+          "personal": {
+            "level": "L1",
+            "zones": [
+              "in",
+              "eea",
+              "uk",
+              "us"
+            ],
+            "platforms": [
+              "onprem",
+              "aws",
+              "azure",
+              "saas_major"
+            ]
+          },
+          "special": {
+            "level": "L1",
+            "zones": [
+              "in",
+              "eea"
+            ],
+            "platforms": [
+              "onprem"
+            ]
+          },
+          "financial": {
+            "level": "L2",
+            "zones": [
+              "eea"
+            ],
+            "platforms": [
+              "aws"
+            ]
+          },
+          "proprietary": {
+            "level": "L0",
+            "zones": [],
+            "platforms": [
+              "onprem",
+              "saas_major"
+            ]
+          }
+        },
+        "R1": "convention",
+        "T1": [
+          "sccs",
+          "idta_or_addendum"
+        ],
+        "T2": "partial",
+        "K1": "byok",
+        "K3": "most",
+        "O1": "log_only",
+        "V1": "most",
+        "V2": "partial",
+        "V3": "partial",
+        "V4": "reports_only",
+        "X1": "partial",
+        "X2": "managed",
+        "I1": "out_of_zone_contract",
+        "I2": "partial",
+        "G1": "shared",
+        "G2": "documented_untested",
+        "W1": "moderate",
+        "W2": "medium",
+        "W3": [
+          "compliance",
+          "cost",
+          "speed"
+        ]
+      },
+      "expected": {
+        "requiredLevels": {
+          "executive": {
+            "personal": "L1",
+            "special": "L1",
+            "financial": "L1",
+            "proprietary": "L1"
+          },
+          "workshop": {
+            "personal": "L1",
+            "special": "L1",
+            "financial": "L2",
+            "proprietary": "L0"
+          }
+        },
+        "regimes": [
+          {
+            "regime": "EU_GDPR",
+            "grade": "applies",
+            "rule": "EU_GDPR.1",
+            "why": "German and Irish subsidiaries"
+          },
+          {
+            "regime": "UK_GDPR",
+            "grade": "applies",
+            "rule": "UK_GDPR.1",
+            "why": "UK subsidiary"
+          },
+          {
+            "regime": "EU_NIS2",
+            "grade": "applies",
+            "rule": "EU_NIS2.3",
+            "why": "Managed service provider (Annex I) with EU establishments; it assessed itself as important, but sector and size (large) point to essential: the higher class is shown, to confirm against the national transposition"
+          },
+          {
+            "regime": "EU_AI_ACT",
+            "grade": "applies",
+            "rule": "EU_AI_ACT.2",
+            "why": "Provides AI systems to clients from EU establishments"
+          },
+          {
+            "regime": "IN_DPDP",
+            "grade": "applies",
+            "rule": "IN_DPDP.1",
+            "why": "Processing in India, including Indian employees; most duties from 13 May 2027; s.17(1)(d) may exempt EU clients' data processed under foreign contracts (to confirm)"
+          },
+          {
+            "regime": "IN_CERT_IN",
+            "grade": "applies",
+            "rule": "IN_CERT_IN.1",
+            "why": "Body corporate in India: 6-hour reporting"
+          },
+          {
+            "regime": "US_SEC_CYBER",
+            "grade": "applies",
+            "rule": "US_SEC_CYBER.1",
+            "why": "SEC registrant: Form 8-K Item 1.05"
+          },
+          {
+            "regime": "US_CCPA",
+            "grade": "applies",
+            "rule": "US_CCPA.1",
+            "why": "California data subjects and revenue above USD 26.625M (whether employee data is covered is to be confirmed in S2)"
+          },
+          {
+            "regime": "EU_DORA",
+            "grade": "advisory",
+            "rule": "EU_DORA.5",
+            "why": "ICT provider to EU financial entities: Art. 30 contract terms flow down from clients"
+          },
+          {
+            "regime": "EU_DATA_ACT",
+            "grade": "advisory",
+            "rule": "EU_DATA_ACT.2",
+            "why": "Customer of cloud services in the EU"
+          },
+          {
+            "regime": "UK_CSR_BILL",
+            "grade": "advisory",
+            "rule": "UK_CSR_BILL.1",
+            "why": "Managed service provider in the UK; Bill pending"
+          },
+          {
+            "regime": "US_STATE_PRIVACY",
+            "grade": "advisory",
+            "rule": "US_STATE_PRIVACY.1",
+            "why": "Employees or customers in other comprehensive-law states"
+          },
+          {
+            "regime": "US_DOJ_DSP",
+            "grade": "advisory",
+            "rule": "US_DOJ_DSP.3",
+            "why": "US subsidiary holds US personal data; screening advised"
+          },
+          {
+            "regime": "US_CLOUD_ACT",
+            "grade": "advisory",
+            "rule": "US_CLOUD_ACT.1",
+            "why": "AWS, Azure, SaaS and AI API have US parents"
+          },
+          {
+            "regime": "US_FISA_702",
+            "grade": "advisory",
+            "rule": "US_FISA_702.1",
+            "why": "US-parent providers hold non-US persons' data; status volatile"
+          }
+        ],
+        "maturity": {
+          "executive": {
+            "score": 67,
+            "band": "Managed",
+            "controlsAssessed": 6
+          },
+          "workshop": {
+            "score": 45,
+            "band": "Developing",
+            "controlsAssessed": 17
+          }
+        },
+        "exposure": [
+          {
+            "regime": "EU_GDPR",
+            "rag": "amber",
+            "why": "TIA, sub-processor control, data map and incident process partial"
+          },
+          {
+            "regime": "UK_GDPR",
+            "rag": "amber",
+            "why": "As EU GDPR"
+          },
+          {
+            "regime": "EU_NIS2",
+            "rag": "amber",
+            "why": "Incident reporting, supplier visibility and governance partial"
+          },
+          {
+            "regime": "EU_AI_ACT",
+            "rag": "amber",
+            "why": "AI Act role and risk mapping partial"
+          },
+          {
+            "regime": "US_SEC_CYBER",
+            "rag": "amber",
+            "why": "Incident process untested"
+          },
+          {
+            "regime": "IN_CERT_IN",
+            "rag": "amber",
+            "why": "6-hour reporting untested"
+          },
+          {
+            "regime": "IN_DPDP",
+            "rag": "not_rated",
+            "why": "Obligations apply from 13 May 2027 (upcoming)"
+          },
+          {
+            "regime": "US_CCPA",
+            "rag": "not_rated",
+            "why": "Required controls pending source (4.3 guard)"
+          }
+        ],
+        "largestCap": {
+          "regime": "EU_GDPR",
+          "article": "Art. 83(5)",
+          "basis": "4% of USD 2bn worldwide turnover (USD 80M, converted at the register's dated rate); UK GDPR's 4% cap is the same percentage and is not added",
+          "amount": 80000000,
+          "currency": "USD",
+          "label": "cap, not expected fine"
+        },
+        "topGaps": [
+          {
+            "control": "SOV.RES.LOCATION",
+            "severity": "Critical",
+            "classes": [
+              "financial"
+            ],
+            "regimes": [],
+            "why": "EU bank clients' financial data processed in India although the requirement is EEA-only with held keys (L2)"
+          },
+          {
+            "control": "SOV.KEY.CUSTODY",
+            "severity": "High",
+            "classes": [
+              "financial"
+            ],
+            "regimes": [],
+            "why": "BYOK for L2 data"
+          },
+          {
+            "control": "SOV.OPS.ADMIN_ACCESS",
+            "severity": "High",
+            "classes": [
+              "financial"
+            ],
+            "regimes": [],
+            "why": "Provider access logged but not approved"
+          },
+          {
+            "control": "SOV.BACKUP.LOCATION",
+            "severity": "High",
+            "classes": [
+              "financial"
+            ],
+            "regimes": [],
+            "why": "Backups of EEA-only financial data held in India"
+          },
+          {
+            "control": "SOV.RES.REGION_LOCK",
+            "severity": "High",
+            "classes": [],
+            "regimes": [],
+            "why": "Location rules by convention only"
+          }
+        ],
+        "scopeConfirmations": [],
+        "decisions": []
+      },
+      "reasoning": "EU and UK subsidiaries bring GDPR and UK GDPR in under Art. 3(1) [S8, S15]. The firm assessed itself as an NIS2 important entity, but a managed service provider is an Annex I ICT service management entity and at its size (large) Art. 3(1)(a) points to essential; the rule shows the higher class and asks for confirmation against the national transposition [S5]. The AI Act applies as a provider (Art. 2(1)(a)) [S12]. DORA is advisory: the firm is not a financial entity, but its EU bank clients must flow Art. 30 terms (access, audit, exit assistance) down to it, which is why its weak audit-rights position (reports only) matters commercially [S7]. In India, DPDP applies (Indian employees and processing in India, duties from 13 May 2027; s.17(1)(d) may exempt EU clients' data processed under foreign contracts, status S [S47]) and CERT-In applies (validation row 66). As an SEC registrant it must disclose material incidents within four business days of the materiality determination [S30]. CCPA applies via California data subjects and revenue [S27]; whether employee data is covered is to be confirmed in S2. The critical gap is EU bank clients' financial data processed and backed up in India when the requirement for that class is EEA-only with held keys (L2); location rules are by convention only. Executive mode reads Managed (67) but the workshop reads Developing (45): with one L1 level for all classes, India and the EEA are both allowed zones for every class, and keys and access are not required; the workshop's per-class L2 for EU clients' financial data reveals the gap. This is the reason executive results carry the \"requirement set at one level\" label (7.1) and open question Q3. Largest cap: GDPR Art. 83(5), 4% of USD 2bn (USD 80M before conversion at the register's dated rate); UK GDPR's 4% is the same percentage and is not added.",
+      "sources": [
+        "S5",
+        "S7",
+        "S8",
+        "S12",
+        "S15",
+        "S27",
+        "S30",
+        "S47"
+      ]
+    }
+  ]
+}

@@ -120,6 +120,8 @@ Every maturity question gets "Unknown", scored as risk and shown as "unconfirmed
 
 **Gate S1:** owner approves the design pack in writing; Resilience IQ and Cloud IQ owners confirm the boundary (exit testing, Q8.2 flag).
 
+**Status (14 Oct 2026): approved.** The design pack is [design/DESIGN.md](design/DESIGN.md) with JSON Schemas and `archetypes.json`: 47 questions (17 executive, 15 workshop, 15 triggered follow-ups), 28 controls, 42 regimes (EU/UK, US, APAC). The owner approved it with the recommended defaults for Q1–Q11. As owner of all accelerators, the product owner also confirms the Resilience IQ and Cloud IQ boundary in section 11.
+
 ---
 
 ## S2: Regulatory content and claims register
