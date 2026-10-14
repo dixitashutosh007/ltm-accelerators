@@ -133,6 +133,8 @@ Every maturity question gets "Unknown", scored as risk (D5). Every question carr
 
 **Gate F1:** owner approves the design pack in writing.
 
+**Status (14 Oct 2026): draft ready for owner review.** [design/DESIGN.md](design/DESIGN.md), five JSON Schemas and five reference scenarios with expected outputs. Open questions Q1–Q14 are in DESIGN section 13, each with a recommended default. Sources that the agent could reach only through search results are labelled P or S, and listed in section 14 for F2.
+
 ---
 
 ## F2: Content and claims register

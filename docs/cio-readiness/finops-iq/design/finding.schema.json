@@ -1,0 +1,196 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:ltm:finops-iq:v3:finding",
+  "title": "FinOps IQ v3 finding (and result, need verdict and reference-scenario shapes)",
+  "description": "A finding is created from a capability gap, a lever opportunity, an unknown that blocks a capability or lever, a conflict between answers (consultant-only) or an executive decision (DESIGN.md section 5). Value sits on lever findings only, so it is counted once. This file also defines the result, need-verdict and reference-scenario shapes used by reference-scenarios.json. Draft for owner approval (F1).",
+  "$ref": "#/$defs/finding",
+  "$defs": {
+    "severity": { "enum": ["Critical", "High", "Medium", "Low"] },
+    "findingType": { "enum": ["capability_gap", "lever_opportunity", "scope_confirmation", "conflict", "decision"] },
+    "ownerRole": {
+      "enum": ["CIO", "CFO", "FP&A lead", "Head of Cloud / CCoE", "FinOps lead", "Engineering leads", "Platform / SRE lead", "Procurement / vendor management", "Product owners", "ITAM lead", "Sustainability lead"]
+    },
+    "timeFrame": { "enum": ["0-3 months", "3-6 months", "6-12 months", "12-24 months"] },
+    "platform": { "enum": ["aws", "azure", "gcp", "oci", "ibm", "alibaba", "other_public", "private_cloud", "data_centre", "kubernetes", "saas", "ai"] },
+    "finding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "type", "severity", "title", "businessConsequence", "decisionOrAction", "ownerRole", "timeFrame", "wave", "offeringIds", "basis", "mode"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^F-FIN-([A-Z_]+|LEV-[0-9]{2}|SCOPE-[A-Z0-9_]+|CONFLICT-[0-9]{2}|DECISION-[0-9]{2})$" },
+        "type": { "$ref": "#/$defs/findingType" },
+        "capability": { "$ref": "urn:ltm:finops-iq:v3:facts#/$defs/capabilityId" },
+        "scopes": { "type": "array", "items": { "type": "string", "pattern": "^[a-z_]+(:[a-z_]+)?$" }, "description": "For example 'public_cloud:aws', 'kubernetes'." },
+        "current": { "$ref": "urn:ltm:finops-iq:v3:facts#/$defs/rating" },
+        "target": { "$ref": "urn:ltm:finops-iq:v3:facts#/$defs/level" },
+        "targetSource": { "enum": ["tier_default", "consultant_override", "ambition_override"] },
+        "gap": { "type": "integer", "minimum": 1, "maximum": 3 },
+        "unconfirmed": { "type": "boolean" },
+        "severity": { "$ref": "#/$defs/severity" },
+        "severityTrace": { "type": "array", "items": { "enum": ["gap_1", "gap_2", "gap_3", "foundation_uplift", "value_uplift", "scope_low"] }, "description": "Which ASM-FIN-005 steps produced the severity." },
+        "title": { "type": "string" },
+        "businessConsequence": { "type": "string" },
+        "decisionOrAction": { "type": "string" },
+        "ownerRole": { "$ref": "#/$defs/ownerRole" },
+        "timeFrame": { "$ref": "#/$defs/timeFrame" },
+        "wave": { "enum": [1, 2, 3] },
+        "dependsOn": { "type": "array", "items": { "type": "string" } },
+        "leverIds": { "type": "array", "items": { "$ref": "urn:ltm:finops-iq:v3:facts#/$defs/leverId" } },
+        "evidenceToConfirm": { "type": "string" },
+        "kpis": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["name"],
+            "properties": {
+              "name": { "type": "string" },
+              "target": { "type": "string" },
+              "assumptionId": { "$ref": "urn:ltm:finops-iq:v3:facts#/$defs/assumptionId" }
+            }
+          }
+        },
+        "playbookRefs": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["key", "platform", "level", "verification"],
+            "properties": {
+              "key": { "type": "string" },
+              "platform": { "$ref": "#/$defs/platform" },
+              "level": { "enum": ["platform", "tech_stack", "application"] },
+              "verification": { "type": "string" },
+              "discoveryNeeded": { "type": "string", "description": "Required for application level (area 11)." }
+            }
+          }
+        },
+        "offeringIds": { "type": "array", "minItems": 1, "items": { "$ref": "urn:ltm:finops-iq:v3:facts#/$defs/offeringId" } },
+        "basis": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "urn:ltm:finops-iq:v3:question#/$defs/basis" }
+        },
+        "mode": { "type": "array", "minItems": 1, "items": { "enum": ["executive", "workshop"] } },
+        "consultantOnly": { "type": "boolean", "description": "true for conflict findings." }
+      },
+      "allOf": [
+        { "if": { "properties": { "type": { "const": "capability_gap" } } }, "then": { "required": ["capability", "current", "target", "gap"] } },
+        { "if": { "properties": { "type": { "const": "lever_opportunity" } } }, "then": { "required": ["capability", "leverIds"] } },
+        { "if": { "properties": { "type": { "const": "conflict" } } }, "then": { "required": ["consultantOnly"], "properties": { "consultantOnly": { "const": true } } } }
+      ]
+    },
+    "needVerdict": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["needIndex", "band", "confidence"],
+      "properties": {
+        "needIndex": { "type": "number", "minimum": 0, "maximum": 100 },
+        "baseIndex": { "type": "number", "minimum": 0, "maximum": 100 },
+        "modifiers": { "type": "array", "items": { "type": "object", "additionalProperties": false, "required": ["id", "points"], "properties": { "id": { "type": "string" }, "points": { "type": "number" } } } },
+        "band": { "enum": ["lightweight", "foundations", "material", "act_now"] },
+        "bandLabel": { "type": "string" },
+        "confidence": { "enum": ["High", "Medium", "Low"] }
+      }
+    },
+    "result": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["versions", "mode", "tier", "capabilities", "headline", "findings", "value"],
+      "properties": {
+        "versions": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["engine", "questionSet", "capabilityModel", "leverLibrary", "claimsRegister"],
+          "properties": {
+            "engine": { "type": "string" }, "questionSet": { "type": "string" }, "capabilityModel": { "type": "string" },
+            "leverLibrary": { "type": "string" }, "claimsRegister": { "type": "string" }
+          }
+        },
+        "mode": { "enum": ["executive", "workshop"] },
+        "tier": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["tier", "points"],
+          "properties": { "tier": { "enum": [1, 2, 3] }, "points": { "type": "integer" }, "trace": { "type": "array", "items": { "type": "string" } }, "override": { "type": "boolean" } }
+        },
+        "capabilities": { "type": "array", "items": { "$ref": "urn:ltm:finops-iq:v3:capability#/$defs/capabilityResult" } },
+        "headline": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["atOrAboveTarget", "inScope", "assessed"],
+          "properties": {
+            "atOrAboveTarget": { "type": "integer", "minimum": 0 },
+            "inScope": { "type": "integer", "minimum": 0, "description": "Denominator includes not_assessed capabilities (executive mode: the executive capabilities that have a target)." },
+            "assessed": { "type": "integer", "minimum": 0 },
+            "ltmSummary": { "type": "string", "description": "Optional derived sentence; never caps the profile." }
+          }
+        },
+        "needVerdict": { "$ref": "#/$defs/needVerdict" },
+        "findings": { "type": "array", "items": { "$ref": "#/$defs/finding" } },
+        "levers": { "type": "array", "items": { "$ref": "urn:ltm:finops-iq:v3:lever#/$defs/leverResult" } },
+        "value": { "$ref": "urn:ltm:finops-iq:v3:lever#/$defs/valueSummary" },
+        "coverage": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": { "asked": { "type": "integer" }, "answered": { "type": "integer" }, "unknown": { "type": "integer" }, "blank": { "type": "integer" } }
+        }
+      }
+    },
+    "scenarioSource": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "citation", "url", "status", "checked", "usedFor"],
+      "properties": {
+        "kind": { "enum": ["government_case_study", "provider_customer_story", "published_survey_profile", "provider_documentation"] },
+        "citation": { "type": "string" },
+        "url": { "type": "string", "format": "uri" },
+        "status": { "$ref": "urn:ltm:finops-iq:v3:facts#/$defs/verificationStatus" },
+        "checked": { "type": "string", "format": "date" },
+        "usedFor": { "type": "string", "description": "Which inputs or shape the source supports. Outcomes in sources are never used as benchmarks." }
+      }
+    },
+    "referenceScenario": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "name", "illustrative", "mode", "sources", "inputs", "expected", "reasoning"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^RS[1-9]$" },
+        "name": { "type": "string" },
+        "illustrative": { "const": true },
+        "summary": { "type": "string" },
+        "mode": { "enum": ["executive", "workshop"] },
+        "sources": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/scenarioSource" } },
+        "inputs": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["facts", "answers"],
+          "properties": {
+            "facts": { "type": "object", "description": "Shape of urn:ltm:finops-iq:v3:facts (abridged where a fact is derived from answers)." },
+            "answers": { "type": "object", "description": "Question ID -> option value or level code; facts-setting questions summarised in facts." },
+            "answersNote": { "type": "string", "description": "Which questions are summarised in facts, which follow-ups fired, and hypothesis answers." },
+            "fromSource": { "type": "array", "items": { "type": "string" }, "description": "Inputs taken from the cited source." },
+            "scenarioAssumptions": { "type": "array", "items": { "type": "string" }, "description": "Inputs chosen by LTM to complete the scenario, labelled illustrative." }
+          }
+        },
+        "expected": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["tier", "capabilityProfile", "headline", "topFindings", "value"],
+          "properties": {
+            "tier": { "type": "object" },
+            "capabilityProfile": { "type": "object", "description": "Capability ID -> { rating, target, gap }." },
+            "headline": { "type": "object" },
+            "needVerdict": { "type": "object" },
+            "topFindings": { "type": "array", "items": { "type": "object" } },
+            "findingCount": { "type": "integer", "minimum": 0 },
+            "value": { "type": "object" },
+            "tolerance": { "type": "string", "description": "How close F4/F5 engine output must be, or the difference explained." }
+          }
+        },
+        "reasoning": { "type": "array", "items": { "type": "string" } },
+        "plausibilityCheck": { "type": "string", "description": "Comparison with the source's reported outcome, where one exists, as a sanity check only." }
+      }
+    }
+  }
+}

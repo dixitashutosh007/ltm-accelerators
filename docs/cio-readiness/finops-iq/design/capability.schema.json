@@ -1,0 +1,171 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:ltm:finops-iq:v3:capability",
+  "title": "FinOps capability model (shared by FinOps IQ and Cost IQ) and capability result",
+  "description": "The shared capability module (DESIGN.md sections 2.2 and 3): FinOps Framework domains and capabilities, adapted from the FinOps Framework by the FinOps Foundation under CC BY 4.0 with changes stated; complexity tiers and default targets (LTM heuristics); and the per-capability result shape. Draft for owner approval (F1).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["modelVersion", "frameworkEdition", "attribution", "domains", "capabilities", "tiers"],
+  "properties": {
+    "modelVersion": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$" },
+    "frameworkEdition": { "type": "string", "description": "For example 'FinOps Framework 2026 (published 19 Mar 2026)'." },
+    "attribution": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["text", "licence", "changes", "noEndorsement"],
+      "properties": {
+        "text": { "type": "string", "description": "'Adapted from the FinOps Framework by the FinOps Foundation.'" },
+        "licence": { "const": "CC BY 4.0" },
+        "sourceUrl": { "type": "string", "format": "uri" },
+        "changes": { "type": "string", "description": "What LTM changed: per-scope question sets, Not yet and Unknown ratings, tier targets." },
+        "noEndorsement": { "const": true }
+      }
+    },
+    "domains": {
+      "type": "array",
+      "minItems": 4,
+      "maxItems": 4,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "name", "capabilities"],
+        "properties": {
+          "id": { "enum": ["D1", "D2", "D3", "D4"] },
+          "name": { "enum": ["Understand Usage & Cost", "Quantify Business Value", "Optimize Usage & Cost", "Manage the FinOps Practice"] },
+          "capabilities": { "type": "array", "items": { "$ref": "urn:ltm:finops-iq:v3:facts#/$defs/capabilityId" } }
+        }
+      }
+    },
+    "capabilities": { "type": "array", "minItems": 22, "maxItems": 22, "items": { "$ref": "#/$defs/capability" } },
+    "tiers": { "$ref": "#/$defs/tierModel" }
+  },
+  "$defs": {
+    "targetLevel": {
+      "description": "Default target; null = no default target (shown for information unless the consultant sets one).",
+      "anyOf": [ { "$ref": "urn:ltm:finops-iq:v3:facts#/$defs/level" }, { "type": "null" } ]
+    },
+    "capability": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "domain", "displayName", "displayNameStatus", "relevance", "defaultTargets", "questions", "basis"],
+      "properties": {
+        "id": { "$ref": "urn:ltm:finops-iq:v3:facts#/$defs/capabilityId" },
+        "domain": { "enum": ["D1", "D2", "D3", "D4"] },
+        "displayName": { "type": "string" },
+        "displayNameStatus": { "$ref": "urn:ltm:finops-iq:v3:facts#/$defs/verificationStatus", "description": "P for AUTOMATION_TOOLS_SERVICES until F2 confirms (DESIGN.md 3.1, Q2)." },
+        "newIn2026": { "type": "boolean" },
+        "relevance": { "enum": ["always", "scope"] },
+        "scopeTrigger": {
+          "description": "For relevance = scope: the facts condition that puts the capability in scope. Uses the question condition language.",
+          "$ref": "urn:ltm:finops-iq:v3:question#/$defs/condition"
+        },
+        "defaultTargets": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["tier1", "tier2", "tier3", "assumptionId"],
+          "properties": {
+            "tier1": { "$ref": "#/$defs/targetLevel" },
+            "tier2": { "$ref": "#/$defs/targetLevel" },
+            "tier3": { "$ref": "#/$defs/targetLevel" },
+            "assumptionId": { "const": "ASM-FIN-004" },
+            "runReason": { "type": "string", "description": "Why Run is the Tier 3 target, where it is." }
+          }
+        },
+        "questions": {
+          "type": "array",
+          "description": "Maturity question IDs that rate this capability, each marked core or depth (scope-conditional or follow-up).",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id", "role"],
+            "properties": {
+              "id": { "$ref": "urn:ltm:finops-iq:v3:question#/$defs/questionId" },
+              "role": { "enum": ["core", "scope_conditional", "follow_up"] },
+              "executive": { "type": "boolean" }
+            }
+          }
+        },
+        "leverIds": { "type": "array", "items": { "$ref": "urn:ltm:finops-iq:v3:facts#/$defs/leverId" } },
+        "offeringIds": { "type": "array", "items": { "$ref": "urn:ltm:finops-iq:v3:facts#/$defs/offeringId" } },
+        "costIqPrefill": { "type": "array", "items": { "type": "string", "pattern": "^CIQ\\.FIN-[0-9]{2}$" } },
+        "dependsOn": { "type": "array", "items": { "$ref": "urn:ltm:finops-iq:v3:facts#/$defs/capabilityId" }, "description": "Roadmap dependencies (DESIGN.md 5.4)." },
+        "wave": { "enum": [1, 2, 3] },
+        "basis": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "urn:ltm:finops-iq:v3:question#/$defs/basis" }
+        }
+      }
+    },
+    "tierModel": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["assumptionIds", "spendBandsUsd", "points", "bands"],
+      "properties": {
+        "assumptionIds": { "type": "array", "items": { "$ref": "urn:ltm:finops-iq:v3:facts#/$defs/assumptionId" } },
+        "spendBandsUsd": {
+          "type": "array",
+          "description": "USD-equivalent in-scope spend bands and points, converted with org.tierFxRate only for tiering. Default: <1M=0, 1-10M=1, 10-50M=2, >50M=3.",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["min", "points"],
+            "properties": { "min": { "type": "number", "minimum": 0 }, "max": { "type": "number" }, "points": { "type": "integer", "minimum": 0 } }
+          }
+        },
+        "points": {
+          "type": "array",
+          "description": "Structural points: providers (2 = +1, 3+ = +2), Kubernetes material, AI material, SaaS or licensing in scope, private cloud or data centre in scope, 5+ consuming units.",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id", "when", "points"],
+            "properties": {
+              "id": { "type": "string" },
+              "when": { "$ref": "urn:ltm:finops-iq:v3:question#/$defs/condition" },
+              "points": { "type": "integer", "minimum": 0 }
+            }
+          }
+        },
+        "bands": {
+          "type": "array",
+          "description": "Default: Tier 1 0-2 points, Tier 2 3-5, Tier 3 6+.",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["tier", "minPoints"],
+            "properties": { "tier": { "enum": [1, 2, 3] }, "label": { "enum": ["Focused", "Scaling", "Complex"] }, "minPoints": { "type": "integer", "minimum": 0 }, "maxPoints": { "type": "integer" } }
+          }
+        }
+      }
+    },
+    "capabilityResult": {
+      "description": "Engine output per capability (DESIGN.md 3.3, 3.4).",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["capability", "rating", "target", "gap", "unconfirmed", "answered", "asked"],
+      "properties": {
+        "capability": { "$ref": "urn:ltm:finops-iq:v3:facts#/$defs/capabilityId" },
+        "rating": { "$ref": "urn:ltm:finops-iq:v3:facts#/$defs/rating" },
+        "coreRating": { "$ref": "urn:ltm:finops-iq:v3:facts#/$defs/rating", "description": "Before the at-most-one-level depth adjustment." },
+        "loweredByDepth": { "type": "boolean" },
+        "target": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["level", "source"],
+          "properties": {
+            "level": { "$ref": "#/$defs/targetLevel" },
+            "source": { "enum": ["tier_default", "consultant_override", "ambition_override"] },
+            "reason": { "type": "string" }
+          }
+        },
+        "gap": { "type": ["integer", "null"], "minimum": -3, "maximum": 3, "description": "target index - current index; unknown counts as 0; null when not_in_scope or no target." },
+        "atOrAboveTarget": { "type": "boolean", "description": "false for not_assessed (blank never flatters the headline)." },
+        "unconfirmed": { "type": "boolean" },
+        "asked": { "type": "integer", "minimum": 0 },
+        "answered": { "type": "integer", "minimum": 0 },
+        "mode": { "enum": ["executive", "workshop"] }
+      }
+    }
+  }
+}

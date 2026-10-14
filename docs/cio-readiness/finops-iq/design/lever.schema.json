@@ -1,0 +1,211 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:ltm:finops-iq:v3:lever",
+  "title": "FinOps lever library (shared by FinOps IQ and Cost IQ) and lever result",
+  "description": "The shared lever and value library (DESIGN.md sections 2.2 and 10): addressable base, maximum rate with source, uniform range rule (expected = 1/2 upper, conservative = 1/4 upper), interaction order, caps, ramp, effort, confidence; plus the per-lever result shape the inflation guard tests. Draft for owner approval (F1).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["libraryVersion", "rangeRule", "globalCap", "levers"],
+  "properties": {
+    "libraryVersion": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$" },
+    "rangeRule": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["expectedFactor", "conservativeFactor", "bandHandling", "assumptionIds"],
+      "properties": {
+        "expectedFactor": { "const": 0.5 },
+        "conservativeFactor": { "const": 0.25 },
+        "bandHandling": { "const": "midpoint_for_expected_corners_for_conservative_and_upper" },
+        "assumptionIds": { "type": "array", "items": { "$ref": "urn:ltm:finops-iq:v3:facts#/$defs/assumptionId" } }
+      }
+    },
+    "globalCap": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["shareOfPublicCloudSpend", "appliesTo", "liftedBy", "source"],
+      "properties": {
+        "shareOfPublicCloudSpend": { "type": "number", "minimum": 0, "maximum": 1, "description": "0.29 (D15)." },
+        "appliesTo": { "type": "array", "items": { "enum": ["expected", "upper"] }, "description": "['expected'] per D15; ['expected','upper'] if the owner accepts Q11." },
+        "liftedBy": { "const": "evidence_for_every_capped_lever" },
+        "excludedLevers": { "type": "array", "items": { "$ref": "urn:ltm:finops-iq:v3:facts#/$defs/leverId" }, "description": "LEV-09 (outside the Flexera IaaS/PaaS base)." },
+        "source": { "$ref": "#/$defs/rateSource" }
+      }
+    },
+    "levers": { "type": "array", "minItems": 10, "maxItems": 10, "items": { "$ref": "#/$defs/lever" } }
+  },
+  "$defs": {
+    "case": { "enum": ["conservative", "expected", "upper"] },
+    "rateSource": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["citation", "status", "checked"],
+      "properties": {
+        "ref": { "$ref": "urn:ltm:finops-iq:v3:facts#/$defs/sourceRef" },
+        "claimId": { "$ref": "urn:ltm:finops-iq:v3:facts#/$defs/claimId" },
+        "assumptionId": { "$ref": "urn:ltm:finops-iq:v3:facts#/$defs/assumptionId" },
+        "citation": { "type": "string" },
+        "url": { "type": "string", "format": "uri" },
+        "year": { "type": "integer" },
+        "sample": { "type": "integer", "description": "Survey sample size where the source is published research." },
+        "status": { "$ref": "urn:ltm:finops-iq:v3:facts#/$defs/verificationStatus" },
+        "checked": { "type": "string", "format": "date" },
+        "reviewBy": { "type": "string", "format": "date", "description": "90 days after checked for volatile items (D14)." }
+      }
+    },
+    "maxRate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind"],
+      "properties": {
+        "kind": { "enum": ["published_by_provider", "arithmetic", "evidence", "ltm_heuristic_formula", "not_quantified"] },
+        "formula": { "type": "string", "description": "For example '1 - 50/168' (LEV-04) or 'max(0, 1 - r/0.65)' (LEV-07)." },
+        "value": { "type": "number", "minimum": 0, "maximum": 1 },
+        "byProvider": {
+          "type": "object",
+          "propertyNames": { "$ref": "urn:ltm:finops-iq:v3:facts#/$defs/providerId" },
+          "additionalProperties": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["quantified"],
+            "properties": {
+              "quantified": { "type": "boolean", "description": "false until a trusted source exists (DESIGN.md 10.2, Q8)." },
+              "value": { "type": "number", "minimum": 0, "maximum": 1 },
+              "instrument": { "type": "string", "description": "For example 'EC2 Instance Savings Plans / Standard RIs'." },
+              "source": { "$ref": "#/$defs/rateSource" }
+            }
+          }
+        },
+        "source": { "$ref": "#/$defs/rateSource" }
+      }
+    },
+    "lever": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "name", "type", "capability", "interactionOrder", "addressableBase", "maxRate", "quantifiedIn", "ramp", "effortFteMonths", "offeringIds"],
+      "properties": {
+        "id": { "$ref": "urn:ltm:finops-iq:v3:facts#/$defs/leverId" },
+        "name": { "type": "string" },
+        "type": { "enum": ["rate", "usage"] },
+        "capability": { "$ref": "urn:ltm:finops-iq:v3:facts#/$defs/capabilityId", "description": "The capability whose gap blocks the lever (finding link)." },
+        "scopeWhen": { "$ref": "urn:ltm:finops-iq:v3:question#/$defs/condition" },
+        "interactionOrder": { "type": "integer", "minimum": 1, "maximum": 10, "description": "DESIGN.md 10.4: LEV-03=1, LEV-04=2, LEV-02=3, LEV-07=4, LEV-05=5, LEV-10=6, LEV-09=7, LEV-06=8, LEV-01=9; LEV-08=10 (not quantified)." },
+        "addressableBase": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["formula", "inputs"],
+          "properties": {
+            "formula": { "type": "string" },
+            "inputs": { "type": "array", "items": { "type": "string" }, "description": "Fact paths; any unknown input = lever not quantified." },
+            "reducedBy": { "type": "array", "items": { "$ref": "urn:ltm:finops-iq:v3:facts#/$defs/leverId" }, "description": "Levers whose removed spend reduces this base (no double counting)." },
+            "excludes": { "type": "array", "items": { "type": "string" }, "description": "Spend excluded from the base, for example kubernetesSpend and gpuSpend for LEV-04." },
+            "cap": { "type": "string", "description": "Base cap, for example 'P_c' for LEV-02." }
+          }
+        },
+        "maxRate": { "$ref": "#/$defs/maxRate" },
+        "neverWith": { "type": "array", "items": { "$ref": "urn:ltm:finops-iq:v3:facts#/$defs/leverId" }, "description": "Levers that cannot apply to the same usage (LEV-01 and LEV-06)." },
+        "quantifiedIn": { "type": "array", "items": { "enum": ["executive", "workshop", "none"] } },
+        "evidenceFreshnessDays": { "type": "integer", "minimum": 1 },
+        "ramp": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["year1Share", "assumptionId"],
+          "properties": {
+            "year1Share": { "type": ["number", "string"], "description": "Number 0-1, or 'renewal_share' for LEV-09." },
+            "year2Share": { "const": 1 },
+            "year3Share": { "const": 1 },
+            "assumptionId": { "const": "ASM-FIN-045" }
+          }
+        },
+        "effortFteMonths": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["tier1", "tier2", "tier3", "assumptionId"],
+          "properties": {
+            "tier1": { "type": "number", "minimum": 0 },
+            "tier2": { "type": "number", "minimum": 0 },
+            "tier3": { "type": "number", "minimum": 0 },
+            "ongoingShareOfOneOff": { "type": "number", "minimum": 0, "maximum": 1, "description": "0.2 per year (ASM-FIN-047)." },
+            "assumptionId": { "const": "ASM-FIN-046" }
+          }
+        },
+        "confidenceRule": { "type": "string" },
+        "offeringIds": { "type": "array", "minItems": 1, "items": { "$ref": "urn:ltm:finops-iq:v3:facts#/$defs/offeringId" } },
+        "playbookKey": { "type": "string", "description": "WS-S3 catalogue key (F8)." },
+        "label": { "type": "string", "description": "One-line basis shown in the report (DESIGN.md 10.12)." }
+      }
+    },
+    "money": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["conservative", "expected", "upper"],
+      "properties": {
+        "conservative": { "type": "number" },
+        "expected": { "type": "number" },
+        "upper": { "type": "number" }
+      }
+    },
+    "leverResult": {
+      "description": "Engine output per lever. The inflation guard asserts: value <= base x maxRate per case; conservative <= expected <= upper; year1 <= runRate; quantified only with every base input present.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["lever", "status", "confidence"],
+      "properties": {
+        "lever": { "$ref": "urn:ltm:finops-iq:v3:facts#/$defs/leverId" },
+        "status": { "enum": ["quantified", "identified_not_quantified", "not_in_scope"] },
+        "notQuantifiedReason": { "enum": ["missing_input", "evidence_stale", "rate_unsourced_for_provider", "executive_mode", "not_quantified_in_v1"] },
+        "missingInputs": { "type": "array", "items": { "type": "string" } },
+        "evidenceNeeded": { "type": "string" },
+        "base": { "$ref": "#/$defs/money", "description": "Addressable base per case after interactions." },
+        "maxRateApplied": { "type": "number", "minimum": 0, "maximum": 1 },
+        "grossRunRate": { "$ref": "#/$defs/money" },
+        "grossYear1": { "$ref": "#/$defs/money" },
+        "cappedBy": { "type": "array", "items": { "enum": ["base", "published_max", "global_expected", "global_upper"] } },
+        "confidence": { "enum": ["High", "Medium", "Low", "n/a"] },
+        "fields": { "type": "object", "description": "Engine paths for the trace test (data-field)." },
+        "assumptionIds": { "type": "array", "items": { "$ref": "urn:ltm:finops-iq:v3:facts#/$defs/assumptionId" } },
+        "sourceRefs": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "valueSummary": {
+      "description": "Headline value block. Totals reconcile: sum of quantified leverResult values per case = grossRunRate; gross - costs = net.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["basis", "label", "confidence"],
+      "properties": {
+        "basis": { "enum": ["lever_model", "not_quantified"] },
+        "label": { "const": "Indicative value range (conservative / expected / upper), net of estimated implementation cost: not a savings commitment; evidence validation required." },
+        "currency": { "type": "string", "pattern": "^[A-Z]{3}$" },
+        "grossRunRate": { "$ref": "#/$defs/money" },
+        "grossYear1": { "$ref": "#/$defs/money" },
+        "oneOffCost": { "type": "number", "minimum": 0 },
+        "annualRunCost": { "type": "number", "minimum": 0 },
+        "toolingProvided": { "type": "boolean" },
+        "externalSupportIncluded": { "type": "boolean", "description": "false until WS-S5 ranges exist (Q10)." },
+        "netYear1": { "$ref": "#/$defs/money" },
+        "netRunRate": { "$ref": "#/$defs/money" },
+        "net3Year": { "$ref": "#/$defs/money" },
+        "operatingModelInvestment": { "type": "object", "description": "Shown beside, not netted (Q12)." },
+        "globalCap": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "expectedCap": { "type": "number" },
+            "expectedBinding": { "type": "boolean" },
+            "upperCap": { "type": "number" },
+            "upperBinding": { "type": "boolean" }
+          }
+        },
+        "confidence": { "enum": ["High", "Medium", "Low", "n/a"] },
+        "hypothesis": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "band": { "type": "string" },
+            "amountRange": { "type": "array", "items": { "type": "number" } },
+            "explanations": { "type": "array", "items": { "enum": ["levers_not_quantified", "unallocated_not_waste", "expected_is_half_of_maximum"] } }
+          }
+        }
+      }
+    }
+  }
+}
