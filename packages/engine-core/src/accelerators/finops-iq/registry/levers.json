@@ -1,5 +1,5 @@
 {
-  "libraryVersion": "1.1.0",
+  "libraryVersion": "1.2.0",
   "statusAsOf": "2026-10-14",
   "rangeRule": {
     "expectedFactor": 0.5,
@@ -46,7 +46,7 @@
       },
       "interactionOrder": 9,
       "addressableBase": {
-        "formula": "P_c x max(0, S - C - n_u - t_u) x (1 - computeRemoved(LEV-02, LEV-03, LEV-07, LEV-10) / P_c), per provider; t_u = (tolerant - Spot) x (1 - C) where LEV-06 is quantified",
+        "formula": "P_c x max(0, S - C - n_u - t_u) x (1 - computeRemoved(LEV-02, LEV-03, LEV-07, LEV-10) / P_c), per provider; S capped at 1 - spotShare in the workshop (Spot usage is never committed, F5 review M3); n_u = nonProd x (1 - scheduled) x (P_c - kubernetesSpend - gpuSpend) / P_c, the non-production LEV-04 acts on (F5 review H1); t_u = (tolerant - Spot) x (1 - C) where LEV-06 is quantified",
         "inputs": [
           "spend.byScope",
           "base.computeShare",

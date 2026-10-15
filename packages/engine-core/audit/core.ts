@@ -19,6 +19,8 @@ export interface EngineAudit {
   bands?: { counts: Record<string, number>; best: string; worst: string; unreachable: string[] };
   sensitivity: Array<{ headline: string; top: Array<{ qid: string; swing: number }>; share: number | null; max: number; byQuestion?: Record<string, number> }>;
   dead: string[];
+  /** F5 review H1: a better answer (one step up the adapter's ladder) moving a headline the wrong way. */
+  monotonicity: Array<{ headline: string; violations: number; examples: string[] }>;
   missing: Array<{ headline: string; meanShift: number; worstProfileShift: number }>;
 }
 
@@ -52,8 +54,21 @@ export function auditEngine(a: Adapter, o: AuditOptions = REPORT_OPTIONS): Engin
   const swings: Record<string, Record<string, number>> = Object.fromEntries(a.headlines.map(h => [h.name, {}]));
   const touched = new Set<string>();
   const bases = [...inputs.slice(0, o.bases), ...(a.livenessBases?.() ?? [])];
+  const mono = (a.thresholds?.monotone ?? []).map(m => ({ ...m, violations: 0, examples: [] as string[] }));
   for (const base of bases) {
     const baseRes = a.evaluate(base);
+    if (mono.length && a.ladder) for (const q of a.questions) {
+      const steps = a.ladder(q.id);
+      if (!steps.length) continue;
+      const rs = steps.map(v => { const inp = a.withAnswer(base, q.id, v); return { inp, res: a.evaluate(inp) }; });
+      for (let i = 1; i < rs.length; i++) for (const m of mono) {
+        const h = a.headlines.find(x => x.name === m.headline)!;
+        const lo = h.get(rs[i - 1].res, rs[i - 1].inp), hi = h.get(rs[i].res, rs[i].inp);
+        if (typeof lo !== 'number' || typeof hi !== 'number') continue;
+        const wrong = m.better === 'lower' ? hi > lo + 1e-9 : hi < lo - 1e-9;
+        if (wrong && !m.except?.(rs[i].inp, q.id)) { m.violations++; if (m.examples.length < 3) m.examples.push(`${q.id} ${JSON.stringify(steps[i - 1])} -> ${JSON.stringify(steps[i])}: ${lo} -> ${hi}`); }
+      }
+    }
     for (const q of a.questions) {
       const vals: Record<string, number[]> = Object.fromEntries(a.headlines.map(h => [h.name, []]));
       for (const v of a.variants(q.id)) {
@@ -98,7 +113,8 @@ export function auditEngine(a: Adapter, o: AuditOptions = REPORT_OPTIONS): Engin
     return { headline: h.name, meanShift: sign * (n ? sum / n : 0), worstProfileShift: sign * ((w1 ?? 0) - (w0 ?? 0)) };
   });
 
-  return { id: a.id, name: a.name, ranges, bands, sensitivity, dead, missing };
+  const monotonicity = mono.map(m => ({ headline: m.headline, violations: m.violations, examples: m.examples }));
+  return { id: a.id, name: a.name, ranges, bands, sensitivity, dead, monotonicity, missing };
 }
 
 /**
@@ -117,6 +133,7 @@ export function thresholdBreaches(a: Adapter, e: EngineAudit): string[] {
     if (m.meanShift > 1e-9) out.push(`${e.id}: missing data flatters ${m.headline} (mean shift ${m.meanShift})`);
     if (m.worstProfileShift > 1e-9) out.push(`${e.id}: missing data flatters ${m.headline} (worst profile ${m.worstProfileShift})`);
   }
+  for (const m of e.monotonicity) if (m.violations) out.push(`${e.id}: a better answer moves ${m.headline} the wrong way ${m.violations} times (${m.examples.join('; ')})`);
   for (const [headline, limit] of Object.entries(t.maxSingleAnswerSwing)) {
     const s = e.sensitivity.find(x => x.headline === headline);
     if (!s) { out.push(`${e.id}: no headline ${headline}`); continue; }

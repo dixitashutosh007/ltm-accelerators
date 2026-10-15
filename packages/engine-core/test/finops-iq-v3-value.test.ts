@@ -599,10 +599,14 @@ describe('FinOps IQ v3 value: model rules (DESIGN.md 10)', () => {
     expect(small.findings.find(f => f.id === 'F-FIN-USAGE_OPTIMIZATION')).toMatchObject({ severity: 'Medium', severityTrace: ['gap_1'] });
   });
 
-  it('raises DECISION-02 when the usage and Spot moves remove all steady usage above coverage (RS3)', () => {
-    const rs3 = scenarioRuns.find(x => x.label === 'RS3')!.r;
-    expect(rs3.findings.find(f => f.id === 'F-FIN-DECISION-02')).toMatchObject({ type: 'decision', severity: 'High', wave: 2, capability: 'RATE_OPTIMIZATION' });
-    for (const id of ['RS1', 'RS2', 'RS4', 'RS5']) expect(scenarioRuns.find(x => x.label === id)!.r.findings.some(f => f.id === 'F-FIN-DECISION-02'), id).toBe(false);
+  it('raises DECISION-02 when the usage and Spot moves remove all steady usage above coverage (RS3 without its clusters and GPUs)', () => {
+    // F5 review H1: in RS3 itself most non-production runs in clusters, which LEV-04 does not schedule, so it stays in
+    // the steady pool and DECISION-02 no longer applies (F5-scenario-diffs.md V13). Without clusters and GPUs it does.
+    const s = SCENARIOS.find(x => x.id === 'RS3')!;
+    const input = JSON.parse(JSON.stringify(scenarioInput(s)));
+    input.facts.footprint.scopes = input.facts.footprint.scopes.filter((x: string) => !['kubernetes', 'ai_platform_gpu'].includes(x));
+    expect(evaluateFinOpsIqV3(input).findings.find(f => f.id === 'F-FIN-DECISION-02')).toMatchObject({ type: 'decision', severity: 'High', wave: 2, capability: 'RATE_OPTIMIZATION' });
+    for (const id of ['RS1', 'RS2', 'RS3', 'RS4', 'RS5']) expect(scenarioRuns.find(x => x.label === id)!.r.findings.some(f => f.id === 'F-FIN-DECISION-02'), id).toBe(false);
   });
 
   it('adds the need modifier when the expected gross value is 5% of P or more (DESIGN.md 9)', () => {
@@ -625,7 +629,8 @@ describe('FinOps IQ v3 value: model rules (DESIGN.md 10)', () => {
 const VALUE_DIFFS: Record<string, { levers: string[]; totals: boolean; cases?: string[] }> = {
   RS2: { levers: ['LEV-06'], totals: true },
   // RS3's upper case is capped: a smaller LEV-06 changes the pro-rata cap scale of every lever (the capped total is unchanged).
-  RS3: { levers: ['LEV-06'], totals: true, cases: ['upper'] },
+  // V13 (F5 review H1): cluster non-production stays in LEV-01's steady pool, so LEV-01 is quantified above zero.
+  RS3: { levers: ['LEV-06', 'LEV-01'], totals: true, cases: ['upper'] },
   RS4: { levers: ['LEV-01', 'LEV-06'], totals: true }
 };
 const within = (a: number, b: number, rel = 0.01) => Math.abs(a - b) <= Math.max(2, Math.abs(b) * rel);

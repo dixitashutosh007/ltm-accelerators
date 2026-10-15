@@ -6904,7 +6904,7 @@
       ],
       "kind": "heuristic",
       "jurisdiction": "global",
-      "statement": "LTM need verdict (executive mode only): need index 0-100 = mean over executive capabilities with a target of (gap / 3) x 100, with Unknown, and any capability with a question left blank, counted as the maximum gap (the target index); urgency modifiers +10 at Tier 2 and +20 at Tier 3, +10 if 12-month spend growth is 20% or more, +10 if AI is in scope, and +10 if the expected gross run-rate value is 5% or more of in-scope public cloud spend; capped at 100. Hypothesis answers are never scored. Bands: 0-25 'Lightweight practices sufficient at current scale'; 26-50 'Targeted improvements needed now'; 51-75 'Material exposure: act this year'; 76-100 'Act now'.",
+      "statement": "LTM need verdict (executive mode only): need index 0-100 = mean over executive capabilities with a target of (gap / 3) x 100, with Unknown, and any capability with a question left blank, counted as the maximum gap (the target index); urgency modifiers +10 at Tier 2 and +20 at Tier 3, +10 if 12-month spend growth is 20% or more, +10 if AI is in scope, and +10 if the expected gross run-rate value is 5% or more of in-scope public cloud spend, or the same 10 points when OP-06 is unanswered and an answer would reach it (CLM-FIN-177); capped at 100. The verdict is withheld while unknown spend could change the tier, and unknown growth adds no points but is disclosed (CLM-FIN-178). Hypothesis answers are never scored. Bands: 0-25 'Lightweight practices sufficient at current scale'; 26-50 'Targeted improvements needed now'; 51-75 'Material exposure: act this year'; 76-100 'Act now'.",
       "source": {
         "url": "https://github.com/dixitashutosh007/ltm-accelerators/blob/main/docs/cio-readiness/finops-iq/design/DESIGN.md",
         "title": "LTM FinOps IQ F1 design pack (approved by the product owner, 14 Oct 2026)",
@@ -8013,7 +8013,7 @@
       ],
       "kind": "heuristic",
       "jurisdiction": "global",
-      "statement": "Unanswered value input in the need verdict (executive mode): when OP-06, which sets the scheduled share of non-production used by the value range, is left blank or answered Don't know and the 5% value modifier is not reached on the figures shown, the need index adds the same 10 points if any answered OP-06 option would reach it, so leaving OP-06 unanswered never lowers the need index. No value figure is shown for it.",
+      "statement": "Unanswered value input in the need verdict (executive mode): when OP-06, which sets the scheduled share of non-production used by the value range, is left blank or answered Don't know and the 5% value modifier is not reached on the figures shown, the need index adds the same 10 points if any answered OP-06 option would reach it, so leaving OP-06 unanswered never lowers the need index. The verdict says \"Scheduling answer missing: counted at the highest need an answer could imply\"; no value figure is shown for it.",
       "source": {
         "url": "https://github.com/dixitashutosh007/ltm-accelerators/blob/main/docs/cio-readiness/finops-iq/design/DESIGN.md",
         "title": "LTM FinOps IQ F1 design pack (approved by the product owner, 14 Oct 2026)",
@@ -8028,6 +8028,30 @@
       "lastReviewed": "2026-10-15",
       "nextReview": "2027-04-14",
       "basisNote": "DESIGN 9 counts a blank capability at the maximum gap so that a blank never lowers need; the F5 audit found that a blank or Unknown OP-06 could still lower need by removing the value modifier, and this rule closes that gap.",
+      "notes": "F5 scoring-audit rule built by the builder for the practice-lead review; it extends DESIGN.md section 9 and awaits the product owner's decision at the F5 gate, so verification is P. LTM heuristic, not a market fact."
+    },
+    {
+      "id": "CLM-FIN-178",
+      "accelerators": [
+        "finops-iq"
+      ],
+      "kind": "heuristic",
+      "jurisdiction": "global",
+      "statement": "Unknown spend and growth in the executive need verdict: when an annual spend row is unknown and a stated spend could put the estate in a higher complexity tier, the verdict is not shown (\"Not available: annual spend is needed to set the tier, the targets and the verdict\") and the targets are labelled provisional. When growth is not known it adds no urgency points; the verdict states that the index would be 10 points higher at 20% growth or more, and confidence is Low.",
+      "source": {
+        "url": "https://github.com/dixitashutosh007/ltm-accelerators/blob/main/docs/cio-readiness/finops-iq/design/DESIGN.md",
+        "title": "LTM FinOps IQ F1 design pack (approved by the product owner, 14 Oct 2026)",
+        "publisher": "LTM",
+        "article": "9 (need verdict); F5 practice-lead review H2 and D4"
+      },
+      "verification": "P",
+      "checkedOn": "2026-10-15",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "finops-cost-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-15",
+      "nextReview": "2027-04-14",
+      "basisNote": "A missing fact must not make the verdict look less urgent (F5 review H2); adding urgency for an unknown forecast would inflate it, so growth is disclosed instead (D4).",
       "notes": "F5 scoring-audit rule built by the builder for the practice-lead review; it extends DESIGN.md section 9 and awaits the product owner's decision at the F5 gate, so verification is P. LTM heuristic, not a market fact."
     }
   ]

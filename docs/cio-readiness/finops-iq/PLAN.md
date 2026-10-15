@@ -447,6 +447,42 @@ Every maturity question gets "Unknown", scored as risk (D5). Every question carr
   - the back-test before any evidence lift of the cap needs past engagements (Phase 3 item 3.2);
   - practice-lead review of this phase (item 5).
 
+- **Practice-lead review (15 Oct 2026, [F5-review.md](design/F5-review.md)): "changes required"; fixes applied on top of 4406f13, not committed.** Engine 3.5.0, rules 1.5.0, value model 1.2.0, lever library 1.2.0, question set 3.2.0.
+  - **H1, fixed.** Better scheduling could raise the need index in Kubernetes estates, because LEV-01's `n_u` removed cluster non-production that LEV-04 never schedules. Now `n_u` covers only the non-production LEV-04 acts on.
+    - Need-index monotonicity is its own CI threshold, in the audit test and in `audit/core.ts`. The one named exception is OP-06 with a stated 72% instrument, above LEV-04's 70.2%, and only through the value modifier.
+    - New tests: the band property (one answer crosses at most one band); a Kubernetes and 72%-instrument executive audit estate.
+    - F5-notes section 1 is corrected, and `value_input_unanswered` now imports the least mature answer's need.
+  - **H2, fixed.** When unknown spend could change the tier, the executive need verdict is withheld ("Not available: annual spend is needed to set the tier, the targets and the verdict") and the targets are labelled provisional (ASM-FIN-087, CLM-FIN-178, pending owner).
+    - The missing-data checks now cover blank facts: spend rows, growth, compute, steady, coverage, non-production and cluster spend.
+    - SCORING_AUDIT item 2 stays open until the owner confirms D4.
+  - **H3, fixed.** RS7 and RS8 were re-built from what their sources say, with expectations written first as scenario version 1.1.0-f5, with a changelog. The BP, Banco BV and Generali sources are now V (opened by the practice lead).
+    - RS7: Cloud Scheduler test shutdown (OP-06 Walk), GKE idle resizing (OP-05 Crawl), growth 10%.
+    - RS8: Spot VM node pools (OP-08 Walk, Spot 10% of compute); cluster spend chosen independently of the case's outcome figures.
+  - **M1, M2, M3, fixed.**
+    - M1: a modifier is never both pending and applied, and the unanswered-value modifier carries its client wording.
+    - M2: RS6 reads BP's "encourages" as Crawl, as a 2019 profile assessed as if in 2026.
+    - M3: in the workshop, LEV-01 never counts usage on Spot (steady share capped at 1 − spotShare; Spot share required); `spotShare` is a share of compute in DESIGN, VB-03 and the formula; there is an inflation-guard bound test; RS9's steady share is 35%.
+  - **D4 as recommended.** Unknown growth adds 0 points, is disclosed as a pending entry (10 points higher at 20% or more, with the alternative band), and gives Low confidence.
+  - **Low items.**
+    - L1: CLM-FIN-127 updated.
+    - L2: DESIGN 9 band label updated.
+    - L3: rules `statusAsOf` updated.
+    - L5: customer names are kept to internal files, as stated in reference-scenarios-f5.json.
+    - L4 and L6 need action later: CLM-FIN-177 and 178 point to `main` and need the URL checked on merge; the F7 report must explain the two question counts.
+  - **Results.** RS6 to RS9 v1.1 match their re-written expectations exactly. RS6: 6 of 8, need 18.3, USD 2.32M expected. RS7: 3 of 8, need 45.0, BRL 8.00M. RS8: 14 of 20, CHF 0.46M, upper capped. RS9: 16 of 18, EUR 0.77M.
+    - F1 RS3 changes (V13): LEV-01 is now quantified, DECISION-02 is gone, expected gross USD 3.66M.
+    - Every other existing golden changes only in its version stamp, apart from two pending-wording and Spot-share findings changes (F5-notes section 6).
+  - **Tests.**
+    - `finops-iq-v3-audit.test.ts`: 99 tests;
+    - `finops-iq-v3.test.ts`: 102;
+    - `finops-iq-v3-value.test.ts`: 54.
+
+    `npm test`: 552 engine tests pass, and so does `npm run audit:engines`.
+  - **Owner decisions still open:**
+    - **H4, before F7:** the VB-02 coverage denominator (S − C or S × (1 − C)), which drives RS6's DECISION-02. The reviewer recommends re-wording VB-02 to "share of steady compute covered".
+    - **D1 to D4 and D5 as listed in F5-review.md.**
+  - **Left for later, M5:** a separate post-hoc plausibility back-test per scenario. The scenario diffs carry first plausibility lines, outcomes used for comparison only.
+
 ---
 
 ## F6: One page with executive, workshop and client modes (WS-S7)

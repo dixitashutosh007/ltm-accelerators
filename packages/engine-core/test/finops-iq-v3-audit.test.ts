@@ -73,7 +73,7 @@ function amount(r: () => number, lo: number, hi: number, pUnknown = 0.1, pBand =
 function randomFacts(r: () => number): Facts {
   const providers = subset(r, ['aws', 'azure', 'gcp'], 0.5);
   if (!providers.length) providers.push(pick(r, ['aws', 'azure', 'gcp']));
-  const scopes = ['public_cloud', ...subset(r, ['kubernetes', 'ai_api', 'saas', 'licensing', 'data_centre'], 0.3)];
+  const scopes = ['public_cloud', ...subset(r, ['kubernetes', 'ai_api', 'saas', 'licensing', 'data_centre'], 0.4)];
   const byScope: Record<string, any> = {};
   for (const p of providers) byScope[p] = amount(r, 1_000_000, 60_000_000, 0.05, 0.3, 0);
   const base: Record<string, any> = {};
@@ -81,6 +81,8 @@ function randomFacts(r: () => number): Facts {
   share('computeShare', 0.3, 0.9); share('steadyStateShare'); share('eligibleCoverage'); share('nonProdShare', 0, 0.5);
   share('nonProdScheduledShare'); share('interruptionTolerantShare', 0, 0.4); share('spotShare', 0, 0.4);
   if (scopes.includes('kubernetes')) { base.kubernetesSpend = amount(r, 0, 8_000_000, 0.1, 0.2, 0); share('kubernetesRequestUtilisation', 0.1, 0.9); }
+  // F5 review H1: some estates state a commitment instrument, including the 72% ones above LEV-04's 70.2%.
+  if (r() < 0.35) base.commitmentInstrument = Object.fromEntries(providers.map(p => [p, pick(r, ({ aws: ['ec2_instance_sp_or_ri', 'compute_sp'], azure: ['reservations', 'savings_plan'], gcp: ['resource_cud', 'memory_optimised_cud'] } as any)[p])]));
   return {
     org: { currency: 'USD', consumingUnits: pick(r, ['1', '2-4', '5-19', '20+']) },
     footprint: { publicCloudProviders: providers, scopes },
@@ -286,7 +288,7 @@ describe('FinOps IQ v3 audit: no dead questions, every rating reachable (PLAN F5
   });
 
   it('every need verdict band is reachable in executive mode (best and worst answers included)', () => {
-    const bands = new Set(CASES.filter(x => x.input.mode === 'executive').map(x => evaluateFinOpsIqV3(x.input).needVerdict!.band));
+    const bands = new Set(CASES.filter(x => x.input.mode === 'executive').map(x => evaluateFinOpsIqV3(x.input).needVerdict?.band).filter((b): b is string => !!b));
     for (const f of [ADAPTER.executive.extremes.best(), ADAPTER.executive.extremes.worst()]) bands.add(evaluateFinOpsIqV3(f).needVerdict!.band);
     for (const level of ORDER) bands.add(evaluateFinOpsIqV3(allAt('executive', level)).needVerdict!.band);
     expect([...bands].sort()).toEqual(R.needVerdict.bands.map((b: any) => b.id).sort());
@@ -352,7 +354,14 @@ describe('FinOps IQ v3 audit: single-answer limit (PLAN F5 item 2; F5-notes.md)'
         for (const c of a.capabilities) if (c.capability !== q.capability && (c.rating !== cap(b, c.capability).rating || c.gap !== cap(b, c.capability).gap)) fail(`${id} moves ${c.capability}`);
         if (q.role !== 'core' && hasCore && Math.abs(own(a) - own(b)) > 1) fail(`depth ${id} moves ${q.capability} ${Math.abs(own(a) - own(b))} levels`);
       }
-      for (let i = 2; i < rs.length; i++) if (Math.abs(own(rs[i]) - own(rs[i - 1])) > 1) fail(`one step of ${id} moves ${q.capability} ${Math.abs(own(rs[i]) - own(rs[i - 1]))} levels`);
+      for (let i = 2; i < rs.length; i++) {
+        // A step that switches on a follow-up of the same capability (OP-02 when OP-01 drops to Crawl) which the client
+        // left blank adds that blank's own effect (rated Unknown, one level at most): measured without it (F5-notes.md 2).
+        const triggeredBlank = [rs[i], rs[i - 1]].some(r => r.questions.asked.some(qid => Q.get(qid).capability === q.capability && Q.get(qid).role === 'follow_up' && qid !== id && x.input.answers[qid] === undefined)
+          && !(rs[i].questions.asked.join() === rs[i - 1].questions.asked.join()));
+        const d = Math.abs(own(rs[i]) - own(rs[i - 1]));
+        if (d > (triggeredBlank ? 2 : 1)) fail(`one step of ${id} moves ${q.capability} ${d} levels`);
+      }
     }
   }, 600_000);
 
@@ -364,7 +373,7 @@ describe('FinOps IQ v3 audit: single-answer limit (PLAN F5 item 2; F5-notes.md)'
       if (swing(gapCount) > 1) fail(`${id}: gap count swing ${swing(gapCount)}`);
       if (swing(r => r.headline.atOrAboveTarget) > 1) fail(`${id}: at-target swing ${swing(r => r.headline.atOrAboveTarget)}`);
       if (swing(totalGap) > 3) fail(`${id}: total gap swing ${swing(totalGap)}`);
-      if (x.input.mode === 'executive') {
+      if (x.input.mode === 'executive' && base.needVerdict) {
         const n = base.capabilities.filter(c => EXECUTIVE_CAPABILITIES.has(c.capability) && c.target.level !== null && c.rating !== 'not_in_scope').length;
         const limit = 100 / n + 0.1 + (feedsValue('executive', id) ? 10 : 0);
         const s = swing(r => r.needVerdict!.needIndex);
@@ -377,6 +386,126 @@ describe('FinOps IQ v3 audit: single-answer limit (PLAN F5 item 2; F5-notes.md)'
       }
     }
   }, 600_000);
+});
+
+/* ---------- 5b. Need index: monotone, one band per answer, missing facts (F5 review H1, H2, M1, D3, D4) ---------- */
+
+/** F5-notes.md 1: OP-06 with a stated commitment instrument above LEV-04's 70.2% (AWS EC2 Instance SP or RI, Azure reservations, 72%). */
+const highInstrument = (input: FinOpsIqV3Input, id: string) =>
+  id === 'OP-06' && Object.values((input.facts.base as any)?.commitmentInstrument ?? {}).some(i => ['ec2_instance_sp_or_ri', 'reservations'].includes(i as string));
+const bandIndex = (r: FinOpsIqV3Result) => R.needVerdict.bands.findIndex((b: any) => b.id === r.needVerdict!.band);
+
+describe('FinOps IQ v3 audit: the need index is monotone and one answer crosses at most one band (F5 review H1, D3)', () => {
+  itCases('a better answer never makes the verdict more urgent (DESIGN 9); the only named exception is OP-06 with a stated 72% instrument, and only through the value modifier', (x, fail) => {
+    if (x.input.mode !== 'executive') return;
+    const base = evaluateFinOpsIqV3(x.input);
+    if (!base.needVerdict) return; // withheld: depends on the facts only
+    for (const id of asked(base)) {
+      const rs = ladder(id).map(v => evaluateFinOpsIqV3(withAnswer(x.input, id, v)));
+      for (let i = 1; i < rs.length; i++) {
+        const [lo, hi] = [rs[i - 1].needVerdict!, rs[i].needVerdict!];
+        if (hi.needIndex <= lo.needIndex + 1e-9) continue;
+        const step = `${id} ${JSON.stringify(ladder(id)[i - 1])} -> ${JSON.stringify(ladder(id)[i])}: ${lo.needIndex} -> ${hi.needIndex}`;
+        const viaValueOnly = hi.baseIndex <= lo.baseIndex + 1e-9 && hi.modifiers.some(m => m.id === VR.scoring.needModifierId) && !lo.modifiers.some(m => m.id === VR.scoring.needModifierId);
+        if (!(highInstrument(x.input, id) && viaValueOnly)) fail(step);
+      }
+    }
+  });
+
+  it('the named exception exists only where the instrument rate is above LEV-04\'s maximum (72% > 70.2%)', () => {
+    const maxima = (levers as any).levers.find((l: any) => l.id === 'LEV-01').maxRate.byProvider;
+    const sched = (levers as any).levers.find((l: any) => l.id === 'LEV-04').maxRate.value;
+    const above = Object.entries<any>(maxima).flatMap(([, v]) => Object.entries<any>(v?.instruments ?? {}).filter(([, i]) => i.value > sched).map(([k]) => k)).sort();
+    expect(above).toEqual(['ec2_instance_sp_or_ri', 'reservations']);
+  });
+
+  itCases('one answer (any value, or blank) moves the verdict across at most one band: 100 / n + 10 < 25, the band width', (x, fail) => {
+    if (x.input.mode !== 'executive') return;
+    const base = evaluateFinOpsIqV3(x.input);
+    if (!base.needVerdict) return;
+    for (const id of asked(base)) {
+      const rs = [evaluateFinOpsIqV3(without(x.input, id)), ...ladder(id).map(v => evaluateFinOpsIqV3(withAnswer(x.input, id, v)))];
+      const b = rs.map(bandIndex);
+      if (Math.max(...b) - Math.min(...b) > 1) fail(`${id}: bands ${b}`);
+    }
+  });
+});
+
+describe('FinOps IQ v3 audit: missing facts never flatter the verdict (F5 review H2, D4, M1)', () => {
+  const setFact = (f: Facts, path: string, v: any): Facts => {
+    const c = JSON.parse(JSON.stringify(f)); const keys = path.split('.');
+    keys.slice(0, -1).reduce((o: any, k) => (o[k] ??= {}), c)[keys[keys.length - 1]] = v; return c;
+  };
+  const factPaths = (f: Facts) => [
+    ...Object.keys(f.spend.byScope).map(s => `spend.byScope.${s}`), 'spend.growth12m',
+    ...['computeShare', 'steadyStateShare', 'eligibleCoverage', 'nonProdShare', 'kubernetesSpend'].filter(k => (f.base as any)?.[k] !== undefined).map(k => `base.${k}`)
+  ];
+  itCases('a blank fact withholds the verdict, or never lowers the need index, or the drop is disclosed as pending points with confidence Low', (x, fail) => {
+    if (x.input.mode !== 'executive') return;
+    const a = evaluateFinOpsIqV3(x.input);
+    if (!a.needVerdict) return;
+    for (const path of factPaths(x.input.facts)) {
+      const b = evaluateFinOpsIqV3({ ...x.input, facts: setFact(x.input.facts, path, path === 'spend.growth12m' ? 'unknown' : { unknown: true }) });
+      if (!b.needVerdict) { if (!b.needVerdictWithheld || !b.tier.provisional) fail(`${path}: verdict missing without a withheld statement`); continue; }
+      const drop = a.needVerdict.needIndex - b.needVerdict.needIndex;
+      if (drop <= 1e-9) continue;
+      const disclosed = b.needVerdict.pending.reduce((t, p) => t + (R.needVerdict.modifiers.find((m: any) => m.id === p.id)?.points ?? 0), 0);
+      if (drop > disclosed + 0.1 + 1e-9) fail(`${path}: need ${a.needVerdict.needIndex} -> ${b.needVerdict.needIndex}, only ${disclosed} disclosed`);
+      if (path === 'spend.growth12m' && b.needVerdict.confidence !== 'Low') fail(`${path}: confidence ${b.needVerdict.confidence}`);
+    }
+  });
+
+  it('H2: RS7 with its spend unknown withholds the verdict and labels the targets provisional (was 49.2 -> 19.5)', () => {
+    const s = F5.find(x => x.id === 'RS7')!;
+    const input = scenarioInput(s, '2026-10-15');
+    const r = evaluateFinOpsIqV3({ ...input, facts: setFact(input.facts, 'spend.byScope.gcp', { unknown: true }) });
+    expect(r.needVerdict).toBeNull();
+    expect(r.needVerdictWithheld).toMatchObject({ reason: 'spend_unknown', statement: R.needVerdict.withheld.statement });
+    expect(r.tier.provisional).toBe(true);
+    expect(r.headline.statement).toContain(R.headline.provisionalSuffix);
+    for (const id of r.needVerdictWithheld!.claimIds) expect(CLAIMS.get(id)?.clientVisible, id).toBe(true);
+    // A banded spend, or an unknown row that cannot change the tier (RS1's data centre), keeps the verdict.
+    expect(evaluateFinOpsIqV3({ ...input, facts: setFact(input.facts, 'spend.byScope.gcp', { band: [100_000_000, 200_000_000] }) }).needVerdict).not.toBeNull();
+    const rs1 = evaluateFinOpsIqV3(scenarioInput(F1[0], '2026-10-14'));
+    expect([rs1.tier.provisional, rs1.needVerdict?.needIndex]).toEqual([false, 36.7]);
+  });
+
+  itCases('M1: a modifier is never both applied and pending, and the unanswered-value modifier carries its client wording', (x, fail) => {
+    const r = evaluateFinOpsIqV3(x.input);
+    const v = r.needVerdict;
+    if (!v) return;
+    const family = (id: string) => (id === 'value_input_unanswered' ? VR.scoring.needModifierId : id);
+    for (const p of v.pending) if (v.modifiers.some(m => family(m.id) === family(p.id))) fail(`${p.id} applied and pending`);
+    const u = v.modifiers.find(m => m.id === 'value_input_unanswered');
+    if (u && u.reason !== 'Scheduling answer missing: counted at the highest need an answer could imply') fail(`wording: ${u.reason}`);
+  });
+});
+
+describe('FinOps IQ v3 audit: commitments never count usage on Spot (F5 review M3)', () => {
+  const runs = [...CASES.filter(x => x.input.mode === 'workshop'), ...Array.from({ length: 40 }, (_, i) => ({ label: `workshop random seed ${9_500 + i}`, input: randomInput(9_500 + i, 'workshop') }))];
+  it('in the workshop, LEV-01\'s base <= P_c x max(0, 1 - spotShare - coverage), at every band corner bound, in every case', () => {
+    const hi = (a: any) => (a?.exact ?? a?.band?.[1]), lo = (a: any) => (a?.exact ?? a?.band?.[0]);
+    const breaches: string[] = [];
+    for (const x of runs) {
+      const r = evaluateFinOpsIqV3(x.input);
+      const l = r.value.levers.find(y => y.id === 'LEV-01');
+      if (!l?.cases) continue;
+      const f = x.input.facts; const b: any = f.base ?? {};
+      const Pc = f.footprint.publicCloudProviders.reduce((t, p) => t + hi(f.spend.byScope[p]), 0) * hi(b.computeShare);
+      const bound = Pc * Math.max(0, 1 - lo(b.spotShare) - lo(b.eligibleCoverage));
+      for (const c of ['conservative', 'expected', 'upper'] as const) if (l.cases[c].base.value > bound + TOL) breaches.push(`${x.label} ${c}: base ${l.cases[c].base.value} > ${bound}`);
+    }
+    expect(breaches.slice(0, 5)).toEqual([]);
+  });
+
+  it('VB-03, DESIGN and the formula agree: the Spot share is a share of compute', () => {
+    const vb03 = Q.get('VB-03');
+    expect(vb03.fields.find((f: any) => f.fact === 'base.spotShare').label).toMatch(/Share of compute already on Spot/);
+    expect(vb03.text).toMatch(/what share of compute already runs on Spot/);
+    const design = readFileSync(join(DESIGN_DIR, 'DESIGN.md'), 'utf8');
+    expect(design).toMatch(/`base.spotShare` \| Share of \*\*compute\*\* already on Spot/);
+    expect((levers as any).levers.find((l: any) => l.id === 'LEV-01').addressableBase.formula).toMatch(/S capped at 1 - spotShare/);
+  });
 });
 
 /* --------------------------- 6. Specific checks ----------------------------- */
@@ -526,21 +655,19 @@ describe('FinOps IQ v3 audit: specific checks (PLAN F5 item 3)', () => {
  * docs/cio-readiness/finops-iq/design/F5-scenario-diffs.md. Everything not listed must match.
  */
 const F5_RECORDED: Record<string, { profile?: Record<string, string> }> = {
-  /** E1: the executive expectations wrote Licensing & SaaS and Sustainability as "not_assessed"; with no SaaS, licensing or data centre in scope they are Not in scope (D5), as RS1 writes them. */
-  RS6: { profile: { LICENSING_SAAS: 'not_in_scope', SUSTAINABILITY: 'not_in_scope' } },
-  RS7: { profile: { LICENSING_SAAS: 'not_in_scope', SUSTAINABILITY: 'not_in_scope' } }
+  // E1 (v1.0) is corrected in v1.1.0-f5: no recorded difference remains.
 };
 const within = (a: number, b: number, rel = 0.01) => Math.abs(a - b) <= Math.max(2, Math.abs(b) * rel);
 
 describe('FinOps IQ v3 audit: F5 reference scenarios against the expectations written first (PLAN F5 item 4)', () => {
-  it('each scenario cites official provider sources, labelled P or S, and is illustrative', () => {
+  it('each scenario cites official provider sources, labelled V (page opened), P or S, and is illustrative', () => {
     expect(F5.length).toBeGreaterThanOrEqual(3);
     expect(F5.length).toBeLessThanOrEqual(5);
     for (const s of F5) {
       expect(s.illustrative, s.id).toBe(true);
       const provider = s.sources.filter((x: any) => /^https:\/\/(aws\.amazon\.com|www\.microsoft\.com|azure\.microsoft\.com|learn\.microsoft\.com|cloud\.google\.com|docs\.cloud\.google\.com)\//.test(x.url));
       expect(provider.length, s.id).toBeGreaterThan(0);
-      for (const x of s.sources) expect(['P', 'S'], `${s.id} ${x.url}`).toContain(x.status);
+      for (const x of s.sources) expect(['V', 'P', 'S'], `${s.id} ${x.url}`).toContain(x.status);
     }
   });
 
@@ -650,7 +777,10 @@ describe('FinOps IQ v3 audit: Phase 3 SCORING_AUDIT.md decisions (PLAN F5 item 6
     const known = exec({ growth12m: 30 }), unknown = exec({ growth12m: 'unknown' });
     expect(known.needVerdict!.modifiers.map(m => m.id)).toContain('growth_ge_20pct');
     expect(unknown.needVerdict!.modifiers.map(m => m.id)).not.toContain('growth_ge_20pct');
-    expect(unknown.needVerdict!.blindSpots).toContainEqual({ fact: 'spend.growth12m', reason: 'unknown' });
+    expect(unknown.needVerdict!.blindSpots).toContainEqual({ questionId: 'SC-05', fact: 'spend.growth12m', reason: 'unknown' });
+    // F5 review D4: no points, but disclosed as pending (10 points higher at 20% growth or more), and confidence Low.
+    expect(unknown.needVerdict!.pending.find(p => p.id === 'growth_ge_20pct')?.reason).toMatch(/10 points higher at 20% growth or more/);
+    expect(unknown.needVerdict!.confidence).toBe('Low');
     // The FinOps Value Case urgency points for HY-03 and HY-05 are retired: the modifiers are tier, value, growth and AI only.
     expect(R.needVerdict.modifiers.map((m: any) => m.id)).toEqual(['tier_2', 'tier_3', 'expected_value_ge_5pct_of_P', 'value_input_unanswered', 'growth_ge_20pct', 'ai_in_scope']);
     const ref = exec({}, answered).needVerdict!.needIndex;

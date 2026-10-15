@@ -170,7 +170,7 @@ How to read it:
 | Capabilities at or above target (0-8) | 0–8 | 0 | 6 | 0 | 0 |
 | Gap count (0-8) | 0–8 | 1 | 8 | 0 | 0 |
 | Total capability gap (levels) | 0–24 | 2 | 22 | 0 | 0 |
-| Critical + high findings | 0–20 | 1 | 9 | 0 | 0 |
+| Critical + high findings | 0–20 | 2 | 9 | 0 | 0 |
 | Findings | 0–20 | 3 | 10 | 0 | 0 |
 | Value expected (net run-rate) | -5.0M–69.6M | 193k | 5.8M | 0 | 0 |
 | Value expected (net 3-year) | -5.0M–69.6M | 432k | 13.7M | 0 | 0 |
@@ -182,9 +182,9 @@ How to read it:
 | Band | Share |
 |---|---|
 | Lightweight practices sufficient at current scale | 0.0% |
-| Targeted improvements needed now | 11.0% |
-| Material exposure: act this year | 37.5% |
-| Act now | 51.5% |
+| Targeted improvements needed now | 16.1% |
+| Material exposure: act this year | 49.1% |
+| Act now | 34.8% |
 
 **Sensitivity**
 
@@ -194,10 +194,10 @@ How to read it:
 | Capabilities at or above target (0-8) | UN-04: 1, UN-10: 1, UN-11: 1, QV-01: 1, QV-05: 1 | 0.17 |
 | Gap count (0-8) | UN-04: 1, UN-10: 1, UN-11: 1, QV-01: 1, QV-05: 1 | 0.14 |
 | Total capability gap (levels) | UN-04: 3, UN-10: 3, UN-11: 3, QV-01: 3, OP-01: 3 | 0.15 |
-| Critical + high findings | OP-06: 2, MP-01: 2, UN-04: 1, UN-10: 1, UN-11: 1 | 0.25 |
+| Critical + high findings | OP-06: 2, MP-01: 2, UN-04: 1, UN-10: 1, UN-11: 1 | 0.29 |
 | Findings | MP-01: 2, UN-04: 1, UN-10: 1, UN-11: 1, QV-01: 1 | 0.29 |
 | Value expected (net run-rate) | OP-06: 5.0M, UN-04: 0, UN-10: 0, UN-11: 0, QV-01: 0 | 0.90 |
-| Value expected (net 3-year) | OP-06: 11.9M, OP-04: 158k, OP-05: 79k, UN-04: 0, UN-10: 0 | 0.90 |
+| Value expected (net 3-year) | OP-06: 11.9M, OP-04: 211k, OP-05: 105k, UN-04: 0, UN-10: 0 | 0.90 |
 | Value expected (gross run-rate) | OP-06: 5.1M, UN-04: 0, UN-10: 0, UN-11: 0, QV-01: 0 | 0.90 |
 | Value upper (gross run-rate) | OP-06: 10.1M, UN-04: 0, UN-10: 0, UN-11: 0, QV-01: 0 | 0.90 |
 
@@ -209,16 +209,16 @@ How to read it:
 
 | Headline | Mean shift, 30% unanswered | Worst profile, half unanswered |
 |---|---|---|
-| Need index (0-100) | -4.21 | +0 |
-| Capabilities at or above target (0-8) | -0.61 | +0 |
-| Gap count (0-8) | -0.58 | +0 |
-| Total capability gap (levels) | -1.92 | +0 |
-| Critical + high findings | -0.78 | +0 |
-| Findings | -0.74 | +0 |
-| Value expected (net run-rate) | -538k | +0 |
-| Value expected (net 3-year) | -1.3M | +0 |
-| Value expected (gross run-rate) | -539k | +0 |
-| Value upper (gross run-rate) | -1.1M | +0 |
+| Need index (0-100) | -5.21 | +0 |
+| Capabilities at or above target (0-8) | -0.65 | +0 |
+| Gap count (0-8) | -0.62 | +0 |
+| Total capability gap (levels) | -1.89 | +0 |
+| Critical + high findings | -0.81 | +0 |
+| Findings | -0.78 | +0 |
+| Value expected (net run-rate) | -434k | +0 |
+| Value expected (net 3-year) | -1.0M | +0 |
+| Value expected (gross run-rate) | -435k | +0 |
+| Value upper (gross run-rate) | -871k | +0 |
 
 ## FinOps IQ v3 (workshop mode)
 
@@ -229,10 +229,10 @@ How to read it:
 | Total capability gap (levels) | 0–66 | 28 | 51 | 0 | 0 |
 | Critical + high findings | 0–34 | 10 | 22 | 0 | 0 |
 | Findings | 0–34 | 16 | 25 | 0 | 0 |
-| Value expected (net run-rate) | -5.0M–69.6M | 6.5M | 6.5M | 0 | 0 |
-| Value expected (net 3-year) | -5.0M–69.6M | 13.9M | 13.9M | 0 | 0 |
-| Value expected (gross run-rate) | 0–23.2M | 6.8M | 6.8M | 0 | 0 |
-| Value upper (gross run-rate) | 0–23.2M | 13.5M | 13.5M | 0 | 0 |
+| Value expected (net run-rate) | -5.0M–69.6M | 7.1M | 7.1M | 0 | 0 |
+| Value expected (net 3-year) | -5.0M–69.6M | 15.3M | 15.3M | 0 | 0 |
+| Value expected (gross run-rate) | 0–23.2M | 7.4M | 7.4M | 0 | 0 |
+| Value upper (gross run-rate) | 0–23.2M | 14.5M | 14.5M | 0 | 0 |
 
 **Sensitivity**
 

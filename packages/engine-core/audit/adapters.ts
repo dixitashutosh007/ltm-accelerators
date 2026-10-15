@@ -56,9 +56,13 @@ export interface Adapter {
    * depth question that bites only when every other answer sits at the core level is shown live, not dead.
    */
   livenessBases?: () => any[];
+  /** Every answer of a question from worst to best (Unknown first), for the monotonicity threshold. */
+  ladder?: (qid: string) => unknown[];
   /** CI thresholds (audit/core.ts thresholdBreaches); only adapters that declare them are gated. */
   thresholds?: {
     note: string;
+    /** Headlines a better answer must never move the wrong way, with any named exception (F5 review H1). */
+    monotone?: Array<{ headline: string; better: 'lower' | 'higher'; except?: (input: any, qid: string) => boolean }>;
     /** Questions allowed to change no headline (never scored by design, e.g. hypothesis questions). */
     allowedDead: string[];
     /** Largest change one answer may make to a headline, over all its answers and blank; a number or per question. */
@@ -165,7 +169,8 @@ const fiqExtreme = (best: boolean) => ({
 // Facts are fixed per mode so the audit varies answers only. The workshop estate selects every scope, and leaves
 // commitment coverage unknown, so every maturity question (including scope-conditional and follow-up ones) can be asked.
 // Executive mode also uses a Tier 3 estate with AI in scope and fast growth (F3 review M9), so every verdict band,
-// including "Act now", is reachable; random questionnaires draw from both executive estates.
+// including "Act now", is reachable; random questionnaires draw from the executive estates, which include (F5 review H1)
+// a Kubernetes estate with a stated 72% commitment instrument.
 // Value bases (F4) are exact and fixed too, so the value headlines vary with the answers only (OP-06 in executive mode).
 const FIQ3_BASE = { computeShare: { exact: 0.6 }, steadyStateShare: { exact: 0.65 }, eligibleCoverage: { exact: 0.3 }, nonProdShare: { exact: 0.3 } };
 const FIQ3_COST = { internalRate: { exact: 12_000 } };
@@ -174,6 +179,13 @@ const FIQ3_EXEC_TIER3: Fiq3Facts = {
   footprint: { publicCloudProviders: ['aws', 'azure'], scopes: ['public_cloud', 'ai_api', 'saas'] },
   spend: { byScope: { aws: { exact: 60_000_000 }, azure: { exact: 20_000_000 } }, growth12m: 30 },
   base: FIQ3_BASE, cost: FIQ3_COST
+};
+/** F5 review H1: a Kubernetes estate with a stated 72% instrument, where n_u and the instrument rate matter. */
+const FIQ3_EXEC_K8S: Fiq3Facts = {
+  org: { currency: 'USD', consumingUnits: '5-19' },
+  footprint: { publicCloudProviders: ['azure', 'gcp'], scopes: ['public_cloud', 'kubernetes'] },
+  spend: { byScope: { azure: { exact: 30_000_000 }, gcp: { exact: 10_000_000 } }, growth12m: 10 },
+  base: { ...FIQ3_BASE, kubernetesSpend: { exact: 8_000_000 }, commitmentInstrument: { azure: 'reservations' } }, cost: FIQ3_COST
 };
 const FIQ3_FACTS: Record<Fiq3Mode, Fiq3Facts> = {
   executive: {
@@ -230,6 +242,8 @@ const FIQ3_EXEC_TARGETED = 8;
  * OP-06 also feeds the executive value (ASM-FIN-052), so it may add the value need modifier (10 points) on top.
  */
 const FIQ3_NEED_LIMIT = (qid: string) => 100 / FIQ3_EXEC_TARGETED + 0.1 + (qid === 'OP-06' ? 10 : 0);
+/** F5-notes.md 1: OP-06 answered with a commitment instrument stated above LEV-04's arithmetic maximum (70.2%). */
+const fiq3HighInstrument = (input: any, qid: string) => qid === 'OP-06' && Object.values(input.facts.base?.commitmentInstrument ?? {}).some(i => ['ec2_instance_sp_or_ri', 'reservations'].includes(i as string));
 function fiq3Adapter(mode: Fiq3Mode): Adapter {
   const qs = fiq3Questions(mode);
   const byId = new Map(qs.map((q: any) => [q.id, q]));
@@ -252,22 +266,31 @@ function fiq3Adapter(mode: Fiq3Mode): Adapter {
     { name: 'Value expected (gross run-rate)', scale: [0, 0.29 * 80_000_000], higherIsBetter: true, get: r => fiq3Total(r, 'grossRunRate') },
     { name: 'Value upper (gross run-rate)', scale: [0, 0.29 * 80_000_000], higherIsBetter: true, get: r => fiq3Total(r, 'grossRunRate', 'upper') }
   ];
-  if (mode === 'executive') headlines.unshift({ name: 'Need index (0-100)', scale: [0, 100], higherIsBetter: false, get: r => r.needVerdict.needIndex });
-  const factSets = mode === 'executive' ? [FIQ3_FACTS.executive, FIQ3_EXEC_TIER3] : [FIQ3_FACTS.workshop];
+  if (mode === 'executive') headlines.unshift({ name: 'Need index (0-100)', scale: [0, 100], higherIsBetter: false, get: r => r.needVerdict?.needIndex ?? null });
+  const factSets = mode === 'executive' ? [FIQ3_FACTS.executive, FIQ3_EXEC_TIER3, FIQ3_EXEC_K8S] : [FIQ3_FACTS.workshop];
   return {
     id: `finops-iq-v3-${mode}`, name: `FinOps IQ v3 (${mode} mode)`,
     questions: qs.map((q: any) => ({ id: q.id, label: q.text })),
-    random: r => ({ mode, assessmentDate: FIQ3_DATE, facts: mode === 'executive' && r() < 0.5 ? FIQ3_EXEC_TIER3 : FIQ3_FACTS[mode], answers: Object.fromEntries(qs.filter(() => r() < 0.85).map((q: any) => [q.id, pick(r, fiq3Variants(q))])) }),
+    random: r => ({ mode, assessmentDate: FIQ3_DATE, facts: mode === 'executive' ? factSets[Math.floor(r() * factSets.length)] : FIQ3_FACTS[mode], answers: Object.fromEntries(qs.filter(() => r() < 0.85).map((q: any) => [q.id, pick(r, fiq3Variants(q))])) }),
     variants: id => fiq3Variants(byId.get(id)),
     withAnswer: setAnswer, withoutAnswer: dropAnswer,
     evaluate: i => evaluateFinOpsIqV3(i),
     headlines,
-    ...(mode === 'executive' ? { band: { get: (r: any) => r.needVerdict.bandLabel, all: ['Lightweight practices sufficient at current scale', 'Targeted improvements needed now', 'Material exposure: act this year', 'Act now'] } } : {}),
+    ...(mode === 'executive' ? { band: { get: (r: any) => r.needVerdict?.bandLabel ?? 'Withheld (annual spend needed)', all: ['Lightweight practices sufficient at current scale', 'Targeted improvements needed now', 'Material exposure: act this year', 'Act now'] } } : {}),
     extremes: { best: () => fiq3Extreme(mode, 'run'), worst: () => fiq3Extreme(mode, 'not_yet') },
     livenessBases: () => factSets.flatMap(f => (['run', 'walk', 'crawl'] as const).map(level => fiq3AllAt(mode, f, level))),
+    ladder: id => { const q: any = byId.get(id); return !q || q.kind !== 'maturity' ? [] : id === 'UN-08' ? ['unknown', [], FIQ3_REPORTS.slice(0, 1), FIQ3_REPORTS.slice(0, 3), FIQ3_REPORTS] : id === 'UN-04' ? ['unknown', 'not_yet', 'below_70', 'crawl', 'walk', 'run'] : ['unknown', 'not_yet', 'crawl', 'walk', 'run']; },
     thresholds: {
       note: 'FinOps IQ plan F5: no out-of-scale value, every band reached, no dead question but the hypothesis questions (never scored, D4), missing data never flatters, one answer moves the gap count and the at-target count by at most 1 and the need index by at most one capability\'s share',
       allowedDead: qs.filter((q: any) => q.kind === 'hypothesis').map((q: any) => q.id),
+      monotone: [
+        { headline: `Capabilities at or above target (0-${capabilities})`, better: 'higher' },
+        { headline: `Gap count (0-${capabilities})`, better: 'lower' },
+        { headline: 'Total capability gap (levels)', better: 'lower' },
+        // A better maturity answer never makes the verdict more urgent (DESIGN 9). Named exception (F5-notes.md 1):
+        // OP-06 with a stated 72% commitment instrument, whose rate is above LEV-04's 70.2%.
+        ...(mode === 'executive' ? [{ headline: 'Need index (0-100)', better: 'lower' as const, except: fiq3HighInstrument }] : [])
+      ],
       maxSingleAnswerSwing: {
         [`Capabilities at or above target (0-${capabilities})`]: 1,
         [`Gap count (0-${capabilities})`]: 1,

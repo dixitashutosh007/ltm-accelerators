@@ -213,6 +213,7 @@
       "L4",
       "X1"
     ],
+    "monotonicity": [],
     "missing": [
       {
         "headline": "Need index",
@@ -450,6 +451,7 @@
       "S3.2",
       "S6.1"
     ],
+    "monotonicity": [],
     "missing": [
       {
         "headline": "Overall maturity (1-5)",
@@ -626,6 +628,7 @@
       "Q8.2",
       "Q9.2"
     ],
+    "monotonicity": [],
     "missing": [
       {
         "headline": "Overall maturity (1-5)",
@@ -777,6 +780,7 @@
       }
     ],
     "dead": [],
+    "monotonicity": [],
     "missing": [
       {
         "headline": "Maturity stage (-1..4)",
@@ -844,7 +848,7 @@
           0,
           20
         ],
-        "min": 1,
+        "min": 2,
         "max": 9,
         "outOfScale": 0,
         "nulls": 0
@@ -908,9 +912,9 @@
     "bands": {
       "counts": {
         "Lightweight practices sufficient at current scale": 0,
-        "Targeted improvements needed now": 88,
-        "Material exposure: act this year": 300,
-        "Act now": 412
+        "Targeted improvements needed now": 129,
+        "Material exposure: act this year": 393,
+        "Act now": 278
       },
       "best": "Lightweight practices sufficient at current scale",
       "worst": "Act now",
@@ -1049,7 +1053,7 @@
             "swing": 1
           }
         ],
-        "share": 0.25,
+        "share": 0.2857142857142857,
         "max": 2
       },
       {
@@ -1115,11 +1119,11 @@
           },
           {
             "qid": "OP-04",
-            "swing": 158036
+            "swing": 210715
           },
           {
             "qid": "OP-05",
-            "swing": 79018
+            "swing": 105357
           },
           {
             "qid": "UN-04",
@@ -1192,55 +1196,77 @@
       "HY-01",
       "HY-07"
     ],
+    "monotonicity": [
+      {
+        "headline": "Capabilities at or above target (0-8)",
+        "violations": 0,
+        "examples": []
+      },
+      {
+        "headline": "Gap count (0-8)",
+        "violations": 0,
+        "examples": []
+      },
+      {
+        "headline": "Total capability gap (levels)",
+        "violations": 0,
+        "examples": []
+      },
+      {
+        "headline": "Need index (0-100)",
+        "violations": 0,
+        "examples": []
+      }
+    ],
     "missing": [
       {
         "headline": "Need index (0-100)",
-        "meanShift": -4.2095,
+        "meanShift": -5.2095,
         "worstProfileShift": 0
       },
       {
         "headline": "Capabilities at or above target (0-8)",
-        "meanShift": -0.615,
+        "meanShift": -0.65,
         "worstProfileShift": 0
       },
       {
         "headline": "Gap count (0-8)",
-        "meanShift": -0.585,
+        "meanShift": -0.625,
         "worstProfileShift": 0
       },
       {
         "headline": "Total capability gap (levels)",
-        "meanShift": -1.92,
+        "meanShift": -1.89,
         "worstProfileShift": 0
       },
       {
         "headline": "Critical + high findings",
-        "meanShift": -0.785,
+        "meanShift": -0.815,
         "worstProfileShift": 0
       },
       {
         "headline": "Findings",
-        "meanShift": -0.745,
+        "meanShift": -0.78,
         "worstProfileShift": 0
       },
       {
         "headline": "Value expected (net run-rate)",
-        "meanShift": -537548.9,
+        "meanShift": -434050.92,
         "worstProfileShift": 0
       },
       {
         "headline": "Value expected (net 3-year)",
-        "meanShift": -1272722.065,
+        "meanShift": -1029122.035,
         "worstProfileShift": 0
       },
       {
         "headline": "Value expected (gross run-rate)",
-        "meanShift": -539024.9,
+        "meanShift": -435274.92,
         "worstProfileShift": 0
       },
       {
         "headline": "Value upper (gross run-rate)",
-        "meanShift": -1078049.915,
+        "meanShift": -870549.92,
         "worstProfileShift": 0
       }
     ]
@@ -1310,8 +1336,8 @@
           -5000000,
           69599999.99999999
         ],
-        "min": 6526584,
-        "max": 6526584,
+        "min": 7115160,
+        "max": 7115160,
         "outOfScale": 0,
         "nulls": 0
       },
@@ -1321,8 +1347,8 @@
           -5000000,
           69599999.99999999
         ],
-        "min": 13924272,
-        "max": 13924272,
+        "min": 15322140,
+        "max": 15322140,
         "outOfScale": 0,
         "nulls": 0
       },
@@ -1332,8 +1358,8 @@
           0,
           23200000
         ],
-        "min": 6841784,
-        "max": 6841784,
+        "min": 7430360,
+        "max": 7430360,
         "outOfScale": 0,
         "nulls": 0
       },
@@ -1343,8 +1369,8 @@
           0,
           23200000
         ],
-        "min": 13450018,
-        "max": 13450018,
+        "min": 14543520,
+        "max": 14543520,
         "outOfScale": 0,
         "nulls": 0
       }
@@ -1603,6 +1629,23 @@
       "HY-06",
       "HY-07"
     ],
+    "monotonicity": [
+      {
+        "headline": "Capabilities at or above target (0-22)",
+        "violations": 0,
+        "examples": []
+      },
+      {
+        "headline": "Gap count (0-22)",
+        "violations": 0,
+        "examples": []
+      },
+      {
+        "headline": "Total capability gap (levels)",
+        "violations": 0,
+        "examples": []
+      }
+    ],
     "missing": [
       {
         "headline": "Capabilities at or above target (0-22)",
@@ -1796,6 +1839,7 @@
       "K2",
       "K3"
     ],
+    "monotonicity": [],
     "missing": [
       {
         "headline": "Posture score (0-100)",
@@ -1946,6 +1990,7 @@
       "Q2.2",
       "Q3.1"
     ],
+    "monotonicity": [],
     "missing": [
       {
         "headline": "Sovereignty maturity (0-100)",
@@ -2072,6 +2117,7 @@
       "AF-TS-02",
       "AF-GV-03"
     ],
+    "monotonicity": [],
     "missing": [
       {
         "headline": "Resilience posture (0-100)",

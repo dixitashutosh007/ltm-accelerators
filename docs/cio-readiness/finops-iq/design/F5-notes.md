@@ -1,6 +1,6 @@
 # FinOps IQ v3: F5 scoring audit notes
 
-**Date:** 15 Oct 2026. **Phase:** F5 (scoring audit and recalibration). **Engine:** 3.4.0 (rules 1.4.0; value model 1.1.0, unchanged). **For review by:** the practice lead (`finops-cost-lead`); the product owner approves.
+**Date:** 15 Oct 2026. **Phase:** F5 (scoring audit and recalibration). **Engine:** 3.5.0 (rules 1.5.0, value model 1.2.0, lever library 1.2.0, question set 3.2.0) after the practice-lead review ([F5-review.md](F5-review.md)); first built as 3.4.0. **For review by:** the practice lead (`finops-cost-lead`); the product owner approves.
 
 The audit is in CI in two places:
 - `packages/engine-core/test/finops-iq-v3-audit.test.ts`, part of `npm test`;
@@ -18,7 +18,23 @@ DESIGN 10.9 defines value monotonicity per lever: "a more mature answer (higher 
 | OP-06: Don't know → any answer | executive | LEV-04 becomes quantified | Net value never falls |
 | Every other maturity answer, and OP-06 in the workshop | both | Sets no base. It moves value only through the roadmap start month (ramp, M3) and the "not worth pursuing" test (M1). A better answer can only start a lever earlier | Net run-rate and net 3-year value never fall. With the same headline levers, no lever's run-rate moves |
 
-The total can fall when scheduling improves, because LEV-04's arithmetic maximum (70.2%) is close to LEV-01's maximum (65–72%). With an AWS EC2 Instance Savings Plan or an Azure reservation stated (72%), the total can also rise slightly. Both are the documented interaction (DESIGN 10.4), not a breach. In the workshop, the value bases are facts (VB-03), so no maturity answer sets a base.
+**Corrected after the review (H1).** The F5 build said here that the total rises with better scheduling only when a 72% instrument is stated. That was wrong for Kubernetes estates.
+
+**The cause.** LEV-01's `n_u` removed *all* unscheduled non-production from the steady pool, including cluster non-production, which LEV-04 does not schedule. Better scheduling therefore returned usage to LEV-01 that no lever had removed. In RS7 v1.0 the need index rose from 49.2 to 59.2 when OP-06 went from Not yet to Run.
+
+**The fix (value model 1.2.0).** `n_u` now covers only the non-production LEV-04 acts on:
+
+`n_u = nonProd × (1 − scheduled) × (P_c − kubernetesSpend − gpuSpend) ÷ P_c`
+
+**After the fix.** The value total falls with better scheduling whenever LEV-01's rate is at or below LEV-04's 70.2%. That covers every default instrument and Google Cloud's 70% memory-optimised CUDs.
+
+**The one remaining rise** comes when the stated instrument is above 70.2%: AWS EC2 Instance Savings Plans or Standard RIs, or Azure reservations, both 72%. Each point of scheduling then adds 1.8% of LEV-04's move to LEV-01, so the total rises slightly and can cross the 5% value modifier. Over 6,000 OP-06 steps in 1,500 random executive estates, this happened once.
+
+It is the **one named exception** to need-index monotonicity. It is tested: the need index can rise only through the value modifier, only on OP-06, and only with one of those two instruments stated.
+
+In the workshop, the value bases are facts (VB-03), so no maturity answer sets a base.
+
+**Commitments and Spot (M3).** In the workshop, LEV-01's steady share is capped at the compute not on Spot, so LEV-01's base is at most `P_c × max(0, 1 − spotShare − coverage)`. That makes `spotShare` required for LEV-01 in the workshop, so a blank cannot raise it. DESIGN, the VB-03 question text and the formula now all define `spotShare` as a share of compute. Executive mode has no Spot input, so the cap does not apply there.
 
 ## 2. Single-answer limit (PLAN F5 item 2)
 
@@ -38,6 +54,12 @@ For the summary, a single answer (any value, or blank) moves:
 - The value modifier is a separate, named step (F4 review H3), so it is counted separately and only for the one answer that feeds value.
 
 A capability with no core question for the client (Licensing & SaaS, Sustainability) rates every asked question as core (DESIGN 3.3). Its questions therefore follow the core limit, not the depth limit.
+
+**Additions after the review (D3):**
+- **Need-index monotonicity** is its own CI threshold. A better answer never makes the verdict more urgent, apart from the named exception in section 1. It is checked in `finops-iq-v3-audit.test.ts` and gated by `audit/core.ts` (`monotonicity`).
+- **The band property is tested:** 100 / n + 10 + 0.1 ≤ 24.4 < 25, the band width, so one answer moves the verdict across at most one band boundary.
+- **The value limit** the tests imply: outside OP-06, a maturity answer changes value only through the ramp start and M1 inclusion, so by at most one lever's expected run-rate.
+- **A clarification:** a step that switches on a follow-up of the same capability (OP-02 when OP-01 drops to Crawl) which the client left blank adds that blank's own effect (rated Unknown, one level at most). It is measured separately, as RS8 v1.1 showed.
 
 ## 3. Engine change: a blank or Unknown OP-06 lowered need (fixed)
 
@@ -62,6 +84,27 @@ The test `F5 fix: a blank or Unknown OP-06 keeps the value need modifier's point
 
 **Effect on scenarios and goldens:** none of RS1 to RS9 leaves OP-06 blank or Unknown, and no golden output changes other than the version stamp (section 6).
 
+**After the review (D2, M1).**
+- With H1 fixed, the need index is monotone in OP-06, so "the highest need an answer could imply" is the least mature answer's. The named 72% exception is the only case where it is not.
+- The applied modifier carries the client wording "Scheduling answer missing: counted at the highest need an answer could imply".
+- It replaces the pending value entry. A modifier is never both applied and pending (tested).
+
+## 3a. Missing facts (review H2, D4)
+
+- **Unknown spend.** It scored 0 tier points, so RS7 with GCP spend unknown fell from 49.2 to 19.5, two bands. Now, when any spend row is unknown and a stated spend could raise the tier:
+  - the executive need verdict is withheld (`needVerdict` null, `needVerdictWithheld`: "Not available: annual spend is needed to set the tier, the targets and the verdict");
+  - the targets are labelled provisional (`tier.provisional`, a headline suffix).
+
+  An unknown row that cannot change the tier keeps the verdict. RS1's data-centre row is an example: RS1 stays at 36.7. (ASM-FIN-087, CLM-FIN-178, pending owner.)
+- **Unknown growth (D4).** It adds 0 points. The verdict now:
+  - lists a pending entry: "Growth not known: the index would be 10 points higher at 20% growth or more", naming the alternative band when it differs;
+  - treats SC-05 "don't know" as a question blind spot, so confidence is Low.
+- **Other missing value inputs.** When part of the value range is not quantified, the value modifier is listed as pending with its 10 points.
+- **The test.** A blank fact (each spend row, growth, compute, steady, coverage, non-production and cluster spend) does one of three things:
+  - withholds the verdict;
+  - never lowers the need index;
+  - lowers it by no more than the points disclosed as pending.
+
 ## 4. No dead questions, every rating reachable
 
 - **Liveness** follows the F3 re-review R4 approach. Core questions are tested from an all-Run baseline, and depth questions from an all-Walk baseline, with every scope in play. Every one of the 46 maturity questions moves its own capability's rating in each mode where it is asked.
@@ -80,26 +123,40 @@ The test `F5 fix: a blank or Unknown OP-06 keeps the value need modifier's point
 
 ## 6. Golden diff for the practice lead and owner
 
-`packages/engine-core/test/golden/finops-iq-v3.json`:
+`packages/engine-core/test/golden/finops-iq-v3.json`, after the review fixes. The comparison is with the F5 build (4406f13):
 
 | Golden | Change | Why |
 |---|---|---|
-| RS1 to RS5, `unanswered-executive`, `unanswered-workshop`, `all-run-workshop` | Version stamp only: `engine` 3.3.0 → 3.4.0, `engineRules` 1.3.0 → 1.4.0, and the `kb` string. No rating, finding, need index or value figure changes | The section 3 fix applies only when OP-06 is blank or Unknown and value is shown. No existing golden has both: `unanswered-executive` has no value bases |
-| RS6 to RS9 (new) | Added | The four F5 provider case-study scenarios; each matches the expectations written before the engine was run (see [F5-scenario-diffs.md](F5-scenario-diffs.md)) |
+| RS1, RS2, RS4, RS5, `all-run-workshop` | Version stamp only: engine 3.5.0, rules 1.5.0, value model 1.2.0, lever library 1.2.0, question set 3.2.0 | No cluster non-production, no Spot cap binding, spend known |
+| RS3 | LEV-01 is now quantified (USD 79k / 135k / 137k); DECISION-02 is removed; expected gross USD 3.53M → 3.66M; the capped upper case is unchanged | H1: cluster and GPU non-production stays in the steady pool (V13) |
+| `unanswered-executive` | Pending wording only: "No value figure is shown ..., so the value modifier is not assessed" | M1 wording |
+| `unanswered-workshop` | `F-FIN-SCOPE-SPOT_SHARE` is now Medium and also blocks LEV-01 | M3: the Spot share is required for LEV-01 in the workshop |
+| RS6 to RS9 | Re-baselined on scenario version 1.1.0-f5 | H3, M2, M3 (F5-scenario-diffs.md) |
 
-**To approve:** the four new goldens and the version-only change to the eight existing ones; the `value_input_unanswered` rule (ASM-FIN-086, CLM-FIN-177); the single-answer limit in section 2.
+**To approve:**
+- the corrected goldens;
+- `value_input_unanswered` (ASM-FIN-086, CLM-FIN-177);
+- the withheld verdict and the growth disclosure (ASM-FIN-087, CLM-FIN-178);
+- the single-answer limit with the D3 additions;
+- the named 72% exception.
 
-## 7. Audit numbers (seeded; `docs/phase3/AUTOMATED_AUDIT.md`)
+**For the owner, not changed here:**
+- **H4:** the VB-02 coverage denominator behind RS6's DECISION-02.
+- **M5:** a separate plausibility back-test.
 
-- **Executive mode:**
-  - need index 18.3 to 100;
-  - all four bands reached;
-  - largest single-answer swing: gap count 1 and need index 12.5;
+## 7. Audit numbers (seeded; `docs/phase3/AUTOMATED_AUDIT.md`, after the review fixes)
+
+- **Executive mode** (three estates, including a Kubernetes estate with a stated Azure reservation):
+  - need index 28.3 to 100;
+  - all four bands reached (Lightweight by the best answers);
+  - largest single-answer swing: gap count 1, need index 12.5;
+  - **need-index monotonicity: 0 violations**;
   - dead questions: HY-01 and HY-07 only;
-  - missing-data mean shift: negative on every headline, and 0 on the worst profile.
-- **Workshop mode:**
-  - gap count 13 to 22 over random answers;
-  - largest swing: gap count 1;
-  - dead questions: HY-01 to HY-07 only;
   - missing-data shift: never positive.
+- **Workshop mode:**
+  - largest swing: gap count 1;
+  - monotonicity: 0 violations;
+  - dead questions: hypothesis questions only;
+  - missing-data shift: never positive.
+  - The fixed estate's expected gross rose from USD 6.8M to 7.4M with H1, because cluster non-production now stays in LEV-01's steady pool.
 - **All CI thresholds pass.**

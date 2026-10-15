@@ -23,6 +23,56 @@ They were found by web search and read through search-result text only, because 
 
 Its `F5_RECORDED` constant mirrors E1 below. Golden outputs for RS6 to RS9 are in `test/golden/finops-iq-v3.json`.
 
+## Version 1.1.0-f5 (after the practice-lead review, F5-review.md)
+
+**What changed and why.** The review found two problems in the v1.0 scenarios:
+- RS7 and RS8 contradicted their sources on the answers that drove their results (H3);
+- RS6 read BP's "encourages" generously (M2), and RS9's steady share counted usage on Spot (M3).
+
+The engine also changed:
+- LEV-01 removes only the non-production that LEV-04 acts on (H1);
+- in the workshop, LEV-01 is capped at the compute not on Spot (M3).
+
+The expectations were **re-written before re-running the engine**, as version 1.1.0-f5 of [`reference-scenarios-f5.json`](reference-scenarios-f5.json). Its `changelog` gives each input change and its reason; `previousVersions` keeps 1.0.0-f5. The calculation sheet was updated for the two engine rules from the review text, not from the code.
+
+**Source status.**
+- BP, Banco BV and Generali: **V**. The practice lead opened these pages on 15 Oct 2026.
+- Bedrock Streaming: stays **S**, because the proxy blocks the AWS site.
+
+| ID | Inputs changed (v1.1) | Tier | At or above target | Need verdict | Findings (top) | Gross run-rate C / E / U | Expected net 3-year |
+|---|---|---|---|---|---|---|---|
+| RS6 | OP-05, OP-06 Walk → Crawl (M2); a 2019 profile assessed as if in 2026 | 2 | 6 of 8 | 18.3, Lightweight practices sufficient at current scale | Usage Optimization High (value uplift); DECISION-02 High; Executive Strategy Alignment Medium; LEV-01 Low (zero) | USD 1.16M / 2.32M (3.9% of P) / 4.64M | USD 5.44M |
+| RS7 | OP-06 Not yet → Walk (Cloud Scheduler); OP-05 Not yet → Crawl (GKE idle resizing); growth 25% → 10% (H3) | 2 | 3 of 8 | 45.0, Targeted improvements needed now (value modifier reached) | Anomaly Management High; Allocation High; LEV-01 High (value uplift); Forecasting, Usage Optimization, Unit Economics Medium | BRL 4.00M / 8.00M (5.3% of P) / 15.99M | BRL 18.51M |
+| RS8 | OP-08 Not yet → Walk with Spot 10% of compute, tolerant 25% (Spot VM node pools); cluster spend CHF 620k → 900k, chosen independently of the case's outcome figures (H3) | 2 | 14 of 20 | n/a | Allocation, Practice Operations, Usage Optimization, DECISION-02 High; Rate Optimization at target, so LEV-06 is a Medium lever finding; LEV-01 Low (zero); upper case capped | CHF 0.23M / 0.46M (15.2% of P) / 0.87M (capped at 29%) | CHF 0.79M |
+| RS9 | Steady share 50% → 35% (M3) | 1 | 16 of 18 | n/a | LEV-07 High; LEV-01 High; LEV-03, 04, 02, 05 Medium; LEV-06 left out of the headline (M1) | EUR 0.39M / 0.77M (12.8% of P) / 1.48M | EUR 1.49M |
+
+**Comparison: written (v1.1) against engine 3.5.0.** All four scenarios match exactly on:
+- tier and points;
+- every capability rating, target, gap and at-target flag;
+- the headline;
+- the finding count and order, with each finding's severity and its trace, owner, wave, dependencies, levers and offerings;
+- the need verdict;
+- every lever and total in all three cases, to the currency unit.
+
+E1 from v1.0 is corrected in the expectations, so no recorded difference remains (`F5_RECORDED` is empty).
+
+**Post-hoc plausibility (comparison only, never an input; review M5).**
+- **RS8:** the engine's LEV-07 range is about 17% / 35% / 67% of cluster spend before the cap. The case identified about 41% of GKE spend, which is inside the range and above the expected case.
+- **RS7:** the story reports reservations and pricing models saving 30% of the monthly bill. That is consistent with OP-01 at target, but the model still finds commitment headroom: GKE-heavy usage stays in the steady pool after H1.
+- **Selection bias:** all four sources are provider success stories, so the set leans towards organisations with a story to tell.
+
+**F1 scenarios after the review fixes (V13).** The H1 rule changes only RS3. RS3's non-production is mostly in clusters (USD 7M of 11.7M compute) or on GPUs, which LEV-04 does not schedule. That usage now stays in LEV-01's steady pool, so:
+- LEV-01 is quantified: USD 79k / 135k / 137k, against zero as written in F1;
+- DECISION-02 no longer applies;
+- expected gross is USD 3.66M, against 3.53M before;
+- the capped upper case is unchanged at USD 5.22M.
+
+The finding count is 15. The tests record this as V13 (`RECORDED.withdrawn` in `finops-iq-v3.test.ts`, and `VALUE_DIFFS` in `finops-iq-v3-value.test.ts`). RS1, RS2, RS4 and RS5 are unchanged apart from the version stamp. `reference-scenarios.json` is not edited.
+
+---
+
+# Version 1.0.0-f5 (superseded; kept for the record)
+
 ## Scenarios
 
 | ID | Shape from | Provider, mode | Tier | At or above target | Need verdict | Gross run-rate C / E / U | Expected net 3-year | Notable behaviour tested |
