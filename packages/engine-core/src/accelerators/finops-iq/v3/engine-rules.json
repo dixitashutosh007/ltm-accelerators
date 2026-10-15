@@ -1,5 +1,5 @@
 {
-  "rulesVersion": "1.2.0",
+  "rulesVersion": "1.3.0",
   "statusAsOf": "2026-10-14",
   "rule": "FinOps IQ v3 engine rules that are not in the F2 registries: rating labels, finding wording, owner roles, severity, schedule, decisions, need verdict, headline and the legacy questions retired without a v3 question. Every client-visible string here carries claim IDs from the WS-S2 register. Waves, dependencies, targets, offerings and lever links come from registry/capabilities.json and registry/levers.json.",
   "ratingLabels": {
@@ -124,8 +124,12 @@
       "minTier": 2
     },
     "valueUplift": {
-      "pending": "F4",
-      "note": "At least High when a linked lever's expected net run-rate value is 2% or more of in-scope spend (THR-FIN-13). Not applied in F3: there is no value model yet."
+      "thresholdId": "THR-FIN-13",
+      "note": "At least High when a linked lever's expected net run-rate value is 2% or more of in-scope public cloud spend (THR-FIN-13); the share is in value-rules.json (scoring.severityUpliftShareOfP), applied from F4.",
+      "claimIds": [
+        "CLM-FIN-122",
+        "CLM-FIN-172"
+      ]
     },
     "lowWhenNoDefaultTarget": true
   },
@@ -182,7 +186,8 @@
       {
         "id": "expected_value_ge_5pct_of_P",
         "points": 10,
-        "pending": "F4"
+        "thresholdId": "THR-FIN-14",
+        "note": "Share of P in value-rules.json (scoring.needModifierShareOfP), applied from F4"
       },
       {
         "id": "growth_ge_20pct",

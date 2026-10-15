@@ -815,7 +815,7 @@
         "headline": "Critical + high findings",
         "scale": [
           0,
-          9
+          20
         ],
         "min": 1,
         "max": 9,
@@ -826,20 +826,42 @@
         "headline": "Findings",
         "scale": [
           0,
-          9
+          20
         ],
-        "min": 1,
-        "max": 9,
+        "min": 3,
+        "max": 10,
+        "outOfScale": 0,
+        "nulls": 0
+      },
+      {
+        "headline": "Value expected (gross run-rate)",
+        "scale": [
+          0,
+          23200000
+        ],
+        "min": 198000,
+        "max": 5846142,
+        "outOfScale": 0,
+        "nulls": 0
+      },
+      {
+        "headline": "Value upper (gross run-rate)",
+        "scale": [
+          0,
+          23200000
+        ],
+        "min": 396000,
+        "max": 11692285,
         "outOfScale": 0,
         "nulls": 0
       }
     ],
     "bands": {
       "counts": {
-        "Lightweight practices sufficient at current scale": 3,
-        "Targeted improvements needed now": 200,
-        "Material exposure: act this year": 205,
-        "Act now": 392
+        "Lightweight practices sufficient at current scale": 1,
+        "Targeted improvements needed now": 125,
+        "Material exposure: act this year": 269,
+        "Act now": 405
       },
       "best": "Lightweight practices sufficient at current scale",
       "worst": "Act now",
@@ -858,16 +880,16 @@
             "swing": 12.5
           },
           {
-            "qid": "OP-01",
-            "swing": 12.5
-          },
-          {
             "qid": "MP-01",
             "swing": 12.5
           },
           {
-            "qid": "UN-10",
-            "swing": 8.400000000000006
+            "qid": "OP-01",
+            "swing": 10
+          },
+          {
+            "qid": "OP-06",
+            "swing": 10
           }
         ],
         "share": 0.15299877600979192
@@ -928,6 +950,10 @@
         "headline": "Critical + high findings",
         "top": [
           {
+            "qid": "OP-06",
+            "swing": 2
+          },
+          {
             "qid": "MP-01",
             "swing": 2
           },
@@ -941,10 +967,6 @@
           },
           {
             "qid": "UN-11",
-            "swing": 1
-          },
-          {
-            "qid": "QV-01",
             "swing": 1
           }
         ],
@@ -974,7 +996,59 @@
             "swing": 1
           }
         ],
-        "share": 0.25
+        "share": 0.2857142857142857
+      },
+      {
+        "headline": "Value expected (gross run-rate)",
+        "top": [
+          {
+            "qid": "OP-06",
+            "swing": 5057142
+          },
+          {
+            "qid": "UN-04",
+            "swing": 0
+          },
+          {
+            "qid": "UN-10",
+            "swing": 0
+          },
+          {
+            "qid": "UN-11",
+            "swing": 0
+          },
+          {
+            "qid": "QV-01",
+            "swing": 0
+          }
+        ],
+        "share": 0.8953638205271751
+      },
+      {
+        "headline": "Value upper (gross run-rate)",
+        "top": [
+          {
+            "qid": "OP-06",
+            "swing": 10114285
+          },
+          {
+            "qid": "UN-04",
+            "swing": 0
+          },
+          {
+            "qid": "UN-10",
+            "swing": 0
+          },
+          {
+            "qid": "UN-11",
+            "swing": 0
+          },
+          {
+            "qid": "QV-01",
+            "swing": 0
+          }
+        ],
+        "share": 0.8953638297900594
       }
     ],
     "dead": [
@@ -984,27 +1058,37 @@
     "missing": [
       {
         "headline": "Need index (0-100)",
-        "meanShift": -5.184999999999999,
+        "meanShift": -3.5310000000000006,
         "worstProfileShift": 0
       },
       {
         "headline": "Capabilities at or above target (0-8)",
-        "meanShift": -0.635,
+        "meanShift": -0.615,
         "worstProfileShift": 0
       },
       {
         "headline": "Total capability gap (levels)",
-        "meanShift": -1.93,
+        "meanShift": -1.92,
         "worstProfileShift": 0
       },
       {
         "headline": "Critical + high findings",
-        "meanShift": -0.92,
+        "meanShift": -0.785,
         "worstProfileShift": 0
       },
       {
         "headline": "Findings",
-        "meanShift": -0.7,
+        "meanShift": -0.745,
+        "worstProfileShift": 0
+      },
+      {
+        "headline": "Value expected (gross run-rate)",
+        "meanShift": -539024.9,
+        "worstProfileShift": 0
+      },
+      {
+        "headline": "Value upper (gross run-rate)",
+        "meanShift": -1078049.915,
         "worstProfileShift": 0
       }
     ]
@@ -1039,10 +1123,10 @@
         "headline": "Critical + high findings",
         "scale": [
           0,
-          23
+          34
         ],
-        "min": 9,
-        "max": 21,
+        "min": 10,
+        "max": 22,
         "outOfScale": 0,
         "nulls": 0
       },
@@ -1050,10 +1134,32 @@
         "headline": "Findings",
         "scale": [
           0,
-          23
+          34
         ],
-        "min": 14,
-        "max": 23,
+        "min": 16,
+        "max": 25,
+        "outOfScale": 0,
+        "nulls": 0
+      },
+      {
+        "headline": "Value expected (gross run-rate)",
+        "scale": [
+          0,
+          23200000
+        ],
+        "min": 6841784,
+        "max": 6841784,
+        "outOfScale": 0,
+        "nulls": 0
+      },
+      {
+        "headline": "Value upper (gross run-rate)",
+        "scale": [
+          0,
+          23200000
+        ],
+        "min": 13450018,
+        "max": 13450018,
         "outOfScale": 0,
         "nulls": 0
       }
@@ -1071,15 +1177,15 @@
             "swing": 1
           },
           {
-            "qid": "UN-05",
-            "swing": 1
-          },
-          {
-            "qid": "UN-09",
-            "swing": 1
-          },
-          {
             "qid": "UN-07",
+            "swing": 1
+          },
+          {
+            "qid": "UN-08",
+            "swing": 1
+          },
+          {
+            "qid": "UN-10",
             "swing": 1
           }
         ],
@@ -1093,10 +1199,6 @@
             "swing": 3
           },
           {
-            "qid": "UN-05",
-            "swing": 3
-          },
-          {
             "qid": "UN-07",
             "swing": 3
           },
@@ -1106,6 +1208,10 @@
           },
           {
             "qid": "UN-10",
+            "swing": 3
+          },
+          {
+            "qid": "UN-11",
             "swing": 3
           }
         ],
@@ -1127,11 +1233,11 @@
             "swing": 1
           },
           {
-            "qid": "UN-05",
+            "qid": "UN-07",
             "swing": 1
           },
           {
-            "qid": "UN-09",
+            "qid": "UN-08",
             "swing": 1
           }
         ],
@@ -1153,15 +1259,67 @@
             "swing": 1
           },
           {
-            "qid": "UN-05",
+            "qid": "UN-07",
             "swing": 1
           },
           {
-            "qid": "UN-09",
+            "qid": "UN-08",
             "swing": 1
           }
         ],
         "share": 0.2222222222222222
+      },
+      {
+        "headline": "Value expected (gross run-rate)",
+        "top": [
+          {
+            "qid": "UN-01",
+            "swing": 0
+          },
+          {
+            "qid": "UN-02",
+            "swing": 0
+          },
+          {
+            "qid": "UN-03",
+            "swing": 0
+          },
+          {
+            "qid": "UN-04",
+            "swing": 0
+          },
+          {
+            "qid": "UN-05",
+            "swing": 0
+          }
+        ],
+        "share": 0
+      },
+      {
+        "headline": "Value upper (gross run-rate)",
+        "top": [
+          {
+            "qid": "UN-01",
+            "swing": 0
+          },
+          {
+            "qid": "UN-02",
+            "swing": 0
+          },
+          {
+            "qid": "UN-03",
+            "swing": 0
+          },
+          {
+            "qid": "UN-04",
+            "swing": 0
+          },
+          {
+            "qid": "UN-05",
+            "swing": 0
+          }
+        ],
+        "share": 0
       }
     ],
     "dead": [
@@ -1182,7 +1340,7 @@
     "missing": [
       {
         "headline": "Capabilities at or above target (0-22)",
-        "meanShift": -1.405,
+        "meanShift": -1.4,
         "worstProfileShift": 0
       },
       {
@@ -1192,12 +1350,22 @@
       },
       {
         "headline": "Critical + high findings",
-        "meanShift": -2.355,
+        "meanShift": -2.235,
         "worstProfileShift": 0
       },
       {
         "headline": "Findings",
-        "meanShift": -1.535,
+        "meanShift": -1.46,
+        "worstProfileShift": 0
+      },
+      {
+        "headline": "Value expected (gross run-rate)",
+        "meanShift": 0,
+        "worstProfileShift": 0
+      },
+      {
+        "headline": "Value upper (gross run-rate)",
+        "meanShift": 0,
         "worstProfileShift": 0
       }
     ]

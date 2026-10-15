@@ -1,5 +1,5 @@
 {
-  "libraryVersion": "1.0.0",
+  "libraryVersion": "1.1.0",
   "statusAsOf": "2026-10-14",
   "rangeRule": {
     "expectedFactor": 0.5,
@@ -14,10 +14,11 @@
   "globalCap": {
     "shareOfPublicCloudSpend": 0.29,
     "appliesTo": [
+      "conservative",
       "expected",
       "upper"
     ],
-    "liftedBy": "evidence_for_every_capped_lever",
+    "liftedBy": "none (v1.0)",
     "excludedLevers": [
       "LEV-09"
     ],
@@ -45,14 +46,15 @@
       },
       "interactionOrder": 9,
       "addressableBase": {
-        "formula": "P_c x max(0, S - C - n_u - t_u) x (1 - computeRemoved(LEV-02, LEV-03, LEV-07, LEV-10) / P_c), per provider",
+        "formula": "P_c x max(0, S - C - n_u - t_u) x (1 - computeRemoved(LEV-02, LEV-03, LEV-07, LEV-10) / P_c), per provider; t_u = (tolerant - Spot) x (1 - C) where LEV-06 is quantified",
         "inputs": [
           "spend.byScope",
           "base.computeShare",
           "base.steadyStateShare",
           "base.eligibleCoverage",
           "base.nonProdShare",
-          "base.nonProdScheduledShare"
+          "base.nonProdScheduledShare",
+          "base.commitmentInstrument"
         ],
         "reducedBy": [
           "LEV-02",
@@ -77,7 +79,20 @@
               "status": "V",
               "checked": "2026-10-14",
               "reviewBy": "2027-01-12"
-            }
+            },
+            "instruments": {
+              "ec2_instance_sp_or_ri": {
+                "value": 0.72,
+                "claimId": "CLM-FIN-060",
+                "label": "EC2 Instance Savings Plans or Standard Reserved Instances"
+              },
+              "compute_sp": {
+                "value": 0.66,
+                "claimId": "CLM-FIN-060",
+                "label": "Compute Savings Plans"
+              }
+            },
+            "defaultInstrument": "compute_sp"
           },
           "azure": {
             "quantified": true,
@@ -90,7 +105,20 @@
               "status": "V",
               "checked": "2026-10-14",
               "reviewBy": "2027-01-12"
-            }
+            },
+            "instruments": {
+              "reservations": {
+                "value": 0.72,
+                "claimId": "CLM-FIN-062",
+                "label": "Azure reservations"
+              },
+              "savings_plan": {
+                "value": 0.65,
+                "claimId": "CLM-FIN-063",
+                "label": "Azure savings plan for compute"
+              }
+            },
+            "defaultInstrument": "savings_plan"
           },
           "gcp": {
             "quantified": true,
@@ -103,7 +131,20 @@
               "status": "V",
               "checked": "2026-10-14",
               "reviewBy": "2027-01-12"
-            }
+            },
+            "instruments": {
+              "resource_cud": {
+                "value": 0.55,
+                "claimId": "CLM-FIN-065",
+                "label": "Resource-based committed use discounts"
+              },
+              "memory_optimised_cud": {
+                "value": 0.7,
+                "claimId": "CLM-FIN-065",
+                "label": "Resource-based CUDs on memory-optimised series"
+              }
+            },
+            "defaultInstrument": "resource_cud"
           },
           "oci": {
             "quantified": false,
@@ -138,7 +179,8 @@
           "other_public": {
             "quantified": false
           }
-        }
+        },
+        "instrumentRule": "The client states its main commitment instrument per provider (VB-02); when it is not stated, the lower published maximum is used (CLM-FIN-176)."
       },
       "neverWith": [
         "LEV-06"
@@ -466,12 +508,13 @@
       },
       "interactionOrder": 8,
       "addressableBase": {
-        "formula": "P_c x max(0, interruptionTolerantShare - spotShare) x (1 - computeRemoved(LEV-02, LEV-03, LEV-07, LEV-10) / P_c), per provider",
+        "formula": "P_c x max(0, interruptionTolerantShare - spotShare) x (1 - eligibleCoverage) x (1 - computeRemoved(LEV-02, LEV-03, LEV-07, LEV-10) / P_c), per provider: only tolerant usage not already covered by commitments moves to Spot",
         "inputs": [
           "spend.byScope",
           "base.computeShare",
           "base.interruptionTolerantShare",
-          "base.spotShare"
+          "base.spotShare",
+          "base.eligibleCoverage"
         ],
         "reducedBy": [
           "LEV-02",
@@ -559,7 +602,7 @@
       "offeringIds": [
         "OFF.FIN.SPRINT"
       ],
-      "label": "Interruption-tolerant compute not yet on Spot x up to the provider's published maximum discount (checked 14 Oct 2026); expected case is half.",
+      "label": "Interruption-tolerant compute not yet on Spot x up to the provider's published maximum discount (checked 14 Oct 2026); expected case is half. Only tolerant usage not covered by commitments is counted: moving committed usage would strand the commitment (Azure limits reservation refunds, CLM-FIN-174).",
       "claimIds": [
         "CLM-FIN-155",
         "CLM-FIN-061",
@@ -735,6 +778,7 @@
       ],
       "ramp": {
         "year1Share": "renewal_share",
+        "year1ShareWithoutRenewalData": 0.25,
         "year2Share": 1,
         "year3Share": 1,
         "assumptionId": "ASM-FIN-045"

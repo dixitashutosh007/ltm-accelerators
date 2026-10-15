@@ -5553,7 +5553,7 @@
       "owner": "finops-cost-lead (agent); approver: product owner",
       "lastReviewed": "2026-10-14",
       "nextReview": "2027-01-12",
-      "notes": "Date, sample, US share and the 29% self-estimate quoted in search results from Flexera's press release and press coverage. Used only as the global cap on the expected (and, per Q11, upper) value case (ASM-FIN-050) and in the published market data panel; never as a target or an LTM peer benchmark. Direct fetches of finops.org, focus.finops.org, provider sites (aws.amazon.com, docs.aws.amazon.com, learn.microsoft.com, azure.microsoft.com, cloud.google.com, oracle.com) and flexera.com are blocked from this environment; checked through web-search results that quote or link the page."
+      "notes": "Date, sample, US share and the 29% self-estimate quoted in search results from Flexera's press release and press coverage. Used only as the global cap on the conservative, expected and upper value cases (D15, Q11; F4 review H1), never lifted by evidence in version 1.0 (ASM-FIN-050) and in the published market data panel; never as a target or an LTM peer benchmark. Direct fetches of finops.org, focus.finops.org, provider sites (aws.amazon.com, docs.aws.amazon.com, learn.microsoft.com, azure.microsoft.com, cloud.google.com, oracle.com) and flexera.com are blocked from this environment; checked through web-search results that quote or link the page."
     },
     {
       "id": "CLM-FIN-041",
@@ -6775,22 +6775,22 @@
       ],
       "kind": "heuristic",
       "jurisdiction": "global",
-      "statement": "LTM severity and schedule rules: gap 1 = Medium, 2 = High, 3 = Critical; +1 level for Data Ingestion, Allocation and FinOps Practice Operations at Tier 2 or 3; at least High when a linked lever's expected net run-rate value is 2% or more of in-scope spend (applied from F4); a consultant-set target where there is no default target gives Low. Each finding starts at its wave's window (wave 1 from month 0, wave 2 from month 3, wave 3 from month 9) and never before each finding it depends on has reached its first milestone (3 months after it starts, or its whole target duration if shorter); its target duration once started is 3 months (Critical), 6 (High), 12 (Medium) or 24 (Low).",
+      "statement": "LTM severity and schedule rules: gap 1 = Medium, 2 = High, 3 = Critical; +1 level for Data Ingestion, Allocation and FinOps Practice Operations at Tier 2 or 3; at least High when a linked lever's expected net run-rate value is 2% or more of in-scope spend; a consultant-set target where there is no default target gives Low. Each finding starts at its wave's window (wave 1 from month 0, wave 2 from month 3, wave 3 from month 9) and never before each finding it depends on has reached its first milestone (3 months after it starts, or its whole target duration if shorter); its target duration once started is 3 months (Critical), 6 (High), 12 (Medium) or 24 (Low).",
       "source": {
         "url": "https://github.com/dixitashutosh007/ltm-accelerators/blob/main/docs/cio-readiness/finops-iq/design/DESIGN.md",
         "title": "LTM FinOps IQ F1 design pack (approved by the product owner, 14 Oct 2026)",
         "article": "5.3 (ASM-FIN-005) and 5.4; F3 review H3 and re-review R1",
         "publisher": "LTM"
       },
-      "verification": "P",
+      "verification": "V",
       "checkedOn": "2026-10-14",
       "volatile": false,
       "clientVisible": true,
       "owner": "finops-cost-lead (agent); approver: product owner",
-      "lastReviewed": "2026-10-14",
+      "lastReviewed": "2026-10-15",
       "nextReview": "2027-04-14",
       "basisNote": "Foundations other capabilities depend on, and high-value levers, come first. Planning defaults, shown as such; the consultant can change them with a reason.",
-      "notes": "Parts of this statement are F3 changes from the practice-lead review (docs/cio-readiness/finops-iq/design/F3-review.md) that amend DESIGN.md and await the product owner's decision, so verification is P (the source is known; the owner-approved wording does not yet contain them). Return to V once DESIGN.md is amended and approved. LTM heuristic, not a market fact."
+      "notes": "Parts of this statement are F3 changes from the practice-lead review (docs/cio-readiness/finops-iq/design/F3-review.md) that amend DESIGN.md and await the product owner's decision, so verification is P (the source is known; the owner-approved wording does not yet contain them). Return to V once DESIGN.md is amended and approved. LTM heuristic, not a market fact. Approved by the product owner on 15 Oct 2026 (F3 rule corrections and F4 gate), so verification is now V against the owner-approved design."
     },
     {
       "id": "CLM-FIN-123",
@@ -6826,7 +6826,7 @@
       ],
       "kind": "threshold",
       "jurisdiction": "global",
-      "statement": "UN-04 allocation bands, measured by cost: Run = more than 90% of spend allocated to an accountable owner; Walk = 85-90%; Crawl = 70-84%; Not yet = below 70% or not measured. The band floors adopt the FinOps Foundation's current sample goals (Crawl about 70%, Walk 85%, Run more than 90%, CLM-FIN-035); turning sample goals into band floors and adding 'Not yet' are LTM's adaptation.",
+      "statement": "UN-04 allocation bands, measured by cost: Run = more than 90% of spend allocated to an accountable owner; Walk = 85-90%; Crawl = below 85% (70-84%, or below 70% where allocation is measured; owner decision 15 Oct 2026); Not yet = not measured. The band floors adopt the FinOps Foundation's current sample goals (Crawl about 70%, Walk 85%, Run more than 90%, CLM-FIN-035); turning sample goals into band floors and adding 'Not yet' are LTM's adaptation.",
       "source": {
         "url": "https://www.finops.org/framework/maturity-model/",
         "title": "FinOps Foundation: FinOps Maturity Model (sample goals), adapted by LTM",
@@ -6904,22 +6904,22 @@
       ],
       "kind": "heuristic",
       "jurisdiction": "global",
-      "statement": "LTM need verdict (executive mode only): need index 0-100 = mean over executive capabilities with a target of (gap / 3) x 100, with Unknown, and any capability with a question left blank, counted as the maximum gap (the target index); urgency modifiers +10 at Tier 2 and +20 at Tier 3, +10 if 12-month spend growth is 20% or more, +10 if AI is in scope, and from F4 +10 if the expected gross run-rate value is 5% or more of in-scope public cloud spend; capped at 100. Hypothesis answers are never scored. Bands: 0-25 'Lightweight practices sufficient at current scale'; 26-50 'Targeted improvements needed now'; 51-75 'Material exposure: act this year'; 76-100 'Act now'.",
+      "statement": "LTM need verdict (executive mode only): need index 0-100 = mean over executive capabilities with a target of (gap / 3) x 100, with Unknown, and any capability with a question left blank, counted as the maximum gap (the target index); urgency modifiers +10 at Tier 2 and +20 at Tier 3, +10 if 12-month spend growth is 20% or more, +10 if AI is in scope, and +10 if the expected gross run-rate value is 5% or more of in-scope public cloud spend; capped at 100. Hypothesis answers are never scored. Bands: 0-25 'Lightweight practices sufficient at current scale'; 26-50 'Targeted improvements needed now'; 51-75 'Material exposure: act this year'; 76-100 'Act now'.",
       "source": {
         "url": "https://github.com/dixitashutosh007/ltm-accelerators/blob/main/docs/cio-readiness/finops-iq/design/DESIGN.md",
         "title": "LTM FinOps IQ F1 design pack (approved by the product owner, 14 Oct 2026)",
         "article": "9 (ASM-FIN-030 to 033); F3 review M8 and departure 4",
         "publisher": "LTM"
       },
-      "verification": "P",
+      "verification": "V",
       "checkedOn": "2026-10-14",
       "volatile": false,
       "clientVisible": true,
       "owner": "finops-cost-lead (agent); approver: product owner",
-      "lastReviewed": "2026-10-14",
+      "lastReviewed": "2026-10-15",
       "nextReview": "2027-04-14",
       "basisNote": "Carried over from FinOps Value Case and reworded for Q14 (26-50 band). Blanks never lower need; scale, growth and AI raise urgency because gaps cost more there. The verdict never contains a money figure.",
-      "notes": "Parts of this statement are F3 changes from the practice-lead review (docs/cio-readiness/finops-iq/design/F3-review.md) that amend DESIGN.md and await the product owner's decision, so verification is P (the source is known; the owner-approved wording does not yet contain them). Return to V once DESIGN.md is amended and approved. LTM heuristic, not a market fact."
+      "notes": "Parts of this statement are F3 changes from the practice-lead review (docs/cio-readiness/finops-iq/design/F3-review.md) that amend DESIGN.md and await the product owner's decision, so verification is P (the source is known; the owner-approved wording does not yet contain them). Return to V once DESIGN.md is amended and approved. LTM heuristic, not a market fact. Approved by the product owner on 15 Oct 2026 (F3 rule corrections and F4 gate), so verification is now V against the owner-approved design."
     },
     {
       "id": "CLM-FIN-128",
@@ -7168,7 +7168,7 @@
       ],
       "kind": "heuristic",
       "jurisdiction": "global",
-      "statement": "Global cap: the expected and upper totals for public cloud levers are each capped at 29% of in-scope public cloud spend (Flexera 2026 respondents' average self-estimate of wasted IaaS and PaaS spend, n = 753, CLM-FIN-040) unless provider-tool or billing evidence supports every capped lever; levers are scaled pro rata when the cap binds. LEV-09 is outside this base.",
+      "statement": "Global cap: the conservative, expected and upper totals for public cloud levers are each capped at 29% of in-scope public cloud spend (Flexera 2026 respondents' average self-estimate of wasted IaaS and PaaS spend, n = 753, CLM-FIN-040); levers are scaled pro rata when the cap binds. In version 1.0 the cap is not lifted by evidence. LEV-09 (SaaS and licensing) is outside this base and is shown on its own.",
       "source": {
         "url": "https://github.com/dixitashutosh007/ltm-accelerators/blob/main/docs/cio-readiness/finops-iq/design/DESIGN.md",
         "title": "LTM FinOps IQ F1 design pack (approved by the product owner, 14 Oct 2026)",
@@ -7183,10 +7183,10 @@
       "volatile": false,
       "clientVisible": true,
       "owner": "finops-cost-lead (agent); approver: product owner",
-      "lastReviewed": "2026-10-14",
+      "lastReviewed": "2026-10-15",
       "nextReview": "2027-04-14",
       "basisNote": "Owner decisions D15 (expected) and Q11 (upper). The figure is a self-estimate used only as a ceiling, never as a target or saving.",
-      "notes": "LTM heuristic, not a market fact. Verification V here means the statement matches LTM's owner-approved design pack (the source); it is shown in the report's assumption register as 'LTM heuristic' with this reasoning."
+      "notes": "F4 value-model rule built by the practice-lead agent; it extends or interprets DESIGN.md and awaits the product owner's decision at the F4 gate, so verification is P (the source is known; the owner-approved wording does not yet contain it). LTM heuristic, not a market fact. Approved by the product owner on 15 Oct 2026 (F3 rule corrections and F4 gate), so verification is now V against the owner-approved design."
     },
     {
       "id": "CLM-FIN-139",
@@ -7250,15 +7250,15 @@
         "article": "3.3 (ASM-FIN-006); F3 review H1 and M1",
         "publisher": "LTM"
       },
-      "verification": "P",
+      "verification": "V",
       "checkedOn": "2026-10-14",
       "volatile": false,
       "clientVisible": true,
       "owner": "finops-cost-lead (agent); approver: product owner",
-      "lastReviewed": "2026-10-14",
+      "lastReviewed": "2026-10-15",
       "nextReview": "2027-04-14",
       "basisNote": "A capability is only as mature as its weakest required practice, but one depth answer should not collapse a mature core practice. The rule is monotone (a better answer never lowers a rating). Owner accepted (Q9).",
-      "notes": "Parts of this statement are F3 changes from the practice-lead review (docs/cio-readiness/finops-iq/design/F3-review.md) that amend DESIGN.md and await the product owner's decision, so verification is P (the source is known; the owner-approved wording does not yet contain them). Return to V once DESIGN.md is amended and approved. LTM heuristic, not a market fact."
+      "notes": "Parts of this statement are F3 changes from the practice-lead review (docs/cio-readiness/finops-iq/design/F3-review.md) that amend DESIGN.md and await the product owner's decision, so verification is P (the source is known; the owner-approved wording does not yet contain them). Return to V once DESIGN.md is amended and approved. LTM heuristic, not a market fact. Approved by the product owner on 15 Oct 2026 (F3 rule corrections and F4 gate), so verification is now V against the owner-approved design."
     },
     {
       "id": "CLM-FIN-142",
@@ -7363,7 +7363,7 @@
       ],
       "kind": "heuristic",
       "jurisdiction": "global",
-      "statement": "LEV-01 commitment discounts: addressable base = provider compute spend x max(0, steady-state share - eligible coverage - unscheduled non-production share - Spot-moved share), reduced by compute removed by usage levers; upper = base x the provider's published maximum (CLM-FIN-060, 062, 063, 065); not quantified for providers without a sourced maximum (CLM-FIN-069).",
+      "statement": "LEV-01 commitment discounts: addressable base = provider compute spend x max(0, steady-state share - eligible coverage - unscheduled non-production share - Spot-moved share), reduced by compute removed by usage levers; the Spot-moved share is the tolerant share not on Spot times (1 - coverage), only where LEV-06 is quantified; upper = base x the published maximum for the client's stated commitment instrument, or the lower published maximum when it is not stated (CLM-FIN-060, 062, 063, 065, 176); not quantified for providers without a sourced maximum (CLM-FIN-069).",
       "source": {
         "url": "https://github.com/dixitashutosh007/ltm-accelerators/blob/main/docs/cio-readiness/finops-iq/design/DESIGN.md",
         "title": "LTM FinOps IQ F1 design pack (approved by the product owner, 14 Oct 2026)",
@@ -7375,10 +7375,10 @@
       "volatile": false,
       "clientVisible": true,
       "owner": "finops-cost-lead (agent); approver: product owner",
-      "lastReviewed": "2026-10-14",
+      "lastReviewed": "2026-10-15",
       "nextReview": "2027-04-14",
       "basisNote": "Only steady, uncovered compute can be committed; usage levers run first so commitments are sized on the reduced base and nothing is counted twice.",
-      "notes": "LTM design rule, not a market fact. Verification V here means the statement matches LTM's owner-approved design pack (the source); shown in the 'How we calculated this' appendix with this reasoning."
+      "notes": "F4 value-model rule built by the practice-lead agent; it extends or interprets DESIGN.md and awaits the product owner's decision at the F4 gate, so verification is P (the source is known; the owner-approved wording does not yet contain it). LTM heuristic, not a market fact. Approved by the product owner on 15 Oct 2026 (F3 rule corrections and F4 gate), so verification is now V against the owner-approved design."
     },
     {
       "id": "CLM-FIN-151",
@@ -7483,7 +7483,7 @@
       ],
       "kind": "heuristic",
       "jurisdiction": "global",
-      "statement": "LEV-06 Spot and preemptible capacity: addressable base = provider compute spend x max(0, interruption-tolerant share - share already on Spot); upper = base x the provider's published maximum (AWS 90%, Azure 90%, Google Cloud 91%: CLM-FIN-061, 064, 067); not quantified for other providers.",
+      "statement": "LEV-06 Spot and preemptible capacity: addressable base = provider compute spend x max(0, interruption-tolerant share - share already on Spot) x (1 - eligible commitment coverage), reduced by compute removed by usage levers: tolerant usage already covered by commitments is assumed covered at the same rate as the rest and is left out, because moving it would strand the commitment (CLM-FIN-174); upper = base x the provider's published maximum (AWS 90%, Azure 90%, Google Cloud 91%: CLM-FIN-061, 064, 067); not quantified for other providers.",
       "source": {
         "url": "https://github.com/dixitashutosh007/ltm-accelerators/blob/main/docs/cio-readiness/finops-iq/design/DESIGN.md",
         "title": "LTM FinOps IQ F1 design pack (approved by the product owner, 14 Oct 2026)",
@@ -7495,10 +7495,10 @@
       "volatile": false,
       "clientVisible": true,
       "owner": "finops-cost-lead (agent); approver: product owner",
-      "lastReviewed": "2026-10-14",
+      "lastReviewed": "2026-10-15",
       "nextReview": "2027-04-14",
       "basisNote": "Only interruption-tolerant workloads can move; maximum discounts apply to the usage moved, not to the bill. LEV-06 and LEV-01 never apply to the same usage.",
-      "notes": "LTM design rule, not a market fact. Verification V here means the statement matches LTM's owner-approved design pack (the source); shown in the 'How we calculated this' appendix with this reasoning. F2 resolves DESIGN.md Q8 for Azure and Google Cloud: their Spot maxima are now verified on provider pages through search results, so LEV-06 can be quantified for them."
+      "notes": "F4 value-model rule built by the practice-lead agent; it extends or interprets DESIGN.md and awaits the product owner's decision at the F4 gate, so verification is P (the source is known; the owner-approved wording does not yet contain it). LTM heuristic, not a market fact. Approved by the product owner on 15 Oct 2026 (F3 rule corrections and F4 gate), so verification is now V against the owner-approved design."
     },
     {
       "id": "CLM-FIN-156",
@@ -7658,15 +7658,15 @@
         "article": "5.2 and 5.4 (ASM-FIN-005); PLAN.md F2 status, departure 5",
         "publisher": "LTM"
       },
-      "verification": "P",
+      "verification": "V",
       "checkedOn": "2026-10-14",
       "volatile": false,
       "clientVisible": true,
       "owner": "finops-cost-lead (agent); approver: product owner",
-      "lastReviewed": "2026-10-14",
+      "lastReviewed": "2026-10-15",
       "nextReview": "2027-04-14",
       "basisNote": "Waves follow the Framework's Inform, Optimize, Operate flow (DESIGN.md 5.4). Owner roles for the twelve capabilities the reference scenarios do not cover, and the interim owner, are LTM planning defaults added in F3; the consultant can change them with a reason.",
-      "notes": "Parts of this statement are F3 changes from the practice-lead review (docs/cio-readiness/finops-iq/design/F3-review.md) that amend DESIGN.md and await the product owner's decision, so verification is P (the source is known; the owner-approved wording does not yet contain them). Return to V once DESIGN.md is amended and approved. LTM heuristic, not a market fact."
+      "notes": "Parts of this statement are F3 changes from the practice-lead review (docs/cio-readiness/finops-iq/design/F3-review.md) that amend DESIGN.md and await the product owner's decision, so verification is P (the source is known; the owner-approved wording does not yet contain them). Return to V once DESIGN.md is amended and approved. LTM heuristic, not a market fact. Approved by the product owner on 15 Oct 2026 (F3 rule corrections and F4 gate), so verification is now V against the owner-approved design."
     },
     {
       "id": "CLM-FIN-163",
@@ -7682,15 +7682,15 @@
         "article": "3.2, 3.4, 9 and 2.3; F3 review H1",
         "publisher": "LTM"
       },
-      "verification": "P",
+      "verification": "V",
       "checkedOn": "2026-10-14",
       "volatile": false,
       "clientVisible": true,
       "owner": "finops-cost-lead (agent); approver: product owner",
-      "lastReviewed": "2026-10-14",
+      "lastReviewed": "2026-10-15",
       "nextReview": "2027-04-14",
       "basisNote": "A blank must never flatter the headline or lower the need index (D5). Executive mode rests on few answers and no evidence, so its confidence is capped at Medium (DESIGN.md 10.7).",
-      "notes": "Parts of this statement are F3 changes from the practice-lead review (docs/cio-readiness/finops-iq/design/F3-review.md) that amend DESIGN.md and await the product owner's decision, so verification is P (the source is known; the owner-approved wording does not yet contain them). Return to V once DESIGN.md is amended and approved. LTM heuristic, not a market fact."
+      "notes": "Parts of this statement are F3 changes from the practice-lead review (docs/cio-readiness/finops-iq/design/F3-review.md) that amend DESIGN.md and await the product owner's decision, so verification is P (the source is known; the owner-approved wording does not yet contain them). Return to V once DESIGN.md is amended and approved. LTM heuristic, not a market fact. Approved by the product owner on 15 Oct 2026 (F3 rule corrections and F4 gate), so verification is now V against the owner-approved design."
     },
     {
       "id": "CLM-FIN-164",
@@ -7730,15 +7730,15 @@
         "article": "5.2 (businessConsequence, evidenceToConfirm); F3 review H2 and M7",
         "publisher": "LTM"
       },
-      "verification": "P",
+      "verification": "V",
       "checkedOn": "2026-10-14",
       "volatile": false,
       "clientVisible": true,
       "owner": "finops-cost-lead (agent); approver: product owner",
-      "lastReviewed": "2026-10-14",
+      "lastReviewed": "2026-10-15",
       "nextReview": "2027-04-14",
       "basisNote": "DESIGN.md 5.2 asks for one or two sentences on money, risk or decision speed per capability and for named evidence; the wording is LTM's, written in F3.",
-      "notes": "Parts of this statement are F3 changes from the practice-lead review (docs/cio-readiness/finops-iq/design/F3-review.md) that amend DESIGN.md and await the product owner's decision, so verification is P (the source is known; the owner-approved wording does not yet contain them). Return to V once DESIGN.md is amended and approved. LTM heuristic, not a market fact."
+      "notes": "Parts of this statement are F3 changes from the practice-lead review (docs/cio-readiness/finops-iq/design/F3-review.md) that amend DESIGN.md and await the product owner's decision, so verification is P (the source is known; the owner-approved wording does not yet contain them). Return to V once DESIGN.md is amended and approved. LTM heuristic, not a market fact. Approved by the product owner on 15 Oct 2026 (F3 rule corrections and F4 gate), so verification is now V against the owner-approved design."
     },
     {
       "id": "CLM-FIN-166",
@@ -7754,15 +7754,257 @@
         "article": "5.1 (decision findings); F3 review M4",
         "publisher": "LTM"
       },
-      "verification": "P",
+      "verification": "V",
+      "checkedOn": "2026-10-14",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "finops-cost-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-15",
+      "nextReview": "2027-04-14",
+      "basisNote": "An accountable owner is a precondition for every other finding; the severity rule reproduces both written reference-scenario expectations (RS4 Critical at Tier 3, RS5 High at Tier 1).",
+      "notes": "Parts of this statement are F3 changes from the practice-lead review (docs/cio-readiness/finops-iq/design/F3-review.md) that amend DESIGN.md and await the product owner's decision, so verification is P (the source is known; the owner-approved wording does not yet contain them). Return to V once DESIGN.md is amended and approved. LTM heuristic, not a market fact. Approved by the product owner on 15 Oct 2026 (F3 rule corrections and F4 gate), so verification is now V against the owner-approved design."
+    },
+    {
+      "id": "CLM-FIN-167",
+      "accelerators": [
+        "finops-iq"
+      ],
+      "kind": "heuristic",
+      "jurisdiction": "global",
+      "statement": "Lever and scope-confirmation findings, and DECISION-02: a quantified lever (including one quantified at zero) whose capability has no capability-gap finding gets its own lever finding, severity Medium, Low when its expected value is zero, and at least High when its expected net run-rate value is 2% or more of in-scope public cloud spend; otherwise the lever's value sits on its capability's gap finding. A value base or scope fact that is unknown and blocks a lever the mode quantifies gets one scope-confirmation finding per fact: Medium when it blocks commitments (LEV-01) or scheduling (LEV-04), otherwise Low; wave 1, to be confirmed within 3 months. DECISION-02 'Sequence commitments after usage and Spot moves' is raised, High, wave 2, when steady usage exceeds today's coverage but the usage and Spot moves in the plan remove all of it.",
+      "source": {
+        "url": "https://github.com/dixitashutosh007/ltm-accelerators/blob/main/docs/cio-readiness/finops-iq/design/DESIGN.md",
+        "title": "LTM FinOps IQ F1 design pack (approved by the product owner, 14 Oct 2026)",
+        "publisher": "LTM",
+        "article": "5.1, 5.3 and 10.4 (F4 build)"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-14",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "finops-cost-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-15",
+      "nextReview": "2027-04-14",
+      "basisNote": "Value is counted once, on the lever, and shown on the finding that owns it; a client cannot quantify a lever without the input, so the report asks for it; buying commitments before usage changes land would commit to usage the plan removes.",
+      "notes": "F4 value-model rule built by the practice-lead agent; it extends or interprets DESIGN.md and awaits the product owner's decision at the F4 gate, so verification is P (the source is known; the owner-approved wording does not yet contain it). LTM heuristic, not a market fact. Approved by the product owner on 15 Oct 2026 (F3 rule corrections and F4 gate), so verification is now V against the owner-approved design."
+    },
+    {
+      "id": "CLM-FIN-168",
+      "accelerators": [
+        "finops-iq"
+      ],
+      "kind": "heuristic",
+      "jurisdiction": "global",
+      "statement": "Hypothesis panel: the client's own waste estimate (HY-01) times in-scope public cloud spend is shown beside the model's range and never changes a number. When the estimate is above the model's expected case the panel explains: levers identified but not quantified (with the evidence that would quantify them), that the expected case is deliberately half of its technical maximum, and, when the estimate is above the model's upper case, that the estimate may include unallocated spend, which is not waste. When the estimate is at or below the expected case it says the model rests on the shares and evidence given, which validation would confirm.",
+      "source": {
+        "url": "https://github.com/dixitashutosh007/ltm-accelerators/blob/main/docs/cio-readiness/finops-iq/design/DESIGN.md",
+        "title": "LTM FinOps IQ F1 design pack (approved by the product owner, 14 Oct 2026)",
+        "publisher": "LTM",
+        "article": "10.8 (D4)"
+      },
+      "verification": "V",
       "checkedOn": "2026-10-14",
       "volatile": false,
       "clientVisible": true,
       "owner": "finops-cost-lead (agent); approver: product owner",
       "lastReviewed": "2026-10-14",
       "nextReview": "2027-04-14",
-      "basisNote": "An accountable owner is a precondition for every other finding; the severity rule reproduces both written reference-scenario expectations (RS4 Critical at Tier 3, RS5 High at Tier 1).",
-      "notes": "Parts of this statement are F3 changes from the practice-lead review (docs/cio-readiness/finops-iq/design/F3-review.md) that amend DESIGN.md and await the product owner's decision, so verification is P (the source is known; the owner-approved wording does not yet contain them). Return to V once DESIGN.md is amended and approved. LTM heuristic, not a market fact."
+      "basisNote": "The client's guess is context, not an input (D4); the three reasons are the usual causes of a gap between a self-estimate and a lever model.",
+      "notes": "LTM heuristic, not a market fact. Verification V here means the statement matches LTM's owner-approved design pack (the source); it is shown in the report's assumption register as 'LTM heuristic' with this reasoning."
+    },
+    {
+      "id": "CLM-FIN-169",
+      "accelerators": [
+        "finops-iq"
+      ],
+      "kind": "heuristic",
+      "jurisdiction": "global",
+      "statement": "Value confidence per lever: High when every input is provider-tool or measured evidence no older than 90 days; Medium when every input is an exact client figure; Low when any input is a band or derived from an answer mapping. Overall confidence is the lowest level among the largest levers that together carry more than half of the expected value (the lowest quantified lever when the expected value is zero); never above Medium in executive mode.",
+      "source": {
+        "url": "https://github.com/dixitashutosh007/ltm-accelerators/blob/main/docs/cio-readiness/finops-iq/design/DESIGN.md",
+        "title": "LTM FinOps IQ F1 design pack (approved by the product owner, 14 Oct 2026)",
+        "publisher": "LTM",
+        "article": "10.7"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-14",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "finops-cost-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-14",
+      "nextReview": "2027-04-14",
+      "basisNote": "Evidence beats an exact estimate, which beats a band; executive mode rests on a few answers and no evidence.",
+      "notes": "LTM heuristic, not a market fact. Verification V here means the statement matches LTM's owner-approved design pack (the source); it is shown in the report's assumption register as 'LTM heuristic' with this reasoning."
+    },
+    {
+      "id": "CLM-FIN-170",
+      "accelerators": [
+        "finops-iq"
+      ],
+      "kind": "heuristic",
+      "jurisdiction": "global",
+      "statement": "Net-of-cost presentation: no value money figure is shown without the client's internal cost rate (Q4); one-off and ongoing effort are counted only for levers with a positive expected value; a lever whose expected 3-year value at the margin does not exceed its effort is shown as not worth pursuing at this scale and left out of the headline totals; tooling cost is a client input and, when not provided, the report says net excludes it; external support is not included until WS-S5 sets ranges (Q10); with a banded internal rate the conservative case uses the high end and the upper case the low end; value figures are rounded down and costs up to whole currency units; the cost of an accountable FinOps lead or team is shown beside the value as its own decision, never netted against it (Q12).",
+      "source": {
+        "url": "https://github.com/dixitashutosh007/ltm-accelerators/blob/main/docs/cio-readiness/finops-iq/design/DESIGN.md",
+        "title": "LTM FinOps IQ F1 design pack (approved by the product owner, 14 Oct 2026)",
+        "publisher": "LTM",
+        "article": "10.6; owner decisions Q4, Q10 and Q12"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-14",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "finops-cost-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-15",
+      "nextReview": "2027-04-14",
+      "basisNote": "A net figure needs a cost; an assumed salary would be unsourced. Rounding and band handling never flatter the net. The operating model enables levers not yet quantified, so netting it against two levers would understate them and hiding it would overstate the programme.",
+      "notes": "F4 value-model rule built by the practice-lead agent; it extends or interprets DESIGN.md and awaits the product owner's decision at the F4 gate, so verification is P (the source is known; the owner-approved wording does not yet contain it). LTM heuristic, not a market fact. Approved by the product owner on 15 Oct 2026 (F3 rule corrections and F4 gate), so verification is now V against the owner-approved design."
+    },
+    {
+      "id": "CLM-FIN-171",
+      "accelerators": [
+        "finops-iq"
+      ],
+      "kind": "heuristic",
+      "jurisdiction": "global",
+      "statement": "FinOps team cost shown beside the value when DECISION-01 is raised: 0.5 FTE at Tier 1, 1 FTE at Tier 2 and 2 FTE at Tier 3, times 12 months times the client's internal cost rate per FTE-month.",
+      "source": {
+        "url": "https://github.com/dixitashutosh007/ltm-accelerators/blob/main/docs/cio-readiness/finops-iq/design/DESIGN.md",
+        "title": "LTM FinOps IQ F1 design pack (approved by the product owner, 14 Oct 2026)",
+        "publisher": "LTM",
+        "article": "10.6 (Q12); F4 build"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-14",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "finops-cost-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-15",
+      "nextReview": "2027-04-14",
+      "basisNote": "An accountable lead part-time in a focused estate, a full-time lead at scale, a lead and an analyst in a complex estate. To be replaced by the client's own plan in the workshop; reviewed against first engagements. Confidence low.",
+      "notes": "F4 value-model rule built by the practice-lead agent; it extends or interprets DESIGN.md and awaits the product owner's decision at the F4 gate, so verification is P (the source is known; the owner-approved wording does not yet contain it). LTM heuristic, not a market fact. Approved by the product owner on 15 Oct 2026 (F3 rule corrections and F4 gate), so verification is now V against the owner-approved design."
+    },
+    {
+      "id": "CLM-FIN-172",
+      "accelerators": [
+        "finops-iq"
+      ],
+      "kind": "heuristic",
+      "jurisdiction": "global",
+      "statement": "Value-model mechanics: band corners are searched over at most eight banded inputs (any further banded input, the narrowest first, is held at its midpoint and listed), and the all-midpoint point is a candidate for the conservative and upper cases so that conservative <= expected <= upper always holds; each case's in-scope public cloud spend is the band corner it uses, and the band is shown once. The 2% severity uplift compares a lever's shown expected net run-rate with its own base (in-scope public cloud spend P; for SaaS and licensing, SaaS and licensing spend, else total in-scope spend), and the 5% need modifier compares the shown expected public cloud value with P; both use only figures the report shows, at the client's own answers, and name the figure. Provider-tool estimates need an assessment date to check their age.",
+      "source": {
+        "url": "https://github.com/dixitashutosh007/ltm-accelerators/blob/main/docs/cio-readiness/finops-iq/design/DESIGN.md",
+        "title": "LTM FinOps IQ F1 design pack (approved by the product owner, 14 Oct 2026)",
+        "publisher": "LTM",
+        "article": "10.1 item 4, 5.3 and 9; F4 build"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-14",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "finops-cost-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-15",
+      "nextReview": "2027-04-14",
+      "basisNote": "Keeps the search bounded and the ordering of the three cases exact, and keeps the scoring monotone: Unknown counts as risk (D5) and a more mature answer never raises need.",
+      "notes": "F4 value-model rule built by the practice-lead agent; it extends or interprets DESIGN.md and awaits the product owner's decision at the F4 gate, so verification is P (the source is known; the owner-approved wording does not yet contain it). LTM heuristic, not a market fact. Approved by the product owner on 15 Oct 2026 (F3 rule corrections and F4 gate), so verification is now V against the owner-approved design."
+    },
+    {
+      "id": "CLM-FIN-173",
+      "accelerators": [
+        "finops-iq"
+      ],
+      "kind": "heuristic",
+      "jurisdiction": "global",
+      "statement": "Value labels: the headline reads 'Indicative value range: not a savings commitment; evidence validation required' (conservative, expected and upper, net of estimated implementation cost); each lever states its basis in one line; the words 'recoverable' and 'guaranteed' are never used.",
+      "source": {
+        "url": "https://github.com/dixitashutosh007/ltm-accelerators/blob/main/docs/cio-readiness/finops-iq/design/DESIGN.md",
+        "title": "LTM FinOps IQ F1 design pack (approved by the product owner, 14 Oct 2026)",
+        "publisher": "LTM",
+        "article": "10.12; PLAN F4 labels"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-14",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "finops-cost-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-14",
+      "nextReview": "2027-04-14",
+      "basisNote": "Cost IQ's existing wording; area 13(c) requires ranges that are never presented as certain.",
+      "notes": "LTM heuristic, not a market fact. Verification V here means the statement matches LTM's owner-approved design pack (the source); it is shown in the report's assumption register as 'LTM heuristic' with this reasoning."
+    },
+    {
+      "id": "CLM-FIN-174",
+      "accelerators": [
+        "finops-iq"
+      ],
+      "kind": "provider",
+      "jurisdiction": "global",
+      "statement": "Microsoft Azure: self-service cancellation of reservations is limited; the cancelled commitment refunded is capped (USD 50,000 per rolling 12-month window per billing scope, as quoted by Microsoft Learn), and exchanges move a commitment rather than remove it.",
+      "source": {
+        "url": "https://learn.microsoft.com/en-us/azure/cost-management-billing/reservations/exchange-and-refund-azure-reservations",
+        "title": "Self-service exchanges and refunds for Azure Reservations (Microsoft Learn)",
+        "publisher": "Microsoft",
+        "secondaryUrls": [
+          "https://learn.microsoft.com/en-au/training/modules/save-money-with-azure-reserved-instances/6-monitor-optimize-reservations"
+        ]
+      },
+      "verification": "P",
+      "checkedOn": "2026-10-14",
+      "volatile": true,
+      "clientVisible": true,
+      "owner": "finops-cost-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-14",
+      "nextReview": "2027-01-12",
+      "basisNote": "Why LEV-06 leaves out tolerant usage already covered by commitments: moving it to Spot would strand the commitment.",
+      "notes": "The USD 50,000 limit was read through search results quoting Microsoft Learn (F4 review H2); the exact wording on the primary exchange-and-refund page was not seen, so verification is P. Re-read the primary page before quoting the amount to a client."
+    },
+    {
+      "id": "CLM-FIN-175",
+      "accelerators": [
+        "finops-iq"
+      ],
+      "kind": "heuristic",
+      "jurisdiction": "global",
+      "statement": "Ramp from the roadmap start: a lever's share of each year's value is its ramp share times the part of that year left after the month the finding that owns it starts (for example a finding starting in month 9 earns 3/12 of its year-1 ramp share).",
+      "source": {
+        "url": "https://github.com/dixitashutosh007/ltm-accelerators/blob/main/docs/cio-readiness/finops-iq/design/DESIGN.md",
+        "title": "LTM FinOps IQ F1 design pack (approved by the product owner, 14 Oct 2026)",
+        "publisher": "LTM",
+        "article": "10.6 (ASM-FIN-045); F4 review M3"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-14",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "finops-cost-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-15",
+      "nextReview": "2027-04-14",
+      "basisNote": "A lever cannot earn value before the work on it starts; ties the value phasing to the roadmap.",
+      "notes": "F4 value-model rule built by the practice-lead agent; it extends or interprets DESIGN.md and awaits the product owner's decision at the F4 gate, so verification is P (the source is known; the owner-approved wording does not yet contain it). LTM heuristic, not a market fact. Approved by the product owner on 15 Oct 2026 (F3 rule corrections and F4 gate), so verification is now V against the owner-approved design."
+    },
+    {
+      "id": "CLM-FIN-176",
+      "accelerators": [
+        "finops-iq"
+      ],
+      "kind": "heuristic",
+      "jurisdiction": "global",
+      "statement": "Commitment instrument: LEV-01 uses the published maximum for the client's stated main commitment instrument per provider (AWS EC2 Instance Savings Plans or Standard Reserved Instances 72%, Compute Savings Plans 66%; Azure reservations 72%, savings plan for compute 65%; Google Cloud resource-based CUDs 55%, memory-optimised 70%), and the lower one when the instrument is not stated.",
+      "source": {
+        "url": "https://github.com/dixitashutosh007/ltm-accelerators/blob/main/docs/cio-readiness/finops-iq/design/DESIGN.md",
+        "title": "LTM FinOps IQ F1 design pack (approved by the product owner, 14 Oct 2026)",
+        "publisher": "LTM",
+        "article": "10.2 (LEV-01); F4 review M6"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-14",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "finops-cost-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-15",
+      "nextReview": "2027-04-14",
+      "basisNote": "The higher maxima apply only to specific instruments; when the client has not said which it uses, the conservative maximum avoids overstating LEV-01.",
+      "notes": "F4 value-model rule built by the practice-lead agent; it extends or interprets DESIGN.md and awaits the product owner's decision at the F4 gate, so verification is P (the source is known; the owner-approved wording does not yet contain it). LTM heuristic, not a market fact. Approved by the product owner on 15 Oct 2026 (F3 rule corrections and F4 gate), so verification is now V against the owner-approved design."
     }
   ]
 }

@@ -229,8 +229,8 @@
         }
       ],
       "maturityGuidance": {
-        "notYet": "Below 70% of spend allocated by cost, or not measured; no allocation policy.",
-        "crawl": "70-84% of spend allocated; informal conventions.",
+        "notYet": "Allocation by cost is not measured; no allocation policy.",
+        "crawl": "Allocation is measured but below 85% of spend (including below 70%); informal conventions.",
         "walk": "85-90% allocated under a documented policy that is mostly applied.",
         "run": "More than 90% allocated; owners for every account; shared and container costs allocated by rule and reconciled to the bill.",
         "source": "ltm_paraphrase",
@@ -1760,6 +1760,16 @@
         "points": 1
       }
     ],
+    "materiality": {
+      "kubernetesShareOfCompute": 0.1,
+      "aiApiShareOfSpend": 0.05,
+      "thresholdId": "THR-FIN-12",
+      "assumptionId": "ASM-FIN-002",
+      "claimIds": [
+        "CLM-FIN-120"
+      ],
+      "note": "Kubernetes counts when cluster spend is 10% or more of compute; AI counts with any GPU or model-serving spend, or AI API spend of 5% or more of in-scope spend. Applied only when the inputs exist; otherwise a selected scope counts as material."
+    },
     "bands": [
       {
         "tier": 1,

@@ -5,6 +5,13 @@
   "description": "A finding is created from a capability gap, a lever opportunity, an unknown that blocks a capability or lever, a conflict between answers (consultant-only) or an executive decision (DESIGN.md section 5). Value sits on lever findings only, so it is counted once. This file also defines the result, need-verdict and reference-scenario shapes used by reference-scenarios.json. Draft for owner approval (F1).",
   "$ref": "#/$defs/finding",
   "$defs": {
+    "figure": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["field", "value", "unit", "claimIds", "assumptionIds"],
+      "description": "F4: a traceable number: its own path in the result, its value, unit, and the claim and assumption IDs behind it.",
+      "properties": { "field": { "type": "string" }, "value": { "type": "number" }, "unit": { "enum": ["currency", "share", "percent", "fte_months", "fte", "ratio"] }, "claimIds": { "type": "array", "items": { "type": "string" } }, "assumptionIds": { "type": "array", "items": { "type": "string" } } }
+    },
     "severity": { "enum": ["Critical", "High", "Medium", "Low"] },
     "findingType": { "enum": ["capability_gap", "lever_opportunity", "scope_confirmation", "conflict", "decision"] },
     "ownerRole": {
@@ -27,7 +34,7 @@
         "gap": { "type": "integer", "minimum": 1, "maximum": 3 },
         "unconfirmed": { "type": "boolean" },
         "severity": { "$ref": "#/$defs/severity" },
-        "severityTrace": { "type": "array", "items": { "enum": ["gap_1", "gap_2", "gap_3", "foundation_uplift", "value_uplift", "scope_low", "decision_rule"] }, "description": "Which ASM-FIN-005 steps produced the severity." },
+        "severityTrace": { "type": "array", "items": { "enum": ["gap_1", "gap_2", "gap_3", "foundation_uplift", "value_uplift", "scope_low", "decision_rule", "lever_base", "lever_zero", "lever_excluded", "scope_material"] }, "description": "Which ASM-FIN-005 steps produced the severity; lever_base, lever_zero and scope_material are the F4 lever and scope-confirmation rules (CLM-FIN-167)." },
         "title": { "type": "string" },
         "businessConsequence": { "type": "string" },
         "decisionOrAction": { "type": "string" },
@@ -77,6 +84,16 @@
           "items": { "$ref": "urn:ltm:finops-iq:v3:question#/$defs/basis" }
         },
         "mode": { "type": "array", "minItems": 1, "items": { "enum": ["executive", "workshop"] } },
+        "severityBeforeValue": { "$ref": "#/$defs/severity", "description": "F4 review H3: severity before the value uplift; monotone in the answers." },
+        "valueBasis": { "description": "F4 review H3: the shown figures a value_uplift rests on.", "oneOf": [{ "type": "null" }, { "type": "object", "required": ["fields", "thresholdField"], "properties": { "fields": { "type": "array", "items": { "type": "string" } }, "thresholdField": { "type": "string" } } }] },
+        "leverActions": { "type": "array", "description": "F4 review M2: levers whose value sits on this gap finding, with their own action, evidence and zero-value advice.", "items": { "type": "object", "required": ["leverId", "title", "action", "evidence", "zeroValue", "inHeadline", "claimIds"] } },
+        "value": {
+          "description": "F4: the run-rate value of the quantified levers this finding owns (each lever on exactly one finding, so finding values sum to the headline); null when it owns none or no money figure is shown (Q4). Each case is a traceable figure.",
+          "oneOf": [
+            { "type": "null" },
+            { "type": "object", "required": ["leverIds", "conservative", "expected", "upper"], "properties": { "leverIds": { "type": "array", "items": { "type": "string" } }, "conservative": { "$ref": "#/$defs/figure" }, "expected": { "$ref": "#/$defs/figure" }, "upper": { "$ref": "#/$defs/figure" } } }
+          ]
+        },
         "consultantOnly": { "type": "boolean", "description": "true for conflict findings." }
       },
       "allOf": [

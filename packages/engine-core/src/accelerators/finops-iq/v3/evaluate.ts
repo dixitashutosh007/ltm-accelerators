@@ -1,8 +1,8 @@
 /**
  * FinOps IQ v3 engine (plan phase F3; design: docs/cio-readiness/finops-iq/design/DESIGN.md).
  * One engine for both modes: the mode selects questions, never scoring.
- * Output: capability profile against tier targets, findings from gaps, executive need verdict, coverage.
- * No money figure: the value model is phase F4. Levers appear only as links from findings.
+ * Output: capability profile against tier targets, findings from gaps, levers and unknown value inputs, executive
+ * need verdict, coverage, and the value model (F4, value-model.ts): lever-based ranges, net and phased, capped.
  */
 import bank from './question-bank.json' with { type: 'json' };
 import rules from './engine-rules.json' with { type: 'json' };
@@ -10,9 +10,11 @@ import capabilityModel from '../registry/capabilities.json' with { type: 'json' 
 import leverLibrary from '../registry/levers.json' with { type: 'json' };
 import thresholds from '../registry/thresholds.json' with { type: 'json' };
 import claimsRegister from '../../../claims/claims-register.json' with { type: 'json' };
+import valueRules from './value-rules.json' with { type: 'json' };
+import { buildValueModel, findingValue, inputInfo, VALUE_MODEL_VERSION, type Figure, type ValueBlock, type ValueModelOutput } from './value-model';
 
-export const ENGINE_VERSION = '3.1.0';
-export const VALUE_MODEL_VERSION = 'not-built (F4)';
+export const ENGINE_VERSION = '3.3.0';
+export { VALUE_MODEL_VERSION };
 
 export type Mode = 'executive' | 'workshop';
 export type Level = 'not_yet' | 'crawl' | 'walk' | 'run';
@@ -31,7 +33,7 @@ export interface Facts {
     migration?: { stage?: string; remainingShare24m?: Amount };
   };
   spend: { byScope: Record<string, Amount>; growth12m?: number | 'unknown' };
-  base?: Record<string, Amount | string>;
+  base?: Record<string, Amount | string | Record<string, string>>;
   evidence?: Record<string, any>;
   cost?: { internalRate?: Amount; tooling?: Amount };
   consultant?: { complexityTierOverride?: 1 | 2 | 3; overrideReason?: string };
@@ -79,9 +81,12 @@ export interface CapabilityProfile {
   claimIds: string[];
 }
 
+/** A finding's value: the sum of the quantified levers it owns (value sits on the lever, counted once). */
+export interface FindingValue { leverIds: string[]; conservative: Figure; expected: Figure; upper: Figure }
+
 export interface Finding {
   id: string;
-  type: 'capability_gap' | 'decision';
+  type: 'capability_gap' | 'lever_opportunity' | 'scope_confirmation' | 'decision';
   capability: string;
   scopes: string[];
   current?: Rating;
@@ -111,6 +116,14 @@ export interface Finding {
   offeringIds: string[];
   basis: Basis[];
   mode: Mode[];
+  /** Value of the levers this finding owns; null when it owns none or no money figure is shown (Q4). */
+  value: FindingValue | null;
+  /** Severity before the value uplift (DESIGN.md 5.3 steps 1, 2, 4, 5): monotone in the answers. */
+  severityBeforeValue: 'Critical' | 'High' | 'Medium' | 'Low';
+  /** With value_uplift: the shown figures it rests on (F4 review H3). */
+  valueBasis: { fields: string[]; thresholdField: string } | null;
+  /** Levers whose value sits on this gap finding, with their own action, evidence and zero-value advice (F4 review M2). */
+  leverActions: Array<{ leverId: string; title: string; action: string; evidence: string; zeroValue: boolean; inHeadline: boolean; claimIds: string[] }>;
 }
 
 export interface NeedVerdict {
@@ -119,6 +132,8 @@ export interface NeedVerdict {
   modifiers: Array<{ id: string; points: number }>;
   /** Modifiers the design defines that cannot be applied yet. */
   pending: Array<{ id: string; reason: string }>;
+  /** The shown figure behind the value modifier (F4 review H3). */
+  valueBasis: { field: string; thresholdField: string } | null;
   band: string;
   bandLabel: string;
   confidence: 'Medium' | 'Low';
@@ -150,6 +165,7 @@ export interface FinOpsIqV3Result {
     leverLibrary: string;
     thresholds: string;
     engineRules: string;
+    valueRules: string;
     valueModel: string;
     claimsRegister: string;
   };
@@ -167,12 +183,15 @@ export interface FinOpsIqV3Result {
   conflicts: Array<{ id: string; probe: string; consultantOnly: true }>;
   /** Hypothesis answers, never scored and never a value input (D4). HY-07 free text is not echoed. */
   hypotheses: { answers: Record<string, AnswerValue>; scored: false; claimIds: string[] };
+  /** Value model (DESIGN.md 10): indicative ranges, never a savings commitment. Every number is a traceable Figure. */
+  value: ValueBlock;
 }
 
 /* ------------------------------ Reference data ------------------------------ */
 
 const BANK: any = bank;
 const RULES: any = rules;
+const VR: any = valueRules;
 const CAPS: any = capabilityModel;
 const LEVERS: any = leverLibrary;
 const REGISTER: any = claimsRegister;
@@ -282,14 +301,14 @@ function material(id: string, f: Facts): boolean {
     const p = publicCloudSpend(f);
     const share = amountValue(f.base?.computeShare);
     if (k8s === undefined || p === undefined || share === undefined || p * share <= 0) return true;
-    return k8s / (p * share) >= 0.1;
+    return k8s / (p * share) >= CAPS.tiers.materiality.kubernetesShareOfCompute;
   }
   if (id === 'ai_material') {
     if (f.footprint.scopes.includes('ai_platform_gpu')) return amountValue(f.evidence?.aiGpu?.gpuSpend) !== 0;
     const api = amountValue(f.spend.byScope.ai_api) ?? amountValue(f.evidence?.aiGpu?.aiApiSpend);
     const total = totalSpend(f);
     if (api === undefined || !total) return true;
-    return api / total >= 0.05;
+    return api / total >= CAPS.tiers.materiality.aiApiShareOfSpend;
   }
   return true;
 }
@@ -443,14 +462,27 @@ function findingScopes(cap: any, f: Facts): string[] {
   return [...f.footprint.publicCloudProviders.map(p => `public_cloud:${p}`), ...scopes];
 }
 
-function severityOf(cap: any, p: CapabilityProfile, tier: number): { severity: Finding['severity']; trace: string[] } {
+function severityOf(cap: any, p: CapabilityProfile, tier: number, leverIds: string[], vm: ValueModelOutput): { severity: Finding['severity']; trace: string[]; before: Finding['severity']; basis: Finding['valueBasis'] } {
   const s = RULES.severity;
-  if (p.target.source === 'consultant_override' && cap.defaultTargets[`tier${tier}`] == null) return { severity: 'Low', trace: ['scope_low'] };
+  const raised = (sev: Finding['severity'], trace: string[]) => valueUplift(sev, trace, leverIds, vm);
+  if (p.target.source === 'consultant_override' && cap.defaultTargets[`tier${tier}`] == null) return raised('Low', ['scope_low']);
   const gap = Math.min(3, p.gap!);
   let rank = SEVERITIES.indexOf(s.byGap[String(gap)]);
   const trace = [`gap_${gap}`];
   if (s.foundationUplift.capabilities.includes(cap.id) && tier >= s.foundationUplift.minTier && rank < 3) { rank++; trace.push('foundation_uplift'); }
-  return { severity: SEVERITIES[rank], trace };
+  return raised(SEVERITIES[rank], trace);
+}
+
+/**
+ * DESIGN.md 5.3 step 3: at least High when a linked lever's expected net run-rate value is 2% or more of its base
+ * (THR-FIN-13). F4 review H3: only on a figure the report shows, at the client's own answers; the figure is named.
+ */
+function valueUplift(severity: Finding['severity'], trace: string[], leverIds: string[], vm: ValueModelOutput) {
+  const hits = leverIds.map(id => vm.scoring.byLever.get(id)).filter(x => x?.reached).map(x => x!.field);
+  if (hits.length && SEVERITIES.indexOf(severity) < SEVERITIES.indexOf('High')) {
+    return { severity: 'High' as const, trace: [...trace, 'value_uplift'], before: severity, basis: { fields: hits, thresholdField: vm.scoring.upliftThresholdField } };
+  }
+  return { severity, trace, before: severity, basis: null };
 }
 
 function leverLinks(cap: any, f: Facts): string[] {
@@ -494,7 +526,7 @@ function mp01Status(state: AnswerState): string | undefined {
   return state.levels.get('MP-01') ?? 'not_answered';
 }
 
-function buildFindings(input: FinOpsIqV3Input, tier: number, profile: CapabilityProfile[], state: AnswerState): Finding[] {
+function buildFindings(input: FinOpsIqV3Input, tier: number, profile: CapabilityProfile[], state: AnswerState, vm: ValueModelOutput): Finding[] {
   const text = RULES.findingText;
   const ruleBasis = [...new Set<string>([...text.claimIds, ...RULES.severity.claimIds, ...RULES.ownerRoles.claimIds, ...RULES.schedule.claimIds])].map(citation);
   const mp01 = mp01Status(state);
@@ -503,7 +535,8 @@ function buildFindings(input: FinOpsIqV3Input, tier: number, profile: Capability
   for (const p of profile) {
     if (p.gap === null || p.gap < 1 || p.target.level === null) continue;
     const cap = CAPABILITIES[CAPABILITY_INDEX.get(p.capability)!];
-    const { severity, trace } = severityOf(cap, p, tier);
+    const leverIds = leverLinks(cap, input.facts);
+    const { severity, trace, before, basis } = severityOf(cap, p, tier, leverIds, vm);
     const ct = RULES.capabilityText.byCapability[cap.id];
     const contributing = ratingAnswers(p, state);
     const values = {
@@ -522,14 +555,16 @@ function buildFindings(input: FinOpsIqV3Input, tier: number, profile: Capability
       decisionOrAction: fill(action, values),
       ...ownerFor(RULES.ownerRoles.byCapability[cap.id], mp01),
       start: { month: 0, label: '' }, targetDuration: { months: 0, label: '' },
-      wave: cap.wave, dependsOn: [], leverIds: leverLinks(cap, input.facts),
+      wave: cap.wave, dependsOn: [], leverIds,
       evidenceToConfirm: ct.evidence,
       offeringIds: [...cap.offeringIds],
       basis: [...cap.basis, ...cap.maturityGuidance.claimIds.filter((id: string) => !cap.claimIds.includes(id)).map(citation),
-        ...questionBasis(contributing).filter((b: any) => !cap.claimIds.includes(b.claimId)), ...ruleBasis],
-      mode: [input.mode]
+        ...questionBasis(contributing).filter((b: any) => !cap.claimIds.includes(b.claimId)), ...ruleBasis,
+        ...(trace.includes('value_uplift') ? VR.scoring.claimIds.map(citation) : [])],
+      mode: [input.mode], value: null, severityBeforeValue: before, valueBasis: basis, leverActions: leverActions(leverIds, vm)
     });
   }
+  findings.push(...leverFindings(input, findings, vm, mp01), ...scopeConfirmations(input, vm, mp01));
   // DECISION-01 (F3 review M4): no accountable owner for cloud spend.
   for (const d of RULES.decisions) {
     if (mp01 === undefined || !d.levels.includes(mp01)) continue;
@@ -546,7 +581,21 @@ function buildFindings(input: FinOpsIqV3Input, tier: number, profile: Capability
       start: { month: 0, label: '' }, targetDuration: { months: 0, label: '' },
       wave: d.wave, dependsOn: [], leverIds: [], evidenceToConfirm: d.evidence, offeringIds: [...d.offeringIds],
       basis: [...d.claimIds.map(citation), ...questionBasis([q]), ...ruleBasis.filter(b => b.claimId !== 'CLM-FIN-141')],
-      mode: [input.mode]
+      mode: [input.mode], value: null, severityBeforeValue: severity, valueBasis: null, leverActions: []
+    });
+  }
+  // DECISION-02 (F4): commitments now would lock in usage that the scheduling and Spot moves remove.
+  if (vm.decision02) {
+    const d = VR.decision02;
+    findings.push({
+      id: d.id, type: 'decision', capability: d.capability, scopes: input.facts.footprint.publicCloudProviders.map(p => `public_cloud:${p}`),
+      unconfirmed: false, notAnsweredCount: 0, severity: d.severity, severityTrace: ['decision_rule'],
+      title: d.title, businessConsequence: d.consequence, decisionOrAction: d.action, ...ownerFor(d.ownerRole, mp01),
+      start: { month: 0, label: '' }, targetDuration: { months: 0, label: '' },
+      wave: d.wave, dependsOn: [], leverIds: ['LEV-01', ...(vm.quantified.includes('LEV-06') ? ['LEV-06'] : []), ...(vm.quantified.includes('LEV-04') ? ['LEV-04'] : [])],
+      evidenceToConfirm: d.evidence, offeringIds: [...d.offeringIds],
+      basis: [...d.claimIds.map(citation), ...ruleBasis.filter(b => b.claimId !== 'CLM-FIN-141')], mode: [input.mode], value: null,
+      severityBeforeValue: d.severity, valueBasis: null, leverActions: []
     });
   }
   // Waves by dependency (DESIGN.md 5.4), then the schedule: a finding starts at its wave window and never before
@@ -557,7 +606,8 @@ function buildFindings(input: FinOpsIqV3Input, tier: number, profile: Capability
   const schedule = (f: Finding) => {
     if (scheduled.has(f.id)) return;
     let month = sch.waveStartMonth[String(f.wave)];
-    if (f.type === 'capability_gap') {
+    const quickWin = f.type === 'lever_opportunity' && VR.leverFindings.waveByLever[f.leverIds[0]] !== undefined;
+    if (f.type === 'capability_gap' || (f.type === 'lever_opportunity' && !quickWin)) {
       for (const dep of CAPABILITIES[CAPABILITY_INDEX.get(f.capability)!].dependsOn ?? []) {
         const d = byCap.get(dep);
         if (!d) continue;
@@ -567,7 +617,7 @@ function buildFindings(input: FinOpsIqV3Input, tier: number, profile: Capability
         month = Math.max(month, sch.waveStartMonth[String(f.wave)], d.start.month + Math.min(sch.firstMilestoneMonths, d.targetDuration.months));
       }
     }
-    const months = sch.durationMonths[f.severity];
+    const months = f.type === 'scope_confirmation' ? VR.scopeConfirmation.targetDurationMonths : sch.durationMonths[f.severity];
     f.start = { month, label: fill(sch.startLabel, { month }) };
     f.targetDuration = { months, label: fill(sch.durationLabel, { months }) };
     scheduled.add(f.id);
@@ -575,9 +625,128 @@ function buildFindings(input: FinOpsIqV3Input, tier: number, profile: Capability
   findings.forEach(schedule);
   // Findings from real answers come before "not answered" ones of the same severity (F3 review H1).
   const blankDriven = (f: Finding) => (f.notAnsweredCount > 0 ? 1 : 0);
-  return findings.sort((a, b) =>
+  const TYPE_ORDER = ['capability_gap', 'lever_opportunity', 'decision', 'scope_confirmation'];
+  findings.sort((a, b) =>
     SEVERITIES.indexOf(b.severity) - SEVERITIES.indexOf(a.severity) || blankDriven(a) - blankDriven(b) || a.wave - b.wave ||
-    (b.gap ?? 0) - (a.gap ?? 0) || CAPABILITY_INDEX.get(a.capability)! - CAPABILITY_INDEX.get(b.capability)! || (a.type === 'decision' ? 1 : -1));
+    (b.gap ?? 0) - (a.gap ?? 0) || CAPABILITY_INDEX.get(a.capability)! - CAPABILITY_INDEX.get(b.capability)! ||
+    TYPE_ORDER.indexOf(a.type) - TYPE_ORDER.indexOf(b.type) || a.id.localeCompare(b.id));
+  // Value sits on the lever; each finding shows the quantified levers it owns, so finding values sum to the headline.
+  if (vm.value.moneyShown) for (const f of findings) {
+    if (f.type === 'capability_gap' || f.type === 'lever_opportunity') f.value = findingValue(f.id, f.leverIds, vm.value);
+  }
+  return findings;
+}
+
+/** Lever texts for a lever: its own, the zero-value ones, or the not-worth-pursuing ones (M1). */
+function leverText(id: string, vm: ValueModelOutput) {
+  const lf = VR.leverFindings;
+  const lever = LEVERS.levers.find((l: any) => l.id === id);
+  const t = lf.byLever[id];
+  const excluded = vm.excluded.includes(id);
+  const zero = vm.zero.includes(id);
+  if (excluded) return { title: fill(lf.excluded.title, { lever: lever.name }), consequence: VR.headline.excludedText, action: lf.excluded.action, evidence: t.evidence, zero: true, excluded };
+  if (zero && id === 'LEV-01' && vm.overCoverage) return { title: lf.overCoverageTitle, consequence: `${t.zeroConsequence} ${t.overCoverage}`, action: t.zeroAction, evidence: t.evidence, zero, excluded };
+  if (zero) return { title: t.zeroTitle ?? fill(lf.zero.title, { lever: lever.name }), consequence: t.zeroConsequence ?? lf.zero.consequence, action: t.zeroAction ?? lf.zero.action, evidence: t.evidence, zero, excluded };
+  return { title: t.title, consequence: t.consequence, action: t.action, evidence: t.evidence, zero, excluded };
+}
+
+/** M2: the quantified levers a gap finding owns keep their own action, evidence and zero-value advice. */
+function leverActions(leverIds: string[], vm: ValueModelOutput): Finding['leverActions'] {
+  return leverIds.filter(id => vm.quantified.includes(id)).map(id => {
+    const t = leverText(id, vm);
+    const lever = LEVERS.levers.find((l: any) => l.id === id);
+    return { leverId: id, title: t.title, action: t.action, evidence: t.evidence, zeroValue: t.zero, inHeadline: !t.excluded, claimIds: [...VR.leverFindings.claimIds, lever.claimIds[0]] };
+  });
+}
+
+/**
+ * Lever findings (DESIGN.md 5.1, CLM-FIN-167): a quantified lever (also at zero, or not worth pursuing) whose
+ * capability has no gap finding. Otherwise the lever sits on its capability's gap finding (with its actions, M2).
+ * Severity Medium, Low at zero or when not worth pursuing, value uplift to High on its shown figure.
+ */
+function leverFindings(input: FinOpsIqV3Input, findings: Finding[], vm: ValueModelOutput, mp01: string | undefined): Finding[] {
+  const lf = VR.leverFindings;
+  const withGap = new Set(findings.filter(f => f.type === 'capability_gap').map(f => f.capability));
+  const out: Finding[] = [];
+  for (const id of vm.quantified) {
+    const lever = LEVERS.levers.find((l: any) => l.id === id);
+    if (withGap.has(lever.capability)) continue;
+    const cap = CAPABILITIES[CAPABILITY_INDEX.get(lever.capability)!];
+    const t = leverText(id, vm);
+    const { severity, trace, before, basis } = t.zero
+      ? { severity: lf.severity.zero as Finding['severity'], trace: [t.excluded ? 'lever_excluded' : 'lever_zero'], before: lf.severity.base as Finding['severity'], basis: null }
+      : valueUplift(lf.severity.base, ['lever_base'], [id], vm);
+    out.push({
+      id: `F-FIN-${id}`, type: 'lever_opportunity', capability: cap.id, scopes: findingScopes(cap, input.facts),
+      unconfirmed: false, notAnsweredCount: 0, severity, severityTrace: trace,
+      title: t.title, businessConsequence: t.consequence, decisionOrAction: t.action,
+      ...ownerFor(RULES.ownerRoles.byCapability[cap.id], mp01),
+      start: { month: 0, label: '' }, targetDuration: { months: 0, label: '' },
+      wave: lf.waveByLever[id] ?? cap.wave, dependsOn: [], leverIds: [id], evidenceToConfirm: t.evidence,
+      offeringIds: [...lever.offeringIds],
+      basis: [...new Set<string>([...lf.claimIds, ...lever.claimIds.slice(0, 2), ...(trace.includes('value_uplift') ? VR.scoring.claimIds : [])])].map(citation),
+      mode: [input.mode], value: null, severityBeforeValue: before, valueBasis: basis, leverActions: []
+    });
+  }
+  return out;
+}
+
+/** Scope-confirmation findings: one per unknown value base or scope fact that blocks a lever this mode quantifies. */
+function scopeConfirmations(input: FinOpsIqV3Input, vm: ValueModelOutput, mp01: string | undefined): Finding[] {
+  const sc = VR.scopeConfirmation;
+  const out: Finding[] = [];
+  for (const [path, leverIds] of vm.blocking) {
+    const info = inputInfo(path);
+    const levers = leverIds.map(id => LEVERS.levers.find((l: any) => l.id === id));
+    const material = leverIds.some(id => sc.materialLevers.includes(id));
+    const question = input.mode === 'executive' && info.executiveQuestion ? info.executiveQuestion : info.question;
+    const label = info.label;
+    const names = levers.map((l: any) => `${l.name.toLowerCase()} (${l.id})`).join(', ');
+    out.push({
+      id: `F-FIN-SCOPE-${info.id}`, type: 'scope_confirmation', capability: levers[0].capability, scopes: [],
+      unconfirmed: true, notAnsweredCount: 0, severity: material ? sc.severity.material : sc.severity.other, severityTrace: [material ? 'scope_material' : 'scope_low'],
+      title: fill(sc.title, { input: label }), businessConsequence: fill(sc.consequence, { input: label, levers: names, them: leverIds.length > 1 ? 'them' : 'it' }),
+      decisionOrAction: fill(sc.action, { input: label, question }),
+      ...ownerFor(sc.ownerRole, mp01),
+      start: { month: 0, label: '' }, targetDuration: { months: 0, label: '' },
+      wave: sc.wave, dependsOn: [], leverIds: [...leverIds], evidenceToConfirm: fill(sc.evidence, { input: label[0].toUpperCase() + label.slice(1) }),
+      offeringIds: [...sc.offeringIds],
+      basis: [...new Set<string>([...sc.claimIds, ...levers.map((l: any) => l.claimIds[0])])].map(citation),
+      mode: [input.mode], value: null, severityBeforeValue: material ? sc.severity.material : sc.severity.other, valueBasis: null, leverActions: []
+    });
+  }
+  return out;
+}
+
+/**
+ * The roadmap start month of the finding that will own each lever (F4 review M3), from waves and dependencies only,
+ * so the ramp can start there before findings exist. It mirrors the schedule in buildFindings: a dependency's first
+ * milestone is min(3 months, its duration) and every duration is at least 3 months, so severity does not enter.
+ */
+function leverStartMonths(profile: CapabilityProfile[]): Record<string, number> {
+  const sch = RULES.schedule;
+  const milestone = Math.min(sch.firstMilestoneMonths, ...Object.values<number>(sch.durationMonths));
+  const gap = new Set(profile.filter(p => p.gap !== null && p.gap >= 1 && p.target.level !== null).map(p => p.capability));
+  const memo = new Map<string, { wave: number; month: number }>();
+  const capStart = (id: string, wave0: number): { wave: number; month: number } => {
+    let wave = wave0;
+    let month = sch.waveStartMonth[String(wave)];
+    for (const dep of CAPABILITIES[CAPABILITY_INDEX.get(id)!].dependsOn ?? []) {
+      if (!gap.has(dep)) continue;
+      const d = memo.get(dep) ?? capStart(dep, CAPABILITIES[CAPABILITY_INDEX.get(dep)!].wave);
+      memo.set(dep, d);
+      wave = Math.max(wave, d.wave);
+      month = Math.max(month, sch.waveStartMonth[String(wave)], d.month + milestone);
+    }
+    return { wave, month };
+  };
+  const out: Record<string, number> = {};
+  for (const l of LEVERS.levers) {
+    const cap = l.capability;
+    const quick = VR.leverFindings.waveByLever[l.id];
+    out[l.id] = !gap.has(cap) && quick !== undefined ? sch.waveStartMonth[String(quick)] : capStart(cap, CAPABILITIES[CAPABILITY_INDEX.get(cap)!].wave).month;
+  }
+  return out;
 }
 
 /* ------------------------------- Need verdict ------------------------------- */
@@ -593,7 +762,7 @@ function factsGiven(q: any, f: Facts): boolean {
   });
 }
 
-function needVerdict(input: FinOpsIqV3Input, tier: number, profile: CapabilityProfile[], state: AnswerState): NeedVerdict {
+function needVerdict(input: FinOpsIqV3Input, tier: number, profile: CapabilityProfile[], state: AnswerState, vm: ValueModelOutput): NeedVerdict {
   const nv = RULES.needVerdict;
   const f = input.facts;
   // Blank (any asked question left blank) counts as the maximum gap, so a blank never lowers need.
@@ -607,6 +776,12 @@ function needVerdict(input: FinOpsIqV3Input, tier: number, profile: CapabilityPr
   const points = (id: string) => nv.modifiers.find((m: any) => m.id === id);
   if (tier === 2) modifiers.push({ id: 'tier_2', points: points('tier_2').points });
   if (tier === 3) modifiers.push({ id: 'tier_3', points: points('tier_3').points });
+  // +10 when the shown expected public cloud value is 5% or more of P (F4; review H3: only a shown figure, at the
+  // client's own answers; the verdict names the figure, never the money).
+  const vmod = VR.scoring.needModifierId;
+  const need = vm.scoring.need;
+  const valueKnown = need !== null;
+  if (need?.reached) modifiers.push({ id: vmod, points: points(vmod).points });
   const growth = f.spend.growth12m;
   if (typeof growth === 'number' && growth >= points('growth_ge_20pct').threshold) modifiers.push({ id: 'growth_ge_20pct', points: points('growth_ge_20pct').points });
   // Executive mode: AI scope only; the migration share comes from SC-06, a workshop question (F3 review L6).
@@ -632,11 +807,12 @@ function needVerdict(input: FinOpsIqV3Input, tier: number, profile: CapabilityPr
   const answered = scored.filter(q => (q.kind === 'maturity' ? state.levels.has(q.id) : factsGiven(q, f))).length;
   return {
     needIndex, baseIndex: round1(baseIndex), modifiers,
-    pending: [{ id: 'expected_value_ge_5pct_of_P', reason: 'needs the value model (F4)' }],
+    pending: valueKnown ? [] : [{ id: vmod, reason: 'no value figure shown (no lever quantified, or no internal cost rate)' }],
+    valueBasis: need?.reached ? { field: need.field, thresholdField: need.thresholdField } : null,
     band: band.id, bandLabel: band.label,
     confidence: blindSpots.some(b => b.questionId) ? 'Low' : 'Medium', blindSpots,
     basisLine: fill(nv.basisLine, { answered, questions: scored.length, tier }),
-    claimIds: [...nv.claimIds, ...nv.basisClaimIds.filter((id: string) => !nv.claimIds.includes(id)), ...nv.confidenceClaimIds]
+    claimIds: [...nv.claimIds, ...nv.basisClaimIds.filter((id: string) => !nv.claimIds.includes(id)), ...nv.confidenceClaimIds, ...(modifiers.some(m => m.id === vmod) ? ['CLM-FIN-172'] : [])]
   };
 }
 
@@ -659,7 +835,16 @@ export function evaluateFinOpsIqV3(input: FinOpsIqV3Input): FinOpsIqV3Result {
     (overrides ? fill(h.overrideSuffix, { overrides: overrides === 1 ? '1 target' : `${overrides} targets` }) : '') +
     (input.mode === 'executive' ? fill(h.executiveSuffix, { assessed }) : '');
 
-  const findings = buildFindings(input, tier.tier, capabilities, state);
+  const mp01 = mp01Status(state);
+  const vm = buildValueModel({
+    mode: input.mode, tier: tier.tier, facts: f, assessmentDate: input.assessmentDate,
+    leversInScope: LEVERS.levers.filter((l: any) => testCondition(l.scopeWhen, { facts: f, levels: new Map(), values: new Map() })).map((l: any) => l.id),
+    op06: { asked: state.asked.has('OP-06'), level: state.levels.get('OP-06') },
+    hypothesis: typeof state.values.get('HY-01') === 'string' ? state.values.get('HY-01') as string : undefined,
+    decision01Raised: mp01 !== undefined && RULES.decisions[0].levels.includes(mp01),
+    leverStartMonth: leverStartMonths(capabilities)
+  });
+  const findings = buildFindings(input, tier.tier, capabilities, state, vm);
 
   const maturityAsked = QUESTIONS.filter(q => q.kind === 'maturity' && state.asked.has(q.id)).map(q => q.id);
   const answeredIds = maturityAsked.filter(id => state.levels.has(id));
@@ -688,12 +873,13 @@ export function evaluateFinOpsIqV3(input: FinOpsIqV3Input): FinOpsIqV3Result {
     capabilityModel: CAPS.modelVersion as string,
     leverLibrary: LEVERS.libraryVersion as string,
     thresholds: (thresholds as any).registryVersion as string,
-    engineRules: RULES.rulesVersion as string
+    engineRules: RULES.rulesVersion as string,
+    valueRules: VR.rulesVersion as string
   };
   return {
     versions: {
       engine: ENGINE_VERSION,
-      kb: `questions ${versions.questionSet}; capabilities ${versions.capabilityModel}; levers ${versions.leverLibrary}; thresholds ${versions.thresholds}; rules ${versions.engineRules}`,
+      kb: `questions ${versions.questionSet}; capabilities ${versions.capabilityModel}; levers ${versions.leverLibrary}; thresholds ${versions.thresholds}; rules ${versions.engineRules}; value rules ${versions.valueRules}`,
       ...versions,
       valueModel: VALUE_MODEL_VERSION,
       claimsRegister: REGISTER.version
@@ -706,9 +892,10 @@ export function evaluateFinOpsIqV3(input: FinOpsIqV3Input): FinOpsIqV3Result {
     headline: { atOrAboveTarget: atOrAbove, inScope: withTarget.length, assessed, statement, claimIds: [...h.claimIds] },
     findings,
     topFindingIds: findings.slice(0, 5).map(x => x.id),
-    needVerdict: input.mode === 'executive' ? needVerdict(input, tier.tier, capabilities, state) : null,
+    needVerdict: input.mode === 'executive' ? needVerdict(input, tier.tier, capabilities, state, vm) : null,
     coverage,
     conflicts,
-    hypotheses: { answers: hypotheses, scored: false, claimIds: ['CLM-FIN-144', 'CLM-FIN-164'] }
+    hypotheses: { answers: hypotheses, scored: false, claimIds: ['CLM-FIN-144', 'CLM-FIN-164'] },
+    value: vm.value
   };
 }

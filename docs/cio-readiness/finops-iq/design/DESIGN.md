@@ -151,9 +151,9 @@ The 2026 Framework (published 19 Mar 2026) keeps four domains and adds **Executi
 | `walk` | 2 | Understood and followed within the organisation; automation and processes cover most requirements; hard edge cases identified, some deliberately not addressed; medium-to-high KPIs |
 | `run` | 3 | Understood and followed by all teams; hard edge cases addressed; very high KPIs; automation preferred |
 | `unknown` | (0 for gap and risk) | The respondent does not know. **Counts as risk (D5)**: gap computed as if `not_yet`, and the finding is flagged *unconfirmed* with "confirm" as its first action. Displayed as Unknown, never as Not yet |
-| `not_answered` (display label for a blank) | (0 for gap and risk) | **Amended (F3 review H1, pending owner confirmation).** An asked maturity question left blank is rated exactly like "Don't know" (rating, gap, findings) and listed in coverage as a blank. Where only blanks cause an Unknown rating, the capability is labelled "Not answered". Its finding is *unconfirmed* and the first action is "Answer and evidence: <questions>". A blank never yields fewer or less severe findings than any answer |
+| `not_answered` (display label for a blank) | (0 for gap and risk) | **Amended (F3 review H1, approved by the owner on 15 Oct 2026).** An asked maturity question left blank is rated exactly like "Don't know" (rating, gap, findings) and listed in coverage as a blank. Where only blanks cause an Unknown rating, the capability is labelled "Not answered". Its finding is *unconfirmed* and the first action is "Answer and evidence: <questions>". A blank never yields fewer or less severe findings than any answer |
 | `not_in_scope` | none | Set only by scope facts (section 4), never by an answer (D5) |
-| `not_assessed` | none | **Amended (F3 review H1, pending owner confirmation).** Only for a capability outside the executive question set ("assessed in the workshop"). Excluded from the executive headline count and the need index, and it creates no finding. A blank inside an asked question set is `not_answered`, not `not_assessed` |
+| `not_assessed` | none | **Amended (F3 review H1, approved by the owner on 15 Oct 2026).** Only for a capability outside the executive question set ("assessed in the workshop"). Excluded from the executive headline count and the need index, and it creates no finding. A blank inside an asked question set is `not_answered`, not `not_assessed` |
 
 **The Foundation's guidance applied** [S3]: maturity describes the complexity of a capability, not how well a team performs; the goal is the appropriate level per capability for the environment, not Run everywhere; maturity can move backwards. So FinOps IQ has **no organisation-level stage and no gating**. An optional "LTM summary" sentence may describe the profile (for example "foundations in place, optimisation at Crawl"); it is derived from the profile and never caps or overrides it.
 
@@ -162,8 +162,8 @@ The 2026 Framework (published 19 Mar 2026) keeps four domains and adds **Executi
 1. Each maturity question maps to **exactly one capability** (section 7). Each option sets a level: `not_yet`, `crawl`, `walk`, `run`, or `unknown`.
 2. Questions are **core** (asked whenever the capability is in scope and the mode includes it) or **follow-up** (asked only when its trigger fires).
 3. **Capability rating = the lowest level among its answered core questions** (weakest link), **then lowered by at most one level** if any answered non-core question (scope-conditional or follow-up) is below that level. If a capability has no core question for the client (for example `LICENSING_SAAS`), all its asked questions count as core. LTM heuristic, reasoning: a capability is only as mature as its weakest required practice, but a depth question (for example Spot handling inside Rate Optimization) should not pull a mature core practice down several levels; the rule is monotone (a better answer never lowers a rating) and easy to explain ("Rate Optimization: commitments at Run, Spot practice at Crawl, so Walk").
-4. **Amended (F3 review M1, pending owner confirmation).** If a **core** question is `unknown` (or blank, step 5), the capability is `unknown`, unless the known answers already rate it `not_yet` (then it is `not_yet`, flagged "partly unconfirmed"). If a **depth** (non-core) question is `unknown` or blank, it counts as `not_yet` for the one-level rule in step 3 and flags the rating *unconfirmed*. So it lowers the capability by one level at most, never more than the worst real answer to the same question. An unconfirmed rating is never counted at or above target.
-5. **Amended (F3 review H1, pending owner confirmation).** A blank on an asked question is rated as `unknown` (section 3.2, `not_answered`). If no core question is answered, the capability is therefore `unknown`, shown as "Not answered"; it is never rated from depth answers alone. `not_assessed` applies only to capabilities outside the executive set.
+4. **Amended (F3 review M1, approved by the owner on 15 Oct 2026).** If a **core** question is `unknown` (or blank, step 5), the capability is `unknown`, unless the known answers already rate it `not_yet` (then it is `not_yet`, flagged "partly unconfirmed"). If a **depth** (non-core) question is `unknown` or blank, it counts as `not_yet` for the one-level rule in step 3 and flags the rating *unconfirmed*. So it lowers the capability by one level at most, never more than the worst real answer to the same question. An unconfirmed rating is never counted at or above target.
+5. **Amended (F3 review H1, approved by the owner on 15 Oct 2026).** A blank on an asked question is rated as `unknown` (section 3.2, `not_answered`). If no core question is answered, the capability is therefore `unknown`, shown as "Not answered"; it is never rated from depth answers alone. `not_assessed` applies only to capabilities outside the executive set.
 6. Unknown, and so a blank, never scores better than the lowest answered option (audit check F5 item 3). The F3 tests and audit enforce this for every capability, the headline, the need index and the findings, with no exemptions.
 
 **Limit on single-answer influence** (F5 item 2): one answer moves only its own capability. This includes answer-triggered follow-ups: a follow-up is triggered only by an answer in its own capability (section 7.5, amended). A non-core answer moves the capability by at most one level and can only lower it (it adds requirements), never raise it above the core rating. LTM heuristic: depth questions probe whether a claimed level holds.
@@ -280,7 +280,7 @@ The overlay's `technologyCategoryCapabilityTriggers` [S16] are reused. FinOps IQ
 | saas or licensing | LEV-09; `LICENSING_SAAS` in scope; `OP-13`, `OP-14` |
 | private_cloud, data_centre, colocation | `SUSTAINABILITY` in scope (as overlay); `UN-02` asks for chargeback data from virtualisation and CMDB; playbook entries for on-premises |
 | `base.eligibleCoverage` unknown or < 50%, or `OP-01` answered `crawl` or worse | `OP-02` (commitment portfolio lifecycle), answer-triggered follow-up |
-| `QV-05` (unit costs known) answered `crawl` or better. **Amended (F3 review M2, pending owner confirmation):** was `UN-04` ≥ `walk`, which let a better Allocation answer lower Unit Economics. The dependency on Allocation stays in the roadmap (5.4) | `QV-06` (unit economics in decisions), answer-triggered follow-up |
+| `QV-05` (unit costs known) answered `crawl` or better. **Amended (F3 review M2, approved by the owner on 15 Oct 2026):** was `UN-04` ≥ `walk`, which let a better Allocation answer lower Unit Economics. The dependency on Allocation stays in the roadmap (5.4) | `QV-06` (unit economics in decisions), answer-triggered follow-up |
 | T6 (`HY-01`) answered | Hypothesis panel beside the model's range (section 10.8) |
 
 **N/A only from scope (D5):** a question whose scope is not in `footprint.scopes` is not asked and its capability is `not_in_scope` (if all its questions are out of scope). No answer option says "not applicable".
@@ -336,9 +336,9 @@ A lever opportunity is always linked to the capability gap that blocks it (for e
 | 3. Value uplift | At least High if a linked lever's expected net run-rate value is ≥ 2% of in-scope spend |
 | 4. Unknown | Severity unchanged; `unconfirmed: true`; first action is "confirm" with the evidence named |
 | 5. Low | Used only for `scope_confirmation` findings that block nothing material, and for capabilities whose default target is `—` but where the consultant set one |
-| 6. Decision finding DECISION-01 | **Added (F3 review M4, pending owner confirmation; CLM-FIN-166).** Raised when `MP-01` is Not yet, Crawl, Don't know or blank (unconfirmed for the last two). Severity High, one level higher at Tier 2 or 3, which reproduces RS4 (Critical) and RS5 (High). Owner CIO, wave 1, offering `OFF.FIN.OPMODEL` |
+| 6. Decision finding DECISION-01 | **Added (F3 review M4, approved by the owner on 15 Oct 2026; CLM-FIN-166).** Raised when `MP-01` is Not yet, Crawl, Don't know or blank (unconfirmed for the last two). Severity High, one level higher at Tier 2 or 3, which reproduces RS4 (Critical) and RS5 (High). Owner CIO, wave 1, offering `OFF.FIN.OPMODEL` |
 
-**Amended (F3 review H3, pending owner confirmation).** The F1 "time frame by severity" (Critical 0–3 months … Low 12–24) contradicted the wave windows: for example, a wave 3 finding starting from month 9 was due in 3–6 months. Each finding now carries two fields:
+**Amended (F3 review H3, approved by the owner on 15 Oct 2026).** The F1 "time frame by severity" (Critical 0–3 months … Low 12–24) contradicted the wave windows: for example, a wave 3 finding starting from month 9 was due in 3–6 months. Each finding now carries two fields:
 - **`targetDuration`**, the time to complete once started, from severity: Critical 3 months, High 6, Medium 12, Low 24.
 - **`start`**, the earliest start month, from the wave and its dependencies (5.4).
 
@@ -352,7 +352,7 @@ A lever opportunity is always linked to the capability gap that blocks it (for e
 | 2. Optimise (3–12 months) | `USAGE_OPTIMIZATION` and `RATE_OPTIMIZATION` programmes (LEV-01 full portfolio, LEV-02, 05, 06, 07, 08); `REPORTING_ANALYTICS`; `FORECASTING`; `BUDGETING`; automated guardrails (`GOVERNANCE_POLICY_RISK`) | `ANOMALY_MANAGEMENT` after `DATA_INGESTION`; LEV-02/07 after `ALLOCATION` (owners must accept changes); LEV-01 purchases sized on the base after usage levers (10.4) |
 | 3. Value and scale (9–24 months) | `UNIT_ECONOMICS`, `INVOICING_CHARGEBACK`, `KPIS_BENCHMARKING`, `EXECUTIVE_STRATEGY_ALIGNMENT`, `LICENSING_SAAS`, `SUSTAINABILITY`, `INTERSECTING_DISCIPLINES`, `FINOPS_EDUCATION_ENABLEMENT` at scale | `UNIT_ECONOMICS` and `INVOICING_CHARGEBACK` after `ALLOCATION` ≥ Walk |
 
-**Amended (F3 review H3 and M3, pending owner confirmation):**
+**Amended (F3 review H3 and M3, approved by the owner on 15 Oct 2026):**
 - **Start.** A finding starts at its wave's window: wave 1 from month 0, wave 2 from month 3, wave 3 from month 9. It never starts before every finding in its `dependsOn` is due to complete (dependency start + `targetDuration`). The registry's dependencies are those of CLM-FIN-162: Anomaly Management, Reporting & Analytics and Forecasting after Data Ingestion; Usage Optimization, Unit Economics, KPIs & Benchmarking and Invoicing & Chargeback after Allocation.
   - **Open item R1 (F3 re-review).** "Due to complete" is too strict for Usage Optimization: in RS5 it starts at month 12, behind a Medium Allocation finding, although 5.4 puts the idle and scheduling quick wins in wave 1 and makes only LEV-02 and LEV-07 depend on Allocation. The re-review recommends gating on the dependency's first milestone, not its completion.
 - **Interim owner.** When `MP-01` shows no accountable owner (Not yet, Crawl, Don't know or blank), findings owned by the FinOps lead read "FinOps lead (to be appointed; interim: Head of Cloud / CCoE)". They do **not** depend on DECISION-01: the interim owner starts the work while the appointment, itself a wave 1, month 0 decision, proceeds in parallel.
@@ -439,7 +439,7 @@ Level codes in the option column: **R** run, **W** walk, **C** crawl, **N** not 
 | QV-03 | BUDGETING | W | core | Do teams have budgets for their cloud spend, with alerts and a review when they are exceeded? | R: budgets per owner, alerts, variance reviewed monthly, linked to forecasts / W: budgets for major owners with alerts / C: one central budget / N: none | [S2] | FVC.C1 (budgets option) + FIQ.C3 (budget part) |
 | QV-04 | PLANNING_ESTIMATING | W | core | Before a new workload or major change goes ahead, is its running cost estimated and approved? | R: estimate required and automated in the delivery pipeline, compared with actuals after launch / W: required for major changes / C: occasional / N: not done | [S2] | FIQ.A9 (as the Run option) + new |
 | QV-05 | UNIT_ECONOMICS | E | core | Do you know what it costs to serve one customer, transaction or unit of output, and is it trended? | R: defined unit costs for key products, trended monthly, used in decisions / W: defined and reported quarterly / C: calculated once or ad hoc / N: not known | [S2] | FIQ.T2 + FVC.V4 |
-| QV-06 | UNIT_ECONOMICS | W | FU (QV-05 ≥ C; amended, F3 review M2, pending owner confirmation) | Do unit costs inform pricing, product roadmap or architecture decisions? | R: routinely, with cost-to-serve per customer or tenant / W: in major decisions / C: occasionally / N: never | [S2] | FIQ.T4 + FIQ.T8 |
+| QV-06 | UNIT_ECONOMICS | W | FU (QV-05 ≥ C; amended, F3 review M2, approved by the owner on 15 Oct 2026) | Do unit costs inform pricing, product roadmap or architecture decisions? | R: routinely, with cost-to-serve per customer or tenant / W: in major decisions / C: occasionally / N: never | [S2] | FIQ.T4 + FIQ.T8 |
 | QV-07 | UNIT_ECONOMICS | W | scope: AI | Do you know the cost per inference, per 1,000 tokens or per AI use case? | R: per use case, trended, compared with value / W: per use case, occasionally / C: total AI spend only / N: not known | [S4] (AI technology category) | new (FIQ.A4 token part) |
 | QV-08 | KPIS_BENCHMARKING | W | core | Is there an agreed set of FinOps KPIs (for example allocation %, eligible commitment coverage and utilisation, forecast variance, unit cost) reviewed by leaders, and compared with published benchmarks? | R: KPI set with targets, reviewed monthly by executives, benchmarked against published data / W: KPI set reviewed quarterly / C: a few metrics, ad hoc / N: none | [S2] | FIQ.T5 (peer leaderboards replaced by published benchmarks) |
 
@@ -498,7 +498,7 @@ Level codes in the option column: **R** run, **W** walk, **C** crawl, **N** not 
 | Trigger | Follow-up | Why |
 |---|---|---|
 | VB-02 unknown or < 50%, or OP-01 ≤ Crawl | OP-02 commitment lifecycle | Low or unknown coverage usually means lifecycle gaps; also checks lapses |
-| QV-05 ≥ Crawl. **Amended (F3 review M2, pending owner confirmation)**; was UN-04 ≥ Walk | QV-06 unit economics in decisions | Unit costs must exist before they can inform decisions. A trigger inside the same capability keeps the rating monotone. The dependency on Allocation is a roadmap dependency (5.4), not a trigger |
+| QV-05 ≥ Crawl. **Amended (F3 review M2, approved by the owner on 15 Oct 2026)**; was UN-04 ≥ Walk | QV-06 unit economics in decisions | Unit costs must exist before they can inform decisions. A trigger inside the same capability keeps the rating monotone. The dependency on Allocation is a roadmap dependency (5.4), not a trigger |
 | OP-04 or OP-05 ≤ Walk | VB-05 provider-tool evidence | Needed to quantify LEV-02 and LEV-03 |
 | OP-06 or OP-08 answered | VB-03 shares | Bases for LEV-04 and LEV-06 |
 | Scope kubernetes | UN-09, OP-11, VB-06 | Kubernetes allocation and efficiency (PLAN F1) |
@@ -648,12 +648,12 @@ Cost IQ options are five-point semantic scales; F3 defines the option-to-level s
 
 | Element | Rule (thresholds are `ASM-FIN-030` to `ASM-FIN-033`, LTM heuristic, registered in F2) |
 |---|---|
-| Scope | **Amended (F3 review, departure 4, pending owner confirmation):** executive mode only. A workshop result carries no verdict |
-| Need index (0–100) | Mean over the executive capabilities that have a target of (gap ÷ 3) × 100, with Unknown counted as gap = target index and **blank counted as the maximum gap** (so a blank never lowers need) but lowering confidence. **Amended (F3 review, pending owner confirmation):** a capability with *any* asked question left blank counts as the maximum gap |
-| Urgency modifiers | +10 at Tier 2 and +20 at Tier 3 (gaps cost more at scale); +10 if the expected gross run-rate value is ≥ 5% of `P` (no money shown in the verdict; applied from F4); +10 if `spend.growth12m` ≥ 20%; +10 if SC-03 shows AI scope; capped at 100. **Amended (F3 review, pending owner confirmation):** (a) the "≥ 25% of the estate still to move" alternative is not used, because the verdict is executive-only and SC-06 is a workshop question; (b) the +5 points for HY-03 "recurring" and HY-05 "uncomfortable" are **retired**: hypothesis answers are never scored (D4). HY-03 stays in conflict probe CP-3 and in the narrative. A "don't know" on growth adds no points but is listed as a blind spot |
+| Scope | **Amended (F3 review, departure 4, approved by the owner on 15 Oct 2026):** executive mode only. A workshop result carries no verdict |
+| Need index (0–100) | Mean over the executive capabilities that have a target of (gap ÷ 3) × 100, with Unknown counted as gap = target index and **blank counted as the maximum gap** (so a blank never lowers need) but lowering confidence. **Amended (F3 review, approved by the owner on 15 Oct 2026):** a capability with *any* asked question left blank counts as the maximum gap |
+| Urgency modifiers | +10 at Tier 2 and +20 at Tier 3 (gaps cost more at scale); +10 if the expected gross run-rate value is ≥ 5% of `P` (no money shown in the verdict; applied from F4); +10 if `spend.growth12m` ≥ 20%; +10 if SC-03 shows AI scope; capped at 100. **Amended (F3 review, approved by the owner on 15 Oct 2026):** (a) the "≥ 25% of the estate still to move" alternative is not used, because the verdict is executive-only and SC-06 is a workshop question; (b) the +5 points for HY-03 "recurring" and HY-05 "uncomfortable" are **retired**: hypothesis answers are never scored (D4). HY-03 stays in conflict probe CP-3 and in the narrative. A "don't know" on growth adds no points but is listed as a blind spot |
 | Verdict bands | 0–25 "Lightweight practices sufficient at current scale"; 26–50 "Establish foundations now"; 51–75 "Material exposure: act this year"; 76–100 "Act now". Wording as FinOps Value Case today, minus any "recoverable" or savings language |
 | Confidence | High / Medium / Low from answer coverage and Unknowns (10.7) |
-| Basis line | "Based on N of 18 questions answered; LTM's targets for a Tier X estate; not a FinOps Foundation assessment". **Amended (F3 review L2, pending owner confirmation):** it states how many questions were answered |
+| Basis line | "Based on N of 18 questions answered; LTM's targets for a Tier X estate; not a FinOps Foundation assessment". **Amended (F3 review L2, approved by the owner on 15 Oct 2026):** it states how many questions were answered |
 
 The verdict never contains a money figure. The value range sits beside it with its own basis (section 10).
 
@@ -704,7 +704,7 @@ The verdict never contains a money figure. The value range sits beside it with i
 | `n_u` = 25% (unscheduled non-production treated as part of steady usage and removed); LEV-01 raw base = 6.0M × max(0, 60% − 30% − 25%) = 0.30M | | | |
 | Reduce LEV-01 base by compute removed by LEV-02, 03, 07 (none quantified here; LEV-04 is already removed through `n_u`, 10.4) | 0.300M | 0.300M | 0.300M |
 | LEV-01 = base × 72% × (¼, ½, 1) | 0.054M | 0.108M | 0.216M |
-| **Total gross run-rate** | **0.317M (3.2%)** | **0.635M (6.4%)** | **1.269M (12.7%)** |
+| **Total gross run-rate** | **0.317M (3.2%)** | **0.635M (6.3%)** | **1.269M (12.7%)** |
 | Global cap check: expected ≤ 29% × 10.0M = 2.9M | pass | pass | n/a |
 
 The example shows the intended behaviour: with only two levers quantifiable from executive answers, the expected figure is small and conservative, and the report says which further levers are "identified, not quantified" and what evidence would quantify them.
@@ -842,6 +842,35 @@ Five illustrative scenarios with expected outcomes written **before** any engine
 | RS5 | Mid-market UK retailer on Google Cloud without a FinOps function (executive mode) | executive | Tier 1 | 3 of 7 | 39.0 (Establish foundations now) | DECISION-01 (High); USAGE_OPTIMIZATION (High); ALLOCATION (Medium) | GBP 0.03M / 0.38M (12.7% of P) / 1.45M (capped; 2.23M before cap) | GBP 0.93M | Low (all inputs banded; scheduled share derived from OP-06) |
 
 **What the scenarios are designed to test:** LEV-01 at zero when coverage already meets the steady share (RS1, RS2, RS3), so the advice becomes "schedule and move to Spot first, then re-baseline commitments"; LEV-01 positive when coverage is low (RS4, RS5); Unknown as risk (RS4 Anomaly Management, RS5 Forecasting); the one-level depth rule (RS2 Rate Optimization reads Walk, not Crawl); band corners and the upper cap (RS3, RS5); provider maxima not yet sourced (Azure and Google Spot); evidence-based levers with and without deduplication (RS3 Cost Optimization Hub; RS2 and RS4 Advisor and Compute Optimizer); renewal-driven ramp for SaaS (RS4); a negative conservative year-1 net in a small estate (RS5). F3 turns these into golden outputs; F4 and F5 compare the engine with them, with the tolerance stated in each record.
+
+
+### 10.15 F4 build notes (approved by the owner on 15 Oct 2026)
+
+The value model is built in `v3/value-model.ts`. Version 1.1.0 applies the practice-lead review ([F4-review.md](F4-review.md)). It follows 10.1 to 10.12, with these interpretations, each registered as an LTM heuristic (CLM-FIN-167 to 176; ASM-FIN-042 and 054 to 064) and listed in PLAN F4's status note:
+- **Caps (10.5; review H1, H4).** The 29% cap applies to the conservative, expected and upper cases and is not lifted by evidence in version 1.0. The registry (`appliesTo`, `liftedBy`), CLM-FIN-138, ASM-FIN-050 and the output say the same. The headline "% of P" and the cap compare public cloud levers with public cloud spend only. LEV-09 is shown on its own line, against SaaS and licensing spend.
+- **Spot (10.2 and 10.4; review H2).** LEV-06 counts only tolerant usage not covered by commitments: (tolerant − Spot) × (1 − C). The same share leaves LEV-01 as t_u. Moving covered usage would strand its commitment (Azure limits reservation refunds, CLM-FIN-174).
+- **Commitment instrument (10.2; review M6).** VB-02 asks for the main instrument per provider. When it is not stated, LEV-01 uses the lower published maximum: AWS 66%, Azure 65%, Google Cloud 55%. The 10.3 worked example states EC2 Instance Savings Plans (72%).
+- **Costs and headline (10.6; review M1).**
+  - Effort is counted only for levers with a positive expected value.
+  - A lever whose expected 3-year value at the margin does not exceed its effort is shown as not worth pursuing at this scale, with its figures, and is left out of the headline totals.
+  - The blank rule holds on gross and on expected net.
+- **Ramp (10.6; review M3).** Each year's share is the lever's ramp share times the part of the year left after the owning finding's roadmap start month.
+- **Phasing safeguard (10.6).** A lower case's year 1 never exceeds the year 1 of the case above; it is lowered pro rata.
+- **Bands (10.1 item 4; review M5).** The midpoint is a candidate for the conservative and upper cases. At most eight banded inputs are searched; the narrowest are held at their midpoints. In-scope spend is shown once, as a band. Each case's "% of P" is of the band corner that case uses, and it is labelled so.
+- **No base, no number (10.1 item 2).**
+  - LEV-04 needs the cluster and GPU spend when those scopes are selected.
+  - LEV-02 needs the compute share for its cap.
+  - LEV-06 needs the commitment coverage.
+  - Every public cloud lever needs every provider's spend, because the cap needs P.
+  - Provider-tool estimates need an assessment date to check their age.
+- **Findings (5.1; review M2).** A lever finding is raised only when the lever's capability has no gap finding. Otherwise the value sits on that gap finding, which carries each lever's own action, evidence and zero-value advice (`leverActions`), for example RS2's "stop buying commitments". Scope-confirmation findings are raised for unknown inputs that block a lever the mode quantifies. DECISION-02 is raised when the usage and Spot moves remove all steady usage above coverage.
+- **Scoring (5.3 step 3, 9; review H3, M4).**
+  - The 2% uplift compares a lever's shown expected net run-rate with its own base: P for public cloud levers; for LEV-09, SaaS and licensing spend, else total in-scope spend. The 5% need modifier compares the shown expected public cloud value with P.
+  - Both use only figures the report shows, at the client's own answers. The finding (`valueBasis`) and the verdict name the figure. With no value shown (no rate, or the lever not quantified), neither applies.
+  - The answer invariants hold on the scores before the value step (`severityBeforeValue`; need index without the value modifier), which are monotone. The value step is checked separately against the shown figures.
+- **Team cost (Q12).** The FinOps team cost shown beside the value is 0.5 / 1 / 2 FTE by tier.
+
+The reference scenarios against the engine are in [F4-scenario-diffs.md](F4-scenario-diffs.md).
 
 ---
 
