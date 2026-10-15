@@ -399,6 +399,90 @@ Every maturity question gets "Unknown", scored as risk (D5). Every question carr
 
 **Gate F5:** audit in CI; no unexplained scenario disagreement; golden outputs approved in writing.
 
+**F5 status (15 Oct 2026): built; awaiting the practice-lead review of the golden diff and the owner's approval.** Not committed. Notes in [F5-notes.md](design/F5-notes.md); scenarios in [F5-scenario-diffs.md](design/F5-scenario-diffs.md).
+
+- **Audit adapter (item 1).** The v3 adapters (`audit/adapters.ts`) now report:
+  - capabilities at or above target;
+  - the gap count (capability-gap findings);
+  - the need index (executive);
+  - expected net value, run-rate and 3-year.
+
+  The earlier headlines (total gap, Critical + High, findings, gross expected and upper) are kept. The measurements moved to `audit/core.ts`, shared by `run.ts` and the CI test. All-at-one-level questionnaires were added as liveness bases (F3 R4).
+- **CI thresholds (item 2).** They run in `test/finops-iq-v3-audit.test.ts` (in `npm test`) and gate `npm run audit:engines`, which exits non-zero on a breach. Each check runs over seeded random questionnaires in both modes (the audit estates and random estates) and the nine reference scenarios:
+  - **Monotonicity.** A better answer never lowers a rating, raises a gap or the gap count, or lowers the at-target count. For value, DESIGN 10.9 is per lever. The one documented exception is OP-06 in executive mode: better scheduling shrinks LEV-04's base, so LEV-04 never rises, no other lever falls, and any fall in net run-rate is at most LEV-04's. Every other answer never lowers net run-rate or net 3-year value.
+  - **No dead questions.** Every maturity question is live from an all-at-core baseline. The audit's dead list is the hypothesis questions only.
+  - **Reachability.** Every rating and every need band is reachable.
+  - **Missing data and Unknown.** A blank or Unknown never beats an answered option on rating, gap count, at-target count, need index (with the value step) or net value.
+  - **Single-answer limit (proposed for approval).** One answer moves only its own capability, and one step on the answer scale moves it by at most one level. For the summary: gap count and at-target count by at most 1, and the need index by at most 100 / n (12.5 at 8 capabilities; plus 10 for OP-06, which feeds value).
+- **Threshold that needed a code fix: missing data on the need verdict.** In executive mode, a blank or Unknown OP-06 lost the value need modifier and could lower the need index by up to 10 points below an answered option. The F4 tests checked the need index only before the value step.
+  - **Fix:** engine 3.4.0, rules 1.4.0. A `value_input_unanswered` modifier adds the same 10 points when an answered OP-06 option would reach the value modifier. It shows no figure (ASM-FIN-086 and CLM-FIN-177, pending owner). DESIGN 9 is amended.
+  - **Effect:** no scenario or golden changes beyond the version stamp.
+- **Specific checks (item 3).** No mismatch was found. Checked:
+  - N/A only from scope;
+  - Unknown never better than the lowest answered option;
+  - labels against thresholds (M10): UN-04 and QV-01 option ranges parsed against THR-FIN-01 and 05 and CLM-FIN-124 and 126, with measured allocation below 70% as Crawl per the owner's decision; also UN-08, the need bands, the 2% and 5% shares, the schedule rate, the OP-02 trigger and the "Today" option labels;
+  - scope answers never scored;
+  - the band-to-exact check left from F4 (DESIGN 10.9): replacing a band with an exact value inside it keeps the expected value inside the banded conservative-to-upper range.
+- **Reference scenarios (item 4).** [reference-scenarios-f5.json](design/reference-scenarios-f5.json) adds RS6 to RS9, with expectations written before the engine ran. Each takes its shape from an official provider source, read through search results only (S):
+  - RS6: Microsoft, BP, Azure, executive;
+  - RS7: Google Cloud, Banco BV, executive;
+  - RS8: Google Cloud blog, Generali Switzerland GKE, workshop;
+  - RS9: AWS blog, Bedrock Streaming, workshop.
+
+  All four match on tier, profile, headline, every finding (order, severity and trace, owner, wave), the need verdict and every value figure to the currency unit. The one recorded difference, E1, is an expectation error: Licensing & SaaS and Sustainability are Not in scope, not "assessed in the workshop", in RS6 and RS7. No engine bug was found by the scenarios.
+- **Phase 3 decisions (item 6).** [SCORING_AUDIT.md](../../phase3/SCORING_AUDIT.md) items 1 and 3 to 5 (FinOps IQ) and 2 and 6 (FinOps Value Case) carry resolution notes naming the v3 behaviour and the test. Item 1 closes for FinOps IQ when the golden diff is approved.
+- **Goldens.** RS6 to RS9 are added. The eight existing goldens change only in the version stamp (engine 3.3.0 → 3.4.0, rules 1.3.0 → 1.4.0). The summary for the practice lead and owner is in F5-notes.md section 6.
+- **Tests.**
+  - `test/finops-iq-v3-audit.test.ts`: 75 tests;
+  - `test/finops-iq-v3.test.ts`: 102 tests (four new goldens);
+  - `test/finops-iq-v3-value.test.ts`: 54 tests.
+
+  `npm test` passes with 528 engine tests, and so does `npm run audit:engines`.
+- **For the owner:**
+  - approve the single-answer limit;
+  - approve the `value_input_unanswered` rule (ASM-FIN-086, CLM-FIN-177);
+  - approve the golden diff;
+  - confirm that a "don't know" on growth still adds no urgency points (DESIGN 9 as approved; it is a fact, listed as a blind spot).
+- **Left for later:**
+  - the back-test before any evidence lift of the cap needs past engagements (Phase 3 item 3.2);
+  - practice-lead review of this phase (item 5).
+
+- **Practice-lead review (15 Oct 2026, [F5-review.md](design/F5-review.md)): "changes required"; fixes applied on top of 4406f13, not committed.** Engine 3.5.0, rules 1.5.0, value model 1.2.0, lever library 1.2.0, question set 3.2.0.
+  - **H1, fixed.** Better scheduling could raise the need index in Kubernetes estates, because LEV-01's `n_u` removed cluster non-production that LEV-04 never schedules. Now `n_u` covers only the non-production LEV-04 acts on.
+    - Need-index monotonicity is its own CI threshold, in the audit test and in `audit/core.ts`. The one named exception is OP-06 with a stated 72% instrument, above LEV-04's 70.2%, and only through the value modifier.
+    - New tests: the band property (one answer crosses at most one band); a Kubernetes and 72%-instrument executive audit estate.
+    - F5-notes section 1 is corrected, and `value_input_unanswered` now imports the least mature answer's need.
+  - **H2, fixed.** When unknown spend could change the tier, the executive need verdict is withheld ("Not available: annual spend is needed to set the tier, the targets and the verdict") and the targets are labelled provisional (ASM-FIN-087, CLM-FIN-178, pending owner).
+    - The missing-data checks now cover blank facts: spend rows, growth, compute, steady, coverage, non-production and cluster spend.
+    - SCORING_AUDIT item 2 stays open until the owner confirms D4.
+  - **H3, fixed.** RS7 and RS8 were re-built from what their sources say, with expectations written first as scenario version 1.1.0-f5, with a changelog. The BP, Banco BV and Generali sources are now V (opened by the practice lead).
+    - RS7: Cloud Scheduler test shutdown (OP-06 Walk), GKE idle resizing (OP-05 Crawl), growth 10%.
+    - RS8: Spot VM node pools (OP-08 Walk, Spot 10% of compute); cluster spend chosen independently of the case's outcome figures.
+  - **M1, M2, M3, fixed.**
+    - M1: a modifier is never both pending and applied, and the unanswered-value modifier carries its client wording.
+    - M2: RS6 reads BP's "encourages" as Crawl, as a 2019 profile assessed as if in 2026.
+    - M3: in the workshop, LEV-01 never counts usage on Spot (steady share capped at 1 − spotShare; Spot share required); `spotShare` is a share of compute in DESIGN, VB-03 and the formula; there is an inflation-guard bound test; RS9's steady share is 35%.
+  - **D4 as recommended.** Unknown growth adds 0 points, is disclosed as a pending entry (10 points higher at 20% or more, with the alternative band), and gives Low confidence.
+  - **Low items.**
+    - L1: CLM-FIN-127 updated.
+    - L2: DESIGN 9 band label updated.
+    - L3: rules `statusAsOf` updated.
+    - L5: customer names are kept to internal files, as stated in reference-scenarios-f5.json.
+    - L4 and L6 need action later: CLM-FIN-177 and 178 point to `main` and need the URL checked on merge; the F7 report must explain the two question counts.
+  - **Results.** RS6 to RS9 v1.1 match their re-written expectations exactly. RS6: 6 of 8, need 18.3, USD 2.32M expected. RS7: 3 of 8, need 45.0, BRL 8.00M. RS8: 14 of 20, CHF 0.46M, upper capped. RS9: 16 of 18, EUR 0.77M.
+    - F1 RS3 changes (V13): LEV-01 is now quantified, DECISION-02 is gone, expected gross USD 3.66M.
+    - Every other existing golden changes only in its version stamp, apart from two pending-wording and Spot-share findings changes (F5-notes section 6).
+  - **Tests.**
+    - `finops-iq-v3-audit.test.ts`: 99 tests;
+    - `finops-iq-v3.test.ts`: 102;
+    - `finops-iq-v3-value.test.ts`: 54.
+
+    `npm test`: 552 engine tests pass, and so does `npm run audit:engines`.
+  - **Owner decisions still open:**
+    - **H4, before F7:** the VB-02 coverage denominator (S − C or S × (1 − C)), which drives RS6's DECISION-02. The reviewer recommends re-wording VB-02 to "share of steady compute covered".
+    - **D1 to D4 and D5 as listed in F5-review.md.**
+  - **Left for later, M5:** a separate post-hoc plausibility back-test per scenario. The scenario diffs carry first plausibility lines, outcomes used for comparison only.
+
 ---
 
 ## F6: One page with executive, workshop and client modes (WS-S7)

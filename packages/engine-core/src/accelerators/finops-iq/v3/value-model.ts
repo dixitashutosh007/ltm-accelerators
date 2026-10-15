@@ -21,7 +21,7 @@ import thresholds from '../registry/thresholds.json' with { type: 'json' };
 import valueRules from './value-rules.json' with { type: 'json' };
 import type { AnswerLevel, Facts, Mode } from './evaluate';
 
-export const VALUE_MODEL_VERSION = '1.1.0';
+export const VALUE_MODEL_VERSION = '1.2.0';
 
 /* --------------------------------- Constants -------------------------------- */
 
@@ -260,7 +260,9 @@ function prepare(ctx: ValueModelContext, schedLevel?: AnswerLevel): Prepared {
       return null;
     };
     switch (id) {
-      case 'LEV-01': need.push('base.computeShare', 'base.steadyStateShare', 'base.eligibleCoverage', 'base.nonProdShare'); optional.push('base.nonProdScheduledShare', 'base.interruptionTolerantShare', 'base.spotShare'); break;
+      // F5 review M3: in the workshop the Spot share caps LEV-01's steady pool, so it is required there (a blank must
+      // not raise LEV-01); executive mode does not ask VB-03 and does not use it.
+      case 'LEV-01': need.push('base.computeShare', 'base.steadyStateShare', 'base.eligibleCoverage', 'base.nonProdShare', ...(ctx.mode === 'workshop' ? ['base.spotShare'] : [])); optional.push('base.nonProdScheduledShare', 'base.interruptionTolerantShare'); break;
       case 'LEV-04':
         need.push('base.computeShare', 'base.nonProdShare', 'base.nonProdScheduledShare');
         if (k8sInScope) need.push('base.kubernetesSpend');
@@ -300,6 +302,28 @@ interface LeverRaw { base: number; upper: number; value: number; rates: Array<{ 
 interface CaseRaw { factor: number; P: number; levers: Map<string, LeverRaw>; cloud: number; cap: number; scale: number; total: number; point: Record<string, number> }
 
 const clamp01 = (x: number) => Math.min(1, Math.max(0, x));
+
+/**
+ * LEV-01's steady pool at one point (F5 review H1, M3):
+ * - n_u removes only the unscheduled non-production that LEV-04 acts on: non-production outside cluster spend (and GPU
+ *   spend outside clusters), the same base as LEV-04. Cluster non-production stays in the steady pool, so better
+ *   scheduling never returns usage to LEV-01 that no lever had removed.
+ * - The steady share is capped at the compute not already on Spot: commitments are never counted on Spot usage, so
+ *   LEV-01's base is at most P_c x max(0, 1 - spotShare - coverage). spotShare is a share of all compute (VB-03),
+ *   asked in the workshop only; executive mode has no Spot input and does not apply the cap.
+ */
+function steadyPool(pp: Prepared, point: Record<string, number>): { S: number; nu: number } {
+  const v = (path: string) => point[path];
+  const P = pp.providers.reduce((t, p) => t + (v(`spend.byScope.${p}`) ?? 0), 0);
+  const Pc = P * (v('base.computeShare') ?? 0);
+  const k8s = pp.k8sInScope ? v('base.kubernetesSpend') ?? 0 : 0;
+  const gpu = pp.gpuOutsideK8s ? v('evidence.aiGpu.gpuSpend') ?? 0 : 0;
+  const schedulable = Pc > 0 ? clamp01(Math.max(0, Pc - k8s - gpu) / Pc) : 0;
+  const nu = (v('base.nonProdShare') ?? 0) * (1 - (v('base.nonProdScheduledShare') ?? 0)) * schedulable;
+  const spot = pp.ctx.mode === 'workshop' ? v('base.spotShare') ?? 0 : 0;
+  const S = Math.min(v('base.steadyStateShare') ?? 0, Math.max(0, 1 - spot));
+  return { S, nu };
+}
 
 /** One case at one point (DESIGN.md 10.4): usage levers, then Spot, then commitments on what remains. */
 function compute(pp: Prepared, point: Record<string, number>, factor: number): CaseRaw {
@@ -360,8 +384,8 @@ function compute(pp: Prepared, point: Record<string, number>, factor: number): C
   if (q('LEV-01')) {
     // n_u: all unscheduled non-production leaves the steady pool (all of it when the scheduled share is unknown);
     // t_u: Spot-movable usage, only where LEV-06 is quantified, so answering never lowers the total.
-    const nu = np * (1 - (sched ?? 0));
-    const S = v('base.steadyStateShare'), Cv = v('base.eligibleCoverage');
+    const { S, nu } = steadyPool(pp, point);
+    const Cv = v('base.eligibleCoverage');
     const rates = pp.ratedProviders.get('LEV-01')!.map(p => ({
       provider: p, rate: pp.commitRate.get(p)!.rate,
       base: (v(`spend.byScope.${p}`) * cs) * Math.max(0, S - Cv - nu - (spotFor.has(p) ? tol : 0)) * left
@@ -760,8 +784,8 @@ export function buildValueModel(ctx: ValueModelContext): ValueModelOutput {
   let decision02 = false, overCoverage = false;
   if (pp.status.get('LEV-01')?.ok) {
     const m = midpoint(pp);
-    const S = m['base.steadyStateShare'], Cv = m['base.eligibleCoverage'];
-    const nu = m['base.nonProdShare'] * (1 - (m['base.nonProdScheduledShare'] ?? 0));
+    const { S, nu } = steadyPool(pp, m);
+    const Cv = m['base.eligibleCoverage'];
     const spotOk = pp.status.get('LEV-06')?.ok && !pp.excluded.has('LEV-06');
     const tol = spotOk ? Math.max(0, (m['base.interruptionTolerantShare'] ?? 0) - (m['base.spotShare'] ?? 0)) * (1 - Cv) : 0;
     const spot = new Set(spotOk ? pp.ratedProviders.get('LEV-06') : []);

@@ -1,6 +1,6 @@
 {
   "registryVersion": "1.0.0",
-  "statusAsOf": "2026-10-14",
+  "statusAsOf": "2026-10-15",
   "rule": "Assumption register (FRAMEWORK.md area 13(b)): every constant the FinOps IQ v3 value model and scoring use, and the client inputs they rest on, each with value, basis (client input / published source with claim ID / LTM heuristic with reasoning), confidence and sensitivity (what changes if it is wrong). 'constants' lists the registry values each entry covers; the test packages/engine-core/test/finops-iq-v3-value.test.ts checks that every constant the code reads is listed here with the same value. The report's 'How we calculated this' appendix (F7) lists them all.",
   "basisValues": {
     "client_input": "Given by the client (exact, band or evidence)",
@@ -898,6 +898,18 @@
               "points": 10,
               "thresholdId": "THR-FIN-14",
               "note": "Share of P in value-rules.json (scoring.needModifierShareOfP), applied from F4"
+            },
+            {
+              "id": "value_input_unanswered",
+              "points": 10,
+              "questions": [
+                "OP-06"
+              ],
+              "claimIds": [
+                "CLM-FIN-177"
+              ],
+              "note": "F5: when OP-06 (which sets the executive scheduled share, ASM-FIN-052) is blank or Don't know and the value modifier is not reached, the value modifier's points apply if any answered OP-06 option would reach it, so a blank or Unknown never lowers need (ASM-FIN-086). Never applied together with expected_value_ge_5pct_of_P, and it replaces the pending value entry (F5 review M1). After the F5 review H1 fix the need index is monotone in OP-06, so the highest need an answer could imply is the least mature answer's",
+              "reason": "Scheduling answer missing: counted at the highest need an answer could imply"
             },
             {
               "id": "growth_ge_20pct",
@@ -2049,6 +2061,47 @@
           "value": 1
         }
       ]
+    },
+    {
+      "id": "ASM-FIN-086",
+      "title": "Unanswered value input in the need verdict",
+      "value": "Executive mode: when OP-06 is blank or Don't know and the value need modifier is not reached on shown figures, +10 (the value modifier's points) if any answered OP-06 option would reach it; never together with the value modifier",
+      "basis": "ltm_heuristic",
+      "claimIds": [
+        "CLM-FIN-177",
+        "CLM-FIN-127"
+      ],
+      "reasoning": "A blank or Unknown OP-06 leaves LEV-04 unquantified and removes all non-production from LEV-01 (ASM-FIN-052), so without this rule leaving OP-06 blank could lower the need index by up to 10 points below an answered option: missing data would flatter the verdict (F5 audit). The rule applies the maximum, as the need index already does for a blank capability (ASM-FIN-030), without showing any figure the report does not show.",
+      "confidence": "Medium",
+      "sensitivity": "The need index, by 10 points, only when OP-06 is blank or Don't know",
+      "usedBy": [
+        "scoring"
+      ],
+      "ownerApproval": "pending owner approval (F5 gate)",
+      "constants": [
+        {
+          "ref": "engineRules:needVerdict.modifiers[value_input_unanswered].points",
+          "value": 10
+        }
+      ]
+    },
+    {
+      "id": "ASM-FIN-087",
+      "title": "Unknown spend and growth in the need verdict",
+      "value": "Executive mode: when a spend row is unknown and a stated spend could raise the complexity tier, the need verdict is withheld (\"annual spend needed\") and the targets are labelled provisional. Unknown growth adds no points; the verdict discloses the 10 points it would add at 20% growth or more, and confidence is Low",
+      "basis": "ltm_heuristic",
+      "claimIds": [
+        "CLM-FIN-178",
+        "CLM-FIN-127"
+      ],
+      "reasoning": "Unknown spend scored 0 tier points, lowering most targets and dropping the tier modifier: RS7 fell from 49.2 to 19.5, two bands (F5 review H2). Withholding the verdict stops a missing fact from flattering it. Growth is an external forecast, not a maturity claim, so adding urgency for it would inflate (D4); disclosure keeps the gap visible.",
+      "confidence": "Medium",
+      "sensitivity": "Whether an executive verdict is shown; the need index by 10 points (growth)",
+      "usedBy": [
+        "scoring"
+      ],
+      "ownerApproval": "pending owner approval (F5 review H2, D4)",
+      "constants": []
     }
   ]
 }

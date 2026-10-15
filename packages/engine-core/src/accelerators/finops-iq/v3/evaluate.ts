@@ -13,7 +13,7 @@ import claimsRegister from '../../../claims/claims-register.json' with { type: '
 import valueRules from './value-rules.json' with { type: 'json' };
 import { buildValueModel, findingValue, inputInfo, VALUE_MODEL_VERSION, type Figure, type ValueBlock, type ValueModelOutput } from './value-model';
 
-export const ENGINE_VERSION = '3.3.0';
+export const ENGINE_VERSION = '3.5.0';
 export { VALUE_MODEL_VERSION };
 
 export type Mode = 'executive' | 'workshop';
@@ -129,7 +129,7 @@ export interface Finding {
 export interface NeedVerdict {
   needIndex: number;
   baseIndex: number;
-  modifiers: Array<{ id: string; points: number }>;
+  modifiers: Array<{ id: string; points: number; reason?: string }>;
   /** Modifiers the design defines that cannot be applied yet. */
   pending: Array<{ id: string; reason: string }>;
   /** The shown figure behind the value modifier (F4 review H3). */
@@ -171,13 +171,19 @@ export interface FinOpsIqV3Result {
   };
   mode: Mode;
   assessmentDate?: string;
-  tier: { tier: 1 | 2 | 3; points: number; trace: string[]; override: boolean; claimIds: string[] };
+  /**
+   * provisional (F5 review H2): annual spend is unknown (or unconverted) and a stated spend could put the estate in a
+   * higher tier, so the targets are provisional and the executive need verdict is withheld.
+   */
+  tier: { tier: 1 | 2 | 3; points: number; trace: string[]; override: boolean; provisional: boolean; claimIds: string[] };
   questions: { asked: string[] };
   capabilities: CapabilityProfile[];
   headline: { atOrAboveTarget: number; inScope: number; assessed: number; statement: string; claimIds: string[] };
   findings: Finding[];
   topFindingIds: string[];
   needVerdict: NeedVerdict | null;
+  /** Executive mode only (F5 review H2): the verdict is withheld while annual spend is unknown and could change the tier. */
+  needVerdictWithheld: { reason: 'spend_unknown'; statement: string; claimIds: string[] } | null;
   coverage: Coverage;
   /** Consultant-only conflict probes (DESIGN.md 7.6); they never change a rating. */
   conflicts: Array<{ id: string; probe: string; consultantOnly: true }>;
@@ -320,12 +326,16 @@ export function complexityTier(f: Facts): FinOpsIqV3Result['tier'] {
   let points = 0;
   const local = totalSpend(f);
   const rate = f.org.tierFxRate ?? (f.org.currency === 'USD' ? 1 : undefined);
+  let spendPoints = 0;
+  const rows = Object.values(f.spend.byScope);
+  const spendUnknown = !rows.length || rows.some(a => amountValue(a) === undefined) || rate === undefined;
   if (local === undefined) trace.push('spend unknown -> 0');
   else if (rate === undefined) trace.push(`spend ${f.org.currency} not converted (no tier FX rate) -> 0`);
   else {
     const usd = local * rate;
     const band = t.spendBandsUsd.find((b: any) => usd >= b.min && (b.max === undefined || usd < b.max));
     points += band.points;
+    spendPoints = band.points;
     trace.push(`spend about USD ${(usd / 1e6).toFixed(1)}M -> ${band.points}`);
   }
   for (const p of t.points) {
@@ -334,10 +344,15 @@ export function complexityTier(f: Facts): FinOpsIqV3Result['tier'] {
       trace.push(`${p.id} -> +${p.points}`);
     }
   }
-  const band = t.bands.find((b: any) => points >= b.minPoints && (b.maxPoints === undefined || points <= b.maxPoints));
+  const bandOf = (n: number) => t.bands.find((b: any) => n >= b.minPoints && (b.maxPoints === undefined || n <= b.maxPoints));
+  const band = bandOf(points);
   const override = f.consultant?.complexityTierOverride;
   if (override) trace.push(`consultant override -> Tier ${override}${f.consultant?.overrideReason ? ': ' + f.consultant.overrideReason : ''}`);
-  return { tier: override ?? band.tier, points, trace, override: !!override, claimIds: ['CLM-FIN-120'] };
+  // F5 review H2: with any spend row unknown, a stated spend could earn up to the top spend band's points.
+  const maxSpendPoints = Math.max(...t.spendBandsUsd.map((b: any) => b.points));
+  const provisional = !override && spendUnknown && bandOf(points - spendPoints + maxSpendPoints).tier !== band.tier;
+  if (provisional) trace.push(`provisional: a stated annual spend could raise the tier to ${bandOf(points - spendPoints + maxSpendPoints).tier}`);
+  return { tier: override ?? band.tier, points, trace, override: !!override, provisional, claimIds: provisional ? ['CLM-FIN-120', 'CLM-FIN-178'] : ['CLM-FIN-120'] };
 }
 
 /* --------------------------------- Rating ---------------------------------- */
@@ -762,7 +777,7 @@ function factsGiven(q: any, f: Facts): boolean {
   });
 }
 
-function needVerdict(input: FinOpsIqV3Input, tier: number, profile: CapabilityProfile[], state: AnswerState, vm: ValueModelOutput): NeedVerdict {
+function needVerdict(input: FinOpsIqV3Input, tier: number, profile: CapabilityProfile[], state: AnswerState, vm: ValueModelOutput, unansweredValueInput: boolean): NeedVerdict {
   const nv = RULES.needVerdict;
   const f = input.facts;
   // Blank (any asked question left blank) counts as the maximum gap, so a blank never lowers need.
@@ -781,14 +796,28 @@ function needVerdict(input: FinOpsIqV3Input, tier: number, profile: CapabilityPr
   const vmod = VR.scoring.needModifierId;
   const need = vm.scoring.need;
   const valueKnown = need !== null;
+  const pending: NeedVerdict['pending'] = [];
   if (need?.reached) modifiers.push({ id: vmod, points: points(vmod).points });
+  // F5 (ASM-FIN-086, CLM-FIN-177): a blank or Unknown answer that feeds the value range never lowers need. It replaces
+  // the pending value entry (F5 review M1): the modifier is applied, with its reason, not both pending and applied.
+  else if (unansweredValueInput) modifiers.push({ id: UNANSWERED_VALUE_INPUT, points: points(UNANSWERED_VALUE_INPUT).points, reason: points(UNANSWERED_VALUE_INPUT).reason });
+  else if (!valueKnown) pending.push({ id: vmod, reason: nv.pendingText.valueNotShown });
+  else if (vm.blocking.size) pending.push({ id: vmod, reason: fill(nv.pendingText.valueIncomplete, { points: points(vmod).points }) });
   const growth = f.spend.growth12m;
-  if (typeof growth === 'number' && growth >= points('growth_ge_20pct').threshold) modifiers.push({ id: 'growth_ge_20pct', points: points('growth_ge_20pct').points });
+  const gm = points('growth_ge_20pct');
+  if (typeof growth === 'number' && growth >= gm.threshold) modifiers.push({ id: 'growth_ge_20pct', points: gm.points });
+  // F5 review D4: unknown growth adds no points, but the verdict says what it would be at 20% growth or more.
+  const growthUnknown = typeof growth !== 'number';
   // Executive mode: AI scope only; the migration share comes from SC-06, a workshop question (F3 review L6).
   if (f.footprint.scopes.includes('ai_api') || f.footprint.scopes.includes('ai_platform_gpu')) modifiers.push({ id: 'ai_in_scope', points: points('ai_in_scope').points });
   const round1 = (x: number) => Math.round(x * 10) / 10;
   const needIndex = round1(Math.min(nv.cap, baseIndex + modifiers.reduce((t, m) => t + m.points, 0)));
-  const band = nv.bands.find((b: any) => needIndex <= b.max) ?? nv.bands[nv.bands.length - 1];
+  const bandFor = (x: number) => nv.bands.find((b: any) => x <= b.max) ?? nv.bands[nv.bands.length - 1];
+  const band = bandFor(needIndex);
+  if (growthUnknown) {
+    const alt = bandFor(round1(Math.min(nv.cap, needIndex + gm.points)));
+    pending.push({ id: 'growth_ge_20pct', reason: fill(nv.pendingText.growthUnknown, { points: gm.points, threshold: gm.threshold }) + (alt.id !== band.id ? fill(nv.pendingText.altBand, { band: alt.label }) : '') });
+  }
 
   const blindSpots: NeedVerdict['blindSpots'] = [];
   for (const id of [...state.asked].filter(x => QUESTION.get(x).kind === 'maturity')) {
@@ -797,7 +826,8 @@ function needVerdict(input: FinOpsIqV3Input, tier: number, profile: CapabilityPr
     else if (l === 'unknown') blindSpots.push({ questionId: id, capability: QUESTION.get(id).capability, reason: 'unknown' });
   }
   for (const [scope, a] of Object.entries(f.spend.byScope)) if (amountValue(a) === undefined) blindSpots.push({ fact: `spend.byScope.${scope}`, reason: 'unknown' });
-  if (typeof growth !== 'number') blindSpots.push({ fact: 'spend.growth12m', reason: 'unknown' });
+  // F5 review D4: SC-05 "don't know" is a question blind spot, so confidence is Low.
+  if (growthUnknown) blindSpots.push({ questionId: 'SC-05', fact: 'spend.growth12m', reason: 'unknown' });
   if (hasPublicCloud(f)) {
     for (const q of QUESTIONS.filter(x => x.kind === 'value_base' && state.asked.has(x.id))) {
       for (const path of q.sets ?? []) if (amountValue(factAt(f, path)) === undefined) blindSpots.push({ fact: path, reason: 'unknown' });
@@ -807,13 +837,32 @@ function needVerdict(input: FinOpsIqV3Input, tier: number, profile: CapabilityPr
   const answered = scored.filter(q => (q.kind === 'maturity' ? state.levels.has(q.id) : factsGiven(q, f))).length;
   return {
     needIndex, baseIndex: round1(baseIndex), modifiers,
-    pending: valueKnown ? [] : [{ id: vmod, reason: 'no value figure shown (no lever quantified, or no internal cost rate)' }],
+    pending,
     valueBasis: need?.reached ? { field: need.field, thresholdField: need.thresholdField } : null,
     band: band.id, bandLabel: band.label,
     confidence: blindSpots.some(b => b.questionId) ? 'Low' : 'Medium', blindSpots,
     basisLine: fill(nv.basisLine, { answered, questions: scored.length, tier }),
-    claimIds: [...nv.claimIds, ...nv.basisClaimIds.filter((id: string) => !nv.claimIds.includes(id)), ...nv.confidenceClaimIds, ...(modifiers.some(m => m.id === vmod) ? ['CLM-FIN-172'] : [])]
+    claimIds: [...nv.claimIds, ...nv.basisClaimIds.filter((id: string) => !nv.claimIds.includes(id)), ...nv.confidenceClaimIds, ...(modifiers.some(m => m.id === vmod) ? ['CLM-FIN-172'] : []), ...(modifiers.some(m => m.id === UNANSWERED_VALUE_INPUT) ? points(UNANSWERED_VALUE_INPUT).claimIds : [])]
   };
+}
+
+/**
+ * F5 scoring audit (ASM-FIN-086, CLM-FIN-177): in executive mode OP-06 sets the scheduled share the value range uses
+ * (ASM-FIN-052). Left blank or Unknown, LEV-04 is not quantified, so the value need modifier could be lost and the
+ * blank would lower need. The verdict then takes the modifier's points if any answered option of that question would
+ * reach it (no figure is shown for it), so a blank or Unknown never lowers need below an answered option.
+ */
+const UNANSWERED_VALUE_INPUT = 'value_input_unanswered';
+function valueInputUnanswered(input: FinOpsIqV3Input, state: AnswerState, vm: ValueModelOutput): boolean {
+  if (input.mode !== 'executive' || vm.scoring.need?.reached || complexityTier(input.facts).provisional) return false;
+  const rule = RULES.needVerdict.modifiers.find((m: any) => m.id === UNANSWERED_VALUE_INPUT);
+  return (rule.questions as string[]).some(id => {
+    const level = state.levels.get(id);
+    if (!state.asked.has(id) || (level !== undefined && level !== 'unknown')) return false;
+    return LEVELS.some(l => evaluateFinOpsIqV3({
+      ...input, answers: { ...input.answers, [id]: l }, prefilled: (input.prefilled ?? []).filter(x => x !== id)
+    }).needVerdict!.modifiers.some(m => m.id === VR.scoring.needModifierId));
+  });
 }
 
 /* --------------------------------- Evaluate --------------------------------- */
@@ -833,7 +882,8 @@ export function evaluateFinOpsIqV3(input: FinOpsIqV3Input): FinOpsIqV3Result {
   const h = RULES.headline;
   const statement = fill(h.statement, { atOrAbove, inScope: withTarget.length, tier: tier.tier }) +
     (overrides ? fill(h.overrideSuffix, { overrides: overrides === 1 ? '1 target' : `${overrides} targets` }) : '') +
-    (input.mode === 'executive' ? fill(h.executiveSuffix, { assessed }) : '');
+    (input.mode === 'executive' ? fill(h.executiveSuffix, { assessed }) : '') +
+    (tier.provisional ? h.provisionalSuffix : '');
 
   const mp01 = mp01Status(state);
   const vm = buildValueModel({
@@ -889,10 +939,11 @@ export function evaluateFinOpsIqV3(input: FinOpsIqV3Input): FinOpsIqV3Result {
     tier,
     questions: { asked: QUESTIONS.filter(q => state.asked.has(q.id)).map(q => q.id) },
     capabilities,
-    headline: { atOrAboveTarget: atOrAbove, inScope: withTarget.length, assessed, statement, claimIds: [...h.claimIds] },
+    headline: { atOrAboveTarget: atOrAbove, inScope: withTarget.length, assessed, statement, claimIds: [...h.claimIds, ...(tier.provisional ? ['CLM-FIN-178'] : [])] },
     findings,
     topFindingIds: findings.slice(0, 5).map(x => x.id),
-    needVerdict: input.mode === 'executive' ? needVerdict(input, tier.tier, capabilities, state, vm) : null,
+    needVerdict: input.mode === 'executive' && !tier.provisional ? needVerdict(input, tier.tier, capabilities, state, vm, valueInputUnanswered(input, state, vm)) : null,
+    needVerdictWithheld: input.mode === 'executive' && tier.provisional ? { reason: 'spend_unknown', statement: RULES.needVerdict.withheld.statement, claimIds: [...RULES.needVerdict.withheld.claimIds] } : null,
     coverage,
     conflicts,
     hypotheses: { answers: hypotheses, scored: false, claimIds: ['CLM-FIN-144', 'CLM-FIN-164'] },

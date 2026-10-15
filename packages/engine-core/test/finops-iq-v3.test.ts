@@ -25,6 +25,8 @@ const require = createRequire(import.meta.url);
 const { BANNED } = require('../../../scripts/check-claims.cjs');
 const DESIGN_DIR = join(__dirname, '../../../docs/cio-readiness/finops-iq/design');
 const SCENARIOS: any[] = JSON.parse(readFileSync(join(DESIGN_DIR, 'reference-scenarios.json'), 'utf8')).scenarios;
+/** F5: four scenarios from published provider case studies (reference-scenarios-f5.json); compared in finops-iq-v3-audit.test.ts. */
+const SCENARIOS_F5: any[] = JSON.parse(readFileSync(join(DESIGN_DIR, 'reference-scenarios-f5.json'), 'utf8')).scenarios;
 const DESIGN = readFileSync(join(DESIGN_DIR, 'DESIGN.md'), 'utf8');
 const B: any = bank;
 const R: any = rules;
@@ -689,7 +691,7 @@ describe('FinOps IQ v3 need verdict (DESIGN.md 9, executive mode)', () => {
     expect(v.modifiers.map(m => m.id)).toEqual(['tier_2', 'growth_ge_20pct', 'ai_in_scope']);
     expect(v.needIndex).toBe(30);
     // No value bases given, so the value modifier cannot be applied (F4).
-    expect(v.pending).toEqual([{ id: 'expected_value_ge_5pct_of_P', reason: 'no value figure shown (no lever quantified, or no internal cost rate)' }]);
+    expect(v.pending).toEqual([{ id: 'expected_value_ge_5pct_of_P', reason: R.needVerdict.pendingText.valueNotShown }]);
     const moving = exec(allExec('run'), facts({ migration: { remainingShare24m: { exact: 0.3 } } }));
     expect(moving.modifiers.map(m => m.id)).toEqual([]);
   });
@@ -706,7 +708,10 @@ describe('FinOps IQ v3 need verdict (DESIGN.md 9, executive mode)', () => {
 
   it('lists unknown growth as a blind spot and counts answered questions in the basis line (review L1, L2)', () => {
     const v = exec({}, facts({}, { spend: { byScope: { aws: { exact: 20_000_000 } }, growth12m: 'unknown' } }));
-    expect(v.blindSpots).toContainEqual({ fact: 'spend.growth12m', reason: 'unknown' });
+    // F5 review D4: SC-05 "don't know" is a question blind spot (confidence Low), with the growth points disclosed as pending.
+    expect(v.blindSpots).toContainEqual({ questionId: 'SC-05', fact: 'spend.growth12m', reason: 'unknown' });
+    expect(v.pending.map(p => p.id)).toContain('growth_ge_20pct');
+    expect(v.confidence).toBe('Low');
     expect(v.basisLine).toMatch(/^Based on 3 of 18 questions answered;/);
     expect(exec(allExec('run')).basisLine).toMatch(/^Based on 15 of 18 questions answered;/);
   });
@@ -729,8 +734,10 @@ const ORDER: AnswerLevel[] = ['unknown', 'not_yet', 'crawl', 'walk', 'run'];
  */
 const VALUE_MODIFIER = 'expected_value_ge_5pct_of_P';
 const needBeforeValue = (r: FinOpsIqV3Result) => {
-  const v = r.needVerdict!;
-  return Math.round(Math.min(100, v.baseIndex + v.modifiers.filter(m => m.id !== VALUE_MODIFIER).reduce((t, m) => t + m.points, 0)) * 10) / 10;
+  // F5 review H2: a withheld verdict (unknown spend could change the tier) depends on the facts only; it is not compared.
+  if (!r.needVerdict) return r.mode === 'executive' && r.needVerdictWithheld ? 0 : NaN;
+  const v = r.needVerdict;
+  return Math.round(Math.min(100, v.baseIndex + v.modifiers.filter(m => m.id !== VALUE_MODIFIER && m.id !== 'value_input_unanswered').reduce((t, m) => t + m.points, 0)) * 10) / 10;
 };
 
 function walk(v: any, path: string, visit: (path: string, v: any) => void) {
@@ -857,6 +864,8 @@ const RECORDED = {
   severity: { RS5: { 'F-FIN-LEV-01': 'High' } } as Record<string, Record<string, string>>,
   /** V3: top-finding order changes with V3 (RS5). V4 (RS2) is resolved by the F4 review's Spot base (H2): RS2's order matches again. */
   orderDiffers: ['RS5'],
+  /** V13 (F5 review H1): with cluster non-production left in LEV-01's steady pool, RS3 no longer raises DECISION-02. */
+  withdrawn: { RS3: ['F-FIN-DECISION-02'] } as Record<string, string[]>,
   /** D4: Q14 rewording adopted in F2 (THR-FIN-14, CLM-FIN-127) after the scenarios were written. */
   bandLabel: { from: 'Establish foundations now', to: 'Targeted improvements needed now' }
 };
@@ -865,7 +874,7 @@ const SEV = ['Low', 'Medium', 'High', 'Critical'];
 function goldenView(r: FinOpsIqV3Result) {
   return {
     versions: r.versions,
-    tier: { tier: r.tier.tier, points: r.tier.points, trace: r.tier.trace },
+    tier: { tier: r.tier.tier, points: r.tier.points, trace: r.tier.trace, ...(r.tier.provisional ? { provisional: true } : {}) },
     asked: r.questions.asked.length,
     profile: Object.fromEntries(r.capabilities.map(c => [c.capability,
       `${c.rating}${c.loweredByDepth ? ' (lowered)' : ''} / ${c.target.level ?? '-'} / ${c.gap ?? '-'}${c.atOrAboveTarget ? ' / at target' : ''}${c.unconfirmed ? ' / unconfirmed' : ''}${c.complete ? '' : ' / incomplete'}${c.assessedIn ? ' / workshop' : ''}`])),
@@ -873,6 +882,7 @@ function goldenView(r: FinOpsIqV3Result) {
     findings: r.findings.map(f => `${f.id} ${f.severity} [${f.severityTrace}] wave ${f.wave}${f.dependsOn.length ? ` after ${f.dependsOn}` : ''} | ${f.ownerLabel} | from month ${f.start.month}, within ${f.targetDuration.months} months | levers ${f.leverIds.join(',') || '-'} | offerings ${f.offeringIds.join(',')}${f.unconfirmed ? ' | unconfirmed' : ''}`),
     topFindingIds: r.topFindingIds,
     needVerdict: r.needVerdict && { ...r.needVerdict, claimIds: undefined },
+    ...(r.needVerdictWithheld ? { needVerdictWithheld: r.needVerdictWithheld.statement } : {}),
     coverage: { ...r.coverage, claimIds: undefined },
     conflicts: r.conflicts.map(c => c.id),
     value: valueView(r)
@@ -915,8 +925,10 @@ describe('FinOps IQ v3 reference scenarios against their written expectations', 
 
       it('findings match, apart from the recorded differences', () => {
         const absorbed = RECORDED.absorbed[s.id] ?? [];
+        const withdrawn = RECORDED.withdrawn[s.id] ?? [];
         for (const x of e.topFindings) {
           const f = r.findings.find(y => y.id === x.id);
+          if (withdrawn.includes(x.id)) { expect(f, `${x.id} withdrawn (V13)`).toBeUndefined(); continue; }
           if (absorbed.includes(x.id)) {
             // V1: the lever's value sits on its capability's gap finding.
             expect(f, `${x.id} sits on its capability's gap finding`).toBeUndefined();
@@ -936,12 +948,12 @@ describe('FinOps IQ v3 reference scenarios against their written expectations', 
           for (const o of x.offeringIds) expect(f!.offeringIds, `${x.id} offering ${o}`).toContain(o);
           for (const l of x.leverIds ?? []) expect(f!.leverIds, `${x.id} lever ${l}`).toContain(l);
         }
-        expect(r.findings.length).toBe(e.findingCount - absorbed.length + (RECORDED.extra[s.id] ?? 0));
+        expect(r.findings.length).toBe(e.findingCount - absorbed.length - withdrawn.length + (RECORDED.extra[s.id] ?? 0));
       });
 
       it('top findings keep the written order where no recorded difference applies', () => {
         if (RECORDED.orderDiffers.includes(s.id)) return;
-        const expectedIds = e.topFindings.map((x: any) => x.id).filter((id: string) => !(RECORDED.absorbed[s.id] ?? []).includes(id));
+        const expectedIds = e.topFindings.map((x: any) => x.id).filter((id: string) => !(RECORDED.absorbed[s.id] ?? []).includes(id) && !(RECORDED.withdrawn[s.id] ?? []).includes(id));
         expect(r.findings.slice(0, expectedIds.length).map(f => f.id)).toEqual(expectedIds);
       });
 
@@ -966,6 +978,8 @@ describe('FinOps IQ v3 golden outputs (approved)', () => {
   inputs['unanswered-executive'] = { mode: 'executive', facts: facts(), answers: {} };
   inputs['unanswered-workshop'] = { mode: 'workshop', facts: facts({ scopes: ['public_cloud', 'kubernetes', 'saas'] }), answers: {} };
   inputs['all-run-workshop'] = { mode: 'workshop', facts: SCENARIOS[3].inputs.facts, answers: Object.fromEntries(MATURITY.map(q => [q.id, answerFor(q.id, 'run')])) };
+  // F5: the provider case-study scenarios, assessed on 15 Oct 2026 (the date their expectations were written).
+  for (const s of SCENARIOS_F5) inputs[s.id] = { ...scenarioInput(s), assessmentDate: '2026-10-15' };
   const file = join(__dirname, 'golden/finops-iq-v3.json');
   const actual = Object.fromEntries(Object.entries(inputs).map(([k, i]) => [k, JSON.parse(JSON.stringify(goldenView(evaluateFinOpsIqV3(i))))]));
   if (process.env.UPDATE_GOLDEN) writeFileSync(file, JSON.stringify(actual, null, 2) + '\n');
