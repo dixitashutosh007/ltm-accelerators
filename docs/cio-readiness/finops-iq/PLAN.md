@@ -233,7 +233,7 @@ Every maturity question gets "Unknown", scored as risk (D5). Every question carr
   - L1–L4, L6, L7: done. L8: this note.
   - L5 (the page must not send `[]` for UN-08) is F6.
   - Re-review: R1, a finding waits only for its dependency's first milestone, so RS5 Usage Optimization starts at month 3, not 12. R3, DECISION-01's consequence is reworded. R4, a test shows each Usage Optimization depth question can lower the rating from an all-at-core baseline. R5, "not answered" findings sort by a `notAnsweredCount` field. R2 (merge the decision and Practice Operations findings in the executive top five) is left for F7.
-  - M6 ("below 70%" reads Not yet) is unchanged: it is an owner decision.
+  - M6 ("below 70%" reads Not yet): decided by the owner on 15 Oct 2026; measured allocation below 70% now reads as Crawl.
 - **Register:** CLM-FIN-162 to 166 (LTM heuristics). 165 and 166 are new in the review fixes. `scripts/check-claims.cjs` also checks the two v3 JSON files.
 - **Tests:** `test/finops-iq-v3.test.ts` has 98 tests:
   - contract tests for both modes, positive and negative;
@@ -311,7 +311,7 @@ Every maturity question gets "Unknown", scored as risk (D5). Every question carr
 - this agent's review of each lever's source recorded;
 - owner approval of the global cap and ramp defaults.
 
-**F4 status (14 Oct 2026): built in v3 (`dc7f4aa`); the practice-lead review ([F4-review.md](design/F4-review.md)) says "approve with changes", and its fixes are applied but not yet committed. Awaiting owner approval at the gate.** The live page and Lambda still use v2.
+**F4 status (15 Oct 2026): done; gate passed.** Built in v3 (`dc7f4aa`), review fixes in `94ebe93`; CI green on GitHub. On 15 Oct 2026 the product owner approved every default the practice lead recommended (the 29% cap on all three cases with no evidence lift; the year-1 ramp shares counted from each lever's start month; effort, tooling and FinOps team cost assumptions; the 2% severity and 5% need thresholds; Spot net of commitment coverage), the builder's two choices (the value uplift is left out of the blank invariant; banded spend uses its corners per case), and the F3 rule corrections. The owner also decided M6: allocation below 70% that is measured reads as Crawl; only "not measured" reads as Not yet. Claims and assumptions marked pending owner are now final.
 - **Value model:** `v3/value-model.ts` (value model 1.1.0, engine 3.3.0), with wording and rules in `v3/value-rules.json` (1.1.0).
   - Per lever: base, inputs, formula, published or arithmetic maximum, conservative / expected / upper, cap applied, ramp from the roadmap start, year-1, run-rate and 3-year figures, run cost and net, confidence, the figure scoring uses, and claim and assumption IDs. A lever not quantified shows the input that blocks it.
   - Totals per case: public cloud % of P against the 29% cap, with its source; SaaS and licensing on their own base; costs.

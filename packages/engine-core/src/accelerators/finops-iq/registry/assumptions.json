@@ -457,7 +457,7 @@
       "usedBy": [
         "scoring"
       ],
-      "ownerApproval": "pending owner decision (F3 review departure)",
+      "ownerApproval": "approved by the owner on 15 Oct 2026 (F3 rule corrections)",
       "constants": [
         {
           "ref": "engineRules:severity.byGap",
@@ -529,13 +529,13 @@
       "usedBy": [
         "scoring"
       ],
-      "ownerApproval": "pending owner decision (F3 review departure)",
+      "ownerApproval": "approved by the owner on 15 Oct 2026 (F3 rule corrections)",
       "constants": []
     },
     {
       "id": "ASM-FIN-020",
       "title": "Allocation coverage bands (UN-04)",
-      "value": "Run more than 90%, Walk 85-90%, Crawl 70-84%, Not yet below 70% of spend allocated",
+      "value": "Run more than 90%, Walk 85-90%, Crawl below 85% (including below 70%), Not yet when allocation is not measured",
       "basis": "ltm_heuristic",
       "claimIds": [
         "CLM-FIN-124",
@@ -554,8 +554,8 @@
           "value": {
             "run": "more than 90% of spend allocated",
             "walk": "85-90%",
-            "crawl": "70-84%",
-            "not_yet": "below 70%, or not measured"
+            "crawl": "below 85% of spend allocated (including below 70%)",
+            "not_yet": "not measured"
           }
         }
       ]
@@ -825,7 +825,7 @@
       "usedBy": [
         "scoring"
       ],
-      "ownerApproval": "pending owner decision (F3 review departure)",
+      "ownerApproval": "approved by the owner on 15 Oct 2026 (F3 rule corrections)",
       "constants": [
         {
           "ref": "engineRules:needVerdict.cap",
@@ -880,7 +880,7 @@
       "usedBy": [
         "scoring"
       ],
-      "ownerApproval": "pending owner decision (F3 review departure)",
+      "ownerApproval": "approved by the owner on 15 Oct 2026 (F3 rule corrections)",
       "constants": [
         {
           "ref": "engineRules:needVerdict.modifiers",
@@ -930,7 +930,7 @@
       "usedBy": [
         "scoring"
       ],
-      "ownerApproval": "pending owner decision (F3 review departure)",
+      "ownerApproval": "approved by the owner on 15 Oct 2026 (F3 rule corrections)",
       "constants": []
     },
     {
@@ -993,7 +993,7 @@
       "usedBy": [
         "value model"
       ],
-      "ownerApproval": "pending owner approval at the F4 gate",
+      "ownerApproval": "approved by the owner on 15 Oct 2026 (F4 gate)",
       "constants": [
         {
           "ref": "valueRules:bandSearch.maxBandedInputs",
@@ -1072,7 +1072,7 @@
       "usedBy": [
         "value model"
       ],
-      "ownerApproval": "pending owner approval at the F4 gate",
+      "ownerApproval": "approved by the owner on 15 Oct 2026 (F4 gate)",
       "constants": [
         {
           "ref": "levers:levers[LEV-01].ramp.year1Share",
@@ -1215,7 +1215,7 @@
       "usedBy": [
         "value model"
       ],
-      "ownerApproval": "pending owner approval at the F4 gate",
+      "ownerApproval": "approved by the owner on 15 Oct 2026 (F4 gate)",
       "constants": [
         {
           "ref": "levers:levers[LEV-01].effortFteMonths.tier1",
@@ -1353,7 +1353,7 @@
       "usedBy": [
         "value model"
       ],
-      "ownerApproval": "pending owner approval at the F4 gate",
+      "ownerApproval": "approved by the owner on 15 Oct 2026 (F4 gate)",
       "constants": [
         {
           "ref": "levers:levers[LEV-01].effortFteMonths.ongoingShareOfOneOff",
@@ -1463,7 +1463,7 @@
       "usedBy": [
         "value model"
       ],
-      "ownerApproval": "pending owner approval at the F4 gate",
+      "ownerApproval": "approved by the owner on 15 Oct 2026 (F4 gate)",
       "constants": [
         {
           "ref": "levers:globalCap.shareOfPublicCloudSpend",
@@ -1587,7 +1587,7 @@
       "usedBy": [
         "value model"
       ],
-      "ownerApproval": "pending owner approval at the F4 gate",
+      "ownerApproval": "approved by the owner on 15 Oct 2026 (F4 gate)",
       "constants": [
         {
           "ref": "valueRules:finopsTeam.fteByTier",
@@ -1617,7 +1617,7 @@
       "usedBy": [
         "scoring"
       ],
-      "ownerApproval": "pending owner approval at the F4 gate",
+      "ownerApproval": "approved by the owner on 15 Oct 2026 (F4 gate)",
       "constants": [
         {
           "ref": "valueRules:leverFindings.severity",
@@ -1681,7 +1681,7 @@
       "usedBy": [
         "scoring"
       ],
-      "ownerApproval": "pending owner approval at the F4 gate",
+      "ownerApproval": "approved by the owner on 15 Oct 2026 (F4 gate)",
       "constants": [
         {
           "ref": "valueRules:scoring.severityUpliftShareOfP",
@@ -1707,7 +1707,7 @@
       "usedBy": [
         "value model"
       ],
-      "ownerApproval": "pending owner approval at the F4 gate",
+      "ownerApproval": "approved by the owner on 15 Oct 2026 (F4 gate)",
       "constants": []
     },
     {
@@ -1741,7 +1741,7 @@
       "usedBy": [
         "value model"
       ],
-      "ownerApproval": "pending owner approval at the F4 gate",
+      "ownerApproval": "approved by the owner on 15 Oct 2026 (F4 gate)",
       "constants": []
     },
     {
@@ -1852,7 +1852,7 @@
       "usedBy": [
         "value model"
       ],
-      "ownerApproval": "pending owner approval at the F4 gate",
+      "ownerApproval": "approved by the owner on 15 Oct 2026 (F4 gate)",
       "constants": []
     },
     {
@@ -1873,7 +1873,7 @@
       "usedBy": [
         "value model"
       ],
-      "ownerApproval": "pending owner approval at the F4 gate",
+      "ownerApproval": "approved by the owner on 15 Oct 2026 (F4 gate)",
       "constants": [
         {
           "ref": "levers:levers[LEV-01].maxRate.byProvider.aws.defaultInstrument",
@@ -1903,7 +1903,7 @@
       "usedBy": [
         "value model"
       ],
-      "ownerApproval": "pending owner approval at the F4 gate",
+      "ownerApproval": "approved by the owner on 15 Oct 2026 (F4 gate)",
       "constants": []
     },
     {
@@ -1920,7 +1920,7 @@
       "usedBy": [
         "value model"
       ],
-      "ownerApproval": "pending owner approval at the F4 gate",
+      "ownerApproval": "approved by the owner on 15 Oct 2026 (F4 gate)",
       "constants": []
     },
     {

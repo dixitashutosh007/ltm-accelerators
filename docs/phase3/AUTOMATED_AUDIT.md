@@ -179,9 +179,9 @@ How to read it:
 | Band | Share |
 |---|---|
 | Lightweight practices sufficient at current scale | 0.1% |
-| Targeted improvements needed now | 15.9% |
-| Material exposure: act this year | 33.5% |
-| Act now | 50.5% |
+| Targeted improvements needed now | 15.6% |
+| Material exposure: act this year | 33.6% |
+| Act now | 50.6% |
 
 **Sensitivity**
 
@@ -201,11 +201,11 @@ How to read it:
 
 | Headline | Mean shift, 30% unanswered | Worst profile, half unanswered |
 |---|---|---|
-| Need index (0-100) | -3.63 | +0 |
-| Capabilities at or above target (0-8) | -0.63 | +0 |
-| Total capability gap (levels) | -1.93 | +0 |
-| Critical + high findings | -0.8 | +0 |
-| Findings | -0.76 | +0 |
+| Need index (0-100) | -3.53 | +0 |
+| Capabilities at or above target (0-8) | -0.61 | +0 |
+| Total capability gap (levels) | -1.92 | +0 |
+| Critical + high findings | -0.78 | +0 |
+| Findings | -0.74 | +0 |
 | Value expected (gross run-rate) | -539k | +0 |
 | Value upper (gross run-rate) | -1.1M | +0 |
 
@@ -215,7 +215,7 @@ How to read it:
 |---|---|---|---|---|---|
 | Capabilities at or above target (0-22) | 0–22 | 0 | 9 | 0 | 0 |
 | Total capability gap (levels) | 0–66 | 28 | 51 | 0 | 0 |
-| Critical + high findings | 0–34 | 10 | 21 | 0 | 0 |
+| Critical + high findings | 0–34 | 10 | 22 | 0 | 0 |
 | Findings | 0–34 | 16 | 25 | 0 | 0 |
 | Value expected (gross run-rate) | 0–23.2M | 6.8M | 6.8M | 0 | 0 |
 | Value upper (gross run-rate) | 0–23.2M | 13.5M | 13.5M | 0 | 0 |
@@ -224,10 +224,10 @@ How to read it:
 
 | Headline | Largest single-answer swing (question: swing) | Share of range |
 |---|---|---|
-| Capabilities at or above target (0-22) | UN-02: 1, UN-04: 1, UN-05: 1, UN-09: 1, UN-07: 1 | 0.11 |
-| Total capability gap (levels) | UN-04: 3, UN-05: 3, UN-07: 3, UN-08: 3, UN-10: 3 | 0.13 |
-| Critical + high findings | MP-01: 2, UN-02: 1, UN-04: 1, UN-05: 1, UN-09: 1 | 0.18 |
-| Findings | MP-01: 2, UN-02: 1, UN-04: 1, UN-05: 1, UN-09: 1 | 0.22 |
+| Capabilities at or above target (0-22) | UN-02: 1, UN-04: 1, UN-07: 1, UN-08: 1, UN-10: 1 | 0.11 |
+| Total capability gap (levels) | UN-04: 3, UN-07: 3, UN-08: 3, UN-10: 3, UN-11: 3 | 0.13 |
+| Critical + high findings | MP-01: 2, UN-02: 1, UN-04: 1, UN-07: 1, UN-08: 1 | 0.17 |
+| Findings | MP-01: 2, UN-02: 1, UN-04: 1, UN-07: 1, UN-08: 1 | 0.22 |
 | Value expected (gross run-rate) | UN-01: 0, UN-02: 0, UN-03: 0, UN-04: 0, UN-05: 0 | 0.00 |
 | Value upper (gross run-rate) | UN-01: 0, UN-02: 0, UN-03: 0, UN-04: 0, UN-05: 0 | 0.00 |
 
@@ -239,7 +239,7 @@ How to read it:
 |---|---|---|
 | Capabilities at or above target (0-22) | -1.4 | +0 |
 | Total capability gap (levels) | -4.71 | +0 |
-| Critical + high findings | -2.24 | +0 |
+| Critical + high findings | -2.23 | +0 |
 | Findings | -1.46 | +0 |
 | Value expected (gross run-rate) | +0 | +0 |
 | Value upper (gross run-rate) | +0 | +0 |

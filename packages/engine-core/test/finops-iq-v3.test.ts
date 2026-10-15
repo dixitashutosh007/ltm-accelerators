@@ -167,7 +167,7 @@ describe('FinOps IQ v3 contract', () => {
     });
     const errors = res.ok ? '' : res.errors.join('\n');
     expect(errors).toContain('answers.ZZ: unknown question');
-    expect(errors).toContain('answers.UN-04: expected one of run, walk, crawl, not_yet, unknown');
+    expect(errors).toContain('answers.UN-04: expected one of run, walk, crawl, below_70, not_yet, unknown');
     expect(errors).toContain('answers.UN-08: expected a list without repeats');
     expect(errors).toContain('answers.OP-01: expected one of');
     expect(errors).toContain('answers.HY-02: expected an ordered list');
@@ -272,7 +272,7 @@ describe('FinOps IQ v3 question bank', () => {
   });
 
   it('uses the F2 thresholds in the UN-04 and QV-01 options without gaps or overlaps (THR-FIN-01, THR-FIN-05; review M5)', () => {
-    expect(Q.get('UN-04').options.map((o: any) => o.label).slice(0, 4)).toEqual(['More than 90%', '85% to 90%', '70% to under 85%', 'Below 70%, or not measured']);
+    expect(Q.get('UN-04').options.map((o: any) => o.label).slice(0, 5)).toEqual(['More than 90%', '85% to 90%', '70% to under 85%', 'Below 70% (allocation is measured)', 'Not measured']);
     expect(Q.get('QV-01').options.map((o: any) => o.label).slice(0, 4)).toEqual(['Within \u00b15%', 'More than \u00b15%, up to \u00b110%', 'More than \u00b110%, up to \u00b120%', 'More than \u00b120%, or no forecast']);
     expect(Q.get('UN-11').options[2].label).toBe('A week or more, or the explanation is disputed');
     expect(Q.get('MP-01').options[1].label).toBe('A named owner (full- or part-time) without a written mandate or sponsor');
