@@ -133,9 +133,31 @@ Each item has a default already in the code. A lead can confirm the default or c
 | 14 | Posture IQ / Sovereign IQ | The default turnover differs: Posture IQ assumes $250M and Sovereign IQ $3B when none is given. Align them? | Unchanged. Both flag the assumption |
 | 15 | Posture IQ | Severity-to-score table (100/75/50/25/0) and pillar weights | Unchanged |
 
+### Resolutions through FinOps IQ v3 (plan phase F5, 15 Oct 2026)
+
+FinOps IQ v3 closes these items: it is one engine, with FinOps Value Case as its executive mode (D1). Each note names the v3 behaviour and the test that proves it. The tests are in `packages/engine-core/test/`, and all run in `npm test`. The legacy engines and their goldens are unchanged until they are retired after F12.
+
+| # | Engine | Resolution |
+|---|---|---|
+| 1 | FinOps IQ, FinOps Value Case | **Closed for FinOps IQ on approval of the F5 golden diff.** v3 has approved goldens for nine reference scenarios (RS1 to RS5 from F1, RS6 to RS9 from published provider case studies) and three edge cases (`test/golden/finops-iq-v3.json`). The F5 diff is summarised for the practice lead and owner in `docs/cio-readiness/finops-iq/design/F5-notes.md` section 6. Each scenario is compared with expectations written before the engine ran. Tests: `finops-iq-v3.test.ts` "golden outputs (approved)"; `finops-iq-v3-audit.test.ts` "F5 reference scenarios against the expectations written first" |
+| 2 | FinOps Value Case | **Closed.** The urgency drivers are now scope facts, not answers: tier, AI scope and growth. The hypothesis drivers (P2 and L3, now HY-03 and HY-05) are retired from scoring (D4). A blank maturity answer counts at the maximum gap, so it never lowers need. A blank or Unknown OP-06 keeps the value modifier's points (F5 fix, ASM-FIN-086). A "don't know" on growth adds no points and is listed as a blind spot; there is no sector median, as DESIGN 9 states (owner-approved). Tests: `finops-iq-v3-audit.test.ts` "FVC item 2" and "a blank or Unknown never scores better than any answered option"; `npm run audit:engines` gates the missing-data shift at 0 or below |
+| 3 | FinOps IQ | **Closed.** v3 has no stages, gates or gate minimums. Each capability is rated Crawl, Walk or Run (plus Not yet and Unknown) against a tier target, by the weakest core answer, lowered by at most one level by a depth answer. Every rating and every need band is reachable. Tests: `finops-iq-v3-audit.test.ts` "every rating is reachable", "every need verdict band is reachable" and "FinOps IQ items 3 to 5"; `finops-iq-v3.test.ts` "removed v2 behaviour stays removed" |
+| 4 | FinOps IQ | **Closed.** No answer option means "not applicable". "Not in scope" comes only from scope facts and never from an answer (D5), so it cannot be used to pass anything. Tests: `finops-iq-v3-audit.test.ts` "N/A only from scope" and "no answer option anywhere means not applicable"; `finops-iq-v3.test.ts` "has no not applicable answer" |
+| 5 | FinOps IQ | **Closed.** Value comes from the lever model (DESIGN 10): conservative, expected and upper ranges, net and phased, capped at 29% of P. The client's waste estimate (T6, now HY-01) is shown beside the range and is never an input (D4). Tests: `finops-iq-v3-audit.test.ts` "FinOps IQ items 3 to 5"; `finops-iq-v3-value.test.ts` "shows HY-01 beside the range ... and it changes no number" and the inflation guard |
+| 6 | FinOps Value Case | **Closed.** The growth cap is gone with the growth projection: no growth is applied to value (ASM-FIN-051), and growth of 20% or more only adds urgency. Confidence is rule-based. The need verdict is Medium, or Low with any unanswered or Unknown question. Value confidence comes from the kind of input per lever (DESIGN 10.7, never above Medium in executive mode). Tests: `finops-iq-v3-audit.test.ts` "FVC item 6"; `finops-iq-v3-value.test.ts` model rules |
+
+FinOps IQ v3 is also the first engine with **the audit as a CI gate** (see "Not done in this phase"). Its thresholds cover:
+- range;
+- every band reached;
+- no dead question except the hypothesis questions;
+- missing data never flatters;
+- a single-answer limit.
+
+They are enforced by `npm run audit:engines` and by `finops-iq-v3-audit.test.ts`, as set out in `docs/cio-readiness/finops-iq/design/F5-notes.md`.
+
 ## Not done in this phase
 
 - **Expert review and back-testing (3.2).** These need the practice leads and 5–10 anonymised past engagements.
 - **Report trace audit (3.3)** for the PDF, deck, SOW and AI briefing beyond the screens covered by the browser tests. Moves to Phase 4 together with the fact-check.
-- **The audit as a CI gate.** The audit runs on demand. Thresholds for failing CI should be set once leads confirm the defaults above.
+- **The audit as a CI gate.** The audit runs on demand. Thresholds for failing CI should be set once leads confirm the defaults above. *Update 15 Oct 2026:* FinOps IQ v3 is now gated (FinOps IQ plan F5). The other engines are still reported only.
 - **`public-schema.json` files** still carry Cloud IQ Q8.2's old dimension and Sovereign IQ's old hints. No code reads them at runtime; they will be refreshed in Phase 4.

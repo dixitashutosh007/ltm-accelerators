@@ -25,6 +25,8 @@ const require = createRequire(import.meta.url);
 const { BANNED } = require('../../../scripts/check-claims.cjs');
 const DESIGN_DIR = join(__dirname, '../../../docs/cio-readiness/finops-iq/design');
 const SCENARIOS: any[] = JSON.parse(readFileSync(join(DESIGN_DIR, 'reference-scenarios.json'), 'utf8')).scenarios;
+/** F5: four scenarios from published provider case studies (reference-scenarios-f5.json); compared in finops-iq-v3-audit.test.ts. */
+const SCENARIOS_F5: any[] = JSON.parse(readFileSync(join(DESIGN_DIR, 'reference-scenarios-f5.json'), 'utf8')).scenarios;
 const DESIGN = readFileSync(join(DESIGN_DIR, 'DESIGN.md'), 'utf8');
 const B: any = bank;
 const R: any = rules;
@@ -966,6 +968,8 @@ describe('FinOps IQ v3 golden outputs (approved)', () => {
   inputs['unanswered-executive'] = { mode: 'executive', facts: facts(), answers: {} };
   inputs['unanswered-workshop'] = { mode: 'workshop', facts: facts({ scopes: ['public_cloud', 'kubernetes', 'saas'] }), answers: {} };
   inputs['all-run-workshop'] = { mode: 'workshop', facts: SCENARIOS[3].inputs.facts, answers: Object.fromEntries(MATURITY.map(q => [q.id, answerFor(q.id, 'run')])) };
+  // F5: the provider case-study scenarios, assessed on 15 Oct 2026 (the date their expectations were written).
+  for (const s of SCENARIOS_F5) inputs[s.id] = { ...scenarioInput(s), assessmentDate: '2026-10-15' };
   const file = join(__dirname, 'golden/finops-iq-v3.json');
   const actual = Object.fromEntries(Object.entries(inputs).map(([k, i]) => [k, JSON.parse(JSON.stringify(goldenView(evaluateFinOpsIqV3(i))))]));
   if (process.env.UPDATE_GOLDEN) writeFileSync(file, JSON.stringify(actual, null, 2) + '\n');

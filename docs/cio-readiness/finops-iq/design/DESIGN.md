@@ -166,7 +166,7 @@ The 2026 Framework (published 19 Mar 2026) keeps four domains and adds **Executi
 5. **Amended (F3 review H1, approved by the owner on 15 Oct 2026).** A blank on an asked question is rated as `unknown` (section 3.2, `not_answered`). If no core question is answered, the capability is therefore `unknown`, shown as "Not answered"; it is never rated from depth answers alone. `not_assessed` applies only to capabilities outside the executive set.
 6. Unknown, and so a blank, never scores better than the lowest answered option (audit check F5 item 3). The F3 tests and audit enforce this for every capability, the headline, the need index and the findings, with no exemptions.
 
-**Limit on single-answer influence** (F5 item 2): one answer moves only its own capability. This includes answer-triggered follow-ups: a follow-up is triggered only by an answer in its own capability (section 7.5, amended). A non-core answer moves the capability by at most one level and can only lower it (it adds requirements), never raise it above the core rating. LTM heuristic: depth questions probe whether a claimed level holds.
+**Limit on single-answer influence** (F5 item 2; the F5 limit on the gap count and need index is in [F5-notes.md](F5-notes.md) section 2): one answer moves only its own capability. This includes answer-triggered follow-ups: a follow-up is triggered only by an answer in its own capability (section 7.5, amended). A non-core answer moves the capability by at most one level and can only lower it (it adds requirements), never raise it above the core rating. LTM heuristic: depth questions probe whether a claimed level holds.
 
 ### 3.4 Targets by complexity tier (LTM heuristic, labelled in every output)
 
@@ -657,6 +657,8 @@ Cost IQ options are five-point semantic scales; F3 defines the option-to-level s
 
 The verdict never contains a money figure. The value range sits beside it with its own basis (section 10).
 
+**Amended (F5 scoring audit, pending owner approval; ASM-FIN-086, CLM-FIN-177).** A blank or "Don't know" on OP-06 leaves LEV-04 unquantified (10.2, ASM-FIN-052). That could remove the value modifier and lower need below an answered option. The F5 audit found cases of up to 10 points. Now, when OP-06 is blank or Unknown and the value modifier is not reached, the verdict adds the same 10 points (`value_input_unanswered`) if any answered OP-06 option would reach the modifier. No figure is shown or claimed for it. See [F5-notes.md](F5-notes.md) section 3.
+
 ---
 
 ## 10. Value model specification (built in F4; designed for area 13)
@@ -769,7 +771,7 @@ The client's HY-01 band × `P` is shown beside the model's expected range, with 
 | Trace | Every rendered number (screen, PDF, backlog) has a `data-field` engine path and a claim or `ASM-FIN` ID, and equals the engine value |
 | Reconciliation | Σ levers = headline in each case; Σ roadmap item values = headline; year 1 + 2 + 3 = 3-year gross; gross − cost = net; screen = PDF = backlog = engine; **Cost IQ total = Cost IQ non-cloud + FinOps IQ cloud** for a client with both |
 | Inflation guard | Over the five reference scenarios and 1,000 random questionnaires: each lever ≤ base × maximum rate; LEV-01/06 rates ≤ published maxima in the register; Σ expected ≤ 29% × `P` unless evidence flag set; conservative ≤ expected ≤ upper; year-1 ≤ run-rate; net ≤ gross; no lever quantified without its base; **a blank never yields a higher total than any answered option**; replacing a band with an exact value inside it never moves the expected value outside the band-based range |
-| Monotonicity (value) | A more mature answer (higher coverage, more scheduling, more Spot) never raises the opportunity for that lever |
+| Monotonicity (value) | A more mature answer (higher coverage, more scheduling, more Spot) never raises the opportunity for that lever. **F5:** asserted per lever. OP-06 in executive mode lowers LEV-04 and never lowers another lever. Every other maturity answer never lowers net expected value ([F5-notes.md](F5-notes.md) section 1) |
 | Language lint | No "guaranteed", "recoverable", "savings at stake", "world-class", "elite", "Big 4", "empirical benchmark" in any rendered output (F2 item 6) |
 | Assumption register | Every constant used in 10.2–10.7 appears in the register with value, basis, confidence and sensitivity, and in the "How we calculated this" appendix |
 

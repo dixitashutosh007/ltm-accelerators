@@ -8005,6 +8005,30 @@
       "nextReview": "2027-04-14",
       "basisNote": "The higher maxima apply only to specific instruments; when the client has not said which it uses, the conservative maximum avoids overstating LEV-01.",
       "notes": "F4 value-model rule built by the practice-lead agent; it extends or interprets DESIGN.md and awaits the product owner's decision at the F4 gate, so verification is P (the source is known; the owner-approved wording does not yet contain it). LTM heuristic, not a market fact. Approved by the product owner on 15 Oct 2026 (F3 rule corrections and F4 gate), so verification is now V against the owner-approved design."
+    },
+    {
+      "id": "CLM-FIN-177",
+      "accelerators": [
+        "finops-iq"
+      ],
+      "kind": "heuristic",
+      "jurisdiction": "global",
+      "statement": "Unanswered value input in the need verdict (executive mode): when OP-06, which sets the scheduled share of non-production used by the value range, is left blank or answered Don't know and the 5% value modifier is not reached on the figures shown, the need index adds the same 10 points if any answered OP-06 option would reach it, so leaving OP-06 unanswered never lowers the need index. No value figure is shown for it.",
+      "source": {
+        "url": "https://github.com/dixitashutosh007/ltm-accelerators/blob/main/docs/cio-readiness/finops-iq/design/DESIGN.md",
+        "title": "LTM FinOps IQ F1 design pack (approved by the product owner, 14 Oct 2026)",
+        "publisher": "LTM",
+        "article": "9 (need index: a blank never lowers need); F5 scoring audit"
+      },
+      "verification": "P",
+      "checkedOn": "2026-10-15",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "finops-cost-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-15",
+      "nextReview": "2027-04-14",
+      "basisNote": "DESIGN 9 counts a blank capability at the maximum gap so that a blank never lowers need; the F5 audit found that a blank or Unknown OP-06 could still lower need by removing the value modifier, and this rule closes that gap.",
+      "notes": "F5 scoring-audit rule built by the builder for the practice-lead review; it extends DESIGN.md section 9 and awaits the product owner's decision at the F5 gate, so verification is P. LTM heuristic, not a market fact."
     }
   ]
 }

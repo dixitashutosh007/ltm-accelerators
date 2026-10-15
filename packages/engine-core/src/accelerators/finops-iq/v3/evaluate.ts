@@ -13,7 +13,7 @@ import claimsRegister from '../../../claims/claims-register.json' with { type: '
 import valueRules from './value-rules.json' with { type: 'json' };
 import { buildValueModel, findingValue, inputInfo, VALUE_MODEL_VERSION, type Figure, type ValueBlock, type ValueModelOutput } from './value-model';
 
-export const ENGINE_VERSION = '3.3.0';
+export const ENGINE_VERSION = '3.4.0';
 export { VALUE_MODEL_VERSION };
 
 export type Mode = 'executive' | 'workshop';
@@ -762,7 +762,7 @@ function factsGiven(q: any, f: Facts): boolean {
   });
 }
 
-function needVerdict(input: FinOpsIqV3Input, tier: number, profile: CapabilityProfile[], state: AnswerState, vm: ValueModelOutput): NeedVerdict {
+function needVerdict(input: FinOpsIqV3Input, tier: number, profile: CapabilityProfile[], state: AnswerState, vm: ValueModelOutput, unansweredValueInput: boolean): NeedVerdict {
   const nv = RULES.needVerdict;
   const f = input.facts;
   // Blank (any asked question left blank) counts as the maximum gap, so a blank never lowers need.
@@ -782,6 +782,8 @@ function needVerdict(input: FinOpsIqV3Input, tier: number, profile: CapabilityPr
   const need = vm.scoring.need;
   const valueKnown = need !== null;
   if (need?.reached) modifiers.push({ id: vmod, points: points(vmod).points });
+  // F5 (ASM-FIN-086, CLM-FIN-177): a blank or Unknown answer that feeds the value range never lowers need.
+  else if (unansweredValueInput) modifiers.push({ id: UNANSWERED_VALUE_INPUT, points: points(UNANSWERED_VALUE_INPUT).points });
   const growth = f.spend.growth12m;
   if (typeof growth === 'number' && growth >= points('growth_ge_20pct').threshold) modifiers.push({ id: 'growth_ge_20pct', points: points('growth_ge_20pct').points });
   // Executive mode: AI scope only; the migration share comes from SC-06, a workshop question (F3 review L6).
@@ -812,8 +814,27 @@ function needVerdict(input: FinOpsIqV3Input, tier: number, profile: CapabilityPr
     band: band.id, bandLabel: band.label,
     confidence: blindSpots.some(b => b.questionId) ? 'Low' : 'Medium', blindSpots,
     basisLine: fill(nv.basisLine, { answered, questions: scored.length, tier }),
-    claimIds: [...nv.claimIds, ...nv.basisClaimIds.filter((id: string) => !nv.claimIds.includes(id)), ...nv.confidenceClaimIds, ...(modifiers.some(m => m.id === vmod) ? ['CLM-FIN-172'] : [])]
+    claimIds: [...nv.claimIds, ...nv.basisClaimIds.filter((id: string) => !nv.claimIds.includes(id)), ...nv.confidenceClaimIds, ...(modifiers.some(m => m.id === vmod) ? ['CLM-FIN-172'] : []), ...(modifiers.some(m => m.id === UNANSWERED_VALUE_INPUT) ? points(UNANSWERED_VALUE_INPUT).claimIds : [])]
   };
+}
+
+/**
+ * F5 scoring audit (ASM-FIN-086, CLM-FIN-177): in executive mode OP-06 sets the scheduled share the value range uses
+ * (ASM-FIN-052). Left blank or Unknown, LEV-04 is not quantified, so the value need modifier could be lost and the
+ * blank would lower need. The verdict then takes the modifier's points if any answered option of that question would
+ * reach it (no figure is shown for it), so a blank or Unknown never lowers need below an answered option.
+ */
+const UNANSWERED_VALUE_INPUT = 'value_input_unanswered';
+function valueInputUnanswered(input: FinOpsIqV3Input, state: AnswerState, vm: ValueModelOutput): boolean {
+  if (input.mode !== 'executive' || vm.scoring.need?.reached) return false;
+  const rule = RULES.needVerdict.modifiers.find((m: any) => m.id === UNANSWERED_VALUE_INPUT);
+  return (rule.questions as string[]).some(id => {
+    const level = state.levels.get(id);
+    if (!state.asked.has(id) || (level !== undefined && level !== 'unknown')) return false;
+    return LEVELS.some(l => evaluateFinOpsIqV3({
+      ...input, answers: { ...input.answers, [id]: l }, prefilled: (input.prefilled ?? []).filter(x => x !== id)
+    }).needVerdict!.modifiers.some(m => m.id === VR.scoring.needModifierId));
+  });
 }
 
 /* --------------------------------- Evaluate --------------------------------- */
@@ -892,7 +913,7 @@ export function evaluateFinOpsIqV3(input: FinOpsIqV3Input): FinOpsIqV3Result {
     headline: { atOrAboveTarget: atOrAbove, inScope: withTarget.length, assessed, statement, claimIds: [...h.claimIds] },
     findings,
     topFindingIds: findings.slice(0, 5).map(x => x.id),
-    needVerdict: input.mode === 'executive' ? needVerdict(input, tier.tier, capabilities, state, vm) : null,
+    needVerdict: input.mode === 'executive' ? needVerdict(input, tier.tier, capabilities, state, vm, valueInputUnanswered(input, state, vm)) : null,
     coverage,
     conflicts,
     hypotheses: { answers: hypotheses, scored: false, claimIds: ['CLM-FIN-144', 'CLM-FIN-164'] },

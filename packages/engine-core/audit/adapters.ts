@@ -51,6 +51,19 @@ export interface Adapter {
   band?: { get: (result: any) => string; all: string[] };
   /** The best and worst answers a client could give, to test band reachability. */
   extremes: { best: () => any; worst: () => any };
+  /**
+   * Extra sensitivity bases (FinOps IQ F5, F3 re-review R4): questionnaires with every answer at one level, so a
+   * depth question that bites only when every other answer sits at the core level is shown live, not dead.
+   */
+  livenessBases?: () => any[];
+  /** CI thresholds (audit/core.ts thresholdBreaches); only adapters that declare them are gated. */
+  thresholds?: {
+    note: string;
+    /** Questions allowed to change no headline (never scored by design, e.g. hypothesis questions). */
+    allowedDead: string[];
+    /** Largest change one answer may make to a headline, over all its answers and blank; a number or per question. */
+    maxSingleAnswerSwing: Record<string, number | ((qid: string) => number)>;
+  };
 }
 
 const setAnswer = (input: any, qid: string, value: unknown) => ({ ...input, answers: { ...input.answers, [qid]: value } });
@@ -200,28 +213,47 @@ function fiq3Variants(q: any): unknown[] {
     default: return [];
   }
 }
-const fiq3Extreme = (mode: Fiq3Mode, level: 'run' | 'not_yet') => ({
-  mode, assessmentDate: FIQ3_DATE, facts: mode === 'executive' && level === 'not_yet' ? FIQ3_EXEC_TIER3 : FIQ3_FACTS[mode],
+const fiq3AllAt = (mode: Fiq3Mode, facts: Fiq3Facts, level: 'run' | 'walk' | 'crawl' | 'not_yet') => ({
+  mode, assessmentDate: FIQ3_DATE, facts,
   answers: Object.fromEntries(fiq3Questions(mode).filter((q: any) => q.kind === 'maturity')
-    .map((q: any) => [q.id, q.id === 'UN-08' ? (level === 'run' ? FIQ3_REPORTS : []) : level]))
+    .map((q: any) => [q.id, q.id === 'UN-08' ? ({ run: FIQ3_REPORTS, walk: FIQ3_REPORTS.slice(0, 3), crawl: FIQ3_REPORTS.slice(0, 1), not_yet: [] } as Record<string, string[]>)[level] : level]))
 });
+const fiq3Extreme = (mode: Fiq3Mode, level: 'run' | 'not_yet') => fiq3AllAt(mode, mode === 'executive' && level === 'not_yet' ? FIQ3_EXEC_TIER3 : FIQ3_FACTS[mode], level);
+/** Expected-case value totals, or null when no money figure is shown (Q4). */
+const fiq3Total = (r: any, field: 'grossRunRate' | 'netRunRate' | 'net3Year', c: 'expected' | 'upper' = 'expected') => (r.value.moneyShown ? r.value.totals[c][field].value : null);
+/** Executive capabilities with a target in both executive estates (Tier 2 and Tier 3): the need index averages over them. */
+const FIQ3_EXEC_TARGETED = 8;
+/**
+ * F5 single-answer limit (docs/cio-readiness/finops-iq/design/F5-notes.md): one answer moves only its own capability,
+ * so the gap count and the at-target count move by at most 1, the total gap by at most 3 (one capability's range),
+ * and the need index by at most one capability's share of it, 100 / 8 = 12.5 (rounded to one decimal, + 0.1).
+ * OP-06 also feeds the executive value (ASM-FIN-052), so it may add the value need modifier (10 points) on top.
+ */
+const FIQ3_NEED_LIMIT = (qid: string) => 100 / FIQ3_EXEC_TARGETED + 0.1 + (qid === 'OP-06' ? 10 : 0);
 function fiq3Adapter(mode: Fiq3Mode): Adapter {
   const qs = fiq3Questions(mode);
   const byId = new Map(qs.map((q: any) => [q.id, q]));
   const capabilities = mode === 'executive' ? 8 : 22;
   const gapFindings = (r: any, severities: string[]) => r.findings.filter((f: any) => severities.includes(f.severity)).length;
+  const valueScale: [number, number] = [-5_000_000, 3 * 0.29 * 80_000_000];
   const headlines: Headline[] = [
     { name: `Capabilities at or above target (0-${capabilities})`, scale: [0, capabilities], higherIsBetter: true, get: r => r.headline.atOrAboveTarget },
+    // F5: the gap count is the number of capability-gap findings (one per in-scope capability below its target).
+    { name: `Gap count (0-${capabilities})`, scale: [0, capabilities], higherIsBetter: false, get: r => r.findings.filter((f: any) => f.type === 'capability_gap').length },
     { name: 'Total capability gap (levels)', scale: [0, 3 * capabilities], higherIsBetter: false, get: r => r.capabilities.reduce((t: number, c: any) => t + Math.max(0, c.gap ?? 0), 0) },
     // Findings: one per capability gap, DECISION-01 and -02, and (F4) lever and scope-confirmation findings.
     { name: 'Critical + high findings', scale: [0, capabilities + 12], higherIsBetter: false, get: r => gapFindings(r, ['Critical', 'High']) },
     { name: 'Findings', scale: [0, capabilities + 12], higherIsBetter: false, get: r => r.findings.length },
-    // Value (F4), on a scale of the 29% global cap on the largest estate's spend. Marked higher-is-better only so the
+    // Value (F4, F5), on a scale of the 29% global cap on the largest estate's spend (net 3-year: three years of it;
+    // net can be negative when tooling and effort exceed a small value). Marked higher-is-better only so the
     // missing-data check flags any blank that raises the value (a blank must never flatter the value, DESIGN.md 10.9).
-    { name: 'Value expected (gross run-rate)', scale: [0, 0.29 * 80_000_000], higherIsBetter: true, get: r => (r.value.moneyShown ? r.value.totals.expected.grossRunRate.value : null) },
-    { name: 'Value upper (gross run-rate)', scale: [0, 0.29 * 80_000_000], higherIsBetter: true, get: r => (r.value.moneyShown ? r.value.totals.upper.grossRunRate.value : null) }
+    { name: 'Value expected (net run-rate)', scale: valueScale, higherIsBetter: true, get: r => fiq3Total(r, 'netRunRate') },
+    { name: 'Value expected (net 3-year)', scale: valueScale, higherIsBetter: true, get: r => fiq3Total(r, 'net3Year') },
+    { name: 'Value expected (gross run-rate)', scale: [0, 0.29 * 80_000_000], higherIsBetter: true, get: r => fiq3Total(r, 'grossRunRate') },
+    { name: 'Value upper (gross run-rate)', scale: [0, 0.29 * 80_000_000], higherIsBetter: true, get: r => fiq3Total(r, 'grossRunRate', 'upper') }
   ];
   if (mode === 'executive') headlines.unshift({ name: 'Need index (0-100)', scale: [0, 100], higherIsBetter: false, get: r => r.needVerdict.needIndex });
+  const factSets = mode === 'executive' ? [FIQ3_FACTS.executive, FIQ3_EXEC_TIER3] : [FIQ3_FACTS.workshop];
   return {
     id: `finops-iq-v3-${mode}`, name: `FinOps IQ v3 (${mode} mode)`,
     questions: qs.map((q: any) => ({ id: q.id, label: q.text })),
@@ -231,7 +263,18 @@ function fiq3Adapter(mode: Fiq3Mode): Adapter {
     evaluate: i => evaluateFinOpsIqV3(i),
     headlines,
     ...(mode === 'executive' ? { band: { get: (r: any) => r.needVerdict.bandLabel, all: ['Lightweight practices sufficient at current scale', 'Targeted improvements needed now', 'Material exposure: act this year', 'Act now'] } } : {}),
-    extremes: { best: () => fiq3Extreme(mode, 'run'), worst: () => fiq3Extreme(mode, 'not_yet') }
+    extremes: { best: () => fiq3Extreme(mode, 'run'), worst: () => fiq3Extreme(mode, 'not_yet') },
+    livenessBases: () => factSets.flatMap(f => (['run', 'walk', 'crawl'] as const).map(level => fiq3AllAt(mode, f, level))),
+    thresholds: {
+      note: 'FinOps IQ plan F5: no out-of-scale value, every band reached, no dead question but the hypothesis questions (never scored, D4), missing data never flatters, one answer moves the gap count and the at-target count by at most 1 and the need index by at most one capability\'s share',
+      allowedDead: qs.filter((q: any) => q.kind === 'hypothesis').map((q: any) => q.id),
+      maxSingleAnswerSwing: {
+        [`Capabilities at or above target (0-${capabilities})`]: 1,
+        [`Gap count (0-${capabilities})`]: 1,
+        'Total capability gap (levels)': 3,
+        ...(mode === 'executive' ? { 'Need index (0-100)': FIQ3_NEED_LIMIT } : {})
+      }
+    }
   };
 }
 
