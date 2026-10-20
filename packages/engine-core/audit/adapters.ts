@@ -210,13 +210,41 @@ const fiq3Uniform = (mode: Fiq3Mode, level: string, facts: Fiq3Facts = FIQ3_FACT
   answers: Object.fromEntries(fiq3Questions(mode).filter((q: any) => q.kind === 'maturity')
     .map((q: any) => [q.id, q.id === 'UN-08' ? ({ run: FIQ3_REPORTS, walk: FIQ3_REPORTS.slice(0, 3), crawl: FIQ3_REPORTS.slice(0, 1) } as any)[level] : level]))
 });
-/** The workshop estate without measured evidence or measured shares, so its value headlines move with the answers. */
+/**
+ * The workshop estate without measured evidence or measured shares. It widens the workshop value range; no maturity
+ * answer moves workshop value (value comes from measured inputs there), which the fact pseudo-questions below show.
+ */
 const FIQ3_WORKSHOP_UNMEASURED: Fiq3Facts = { ...FIQ3_FACTS.workshop, base: FIQ3_BASE, evidence: undefined, cost: FIQ3_COST };
 const fiq3Extreme = (mode: Fiq3Mode, level: 'run' | 'not_yet') => ({
   mode, assessmentDate: FIQ3_DATE, facts: mode === 'executive' && level === 'not_yet' ? FIQ3_EXEC_TIER3 : FIQ3_FACTS[mode],
   answers: Object.fromEntries(fiq3Questions(mode).filter((q: any) => q.kind === 'maturity')
     .map((q: any) => [q.id, q.id === 'UN-08' ? (level === 'run' ? FIQ3_REPORTS : []) : level]))
 });
+/**
+ * Fact pseudo-questions (F5 review M4): the audit varies scope and value-base facts as well as answers, so fact-driven
+ * behaviour (unknown spend, units or growth; unknown value shares) shows in sensitivity and missing data. "Unanswered"
+ * for a fact means unknown.
+ */
+const SHARE_VARIANTS = [{ band: [0, 0.25] }, { band: [0.25, 0.49] }, { band: [0.5, 0.74] }, { band: [0.75, 1] }, { unknown: true }];
+const FIQ3_FACT_QUESTIONS: Record<string, { label: string; path: string; variants: unknown[]; unknown: unknown }> = {
+  'fact:SC-04 aws': { label: 'SC-04 AWS annual spend', path: 'spend.byScope.aws', variants: [{ exact: 5e6 }, { exact: 3e7 }, { exact: 1e8 }], unknown: { unknown: true } },
+  'fact:SC-05': { label: 'SC-05 spend growth', path: 'spend.growth12m', variants: [-10, 10, 30], unknown: 'unknown' },
+  'fact:SC-07 units': { label: 'SC-07 consuming units', path: 'org.consumingUnits', variants: ['1', '2-4', '5-19', '20+'], unknown: 'unknown' },
+  'fact:VB-01 compute': { label: 'VB-01 compute share', path: 'base.computeShare', variants: SHARE_VARIANTS.slice(0, 4), unknown: { unknown: true } },
+  'fact:VB-01 non-production': { label: 'VB-01 non-production share', path: 'base.nonProdShare', variants: SHARE_VARIANTS.slice(0, 4), unknown: { unknown: true } },
+  'fact:VB-02 coverage': { label: 'VB-02 eligible coverage', path: 'base.eligibleCoverage', variants: SHARE_VARIANTS.slice(0, 4), unknown: { unknown: true } }
+};
+function setFact(input: any, qid: string, value: unknown) {
+  const q = FIQ3_FACT_QUESTIONS[qid];
+  const facts = JSON.parse(JSON.stringify(input.facts));
+  const keys = q.path.split('.');
+  const parent = keys.slice(0, -1).reduce((o: any, k) => (o[k] ??= {}), facts);
+  parent[keys[keys.length - 1]] = value;
+  return { ...input, facts };
+}
+const fiq3WithAnswer = (input: any, qid: string, value: unknown) => (qid in FIQ3_FACT_QUESTIONS ? setFact(input, qid, value) : setAnswer(input, qid, value));
+const fiq3WithoutAnswer = (input: any, qid: string) => (qid in FIQ3_FACT_QUESTIONS ? setFact(input, qid, FIQ3_FACT_QUESTIONS[qid].unknown) : dropAnswer(input, qid));
+
 function fiq3Adapter(mode: Fiq3Mode): Adapter {
   const qs = fiq3Questions(mode);
   const byId = new Map(qs.map((q: any) => [q.id, q]));
@@ -236,10 +264,10 @@ function fiq3Adapter(mode: Fiq3Mode): Adapter {
   if (mode === 'executive') headlines.unshift({ name: 'Need index (0-100)', scale: [0, 100], higherIsBetter: false, get: r => r.needVerdict.needIndex });
   return {
     id: `finops-iq-v3-${mode}`, name: `FinOps IQ v3 (${mode} mode)`,
-    questions: qs.map((q: any) => ({ id: q.id, label: q.text })),
+    questions: [...qs.map((q: any) => ({ id: q.id, label: q.text })), ...Object.entries(FIQ3_FACT_QUESTIONS).map(([id, q]) => ({ id, label: q.label }))],
     random: r => ({ mode, assessmentDate: FIQ3_DATE, facts: r() < 0.5 ? (mode === 'executive' ? FIQ3_EXEC_TIER3 : FIQ3_WORKSHOP_UNMEASURED) : FIQ3_FACTS[mode], answers: Object.fromEntries(qs.filter(() => r() < 0.85).map((q: any) => [q.id, pick(r, fiq3Variants(q))])) }),
-    variants: id => fiq3Variants(byId.get(id)),
-    withAnswer: setAnswer, withoutAnswer: dropAnswer,
+    variants: id => (id in FIQ3_FACT_QUESTIONS ? FIQ3_FACT_QUESTIONS[id].variants : fiq3Variants(byId.get(id))),
+    withAnswer: fiq3WithAnswer, withoutAnswer: fiq3WithoutAnswer,
     evaluate: i => evaluateFinOpsIqV3(i),
     headlines,
     ...(mode === 'executive' ? { band: { get: (r: any) => r.needVerdict.bandLabel, all: ['Lightweight practices sufficient at current scale', 'Targeted improvements needed now', 'Material exposure: act this year', 'Act now'] } } : {}),

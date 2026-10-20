@@ -1,5 +1,5 @@
 {
-  "registryVersion": "1.0.0",
+  "registryVersion": "1.1.0",
   "statusAsOf": "2026-10-14",
   "rule": "Every percentage, count or time used in an answer option, trigger, verdict or value rule. Each is a published figure, a Foundation sample goal adapted by LTM, or an LTM heuristic with its reasoning; the label travels with it into the report's assumption register.",
   "basisValues": {
@@ -237,12 +237,12 @@
       "id": "THR-FIN-10",
       "topic": "Global value cap (waste-based ceiling)",
       "appliesTo": [
-        "value model: expected and upper cases"
+        "value model: conservative, expected and upper cases"
       ],
       "rule": {
         "cap": "29% of in-scope public cloud spend",
-        "appliesTo": "expected and upper",
-        "liftedBy": "provider-tool or billing evidence for every capped lever",
+        "appliesTo": "conservative, expected and upper",
+        "liftedBy": "none (v1.0)",
         "excludes": "LEV-09"
       },
       "basis": "published_market_data_as_ceiling",
@@ -286,7 +286,9 @@
         "spendBandsUsd": "under 1M = 0, 1-10M = 1, 10-50M = 2, over 50M = 3",
         "kubernetesMaterial": "10% or more of compute, or most new workloads",
         "aiMaterial": "any GPU or model-serving spend, or AI API spend of 5% or more of in-scope spend",
-        "consumingUnits": "5 or more"
+        "consumingUnits": "5 or more; unknown counts until confirmed",
+        "unknownSpend": "counts as over 50M until confirmed",
+        "ofWhichRows": "Kubernetes and GPU rows are inside the provider bills and are not added"
       },
       "basis": "ltm_heuristic",
       "assumptionId": "ASM-FIN-001",
@@ -304,7 +306,7 @@
         "findings"
       ],
       "rule": {
-        "rule": "at least High when a linked lever's expected net run-rate value is 2% or more of in-scope spend"
+        "rule": "at least High when a linked lever's expected net run-rate value is 2% or more of its own base (in-scope public cloud spend; SaaS and licensing spend for LEV-09), or when a blank input leaves a linked material lever (LEV-01, LEV-04) open, until confirmed"
       },
       "basis": "ltm_heuristic",
       "assumptionId": "ASM-FIN-005",
@@ -323,7 +325,7 @@
       ],
       "rule": {
         "bands": "0-25 Lightweight practices sufficient at current scale; 26-50 Targeted improvements needed now; 51-75 Material exposure: act this year; 76-100 Act now",
-        "urgency": "value 5% or more of P; growth 20% or more; 25% or more of estate still to move; Tier 2 +10, Tier 3 +20"
+        "urgency": "+10 value 5% or more of P, or a blank input leaving LEV-01 or LEV-04 open; +10 growth 20% or more, or unknown; +10 AI in scope; Tier 2 +10, Tier 3 +20"
       },
       "basis": "ltm_heuristic",
       "assumptionId": "ASM-FIN-030",
@@ -342,7 +344,7 @@
       ],
       "rule": {
         "hoursPerWeek": 50,
-        "maxRate": 0.702
+        "maxRate": 0.7023809524
       },
       "basis": "arithmetic_with_ltm_schedule",
       "assumptionId": "ASM-FIN-043",

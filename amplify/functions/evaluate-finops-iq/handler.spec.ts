@@ -20,7 +20,7 @@ describe('POST /api/evaluate/finops-iq/v3', () => {
   it('scores an executive request with the v3 engine', async () => {
     const res = await post('/api/evaluate/finops-iq/v3', { mode: 'executive', facts, answers: { 'MP-01': 'walk', 'OP-06': 'crawl' } });
     expect(res.status).toBe(200);
-    expect(res.body.data.versions.engine).toBe('3.3.0');
+    expect(res.body.data.versions.engine).toBe('3.4.0');
     expect(res.body.data.mode).toBe('executive');
     expect(res.body.data.needVerdict).not.toBeNull();
   });

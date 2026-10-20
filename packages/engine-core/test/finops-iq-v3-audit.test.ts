@@ -251,3 +251,238 @@ describe('FinOps IQ v3 audit: labels say what is computed (validation M10)', () 
     }
   });
 });
+
+/* ------------------- F5 review: invariants added at the M1 gate ------------------- */
+
+import thresholds from '../src/accelerators/finops-iq/registry/thresholds.json' with { type: 'json' };
+import leverLibrary from '../src/accelerators/finops-iq/registry/levers.json' with { type: 'json' };
+import valueRules from '../src/accelerators/finops-iq/v3/value-rules.json' with { type: 'json' };
+
+const SEV = ['Low', 'Medium', 'High', 'Critical'];
+const sevIndex = (s: string) => SEV.indexOf(s);
+/** Capability-gap severity by capability (lever and scope findings can move between finding types). */
+const gapSeverities = (r: FinOpsIqV3Result) => new Map(r.findings.filter(f => f.type === 'capability_gap').map(f => [f.capability, f.severity]));
+const finalNeed = (r: FinOpsIqV3Result) => r.needVerdict?.needIndex ?? 0;
+const withFacts = (f: Facts, patch: (c: any) => void): Facts => { const c = JSON.parse(JSON.stringify(f)); patch(c); return c; };
+
+/** True when `blank` is never milder than `answered`: tier, final need and every gap severity. */
+function neverMilder(blank: FinOpsIqV3Result, answered: FinOpsIqV3Result, tag: string, breaches: string[]) {
+  if (blank.tier.tier < answered.tier.tier) breaches.push(`${tag}: tier ${blank.tier.tier} < ${answered.tier.tier}`);
+  if (finalNeed(blank) < finalNeed(answered) - 1e-9) breaches.push(`${tag}: need ${finalNeed(blank)} < ${finalNeed(answered)}`);
+  const b = gapSeverities(blank);
+  for (const [capability, s] of gapSeverities(answered)) {
+    const x = b.get(capability);
+    if (x === undefined || sevIndex(x) < sevIndex(s)) breaches.push(`${tag}: ${capability} ${x ?? 'no finding'} < ${s}`);
+  }
+}
+
+describe('FinOps IQ v3 audit: unknown scope facts never flatter (F5 review H1, D-A)', () => {
+  const bases = (mode: Mode) => [allAt(mode, 'walk'), allAt(mode, 'crawl'), ...[1, 2, 3, 4, 5].map(seed => randomAnswers(700 + seed, mode))];
+  for (const mode of MODES) {
+    it(`${mode}: unknown spend, consuming units or growth never lower the tier, the need or a severity`, () => {
+      const breaches: string[] = [];
+      const cases: Array<[string, (c: any) => void, Array<(c: any) => void>]> = [
+        ['spend', c => { c.spend.byScope.aws = { unknown: true }; }, [1e6, 3e7, 1e8].map(v => (c: any) => { c.spend.byScope.aws = { exact: v }; })],
+        ['units', c => { c.org.consumingUnits = 'unknown'; }, ['1', '2-4', '5-19', '20+'].map(v => (c: any) => { c.org.consumingUnits = v; })],
+        ['growth', c => { c.spend.growth12m = 'unknown'; }, [-10, 5, 30].map(v => (c: any) => { c.spend.growth12m = v; })]
+      ];
+      // The full estate is Tier 3 on its other points; a one-provider estate is where spend and units decide the tier.
+      const MID = withFacts(FULL, c => { c.footprint = { publicCloudProviders: ['aws'], scopes: ['public_cloud'] }; c.spend.byScope = { aws: { exact: 2e7 } }; c.org.consumingUnits = '2-4'; });
+      for (const estate of [FULL, MID]) {
+        for (const answers of bases(mode)) {
+          for (const [name, blank, values] of cases) {
+            const b = run(mode, answers, withFacts(estate, blank));
+            values.forEach((v, i) => neverMilder(b, run(mode, answers, withFacts(estate, v)), `${estate === MID ? 'mid' : 'full'} ${name} #${i}`, breaches));
+          }
+        }
+      }
+      expect(breaches).toEqual([]);
+    });
+  }
+
+  it('an assumed input is labelled and makes the need verdict\'s confidence Low', () => {
+    const r = run('executive', allAt('executive', 'run'), withFacts(FULL, c => { c.org.consumingUnits = 'unknown'; }));
+    expect(r.tier.assumed).toEqual(['consumingUnits']);
+    expect(r.needVerdict!.confidence).toBe('Low');
+  });
+});
+
+describe('FinOps IQ v3 audit: the shown need and severities never improve on a blank (F5 review H2, D-B)', () => {
+  for (const mode of MODES) {
+    it(`${mode}: a blank or "Don't know" answer is never milder than any answered option, after the value step`, () => {
+      const breaches: string[] = [];
+      for (let seed = 800; seed < 815; seed++) {
+        const answers = randomAnswers(seed, mode);
+        const base = run(mode, answers);
+        for (const q of inMode(mode).filter(x => base.questions.asked.includes(x.id))) {
+          const { [q.id]: _, ...rest } = answers;
+          const blank = run(mode, rest);
+          const unknown = run(mode, { ...rest, [q.id]: answerFor(q.id, 'unknown') });
+          for (const level of ['not_yet', 'crawl', 'walk', 'run'] as AnswerLevel[]) {
+            const answered = run(mode, { ...rest, [q.id]: answerFor(q.id, level) });
+            neverMilder(blank, answered, `seed ${seed} ${q.id} blank vs ${level}`, breaches);
+            neverMilder(unknown, answered, `seed ${seed} ${q.id} unknown vs ${level}`, breaches);
+          }
+        }
+      }
+      expect(breaches).toEqual([]);
+    }, 120_000);
+
+    it(`${mode}: a blank value-base share is never milder than any banded answer, after the value step`, () => {
+      const breaches: string[] = [];
+      const bands = [[0, 0.25], [0.25, 0.49], [0.5, 0.74], [0.75, 1]];
+      for (let seed = 820; seed < 830; seed++) {
+        const answers = randomAnswers(seed, mode);
+        for (const key of ['computeShare', 'steadyStateShare', 'eligibleCoverage', 'nonProdShare']) {
+          const blank = run(mode, answers, withFacts(FULL, c => { delete c.base[key]; }));
+          const unknown = run(mode, answers, withFacts(FULL, c => { c.base[key] = { unknown: true }; }));
+          for (const band of bands) {
+            const answered = run(mode, answers, withFacts(FULL, c => { c.base[key] = { band }; }));
+            neverMilder(blank, answered, `seed ${seed} ${key} blank vs ${band}`, breaches);
+            neverMilder(unknown, answered, `seed ${seed} ${key} unknown vs ${band}`, breaches);
+          }
+        }
+      }
+      expect(breaches).toEqual([]);
+    }, 120_000);
+  }
+});
+
+describe('FinOps IQ v3 audit: one answer and other capabilities (F5 review M3, D-H)', () => {
+  for (const mode of MODES) {
+    it(`${mode}: another capability's finding moves only through a value step, and need before value moves at most 12.5 per answer`, () => {
+      const breaches: string[] = [];
+      for (let seed = 900; seed < 920; seed++) {
+        const answers = randomAnswers(seed, mode);
+        const base = run(mode, answers);
+        for (const q of inMode(mode).filter(x => base.questions.asked.includes(x.id))) {
+          for (const level of ORDER) {
+            const r = run(mode, { ...answers, [q.id]: answerFor(q.id, level) });
+            const tag = `seed ${seed} ${q.id}=${level}`;
+            for (const f of r.findings.filter(x => x.type === 'capability_gap' && x.capability !== q.capability)) {
+              const b = base.findings.find(x => x.id === f.id);
+              if (!b || b.severity === f.severity) continue;
+              const viaValue = [...f.severityTrace, ...b.severityTrace].some(t => t === 'value_uplift' || t === 'value_unconfirmed');
+              if (!viaValue) breaches.push(`${tag}: ${f.id} ${b.severity} -> ${f.severity} without a value step`);
+            }
+            if (mode === 'executive' && Math.abs(needBeforeValue(r) - needBeforeValue(base)) > 12.5 + 1e-9) breaches.push(`${tag}: need before value moved ${needBeforeValue(r) - needBeforeValue(base)}`);
+          }
+        }
+      }
+      expect(breaches).toEqual([]);
+    }, 120_000);
+  }
+});
+
+describe('FinOps IQ v3 audit: value monotonicity and bands (DESIGN.md 10.9; F5 review M2)', () => {
+  const lever = (r: FinOpsIqV3Result, id: string) => r.value.levers.find(l => l.id === id);
+  const expected = (r: FinOpsIqV3Result, id: string) => lever(r, id)?.cases?.expected.runRate.value ?? 0;
+  const W: Facts = withFacts(FULL, c => {
+    c.footprint.scopes.push('ai_platform_gpu');
+    Object.assign(c.base, { nonProdScheduledShare: { exact: 0.2 }, interruptionTolerantShare: { exact: 0.3 }, spotShare: { exact: 0.05 }, kubernetesSpend: { exact: 8e6 }, kubernetesRequestUtilisation: { exact: 0.4 } });
+    c.evidence = { aiGpu: { gpuSpend: { exact: 3e6 }, gpuUtilisation: { exact: 0.3 }, idleEndpointSpend: { exact: 2e5 } } };
+  });
+  const steps = [0.1, 0.3, 0.5, 0.7, 0.9];
+
+  it('a better measured input never raises its own lever: coverage (LEV-01), scheduled share (LEV-04), Spot share (LEV-06), cluster and GPU utilisation (LEV-07, LEV-10)', () => {
+    const breaches: string[] = [];
+    const checks: Array<[string, string, (c: any, v: number) => void]> = [
+      ['LEV-01', 'eligibleCoverage', (c, v) => { c.base.eligibleCoverage = { exact: v }; }],
+      ['LEV-04', 'nonProdScheduledShare', (c, v) => { c.base.nonProdScheduledShare = { exact: v }; }],
+      ['LEV-06', 'spotShare', (c, v) => { c.base.spotShare = { exact: Math.min(v, 0.3) }; }],
+      ['LEV-07', 'kubernetesRequestUtilisation', (c, v) => { c.base.kubernetesRequestUtilisation = { exact: v }; }],
+      ['LEV-10', 'gpuUtilisation', (c, v) => { c.evidence.aiGpu.gpuUtilisation = { exact: v }; }]
+    ];
+    for (let seed = 1000; seed < 1010; seed++) {
+      const answers = randomAnswers(seed, 'workshop');
+      for (const [id, name, setv] of checks) {
+        let prev = Infinity;
+        for (const v of steps) {
+          const x = expected(run('workshop', answers, withFacts(W, c => setv(c, v))), id);
+          if (x > prev + 1e-6) breaches.push(`seed ${seed} ${id}: ${name} ${v} gives ${x} > ${prev}`);
+          prev = x;
+        }
+      }
+    }
+    expect(breaches).toEqual([]);
+  });
+
+  it('an exact value inside a band never gives a wider range than the band: conservative not lower, upper not higher', () => {
+    const breaches: string[] = [];
+    const total = (r: FinOpsIqV3Result, c: 'conservative' | 'upper') => r.value.totals?.[c].grossRunRate.value ?? 0;
+    for (let seed = 1020; seed < 1030; seed++) {
+      const answers = randomAnswers(seed, 'workshop');
+      for (const key of ['computeShare', 'steadyStateShare', 'eligibleCoverage', 'nonProdShare']) {
+        for (const band of [[0.25, 0.49], [0.5, 0.74]]) {
+          const banded = run('workshop', answers, withFacts(W, c => { c.base[key] = { band }; }));
+          for (const x of [band[0], (band[0] + band[1]) / 2, band[1]]) {
+            const exact = run('workshop', answers, withFacts(W, c => { c.base[key] = { exact: x }; }));
+            if (total(exact, 'upper') > total(banded, 'upper') + 1) breaches.push(`seed ${seed} ${key} ${x}: upper above the band's`);
+            if (total(exact, 'conservative') < total(banded, 'conservative') - 1) breaches.push(`seed ${seed} ${key} ${x}: conservative below the band's`);
+          }
+        }
+      }
+    }
+    expect(breaches).toEqual([]);
+  });
+
+  it('a workshop scheduled share derived from OP-06 reads Low confidence, as answer mappings do in any mode (F5 review L2)', () => {
+    const measured = run('workshop', allAt('workshop', 'walk'), withFacts(W, c => { c.base.nonProdScheduledShare = { exact: 0.5 }; }));
+    const derived = run('workshop', allAt('workshop', 'walk'), withFacts(W, c => { c.base.nonProdScheduledShare = { exact: 0.5 }; c.base.nonProdScheduledShareSource = 'derived_from_OP-06'; }));
+    expect(lever(measured, 'LEV-04')!.confidence).not.toBe('Low');
+    expect(lever(derived, 'LEV-04')!.confidence).toBe('Low');
+    expect(expected(derived, 'LEV-04')).toBe(expected(measured, 'LEV-04'));
+  });
+
+  it('growth never changes a value figure (ASM-FIN-051), and executive value confidence is never above Medium (DESIGN.md 10.7)', () => {
+    for (let seed = 1040; seed < 1060; seed++) {
+      for (const mode of MODES) {
+        const answers = randomAnswers(seed, mode);
+        const a = run(mode, answers, withFacts(FULL, c => { c.spend.growth12m = -20; }));
+        const b = run(mode, answers, withFacts(FULL, c => { c.spend.growth12m = 150; }));
+        expect(JSON.stringify(a.value.totals), `seed ${seed} ${mode}`).toBe(JSON.stringify(b.value.totals));
+        if (mode === 'executive') expect(['Medium', 'Low', null]).toContain(a.value.confidence.overall);
+      }
+    }
+  });
+});
+
+describe('FinOps IQ v3 audit: registers and actions say what the code does (F5 review H3, H4)', () => {
+  const THR = new Map<string, any>((thresholds as any).thresholds.map((t: any) => [t.id, t]));
+  const cap = (leverLibrary as any).globalCap;
+  const VR: any = valueRules;
+
+  it('THR-FIN-10 states the cap, its cases and that nothing lifts it, as levers.json does', () => {
+    const t = THR.get('THR-FIN-10').rule;
+    expect(t.cap).toContain(`${Math.round(cap.shareOfPublicCloudSpend * 100)}%`);
+    expect(t.appliesTo).toBe(cap.appliesTo.slice(0, -1).join(', ') + ' and ' + cap.appliesTo[cap.appliesTo.length - 1]);
+    expect(t.liftedBy).toBe(cap.liftedBy);
+  });
+
+  it('THR-FIN-13 states the uplift share and that each lever is compared with its own base', () => {
+    const t = THR.get('THR-FIN-13').rule.rule;
+    expect(t).toContain(`${VR.scoring.severityUpliftShareOfP * 100}%`);
+    expect(t).toMatch(/its own base/);
+  });
+
+  it('THR-FIN-14 lists every urgency modifier the engine applies, with its points, and no retired rule', () => {
+    const urgency: string = THR.get('THR-FIN-14').rule.urgency;
+    for (const m of R.needVerdict.modifiers) expect(urgency, m.id).toContain(`+${m.points}`);
+    expect(urgency).not.toMatch(/estate still to move|migration/);
+    expect(urgency).toContain(`${VR.scoring.needModifierShareOfP * 100}% or more of P`);
+  });
+
+  it('no scope-confirmation action names a question outside the mode\'s question set', () => {
+    for (let seed = 1100; seed < 1160; seed++) {
+      for (const mode of MODES) {
+        const facts = withFacts(seed % 2 ? FULL : SMALL, c => { if (seed % 3 === 0) c.base = {}; if (seed % 5 === 0) c.footprint.scopes.push('ai_platform_gpu'); });
+        const r = run(mode, randomAnswers(seed, mode), facts);
+        for (const f of r.findings.filter(x => x.type === 'scope_confirmation')) {
+          for (const id of f.decisionOrAction.match(/\b[A-Z]{2}-\d{2}\b/g) ?? []) {
+            expect(QUESTIONS.find(q => q.id === id)!.modes, `${mode} seed ${seed} ${f.id} names ${id}`).toContain(mode);
+          }
+        }
+      }
+    }
+  });
+});

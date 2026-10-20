@@ -630,7 +630,7 @@
     return h('div', { class: 'field' }, h('label', { for: id }, text),
       h('div', { class: 'amount' },
         h('select', { id: id, onchange: function (e) {
-          var k = e.target.value; ui[path] = k;
+          var k = e.target.value; ui[path] = k; clearDerived(path);
           if (k === '') set(state.facts, path, undefined);
           else if (k === 'unknown') set(state.facts, path, { unknown: true });
           else if (k === 'exact') set(state.facts, path, undefined);
@@ -638,8 +638,32 @@
           changed(); render();
         } }, opts),
         key === 'exact' ? h('input', { type: 'number', id: id + '-exact', min: '0', max: '100', step: 'any', inputmode: 'decimal', 'aria-label': text + ' (percent)', placeholder: '%', value: v && v.exact !== undefined ? String(Math.round(v.exact * 1000) / 10) : '', oninput: function (e) {
-          var n = Number(e.target.value); set(state.facts, path, e.target.value !== '' && n >= 0 && n <= 100 ? { exact: n / 100 } : undefined); changed();
-        } }) : null));
+          var n = Number(e.target.value); clearDerived(path); set(state.facts, path, e.target.value !== '' && n >= 0 && n <= 100 ? { exact: n / 100 } : undefined); changed();
+        } }) : null),
+      prefillSuggestion(path, v));
+  }
+
+  /**
+   * A suggestion from another answer (F5 D-C): shown in the workshop when the fact is empty; nothing is set until the
+   * consultant confirms it, and the confirmed value is marked as derived (Low confidence on the server).
+   */
+  function prefillSuggestion(path, current) {
+    var p = (schema.prefills || []).find(function (x) { return x.fact === path; });
+    if (!p || state.mode !== 'workshop' || isFinal()) return null;
+    var answer = state.answers[p.fromQuestion];
+    var share = p.byAnswer[answer];
+    if (current && get(state.facts, p.sourceFact) === p.sourceValue) return h('p', { class: 'small muted' }, 'Derived from ' + p.fromQuestion + ' (' + p.assumptionId + '); replace it with a measured share when you have one.');
+    if (current || typeof share !== 'number') return null;
+    var q = Q[p.fromQuestion];
+    var opt = q && q.options.find(function (o) { return o.value === answer; });
+    return h('div', { class: 'notice', role: 'note' }, 'Suggested from ' + p.fromQuestion + (opt ? ' ("' + opt.label + '")' : '') + ': about ' + Math.round(share * 100) + '%. ',
+      h('button', { class: 'btn small', type: 'button', onclick: function () {
+        set(state.facts, path, { exact: share }); set(state.facts, p.sourceFact, p.sourceValue); changed(); render();
+      } }, 'Use this, then confirm with the client'));
+  }
+  function clearDerived(path) {
+    var p = (schema.prefills || []).find(function (x) { return x.fact === path; });
+    if (p) set(state.facts, p.sourceFact, undefined);
   }
 
   function instrumentField(fd) {

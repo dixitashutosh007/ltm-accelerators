@@ -1,5 +1,5 @@
 {
-  "libraryVersion": "1.1.0",
+  "libraryVersion": "1.2.0",
   "statusAsOf": "2026-10-14",
   "rangeRule": {
     "expectedFactor": 0.5,
@@ -388,7 +388,7 @@
       "maxRate": {
         "kind": "arithmetic",
         "formula": "1 - 50/168",
-        "value": 0.702,
+        "value": 0.7023809524,
         "source": {
           "claimId": "CLM-FIN-131",
           "citation": "50-hour weekly schedule against 168 hours (LTM heuristic); AWS Instance Scheduler uses the same example (CLM-FIN-086)",
@@ -816,16 +816,8 @@
       "type": "usage",
       "capability": "USAGE_OPTIMIZATION",
       "scopeWhen": {
-        "any": [
-          {
-            "fact": "footprint.scopes",
-            "contains": "ai_platform_gpu"
-          },
-          {
-            "fact": "footprint.scopes",
-            "contains": "ai_api"
-          }
-        ]
+        "fact": "footprint.scopes",
+        "contains": "ai_platform_gpu"
       },
       "interactionOrder": 6,
       "addressableBase": {

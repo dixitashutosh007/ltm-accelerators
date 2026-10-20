@@ -860,7 +860,7 @@
           "ref": "thresholds:thresholds[THR-FIN-14].rule",
           "value": {
             "bands": "0-25 Lightweight practices sufficient at current scale; 26-50 Targeted improvements needed now; 51-75 Material exposure: act this year; 76-100 Act now",
-            "urgency": "value 5% or more of P; growth 20% or more; 25% or more of estate still to move; Tier 2 +10, Tier 3 +20"
+            "urgency": "+10 value 5% or more of P, or a blank input leaving LEV-01 or LEV-04 open; +10 growth 20% or more, or unknown; +10 AI in scope; Tier 2 +10, Tier 3 +20"
           }
         }
       ]
@@ -1008,7 +1008,7 @@
     {
       "id": "ASM-FIN-043",
       "title": "Non-production on-schedule hours",
-      "value": "50 of 168 hours a week (LEV-04 maximum 1 - 50/168 = 70.24%; the registry shows it rounded as 0.702)",
+      "value": "50 of 168 hours a week (LEV-04 maximum 1 - 50/168 = 70.24%, stored as 0.7023809524)",
       "basis": "ltm_heuristic",
       "claimIds": [
         "CLM-FIN-131",
@@ -1028,11 +1028,11 @@
         },
         {
           "ref": "thresholds:thresholds[THR-FIN-15].rule.maxRate",
-          "value": 0.702
+          "value": 0.7023809524
         },
         {
           "ref": "levers:levers[LEV-04].maxRate.value",
-          "value": 0.702
+          "value": 0.7023809524
         }
       ]
     },

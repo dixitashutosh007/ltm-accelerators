@@ -1,5 +1,5 @@
 {
-  "questionSetVersion": "3.1.0",
+  "questionSetVersion": "3.2.0",
   "executiveSet": [
     "SC-02",
     "SC-03",
@@ -279,7 +279,8 @@
           "disposition": "rewritten",
           "note": "One slider becomes spend by scope (exact, band or don't know) so levers have bases"
         }
-      ]
+      ],
+      "help": "One row per selected provider or scope. Kubernetes and GPU rows are the part of the provider bills spent on clusters and GPUs: they are not added to the total."
     },
     {
       "id": "SC-05",
@@ -783,7 +784,7 @@
           }
         ]
       },
-      "text": "Of non-production compute, what share is already switched off outside working hours? What share of compute could tolerate interruption, and how much of that already runs on Spot / preemptible capacity?",
+      "text": "Of non-production compute, what share is already switched off outside working hours? What share of all compute could tolerate interruption, and what share of all compute already runs on Spot / preemptible capacity?",
       "answerType": "compound",
       "fields": [
         {
@@ -1227,16 +1228,8 @@
         "workshop"
       ],
       "askWhen": {
-        "any": [
-          {
-            "fact": "footprint.scopes",
-            "contains": "ai_api"
-          },
-          {
-            "fact": "footprint.scopes",
-            "contains": "ai_platform_gpu"
-          }
-        ]
+        "fact": "footprint.scopes",
+        "contains": "ai_platform_gpu"
       },
       "text": "GPU and model-serving spend, measured average GPU utilisation, and spend on idle endpoints",
       "answerType": "compound",

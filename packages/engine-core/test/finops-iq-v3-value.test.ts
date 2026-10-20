@@ -226,11 +226,12 @@ const publishedMax = (lever: string, provider: string) =>
 const SCHEDULE_MAX = 1 - (thresholds as any).thresholds.find((t: any) => t.id === 'THR-FIN-15').rule.hoursPerWeek / 168;
 const EVIDENCE = ['LEV-02', 'LEV-03', 'LEV-05', 'LEV-09'];
 /** Inputs each lever cannot be quantified without (DESIGN.md 10.2), checked independently of the engine. */
-const REQUIRED: Record<string, (f: Facts) => string[]> = {
+const REQUIRED: Record<string, (f: Facts, mode: Mode) => string[]> = {
   'LEV-01': () => ['base.computeShare', 'base.steadyStateShare', 'base.eligibleCoverage', 'base.nonProdShare'],
   'LEV-02': () => ['base.computeShare', 'evidence.providerRecommendations'],
   'LEV-03': () => ['evidence.providerRecommendations'],
-  'LEV-04': f => ['base.computeShare', 'base.nonProdShare', ...(f.footprint.scopes.includes('kubernetes') ? ['base.kubernetesSpend'] : [])],
+  // Executive mode reads SC-04's Kubernetes row unless the measured cluster spend was given (F5 review H4, D-D).
+  'LEV-04': (f, mode) => ['base.computeShare', 'base.nonProdShare', ...(f.footprint.scopes.includes('kubernetes') ? [mode === 'executive' && !given(f, 'base.kubernetesSpend') ? 'spend.byScope.kubernetes' : 'base.kubernetesSpend'] : [])],
   'LEV-05': () => ['evidence.providerRecommendations'],
   'LEV-06': () => ['base.computeShare', 'base.interruptionTolerantShare', 'base.spotShare', 'base.eligibleCoverage'],
   'LEV-07': () => ['base.kubernetesSpend', 'base.kubernetesRequestUtilisation'],
@@ -306,7 +307,7 @@ describe('FinOps IQ v3 value: inflation guard (5 reference scenarios and 1,000 r
     const spendKnown = f.footprint.publicCloudProviders.every(p => given(f, `spend.byScope.${p}`));
     for (const l of x.r.value.levers) {
       if (l.status !== 'quantified') { if (l.cases) fail(`${l.id}: not quantified but has figures`); continue; }
-      for (const p of REQUIRED[l.id](f)) if (!given(f, p)) fail(`${l.id} quantified without ${p}`);
+      for (const p of REQUIRED[l.id](f, x.input.mode)) if (!given(f, p)) fail(`${l.id} quantified without ${p}`);
       if (l.id !== 'LEV-09' && !spendKnown) fail(`${l.id} quantified without every provider's spend`);
       if (x.input.mode === 'executive' && !['LEV-01', 'LEV-04'].includes(l.id)) fail(`${l.id} quantified in executive mode (Q7)`);
       if (l.id === 'LEV-04' && x.input.mode === 'executive' && !['run', 'walk', 'crawl', 'not_yet'].includes(x.input.answers['OP-06'] as string)) fail('LEV-04 quantified without an OP-06 answer');
@@ -626,7 +627,12 @@ const VALUE_DIFFS: Record<string, { levers: string[]; totals: boolean; cases?: s
   RS2: { levers: ['LEV-06'], totals: true },
   // RS3's upper case is capped: a smaller LEV-06 changes the pro-rata cap scale of every lever (the capped total is unchanged).
   RS3: { levers: ['LEV-06'], totals: true, cases: ['upper'] },
-  RS4: { levers: ['LEV-01', 'LEV-06'], totals: true }
+  RS4: { levers: ['LEV-01', 'LEV-06'], totals: true },
+  // F5 (F5-scenario-diffs.md): RS7 was written before D-D, when executive mode could not value LEV-04 with Kubernetes in
+  // scope; it now reads SC-04's Kubernetes row, so LEV-04 is quantified and the totals move. RS8: LEV-02 is not worth
+  // pursuing at this scale, so it has no case figures, only the expected figure behind its exclusion (X1).
+  RS7: { levers: ['LEV-01', 'LEV-04'], totals: true },
+  RS8: { levers: ['LEV-02'], totals: false }
 };
 const within = (a: number, b: number, rel = 0.01) => Math.abs(a - b) <= Math.max(2, Math.abs(b) * rel);
 
@@ -716,11 +722,26 @@ describe('FinOps IQ v3 value: F4 review fixes', () => {
     expect(lever(wf(0.5), 'LEV-01').cases!.upper.base.value).toBe(1_000_000);
   });
 
+  // F5 review H2 (D-B): an uplift or need modifier rests either on a shown figure, or on named blank inputs that leave a
+  // material lever (LEV-01, LEV-04) open; never on a hidden money figure.
+  const openLevers = (r: FinOpsIqV3Result) => {
+    const blocked = r.value.levers.filter(l => ['LEV-01', 'LEV-04'].includes(l.id) && l.status === 'not_quantified' && ['missing_input', 'public_cloud_spend_unknown'].includes(l.reason!));
+    const blockedInputs = blocked.flatMap(l => l.blockedBy);
+    return r.value.levers.filter(l => ['LEV-01', 'LEV-04'].includes(l.id) && (blocked.includes(l) || (l.status === 'quantified' &&
+      (!r.value.moneyShown || (l.id === 'LEV-01' && blockedInputs.includes('base.nonProdScheduledShare')))))).map(l => l.id);
+  };
   it('H3: every value uplift and value need modifier rests on a figure the report shows, at the client\'s own answers', () => guard((x, fail) => {
     const threshold = (field: string) => resolveField(x.r, field)?.value;
+    const open = openLevers(x.r);
     for (const f of x.r.findings) {
       const up = f.severityTrace.includes('value_uplift');
-      if (up !== !!f.valueBasis) fail(`${f.id}: uplift ${up} but valueBasis ${JSON.stringify(f.valueBasis)}`);
+      const unconfirmed = f.severityTrace.includes('value_unconfirmed');
+      if ((up || unconfirmed) !== !!f.valueBasis) fail(`${f.id}: uplift ${up || unconfirmed} but valueBasis ${JSON.stringify(f.valueBasis)}`);
+      if (unconfirmed) {
+        if (!f.valueBasis!.unconfirmedInputs?.length || f.valueBasis!.fields.length) fail(`${f.id}: value_unconfirmed without named inputs, or with a figure`);
+        if (!f.leverIds.some(id => open.includes(id))) fail(`${f.id}: value_unconfirmed without an open material lever`);
+        continue;
+      }
       if (!f.valueBasis) continue;
       if (!x.r.value.moneyShown) fail(`${f.id}: uplift without any value shown`);
       for (const field of f.valueBasis.fields) {
@@ -736,10 +757,12 @@ describe('FinOps IQ v3 value: F4 review fixes', () => {
     }
     const v = x.r.needVerdict;
     if (v) {
-      const has = v.modifiers.some(m => m.id === 'expected_value_ge_5pct_of_P');
+      const m = v.modifiers.find(y => y.id === 'expected_value_ge_5pct_of_P');
+      const has = !!m && !m.assumed;
       if (has !== !!v.valueBasis) fail('need modifier without its valueBasis');
       const shown = x.r.value.moneyShown && total(x.r, 'expected').pctOfP.value >= 5;
       if (has !== shown) fail(`need modifier ${has}, shown value at 5% of P ${shown}`);
+      if (!!m?.assumed !== (!shown && open.length > 0)) fail(`assumed need modifier ${!!m?.assumed}, open material levers ${open.join(', ')}`);
     }
   }));
 

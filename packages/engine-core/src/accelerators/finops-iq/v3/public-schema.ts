@@ -9,6 +9,7 @@ import bank from './question-bank.json' with { type: 'json' };
 import capabilityModel from '../registry/capabilities.json' with { type: 'json' };
 import register from '../../../claims/claims-register.json' with { type: 'json' };
 import { INSTRUMENTS, MARKETS, MIGRATION_STAGES, PROVIDERS, SCOPES, SECTORS } from './contract';
+import valueRules from './value-rules.json' with { type: 'json' };
 
 const B: any = bank;
 const CLAIM = new Map<string, any>((register as any).claims.map((c: any) => [c.id, c]));
@@ -48,6 +49,14 @@ export function publicQuestionSchema() {
     note: 'Generated from the FinOps IQ v3 question bank by npm run build:finops-iq-questions. Do not edit.',
     questionSetVersion: B.questionSetVersion as string,
     notices: NOTICES,
+    /**
+     * Pre-fill suggestions the consultant must confirm (F5 D-C): in the workshop, OP-06's answer suggests VB-03's
+     * scheduled share through ASM-FIN-052. Nothing is set until confirmed; a confirmed value is marked as derived.
+     */
+    prefills: [(() => {
+      const d: any = (valueRules as any).derivations.nonProdScheduledShareFromOp06;
+      return { fact: d.fact, fromQuestion: d.question, byAnswer: d.byLevel, sourceFact: 'base.nonProdScheduledShareSource', sourceValue: 'derived_from_OP-06', assumptionId: d.assumptionId };
+    })()],
     executiveSet: [...B.executiveSet] as string[],
     enums: {
       providers: PROVIDERS.map(v => ({ value: v, label: providerLabels[v] ?? v })),

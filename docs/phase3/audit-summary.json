@@ -784,7 +784,7 @@
           0,
           100
         ],
-        "min": 18.3,
+        "min": 28.3,
         "max": 100,
         "outOfScale": 0,
         "nulls": 0
@@ -817,7 +817,7 @@
           0,
           20
         ],
-        "min": 1,
+        "min": 2,
         "max": 9,
         "outOfScale": 0,
         "nulls": 0
@@ -858,10 +858,10 @@
     ],
     "bands": {
       "counts": {
-        "Lightweight practices sufficient at current scale": 1,
-        "Targeted improvements needed now": 125,
-        "Material exposure: act this year": 269,
-        "Act now": 405
+        "Lightweight practices sufficient at current scale": 0,
+        "Targeted improvements needed now": 88,
+        "Material exposure: act this year": 300,
+        "Act now": 412
       },
       "best": "Lightweight practices sufficient at current scale",
       "worst": "Act now",
@@ -872,6 +872,14 @@
         "headline": "Need index (0-100)",
         "top": [
           {
+            "qid": "fact:SC-04 aws",
+            "swing": 41.5
+          },
+          {
+            "qid": "fact:SC-07 units",
+            "swing": 41.5
+          },
+          {
             "qid": "UN-04",
             "swing": 12.5
           },
@@ -882,22 +890,22 @@
           {
             "qid": "UN-11",
             "swing": 12.5
-          },
-          {
-            "qid": "QV-01",
-            "swing": 12.5
-          },
-          {
-            "qid": "OP-01",
-            "swing": 12.5
           }
         ],
-        "share": 0.15299877600979192
+        "share": 0.5788005578800558
       },
       {
         "headline": "Capabilities at or above target (0-8)",
         "top": [
           {
+            "qid": "fact:SC-04 aws",
+            "swing": 6
+          },
+          {
+            "qid": "fact:SC-07 units",
+            "swing": 6
+          },
+          {
             "qid": "UN-04",
             "swing": 1
           },
@@ -908,22 +916,22 @@
           {
             "qid": "UN-11",
             "swing": 1
-          },
-          {
-            "qid": "QV-01",
-            "swing": 1
-          },
-          {
-            "qid": "QV-05",
-            "swing": 1
           }
         ],
-        "share": 0.16666666666666666
+        "share": 1
       },
       {
         "headline": "Total capability gap (levels)",
         "top": [
           {
+            "qid": "fact:SC-04 aws",
+            "swing": 8
+          },
+          {
+            "qid": "fact:SC-07 units",
+            "swing": 8
+          },
+          {
             "qid": "UN-04",
             "swing": 3
           },
@@ -934,121 +942,113 @@
           {
             "qid": "UN-11",
             "swing": 3
-          },
-          {
-            "qid": "QV-01",
-            "swing": 3
-          },
-          {
-            "qid": "OP-01",
-            "swing": 3
           }
         ],
-        "share": 0.15
+        "share": 0.4
       },
       {
         "headline": "Critical + high findings",
         "top": [
           {
-            "qid": "OP-06",
-            "swing": 2
+            "qid": "fact:SC-04 aws",
+            "swing": 6
+          },
+          {
+            "qid": "fact:SC-07 units",
+            "swing": 6
           },
           {
             "qid": "MP-01",
             "swing": 2
           },
           {
-            "qid": "UN-04",
-            "swing": 1
+            "qid": "fact:VB-01 compute",
+            "swing": 2
           },
           {
-            "qid": "UN-10",
-            "swing": 1
-          },
-          {
-            "qid": "UN-11",
-            "swing": 1
+            "qid": "fact:VB-01 non-production",
+            "swing": 2
           }
         ],
-        "share": 0.25
+        "share": 0.8571428571428571
       },
       {
         "headline": "Findings",
         "top": [
           {
+            "qid": "fact:SC-04 aws",
+            "swing": 6
+          },
+          {
+            "qid": "fact:SC-07 units",
+            "swing": 5
+          },
+          {
             "qid": "MP-01",
+            "swing": 2
+          },
+          {
+            "qid": "fact:VB-01 non-production",
             "swing": 2
           },
           {
             "qid": "UN-04",
             "swing": 1
-          },
-          {
-            "qid": "UN-10",
-            "swing": 1
-          },
-          {
-            "qid": "UN-11",
-            "swing": 1
-          },
-          {
-            "qid": "QV-01",
-            "swing": 1
           }
         ],
-        "share": 0.2857142857142857
+        "share": 0.8571428571428571
       },
       {
         "headline": "Value expected (gross run-rate)",
         "top": [
           {
+            "qid": "fact:VB-01 non-production",
+            "swing": 9092358
+          },
+          {
+            "qid": "fact:VB-02 coverage",
+            "swing": 8284500
+          },
+          {
+            "qid": "fact:VB-01 compute",
+            "swing": 7307679
+          },
+          {
+            "qid": "fact:SC-04 aws",
+            "swing": 6945857
+          },
+          {
             "qid": "OP-06",
             "swing": 5057142
-          },
-          {
-            "qid": "UN-04",
-            "swing": 0
-          },
-          {
-            "qid": "UN-10",
-            "swing": 0
-          },
-          {
-            "qid": "UN-11",
-            "swing": 0
-          },
-          {
-            "qid": "QV-01",
-            "swing": 0
           }
         ],
-        "share": 0.8953638205271751
+        "share": 1.6097962834503807
       },
       {
         "headline": "Value upper (gross run-rate)",
         "top": [
           {
+            "qid": "fact:VB-02 coverage",
+            "swing": 20514000
+          },
+          {
+            "qid": "fact:VB-01 compute",
+            "swing": 14615357
+          },
+          {
+            "qid": "fact:SC-04 aws",
+            "swing": 13891715
+          },
+          {
+            "qid": "fact:VB-01 non-production",
+            "swing": 11615429
+          },
+          {
             "qid": "OP-06",
             "swing": 10114285
-          },
-          {
-            "qid": "UN-04",
-            "swing": 0
-          },
-          {
-            "qid": "UN-10",
-            "swing": 0
-          },
-          {
-            "qid": "UN-11",
-            "swing": 0
-          },
-          {
-            "qid": "QV-01",
-            "swing": 0
           }
         ],
-        "share": 0.8953638297900594
+        "share": 1.8159952586182095
       }
     ],
     "dead": [
@@ -1058,7 +1058,7 @@
     "missing": [
       {
         "headline": "Need index (0-100)",
-        "meanShift": -3.5310000000000006,
+        "meanShift": -4.2095,
         "worstProfileShift": 0
       },
       {
@@ -1073,7 +1073,7 @@
       },
       {
         "headline": "Critical + high findings",
-        "meanShift": -0.785,
+        "meanShift": -0.77,
         "worstProfileShift": 0
       },
       {
@@ -1136,8 +1136,8 @@
           0,
           34
         ],
-        "min": 16,
-        "max": 32,
+        "min": 14,
+        "max": 30,
         "outOfScale": 0,
         "nulls": 0
       },
@@ -1221,31 +1221,35 @@
         "headline": "Critical + high findings",
         "top": [
           {
+            "qid": "fact:SC-04 aws",
+            "swing": 4
+          },
+          {
             "qid": "MP-01",
             "swing": 2
           },
           {
-            "qid": "UN-01",
-            "swing": 1
+            "qid": "fact:VB-01 compute",
+            "swing": 2
           },
           {
-            "qid": "UN-02",
-            "swing": 1
+            "qid": "fact:VB-01 non-production",
+            "swing": 2
           },
           {
-            "qid": "UN-03",
-            "swing": 1
-          },
-          {
-            "qid": "UN-04",
-            "swing": 1
+            "qid": "fact:VB-02 coverage",
+            "swing": 2
           }
         ],
-        "share": 0.2
+        "share": 0.4
       },
       {
         "headline": "Findings",
         "top": [
+          {
+            "qid": "fact:SC-04 aws",
+            "swing": 6
+          },
           {
             "qid": "OP-04",
             "swing": 3
@@ -1261,65 +1265,61 @@
           {
             "qid": "OP-07",
             "swing": 3
-          },
-          {
-            "qid": "OP-09",
-            "swing": 3
           }
         ],
-        "share": 0.1875
+        "share": 0.375
       },
       {
         "headline": "Value expected (gross run-rate)",
         "top": [
           {
+            "qid": "fact:SC-04 aws",
+            "swing": 11186459
+          },
+          {
+            "qid": "fact:VB-01 non-production",
+            "swing": 6883333
+          },
+          {
+            "qid": "fact:VB-01 compute",
+            "swing": 6800750
+          },
+          {
+            "qid": "fact:VB-02 coverage",
+            "swing": 3681933
+          },
+          {
             "qid": "UN-01",
-            "swing": 0
-          },
-          {
-            "qid": "UN-02",
-            "swing": 0
-          },
-          {
-            "qid": "UN-03",
-            "swing": 0
-          },
-          {
-            "qid": "UN-04",
-            "swing": 0
-          },
-          {
-            "qid": "UN-05",
             "swing": 0
           }
         ],
-        "share": 0
+        "share": 1.7896089514531297
       },
       {
         "headline": "Value upper (gross run-rate)",
         "top": [
           {
+            "qid": "fact:SC-04 aws",
+            "swing": 22139349
+          },
+          {
+            "qid": "fact:VB-01 compute",
+            "swing": 13823074
+          },
+          {
+            "qid": "fact:VB-01 non-production",
+            "swing": 9672495
+          },
+          {
+            "qid": "fact:VB-02 coverage",
+            "swing": 8274000
+          },
+          {
             "qid": "UN-01",
-            "swing": 0
-          },
-          {
-            "qid": "UN-02",
-            "swing": 0
-          },
-          {
-            "qid": "UN-03",
-            "swing": 0
-          },
-          {
-            "qid": "UN-04",
-            "swing": 0
-          },
-          {
-            "qid": "UN-05",
             "swing": 0
           }
         ],
-        "share": 0
+        "share": 1.804639429123759
       }
     ],
     "dead": [
@@ -1329,7 +1329,9 @@
       "HY-04",
       "HY-05",
       "HY-06",
-      "HY-07"
+      "HY-07",
+      "fact:SC-05",
+      "fact:SC-07 units"
     ],
     "missing": [
       {
@@ -1344,7 +1346,7 @@
       },
       {
         "headline": "Critical + high findings",
-        "meanShift": -2.21,
+        "meanShift": -2.175,
         "worstProfileShift": 0
       },
       {

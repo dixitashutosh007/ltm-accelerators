@@ -1,5 +1,5 @@
 {
-  "rulesVersion": "1.1.0",
+  "rulesVersion": "1.2.0",
   "statusAsOf": "2026-10-14",
   "rule": "Wording and F4 rules of the FinOps IQ v3 value model (DESIGN.md section 10). Numbers here are LTM heuristics registered in registry/assumptions.json; published maxima, ranges, ramps and effort come from registry/levers.json. Nothing here is a market fact.",
   "labels": {
@@ -47,7 +47,7 @@
     "needModifierId": "expected_value_ge_5pct_of_P",
     "needModifierShareOfP": 0.05,
     "needModifierThresholdId": "THR-FIN-14",
-    "rule": "The uplift and the need modifier use only figures the report shows, at the client's own answers: a lever's expected net run-rate as a share of its comparison base, and the expected public cloud value as a share of P. Without a shown figure (no internal rate, or the lever not quantified) neither applies.",
+    "rule": "The uplift and the need modifier use only figures the report shows, at the client's own answers: a lever's expected net run-rate as a share of its comparison base, and the expected public cloud value as a share of P. Without a shown figure they do not apply on value; but when a blank or unknown input, or a missing internal cost rate, leaves LEV-01 or LEV-04 open, both count as reached until the input is confirmed, and the inputs are named instead of a figure (F5 review D-B).",
     "comparisonBases": {
       "cloud": "in-scope public cloud spend (P, at the midpoints)",
       "saasLicensing": "SaaS and licensing spend in scope",
@@ -155,7 +155,7 @@
     },
     "base.spotShare": {
       "id": "SPOT_SHARE",
-      "label": "the share of tolerant compute already on Spot",
+      "label": "the share of all compute already on Spot",
       "question": "VB-03"
     },
     "base.kubernetesSpend": {
@@ -197,6 +197,16 @@
       "id": "COMMITMENT_INSTRUMENT",
       "label": "the main commitment instrument per provider",
       "question": "VB-02"
+    },
+    "spend.byScope.kubernetes": {
+      "id": "SPEND_KUBERNETES",
+      "label": "annual Kubernetes spend (the SC-04 row, part of the provider bills)",
+      "question": "SC-04"
+    },
+    "spend.byScope.ai_platform_gpu": {
+      "id": "SPEND_GPU",
+      "label": "annual GPU and model-serving spend (the SC-04 row, part of the provider bills)",
+      "question": "SC-04"
     }
   },
   "leverFindings": {

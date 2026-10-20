@@ -1,12 +1,27 @@
 {
   "note": "Generated from the FinOps IQ v3 question bank by npm run build:finops-iq-questions. Do not edit.",
-  "questionSetVersion": "3.1.0",
+  "questionSetVersion": "3.2.0",
   "notices": {
     "attribution": "FinOps IQ's capability model is adapted from the FinOps Framework by the FinOps Foundation under CC BY 4.0. Changes by LTM: capabilities rated per scope with LTM question sets; 'Not yet' and 'Unknown' ratings added; default targets by complexity tier are LTM heuristics; no organisation-level stage is computed. It is not endorsed by the FinOps Foundation and is not a FinOps Foundation assessment or certification.",
     "disclaimer": "FinOps IQ gives an indicative assessment from the answers and figures you provide. Value figures are an indicative range, not a savings commitment, and need validating against your billing data before any decision. Scoring constants are LTM heuristics unless a source is cited. This is not financial, accounting or legal advice.",
     "data": "LTM hosts this assessment in Amazon Web Services, Mumbai region (India). If you are in the EU or UK, the information you enter is transferred to India, which does not have an EU adequacy decision or a UK data bridge. We collect your answers, your spend figures, your organisation's name and the consultant's email address to produce the report. This version uses no AI features.",
     "status": "Draft wording pending owner and counsel approval (execution phase M6)."
   },
+  "prefills": [
+    {
+      "fact": "base.nonProdScheduledShare",
+      "fromQuestion": "OP-06",
+      "byAnswer": {
+        "run": 1,
+        "walk": 0.5,
+        "crawl": 0,
+        "not_yet": 0
+      },
+      "sourceFact": "base.nonProdScheduledShareSource",
+      "sourceValue": "derived_from_OP-06",
+      "assumptionId": "ASM-FIN-052"
+    }
+  ],
   "executiveSet": [
     "SC-02",
     "SC-03",
@@ -523,6 +538,7 @@
         "workshop"
       ],
       "text": "Roughly what is your annual spend in each of these areas, and in which currency?",
+      "help": "One row per selected provider or scope. Kubernetes and GPU rows are the part of the provider bills spent on clusters and GPUs: they are not added to the total.",
       "answerType": "matrix",
       "fields": [
         {
@@ -935,7 +951,7 @@
       "modes": [
         "workshop"
       ],
-      "text": "Of non-production compute, what share is already switched off outside working hours? What share of compute could tolerate interruption, and how much of that already runs on Spot / preemptible capacity?",
+      "text": "Of non-production compute, what share is already switched off outside working hours? What share of all compute could tolerate interruption, and what share of all compute already runs on Spot / preemptible capacity?",
       "answerType": "compound",
       "fields": [
         {

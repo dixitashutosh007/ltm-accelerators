@@ -11,9 +11,9 @@ import leverLibrary from '../registry/levers.json' with { type: 'json' };
 import thresholds from '../registry/thresholds.json' with { type: 'json' };
 import claimsRegister from '../../../claims/claims-register.json' with { type: 'json' };
 import valueRules from './value-rules.json' with { type: 'json' };
-import { buildValueModel, findingValue, inputInfo, VALUE_MODEL_VERSION, type Figure, type ValueBlock, type ValueModelOutput } from './value-model';
+import { buildValueModel, findingValue, inputInfo, OF_WHICH_ROWS, VALUE_MODEL_VERSION, type Figure, type ValueBlock, type ValueModelOutput } from './value-model';
 
-export const ENGINE_VERSION = '3.3.0';
+export const ENGINE_VERSION = '3.4.0';
 export { VALUE_MODEL_VERSION };
 
 export type Mode = 'executive' | 'workshop';
@@ -121,7 +121,8 @@ export interface Finding {
   /** Severity before the value uplift (DESIGN.md 5.3 steps 1, 2, 4, 5): monotone in the answers. */
   severityBeforeValue: 'Critical' | 'High' | 'Medium' | 'Low';
   /** With value_uplift: the shown figures it rests on (F4 review H3). */
-  valueBasis: { fields: string[]; thresholdField: string } | null;
+  /** The shown figures behind a value uplift, or (value_unconfirmed) the blank inputs that leave a material lever open. */
+  valueBasis: { fields: string[]; thresholdField: string; unconfirmedInputs?: string[] } | null;
   /** Levers whose value sits on this gap finding, with their own action, evidence and zero-value advice (F4 review M2). */
   leverActions: Array<{ leverId: string; title: string; action: string; evidence: string; zeroValue: boolean; inHeadline: boolean; claimIds: string[] }>;
 }
@@ -129,7 +130,8 @@ export interface Finding {
 export interface NeedVerdict {
   needIndex: number;
   baseIndex: number;
-  modifiers: Array<{ id: string; points: number }>;
+  /** `assumed`: the input is unknown and counted as risk until confirmed (F5 review H1, H2). */
+  modifiers: Array<{ id: string; points: number; assumed?: true }>;
   /** Modifiers the design defines that cannot be applied yet. */
   pending: Array<{ id: string; reason: string }>;
   /** The shown figure behind the value modifier (F4 review H3). */
@@ -171,7 +173,8 @@ export interface FinOpsIqV3Result {
   };
   mode: Mode;
   assessmentDate?: string;
-  tier: { tier: 1 | 2 | 3; points: number; trace: string[]; override: boolean; claimIds: string[] };
+  /** `assumed`: facts left unknown and counted as risk until confirmed (spend, consumingUnits; F5 review H1, D-A). */
+  tier: { tier: 1 | 2 | 3; points: number; trace: string[]; override: boolean; assumed: string[]; claimIds: string[] };
   questions: { asked: string[] };
   capabilities: CapabilityProfile[];
   headline: { atOrAboveTarget: number; inScope: number; assessed: number; statement: string; claimIds: string[] };
@@ -240,8 +243,9 @@ const publicCloudSpend = (f: Facts) =>
     const v = amountValue(f.spend.byScope[p]);
     return v === undefined ? t : (t ?? 0) + v;
   }, undefined);
+/** In-scope spend for the tier. Kubernetes and GPU rows sit inside the provider bills, so they are not added (M1). */
 const totalSpend = (f: Facts) =>
-  Object.values(f.spend.byScope).reduce<number | undefined>((t, a) => {
+  Object.entries(f.spend.byScope).filter(([k]) => !OF_WHICH_ROWS.includes(k)).map(([, a]) => a).reduce<number | undefined>((t, a) => {
     const v = amountValue(a);
     return v === undefined ? t : (t ?? 0) + v;
   }, undefined);
@@ -318,10 +322,21 @@ export function complexityTier(f: Facts): FinOpsIqV3Result['tier'] {
   const ctx: Context = { facts: f, levels: new Map(), values: new Map() };
   const trace: string[] = [];
   let points = 0;
+  const assumed: string[] = [];
   const local = totalSpend(f);
   const rate = f.org.tierFxRate ?? (f.org.currency === 'USD' ? 1 : undefined);
-  if (local === undefined) trace.push('spend unknown -> 0');
-  else if (rate === undefined) trace.push(`spend ${f.org.currency} not converted (no tier FX rate) -> 0`);
+  // D-A: unknown spend counts as risk, at the top spend band, until confirmed. Unknown means a selected provider
+  // without a figure, any row marked unknown, or no figure at all.
+  const unknownRows = [...new Set([
+    ...f.footprint.publicCloudProviders.filter(p => amountValue(f.spend.byScope[p]) === undefined),
+    ...Object.entries(f.spend.byScope).filter(([k, a]) => !OF_WHICH_ROWS.includes(k) && amountValue(a) === undefined).map(([k]) => k)
+  ])];
+  const top = Math.max(...t.spendBandsUsd.map((b: any) => b.points));
+  if (unknownRows.length || local === undefined) {
+    points += top;
+    assumed.push('spend');
+    trace.push(`spend unknown${unknownRows.length ? ` (${unknownRows.join(', ')})` : ''} -> ${top}, assumed until confirmed`);
+  } else if (rate === undefined) trace.push(`spend ${f.org.currency} not converted (no tier FX rate) -> 0`);
   else {
     const usd = local * rate;
     const band = t.spendBandsUsd.find((b: any) => usd >= b.min && (b.max === undefined || usd < b.max));
@@ -332,12 +347,17 @@ export function complexityTier(f: Facts): FinOpsIqV3Result['tier'] {
     if (testCondition(p.when, ctx) && material(p.id, f)) {
       points += p.points;
       trace.push(`${p.id} -> +${p.points}`);
+    } else if (p.id === 'consuming_units_5_plus' && (f.org.consumingUnits === undefined || f.org.consumingUnits === 'unknown')) {
+      // D-A: unknown consuming units count as five or more until confirmed.
+      points += p.points;
+      assumed.push('consumingUnits');
+      trace.push(`${p.id} -> +${p.points}, consuming units unknown, assumed until confirmed`);
     }
   }
   const band = t.bands.find((b: any) => points >= b.minPoints && (b.maxPoints === undefined || points <= b.maxPoints));
   const override = f.consultant?.complexityTierOverride;
   if (override) trace.push(`consultant override -> Tier ${override}${f.consultant?.overrideReason ? ': ' + f.consultant.overrideReason : ''}`);
-  return { tier: override ?? band.tier, points, trace, override: !!override, claimIds: ['CLM-FIN-120'] };
+  return { tier: override ?? band.tier, points, trace, override: !!override, assumed, claimIds: ['CLM-FIN-120'] };
 }
 
 /* --------------------------------- Rating ---------------------------------- */
@@ -479,8 +499,14 @@ function severityOf(cap: any, p: CapabilityProfile, tier: number, leverIds: stri
  */
 function valueUplift(severity: Finding['severity'], trace: string[], leverIds: string[], vm: ValueModelOutput) {
   const hits = leverIds.map(id => vm.scoring.byLever.get(id)).filter(x => x?.reached).map(x => x!.field);
-  if (hits.length && SEVERITIES.indexOf(severity) < SEVERITIES.indexOf('High')) {
+  const below = SEVERITIES.indexOf(severity) < SEVERITIES.indexOf('High');
+  if (hits.length && below) {
     return { severity: 'High' as const, trace: [...trace, 'value_uplift'], before: severity, basis: { fields: hits, thresholdField: vm.scoring.upliftThresholdField } };
+  }
+  // D-B: a material lever left open by a blank counts as material until confirmed; the blank inputs are named.
+  const open = vm.scoring.unconfirmed;
+  if (open && below && leverIds.some(id => open.levers.includes(id))) {
+    return { severity: 'High' as const, trace: [...trace, 'value_unconfirmed'], before: severity, basis: { fields: [], thresholdField: vm.scoring.upliftThresholdField, unconfirmedInputs: [...open.inputs] } };
   }
   return { severity, trace, before: severity, basis: null };
 }
@@ -701,7 +727,7 @@ function scopeConfirmations(input: FinOpsIqV3Input, vm: ValueModelOutput, mp01: 
     const material = leverIds.some(id => sc.materialLevers.includes(id));
     const question = input.mode === 'executive' && info.executiveQuestion ? info.executiveQuestion : info.question;
     const label = info.label;
-    const names = levers.map((l: any) => `${l.name.toLowerCase()} (${l.id})`).join(', ');
+    const names = levers.map((l: any) => `${l.name} (${l.id})`).join(', ');
     out.push({
       id: `F-FIN-SCOPE-${info.id}`, type: 'scope_confirmation', capability: levers[0].capability, scopes: [],
       unconfirmed: true, notAnsweredCount: 0, severity: material ? sc.severity.material : sc.severity.other, severityTrace: [material ? 'scope_material' : 'scope_low'],
@@ -762,7 +788,8 @@ function factsGiven(q: any, f: Facts): boolean {
   });
 }
 
-function needVerdict(input: FinOpsIqV3Input, tier: number, profile: CapabilityProfile[], state: AnswerState, vm: ValueModelOutput): NeedVerdict {
+function needVerdict(input: FinOpsIqV3Input, tierInfo: FinOpsIqV3Result['tier'], profile: CapabilityProfile[], state: AnswerState, vm: ValueModelOutput): NeedVerdict {
+  const tier = tierInfo.tier;
   const nv = RULES.needVerdict;
   const f = input.facts;
   // Blank (any asked question left blank) counts as the maximum gap, so a blank never lowers need.
@@ -781,9 +808,14 @@ function needVerdict(input: FinOpsIqV3Input, tier: number, profile: CapabilityPr
   const vmod = VR.scoring.needModifierId;
   const need = vm.scoring.need;
   const valueKnown = need !== null;
+  const open = vm.scoring.unconfirmed;
   if (need?.reached) modifiers.push({ id: vmod, points: points(vmod).points });
+  // D-B: when a material lever is left open by a blank, the value modifier counts until the input is confirmed.
+  else if (open) modifiers.push({ id: vmod, points: points(vmod).points, assumed: true });
   const growth = f.spend.growth12m;
   if (typeof growth === 'number' && growth >= points('growth_ge_20pct').threshold) modifiers.push({ id: 'growth_ge_20pct', points: points('growth_ge_20pct').points });
+  // D-A: unknown growth counts as 20% or more until confirmed.
+  else if (typeof growth !== 'number') modifiers.push({ id: 'growth_ge_20pct', points: points('growth_ge_20pct').points, assumed: true });
   // Executive mode: AI scope only; the migration share comes from SC-06, a workshop question (F3 review L6).
   if (f.footprint.scopes.includes('ai_api') || f.footprint.scopes.includes('ai_platform_gpu')) modifiers.push({ id: 'ai_in_scope', points: points('ai_in_scope').points });
   const round1 = (x: number) => Math.round(x * 10) / 10;
@@ -798,6 +830,8 @@ function needVerdict(input: FinOpsIqV3Input, tier: number, profile: CapabilityPr
   }
   for (const [scope, a] of Object.entries(f.spend.byScope)) if (amountValue(a) === undefined) blindSpots.push({ fact: `spend.byScope.${scope}`, reason: 'unknown' });
   if (typeof growth !== 'number') blindSpots.push({ fact: 'spend.growth12m', reason: 'unknown' });
+  if (tierInfo.assumed.includes('consumingUnits')) blindSpots.push({ fact: 'org.consumingUnits', reason: 'unknown' });
+  for (const path of open?.inputs ?? []) if (!blindSpots.some(b => b.fact === path)) blindSpots.push({ fact: path, reason: 'unknown' });
   if (hasPublicCloud(f)) {
     for (const q of QUESTIONS.filter(x => x.kind === 'value_base' && state.asked.has(x.id))) {
       for (const path of q.sets ?? []) if (amountValue(factAt(f, path)) === undefined) blindSpots.push({ fact: path, reason: 'unknown' });
@@ -807,10 +841,11 @@ function needVerdict(input: FinOpsIqV3Input, tier: number, profile: CapabilityPr
   const answered = scored.filter(q => (q.kind === 'maturity' ? state.levels.has(q.id) : factsGiven(q, f))).length;
   return {
     needIndex, baseIndex: round1(baseIndex), modifiers,
-    pending: valueKnown ? [] : [{ id: vmod, reason: 'no value figure shown (no lever quantified, or no internal cost rate)' }],
+    pending: valueKnown || open ? [] : [{ id: vmod, reason: 'no value figure shown (no lever quantified, or no internal cost rate)' }],
     valueBasis: need?.reached ? { field: need.field, thresholdField: need.thresholdField } : null,
     band: band.id, bandLabel: band.label,
-    confidence: blindSpots.some(b => b.questionId) ? 'Low' : 'Medium', blindSpots,
+    // Low whenever the verdict rests on an assumption: a blank or unknown answer, or an unknown scope or value input.
+    confidence: blindSpots.some(b => b.questionId) || tierInfo.assumed.length || modifiers.some(m => m.assumed) ? 'Low' : 'Medium', blindSpots,
     basisLine: fill(nv.basisLine, { answered, questions: scored.length, tier }),
     claimIds: [...nv.claimIds, ...nv.basisClaimIds.filter((id: string) => !nv.claimIds.includes(id)), ...nv.confidenceClaimIds, ...(modifiers.some(m => m.id === vmod) ? ['CLM-FIN-172'] : [])]
   };
@@ -892,7 +927,7 @@ export function evaluateFinOpsIqV3(input: FinOpsIqV3Input): FinOpsIqV3Result {
     headline: { atOrAboveTarget: atOrAbove, inScope: withTarget.length, assessed, statement, claimIds: [...h.claimIds] },
     findings,
     topFindingIds: findings.slice(0, 5).map(x => x.id),
-    needVerdict: input.mode === 'executive' ? needVerdict(input, tier.tier, capabilities, state, vm) : null,
+    needVerdict: input.mode === 'executive' ? needVerdict(input, tier, capabilities, state, vm) : null,
     coverage,
     conflicts,
     hypotheses: { answers: hypotheses, scored: false, claimIds: ['CLM-FIN-144', 'CLM-FIN-164'] },

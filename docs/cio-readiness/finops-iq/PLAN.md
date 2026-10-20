@@ -68,7 +68,20 @@ F0–F4 are done: the merged engine (v3, executive and workshop modes) exists, b
 
 Commits land on a local branch and are pushed when the owner asks.
 
-**M1 status (20 Oct 2026): engineering done; practice-lead review and owner gate open.** `finops-iq-v3-audit.test.ts` puts the F5 invariants in CI (no dead questions; every rating, need band and headline value reachable; one answer moves only its own capability; Unknown never better than Not yet; N/A only from scope; value-base facts never move a rating; label truth, M10). Each invariant was checked to fail on a deliberately broken engine. The audit gained uniform baselines, so it no longer reports weakest-link depth questions as dead: the only dead questions are HY-01 to HY-07, by design (D4). Observation for the lead: in workshop mode LEV-04 needs the measured VB-03 share and is not quantified without it, while executive mode maps OP-06 (DESIGN.md 10.4–10.5). New reference scenarios from published case studies and the review are with `finops-cost-lead`.
+**M1 status (20 Oct 2026): done; gate ready for the owner.** The practice-lead review ([design/F5-review.md](design/F5-review.md)) asked for changes; the owner accepted every recommended default (D-A to D-H) on 20 Oct 2026 and they are built (engine 3.4.0, value model 1.2.0):
+- **D-A (H1):** unknown spend, consuming units and growth count as risk until confirmed, labelled assumed, with need confidence Low.
+- **D-B (H2):** a blank that leaves LEV-01 or LEV-04 open counts as material for the need modifier and the severity uplift (`value_unconfirmed`), naming the inputs.
+- **D-C:** the workshop keeps the measured VB-03 rule; the page offers OP-06's mapping as a pre-fill to confirm; a derived share reads Low confidence (L2).
+- **D-D (H4, M1):** SC-04's Kubernetes and GPU rows are "of which" spend: out of the tier, and LEV-04's exclusion in executive mode.
+- **D-E (M5):** LEV-10 and VB-07 for GPU scope only.
+- **D-F:** RS6 to RS9 in CI with approved goldens; every golden change explained in [design/F5-scenario-diffs.md](design/F5-scenario-diffs.md).
+- **D-G, D-H:** no cap lift; OP-06's cross-capability effect kept and tested.
+- **H3:** threshold register, claims CLM-FIN-120/122/127/163/172 and the value rule text now say what the code does, with a test.
+- **New CI invariants:** unknown scope facts and blank answers or value bases never make the need, tier or a severity milder (after the value step); other capabilities' findings move only through a value step; need before value moves at most 12.5 per answer; value monotonicity per lever and band-to-exact; growth never moves value; executive value confidence at most Medium; no scope confirmation names a question outside the mode. The D-A and D-B invariants were checked to fail on a deliberately broken engine.
+- **Audit:** fact pseudo-questions (SC-04, SC-05, SC-07, VB-01, VB-02) show fact-driven sensitivity; OP-06's share of the executive value range is noted in DESIGN 10.2.
+- **Phase 3 decisions:** FinOps IQ 3, 4 and 5 and FinOps Value Case 2 and 6 are closed for v3 (`docs/phase3/SCORING_AUDIT.md`); the v2 page keeps the old behaviour until M8.
+
+*Earlier note, kept for the record:* `finops-iq-v3-audit.test.ts` puts the F5 invariants in CI (no dead questions; every rating, need band and headline value reachable; one answer moves only its own capability; Unknown never better than Not yet; N/A only from scope; value-base facts never move a rating; label truth, M10). Each invariant was checked to fail on a deliberately broken engine. The audit gained uniform baselines, so it no longer reports weakest-link depth questions as dead: the only dead questions are HY-01 to HY-07, by design (D4). Observation for the lead: in workshop mode LEV-04 needs the measured VB-03 share and is not quantified without it, while executive mode maps OP-06 (DESIGN.md 10.4–10.5). New reference scenarios from published case studies and the review are with `finops-cost-lead`.
 
 **M2 status (20 Oct 2026): built; owner gate open.**
 - `POST /api/evaluate/finops-iq/v3` scores both modes (the same Lambda; the plain route keeps v2 for the current page until M8).

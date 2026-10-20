@@ -55,6 +55,11 @@ const facts = (over: Partial<Facts['footprint']> = {}, extra: Partial<Facts> = {
   spend: { byScope: { aws: { exact: 20_000_000 } }, growth12m: 10 },
   ...extra
 });
+/** Value bases and an internal rate that quantify LEV-01 and LEV-04 at almost no value: nothing left open (D-B). */
+const VALUED: Partial<Facts> = {
+  base: { computeShare: { exact: 0.6 }, steadyStateShare: { exact: 0.6 }, eligibleCoverage: { exact: 0.9 }, nonProdShare: { exact: 0.1 }, nonProdScheduledShare: { exact: 0.9 } },
+  cost: { internalRate: { exact: 12_000 } }
+};
 const run = (f: Facts, answers: Record<string, any> = {}, mode: Mode = 'workshop', more: Partial<FinOpsIqV3Input> = {}) =>
   evaluateFinOpsIqV3({ mode, facts: f, answers, ...more });
 const cap = (r: FinOpsIqV3Result, id: string) => r.capabilities.find(c => c.capability === id)!;
@@ -407,11 +412,15 @@ describe('FinOps IQ v3 scope triggers (DESIGN.md 4.4 and 7.5)', () => {
     expect(off.findings.find(f => f.type === 'capability_gap' && f.capability === 'USAGE_OPTIMIZATION')!.leverIds).not.toContain('LEV-07');
   });
 
-  it('AI APIs or AI platforms switch on OP-12, QV-07, VB-07 and LEV-10', () => {
+  it('AI APIs or AI platforms switch on OP-12 and QV-07; only GPU platforms switch on VB-07 and LEV-10 (F5 review M5, D-E)', () => {
     for (const scope of ['ai_api', 'ai_platform_gpu']) {
       const on = run(facts({ scopes: ['public_cloud', scope] }), { 'OP-04': 'not_yet' });
-      for (const id of ['OP-12', 'QV-07', 'VB-07']) expect(asked(on, id), `${scope} ${id}`).toBe(true);
-      expect(on.findings.find(f => f.type === 'capability_gap' && f.capability === 'USAGE_OPTIMIZATION')!.leverIds).toContain('LEV-10');
+      for (const id of ['OP-12', 'QV-07']) expect(asked(on, id), `${scope} ${id}`).toBe(true);
+      const gpu = scope === 'ai_platform_gpu';
+      expect(asked(on, 'VB-07'), `${scope} VB-07`).toBe(gpu);
+      expect(on.findings.find(f => f.type === 'capability_gap' && f.capability === 'USAGE_OPTIMIZATION')!.leverIds.includes('LEV-10'), `${scope} LEV-10`).toBe(gpu);
+      // An API-only estate is never asked to confirm GPU figures it does not have.
+      if (!gpu) expect(on.findings.filter(f => /GPU/.test(f.id)).map(f => f.id)).toEqual([]);
     }
     const off = run(facts());
     for (const id of ['OP-12', 'QV-07', 'VB-07']) expect(asked(off, id), id).toBe(false);
@@ -491,11 +500,31 @@ describe('FinOps IQ v3 scope triggers (DESIGN.md 4.4 and 7.5)', () => {
 
   it('places the tier by points, converts spend only with the tier FX rate, and honours a consultant override', () => {
     expect(complexityTier(facts()).tier).toBe(1); // USD 20M -> 2 points
-    const big = facts({ publicCloudProviders: ['aws', 'azure', 'gcp'] }, { org: { currency: 'EUR', tierFxRate: 1.1, consumingUnits: '20+' } });
-    expect(complexityTier(big)).toMatchObject({ tier: 2, points: 2 + 2 + 1 }); // EUR 20M = USD 22M, three providers, 20+ units
+    const big = facts({ publicCloudProviders: ['aws', 'azure', 'gcp'] }, { org: { currency: 'EUR', tierFxRate: 1.1, consumingUnits: '20+' },
+      spend: { byScope: { aws: { exact: 10_000_000 }, azure: { exact: 6_000_000 }, gcp: { exact: 4_000_000 } }, growth12m: 10 } });
+    expect(complexityTier(big)).toMatchObject({ tier: 2, points: 2 + 2 + 1, assumed: [] }); // EUR 20M = USD 22M, three providers, 20+ units
     expect(complexityTier({ ...big, org: { currency: 'EUR' } }).trace[0]).toMatch(/not converted/);
     const over = complexityTier({ ...facts(), consultant: { complexityTierOverride: 3, overrideReason: 'Regulated, many entities' } });
     expect(over).toMatchObject({ tier: 3, override: true });
+  });
+
+  it('counts unknown spend, consuming units and growth as risk until confirmed, and labels them assumed (F5 review H1, D-A)', () => {
+    // A provider without a spend figure, or a row marked unknown, counts at the top spend band.
+    const missingRow = complexityTier(facts({ publicCloudProviders: ['aws', 'azure'] }));
+    expect(missingRow).toMatchObject({ assumed: ['spend'] });
+    expect(missingRow.trace[0]).toMatch(/spend unknown \(azure\) -> 3, assumed until confirmed/);
+    const unknownRow = complexityTier(facts({}, { spend: { byScope: { aws: { unknown: true } }, growth12m: 10 } }));
+    expect(unknownRow.points).toBe(3);
+    const units = complexityTier(facts({}, { org: { currency: 'USD', consumingUnits: 'unknown' } }));
+    expect(units).toMatchObject({ points: 2 + 1, assumed: ['consumingUnits'] });
+    // Kubernetes and GPU rows are inside the provider bills, so they are not added (F5 review M1).
+    const ofWhich = complexityTier(facts({ scopes: ['public_cloud', 'kubernetes'] }, { spend: { byScope: { aws: { exact: 9_000_000 }, kubernetes: { exact: 3_000_000 } }, growth12m: 10 } }));
+    expect(ofWhich.trace[0]).toMatch(/spend about USD 9.0M -> 1/);
+    // Unknown growth counts as 20% or more in the need verdict, labelled assumed; confidence is Low.
+    const runAll = Object.fromEntries(MATURITY.filter(q => B.executiveSet.includes(q.id)).map(q => [q.id, 'run']));
+    const v = run(facts({}, { spend: { byScope: { aws: { exact: 20_000_000 } }, growth12m: 'unknown' }, ...VALUED }), runAll, 'executive').needVerdict!;
+    expect(v.modifiers).toContainEqual({ id: 'growth_ge_20pct', points: 10, assumed: true });
+    expect(v.confidence).toBe('Low');
   });
 
   it('a consultant target override is used and recorded; with no default target the finding is Low', () => {
@@ -543,10 +572,16 @@ describe('FinOps IQ v3 findings (DESIGN.md 5)', () => {
     expect(di).toMatchObject({ gap: 3, severity: 'Critical', severityTrace: ['gap_3'], targetDuration: { months: 3 }, ownerRole: 'Head of Cloud / CCoE' });
     const kpi = r.findings.find(f => f.type === 'capability_gap' && f.capability === 'KPIS_BENCHMARKING')!;
     expect(kpi).toMatchObject({ gap: 2, severity: 'High', severityTrace: ['gap_2'], targetDuration: { months: 6 } });
-    const t2 = run(facts({}, { org: { currency: 'USD', consumingUnits: '5-19' }, spend: { byScope: { aws: { exact: 20_000_000 } } } }), { 'UN-04': 'crawl', 'UN-05': 'crawl', 'OP-04': 'crawl', 'OP-05': 'crawl', 'OP-06': 'crawl', 'OP-07': 'crawl', 'OP-09': 'crawl' });
+    const t2Facts = facts({}, { org: { currency: 'USD', consumingUnits: '5-19' }, spend: { byScope: { aws: { exact: 20_000_000 } } }, ...VALUED });
+    const t2Answers = { 'UN-04': 'crawl', 'UN-05': 'crawl', 'OP-04': 'crawl', 'OP-05': 'crawl', 'OP-06': 'crawl', 'OP-07': 'crawl', 'OP-09': 'crawl' };
+    const t2 = run(t2Facts, t2Answers);
     expect(t2.tier.tier).toBe(2);
     expect(t2.findings.find(f => f.type === 'capability_gap' && f.capability === 'ALLOCATION')).toMatchObject({ severity: 'High', severityTrace: ['gap_1', 'foundation_uplift'] });
     expect(t2.findings.find(f => f.type === 'capability_gap' && f.capability === 'USAGE_OPTIMIZATION')).toMatchObject({ severity: 'Medium', severityTrace: ['gap_1'] });
+    // A blank measured scheduled share (VB-03) leaves LEV-04 open in the workshop: High until confirmed (D-B).
+    const { nonProdScheduledShare: _, ...openBase } = t2Facts.base as any;
+    const open = run({ ...t2Facts, base: openBase }, t2Answers);
+    expect(open.findings.find(f => f.type === 'capability_gap' && f.capability === 'USAGE_OPTIMIZATION')).toMatchObject({ severity: 'High', severityTrace: ['gap_1', 'value_unconfirmed'] });
   });
 
   it('orders waves by dependency: Data Ingestion before Anomaly Management, Allocation before Unit Economics', () => {
@@ -680,17 +715,34 @@ describe('FinOps IQ v3 need verdict (DESIGN.md 9, executive mode)', () => {
     const blank = exec({});
     expect(blank.baseIndex).toBeGreaterThan(exec(allExec('run')).baseIndex);
     expect(blank.confidence).toBe('Low');
-    expect(exec(allExec('run'))).toMatchObject({ baseIndex: 0, needIndex: 0, band: 'lightweight', confidence: 'Medium' });
+    expect(exec(allExec('run'), facts({}, VALUED))).toMatchObject({ baseIndex: 0, needIndex: 0, band: 'lightweight', confidence: 'Medium' });
+  });
+
+  it('a blank value input that leaves LEV-01 or LEV-04 open counts as material until confirmed (F5 review H2, D-B)', () => {
+    const open = exec(allExec('run'));
+    expect(open.modifiers).toEqual([{ id: 'expected_value_ge_5pct_of_P', points: 10, assumed: true }]);
+    expect(open.confidence).toBe('Low');
+    expect(open.blindSpots.map(b => b.fact)).toEqual(expect.arrayContaining(['base.computeShare', 'base.nonProdShare']));
+    // Unknown on OP-06 leaves LEV-04 open in executive mode, so the verdict is never milder than at the lowest answer.
+    const unknown = run(facts({}, VALUED), { ...allExec('crawl'), 'OP-06': 'unknown' }, 'executive');
+    const lowest = run(facts({}, VALUED), { ...allExec('crawl'), 'OP-06': 'not_yet' }, 'executive');
+    expect(unknown.needVerdict!.needIndex).toBeGreaterThanOrEqual(lowest.needVerdict!.needIndex);
+    const uo = unknown.findings.find(f => f.type === 'capability_gap' && f.capability === 'USAGE_OPTIMIZATION')!;
+    expect(uo).toMatchObject({ severity: 'High', valueBasis: { fields: [], unconfirmedInputs: ['base.nonProdScheduledShare'] } });
+    expect(uo.severityTrace).toContain('value_unconfirmed');
+    // With no internal cost rate, the levers are quantified but no money is shown: also open until confirmed.
+    const noRate = exec(allExec('run'), facts({}, { base: VALUED.base }));
+    expect(noRate.modifiers).toContainEqual({ id: 'expected_value_ge_5pct_of_P', points: 10, assumed: true });
   });
 
   it('adds the urgency modifiers: tier, growth of 20% or more, AI in scope (executive mode: no migration share, review L6)', () => {
-    const f = facts({ scopes: ['public_cloud', 'ai_api'] }, { org: { currency: 'USD', consumingUnits: '20+' }, spend: { byScope: { aws: { exact: 60_000_000 } }, growth12m: 25 } });
+    const f = facts({ scopes: ['public_cloud', 'ai_api'] }, { org: { currency: 'USD', consumingUnits: '20+' }, spend: { byScope: { aws: { exact: 60_000_000 } }, growth12m: 25 }, ...VALUED });
     const v = exec(allExec('run'), f);
     expect(v.modifiers.map(m => m.id)).toEqual(['tier_2', 'growth_ge_20pct', 'ai_in_scope']);
     expect(v.needIndex).toBe(30);
-    // No value bases given, so the value modifier cannot be applied (F4).
-    expect(v.pending).toEqual([{ id: 'expected_value_ge_5pct_of_P', reason: 'no value figure shown (no lever quantified, or no internal cost rate)' }]);
-    const moving = exec(allExec('run'), facts({ migration: { remainingShare24m: { exact: 0.3 } } }));
+    // The value bases are given and the value is below 5% of P, so the value modifier does not apply.
+    expect(v.pending).toEqual([]);
+    const moving = exec(allExec('run'), facts({ migration: { remainingShare24m: { exact: 0.3 } } }, VALUED));
     expect(moving.modifiers.map(m => m.id)).toEqual([]);
   });
 
@@ -857,8 +909,14 @@ const RECORDED = {
   severity: { RS5: { 'F-FIN-LEV-01': 'High' } } as Record<string, Record<string, string>>,
   /** V3: top-finding order changes with V3 (RS5). V4 (RS2) is resolved by the F4 review's Spot base (H2): RS2's order matches again. */
   orderDiffers: ['RS5'],
-  /** D4: Q14 rewording adopted in F2 (THR-FIN-14, CLM-FIN-127) after the scenarios were written. */
-  bandLabel: { from: 'Establish foundations now', to: 'Targeted improvements needed now' }
+  /** D4: Q14 rewording adopted in F2 (THR-FIN-14, CLM-FIN-127) after the scenarios were written; the foundations band only (F5 X2). */
+  bandLabel: { from: 'Establish foundations now', to: 'Targeted improvements needed now' },
+  /** F5 D-A: RS1's data centre spend is unknown, so it counts at the top spend band until confirmed (+1 point, still Tier 2). */
+  tierPoints: { RS1: 5 } as Record<string, number>,
+  /** F5 D-A: an assumed input makes the need verdict's confidence Low. */
+  confidence: { RS1: 'Low' } as Record<string, string>,
+  /** F5 D-D: executive mode reads SC-04's Kubernetes row, so RS7 no longer asks to confirm cluster spend (H4). */
+  removed: { RS7: ['F-FIN-SCOPE-KUBERNETES_SPEND'] } as Record<string, string[]>
 };
 const SEV = ['Low', 'Medium', 'High', 'Critical'];
 
@@ -902,7 +960,7 @@ describe('FinOps IQ v3 reference scenarios against their written expectations', 
       const e = s.expected;
 
       it('tier, capability profile and headline match exactly', () => {
-        expect({ tier: r.tier.tier, points: r.tier.points }).toEqual({ tier: e.tier.tier, points: e.tier.points });
+        expect({ tier: r.tier.tier, points: r.tier.points }).toEqual({ tier: e.tier.tier, points: RECORDED.tierPoints[s.id] ?? e.tier.points });
         for (const [id, x] of Object.entries<any>(e.capabilityProfile)) {
           const c = cap(r, id);
           expect(c.rating, id).toBe(x.rating);
@@ -915,8 +973,10 @@ describe('FinOps IQ v3 reference scenarios against their written expectations', 
 
       it('findings match, apart from the recorded differences', () => {
         const absorbed = RECORDED.absorbed[s.id] ?? [];
+        const removed = RECORDED.removed[s.id] ?? [];
         for (const x of e.topFindings) {
           const f = r.findings.find(y => y.id === x.id);
+          if (removed.includes(x.id)) { expect(f, `${x.id} is no longer raised`).toBeUndefined(); continue; }
           if (absorbed.includes(x.id)) {
             // V1: the lever's value sits on its capability's gap finding.
             expect(f, `${x.id} sits on its capability's gap finding`).toBeUndefined();
@@ -936,12 +996,12 @@ describe('FinOps IQ v3 reference scenarios against their written expectations', 
           for (const o of x.offeringIds) expect(f!.offeringIds, `${x.id} offering ${o}`).toContain(o);
           for (const l of x.leverIds ?? []) expect(f!.leverIds, `${x.id} lever ${l}`).toContain(l);
         }
-        expect(r.findings.length).toBe(e.findingCount - absorbed.length + (RECORDED.extra[s.id] ?? 0));
+        expect(r.findings.length).toBe(e.findingCount - absorbed.length - removed.length + (RECORDED.extra[s.id] ?? 0));
       });
 
       it('top findings keep the written order where no recorded difference applies', () => {
         if (RECORDED.orderDiffers.includes(s.id)) return;
-        const expectedIds = e.topFindings.map((x: any) => x.id).filter((id: string) => !(RECORDED.absorbed[s.id] ?? []).includes(id));
+        const expectedIds = e.topFindings.map((x: any) => x.id).filter((id: string) => !(RECORDED.absorbed[s.id] ?? []).includes(id) && !(RECORDED.removed[s.id] ?? []).includes(id));
         expect(r.findings.slice(0, expectedIds.length).map(f => f.id)).toEqual(expectedIds);
       });
 
@@ -952,9 +1012,11 @@ describe('FinOps IQ v3 reference scenarios against their written expectations', 
         expect(v.pending).toEqual([]);
         expect(v.needIndex).toBeCloseTo(e.needVerdict.needIndex, 5);
         expect(v.band).toBe(e.needVerdict.band);
-        expect(e.needVerdict.bandLabel).toBe(RECORDED.bandLabel.from);
-        expect(v.bandLabel).toBe(RECORDED.bandLabel.to);
-        expect(v.confidence).toBe(e.needVerdict.confidence);
+        if (e.needVerdict.band === 'foundations') {
+          expect(e.needVerdict.bandLabel).toBe(RECORDED.bandLabel.from);
+          expect(v.bandLabel).toBe(RECORDED.bandLabel.to);
+        } else expect(v.bandLabel).toBe(e.needVerdict.bandLabel);
+        expect(v.confidence).toBe(RECORDED.confidence[s.id] ?? e.needVerdict.confidence);
       });
       else it('has no need verdict (workshop)', () => expect(r.needVerdict).toBeNull());
     });

@@ -21,7 +21,7 @@ import thresholds from '../registry/thresholds.json' with { type: 'json' };
 import valueRules from './value-rules.json' with { type: 'json' };
 import type { AnswerLevel, Facts, Mode } from './evaluate';
 
-export const VALUE_MODEL_VERSION = '1.1.0';
+export const VALUE_MODEL_VERSION = '1.2.0';
 
 /* --------------------------------- Constants -------------------------------- */
 
@@ -136,6 +136,8 @@ type InputKind = 'exact' | 'band' | 'evidence' | 'derived';
 interface In { path: string; low: number; mid: number; high: number; kind: InputKind }
 
 const CASES = ['conservative', 'expected', 'upper'] as const;
+/** SC-04 rows that sit inside the provider bills: never added to spend (F5 review M1, D-D). */
+export const OF_WHICH_ROWS = ['kubernetes', 'ai_platform_gpu'];
 type Case = typeof CASES[number];
 
 function amount(a: unknown, path: string, kind: 'client' | 'evidence' = 'client'): In | undefined {
@@ -203,7 +205,19 @@ function prepare(ctx: ValueModelContext, schedLevel?: AnswerLevel): Prepared {
   if (ctx.mode === 'executive') {
     const v = level !== undefined && level !== 'unknown' ? C.op06[level] : undefined;
     if (v !== undefined) inputs.set('base.nonProdScheduledShare', { path: 'base.nonProdScheduledShare', low: v, mid: v, high: v, kind: 'derived' });
-  } else put(amount(base.nonProdScheduledShare, 'base.nonProdScheduledShare'));
+  } else {
+    // A workshop share derived from OP-06 is an answer mapping, so it reads as derived (Low confidence) in any mode.
+    const s = amount(base.nonProdScheduledShare, 'base.nonProdScheduledShare');
+    if (s) inputs.set(s.path, base.nonProdScheduledShareSource === 'derived_from_OP-06' ? { ...s, kind: 'derived' } : s);
+  }
+  // Executive mode has no VB-06 or VB-07: SC-04's Kubernetes and GPU rows are "of which" spend inside the provider
+  // bills, used only to keep cluster and GPU compute out of LEV-04's base, at Low confidence (F5 review H4, D-D).
+  if (ctx.mode === 'executive') {
+    for (const row of OF_WHICH_ROWS) {
+      const a = amount(f.spend.byScope[row], `spend.byScope.${row}`);
+      if (a) inputs.set(a.path, { ...a, kind: 'derived' });
+    }
+  }
   const ai: any = f.evidence?.aiGpu ?? {};
   for (const k of ['gpuSpend', 'gpuUtilisation', 'idleEndpointSpend']) put(amount(ai[k], `evidence.aiGpu.${k}`, 'evidence'));
   const saas: any = f.evidence?.saasLicence;
@@ -261,11 +275,14 @@ function prepare(ctx: ValueModelContext, schedLevel?: AnswerLevel): Prepared {
     };
     switch (id) {
       case 'LEV-01': need.push('base.computeShare', 'base.steadyStateShare', 'base.eligibleCoverage', 'base.nonProdShare'); optional.push('base.nonProdScheduledShare', 'base.interruptionTolerantShare', 'base.spotShare'); break;
-      case 'LEV-04':
+      case 'LEV-04': {
         need.push('base.computeShare', 'base.nonProdShare', 'base.nonProdScheduledShare');
-        if (k8sInScope) need.push('base.kubernetesSpend');
-        if (gpuOutsideK8s) need.push('evidence.aiGpu.gpuSpend');
+        // Executive mode reads the SC-04 rows unless the measured figures were given anyway.
+        const exec = ctx.mode === 'executive';
+        if (k8sInScope) need.push(exec && !inputs.has('base.kubernetesSpend') ? 'spend.byScope.kubernetes' : 'base.kubernetesSpend');
+        if (gpuOutsideK8s) need.push(exec && !inputs.has('evidence.aiGpu.gpuSpend') ? 'spend.byScope.ai_platform_gpu' : 'evidence.aiGpu.gpuSpend');
         break;
+      }
       case 'LEV-02': need.push('base.computeShare'); break;
       case 'LEV-06': need.push('base.computeShare', 'base.interruptionTolerantShare', 'base.spotShare', 'base.eligibleCoverage'); break;
       case 'LEV-07': need.push('base.kubernetesSpend', 'base.kubernetesRequestUtilisation'); break;
@@ -311,8 +328,8 @@ function compute(pp: Prepared, point: Record<string, number>, factor: number): C
   const Pc = P * cs;
   const set = (id: string, base: number, upper: number, rates: LeverRaw['rates']) => levers.set(id, { base, upper, value: upper * factor, rates });
   const val = (id: string) => levers.get(id)?.value ?? 0;
-  const k8s = pp.k8sInScope ? v('base.kubernetesSpend') ?? 0 : 0;
-  const gpu = pp.gpuOutsideK8s ? v('evidence.aiGpu.gpuSpend') ?? 0 : 0;
+  const k8s = pp.k8sInScope ? v('base.kubernetesSpend') ?? v('spend.byScope.kubernetes') ?? 0 : 0;
+  const gpu = pp.gpuOutsideK8s ? v('evidence.aiGpu.gpuSpend') ?? v('spend.byScope.ai_platform_gpu') ?? 0 : 0;
   const np = v('base.nonProdShare') ?? 0;
   const sched = v('base.nonProdScheduledShare');
   const target = C.targetUtilisation;
@@ -409,6 +426,32 @@ function solve(pp: Prepared) {
   return { conservative: conservative!, expected, upper: upper!, searched: searched.map(i => i.path), fixed };
 }
 
+/** Blank-driven reasons a material lever is not quantified; scope, mode and unsourced rates are not blanks. */
+const BLANK_REASONS = new Set(['missing_input', 'public_cloud_spend_unknown']);
+/**
+ * Inputs a quantified material lever reads only to reduce its own value: LEV-01 removes the unscheduled
+ * non-production share (n_u) at its most conservative when the scheduled share is blank, so its value is open too.
+ */
+const OPEN_THROUGH: Record<string, string[]> = { 'LEV-01': ['base.nonProdScheduledShare'] };
+
+function unconfirmedLevers(pp: Prepared, moneyShown: boolean): Scoring['unconfirmed'] {
+  const material: string[] = VR.scopeConfirmation.materialLevers;
+  const levers: string[] = [];
+  const inputs = new Set<string>();
+  for (const id of material) {
+    const st = pp.status.get(id);
+    if (st && !st.ok && BLANK_REASONS.has(st.reason)) { levers.push(id); st.blockedBy.forEach(b => inputs.add(b)); }
+  }
+  for (const id of material) {
+    const st = pp.status.get(id);
+    if (!st?.ok || levers.includes(id)) continue;
+    const through = (OPEN_THROUGH[id] ?? []).filter(path => inputs.has(path));
+    if (through.length) levers.push(id);
+    else if (!moneyShown && !pp.inputs.has('cost.internalRate')) { levers.push(id); inputs.add('cost.internalRate'); }
+  }
+  return levers.length ? { levers, inputs: [...inputs] } : null;
+}
+
 /* ---------------------------------- Output ---------------------------------- */
 
 export interface LeverCase {
@@ -479,6 +522,12 @@ export interface Scoring {
   /** The need modifier: reached on the shown expected public cloud % of P; null when no value is shown. */
   need: { reached: boolean; field: string; thresholdField: string } | null;
   upliftThresholdField: string;
+  /**
+   * Material levers (LEV-01, LEV-04) whose value is not determined because an input is blank or unknown, or because
+   * no internal cost rate was given. Scoring counts them as material until confirmed, so a blank never flatters the
+   * need verdict or a severity (F5 review H2, D-B). No money figure is implied: the inputs are named instead.
+   */
+  unconfirmed: { levers: string[]; inputs: string[] } | null;
 }
 export interface ValueModelOutput {
   value: ValueBlock;
@@ -498,13 +547,14 @@ export interface ValueModelOutput {
 }
 
 const fill = (template: string, values: Record<string, string | number>) => template.replace(/\{(\w+)\}/g, (_, k) => String(values[k] ?? ''));
+const inputKey = (path: string) => (VR.inputs[path] ? path : path.startsWith('spend.byScope.') ? 'spend.byScope' : path);
 const inputLabel = (path: string) => {
-  const key = path.startsWith('spend.byScope.') ? 'spend.byScope' : path;
+  const key = inputKey(path);
   const d = VR.inputs[key];
   return d ? (key === 'spend.byScope' ? `annual spend with ${path.slice('spend.byScope.'.length).toUpperCase()}` : d.label) : path;
 };
 export const inputInfo = (path: string): { id: string; label: string; question: string; executiveQuestion?: string } => {
-  const key = path.startsWith('spend.byScope.') ? 'spend.byScope' : path;
+  const key = inputKey(path);
   const d = VR.inputs[key] ?? { id: path.replace(/\W+/g, '_').toUpperCase(), question: '' };
   return { ...d, id: key === 'spend.byScope' ? `${d.id}_${path.slice('spend.byScope.'.length).toUpperCase()}` : d.id, label: inputLabel(path) };
 };
@@ -753,7 +803,8 @@ export function buildValueModel(ctx: ValueModelContext): ValueModelOutput {
   const scoring: Scoring = {
     byLever,
     need: totals ? { reached: totals.expected.pctOfP.value >= C.needShare * 100, field: totals.expected.pctOfP.field, thresholdField: `${V}.scoring.needModifierShareOfP` } : null,
-    upliftThresholdField: `${V}.scoring.severityUpliftShareOfP`
+    upliftThresholdField: `${V}.scoring.severityUpliftShareOfP`,
+    unconfirmed: unconfirmedLevers(pp, moneyShown)
   };
 
   // DECISION-02 at the midpoints: steady usage above coverage exists, but n_u and t_u remove all of it for a provider.

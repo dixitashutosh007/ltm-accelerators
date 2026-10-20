@@ -123,6 +123,8 @@ Each item has a default already in the code. A lead can confirm the default or c
 | 4 | FinOps IQ | Could clients overuse "Not applicable" to pass gates? | N/A passes its gate. Counts are shown |
 | 5 | FinOps IQ | Value at stake from the client's own T6 waste range, otherwise the stage table | T6 first |
 | 6 | FinOps Value Case | Growth cap of −25% to +60% a year. Confidence thresholds (70% answered, fewer than 3 blind spots) | As stated |
+**FinOps IQ and FinOps Value Case, 20 Oct 2026:** decisions 3, 4 and 5 (FinOps IQ) and 2 and 6 (FinOps Value Case) are closed for the merged FinOps IQ v3 by owner decisions D2 to D5 and F5 D-A and D-B, with the tests cited in `docs/cio-readiness/finops-iq/design/F5-review.md` section 5. The current v2 pages keep the defaults above until cutover (FinOps IQ plan, phase M8). Decision 1 for FinOps IQ is closed by the approved v3 goldens.
+
 | 7 | Strategy IQ | Tech-debt drag formula (section score to % of IT spend, 45% cap) and the brief's cut-off at 3.0 | Kept, labelled as a heuristic |
 | 8 | Strategy IQ | An empty section still shows 3.0 | Kept. Completeness is shown |
 | 9 | Cloud IQ | Hybrid when the tracks are within 2 points. Waste and leakage rates need a source | As stated |

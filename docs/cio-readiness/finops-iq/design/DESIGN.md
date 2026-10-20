@@ -258,7 +258,7 @@ Each base is an input for one or more levers (section 10). Each accepts exact, a
 | `base.nonProdShare` | Share of compute that is non-production | LEV-04 |
 | `base.nonProdScheduledShare` | Share of non-production compute already scheduled off outside working hours | LEV-04 |
 | `base.interruptionTolerantShare` | Share of compute that could tolerate interruption (batch, CI, stateless) | LEV-06 |
-| `base.spotShare` | Share of that tolerant compute already on Spot / preemptible | LEV-06 |
+| `base.spotShare` | Share of **all** compute already on Spot / preemptible. **Amended (F5 review M6, owner 20 Oct 2026):** was "share of that tolerant compute"; the formula and the field always read it as a share of all compute, so VB-03 now asks for that | LEV-06 |
 | `base.storageShare`, `base.coldDataShare` | Storage share of spend; share of stored data in a hot tier that is rarely accessed (from provider storage analytics) | LEV-05 |
 | `base.dataTransferShare` | Data transfer share of public cloud spend | LEV-08 |
 | `base.kubernetesSpend`, `base.kubernetesRequestUtilisation` | Cluster spend; measured average used / requested CPU and memory | LEV-07 |
@@ -276,12 +276,18 @@ The overlay's `technologyCategoryCapabilityTriggers` [S16] are reused. FinOps IQ
 | public_cloud (any provider) | LEV-01 to LEV-06, LEV-08; scope-conditional questions `OP-03`, `OP-05` to `OP-09` |
 | 2+ public cloud providers, or public cloud plus private cloud / data centre | `UN-03` (normalisation, FOCUS) becomes core |
 | kubernetes | LEV-07; `UN-09` (container allocation), `OP-11` (autoscaling and requests) |
-| ai_api or ai_platform_gpu | LEV-10; `OP-12` (AI and GPU cost management), `QV-07` (AI unit cost) |
+| ai_api or ai_platform_gpu | `OP-12` (AI and GPU cost management), `QV-07` (AI unit cost). **Amended (F5 review M5, D-E, owner 20 Oct 2026):** LEV-10 and `VB-07` are switched on by `ai_platform_gpu` only; an API-only estate has no GPU base, and token spend has no v1 lever |
 | saas or licensing | LEV-09; `LICENSING_SAAS` in scope; `OP-13`, `OP-14` |
 | private_cloud, data_centre, colocation | `SUSTAINABILITY` in scope (as overlay); `UN-02` asks for chargeback data from virtualisation and CMDB; playbook entries for on-premises |
 | `base.eligibleCoverage` unknown or < 50%, or `OP-01` answered `crawl` or worse | `OP-02` (commitment portfolio lifecycle), answer-triggered follow-up |
 | `QV-05` (unit costs known) answered `crawl` or better. **Amended (F3 review M2, approved by the owner on 15 Oct 2026):** was `UN-04` ≥ `walk`, which let a better Allocation answer lower Unit Economics. The dependency on Allocation stays in the roadmap (5.4) | `QV-06` (unit economics in decisions), answer-triggered follow-up |
 | T6 (`HY-01`) answered | Hypothesis panel beside the model's range (section 10.8) |
+
+**Unknown scope facts and "of which" rows (F5 review H1, H4 and M1; owner decisions D-A and D-D, 20 Oct 2026).**
+- *Unknown counts as risk.* A selected provider without a spend figure, or any SC-04 row marked "don't know", counts at the top spend band (3 points); unknown consuming units count +1; unknown growth counts as 20% or more in the need verdict. Each is labelled "assumed until confirmed" (`tier.assumed`, `modifiers[].assumed`), listed as a blind spot, and makes the verdict's confidence Low. The consultant tier override stays.
+- *Kubernetes and GPU rows are inside the provider bills.* SC-04's `kubernetes` and `ai_platform_gpu` rows are never added to the tier spend. In executive mode (no VB-06 or VB-07) they are read as the cluster and GPU spend that LEV-04 excludes, at Low confidence; when they are missing, the confirmation points to SC-04.
+- *Blank value inputs (D-B).* When a blank or unknown input, or a missing internal cost rate, leaves LEV-01 or LEV-04 open, the need modifier and the severity uplift count it as material until confirmed (trace `value_unconfirmed`), naming the inputs, never a money figure. LEV-01 is also open when the non-production scheduled share is blank, because its value then removes all non-production at the most conservative overlap.
+- *Workshop LEV-04 (D-C).* The workshop keeps needing the measured scheduled share (VB-03). When OP-06 is answered, the page offers its ASM-FIN-052 mapping as a pre-fill the consultant must confirm; an unconfirmed pre-fill counts as blank. A confirmed derived share reads Low confidence (`nonProdScheduledShareSource: "derived_from_OP-06"`).
 
 **N/A only from scope (D5):** a question whose scope is not in `footprint.scopes` is not asked and its capability is `not_in_scope` (if all its questions are out of scope). No answer option says "not applicable".
 
@@ -650,9 +656,9 @@ Cost IQ options are five-point semantic scales; F3 defines the option-to-level s
 |---|---|
 | Scope | **Amended (F3 review, departure 4, approved by the owner on 15 Oct 2026):** executive mode only. A workshop result carries no verdict |
 | Need index (0–100) | Mean over the executive capabilities that have a target of (gap ÷ 3) × 100, with Unknown counted as gap = target index and **blank counted as the maximum gap** (so a blank never lowers need) but lowering confidence. **Amended (F3 review, approved by the owner on 15 Oct 2026):** a capability with *any* asked question left blank counts as the maximum gap |
-| Urgency modifiers | +10 at Tier 2 and +20 at Tier 3 (gaps cost more at scale); +10 if the expected gross run-rate value is ≥ 5% of `P` (no money shown in the verdict; applied from F4); +10 if `spend.growth12m` ≥ 20%; +10 if SC-03 shows AI scope; capped at 100. **Amended (F3 review, approved by the owner on 15 Oct 2026):** (a) the "≥ 25% of the estate still to move" alternative is not used, because the verdict is executive-only and SC-06 is a workshop question; (b) the +5 points for HY-03 "recurring" and HY-05 "uncomfortable" are **retired**: hypothesis answers are never scored (D4). HY-03 stays in conflict probe CP-3 and in the narrative. A "don't know" on growth adds no points but is listed as a blind spot |
+| Urgency modifiers | +10 at Tier 2 and +20 at Tier 3 (gaps cost more at scale); +10 if the expected gross run-rate value is ≥ 5% of `P` (no money shown in the verdict; applied from F4), **or (F5 D-B, owner 20 Oct 2026) when a blank or unknown input, or a missing internal cost rate, leaves LEV-01 or LEV-04 open: counted as material until confirmed, labelled assumed, the inputs listed as blind spots**; +10 if `spend.growth12m` ≥ 20% **or unknown (F5 D-A: counted until confirmed, labelled assumed)**; +10 if SC-03 shows AI scope; capped at 100. **Amended (F3 review, approved by the owner on 15 Oct 2026):** (a) the "≥ 25% of the estate still to move" alternative is not used, because the verdict is executive-only and SC-06 is a workshop question; (b) the +5 points for HY-03 "recurring" and HY-05 "uncomfortable" are **retired**: hypothesis answers are never scored (D4). HY-03 stays in conflict probe CP-3 and in the narrative. ~~A "don't know" on growth adds no points but is listed as a blind spot~~ (superseded by F5 D-A) |
 | Verdict bands | 0–25 "Lightweight practices sufficient at current scale"; 26–50 "Establish foundations now"; 51–75 "Material exposure: act this year"; 76–100 "Act now". Wording as FinOps Value Case today, minus any "recoverable" or savings language |
-| Confidence | High / Medium / Low from answer coverage and Unknowns (10.7) |
+| Confidence | Medium when every asked question is answered with a level and no input is assumed; **Low** when any answer is blank or Unknown, or (F5 D-A, D-B) any scope or value input is counted as risk; never High in executive mode |
 | Basis line | "Based on N of 18 questions answered; LTM's targets for a Tier X estate; not a FinOps Foundation assessment". **Amended (F3 review L2, approved by the owner on 15 Oct 2026):** it states how many questions were answered |
 
 The verdict never contains a money figure. The value range sits beside it with its own basis (section 10).
@@ -676,6 +682,8 @@ The verdict never contains a money figure. The value range sits beside it with i
 ### 10.2 Lever library
 
 `P` = in-scope public cloud spend (sum of SC-04 provider rows), annual, client currency. Shares are of `P` unless stated. All amounts annual run-rate, gross, before 10.6.
+
+**Executive value sensitivity (F5 review M4, noted 20 Oct 2026).** Executive mode quantifies LEV-01 and LEV-04 only, and OP-06 sets LEV-04's scheduled share through ASM-FIN-052, so OP-06 carries about 0.9 of the executive value range in the automated audit (`docs/phase3/AUTOMATED_AUDIT.md`). This is by design; F7's sensitivity table shows it.
 
 | Lever | Type | Addressable base | Maximum rate (upper) | Source of maximum | Quantified in |
 |---|---|---|---|---|---|

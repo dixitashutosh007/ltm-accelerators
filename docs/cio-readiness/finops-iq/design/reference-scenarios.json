@@ -2768,6 +2768,2226 @@
         "Conservative net year 1 is negative (minus GBP 8.7k): small estate, one-off effort counted in full. Shown as is."
       ],
       "plausibilityCheck": "The expected case (12.7% of the band midpoint) sits below Flexera's 29% average self-estimated waste, as expected for an estate where only two levers can be quantified from executive answers."
+    },
+    {
+      "id": "RS6",
+      "name": "German cooperative central bank, Google Cloud-led with a large data centre estate and GKE (workshop mode)",
+      "illustrative": true,
+      "summary": "Shape from a Google Cloud customer story by a German bank: Cloud Run-first for new applications, GKE for a nightly risk calculation that scales to tens of thousands of CPUs, and a legacy on-premises estate. Tests a Google Cloud-led workshop (resource-based CUD 55%, Spot 91%), a hybrid estate (UN-03 core, UN-02, Sustainability in scope), a Tier 3 bank, and LEV-01 positive on Google Cloud. All figures and answers are scenario assumptions; no outcome figure from the story is used.",
+      "mode": "workshop",
+      "expectationsWritten": {
+        "writtenAt": "2026-10-20T04:02:45Z",
+        "beforeEngineRun": true,
+        "method": "Written by the practice lead in F5 (M1) by applying DESIGN.md sections 3, 5, 9 and 10, the F3/F4 amendments recorded there, and the F2 registries, with a throwaway calculation sheet that does not call the engine. The engine was run on this scenario only after this record was frozen; F5-scenario-diffs.md compares the two."
+      },
+      "sources": [
+        {
+          "kind": "provider_customer_story",
+          "citation": "Google Cloud Blog, \"How DZ BANK uses a Cloud Run-first approach to unlock big savings\" (T. Harpe, DZ BANK, and X. Xin, Google Cloud; 7 Mar 2024)",
+          "url": "https://cloud.google.com/blog/products/serverless/how-dz-bank-uses-a-cloud-run-first-approach-to-unlock-big-savings",
+          "status": "V",
+          "checked": "2026-10-20",
+          "usedFor": "Shape only: German bank (second largest by assets), Google Cloud as the public cloud, Cloud Run-first for new applications, GKE for a nightly risk and creditworthiness batch (up to 60,000 CPUs), internal workloads scaled to zero off-hours, a legacy on-premises estate of over 55,000 CPUs. The story's 90% infrastructure saving is a self-reported outcome for specific workloads and is NOT used as an input, benchmark or prediction."
+        },
+        {
+          "kind": "provider_documentation",
+          "citation": "Google Cloud, Committed use discounts overview: \"up to 70% for memory-optimized machine series and ... up to 55% for all other machine series\"",
+          "url": "https://docs.cloud.google.com/compute/docs/instances/committed-use-discounts-overview",
+          "status": "V",
+          "checked": "2026-10-20",
+          "usedFor": "LEV-01 maximum for Google Cloud when the instrument is not stated (55%, CLM-FIN-065)."
+        },
+        {
+          "kind": "provider_documentation",
+          "citation": "Google Cloud Spot VMs pricing (up to 91%), claims register CLM-FIN-067",
+          "url": "https://cloud.google.com/spot-vms/pricing",
+          "status": "P",
+          "checked": "2026-10-20",
+          "usedFor": "LEV-06 maximum for Google Cloud. Verified in F2 (CLM-FIN-067); the page did not load in this session, so status P here."
+        }
+      ],
+      "inputs": {
+        "facts": {
+          "org": {
+            "sector": "banking",
+            "markets": [
+              "eu"
+            ],
+            "consumingUnits": "20+",
+            "currency": "EUR",
+            "tierFxRate": 1.08
+          },
+          "footprint": {
+            "infrastructureMix": "balanced_hybrid",
+            "publicCloudProviders": [
+              "gcp"
+            ],
+            "scopes": [
+              "public_cloud",
+              "data_centre",
+              "kubernetes"
+            ]
+          },
+          "spend": {
+            "byScope": {
+              "gcp": {
+                "exact": 24000000
+              },
+              "data_centre": {
+                "band": [
+                  30000000,
+                  50000000
+                ]
+              }
+            },
+            "growth12m": 15
+          },
+          "base": {
+            "computeShare": {
+              "exact": 0.55
+            },
+            "steadyStateShare": {
+              "exact": 0.6
+            },
+            "eligibleCoverage": {
+              "exact": 0.2
+            },
+            "nonProdShare": {
+              "exact": 0.25
+            },
+            "nonProdScheduledShare": {
+              "exact": 0.6
+            },
+            "interruptionTolerantShare": {
+              "exact": 0.25
+            },
+            "spotShare": {
+              "exact": 0.05
+            },
+            "kubernetesSpend": {
+              "exact": 6000000
+            },
+            "kubernetesRequestUtilisation": {
+              "exact": 0.5
+            }
+          },
+          "evidence": {
+            "providerRecommendations": [
+              {
+                "type": "rightsizing",
+                "provider": "gcp",
+                "tool": "Google Cloud Recommender",
+                "deduplicated": false,
+                "annualEstimate": 600000,
+                "exportDate": "2026-09-20"
+              },
+              {
+                "type": "idle",
+                "provider": "gcp",
+                "tool": "Google Cloud Recommender",
+                "deduplicated": false,
+                "annualEstimate": 250000,
+                "exportDate": "2026-09-20"
+              }
+            ]
+          },
+          "cost": {
+            "internalRate": {
+              "exact": 13000
+            },
+            "tooling": {
+              "exact": 150000
+            }
+          }
+        },
+        "answers": {
+          "UN-01": "W",
+          "UN-02": "C",
+          "UN-03": "C",
+          "UN-04": "W",
+          "UN-05": "W",
+          "UN-09": "C",
+          "UN-07": "W",
+          "UN-08": "W",
+          "UN-10": "W",
+          "UN-11": "W",
+          "QV-01": "W",
+          "QV-02": "W",
+          "QV-03": "R",
+          "QV-04": "W",
+          "QV-05": "C",
+          "QV-06": "C",
+          "QV-08": "C",
+          "OP-01": "C",
+          "OP-02": "C",
+          "OP-03": "W",
+          "OP-08": "W",
+          "OP-04": "W",
+          "OP-05": "W",
+          "OP-06": "R",
+          "OP-07": "W",
+          "OP-09": "C",
+          "OP-11": "W",
+          "OP-10": "R",
+          "OP-15": "N",
+          "MP-01": "W",
+          "MP-02": "W",
+          "MP-03": "C",
+          "MP-04": "W",
+          "MP-05": "W",
+          "MP-06": "W",
+          "MP-07": "R",
+          "MP-08": "C",
+          "MP-09": "W",
+          "MP-10": "W",
+          "MP-11": "W",
+          "MP-12": "W",
+          "MP-13": "C"
+        },
+        "answersNote": "UN-03 core (public cloud plus data centre). UN-02 and OP-15 asked (data centre in scope). QV-06 asked (QV-05 Crawl). OP-02 asked (coverage 20%). Licensing & SaaS not in scope. HY-01 answered '5-9%'. OP-06 Run with a measured scheduled share of 60% (scale to zero off-hours is the default for internal workloads; batch and some environments still run 24/7).",
+        "fromSource": [
+          "German bank; Google Cloud as the only public cloud",
+          "Cloud Run (serverless) and GKE in use; nightly risk batch on GKE",
+          "Internal workloads scaled to zero off-hours (OP-06 Run)",
+          "Legacy on-premises estate (data centre in FinOps scope)"
+        ],
+        "scenarioAssumptions": [
+          "All spend, shares, evidence and maturity answers",
+          "Google Cloud spend EUR 24M (exact); data centre EUR 30-50M (band)",
+          "Recommender export 24 days old, not deduplicated",
+          "Internal rate EUR 13,000 per FTE-month; tooling EUR 150k",
+          "Tier FX 1.08 USD per EUR, for tiering only",
+          "Commitment instrument not stated (55% maximum)"
+        ]
+      },
+      "expected": {
+        "tier": {
+          "tier": 3,
+          "points": 6,
+          "trace": [
+            "spend EUR 24M (Google Cloud) + EUR 30-50M (data centre) = USD 58-78M at 1.08 -> 3",
+            "1 provider -> 0",
+            "Kubernetes 45% of compute -> +1",
+            "data centre in scope -> +1",
+            "20+ consuming units -> +1"
+          ]
+        },
+        "capabilityProfile": {
+          "DATA_INGESTION": {
+            "rating": "crawl",
+            "target": "run",
+            "gap": 2,
+            "atOrAboveTarget": false
+          },
+          "ALLOCATION": {
+            "rating": "crawl",
+            "target": "run",
+            "gap": 2,
+            "atOrAboveTarget": false,
+            "loweredByDepth": true
+          },
+          "REPORTING_ANALYTICS": {
+            "rating": "walk",
+            "target": "run",
+            "gap": 1,
+            "atOrAboveTarget": false
+          },
+          "ANOMALY_MANAGEMENT": {
+            "rating": "walk",
+            "target": "run",
+            "gap": 1,
+            "atOrAboveTarget": false
+          },
+          "PLANNING_ESTIMATING": {
+            "rating": "walk",
+            "target": "walk",
+            "gap": 0,
+            "atOrAboveTarget": true
+          },
+          "FORECASTING": {
+            "rating": "walk",
+            "target": "run",
+            "gap": 1,
+            "atOrAboveTarget": false
+          },
+          "BUDGETING": {
+            "rating": "run",
+            "target": "walk",
+            "gap": -1,
+            "atOrAboveTarget": true
+          },
+          "KPIS_BENCHMARKING": {
+            "rating": "crawl",
+            "target": "walk",
+            "gap": 1,
+            "atOrAboveTarget": false
+          },
+          "UNIT_ECONOMICS": {
+            "rating": "crawl",
+            "target": "walk",
+            "gap": 1,
+            "atOrAboveTarget": false
+          },
+          "ARCHITECTING_WORKLOAD_PLACEMENT": {
+            "rating": "run",
+            "target": "walk",
+            "gap": -1,
+            "atOrAboveTarget": true
+          },
+          "USAGE_OPTIMIZATION": {
+            "rating": "crawl",
+            "target": "run",
+            "gap": 2,
+            "atOrAboveTarget": false,
+            "loweredByDepth": true
+          },
+          "RATE_OPTIMIZATION": {
+            "rating": "crawl",
+            "target": "run",
+            "gap": 2,
+            "atOrAboveTarget": false
+          },
+          "LICENSING_SAAS": {
+            "rating": "not_in_scope"
+          },
+          "SUSTAINABILITY": {
+            "rating": "not_yet",
+            "target": "crawl",
+            "gap": 1,
+            "atOrAboveTarget": false
+          },
+          "EXECUTIVE_STRATEGY_ALIGNMENT": {
+            "rating": "walk",
+            "target": "walk",
+            "gap": 0,
+            "atOrAboveTarget": true
+          },
+          "FINOPS_PRACTICE_OPERATIONS": {
+            "rating": "crawl",
+            "target": "run",
+            "gap": 2,
+            "atOrAboveTarget": false
+          },
+          "GOVERNANCE_POLICY_RISK": {
+            "rating": "walk",
+            "target": "run",
+            "gap": 1,
+            "atOrAboveTarget": false
+          },
+          "FINOPS_EDUCATION_ENABLEMENT": {
+            "rating": "crawl",
+            "target": "walk",
+            "gap": 1,
+            "atOrAboveTarget": false
+          },
+          "INVOICING_CHARGEBACK": {
+            "rating": "walk",
+            "target": "walk",
+            "gap": 0,
+            "atOrAboveTarget": true
+          },
+          "FINOPS_ASSESSMENT": {
+            "rating": "walk",
+            "target": "walk",
+            "gap": 0,
+            "atOrAboveTarget": true
+          },
+          "AUTOMATION_TOOLS_SERVICES": {
+            "rating": "walk",
+            "target": "walk",
+            "gap": 0,
+            "atOrAboveTarget": true
+          },
+          "INTERSECTING_DISCIPLINES": {
+            "rating": "crawl",
+            "target": "walk",
+            "gap": 1,
+            "atOrAboveTarget": false
+          }
+        },
+        "headline": {
+          "atOrAboveTarget": 7,
+          "inScope": 21,
+          "assessed": 21,
+          "statement": "7 of 21 in-scope capabilities with a target are at or above LTM's default target for a Tier 3 estate"
+        },
+        "topFindings": [
+          {
+            "id": "F-FIN-DATA_INGESTION",
+            "type": "capability_gap",
+            "capability": "DATA_INGESTION",
+            "current": "crawl",
+            "target": "run",
+            "gap": 2,
+            "severity": "Critical",
+            "severityTrace": [
+              "gap_2",
+              "foundation_uplift"
+            ],
+            "ownerRole": "Head of Cloud / CCoE",
+            "wave": 1,
+            "offeringIds": [
+              "OFF.FIN.TOOLING",
+              "OFF.FIN.ASSESS"
+            ]
+          },
+          {
+            "id": "F-FIN-ALLOCATION",
+            "type": "capability_gap",
+            "capability": "ALLOCATION",
+            "current": "crawl",
+            "target": "run",
+            "gap": 2,
+            "severity": "Critical",
+            "severityTrace": [
+              "gap_2",
+              "foundation_uplift"
+            ],
+            "ownerRole": "FinOps lead",
+            "wave": 1,
+            "offeringIds": [
+              "OFF.FIN.TOOLING",
+              "OFF.FIN.OPMODEL"
+            ]
+          },
+          {
+            "id": "F-FIN-FINOPS_PRACTICE_OPERATIONS",
+            "type": "capability_gap",
+            "capability": "FINOPS_PRACTICE_OPERATIONS",
+            "current": "crawl",
+            "target": "run",
+            "gap": 2,
+            "severity": "Critical",
+            "severityTrace": [
+              "gap_2",
+              "foundation_uplift"
+            ],
+            "ownerRole": "CIO",
+            "wave": 1,
+            "offeringIds": [
+              "OFF.FIN.OPMODEL",
+              "OFF.FIN.MANAGED"
+            ]
+          },
+          {
+            "id": "F-FIN-USAGE_OPTIMIZATION",
+            "type": "capability_gap",
+            "capability": "USAGE_OPTIMIZATION",
+            "current": "crawl",
+            "target": "run",
+            "gap": 2,
+            "severity": "High",
+            "severityTrace": [
+              "gap_2"
+            ],
+            "ownerRole": "Engineering leads",
+            "wave": 2,
+            "offeringIds": [
+              "OFF.FIN.SPRINT"
+            ],
+            "leverIds": [
+              "LEV-02",
+              "LEV-03",
+              "LEV-04",
+              "LEV-07"
+            ]
+          },
+          {
+            "id": "F-FIN-RATE_OPTIMIZATION",
+            "type": "capability_gap",
+            "capability": "RATE_OPTIMIZATION",
+            "current": "crawl",
+            "target": "run",
+            "gap": 2,
+            "severity": "High",
+            "severityTrace": [
+              "gap_2"
+            ],
+            "ownerRole": "FinOps lead",
+            "wave": 2,
+            "offeringIds": [
+              "OFF.FIN.SPRINT",
+              "OFF.FIN.MANAGED"
+            ],
+            "leverIds": [
+              "LEV-01",
+              "LEV-06"
+            ]
+          },
+          {
+            "id": "F-FIN-ANOMALY_MANAGEMENT",
+            "type": "capability_gap",
+            "capability": "ANOMALY_MANAGEMENT",
+            "current": "walk",
+            "target": "run",
+            "gap": 1,
+            "severity": "Medium",
+            "severityTrace": [
+              "gap_1"
+            ],
+            "ownerRole": "Platform / SRE lead",
+            "wave": 1,
+            "offeringIds": [
+              "OFF.FIN.TOOLING"
+            ]
+          }
+        ],
+        "findingCount": 14,
+        "value": {
+          "conservative": {
+            "levers": {
+              "LEV-01": 243387,
+              "LEV-02": 147853,
+              "LEV-03": 62500,
+              "LEV-04": 126360,
+              "LEV-06": 460223,
+              "LEV-07": 346153
+            },
+            "grossRunRate": 1386478,
+            "grossYear1": 349882,
+            "pctOfP": 5.8,
+            "P": 24000000.0,
+            "oneOffCost": 546000,
+            "annualRunCost": 259200,
+            "netYear1": -455318,
+            "netRunRate": 1127278,
+            "net3Year": 1799238
+          },
+          "expected": {
+            "levers": {
+              "LEV-01": 465514,
+              "LEV-02": 291415,
+              "LEV-03": 125000,
+              "LEV-04": 252720,
+              "LEV-06": 880244,
+              "LEV-07": 692307
+            },
+            "grossRunRate": 2707202,
+            "grossYear1": 683191,
+            "pctOfP": 11.3,
+            "P": 24000000.0,
+            "oneOffCost": 546000,
+            "annualRunCost": 259200,
+            "netYear1": -122008,
+            "netRunRate": 2448002,
+            "net3Year": 4773996
+          },
+          "upper": {
+            "levers": {
+              "LEV-01": 846978,
+              "LEV-02": 565661,
+              "LEV-03": 250000,
+              "LEV-04": 505440,
+              "LEV-06": 1601559,
+              "LEV-07": 1384615
+            },
+            "grossRunRate": 5154255,
+            "grossYear1": 1300816,
+            "pctOfP": 21.5,
+            "P": 24000000.0,
+            "oneOffCost": 546000,
+            "annualRunCost": 259200,
+            "netYear1": 495616,
+            "netRunRate": 4895055,
+            "net3Year": 10285727
+          },
+          "globalCap": {
+            "cap": 6960000,
+            "cloudExpectedBeforeCap": 2707202,
+            "binding": false,
+            "upperCap": 6960000,
+            "upperBeforeCap": 5154255,
+            "upperBinding": false
+          },
+          "currency": "EUR",
+          "notQuantified": [
+            {
+              "lever": "LEV-05",
+              "reason": "rate_unsourced_for_provider (storage price ratio); no storage evidence"
+            },
+            {
+              "lever": "LEV-08",
+              "reason": "not_quantified_in_v1"
+            },
+            {
+              "lever": "Data centre",
+              "reason": "no v1 lever for private cloud or data centre spend; capabilities only"
+            }
+          ],
+          "confidence": "Overall Medium: LEV-02 and LEV-03 rest on a Google Cloud Recommender export 24 days old; LEV-01, LEV-04, LEV-06 and LEV-07, which carry most of the expected value, rest on exact client inputs",
+          "toolingProvided": true,
+          "externalSupportIncluded": false,
+          "label": "Indicative value range (conservative / expected / upper), net of estimated implementation cost: not a savings commitment; evidence validation required.",
+          "hypothesis": {
+            "band": "5-9%",
+            "amountRange": [
+              1200000,
+              2160000
+            ],
+            "explanations": [
+              "estimate_at_or_below_model",
+              "levers_not_quantified"
+            ]
+          }
+        },
+        "tolerance": "Ratings, gaps, severities and finding IDs must match exactly. Money figures within 1% (rounding) or the difference explained in F5-scenario-diffs.md."
+      },
+      "reasoning": [
+        "Tier 3 (6 points): spend above USD 50M with the data centre, Kubernetes material (EUR 6M of EUR 13.2M compute), data centre in scope, 20+ consuming units.",
+        "Data Ingestion: UN-01 Walk but UN-03 (normalisation across Google Cloud and the data centre) Crawl, so Crawl; target Run at Tier 3, gap 2 plus the foundation uplift gives Critical.",
+        "Allocation: core Walk (85-90% allocated, documented policy) lowered one level by Kubernetes allocation (UN-09 Crawl). Gap 2 plus uplift: Critical.",
+        "Practice Operations: a part-time named owner (MP-01 Walk) and monthly reviews, but optimisation work is not planned in backlogs (MP-03 Crawl): Crawl, Critical at Tier 3. No DECISION-01 (an owner exists).",
+        "Usage Optimization: rightsizing quarterly (Walk) and scale to zero (Run), but data transfer not reviewed (OP-09 Crawl) lowers it to Crawl; target Run, gap 2, High.",
+        "Rate Optimization: CUDs bought ad hoc by teams (OP-01 Crawl), coverage 20% of eligible usage; gap 2, High. LEV-01 is positive: steady 60% minus coverage 20%, unscheduled non-production 10% and Spot-movable 16% leaves 14% of compute, at the 55% resource-based CUD maximum.",
+        "Value: LEV-06 (nightly risk batch moved to Spot, 91%) and LEV-07 (request utilisation 50% against 65%) carry most of the expected EUR 2.71M (11.3% of Google Cloud spend). Recommender estimates are not deduplicated, so rightsizing is reduced pro rata by the idle and scheduling values (DESIGN 10.4 step 3).",
+        "No lever value is put on the data centre: v1 has no data-centre lever; the capability gaps carry it."
+      ],
+      "plausibilityCheck": "The source supplies the estate shape only. The expected value (11.3% of public cloud spend) sits well under the 29% Flexera 2026 self-estimate ceiling and far under the story's own 90% workload figure, which is not comparable (a re-platforming outcome on specific workloads, not an estate-wide optimisation range)."
+    },
+    {
+      "id": "RS7",
+      "name": "Brazilian steelmaker, multi-cloud (AWS, Azure, OCI) with OpenShift, SaaS and a data cloud platform, reporting in BRL (executive mode)",
+      "illustrative": true,
+      "summary": "Shape from a FinOps Foundation session by a Brazilian steel company that unified multi-cloud and SaaS allocation (OpenShift, Kafka, MongoDB, Databricks) and unit economics. Tests a non-USD, non-EU currency with a consultant FX rate for tiering only; three providers including one without a sourced commitment maximum (OCI); Kubernetes in an executive assessment; band corners with the upper case capped; and a need verdict in the \"material\" band. Providers and every figure are scenario assumptions.",
+      "mode": "executive",
+      "expectationsWritten": {
+        "writtenAt": "2026-10-20T04:02:45Z",
+        "beforeEngineRun": true,
+        "method": "Written by the practice lead in F5 (M1) by applying DESIGN.md sections 3, 5, 9 and 10, the F3/F4 amendments recorded there, and the F2 registries, with a throwaway calculation sheet that does not call the engine. The engine was run on this scenario only after this record was frozen; F5-scenario-diffs.md compares the two."
+      },
+      "sources": [
+        {
+          "kind": "framework_body_session",
+          "citation": "FinOps Foundation, \"How Gerdau FinOps Unified Multi-Cloud and SaaS Allocation and Unit Economics at Scale\" (session listing on the FinOps Scopes topic page, 24 Aug 2026; speaker from Gerdau)",
+          "url": "https://www.finops.org/topic/scopes/",
+          "status": "P",
+          "checked": "2026-10-20",
+          "usedFor": "Shape only: a 125-year-old Brazilian steel company; multi-cloud and SaaS allocation; a unified allocation model covering OpenShift, Kafka, MongoDB and Databricks; unit economics. Read from the Foundation's listing text; the session video (https://www.finops.org/assets/how-gerdau-finops-unified-multi-cloud-and-saas-allocation-and-unit-economics-at-scale/, redirects to YouTube) was not watched, so the providers are not known (status P)."
+        },
+        {
+          "kind": "provider_documentation",
+          "citation": "AWS Savings Plans FAQs: Compute Savings Plans \"up to 66%\", EC2 Instance Savings Plans \"up to 72%\"",
+          "url": "https://aws.amazon.com/savingsplans/faq/",
+          "status": "V",
+          "checked": "2026-10-20",
+          "usedFor": "LEV-01 maximum for AWS when the instrument is not stated (66%, CLM-FIN-060, CLM-FIN-176)."
+        },
+        {
+          "kind": "provider_documentation",
+          "citation": "Azure reservations and savings plan for compute maxima, claims register CLM-FIN-062 and CLM-FIN-063",
+          "url": "https://azure.microsoft.com/en-us/pricing/offers/reservations/",
+          "status": "P",
+          "checked": "2026-10-20",
+          "usedFor": "LEV-01 maximum for Azure when the instrument is not stated (65%); verified in F2, not re-read in this session."
+        }
+      ],
+      "inputs": {
+        "facts": {
+          "org": {
+            "sector": "manufacturing",
+            "markets": [
+              "us",
+              "other"
+            ],
+            "consumingUnits": "20+",
+            "currency": "BRL",
+            "tierFxRate": 0.18
+          },
+          "footprint": {
+            "publicCloudProviders": [
+              "aws",
+              "azure",
+              "oci"
+            ],
+            "scopes": [
+              "public_cloud",
+              "kubernetes",
+              "saas",
+              "data_cloud_platform"
+            ]
+          },
+          "spend": {
+            "byScope": {
+              "aws": {
+                "band": [
+                  40000000,
+                  60000000
+                ]
+              },
+              "azure": {
+                "band": [
+                  20000000,
+                  40000000
+                ]
+              },
+              "oci": {
+                "exact": 5000000
+              },
+              "kubernetes": {
+                "band": [
+                  15000000,
+                  25000000
+                ]
+              },
+              "saas": {
+                "band": [
+                  30000000,
+                  50000000
+                ]
+              },
+              "data_cloud_platform": {
+                "band": [
+                  10000000,
+                  20000000
+                ]
+              }
+            },
+            "growth12m": 10
+          },
+          "base": {
+            "computeShare": {
+              "band": [
+                0.5,
+                0.74
+              ]
+            },
+            "steadyStateShare": {
+              "band": [
+                0.75,
+                1.0
+              ]
+            },
+            "nonProdShare": {
+              "band": [
+                0.0,
+                0.25
+              ]
+            },
+            "eligibleCoverage": {
+              "band": [
+                0.25,
+                0.49
+              ]
+            },
+            "nonProdScheduledShare": {
+              "exact": 0.5
+            },
+            "nonProdScheduledShareSource": "derived_from_OP-06"
+          },
+          "cost": {
+            "internalRate": {
+              "exact": 45000
+            }
+          }
+        },
+        "answers": {
+          "UN-04": "W",
+          "UN-10": "C",
+          "UN-11": "W",
+          "QV-01": "C",
+          "QV-05": "W",
+          "OP-01": "W",
+          "OP-04": "C",
+          "OP-05": "C",
+          "OP-06": "W",
+          "MP-01": "R",
+          "MP-04": "W"
+        },
+        "answersNote": "Executive set. SC-04 has one row per selected scope, so the Kubernetes (OpenShift) cluster spend is given as a SC-04 row; VB-06 (base.kubernetesSpend) is a workshop question and is not asked. HY-01 answered '10-19%'. Variant worth knowing: the same client in workshop mode would answer VB-06 and VB-03 and get LEV-04 quantified.",
+        "fromSource": [
+          "Brazilian manufacturer (steel)",
+          "Multi-cloud with OpenShift, Kafka, MongoDB and Databricks in the allocation model",
+          "SaaS in FinOps scope",
+          "A FinOps practice with allocation and unit economics (MP-01 Run, UN-04 Walk, QV-05 Walk)"
+        ],
+        "scenarioAssumptions": [
+          "Providers AWS, Azure and OCI (the session listing does not name them)",
+          "All spend bands and shares",
+          "All other answers",
+          "Internal rate BRL 45,000 per FTE-month set by the consultant at setup",
+          "Tier FX 0.18 USD per BRL, consultant-confirmed, for tiering only (UNSOURCED as a market rate)",
+          "Commitment instruments not stated"
+        ]
+      },
+      "expected": {
+        "tier": {
+          "tier": 3,
+          "points": 7,
+          "trace": [
+            "spend BRL 105-175M without the Kubernetes row (BRL 120-200M with it) = USD 19-36M at 0.18 -> 2",
+            "3 providers -> +2",
+            "Kubernetes in scope, no cluster spend input, so material -> +1",
+            "SaaS in scope -> +1",
+            "20+ consuming units -> +1"
+          ]
+        },
+        "capabilityProfile": {
+          "DATA_INGESTION": {
+            "rating": "not_assessed",
+            "note": "assessed in the workshop"
+          },
+          "ALLOCATION": {
+            "rating": "walk",
+            "target": "run",
+            "gap": 1,
+            "atOrAboveTarget": false
+          },
+          "REPORTING_ANALYTICS": {
+            "rating": "not_assessed",
+            "note": "assessed in the workshop"
+          },
+          "ANOMALY_MANAGEMENT": {
+            "rating": "crawl",
+            "target": "run",
+            "gap": 2,
+            "atOrAboveTarget": false
+          },
+          "PLANNING_ESTIMATING": {
+            "rating": "not_assessed",
+            "note": "assessed in the workshop"
+          },
+          "FORECASTING": {
+            "rating": "crawl",
+            "target": "run",
+            "gap": 2,
+            "atOrAboveTarget": false
+          },
+          "BUDGETING": {
+            "rating": "not_assessed",
+            "note": "assessed in the workshop"
+          },
+          "KPIS_BENCHMARKING": {
+            "rating": "not_assessed",
+            "note": "assessed in the workshop"
+          },
+          "UNIT_ECONOMICS": {
+            "rating": "walk",
+            "target": "walk",
+            "gap": 0,
+            "atOrAboveTarget": true
+          },
+          "ARCHITECTING_WORKLOAD_PLACEMENT": {
+            "rating": "not_assessed",
+            "note": "assessed in the workshop"
+          },
+          "USAGE_OPTIMIZATION": {
+            "rating": "crawl",
+            "target": "run",
+            "gap": 2,
+            "atOrAboveTarget": false
+          },
+          "RATE_OPTIMIZATION": {
+            "rating": "walk",
+            "target": "run",
+            "gap": 1,
+            "atOrAboveTarget": false
+          },
+          "LICENSING_SAAS": {
+            "rating": "not_assessed",
+            "note": "assessed in the workshop"
+          },
+          "SUSTAINABILITY": {
+            "rating": "not_in_scope"
+          },
+          "EXECUTIVE_STRATEGY_ALIGNMENT": {
+            "rating": "walk",
+            "target": "walk",
+            "gap": 0,
+            "atOrAboveTarget": true
+          },
+          "FINOPS_PRACTICE_OPERATIONS": {
+            "rating": "run",
+            "target": "run",
+            "gap": 0,
+            "atOrAboveTarget": true
+          },
+          "GOVERNANCE_POLICY_RISK": {
+            "rating": "not_assessed",
+            "note": "assessed in the workshop"
+          },
+          "FINOPS_EDUCATION_ENABLEMENT": {
+            "rating": "not_assessed",
+            "note": "assessed in the workshop"
+          },
+          "INVOICING_CHARGEBACK": {
+            "rating": "not_assessed",
+            "note": "assessed in the workshop"
+          },
+          "FINOPS_ASSESSMENT": {
+            "rating": "not_assessed",
+            "note": "assessed in the workshop"
+          },
+          "AUTOMATION_TOOLS_SERVICES": {
+            "rating": "not_assessed",
+            "note": "assessed in the workshop"
+          },
+          "INTERSECTING_DISCIPLINES": {
+            "rating": "not_assessed",
+            "note": "assessed in the workshop"
+          }
+        },
+        "headline": {
+          "atOrAboveTarget": 3,
+          "inScope": 8,
+          "assessed": 8,
+          "statement": "3 of 8 in-scope capabilities with a target are at or above LTM's default target for a Tier 3 estate (executive mode: 8 capabilities assessed; the rest in the workshop)"
+        },
+        "topFindings": [
+          {
+            "id": "F-FIN-ANOMALY_MANAGEMENT",
+            "type": "capability_gap",
+            "capability": "ANOMALY_MANAGEMENT",
+            "current": "crawl",
+            "target": "run",
+            "gap": 2,
+            "severity": "High",
+            "severityTrace": [
+              "gap_2"
+            ],
+            "ownerRole": "Platform / SRE lead",
+            "wave": 1,
+            "offeringIds": [
+              "OFF.FIN.TOOLING"
+            ]
+          },
+          {
+            "id": "F-FIN-ALLOCATION",
+            "type": "capability_gap",
+            "capability": "ALLOCATION",
+            "current": "walk",
+            "target": "run",
+            "gap": 1,
+            "severity": "High",
+            "severityTrace": [
+              "gap_1",
+              "foundation_uplift"
+            ],
+            "ownerRole": "FinOps lead",
+            "wave": 1,
+            "offeringIds": [
+              "OFF.FIN.TOOLING",
+              "OFF.FIN.OPMODEL"
+            ]
+          },
+          {
+            "id": "F-FIN-FORECASTING",
+            "type": "capability_gap",
+            "capability": "FORECASTING",
+            "current": "crawl",
+            "target": "run",
+            "gap": 2,
+            "severity": "High",
+            "severityTrace": [
+              "gap_2"
+            ],
+            "ownerRole": "FP&A lead",
+            "wave": 2,
+            "offeringIds": [
+              "OFF.FIN.UNITECON"
+            ]
+          },
+          {
+            "id": "F-FIN-USAGE_OPTIMIZATION",
+            "type": "capability_gap",
+            "capability": "USAGE_OPTIMIZATION",
+            "current": "crawl",
+            "target": "run",
+            "gap": 2,
+            "severity": "High",
+            "severityTrace": [
+              "gap_2"
+            ],
+            "ownerRole": "Engineering leads",
+            "wave": 2,
+            "offeringIds": [
+              "OFF.FIN.SPRINT"
+            ]
+          },
+          {
+            "id": "F-FIN-RATE_OPTIMIZATION",
+            "type": "capability_gap",
+            "capability": "RATE_OPTIMIZATION",
+            "current": "walk",
+            "target": "run",
+            "gap": 1,
+            "severity": "High",
+            "severityTrace": [
+              "gap_1",
+              "value_uplift"
+            ],
+            "ownerRole": "FinOps lead",
+            "wave": 2,
+            "offeringIds": [
+              "OFF.FIN.SPRINT"
+            ],
+            "leverIds": [
+              "LEV-01"
+            ]
+          },
+          {
+            "id": "F-FIN-SCOPE-KUBERNETES_SPEND",
+            "type": "scope_confirmation",
+            "capability": "USAGE_OPTIMIZATION",
+            "severity": "Medium",
+            "ownerRole": "FinOps lead",
+            "wave": 1,
+            "offeringIds": [
+              "OFF.FIN.ASSESS"
+            ],
+            "note": "Cluster spend (VB-06) blocks LEV-04; it is a workshop question, so the executive report cannot quantify scheduling for this client"
+          }
+        ],
+        "findingCount": 6,
+        "needVerdict": {
+          "baseIndex": 33.3,
+          "modifiers": [
+            {
+              "id": "tier_3",
+              "points": 20
+            },
+            {
+              "id": "expected_value_ge_5pct_of_P",
+              "points": 10
+            }
+          ],
+          "needIndex": 63.3,
+          "band": "material",
+          "bandLabel": "Material exposure: act this year",
+          "confidence": "Medium"
+        },
+        "value": {
+          "conservative": {
+            "levers": {
+              "LEV-01": 664875
+            },
+            "grossRunRate": 664875,
+            "grossYear1": 249328,
+            "pctOfP": 1.0,
+            "P": 65000000.0,
+            "oneOffCost": 180000,
+            "annualRunCost": 36000,
+            "netYear1": 33328,
+            "netRunRate": 628875,
+            "net3Year": 1291078
+          },
+          "expected": {
+            "levers": {
+              "LEV-01": 7201687
+            },
+            "grossRunRate": 7201687,
+            "grossYear1": 2700632,
+            "pctOfP": 8.5,
+            "P": 85000000.0,
+            "oneOffCost": 180000,
+            "annualRunCost": 36000,
+            "netYear1": 2484633,
+            "netRunRate": 7165688,
+            "net3Year": 16816008
+          },
+          "upper": {
+            "levers": {
+              "LEV-01": 30449999
+            },
+            "grossRunRate": 30449999,
+            "grossYear1": 11418749,
+            "pctOfP": 29.0,
+            "P": 105000000.0,
+            "oneOffCost": 180000,
+            "annualRunCost": 36000,
+            "netYear1": 11202750,
+            "netRunRate": 30414000,
+            "net3Year": 72030750
+          },
+          "globalCap": {
+            "cap": 24650000,
+            "cloudExpectedBeforeCap": 7201687,
+            "binding": false,
+            "upperCap": 30450000,
+            "upperBeforeCap": 36408000,
+            "upperBinding": true
+          },
+          "currency": "BRL",
+          "notQuantified": [
+            {
+              "lever": "LEV-04",
+              "reason": "missing_input (base.kubernetesSpend: VB-06 is a workshop question; the SC-04 Kubernetes row is not used as the cluster spend)"
+            },
+            {
+              "lever": "LEV-01 (OCI)",
+              "reason": "rate_unsourced_for_provider (no published OCI commitment maximum in the register, CLM-FIN-069)"
+            },
+            {
+              "lever": "LEV-02, LEV-03, LEV-05, LEV-06, LEV-07, LEV-08, LEV-09",
+              "reason": "executive_mode"
+            },
+            {
+              "lever": "Data cloud platform (Databricks)",
+              "reason": "no v1 lever"
+            }
+          ],
+          "confidence": "Overall Low: every input is a band and the scheduled share is derived from OP-06 (ASM-FIN-052)",
+          "toolingProvided": false,
+          "externalSupportIncluded": false,
+          "label": "Indicative value range (conservative / expected / upper), net of estimated implementation cost: not a savings commitment; evidence validation required.",
+          "hypothesis": {
+            "band": "10-19%",
+            "amountRange": [
+              8500000,
+              16150000
+            ],
+            "explanations": [
+              "levers_not_quantified",
+              "expected_is_half_of_maximum"
+            ]
+          },
+          "bandCorners": {
+            "conservative": {
+              "aws": 40000000,
+              "azure": 20000000,
+              "cs": 0.5,
+              "S": 0.75,
+              "C": 0.49,
+              "nonProd": 0.25
+            },
+            "upper": {
+              "aws": 60000000,
+              "azure": 40000000,
+              "cs": 0.74,
+              "S": 1.0,
+              "C": 0.25,
+              "nonProd": 0.0
+            }
+          }
+        },
+        "tolerance": "Ratings, gaps, severities and finding IDs must match exactly. Money figures within 1% (rounding) or the difference explained in F5-scenario-diffs.md."
+      },
+      "reasoning": [
+        "Tier 3 (7 points) in BRL: the tier converts spend with the consultant rate only; no figure is converted (D9).",
+        "Allocation Walk against a Tier 3 target of Run: gap 1 plus the foundation uplift gives High.",
+        "Rate Optimization Walk (central portfolio reviewed quarterly), gap 1, raised to High by the value uplift: LEV-01 expected net run-rate BRL 7.17M is 8.4% of P at the midpoints (BRL 85M), above 2%.",
+        "Need index: mean gap 8 of 24 levels = 33.3; Tier 3 +20; expected public cloud value 8.5% of P >= 5% +10; growth 10% and no AI scope add nothing: 63.3, \"Material exposure: act this year\".",
+        "LEV-01 only: steady share 75-100% against coverage 25-49% with little unscheduled non-production. OCI spend counts in P (and so in the cap) but gets no LEV-01 value: no published OCI maximum is registered.",
+        "LEV-04 is not quantified although OP-06 is answered: with Kubernetes in scope, LEV-04 needs the cluster spend (DESIGN 10.15, \"no base, no number\"), which only VB-06 in the workshop asks. A scope-confirmation finding (Medium, LEV-04 material) asks for it.",
+        "Band corners: the upper corner (all spend and shares at their favourable ends) gives BRL 36.4M, capped at 29% of BRL 105M = BRL 30.45M. The conservative corner is unique (steady 75% minus coverage 49% minus unscheduled non-production 12.5% still leaves 13.5%): BRL 0.66M."
+      ],
+      "plausibilityCheck": "The spread from conservative (1.0% of P) to capped upper (29%) is the widest in the set and comes from seven banded executive inputs; the expected case (8.5% of P) is the figure a CFO should read. Under the Flexera 2026 29% self-estimate ceiling by construction."
+    },
+    {
+      "id": "RS8",
+      "name": "AI-native customer-service software company on AWS, GPU inference on SageMaker endpoints (workshop mode)",
+      "illustrative": true,
+      "summary": "Shape from an AWS case study of a generative-AI customer-service software company that moved GPU inference from Kubernetes to SageMaker multi-model and serverless endpoints, run by a three-person cloud team. Tests an AI estate where GPU spend is most of compute and sits outside Kubernetes; LEV-10 dominant; a small Tier 2 estate where effort can exceed a lever's value (M1 \"not worth pursuing\"); LEV-01 at zero with DECISION-02; the upper case capped. All figures and answers are scenario assumptions.",
+      "mode": "workshop",
+      "expectationsWritten": {
+        "writtenAt": "2026-10-20T04:02:45Z",
+        "beforeEngineRun": true,
+        "method": "Written by the practice lead in F5 (M1) by applying DESIGN.md sections 3, 5, 9 and 10, the F3/F4 amendments recorded there, and the F2 registries, with a throwaway calculation sheet that does not call the engine. The engine was run on this scenario only after this record was frozen; F5-scenario-diffs.md compares the two."
+      },
+      "sources": [
+        {
+          "kind": "provider_customer_story",
+          "citation": "AWS case study, \"Optimizing Costs and Performance for Generative AI Using Amazon SageMaker with Forethought Technologies\" (undated page)",
+          "url": "https://aws.amazon.com/solutions/case-studies/forethought-technologies-case-study/",
+          "status": "V",
+          "checked": "2026-10-20",
+          "usedFor": "Shape only: US generative-AI customer-service software start-up; over 80% of GPU inference on SageMaker multi-model and serverless endpoints; earlier inference on Amazon EKS; a three-person cloud team; many per-customer models. The story's \"up to 66%\" and \"up to 80%\" cost reductions are self-reported outcomes for specific endpoint changes and are NOT used as inputs, benchmarks or predictions."
+        },
+        {
+          "kind": "provider_documentation",
+          "citation": "AWS Savings Plans FAQs: Compute Savings Plans apply to EC2, Lambda and Fargate; \"SageMaker Savings Plans is only applicable to SageMaker ML Instance usage\"; SageMaker Savings Plans \"up to 64%\"",
+          "url": "https://aws.amazon.com/savingsplans/faq/",
+          "status": "V",
+          "checked": "2026-10-20",
+          "usedFor": "Context for review finding L-level: GPU spend on SageMaker is not eligible for Compute Savings Plans; LEV-01 is zero here, so it does not change the figures."
+        },
+        {
+          "kind": "provider_documentation",
+          "citation": "AWS, Machine Learning Savings Plans pricing: \"Amazon SageMaker Savings Plans ... reduce your costs by up to 64%\"",
+          "url": "https://aws.amazon.com/savingsplans/ml-pricing/",
+          "status": "V",
+          "checked": "2026-10-20",
+          "usedFor": "As above."
+        }
+      ],
+      "inputs": {
+        "facts": {
+          "org": {
+            "sector": "technology_saas",
+            "markets": [
+              "us"
+            ],
+            "consumingUnits": "2-4",
+            "currency": "USD",
+            "tierFxRate": 1.0
+          },
+          "footprint": {
+            "publicCloudProviders": [
+              "aws"
+            ],
+            "scopes": [
+              "public_cloud",
+              "ai_platform_gpu",
+              "ai_api",
+              "saas"
+            ],
+            "gpuInsideKubernetes": false
+          },
+          "spend": {
+            "byScope": {
+              "aws": {
+                "exact": 4200000
+              },
+              "ai_api": {
+                "exact": 600000
+              },
+              "saas": {
+                "band": [
+                  300000,
+                  600000
+                ]
+              }
+            },
+            "growth12m": 60
+          },
+          "base": {
+            "computeShare": {
+              "exact": 0.7
+            },
+            "steadyStateShare": {
+              "exact": 0.5
+            },
+            "eligibleCoverage": {
+              "exact": 0.3
+            },
+            "nonProdShare": {
+              "exact": 0.2
+            },
+            "nonProdScheduledShare": {
+              "exact": 0.1
+            },
+            "interruptionTolerantShare": {
+              "exact": 0.15
+            },
+            "spotShare": {
+              "exact": 0.0
+            }
+          },
+          "evidence": {
+            "providerRecommendations": [
+              {
+                "type": "rightsizing",
+                "provider": "aws",
+                "tool": "AWS Cost Optimization Hub",
+                "deduplicated": true,
+                "annualEstimate": 120000,
+                "exportDate": "2026-09-01"
+              },
+              {
+                "type": "idle",
+                "provider": "aws",
+                "tool": "AWS Cost Optimization Hub",
+                "deduplicated": true,
+                "annualEstimate": 80000,
+                "exportDate": "2026-09-01"
+              }
+            ],
+            "aiGpu": {
+              "gpuSpend": {
+                "exact": 2000000
+              },
+              "gpuUtilisation": {
+                "exact": 0.3
+              },
+              "idleEndpointSpend": {
+                "exact": 350000
+              },
+              "aiApiSpend": {
+                "exact": 600000
+              }
+            }
+          },
+          "cost": {
+            "internalRate": {
+              "exact": 15000
+            },
+            "tooling": {
+              "exact": 30000
+            }
+          }
+        },
+        "answers": {
+          "UN-01": "W",
+          "UN-04": "C",
+          "UN-05": "C",
+          "UN-07": "C",
+          "UN-08": "C",
+          "UN-10": "W",
+          "UN-11": "W",
+          "QV-01": "N",
+          "QV-02": "C",
+          "QV-03": "C",
+          "QV-04": "W",
+          "QV-05": "W",
+          "QV-06": "W",
+          "QV-07": "C",
+          "QV-08": "C",
+          "OP-01": "C",
+          "OP-02": "C",
+          "OP-03": "C",
+          "OP-08": "N",
+          "OP-04": "W",
+          "OP-05": "W",
+          "OP-06": "C",
+          "OP-07": "W",
+          "OP-09": "C",
+          "OP-12": "C",
+          "OP-10": "W",
+          "OP-13": "C",
+          "MP-01": "W",
+          "MP-02": "W",
+          "MP-03": "W",
+          "MP-04": "C",
+          "MP-05": "C",
+          "MP-06": "C",
+          "MP-07": "W",
+          "MP-08": "C",
+          "MP-09": "N",
+          "MP-10": "C",
+          "MP-11": "N",
+          "MP-12": "C",
+          "MP-13": "N"
+        },
+        "answersNote": "One provider, no Kubernetes (inference moved off EKS), so UN-03, UN-09, OP-11 and VB-06 are not asked. QV-06 asked (QV-05 Walk), OP-02 asked (OP-01 Crawl), OP-12 and QV-07 asked (AI scope), OP-13 asked (SaaS); OP-14 not asked (no licensing scope). HY-01 answered '10-19%'.",
+        "fromSource": [
+          "Generative-AI customer-service software company on AWS",
+          "GPU inference on SageMaker endpoints, outside Kubernetes",
+          "Small cloud team (MP-01 Walk: a named part-time owner)",
+          "Unit cost per customer is a goal (QV-05 Walk)"
+        ],
+        "scenarioAssumptions": [
+          "All spend, shares, evidence and answers",
+          "GPU and model-serving spend USD 2.0M of USD 2.94M compute; average GPU utilisation 30%; idle endpoints USD 350k",
+          "Third-party AI API spend USD 600k outside the AWS bill",
+          "Cost Optimization Hub export 43 days old, deduplicated",
+          "Internal rate USD 15,000; tooling USD 30k"
+        ]
+      },
+      "expected": {
+        "tier": {
+          "tier": 2,
+          "points": 3,
+          "trace": [
+            "spend USD 4.2M (AWS) + 0.6M (AI APIs) + 0.3-0.6M (SaaS) = USD 5.1-5.4M -> 1",
+            "1 provider -> 0",
+            "AI material (GPU spend) -> +1",
+            "SaaS in scope -> +1",
+            "2-4 consuming units -> 0"
+          ]
+        },
+        "capabilityProfile": {
+          "DATA_INGESTION": {
+            "rating": "walk",
+            "target": "walk",
+            "gap": 0,
+            "atOrAboveTarget": true
+          },
+          "ALLOCATION": {
+            "rating": "crawl",
+            "target": "walk",
+            "gap": 1,
+            "atOrAboveTarget": false
+          },
+          "REPORTING_ANALYTICS": {
+            "rating": "crawl",
+            "target": "walk",
+            "gap": 1,
+            "atOrAboveTarget": false
+          },
+          "ANOMALY_MANAGEMENT": {
+            "rating": "walk",
+            "target": "walk",
+            "gap": 0,
+            "atOrAboveTarget": true
+          },
+          "PLANNING_ESTIMATING": {
+            "rating": "walk",
+            "target": "walk",
+            "gap": 0,
+            "atOrAboveTarget": true
+          },
+          "FORECASTING": {
+            "rating": "not_yet",
+            "target": "walk",
+            "gap": 2,
+            "atOrAboveTarget": false
+          },
+          "BUDGETING": {
+            "rating": "crawl",
+            "target": "walk",
+            "gap": 1,
+            "atOrAboveTarget": false
+          },
+          "KPIS_BENCHMARKING": {
+            "rating": "crawl",
+            "target": "crawl",
+            "gap": 0,
+            "atOrAboveTarget": true
+          },
+          "UNIT_ECONOMICS": {
+            "rating": "crawl",
+            "target": "crawl",
+            "gap": 0,
+            "atOrAboveTarget": true,
+            "loweredByDepth": true
+          },
+          "ARCHITECTING_WORKLOAD_PLACEMENT": {
+            "rating": "walk",
+            "target": "walk",
+            "gap": 0,
+            "atOrAboveTarget": true
+          },
+          "USAGE_OPTIMIZATION": {
+            "rating": "crawl",
+            "target": "walk",
+            "gap": 1,
+            "atOrAboveTarget": false,
+            "loweredByDepth": true
+          },
+          "RATE_OPTIMIZATION": {
+            "rating": "not_yet",
+            "target": "walk",
+            "gap": 2,
+            "atOrAboveTarget": false,
+            "loweredByDepth": true
+          },
+          "LICENSING_SAAS": {
+            "rating": "crawl",
+            "target": "crawl",
+            "gap": 0,
+            "atOrAboveTarget": true
+          },
+          "SUSTAINABILITY": {
+            "rating": "not_in_scope"
+          },
+          "EXECUTIVE_STRATEGY_ALIGNMENT": {
+            "rating": "crawl",
+            "target": "walk",
+            "gap": 1,
+            "atOrAboveTarget": false
+          },
+          "FINOPS_PRACTICE_OPERATIONS": {
+            "rating": "walk",
+            "target": "walk",
+            "gap": 0,
+            "atOrAboveTarget": true
+          },
+          "GOVERNANCE_POLICY_RISK": {
+            "rating": "crawl",
+            "target": "walk",
+            "gap": 1,
+            "atOrAboveTarget": false
+          },
+          "FINOPS_EDUCATION_ENABLEMENT": {
+            "rating": "crawl",
+            "target": "crawl",
+            "gap": 0,
+            "atOrAboveTarget": true
+          },
+          "INVOICING_CHARGEBACK": {
+            "rating": "not_yet",
+            "target": "crawl",
+            "gap": 1,
+            "atOrAboveTarget": false
+          },
+          "FINOPS_ASSESSMENT": {
+            "rating": "not_yet",
+            "target": "crawl",
+            "gap": 1,
+            "atOrAboveTarget": false
+          },
+          "AUTOMATION_TOOLS_SERVICES": {
+            "rating": "crawl",
+            "target": "walk",
+            "gap": 1,
+            "atOrAboveTarget": false
+          },
+          "INTERSECTING_DISCIPLINES": {
+            "rating": "not_yet",
+            "target": "crawl",
+            "gap": 1,
+            "atOrAboveTarget": false
+          }
+        },
+        "headline": {
+          "atOrAboveTarget": 9,
+          "inScope": 21,
+          "assessed": 21,
+          "statement": "9 of 21 in-scope capabilities with a target are at or above LTM's default target for a Tier 2 estate"
+        },
+        "topFindings": [
+          {
+            "id": "F-FIN-ALLOCATION",
+            "type": "capability_gap",
+            "capability": "ALLOCATION",
+            "current": "crawl",
+            "target": "walk",
+            "gap": 1,
+            "severity": "High",
+            "severityTrace": [
+              "gap_1",
+              "foundation_uplift"
+            ],
+            "ownerRole": "FinOps lead",
+            "wave": 1,
+            "offeringIds": [
+              "OFF.FIN.TOOLING",
+              "OFF.FIN.OPMODEL"
+            ]
+          },
+          {
+            "id": "F-FIN-FORECASTING",
+            "type": "capability_gap",
+            "capability": "FORECASTING",
+            "current": "not_yet",
+            "target": "walk",
+            "gap": 2,
+            "severity": "High",
+            "severityTrace": [
+              "gap_2"
+            ],
+            "ownerRole": "FP&A lead",
+            "wave": 2,
+            "offeringIds": [
+              "OFF.FIN.UNITECON"
+            ]
+          },
+          {
+            "id": "F-FIN-RATE_OPTIMIZATION",
+            "type": "capability_gap",
+            "capability": "RATE_OPTIMIZATION",
+            "current": "not_yet",
+            "target": "walk",
+            "gap": 2,
+            "severity": "High",
+            "severityTrace": [
+              "gap_2"
+            ],
+            "ownerRole": "FinOps lead",
+            "wave": 2,
+            "offeringIds": [
+              "OFF.FIN.SPRINT"
+            ],
+            "leverIds": [
+              "LEV-01",
+              "LEV-06"
+            ]
+          },
+          {
+            "id": "F-FIN-USAGE_OPTIMIZATION",
+            "type": "capability_gap",
+            "capability": "USAGE_OPTIMIZATION",
+            "current": "crawl",
+            "target": "walk",
+            "gap": 1,
+            "severity": "High",
+            "severityTrace": [
+              "gap_1",
+              "value_uplift"
+            ],
+            "ownerRole": "Engineering leads",
+            "wave": 2,
+            "offeringIds": [
+              "OFF.FIN.SPRINT"
+            ],
+            "leverIds": [
+              "LEV-02",
+              "LEV-03",
+              "LEV-04",
+              "LEV-10"
+            ]
+          },
+          {
+            "id": "F-FIN-DECISION-02",
+            "type": "decision",
+            "capability": "RATE_OPTIMIZATION",
+            "severity": "High",
+            "ownerRole": "FinOps lead",
+            "wave": 2,
+            "offeringIds": [
+              "OFF.FIN.SPRINT"
+            ],
+            "note": "Steady 50% above coverage 30%, but unscheduled non-production (18% of compute) and Spot-movable usage (10.5%) remove it all"
+          },
+          {
+            "id": "F-FIN-REPORTING_ANALYTICS",
+            "type": "capability_gap",
+            "capability": "REPORTING_ANALYTICS",
+            "current": "crawl",
+            "target": "walk",
+            "gap": 1,
+            "severity": "Medium",
+            "severityTrace": [
+              "gap_1"
+            ],
+            "ownerRole": "FinOps lead",
+            "wave": 2,
+            "offeringIds": [
+              "OFF.FIN.TOOLING"
+            ]
+          }
+        ],
+        "findingCount": 14,
+        "value": {
+          "conservative": {
+            "levers": {
+              "LEV-01": 0,
+              "LEV-02": 30000,
+              "LEV-03": 20000,
+              "LEV-04": 29694,
+              "LEV-06": 61670,
+              "LEV-10": 309615
+            },
+            "grossRunRate": 420980,
+            "grossYear1": 106828,
+            "pctOfP": 10.0,
+            "P": 4200000.0,
+            "oneOffCost": 180000,
+            "annualRunCost": 66000,
+            "netYear1": -139172,
+            "netRunRate": 354980,
+            "net3Year": 570789
+          },
+          "expected": {
+            "levers": {
+              "LEV-01": 0,
+              "LEV-02": 60000,
+              "LEV-03": 40000,
+              "LEV-04": 59389,
+              "LEV-06": 107766,
+              "LEV-10": 619230
+            },
+            "grossRunRate": 826386,
+            "grossYear1": 210736,
+            "pctOfP": 19.7,
+            "P": 4200000.0,
+            "oneOffCost": 180000,
+            "annualRunCost": 66000,
+            "netYear1": -35263,
+            "netRunRate": 760386,
+            "net3Year": 1485509
+          },
+          "upper": {
+            "levers": {
+              "LEV-01": 0,
+              "LEV-02": 120000,
+              "LEV-03": 61264,
+              "LEV-04": 90961,
+              "LEV-06": 117349,
+              "LEV-10": 948424
+            },
+            "grossRunRate": 1217999,
+            "grossYear1": 313822,
+            "pctOfP": 29.0,
+            "P": 4200000.0,
+            "oneOffCost": 180000,
+            "annualRunCost": 66000,
+            "netYear1": 67823,
+            "netRunRate": 1152000,
+            "net3Year": 2371823
+          },
+          "globalCap": {
+            "cap": 1218000,
+            "cloudExpectedBeforeCap": 826386,
+            "binding": false,
+            "upperCap": 1218000,
+            "upperBeforeCap": 1590475,
+            "upperBinding": true
+          },
+          "currency": "USD",
+          "notWorthPursuing": [
+            {
+              "lever": "LEV-02",
+              "reason": "expected USD 60k a year against 6 FTE-months (USD 90k) plus USD 18k a year ongoing: marginal 3-year net about -USD 15k (ASM-FIN-063). Shown with its figures (pre-cap), left out of the headline with its effort"
+            }
+          ],
+          "notQuantified": [
+            {
+              "lever": "LEV-01",
+              "reason": "quantified at zero: after removing unscheduled non-production (18% of compute) and Spot-movable usage (10.5%), no steady uncovered base remains"
+            },
+            {
+              "lever": "LEV-05",
+              "reason": "no storage evidence"
+            },
+            {
+              "lever": "LEV-08",
+              "reason": "not_quantified_in_v1"
+            },
+            {
+              "lever": "LEV-09",
+              "reason": "missing_input (no measured unused SaaS)"
+            },
+            {
+              "lever": "AI API token spend",
+              "reason": "no v1 lever"
+            }
+          ],
+          "confidence": "Overall Medium: LEV-10, most of the expected value, rests on measured GPU figures the client entered without an export date, which count as exact client inputs; LEV-03 rests on a Cost Optimization Hub export 43 days old",
+          "toolingProvided": true,
+          "externalSupportIncluded": false,
+          "label": "Indicative value range (conservative / expected / upper), net of estimated implementation cost: not a savings commitment; evidence validation required.",
+          "hypothesis": {
+            "band": "10-19%",
+            "amountRange": [
+              420000,
+              798000
+            ],
+            "explanations": [
+              "estimate_at_or_below_model"
+            ]
+          }
+        },
+        "tolerance": "Ratings, gaps, severities and finding IDs must match exactly. Money figures within 1% (rounding) or the difference explained in F5-scenario-diffs.md. The headline excludes LEV-02 (not worth pursuing) and is recomputed without it, so LEV-06 is computed on the base left without LEV-02 (expectation; uncertain whether the engine recomputes or simply drops the lever)."
+      },
+      "reasoning": [
+        "Tier 2 (3 points): small spend (1), AI material through GPU spend (+1), SaaS (+1).",
+        "Rate Optimization: commitments bought ad hoc (OP-01 Crawl) and no Spot use (OP-08 Not yet): the depth answer lowers Crawl to Not yet; gap 2, High.",
+        "Usage Optimization: rightsizing quarterly (Walk) lowered by scheduling, data transfer and AI cost management (Crawl): Crawl, gap 1, High through the value uplift (LEV-10 expected net run-rate USD 610k, 14.5% of P).",
+        "Unit Economics: unit cost per customer known (Walk) but AI unit cost only as a total (QV-07 Crawl): Crawl, at the Tier 2 target.",
+        "LEV-10 dominates: idle endpoints USD 350k plus GPU utilisation 30% against 65% on the remaining USD 1.65M gives an upper USD 1.24M; expected USD 619k. LEV-04 excludes the GPU spend from its base, so only USD 0.94M of non-GPU compute is schedulable.",
+        "LEV-02 (rightsizing USD 120k from the Hub) is not worth pursuing at Tier 2 effort (6 FTE-months): marginal 3-year net about -USD 15k. It is shown and left out of the headline, with its effort (one-off USD 180k, not 270k).",
+        "LEV-01 is zero and DECISION-02 is raised: commitments should wait for scheduling and the Spot move.",
+        "The upper case (USD 1.59M, 37.9% of P) is capped at 29% of P = USD 1.218M."
+      ],
+      "plausibilityCheck": "Expected 19.7% of AWS spend is high but under the 29% ceiling, and driven by a measured 30% GPU utilisation. A CFO should read LEV-10 as conditional on consolidating endpoints and models (the source describes exactly that move), not as a forecast."
+    },
+    {
+      "id": "RS9",
+      "name": "Japanese news and media app on AWS with EKS and a mature Spot practice, reporting in JPY (workshop mode, scheduled share unknown)",
+      "illustrative": true,
+      "summary": "Shape from an AWS case study of a Japan-based news app that runs EKS with Karpenter, a 70/30 Spot mix on backend services, Graviton for ML and Spark workloads, and Amazon Bedrock for model development. Tests an APAC client in JPY (large nominal amounts, tier FX 0.0067), Usage Optimization at target so that lever findings are raised on their own, a mature Spot practice, AI API spend below the 5% materiality threshold, and the workshop LEV-04 rule when VB-03's scheduled share is unknown although OP-06 is answered. All figures and answers are scenario assumptions.",
+      "mode": "workshop",
+      "expectationsWritten": {
+        "writtenAt": "2026-10-20T04:02:45Z",
+        "beforeEngineRun": true,
+        "method": "Written by the practice lead in F5 (M1) by applying DESIGN.md sections 3, 5, 9 and 10, the F3/F4 amendments recorded there, and the F2 registries, with a throwaway calculation sheet that does not call the engine. The engine was run on this scenario only after this record was frozen; F5-scenario-diffs.md compares the two."
+      },
+      "sources": [
+        {
+          "kind": "provider_customer_story",
+          "citation": "AWS case study, SmartNews (Graviton and Spot on Amazon EKS with Karpenter; undated page)",
+          "url": "https://aws.amazon.com/solutions/case-studies/smartnews-graviton-case-study/",
+          "status": "V",
+          "checked": "2026-10-20",
+          "usedFor": "Shape only: news app operating in Japan and the US; EKS since 2021, Karpenter since 2024; backend services on \"70 percent Spot Instances and 30 percent other payment plans\"; Graviton for 60-70% of ML workloads; Amazon Bedrock for model development. The case study's 50% (Spot) and 15% (Graviton) savings are self-reported workload outcomes and are NOT used as inputs, benchmarks or predictions."
+        },
+        {
+          "kind": "provider_documentation",
+          "citation": "Amazon EC2 Spot pricing (up to 90%), claims register CLM-FIN-061; AWS Savings Plans FAQs (Compute Savings Plans up to 66%)",
+          "url": "https://aws.amazon.com/savingsplans/faq/",
+          "status": "V",
+          "checked": "2026-10-20",
+          "usedFor": "LEV-06 and LEV-01 maxima for AWS."
+        }
+      ],
+      "inputs": {
+        "facts": {
+          "org": {
+            "sector": "telecom_media",
+            "markets": [
+              "apac",
+              "us"
+            ],
+            "consumingUnits": "5-19",
+            "currency": "JPY",
+            "tierFxRate": 0.0067
+          },
+          "footprint": {
+            "publicCloudProviders": [
+              "aws"
+            ],
+            "scopes": [
+              "public_cloud",
+              "kubernetes",
+              "ai_api"
+            ]
+          },
+          "spend": {
+            "byScope": {
+              "aws": {
+                "exact": 2400000000
+              },
+              "ai_api": {
+                "exact": 90000000
+              }
+            },
+            "growth12m": 15
+          },
+          "base": {
+            "computeShare": {
+              "exact": 0.7
+            },
+            "steadyStateShare": {
+              "exact": 0.55
+            },
+            "eligibleCoverage": {
+              "exact": 0.25
+            },
+            "nonProdShare": {
+              "exact": 0.15
+            },
+            "nonProdScheduledShare": {
+              "unknown": true
+            },
+            "interruptionTolerantShare": {
+              "exact": 0.6
+            },
+            "spotShare": {
+              "exact": 0.45
+            },
+            "kubernetesSpend": {
+              "exact": 1300000000
+            },
+            "kubernetesRequestUtilisation": {
+              "exact": 0.55
+            }
+          },
+          "evidence": {
+            "providerRecommendations": [
+              {
+                "type": "rightsizing",
+                "provider": "aws",
+                "tool": "AWS Compute Optimizer",
+                "deduplicated": false,
+                "annualEstimate": 40000000,
+                "exportDate": "2026-09-15"
+              }
+            ],
+            "aiGpu": {
+              "aiApiSpend": {
+                "exact": 90000000
+              }
+            }
+          },
+          "cost": {
+            "internalRate": {
+              "exact": 1400000
+            },
+            "tooling": {
+              "exact": 6000000
+            }
+          }
+        },
+        "answers": {
+          "UN-01": "W",
+          "UN-04": "C",
+          "UN-05": "W",
+          "UN-09": "W",
+          "UN-07": "W",
+          "UN-08": "C",
+          "UN-10": "W",
+          "UN-11": "R",
+          "QV-01": "W",
+          "QV-02": "W",
+          "QV-03": "C",
+          "QV-04": "C",
+          "QV-05": "C",
+          "QV-06": "N",
+          "QV-07": "N",
+          "QV-08": "C",
+          "OP-01": "C",
+          "OP-02": "C",
+          "OP-03": "C",
+          "OP-08": "R",
+          "OP-04": "R",
+          "OP-05": "W",
+          "OP-06": "W",
+          "OP-07": "R",
+          "OP-09": "W",
+          "OP-11": "R",
+          "OP-12": "W",
+          "OP-10": "W",
+          "MP-01": "C",
+          "MP-02": "C",
+          "MP-03": "W",
+          "MP-04": "C",
+          "MP-05": "W",
+          "MP-06": "W",
+          "MP-07": "R",
+          "MP-08": "C",
+          "MP-09": "C",
+          "MP-10": "C",
+          "MP-11": "N",
+          "MP-12": "W",
+          "MP-13": "C"
+        },
+        "answersNote": "OP-06 answered Walk ('for some teams') but VB-03's scheduled share is 'don't know'; Spot share is given as a share of compute (the VB-03 field label). Amazon Bedrock spend is billed by AWS; the AI API row is the model-API part the client could separate. HY-01 'don't know'.",
+        "fromSource": [
+          "Japan-based news app on AWS",
+          "EKS with Karpenter (Kubernetes in scope; OP-11 Run)",
+          "Mature Spot practice on backend services (OP-08 Run)",
+          "Bedrock in use (AI API scope)"
+        ],
+        "scenarioAssumptions": [
+          "All spend, shares, evidence and answers",
+          "AWS spend JPY 2.4bn; cluster spend JPY 1.3bn",
+          "Spot 45% of compute against 60% tolerant",
+          "Compute Optimizer export 29 days old, not deduplicated; no idle estimate",
+          "Internal rate JPY 1.4M per FTE-month; tooling JPY 6M",
+          "Tier FX 0.0067 USD per JPY, for tiering only (UNSOURCED as a market rate)"
+        ]
+      },
+      "expected": {
+        "tier": {
+          "tier": 2,
+          "points": 4,
+          "trace": [
+            "spend JPY 2.49bn = USD 16.7M at 0.0067 -> 2",
+            "1 provider -> 0",
+            "Kubernetes 77% of compute -> +1",
+            "AI API spend 3.6% of in-scope spend (< 5%), no GPU -> 0",
+            "5-19 consuming units -> +1"
+          ]
+        },
+        "capabilityProfile": {
+          "DATA_INGESTION": {
+            "rating": "walk",
+            "target": "walk",
+            "gap": 0,
+            "atOrAboveTarget": true
+          },
+          "ALLOCATION": {
+            "rating": "crawl",
+            "target": "walk",
+            "gap": 1,
+            "atOrAboveTarget": false
+          },
+          "REPORTING_ANALYTICS": {
+            "rating": "crawl",
+            "target": "walk",
+            "gap": 1,
+            "atOrAboveTarget": false
+          },
+          "ANOMALY_MANAGEMENT": {
+            "rating": "walk",
+            "target": "walk",
+            "gap": 0,
+            "atOrAboveTarget": true
+          },
+          "PLANNING_ESTIMATING": {
+            "rating": "crawl",
+            "target": "walk",
+            "gap": 1,
+            "atOrAboveTarget": false
+          },
+          "FORECASTING": {
+            "rating": "walk",
+            "target": "walk",
+            "gap": 0,
+            "atOrAboveTarget": true
+          },
+          "BUDGETING": {
+            "rating": "crawl",
+            "target": "walk",
+            "gap": 1,
+            "atOrAboveTarget": false
+          },
+          "KPIS_BENCHMARKING": {
+            "rating": "crawl",
+            "target": "crawl",
+            "gap": 0,
+            "atOrAboveTarget": true
+          },
+          "UNIT_ECONOMICS": {
+            "rating": "not_yet",
+            "target": "crawl",
+            "gap": 1,
+            "atOrAboveTarget": false,
+            "loweredByDepth": true
+          },
+          "ARCHITECTING_WORKLOAD_PLACEMENT": {
+            "rating": "walk",
+            "target": "walk",
+            "gap": 0,
+            "atOrAboveTarget": true
+          },
+          "USAGE_OPTIMIZATION": {
+            "rating": "walk",
+            "target": "walk",
+            "gap": 0,
+            "atOrAboveTarget": true,
+            "loweredByDepth": true
+          },
+          "RATE_OPTIMIZATION": {
+            "rating": "crawl",
+            "target": "walk",
+            "gap": 1,
+            "atOrAboveTarget": false
+          },
+          "LICENSING_SAAS": {
+            "rating": "not_in_scope"
+          },
+          "SUSTAINABILITY": {
+            "rating": "not_in_scope"
+          },
+          "EXECUTIVE_STRATEGY_ALIGNMENT": {
+            "rating": "crawl",
+            "target": "walk",
+            "gap": 1,
+            "atOrAboveTarget": false
+          },
+          "FINOPS_PRACTICE_OPERATIONS": {
+            "rating": "crawl",
+            "target": "walk",
+            "gap": 1,
+            "atOrAboveTarget": false
+          },
+          "GOVERNANCE_POLICY_RISK": {
+            "rating": "walk",
+            "target": "walk",
+            "gap": 0,
+            "atOrAboveTarget": true
+          },
+          "FINOPS_EDUCATION_ENABLEMENT": {
+            "rating": "crawl",
+            "target": "crawl",
+            "gap": 0,
+            "atOrAboveTarget": true
+          },
+          "INVOICING_CHARGEBACK": {
+            "rating": "crawl",
+            "target": "crawl",
+            "gap": 0,
+            "atOrAboveTarget": true
+          },
+          "FINOPS_ASSESSMENT": {
+            "rating": "not_yet",
+            "target": "crawl",
+            "gap": 1,
+            "atOrAboveTarget": false
+          },
+          "AUTOMATION_TOOLS_SERVICES": {
+            "rating": "walk",
+            "target": "walk",
+            "gap": 0,
+            "atOrAboveTarget": true
+          },
+          "INTERSECTING_DISCIPLINES": {
+            "rating": "crawl",
+            "target": "crawl",
+            "gap": 0,
+            "atOrAboveTarget": true
+          }
+        },
+        "headline": {
+          "atOrAboveTarget": 11,
+          "inScope": 20,
+          "assessed": 20,
+          "statement": "11 of 20 in-scope capabilities with a target are at or above LTM's default target for a Tier 2 estate"
+        },
+        "topFindings": [
+          {
+            "id": "F-FIN-DECISION-01",
+            "type": "decision",
+            "capability": "FINOPS_PRACTICE_OPERATIONS",
+            "severity": "Critical",
+            "ownerRole": "CIO",
+            "wave": 1,
+            "offeringIds": [
+              "OFF.FIN.OPMODEL"
+            ],
+            "note": "MP-01 Crawl (shared and unclear) at Tier 2: High plus one level"
+          },
+          {
+            "id": "F-FIN-ALLOCATION",
+            "type": "capability_gap",
+            "capability": "ALLOCATION",
+            "current": "crawl",
+            "target": "walk",
+            "gap": 1,
+            "severity": "High",
+            "severityTrace": [
+              "gap_1",
+              "foundation_uplift"
+            ],
+            "ownerRole": "FinOps lead",
+            "wave": 1,
+            "offeringIds": [
+              "OFF.FIN.TOOLING",
+              "OFF.FIN.OPMODEL"
+            ]
+          },
+          {
+            "id": "F-FIN-FINOPS_PRACTICE_OPERATIONS",
+            "type": "capability_gap",
+            "capability": "FINOPS_PRACTICE_OPERATIONS",
+            "current": "crawl",
+            "target": "walk",
+            "gap": 1,
+            "severity": "High",
+            "severityTrace": [
+              "gap_1",
+              "foundation_uplift"
+            ],
+            "ownerRole": "CIO",
+            "wave": 1,
+            "offeringIds": [
+              "OFF.FIN.OPMODEL",
+              "OFF.FIN.MANAGED"
+            ]
+          },
+          {
+            "id": "F-FIN-RATE_OPTIMIZATION",
+            "type": "capability_gap",
+            "capability": "RATE_OPTIMIZATION",
+            "current": "crawl",
+            "target": "walk",
+            "gap": 1,
+            "severity": "High",
+            "severityTrace": [
+              "gap_1",
+              "value_uplift"
+            ],
+            "ownerRole": "FinOps lead",
+            "wave": 2,
+            "offeringIds": [
+              "OFF.FIN.SPRINT"
+            ],
+            "leverIds": [
+              "LEV-01",
+              "LEV-06"
+            ]
+          },
+          {
+            "id": "F-FIN-LEV-07",
+            "type": "lever_opportunity",
+            "capability": "USAGE_OPTIMIZATION",
+            "leverIds": [
+              "LEV-07"
+            ],
+            "severity": "High",
+            "ownerRole": "Engineering leads",
+            "wave": 2,
+            "offeringIds": [
+              "OFF.FIN.SPRINT"
+            ],
+            "note": "Usage Optimization is at target, so the lever carries its own finding; expected net run-rate 4.1% of P"
+          },
+          {
+            "id": "F-FIN-SCOPE-NON_PROD_SCHEDULED_SHARE",
+            "type": "scope_confirmation",
+            "capability": "USAGE_OPTIMIZATION",
+            "severity": "Medium",
+            "ownerRole": "FinOps lead",
+            "wave": 1,
+            "offeringIds": [
+              "OFF.FIN.ASSESS"
+            ],
+            "note": "OP-06 Walk is answered, but in the workshop LEV-04 needs the measured scheduled share (VB-03)"
+          }
+        ],
+        "findingCount": 13,
+        "value": {
+          "conservative": {
+            "levers": {
+              "LEV-01": 10023750,
+              "LEV-02": 10000000,
+              "LEV-06": 41006249,
+              "LEV-07": 50000000
+            },
+            "grossRunRate": 111030000,
+            "grossYear1": 23297578,
+            "pctOfP": 4.6,
+            "P": 2400000000.0,
+            "oneOffCost": 22400000,
+            "annualRunCost": 10480000,
+            "netYear1": -9582422,
+            "netRunRate": 100550000,
+            "net3Year": 191517578
+          },
+          "expected": {
+            "levers": {
+              "LEV-01": 19305000,
+              "LEV-02": 20000000,
+              "LEV-06": 78974999,
+              "LEV-07": 100000000
+            },
+            "grossRunRate": 218280000,
+            "grossYear1": 45747187,
+            "pctOfP": 9.1,
+            "P": 2400000000.0,
+            "oneOffCost": 22400000,
+            "annualRunCost": 10480000,
+            "netYear1": 12867188,
+            "netRunRate": 207800000,
+            "net3Year": 428467188
+          },
+          "upper": {
+            "levers": {
+              "LEV-01": 35640000,
+              "LEV-02": 40000000,
+              "LEV-06": 145800000,
+              "LEV-07": 200000000
+            },
+            "grossRunRate": 421440000,
+            "grossYear1": 88102500,
+            "pctOfP": 17.6,
+            "P": 2400000000.0,
+            "oneOffCost": 22400000,
+            "annualRunCost": 10480000,
+            "netYear1": 55222500,
+            "netRunRate": 410960000,
+            "net3Year": 877142500
+          },
+          "globalCap": {
+            "cap": 696000000,
+            "cloudExpectedBeforeCap": 218280000,
+            "binding": false,
+            "upperCap": 696000000,
+            "upperBeforeCap": 421440000,
+            "upperBinding": false
+          },
+          "currency": "JPY",
+          "notQuantified": [
+            {
+              "lever": "LEV-04",
+              "reason": "missing_input (base.nonProdScheduledShare unknown; the OP-06 mapping ASM-FIN-052 is executive-only)"
+            },
+            {
+              "lever": "LEV-03",
+              "reason": "no_estimate_of_type (idle)"
+            },
+            {
+              "lever": "LEV-05",
+              "reason": "no storage evidence"
+            },
+            {
+              "lever": "LEV-08",
+              "reason": "not_quantified_in_v1"
+            },
+            {
+              "lever": "LEV-10",
+              "reason": "no GPU or endpoint spend (AI API scope only); AI API token spend has no v1 lever"
+            }
+          ],
+          "confidence": "Overall Medium: LEV-07 and LEV-06, most of the expected value, rest on exact client inputs; LEV-02 on a Compute Optimizer export 29 days old",
+          "toolingProvided": true,
+          "externalSupportIncluded": false,
+          "label": "Indicative value range (conservative / expected / upper), net of estimated implementation cost: not a savings commitment; evidence validation required.",
+          "finopsTeamAnnualCost": 16800000
+        },
+        "tolerance": "Ratings, gaps, severities and finding IDs must match exactly. Money figures within 1% (rounding) or the difference explained in F5-scenario-diffs.md. LEV-01 uses n_u = the whole non-production share when the scheduled share is unknown (DESIGN 10.2's conservative overlap, applied by analogy with OP-06 Unknown in executive mode)."
+      },
+      "reasoning": [
+        "Tier 2 (4 points): JPY 2.49bn is USD 16.7M at the consultant rate (2); Kubernetes material (+1); AI API spend 3.6% of in-scope spend is below the 5% materiality threshold and there is no GPU spend (0); 5-19 units (+1).",
+        "Usage Optimization: rightsizing monthly (Run) lowered one level by scheduling, idle clean-up, data transfer and AI cost management at Walk: Walk, at the Tier 2 target. So its levers carry their own findings: LEV-07 (High, 4.1% of P) and LEV-02 (Medium, 0.8%).",
+        "Rate Optimization: commitments bought ad hoc (OP-01 Crawl) despite Spot at Run; gap 1, High through the value uplift (LEV-06 expected net run-rate JPY 77.9M, 3.2% of P).",
+        "Spot: 45% of compute already on Spot against 60% tolerant leaves 15%, net of 25% coverage 11.25% of compute; at AWS 90%.",
+        "LEV-04 is not quantified: the workshop rule needs VB-03's measured scheduled share, and the OP-06 mapping applies only in executive mode (DESIGN 10.2, 10.15). A Medium scope confirmation asks for it. For LEV-01 the whole non-production share is removed from the steady pool (n_u = 15%), the conservative choice, leaving 3.75% of compute.",
+        "MP-01 Crawl raises DECISION-01 (Critical at Tier 2) and the FinOps team cost beside the value (1 FTE, JPY 16.8M a year). FinOps-lead findings read \"to be appointed; interim: Head of Cloud / CCoE\"."
+      ],
+      "plausibilityCheck": "Expected 9.1% of AWS spend, mostly Kubernetes requests and the remaining Spot-tolerant usage; plausible for a Spot-mature estate and far under the 29% ceiling. The source's 50% Spot saving is a workload outcome already reflected in the 45% Spot share, not added again."
     }
-  ]
+  ],
+  "noteF5": "RS6-RS9 added in F5 (M1, 20 Oct 2026) by the practice lead, from published provider and FinOps Foundation case studies (shape only, URL and date checked in each record). Each record's expectationsWritten field states that its expected outcome was written and frozen before the engine was run on it; RS1-RS5 are unchanged. The comparison is in F5-scenario-diffs.md."
 }

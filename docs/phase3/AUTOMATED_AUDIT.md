@@ -166,10 +166,10 @@ How to read it:
 
 | Headline | Scale | Observed min | Observed max | Out of scale | Null |
 |---|---|---|---|---|---|
-| Need index (0-100) | 0–100 | 18.3 | 100 | 0 | 0 |
+| Need index (0-100) | 0–100 | 28.3 | 100 | 0 | 0 |
 | Capabilities at or above target (0-8) | 0–8 | 0 | 6 | 0 | 0 |
 | Total capability gap (levels) | 0–24 | 2 | 22 | 0 | 0 |
-| Critical + high findings | 0–20 | 1 | 9 | 0 | 0 |
+| Critical + high findings | 0–20 | 2 | 9 | 0 | 0 |
 | Findings | 0–20 | 3 | 10 | 0 | 0 |
 | Value expected (gross run-rate) | 0–23.2M | 198k | 5.8M | 0 | 0 |
 | Value upper (gross run-rate) | 0–23.2M | 396k | 11.7M | 0 | 0 |
@@ -178,22 +178,22 @@ How to read it:
 
 | Band | Share |
 |---|---|
-| Lightweight practices sufficient at current scale | 0.1% |
-| Targeted improvements needed now | 15.6% |
-| Material exposure: act this year | 33.6% |
-| Act now | 50.6% |
+| Lightweight practices sufficient at current scale | 0.0% |
+| Targeted improvements needed now | 11.0% |
+| Material exposure: act this year | 37.5% |
+| Act now | 51.5% |
 
 **Sensitivity**
 
 | Headline | Largest single-answer swing (question: swing) | Share of range |
 |---|---|---|
-| Need index (0-100) | UN-04: 12.5, UN-10: 12.5, UN-11: 12.5, QV-01: 12.5, OP-01: 12.5 | 0.15 |
-| Capabilities at or above target (0-8) | UN-04: 1, UN-10: 1, UN-11: 1, QV-01: 1, QV-05: 1 | 0.17 |
-| Total capability gap (levels) | UN-04: 3, UN-10: 3, UN-11: 3, QV-01: 3, OP-01: 3 | 0.15 |
-| Critical + high findings | OP-06: 2, MP-01: 2, UN-04: 1, UN-10: 1, UN-11: 1 | 0.25 |
-| Findings | MP-01: 2, UN-04: 1, UN-10: 1, UN-11: 1, QV-01: 1 | 0.29 |
-| Value expected (gross run-rate) | OP-06: 5.1M, UN-04: 0, UN-10: 0, UN-11: 0, QV-01: 0 | 0.90 |
-| Value upper (gross run-rate) | OP-06: 10.1M, UN-04: 0, UN-10: 0, UN-11: 0, QV-01: 0 | 0.90 |
+| Need index (0-100) | fact:SC-04 aws: 41.5, fact:SC-07 units: 41.5, UN-04: 12.5, UN-10: 12.5, UN-11: 12.5 | 0.58 |
+| Capabilities at or above target (0-8) | fact:SC-04 aws: 6, fact:SC-07 units: 6, UN-04: 1, UN-10: 1, UN-11: 1 | 1.00 |
+| Total capability gap (levels) | fact:SC-04 aws: 8, fact:SC-07 units: 8, UN-04: 3, UN-10: 3, UN-11: 3 | 0.40 |
+| Critical + high findings | fact:SC-04 aws: 6, fact:SC-07 units: 6, MP-01: 2, fact:VB-01 compute: 2, fact:VB-01 non-production: 2 | 0.86 |
+| Findings | fact:SC-04 aws: 6, fact:SC-07 units: 5, MP-01: 2, fact:VB-01 non-production: 2, UN-04: 1 | 0.86 |
+| Value expected (gross run-rate) | fact:VB-01 non-production: 9.1M, fact:VB-02 coverage: 8.3M, fact:VB-01 compute: 7.3M, fact:SC-04 aws: 6.9M, OP-06: 5.1M | 1.61 |
+| Value upper (gross run-rate) | fact:VB-02 coverage: 20.5M, fact:VB-01 compute: 14.6M, fact:SC-04 aws: 13.9M, fact:VB-01 non-production: 11.6M, OP-06: 10.1M | 1.82 |
 
 **Dead questions** (no effect on any headline): HY-01, HY-07
 
@@ -201,10 +201,10 @@ How to read it:
 
 | Headline | Mean shift, 30% unanswered | Worst profile, half unanswered |
 |---|---|---|
-| Need index (0-100) | -3.53 | +0 |
+| Need index (0-100) | -4.21 | +0 |
 | Capabilities at or above target (0-8) | -0.61 | +0 |
 | Total capability gap (levels) | -1.92 | +0 |
-| Critical + high findings | -0.78 | +0 |
+| Critical + high findings | -0.77 | +0 |
 | Findings | -0.74 | +0 |
 | Value expected (gross run-rate) | -539k | +0 |
 | Value upper (gross run-rate) | -1.1M | +0 |
@@ -216,7 +216,7 @@ How to read it:
 | Capabilities at or above target (0-22) | 0–22 | 0 | 9 | 0 | 0 |
 | Total capability gap (levels) | 0–66 | 26 | 50 | 0 | 0 |
 | Critical + high findings | 0–34 | 11 | 21 | 0 | 0 |
-| Findings | 0–34 | 16 | 32 | 0 | 0 |
+| Findings | 0–34 | 14 | 30 | 0 | 0 |
 | Value expected (gross run-rate) | 0–23.2M | 591k | 6.8M | 0 | 0 |
 | Value upper (gross run-rate) | 0–23.2M | 1.2M | 13.5M | 0 | 0 |
 
@@ -226,12 +226,12 @@ How to read it:
 |---|---|---|
 | Capabilities at or above target (0-22) | UN-01: 1, UN-02: 1, UN-03: 1, UN-04: 1, UN-05: 1 | 0.11 |
 | Total capability gap (levels) | UN-01: 3, UN-03: 3, UN-04: 3, UN-05: 3, UN-07: 3 | 0.13 |
-| Critical + high findings | MP-01: 2, UN-01: 1, UN-02: 1, UN-03: 1, UN-04: 1 | 0.20 |
-| Findings | OP-04: 3, OP-05: 3, OP-06: 3, OP-07: 3, OP-09: 3 | 0.19 |
-| Value expected (gross run-rate) | UN-01: 0, UN-02: 0, UN-03: 0, UN-04: 0, UN-05: 0 | 0.00 |
-| Value upper (gross run-rate) | UN-01: 0, UN-02: 0, UN-03: 0, UN-04: 0, UN-05: 0 | 0.00 |
+| Critical + high findings | fact:SC-04 aws: 4, MP-01: 2, fact:VB-01 compute: 2, fact:VB-01 non-production: 2, fact:VB-02 coverage: 2 | 0.40 |
+| Findings | fact:SC-04 aws: 6, OP-04: 3, OP-05: 3, OP-06: 3, OP-07: 3 | 0.38 |
+| Value expected (gross run-rate) | fact:SC-04 aws: 11.2M, fact:VB-01 non-production: 6.9M, fact:VB-01 compute: 6.8M, fact:VB-02 coverage: 3.7M, UN-01: 0 | 1.79 |
+| Value upper (gross run-rate) | fact:SC-04 aws: 22.1M, fact:VB-01 compute: 13.8M, fact:VB-01 non-production: 9.7M, fact:VB-02 coverage: 8.3M, UN-01: 0 | 1.80 |
 
-**Dead questions** (no effect on any headline): HY-01, HY-02, HY-03, HY-04, HY-05, HY-06, HY-07
+**Dead questions** (no effect on any headline): HY-01, HY-02, HY-03, HY-04, HY-05, HY-06, HY-07, fact:SC-05, fact:SC-07 units
 
 **Missing data** (positive = leaving answers blank flatters the result)
 
@@ -239,7 +239,7 @@ How to read it:
 |---|---|---|
 | Capabilities at or above target (0-22) | -1.31 | +0 |
 | Total capability gap (levels) | -4.44 | +0 |
-| Critical + high findings | -2.21 | +0 |
+| Critical + high findings | -2.17 | +0 |
 | Findings | -1.42 | +0 |
 | Value expected (gross run-rate) | +0 | +0 |
 | Value upper (gross run-rate) | +0 | +0 |

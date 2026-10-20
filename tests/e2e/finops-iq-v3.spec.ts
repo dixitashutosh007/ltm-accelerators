@@ -211,3 +211,20 @@ test('every form control has an accessible name', async ({ page }) => {
     expect(unnamed, label).toEqual([]);
   }
 });
+
+test('workshop: OP-06 suggests the scheduled share, set only when the consultant confirms it (F5 D-C)', async ({ page }) => {
+  await start(page, 'workshop', 'Prefill Co');
+  await fillEstate(page, 'workshop');
+  await page.locator('nav.steps button', { hasText: 'Optimize Usage & Cost' }).click();
+  await page.locator('#q-OP-06 input[value=walk]').check();
+  await settled(page);
+  await page.locator('nav.steps button', { hasText: 'Value inputs' }).click();
+  const q = page.locator('#q-VB-03');
+  await expect(q.getByText(/Suggested from OP-06/)).toContainText('about 50%');
+  // Nothing is set until confirmed: an unconfirmed pre-fill counts as blank.
+  expect(await page.evaluate(() => (window as any).FINOPS_IQ.state().facts.base?.nonProdScheduledShare)).toBeUndefined();
+  await q.getByRole('button', { name: /Use this/ }).click();
+  await settled(page);
+  expect(await page.evaluate(() => (window as any).FINOPS_IQ.state().facts.base)).toMatchObject({ nonProdScheduledShare: { exact: 0.5 }, nonProdScheduledShareSource: 'derived_from_OP-06' });
+  await expect(q.getByText(/Derived from OP-06/)).toBeVisible();
+});
