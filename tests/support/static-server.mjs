@@ -4,6 +4,7 @@
  * (/strategy-iq -> strategy-iq.html).
  *
  * Usage: node tests/support/static-server.mjs [port]
+ * The local dev server (scripts/dev-server.ts) reuses serveSite() for the same behaviour.
  */
 import { createServer } from 'node:http';
 import { readFileSync, existsSync, statSync } from 'node:fs';
@@ -13,7 +14,6 @@ import YAML from 'yaml';
 
 const root = resolve(fileURLToPath(new URL('../../', import.meta.url)));
 const siteDir = join(root, 'Accelerators');
-const port = Number(process.argv[2] || process.env.PORT || 4173);
 
 const { customHeaders = [] } = YAML.parse(readFileSync(join(root, 'customHttp.yml'), 'utf8'));
 
@@ -41,7 +41,8 @@ function resolveFile(urlPath) {
   return null;
 }
 
-createServer((req, res) => {
+/** Serves one request from Accelerators/ with the customHttp.yml headers. */
+export function serveSite(req, res) {
   const urlPath = new URL(req.url, 'http://localhost').pathname;
   const file = resolveFile(urlPath);
   if (!file) {
@@ -55,4 +56,9 @@ createServer((req, res) => {
   }
   res.writeHead(200, headers);
   res.end(readFileSync(file.abs));
-}).listen(port, () => console.log(`Serving ${siteDir} with customHttp.yml headers on http://localhost:${port}`));
+}
+
+if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+  const port = Number(process.argv[2] || process.env.PORT || 4173);
+  createServer(serveSite).listen(port, () => console.log(`Serving ${siteDir} with customHttp.yml headers on http://localhost:${port}`));
+}

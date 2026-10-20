@@ -2,6 +2,11 @@ import type { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda
 import { corsHeaders } from '../_shared/http';
 import { evaluateFinOpsIq } from '../../../packages/engine-core/src/accelerators/finops-iq/evaluate';
 import { parseFinOpsIqRequest } from '../../../packages/engine-core/src/accelerators/finops-iq/contract';
+import { evaluateFinOpsIqV3, parseFinOpsIqV3Request } from '../../../packages/engine-core/src/accelerators/finops-iq/v3';
+
+function score<I, R>(parsed: { ok: true; value: I } | { ok: false; errors: string[] }, evaluate: (input: I) => R) {
+  return parsed.ok ? { ok: true as const, result: evaluate(parsed.value) } : parsed;
+}
 
 // Per-request CORS headers (origin allowlist). Lambda handles one request at a time,
 // so this module-level value is safe.
@@ -28,16 +33,19 @@ export const handler = async (event: APIGatewayProxyEventV2): Promise<APIGateway
       return { statusCode: 400, headers: CORS_HEADERS, body: JSON.stringify({ ok: false, error: 'Request body is not valid JSON.' }) };
     }
 
-    const parsed = parseFinOpsIqRequest(body);
-    if (!parsed.ok) {
+    // POST /api/evaluate/finops-iq/v3 scores the merged product (both modes); POST /api/evaluate/finops-iq keeps
+    // the v2 engine for the current page until cutover (execution phase M8).
+    const v3 = /\/v3\/?$/.test(event.rawPath || '');
+    const evaluated = v3 ? score(parseFinOpsIqV3Request(body), evaluateFinOpsIqV3) : score(parseFinOpsIqRequest(body), evaluateFinOpsIq);
+    if (!evaluated.ok) {
       return {
         statusCode: 400,
         headers: CORS_HEADERS,
-        body: JSON.stringify({ ok: false, error: 'Invalid assessment payload.', details: parsed.errors.slice(0, 20) })
+        body: JSON.stringify({ ok: false, error: 'Invalid assessment payload.', details: evaluated.errors.slice(0, 20) })
       };
     }
 
-    const result = evaluateFinOpsIq(parsed.value);
+    const result = evaluated.result;
 
     return {
       statusCode: 200,

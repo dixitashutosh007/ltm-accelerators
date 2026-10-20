@@ -20,6 +20,15 @@ The October 2026 Resilience IQ deployment failures are resolved: the cause was i
 4. Every API route except the CORS preflight uses the Cognito JWT authorizer (`check:backend` enforces it). The browser uses the shared app session; do not add a second login flow.
 5. No unsourced numbers, benchmarks or regulatory statements; scoring constants are labelled as LTM heuristics. Technology options are vendor-neutral and indicative.
 
+## Run it locally
+
+```
+npm ci
+npm run dev               # http://localhost:4300, nothing deployed
+```
+
+Sign in as `consultant@ltm.local` or `admin@ltm.local`, password `local-dev`. The dev server (`scripts/dev-server.ts`) serves the pages, runs the Advisory API handlers in-process behind a local token check, and stands in for Cognito. FinOps IQ assessments are saved in `.local-data/`; the reports archive keeps metadata in memory only.
+
 ## Checks before pushing
 
 ```

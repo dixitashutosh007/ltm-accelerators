@@ -68,6 +68,15 @@ F0–F4 are done: the merged engine (v3, executive and workshop modes) exists, b
 
 Commits land on a local branch and are pushed when the owner asks.
 
+**M1 status (20 Oct 2026): engineering done; practice-lead review and owner gate open.** `finops-iq-v3-audit.test.ts` puts the F5 invariants in CI (no dead questions; every rating, need band and headline value reachable; one answer moves only its own capability; Unknown never better than Not yet; N/A only from scope; value-base facts never move a rating; label truth, M10). Each invariant was checked to fail on a deliberately broken engine. The audit gained uniform baselines, so it no longer reports weakest-link depth questions as dead: the only dead questions are HY-01 to HY-07, by design (D4). Observation for the lead: in workshop mode LEV-04 needs the measured VB-03 share and is not quantified without it, while executive mode maps OP-06 (DESIGN.md 10.4–10.5). New reference scenarios from published case studies and the review are with `finops-cost-lead`.
+
+**M2 status (20 Oct 2026): built; owner gate open.**
+- `POST /api/evaluate/finops-iq/v3` scores both modes (the same Lambda; the plain route keeps v2 for the current page until M8).
+- `GET/POST /api/finops-iq/assessment`: save, resume, complete and archive, on the `FinOpsIqAssessment` model, with ownership checks and the Resilience IQ lifecycle (a completed assessment is immutable). The result is computed on the server at completion and dated there. Drafts may hold incomplete facts; answers are always checked with the contract.
+- Both routes are on the Advisory API behind the Cognito JWT authorizer; `check:backend` requires them and fails if any FinOps route appears on the unauthenticated API.
+- `npm run dev` runs the platform locally (pages, handlers, local sign-in, `.local-data/` store).
+- Change from the plan: the FinOps Value Case route keeps its own engine until M3, because the current FinOps Value Case page cannot render a v3 result; M3 redirects that page to executive mode and M8 removes the route.
+
 ---
 
 ## F0: Containment

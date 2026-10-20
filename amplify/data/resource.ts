@@ -1,6 +1,7 @@
 import { type ClientSchema, a, defineData } from '@aws-amplify/backend';
 import { manageResilienceAssessmentFunction } from '../functions/manage-resilience-assessment/resource';
 import { manageResilienceEvidenceFunction } from '../functions/manage-resilience-evidence/resource';
+import { manageFinOpsAssessmentFunction } from '../functions/manage-finops-assessment/resource';
 
 /**
  * Defines DynamoDB tables via Amplify Data Schema:
@@ -10,6 +11,7 @@ import { manageResilienceEvidenceFunction } from '../functions/manage-resilience
  * 4. AssessmentSubmission: Client answers and computed boardroom results
  * 5. ResilienceEvidence: Governed evidence metadata and validation lifecycle for Resilience IQ
  * 6. UserAllowlist: Pre-approved email directory with RBAC roles
+ * 7. FinOpsIqAssessment: saved FinOps IQ assessments (request, consultant notes, server-computed result)
 
  */
 const schema = a.schema({
@@ -149,6 +151,28 @@ const schema = a.schema({
       allow.group('Consultant').to(['create', 'read', 'update', 'delete'])
     ]),
 
+  // Read and written only by the manage-finops-assessment Lambda, which checks ownership from the caller's JWT.
+  FinOpsIqAssessment: a
+    .model({
+      assessmentId: a.string().required(),
+      clientName: a.string().required(),
+      clientSector: a.string(),
+      respondentEmail: a.string().required(),
+      status: a.string().required(),
+      mode: a.string().required(),
+      engineVersion: a.string().required(),
+      requestJson: a.string().required(),
+      consultantNotes: a.string(),
+      resultJson: a.string(),
+      startedAt: a.datetime().required(),
+      completedAt: a.datetime(),
+      archivedAt: a.datetime()
+    })
+    .identifier(['assessmentId'])
+    .authorization(allow => [
+      allow.group('Admin').to(['read'])
+    ]),
+
   UserAllowlist: a
     .model({
       email: a.string().required(),
@@ -162,7 +186,8 @@ const schema = a.schema({
 })
 .authorization(allow => [
   allow.resource(manageResilienceAssessmentFunction).to(['query', 'mutate']),
-  allow.resource(manageResilienceEvidenceFunction).to(['query', 'mutate'])
+  allow.resource(manageResilienceEvidenceFunction).to(['query', 'mutate']),
+  allow.resource(manageFinOpsAssessmentFunction).to(['query', 'mutate'])
 ]);
 
 export type Schema = ClientSchema<typeof schema>;

@@ -1,11 +1,12 @@
 {
   "name": "ltm-accelerators",
   "version": "1.0.0",
-  "description": "LTM Vantage — Responsible Advisory: enterprise advisory accelerators with headless scoring engines and role-based access control",
+  "description": "LTM Vantage \u2014 Responsible Advisory: enterprise advisory accelerators with headless scoring engines and role-based access control",
   "private": true,
   "type": "module",
   "scripts": {
     "test:engine": "vitest run",
+    "dev": "tsx scripts/dev-server.ts",
     "amplify": "ampx",
     "validate:costiq": "node scripts/validate-cost-iq.cjs",
     "build:runtime-config": "node scripts/generate-runtime-config.cjs",

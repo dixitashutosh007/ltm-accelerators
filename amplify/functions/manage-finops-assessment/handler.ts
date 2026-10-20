@@ -1,0 +1,108 @@
+/**
+ * FinOps IQ save and resume (execution phase M2), on the Advisory API behind the Cognito JWT authorizer:
+ *   GET  /api/finops-iq/assessment                      the caller's assessments, newest first (summaries)
+ *   GET  /api/finops-iq/assessment?assessmentId=...     one assessment, with its request and, once completed, result
+ *   POST /api/finops-iq/assessment  { action, snapshot } save | complete | archive
+ * A record belongs to its respondent (Admins may act on any). The stored result is computed here on completion,
+ * never taken from the browser. A completed assessment is immutable; it can only be archived.
+ */
+import type { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
+import { randomUUID } from 'node:crypto';
+import { corsHeaders } from '../_shared/http';
+import { authorized, canAccess, isAdmin, parseBody, userEmail } from '../_shared/resilience-data';
+import { canTransition, evaluateSnapshot, parseSnapshot, snapshotMode, type FinOpsAssessmentStatus } from '../../../packages/engine-core/src/accelerators/finops-iq/v3/assessment';
+import { ENGINE_VERSION } from '../../../packages/engine-core/src/accelerators/finops-iq/v3/evaluate';
+import { appSyncStore, type FinOpsAssessmentRecord, type FinOpsAssessmentStore } from './store';
+
+const ACTIONS = new Set(['save', 'complete', 'archive']);
+
+/** Stored fields to the page's view: JSON fields parsed. */
+function view(r: FinOpsAssessmentRecord) {
+  const { requestJson, resultJson, ...rest } = r;
+  return { ...rest, ...(requestJson ? { request: JSON.parse(requestJson) } : {}), ...(resultJson ? { result: JSON.parse(resultJson) } : {}) };
+}
+
+/** The list shows summaries only, whatever the store returns: no request, notes or result. */
+function summary(r: FinOpsAssessmentRecord) {
+  const { requestJson, resultJson, consultantNotes, ...rest } = r;
+  return rest;
+}
+
+export function createHandler(store: FinOpsAssessmentStore, now: () => Date = () => new Date()) {
+  return async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> => {
+    const requestId = event.requestContext?.requestId || randomUUID();
+    const respond = (statusCode: number, body: Record<string, unknown>): APIGatewayProxyResultV2 => ({
+      statusCode,
+      headers: { ...corsHeaders(event, 'OPTIONS,GET,POST', 'X-Request-Id'), 'X-Request-Id': requestId },
+      body: JSON.stringify({ ...body, requestId })
+    });
+    const method = event.requestContext?.http?.method || 'POST';
+    if (method === 'OPTIONS') return respond(200, {});
+    if (!authorized(event)) return respond(403, { ok: false, error: 'forbidden' });
+    try {
+      if (method === 'GET') {
+        const assessmentId = event.queryStringParameters?.assessmentId;
+        if (!assessmentId) return respond(200, { ok: true, data: (await store.listByRespondent(userEmail(event))).map(summary) });
+        const item = await store.get(assessmentId);
+        if (!item) return respond(404, { ok: false, error: 'assessment_not_found' });
+        if (!canAccess(event, item.respondentEmail)) return respond(403, { ok: false, error: 'assessment_access_denied' });
+        return respond(200, { ok: true, data: view(item) });
+      }
+      if (method !== 'POST') return respond(405, { ok: false, error: 'method_not_allowed' });
+
+      let body: any;
+      try { body = parseBody(event); } catch { return respond(400, { ok: false, error: 'Request body is not valid JSON.' }); }
+      const action = String(body?.action || 'save');
+      if (!ACTIONS.has(action)) return respond(400, { ok: false, error: `action: expected one of ${[...ACTIONS].join(', ')}` });
+      const expected: FinOpsAssessmentStatus | undefined = action === 'complete' ? 'completed' : action === 'archive' ? 'archived' : undefined;
+      if (expected && body?.snapshot?.status !== expected) return respond(400, { ok: false, error: `${action} action requires ${expected} status.` });
+      if (action === 'save' && ['completed', 'archived'].includes(body?.snapshot?.status)) return respond(400, { ok: false, error: 'Use the complete or archive action.' });
+
+      const existing = typeof body?.snapshot?.assessmentId === 'string' ? await store.get(body.snapshot.assessmentId) : null;
+      // An existing record belongs to its respondent: a non-admin may not overwrite (and so take over) someone else's.
+      if (existing && !canAccess(event, existing.respondentEmail)) return respond(403, { ok: false, error: 'assessment_access_denied' });
+
+      // Archiving changes only the status: request and result stay as completed.
+      if (action === 'archive') {
+        if (!existing) return respond(404, { ok: false, error: 'assessment_not_found' });
+        if (!canTransition(existing.status as FinOpsAssessmentStatus, 'archived')) return respond(409, { ok: false, error: 'assessment_immutable' });
+        const data = await store.update({ assessmentId: existing.assessmentId, status: 'archived', archivedAt: now().toISOString() });
+        return respond(200, { ok: true, data: view(data) });
+      }
+
+      const parsed = parseSnapshot(body?.snapshot);
+      if (!parsed.ok) return respond(400, { ok: false, error: parsed.errors[0], details: parsed.errors.slice(0, 20) });
+      const s = parsed.value;
+      if (!isAdmin(event) && s.respondentEmail !== userEmail(event)) return respond(403, { ok: false, error: 'respondent_email_mismatch' });
+      if (existing && !canTransition(existing.status as FinOpsAssessmentStatus, s.status)) {
+        return respond(409, { ok: false, error: existing.status === 'completed' || existing.status === 'archived' ? 'assessment_immutable' : 'invalid_assessment_status_transition', message: `${existing.status} -> ${s.status}` });
+      }
+      if (existing && existing.mode !== snapshotMode(s)) return respond(409, { ok: false, error: 'mode_change_not_allowed', message: 'Start a new assessment to change mode.' });
+
+      const completedAt = s.status === 'completed' ? now() : undefined;
+      const result = completedAt ? evaluateSnapshot(s, completedAt) : undefined;
+      const record: FinOpsAssessmentRecord = {
+        assessmentId: s.assessmentId,
+        clientName: s.clientName,
+        clientSector: s.clientSector ?? null,
+        respondentEmail: existing?.respondentEmail ?? s.respondentEmail,
+        status: s.status,
+        mode: snapshotMode(s),
+        engineVersion: result?.versions.engine ?? ENGINE_VERSION,
+        requestJson: JSON.stringify(result ? { ...s.request, assessmentDate: result.assessmentDate } : s.request),
+        consultantNotes: s.consultantNotes ?? null,
+        resultJson: result ? JSON.stringify(result) : null,
+        startedAt: existing?.startedAt ?? s.startedAt,
+        completedAt: completedAt?.toISOString() ?? null
+      };
+      const data = existing ? await store.update(record) : await store.create(record);
+      return respond(200, { ok: true, data: view(data) });
+    } catch (error: any) {
+      console.error('[ManageFinOpsAssessment]', { requestId, error });
+      // Details stay in the logs: database errors are not returned to the browser.
+      return respond(500, { ok: false, error: 'internal_assessment_persistence_error', message: 'The assessment could not be saved. Please try again.' });
+    }
+  };
+}
+
+export const handler = createHandler(appSyncStore);

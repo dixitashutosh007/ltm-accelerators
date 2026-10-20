@@ -53,7 +53,8 @@
   }
 
   async function cognitoCall(target, payload) {
-    var res = await fetch('https://cognito-idp.' + (cognito.region || 'ap-south-1') + '.amazonaws.com/', {
+    // `endpoint` is set only by the local dev server (scripts/dev-server.ts); deployed config never sets it.
+    var res = await fetch(cognito.endpoint || ('https://cognito-idp.' + (cognito.region || 'ap-south-1') + '.amazonaws.com/'), {
       method: 'POST',
       headers: {
         'Content-Type': 'application/x-amz-json-1.1',

@@ -20,6 +20,7 @@ import { reportsServiceFunction } from './functions/reports-service/resource';
 import { evaluateResilienceIqFunction } from './functions/evaluate-resilience-iq/resource';
 import { manageResilienceEvidenceFunction } from './functions/manage-resilience-evidence/resource';
 import { manageResilienceAssessmentFunction } from './functions/manage-resilience-assessment/resource';
+import { manageFinOpsAssessmentFunction } from './functions/manage-finops-assessment/resource';
 import {
   API_GATEWAY_CORS_ORIGINS, API_BURST_LIMIT, API_RATE_LIMIT, COGNITO_ISSUER, KEEP_LEGACY_API,
   REGION, REPORTS_BUCKET, USER_POOL_CLIENT_ID, USER_POOL_ID
@@ -39,7 +40,8 @@ export const backend = defineBackend({
   reportsServiceFunction,
   evaluateResilienceIqFunction,
   manageResilienceEvidenceFunction,
-  manageResilienceAssessmentFunction
+  manageResilienceAssessmentFunction,
+  manageFinOpsAssessmentFunction
 });
 
 const apiStack = backend.createStack('AcceleratorsApiStack');
@@ -97,6 +99,7 @@ const integrate = (id: string, fn: { resources: { lambda: IFunction } }) =>
 const integrations = {
   finops: integrate('AdvisoryFinOpsValueCase', backend.evaluateFinOpsFunction),
   finopsIq: integrate('AdvisoryFinOpsIq', backend.evaluateFinOpsIqFunction),
+  finopsAssessment: integrate('AdvisoryFinOpsIqAssessment', backend.manageFinOpsAssessmentFunction),
   posture: integrate('AdvisoryPostureIq', backend.evaluatePostureIqFunction),
   sovereign: integrate('AdvisorySovereignIq', backend.evaluateSovereignIqFunction),
   cloud: integrate('AdvisoryCloudIq', backend.evaluateCloudIqFunction),
@@ -111,6 +114,10 @@ const route = (path: string, methods: HttpMethod[], integration: HttpLambdaInteg
 // Scoring engines
 route('/api/evaluate/finops-value-case', [HttpMethod.POST], integrations.finops);
 route('/api/evaluate/finops-iq', [HttpMethod.POST], integrations.finopsIq);
+// FinOps IQ v3, the merged product (FinOps IQ with FinOps Value Case as its executive mode). The v2 route above
+// stays for the current page until cutover (execution phase M8).
+route('/api/evaluate/finops-iq/v3', [HttpMethod.POST], integrations.finopsIq);
+route('/api/finops-iq/assessment', [HttpMethod.GET, HttpMethod.POST], integrations.finopsAssessment);
 route('/api/evaluate/posture-iq', [HttpMethod.POST], integrations.posture);
 route('/api/evaluate/sovereign-iq', [HttpMethod.POST], integrations.sovereign);
 route('/api/evaluate/cloud-iq', [HttpMethod.POST], integrations.cloud);

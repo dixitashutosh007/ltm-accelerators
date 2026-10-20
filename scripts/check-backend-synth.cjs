@@ -51,10 +51,11 @@ check(!!advisory, 'Advisory API (ltm-advisory-api) is missing');
 
 if (advisory) {
   const routes = ofType('AWS::ApiGatewayV2::Route').filter(r => r.Properties.ApiId?.Ref === advisory.id);
-  // 7 scoring routes + identity, user administration and reports archive routes.
+  // 7 scoring routes, FinOps IQ v3 scoring and save/resume, identity, user administration and reports archive routes.
   const required = ['POST /api/evaluate/finops-value-case', 'POST /api/evaluate/finops-iq', 'POST /api/evaluate/posture-iq',
     'POST /api/evaluate/sovereign-iq', 'POST /api/evaluate/cloud-iq', 'POST /api/evaluate/strategy-iq',
-    'POST /api/evaluate/modernization-iq', 'GET /api/me', 'GET /api/users', 'POST /api/users/create',
+    'POST /api/evaluate/modernization-iq', 'POST /api/evaluate/finops-iq/v3', 'GET /api/finops-iq/assessment',
+    'POST /api/finops-iq/assessment', 'GET /api/me', 'GET /api/users', 'POST /api/users/create',
     'POST /api/users/set-password', 'POST /api/users/permissions', 'GET /api/reports/list',
     'POST /api/reports/save', 'POST /api/reports/delete', 'POST /api/reports/rename'];
   const keys = routes.map(r => r.Properties.RouteKey);
@@ -107,7 +108,7 @@ if (legacyApi && String(legacy).toLowerCase() === 'false') {
 // FinOps IQ and FinOps Value Case never have an unauthenticated route (F0, D11), whatever LTM_KEEP_LEGACY_API says.
 if (legacyApi) {
   const finops = ofType('AWS::ApiGatewayV2::Route')
-    .filter(r => r.Properties.ApiId?.Ref === legacyApi.id && /\/api\/evaluate\/finops-(iq|value-case)\b/.test(r.Properties.RouteKey))
+    .filter(r => r.Properties.ApiId?.Ref === legacyApi.id && /\/api\/(evaluate\/finops-(iq|value-case)|finops-iq)\b/.test(r.Properties.RouteKey))
     .map(r => r.Properties.RouteKey);
   check(finops.length === 0, `FinOps routes on the unauthenticated Accelerators API: ${finops.join(', ')}`);
 }
