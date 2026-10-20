@@ -148,13 +148,15 @@ async function api(req: IncomingMessage, res: ServerResponse, url: URL) {
   res.end(out.body ?? '');
 }
 
+// Same-origin addresses, so the pages work at http://localhost:PORT and http://127.0.0.1:PORT alike (the security
+// policy allows only 'self'; an absolute localhost address from a 127.0.0.1 page would be blocked).
 const RUNTIME_CONFIG = `window.LTM_CONFIG = ${JSON.stringify({
-  apiBase: ORIGIN,
-  cognito: { region: 'ap-south-1', userPoolId: 'local', clientId: 'local', endpoint: `${ORIGIN}/__dev/cognito` },
+  apiBase: '',
+  cognito: { region: 'ap-south-1', userPoolId: 'local', clientId: 'local', endpoint: '/__dev/cognito' },
   local: true
 })};\n`;
 
-createServer(async (req, res) => {
+const app = async (req: IncomingMessage, res: ServerResponse) => {
   try {
     const url = new URL(req.url || '/', ORIGIN);
     if (url.pathname === '/assets/runtime-config.js') {
@@ -171,8 +173,12 @@ createServer(async (req, res) => {
     console.error('[dev-server]', error);
     if (!res.headersSent) json(res, 500, { ok: false, error: 'dev server error (see the terminal)' });
   }
-}).listen(PORT, '127.0.0.1', () => {
-  console.log(`LTM accelerators running locally on ${ORIGIN}`);
+};
+
+// Loopback only, on IPv4 and IPv6: browsers may resolve "localhost" to either.
+createServer(app).listen(PORT, '127.0.0.1', () => {
+  console.log(`LTM accelerators running locally on ${ORIGIN} (or http://127.0.0.1:${PORT})`);
   console.log(`Sign in with ${Object.keys(USERS).join(' or ')}, password "${PASSWORD}".`);
   console.log(`FinOps IQ assessments are saved in ${DATA_DIR}.`);
 });
+createServer(app).listen(PORT, '::1').on('error', () => { /* no IPv6 loopback on this machine: IPv4 is enough */ });
