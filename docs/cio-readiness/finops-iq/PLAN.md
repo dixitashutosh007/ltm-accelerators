@@ -68,7 +68,9 @@ F0–F4 are done: the merged engine (v3, executive and workshop modes) exists, b
 
 Commits land on a local branch and are pushed when the owner asks.
 
-**M1 status (20 Oct 2026): done; gate ready for the owner.** The practice-lead review ([design/F5-review.md](design/F5-review.md)) asked for changes; the owner accepted every recommended default (D-A to D-H) on 20 Oct 2026 and they are built (engine 3.4.0, value model 1.2.0):
+**Gates M1, M2 and M3 approved by the owner on 20 Oct 2026.**
+
+**M1 status (20 Oct 2026): done; gate approved.** The practice-lead review ([design/F5-review.md](design/F5-review.md)) asked for changes; the owner accepted every recommended default (D-A to D-H) on 20 Oct 2026 and they are built (engine 3.4.0, value model 1.2.0):
 - **D-A (H1):** unknown spend, consuming units and growth count as risk until confirmed, labelled assumed, with need confidence Low.
 - **D-B (H2):** a blank that leaves LEV-01 or LEV-04 open counts as material for the need modifier and the severity uplift (`value_unconfirmed`), naming the inputs.
 - **D-C:** the workshop keeps the measured VB-03 rule; the page offers OP-06's mapping as a pre-fill to confirm; a derived share reads Low confidence (L2).
@@ -83,14 +85,14 @@ Commits land on a local branch and are pushed when the owner asks.
 
 *Earlier note, kept for the record:* `finops-iq-v3-audit.test.ts` puts the F5 invariants in CI (no dead questions; every rating, need band and headline value reachable; one answer moves only its own capability; Unknown never better than Not yet; N/A only from scope; value-base facts never move a rating; label truth, M10). Each invariant was checked to fail on a deliberately broken engine. The audit gained uniform baselines, so it no longer reports weakest-link depth questions as dead: the only dead questions are HY-01 to HY-07, by design (D4). Observation for the lead: in workshop mode LEV-04 needs the measured VB-03 share and is not quantified without it, while executive mode maps OP-06 (DESIGN.md 10.4–10.5). New reference scenarios from published case studies and the review are with `finops-cost-lead`.
 
-**M2 status (20 Oct 2026): built; owner gate open.**
+**M2 status (20 Oct 2026): built; gate approved.**
 - `POST /api/evaluate/finops-iq/v3` scores both modes (the same Lambda; the plain route keeps v2 for the current page until M8).
 - `GET/POST /api/finops-iq/assessment`: save, resume, complete and archive, on the `FinOpsIqAssessment` model, with ownership checks and the Resilience IQ lifecycle (a completed assessment is immutable). The result is computed on the server at completion and dated there. Drafts may hold incomplete facts; answers are always checked with the contract.
 - Both routes are on the Advisory API behind the Cognito JWT authorizer; `check:backend` requires them and fails if any FinOps route appears on the unauthenticated API.
 - `npm run dev` runs the platform locally (pages, handlers, local sign-in, `.local-data/` store).
 - Change from the plan: the FinOps Value Case route keeps its own engine until cutover, because the current FinOps Value Case page cannot render a v3 result. Under D18 that page stays live until M8, which redirects it to executive mode and removes the route.
 
-**M3 status (20 Oct 2026): built; owner gate open.** The merged page is served at `/finops-iq-v3` (`Accelerators/finops-iq-v3.html`, `assets/finops-iq/app.js` and `app.css`) and replaces `/finops-iq` at M8.
+**M3 status (20 Oct 2026): built; gate approved.** The merged page is served at `/finops-iq-v3` (`Accelerators/finops-iq-v3.html`, `assets/finops-iq/app.js` and `app.css`) and replaces `/finops-iq` at M8.
 - **No scoring in the browser.** The page reads `assets/finops-iq/questions.json`, generated from the bank with no option levels, ask conditions or legacy map; a test fails CI when it is stale. Which questions are asked comes from the server's result, and the server's contract messages tell the consultant which estate facts are missing.
 - **Modes.** Executive (18 questions, need verdict, top five findings) and workshop (every question for the estate, follow-ups as answers trigger them, all findings) on one engine. A completed executive assessment can continue in workshop mode with its answers filled in. In executive mode the consultant sets the internal cost rate at setup (DESIGN.md Q4).
 - **Client mode is server-side.** `?view=client` on the scoring and assessment routes runs `clientView()`: no conflict probes, scoring internals or consultant notes reach the browser; the page also omits the notes, setup and checks panels.

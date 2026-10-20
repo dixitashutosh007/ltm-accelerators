@@ -32,7 +32,7 @@ const READS = new Map<string, unknown>();
 function tokens(path: string): Array<{ key?: string; select?: string }> {
   return [...path.matchAll(/([^.[\]]+)|\[([^\]]+)\]/g)].map(m => (m[2] !== undefined ? { select: m[2] } : { key: m[1] }));
 }
-const SELECTOR_KEYS = ['id', 'fact', 'lever', 'provider', 'key'];
+const SELECTOR_KEYS = ['id', 'fact', 'lever', 'provider', 'key', 'capability'];
 function pathGet(root: any, path: string): any {
   let o = root;
   for (const t of tokens(path)) {

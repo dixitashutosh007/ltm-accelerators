@@ -18,6 +18,7 @@ import thresholds from '../src/accelerators/finops-iq/registry/thresholds.json' 
 import marketData from '../src/accelerators/finops-iq/registry/market-data.json' with { type: 'json' };
 import capabilities from '../src/accelerators/finops-iq/registry/capabilities.json' with { type: 'json' };
 import assumptions from '../src/accelerators/finops-iq/registry/assumptions.json' with { type: 'json' };
+import workstreams from '../src/accelerators/finops-iq/registry/workstreams.json' with { type: 'json' };
 import valueRules from '../src/accelerators/finops-iq/v3/value-rules.json' with { type: 'json' };
 import engineRules from '../src/accelerators/finops-iq/v3/engine-rules.json' with { type: 'json' };
 import questionBank from '../src/accelerators/finops-iq/v3/question-bank.json' with { type: 'json' };
@@ -418,7 +419,7 @@ describe('FinOps IQ v3 value: language lint', () => {
 
 /* --------------------------- Assumption register ---------------------------- */
 
-const SOURCES: Record<string, any> = { levers, thresholds, capabilities, valueRules, engineRules, questionBank };
+const SOURCES: Record<string, any> = { levers, thresholds, capabilities, valueRules, engineRules, questionBank, workstreams };
 function get(ref: string): any {
   const [source, path] = [ref.slice(0, ref.indexOf(':')), ref.slice(ref.indexOf(':') + 1)];
   let o = SOURCES[source];

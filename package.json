@@ -1,7 +1,7 @@
 {
   "name": "ltm-accelerators",
   "version": "1.0.0",
-  "description": "LTM Vantage \u2014 Responsible Advisory: enterprise advisory accelerators with headless scoring engines and role-based access control",
+  "description": "LTM Vantage — Responsible Advisory: enterprise advisory accelerators with headless scoring engines and role-based access control",
   "private": true,
   "type": "module",
   "scripts": {
@@ -44,7 +44,8 @@
   "dependencies": {
     "@aws-sdk/client-cognito-identity-provider": "^3.1146.0",
     "@aws-sdk/client-s3": "^3.1146.0",
-    "@aws-sdk/s3-request-presigner": "^3.1146.0"
+    "@aws-sdk/s3-request-presigner": "^3.1146.0",
+    "pdfmake": "0.2.20"
   },
   "devDependencies": {
     "@aws-amplify/backend": "^1.14.0",
@@ -52,12 +53,14 @@
     "@playwright/test": "1.56.1",
     "@types/aws-lambda": "^8.10.147",
     "@types/node": "^22.10.0",
+    "@types/pdfmake": "0.2.11",
     "aws-cdk-lib": "^2.170.0",
     "chart.js": "4.4.1",
     "constructs": "^10.4.0",
     "html2pdf.js": "0.10.1",
     "jspdf": "2.5.1",
     "jspdf-autotable": "3.8.2",
+    "pdfjs-dist": "5.7.284",
     "tsx": "^4.19.0",
     "typescript": "^5.7.0",
     "vitest": "^3.2.7",

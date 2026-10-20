@@ -8005,6 +8005,54 @@
       "nextReview": "2027-04-14",
       "basisNote": "The higher maxima apply only to specific instruments; when the client has not said which it uses, the conservative maximum avoids overstating LEV-01.",
       "notes": "F4 value-model rule built by the practice-lead agent; it extends or interprets DESIGN.md and awaits the product owner's decision at the F4 gate, so verification is P (the source is known; the owner-approved wording does not yet contain it). LTM heuristic, not a market fact. Approved by the product owner on 15 Oct 2026 (F3 rule corrections and F4 gate), so verification is now V against the owner-approved design."
+    },
+    {
+      "id": "CLM-FIN-177",
+      "accelerators": [
+        "finops-iq"
+      ],
+      "kind": "heuristic",
+      "jurisdiction": "global",
+      "source": {
+        "url": "https://github.com/dixitashutosh007/ltm-accelerators/blob/main/docs/cio-readiness/finops-iq/design/DESIGN.md",
+        "title": "LTM FinOps IQ design pack, section 11 (report and roadmap, execution phase M4)",
+        "article": "11",
+        "publisher": "LTM"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-20",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "finops-cost-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-20",
+      "nextReview": "2027-04-20",
+      "statement": "LTM roadmap workstreams for FinOps IQ: six workstreams (allocation, cost data and reporting; commitment portfolio, licences and SaaS; rightsizing, scheduling and clean-up; Kubernetes and AI cost management; forecasting, budgets and unit economics; FinOps operating model and governance), each with an objective, activities, KPIs, prerequisites and risks. A workstream's start, duration, owner, dependencies, milestones and value come from the findings it holds.",
+      "basisNote": "Grouping follows the FinOps Framework domains and the lever library; KPIs cite the Foundation's sample goals where they exist (CLM-FIN-035 to 038).",
+      "notes": "LTM heuristic, not a market fact. Shown in the report's roadmap and assumption register."
+    },
+    {
+      "id": "CLM-FIN-178",
+      "accelerators": [
+        "finops-iq"
+      ],
+      "kind": "heuristic",
+      "jurisdiction": "global",
+      "source": {
+        "url": "https://github.com/dixitashutosh007/ltm-accelerators/blob/main/docs/cio-readiness/finops-iq/design/DESIGN.md",
+        "title": "LTM FinOps IQ design pack, section 11 (report and roadmap, execution phase M4)",
+        "article": "11",
+        "publisher": "LTM"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-20",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "finops-cost-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-20",
+      "nextReview": "2027-04-20",
+      "statement": "LTM effort heuristic for a capability gap without a quantified lever: 1, 2 or 3 FTE-months per level of gap at Tier 1, 2 or 3; a workstream's effort is this plus the value model's lever effort (ASM-FIN-046), banded S (up to 3 FTE-months), M (up to 9) or L (more than 9).",
+      "basisNote": "No published effort benchmark for FinOps capability work was found; the band is indicative and is stated as such.",
+      "notes": "LTM heuristic, not a market fact (ASM-FIN-086)."
     }
   ]
 }

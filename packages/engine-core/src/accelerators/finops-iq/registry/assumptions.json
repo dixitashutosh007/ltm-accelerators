@@ -2049,6 +2049,48 @@
           "value": 1
         }
       ]
+    },
+    {
+      "id": "ASM-FIN-086",
+      "title": "Effort per level of capability gap, and effort bands",
+      "value": "1, 2 or 3 FTE-months per level of gap at Tier 1, 2 or 3; bands S up to 3 FTE-months, M up to 9, L above 9",
+      "basis": "ltm_heuristic",
+      "claimIds": [
+        "CLM-FIN-178"
+      ],
+      "reasoning": "Closing a level means policy, tooling and adoption work across the owners in scope; larger estates have more owners. Used only for the roadmap's effort band, never for value.",
+      "confidence": "Low",
+      "sensitivity": "Changes a workstream's band by at most one step; no rating or value changes",
+      "usedBy": [
+        "report roadmap"
+      ],
+      "ownerApproval": "pending owner approval at the M4 gate",
+      "constants": [
+        {
+          "ref": "workstreams:effort.fteMonthsPerLevelByTier",
+          "value": {
+            "1": 1,
+            "2": 2,
+            "3": 3
+          }
+        },
+        {
+          "ref": "workstreams:effort.bands",
+          "value": [
+            {
+              "maxFteMonths": 3,
+              "label": "S"
+            },
+            {
+              "maxFteMonths": 9,
+              "label": "M"
+            },
+            {
+              "label": "L"
+            }
+          ]
+        }
+      ]
     }
   ]
 }

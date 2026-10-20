@@ -1,0 +1,133 @@
+{
+  "libraryVersion": "1.0.0",
+  "statusAsOf": "2026-10-20",
+  "rule": "The report's delivery-grade roadmap (PLAN F7 item 3, area 13(e)). Each capability gap finding and each lever finding belongs to one workstream; a workstream's start, duration, owner, dependencies, milestones and value come from its findings, and its effort from the value model's lever effort plus a per-level heuristic for gaps without a quantified lever. Activities, KPIs, prerequisites and risks are LTM heuristics (CLM-FIN-177) except where a claim is cited.",
+  "claimIds": ["CLM-FIN-177"],
+  "effort": {
+    "fteMonthsPerLevelByTier": { "1": 1, "2": 2, "3": 3 },
+    "bands": [
+      { "maxFteMonths": 3, "label": "S" },
+      { "maxFteMonths": 9, "label": "M" },
+      { "label": "L" }
+    ],
+    "assumptionId": "ASM-FIN-086",
+    "claimIds": ["CLM-FIN-178"]
+  },
+  "workstreams": [
+    {
+      "id": "WS-ALLOCATION",
+      "name": "Allocation, cost data and reporting",
+      "capabilities": ["DATA_INGESTION", "ALLOCATION", "REPORTING_ANALYTICS", "ANOMALY_MANAGEMENT", "INVOICING_CHARGEBACK"],
+      "levers": [],
+      "objective": "Every cost has an accountable owner, complete data and a report that reaches the owner in time to act.",
+      "activities": [
+        "Agree the allocation policy: account and project structure, mandatory tags or labels, and rules for shared and untaggable costs",
+        "Bring every provider's billing export (FOCUS where available) into one dataset and reconcile it to the invoices",
+        "Publish cost by owner and route anomaly alerts to the owner with an agreed response time",
+        "Show back, then charge back, cost to business units once allocation is stable"
+      ],
+      "kpis": [
+        { "name": "Share of spend allocated to an accountable owner, measured by cost", "claimIds": ["CLM-FIN-035", "CLM-FIN-124"] },
+        { "name": "Time from an unexpected cost increase to the owner knowing about it", "claimIds": ["CLM-FIN-038", "CLM-FIN-123"] },
+        { "name": "Share of invoices reconciled to the cost data each month", "claimIds": ["CLM-FIN-029"] }
+      ],
+      "prerequisites": ["Read access to every provider's billing export", "A named owner for each account, subscription or project"],
+      "risks": ["Tagging coverage measured by resource count overstates allocation by cost", "Shared platform costs left unallocated stall chargeback"]
+    },
+    {
+      "id": "WS-COMMITMENTS",
+      "name": "Commitment portfolio, licences and SaaS",
+      "capabilities": ["RATE_OPTIMIZATION", "LICENSING_SAAS"],
+      "levers": ["LEV-01", "LEV-06", "LEV-09"],
+      "objective": "Buy commitments against steady usage after the usage changes are planned, and stop paying for unused licences and seats.",
+      "activities": [
+        "Baseline coverage and utilisation of commitments by provider, measured by cost",
+        "Sequence purchases after scheduling, rightsizing and Spot moves, in tranches with expiry dates spread",
+        "Move interruption-tolerant workloads not covered by commitments to Spot or preemptible capacity",
+        "Reclaim or re-harvest unused licences and seats at renewal"
+      ],
+      "kpis": [
+        { "name": "Commitment coverage of eligible usage, by cost", "claimIds": ["CLM-FIN-036"] },
+        { "name": "Commitment utilisation", "claimIds": ["CLM-FIN-036"] },
+        { "name": "Unused licence and seat cost at each renewal", "claimIds": ["CLM-FIN-158"] }
+      ],
+      "prerequisites": ["Allocation good enough to see steady usage by owner", "Finance agreement to commit for one or three years"],
+      "risks": ["Committing before usage is reduced locks in waste", "Concentrated expiry dates create renewal cliffs"]
+    },
+    {
+      "id": "WS-USAGE",
+      "name": "Rightsizing, scheduling and clean-up",
+      "capabilities": ["USAGE_OPTIMIZATION", "ARCHITECTING_WORKLOAD_PLACEMENT", "SUSTAINABILITY"],
+      "levers": ["LEV-02", "LEV-03", "LEV-04", "LEV-05", "LEV-08"],
+      "objective": "Pay only for the capacity that is used, when it is used.",
+      "activities": [
+        "Switch non-production environments off outside working hours by default",
+        "Act on provider-tool rightsizing and idle-resource recommendations on a fixed cadence, with owners",
+        "Set storage lifecycle policies and remove orphaned volumes, snapshots and addresses",
+        "Make expected cost a criterion in architecture reviews"
+      ],
+      "kpis": [
+        { "name": "Share of non-production compute scheduled off outside working hours", "claimIds": ["CLM-FIN-131"] },
+        { "name": "Provider-tool recommendations actioned within the agreed cycle", "claimIds": ["CLM-FIN-083", "CLM-FIN-092"] }
+      ],
+      "prerequisites": ["Owners for the resources to change", "Agreed working-hours schedules per environment"],
+      "risks": ["Changes made without owners are reverted", "Savings counted twice across rightsizing and commitments"]
+    },
+    {
+      "id": "WS-CONTAINERS-AI",
+      "name": "Kubernetes and AI cost management",
+      "capabilities": [],
+      "levers": ["LEV-07", "LEV-10"],
+      "objective": "Allocate and right-size cluster and GPU spend like any other workload.",
+      "activities": [
+        "Allocate cluster cost to namespaces and teams by requested and used CPU and memory",
+        "Tune requests and autoscaling to measured use",
+        "Track GPU utilisation and shut down idle model endpoints"
+      ],
+      "kpis": [
+        { "name": "Used versus requested CPU and memory in clusters", "claimIds": ["CLM-FIN-132"] },
+        { "name": "Average GPU utilisation and idle endpoint spend", "claimIds": ["CLM-FIN-159"] }
+      ],
+      "prerequisites": ["Cluster cost allocation data (provider split cost data or an open-source allocator)", "GPU utilisation metrics"],
+      "risks": ["Requests cut below need cause throttling", "AI spend grows faster than the controls"]
+    },
+    {
+      "id": "WS-FORECAST",
+      "name": "Forecasting, budgets and unit economics",
+      "capabilities": ["PLANNING_ESTIMATING", "FORECASTING", "BUDGETING", "KPIS_BENCHMARKING", "UNIT_ECONOMICS"],
+      "levers": [],
+      "objective": "Plan spend from business drivers and judge it by what it delivers.",
+      "activities": [
+        "Estimate the running cost of new workloads before they go ahead",
+        "Forecast from business drivers and planned changes; track variance monthly",
+        "Give teams budgets with alerts and a review when they are exceeded",
+        "Agree unit costs (per customer, transaction or unit of output) and report their trend"
+      ],
+      "kpis": [
+        { "name": "Forecast variance, actual against forecast", "claimIds": ["CLM-FIN-037", "CLM-FIN-126"] },
+        { "name": "Unit cost trend for the agreed business units", "claimIds": ["CLM-FIN-018"] }
+      ],
+      "prerequisites": ["Allocation by owner", "A business volume measure the finance team accepts"],
+      "risks": ["Unit costs built on unallocated spend mislead decisions", "Forecasts that ignore planned migrations"]
+    },
+    {
+      "id": "WS-OPERATING-MODEL",
+      "name": "FinOps operating model and governance",
+      "capabilities": ["EXECUTIVE_STRATEGY_ALIGNMENT", "FINOPS_PRACTICE_OPERATIONS", "GOVERNANCE_POLICY_RISK", "FINOPS_EDUCATION_ENABLEMENT", "FINOPS_ASSESSMENT", "AUTOMATION_TOOLS_SERVICES", "INTERSECTING_DISCIPLINES"],
+      "levers": [],
+      "objective": "Someone is accountable for technology spend, with a mandate, a cadence and policies that hold.",
+      "activities": [
+        "Appoint an accountable FinOps owner with a written mandate and an executive sponsor",
+        "Run a regular cost review with engineering and finance, with decisions recorded",
+        "Enforce cost policies automatically (tags, allowed regions and sizes, budgets)",
+        "Train engineers, product owners and finance staff; reassess the practice yearly"
+      ],
+      "kpis": [
+        { "name": "Capabilities at or above their target level", "claimIds": ["CLM-FIN-121"] },
+        { "name": "Share of cost reviews held on schedule with decisions recorded", "claimIds": ["CLM-FIN-177"] }
+      ],
+      "prerequisites": ["An executive sponsor", "Agreement between finance and technology on who decides"],
+      "risks": ["A FinOps team without a mandate becomes a reporting function", "Policies enforced without exceptions block delivery"]
+    }
+  ]
+}

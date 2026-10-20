@@ -19,7 +19,7 @@ const REGISTER = 'packages/engine-core/src/claims/claims-register.json';
 const SCHEMA = 'packages/engine-core/src/claims/claim.schema.json';
 // Knowledge files whose claim references must resolve. Add each accelerator's registry as it is sourced.
 const FINOPS_REGISTRY = [
-  'capabilities.json', 'levers.json', 'thresholds.json', 'market-data.json', 'provider-statements.json', 'assumptions.json'
+  'capabilities.json', 'levers.json', 'thresholds.json', 'market-data.json', 'provider-statements.json', 'assumptions.json', 'workstreams.json'
 ].map(f => `packages/engine-core/src/accelerators/finops-iq/registry/${f}`);
 // FinOps IQ v3 engine content (plans F3 and F4): the merged question bank, the engine's and the value model's wording and rules.
 const FINOPS_V3 = ['question-bank.json', 'engine-rules.json', 'value-rules.json'].map(f => `packages/engine-core/src/accelerators/finops-iq/v3/${f}`);
