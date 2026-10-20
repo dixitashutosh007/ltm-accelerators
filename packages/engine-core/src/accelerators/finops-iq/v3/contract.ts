@@ -16,15 +16,15 @@ const CAPABILITY_IDS = new Set<string>((capabilityModel as any).capabilities.map
 
 export const PROVIDERS = ['aws', 'azure', 'gcp', 'oci', 'ibm', 'alibaba', 'other_public'];
 export const SCOPES = ['public_cloud', 'private_cloud', 'data_centre', 'colocation', 'kubernetes', 'ai_api', 'ai_platform_gpu', 'saas', 'licensing', 'data_cloud_platform'];
-const SECTORS = ['banking', 'insurance', 'capital_markets', 'public_sector', 'healthcare', 'retail', 'manufacturing', 'telecom_media', 'technology_saas', 'energy_utilities', 'professional_services', 'other'];
-const MARKETS = ['eu', 'uk', 'us', 'apac', 'other'];
-const UNITS = ['1', '2-4', '5-19', '20+', 'unknown'];
-const MIXES = ['on_premises_only', 'mostly_dc', 'balanced_hybrid', 'mostly_cloud', 'cloud_native', 'unknown'];
-const MIGRATION_STAGES = ['planning', 'early', 'in_flight', 'largely', 'complete', 'unknown'];
+export const SECTORS = ['banking', 'insurance', 'capital_markets', 'public_sector', 'healthcare', 'retail', 'manufacturing', 'telecom_media', 'technology_saas', 'energy_utilities', 'professional_services', 'other'];
+export const MARKETS = ['eu', 'uk', 'us', 'apac', 'other'];
+export const UNITS = ['1', '2-4', '5-19', '20+', 'unknown'];
+export const MIXES = ['on_premises_only', 'mostly_dc', 'balanced_hybrid', 'mostly_cloud', 'cloud_native', 'unknown'];
+export const MIGRATION_STAGES = ['planning', 'early', 'in_flight', 'largely', 'complete', 'unknown'];
 const SHARE_FACTS = ['computeShare', 'steadyStateShare', 'eligibleCoverage', 'nonProdShare', 'nonProdScheduledShare', 'interruptionTolerantShare', 'spotShare', 'storageShare', 'coldDataShare', 'dataTransferShare', 'kubernetesRequestUtilisation'];
 const RECOMMENDATION_TYPES = ['rightsizing', 'modernisation', 'idle', 'storage', 'commitments', 'other'];
 /** Main commitment instrument per provider (VB-02, F4 review M6). */
-const INSTRUMENTS: Record<string, string[]> = { aws: ['ec2_instance_sp_or_ri', 'compute_sp'], azure: ['reservations', 'savings_plan'], gcp: ['resource_cud', 'memory_optimised_cud'] };
+export const INSTRUMENTS: Record<string, string[]> = { aws: ['ec2_instance_sp_or_ri', 'compute_sp'], azure: ['reservations', 'savings_plan'], gcp: ['resource_cud', 'memory_optimised_cud'] };
 
 const isObject = (v: unknown): v is Record<string, any> => !!v && typeof v === 'object' && !Array.isArray(v);
 const isNumber = (v: unknown): v is number => typeof v === 'number' && Number.isFinite(v);

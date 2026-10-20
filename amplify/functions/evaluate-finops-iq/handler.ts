@@ -2,7 +2,7 @@ import type { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda
 import { corsHeaders } from '../_shared/http';
 import { evaluateFinOpsIq } from '../../../packages/engine-core/src/accelerators/finops-iq/evaluate';
 import { parseFinOpsIqRequest } from '../../../packages/engine-core/src/accelerators/finops-iq/contract';
-import { evaluateFinOpsIqV3, parseFinOpsIqV3Request } from '../../../packages/engine-core/src/accelerators/finops-iq/v3';
+import { clientView, evaluateFinOpsIqV3, parseFinOpsIqV3Request } from '../../../packages/engine-core/src/accelerators/finops-iq/v3';
 
 function score<I, R>(parsed: { ok: true; value: I } | { ok: false; errors: string[] }, evaluate: (input: I) => R) {
   return parsed.ok ? { ok: true as const, result: evaluate(parsed.value) } : parsed;
@@ -45,7 +45,9 @@ export const handler = async (event: APIGatewayProxyEventV2): Promise<APIGateway
       };
     }
 
-    const result = evaluated.result;
+    // ?view=client returns the client-mode result: consultant-only fields are removed here, not hidden in the page.
+    const client = v3 && event.queryStringParameters?.view === 'client';
+    const result = client ? clientView(evaluated.result as ReturnType<typeof evaluateFinOpsIqV3>) : evaluated.result;
 
     return {
       statusCode: 200,

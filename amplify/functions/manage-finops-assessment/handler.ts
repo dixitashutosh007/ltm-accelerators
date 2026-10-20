@@ -2,6 +2,7 @@
  * FinOps IQ save and resume (execution phase M2), on the Advisory API behind the Cognito JWT authorizer:
  *   GET  /api/finops-iq/assessment                      the caller's assessments, newest first (summaries)
  *   GET  /api/finops-iq/assessment?assessmentId=...     one assessment, with its request and, once completed, result
+ *        &view=client                                   client mode: no consultant notes, result through clientView()
  *   POST /api/finops-iq/assessment  { action, snapshot } save | complete | archive
  * A record belongs to its respondent (Admins may act on any). The stored result is computed here on completion,
  * never taken from the browser. A completed assessment is immutable; it can only be archived.
@@ -11,15 +12,22 @@ import { randomUUID } from 'node:crypto';
 import { corsHeaders } from '../_shared/http';
 import { authorized, canAccess, isAdmin, parseBody, userEmail } from '../_shared/resilience-data';
 import { canTransition, evaluateSnapshot, parseSnapshot, snapshotMode, type FinOpsAssessmentStatus } from '../../../packages/engine-core/src/accelerators/finops-iq/v3/assessment';
+import { clientView } from '../../../packages/engine-core/src/accelerators/finops-iq/v3/client-view';
 import { ENGINE_VERSION } from '../../../packages/engine-core/src/accelerators/finops-iq/v3/evaluate';
 import { appSyncStore, type FinOpsAssessmentRecord, type FinOpsAssessmentStore } from './store';
 
 const ACTIONS = new Set(['save', 'complete', 'archive']);
 
-/** Stored fields to the page's view: JSON fields parsed. */
-function view(r: FinOpsAssessmentRecord) {
-  const { requestJson, resultJson, ...rest } = r;
-  return { ...rest, ...(requestJson ? { request: JSON.parse(requestJson) } : {}), ...(resultJson ? { result: JSON.parse(resultJson) } : {}) };
+/** Stored fields to the page's view: JSON fields parsed. Client mode drops the notes and filters the result. */
+function view(r: FinOpsAssessmentRecord, client = false) {
+  const { requestJson, resultJson, consultantNotes, ...rest } = r;
+  const result = resultJson ? JSON.parse(resultJson) : undefined;
+  return {
+    ...rest,
+    ...(client ? {} : { consultantNotes }),
+    ...(requestJson ? { request: JSON.parse(requestJson) } : {}),
+    ...(result ? { result: client ? clientView(result) : result } : {})
+  };
 }
 
 /** The list shows summaries only, whatever the store returns: no request, notes or result. */
@@ -46,7 +54,7 @@ export function createHandler(store: FinOpsAssessmentStore, now: () => Date = ()
         const item = await store.get(assessmentId);
         if (!item) return respond(404, { ok: false, error: 'assessment_not_found' });
         if (!canAccess(event, item.respondentEmail)) return respond(403, { ok: false, error: 'assessment_access_denied' });
-        return respond(200, { ok: true, data: view(item) });
+        return respond(200, { ok: true, data: view(item, event.queryStringParameters?.view === 'client') });
       }
       if (method !== 'POST') return respond(405, { ok: false, error: 'method_not_allowed' });
 

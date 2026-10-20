@@ -27,7 +27,9 @@ export function makeIdToken(email: string, expiresInSeconds = 3600, extra: Recor
 }
 
 export type Session = { email: string; token: string; refreshToken?: string; role?: string; permissions?: Record<string, unknown> };
-type ApiHandler = (req: { method: string; path: string; body: any; auth: string }) => { status?: number; body: unknown } | undefined;
+type ApiReply = { status?: number; body: unknown } | undefined;
+/** A fake route. It may be async, so a test can run a real Lambda handler behind it. */
+type ApiHandler = (req: { method: string; path: string; body: any; auth: string; query: Record<string, string>; claims: Record<string, any> }) => ApiReply | Promise<ApiReply>;
 
 export class MockWorld {
   calls: string[] = [];
@@ -118,7 +120,7 @@ export class MockWorld {
     for (const h of this.handlers) {
       const pathOk = typeof h.path === 'string' ? h.path === url.pathname : h.path.test(url.pathname);
       if (h.method === method && pathOk) {
-        const out = h.fn({ method, path: url.pathname, body, auth });
+        const out = await h.fn({ method, path: url.pathname, body, auth, query: Object.fromEntries(url.searchParams), claims });
         if (out) return reply(out.status ?? 200, out.body);
       }
     }

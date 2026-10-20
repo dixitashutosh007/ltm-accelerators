@@ -75,7 +75,16 @@ Commits land on a local branch and are pushed when the owner asks.
 - `GET/POST /api/finops-iq/assessment`: save, resume, complete and archive, on the `FinOpsIqAssessment` model, with ownership checks and the Resilience IQ lifecycle (a completed assessment is immutable). The result is computed on the server at completion and dated there. Drafts may hold incomplete facts; answers are always checked with the contract.
 - Both routes are on the Advisory API behind the Cognito JWT authorizer; `check:backend` requires them and fails if any FinOps route appears on the unauthenticated API.
 - `npm run dev` runs the platform locally (pages, handlers, local sign-in, `.local-data/` store).
-- Change from the plan: the FinOps Value Case route keeps its own engine until M3, because the current FinOps Value Case page cannot render a v3 result; M3 redirects that page to executive mode and M8 removes the route.
+- Change from the plan: the FinOps Value Case route keeps its own engine until cutover, because the current FinOps Value Case page cannot render a v3 result. Under D18 that page stays live until M8, which redirects it to executive mode and removes the route.
+
+**M3 status (20 Oct 2026): built; owner gate open.** The merged page is served at `/finops-iq-v3` (`Accelerators/finops-iq-v3.html`, `assets/finops-iq/app.js` and `app.css`) and replaces `/finops-iq` at M8.
+- **No scoring in the browser.** The page reads `assets/finops-iq/questions.json`, generated from the bank with no option levels, ask conditions or legacy map; a test fails CI when it is stale. Which questions are asked comes from the server's result, and the server's contract messages tell the consultant which estate facts are missing.
+- **Modes.** Executive (18 questions, need verdict, top five findings) and workshop (every question for the estate, follow-ups as answers trigger them, all findings) on one engine. A completed executive assessment can continue in workshop mode with its answers filled in. In executive mode the consultant sets the internal cost rate at setup (DESIGN.md Q4).
+- **Client mode is server-side.** `?view=client` on the scoring and assessment routes runs `clientView()`: no conflict probes, scoring internals or consultant notes reach the browser; the page also omits the notes, setup and checks panels.
+- **Save and resume** on the server, autosaved; completion records the server's result and makes the assessment read-only. No assessment data in `localStorage`.
+- **Notices.** Review banner, data and hosting notice, disclaimer and CC BY 4.0 attribution (CLM-FIN-033) on the start screen and in the methodology panel. The data notice and disclaimer are draft wording for M6.
+- **Gate evidence.** `tests/e2e/finops-iq-v3.spec.ts` runs the real Lambda handlers: every question renders and can be answered in both modes; sign-in → answer → save → complete → resume; the client-mode DOM holds no consultant-only content; no console errors or CSP violations; no horizontal scroll at 360px; every control has an accessible name. A full WCAG 2.2 AA audit (automated axe scan and a manual keyboard and screen-reader pass) is part of M7.
+- **Not in M3:** consultant target overrides and the complexity-tier override (the engine supports both; the page does not yet), PDF and backlog (M4), playbook and offerings (M5).
 
 ---
 

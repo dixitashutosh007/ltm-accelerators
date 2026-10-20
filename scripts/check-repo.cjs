@@ -78,7 +78,8 @@ for (const f of sitePages) {
 
 // 6b. No browser AI in pages that have been moved off it (Sovereign IQ plan S0): no LLM vendor API host and no
 // provider key handling. AI returns through LTM's server-side service. Add each page here as its browser AI is removed.
-const NO_BROWSER_AI = ['Accelerators/sovereign-iq.html', 'Accelerators/posture-iq.html', 'Accelerators/finops-iq.html'];
+const NO_BROWSER_AI = ['Accelerators/sovereign-iq.html', 'Accelerators/posture-iq.html', 'Accelerators/finops-iq.html',
+  'Accelerators/finops-iq-v3.html', 'Accelerators/assets/finops-iq/app.js'];
 for (const f of NO_BROWSER_AI) {
   const m = read(f).match(/generativelanguage\.googleapis\.com|api\.openai\.com|api\.anthropic\.com|anthropic-dangerous-direct-browser-access/);
   if (m) fail('browser-ai', f, m[0]);

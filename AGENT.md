@@ -27,7 +27,7 @@ npm ci
 npm run dev               # http://localhost:4300, nothing deployed
 ```
 
-Sign in as `consultant@ltm.local` or `admin@ltm.local`, password `local-dev`. The dev server (`scripts/dev-server.ts`) serves the pages, runs the Advisory API handlers in-process behind a local token check, and stands in for Cognito. FinOps IQ assessments are saved in `.local-data/`; the reports archive keeps metadata in memory only.
+The merged FinOps IQ is at http://localhost:4300/finops-iq-v3. Sign in as `consultant@ltm.local` or `admin@ltm.local`, password `local-dev`. The dev server (`scripts/dev-server.ts`) serves the pages, runs the Advisory API handlers in-process behind a local token check, and stands in for Cognito. FinOps IQ assessments are saved in `.local-data/`; the reports archive keeps metadata in memory only.
 
 ## Checks before pushing
 

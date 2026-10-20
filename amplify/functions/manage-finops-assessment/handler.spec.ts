@@ -117,6 +117,19 @@ describe('FinOps IQ assessment API: save and resume', () => {
   });
 });
 
+describe('FinOps IQ assessment API: client mode', () => {
+  it('?view=client returns no consultant notes and a client-mode result', async () => {
+    await save({ status: 'completed', consultantNotes: 'Client CFO sceptical about tagging numbers' }, 'complete');
+    const full = await call(event('GET', { query: { assessmentId: 'FIQ-0001-test' } }));
+    expect(full.body.data.consultantNotes).toMatch(/sceptical/);
+    expect(full.body.data.result.tier.trace).toBeDefined();
+    const client = await call(event('GET', { query: { assessmentId: 'FIQ-0001-test', view: 'client' } }));
+    expect(JSON.stringify(client.body)).not.toMatch(/sceptical|consultantNotes/);
+    expect(client.body.data.result.view).toBe('client');
+    expect(client.body.data.result.tier.trace).toBeUndefined();
+  });
+});
+
 describe('FinOps IQ assessment API: ownership', () => {
   const OTHER = { email: 'someone.else@example.com', sub: 'sub-2' };
   const ADMIN = { email: 'admin@example.com', sub: 'sub-9', 'cognito:groups': ['Admin'] };

@@ -10,6 +10,7 @@
     "amplify": "ampx",
     "validate:costiq": "node scripts/validate-cost-iq.cjs",
     "build:runtime-config": "node scripts/generate-runtime-config.cjs",
+    "build:finops-iq-questions": "tsx scripts/build-finops-iq-questions.ts",
     "test:reports": "npm --prefix services/reports-service test",
     "typecheck": "tsc --noEmit -p tsconfig.typecheck.json",
     "demo:engine": "tsx packages/engine-core/src/test-runner.ts",

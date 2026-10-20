@@ -11,8 +11,8 @@ const facts = {
   footprint: { publicCloudProviders: ['aws'], scopes: ['public_cloud'] },
   spend: { byScope: { aws: { exact: 20_000_000 } }, growth12m: 10 }
 };
-const post = async (rawPath: string, body: unknown) => {
-  const res = (await handler({ rawPath, requestContext: { http: { method: 'POST' } }, headers: {}, body: JSON.stringify(body) } as any)) as APIGatewayProxyStructuredResultV2;
+const post = async (rawPath: string, body: unknown, query?: Record<string, string>) => {
+  const res = (await handler({ rawPath, queryStringParameters: query, requestContext: { http: { method: 'POST' } }, headers: {}, body: JSON.stringify(body) } as any)) as APIGatewayProxyStructuredResultV2;
   return { status: res.statusCode, body: JSON.parse(String(res.body)) };
 };
 
@@ -23,6 +23,17 @@ describe('POST /api/evaluate/finops-iq/v3', () => {
     expect(res.body.data.versions.engine).toBe('3.3.0');
     expect(res.body.data.mode).toBe('executive');
     expect(res.body.data.needVerdict).not.toBeNull();
+  });
+
+  it('?view=client removes consultant-only fields on the server', async () => {
+    const body = { mode: 'executive', facts, answers: { 'MP-01': 'walk', 'UN-04': 'run', 'UN-11': 'crawl' } };
+    const full = await post('/api/evaluate/finops-iq/v3', body);
+    const client = await post('/api/evaluate/finops-iq/v3', body, { view: 'client' });
+    expect(full.body.data.tier.trace).toBeDefined();
+    expect(client.body.data.view).toBe('client');
+    expect(client.body.data.tier.trace).toBeUndefined();
+    expect(client.body.data.needVerdict.baseIndex).toBeUndefined();
+    expect(client.body.data.conflicts).toEqual([]);
   });
 
   it('rejects a v2 payload, and a v3 payload sent to the v2 route', async () => {
