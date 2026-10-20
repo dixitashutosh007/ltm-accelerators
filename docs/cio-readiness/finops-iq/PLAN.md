@@ -42,6 +42,32 @@
 
 F0 starts now and does not wait for any decision. F2 research can run beside F1. F6, F8 and F9 can run in parallel once F3's contract is fixed. F4 is the critical path for area 13.
 
+## Execution sequence M1–M8 (owner, 20 Oct 2026)
+
+F0–F4 are done: the merged engine (v3, executive and workshop modes) exists, but no page or route uses it yet. The remaining work is re-sequenced so one merged **FinOps IQ** product runs early and is then hardened. The F-phase sections below stay the detailed specification; each M phase points to them.
+
+| # | Phase | Covers | Gate |
+|---|---|---|---|
+| M1 | Scoring audit and recalibration | F5 | Audit invariants on v3 in CI; reference scenarios agree; golden outputs approved |
+| M2 | Wire the merged engine | F3 item 1, F6 item 2 | One authenticated route on v3 for both modes; server save and resume with ownership checks; FinOps Value Case route returns the executive result; v2 behind a flag until M8; local dev server (`npm run dev`) runs pages and handlers with no deployment |
+| M3 | One page, three modes | F6 | Every question renders and can be answered in both modes; journey test; client mode enforced on the server; notices shown; WCAG 2.2 AA; no horizontal scroll at 360px |
+| M4 | Report and PDF | F7, WS-S4 (built generic) | Server-rendered PDF from the screen template; "How we calculated this"; backlog CSV; screen = PDF = backlog = engine |
+| M5 | Technical execution and How LTM can help | F8, F9, WS-S3, WS-S5 (built generic) | Playbook entries per selected platform with verification; every finding maps to a typed offering; SOW consultant-only |
+| M6 | Client-data protection and legal | F11, WS-S6 | Notice, transfer basis, retention live; counsel review started at M2, comments recorded |
+| M7 | Production-readiness review | F12, expanded | Functional, legal, technical and security, UI, report, PDF and presentability each Pass with evidence; CIO challenge ≥ 9/10; live smoke test |
+| M8 | Cutover and retire | F3 item 1, F6 item 1 | v3 live; v2 engine, FinOps Value Case engine, route and page, old sample report and playbook removed; playbook regenerated from the engine and KB |
+
+**Decisions (owner, 20 Oct 2026):**
+
+| # | Decision | Taken |
+|---|---|---|
+| D16 | AI in v1 | No AI in v1; F10 (Bedrock) follows after M8. Area 10 passes on "no browser AI, no keys in the page" |
+| D17 | Shared workstreams | WS-S3, WS-S4 and WS-S5 built generic, with FinOps IQ as the first consumer |
+| D18 | Current pages during the build | Stay live with the F0 review banner until M8 |
+| D19 | Counsel | Engaged from M2 so M6 is not blocked |
+
+Commits land on a local branch and are pushed when the owner asks.
+
 ---
 
 ## F0: Containment

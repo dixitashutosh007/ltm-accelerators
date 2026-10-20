@@ -51,6 +51,11 @@ export interface Adapter {
   band?: { get: (result: any) => string; all: string[] };
   /** The best and worst answers a client could give, to test band reachability. */
   extremes: { best: () => any; worst: () => any };
+  /**
+   * Extra questionnaires to vary one answer from, besides the random ones. An engine that rates by the weakest answer
+   * needs uniform baselines: from a random base one answer rarely moves the minimum, so it would read as dead.
+   */
+  sensitivityBases?: () => any[];
 }
 
 const setAnswer = (input: any, qid: string, value: unknown) => ({ ...input, answers: { ...input.answers, [qid]: value } });
@@ -200,6 +205,13 @@ function fiq3Variants(q: any): unknown[] {
     default: return [];
   }
 }
+const fiq3Uniform = (mode: Fiq3Mode, level: string, facts: Fiq3Facts = FIQ3_FACTS[mode]) => ({
+  mode, assessmentDate: FIQ3_DATE, facts,
+  answers: Object.fromEntries(fiq3Questions(mode).filter((q: any) => q.kind === 'maturity')
+    .map((q: any) => [q.id, q.id === 'UN-08' ? ({ run: FIQ3_REPORTS, walk: FIQ3_REPORTS.slice(0, 3), crawl: FIQ3_REPORTS.slice(0, 1) } as any)[level] : level]))
+});
+/** The workshop estate without measured evidence or measured shares, so its value headlines move with the answers. */
+const FIQ3_WORKSHOP_UNMEASURED: Fiq3Facts = { ...FIQ3_FACTS.workshop, base: FIQ3_BASE, evidence: undefined, cost: FIQ3_COST };
 const fiq3Extreme = (mode: Fiq3Mode, level: 'run' | 'not_yet') => ({
   mode, assessmentDate: FIQ3_DATE, facts: mode === 'executive' && level === 'not_yet' ? FIQ3_EXEC_TIER3 : FIQ3_FACTS[mode],
   answers: Object.fromEntries(fiq3Questions(mode).filter((q: any) => q.kind === 'maturity')
@@ -225,13 +237,16 @@ function fiq3Adapter(mode: Fiq3Mode): Adapter {
   return {
     id: `finops-iq-v3-${mode}`, name: `FinOps IQ v3 (${mode} mode)`,
     questions: qs.map((q: any) => ({ id: q.id, label: q.text })),
-    random: r => ({ mode, assessmentDate: FIQ3_DATE, facts: mode === 'executive' && r() < 0.5 ? FIQ3_EXEC_TIER3 : FIQ3_FACTS[mode], answers: Object.fromEntries(qs.filter(() => r() < 0.85).map((q: any) => [q.id, pick(r, fiq3Variants(q))])) }),
+    random: r => ({ mode, assessmentDate: FIQ3_DATE, facts: r() < 0.5 ? (mode === 'executive' ? FIQ3_EXEC_TIER3 : FIQ3_WORKSHOP_UNMEASURED) : FIQ3_FACTS[mode], answers: Object.fromEntries(qs.filter(() => r() < 0.85).map((q: any) => [q.id, pick(r, fiq3Variants(q))])) }),
     variants: id => fiq3Variants(byId.get(id)),
     withAnswer: setAnswer, withoutAnswer: dropAnswer,
     evaluate: i => evaluateFinOpsIqV3(i),
     headlines,
     ...(mode === 'executive' ? { band: { get: (r: any) => r.needVerdict.bandLabel, all: ['Lightweight practices sufficient at current scale', 'Targeted improvements needed now', 'Material exposure: act this year', 'Act now'] } } : {}),
-    extremes: { best: () => fiq3Extreme(mode, 'run'), worst: () => fiq3Extreme(mode, 'not_yet') }
+    extremes: { best: () => fiq3Extreme(mode, 'run'), worst: () => fiq3Extreme(mode, 'not_yet') },
+    // Uniform baselines (follow-ups are asked only after a weak answer, hence Walk and Crawl too), on each estate.
+    sensitivityBases: () => (['run', 'walk', 'crawl'] as const).flatMap(level =>
+      [FIQ3_FACTS[mode], mode === 'executive' ? FIQ3_EXEC_TIER3 : FIQ3_WORKSHOP_UNMEASURED].map(f => fiq3Uniform(mode, level, f)))
   };
 }
 

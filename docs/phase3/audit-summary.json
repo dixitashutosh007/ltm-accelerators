@@ -876,20 +876,20 @@
             "swing": 12.5
           },
           {
+            "qid": "UN-10",
+            "swing": 12.5
+          },
+          {
+            "qid": "UN-11",
+            "swing": 12.5
+          },
+          {
             "qid": "QV-01",
             "swing": 12.5
           },
           {
-            "qid": "MP-01",
-            "swing": 12.5
-          },
-          {
             "qid": "OP-01",
-            "swing": 10
-          },
-          {
-            "qid": "OP-06",
-            "swing": 10
+            "swing": 12.5
           }
         ],
         "share": 0.15299877600979192
@@ -1114,8 +1114,8 @@
           0,
           66
         ],
-        "min": 28,
-        "max": 51,
+        "min": 26,
+        "max": 50,
         "outOfScale": 0,
         "nulls": 0
       },
@@ -1125,8 +1125,8 @@
           0,
           34
         ],
-        "min": 10,
-        "max": 22,
+        "min": 11,
+        "max": 21,
         "outOfScale": 0,
         "nulls": 0
       },
@@ -1137,7 +1137,7 @@
           34
         ],
         "min": 16,
-        "max": 25,
+        "max": 32,
         "outOfScale": 0,
         "nulls": 0
       },
@@ -1147,7 +1147,7 @@
           0,
           23200000
         ],
-        "min": 6841784,
+        "min": 591000,
         "max": 6841784,
         "outOfScale": 0,
         "nulls": 0
@@ -1158,7 +1158,7 @@
           0,
           23200000
         ],
-        "min": 13450018,
+        "min": 1182000,
         "max": 13450018,
         "outOfScale": 0,
         "nulls": 0
@@ -1169,7 +1169,15 @@
         "headline": "Capabilities at or above target (0-22)",
         "top": [
           {
+            "qid": "UN-01",
+            "swing": 1
+          },
+          {
             "qid": "UN-02",
+            "swing": 1
+          },
+          {
+            "qid": "UN-03",
             "swing": 1
           },
           {
@@ -1177,15 +1185,7 @@
             "swing": 1
           },
           {
-            "qid": "UN-07",
-            "swing": 1
-          },
-          {
-            "qid": "UN-08",
-            "swing": 1
-          },
-          {
-            "qid": "UN-10",
+            "qid": "UN-05",
             "swing": 1
           }
         ],
@@ -1195,27 +1195,27 @@
         "headline": "Total capability gap (levels)",
         "top": [
           {
+            "qid": "UN-01",
+            "swing": 3
+          },
+          {
+            "qid": "UN-03",
+            "swing": 3
+          },
+          {
             "qid": "UN-04",
+            "swing": 3
+          },
+          {
+            "qid": "UN-05",
             "swing": 3
           },
           {
             "qid": "UN-07",
             "swing": 3
-          },
-          {
-            "qid": "UN-08",
-            "swing": 3
-          },
-          {
-            "qid": "UN-10",
-            "swing": 3
-          },
-          {
-            "qid": "UN-11",
-            "swing": 3
           }
         ],
-        "share": 0.13043478260869565
+        "share": 0.125
       },
       {
         "headline": "Critical + high findings",
@@ -1225,49 +1225,49 @@
             "swing": 2
           },
           {
+            "qid": "UN-01",
+            "swing": 1
+          },
+          {
             "qid": "UN-02",
+            "swing": 1
+          },
+          {
+            "qid": "UN-03",
             "swing": 1
           },
           {
             "qid": "UN-04",
             "swing": 1
-          },
-          {
-            "qid": "UN-07",
-            "swing": 1
-          },
-          {
-            "qid": "UN-08",
-            "swing": 1
           }
         ],
-        "share": 0.16666666666666666
+        "share": 0.2
       },
       {
         "headline": "Findings",
         "top": [
           {
-            "qid": "MP-01",
-            "swing": 2
+            "qid": "OP-04",
+            "swing": 3
           },
           {
-            "qid": "UN-02",
-            "swing": 1
+            "qid": "OP-05",
+            "swing": 3
           },
           {
-            "qid": "UN-04",
-            "swing": 1
+            "qid": "OP-06",
+            "swing": 3
           },
           {
-            "qid": "UN-07",
-            "swing": 1
+            "qid": "OP-07",
+            "swing": 3
           },
           {
-            "qid": "UN-08",
-            "swing": 1
+            "qid": "OP-09",
+            "swing": 3
           }
         ],
-        "share": 0.2222222222222222
+        "share": 0.1875
       },
       {
         "headline": "Value expected (gross run-rate)",
@@ -1323,12 +1323,6 @@
       }
     ],
     "dead": [
-      "OP-05",
-      "OP-06",
-      "OP-07",
-      "OP-09",
-      "OP-11",
-      "OP-12",
       "HY-01",
       "HY-02",
       "HY-03",
@@ -1340,22 +1334,22 @@
     "missing": [
       {
         "headline": "Capabilities at or above target (0-22)",
-        "meanShift": -1.4,
+        "meanShift": -1.315,
         "worstProfileShift": 0
       },
       {
         "headline": "Total capability gap (levels)",
-        "meanShift": -4.71,
+        "meanShift": -4.445,
         "worstProfileShift": 0
       },
       {
         "headline": "Critical + high findings",
-        "meanShift": -2.235,
+        "meanShift": -2.21,
         "worstProfileShift": 0
       },
       {
         "headline": "Findings",
-        "meanShift": -1.46,
+        "meanShift": -1.42,
         "worstProfileShift": 0
       },
       {
