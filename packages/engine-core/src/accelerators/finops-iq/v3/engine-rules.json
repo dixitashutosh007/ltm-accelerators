@@ -149,9 +149,9 @@
     "answer": "“{label}” ({question})",
     "answerUnknown": "“Don't know” ({question})",
     "answerBlank": "not answered ({question})",
-    "action": "Move {capability} to {target}: {targetGuidance}",
-    "actionUnconfirmed": "Confirm the current practice with evidence, then move {capability} to {target}: {targetGuidance}",
-    "actionNotAnswered": "Answer and evidence: {questions}; then move {capability} to {target}: {targetGuidance}"
+    "action": "Move {capability} to {steps}: {targetGuidance}",
+    "actionUnconfirmed": "Confirm the current practice with evidence, then move {capability} to {steps}: {targetGuidance}",
+    "actionNotAnswered": "Answer and evidence: {questions}; then move {capability} to {steps}: {targetGuidance}"
   },
   "headline": {
     "claimIds": [
@@ -337,7 +337,8 @@
   "schedule": {
     "claimIds": [
       "CLM-FIN-122",
-      "CLM-FIN-162"
+      "CLM-FIN-162",
+      "CLM-FIN-004"
     ],
     "waveStartMonth": {
       "1": 0,
@@ -352,8 +353,9 @@
     },
     "startLabel": "From month {month}",
     "durationLabel": "Complete within {months} months of starting",
-    "note": "A finding starts at its wave's window (DESIGN.md 5.4: wave 1 from month 0, wave 2 from month 3, wave 3 from month 9) and never before every finding it depends on has reached its first milestone: 3 months after that finding starts, or its whole target duration if shorter (F3 re-review R1). Spreading Critical work by delivery capacity is F7.",
-    "firstMilestoneMonths": 3
+    "note": "A finding starts at its wave's window (DESIGN.md 5.4: wave 1 from month 0, wave 2 from month 3, wave 3 from month 9) and never before every finding it depends on has reached its first milestone: 3 months after that finding starts, or its whole target duration if shorter (F3 re-review R1). A capability gap moves one level at a time: the first level at firstMilestoneMonths, each further level levelStepMonths later, so its duration grows with the gap and severity sets only the order (M4 CIO challenge D4; the FinOps Foundation describes maturity as iterative, Crawl to Walk to Run). durationMonths applies to the other findings. Spreading Critical work by delivery capacity is F7.",
+    "firstMilestoneMonths": 3,
+    "levelStepMonths": 6
   },
   "decisions": [
     {

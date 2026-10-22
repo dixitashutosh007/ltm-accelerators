@@ -150,6 +150,8 @@ describe('FinOps IQ report: CIO challenge test fixes (M4-cio-challenge.md)', () 
       const summary = traces({ meta: x.doc.meta, sections: [x.doc.sections[0]] }).map(s => s.trace.field);
       expect(summary, x.label).toContain('value.totals.conservative.netYear1');
       expect(sectionText(x.doc, ['summary', 'value'])).toMatch(/Not netted, and shown for your decision/);
+      // The FinOps team is always accounted for: its cost, or the reason it is not shown.
+      expect(sectionText(x.doc, ['summary', 'value']), x.label).toMatch(/Not netted, and shown for your decision: [^.]*(FinOps lead or team of|no FinOps team cost)/);
     }
   });
 
@@ -285,12 +287,12 @@ describe('FinOps IQ report: sensitivity (F7 item 2)', () => {
 });
 
 describe('FinOps IQ report: screen = PDF = backlog = engine (F7 item 4)', () => {
-  it.each(runs.map(x => [x.label, x]))('%s: one row per finding and per lever action, with the engine\'s start, duration, effort and value', (_, x) => {
+  it.each(runs.map(x => [x.label, x]))('%s: one row per finding, per lever action and per platform action, with the engine\'s start, duration, effort and value', (_, x) => {
     const b = finopsIqBacklog(x.r, x.view);
     expect(b.header).toEqual(BACKLOG_HEADER);
     const col = (name: string) => BACKLOG_HEADER.indexOf(name);
     const findingRows = b.rows.filter(row => row[col('Lever')] === '' || x.r.findings.find(f => f.id === row[0])!.leverIds.join(' ') === row[col('Lever')]);
-    expect(b.rows.length).toBe(x.r.findings.reduce((t, f) => t + 1 + f.leverActions.length, 0));
+    expect(b.rows.length).toBe(x.r.findings.reduce((t, f) => t + 1 + f.leverActions.length, 0) + x.r.technicalPlan.actions.filter(a => !a.noPlatformAction).length);
     for (const f of x.r.findings) {
       const row = b.rows.find(r => r[0] === f.id)!;
       expect(row[col('Start month')]).toBe(f.start.month);

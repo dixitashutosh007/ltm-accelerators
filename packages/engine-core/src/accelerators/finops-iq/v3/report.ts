@@ -110,7 +110,8 @@ export interface RoadmapWorkstream {
   findings: Finding[];
   /** Earliest finding start, latest finding completion (start + target duration), in months from the start. */
   start: number; end: number;
-  milestones: Array<{ finding: Finding; month: number }>;
+  /** One per finding, or one per maturity level for a capability gap (its levelMilestones), in month order. */
+  milestones: Array<{ finding: Finding; month: number; level?: Level }>;
   effort: { fteMonths: number; band: string; leverFields: string[]; gapFields: string[]; perLevel: number };
   /** Expected gross run-rate of the levers its findings own; null when none is quantified or money is not shown. */
   value: { expected: number; fields: string[] } | null;
@@ -134,7 +135,9 @@ export function finopsIqRoadmap(r: FinOpsIqV3Result, estate: Estate = estateOf(r
   for (const w of WS.workstreams as any[]) {
     const findings = r.findings.filter(f => home.get(f.id) === w.id).sort((a, b) => a.start.month - b.start.month || bySeverity(a, b));
     if (!findings.length) continue;
-    const milestones = findings.map(f => ({ finding: f, month: f.start.month + f.targetDuration.months })).sort((a, b) => a.month - b.month);
+    const milestones = findings.flatMap(f => (f.levelMilestones
+      ? (Object.entries(f.levelMilestones) as Array<[Level, number]>).map(([level, month]) => ({ finding: f, month, level }))
+      : [{ finding: f, month: f.start.month + f.targetDuration.months }])).sort((a, b) => a.month - b.month);
     const efforts = findings.map(f => findingEffort(f, r));
     const fteMonths = efforts.reduce((t, e) => t + e.fteMonths, 0);
     const valued = r.value.moneyShown ? findings.filter(f => f.value) : [];
@@ -336,7 +339,10 @@ function notNetted(c: Ctx): Seg[] {
     'Not netted, and shown for your decision: ',
     ...(months > 0 ? ['capability-building effort in the roadmap of ', derivedSeg('report:notNetted.capabilityEffort', months, 'fte_months',
       { op: 'effort', of: gapFields, detail: { perLevel, gapFields } }, WS.effort.claimIds, [WS.effort.assumptionId], c), ', beyond the lever effort above'] : ['no capability-building effort beyond the levers']),
-    ...(team.shown && team.fte && team.annualCost ? ['; an accountable FinOps lead or team of ', fig(team.fte, cur), ', about ', fig(team.annualCost, cur), ' a year'] : []),
+    // The FinOps team is always accounted for: its cost, or why it is not shown (M4 re-test, lead note).
+    ...(team.shown && team.fte && team.annualCost ? ['; an accountable FinOps lead or team of ', fig(team.fte, cur), ', about ', fig(team.annualCost, cur), ' a year']
+      : team.fte ? ['; an accountable FinOps lead or team of ', fig(team.fte, cur), ', ', cite('not costed without your internal cost rate', team.claimIds)]
+      : ['; ', cite('no FinOps team cost, as your answers show an accountable owner for cloud spend already', team.claimIds)]),
     '.'
   ];
 }
@@ -405,7 +411,7 @@ function findingsSection(c: Ctx): ReportSection {
     blocks.push({ kind: 'paragraph', segs: [strong('What to do. '), cite(sentence(f.decisionOrAction), ids)] });
     blocks.push({ kind: 'paragraph', style: 'small', segs: [
       strong('Owner: '), f.ownerLabel, '. ', strong('Start: '), 'month ', findingStart(f), '; ', cite(f.targetDuration.label.toLowerCase(), ids), '.',
-      ...(f.dependsOn.length ? [' ', strong('After: '), f.dependsOn.map(d => dependencyName(c, d)).join('; '), '.'] : []),
+      ...(f.dependsOn.length ? [' ', strong('After the first milestone of: '), f.dependsOn.map(d => dependencyName(c, d)).join('; '), '.'] : []),
       ...(f.notAnsweredCount ? [' Questions left unanswered: ', traced(`findings[${f.id}].notAnsweredCount`, f.notAnsweredCount, 'count', ids), '.'] : [])
     ] });
     blocks.push({ kind: 'paragraph', style: 'small', segs: [strong('Evidence to confirm. '), cite(sentence(f.evidenceToConfirm), ids)] });
@@ -500,7 +506,8 @@ function roadmapSection(c: Ctx): ReportSection {
   ] }];
   const name = new Map(c.roadmap.map(w => [w.id, w.name]));
   const startSeg = (w: RoadmapWorkstream) => derivedSeg(`report:roadmap[${w.id}].start`, w.start, 'count', { op: 'min', of: w.findings.map(f => `findings[${f.id}].start.month`) }, claims, [], c);
-  const endSeg = (w: RoadmapWorkstream) => derivedSeg(`report:roadmap[${w.id}].end`, w.end, 'count', { op: 'max', of: w.milestones.map(m => `report:roadmap[${w.id}].milestone[${m.finding.id}]`) }, claims, [], c);
+  const milestoneField = (w: RoadmapWorkstream, m: RoadmapWorkstream['milestones'][number]) => (m.level ? `findings[${m.finding.id}].levelMilestones.${m.level}` : `report:roadmap[${w.id}].milestone[${m.finding.id}]`);
+  const endSeg = (w: RoadmapWorkstream) => derivedSeg(`report:roadmap[${w.id}].end`, w.end, 'count', { op: 'max', of: w.milestones.map(m => milestoneField(w, m)) }, claims, [], c);
   const effortSeg = (w: RoadmapWorkstream) => derivedSeg(`report:roadmap[${w.id}].effort`, w.effort.fteMonths, 'fte_months',
     { op: 'effort', of: [...w.effort.leverFields, ...w.effort.gapFields], detail: { perLevel: w.effort.perLevel, gapFields: w.effort.gapFields } }, effortIds.claimIds, effortIds.assumptionIds, c);
   const valueSeg = (w: RoadmapWorkstream): Seg[] => (w.value
@@ -508,7 +515,7 @@ function roadmapSection(c: Ctx): ReportSection {
     : ['—']);
   blocks.push({ kind: 'table', small: true, head: ['Workstream', 'Months', 'Effort', 'Expected value per year (gross)', 'Lead owner'], widths: ['*', 55, 75, 75, 100],
     rows: c.roadmap.map(w => [[w.name], [startSeg(w), ' to ', endSeg(w)], [w.effort.band, ' (', effortSeg(w), ')'], valueSeg(w), [w.owners[0]]]) });
-  blocks.push({ kind: 'paragraph', style: 'note', segs: ['A finding that depends on another starts once that one has reached its first milestone, so dependent work can overlap.'] });
+  blocks.push({ kind: 'paragraph', style: 'note', segs: ['A capability moves one maturity level at a time, with a milestone for each level, so a larger gap takes longer; severity sets the order of the work, not its pace. A finding that depends on another starts once that one has reached its first milestone, so dependent work can overlap.'] });
   for (const w of c.roadmap) {
     blocks.push({ kind: 'subheading', text: w.name });
     blocks.push({ kind: 'paragraph', segs: [cite(w.objective, claims)] });
@@ -522,8 +529,10 @@ function roadmapSection(c: Ctx): ReportSection {
     blocks.push({ kind: 'paragraph', style: 'small', segs: [strong('Milestones')] });
     blocks.push({ kind: 'list', small: true, items: w.milestones.map(m => {
       const f = m.finding;
-      const done = f.type === 'capability_gap' && f.target ? `${capName(c, f.capability)} at ${LEVEL_LABEL[f.target]}` : f.title;
-      return ['Month ', derivedSeg(`report:roadmap[${w.id}].milestone[${f.id}]`, m.month, 'count', { op: 'sum', of: [`findings[${f.id}].start.month`, `findings[${f.id}].targetDuration.months`] }, findingClaims(f), [], c),
+      const done = m.level ? `${capName(c, f.capability)} at ${LEVEL_LABEL[m.level]}` : f.title;
+      const at = m.level ? month(`findings[${f.id}].levelMilestones.${m.level}`, m.month, findingClaims(f))
+        : derivedSeg(`report:roadmap[${w.id}].milestone[${f.id}]`, m.month, 'count', { op: 'sum', of: [`findings[${f.id}].start.month`, `findings[${f.id}].targetDuration.months`] }, findingClaims(f), [], c);
+      return ['Month ', at,
         ': ', cite(done, findingClaims(f)), ...(c.client ? [] : [' ', ref(`(${f.id})`)])];
     }) });
     blocks.push({ kind: 'paragraph', style: 'small', segs: [strong('KPIs')] });

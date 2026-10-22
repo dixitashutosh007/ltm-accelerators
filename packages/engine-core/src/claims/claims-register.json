@@ -6775,7 +6775,7 @@
       ],
       "kind": "heuristic",
       "jurisdiction": "global",
-      "statement": "LTM severity and schedule rules: gap 1 = Medium, 2 = High, 3 = Critical; +1 level for Data Ingestion, Allocation and FinOps Practice Operations at Tier 2 or 3; at least High when a linked lever's expected net run-rate value is 2% or more of its own base (in-scope public cloud spend; SaaS and licensing spend for LEV-09), or when a blank or unknown input (or a missing internal cost rate) leaves a linked material lever (LEV-01, LEV-04) open, until it is confirmed; a consultant-set target where there is no default target gives Low. Each finding starts at its wave's window (wave 1 from month 0, wave 2 from month 3, wave 3 from month 9) and never before each finding it depends on has reached its first milestone (3 months after it starts, or its whole target duration if shorter); its target duration once started is 3 months (Critical), 6 (High), 12 (Medium) or 24 (Low).",
+      "statement": "LTM severity and schedule rules: gap 1 = Medium, 2 = High, 3 = Critical; +1 level for Data Ingestion, Allocation and FinOps Practice Operations at Tier 2 or 3; at least High when a linked lever's expected net run-rate value is 2% or more of its own base (in-scope public cloud spend; SaaS and licensing spend for LEV-09), or when a blank or unknown input (or a missing internal cost rate) leaves a linked material lever (LEV-01, LEV-04) open, until it is confirmed; a consultant-set target where there is no default target gives Low. Each finding starts at its wave's window (wave 1 from month 0, wave 2 from month 3, wave 3 from month 9) and never before each finding it depends on has reached its first milestone (3 months after it starts, or its whole target duration if shorter); a capability gap moves one level at a time, its first level 3 months after it starts and each further level 6 months later (3, 9 or 15 months for a gap of 1, 2 or 3; M4 CIO challenge D4); other findings take 3 months (Critical), 6 (High), 12 (Medium) or 24 (Low) once started.",
       "source": {
         "url": "https://github.com/dixitashutosh007/ltm-accelerators/blob/main/docs/cio-readiness/finops-iq/design/DESIGN.md",
         "title": "LTM FinOps IQ F1 design pack (approved by the product owner, 14 Oct 2026)",
@@ -8101,6 +8101,1436 @@
       "statement": "LTM platform playbook: each finding's controls map to actions per platform the client selected and per level (platform, tech stack, application), approach first and then options with alternatives, each with a verification step and owner role. Options are indicative and are validated per engagement against current regional availability, pricing and licensing; application-level actions need the discovery they state.",
       "basisNote": "Each entry cites its own provider claims; this claim covers the catalogue's method, not any provider fact.",
       "notes": "LTM heuristic, not a market fact. Shown in the report's technical execution section."
+    },
+    {
+      "id": "CLM-FIN-181",
+      "accelerators": [
+        "finops-iq"
+      ],
+      "kind": "provider",
+      "jurisdiction": "global",
+      "statement": "AWS Cost Categories map AWS costs to internal business structures with rules (for example by account or tag); categories appear as a column in the Cost and Usage Report and in Cost Explorer, AWS Budgets and Cost Anomaly Detection. Split charge rules allocate shared costs between category values by proportional, fixed or even split.",
+      "source": {
+        "url": "https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/manage-cost-categories.html",
+        "title": "Organizing costs using AWS Cost Categories",
+        "publisher": "Amazon Web Services",
+        "secondaryUrls": [
+          "https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/splitcharge-cost-categories.html"
+        ]
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-22",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "finops-cost-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-04-22",
+      "notes": "Fetched and read from the publisher's page on 2026-10-22 (docs.aws.amazon.com, learn.microsoft.com, docs.cloud.google.com, docs.oracle.com, cloud.ibm.com, alibabacloud.com, kubernetes.io, cncf.io, focus.finops.org, docs.snowflake.com, docs.databricks.com, docs.nvidia.com and knowledge.broadcom.com were reachable from this environment). Used by the platform playbook (src/playbook/finops-iq.json)."
+    },
+    {
+      "id": "CLM-FIN-182",
+      "accelerators": [
+        "finops-iq"
+      ],
+      "kind": "provider",
+      "jurisdiction": "global",
+      "statement": "AWS cost allocation tags (user-defined and AWS-generated) must each be activated before they appear in Cost Explorer or cost allocation reports. Account tags from AWS Organizations can be activated for cost allocation; they apply to all metered usage in the tagged account, including refunds, credits and charges that cannot be tagged at resource level, and appear in CUR 2.0 and the FOCUS export.",
+      "source": {
+        "url": "https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/cost-alloc-tags.html",
+        "title": "Organizing and tracking costs using AWS cost allocation tags",
+        "publisher": "Amazon Web Services",
+        "secondaryUrls": [
+          "https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/account-tags-cost-allocation.html"
+        ]
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-22",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "finops-cost-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-04-22",
+      "notes": "Fetched and read from the publisher's page on 2026-10-22 (docs.aws.amazon.com, learn.microsoft.com, docs.cloud.google.com, docs.oracle.com, cloud.ibm.com, alibabacloud.com, kubernetes.io, cncf.io, focus.finops.org, docs.snowflake.com, docs.databricks.com, docs.nvidia.com and knowledge.broadcom.com were reachable from this environment). Used by the platform playbook (src/playbook/finops-iq.json)."
+    },
+    {
+      "id": "CLM-FIN-183",
+      "accelerators": [
+        "finops-iq"
+      ],
+      "kind": "provider",
+      "jurisdiction": "global",
+      "statement": "AWS provides Savings Plans purchase recommendations from past usage (viewable from the management or member account), coverage and utilization reports, and Savings Plans alerts that email up to 10 recipients 1, 7, 30 or 60 days before expiry; purchases can be queued up to three years ahead to start when an existing plan ends.",
+      "source": {
+        "url": "https://docs.aws.amazon.com/savingsplans/latest/userguide/sp-recommendations.html",
+        "title": "Understanding Savings Plans recommendations",
+        "publisher": "Amazon Web Services",
+        "secondaryUrls": [
+          "https://docs.aws.amazon.com/savingsplans/latest/userguide/sp-alert.html",
+          "https://docs.aws.amazon.com/savingsplans/latest/userguide/queued-sp-cart.html",
+          "https://docs.aws.amazon.com/savingsplans/latest/userguide/ce-sp-usingCR.html"
+        ]
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-22",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "finops-cost-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-04-22",
+      "notes": "Fetched and read from the publisher's page on 2026-10-22 (docs.aws.amazon.com, learn.microsoft.com, docs.cloud.google.com, docs.oracle.com, cloud.ibm.com, alibabacloud.com, kubernetes.io, cncf.io, focus.finops.org, docs.snowflake.com, docs.databricks.com, docs.nvidia.com and knowledge.broadcom.com were reachable from this environment). Used by the platform playbook (src/playbook/finops-iq.json)."
+    },
+    {
+      "id": "CLM-FIN-184",
+      "accelerators": [
+        "finops-iq"
+      ],
+      "kind": "provider",
+      "jurisdiction": "global",
+      "statement": "AWS Cost Explorer generates reservation purchase recommendations for Amazon EC2, Amazon RDS, ElastiCache, OpenSearch Service, Amazon Redshift, Amazon MemoryDB and Amazon DynamoDB by simulating reservation combinations against historical On-Demand usage.",
+      "source": {
+        "url": "https://docs.aws.amazon.com/cost-management/latest/userguide/ri-recommendations.html",
+        "title": "Accessing reservation recommendations",
+        "publisher": "Amazon Web Services"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-22",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "finops-cost-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-04-22",
+      "notes": "Fetched and read from the publisher's page on 2026-10-22 (docs.aws.amazon.com, learn.microsoft.com, docs.cloud.google.com, docs.oracle.com, cloud.ibm.com, alibabacloud.com, kubernetes.io, cncf.io, focus.finops.org, docs.snowflake.com, docs.databricks.com, docs.nvidia.com and knowledge.broadcom.com were reachable from this environment). Used by the platform playbook (src/playbook/finops-iq.json)."
+    },
+    {
+      "id": "CLM-FIN-185",
+      "accelerators": [
+        "finops-iq"
+      ],
+      "kind": "provider",
+      "jurisdiction": "global",
+      "statement": "Amazon Data Lifecycle Manager automates the creation, retention and deletion of EBS snapshots and EBS-backed AMIs at no additional cost, including deleting outdated backups to reduce storage cost; it cannot manage snapshots created by other means.",
+      "source": {
+        "url": "https://docs.aws.amazon.com/ebs/latest/userguide/snapshot-lifecycle.html",
+        "title": "Automate backups with Amazon Data Lifecycle Manager",
+        "publisher": "Amazon Web Services"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-22",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "finops-cost-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-04-22",
+      "notes": "Fetched and read from the publisher's page on 2026-10-22 (docs.aws.amazon.com, learn.microsoft.com, docs.cloud.google.com, docs.oracle.com, cloud.ibm.com, alibabacloud.com, kubernetes.io, cncf.io, focus.finops.org, docs.snowflake.com, docs.databricks.com, docs.nvidia.com and knowledge.broadcom.com were reachable from this environment). Used by the platform playbook (src/playbook/finops-iq.json)."
+    },
+    {
+      "id": "CLM-FIN-186",
+      "accelerators": [
+        "finops-iq"
+      ],
+      "kind": "provider",
+      "jurisdiction": "global",
+      "statement": "Amazon S3 Storage Lens gives organisation-wide visibility of object storage usage and activity and contextual cost-optimisation recommendations, for example buckets without lifecycle rules to expire incomplete multipart uploads.",
+      "source": {
+        "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/storage_lens.html",
+        "title": "Monitoring your storage activity and usage with Amazon S3 Storage Lens",
+        "publisher": "Amazon Web Services"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-22",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "finops-cost-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-04-22",
+      "notes": "Fetched and read from the publisher's page on 2026-10-22 (docs.aws.amazon.com, learn.microsoft.com, docs.cloud.google.com, docs.oracle.com, cloud.ibm.com, alibabacloud.com, kubernetes.io, cncf.io, focus.finops.org, docs.snowflake.com, docs.databricks.com, docs.nvidia.com and knowledge.broadcom.com were reachable from this environment). Used by the platform playbook (src/playbook/finops-iq.json)."
+    },
+    {
+      "id": "CLM-FIN-187",
+      "accelerators": [
+        "finops-iq"
+      ],
+      "kind": "provider",
+      "jurisdiction": "global",
+      "statement": "Gateway VPC endpoints connect a VPC to Amazon S3 and DynamoDB without an internet gateway or NAT device, at no additional charge. NAT gateways are charged per hour and per gigabyte processed; AWS suggests keeping resources in the NAT gateway's Availability Zone and using gateway or interface endpoints for AWS service traffic to reduce those charges.",
+      "source": {
+        "url": "https://docs.aws.amazon.com/vpc/latest/privatelink/gateway-endpoints.html",
+        "title": "Gateway endpoints",
+        "publisher": "Amazon Web Services",
+        "secondaryUrls": [
+          "https://docs.aws.amazon.com/vpc/latest/userguide/nat-gateway-pricing.html"
+        ]
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-22",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "finops-cost-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-04-22",
+      "notes": "Fetched and read from the publisher's page on 2026-10-22 (docs.aws.amazon.com, learn.microsoft.com, docs.cloud.google.com, docs.oracle.com, cloud.ibm.com, alibabacloud.com, kubernetes.io, cncf.io, focus.finops.org, docs.snowflake.com, docs.databricks.com, docs.nvidia.com and knowledge.broadcom.com were reachable from this environment). Used by the platform playbook (src/playbook/finops-iq.json)."
+    },
+    {
+      "id": "CLM-FIN-188",
+      "accelerators": [
+        "finops-iq"
+      ],
+      "kind": "provider",
+      "jurisdiction": "global",
+      "statement": "Amazon VPC Flow Logs capture information about IP traffic to and from network interfaces in a VPC and publish it to CloudWatch Logs, Amazon S3 or Amazon Data Firehose, without affecting network throughput or latency.",
+      "source": {
+        "url": "https://docs.aws.amazon.com/vpc/latest/userguide/flow-logs.html",
+        "title": "Logging IP traffic using VPC Flow Logs",
+        "publisher": "Amazon Web Services"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-22",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "finops-cost-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-04-22",
+      "notes": "Fetched and read from the publisher's page on 2026-10-22 (docs.aws.amazon.com, learn.microsoft.com, docs.cloud.google.com, docs.oracle.com, cloud.ibm.com, alibabacloud.com, kubernetes.io, cncf.io, focus.finops.org, docs.snowflake.com, docs.databricks.com, docs.nvidia.com and knowledge.broadcom.com were reachable from this environment). Used by the platform playbook (src/playbook/finops-iq.json)."
+    },
+    {
+      "id": "CLM-FIN-189",
+      "accelerators": [
+        "finops-iq"
+      ],
+      "kind": "provider",
+      "jurisdiction": "global",
+      "statement": "Amazon Bedrock application inference profiles can carry tags used as cost allocation tags for on-demand model invocation. AWS also supports cost allocation for Bedrock by IAM principal: when enabled in CUR 2.0, the caller identity is recorded per Bedrock API call and IAM principal tags flow to cost and token usage data.",
+      "source": {
+        "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/inference-profiles.html",
+        "title": "Set up a model invocation resource using inference profiles",
+        "publisher": "Amazon Web Services",
+        "secondaryUrls": [
+          "https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/iam-principal-cost-allocation.html"
+        ]
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-22",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "finops-cost-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-04-22",
+      "notes": "Fetched and read from the publisher's page on 2026-10-22 (docs.aws.amazon.com, learn.microsoft.com, docs.cloud.google.com, docs.oracle.com, cloud.ibm.com, alibabacloud.com, kubernetes.io, cncf.io, focus.finops.org, docs.snowflake.com, docs.databricks.com, docs.nvidia.com and knowledge.broadcom.com were reachable from this environment). Used by the platform playbook (src/playbook/finops-iq.json)."
+    },
+    {
+      "id": "CLM-FIN-190",
+      "accelerators": [
+        "finops-iq"
+      ],
+      "kind": "provider",
+      "jurisdiction": "global",
+      "statement": "Amazon SageMaker AI endpoints that host inference components can scale in to zero instances when idle, using Application Auto Scaling step scaling and a CloudWatch alarm to provision an instance again; requests fail for several minutes while an instance is provisioned.",
+      "source": {
+        "url": "https://docs.aws.amazon.com/sagemaker/latest/dg/endpoint-auto-scaling-zero-instances.html",
+        "title": "Scale an endpoint to zero instances",
+        "publisher": "Amazon Web Services"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-22",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "finops-cost-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-04-22",
+      "notes": "Fetched and read from the publisher's page on 2026-10-22 (docs.aws.amazon.com, learn.microsoft.com, docs.cloud.google.com, docs.oracle.com, cloud.ibm.com, alibabacloud.com, kubernetes.io, cncf.io, focus.finops.org, docs.snowflake.com, docs.databricks.com, docs.nvidia.com and knowledge.broadcom.com were reachable from this environment). Used by the platform playbook (src/playbook/finops-iq.json)."
+    },
+    {
+      "id": "CLM-FIN-191",
+      "accelerators": [
+        "finops-iq"
+      ],
+      "kind": "provider",
+      "jurisdiction": "global",
+      "statement": "The Amazon CloudWatch agent can collect NVIDIA GPU metrics (including GPU utilisation and memory use) from Linux instances with the NVIDIA driver installed.",
+      "source": {
+        "url": "https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch-Agent-NVIDIA-GPU.html",
+        "title": "Collect NVIDIA GPU metrics",
+        "publisher": "Amazon Web Services"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-22",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "finops-cost-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-04-22",
+      "notes": "Fetched and read from the publisher's page on 2026-10-22 (docs.aws.amazon.com, learn.microsoft.com, docs.cloud.google.com, docs.oracle.com, cloud.ibm.com, alibabacloud.com, kubernetes.io, cncf.io, focus.finops.org, docs.snowflake.com, docs.databricks.com, docs.nvidia.com and knowledge.broadcom.com were reachable from this environment). Used by the platform playbook (src/playbook/finops-iq.json)."
+    },
+    {
+      "id": "CLM-FIN-192",
+      "accelerators": [
+        "finops-iq"
+      ],
+      "kind": "provider",
+      "jurisdiction": "global",
+      "statement": "Amazon EC2 Auto Scaling groups can launch and scale a fleet of On-Demand and Spot Instances across multiple instance types in one group, alongside Reserved Instance or Savings Plans discounts; AWS lists stateless web servers, big data, containerised workloads, CI/CD and HPC as Spot candidates.",
+      "source": {
+        "url": "https://docs.aws.amazon.com/autoscaling/ec2/userguide/ec2-auto-scaling-mixed-instances-groups.html",
+        "title": "Auto Scaling groups with multiple instance types and purchase options",
+        "publisher": "Amazon Web Services"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-22",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "finops-cost-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-04-22",
+      "notes": "Fetched and read from the publisher's page on 2026-10-22 (docs.aws.amazon.com, learn.microsoft.com, docs.cloud.google.com, docs.oracle.com, cloud.ibm.com, alibabacloud.com, kubernetes.io, cncf.io, focus.finops.org, docs.snowflake.com, docs.databricks.com, docs.nvidia.com and knowledge.broadcom.com were reachable from this environment). Used by the platform playbook (src/playbook/finops-iq.json)."
+    },
+    {
+      "id": "CLM-FIN-193",
+      "accelerators": [
+        "finops-iq"
+      ],
+      "kind": "provider",
+      "jurisdiction": "global",
+      "statement": "Microsoft Cost Management cost allocation rules reassign or distribute the costs of subscriptions, resource groups or tags to other subscriptions, resource groups or tags (evenly, by total, compute, storage or network cost, or custom percentages). Supported for Enterprise Agreement and Microsoft Customer Agreement billing accounts; purchases such as reservations and savings plans are not supported, and the invoice is not changed.",
+      "source": {
+        "url": "https://learn.microsoft.com/en-us/azure/cost-management-billing/costs/allocate-costs",
+        "title": "Allocate Azure costs",
+        "publisher": "Microsoft"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-22",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "finops-cost-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-04-22",
+      "notes": "Fetched and read from the publisher's page on 2026-10-22 (docs.aws.amazon.com, learn.microsoft.com, docs.cloud.google.com, docs.oracle.com, cloud.ibm.com, alibabacloud.com, kubernetes.io, cncf.io, focus.finops.org, docs.snowflake.com, docs.databricks.com, docs.nvidia.com and knowledge.broadcom.com were reachable from this environment). Used by the platform playbook (src/playbook/finops-iq.json)."
+    },
+    {
+      "id": "CLM-FIN-194",
+      "accelerators": [
+        "finops-iq"
+      ],
+      "kind": "provider",
+      "jurisdiction": "global",
+      "statement": "Microsoft Cost Management tag inheritance applies billing, subscription and resource group tags to child resource usage records (not to the resources themselves) for Enterprise Agreement, Microsoft Customer Agreement and Microsoft Partner Agreement accounts; records for the current month update within about 8 to 24 hours.",
+      "source": {
+        "url": "https://learn.microsoft.com/en-us/azure/cost-management-billing/costs/enable-tag-inheritance",
+        "title": "Group and allocate costs using tag inheritance",
+        "publisher": "Microsoft"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-22",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "finops-cost-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-04-22",
+      "notes": "Fetched and read from the publisher's page on 2026-10-22 (docs.aws.amazon.com, learn.microsoft.com, docs.cloud.google.com, docs.oracle.com, cloud.ibm.com, alibabacloud.com, kubernetes.io, cncf.io, focus.finops.org, docs.snowflake.com, docs.databricks.com, docs.nvidia.com and knowledge.broadcom.com were reachable from this environment). Used by the platform playbook (src/playbook/finops-iq.json)."
+    },
+    {
+      "id": "CLM-FIN-195",
+      "accelerators": [
+        "finops-iq"
+      ],
+      "kind": "provider",
+      "jurisdiction": "global",
+      "statement": "Azure reservation purchase recommendations (Reservation Recommendation API, Azure Advisor and the purchase experience) simulate costs from hourly usage over the past 7, 30 and 60 days and exclude usage already covered by reservations and savings plans; Microsoft advises not buying a savings plan and a reservation for the same usage at the same time and allowing at least 3 days for recommendations to update.",
+      "source": {
+        "url": "https://learn.microsoft.com/en-us/azure/cost-management-billing/reservations/reserved-instance-purchase-recommendations",
+        "title": "Azure reservation recommendations",
+        "publisher": "Microsoft"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-22",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "finops-cost-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-04-22",
+      "notes": "Fetched and read from the publisher's page on 2026-10-22 (docs.aws.amazon.com, learn.microsoft.com, docs.cloud.google.com, docs.oracle.com, cloud.ibm.com, alibabacloud.com, kubernetes.io, cncf.io, focus.finops.org, docs.snowflake.com, docs.databricks.com, docs.nvidia.com and knowledge.broadcom.com were reachable from this environment). Used by the platform playbook (src/playbook/finops-iq.json)."
+    },
+    {
+      "id": "CLM-FIN-196",
+      "accelerators": [
+        "finops-iq"
+      ],
+      "kind": "provider",
+      "jurisdiction": "global",
+      "statement": "Microsoft Cost Management reservation utilization alerts email recipients when any reservation's 7-day or 30-day average utilisation falls below a set percentage; rules are created at EA billing account, MCA billing profile or MPA customer scope, and do not cover prepurchase plans such as Databricks, Defender for Cloud and Synapse Analytics.",
+      "source": {
+        "url": "https://learn.microsoft.com/en-us/azure/cost-management-billing/costs/reservation-utilization-alerts",
+        "title": "Reservation utilization alerts",
+        "publisher": "Microsoft"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-22",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "finops-cost-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-04-22",
+      "notes": "Fetched and read from the publisher's page on 2026-10-22 (docs.aws.amazon.com, learn.microsoft.com, docs.cloud.google.com, docs.oracle.com, cloud.ibm.com, alibabacloud.com, kubernetes.io, cncf.io, focus.finops.org, docs.snowflake.com, docs.databricks.com, docs.nvidia.com and knowledge.broadcom.com were reachable from this environment). Used by the platform playbook (src/playbook/finops-iq.json)."
+    },
+    {
+      "id": "CLM-FIN-197",
+      "accelerators": [
+        "finops-iq"
+      ],
+      "kind": "provider",
+      "jurisdiction": "global",
+      "statement": "Deleting an Azure virtual machine does not delete its attached disks by default, and unattached managed disks continue to be billed. The Azure Cost Optimization workbook in the Azure Advisor gallery brings together Advisor cost recommendations, idle resources, improperly deallocated virtual machines, reservation and savings plan recommendations and Azure Hybrid Benefit insights.",
+      "source": {
+        "url": "https://learn.microsoft.com/en-us/azure/virtual-machines/disks-find-unattached-portal",
+        "title": "Find and delete unattached Azure managed disks",
+        "publisher": "Microsoft",
+        "secondaryUrls": [
+          "https://learn.microsoft.com/en-us/azure/advisor/advisor-workbook-cost-optimization"
+        ]
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-22",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "finops-cost-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-04-22",
+      "notes": "Fetched and read from the publisher's page on 2026-10-22 (docs.aws.amazon.com, learn.microsoft.com, docs.cloud.google.com, docs.oracle.com, cloud.ibm.com, alibabacloud.com, kubernetes.io, cncf.io, focus.finops.org, docs.snowflake.com, docs.databricks.com, docs.nvidia.com and knowledge.broadcom.com were reachable from this environment). Used by the platform playbook (src/playbook/finops-iq.json)."
+    },
+    {
+      "id": "CLM-FIN-198",
+      "accelerators": [
+        "finops-iq"
+      ],
+      "kind": "provider",
+      "jurisdiction": "global",
+      "statement": "An Azure Kubernetes Service Spot node pool is a secondary node pool backed by an Azure Spot Virtual Machine scale set, with no SLA; nodes are evicted when Azure needs the capacity. AKS adds a spot label and NoSchedule taint so only workloads with a matching toleration land there, and Microsoft recommends the cluster autoscaler with Spot node pools.",
+      "source": {
+        "url": "https://learn.microsoft.com/en-us/azure/aks/spot-node-pool",
+        "title": "Add an Azure Spot node pool to an AKS cluster",
+        "publisher": "Microsoft"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-22",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "finops-cost-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-04-22",
+      "notes": "Fetched and read from the publisher's page on 2026-10-22 (docs.aws.amazon.com, learn.microsoft.com, docs.cloud.google.com, docs.oracle.com, cloud.ibm.com, alibabacloud.com, kubernetes.io, cncf.io, focus.finops.org, docs.snowflake.com, docs.databricks.com, docs.nvidia.com and knowledge.broadcom.com were reachable from this environment). Used by the platform playbook (src/playbook/finops-iq.json)."
+    },
+    {
+      "id": "CLM-FIN-199",
+      "accelerators": [
+        "finops-iq"
+      ],
+      "kind": "provider",
+      "jurisdiction": "global",
+      "statement": "Azure virtual network service endpoints carry traffic from a subnet to supported Azure services over the Azure backbone with no extra charge for the endpoints; Microsoft recommends Azure Private Link and private endpoints for private access to Azure-hosted services.",
+      "source": {
+        "url": "https://learn.microsoft.com/en-us/azure/virtual-network/virtual-network-service-endpoints-overview",
+        "title": "Azure virtual network service endpoints",
+        "publisher": "Microsoft"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-22",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "finops-cost-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-04-22",
+      "notes": "Fetched and read from the publisher's page on 2026-10-22 (docs.aws.amazon.com, learn.microsoft.com, docs.cloud.google.com, docs.oracle.com, cloud.ibm.com, alibabacloud.com, kubernetes.io, cncf.io, focus.finops.org, docs.snowflake.com, docs.databricks.com, docs.nvidia.com and knowledge.broadcom.com were reachable from this environment). Used by the platform playbook (src/playbook/finops-iq.json)."
+    },
+    {
+      "id": "CLM-FIN-200",
+      "accelerators": [
+        "finops-iq"
+      ],
+      "kind": "provider",
+      "jurisdiction": "global",
+      "statement": "Azure Network Watcher traffic analytics analyses network security group or virtual network flow logs in a Log Analytics workspace to show traffic flow patterns across Azure regions and the internet; traffic analytics is not available in every region that supports flow logs.",
+      "source": {
+        "url": "https://learn.microsoft.com/en-us/azure/network-watcher/traffic-analytics",
+        "title": "Traffic analytics overview",
+        "publisher": "Microsoft"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-22",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "finops-cost-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-04-22",
+      "notes": "Fetched and read from the publisher's page on 2026-10-22 (docs.aws.amazon.com, learn.microsoft.com, docs.cloud.google.com, docs.oracle.com, cloud.ibm.com, alibabacloud.com, kubernetes.io, cncf.io, focus.finops.org, docs.snowflake.com, docs.databricks.com, docs.nvidia.com and knowledge.broadcom.com were reachable from this environment). Used by the platform playbook (src/playbook/finops-iq.json)."
+    },
+    {
+      "id": "CLM-FIN-201",
+      "accelerators": [
+        "finops-iq"
+      ],
+      "kind": "provider",
+      "jurisdiction": "global",
+      "statement": "Provisioned throughput deployments in Microsoft Foundry are billed hourly on the number of provisioned throughput units deployed, regardless of utilisation; Azure Reservations give a discounted rate for sustained use, and Microsoft directs customers to monitor reservation utilisation in Cost Management to find over-provisioning.",
+      "source": {
+        "url": "https://learn.microsoft.com/en-us/azure/ai-foundry/openai/how-to/provisioned-throughput-onboarding",
+        "title": "Provisioned throughput billing and cost management",
+        "publisher": "Microsoft"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-22",
+      "volatile": true,
+      "clientVisible": true,
+      "owner": "finops-cost-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-01-20",
+      "notes": "Product names in this area changed in 2025 and 2026 (Azure AI Foundry to Microsoft Foundry; Foundry Models). Fetched and read from the publisher's page on 2026-10-22 (docs.aws.amazon.com, learn.microsoft.com, docs.cloud.google.com, docs.oracle.com, cloud.ibm.com, alibabacloud.com, kubernetes.io, cncf.io, focus.finops.org, docs.snowflake.com, docs.databricks.com, docs.nvidia.com and knowledge.broadcom.com were reachable from this environment). Used by the platform playbook (src/playbook/finops-iq.json)."
+    },
+    {
+      "id": "CLM-FIN-202",
+      "accelerators": [
+        "finops-iq"
+      ],
+      "kind": "provider",
+      "jurisdiction": "global",
+      "statement": "Managed GPU metrics on Azure Kubernetes Service (preview) collect GPU utilisation, memory and performance data across NVIDIA GPU-enabled node pools.",
+      "source": {
+        "url": "https://learn.microsoft.com/en-us/azure/aks/monitor-gpu-metrics",
+        "title": "NVIDIA GPU metrics on AKS",
+        "publisher": "Microsoft"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-22",
+      "volatile": true,
+      "clientVisible": true,
+      "owner": "finops-cost-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-01-20",
+      "notes": "Preview feature. Fetched and read from the publisher's page on 2026-10-22 (docs.aws.amazon.com, learn.microsoft.com, docs.cloud.google.com, docs.oracle.com, cloud.ibm.com, alibabacloud.com, kubernetes.io, cncf.io, focus.finops.org, docs.snowflake.com, docs.databricks.com, docs.nvidia.com and knowledge.broadcom.com were reachable from this environment). Used by the platform playbook (src/playbook/finops-iq.json)."
+    },
+    {
+      "id": "CLM-FIN-203",
+      "accelerators": [
+        "finops-iq"
+      ],
+      "kind": "provider",
+      "jurisdiction": "global",
+      "statement": "Google Cloud labels are key-value pairs on resources (up to 64 per resource) that are forwarded to the billing system, so billed charges can be filtered and grouped by label in Cloud Billing reports and billing data exports.",
+      "source": {
+        "url": "https://docs.cloud.google.com/resource-manager/docs/labels-overview",
+        "title": "Labels overview",
+        "publisher": "Google Cloud"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-22",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "finops-cost-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-04-22",
+      "notes": "Fetched and read from the publisher's page on 2026-10-22 (docs.aws.amazon.com, learn.microsoft.com, docs.cloud.google.com, docs.oracle.com, cloud.ibm.com, alibabacloud.com, kubernetes.io, cncf.io, focus.finops.org, docs.snowflake.com, docs.databricks.com, docs.nvidia.com and knowledge.broadcom.com were reachable from this environment). Used by the platform playbook (src/playbook/finops-iq.json)."
+    },
+    {
+      "id": "CLM-FIN-204",
+      "accelerators": [
+        "finops-iq"
+      ],
+      "kind": "provider",
+      "jurisdiction": "global",
+      "statement": "Google Cloud committed use discount recommendations are generated from historical and recent usage, including usage already covered by commitments, for a subset of resource-based and spend-based commitments; the CUD analysis report shows the effectiveness of purchased commitments.",
+      "source": {
+        "url": "https://docs.cloud.google.com/docs/cuds-recommender",
+        "title": "Get recommendations for committed use discounts",
+        "publisher": "Google Cloud",
+        "secondaryUrls": [
+          "https://docs.cloud.google.com/billing/docs/how-to/cud-analysis"
+        ]
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-22",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "finops-cost-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-04-22",
+      "notes": "Fetched and read from the publisher's page on 2026-10-22 (docs.aws.amazon.com, learn.microsoft.com, docs.cloud.google.com, docs.oracle.com, cloud.ibm.com, alibabacloud.com, kubernetes.io, cncf.io, focus.finops.org, docs.snowflake.com, docs.databricks.com, docs.nvidia.com and knowledge.broadcom.com were reachable from this environment). Used by the platform playbook (src/playbook/finops-iq.json)."
+    },
+    {
+      "id": "CLM-FIN-205",
+      "accelerators": [
+        "finops-iq"
+      ],
+      "kind": "provider",
+      "jurisdiction": "global",
+      "statement": "Google Cloud Recommender includes idle resource recommenders for VMs, persistent disks, IP addresses, custom images, GKE clusters and reservations, and an underutilised reservations recommender.",
+      "source": {
+        "url": "https://docs.cloud.google.com/recommender/docs/recommenders",
+        "title": "Recommenders",
+        "publisher": "Google Cloud"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-22",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "finops-cost-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-04-22",
+      "notes": "Fetched and read from the publisher's page on 2026-10-22 (docs.aws.amazon.com, learn.microsoft.com, docs.cloud.google.com, docs.oracle.com, cloud.ibm.com, alibabacloud.com, kubernetes.io, cncf.io, focus.finops.org, docs.snowflake.com, docs.databricks.com, docs.nvidia.com and knowledge.broadcom.com were reachable from this environment). Used by the platform playbook (src/playbook/finops-iq.json)."
+    },
+    {
+      "id": "CLM-FIN-206",
+      "accelerators": [
+        "finops-iq"
+      ],
+      "kind": "provider",
+      "jurisdiction": "global",
+      "statement": "Google Kubernetes Engine can run workloads on Spot VMs, which are priced lower than standard VMs and have no assured availability, in Standard node pools or as Spot Pods in Autopilot, selected through ComputeClasses or node selectors.",
+      "source": {
+        "url": "https://docs.cloud.google.com/kubernetes-engine/docs/concepts/spot-vms",
+        "title": "Spot VMs (GKE)",
+        "publisher": "Google Cloud"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-22",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "finops-cost-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-04-22",
+      "notes": "Fetched and read from the publisher's page on 2026-10-22 (docs.aws.amazon.com, learn.microsoft.com, docs.cloud.google.com, docs.oracle.com, cloud.ibm.com, alibabacloud.com, kubernetes.io, cncf.io, focus.finops.org, docs.snowflake.com, docs.databricks.com, docs.nvidia.com and knowledge.broadcom.com were reachable from this environment). Used by the platform playbook (src/playbook/finops-iq.json)."
+    },
+    {
+      "id": "CLM-FIN-207",
+      "accelerators": [
+        "finops-iq"
+      ],
+      "kind": "provider",
+      "jurisdiction": "global",
+      "statement": "Google Cloud VPC Flow Logs sample VM, GKE node, serverless and hybrid-connection traffic; Google lists understanding network usage and optimising network traffic expenses, for example traffic between regions and zones, as a use case.",
+      "source": {
+        "url": "https://docs.cloud.google.com/vpc/docs/flow-logs",
+        "title": "VPC Flow Logs",
+        "publisher": "Google Cloud"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-22",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "finops-cost-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-04-22",
+      "notes": "Fetched and read from the publisher's page on 2026-10-22 (docs.aws.amazon.com, learn.microsoft.com, docs.cloud.google.com, docs.oracle.com, cloud.ibm.com, alibabacloud.com, kubernetes.io, cncf.io, focus.finops.org, docs.snowflake.com, docs.databricks.com, docs.nvidia.com and knowledge.broadcom.com were reachable from this environment). Used by the platform playbook (src/playbook/finops-iq.json)."
+    },
+    {
+      "id": "CLM-FIN-208",
+      "accelerators": [
+        "finops-iq"
+      ],
+      "kind": "provider",
+      "jurisdiction": "global",
+      "statement": "GKE can send NVIDIA DCGM GPU utilisation, performance and health metrics to Cloud Monitoring; the DCGM metrics package is on by default for new clusters from version 1.32.1-gke.1357000.",
+      "source": {
+        "url": "https://docs.cloud.google.com/kubernetes-engine/docs/how-to/dcgm-metrics",
+        "title": "Collect and view DCGM metrics",
+        "publisher": "Google Cloud"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-22",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "finops-cost-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-04-22",
+      "notes": "Fetched and read from the publisher's page on 2026-10-22 (docs.aws.amazon.com, learn.microsoft.com, docs.cloud.google.com, docs.oracle.com, cloud.ibm.com, alibabacloud.com, kubernetes.io, cncf.io, focus.finops.org, docs.snowflake.com, docs.databricks.com, docs.nvidia.com and knowledge.broadcom.com were reachable from this environment). Used by the platform playbook (src/playbook/finops-iq.json)."
+    },
+    {
+      "id": "CLM-FIN-209",
+      "accelerators": [
+        "finops-iq"
+      ],
+      "kind": "provider",
+      "jurisdiction": "global",
+      "statement": "Google renamed Vertex AI to Gemini Enterprise Agent Platform on 22 April 2026 (for example Vertex AI API became Agent Platform API). Custom metadata labels can be added to model calls such as generateContent and rawPredict and are forwarded to Cloud Billing, so model charges can be grouped by label in billing reports and exports.",
+      "source": {
+        "url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/release-notes",
+        "title": "Gemini Enterprise Agent Platform release notes (22 April 2026 naming changes)",
+        "publisher": "Google Cloud",
+        "secondaryUrls": [
+          "https://docs.cloud.google.com/vertex-ai/generative-ai/docs/multimodal/add-labels-to-api-calls"
+        ]
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-22",
+      "volatile": true,
+      "clientVisible": true,
+      "owner": "finops-cost-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-01-20",
+      "notes": "PLAN F8 draft named \"Vertex AI\"; the current name is used in the playbook. Fetched and read from the publisher's page on 2026-10-22 (docs.aws.amazon.com, learn.microsoft.com, docs.cloud.google.com, docs.oracle.com, cloud.ibm.com, alibabacloud.com, kubernetes.io, cncf.io, focus.finops.org, docs.snowflake.com, docs.databricks.com, docs.nvidia.com and knowledge.broadcom.com were reachable from this environment). Used by the platform playbook (src/playbook/finops-iq.json)."
+    },
+    {
+      "id": "CLM-FIN-210",
+      "accelerators": [
+        "finops-iq"
+      ],
+      "kind": "provider",
+      "jurisdiction": "global",
+      "statement": "Oracle Cloud Infrastructure: cost tracking is possible on all defined tags; cost-tracking tags are deprecated and now only relevant for Budgets. Tag defaults apply tags automatically to resources created in a compartment, and Cost Analysis reports costs by compartment and by tag.",
+      "source": {
+        "url": "https://docs.oracle.com/en/cloud/foundation/cloud_architecture/governance/tags.html",
+        "title": "OCI Cloud Foundation: Tagging",
+        "publisher": "Oracle",
+        "secondaryUrls": [
+          "https://docs.oracle.com/en-us/iaas/Content/Tagging/Tasks/managingtagdefaults.htm",
+          "https://docs.oracle.com/en-us/iaas/Content/Billing/Concepts/costanalysisoverview.htm"
+        ]
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-22",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "finops-cost-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-04-22",
+      "notes": "Fetched and read from the publisher's page on 2026-10-22 (docs.aws.amazon.com, learn.microsoft.com, docs.cloud.google.com, docs.oracle.com, cloud.ibm.com, alibabacloud.com, kubernetes.io, cncf.io, focus.finops.org, docs.snowflake.com, docs.databricks.com, docs.nvidia.com and knowledge.broadcom.com were reachable from this environment). Used by the platform playbook (src/playbook/finops-iq.json)."
+    },
+    {
+      "id": "CLM-FIN-211",
+      "accelerators": [
+        "finops-iq"
+      ],
+      "kind": "provider",
+      "jurisdiction": "global",
+      "statement": "Oracle Cloud Infrastructure is bought either Pay As You Go or under the Universal Credit annual commitment model: a prepaid amount drawn down by usage on eligible services in any region, with a discount on service prices; usage above the annual commitment is invoiced monthly in arrears at the order's rate card.",
+      "source": {
+        "url": "https://www.oracle.com/cloud/universal-credits/",
+        "title": "Oracle Universal Credits",
+        "publisher": "Oracle"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-22",
+      "volatile": true,
+      "clientVisible": true,
+      "owner": "finops-cost-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-01-20",
+      "notes": "Commercial terms; discount levels are negotiated and not published on this page. Fetched and read from the publisher's page on 2026-10-22 (docs.aws.amazon.com, learn.microsoft.com, docs.cloud.google.com, docs.oracle.com, cloud.ibm.com, alibabacloud.com, kubernetes.io, cncf.io, focus.finops.org, docs.snowflake.com, docs.databricks.com, docs.nvidia.com and knowledge.broadcom.com were reachable from this environment). Used by the platform playbook (src/playbook/finops-iq.json)."
+    },
+    {
+      "id": "CLM-FIN-212",
+      "accelerators": [
+        "finops-iq"
+      ],
+      "kind": "provider",
+      "jurisdiction": "global",
+      "statement": "OCI Cloud Advisor cost management recommendations find underutilised Compute instances, over-provisioned Autonomous AI Lakehouse instances, unattached block and boot volumes and Object Storage buckets without lifecycle policy rules, with estimated monthly savings.",
+      "source": {
+        "url": "https://docs.oracle.com/en-us/iaas/Content/CloudAdvisor/Concepts/cloudadvisoroverview.htm",
+        "title": "About Cloud Advisor",
+        "publisher": "Oracle"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-22",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "finops-cost-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-04-22",
+      "notes": "Fetched and read from the publisher's page on 2026-10-22 (docs.aws.amazon.com, learn.microsoft.com, docs.cloud.google.com, docs.oracle.com, cloud.ibm.com, alibabacloud.com, kubernetes.io, cncf.io, focus.finops.org, docs.snowflake.com, docs.databricks.com, docs.nvidia.com and knowledge.broadcom.com were reachable from this environment). Used by the platform playbook (src/playbook/finops-iq.json)."
+    },
+    {
+      "id": "CLM-FIN-213",
+      "accelerators": [
+        "finops-iq"
+      ],
+      "kind": "provider",
+      "jurisdiction": "global",
+      "statement": "OCI Resource Scheduler stops compute and database resources on a schedule when they are not needed and restarts them, across a tenancy or group of centrally managed tenancies.",
+      "source": {
+        "url": "https://docs.oracle.com/en-us/iaas/Content/resource-scheduler/home.htm",
+        "title": "Resource Scheduler",
+        "publisher": "Oracle"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-22",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "finops-cost-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-04-22",
+      "notes": "Fetched and read from the publisher's page on 2026-10-22 (docs.aws.amazon.com, learn.microsoft.com, docs.cloud.google.com, docs.oracle.com, cloud.ibm.com, alibabacloud.com, kubernetes.io, cncf.io, focus.finops.org, docs.snowflake.com, docs.databricks.com, docs.nvidia.com and knowledge.broadcom.com were reachable from this environment). Used by the platform playbook (src/playbook/finops-iq.json)."
+    },
+    {
+      "id": "CLM-FIN-214",
+      "accelerators": [
+        "finops-iq"
+      ],
+      "kind": "provider",
+      "jurisdiction": "global",
+      "statement": "OCI Object Storage Auto-Tiering moves objects between the Standard and Infrequent Access tiers based on access patterns; lifecycle policies move objects to Infrequent Access or Archive and delete them. Auto-Tiering cannot be combined with a lifecycle rule that moves objects to Infrequent Access.",
+      "source": {
+        "url": "https://docs.oracle.com/iaas/Content/Object/Concepts/understandingstoragetiers.htm",
+        "title": "Object Storage storage tiers",
+        "publisher": "Oracle"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-22",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "finops-cost-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-04-22",
+      "notes": "Mutual exclusion of Auto-Tiering and Infrequent Access lifecycle rules taken from search results quoting Oracle documentation; the tiers page itself was read. Fetched and read from the publisher's page on 2026-10-22 (docs.aws.amazon.com, learn.microsoft.com, docs.cloud.google.com, docs.oracle.com, cloud.ibm.com, alibabacloud.com, kubernetes.io, cncf.io, focus.finops.org, docs.snowflake.com, docs.databricks.com, docs.nvidia.com and knowledge.broadcom.com were reachable from this environment). Used by the platform playbook (src/playbook/finops-iq.json)."
+    },
+    {
+      "id": "CLM-FIN-215",
+      "accelerators": [
+        "finops-iq"
+      ],
+      "kind": "provider",
+      "jurisdiction": "global",
+      "statement": "OCI preemptible instances cost less than on-demand capacity and are terminated when the capacity is reclaimed, with no minimum run time; OCI Kubernetes Engine node pools can use preemptible capacity for worker nodes.",
+      "source": {
+        "url": "https://docs.oracle.com/en-us/iaas/Content/Compute/Concepts/preemptible.htm",
+        "title": "Preemptible Instances",
+        "publisher": "Oracle",
+        "secondaryUrls": [
+          "https://docs.oracle.com/en-us/iaas/Content/ContEng/Tasks/contengusingpreemptiblecapacity.htm"
+        ]
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-22",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "finops-cost-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-04-22",
+      "notes": "Fetched and read from the publisher's page on 2026-10-22 (docs.aws.amazon.com, learn.microsoft.com, docs.cloud.google.com, docs.oracle.com, cloud.ibm.com, alibabacloud.com, kubernetes.io, cncf.io, focus.finops.org, docs.snowflake.com, docs.databricks.com, docs.nvidia.com and knowledge.broadcom.com were reachable from this environment). Used by the platform playbook (src/playbook/finops-iq.json)."
+    },
+    {
+      "id": "CLM-FIN-216",
+      "accelerators": [
+        "finops-iq"
+      ],
+      "kind": "provider",
+      "jurisdiction": "global",
+      "statement": "OCI VCN flow logs record traffic passing through a VCN; a service gateway lets resources without public IP addresses reach Oracle services privately; Oracle's price list states no separate inbound or outbound data transfer charges on FastConnect private virtual circuits.",
+      "source": {
+        "url": "https://docs.oracle.com/en-us/iaas/Content/Network/Concepts/vcn_flow_logs.htm",
+        "title": "Flow Logs (VCN)",
+        "publisher": "Oracle",
+        "secondaryUrls": [
+          "https://docs.oracle.com/en-us/iaas/Content/Network/Tasks/servicegateway.htm",
+          "https://www.oracle.com/cloud/networking/pricing/"
+        ]
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-22",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "finops-cost-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-04-22",
+      "notes": "Fetched and read from the publisher's page on 2026-10-22 (docs.aws.amazon.com, learn.microsoft.com, docs.cloud.google.com, docs.oracle.com, cloud.ibm.com, alibabacloud.com, kubernetes.io, cncf.io, focus.finops.org, docs.snowflake.com, docs.databricks.com, docs.nvidia.com and knowledge.broadcom.com were reachable from this environment). Used by the platform playbook (src/playbook/finops-iq.json)."
+    },
+    {
+      "id": "CLM-FIN-217",
+      "accelerators": [
+        "finops-iq"
+      ],
+      "kind": "provider",
+      "jurisdiction": "global",
+      "statement": "OCI Generative AI dedicated AI clusters are compute dedicated to a tenancy for fine-tuning or hosting models, with hosting metrics available per cluster.",
+      "source": {
+        "url": "https://docs.oracle.com/en-us/iaas/Content/generative-ai/ai-cluster.htm",
+        "title": "Managing Dedicated AI Clusters",
+        "publisher": "Oracle"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-22",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "finops-cost-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-04-22",
+      "notes": "Fetched and read from the publisher's page on 2026-10-22 (docs.aws.amazon.com, learn.microsoft.com, docs.cloud.google.com, docs.oracle.com, cloud.ibm.com, alibabacloud.com, kubernetes.io, cncf.io, focus.finops.org, docs.snowflake.com, docs.databricks.com, docs.nvidia.com and knowledge.broadcom.com were reachable from this environment). Used by the platform playbook (src/playbook/finops-iq.json)."
+    },
+    {
+      "id": "CLM-FIN-218",
+      "accelerators": [
+        "finops-iq"
+      ],
+      "kind": "provider",
+      "jurisdiction": "global",
+      "statement": "KEDA (Kubernetes Event-driven Autoscaling) became a CNCF Graduated project on 22 August 2023; it can scale workloads to zero (not with CPU or memory triggers), and its cron scaler sets replica counts by time window, for example zero overnight.",
+      "source": {
+        "url": "https://keda.sh/docs/latest/scalers/cron/",
+        "title": "KEDA Cron scaler",
+        "publisher": "KEDA project (CNCF)",
+        "secondaryUrls": [
+          "https://www.cncf.io/projects/keda/",
+          "https://keda.sh/docs/latest/concepts/"
+        ]
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-22",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "finops-cost-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-04-22",
+      "notes": "Fetched and read from the publisher's page on 2026-10-22 (docs.aws.amazon.com, learn.microsoft.com, docs.cloud.google.com, docs.oracle.com, cloud.ibm.com, alibabacloud.com, kubernetes.io, cncf.io, focus.finops.org, docs.snowflake.com, docs.databricks.com, docs.nvidia.com and knowledge.broadcom.com were reachable from this environment). Used by the platform playbook (src/playbook/finops-iq.json)."
+    },
+    {
+      "id": "CLM-FIN-219",
+      "accelerators": [
+        "finops-iq"
+      ],
+      "kind": "provider",
+      "jurisdiction": "global",
+      "statement": "Kubernetes Topology Aware Routing prefers keeping Service traffic in the zone where it originated, which Kubernetes documents as helping reliability, performance or cost.",
+      "source": {
+        "url": "https://kubernetes.io/docs/concepts/services-networking/topology-aware-routing/",
+        "title": "Topology Aware Routing",
+        "publisher": "The Kubernetes Authors"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-22",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "finops-cost-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-04-22",
+      "notes": "Fetched and read from the publisher's page on 2026-10-22 (docs.aws.amazon.com, learn.microsoft.com, docs.cloud.google.com, docs.oracle.com, cloud.ibm.com, alibabacloud.com, kubernetes.io, cncf.io, focus.finops.org, docs.snowflake.com, docs.databricks.com, docs.nvidia.com and knowledge.broadcom.com were reachable from this environment). Used by the platform playbook (src/playbook/finops-iq.json)."
+    },
+    {
+      "id": "CLM-FIN-220",
+      "accelerators": [
+        "finops-iq"
+      ],
+      "kind": "provider",
+      "jurisdiction": "global",
+      "statement": "Kubernetes PersistentVolumes with the Retain reclaim policy remain, holding their data, after the claim is deleted until an administrator reclaims them; a PodDisruptionBudget limits how many Pods of a replicated application are down at once from voluntary disruptions such as node drains.",
+      "source": {
+        "url": "https://kubernetes.io/docs/concepts/storage/persistent-volumes/",
+        "title": "Persistent Volumes",
+        "publisher": "The Kubernetes Authors",
+        "secondaryUrls": [
+          "https://kubernetes.io/docs/concepts/workloads/pods/disruptions/"
+        ]
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-22",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "finops-cost-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-04-22",
+      "notes": "Fetched and read from the publisher's page on 2026-10-22 (docs.aws.amazon.com, learn.microsoft.com, docs.cloud.google.com, docs.oracle.com, cloud.ibm.com, alibabacloud.com, kubernetes.io, cncf.io, focus.finops.org, docs.snowflake.com, docs.databricks.com, docs.nvidia.com and knowledge.broadcom.com were reachable from this environment). Used by the platform playbook (src/playbook/finops-iq.json)."
+    },
+    {
+      "id": "CLM-FIN-221",
+      "accelerators": [
+        "finops-iq"
+      ],
+      "kind": "provider",
+      "jurisdiction": "global",
+      "statement": "NVIDIA DCGM Exporter exposes GPU metrics at an HTTP endpoint for Prometheus and runs standalone or as a Kubernetes DaemonSet; Multi-Instance GPU (MIG) partitions supported NVIDIA GPUs into isolated instances with dedicated compute and memory.",
+      "source": {
+        "url": "https://docs.nvidia.com/datacenter/cloud-native/gpu-telemetry/latest/dcgm-exporter.html",
+        "title": "DCGM Exporter",
+        "publisher": "NVIDIA",
+        "secondaryUrls": [
+          "https://docs.nvidia.com/datacenter/tesla/mig-user-guide/index.html"
+        ]
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-22",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "finops-cost-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-04-22",
+      "notes": "Fetched and read from the publisher's page on 2026-10-22 (docs.aws.amazon.com, learn.microsoft.com, docs.cloud.google.com, docs.oracle.com, cloud.ibm.com, alibabacloud.com, kubernetes.io, cncf.io, focus.finops.org, docs.snowflake.com, docs.databricks.com, docs.nvidia.com and knowledge.broadcom.com were reachable from this environment). Used by the platform playbook (src/playbook/finops-iq.json)."
+    },
+    {
+      "id": "CLM-FIN-222",
+      "accelerators": [
+        "finops-iq"
+      ],
+      "kind": "provider",
+      "jurisdiction": "global",
+      "statement": "OpenCost is a vendor-neutral open-source project for measuring and allocating cloud infrastructure and container costs, for showback and chargeback, with cloud billing integration and an on-premises setup path.",
+      "source": {
+        "url": "https://opencost.io/docs/",
+        "title": "OpenCost documentation",
+        "publisher": "OpenCost project (CNCF)",
+        "secondaryUrls": [
+          "https://www.cncf.io/projects/opencost/"
+        ]
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-22",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "finops-cost-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-04-22",
+      "notes": "Fetched and read from the publisher's page on 2026-10-22 (docs.aws.amazon.com, learn.microsoft.com, docs.cloud.google.com, docs.oracle.com, cloud.ibm.com, alibabacloud.com, kubernetes.io, cncf.io, focus.finops.org, docs.snowflake.com, docs.databricks.com, docs.nvidia.com and knowledge.broadcom.com were reachable from this environment). Used by the platform playbook (src/playbook/finops-iq.json)."
+    },
+    {
+      "id": "CLM-FIN-223",
+      "accelerators": [
+        "finops-iq"
+      ],
+      "kind": "provider",
+      "jurisdiction": "global",
+      "statement": "VMware VCF Operations (formerly Aria Operations) flags idle VMs (by default CPU below 100 MHz for 100% of each 24-hour period, configurable with idle and exclusion periods), powered-off VMs, snapshots and orphaned disks for reclamation, and separately recommends VM rightsizing.",
+      "source": {
+        "url": "https://knowledge.broadcom.com/external/article/445643/identifying-and-reviewing-idle-virtual-m.html",
+        "title": "Identifying and Reviewing Idle Virtual Machines in Aria Operations (KB 445643)",
+        "publisher": "Broadcom",
+        "secondaryUrls": [
+          "https://knowledge.broadcom.com/external/article/383876",
+          "https://blogs.vmware.com/cloud-foundation/2025/08/12/vmware-cloud-foundation-helps-you-optimally-size-vms-and-keep-your-infrastructure-and-workloads-running-smoothly/"
+        ]
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-22",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "finops-cost-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-04-22",
+      "notes": "Idle definition read in the Broadcom knowledge base; rightsizing from the VMware Cloud Foundation blog. techdocs.broadcom.com product pages were not located. Fetched and read from the publisher's page on 2026-10-22 (docs.aws.amazon.com, learn.microsoft.com, docs.cloud.google.com, docs.oracle.com, cloud.ibm.com, alibabacloud.com, kubernetes.io, cncf.io, focus.finops.org, docs.snowflake.com, docs.databricks.com, docs.nvidia.com and knowledge.broadcom.com were reachable from this environment). Used by the platform playbook (src/playbook/finops-iq.json)."
+    },
+    {
+      "id": "CLM-FIN-224",
+      "accelerators": [
+        "finops-iq"
+      ],
+      "kind": "provider",
+      "jurisdiction": "global",
+      "statement": "VMware Cloud Foundation cost management in VCF Operations uses cost drivers (hardware, software licences, labour, facilities) and offers showback and chargeback dashboards by organisation, project, vSphere namespace, cluster and node.",
+      "source": {
+        "url": "https://blogs.vmware.com/cloud-foundation/2026/10/14/show-me-the-money-cost-management-and-chargeback-in-vmware-cloud-foundation/",
+        "title": "Show me the money: cost management and chargeback in VMware Cloud Foundation",
+        "publisher": "Broadcom (VMware)",
+        "secondaryUrls": [
+          "https://blogs.vmware.com/cloud-foundation/2025/09/10/finops-in-vmware-cloud-foundation/"
+        ]
+      },
+      "verification": "S",
+      "checkedOn": "2026-10-22",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "finops-cost-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-04-22",
+      "notes": "Vendor blog, not product documentation; confirm against techdocs.broadcom.com for the client's VCF version. Fetched and read from the publisher's page on 2026-10-22 (docs.aws.amazon.com, learn.microsoft.com, docs.cloud.google.com, docs.oracle.com, cloud.ibm.com, alibabacloud.com, kubernetes.io, cncf.io, focus.finops.org, docs.snowflake.com, docs.databricks.com, docs.nvidia.com and knowledge.broadcom.com were reachable from this environment). Used by the platform playbook (src/playbook/finops-iq.json)."
+    },
+    {
+      "id": "CLM-FIN-225",
+      "accelerators": [
+        "finops-iq"
+      ],
+      "kind": "provider",
+      "jurisdiction": "global",
+      "statement": "In VMware vSphere 7.0 and 8.0, the vSphere Client can create scheduled tasks on a virtual machine (Configure > Scheduled Tasks) to power it on or shut it down periodically.",
+      "source": {
+        "url": "https://knowledge.broadcom.com/external/article/433217",
+        "title": "How to schedule virtual machine power operations in vSphere (KB 433217)",
+        "publisher": "Broadcom"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-22",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "finops-cost-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-04-22",
+      "notes": "Fetched and read from the publisher's page on 2026-10-22 (docs.aws.amazon.com, learn.microsoft.com, docs.cloud.google.com, docs.oracle.com, cloud.ibm.com, alibabacloud.com, kubernetes.io, cncf.io, focus.finops.org, docs.snowflake.com, docs.databricks.com, docs.nvidia.com and knowledge.broadcom.com were reachable from this environment). Used by the platform playbook (src/playbook/finops-iq.json)."
+    },
+    {
+      "id": "CLM-FIN-226",
+      "accelerators": [
+        "finops-iq"
+      ],
+      "kind": "provider",
+      "jurisdiction": "global",
+      "statement": "OpenStack CloudKitty is a rating-as-a-service project for chargeback and rating of a cloud; it rates collected metrics with rating rules and can run standalone outside OpenStack.",
+      "source": {
+        "url": "https://docs.openstack.org/cloudkitty/latest/",
+        "title": "CloudKitty documentation",
+        "publisher": "OpenInfra Foundation (OpenStack)"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-22",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "finops-cost-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-04-22",
+      "notes": "Fetched and read from the publisher's page on 2026-10-22 (docs.aws.amazon.com, learn.microsoft.com, docs.cloud.google.com, docs.oracle.com, cloud.ibm.com, alibabacloud.com, kubernetes.io, cncf.io, focus.finops.org, docs.snowflake.com, docs.databricks.com, docs.nvidia.com and knowledge.broadcom.com were reachable from this environment). Used by the platform playbook (src/playbook/finops-iq.json)."
+    },
+    {
+      "id": "CLM-FIN-227",
+      "accelerators": [
+        "finops-iq"
+      ],
+      "kind": "framework",
+      "jurisdiction": "global",
+      "statement": "The FinOps Foundation describes FOCUS as normalising billing datasets across AI, cloud, SaaS, data centre and other technology vendors, and lists data generators with their supported FOCUS version, including AWS 1.2, Microsoft (Azure) 1.2, Google Cloud 1.2, IBM Cloud 1.2, Oracle 1.0, Alibaba Cloud 1.0, Snowflake 1.3 and Databricks 1.3.",
+      "source": {
+        "url": "https://focus.finops.org/focus-specification/",
+        "title": "FOCUS specification and data generators",
+        "publisher": "FinOps Foundation",
+        "secondaryUrls": [
+          "https://focus.finops.org/docs/implementation/data-generators/ibm-cloud/",
+          "https://focus.finops.org/docs/implementation/data-generators/alibaba-cloud/",
+          "https://focus.finops.org/docs/implementation/data-generators/snowflake/",
+          "https://focus.finops.org/docs/implementation/data-generators/databricks/"
+        ]
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-22",
+      "volatile": true,
+      "clientVisible": true,
+      "owner": "finops-cost-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-01-20",
+      "notes": "Fetched and read from the publisher's page on 2026-10-22 (docs.aws.amazon.com, learn.microsoft.com, docs.cloud.google.com, docs.oracle.com, cloud.ibm.com, alibabacloud.com, kubernetes.io, cncf.io, focus.finops.org, docs.snowflake.com, docs.databricks.com, docs.nvidia.com and knowledge.broadcom.com were reachable from this environment). Used by the platform playbook (src/playbook/finops-iq.json)."
+    },
+    {
+      "id": "CLM-FIN-228",
+      "accelerators": [
+        "finops-iq"
+      ],
+      "kind": "provider",
+      "jurisdiction": "global",
+      "statement": "IBM Cloud supports exporting usage data in FOCUS v1.2 format for cost and usage reporting; Billing Administrator or Account Owner access is required.",
+      "source": {
+        "url": "https://cloud.ibm.com/docs/account?topic=account-export-usage-focus",
+        "title": "Exporting usage data in FOCUS format",
+        "publisher": "IBM"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-22",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "finops-cost-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-04-22",
+      "notes": "Fetched and read from the publisher's page on 2026-10-22 (docs.aws.amazon.com, learn.microsoft.com, docs.cloud.google.com, docs.oracle.com, cloud.ibm.com, alibabacloud.com, kubernetes.io, cncf.io, focus.finops.org, docs.snowflake.com, docs.databricks.com, docs.nvidia.com and knowledge.broadcom.com were reachable from this environment). Used by the platform playbook (src/playbook/finops-iq.json)."
+    },
+    {
+      "id": "CLM-FIN-229",
+      "accelerators": [
+        "finops-iq"
+      ],
+      "kind": "provider",
+      "jurisdiction": "global",
+      "statement": "IBM Cloud resource groups organise account resources for access management; IBM Cloud user tags can be applied to resources to organise them and to group and filter costs by team or cost allocation.",
+      "source": {
+        "url": "https://cloud.ibm.com/docs/account?topic=account-tag",
+        "title": "Working with tags",
+        "publisher": "IBM",
+        "secondaryUrls": [
+          "https://cloud.ibm.com/docs/account?topic=account-rgs"
+        ]
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-22",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "finops-cost-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-04-22",
+      "notes": "Fetched and read from the publisher's page on 2026-10-22 (docs.aws.amazon.com, learn.microsoft.com, docs.cloud.google.com, docs.oracle.com, cloud.ibm.com, alibabacloud.com, kubernetes.io, cncf.io, focus.finops.org, docs.snowflake.com, docs.databricks.com, docs.nvidia.com and knowledge.broadcom.com were reachable from this environment). Used by the platform playbook (src/playbook/finops-iq.json)."
+    },
+    {
+      "id": "CLM-FIN-230",
+      "accelerators": [
+        "finops-iq"
+      ],
+      "kind": "provider",
+      "jurisdiction": "global",
+      "statement": "IBM Cloud Pay-as-you-go with Committed Use: the customer commits to spend an amount on IBM Cloud and receives platform-wide discounts (IBM states up to 17%), continuing after the committed amount is reached.",
+      "source": {
+        "url": "https://www.ibm.com/products/cloud/pricing/pay-as-you-go",
+        "title": "IBM Cloud Pay As You Go Committed Use",
+        "publisher": "IBM"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-22",
+      "volatile": true,
+      "clientVisible": true,
+      "owner": "finops-cost-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-01-20",
+      "notes": "Pricing page; the percentage is IBM's stated maximum and is not used as a lever rate (CLM-FIN-069 remains the open item for the LEV-01 rate). Fetched and read from the publisher's page on 2026-10-22 (docs.aws.amazon.com, learn.microsoft.com, docs.cloud.google.com, docs.oracle.com, cloud.ibm.com, alibabacloud.com, kubernetes.io, cncf.io, focus.finops.org, docs.snowflake.com, docs.databricks.com, docs.nvidia.com and knowledge.broadcom.com were reachable from this environment). Used by the platform playbook (src/playbook/finops-iq.json)."
+    },
+    {
+      "id": "CLM-FIN-231",
+      "accelerators": [
+        "finops-iq"
+      ],
+      "kind": "provider",
+      "jurisdiction": "global",
+      "statement": "Alibaba Cloud exports FOCUS 1.0 cost and usage data (preview, by invitation) through Bill Subscription to Object Storage Service; the export is for analysis only and cannot be used for reconciliation, and the current month is final after 12:00 (UTC+8) on the 4th of the next month.",
+      "source": {
+        "url": "https://www.alibabacloud.com/help/en/user-center/user-guide/export-alibaba-cloud-standard-billing-focus",
+        "title": "Export Alibaba Cloud standard billing data in FOCUS format",
+        "publisher": "Alibaba Cloud"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-22",
+      "volatile": true,
+      "clientVisible": true,
+      "owner": "finops-cost-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-01-20",
+      "notes": "Invitational preview. Fetched and read from the publisher's page on 2026-10-22 (docs.aws.amazon.com, learn.microsoft.com, docs.cloud.google.com, docs.oracle.com, cloud.ibm.com, alibabacloud.com, kubernetes.io, cncf.io, focus.finops.org, docs.snowflake.com, docs.databricks.com, docs.nvidia.com and knowledge.broadcom.com were reachable from this environment). Used by the platform playbook (src/playbook/finops-iq.json)."
+    },
+    {
+      "id": "CLM-FIN-232",
+      "accelerators": [
+        "finops-iq"
+      ],
+      "kind": "provider",
+      "jurisdiction": "global",
+      "statement": "Alibaba Cloud allocates cost through multi-account structures, financial units and cost allocation tags; tag keys must be enabled as cost allocation tags in Expenses and Costs before they are recorded in billing data, and split bill details give finer-grained cost for internal allocation.",
+      "source": {
+        "url": "https://www.alibabacloud.com/help/en/user-center/cost-label",
+        "title": "Cost allocation tags",
+        "publisher": "Alibaba Cloud",
+        "secondaryUrls": [
+          "https://www.alibabacloud.com/help/en/user-center/splitting-bill"
+        ]
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-22",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "finops-cost-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-04-22",
+      "notes": "Fetched and read from the publisher's page on 2026-10-22 (docs.aws.amazon.com, learn.microsoft.com, docs.cloud.google.com, docs.oracle.com, cloud.ibm.com, alibabacloud.com, kubernetes.io, cncf.io, focus.finops.org, docs.snowflake.com, docs.databricks.com, docs.nvidia.com and knowledge.broadcom.com were reachable from this environment). Used by the platform playbook (src/playbook/finops-iq.json)."
+    },
+    {
+      "id": "CLM-FIN-233",
+      "accelerators": [
+        "finops-iq"
+      ],
+      "kind": "provider",
+      "jurisdiction": "global",
+      "statement": "Alibaba Cloud ECS discount options include savings plans (an hourly spend commitment for one, three or five years, applied to pay-as-you-go ECS and ECI usage, excluding spot instances), reserved instances (coupons offsetting pay-as-you-go instance bills) and spot instances priced by supply and demand.",
+      "source": {
+        "url": "https://help.aliyun.com/en/ecs/overview-of-billing-methods",
+        "title": "Overview of billing methods (ECS)",
+        "publisher": "Alibaba Cloud",
+        "secondaryUrls": [
+          "https://help.aliyun.com/en/ecs/savings-plans"
+        ]
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-22",
+      "volatile": true,
+      "clientVisible": true,
+      "owner": "finops-cost-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-01-20",
+      "notes": "The English international page lists one- and three-year savings plan terms; the help.aliyun.com page adds five years. Fetched and read from the publisher's page on 2026-10-22 (docs.aws.amazon.com, learn.microsoft.com, docs.cloud.google.com, docs.oracle.com, cloud.ibm.com, alibabacloud.com, kubernetes.io, cncf.io, focus.finops.org, docs.snowflake.com, docs.databricks.com, docs.nvidia.com and knowledge.broadcom.com were reachable from this environment). Used by the platform playbook (src/playbook/finops-iq.json)."
+    },
+    {
+      "id": "CLM-FIN-234",
+      "accelerators": [
+        "finops-iq"
+      ],
+      "kind": "provider",
+      "jurisdiction": "global",
+      "statement": "Snowflake's SNOWFLAKE.BILLING.FOCUS_COST_USAGE_V1_3 view (preview) gives daily FOCUS 1.3 charge line items for credit consumption across sub-accounts of a billing account (org-enabled accounts); Snowflake recommends object tags and query tags to attribute cost to departments or projects.",
+      "source": {
+        "url": "https://docs.snowflake.com/en/sql-reference/billing/focus_cost_usage_v1_3",
+        "title": "FOCUS_COST_USAGE_V1_3 view",
+        "publisher": "Snowflake",
+        "secondaryUrls": [
+          "https://docs.snowflake.com/en/user-guide/cost-attributing"
+        ]
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-22",
+      "volatile": true,
+      "clientVisible": true,
+      "owner": "finops-cost-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-01-20",
+      "notes": "Fetched and read from the publisher's page on 2026-10-22 (docs.aws.amazon.com, learn.microsoft.com, docs.cloud.google.com, docs.oracle.com, cloud.ibm.com, alibabacloud.com, kubernetes.io, cncf.io, focus.finops.org, docs.snowflake.com, docs.databricks.com, docs.nvidia.com and knowledge.broadcom.com were reachable from this environment). Used by the platform playbook (src/playbook/finops-iq.json)."
+    },
+    {
+      "id": "CLM-FIN-235",
+      "accelerators": [
+        "finops-iq"
+      ],
+      "kind": "provider",
+      "jurisdiction": "global",
+      "statement": "Snowflake bills warehouses per second and warehouses can auto-suspend after a set period of inactivity (Snowflake suggests a low value such as 5 or 10 minutes or less, by workload); resource monitors can suspend warehouses at credit limits but do not cover serverless features and AI services, for which Snowflake points to budgets.",
+      "source": {
+        "url": "https://docs.snowflake.com/en/user-guide/warehouses-considerations",
+        "title": "Warehouse considerations",
+        "publisher": "Snowflake",
+        "secondaryUrls": [
+          "https://docs.snowflake.com/en/user-guide/resource-monitors"
+        ]
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-22",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "finops-cost-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-04-22",
+      "notes": "Fetched and read from the publisher's page on 2026-10-22 (docs.aws.amazon.com, learn.microsoft.com, docs.cloud.google.com, docs.oracle.com, cloud.ibm.com, alibabacloud.com, kubernetes.io, cncf.io, focus.finops.org, docs.snowflake.com, docs.databricks.com, docs.nvidia.com and knowledge.broadcom.com were reachable from this environment). Used by the platform playbook (src/playbook/finops-iq.json)."
+    },
+    {
+      "id": "CLM-FIN-236",
+      "accelerators": [
+        "finops-iq"
+      ],
+      "kind": "provider",
+      "jurisdiction": "global",
+      "statement": "Snowflake storage cost includes Time Travel and Fail-safe data; storage rates depend on account type (Capacity or On Demand) and region; Snowflake charges for data egress to another region or cloud platform, and transfers within a region are free.",
+      "source": {
+        "url": "https://docs.snowflake.com/en/user-guide/cost-understanding-data-storage",
+        "title": "Understanding storage cost",
+        "publisher": "Snowflake",
+        "secondaryUrls": [
+          "https://docs.snowflake.com/en/user-guide/cost-understanding-overall",
+          "https://docs.snowflake.com/en/user-guide/cost-understanding-data-transfer"
+        ]
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-22",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "finops-cost-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-04-22",
+      "notes": "Fetched and read from the publisher's page on 2026-10-22 (docs.aws.amazon.com, learn.microsoft.com, docs.cloud.google.com, docs.oracle.com, cloud.ibm.com, alibabacloud.com, kubernetes.io, cncf.io, focus.finops.org, docs.snowflake.com, docs.databricks.com, docs.nvidia.com and knowledge.broadcom.com were reachable from this environment). Used by the platform playbook (src/playbook/finops-iq.json)."
+    },
+    {
+      "id": "CLM-FIN-237",
+      "accelerators": [
+        "finops-iq"
+      ],
+      "kind": "provider",
+      "jurisdiction": "global",
+      "statement": "The Databricks billable usage system table (system.billing.usage) centralises account usage across regions, typically within 12 hours, with a billing_origin_product column (for example JOBS, SQL, MODEL_SERVING); custom tags on compute and serverless workloads attribute usage to teams and projects.",
+      "source": {
+        "url": "https://docs.databricks.com/aws/en/admin/system-tables/billing",
+        "title": "Billable usage system table reference",
+        "publisher": "Databricks",
+        "secondaryUrls": [
+          "https://docs.databricks.com/aws/en/admin/account-settings/usage-detail-tags"
+        ]
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-22",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "finops-cost-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-04-22",
+      "notes": "Fetched and read from the publisher's page on 2026-10-22 (docs.aws.amazon.com, learn.microsoft.com, docs.cloud.google.com, docs.oracle.com, cloud.ibm.com, alibabacloud.com, kubernetes.io, cncf.io, focus.finops.org, docs.snowflake.com, docs.databricks.com, docs.nvidia.com and knowledge.broadcom.com were reachable from this environment). Used by the platform playbook (src/playbook/finops-iq.json)."
+    },
+    {
+      "id": "CLM-FIN-238",
+      "accelerators": [
+        "finops-iq"
+      ],
+      "kind": "provider",
+      "jurisdiction": "global",
+      "statement": "Databricks classic compute can use spot instances for workers (the driver stays on-demand), terminates automatically after a set inactivity period and autoscales between minimum and maximum workers; VACUUM removes Delta table data files older than a retention threshold.",
+      "source": {
+        "url": "https://docs.databricks.com/aws/en/compute/configure",
+        "title": "Compute configuration reference",
+        "publisher": "Databricks",
+        "secondaryUrls": [
+          "https://docs.databricks.com/aws/en/sql/language-manual/delta-vacuum"
+        ]
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-22",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "finops-cost-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-04-22",
+      "notes": "Fetched and read from the publisher's page on 2026-10-22 (docs.aws.amazon.com, learn.microsoft.com, docs.cloud.google.com, docs.oracle.com, cloud.ibm.com, alibabacloud.com, kubernetes.io, cncf.io, focus.finops.org, docs.snowflake.com, docs.databricks.com, docs.nvidia.com and knowledge.broadcom.com were reachable from this environment). Used by the platform playbook (src/playbook/finops-iq.json)."
+    },
+    {
+      "id": "CLM-FIN-239",
+      "accelerators": [
+        "finops-iq"
+      ],
+      "kind": "provider",
+      "jurisdiction": "global",
+      "statement": "Snowflake records Cortex AI function token and credit consumption in Account Usage; the CORTEX_FUNCTIONS_USAGE_HISTORY view is no longer updated and Snowflake directs users to CORTEX_AISQL_USAGE_HISTORY.",
+      "source": {
+        "url": "https://docs.snowflake.com/en/sql-reference/account-usage/cortex_functions_usage_history",
+        "title": "CORTEX_FUNCTIONS_USAGE_HISTORY view",
+        "publisher": "Snowflake"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-22",
+      "volatile": true,
+      "clientVisible": true,
+      "owner": "finops-cost-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-01-20",
+      "notes": "Fetched and read from the publisher's page on 2026-10-22 (docs.aws.amazon.com, learn.microsoft.com, docs.cloud.google.com, docs.oracle.com, cloud.ibm.com, alibabacloud.com, kubernetes.io, cncf.io, focus.finops.org, docs.snowflake.com, docs.databricks.com, docs.nvidia.com and knowledge.broadcom.com were reachable from this environment). Used by the platform playbook (src/playbook/finops-iq.json)."
+    },
+    {
+      "id": "CLM-FIN-240",
+      "accelerators": [
+        "finops-iq"
+      ],
+      "kind": "provider",
+      "jurisdiction": "global",
+      "statement": "Microsoft 365 group-based licensing assigns or removes licences for security groups, mail-enabled groups or Microsoft 365 groups from the Microsoft 365 admin center.",
+      "source": {
+        "url": "https://learn.microsoft.com/en-us/entra/fundamentals/concept-group-based-licensing",
+        "title": "What is group-based licensing in Microsoft Entra ID?",
+        "publisher": "Microsoft"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-22",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "finops-cost-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-04-22",
+      "notes": "Fetched and read from the publisher's page on 2026-10-22 (docs.aws.amazon.com, learn.microsoft.com, docs.cloud.google.com, docs.oracle.com, cloud.ibm.com, alibabacloud.com, kubernetes.io, cncf.io, focus.finops.org, docs.snowflake.com, docs.databricks.com, docs.nvidia.com and knowledge.broadcom.com were reachable from this environment). Used by the platform playbook (src/playbook/finops-iq.json)."
+    },
+    {
+      "id": "CLM-FIN-241",
+      "accelerators": [
+        "finops-iq"
+      ],
+      "kind": "provider",
+      "jurisdiction": "global",
+      "statement": "Azure Advisor virtual machine savings estimates use retail rates and do not account for existing reservations or savings plans, so listed savings can be higher than achievable; Advisor resize targets are P95 CPU at or below 40% for user-facing and 80% for other workloads on the recommended size.",
+      "source": {
+        "url": "https://learn.microsoft.com/en-us/azure/advisor/advisor-cost-recommendations",
+        "title": "Optimize VM or VMSS spend by resizing or shutting down underutilized instances",
+        "publisher": "Microsoft"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-22",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "finops-cost-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-04-22",
+      "notes": "Fetched and read from the publisher's page on 2026-10-22 (docs.aws.amazon.com, learn.microsoft.com, docs.cloud.google.com, docs.oracle.com, cloud.ibm.com, alibabacloud.com, kubernetes.io, cncf.io, focus.finops.org, docs.snowflake.com, docs.databricks.com, docs.nvidia.com and knowledge.broadcom.com were reachable from this environment). Used by the platform playbook (src/playbook/finops-iq.json)."
     }
   ]
 }

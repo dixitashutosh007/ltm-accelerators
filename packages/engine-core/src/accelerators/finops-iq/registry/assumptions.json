@@ -444,20 +444,21 @@
     {
       "id": "ASM-FIN-005",
       "title": "Severity and schedule rules",
-      "value": "Gap 1/2/3 = Medium/High/Critical; +1 for Data Ingestion, Allocation and Practice Operations at Tier 2-3; at least High when a linked lever is 2% or more of P; waves from months 0/3/9; durations 3/6/12/24 months; first milestone 3 months; DECISION-01 High, +1 at Tier 2-3; executive view shows the top five",
+      "value": "Gap 1/2/3 = Medium/High/Critical; +1 for Data Ingestion, Allocation and Practice Operations at Tier 2-3; at least High when a linked lever is 2% or more of P; waves from months 0/3/9; a capability gap moves one level at a time, first level at 3 months and each further level 6 months later (durations 3/9/15 months for gaps 1/2/3); other findings 3/6/12/24 months by severity; first milestone 3 months; DECISION-01 High, +1 at Tier 2-3; executive view shows the top five",
       "basis": "ltm_heuristic",
       "claimIds": [
         "CLM-FIN-122",
         "CLM-FIN-162",
-        "CLM-FIN-166"
+        "CLM-FIN-166",
+        "CLM-FIN-004"
       ],
-      "reasoning": "Foundations other capabilities depend on, and high-value levers, come first. Planning defaults the consultant can change with a reason.",
+      "reasoning": "Foundations other capabilities depend on, and high-value levers, come first. Maturity is built a level at a time (Crawl to Walk to Run), so severity orders the work rather than shortening it. Planning defaults the consultant can change with a reason.",
       "confidence": "Medium",
       "sensitivity": "The order of the roadmap; no value figure changes",
       "usedBy": [
         "scoring"
       ],
-      "ownerApproval": "approved by the owner on 15 Oct 2026 (F3 rule corrections)",
+      "ownerApproval": "approved by the owner on 15 Oct 2026 (F3 rule corrections); per-level durations approved for M5 on 22 Oct 2026 (M4 CIO challenge D4)",
       "constants": [
         {
           "ref": "engineRules:severity.byGap",
@@ -498,6 +499,10 @@
         {
           "ref": "engineRules:schedule.firstMilestoneMonths",
           "value": 3
+        },
+        {
+          "ref": "engineRules:schedule.levelStepMonths",
+          "value": 6
         },
         {
           "ref": "engineRules:decisions[F-FIN-DECISION-01].severity",

@@ -14,7 +14,7 @@ import valueRules from './value-rules.json' with { type: 'json' };
 import { howLtmCanHelp, technicalPlan, PLAYBOOK, OFFERINGS, type HelpItem, type TechnicalPlan } from './execution';
 import { buildValueModel, findingValue, inputInfo, OF_WHICH_ROWS, VALUE_MODEL_VERSION, type Figure, type ValueBlock, type ValueModelOutput } from './value-model';
 
-export const ENGINE_VERSION = '3.5.0';
+export const ENGINE_VERSION = '3.6.0';
 export { VALUE_MODEL_VERSION };
 
 export type Mode = 'executive' | 'workshop';
@@ -108,8 +108,10 @@ export interface Finding {
   notAnsweredCount: number;
   /** Earliest start: the wave window, never before every finding in dependsOn has reached its first milestone. */
   start: { month: number; label: string };
-  /** Time to complete once started, from severity. */
+  /** Time to complete once started: one milestone per maturity level for a capability gap, from severity otherwise. */
   targetDuration: { months: number; label: string };
+  /** Capability gaps: the month (from programme start) each level up to the target is reached, in level order. */
+  levelMilestones?: Partial<Record<Level, number>>;
   wave: 1 | 2 | 3;
   dependsOn: string[];
   leverIds: string[];
@@ -574,6 +576,7 @@ function buildFindings(input: FinOpsIqV3Input, tier: number, profile: Capability
     const contributing = ratingAnswers(p, state);
     const values = {
       capability: cap.displayName, current: p.ratingLabel, target: label(p.target.level),
+      steps: LEVELS.slice(levelIndex(p.rating as AnswerLevel) + 1, LEVELS.indexOf(p.target.level) + 1).map(label).join(', then '),
       targetGuidance: guidance(cap, p.target.level), questions: p.notAnswered.join(', '),
       answers: contributing.map(q => describeAnswer(q, state)).join('; ')
     };
@@ -650,7 +653,15 @@ function buildFindings(input: FinOpsIqV3Input, tier: number, profile: Capability
         month = Math.max(month, sch.waveStartMonth[String(f.wave)], d.start.month + Math.min(sch.firstMilestoneMonths, d.targetDuration.months));
       }
     }
-    const months = f.type === 'scope_confirmation' ? VR.scopeConfirmation.targetDurationMonths : sch.durationMonths[f.severity];
+    // A capability gap moves one level at a time (M4 CIO challenge D4): the first level at the first milestone, each
+    // further level a step later. Severity sets the order of work, not how fast a level can be reached.
+    const months = f.type === 'scope_confirmation' ? VR.scopeConfirmation.targetDurationMonths
+      : f.type === 'capability_gap' ? sch.firstMilestoneMonths + sch.levelStepMonths * (f.gap! - 1)
+      : sch.durationMonths[f.severity];
+    if (f.type === 'capability_gap') {
+      const from = levelIndex(f.current as AnswerLevel);
+      f.levelMilestones = Object.fromEntries(LEVELS.slice(from + 1, from + 1 + f.gap!).map((l, i) => [l, month + sch.firstMilestoneMonths + sch.levelStepMonths * i]));
+    }
     f.start = { month, label: fill(sch.startLabel, { month }) };
     f.targetDuration = { months, label: fill(sch.durationLabel, { months }) };
     scheduled.add(f.id);
@@ -754,11 +765,11 @@ function scopeConfirmations(input: FinOpsIqV3Input, vm: ValueModelOutput, mp01: 
 /**
  * The roadmap start month of the finding that will own each lever (F4 review M3), from waves and dependencies only,
  * so the ramp can start there before findings exist. It mirrors the schedule in buildFindings: a dependency's first
- * milestone is min(3 months, its duration) and every duration is at least 3 months, so severity does not enter.
+ * milestone is its first level, 3 months after it starts, so severity does not enter.
  */
 function leverStartMonths(profile: CapabilityProfile[]): Record<string, number> {
   const sch = RULES.schedule;
-  const milestone = Math.min(sch.firstMilestoneMonths, ...Object.values<number>(sch.durationMonths));
+  const milestone = sch.firstMilestoneMonths;
   const gap = new Set(profile.filter(p => p.gap !== null && p.gap >= 1 && p.target.level !== null).map(p => p.capability));
   const memo = new Map<string, { wave: number; month: number }>();
   const capStart = (id: string, wave0: number): { wave: number; month: number } => {

@@ -54,7 +54,7 @@ describe('FinOps IQ assessment API: save and resume', () => {
   it('saves a draft with incomplete facts, then lists and resumes it', async () => {
     const draft = await save({ status: 'draft', request: { mode: 'executive', facts: {}, answers: { 'MP-01': 'walk' } } });
     expect(draft.status).toBe(200);
-    expect(draft.body.data).toMatchObject({ assessmentId: 'FIQ-0001-test', status: 'draft', mode: 'executive', engineVersion: '3.5.0' });
+    expect(draft.body.data).toMatchObject({ assessmentId: 'FIQ-0001-test', status: 'draft', mode: 'executive', engineVersion: '3.6.0' });
     expect(draft.body.data.result).toBeUndefined();
 
     const list = await call(event('GET'));
@@ -85,7 +85,7 @@ describe('FinOps IQ assessment API: save and resume', () => {
     expect(done.body.data.completedAt).toBe(COMPLETED_AT.toISOString());
     expect(done.body.data.result.forged).toBeUndefined();
     expect(done.body.data.result.assessmentDate).toBe('2026-10-20');
-    expect(done.body.data.result.versions.engine).toBe('3.5.0');
+    expect(done.body.data.result.versions.engine).toBe('3.6.0');
     expect(done.body.data.request.assessmentDate).toBe('2026-10-20');
   });
 

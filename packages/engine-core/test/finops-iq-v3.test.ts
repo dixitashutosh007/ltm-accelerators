@@ -533,7 +533,7 @@ describe('FinOps IQ v3 scope triggers (DESIGN.md 4.4 and 7.5)', () => {
       targetOverrides: [{ capability: 'UNIT_ECONOMICS', level: 'walk', reason: 'Board asked for cost per customer' }]
     });
     expect(cap(r, 'UNIT_ECONOMICS').target).toEqual({ level: 'walk', source: 'consultant_override', reason: 'Board asked for cost per customer' });
-    expect(r.findings.find(f => f.type === 'capability_gap' && f.capability === 'UNIT_ECONOMICS')).toMatchObject({ severity: 'Low', severityTrace: ['scope_low'], targetDuration: { months: 24 }, targetSource: 'consultant_override' });
+    expect(r.findings.find(f => f.type === 'capability_gap' && f.capability === 'UNIT_ECONOMICS')).toMatchObject({ severity: 'Low', severityTrace: ['scope_low'], gap: 2, targetDuration: { months: 9 }, targetSource: 'consultant_override' });
     expect(cap(r, 'INVOICING_CHARGEBACK')).toMatchObject({ target: { level: null }, gap: null, atOrAboveTarget: false });
     expect(r.findings.find(f => f.type === 'capability_gap' && f.capability === 'INVOICING_CHARGEBACK')).toBeUndefined();
   });
@@ -566,12 +566,14 @@ describe('FinOps IQ v3 findings (DESIGN.md 5)', () => {
     expect(best.findings.length).toBeGreaterThan(0);
   });
 
-  it('sets severity from the gap with the foundation uplift at Tier 2 and 3, and the target duration from severity', () => {
+  it('sets severity from the gap with the foundation uplift at Tier 2 and 3, and the target duration one level at a time (D4)', () => {
     expect(r.tier.tier).toBe(3);
     const di = r.findings.find(f => f.type === 'capability_gap' && f.capability === 'DATA_INGESTION')!;
-    expect(di).toMatchObject({ gap: 3, severity: 'Critical', severityTrace: ['gap_3'], targetDuration: { months: 3 }, ownerRole: 'Head of Cloud / CCoE' });
+    expect(di).toMatchObject({ gap: 3, severity: 'Critical', severityTrace: ['gap_3'], targetDuration: { months: 15 }, ownerRole: 'Head of Cloud / CCoE' });
+    expect(di.levelMilestones).toEqual({ crawl: di.start.month + 3, walk: di.start.month + 9, run: di.start.month + 15 });
+    expect(di.decisionOrAction).toMatch(/^Move Data Ingestion to Crawl, then Walk, then Run: /);
     const kpi = r.findings.find(f => f.type === 'capability_gap' && f.capability === 'KPIS_BENCHMARKING')!;
-    expect(kpi).toMatchObject({ gap: 2, severity: 'High', severityTrace: ['gap_2'], targetDuration: { months: 6 } });
+    expect(kpi).toMatchObject({ gap: 2, severity: 'High', severityTrace: ['gap_2'], targetDuration: { months: 9 } });
     const t2Facts = facts({}, { org: { currency: 'USD', consumingUnits: '5-19' }, spend: { byScope: { aws: { exact: 20_000_000 } } }, ...VALUED });
     const t2Answers = { 'UN-04': 'crawl', 'UN-05': 'crawl', 'OP-04': 'crawl', 'OP-05': 'crawl', 'OP-06': 'crawl', 'OP-07': 'crawl', 'OP-09': 'crawl' };
     const t2 = run(t2Facts, t2Answers);
@@ -600,8 +602,16 @@ describe('FinOps IQ v3 findings (DESIGN.md 5)', () => {
     for (const res of all) {
       for (const f of res.findings) {
         expect(f.start.month, f.id).toBeGreaterThanOrEqual(waveStart[String(f.wave)]);
-        // Scope confirmations are due within their own window (CLM-FIN-167); everything else from severity.
-        expect(f.targetDuration.months, f.id).toBe(f.type === 'scope_confirmation' ? VR.scopeConfirmation.targetDurationMonths : R.schedule.durationMonths[f.severity]);
+        // Scope confirmations are due within their own window (CLM-FIN-167); capability gaps one level at a time, the last
+        // level at the end (D4); everything else from severity.
+        expect(f.targetDuration.months, f.id).toBe(f.type === 'scope_confirmation' ? VR.scopeConfirmation.targetDurationMonths
+          : f.type === 'capability_gap' ? R.schedule.firstMilestoneMonths + R.schedule.levelStepMonths * (f.gap! - 1) : R.schedule.durationMonths[f.severity]);
+        if (f.type === 'capability_gap') {
+          const months = Object.values(f.levelMilestones!);
+          expect(months.length, f.id).toBe(f.gap);
+          expect(months.at(-1), f.id).toBe(f.start.month + f.targetDuration.months);
+          expect(Object.keys(f.levelMilestones!).at(-1), f.id).toBe(f.target);
+        } else expect(f.levelMilestones, f.id).toBeUndefined();
         for (const d of f.dependsOn) {
           const dep = res.findings.find(x => x.id === d)!;
           expect(f.start.month, `${f.id} after ${d}`).toBeGreaterThanOrEqual(dep.start.month + Math.min(3, dep.targetDuration.months));
@@ -620,11 +630,11 @@ describe('FinOps IQ v3 findings (DESIGN.md 5)', () => {
   });
 
   it('let a finding start after its dependency\'s first milestone, not its completion (re-review R1)', () => {
-    // RS5 (Tier 1): Allocation is Medium (12 months); Usage Optimization (idle, scheduling) still starts at month 3.
+    // RS5 (Tier 1): Allocation starts at month 0; Usage Optimization (idle, scheduling) starts at its first level, month 3.
     const rs5 = evaluateFinOpsIqV3(scenarioInput(SCENARIOS[4]));
     const al = rs5.findings.find(f => f.type === 'capability_gap' && f.capability === 'ALLOCATION')!;
     const usage = rs5.findings.find(f => f.type === 'capability_gap' && f.capability === 'USAGE_OPTIMIZATION')!;
-    expect(al).toMatchObject({ start: { month: 0 }, targetDuration: { months: 12 } });
+    expect(al).toMatchObject({ start: { month: 0 } });
     expect(usage.dependsOn).toEqual(['F-FIN-ALLOCATION']);
     expect(usage.start.month).toBeGreaterThanOrEqual(0);
     expect(usage.start.month).toBeLessThanOrEqual(3);

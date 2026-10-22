@@ -1,8 +1,3781 @@
 {
-  "catalogueVersion": "0.1.0",
+  "catalogueVersion": "1.0.0",
   "accelerator": "finops-iq",
   "statusAsOf": "2026-10-22",
-  "rule": "FinOps IQ platform playbook (WS-S3; PLAN F8; IMPROVEMENT_PLAN 5.1). Controls are FIN.<CAPABILITY> for capability gap findings and FIN.<LEVER> for levers (e.g. FIN.ALLOCATION, FIN.LEV-01). The approach comes first, then options per platform, named as the provider names them, with alternatives; options are validated per engagement against current availability, pricing and licensing. Every control in technicalControls has an entry, or an explicit noPlatformAction entry, for every platform; other controls may use platform 'any' for practice-level actions. Each entry cites claims in the claims register and is reviewed by its nextReview date.",
-  "technicalControls": [],
-  "entries": []
+  "rule": "FinOps IQ platform playbook (WS-S3; PLAN F8; IMPROVEMENT_PLAN 5.1). Controls are FIN.<CAPABILITY> for capability gap findings and FIN.<LEVER> for levers (e.g. FIN.ALLOCATION, FIN.LEV-01). The approach comes first, then options per platform, named as the provider names them on the review date, with open-source or third-party alternatives where credible; options are validated per engagement against current availability, pricing and licensing. Every control in technicalControls has an entry, or an explicit noPlatformAction entry saying why, for every platform. Where no provider-specific option is catalogued (IBM Cloud, Alibaba Cloud or an unidentified provider for some levers), the entry is a Low-confidence practice action whose options are found in discovery. Other controls (anomaly management, Kubernetes efficiency, SaaS and licensing) have entries on selected platforms only. Each entry cites claims in the claims register and is reviewed by its nextReview date, which is never later than the review date of the claims it cites.",
+  "technicalControls": [
+    "FIN.DATA_INGESTION",
+    "FIN.ALLOCATION",
+    "FIN.UNIT_ECONOMICS",
+    "FIN.LEV-01",
+    "FIN.LEV-02",
+    "FIN.LEV-03",
+    "FIN.LEV-04",
+    "FIN.LEV-05",
+    "FIN.LEV-06",
+    "FIN.LEV-08",
+    "FIN.LEV-10"
+  ],
+  "entries": [
+    {
+      "id": "PB.FIN.DATA_INGESTION.aws.platform",
+      "control": "FIN.DATA_INGESTION",
+      "platform": "aws",
+      "level": "platform",
+      "action": "Create an organisation-wide FOCUS 1.2 export in AWS Data Exports from the management account and land it in the central cost store, adding CUR 2.0 where AWS-specific columns are needed.",
+      "approach": "One organisation-wide cost and usage dataset in the FOCUS format, loaded at least daily into a store you control, covering every billing account, subscription, project and estate in scope, with the provider's native export as the source.",
+      "options": [
+        {
+          "name": "AWS Data Exports (FOCUS 1.2 with AWS columns)",
+          "kind": "native"
+        },
+        {
+          "name": "AWS Data Exports (CUR 2.0)",
+          "kind": "native",
+          "detail": "Most granular AWS export; fixed column set"
+        },
+        {
+          "name": "FOCUS-conformant FinOps platform of your choice",
+          "kind": "third_party",
+          "detail": "Ingests the same export; selection under FinOps Tools & Services"
+        }
+      ],
+      "verification": "Every billing account, subscription, project or compartment in scope is present in the central dataset; data refreshed at least daily; the monthly total reconciles to the invoice, with differences explained.",
+      "effort": "S",
+      "ownerRole": "Cloud platform team with the FinOps lead",
+      "confirmRegionalAvailability": false,
+      "confidence": "High",
+      "claimIds": [
+        "CLM-FIN-080",
+        "CLM-FIN-008",
+        "CLM-FIN-227"
+      ],
+      "owner": "finops-cost-lead",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-01-12"
+    },
+    {
+      "id": "PB.FIN.DATA_INGESTION.azure.platform",
+      "control": "FIN.DATA_INGESTION",
+      "platform": "azure",
+      "level": "platform",
+      "action": "Schedule a Microsoft Cost Management export of the FOCUS cost and usage dataset at billing account or billing profile scope into a storage account read by the central cost store.",
+      "approach": "One organisation-wide cost and usage dataset in the FOCUS format, loaded at least daily into a store you control, covering every billing account, subscription, project and estate in scope, with the provider's native export as the source.",
+      "options": [
+        {
+          "name": "Microsoft Cost Management exports (FOCUS cost and usage dataset)",
+          "kind": "native",
+          "detail": "One dataset with actual and amortised cost"
+        },
+        {
+          "name": "Microsoft Cost Management exports (price sheet and reservation datasets)",
+          "kind": "native"
+        },
+        {
+          "name": "FOCUS-conformant FinOps platform of your choice",
+          "kind": "third_party"
+        }
+      ],
+      "verification": "Every billing account, subscription, project or compartment in scope is present in the central dataset; data refreshed at least daily; the monthly total reconciles to the invoice, with differences explained.",
+      "effort": "S",
+      "ownerRole": "Cloud platform team with the FinOps lead",
+      "confirmRegionalAvailability": false,
+      "confidence": "Medium",
+      "claimIds": [
+        "CLM-FIN-090",
+        "CLM-FIN-008",
+        "CLM-FIN-227"
+      ],
+      "owner": "finops-cost-lead",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-01-12"
+    },
+    {
+      "id": "PB.FIN.DATA_INGESTION.gcp.platform",
+      "control": "FIN.DATA_INGESTION",
+      "platform": "gcp",
+      "level": "platform",
+      "action": "Enable the Cloud Billing detailed usage cost export to BigQuery, add the FOCUS usage cost export, and enable GKE cost allocation so cluster detail reaches the export.",
+      "approach": "One organisation-wide cost and usage dataset in the FOCUS format, loaded at least daily into a store you control, covering every billing account, subscription, project and estate in scope, with the provider's native export as the source.",
+      "options": [
+        {
+          "name": "Cloud Billing export to BigQuery (detailed usage cost)",
+          "kind": "native"
+        },
+        {
+          "name": "Cloud Billing FOCUS usage cost export (preview)",
+          "kind": "native",
+          "detail": "Google-managed BigQuery dataset normalised to FOCUS"
+        },
+        {
+          "name": "FOCUS-conformant FinOps platform of your choice",
+          "kind": "third_party"
+        }
+      ],
+      "verification": "Every billing account, subscription, project or compartment in scope is present in the central dataset; data refreshed at least daily; the monthly total reconciles to the invoice, with differences explained.",
+      "effort": "S",
+      "ownerRole": "Cloud platform team with the FinOps lead",
+      "confirmRegionalAvailability": false,
+      "confidence": "Medium",
+      "claimIds": [
+        "CLM-FIN-100",
+        "CLM-FIN-103",
+        "CLM-FIN-227"
+      ],
+      "owner": "finops-cost-lead",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-01-12"
+    },
+    {
+      "id": "PB.FIN.DATA_INGESTION.oci.platform",
+      "control": "FIN.DATA_INGESTION",
+      "platform": "oci",
+      "level": "platform",
+      "action": "Copy the OCI cost reports in FOCUS format from the tenancy into the central cost store on their six-hourly cycle.",
+      "approach": "One organisation-wide cost and usage dataset in the FOCUS format, loaded at least daily into a store you control, covering every billing account, subscription, project and estate in scope, with the provider's native export as the source.",
+      "options": [
+        {
+          "name": "OCI Cost and Usage Reports (FOCUS format)",
+          "kind": "native",
+          "detail": "Generated every six hours, one row per resource per hour"
+        },
+        {
+          "name": "FOCUS-conformant FinOps platform of your choice",
+          "kind": "third_party"
+        }
+      ],
+      "verification": "Every billing account, subscription, project or compartment in scope is present in the central dataset; data refreshed at least daily; the monthly total reconciles to the invoice, with differences explained.",
+      "effort": "S",
+      "ownerRole": "Cloud platform team with the FinOps lead",
+      "confirmRegionalAvailability": false,
+      "confidence": "High",
+      "claimIds": [
+        "CLM-FIN-107",
+        "CLM-FIN-227"
+      ],
+      "owner": "finops-cost-lead",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-01-12"
+    },
+    {
+      "id": "PB.FIN.DATA_INGESTION.ibm.platform",
+      "control": "FIN.DATA_INGESTION",
+      "platform": "ibm",
+      "level": "platform",
+      "action": "Export IBM Cloud usage in FOCUS v1.2 format for each account in scope and load it into the central cost store.",
+      "approach": "One organisation-wide cost and usage dataset in the FOCUS format, loaded at least daily into a store you control, covering every billing account, subscription, project and estate in scope, with the provider's native export as the source.",
+      "options": [
+        {
+          "name": "IBM Cloud usage export in FOCUS format (v1.2)",
+          "kind": "native"
+        },
+        {
+          "name": "FOCUS-conformant FinOps platform of your choice",
+          "kind": "third_party"
+        }
+      ],
+      "verification": "Every billing account, subscription, project or compartment in scope is present in the central dataset; data refreshed at least daily; the monthly total reconciles to the invoice, with differences explained.",
+      "effort": "S",
+      "ownerRole": "Cloud platform team with the FinOps lead",
+      "confirmRegionalAvailability": false,
+      "confidence": "Medium",
+      "claimIds": [
+        "CLM-FIN-228",
+        "CLM-FIN-227"
+      ],
+      "owner": "finops-cost-lead",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-01-20"
+    },
+    {
+      "id": "PB.FIN.DATA_INGESTION.alibaba.platform",
+      "control": "FIN.DATA_INGESTION",
+      "platform": "alibaba",
+      "level": "platform",
+      "action": "Create a Bill Subscription that exports Alibaba Cloud FOCUS 1.0 data to Object Storage Service where the preview is enabled, and use bill details for reconciliation.",
+      "approach": "One organisation-wide cost and usage dataset in the FOCUS format, loaded at least daily into a store you control, covering every billing account, subscription, project and estate in scope, with the provider's native export as the source.",
+      "options": [
+        {
+          "name": "Alibaba Cloud Bill Subscription: FOCUS 1.0 export (invitational preview)",
+          "kind": "native",
+          "detail": "For analysis only; not for reconciliation"
+        },
+        {
+          "name": "Alibaba Cloud bill details",
+          "kind": "native",
+          "detail": "Basis for reconciliation"
+        }
+      ],
+      "verification": "Every Alibaba Cloud account in scope is present in the central dataset; data refreshed at least daily; month-end totals reconcile to bill details (not to the FOCUS export, which Alibaba Cloud states is not for reconciliation).",
+      "effort": "S",
+      "ownerRole": "Cloud platform team with the FinOps lead",
+      "confirmRegionalAvailability": false,
+      "confidence": "Low",
+      "claimIds": [
+        "CLM-FIN-231",
+        "CLM-FIN-227"
+      ],
+      "owner": "finops-cost-lead",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-01-20"
+    },
+    {
+      "id": "PB.FIN.DATA_INGESTION.other_public.platform",
+      "control": "FIN.DATA_INGESTION",
+      "platform": "other_public",
+      "level": "platform",
+      "action": "Check whether the provider publishes a FOCUS export; load it if so, otherwise map its billing export to FOCUS columns before loading it into the central cost store.",
+      "approach": "One organisation-wide cost and usage dataset in the FOCUS format, loaded at least daily into a store you control, covering every billing account, subscription, project and estate in scope, with the provider's native export as the source.",
+      "options": [
+        {
+          "name": "Provider FOCUS export, where listed as a FOCUS data generator",
+          "kind": "practice"
+        },
+        {
+          "name": "Mapping of the provider billing export to FOCUS columns",
+          "kind": "practice"
+        }
+      ],
+      "verification": "Every billing account, subscription, project or compartment in scope is present in the central dataset; data refreshed at least daily; the monthly total reconciles to the invoice, with differences explained.",
+      "effort": "M",
+      "ownerRole": "FinOps lead with the cloud platform team",
+      "confirmRegionalAvailability": false,
+      "confidence": "Medium",
+      "claimIds": [
+        "CLM-FIN-227",
+        "CLM-FIN-008"
+      ],
+      "owner": "finops-cost-lead",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-01-12"
+    },
+    {
+      "id": "PB.FIN.DATA_INGESTION.kubernetes.platform",
+      "control": "FIN.DATA_INGESTION",
+      "platform": "kubernetes",
+      "level": "platform",
+      "action": "Load container cost allocation (cluster, namespace, workload, label) into the central dataset beside the provider bill, from the managed service's allocation feature or an in-cluster allocator.",
+      "approach": "Container cost comes from the provider bill split by a cost allocator; the split data joins the central FOCUS dataset so cluster cost reconciles to node charges.",
+      "options": [
+        {
+          "name": "OpenCost",
+          "kind": "open_source",
+          "detail": "CNCF Incubating; vendor-neutral"
+        },
+        {
+          "name": "AWS split cost allocation data for Amazon EKS",
+          "kind": "native"
+        },
+        {
+          "name": "AKS cost analysis add-on",
+          "kind": "native",
+          "detail": "Built on OpenCost; Standard and Premium tiers"
+        },
+        {
+          "name": "GKE cost allocation",
+          "kind": "native"
+        },
+        {
+          "name": "Kubecost",
+          "kind": "third_party",
+          "detail": "IBM"
+        }
+      ],
+      "verification": "Every cluster in scope present in the allocation data; cluster cost in the allocation data reconciles to node and cluster charges in the provider bill for the same month.",
+      "effort": "M",
+      "ownerRole": "Kubernetes platform team",
+      "confirmRegionalAvailability": false,
+      "confidence": "High",
+      "claimIds": [
+        "CLM-FIN-110",
+        "CLM-FIN-222",
+        "CLM-FIN-084",
+        "CLM-FIN-094",
+        "CLM-FIN-103",
+        "CLM-FIN-111"
+      ],
+      "owner": "finops-cost-lead",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-04-14"
+    },
+    {
+      "id": "PB.FIN.DATA_INGESTION.on_prem.platform",
+      "control": "FIN.DATA_INGESTION",
+      "platform": "on_prem",
+      "level": "platform",
+      "action": "Build a monthly on-premises cost dataset from cost drivers (hardware, licences, facilities, labour) allocated to hosts and VMs, shaped to FOCUS columns, and load it into the central cost store.",
+      "approach": "FOCUS covers data centre spend as well as cloud; the dataset is built from the general ledger, asset register and virtualisation inventory, with cost drivers allocated to the VMs and services that consume them.",
+      "options": [
+        {
+          "name": "VMware VCF Operations cost drivers and showback",
+          "kind": "native",
+          "detail": "For VMware Cloud Foundation estates"
+        },
+        {
+          "name": "OpenStack CloudKitty",
+          "kind": "open_source",
+          "detail": "Rating for OpenStack or standalone"
+        },
+        {
+          "name": "OpenCost (on-premises setup)",
+          "kind": "open_source",
+          "detail": "Kubernetes on owned infrastructure"
+        },
+        {
+          "name": "Cost pools from the general ledger and CMDB",
+          "kind": "practice"
+        }
+      ],
+      "verification": "Every data centre, private cloud and colocation estate in scope is represented monthly; total allocated cost reconciles to the infrastructure cost centres in the general ledger.",
+      "effort": "L",
+      "ownerRole": "Infrastructure and virtualisation team with finance",
+      "confirmRegionalAvailability": false,
+      "confidence": "Medium",
+      "claimIds": [
+        "CLM-FIN-227",
+        "CLM-FIN-006",
+        "CLM-FIN-224",
+        "CLM-FIN-226",
+        "CLM-FIN-222"
+      ],
+      "owner": "finops-cost-lead",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-01-20"
+    },
+    {
+      "id": "PB.FIN.DATA_INGESTION.saas.platform",
+      "control": "FIN.DATA_INGESTION",
+      "platform": "saas",
+      "level": "platform",
+      "action": "Load SaaS spend into the central dataset: the vendor's FOCUS export where it publishes one, otherwise invoice, contract and licence-assignment data mapped to FOCUS columns.",
+      "approach": "SaaS is a FOCUS scope: the same dataset holds SaaS charges so licence cost can be allocated and compared with cloud cost.",
+      "options": [
+        {
+          "name": "Vendor FOCUS exports (vendors listed as FOCUS data generators)",
+          "kind": "practice"
+        },
+        {
+          "name": "Invoice and contract data mapped to FOCUS columns",
+          "kind": "practice"
+        },
+        {
+          "name": "SaaS management platform of your choice",
+          "kind": "third_party"
+        }
+      ],
+      "verification": "Every SaaS contract above your materiality threshold is present in the dataset with its renewal date; monthly SaaS total reconciles to accounts payable.",
+      "effort": "M",
+      "ownerRole": "Software asset manager with the FinOps lead",
+      "confirmRegionalAvailability": false,
+      "confidence": "Medium",
+      "claimIds": [
+        "CLM-FIN-227",
+        "CLM-FIN-023"
+      ],
+      "owner": "finops-cost-lead",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-01-20"
+    },
+    {
+      "id": "PB.FIN.DATA_INGESTION.data_platform.platform",
+      "control": "FIN.DATA_INGESTION",
+      "platform": "data_platform",
+      "level": "platform",
+      "action": "Load the data platform's own billing views into the central dataset: the FOCUS view where offered, otherwise the billing system tables.",
+      "approach": "One organisation-wide cost and usage dataset in the FOCUS format, loaded at least daily into a store you control, covering every billing account, subscription, project and estate in scope, with the provider's native export as the source.",
+      "options": [
+        {
+          "name": "Snowflake SNOWFLAKE.BILLING.FOCUS_COST_USAGE_V1_3 view (preview)",
+          "kind": "native",
+          "detail": "Org-enabled accounts"
+        },
+        {
+          "name": "Databricks system.billing.usage system table",
+          "kind": "native",
+          "detail": "Typically within 12 hours"
+        }
+      ],
+      "verification": "Every billing account, subscription, project or compartment in scope is present in the central dataset; data refreshed at least daily; the monthly total reconciles to the invoice, with differences explained.",
+      "effort": "S",
+      "ownerRole": "Data platform team with the FinOps lead",
+      "confirmRegionalAvailability": false,
+      "confidence": "Medium",
+      "claimIds": [
+        "CLM-FIN-234",
+        "CLM-FIN-237",
+        "CLM-FIN-227"
+      ],
+      "owner": "finops-cost-lead",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-01-20"
+    },
+    {
+      "id": "PB.FIN.ALLOCATION.aws.platform",
+      "control": "FIN.ALLOCATION",
+      "platform": "aws",
+      "level": "platform",
+      "action": "Enforce the mandatory tag set with AWS Organizations tag policies, activate it as cost allocation tags with account tags for untaggable cost, and allocate shared cost with Cost Categories split charge rules.",
+      "approach": "An account, subscription or project hierarchy that mirrors ownership; a small mandatory tag set (owner, cost centre, environment, application) enforced by policy at creation; and documented rules for shared and untaggable costs, so no cost is left unallocated.",
+      "options": [
+        {
+          "name": "AWS Organizations tag policies",
+          "kind": "native"
+        },
+        {
+          "name": "AWS cost allocation tags (user-defined and account tags)",
+          "kind": "native",
+          "detail": "Must be activated"
+        },
+        {
+          "name": "AWS Cost Categories with split charge rules",
+          "kind": "native"
+        }
+      ],
+      "verification": "Share of monthly spend allocated to an accountable owner, measured by cost (not by resource count), reported monthly against your target; the unallocated remainder is itemised with an owner for each line.",
+      "effort": "M",
+      "ownerRole": "Cloud platform team with the FinOps lead",
+      "confirmRegionalAvailability": false,
+      "confidence": "High",
+      "claimIds": [
+        "CLM-FIN-088",
+        "CLM-FIN-182",
+        "CLM-FIN-181"
+      ],
+      "owner": "finops-cost-lead",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-04-14"
+    },
+    {
+      "id": "PB.FIN.ALLOCATION.azure.platform",
+      "control": "FIN.ALLOCATION",
+      "platform": "azure",
+      "level": "platform",
+      "action": "Require the mandatory tags with Azure Policy, turn on Cost Management tag inheritance, and distribute shared costs with cost allocation rules.",
+      "approach": "An account, subscription or project hierarchy that mirrors ownership; a small mandatory tag set (owner, cost centre, environment, application) enforced by policy at creation; and documented rules for shared and untaggable costs, so no cost is left unallocated.",
+      "options": [
+        {
+          "name": "Azure Policy built-in tag definitions (require, add, inherit)",
+          "kind": "native"
+        },
+        {
+          "name": "Microsoft Cost Management tag inheritance",
+          "kind": "native",
+          "detail": "EA, MCA, MPA"
+        },
+        {
+          "name": "Microsoft Cost Management cost allocation rules",
+          "kind": "native",
+          "detail": "EA and MCA; not for reservation or savings plan purchases"
+        }
+      ],
+      "verification": "Share of monthly spend allocated to an accountable owner, measured by cost (not by resource count), reported monthly against your target; the unallocated remainder is itemised with an owner for each line.",
+      "effort": "M",
+      "ownerRole": "Cloud platform team with the FinOps lead",
+      "confirmRegionalAvailability": false,
+      "confidence": "High",
+      "claimIds": [
+        "CLM-FIN-093",
+        "CLM-FIN-194",
+        "CLM-FIN-193"
+      ],
+      "owner": "finops-cost-lead",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-04-14"
+    },
+    {
+      "id": "PB.FIN.ALLOCATION.gcp.platform",
+      "control": "FIN.ALLOCATION",
+      "platform": "gcp",
+      "level": "platform",
+      "action": "Apply the mandatory labels to projects and resources through infrastructure-as-code checks, use the folder and project hierarchy for ownership, and enable GKE cost allocation for shared clusters.",
+      "approach": "An account, subscription or project hierarchy that mirrors ownership; a small mandatory tag set (owner, cost centre, environment, application) enforced by policy at creation; and documented rules for shared and untaggable costs, so no cost is left unallocated.",
+      "options": [
+        {
+          "name": "Google Cloud resource labels",
+          "kind": "native",
+          "detail": "Forwarded to Cloud Billing reports and exports"
+        },
+        {
+          "name": "GKE cost allocation",
+          "kind": "native"
+        },
+        {
+          "name": "Label checks in the infrastructure-as-code pipeline",
+          "kind": "practice"
+        }
+      ],
+      "verification": "Share of monthly spend allocated to an accountable owner, measured by cost (not by resource count), reported monthly against your target; the unallocated remainder is itemised with an owner for each line.",
+      "effort": "M",
+      "ownerRole": "Cloud platform team with the FinOps lead",
+      "confirmRegionalAvailability": false,
+      "confidence": "Medium",
+      "claimIds": [
+        "CLM-FIN-203",
+        "CLM-FIN-103"
+      ],
+      "owner": "finops-cost-lead",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-04-14"
+    },
+    {
+      "id": "PB.FIN.ALLOCATION.oci.platform",
+      "control": "FIN.ALLOCATION",
+      "platform": "oci",
+      "level": "platform",
+      "action": "Define the mandatory tags as OCI defined tags with tag defaults on each compartment, and report allocation by compartment and tag in Cost Analysis.",
+      "approach": "An account, subscription or project hierarchy that mirrors ownership; a small mandatory tag set (owner, cost centre, environment, application) enforced by policy at creation; and documented rules for shared and untaggable costs, so no cost is left unallocated. On OCI, cost tracking works on all defined tags; cost-tracking tags are deprecated and needed only for Budgets.",
+      "options": [
+        {
+          "name": "OCI defined tags and tag defaults",
+          "kind": "native"
+        },
+        {
+          "name": "OCI compartments",
+          "kind": "native"
+        },
+        {
+          "name": "OCI Cost Analysis (group by compartment or tag)",
+          "kind": "native"
+        }
+      ],
+      "verification": "Share of monthly spend allocated to an accountable owner, measured by cost (not by resource count), reported monthly against your target; the unallocated remainder is itemised with an owner for each line.",
+      "effort": "M",
+      "ownerRole": "Cloud platform team with the FinOps lead",
+      "confirmRegionalAvailability": false,
+      "confidence": "High",
+      "claimIds": [
+        "CLM-FIN-210"
+      ],
+      "owner": "finops-cost-lead",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-04-22"
+    },
+    {
+      "id": "PB.FIN.ALLOCATION.ibm.platform",
+      "control": "FIN.ALLOCATION",
+      "platform": "ibm",
+      "level": "platform",
+      "action": "Organise IBM Cloud resources into resource groups by owner and apply the mandatory set as user tags used in cost reporting.",
+      "approach": "An account, subscription or project hierarchy that mirrors ownership; a small mandatory tag set (owner, cost centre, environment, application) enforced by policy at creation; and documented rules for shared and untaggable costs, so no cost is left unallocated.",
+      "options": [
+        {
+          "name": "IBM Cloud resource groups",
+          "kind": "native"
+        },
+        {
+          "name": "IBM Cloud user tags",
+          "kind": "native"
+        }
+      ],
+      "verification": "Share of monthly spend allocated to an accountable owner, measured by cost (not by resource count), reported monthly against your target; the unallocated remainder is itemised with an owner for each line.",
+      "effort": "M",
+      "ownerRole": "Cloud platform team with the FinOps lead",
+      "confirmRegionalAvailability": false,
+      "confidence": "Medium",
+      "claimIds": [
+        "CLM-FIN-229"
+      ],
+      "owner": "finops-cost-lead",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-04-22"
+    },
+    {
+      "id": "PB.FIN.ALLOCATION.alibaba.platform",
+      "control": "FIN.ALLOCATION",
+      "platform": "alibaba",
+      "level": "platform",
+      "action": "Enable the mandatory tag keys as Alibaba Cloud cost allocation tags, use financial units and the account structure for ownership, and use split bill details for shared services.",
+      "approach": "An account, subscription or project hierarchy that mirrors ownership; a small mandatory tag set (owner, cost centre, environment, application) enforced by policy at creation; and documented rules for shared and untaggable costs, so no cost is left unallocated.",
+      "options": [
+        {
+          "name": "Alibaba Cloud cost allocation tags",
+          "kind": "native",
+          "detail": "Must be enabled in Expenses and Costs"
+        },
+        {
+          "name": "Alibaba Cloud financial units",
+          "kind": "native"
+        },
+        {
+          "name": "Alibaba Cloud split bill details",
+          "kind": "native"
+        }
+      ],
+      "verification": "Share of monthly spend allocated to an accountable owner, measured by cost (not by resource count), reported monthly against your target; the unallocated remainder is itemised with an owner for each line.",
+      "effort": "M",
+      "ownerRole": "Cloud platform team with the FinOps lead",
+      "confirmRegionalAvailability": false,
+      "confidence": "Medium",
+      "claimIds": [
+        "CLM-FIN-232"
+      ],
+      "owner": "finops-cost-lead",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-04-22"
+    },
+    {
+      "id": "PB.FIN.ALLOCATION.other_public.platform",
+      "control": "FIN.ALLOCATION",
+      "platform": "other_public",
+      "level": "platform",
+      "action": "Apply the account and tag model with the provider's own tooling; the provider is not identified in the assessment, so options are identified and validated in discovery.",
+      "approach": "An account, subscription or project hierarchy that mirrors ownership; a small mandatory tag set (owner, cost centre, environment, application) enforced by policy at creation; and documented rules for shared and untaggable costs, so no cost is left unallocated.",
+      "options": [
+        {
+          "name": "Mandatory tag set enforced in the provisioning pipeline",
+          "kind": "practice"
+        },
+        {
+          "name": "Shared-cost allocation rules applied in the central dataset",
+          "kind": "practice"
+        }
+      ],
+      "verification": "Share of monthly spend allocated to an accountable owner, measured by cost (not by resource count), reported monthly against your target; the unallocated remainder is itemised with an owner for each line.",
+      "effort": "M",
+      "ownerRole": "Cloud platform team with the FinOps lead",
+      "confirmRegionalAvailability": false,
+      "confidence": "Low",
+      "claimIds": [
+        "CLM-FIN-012"
+      ],
+      "owner": "finops-cost-lead",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-04-14"
+    },
+    {
+      "id": "PB.FIN.ALLOCATION.kubernetes.stack",
+      "control": "FIN.ALLOCATION",
+      "platform": "kubernetes",
+      "level": "stack",
+      "action": "Require owner, cost centre and environment labels on namespaces and workloads, and allocate cluster cost (including idle and shared system cost) by namespace and label.",
+      "approach": "Namespaces map to owners; workload labels carry the tag set; shared cluster cost (system pods, idle capacity) is distributed by documented rule.",
+      "options": [
+        {
+          "name": "OpenCost",
+          "kind": "open_source"
+        },
+        {
+          "name": "AWS split cost allocation data for Amazon EKS",
+          "kind": "native"
+        },
+        {
+          "name": "AKS cost analysis add-on",
+          "kind": "native"
+        },
+        {
+          "name": "GKE cost allocation",
+          "kind": "native"
+        },
+        {
+          "name": "Kubecost",
+          "kind": "third_party",
+          "detail": "IBM"
+        }
+      ],
+      "verification": "Share of cluster cost allocated to a namespace owner, by cost, monthly; namespaces without the mandatory labels listed with owners.",
+      "effort": "M",
+      "ownerRole": "Kubernetes platform team",
+      "confirmRegionalAvailability": false,
+      "confidence": "High",
+      "claimIds": [
+        "CLM-FIN-110",
+        "CLM-FIN-222",
+        "CLM-FIN-084",
+        "CLM-FIN-094",
+        "CLM-FIN-103",
+        "CLM-FIN-111"
+      ],
+      "owner": "finops-cost-lead",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-04-14"
+    },
+    {
+      "id": "PB.FIN.ALLOCATION.on_prem.platform",
+      "control": "FIN.ALLOCATION",
+      "platform": "on_prem",
+      "level": "platform",
+      "action": "Map VMs and hosts to business services and owners in the CMDB and show back their cost monthly by organisation and project.",
+      "approach": "The CMDB service map is the allocation key on owned infrastructure; showback precedes any chargeback.",
+      "options": [
+        {
+          "name": "VMware VCF Operations showback and chargeback",
+          "kind": "native",
+          "detail": "For VMware Cloud Foundation estates"
+        },
+        {
+          "name": "OpenStack CloudKitty",
+          "kind": "open_source"
+        },
+        {
+          "name": "CMDB service mapping",
+          "kind": "practice"
+        }
+      ],
+      "verification": "Share of on-premises cost allocated to a business service owner, by cost, monthly; VMs without a CMDB service mapping listed.",
+      "effort": "L",
+      "ownerRole": "Infrastructure and virtualisation team with finance",
+      "confirmRegionalAvailability": false,
+      "confidence": "Medium",
+      "claimIds": [
+        "CLM-FIN-224",
+        "CLM-FIN-226",
+        "CLM-FIN-012"
+      ],
+      "owner": "finops-cost-lead",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-04-14"
+    },
+    {
+      "id": "PB.FIN.ALLOCATION.saas.platform",
+      "control": "FIN.ALLOCATION",
+      "platform": "saas",
+      "level": "platform",
+      "action": "Allocate SaaS licence cost to the cost centre of each assigned user, using group-based licence assignment from the identity provider as the key.",
+      "approach": "Licences are assigned through identity groups that map to cost centres, so licence cost follows the user.",
+      "options": [
+        {
+          "name": "Microsoft 365 group-based licensing",
+          "kind": "native",
+          "detail": "Example for Microsoft 365; other SaaS vendors offer similar group assignment"
+        },
+        {
+          "name": "Identity-group to cost-centre mapping",
+          "kind": "practice"
+        },
+        {
+          "name": "SaaS management platform of your choice",
+          "kind": "third_party"
+        }
+      ],
+      "verification": "Share of SaaS spend allocated to a cost centre, by cost, monthly; unassigned licences listed per product.",
+      "effort": "M",
+      "ownerRole": "Software asset manager with finance",
+      "confirmRegionalAvailability": false,
+      "confidence": "Medium",
+      "claimIds": [
+        "CLM-FIN-240",
+        "CLM-FIN-023"
+      ],
+      "owner": "finops-cost-lead",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-04-14"
+    },
+    {
+      "id": "PB.FIN.ALLOCATION.data_platform.platform",
+      "control": "FIN.ALLOCATION",
+      "platform": "data_platform",
+      "level": "platform",
+      "action": "Tag warehouses, clusters and jobs with the mandatory set and add query tags for shared warehouses, so data platform consumption allocates to owners.",
+      "approach": "An account, subscription or project hierarchy that mirrors ownership; a small mandatory tag set (owner, cost centre, environment, application) enforced by policy at creation; and documented rules for shared and untaggable costs, so no cost is left unallocated.",
+      "options": [
+        {
+          "name": "Snowflake object tags and query tags",
+          "kind": "native"
+        },
+        {
+          "name": "Databricks custom tags (compute and serverless)",
+          "kind": "native"
+        }
+      ],
+      "verification": "Share of monthly spend allocated to an accountable owner, measured by cost (not by resource count), reported monthly against your target; the unallocated remainder is itemised with an owner for each line.",
+      "effort": "M",
+      "ownerRole": "Data platform team with the FinOps lead",
+      "confirmRegionalAvailability": false,
+      "confidence": "High",
+      "claimIds": [
+        "CLM-FIN-234",
+        "CLM-FIN-237"
+      ],
+      "owner": "finops-cost-lead",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-01-20"
+    },
+    {
+      "id": "PB.FIN.UNIT_ECONOMICS.any.application",
+      "control": "FIN.UNIT_ECONOMICS",
+      "platform": "any",
+      "level": "application",
+      "action": "Agree two or three unit metrics with product owners and finance, and publish unit cost monthly by joining allocated cost with business volumes.",
+      "approach": "Unit cost = allocated cost (numerator, from the central FOCUS dataset) divided by a business volume (denominator, from product telemetry); metrics are owned by product and finance, not by the platform team.",
+      "options": [
+        {
+          "name": "Unit metric catalogue agreed with finance and product owners",
+          "kind": "practice"
+        },
+        {
+          "name": "BI join of the FOCUS dataset with product telemetry",
+          "kind": "practice"
+        }
+      ],
+      "verification": "Unit cost for each agreed metric published monthly for every in-scope product, with cost and volume sources documented, and trended for at least three months.",
+      "effort": "M",
+      "ownerRole": "FinOps lead with product owners and finance",
+      "discoveryNeeded": "Product telemetry and business volume sources (for example transactions, active customers, inferences), their owners and refresh frequency, and allocation coverage for the products in scope.",
+      "confirmRegionalAvailability": false,
+      "confidence": "Medium",
+      "claimIds": [
+        "CLM-FIN-019",
+        "CLM-FIN-012"
+      ],
+      "owner": "finops-cost-lead",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-04-14"
+    },
+    {
+      "id": "PB.FIN.UNIT_ECONOMICS.aws.application",
+      "control": "FIN.UNIT_ECONOMICS",
+      "platform": "aws",
+      "level": "application",
+      "action": "Produce cost per product from the AWS data using Cost Categories (with split charges for shared cost), account tags and split cost allocation data for shared EKS clusters.",
+      "approach": "The platform supplies the numerator: cost per product, with shared platform cost split by rule, ready to divide by the product's business volume.",
+      "options": [
+        {
+          "name": "AWS Cost Categories with split charge rules",
+          "kind": "native"
+        },
+        {
+          "name": "AWS account tags for cost allocation",
+          "kind": "native"
+        },
+        {
+          "name": "AWS split cost allocation data for Amazon EKS",
+          "kind": "native"
+        }
+      ],
+      "verification": "Unit cost for each agreed metric published monthly for every in-scope product, with cost and volume sources documented, and trended for at least three months.",
+      "effort": "M",
+      "ownerRole": "FinOps lead with the cloud platform team",
+      "discoveryNeeded": "Product telemetry and business volume sources (for example transactions, active customers, inferences), their owners and refresh frequency, and allocation coverage for the products in scope.",
+      "confirmRegionalAvailability": false,
+      "confidence": "Medium",
+      "claimIds": [
+        "CLM-FIN-181",
+        "CLM-FIN-182",
+        "CLM-FIN-084",
+        "CLM-FIN-019"
+      ],
+      "owner": "finops-cost-lead",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-04-14"
+    },
+    {
+      "id": "PB.FIN.UNIT_ECONOMICS.azure.application",
+      "control": "FIN.UNIT_ECONOMICS",
+      "platform": "azure",
+      "level": "application",
+      "action": "Produce cost per product from the Azure data using tag inheritance, cost allocation rules for shared services and the AKS cost analysis add-on for shared clusters.",
+      "approach": "The platform supplies the numerator: cost per product, with shared platform cost split by rule, ready to divide by the product's business volume.",
+      "options": [
+        {
+          "name": "Microsoft Cost Management tag inheritance",
+          "kind": "native"
+        },
+        {
+          "name": "Microsoft Cost Management cost allocation rules",
+          "kind": "native"
+        },
+        {
+          "name": "AKS cost analysis add-on",
+          "kind": "native"
+        }
+      ],
+      "verification": "Unit cost for each agreed metric published monthly for every in-scope product, with cost and volume sources documented, and trended for at least three months.",
+      "effort": "M",
+      "ownerRole": "FinOps lead with the cloud platform team",
+      "discoveryNeeded": "Product telemetry and business volume sources (for example transactions, active customers, inferences), their owners and refresh frequency, and allocation coverage for the products in scope.",
+      "confirmRegionalAvailability": false,
+      "confidence": "Medium",
+      "claimIds": [
+        "CLM-FIN-194",
+        "CLM-FIN-193",
+        "CLM-FIN-094",
+        "CLM-FIN-019"
+      ],
+      "owner": "finops-cost-lead",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-04-14"
+    },
+    {
+      "id": "PB.FIN.UNIT_ECONOMICS.gcp.application",
+      "control": "FIN.UNIT_ECONOMICS",
+      "platform": "gcp",
+      "level": "application",
+      "action": "Produce cost per product from the Google Cloud billing export using labels, GKE cost allocation and request labels on model calls.",
+      "approach": "The platform supplies the numerator: cost per product, with shared platform cost split by rule, ready to divide by the product's business volume.",
+      "options": [
+        {
+          "name": "Google Cloud resource labels",
+          "kind": "native"
+        },
+        {
+          "name": "GKE cost allocation",
+          "kind": "native"
+        },
+        {
+          "name": "Gemini Enterprise Agent Platform request labels (formerly Vertex AI)",
+          "kind": "native"
+        }
+      ],
+      "verification": "Unit cost for each agreed metric published monthly for every in-scope product, with cost and volume sources documented, and trended for at least three months.",
+      "effort": "M",
+      "ownerRole": "FinOps lead with the cloud platform team",
+      "discoveryNeeded": "Product telemetry and business volume sources (for example transactions, active customers, inferences), their owners and refresh frequency, and allocation coverage for the products in scope.",
+      "confirmRegionalAvailability": false,
+      "confidence": "Medium",
+      "claimIds": [
+        "CLM-FIN-203",
+        "CLM-FIN-103",
+        "CLM-FIN-209",
+        "CLM-FIN-019"
+      ],
+      "owner": "finops-cost-lead",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-01-20"
+    },
+    {
+      "id": "PB.FIN.UNIT_ECONOMICS.oci.application",
+      "control": "FIN.UNIT_ECONOMICS",
+      "platform": "oci",
+      "level": "application",
+      "action": "Produce cost per product from the OCI FOCUS cost reports grouped by defined tags and compartments.",
+      "approach": "The platform supplies the numerator: cost per product, with shared platform cost split by rule, ready to divide by the product's business volume.",
+      "options": [
+        {
+          "name": "OCI Cost and Usage Reports (FOCUS format)",
+          "kind": "native"
+        },
+        {
+          "name": "OCI defined tags and compartments",
+          "kind": "native"
+        }
+      ],
+      "verification": "Unit cost for each agreed metric published monthly for every in-scope product, with cost and volume sources documented, and trended for at least three months.",
+      "effort": "M",
+      "ownerRole": "FinOps lead with the cloud platform team",
+      "discoveryNeeded": "Product telemetry and business volume sources (for example transactions, active customers, inferences), their owners and refresh frequency, and allocation coverage for the products in scope.",
+      "confirmRegionalAvailability": false,
+      "confidence": "Medium",
+      "claimIds": [
+        "CLM-FIN-107",
+        "CLM-FIN-210",
+        "CLM-FIN-019"
+      ],
+      "owner": "finops-cost-lead",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-01-12"
+    },
+    {
+      "id": "PB.FIN.UNIT_ECONOMICS.kubernetes.application",
+      "control": "FIN.UNIT_ECONOMICS",
+      "platform": "kubernetes",
+      "level": "application",
+      "action": "Produce cost per product from namespace and label allocation, including a share of idle and system cost.",
+      "approach": "The platform supplies the numerator: cost per product, with shared platform cost split by rule, ready to divide by the product's business volume.",
+      "options": [
+        {
+          "name": "OpenCost",
+          "kind": "open_source"
+        },
+        {
+          "name": "Kubecost",
+          "kind": "third_party",
+          "detail": "IBM"
+        }
+      ],
+      "verification": "Unit cost for each agreed metric published monthly for every in-scope product, with cost and volume sources documented, and trended for at least three months.",
+      "effort": "M",
+      "ownerRole": "Kubernetes platform team with the FinOps lead",
+      "discoveryNeeded": "Product telemetry and business volume sources (for example transactions, active customers, inferences), their owners and refresh frequency, and allocation coverage for the products in scope.",
+      "confirmRegionalAvailability": false,
+      "confidence": "Medium",
+      "claimIds": [
+        "CLM-FIN-110",
+        "CLM-FIN-222",
+        "CLM-FIN-019"
+      ],
+      "owner": "finops-cost-lead",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-04-14"
+    },
+    {
+      "id": "PB.FIN.UNIT_ECONOMICS.on_prem.application",
+      "control": "FIN.UNIT_ECONOMICS",
+      "platform": "on_prem",
+      "level": "application",
+      "action": "Produce cost per product from on-premises showback by project or business service.",
+      "approach": "The platform supplies the numerator: cost per product, with shared platform cost split by rule, ready to divide by the product's business volume.",
+      "options": [
+        {
+          "name": "VMware VCF Operations showback",
+          "kind": "native",
+          "detail": "For VMware Cloud Foundation estates"
+        },
+        {
+          "name": "OpenStack CloudKitty",
+          "kind": "open_source"
+        }
+      ],
+      "verification": "Unit cost for each agreed metric published monthly for every in-scope product, with cost and volume sources documented, and trended for at least three months.",
+      "effort": "M",
+      "ownerRole": "Infrastructure and virtualisation team with the FinOps lead",
+      "discoveryNeeded": "Product telemetry and business volume sources (for example transactions, active customers, inferences), their owners and refresh frequency, and allocation coverage for the products in scope.",
+      "confirmRegionalAvailability": false,
+      "confidence": "Low",
+      "claimIds": [
+        "CLM-FIN-224",
+        "CLM-FIN-226",
+        "CLM-FIN-019"
+      ],
+      "owner": "finops-cost-lead",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-04-14"
+    },
+    {
+      "id": "PB.FIN.LEV-01.aws.platform",
+      "control": "FIN.LEV-01",
+      "platform": "aws",
+      "level": "platform",
+      "action": "Run a Savings Plans and Reserved Instances portfolio from the management account using AWS recommendations, coverage and utilization reports and expiry alerts, with renewals queued ahead of expiry.",
+      "approach": "Manage commitments centrally as a portfolio: size them from steady-state usage after rightsizing and idle clean-up, prefer flexible instruments first, stagger terms so renewals spread across the year, and alert on utilisation and expiry. Provider recommendations are an input, not a purchase order.",
+      "options": [
+        {
+          "name": "Compute Savings Plans",
+          "kind": "native",
+          "detail": "Most flexible"
+        },
+        {
+          "name": "EC2 Instance Savings Plans",
+          "kind": "native"
+        },
+        {
+          "name": "Reserved Instances (RDS, ElastiCache, OpenSearch Service, Redshift, MemoryDB, DynamoDB)",
+          "kind": "native"
+        },
+        {
+          "name": "Savings Plans recommendations, coverage and utilization reports, and alerts",
+          "kind": "native"
+        },
+        {
+          "name": "AWS Cost Optimization Hub",
+          "kind": "native"
+        }
+      ],
+      "verification": "Eligible coverage and commitment utilisation reported monthly against your targets; utilisation and expiry alerts configured; no commitment expires without a recorded renew or let-lapse decision.",
+      "effort": "M",
+      "ownerRole": "FinOps lead with procurement and finance",
+      "confirmRegionalAvailability": false,
+      "confidence": "High",
+      "claimIds": [
+        "CLM-FIN-060",
+        "CLM-FIN-183",
+        "CLM-FIN-184",
+        "CLM-FIN-082",
+        "CLM-FIN-009"
+      ],
+      "owner": "finops-cost-lead",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-01-12"
+    },
+    {
+      "id": "PB.FIN.LEV-01.azure.platform",
+      "control": "FIN.LEV-01",
+      "platform": "azure",
+      "level": "platform",
+      "action": "Run a savings plan and reservations portfolio at billing scope using Azure purchase recommendations and reservation utilization alerts, without buying both instruments for the same usage at once.",
+      "approach": "Manage commitments centrally as a portfolio: size them from steady-state usage after rightsizing and idle clean-up, prefer flexible instruments first, stagger terms so renewals spread across the year, and alert on utilisation and expiry. Provider recommendations are an input, not a purchase order. Azure self-service reservation refunds are capped, so size conservatively.",
+      "options": [
+        {
+          "name": "Azure savings plan for compute",
+          "kind": "native",
+          "detail": "Most flexible"
+        },
+        {
+          "name": "Azure reservations",
+          "kind": "native"
+        },
+        {
+          "name": "Azure reservation recommendations (Advisor, API, purchase experience)",
+          "kind": "native"
+        },
+        {
+          "name": "Microsoft Cost Management reservation utilization alerts",
+          "kind": "native"
+        }
+      ],
+      "verification": "Eligible coverage and commitment utilisation reported monthly against your targets; utilisation and expiry alerts configured; no commitment expires without a recorded renew or let-lapse decision.",
+      "effort": "M",
+      "ownerRole": "FinOps lead with procurement and finance",
+      "confirmRegionalAvailability": false,
+      "confidence": "High",
+      "claimIds": [
+        "CLM-FIN-062",
+        "CLM-FIN-063",
+        "CLM-FIN-195",
+        "CLM-FIN-196",
+        "CLM-FIN-174"
+      ],
+      "owner": "finops-cost-lead",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-01-12"
+    },
+    {
+      "id": "PB.FIN.LEV-01.gcp.platform",
+      "control": "FIN.LEV-01",
+      "platform": "gcp",
+      "level": "platform",
+      "action": "Run a committed use discount portfolio at Cloud Billing account level using CUD recommendations, and track effectiveness in the CUD analysis report.",
+      "approach": "Manage commitments centrally as a portfolio: size them from steady-state usage after rightsizing and idle clean-up, prefer flexible instruments first, stagger terms so renewals spread across the year, and alert on utilisation and expiry. Provider recommendations are an input, not a purchase order.",
+      "options": [
+        {
+          "name": "Compute flexible (spend-based) committed use discounts",
+          "kind": "native",
+          "detail": "Most flexible"
+        },
+        {
+          "name": "Resource-based committed use discounts",
+          "kind": "native"
+        },
+        {
+          "name": "Committed use discount recommendations",
+          "kind": "native"
+        },
+        {
+          "name": "Cloud Billing CUD analysis report",
+          "kind": "native"
+        }
+      ],
+      "verification": "Eligible coverage and commitment utilisation reported monthly against your targets; utilisation and expiry alerts configured; no commitment expires without a recorded renew or let-lapse decision.",
+      "effort": "M",
+      "ownerRole": "FinOps lead with procurement and finance",
+      "confirmRegionalAvailability": false,
+      "confidence": "High",
+      "claimIds": [
+        "CLM-FIN-065",
+        "CLM-FIN-066",
+        "CLM-FIN-204"
+      ],
+      "owner": "finops-cost-lead",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-01-12"
+    },
+    {
+      "id": "PB.FIN.LEV-01.oci.platform",
+      "control": "FIN.LEV-01",
+      "platform": "oci",
+      "level": "platform",
+      "action": "Size any Universal Credits annual commitment from the spend forecast and track draw-down against it monthly.",
+      "approach": "On OCI the commitment is an annual prepaid credit amount rather than per-resource reservations; size it from the forecast, not the peak.",
+      "options": [
+        {
+          "name": "Oracle Universal Credits annual commitment",
+          "kind": "native",
+          "detail": "Discount negotiated in the order"
+        },
+        {
+          "name": "OCI Cost Analysis",
+          "kind": "native"
+        }
+      ],
+      "verification": "Monthly draw-down tracked against the annual commitment; a forecast shortfall or overage is raised at least one quarter before the term ends.",
+      "effort": "M",
+      "ownerRole": "FinOps lead with procurement and finance",
+      "confirmRegionalAvailability": false,
+      "confidence": "Medium",
+      "claimIds": [
+        "CLM-FIN-211",
+        "CLM-FIN-107"
+      ],
+      "owner": "finops-cost-lead",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-01-12"
+    },
+    {
+      "id": "PB.FIN.LEV-01.ibm.platform",
+      "control": "FIN.LEV-01",
+      "platform": "ibm",
+      "level": "platform",
+      "action": "Size any IBM Cloud committed-use spend agreement from the spend forecast and track consumption against it monthly.",
+      "approach": "Manage commitments centrally as a portfolio: size them from steady-state usage after rightsizing and idle clean-up, prefer flexible instruments first, stagger terms so renewals spread across the year, and alert on utilisation and expiry. Provider recommendations are an input, not a purchase order.",
+      "options": [
+        {
+          "name": "IBM Cloud Pay-as-you-go with Committed Use",
+          "kind": "native"
+        }
+      ],
+      "verification": "Monthly consumption tracked against the committed amount; the renewal decision recorded before the term ends.",
+      "effort": "M",
+      "ownerRole": "FinOps lead with procurement and finance",
+      "confirmRegionalAvailability": false,
+      "confidence": "Medium",
+      "claimIds": [
+        "CLM-FIN-230"
+      ],
+      "owner": "finops-cost-lead",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-01-20"
+    },
+    {
+      "id": "PB.FIN.LEV-01.alibaba.platform",
+      "control": "FIN.LEV-01",
+      "platform": "alibaba",
+      "level": "platform",
+      "action": "Run an Alibaba Cloud savings plan and reserved instance portfolio for steady pay-as-you-go ECS and ECI usage.",
+      "approach": "Manage commitments centrally as a portfolio: size them from steady-state usage after rightsizing and idle clean-up, prefer flexible instruments first, stagger terms so renewals spread across the year, and alert on utilisation and expiry. Provider recommendations are an input, not a purchase order. Savings plans do not apply to spot instances, so apply them after the Spot decision.",
+      "options": [
+        {
+          "name": "Alibaba Cloud savings plans",
+          "kind": "native"
+        },
+        {
+          "name": "Alibaba Cloud reserved instances",
+          "kind": "native"
+        }
+      ],
+      "verification": "Eligible coverage and commitment utilisation reported monthly against your targets; utilisation and expiry alerts configured; no commitment expires without a recorded renew or let-lapse decision.",
+      "effort": "M",
+      "ownerRole": "FinOps lead with procurement and finance",
+      "confirmRegionalAvailability": false,
+      "confidence": "Medium",
+      "claimIds": [
+        "CLM-FIN-233"
+      ],
+      "owner": "finops-cost-lead",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-01-20"
+    },
+    {
+      "id": "PB.FIN.LEV-01.other_public.platform",
+      "control": "FIN.LEV-01",
+      "platform": "other_public",
+      "level": "platform",
+      "action": "Negotiate and size any commitment or enterprise discount from the forecast with the provider's own tooling; the provider is not identified in the assessment, so options are identified and validated in discovery.",
+      "approach": "Manage commitments centrally as a portfolio: size them from steady-state usage after rightsizing and idle clean-up, prefer flexible instruments first, stagger terms so renewals spread across the year, and alert on utilisation and expiry. Provider recommendations are an input, not a purchase order.",
+      "options": [
+        {
+          "name": "Commitment or enterprise discount sized from the spend forecast",
+          "kind": "practice"
+        }
+      ],
+      "verification": "Eligible coverage and commitment utilisation reported monthly against your targets; utilisation and expiry alerts configured; no commitment expires without a recorded renew or let-lapse decision.",
+      "effort": "M",
+      "ownerRole": "FinOps lead with procurement and finance",
+      "confirmRegionalAvailability": false,
+      "confidence": "Low",
+      "claimIds": [
+        "CLM-FIN-022"
+      ],
+      "owner": "finops-cost-lead",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-04-14"
+    },
+    {
+      "id": "PB.FIN.LEV-01.kubernetes.platform",
+      "control": "FIN.LEV-01",
+      "platform": "kubernetes",
+      "level": "platform",
+      "action": "Commitments for Kubernetes are bought on the nodes' underlying compute at provider level; the provider entries for this lever cover them, sized after cluster efficiency work (LEV-07).",
+      "approach": "No platform-specific action: see the reason in the action.",
+      "options": [],
+      "verification": "Not applicable on this platform; confirm in discovery that the reason holds for you.",
+      "effort": "S",
+      "ownerRole": "FinOps lead",
+      "confirmRegionalAvailability": false,
+      "confidence": "High",
+      "noPlatformAction": true,
+      "claimIds": [
+        "CLM-FIN-009",
+        "CLM-FIN-160"
+      ],
+      "owner": "finops-cost-lead",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-04-14"
+    },
+    {
+      "id": "PB.FIN.LEV-01.on_prem.platform",
+      "control": "FIN.LEV-01",
+      "platform": "on_prem",
+      "level": "platform",
+      "action": "Owned or leased on-premises capacity carries no provider commitment discount; capacity and licence purchases are planned in capacity management, outside this lever.",
+      "approach": "No platform-specific action: see the reason in the action.",
+      "options": [],
+      "verification": "Not applicable on this platform; confirm in discovery that the reason holds for you.",
+      "effort": "S",
+      "ownerRole": "FinOps lead",
+      "confirmRegionalAvailability": false,
+      "confidence": "High",
+      "noPlatformAction": true,
+      "claimIds": [
+        "CLM-FIN-150"
+      ],
+      "owner": "finops-cost-lead",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-04-14"
+    },
+    {
+      "id": "PB.FIN.LEV-01.saas.platform",
+      "control": "FIN.LEV-01",
+      "platform": "saas",
+      "level": "platform",
+      "action": "SaaS rates, tiers and seat counts are contract terms rather than infrastructure settings; act on them through LEV-09 SaaS and licensing at renewal, so no separate SaaS action is catalogued for this lever.",
+      "approach": "No platform-specific action: see the reason in the action.",
+      "options": [],
+      "verification": "Not applicable on this platform; confirm in discovery that the reason holds for you.",
+      "effort": "S",
+      "ownerRole": "FinOps lead",
+      "confirmRegionalAvailability": false,
+      "confidence": "High",
+      "noPlatformAction": true,
+      "claimIds": [
+        "CLM-FIN-158",
+        "CLM-FIN-023"
+      ],
+      "owner": "finops-cost-lead",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-04-14"
+    },
+    {
+      "id": "PB.FIN.LEV-01.data_platform.platform",
+      "control": "FIN.LEV-01",
+      "platform": "data_platform",
+      "level": "platform",
+      "action": "Align any capacity or pre-purchase contract with the data platform vendor to measured consumption and review draw-down monthly.",
+      "approach": "Data platforms sell capacity contracts or pre-purchase plans against consumption credits; size them from measured consumption, not peak.",
+      "options": [
+        {
+          "name": "Snowflake Capacity account",
+          "kind": "native",
+          "detail": "Rates differ from On Demand"
+        },
+        {
+          "name": "Databricks pre-purchase plan through Azure reservations",
+          "kind": "native",
+          "detail": "Not covered by Azure reservation utilization alerts"
+        }
+      ],
+      "verification": "Contracted capacity forecast to be consumed within the term with no forfeited balance; draw-down reviewed monthly.",
+      "effort": "S",
+      "ownerRole": "FinOps lead with procurement and finance",
+      "confirmRegionalAvailability": false,
+      "confidence": "Medium",
+      "claimIds": [
+        "CLM-FIN-236",
+        "CLM-FIN-196"
+      ],
+      "owner": "finops-cost-lead",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-04-22"
+    },
+    {
+      "id": "PB.FIN.LEV-02.aws.stack",
+      "control": "FIN.LEV-02",
+      "platform": "aws",
+      "level": "stack",
+      "action": "Review AWS Compute Optimizer and Cost Optimization Hub rightsizing recommendations with application owners and apply accepted changes through the release process.",
+      "approach": "Start from provider recommendations over a representative look-back period, confirm with the application owner, change through the normal release process with performance guardrails, and recheck after the change; account for existing commitments before moving across families.",
+      "options": [
+        {
+          "name": "AWS Compute Optimizer",
+          "kind": "native",
+          "detail": "EC2, Auto Scaling groups, EBS, Lambda; configurable look-back and headroom"
+        },
+        {
+          "name": "AWS Cost Optimization Hub",
+          "kind": "native"
+        }
+      ],
+      "verification": "Utilisation of changed resources within the target band 30 days after the change, with no SLO breach attributable to it; every recommendation actioned or dismissed with a recorded reason.",
+      "effort": "M",
+      "ownerRole": "Application owners with the cloud platform team",
+      "confirmRegionalAvailability": false,
+      "confidence": "High",
+      "claimIds": [
+        "CLM-FIN-083",
+        "CLM-FIN-082"
+      ],
+      "owner": "finops-cost-lead",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-04-14"
+    },
+    {
+      "id": "PB.FIN.LEV-02.azure.stack",
+      "control": "FIN.LEV-02",
+      "platform": "azure",
+      "level": "stack",
+      "action": "Review Azure Advisor resize recommendations with application owners, check them against reservations and savings plans, and apply accepted changes through the release process.",
+      "approach": "Start from provider recommendations over a representative look-back period, confirm with the application owner, change through the normal release process with performance guardrails, and recheck after the change; account for existing commitments before moving across families. Advisor estimates use retail rates and ignore reservations and savings plans, so restate savings at your rates.",
+      "options": [
+        {
+          "name": "Azure Advisor resize and shutdown recommendations",
+          "kind": "native",
+          "detail": "Look-back 7 to 90 days"
+        }
+      ],
+      "verification": "Utilisation of changed resources within the target band 30 days after the change, with no SLO breach attributable to it; every recommendation actioned or dismissed with a recorded reason.",
+      "effort": "M",
+      "ownerRole": "Application owners with the cloud platform team",
+      "confirmRegionalAvailability": false,
+      "confidence": "High",
+      "claimIds": [
+        "CLM-FIN-092",
+        "CLM-FIN-241"
+      ],
+      "owner": "finops-cost-lead",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-04-14"
+    },
+    {
+      "id": "PB.FIN.LEV-02.gcp.stack",
+      "control": "FIN.LEV-02",
+      "platform": "gcp",
+      "level": "stack",
+      "action": "Review Google Cloud Recommender machine type recommendations with application owners and apply accepted changes through the release process.",
+      "approach": "Start from provider recommendations over a representative look-back period, confirm with the application owner, change through the normal release process with performance guardrails, and recheck after the change; account for existing commitments before moving across families.",
+      "options": [
+        {
+          "name": "Google Cloud Recommender: machine type recommendations",
+          "kind": "native"
+        },
+        {
+          "name": "Google Cloud Recommender: underutilised reservations",
+          "kind": "native"
+        }
+      ],
+      "verification": "Utilisation of changed resources within the target band 30 days after the change, with no SLO breach attributable to it; every recommendation actioned or dismissed with a recorded reason.",
+      "effort": "M",
+      "ownerRole": "Application owners with the cloud platform team",
+      "confirmRegionalAvailability": false,
+      "confidence": "High",
+      "claimIds": [
+        "CLM-FIN-101",
+        "CLM-FIN-205"
+      ],
+      "owner": "finops-cost-lead",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-04-14"
+    },
+    {
+      "id": "PB.FIN.LEV-02.oci.stack",
+      "control": "FIN.LEV-02",
+      "platform": "oci",
+      "level": "stack",
+      "action": "Review OCI Cloud Advisor rightsizing recommendations for underutilised compute and over-provisioned databases and apply accepted changes.",
+      "approach": "Start from provider recommendations over a representative look-back period, confirm with the application owner, change through the normal release process with performance guardrails, and recheck after the change; account for existing commitments before moving across families.",
+      "options": [
+        {
+          "name": "OCI Cloud Advisor cost management recommendations",
+          "kind": "native"
+        }
+      ],
+      "verification": "Utilisation of changed resources within the target band 30 days after the change, with no SLO breach attributable to it; every recommendation actioned or dismissed with a recorded reason.",
+      "effort": "M",
+      "ownerRole": "Application owners with the cloud platform team",
+      "confirmRegionalAvailability": false,
+      "confidence": "High",
+      "claimIds": [
+        "CLM-FIN-212"
+      ],
+      "owner": "finops-cost-lead",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-04-22"
+    },
+    {
+      "id": "PB.FIN.LEV-02.ibm.stack",
+      "control": "FIN.LEV-02",
+      "platform": "ibm",
+      "level": "stack",
+      "action": "Rightsize virtual servers and managed services from utilisation data on IBM Cloud with its own tooling; no IBM Cloud-specific option is catalogued in this version, so options are identified and validated in discovery.",
+      "approach": "Start from provider recommendations over a representative look-back period, confirm with the application owner, change through the normal release process with performance guardrails, and recheck after the change; account for existing commitments before moving across families.",
+      "options": [
+        {
+          "name": "Utilisation-based rightsizing review",
+          "kind": "practice"
+        }
+      ],
+      "verification": "Utilisation of changed resources within the target band 30 days after the change, with no SLO breach attributable to it; every recommendation actioned or dismissed with a recorded reason.",
+      "effort": "M",
+      "ownerRole": "Application owners with the cloud platform team",
+      "confirmRegionalAvailability": false,
+      "confidence": "Low",
+      "claimIds": [
+        "CLM-FIN-021"
+      ],
+      "owner": "finops-cost-lead",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-04-14"
+    },
+    {
+      "id": "PB.FIN.LEV-02.alibaba.stack",
+      "control": "FIN.LEV-02",
+      "platform": "alibaba",
+      "level": "stack",
+      "action": "Rightsize ECS instances and managed services from utilisation data on Alibaba Cloud with its own tooling; no Alibaba Cloud-specific option is catalogued in this version, so options are identified and validated in discovery.",
+      "approach": "Start from provider recommendations over a representative look-back period, confirm with the application owner, change through the normal release process with performance guardrails, and recheck after the change; account for existing commitments before moving across families.",
+      "options": [
+        {
+          "name": "Utilisation-based rightsizing review",
+          "kind": "practice"
+        }
+      ],
+      "verification": "Utilisation of changed resources within the target band 30 days after the change, with no SLO breach attributable to it; every recommendation actioned or dismissed with a recorded reason.",
+      "effort": "M",
+      "ownerRole": "Application owners with the cloud platform team",
+      "confirmRegionalAvailability": false,
+      "confidence": "Low",
+      "claimIds": [
+        "CLM-FIN-021"
+      ],
+      "owner": "finops-cost-lead",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-04-14"
+    },
+    {
+      "id": "PB.FIN.LEV-02.other_public.stack",
+      "control": "FIN.LEV-02",
+      "platform": "other_public",
+      "level": "stack",
+      "action": "Rightsize compute and managed services from utilisation data with the provider's own tooling; the provider is not identified in the assessment, so options are identified and validated in discovery.",
+      "approach": "Start from provider recommendations over a representative look-back period, confirm with the application owner, change through the normal release process with performance guardrails, and recheck after the change; account for existing commitments before moving across families.",
+      "options": [
+        {
+          "name": "Utilisation-based rightsizing review",
+          "kind": "practice"
+        }
+      ],
+      "verification": "Utilisation of changed resources within the target band 30 days after the change, with no SLO breach attributable to it; every recommendation actioned or dismissed with a recorded reason.",
+      "effort": "M",
+      "ownerRole": "Application owners with the cloud platform team",
+      "confirmRegionalAvailability": false,
+      "confidence": "Low",
+      "claimIds": [
+        "CLM-FIN-021"
+      ],
+      "owner": "finops-cost-lead",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-04-14"
+    },
+    {
+      "id": "PB.FIN.LEV-02.kubernetes.stack",
+      "control": "FIN.LEV-02",
+      "platform": "kubernetes",
+      "level": "stack",
+      "action": "Set container CPU and memory requests from observed usage, starting with Vertical Pod Autoscaler in recommendation-only mode, and review request-to-usage efficiency per namespace.",
+      "approach": "Requests drive node count; set them from observed usage with headroom, apply through the deployment pipeline, and leave node consolidation to LEV-07.",
+      "options": [
+        {
+          "name": "Kubernetes Vertical Pod Autoscaler (recommendation mode)",
+          "kind": "open_source"
+        },
+        {
+          "name": "OpenCost",
+          "kind": "open_source",
+          "detail": "Request versus usage per namespace"
+        },
+        {
+          "name": "Kubecost",
+          "kind": "third_party",
+          "detail": "IBM"
+        }
+      ],
+      "verification": "Ratio of used to requested CPU and memory per namespace reported monthly and moving towards your target; no OOM-kill or throttling increase after changes.",
+      "effort": "M",
+      "ownerRole": "Kubernetes platform team with application owners",
+      "confirmRegionalAvailability": false,
+      "confidence": "High",
+      "claimIds": [
+        "CLM-FIN-113",
+        "CLM-FIN-222",
+        "CLM-FIN-111"
+      ],
+      "owner": "finops-cost-lead",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-04-14"
+    },
+    {
+      "id": "PB.FIN.LEV-02.on_prem.stack",
+      "control": "FIN.LEV-02",
+      "platform": "on_prem",
+      "level": "stack",
+      "action": "Rightsize oversized VMs from hypervisor utilisation, using the virtualisation platform's rightsizing recommendations where available.",
+      "approach": "Start from provider recommendations over a representative look-back period, confirm with the application owner, change through the normal release process with performance guardrails, and recheck after the change; account for existing commitments before moving across families. On owned capacity the gain is freed capacity and deferred hardware or licence purchases, not a lower bill.",
+      "options": [
+        {
+          "name": "VMware VCF Operations rightsizing",
+          "kind": "native",
+          "detail": "For VMware Cloud Foundation estates"
+        },
+        {
+          "name": "Hypervisor utilisation review",
+          "kind": "practice"
+        }
+      ],
+      "verification": "Utilisation of changed resources within the target band 30 days after the change, with no SLO breach attributable to it; every recommendation actioned or dismissed with a recorded reason.",
+      "effort": "M",
+      "ownerRole": "Infrastructure and virtualisation team",
+      "confirmRegionalAvailability": false,
+      "confidence": "Medium",
+      "claimIds": [
+        "CLM-FIN-223"
+      ],
+      "owner": "finops-cost-lead",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-04-22"
+    },
+    {
+      "id": "PB.FIN.LEV-02.saas.stack",
+      "control": "FIN.LEV-02",
+      "platform": "saas",
+      "level": "stack",
+      "action": "SaaS rates, tiers and seat counts are contract terms rather than infrastructure settings; act on them through LEV-09 SaaS and licensing at renewal, so no separate SaaS action is catalogued for this lever.",
+      "approach": "No platform-specific action: see the reason in the action.",
+      "options": [],
+      "verification": "Not applicable on this platform; confirm in discovery that the reason holds for you.",
+      "effort": "S",
+      "ownerRole": "FinOps lead",
+      "confirmRegionalAvailability": false,
+      "confidence": "High",
+      "noPlatformAction": true,
+      "claimIds": [
+        "CLM-FIN-158",
+        "CLM-FIN-023"
+      ],
+      "owner": "finops-cost-lead",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-04-14"
+    },
+    {
+      "id": "PB.FIN.LEV-02.data_platform.stack",
+      "control": "FIN.LEV-02",
+      "platform": "data_platform",
+      "level": "stack",
+      "action": "Size warehouses and clusters per workload from query history, with autoscaling bounded by policy.",
+      "approach": "Consumption platforms bill by size and running time; test sizes per workload and bound autoscaling so larger sizes run for less time.",
+      "options": [
+        {
+          "name": "Snowflake warehouse sizing",
+          "kind": "native",
+          "detail": "Per-second billing"
+        },
+        {
+          "name": "Databricks compute autoscaling",
+          "kind": "native"
+        }
+      ],
+      "verification": "Credit or DBU consumption per workload trended monthly after changes, with query duration within the agreed target.",
+      "effort": "M",
+      "ownerRole": "Data platform team",
+      "confirmRegionalAvailability": false,
+      "confidence": "Medium",
+      "claimIds": [
+        "CLM-FIN-235",
+        "CLM-FIN-238"
+      ],
+      "owner": "finops-cost-lead",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-04-22"
+    },
+    {
+      "id": "PB.FIN.LEV-03.aws.platform",
+      "control": "FIN.LEV-03",
+      "platform": "aws",
+      "level": "platform",
+      "action": "Act on idle-resource findings from AWS Compute Optimizer and Cost Optimization Hub, and expire outdated EBS snapshots with Amazon Data Lifecycle Manager policies.",
+      "approach": "Detect idle and orphaned resources on a schedule, notify the owner, quarantine (stop or snapshot) for a fixed period, then delete unless an exception is registered.",
+      "options": [
+        {
+          "name": "AWS Compute Optimizer idle resource findings",
+          "kind": "native"
+        },
+        {
+          "name": "AWS Cost Optimization Hub",
+          "kind": "native"
+        },
+        {
+          "name": "Amazon Data Lifecycle Manager",
+          "kind": "native",
+          "detail": "Only manages snapshots it created"
+        }
+      ],
+      "verification": "Idle and orphaned spend reported monthly and trending down; every remaining idle resource has an owner-approved exception with an expiry date.",
+      "effort": "S",
+      "ownerRole": "Cloud platform team with resource owners",
+      "confirmRegionalAvailability": false,
+      "confidence": "High",
+      "claimIds": [
+        "CLM-FIN-083",
+        "CLM-FIN-082",
+        "CLM-FIN-185"
+      ],
+      "owner": "finops-cost-lead",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-04-14"
+    },
+    {
+      "id": "PB.FIN.LEV-03.azure.platform",
+      "control": "FIN.LEV-03",
+      "platform": "azure",
+      "level": "platform",
+      "action": "Act on Azure Advisor shutdown recommendations and the Cost Optimization workbook's idle-resource views, including unattached managed disks.",
+      "approach": "Detect idle and orphaned resources on a schedule, notify the owner, quarantine (stop or snapshot) for a fixed period, then delete unless an exception is registered.",
+      "options": [
+        {
+          "name": "Azure Advisor shutdown recommendations",
+          "kind": "native"
+        },
+        {
+          "name": "Azure Cost Optimization workbook (Azure Advisor)",
+          "kind": "native"
+        },
+        {
+          "name": "Unattached managed disk review",
+          "kind": "practice"
+        }
+      ],
+      "verification": "Idle and orphaned spend reported monthly and trending down; every remaining idle resource has an owner-approved exception with an expiry date.",
+      "effort": "S",
+      "ownerRole": "Cloud platform team with resource owners",
+      "confirmRegionalAvailability": false,
+      "confidence": "High",
+      "claimIds": [
+        "CLM-FIN-092",
+        "CLM-FIN-197"
+      ],
+      "owner": "finops-cost-lead",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-04-14"
+    },
+    {
+      "id": "PB.FIN.LEV-03.gcp.platform",
+      "control": "FIN.LEV-03",
+      "platform": "gcp",
+      "level": "platform",
+      "action": "Act on Google Cloud idle resource recommenders for VMs, persistent disks, IP addresses, custom images, GKE clusters and reservations.",
+      "approach": "Detect idle and orphaned resources on a schedule, notify the owner, quarantine (stop or snapshot) for a fixed period, then delete unless an exception is registered.",
+      "options": [
+        {
+          "name": "Google Cloud Recommender: idle resource recommenders",
+          "kind": "native"
+        }
+      ],
+      "verification": "Idle and orphaned spend reported monthly and trending down; every remaining idle resource has an owner-approved exception with an expiry date.",
+      "effort": "S",
+      "ownerRole": "Cloud platform team with resource owners",
+      "confirmRegionalAvailability": false,
+      "confidence": "High",
+      "claimIds": [
+        "CLM-FIN-101",
+        "CLM-FIN-205"
+      ],
+      "owner": "finops-cost-lead",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-04-14"
+    },
+    {
+      "id": "PB.FIN.LEV-03.oci.platform",
+      "control": "FIN.LEV-03",
+      "platform": "oci",
+      "level": "platform",
+      "action": "Act on OCI Cloud Advisor findings for underutilised compute and unattached block and boot volumes.",
+      "approach": "Detect idle and orphaned resources on a schedule, notify the owner, quarantine (stop or snapshot) for a fixed period, then delete unless an exception is registered.",
+      "options": [
+        {
+          "name": "OCI Cloud Advisor cost management recommendations",
+          "kind": "native"
+        }
+      ],
+      "verification": "Idle and orphaned spend reported monthly and trending down; every remaining idle resource has an owner-approved exception with an expiry date.",
+      "effort": "S",
+      "ownerRole": "Cloud platform team with resource owners",
+      "confirmRegionalAvailability": false,
+      "confidence": "High",
+      "claimIds": [
+        "CLM-FIN-212"
+      ],
+      "owner": "finops-cost-lead",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-04-22"
+    },
+    {
+      "id": "PB.FIN.LEV-03.ibm.platform",
+      "control": "FIN.LEV-03",
+      "platform": "ibm",
+      "level": "platform",
+      "action": "Find and remove idle and unattached resources on IBM Cloud with its own tooling; no IBM Cloud-specific option is catalogued in this version, so options are identified and validated in discovery.",
+      "approach": "Detect idle and orphaned resources on a schedule, notify the owner, quarantine (stop or snapshot) for a fixed period, then delete unless an exception is registered.",
+      "options": [
+        {
+          "name": "Idle and unattached resource report with quarantine-then-delete policy",
+          "kind": "practice"
+        }
+      ],
+      "verification": "Idle and orphaned spend reported monthly and trending down; every remaining idle resource has an owner-approved exception with an expiry date.",
+      "effort": "S",
+      "ownerRole": "Cloud platform team with resource owners",
+      "confirmRegionalAvailability": false,
+      "confidence": "Low",
+      "claimIds": [
+        "CLM-FIN-021"
+      ],
+      "owner": "finops-cost-lead",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-04-14"
+    },
+    {
+      "id": "PB.FIN.LEV-03.alibaba.platform",
+      "control": "FIN.LEV-03",
+      "platform": "alibaba",
+      "level": "platform",
+      "action": "Find and remove idle and unattached resources on Alibaba Cloud with its own tooling; no Alibaba Cloud-specific option is catalogued in this version, so options are identified and validated in discovery.",
+      "approach": "Detect idle and orphaned resources on a schedule, notify the owner, quarantine (stop or snapshot) for a fixed period, then delete unless an exception is registered.",
+      "options": [
+        {
+          "name": "Idle and unattached resource report with quarantine-then-delete policy",
+          "kind": "practice"
+        }
+      ],
+      "verification": "Idle and orphaned spend reported monthly and trending down; every remaining idle resource has an owner-approved exception with an expiry date.",
+      "effort": "S",
+      "ownerRole": "Cloud platform team with resource owners",
+      "confirmRegionalAvailability": false,
+      "confidence": "Low",
+      "claimIds": [
+        "CLM-FIN-021"
+      ],
+      "owner": "finops-cost-lead",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-04-14"
+    },
+    {
+      "id": "PB.FIN.LEV-03.other_public.platform",
+      "control": "FIN.LEV-03",
+      "platform": "other_public",
+      "level": "platform",
+      "action": "Find and remove idle and unattached resources with the provider's own tooling; the provider is not identified in the assessment, so options are identified and validated in discovery.",
+      "approach": "Detect idle and orphaned resources on a schedule, notify the owner, quarantine (stop or snapshot) for a fixed period, then delete unless an exception is registered.",
+      "options": [
+        {
+          "name": "Idle and unattached resource report with quarantine-then-delete policy",
+          "kind": "practice"
+        }
+      ],
+      "verification": "Idle and orphaned spend reported monthly and trending down; every remaining idle resource has an owner-approved exception with an expiry date.",
+      "effort": "S",
+      "ownerRole": "Cloud platform team with resource owners",
+      "confirmRegionalAvailability": false,
+      "confidence": "Low",
+      "claimIds": [
+        "CLM-FIN-021"
+      ],
+      "owner": "finops-cost-lead",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-04-14"
+    },
+    {
+      "id": "PB.FIN.LEV-03.kubernetes.platform",
+      "control": "FIN.LEV-03",
+      "platform": "kubernetes",
+      "level": "platform",
+      "action": "Remove idle namespaces and workloads, reclaim released persistent volumes left by the Retain policy, and let the node autoscaler remove empty nodes.",
+      "approach": "Detect idle and orphaned resources on a schedule, notify the owner, quarantine (stop or snapshot) for a fixed period, then delete unless an exception is registered.",
+      "options": [
+        {
+          "name": "OpenCost",
+          "kind": "open_source",
+          "detail": "Idle and unallocated cost"
+        },
+        {
+          "name": "Karpenter consolidation",
+          "kind": "open_source"
+        },
+        {
+          "name": "Persistent volume reclaim review",
+          "kind": "practice"
+        }
+      ],
+      "verification": "Idle and orphaned spend reported monthly and trending down; every remaining idle resource has an owner-approved exception with an expiry date.",
+      "effort": "S",
+      "ownerRole": "Kubernetes platform team",
+      "confirmRegionalAvailability": false,
+      "confidence": "Medium",
+      "claimIds": [
+        "CLM-FIN-222",
+        "CLM-FIN-112",
+        "CLM-FIN-220"
+      ],
+      "owner": "finops-cost-lead",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-04-14"
+    },
+    {
+      "id": "PB.FIN.LEV-03.on_prem.platform",
+      "control": "FIN.LEV-03",
+      "platform": "on_prem",
+      "level": "platform",
+      "action": "Reclaim idle and powered-off VMs, old snapshots and orphaned disks found by the virtualisation platform's reclamation report, after owner review.",
+      "approach": "Detect idle and orphaned resources on a schedule, notify the owner, quarantine (stop or snapshot) for a fixed period, then delete unless an exception is registered. On owned capacity the gain is freed capacity and deferred purchases, not a lower bill.",
+      "options": [
+        {
+          "name": "VMware VCF Operations reclamation (idle VMs, powered-off VMs, snapshots, orphaned disks)",
+          "kind": "native",
+          "detail": "Orphaned disks are listed, deleted manually"
+        },
+        {
+          "name": "VM inventory review against the CMDB",
+          "kind": "practice"
+        }
+      ],
+      "verification": "Idle and orphaned spend reported monthly and trending down; every remaining idle resource has an owner-approved exception with an expiry date.",
+      "effort": "S",
+      "ownerRole": "Infrastructure and virtualisation team",
+      "confirmRegionalAvailability": false,
+      "confidence": "Medium",
+      "claimIds": [
+        "CLM-FIN-223"
+      ],
+      "owner": "finops-cost-lead",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-04-22"
+    },
+    {
+      "id": "PB.FIN.LEV-03.saas.platform",
+      "control": "FIN.LEV-03",
+      "platform": "saas",
+      "level": "platform",
+      "action": "Unused SaaS licences are the SaaS form of idle resources; they are removed through LEV-09 SaaS and licensing, so no separate SaaS action is catalogued for this lever.",
+      "approach": "No platform-specific action: see the reason in the action.",
+      "options": [],
+      "verification": "Not applicable on this platform; confirm in discovery that the reason holds for you.",
+      "effort": "S",
+      "ownerRole": "FinOps lead",
+      "confirmRegionalAvailability": false,
+      "confidence": "High",
+      "noPlatformAction": true,
+      "claimIds": [
+        "CLM-FIN-158",
+        "CLM-FIN-023"
+      ],
+      "owner": "finops-cost-lead",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-04-14"
+    },
+    {
+      "id": "PB.FIN.LEV-03.data_platform.platform",
+      "control": "FIN.LEV-03",
+      "platform": "data_platform",
+      "level": "platform",
+      "action": "Set auto-suspend on every warehouse and auto-termination on every cluster, with low inactivity periods agreed per workload.",
+      "approach": "Consumption platforms bill while compute runs; stop it automatically when idle.",
+      "options": [
+        {
+          "name": "Snowflake warehouse auto-suspend",
+          "kind": "native"
+        },
+        {
+          "name": "Databricks compute automatic termination",
+          "kind": "native"
+        },
+        {
+          "name": "Snowflake resource monitors and budgets",
+          "kind": "native",
+          "detail": "Credit limits as a backstop"
+        }
+      ],
+      "verification": "Every warehouse and cluster has an inactivity limit within the agreed policy; idle running hours trend down monthly.",
+      "effort": "S",
+      "ownerRole": "Data platform team",
+      "confirmRegionalAvailability": false,
+      "confidence": "High",
+      "claimIds": [
+        "CLM-FIN-235",
+        "CLM-FIN-238"
+      ],
+      "owner": "finops-cost-lead",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-04-22"
+    },
+    {
+      "id": "PB.FIN.LEV-04.aws.platform",
+      "control": "FIN.LEV-04",
+      "platform": "aws",
+      "level": "platform",
+      "action": "Deploy Instance Scheduler on AWS across accounts and Regions with tag-driven schedules for non-production EC2, Auto Scaling groups and RDS.",
+      "approach": "Tag non-production resources with environment and schedule, stop them outside agreed hours by automation, and give teams a self-service override with an expiry.",
+      "options": [
+        {
+          "name": "Instance Scheduler on AWS",
+          "kind": "native",
+          "detail": "AWS solution"
+        },
+        {
+          "name": "AWS Organizations tag policies",
+          "kind": "native",
+          "detail": "Enforce the schedule tag"
+        }
+      ],
+      "verification": "Non-production running hours per week against the agreed schedule, measured monthly from billing usage; overrides logged with expiry.",
+      "effort": "S",
+      "ownerRole": "Cloud platform team with engineering leads",
+      "confirmRegionalAvailability": false,
+      "confidence": "High",
+      "claimIds": [
+        "CLM-FIN-086",
+        "CLM-FIN-088"
+      ],
+      "owner": "finops-cost-lead",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-04-14"
+    },
+    {
+      "id": "PB.FIN.LEV-04.azure.platform",
+      "control": "FIN.LEV-04",
+      "platform": "azure",
+      "level": "platform",
+      "action": "Deploy Start/Stop VMs v2 with schedules for non-production virtual machines, driven by tags.",
+      "approach": "Tag non-production resources with environment and schedule, stop them outside agreed hours by automation, and give teams a self-service override with an expiry.",
+      "options": [
+        {
+          "name": "Start/Stop VMs v2",
+          "kind": "native"
+        },
+        {
+          "name": "Azure Policy built-in tag definitions",
+          "kind": "native",
+          "detail": "Enforce the schedule tag"
+        }
+      ],
+      "verification": "Non-production running hours per week against the agreed schedule, measured monthly from billing usage; overrides logged with expiry.",
+      "effort": "S",
+      "ownerRole": "Cloud platform team with engineering leads",
+      "confirmRegionalAvailability": false,
+      "confidence": "Medium",
+      "claimIds": [
+        "CLM-FIN-096",
+        "CLM-FIN-093"
+      ],
+      "owner": "finops-cost-lead",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-04-14"
+    },
+    {
+      "id": "PB.FIN.LEV-04.gcp.platform",
+      "control": "FIN.LEV-04",
+      "platform": "gcp",
+      "level": "platform",
+      "action": "Attach Compute Engine instance schedules to non-production VMs, grouped by label.",
+      "approach": "Tag non-production resources with environment and schedule, stop them outside agreed hours by automation, and give teams a self-service override with an expiry.",
+      "options": [
+        {
+          "name": "Compute Engine instance schedules",
+          "kind": "native"
+        }
+      ],
+      "verification": "Non-production running hours per week against the agreed schedule, measured monthly from billing usage; overrides logged with expiry.",
+      "effort": "S",
+      "ownerRole": "Cloud platform team with engineering leads",
+      "confirmRegionalAvailability": false,
+      "confidence": "Medium",
+      "claimIds": [
+        "CLM-FIN-105",
+        "CLM-FIN-203"
+      ],
+      "owner": "finops-cost-lead",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-04-14"
+    },
+    {
+      "id": "PB.FIN.LEV-04.oci.platform",
+      "control": "FIN.LEV-04",
+      "platform": "oci",
+      "level": "platform",
+      "action": "Create OCI Resource Scheduler schedules that stop non-production compute and database resources outside agreed hours.",
+      "approach": "Tag non-production resources with environment and schedule, stop them outside agreed hours by automation, and give teams a self-service override with an expiry.",
+      "options": [
+        {
+          "name": "OCI Resource Scheduler",
+          "kind": "native"
+        }
+      ],
+      "verification": "Non-production running hours per week against the agreed schedule, measured monthly from billing usage; overrides logged with expiry.",
+      "effort": "S",
+      "ownerRole": "Cloud platform team with engineering leads",
+      "confirmRegionalAvailability": false,
+      "confidence": "High",
+      "claimIds": [
+        "CLM-FIN-213"
+      ],
+      "owner": "finops-cost-lead",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-04-22"
+    },
+    {
+      "id": "PB.FIN.LEV-04.ibm.platform",
+      "control": "FIN.LEV-04",
+      "platform": "ibm",
+      "level": "platform",
+      "action": "Stop non-production resources outside agreed hours on IBM Cloud with its own tooling; no IBM Cloud-specific option is catalogued in this version, so options are identified and validated in discovery.",
+      "approach": "Tag non-production resources with environment and schedule, stop them outside agreed hours by automation, and give teams a self-service override with an expiry.",
+      "options": [
+        {
+          "name": "Tag-driven start and stop schedule",
+          "kind": "practice"
+        }
+      ],
+      "verification": "Non-production running hours per week against the agreed schedule, measured monthly from billing usage; overrides logged with expiry.",
+      "effort": "S",
+      "ownerRole": "Cloud platform team with engineering leads",
+      "confirmRegionalAvailability": false,
+      "confidence": "Low",
+      "claimIds": [
+        "CLM-FIN-021"
+      ],
+      "owner": "finops-cost-lead",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-04-14"
+    },
+    {
+      "id": "PB.FIN.LEV-04.alibaba.platform",
+      "control": "FIN.LEV-04",
+      "platform": "alibaba",
+      "level": "platform",
+      "action": "Stop non-production resources outside agreed hours on Alibaba Cloud with its own tooling; no Alibaba Cloud-specific option is catalogued in this version, so options are identified and validated in discovery.",
+      "approach": "Tag non-production resources with environment and schedule, stop them outside agreed hours by automation, and give teams a self-service override with an expiry.",
+      "options": [
+        {
+          "name": "Tag-driven start and stop schedule",
+          "kind": "practice"
+        }
+      ],
+      "verification": "Non-production running hours per week against the agreed schedule, measured monthly from billing usage; overrides logged with expiry.",
+      "effort": "S",
+      "ownerRole": "Cloud platform team with engineering leads",
+      "confirmRegionalAvailability": false,
+      "confidence": "Low",
+      "claimIds": [
+        "CLM-FIN-021"
+      ],
+      "owner": "finops-cost-lead",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-04-14"
+    },
+    {
+      "id": "PB.FIN.LEV-04.other_public.platform",
+      "control": "FIN.LEV-04",
+      "platform": "other_public",
+      "level": "platform",
+      "action": "Stop non-production resources outside agreed hours with the provider's own tooling; the provider is not identified in the assessment, so options are identified and validated in discovery.",
+      "approach": "Tag non-production resources with environment and schedule, stop them outside agreed hours by automation, and give teams a self-service override with an expiry.",
+      "options": [
+        {
+          "name": "Tag-driven start and stop schedule",
+          "kind": "practice"
+        }
+      ],
+      "verification": "Non-production running hours per week against the agreed schedule, measured monthly from billing usage; overrides logged with expiry.",
+      "effort": "S",
+      "ownerRole": "Cloud platform team with engineering leads",
+      "confirmRegionalAvailability": false,
+      "confidence": "Low",
+      "claimIds": [
+        "CLM-FIN-021"
+      ],
+      "owner": "finops-cost-lead",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-04-14"
+    },
+    {
+      "id": "PB.FIN.LEV-04.kubernetes.platform",
+      "control": "FIN.LEV-04",
+      "platform": "kubernetes",
+      "level": "platform",
+      "action": "Scale non-production workloads to zero outside agreed hours with a time-based autoscaler, and let the node autoscaler remove the emptied nodes.",
+      "approach": "Scale workloads by schedule; savings appear only when the node autoscaler then removes nodes.",
+      "options": [
+        {
+          "name": "KEDA cron scaler",
+          "kind": "open_source",
+          "detail": "CNCF Graduated"
+        },
+        {
+          "name": "Karpenter",
+          "kind": "open_source"
+        },
+        {
+          "name": "Kubernetes Cluster Autoscaler",
+          "kind": "open_source"
+        }
+      ],
+      "verification": "Non-production node hours per week against the schedule, monthly; workloads in non-production namespaces at zero replicas outside hours.",
+      "effort": "S",
+      "ownerRole": "Kubernetes platform team",
+      "confirmRegionalAvailability": false,
+      "confidence": "High",
+      "claimIds": [
+        "CLM-FIN-218",
+        "CLM-FIN-112",
+        "CLM-FIN-113"
+      ],
+      "owner": "finops-cost-lead",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-04-14"
+    },
+    {
+      "id": "PB.FIN.LEV-04.on_prem.platform",
+      "control": "FIN.LEV-04",
+      "platform": "on_prem",
+      "level": "platform",
+      "action": "Schedule power-off of non-production VMs outside agreed hours with hypervisor scheduled tasks or automation.",
+      "approach": "Tag non-production resources with environment and schedule, stop them outside agreed hours by automation, and give teams a self-service override with an expiry. On owned capacity, scheduling saves energy and frees capacity rather than reducing a bill; count value only where it defers hardware or licence purchases.",
+      "options": [
+        {
+          "name": "VMware vSphere scheduled tasks (power on and shut down)",
+          "kind": "native",
+          "detail": "vSphere 7.0 and 8.0"
+        },
+        {
+          "name": "Automation through the hypervisor API",
+          "kind": "practice"
+        }
+      ],
+      "verification": "Non-production running hours per week against the agreed schedule, measured monthly from billing usage; overrides logged with expiry.",
+      "effort": "S",
+      "ownerRole": "Infrastructure and virtualisation team",
+      "confirmRegionalAvailability": false,
+      "confidence": "Medium",
+      "claimIds": [
+        "CLM-FIN-225"
+      ],
+      "owner": "finops-cost-lead",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-04-22"
+    },
+    {
+      "id": "PB.FIN.LEV-04.saas.platform",
+      "control": "FIN.LEV-04",
+      "platform": "saas",
+      "level": "platform",
+      "action": "SaaS rates, tiers and seat counts are contract terms rather than infrastructure settings; act on them through LEV-09 SaaS and licensing at renewal, so no separate SaaS action is catalogued for this lever.",
+      "approach": "No platform-specific action: see the reason in the action.",
+      "options": [],
+      "verification": "Not applicable on this platform; confirm in discovery that the reason holds for you.",
+      "effort": "S",
+      "ownerRole": "FinOps lead",
+      "confirmRegionalAvailability": false,
+      "confidence": "High",
+      "noPlatformAction": true,
+      "claimIds": [
+        "CLM-FIN-158",
+        "CLM-FIN-023"
+      ],
+      "owner": "finops-cost-lead",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-04-14"
+    },
+    {
+      "id": "PB.FIN.LEV-04.data_platform.platform",
+      "control": "FIN.LEV-04",
+      "platform": "data_platform",
+      "level": "platform",
+      "action": "Data platform compute stops billing when warehouses suspend or clusters terminate; non-production idle time is handled by auto-suspend and auto-termination in the LEV-03 entry, so no separate schedule is catalogued.",
+      "approach": "No platform-specific action: see the reason in the action.",
+      "options": [],
+      "verification": "Not applicable on this platform; confirm in discovery that the reason holds for you.",
+      "effort": "S",
+      "ownerRole": "FinOps lead",
+      "confirmRegionalAvailability": false,
+      "confidence": "High",
+      "noPlatformAction": true,
+      "claimIds": [
+        "CLM-FIN-235",
+        "CLM-FIN-238"
+      ],
+      "owner": "finops-cost-lead",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-04-22"
+    },
+    {
+      "id": "PB.FIN.LEV-05.aws.stack",
+      "control": "FIN.LEV-05",
+      "platform": "aws",
+      "level": "stack",
+      "action": "Apply S3 Lifecycle rules and S3 Intelligent-Tiering by data class, find buckets without rules in S3 Storage Lens, and set EBS snapshot retention with Data Lifecycle Manager.",
+      "approach": "Classify data by access pattern and retention need, apply lifecycle rules (tier down, then expire) and snapshot retention by policy, and use automatic tiering where access is unpredictable; check retrieval and minimum-duration charges before moving data to cold tiers.",
+      "options": [
+        {
+          "name": "Amazon S3 Lifecycle",
+          "kind": "native"
+        },
+        {
+          "name": "Amazon S3 Intelligent-Tiering",
+          "kind": "native"
+        },
+        {
+          "name": "Amazon S3 Storage Lens",
+          "kind": "native"
+        },
+        {
+          "name": "Amazon Data Lifecycle Manager",
+          "kind": "native"
+        }
+      ],
+      "verification": "Share of object storage in its intended tier and share of snapshots older than the retention policy, reported monthly; no restore incident caused by a lifecycle rule.",
+      "effort": "M",
+      "ownerRole": "Cloud platform team with data owners",
+      "confirmRegionalAvailability": false,
+      "confidence": "High",
+      "claimIds": [
+        "CLM-FIN-087",
+        "CLM-FIN-186",
+        "CLM-FIN-185"
+      ],
+      "owner": "finops-cost-lead",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-04-14"
+    },
+    {
+      "id": "PB.FIN.LEV-05.azure.stack",
+      "control": "FIN.LEV-05",
+      "platform": "azure",
+      "level": "stack",
+      "action": "Apply Azure Blob Storage lifecycle management rules to move blobs to cool, cold or archive tiers and delete them by age.",
+      "approach": "Classify data by access pattern and retention need, apply lifecycle rules (tier down, then expire) and snapshot retention by policy, and use automatic tiering where access is unpredictable; check retrieval and minimum-duration charges before moving data to cold tiers.",
+      "options": [
+        {
+          "name": "Azure Blob Storage lifecycle management",
+          "kind": "native"
+        }
+      ],
+      "verification": "Share of object storage in its intended tier and share of snapshots older than the retention policy, reported monthly; no restore incident caused by a lifecycle rule.",
+      "effort": "M",
+      "ownerRole": "Cloud platform team with data owners",
+      "confirmRegionalAvailability": false,
+      "confidence": "Medium",
+      "claimIds": [
+        "CLM-FIN-097"
+      ],
+      "owner": "finops-cost-lead",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-04-14"
+    },
+    {
+      "id": "PB.FIN.LEV-05.gcp.stack",
+      "control": "FIN.LEV-05",
+      "platform": "gcp",
+      "level": "stack",
+      "action": "Apply Object Lifecycle Management rules by data class, or Autoclass where access is unpredictable.",
+      "approach": "Classify data by access pattern and retention need, apply lifecycle rules (tier down, then expire) and snapshot retention by policy, and use automatic tiering where access is unpredictable; check retrieval and minimum-duration charges before moving data to cold tiers.",
+      "options": [
+        {
+          "name": "Cloud Storage Object Lifecycle Management",
+          "kind": "native"
+        },
+        {
+          "name": "Cloud Storage Autoclass",
+          "kind": "native"
+        }
+      ],
+      "verification": "Share of object storage in its intended tier and share of snapshots older than the retention policy, reported monthly; no restore incident caused by a lifecycle rule.",
+      "effort": "M",
+      "ownerRole": "Cloud platform team with data owners",
+      "confirmRegionalAvailability": false,
+      "confidence": "Medium",
+      "claimIds": [
+        "CLM-FIN-104"
+      ],
+      "owner": "finops-cost-lead",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-04-14"
+    },
+    {
+      "id": "PB.FIN.LEV-05.oci.stack",
+      "control": "FIN.LEV-05",
+      "platform": "oci",
+      "level": "stack",
+      "action": "Enable Auto-Tiering on Standard buckets with unpredictable access and lifecycle policies for archive and deletion; fix buckets Cloud Advisor reports without lifecycle rules.",
+      "approach": "Classify data by access pattern and retention need, apply lifecycle rules (tier down, then expire) and snapshot retention by policy, and use automatic tiering where access is unpredictable; check retrieval and minimum-duration charges before moving data to cold tiers. Auto-Tiering cannot be combined with a lifecycle rule to Infrequent Access on the same bucket.",
+      "options": [
+        {
+          "name": "OCI Object Storage Auto-Tiering",
+          "kind": "native"
+        },
+        {
+          "name": "OCI Object Storage lifecycle policies",
+          "kind": "native"
+        },
+        {
+          "name": "OCI Cloud Advisor",
+          "kind": "native"
+        }
+      ],
+      "verification": "Share of object storage in its intended tier and share of snapshots older than the retention policy, reported monthly; no restore incident caused by a lifecycle rule.",
+      "effort": "M",
+      "ownerRole": "Cloud platform team with data owners",
+      "confirmRegionalAvailability": false,
+      "confidence": "High",
+      "claimIds": [
+        "CLM-FIN-214",
+        "CLM-FIN-212"
+      ],
+      "owner": "finops-cost-lead",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-04-22"
+    },
+    {
+      "id": "PB.FIN.LEV-05.ibm.stack",
+      "control": "FIN.LEV-05",
+      "platform": "ibm",
+      "level": "stack",
+      "action": "Apply object lifecycle and snapshot retention rules on IBM Cloud with its own tooling; no IBM Cloud-specific option is catalogued in this version, so options are identified and validated in discovery.",
+      "approach": "Classify data by access pattern and retention need, apply lifecycle rules (tier down, then expire) and snapshot retention by policy, and use automatic tiering where access is unpredictable; check retrieval and minimum-duration charges before moving data to cold tiers.",
+      "options": [
+        {
+          "name": "Object lifecycle and snapshot retention policy",
+          "kind": "practice"
+        }
+      ],
+      "verification": "Share of object storage in its intended tier and share of snapshots older than the retention policy, reported monthly; no restore incident caused by a lifecycle rule.",
+      "effort": "M",
+      "ownerRole": "Cloud platform team with data owners",
+      "confirmRegionalAvailability": false,
+      "confidence": "Low",
+      "claimIds": [
+        "CLM-FIN-021"
+      ],
+      "owner": "finops-cost-lead",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-04-14"
+    },
+    {
+      "id": "PB.FIN.LEV-05.alibaba.stack",
+      "control": "FIN.LEV-05",
+      "platform": "alibaba",
+      "level": "stack",
+      "action": "Apply object lifecycle and snapshot retention rules on Alibaba Cloud with its own tooling; no Alibaba Cloud-specific option is catalogued in this version, so options are identified and validated in discovery.",
+      "approach": "Classify data by access pattern and retention need, apply lifecycle rules (tier down, then expire) and snapshot retention by policy, and use automatic tiering where access is unpredictable; check retrieval and minimum-duration charges before moving data to cold tiers.",
+      "options": [
+        {
+          "name": "Object lifecycle and snapshot retention policy",
+          "kind": "practice"
+        }
+      ],
+      "verification": "Share of object storage in its intended tier and share of snapshots older than the retention policy, reported monthly; no restore incident caused by a lifecycle rule.",
+      "effort": "M",
+      "ownerRole": "Cloud platform team with data owners",
+      "confirmRegionalAvailability": false,
+      "confidence": "Low",
+      "claimIds": [
+        "CLM-FIN-021"
+      ],
+      "owner": "finops-cost-lead",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-04-14"
+    },
+    {
+      "id": "PB.FIN.LEV-05.other_public.stack",
+      "control": "FIN.LEV-05",
+      "platform": "other_public",
+      "level": "stack",
+      "action": "Apply object lifecycle and snapshot retention rules with the provider's own tooling; the provider is not identified in the assessment, so options are identified and validated in discovery.",
+      "approach": "Classify data by access pattern and retention need, apply lifecycle rules (tier down, then expire) and snapshot retention by policy, and use automatic tiering where access is unpredictable; check retrieval and minimum-duration charges before moving data to cold tiers.",
+      "options": [
+        {
+          "name": "Object lifecycle and snapshot retention policy",
+          "kind": "practice"
+        }
+      ],
+      "verification": "Share of object storage in its intended tier and share of snapshots older than the retention policy, reported monthly; no restore incident caused by a lifecycle rule.",
+      "effort": "M",
+      "ownerRole": "Cloud platform team with data owners",
+      "confirmRegionalAvailability": false,
+      "confidence": "Low",
+      "claimIds": [
+        "CLM-FIN-021"
+      ],
+      "owner": "finops-cost-lead",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-04-14"
+    },
+    {
+      "id": "PB.FIN.LEV-05.kubernetes.stack",
+      "control": "FIN.LEV-05",
+      "platform": "kubernetes",
+      "level": "stack",
+      "action": "Review storage classes and reclaim policies, and remove released persistent volumes no workload needs.",
+      "approach": "Persistent volumes outlive their workloads under the Retain policy; match the storage class to the workload and reclaim what is released.",
+      "options": [
+        {
+          "name": "Kubernetes PersistentVolume reclaim policy review",
+          "kind": "practice"
+        },
+        {
+          "name": "OpenCost",
+          "kind": "open_source",
+          "detail": "Persistent volume cost by namespace"
+        }
+      ],
+      "verification": "Released persistent volumes older than the retention policy reported monthly and trending to zero.",
+      "effort": "S",
+      "ownerRole": "Kubernetes platform team",
+      "confirmRegionalAvailability": false,
+      "confidence": "Medium",
+      "claimIds": [
+        "CLM-FIN-220",
+        "CLM-FIN-222"
+      ],
+      "owner": "finops-cost-lead",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-04-22"
+    },
+    {
+      "id": "PB.FIN.LEV-05.on_prem.stack",
+      "control": "FIN.LEV-05",
+      "platform": "on_prem",
+      "level": "stack",
+      "action": "Apply tiering and snapshot retention policies on owned storage, starting with snapshot and orphaned-disk reclamation.",
+      "approach": "Classify data by access pattern and retention need, apply lifecycle rules (tier down, then expire) and snapshot retention by policy, and use automatic tiering where access is unpredictable; check retrieval and minimum-duration charges before moving data to cold tiers. On owned storage the gain is deferred capacity purchases.",
+      "options": [
+        {
+          "name": "VMware VCF Operations reclamation (snapshots, orphaned disks)",
+          "kind": "native"
+        },
+        {
+          "name": "Storage array or software-defined storage tiering policies",
+          "kind": "practice"
+        }
+      ],
+      "verification": "Share of object storage in its intended tier and share of snapshots older than the retention policy, reported monthly; no restore incident caused by a lifecycle rule.",
+      "effort": "M",
+      "ownerRole": "Infrastructure and virtualisation team",
+      "confirmRegionalAvailability": false,
+      "confidence": "Low",
+      "claimIds": [
+        "CLM-FIN-223",
+        "CLM-FIN-021"
+      ],
+      "owner": "finops-cost-lead",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-04-14"
+    },
+    {
+      "id": "PB.FIN.LEV-05.saas.stack",
+      "control": "FIN.LEV-05",
+      "platform": "saas",
+      "level": "stack",
+      "action": "SaaS storage is sold as a plan or add-on in the contract; changes are made through LEV-09 SaaS and licensing at renewal, so no separate SaaS action is catalogued for this lever.",
+      "approach": "No platform-specific action: see the reason in the action.",
+      "options": [],
+      "verification": "Not applicable on this platform; confirm in discovery that the reason holds for you.",
+      "effort": "S",
+      "ownerRole": "FinOps lead",
+      "confirmRegionalAvailability": false,
+      "confidence": "High",
+      "noPlatformAction": true,
+      "claimIds": [
+        "CLM-FIN-158",
+        "CLM-FIN-023"
+      ],
+      "owner": "finops-cost-lead",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-04-14"
+    },
+    {
+      "id": "PB.FIN.LEV-05.data_platform.stack",
+      "control": "FIN.LEV-05",
+      "platform": "data_platform",
+      "level": "stack",
+      "action": "Set Time Travel retention per table class and vacuum old Delta files on a schedule.",
+      "approach": "Historical data retained for recovery is billed as storage; set retention by data class rather than the maximum.",
+      "options": [
+        {
+          "name": "Snowflake Time Travel retention settings",
+          "kind": "native",
+          "detail": "Fail-safe adds storage after Time Travel"
+        },
+        {
+          "name": "Databricks VACUUM",
+          "kind": "native"
+        }
+      ],
+      "verification": "Storage billed for Time Travel, Fail-safe and unreferenced files reported monthly and within policy.",
+      "effort": "S",
+      "ownerRole": "Data platform team",
+      "confirmRegionalAvailability": false,
+      "confidence": "Medium",
+      "claimIds": [
+        "CLM-FIN-236",
+        "CLM-FIN-238"
+      ],
+      "owner": "finops-cost-lead",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-04-22"
+    },
+    {
+      "id": "PB.FIN.LEV-06.aws.stack",
+      "control": "FIN.LEV-06",
+      "platform": "aws",
+      "level": "stack",
+      "action": "Move interruption-tolerant workloads to EC2 Spot through Auto Scaling groups with multiple instance types, handling the two-minute interruption notice and rebalance recommendations.",
+      "approach": "Use interruptible capacity only for workloads that tolerate interruption (stateless, batch, CI, some development and test), diversify instance types, handle the provider's interruption notice, and keep a fallback to on-demand capacity.",
+      "options": [
+        {
+          "name": "Amazon EC2 Spot Instances",
+          "kind": "native"
+        },
+        {
+          "name": "EC2 Auto Scaling groups with mixed instances",
+          "kind": "native"
+        },
+        {
+          "name": "Karpenter (Amazon EKS)",
+          "kind": "open_source"
+        }
+      ],
+      "verification": "Interruption handling tested (drain and restart within the workload's tolerance) before production use; Spot share of eligible usage reported monthly.",
+      "effort": "M",
+      "ownerRole": "Cloud platform team with application owners",
+      "confirmRegionalAvailability": false,
+      "confidence": "High",
+      "claimIds": [
+        "CLM-FIN-061",
+        "CLM-FIN-192",
+        "CLM-FIN-089",
+        "CLM-FIN-112"
+      ],
+      "owner": "finops-cost-lead",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-01-12"
+    },
+    {
+      "id": "PB.FIN.LEV-06.azure.stack",
+      "control": "FIN.LEV-06",
+      "platform": "azure",
+      "level": "stack",
+      "action": "Move interruption-tolerant workloads to Azure Spot Virtual Machines or AKS Spot node pools, handling the 30-second eviction notice.",
+      "approach": "Use interruptible capacity only for workloads that tolerate interruption (stateless, batch, CI, some development and test), diversify instance types, handle the provider's interruption notice, and keep a fallback to on-demand capacity.",
+      "options": [
+        {
+          "name": "Azure Spot Virtual Machines",
+          "kind": "native"
+        },
+        {
+          "name": "AKS Spot node pools",
+          "kind": "native",
+          "detail": "Secondary pools only"
+        }
+      ],
+      "verification": "Interruption handling tested (drain and restart within the workload's tolerance) before production use; Spot share of eligible usage reported monthly.",
+      "effort": "M",
+      "ownerRole": "Cloud platform team with application owners",
+      "confirmRegionalAvailability": false,
+      "confidence": "High",
+      "claimIds": [
+        "CLM-FIN-064",
+        "CLM-FIN-098",
+        "CLM-FIN-198"
+      ],
+      "owner": "finops-cost-lead",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-01-12"
+    },
+    {
+      "id": "PB.FIN.LEV-06.gcp.stack",
+      "control": "FIN.LEV-06",
+      "platform": "gcp",
+      "level": "stack",
+      "action": "Move interruption-tolerant workloads to Spot VMs or GKE Spot node pools and Spot Pods, handling the 30-second preemption notice.",
+      "approach": "Use interruptible capacity only for workloads that tolerate interruption (stateless, batch, CI, some development and test), diversify instance types, handle the provider's interruption notice, and keep a fallback to on-demand capacity.",
+      "options": [
+        {
+          "name": "Compute Engine Spot VMs",
+          "kind": "native"
+        },
+        {
+          "name": "GKE Spot VMs and Spot Pods",
+          "kind": "native"
+        }
+      ],
+      "verification": "Interruption handling tested (drain and restart within the workload's tolerance) before production use; Spot share of eligible usage reported monthly.",
+      "effort": "M",
+      "ownerRole": "Cloud platform team with application owners",
+      "confirmRegionalAvailability": false,
+      "confidence": "High",
+      "claimIds": [
+        "CLM-FIN-067",
+        "CLM-FIN-106",
+        "CLM-FIN-206"
+      ],
+      "owner": "finops-cost-lead",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-01-12"
+    },
+    {
+      "id": "PB.FIN.LEV-06.oci.stack",
+      "control": "FIN.LEV-06",
+      "platform": "oci",
+      "level": "stack",
+      "action": "Move interruption-tolerant workloads to OCI preemptible instances or preemptible OKE worker nodes.",
+      "approach": "Use interruptible capacity only for workloads that tolerate interruption (stateless, batch, CI, some development and test), diversify instance types, handle the provider's interruption notice, and keep a fallback to on-demand capacity.",
+      "options": [
+        {
+          "name": "OCI preemptible instances",
+          "kind": "native"
+        },
+        {
+          "name": "OCI Kubernetes Engine preemptible worker nodes",
+          "kind": "native"
+        }
+      ],
+      "verification": "Interruption handling tested (drain and restart within the workload's tolerance) before production use; Spot share of eligible usage reported monthly.",
+      "effort": "M",
+      "ownerRole": "Cloud platform team with application owners",
+      "confirmRegionalAvailability": false,
+      "confidence": "High",
+      "claimIds": [
+        "CLM-FIN-215",
+        "CLM-FIN-068"
+      ],
+      "owner": "finops-cost-lead",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-01-12"
+    },
+    {
+      "id": "PB.FIN.LEV-06.ibm.stack",
+      "control": "FIN.LEV-06",
+      "platform": "ibm",
+      "level": "stack",
+      "action": "Confirm whether interruptible capacity is offered for the services in use and, if so, move interruption-tolerant workloads to it on IBM Cloud with its own tooling; no IBM Cloud-specific option is catalogued in this version, so options are identified and validated in discovery.",
+      "approach": "Use interruptible capacity only for workloads that tolerate interruption (stateless, batch, CI, some development and test), diversify instance types, handle the provider's interruption notice, and keep a fallback to on-demand capacity.",
+      "options": [
+        {
+          "name": "Interruptible capacity for fault-tolerant workloads",
+          "kind": "practice"
+        }
+      ],
+      "verification": "Interruption handling tested (drain and restart within the workload's tolerance) before production use; Spot share of eligible usage reported monthly.",
+      "effort": "M",
+      "ownerRole": "Cloud platform team with application owners",
+      "confirmRegionalAvailability": false,
+      "confidence": "Low",
+      "claimIds": [
+        "CLM-FIN-022"
+      ],
+      "owner": "finops-cost-lead",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-04-14"
+    },
+    {
+      "id": "PB.FIN.LEV-06.alibaba.stack",
+      "control": "FIN.LEV-06",
+      "platform": "alibaba",
+      "level": "stack",
+      "action": "Move interruption-tolerant workloads to Alibaba Cloud spot instances, outside savings plan coverage.",
+      "approach": "Use interruptible capacity only for workloads that tolerate interruption (stateless, batch, CI, some development and test), diversify instance types, handle the provider's interruption notice, and keep a fallback to on-demand capacity. Spot instances are excluded from savings plans; decide Spot before sizing commitments.",
+      "options": [
+        {
+          "name": "Alibaba Cloud ECS spot instances",
+          "kind": "native"
+        }
+      ],
+      "verification": "Interruption handling tested (drain and restart within the workload's tolerance) before production use; Spot share of eligible usage reported monthly.",
+      "effort": "M",
+      "ownerRole": "Cloud platform team with application owners",
+      "confirmRegionalAvailability": false,
+      "confidence": "Medium",
+      "claimIds": [
+        "CLM-FIN-233"
+      ],
+      "owner": "finops-cost-lead",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-01-20"
+    },
+    {
+      "id": "PB.FIN.LEV-06.other_public.stack",
+      "control": "FIN.LEV-06",
+      "platform": "other_public",
+      "level": "stack",
+      "action": "Move interruption-tolerant workloads to interruptible capacity where the provider offers it with the provider's own tooling; the provider is not identified in the assessment, so options are identified and validated in discovery.",
+      "approach": "Use interruptible capacity only for workloads that tolerate interruption (stateless, batch, CI, some development and test), diversify instance types, handle the provider's interruption notice, and keep a fallback to on-demand capacity.",
+      "options": [
+        {
+          "name": "Interruptible capacity for fault-tolerant workloads",
+          "kind": "practice"
+        }
+      ],
+      "verification": "Interruption handling tested (drain and restart within the workload's tolerance) before production use; Spot share of eligible usage reported monthly.",
+      "effort": "M",
+      "ownerRole": "Cloud platform team with application owners",
+      "confirmRegionalAvailability": false,
+      "confidence": "Low",
+      "claimIds": [
+        "CLM-FIN-022"
+      ],
+      "owner": "finops-cost-lead",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-04-14"
+    },
+    {
+      "id": "PB.FIN.LEV-06.kubernetes.stack",
+      "control": "FIN.LEV-06",
+      "platform": "kubernetes",
+      "level": "stack",
+      "action": "Run interruption-tolerant workloads on Spot or preemptible node pools with taints and tolerations, PodDisruptionBudgets and an on-demand fallback pool.",
+      "approach": "Only tolerant workloads land on interruptible nodes (taints and tolerations); disruption budgets and a fallback pool keep services available during reclaim.",
+      "options": [
+        {
+          "name": "Karpenter",
+          "kind": "open_source",
+          "detail": "Spot with interruption handling"
+        },
+        {
+          "name": "AKS Spot node pools",
+          "kind": "native"
+        },
+        {
+          "name": "GKE Spot VMs and Spot Pods",
+          "kind": "native"
+        },
+        {
+          "name": "OCI Kubernetes Engine preemptible worker nodes",
+          "kind": "native"
+        },
+        {
+          "name": "Kubernetes PodDisruptionBudget",
+          "kind": "open_source"
+        }
+      ],
+      "verification": "Interruption handling tested (drain and restart within the workload's tolerance) before production use; Spot share of eligible usage reported monthly.",
+      "effort": "M",
+      "ownerRole": "Kubernetes platform team with application owners",
+      "confirmRegionalAvailability": false,
+      "confidence": "High",
+      "claimIds": [
+        "CLM-FIN-112",
+        "CLM-FIN-198",
+        "CLM-FIN-206",
+        "CLM-FIN-215",
+        "CLM-FIN-220"
+      ],
+      "owner": "finops-cost-lead",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-04-14"
+    },
+    {
+      "id": "PB.FIN.LEV-06.on_prem.stack",
+      "control": "FIN.LEV-06",
+      "platform": "on_prem",
+      "level": "stack",
+      "action": "Owned capacity has no interruptible price tier: spare capacity is already paid for; batch work can use it through scheduler priorities without a separate cost action.",
+      "approach": "No platform-specific action: see the reason in the action.",
+      "options": [],
+      "verification": "Not applicable on this platform; confirm in discovery that the reason holds for you.",
+      "effort": "S",
+      "ownerRole": "FinOps lead",
+      "confirmRegionalAvailability": false,
+      "confidence": "High",
+      "noPlatformAction": true,
+      "claimIds": [
+        "CLM-FIN-155"
+      ],
+      "owner": "finops-cost-lead",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-04-14"
+    },
+    {
+      "id": "PB.FIN.LEV-06.saas.stack",
+      "control": "FIN.LEV-06",
+      "platform": "saas",
+      "level": "stack",
+      "action": "SaaS rates, tiers and seat counts are contract terms rather than infrastructure settings; act on them through LEV-09 SaaS and licensing at renewal, so no separate SaaS action is catalogued for this lever.",
+      "approach": "No platform-specific action: see the reason in the action.",
+      "options": [],
+      "verification": "Not applicable on this platform; confirm in discovery that the reason holds for you.",
+      "effort": "S",
+      "ownerRole": "FinOps lead",
+      "confirmRegionalAvailability": false,
+      "confidence": "High",
+      "noPlatformAction": true,
+      "claimIds": [
+        "CLM-FIN-158",
+        "CLM-FIN-023"
+      ],
+      "owner": "finops-cost-lead",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-04-14"
+    },
+    {
+      "id": "PB.FIN.LEV-06.data_platform.stack",
+      "control": "FIN.LEV-06",
+      "platform": "data_platform",
+      "level": "stack",
+      "action": "Use spot instances for workers of interruption-tolerant Databricks classic compute, keeping the driver on-demand.",
+      "approach": "Use interruptible capacity only for workloads that tolerate interruption (stateless, batch, CI, some development and test), diversify instance types, handle the provider's interruption notice, and keep a fallback to on-demand capacity. Snowflake has no interruptible option, so this applies to Databricks classic compute only.",
+      "options": [
+        {
+          "name": "Databricks classic compute spot instances",
+          "kind": "native",
+          "detail": "Driver stays on-demand"
+        }
+      ],
+      "verification": "Interruption handling tested (drain and restart within the workload's tolerance) before production use; Spot share of eligible usage reported monthly.",
+      "effort": "S",
+      "ownerRole": "Data platform team",
+      "confirmRegionalAvailability": false,
+      "confidence": "Medium",
+      "claimIds": [
+        "CLM-FIN-238"
+      ],
+      "owner": "finops-cost-lead",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-04-22"
+    },
+    {
+      "id": "PB.FIN.LEV-08.aws.application",
+      "control": "FIN.LEV-08",
+      "platform": "aws",
+      "level": "application",
+      "action": "Trace the top AWS transfer and NAT gateway charges with VPC Flow Logs, add gateway endpoints for S3 and DynamoDB, and keep traffic in the NAT gateway's Availability Zone.",
+      "approach": "Map the largest transfer charges (internet egress, cross-region, cross-zone, NAT and gateway processing) to the flows that cause them, then change the architecture: private endpoints for provider services, zonal affinity, caching or CDN, and data placement.",
+      "options": [
+        {
+          "name": "Gateway VPC endpoints (Amazon S3, DynamoDB)",
+          "kind": "native",
+          "detail": "No additional charge"
+        },
+        {
+          "name": "AWS PrivateLink interface endpoints",
+          "kind": "native"
+        },
+        {
+          "name": "Amazon VPC Flow Logs",
+          "kind": "native"
+        }
+      ],
+      "verification": "Transfer cost per unit of traffic (for example per GB served or per transaction) trended monthly; each of the top ten transfer line items has a named flow and owner.",
+      "effort": "M",
+      "ownerRole": "Network architect with application owners",
+      "discoveryNeeded": "Architecture review of the top transfer line items in the billing data, with flow logs for the networks involved and the application dependency map.",
+      "confirmRegionalAvailability": false,
+      "confidence": "High",
+      "claimIds": [
+        "CLM-FIN-187",
+        "CLM-FIN-188",
+        "CLM-FIN-157"
+      ],
+      "owner": "finops-cost-lead",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-04-14"
+    },
+    {
+      "id": "PB.FIN.LEV-08.azure.application",
+      "control": "FIN.LEV-08",
+      "platform": "azure",
+      "level": "application",
+      "action": "Trace the top Azure bandwidth charges with traffic analytics on virtual network flow logs, and route service traffic through service endpoints or private endpoints.",
+      "approach": "Map the largest transfer charges (internet egress, cross-region, cross-zone, NAT and gateway processing) to the flows that cause them, then change the architecture: private endpoints for provider services, zonal affinity, caching or CDN, and data placement.",
+      "options": [
+        {
+          "name": "Azure Network Watcher traffic analytics",
+          "kind": "native",
+          "detail": "Not in every region"
+        },
+        {
+          "name": "Virtual network service endpoints",
+          "kind": "native",
+          "detail": "No extra charge"
+        },
+        {
+          "name": "Azure Private Link (private endpoints)",
+          "kind": "native"
+        }
+      ],
+      "verification": "Transfer cost per unit of traffic (for example per GB served or per transaction) trended monthly; each of the top ten transfer line items has a named flow and owner.",
+      "effort": "M",
+      "ownerRole": "Network architect with application owners",
+      "discoveryNeeded": "Architecture review of the top transfer line items in the billing data, with flow logs for the networks involved and the application dependency map.",
+      "confirmRegionalAvailability": true,
+      "confidence": "Medium",
+      "claimIds": [
+        "CLM-FIN-200",
+        "CLM-FIN-199",
+        "CLM-FIN-157"
+      ],
+      "owner": "finops-cost-lead",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-04-14"
+    },
+    {
+      "id": "PB.FIN.LEV-08.gcp.application",
+      "control": "FIN.LEV-08",
+      "platform": "gcp",
+      "level": "application",
+      "action": "Trace the top Google Cloud network charges with VPC Flow Logs (inter-region, inter-zone and internet traffic) and change placement or routing for the largest flows.",
+      "approach": "Map the largest transfer charges (internet egress, cross-region, cross-zone, NAT and gateway processing) to the flows that cause them, then change the architecture: private endpoints for provider services, zonal affinity, caching or CDN, and data placement.",
+      "options": [
+        {
+          "name": "VPC Flow Logs",
+          "kind": "native"
+        }
+      ],
+      "verification": "Transfer cost per unit of traffic (for example per GB served or per transaction) trended monthly; each of the top ten transfer line items has a named flow and owner.",
+      "effort": "M",
+      "ownerRole": "Network architect with application owners",
+      "discoveryNeeded": "Architecture review of the top transfer line items in the billing data, with flow logs for the networks involved and the application dependency map.",
+      "confirmRegionalAvailability": false,
+      "confidence": "Medium",
+      "claimIds": [
+        "CLM-FIN-207",
+        "CLM-FIN-157"
+      ],
+      "owner": "finops-cost-lead",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-04-14"
+    },
+    {
+      "id": "PB.FIN.LEV-08.oci.application",
+      "control": "FIN.LEV-08",
+      "platform": "oci",
+      "level": "application",
+      "action": "Trace the top OCI transfer charges with VCN flow logs, use a service gateway for Oracle services traffic and FastConnect private virtual circuits for high-volume on-premises traffic.",
+      "approach": "Map the largest transfer charges (internet egress, cross-region, cross-zone, NAT and gateway processing) to the flows that cause them, then change the architecture: private endpoints for provider services, zonal affinity, caching or CDN, and data placement.",
+      "options": [
+        {
+          "name": "OCI VCN flow logs",
+          "kind": "native"
+        },
+        {
+          "name": "OCI service gateway",
+          "kind": "native"
+        },
+        {
+          "name": "OCI FastConnect private virtual circuits",
+          "kind": "native",
+          "detail": "No separate data transfer charges per Oracle price list"
+        }
+      ],
+      "verification": "Transfer cost per unit of traffic (for example per GB served or per transaction) trended monthly; each of the top ten transfer line items has a named flow and owner.",
+      "effort": "M",
+      "ownerRole": "Network architect with application owners",
+      "discoveryNeeded": "Architecture review of the top transfer line items in the billing data, with flow logs for the networks involved and the application dependency map.",
+      "confirmRegionalAvailability": false,
+      "confidence": "Medium",
+      "claimIds": [
+        "CLM-FIN-216",
+        "CLM-FIN-157"
+      ],
+      "owner": "finops-cost-lead",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-04-14"
+    },
+    {
+      "id": "PB.FIN.LEV-08.ibm.application",
+      "control": "FIN.LEV-08",
+      "platform": "ibm",
+      "level": "application",
+      "action": "Trace the top transfer charges to flows and change routing or placement on IBM Cloud with its own tooling; no IBM Cloud-specific option is catalogued in this version, so options are identified and validated in discovery.",
+      "approach": "Map the largest transfer charges (internet egress, cross-region, cross-zone, NAT and gateway processing) to the flows that cause them, then change the architecture: private endpoints for provider services, zonal affinity, caching or CDN, and data placement.",
+      "options": [
+        {
+          "name": "Flow-log review of cross-zone, cross-region and internet egress",
+          "kind": "practice"
+        }
+      ],
+      "verification": "Transfer cost per unit of traffic (for example per GB served or per transaction) trended monthly; each of the top ten transfer line items has a named flow and owner.",
+      "effort": "M",
+      "ownerRole": "Network architect with application owners",
+      "discoveryNeeded": "Architecture review of the top transfer line items in the billing data, with flow logs for the networks involved and the application dependency map.",
+      "confirmRegionalAvailability": false,
+      "confidence": "Low",
+      "claimIds": [
+        "CLM-FIN-157"
+      ],
+      "owner": "finops-cost-lead",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-04-14"
+    },
+    {
+      "id": "PB.FIN.LEV-08.alibaba.application",
+      "control": "FIN.LEV-08",
+      "platform": "alibaba",
+      "level": "application",
+      "action": "Trace the top transfer charges to flows and change routing or placement on Alibaba Cloud with its own tooling; no Alibaba Cloud-specific option is catalogued in this version, so options are identified and validated in discovery.",
+      "approach": "Map the largest transfer charges (internet egress, cross-region, cross-zone, NAT and gateway processing) to the flows that cause them, then change the architecture: private endpoints for provider services, zonal affinity, caching or CDN, and data placement.",
+      "options": [
+        {
+          "name": "Flow-log review of cross-zone, cross-region and internet egress",
+          "kind": "practice"
+        }
+      ],
+      "verification": "Transfer cost per unit of traffic (for example per GB served or per transaction) trended monthly; each of the top ten transfer line items has a named flow and owner.",
+      "effort": "M",
+      "ownerRole": "Network architect with application owners",
+      "discoveryNeeded": "Architecture review of the top transfer line items in the billing data, with flow logs for the networks involved and the application dependency map.",
+      "confirmRegionalAvailability": false,
+      "confidence": "Low",
+      "claimIds": [
+        "CLM-FIN-157"
+      ],
+      "owner": "finops-cost-lead",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-04-14"
+    },
+    {
+      "id": "PB.FIN.LEV-08.other_public.application",
+      "control": "FIN.LEV-08",
+      "platform": "other_public",
+      "level": "application",
+      "action": "Trace the top transfer charges to flows and change routing or placement with the provider's own tooling; the provider is not identified in the assessment, so options are identified and validated in discovery.",
+      "approach": "Map the largest transfer charges (internet egress, cross-region, cross-zone, NAT and gateway processing) to the flows that cause them, then change the architecture: private endpoints for provider services, zonal affinity, caching or CDN, and data placement.",
+      "options": [
+        {
+          "name": "Flow-log review of cross-zone, cross-region and internet egress",
+          "kind": "practice"
+        }
+      ],
+      "verification": "Transfer cost per unit of traffic (for example per GB served or per transaction) trended monthly; each of the top ten transfer line items has a named flow and owner.",
+      "effort": "M",
+      "ownerRole": "Network architect with application owners",
+      "discoveryNeeded": "Architecture review of the top transfer line items in the billing data, with flow logs for the networks involved and the application dependency map.",
+      "confirmRegionalAvailability": false,
+      "confidence": "Low",
+      "claimIds": [
+        "CLM-FIN-157"
+      ],
+      "owner": "finops-cost-lead",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-04-14"
+    },
+    {
+      "id": "PB.FIN.LEV-08.kubernetes.application",
+      "control": "FIN.LEV-08",
+      "platform": "kubernetes",
+      "level": "application",
+      "action": "Keep Service traffic in its zone with Topology Aware Routing where replicas are spread across zones.",
+      "approach": "Cross-zone traffic between pods is billed by most providers; prefer same-zone endpoints where capacity allows.",
+      "options": [
+        {
+          "name": "Kubernetes Topology Aware Routing",
+          "kind": "open_source"
+        }
+      ],
+      "verification": "Cross-zone transfer cost for the cluster trended monthly after the change; no latency or availability regression.",
+      "effort": "S",
+      "ownerRole": "Kubernetes platform team",
+      "discoveryNeeded": "Architecture review of the top transfer line items in the billing data, with flow logs for the networks involved and the application dependency map.",
+      "confirmRegionalAvailability": false,
+      "confidence": "Medium",
+      "claimIds": [
+        "CLM-FIN-219",
+        "CLM-FIN-157"
+      ],
+      "owner": "finops-cost-lead",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-04-14"
+    },
+    {
+      "id": "PB.FIN.LEV-08.on_prem.application",
+      "control": "FIN.LEV-08",
+      "platform": "on_prem",
+      "level": "application",
+      "action": "Owned networks are usually paid as circuit capacity rather than per gigabyte; transfer charged by a cloud provider for traffic to on-premises sites is handled in that provider's entry for this lever.",
+      "approach": "No platform-specific action: see the reason in the action.",
+      "options": [],
+      "verification": "Not applicable on this platform; confirm in discovery that the reason holds for you.",
+      "effort": "S",
+      "ownerRole": "FinOps lead",
+      "discoveryNeeded": "Confirm in discovery that the reason holds for you (contracts, network charges and billing lines for this platform).",
+      "confirmRegionalAvailability": false,
+      "confidence": "Medium",
+      "noPlatformAction": true,
+      "claimIds": [
+        "CLM-FIN-157"
+      ],
+      "owner": "finops-cost-lead",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-04-14"
+    },
+    {
+      "id": "PB.FIN.LEV-08.saas.application",
+      "control": "FIN.LEV-08",
+      "platform": "saas",
+      "level": "application",
+      "action": "SaaS vendors rarely bill data transfer separately; where a contract does, it is handled through LEV-09 SaaS and licensing.",
+      "approach": "No platform-specific action: see the reason in the action.",
+      "options": [],
+      "verification": "Not applicable on this platform; confirm in discovery that the reason holds for you.",
+      "effort": "S",
+      "ownerRole": "FinOps lead",
+      "discoveryNeeded": "Confirm in discovery that the reason holds for you (contracts, network charges and billing lines for this platform).",
+      "confirmRegionalAvailability": false,
+      "confidence": "Medium",
+      "noPlatformAction": true,
+      "claimIds": [
+        "CLM-FIN-158",
+        "CLM-FIN-157"
+      ],
+      "owner": "finops-cost-lead",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-04-14"
+    },
+    {
+      "id": "PB.FIN.LEV-08.data_platform.application",
+      "control": "FIN.LEV-08",
+      "platform": "data_platform",
+      "level": "application",
+      "action": "Keep data platform workloads and consumers in the account's region and review cross-region and cross-cloud egress for replication and sharing.",
+      "approach": "Data platforms charge for egress to another region or cloud and not within a region; place consumers and replicas accordingly.",
+      "options": [
+        {
+          "name": "Snowflake data transfer review (cross-region and cross-cloud)",
+          "kind": "native",
+          "detail": "Same-region transfer free"
+        }
+      ],
+      "verification": "Data platform egress cost per month trended, with each cross-region or cross-cloud flow justified by an owner.",
+      "effort": "S",
+      "ownerRole": "Data platform team",
+      "discoveryNeeded": "Architecture review of the top transfer line items in the billing data, with flow logs for the networks involved and the application dependency map.",
+      "confirmRegionalAvailability": false,
+      "confidence": "Medium",
+      "claimIds": [
+        "CLM-FIN-236",
+        "CLM-FIN-157"
+      ],
+      "owner": "finops-cost-lead",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-04-14"
+    },
+    {
+      "id": "PB.FIN.LEV-10.aws.stack",
+      "control": "FIN.LEV-10",
+      "platform": "aws",
+      "level": "stack",
+      "action": "Collect GPU utilisation with the CloudWatch agent, let idle SageMaker AI inference endpoints scale to zero, and attribute Bedrock cost by application inference profile tags or IAM principal.",
+      "approach": "Measure GPU utilisation and idle endpoint time, scale inference endpoints down or to zero when idle, share GPUs where the workload allows, match provisioned AI capacity to measured demand, and attribute token and GPU cost to applications.",
+      "options": [
+        {
+          "name": "Amazon CloudWatch agent NVIDIA GPU metrics",
+          "kind": "native"
+        },
+        {
+          "name": "Amazon SageMaker AI endpoint scale to zero (inference components)",
+          "kind": "native"
+        },
+        {
+          "name": "Amazon Bedrock application inference profiles with cost allocation tags",
+          "kind": "native"
+        },
+        {
+          "name": "IAM principal cost allocation for Amazon Bedrock (CUR 2.0)",
+          "kind": "native"
+        }
+      ],
+      "verification": "Average GPU utilisation per pool reported monthly against your target; idle endpoint hours trending down; cost per 1,000 inferences or per million tokens reported per application.",
+      "effort": "M",
+      "ownerRole": "ML platform team with application owners",
+      "confirmRegionalAvailability": true,
+      "confidence": "High",
+      "claimIds": [
+        "CLM-FIN-191",
+        "CLM-FIN-190",
+        "CLM-FIN-189",
+        "CLM-FIN-044"
+      ],
+      "owner": "finops-cost-lead",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-01-12"
+    },
+    {
+      "id": "PB.FIN.LEV-10.azure.stack",
+      "control": "FIN.LEV-10",
+      "platform": "azure",
+      "level": "stack",
+      "action": "Size Microsoft Foundry provisioned throughput to measured demand and watch its reservation utilisation, and collect GPU utilisation for AKS GPU node pools.",
+      "approach": "Measure GPU utilisation and idle endpoint time, scale inference endpoints down or to zero when idle, share GPUs where the workload allows, match provisioned AI capacity to measured demand, and attribute token and GPU cost to applications. Provisioned throughput is billed per deployed unit whether used or not.",
+      "options": [
+        {
+          "name": "Microsoft Foundry provisioned throughput with Azure Reservations",
+          "kind": "native"
+        },
+        {
+          "name": "Managed GPU metrics on AKS (preview)",
+          "kind": "native"
+        },
+        {
+          "name": "NVIDIA DCGM Exporter",
+          "kind": "open_source"
+        }
+      ],
+      "verification": "Average GPU utilisation per pool reported monthly against your target; idle endpoint hours trending down; cost per 1,000 inferences or per million tokens reported per application.",
+      "effort": "M",
+      "ownerRole": "ML platform team with application owners",
+      "confirmRegionalAvailability": true,
+      "confidence": "Medium",
+      "claimIds": [
+        "CLM-FIN-201",
+        "CLM-FIN-202",
+        "CLM-FIN-221"
+      ],
+      "owner": "finops-cost-lead",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-01-20"
+    },
+    {
+      "id": "PB.FIN.LEV-10.gcp.stack",
+      "control": "FIN.LEV-10",
+      "platform": "gcp",
+      "level": "stack",
+      "action": "Use GKE DCGM metrics for GPU utilisation and label model calls on Gemini Enterprise Agent Platform (formerly Vertex AI) so token cost is attributed per application.",
+      "approach": "Measure GPU utilisation and idle endpoint time, scale inference endpoints down or to zero when idle, share GPUs where the workload allows, match provisioned AI capacity to measured demand, and attribute token and GPU cost to applications.",
+      "options": [
+        {
+          "name": "GKE DCGM metrics in Cloud Monitoring",
+          "kind": "native"
+        },
+        {
+          "name": "Gemini Enterprise Agent Platform request labels (formerly Vertex AI)",
+          "kind": "native"
+        }
+      ],
+      "verification": "Average GPU utilisation per pool reported monthly against your target; idle endpoint hours trending down; cost per 1,000 inferences or per million tokens reported per application.",
+      "effort": "M",
+      "ownerRole": "ML platform team with application owners",
+      "confirmRegionalAvailability": true,
+      "confidence": "Medium",
+      "claimIds": [
+        "CLM-FIN-208",
+        "CLM-FIN-209"
+      ],
+      "owner": "finops-cost-lead",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-01-20"
+    },
+    {
+      "id": "PB.FIN.LEV-10.oci.stack",
+      "control": "FIN.LEV-10",
+      "platform": "oci",
+      "level": "stack",
+      "action": "Size OCI Generative AI dedicated AI clusters from their hosting metrics and collect GPU utilisation on GPU instances.",
+      "approach": "Measure GPU utilisation and idle endpoint time, scale inference endpoints down or to zero when idle, share GPUs where the workload allows, match provisioned AI capacity to measured demand, and attribute token and GPU cost to applications.",
+      "options": [
+        {
+          "name": "OCI Generative AI dedicated AI clusters (hosting metrics)",
+          "kind": "native"
+        },
+        {
+          "name": "NVIDIA DCGM Exporter",
+          "kind": "open_source"
+        }
+      ],
+      "verification": "Average GPU utilisation per pool reported monthly against your target; idle endpoint hours trending down; cost per 1,000 inferences or per million tokens reported per application.",
+      "effort": "M",
+      "ownerRole": "ML platform team with application owners",
+      "confirmRegionalAvailability": true,
+      "confidence": "Medium",
+      "claimIds": [
+        "CLM-FIN-217",
+        "CLM-FIN-221"
+      ],
+      "owner": "finops-cost-lead",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-04-22"
+    },
+    {
+      "id": "PB.FIN.LEV-10.ibm.stack",
+      "control": "FIN.LEV-10",
+      "platform": "ibm",
+      "level": "stack",
+      "action": "Measure GPU utilisation and scale idle inference capacity down on IBM Cloud with its own tooling; no IBM Cloud-specific option is catalogued in this version, so options are identified and validated in discovery.",
+      "approach": "Measure GPU utilisation and idle endpoint time, scale inference endpoints down or to zero when idle, share GPUs where the workload allows, match provisioned AI capacity to measured demand, and attribute token and GPU cost to applications.",
+      "options": [
+        {
+          "name": "NVIDIA DCGM Exporter",
+          "kind": "open_source",
+          "detail": "GPU telemetry on GPU instances"
+        }
+      ],
+      "verification": "Average GPU utilisation per pool reported monthly against your target; idle endpoint hours trending down; cost per 1,000 inferences or per million tokens reported per application.",
+      "effort": "M",
+      "ownerRole": "ML platform team with application owners",
+      "confirmRegionalAvailability": false,
+      "confidence": "Low",
+      "claimIds": [
+        "CLM-FIN-221",
+        "CLM-FIN-021"
+      ],
+      "owner": "finops-cost-lead",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-04-14"
+    },
+    {
+      "id": "PB.FIN.LEV-10.alibaba.stack",
+      "control": "FIN.LEV-10",
+      "platform": "alibaba",
+      "level": "stack",
+      "action": "Measure GPU utilisation and scale idle inference capacity down on Alibaba Cloud with its own tooling; no Alibaba Cloud-specific option is catalogued in this version, so options are identified and validated in discovery.",
+      "approach": "Measure GPU utilisation and idle endpoint time, scale inference endpoints down or to zero when idle, share GPUs where the workload allows, match provisioned AI capacity to measured demand, and attribute token and GPU cost to applications.",
+      "options": [
+        {
+          "name": "NVIDIA DCGM Exporter",
+          "kind": "open_source",
+          "detail": "GPU telemetry on GPU instances"
+        }
+      ],
+      "verification": "Average GPU utilisation per pool reported monthly against your target; idle endpoint hours trending down; cost per 1,000 inferences or per million tokens reported per application.",
+      "effort": "M",
+      "ownerRole": "ML platform team with application owners",
+      "confirmRegionalAvailability": false,
+      "confidence": "Low",
+      "claimIds": [
+        "CLM-FIN-221",
+        "CLM-FIN-021"
+      ],
+      "owner": "finops-cost-lead",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-04-14"
+    },
+    {
+      "id": "PB.FIN.LEV-10.other_public.stack",
+      "control": "FIN.LEV-10",
+      "platform": "other_public",
+      "level": "stack",
+      "action": "Measure GPU utilisation and scale idle inference capacity down with the provider's own tooling; the provider is not identified in the assessment, so options are identified and validated in discovery.",
+      "approach": "Measure GPU utilisation and idle endpoint time, scale inference endpoints down or to zero when idle, share GPUs where the workload allows, match provisioned AI capacity to measured demand, and attribute token and GPU cost to applications.",
+      "options": [
+        {
+          "name": "NVIDIA DCGM Exporter",
+          "kind": "open_source",
+          "detail": "GPU telemetry on GPU instances"
+        }
+      ],
+      "verification": "Average GPU utilisation per pool reported monthly against your target; idle endpoint hours trending down; cost per 1,000 inferences or per million tokens reported per application.",
+      "effort": "M",
+      "ownerRole": "ML platform team with application owners",
+      "confirmRegionalAvailability": false,
+      "confidence": "Low",
+      "claimIds": [
+        "CLM-FIN-221",
+        "CLM-FIN-021"
+      ],
+      "owner": "finops-cost-lead",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-04-14"
+    },
+    {
+      "id": "PB.FIN.LEV-10.kubernetes.stack",
+      "control": "FIN.LEV-10",
+      "platform": "kubernetes",
+      "level": "stack",
+      "action": "Export GPU metrics with DCGM Exporter, partition large GPUs with MIG for small workloads, and scale idle inference deployments to zero with an event-driven autoscaler.",
+      "approach": "Measure GPU utilisation and idle endpoint time, scale inference endpoints down or to zero when idle, share GPUs where the workload allows, match provisioned AI capacity to measured demand, and attribute token and GPU cost to applications.",
+      "options": [
+        {
+          "name": "NVIDIA DCGM Exporter",
+          "kind": "open_source"
+        },
+        {
+          "name": "NVIDIA Multi-Instance GPU (MIG)",
+          "kind": "third_party"
+        },
+        {
+          "name": "KEDA",
+          "kind": "open_source",
+          "detail": "Scale to zero; not with CPU or memory triggers"
+        }
+      ],
+      "verification": "Average GPU utilisation per pool reported monthly against your target; idle endpoint hours trending down; cost per 1,000 inferences or per million tokens reported per application.",
+      "effort": "M",
+      "ownerRole": "Kubernetes platform team with the ML platform team",
+      "confirmRegionalAvailability": false,
+      "confidence": "Medium",
+      "claimIds": [
+        "CLM-FIN-221",
+        "CLM-FIN-218"
+      ],
+      "owner": "finops-cost-lead",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-04-22"
+    },
+    {
+      "id": "PB.FIN.LEV-10.on_prem.stack",
+      "control": "FIN.LEV-10",
+      "platform": "on_prem",
+      "level": "stack",
+      "action": "Export GPU metrics with DCGM Exporter and partition large GPUs with MIG where workloads are small.",
+      "approach": "Measure GPU utilisation and idle endpoint time, scale inference endpoints down or to zero when idle, share GPUs where the workload allows, match provisioned AI capacity to measured demand, and attribute token and GPU cost to applications. On owned GPUs the gain is capacity for more workloads and deferred purchases.",
+      "options": [
+        {
+          "name": "NVIDIA DCGM Exporter",
+          "kind": "open_source"
+        },
+        {
+          "name": "NVIDIA Multi-Instance GPU (MIG)",
+          "kind": "third_party"
+        }
+      ],
+      "verification": "Average GPU utilisation per pool reported monthly against your target; idle endpoint hours trending down; cost per 1,000 inferences or per million tokens reported per application.",
+      "effort": "M",
+      "ownerRole": "Infrastructure team with the ML platform team",
+      "confirmRegionalAvailability": false,
+      "confidence": "Medium",
+      "claimIds": [
+        "CLM-FIN-221"
+      ],
+      "owner": "finops-cost-lead",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-04-22"
+    },
+    {
+      "id": "PB.FIN.LEV-10.saas.stack",
+      "control": "FIN.LEV-10",
+      "platform": "saas",
+      "level": "stack",
+      "action": "AI features bought as SaaS seats or add-ons are licences; they are right-sized through LEV-09 SaaS and licensing, so no separate SaaS action is catalogued for this lever.",
+      "approach": "No platform-specific action: see the reason in the action.",
+      "options": [],
+      "verification": "Not applicable on this platform; confirm in discovery that the reason holds for you.",
+      "effort": "S",
+      "ownerRole": "FinOps lead",
+      "confirmRegionalAvailability": false,
+      "confidence": "High",
+      "noPlatformAction": true,
+      "claimIds": [
+        "CLM-FIN-158",
+        "CLM-FIN-023"
+      ],
+      "owner": "finops-cost-lead",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-04-14"
+    },
+    {
+      "id": "PB.FIN.LEV-10.data_platform.stack",
+      "control": "FIN.LEV-10",
+      "platform": "data_platform",
+      "level": "stack",
+      "action": "Report AI and model-serving consumption on the data platform by product and tag, and set budgets for AI services that resource monitors do not cover.",
+      "approach": "Measure GPU utilisation and idle endpoint time, scale inference endpoints down or to zero when idle, share GPUs where the workload allows, match provisioned AI capacity to measured demand, and attribute token and GPU cost to applications.",
+      "options": [
+        {
+          "name": "Databricks system.billing.usage (billing_origin_product MODEL_SERVING)",
+          "kind": "native"
+        },
+        {
+          "name": "Snowflake CORTEX_AISQL_USAGE_HISTORY view",
+          "kind": "native"
+        },
+        {
+          "name": "Snowflake budgets",
+          "kind": "native",
+          "detail": "Resource monitors do not cover AI services"
+        }
+      ],
+      "verification": "AI and model-serving consumption per application reported monthly; every AI service in use is covered by a budget.",
+      "effort": "S",
+      "ownerRole": "Data platform team",
+      "confirmRegionalAvailability": false,
+      "confidence": "Medium",
+      "claimIds": [
+        "CLM-FIN-237",
+        "CLM-FIN-239",
+        "CLM-FIN-235"
+      ],
+      "owner": "finops-cost-lead",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-01-20"
+    },
+    {
+      "id": "PB.FIN.ANOMALY_MANAGEMENT.aws.platform",
+      "control": "FIN.ANOMALY_MANAGEMENT",
+      "platform": "aws",
+      "level": "platform",
+      "action": "Create AWS Cost Anomaly Detection monitors by linked account, cost allocation tag or cost category, with alert subscriptions routed to each owner.",
+      "approach": "Dedicated anomaly detection per owner, with alerts reaching the accountable team within a day and a triage record for each anomaly.",
+      "options": [
+        {
+          "name": "AWS Cost Anomaly Detection",
+          "kind": "native"
+        },
+        {
+          "name": "AWS Budgets",
+          "kind": "native",
+          "detail": "Thresholds as a backstop"
+        }
+      ],
+      "verification": "Every owner has a monitor and subscription; anomalies triaged within the agreed time, with root cause recorded.",
+      "effort": "S",
+      "ownerRole": "FinOps lead with resource owners",
+      "confirmRegionalAvailability": false,
+      "confidence": "High",
+      "claimIds": [
+        "CLM-FIN-081",
+        "CLM-FIN-085",
+        "CLM-FIN-014"
+      ],
+      "owner": "finops-cost-lead",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-04-14"
+    },
+    {
+      "id": "PB.FIN.ANOMALY_MANAGEMENT.azure.platform",
+      "control": "FIN.ANOMALY_MANAGEMENT",
+      "platform": "azure",
+      "level": "platform",
+      "action": "Turn on Microsoft Cost Management anomaly alerts for each subscription and route them to the owner, with budgets as a backstop.",
+      "approach": "Dedicated anomaly detection per owner, with alerts reaching the accountable team within a day and a triage record for each anomaly.",
+      "options": [
+        {
+          "name": "Microsoft Cost Management anomaly alerts",
+          "kind": "native"
+        },
+        {
+          "name": "Microsoft Cost Management budgets",
+          "kind": "native",
+          "detail": "Notify only; do not stop spend"
+        }
+      ],
+      "verification": "Every subscription in scope has an anomaly alert routed to its owner; anomalies triaged within the agreed time.",
+      "effort": "S",
+      "ownerRole": "FinOps lead with resource owners",
+      "confirmRegionalAvailability": false,
+      "confidence": "High",
+      "claimIds": [
+        "CLM-FIN-091",
+        "CLM-FIN-014"
+      ],
+      "owner": "finops-cost-lead",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-04-14"
+    },
+    {
+      "id": "PB.FIN.ANOMALY_MANAGEMENT.gcp.platform",
+      "control": "FIN.ANOMALY_MANAGEMENT",
+      "platform": "gcp",
+      "level": "platform",
+      "action": "Route Google Cloud Cost Anomaly Detection notifications to project owners by email or Pub/Sub, alongside Cloud Billing budgets.",
+      "approach": "Dedicated anomaly detection per owner, with alerts reaching the accountable team within a day and a triage record for each anomaly.",
+      "options": [
+        {
+          "name": "Google Cloud Cost Anomaly Detection",
+          "kind": "native",
+          "detail": "On by default"
+        },
+        {
+          "name": "Cloud Billing budgets",
+          "kind": "native"
+        }
+      ],
+      "verification": "Every project in scope routes anomaly notifications to an owner; anomalies triaged within the agreed time.",
+      "effort": "S",
+      "ownerRole": "FinOps lead with resource owners",
+      "confirmRegionalAvailability": false,
+      "confidence": "High",
+      "claimIds": [
+        "CLM-FIN-102",
+        "CLM-FIN-014"
+      ],
+      "owner": "finops-cost-lead",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-04-14"
+    },
+    {
+      "id": "PB.FIN.LEV-07.kubernetes.stack",
+      "control": "FIN.LEV-07",
+      "platform": "kubernetes",
+      "level": "stack",
+      "action": "Consolidate nodes with a node autoscaler that removes empty and under-used nodes, after requests are set from usage.",
+      "approach": "Bin-pack pods onto fewer, right-sized nodes once requests reflect usage; measure efficiency as used over requested resources.",
+      "options": [
+        {
+          "name": "Karpenter",
+          "kind": "open_source"
+        },
+        {
+          "name": "Kubernetes Cluster Autoscaler",
+          "kind": "open_source"
+        },
+        {
+          "name": "OpenCost",
+          "kind": "open_source"
+        },
+        {
+          "name": "Kubecost",
+          "kind": "third_party",
+          "detail": "IBM"
+        }
+      ],
+      "verification": "Ratio of used to requested CPU and memory per cluster reported monthly against your target; node count trend after consolidation.",
+      "effort": "M",
+      "ownerRole": "Kubernetes platform team",
+      "confirmRegionalAvailability": false,
+      "confidence": "High",
+      "claimIds": [
+        "CLM-FIN-112",
+        "CLM-FIN-113",
+        "CLM-FIN-110",
+        "CLM-FIN-111",
+        "CLM-FIN-156"
+      ],
+      "owner": "finops-cost-lead",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-04-14"
+    },
+    {
+      "id": "PB.FIN.LEV-09.saas.platform",
+      "control": "FIN.LEV-09",
+      "platform": "saas",
+      "level": "platform",
+      "action": "Remove or downgrade unused and under-used licences before each renewal, using licence assignment and activity data.",
+      "approach": "Licence position (owned, assigned, active) per product, reviewed ahead of each renewal date with the business owner and procurement.",
+      "options": [
+        {
+          "name": "Microsoft 365 group-based licensing",
+          "kind": "native",
+          "detail": "Example for Microsoft 365"
+        },
+        {
+          "name": "SaaS management platform of your choice",
+          "kind": "third_party"
+        },
+        {
+          "name": "Renewal calendar with licence position",
+          "kind": "practice"
+        }
+      ],
+      "verification": "Unused licence cost per product reported monthly; every renewal has a recorded licence position and decision before notice dates.",
+      "effort": "M",
+      "ownerRole": "Software asset manager with procurement",
+      "confirmRegionalAvailability": false,
+      "confidence": "Medium",
+      "claimIds": [
+        "CLM-FIN-158",
+        "CLM-FIN-240",
+        "CLM-FIN-023"
+      ],
+      "owner": "finops-cost-lead",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-04-14"
+    },
+    {
+      "id": "PB.FIN.LEV-09.azure.stack",
+      "control": "FIN.LEV-09",
+      "platform": "azure",
+      "level": "stack",
+      "action": "Apply Azure Hybrid Benefit to eligible Windows Server and SQL Server workloads where you hold qualifying licences.",
+      "approach": "Use licences already owned (with Software Assurance or qualifying subscriptions) instead of paying licence-included rates, with licence compliance confirmed by the software asset manager.",
+      "options": [
+        {
+          "name": "Azure Hybrid Benefit",
+          "kind": "native"
+        }
+      ],
+      "verification": "Share of eligible Windows Server and SQL Server cores with Azure Hybrid Benefit applied, reported monthly, within the licences owned.",
+      "effort": "S",
+      "ownerRole": "Software asset manager with the cloud platform team",
+      "confirmRegionalAvailability": false,
+      "confidence": "High",
+      "claimIds": [
+        "CLM-FIN-095"
+      ],
+      "owner": "finops-cost-lead",
+      "lastReviewed": "2026-10-22",
+      "nextReview": "2027-04-14"
+    }
+  ]
 }
