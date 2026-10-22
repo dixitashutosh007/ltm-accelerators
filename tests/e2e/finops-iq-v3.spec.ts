@@ -14,6 +14,7 @@ import { createHandler } from '../../amplify/functions/manage-finops-assessment/
 import { memoryStore } from '../../amplify/functions/manage-finops-assessment/store';
 import { createHandler as createReportHandler } from '../../amplify/functions/finops-iq-report/handler';
 import { readFileSync } from 'node:fs';
+import AxeBuilder from '@axe-core/playwright';
 import { QUESTIONS } from '../../packages/engine-core/src/accelerators/finops-iq/v3';
 
 const EMAIL = 'consultant@ltm.com';
@@ -273,8 +274,86 @@ test('retention (M6): the data notice states the retention period, and an assess
   const row = page.getByRole('row', { name: /Delete Me Ltd/ });
   await row.getByRole('button', { name: 'Delete Delete Me Ltd' }).click();
   await row.getByRole('button', { name: 'Cancel' }).click();
-  await expect(row).toBeVisible();
+  await expect(row.getByRole('button', { name: 'Delete Delete Me Ltd' })).toBeFocused();
   await row.getByRole('button', { name: 'Delete Delete Me Ltd' }).click();
   await row.getByRole('button', { name: 'Confirm delete Delete Me Ltd' }).click();
+  await expect(page.getByText('No saved assessments yet.')).toBeVisible();
+});
+
+/** WCAG 2.2 AA scan (execution phase M7): every screen, consultant and client view, with no exceptions. */
+async function axe(page: Page, where: string) {
+  const { violations } = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa']).analyze();
+  expect(violations.map(v => `${v.id} (${v.impact}): ${v.nodes.slice(0, 5).map(n => `${n.html.slice(0, 120)} [${(n.failureSummary || '').replace(/\s+/g, ' ').slice(0, 200)}]`).join(' | ')}`), where).toEqual([]);
+}
+
+test('accessibility (M7): no WCAG 2.2 AA violations on any screen, in consultant or client view', async ({ page }) => {
+  test.setTimeout(120_000);
+  await page.goto('/finops-iq-v3');
+  await expect(page.getByRole('button', { name: 'Start assessment' })).toBeVisible();
+  await axe(page, 'start');
+  await start(page, 'workshop', 'Axe Ltd');
+  await axe(page, 'estate (empty)');
+  await fillEstate(page, 'workshop');
+  await axe(page, 'estate (filled)');
+  for (const label of await stepButtons(page)) {
+    await page.locator('nav.steps button', { hasText: label }).first().click();
+    if (label === 'Results') {
+      await expect(page.getByRole('heading', { name: 'Capability profile' })).toBeVisible();
+      expect(await page.locator('main').innerText(), 'platforms by name (M7 D6)').not.toMatch(/\b(aws|azure|on_prem|data_platform|kubernetes|saas)\b/);
+    }
+    await axe(page, label);
+  }
+  await page.getByRole('button', { name: 'Client view: off' }).click();
+  await expect(page.getByRole('button', { name: 'Client view: on' })).toBeVisible();
+  await axe(page, 'results, client view');
+  await page.getByRole('button', { name: 'Client view: on' }).click();
+  await page.getByRole('button', { name: 'All assessments' }).click();
+  await axe(page, 'assessment list');
+  await page.getByRole('row', { name: /Axe Ltd/ }).getByRole('button', { name: 'Delete Axe Ltd' }).click();
+  await axe(page, 'delete confirmation');
+});
+
+/** Tab forward until the focused element is the one wanted; fails if it is not reached, so tab order is tested too. */
+async function tabTo(page: Page, target: ReturnType<Page['locator']>, max = 60) {
+  for (let i = 0; i < max; i++) {
+    await page.keyboard.press('Tab');
+    if (await target.evaluate(el => el === document.activeElement)) {
+      expect(await target.evaluate(el => getComputedStyle(el).outlineStyle), 'visible focus').toBe('solid');
+      return;
+    }
+  }
+  throw new Error(`not reached by Tab: ${target}`);
+}
+
+test('keyboard (M7): start, answer, complete and delete an assessment with the keyboard alone, with focus always visible', async ({ page }) => {
+  await page.goto('/finops-iq-v3');
+  await tabTo(page, page.getByLabel('Client organisation'));
+  await page.keyboard.type('Keys Ltd');
+  await tabTo(page, page.getByRole('radio', { name: /^Executive/ }));
+  await page.keyboard.press('Space');
+  await tabTo(page, page.getByRole('button', { name: 'Start assessment' }));
+  await page.keyboard.press('Enter');
+  await expect(page.getByRole('heading', { level: 1, name: 'Keys Ltd' })).toBeVisible();
+  await tabTo(page, page.getByLabel('AWS', { exact: true }));
+  await page.keyboard.press('Space');
+  await expect(page.getByLabel('AWS', { exact: true })).toBeChecked();
+  // The rest of the estate by the usual helper; then a capability question by keyboard.
+  await fillEstate(page, 'executive');
+  const step = page.locator('nav.steps button', { hasText: 'Optimize Usage & Cost' }).first();
+  await step.focus();
+  await page.keyboard.press('Enter');
+  const first = page.locator('fieldset.question:not(.consultant) input[type=radio]').first();
+  await tabTo(page, first);
+  await page.keyboard.press('Space');
+  await expect(first).toBeChecked();
+  await settled(page);
+  await page.getByRole('button', { name: 'All assessments' }).focus();
+  await page.keyboard.press('Enter');
+  const row = page.getByRole('row', { name: /Keys Ltd/ });
+  await tabTo(page, row.getByRole('button', { name: 'Delete Keys Ltd' }));
+  await page.keyboard.press('Enter');
+  await expect(row.getByRole('button', { name: 'Confirm delete Keys Ltd' })).toBeFocused();
+  await page.keyboard.press('Enter');
+  await expect(page.getByRole('status').filter({ hasText: 'Keys Ltd deleted.' })).toBeFocused();
   await expect(page.getByText('No saved assessments yet.')).toBeVisible();
 });

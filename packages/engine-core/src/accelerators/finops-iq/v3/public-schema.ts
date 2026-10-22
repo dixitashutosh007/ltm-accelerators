@@ -11,6 +11,7 @@ import register from '../../../claims/claims-register.json' with { type: 'json' 
 import { INSTRUMENTS, MARKETS, MIGRATION_STAGES, PROVIDERS, SCOPES, SECTORS } from './contract';
 import valueRules from './value-rules.json' with { type: 'json' };
 import { RETENTION_MONTHS } from './retention';
+import { PLATFORMS } from '../../../playbook/catalogue';
 
 const B: any = bank;
 const CLAIM = new Map<string, any>((register as any).claims.map((c: any) => [c.id, c]));
@@ -45,6 +46,12 @@ export const NOTICES = {
   status: 'Draft wording: legal review recorded (M6, AI-assisted, not a qualified lawyer); pending owner approval and LTM confirmation of the transfer mechanism.'
 };
 
+/** Playbook platforms that are not providers, by name; page and report share them, so no raw key is shown (M7 D6). */
+export const PLATFORM_LABELS: Record<string, string> = {
+  any: 'Any', on_prem: 'Data centre and private cloud', saas: 'SaaS and licensing', kubernetes: 'Kubernetes',
+  data_platform: 'Data platform', other_public: 'Other public cloud'
+};
+
 const labelsFrom = (questionId: string) => Object.fromEntries((B.questions.find((q: any) => q.id === questionId).options as any[]).map(o => [o.value, o.label]));
 
 function basis(q: any) {
@@ -71,6 +78,7 @@ export function publicQuestionSchema() {
     enums: {
       providers: PROVIDERS.map(v => ({ value: v, label: providerLabels[v] ?? v })),
       scopes: SCOPES.map(v => ({ value: v, label: scopeLabels[v] ?? v })),
+      platforms: PLATFORMS.map(v => ({ value: v, label: PLATFORM_LABELS[v] ?? providerLabels[v] ?? v })),
       sectors: SECTORS.map(v => ({ value: v, label: SECTOR_LABELS[v] ?? v })),
       markets: MARKETS.map(v => ({ value: v, label: MARKET_LABELS[v] ?? v })),
       migrationStages: MIGRATION_STAGES,

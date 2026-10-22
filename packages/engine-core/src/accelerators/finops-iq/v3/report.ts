@@ -16,7 +16,7 @@ import claimsRegister from '../../../claims/claims-register.json' with { type: '
 import { evaluateFinOpsIqV3, type Finding, type FinOpsIqV3Input, type FinOpsIqV3Result, type Level } from './evaluate';
 import { inputInfo, resolveField, type Figure, type LeverValue } from './value-model';
 import { clientView } from './client-view';
-import { NOTICES } from './public-schema';
+import { NOTICES, PLATFORM_LABELS } from './public-schema';
 import { OFFERINGS } from './execution';
 import { sowDraft } from '../../../offerings/catalogue';
 import questionBank from './question-bank.json' with { type: 'json' };
@@ -61,6 +61,11 @@ const joinItems = (items: string[]) => items.map((x, i) => (i && /^[A-Z][a-z]/.t
 
 const PROVIDER_NAME: Record<string, string> = { aws: 'AWS', azure: 'Azure', gcp: 'Google Cloud', oci: 'OCI', ibm: 'IBM Cloud', alibaba: 'Alibaba Cloud', other_public: 'other public cloud' };
 const providerName = (p: string) => PROVIDER_NAME[p] ?? p;
+/** Playbook platforms by name; no raw key reaches either edition (M7 CIO challenge D6). */
+const platformName = (p: string) => PLATFORM_LABELS[p] ?? providerName(p);
+const SCOPE_NAME = new Map<string, string>([['public_cloud', 'Public cloud'], ...(questionBank as any).questions.find((q: any) => q.id === 'SC-03').options.map((o: any) => [o.value, o.label])]);
+/** A finding scope by name: "public_cloud:aws" as "AWS", "data_centre" as "Own data centre". */
+const scopeName = (x: string) => (x.startsWith('public_cloud:') ? providerName(x.slice('public_cloud:'.length)) : SCOPE_NAME.get(x) ?? x);
 const listOf = (a: string[]) => (a.length < 2 ? a.join('') : `${a.slice(0, -1).join(', ')} and ${a[a.length - 1]}`);
 
 /** The client's estate: from the request when the report has it, otherwise from the scopes its findings name. */
@@ -72,10 +77,14 @@ export function estateOf(r: FinOpsIqV3Result, input?: FinOpsIqV3Input): Estate {
 }
 
 /** A registry item (activity, KPI, prerequisite, risk): plain text, or text shown only for some scopes or capabilities. */
-type Item = string | { text?: string; name?: string; scopes?: string[]; capabilities?: string[] };
-const applies = (i: Item, scopes: string[], caps: Set<string>) =>
-  typeof i === 'string' || ((!i.scopes || i.scopes.some(x => scopes.includes(x))) && (!i.capabilities || i.capabilities.some(x => caps.has(x))));
-const itemText = (i: Item) => (typeof i === 'string' ? i : (i.text ?? i.name ?? ''));
+type Item = string | { text?: string; textWhenOwner?: string; name?: string; scopes?: string[]; capabilities?: string[]; levers?: string[] };
+/** An item tagged with levers applies only while one of them is in scope and not advised against (M7 CIO challenge D3). */
+const applies = (i: Item, scopes: string[], caps: Set<string>, levers: Set<string> = new Set()) =>
+  typeof i === 'string' || ((!i.scopes || i.scopes.some(x => scopes.includes(x))) && (!i.capabilities || i.capabilities.some(x => caps.has(x)))
+    && (!i.levers || i.levers.some(x => levers.has(x))));
+const itemText = (i: Item, hasOwner = false) => (typeof i === 'string' ? i : ((hasOwner && i.textWhenOwner) || i.text || i.name || ''));
+/** An accountable owner is in place when DECISION-01 is not raised; the roadmap and the team-cost line follow it (M7 D1). */
+const hasOwner = (r: FinOpsIqV3Result) => !r.findings.some(f => f.id === 'F-FIN-DECISION-01');
 
 /** A Figure as a traced segment; `ratio` figures (rates, factors) are shown as shares. */
 const fig = (f: Figure, currency: string): Seg => figure(f, currency, f.unit === 'ratio' ? 'share' : undefined);
@@ -143,12 +152,13 @@ export function finopsIqRoadmap(r: FinOpsIqV3Result, estate: Estate = estateOf(r
     const valued = r.value.moneyShown ? findings.filter(f => f.value) : [];
     // Only what applies: items tagged with scopes the client does not have, or capabilities no finding here names, are left out.
     const caps = new Set(findings.map(f => f.capability));
-    const pick = (items: Item[]) => items.filter(i => applies(i, estate.scopes, caps));
+    const levers = new Set(r.value.levers.filter(l => !l.exclusion).map(l => l.id));
+    const pick = (items: Item[]) => items.filter(i => applies(i, estate.scopes, caps, levers));
     const renamed = w.nameWithoutScopes && !w.nameWithoutScopes.scopes.some((x: string) => estate.scopes.includes(x));
     out.push({
       id: w.id, name: renamed ? w.nameWithoutScopes.name : w.name, objective: renamed ? w.nameWithoutScopes.objective : w.objective,
-      activities: pick(w.activities).map(itemText), kpis: pick(w.kpis).map((k: any) => ({ name: k.name, claimIds: k.claimIds })),
-      prerequisites: pick(w.prerequisites).map(itemText), risks: pick(w.risks).map(itemText),
+      activities: pick(w.activities).map((i: Item) => itemText(i, hasOwner(r))), kpis: pick(w.kpis).map((k: any) => ({ name: k.name, claimIds: k.claimIds })),
+      prerequisites: pick(w.prerequisites).map(i => itemText(i)), risks: pick(w.risks).map(i => itemText(i)),
       findings,
       start: Math.min(...findings.map(f => f.start.month)),
       end: Math.max(...milestones.map(m => m.month)),
@@ -240,7 +250,7 @@ export function finopsIqBacklog(result: FinOpsIqV3Result, view: 'client' | 'cons
     const common = [names.get(workstreamOf(f) ?? '') ?? '', f.severity, cap.get(f.capability) ?? f.capability];
     const current = f.current ? (LEVEL_LABEL[f.current as Level] ?? r.capabilities.find(c => c.capability === f.capability)?.ratingLabel ?? '') : '';
     rows.push([
-      f.id, ...common, f.leverIds.join(' '), f.scopes.join(' '), current, f.target ? LEVEL_LABEL[f.target] : '', f.decisionOrAction,
+      f.id, ...common, f.leverIds.join(' '), f.scopes.map(scopeName).join('; '), current, f.target ? LEVEL_LABEL[f.target] : '', f.decisionOrAction,
       f.evidenceToConfirm, f.ownerLabel, f.start.month, f.targetDuration.months, e.fteMonths,
       r.value.moneyShown && f.value ? f.value.expected.value : '', cur, findingClaims(f).join(' '), uniq(f.value?.expected.assumptionIds ?? []).join(' '), '', '', ''
     ]);
@@ -248,7 +258,7 @@ export function finopsIqBacklog(result: FinOpsIqV3Result, view: 'client' | 'cons
       const l = r.value.levers.find(x => x.id === a.leverId);
       const valued = r.value.moneyShown && l?.cases && f.value?.leverIds.includes(a.leverId);
       rows.push([
-        f.id, ...common, a.leverId, f.scopes.join(' '), '', '', a.action, a.evidence, f.ownerLabel, f.start.month, f.targetDuration.months,
+        f.id, ...common, a.leverId, f.scopes.map(scopeName).join('; '), '', '', a.action, a.evidence, f.ownerLabel, f.start.month, f.targetDuration.months,
         l?.inHeadline && l.effortFteMonths ? l.effortFteMonths.value : '', valued ? l!.cases!.expected.runRate.value : '', cur,
         uniq(a.claimIds).join(' '), valued ? uniq(l!.cases!.expected.runRate.assumptionIds).join(' ') : '', '', '', ''
       ]);
@@ -256,7 +266,7 @@ export function finopsIqBacklog(result: FinOpsIqV3Result, view: 'client' | 'cons
     // One row per platform action from the playbook (F7 item 4, F8), on the finding's schedule.
     for (const t of (r.technicalPlan?.actions ?? []).filter(x => x.findingId === f.id && !x.noPlatformAction)) {
       rows.push([
-        f.id, ...common, t.control.startsWith('FIN.LEV-') ? t.control.slice(4) : '', t.platform, '', '', `${t.action} ${t.approach}`, t.verification, t.ownerRole,
+        f.id, ...common, t.control.startsWith('FIN.LEV-') ? t.control.slice(4) : '', platformName(t.platform), '', '', `${t.action} ${t.approach}`, t.verification, t.ownerRole,
         f.start.month, f.targetDuration.months, '', '', cur, uniq(t.claimIds).join(' '), '', t.level, t.options.map(o => o.name).join('; '), t.effort
       ]);
     }
@@ -342,7 +352,9 @@ function notNetted(c: Ctx): Seg[] {
     // The FinOps team is always accounted for: its cost, or why it is not shown (M4 re-test, lead note).
     ...(team.shown && team.fte && team.annualCost ? ['; an accountable FinOps lead or team of ', fig(team.fte, cur), ', about ', fig(team.annualCost, cur), ' a year']
       : team.fte ? ['; an accountable FinOps lead or team of ', fig(team.fte, cur), ', ', cite('not costed without your internal cost rate', team.claimIds)]
-      : ['; ', cite('no FinOps team cost, as your answers show an accountable owner for cloud spend already', team.claimIds)]),
+      : r.findings.some(f => f.type === 'capability_gap' && f.capability === 'FINOPS_PRACTICE_OPERATIONS')
+        ? ['; ', cite('no separate FinOps team cost, as your answers show an accountable owner for cloud spend already; the work to bring the practice to its target is in the capability-building effort', team.claimIds)]
+        : ['; ', cite('no FinOps team cost, as your answers show an accountable owner for cloud spend already', team.claimIds)]),
     '.'
   ];
 }
@@ -742,7 +754,7 @@ function technicalSection(c: Ctx): ReportSection {
     blocks.push({ kind: 'subheading', text: dependencyName(c, id) });
     blocks.push({ kind: 'table', small: true, head: ['Platform', 'Level', 'Action and approach', 'Options', 'Verification', 'Owner'], widths: [55, 45, '*', 100, 90, 60],
       rows: actions.map(a => [
-        [a.platform === 'any' ? 'Any' : a.platform === 'on_prem' ? 'Data centre and private cloud' : a.platform === 'saas' ? 'SaaS and licensing' : a.platform === 'kubernetes' ? 'Kubernetes' : providerName(a.platform)],
+        [platformName(a.platform)],
         [LEVEL_TEXT[a.level]],
         [cite(a.noPlatformAction ? a.action : `${sentence(a.action)} ${sentence(a.approach)}`, a.claimIds), ...(a.discoveryNeeded ? [' ', { text: `Needs: ${sentence(a.discoveryNeeded)}`, cite: a.claimIds, italic: true }] : []),
           ...(a.confirmRegionalAvailability ? [' Confirm regional availability.'] : [])],

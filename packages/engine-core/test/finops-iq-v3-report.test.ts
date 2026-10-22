@@ -151,7 +151,7 @@ describe('FinOps IQ report: CIO challenge test fixes (M4-cio-challenge.md)', () 
       expect(summary, x.label).toContain('value.totals.conservative.netYear1');
       expect(sectionText(x.doc, ['summary', 'value'])).toMatch(/Not netted, and shown for your decision/);
       // The FinOps team is always accounted for: its cost, or the reason it is not shown.
-      expect(sectionText(x.doc, ['summary', 'value']), x.label).toMatch(/Not netted, and shown for your decision: [^.]*(FinOps lead or team of|no FinOps team cost)/);
+      expect(sectionText(x.doc, ['summary', 'value']), x.label).toMatch(/Not netted, and shown for your decision: [^.]*(FinOps lead or team of|no (separate )?FinOps team cost)/);
     }
   });
 
@@ -370,4 +370,73 @@ describe('Backlog CSV and PDF rendering (WS-S4)', () => {
     expect(a.length).toBeGreaterThan(50_000);
     expect(a.equals(b)).toBe(true);
   }, 30_000);
+});
+
+describe('FinOps IQ report: M7 CIO challenge fixes (M7-cio-challenge.md)', () => {
+  const allText = (doc: ReportDocument) => sectionText(doc, doc.sections.map(s => s.id));
+  const practiceGap = (r: FinOpsIqV3Result) => r.findings.some(f => f.type === 'capability_gap' && f.capability === 'FINOPS_PRACTICE_OPERATIONS');
+
+  it('D1: one rule on the accountable owner drives the roadmap activity, the team-cost line and the decision finding', () => {
+    const seen = { owner: 0, noOwner: 0 };
+    for (const x of runs) {
+      const decision = x.r.findings.find(f => f.id === 'F-FIN-DECISION-01');
+      const roadmap = sectionText(x.doc, ['roadmap']);
+      if (decision) {
+        seen.noOwner++;
+        expect(sectionText(x.doc, ['summary', 'value']), x.label).not.toMatch(/accountable owner for cloud spend already/);
+        const met = x.r.capabilities.some(p => p.capability === 'FINOPS_PRACTICE_OPERATIONS' && p.gap !== null && p.gap < 1 && p.target.level !== null);
+        expect(decision.businessConsequence.includes('rest on individual effort until someone is accountable'), x.label).toBe(met);
+      } else {
+        seen.owner++;
+        expect(roadmap, x.label).not.toMatch(/Appoint an accountable FinOps owner/);
+        if (practiceGap(x.r) && x.r.value.moneyShown) {
+          expect(sectionText(x.doc, ['value']), x.label).toMatch(/no separate FinOps team cost[^.]*the work to bring the practice to its target is in the capability-building effort/);
+        }
+      }
+    }
+    expect(seen.owner && seen.noOwner).toBeGreaterThan(0);
+  });
+
+  it('D3: a roadmap never schedules a lever the value section advises against or leaves out', () => {
+    let filtered = 0;
+    for (const x of runs) {
+      const spot = x.r.value.levers.find(l => l.id === 'LEV-06');
+      const roadmap = sectionText(x.doc, ['roadmap']);
+      if (!spot || spot.exclusion) { filtered++; expect(roadmap, x.label).not.toMatch(/to Spot or preemptible capacity/); }
+    }
+    expect(filtered).toBeGreaterThan(0);
+  });
+
+  it('D5: no lever or platform name is repeated back to back in either edition', () => {
+    const names = [...new Set(runs.flatMap(x => x.r.value.levers.map(l => l.name)))].concat(['Data platform', 'SaaS and licensing']);
+    for (const x of runs) {
+      const text = allText(x.doc).replace(/\s+/g, ' ');
+      for (const n of names) expect(text.includes(`${n} ${n}`), `${x.label}: "${n} ${n}"`).toBe(false);
+    }
+  });
+
+  it('D6: no raw platform key reaches either edition or the backlog', () => {
+    for (const x of runs) {
+      expect(allText(x.doc), x.label).not.toMatch(/\b(data_platform|on_prem|other_public)\b/);
+      const backlog = finopsIqBacklog(x.r, x.view);
+      const col = BACKLOG_HEADER.indexOf('Platform');
+      for (const row of backlog.rows) expect(String(row[col]), x.label).not.toMatch(/^[a-z_]+$/);
+    }
+  });
+
+  it('D7: no page of the PDF ends on a heading or a table header row', async () => {
+    const pdfjs = await import('pdfjs-dist/legacy/build/pdf.mjs');
+    for (const x of runs.filter(y => ['RS4 client', 'RS5 client', 'RS9 consultant'].includes(y.label))) {
+      const pdf = await pdfjs.getDocument({ data: new Uint8Array(await renderPdf(x.doc)), verbosity: 0 }).promise;
+      for (let p = 2; p <= pdf.numPages; p++) {
+        // Body text only (the running header and footer sit in the top and bottom margins of the A4 page).
+        const items = ((await (await pdf.getPage(p)).getTextContent()).items as any[]).filter(i => i.str.trim() && i.transform[5] > 60 && i.transform[5] < 800);
+        if (!items.length) continue;
+        const bottom = Math.min(...items.map(i => i.transform[5]));
+        const size = Math.max(...items.filter(i => Math.abs(i.transform[5] - bottom) < 2).map(i => Math.hypot(i.transform[0], i.transform[1])));
+        // Headings are set at 11pt or more and table headers at 8pt (pdf.ts styles); body text is neither.
+        expect(size >= 10.9 || Math.abs(size - 8) < 0.05, `${x.label} page ${p} ends on a heading or table header`).toBe(false);
+      }
+    }
+  }, 60_000);
 });

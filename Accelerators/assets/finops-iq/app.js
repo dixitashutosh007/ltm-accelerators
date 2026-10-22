@@ -24,6 +24,7 @@
   var Q = {};
   var state = null;   // the open assessment
   var timers = {};
+  var listNotice = null;  // announced and focused when the assessment list next loads (after a deletion)
   var app = document.getElementById('app');
   var actions = document.getElementById('topbar-actions');
 
@@ -146,6 +147,12 @@
     var res = await call(ASSESSMENT);
     clear(listCard);
     listCard.appendChild(h('h2', { id: 'saved-h' }, 'Your assessments'));
+    if (listNotice) {
+      var notice = h('p', { class: 'small', role: 'status', tabindex: '-1', id: 'list-notice' }, listNotice);
+      listNotice = null;
+      listCard.appendChild(notice);
+      notice.focus();
+    }
     if (res.status !== 200) { listCard.appendChild(h('p', { class: 'notice error' }, 'Saved assessments could not be loaded. Please try again.')); return; }
     var items = res.body.data || [];
     if (!items.length) { listCard.appendChild(h('p', { class: 'muted' }, 'No saved assessments yet.')); return; }
@@ -158,19 +165,30 @@
             deleteControl(a))); })))));
   }
 
-  /** Deletion at the client's request (M6): permanent, so it asks for a second click in place. */
+  /**
+   * Deletion at the client's request (M6): permanent, so it asks for a second click in place. Focus follows the
+   * control as it changes (M7 keyboard check): to the confirm button, back to Delete on Cancel, and to the
+   * announcement once the list reloads.
+   */
   function deleteControl(a) {
     var cell = h('span', { class: 'delete' });
     function ask() {
+      var yes = h('button', { class: 'btn small danger', type: 'button', 'aria-label': 'Confirm delete ' + a.clientName, onclick: confirm }, 'Delete');
       clear(cell);
-      append(cell, [h('span', { class: 'small', role: 'status' }, 'Delete permanently? '),
-        h('button', { class: 'btn small danger', type: 'button', 'aria-label': 'Confirm delete ' + a.clientName, onclick: confirm }, 'Delete'),
-        h('button', { class: 'btn small', type: 'button', onclick: reset }, 'Cancel')]);
+      append(cell, [h('span', { class: 'small', role: 'status' }, 'Delete permanently? '), yes,
+        h('button', { class: 'btn small', type: 'button', onclick: function () { reset().focus(); } }, 'Cancel')]);
+      yes.focus();
     }
-    function reset() { clear(cell); cell.appendChild(h('button', { class: 'btn small', type: 'button', 'aria-label': 'Delete ' + a.clientName, onclick: ask }, 'Delete')); }
+    function reset() {
+      var btn = h('button', { class: 'btn small', type: 'button', 'aria-label': 'Delete ' + a.clientName, onclick: ask }, 'Delete');
+      clear(cell);
+      cell.appendChild(btn);
+      return btn;
+    }
     async function confirm() {
       var res = await call(ASSESSMENT, { method: 'POST', body: JSON.stringify({ action: 'delete', assessmentId: a.assessmentId }) });
-      if (res.status !== 200) { clear(cell); cell.appendChild(h('span', { class: 'small text-error', role: 'alert' }, 'Not deleted. Please try again.')); return; }
+      if (res.status !== 200) { clear(cell); cell.appendChild(h('span', { class: 'small text-error', role: 'alert', tabindex: '-1' }, 'Not deleted. Please try again.')); cell.firstChild.focus(); return; }
+      listNotice = a.clientName + ' deleted.';
       render();
     }
     reset();
@@ -180,6 +198,7 @@
     var id = control.id;
     return h('div', { class: 'field' }, h('label', { for: id }, label), hint ? h('p', { class: 'hint' }, hint) : null, control);
   }
+  function platformLabel(p) { var o = schema.enums.platforms.find(function (x) { return x.value === p; }); return o ? o.label : p; }
   function statusLabel(s) { return { draft: 'Draft', in_progress: 'In progress', completed: 'Completed', archived: 'Archived' }[s] || s; }
 
   function dataNotice() {
@@ -902,7 +921,7 @@
       h('thead', null, h('tr', null, ['Finding', 'Platform', 'Action', 'Options', 'Verification'].map(function (t) { return h('th', { scope: 'col' }, t); }))),
       h('tbody', null, plan.actions.map(function (a) {
         var f = r.findings.find(function (x) { return x.id === a.findingId; });
-        return h('tr', null, h('td', null, f ? f.title : a.findingId), h('td', null, a.platform), h('td', null, a.action),
+        return h('tr', null, h('td', null, f ? f.title : a.findingId), h('td', null, platformLabel(a.platform)), h('td', null, a.action),
           h('td', { class: 'small' }, a.options.map(function (o) { return o.name; }).join('; ') || '—'), h('td', { class: 'small' }, a.verification));
       })))));
     return sec;

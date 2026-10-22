@@ -1,6 +1,6 @@
 /* FinOps IQ page (execution phase M3). LTM Vantage colours and type; WCAG 2.2 AA contrast; usable at 360px. */
 :root {
-  --red: #E5412F;          /* 4.6:1 on white, for text and focus; the brand #FF5E4F is used for fills only */
+  --red: #D33826;          /* 4.8:1 on white, 4.5:1 on the selected-option tint; for text, buttons and focus. The brand #FF5E4F is used for fills only */
   --red-fill: #FF5E4F;
   --ink: #141414;
   --ink-2: #374151;
@@ -17,7 +17,6 @@
   --blue-bg: #EEF7FA;
   --crit: #9F1D12;
   --crit-bg: #FDECEA;
-  --focus: 0 0 0 3px rgba(229, 65, 47, .45);
   --sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --head: 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   --radius: 8px;
@@ -30,7 +29,7 @@ h1, h2, h3, h4 { font-family: var(--head); line-height: 1.25; margin: 0 0 .5em; 
 h1 { font-size: 26px; } h2 { font-size: 21px; } h3 { font-size: 17px; } h4 { font-size: 15px; }
 p { margin: 0 0 .8em; }
 a { color: var(--red); }
-:focus-visible { outline: none; box-shadow: var(--focus); border-radius: 4px; }
+:focus-visible { outline: 3px solid var(--red); outline-offset: 2px; border-radius: 4px; } /* solid, 3:1 or more against white (WCAG 1.4.11), and kept in forced-colours mode, unlike a shadow */
 .skip { position: absolute; left: -9999px; top: 0; background: var(--ink); color: #fff; padding: 8px 12px; z-index: 2000; }
 .skip:focus { left: 8px; top: 8px; }
 .review-banner { background: #3B2A0B; color: #FDE7B0; font: 600 12px/1.5 var(--sans); text-align: center; padding: 7px 16px; }
@@ -49,7 +48,7 @@ a { color: var(--red); }
 .btn { font: 600 14px/1.2 var(--sans); border-radius: 6px; border: 1px solid var(--line); background: var(--card); color: var(--ink); padding: 10px 16px; cursor: pointer; min-height: 44px; }
 .btn:hover { border-color: var(--ink-3); }
 .btn.primary { background: var(--red); border-color: var(--red); color: #fff; }
-.btn.primary:hover { background: #C9361F; }
+.btn.primary:hover { background: #B82E1A; }
 .btn.small { min-height: 36px; padding: 6px 12px; font-size: 13px; }
 .btn.link { border: none; background: none; color: var(--red); padding: 4px; min-height: 0; text-decoration: underline; }
 .btn[disabled] { opacity: .55; cursor: not-allowed; }

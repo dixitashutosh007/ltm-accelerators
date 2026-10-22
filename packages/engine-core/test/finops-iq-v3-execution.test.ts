@@ -168,7 +168,7 @@ describe('Playbook selection rules (fixture catalogue)', () => {
     const alloc = r.findings.find(f => f.capability === 'ALLOCATION')!;
     r.technicalPlan = technicalPlan(r.findings, { ...fixture, technicalControls: [] });
     const rows = finopsIqBacklog(r).rows.filter(row => row[0] === alloc.id && row[BACKLOG_HEADER.indexOf('Platform level')] === 'platform');
-    expect(rows.map(row => row[BACKLOG_HEADER.indexOf('Platform')]).sort()).toEqual(['aws', 'azure']);
+    expect(rows.map(row => row[BACKLOG_HEADER.indexOf('Platform')]).sort()).toEqual(['AWS', 'Azure']); // names, never raw keys (M7 D6)
     expect(rows[0][BACKLOG_HEADER.indexOf('Effort band')]).toBe('M');
   });
 });

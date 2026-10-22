@@ -14,7 +14,7 @@ import valueRules from './value-rules.json' with { type: 'json' };
 import { howLtmCanHelp, technicalPlan, PLAYBOOK, OFFERINGS, type HelpItem, type TechnicalPlan } from './execution';
 import { buildValueModel, findingValue, inputInfo, OF_WHICH_ROWS, VALUE_MODEL_VERSION, type Figure, type ValueBlock, type ValueModelOutput } from './value-model';
 
-export const ENGINE_VERSION = '3.6.0';
+export const ENGINE_VERSION = '3.6.1';
 export { VALUE_MODEL_VERSION };
 
 export type Mode = 'executive' | 'workshop';
@@ -611,7 +611,9 @@ function buildFindings(input: FinOpsIqV3Input, tier: number, profile: Capability
     findings.push({
       id: d.id, type: 'decision', capability: d.capability, scopes: [], unconfirmed, notAnsweredCount: mp01 === 'not_answered' ? 1 : 0, severity,
       severityTrace: up ? ['decision_rule', 'foundation_uplift'] : ['decision_rule'],
-      title: d.title, businessConsequence: `${fill(text.today, { answers: describeAnswer(q, state) })} ${d.consequence}`,
+      title: d.title,
+      // The owner question and the capability rating can disagree (M7 CIO challenge D1): say so rather than leave it unexplained.
+      businessConsequence: `${fill(text.today, { answers: describeAnswer(q, state) })} ${d.consequence}${profile.some(p => p.capability === d.capability && p.gap !== null && p.gap < 1 && p.target.level !== null) ? ` ${d.consequenceWhenCapabilityMet}` : ''}`,
       decisionOrAction: unconfirmed ? d.actionUnconfirmed : d.action,
       ownerRole: d.ownerRole, ownerLabel: d.ownerRole,
       start: { month: 0, label: '' }, targetDuration: { months: 0, label: '' },

@@ -14,7 +14,7 @@ const printer = new PdfPrinter({
   Roboto: { normal: font('Roboto-Regular.ttf'), bold: font('Roboto-Medium.ttf'), italics: font('Roboto-Italic.ttf'), bolditalics: font('Roboto-MediumItalic.ttf') }
 });
 
-const INK = '#141414', MUTED = '#4B5563', RED = '#E5412F', LINE = '#D1D5DB', FILL = '#F3F4F6', AMBER_BG = '#FDF6EB', BLUE_BG = '#EEF7FA';
+const INK = '#141414', MUTED = '#4B5563', RED = '#D33826', LINE = '#D1D5DB', FILL = '#F3F4F6', AMBER_BG = '#FDF6EB', BLUE_BG = '#EEF7FA';
 
 const run = (segs: Seg[]): Content[] => segs.map(s => (typeof s === 'string' ? { text: s } : { text: s.text, bold: s.strong || undefined, italics: s.italic || undefined }));
 
@@ -23,7 +23,7 @@ function block(b: Block): Content {
     case 'paragraph':
       return { text: run(b.segs), style: b.style === 'lead' ? 'lead' : b.style === 'small' || b.style === 'note' ? 'small' : 'body', ...(b.style === 'note' ? { color: MUTED } : {}) };
     case 'subheading':
-      return { text: b.text, style: 'h3' };
+      return { text: b.text, style: 'h3', headlineLevel: 2 };
     case 'list':
       return { ul: b.items.map(i => ({ text: run(i) })), style: b.small ? 'small' : 'body', margin: [0, 0, 0, 8] };
     case 'callout':
@@ -42,20 +42,45 @@ function block(b: Block): Content {
         },
         layout: { hLineColor: () => LINE, vLineColor: () => LINE }, margin: [0, 2, 0, 10]
       };
-    case 'table': {
-      const head: TableCell[] = b.head.map(h => ({ text: h, style: 'th' }));
-      const rows: TableCell[][] = b.rows.map(r => r.map(c => ({ text: run(c) })));
-      return {
-        table: { headerRows: 1, widths: b.widths ?? b.head.map(() => '*'), body: [head, ...rows], dontBreakRows: true },
-        layout: {
-          fillColor: (i: number) => (i === 0 ? FILL : null), hLineColor: () => LINE, vLineWidth: () => 0,
-          hLineWidth: (i: number, node: any) => (i === 0 || i === 1 || i === node.table.body.length ? 0.8 : 0.4),
-          paddingTop: () => 3, paddingBottom: () => 3, paddingLeft: () => 4, paddingRight: () => 4
-        },
-        style: b.small ? 'tableSmall' : 'table', margin: [0, 2, 0, 10]
-      };
-    }
+    case 'table':
+      return table(b);
   }
+}
+
+/**
+ * A table keeps its header with the first row and repeats it on each page. A subheading just before it becomes its
+ * first header row (`title`), so the heading can never be left at the foot of a page above the table (M7 D7).
+ */
+function table(b: Extract<Block, { kind: 'table' }>, title?: string): Content {
+  const t = title ? 1 : 0;
+  const head: TableCell[] = b.head.map(h => ({ text: h, style: 'th' }));
+  const rows: TableCell[][] = b.rows.map(r => r.map(c => ({ text: run(c) })));
+  const heading: TableCell[][] = title ? [[{ text: title, style: 'h3', colSpan: b.head.length, margin: [-4, 0, 0, 0] }, ...b.head.slice(1).map(() => ({}))]] : [];
+  return {
+    table: { headerRows: 1 + t, keepWithHeaderRows: 1, widths: b.widths ?? b.head.map(() => '*'), body: [...heading, head, ...rows], dontBreakRows: true },
+    layout: {
+      fillColor: (i: number) => (i === t ? FILL : null), hLineColor: () => LINE, vLineWidth: () => 0,
+      hLineWidth: (i: number, node: any) => (i < t ? 0 : i === t || i === t + 1 || i === node.table.body.length ? 0.8 : 0.4),
+      paddingTop: () => 3, paddingBottom: () => 3, paddingLeft: () => 4, paddingRight: () => 4
+    },
+    style: b.small ? 'tableSmall' : 'table', margin: [0, 2, 0, 10]
+  };
+}
+
+/** headlineLevel marks headings (1 section, 2 subheading); RUNNING marks the page header and footer text. */
+const RUNNING = 9;
+const BODY_BOTTOM = 842 - 56;
+
+/**
+ * A heading never ends a page (M7 CIO challenge D7): it moves to the next page when no body text follows it on this
+ * page, or when it starts in the last inch, where pdfmake may still report a table row that it then moves on (rows
+ * are kept whole and with the table header). Only text nodes count; the running header and footer do not.
+ */
+function keepHeadingsWithContent(node: any, following: any[]): boolean {
+  if (node.headlineLevel !== 1 && node.headlineLevel !== 2) return false;
+  const page = node.startPosition?.pageNumber;
+  const body = following.some(f => f.text !== undefined && f.headlineLevel === undefined && f.style !== 'th' && f.startPosition?.pageNumber === page);
+  return !body || node.startPosition.top > BODY_BOTTOM - 72;
 }
 
 export function definition(doc: ReportDocument): TDocumentDefinitions {
@@ -64,9 +89,14 @@ export function definition(doc: ReportDocument): TDocumentDefinitions {
   const body: Content[] = [];
   for (const s of doc.sections) {
     const label = s.appendix ? `Appendix ${String.fromCharCode(65 + a++)}. ${s.title}` : `${++n}. ${s.title}`;
-    body.push({ text: label, style: 'h2', pageBreak: s.appendix ? 'before' : undefined, id: s.id, tocItem: true });
+    body.push({ text: label, style: 'h2', pageBreak: s.appendix ? 'before' : undefined, id: s.id, tocItem: true, headlineLevel: 1 });
     body.push({ canvas: [{ type: 'line', x1: 0, y1: 0, x2: 495, y2: 0, lineWidth: 1, lineColor: RED }], margin: [0, 0, 0, 8] });
-    for (const b of s.blocks) body.push(block(b));
+    s.blocks.forEach((b, i) => {
+      const next = s.blocks[i + 1];
+      if (b.kind === 'subheading' && next?.kind === 'table') return;
+      const prev = s.blocks[i - 1];
+      body.push(b.kind === 'table' && prev?.kind === 'subheading' ? table(b, prev.text) : block(b));
+    });
   }
   const cover: Content[] = [
     { text: m.platform.toUpperCase(), style: 'coverBadge', margin: [0, 120, 0, 18] },
@@ -94,14 +124,15 @@ export function definition(doc: ReportDocument): TDocumentDefinitions {
     info: { title: `${m.product}: ${m.title} · ${m.client}`, author: m.preparedBy, subject: m.subtitle, creator: m.platform, producer: m.platform },
     defaultStyle: { font: 'Roboto', fontSize: 9.5, color: INK, lineHeight: 1.25 },
     header: (page: number) => (page === 1 ? null : {
-      columns: [{ text: m.platform, color: MUTED }, { text: `${m.product} · ${m.client}`, alignment: 'right', color: MUTED }],
+      columns: [{ text: m.platform, color: MUTED, headlineLevel: RUNNING }, { text: `${m.product} · ${m.client}`, alignment: 'right', color: MUTED, headlineLevel: RUNNING }],
       margin: [50, 24, 50, 0], fontSize: 7.5
     }),
     footer: (page: number, pages: number) => ({
-      columns: [{ text: m.footer, color: MUTED }, { text: `Page ${page} of ${pages}`, alignment: 'right', color: MUTED }],
+      columns: [{ text: m.footer, color: MUTED, headlineLevel: RUNNING }, { text: `Page ${page} of ${pages}`, alignment: 'right', color: MUTED, headlineLevel: RUNNING }],
       margin: [50, 18, 50, 0], fontSize: 7.5
     }),
     content: [...cover, { text: '', pageBreak: 'after' }, ...body],
+    pageBreakBefore: keepHeadingsWithContent,
     styles: {
       body: { margin: [0, 0, 0, 6] },
       lead: { fontSize: 11, margin: [0, 0, 0, 8] },
