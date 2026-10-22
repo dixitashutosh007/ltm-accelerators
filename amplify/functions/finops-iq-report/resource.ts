@@ -5,6 +5,8 @@ import { ALLOWED_ORIGINS } from '../../config';
 export const finopsIqReportFunction = defineFunction({
   name: 'finops-iq-report',
   entry: './handler.ts',
+  // Retention (M6): FinOps IQ logs are kept for one year, as the API access logs.
+  logging: { retention: '1 year' },
   timeoutSeconds: 30,
   memoryMB: 1024,
   environment: {

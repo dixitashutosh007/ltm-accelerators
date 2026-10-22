@@ -154,7 +154,27 @@
       h('tbody', null, items.map(function (a) {
         return h('tr', null, h('td', null, a.clientName), h('td', null, MODE_INFO[a.mode] ? MODE_INFO[a.mode].label : a.mode),
           h('td', null, statusLabel(a.status)), h('td', null, when(a.updatedAt || a.startedAt)),
-          h('td', null, h('button', { class: 'btn small', type: 'button', 'aria-label': 'Open ' + a.clientName, onclick: function () { openAssessment(a.assessmentId); } }, 'Open'))); })))));
+          h('td', { class: 'actions' }, h('button', { class: 'btn small', type: 'button', 'aria-label': 'Open ' + a.clientName, onclick: function () { openAssessment(a.assessmentId); } }, 'Open'),
+            deleteControl(a))); })))));
+  }
+
+  /** Deletion at the client's request (M6): permanent, so it asks for a second click in place. */
+  function deleteControl(a) {
+    var cell = h('span', { class: 'delete' });
+    function ask() {
+      clear(cell);
+      append(cell, [h('span', { class: 'small', role: 'status' }, 'Delete permanently? '),
+        h('button', { class: 'btn small danger', type: 'button', 'aria-label': 'Confirm delete ' + a.clientName, onclick: confirm }, 'Delete'),
+        h('button', { class: 'btn small', type: 'button', onclick: reset }, 'Cancel')]);
+    }
+    function reset() { clear(cell); cell.appendChild(h('button', { class: 'btn small', type: 'button', 'aria-label': 'Delete ' + a.clientName, onclick: ask }, 'Delete')); }
+    async function confirm() {
+      var res = await call(ASSESSMENT, { method: 'POST', body: JSON.stringify({ action: 'delete', assessmentId: a.assessmentId }) });
+      if (res.status !== 200) { clear(cell); cell.appendChild(h('span', { class: 'small text-error', role: 'alert' }, 'Not deleted. Please try again.')); return; }
+      render();
+    }
+    reset();
+    return cell;
   }
   function field(label, control, hint) {
     var id = control.id;

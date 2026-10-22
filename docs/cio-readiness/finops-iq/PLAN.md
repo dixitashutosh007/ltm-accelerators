@@ -123,6 +123,13 @@ Commits land on a local branch and are pushed when the owner asks.
 - **D11, dependencies.** The overlap rule is kept and stated (dependent work starts at the predecessor's first milestone; findings say "After the first milestone of"). Moving dependent starts to completion would delay lever ramps and change approved value figures. The commitment workstream now says "Plan purchases alongside the scheduling, rightsizing and Spot changes, and buy in tranches as each change lands" (lead re-test R4, second option).
 - **Gate tests** (`finops-iq-v3-execution.test.ts`): F9 every finding maps to an offering; scope never in the result, client view or client edition; F8 no action without its finding, control and platform, no gap for a technical control; selection and validation rules on a fixture catalogue. The check that every control F8 lists is a technical control now runs and passes.
 
+**M6 status (22 Oct 2026): built; transfer mechanism and counsel review open.** Details in `design/M6-data-protection.md`.
+- **Data inventory** of FinOps IQ v3: the assessment record (client name and sector, answers and spend, result, consultant notes, consultant email), access and Lambda logs, and what is not stored (scoring requests, report files). The current pages' own flows (browser storage, S3 archive) retire at M8.
+- **Retention (owner decision 22 Oct 2026: 24 months).** Every write sets `expiresAt` 24 months on; DynamoDB time to live deletes the record; the stores treat an expired record as deleted until then. Deletion at the client's request: a `delete` action (respondent or Admin, any status) and a Delete button with a second click to confirm. FinOps IQ Lambda logs now kept one year (previously forever). Tested in the handler specs, the backend synth check and the journey test. Records saved before M6 gain `expiresAt` on their next write; a one-off backfill is due before M7.
+- **Notice** now states the retention period and deletion on request, on the start screen and in the report; still draft wording pending owner and counsel approval.
+- **Transfer basis** drafted (EU SCCs; UK IDTA or Addendum, with a transfer risk assessment). LTM to confirm which instrument is in place; the notice names no mechanism until then.
+- **Counsel pack** ready (seven items: notice, disclaimer, CC BY attribution, trademark wording, value labels, SOW draft, retention); the comments register is empty until counsel replies.
+
 ---
 
 ## F0: Containment

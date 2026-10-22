@@ -83,6 +83,12 @@ describe('FinOps IQ report API', () => {
     expect(json(res).error).toBe('assessment_not_completed');
   });
 
+  it('gives no report for an assessment past its retention date (M6)', async () => {
+    await saveAs('completed');
+    await store.update({ assessmentId: ID, expiresAt: Math.floor(Date.now() / 1000) - 1 });
+    expect((await call(event('GET', { assessmentId: ID }))).statusCode).toBe(404);
+  });
+
   it('checks the request: assessment ID, format and method', async () => {
     expect((await call(event('GET', {}))).statusCode).toBe(400);
     expect((await call(event('GET', { assessmentId: ID, format: 'docx' }))).statusCode).toBe(400);

@@ -49,6 +49,12 @@ export const backend = defineBackend({
 const apiStack = backend.createStack('AcceleratorsApiStack');
 
 /* ------------------------------------------------------------------
+ * Retention (FinOps IQ M6): DynamoDB time to live deletes a saved
+ * assessment once expiresAt passes, 24 months after its last change.
+ * ------------------------------------------------------------------ */
+backend.data.resources.cfnResources.amplifyDynamoDbTables['FinOpsIqAssessment'].timeToLiveAttribute = { attributeName: 'expiresAt', enabled: true };
+
+/* ------------------------------------------------------------------
  * Reports service permissions: the existing reports bucket and the
  * Cognito admin calls used by the Access Control screen.
  * ------------------------------------------------------------------ */

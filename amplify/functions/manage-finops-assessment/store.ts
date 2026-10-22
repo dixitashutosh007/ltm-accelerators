@@ -18,6 +18,8 @@ export interface FinOpsAssessmentRecord {
   startedAt: string;
   completedAt?: string | null;
   archivedAt?: string | null;
+  /** Epoch seconds after which DynamoDB time to live deletes the record (retention, M6). */
+  expiresAt?: number | null;
   createdAt?: string;
   updatedAt?: string;
 }
@@ -28,11 +30,20 @@ export interface FinOpsAssessmentStore {
   listByRespondent(email: string): Promise<FinOpsAssessmentRecord[]>;
   create(record: FinOpsAssessmentRecord): Promise<FinOpsAssessmentRecord>;
   update(record: Partial<FinOpsAssessmentRecord> & { assessmentId: string }): Promise<FinOpsAssessmentRecord>;
+  /** Permanent deletion, at the client's request (M6). */
+  delete(assessmentId: string): Promise<void>;
 }
 
 /** The list view leaves out the request, notes and result, which can be large. */
-export const SUMMARY_FIELDS = 'assessmentId clientName clientSector respondentEmail status mode engineVersion startedAt completedAt archivedAt createdAt updatedAt';
+export const SUMMARY_FIELDS = 'assessmentId clientName clientSector respondentEmail status mode engineVersion startedAt completedAt archivedAt expiresAt createdAt updatedAt';
 export const FIELDS = `${SUMMARY_FIELDS} requestJson consultantNotes resultJson`;
+
+/**
+ * DynamoDB time to live deletes an expired record within days, not at once, and reads return it until then: the stores
+ * treat a record past expiresAt as already deleted, so retention holds from the day it falls due.
+ */
+export const isLive = (r: FinOpsAssessmentRecord | null | undefined, now = Date.now()): r is FinOpsAssessmentRecord =>
+  !!r && (r.expiresAt == null || r.expiresAt * 1000 > now);
 
 // AppSync list queries filter after reading a page: follow nextToken. MAX_PAGES bounds the work per request.
 const PAGE_SIZE = 200, MAX_PAGES = 50;
@@ -40,7 +51,7 @@ const PAGE_SIZE = 200, MAX_PAGES = 50;
 export const appSyncStore: FinOpsAssessmentStore = {
   async get(assessmentId) {
     const data = await graphql(`query GetFinOpsIqAssessment($assessmentId: String!) { getFinOpsIqAssessment(assessmentId:$assessmentId) { ${FIELDS} } }`, { assessmentId });
-    return data.getFinOpsIqAssessment ?? null;
+    return isLive(data.getFinOpsIqAssessment) ? data.getFinOpsIqAssessment : null;
   },
   async listByRespondent(email) {
     const items: FinOpsAssessmentRecord[] = [];
@@ -53,7 +64,7 @@ export const appSyncStore: FinOpsAssessmentStore = {
       nextToken = data.listFinOpsIqAssessments.nextToken || null;
       if (!nextToken) break;
     }
-    return newestFirst(items);
+    return newestFirst(items.filter(r => isLive(r)));
   },
   async create(record) {
     const data = await graphql(`mutation CreateFinOpsIqAssessment($input: CreateFinOpsIqAssessmentInput!) { createFinOpsIqAssessment(input:$input) { ${FIELDS} } }`, { input: record });
@@ -62,6 +73,9 @@ export const appSyncStore: FinOpsAssessmentStore = {
   async update(record) {
     const data = await graphql(`mutation UpdateFinOpsIqAssessment($input: UpdateFinOpsIqAssessmentInput!) { updateFinOpsIqAssessment(input:$input) { ${FIELDS} } }`, { input: record });
     return data.updateFinOpsIqAssessment;
+  },
+  async delete(assessmentId) {
+    await graphql(`mutation DeleteFinOpsIqAssessment($input: DeleteFinOpsIqAssessmentInput!) { deleteFinOpsIqAssessment(input:$input) { assessmentId } }`, { input: { assessmentId } });
   }
 };
 
@@ -74,8 +88,8 @@ export function memoryStore(persist?: { load: () => FinOpsAssessmentRecord[]; sa
   const save = () => persist?.save([...items.values()]);
   const copy = <T>(v: T): T => JSON.parse(JSON.stringify(v));
   return {
-    async get(id) { const r = items.get(id); return r ? copy(r) : null; },
-    async listByRespondent(email) { return newestFirst([...items.values()].filter(r => r.respondentEmail === email)).map(copy); },
+    async get(id) { const r = items.get(id); return isLive(r) ? copy(r) : null; },
+    async listByRespondent(email) { return newestFirst([...items.values()].filter(r => r.respondentEmail === email && isLive(r))).map(copy); },
     async create(record) {
       if (items.has(record.assessmentId)) throw new Error('conditional check failed: record exists');
       const now = new Date().toISOString();
@@ -87,6 +101,10 @@ export function memoryStore(persist?: { load: () => FinOpsAssessmentRecord[]; sa
       if (!existing) throw new Error('conditional check failed: no record');
       const r = { ...existing, ...record, updatedAt: new Date().toISOString() };
       items.set(r.assessmentId, r); save(); return copy(r);
+    },
+    async delete(id) {
+      if (!items.delete(id)) throw new Error('conditional check failed: no record');
+      save();
     }
   };
 }

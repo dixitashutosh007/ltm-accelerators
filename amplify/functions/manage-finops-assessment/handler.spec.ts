@@ -162,6 +162,48 @@ describe('FinOps IQ assessment API: ownership', () => {
   });
 });
 
+describe('FinOps IQ assessment API: retention and deletion (M6)', () => {
+  const OTHER = { email: 'someone.else@example.com', sub: 'sub-2' };
+  const ADMIN = { email: 'admin@example.com', sub: 'sub-9', 'cognito:groups': ['Admin'] };
+  const DUE = Date.parse('2028-10-20T10:00:00Z') / 1000;
+  const del = (assessmentId: unknown, claims?: Record<string, unknown>) => call(event('POST', { body: { action: 'delete', assessmentId }, claims }));
+
+  it('every write (save, complete, archive) sets expiresAt 24 months after the change', async () => {
+    await save({ status: 'draft' });
+    expect((await store.get('FIQ-0001-test'))!.expiresAt).toBe(DUE);
+    await store.update({ assessmentId: 'FIQ-0001-test', expiresAt: 1 + Date.now() / 1000 + 86400 });
+    await save({ status: 'completed' }, 'complete');
+    expect((await store.get('FIQ-0001-test'))!.expiresAt).toBe(DUE);
+    await store.update({ assessmentId: 'FIQ-0001-test', expiresAt: 1 + Date.now() / 1000 + 86400 });
+    await save({ status: 'archived' }, 'archive');
+    expect((await store.get('FIQ-0001-test'))!.expiresAt).toBe(DUE);
+  });
+
+  it('a record past expiresAt is treated as deleted before time to live removes it: not listed, not found', async () => {
+    await save({ status: 'completed' }, 'complete');
+    await store.update({ assessmentId: 'FIQ-0001-test', expiresAt: Math.floor(Date.now() / 1000) - 1 });
+    expect((await call(event('GET'))).body.data).toEqual([]);
+    expect((await call(event('GET', { query: { assessmentId: 'FIQ-0001-test' } }))).status).toBe(404);
+  });
+
+  it('the respondent can delete an assessment in any status, permanently', async () => {
+    await save({ status: 'completed' }, 'complete');
+    const res = await del('FIQ-0001-test');
+    expect(res).toMatchObject({ status: 200, body: { ok: true, data: { assessmentId: 'FIQ-0001-test', deleted: true } } });
+    expect((await call(event('GET', { query: { assessmentId: 'FIQ-0001-test' } }))).status).toBe(404);
+    expect((await del('FIQ-0001-test')).status).toBe(404);
+  });
+
+  it('only the respondent or an Admin can delete; the request names the assessment', async () => {
+    await save();
+    expect((await del('FIQ-0001-test', OTHER)).body.error).toBe('assessment_access_denied');
+    expect((await store.get('FIQ-0001-test'))).not.toBeNull();
+    expect((await del(undefined)).status).toBe(400);
+    expect((await del('FIQ-0001-test', ADMIN)).status).toBe(200);
+    expect(await store.get('FIQ-0001-test')).toBeNull();
+  });
+});
+
 describe('FinOps IQ assessment API: errors', () => {
   it('a store failure returns a generic 500 and keeps the details in the log', async () => {
     handler = createHandler({ ...memoryStore(), get: async () => { throw new Error('DynamoDB:ConditionalCheckFailed table=FinOpsIqAssessment-internal'); } });

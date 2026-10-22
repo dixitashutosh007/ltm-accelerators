@@ -129,6 +129,17 @@ if (legacyApi) {
   }
 }
 
+// FinOps IQ retention (M6): saved assessments expire by DynamoDB time to live on expiresAt; FinOps IQ Lambda logs
+// are kept for one year, not forever.
+const finopsTable = resources.find(r => r.Type === 'Custom::AmplifyDynamoDBTable' && /^FinOpsIqAssessment/.test(r.Properties?.tableName?.['Fn::Join']?.[1]?.[0] ?? r.Properties?.tableName ?? ''));
+check(!!finopsTable, 'FinOpsIqAssessment table not found');
+const ttl = finopsTable?.Properties.timeToLiveSpecification || finopsTable?.Properties.TimeToLiveSpecification;
+check(ttl?.attributeName === 'expiresAt' && ttl?.enabled === true || ttl?.AttributeName === 'expiresAt' && ttl?.Enabled === true, `FinOpsIqAssessment time to live is not enabled on expiresAt: ${JSON.stringify(ttl)}`);
+for (const fn of ['evaluate-finops-iq', 'manage-finops-assessment', 'finops-iq-report']) {
+  const groups = ofType('AWS::Logs::LogGroup').filter(g => JSON.stringify(g.Properties.LogGroupName ?? '').includes(fn) || g.id.toLowerCase().includes(fn.replace(/-/g, '')));
+  check(groups.length > 0 && groups.every(g => g.Properties.RetentionInDays === 365), `${fn} log group must keep logs for one year (found ${groups.map(g => g.Properties.RetentionInDays).join(', ') || 'none'})`);
+}
+
 for (const policy of ofType('AWS::IAM::Policy')) {
   for (const st of policy.Properties.PolicyDocument?.Statement || []) {
     const res = [].concat(st.Resource || []);

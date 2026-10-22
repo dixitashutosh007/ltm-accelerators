@@ -167,7 +167,9 @@ const schema = a.schema({
       resultJson: a.string(),
       startedAt: a.datetime().required(),
       completedAt: a.datetime(),
-      archivedAt: a.datetime()
+      archivedAt: a.datetime(),
+      // Retention (M6): epoch seconds 24 months after the last change; DynamoDB time to live deletes the record then.
+      expiresAt: a.integer()
     })
     .identifier(['assessmentId'])
     .authorization(allow => [

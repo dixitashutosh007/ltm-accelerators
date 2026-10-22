@@ -4,8 +4,10 @@
  *   GET  /api/finops-iq/assessment?assessmentId=...     one assessment, with its request and, once completed, result
  *        &view=client                                   client mode: no consultant notes, result through clientView()
  *   POST /api/finops-iq/assessment  { action, snapshot } save | complete | archive
+ *   POST /api/finops-iq/assessment  { action: 'delete', assessmentId }   permanent deletion at the client's request
  * A record belongs to its respondent (Admins may act on any). The stored result is computed here on completion,
- * never taken from the browser. A completed assessment is immutable; it can only be archived.
+ * never taken from the browser. A completed assessment is immutable; it can only be archived or deleted.
+ * Every write sets expiresAt, so DynamoDB deletes a record 24 months after its last change (retention, M6).
  */
 import type { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
 import { randomUUID } from 'node:crypto';
@@ -14,9 +16,10 @@ import { authorized, canAccess, isAdmin, parseBody, userEmail } from '../_shared
 import { canTransition, evaluateSnapshot, parseSnapshot, snapshotMode, type FinOpsAssessmentStatus } from '../../../packages/engine-core/src/accelerators/finops-iq/v3/assessment';
 import { clientView } from '../../../packages/engine-core/src/accelerators/finops-iq/v3/client-view';
 import { ENGINE_VERSION } from '../../../packages/engine-core/src/accelerators/finops-iq/v3/evaluate';
+import { expiresAt } from '../../../packages/engine-core/src/accelerators/finops-iq/v3/retention';
 import { appSyncStore, type FinOpsAssessmentRecord, type FinOpsAssessmentStore } from './store';
 
-const ACTIONS = new Set(['save', 'complete', 'archive']);
+const ACTIONS = new Set(['save', 'complete', 'archive', 'delete']);
 
 /** Stored fields to the page's view: JSON fields parsed. Client mode drops the notes and filters the result. */
 function view(r: FinOpsAssessmentRecord, client = false) {
@@ -62,6 +65,17 @@ export function createHandler(store: FinOpsAssessmentStore, now: () => Date = ()
       try { body = parseBody(event); } catch { return respond(400, { ok: false, error: 'Request body is not valid JSON.' }); }
       const action = String(body?.action || 'save');
       if (!ACTIONS.has(action)) return respond(400, { ok: false, error: `action: expected one of ${[...ACTIONS].join(', ')}` });
+      // Deletion is permanent and allowed in any status, to the respondent or an Admin.
+      if (action === 'delete') {
+        const id = body?.assessmentId;
+        if (typeof id !== 'string' || !id) return respond(400, { ok: false, error: 'delete action requires assessmentId.' });
+        const item = await store.get(id);
+        if (!item) return respond(404, { ok: false, error: 'assessment_not_found' });
+        if (!canAccess(event, item.respondentEmail)) return respond(403, { ok: false, error: 'assessment_access_denied' });
+        await store.delete(id);
+        console.info('[ManageFinOpsAssessment] deleted', { requestId, assessmentId: id });
+        return respond(200, { ok: true, data: { assessmentId: id, deleted: true } });
+      }
       const expected: FinOpsAssessmentStatus | undefined = action === 'complete' ? 'completed' : action === 'archive' ? 'archived' : undefined;
       if (expected && body?.snapshot?.status !== expected) return respond(400, { ok: false, error: `${action} action requires ${expected} status.` });
       if (action === 'save' && ['completed', 'archived'].includes(body?.snapshot?.status)) return respond(400, { ok: false, error: 'Use the complete or archive action.' });
@@ -74,7 +88,8 @@ export function createHandler(store: FinOpsAssessmentStore, now: () => Date = ()
       if (action === 'archive') {
         if (!existing) return respond(404, { ok: false, error: 'assessment_not_found' });
         if (!canTransition(existing.status as FinOpsAssessmentStatus, 'archived')) return respond(409, { ok: false, error: 'assessment_immutable' });
-        const data = await store.update({ assessmentId: existing.assessmentId, status: 'archived', archivedAt: now().toISOString() });
+        const at = now();
+        const data = await store.update({ assessmentId: existing.assessmentId, status: 'archived', archivedAt: at.toISOString(), expiresAt: expiresAt(at) });
         return respond(200, { ok: true, data: view(data) });
       }
 
@@ -101,7 +116,8 @@ export function createHandler(store: FinOpsAssessmentStore, now: () => Date = ()
         consultantNotes: s.consultantNotes ?? null,
         resultJson: result ? JSON.stringify(result) : null,
         startedAt: existing?.startedAt ?? s.startedAt,
-        completedAt: completedAt?.toISOString() ?? null
+        completedAt: completedAt?.toISOString() ?? null,
+        expiresAt: expiresAt(now())
       };
       const data = existing ? await store.update(record) : await store.create(record);
       return respond(200, { ok: true, data: view(data) });

@@ -10,6 +10,7 @@ import capabilityModel from '../registry/capabilities.json' with { type: 'json' 
 import register from '../../../claims/claims-register.json' with { type: 'json' };
 import { INSTRUMENTS, MARKETS, MIGRATION_STAGES, PROVIDERS, SCOPES, SECTORS } from './contract';
 import valueRules from './value-rules.json' with { type: 'json' };
+import { RETENTION_MONTHS } from './retention';
 
 const B: any = bank;
 const CLAIM = new Map<string, any>((register as any).claims.map((c: any) => [c.id, c]));
@@ -23,6 +24,10 @@ const MARKET_LABELS: Record<string, string> = { eu: 'European Union', uk: 'Unite
 /** Currencies offered first; any ISO 4217 code is accepted. */
 const CURRENCIES = ['USD', 'EUR', 'GBP', 'INR', 'AUD', 'SGD', 'JPY', 'CAD', 'CHF', 'AED', 'SEK', 'NOK', 'DKK', 'NZD', 'HKD'];
 
+/** The retention period in words: notices are plain text, which carries no digits in the report (area 13(a)). */
+const RETENTION_WORDS = ({ 12: 'one year', 24: 'two years', 36: 'three years' } as Record<number, string>)[RETENTION_MONTHS];
+if (!RETENTION_WORDS) throw new Error(`No wording for a retention period of ${RETENTION_MONTHS} months`);
+
 /**
  * Notices on the start screen and in the methodology panel. The attribution is the register's own statement; the
  * data notice is the validation report's recommended wording (section 7), adapted to v1 (no AI, no file upload).
@@ -31,7 +36,7 @@ const CURRENCIES = ['USD', 'EUR', 'GBP', 'INR', 'AUD', 'SGD', 'JPY', 'CAD', 'CHF
 export const NOTICES = {
   attribution: CLAIM.get('CLM-FIN-033').statement as string,
   disclaimer: 'FinOps IQ gives an indicative assessment from the answers and figures you provide. Value figures are an indicative range, not a savings commitment, and need validating against your billing data before any decision. Scoring constants are LTM heuristics unless a source is cited. This is not financial, accounting or legal advice.',
-  data: 'LTM hosts this assessment in Amazon Web Services, Mumbai region (India). If you are in the EU or UK, the information you enter is transferred to India, which does not have an EU adequacy decision or a UK data bridge. We collect your answers, your spend figures, your organisation\'s name and the consultant\'s email address to produce the report. This version uses no AI features.',
+  data: `LTM hosts this assessment in Amazon Web Services, Mumbai region (India). If you are in the EU or UK, the information you enter is transferred to India, which does not have an EU adequacy decision or a UK data bridge. We collect your answers, your spend figures, your organisation's name and the consultant's email address to produce the report. We keep each assessment for ${RETENTION_WORDS} after its last change and then delete it automatically; ask your consultant to delete it sooner. This version uses no AI features.`,
   status: 'Draft wording pending owner and counsel approval (execution phase M6).'
 };
 

@@ -251,3 +251,18 @@ test('workshop: OP-06 suggests the scheduled share, set only when the consultant
   expect(await page.evaluate(() => (window as any).FINOPS_IQ.state().facts.base)).toMatchObject({ nonProdScheduledShare: { exact: 0.5 }, nonProdScheduledShareSource: 'derived_from_OP-06' });
   await expect(q.getByText(/Derived from OP-06/)).toBeVisible();
 });
+
+test('retention (M6): the data notice states the retention period, and an assessment can be deleted after a second click', async ({ page }) => {
+  await start(page, 'executive', 'Delete Me Ltd');
+  await fillEstate(page, 'executive');
+  await expect(page.locator('#save-status')).toHaveText(/^Saved/, { timeout: 10_000 });
+  await page.getByRole('button', { name: 'All assessments' }).click();
+  await expect(page.getByRole('note').filter({ hasText: 'How your data is handled' })).toContainText('We keep each assessment for two years after its last change and then delete it automatically');
+  const row = page.getByRole('row', { name: /Delete Me Ltd/ });
+  await row.getByRole('button', { name: 'Delete Delete Me Ltd' }).click();
+  await row.getByRole('button', { name: 'Cancel' }).click();
+  await expect(row).toBeVisible();
+  await row.getByRole('button', { name: 'Delete Delete Me Ltd' }).click();
+  await row.getByRole('button', { name: 'Confirm delete Delete Me Ltd' }).click();
+  await expect(page.getByText('No saved assessments yet.')).toBeVisible();
+});
