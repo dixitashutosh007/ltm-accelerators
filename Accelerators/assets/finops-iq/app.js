@@ -133,7 +133,8 @@
         schema.enums.sectors.map(function (s) { return h('option', { value: s.value }, s.label); }))),
       h('fieldset', { class: 'field' }, h('legend', null, 'Mode'),
         h('div', { class: 'mode-choice' }, ['executive', 'workshop'].map(function (m, i) {
-          return h('label', null, h('input', { type: 'radio', name: 'mode', value: m, checked: i === 0 }),
+          var preset = new URLSearchParams(location.search).get('mode');  // the portal's FinOps Value Case tile opens ?mode=executive
+          return h('label', null, h('input', { type: 'radio', name: 'mode', value: m, checked: MODE_INFO[preset] ? m === preset : i === 0 }),
             h('strong', null, MODE_INFO[m].label + ' · ' + MODE_INFO[m].duration), h('br'), h('span', { class: 'small muted' }, MODE_INFO[m].text));
         }))),
       h('div', null, h('button', { class: 'btn primary', type: 'submit' }, 'Start assessment')));
@@ -945,7 +946,10 @@
     btn.disabled = true;
     status.textContent = format === 'pdf' ? 'Preparing the report…' : 'Preparing the backlog…';
     try {
-      var res = await API.fetch(REPORT + '?' + q.toString(), { method: 'GET' });
+      var request = API.fetch(REPORT + '?' + q.toString(), { method: 'GET' });
+      var res = format === 'pdf'
+        ? await working(['Reading the stored result', 'Laying out the LTM report', 'Adding the roadmap and platform actions', 'Adding methodology and sources'], request, 'Report ready')
+        : await request;
       if (res.status !== 200) {
         var err = await res.json().catch(function () { return {}; });
         status.textContent = err.message || 'The file could not be produced. Please try again.';
@@ -966,12 +970,56 @@
 
   async function complete() {
     clearTimeout(timers.save);
-    var data = await persist('complete');
+    var data = await working(['Scoring your answers on the server', 'Rating each capability against its target', 'Sizing the indicative value range', 'Building the roadmap and platform actions'],
+      persist('complete'), 'Result ready');
     if (data) { state.step = 'results'; render(); }
   }
   async function archive() { var data = await persist('archive'); if (data) render(); }
   function continueInWorkshop() {
     startNew(null, { mode: 'workshop', clientName: state.clientName, clientSector: state.clientSector, facts: state.facts, answers: state.answers });
+  }
+
+  /* ------------------------------ Working screen ----------------------------- */
+
+  /**
+   * The LTM working screen while the server scores the assessment or builds the report. The steps are what the
+   * server does; they advance on a timer, and the last one shows only when the request has returned. Shown for at
+   * least MIN_MS so it reads as a deliberate step, never longer than the request plus that. Returns the request's
+   * result (or rethrows its error).
+   */
+  var MIN_MS = 1600;
+  async function working(steps, promise, done) {
+    var started = Date.now();
+    var log = h('p', { class: 'working-step' }, steps[0]);
+    var bar = h('i');
+    var screen = h('div', { class: 'working', role: 'status', 'aria-live': 'polite' },
+      h('div', { class: 'working-glow', 'aria-hidden': 'true' }),
+      h('div', { class: 'working-card' },
+        h('div', { class: 'working-emblem', 'aria-hidden': 'true' }, h('span', { class: 'ring r1' }), h('span', { class: 'ring r2' }), h('span', { class: 'ring r3' }), h('span', { class: 'hex' })),
+        h('p', { class: 'working-org' }, h('strong', null, 'LTM'), ' Vantage · Responsible Advisory'),
+        h('p', { class: 'working-title' }, 'FinOps ', h('span', null, 'IQ')),
+        log,
+        h('div', { class: 'working-track', 'aria-hidden': 'true' }, bar)));
+    document.body.appendChild(screen);
+    document.getElementById('main').setAttribute('aria-busy', 'true');
+    var i = 0;
+    var show = function () { log.textContent = steps[i]; bar.style.width = Math.round(((i + 1) / (steps.length + 1)) * 100) + '%'; };
+    show();
+    var tick = setInterval(function () { if (i < steps.length - 1) { i++; show(); } }, MIN_MS / steps.length);
+    try {
+      var result = await promise;
+      var left = MIN_MS - (Date.now() - started);
+      if (left > 0) await new Promise(function (r) { setTimeout(r, left); });
+      clearInterval(tick);
+      log.textContent = done; bar.style.width = '100%';
+      await new Promise(function (r) { setTimeout(r, 250); });
+      return result;
+    } finally {
+      clearInterval(tick);
+      screen.classList.add('working-out');
+      setTimeout(function () { screen.remove(); }, 300);
+      document.getElementById('main').removeAttribute('aria-busy');
+    }
   }
 
   /* ---------------------------------- Start --------------------------------- */

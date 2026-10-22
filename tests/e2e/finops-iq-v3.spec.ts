@@ -138,6 +138,11 @@ test('executive: every question renders and can be answered; complete, then resu
   // The consultant set the internal rate at setup, so executive mode shows the value range (DESIGN.md Q4).
   await expect(page.getByText(/Expected \(net, per year at full run-rate\)/i)).toBeVisible();
   await page.getByRole('button', { name: 'Complete assessment' }).click();
+  // The LTM working screen shows the server's steps while it scores, then gives way to the result.
+  const screen = page.locator('.working');
+  await expect(screen).toHaveAttribute('role', 'status');
+  await expect(screen).toContainText(/Scoring your answers on the server|Rating each capability|Sizing the indicative value range|Building the roadmap/);
+  await expect(screen).toHaveCount(0, { timeout: 10_000 });
   await expect(page.getByText(/Completed/).first()).toBeVisible();
   await expect(page.getByRole('button', { name: 'Continue in workshop mode' })).toBeVisible();
 
@@ -221,6 +226,13 @@ test('usable at 360px: no horizontal scroll on the start screen, a question step
   await page.locator('nav.steps button', { hasText: 'Results' }).click();
   await expect(page.getByRole('heading', { name: 'Capability profile' })).toBeVisible();
   await noScroll('results');
+});
+
+test('portal tiles (M8 preview): ?mode=executive or ?mode=workshop preselects the mode on the start screen', async ({ page }) => {
+  for (const mode of ['executive', 'workshop']) {
+    await page.goto('/finops-iq-v3?mode=' + mode);
+    await expect(page.getByRole('radio', { name: new RegExp(mode === 'executive' ? '^Executive' : '^Workshop') })).toBeChecked();
+  }
 });
 
 test('methodology (M6): the framework attribution links the framework, the FinOps Foundation and the CC BY licence', async ({ page }) => {
