@@ -1,0 +1,290 @@
+/**
+ * FinOps IQ report (execution phase M4; plan F7, WS-S4): every number in the PDF document resolves to the engine
+ * result, or is recomputed from it when the report derives it (area 13(a)); screen = PDF = backlog = engine; the
+ * client edition carries nothing consultant-only; the roadmap places every finding; the backlog CSV is safe to open.
+ * Runs on the nine reference scenarios (docs/cio-readiness/finops-iq/design/reference-scenarios.json), both editions.
+ */
+import { describe, it, expect } from 'vitest';
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
+import { createRequire } from 'node:module';
+import { evaluateFinOpsIqV3, type AnswerLevel, type FinOpsIqV3Input, type FinOpsIqV3Result } from '../src/accelerators/finops-iq/v3/evaluate';
+import { clientView } from '../src/accelerators/finops-iq/v3/client-view';
+import {
+  BACKLOG_HEADER, effortBand, findingEffort, finopsIqBacklog, finopsIqReport, finopsIqRoadmap, finopsIqSensitivity, resolveTraceField
+} from '../src/accelerators/finops-iq/v3/report';
+import { format, walkSegments, type ReportDocument, type Seg, type Trace } from '../src/report/model';
+import { cell, toCsv } from '../src/report/csv';
+import { renderPdf } from '../src/report/pdf';
+import register from '../src/claims/claims-register.json' with { type: 'json' };
+import assumptions from '../src/accelerators/finops-iq/registry/assumptions.json' with { type: 'json' };
+import workstreams from '../src/accelerators/finops-iq/registry/workstreams.json' with { type: 'json' };
+
+const require = createRequire(import.meta.url);
+const { BANNED } = require('../../../scripts/check-claims.cjs');
+const SCENARIOS: any[] = JSON.parse(readFileSync(join(__dirname, '../../../docs/cio-readiness/finops-iq/design/reference-scenarios.json'), 'utf8')).scenarios;
+const CLAIM = new Map<string, any>((register as any).claims.map((c: any) => [c.id, c]));
+const ASM_IDS = new Set<string>((assumptions as any).assumptions.map((a: any) => a.id));
+const ASSESSED = '2026-10-14';
+
+const CODE: Record<string, AnswerLevel> = { R: 'run', W: 'walk', C: 'crawl', N: 'not_yet', U: 'unknown' };
+const REPORTS = ['cost_by_owner', 'forecast', 'anomaly_alerts', 'unit_cost_trend', 'commitment_coverage'];
+const UN08: Record<string, string[] | string> = { run: REPORTS, walk: REPORTS.slice(0, 3), crawl: REPORTS.slice(0, 1), not_yet: [], unknown: 'unknown' };
+function scenarioInput(s: any): FinOpsIqV3Input {
+  const answers = Object.fromEntries(Object.entries<string>(s.inputs.answers).map(([q, c]) => [q, q === 'UN-08' ? UN08[CODE[c]] : CODE[c]]));
+  return { mode: s.mode, facts: s.inputs.facts, answers, assessmentDate: ASSESSED };
+}
+
+const OPTS = { client: 'Example Client', preparedBy: 'LTM consultant', dataProvidedBy: 'Example Client' };
+const runs = SCENARIOS.flatMap(s => {
+  const input = scenarioInput(s);
+  const r = evaluateFinOpsIqV3(input);
+  return (['consultant', 'client'] as const).map(view => ({
+    label: `${s.id} ${view}`, view, input, r,
+    /** What the edition is built from: the client edition goes through clientView(). */
+    shown: view === 'client' ? (clientView(r) as unknown as FinOpsIqV3Result) : r,
+    doc: finopsIqReport(r, { ...OPTS, view, input })
+  }));
+});
+
+type TracedSeg = Exclude<Seg, string> & { trace: Trace };
+function traces(doc: ReportDocument): TracedSeg[] {
+  const out: TracedSeg[] = [];
+  walkSegments(doc, s => { if (typeof s !== 'string' && s.trace) out.push(s as TracedSeg); });
+  return out;
+}
+
+/** The value a traced number must have: read from the engine, or recomputed as the report says it derived it. */
+function expectedValue(t: Trace, x: (typeof runs)[number], byField: Map<string, number>): number | undefined {
+  const field = (f: string) => (f.startsWith('report:') ? byField.get(f) : resolveTraceField(x.shown, f));
+  const sensitivity = (fact: string) => finopsIqSensitivity(x.input, x.r).find(s => s.fact === fact);
+  const tested = /^report:sensitivity\[(.+)\]\.(lowInput|highInput)$/.exec(t.field);
+  if (tested) return sensitivity(tested[1])?.[tested[2] as 'lowInput' | 'highInput'];
+  if (t.derived?.op === 'sensitivity') {
+    const row = sensitivity(t.derived.of[0]);
+    return row ? (t.derived.detail as any).side === 'low' ? row.low : row.high : undefined;
+  }
+  if (!t.derived) return t.field.startsWith('report:') ? byField.get(t.field) : resolveTraceField(x.shown, t.field);
+  const vals = t.derived.of.map(field);
+  if (vals.some(v => v === undefined)) return undefined;
+  switch (t.derived.op) {
+    case 'sum': return vals.reduce((a, b) => a! + b!, 0);
+    case 'min': return Math.min(...(vals as number[]));
+    case 'max': return Math.max(...(vals as number[]));
+    case 'effort': {
+      const gaps = new Set<string>((t.derived.detail as any).gapFields);
+      return t.derived.of.reduce((sum, f, i) => sum + (gaps.has(f) ? vals[i]! * (t.derived!.detail as any).perLevel : vals[i]!), 0);
+    }
+    default: return undefined;
+  }
+}
+
+describe('FinOps IQ report: every number traces to the engine (area 13(a))', () => {
+  it.each(runs.map(x => [x.label, x]))('%s: each traced number equals its engine field or its stated derivation, and is shown with the shared formatter', (_, x) => {
+    const all = traces(x.doc);
+    expect(all.length).toBeGreaterThan(40);
+    const byField = new Map(all.map(s => [s.trace.field, s.trace.value]));
+    const bad: string[] = [];
+    for (const s of all) {
+      const want = expectedValue(s.trace, x, byField);
+      if (want === undefined || Math.abs(want - s.trace.value) > 1e-9) bad.push(`${s.trace.field}: shown ${s.trace.value}, engine ${want}`);
+      if (format(s.trace.value, s.trace.unit, x.r.value.currency) !== s.text) bad.push(`${s.trace.field}: text "${s.text}" is not the formatted value`);
+      for (const id of s.trace.claimIds) if (!CLAIM.has(id)) bad.push(`${s.trace.field}: unknown claim ${id}`);
+      for (const id of s.trace.assumptionIds) if (!ASM_IDS.has(id)) bad.push(`${s.trace.field}: unknown assumption ${id}`);
+    }
+    expect(bad).toEqual([]);
+  });
+
+  it.each(runs.map(x => [x.label, x]))('%s: no number appears in plain text; quoted text names claims or assumptions that exist', (_, x) => {
+    const bad: string[] = [];
+    walkSegments(x.doc, (s, section) => {
+      // Consultant checks quote engine probes and tier steps verbatim; that appendix is not in the client edition.
+      if (section.id === 'consultant') return;
+      if (typeof s === 'string') { if (/\d/.test(s)) bad.push(`${section.id}: "${s}"`); return; }
+      if (!s.trace && !s.ref && !s.cite && /\d/.test(s.text)) bad.push(`${section.id}: "${s.text}"`);
+      for (const id of s.cite ?? []) if (!CLAIM.has(id) && !ASM_IDS.has(id)) bad.push(`${section.id}: cites unknown ${id}`);
+    });
+    expect(bad).toEqual([]);
+  });
+
+  it('every engine figure the screen shows as a headline is in the report: net run-rate, first-year and 3-year net, each case', () => {
+    for (const x of runs.filter(y => y.r.value.moneyShown)) {
+      const fields = new Set(traces(x.doc).map(s => s.trace.field));
+      for (const k of ['conservative', 'expected', 'upper']) {
+        for (const f of ['netRunRate', 'netYear1', 'net3Year', 'grossRunRate']) expect(fields.has(`value.totals.${k}.${f}`), `${x.label} ${k}.${f}`).toBe(true);
+      }
+      for (const l of x.r.value.levers.filter(l => l.cases)) expect(fields.has(`value.levers[${l.id}].cases.expected.runRate`), `${x.label} ${l.id}`).toBe(true);
+    }
+  });
+
+  it('no banned phrase appears anywhere in the document', () => {
+    for (const x of runs) {
+      const text = JSON.stringify(x.doc);
+      for (const re of BANNED as RegExp[]) expect(re.test(text), `${x.label}: ${re}`).toBe(false);
+    }
+  });
+
+  it('a result without an assessment date (not completed) has no report', () => {
+    const { assessmentDate, ...rest } = runs[0].r;
+    expect(() => finopsIqReport(rest as FinOpsIqV3Result, { ...OPTS, view: 'consultant' })).toThrow(/assessment date/);
+  });
+});
+
+describe('FinOps IQ report: client edition', () => {
+  const clientRuns = runs.filter(x => x.view === 'client');
+  it.each(clientRuns.map(x => [x.label, x]))('%s: no consultant appendix, probe, tier trace or need modifier; sources are client-visible claims only', (_, x) => {
+    expect(x.doc.meta.view).toBe('client');
+    expect(x.doc.sections.map(s => s.id)).not.toContain('consultant');
+    const text = JSON.stringify(x.doc);
+    for (const c of x.r.conflicts) expect(text).not.toContain(c.probe);
+    for (const t of x.r.tier.trace) expect(text).not.toContain(t);
+    expect(text).not.toMatch(/needVerdict\.modifiers|severityTrace|valueBasis|value\.scoring|value\.bands/);
+    const sources = x.doc.sections.find(s => s.id === 'sources')!;
+    walkSegments({ meta: x.doc.meta, sections: [sources] }, s => {
+      if (typeof s !== 'string' && s.ref && /^CLM-/.test(s.text)) expect(CLAIM.get(s.text)?.clientVisible, s.text).not.toBe(false);
+    });
+  });
+
+  it('the consultant edition keeps the consultant checks', () => {
+    for (const x of runs.filter(y => y.view === 'consultant')) expect(x.doc.sections.at(-1)!.id).toBe('consultant');
+  });
+});
+
+describe('FinOps IQ report: roadmap (F7 item 3, area 13(e))', () => {
+  const consultant = runs.filter(x => x.view === 'consultant');
+  it.each(consultant.map(x => [x.label, x]))('%s: every finding sits in exactly one workstream; start, end, effort and value follow from its findings', (_, x) => {
+    const roadmap = finopsIqRoadmap(x.r);
+    const placed = roadmap.flatMap(w => w.findings.map(f => f.id));
+    expect([...placed].sort()).toEqual(x.r.findings.map(f => f.id).sort());
+    const ids = new Set(roadmap.map(w => w.id));
+    for (const w of roadmap) {
+      expect(w.start).toBe(Math.min(...w.findings.map(f => f.start.month)));
+      expect(w.end).toBe(Math.max(...w.findings.map(f => f.start.month + f.targetDuration.months)));
+      expect(w.end).toBeGreaterThan(w.start);
+      expect(w.effort.fteMonths).toBe(w.findings.reduce((t, f) => t + findingEffort(f, x.r).fteMonths, 0));
+      expect(w.effort.band).toBe(effortBand(w.effort.fteMonths));
+      expect(w.value?.expected ?? 0).toBe(x.r.value.moneyShown ? w.findings.reduce((t, f) => t + (f.value?.expected.value ?? 0), 0) : 0);
+      for (const d of w.dependsOn) expect(ids.has(d), `${w.id} depends on ${d}`).toBe(true);
+      expect(w.owners.length).toBeGreaterThan(0);
+      expect(w.activities.length && w.kpis.length && w.prerequisites.length && w.risks.length).toBeTruthy();
+    }
+  });
+
+  it('the effort heuristic and bands come from the workstream registry (ASM-FIN-086)', () => {
+    const bands = (workstreams as any).effort.bands;
+    expect(effortBand(0)).toBe(bands[0].label);
+    expect(effortBand(bands[0].maxFteMonths)).toBe(bands[0].label);
+    expect(effortBand(bands[0].maxFteMonths + 0.5)).toBe(bands[1].label);
+    expect(effortBand(bands[1].maxFteMonths + 0.5)).toBe(bands[2].label);
+    expect((workstreams as any).effort.assumptionId).toBe('ASM-FIN-086');
+  });
+
+  it('a lever is counted once: workstream values add up to the finding values', () => {
+    for (const x of consultant.filter(y => y.r.value.moneyShown)) {
+      const total = finopsIqRoadmap(x.r).reduce((t, w) => t + (w.value?.expected ?? 0), 0);
+      expect(total).toBe(x.r.findings.reduce((t, f) => t + (f.value?.expected.value ?? 0), 0));
+    }
+  });
+});
+
+describe('FinOps IQ report: sensitivity (F7 item 2)', () => {
+  it('lists at most three inputs, largest swing first, each re-run through the engine', () => {
+    for (const x of runs.filter(y => y.view === 'consultant')) {
+      const rows = finopsIqSensitivity(x.input, x.r);
+      expect(rows.length).toBeLessThanOrEqual(3);
+      if (x.r.value.moneyShown) expect(rows.length, x.label).toBeGreaterThan(0);
+      for (let i = 1; i < rows.length; i++) expect(rows[i - 1].swing).toBeGreaterThanOrEqual(rows[i].swing);
+      for (const s of rows) {
+        expect(s.base).toBe(x.r.value.totals!.expected.netRunRate.value);
+        expect(s.lowInput).toBeLessThan(s.highInput);
+        if (s.kind === 'exact' && !s.fact.startsWith('spend.') && !/Spend$/.test(s.fact)) expect(s.highInput).toBeLessThanOrEqual(1);
+      }
+    }
+  });
+});
+
+describe('FinOps IQ report: screen = PDF = backlog = engine (F7 item 4)', () => {
+  it.each(runs.map(x => [x.label, x]))('%s: one row per finding and per lever action, with the engine\'s start, duration, effort and value', (_, x) => {
+    const b = finopsIqBacklog(x.r, x.view);
+    expect(b.header).toEqual(BACKLOG_HEADER);
+    const col = (name: string) => BACKLOG_HEADER.indexOf(name);
+    const findingRows = b.rows.filter(row => row[col('Lever')] === '' || x.r.findings.find(f => f.id === row[0])!.leverIds.join(' ') === row[col('Lever')]);
+    expect(b.rows.length).toBe(x.r.findings.reduce((t, f) => t + 1 + f.leverActions.length, 0));
+    for (const f of x.r.findings) {
+      const row = b.rows.find(r => r[0] === f.id)!;
+      expect(row[col('Start month')]).toBe(f.start.month);
+      expect(row[col('Duration (months)')]).toBe(f.targetDuration.months);
+      expect(row[col('Effort (FTE-months)')]).toBe(findingEffort(f, x.r).fteMonths);
+      expect(row[col('Expected value per year (gross)')]).toBe(x.r.value.moneyShown && f.value ? f.value.expected.value : '');
+      expect(row[col('Owner role')]).toBe(f.ownerLabel);
+    }
+    expect(findingRows.length).toBeGreaterThanOrEqual(x.r.findings.length);
+    for (const row of b.rows) expect(row.length).toBe(BACKLOG_HEADER.length);
+  });
+
+  it('the PDF shows the same finding values as the backlog', () => {
+    for (const x of runs.filter(y => y.r.value.moneyShown)) {
+      const shown = new Map(traces(x.doc).map(s => [s.trace.field, s.trace.value]));
+      for (const f of x.r.findings.filter(y => y.value)) expect(shown.get(f.value!.expected.field), `${x.label} ${f.id}`).toBe(f.value!.expected.value);
+    }
+  });
+});
+
+describe('FinOps IQ report: no money figure without the internal cost rate (Q4)', () => {
+  const s = SCENARIOS.find(x => x.id === 'RS4')!;
+  const input = scenarioInput(s);
+  const { internalRate, ...cost } = (input.facts.cost ?? {}) as any;
+  const noRate: FinOpsIqV3Input = { ...input, facts: { ...input.facts, cost } };
+  const r = evaluateFinOpsIqV3(noRate);
+  const doc = finopsIqReport(r, { ...OPTS, view: 'client', input: noRate });
+  it('shows the reason instead of figures, with no sensitivity and no workstream value', () => {
+    expect(r.value.moneyShown).toBe(false);
+    const currency = traces(doc).filter(t => t.trace.unit === 'currency' && /netRunRate|net3Year|netYear1|runRate|report:roadmap/.test(t.trace.field));
+    expect(currency).toEqual([]);
+    expect(finopsIqSensitivity(noRate, r)).toEqual([]);
+    expect(finopsIqRoadmap(r).every(w => w.value === null)).toBe(true);
+    expect(finopsIqBacklog(r).rows.every(row => row[BACKLOG_HEADER.indexOf('Expected value per year (gross)')] === '')).toBe(true);
+  });
+});
+
+describe('Backlog CSV and PDF rendering (WS-S4)', () => {
+  it('quotes RFC 4180 fields, starts with a byte-order mark, ends rows with CRLF, and defuses formulas', () => {
+    expect(cell('=SUM(A1:A9)')).toBe("'=SUM(A1:A9)");
+    expect(cell('+44 20')).toBe("'+44 20");
+    expect(cell('-1')).toBe("'-1");
+    expect(cell('@cmd')).toBe("'@cmd");
+    expect(cell(-1)).toBe('-1');
+    expect(cell('a, "b"')).toBe('"a, ""b"""');
+    expect(cell(Number.NaN)).toBe('');
+    const csv = toCsv({ header: ['A', 'B'], rows: [['x', 1], ['line\nbreak', '=1']] });
+    expect(csv.startsWith('﻿A,B\r\n')).toBe(true);
+    expect(csv.endsWith('\r\n')).toBe(true);
+    expect(csv).toContain('"line\nbreak",\'=1');
+  });
+
+  it('every backlog has the same number of fields on every line once parsed', () => {
+    for (const x of runs) {
+      const csv = toCsv(finopsIqBacklog(x.r, x.view)).slice(1);
+      const rows: string[][] = [];
+      let row: string[] = [], field = '', quoted = false;
+      for (let i = 0; i < csv.length; i++) {
+        const ch = csv[i];
+        if (quoted) { if (ch === '"' && csv[i + 1] === '"') { field += '"'; i++; } else if (ch === '"') quoted = false; else field += ch; }
+        else if (ch === '"') quoted = true;
+        else if (ch === ',') { row.push(field); field = ''; }
+        else if (ch === '\r' && csv[i + 1] === '\n') { row.push(field); rows.push(row); row = []; field = ''; i++; }
+        else field += ch;
+      }
+      expect(rows.length).toBe(finopsIqBacklog(x.r, x.view).rows.length + 1);
+      for (const r of rows) expect(r.length, x.label).toBe(BACKLOG_HEADER.length);
+    }
+  });
+
+  it('renders a PDF, the same bytes for the same document', async () => {
+    const x = runs.find(y => y.label === 'RS5 client')!;
+    const [a, b] = await Promise.all([renderPdf(x.doc), renderPdf(x.doc)]);
+    expect(a.subarray(0, 5).toString()).toBe('%PDF-');
+    expect(a.length).toBeGreaterThan(50_000);
+    expect(a.equals(b)).toBe(true);
+  }, 30_000);
+});

@@ -2,6 +2,7 @@ import { type ClientSchema, a, defineData } from '@aws-amplify/backend';
 import { manageResilienceAssessmentFunction } from '../functions/manage-resilience-assessment/resource';
 import { manageResilienceEvidenceFunction } from '../functions/manage-resilience-evidence/resource';
 import { manageFinOpsAssessmentFunction } from '../functions/manage-finops-assessment/resource';
+import { finopsIqReportFunction } from '../functions/finops-iq-report/resource';
 
 /**
  * Defines DynamoDB tables via Amplify Data Schema:
@@ -187,7 +188,9 @@ const schema = a.schema({
 .authorization(allow => [
   allow.resource(manageResilienceAssessmentFunction).to(['query', 'mutate']),
   allow.resource(manageResilienceEvidenceFunction).to(['query', 'mutate']),
-  allow.resource(manageFinOpsAssessmentFunction).to(['query', 'mutate'])
+  allow.resource(manageFinOpsAssessmentFunction).to(['query', 'mutate']),
+  // The report reads completed assessments only.
+  allow.resource(finopsIqReportFunction).to(['query'])
 ]);
 
 export type Schema = ClientSchema<typeof schema>;

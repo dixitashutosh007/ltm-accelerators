@@ -2,6 +2,7 @@
  * FinOps IQ, merged page (execution phase M3 gate):
  *   - every question in both modes renders and can be answered;
  *   - sign-in → answer → save → resume → report journey, with the result computed on the server;
+ *   - M4: the report PDF and backlog CSV of the completed assessment download from the server;
  *   - client mode: no consultant-only field in the DOM, and the server is asked for the client view;
  *   - no console errors or CSP violations; usable at 360px without horizontal scroll; every control labelled.
  * The fake API runs the real Lambda handlers (scoring and save/resume) with an in-memory store.
@@ -11,6 +12,8 @@ import type { Page } from '@playwright/test';
 import { handler as evaluateHandler } from '../../amplify/functions/evaluate-finops-iq/handler';
 import { createHandler } from '../../amplify/functions/manage-finops-assessment/handler';
 import { memoryStore } from '../../amplify/functions/manage-finops-assessment/store';
+import { createHandler as createReportHandler } from '../../amplify/functions/finops-iq-report/handler';
+import { readFileSync } from 'node:fs';
 import { QUESTIONS } from '../../packages/engine-core/src/accelerators/finops-iq/v3';
 
 const EMAIL = 'consultant@ltm.com';
@@ -29,7 +32,9 @@ let evaluated: Array<{ query: Record<string, string>; data: any }>;
 
 test.beforeEach(async ({ context, world }) => {
   evaluated = [];
-  const persistence = createHandler(memoryStore());
+  const store = memoryStore();
+  const persistence = createHandler(store);
+  const report = createReportHandler(store);
   world.on('POST', '/api/evaluate/finops-iq/v3', async req => {
     const out = await lambda(evaluateHandler, req);
     evaluated.push({ query: req.query, data: out.body.data });
@@ -37,6 +42,12 @@ test.beforeEach(async ({ context, world }) => {
   });
   world.on('GET', '/api/finops-iq/assessment', req => lambda(persistence, req));
   world.on('POST', '/api/finops-iq/assessment', req => lambda(persistence, req));
+  world.on('GET', '/api/finops-iq/report', async req => {
+    const out: any = await report({ headers: {}, queryStringParameters: req.query, requestContext: { requestId: 'e2e', http: { method: 'GET' }, authorizer: { jwt: { claims: req.claims } } } } as any);
+    if (out.statusCode !== 200) return { status: out.statusCode, body: JSON.parse(out.body) };
+    const { 'Content-Type': type, 'Content-Disposition': disposition } = out.headers;
+    return { body: null, raw: { body: out.isBase64Encoded ? Buffer.from(out.body, 'base64') : out.body, headers: { 'content-type': type, 'content-disposition': disposition } } };
+  });
   await signedIn(context, { email: EMAIL, token: makeIdToken(EMAIL), role: 'super_admin', permissions: {} });
 });
 
@@ -128,6 +139,14 @@ test('executive: every question renders and can be answered; complete, then resu
   await page.getByRole('button', { name: 'Complete assessment' }).click();
   await expect(page.getByText(/Completed/).first()).toBeVisible();
   await expect(page.getByRole('button', { name: 'Continue in workshop mode' })).toBeVisible();
+
+  // M4: the report and the backlog of the completed assessment, built on the server from the stored result.
+  for (const [label, ext, magic] of [['Download report (PDF)', 'pdf', '%PDF-'], ['Download backlog (CSV)', 'csv', '\uFEFFFinding ID']] as const) {
+    const [file] = await Promise.all([page.waitForEvent('download'), page.getByRole('button', { name: label }).click()]);
+    expect(file.suggestedFilename()).toMatch(new RegExp(`^finops-iq-example-bank-\\d{4}-\\d{2}-\\d{2}\\.${ext}$`));
+    expect(readFileSync((await file.path())!, 'utf8').startsWith(magic)).toBe(true);
+  }
+  await expect(page.getByRole('status').filter({ hasText: 'Downloaded.' })).toBeVisible();
 
   // Resume from the server in a fresh load: the stored result is shown and the inputs are read-only.
   const id = new URL(page.url()).searchParams.get('assessment')!;

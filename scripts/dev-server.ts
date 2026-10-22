@@ -27,6 +27,7 @@ import { handler as strategyIq } from '../amplify/functions/evaluate-strategy-iq
 import { handler as modernizationIq } from '../amplify/functions/evaluate-modernization-iq/handler';
 import { createHandler as finopsAssessment } from '../amplify/functions/manage-finops-assessment/handler';
 import { memoryStore, type FinOpsAssessmentRecord } from '../amplify/functions/manage-finops-assessment/store';
+import { createHandler as finopsReport } from '../amplify/functions/finops-iq-report/handler';
 
 const PORT = Number(process.env.PORT || 4300);
 const ORIGIN = `http://localhost:${PORT}`;
@@ -92,7 +93,8 @@ const ROUTES: Record<string, LambdaHandler> = {
   'POST /api/evaluate/strategy-iq': strategyIq,
   'POST /api/evaluate/modernization-iq': modernizationIq,
   'GET /api/finops-iq/assessment': finopsAssessment(assessments),
-  'POST /api/finops-iq/assessment': finopsAssessment(assessments)
+  'POST /api/finops-iq/assessment': finopsAssessment(assessments),
+  'GET /api/finops-iq/report': finopsReport(assessments)
 };
 
 /** The reports archive needs S3; locally it keeps report metadata in memory and discards the PDF. */
@@ -145,7 +147,8 @@ async function api(req: IncomingMessage, res: ServerResponse, url: URL) {
   };
   const out = await fn(event);
   res.writeHead(out.statusCode ?? 200, { 'Content-Type': 'application/json', ...(out.headers || {}) });
-  res.end(out.body ?? '');
+  // API Gateway decodes base64 bodies (the report PDF) before they reach the browser; so does this stand-in.
+  res.end(out.isBase64Encoded ? Buffer.from(out.body ?? '', 'base64') : out.body ?? '');
 }
 
 // Same-origin addresses, so the pages work at http://localhost:PORT and http://127.0.0.1:PORT alike (the security

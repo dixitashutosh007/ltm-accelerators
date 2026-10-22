@@ -21,6 +21,7 @@ import { evaluateResilienceIqFunction } from './functions/evaluate-resilience-iq
 import { manageResilienceEvidenceFunction } from './functions/manage-resilience-evidence/resource';
 import { manageResilienceAssessmentFunction } from './functions/manage-resilience-assessment/resource';
 import { manageFinOpsAssessmentFunction } from './functions/manage-finops-assessment/resource';
+import { finopsIqReportFunction } from './functions/finops-iq-report/resource';
 import {
   API_GATEWAY_CORS_ORIGINS, API_BURST_LIMIT, API_RATE_LIMIT, COGNITO_ISSUER, KEEP_LEGACY_API,
   REGION, REPORTS_BUCKET, USER_POOL_CLIENT_ID, USER_POOL_ID
@@ -41,7 +42,8 @@ export const backend = defineBackend({
   evaluateResilienceIqFunction,
   manageResilienceEvidenceFunction,
   manageResilienceAssessmentFunction,
-  manageFinOpsAssessmentFunction
+  manageFinOpsAssessmentFunction,
+  finopsIqReportFunction
 });
 
 const apiStack = backend.createStack('AcceleratorsApiStack');
@@ -88,7 +90,8 @@ const advisoryApi = new HttpApi(apiStack, 'AdvisoryHttpApi', {
     allowOrigins: API_GATEWAY_CORS_ORIGINS,
     allowMethods: [CorsHttpMethod.GET, CorsHttpMethod.POST, CorsHttpMethod.OPTIONS],
     allowHeaders: ['Content-Type', 'Authorization', 'X-Request-Id'],
-    exposeHeaders: ['X-Request-Id'],
+    // Content-Disposition carries the report's file name to the page (FinOps IQ report route).
+    exposeHeaders: ['X-Request-Id', 'Content-Disposition'],
     maxAge: Duration.hours(1)
   }
 });
@@ -100,6 +103,7 @@ const integrations = {
   finops: integrate('AdvisoryFinOpsValueCase', backend.evaluateFinOpsFunction),
   finopsIq: integrate('AdvisoryFinOpsIq', backend.evaluateFinOpsIqFunction),
   finopsAssessment: integrate('AdvisoryFinOpsIqAssessment', backend.manageFinOpsAssessmentFunction),
+  finopsReport: integrate('AdvisoryFinOpsIqReport', backend.finopsIqReportFunction),
   posture: integrate('AdvisoryPostureIq', backend.evaluatePostureIqFunction),
   sovereign: integrate('AdvisorySovereignIq', backend.evaluateSovereignIqFunction),
   cloud: integrate('AdvisoryCloudIq', backend.evaluateCloudIqFunction),
@@ -118,6 +122,8 @@ route('/api/evaluate/finops-iq', [HttpMethod.POST], integrations.finopsIq);
 // stays for the current page until cutover (execution phase M8).
 route('/api/evaluate/finops-iq/v3', [HttpMethod.POST], integrations.finopsIq);
 route('/api/finops-iq/assessment', [HttpMethod.GET, HttpMethod.POST], integrations.finopsAssessment);
+// Report PDF and backlog CSV of a completed assessment (execution phase M4).
+route('/api/finops-iq/report', [HttpMethod.GET], integrations.finopsReport);
 route('/api/evaluate/posture-iq', [HttpMethod.POST], integrations.posture);
 route('/api/evaluate/sovereign-iq', [HttpMethod.POST], integrations.sovereign);
 route('/api/evaluate/cloud-iq', [HttpMethod.POST], integrations.cloud);

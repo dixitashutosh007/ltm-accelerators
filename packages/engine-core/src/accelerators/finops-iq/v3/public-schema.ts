@@ -28,7 +28,7 @@ const CURRENCIES = ['USD', 'EUR', 'GBP', 'INR', 'AUD', 'SGD', 'JPY', 'CAD', 'CHF
  * data notice is the validation report's recommended wording (section 7), adapted to v1 (no AI, no file upload).
  * Both the data notice and the disclaimer wait for owner and counsel approval in M6.
  */
-const NOTICES = {
+export const NOTICES = {
   attribution: CLAIM.get('CLM-FIN-033').statement as string,
   disclaimer: 'FinOps IQ gives an indicative assessment from the answers and figures you provide. Value figures are an indicative range, not a savings commitment, and need validating against your billing data before any decision. Scoring constants are LTM heuristics unless a source is cited. This is not financial, accounting or legal advice.',
   data: 'LTM hosts this assessment in Amazon Web Services, Mumbai region (India). If you are in the EU or UK, the information you enter is transferred to India, which does not have an EU adequacy decision or a UK data bridge. We collect your answers, your spend figures, your organisation\'s name and the consultant\'s email address to produce the report. This version uses no AI features.',

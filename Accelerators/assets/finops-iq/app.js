@@ -13,6 +13,7 @@
   var API = window.LTM_API;
   var EVALUATE = '/api/evaluate/finops-iq/v3';
   var ASSESSMENT = '/api/finops-iq/assessment';
+  var REPORT = '/api/finops-iq/report';
   var LEVEL_LABEL = { run: 'Run', walk: 'Walk', crawl: 'Crawl', not_yet: 'Not yet' };
   var MODE_INFO = {
     executive: { label: 'Executive', duration: '15–20 minutes', text: 'Do we need to act now, and roughly how much is at stake? 18 questions for the CIO or CFO.' },
@@ -757,6 +758,7 @@
 
     if (!client) body.appendChild(consultantPanel(r));
     body.appendChild(methodology(r));
+    if (isFinal()) body.appendChild(reportCard(client));
 
     if (!isFinal() && !client) {
       body.appendChild(h('div', { class: 'card' }, h('h3', null, 'Complete the assessment'),
@@ -848,6 +850,43 @@
       h('p', null, n.disclaimer),
       h('p', null, n.data),
       h('p', { class: 'small muted' }, 'FinOps IQ engine ' + r.versions.engine + ' · value model ' + r.versions.valueModel + ' · ' + r.versions.kb + ' · claims register ' + r.versions.claimsRegister + (r.assessmentDate ? ' · assessed ' + r.assessmentDate : '') + ' · data provided by ' + state.clientName));
+  }
+
+  /** The report PDF and backlog CSV, built on the server from the stored result (M4); client view gets the client edition. */
+  function reportCard(client) {
+    var status = h('p', { class: 'small muted', id: 'report-status', role: 'status', 'aria-live': 'polite' });
+    var button = function (format, label) {
+      return h('button', { class: 'btn', type: 'button', onclick: function (e) { download(format, e.currentTarget, status); } }, label);
+    };
+    return h('section', { class: 'card', 'aria-labelledby': 'report-h' }, h('h3', { id: 'report-h' }, 'Report'),
+      h('p', { class: 'small muted' }, client ? 'Client edition: no consultant checks or notes.' : 'Consultant edition, with the consultant checks. Turn on client view for the client edition.'),
+      h('div', { class: 'actions' }, button('pdf', 'Download report (PDF)'), button('csv', 'Download backlog (CSV)')),
+      status);
+  }
+
+  async function download(format, btn, status) {
+    var q = new URLSearchParams({ assessmentId: state.assessmentId, format: format });
+    if (state.view === 'client') q.set('view', 'client');
+    btn.disabled = true;
+    status.textContent = format === 'pdf' ? 'Preparing the report…' : 'Preparing the backlog…';
+    try {
+      var res = await API.fetch(REPORT + '?' + q.toString(), { method: 'GET' });
+      if (res.status !== 200) {
+        var err = await res.json().catch(function () { return {}; });
+        status.textContent = err.message || 'The file could not be produced. Please try again.';
+        return;
+      }
+      var name = /filename="([^"]+)"/.exec(res.headers.get('Content-Disposition') || '');
+      var url = URL.createObjectURL(await res.blob());
+      var a = h('a', { href: url, download: name ? name[1] : 'finops-iq.' + format });
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(function () { URL.revokeObjectURL(url); }, 10000);
+      status.textContent = 'Downloaded.';
+    } catch (e) {
+      status.textContent = 'The file could not be produced. Please try again.';
+    } finally {
+      btn.disabled = false;
+    }
   }
 
   async function complete() {

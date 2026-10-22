@@ -27,7 +27,8 @@ export function makeIdToken(email: string, expiresInSeconds = 3600, extra: Recor
 }
 
 export type Session = { email: string; token: string; refreshToken?: string; role?: string; permissions?: Record<string, unknown> };
-type ApiReply = { status?: number; body: unknown } | undefined;
+/** `raw` sends a file (bytes and headers) instead of a JSON body, as the report route does. */
+type ApiReply = { status?: number; body: unknown; raw?: { body: Buffer | string; headers: Record<string, string> } } | undefined;
 /** A fake route. It may be async, so a test can run a real Lambda handler behind it. */
 type ApiHandler = (req: { method: string; path: string; body: any; auth: string; query: Record<string, string>; claims: Record<string, any> }) => ApiReply | Promise<ApiReply>;
 
@@ -121,6 +122,7 @@ export class MockWorld {
       const pathOk = typeof h.path === 'string' ? h.path === url.pathname : h.path.test(url.pathname);
       if (h.method === method && pathOk) {
         const out = await h.fn({ method, path: url.pathname, body, auth, query: Object.fromEntries(url.searchParams), claims });
+        if (out?.raw) return route.fulfill({ status: out.status ?? 200, headers: { ...cors, 'access-control-expose-headers': 'content-disposition', ...out.raw.headers }, body: out.raw.body });
         if (out) return reply(out.status ?? 200, out.body);
       }
     }

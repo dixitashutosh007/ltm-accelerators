@@ -51,11 +51,11 @@ check(!!advisory, 'Advisory API (ltm-advisory-api) is missing');
 
 if (advisory) {
   const routes = ofType('AWS::ApiGatewayV2::Route').filter(r => r.Properties.ApiId?.Ref === advisory.id);
-  // 7 scoring routes, FinOps IQ v3 scoring and save/resume, identity, user administration and reports archive routes.
+  // 7 scoring routes, FinOps IQ v3 scoring, save/resume and report, identity, user administration and reports archive routes.
   const required = ['POST /api/evaluate/finops-value-case', 'POST /api/evaluate/finops-iq', 'POST /api/evaluate/posture-iq',
     'POST /api/evaluate/sovereign-iq', 'POST /api/evaluate/cloud-iq', 'POST /api/evaluate/strategy-iq',
     'POST /api/evaluate/modernization-iq', 'POST /api/evaluate/finops-iq/v3', 'GET /api/finops-iq/assessment',
-    'POST /api/finops-iq/assessment', 'GET /api/me', 'GET /api/users', 'POST /api/users/create',
+    'POST /api/finops-iq/assessment', 'GET /api/finops-iq/report', 'GET /api/me', 'GET /api/users', 'POST /api/users/create',
     'POST /api/users/set-password', 'POST /api/users/permissions', 'GET /api/reports/list',
     'POST /api/reports/save', 'POST /api/reports/delete', 'POST /api/reports/rename'];
   const keys = routes.map(r => r.Properties.RouteKey);

@@ -53,6 +53,7 @@ a { color: var(--red); }
 .btn.small { min-height: 36px; padding: 6px 12px; font-size: 13px; }
 .btn.link { border: none; background: none; color: var(--red); padding: 4px; min-height: 0; text-decoration: underline; }
 .btn[disabled] { opacity: .55; cursor: not-allowed; }
+.actions { display: flex; flex-wrap: wrap; gap: 8px; margin: 8px 0; }
 .topbar .btn { background: transparent; color: #fff; border-color: #6B7280; }
 .topbar .btn[aria-pressed="true"] { background: #fff; color: var(--ink); }
 .status { font-size: 12px; color: #D1D5DB; }

@@ -4,7 +4,7 @@
  * for rules and headings, the platform footer on every page (docs/BRAND.md).
  */
 import PdfPrinter from 'pdfmake';
-import vfsFonts from 'pdfmake/build/vfs_fonts';
+import vfsFonts from 'pdfmake/build/vfs_fonts.js';
 import type { Content, TDocumentDefinitions, TableCell } from 'pdfmake/interfaces';
 import type { Block, ReportDocument, Seg } from './model';
 
