@@ -213,3 +213,20 @@ describe('FinOps IQ assessment API: errors', () => {
     expect(res.body.requestId).toBe('req-1');
   });
 });
+
+describe('client logo (carried over from FinOps Value Case)', () => {
+  const PNG = 'data:image/png;base64,' + Buffer.from('logo').toString('base64');
+  it('is saved with the assessment, returned in both views, and left out of the list', async () => {
+    expect((await save({ clientLogo: PNG })).status).toBe(200);
+    expect((await call(event('GET', { query: { assessmentId: 'FIQ-0001-test' } }))).body.data.clientLogo).toBe(PNG);
+    expect((await call(event('GET', { query: { assessmentId: 'FIQ-0001-test', view: 'client' } }))).body.data.clientLogo).toBe(PNG);
+    expect((await call(event('GET'))).body.data[0]).not.toHaveProperty('clientLogo');
+  });
+  it('accepts only a PNG or JPEG data URL of bounded size', async () => {
+    for (const bad of ['data:image/svg+xml;base64,PHN2Zz4=', 'https://example.com/logo.png', 'data:image/png;base64,' + 'A'.repeat(150_001)]) {
+      const res = await save({ clientLogo: bad });
+      expect(res.status, bad.slice(0, 30)).toBe(400);
+      expect(res.body.error).toMatch(/clientLogo/);
+    }
+  });
+});

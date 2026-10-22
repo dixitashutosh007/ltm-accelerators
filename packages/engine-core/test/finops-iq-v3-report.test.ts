@@ -440,3 +440,18 @@ describe('FinOps IQ report: M7 CIO challenge fixes (M7-cio-challenge.md)', () =>
     }
   }, 60_000);
 });
+
+describe('FinOps IQ report: client logo on the cover (carried over from FinOps Value Case)', () => {
+  it('puts the logo on the cover when one is given, and renders either way', async () => {
+    // A 1x1 PNG.
+    const PNG = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==';
+    const x = runs.find(y => y.label === 'RS5 client')!;
+    const doc = finopsIqReport(x.r, { ...OPTS, view: 'client', input: x.input, clientLogo: PNG });
+    expect(doc.meta.clientLogo).toBe(PNG);
+    const withLogo = await renderPdf(doc);
+    const without = await renderPdf(x.doc);
+    expect(withLogo.subarray(0, 5).toString()).toBe('%PDF-');
+    expect(withLogo.includes(Buffer.from('/Subtype /Image'))).toBe(true);
+    expect(without.includes(Buffer.from('/Subtype /Image'))).toBe(false);
+  }, 30_000);
+});

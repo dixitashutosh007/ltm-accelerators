@@ -61,6 +61,8 @@ export interface ReportMeta {
   /** Footer on every page: "LTM Vantage · Responsible Advisory · <product> · Confidential". */
   footer: string;
   status?: string;
+  /** The client's logo (PNG or JPEG data URL) for the cover. */
+  clientLogo?: string;
 }
 
 export interface ReportDocument { meta: ReportMeta; sections: ReportSection[] }

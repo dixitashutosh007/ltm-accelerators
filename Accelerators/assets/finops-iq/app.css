@@ -193,3 +193,14 @@ details.basis ul { margin: 6px 0 0; padding-left: 18px; }
   .working-track i { transition: none; }
 }
 @media print { .working { display: none; } }
+
+/* Client logo beside the client name (carried over from FinOps Value Case) */
+.client-id { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+.client-logo { max-height: 48px; max-width: 160px; object-fit: contain; }
+.logo-control { display: flex; align-items: center; gap: 8px; }
+.visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.logo-control input:focus-visible + label { outline: 3px solid var(--red); outline-offset: 2px; }
+
+/* Teaser mode (carried over from FinOps Value Case): placeholder bars, blurred, in place of held-back sections */
+.teaser-bars { display: grid; gap: 10px; margin: 8px 0 16px; filter: blur(3px); }
+.teaser-bars span { display: block; height: 14px; border-radius: 7px; background: linear-gradient(90deg, #E5E7EB, #F3F4F6); }

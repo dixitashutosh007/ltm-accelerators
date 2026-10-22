@@ -19,7 +19,9 @@ const TRANSITIONS: Record<FinOpsAssessmentStatus, readonly FinOpsAssessmentStatu
 };
 export const canTransition = (from: FinOpsAssessmentStatus, to: FinOpsAssessmentStatus) => TRANSITIONS[from].includes(to);
 
-export const LIMITS = { idLength: 80, clientNameLength: 200, sectorLength: 80, notesLength: 20_000, requestBytes: 256_000 };
+export const LIMITS = { idLength: 80, clientNameLength: 200, sectorLength: 80, notesLength: 20_000, requestBytes: 256_000, logoChars: 150_000 };
+/** The client's logo for the report cover and page header: a small PNG or JPEG as a data URL (carried over from FinOps Value Case). */
+const LOGO = /^data:image\/(png|jpeg);base64,[A-Za-z0-9+/]+={0,2}$/;
 const ID = /^[A-Za-z0-9_-]{8,80}$/;
 
 export interface FinOpsAssessmentSnapshot {
@@ -33,6 +35,8 @@ export interface FinOpsAssessmentSnapshot {
   request: Record<string, any>;
   /** Consultant-only notes; never shown in client mode (M3). */
   consultantNotes?: string;
+  /** The client's logo, a PNG or JPEG data URL; shown on the report cover and the page. */
+  clientLogo?: string;
 }
 
 export type SnapshotParse = { ok: true; value: FinOpsAssessmentSnapshot } | { ok: false; errors: string[] };
@@ -51,6 +55,7 @@ export function parseSnapshot(body: unknown): SnapshotParse {
   if (!(ASSESSMENT_STATUSES as readonly string[]).includes(s.status)) errors.push(`status: expected one of ${ASSESSMENT_STATUSES.join(', ')}`);
   if (!isTimestamp(s.startedAt)) errors.push('startedAt: expected an ISO timestamp');
   if (s.consultantNotes !== undefined && (typeof s.consultantNotes !== 'string' || s.consultantNotes.length > LIMITS.notesLength)) errors.push(`consultantNotes: expected text up to ${LIMITS.notesLength} characters`);
+  if (s.clientLogo !== undefined && (typeof s.clientLogo !== 'string' || s.clientLogo.length > LIMITS.logoChars || !LOGO.test(s.clientLogo))) errors.push('clientLogo: expected a PNG or JPEG image up to about 100 KB');
   if (!isObject(s.request)) errors.push('request: expected the scoring request (mode, facts, answers)');
   else if (JSON.stringify(s.request).length > LIMITS.requestBytes) errors.push(`request: larger than ${LIMITS.requestBytes} bytes`);
   else {
@@ -66,6 +71,7 @@ export function parseSnapshot(body: unknown): SnapshotParse {
   };
   if (s.clientSector !== undefined) value.clientSector = s.clientSector.trim();
   if (s.consultantNotes !== undefined) value.consultantNotes = s.consultantNotes;
+  if (s.clientLogo !== undefined) value.clientLogo = s.clientLogo;
   return { ok: true, value };
 }
 

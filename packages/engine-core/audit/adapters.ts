@@ -3,8 +3,6 @@
  * Each adapter knows how to generate a valid random questionnaire, how to vary one question across all of its
  * possible answers, and which headline numbers and bands a CIO actually sees.
  */
-import { evaluateFinOpsValueCase } from '../src/accelerators/finops-value-case/evaluate';
-import fvcKb from '../src/accelerators/finops-value-case/knowledge-base.json' with { type: 'json' };
 import { evaluateStrategyIq } from '../src/accelerators/strategy-iq/evaluate';
 import strategyKb from '../src/accelerators/strategy-iq/knowledge-base.json' with { type: 'json' };
 import { evaluateCloudIq } from '../src/accelerators/cloud-iq/evaluate';
@@ -61,38 +59,6 @@ export interface Adapter {
 const setAnswer = (input: any, qid: string, value: unknown) => ({ ...input, answers: { ...input.answers, [qid]: value } });
 const dropAnswer = (input: any, qid: string) => { const a = { ...input.answers }; delete a[qid]; return { ...input, answers: a }; };
 const subsets = (n: number) => [[], ...range(n).map(i => [i]), range(n)];
-
-/* ---------------------------- FinOps Value Case ---------------------------- */
-const FVC: any = fvcKb;
-function fvcVariants(q: any): unknown[] {
-  const n = (q.options || []).length;
-  switch (q.answer_type) {
-    case 'single_select': case 'card_select': return [...range(n), '__DK__'];
-    case 'multi_select': case 'multi_select_logo': return subsets(n);
-    case 'boolean_dk': return ['yes', 'no', 'dk'];
-    case 'rating_1_5': return [1, 2, 3, 4, 5];
-    case 'slider_percent': case 'slider_signed': case 'slider_currency': {
-      const { min, max } = q.slider; return [min, Math.round((min + max) / 2), max, '__DK__'];
-    }
-    case 'allocation_100': return [{ engineering: 100, finance: 0, central_it: 0, nobody: 0 }, { engineering: 0, finance: 0, central_it: 0, nobody: 100 }, { engineering: 25, finance: 25, central_it: 25, nobody: 25 }];
-    case 'drag_order': return [q.options.slice(), q.options.slice().reverse()];
-    case 'open_text': return ['', 'Notes'];
-    default: return [];
-  }
-}
-const fvcBest = (worst: boolean) => {
-  const answers: Record<string, unknown> = {};
-  for (const q of FVC.questions) {
-    if (q.answer_type !== 'single_select' && q.answer_type !== 'card_select') continue;
-    const scored = (q.options || []).map((o: any, i: number) => ({ i, s: o.score })).filter((x: any) => typeof x.s === 'number');
-    if (scored.length) answers[q.id] = scored.reduce((m: any, x: any) => ((worst ? x.s < m.s : x.s > m.s) ? x : m)).i;
-    // Urgency comes from drivers (growth, migration ahead), not maturity: the worst case has the strongest drivers.
-    const drive = (q.options || []).map((o: any, i: number) => ({ i, u: (o.urgency || 0) + (o.migration_ahead || 0) * 18 }));
-    if (drive.some((x: any) => x.u > 0)) answers[q.id] = drive.reduce((m: any, x: any) => ((worst ? x.u > m.u : x.u < m.u) ? x : m)).i;
-  }
-  for (const q of FVC.questions) if (worst && String(q.answer_type).startsWith('slider') && q.id !== 'E3') answers[q.id] = q.slider.max;
-  return { answers: { ...answers, E3: 5_000_000 }, org: { sector_class: worst ? 'bfsi' : 'other', currency: 'usd' } };
-};
 
 /* ------------------------------- Strategy IQ ------------------------------- */
 const STR: any = strategyKb;
@@ -348,27 +314,6 @@ function riqExtreme(best: boolean) {
 }
 
 export const ADAPTERS: Adapter[] = [
-  {
-    id: 'finops-value-case', name: 'FinOps Value Case',
-    questions: FVC.questions.map((q: any) => ({ id: q.id, label: q.text })),
-    random: r => {
-      const answers: Record<string, unknown> = {};
-      for (const q of FVC.questions) if (r() < 0.85) { const v = fvcVariants(q); if (v.length) answers[q.id] = pick(r, v); }
-      return { answers, org: { sector_class: r() < 0.5 ? 'bfsi' : 'other', currency: 'usd' } };
-    },
-    variants: id => fvcVariants(FVC.questions.find((q: any) => q.id === id)),
-    withAnswer: setAnswer, withoutAnswer: dropAnswer,
-    evaluate: i => evaluateFinOpsValueCase(i.answers, i.org),
-    headlines: [
-      { name: 'Need index', scale: [0, 100], higherIsBetter: false, get: r => r.needIndex },
-      { name: 'Gap index', scale: [0, 100], higherIsBetter: false, get: r => r.gapIndex },
-      { name: 'Urgency index', scale: [0, 100], higherIsBetter: false, get: r => r.urgencyIndex },
-      { name: 'Waste band high (% of spend)', scale: [0, 100], higherIsBetter: false, get: r => r.wasteBand.high * 100 },
-      { name: 'Year-1 exposure high ($)', scale: [0, Infinity], higherIsBetter: null, get: r => r.exposure.y1?.[1] ?? null }
-    ],
-    band: { get: r => r.verdict?.label ?? r.verdict?.title ?? '(none)', all: FVC.meta.verdict_bands.map((v: any) => v.label ?? v.title) },
-    extremes: { best: () => fvcBest(false), worst: () => fvcBest(true) }
-  },
   {
     id: 'strategy-iq', name: 'Strategy IQ',
     questions: STR.questions.map((q: any) => ({ id: q.id, label: q.q })),

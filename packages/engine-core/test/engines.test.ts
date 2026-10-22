@@ -1,5 +1,4 @@
 import { describe, it, expect } from 'vitest';
-import { evaluateFinOpsValueCase } from '../src/accelerators/finops-value-case/evaluate';
 import { evaluateFinOpsIq } from '../src/accelerators/finops-iq/evaluate';
 import { evaluatePostureIq } from '../src/accelerators/posture-iq/evaluate';
 import { evaluateSovereignIq, EUR_TO_USD } from '../src/accelerators/sovereign-iq/evaluate';
@@ -7,7 +6,7 @@ import { evaluateCloudIq } from '../src/accelerators/cloud-iq/evaluate';
 import { evaluateStrategyIq } from '../src/accelerators/strategy-iq/evaluate';
 import { evaluateModernizationIq } from '../src/accelerators/modernization-iq/evaluate';
 import {
-  finopsValueCaseAnswers, finopsValueCaseOrg, finopsIqAnswers, cloudIqAnswers,
+  finopsIqAnswers, cloudIqAnswers,
   strategyIqAnswers, strategyIqIntake, modernizationIqAnswers, modernizationIqOrg,
   postureArchetypes, sovereignArchetypes
 } from './sample-inputs';
@@ -41,7 +40,6 @@ const runSovereign = (key: string) => {
 
 // One representative run per engine, with the score range each engine documents.
 const ENGINES: { name: string; run: () => any; score: (r: any) => number; range: [number, number] }[] = [
-  { name: 'FinOps Value Case', run: () => evaluateFinOpsValueCase(finopsValueCaseAnswers, finopsValueCaseOrg), score: r => r.needIndex, range: [0, 100] },
   { name: 'FinOps IQ', run: () => evaluateFinOpsIq({ answers: finopsIqAnswers, annualSpend: 4000000 }), score: r => r.overallScore, range: [0, 100] },
   { name: 'Posture IQ', run: () => runPosture('bank'), score: r => r.overallScore, range: [0, 100] },
   { name: 'Sovereign IQ', run: () => runSovereign('saudi_bank'), score: r => r.maturity.score, range: [0, 100] },
@@ -68,7 +66,6 @@ describe.each(ENGINES)('$name engine', ({ run, score, range }) => {
 
 describe('Engines tolerate an empty questionnaire', () => {
   it.each([
-    ['FinOps Value Case', () => evaluateFinOpsValueCase({}, finopsValueCaseOrg)],
     ['FinOps IQ', () => evaluateFinOpsIq({ answers: {}, annualSpend: 0 })],
     ['Posture IQ', () => evaluatePostureIq({ answers: {}, org: {} } as any)],
     ['Sovereign IQ', () => evaluateSovereignIq({ answers: {}, session: { clientName: 'x', mode: 'workshop' } } as any)],

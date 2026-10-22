@@ -30,9 +30,11 @@ async function lambda(fn: (e: any) => Promise<any>, req: { method: string; path:
 }
 
 let evaluated: Array<{ query: Record<string, string>; data: any }>;
+let archived: any[];
 
 test.beforeEach(async ({ context, world }) => {
   evaluated = [];
+  archived = [];
   const store = memoryStore();
   const persistence = createHandler(store);
   const report = createReportHandler(store);
@@ -43,6 +45,8 @@ test.beforeEach(async ({ context, world }) => {
   });
   world.on('GET', '/api/finops-iq/assessment', req => lambda(persistence, req));
   world.on('POST', '/api/finops-iq/assessment', req => lambda(persistence, req));
+  // The portal's reports service (Archive to Reports): records what the page sends.
+  world.on('POST', '/api/reports/save', req => { archived.push(req.body); return { body: { ok: true, pdfKey: 'reports/finops-iq/x.pdf' } }; });
   world.on('GET', '/api/finops-iq/report', async req => {
     const out: any = await report({ headers: {}, queryStringParameters: req.query, requestContext: { requestId: 'e2e', http: { method: 'GET' }, authorizer: { jwt: { claims: req.claims } } } } as any);
     if (out.statusCode !== 200) return { status: out.statusCode, body: JSON.parse(out.body) };
@@ -368,4 +372,42 @@ test('keyboard (M7): start, answer, complete and delete an assessment with the k
   await page.keyboard.press('Enter');
   await expect(page.getByRole('status').filter({ hasText: 'Keys Ltd deleted.' })).toBeFocused();
   await expect(page.getByText('No saved assessments yet.')).toBeVisible();
+});
+
+test('carried over from FinOps Value Case: client logo on the page and report, teaser mode, archive to Reports', async ({ page }) => {
+  test.setTimeout(90_000);
+  // A 2x2 red PNG.
+  const png = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAYAAABytg0kAAAAEklEQVR42mP8z8DwnwEJMOJiAABOZQX/x5MoMwAAAABJRU5ErkJggg==', 'base64');
+  await start(page, 'executive', 'Logo Bank');
+  await page.locator('#client-logo').setInputFiles({ name: 'logo.png', mimeType: 'image/png', buffer: png });
+  await expect(page.getByRole('img', { name: 'Logo Bank logo' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Remove logo' })).toBeVisible();
+  await fillEstate(page, 'executive');
+  await page.locator('nav.steps button', { hasText: 'Results' }).click();
+  await page.getByRole('button', { name: 'Complete assessment' }).click();
+  await expect(page.locator('.working')).toHaveCount(0, { timeout: 10_000 });
+  await expect(page.getByText(/Completed/).first()).toBeVisible();
+
+  // The report cover carries the logo (an image object in the PDF).
+  const [file] = await Promise.all([page.waitForEvent('download'), page.getByRole('button', { name: 'Download report (PDF)' }).click()]);
+  expect(readFileSync((await file.path())!).includes(Buffer.from('/Subtype /Image'))).toBe(true);
+
+  // Archive to Reports: a second click confirms; the server-built PDF goes to the reports service as FinOps IQ.
+  await page.getByRole('button', { name: 'Archive to Reports' }).click();
+  await page.getByRole('button', { name: 'Save to Reports' }).click();
+  await expect(page.getByRole('status').filter({ hasText: 'Archived to Reports.' })).toBeVisible({ timeout: 10_000 });
+  expect(archived).toHaveLength(1);
+  expect(archived[0]).toMatchObject({ acceleratorId: 'finops-iq', clientName: 'Logo Bank', metadata: { mode: 'executive', edition: 'consultant' } });
+  expect(Buffer.from(archived[0].pdfBase64, 'base64').subarray(0, 5).toString()).toBe('%PDF-');
+
+  // Teaser mode in client view: the profile stays, the value, findings, roadmap and platform actions are not in the page.
+  await page.getByRole('button', { name: 'Client view: off' }).click();
+  await page.getByRole('button', { name: 'Teaser: off' }).click();
+  await expect(page.getByRole('button', { name: 'Teaser: on' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Capability profile' })).toBeVisible();
+  await expect(page.getByText('presented in your LTM readout')).toBeVisible();
+  for (const name of ['Top findings', 'Technical execution', 'How LTM can help']) await expect(page.getByRole('heading', { name })).toHaveCount(0);
+  await expect(page.getByText(/Expected \(net, per year at full run-rate\)/i)).toHaveCount(0);
+  await page.getByRole('button', { name: 'Teaser: on' }).click();
+  await expect(page.getByRole('heading', { name: 'Top findings' })).toBeVisible();
 });

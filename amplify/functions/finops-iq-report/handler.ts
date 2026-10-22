@@ -54,7 +54,7 @@ export function createHandler(store: FinOpsAssessmentStore) {
         };
       }
       const input = JSON.parse(item.requestJson) as FinOpsIqV3Input;
-      const doc = finopsIqReport(result, { client: item.clientName, preparedBy: `LTM consultant (${item.respondentEmail})`, dataProvidedBy: item.clientName, view, input });
+      const doc = finopsIqReport(result, { client: item.clientName, preparedBy: `LTM consultant (${item.respondentEmail})`, dataProvidedBy: item.clientName, view, input, clientLogo: item.clientLogo ?? undefined });
       const pdf = await renderPdf(doc);
       return {
         statusCode: 200,

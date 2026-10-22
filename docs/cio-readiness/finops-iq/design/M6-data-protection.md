@@ -18,18 +18,19 @@ Execution phase M6 (PLAN F11, shared workstream WS-S6). Status at 22 Oct 2026. P
 
 | Data | Who it is about | Where it is held | How long |
 |---|---|---|---|
-| Client organisation name, sector | The client organisation | `FinOpsIqAssessment` (Amplify Data, DynamoDB, AWS ap-south-1 Mumbai) | 24 months after the last change, or until deleted |
+| Client organisation name, sector, and logo if the consultant adds one (a small PNG or JPEG) | The client organisation | `FinOpsIqAssessment` (Amplify Data, DynamoDB, AWS ap-south-1 Mumbai) | 24 months after the last change, or until deleted |
 | Answers and estate facts: providers, scopes, spend by scope and currency, value-base inputs (shares, utilisation, internal cost rate) | The client organisation (commercially confidential, not personal data) | `requestJson` in the same record | As above |
 | Server-computed result (ratings, findings, value range, roadmap, platform actions) | The client organisation | `resultJson` in the same record | As above |
 | Consultant notes (consultant-only; never in the client view or client edition) | The client organisation; may name people if a consultant writes names | `consultantNotes` in the same record | As above |
 | Respondent email: the consultant who runs the assessment | The consultant (personal data) | `respondentEmail` in the same record; the Cognito user pool (platform sign-in) | Record: as above. User pool: platform account lifecycle, outside FinOps IQ |
 | Report PDF and backlog CSV | The client organisation | Generated on request from the stored record; not stored by LTM (`Cache-Control: no-store`); the downloaded file is held by whoever downloads it | Not retained by LTM |
+| Archived report PDFs ("Archive to Reports", carried over from FinOps Value Case, 22 Oct 2026) | The client organisation; the archiving consultant's email in the file metadata | The shared reports bucket (`ltm-advisory-reports-223833501993`, `reports/finops-iq/`), listed in the portal's Reports section | **Open:** the bucket has no expiry rule. A lifecycle rule deleting `reports/finops-iq/` objects after 730 days (24 months, matching the assessments) is drafted and needs the owner's approval to apply, because it changes a shared production bucket |
 | Scoring requests (`POST /api/evaluate/finops-iq/v3`) | The client organisation | Processed in memory; not stored | Not retained |
 | API access logs: request ID, time, source IP, method, route, status, latency, caller email, authorizer error | The consultant (IP address and email are personal data) | CloudWatch Logs, ap-south-1 | One year (`RetentionDays.ONE_YEAR`) |
 | Lambda logs for the three FinOps IQ functions: errors with the request ID and the error object; deletions with the assessment ID. Request and response bodies are not logged | Mainly operational | CloudWatch Logs, ap-south-1 | One year (set in M6; previously kept forever) |
 | Browser | — | No assessment data in browser storage (the page saves and resumes on the server); the platform session token only | Session |
 
-**Not in FinOps IQ v3:** AI features, file upload, the S3 report archive. The current FinOps IQ and FinOps Value Case pages stay live with the F0 review banner until M8 (D18). They keep their own flows: the old FinOps IQ page holds its state in browser `localStorage`, and FinOps Value Case can archive a PDF to the shared S3 reports bucket. They are retired at M8; the shared reports bucket's retention is a platform question for WS-S6, outside this phase.
+**Not in FinOps IQ v3:** AI features and document upload. (The S3 report archive and a logo image were added on 22 Oct 2026, when FinOps Value Case was retired; see the rows above.) The current FinOps IQ and FinOps Value Case pages stay live with the F0 review banner until M8 (D18). They keep their own flows: the old FinOps IQ page holds its state in browser `localStorage`, and FinOps Value Case can archive a PDF to the shared S3 reports bucket. They are retired at M8; the shared reports bucket's retention is a platform question for WS-S6, outside this phase.
 
 ## 2. Retention (built)
 

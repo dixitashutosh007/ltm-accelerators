@@ -38,12 +38,15 @@
 
     if (user.role === 'super_admin' || !toolId) return;
 
+    // data-tool may list several tools (space-separated): access to any one opens the page. FinOps IQ lists the
+    // retired FinOps Value Case too, whose permission now grants FinOps IQ (owner decision, 22 Oct 2026).
     var p = user.permissions || {};
-    var acc = p.accelerators && p.accelerators[toolId];
-    var hasAccess =
-      !!(acc && (acc.take || acc.full)) ||
-      (Array.isArray(p.take) && p.take.indexOf(toolId) >= 0) ||
-      (Array.isArray(p.view) && p.view.indexOf(toolId) >= 0);
+    var hasAccess = toolId.split(/\s+/).some(function (id) {
+      var acc = p.accelerators && p.accelerators[id];
+      return !!(acc && (acc.take || acc.full)) ||
+        (Array.isArray(p.take) && p.take.indexOf(id) >= 0) ||
+        (Array.isArray(p.view) && p.view.indexOf(id) >= 0);
+    });
 
     if (!hasAccess) {
       alert("Access Restricted: Your account does not have permission to access this diagnostic assessment.\n\nPlease contact your administrator.");

@@ -120,6 +120,10 @@
       class: 'btn small', type: 'button', 'aria-pressed': state.view === 'client' ? 'true' : 'false',
       onclick: function () { setView(state.view === 'client' ? 'consultant' : 'client'); }
     }, state.view === 'client' ? 'Client view: on' : 'Client view: off'));
+    if (state.view === 'client') actions.appendChild(h('button', {
+      class: 'btn small', type: 'button', 'aria-pressed': state.teaser ? 'true' : 'false',
+      onclick: function () { state.teaser = !state.teaser; render(); }
+    }, state.teaser ? 'Teaser: on' : 'Teaser: off'));
     actions.appendChild(h('button', { class: 'btn small', type: 'button', onclick: function () { closeAssessment(); } }, 'All assessments'));
   }
 
@@ -133,7 +137,7 @@
         schema.enums.sectors.map(function (s) { return h('option', { value: s.value }, s.label); }))),
       h('fieldset', { class: 'field' }, h('legend', null, 'Mode'),
         h('div', { class: 'mode-choice' }, ['executive', 'workshop'].map(function (m, i) {
-          var preset = new URLSearchParams(location.search).get('mode');  // the portal's FinOps Value Case tile opens ?mode=executive
+          var preset = new URLSearchParams(location.search).get('mode');  // links can open a mode directly; the retired FinOps Value Case page forwards to ?mode=executive
           return h('label', null, h('input', { type: 'radio', name: 'mode', value: m, checked: MODE_INFO[preset] ? m === preset : i === 0 }),
             h('strong', null, MODE_INFO[m].label + ' · ' + MODE_INFO[m].duration), h('br'), h('span', { class: 'small muted' }, MODE_INFO[m].text));
         }))),
@@ -223,7 +227,7 @@
     state = {
       assessmentId: newId(), clientName: carry ? carry.clientName : String(form.get('clientName')).trim(), clientSector: sector,
       respondentEmail: session.email, status: 'draft', startedAt: new Date().toISOString(), mode: mode,
-      facts: facts, answers: carry ? JSON.parse(JSON.stringify(carry.answers)) : {}, consultantNotes: '',
+      facts: facts, answers: carry ? JSON.parse(JSON.stringify(carry.answers)) : {}, consultantNotes: '', clientLogo: carry ? carry.clientLogo || '' : '',
       result: null, errors: [], step: 'estate', view: 'consultant', saveStatus: ''
     };
     var saved = await persist('save');
@@ -242,7 +246,7 @@
       assessmentId: a.assessmentId, clientName: a.clientName, clientSector: a.clientSector || undefined, respondentEmail: a.respondentEmail,
       status: a.status, startedAt: a.startedAt, completedAt: a.completedAt, archivedAt: a.archivedAt, mode: a.mode,
       facts: req.facts || { org: { currency: 'USD' }, footprint: { publicCloudProviders: [], scopes: [] }, spend: { byScope: {} } },
-      answers: req.answers || {}, consultantNotes: a.consultantNotes || '', result: a.result || null, errors: [],
+      answers: req.answers || {}, consultantNotes: a.consultantNotes || '', clientLogo: a.clientLogo || '', result: a.result || null, errors: [],
       step: a.result ? 'results' : 'estate', view: view === 'client' ? 'client' : 'consultant', saveStatus: a.status === 'completed' || a.status === 'archived' ? statusLabel(a.status) : 'Saved'
     };
     setUrl();
@@ -275,6 +279,7 @@
     var s = { assessmentId: state.assessmentId, clientName: state.clientName, respondentEmail: state.respondentEmail, status: status, startedAt: state.startedAt, request: request() };
     if (state.clientSector) s.clientSector = state.clientSector;
     if (state.consultantNotes) s.consultantNotes = state.consultantNotes;
+    if (state.clientLogo) s.clientLogo = state.clientLogo;
     return s;
   }
 
@@ -365,7 +370,7 @@
     })));
     var cov = state.result && state.result.coverage;
     var head = h('div', { class: 'header-row' },
-      h('div', null, h('h1', null, state.clientName), h('p', { class: 'muted small' }, MODE_INFO[state.mode].label + ' mode · ' + MODE_INFO[state.mode].duration + ' · ' + statusLabel(state.status) + (state.completedAt ? ' ' + when(state.completedAt) : ''))),
+      h('div', { class: 'client-id' }, logoControl(), h('div', null, h('h1', null, state.clientName), h('p', { class: 'muted small' }, MODE_INFO[state.mode].label + ' mode · ' + MODE_INFO[state.mode].duration + ' · ' + statusLabel(state.status) + (state.completedAt ? ' ' + when(state.completedAt) : '')))),
       cov ? h('div', { class: 'small muted', style: 'min-width:200px' }, cov.answered + ' of ' + cov.asked + ' questions answered', h('div', { class: 'progress', role: 'progressbar', 'aria-valuemin': '0', 'aria-valuemax': String(cov.asked), 'aria-valuenow': String(cov.answered), 'aria-label': 'Questions answered' }, h('i', { style: 'width:' + (cov.asked ? Math.round(100 * cov.answered / cov.asked) : 0) + '%' }))) : null);
     var body = h('div', { class: isFinal() ? 'read-only' : '' });
     if (state.saveError) body.appendChild(h('div', { class: 'notice error', role: 'alert' }, h('strong', null, 'Not saved. '), h('ul', null, state.saveError.slice(0, 6).map(function (e) { return h('li', null, e); }))));
@@ -402,6 +407,39 @@
     return h('fieldset', { class: 'question consultant', id: 'q-setup', disabled: isFinal() }, h('legend', null, 'Engagement setup'),
       h('p', { class: 'help' }, 'Set by the consultant; not shown in client view. Value figures are net of implementation effort, so no money figure is shown until this is set.'),
       amountWidget('cost.internalRate', 'Loaded internal cost per FTE-month', { allowBand: true, allowUnknown: true }));
+  }
+
+  /**
+   * The client's logo (carried over from FinOps Value Case): shown beside the client name and on the report cover.
+   * The consultant adds or replaces it while the assessment is open; the image is scaled down in the browser to at
+   * most 480 by 160 pixels, so it stays small enough to keep with the assessment.
+   */
+  function logoControl() {
+    var img = state.clientLogo ? h('img', { class: 'client-logo', src: state.clientLogo, alt: state.clientName + ' logo' }) : null;
+    if (state.view === 'client' || isFinal()) return img;
+    var input = h('input', { type: 'file', id: 'client-logo', accept: 'image/png,image/jpeg', class: 'visually-hidden', onchange: function (e) { loadLogo(e.target.files[0]); e.target.value = ''; } });
+    return h('div', { class: 'logo-control' }, img,
+      input, h('label', { for: 'client-logo', class: 'btn small' }, state.clientLogo ? 'Change logo' : 'Add client logo'),
+      state.clientLogo ? h('button', { type: 'button', class: 'btn small link', onclick: function () { state.clientLogo = ''; render(); persist('save'); } }, 'Remove logo') : null);
+  }
+  function loadLogo(file) {
+    if (!file || !/^image\/(png|jpeg)$/.test(file.type)) { showSave('Logo not added: choose a PNG or JPEG image'); return; }
+    var reader = new FileReader();
+    reader.onload = function () {
+      var im = new Image();
+      im.onload = function () {
+        var scale = Math.min(1, 480 / im.width, 160 / im.height);
+        var c = document.createElement('canvas');
+        c.width = Math.max(1, Math.round(im.width * scale)); c.height = Math.max(1, Math.round(im.height * scale));
+        c.getContext('2d').drawImage(im, 0, 0, c.width, c.height);
+        var url = c.toDataURL('image/png');
+        if (url.length > 140000) url = c.toDataURL('image/jpeg', 0.85);
+        if (url.length > 140000) { showSave('Logo not added: the image is too detailed; try a simpler file'); return; }
+        state.clientLogo = url; render(); persist('save');
+      };
+      im.src = reader.result;
+    };
+    reader.readAsDataURL(file);
   }
 
   function notesCard() {
@@ -789,6 +827,10 @@
         })))),
       workshopOnly.length ? h('p', { class: 'small muted' }, workshopOnly.length + ' more capabilities are assessed in the workshop: ' + workshopOnly.map(function (c) { return c.displayName; }).join(', ') + '.') : null));
 
+    // Teaser mode (carried over from FinOps Value Case): in client view the consultant can hold back the value,
+    // findings, roadmap and platform actions for the readout. They are not rendered at all, only a gated card.
+    if (client && state.teaser) { body.appendChild(teaserCard()); body.appendChild(methodology(r)); return; }
+
     body.appendChild(valueSection(r.value, cur));
 
     var ids = state.mode === 'executive' ? r.topFindingIds : r.findings.map(function (f) { return f.id; });
@@ -895,6 +937,15 @@
       h('p', { class: 'small muted' }, 'FinOps IQ engine ' + r.versions.engine + ' · value model ' + r.versions.valueModel + ' · ' + r.versions.kb + ' · claims register ' + r.versions.claimsRegister + (r.assessmentDate ? ' · assessed ' + r.assessmentDate : '') + ' · data provided by ' + state.clientName));
   }
 
+  /** The gated card shown in teaser mode: placeholder bars only, so nothing held back is in the page. */
+  function teaserCard() {
+    var bars = [92, 76, 84, 58, 70].map(function (w) { return h('span', { style: 'width:' + w + '%' }); });
+    return h('section', { class: 'card teaser', 'aria-labelledby': 'teaser-h' }, h('h3', { id: 'teaser-h' }, 'Value, findings and roadmap'),
+      h('div', { class: 'teaser-bars', 'aria-hidden': 'true' }, bars),
+      h('p', null, 'The indicative value range, the findings, the roadmap and the platform actions are presented in your LTM readout.'),
+      h('p', { class: 'small muted' }, 'Your LTM consultant will walk you through them and share the report.'));
+  }
+
   /** How LTM can help (M5): the offerings the findings call for, from the server's result; no scope ranges. */
   function helpCard(r) {
     var title = function (id) { var f = r.findings.find(function (x) { return x.id === id; }); return f ? f.title : id; };
@@ -936,8 +987,54 @@
     };
     return h('section', { class: 'card', 'aria-labelledby': 'report-h' }, h('h3', { id: 'report-h' }, 'Report'),
       h('p', { class: 'small muted' }, client ? 'Client edition: no consultant checks or notes.' : 'Consultant edition, with the consultant checks. Turn on client view for the client edition.'),
-      h('div', { class: 'actions' }, button('pdf', 'Download report (PDF)'), button('csv', 'Download backlog (CSV)')),
+      h('div', { class: 'actions' }, button('pdf', 'Download report (PDF)'), button('csv', 'Download backlog (CSV)'), archiveControl(status)),
       status);
+  }
+
+  /**
+   * Archive to Reports (carried over from FinOps Value Case): the server-built PDF of this edition is saved to the
+   * portal's Reports section, kept two years like the assessment. A second click confirms, as for Delete.
+   */
+  function archiveControl(status) {
+    var cell = h('span', { class: 'archive' });
+    var edition = state.view === 'client' ? 'client edition' : 'consultant edition';
+    function ask() {
+      var yes = h('button', { class: 'btn', type: 'button', onclick: save }, 'Save to Reports');
+      clear(cell);
+      append(cell, [h('span', { class: 'small' }, 'Save the ' + edition + ' to Reports for two years? '), yes,
+        h('button', { class: 'btn small link', type: 'button', onclick: function () { reset().focus(); } }, 'Cancel')]);
+      yes.focus();
+    }
+    function reset() {
+      var btn = h('button', { class: 'btn', type: 'button', onclick: ask }, 'Archive to Reports');
+      clear(cell); cell.appendChild(btn);
+      return btn;
+    }
+    async function save() {
+      var q = new URLSearchParams({ assessmentId: state.assessmentId, format: 'pdf' });
+      if (state.view === 'client') q.set('view', 'client');
+      try {
+        var saved = await working(['Building the ' + edition, 'Saving it to Reports'], (async function () {
+          var res = await API.fetch(REPORT + '?' + q.toString(), { method: 'GET' });
+          if (res.status !== 200) throw new Error('report');
+          var pdfBase64 = await new Promise(function (resolve, reject) {
+            var r = new FileReader(); r.onload = function () { resolve(r.result); }; r.onerror = reject;
+            res.blob().then(function (b) { r.readAsDataURL(b); }, reject);
+          });
+          return window.LTM_S3.saveReportToS3({
+            acceleratorId: 'finops-iq', clientName: state.clientName, pdfBase64: pdfBase64,
+            metadata: { assessmentId: state.assessmentId, mode: state.mode, edition: state.view === 'client' ? 'client' : 'consultant', engine: state.result && state.result.versions.engine }
+          });
+        })(), 'Saved to Reports');
+        reset();
+        status.textContent = saved && saved.ok === false ? 'Not archived. Please try again.' : 'Archived to Reports.';
+      } catch (e) {
+        reset();
+        status.textContent = 'Not archived. Please try again.';
+      }
+    }
+    reset();
+    return cell;
   }
 
   async function download(format, btn, status) {
@@ -976,7 +1073,7 @@
   }
   async function archive() { var data = await persist('archive'); if (data) render(); }
   function continueInWorkshop() {
-    startNew(null, { mode: 'workshop', clientName: state.clientName, clientSector: state.clientSector, facts: state.facts, answers: state.answers });
+    startNew(null, { mode: 'workshop', clientName: state.clientName, clientSector: state.clientSector, clientLogo: state.clientLogo, facts: state.facts, answers: state.answers });
   }
 
   /* ------------------------------ Working screen ----------------------------- */

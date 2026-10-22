@@ -33,7 +33,7 @@ const DOWNLOAD_URL_TTL_SECONDS = 900; // 15 minutes
 const MAX_PDF_BYTES = 5 * 1024 * 1024;
 const REPORT_KEY_PATTERN = /^reports\/[A-Za-z0-9_-]+\/[A-Za-z0-9_.-]+\.pdf$/;
 
-const ALL_ACCELERATORS = ['strategy-iq', 'modernization-iq', 'finops-value-case', 'finops-iq', 'sovereign-iq', 'posture-iq', 'cloud-iq', 'cost-iq', 'resilience-iq'];
+const ALL_ACCELERATORS = ['strategy-iq', 'modernization-iq', 'finops-iq', 'sovereign-iq', 'posture-iq', 'cloud-iq', 'cost-iq', 'resilience-iq'];
 
 const s3Client = new S3Client({ region: REGION });
 const cognitoClient = new CognitoIdentityProviderClient({ region: COGNITO_REGION });
@@ -178,7 +178,14 @@ function includesAny(list, ...values) {
   return Array.isArray(list) && values.some(v => list.includes(v));
 }
 
+// A retired accelerator's permission carries over to its replacement (FinOps Value Case → FinOps IQ, 22 Oct 2026).
+const PERMISSION_ALIASES = { 'finops-iq': ['finops-value-case'] };
+
 function canAccessAccelerator(perms, acceleratorId) {
+  return [acceleratorId, ...(PERMISSION_ALIASES[acceleratorId] || [])].some(id => canAccessOne(perms, id));
+}
+
+function canAccessOne(perms, acceleratorId) {
   const acc = perms.accelerators?.[acceleratorId];
   return !!(acc && (acc.full || acc.take || acc.edit)) ||
     includesAny(perms.take, acceleratorId, '*') ||
@@ -303,9 +310,9 @@ export const handler = async (event) => {
         role: role || 'advisor_viewer',
         name: name || cleanEmail,
         permissions: permissions || {
-          view: ['finops-value-case', 'finops-iq', 'sovereign-iq', 'posture-iq'],
+          view: ['finops-iq', 'sovereign-iq', 'posture-iq'],
           edit: role === 'practice_finops'
-            ? ['finops-value-case', 'finops-iq']
+            ? ['finops-iq']
             : role === 'practice_sovereignty'
             ? ['sovereign-iq', 'posture-iq']
             : []

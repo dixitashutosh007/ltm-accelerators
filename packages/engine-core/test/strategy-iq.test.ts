@@ -1,5 +1,5 @@
 /**
- * Strategy IQ: Phase 2 test suite (same pattern as finops-value-case.test.ts; see docs/phase2/ACCELERATOR_TEMPLATE.md).
+ * Strategy IQ: Phase 2 test suite (see docs/phase2/ACCELERATOR_TEMPLATE.md).
  * To change an approved output on purpose: UPDATE_GOLDEN=1 npx vitest run strategy-iq, then have the strategy lead
  * review the golden file diff.
  */

@@ -164,6 +164,8 @@ const schema = a.schema({
       engineVersion: a.string().required(),
       requestJson: a.string().required(),
       consultantNotes: a.string(),
+      // The client's logo (PNG or JPEG data URL, about 100 KB at most) for the report cover.
+      clientLogo: a.string(),
       resultJson: a.string(),
       startedAt: a.datetime().required(),
       completedAt: a.datetime(),

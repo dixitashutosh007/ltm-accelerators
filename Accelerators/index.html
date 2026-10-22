@@ -685,7 +685,6 @@
       opacity: 1;
     }
 
-    .acc-card.card-finops-val { --card-accent: #10B981; }
     .acc-card.card-finops-iq { --card-accent: #06B6D4; }
     .acc-card.card-sovereign-iq { --card-accent: #FF5E4F; }
     .acc-card.card-posture-iq { --card-accent: #F59E0B; }
@@ -1390,30 +1389,7 @@
       </div>
 
       <div class="acc-grid">
-        <!-- 1. FinOps Value Case -->
-        <div class="acc-card card-finops-val">
-          <div class="card-top">
-            <div class="card-meta-row">
-              <span class="card-eyebrow">OPPORTUNITY QUALIFICATION</span>
-            </div>
-            <h3 class="card-title">FinOps Value Case</h3>
-            <p class="card-desc">Being merged into FinOps IQ as its executive mode: do we need to act now, and roughly how much is at stake? Until then this opens the current page.</p>
-            <div class="chip-row">
-              <span class="chip">Executive Questions</span>
-              <span class="chip">15–20 Minutes</span>
-              <span class="chip">Indicative Value Range</span>
-            </div>
-          </div>
-
-          <div class="card-footer" style="justify-content:flex-end;">
-            <div class="card-actions">
-              <button class="btn-action-edit" data-tool="finops-value-case" onclick="handleEditClick('finops-value-case')">Edit</button>
-              <button class="btn-action-launch" data-tool="finops-value-case" onclick="handleLaunchClick('finops-value-case', '/finops-value-case')">Take Assessment &rarr;</button>
-            </div>
-          </div>
-        </div>
-
-        <!-- 2. FinOps IQ -->
+        <!-- 1. FinOps IQ -->
         <div class="acc-card card-finops-iq">
           <div class="card-top">
             <div class="card-meta-row">
@@ -1711,7 +1687,6 @@
         <div style="display:flex;gap:8px;margin-top:14px;flex-wrap:wrap;" id="reportsFilterBar">
           <button class="chip active-chip" onclick="setReportsFilter('', this)">All Reports</button>
           <button class="chip" onclick="setReportsFilter('strategy-iq', this)">Strategy IQ</button>
-          <button class="chip" onclick="setReportsFilter('finops-value-case', this)">FinOps Value Case</button>
           <button class="chip" onclick="setReportsFilter('finops-iq', this)">FinOps IQ</button>
           <button class="chip" onclick="setReportsFilter('posture-iq', this)">Posture IQ</button>
           <button class="chip" onclick="setReportsFilter('sovereign-iq', this)">Sovereign IQ</button>
@@ -1814,19 +1789,6 @@
                     <label><input type="checkbox" id="perm_create_strategy-iq_take" onchange="syncAccFull('create', 'strategy-iq')" checked> Take Assessment</label>
                     <label><input type="checkbox" id="perm_create_strategy-iq_edit" onchange="syncAccFull('create', 'strategy-iq')"> Edit Engine</label>
                     <label><input type="checkbox" id="perm_create_strategy-iq_archive" onchange="syncAccFull('create', 'strategy-iq')"> View Archive</label>
-                  </div>
-                </div>
-
-                <!-- FinOps Value Case -->
-                <div class="granular-acc-card">
-                  <div class="granular-acc-head">
-                    <span class="granular-acc-name">💰 FinOps Value Case</span>
-                    <label class="full-perm-label"><input type="checkbox" id="perm_create_finops-value-case_full" onchange="toggleAccFull('create', 'finops-value-case', this.checked)"> Full</label>
-                  </div>
-                  <div class="granular-acc-options">
-                    <label><input type="checkbox" id="perm_create_finops-value-case_take" onchange="syncAccFull('create', 'finops-value-case')" checked> Take Assessment</label>
-                    <label><input type="checkbox" id="perm_create_finops-value-case_edit" onchange="syncAccFull('create', 'finops-value-case')"> Edit Engine</label>
-                    <label><input type="checkbox" id="perm_create_finops-value-case_archive" onchange="syncAccFull('create', 'finops-value-case')"> View Archive</label>
                   </div>
                 </div>
 
@@ -2020,19 +1982,6 @@
               <label><input type="checkbox" id="perm_editperm_strategy-iq_take" onchange="syncAccFull('editperm', 'strategy-iq')"> Take Assessment</label>
               <label><input type="checkbox" id="perm_editperm_strategy-iq_edit" onchange="syncAccFull('editperm', 'strategy-iq')"> Edit Engine</label>
               <label><input type="checkbox" id="perm_editperm_strategy-iq_archive" onchange="syncAccFull('editperm', 'strategy-iq')"> View Archive</label>
-            </div>
-          </div>
-
-          <!-- FinOps Value Case -->
-          <div class="granular-acc-card">
-            <div class="granular-acc-head">
-              <span class="granular-acc-name">💰 FinOps Value Case</span>
-              <label class="full-perm-label"><input type="checkbox" id="perm_editperm_finops-value-case_full" onchange="toggleAccFull('editperm', 'finops-value-case', this.checked)"> Full</label>
-            </div>
-            <div class="granular-acc-options">
-              <label><input type="checkbox" id="perm_editperm_finops-value-case_take" onchange="syncAccFull('editperm', 'finops-value-case')"> Take Assessment</label>
-              <label><input type="checkbox" id="perm_editperm_finops-value-case_edit" onchange="syncAccFull('editperm', 'finops-value-case')"> Edit Engine</label>
-              <label><input type="checkbox" id="perm_editperm_finops-value-case_archive" onchange="syncAccFull('editperm', 'finops-value-case')"> View Archive</label>
             </div>
           </div>
 
@@ -2238,7 +2187,13 @@
       return !!(AUTH_USER && AUTH_USER.role === 'super_admin');
     }
 
+    // A retired tool's permission carries over to the tool that replaced it (FinOps Value Case → FinOps IQ, 22 Oct 2026).
+    const PERMISSION_ALIASES = { 'finops-iq': ['finops-value-case'] };
     function canUserTakeAssessment(toolId) {
+      if ((PERMISSION_ALIASES[toolId] || []).some(canTakeOne)) return true;
+      return canTakeOne(toolId);
+    }
+    function canTakeOne(toolId) {
       if (isSuperAdmin()) return true;
       if (!AUTH_USER || !AUTH_USER.permissions) return false;
       const p = AUTH_USER.permissions;
@@ -2830,7 +2785,6 @@
 
     const ACCELERATOR_TOOLS = [
       { id: 'strategy-iq', name: 'Strategy IQ', icon: '🎯' },
-      { id: 'finops-value-case', name: 'FinOps Value Case', icon: '💰' },
       { id: 'finops-iq', name: 'FinOps IQ', icon: '📊' },
       { id: 'sovereign-iq', name: 'Sovereign IQ', icon: '🛡️' },
       { id: 'posture-iq', name: 'Posture IQ', icon: '⚡' },
@@ -2912,7 +2866,8 @@
     function populateGranularForm(prefix, perms) {
       const p = perms || {};
       ACCELERATOR_TOOLS.forEach(t => {
-        const acc = p.accelerators?.[t.id];
+        // A retired tool's grant shows (and is saved) as its replacement's, so editing a user never drops it.
+        const acc = p.accelerators?.[t.id] || (PERMISSION_ALIASES[t.id] || []).map(id => p.accelerators?.[id]).find(Boolean);
         let isTake = false, isEdit = false, isArchive = false, isFull = false;
 
         if (acc) {
@@ -2921,8 +2876,9 @@
           isArchive = Boolean(acc.archive || acc.full);
           isFull = Boolean(acc.full || (isTake && isEdit && isArchive));
         } else {
-          isTake = Boolean(p.take?.includes(t.id) || p.view?.includes(t.id));
-          isEdit = Boolean(p.edit?.includes(t.id));
+          const ids = [t.id, ...(PERMISSION_ALIASES[t.id] || [])];
+          isTake = ids.some(id => p.take?.includes(id) || p.view?.includes(id));
+          isEdit = ids.some(id => p.edit?.includes(id));
           isArchive = Boolean(p.archive?.includes(t.id) || p.view?.includes('reports'));
           isFull = isTake && isEdit && isArchive;
         }

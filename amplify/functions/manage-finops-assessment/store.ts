@@ -14,6 +14,7 @@ export interface FinOpsAssessmentRecord {
   engineVersion: string;
   requestJson: string;
   consultantNotes?: string | null;
+  clientLogo?: string | null;
   resultJson?: string | null;
   startedAt: string;
   completedAt?: string | null;
@@ -36,7 +37,7 @@ export interface FinOpsAssessmentStore {
 
 /** The list view leaves out the request, notes and result, which can be large. */
 export const SUMMARY_FIELDS = 'assessmentId clientName clientSector respondentEmail status mode engineVersion startedAt completedAt archivedAt expiresAt createdAt updatedAt';
-export const FIELDS = `${SUMMARY_FIELDS} requestJson consultantNotes resultJson`;
+export const FIELDS = `${SUMMARY_FIELDS} requestJson consultantNotes clientLogo resultJson`;
 
 /**
  * DynamoDB time to live deletes an expired record within days, not at once, and reads return it until then: the stores

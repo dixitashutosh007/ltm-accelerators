@@ -2,21 +2,6 @@
 import postureKb from '../src/accelerators/posture-iq/knowledge-base.json' with { type: 'json' };
 import sovereignKb from '../src/accelerators/sovereign-iq/knowledge-base.json' with { type: 'json' };
 
-export const finopsValueCaseAnswers: Record<string, any> = {
-  E2: [0, 1], // AWS, Azure
-  E3: 3500000, // £3.5M annual spend
-  E4: 1, // Significant migration planned
-  E5: 40, // 40% growth
-  E6: 60, // 60% migration
-  P1: 20, // 20% variance
-  P2: 1, // quarterly surprise
-  C2: 50, // 50% commitment coverage
-  C3: 1,
-  C5: 0,
-  V1: 0
-};
-export const finopsValueCaseOrg = { name: 'Global Investment Bank', sector: 'Banking & Capital Markets', sector_class: 'bfsi', currency: 'gbp' };
-
 export const finopsIqAnswers: Record<string, any> = {
   C1: 0, C2: 0, C3: 0, C4: 0, C5: 0, C6: 0, C7: 0, C8: 0,
   R1: 0, R2: 0, R3: 0, R4: 0, R5: 0, R6: 0, R7: 0, R8: 0, R9: 0

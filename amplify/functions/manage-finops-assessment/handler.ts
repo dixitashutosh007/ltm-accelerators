@@ -33,9 +33,9 @@ function view(r: FinOpsAssessmentRecord, client = false) {
   };
 }
 
-/** The list shows summaries only, whatever the store returns: no request, notes or result. */
+/** The list shows summaries only, whatever the store returns: no request, notes, logo or result. */
 function summary(r: FinOpsAssessmentRecord) {
-  const { requestJson, resultJson, consultantNotes, ...rest } = r;
+  const { requestJson, resultJson, consultantNotes, clientLogo, ...rest } = r;
   return rest;
 }
 
@@ -114,6 +114,7 @@ export function createHandler(store: FinOpsAssessmentStore, now: () => Date = ()
         engineVersion: result?.versions.engine ?? ENGINE_VERSION,
         requestJson: JSON.stringify(result ? { ...s.request, assessmentDate: result.assessmentDate } : s.request),
         consultantNotes: s.consultantNotes ?? null,
+        clientLogo: s.clientLogo ?? null,
         resultJson: result ? JSON.stringify(result) : null,
         startedAt: existing?.startedAt ?? s.startedAt,
         completedAt: completedAt?.toISOString() ?? null,

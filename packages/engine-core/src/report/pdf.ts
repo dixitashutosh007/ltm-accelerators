@@ -99,7 +99,9 @@ export function definition(doc: ReportDocument): TDocumentDefinitions {
     });
   }
   const cover: Content[] = [
-    { text: m.platform.toUpperCase(), style: 'coverBadge', margin: [0, 120, 0, 18] },
+    // The client's logo sits in the space above the badge when one was given, so the cover does not shift.
+    m.clientLogo ? { image: m.clientLogo, fit: [180, 64], margin: [0, 56, 0, 18] } : { text: '', margin: [0, 120, 0, 0] },
+    { text: m.platform.toUpperCase(), style: 'coverBadge', margin: [0, 0, 0, 18] },
     { text: m.product, style: 'coverProduct' },
     { text: m.title, style: 'coverTitle' },
     { text: m.subtitle, style: 'coverSubtitle', margin: [0, 6, 0, 36] },

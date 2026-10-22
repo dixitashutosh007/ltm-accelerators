@@ -43,6 +43,8 @@ export interface ReportOptions {
   view: 'client' | 'consultant';
   /** The scoring request the result came from; needed for the sensitivity table, which re-runs the engine. */
   input?: FinOpsIqV3Input;
+  /** The client's logo for the cover (PNG or JPEG data URL). */
+  clientLogo?: string;
 }
 
 /* --------------------------------- Helpers ---------------------------------- */
@@ -809,7 +811,7 @@ export function finopsIqReport(result: FinOpsIqV3Result, opts: ReportOptions): R
     meta: {
       platform: PLATFORM, product: PRODUCT, title: 'FinOps assessment report',
       subtitle: r.mode === 'executive' ? 'Executive assessment: do we need to act, and what is at stake?' : 'Workshop assessment: what to do, by when, owned by whom, and what it is worth',
-      client: opts.client, preparedBy: opts.preparedBy, dataProvidedBy: opts.dataProvidedBy, date: r.assessmentDate!,
+      client: opts.client, preparedBy: opts.preparedBy, dataProvidedBy: opts.dataProvidedBy, date: r.assessmentDate!, clientLogo: opts.clientLogo,
       version: `FinOps IQ engine ${r.versions.engine} · value model ${r.versions.valueModel}`, view: opts.view,
       footer: `${PLATFORM} · ${PRODUCT} · Confidential`,
       status: r.technicalPlan?.actions.length ? 'Review draft.' : 'Review draft. Platform actions are added as the playbook entries are reviewed.'

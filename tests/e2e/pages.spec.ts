@@ -3,7 +3,7 @@ import { test, expect, makeIdToken, signedIn } from './fixtures';
 // Every hosted page, opened as an administrator under the production security headers.
 // (Cost IQ and Resilience IQ are maintained separately and have their own test suites.)
 const PAGES = [
-  '/', '/strategy-iq', '/modernization-iq', '/finops-value-case', '/finops-iq',
+  '/', '/strategy-iq', '/modernization-iq', '/finops-iq',
   '/cloud-iq', '/sovereign-iq', '/posture-iq', '/ai-readiness-iq', '/studio',
   '/cloud-iq-sample-report', '/sovereign-iq-sample-report', '/finops-iq-sample-report', '/portal'
 ];
@@ -36,4 +36,15 @@ test('no page sends data to third-party AI services on load', async ({ page, con
     await page.waitForLoadState('networkidle');
   }
   expect(world.calls.filter(c => c.startsWith('BLOCKED-AI'))).toEqual([]);
+});
+
+test('FinOps Value Case is retired: its old address forwards to FinOps IQ executive mode, and the portal no longer lists it', async ({ page, context }) => {
+  await signedIn(context, { email: 'fvc@ltm.com', token: makeIdToken('fvc@ltm.com'), role: 'advisor_viewer', permissions: { take: ['finops-value-case'] } });
+  await page.goto('/finops-value-case');
+  await page.waitForURL(/\/finops-iq-v3\?mode=executive$/);
+  // A Value Case permission opens FinOps IQ (owner decision, 22 Oct 2026), with executive mode preselected.
+  await expect(page.getByRole('radio', { name: /^Executive/ })).toBeChecked();
+  await page.goto('/');
+  await expect(page.getByRole('heading', { name: 'FinOps IQ', exact: true })).toBeVisible();
+  expect(await page.locator('body').innerText()).not.toMatch(/FinOps Value Case/);
 });

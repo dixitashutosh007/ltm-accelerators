@@ -8,7 +8,6 @@ import type { IFunction } from 'aws-cdk-lib/aws-lambda';
 import { LogGroup, RetentionDays } from 'aws-cdk-lib/aws-logs';
 import { auth } from './auth/resource';
 import { data } from './data/resource';
-import { evaluateFinOpsFunction } from './functions/evaluate-finops/resource';
 import { evaluateFinOpsIqFunction } from './functions/evaluate-finops-iq/resource';
 import { evaluatePostureIqFunction } from './functions/evaluate-posture-iq/resource';
 import { evaluateSovereignIqFunction } from './functions/evaluate-sovereign-iq/resource';
@@ -30,7 +29,6 @@ import {
 export const backend = defineBackend({
   auth,
   data,
-  evaluateFinOpsFunction,
   evaluateFinOpsIqFunction,
   evaluatePostureIqFunction,
   evaluateSovereignIqFunction,
@@ -106,7 +104,6 @@ const integrate = (id: string, fn: { resources: { lambda: IFunction } }) =>
   new HttpLambdaIntegration(id, fn.resources.lambda);
 
 const integrations = {
-  finops: integrate('AdvisoryFinOpsValueCase', backend.evaluateFinOpsFunction),
   finopsIq: integrate('AdvisoryFinOpsIq', backend.evaluateFinOpsIqFunction),
   finopsAssessment: integrate('AdvisoryFinOpsIqAssessment', backend.manageFinOpsAssessmentFunction),
   finopsReport: integrate('AdvisoryFinOpsIqReport', backend.finopsIqReportFunction),
@@ -122,9 +119,8 @@ const route = (path: string, methods: HttpMethod[], integration: HttpLambdaInteg
   advisoryApi.addRoutes({ path, methods, integration });
 
 // Scoring engines
-route('/api/evaluate/finops-value-case', [HttpMethod.POST], integrations.finops);
 route('/api/evaluate/finops-iq', [HttpMethod.POST], integrations.finopsIq);
-// FinOps IQ v3, the merged product (FinOps IQ with FinOps Value Case as its executive mode). The v2 route above
+// FinOps IQ v3, the merged product (FinOps IQ with the retired FinOps Value Case as its executive mode). The v2 route above
 // stays for the current page until cutover (execution phase M8).
 route('/api/evaluate/finops-iq/v3', [HttpMethod.POST], integrations.finopsIq);
 route('/api/finops-iq/assessment', [HttpMethod.GET, HttpMethod.POST], integrations.finopsAssessment);
