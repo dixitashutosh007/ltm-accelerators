@@ -631,7 +631,8 @@ function methodologySection(c: Ctx): ReportSection {
         [['Workstream library'], [ref(String(WS.libraryVersion))]],
         [['Assumption register'], [ref(String((assumptionRegister as any).registryVersion))]]
       ] },
-      { kind: 'paragraph', style: 'note', segs: [c.client ? 'The data notice and the disclaimer are draft wording, pending approval.' : ref(NOTICES.status)] }
+      // The approval record is for the consultant; the client edition carries the approved wording without it.
+      ...(c.client ? [] : [{ kind: 'paragraph', style: 'note', segs: [ref(NOTICES.status)] } as Block])
     ]
   };
 }
@@ -814,7 +815,8 @@ export function finopsIqReport(result: FinOpsIqV3Result, opts: ReportOptions): R
       client: opts.client, preparedBy: opts.preparedBy, dataProvidedBy: opts.dataProvidedBy, date: r.assessmentDate!, clientLogo: opts.clientLogo,
       version: `FinOps IQ engine ${r.versions.engine} · value model ${r.versions.valueModel}`, view: opts.view,
       footer: `${PLATFORM} · ${PRODUCT} · Confidential`,
-      status: r.technicalPlan?.actions.length ? 'Review draft.' : 'Review draft. Platform actions are added as the playbook entries are reviewed.'
+      // The "Review draft" marker came off when the owner approved the notice and disclaimer (M6 A3, 22 Oct 2026).
+      status: r.technicalPlan?.actions.length ? undefined : 'Platform actions are added as the playbook entries are reviewed.'
     },
     sections: [executiveSummary(c), capabilityProfile(c), findingsSection(c), valueSection(c), roadmapSection(c), helpSection(c), technicalSection(c), marketSection(), methodologySection(c)]
   };

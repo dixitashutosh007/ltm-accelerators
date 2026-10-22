@@ -47,7 +47,7 @@ Owner instruction (22 Oct 2026): retire FinOps Value Case entirely, with its hom
 
 ## What was removed
 
-- The page (`/finops-value-case` now redirects to FinOps IQ in executive mode), the home-screen tile, its Reports filter and its Access Control rows.
+- The page (`/finops-value-case` now forwards to `/finops-iq?mode=executive`), the home-screen tile, its Reports filter and its Access Control rows.
 - The engine (`finops-value-case/`), its API route and Lambda (`evaluate-finops`), its tests and golden file, the legacy standalone `packages/web-app`, its Studio entry and the family links on other accelerator pages.
 - No archived reports existed under `reports/finops-value-case/` in the reports bucket (checked 22 Oct 2026), so none were lost.
 - Existing FinOps Value Case permissions keep working: they now open FinOps IQ.

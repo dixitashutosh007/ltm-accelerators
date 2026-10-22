@@ -7,9 +7,7 @@ import { evaluateStrategyIq } from '../src/accelerators/strategy-iq/evaluate';
 import strategyKb from '../src/accelerators/strategy-iq/knowledge-base.json' with { type: 'json' };
 import { evaluateCloudIq } from '../src/accelerators/cloud-iq/evaluate';
 import cloudKb from '../src/accelerators/cloud-iq/knowledge-base.json' with { type: 'json' };
-import { evaluateFinOpsIq } from '../src/accelerators/finops-iq/evaluate';
 import { evaluateFinOpsIqV3, QUESTIONS as FIQ3_QUESTIONS, type Facts as Fiq3Facts, type Mode as Fiq3Mode } from '../src/accelerators/finops-iq/v3';
-import finopsIqKb from '../src/accelerators/finops-iq/knowledge-base.json' with { type: 'json' };
 import { evaluatePostureIq } from '../src/accelerators/posture-iq/evaluate';
 import postureKb from '../src/accelerators/posture-iq/knowledge-base.json' with { type: 'json' };
 import { evaluateSovereignIq } from '../src/accelerators/sovereign-iq/evaluate';
@@ -107,16 +105,6 @@ const cldExtreme = (best: boolean) => ({
     return [q.id, best ? n - 1 : 0];
   })),
   session: { mode: 'workshop' }
-});
-
-/* -------------------------------- FinOps IQ -------------------------------- */
-const FIQ: any = finopsIqKb;
-const fiqExtreme = (best: boolean) => ({
-  answers: Object.fromEntries(FIQ.questions.map((q: any) => {
-    const idx = q.options.reduce((m: number, o: any, i: number, a: any[]) => ((best ? o.score > a[m].score : o.score < a[m].score) ? i : m), 0);
-    return [q.id, idx];
-  })),
-  annualSpend: 10_000_000
 });
 
 /* ------------------------------ FinOps IQ v3 ------------------------------- */
@@ -345,21 +333,6 @@ export const ADAPTERS: Adapter[] = [
     ],
     band: { get: r => r.band, all: ['Nascent', 'Emerging', 'Established', 'Advanced', 'Leading'] },
     extremes: { best: () => cldExtreme(true), worst: () => cldExtreme(false) }
-  },
-  {
-    id: 'finops-iq', name: 'FinOps IQ',
-    questions: FIQ.questions.map((q: any) => ({ id: q.id, label: q.text })),
-    random: r => ({ answers: Object.fromEntries(FIQ.questions.filter(() => r() < 0.9).map((q: any) => [q.id, r() < 0.05 ? '__NA__' : Math.floor(r() * q.options.length)])), annualSpend: 10_000_000 }),
-    variants: id => { const q = FIQ.questions.find((x: any) => x.id === id); return [...range(q.options.length), '__NA__']; },
-    withAnswer: setAnswer, withoutAnswer: dropAnswer,
-    evaluate: i => evaluateFinOpsIq(i),
-    headlines: [
-      { name: 'Maturity stage (-1..4)', scale: [-1, 4], higherIsBetter: true, get: r => r.maturity },
-      { name: 'Overall score (0-100)', scale: [0, 100], higherIsBetter: true, get: r => r.overallScore },
-      { name: 'Value at stake high ($)', scale: [0, Infinity], higherIsBetter: null, get: r => r.valueAtStake.maxSavings ?? 0 }
-    ],
-    band: { get: r => (r.maturity >= 0 ? FIQ.meta.stages[r.maturity].name : 'Below Stage 1'), all: ['Below Stage 1', ...FIQ.meta.stages.map((s: any) => s.name)] },
-    extremes: { best: () => fiqExtreme(true), worst: () => fiqExtreme(false) }
   },
   fiq3Adapter('executive'),
   fiq3Adapter('workshop'),

@@ -1,6 +1,6 @@
 /**
- * The FinOps IQ scoring route: /v3 scores the merged product (execution phase M2); the plain route keeps v2 for the
- * current page until cutover (M8).
+ * The FinOps IQ scoring route (/v3) scores the merged product (execution phase M2). The v2 engine was retired at
+ * cutover (M8).
  */
 import { describe, it, expect } from 'vitest';
 import type { APIGatewayProxyStructuredResultV2 } from 'aws-lambda';
@@ -36,8 +36,7 @@ describe('POST /api/evaluate/finops-iq/v3', () => {
     expect(client.body.data.conflicts).toEqual([]);
   });
 
-  it('rejects a v2 payload, and a v3 payload sent to the v2 route', async () => {
+  it('rejects a payload for the retired v2 engine', async () => {
     expect((await post('/api/evaluate/finops-iq/v3', { answers: { C1: 100 } })).status).toBe(400);
-    expect((await post('/api/evaluate/finops-iq', { mode: 'executive', facts, answers: { 'MP-01': 'walk' } })).status).toBe(400);
   });
 });

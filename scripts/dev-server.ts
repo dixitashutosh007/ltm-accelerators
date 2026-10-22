@@ -83,7 +83,6 @@ const assessments = memoryStore({
   save: items => { mkdirSync(DATA_DIR, { recursive: true }); writeFileSync(join(DATA_DIR, 'finops-assessments.json'), JSON.stringify(items, null, 2)); }
 });
 const ROUTES: Record<string, LambdaHandler> = {
-  'POST /api/evaluate/finops-iq': finopsIq,
   'POST /api/evaluate/finops-iq/v3': finopsIq,
   'POST /api/evaluate/posture-iq': postureIq,
   'POST /api/evaluate/sovereign-iq': sovereignIq,

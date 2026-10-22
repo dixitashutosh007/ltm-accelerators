@@ -119,9 +119,8 @@ const route = (path: string, methods: HttpMethod[], integration: HttpLambdaInteg
   advisoryApi.addRoutes({ path, methods, integration });
 
 // Scoring engines
-route('/api/evaluate/finops-iq', [HttpMethod.POST], integrations.finopsIq);
-// FinOps IQ v3, the merged product (FinOps IQ with the retired FinOps Value Case as its executive mode). The v2 route above
-// stays for the current page until cutover (execution phase M8).
+// FinOps IQ (engine v3; FinOps Value Case is its executive mode). The v2 engine and route were retired at cutover
+// (execution phase M8, 22 Oct 2026).
 route('/api/evaluate/finops-iq/v3', [HttpMethod.POST], integrations.finopsIq);
 route('/api/finops-iq/assessment', [HttpMethod.GET, HttpMethod.POST], integrations.finopsAssessment);
 // Report PDF and backlog CSV of a completed assessment (execution phase M4).

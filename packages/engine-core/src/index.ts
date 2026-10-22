@@ -1,4 +1,3 @@
-export * from './accelerators/finops-iq/evaluate';
 export * from './accelerators/posture-iq/evaluate';
 export * from './accelerators/sovereign-iq/evaluate';
 // Posture IQ and Sovereign IQ each define FX rates and a default turnover; export both under explicit names.

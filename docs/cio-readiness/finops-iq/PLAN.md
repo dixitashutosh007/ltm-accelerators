@@ -135,11 +135,12 @@ Commits land on a local branch and are pushed when the owner asks.
 - **CIO challenge 10 of 10.** Its High and Medium defects D1, D3, D5, D6 and D7 are fixed and tested.
 - **Open:** D2, the Google Cloud commitment rate when the instrument is not stated (owner decision: 55% now, 46% recommended, which lowers Google-heavy figures); D4 waits on A1 and A3; Medium and Low items D8–D21 on the backlog; live smoke test after push and deploy (owner's go-ahead); a screen-reader pass by a person.
 
-**M8 status (22 Oct 2026): FinOps Value Case retired; the old FinOps IQ page stays until M8 closes.** Details in `design/FVC-retirement.md`.
-- Owner instruction: retire FinOps Value Case once FinOps IQ covers every feature. Parity checked feature by feature. Carried over: client logo on the report, archive to Reports, teaser mode, an LTM working screen in place of the splash and report animation. Dropped: placeholder features that never worked (readout booking, case studies, brochure), and JSON export (owner).
-- Removed: the page (its address forwards to FinOps IQ executive mode), the home-screen tile, its Reports filter and Access Control rows, the engine, route and Lambda, tests and golden file, the legacy `packages/web-app`, the Studio entry and family links. Value Case permissions now open FinOps IQ (both modes).
-- The portal's FinOps IQ tile opens `/finops-iq-v3`. Still open for M8: retire the old FinOps IQ page and v2 engine, and regenerate the consultant playbook.
-- Open: S3 lifecycle rule for archived FinOps IQ reports (24 months), awaiting the owner's approval.
+**M8 status (22 Oct 2026): cutover done.** Details in `design/FVC-retirement.md`.
+- **FinOps Value Case retired** once parity was checked feature by feature. Carried over: client logo on the report, archive to Reports, teaser mode, an LTM working screen in place of the splash and report animation. Dropped: placeholders that never worked (readout booking, case studies, brochure) and JSON export (owner). Its address forwards to FinOps IQ executive mode; Value Case permissions open FinOps IQ.
+- **Old FinOps IQ retired**: the merged page is served at `/finops-iq` (`/finops-iq-v3` forwards there, keeping the query); the v2 page, engine, knowledge base, `/api/evaluate/finops-iq` route, tests, golden file, audit adapter and Studio entry are removed, with the old sample report and the superseded v2.2 playbook.
+- **Consultant playbook regenerated** from the engine and knowledge base: `docs/cio-readiness/finops-iq/CONSULTANT_PLAYBOOK.md`, built by `npm run build:finops-iq-playbook`; a test fails CI when it is out of date or uses banned language. Internal, so it is in `docs/`, not the hosted `Accelerators/`.
+- **Owner decisions (22 Oct 2026):** D2 keep 55% for Google Cloud commitments when the instrument is not stated (the flexible-CUD rate of 46% is not used; the "prefer flexible instruments" advice stays as guidance on what to buy). M6 A3: notice and disclaimer approved, so the report's draft markers are removed. Archived-report retention: 24-month S3 rule approved (`infra/s3/reports-bucket-lifecycle.json`); applying it to the bucket is the owner's step, as the agent's tool may not change the shared bucket.
+- **Open:** M6 A1, the transfer instrument LTM's privacy office confirms (the notice names none until then); M7 live smoke test and a screen-reader pass; Medium and Low items D8–D21.
 
 ---
 

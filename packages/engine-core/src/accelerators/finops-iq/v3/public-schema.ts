@@ -32,7 +32,7 @@ if (!RETENTION_WORDS) throw new Error(`No wording for a retention period of ${RE
 /**
  * Notices on the start screen and in the methodology panel. The attribution is the register's own statement, with the
  * links CC BY 4.0 section 3(a)(1) and the FinOps Foundation's attribution guidance ask for. The data notice and the
- * disclaimer follow the M6 legal review (design/M6-data-protection.md section 6) and wait for owner approval.
+ * disclaimer follow the M6 legal review (design/M6-data-protection.md section 6); the owner approved them on 22 Oct 2026 (A3).
  */
 export const NOTICES = {
   attribution: CLAIM.get('CLM-FIN-033').statement as string,
@@ -43,7 +43,7 @@ export const NOTICES = {
   ],
   disclaimer: 'FinOps IQ gives an indicative assessment based on the answers and figures you provide, which LTM has not audited or verified. Value figures are an indicative range, not a savings commitment, and need validating against your billing data before any decision. Scoring constants are LTM heuristics unless a source is cited. The assessment is for your organisation\'s internal use: any reliance on it is governed by your agreement with LTM, if there is one, and LTM accepts no responsibility to anyone else who relies on it. This is not financial, accounting, tax or legal advice.',
   data: `LTM is responsible for the information held in this assessment. It is hosted in Amazon Web Services, Mumbai region (India); if you are in the EU or UK, what you enter is transferred to India, which the EU and the UK have not recognised as giving adequate data protection. We hold your answers, your spend figures and your organisation's name, used only to produce this assessment and its report, and the consultant's email address. The assessment needs no personal details about individuals, so please do not enter any. We keep each assessment for ${RETENTION_WORDS} after its last change and then delete it automatically; ask your consultant to delete it sooner. Access logs, which record the consultant's email and network address, are kept for one year. This version uses no AI features. LTM's privacy notice explains your data protection rights and how to contact LTM's data protection team.`,
-  status: 'Draft wording: legal review recorded (M6, AI-assisted, not a qualified lawyer); pending owner approval and LTM confirmation of the transfer mechanism.'
+  status: 'Data notice and disclaimer approved by the product owner on 22 Oct 2026 (M6, A3), after an AI-assisted legal review; the transfer mechanism is added once LTM names it (A1).'
 };
 
 /** Playbook platforms that are not providers, by name; page and report share them, so no raw key is shown (M7 D6). */

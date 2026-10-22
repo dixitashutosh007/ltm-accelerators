@@ -8,7 +8,7 @@ Execution phase M6 (PLAN F11, shared workstream WS-S6). Status at 22 Oct 2026. P
 |---|---|
 | 1 Data inventory | Done (section 1) |
 | 2 Transfer basis | Analysed; LTM's privacy office to confirm the instrument it has signed (section 3, request drafted) |
-| 3 Notice | Revised after the review (section 4); on the start screen and in the report; awaits owner approval |
+| 3 Notice | Revised after the review (section 4); on the start screen and in the report; approved by the owner on 22 Oct 2026 (A3) |
 | 4 Retention | Built and tested: 24 months after the last change, deletion at the client's request (section 2) |
 | 5 Counsel review | Done as an AI review (section 6); seven items, changes applied; three actions for LTM (section 6.2) |
 
@@ -24,7 +24,7 @@ Execution phase M6 (PLAN F11, shared workstream WS-S6). Status at 22 Oct 2026. P
 | Consultant notes (consultant-only; never in the client view or client edition) | The client organisation; may name people if a consultant writes names | `consultantNotes` in the same record | As above |
 | Respondent email: the consultant who runs the assessment | The consultant (personal data) | `respondentEmail` in the same record; the Cognito user pool (platform sign-in) | Record: as above. User pool: platform account lifecycle, outside FinOps IQ |
 | Report PDF and backlog CSV | The client organisation | Generated on request from the stored record; not stored by LTM (`Cache-Control: no-store`); the downloaded file is held by whoever downloads it | Not retained by LTM |
-| Archived report PDFs ("Archive to Reports", carried over from FinOps Value Case, 22 Oct 2026) | The client organisation; the archiving consultant's email in the file metadata | The shared reports bucket (`ltm-advisory-reports-223833501993`, `reports/finops-iq/`), listed in the portal's Reports section | **Open:** the bucket has no expiry rule. A lifecycle rule deleting `reports/finops-iq/` objects after 730 days (24 months, matching the assessments) is drafted and needs the owner's approval to apply, because it changes a shared production bucket |
+| Archived report PDFs ("Archive to Reports", carried over from FinOps Value Case, 22 Oct 2026) | The client organisation; the archiving consultant's email in the file metadata | The shared reports bucket (`ltm-advisory-reports-223833501993`, `reports/finops-iq/`), listed in the portal's Reports section | 24 months: lifecycle rule `infra/s3/reports-bucket-lifecycle.json` (delete `reports/finops-iq/` objects 730 days after creation), approved by the owner on 22 Oct 2026; applied with `aws s3api put-bucket-lifecycle-configuration --bucket ltm-advisory-reports-223833501993 --lifecycle-configuration file://infra/s3/reports-bucket-lifecycle.json` |
 | Scoring requests (`POST /api/evaluate/finops-iq/v3`) | The client organisation | Processed in memory; not stored | Not retained |
 | API access logs: request ID, time, source IP, method, route, status, latency, caller email, authorizer error | The consultant (IP address and email are personal data) | CloudWatch Logs, ap-south-1 | One year (`RetentionDays.ONE_YEAR`) |
 | Lambda logs for the three FinOps IQ functions: errors with the request ID and the error object; deletions with the assessment ID. Request and response bodies are not logged | Mainly operational | CloudWatch Logs, ap-south-1 | One year (set in M6; previously kept forever) |
@@ -101,7 +101,7 @@ Reviewer: Claude (AI, acting in a counsel role at the owner's request, 22 Oct 20
 |---|---|---|---|
 | A1 | Send the section 3 request to LTM's privacy office; add the confirmed mechanism and data protection contact to the notice | Owner | External EU/UK use |
 | A2 | Trademark register search for FINOPS (UKIPO, EUIPO, USPTO, India), or ask trademarks@lfprojects.org | Owner | First external client |
-| A3 | Approve the revised notice and disclaimer (sections 4, 6.1 C2) | Owner | Removing the draft marker |
+| A3 | Approve the revised notice and disclaimer (sections 4, 6.1 C2) | Owner | Done 22 Oct 2026; draft markers removed |
 
 ### 6.3 Limits of this review
 

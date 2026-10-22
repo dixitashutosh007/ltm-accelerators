@@ -1,5 +1,4 @@
 import assert from 'node:assert/strict';
-import { evaluateFinOpsIq } from './accelerators/finops-iq/evaluate';
 import { evaluatePostureIq } from './accelerators/posture-iq/evaluate';
 import { evaluateSovereignIq } from './accelerators/sovereign-iq/evaluate';
 import { evaluateCloudIq } from './accelerators/cloud-iq/evaluate';
@@ -8,26 +7,7 @@ import { evaluateModernizationIq } from './accelerators/modernization-iq/evaluat
 import postureKb from './accelerators/posture-iq/knowledge-base.json' with { type: 'json' };
 import sovereignKb from './accelerators/sovereign-iq/knowledge-base.json' with { type: 'json' };
 
-console.log('--- 1. Testing FinOps IQ Headless Engine ---');
-const iqMockAnswers = {
-  C1: 0, C2: 0, C3: 0, C4: 0, C5: 0, C6: 0, C7: 0, C8: 0,
-  R1: 0, R2: 0, R3: 0, R4: 0, R5: 0, R6: 0, R7: 0, R8: 0, R9: 0
-};
-
-const iqResult = evaluateFinOpsIq({
-  answers: iqMockAnswers,
-  annualSpend: 4000000
-});
-
-console.log('Maturity Stage:', iqResult.maturityStage?.name || 'Chaos Baseline');
-console.log('Overall Score:', iqResult.overallScore);
-console.log('Chaos Stage Status:', iqResult.stageStatuses['chaos']);
-console.log('Reactive Stage Status:', iqResult.stageStatuses['reactive']);
-console.log('Value at Stake Min Savings:', iqResult.valueAtStake.minSavings ?? 'not quantified');
-console.log('Roadmap Horizons:', iqResult.roadmap.horizons.map(h => `${h.name}: ${h.items.length} actions`).join(' | '));
-console.log('--- FinOps IQ Assertions Passed! ---\n');
-
-console.log('--- 2. Testing Posture IQ Headless Engine ---');
+console.log('--- 1. Testing Posture IQ Headless Engine ---');
 const bankArch = (postureKb as any).demoArchetypes['bank'];
 const postureResult = evaluatePostureIq({
   answers: bankArch.answers,
@@ -58,7 +38,7 @@ assert.ok(aiCap, 'AI Act exposure expected when the regulation is in scope');
 assert.equal(aiCap!.capUSD, Math.round(Math.max(15000000, (1000000000 / 1.08) * 0.03) * 1.08), 'AI Act high-risk cap must use Art. 99(4) (EUR 15M / 3%)');
 console.log('--- Posture IQ Assertions Passed! ---\n');
 
-console.log('--- 3. Testing Sovereign IQ Headless Engine ---');
+console.log('--- 2. Testing Sovereign IQ Headless Engine ---');
 const ksaArch = (sovereignKb as any).demoArchetypes['saudi_bank'];
 const sovereignResult = evaluateSovereignIq({
   answers: ksaArch.answers,
@@ -90,7 +70,7 @@ assert.ok(euGdpr, 'EU archetype must carry a GDPR exposure');
 assert.ok(euGdpr!.amt >= 20000000, 'GDPR cap is the HIGHER of EUR 20M or 4% of turnover');
 console.log('--- Sovereign IQ Assertions Passed! ---\n');
 
-console.log('--- 4. Testing Cloud IQ Headless Engine ---');
+console.log('--- 3. Testing Cloud IQ Headless Engine ---');
 const cloudIqMockAnswers = {
   'Q0.1': 0, // CIO / CTO
   'Q0.2': 0, // BFSI
@@ -135,7 +115,7 @@ console.log('Recommended Offerings:', cloudIqResult.offers.map(o => o.code).join
 console.log('Triggered Probes:', cloudIqResult.probes.map(p => p.badge).join(' | '));
 console.log('--- Cloud IQ Assertions Passed! ---\n');
 
-console.log('--- 5. Testing Strategy IQ Headless Engine ---');
+console.log('--- 4. Testing Strategy IQ Headless Engine ---');
 const strategyIqMockAnswers = {
   'S1.1': 3, 'S1.2': 4, 'S1.3': 3, 'S1.4': 2,
   'S2.1': 3, 'S2.2': 3, 'S2.3': 4, 'S2.4': 3,
@@ -161,7 +141,7 @@ console.log('Alignment Index:', strategyIqResult.alignmentIndex + '%', '| Tech D
 console.log('Operating Model Maturity:', strategyIqResult.deliveryMaturity + '/5', '| Resilience Score:', strategyIqResult.resilienceScore + '%');
 console.log('--- Strategy IQ Assertions Passed! ---\n');
 
-console.log('--- 6. Testing Modernize IQ Headless Engine ---');
+console.log('--- 5. Testing Modernize IQ Headless Engine ---');
 const modernizationIqMockAnswers = {
   'Q1.1': 3,
   'Q1.2': ['srv', 'san', 'net'],

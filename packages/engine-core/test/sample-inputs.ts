@@ -2,11 +2,6 @@
 import postureKb from '../src/accelerators/posture-iq/knowledge-base.json' with { type: 'json' };
 import sovereignKb from '../src/accelerators/sovereign-iq/knowledge-base.json' with { type: 'json' };
 
-export const finopsIqAnswers: Record<string, any> = {
-  C1: 0, C2: 0, C3: 0, C4: 0, C5: 0, C6: 0, C7: 0, C8: 0,
-  R1: 0, R2: 0, R3: 0, R4: 0, R5: 0, R6: 0, R7: 0, R8: 0, R9: 0
-};
-
 export const cloudIqAnswers: Record<string, any> = {
   'Q0.1': 0, // CIO / CTO
   'Q0.2': 0, // BFSI

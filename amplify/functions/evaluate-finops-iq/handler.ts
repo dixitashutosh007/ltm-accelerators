@@ -1,7 +1,5 @@
 import type { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
 import { corsHeaders } from '../_shared/http';
-import { evaluateFinOpsIq } from '../../../packages/engine-core/src/accelerators/finops-iq/evaluate';
-import { parseFinOpsIqRequest } from '../../../packages/engine-core/src/accelerators/finops-iq/contract';
 import { clientView, evaluateFinOpsIqV3, parseFinOpsIqV3Request } from '../../../packages/engine-core/src/accelerators/finops-iq/v3';
 
 function score<I, R>(parsed: { ok: true; value: I } | { ok: false; errors: string[] }, evaluate: (input: I) => R) {
@@ -33,10 +31,9 @@ export const handler = async (event: APIGatewayProxyEventV2): Promise<APIGateway
       return { statusCode: 400, headers: CORS_HEADERS, body: JSON.stringify({ ok: false, error: 'Request body is not valid JSON.' }) };
     }
 
-    // POST /api/evaluate/finops-iq/v3 scores the merged product (both modes); POST /api/evaluate/finops-iq keeps
-    // the v2 engine for the current page until cutover (execution phase M8).
-    const v3 = /\/v3\/?$/.test(event.rawPath || '');
-    const evaluated = v3 ? score(parseFinOpsIqV3Request(body), evaluateFinOpsIqV3) : score(parseFinOpsIqRequest(body), evaluateFinOpsIq);
+    // POST /api/evaluate/finops-iq/v3 scores FinOps IQ (both modes). The v2 engine and its route were retired at
+    // cutover (execution phase M8, 22 Oct 2026).
+    const evaluated = score(parseFinOpsIqV3Request(body), evaluateFinOpsIqV3);
     if (!evaluated.ok) {
       return {
         statusCode: 400,
@@ -46,7 +43,7 @@ export const handler = async (event: APIGatewayProxyEventV2): Promise<APIGateway
     }
 
     // ?view=client returns the client-mode result: consultant-only fields are removed here, not hidden in the page.
-    const client = v3 && event.queryStringParameters?.view === 'client';
+    const client = event.queryStringParameters?.view === 'client';
     const result = client ? clientView(evaluated.result as ReturnType<typeof evaluateFinOpsIqV3>) : evaluated.result;
 
     return {
