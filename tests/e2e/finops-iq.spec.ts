@@ -109,7 +109,19 @@ async function answerStep(page: Page) {
 }
 
 async function stepButtons(page: Page) {
-  return page.locator('nav.steps button').evaluateAll(els => els.map(e => (e.querySelector('span') as HTMLElement).textContent!));
+  return page.locator('nav.steps button').evaluateAll(els => els.map(e => (e.querySelector('.step-label') as HTMLElement).textContent!));
+}
+
+const FINAL_STEPS = ['Review & complete', 'Results'];
+const tab = (page: Page, name: string) => page.getByRole('tab', { name }).click();
+
+/** Review and complete, then the working screen, then the dashboard. */
+async function complete(page: Page) {
+  await page.locator('nav.steps button', { hasText: 'Review & complete' }).click();
+  await expect(page.getByRole('heading', { name: 'Review and complete' })).toBeVisible();
+  await page.getByRole('button', { name: /^Complete (assessment|anyway)$/ }).click();
+  await expect(page.locator('.working')).toHaveCount(0, { timeout: 15_000 });
+  await expect(page.getByRole('tab', { name: 'Overview' })).toHaveAttribute('aria-selected', 'true');
 }
 
 const settled = (page: Page) => expect.poll(() => page.evaluate(() => (window as any).FINOPS_IQ.busy()), { timeout: 10_000 }).toBe(false);
@@ -119,7 +131,7 @@ async function answerAll(page: Page) {
   // Answers trigger follow-up questions, so walk the steps again until a pass shows nothing new.
   for (let pass = 0; pass < 5; pass++) {
     const before = seen.size;
-    for (const label of (await stepButtons(page)).filter(l => l !== 'Results' && l !== 'Your estate')) {
+    for (const label of (await stepButtons(page)).filter(l => !FINAL_STEPS.includes(l) && l !== 'Your estate')) {
       await page.locator('nav.steps button', { hasText: label }).first().click();
       for (const id of await answerStep(page)) seen.add(id);
       await settled(page);
@@ -136,19 +148,33 @@ test('executive: every question renders and can be answered; complete, then resu
   const executive = MATURITY.filter(q => q.modes.includes('executive')).map(q => q.id);
   expect(executive.filter(id => !seen.has(id))).toEqual([]);
 
-  await page.locator('nav.steps button', { hasText: 'Results' }).click();
-  await expect(page.getByRole('heading', { name: 'Do you need to act now?' })).toBeVisible();
-  await expect(page.getByText('Preview. The result is recorded')).toBeVisible();
-  // The consultant set the internal rate at setup, so executive mode shows the value range (DESIGN.md Q4).
-  await expect(page.getByText(/Expected \(net, per year at full run-rate\)/i)).toBeVisible();
+  // Review and complete (owner feedback, 22 Oct 2026): what is open, and no result until the assessment is completed.
+  await page.locator('nav.steps button', { hasText: 'Review & complete' }).click();
+  await expect(page.getByRole('heading', { name: 'Review and complete' })).toBeVisible();
+  await expect(page.locator('.rk.bad, .rk.warn')).toHaveCount(0);
+  for (const gone of ['Do you need to act now?', 'Capability profile', 'Top findings']) await expect(page.getByRole('heading', { name: gone })).toHaveCount(0);
+  await expect(page.getByText(/Preview/)).toHaveCount(0);
   await page.getByRole('button', { name: 'Complete assessment' }).click();
-  // The LTM working screen shows the server's steps while it scores, then gives way to the result.
+  // The LTM working screen shows the server's steps while it scores, then gives way to the dashboard.
   const screen = page.locator('.working');
   await expect(screen).toHaveAttribute('role', 'status');
   await expect(screen).toContainText(/Scoring your answers on the server|Rating each capability|Sizing the indicative value range|Building the roadmap/);
-  await expect(screen).toHaveCount(0, { timeout: 10_000 });
+  await expect(screen.locator('.working-list li')).toHaveCount(5);
+  await expect(screen).toHaveCount(0, { timeout: 15_000 });
   await expect(page.getByText(/Completed/).first()).toBeVisible();
+  // The dashboard: the need gauge, value and findings counting up, and the charts.
+  // The consultant set the internal rate at setup, so executive mode shows the value range (DESIGN.md Q4).
+  await expect(page.getByText('Expected value, net per year')).toBeVisible();
+  await expect(page.locator('.kpi-gauge svg[role=img]')).toHaveAttribute('aria-label', /^Need index \d+ of 100/);
+  for (const chart of ['.radar', '.heatmap', '.donut']) await expect(page.locator(chart).first()).toBeVisible();
   await expect(page.getByRole('button', { name: 'Continue in workshop mode' })).toBeVisible();
+  await tab(page, 'Value');
+  await expect(page.getByText(/Expected \(net, per year at full run-rate\)/i)).toBeVisible();
+  await expect(page.locator('.rbars .rb-row').first()).toBeVisible();
+  await tab(page, 'Findings');
+  await expect(page.locator('.matrix')).toBeVisible();
+  await tab(page, 'Report and method');
+  await expect(page.getByRole('heading', { name: 'Do you need to act now?' })).toBeVisible();
 
   // M4: the report and the backlog of the completed assessment, built on the server from the stored result.
   for (const [label, ext, magic] of [['Download report (PDF)', 'pdf', '%PDF-'], ['Download backlog (CSV)', 'csv', '\uFEFFFinding ID']] as const) {
@@ -161,8 +187,10 @@ test('executive: every question renders and can be answered; complete, then resu
   // Resume from the server in a fresh load: the stored result is shown and the inputs are read-only.
   const id = new URL(page.url()).searchParams.get('assessment')!;
   await page.goto('/finops-iq?assessment=' + encodeURIComponent(id));
-  await expect(page.getByRole('heading', { name: 'Capability profile' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Capability profile' }).first()).toBeVisible();
   // M5: offerings and the technical execution section come from the stored result; no scope ranges on the page.
+  await tab(page, 'Roadmap');
+  await expect(page.locator('.gantt')).toBeVisible();
   await expect(page.getByRole('heading', { name: 'How LTM can help' })).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Technical execution' })).toBeVisible();
   expect(await page.locator('main').innerText()).not.toMatch(/\d+\s*(?:–|-)\s*\d+ weeks|12 months or more/);
@@ -194,17 +222,23 @@ test('client view: the server is asked for the client view and no consultant-onl
   await fillEstate(page, 'executive');
   await page.locator('nav.steps button', { hasText: 'Your view' }).click();
   await page.getByLabel(/Saved with the assessment/).fill('Consultant-only note: CFO sceptical');
-  await page.locator('nav.steps button', { hasText: 'Results' }).click();
-  await expect(page.getByRole('heading', { name: 'Checks before issuing' })).toBeVisible();
-
+  // Before completion, client view asks the server for the client view of the live scoring.
   await page.getByRole('button', { name: 'Client view: off' }).click();
   await expect(page.getByRole('button', { name: 'Client view: on' })).toBeVisible();
   await expect.poll(() => evaluated.some(e => e.query.view === 'client')).toBe(true);
   const clientResult = evaluated.filter(e => e.query.view === 'client').pop()!.data;
   expect(clientResult.view).toBe('client');
   expect(clientResult.tier.trace).toBeUndefined();
+  await page.getByRole('button', { name: 'Client view: on' }).click();
+  await complete(page);
+  await tab(page, 'Report and method');
+  await expect(page.getByRole('heading', { name: 'Checks before issuing' })).toBeVisible();
 
-  await expect(page.getByRole('heading', { name: 'Capability profile' })).toBeVisible();
+  await page.getByRole('button', { name: 'Client view: off' }).click();
+  await expect(page.getByRole('button', { name: 'Client view: on' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Capability profile' }).first()).toBeVisible();
+  await tab(page, 'Report and method');
+  await expect(page.getByText('Client edition: no consultant checks or notes.')).toBeVisible();
   const html = await page.content();
   expect(html).not.toMatch(/data-consultant-only|Checks before issuing|CFO sceptical|Complete assessment/);
   await page.locator('nav.steps button', { hasText: 'Your view' }).click();
@@ -227,9 +261,9 @@ test('usable at 360px: no horizontal scroll on the start screen, a question step
   await fillEstate(page, 'workshop');
   await page.locator('nav.steps button', { hasText: 'Optimize Usage & Cost' }).click();
   await noScroll('question step');
-  await page.locator('nav.steps button', { hasText: 'Results' }).click();
-  await expect(page.getByRole('heading', { name: 'Capability profile' })).toBeVisible();
+  await complete(page);
   await noScroll('results');
+  for (const name of ['Capabilities', 'Value', 'Findings', 'Roadmap', 'Report and method']) { await tab(page, name); await noScroll('results: ' + name); }
 });
 
 test('portal tiles (M8 preview): ?mode=executive or ?mode=workshop preselects the mode on the start screen', async ({ page }) => {
@@ -242,7 +276,8 @@ test('portal tiles (M8 preview): ?mode=executive or ?mode=workshop preselects th
 test('methodology (M6): the framework attribution links the framework, the FinOps Foundation and the CC BY licence', async ({ page }) => {
   await start(page, 'executive', 'Attribution Ltd');
   await fillEstate(page, 'executive');
-  await page.locator('nav.steps button', { hasText: 'Results' }).click();
+  await complete(page);
+  await tab(page, 'Report and method');
   const m = page.locator('section.methodology');
   await expect(m.getByRole('link', { name: 'FinOps Framework' })).toHaveAttribute('href', 'https://www.finops.org/framework/');
   await expect(m.getByRole('link', { name: 'FinOps Foundation' })).toHaveAttribute('href', 'https://www.finops.org/');
@@ -253,7 +288,7 @@ test('methodology (M6): the framework attribution links the framework, the FinOp
 test('every form control has an accessible name', async ({ page }) => {
   await start(page, 'workshop', 'Labels Inc');
   await fillEstate(page, 'workshop');
-  for (const label of (await stepButtons(page)).filter(l => l !== 'Results')) {
+  for (const label of (await stepButtons(page)).filter(l => !FINAL_STEPS.includes(l))) {
     await page.locator('nav.steps button', { hasText: label }).first().click();
     const unnamed = await page.locator('main input, main select, main textarea').evaluateAll(els => els.filter(el => {
       const e = el as HTMLInputElement;
@@ -298,6 +333,8 @@ test('retention (M6): the data notice states the retention period, and an assess
 
 /** WCAG 2.2 AA scan (execution phase M7): every screen, consultant and client view, with no exceptions. */
 async function axe(page: Page, where: string) {
+  // Contrast is measured on the settled screen, not part-way through the dashboard's fade-in.
+  await page.evaluate(() => Promise.all(document.getAnimations().filter(a => a.effect?.getTiming().iterations !== Infinity).map(a => a.finished.catch(() => {}))));
   const { violations } = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa']).analyze();
   expect(violations.map(v => `${v.id} (${v.impact}): ${v.nodes.slice(0, 5).map(n => `${n.html.slice(0, 120)} [${(n.failureSummary || '').replace(/\s+/g, ' ').slice(0, 200)}]`).join(' | ')}`), where).toEqual([]);
 }
@@ -313,14 +350,17 @@ test('accessibility (M7): no WCAG 2.2 AA violations on any screen, in consultant
   await axe(page, 'estate (filled)');
   for (const label of await stepButtons(page)) {
     await page.locator('nav.steps button', { hasText: label }).first().click();
-    if (label === 'Results') {
-      await expect(page.getByRole('heading', { name: 'Capability profile' })).toBeVisible();
-      expect(await page.locator('main').innerText(), 'platforms by name (M7 D6)').not.toMatch(/\b(aws|azure|on_prem|data_platform|kubernetes|saas)\b/);
-    }
     await axe(page, label);
+  }
+  await complete(page);
+  for (const name of ['Overview', 'Capabilities', 'Value', 'Findings', 'Roadmap', 'Report and method']) {
+    await tab(page, name);
+    if (name === 'Roadmap') expect(await page.locator('main').innerText(), 'platforms by name (M7 D6)').not.toMatch(/\b(aws|azure|on_prem|data_platform|kubernetes|saas)\b/);
+    await axe(page, 'results: ' + name);
   }
   await page.getByRole('button', { name: 'Client view: off' }).click();
   await expect(page.getByRole('button', { name: 'Client view: on' })).toBeVisible();
+  await tab(page, 'Overview');
   await axe(page, 'results, client view');
   await page.getByRole('button', { name: 'Client view: on' }).click();
   await page.getByRole('button', { name: 'All assessments' }).click();
@@ -383,9 +423,7 @@ test('carried over from FinOps Value Case: client logo on the page and report, t
   await expect(page.getByRole('img', { name: 'Logo Bank logo' })).toBeVisible();
   await expect(page.getByRole('button', { name: 'Remove logo' })).toBeVisible();
   await fillEstate(page, 'executive');
-  await page.locator('nav.steps button', { hasText: 'Results' }).click();
-  await page.getByRole('button', { name: 'Complete assessment' }).click();
-  await expect(page.locator('.working')).toHaveCount(0, { timeout: 10_000 });
+  await complete(page);
   await expect(page.getByText(/Completed/).first()).toBeVisible();
 
   // The report cover carries the logo (an image object in the PDF).
@@ -404,10 +442,76 @@ test('carried over from FinOps Value Case: client logo on the page and report, t
   await page.getByRole('button', { name: 'Client view: off' }).click();
   await page.getByRole('button', { name: 'Teaser: off' }).click();
   await expect(page.getByRole('button', { name: 'Teaser: on' })).toBeVisible();
-  await expect(page.getByRole('heading', { name: 'Capability profile' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Capability profile' }).first()).toBeVisible();
   await expect(page.getByText('presented in your LTM readout')).toBeVisible();
-  for (const name of ['Top findings', 'Technical execution', 'How LTM can help']) await expect(page.getByRole('heading', { name })).toHaveCount(0);
-  await expect(page.getByText(/Expected \(net, per year at full run-rate\)/i)).toHaveCount(0);
+  await expect(page.getByText('Expected value, net per year')).toHaveCount(0);
+  for (const name of ['Value', 'Findings', 'Roadmap']) {
+    await tab(page, name);
+    await expect(page.getByText('presented in your LTM readout')).toBeVisible();
+    for (const heading of ['Top findings', 'Technical execution', 'How LTM can help', 'Value by lever', 'Priority matrix', 'Roadmap']) await expect(page.getByRole('heading', { name: heading, exact: true })).toHaveCount(0);
+    await expect(page.getByText(/Expected \(net, per year at full run-rate\)/i)).toHaveCount(0);
+  }
   await page.getByRole('button', { name: 'Teaser: on' }).click();
+  await tab(page, 'Findings');
   await expect(page.getByRole('heading', { name: 'Top findings' })).toBeVisible();
+});
+
+test('owner feedback (22 Oct 2026): typing an amount is never interrupted, answers do not redraw the page, and SC-03 shows public cloud', async ({ page }) => {
+  await start(page, 'executive', 'Typing Ltd');
+  // SC-03 lists public cloud, ticked by SC-02 and changed only there.
+  const pc = page.getByRole('checkbox', { name: /^Public cloud/ });
+  await expect(pc).toBeDisabled();
+  await expect(pc).not.toBeChecked();
+  await page.getByLabel('AWS', { exact: true }).check();
+  await expect(pc).toBeChecked();
+  await expect(page.locator('#f-SC-03-public-note')).toHaveText('Included: you selected AWS in SC-02');
+  // Typing digit by digit, with scoring replies arriving in between: the same input keeps focus and every digit lands in order.
+  await page.getByLabel('Annual spend: AWS: how to answer').selectOption('exact');
+  const amount = page.getByLabel('Annual spend: AWS', { exact: true });
+  await amount.click();
+  await page.evaluate(() => { (window as any).__marker = document.getElementById('f-spend.byScope.aws-a'); });
+  for (const d of '12500000') { await page.keyboard.type(d); await page.waitForTimeout(150); }
+  await settled(page);
+  await expect(amount).toHaveValue('12500000');
+  expect(await page.evaluate(() => (window as any).__marker === document.getElementById('f-spend.byScope.aws-a') && document.activeElement === (window as any).__marker), 'same input, still focused').toBe(true);
+  // Picking an answer updates its status in place: the question card is the same element afterwards.
+  await page.locator('nav.steps button', { hasText: 'Optimize Usage & Cost' }).click();
+  const card = page.locator('fieldset.question').first();
+  await expect(card.locator('.q-status')).toHaveText('Required');
+  await page.evaluate(() => { (window as any).__card = document.querySelector('fieldset.question'); });
+  await card.locator('input[type=radio]').first().check();
+  await expect(card.locator('.q-status')).toHaveText('Answered');
+  await settled(page);
+  expect(await page.evaluate(() => (window as any).__card === document.querySelector('fieldset.question'))).toBe(true);
+  // Required questions left unanswered turn red once their step is left.
+  await page.locator('nav.steps button', { hasText: 'Manage the FinOps Practice' }).click();
+  await page.locator('nav.steps button', { hasText: 'Optimize Usage & Cost' }).click();
+  await expect(page.locator('fieldset.question.is-missing').first().locator('.q-status')).toHaveText('Required: not answered');
+  await expect(page.locator('nav.steps button.missing', { hasText: 'Optimize Usage & Cost' })).toHaveCount(1);
+  // The Review step lists what is open, with a link to each question.
+  await page.locator('nav.steps button', { hasText: 'Review & complete' }).click();
+  await expect(page.locator('.rk.bad strong')).not.toHaveText('0');
+  await expect(page.getByRole('button', { name: 'Complete anyway' })).toBeVisible();
+  const link = page.locator('.rs-missing button').first();
+  const qid = await link.innerText();
+  await link.click();
+  await expect(page.locator('#q-' + qid)).toBeInViewport();
+});
+
+test('owner feedback (22 Oct 2026): continued in the workshop, answered core questions fold away and the deep-dive comes first', async ({ page }) => {
+  test.setTimeout(90_000);
+  await start(page, 'executive', 'Workshop Next plc');
+  await fillEstate(page, 'executive');
+  await answerAll(page);
+  await complete(page);
+  await page.getByRole('button', { name: 'Continue in workshop mode' }).click();
+  await expect(page.locator('nav.steps button', { hasText: 'Optimize Usage & Cost' })).toBeEnabled({ timeout: 10_000 });
+  await page.locator('nav.steps button', { hasText: 'Optimize Usage & Cost' }).click();
+  await settled(page);
+  const core = page.locator('.q-group.core');
+  await expect(core).toContainText(/All \d+ answered, as in the executive session/);
+  await expect(core.locator('fieldset.question')).toHaveCount(0);
+  await expect(page.locator('.q-group.deep fieldset.question').first()).toBeVisible();
+  await core.getByRole('button', { name: /Review \d+ answers/ }).click();
+  await expect(core.locator('fieldset.question.is-answered').first()).toBeVisible();
 });

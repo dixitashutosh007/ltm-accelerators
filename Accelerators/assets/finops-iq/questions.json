@@ -1016,6 +1016,10 @@
         "workshop"
       ],
       "text": "Of non-production compute, what share is already switched off outside working hours? What share of all compute could tolerate interruption, and what share of all compute already runs on Spot / preemptible capacity?",
+      "followUpOf": [
+        "OP-06",
+        "OP-08"
+      ],
       "answerType": "compound",
       "fields": [
         {
@@ -1222,6 +1226,10 @@
         "workshop"
       ],
       "text": "Do you have current savings estimates from your provider tools, by type? (for example AWS Cost Optimization Hub or Compute Optimizer, Azure Advisor, Google Cloud Recommender, OCI Cloud Advisor)",
+      "followUpOf": [
+        "OP-04",
+        "OP-05"
+      ],
       "answerType": "matrix",
       "fields": [
         {
@@ -2272,6 +2280,9 @@
       "capability": "UNIT_ECONOMICS",
       "text": "Do unit costs inform pricing, product roadmap or architecture decisions?",
       "help": "Choose the highest option that fully describes you today.",
+      "followUpOf": [
+        "QV-05"
+      ],
       "answerType": "single_select",
       "options": [
         {
@@ -2469,6 +2480,9 @@
       "capability": "RATE_OPTIMIZATION",
       "text": "How is the commitment portfolio's lifecycle handled: expiry dates, utilisation drift, renewals?",
       "help": "Choose the highest option that fully describes you today.",
+      "followUpOf": [
+        "OP-01"
+      ],
       "answerType": "single_select",
       "options": [
         {

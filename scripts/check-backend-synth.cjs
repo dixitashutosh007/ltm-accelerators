@@ -157,8 +157,29 @@ for (const policy of ofType('AWS::IAM::Policy')) {
   }
 }
 
+// Every bundled Lambda starts outside the repository, as it does on AWS: a dependency that reads a data file from
+// beside its own source (pdfmake's Node entry did, 22 Oct 2026) passes the unit tests but fails at cold start.
+// Each bundle is copied alone into an empty directory and imported there, with no node_modules to fall back on.
+const bundles = ofType('AWS::Lambda::Function')
+  .map(f => ({ id: f.id, asset: f.Metadata?.['aws:asset:path'] || 'asset.' + String(f.Properties.Code?.S3Key || '').replace(/\.zip$/, '') }))
+  .filter(b => b.asset && fs.existsSync(path.join(outDir, b.asset, 'index.mjs')));
+for (const b of bundles) {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'ltm-cold-'));
+  fs.cpSync(path.join(outDir, b.asset), dir, { recursive: true });
+  try {
+    execFileSync(process.execPath, ['--input-type=module', '-e', "await import('./index.mjs'); process.exit(0)"], {
+      cwd: dir, stdio: ['ignore', 'ignore', 'pipe'], timeout: 30000,
+      env: { PATH: process.env.PATH, AWS_REGION: 'ap-south-1', AMPLIFY_SSM_ENV_CONFIG: '{}' }
+    });
+  } catch (e) {
+    check(false, `Lambda ${b.id} fails at cold start outside the repository: ${String(e.stderr || e.message).split('\n').find(l => /Error/.test(l)) || e.message}`);
+  }
+  fs.rmSync(dir, { recursive: true, force: true });
+}
+check(bundles.length > 0, 'no Lambda bundles found to start');
+
 const functions = ofType('AWS::Lambda::Function').map(f => f.Properties.FunctionName || f.id);
-console.log(`Synthesized ${templates.length} templates, ${functions.length} Lambda functions, ${apis.length} HTTP APIs.`);
+console.log(`Synthesized ${templates.length} templates, ${functions.length} Lambda functions (${bundles.length} bundles started cold), ${apis.length} HTTP APIs.`);
 fs.rmSync(outDir, { recursive: true, force: true });
 
 if (failures.length) {

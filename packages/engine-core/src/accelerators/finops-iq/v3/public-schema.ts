@@ -59,6 +59,21 @@ function basis(q: any) {
   return (q.basis ?? []).filter((b: any) => CLAIM.get(b.claimId)?.clientVisible !== false).map((b: any) => ({ citation: b.citation, status: b.status }));
 }
 
+/**
+ * The questions whose answers can bring this one in (a follow-up), by id only: the page shows a follow-up beside the
+ * question that triggered it. The condition itself stays on the server.
+ */
+function followUpOf(q: any): string[] {
+  const ids = new Set<string>();
+  const walk = (c: any) => {
+    if (!c || typeof c !== 'object') return;
+    if (typeof c.answer === 'string') ids.add(c.answer);
+    for (const k of ['all', 'any']) if (Array.isArray(c[k])) c[k].forEach(walk);
+  };
+  walk(q.askWhen);
+  return [...ids];
+}
+
 export function publicQuestionSchema() {
   const providerLabels = labelsFrom('SC-02');
   const scopeLabels = { public_cloud: 'Public cloud', ...labelsFrom('SC-03') };
@@ -94,6 +109,7 @@ export function publicQuestionSchema() {
       ...(q.capability ? { capability: q.capability } : {}),
       text: q.text,
       ...(q.help ? { help: q.help } : {}),
+      ...(followUpOf(q).length ? { followUpOf: followUpOf(q) } : {}),
       answerType: q.answerType,
       ...(q.options ? { options: q.options.map((o: any) => ({ value: o.value, label: o.label, ...(o.sets ? { sets: o.sets } : {}) })) } : {}),
       ...(q.fields ? { fields: q.fields.map((f: any) => ({ ...f, ...(f.options ? { options: f.options.map((o: any) => ({ value: o.value, label: o.label, ...(o.sets ? { sets: o.sets } : {}) })) } : {}) })) } : {}),

@@ -1,5 +1,6 @@
 /**
- * FinOps IQ page (execution phase M3): one page, executive and workshop modes, and client mode.
+ * FinOps IQ page (execution phase M3): one page, executive and workshop modes, and client mode. Questions step by
+ * step, a Review and complete step, then the completed result as a dashboard (charts in charts.js).
  *
  * The page holds no scoring or trigger logic. It sends the facts and answers to the server
  * (POST /api/evaluate/finops-iq/v3) and shows what comes back: which questions are asked, the
@@ -51,18 +52,31 @@
   }
   function clear(el) { while (el.firstChild) el.removeChild(el.firstChild); }
 
-  /** Re-render, keeping keyboard focus on the same control. */
+  /**
+   * Re-render, keeping keyboard focus on the same control and the page where it was scrolled. Answering a question or
+   * a scoring reply does not call this (see refresh): only a change to which questions are shown does.
+   */
   function render() {
     var active = document.activeElement;
     var focusId = active && active.id;
     var sel = active && typeof active.selectionStart === 'number' ? [active.selectionStart, active.selectionEnd] : null;
+    var y = window.scrollY;
     clear(app);
     renderTopbar();
     if (!state) renderStart(); else renderAssessment();
     if (focusId) {
       var el = document.getElementById(focusId);
-      if (el) { el.focus(); if (sel && el.setSelectionRange) try { el.setSelectionRange(sel[0], sel[1]); } catch (e) {} }
+      if (el) { el.focus({ preventScroll: true }); if (sel && el.setSelectionRange) try { el.setSelectionRange(sel[0], sel[1]); } catch (e) {} }
     }
+    window.scrollTo(0, y);
+  }
+
+  /** Says something to screen readers without moving focus. */
+  function announce(text) {
+    var live = document.getElementById('live');
+    if (!live) return;
+    live.textContent = '';
+    setTimeout(function () { live.textContent = text; }, 50);
   }
 
   /* ---------------------------------- API ----------------------------------- */
@@ -247,7 +261,7 @@
       status: a.status, startedAt: a.startedAt, completedAt: a.completedAt, archivedAt: a.archivedAt, mode: a.mode,
       facts: req.facts || { org: { currency: 'USD' }, footprint: { publicCloudProviders: [], scopes: [] }, spend: { byScope: {} } },
       answers: req.answers || {}, consultantNotes: a.consultantNotes || '', clientLogo: a.clientLogo || '', result: a.result || null, errors: [],
-      step: a.result ? 'results' : 'estate', view: view === 'client' ? 'client' : 'consultant', saveStatus: a.status === 'completed' || a.status === 'archived' ? statusLabel(a.status) : 'Saved'
+      step: a.result && (a.status === 'completed' || a.status === 'archived') ? 'results' : 'estate', view: view === 'client' ? 'client' : 'consultant', saveStatus: a.status === 'completed' || a.status === 'archived' ? statusLabel(a.status) : 'Saved'
     };
     setUrl();
     render();
@@ -305,6 +319,7 @@
   /** Something changed: score it and save it, each after a short pause. */
   function changed() {
     if (isFinal()) return;
+    updateLive();
     showSave('Unsaved changes');
     clearTimeout(timers.save);
     timers.save = setTimeout(function () { persist('save'); }, 1200);
@@ -331,7 +346,65 @@
     if (res.status === 200) { state.result = res.body.data; state.errors = []; }
     else if (res.status === 400) { state.result = null; state.errors = res.body.details || [res.body.error]; }
     else { state.errors = ['Scoring is unavailable right now. Your answers are kept; try again shortly.']; }
-    render();
+    refresh();
+  }
+
+  /**
+   * After a scoring reply: when the questions on screen are the same, only the counts, the progress bar and each
+   * question's status change, in place, so typing and scrolling are never interrupted. When the server asks a
+   * different set of questions on this step (a follow-up), the step is drawn again and the new question is marked.
+   */
+  var shown = { key: null, ids: [] };
+  function structureKey() {
+    var all = steps();
+    var cur = currentStep(all);
+    return [state.mode, state.view, isFinal(), cur.id, cur.questions.map(function (q) { return q.id; }).join(',')].join('|');
+  }
+  function navKey(all) { return all.map(function (x) { return x.id; }).join(','); }
+  function refresh() {
+    if (!state) return;
+    if (structureKey() !== shown.key) {
+      var before = shown.ids;
+      render();
+      var added = before.length ? shown.ids.filter(function (id) { return before.indexOf(id) < 0; }) : [];
+      added.forEach(function (id) { var el = document.getElementById('q-' + id); if (el) el.classList.add('q-new'); });
+      if (added.length) announce(added.length === 1 ? 'A follow-up question was added: ' + added[0] + '.' : added.length + ' follow-up questions were added.');
+      return;
+    }
+    updateLive();
+  }
+  function updateLive() {
+    var all = steps();
+    // A step appeared or went (the server now asks a different set elsewhere): redraw the step list only.
+    var navEl = document.querySelector('nav.steps');
+    if (navEl && navEl.getAttribute('data-key') !== navKey(all)) navEl.replaceWith(stepNav(all, currentStep(all)));
+    var row = document.getElementById('nav-row');
+    if (row && !row.contains(document.activeElement)) row.replaceWith(navRow(all, currentStep(all)));
+    all.forEach(function (st) {
+      var btn = document.querySelector('nav.steps button[data-step="' + st.id + '"]');
+      if (!btn) return;
+      btn.className = stepClass(st);
+      var c = btn.querySelector('.count');
+      if (c) c.textContent = stepCount(st);
+      btn.disabled = st.needsFacts && !state.result;
+    });
+    var cov = document.getElementById('coverage');
+    if (cov) cov.replaceWith(coverageBlock());
+    currentStep(all).questions.forEach(function (q) {
+      var el = document.getElementById('q-' + q.id);
+      if (!el) return;
+      var st = questionStatus(q);
+      el.classList.remove('is-answered', 'is-missing', 'is-unknown', 'is-required');
+      el.classList.add.apply(el.classList, st.classes);
+      var pill = el.querySelector('.q-status');
+      if (pill) pill.replaceWith(statusPill(st));
+      var slot = el.querySelector('.q-clear');
+      if (slot) slot.replaceWith(clearSlot(q));
+    });
+    var fn = document.getElementById('facts-notice');
+    if (fn) fn.replaceWith(factsSlot());
+    var rv = document.getElementById('review-body');
+    if (rv) rv.replaceWith(reviewBody());
   }
 
   /* ------------------------------ Assessment view --------------------------- */
@@ -339,64 +412,221 @@
   function asked(id) { return state.result ? state.result.questions.asked.indexOf(id) >= 0 : false; }
   function inMode(q) { return q.modes.indexOf(state.mode) >= 0; }
 
+  /**
+   * The steps: estate, one per domain, value inputs, your view, then Review and complete. Results appear only once
+   * the assessment is completed (owner feedback, 22 Oct 2026: a live preview read as the result and made completion
+   * look like it did nothing). A follow-up question is placed straight after the question that brought it in.
+   */
   function steps() {
     var list = [{ id: 'estate', label: 'Your estate', questions: schema.questions.filter(function (q) { return q.kind === 'scope' && inMode(q); }) }];
     schema.domains.forEach(function (d) {
       var qs = schema.questions.filter(function (q) { return q.kind === 'maturity' && inMode(q) && capabilityDomain(q.capability) === d.id && (!state.result || asked(q.id)); });
-      if (qs.length) list.push({ id: d.id, label: d.name, questions: qs, needsFacts: true });
+      if (qs.length) list.push({ id: d.id, label: d.name, questions: withFollowUps(qs), needsFacts: true });
     });
     var vb = schema.questions.filter(function (q) { return q.kind === 'value_base' && inMode(q) && asked(q.id); });
     if (vb.length) list.push({ id: 'value', label: 'Value inputs', questions: vb, needsFacts: true });
     list.push({ id: 'view', label: 'Your view', questions: schema.questions.filter(function (q) { return q.kind === 'hypothesis' && inMode(q) && (!state.result || asked(q.id)); }), needsFacts: true });
-    list.push({ id: 'results', label: 'Results', questions: [], needsFacts: true });
+    list.push(isFinal() ? { id: 'results', label: 'Results', questions: [], needsFacts: true } : { id: 'review', label: 'Review & complete', questions: [], needsFacts: true });
     return list;
   }
+  function currentStep(all) {
+    var want = state.step === 'results' || state.step === 'review' ? (isFinal() ? 'results' : 'review') : state.step;
+    return all.find(function (x) { return x.id === want; }) || all[0];
+  }
+  function withFollowUps(qs) {
+    var out = qs.filter(function (q) { return !followUpHere(q, qs); });
+    qs.filter(function (q) { return followUpHere(q, qs); }).forEach(function (f) {
+      var at = -1;
+      out.forEach(function (q, i) { if (f.followUpOf.indexOf(q.id) >= 0) at = i; });
+      while (at >= 0 && at + 1 < out.length && out[at + 1].followUpOf) at++;
+      out.splice(at + 1, 0, f);
+    });
+    return out;
+  }
+  function followUpHere(q, qs) { return !!q.followUpOf && qs.some(function (x) { return q.followUpOf.indexOf(x.id) >= 0; }); }
   function capabilityDomain(id) { var c = schema.capabilities.find(function (x) { return x.id === id; }); return c && c.domain; }
+  function capabilityName(id) { var c = schema.capabilities.find(function (x) { return x.id === id; }); return c ? c.displayName : id; }
   function isAnswered(q) {
-    if (q.kind === 'scope' || q.kind === 'value_base') return (q.fields || [{ fact: null }]).some(function (f) { return f.fact && get(state.facts, f.fact) !== undefined; }) || (q.id === 'SC-02' && state.facts.footprint.publicCloudProviders.length > 0) || (q.id === 'SC-03' && state.facts.footprint.scopes.length > 0);
+    if (q.kind === 'scope' || q.kind === 'value_base') return (q.fields || [{ fact: null }]).some(function (f) { return f.fact && get(state.facts, f.fact) !== undefined; }) || (q.id === 'SC-01' && get(state.facts, 'footprint.infrastructureMix') !== undefined) || (q.id === 'SC-02' && (state.facts.footprint.publicCloudProviders.length > 0 || !!state.noneYet)) || (q.id === 'SC-03' && state.facts.footprint.scopes.length > 0) || (q.id === 'SC-04' && Object.keys(state.facts.spend.byScope).length > 0);
     return state.answers[q.id] !== undefined;
+  }
+  /** Required: every capability question asked, and the estate questions that decide what is asked. */
+  var REQUIRED_SCOPE = ['SC-01', 'SC-02', 'SC-03', 'SC-04'];
+  function isRequired(q) { return q.kind === 'maturity' || (q.kind === 'scope' && REQUIRED_SCOPE.indexOf(q.id) >= 0); }
+  function isUnknown(q) { var a = state.answers[q.id]; return a === 'unknown' || a === 'dont_know'; }
+  /** Unanswered required questions turn red once their step has been left, or on the Review step. */
+  function questionStatus(q) {
+    var ui = (state.ui = state.ui || {});
+    var visited = ui.visited && ui.visited[stepOf(q)];
+    if (isAnswered(q)) return isUnknown(q) ? { key: 'unknown', text: 'Don\'t know', classes: ['is-answered', 'is-unknown'] } : { key: 'answered', text: 'Answered', classes: ['is-answered'] };
+    if (!isRequired(q)) return { key: 'optional', text: 'Optional', classes: [] };
+    return visited || state.step === 'review' ? { key: 'missing', text: 'Required: not answered', classes: ['is-required', 'is-missing'] } : { key: 'required', text: 'Required', classes: ['is-required'] };
+  }
+  function stepOf(q) { var st = steps().find(function (x) { return x.questions.indexOf(q) >= 0; }); return st ? st.id : null; }
+  function statusPill(st) { return h('span', { class: 'q-status ' + st.key }, st.text); }
+  function missingIn(st) { return st.questions.filter(function (q) { return isRequired(q) && !isAnswered(q); }); }
+  function stepCount(st) { return st.questions.length ? st.questions.filter(isAnswered).length + '/' + st.questions.length : ''; }
+  function stepClass(st) {
+    if (!st.questions.length) return 'step';
+    var done = st.questions.filter(isAnswered).length, missing = missingIn(st).length;
+    var visited = state.ui && state.ui.visited && state.ui.visited[st.id];
+    return 'step ' + (missing === 0 && done ? 'complete' : visited && missing ? 'missing' : done ? 'partial' : '');
+  }
+  function leaveStep(to) {
+    var ui = (state.ui = state.ui || {});
+    (ui.visited = ui.visited || {})[state.step] = true;
+    state.step = to;
+  }
+
+  function coverageBlock() {
+    var cov = state.result && state.result.coverage;
+    if (!cov) return h('div', { id: 'coverage' });
+    var pctDone = cov.asked ? Math.round(100 * cov.answered / cov.asked) : 0;
+    return h('div', { id: 'coverage', class: 'coverage' },
+      h('div', { class: 'coverage-ring', style: '--p:' + pctDone, 'aria-hidden': 'true' }, h('span', null, pctDone + '%')),
+      h('div', null, h('strong', null, cov.answered + ' of ' + cov.asked), h('span', { class: 'small muted' }, ' questions answered'),
+        h('div', { class: 'progress', role: 'progressbar', 'aria-valuemin': '0', 'aria-valuemax': String(cov.asked), 'aria-valuenow': String(cov.answered), 'aria-label': 'Questions answered' }, h('i', { style: 'width:' + pctDone + '%' }))));
+  }
+
+  function stepNav(all, current) {
+    var ready = !!state.result;
+    return h('nav', { class: 'steps', 'aria-label': 'Assessment steps', 'data-key': navKey(all) }, h('ol', null, all.map(function (st, i) {
+      return h('li', null, h('button', {
+        type: 'button', class: stepClass(st), 'data-step': st.id, 'aria-current': st.id === current.id ? 'step' : null, disabled: st.needsFacts && !ready,
+        onclick: function () { leaveStep(st.id); render(); var m = document.getElementById('main'); if (m) m.focus({ preventScroll: true }); window.scrollTo(0, 0); }
+      }, h('span', { class: 'step-no', 'aria-hidden': 'true' }, st.id === 'review' || st.id === 'results' ? '✓' : String(i + 1)), h('span', { class: 'step-label' }, st.label), h('span', { class: 'count' }, stepCount(st))));
+    })));
   }
 
   function renderAssessment() {
     var all = steps();
-    var current = all.find(function (s) { return s.id === state.step; }) || all[0];
+    var current = currentStep(all);
     var ready = !!state.result;
-    var nav = h('nav', { class: 'steps', 'aria-label': 'Assessment steps' }, h('ol', null, all.map(function (s) {
-      var done = s.questions.filter(isAnswered).length;
-      return h('li', null, h('button', {
-        type: 'button', 'aria-current': s.id === current.id ? 'step' : null, disabled: s.needsFacts && !ready && !state.result,
-        onclick: function () { state.step = s.id; render(); var m = document.getElementById('main'); if (m) m.focus(); }
-      }, h('span', null, s.label), s.questions.length ? h('span', { class: 'count' }, done + '/' + s.questions.length) : null));
-    })));
-    var cov = state.result && state.result.coverage;
+    var nav = stepNav(all, current);
     var head = h('div', { class: 'header-row' },
       h('div', { class: 'client-id' }, logoControl(), h('div', null, h('h1', null, state.clientName), h('p', { class: 'muted small' }, MODE_INFO[state.mode].label + ' mode · ' + MODE_INFO[state.mode].duration + ' · ' + statusLabel(state.status) + (state.completedAt ? ' ' + when(state.completedAt) : '')))),
-      cov ? h('div', { class: 'small muted', style: 'min-width:200px' }, cov.answered + ' of ' + cov.asked + ' questions answered', h('div', { class: 'progress', role: 'progressbar', 'aria-valuemin': '0', 'aria-valuemax': String(cov.asked), 'aria-valuenow': String(cov.answered), 'aria-label': 'Questions answered' }, h('i', { style: 'width:' + (cov.asked ? Math.round(100 * cov.answered / cov.asked) : 0) + '%' }))) : null);
-    var body = h('div', { class: isFinal() ? 'read-only' : '' });
+      current.id === 'results' ? null : coverageBlock());
+    var body = h('div', { class: 'step-body' + (isFinal() ? ' read-only' : '') });
     if (state.saveError) body.appendChild(h('div', { class: 'notice error', role: 'alert' }, h('strong', null, 'Not saved. '), h('ul', null, state.saveError.slice(0, 6).map(function (e) { return h('li', null, e); }))));
     if (current.id === 'results') renderResults(body);
+    else if (current.id === 'review') renderReview(body);
     else {
-      body.appendChild(h('h2', null, current.label));
-      if (current.id === 'estate') {
-        body.appendChild(h('p', { class: 'muted' }, 'Scope and spend decide which capabilities and questions apply. They are never scored.'));
-        if (state.errors.length) body.appendChild(factsNotice());
-      }
-      if (current.id === 'value') body.appendChild(h('p', { class: 'muted' }, 'Measured inputs from your billing data and provider tools. Without them, the matching value lever is listed but not quantified.'));
-      if (current.id === 'view') body.appendChild(h('p', { class: 'muted' }, 'Your own view, shown beside the model. It never changes a rating or a number.'));
-      current.questions.forEach(function (q) { body.appendChild(question(q)); });
+      body.appendChild(h('div', { class: 'step-head' }, h('h2', null, current.label), h('p', { class: 'muted' }, stepIntro(current.id))));
+      if (current.id === 'estate') body.appendChild(factsSlot());
+      renderQuestions(body, current);
       if (current.id === 'estate' && state.mode === 'executive' && state.view !== 'client') body.appendChild(setupCard());
       if (current.id === 'view' && state.view !== 'client') body.appendChild(notesCard());
     }
-    var idx = all.indexOf(current);
-    body.appendChild(h('div', { class: 'nav-row' },
-      idx > 0 ? h('button', { class: 'btn', type: 'button', onclick: function () { state.step = all[idx - 1].id; render(); window.scrollTo(0, 0); } }, '← ' + all[idx - 1].label) : h('span'),
-      idx < all.length - 1 ? h('button', { class: 'btn primary', type: 'button', disabled: all[idx + 1].needsFacts && !ready, onclick: function () { state.step = all[idx + 1].id; render(); window.scrollTo(0, 0); } }, all[idx + 1].label + ' →') : null));
-    append(app, [head, h('div', { class: 'layout' }, nav, body)]);
+    if (current.id !== 'results') body.appendChild(navRow(all, current));
+    append(app, current.id === 'results' ? [h('div', { class: 'layout results-layout' }, nav, body)] : [head, h('div', { class: 'layout' }, nav, body)]);
+    shown.key = structureKey();
+    shown.ids = current.questions.map(function (q) { return q.id; });
   }
 
-  function factsNotice() {
+  /** Back and next; drawn again in place when the step list changes. */
+  function navRow(all, current) {
+    var idx = all.indexOf(current), ready = !!state.result;
+    return h('div', { class: 'nav-row', id: 'nav-row' },
+      idx > 0 ? h('button', { class: 'btn', type: 'button', onclick: function () { leaveStep(all[idx - 1].id); render(); window.scrollTo(0, 0); } }, '← ' + all[idx - 1].label) : h('span'),
+      idx < all.length - 1 ? h('button', { class: 'btn primary', type: 'button', disabled: all[idx + 1].needsFacts && !ready, onclick: function () { leaveStep(all[idx + 1].id); render(); window.scrollTo(0, 0); } }, all[idx + 1].label + ' →') : null);
+  }
+
+  function stepIntro(id) {
+    if (id === 'estate') return 'Scope and spend decide which capabilities and questions apply. They are never scored.';
+    if (id === 'value') return 'Measured inputs from your billing data and provider tools. Without them, the matching value lever is listed but not quantified.';
+    if (id === 'view') return 'Your own view, shown beside the model. It never changes a rating or a number.';
+    return 'Choose the option that fully describes you today. "Don\'t know" is always fine: it is listed as a blind spot, never guessed.';
+  }
+
+  /**
+   * The questions of a step. In workshop mode a domain's questions come in two groups: the core questions, also asked
+   * in the executive session, and the workshop deep-dive. When the core questions are already answered (an executive
+   * assessment continued in the workshop) they fold into one line that opens for review, so the workshop starts on
+   * the new questions instead of mixing them in with answered ones (owner feedback, 22 Oct 2026).
+   */
+  function renderQuestions(body, current) {
+    var qs = current.questions;
+    var exec = schema.executiveSet;
+    var n = 0;
+    // A follow-up is indented under its trigger only when the trigger is drawn straight above it.
+    var draw = function (list, into) {
+      var prev = null;
+      list.forEach(function (q) { n++; into.appendChild(question(q, n, qs.length, !!(q.followUpOf && prev && (q.followUpOf.indexOf(prev.id) >= 0 || prev.followUpOf)))); prev = q; });
+    };
+    if (state.mode !== 'workshop' || current.id === 'estate' || current.id === 'view' || current.id === 'value') { draw(qs, body); return; }
+    var core = qs.filter(function (q) { return exec.indexOf(q.id) >= 0; });
+    var deep = qs.filter(function (q) { return exec.indexOf(q.id) < 0; });
+    if (!core.length || !deep.length) { draw(qs, body); return; }
+    var ui = (state.ui = state.ui || {});
+    var open = (ui.coreOpen = ui.coreOpen || {});
+    var allDone = core.every(isAnswered);
+    var isOpen = open[current.id] !== undefined ? open[current.id] : !allDone;
+    var group = h('section', { class: 'q-group core' + (isOpen ? ' open' : '') },
+      h('div', { class: 'q-group-head' },
+        h('div', null, h('h3', null, 'Core questions'), h('p', { class: 'small muted' }, allDone ? 'All ' + core.length + ' answered, as in the executive session. Open them to review or change an answer.' : 'Also asked in the executive session.')),
+        h('button', { class: 'btn small', type: 'button', 'aria-expanded': isOpen ? 'true' : 'false', id: 'core-toggle-' + current.id, onclick: function () { open[current.id] = !isOpen; render(); } }, isOpen ? 'Hide' : 'Review ' + core.length + ' answers')));
+    if (isOpen) draw(core, group); else n += core.length;
+    body.appendChild(group);
+    var dg = h('section', { class: 'q-group deep' }, h('div', { class: 'q-group-head' }, h('div', null, h('h3', null, 'Workshop deep-dive'), h('p', { class: 'small muted' }, deep.length + ' questions for the workshop, with the cloud, FinOps, finance and engineering leads.'))));
+    draw(deep, dg);
+    body.appendChild(dg);
+  }
+
+  function factsSlot() {
+    if (!state.errors.length) return h('div', { id: 'facts-notice' });
     var errs = state.errors.map(function (e) { return e.replace(/^facts\./, ''); });
-    return h('div', { class: 'notice warn', role: 'status' }, h('strong', null, 'To continue, complete:'), h('ul', null, errs.slice(0, 8).map(function (e) { return h('li', null, e); })));
+    return h('div', { class: 'notice warn', role: 'status', id: 'facts-notice' }, h('strong', null, 'To continue, complete:'), h('ul', null, errs.slice(0, 8).map(function (e) { return h('li', null, e); })));
+  }
+  function factsNotice() { return factsSlot(); }
+
+  /**
+   * Review and complete: what is answered, what is still missing (with a link to each), then completion. The
+   * result is not shown here; it appears after the server has scored and recorded it.
+   */
+  function renderReview(body) {
+    body.appendChild(h('div', { class: 'step-head' }, h('h2', null, 'Review and complete'), h('p', { class: 'muted' }, 'Check what is still open, then complete the assessment. The server scores the saved answers, records the result and dates it today.')));
+    body.appendChild(factsSlot());
+    body.appendChild(reviewBody());
+  }
+  function reviewBody() {
+    var all = steps().filter(function (x) { return x.questions.length; });
+    var qs = [].concat.apply([], all.map(function (x) { return x.questions; }));
+    var req = qs.filter(isRequired), reqDone = req.filter(isAnswered).length;
+    var unknown = qs.filter(function (q) { return isAnswered(q) && isUnknown(q); }).length;
+    var optional = qs.filter(function (q) { return !isRequired(q); }), optDone = optional.filter(isAnswered).length;
+    var missing = req.length - reqDone;
+    var box = h('div', { id: 'review-body' });
+    box.appendChild(h('div', { class: 'review-kpis' },
+      reviewKpi(missing ? 'warn' : 'ok', reqDone + ' / ' + req.length, 'Required answered'),
+      reviewKpi(missing ? 'bad' : 'ok', String(missing), 'Required still open'),
+      reviewKpi('neutral', String(unknown), '"Don\'t know" answers'),
+      reviewKpi('neutral', optDone + ' / ' + optional.length, 'Optional answered')));
+    box.appendChild(h('div', { class: 'card review-steps' }, h('h3', null, 'By step'), h('ul', null, all.map(function (st) {
+      var miss = missingIn(st);
+      var done = st.questions.filter(isAnswered).length;
+      return h('li', { class: miss.length ? 'has-missing' : 'is-done' },
+        h('div', { class: 'rs-head' }, h('strong', null, st.label), h('span', { class: 'small muted' }, done + ' of ' + st.questions.length + ' answered'),
+          h('span', { class: 'rs-bar', 'aria-hidden': 'true' }, h('i', { style: 'width:' + Math.round(100 * done / st.questions.length) + '%' }))),
+        miss.length ? h('div', { class: 'rs-missing' }, h('span', { class: 'small' }, 'Required, not answered: '), miss.map(function (q) {
+          return h('button', { class: 'btn link small', type: 'button', onclick: function () { goToQuestion(st.id, q.id); } }, q.id);
+        })) : null);
+    }))));
+    if (state.view !== 'client' && !isFinal()) {
+      box.appendChild(h('div', { class: 'card complete-card' },
+        h('div', null, h('h3', null, 'Complete the assessment'),
+          h('p', { class: 'small muted' }, missing ? missing + ' required ' + (missing === 1 ? 'question is' : 'questions are') + ' still open. Unanswered questions count as the largest gap and are listed as blind spots; you can complete now or answer them first.' : 'Everything required is answered. After completion the answers cannot be changed; start a new assessment to revise them.')),
+        h('button', { class: 'btn primary big-btn', type: 'button', disabled: !state.result, onclick: complete }, missing ? 'Complete anyway' : 'Complete assessment')));
+    }
+    return box;
+  }
+  function reviewKpi(tone, value, label) { return h('div', { class: 'rk ' + tone }, h('strong', null, value), h('span', null, label)); }
+  function goToQuestion(stepId, qid) {
+    var ui = (state.ui = state.ui || {});
+    (ui.coreOpen = ui.coreOpen || {})[stepId] = true;
+    leaveStep(stepId);
+    render();
+    var el = document.getElementById('q-' + qid);
+    if (el) { el.scrollIntoView({ block: 'center' }); var first = el.querySelector('input, select, textarea, button'); if (first) first.focus({ preventScroll: true }); el.classList.add('q-new'); }
   }
 
   /**
@@ -451,33 +681,52 @@
 
   /* -------------------------------- Questions ------------------------------- */
 
-  function question(q) {
-    var wrap = h('fieldset', { class: 'question', id: 'q-' + q.id, disabled: isFinal() });
-    wrap.appendChild(h('legend', null, h('span', { class: 'q-id' }, q.id + ' '), q.text));
+  /**
+   * One question as a card: its number and text, then a line with its id, capability and status (answered, required,
+   * optional, or "Required: not answered" in red once its step has been left), the options, and its basis.
+   */
+  function question(q, n, total, nested) {
+    var st = questionStatus(q);
+    var wrap = h('fieldset', { class: ['question'].concat(st.classes).join(' ') + (nested ? ' follow-up' : ''), id: 'q-' + q.id, disabled: isFinal() });
+    wrap.appendChild(h('legend', { class: 'q-legend' }, h('span', { class: 'q-num', 'aria-hidden': 'true' }, String(n)), h('span', { class: 'q-text' }, q.text)));
+    var trigger = q.followUpOf && q.followUpOf.filter(function (id) { return state.answers[id] !== undefined; });
+    wrap.appendChild(h('div', { class: 'q-meta' },
+      h('span', { class: 'q-id' }, q.id),
+      q.capability ? h('span', { class: 'q-cap' }, capabilityName(q.capability)) : null,
+      q.followUpOf ? h('span', { class: 'q-follow' }, 'Follow-up to ' + (trigger && trigger.length ? trigger : q.followUpOf).join(' and ')) : null,
+      statusPill(st)));
     if (q.help) wrap.appendChild(h('p', { class: 'help' }, q.help));
     if (q.kind === 'scope' || q.kind === 'value_base') wrap.appendChild(factControl(q));
     else wrap.appendChild(answerControl(q));
     var foot = h('div', { class: 'q-foot' });
-    if (q.basis && q.basis.length) foot.appendChild(h('details', { class: 'basis' }, h('summary', null, 'Based on'), h('ul', null, q.basis.map(function (b) { return h('li', null, b.citation); }))));
-    if ((q.kind === 'maturity' || q.kind === 'hypothesis') && state.answers[q.id] !== undefined && !isFinal()) {
-      foot.appendChild(h('button', { class: 'btn link small', type: 'button', onclick: function () { delete state.answers[q.id]; changed(); render(); } }, 'Clear answer'));
-    }
+    if (q.basis && q.basis.length) foot.appendChild(h('details', { class: 'basis' }, h('summary', null, 'Based on ' + q.basis.length + (q.basis.length === 1 ? ' source' : ' sources')), h('ul', null, q.basis.map(function (b) { return h('li', null, b.citation); }))));
+    foot.appendChild(clearSlot(q));
     wrap.appendChild(foot);
     return wrap;
   }
+  function clearSlot(q) {
+    var can = (q.kind === 'maturity' || q.kind === 'hypothesis') && state.answers[q.id] !== undefined && !isFinal();
+    return h('span', { class: 'q-clear' }, can ? h('button', { class: 'btn link small', type: 'button', onclick: function () { delete state.answers[q.id]; changed(); render(); } }, 'Clear answer') : null);
+  }
 
+  var LETTERS = 'ABCDEFGHIJ';
   function radios(name, options, value, onPick) {
+    var lettered = 0;
     return h('div', { class: 'options', role: 'radiogroup' }, options.map(function (o, i) {
       var id = name + '-' + i;
-      return h('label', { class: 'option' + (o.value === 'unknown' || o.value === 'dont_know' ? ' unknown' : ''), for: id },
-        h('input', { type: 'radio', name: name, id: id, value: o.value, checked: value === o.value, onchange: function () { onPick(o.value); } }), h('span', null, o.label));
+      var unknown = o.value === 'unknown' || o.value === 'dont_know' || o.value === '__none';
+      return h('label', { class: 'option' + (unknown ? ' unknown' : ''), for: id },
+        h('input', { type: 'radio', name: name, id: id, value: o.value, checked: value === o.value, onchange: function () { onPick(o.value); } }),
+        h('span', { class: 'opt-mark', 'aria-hidden': 'true' }, unknown ? '?' : LETTERS.charAt(lettered++)),
+        h('span', { class: 'opt-text' }, o.label));
     }));
   }
   function checks(name, options, values, onToggle) {
     return h('div', { class: 'options' }, options.map(function (o, i) {
       var id = name + '-' + i;
-      return h('label', { class: 'option', for: id },
-        h('input', { type: 'checkbox', name: name, id: id, value: o.value, checked: values.indexOf(o.value) >= 0, onchange: function (e) { onToggle(o.value, e.target.checked); } }), h('span', null, o.label));
+      return h('label', { class: 'option check', for: id },
+        h('input', { type: 'checkbox', name: name, id: id, value: o.value, checked: values.indexOf(o.value) >= 0, onchange: function (e) { onToggle(o.value, e.target.checked); } }),
+        h('span', { class: 'opt-mark', 'aria-hidden': 'true' }), h('span', { class: 'opt-text' }, o.label));
     }));
   }
 
@@ -558,6 +807,14 @@
     }
     if (q.id === 'SC-03') {
       var own = fp.scopes.filter(function (s) { return s !== 'public_cloud'; });
+      // Public cloud follows SC-02 (owner feedback, 22 Oct 2026: it was missing from the list): shown ticked when a
+      // provider is selected there, and not ticked otherwise; it is changed through SC-02.
+      var pc = fp.publicCloudProviders.length > 0;
+      var names = fp.publicCloudProviders.map(function (p) { return label(schema.enums.providers, p); }).join(', ');
+      box.appendChild(h('div', { class: 'options' }, h('label', { class: 'option check locked', for: 'f-SC-03-public' },
+        h('input', { type: 'checkbox', id: 'f-SC-03-public', checked: pc, disabled: true, 'aria-describedby': 'f-SC-03-public-note' }),
+        h('span', { class: 'opt-mark', 'aria-hidden': 'true' }),
+        h('span', { class: 'opt-text' }, 'Public cloud', h('span', { class: 'opt-note', id: 'f-SC-03-public-note' }, pc ? 'Included: you selected ' + names + ' in SC-02' : 'Select a provider in SC-02 to include it')))));
       box.appendChild(checks('f-SC-03', q.options, own, function (v, on) {
         own = own.filter(function (x) { return x !== v; }); if (on) own.push(v);
         fp.scopes = own; syncScopes(); changed(); render();
@@ -658,9 +915,9 @@
         h('input', { type: 'number', id: id, min: '-25', max: '200', step: '1', inputmode: 'numeric', disabled: v === 'unknown', value: typeof v === 'number' ? String(v) : '', oninput: function (e) {
           set(state.facts, path, e.target.value === '' ? undefined : Number(e.target.value)); changed();
         } }),
-        fd.allowUnknown ? h('label', { class: 'option', for: id + '-unknown' }, h('input', { type: 'checkbox', id: id + '-unknown', checked: v === 'unknown', onchange: function (e) {
+        fd.allowUnknown ? h('label', { class: 'option check', for: id + '-unknown' }, h('input', { type: 'checkbox', id: id + '-unknown', checked: v === 'unknown', onchange: function (e) {
           set(state.facts, path, e.target.checked ? 'unknown' : undefined); changed(); render();
-        } }), h('span', null, 'Don\'t know')) : null));
+        } }), h('span', { class: 'opt-mark', 'aria-hidden': 'true' }), h('span', { class: 'opt-text' }, 'Don\'t know')) : null));
   }
 
   /** An amount: exact, a range, or "don't know". Written to the facts only when complete. */
@@ -797,63 +1054,273 @@
 
   /* --------------------------------- Results -------------------------------- */
 
+  /* ------------------------------- Results dashboard ------------------------------ */
+
+  var C = window.FinOpsIqCharts;
+  var LEVEL_NUM = { not_yet: 0, crawl: 1, walk: 2, run: 3 };
+  var SEVERITIES = ['Critical', 'High', 'Medium', 'Low'];
+  var SEV_COLOR = { Critical: '#9F1D12', High: '#D9822B', Medium: '#2F7FA0', Low: '#3C8D5A' };
+  var CASE_COLOR = { conservative: '#F4A79D', expected: '#D33826', upper: '#7A1F15' };
+  var TABS = [
+    { id: 'overview', label: 'Overview' }, { id: 'capabilities', label: 'Capabilities' }, { id: 'value', label: 'Value' },
+    { id: 'findings', label: 'Findings' }, { id: 'roadmap', label: 'Roadmap' }, { id: 'report', label: 'Report and method' }
+  ];
+
+  /**
+   * The completed assessment as a dashboard (owner feedback, 22 Oct 2026): a headline band with the key figures
+   * counting up, then tabs for the capability profile (radar, heatmap), the value (range by lever, by year), the
+   * findings (a severity by wave matrix that filters the list), the roadmap (a timeline by finding) and the report.
+   * Every figure is the server's stored result; the page computes no score or value. Teaser mode holds back the
+   * value, findings and roadmap in client view: those tabs show the gated card and nothing of the data.
+   */
   function renderResults(body) {
     var r = state.result;
-    body.appendChild(h('h2', null, 'Results'));
-    if (!r) { body.appendChild(state.errors.length ? factsNotice() : h('p', { class: 'muted' }, 'Scoring…')); return; }
+    if (!r) { body.appendChild(state.errors.length ? factsNotice() : h('p', { class: 'muted' }, 'Loading the result…')); return; }
     var client = state.view === 'client';
+    var held = client && state.teaser;
     var cur = r.value.currency || state.facts.org.currency;
-    if (!isFinal()) body.appendChild(h('div', { class: 'notice warn', role: 'note' }, 'Preview. The result is recorded when you complete the assessment; until then it changes with every answer.'));
+    var tab = TABS.some(function (t) { return t.id === state.tab; }) ? state.tab : 'overview';
+    body.appendChild(dashHero(r, cur, held, client));
+    var list = h('div', { class: 'tabs', role: 'tablist', 'aria-label': 'Result views' }, TABS.map(function (t) {
+      return h('button', { type: 'button', role: 'tab', id: 'tab-' + t.id, class: 'tab', 'aria-selected': t.id === tab ? 'true' : 'false', 'aria-controls': 'panel-' + t.id, tabindex: t.id === tab ? '0' : '-1',
+        onclick: function () { state.tab = t.id; render(); var b = document.getElementById('tab-' + t.id); if (b) b.focus({ preventScroll: true }); },
+        onkeydown: function (e) {
+          var i = TABS.indexOf(t), j = e.key === 'ArrowRight' ? i + 1 : e.key === 'ArrowLeft' ? i - 1 : e.key === 'Home' ? 0 : e.key === 'End' ? TABS.length - 1 : -2;
+          if (j === -2) return;
+          e.preventDefault();
+          state.tab = TABS[(j + TABS.length) % TABS.length].id; render(); document.getElementById('tab-' + state.tab).focus({ preventScroll: true });
+        } }, t.label);
+    }));
+    body.appendChild(list);
+    var panel = h('div', { class: 'tab-panel', role: 'tabpanel', id: 'panel-' + tab, 'aria-labelledby': 'tab-' + tab, tabindex: '0' });
+    var gated = held && (tab === 'value' || tab === 'findings' || tab === 'roadmap');
+    if (gated) panel.appendChild(teaserCard());
+    else if (tab === 'overview') overviewPanel(panel, r, cur, held);
+    else if (tab === 'capabilities') capabilitiesPanel(panel, r);
+    else if (tab === 'value') valuePanel(panel, r, cur);
+    else if (tab === 'findings') findingsPanel(panel, r);
+    else if (tab === 'roadmap') roadmapPanel(panel, r);
+    else reportPanel(panel, r, client);
+    body.appendChild(panel);
+  }
 
+  function inScopeCaps(r) { return r.capabilities.filter(function (c) { return c.rating !== 'not_in_scope'; }); }
+  function profiledCaps(r) { return inScopeCaps(r).filter(function (c) { return c.rating !== 'not_assessed'; }); }
+  function shownFindings(r) {
+    var ids = state.mode === 'executive' ? r.topFindingIds : r.findings.map(function (f) { return f.id; });
+    return ids.map(function (id) { return r.findings.find(function (f) { return f.id === id; }); }).filter(Boolean);
+  }
+  function moneyFmt(cur) { return function (v) { return money(v, cur); }; }
+  function fig(x) { return x && typeof x === 'object' ? x.value : x; }
+
+  function dashHero(r, cur, held, client) {
+    var v = r.value, t = v.moneyShown ? v.totals : null;
+    var caps = profiledCaps(r);
+    var sev = {};
+    r.findings.forEach(function (f) { sev[f.severity] = (sev[f.severity] || 0) + 1; });
+    var kpis = [];
     if (r.needVerdict) {
       var nv = r.needVerdict;
-      body.appendChild(h('section', { class: 'card', 'aria-labelledby': 'need-h' }, h('h3', { id: 'need-h' }, 'Do you need to act now?'),
-        h('div', { class: 'verdict' }, h('div', null, h('div', { class: 'big' }, String(Math.round(nv.needIndex))), h('div', { class: 'small muted' }, 'Need index, 0–100')),
-          h('div', null, h('p', null, h('strong', null, nv.bandLabel)), h('p', { class: 'small muted' }, nv.basisLine), h('p', { class: 'small' }, 'Confidence: ' + nv.confidence),
-            nv.blindSpots && nv.blindSpots.length ? h('p', { class: 'small muted' }, 'Blind spots (unanswered or "Don\'t know"): ' + blindSpotLabels(nv.blindSpots).join('; ')) : null))));
+      var g = h('div', { class: 'kpi-card kpi-gauge' }, h('span', { class: 'kpi-label' }, 'Need to act'), C.gauge({ value: nv.needIndex, label: 'Need index ' + Math.round(nv.needIndex) + ' of 100: ' + nv.bandLabel }),
+        h('div', { class: 'gauge-value' }, h('strong', { class: 'count' }), h('span', null, '/100')), h('span', { class: 'kpi-sub' }, nv.bandLabel));
+      C.countUp(g.querySelector('.count'), Math.round(nv.needIndex), function (x) { return String(Math.round(x)); });
+      kpis.push(g);
     }
+    var atTarget = r.headline.atOrAboveTarget, of = r.headline.inScope;
+    var ring = h('div', { class: 'kpi-card' }, h('span', { class: 'kpi-label' }, 'At or above target'),
+      h('div', { class: 'kpi-donut' }, C.donut({ label: atTarget + ' of ' + of + ' capabilities at or above target', parts: [{ value: atTarget, color: '#3C8D5A', label: 'At or above target' }, { value: Math.max(0, of - atTarget), color: '#F1C9C3', label: 'Below target' }], center: atTarget + '/' + of })),
+      h('span', { class: 'kpi-sub' }, caps.length + ' capabilities rated'));
+    kpis.push(ring);
+    if (!held) {
+      if (t) {
+        var exp = h('div', { class: 'kpi-card kpi-money' }, h('span', { class: 'kpi-label' }, 'Expected value, net per year'), h('strong', { class: 'kpi-big count' }),
+          h('span', { class: 'kpi-sub' }, 'Range ' + money(t.conservative.netRunRate, cur) + ' to ' + money(t.upper.netRunRate, cur)));
+        C.countUp(exp.querySelector('.count'), fig(t.expected.netRunRate), moneyFmt(cur), 1400);
+        var three = h('div', { class: 'kpi-card kpi-money' }, h('span', { class: 'kpi-label' }, 'Expected, net over 3 years'), h('strong', { class: 'kpi-big count' }),
+          h('span', { class: 'kpi-sub' }, t.expected.pctOfP ? 'Gross ' + t.expected.pctOfP.value + '% of in-scope public cloud spend' : 'Net of implementation effort'));
+        C.countUp(three.querySelector('.count'), fig(t.expected.net3Year), moneyFmt(cur), 1600);
+        kpis.push(exp, three);
+      } else {
+        kpis.push(h('div', { class: 'kpi-card kpi-money' }, h('span', { class: 'kpi-label' }, 'Indicative value'), h('strong', { class: 'kpi-big small-big' }, 'Not sized yet'), h('span', { class: 'kpi-sub' }, v.notice || 'No money figure until the inputs it needs are given.')));
+      }
+      var fc = h('div', { class: 'kpi-card' }, h('span', { class: 'kpi-label' }, 'Findings'), h('strong', { class: 'kpi-big count' }),
+        h('div', { class: 'sev-strip', 'aria-hidden': 'true' }, SEVERITIES.map(function (k) { return sev[k] ? h('i', { style: 'flex:' + sev[k] + ';background:' + SEV_COLOR[k], title: k + ': ' + sev[k] }) : null; })),
+        h('span', { class: 'kpi-sub' }, SEVERITIES.filter(function (k) { return sev[k]; }).map(function (k) { return sev[k] + ' ' + k.toLowerCase(); }).join(' · ') || 'No gaps against the targets'));
+      C.countUp(fc.querySelector('.count'), r.findings.length, function (x) { return String(Math.round(x)); }, 900);
+      kpis.push(fc);
+    }
+    var actions = h('div', { class: 'hero-actions' });
+    if (isFinal()) {
+      var status = h('p', { class: 'small hero-status', id: 'report-status', role: 'status', 'aria-live': 'polite' });
+      actions.appendChild(h('button', { class: 'btn primary', type: 'button', onclick: function (e) { download('pdf', e.currentTarget, status); } }, 'Download report (PDF)'));
+      actions.appendChild(h('button', { class: 'btn ghost', type: 'button', onclick: function (e) { download('csv', e.currentTarget, status); } }, 'Download backlog (CSV)'));
+      actions.appendChild(archiveControl(status));
+      if (state.status === 'completed' && state.mode === 'executive' && !client) actions.appendChild(h('button', { class: 'btn ghost', type: 'button', onclick: continueInWorkshop }, 'Continue in workshop mode'));
+      actions.appendChild(status);
+    }
+    return h('section', { class: 'hero', 'aria-labelledby': 'hero-h' },
+      h('div', { class: 'hero-top' },
+        h('div', { class: 'client-id' }, logoControl(), h('div', null,
+          h('p', { class: 'hero-eyebrow' }, 'FinOps IQ · ' + MODE_INFO[state.mode].label + ' assessment'),
+          h('h1', { id: 'hero-h' }, state.clientName),
+          h('p', { class: 'hero-meta' }, [statusLabel(state.status) + (state.completedAt ? ' ' + when(state.completedAt) : ''), 'Tier ' + r.tier.tier + ' estate', 'Confidence ' + (v.confidence ? v.confidence.overall : '—'), client ? 'Client edition' : 'Consultant view'].join(' · ')))),
+        actions),
+      h('p', { class: 'hero-headline' }, r.needVerdict ? r.needVerdict.basisLine : r.headline.statement),
+      h('div', { class: 'kpi-row' }, kpis));
+  }
 
-    var inScope = r.capabilities.filter(function (c) { return c.rating !== 'not_in_scope'; });
+  function overviewPanel(p, r, cur, held) {
+    var grid = h('div', { class: 'dash-grid' });
+    grid.appendChild(card('Capability profile', 'Today against the target for your estate', capRadar(r), 'wide'));
+    var bands = { run: 0, walk: 0, crawl: 0, not_yet: 0, unknown: 0 };
+    profiledCaps(r).forEach(function (c) { var k = LEVEL_NUM[c.rating] !== undefined ? c.rating : 'unknown'; bands[k]++; });
+    var parts = [{ k: 'run', color: '#3C8D5A' }, { k: 'walk', color: '#8DBF6A' }, { k: 'crawl', color: '#E8A33A' }, { k: 'not_yet', color: '#D33826' }, { k: 'unknown', color: '#9CA3AF' }]
+      .map(function (x) { return { value: bands[x.k], color: x.color, label: x.k === 'unknown' ? 'Not answered or don\'t know' : LEVEL_LABEL[x.k], display: bands[x.k] }; });
+    grid.appendChild(card('Maturity mix', 'Capabilities by rating today', h('div', { class: 'donut-wrap' }, C.donut({ label: 'Capabilities by rating: ' + parts.map(function (x) { return x.label + ' ' + x.value; }).join(', '), parts: parts, center: String(profiledCaps(r).length), sub: 'rated' }), C.legend(parts))));
+    if (!held) {
+      var sevParts = SEVERITIES.map(function (k) { var n = r.findings.filter(function (f) { return f.severity === k; }).length; return { value: n, color: SEV_COLOR[k], label: k, display: n }; });
+      grid.appendChild(card('Findings by severity', 'Gaps against target, weighted by value at stake', h('div', { class: 'donut-wrap' }, C.donut({ label: 'Findings by severity: ' + sevParts.map(function (x) { return x.label + ' ' + x.value; }).join(', '), parts: sevParts, center: String(r.findings.length), sub: 'findings' }), C.legend(sevParts))));
+      if (r.value.moneyShown) grid.appendChild(card('Value by year', 'Net of effort, three cases', yearColumns(r.value.totals, cur)));
+    }
+    grid.appendChild(card('Capability heatmap', 'Gap to target by domain', capHeatmap(r), 'wide'));
+    if (r.needVerdict && r.needVerdict.blindSpots && r.needVerdict.blindSpots.length) {
+      grid.appendChild(card('Blind spots', 'Unanswered or "Don\'t know": each could move the result', h('ul', { class: 'chips' }, blindSpotLabels(r.needVerdict.blindSpots).map(function (b) { return h('li', null, b); }))));
+    }
+    if (held) grid.appendChild(h('div', { class: 'wide' }, teaserCard()));
+    if (!held && state.mode === 'executive') {
+      var top = shownFindings(r).slice(0, 3);
+      if (top.length) grid.appendChild(card('Top findings', 'Where to start', h('div', null, top.map(findingCard)), 'wide'));
+    }
+    p.appendChild(grid);
+  }
+
+  function card(title, sub, content, cls) {
+    var id = 'c-' + title.toLowerCase().replace(/[^a-z]+/g, '-');
+    return h('section', { class: 'dash-card ' + (cls || ''), 'aria-labelledby': id }, h('div', { class: 'dash-card-head' }, h('h3', { id: id }, title), sub ? h('p', { class: 'small muted' }, sub) : null), content);
+  }
+
+  function capRadar(r) {
+    var caps = profiledCaps(r);
+    if (caps.length < 3) return h('p', { class: 'muted' }, 'Too few capabilities rated to draw a profile.');
+    var wrap = h('div', { class: 'radar-wrap' }, C.radar({
+      label: 'Capability profile: ' + caps.map(function (c) { return c.displayName + ' ' + c.ratingLabel + (c.target && c.target.level ? ', target ' + LEVEL_LABEL[c.target.level] : ''); }).join('; '),
+      max: 3, levels: ['Crawl', 'Walk', 'Run'],
+      axes: caps.map(function (c) { return { label: c.displayName, today: LEVEL_NUM[c.rating] !== undefined ? LEVEL_NUM[c.rating] : null, todayLabel: c.ratingLabel, target: c.target && c.target.level ? LEVEL_NUM[c.target.level] : null, targetLabel: c.target && c.target.level ? LEVEL_LABEL[c.target.level] : '' }; })
+    }), h('ul', { class: 'legend' }, h('li', null, h('i', { class: 'lg-today', 'aria-hidden': 'true' }), h('span', null, 'Today')), h('li', null, h('i', { class: 'lg-target', 'aria-hidden': 'true' }), h('span', null, 'Target'))));
+    return wrap;
+  }
+
+  function capHeatmap(r) {
+    var caps = inScopeCaps(r);
+    return C.heatmap({
+      label: 'Capability heatmap by domain: each capability coloured by its gap to target',
+      rows: schema.domains.map(function (d) {
+        var cs = caps.filter(function (c) { return c.domain === d.id; });
+        return { label: d.name, cells: cs.map(function (c) {
+          var cls = c.rating === 'not_assessed' ? 'na' : typeof c.gap !== 'number' ? 'unknown' : 'gap' + Math.min(3, Math.max(0, c.gap));
+          return { label: c.displayName, sub: c.rating === 'not_assessed' ? 'Workshop' : c.ratingLabel + (c.target && c.target.level ? ' → ' + LEVEL_LABEL[c.target.level] : ''), cls: cls, title: c.displayName + ': ' + (c.rating === 'not_assessed' ? 'assessed in the workshop' : c.ratingLabel + (typeof c.gap === 'number' ? (c.gap > 0 ? ', ' + c.gap + ' below target' : ', at target') : '')) };
+        }) };
+      }).filter(function (x) { return x.cells.length; })
+    });
+  }
+
+  function yearColumns(t, cur) {
+    var cases = ['conservative', 'expected', 'upper'];
+    return h('div', null, C.columns({
+      label: 'Net value by year: ' + ['netYear1', 'netYear2', 'netYear3'].map(function (k, i) { return 'year ' + (i + 1) + ' expected ' + money(t.expected[k], cur); }).join(', '),
+      groups: ['netYear1', 'netYear2', 'netYear3'].map(function (k, i) {
+        return { label: 'Year ' + (i + 1), caption: money(t.expected[k], cur), bars: cases.map(function (c) { return { value: fig(t[c][k]), color: CASE_COLOR[c], name: c[0].toUpperCase() + c.slice(1), display: money(t[c][k], cur) }; }) };
+      })
+    }), C.legend(cases.map(function (c) { return { color: CASE_COLOR[c], label: c[0].toUpperCase() + c.slice(1) }; })));
+  }
+
+  function capabilitiesPanel(p, r) {
+    var grid = h('div', { class: 'dash-grid' });
+    grid.appendChild(card('Capability profile', r.headline.statement, capRadar(r), 'wide'));
+    grid.appendChild(card('Capability heatmap', 'Green at target; amber to red by levels below; grey not answered; striped assessed in the workshop', capHeatmap(r), 'wide'));
+    p.appendChild(grid);
+    p.appendChild(capabilityTable(r));
+  }
+
+  function capabilityTable(r) {
+    var inScope = inScopeCaps(r);
     var workshopOnly = inScope.filter(function (c) { return c.rating === 'not_assessed'; });
     var profiled = inScope.filter(function (c) { return c.rating !== 'not_assessed'; });
-    body.appendChild(h('section', { class: 'card', 'aria-labelledby': 'profile-h' }, h('h3', { id: 'profile-h' }, 'Capability profile'), h('p', null, r.headline.statement),
+    return h('section', { class: 'card', 'aria-labelledby': 'profile-h' }, h('h3', { id: 'profile-h' }, 'Capability profile'), h('p', null, r.headline.statement),
       h('div', { class: 'table-wrap' }, h('table', null, h('thead', null, h('tr', null, ['Capability', 'Today', 'Target'].map(function (t) { return h('th', { scope: 'col' }, t); }))),
         h('tbody', null, profiled.map(function (c) {
           // "Not answered" already says the rating is unconfirmed; the note is for "Don't know" answers.
           var note = c.unconfirmed && c.ratingLabel !== 'Not answered' ? h('span', { class: 'small muted' }, ' (unconfirmed)') : null;
           var gap = typeof c.gap === 'number' ? (c.gap > 0 ? h('span', { class: 'small muted' }, ' · ' + c.gap + (c.gap === 1 ? ' level below' : ' levels below')) : h('span', { class: 'chip ok' }, 'At target')) : null;
-          return h('tr', null, h('td', null, c.displayName), h('td', null, c.ratingLabel, note),
+          return h('tr', null, h('td', null, c.displayName), h('td', null, h('span', { class: 'lvl ' + c.rating }, c.ratingLabel), note),
             h('td', null, c.target && c.target.level ? LEVEL_LABEL[c.target.level] : '—', gap ? ' ' : null, gap));
         })))),
-      workshopOnly.length ? h('p', { class: 'small muted' }, workshopOnly.length + ' more capabilities are assessed in the workshop: ' + workshopOnly.map(function (c) { return c.displayName; }).join(', ') + '.') : null));
+      workshopOnly.length ? h('p', { class: 'small muted' }, workshopOnly.length + ' more capabilities are assessed in the workshop: ' + workshopOnly.map(function (c) { return c.displayName; }).join(', ') + '.') : null);
+  }
 
-    // Teaser mode (carried over from FinOps Value Case): in client view the consultant can hold back the value,
-    // findings, roadmap and platform actions for the readout. They are not rendered at all, only a gated card.
-    if (client && state.teaser) { body.appendChild(teaserCard()); body.appendChild(methodology(r)); return; }
-
-    body.appendChild(valueSection(r.value, cur));
-
-    var ids = state.mode === 'executive' ? r.topFindingIds : r.findings.map(function (f) { return f.id; });
-    var shown = ids.map(function (id) { return r.findings.find(function (f) { return f.id === id; }); }).filter(Boolean);
-    body.appendChild(h('section', { class: 'card', 'aria-labelledby': 'findings-h' }, h('h3', { id: 'findings-h' }, state.mode === 'executive' ? 'Top findings' : 'Findings (' + shown.length + ')'),
-      shown.length ? shown.map(findingCard) : h('p', { class: 'muted' }, 'No gaps against the targets for this estate.')));
-
-    if (r.help && r.help.length) body.appendChild(helpCard(r));
-    body.appendChild(technicalCard(r));
-    if (!client) body.appendChild(consultantPanel(r));
-    body.appendChild(methodology(r));
-    if (isFinal()) body.appendChild(reportCard(client));
-
-    if (!isFinal() && !client) {
-      body.appendChild(h('div', { class: 'card' }, h('h3', null, 'Complete the assessment'),
-        h('p', { class: 'small muted' }, 'The server scores the saved answers, records the result and dates it today. After that the answers cannot be changed; start a new assessment to revise them.'),
-        h('button', { class: 'btn primary', type: 'button', onclick: complete }, 'Complete assessment')));
+  function valuePanel(p, r, cur) {
+    var v = r.value;
+    var grid = h('div', { class: 'dash-grid' });
+    if (v.moneyShown) {
+      var q = v.levers.filter(function (l) { return l.status === 'quantified' && l.cases && l.cases.expected; });
+      grid.appendChild(card('Value by lever', 'Expected net per year at full run-rate; the line shows the conservative to upper range', C.rangeBars({
+        label: 'Value by lever: ' + q.map(function (l) { return l.name + ' ' + money(l.cases.expected.netRunRate, cur); }).join(', '),
+        rows: q.map(function (l) { return { label: l.name, low: fig(l.cases.conservative.netRunRate), mid: fig(l.cases.expected.netRunRate), high: fig(l.cases.upper.netRunRate), display: money(l.cases.expected.netRunRate, cur), title: l.basisLine }; })
+      }), 'wide'));
+      var leverParts = q.map(function (l, i) { return { value: fig(l.cases.expected.netRunRate), color: ['#D33826', '#7A1F15', '#F08A7E', '#2F7FA0', '#3C8D5A', '#E8A33A', '#6B4FA0', '#9CA3AF'][i % 8], label: l.name, display: money(l.cases.expected.netRunRate, cur) }; });
+      grid.appendChild(card('Share of expected value', 'By lever', h('div', { class: 'donut-wrap' }, C.donut({ label: 'Share of expected value by lever', parts: leverParts, center: money(v.totals.expected.netRunRate, cur), sub: 'per year' }), C.legend(leverParts))));
+      grid.appendChild(card('Value by year', 'Net of effort: year one ramps up as levers start', yearColumns(v.totals, cur)));
     }
-    if (state.status === 'completed' && !client) {
-      body.appendChild(h('div', { class: 'card' }, h('h3', null, 'After completion'),
-        state.mode === 'executive' ? h('p', null, h('button', { class: 'btn', type: 'button', onclick: continueInWorkshop }, 'Continue in workshop mode'), h('span', { class: 'small muted' }, ' Starts a workshop assessment with these answers filled in.')) : null,
-        h('button', { class: 'btn', type: 'button', onclick: archive }, 'Archive')));
+    p.appendChild(grid);
+    p.appendChild(valueSection(v, cur));
+  }
+
+  /** The findings: a severity by wave matrix that filters the list, then the finding cards. */
+  function findingsPanel(p, r) {
+    var list = shownFindings(r);
+    var waves = [1, 2, 3];
+    var cells = SEVERITIES.map(function (sv) { return waves.map(function (w) { return { count: list.filter(function (f) { return f.severity === sv && f.wave === w; }).length }; }); });
+    var pick = state.findingFilter;
+    var grid = h('div', { class: 'dash-grid' });
+    grid.appendChild(card('Priority matrix', 'Severity against when to start; choose a cell to filter the list', C.matrix({
+      rows: SEVERITIES, cols: ['Wave 1 · start now', 'Wave 2 · from month 3', 'Wave 3 · from month 9'], cells: cells, corner: 'Severity', unit: ['finding', 'findings'],
+      rowClass: SEVERITIES.map(function (x) { return 'sev-' + x.toLowerCase(); }), picked: pick,
+      onPick: function (ri, ci) { state.findingFilter = pick && pick[0] === ri && pick[1] === ci ? null : [ri, ci]; render(); }
+    }), 'wide'));
+    p.appendChild(grid);
+    var filtered = pick ? list.filter(function (f) { return f.severity === SEVERITIES[pick[0]] && f.wave === waves[pick[1]]; }) : list;
+    p.appendChild(h('section', { class: 'card', 'aria-labelledby': 'findings-h' },
+      h('div', { class: 'header-row', style: 'margin:0 0 8px' }, h('h3', { id: 'findings-h', style: 'margin:0' }, state.mode === 'executive' ? 'Top findings' : 'Findings (' + filtered.length + ')'),
+        pick ? h('button', { class: 'btn small', type: 'button', onclick: function () { state.findingFilter = null; render(); } }, 'Show all ' + list.length) : null),
+      pick ? h('p', { class: 'small muted' }, 'Showing ' + SEVERITIES[pick[0]].toLowerCase() + ' findings in wave ' + waves[pick[1]] + '.') : null,
+      filtered.length ? filtered.map(findingCard) : h('p', { class: 'muted' }, 'No gaps against the targets for this estate.')));
+  }
+
+  function roadmapPanel(p, r) {
+    var list = r.findings.filter(function (f) { return f.start && typeof f.start.month === 'number'; }).slice().sort(function (a, b) { return a.start.month - b.start.month || SEVERITIES.indexOf(a.severity) - SEVERITIES.indexOf(b.severity); });
+    var end = list.reduce(function (m, f) { return Math.max(m, f.start.month + ((f.targetDuration && f.targetDuration.months) || 3)); }, 12);
+    var months = Math.ceil(end / 6) * 6;
+    var grid = h('div', { class: 'dash-grid' });
+    if (list.length) grid.appendChild(card('Roadmap', 'Each finding from its start month for its target duration, coloured by severity', h('div', null, C.gantt({
+      label: 'Roadmap: ' + list.map(function (f) { return f.title + ', ' + f.start.label + (f.targetDuration ? ', ' + f.targetDuration.label : ''); }).join('; '),
+      months: months, step: months > 18 ? 6 : 3, head: 'Finding',
+      rows: list.map(function (f) { return { label: f.capability ? capabilityName(f.capability) : f.title, start: f.start.month, length: (f.targetDuration && f.targetDuration.months) || 3, cls: 'sev-' + f.severity.toLowerCase(), title: f.title + ' · ' + f.start.label + (f.targetDuration ? ' · ' + f.targetDuration.label : '') + ' · ' + f.ownerLabel }; })
+    }), C.legend(SEVERITIES.map(function (k) { return { color: SEV_COLOR[k], label: k }; }))), 'wide'));
+    p.appendChild(grid);
+    if (r.help && r.help.length) p.appendChild(helpCard(r));
+    p.appendChild(technicalCard(r));
+  }
+
+  function reportPanel(p, r, client) {
+    p.appendChild(reportCard(client));
+    if (!client) p.appendChild(consultantPanel(r));
+    if (r.needVerdict) {
+      var nv = r.needVerdict;
+      p.appendChild(h('section', { class: 'card', 'aria-labelledby': 'need-h' }, h('h3', { id: 'need-h' }, 'Do you need to act now?'),
+        h('div', { class: 'verdict' }, h('div', null, h('div', { class: 'big' }, String(Math.round(nv.needIndex))), h('div', { class: 'small muted' }, 'Need index, 0–100')),
+          h('div', null, h('p', null, h('strong', null, nv.bandLabel)), h('p', { class: 'small muted' }, nv.basisLine), h('p', { class: 'small' }, 'Confidence: ' + nv.confidence)))));
     }
+    p.appendChild(methodology(r));
   }
 
   function valueSection(v, cur) {
@@ -979,16 +1446,15 @@
     return sec;
   }
 
-  /** The report PDF and backlog CSV, built on the server from the stored result (M4); client view gets the client edition. */
+  /**
+   * The report PDF and backlog CSV are built on the server from the stored result (M4); their buttons are in the
+   * headline band. Client view gets the client edition.
+   */
   function reportCard(client) {
-    var status = h('p', { class: 'small muted', id: 'report-status', role: 'status', 'aria-live': 'polite' });
-    var button = function (format, label) {
-      return h('button', { class: 'btn', type: 'button', onclick: function (e) { download(format, e.currentTarget, status); } }, label);
-    };
     return h('section', { class: 'card', 'aria-labelledby': 'report-h' }, h('h3', { id: 'report-h' }, 'Report'),
       h('p', { class: 'small muted' }, client ? 'Client edition: no consultant checks or notes.' : 'Consultant edition, with the consultant checks. Turn on client view for the client edition.'),
-      h('div', { class: 'actions' }, button('pdf', 'Download report (PDF)'), button('csv', 'Download backlog (CSV)'), archiveControl(status)),
-      status);
+      h('p', { class: 'small' }, 'Download the report, the backlog or archive the report to Reports with the buttons at the top of the page.'),
+      state.status === 'completed' && !client ? h('p', null, h('button', { class: 'btn', type: 'button', onclick: archive }, 'Archive assessment'), h('span', { class: 'small muted' }, ' Marks it archived in your list; it is still kept for two years.')) : null);
   }
 
   /**
@@ -1067,9 +1533,9 @@
 
   async function complete() {
     clearTimeout(timers.save);
-    var data = await working(['Scoring your answers on the server', 'Rating each capability against its target', 'Sizing the indicative value range', 'Building the roadmap and platform actions'],
-      persist('complete'), 'Result ready');
-    if (data) { state.step = 'results'; render(); }
+    var data = await working(['Scoring your answers on the server', 'Rating each capability against its target', 'Sizing the indicative value range', 'Prioritising the findings', 'Building the roadmap and platform actions'],
+      persist('complete'), 'Result ready', 3200);
+    if (data) { state.step = 'results'; state.tab = 'overview'; state.findingFilter = null; render(); window.scrollTo(0, 0); }
   }
   async function archive() { var data = await persist('archive'); if (data) render(); }
   function continueInWorkshop() {
@@ -1085,8 +1551,10 @@
    * result (or rethrows its error).
    */
   var MIN_MS = 1600;
-  async function working(steps, promise, done) {
+  async function working(steps, promise, done, minMs) {
+    var min = minMs || MIN_MS;
     var started = Date.now();
+    var items = steps.map(function (t) { return h('li', null, h('span', { class: 'wl-icon', 'aria-hidden': 'true' }), h('span', null, t)); });
     var log = h('p', { class: 'working-step' }, steps[0]);
     var bar = h('i');
     var screen = h('div', { class: 'working', role: 'status', 'aria-live': 'polite' },
@@ -1095,21 +1563,28 @@
         h('div', { class: 'working-emblem', 'aria-hidden': 'true' }, h('span', { class: 'ring r1' }), h('span', { class: 'ring r2' }), h('span', { class: 'ring r3' }), h('span', { class: 'hex' })),
         h('p', { class: 'working-org' }, h('strong', null, 'LTM'), ' Vantage · Responsible Advisory'),
         h('p', { class: 'working-title' }, 'FinOps ', h('span', null, 'IQ')),
+        h('p', { class: 'working-client' }, state ? state.clientName : ''),
         log,
-        h('div', { class: 'working-track', 'aria-hidden': 'true' }, bar)));
+        h('div', { class: 'working-track', 'aria-hidden': 'true' }, bar),
+        h('ol', { class: 'working-list', 'aria-hidden': 'true' }, items)));
     document.body.appendChild(screen);
     document.getElementById('main').setAttribute('aria-busy', 'true');
     var i = 0;
-    var show = function () { log.textContent = steps[i]; bar.style.width = Math.round(((i + 1) / (steps.length + 1)) * 100) + '%'; };
+    var show = function () {
+      log.textContent = steps[i];
+      items.forEach(function (li, j) { li.className = j < i ? 'done' : j === i ? 'active' : ''; });
+      bar.style.width = Math.round(((i + 1) / (steps.length + 1)) * 100) + '%';
+    };
     show();
-    var tick = setInterval(function () { if (i < steps.length - 1) { i++; show(); } }, MIN_MS / steps.length);
+    var tick = setInterval(function () { if (i < steps.length - 1) { i++; show(); } }, min / steps.length);
     try {
       var result = await promise;
-      var left = MIN_MS - (Date.now() - started);
+      var left = min - (Date.now() - started);
       if (left > 0) await new Promise(function (r) { setTimeout(r, left); });
       clearInterval(tick);
+      items.forEach(function (li) { li.className = 'done'; });
       log.textContent = done; bar.style.width = '100%';
-      await new Promise(function (r) { setTimeout(r, 250); });
+      await new Promise(function (r) { setTimeout(r, 450); });
       return result;
     } finally {
       clearInterval(tick);

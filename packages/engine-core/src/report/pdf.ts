@@ -1,18 +1,18 @@
 /**
- * Renders a ReportDocument to PDF on the server (WS-S4). pdfmake with the Roboto fonts it ships as base64 data,
- * so nothing is read from disk and the renderer bundles into a Lambda. LTM Vantage brand: ink text, the LTM red
+ * Renders a ReportDocument to PDF on the server (WS-S4). pdfmake's self-contained build with the Roboto fonts it
+ * ships as base64 data, so nothing is read from disk and the renderer bundles into a Lambda. (The package's Node
+ * entry reads font-shaping tables from files beside its own source, which the Lambda bundle does not carry.) LTM Vantage brand: ink text, the LTM red
  * for rules and headings, the platform footer on every page (docs/BRAND.md).
  */
-import PdfPrinter from 'pdfmake';
+import pdfMake from 'pdfmake/build/pdfmake.js';
 import vfsFonts from 'pdfmake/build/vfs_fonts.js';
 import type { Content, TDocumentDefinitions, TableCell } from 'pdfmake/interfaces';
 import type { Block, ReportDocument, Seg } from './model';
 
 const VFS: Record<string, string> = (vfsFonts as any).pdfMake?.vfs ?? (vfsFonts as any).vfs ?? (vfsFonts as any);
-const font = (name: string) => Buffer.from(VFS[name], 'base64');
-const printer = new PdfPrinter({
-  Roboto: { normal: font('Roboto-Regular.ttf'), bold: font('Roboto-Medium.ttf'), italics: font('Roboto-Italic.ttf'), bolditalics: font('Roboto-MediumItalic.ttf') }
-});
+const FONTS = {
+  Roboto: { normal: 'Roboto-Regular.ttf', bold: 'Roboto-Medium.ttf', italics: 'Roboto-Italic.ttf', bolditalics: 'Roboto-MediumItalic.ttf' }
+};
 
 const INK = '#141414', MUTED = '#4B5563', RED = '#D33826', LINE = '#D1D5DB', FILL = '#F3F4F6', AMBER_BG = '#FDF6EB', BLUE_BG = '#EEF7FA';
 
@@ -159,12 +159,8 @@ export function definition(doc: ReportDocument): TDocumentDefinitions {
 export function renderPdf(doc: ReportDocument): Promise<Buffer> {
   const def = definition(doc);
   def.info = { ...def.info, creationDate: new Date(`${doc.meta.date}T00:00:00Z`) } as any;
-  const pdf = printer.createPdfKitDocument(def);
   return new Promise((resolve, reject) => {
-    const chunks: Buffer[] = [];
-    pdf.on('data', (c: Buffer) => chunks.push(c));
-    pdf.on('end', () => resolve(Buffer.concat(chunks)));
-    pdf.on('error', reject);
-    pdf.end();
+    try { (pdfMake as any).createPdf(def, undefined, FONTS, VFS).getBuffer((b: Uint8Array) => resolve(Buffer.from(b))); }
+    catch (e) { reject(e); }
   });
 }
