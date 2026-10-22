@@ -152,6 +152,10 @@ test('executive: every question renders and can be answered; complete, then resu
   const id = new URL(page.url()).searchParams.get('assessment')!;
   await page.goto('/finops-iq-v3?assessment=' + encodeURIComponent(id));
   await expect(page.getByRole('heading', { name: 'Capability profile' })).toBeVisible();
+  // M5: offerings and the technical execution section come from the stored result; no scope ranges on the page.
+  await expect(page.getByRole('heading', { name: 'How LTM can help' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Technical execution' })).toBeVisible();
+  expect(await page.locator('main').innerText()).not.toMatch(/\d+\s*(?:–|-)\s*\d+ weeks|12 months or more/);
   await page.locator('nav.steps button', { hasText: 'Your estate' }).click();
   await expect(page.locator('fieldset.question input').first()).toBeDisabled();
 

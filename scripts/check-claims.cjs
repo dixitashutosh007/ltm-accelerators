@@ -23,16 +23,20 @@ const FINOPS_REGISTRY = [
 ].map(f => `packages/engine-core/src/accelerators/finops-iq/registry/${f}`);
 // FinOps IQ v3 engine content (plans F3 and F4): the merged question bank, the engine's and the value model's wording and rules.
 const FINOPS_V3 = ['question-bank.json', 'engine-rules.json', 'value-rules.json'].map(f => `packages/engine-core/src/accelerators/finops-iq/v3/${f}`);
+// Shared catalogues (WS-S3 platform playbook, WS-S5 offerings), FinOps IQ the first consumer (execution phase M5).
+const SHARED_CATALOGUES = ['packages/engine-core/src/playbook/finops-iq.json', 'packages/engine-core/src/offerings/finops-iq.json'];
 const REFERENCING_FILES = [
   'packages/engine-core/src/accelerators/sovereign-iq/registry/regimes.json',
   ...FINOPS_REGISTRY,
-  ...FINOPS_V3
+  ...FINOPS_V3,
+  ...SHARED_CATALOGUES
 ];
 // Client-facing files checked for banned phrases (decision D8 / plan S2 item 7). Add pages as they are rebuilt.
 const LANGUAGE_CHECKED = [
   'packages/engine-core/src/accelerators/sovereign-iq/registry/regimes.json',
   ...FINOPS_REGISTRY,
-  ...FINOPS_V3
+  ...FINOPS_V3,
+  ...SHARED_CATALOGUES
 ];
 const BANNED = [
   /legally void/i, /\bunenforceable\b/i, /injunction notice/i, /zero legal immunity/i, /\bguarantee[sd]?\b/i, /100% compliant/i, /attorney-drafted/i,

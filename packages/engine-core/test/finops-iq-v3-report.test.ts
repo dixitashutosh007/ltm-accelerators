@@ -130,6 +130,87 @@ describe('FinOps IQ report: every number traces to the engine (area 13(a))', () 
   });
 });
 
+/** The plain text of the named sections. */
+const sectionText = (doc: ReportDocument, ids: string[]) => {
+  const parts: string[] = [];
+  walkSegments({ meta: doc.meta, sections: doc.sections.filter(s => ids.includes(s.id)) }, s => parts.push(typeof s === 'string' ? s : s.text));
+  for (const s of doc.sections.filter(x => ids.includes(x.id))) for (const b of s.blocks) if (b.kind === 'subheading') parts.push(b.text);
+  return parts.join(' ');
+};
+const BODY = ['summary', 'profile', 'findings', 'value', 'roadmap', 'market', 'methodology'];
+
+describe('FinOps IQ report: CIO challenge test fixes (M4-cio-challenge.md)', () => {
+  it('Q2: net is reconciled with the roadmap: lever effort netted + capability effort not netted = roadmap effort; the conservative first year is in the summary', () => {
+    for (const x of runs.filter(y => y.r.value.moneyShown && y.view === 'consultant')) {
+      const shown = new Map(traces(x.doc).map(s => [s.trace.field, s.trace.value]));
+      const roadmap = finopsIqRoadmap(x.r).reduce((t, w) => t + w.effort.fteMonths, 0);
+      const notNetted = shown.get('report:notNetted.capabilityEffort') ?? 0;
+      const netted = finopsIqRoadmap(x.r).flatMap(w => w.effort.leverFields).reduce((t, f) => t + resolveTraceField(x.r, f)!, 0);
+      expect(netted + notNetted, x.label).toBe(roadmap);
+      const summary = traces({ meta: x.doc.meta, sections: [x.doc.sections[0]] }).map(s => s.trace.field);
+      expect(summary, x.label).toContain('value.totals.conservative.netYear1');
+      expect(sectionText(x.doc, ['summary', 'value'])).toMatch(/Not netted, and shown for your decision/);
+    }
+  });
+
+  it('Q7: the methodology says why provider tools are not enough, naming the tools for the client\'s providers', () => {
+    for (const x of runs) {
+      const text = sectionText(x.doc, ['methodology']);
+      expect(text, x.label).toMatch(/Why provider tools are not enough/);
+      const providers: string[] = x.input.facts.footprint.publicCloudProviders;
+      if (providers.includes('aws')) expect(text).toMatch(/AWS Cost Optimization Hub/);
+      if (providers.includes('azure')) expect(text).toMatch(/Azure Advisor/);
+      if (providers.includes('gcp')) expect(text).toMatch(/Google Cloud Recommender/);
+    }
+  });
+
+  it('Q6 and D2: the waste estimate is never an input, and one question count is used (all questions, of which capability questions)', () => {
+    for (const x of runs) {
+      const text = sectionText(x.doc, ['methodology']);
+      expect(text).toMatch(/own estimate of waste, it is not used in any figure/);
+      const fields = traces(x.doc).map(s => s.trace.field);
+      expect(fields).toContain('questions.asked.length');
+    }
+  });
+
+  it('D8: the client edition body has no question, finding or design IDs; the consultant edition keeps finding IDs on milestones', () => {
+    for (const x of runs.filter(y => y.view === 'client')) {
+      const text = sectionText(x.doc, BODY);
+      expect(text.match(/\b(?:[A-Z]{2}-\d{2}|F-FIN-[A-Z0-9_-]+|LEV-\d{2})\b|\((?:Q|D)\d+\)|WS-S\d/g), x.label).toBeNull();
+    }
+    expect(sectionText(runs.find(y => y.label === 'RS4 consultant')!.doc, ['roadmap'])).toMatch(/F-FIN-DATA_INGESTION/);
+  });
+
+  it('D3 and D6: no private source address, "null" or internal file reference in the client edition', () => {
+    for (const x of runs.filter(y => y.view === 'client')) {
+      const text = sectionText(x.doc, x.doc.sections.map(s => s.id));
+      expect(text).not.toMatch(/github\.com|\bnull\b|FRAMEWORK\.md|DESIGN\.md/);
+    }
+  });
+
+  it('D7: a lever without a base shows no rate, and a blended rate says so', () => {
+    for (const x of runs) {
+      const value = x.doc.sections.find(s => s.id === 'value')!;
+      for (const b of value.blocks.filter(b => b.kind === 'table' && b.head[0] === 'Lever') as any[]) {
+        for (const row of b.rows) {
+          const rate = row[2].map((s: Seg) => (typeof s === 'string' ? s : s.text)).join('');
+          expect(rate, x.label).not.toBe('0%');
+        }
+      }
+    }
+  });
+
+  it('D10: roadmap items follow the estate: no licence actions without SaaS or licensing in scope, and the workstream is renamed', () => {
+    const rs5 = runs.find(y => y.label === 'RS5 client')!;
+    expect(rs5.input.facts.footprint.scopes).not.toContain('saas');
+    const text = sectionText(rs5.doc, ['roadmap']);
+    expect(text).not.toMatch(/licences and seats/i);
+    if (finopsIqRoadmap(rs5.r).some(w => w.id === 'WS-COMMITMENTS')) expect(text).toMatch(/Commitment portfolio/);
+    const rs4 = runs.find(y => y.label === 'RS4 client')!;
+    expect(sectionText(rs4.doc, ['roadmap'])).toMatch(/licences and seats/i);
+  });
+});
+
 describe('FinOps IQ report: client edition', () => {
   const clientRuns = runs.filter(x => x.view === 'client');
   it.each(clientRuns.map(x => [x.label, x]))('%s: no consultant appendix, probe, tier trace or need modifier; sources are client-visible claims only', (_, x) => {

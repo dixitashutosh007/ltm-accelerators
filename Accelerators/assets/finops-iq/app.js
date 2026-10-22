@@ -756,6 +756,8 @@
     body.appendChild(h('section', { class: 'card', 'aria-labelledby': 'findings-h' }, h('h3', { id: 'findings-h' }, state.mode === 'executive' ? 'Top findings' : 'Findings (' + shown.length + ')'),
       shown.length ? shown.map(findingCard) : h('p', { class: 'muted' }, 'No gaps against the targets for this estate.')));
 
+    if (r.help && r.help.length) body.appendChild(helpCard(r));
+    body.appendChild(technicalCard(r));
     if (!client) body.appendChild(consultantPanel(r));
     body.appendChild(methodology(r));
     if (isFinal()) body.appendChild(reportCard(client));
@@ -850,6 +852,39 @@
       h('p', null, n.disclaimer),
       h('p', null, n.data),
       h('p', { class: 'small muted' }, 'FinOps IQ engine ' + r.versions.engine + ' · value model ' + r.versions.valueModel + ' · ' + r.versions.kb + ' · claims register ' + r.versions.claimsRegister + (r.assessmentDate ? ' · assessed ' + r.assessmentDate : '') + ' · data provided by ' + state.clientName));
+  }
+
+  /** How LTM can help (M5): the offerings the findings call for, from the server's result; no scope ranges. */
+  function helpCard(r) {
+    var title = function (id) { var f = r.findings.find(function (x) { return x.id === id; }); return f ? f.title : id; };
+    return h('section', { class: 'card', 'aria-labelledby': 'help-h' }, h('h3', { id: 'help-h' }, 'How LTM can help'),
+      r.help.map(function (x) {
+        var o = x.offering;
+        return h('div', { class: 'help-item' },
+          h('h4', null, o.type === 'Route' ? 'See ' + o.name : o.name + ' (' + o.type.toLowerCase() + ')'),
+          h('p', null, o.purpose),
+          o.outline.length ? h('ul', { class: 'small' }, o.outline.map(function (t) { return h('li', null, t); })) : null,
+          h('p', { class: 'small muted' }, 'For: ' + x.findingIds.map(title).join('; ')));
+      }));
+  }
+
+  /** Technical execution (M5): platform actions per finding from the playbook, as the server selected them. */
+  function technicalCard(r) {
+    var plan = r.technicalPlan;
+    var sec = h('section', { class: 'card', 'aria-labelledby': 'tech-h' }, h('h3', { id: 'tech-h' }, 'Technical execution'));
+    if (!plan || !plan.actions.length) {
+      sec.appendChild(h('p', { class: 'muted' }, 'No platform actions are listed for these findings yet: the platform playbook entries are still being sourced and reviewed.'));
+      return sec;
+    }
+    sec.appendChild(h('p', { class: 'small muted' }, plan.statement));
+    sec.appendChild(h('div', { class: 'table-wrap' }, h('table', null,
+      h('thead', null, h('tr', null, ['Finding', 'Platform', 'Action', 'Options', 'Verification'].map(function (t) { return h('th', { scope: 'col' }, t); }))),
+      h('tbody', null, plan.actions.map(function (a) {
+        var f = r.findings.find(function (x) { return x.id === a.findingId; });
+        return h('tr', null, h('td', null, f ? f.title : a.findingId), h('td', null, a.platform), h('td', null, a.action),
+          h('td', { class: 'small' }, a.options.map(function (o) { return o.name; }).join('; ') || '—'), h('td', { class: 'small' }, a.verification));
+      })))));
+    return sec;
   }
 
   /** The report PDF and backlog CSV, built on the server from the stored result (M4); client view gets the client edition. */

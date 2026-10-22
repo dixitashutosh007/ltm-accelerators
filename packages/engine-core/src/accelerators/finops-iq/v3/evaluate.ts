@@ -11,9 +11,10 @@ import leverLibrary from '../registry/levers.json' with { type: 'json' };
 import thresholds from '../registry/thresholds.json' with { type: 'json' };
 import claimsRegister from '../../../claims/claims-register.json' with { type: 'json' };
 import valueRules from './value-rules.json' with { type: 'json' };
+import { howLtmCanHelp, technicalPlan, PLAYBOOK, OFFERINGS, type HelpItem, type TechnicalPlan } from './execution';
 import { buildValueModel, findingValue, inputInfo, OF_WHICH_ROWS, VALUE_MODEL_VERSION, type Figure, type ValueBlock, type ValueModelOutput } from './value-model';
 
-export const ENGINE_VERSION = '3.4.0';
+export const ENGINE_VERSION = '3.5.0';
 export { VALUE_MODEL_VERSION };
 
 export type Mode = 'executive' | 'workshop';
@@ -170,6 +171,8 @@ export interface FinOpsIqV3Result {
     valueRules: string;
     valueModel: string;
     claimsRegister: string;
+    playbook: string;
+    offerings: string;
   };
   mode: Mode;
   assessmentDate?: string;
@@ -188,6 +191,10 @@ export interface FinOpsIqV3Result {
   hypotheses: { answers: Record<string, AnswerValue>; scored: false; claimIds: string[] };
   /** Value model (DESIGN.md 10): indicative ranges, never a savings commitment. Every number is a traceable Figure. */
   value: ValueBlock;
+  /** Platform actions for the findings, from the shared playbook (M5, F8, WS-S3). */
+  technicalPlan: TechnicalPlan;
+  /** Offerings the findings call for, client-visible part only (M5, F9, WS-S5); scope ranges stay in the SOW draft. */
+  help: HelpItem[];
 }
 
 /* ------------------------------ Reference data ------------------------------ */
@@ -917,7 +924,9 @@ export function evaluateFinOpsIqV3(input: FinOpsIqV3Input): FinOpsIqV3Result {
       kb: `questions ${versions.questionSet}; capabilities ${versions.capabilityModel}; levers ${versions.leverLibrary}; thresholds ${versions.thresholds}; rules ${versions.engineRules}; value rules ${versions.valueRules}`,
       ...versions,
       valueModel: VALUE_MODEL_VERSION,
-      claimsRegister: REGISTER.version
+      claimsRegister: REGISTER.version,
+      playbook: PLAYBOOK.catalogueVersion,
+      offerings: OFFERINGS.catalogueVersion
     },
     mode: input.mode,
     ...(input.assessmentDate ? { assessmentDate: input.assessmentDate } : {}),
@@ -931,6 +940,8 @@ export function evaluateFinOpsIqV3(input: FinOpsIqV3Input): FinOpsIqV3Result {
     coverage,
     conflicts,
     hypotheses: { answers: hypotheses, scored: false, claimIds: ['CLM-FIN-144', 'CLM-FIN-164'] },
-    value: vm.value
+    value: vm.value,
+    technicalPlan: technicalPlan(findings),
+    help: howLtmCanHelp(findings)
   };
 }

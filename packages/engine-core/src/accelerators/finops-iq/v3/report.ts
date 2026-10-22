@@ -17,6 +17,10 @@ import { evaluateFinOpsIqV3, type Finding, type FinOpsIqV3Input, type FinOpsIqV3
 import { inputInfo, resolveField, type Figure, type LeverValue } from './value-model';
 import { clientView } from './client-view';
 import { NOTICES } from './public-schema';
+import { OFFERINGS } from './execution';
+import { sowDraft } from '../../../offerings/catalogue';
+import questionBank from './question-bank.json' with { type: 'json' };
+import leverLibrary from '../registry/levers.json' with { type: 'json' };
 import { figure, traced, walkSegments, type Backlog, type Block, type ReportDocument, type ReportSection, type Seg, type Trace } from '../../../report/model';
 
 const WS: any = workstreamRegistry;
@@ -50,8 +54,28 @@ const strong = (text: string): Seg => ({ text, strong: true });
 const findingClaims = (f: Finding) => uniq(f.basis.map(b => b.claimId!).filter(Boolean));
 const bySeverity = (a: Finding, b: Finding) => SEVERITY_ORDER.indexOf(a.severity) - SEVERITY_ORDER.indexOf(b.severity);
 const sentence = (s: string) => (/[.!?]$/.test(s.trim()) ? s.trim() : `${s.trim()}.`);
+/** The need verdict's basis without its question count, which section 7 states once for the whole report. */
+const withoutCount = (line: string) => { const t = line.replace(/^Based on \d+ of \d+ questions answered;\s*/, ''); return t[0].toUpperCase() + t.slice(1); };
 /** Items run together after a semicolon: "An executive sponsor; agreement on who decides" (acronyms keep their case). */
 const joinItems = (items: string[]) => items.map((x, i) => (i && /^[A-Z][a-z]/.test(x) ? x[0].toLowerCase() + x.slice(1) : x)).join('; ');
+
+const PROVIDER_NAME: Record<string, string> = { aws: 'AWS', azure: 'Azure', gcp: 'Google Cloud', oci: 'OCI', ibm: 'IBM Cloud', alibaba: 'Alibaba Cloud', other_public: 'other public cloud' };
+const providerName = (p: string) => PROVIDER_NAME[p] ?? p;
+const listOf = (a: string[]) => (a.length < 2 ? a.join('') : `${a.slice(0, -1).join(', ')} and ${a[a.length - 1]}`);
+
+/** The client's estate: from the request when the report has it, otherwise from the scopes its findings name. */
+export interface Estate { scopes: string[]; providers: string[] }
+export function estateOf(r: FinOpsIqV3Result, input?: FinOpsIqV3Input): Estate {
+  if (input?.facts?.footprint) return { scopes: [...input.facts.footprint.scopes], providers: [...input.facts.footprint.publicCloudProviders] };
+  const all = r.findings.flatMap(f => f.scopes);
+  return { scopes: uniq(all.map(x => x.split(':')[0])), providers: uniq(all.filter(x => x.startsWith('public_cloud:')).map(x => x.split(':')[1])) };
+}
+
+/** A registry item (activity, KPI, prerequisite, risk): plain text, or text shown only for some scopes or capabilities. */
+type Item = string | { text?: string; name?: string; scopes?: string[]; capabilities?: string[] };
+const applies = (i: Item, scopes: string[], caps: Set<string>) =>
+  typeof i === 'string' || ((!i.scopes || i.scopes.some(x => scopes.includes(x))) && (!i.capabilities || i.capabilities.some(x => caps.has(x))));
+const itemText = (i: Item) => (typeof i === 'string' ? i : (i.text ?? i.name ?? ''));
 
 /** A Figure as a traced segment; `ratio` figures (rates, factors) are shown as shares. */
 const fig = (f: Figure, currency: string): Seg => figure(f, currency, f.unit === 'ratio' ? 'share' : undefined);
@@ -104,7 +128,7 @@ const workstreamOf = (f: Finding): string | undefined => {
 };
 
 /** The delivery-grade roadmap (F7 item 3): workstreams that have at least one finding, in start order. */
-export function finopsIqRoadmap(r: FinOpsIqV3Result): RoadmapWorkstream[] {
+export function finopsIqRoadmap(r: FinOpsIqV3Result, estate: Estate = estateOf(r)): RoadmapWorkstream[] {
   const home = new Map(r.findings.map(f => [f.id, workstreamOf(f)]));
   const out: RoadmapWorkstream[] = [];
   for (const w of WS.workstreams as any[]) {
@@ -114,8 +138,14 @@ export function finopsIqRoadmap(r: FinOpsIqV3Result): RoadmapWorkstream[] {
     const efforts = findings.map(f => findingEffort(f, r));
     const fteMonths = efforts.reduce((t, e) => t + e.fteMonths, 0);
     const valued = r.value.moneyShown ? findings.filter(f => f.value) : [];
+    // Only what applies: items tagged with scopes the client does not have, or capabilities no finding here names, are left out.
+    const caps = new Set(findings.map(f => f.capability));
+    const pick = (items: Item[]) => items.filter(i => applies(i, estate.scopes, caps));
+    const renamed = w.nameWithoutScopes && !w.nameWithoutScopes.scopes.some((x: string) => estate.scopes.includes(x));
     out.push({
-      id: w.id, name: w.name, objective: w.objective, activities: w.activities, kpis: w.kpis, prerequisites: w.prerequisites, risks: w.risks,
+      id: w.id, name: renamed ? w.nameWithoutScopes.name : w.name, objective: renamed ? w.nameWithoutScopes.objective : w.objective,
+      activities: pick(w.activities).map(itemText), kpis: pick(w.kpis).map((k: any) => ({ name: k.name, claimIds: k.claimIds })),
+      prerequisites: pick(w.prerequisites).map(itemText), risks: pick(w.risks).map(itemText),
       findings,
       start: Math.min(...findings.map(f => f.start.month)),
       end: Math.max(...milestones.map(m => m.month)),
@@ -189,7 +219,7 @@ export function finopsIqSensitivity(input: FinOpsIqV3Input, r: FinOpsIqV3Result,
 export const BACKLOG_HEADER = [
   'Finding ID', 'Workstream', 'Severity', 'Capability', 'Lever', 'Platform', 'Current level', 'Target level', 'Action',
   'Verification', 'Owner role', 'Start month', 'Duration (months)', 'Effort (FTE-months)', 'Expected value per year (gross)',
-  'Currency', 'Claim IDs', 'Assumption IDs'
+  'Currency', 'Claim IDs', 'Assumption IDs', 'Platform level', 'Options', 'Effort band'
 ];
 
 /**
@@ -209,7 +239,7 @@ export function finopsIqBacklog(result: FinOpsIqV3Result, view: 'client' | 'cons
     rows.push([
       f.id, ...common, f.leverIds.join(' '), f.scopes.join(' '), current, f.target ? LEVEL_LABEL[f.target] : '', f.decisionOrAction,
       f.evidenceToConfirm, f.ownerLabel, f.start.month, f.targetDuration.months, e.fteMonths,
-      r.value.moneyShown && f.value ? f.value.expected.value : '', cur, findingClaims(f).join(' '), uniq(f.value?.expected.assumptionIds ?? []).join(' ')
+      r.value.moneyShown && f.value ? f.value.expected.value : '', cur, findingClaims(f).join(' '), uniq(f.value?.expected.assumptionIds ?? []).join(' '), '', '', ''
     ]);
     for (const a of f.leverActions) {
       const l = r.value.levers.find(x => x.id === a.leverId);
@@ -217,7 +247,14 @@ export function finopsIqBacklog(result: FinOpsIqV3Result, view: 'client' | 'cons
       rows.push([
         f.id, ...common, a.leverId, f.scopes.join(' '), '', '', a.action, a.evidence, f.ownerLabel, f.start.month, f.targetDuration.months,
         l?.inHeadline && l.effortFteMonths ? l.effortFteMonths.value : '', valued ? l!.cases!.expected.runRate.value : '', cur,
-        uniq(a.claimIds).join(' '), valued ? uniq(l!.cases!.expected.runRate.assumptionIds).join(' ') : ''
+        uniq(a.claimIds).join(' '), valued ? uniq(l!.cases!.expected.runRate.assumptionIds).join(' ') : '', '', '', ''
+      ]);
+    }
+    // One row per platform action from the playbook (F7 item 4, F8), on the finding's schedule.
+    for (const t of (r.technicalPlan?.actions ?? []).filter(x => x.findingId === f.id && !x.noPlatformAction)) {
+      rows.push([
+        f.id, ...common, t.control.startsWith('FIN.LEV-') ? t.control.slice(4) : '', t.platform, '', '', `${t.action} ${t.approach}`, t.verification, t.ownerRole,
+        f.start.month, f.targetDuration.months, '', '', cur, uniq(t.claimIds).join(' '), '', t.level, t.options.map(o => o.name).join('; '), t.effort
       ]);
     }
   }
@@ -226,9 +263,14 @@ export function finopsIqBacklog(result: FinOpsIqV3Result, view: 'client' | 'cons
 
 /* --------------------------------- Sections --------------------------------- */
 
-interface Ctx { r: FinOpsIqV3Result; cur: string; client: boolean; opts: ReportOptions; roadmap: RoadmapWorkstream[]; sensitivity: SensitivityRow[] }
+interface Ctx { r: FinOpsIqV3Result; cur: string; client: boolean; opts: ReportOptions; estate: Estate; roadmap: RoadmapWorkstream[]; sensitivity: SensitivityRow[] }
 
 const capName = (c: Ctx, id: string) => c.r.capabilities.find(x => x.capability === id)?.displayName ?? id;
+/** A finding named in plain words: its capability for a gap, otherwise its title. */
+const dependencyName = (c: Ctx, id: string) => {
+  const f = c.r.findings.find(x => x.id === id);
+  return !f ? id : f.type === 'capability_gap' ? capName(c, f.capability) : f.title;
+};
 const month = (field: string, value: number, claimIds: string[]): Seg => traced(field, value, 'count', claimIds);
 const findingStart = (f: Finding) => month(`findings[${f.id}].start.month`, f.start.month, findingClaims(f));
 const findingDuration = (f: Finding) => traced(`findings[${f.id}].targetDuration.months`, f.targetDuration.months, 'months', findingClaims(f));
@@ -245,15 +287,17 @@ function executiveSummary(c: Ctx): ReportSection {
   blocks.push({ kind: 'subheading', text: 'Situation' });
   blocks.push({ kind: 'paragraph', style: 'lead', segs: [
     `${c.opts.client} was assessed in ${r.mode === 'executive' ? 'executive' : 'workshop'} mode as a `,
-    traced('tier.tier', r.tier.tier, 'tier', r.tier.claimIds), ' estate (LTM complexity tier). ',
+    traced('tier.tier', r.tier.tier, 'tier', r.tier.claimIds), ' estate (LTM complexity tier)',
+    ...(r.value.spend ? [', with in-scope public cloud spend of ', fig(r.value.spend.P, cur), ...(r.value.spend.banded && r.value.spend.low && r.value.spend.high ? [' (band ', fig(r.value.spend.low, cur), ' to ', fig(r.value.spend.high, cur), ')'] : [])] : []),
+    ...(c.estate.providers.length ? [` on ${listOf(c.estate.providers.map(providerName))}`] : []), '. ',
     traced('headline.atOrAboveTarget', h.atOrAboveTarget, 'count', h.claimIds), ' of ', traced('headline.inScope', h.inScope, 'count', h.claimIds),
     ' in-scope capabilities are at or above LTM\'s default target for the tier.'
   ] });
   blocks.push({ kind: 'subheading', text: 'Issue' });
   if (r.needVerdict) {
     const nv = r.needVerdict;
-    blocks.push({ kind: 'paragraph', segs: [strong(`${nv.bandLabel}. `), 'Need index ', traced('needVerdict.needIndex', nv.needIndex, 'index', nv.claimIds), ' of a possible ',
-      { text: '100', ref: true }, ', confidence ', nv.confidence.toLowerCase(), '. ', cite(sentence(nv.basisLine), nv.claimIds)] });
+    blocks.push({ kind: 'paragraph', segs: [strong(`${nv.bandLabel}. `), 'Need index ', traced('needVerdict.needIndex', nv.needIndex, 'index', nv.claimIds), ' on a scale to ',
+      { text: '100', ref: true }, ': how urgently to act, not a maturity score. Confidence ', nv.confidence.toLowerCase(), '. ', cite(sentence(withoutCount(nv.basisLine)), nv.claimIds)] });
   }
   const top = (r.topFindingIds.length ? r.topFindingIds : r.findings.map(f => f.id)).map(id => r.findings.find(f => f.id === id)!).filter(Boolean).slice(0, 5);
   if (top.length) {
@@ -270,10 +314,31 @@ function executiveSummary(c: Ctx): ReportSection {
     const t = r.value.totals;
     blocks.push({ kind: 'paragraph', style: 'small', segs: [
       'Net over three years ranges from ', fig(t.conservative.net3Year, cur), ' (conservative) to ', fig(t.upper.net3Year, cur),
-      ' (upper). Confidence: ', cite(r.value.confidence.reason, r.value.confidence.claimIds), '. ', cite(r.value.detail, r.value.claimIds)
+      ' (upper). In the conservative case the first year is ', fig(t.conservative.netYear1, cur), '. Value confidence: ',
+      cite(r.value.confidence.reason, r.value.confidence.claimIds), '. ', cite(r.value.detail, r.value.claimIds)
     ] });
+    blocks.push({ kind: 'paragraph', style: 'small', segs: notNetted(c) });
   }
   return { id: 'summary', title: 'Executive summary', blocks };
+}
+
+/**
+ * What "net" leaves out (CIO challenge Q2): the roadmap's capability-building effort (gap findings without a quantified
+ * lever, ASM-FIN-086) and the FinOps team, both shown for the client's decision.
+ */
+function notNetted(c: Ctx): Seg[] {
+  const { r, cur } = c;
+  const gapFields = c.roadmap.flatMap(w => w.effort.gapFields);
+  const perLevel = c.roadmap[0]?.effort.perLevel ?? 0;
+  const months = gapFields.reduce((t, f) => t + (resolveTraceField(r, f) ?? 0), 0) * perLevel;
+  const team = r.value.finopsTeam;
+  return [
+    'Not netted, and shown for your decision: ',
+    ...(months > 0 ? ['capability-building effort in the roadmap of ', derivedSeg('report:notNetted.capabilityEffort', months, 'fte_months',
+      { op: 'effort', of: gapFields, detail: { perLevel, gapFields } }, WS.effort.claimIds, [WS.effort.assumptionId], c), ', beyond the lever effort above'] : ['no capability-building effort beyond the levers']),
+    ...(team.shown && team.fte && team.annualCost ? ['; an accountable FinOps lead or team of ', fig(team.fte, cur), ', about ', fig(team.annualCost, cur), ' a year'] : []),
+    '.'
+  ];
 }
 
 /** The value headline: KPIs when a money figure is shown, otherwise the reason it is not. */
@@ -340,7 +405,7 @@ function findingsSection(c: Ctx): ReportSection {
     blocks.push({ kind: 'paragraph', segs: [strong('What to do. '), cite(sentence(f.decisionOrAction), ids)] });
     blocks.push({ kind: 'paragraph', style: 'small', segs: [
       strong('Owner: '), f.ownerLabel, '. ', strong('Start: '), 'month ', findingStart(f), '; ', cite(f.targetDuration.label.toLowerCase(), ids), '.',
-      ...(f.dependsOn.length ? [' ', strong('After: '), ref(f.dependsOn.join(', ')), '.'] : []),
+      ...(f.dependsOn.length ? [' ', strong('After: '), f.dependsOn.map(d => dependencyName(c, d)).join('; '), '.'] : []),
       ...(f.notAnsweredCount ? [' Questions left unanswered: ', traced(`findings[${f.id}].notAnsweredCount`, f.notAnsweredCount, 'count', ids), '.'] : [])
     ] });
     blocks.push({ kind: 'paragraph', style: 'small', segs: [strong('Evidence to confirm. '), cite(sentence(f.evidenceToConfirm), ids)] });
@@ -377,7 +442,7 @@ function valueSection(c: Ctx): ReportSection {
     if (t.expected.saasLicensing) {
       const s = t.expected.saasLicensing;
       blocks.push({ kind: 'paragraph', style: 'small', segs: ['SaaS and licensing are counted on their own base: expected ', fig(s.runRate, cur), ' per year',
-        ...(s.base ? [' against ', fig(s.base, cur), ` ${s.baseLabel.toLowerCase()}`] : []), ...(s.pctOfBase ? [' (', fig(s.pctOfBase, cur), ')'] : []), '.'] });
+        ...(s.base ? [' against ', fig(s.base, cur), ` of ${s.baseLabel[0].toLowerCase()}${s.baseLabel.slice(1)}`] : []), ...(s.pctOfBase ? [' (', fig(s.pctOfBase, cur), ')'] : []), '.'] });
     }
     blocks.push({ kind: 'paragraph', style: 'small', segs: [cite(sentence(v.globalCap.statement), v.globalCap.claimIds),
       ...(t.expected.capBinding ? [' The cap binds in the expected case: levers are scaled to ', fig(t.expected.cap, cur), '.'] : [])] });
@@ -388,12 +453,17 @@ function valueSection(c: Ctx): ReportSection {
     blocks.push({ kind: 'table', small: true, head: ['Lever', 'Base (expected)', 'Maximum rate', 'Conservative', 'Expected', 'Upper', 'Confidence'],
       widths: ['*', 60, 50, 60, 60, 60, 50],
       rows: q.map(l => [
-        [l.name, ' ', ref(`(${l.id})`), ...(l.inHeadline ? [] : [' not in the headline'])],
-        [fig(l.cases!.expected.base, cur)], [fig(l.cases!.expected.rate, cur)],
+        [l.name, ...(c.client ? [] : [' ', ref(`(${l.id})`)]), ...(l.inHeadline ? [] : [' not in the headline'])],
+        [fig(l.cases!.expected.base, cur)],
+        // No base (for example coverage already meets steady usage): the rate would read 0%, so it is not shown.
+        l.cases!.expected.base.value > 0 ? [fig(l.cases!.expected.rate, cur), ...(l.maxRate.length > 1 ? [' (blended)'] : [])] : ['no base'],
         ...CASES.map(k => [fig(l.cases![k].runRate, cur)]),
         [l.confidence ?? '—']
       ]) });
-    blocks.push({ kind: 'paragraph', style: 'note', segs: ['Gross per year at full run-rate, after the global cap. The maximum rate is the published or arithmetic maximum; the expected case takes half of it and the conservative case a quarter.'] });
+    blocks.push({ kind: 'paragraph', style: 'note', segs: [
+      'Gross per year at full run-rate. The maximum rate is the published or arithmetic maximum, blended across providers by their share of the base where there is more than one (Appendix A gives each provider\'s rate); the expected case takes half of it and the conservative case a quarter.',
+      ...(CASES.some(k => t[k].capBinding) ? [' The global cap binds in the ', CASES.filter(k => t[k].capBinding).join(' and '), ' case, so those figures are scaled down from base × rate (Appendix A shows each lever before the cap).'] : [])
+    ] });
     for (const l of q.filter(x => x.exclusion)) {
       const x = l.exclusion!;
       blocks.push({ kind: 'paragraph', style: 'small', segs: [strong(`${l.name}: `), cite(sentence(x.statement), l.claimIds), ' Expected ', fig(x.expectedRunRate, cur),
@@ -401,7 +471,8 @@ function valueSection(c: Ctx): ReportSection {
     }
     blocks.push({ kind: 'subheading', text: 'Costs' });
     blocks.push({ kind: 'list', small: true, items: [
-      ...(v.costs.effortFteMonths ? [['Internal implementation effort: ', fig(v.costs.effortFteMonths, cur), ', at the internal cost rate you gave.'] as Seg[]] : []),
+      ...(v.costs.effortFteMonths ? [['Internal implementation effort for the levers: ', fig(v.costs.effortFteMonths, cur), ', at the internal cost rate you gave. This is the effort netted above.'] as Seg[]] : []),
+      notNetted(c),
       [cite(v.costs.toolingNote, v.costs.claimIds)],
       [cite(v.costs.externalSupportNote, v.costs.claimIds)]
     ] });
@@ -437,6 +508,7 @@ function roadmapSection(c: Ctx): ReportSection {
     : ['—']);
   blocks.push({ kind: 'table', small: true, head: ['Workstream', 'Months', 'Effort', 'Expected value per year (gross)', 'Lead owner'], widths: ['*', 55, 75, 75, 100],
     rows: c.roadmap.map(w => [[w.name], [startSeg(w), ' to ', endSeg(w)], [w.effort.band, ' (', effortSeg(w), ')'], valueSeg(w), [w.owners[0]]]) });
+  blocks.push({ kind: 'paragraph', style: 'note', segs: ['A finding that depends on another starts once that one has reached its first milestone, so dependent work can overlap.'] });
   for (const w of c.roadmap) {
     blocks.push({ kind: 'subheading', text: w.name });
     blocks.push({ kind: 'paragraph', segs: [cite(w.objective, claims)] });
@@ -446,17 +518,20 @@ function roadmapSection(c: Ctx): ReportSection {
       ...(w.dependsOn.length ? [' ', strong('Depends on: '), w.dependsOn.map(d => name.get(d) ?? d).join('; '), '.'] : [])
     ] });
     blocks.push({ kind: 'paragraph', style: 'small', segs: [strong('Activities')] });
-    blocks.push({ kind: 'list', small: true, items: w.activities.map(a => [cite(a, claims)]) });
+    if (w.activities.length) blocks.push({ kind: 'list', small: true, items: w.activities.map(a => [cite(a, claims)]) });
     blocks.push({ kind: 'paragraph', style: 'small', segs: [strong('Milestones')] });
     blocks.push({ kind: 'list', small: true, items: w.milestones.map(m => {
       const f = m.finding;
       const done = f.type === 'capability_gap' && f.target ? `${capName(c, f.capability)} at ${LEVEL_LABEL[f.target]}` : f.title;
       return ['Month ', derivedSeg(`report:roadmap[${w.id}].milestone[${f.id}]`, m.month, 'count', { op: 'sum', of: [`findings[${f.id}].start.month`, `findings[${f.id}].targetDuration.months`] }, findingClaims(f), [], c),
-        ': ', cite(done, findingClaims(f)), ' ', ref(`(${f.id})`)];
+        ': ', cite(done, findingClaims(f)), ...(c.client ? [] : [' ', ref(`(${f.id})`)])];
     }) });
     blocks.push({ kind: 'paragraph', style: 'small', segs: [strong('KPIs')] });
-    blocks.push({ kind: 'list', small: true, items: w.kpis.map(k => [cite(k.name, k.claimIds)]) });
-    blocks.push({ kind: 'paragraph', style: 'small', segs: [strong('Prerequisites: '), cite(joinItems(w.prerequisites), claims), '. ', strong('Risks: '), cite(joinItems(w.risks), claims), '.'] });
+    if (w.kpis.length) blocks.push({ kind: 'list', small: true, items: w.kpis.map(k => [cite(k.name, k.claimIds)]) });
+    blocks.push({ kind: 'paragraph', style: 'small', segs: [
+      ...(w.prerequisites.length ? [strong('Prerequisites: '), cite(joinItems(w.prerequisites), claims), '. '] : []),
+      ...(w.risks.length ? [strong('Risks: '), cite(joinItems(w.risks), claims), '.'] : [])
+    ] });
   }
   return { id: 'roadmap', title: 'Roadmap', blocks };
 }
@@ -465,7 +540,7 @@ function marketSection(): ReportSection {
   const md: any = marketData;
   const rows: Seg[][][] = [];
   for (const s of md.surveys as any[]) {
-    for (const f of (s.figures as any[]).filter(x => x.clientVisible && x.use.includes('market_panel'))) {
+    for (const f of (s.figures as any[]).filter(x => x.clientVisible && x.use.includes('market_panel') && typeof x.value === 'number')) {
       const shown = f.unit === 'share' ? `${Math.round(f.value * 1000) / 10}%` : String(f.value);
       rows.push([[cite(f.label, [f.claimId])], [cite(shown, [f.claimId])], [cite(`${s.publisher}, ${s.title}`, s.claimIds)], [cite(`n = ${s.sample.toLocaleString('en-GB')}`, s.claimIds)], [cite(f.caveat, [f.claimId])]]);
     }
@@ -473,11 +548,35 @@ function marketSection(): ReportSection {
   return {
     id: 'market', title: 'Published market data',
     blocks: [
-      { kind: 'paragraph', segs: [md.displayRule] },
+      { kind: 'paragraph', segs: ['Published survey data, with source, year and sample. It is not an LTM peer benchmark, not your position and not a target: LTM has no engagement history to benchmark against.'] },
       { kind: 'table', small: true, head: ['Figure', 'Value', 'Source', 'Sample', 'Caveat'], widths: ['*', 40, 110, 55, 110], rows }
     ]
   };
 }
+
+/** Provider recommendation tools, by provider, with the claims that describe them. */
+const PROVIDER_TOOLS: Record<string, { tools: string; claimIds: string[] }> = {
+  aws: { tools: 'AWS Cost Optimization Hub and Compute Optimizer', claimIds: ['CLM-FIN-082', 'CLM-FIN-083'] },
+  azure: { tools: 'Azure Advisor', claimIds: ['CLM-FIN-092'] },
+  gcp: { tools: 'Google Cloud Recommender', claimIds: ['CLM-FIN-101'] }
+};
+
+/** Why this is not what provider tools already do (CIO challenge Q7; DESIGN.md section 1, edge). */
+function edge(c: Ctx): Seg[] {
+  const known = c.estate.providers.filter(p => PROVIDER_TOOLS[p]);
+  const tools = known.length ? listOf(known.map(p => PROVIDER_TOOLS[p].tools)) : 'Provider tools';
+  return [
+    strong('Why provider tools are not enough. '),
+    cite(`${tools} ${known.length === 1 && !tools.includes(' and ') ? 'gives' : 'give'} resource-level recommendations${c.estate.providers.length > 1 ? ', each for its own platform' : ''}. This assessment uses their exports as evidence for the rightsizing and idle-resource levers. It also covers what those tools do not assess: who owns the spend and decides, allocation and chargeback ${c.estate.providers.length > 1 ? 'across providers' : 'across owners'}${c.estate.scopes.some(x => ['data_centre', 'private_cloud', 'colocation'].includes(x)) ? ' and the data centre' : ''}, forecasting and budgets, unit economics, and the order in which to act, for example usage changes before new commitments.`,
+      known.flatMap(p => PROVIDER_TOOLS[p].claimIds))
+  ];
+}
+
+/** Questions by ID in the consultant edition, by their wording in the client edition. */
+const questionList = (c: Ctx, ids: string[]): Seg =>
+  (c.client
+    ? cite(ids.map(id => `"${(QUESTION_TEXT.get(id) ?? id).replace(/[?.]$/, '')}"`).join('; '), ids.flatMap(id => QUESTION_CLAIMS.get(id) ?? []))
+    : ref(ids.join(', ')));
 
 function methodologySection(c: Ctx): ReportSection {
   const { r } = c;
@@ -488,14 +587,16 @@ function methodologySection(c: Ctx): ReportSection {
     id: 'methodology', title: 'Methodology and sources',
     blocks: [
       { kind: 'paragraph', segs: [cite(NOTICES.attribution, ['CLM-FIN-033'])] },
+      { kind: 'paragraph', segs: edge(c) },
       { kind: 'paragraph', segs: [NOTICES.disclaimer] },
       { kind: 'paragraph', segs: [strong('How your data is handled. '), NOTICES.data] },
       { kind: 'paragraph', style: 'small', segs: [
-        'Questions asked: ', traced('coverage.asked', cov.asked, 'count', covIds), '; answered: ', traced('coverage.answered', cov.answered, 'count', covIds),
+        'Questions asked: ', traced('questions.asked.length', r.questions.asked.length, 'count', covIds), ', of which ', traced('coverage.asked', cov.asked, 'count', covIds),
+        ' rate a capability (the rest record your estate, spend and value inputs). Of the capability questions, answered: ', traced('coverage.answered', cov.answered, 'count', covIds),
         '; "Don\'t know": ', traced('coverage.unknown', cov.unknown, 'count', covIds), '; left blank: ', traced('coverage.blank', cov.blank, 'count', covIds),
-        '. A blank or "Don\'t know" is rated as unconfirmed and never raises a value.',
-        ...(cov.blankQuestions.length ? [' Left blank: ', ref(cov.blankQuestions.join(', ')), '.'] : []),
-        ...(cov.unknownQuestions.length ? [' "Don\'t know": ', ref(cov.unknownQuestions.join(', ')), '.'] : [])
+        '. A blank or "Don\'t know" is rated as unconfirmed and never raises a value. If you gave your own estimate of waste, it is not used in any figure: the value comes only from the lever formulas and your spend and evidence inputs.',
+        ...(cov.blankQuestions.length ? [' Left blank: ', questionList(c, cov.blankQuestions), '.'] : []),
+        ...(cov.unknownQuestions.length ? [' "Don\'t know": ', questionList(c, cov.unknownQuestions), '.'] : [])
       ] },
       { kind: 'table', small: true, head: ['Item', 'Version or date'], widths: [160, '*'], rows: [
         [['Assessment date'], [ref(r.assessmentDate ?? '')]],
@@ -506,7 +607,7 @@ function methodologySection(c: Ctx): ReportSection {
         [['Workstream library'], [ref(String(WS.libraryVersion))]],
         [['Assumption register'], [ref(String((assumptionRegister as any).registryVersion))]]
       ] },
-      { kind: 'paragraph', style: 'note', segs: [ref(NOTICES.status)] }
+      { kind: 'paragraph', style: 'note', segs: [c.client ? 'The data notice and the disclaimer are draft wording, pending approval.' : ref(NOTICES.status)] }
     ]
   };
 }
@@ -523,7 +624,7 @@ function leverFormulas(c: Ctx): Block[] {
       rows: l.inputs.map(i => [[cite(inputInfo(i.fact).label, i.value.claimIds)], [i.kind], [fig(i.value, cur)], i.low ? [fig(i.low, cur)] : ['—'], i.high ? [fig(i.high, cur)] : ['—']]) });
     if (l.maxRate.length) {
       blocks.push({ kind: 'table', small: true, head: ['Provider', 'Maximum rate', 'Instrument'], widths: [80, 70, '*'],
-        rows: l.maxRate.map(m => [[m.provider.toUpperCase()], [fig(m.rate, cur)], [m.instrument ? cite(m.instrument + (m.instrumentStated === false ? ' (not stated; the lower published maximum is used)' : ''), m.rate.claimIds) : '—']]) });
+        rows: l.maxRate.map(m => [[providerName(m.provider)], [fig(m.rate, cur)], [m.instrument ? cite(m.instrument + (m.instrumentStated === false ? ' (not stated; the lower published maximum is used)' : ''), m.rate.claimIds) : '—']]) });
     }
     const e = l.cases!.expected;
     blocks.push({ kind: 'paragraph', style: 'small', segs: [
@@ -584,13 +685,73 @@ function sensitivityAppendix(c: Ctx): Block[] {
 }
 
 function sourcesAppendix(ids: string[], c: Ctx): Block[] {
+  const source = (x: any) => {
+    const pub = x.source?.publisher ?? '', title = x.source?.title ?? '';
+    return title.startsWith(pub) ? title : `${pub}: ${title}`;
+  };
+  // LTM's own design pack is not public: the client edition names it without an address.
+  const address = (x: any) => (x.source?.publisher === 'LTM' ? (c.client ? 'Available on request' : x.source?.url ?? '') : x.source?.url ?? '');
   const rows: Seg[][][] = ids.map(id => CLAIM.get(id)).filter(x => x && (!c.client || x.clientVisible !== false)).map((x: any) => [
-    [ref(x.id)], [cite(`${x.source?.publisher ?? ''}: ${x.source?.title ?? ''}`, [x.id])], [ref(x.verification ?? '')], [ref(x.checkedOn ?? '')], [ref(x.source?.url ?? '')]
+    [ref(x.id)], [cite(source(x), [x.id])], [ref(x.verification ?? '')], [ref(x.checkedOn ?? '')], [ref(address(x))]
   ]);
   return [
-    { kind: 'paragraph', segs: ['Every claim behind a number or statement in this report. Verification: V verified against the source, S read through a secondary source, LTM an LTM heuristic.'] },
+    { kind: 'paragraph', segs: ['Every claim behind a number or statement in this report. Status: V verified against the source; P the primary source is given but the passage was not re-read; S read through a secondary source. LTM heuristics are marked as LTM in the source.'] },
     { kind: 'table', small: true, head: ['Claim', 'Source', 'Status', 'Checked', 'Address'], widths: [55, '*', 35, 55, 150], rows }
   ];
+}
+
+/** How LTM can help (F9, WS-S5): advice on what to do next and who could do it; type, purpose and outline only. */
+function helpSection(c: Ctx): ReportSection {
+  const help = c.r.help ?? [];
+  const blocks: Block[] = [{ kind: 'paragraph', segs: ['What could help with the findings, and the kind of work each is. Providers and tools are chosen from your requirements, with alternatives.'] }];
+  if (!help.length) blocks.push({ kind: 'paragraph', segs: ['No finding calls for further work.'] });
+  for (const h of help) {
+    const route = h.offering.type === 'Route';
+    blocks.push({ kind: 'subheading', text: route ? `See ${h.offering.name}` : `${h.offering.name} (${h.offering.type.toLowerCase()})` });
+    blocks.push({ kind: 'paragraph', segs: [cite(h.offering.purpose, h.claimIds), ...(route ? [] : [' ', { text: `Delivered by: ${h.offering.practice}.`, cite: h.claimIds, italic: true }])] });
+    if (h.offering.outline.length) blocks.push({ kind: 'list', small: true, items: h.offering.outline.map(o => [cite(o, h.claimIds)]) });
+    blocks.push({ kind: 'paragraph', style: 'small', segs: [strong('For: '), h.findingIds.map(id => dependencyName(c, id)).join('; '), '.'] });
+  }
+  return { id: 'help', title: 'How LTM can help', blocks };
+}
+
+const LEVEL_TEXT: Record<string, string> = { platform: 'Platform', stack: 'Tech stack', application: 'Application' };
+
+/** Technical execution (F8, WS-S3): the playbook's actions for each finding on the platforms it names. */
+function technicalSection(c: Ctx): ReportSection {
+  const plan = c.r.technicalPlan;
+  const blocks: Block[] = [];
+  if (!plan || !plan.actions.length) {
+    blocks.push({ kind: 'paragraph', segs: ['No platform actions are listed for these findings yet: the platform playbook entries are still being sourced and reviewed. The findings and roadmap above state what to do; the actions per platform follow in a later edition.'] });
+    return { id: 'technical', title: 'Technical execution', blocks };
+  }
+  blocks.push({ kind: 'paragraph', segs: [cite(plan.statement, plan.claimIds)] });
+  const byFinding = new Map<string, typeof plan.actions>();
+  for (const a of plan.actions) byFinding.set(a.findingId, [...(byFinding.get(a.findingId) ?? []), a]);
+  for (const [id, actions] of byFinding) {
+    blocks.push({ kind: 'subheading', text: dependencyName(c, id) });
+    blocks.push({ kind: 'table', small: true, head: ['Platform', 'Level', 'Action and approach', 'Options', 'Verification', 'Owner'], widths: [55, 45, '*', 100, 90, 60],
+      rows: actions.map(a => [
+        [a.platform === 'any' ? 'Any' : a.platform === 'on_prem' ? 'Data centre and private cloud' : a.platform === 'saas' ? 'SaaS and licensing' : a.platform === 'kubernetes' ? 'Kubernetes' : providerName(a.platform)],
+        [LEVEL_TEXT[a.level]],
+        [cite(a.noPlatformAction ? a.action : `${sentence(a.action)} ${sentence(a.approach)}`, a.claimIds), ...(a.discoveryNeeded ? [' ', { text: `Needs: ${sentence(a.discoveryNeeded)}`, cite: a.claimIds, italic: true }] : []),
+          ...(a.confirmRegionalAvailability ? [' Confirm regional availability.'] : [])],
+        a.options.length ? [cite(a.options.map(o => o.name + (o.kind === 'native' ? '' : ` (${o.kind.replace('_', ' ')})`)).join('; '), a.claimIds)] : ['—'],
+        [cite(a.verification, a.claimIds)],
+        [a.ownerRole]
+      ]) });
+  }
+  return { id: 'technical', title: 'Technical execution', blocks };
+}
+
+/** Consultant-only SOW draft (F9): offerings with indicative scope and the findings behind each. Never in the client edition. */
+function sowAppendix(c: Ctx): ReportSection {
+  const { lines, routes } = sowDraft(OFFERINGS, c.r.findings);
+  const blocks: Block[] = [{ kind: 'callout', tone: 'warn', segs: ['Consultant edition only. Indicative scope is an LTM heuristic to be agreed per engagement, not a quotation.'] }];
+  blocks.push({ kind: 'table', small: true, head: ['Offering', 'Type', 'Indicative scope', 'Findings'], widths: ['*', 80, 70, 150],
+    rows: lines.map(l => [[l.offering.name], [l.offering.type], [cite(l.offering.indicativeScope ?? '—', OFFERINGS.claimIds)], [ref(l.findingIds.join(', '))]]) });
+  if (routes.length) blocks.push({ kind: 'paragraph', style: 'small', segs: ['Routed to other accelerators: ', routes.map(r => r.offering.name).join(', '), '.'] });
+  return { id: 'sow', title: 'Statement of work draft', appendix: true, blocks };
 }
 
 function consultantAppendix(c: Ctx): ReportSection {
@@ -617,8 +778,9 @@ export function finopsIqReport(result: FinOpsIqV3Result, opts: ReportOptions): R
   if (!result.assessmentDate) throw new Error('report: the result has no assessment date (complete the assessment first)');
   const client = opts.view === 'client';
   const r = client ? (clientView(result) as unknown as FinOpsIqV3Result) : result;
+  const estate = estateOf(r, opts.input);
   const c: Ctx = {
-    r, cur: r.value.currency, client, opts, roadmap: finopsIqRoadmap(r),
+    r, cur: r.value.currency, client, opts, estate, roadmap: finopsIqRoadmap(r, estate),
     sensitivity: opts.input ? finopsIqSensitivity(opts.input, result) : []
   };
   const doc: ReportDocument = {
@@ -628,9 +790,9 @@ export function finopsIqReport(result: FinOpsIqV3Result, opts: ReportOptions): R
       client: opts.client, preparedBy: opts.preparedBy, dataProvidedBy: opts.dataProvidedBy, date: r.assessmentDate!,
       version: `FinOps IQ engine ${r.versions.engine} · value model ${r.versions.valueModel}`, view: opts.view,
       footer: `${PLATFORM} · ${PRODUCT} · Confidential`,
-      status: 'Review draft. How LTM can help and technical execution by platform are added in the next release.'
+      status: r.technicalPlan?.actions.length ? 'Review draft.' : 'Review draft. Platform actions are added as the playbook entries are reviewed.'
     },
-    sections: [executiveSummary(c), capabilityProfile(c), findingsSection(c), valueSection(c), roadmapSection(c), marketSection(), methodologySection(c)]
+    sections: [executiveSummary(c), capabilityProfile(c), findingsSection(c), valueSection(c), roadmapSection(c), helpSection(c), technicalSection(c), marketSection(), methodologySection(c)]
   };
   // "How we calculated this" lists every number shown before it, then the lever formulas, register and sensitivity.
   const sensitivity = sensitivityAppendix(c);
@@ -650,8 +812,52 @@ export function finopsIqReport(result: FinOpsIqV3Result, opts: ReportOptions): R
   });
   doc.sections.push({ id: 'assumptions', title: 'Assumption register', appendix: true, blocks: assumptionAppendix(used) });
   doc.sections.push({ id: 'sources', title: 'Sources', appendix: true, blocks: sourcesAppendix([...claims].sort(), c) });
-  if (!client) doc.sections.push(consultantAppendix(c));
+  if (client) clientWords(doc);
+  else doc.sections.push(sowAppendix(c), consultantAppendix(c));
   return doc;
+}
+
+const QUESTION_TEXT = new Map<string, string>((questionBank as any).questions.map((q: any) => [q.id, q.text]));
+const LEVER_NAME = new Map<string, string>((leverLibrary as any).levers.map((l: any) => [l.id, l.name]));
+const QUESTION_CLAIMS = new Map<string, string[]>((questionBank as any).questions.map((q: any) => [q.id, (q.basis ?? []).map((b: any) => b.claimId).filter(Boolean)]));
+/** Sections where identifiers belong: the calculation, the registers and the consultant checks. */
+const KEEPS_IDS = new Set(['calculation', 'assumptions', 'sources', 'sow', 'consultant']);
+
+/**
+ * Client edition: text quoted from the engine and registers in plain words (CIO challenge D8). Question IDs after a
+ * quoted answer are dropped, other question IDs become the question itself, and design references such as "(Q10)",
+ * "(D4)" or "(DECISION-01)" are removed. Traced numbers are not touched.
+ */
+export function plainWords(text: string): string {
+  return text
+    .replace(/\s*\((?:[A-Z]{2}-\d{2}(?:,\s*)?)+\)/g, '')
+    .replace(/\s*\((?:[QDHML]\d+|DECISION-\d+|WS-S\d+)(?:[,;]\s*(?:[QDHML]\d+|DECISION-\d+|WS-S\d+))*\)/g, '')
+    .replace(/\b[A-Z]{2}-\d{2}\b/g, id => (QUESTION_TEXT.has(id) ? `the question "${QUESTION_TEXT.get(id)!.replace(/[?.]$/, '')}"` : id))
+    .replace(/\s*\((LEV-\d{2})\)/g, '')
+    .replace(/\bLEV-\d{2}\b/g, id => LEVER_NAME.get(id) ?? id);
+}
+
+/** Client edition, every section: LTM's internal files are named as the design pack, which the client cannot open. */
+export const noFileRefs = (text: string) => text
+  .replace(/\s*\([^()]*\.(?:json|ts|cjs)\b[^()]*\)/g, '')
+  .replace(/\bDESIGN\.md\s+(?=\d)/g, 'the LTM design pack, section ')
+  .replace(/\b[\w-]+\.(?:md|json)\b/g, 'the LTM design pack')
+  .replace(/\b(AZURE|GCP|OCI)\b/g, p => providerName(p.toLowerCase()));
+function clientWords(doc: ReportDocument) {
+  for (const section of doc.sections) {
+    const words = (t: string) => noFileRefs(KEEPS_IDS.has(section.id) ? t : plainWords(t));
+    const fix = (run: Seg[]) => run.forEach((s, i) => {
+      if (typeof s === 'string') run[i] = words(s);
+      else if (!s.trace && !s.ref) run[i] = { ...s, text: words(s.text) };
+    });
+    for (const b of section.blocks) {
+      if (b.kind === 'paragraph' || b.kind === 'callout') fix(b.segs);
+      else if (b.kind === 'list') b.items.forEach(fix);
+      else if (b.kind === 'table') b.rows.forEach(r => r.forEach(fix));
+      else if (b.kind === 'kpis') b.items.forEach(i => { fix(i.value); if (i.note) fix(i.note); });
+      else if (b.kind === 'subheading') b.text = words(b.text);
+    }
+  }
 }
 
 /** Resolves a traced field against the result: an engine path, or a Figure at that path (its value). */

@@ -106,11 +106,12 @@ export function money(value: number, currency: string): string {
 export function format(value: number, unit: Unit, currency = 'USD'): string {
   switch (unit) {
     case 'currency': return money(value, currency);
-    case 'share': { const d = Math.abs(value * 100) < 10 && (value * 100) % 1 !== 0 ? 1 : 0; return `${group(down(value * 100, d), d)}%`; }
+    // One decimal when the percentage is not whole (a blended 65.39% reads 65.3%, never a rounded-up 66%).
+    case 'share': { const d = Math.abs(Math.round(value * 1e6) / 1e4) % 1 !== 0 ? 1 : 0; return `${group(down(value * 100, d), d)}%`; }
     case 'percent': { const d = value % 1 === 0 ? 0 : 1; return `${group(down(value, d), d)}%`; }
     case 'index': return group(value, value % 1 === 0 ? 0 : 1);
     case 'months': return `${group(value, 0)} ${value === 1 ? 'month' : 'months'}`;
-    case 'fte_months': return `${group(value, value % 1 === 0 ? 0 : 1)} FTE-months`;
+    case 'fte_months': return `${group(value, value % 1 === 0 ? 0 : 1)} ${value === 1 ? 'FTE-month' : 'FTE-months'}`;
     case 'fte': return `${group(value, value % 1 === 0 ? 0 : 1)} FTE`;
     case 'tier': return `Tier ${value}`;
     case 'level': return `${value} ${value === 1 ? 'level' : 'levels'}`;

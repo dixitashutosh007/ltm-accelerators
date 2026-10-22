@@ -1,0 +1,134 @@
+{
+  "catalogueVersion": "1.0.0",
+  "statusAsOf": "2026-10-22",
+  "rule": "How LTM can help for FinOps IQ (WS-S5; DESIGN.md 11; PLAN F9). Generic practice names only; providers and tools appear only as options chosen from the client's requirements, with alternatives. No partner claims. The client sees type, purpose and execution outline; indicative scope appears only in the consultant's SOW draft (D7). The text reads as advice, never as a sales pitch.",
+  "claimIds": ["CLM-FIN-179"],
+  "offerings": [
+    {
+      "id": "OFF.FIN.ASSESS",
+      "name": "FinOps assessment and value validation",
+      "practice": "FinOps",
+      "type": "Advisory",
+      "purpose": "Confirm the capability profile and turn indicative value into evidenced ranges with your own billing data.",
+      "outline": [
+        "Validate the capability profile with billing data (FOCUS exports where available) and provider-tool recommendations",
+        "Confirm answers given as \"Don't know\" and facts left blank",
+        "Turn levers identified but not quantified into evidenced ranges",
+        "Agree capability targets with you"
+      ],
+      "indicativeScope": "3–6 weeks"
+    },
+    {
+      "id": "OFF.FIN.OPMODEL",
+      "name": "FinOps operating model and governance",
+      "practice": "FinOps",
+      "type": "Advisory",
+      "purpose": "Make someone accountable for technology spend, with a mandate, a cadence and policies that hold.",
+      "outline": [
+        "Charter and executive sponsor",
+        "Responsibilities across engineering, finance and procurement",
+        "Review cadence, KPI set and policy set",
+        "Education plan, and links to IT asset management, IT financial management, security and sustainability"
+      ],
+      "indicativeScope": "4–8 weeks"
+    },
+    {
+      "id": "OFF.FIN.TOOLING",
+      "name": "FinOps data, allocation and tooling implementation",
+      "practice": "FinOps with Cloud Transformation",
+      "type": "Implementation",
+      "purpose": "Give every cost an accountable owner and complete, timely data on the platforms you use.",
+      "outline": [
+        "Central cost data pipeline in FOCUS format",
+        "Allocation rules and account hierarchy; tag and label policy as code",
+        "Dashboards for each persona and anomaly alerts routed to owners",
+        "Tool selection from your requirements, with alternatives"
+      ],
+      "indicativeScope": "6–12 weeks"
+    },
+    {
+      "id": "OFF.FIN.SPRINT",
+      "name": "Optimisation sprints",
+      "practice": "FinOps with engineering teams",
+      "type": "Implementation",
+      "purpose": "Realise the lever value with changes your engineers accept, verified against billing data.",
+      "outline": [
+        "A backlog for each lever and platform: idle clean-up, scheduling, rightsizing, storage lifecycle, Kubernetes requests, Spot adoption, commitment portfolio",
+        "Changes made with performance guardrails",
+        "Savings verified against billing data before and after"
+      ],
+      "indicativeScope": "4–8 weeks per wave"
+    },
+    {
+      "id": "OFF.FIN.UNITECON",
+      "name": "Unit economics, forecasting and chargeback",
+      "practice": "FinOps with Data and AI",
+      "type": "Implementation",
+      "purpose": "Tie spend to business output, forecast it from its drivers and charge it to the units that use it.",
+      "outline": [
+        "Unit metric design with product owners",
+        "Product telemetry joined to allocation data in business intelligence",
+        "Driver-based forecast",
+        "Showback, then chargeback into the ERP"
+      ],
+      "indicativeScope": "8–12 weeks"
+    },
+    {
+      "id": "OFF.FIN.MANAGED",
+      "name": "Managed FinOps service",
+      "practice": "FinOps",
+      "type": "Transformation (run)",
+      "purpose": "Run the practice while your own capability grows, where internal capacity is limited.",
+      "outline": [
+        "Ongoing allocation hygiene and commitment portfolio management",
+        "Anomaly response, monthly reviews and KPI reporting",
+        "Capability handed back to you over time"
+      ],
+      "indicativeScope": "12 months or more"
+    },
+    {
+      "id": "OFF.CT.PLACEMENT",
+      "name": "Workload placement and cost-aware architecture",
+      "practice": "Cloud Transformation",
+      "type": "Advisory, then transformation",
+      "purpose": "Place workloads where they cost least for what they need, and remove cost built into the architecture.",
+      "outline": [
+        "Placement decisions across public cloud, private cloud and data centre with a cost model",
+        "Architecture reviews for data transfer and modernisation",
+        "Migration or re-platforming where the business case supports it"
+      ],
+      "indicativeScope": "4–8 weeks advisory"
+    },
+    {
+      "id": "OFF.DAI.AICOST",
+      "name": "AI cost and value management",
+      "practice": "Data and AI with FinOps",
+      "type": "Implementation",
+      "purpose": "Know what each AI use case costs and keep GPU and inference spend in line with its value.",
+      "outline": [
+        "GPU utilisation and idle-endpoint controls",
+        "Token and inference cost attributed to each use case",
+        "Model-choice reviews for cost and quality"
+      ],
+      "indicativeScope": "6–10 weeks"
+    },
+    {
+      "id": "REF.COST_IQ",
+      "name": "Cost IQ",
+      "practice": "LTM accelerator",
+      "type": "Route",
+      "purpose": "SaaS portfolio rationalisation and vendor strategy beyond the FinOps practice.",
+      "outline": [],
+      "indicativeScope": null
+    },
+    {
+      "id": "REF.CLOUD_IQ",
+      "name": "Cloud IQ",
+      "practice": "LTM accelerator",
+      "type": "Route",
+      "purpose": "Billing-console and payer-account security.",
+      "outline": [],
+      "indicativeScope": null
+    }
+  ]
+}
