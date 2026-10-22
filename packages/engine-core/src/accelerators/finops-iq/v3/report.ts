@@ -596,6 +596,7 @@ function methodologySection(c: Ctx): ReportSection {
     id: 'methodology', title: 'Methodology and sources',
     blocks: [
       { kind: 'paragraph', segs: [cite(NOTICES.attribution, ['CLM-FIN-033'])] },
+      { kind: 'paragraph', style: 'small', segs: NOTICES.attributionLinks.flatMap((l, i) => [i ? '; ' : '', l.label, ': ', ref(l.url)]) },
       { kind: 'paragraph', segs: edge(c) },
       { kind: 'paragraph', segs: [NOTICES.disclaimer] },
       { kind: 'paragraph', segs: [strong('How your data is handled. '), NOTICES.data] },
@@ -756,7 +757,7 @@ function technicalSection(c: Ctx): ReportSection {
 /** Consultant-only SOW draft (F9): offerings with indicative scope and the findings behind each. Never in the client edition. */
 function sowAppendix(c: Ctx): ReportSection {
   const { lines, routes } = sowDraft(OFFERINGS, c.r.findings);
-  const blocks: Block[] = [{ kind: 'callout', tone: 'warn', segs: ['Consultant edition only. Indicative scope is an LTM heuristic to be agreed per engagement, not a quotation.'] }];
+  const blocks: Block[] = [{ kind: 'callout', tone: 'warn', segs: ['Consultant edition only. Draft for discussion, subject to contract: not an offer or a quotation. Indicative scope is an LTM heuristic to be agreed per engagement.'] }];
   blocks.push({ kind: 'table', small: true, head: ['Offering', 'Type', 'Indicative scope', 'Findings'], widths: ['*', 80, 70, 150],
     rows: lines.map(l => [[l.offering.name], [l.offering.type], [cite(l.offering.indicativeScope ?? '—', OFFERINGS.claimIds)], [ref(l.findingIds.join(', '))]]) });
   if (routes.length) blocks.push({ kind: 'paragraph', style: 'small', segs: ['Routed to other accelerators: ', routes.map(r => r.offering.name).join(', '), '.'] });

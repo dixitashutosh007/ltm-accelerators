@@ -222,6 +222,17 @@ test('usable at 360px: no horizontal scroll on the start screen, a question step
   await noScroll('results');
 });
 
+test('methodology (M6): the framework attribution links the framework, the FinOps Foundation and the CC BY licence', async ({ page }) => {
+  await start(page, 'executive', 'Attribution Ltd');
+  await fillEstate(page, 'executive');
+  await page.locator('nav.steps button', { hasText: 'Results' }).click();
+  const m = page.locator('section.methodology');
+  await expect(m.getByRole('link', { name: 'FinOps Framework' })).toHaveAttribute('href', 'https://www.finops.org/framework/');
+  await expect(m.getByRole('link', { name: 'FinOps Foundation' })).toHaveAttribute('href', 'https://www.finops.org/');
+  await expect(m.getByRole('link', { name: 'Creative Commons Attribution licence' })).toHaveAttribute('href', 'https://creativecommons.org/licenses/by/4.0/');
+  await expect(m).toContainText('LTM has not audited or verified');
+});
+
 test('every form control has an accessible name', async ({ page }) => {
   await start(page, 'workshop', 'Labels Inc');
   await fillEstate(page, 'workshop');
@@ -258,6 +269,7 @@ test('retention (M6): the data notice states the retention period, and an assess
   await expect(page.locator('#save-status')).toHaveText(/^Saved/, { timeout: 10_000 });
   await page.getByRole('button', { name: 'All assessments' }).click();
   await expect(page.getByRole('note').filter({ hasText: 'How your data is handled' })).toContainText('We keep each assessment for two years after its last change and then delete it automatically');
+  await expect(page.getByRole('note').filter({ hasText: 'How your data is handled' })).toContainText('LTM is responsible for the information held in this assessment');
   const row = page.getByRole('row', { name: /Delete Me Ltd/ });
   await row.getByRole('button', { name: 'Delete Delete Me Ltd' }).click();
   await row.getByRole('button', { name: 'Cancel' }).click();

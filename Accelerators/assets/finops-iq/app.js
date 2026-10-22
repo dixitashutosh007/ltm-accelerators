@@ -387,7 +387,7 @@
   function notesCard() {
     var id = 'notes';
     return h('div', { class: 'card consultant' }, h('h3', null, 'Notes'),
-      h('label', { for: id, class: 'small muted' }, 'Saved with the assessment; never shown in client view or sent to the scoring engine.'),
+      h('label', { for: id, class: 'small muted' }, 'Saved with the assessment; never shown in client view or sent to the scoring engine. Do not record personal details about individuals.'),
       h('textarea', { id: id, maxlength: '20000', disabled: isFinal(), oninput: function (e) { state.consultantNotes = e.target.value; showSave('Unsaved changes'); clearTimeout(timers.save); timers.save = setTimeout(function () { persist('save'); }, 1200); } }, state.consultantNotes));
   }
 
@@ -869,6 +869,7 @@
     var n = schema.notices;
     return h('section', { class: 'card methodology', 'aria-labelledby': 'method-h' }, h('h3', { id: 'method-h' }, 'Methodology and sources'),
       h('p', null, n.attribution),
+      h('p', { class: 'small' }, n.attributionLinks.map(function (l, i) { return [i ? ' · ' : '', h('a', { href: l.url, target: '_blank', rel: 'noopener' }, l.label)]; })),
       h('p', null, n.disclaimer),
       h('p', null, n.data),
       h('p', { class: 'small muted' }, 'FinOps IQ engine ' + r.versions.engine + ' · value model ' + r.versions.valueModel + ' · ' + r.versions.kb + ' · claims register ' + r.versions.claimsRegister + (r.assessmentDate ? ' · assessed ' + r.assessmentDate : '') + ' · data provided by ' + state.clientName));
