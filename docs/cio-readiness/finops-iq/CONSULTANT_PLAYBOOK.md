@@ -4,7 +4,7 @@
 
 | Source | Version |
 |---|---|
-| FinOps IQ engine | 3.6.1 |
+| FinOps IQ engine | 3.6.2 |
 | Question set | 3.2.0 |
 | Capability model | 3.0.0 |
 | Lever library | 1.2.0 |
@@ -1072,7 +1072,7 @@ Findings map to these offerings. Indicative scope is an LTM heuristic to be agre
 - **Managed FinOps service** (Transformation (run), FinOps): Run the practice while your own capability grows, where internal capacity is limited. Indicative scope: 12 months or more.
 - **Workload placement and cost-aware architecture** (Advisory, then transformation, Cloud Transformation): Place workloads where they cost least for what they need, and remove cost built into the architecture. Indicative scope: 4–8 weeks advisory.
 - **AI cost and value management** (Implementation, Data and AI with FinOps): Know what each AI use case costs and keep GPU and inference spend in line with its value. Indicative scope: 6–10 weeks.
-- **Cost IQ** (Route, LTM accelerator): SaaS portfolio rationalisation and vendor strategy beyond the FinOps practice.
+- **SaaS portfolio and vendor strategy** (Advisory, FinOps with Procurement): Rationalise the SaaS and software portfolio and set the strategy for the largest vendors, beyond licence clean-up. Indicative scope: 4–8 weeks.
 - **Cloud IQ** (Route, LTM accelerator): Billing-console and payer-account security.
 
 ## 11. Sources

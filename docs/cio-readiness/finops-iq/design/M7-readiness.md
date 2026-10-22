@@ -77,7 +77,7 @@ The CIO challenge re-run (`M7-cio-challenge.md`, finops-cost-lead, build 625e4d9
 
 **D4 (High):** the owner approved the wording (A3, 22 Oct 2026) and the "Review draft" and "draft wording" markers are removed. The transfer instrument (A1) is still to be named by LTM's privacy office.
 
-**Backlog (Medium and Low), recommended before the first external client:** D8 say which findings have no platform entry yet; D9 outcome wording for milestones; D10 explain that value comes from lever actions before the target level is reached; D11 technical-execution text (approach once per control, per-platform wording, lever labels, collapse not-applicable rows); D12 consultant appendix sources (private link, blog source); D13 market-data caveats in client language; D14 "See Cost IQ" in the client edition; D15–D21 wording and labelling items. Details and suggested fixes are in `M7-cio-challenge.md`.
+**Backlog (Medium and Low): fixed on 22 Oct 2026, see the status table in M7-cio-challenge.md.** Original list: D8 say which findings have no platform entry yet; D9 outcome wording for milestones; D10 explain that value comes from lever actions before the target level is reached; D11 technical-execution text (approach once per control, per-platform wording, lever labels, collapse not-applicable rows); D12 consultant appendix sources (private link, blog source); D13 market-data caveats in client language; D14 "See Cost IQ" in the client edition; D15–D21 wording and labelling items. Details and suggested fixes are in `M7-cio-challenge.md`.
 
 ## 6. Live smoke test
 

@@ -7363,7 +7363,7 @@
       ],
       "kind": "heuristic",
       "jurisdiction": "global",
-      "statement": "LEV-01 commitment discounts: addressable base = provider compute spend x max(0, steady-state share - eligible coverage - unscheduled non-production share - Spot-moved share), reduced by compute removed by usage levers; the Spot-moved share is the tolerant share not on Spot times (1 - coverage), only where LEV-06 is quantified; upper = base x the published maximum for the client's stated commitment instrument, or the lower published maximum when it is not stated (CLM-FIN-060, 062, 063, 065, 176); not quantified for providers without a sourced maximum (CLM-FIN-069).",
+      "statement": "LEV-01 commitment discounts: addressable base = provider compute spend x max(0, steady-state share - eligible coverage - unscheduled non-production share - Spot-moved share), reduced by compute removed by usage levers; the Spot-moved share is the tolerant share not on Spot times (1 - coverage), only where LEV-06 is quantified; upper = base x the published maximum for the client's stated commitment instrument, or the default maximum when it is not stated: the lower published maximum for AWS and Azure, the resource-based maximum for Google Cloud by product-owner decision (CLM-FIN-060, 062, 063, 065, 176; ASM-FIN-062); not quantified for providers without a sourced maximum (CLM-FIN-069).",
       "source": {
         "url": "https://github.com/dixitashutosh007/ltm-accelerators/blob/main/docs/cio-readiness/finops-iq/design/DESIGN.md",
         "title": "LTM FinOps IQ F1 design pack (approved by the product owner, 14 Oct 2026)",

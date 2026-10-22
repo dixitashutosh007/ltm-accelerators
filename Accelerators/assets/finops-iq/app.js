@@ -1011,7 +1011,7 @@
       var opts = fd.options.filter(function (o) { return schema.enums.instruments[p].indexOf(o.value) >= 0; });
       return field('Main commitment instrument: ' + label(schema.enums.providers, p) + ' (optional)', h('select', { id: id, onchange: function (e) {
         set(state.facts, 'base.commitmentInstrument.' + p, e.target.value || undefined); changed();
-      } }, [h('option', { value: '' }, 'Not stated (the lower published maximum is used)')].concat(opts.map(function (o) { return h('option', { value: o.value, selected: current === o.value }, o.label); }))));
+      } }, [h('option', { value: '' }, 'Not stated (LTM\'s default instrument is used)')].concat(opts.map(function (o) { return h('option', { value: o.value, selected: current === o.value }, o.label); }))));
     }));
   }
 
@@ -1420,7 +1420,7 @@
       r.help.map(function (x) {
         var o = x.offering;
         return h('div', { class: 'help-item' },
-          h('h4', null, o.type === 'Route' ? 'See ' + o.name : o.name + ' (' + o.type.toLowerCase() + ')'),
+          h('h4', null, o.type === 'Route' ? 'See ' + o.name : o.name + ' (' + (o.typeLabel || o.type.toLowerCase()) + ')'),
           h('p', null, o.purpose),
           o.outline.length ? h('ul', { class: 'small' }, o.outline.map(function (t) { return h('li', null, t); })) : null,
           h('p', { class: 'small muted' }, 'For: ' + x.findingIds.map(title).join('; ')));

@@ -16,6 +16,11 @@
     "FIN.LEV-08",
     "FIN.LEV-10"
   ],
+  "plannedControls": [
+    "FIN.GOVERNANCE_POLICY_RISK",
+    "FIN.REPORTING_ANALYTICS"
+  ],
+  "plannedControlsNote": "Platform work with no entries yet (tag and region policy enforcement; reporting on the cost store). The report names findings on these as platform actions still being added, not as operating-model work (M7 CIO challenge D8). Entries are due in the next playbook version.",
   "entries": [
     {
       "id": "PB.FIN.DATA_INGESTION.aws.platform",
@@ -415,7 +420,7 @@
       "platform": "aws",
       "level": "platform",
       "action": "Enforce the mandatory tag set with AWS Organizations tag policies, activate it as cost allocation tags with account tags for untaggable cost, and allocate shared cost with Cost Categories split charge rules.",
-      "approach": "An account, subscription or project hierarchy that mirrors ownership; a small mandatory tag set (owner, cost centre, environment, application) enforced by policy at creation; and documented rules for shared and untaggable costs, so no cost is left unallocated.",
+      "approach": "An account and organisational-unit hierarchy in AWS Organizations that mirrors ownership. A small mandatory tag set (owner, cost centre, environment, application) enforced by policy at creation, and documented rules for shared and untaggable costs, so no cost is left unallocated.",
       "options": [
         {
           "name": "AWS Organizations tag policies",
@@ -451,7 +456,7 @@
       "platform": "azure",
       "level": "platform",
       "action": "Require the mandatory tags with Azure Policy, turn on Cost Management tag inheritance, and distribute shared costs with cost allocation rules.",
-      "approach": "An account, subscription or project hierarchy that mirrors ownership; a small mandatory tag set (owner, cost centre, environment, application) enforced by policy at creation; and documented rules for shared and untaggable costs, so no cost is left unallocated.",
+      "approach": "A management group and subscription hierarchy that mirrors ownership. A small mandatory tag set (owner, cost centre, environment, application) enforced by policy at creation, and documented rules for shared and untaggable costs, so no cost is left unallocated.",
       "options": [
         {
           "name": "Azure Policy built-in tag definitions (require, add, inherit)",
@@ -488,7 +493,7 @@
       "platform": "gcp",
       "level": "platform",
       "action": "Apply the mandatory labels to projects and resources through infrastructure-as-code checks, use the folder and project hierarchy for ownership, and enable GKE cost allocation for shared clusters.",
-      "approach": "An account, subscription or project hierarchy that mirrors ownership; a small mandatory tag set (owner, cost centre, environment, application) enforced by policy at creation; and documented rules for shared and untaggable costs, so no cost is left unallocated.",
+      "approach": "A folder and project hierarchy that mirrors ownership. A small mandatory tag set (owner, cost centre, environment, application) enforced by policy at creation, and documented rules for shared and untaggable costs, so no cost is left unallocated.",
       "options": [
         {
           "name": "Google Cloud resource labels",
@@ -523,7 +528,7 @@
       "platform": "oci",
       "level": "platform",
       "action": "Define the mandatory tags as OCI defined tags with tag defaults on each compartment, and report allocation by compartment and tag in Cost Analysis.",
-      "approach": "An account, subscription or project hierarchy that mirrors ownership; a small mandatory tag set (owner, cost centre, environment, application) enforced by policy at creation; and documented rules for shared and untaggable costs, so no cost is left unallocated. On OCI, cost tracking works on all defined tags; cost-tracking tags are deprecated and needed only for Budgets.",
+      "approach": "A compartment hierarchy that mirrors ownership. A small mandatory tag set (owner, cost centre, environment, application) enforced by policy at creation, and documented rules for shared and untaggable costs, so no cost is left unallocated. On OCI, cost tracking works on all defined tags; cost-tracking tags are deprecated and needed only for Budgets.",
       "options": [
         {
           "name": "OCI defined tags and tag defaults",
@@ -556,7 +561,7 @@
       "platform": "ibm",
       "level": "platform",
       "action": "Organise IBM Cloud resources into resource groups by owner and apply the mandatory set as user tags used in cost reporting.",
-      "approach": "An account, subscription or project hierarchy that mirrors ownership; a small mandatory tag set (owner, cost centre, environment, application) enforced by policy at creation; and documented rules for shared and untaggable costs, so no cost is left unallocated.",
+      "approach": "A resource hierarchy (accounts, projects or compartments, as the provider names them) that mirrors ownership. A small mandatory tag set (owner, cost centre, environment, application) enforced by policy at creation, and documented rules for shared and untaggable costs, so no cost is left unallocated.",
       "options": [
         {
           "name": "IBM Cloud resource groups",
@@ -585,7 +590,7 @@
       "platform": "alibaba",
       "level": "platform",
       "action": "Enable the mandatory tag keys as Alibaba Cloud cost allocation tags, use financial units and the account structure for ownership, and use split bill details for shared services.",
-      "approach": "An account, subscription or project hierarchy that mirrors ownership; a small mandatory tag set (owner, cost centre, environment, application) enforced by policy at creation; and documented rules for shared and untaggable costs, so no cost is left unallocated.",
+      "approach": "A resource hierarchy (accounts, projects or compartments, as the provider names them) that mirrors ownership. A small mandatory tag set (owner, cost centre, environment, application) enforced by policy at creation, and documented rules for shared and untaggable costs, so no cost is left unallocated.",
       "options": [
         {
           "name": "Alibaba Cloud cost allocation tags",
@@ -619,7 +624,7 @@
       "platform": "other_public",
       "level": "platform",
       "action": "Apply the account and tag model with the provider's own tooling; the provider is not identified in the assessment, so options are identified and validated in discovery.",
-      "approach": "An account, subscription or project hierarchy that mirrors ownership; a small mandatory tag set (owner, cost centre, environment, application) enforced by policy at creation; and documented rules for shared and untaggable costs, so no cost is left unallocated.",
+      "approach": "A resource hierarchy (accounts, projects or compartments, as the provider names them) that mirrors ownership. A small mandatory tag set (owner, cost centre, environment, application) enforced by policy at creation, and documented rules for shared and untaggable costs, so no cost is left unallocated.",
       "options": [
         {
           "name": "Mandatory tag set enforced in the provisioning pipeline",
@@ -734,7 +739,7 @@
       "approach": "Licences are assigned through identity groups that map to cost centres, so licence cost follows the user.",
       "options": [
         {
-          "name": "Microsoft 365 group-based licensing",
+          "name": "Your identity provider's group-based licensing (for example Microsoft 365)",
           "kind": "native",
           "detail": "Example for Microsoft 365; other SaaS vendors offer similar group assignment"
         },
@@ -766,7 +771,7 @@
       "platform": "data_platform",
       "level": "platform",
       "action": "Tag warehouses, clusters and jobs with the mandatory set and add query tags for shared warehouses, so data platform consumption allocates to owners.",
-      "approach": "An account, subscription or project hierarchy that mirrors ownership; a small mandatory tag set (owner, cost centre, environment, application) enforced by policy at creation; and documented rules for shared and untaggable costs, so no cost is left unallocated.",
+      "approach": "A resource hierarchy (accounts, projects or compartments, as the provider names them) that mirrors ownership. A small mandatory tag set (owner, cost centre, environment, application) enforced by policy at creation, and documented rules for shared and untaggable costs, so no cost is left unallocated.",
       "options": [
         {
           "name": "Snowflake object tags and query tags",
@@ -1371,7 +1376,7 @@
       "platform": "aws",
       "level": "stack",
       "action": "Review AWS Compute Optimizer and Cost Optimization Hub rightsizing recommendations with application owners and apply accepted changes through the release process.",
-      "approach": "Start from provider recommendations over a representative look-back period, confirm with the application owner, change through the normal release process with performance guardrails, and recheck after the change; account for existing commitments before moving across families.",
+      "approach": "Start from provider recommendations over a representative look-back period, confirm with the application owner, change through the normal release process with performance guardrails, and recheck after the change. Account for existing commitments before moving across instance families.",
       "options": [
         {
           "name": "AWS Compute Optimizer",
@@ -1402,7 +1407,7 @@
       "platform": "azure",
       "level": "stack",
       "action": "Review Azure Advisor resize recommendations with application owners, check them against reservations and savings plans, and apply accepted changes through the release process.",
-      "approach": "Start from provider recommendations over a representative look-back period, confirm with the application owner, change through the normal release process with performance guardrails, and recheck after the change; account for existing commitments before moving across families. Advisor estimates use retail rates and ignore reservations and savings plans, so restate savings at your rates.",
+      "approach": "Start from provider recommendations over a representative look-back period, confirm with the application owner, change through the normal release process with performance guardrails, and recheck after the change. Account for existing commitments before moving across instance families. Advisor estimates use retail rates and ignore reservations and savings plans, so restate savings at your rates.",
       "options": [
         {
           "name": "Azure Advisor resize and shutdown recommendations",
@@ -1429,7 +1434,7 @@
       "platform": "gcp",
       "level": "stack",
       "action": "Review Google Cloud Recommender machine type recommendations with application owners and apply accepted changes through the release process.",
-      "approach": "Start from provider recommendations over a representative look-back period, confirm with the application owner, change through the normal release process with performance guardrails, and recheck after the change; account for existing commitments before moving across families.",
+      "approach": "Start from provider recommendations over a representative look-back period, confirm with the application owner, change through the normal release process with performance guardrails, and recheck after the change. Account for existing commitments before moving across instance families.",
       "options": [
         {
           "name": "Google Cloud Recommender: machine type recommendations",
@@ -1459,7 +1464,7 @@
       "platform": "oci",
       "level": "stack",
       "action": "Review OCI Cloud Advisor rightsizing recommendations for underutilised compute and over-provisioned databases and apply accepted changes.",
-      "approach": "Start from provider recommendations over a representative look-back period, confirm with the application owner, change through the normal release process with performance guardrails, and recheck after the change; account for existing commitments before moving across families.",
+      "approach": "Start from provider recommendations over a representative look-back period, confirm with the application owner, change through the normal release process with performance guardrails, and recheck after the change. Account for existing commitments before moving across instance families.",
       "options": [
         {
           "name": "OCI Cloud Advisor cost management recommendations",
@@ -1484,7 +1489,7 @@
       "platform": "ibm",
       "level": "stack",
       "action": "Rightsize virtual servers and managed services from utilisation data on IBM Cloud with its own tooling; no IBM Cloud-specific option is catalogued in this version, so options are identified and validated in discovery.",
-      "approach": "Start from provider recommendations over a representative look-back period, confirm with the application owner, change through the normal release process with performance guardrails, and recheck after the change; account for existing commitments before moving across families.",
+      "approach": "Start from provider recommendations over a representative look-back period, confirm with the application owner, change through the normal release process with performance guardrails, and recheck after the change. Account for existing commitments before moving across instance families.",
       "options": [
         {
           "name": "Utilisation-based rightsizing review",
@@ -1509,7 +1514,7 @@
       "platform": "alibaba",
       "level": "stack",
       "action": "Rightsize ECS instances and managed services from utilisation data on Alibaba Cloud with its own tooling; no Alibaba Cloud-specific option is catalogued in this version, so options are identified and validated in discovery.",
-      "approach": "Start from provider recommendations over a representative look-back period, confirm with the application owner, change through the normal release process with performance guardrails, and recheck after the change; account for existing commitments before moving across families.",
+      "approach": "Start from provider recommendations over a representative look-back period, confirm with the application owner, change through the normal release process with performance guardrails, and recheck after the change. Account for existing commitments before moving across instance families.",
       "options": [
         {
           "name": "Utilisation-based rightsizing review",
@@ -1534,7 +1539,7 @@
       "platform": "other_public",
       "level": "stack",
       "action": "Rightsize compute and managed services from utilisation data with the provider's own tooling; the provider is not identified in the assessment, so options are identified and validated in discovery.",
-      "approach": "Start from provider recommendations over a representative look-back period, confirm with the application owner, change through the normal release process with performance guardrails, and recheck after the change; account for existing commitments before moving across families.",
+      "approach": "Start from provider recommendations over a representative look-back period, confirm with the application owner, change through the normal release process with performance guardrails, and recheck after the change. Account for existing commitments before moving across instance families.",
       "options": [
         {
           "name": "Utilisation-based rightsizing review",
@@ -1596,7 +1601,7 @@
       "platform": "on_prem",
       "level": "stack",
       "action": "Rightsize oversized VMs from hypervisor utilisation, using the virtualisation platform's rightsizing recommendations where available.",
-      "approach": "Start from provider recommendations over a representative look-back period, confirm with the application owner, change through the normal release process with performance guardrails, and recheck after the change; account for existing commitments before moving across families. On owned capacity the gain is freed capacity and deferred hardware or licence purchases, not a lower bill.",
+      "approach": "Start from provider recommendations over a representative look-back period, confirm with the application owner, change through the normal release process with performance guardrails, and recheck after the change. On owned capacity the gain is freed capacity and deferred hardware or licence purchases, not a lower bill.",
       "options": [
         {
           "name": "VMware VCF Operations rightsizing",
@@ -2235,7 +2240,7 @@
           "kind": "practice"
         }
       ],
-      "verification": "Non-production running hours per week against the agreed schedule, measured monthly from billing usage; overrides logged with expiry.",
+      "verification": "Non-production running hours per week against the agreed schedule, measured monthly from hypervisor power-state records; overrides logged with expiry.",
       "effort": "S",
       "ownerRole": "Infrastructure and virtualisation team",
       "confirmRegionalAvailability": false,
@@ -3725,7 +3730,7 @@
       "approach": "Licence position (owned, assigned, active) per product, reviewed ahead of each renewal date with the business owner and procurement.",
       "options": [
         {
-          "name": "Microsoft 365 group-based licensing",
+          "name": "Your identity provider's group-based licensing (for example Microsoft 365)",
           "kind": "native",
           "detail": "Example for Microsoft 365"
         },

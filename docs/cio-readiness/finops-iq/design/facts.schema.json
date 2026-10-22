@@ -191,7 +191,7 @@
     "leverId": { "enum": ["LEV-01", "LEV-02", "LEV-03", "LEV-04", "LEV-05", "LEV-06", "LEV-07", "LEV-08", "LEV-09", "LEV-10"] },
     "rating": { "enum": ["not_yet", "crawl", "walk", "run", "unknown", "not_in_scope", "not_assessed"] },
     "level": { "enum": ["not_yet", "crawl", "walk", "run"] },
-    "offeringId": { "enum": ["OFF.FIN.ASSESS", "OFF.FIN.OPMODEL", "OFF.FIN.TOOLING", "OFF.FIN.SPRINT", "OFF.FIN.UNITECON", "OFF.FIN.MANAGED", "OFF.CT.PLACEMENT", "OFF.DAI.AICOST", "REF.COST_IQ", "REF.CLOUD_IQ"] },
+    "offeringId": { "enum": ["OFF.FIN.ASSESS", "OFF.FIN.OPMODEL", "OFF.FIN.TOOLING", "OFF.FIN.SPRINT", "OFF.FIN.UNITECON", "OFF.FIN.MANAGED", "OFF.CT.PLACEMENT", "OFF.DAI.AICOST", "OFF.FIN.SAAS_VENDOR", "REF.CLOUD_IQ"] },
     "assumptionId": { "type": "string", "pattern": "^ASM-FIN-[0-9]{3}$" },
     "claimId": { "type": "string", "pattern": "^CLM-FIN-[0-9]{3,}$" },
     "sourceRef": { "type": "string", "pattern": "^S[0-9]+$", "description": "DESIGN.md section 15 reference; replaced by claim IDs in F2." },

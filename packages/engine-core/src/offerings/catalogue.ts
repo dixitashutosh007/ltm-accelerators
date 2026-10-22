@@ -16,16 +16,30 @@ export interface Offering {
   type: typeof OFFERING_TYPES[number];
   /** Client-visible: what it is for and how it runs. */
   purpose: string;
-  outline: string[];
+  /** An item with scopes is shown only when one of the findings it serves names one of them (M7 CIO challenge D20). */
+  outline: OutlineItem[];
   /** Consultant-only (SOW draft): indicative duration, an LTM heuristic until WS-S5 sets the catalogue. */
   indicativeScope: string | null;
 }
 
+export type OutlineItem = string | { text: string; scopes: string[] };
+
+/** Outline items as text, keeping those whose scopes the findings name. */
+export const outlineFor = (outline: OutlineItem[], scopes: Set<string>): string[] =>
+  outline.filter(i => typeof i === 'string' || i.scopes.some(x => scopes.has(x))).map(i => (typeof i === 'string' ? i : i.text));
+
+/** The offering type as a client reads it: "transformation: managed run service", not "transformation (run)" (D15). */
+export const TYPE_LABEL: Record<typeof OFFERING_TYPES[number], string> = {
+  Advisory: 'advisory', Implementation: 'implementation', 'Transformation (run)': 'transformation: managed run service',
+  'Advisory, then transformation': 'advisory, then transformation', Route: 'route'
+};
+
 export interface OfferingCatalogue { catalogueVersion: string; statusAsOf: string; rule: string; claimIds: string[]; offerings: Offering[] }
 
 /** The client-visible part of an offering: no indicative scope (D7). */
-export type ClientOffering = Omit<Offering, 'indicativeScope'>;
-export const clientOffering = ({ indicativeScope, ...rest }: Offering): ClientOffering => rest;
+export type ClientOffering = Omit<Offering, 'indicativeScope' | 'outline'> & { outline: string[]; typeLabel: string };
+export const clientOffering = ({ indicativeScope, outline, ...rest }: Offering, scopes: Set<string> = new Set()): ClientOffering =>
+  ({ ...rest, outline: outlineFor(outline, scopes), typeLabel: TYPE_LABEL[rest.type] });
 
 export function validateOfferings(cat: OfferingCatalogue, claimIds: Set<string>): string[] {
   const out: string[] = [];

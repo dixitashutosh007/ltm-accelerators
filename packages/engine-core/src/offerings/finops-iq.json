@@ -53,7 +53,8 @@
       "type": "Implementation",
       "purpose": "Realise the lever value with changes your engineers accept, verified against billing data.",
       "outline": [
-        "A backlog for each lever and platform: idle clean-up, scheduling, rightsizing, storage lifecycle, Kubernetes requests, Spot adoption, commitment portfolio",
+        "A backlog for each lever and platform: idle clean-up, scheduling, rightsizing, storage lifecycle, Spot adoption, commitment portfolio",
+        { "text": "Kubernetes requests and limits tuned to measured use", "scopes": ["kubernetes"] },
         "Changes made with performance guardrails",
         "Savings verified against billing data before and after"
       ],
@@ -113,13 +114,17 @@
       "indicativeScope": "6–10 weeks"
     },
     {
-      "id": "REF.COST_IQ",
-      "name": "Cost IQ",
-      "practice": "LTM accelerator",
-      "type": "Route",
-      "purpose": "SaaS portfolio rationalisation and vendor strategy beyond the FinOps practice.",
-      "outline": [],
-      "indicativeScope": null
+      "id": "OFF.FIN.SAAS_VENDOR",
+      "name": "SaaS portfolio and vendor strategy",
+      "practice": "FinOps with Procurement",
+      "type": "Advisory",
+      "purpose": "Rationalise the SaaS and software portfolio and set the strategy for the largest vendors, beyond licence clean-up.",
+      "outline": [
+        "Portfolio review: overlapping tools and usage against entitlements",
+        "Renewal and negotiation strategy for the largest contracts",
+        "Consolidation plan agreed with the business owners"
+      ],
+      "indicativeScope": "4–8 weeks"
     },
     {
       "id": "REF.CLOUD_IQ",

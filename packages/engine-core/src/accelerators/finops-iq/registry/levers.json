@@ -180,7 +180,7 @@
             "quantified": false
           }
         },
-        "instrumentRule": "The client states its main commitment instrument per provider (VB-02); when it is not stated, the lower published maximum is used (CLM-FIN-176)."
+        "instrumentRule": "The client states its main commitment instrument per provider (VB-02); when it is not stated, the lower published maximum is used for AWS and Azure, and the resource-based maximum for Google Cloud by product-owner decision (CLM-FIN-176; ASM-FIN-062)."
       },
       "neverWith": [
         "LEV-06"
@@ -793,7 +793,7 @@
       "confidenceRule": "High when every input is provider-tool or billing evidence no older than 90 days; Medium when every input is an exact client figure; Low when any input is a band or derived from an answer mapping (DESIGN.md 10.7).",
       "offeringIds": [
         "OFF.FIN.SPRINT",
-        "REF.COST_IQ"
+        "OFF.FIN.SAAS_VENDOR"
       ],
       "label": "Your measured unused licence cost, up to 100%, realisable at renewal; expected case is half.",
       "claimIds": [

@@ -111,7 +111,8 @@ export function format(value: number, unit: Unit, currency = 'USD'): string {
     // One decimal when the percentage is not whole (a blended 65.39% reads 65.3%, never a rounded-up 66%).
     case 'share': { const d = Math.abs(Math.round(value * 1e6) / 1e4) % 1 !== 0 ? 1 : 0; return `${group(down(value * 100, d), d)}%`; }
     case 'percent': { const d = value % 1 === 0 ? 0 : 1; return `${group(down(value, d), d)}%`; }
-    case 'index': return group(value, value % 1 === 0 ? 0 : 1);
+    // A whole number: "39 out of 100", never "36.7" (M7 CIO challenge D17).
+    case 'index': return group(Math.round(value), 0);
     case 'months': return `${group(value, 0)} ${value === 1 ? 'month' : 'months'}`;
     case 'fte_months': return `${group(value, value % 1 === 0 ? 0 : 1)} ${value === 1 ? 'FTE-month' : 'FTE-months'}`;
     case 'fte': return `${group(value, value % 1 === 0 ? 0 : 1)} FTE`;

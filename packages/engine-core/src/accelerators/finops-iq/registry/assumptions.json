@@ -1071,7 +1071,7 @@
       "claimIds": [
         "CLM-FIN-133"
       ],
-      "reasoning": "Commitments in quarterly tranches; clean-up and scheduling are quick; rightsizing, storage, Spot and Kubernetes need engineering cycles; licences at renewal.",
+      "reasoning": "Commitments in quarterly tranches; clean-up and scheduling are quick; rightsizing, storage, Spot and Kubernetes need engineering cycles; licences at renewal. Lever value comes from the lever actions themselves, which land within the first year; it does not wait for the capability to reach its target level, so full run-rate from year 2 sits alongside capability milestones that run longer.",
       "confidence": "Low-Medium",
       "sensitivity": "Year-1 and 3-year figures; never the run-rate",
       "usedBy": [
@@ -1863,7 +1863,7 @@
     {
       "id": "ASM-FIN-062",
       "title": "Commitment instrument default",
-      "value": "The lower published maximum per provider when the client does not state its main instrument: AWS 66% (Compute Savings Plans), Azure 65% (savings plan for compute), Google Cloud 55% (resource-based CUDs)",
+      "value": "When the client does not state its main instrument: AWS 66% (Compute Savings Plans) and Azure 65% (savings plan for compute), the lower published maximum; Google Cloud 55% (resource-based CUDs), which is higher than the flexible CUD maximum, by product-owner decision (22 Oct 2026, M7 D2)",
       "basis": "ltm_heuristic",
       "claimIds": [
         "CLM-FIN-176",

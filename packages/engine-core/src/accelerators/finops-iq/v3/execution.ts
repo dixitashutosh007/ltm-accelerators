@@ -68,9 +68,18 @@ export function technicalPlan(findings: FindingRef[], cat: PlaybookCatalogue = P
   };
 }
 
-/** How LTM can help: the offerings the findings name, in catalogue order, each with the findings that call for it. */
+/**
+ * How LTM can help: the offerings the findings name, in catalogue order, each with the findings that call for it.
+ * Routes to other LTM accelerators stay in the consultant's SOW draft: a client does not know the product names (D14).
+ * Outline items tied to a scope appear only when one of the offering's findings names that scope (D20).
+ */
 export function howLtmCanHelp(findings: FindingRef[], cat: OfferingCatalogue = OFFERINGS): HelpItem[] {
   return cat.offerings
-    .map(o => ({ offering: clientOffering(o), findingIds: findings.filter(f => f.offeringIds.includes(o.id)).map(f => f.id), claimIds: [...cat.claimIds] }))
+    .filter(o => o.type !== 'Route')
+    .map(o => {
+      const serves = findings.filter(f => f.offeringIds.includes(o.id));
+      const scopes = new Set(serves.flatMap(f => f.scopes.map(x => x.split(':')[0])));
+      return { offering: clientOffering(o, scopes), findingIds: serves.map(f => f.id), claimIds: [...cat.claimIds] };
+    })
     .filter(h => h.findingIds.length);
 }

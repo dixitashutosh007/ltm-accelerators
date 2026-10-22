@@ -1,5 +1,5 @@
 {
-  "libraryVersion": "1.1.0",
+  "libraryVersion": "1.2.0",
   "statusAsOf": "2026-10-22",
   "rule": "The report's delivery-grade roadmap (PLAN F7 item 3, area 13(e)). Each capability gap finding and each lever finding belongs to one workstream; a workstream's start, duration, owner, dependencies, milestones and value come from its findings, and its effort from the value model's lever effort plus a per-level heuristic for gaps without a quantified lever. Activities, KPIs, prerequisites and risks are LTM heuristics (CLM-FIN-177) except where a claim is cited. An activity, KPI, prerequisite or risk may be an object with 'scopes' (shown only when one of them is in the client's scope) and 'capabilities' (shown only when the workstream holds a finding on one of them); 'nameWithoutScopes' renames a workstream, and restates its objective, when none of its scopes is in scope.",
   "claimIds": ["CLM-FIN-177"],
@@ -12,6 +12,19 @@
     ],
     "assumptionId": "ASM-FIN-086",
     "claimIds": ["CLM-FIN-178"]
+  },
+  "leverMilestones": {
+    "note": "The outcome a lever finding's milestone marks, in place of its title (M7 CIO challenge D9). LTM heuristic.",
+    "LEV-01": "First commitment tranche bought on the steady usage left after the usage levers; coverage and utilisation reported monthly",
+    "LEV-02": "Agreed rightsizing recommendations applied by the owning teams, and the saving checked against billing data",
+    "LEV-03": "Idle and orphaned resources removed with owner sign-off, and a monthly clean-up in place",
+    "LEV-04": "Default schedule live on non-production compute, with approved exceptions recorded",
+    "LEV-05": "Lifecycle rules live on the main storage, moving rarely accessed data to cooler tiers",
+    "LEV-06": "Interruption-tolerant workloads running on Spot or preemptible capacity, with interruption handling tested",
+    "LEV-07": "Requests set from measured use on the main clusters, with the node autoscaler consolidating nodes",
+    "LEV-08": "Architecture review of the largest data transfer paths done, with changes agreed",
+    "LEV-09": "Unused licences and seats removed at each renewal that has fallen due",
+    "LEV-10": "Idle model endpoints removed and GPU workloads consolidated towards the target utilisation"
   },
   "workstreams": [
     {

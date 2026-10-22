@@ -25,6 +25,30 @@ The score does not mean the report is ready for a client. M5 and M6 add new defe
 
 I recommend fixing D1 to D3, plus the visible text defects D5 to D7, before M7 closes.
 
+## Status of the defects (22 Oct 2026)
+
+| # | Status | What changed |
+|---|---|---|
+| D1, D3, D5, D6, D7 | Fixed in M7 (engine 3.6.1) | See M7-readiness.md |
+| D2 | Owner kept 55% | The report no longer calls the Google Cloud rate "the lower published maximum": Appendix A says the resource-based maximum is used, higher than the flexible CUD maximum, and asks the consultant to confirm the instrument. ASM-FIN-062, the LEV-01 rule and its claim say the same |
+| D4 | A3 done; A1 open | Draft markers removed in M8; the transfer instrument waits for LTM's privacy office |
+| D8 | Fixed | Technical execution names the findings it leaves out: platform work still being added to the playbook (Governance, Policy & Risk; Reporting & Analytics, listed as `plannedControls`), and operating-model work covered in the roadmap |
+| D9 | Fixed | Lever milestones state an outcome (workstream library 1.2.0, `leverMilestones`); a lever at zero or not worth pursuing keeps its own title |
+| D10 | Fixed | Section 4 and ASM-FIN-045 state that lever value comes from the lever actions, not from reaching the capability target |
+| D11 | Fixed | One block per control: the approach sentences all platforms share are stated once, a platform keeps only its own; a shared discovery need is stated once; rows are grouped and labelled by lever; not-applicable platforms collapse into one line. Per-platform wording for allocation hierarchies, data centre rightsizing and data centre scheduling verification |
+| D12 | Fixed | LTM claims show "Available on request" in both editions; the secondary Finout source and its figure (57% private cloud, CLM-FIN-046) are dropped; status column widened |
+| D13 | Fixed | Flexera figures checked against Flexera's release of 18 March 2026 (29%, 85%, 63%); caveats rewritten for the client; the 2025 figure (27%, secondary sources only, conflicting) is no longer shown |
+| D14 | Fixed | "See Cost IQ" replaced by a typed offering, SaaS portfolio and vendor strategy (advisory); routes to other accelerators stay in the consultant SOW draft only |
+| D15 | Fixed | Type reads "transformation: managed run service"; the managed service is no longer offered for the accountable-owner decision |
+| D16 | Fixed | Client appendices drop design references, finding-rule IDs and fact paths |
+| D17 | Fixed | "Need index 39 out of 100", whole numbers |
+| D18 | Fixed | The situation line names the rest of the estate in scope |
+| D19 | Fixed | Appendix A notes that shown figures are rounded and the arithmetic runs unrounded |
+| D20 | Fixed | Singular verb and "its exports" for one tool; the Kubernetes bullet appears only with Kubernetes in scope; "your identity provider's group-based licensing (for example Microsoft 365)" |
+| D21 | Fixed | LTM claims show status "LTM", not "V" |
+
+Engine 3.6.2, workstream library 1.2.0. Each fix has a test in `finops-iq-v3-report.test.ts` ("M7 CIO challenge backlog"). Golden outputs changed only in the offering mappings (D14, D15); no value figure moved.
+
 ## Results by question
 
 | # | Question | Result | Where it is answered (scenario, page) |

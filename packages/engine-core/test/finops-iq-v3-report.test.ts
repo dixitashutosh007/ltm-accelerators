@@ -455,3 +455,92 @@ describe('FinOps IQ report: client logo on the cover (carried over from FinOps V
     expect(without.includes(Buffer.from('/Subtype /Image'))).toBe(false);
   }, 30_000);
 });
+
+describe('FinOps IQ report: M7 CIO challenge backlog (D8 to D21)', () => {
+  const client = runs.filter(x => x.view === 'client');
+  const allText = (doc: ReportDocument) => sectionText(doc, doc.sections.map(s => s.id));
+
+  it('D8: technical execution says which findings it leaves out, and why', () => {
+    for (const x of runs.filter(y => y.r.technicalPlan?.actions.length)) {
+      const listed = new Set(x.r.technicalPlan!.actions.map(a => a.findingId));
+      const text = sectionText(x.doc, ['technical']);
+      if (x.r.findings.some(f => !listed.has(f.id))) expect(text, x.label).toMatch(/Not listed here, because they are operating-model work|Platform actions still being added to the playbook/);
+      for (const f of x.r.findings.filter(f => f.type === 'capability_gap' && ['GOVERNANCE_POLICY_RISK', 'REPORTING_ANALYTICS'].includes(f.capability))) {
+        expect(text, x.label).toMatch(/Platform actions still being added to the playbook: [^.]*(Governance|Reporting)/);
+      }
+    }
+  });
+
+  it('D9: a lever milestone states an outcome, never the finding title', () => {
+    for (const x of runs) expect(sectionText(x.doc, ['roadmap']), x.label).not.toMatch(/Month \d+: [^:]+: indicative value/);
+  });
+
+  it('D10: the value section states why full run-rate does not wait for the capability milestones', () => {
+    for (const x of runs.filter(y => y.r.value.moneyShown)) expect(sectionText(x.doc, ['value']), x.label).toMatch(/does not wait for the capability to reach its target level/);
+  });
+
+  it('D11: technical execution states a shared approach once and collapses platforms with nothing to do', () => {
+    for (const x of runs.filter(y => y.r.technicalPlan?.actions.length)) {
+      const t = x.doc.sections.find(s => s.id === 'technical')!;
+      for (const b of t.blocks.filter(b => b.kind === 'table') as any[]) {
+        const cells = b.rows.map((r: Seg[][]) => r[2].map(s => (typeof s === 'string' ? s : s.text)).join(''));
+        const sentences = cells.map((c: string) => c.split(/(?<=[.!?])\s+/));
+        const everyRow = sentences.length > 1 ? sentences[0].filter((s: string) => s.length > 40 && sentences.every((y: string[]) => y.includes(s))) : [];
+        expect(everyRow, x.label + ' ' + cells.join(' || ').slice(0, 600)).toEqual([]);
+        expect(b.rows.some((r: Seg[][]) => r[2].some(s => /no platform action|not applicable/i.test(typeof s === 'string' ? s : s.text)) && r[3][0] === '—'), x.label).toBe(false);
+      }
+    }
+  });
+
+  it('D12, D21: the sources name LTM claims as LTM, without an address, in both editions; no vendor-blog source', () => {
+    for (const x of runs) {
+      const text = sectionText(x.doc, ['sources']);
+      expect(text, x.label).not.toMatch(/github\.com|finout/i);
+      if (/Available on request/.test(text)) expect(text, x.label).toMatch(/LTM an LTM heuristic or design decision/);
+    }
+  });
+
+  it('D13: market data caveats are written for the client, not as working notes', () => {
+    for (const x of runs) expect(sectionText(x.doc, ['market']), x.label).not.toMatch(/not re-checked|wording not read|show as|Secondary source only/i);
+  });
+
+  it('D14, D15: no internal product route or "(transformation (run))" in the client edition; the managed service is not offered for the owner decision', () => {
+    for (const x of client) {
+      const help = sectionText(x.doc, ['help']);
+      expect(help, x.label).not.toMatch(/See Cost IQ|\(transformation \(run\)\)/);
+      const managed = x.r.help?.find(h => h.offering.id === 'OFF.FIN.MANAGED');
+      expect(managed?.findingIds ?? [], x.label).not.toContain('F-FIN-DECISION-01');
+    }
+  });
+
+  it('D16: client appendices carry no design references, rule IDs or fact paths', () => {
+    for (const x of client) {
+      const text = sectionText(x.doc, ['calculation', 'assumptions', 'sources']).replace(/\S*\[[^\]]*\]\S*/g, '');
+      expect(text, x.label).not.toMatch(/\((?:Q|D)\d+\)|\bWS-S\d+|execution phase M\d|\bDECISION-\d{2}\b|\bcost\.internalRate\b|\bevidence\.saasLicence\b/);
+    }
+  });
+
+  it('D17: the need index is a whole number "out of 100"', () => {
+    for (const x of runs.filter(y => y.r.needVerdict)) expect(sectionText(x.doc, ['summary']), x.label).toMatch(/Need index\s+\d+\s+out of\s+100\s*:/);
+  });
+
+  it('D18: the situation line names the rest of the estate in scope', () => {
+    for (const x of runs) {
+      const others = x.input.facts.footprint.scopes.filter((s: string) => s !== 'public_cloud');
+      if (others.length) expect(sectionText(x.doc, ['summary']), x.label).toMatch(/also in scope/);
+    }
+  });
+
+  it('D19: the lever arithmetic says the shown figures are rounded', () => {
+    for (const x of runs.filter(y => y.r.value.moneyShown)) expect(sectionText(x.doc, ['calculation']), x.label).toMatch(/shown rounded/);
+  });
+
+  it('D20: one tool takes the singular; scope-tied offering bullets and Microsoft 365 appear only where they apply', () => {
+    for (const x of runs) {
+      const text = allText(x.doc);
+      expect(text, x.label).not.toMatch(/Recommender gives[^.]*\. This assessment uses their exports/);
+      expect(text, x.label).not.toMatch(/Microsoft 365 group-based licensing;/);
+      if (!x.input.facts.footprint.scopes.includes('kubernetes')) expect(sectionText(x.doc, ['help']), x.label).not.toMatch(/Kubernetes requests/);
+    }
+  });
+});
