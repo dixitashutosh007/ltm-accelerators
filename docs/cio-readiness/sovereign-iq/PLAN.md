@@ -247,6 +247,12 @@ The 28 P claims cite a primary URL whose article text was not re-read. They are 
 
 > **Paused here (14 Oct 2026).** The owner prioritised FinOps IQ. Sovereign IQ resumes at S3; the S2 design changes listed above are decided when it resumes.
 
+**Owner decisions on S2 (23 Oct 2026), all as recommended:**
+- Design changes 1 to 8 above: accepted, including the rule-level and floor-level UNSOURCED guard (consultant-only, hidden in client mode; the floor shown as provisional).
+- `IN_SEBI_IRDAI`: stays advisory with no legal floor until counsel confirms (S10).
+- Gate S2: **passed**, with rows 52 (NDAA § 889) and 54 (MAS penalties) left UNSOURCED and consultant-only; counsel settles them at S10.
+- Before S3: `sovereignty-compliance-lead` re-verifies the volatile claims as of 23 Oct 2026 (the ECB rates stay a dated reference set).
+
 ## S3: Engine build (Sovereign IQ v4)
 
 **Objective:** one engine and one request contract for both modes.
