@@ -9531,6 +9531,740 @@
       "lastReviewed": "2026-10-22",
       "nextReview": "2027-04-22",
       "notes": "Fetched and read from the publisher's page on 2026-10-22 (docs.aws.amazon.com, learn.microsoft.com, docs.cloud.google.com, docs.oracle.com, cloud.ibm.com, alibabacloud.com, kubernetes.io, cncf.io, focus.finops.org, docs.snowflake.com, docs.databricks.com, docs.nvidia.com and knowledge.broadcom.com were reachable from this environment). Used by the platform playbook (src/playbook/finops-iq.json)."
+    },
+    {
+      "id": "CLM-FIN-242",
+      "accelerators": [
+        "finops-iq"
+      ],
+      "kind": "provider",
+      "jurisdiction": "global",
+      "statement": "AWS Organizations service control policies (SCPs) set the maximum available permissions for IAM users and roles in member accounts; they grant no permissions, do not affect the management account, and AWS recommends testing them on an organisational unit before attaching them to the root. AWS's IAM documentation gives an example policy that denies actions outside listed Regions using the aws:RequestedRegion condition key.",
+      "source": {
+        "url": "https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_scps.html",
+        "title": "Service control policies (SCPs)",
+        "publisher": "Amazon Web Services",
+        "secondaryUrls": [
+          "https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_examples_aws_deny-requested-region.html"
+        ]
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-23",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "finops-cost-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-23",
+      "nextReview": "2027-04-23",
+      "notes": "Fetched and read from the publisher's page on 2026-10-23 by the finops-cost-lead agent (page text retrieved and the quoted points located in it). Used by the platform playbook (src/playbook/finops-iq.json)."
+    },
+    {
+      "id": "CLM-FIN-243",
+      "accelerators": [
+        "finops-iq"
+      ],
+      "kind": "provider",
+      "jurisdiction": "global",
+      "statement": "AWS Control Tower implements preventive, detective and proactive controls; a control applies to an organisational unit and every account in it. AWS Control Tower offers two Region deny controls: AWS-GR_REGION_DENY for the whole landing zone and CT.MULTISERVICE.PV.1 for specified organisational units.",
+      "source": {
+        "url": "https://docs.aws.amazon.com/controltower/latest/controlreference/controls.html",
+        "title": "About controls in AWS Control Tower",
+        "publisher": "Amazon Web Services",
+        "secondaryUrls": [
+          "https://docs.aws.amazon.com/controltower/latest/userguide/region-deny.html"
+        ]
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-23",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "finops-cost-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-23",
+      "nextReview": "2027-04-23",
+      "notes": "Fetched and read from the publisher's page on 2026-10-23 by the finops-cost-lead agent (page text retrieved and the quoted points located in it). Used by the platform playbook (src/playbook/finops-iq.json)."
+    },
+    {
+      "id": "CLM-FIN-244",
+      "accelerators": [
+        "finops-iq"
+      ],
+      "kind": "provider",
+      "jurisdiction": "global",
+      "statement": "AWS Budgets actions run when a budget exceeds a cost or usage threshold, either automatically or after manual approval; actions can apply an IAM policy or a service control policy, or target specific Amazon EC2 or Amazon RDS instances. From the management account an SCP can be applied to another account, but EC2 or RDS instances in another account cannot be targeted.",
+      "source": {
+        "url": "https://docs.aws.amazon.com/cost-management/latest/userguide/budgets-controls.html",
+        "title": "Configuring budget actions",
+        "publisher": "Amazon Web Services"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-23",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "finops-cost-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-23",
+      "nextReview": "2027-04-23",
+      "notes": "Fetched and read from the publisher's page on 2026-10-23 by the finops-cost-lead agent (page text retrieved and the quoted points located in it). Used by the platform playbook (src/playbook/finops-iq.json)."
+    },
+    {
+      "id": "CLM-FIN-245",
+      "accelerators": [
+        "finops-iq"
+      ],
+      "kind": "provider",
+      "jurisdiction": "global",
+      "statement": "Azure Policy enforces organisational standards and assesses compliance at scale; definitions and initiatives can be assigned to management groups, subscriptions, resource groups or resources, with effects including deny. Built-in definitions include 'Allowed locations' (Audit, Deny or Disabled), 'Allowed virtual machine size SKUs' (Deny) and 'Require a tag on resources' (deny).",
+      "source": {
+        "url": "https://learn.microsoft.com/en-us/azure/governance/policy/overview",
+        "title": "What is Azure Policy?",
+        "publisher": "Microsoft",
+        "secondaryUrls": [
+          "https://learn.microsoft.com/en-us/azure/governance/policy/samples/built-in-policies"
+        ]
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-23",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "finops-cost-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-23",
+      "nextReview": "2027-04-23",
+      "notes": "Fetched and read from the publisher's page on 2026-10-23 by the finops-cost-lead agent (page text retrieved and the quoted points located in it). Used by the platform playbook (src/playbook/finops-iq.json)."
+    },
+    {
+      "id": "CLM-FIN-246",
+      "accelerators": [
+        "finops-iq"
+      ],
+      "kind": "provider",
+      "jurisdiction": "global",
+      "statement": "A Microsoft Cost Management budget at subscription or resource group scope can call an Azure Monitor action group when a threshold is met; action groups are supported only at those scopes. Budgets are evaluated against actual cost every 24 hours, and cost data is typically available within 8 to 24 hours.",
+      "source": {
+        "url": "https://learn.microsoft.com/en-us/azure/cost-management-billing/costs/tutorial-acm-create-budgets",
+        "title": "Tutorial: Create and manage budgets",
+        "publisher": "Microsoft"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-23",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "finops-cost-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-23",
+      "nextReview": "2027-04-23",
+      "notes": "Fetched and read from the publisher's page on 2026-10-23 by the finops-cost-lead agent (page text retrieved and the quoted points located in it). Used by the platform playbook (src/playbook/finops-iq.json)."
+    },
+    {
+      "id": "CLM-FIN-247",
+      "accelerators": [
+        "finops-iq"
+      ],
+      "kind": "provider",
+      "jurisdiction": "global",
+      "statement": "Google Cloud Organization Policy restricts where resources can be created with the gcp.resourceLocations constraint, inherited down the resource hierarchy. Compute Engine custom organisation policy constraints can allow or deny resource creation on conditions such as resource.machineType.",
+      "source": {
+        "url": "https://docs.cloud.google.com/organization-policy/restrict-locations",
+        "title": "Restricting resource locations",
+        "publisher": "Google Cloud",
+        "secondaryUrls": [
+          "https://docs.cloud.google.com/compute/docs/access/custom-constraints"
+        ]
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-23",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "finops-cost-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-23",
+      "nextReview": "2027-04-23",
+      "notes": "Fetched and read from the publisher's page on 2026-10-23 by the finops-cost-lead agent (page text retrieved and the quoted points located in it). Used by the platform playbook (src/playbook/finops-iq.json)."
+    },
+    {
+      "id": "CLM-FIN-248",
+      "accelerators": [
+        "finops-iq"
+      ],
+      "kind": "provider",
+      "jurisdiction": "global",
+      "statement": "Google Cloud alerts-only budgets do not automatically cap usage or spending; budgets can send programmatic notifications through Pub/Sub to automate cost management responses, such as disabling Cloud Billing on a project.",
+      "source": {
+        "url": "https://docs.cloud.google.com/billing/docs/how-to/budgets",
+        "title": "Create, edit, or delete budgets and budget alerts",
+        "publisher": "Google Cloud",
+        "secondaryUrls": [
+          "https://docs.cloud.google.com/billing/docs/how-to/budgets-programmatic-notifications"
+        ]
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-23",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "finops-cost-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-23",
+      "nextReview": "2027-04-23",
+      "notes": "Fetched and read from the publisher's page on 2026-10-23 by the finops-cost-lead agent (page text retrieved and the quoted points located in it). Used by the platform playbook (src/playbook/finops-iq.json)."
+    },
+    {
+      "id": "CLM-FIN-249",
+      "accelerators": [
+        "finops-iq"
+      ],
+      "kind": "provider",
+      "jurisdiction": "global",
+      "statement": "Google Cloud spend cap budgets pause usage of the specified service for the rest of the monthly budget period when gross estimated cost exceeds the budget, unless the cap is lifted manually. They are limited to a single project and a single eligible service; on the review date the eligible services were the Gemini API, Gemini Enterprise Agent Platform (formerly Vertex AI), Cloud Run and Cloud Run functions.",
+      "source": {
+        "url": "https://docs.cloud.google.com/billing/docs/how-to/budgets-spend-caps",
+        "title": "Manage spend cap budgets",
+        "publisher": "Google Cloud"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-23",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "finops-cost-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-23",
+      "nextReview": "2027-01-21",
+      "notes": "Recently added capability with a short eligible-service list; reviewed at three months. Fetched and read from the publisher's page on 2026-10-23 by the finops-cost-lead agent (page text retrieved and the quoted points located in it). Used by the platform playbook (src/playbook/finops-iq.json)."
+    },
+    {
+      "id": "CLM-FIN-250",
+      "accelerators": [
+        "finops-iq"
+      ],
+      "kind": "provider",
+      "jurisdiction": "global",
+      "statement": "OCI compartment quotas let administrators control resource consumption in compartments with set, unset and zero quota statements; a quota statement can be limited to a region with a request.region condition.",
+      "source": {
+        "url": "https://docs.oracle.com/en-us/iaas/Content/Quotas/Concepts/resourcequotas.htm",
+        "title": "Overview of Compartment Quotas",
+        "publisher": "Oracle",
+        "secondaryUrls": [
+          "https://docs.oracle.com/en-us/iaas/Content/Quotas/Concepts/sample_quotas.htm"
+        ]
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-23",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "finops-cost-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-23",
+      "nextReview": "2027-04-23",
+      "notes": "Fetched and read from the publisher's page on 2026-10-23 by the finops-cost-lead agent (page text retrieved and the quoted points located in it). Used by the platform playbook (src/playbook/finops-iq.json)."
+    },
+    {
+      "id": "CLM-FIN-251",
+      "accelerators": [
+        "finops-iq"
+      ],
+      "kind": "provider",
+      "jurisdiction": "global",
+      "statement": "OCI budgets set soft limits on spending, on compartments (including the root) or on tags; budget alerts are evaluated every 24 hours and can trigger on actual or forecast spend reaching a percentage or an amount.",
+      "source": {
+        "url": "https://docs.oracle.com/en-us/iaas/Content/Billing/Concepts/budgetsoverview.htm",
+        "title": "Budgets",
+        "publisher": "Oracle"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-23",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "finops-cost-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-23",
+      "nextReview": "2027-04-23",
+      "notes": "Fetched and read from the publisher's page on 2026-10-23 by the finops-cost-lead agent (page text retrieved and the quoted points located in it). Used by the platform playbook (src/playbook/finops-iq.json)."
+    },
+    {
+      "id": "CLM-FIN-252",
+      "accelerators": [
+        "finops-iq"
+      ],
+      "kind": "provider",
+      "jurisdiction": "global",
+      "statement": "IBM Cloud spending notifications email up to ten chosen users when total account spend or a specific service's spend reaches 80%, 90% and 100% of the threshold set; they are available to Pay-As-You-Go and Subscription accounts.",
+      "source": {
+        "url": "https://cloud.ibm.com/docs/support?topic=support-spending",
+        "title": "Configuring spending notifications in IBM Cloud",
+        "publisher": "IBM"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-23",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "finops-cost-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-23",
+      "nextReview": "2027-04-23",
+      "notes": "Fetched and read from the publisher's page on 2026-10-23 by the finops-cost-lead agent (page text retrieved and the quoted points located in it). Used by the platform playbook (src/playbook/finops-iq.json)."
+    },
+    {
+      "id": "CLM-FIN-253",
+      "accelerators": [
+        "finops-iq"
+      ],
+      "kind": "provider",
+      "jurisdiction": "global",
+      "statement": "Alibaba Cloud control policies are permission guardrails in a resource directory: the management account attaches them to folders or members, they define the maximum actions of RAM users and roles in member accounts and do not grant permissions. Alibaba Cloud's examples include a policy that denies ECS access in a specific region; some services do not support control policies.",
+      "source": {
+        "url": "https://www.alibabacloud.com/help/en/resource-management/resource-directory/user-guide/control-policy-overview",
+        "title": "Overview (Control Policy)",
+        "publisher": "Alibaba Cloud",
+        "secondaryUrls": [
+          "https://www.alibabacloud.com/help/en/resource-management/resource-directory/user-guide/examples-of-custom-access-control-policies"
+        ]
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-23",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "finops-cost-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-23",
+      "nextReview": "2027-04-23",
+      "notes": "Fetched and read from the publisher's page on 2026-10-23 by the finops-cost-lead agent (page text retrieved and the quoted points located in it). Used by the platform playbook (src/playbook/finops-iq.json)."
+    },
+    {
+      "id": "CLM-FIN-254",
+      "accelerators": [
+        "finops-iq"
+      ],
+      "kind": "provider",
+      "jurisdiction": "global",
+      "statement": "Alibaba Cloud Budget Management sets budgets for organisations, departments, projects or specific cloud services and sends alerts by email and internal message when actual or forecast spending exceeds a threshold.",
+      "source": {
+        "url": "https://www.alibabacloud.com/help/en/user-center/how-to-manage-a-budget",
+        "title": "Budget management",
+        "publisher": "Alibaba Cloud"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-23",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "finops-cost-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-23",
+      "nextReview": "2027-04-23",
+      "notes": "Fetched and read from the publisher's page on 2026-10-23 by the finops-cost-lead agent (page text retrieved and the quoted points located in it). Used by the platform playbook (src/playbook/finops-iq.json)."
+    },
+    {
+      "id": "CLM-FIN-255",
+      "accelerators": [
+        "finops-iq"
+      ],
+      "kind": "provider",
+      "jurisdiction": "global",
+      "statement": "A Kubernetes ResourceQuota limits aggregate resource consumption per namespace (for example the sum of CPU and memory requests and limits) and the number of objects; a LimitRange constrains the requests and limits each Pod, container or PersistentVolumeClaim in a namespace can specify, including defaults and minimums and maximums.",
+      "source": {
+        "url": "https://kubernetes.io/docs/concepts/policy/resource-quotas/",
+        "title": "Resource Quotas",
+        "publisher": "Kubernetes project (CNCF)",
+        "secondaryUrls": [
+          "https://kubernetes.io/docs/concepts/policy/limit-range/"
+        ]
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-23",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "finops-cost-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-23",
+      "nextReview": "2027-04-23",
+      "notes": "Fetched and read from the publisher's page on 2026-10-23 by the finops-cost-lead agent (page text retrieved and the quoted points located in it). Used by the platform playbook (src/playbook/finops-iq.json)."
+    },
+    {
+      "id": "CLM-FIN-256",
+      "accelerators": [
+        "finops-iq"
+      ],
+      "kind": "provider",
+      "jurisdiction": "global",
+      "statement": "Kubernetes Validating Admission Policy, stable since Kubernetes v1.30, is a declarative, in-process alternative to validating admission webhooks that uses Common Expression Language (CEL) rules.",
+      "source": {
+        "url": "https://kubernetes.io/docs/reference/access-authn-authz/validating-admission-policy/",
+        "title": "Validating Admission Policy",
+        "publisher": "Kubernetes project (CNCF)"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-23",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "finops-cost-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-23",
+      "nextReview": "2027-04-23",
+      "notes": "Fetched and read from the publisher's page on 2026-10-23 by the finops-cost-lead agent (page text retrieved and the quoted points located in it). Used by the platform playbook (src/playbook/finops-iq.json)."
+    },
+    {
+      "id": "CLM-FIN-257",
+      "accelerators": [
+        "finops-iq"
+      ],
+      "kind": "provider",
+      "jurisdiction": "global",
+      "statement": "Kyverno (policy as code for Kubernetes) moved to the CNCF Graduated maturity level on 16 March 2026; Open Policy Agent (OPA), a general-purpose policy engine, has been CNCF Graduated since 29 January 2021.",
+      "source": {
+        "url": "https://www.cncf.io/projects/kyverno/",
+        "title": "Kyverno (CNCF project page)",
+        "publisher": "Cloud Native Computing Foundation",
+        "secondaryUrls": [
+          "https://www.cncf.io/projects/open-policy-agent-opa/"
+        ]
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-23",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "finops-cost-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-23",
+      "nextReview": "2027-04-23",
+      "notes": "Fetched and read from the publisher's page on 2026-10-23 by the finops-cost-lead agent (page text retrieved and the quoted points located in it). Used by the platform playbook (src/playbook/finops-iq.json)."
+    },
+    {
+      "id": "CLM-FIN-258",
+      "accelerators": [
+        "finops-iq"
+      ],
+      "kind": "provider",
+      "jurisdiction": "global",
+      "statement": "OpenStack Nova quotas limit resources such as the number of instances and instance cores a project can use; Nova's default quota driver is moving to unified limits stored in Keystone.",
+      "source": {
+        "url": "https://docs.openstack.org/nova/latest/user/quotas.html",
+        "title": "Quotas (Nova)",
+        "publisher": "OpenStack (OpenInfra Foundation)",
+        "secondaryUrls": [
+          "https://docs.openstack.org/keystone/latest/admin/unified-limits.html"
+        ]
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-23",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "finops-cost-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-23",
+      "nextReview": "2027-04-23",
+      "notes": "Fetched and read from the publisher's page on 2026-10-23 by the finops-cost-lead agent (page text retrieved and the quoted points located in it). Used by the platform playbook (src/playbook/finops-iq.json)."
+    },
+    {
+      "id": "CLM-FIN-259",
+      "accelerators": [
+        "finops-iq"
+      ],
+      "kind": "provider",
+      "jurisdiction": "global",
+      "statement": "VCF Automation (VMware Cloud Foundation 9) approval policies require approvers to accept catalog requests before resources are deployed, and lease policies set the maximum time a deployment can exist, after which it is destroyed and its resources reclaimed.",
+      "source": {
+        "url": "https://techdocs.broadcom.com/us/en/vmware-cis/vcf/vcf-9-0-and-later/9-0/organization-management/creating-policies-for-all-apps-orgs.html",
+        "title": "Managing Policies in VCF Automation",
+        "publisher": "Broadcom",
+        "secondaryUrls": [
+          "https://techdocs.broadcom.com/us/en/vmware-cis/vcf/vcf-9-0-and-later/9-0/organization-management/creating-policies-for-all-apps-orgs/vcfa-all-apps-lease-policies.html"
+        ]
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-23",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "finops-cost-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-23",
+      "nextReview": "2027-04-23",
+      "notes": "Fetched and read from the publisher's page on 2026-10-23 by the finops-cost-lead agent (page text retrieved and the quoted points located in it). Used by the platform playbook (src/playbook/finops-iq.json)."
+    },
+    {
+      "id": "CLM-FIN-260",
+      "accelerators": [
+        "finops-iq"
+      ],
+      "kind": "provider",
+      "jurisdiction": "global",
+      "statement": "Microsoft 365 admins control whether users can make self-service purchases of Microsoft or select third-party offers with the AllowSelfServicePurchase policy, per product, in the Microsoft 365 admin center or the MSCommerce PowerShell module; it cannot be turned off for the whole tenant with a single command.",
+      "source": {
+        "url": "https://learn.microsoft.com/en-us/microsoft-365/commerce/subscriptions/allowselfservicepurchase-powershell",
+        "title": "Use AllowSelfServicePurchase for the MSCommerce PowerShell module",
+        "publisher": "Microsoft"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-23",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "finops-cost-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-23",
+      "nextReview": "2027-04-23",
+      "notes": "Fetched and read from the publisher's page on 2026-10-23 by the finops-cost-lead agent (page text retrieved and the quoted points located in it). Used by the platform playbook (src/playbook/finops-iq.json)."
+    },
+    {
+      "id": "CLM-FIN-261",
+      "accelerators": [
+        "finops-iq"
+      ],
+      "kind": "provider",
+      "jurisdiction": "global",
+      "statement": "Snowflake resource monitors track credit use by warehouses against a credit quota and can send notifications or suspend warehouses when a threshold is reached; they work for warehouses only, not for serverless features or AI services.",
+      "source": {
+        "url": "https://docs.snowflake.com/en/user-guide/resource-monitors",
+        "title": "Working with resource monitors",
+        "publisher": "Snowflake"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-23",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "finops-cost-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-23",
+      "nextReview": "2027-04-23",
+      "notes": "Fetched and read from the publisher's page on 2026-10-23 by the finops-cost-lead agent (page text retrieved and the quoted points located in it). Used by the platform playbook (src/playbook/finops-iq.json)."
+    },
+    {
+      "id": "CLM-FIN-262",
+      "accelerators": [
+        "finops-iq"
+      ],
+      "kind": "provider",
+      "jurisdiction": "global",
+      "statement": "Databricks compute policies let workspace admins limit users' compute creation to prescribed settings, limit the number of clusters, cap per-cluster cost (for example maximum DBUs per hour) and set rules for custom tags. Serverless usage policies (Public Preview) add attribution tags to serverless usage but do not limit it.",
+      "source": {
+        "url": "https://docs.databricks.com/aws/en/admin/clusters/policies",
+        "title": "Create and manage compute policies",
+        "publisher": "Databricks",
+        "secondaryUrls": [
+          "https://docs.databricks.com/aws/en/admin/usage/budget-policies"
+        ]
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-23",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "finops-cost-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-23",
+      "nextReview": "2027-04-23",
+      "notes": "Fetched and read from the publisher's page on 2026-10-23 by the finops-cost-lead agent (page text retrieved and the quoted points located in it). Used by the platform playbook (src/playbook/finops-iq.json)."
+    },
+    {
+      "id": "CLM-FIN-263",
+      "accelerators": [
+        "finops-iq"
+      ],
+      "kind": "provider",
+      "jurisdiction": "global",
+      "statement": "AWS Billing and Cost Management Dashboards combine widgets from Cost Explorer, Savings Plans and Reserved Instance coverage and utilisation, Budgets, Cost Efficiency and detected anomalies; dashboards can be shared with accounts inside or outside the AWS Organization, exported as PDF, and delivered as PDF reports by scheduled email daily, weekly or monthly.",
+      "source": {
+        "url": "https://docs.aws.amazon.com/cost-management/latest/userguide/dashboards.html",
+        "title": "Visualizing and analyzing cost and usage data using Dashboards",
+        "publisher": "Amazon Web Services"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-23",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "finops-cost-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-23",
+      "nextReview": "2027-04-23",
+      "notes": "Fetched and read from the publisher's page on 2026-10-23 by the finops-cost-lead agent (page text retrieved and the quoted points located in it). Used by the platform playbook (src/playbook/finops-iq.json)."
+    },
+    {
+      "id": "CLM-FIN-264",
+      "accelerators": [
+        "finops-iq"
+      ],
+      "kind": "provider",
+      "jurisdiction": "global",
+      "statement": "Cost Explorer enabled from the AWS management account is enabled for member accounts, and management-account preferences control what member accounts can see. AWS Billing View represents cost management data as a resource controlled by resource-based policies; custom billing views apply filters and can be shared with accounts inside and outside the organisation.",
+      "source": {
+        "url": "https://docs.aws.amazon.com/cost-management/latest/userguide/ce-access.html",
+        "title": "Controlling access to Cost Explorer",
+        "publisher": "Amazon Web Services",
+        "secondaryUrls": [
+          "https://docs.aws.amazon.com/cost-management/latest/userguide/billing-view.html"
+        ]
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-23",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "finops-cost-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-23",
+      "nextReview": "2027-04-23",
+      "notes": "Fetched and read from the publisher's page on 2026-10-23 by the finops-cost-lead agent (page text retrieved and the quoted points located in it). Used by the platform playbook (src/playbook/finops-iq.json)."
+    },
+    {
+      "id": "CLM-FIN-265",
+      "accelerators": [
+        "finops-iq"
+      ],
+      "kind": "provider",
+      "jurisdiction": "global",
+      "statement": "Microsoft Cost Management cost analysis views can be saved and shared, and users can subscribe to scheduled alerts of saved chart views, including recipients without portal access. Access to cost data follows Azure RBAC scope: Cost Management Reader at management group, subscription or resource group scope shows costs for that scope.",
+      "source": {
+        "url": "https://learn.microsoft.com/en-us/azure/cost-management-billing/costs/save-share-views",
+        "title": "Save and share customized views",
+        "publisher": "Microsoft",
+        "secondaryUrls": [
+          "https://learn.microsoft.com/en-us/azure/cost-management-billing/costs/assign-access-acm-data"
+        ]
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-23",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "finops-cost-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-23",
+      "nextReview": "2027-04-23",
+      "notes": "Fetched and read from the publisher's page on 2026-10-23 by the finops-cost-lead agent (page text retrieved and the quoted points located in it). Used by the platform playbook (src/playbook/finops-iq.json)."
+    },
+    {
+      "id": "CLM-FIN-266",
+      "accelerators": [
+        "finops-iq"
+      ],
+      "kind": "provider",
+      "jurisdiction": "global",
+      "statement": "The Microsoft FinOps toolkit Power BI reports (for example cost summary, rate optimisation, invoicing and chargeback, workload optimisation) connect to Cost Management exports or to FinOps hubs, a FOCUS-based data pipeline; Microsoft states the older Cost Management connector for Power BI is kept for backwards compatibility and is not recommended.",
+      "source": {
+        "url": "https://learn.microsoft.com/en-us/cloud-computing/finops/toolkit/power-bi/reports",
+        "title": "Power BI reports (FinOps toolkit)",
+        "publisher": "Microsoft",
+        "secondaryUrls": [
+          "https://learn.microsoft.com/en-us/cloud-computing/finops/toolkit/hubs/finops-hubs-overview"
+        ]
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-23",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "finops-cost-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-23",
+      "nextReview": "2027-04-23",
+      "notes": "Fetched and read from the publisher's page on 2026-10-23 by the finops-cost-lead agent (page text retrieved and the quoted points located in it). Used by the platform playbook (src/playbook/finops-iq.json)."
+    },
+    {
+      "id": "CLM-FIN-267",
+      "accelerators": [
+        "finops-iq"
+      ],
+      "kind": "provider",
+      "jurisdiction": "global",
+      "statement": "Google Cloud Billing Reports chart usage cost for a billing account with filters and grouping (for example by project, service or SKU), saved reports, and grouping by project hierarchy so folders that represent cost centres can be reported together; cost management for project owners (Preview) gives project-scoped access to billing data.",
+      "source": {
+        "url": "https://docs.cloud.google.com/billing/docs/how-to/reports",
+        "title": "Analyze your billing data and cost trends with Reports",
+        "publisher": "Google Cloud",
+        "secondaryUrls": [
+          "https://docs.cloud.google.com/billing/docs/how-to/reports-project-hierarchy",
+          "https://docs.cloud.google.com/billing/docs/how-to/project-owners/overview"
+        ]
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-23",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "finops-cost-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-23",
+      "nextReview": "2027-04-23",
+      "notes": "Fetched and read from the publisher's page on 2026-10-23 by the finops-cost-lead agent (page text retrieved and the quoted points located in it). Used by the platform playbook (src/playbook/finops-iq.json)."
+    },
+    {
+      "id": "CLM-FIN-268",
+      "accelerators": [
+        "finops-iq"
+      ],
+      "kind": "provider",
+      "jurisdiction": "global",
+      "statement": "OCI Cost Analysis generates charts and tabular reports of cost data and saves custom reports; Scheduled Reports run a saved report once, daily or monthly and write it to an Object Storage Standard tier bucket.",
+      "source": {
+        "url": "https://docs.oracle.com/en-us/iaas/Content/Billing/Concepts/costanalysisoverview.htm",
+        "title": "Cost Analysis",
+        "publisher": "Oracle",
+        "secondaryUrls": [
+          "https://docs.oracle.com/en-us/iaas/Content/Billing/Concepts/scheduledreportoverview.htm"
+        ]
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-23",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "finops-cost-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-23",
+      "nextReview": "2027-04-23",
+      "notes": "Fetched and read from the publisher's page on 2026-10-23 by the finops-cost-lead agent (page text retrieved and the quoted points located in it). Used by the platform playbook (src/playbook/finops-iq.json)."
+    },
+    {
+      "id": "CLM-FIN-269",
+      "accelerators": [
+        "finops-iq"
+      ],
+      "kind": "provider",
+      "jurisdiction": "global",
+      "statement": "The IBM Cloud cost analysis page compares costs over months and filters by region, service, plan, instance and resource group (standalone and enterprise child accounts only); usage viewing can be limited to a resource group with the Viewer role, and usage can be exported to CSV.",
+      "source": {
+        "url": "https://cloud.ibm.com/docs/account?topic=account-viewingusage",
+        "title": "Viewing your usage",
+        "publisher": "IBM"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-23",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "finops-cost-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-23",
+      "nextReview": "2027-04-23",
+      "notes": "Fetched and read from the publisher's page on 2026-10-23 by the finops-cost-lead agent (page text retrieved and the quoted points located in it). Used by the platform playbook (src/playbook/finops-iq.json)."
+    },
+    {
+      "id": "CLM-FIN-270",
+      "accelerators": [
+        "finops-iq"
+      ],
+      "kind": "provider",
+      "jurisdiction": "global",
+      "statement": "Alibaba Cloud Cost Analysis visualises spending by dimensions including product, financial unit, account, resource group, region and instance tag, saves reports and forecasts costs; data is updated with a one-day delay and RAM users need the AliyunBSSReadOnlyAccess permission.",
+      "source": {
+        "url": "https://www.alibabacloud.com/help/en/user-center/cost-analysis/",
+        "title": "Cost analysis",
+        "publisher": "Alibaba Cloud"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-23",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "finops-cost-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-23",
+      "nextReview": "2027-04-23",
+      "notes": "Fetched and read from the publisher's page on 2026-10-23 by the finops-cost-lead agent (page text retrieved and the quoted points located in it). Used by the platform playbook (src/playbook/finops-iq.json)."
+    },
+    {
+      "id": "CLM-FIN-271",
+      "accelerators": [
+        "finops-iq"
+      ],
+      "kind": "provider",
+      "jurisdiction": "global",
+      "statement": "Snowflake cost can be explored in a visual dashboard in Snowsight (Admin, Cost management, including an organisation overview) or by querying the ACCOUNT_USAGE and ORGANIZATION_USAGE views for custom reports and dashboards.",
+      "source": {
+        "url": "https://docs.snowflake.com/en/user-guide/cost-exploring-overall",
+        "title": "Exploring overall cost",
+        "publisher": "Snowflake"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-23",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "finops-cost-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-23",
+      "nextReview": "2027-04-23",
+      "notes": "Fetched and read from the publisher's page on 2026-10-23 by the finops-cost-lead agent (page text retrieved and the quoted points located in it). Used by the platform playbook (src/playbook/finops-iq.json)."
+    },
+    {
+      "id": "CLM-FIN-272",
+      "accelerators": [
+        "finops-iq"
+      ],
+      "kind": "provider",
+      "jurisdiction": "global",
+      "statement": "Databricks account admins can import pre-built, customisable usage dashboards into Unity Catalog-enabled workspaces to monitor account- and workspace-level usage.",
+      "source": {
+        "url": "https://docs.databricks.com/aws/en/admin/account-settings/usage",
+        "title": "Usage dashboards",
+        "publisher": "Databricks"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-23",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "finops-cost-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-23",
+      "nextReview": "2027-04-23",
+      "notes": "Fetched and read from the publisher's page on 2026-10-23 by the finops-cost-lead agent (page text retrieved and the quoted points located in it). Used by the platform playbook (src/playbook/finops-iq.json)."
     }
   ]
 }

@@ -1,7 +1,7 @@
 {
-  "catalogueVersion": "1.0.0",
+  "catalogueVersion": "1.1.0",
   "accelerator": "finops-iq",
-  "statusAsOf": "2026-10-22",
+  "statusAsOf": "2026-10-23",
   "rule": "FinOps IQ platform playbook (WS-S3; PLAN F8; IMPROVEMENT_PLAN 5.1). Controls are FIN.<CAPABILITY> for capability gap findings and FIN.<LEVER> for levers (e.g. FIN.ALLOCATION, FIN.LEV-01). The approach comes first, then options per platform, named as the provider names them on the review date, with open-source or third-party alternatives where credible; options are validated per engagement against current availability, pricing and licensing. Every control in technicalControls has an entry, or an explicit noPlatformAction entry saying why, for every platform. Where no provider-specific option is catalogued (IBM Cloud, Alibaba Cloud or an unidentified provider for some levers), the entry is a Low-confidence practice action whose options are found in discovery. Other controls (anomaly management, Kubernetes efficiency, SaaS and licensing) have entries on selected platforms only. Each entry cites claims in the claims register and is reviewed by its nextReview date, which is never later than the review date of the claims it cites.",
   "technicalControls": [
     "FIN.DATA_INGESTION",
@@ -14,13 +14,10 @@
     "FIN.LEV-05",
     "FIN.LEV-06",
     "FIN.LEV-08",
-    "FIN.LEV-10"
-  ],
-  "plannedControls": [
+    "FIN.LEV-10",
     "FIN.GOVERNANCE_POLICY_RISK",
     "FIN.REPORTING_ANALYTICS"
   ],
-  "plannedControlsNote": "Platform work with no entries yet (tag and region policy enforcement; reporting on the cost store). The report names findings on these as platform actions still being added, not as operating-model work (M7 CIO challenge D8). Entries are due in the next playbook version.",
   "entries": [
     {
       "id": "PB.FIN.DATA_INGESTION.aws.platform",
@@ -3781,6 +3778,798 @@
       "owner": "finops-cost-lead",
       "lastReviewed": "2026-10-22",
       "nextReview": "2027-04-14"
+    },
+    {
+      "id": "PB.FIN.GOVERNANCE_POLICY_RISK.aws.platform",
+      "control": "FIN.GOVERNANCE_POLICY_RISK",
+      "platform": "aws",
+      "level": "platform",
+      "action": "Attach service control policies to organisational units that deny unapproved Regions and instance types and require the mandatory tags at creation, and add AWS Budgets actions that apply a restrictive policy when an account's budget threshold is crossed.",
+      "approach": "Rules for technology spend are written as policy and enforced by the platform rather than by review after the fact: what may be created, where, at what size and with which tags is checked at creation, and spending limits on each owner's scope trigger an agreed response when they are crossed. Each rule has an owner, a documented exception route and a compliance measure reported monthly. On AWS, preventive rules sit on organisational units so every new account inherits them; tag policies define the tag values, and service control policies make them mandatory.",
+      "options": [
+        {
+          "name": "AWS Organizations service control policies",
+          "kind": "native",
+          "detail": "Do not apply to the management account"
+        },
+        {
+          "name": "AWS Control Tower controls (including Region deny)",
+          "kind": "native",
+          "detail": "Preventive, detective and proactive controls by organisational unit"
+        },
+        {
+          "name": "AWS Budgets actions",
+          "kind": "native",
+          "detail": "Automatic or after approval; IAM policy, SCP or stop EC2 and RDS instances"
+        },
+        {
+          "name": "AWS Organizations tag policies",
+          "kind": "native"
+        }
+      ],
+      "verification": "Every account, subscription, project or equivalent scope in scope is covered by the agreed preventive policies and by a budget with a defined response; a test deployment outside the rules is blocked; exceptions are listed with an owner and an expiry date; policy compliance is reported monthly.",
+      "effort": "M",
+      "ownerRole": "Cloud platform team with the FinOps lead",
+      "confirmRegionalAvailability": false,
+      "confidence": "High",
+      "claimIds": [
+        "CLM-FIN-242",
+        "CLM-FIN-243",
+        "CLM-FIN-244",
+        "CLM-FIN-088",
+        "CLM-FIN-027"
+      ],
+      "owner": "finops-cost-lead",
+      "lastReviewed": "2026-10-23",
+      "nextReview": "2027-04-14"
+    },
+    {
+      "id": "PB.FIN.GOVERNANCE_POLICY_RISK.azure.platform",
+      "control": "FIN.GOVERNANCE_POLICY_RISK",
+      "platform": "azure",
+      "level": "platform",
+      "action": "Assign Azure Policy at management group scope to deny resources outside the allowed locations and virtual machine sizes and without the mandatory tags, and connect subscription budgets to action groups that run the agreed response.",
+      "approach": "Rules for technology spend are written as policy and enforced by the platform rather than by review after the fact: what may be created, where, at what size and with which tags is checked at creation, and spending limits on each owner's scope trigger an agreed response when they are crossed. Each rule has an owner, a documented exception route and a compliance measure reported monthly. On Azure, policy assigned at a management group applies to every subscription below it; budgets notify but do not stop spending on their own, so the response is automated through action groups.",
+      "options": [
+        {
+          "name": "Azure Policy built-in definitions (Allowed locations, Allowed virtual machine size SKUs, Require a tag on resources)",
+          "kind": "native"
+        },
+        {
+          "name": "Azure management groups",
+          "kind": "native",
+          "detail": "Scope for policy assignment"
+        },
+        {
+          "name": "Microsoft Cost Management budgets with action groups",
+          "kind": "native",
+          "detail": "Subscription and resource group scopes only"
+        }
+      ],
+      "verification": "Every account, subscription, project or equivalent scope in scope is covered by the agreed preventive policies and by a budget with a defined response; a test deployment outside the rules is blocked; exceptions are listed with an owner and an expiry date; policy compliance is reported monthly.",
+      "effort": "M",
+      "ownerRole": "Cloud platform team with the FinOps lead",
+      "confirmRegionalAvailability": false,
+      "confidence": "High",
+      "claimIds": [
+        "CLM-FIN-245",
+        "CLM-FIN-246",
+        "CLM-FIN-091",
+        "CLM-FIN-093",
+        "CLM-FIN-027"
+      ],
+      "owner": "finops-cost-lead",
+      "lastReviewed": "2026-10-23",
+      "nextReview": "2027-04-14"
+    },
+    {
+      "id": "PB.FIN.GOVERNANCE_POLICY_RISK.gcp.platform",
+      "control": "FIN.GOVERNANCE_POLICY_RISK",
+      "platform": "gcp",
+      "level": "platform",
+      "action": "Set organisation policies at the organisation or folder that restrict resource locations and allowed machine types, and route budget notifications through Pub/Sub to an automated response, using spend cap budgets where the service is eligible.",
+      "approach": "Rules for technology spend are written as policy and enforced by the platform rather than by review after the fact: what may be created, where, at what size and with which tags is checked at creation, and spending limits on each owner's scope trigger an agreed response when they are crossed. Each rule has an owner, a documented exception route and a compliance measure reported monthly. On Google Cloud, organisation policies are inherited down the folder and project hierarchy; alerts-only budgets do not cap spending, so any response is automated or uses a spend cap where offered.",
+      "options": [
+        {
+          "name": "Organization Policy: resource locations constraint (gcp.resourceLocations)",
+          "kind": "native"
+        },
+        {
+          "name": "Compute Engine custom organisation policy constraints",
+          "kind": "native",
+          "detail": "For example on machine type"
+        },
+        {
+          "name": "Cloud Billing budgets with Pub/Sub programmatic notifications",
+          "kind": "native"
+        },
+        {
+          "name": "Cloud Billing spend cap budgets",
+          "kind": "native",
+          "detail": "Single project and eligible service only"
+        }
+      ],
+      "verification": "Every account, subscription, project or equivalent scope in scope is covered by the agreed preventive policies and by a budget with a defined response; a test deployment outside the rules is blocked; exceptions are listed with an owner and an expiry date; policy compliance is reported monthly.",
+      "effort": "M",
+      "ownerRole": "Cloud platform team with the FinOps lead",
+      "confirmRegionalAvailability": false,
+      "confidence": "High",
+      "claimIds": [
+        "CLM-FIN-247",
+        "CLM-FIN-248",
+        "CLM-FIN-249",
+        "CLM-FIN-027"
+      ],
+      "owner": "finops-cost-lead",
+      "lastReviewed": "2026-10-23",
+      "nextReview": "2027-01-21"
+    },
+    {
+      "id": "PB.FIN.GOVERNANCE_POLICY_RISK.oci.platform",
+      "control": "FIN.GOVERNANCE_POLICY_RISK",
+      "platform": "oci",
+      "level": "platform",
+      "action": "Write compartment quota policies that cap or zero the services, shapes and regions each compartment may use, apply tag defaults to every compartment, and set a budget with alerts on each owner's compartment.",
+      "approach": "Rules for technology spend are written as policy and enforced by the platform rather than by review after the fact: what may be created, where, at what size and with which tags is checked at creation, and spending limits on each owner's scope trigger an agreed response when they are crossed. Each rule has an owner, a documented exception route and a compliance measure reported monthly. On OCI, quotas are the preventive control; budgets are soft limits that alert on actual or forecast spend.",
+      "options": [
+        {
+          "name": "OCI compartment quotas",
+          "kind": "native",
+          "detail": "set, unset and zero statements; can be limited by region"
+        },
+        {
+          "name": "OCI defined tags and tag defaults",
+          "kind": "native"
+        },
+        {
+          "name": "OCI budgets with alerts",
+          "kind": "native"
+        }
+      ],
+      "verification": "Every account, subscription, project or equivalent scope in scope is covered by the agreed preventive policies and by a budget with a defined response; a test deployment outside the rules is blocked; exceptions are listed with an owner and an expiry date; policy compliance is reported monthly.",
+      "effort": "M",
+      "ownerRole": "Cloud platform team with the FinOps lead",
+      "confirmRegionalAvailability": false,
+      "confidence": "High",
+      "claimIds": [
+        "CLM-FIN-250",
+        "CLM-FIN-251",
+        "CLM-FIN-210",
+        "CLM-FIN-027"
+      ],
+      "owner": "finops-cost-lead",
+      "lastReviewed": "2026-10-23",
+      "nextReview": "2027-04-14"
+    },
+    {
+      "id": "PB.FIN.GOVERNANCE_POLICY_RISK.ibm.platform",
+      "control": "FIN.GOVERNANCE_POLICY_RISK",
+      "platform": "ibm",
+      "level": "platform",
+      "action": "Set spending notifications for the account and for each major service, restrict who can create resources in each resource group through access policies, and enforce allowed regions, sizes and tags as checks in the provisioning pipeline.",
+      "approach": "Rules for technology spend are written as policy and enforced by the platform rather than by review after the fact: what may be created, where, at what size and with which tags is checked at creation, and spending limits on each owner's scope trigger an agreed response when they are crossed. Each rule has an owner, a documented exception route and a compliance measure reported monthly. On IBM Cloud, no native preventive policy for regions or sizes is catalogued here, so those rules are enforced in the provisioning pipeline; spending notifications alert but do not stop usage.",
+      "options": [
+        {
+          "name": "IBM Cloud spending notifications",
+          "kind": "native",
+          "detail": "Account total and per service"
+        },
+        {
+          "name": "IBM Cloud resource groups and access policies",
+          "kind": "native"
+        },
+        {
+          "name": "Region, size and tag checks in the infrastructure-as-code pipeline",
+          "kind": "practice"
+        }
+      ],
+      "verification": "Every account, subscription, project or equivalent scope in scope is covered by the agreed preventive policies and by a budget with a defined response; a test deployment outside the rules is blocked; exceptions are listed with an owner and an expiry date; policy compliance is reported monthly.",
+      "effort": "M",
+      "ownerRole": "Cloud platform team with the FinOps lead",
+      "confirmRegionalAvailability": false,
+      "confidence": "Low",
+      "claimIds": [
+        "CLM-FIN-252",
+        "CLM-FIN-229",
+        "CLM-FIN-027"
+      ],
+      "owner": "finops-cost-lead",
+      "lastReviewed": "2026-10-23",
+      "nextReview": "2027-04-14"
+    },
+    {
+      "id": "PB.FIN.GOVERNANCE_POLICY_RISK.alibaba.platform",
+      "control": "FIN.GOVERNANCE_POLICY_RISK",
+      "platform": "alibaba",
+      "level": "platform",
+      "action": "Attach resource directory control policies to folders that deny unapproved regions and services, and set budgets with alert thresholds for each department or project.",
+      "approach": "Rules for technology spend are written as policy and enforced by the platform rather than by review after the fact: what may be created, where, at what size and with which tags is checked at creation, and spending limits on each owner's scope trigger an agreed response when they are crossed. Each rule has an owner, a documented exception route and a compliance measure reported monthly. On Alibaba Cloud, control policies set by the management account bound what member accounts can do; budget alerts inform but do not stop spending.",
+      "options": [
+        {
+          "name": "Alibaba Cloud Resource Directory control policies",
+          "kind": "native",
+          "detail": "Check service support before relying on a policy"
+        },
+        {
+          "name": "Alibaba Cloud Budget Management",
+          "kind": "native"
+        }
+      ],
+      "verification": "Every account, subscription, project or equivalent scope in scope is covered by the agreed preventive policies and by a budget with a defined response; a test deployment outside the rules is blocked; exceptions are listed with an owner and an expiry date; policy compliance is reported monthly.",
+      "effort": "M",
+      "ownerRole": "Cloud platform team with the FinOps lead",
+      "confirmRegionalAvailability": true,
+      "confidence": "Medium",
+      "claimIds": [
+        "CLM-FIN-253",
+        "CLM-FIN-254",
+        "CLM-FIN-027"
+      ],
+      "owner": "finops-cost-lead",
+      "lastReviewed": "2026-10-23",
+      "nextReview": "2027-04-14"
+    },
+    {
+      "id": "PB.FIN.GOVERNANCE_POLICY_RISK.other_public.platform",
+      "control": "FIN.GOVERNANCE_POLICY_RISK",
+      "platform": "other_public",
+      "level": "platform",
+      "action": "Enforce the allowed regions, sizes and mandatory tags in the provisioning pipeline and set budget alerts with the provider's tooling; the provider is not identified in the assessment, so native options are identified and validated in discovery.",
+      "approach": "Rules for technology spend are written as policy and enforced by the platform rather than by review after the fact: what may be created, where, at what size and with which tags is checked at creation, and spending limits on each owner's scope trigger an agreed response when they are crossed. Each rule has an owner, a documented exception route and a compliance measure reported monthly. Where the provider's own policy service is unknown, the provisioning pipeline is the enforcement point.",
+      "options": [
+        {
+          "name": "Policy checks in the infrastructure-as-code pipeline",
+          "kind": "practice"
+        },
+        {
+          "name": "Provider budget alerts, where offered",
+          "kind": "practice"
+        }
+      ],
+      "verification": "Every account, subscription, project or equivalent scope in scope is covered by the agreed preventive policies and by a budget with a defined response; a test deployment outside the rules is blocked; exceptions are listed with an owner and an expiry date; policy compliance is reported monthly.",
+      "effort": "M",
+      "ownerRole": "Cloud platform team with the FinOps lead",
+      "confirmRegionalAvailability": false,
+      "confidence": "Low",
+      "claimIds": [
+        "CLM-FIN-027"
+      ],
+      "owner": "finops-cost-lead",
+      "lastReviewed": "2026-10-23",
+      "nextReview": "2027-04-14"
+    },
+    {
+      "id": "PB.FIN.GOVERNANCE_POLICY_RISK.kubernetes.stack",
+      "control": "FIN.GOVERNANCE_POLICY_RISK",
+      "platform": "kubernetes",
+      "level": "stack",
+      "action": "Give every namespace a resource quota and default limits, and use admission policy to reject workloads without requests, limits or the mandatory labels.",
+      "approach": "Rules for technology spend are written as policy and enforced by the platform rather than by review after the fact: what may be created, where, at what size and with which tags is checked at creation, and spending limits on each owner's scope trigger an agreed response when they are crossed. Each rule has an owner, a documented exception route and a compliance measure reported monthly. In Kubernetes, the namespace is the spending boundary: quotas cap what a team can request, and admission policy checks each workload before it is created.",
+      "options": [
+        {
+          "name": "Kubernetes ResourceQuota and LimitRange",
+          "kind": "open_source"
+        },
+        {
+          "name": "Kubernetes Validating Admission Policy",
+          "kind": "open_source",
+          "detail": "Built in; CEL rules"
+        },
+        {
+          "name": "Kyverno",
+          "kind": "open_source",
+          "detail": "CNCF Graduated"
+        },
+        {
+          "name": "Open Policy Agent (OPA)",
+          "kind": "open_source",
+          "detail": "CNCF Graduated"
+        }
+      ],
+      "verification": "Every namespace in scope has a resource quota and default limits; a test workload without requests, limits or the mandatory labels is rejected; exceptions are listed with an owner and an expiry date; policy compliance is reported monthly.",
+      "effort": "M",
+      "ownerRole": "Kubernetes platform team",
+      "confirmRegionalAvailability": false,
+      "confidence": "High",
+      "claimIds": [
+        "CLM-FIN-255",
+        "CLM-FIN-256",
+        "CLM-FIN-257",
+        "CLM-FIN-027"
+      ],
+      "owner": "finops-cost-lead",
+      "lastReviewed": "2026-10-23",
+      "nextReview": "2027-04-14"
+    },
+    {
+      "id": "PB.FIN.GOVERNANCE_POLICY_RISK.on_prem.platform",
+      "control": "FIN.GOVERNANCE_POLICY_RISK",
+      "platform": "on_prem",
+      "level": "platform",
+      "action": "Set per-project quotas on the private cloud or virtualisation platform, require approval for requests above an agreed size, and give non-permanent deployments a lease after which they are reclaimed.",
+      "approach": "Rules for technology spend are written as policy and enforced by the platform rather than by review after the fact: what may be created, where, at what size and with which tags is checked at creation, and spending limits on each owner's scope trigger an agreed response when they are crossed. Each rule has an owner, a documented exception route and a compliance measure reported monthly. On owned infrastructure, the self-service catalogue or private cloud is the enforcement point: quotas, approvals and leases stand in for provider policy.",
+      "options": [
+        {
+          "name": "VCF Automation approval and lease policies",
+          "kind": "native",
+          "detail": "For VMware Cloud Foundation estates"
+        },
+        {
+          "name": "OpenStack quotas (unified limits)",
+          "kind": "open_source"
+        },
+        {
+          "name": "Request approval workflow in the service catalogue",
+          "kind": "practice"
+        }
+      ],
+      "verification": "Every private cloud project or tenant in scope has a quota; requests above the approval threshold show an approval record; deployments without a lease are listed with owners; exceptions and compliance are reported monthly.",
+      "effort": "M",
+      "ownerRole": "Infrastructure and virtualisation team with the FinOps lead",
+      "confirmRegionalAvailability": false,
+      "confidence": "Medium",
+      "claimIds": [
+        "CLM-FIN-259",
+        "CLM-FIN-258",
+        "CLM-FIN-027"
+      ],
+      "owner": "finops-cost-lead",
+      "lastReviewed": "2026-10-23",
+      "nextReview": "2027-04-14"
+    },
+    {
+      "id": "PB.FIN.GOVERNANCE_POLICY_RISK.saas.platform",
+      "control": "FIN.GOVERNANCE_POLICY_RISK",
+      "platform": "saas",
+      "level": "platform",
+      "action": "Turn off self-service purchases where the vendor allows it, assign licences only through identity groups with an approver, and require approval in procurement for new SaaS subscriptions.",
+      "approach": "Rules for technology spend are written as policy and enforced by the platform rather than by review after the fact: what may be created, where, at what size and with which tags is checked at creation, and spending limits on each owner's scope trigger an agreed response when they are crossed. Each rule has an owner, a documented exception route and a compliance measure reported monthly. For SaaS, the rules govern who may buy and who may be given a licence; the vendor's admin settings and the identity provider are the enforcement points.",
+      "options": [
+        {
+          "name": "Microsoft 365 self-service purchase controls (AllowSelfServicePurchase)",
+          "kind": "native",
+          "detail": "Example for Microsoft 365; set per product"
+        },
+        {
+          "name": "Your identity provider's group-based licensing (for example Microsoft 365)",
+          "kind": "native"
+        },
+        {
+          "name": "SaaS purchase approval in procurement",
+          "kind": "practice"
+        }
+      ],
+      "verification": "Self-service purchase is off, or approved by exception, for every SaaS product above your materiality threshold; new licences are assigned only through approved groups; SaaS spend outside approved contracts is listed monthly.",
+      "effort": "M",
+      "ownerRole": "Software asset manager with procurement",
+      "confirmRegionalAvailability": false,
+      "confidence": "Medium",
+      "claimIds": [
+        "CLM-FIN-260",
+        "CLM-FIN-240",
+        "CLM-FIN-023",
+        "CLM-FIN-027"
+      ],
+      "owner": "finops-cost-lead",
+      "lastReviewed": "2026-10-23",
+      "nextReview": "2027-04-14"
+    },
+    {
+      "id": "PB.FIN.GOVERNANCE_POLICY_RISK.data_platform.platform",
+      "control": "FIN.GOVERNANCE_POLICY_RISK",
+      "platform": "data_platform",
+      "level": "platform",
+      "action": "Put each warehouse under a resource monitor that notifies and then suspends at its credit quota, and apply compute policies that cap cluster size and cost and require the mandatory tags.",
+      "approach": "Rules for technology spend are written as policy and enforced by the platform rather than by review after the fact: what may be created, where, at what size and with which tags is checked at creation, and spending limits on each owner's scope trigger an agreed response when they are crossed. Each rule has an owner, a documented exception route and a compliance measure reported monthly. On data platforms, credit and cluster limits are the guardrails; limits that cover only some compute types are paired with budget alerts for the rest.",
+      "options": [
+        {
+          "name": "Snowflake resource monitors",
+          "kind": "native",
+          "detail": "Warehouses only; not serverless or AI services"
+        },
+        {
+          "name": "Databricks compute policies",
+          "kind": "native",
+          "detail": "Limits on settings, cluster count, DBUs per hour and tags"
+        }
+      ],
+      "verification": "Every warehouse and workspace in scope is under a resource monitor or compute policy with a defined response; compute that no limit covers is listed with its budget alert; exceptions and compliance are reported monthly.",
+      "effort": "M",
+      "ownerRole": "Data platform team with the FinOps lead",
+      "confirmRegionalAvailability": false,
+      "confidence": "High",
+      "claimIds": [
+        "CLM-FIN-261",
+        "CLM-FIN-262",
+        "CLM-FIN-027"
+      ],
+      "owner": "finops-cost-lead",
+      "lastReviewed": "2026-10-23",
+      "nextReview": "2027-04-14"
+    },
+    {
+      "id": "PB.FIN.REPORTING_ANALYTICS.aws.platform",
+      "control": "FIN.REPORTING_ANALYTICS",
+      "platform": "aws",
+      "level": "platform",
+      "action": "Build Billing and Cost Management dashboards for each audience, share them through billing views filtered to each team's accounts, and schedule their PDF delivery to owners.",
+      "approach": "Each audience gets its cost view from the same reconciled data: engineering by workload and environment, product by product or service, finance by cost centre, with access limited to each team's own scope. Views are self-service and also delivered on a fixed schedule, and where more than one provider or estate is in scope the combined view is built on the central FOCUS dataset rather than stitched together from each console. On AWS, the dashboards and Cost Explorer read the same billing data, and Cost Explorer settings in the management account control what member accounts see.",
+      "options": [
+        {
+          "name": "AWS Billing and Cost Management Dashboards",
+          "kind": "native",
+          "detail": "Shareable; scheduled PDF email delivery"
+        },
+        {
+          "name": "AWS Cost Explorer",
+          "kind": "native"
+        },
+        {
+          "name": "AWS Billing View (custom billing views)",
+          "kind": "native",
+          "detail": "Filtered, shareable cost data"
+        },
+        {
+          "name": "BI tool of your choice on the AWS Data Exports FOCUS dataset",
+          "kind": "practice"
+        }
+      ],
+      "verification": "Each named owner opens a view filtered to their own scope without asking the FinOps team; scheduled reports reach every owner on the agreed cadence; totals in the views reconcile to the central dataset for the same month.",
+      "effort": "S",
+      "ownerRole": "FinOps lead with the cloud platform team",
+      "confirmRegionalAvailability": false,
+      "confidence": "High",
+      "claimIds": [
+        "CLM-FIN-263",
+        "CLM-FIN-264",
+        "CLM-FIN-080",
+        "CLM-FIN-013"
+      ],
+      "owner": "finops-cost-lead",
+      "lastReviewed": "2026-10-23",
+      "nextReview": "2027-01-12"
+    },
+    {
+      "id": "PB.FIN.REPORTING_ANALYTICS.azure.platform",
+      "control": "FIN.REPORTING_ANALYTICS",
+      "platform": "azure",
+      "level": "platform",
+      "action": "Save cost analysis views for each audience, grant Cost Management Reader at each owner's scope, subscribe owners to scheduled alerts of their views, and use the FinOps toolkit Power BI reports for cross-subscription reporting.",
+      "approach": "Each audience gets its cost view from the same reconciled data: engineering by workload and environment, product by product or service, finance by cost centre, with access limited to each team's own scope. Views are self-service and also delivered on a fixed schedule, and where more than one provider or estate is in scope the combined view is built on the central FOCUS dataset rather than stitched together from each console. On Azure, what a user sees in Cost Management follows the scope of their role.",
+      "options": [
+        {
+          "name": "Microsoft Cost Management cost analysis saved views and scheduled alerts",
+          "kind": "native"
+        },
+        {
+          "name": "Cost Management Reader role at management group, subscription or resource group scope",
+          "kind": "native"
+        },
+        {
+          "name": "FinOps toolkit Power BI reports with Cost Management exports or FinOps hubs",
+          "kind": "open_source",
+          "detail": "Microsoft open-source toolkit"
+        }
+      ],
+      "verification": "Each named owner opens a view filtered to their own scope without asking the FinOps team; scheduled reports reach every owner on the agreed cadence; totals in the views reconcile to the central dataset for the same month.",
+      "effort": "S",
+      "ownerRole": "FinOps lead with the cloud platform team",
+      "confirmRegionalAvailability": false,
+      "confidence": "High",
+      "claimIds": [
+        "CLM-FIN-265",
+        "CLM-FIN-266",
+        "CLM-FIN-013"
+      ],
+      "owner": "finops-cost-lead",
+      "lastReviewed": "2026-10-23",
+      "nextReview": "2027-04-14"
+    },
+    {
+      "id": "PB.FIN.REPORTING_ANALYTICS.gcp.platform",
+      "control": "FIN.REPORTING_ANALYTICS",
+      "platform": "gcp",
+      "level": "platform",
+      "action": "Save Cloud Billing reports for each audience, group them by project hierarchy where folders map to cost centres, give project owners project-scoped billing access, and publish scheduled dashboards from the BigQuery billing export.",
+      "approach": "Each audience gets its cost view from the same reconciled data: engineering by workload and environment, product by product or service, finance by cost centre, with access limited to each team's own scope. Views are self-service and also delivered on a fixed schedule, and where more than one provider or estate is in scope the combined view is built on the central FOCUS dataset rather than stitched together from each console. On Google Cloud, the console reports cover one billing account; scheduled and cross-account views come from the BigQuery export.",
+      "options": [
+        {
+          "name": "Cloud Billing Reports (saved reports, project hierarchy grouping)",
+          "kind": "native"
+        },
+        {
+          "name": "Cloud Billing project-scoped access for project owners (Preview)",
+          "kind": "native"
+        },
+        {
+          "name": "Dashboards in a BI tool of your choice on the BigQuery billing export",
+          "kind": "practice"
+        }
+      ],
+      "verification": "Each named owner opens a view filtered to their own scope without asking the FinOps team; scheduled reports reach every owner on the agreed cadence; totals in the views reconcile to the central dataset for the same month.",
+      "effort": "S",
+      "ownerRole": "FinOps lead with the cloud platform team",
+      "confirmRegionalAvailability": false,
+      "confidence": "Medium",
+      "claimIds": [
+        "CLM-FIN-267",
+        "CLM-FIN-100",
+        "CLM-FIN-013"
+      ],
+      "owner": "finops-cost-lead",
+      "lastReviewed": "2026-10-23",
+      "nextReview": "2027-01-12"
+    },
+    {
+      "id": "PB.FIN.REPORTING_ANALYTICS.oci.platform",
+      "control": "FIN.REPORTING_ANALYTICS",
+      "platform": "oci",
+      "level": "platform",
+      "action": "Save Cost Analysis reports for each audience grouped by compartment and tag, and schedule them to run daily or monthly into a bucket each owner can read.",
+      "approach": "Each audience gets its cost view from the same reconciled data: engineering by workload and environment, product by product or service, finance by cost centre, with access limited to each team's own scope. Views are self-service and also delivered on a fixed schedule, and where more than one provider or estate is in scope the combined view is built on the central FOCUS dataset rather than stitched together from each console. On OCI, Cost Analysis saved reports are the self-service view and Scheduled Reports deliver them on a cadence.",
+      "options": [
+        {
+          "name": "OCI Cost Analysis saved reports",
+          "kind": "native"
+        },
+        {
+          "name": "OCI Scheduled Reports",
+          "kind": "native",
+          "detail": "Once, daily or monthly to Object Storage"
+        }
+      ],
+      "verification": "Each named owner opens a view filtered to their own scope without asking the FinOps team; scheduled reports reach every owner on the agreed cadence; totals in the views reconcile to the central dataset for the same month.",
+      "effort": "S",
+      "ownerRole": "FinOps lead with the cloud platform team",
+      "confirmRegionalAvailability": false,
+      "confidence": "High",
+      "claimIds": [
+        "CLM-FIN-268",
+        "CLM-FIN-210",
+        "CLM-FIN-013"
+      ],
+      "owner": "finops-cost-lead",
+      "lastReviewed": "2026-10-23",
+      "nextReview": "2027-04-14"
+    },
+    {
+      "id": "PB.FIN.REPORTING_ANALYTICS.ibm.platform",
+      "control": "FIN.REPORTING_ANALYTICS",
+      "platform": "ibm",
+      "level": "platform",
+      "action": "Give each owner usage access limited to their resource groups, use the cost analysis page for self-service views, and publish a scheduled report from the central dataset.",
+      "approach": "Each audience gets its cost view from the same reconciled data: engineering by workload and environment, product by product or service, finance by cost centre, with access limited to each team's own scope. Views are self-service and also delivered on a fixed schedule, and where more than one provider or estate is in scope the combined view is built on the central FOCUS dataset rather than stitched together from each console. On IBM Cloud, no native scheduled report delivery is catalogued here, so the schedule runs from the central dataset.",
+      "options": [
+        {
+          "name": "IBM Cloud cost analysis page",
+          "kind": "native",
+          "detail": "Not available to enterprise root accounts"
+        },
+        {
+          "name": "IBM Cloud resource group Viewer access for usage",
+          "kind": "native"
+        },
+        {
+          "name": "Scheduled report from the central FOCUS dataset",
+          "kind": "practice"
+        }
+      ],
+      "verification": "Each named owner opens a view filtered to their own scope without asking the FinOps team; scheduled reports reach every owner on the agreed cadence; totals in the views reconcile to the central dataset for the same month.",
+      "effort": "S",
+      "ownerRole": "FinOps lead with the cloud platform team",
+      "confirmRegionalAvailability": false,
+      "confidence": "Medium",
+      "claimIds": [
+        "CLM-FIN-269",
+        "CLM-FIN-228",
+        "CLM-FIN-013"
+      ],
+      "owner": "finops-cost-lead",
+      "lastReviewed": "2026-10-23",
+      "nextReview": "2027-04-14"
+    },
+    {
+      "id": "PB.FIN.REPORTING_ANALYTICS.alibaba.platform",
+      "control": "FIN.REPORTING_ANALYTICS",
+      "platform": "alibaba",
+      "level": "platform",
+      "action": "Save Cost Analysis reports for each audience by financial unit, account and tag, grant read-only billing access to each owner, and publish a scheduled report from the central dataset.",
+      "approach": "Each audience gets its cost view from the same reconciled data: engineering by workload and environment, product by product or service, finance by cost centre, with access limited to each team's own scope. Views are self-service and also delivered on a fixed schedule, and where more than one provider or estate is in scope the combined view is built on the central FOCUS dataset rather than stitched together from each console. On Alibaba Cloud, no native scheduled report delivery is catalogued here, so the schedule runs from the central dataset.",
+      "options": [
+        {
+          "name": "Alibaba Cloud Cost Analysis saved reports",
+          "kind": "native"
+        },
+        {
+          "name": "Scheduled report from the central dataset",
+          "kind": "practice"
+        }
+      ],
+      "verification": "Each named owner opens a view filtered to their own scope without asking the FinOps team; scheduled reports reach every owner on the agreed cadence; totals in the views reconcile to the central dataset for the same month.",
+      "effort": "S",
+      "ownerRole": "FinOps lead with the cloud platform team",
+      "confirmRegionalAvailability": false,
+      "confidence": "Medium",
+      "claimIds": [
+        "CLM-FIN-270",
+        "CLM-FIN-232",
+        "CLM-FIN-013"
+      ],
+      "owner": "finops-cost-lead",
+      "lastReviewed": "2026-10-23",
+      "nextReview": "2027-04-14"
+    },
+    {
+      "id": "PB.FIN.REPORTING_ANALYTICS.other_public.platform",
+      "control": "FIN.REPORTING_ANALYTICS",
+      "platform": "other_public",
+      "level": "platform",
+      "action": "Report this provider's cost from the central FOCUS dataset with the same views as other providers; the provider is not identified in the assessment, so native reporting options are identified in discovery.",
+      "approach": "Each audience gets its cost view from the same reconciled data: engineering by workload and environment, product by product or service, finance by cost centre, with access limited to each team's own scope. Views are self-service and also delivered on a fixed schedule, and where more than one provider or estate is in scope the combined view is built on the central FOCUS dataset rather than stitched together from each console. Where the provider's own reporting is unknown, the central dataset is the only reporting source.",
+      "options": [
+        {
+          "name": "Views in a BI tool of your choice on the central FOCUS dataset",
+          "kind": "practice"
+        }
+      ],
+      "verification": "Each named owner opens a view filtered to their own scope without asking the FinOps team; scheduled reports reach every owner on the agreed cadence; totals in the views reconcile to the central dataset for the same month.",
+      "effort": "S",
+      "ownerRole": "FinOps lead with the cloud platform team",
+      "confirmRegionalAvailability": false,
+      "confidence": "Low",
+      "claimIds": [
+        "CLM-FIN-227",
+        "CLM-FIN-013"
+      ],
+      "owner": "finops-cost-lead",
+      "lastReviewed": "2026-10-23",
+      "nextReview": "2027-01-20"
+    },
+    {
+      "id": "PB.FIN.REPORTING_ANALYTICS.kubernetes.stack",
+      "control": "FIN.REPORTING_ANALYTICS",
+      "platform": "kubernetes",
+      "level": "stack",
+      "action": "Give each team a cost view of its own namespaces and labels, including its share of idle and shared cluster cost, and include it in the scheduled owner reports.",
+      "approach": "Each audience gets its cost view from the same reconciled data: engineering by workload and environment, product by product or service, finance by cost centre, with access limited to each team's own scope. Views are self-service and also delivered on a fixed schedule, and where more than one provider or estate is in scope the combined view is built on the central FOCUS dataset rather than stitched together from each console. In Kubernetes, team views come from the cost allocator, whose cluster totals reconcile to the provider bill.",
+      "options": [
+        {
+          "name": "OpenCost",
+          "kind": "open_source"
+        },
+        {
+          "name": "AKS cost analysis add-on",
+          "kind": "native"
+        },
+        {
+          "name": "GKE cost allocation",
+          "kind": "native"
+        },
+        {
+          "name": "Kubecost",
+          "kind": "third_party",
+          "detail": "IBM"
+        }
+      ],
+      "verification": "Each named owner opens a view filtered to their own scope without asking the FinOps team; scheduled reports reach every owner on the agreed cadence; totals in the views reconcile to the central dataset for the same month.",
+      "effort": "S",
+      "ownerRole": "Kubernetes platform team with the FinOps lead",
+      "confirmRegionalAvailability": false,
+      "confidence": "High",
+      "claimIds": [
+        "CLM-FIN-222",
+        "CLM-FIN-110",
+        "CLM-FIN-094",
+        "CLM-FIN-103",
+        "CLM-FIN-111",
+        "CLM-FIN-013"
+      ],
+      "owner": "finops-cost-lead",
+      "lastReviewed": "2026-10-23",
+      "nextReview": "2027-04-14"
+    },
+    {
+      "id": "PB.FIN.REPORTING_ANALYTICS.on_prem.platform",
+      "control": "FIN.REPORTING_ANALYTICS",
+      "platform": "on_prem",
+      "level": "platform",
+      "action": "Publish monthly showback views of on-premises cost by business service and project to each owner, from the same dataset that holds cloud cost.",
+      "approach": "Each audience gets its cost view from the same reconciled data: engineering by workload and environment, product by product or service, finance by cost centre, with access limited to each team's own scope. Views are self-service and also delivered on a fixed schedule, and where more than one provider or estate is in scope the combined view is built on the central FOCUS dataset rather than stitched together from each console. On owned infrastructure, showback views come from the cost-driver model built for the central dataset.",
+      "options": [
+        {
+          "name": "VMware VCF Operations showback dashboards",
+          "kind": "native",
+          "detail": "For VMware Cloud Foundation estates"
+        },
+        {
+          "name": "OpenStack CloudKitty",
+          "kind": "open_source"
+        },
+        {
+          "name": "Views in a BI tool of your choice on the central FOCUS dataset",
+          "kind": "practice"
+        }
+      ],
+      "verification": "Each named owner opens a view filtered to their own scope without asking the FinOps team; scheduled reports reach every owner on the agreed cadence; totals in the views reconcile to the central dataset for the same month.",
+      "effort": "M",
+      "ownerRole": "Infrastructure and virtualisation team with finance",
+      "confirmRegionalAvailability": false,
+      "confidence": "Medium",
+      "claimIds": [
+        "CLM-FIN-224",
+        "CLM-FIN-226",
+        "CLM-FIN-227",
+        "CLM-FIN-013"
+      ],
+      "owner": "finops-cost-lead",
+      "lastReviewed": "2026-10-23",
+      "nextReview": "2027-01-20"
+    },
+    {
+      "id": "PB.FIN.REPORTING_ANALYTICS.saas.platform",
+      "control": "FIN.REPORTING_ANALYTICS",
+      "platform": "saas",
+      "level": "platform",
+      "action": "Publish a monthly SaaS view per cost centre showing spend, licences assigned and unassigned, and upcoming renewals.",
+      "approach": "Each audience gets its cost view from the same reconciled data: engineering by workload and environment, product by product or service, finance by cost centre, with access limited to each team's own scope. Views are self-service and also delivered on a fixed schedule, and where more than one provider or estate is in scope the combined view is built on the central FOCUS dataset rather than stitched together from each console. For SaaS, the view joins contract, invoice and licence-assignment data so owners see cost and renewal dates together.",
+      "options": [
+        {
+          "name": "SaaS management platform of your choice",
+          "kind": "third_party"
+        },
+        {
+          "name": "Views in a BI tool of your choice on the central FOCUS dataset",
+          "kind": "practice"
+        }
+      ],
+      "verification": "Each cost centre owner receives the SaaS view on the agreed cadence; every contract above your materiality threshold appears with its renewal date; the SaaS total reconciles to accounts payable for the same month.",
+      "effort": "S",
+      "ownerRole": "Software asset manager with finance",
+      "confirmRegionalAvailability": false,
+      "confidence": "Low",
+      "claimIds": [
+        "CLM-FIN-023",
+        "CLM-FIN-227",
+        "CLM-FIN-013"
+      ],
+      "owner": "finops-cost-lead",
+      "lastReviewed": "2026-10-23",
+      "nextReview": "2027-01-20"
+    },
+    {
+      "id": "PB.FIN.REPORTING_ANALYTICS.data_platform.platform",
+      "control": "FIN.REPORTING_ANALYTICS",
+      "platform": "data_platform",
+      "level": "platform",
+      "action": "Set up the data platform's cost dashboards for platform owners and build team views from the billing tables, filtered by the tags on warehouses, clusters and jobs.",
+      "approach": "Each audience gets its cost view from the same reconciled data: engineering by workload and environment, product by product or service, finance by cost centre, with access limited to each team's own scope. Views are self-service and also delivered on a fixed schedule, and where more than one provider or estate is in scope the combined view is built on the central FOCUS dataset rather than stitched together from each console. On data platforms, the built-in dashboards serve platform owners, and team views are built from the billing tables.",
+      "options": [
+        {
+          "name": "Snowflake cost management in Snowsight",
+          "kind": "native",
+          "detail": "ACCOUNT_USAGE and ORGANIZATION_USAGE views for custom reports"
+        },
+        {
+          "name": "Databricks usage dashboards",
+          "kind": "native",
+          "detail": "Imported into Unity Catalog-enabled workspaces"
+        }
+      ],
+      "verification": "Each named owner opens a view filtered to their own scope without asking the FinOps team; scheduled reports reach every owner on the agreed cadence; totals in the views reconcile to the central dataset for the same month.",
+      "effort": "S",
+      "ownerRole": "Data platform team with the FinOps lead",
+      "confirmRegionalAvailability": false,
+      "confidence": "High",
+      "claimIds": [
+        "CLM-FIN-271",
+        "CLM-FIN-272",
+        "CLM-FIN-234",
+        "CLM-FIN-237",
+        "CLM-FIN-013"
+      ],
+      "owner": "finops-cost-lead",
+      "lastReviewed": "2026-10-23",
+      "nextReview": "2027-01-20"
     }
   ]
 }

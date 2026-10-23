@@ -4,13 +4,13 @@
 
 | Source | Version |
 |---|---|
-| FinOps IQ engine | 3.6.2 |
+| FinOps IQ engine | 3.6.3 |
 | Question set | 3.2.0 |
 | Capability model | 3.0.0 |
 | Lever library | 1.2.0 |
 | Engine rules | 1.3.0 |
 | Value rules | 1.2.0 |
-| Platform playbook | 1.0.0 |
+| Platform playbook | 1.1.0 |
 | Offering catalogue | 1.0.0 |
 | Claims register | 0.1.0 |
 
@@ -1039,7 +1039,7 @@ Answers that contradict each other raise these probes on the consultant's screen
 
 ## 9. Technical execution
 
-The report adds platform actions from the platform playbook (123 entries) for the platforms the client has, each with a verification step. Controls covered:
+The report adds platform actions from the platform playbook (145 entries) for the platforms the client has, each with a verification step. Controls covered:
 
 | Control | Entries | Platforms |
 |---|---|---|
@@ -1057,6 +1057,8 @@ The report adds platform actions from the platform playbook (123 entries) for th
 | ANOMALY MANAGEMENT | 3 | AWS, Azure, Google Cloud |
 | LEV-07 Kubernetes efficiency | 1 | Kubernetes |
 | LEV-09 SaaS and licensing | 2 | SaaS and licensing, Azure |
+| GOVERNANCE POLICY RISK | 11 | AWS, Azure, Google Cloud, OCI, IBM Cloud, Alibaba Cloud, Other public cloud, Kubernetes, Data centre and private cloud, SaaS and licensing, Data platform |
+| REPORTING ANALYTICS | 11 | AWS, Azure, Google Cloud, OCI, IBM Cloud, Alibaba Cloud, Other public cloud, Kubernetes, Data centre and private cloud, SaaS and licensing, Data platform |
 
 Capabilities outside these controls have no platform entry yet; the finding's own action and evidence apply.
 
@@ -1077,4 +1079,4 @@ Findings map to these offerings. Indicative scope is an LTM heuristic to be agre
 
 ## 11. Sources
 
-FinOps IQ rests on 205 claims in `packages/engine-core/src/claims/claims-register.json`: 175 verified against the source (V), 19 from a secondary source (S), 9 pending (P), and 2 LTM heuristics or other statuses. Each question above lists its claim IDs; the report's methodology appendix cites them for the client.
+FinOps IQ rests on 236 claims in `packages/engine-core/src/claims/claims-register.json`: 206 verified against the source (V), 19 from a secondary source (S), 9 pending (P), and 2 LTM heuristics or other statuses. Each question above lists its claim IDs; the report's methodology appendix cites them for the client.

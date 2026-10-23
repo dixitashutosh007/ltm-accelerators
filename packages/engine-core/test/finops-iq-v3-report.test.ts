@@ -465,8 +465,10 @@ describe('FinOps IQ report: M7 CIO challenge backlog (D8 to D21)', () => {
       const listed = new Set(x.r.technicalPlan!.actions.map(a => a.findingId));
       const text = sectionText(x.doc, ['technical']);
       if (x.r.findings.some(f => !listed.has(f.id))) expect(text, x.label).toMatch(/Not listed here, because they are operating-model work|Platform actions still being added to the playbook/);
+      // Governance and Reporting have playbook entries since playbook 1.1.0: their findings are listed, never "still being added".
       for (const f of x.r.findings.filter(f => f.type === 'capability_gap' && ['GOVERNANCE_POLICY_RISK', 'REPORTING_ANALYTICS'].includes(f.capability))) {
-        expect(text, x.label).toMatch(/Platform actions still being added to the playbook: [^.]*(Governance|Reporting)/);
+        expect(listed.has(f.id), `${x.label} ${f.id}`).toBe(true);
+        expect(text, x.label).not.toMatch(/Platform actions still being added to the playbook: [^.]*(Governance|Reporting)/);
       }
     }
   });

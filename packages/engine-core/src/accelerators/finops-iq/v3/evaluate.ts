@@ -14,7 +14,7 @@ import valueRules from './value-rules.json' with { type: 'json' };
 import { howLtmCanHelp, technicalPlan, PLAYBOOK, OFFERINGS, type HelpItem, type TechnicalPlan } from './execution';
 import { buildValueModel, findingValue, inputInfo, OF_WHICH_ROWS, VALUE_MODEL_VERSION, type Figure, type ValueBlock, type ValueModelOutput } from './value-model';
 
-export const ENGINE_VERSION = '3.6.2';
+export const ENGINE_VERSION = '3.6.3';
 export { VALUE_MODEL_VERSION };
 
 export type Mode = 'executive' | 'workshop';
