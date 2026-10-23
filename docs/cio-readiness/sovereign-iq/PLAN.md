@@ -272,6 +272,30 @@ The 28 P claims cite a primary URL whose article text was not re-read. They are 
 
 **Gate S3:** contract tests; unit tests for each applicability rule (positive and negative); golden outputs for the five archetypes; no Sovereign or Posture behaviour lost without a recorded reason.
 
+**Status (23 Oct 2026): built, for the owner's approval.** Engine 4.0.0 in `packages/engine-core/src/accelerators/sovereign-iq/v4/`:
+- `question-bank.json` (47 questions: 17 executive, 15 workshop, 15 follow-ups; valid against `question.schema.json`), `controls.json` (28 controls, 10 measured in executive mode), `exchange-rates.json` (the ECB rates of 12 Oct 2026, from the claims register), `conditions.ts` (the condition language), `facts.ts` (answers to facts and derived facts), `evaluate.ts` (applicability, requirement levels, control states, maturity, exposure, findings, roadmap) and `contract.ts` (request validation).
+- Tests: `packages/engine-core/test/sovereign-iq-v4.test.ts`, 159 tests. Data files against their schemas; contract; **all 94 applicability rules, each positive and negative**; the five archetypes in both modes; golden outputs (`test/golden/sovereign-iq-v4.json`); invariants over 300 random questionnaires (no NaN, maturity 0-100, monotonic, unknown and blanks never score above the lowest answer, provider nationality never changes maturity below L4, scope answers never scored, every required control's question is asked, executive results hold only executive controls, findings from gaps only, roadmap dependencies respected). Full suite 784 tests pass; type check, claims and repository checks pass.
+- The current Sovereign IQ and Posture IQ pages and engines are unchanged. The `evaluate-posture-iq` route switch (item 1) moves to S5, with the new page.
+
+**Archetypes against the outcomes written before the engine (DESIGN.md section 10).** Required levels, maturity (score, band and controls assessed, both modes), regime grades and rules, exposure RAG, largest cap and the top five gaps match for all five archetypes, with two differences:
+
+| Archetype | Expected | Engine | Why |
+|---|---|---|---|
+| ARC3, ARC5 | US_CCPA not RAG-rated | Amber | S2 sourced the CCPA required controls, so they score (S2 design change 5, approved 23 Oct 2026). Maturity is unchanged: GDPR already requires the same controls |
+| ARC3 | Largest cap EU_GDPR EUR 20M | UK_GDPR GBP 17.5M (about EUR 20.7M) | DESIGN 7.2 takes the highest computable cap among regimes that apply **or likely apply**; UK_GDPR is likely_confirm for ARC3. The cap now carries its regime's grade, so the report can say "likely – confirm". **Owner decision (23 Oct 2026): keep the rule as written**, with the cap labelled by its regime's grade |
+
+**Gate S3: approved by the owner on 23 Oct 2026.**
+
+**Choices made while building (for the compliance lead's review in S4):**
+1. **Personal transfer test.** Storage counts as a transfer only for people in regions that restrict transfers. The engine's no-transfer zones are: EEA and UK (each other, Switzerland, Canada, Japan, South Korea, New Zealand), Switzerland, Japan and New Zealand (each with the EEA and UK), South Korea (with the EEA), Singapore, Australia and China (own region only). US, Canada, India (until s.16 notifications), Hong Kong (s.33 not in operation) and "other" restrict nothing. These adequacy pairings are LTM's working list and need sourcing in S4.
+2. **B5 (ICT register) trigger** extended to "any regime requiring the register is applies or likely_confirm" (DORA, PRA SS2/21, CPS 230, MAS). The random-questionnaire test found that a likely_confirm DORA or CPS 230 required the register while B5 was not asked.
+3. **Location controls** (`SOV.RES.LOCATION`, `SOV.BACKUP.LOCATION`) are derived: D3 (scope) against the allowed zone. They are scored controls, but no scope answer is scored by itself.
+4. **Combined control** (`SOV.CONC.PROVIDER`, lower of X2 and B6): a question the mode did not ask is left out; one asked and left blank counts as not answered (scored 0). The invariant test found that the first version let a blank B6 raise maturity.
+5. **Caps from the turnover band** (Q2) are shown as a range in euros. A band where the fixed limb wins at both ends is shown as one figure. Limbs on a turnover the assessment never collects (Singapore turnover, Australian adjusted turnover, Korean related revenue) are not computed; the fixed limb is shown alone.
+6. **Executive "n of N required controls assessed":** N is the number of controls the executive requirement (one level for all classes) would need in a workshop.
+
+**No Sovereign or Posture behaviour lost without a reason:** the old-to-new question map and the list of retired behaviours are DESIGN.md sections 6.7 and 12 (approved at S1). The engine implements them; nothing else from the old engines is carried.
+
 ---
 
 ## S4: Scoring audit and recalibration

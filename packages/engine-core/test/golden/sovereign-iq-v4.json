@@ -1,0 +1,4433 @@
+{
+  "ARC1_EU_BANK_DORA executive": {
+    "versions": {
+      "engine": "4.0.0",
+      "questionSet": "4.0.0",
+      "controls": "4.0.0",
+      "registry": "1.0.0",
+      "registryStatusAsOf": "2026-10-14",
+      "claimsRegister": "0.1.0"
+    },
+    "asked": [
+      "A1",
+      "A2",
+      "A3",
+      "A4",
+      "B1",
+      "B4",
+      "D1",
+      "D3",
+      "P1",
+      "L1",
+      "R1",
+      "T1",
+      "T2",
+      "K1",
+      "O1",
+      "X1",
+      "I1"
+    ],
+    "regimes": [
+      {
+        "regime": "EU_GDPR",
+        "grade": "applies",
+        "rule": "EU_GDPR.1"
+      },
+      {
+        "regime": "EU_NIS2",
+        "grade": "advisory",
+        "rule": "EU_NIS2.7"
+      },
+      {
+        "regime": "EU_DORA",
+        "grade": "applies",
+        "rule": "EU_DORA.2"
+      },
+      {
+        "regime": "EU_AI_ACT",
+        "grade": "applies",
+        "rule": "EU_AI_ACT.4"
+      },
+      {
+        "regime": "EU_DATA_ACT",
+        "grade": "advisory",
+        "rule": "EU_DATA_ACT.2"
+      },
+      {
+        "regime": "US_CLOUD_ACT",
+        "grade": "advisory",
+        "rule": "US_CLOUD_ACT.1"
+      },
+      {
+        "regime": "US_FISA_702",
+        "grade": "advisory",
+        "rule": "US_FISA_702.1"
+      }
+    ],
+    "requirements": [
+      {
+        "dataClass": "personal",
+        "required": "L2",
+        "floor": null,
+        "allowedZone": [
+          "eea"
+        ]
+      },
+      {
+        "dataClass": "financial",
+        "required": "L2",
+        "floor": null,
+        "allowedZone": [
+          "eea"
+        ]
+      },
+      {
+        "dataClass": "proprietary",
+        "required": "L2",
+        "floor": null,
+        "allowedZone": [
+          "eea"
+        ]
+      }
+    ],
+    "maturity": {
+      "score": 50,
+      "band": "Developing",
+      "wording": "Some required controls in place; material gaps remain",
+      "controlsAssessed": 9,
+      "requiredControls": 20,
+      "coverage": 1,
+      "provisional": false,
+      "unconfirmed": [],
+      "notAnswered": [],
+      "label": "Executive maturity, 9 of 20 required controls assessed"
+    },
+    "controls": [
+      {
+        "control": "SOV.RES.LOCATION",
+        "state": 0,
+        "byClass": {
+          "personal": 3,
+          "financial": 3,
+          "proprietary": 0
+        },
+        "score": 0.667
+      },
+      {
+        "control": "SOV.RES.REGION_LOCK",
+        "state": 1,
+        "score": 0.333
+      },
+      {
+        "control": "SOV.BACKUP.LOCATION",
+        "state": 0,
+        "byClass": {
+          "personal": 3,
+          "financial": 3,
+          "proprietary": 0
+        },
+        "score": 0.667
+      },
+      {
+        "control": "SOV.XFER.BASIS",
+        "state": 3,
+        "score": 1
+      },
+      {
+        "control": "SOV.XFER.TIA",
+        "state": 1,
+        "score": 0.333
+      },
+      {
+        "control": "SOV.KEY.CUSTODY",
+        "state": 1,
+        "score": 0.333
+      },
+      {
+        "control": "SOV.OPS.ADMIN_ACCESS",
+        "state": 1,
+        "score": 0.333
+      },
+      {
+        "control": "SOV.EXIT.PLAN",
+        "state": 1,
+        "score": 0.333
+      },
+      {
+        "control": "SOV.AI.DATA_LOCATION",
+        "state": 1,
+        "score": 0.333
+      }
+    ],
+    "exposure": {
+      "summary": "3 regimes apply, 0 likely – confirm, 4 advisory; 0 red, 2 amber, 0 green.",
+      "largestCap": {
+        "regime": "EU_GDPR",
+        "grade": "applies",
+        "article": "Art. 83(5)",
+        "label": "cap, not expected fine",
+        "amount": null,
+        "range": [
+          40000000,
+          400000000
+        ],
+        "currency": "EUR",
+        "eur": 400000000,
+        "basis": "From the turnover band (1bn_10bn): EUR 20M or 4% of turnover, whichever is higher",
+        "rateDate": null,
+        "claims": [
+          "CLM-SOV-016"
+        ]
+      },
+      "regimes": [
+        {
+          "regime": "EU_GDPR",
+          "rag": "amber",
+          "assessed": 2,
+          "required": 7,
+          "cap": {
+            "amount": null,
+            "range": [
+              40000000,
+              400000000
+            ],
+            "currency": "EUR"
+          }
+        },
+        {
+          "regime": "EU_NIS2",
+          "rag": "not_rated",
+          "assessed": 0,
+          "required": 0,
+          "cap": null
+        },
+        {
+          "regime": "EU_DORA",
+          "rag": "amber",
+          "assessed": 1,
+          "required": 6,
+          "cap": null
+        },
+        {
+          "regime": "EU_AI_ACT",
+          "rag": "not_rated",
+          "assessed": 0,
+          "required": 1,
+          "cap": {
+            "amount": null,
+            "range": [
+              30000000,
+              300000000
+            ],
+            "currency": "EUR"
+          }
+        },
+        {
+          "regime": "EU_DATA_ACT",
+          "rag": "not_rated",
+          "assessed": 0,
+          "required": 0,
+          "cap": null
+        },
+        {
+          "regime": "US_CLOUD_ACT",
+          "rag": "not_rated",
+          "assessed": 0,
+          "required": 0,
+          "cap": null
+        },
+        {
+          "regime": "US_FISA_702",
+          "rag": "not_rated",
+          "assessed": 0,
+          "required": 0,
+          "cap": null
+        }
+      ]
+    },
+    "findings": [
+      {
+        "id": "F-SOV.RES.LOCATION",
+        "severity": "Critical",
+        "wave": 1,
+        "timeFrame": "0–3 months",
+        "dataClasses": [
+          "proprietary"
+        ]
+      },
+      {
+        "id": "F-SOV.KEY.CUSTODY",
+        "severity": "High",
+        "wave": 2,
+        "timeFrame": "3–6 months",
+        "dataClasses": [
+          "personal",
+          "financial",
+          "proprietary"
+        ]
+      },
+      {
+        "id": "F-SOV.OPS.ADMIN_ACCESS",
+        "severity": "High",
+        "wave": 2,
+        "timeFrame": "3–6 months",
+        "dataClasses": [
+          "personal",
+          "financial",
+          "proprietary"
+        ]
+      },
+      {
+        "id": "F-SOV.BACKUP.LOCATION",
+        "severity": "High",
+        "wave": 2,
+        "timeFrame": "3–6 months",
+        "dataClasses": [
+          "proprietary"
+        ]
+      },
+      {
+        "id": "F-SOV.AI.DATA_LOCATION",
+        "severity": "Medium",
+        "wave": 3,
+        "timeFrame": "6–12 months",
+        "dataClasses": [
+          "personal",
+          "financial",
+          "proprietary"
+        ]
+      },
+      {
+        "id": "F-SOV.EXIT.PLAN",
+        "severity": "Medium",
+        "wave": 3,
+        "timeFrame": "6–12 months",
+        "dataClasses": []
+      },
+      {
+        "id": "F-SOV.RES.REGION_LOCK",
+        "severity": "Medium",
+        "wave": 1,
+        "timeFrame": "6–12 months",
+        "dataClasses": [
+          "personal",
+          "financial",
+          "proprietary"
+        ]
+      },
+      {
+        "id": "F-SOV.XFER.TIA",
+        "severity": "Medium",
+        "wave": 3,
+        "timeFrame": "6–12 months",
+        "dataClasses": []
+      }
+    ],
+    "roadmap": [
+      {
+        "wave": 1,
+        "findings": [
+          "F-SOV.RES.REGION_LOCK",
+          "F-SOV.RES.LOCATION"
+        ]
+      },
+      {
+        "wave": 2,
+        "findings": [
+          "F-SOV.KEY.CUSTODY",
+          "F-SOV.OPS.ADMIN_ACCESS",
+          "F-SOV.BACKUP.LOCATION"
+        ]
+      },
+      {
+        "wave": 3,
+        "findings": [
+          "F-SOV.AI.DATA_LOCATION",
+          "F-SOV.EXIT.PLAN",
+          "F-SOV.XFER.TIA"
+        ]
+      }
+    ],
+    "pendingSource": [],
+    "notes": [
+      "Data is processed in us without an entity there; processing location alone does not trigger that country's law in v1 (Q11). Confirm with counsel.",
+      "Requirement set at one level for all data classes; the workshop confirms it per class."
+    ]
+  },
+  "ARC1_EU_BANK_DORA workshop": {
+    "versions": {
+      "engine": "4.0.0",
+      "questionSet": "4.0.0",
+      "controls": "4.0.0",
+      "registry": "1.0.0",
+      "registryStatusAsOf": "2026-10-14",
+      "claimsRegister": "0.1.0"
+    },
+    "asked": [
+      "A1",
+      "A2",
+      "A3",
+      "A4",
+      "A5",
+      "A6",
+      "B1",
+      "B2",
+      "B4",
+      "D1",
+      "D2",
+      "D3",
+      "D4",
+      "P1",
+      "P2",
+      "L1",
+      "L2",
+      "R1",
+      "T1",
+      "T2",
+      "K1",
+      "K2",
+      "K3",
+      "K4",
+      "O1",
+      "O2",
+      "O3",
+      "V1",
+      "V2",
+      "V3",
+      "V4",
+      "B5",
+      "X1",
+      "X2",
+      "I1",
+      "I2",
+      "G1",
+      "G2",
+      "G3",
+      "W1",
+      "W2",
+      "W3"
+    ],
+    "regimes": [
+      {
+        "regime": "EU_GDPR",
+        "grade": "applies",
+        "rule": "EU_GDPR.1"
+      },
+      {
+        "regime": "EU_NIS2",
+        "grade": "advisory",
+        "rule": "EU_NIS2.7"
+      },
+      {
+        "regime": "EU_DORA",
+        "grade": "applies",
+        "rule": "EU_DORA.2"
+      },
+      {
+        "regime": "EU_AI_ACT",
+        "grade": "applies",
+        "rule": "EU_AI_ACT.4"
+      },
+      {
+        "regime": "EU_DATA_ACT",
+        "grade": "advisory",
+        "rule": "EU_DATA_ACT.2"
+      },
+      {
+        "regime": "US_CLOUD_ACT",
+        "grade": "advisory",
+        "rule": "US_CLOUD_ACT.1"
+      },
+      {
+        "regime": "US_FISA_702",
+        "grade": "advisory",
+        "rule": "US_FISA_702.1"
+      }
+    ],
+    "requirements": [
+      {
+        "dataClass": "personal",
+        "required": "L2",
+        "floor": null,
+        "allowedZone": [
+          "eea"
+        ]
+      },
+      {
+        "dataClass": "financial",
+        "required": "L3",
+        "floor": null,
+        "allowedZone": [
+          "eea"
+        ]
+      },
+      {
+        "dataClass": "proprietary",
+        "required": "L1",
+        "floor": null,
+        "allowedZone": [
+          "eea",
+          "us"
+        ]
+      }
+    ],
+    "maturity": {
+      "score": 55,
+      "band": "Developing",
+      "wording": "Some required controls in place; material gaps remain",
+      "controlsAssessed": 24,
+      "requiredControls": 24,
+      "coverage": 1,
+      "provisional": false,
+      "unconfirmed": [],
+      "notAnswered": [],
+      "label": null
+    },
+    "controls": [
+      {
+        "control": "SOV.GOV.OWNER",
+        "state": 3,
+        "score": 1
+      },
+      {
+        "control": "SOV.DATA.MAP",
+        "state": 1,
+        "score": 0.333
+      },
+      {
+        "control": "SOV.RES.LOCATION",
+        "state": 3,
+        "byClass": {
+          "personal": 3,
+          "financial": 3,
+          "proprietary": 3
+        },
+        "score": 1
+      },
+      {
+        "control": "SOV.RES.REGION_LOCK",
+        "state": 1,
+        "score": 0.333
+      },
+      {
+        "control": "SOV.BACKUP.LOCATION",
+        "state": 3,
+        "byClass": {
+          "personal": 3,
+          "financial": 3,
+          "proprietary": 3
+        },
+        "score": 1
+      },
+      {
+        "control": "SOV.XFER.BASIS",
+        "state": 3,
+        "score": 1
+      },
+      {
+        "control": "SOV.XFER.TIA",
+        "state": 1,
+        "score": 0.333
+      },
+      {
+        "control": "SOV.KEY.CUSTODY",
+        "state": 1,
+        "score": 0.333
+      },
+      {
+        "control": "SOV.KEY.REVOCATION",
+        "state": 1,
+        "score": 0.333
+      },
+      {
+        "control": "SOV.ENC.BASELINE",
+        "state": 2,
+        "score": 0.667
+      },
+      {
+        "control": "SOV.OPS.ADMIN_ACCESS",
+        "state": 1,
+        "score": 0.333
+      },
+      {
+        "control": "SOV.OPS.PERSONNEL_ZONE",
+        "state": 1,
+        "score": 0.333
+      },
+      {
+        "control": "SOV.OPS.OOB_MGMT",
+        "state": 1,
+        "score": 0.333
+      },
+      {
+        "control": "SOV.TP.DPA",
+        "state": 3,
+        "score": 1
+      },
+      {
+        "control": "SOV.SAAS.SUBPROCESSOR",
+        "state": 1,
+        "score": 0.333
+      },
+      {
+        "control": "SOV.TP.VISIBILITY",
+        "state": 1,
+        "score": 0.333
+      },
+      {
+        "control": "SOV.TP.REGISTER",
+        "state": 1,
+        "score": 0.333
+      },
+      {
+        "control": "SOV.TP.AUDIT",
+        "state": 3,
+        "score": 1
+      },
+      {
+        "control": "SOV.EXIT.PLAN",
+        "state": 1,
+        "score": 0.333
+      },
+      {
+        "control": "SOV.CONC.PROVIDER",
+        "state": 1,
+        "score": 0.333
+      },
+      {
+        "control": "SOV.CERT.ASSURANCE",
+        "state": 1,
+        "score": 0.333
+      },
+      {
+        "control": "SOV.AI.DATA_LOCATION",
+        "state": 1,
+        "score": 0.333
+      },
+      {
+        "control": "SOV.AI.GOVERNANCE",
+        "state": 1,
+        "score": 0.333
+      },
+      {
+        "control": "SOV.IR.REPORTING",
+        "state": 3,
+        "score": 1
+      }
+    ],
+    "exposure": {
+      "summary": "3 regimes apply, 0 likely – confirm, 4 advisory; 0 red, 3 amber, 0 green.",
+      "largestCap": {
+        "regime": "EU_GDPR",
+        "grade": "applies",
+        "article": "Art. 83(5)",
+        "label": "cap, not expected fine",
+        "amount": 128000000,
+        "range": null,
+        "currency": "EUR",
+        "eur": 128000000,
+        "basis": "4% of EUR 3.2bn worldwide turnover",
+        "rateDate": null,
+        "claims": [
+          "CLM-SOV-016"
+        ]
+      },
+      "regimes": [
+        {
+          "regime": "EU_GDPR",
+          "rag": "amber",
+          "assessed": 7,
+          "required": 7,
+          "cap": {
+            "amount": 128000000,
+            "range": null,
+            "currency": "EUR"
+          }
+        },
+        {
+          "regime": "EU_NIS2",
+          "rag": "not_rated",
+          "assessed": 0,
+          "required": 0,
+          "cap": null
+        },
+        {
+          "regime": "EU_DORA",
+          "rag": "amber",
+          "assessed": 6,
+          "required": 6,
+          "cap": null
+        },
+        {
+          "regime": "EU_AI_ACT",
+          "rag": "amber",
+          "assessed": 1,
+          "required": 1,
+          "cap": {
+            "amount": 96000000,
+            "range": null,
+            "currency": "EUR"
+          }
+        },
+        {
+          "regime": "EU_DATA_ACT",
+          "rag": "not_rated",
+          "assessed": 0,
+          "required": 0,
+          "cap": null
+        },
+        {
+          "regime": "US_CLOUD_ACT",
+          "rag": "not_rated",
+          "assessed": 0,
+          "required": 0,
+          "cap": null
+        },
+        {
+          "regime": "US_FISA_702",
+          "rag": "not_rated",
+          "assessed": 0,
+          "required": 0,
+          "cap": null
+        }
+      ]
+    },
+    "findings": [
+      {
+        "id": "F-SOV.KEY.CUSTODY",
+        "severity": "High",
+        "wave": 2,
+        "timeFrame": "3–6 months",
+        "dataClasses": [
+          "personal",
+          "financial"
+        ]
+      },
+      {
+        "id": "F-SOV.OPS.ADMIN_ACCESS",
+        "severity": "High",
+        "wave": 2,
+        "timeFrame": "3–6 months",
+        "dataClasses": [
+          "personal",
+          "financial"
+        ]
+      },
+      {
+        "id": "F-SOV.SAAS.SUBPROCESSOR",
+        "severity": "Medium",
+        "wave": 3,
+        "timeFrame": "6–12 months",
+        "dataClasses": [
+          "personal",
+          "financial"
+        ]
+      },
+      {
+        "id": "F-SOV.DATA.MAP",
+        "severity": "Medium",
+        "wave": 3,
+        "timeFrame": "6–12 months",
+        "dataClasses": [
+          "personal",
+          "financial",
+          "proprietary"
+        ]
+      },
+      {
+        "id": "F-SOV.EXIT.PLAN",
+        "severity": "Medium",
+        "wave": 3,
+        "timeFrame": "6–12 months",
+        "dataClasses": [
+          "financial"
+        ]
+      },
+      {
+        "id": "F-SOV.AI.DATA_LOCATION",
+        "severity": "Medium",
+        "wave": 3,
+        "timeFrame": "6–12 months",
+        "dataClasses": [
+          "personal",
+          "financial",
+          "proprietary"
+        ]
+      },
+      {
+        "id": "F-SOV.AI.GOVERNANCE",
+        "severity": "Medium",
+        "wave": 3,
+        "timeFrame": "6–12 months",
+        "dataClasses": []
+      },
+      {
+        "id": "F-SOV.KEY.REVOCATION",
+        "severity": "Medium",
+        "wave": 3,
+        "timeFrame": "6–12 months",
+        "dataClasses": [
+          "financial"
+        ]
+      },
+      {
+        "id": "F-SOV.OPS.PERSONNEL_ZONE",
+        "severity": "Medium",
+        "wave": 3,
+        "timeFrame": "6–12 months",
+        "dataClasses": [
+          "financial"
+        ]
+      },
+      {
+        "id": "F-SOV.RES.REGION_LOCK",
+        "severity": "Medium",
+        "wave": 3,
+        "timeFrame": "6–12 months",
+        "dataClasses": [
+          "personal",
+          "financial",
+          "proprietary"
+        ]
+      },
+      {
+        "id": "F-SOV.TP.REGISTER",
+        "severity": "Medium",
+        "wave": 3,
+        "timeFrame": "6–12 months",
+        "dataClasses": []
+      },
+      {
+        "id": "F-SOV.TP.VISIBILITY",
+        "severity": "Medium",
+        "wave": 3,
+        "timeFrame": "6–12 months",
+        "dataClasses": [
+          "personal",
+          "financial",
+          "proprietary"
+        ]
+      },
+      {
+        "id": "F-SOV.XFER.TIA",
+        "severity": "Medium",
+        "wave": 3,
+        "timeFrame": "6–12 months",
+        "dataClasses": []
+      },
+      {
+        "id": "F-SOV.ENC.BASELINE",
+        "severity": "Low",
+        "wave": 4,
+        "timeFrame": "12–24 months",
+        "dataClasses": [
+          "personal",
+          "financial",
+          "proprietary"
+        ]
+      },
+      {
+        "id": "F-SOV.CONC.PROVIDER",
+        "severity": "Low",
+        "wave": 4,
+        "timeFrame": "12–24 months",
+        "dataClasses": [
+          "financial"
+        ]
+      },
+      {
+        "id": "F-SOV.CERT.ASSURANCE",
+        "severity": "Low",
+        "wave": 4,
+        "timeFrame": "12–24 months",
+        "dataClasses": [
+          "financial"
+        ]
+      },
+      {
+        "id": "F-SOV.OPS.OOB_MGMT",
+        "severity": "Low",
+        "wave": 4,
+        "timeFrame": "12–24 months",
+        "dataClasses": [
+          "financial"
+        ]
+      }
+    ],
+    "roadmap": [
+      {
+        "wave": 2,
+        "findings": [
+          "F-SOV.KEY.CUSTODY",
+          "F-SOV.OPS.ADMIN_ACCESS"
+        ]
+      },
+      {
+        "wave": 3,
+        "findings": [
+          "F-SOV.SAAS.SUBPROCESSOR",
+          "F-SOV.DATA.MAP",
+          "F-SOV.EXIT.PLAN",
+          "F-SOV.AI.DATA_LOCATION",
+          "F-SOV.AI.GOVERNANCE",
+          "F-SOV.KEY.REVOCATION",
+          "F-SOV.OPS.PERSONNEL_ZONE",
+          "F-SOV.RES.REGION_LOCK",
+          "F-SOV.TP.REGISTER",
+          "F-SOV.TP.VISIBILITY",
+          "F-SOV.XFER.TIA"
+        ]
+      },
+      {
+        "wave": 4,
+        "findings": [
+          "F-SOV.ENC.BASELINE",
+          "F-SOV.CONC.PROVIDER",
+          "F-SOV.CERT.ASSURANCE",
+          "F-SOV.OPS.OOB_MGMT"
+        ]
+      }
+    ],
+    "pendingSource": [],
+    "notes": [
+      "Data is processed in us without an entity there; processing location alone does not trigger that country's law in v1 (Q11). Confirm with counsel."
+    ]
+  },
+  "ARC2_UK_INSURER_OPRES_CTP executive": {
+    "versions": {
+      "engine": "4.0.0",
+      "questionSet": "4.0.0",
+      "controls": "4.0.0",
+      "registry": "1.0.0",
+      "registryStatusAsOf": "2026-10-14",
+      "claimsRegister": "0.1.0"
+    },
+    "asked": [
+      "A1",
+      "A2",
+      "A3",
+      "A4",
+      "B1",
+      "B4",
+      "D1",
+      "D3",
+      "P1",
+      "L1",
+      "R1",
+      "T1",
+      "T2",
+      "K1",
+      "O1",
+      "X1",
+      "I1"
+    ],
+    "regimes": [
+      {
+        "regime": "UK_GDPR",
+        "grade": "applies",
+        "rule": "UK_GDPR.1"
+      },
+      {
+        "regime": "UK_OPRES",
+        "grade": "applies",
+        "rule": "UK_OPRES.1"
+      },
+      {
+        "regime": "UK_PRA_SS2_21",
+        "grade": "applies",
+        "rule": "UK_PRA_SS2_21.1"
+      },
+      {
+        "regime": "UK_CTP",
+        "grade": "advisory",
+        "rule": "UK_CTP.2"
+      },
+      {
+        "regime": "US_CLOUD_ACT",
+        "grade": "advisory",
+        "rule": "US_CLOUD_ACT.1"
+      },
+      {
+        "regime": "US_FISA_702",
+        "grade": "advisory",
+        "rule": "US_FISA_702.1"
+      }
+    ],
+    "requirements": [
+      {
+        "dataClass": "personal",
+        "required": "L2",
+        "floor": null,
+        "allowedZone": [
+          "uk"
+        ]
+      },
+      {
+        "dataClass": "special",
+        "required": "L2",
+        "floor": null,
+        "allowedZone": [
+          "uk"
+        ]
+      },
+      {
+        "dataClass": "financial",
+        "required": "L2",
+        "floor": null,
+        "allowedZone": [
+          "uk"
+        ]
+      }
+    ],
+    "maturity": {
+      "score": 67,
+      "band": "Managed",
+      "wording": "Most required controls in place; gaps are specific",
+      "controlsAssessed": 9,
+      "requiredControls": 19,
+      "coverage": 1,
+      "provisional": false,
+      "unconfirmed": [],
+      "notAnswered": [],
+      "label": "Executive maturity, 9 of 19 required controls assessed"
+    },
+    "controls": [
+      {
+        "control": "SOV.RES.LOCATION",
+        "state": 0,
+        "byClass": {
+          "personal": 0,
+          "special": 3,
+          "financial": 3
+        },
+        "score": 0.667
+      },
+      {
+        "control": "SOV.RES.REGION_LOCK",
+        "state": 3,
+        "score": 1
+      },
+      {
+        "control": "SOV.BACKUP.LOCATION",
+        "state": 0,
+        "byClass": {
+          "personal": 0,
+          "special": 0,
+          "financial": 3
+        },
+        "score": 0.333
+      },
+      {
+        "control": "SOV.XFER.BASIS",
+        "state": 3,
+        "score": 1
+      },
+      {
+        "control": "SOV.XFER.TIA",
+        "state": 0,
+        "score": 0
+      },
+      {
+        "control": "SOV.KEY.CUSTODY",
+        "state": 2,
+        "score": 0.667
+      },
+      {
+        "control": "SOV.OPS.ADMIN_ACCESS",
+        "state": 3,
+        "score": 1
+      },
+      {
+        "control": "SOV.EXIT.PLAN",
+        "state": 2,
+        "score": 0.667
+      },
+      {
+        "control": "SOV.AI.DATA_LOCATION",
+        "state": 1,
+        "score": 0.333
+      }
+    ],
+    "exposure": {
+      "summary": "3 regimes apply, 0 likely – confirm, 3 advisory; 1 red, 1 amber, 0 green.",
+      "largestCap": {
+        "regime": "UK_GDPR",
+        "grade": "applies",
+        "article": "UK GDPR Art. 83(5); DPA 2018 s.157",
+        "label": "cap, not expected fine",
+        "amount": null,
+        "range": [
+          40000000,
+          400000000
+        ],
+        "currency": "EUR",
+        "eur": 400000000,
+        "basis": "From the turnover band (1bn_10bn): GBP 17.5M or 4% of turnover, whichever is higher",
+        "rateDate": "2026-10-12",
+        "claims": [
+          "CLM-SOV-084",
+          "CLM-SOV-192"
+        ]
+      },
+      "regimes": [
+        {
+          "regime": "UK_GDPR",
+          "rag": "red",
+          "assessed": 2,
+          "required": 7,
+          "cap": {
+            "amount": null,
+            "range": [
+              40000000,
+              400000000
+            ],
+            "currency": "EUR"
+          }
+        },
+        {
+          "regime": "UK_OPRES",
+          "rag": "not_rated",
+          "assessed": 0,
+          "required": 0,
+          "cap": null
+        },
+        {
+          "regime": "UK_PRA_SS2_21",
+          "rag": "amber",
+          "assessed": 1,
+          "required": 4,
+          "cap": null
+        },
+        {
+          "regime": "UK_CTP",
+          "rag": "not_rated",
+          "assessed": 0,
+          "required": 0,
+          "cap": null
+        },
+        {
+          "regime": "US_CLOUD_ACT",
+          "rag": "not_rated",
+          "assessed": 0,
+          "required": 0,
+          "cap": null
+        },
+        {
+          "regime": "US_FISA_702",
+          "rag": "not_rated",
+          "assessed": 0,
+          "required": 0,
+          "cap": null
+        }
+      ]
+    },
+    "findings": [
+      {
+        "id": "F-SOV.RES.LOCATION",
+        "severity": "Critical",
+        "wave": 1,
+        "timeFrame": "0–3 months",
+        "dataClasses": [
+          "personal"
+        ]
+      },
+      {
+        "id": "F-SOV.BACKUP.LOCATION",
+        "severity": "High",
+        "wave": 2,
+        "timeFrame": "3–6 months",
+        "dataClasses": [
+          "personal",
+          "special"
+        ]
+      },
+      {
+        "id": "F-SOV.XFER.TIA",
+        "severity": "High",
+        "wave": 2,
+        "timeFrame": "3–6 months",
+        "dataClasses": []
+      },
+      {
+        "id": "F-SOV.KEY.CUSTODY",
+        "severity": "Medium",
+        "wave": 3,
+        "timeFrame": "6–12 months",
+        "dataClasses": [
+          "personal",
+          "special",
+          "financial"
+        ]
+      },
+      {
+        "id": "F-SOV.AI.DATA_LOCATION",
+        "severity": "Medium",
+        "wave": 3,
+        "timeFrame": "6–12 months",
+        "dataClasses": [
+          "personal",
+          "special",
+          "financial"
+        ]
+      },
+      {
+        "id": "F-SOV.EXIT.PLAN",
+        "severity": "Low",
+        "wave": 4,
+        "timeFrame": "12–24 months",
+        "dataClasses": []
+      }
+    ],
+    "roadmap": [
+      {
+        "wave": 1,
+        "findings": [
+          "F-SOV.RES.LOCATION"
+        ]
+      },
+      {
+        "wave": 2,
+        "findings": [
+          "F-SOV.BACKUP.LOCATION",
+          "F-SOV.XFER.TIA"
+        ]
+      },
+      {
+        "wave": 3,
+        "findings": [
+          "F-SOV.KEY.CUSTODY",
+          "F-SOV.AI.DATA_LOCATION"
+        ]
+      },
+      {
+        "wave": 4,
+        "findings": [
+          "F-SOV.EXIT.PLAN"
+        ]
+      }
+    ],
+    "pendingSource": [],
+    "notes": [
+      "Data is processed in eea without an entity there; processing location alone does not trigger that country's law in v1 (Q11). Confirm with counsel.",
+      "Requirement set at one level for all data classes; the workshop confirms it per class."
+    ]
+  },
+  "ARC2_UK_INSURER_OPRES_CTP workshop": {
+    "versions": {
+      "engine": "4.0.0",
+      "questionSet": "4.0.0",
+      "controls": "4.0.0",
+      "registry": "1.0.0",
+      "registryStatusAsOf": "2026-10-14",
+      "claimsRegister": "0.1.0"
+    },
+    "asked": [
+      "A1",
+      "A2",
+      "A3",
+      "A4",
+      "A5",
+      "B1",
+      "B4",
+      "D1",
+      "D2",
+      "D3",
+      "D4",
+      "P1",
+      "P2",
+      "L1",
+      "L2",
+      "R1",
+      "T1",
+      "T2",
+      "K1",
+      "K3",
+      "O1",
+      "V1",
+      "V2",
+      "V3",
+      "V4",
+      "B5",
+      "B6",
+      "X1",
+      "X2",
+      "I1",
+      "I2",
+      "G1",
+      "G2",
+      "W1",
+      "W2",
+      "W3"
+    ],
+    "regimes": [
+      {
+        "regime": "UK_GDPR",
+        "grade": "applies",
+        "rule": "UK_GDPR.1"
+      },
+      {
+        "regime": "UK_OPRES",
+        "grade": "applies",
+        "rule": "UK_OPRES.1"
+      },
+      {
+        "regime": "UK_PRA_SS2_21",
+        "grade": "applies",
+        "rule": "UK_PRA_SS2_21.1"
+      },
+      {
+        "regime": "UK_CTP",
+        "grade": "advisory",
+        "rule": "UK_CTP.2"
+      },
+      {
+        "regime": "US_CLOUD_ACT",
+        "grade": "advisory",
+        "rule": "US_CLOUD_ACT.1"
+      },
+      {
+        "regime": "US_FISA_702",
+        "grade": "advisory",
+        "rule": "US_FISA_702.1"
+      }
+    ],
+    "requirements": [
+      {
+        "dataClass": "personal",
+        "required": "L1",
+        "floor": null,
+        "allowedZone": [
+          "uk",
+          "eea"
+        ]
+      },
+      {
+        "dataClass": "special",
+        "required": "L2",
+        "floor": null,
+        "allowedZone": [
+          "uk"
+        ]
+      },
+      {
+        "dataClass": "financial",
+        "required": "L2",
+        "floor": null,
+        "allowedZone": [
+          "uk"
+        ]
+      }
+    ],
+    "maturity": {
+      "score": 84,
+      "band": "Sovereign-ready",
+      "wording": "Controls meet the level your data requires",
+      "controlsAssessed": 19,
+      "requiredControls": 19,
+      "coverage": 1,
+      "provisional": false,
+      "unconfirmed": [],
+      "notAnswered": [],
+      "label": null
+    },
+    "controls": [
+      {
+        "control": "SOV.GOV.OWNER",
+        "state": 3,
+        "score": 1
+      },
+      {
+        "control": "SOV.DATA.MAP",
+        "state": 3,
+        "score": 1
+      },
+      {
+        "control": "SOV.RES.LOCATION",
+        "state": 3,
+        "byClass": {
+          "personal": 3,
+          "special": 3,
+          "financial": 3
+        },
+        "score": 1
+      },
+      {
+        "control": "SOV.RES.REGION_LOCK",
+        "state": 3,
+        "score": 1
+      },
+      {
+        "control": "SOV.BACKUP.LOCATION",
+        "state": 0,
+        "byClass": {
+          "personal": 3,
+          "special": 0,
+          "financial": 3
+        },
+        "score": 0.667
+      },
+      {
+        "control": "SOV.XFER.BASIS",
+        "state": 3,
+        "score": 1
+      },
+      {
+        "control": "SOV.XFER.TIA",
+        "state": 0,
+        "score": 0
+      },
+      {
+        "control": "SOV.KEY.CUSTODY",
+        "state": 2,
+        "score": 0.667
+      },
+      {
+        "control": "SOV.ENC.BASELINE",
+        "state": 3,
+        "score": 1
+      },
+      {
+        "control": "SOV.OPS.ADMIN_ACCESS",
+        "state": 3,
+        "score": 1
+      },
+      {
+        "control": "SOV.TP.DPA",
+        "state": 3,
+        "score": 1
+      },
+      {
+        "control": "SOV.SAAS.SUBPROCESSOR",
+        "state": 3,
+        "score": 1
+      },
+      {
+        "control": "SOV.TP.VISIBILITY",
+        "state": 3,
+        "score": 1
+      },
+      {
+        "control": "SOV.TP.REGISTER",
+        "state": 3,
+        "score": 1
+      },
+      {
+        "control": "SOV.TP.AUDIT",
+        "state": 3,
+        "score": 1
+      },
+      {
+        "control": "SOV.EXIT.PLAN",
+        "state": 2,
+        "score": 0.667
+      },
+      {
+        "control": "SOV.CONC.PROVIDER",
+        "state": 1,
+        "score": 0.333
+      },
+      {
+        "control": "SOV.AI.DATA_LOCATION",
+        "state": 1,
+        "score": 0.333
+      },
+      {
+        "control": "SOV.IR.REPORTING",
+        "state": 3,
+        "score": 1
+      }
+    ],
+    "exposure": {
+      "summary": "3 regimes apply, 0 likely – confirm, 3 advisory; 1 red, 1 amber, 0 green.",
+      "largestCap": {
+        "regime": "UK_GDPR",
+        "grade": "applies",
+        "article": "UK GDPR Art. 83(5); DPA 2018 s.157",
+        "label": "cap, not expected fine",
+        "amount": 100000000,
+        "range": null,
+        "currency": "GBP",
+        "eur": 118374014.53632899,
+        "basis": "4% of GBP 2.5bn worldwide turnover",
+        "rateDate": "2026-10-12",
+        "claims": [
+          "CLM-SOV-084",
+          "CLM-SOV-192"
+        ]
+      },
+      "regimes": [
+        {
+          "regime": "UK_GDPR",
+          "rag": "red",
+          "assessed": 7,
+          "required": 7,
+          "cap": {
+            "amount": 100000000,
+            "range": null,
+            "currency": "GBP"
+          }
+        },
+        {
+          "regime": "UK_OPRES",
+          "rag": "not_rated",
+          "assessed": 0,
+          "required": 0,
+          "cap": null
+        },
+        {
+          "regime": "UK_PRA_SS2_21",
+          "rag": "amber",
+          "assessed": 4,
+          "required": 4,
+          "cap": null
+        },
+        {
+          "regime": "UK_CTP",
+          "rag": "not_rated",
+          "assessed": 0,
+          "required": 0,
+          "cap": null
+        },
+        {
+          "regime": "US_CLOUD_ACT",
+          "rag": "not_rated",
+          "assessed": 0,
+          "required": 0,
+          "cap": null
+        },
+        {
+          "regime": "US_FISA_702",
+          "rag": "not_rated",
+          "assessed": 0,
+          "required": 0,
+          "cap": null
+        }
+      ]
+    },
+    "findings": [
+      {
+        "id": "F-SOV.BACKUP.LOCATION",
+        "severity": "High",
+        "wave": 2,
+        "timeFrame": "3–6 months",
+        "dataClasses": [
+          "special"
+        ]
+      },
+      {
+        "id": "F-SOV.XFER.TIA",
+        "severity": "High",
+        "wave": 2,
+        "timeFrame": "3–6 months",
+        "dataClasses": []
+      },
+      {
+        "id": "F-SOV.KEY.CUSTODY",
+        "severity": "Medium",
+        "wave": 3,
+        "timeFrame": "6–12 months",
+        "dataClasses": [
+          "special",
+          "financial"
+        ]
+      },
+      {
+        "id": "F-SOV.AI.DATA_LOCATION",
+        "severity": "Medium",
+        "wave": 3,
+        "timeFrame": "6–12 months",
+        "dataClasses": [
+          "personal",
+          "special",
+          "financial"
+        ]
+      },
+      {
+        "id": "F-SOV.EXIT.PLAN",
+        "severity": "Low",
+        "wave": 4,
+        "timeFrame": "12–24 months",
+        "dataClasses": []
+      },
+      {
+        "id": "F-SOV.CONC.PROVIDER",
+        "severity": "Low",
+        "wave": 4,
+        "timeFrame": "12–24 months",
+        "dataClasses": []
+      }
+    ],
+    "roadmap": [
+      {
+        "wave": 2,
+        "findings": [
+          "F-SOV.BACKUP.LOCATION",
+          "F-SOV.XFER.TIA"
+        ]
+      },
+      {
+        "wave": 3,
+        "findings": [
+          "F-SOV.KEY.CUSTODY",
+          "F-SOV.AI.DATA_LOCATION"
+        ]
+      },
+      {
+        "wave": 4,
+        "findings": [
+          "F-SOV.EXIT.PLAN",
+          "F-SOV.CONC.PROVIDER"
+        ]
+      }
+    ],
+    "pendingSource": [],
+    "notes": [
+      "Data is processed in eea without an entity there; processing location alone does not trigger that country's law in v1 (Q11). Confirm with counsel."
+    ]
+  },
+  "ARC3_US_HEALTHTECH_EU_CUSTOMERS executive": {
+    "versions": {
+      "engine": "4.0.0",
+      "questionSet": "4.0.0",
+      "controls": "4.0.0",
+      "registry": "1.0.0",
+      "registryStatusAsOf": "2026-10-14",
+      "claimsRegister": "0.1.0"
+    },
+    "asked": [
+      "A1",
+      "A2",
+      "A3",
+      "A4",
+      "B1",
+      "B4",
+      "D1",
+      "D3",
+      "P1",
+      "L1",
+      "R1",
+      "T1",
+      "T2",
+      "K1",
+      "O1",
+      "X1",
+      "I1"
+    ],
+    "regimes": [
+      {
+        "regime": "EU_GDPR",
+        "grade": "applies",
+        "rule": "EU_GDPR.1"
+      },
+      {
+        "regime": "EU_NIS2",
+        "grade": "applies",
+        "rule": "EU_NIS2.8",
+        "nis2Class": "essential_or_important"
+      },
+      {
+        "regime": "EU_AI_ACT",
+        "grade": "applies",
+        "rule": "EU_AI_ACT.2"
+      },
+      {
+        "regime": "EU_DATA_ACT",
+        "grade": "applies",
+        "rule": "EU_DATA_ACT.1"
+      },
+      {
+        "regime": "UK_GDPR",
+        "grade": "likely_confirm",
+        "rule": "UK_GDPR.2"
+      },
+      {
+        "regime": "UK_CSR_BILL",
+        "grade": "advisory",
+        "rule": "UK_CSR_BILL.1"
+      },
+      {
+        "regime": "US_CLOUD_ACT",
+        "grade": "advisory",
+        "rule": "US_CLOUD_ACT.1"
+      },
+      {
+        "regime": "US_FISA_702",
+        "grade": "advisory",
+        "rule": "US_FISA_702.1"
+      },
+      {
+        "regime": "US_DOJ_DSP",
+        "grade": "advisory",
+        "rule": "US_DOJ_DSP.3"
+      },
+      {
+        "regime": "US_CCPA",
+        "grade": "likely_confirm",
+        "rule": "US_CCPA.3"
+      },
+      {
+        "regime": "US_STATE_PRIVACY",
+        "grade": "advisory",
+        "rule": "US_STATE_PRIVACY.1"
+      },
+      {
+        "regime": "US_HIPAA",
+        "grade": "applies",
+        "rule": "US_HIPAA.1"
+      }
+    ],
+    "requirements": [
+      {
+        "dataClass": "personal",
+        "required": "L1",
+        "floor": null,
+        "allowedZone": [
+          "us",
+          "eea",
+          "uk"
+        ]
+      },
+      {
+        "dataClass": "special",
+        "required": "L1",
+        "floor": null,
+        "allowedZone": [
+          "us",
+          "eea",
+          "uk"
+        ]
+      },
+      {
+        "dataClass": "ai_training",
+        "required": "L1",
+        "floor": null,
+        "allowedZone": [
+          "us",
+          "eea"
+        ]
+      },
+      {
+        "dataClass": "proprietary",
+        "required": "L1",
+        "floor": null,
+        "allowedZone": [
+          "us",
+          "eea"
+        ]
+      }
+    ],
+    "maturity": {
+      "score": 52,
+      "band": "Developing",
+      "wording": "Some required controls in place; material gaps remain",
+      "controlsAssessed": 6,
+      "requiredControls": 14,
+      "coverage": 1,
+      "provisional": false,
+      "unconfirmed": [],
+      "notAnswered": [],
+      "label": "Executive maturity, 6 of 14 required controls assessed"
+    },
+    "controls": [
+      {
+        "control": "SOV.RES.LOCATION",
+        "state": 3,
+        "byClass": {
+          "personal": 3,
+          "special": 3,
+          "ai_training": 3,
+          "proprietary": 3
+        },
+        "score": 1
+      },
+      {
+        "control": "SOV.RES.REGION_LOCK",
+        "state": 1,
+        "score": 0.333
+      },
+      {
+        "control": "SOV.BACKUP.LOCATION",
+        "state": 3,
+        "byClass": {
+          "personal": 3,
+          "special": 3,
+          "ai_training": 3,
+          "proprietary": 3
+        },
+        "score": 1
+      },
+      {
+        "control": "SOV.XFER.BASIS",
+        "state": 1,
+        "score": 0.333
+      },
+      {
+        "control": "SOV.XFER.TIA",
+        "state": 0,
+        "score": 0
+      },
+      {
+        "control": "SOV.AI.DATA_LOCATION",
+        "state": 1,
+        "score": 0.333
+      }
+    ],
+    "exposure": {
+      "summary": "5 regimes apply, 2 likely – confirm, 5 advisory; 1 red, 1 amber, 0 green.",
+      "largestCap": {
+        "regime": "UK_GDPR",
+        "grade": "likely_confirm",
+        "article": "UK GDPR Art. 83(5); DPA 2018 s.157",
+        "label": "cap, not expected fine",
+        "amount": 20715453,
+        "range": null,
+        "currency": "EUR",
+        "eur": 20715452.543857574,
+        "basis": "From the turnover band (50m_250m): GBP 17.5M or 4% of turnover, whichever is higher",
+        "rateDate": "2026-10-12",
+        "claims": [
+          "CLM-SOV-084",
+          "CLM-SOV-192"
+        ]
+      },
+      "regimes": [
+        {
+          "regime": "EU_GDPR",
+          "rag": "red",
+          "assessed": 2,
+          "required": 7,
+          "cap": {
+            "amount": 20000000,
+            "range": null,
+            "currency": "EUR"
+          }
+        },
+        {
+          "regime": "EU_NIS2",
+          "rag": "not_rated",
+          "assessed": 0,
+          "required": 4,
+          "cap": {
+            "amount": 10000000,
+            "range": null,
+            "currency": "EUR"
+          }
+        },
+        {
+          "regime": "EU_AI_ACT",
+          "rag": "not_rated",
+          "assessed": 0,
+          "required": 1,
+          "cap": {
+            "amount": 15000000,
+            "range": null,
+            "currency": "EUR"
+          }
+        },
+        {
+          "regime": "EU_DATA_ACT",
+          "rag": "not_rated",
+          "assessed": 0,
+          "required": 0,
+          "cap": null
+        },
+        {
+          "regime": "UK_GDPR",
+          "rag": "amber",
+          "assessed": 1,
+          "required": 6,
+          "cap": {
+            "amount": 20715453,
+            "range": null,
+            "currency": "EUR"
+          }
+        },
+        {
+          "regime": "UK_CSR_BILL",
+          "rag": "not_rated",
+          "assessed": 0,
+          "required": 0,
+          "cap": null
+        },
+        {
+          "regime": "US_CLOUD_ACT",
+          "rag": "not_rated",
+          "assessed": 0,
+          "required": 0,
+          "cap": null
+        },
+        {
+          "regime": "US_FISA_702",
+          "rag": "not_rated",
+          "assessed": 0,
+          "required": 0,
+          "cap": null
+        },
+        {
+          "regime": "US_DOJ_DSP",
+          "rag": "not_rated",
+          "assessed": 0,
+          "required": 0,
+          "cap": null
+        },
+        {
+          "regime": "US_CCPA",
+          "rag": "not_rated",
+          "assessed": 0,
+          "required": 2,
+          "cap": null
+        },
+        {
+          "regime": "US_STATE_PRIVACY",
+          "rag": "not_rated",
+          "assessed": 0,
+          "required": 0,
+          "cap": null
+        },
+        {
+          "regime": "US_HIPAA",
+          "rag": "not_rated",
+          "assessed": 0,
+          "required": 3,
+          "cap": null
+        }
+      ]
+    },
+    "findings": [
+      {
+        "id": "F-SOV.XFER.BASIS",
+        "severity": "High",
+        "wave": 2,
+        "timeFrame": "3–6 months",
+        "dataClasses": []
+      },
+      {
+        "id": "F-SOV.XFER.TIA",
+        "severity": "High",
+        "wave": 2,
+        "timeFrame": "3–6 months",
+        "dataClasses": []
+      },
+      {
+        "id": "F-SCOPE-UK_GDPR",
+        "severity": "High",
+        "wave": 1,
+        "timeFrame": "3–6 months",
+        "dataClasses": []
+      },
+      {
+        "id": "F-SCOPE-US_CCPA",
+        "severity": "Medium",
+        "wave": 1,
+        "timeFrame": "6–12 months",
+        "dataClasses": []
+      },
+      {
+        "id": "F-SOV.AI.DATA_LOCATION",
+        "severity": "Low",
+        "wave": 4,
+        "timeFrame": "12–24 months",
+        "dataClasses": [
+          "personal",
+          "special",
+          "ai_training",
+          "proprietary"
+        ]
+      },
+      {
+        "id": "F-SOV.RES.REGION_LOCK",
+        "severity": "Low",
+        "wave": 4,
+        "timeFrame": "12–24 months",
+        "dataClasses": [
+          "personal",
+          "special",
+          "ai_training",
+          "proprietary"
+        ]
+      }
+    ],
+    "roadmap": [
+      {
+        "wave": 1,
+        "findings": [
+          "F-SCOPE-UK_GDPR",
+          "F-SCOPE-US_CCPA"
+        ]
+      },
+      {
+        "wave": 2,
+        "findings": [
+          "F-SOV.XFER.BASIS",
+          "F-SOV.XFER.TIA"
+        ]
+      },
+      {
+        "wave": 4,
+        "findings": [
+          "F-SOV.AI.DATA_LOCATION",
+          "F-SOV.RES.REGION_LOCK"
+        ]
+      }
+    ],
+    "pendingSource": [],
+    "notes": [
+      "Requirement set at one level for all data classes; the workshop confirms it per class."
+    ]
+  },
+  "ARC3_US_HEALTHTECH_EU_CUSTOMERS workshop": {
+    "versions": {
+      "engine": "4.0.0",
+      "questionSet": "4.0.0",
+      "controls": "4.0.0",
+      "registry": "1.0.0",
+      "registryStatusAsOf": "2026-10-14",
+      "claimsRegister": "0.1.0"
+    },
+    "asked": [
+      "A1",
+      "A2",
+      "A3",
+      "A4",
+      "A5",
+      "A6",
+      "A7",
+      "B1",
+      "B2",
+      "B4",
+      "D1",
+      "D2",
+      "D3",
+      "D4",
+      "P1",
+      "P2",
+      "L1",
+      "L2",
+      "R1",
+      "T1",
+      "T2",
+      "K1",
+      "K3",
+      "O1",
+      "V1",
+      "V2",
+      "V3",
+      "V4",
+      "X1",
+      "X2",
+      "I1",
+      "I2",
+      "G1",
+      "G2",
+      "W1",
+      "W2",
+      "W3"
+    ],
+    "regimes": [
+      {
+        "regime": "EU_GDPR",
+        "grade": "applies",
+        "rule": "EU_GDPR.1"
+      },
+      {
+        "regime": "EU_NIS2",
+        "grade": "applies",
+        "rule": "EU_NIS2.8",
+        "nis2Class": "essential_or_important"
+      },
+      {
+        "regime": "EU_AI_ACT",
+        "grade": "applies",
+        "rule": "EU_AI_ACT.2"
+      },
+      {
+        "regime": "EU_DATA_ACT",
+        "grade": "applies",
+        "rule": "EU_DATA_ACT.1"
+      },
+      {
+        "regime": "UK_GDPR",
+        "grade": "likely_confirm",
+        "rule": "UK_GDPR.2"
+      },
+      {
+        "regime": "UK_CSR_BILL",
+        "grade": "advisory",
+        "rule": "UK_CSR_BILL.1"
+      },
+      {
+        "regime": "US_CLOUD_ACT",
+        "grade": "advisory",
+        "rule": "US_CLOUD_ACT.1"
+      },
+      {
+        "regime": "US_FISA_702",
+        "grade": "advisory",
+        "rule": "US_FISA_702.1"
+      },
+      {
+        "regime": "US_DOJ_DSP",
+        "grade": "advisory",
+        "rule": "US_DOJ_DSP.3"
+      },
+      {
+        "regime": "US_CCPA",
+        "grade": "applies",
+        "rule": "US_CCPA.1"
+      },
+      {
+        "regime": "US_STATE_PRIVACY",
+        "grade": "advisory",
+        "rule": "US_STATE_PRIVACY.1"
+      },
+      {
+        "regime": "US_HIPAA",
+        "grade": "applies",
+        "rule": "US_HIPAA.1"
+      }
+    ],
+    "requirements": [
+      {
+        "dataClass": "personal",
+        "required": "L1",
+        "floor": null,
+        "allowedZone": [
+          "us",
+          "eea"
+        ]
+      },
+      {
+        "dataClass": "special",
+        "required": "L2",
+        "floor": null,
+        "allowedZone": [
+          "us",
+          "eea"
+        ]
+      },
+      {
+        "dataClass": "ai_training",
+        "required": "L1",
+        "floor": null,
+        "allowedZone": [
+          "us"
+        ]
+      },
+      {
+        "dataClass": "proprietary",
+        "required": "L0",
+        "floor": null,
+        "allowedZone": []
+      }
+    ],
+    "maturity": {
+      "score": 37,
+      "band": "Exposed",
+      "wording": "Controls do not yet meet the level your data requires",
+      "controlsAssessed": 17,
+      "requiredControls": 17,
+      "coverage": 1,
+      "provisional": false,
+      "unconfirmed": [],
+      "notAnswered": [],
+      "label": null
+    },
+    "controls": [
+      {
+        "control": "SOV.GOV.OWNER",
+        "state": 1,
+        "score": 0.333
+      },
+      {
+        "control": "SOV.DATA.MAP",
+        "state": 1,
+        "score": 0.333
+      },
+      {
+        "control": "SOV.RES.LOCATION",
+        "state": 3,
+        "byClass": {
+          "personal": 3,
+          "special": 3,
+          "ai_training": 3
+        },
+        "score": 1
+      },
+      {
+        "control": "SOV.RES.REGION_LOCK",
+        "state": 1,
+        "score": 0.333
+      },
+      {
+        "control": "SOV.BACKUP.LOCATION",
+        "state": 3,
+        "byClass": {
+          "personal": 3,
+          "special": 3,
+          "ai_training": 3
+        },
+        "score": 1
+      },
+      {
+        "control": "SOV.XFER.BASIS",
+        "state": 1,
+        "score": 0.333
+      },
+      {
+        "control": "SOV.XFER.TIA",
+        "state": 0,
+        "score": 0
+      },
+      {
+        "control": "SOV.KEY.CUSTODY",
+        "state": 0,
+        "score": 0
+      },
+      {
+        "control": "SOV.ENC.BASELINE",
+        "state": 2,
+        "score": 0.667
+      },
+      {
+        "control": "SOV.OPS.ADMIN_ACCESS",
+        "state": 0,
+        "score": 0
+      },
+      {
+        "control": "SOV.TP.DPA",
+        "state": 2,
+        "score": 0.667
+      },
+      {
+        "control": "SOV.SAAS.SUBPROCESSOR",
+        "state": 1,
+        "score": 0.333
+      },
+      {
+        "control": "SOV.TP.VISIBILITY",
+        "state": 1,
+        "score": 0.333
+      },
+      {
+        "control": "SOV.TP.AUDIT",
+        "state": 1,
+        "score": 0.333
+      },
+      {
+        "control": "SOV.AI.DATA_LOCATION",
+        "state": 1,
+        "score": 0.333
+      },
+      {
+        "control": "SOV.AI.GOVERNANCE",
+        "state": 0,
+        "score": 0
+      },
+      {
+        "control": "SOV.IR.REPORTING",
+        "state": 1,
+        "score": 0.333
+      }
+    ],
+    "exposure": {
+      "summary": "6 regimes apply, 1 likely – confirm, 5 advisory; 2 red, 4 amber, 0 green.",
+      "largestCap": {
+        "regime": "UK_GDPR",
+        "grade": "likely_confirm",
+        "article": "UK GDPR Art. 83(5); DPA 2018 s.157",
+        "label": "cap, not expected fine",
+        "amount": 17500000,
+        "range": null,
+        "currency": "GBP",
+        "eur": 20715452.543857574,
+        "basis": "GBP 17.5M fixed limb (4% of USD 75M is lower)",
+        "rateDate": "2026-10-12",
+        "claims": [
+          "CLM-SOV-084",
+          "CLM-SOV-191",
+          "CLM-SOV-192"
+        ]
+      },
+      "regimes": [
+        {
+          "regime": "EU_GDPR",
+          "rag": "red",
+          "assessed": 7,
+          "required": 7,
+          "cap": {
+            "amount": 20000000,
+            "range": null,
+            "currency": "EUR"
+          }
+        },
+        {
+          "regime": "EU_NIS2",
+          "rag": "amber",
+          "assessed": 4,
+          "required": 4,
+          "cap": {
+            "amount": 10000000,
+            "range": null,
+            "currency": "EUR"
+          }
+        },
+        {
+          "regime": "EU_AI_ACT",
+          "rag": "red",
+          "assessed": 1,
+          "required": 1,
+          "cap": {
+            "amount": 15000000,
+            "range": null,
+            "currency": "EUR"
+          }
+        },
+        {
+          "regime": "EU_DATA_ACT",
+          "rag": "not_rated",
+          "assessed": 0,
+          "required": 0,
+          "cap": null
+        },
+        {
+          "regime": "UK_GDPR",
+          "rag": "amber",
+          "assessed": 6,
+          "required": 6,
+          "cap": {
+            "amount": 17500000,
+            "range": null,
+            "currency": "GBP"
+          }
+        },
+        {
+          "regime": "UK_CSR_BILL",
+          "rag": "not_rated",
+          "assessed": 0,
+          "required": 0,
+          "cap": null
+        },
+        {
+          "regime": "US_CLOUD_ACT",
+          "rag": "not_rated",
+          "assessed": 0,
+          "required": 0,
+          "cap": null
+        },
+        {
+          "regime": "US_FISA_702",
+          "rag": "not_rated",
+          "assessed": 0,
+          "required": 0,
+          "cap": null
+        },
+        {
+          "regime": "US_DOJ_DSP",
+          "rag": "not_rated",
+          "assessed": 0,
+          "required": 0,
+          "cap": null
+        },
+        {
+          "regime": "US_CCPA",
+          "rag": "amber",
+          "assessed": 2,
+          "required": 2,
+          "cap": null
+        },
+        {
+          "regime": "US_STATE_PRIVACY",
+          "rag": "not_rated",
+          "assessed": 0,
+          "required": 0,
+          "cap": null
+        },
+        {
+          "regime": "US_HIPAA",
+          "rag": "amber",
+          "assessed": 3,
+          "required": 3,
+          "cap": null
+        }
+      ]
+    },
+    "findings": [
+      {
+        "id": "F-SOV.KEY.CUSTODY",
+        "severity": "Critical",
+        "wave": 1,
+        "timeFrame": "0–3 months",
+        "dataClasses": [
+          "special"
+        ]
+      },
+      {
+        "id": "F-SOV.OPS.ADMIN_ACCESS",
+        "severity": "Critical",
+        "wave": 1,
+        "timeFrame": "0–3 months",
+        "dataClasses": [
+          "special"
+        ]
+      },
+      {
+        "id": "F-SOV.XFER.BASIS",
+        "severity": "High",
+        "wave": 2,
+        "timeFrame": "3–6 months",
+        "dataClasses": []
+      },
+      {
+        "id": "F-SOV.AI.GOVERNANCE",
+        "severity": "High",
+        "wave": 2,
+        "timeFrame": "3–6 months",
+        "dataClasses": []
+      },
+      {
+        "id": "F-SOV.XFER.TIA",
+        "severity": "High",
+        "wave": 2,
+        "timeFrame": "3–6 months",
+        "dataClasses": []
+      },
+      {
+        "id": "F-SCOPE-UK_GDPR",
+        "severity": "High",
+        "wave": 1,
+        "timeFrame": "3–6 months",
+        "dataClasses": []
+      },
+      {
+        "id": "F-SOV.IR.REPORTING",
+        "severity": "Medium",
+        "wave": 3,
+        "timeFrame": "6–12 months",
+        "dataClasses": []
+      },
+      {
+        "id": "F-SOV.DATA.MAP",
+        "severity": "Medium",
+        "wave": 2,
+        "timeFrame": "6–12 months",
+        "dataClasses": [
+          "personal",
+          "special",
+          "ai_training"
+        ]
+      },
+      {
+        "id": "F-SOV.SAAS.SUBPROCESSOR",
+        "severity": "Medium",
+        "wave": 3,
+        "timeFrame": "6–12 months",
+        "dataClasses": [
+          "special"
+        ]
+      },
+      {
+        "id": "F-SOV.TP.VISIBILITY",
+        "severity": "Medium",
+        "wave": 2,
+        "timeFrame": "6–12 months",
+        "dataClasses": [
+          "personal",
+          "special",
+          "ai_training"
+        ]
+      },
+      {
+        "id": "F-SOV.AI.DATA_LOCATION",
+        "severity": "Medium",
+        "wave": 3,
+        "timeFrame": "6–12 months",
+        "dataClasses": [
+          "personal",
+          "special",
+          "ai_training"
+        ]
+      },
+      {
+        "id": "F-SOV.RES.REGION_LOCK",
+        "severity": "Medium",
+        "wave": 3,
+        "timeFrame": "6–12 months",
+        "dataClasses": [
+          "personal",
+          "special",
+          "ai_training"
+        ]
+      },
+      {
+        "id": "F-SOV.ENC.BASELINE",
+        "severity": "Low",
+        "wave": 4,
+        "timeFrame": "12–24 months",
+        "dataClasses": [
+          "personal",
+          "special",
+          "ai_training"
+        ]
+      },
+      {
+        "id": "F-SOV.TP.DPA",
+        "severity": "Low",
+        "wave": 4,
+        "timeFrame": "12–24 months",
+        "dataClasses": []
+      },
+      {
+        "id": "F-SOV.GOV.OWNER",
+        "severity": "Low",
+        "wave": 4,
+        "timeFrame": "12–24 months",
+        "dataClasses": [
+          "personal",
+          "special",
+          "ai_training"
+        ]
+      },
+      {
+        "id": "F-SOV.TP.AUDIT",
+        "severity": "Low",
+        "wave": 4,
+        "timeFrame": "12–24 months",
+        "dataClasses": [
+          "special"
+        ]
+      }
+    ],
+    "roadmap": [
+      {
+        "wave": 1,
+        "findings": [
+          "F-SOV.KEY.CUSTODY",
+          "F-SOV.OPS.ADMIN_ACCESS",
+          "F-SCOPE-UK_GDPR"
+        ]
+      },
+      {
+        "wave": 2,
+        "findings": [
+          "F-SOV.DATA.MAP",
+          "F-SOV.TP.VISIBILITY",
+          "F-SOV.XFER.BASIS",
+          "F-SOV.AI.GOVERNANCE",
+          "F-SOV.XFER.TIA"
+        ]
+      },
+      {
+        "wave": 3,
+        "findings": [
+          "F-SOV.IR.REPORTING",
+          "F-SOV.SAAS.SUBPROCESSOR",
+          "F-SOV.AI.DATA_LOCATION",
+          "F-SOV.RES.REGION_LOCK"
+        ]
+      },
+      {
+        "wave": 4,
+        "findings": [
+          "F-SOV.ENC.BASELINE",
+          "F-SOV.TP.DPA",
+          "F-SOV.GOV.OWNER",
+          "F-SOV.TP.AUDIT"
+        ]
+      }
+    ],
+    "pendingSource": [],
+    "notes": []
+  },
+  "ARC4_SG_AU_FINANCIAL_GROUP executive": {
+    "versions": {
+      "engine": "4.0.0",
+      "questionSet": "4.0.0",
+      "controls": "4.0.0",
+      "registry": "1.0.0",
+      "registryStatusAsOf": "2026-10-14",
+      "claimsRegister": "0.1.0"
+    },
+    "asked": [
+      "A1",
+      "A2",
+      "A3",
+      "A4",
+      "B1",
+      "B4",
+      "D1",
+      "D3",
+      "P1",
+      "L1",
+      "R1",
+      "T1",
+      "K1",
+      "O1",
+      "X1",
+      "I1"
+    ],
+    "regimes": [
+      {
+        "regime": "US_CLOUD_ACT",
+        "grade": "advisory",
+        "rule": "US_CLOUD_ACT.1"
+      },
+      {
+        "regime": "US_FISA_702",
+        "grade": "advisory",
+        "rule": "US_FISA_702.1"
+      },
+      {
+        "regime": "SG_PDPA",
+        "grade": "applies",
+        "rule": "SG_PDPA.1"
+      },
+      {
+        "regime": "SG_MAS_TRM",
+        "grade": "applies",
+        "rule": "SG_MAS_TRM.1"
+      },
+      {
+        "regime": "AU_PRIVACY",
+        "grade": "applies",
+        "rule": "AU_PRIVACY.2"
+      },
+      {
+        "regime": "AU_APRA_CPS230",
+        "grade": "applies",
+        "rule": "AU_APRA_CPS230.1"
+      },
+      {
+        "regime": "AU_APRA_CPS234",
+        "grade": "applies",
+        "rule": "AU_APRA_CPS234.1"
+      },
+      {
+        "regime": "AU_SOCI",
+        "grade": "likely_confirm",
+        "rule": "AU_SOCI.2"
+      },
+      {
+        "regime": "IN_DPDP",
+        "grade": "applies",
+        "rule": "IN_DPDP.1"
+      },
+      {
+        "regime": "IN_CERT_IN",
+        "grade": "applies",
+        "rule": "IN_CERT_IN.1"
+      },
+      {
+        "regime": "HK_PDPO",
+        "grade": "applies",
+        "rule": "HK_PDPO.1"
+      },
+      {
+        "regime": "HK_HKMA",
+        "grade": "advisory",
+        "rule": "HK_HKMA.1"
+      }
+    ],
+    "requirements": [
+      {
+        "dataClass": "personal",
+        "required": "L2",
+        "floor": null,
+        "allowedZone": [
+          "sg",
+          "au",
+          "hk",
+          "in"
+        ]
+      },
+      {
+        "dataClass": "financial",
+        "required": "L2",
+        "floor": null,
+        "allowedZone": [
+          "sg",
+          "au",
+          "hk",
+          "in"
+        ]
+      },
+      {
+        "dataClass": "proprietary",
+        "required": "L2",
+        "floor": null,
+        "allowedZone": [
+          "sg",
+          "au",
+          "hk",
+          "in"
+        ]
+      }
+    ],
+    "maturity": {
+      "score": 85,
+      "band": "Sovereign-ready",
+      "wording": "Controls meet the level your data requires",
+      "controlsAssessed": 8,
+      "requiredControls": 17,
+      "coverage": 1,
+      "provisional": false,
+      "unconfirmed": [],
+      "notAnswered": [],
+      "label": "Executive maturity, 8 of 17 required controls assessed"
+    },
+    "controls": [
+      {
+        "control": "SOV.RES.LOCATION",
+        "state": 0,
+        "byClass": {
+          "personal": 3,
+          "financial": 3,
+          "proprietary": 0
+        },
+        "score": 0.667
+      },
+      {
+        "control": "SOV.RES.REGION_LOCK",
+        "state": 3,
+        "score": 1
+      },
+      {
+        "control": "SOV.BACKUP.LOCATION",
+        "state": 3,
+        "byClass": {
+          "personal": 3,
+          "financial": 3,
+          "proprietary": 3
+        },
+        "score": 1
+      },
+      {
+        "control": "SOV.XFER.BASIS",
+        "state": 3,
+        "score": 1
+      },
+      {
+        "control": "SOV.KEY.CUSTODY",
+        "state": 3,
+        "score": 1
+      },
+      {
+        "control": "SOV.OPS.ADMIN_ACCESS",
+        "state": 3,
+        "score": 1
+      },
+      {
+        "control": "SOV.EXIT.PLAN",
+        "state": 2,
+        "score": 0.667
+      },
+      {
+        "control": "SOV.AI.DATA_LOCATION",
+        "state": 1,
+        "score": 0.333
+      }
+    ],
+    "exposure": {
+      "summary": "8 regimes apply, 1 likely – confirm, 3 advisory; 0 red, 2 amber, 2 green.",
+      "largestCap": {
+        "regime": "AU_PRIVACY",
+        "grade": "applies",
+        "article": "s.13G",
+        "label": "cap, not expected fine",
+        "amount": 50000000,
+        "range": null,
+        "currency": "AUD",
+        "eur": 31187624.750499003,
+        "basis": "AUD 50M fixed limb; the 30% limb is not computed (it rests on a turnover the assessment does not collect)",
+        "rateDate": "2026-10-12",
+        "claims": [
+          "CLM-SOV-147",
+          "CLM-SOV-194"
+        ]
+      },
+      "regimes": [
+        {
+          "regime": "US_CLOUD_ACT",
+          "rag": "not_rated",
+          "assessed": 0,
+          "required": 0,
+          "cap": null
+        },
+        {
+          "regime": "US_FISA_702",
+          "rag": "not_rated",
+          "assessed": 0,
+          "required": 0,
+          "cap": null
+        },
+        {
+          "regime": "SG_PDPA",
+          "rag": "green",
+          "assessed": 1,
+          "required": 2,
+          "cap": {
+            "amount": 1000000,
+            "range": null,
+            "currency": "SGD"
+          }
+        },
+        {
+          "regime": "SG_MAS_TRM",
+          "rag": "amber",
+          "assessed": 1,
+          "required": 4,
+          "cap": null
+        },
+        {
+          "regime": "AU_PRIVACY",
+          "rag": "green",
+          "assessed": 1,
+          "required": 3,
+          "cap": {
+            "amount": 50000000,
+            "range": null,
+            "currency": "AUD"
+          }
+        },
+        {
+          "regime": "AU_APRA_CPS230",
+          "rag": "amber",
+          "assessed": 1,
+          "required": 5,
+          "cap": null
+        },
+        {
+          "regime": "AU_APRA_CPS234",
+          "rag": "not_rated",
+          "assessed": 0,
+          "required": 3,
+          "cap": null
+        },
+        {
+          "regime": "AU_SOCI",
+          "rag": "not_rated",
+          "assessed": 0,
+          "required": 1,
+          "cap": null
+        },
+        {
+          "regime": "IN_DPDP",
+          "rag": "not_rated",
+          "assessed": 0,
+          "required": 0,
+          "cap": {
+            "amount": 2500000000,
+            "range": null,
+            "currency": "INR"
+          }
+        },
+        {
+          "regime": "IN_CERT_IN",
+          "rag": "not_rated",
+          "assessed": 0,
+          "required": 1,
+          "cap": null
+        },
+        {
+          "regime": "HK_PDPO",
+          "rag": "not_rated",
+          "assessed": 0,
+          "required": 0,
+          "cap": {
+            "amount": 50000,
+            "range": null,
+            "currency": "HKD"
+          }
+        },
+        {
+          "regime": "HK_HKMA",
+          "rag": "not_rated",
+          "assessed": 0,
+          "required": 0,
+          "cap": null
+        }
+      ]
+    },
+    "findings": [
+      {
+        "id": "F-SOV.RES.LOCATION",
+        "severity": "Critical",
+        "wave": 1,
+        "timeFrame": "0–3 months",
+        "dataClasses": [
+          "proprietary"
+        ]
+      },
+      {
+        "id": "F-SOV.AI.DATA_LOCATION",
+        "severity": "Medium",
+        "wave": 3,
+        "timeFrame": "6–12 months",
+        "dataClasses": [
+          "personal",
+          "financial",
+          "proprietary"
+        ]
+      },
+      {
+        "id": "F-SCOPE-AU_SOCI",
+        "severity": "Medium",
+        "wave": 1,
+        "timeFrame": "6–12 months",
+        "dataClasses": []
+      },
+      {
+        "id": "F-SOV.EXIT.PLAN",
+        "severity": "Low",
+        "wave": 4,
+        "timeFrame": "12–24 months",
+        "dataClasses": []
+      }
+    ],
+    "roadmap": [
+      {
+        "wave": 1,
+        "findings": [
+          "F-SOV.RES.LOCATION",
+          "F-SCOPE-AU_SOCI"
+        ]
+      },
+      {
+        "wave": 3,
+        "findings": [
+          "F-SOV.AI.DATA_LOCATION"
+        ]
+      },
+      {
+        "wave": 4,
+        "findings": [
+          "F-SOV.EXIT.PLAN"
+        ]
+      }
+    ],
+    "pendingSource": [],
+    "notes": [
+      "Data is processed in us without an entity there; processing location alone does not trigger that country's law in v1 (Q11). Confirm with counsel.",
+      "Requirement set at one level for all data classes; the workshop confirms it per class."
+    ]
+  },
+  "ARC4_SG_AU_FINANCIAL_GROUP workshop": {
+    "versions": {
+      "engine": "4.0.0",
+      "questionSet": "4.0.0",
+      "controls": "4.0.0",
+      "registry": "1.0.0",
+      "registryStatusAsOf": "2026-10-14",
+      "claimsRegister": "0.1.0"
+    },
+    "asked": [
+      "A1",
+      "A2",
+      "A3",
+      "A4",
+      "A5",
+      "B1",
+      "B3",
+      "B4",
+      "D1",
+      "D2",
+      "D3",
+      "D4",
+      "P1",
+      "P2",
+      "L1",
+      "L2",
+      "R1",
+      "T1",
+      "K1",
+      "K2",
+      "K3",
+      "K4",
+      "O1",
+      "O2",
+      "O3",
+      "V1",
+      "V2",
+      "V3",
+      "V4",
+      "B5",
+      "X1",
+      "X2",
+      "I1",
+      "G1",
+      "G2",
+      "G3",
+      "H1",
+      "W1",
+      "W2",
+      "W3"
+    ],
+    "regimes": [
+      {
+        "regime": "US_CLOUD_ACT",
+        "grade": "advisory",
+        "rule": "US_CLOUD_ACT.1"
+      },
+      {
+        "regime": "US_FISA_702",
+        "grade": "advisory",
+        "rule": "US_FISA_702.1"
+      },
+      {
+        "regime": "SG_PDPA",
+        "grade": "applies",
+        "rule": "SG_PDPA.1"
+      },
+      {
+        "regime": "SG_MAS_TRM",
+        "grade": "applies",
+        "rule": "SG_MAS_TRM.1"
+      },
+      {
+        "regime": "AU_PRIVACY",
+        "grade": "applies",
+        "rule": "AU_PRIVACY.2"
+      },
+      {
+        "regime": "AU_APRA_CPS230",
+        "grade": "applies",
+        "rule": "AU_APRA_CPS230.1"
+      },
+      {
+        "regime": "AU_APRA_CPS234",
+        "grade": "applies",
+        "rule": "AU_APRA_CPS234.1"
+      },
+      {
+        "regime": "AU_SOCI",
+        "grade": "applies",
+        "rule": "AU_SOCI.1"
+      },
+      {
+        "regime": "IN_DPDP",
+        "grade": "applies",
+        "rule": "IN_DPDP.1"
+      },
+      {
+        "regime": "IN_CERT_IN",
+        "grade": "applies",
+        "rule": "IN_CERT_IN.1"
+      },
+      {
+        "regime": "HK_PDPO",
+        "grade": "applies",
+        "rule": "HK_PDPO.1"
+      },
+      {
+        "regime": "HK_HKMA",
+        "grade": "advisory",
+        "rule": "HK_HKMA.1"
+      }
+    ],
+    "requirements": [
+      {
+        "dataClass": "personal",
+        "required": "L2",
+        "floor": null,
+        "allowedZone": [
+          "sg",
+          "au",
+          "hk",
+          "in"
+        ]
+      },
+      {
+        "dataClass": "financial",
+        "required": "L3",
+        "floor": null,
+        "allowedZone": [
+          "sg",
+          "au"
+        ]
+      },
+      {
+        "dataClass": "proprietary",
+        "required": "L1",
+        "floor": null,
+        "allowedZone": [
+          "sg",
+          "us"
+        ]
+      }
+    ],
+    "maturity": {
+      "score": 85,
+      "band": "Sovereign-ready",
+      "wording": "Controls meet the level your data requires",
+      "controlsAssessed": 21,
+      "requiredControls": 21,
+      "coverage": 1,
+      "provisional": false,
+      "unconfirmed": [],
+      "notAnswered": [],
+      "label": null
+    },
+    "controls": [
+      {
+        "control": "SOV.GOV.OWNER",
+        "state": 3,
+        "score": 1
+      },
+      {
+        "control": "SOV.DATA.MAP",
+        "state": 3,
+        "score": 1
+      },
+      {
+        "control": "SOV.RES.LOCATION",
+        "state": 0,
+        "byClass": {
+          "personal": 3,
+          "financial": 0,
+          "proprietary": 3
+        },
+        "score": 0.667
+      },
+      {
+        "control": "SOV.RES.REGION_LOCK",
+        "state": 3,
+        "score": 1
+      },
+      {
+        "control": "SOV.BACKUP.LOCATION",
+        "state": 3,
+        "byClass": {
+          "personal": 3,
+          "financial": 3,
+          "proprietary": 3
+        },
+        "score": 1
+      },
+      {
+        "control": "SOV.XFER.BASIS",
+        "state": 3,
+        "score": 1
+      },
+      {
+        "control": "SOV.KEY.CUSTODY",
+        "state": 3,
+        "score": 1
+      },
+      {
+        "control": "SOV.KEY.REVOCATION",
+        "state": 3,
+        "score": 1
+      },
+      {
+        "control": "SOV.ENC.BASELINE",
+        "state": 3,
+        "score": 1
+      },
+      {
+        "control": "SOV.OPS.ADMIN_ACCESS",
+        "state": 3,
+        "score": 1
+      },
+      {
+        "control": "SOV.OPS.PERSONNEL_ZONE",
+        "state": 1,
+        "score": 0.333
+      },
+      {
+        "control": "SOV.OPS.OOB_MGMT",
+        "state": 3,
+        "score": 1
+      },
+      {
+        "control": "SOV.SAAS.SUBPROCESSOR",
+        "state": 3,
+        "score": 1
+      },
+      {
+        "control": "SOV.TP.VISIBILITY",
+        "state": 3,
+        "score": 1
+      },
+      {
+        "control": "SOV.TP.REGISTER",
+        "state": 3,
+        "score": 1
+      },
+      {
+        "control": "SOV.TP.AUDIT",
+        "state": 3,
+        "score": 1
+      },
+      {
+        "control": "SOV.EXIT.PLAN",
+        "state": 2,
+        "score": 0.667
+      },
+      {
+        "control": "SOV.CONC.PROVIDER",
+        "state": 2,
+        "score": 0.667
+      },
+      {
+        "control": "SOV.CERT.ASSURANCE",
+        "state": 3,
+        "score": 1
+      },
+      {
+        "control": "SOV.AI.DATA_LOCATION",
+        "state": 1,
+        "score": 0.333
+      },
+      {
+        "control": "SOV.IR.REPORTING",
+        "state": 1,
+        "score": 0.333
+      }
+    ],
+    "exposure": {
+      "summary": "9 regimes apply, 0 likely – confirm, 3 advisory; 0 red, 7 amber, 0 green.",
+      "largestCap": {
+        "regime": "AU_PRIVACY",
+        "grade": "applies",
+        "article": "s.13G",
+        "label": "cap, not expected fine",
+        "amount": 50000000,
+        "range": null,
+        "currency": "AUD",
+        "eur": 31187624.750499003,
+        "basis": "AUD 50M fixed limb; the 30% limb is not computed (it rests on a turnover the assessment does not collect)",
+        "rateDate": "2026-10-12",
+        "claims": [
+          "CLM-SOV-147",
+          "CLM-SOV-194"
+        ]
+      },
+      "regimes": [
+        {
+          "regime": "US_CLOUD_ACT",
+          "rag": "not_rated",
+          "assessed": 0,
+          "required": 0,
+          "cap": null
+        },
+        {
+          "regime": "US_FISA_702",
+          "rag": "not_rated",
+          "assessed": 0,
+          "required": 0,
+          "cap": null
+        },
+        {
+          "regime": "SG_PDPA",
+          "rag": "amber",
+          "assessed": 2,
+          "required": 2,
+          "cap": {
+            "amount": 1000000,
+            "range": null,
+            "currency": "SGD"
+          }
+        },
+        {
+          "regime": "SG_MAS_TRM",
+          "rag": "amber",
+          "assessed": 4,
+          "required": 4,
+          "cap": null
+        },
+        {
+          "regime": "AU_PRIVACY",
+          "rag": "amber",
+          "assessed": 3,
+          "required": 3,
+          "cap": {
+            "amount": 50000000,
+            "range": null,
+            "currency": "AUD"
+          }
+        },
+        {
+          "regime": "AU_APRA_CPS230",
+          "rag": "amber",
+          "assessed": 5,
+          "required": 5,
+          "cap": null
+        },
+        {
+          "regime": "AU_APRA_CPS234",
+          "rag": "amber",
+          "assessed": 3,
+          "required": 3,
+          "cap": null
+        },
+        {
+          "regime": "AU_SOCI",
+          "rag": "amber",
+          "assessed": 1,
+          "required": 1,
+          "cap": null
+        },
+        {
+          "regime": "IN_DPDP",
+          "rag": "not_rated",
+          "assessed": 0,
+          "required": 0,
+          "cap": {
+            "amount": 2500000000,
+            "range": null,
+            "currency": "INR"
+          }
+        },
+        {
+          "regime": "IN_CERT_IN",
+          "rag": "amber",
+          "assessed": 1,
+          "required": 1,
+          "cap": null
+        },
+        {
+          "regime": "HK_PDPO",
+          "rag": "not_rated",
+          "assessed": 0,
+          "required": 0,
+          "cap": {
+            "amount": 50000,
+            "range": null,
+            "currency": "HKD"
+          }
+        },
+        {
+          "regime": "HK_HKMA",
+          "rag": "not_rated",
+          "assessed": 0,
+          "required": 0,
+          "cap": null
+        }
+      ]
+    },
+    "findings": [
+      {
+        "id": "F-SOV.RES.LOCATION",
+        "severity": "Critical",
+        "wave": 1,
+        "timeFrame": "0–3 months",
+        "dataClasses": [
+          "financial"
+        ]
+      },
+      {
+        "id": "F-SOV.IR.REPORTING",
+        "severity": "Medium",
+        "wave": 3,
+        "timeFrame": "6–12 months",
+        "dataClasses": []
+      },
+      {
+        "id": "F-SOV.AI.DATA_LOCATION",
+        "severity": "Medium",
+        "wave": 3,
+        "timeFrame": "6–12 months",
+        "dataClasses": [
+          "personal",
+          "financial",
+          "proprietary"
+        ]
+      },
+      {
+        "id": "F-SOV.OPS.PERSONNEL_ZONE",
+        "severity": "Medium",
+        "wave": 3,
+        "timeFrame": "6–12 months",
+        "dataClasses": [
+          "financial"
+        ]
+      },
+      {
+        "id": "F-SOV.EXIT.PLAN",
+        "severity": "Low",
+        "wave": 4,
+        "timeFrame": "12–24 months",
+        "dataClasses": [
+          "financial"
+        ]
+      },
+      {
+        "id": "F-SOV.CONC.PROVIDER",
+        "severity": "Low",
+        "wave": 4,
+        "timeFrame": "12–24 months",
+        "dataClasses": [
+          "financial"
+        ]
+      }
+    ],
+    "roadmap": [
+      {
+        "wave": 1,
+        "findings": [
+          "F-SOV.RES.LOCATION"
+        ]
+      },
+      {
+        "wave": 3,
+        "findings": [
+          "F-SOV.IR.REPORTING",
+          "F-SOV.AI.DATA_LOCATION",
+          "F-SOV.OPS.PERSONNEL_ZONE"
+        ]
+      },
+      {
+        "wave": 4,
+        "findings": [
+          "F-SOV.EXIT.PLAN",
+          "F-SOV.CONC.PROVIDER"
+        ]
+      }
+    ],
+    "pendingSource": [],
+    "notes": [
+      "Data is processed in us without an entity there; processing location alone does not trigger that country's law in v1 (Q11). Confirm with counsel."
+    ]
+  },
+  "ARC5_IN_SERVICES_EU_CLIENTS executive": {
+    "versions": {
+      "engine": "4.0.0",
+      "questionSet": "4.0.0",
+      "controls": "4.0.0",
+      "registry": "1.0.0",
+      "registryStatusAsOf": "2026-10-14",
+      "claimsRegister": "0.1.0"
+    },
+    "asked": [
+      "A1",
+      "A2",
+      "A3",
+      "A4",
+      "B1",
+      "B4",
+      "D1",
+      "D3",
+      "P1",
+      "L1",
+      "R1",
+      "T1",
+      "T2",
+      "K1",
+      "O1",
+      "X1",
+      "I1"
+    ],
+    "regimes": [
+      {
+        "regime": "EU_GDPR",
+        "grade": "applies",
+        "rule": "EU_GDPR.1"
+      },
+      {
+        "regime": "EU_NIS2",
+        "grade": "applies",
+        "rule": "EU_NIS2.8",
+        "nis2Class": "essential"
+      },
+      {
+        "regime": "EU_DORA",
+        "grade": "advisory",
+        "rule": "EU_DORA.5"
+      },
+      {
+        "regime": "EU_AI_ACT",
+        "grade": "applies",
+        "rule": "EU_AI_ACT.2"
+      },
+      {
+        "regime": "EU_DATA_ACT",
+        "grade": "advisory",
+        "rule": "EU_DATA_ACT.2"
+      },
+      {
+        "regime": "UK_GDPR",
+        "grade": "applies",
+        "rule": "UK_GDPR.1"
+      },
+      {
+        "regime": "UK_CSR_BILL",
+        "grade": "advisory",
+        "rule": "UK_CSR_BILL.1"
+      },
+      {
+        "regime": "US_CLOUD_ACT",
+        "grade": "advisory",
+        "rule": "US_CLOUD_ACT.1"
+      },
+      {
+        "regime": "US_FISA_702",
+        "grade": "advisory",
+        "rule": "US_FISA_702.1"
+      },
+      {
+        "regime": "US_DOJ_DSP",
+        "grade": "advisory",
+        "rule": "US_DOJ_DSP.3"
+      },
+      {
+        "regime": "US_CCPA",
+        "grade": "likely_confirm",
+        "rule": "US_CCPA.3"
+      },
+      {
+        "regime": "US_STATE_PRIVACY",
+        "grade": "advisory",
+        "rule": "US_STATE_PRIVACY.1"
+      },
+      {
+        "regime": "US_SEC_CYBER",
+        "grade": "applies",
+        "rule": "US_SEC_CYBER.1"
+      },
+      {
+        "regime": "IN_DPDP",
+        "grade": "applies",
+        "rule": "IN_DPDP.1"
+      },
+      {
+        "regime": "IN_CERT_IN",
+        "grade": "applies",
+        "rule": "IN_CERT_IN.1"
+      }
+    ],
+    "requirements": [
+      {
+        "dataClass": "personal",
+        "required": "L1",
+        "floor": null,
+        "allowedZone": [
+          "in",
+          "eea",
+          "uk",
+          "us"
+        ]
+      },
+      {
+        "dataClass": "special",
+        "required": "L1",
+        "floor": null,
+        "allowedZone": [
+          "in",
+          "eea",
+          "uk",
+          "us"
+        ]
+      },
+      {
+        "dataClass": "financial",
+        "required": "L1",
+        "floor": null,
+        "allowedZone": [
+          "in",
+          "eea",
+          "uk",
+          "us"
+        ]
+      },
+      {
+        "dataClass": "proprietary",
+        "required": "L1",
+        "floor": null,
+        "allowedZone": [
+          "in",
+          "eea",
+          "uk",
+          "us"
+        ]
+      }
+    ],
+    "maturity": {
+      "score": 67,
+      "band": "Managed",
+      "wording": "Most required controls in place; gaps are specific",
+      "controlsAssessed": 6,
+      "requiredControls": 14,
+      "coverage": 1,
+      "provisional": false,
+      "unconfirmed": [],
+      "notAnswered": [],
+      "label": "Executive maturity, 6 of 14 required controls assessed"
+    },
+    "controls": [
+      {
+        "control": "SOV.RES.LOCATION",
+        "state": 3,
+        "byClass": {
+          "personal": 3,
+          "special": 3,
+          "financial": 3,
+          "proprietary": 3
+        },
+        "score": 1
+      },
+      {
+        "control": "SOV.RES.REGION_LOCK",
+        "state": 0,
+        "score": 0
+      },
+      {
+        "control": "SOV.BACKUP.LOCATION",
+        "state": 3,
+        "byClass": {
+          "personal": 3,
+          "special": 3,
+          "financial": 3,
+          "proprietary": 3
+        },
+        "score": 1
+      },
+      {
+        "control": "SOV.XFER.BASIS",
+        "state": 3,
+        "score": 1
+      },
+      {
+        "control": "SOV.XFER.TIA",
+        "state": 1,
+        "score": 0.333
+      },
+      {
+        "control": "SOV.AI.DATA_LOCATION",
+        "state": 1,
+        "score": 0.333
+      }
+    ],
+    "exposure": {
+      "summary": "7 regimes apply, 1 likely – confirm, 7 advisory; 0 red, 2 amber, 0 green.",
+      "largestCap": {
+        "regime": "EU_GDPR",
+        "grade": "applies",
+        "article": "Art. 83(5)",
+        "label": "cap, not expected fine",
+        "amount": null,
+        "range": [
+          40000000,
+          400000000
+        ],
+        "currency": "EUR",
+        "eur": 400000000,
+        "basis": "From the turnover band (1bn_10bn): EUR 20M or 4% of turnover, whichever is higher",
+        "rateDate": null,
+        "claims": [
+          "CLM-SOV-016"
+        ]
+      },
+      "regimes": [
+        {
+          "regime": "EU_GDPR",
+          "rag": "amber",
+          "assessed": 2,
+          "required": 7,
+          "cap": {
+            "amount": null,
+            "range": [
+              40000000,
+              400000000
+            ],
+            "currency": "EUR"
+          }
+        },
+        {
+          "regime": "EU_NIS2",
+          "rag": "not_rated",
+          "assessed": 0,
+          "required": 4,
+          "cap": {
+            "amount": null,
+            "range": [
+              20000000,
+              200000000
+            ],
+            "currency": "EUR"
+          }
+        },
+        {
+          "regime": "EU_DORA",
+          "rag": "not_rated",
+          "assessed": 0,
+          "required": 0,
+          "cap": null
+        },
+        {
+          "regime": "EU_AI_ACT",
+          "rag": "not_rated",
+          "assessed": 0,
+          "required": 1,
+          "cap": {
+            "amount": null,
+            "range": [
+              30000000,
+              300000000
+            ],
+            "currency": "EUR"
+          }
+        },
+        {
+          "regime": "EU_DATA_ACT",
+          "rag": "not_rated",
+          "assessed": 0,
+          "required": 0,
+          "cap": null
+        },
+        {
+          "regime": "UK_GDPR",
+          "rag": "amber",
+          "assessed": 2,
+          "required": 7,
+          "cap": {
+            "amount": null,
+            "range": [
+              40000000,
+              400000000
+            ],
+            "currency": "EUR"
+          }
+        },
+        {
+          "regime": "UK_CSR_BILL",
+          "rag": "not_rated",
+          "assessed": 0,
+          "required": 0,
+          "cap": null
+        },
+        {
+          "regime": "US_CLOUD_ACT",
+          "rag": "not_rated",
+          "assessed": 0,
+          "required": 0,
+          "cap": null
+        },
+        {
+          "regime": "US_FISA_702",
+          "rag": "not_rated",
+          "assessed": 0,
+          "required": 0,
+          "cap": null
+        },
+        {
+          "regime": "US_DOJ_DSP",
+          "rag": "not_rated",
+          "assessed": 0,
+          "required": 0,
+          "cap": null
+        },
+        {
+          "regime": "US_CCPA",
+          "rag": "not_rated",
+          "assessed": 0,
+          "required": 2,
+          "cap": null
+        },
+        {
+          "regime": "US_STATE_PRIVACY",
+          "rag": "not_rated",
+          "assessed": 0,
+          "required": 0,
+          "cap": null
+        },
+        {
+          "regime": "US_SEC_CYBER",
+          "rag": "not_rated",
+          "assessed": 0,
+          "required": 1,
+          "cap": null
+        },
+        {
+          "regime": "IN_DPDP",
+          "rag": "not_rated",
+          "assessed": 0,
+          "required": 0,
+          "cap": {
+            "amount": 2500000000,
+            "range": null,
+            "currency": "INR"
+          }
+        },
+        {
+          "regime": "IN_CERT_IN",
+          "rag": "not_rated",
+          "assessed": 0,
+          "required": 1,
+          "cap": null
+        }
+      ]
+    },
+    "findings": [
+      {
+        "id": "F-SOV.XFER.TIA",
+        "severity": "Medium",
+        "wave": 3,
+        "timeFrame": "6–12 months",
+        "dataClasses": []
+      },
+      {
+        "id": "F-SOV.RES.REGION_LOCK",
+        "severity": "Medium",
+        "wave": 3,
+        "timeFrame": "6–12 months",
+        "dataClasses": [
+          "personal",
+          "special",
+          "financial",
+          "proprietary"
+        ]
+      },
+      {
+        "id": "F-SCOPE-US_CCPA",
+        "severity": "Medium",
+        "wave": 1,
+        "timeFrame": "6–12 months",
+        "dataClasses": []
+      },
+      {
+        "id": "F-SOV.AI.DATA_LOCATION",
+        "severity": "Low",
+        "wave": 4,
+        "timeFrame": "12–24 months",
+        "dataClasses": [
+          "personal",
+          "special",
+          "financial",
+          "proprietary"
+        ]
+      }
+    ],
+    "roadmap": [
+      {
+        "wave": 1,
+        "findings": [
+          "F-SCOPE-US_CCPA"
+        ]
+      },
+      {
+        "wave": 3,
+        "findings": [
+          "F-SOV.XFER.TIA",
+          "F-SOV.RES.REGION_LOCK"
+        ]
+      },
+      {
+        "wave": 4,
+        "findings": [
+          "F-SOV.AI.DATA_LOCATION"
+        ]
+      }
+    ],
+    "pendingSource": [],
+    "notes": [
+      "Requirement set at one level for all data classes; the workshop confirms it per class."
+    ]
+  },
+  "ARC5_IN_SERVICES_EU_CLIENTS workshop": {
+    "versions": {
+      "engine": "4.0.0",
+      "questionSet": "4.0.0",
+      "controls": "4.0.0",
+      "registry": "1.0.0",
+      "registryStatusAsOf": "2026-10-14",
+      "claimsRegister": "0.1.0"
+    },
+    "asked": [
+      "A1",
+      "A2",
+      "A3",
+      "A4",
+      "A5",
+      "A6",
+      "A7",
+      "B1",
+      "B2",
+      "B4",
+      "D1",
+      "D2",
+      "D3",
+      "D4",
+      "P1",
+      "P2",
+      "L1",
+      "L2",
+      "R1",
+      "T1",
+      "T2",
+      "K1",
+      "K3",
+      "O1",
+      "V1",
+      "V2",
+      "V3",
+      "V4",
+      "X1",
+      "X2",
+      "I1",
+      "I2",
+      "G1",
+      "G2",
+      "W1",
+      "W2",
+      "W3"
+    ],
+    "regimes": [
+      {
+        "regime": "EU_GDPR",
+        "grade": "applies",
+        "rule": "EU_GDPR.1"
+      },
+      {
+        "regime": "EU_NIS2",
+        "grade": "applies",
+        "rule": "EU_NIS2.3",
+        "nis2Class": "essential"
+      },
+      {
+        "regime": "EU_DORA",
+        "grade": "advisory",
+        "rule": "EU_DORA.5"
+      },
+      {
+        "regime": "EU_AI_ACT",
+        "grade": "applies",
+        "rule": "EU_AI_ACT.2"
+      },
+      {
+        "regime": "EU_DATA_ACT",
+        "grade": "advisory",
+        "rule": "EU_DATA_ACT.2"
+      },
+      {
+        "regime": "UK_GDPR",
+        "grade": "applies",
+        "rule": "UK_GDPR.1"
+      },
+      {
+        "regime": "UK_CSR_BILL",
+        "grade": "advisory",
+        "rule": "UK_CSR_BILL.1"
+      },
+      {
+        "regime": "US_CLOUD_ACT",
+        "grade": "advisory",
+        "rule": "US_CLOUD_ACT.1"
+      },
+      {
+        "regime": "US_FISA_702",
+        "grade": "advisory",
+        "rule": "US_FISA_702.1"
+      },
+      {
+        "regime": "US_DOJ_DSP",
+        "grade": "advisory",
+        "rule": "US_DOJ_DSP.3"
+      },
+      {
+        "regime": "US_CCPA",
+        "grade": "applies",
+        "rule": "US_CCPA.1"
+      },
+      {
+        "regime": "US_STATE_PRIVACY",
+        "grade": "advisory",
+        "rule": "US_STATE_PRIVACY.1"
+      },
+      {
+        "regime": "US_SEC_CYBER",
+        "grade": "applies",
+        "rule": "US_SEC_CYBER.1"
+      },
+      {
+        "regime": "IN_DPDP",
+        "grade": "applies",
+        "rule": "IN_DPDP.1"
+      },
+      {
+        "regime": "IN_CERT_IN",
+        "grade": "applies",
+        "rule": "IN_CERT_IN.1"
+      }
+    ],
+    "requirements": [
+      {
+        "dataClass": "personal",
+        "required": "L1",
+        "floor": null,
+        "allowedZone": [
+          "in",
+          "eea",
+          "uk",
+          "us"
+        ]
+      },
+      {
+        "dataClass": "special",
+        "required": "L1",
+        "floor": null,
+        "allowedZone": [
+          "in",
+          "eea"
+        ]
+      },
+      {
+        "dataClass": "financial",
+        "required": "L2",
+        "floor": null,
+        "allowedZone": [
+          "eea"
+        ]
+      },
+      {
+        "dataClass": "proprietary",
+        "required": "L0",
+        "floor": null,
+        "allowedZone": []
+      }
+    ],
+    "maturity": {
+      "score": 45,
+      "band": "Developing",
+      "wording": "Some required controls in place; material gaps remain",
+      "controlsAssessed": 17,
+      "requiredControls": 17,
+      "coverage": 1,
+      "provisional": false,
+      "unconfirmed": [],
+      "notAnswered": [],
+      "label": null
+    },
+    "controls": [
+      {
+        "control": "SOV.GOV.OWNER",
+        "state": 1,
+        "score": 0.333
+      },
+      {
+        "control": "SOV.DATA.MAP",
+        "state": 1,
+        "score": 0.333
+      },
+      {
+        "control": "SOV.RES.LOCATION",
+        "state": 0,
+        "byClass": {
+          "personal": 3,
+          "special": 3,
+          "financial": 0
+        },
+        "score": 0.667
+      },
+      {
+        "control": "SOV.RES.REGION_LOCK",
+        "state": 0,
+        "score": 0
+      },
+      {
+        "control": "SOV.BACKUP.LOCATION",
+        "state": 0,
+        "byClass": {
+          "personal": 3,
+          "special": 3,
+          "financial": 0
+        },
+        "score": 0.667
+      },
+      {
+        "control": "SOV.XFER.BASIS",
+        "state": 3,
+        "score": 1
+      },
+      {
+        "control": "SOV.XFER.TIA",
+        "state": 1,
+        "score": 0.333
+      },
+      {
+        "control": "SOV.KEY.CUSTODY",
+        "state": 1,
+        "score": 0.333
+      },
+      {
+        "control": "SOV.ENC.BASELINE",
+        "state": 2,
+        "score": 0.667
+      },
+      {
+        "control": "SOV.OPS.ADMIN_ACCESS",
+        "state": 1,
+        "score": 0.333
+      },
+      {
+        "control": "SOV.TP.DPA",
+        "state": 2,
+        "score": 0.667
+      },
+      {
+        "control": "SOV.SAAS.SUBPROCESSOR",
+        "state": 1,
+        "score": 0.333
+      },
+      {
+        "control": "SOV.TP.VISIBILITY",
+        "state": 1,
+        "score": 0.333
+      },
+      {
+        "control": "SOV.TP.AUDIT",
+        "state": 1,
+        "score": 0.333
+      },
+      {
+        "control": "SOV.AI.DATA_LOCATION",
+        "state": 1,
+        "score": 0.333
+      },
+      {
+        "control": "SOV.AI.GOVERNANCE",
+        "state": 1,
+        "score": 0.333
+      },
+      {
+        "control": "SOV.IR.REPORTING",
+        "state": 1,
+        "score": 0.333
+      }
+    ],
+    "exposure": {
+      "summary": "8 regimes apply, 0 likely – confirm, 7 advisory; 0 red, 7 amber, 0 green.",
+      "largestCap": {
+        "regime": "EU_GDPR",
+        "grade": "applies",
+        "article": "Art. 83(5)",
+        "label": "cap, not expected fine",
+        "amount": 80000000,
+        "range": null,
+        "currency": "USD",
+        "eur": 71549950.80940881,
+        "basis": "4% of USD 2bn worldwide turnover",
+        "rateDate": "2026-10-12",
+        "claims": [
+          "CLM-SOV-016",
+          "CLM-SOV-191"
+        ]
+      },
+      "regimes": [
+        {
+          "regime": "EU_GDPR",
+          "rag": "amber",
+          "assessed": 7,
+          "required": 7,
+          "cap": {
+            "amount": 80000000,
+            "range": null,
+            "currency": "USD"
+          }
+        },
+        {
+          "regime": "EU_NIS2",
+          "rag": "amber",
+          "assessed": 4,
+          "required": 4,
+          "cap": {
+            "amount": 40000000,
+            "range": null,
+            "currency": "USD"
+          }
+        },
+        {
+          "regime": "EU_DORA",
+          "rag": "not_rated",
+          "assessed": 0,
+          "required": 0,
+          "cap": null
+        },
+        {
+          "regime": "EU_AI_ACT",
+          "rag": "amber",
+          "assessed": 1,
+          "required": 1,
+          "cap": {
+            "amount": 60000000,
+            "range": null,
+            "currency": "USD"
+          }
+        },
+        {
+          "regime": "EU_DATA_ACT",
+          "rag": "not_rated",
+          "assessed": 0,
+          "required": 0,
+          "cap": null
+        },
+        {
+          "regime": "UK_GDPR",
+          "rag": "amber",
+          "assessed": 7,
+          "required": 7,
+          "cap": {
+            "amount": 80000000,
+            "range": null,
+            "currency": "USD"
+          }
+        },
+        {
+          "regime": "UK_CSR_BILL",
+          "rag": "not_rated",
+          "assessed": 0,
+          "required": 0,
+          "cap": null
+        },
+        {
+          "regime": "US_CLOUD_ACT",
+          "rag": "not_rated",
+          "assessed": 0,
+          "required": 0,
+          "cap": null
+        },
+        {
+          "regime": "US_FISA_702",
+          "rag": "not_rated",
+          "assessed": 0,
+          "required": 0,
+          "cap": null
+        },
+        {
+          "regime": "US_DOJ_DSP",
+          "rag": "not_rated",
+          "assessed": 0,
+          "required": 0,
+          "cap": null
+        },
+        {
+          "regime": "US_CCPA",
+          "rag": "amber",
+          "assessed": 2,
+          "required": 2,
+          "cap": null
+        },
+        {
+          "regime": "US_STATE_PRIVACY",
+          "rag": "not_rated",
+          "assessed": 0,
+          "required": 0,
+          "cap": null
+        },
+        {
+          "regime": "US_SEC_CYBER",
+          "rag": "amber",
+          "assessed": 1,
+          "required": 1,
+          "cap": null
+        },
+        {
+          "regime": "IN_DPDP",
+          "rag": "not_rated",
+          "assessed": 0,
+          "required": 0,
+          "cap": {
+            "amount": 2500000000,
+            "range": null,
+            "currency": "INR"
+          }
+        },
+        {
+          "regime": "IN_CERT_IN",
+          "rag": "amber",
+          "assessed": 1,
+          "required": 1,
+          "cap": null
+        }
+      ]
+    },
+    "findings": [
+      {
+        "id": "F-SOV.RES.LOCATION",
+        "severity": "Critical",
+        "wave": 1,
+        "timeFrame": "0–3 months",
+        "dataClasses": [
+          "financial"
+        ]
+      },
+      {
+        "id": "F-SOV.KEY.CUSTODY",
+        "severity": "High",
+        "wave": 2,
+        "timeFrame": "3–6 months",
+        "dataClasses": [
+          "financial"
+        ]
+      },
+      {
+        "id": "F-SOV.OPS.ADMIN_ACCESS",
+        "severity": "High",
+        "wave": 2,
+        "timeFrame": "3–6 months",
+        "dataClasses": [
+          "financial"
+        ]
+      },
+      {
+        "id": "F-SOV.BACKUP.LOCATION",
+        "severity": "High",
+        "wave": 2,
+        "timeFrame": "3–6 months",
+        "dataClasses": [
+          "financial"
+        ]
+      },
+      {
+        "id": "F-SOV.RES.REGION_LOCK",
+        "severity": "High",
+        "wave": 1,
+        "timeFrame": "3–6 months",
+        "dataClasses": [
+          "personal",
+          "special",
+          "financial"
+        ]
+      },
+      {
+        "id": "F-SOV.IR.REPORTING",
+        "severity": "Medium",
+        "wave": 3,
+        "timeFrame": "6–12 months",
+        "dataClasses": []
+      },
+      {
+        "id": "F-SOV.DATA.MAP",
+        "severity": "Medium",
+        "wave": 1,
+        "timeFrame": "6–12 months",
+        "dataClasses": [
+          "personal",
+          "special",
+          "financial"
+        ]
+      },
+      {
+        "id": "F-SOV.SAAS.SUBPROCESSOR",
+        "severity": "Medium",
+        "wave": 3,
+        "timeFrame": "6–12 months",
+        "dataClasses": [
+          "financial"
+        ]
+      },
+      {
+        "id": "F-SOV.TP.VISIBILITY",
+        "severity": "Medium",
+        "wave": 1,
+        "timeFrame": "6–12 months",
+        "dataClasses": [
+          "personal",
+          "special",
+          "financial"
+        ]
+      },
+      {
+        "id": "F-SOV.XFER.TIA",
+        "severity": "Medium",
+        "wave": 3,
+        "timeFrame": "6–12 months",
+        "dataClasses": []
+      },
+      {
+        "id": "F-SOV.AI.DATA_LOCATION",
+        "severity": "Medium",
+        "wave": 3,
+        "timeFrame": "6–12 months",
+        "dataClasses": [
+          "personal",
+          "special",
+          "financial"
+        ]
+      },
+      {
+        "id": "F-SOV.AI.GOVERNANCE",
+        "severity": "Medium",
+        "wave": 3,
+        "timeFrame": "6–12 months",
+        "dataClasses": []
+      },
+      {
+        "id": "F-SOV.ENC.BASELINE",
+        "severity": "Low",
+        "wave": 4,
+        "timeFrame": "12–24 months",
+        "dataClasses": [
+          "personal",
+          "special",
+          "financial"
+        ]
+      },
+      {
+        "id": "F-SOV.TP.DPA",
+        "severity": "Low",
+        "wave": 4,
+        "timeFrame": "12–24 months",
+        "dataClasses": []
+      },
+      {
+        "id": "F-SOV.GOV.OWNER",
+        "severity": "Low",
+        "wave": 4,
+        "timeFrame": "12–24 months",
+        "dataClasses": [
+          "personal",
+          "special",
+          "financial"
+        ]
+      },
+      {
+        "id": "F-SOV.TP.AUDIT",
+        "severity": "Low",
+        "wave": 4,
+        "timeFrame": "12–24 months",
+        "dataClasses": [
+          "financial"
+        ]
+      }
+    ],
+    "roadmap": [
+      {
+        "wave": 1,
+        "findings": [
+          "F-SOV.DATA.MAP",
+          "F-SOV.TP.VISIBILITY",
+          "F-SOV.RES.REGION_LOCK",
+          "F-SOV.RES.LOCATION"
+        ]
+      },
+      {
+        "wave": 2,
+        "findings": [
+          "F-SOV.KEY.CUSTODY",
+          "F-SOV.OPS.ADMIN_ACCESS",
+          "F-SOV.BACKUP.LOCATION"
+        ]
+      },
+      {
+        "wave": 3,
+        "findings": [
+          "F-SOV.IR.REPORTING",
+          "F-SOV.SAAS.SUBPROCESSOR",
+          "F-SOV.XFER.TIA",
+          "F-SOV.AI.DATA_LOCATION",
+          "F-SOV.AI.GOVERNANCE"
+        ]
+      },
+      {
+        "wave": 4,
+        "findings": [
+          "F-SOV.ENC.BASELINE",
+          "F-SOV.TP.DPA",
+          "F-SOV.GOV.OWNER",
+          "F-SOV.TP.AUDIT"
+        ]
+      }
+    ],
+    "pendingSource": [],
+    "notes": []
+  }
+}
