@@ -100,7 +100,7 @@ Reviewer: Claude (AI, acting in a counsel role at the owner's request, 22 Oct 20
 | # | Action | Who | Blocks |
 |---|---|---|---|
 | A1 | Send the section 3 request to LTM's privacy office; add the confirmed mechanism and data protection contact to the notice | Owner | External EU/UK use |
-| A2 | Trademark register search for FINOPS (UKIPO, EUIPO, USPTO, India), or ask trademarks@lfprojects.org | Owner | First external client |
+| A2 | Trademark register search for FINOPS (UKIPO, EUIPO, USPTO, India), or ask trademarks@lfprojects.org. Preliminary desk check 23 Oct 2026 (`A2-trademark-check.md`): no bare FINOPS mark found; Perficient markets a similar "Cloud FinOps IQ" assessment, which needs LTM legal's view | Owner | First external client |
 | A3 | Approve the revised notice and disclaimer (sections 4, 6.1 C2) | Owner | Done 22 Oct 2026; draft markers removed |
 
 ### 6.3 Limits of this review

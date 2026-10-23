@@ -157,7 +157,7 @@ test('executive: every question renders and can be answered; complete, then resu
   await page.getByRole('button', { name: 'Complete assessment' }).click();
   // The LTM working screen shows the server's steps while it scores, then gives way to the dashboard.
   const screen = page.locator('.working');
-  await expect(screen).toHaveAttribute('role', 'status');
+  await expect(screen.locator('.working-step')).toHaveAttribute('role', 'status');
   await expect(screen).toContainText(/Scoring your answers on the server|Rating each capability|Sizing the indicative value range|Building the roadmap/);
   await expect(screen.locator('.working-list li')).toHaveCount(5);
   await expect(screen).toHaveCount(0, { timeout: 15_000 });
@@ -412,6 +412,31 @@ test('keyboard (M7): start, answer, complete and delete an assessment with the k
   await page.keyboard.press('Enter');
   await expect(page.getByRole('status').filter({ hasText: 'Keys Ltd deleted.' })).toBeFocused();
   await expect(page.getByText('No saved assessments yet.')).toBeVisible();
+});
+
+test('screen readers: focus follows the view, the working screen reads one line, answers are not announced, headings nest', async ({ page }) => {
+  test.setTimeout(90_000);
+  await start(page, 'executive');
+  await expect(page.locator('#step-h')).toBeFocused();
+  await expect(page.locator('#step-h')).toHaveText('Your estate');
+  await fillEstate(page, 'executive');
+  await page.locator('nav.steps button', { hasText: 'Optimize Usage & Cost' }).first().click();
+  await expect(page.locator('#step-h')).toBeFocused();
+  // The save status changes on every answer, so it is not a live region.
+  await expect(page.locator('#save-status')).not.toHaveAttribute('role', /./);
+  await expect(page.locator('#save-status')).not.toHaveAttribute('aria-live', /./);
+  await page.locator('nav.steps button', { hasText: 'Review & complete' }).click();
+  await page.getByRole('button', { name: /^Complete (assessment|anyway)$/ }).click();
+  // Only the current step line is live, not the whole card.
+  await expect(page.locator('.working')).not.toHaveAttribute('aria-live', /./);
+  await expect(page.locator('.working [aria-live]')).toHaveCount(1);
+  await expect(page.locator('.working [aria-live]')).toHaveClass(/working-step/);
+  await expect(page.locator('.working')).toHaveCount(0, { timeout: 15_000 });
+  await expect(page.locator('#hero-h')).toBeFocused();
+  // No heading level is skipped below the client's h1, and the heatmap's name carries its data.
+  const levels = await page.locator('main h1, main h2, main h3, main h4').evaluateAll(els => els.filter(e => (e as HTMLElement).offsetParent).map(e => Number(e.tagName[1])));
+  levels.forEach((l, i) => { if (i) expect(l - levels[i - 1], levels.join(',')).toBeLessThanOrEqual(1); });
+  await expect(page.getByRole('img', { name: /^Capability heatmap by domain: [^:]+: \S/ })).toBeVisible();
 });
 
 test('carried over from FinOps Value Case: client logo on the page and report, teaser mode, archive to Reports', async ({ page }) => {

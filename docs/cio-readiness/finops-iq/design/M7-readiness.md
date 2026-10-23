@@ -1,6 +1,8 @@
 # FinOps IQ M7: production-readiness review
 
-Execution phase M7 (PLAN F12, expanded). Status at 22 Oct 2026. Branch `finops-iq-merge`, build after 625e4d9 (engine 3.6.1 after the M7 fixes; value model 1.2.0, playbook 1.0.0). Prepared by the build; the owner decides.
+Execution phase M7 (PLAN F12, expanded). Status at 22 Oct 2026, updated 23 Oct 2026. Branch `finops-iq-merge`, build after 625e4d9 (engine 3.6.1 after the M7 fixes; value model 1.2.0, playbook 1.0.0); now live on main at d83fd18 (engine 3.6.3, playbook 1.1.0). Prepared by the build; the owner decides.
+
+**Status at 23 Oct 2026: every gate passes.** The owner ran a full assessment in production and approved the result and the report. Open before the first external client only: A1 (transfer instrument, deferred to the move to LTM's environment), A2 (trademark search), a lawyer's read, a screen-reader pass by a person, and the reports bucket expiry rule (deferred to the move to LTM's environment).
 
 **Gate M7:** functional, legal, technical and security, UI, report, PDF and presentability each Pass with evidence; CIO challenge at least 9 of 10; live smoke test.
 
@@ -10,9 +12,9 @@ Execution phase M7 (PLAN F12, expanded). Status at 22 Oct 2026. Branch `finops-i
 | Legal | **Pass for internal use**; three owner actions before external use | Section 2 |
 | Technical and security | **Pass** | Section 3 |
 | UI and accessibility | **Pass** after fixes | Section 4 |
-| Report, PDF and presentability | **Pass with one decision open** (D2, Google commitment rate) and Medium/Low items on the backlog | Section 5 |
+| Report, PDF and presentability | **Pass**: D2 decided by the owner (keep 55%); backlog D8 to D21 fixed (engine 3.6.2); Governance and Reporting platform entries added (playbook 1.1.0) | Section 5 |
 | CIO challenge (at least 9 of 10) | **Pass: 10 of 10** | `M7-cio-challenge.md` |
-| Live smoke test | **Not run**: needs the branch pushed and deployed (owner's go-ahead) | Section 6 |
+| Live smoke test | **Pass** (22 and 23 Oct 2026, builds 125 to 127) | Section 6 |
 
 ---
 
@@ -60,6 +62,7 @@ Low-risk notes, no change made:
   - After Delete, keyboard focus fell to the page body (WCAG 2.4.3). Focus now moves to the confirm button, back to Delete on Cancel, and to a "deleted" announcement after the list reloads.
 - No horizontal scroll at 360px (existing test); every control has an accessible name (existing test).
 - **Not covered by automation:** a screen-reader pass (VoiceOver or NVDA) by a person. Recommended before external use; the structure (labelled fieldsets, live status regions, headings) is in place.
+- **Screen-reader preparation (23 Oct 2026):** an automated read of the accessibility tree and live announcements on every screen found and fixed five issues (working screen read in full at each step, save status announced after every answer, focus lost after start and completion, skipped heading level on the results, generic heatmap name). The person-run pass follows `screen-reader-checklist.md` (18 checks, about 15 minutes).
 
 ## 5. Report, PDF and presentability
 
@@ -81,4 +84,9 @@ The CIO challenge re-run (`M7-cio-challenge.md`, finops-cost-lead, build 625e4d9
 
 ## 6. Live smoke test
 
-Not run. It needs the branch pushed and deployed to a test environment, which waits for the owner. The planned script: sign in; run an executive and a workshop assessment; save, resume, complete; download the client and consultant PDFs and the backlog CSV; delete one; confirm in AWS that the `FinOpsIqAssessment` table has time to live on `expiresAt` and the three log groups keep one year.
+**Pass, 22 and 23 Oct 2026.** Production builds 125 (661bf5f), 126 (af3502a) and 127 (d83fd18) succeeded on main.
+- The owner ran full executive and workshop assessments in production: answer, save, resume, complete, the results dashboard and the PDF download. Owner feedback (11 items) was fixed in 661bf5f and confirmed by the owner; the owner approved the final assessment and report on 23 Oct 2026.
+- The report PDF failed in production at first ("Internal Error": the PDF library read a font data file from disk that the function bundle did not include). Fixed in 661bf5f; `npm run check:backend` now starts every function bundle from cold, so the same kind of fault fails the build.
+- AWS, checked 23 Oct 2026: the `FinOpsIqAssessment` table has time to live on `expiresAt` (enabled); the three FinOps IQ functions write to their own log groups, each kept 365 days. An older default log group of the scoring function (`/aws/lambda/…evaluatefinopsiqlambda…`, last written 6 Oct 2026, before the dedicated groups) has no retention set; it can be given a retention period or deleted.
+
+The script as planned: sign in; run an executive and a workshop assessment; save, resume, complete; download the client and consultant PDFs and the backlog CSV; delete one; confirm in AWS that the `FinOpsIqAssessment` table has time to live on `expiresAt` and the three log groups keep one year.

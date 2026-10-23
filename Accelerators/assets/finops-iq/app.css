@@ -223,7 +223,7 @@ details.basis ul { margin: 6px 0 0; padding-left: 18px; }
 .finding dt { color: var(--ink-3); }
 .finding dd { margin: 0; }
 .consultant { border: 1px dashed var(--amber); background: var(--amber-bg); }
-.consultant h3::before { content: 'Consultant only · '; color: var(--amber); }
+.consultant h2::before, .consultant h3::before { content: 'Consultant only · '; color: var(--amber); }
 .methodology { font-size: 13px; color: var(--ink-2); }
 
 @media (max-width: 860px) {
@@ -334,6 +334,9 @@ details.basis ul { margin: 6px 0 0; padding-left: 18px; }
 .dash-card:nth-child(2) { animation-delay: .05s; } .dash-card:nth-child(3) { animation-delay: .1s; } .dash-card:nth-child(4) { animation-delay: .15s; } .dash-card:nth-child(5) { animation-delay: .2s; }
 .dash-card-head { margin-bottom: 12px; }
 .dash-card-head h3 { margin: 0 0 2px; }
+/* Result views: headings are h2 and h3 below the client's h1 (a correct outline for screen readers), sized as before. */
+.tab-panel h2 { font-size: 17px; } .tab-panel h3 { font-size: 15px; }
+.dash-card-head h2 { margin: 0 0 2px; }
 .dash-card-head p { margin: 0; }
 .chips { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; }
 .chips li { font-size: 12px; background: var(--amber-bg); color: var(--amber); border: 1px solid #F1D9B5; border-radius: 999px; padding: 2px 10px; }
@@ -476,3 +479,6 @@ button.mx-cell:hover { background: #fff; transform: translateY(-2px); box-shadow
 .hero-top > .client-id { flex: 1 1 320px; }
 .kpi-donut .donut .d-center { fill: #fff; }
 .kpi-donut .donut .d-sub { fill: #C9CED8; }
+
+/* Headings that receive focus when the view changes (focusHeading in app.js): not controls, so no focus ring. */
+h1[tabindex="-1"]:focus, h2[tabindex="-1"]:focus { outline: none; }

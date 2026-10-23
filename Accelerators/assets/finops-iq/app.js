@@ -71,6 +71,15 @@
     window.scrollTo(0, y);
   }
 
+  /**
+   * Moves focus to the heading of what is now on screen (the dashboard's client name, else the step heading), so a
+   * screen reader reads the new view's name instead of losing focus to the page body (WCAG 2.4.3).
+   */
+  function focusHeading() {
+    var el = document.getElementById('hero-h') || document.getElementById('step-h');
+    if (el) el.focus({ preventScroll: true });
+  }
+
   /** Says something to screen readers without moving focus. */
   function announce(text) {
     var live = document.getElementById('live');
@@ -129,7 +138,9 @@
   function renderTopbar() {
     clear(actions);
     if (!state) return;
-    actions.appendChild(h('span', { class: 'status', id: 'save-status', role: 'status' }, state.saveStatus || ''));
+    // Not a live region: it changes on every answer, which a screen reader would read out each time. Save failures
+    // are announced by the role=alert notice.
+    actions.appendChild(h('span', { class: 'status', id: 'save-status' }, state.saveStatus || ''));
     actions.appendChild(h('button', {
       class: 'btn small', type: 'button', 'aria-pressed': state.view === 'client' ? 'true' : 'false',
       onclick: function () { setView(state.view === 'client' ? 'consultant' : 'client'); }
@@ -248,6 +259,7 @@
     if (!saved) { state = null; render(); return; }
     setUrl();
     render();
+    focusHeading();
     evaluate();
   }
 
@@ -265,6 +277,7 @@
     };
     setUrl();
     render();
+    focusHeading();
     if (!isFinal()) evaluate();
   }
 
@@ -493,7 +506,7 @@
     return h('nav', { class: 'steps', 'aria-label': 'Assessment steps', 'data-key': navKey(all) }, h('ol', null, all.map(function (st, i) {
       return h('li', null, h('button', {
         type: 'button', class: stepClass(st), 'data-step': st.id, 'aria-current': st.id === current.id ? 'step' : null, disabled: st.needsFacts && !ready,
-        onclick: function () { leaveStep(st.id); render(); var m = document.getElementById('main'); if (m) m.focus({ preventScroll: true }); window.scrollTo(0, 0); }
+        onclick: function () { leaveStep(st.id); render(); focusHeading(); window.scrollTo(0, 0); }
       }, h('span', { class: 'step-no', 'aria-hidden': 'true' }, st.id === 'review' || st.id === 'results' ? '✓' : String(i + 1)), h('span', { class: 'step-label' }, st.label), h('span', { class: 'count' }, stepCount(st))));
     })));
   }
@@ -511,7 +524,7 @@
     if (current.id === 'results') renderResults(body);
     else if (current.id === 'review') renderReview(body);
     else {
-      body.appendChild(h('div', { class: 'step-head' }, h('h2', null, current.label), h('p', { class: 'muted' }, stepIntro(current.id))));
+      body.appendChild(h('div', { class: 'step-head' }, h('h2', { id: 'step-h', tabindex: '-1' }, current.label), h('p', { class: 'muted' }, stepIntro(current.id))));
       if (current.id === 'estate') body.appendChild(factsSlot());
       renderQuestions(body, current);
       if (current.id === 'estate' && state.mode === 'executive' && state.view !== 'client') body.appendChild(setupCard());
@@ -584,7 +597,7 @@
    * result is not shown here; it appears after the server has scored and recorded it.
    */
   function renderReview(body) {
-    body.appendChild(h('div', { class: 'step-head' }, h('h2', null, 'Review and complete'), h('p', { class: 'muted' }, 'Check what is still open, then complete the assessment. The server scores the saved answers, records the result and dates it today.')));
+    body.appendChild(h('div', { class: 'step-head' }, h('h2', { id: 'step-h', tabindex: '-1' }, 'Review and complete'), h('p', { class: 'muted' }, 'Check what is still open, then complete the assessment. The server scores the saved answers, records the result and dates it today.')));
     body.appendChild(factsSlot());
     body.appendChild(reviewBody());
   }
@@ -1162,7 +1175,7 @@
       h('div', { class: 'hero-top' },
         h('div', { class: 'client-id' }, logoControl(), h('div', null,
           h('p', { class: 'hero-eyebrow' }, 'FinOps IQ · ' + MODE_INFO[state.mode].label + ' assessment'),
-          h('h1', { id: 'hero-h' }, state.clientName),
+          h('h1', { id: 'hero-h', tabindex: '-1' }, state.clientName),
           h('p', { class: 'hero-meta' }, [statusLabel(state.status) + (state.completedAt ? ' ' + when(state.completedAt) : ''), 'Tier ' + r.tier.tier + ' estate', 'Confidence ' + (v.confidence ? v.confidence.overall : '—'), client ? 'Client edition' : 'Consultant view'].join(' · ')))),
         actions),
       h('p', { class: 'hero-headline' }, r.needVerdict ? r.needVerdict.basisLine : r.headline.statement),
@@ -1196,7 +1209,7 @@
 
   function card(title, sub, content, cls) {
     var id = 'c-' + title.toLowerCase().replace(/[^a-z]+/g, '-');
-    return h('section', { class: 'dash-card ' + (cls || ''), 'aria-labelledby': id }, h('div', { class: 'dash-card-head' }, h('h3', { id: id }, title), sub ? h('p', { class: 'small muted' }, sub) : null), content);
+    return h('section', { class: 'dash-card ' + (cls || ''), 'aria-labelledby': id }, h('div', { class: 'dash-card-head' }, h('h2', { id: id }, title), sub ? h('p', { class: 'small muted' }, sub) : null), content);
   }
 
   function capRadar(r) {
@@ -1213,7 +1226,10 @@
   function capHeatmap(r) {
     var caps = inScopeCaps(r);
     return C.heatmap({
-      label: 'Capability heatmap by domain: each capability coloured by its gap to target',
+      label: 'Capability heatmap by domain: ' + schema.domains.map(function (d) {
+        var cs = caps.filter(function (c) { return c.domain === d.id; });
+        return cs.length ? d.name + ': ' + cs.map(function (c) { return c.displayName + ' ' + (c.rating === 'not_assessed' ? 'assessed in the workshop' : c.ratingLabel + (typeof c.gap === 'number' ? (c.gap > 0 ? ', ' + c.gap + ' below target' : ', at target') : '')); }).join('; ') : '';
+      }).filter(Boolean).join('. '),
       rows: schema.domains.map(function (d) {
         var cs = caps.filter(function (c) { return c.domain === d.id; });
         return { label: d.name, cells: cs.map(function (c) {
@@ -1246,7 +1262,7 @@
     var inScope = inScopeCaps(r);
     var workshopOnly = inScope.filter(function (c) { return c.rating === 'not_assessed'; });
     var profiled = inScope.filter(function (c) { return c.rating !== 'not_assessed'; });
-    return h('section', { class: 'card', 'aria-labelledby': 'profile-h' }, h('h3', { id: 'profile-h' }, 'Capability profile'), h('p', null, r.headline.statement),
+    return h('section', { class: 'card', 'aria-labelledby': 'profile-h' }, h('h2', { id: 'profile-h' }, 'Capability profile'), h('p', null, r.headline.statement),
       h('div', { class: 'table-wrap' }, h('table', null, h('thead', null, h('tr', null, ['Capability', 'Today', 'Target'].map(function (t) { return h('th', { scope: 'col' }, t); }))),
         h('tbody', null, profiled.map(function (c) {
           // "Not answered" already says the rating is unconfirmed; the note is for "Don't know" answers.
@@ -1290,7 +1306,7 @@
     p.appendChild(grid);
     var filtered = pick ? list.filter(function (f) { return f.severity === SEVERITIES[pick[0]] && f.wave === waves[pick[1]]; }) : list;
     p.appendChild(h('section', { class: 'card', 'aria-labelledby': 'findings-h' },
-      h('div', { class: 'header-row', style: 'margin:0 0 8px' }, h('h3', { id: 'findings-h', style: 'margin:0' }, state.mode === 'executive' ? 'Top findings' : 'Findings (' + filtered.length + ')'),
+      h('div', { class: 'header-row', style: 'margin:0 0 8px' }, h('h2', { id: 'findings-h', style: 'margin:0' }, state.mode === 'executive' ? 'Top findings' : 'Findings (' + filtered.length + ')'),
         pick ? h('button', { class: 'btn small', type: 'button', onclick: function () { state.findingFilter = null; render(); } }, 'Show all ' + list.length) : null),
       pick ? h('p', { class: 'small muted' }, 'Showing ' + SEVERITIES[pick[0]].toLowerCase() + ' findings in wave ' + waves[pick[1]] + '.') : null,
       filtered.length ? filtered.map(findingCard) : h('p', { class: 'muted' }, 'No gaps against the targets for this estate.')));
@@ -1316,7 +1332,7 @@
     if (!client) p.appendChild(consultantPanel(r));
     if (r.needVerdict) {
       var nv = r.needVerdict;
-      p.appendChild(h('section', { class: 'card', 'aria-labelledby': 'need-h' }, h('h3', { id: 'need-h' }, 'Do you need to act now?'),
+      p.appendChild(h('section', { class: 'card', 'aria-labelledby': 'need-h' }, h('h2', { id: 'need-h' }, 'Do you need to act now?'),
         h('div', { class: 'verdict' }, h('div', null, h('div', { class: 'big' }, String(Math.round(nv.needIndex))), h('div', { class: 'small muted' }, 'Need index, 0–100')),
           h('div', null, h('p', null, h('strong', null, nv.bandLabel)), h('p', { class: 'small muted' }, nv.basisLine), h('p', { class: 'small' }, 'Confidence: ' + nv.confidence)))));
     }
@@ -1324,7 +1340,7 @@
   }
 
   function valueSection(v, cur) {
-    var sec = h('section', { class: 'card', 'aria-labelledby': 'value-h' }, h('h3', { id: 'value-h' }, 'Indicative value'));
+    var sec = h('section', { class: 'card', 'aria-labelledby': 'value-h' }, h('h2', { id: 'value-h' }, 'Indicative value'));
     sec.appendChild(h('p', null, h('strong', null, v.label)));
     if (v.detail) sec.appendChild(h('p', { class: 'small muted' }, v.detail));
     if (!v.moneyShown) {
@@ -1343,7 +1359,7 @@
         h('tbody', null, q.map(function (l) { return h('tr', null, h('td', null, l.name, l.inHeadline ? null : h('span', { class: 'small muted' }, ' (not in the headline)')), h('td', null, l.cases && l.cases.expected ? money(l.cases.expected.netRunRate, cur) : '—'), h('td', { class: 'small' }, l.basisLine)); })))));
     }
     if (v.notQuantified && v.notQuantified.length) {
-      sec.appendChild(h('h4', null, 'Identified, not quantified'));
+      sec.appendChild(h('h3', null, 'Identified, not quantified'));
       sec.appendChild(h('ul', { class: 'small' }, v.notQuantified.map(function (n) {
         return h('li', null, h('strong', null, n.name + '. '), sentence(n.reasonText), n.evidenceNeeded ? [' ', h('em', null, 'Would be quantified by: '), sentence(n.evidenceNeeded)] : null);
       })));
@@ -1375,7 +1391,7 @@
 
   function findingCard(f) {
     return h('article', { class: 'finding ' + sevClass(f.severity) },
-      h('div', { class: 'header-row', style: 'margin:0' }, h('h4', { style: 'margin:0' }, f.title), h('span', { class: 'chip ' + sevClass(f.severity) }, f.severity)),
+      h('div', { class: 'header-row', style: 'margin:0' }, h('h3', { style: 'margin:0' }, f.title), h('span', { class: 'chip ' + sevClass(f.severity) }, f.severity)),
       h('p', { class: 'small', style: 'margin:6px 0 0' }, f.businessConsequence),
       h('dl', null,
         h('dt', null, 'Decision or action'), h('dd', null, f.decisionOrAction),
@@ -1386,8 +1402,8 @@
   }
 
   function consultantPanel(r) {
-    return h('section', { class: 'card consultant', 'aria-labelledby': 'cons-h', 'data-consultant-only': 'true' }, h('h3', { id: 'cons-h' }, 'Checks before issuing'),
-      r.conflicts.length ? h('div', null, h('h4', null, 'Answers that contradict each other'), h('ul', { class: 'small' }, r.conflicts.map(function (c) { return h('li', null, c.id + ': ' + c.probe); })))
+    return h('section', { class: 'card consultant', 'aria-labelledby': 'cons-h', 'data-consultant-only': 'true' }, h('h2', { id: 'cons-h' }, 'Checks before issuing'),
+      r.conflicts.length ? h('div', null, h('h3', null, 'Answers that contradict each other'), h('ul', { class: 'small' }, r.conflicts.map(function (c) { return h('li', null, c.id + ': ' + c.probe); })))
         : h('p', { class: 'small' }, 'No contradicting answers found.'),
       h('p', { class: 'small' }, 'Complexity tier ' + r.tier.tier + (r.tier.points !== undefined ? ' (' + r.tier.points + ' points: ' + (r.tier.trace || []).join('; ') + ')' : '')),
       r.coverage.unknownQuestions.length ? h('p', { class: 'small' }, 'Answered "Don\'t know": ' + r.coverage.unknownQuestions.join(', ')) : null,
@@ -1396,7 +1412,7 @@
 
   function methodology(r) {
     var n = schema.notices;
-    return h('section', { class: 'card methodology', 'aria-labelledby': 'method-h' }, h('h3', { id: 'method-h' }, 'Methodology and sources'),
+    return h('section', { class: 'card methodology', 'aria-labelledby': 'method-h' }, h('h2', { id: 'method-h' }, 'Methodology and sources'),
       h('p', null, n.attribution),
       h('p', { class: 'small' }, n.attributionLinks.map(function (l, i) { return [i ? ' · ' : '', h('a', { href: l.url, target: '_blank', rel: 'noopener' }, l.label)]; })),
       h('p', null, n.disclaimer),
@@ -1407,7 +1423,7 @@
   /** The gated card shown in teaser mode: placeholder bars only, so nothing held back is in the page. */
   function teaserCard() {
     var bars = [92, 76, 84, 58, 70].map(function (w) { return h('span', { style: 'width:' + w + '%' }); });
-    return h('section', { class: 'card teaser', 'aria-labelledby': 'teaser-h' }, h('h3', { id: 'teaser-h' }, 'Value, findings and roadmap'),
+    return h('section', { class: 'card teaser', 'aria-labelledby': 'teaser-h' }, h('h2', { id: 'teaser-h' }, 'Value, findings and roadmap'),
       h('div', { class: 'teaser-bars', 'aria-hidden': 'true' }, bars),
       h('p', null, 'The indicative value range, the findings, the roadmap and the platform actions are presented in your LTM readout.'),
       h('p', { class: 'small muted' }, 'Your LTM consultant will walk you through them and share the report.'));
@@ -1416,11 +1432,11 @@
   /** How LTM can help (M5): the offerings the findings call for, from the server's result; no scope ranges. */
   function helpCard(r) {
     var title = function (id) { var f = r.findings.find(function (x) { return x.id === id; }); return f ? f.title : id; };
-    return h('section', { class: 'card', 'aria-labelledby': 'help-h' }, h('h3', { id: 'help-h' }, 'How LTM can help'),
+    return h('section', { class: 'card', 'aria-labelledby': 'help-h' }, h('h2', { id: 'help-h' }, 'How LTM can help'),
       r.help.map(function (x) {
         var o = x.offering;
         return h('div', { class: 'help-item' },
-          h('h4', null, o.type === 'Route' ? 'See ' + o.name : o.name + ' (' + (o.typeLabel || o.type.toLowerCase()) + ')'),
+          h('h3', null, o.type === 'Route' ? 'See ' + o.name : o.name + ' (' + (o.typeLabel || o.type.toLowerCase()) + ')'),
           h('p', null, o.purpose),
           o.outline.length ? h('ul', { class: 'small' }, o.outline.map(function (t) { return h('li', null, t); })) : null,
           h('p', { class: 'small muted' }, 'For: ' + x.findingIds.map(title).join('; ')));
@@ -1430,7 +1446,7 @@
   /** Technical execution (M5): platform actions per finding from the playbook, as the server selected them. */
   function technicalCard(r) {
     var plan = r.technicalPlan;
-    var sec = h('section', { class: 'card', 'aria-labelledby': 'tech-h' }, h('h3', { id: 'tech-h' }, 'Technical execution'));
+    var sec = h('section', { class: 'card', 'aria-labelledby': 'tech-h' }, h('h2', { id: 'tech-h' }, 'Technical execution'));
     if (!plan || !plan.actions.length) {
       sec.appendChild(h('p', { class: 'muted' }, 'No platform actions are listed for these findings yet: the platform playbook entries are still being sourced and reviewed.'));
       return sec;
@@ -1451,7 +1467,7 @@
    * headline band. Client view gets the client edition.
    */
   function reportCard(client) {
-    return h('section', { class: 'card', 'aria-labelledby': 'report-h' }, h('h3', { id: 'report-h' }, 'Report'),
+    return h('section', { class: 'card', 'aria-labelledby': 'report-h' }, h('h2', { id: 'report-h' }, 'Report'),
       h('p', { class: 'small muted' }, client ? 'Client edition: no consultant checks or notes.' : 'Consultant edition, with the consultant checks. Turn on client view for the client edition.'),
       h('p', { class: 'small' }, 'Download the report, the backlog or archive the report to Reports with the buttons at the top of the page.'),
       state.status === 'completed' && !client ? h('p', null, h('button', { class: 'btn', type: 'button', onclick: archive }, 'Archive assessment'), h('span', { class: 'small muted' }, ' Marks it archived in your list; it is still kept for two years.')) : null);
@@ -1535,7 +1551,7 @@
     clearTimeout(timers.save);
     var data = await working(['Scoring your answers on the server', 'Rating each capability against its target', 'Sizing the indicative value range', 'Prioritising the findings', 'Building the roadmap and platform actions'],
       persist('complete'), 'Result ready', 3200);
-    if (data) { state.step = 'results'; state.tab = 'overview'; state.findingFilter = null; render(); window.scrollTo(0, 0); }
+    if (data) { state.step = 'results'; state.tab = 'overview'; state.findingFilter = null; render(); focusHeading(); window.scrollTo(0, 0); }
   }
   async function archive() { var data = await persist('archive'); if (data) render(); }
   function continueInWorkshop() {
@@ -1555,9 +1571,9 @@
     var min = minMs || MIN_MS;
     var started = Date.now();
     var items = steps.map(function (t) { return h('li', null, h('span', { class: 'wl-icon', 'aria-hidden': 'true' }), h('span', null, t)); });
-    var log = h('p', { class: 'working-step' }, steps[0]);
+    var log = h('p', { class: 'working-step', role: 'status', 'aria-live': 'polite' }, steps[0]);
     var bar = h('i');
-    var screen = h('div', { class: 'working', role: 'status', 'aria-live': 'polite' },
+    var screen = h('div', { class: 'working' },
       h('div', { class: 'working-glow', 'aria-hidden': 'true' }),
       h('div', { class: 'working-card' },
         h('div', { class: 'working-emblem', 'aria-hidden': 'true' }, h('span', { class: 'ring r1' }), h('span', { class: 'ring r2' }), h('span', { class: 'ring r3' }), h('span', { class: 'hex' })),
