@@ -2,6 +2,7 @@ import type { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda
 import { evaluateResilienceIq } from '../../../packages/engine-core/src/accelerators/resilience-iq/evaluate';
 import { parseResilienceIqRequest } from '../../../packages/engine-core/src/accelerators/resilience-iq/contract';
 import { corsHeaders as sharedCors } from '../_shared/http';
+import { withAcceleratorAccess } from '../_shared/access';
 
 // Lambdas run one request at a time per container, so the current request's headers are kept here for
 // response() to echo an allowed origin (see _shared/http.ts). Origins not in ALLOWED_ORIGINS get no CORS header.
@@ -21,7 +22,7 @@ function response(statusCode: number, body: unknown, requestId: string): APIGate
 }
 
 
-export const handler = async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> => {
+const serve = async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> => {
   requestHeaders = event.headers;
   const requestId = makeRequestId(event);
   const method = event.requestContext?.http?.method || (event as any).httpMethod || 'POST';
@@ -74,3 +75,6 @@ export const handler = async (event: APIGatewayProxyEventV2): Promise<APIGateway
     }, requestId);
   }
 };
+
+// Only callers with access to the accelerator reach the handler (amplify/functions/_shared/access.ts).
+export const handler = withAcceleratorAccess('resilience-iq', serve);

@@ -9,6 +9,7 @@ import { corsHeaders } from '../_shared/http';
 import { authorized, canAccess, getAssessment, graphql, listWhere, parseBody, userEmail } from '../_shared/resilience-data';
 import { ALLOWED_TYPES, DOWNLOAD_URL_SECONDS, EVIDENCE_PREFIX, MAX_FILE_BYTES, s3EvidenceStorage, type EvidenceStorage } from './storage';
 import { createHash, randomUUID } from 'node:crypto';
+import { withAcceleratorAccess } from '../_shared/access';
 
 /** Replaceable in tests. */
 export const deps: { storage: EvidenceStorage } = { storage: s3EvidenceStorage };
@@ -70,7 +71,7 @@ async function listEvidence(assessmentId: string) {
   return listWhere('ResilienceEvidence', EVIDENCE_FIELDS, { assessmentId: { eq: assessmentId } });
 }
 
-export const handler = async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> => {
+const serve = async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> => {
   requestHeaders = event.headers;
   const requestId = event.requestContext?.requestId || randomUUID();
   const method = event.requestContext?.http?.method || (event as any).httpMethod || 'POST';
@@ -221,3 +222,6 @@ export const handler = async (event: APIGatewayProxyEventV2): Promise<APIGateway
     return response(500, { ok: false, error: 'internal_evidence_error', message: 'The evidence could not be saved. Please try again.', requestId }, requestId);
   }
 };
+
+// Only callers with access to the accelerator reach the handler (amplify/functions/_shared/access.ts).
+export const handler = withAcceleratorAccess('resilience-iq', serve);

@@ -2,6 +2,9 @@ import type { APIGatewayProxyStructuredResultV2 } from 'aws-lambda';
 import { handler as rawHandler } from './handler';
 import { evaluateResilienceIq } from '../../../packages/engine-core/src/accelerators/resilience-iq/evaluate';
 import { ARCHETYPES } from '../../../packages/engine-core/test/resilience-iq-samples';
+import { setPermissionSource } from '../_shared/access';
+// Every test caller has Resilience IQ access (the access check is tested in _shared/access.spec.ts).
+setPermissionSource(async () => ({ take: ['resilience-iq'] }));
 
 const handler = async (e: any) => (await rawHandler(e)) as APIGatewayProxyStructuredResultV2;
 
@@ -44,7 +47,7 @@ globalThis.fetch=async (_input:any, init:any)=>{
 // API Gateway validates the platform Cognito JWT; platform roles live in the application, not in Cognito
 // groups, so any verified identity may call the API, but a request with no identity claims is rejected.
 const forbidden=await handler(event('POST',{snapshot:{assessmentId:'RIQ-001'}} ,{}));
-if(forbidden.statusCode!==403) throw new Error('Requests without an authenticated identity must be rejected');
+if(forbidden.statusCode!==401) throw new Error('Requests without an authenticated identity must be rejected (access check: 401)');
 
 const mismatch=await handler(event('POST',{action:'save',snapshot:{assessmentId:'RIQ-001',status:'draft',clientName:'Test Client',respondentEmail:'someone.else@example.com',answers:{},startedAt:'2026-10-06T00:00:00.000Z'}},{email:'user@example.com'}));
 if(mismatch.statusCode!==403) throw new Error('A non-admin must not save an assessment for another respondent');

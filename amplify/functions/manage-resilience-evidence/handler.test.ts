@@ -3,6 +3,9 @@ import { handler as rawHandler, deps } from './handler';
 import { createHash } from 'node:crypto';
 import { evaluateResilienceIq } from '../../../packages/engine-core/src/accelerators/resilience-iq/evaluate';
 import { ARCHETYPES } from '../../../packages/engine-core/test/resilience-iq-samples';
+import { setPermissionSource } from '../_shared/access';
+// Every test caller has Resilience IQ access (the access check is tested in _shared/access.spec.ts).
+setPermissionSource(async () => ({ take: ['resilience-iq'] }));
 
 const handler = async (e: any) => (await rawHandler(e)) as APIGatewayProxyStructuredResultV2;
 
@@ -196,7 +199,7 @@ reset();
 expect((await handler(event('POST', null))).statusCode === 400, 'A body that is not an object returns 400');
 expect((await post({ toStatus: 'done' })).statusCode === 400, 'An unknown status returns 400');
 expect((await handler(event('POST', { assessmentId: 'RIQ-001', toStatus: 'provided' }))).statusCode === 400, 'evidenceId is required');
-expect((await handler(event('POST', { toStatus: 'provided' }, {}))).statusCode === 403, 'A request with no identity is refused');
+expect((await handler(event('POST', { toStatus: 'provided' }, {}))).statusCode === 401, 'A request with no identity is refused (access check: 401)');
 expect((await handler(event('OPTIONS'))).statusCode === 200, 'OPTIONS returns 200');
 expect((await handler(event('PUT', {}))).statusCode === 405, 'Unsupported methods return 405');
 

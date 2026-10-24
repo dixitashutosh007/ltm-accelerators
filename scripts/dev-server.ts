@@ -25,6 +25,7 @@ import { handler as cloudIq } from '../amplify/functions/evaluate-cloud-iq/handl
 import { handler as strategyIq } from '../amplify/functions/evaluate-strategy-iq/handler';
 import { handler as modernizationIq } from '../amplify/functions/evaluate-modernization-iq/handler';
 import { createHandler as finopsAssessment } from '../amplify/functions/manage-finops-assessment/handler';
+import { setPermissionSource } from '../amplify/functions/_shared/access';
 import { memoryStore, type FinOpsAssessmentRecord } from '../amplify/functions/manage-finops-assessment/store';
 import { createHandler as finopsReport } from '../amplify/functions/finops-iq-report/handler';
 
@@ -38,6 +39,8 @@ const USERS: Record<string, { role: string; groups: string[] }> = {
   'admin@ltm.local': { role: 'super_admin', groups: ['Admin'] }
 };
 const PERMISSIONS = { take: ['*'], view: ['*', 'reports'], edit: ['reports'] };
+// The accelerator handlers' access check reads these instead of the reports bucket.
+setPermissionSource(async () => PERMISSIONS);
 const KEY = randomBytes(32);
 const TOKEN_SECONDS = 3600;
 

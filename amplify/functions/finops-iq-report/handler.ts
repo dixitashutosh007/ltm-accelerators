@@ -15,6 +15,7 @@ import { finopsIqBacklog, finopsIqReport } from '../../../packages/engine-core/s
 import { renderPdf } from '../../../packages/engine-core/src/report/pdf';
 import { toCsv } from '../../../packages/engine-core/src/report/csv';
 import { appSyncStore, type FinOpsAssessmentStore } from '../manage-finops-assessment/store';
+import { withAcceleratorAccess } from '../_shared/access';
 
 const FORMATS = new Set(['pdf', 'csv']);
 const REPORTABLE = new Set(['completed', 'archived']);
@@ -69,4 +70,5 @@ export function createHandler(store: FinOpsAssessmentStore) {
   };
 }
 
-export const handler = createHandler(appSyncStore);
+// Only callers with access to the accelerator reach the handler (amplify/functions/_shared/access.ts).
+export const handler = withAcceleratorAccess('finops-iq', createHandler(appSyncStore));

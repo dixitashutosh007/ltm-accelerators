@@ -22,8 +22,8 @@ import { manageResilienceAssessmentFunction } from './functions/manage-resilienc
 import { manageFinOpsAssessmentFunction } from './functions/manage-finops-assessment/resource';
 import { finopsIqReportFunction } from './functions/finops-iq-report/resource';
 import {
-  API_GATEWAY_CORS_ORIGINS, API_BURST_LIMIT, API_RATE_LIMIT, KEEP_LEGACY_API,
-  REGION, REPORTS_BUCKET
+  ADMIN_GROUP, API_GATEWAY_CORS_ORIGINS, API_BURST_LIMIT, API_RATE_LIMIT, KEEP_LEGACY_API,
+  REGION, REPORTS_BUCKET, SUPER_ADMIN_EMAILS
 } from './config';
 
 export const backend = defineBackend({
@@ -67,6 +67,27 @@ const COGNITO_ISSUER = `https://cognito-idp.${REGION}.amazonaws.com/${USER_POOL_
  * assessment once expiresAt passes, 24 months after its last change.
  * ------------------------------------------------------------------ */
 backend.data.resources.cfnResources.amplifyDynamoDbTables['FinOpsIqAssessment'].timeToLiveAttribute = { attributeName: 'expiresAt', enabled: true };
+
+/* ------------------------------------------------------------------
+ * Accelerator access on the server (amplify/functions/_shared/access.ts):
+ * every accelerator service reads the saved permissions (read-only, the
+ * one object) and knows who the administrators are. Cost IQ is maintained
+ * separately and is not wrapped yet.
+ * ------------------------------------------------------------------ */
+for (const fn of [
+  backend.evaluateFinOpsIqFunction, backend.manageFinOpsAssessmentFunction, backend.finopsIqReportFunction,
+  backend.evaluatePostureIqFunction, backend.evaluateSovereignIqFunction, backend.evaluateCloudIqFunction,
+  backend.evaluateStrategyIqFunction, backend.evaluateModernizationIqFunction, backend.evaluateResilienceIqFunction,
+  backend.manageResilienceAssessmentFunction, backend.manageResilienceEvidenceFunction
+]) {
+  fn.addEnvironment('REPORTS_BUCKET', REPORTS_BUCKET);
+  fn.addEnvironment('SUPER_ADMIN_EMAILS', SUPER_ADMIN_EMAILS);
+  fn.addEnvironment('ADMIN_GROUP', ADMIN_GROUP);
+  fn.resources.lambda.addToRolePolicy(new PolicyStatement({
+    actions: ['s3:GetObject'],
+    resources: [`arn:aws:s3:::${REPORTS_BUCKET}/config/rbac-permissions.json`]
+  }));
+}
 
 /* ------------------------------------------------------------------
  * Reports service permissions: the existing reports bucket and the

@@ -5,6 +5,10 @@
 import { describe, it, expect } from 'vitest';
 import type { APIGatewayProxyStructuredResultV2 } from 'aws-lambda';
 import { handler } from './handler';
+import { setPermissionSource } from '../_shared/access';
+
+// A consultant with FinOps IQ access (the access check itself is tested in _shared/access.spec.ts).
+setPermissionSource(async () => ({ take: ['finops-iq'] }));
 
 const facts = {
   org: { currency: 'USD', consumingUnits: '5-19' },
@@ -12,7 +16,7 @@ const facts = {
   spend: { byScope: { aws: { exact: 20_000_000 } }, growth12m: 10 }
 };
 const post = async (rawPath: string, body: unknown, query?: Record<string, string>) => {
-  const res = (await handler({ rawPath, queryStringParameters: query, requestContext: { http: { method: 'POST' } }, headers: {}, body: JSON.stringify(body) } as any)) as APIGatewayProxyStructuredResultV2;
+  const res = (await handler({ rawPath, queryStringParameters: query, requestContext: { http: { method: 'POST' }, authorizer: { jwt: { claims: { email: 'consultant@ltm.com' } } } }, headers: {}, body: JSON.stringify(body) } as any)) as APIGatewayProxyStructuredResultV2;
   return { status: res.statusCode, body: JSON.parse(String(res.body)) };
 };
 

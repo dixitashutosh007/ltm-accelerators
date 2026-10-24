@@ -18,6 +18,7 @@ import { clientView } from '../../../packages/engine-core/src/accelerators/finop
 import { ENGINE_VERSION } from '../../../packages/engine-core/src/accelerators/finops-iq/v3/evaluate';
 import { expiresAt } from '../../../packages/engine-core/src/accelerators/finops-iq/v3/retention';
 import { appSyncStore, type FinOpsAssessmentRecord, type FinOpsAssessmentStore } from './store';
+import { withAcceleratorAccess } from '../_shared/access';
 
 const ACTIONS = new Set(['save', 'complete', 'archive', 'delete']);
 
@@ -130,4 +131,5 @@ export function createHandler(store: FinOpsAssessmentStore, now: () => Date = ()
   };
 }
 
-export const handler = createHandler(appSyncStore);
+// Only callers with access to the accelerator reach the handler (amplify/functions/_shared/access.ts).
+export const handler = withAcceleratorAccess('finops-iq', createHandler(appSyncStore));

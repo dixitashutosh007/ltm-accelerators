@@ -12,6 +12,7 @@ import type { Page } from '@playwright/test';
 import { handler as evaluateHandler } from '../../amplify/functions/evaluate-finops-iq/handler';
 import { createHandler } from '../../amplify/functions/manage-finops-assessment/handler';
 import { memoryStore } from '../../amplify/functions/manage-finops-assessment/store';
+import { setPermissionSource } from '../../amplify/functions/_shared/access';
 import { createHandler as createReportHandler } from '../../amplify/functions/finops-iq-report/handler';
 import { readFileSync } from 'node:fs';
 import AxeBuilder from '@axe-core/playwright';
@@ -33,6 +34,7 @@ let evaluated: Array<{ query: Record<string, string>; data: any }>;
 let archived: any[];
 
 test.beforeEach(async ({ context, world }) => {
+  setPermissionSource(async () => ({ take: ['finops-iq'] }));
   evaluated = [];
   archived = [];
   const store = memoryStore();

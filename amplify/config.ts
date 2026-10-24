@@ -48,10 +48,11 @@ export const REPORTS_BUCKET = env('LTM_REPORTS_BUCKET', 'ltm-advisory-reports-22
 export const APP_BASE_URL = env('LTM_APP_BASE_URL', 'https://main.d199dq940iqyj2.amplifyapp.com');
 
 /**
- * Keep the pre-Phase-1 API (no authorizer) deployed during cutover.
- * Set LTM_KEEP_LEGACY_API=false once the new API is verified, then redeploy to remove it.
+ * The pre-Phase-1 scoring routes (no authorizer) for Posture, Sovereign, Cloud, Strategy and Modernization IQ.
+ * Off since 24 Oct 2026: every page calls the Advisory API. Set LTM_KEEP_LEGACY_API=true only to restore them.
+ * Cost IQ and Resilience IQ keep their routes on the Accelerators API.
  */
-export const KEEP_LEGACY_API = env('LTM_KEEP_LEGACY_API', 'true').toLowerCase() !== 'false';
+export const KEEP_LEGACY_API = env('LTM_KEEP_LEGACY_API', 'false').toLowerCase() === 'true';
 
 /** Steady-state request rate per second and burst for the API stage. */
 export const API_RATE_LIMIT = Number(env('LTM_API_RATE_LIMIT', '25'));

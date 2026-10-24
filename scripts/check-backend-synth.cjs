@@ -118,12 +118,24 @@ if (advisory) {
 // The Accelerators API stays (it serves Cost IQ and Resilience IQ). After cutover it must no
 // longer expose unauthenticated routes for the seven Advisory-API accelerators.
 const legacyApi = apis.find(a => a.Properties.Name === 'ltm-accelerators-api');
-if (legacyApi && String(legacy).toLowerCase() === 'false') {
+// Off by default since 24 Oct 2026 (amplify/config.ts); checked unless LTM_KEEP_LEGACY_API=true restores them.
+if (legacyApi && String(legacy).toLowerCase() !== 'true') {
   const moved = /^(POST|OPTIONS) \/api\/evaluate\/(finops-value-case|finops-iq|posture-iq|sovereign-iq|cloud-iq|strategy-iq|modernization-iq)$/;
   const leftovers = ofType('AWS::ApiGatewayV2::Route')
     .filter(r => r.Properties.ApiId?.Ref === legacyApi.id && moved.test(r.Properties.RouteKey))
     .map(r => r.Properties.RouteKey);
   check(leftovers.length === 0, `unauthenticated legacy routes remain after cutover: ${leftovers.join(', ')}`);
+}
+
+// Accelerator access on the server (24 Oct 2026): every accelerator service can read the saved permissions.
+{
+  const services = /(evaluate(finops|posture|sovereign|cloud|strategy|modernization|resilience)iq|managefinopsassessment|finopsiqreport|manageresilience(assessment|evidence))lambda/i;
+  const fns = ofType('AWS::Lambda::Function').filter(f => services.test(f.id));
+  check(fns.length === 11, `expected 11 accelerator services, found ${fns.length}`);
+  for (const f of fns) {
+    const env = f.Properties.Environment?.Variables || {};
+    check(!!env.REPORTS_BUCKET && 'SUPER_ADMIN_EMAILS' in env && !!env.ADMIN_GROUP, `${f.id} cannot check accelerator access (REPORTS_BUCKET, SUPER_ADMIN_EMAILS, ADMIN_GROUP)`);
+  }
 }
 
 // FinOps Value Case and the FinOps IQ v2 engine are retired (22 Oct 2026): no route for either on any API.
