@@ -75,8 +75,29 @@ if (advisory) {
   const authorizers = ofType('AWS::ApiGatewayV2::Authorizer').filter(a => a.Properties.ApiId?.Ref === advisory.id);
   check(authorizers.length === 1 && authorizers[0].Properties.AuthorizerType === 'JWT', 'Advisory API must have exactly one JWT authorizer');
   const jwt = authorizers[0]?.Properties.JwtConfiguration || {};
-  check(/^https:\/\/cognito-idp\.[a-z0-9-]+\.amazonaws\.com\/[a-z0-9-]+_[A-Za-z0-9]+$/.test(jwt.Issuer || ''), `JWT issuer is not a Cognito user pool: ${jwt.Issuer}`);
+  // The issuer is the backend's own user pool: in the API stack it is "https://cognito-idp.<region>.amazonaws.com/"
+  // joined with a reference to the auth stack's user pool (a fixed pool ID is accepted too).
+  const join = jwt.Issuer?.['Fn::Join']?.[1] || [];
+  const poolRef = JSON.stringify(join[1] || '');
+  check(/^https:\/\/cognito-idp\.[a-z0-9-]+\.amazonaws\.com\/[a-z0-9-]+_[A-Za-z0-9]+$/.test(typeof jwt.Issuer === 'string' ? jwt.Issuer : '') ||
+    (/^https:\/\/cognito-idp\.[a-z0-9-]+\.amazonaws\.com\/$/.test(join[0] || '') && /UserPool/.test(poolRef) && !/AppClient/.test(poolRef)),
+    `JWT issuer is not a Cognito user pool: ${JSON.stringify(jwt.Issuer)}`);
   check(Array.isArray(jwt.Audience) && jwt.Audience.length > 0, 'JWT authorizer has no audience (app client)');
+
+  // Sign-in (23 Oct 2026): administrator-created accounts only, deletion protection, password sign-in for the portal,
+  // and the allowlist on the pre-sign-up trigger.
+  const pools = ofType('AWS::Cognito::UserPool');
+  check(pools.length === 1, `expected one user pool, found ${pools.length}`);
+  for (const p of pools) {
+    check(p.Properties.AdminCreateUserConfig?.AllowAdminCreateUserOnly === true, 'user pool allows self-registration');
+    check(p.Properties.DeletionProtection === 'ACTIVE', 'user pool has no deletion protection');
+  }
+  for (const c of ofType('AWS::Cognito::UserPoolClient')) {
+    check((c.Properties.ExplicitAuthFlows || []).includes('ALLOW_USER_PASSWORD_AUTH'), `app client ${c.id} does not allow the portal's password sign-in`);
+  }
+  const preSignUp = ofType('AWS::Lambda::Function').find(f => /presignup/i.test(f.id));
+  const allowed = String(preSignUp?.Properties.Environment?.Variables?.ALLOWED_DOMAINS || '').split(',');
+  check(['ltm.com', 'ey.com'].every(d => allowed.includes(d)), `pre-sign-up allowlist is ${allowed.join(',') || 'missing'}`);
 
   const stage = ofType('AWS::ApiGatewayV2::Stage').find(s => s.Properties.ApiId?.Ref === advisory.id);
   check(!!stage?.Properties.DefaultRouteSettings?.ThrottlingRateLimit, 'Advisory API stage is not throttled');
