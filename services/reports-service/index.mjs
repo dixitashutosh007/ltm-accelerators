@@ -14,8 +14,9 @@ import { createPublicKey, verify as cryptoVerify } from 'node:crypto';
 const BUCKET_NAME = process.env.REPORTS_BUCKET || 'ltm-advisory-reports-223833501993';
 const REGION = process.env.AWS_REGION || 'ap-south-1';
 const COGNITO_REGION = process.env.COGNITO_REGION || REGION;
-const USER_POOL_ID = process.env.USER_POOL_ID || 'ap-south-1_91amN2bz4';
-const COGNITO_CLIENT_ID = process.env.COGNITO_CLIENT_ID || '4iiqcsgvsm0b4ngpps94ho4c67';
+// Set by the backend from its own user pool (amplify/backend.ts). No default: a missing value rejects every token.
+const USER_POOL_ID = process.env.USER_POOL_ID || '';
+const COGNITO_CLIENT_ID = process.env.COGNITO_CLIENT_ID || '';
 const COGNITO_ISSUER = `https://cognito-idp.${COGNITO_REGION}.amazonaws.com/${USER_POOL_ID}`;
 
 // Bootstrap admins: comma-separated emails, set by amplify/config.ts ("none" or unset = Cognito admin group only).

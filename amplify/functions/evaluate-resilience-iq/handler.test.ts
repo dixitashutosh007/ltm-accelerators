@@ -1,10 +1,13 @@
 import type { APIGatewayProxyStructuredResultV2 } from 'aws-lambda';
 import { handler as rawHandler } from './handler';
+import { setPermissionSource } from '../_shared/access';
+// Every test caller has Resilience IQ access (the access check is tested in _shared/access.spec.ts).
+setPermissionSource(async () => ({ take: ['resilience-iq'] }));
 
 const handler = async (e: any) => (await rawHandler(e)) as APIGatewayProxyStructuredResultV2;
 
 const event = (body: unknown) => ({
-  requestContext: { http: { method: "POST" } },
+  requestContext: { http: { method: "POST" }, authorizer: { jwt: { claims: { email: "consultant@example.com" } } } },
   body: JSON.stringify(body),
   isBase64Encoded: false
 }) as any;
@@ -78,7 +81,7 @@ if (arrayEnvelope.statusCode !== 400 || !String(json(arrayEnvelope).error).inclu
 }
 
 const malformed = await handler({
-  requestContext: { http: { method: "POST" } },
+  requestContext: { http: { method: "POST" }, authorizer: { jwt: { claims: { email: "consultant@example.com" } } } },
   body: "{not-json}",
   isBase64Encoded: false
 } as any);
@@ -92,7 +95,7 @@ const options = await handler({
 if (options.statusCode !== 200) throw new Error("OPTIONS should return 200");
 
 const get = await handler({
-  requestContext: { http: { method: "GET" } }
+  requestContext: { http: { method: "GET" }, authorizer: { jwt: { claims: { email: "consultant@example.com" } } } }
 } as any);
 if (get.statusCode !== 405) throw new Error("Unsupported methods should return 405");
 
@@ -118,7 +121,7 @@ const traceable = await handler(event({ answers: validAnswers }));
 if (!traceable.headers?.["X-Request-Id"]) throw new Error("Responses should include a request ID");
 
 const base64 = await handler({
-  requestContext: { http: { method: "POST" } },
+  requestContext: { http: { method: "POST" }, authorizer: { jwt: { claims: { email: "consultant@example.com" } } } },
   body: Buffer.from(JSON.stringify({ answers: validAnswers }), "utf-8").toString("base64"),
   isBase64Encoded: true
 } as any);

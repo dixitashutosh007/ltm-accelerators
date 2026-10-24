@@ -1,6 +1,7 @@
 import type { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
 import { corsHeaders } from '../_shared/http';
 import { clientView, evaluateFinOpsIqV3, parseFinOpsIqV3Request } from '../../../packages/engine-core/src/accelerators/finops-iq/v3';
+import { withAcceleratorAccess } from '../_shared/access';
 
 function score<I, R>(parsed: { ok: true; value: I } | { ok: false; errors: string[] }, evaluate: (input: I) => R) {
   return parsed.ok ? { ok: true as const, result: evaluate(parsed.value) } : parsed;
@@ -10,7 +11,7 @@ function score<I, R>(parsed: { ok: true; value: I } | { ok: false; errors: strin
 // so this module-level value is safe.
 let CORS_HEADERS: Record<string, string> = corsHeaders();
 
-export const handler = async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> => {
+const serve = async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> => {
   CORS_HEADERS = corsHeaders(event, 'OPTIONS,POST');
   const method = event.requestContext?.http?.method || (event as any).httpMethod;
   if (method === 'OPTIONS') {
@@ -66,3 +67,6 @@ export const handler = async (event: APIGatewayProxyEventV2): Promise<APIGateway
     };
   }
 };
+
+// Only callers with access to the accelerator reach the handler (amplify/functions/_shared/access.ts).
+export const handler = withAcceleratorAccess('finops-iq', serve);

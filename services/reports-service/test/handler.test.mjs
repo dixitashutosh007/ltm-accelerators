@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { S3Client } from '@aws-sdk/client-s3';
 import { CognitoIdentityProviderClient } from '@aws-sdk/client-cognito-identity-provider';
 
-process.env.AWS_REGION='ap-south-1'; process.env.SUPER_ADMIN_EMAILS='owner@ltm.com'; process.env.AWS_ACCESS_KEY_ID='x'; process.env.AWS_SECRET_ACCESS_KEY='y';
+process.env.AWS_REGION='ap-south-1'; process.env.USER_POOL_ID='ap-south-1_91amN2bz4'; process.env.COGNITO_CLIENT_ID='4iiqcsgvsm0b4ngpps94ho4c67'; process.env.SUPER_ADMIN_EMAILS='owner@ltm.com'; process.env.AWS_ACCESS_KEY_ID='x'; process.env.AWS_SECRET_ACCESS_KEY='y';
 const ISS='https://cognito-idp.ap-south-1.amazonaws.com/ap-south-1_91amN2bz4', AUD='4iiqcsgvsm0b4ngpps94ho4c67';
 const { publicKey, privateKey } = generateKeyPairSync('rsa',{modulusLength:2048});
 const other = generateKeyPairSync('rsa',{modulusLength:2048});

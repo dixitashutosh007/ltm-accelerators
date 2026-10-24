@@ -1,6 +1,6 @@
 import { defineFunction } from '@aws-amplify/backend';
 import {
-  REGION, USER_POOL_ID, USER_POOL_CLIENT_ID, ADMIN_GROUP, SUPER_ADMIN_EMAILS,
+  REGION, ADMIN_GROUP, SUPER_ADMIN_EMAILS,
   ALLOWED_ORIGINS, REPORTS_BUCKET, APP_BASE_URL
 } from '../../config';
 
@@ -11,9 +11,8 @@ export const reportsServiceFunction = defineFunction({
   timeoutSeconds: 30,
   memoryMB: 512,
   environment: {
+    // USER_POOL_ID and COGNITO_CLIENT_ID are added in backend.ts from the backend's own user pool.
     COGNITO_REGION: REGION,
-    USER_POOL_ID,
-    COGNITO_CLIENT_ID: USER_POOL_CLIENT_ID,
     ADMIN_GROUP,
     SUPER_ADMIN_EMAILS,
     ALLOWED_ORIGINS: ALLOWED_ORIGINS.join(','),

@@ -22,8 +22,8 @@ import { manageResilienceAssessmentFunction } from './functions/manage-resilienc
 import { manageFinOpsAssessmentFunction } from './functions/manage-finops-assessment/resource';
 import { finopsIqReportFunction } from './functions/finops-iq-report/resource';
 import {
-  API_GATEWAY_CORS_ORIGINS, API_BURST_LIMIT, API_RATE_LIMIT, COGNITO_ISSUER, KEEP_LEGACY_API,
-  REGION, REPORTS_BUCKET, USER_POOL_CLIENT_ID, USER_POOL_ID
+  ADMIN_GROUP, API_GATEWAY_CORS_ORIGINS, API_BURST_LIMIT, API_RATE_LIMIT, KEEP_LEGACY_API,
+  REGION, REPORTS_BUCKET, SUPER_ADMIN_EMAILS
 } from './config';
 
 export const backend = defineBackend({
@@ -47,16 +47,55 @@ export const backend = defineBackend({
 const apiStack = backend.createStack('AcceleratorsApiStack');
 
 /* ------------------------------------------------------------------
+ * Sign-in: the user pool this backend defines. Accounts are created by
+ * an administrator only (Access Control); the pre-sign-up trigger limits
+ * them to the allowlist in config.ts. The portal signs in with
+ * USER_PASSWORD_AUTH (assets/ltm-api.js), so the app client allows it.
+ * Deletion protection: the pool holds every account.
+ * ------------------------------------------------------------------ */
+const { userPool, userPoolClient } = backend.auth.resources;
+const { cfnUserPool, cfnUserPoolClient } = backend.auth.resources.cfnResources;
+cfnUserPool.adminCreateUserConfig = { ...(cfnUserPool.adminCreateUserConfig as object), allowAdminCreateUserOnly: true };
+cfnUserPool.deletionProtection = 'ACTIVE';
+cfnUserPoolClient.explicitAuthFlows = ['ALLOW_USER_PASSWORD_AUTH', 'ALLOW_USER_SRP_AUTH', 'ALLOW_REFRESH_TOKEN_AUTH'];
+const USER_POOL_ID = userPool.userPoolId;
+const USER_POOL_CLIENT_ID = userPoolClient.userPoolClientId;
+const COGNITO_ISSUER = `https://cognito-idp.${REGION}.amazonaws.com/${USER_POOL_ID}`;
+
+/* ------------------------------------------------------------------
  * Retention (FinOps IQ M6): DynamoDB time to live deletes a saved
  * assessment once expiresAt passes, 24 months after its last change.
  * ------------------------------------------------------------------ */
 backend.data.resources.cfnResources.amplifyDynamoDbTables['FinOpsIqAssessment'].timeToLiveAttribute = { attributeName: 'expiresAt', enabled: true };
 
 /* ------------------------------------------------------------------
+ * Accelerator access on the server (amplify/functions/_shared/access.ts):
+ * every accelerator service reads the saved permissions (read-only, the
+ * one object) and knows who the administrators are. Cost IQ is maintained
+ * separately and is not wrapped yet.
+ * ------------------------------------------------------------------ */
+for (const fn of [
+  backend.evaluateFinOpsIqFunction, backend.manageFinOpsAssessmentFunction, backend.finopsIqReportFunction,
+  backend.evaluatePostureIqFunction, backend.evaluateSovereignIqFunction, backend.evaluateCloudIqFunction,
+  backend.evaluateStrategyIqFunction, backend.evaluateModernizationIqFunction, backend.evaluateResilienceIqFunction,
+  backend.manageResilienceAssessmentFunction, backend.manageResilienceEvidenceFunction
+]) {
+  fn.addEnvironment('REPORTS_BUCKET', REPORTS_BUCKET);
+  fn.addEnvironment('SUPER_ADMIN_EMAILS', SUPER_ADMIN_EMAILS);
+  fn.addEnvironment('ADMIN_GROUP', ADMIN_GROUP);
+  fn.resources.lambda.addToRolePolicy(new PolicyStatement({
+    actions: ['s3:GetObject'],
+    resources: [`arn:aws:s3:::${REPORTS_BUCKET}/config/rbac-permissions.json`]
+  }));
+}
+
+/* ------------------------------------------------------------------
  * Reports service permissions: the existing reports bucket and the
  * Cognito admin calls used by the Access Control screen.
  * ------------------------------------------------------------------ */
 const reportsLambda = backend.reportsServiceFunction.resources.lambda;
+backend.reportsServiceFunction.addEnvironment('USER_POOL_ID', USER_POOL_ID);
+backend.reportsServiceFunction.addEnvironment('COGNITO_CLIENT_ID', USER_POOL_CLIENT_ID);
 const account = Stack.of(reportsLambda).account;
 reportsLambda.addToRolePolicy(new PolicyStatement({
   actions: ['s3:GetObject', 's3:PutObject', 's3:DeleteObject'],
@@ -68,7 +107,7 @@ reportsLambda.addToRolePolicy(new PolicyStatement({
 }));
 reportsLambda.addToRolePolicy(new PolicyStatement({
   actions: ['cognito-idp:ListUsers', 'cognito-idp:AdminCreateUser', 'cognito-idp:AdminSetUserPassword'],
-  resources: [`arn:aws:cognito-idp:${REGION}:${account}:userpool/${USER_POOL_ID}`]
+  resources: [userPool.userPoolArn]
 }));
 
 // Resilience IQ evidence files: read and write only under resilience-iq/evidence/ in the same bucket.

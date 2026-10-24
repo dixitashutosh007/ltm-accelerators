@@ -6,6 +6,7 @@ import { ASSESSMENT_FIELDS as fields, authorized, canAccess, getAssessment, grap
 import { evaluateResilienceIq } from '../../../packages/engine-core/src/accelerators/resilience-iq/evaluate';
 import { parseResilienceIqRequest } from '../../../packages/engine-core/src/accelerators/resilience-iq/contract';
 import { RESILIENCE_IQ_VERSION } from '../../../packages/engine-core/src/accelerators/resilience-iq/version';
+import { withAcceleratorAccess } from '../_shared/access';
 
 // Lambdas run one request at a time per container, so the current request's headers are kept here for
 // response() to echo an allowed origin (see _shared/http.ts). Origins not in ALLOWED_ORIGINS get no CORS header.
@@ -20,7 +21,7 @@ async function listAssessments(email:string){
   return items.sort((a:any,b:any)=>String(b.updatedAt||b.startedAt||'').localeCompare(String(a.updatedAt||a.startedAt||'')));
 }
 
-export const handler=async(event:APIGatewayProxyEventV2):Promise<APIGatewayProxyResultV2>=>{
+const serve = async(event:APIGatewayProxyEventV2):Promise<APIGatewayProxyResultV2>=>{
   requestHeaders=event.headers;
   const requestId=event.requestContext?.requestId || randomUUID();
   const method=event.requestContext?.http?.method || 'POST';
@@ -115,3 +116,6 @@ export const handler=async(event:APIGatewayProxyEventV2):Promise<APIGatewayProxy
 function canUpdate(from:ResilienceAssessmentStatus,to:ResilienceAssessmentStatus){
   try { assertAssessmentStatusTransition(from,to); return true; } catch { return false; }
 }
+
+// Only callers with access to the accelerator reach the handler (amplify/functions/_shared/access.ts).
+export const handler = withAcceleratorAccess('resilience-iq', serve);

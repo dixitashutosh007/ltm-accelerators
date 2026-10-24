@@ -25,8 +25,9 @@
 
 **Open owner actions (Phase 1):**
 - GitHub branch protection on `main`.
+- **Done 24 Oct 2026:** accelerator permissions are checked on the server (`amplify/functions/_shared/access.ts`) by every accelerator service except Cost IQ, under the page guard's rule; the old unauthenticated scoring routes for Posture, Sovereign, Cloud, Strategy and Modernization IQ are removed. Open: Cost IQ's routes still need no sign-in (maintained separately).
 - Cognito `Admin` group, then `LTM_SUPER_ADMIN_EMAILS=none`.
-- Move users from the sandbox-owned user pool (`ap-south-1_91amN2bz4`) to the production pool. The sandbox stack can be deleted only after that.
+- Move users from the sandbox-owned user pool (`ap-south-1_91amN2bz4`) to the production pool. The sandbox stack can be deleted only after that. **In progress (23 Oct 2026):** the portal, APIs and reports service now use the backend's own pool (administrator-created accounts only, deletion protection on, allowlist `ltm.com`, `ey.com` and the owner's personal address); the existing accounts are recreated there after deployment. The sandbox pool stays untouched until everyone has signed in to the new one.
 
 ## Decisions taken (product owner, 6 Oct 2026)
 
