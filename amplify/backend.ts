@@ -187,13 +187,13 @@ route('/api/sovereign-iq/narrative', [HttpMethod.POST], integrations.sovereignNa
 /* ------------------------------------------------------------------
  * AI narrative (Sovereign IQ PLAN S9, WS-S1): Claude in Amazon Bedrock
  * through the Messages API. The function only calls the model when
- * AI_ENABLED is 'true' (off until the owner approves D14).
- * TODO(S9 deploy): scope the resource to the approved model ARNs once
- * the region is decided; bedrock-mantle model ARNs are per region.
+ * AI_ENABLED is 'true'. Inference stays in eu-west-1 (owner decision
+ * D28): the permission is limited to requests made in that region.
  * ------------------------------------------------------------------ */
 backend.sovereignIqNarrativeFunction.resources.lambda.addToRolePolicy(new PolicyStatement({
   actions: ['bedrock-mantle:CreateInference'],
-  resources: ['*']
+  resources: ['*'],
+  conditions: { StringEquals: { 'aws:RequestedRegion': 'eu-west-1' } }
 }));
 route('/api/evaluate/cloud-iq', [HttpMethod.POST], integrations.cloud);
 route('/api/evaluate/strategy-iq', [HttpMethod.POST], integrations.strategy);

@@ -1,8 +1,8 @@
 /**
  * The Bedrock model behind the AI narrative (shared workstream WS-S1; Sovereign IQ PLAN S9). Claude in Amazon Bedrock
  * through the Messages API (AnthropicBedrockMantle, SigV4 with the Lambda role), structured output against the
- * narrative schema. Region, endpoint and model come from configuration (owner decision D14 on where inference may
- * run); nothing here runs unless the service's AI switch is on. A refusal falls back once to the configured fallback
+ * narrative schema. Region and model come from configuration: in-region eu-west-1 (owner decision D28, 26 Oct 2026).
+ * Nothing here runs unless the service's AI switch is on. A refusal falls back once to the configured fallback
  * model (client-side middleware: Bedrock has no server-side fallback); a refusal from both returns no text.
  */
 import { AnthropicBedrockMantle } from '@anthropic-ai/bedrock-sdk';
@@ -22,7 +22,7 @@ export interface BedrockNarrativeConfig {
 export function aiConfig(env: NodeJS.ProcessEnv = process.env): (BedrockNarrativeConfig & { enabled: boolean }) {
   return {
     enabled: env.AI_ENABLED === 'true',
-    region: env.AI_REGION || 'ap-south-1',
+    region: env.AI_REGION || 'eu-west-1',
     modelId: env.AI_MODEL_ID || 'anthropic.claude-opus-5-5',
     fallbackModelId: env.AI_FALLBACK_MODEL_ID ?? 'anthropic.claude-opus-4-8'
   };

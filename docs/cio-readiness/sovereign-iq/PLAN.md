@@ -508,7 +508,7 @@ Scope ranges appear only in the consultant SOW draft (D7). The client sees type,
 
 | # | Item |
 |---|---|
-| 1 | Shared Bedrock service in ap-south-1; model set by config; no cross-region processing unless the owner approves it (confirm Bedrock inference-profile routing in AWS documentation) |
+| 1 | Shared Bedrock service; model set by config; inference in-region in eu-west-1 (D28, replacing D14: ap-south-1 offers only the Global endpoint) |
 | 2 | Off by default; consultant switches it on per engagement; the state is shown on the report |
 | 3 | Input is the engine result only, with client name and personal data redacted |
 | 4 | Grounding check rejects any number, regime, date or provider not in the engine output |
@@ -517,7 +517,7 @@ Scope ranges appear only in the consultant SOW draft (D7). The client sees type,
 
 **Dependencies:** WS-S1; S6.
 
-**Status (26 Oct 2026): built, off, waiting on the owner's region decision.** The shared service (WS-S1) is `packages/engine-core/src/ai/` (grounding check: every number, regulation and provider must be in the input; legal conclusions, provider recommendations, SEAL ratings of the client and sales phrases rejected; one retry with the violations listed, then fail closed) with Sovereign IQ's redacted, client-visible input, lexicon and instructions in `v4/narrative.ts`. Service `sovereign-iq-narrative` (`POST /api/sovereign-iq/narrative`: per-engagement switch and generate) on Claude in Amazon Bedrock (`@anthropic-ai/bedrock-sdk` 1.1.0, `anthropic.claude-opus-5-5`, structured output, client-side refusal fallback to `anthropic.claude-opus-4-8`), behind `AI_ENABLED=false`; prompt and output logged to CloudWatch (1 year until S10). Page: AI card on the Overview (switch, optional focus with the client name redacted, labelled narrative); clients see only grounded text. Report: labelled "Narrative summary (AI-written)" section when present, and the AI state on the cover status line. Tests: `sovereign-iq-v4-narrative.test.ts` (20) and the service spec (5), with a stub model; live eval `scripts/eval-sovereign-narrative.ts` (10 archetype runs plus 8 adversarial focus notes) not yet run.
+**Status (26 Oct 2026): built, off; region decided (D28: in-region eu-west-1).** Before switching on: enable model access in the Bedrock console (eu-west-1), run the live eval, then set `AI_ENABLED=true`. The shared service (WS-S1) is `packages/engine-core/src/ai/` (grounding check: every number, regulation and provider must be in the input; legal conclusions, provider recommendations, SEAL ratings of the client and sales phrases rejected; one retry with the violations listed, then fail closed) with Sovereign IQ's redacted, client-visible input, lexicon and instructions in `v4/narrative.ts`. Service `sovereign-iq-narrative` (`POST /api/sovereign-iq/narrative`: per-engagement switch and generate) on Claude in Amazon Bedrock (`@anthropic-ai/bedrock-sdk` 1.1.0, `anthropic.claude-opus-5-5`, structured output, client-side refusal fallback to `anthropic.claude-opus-4-8`), behind `AI_ENABLED=false`; prompt and output logged to CloudWatch (1 year until S10). Page: AI card on the Overview (switch, optional focus with the client name redacted, labelled narrative); clients see only grounded text. Report: labelled "Narrative summary (AI-written)" section when present, and the AI state on the cover status line. Tests: `sovereign-iq-v4-narrative.test.ts` (20) and the service spec (5), with a stub model; live eval `scripts/eval-sovereign-narrative.ts` (10 archetype runs plus 8 adversarial focus notes) not yet run.
 
 **Region finding (26 Oct 2026, Anthropic documentation for Claude in Amazon Bedrock):** `ap-south-1` (Mumbai) serves the current Claude models on the **Global** endpoint only, which routes across all regions; it has no regional or in-region option. D14 ("ap-south-1 only, no cross-region inference without approval") cannot be met as written. Options for the owner: (a) Global from ap-south-1; (b) an in-region-only EU endpoint (`eu-west-1` or `eu-north-1`) so inference stays in one EU region; (c) a geography profile (EU, US, JP or AU). The input is the redacted engine result (no client name, answers or notes).
 
@@ -595,7 +595,7 @@ All recommended defaults are **accepted**, with one change: **D11**. The owner d
 | D11 | EU/UK client data while hosted in Mumbai | ~~Minimise, pseudonymise client name, offer a no-store session~~ **Decided: collect and keep all required data, client name included; no no-store session.** Transfer basis, privacy notice and retention still required | S5, S10 |
 | D12 | Sovereignty level vocabulary | Align with EU Cloud Sovereignty Framework SEAL objectives, with LTM wording | S1 |
 | D13 | Boundary with Resilience IQ | Sovereign IQ flags exit and concentration; Resilience IQ owns exit testing | S1 |
-| D14 | Bedrock region | ap-south-1 only, no cross-region inference without approval | S9 |
+| D14 | Bedrock region | ~~ap-south-1 only, no cross-region inference without approval~~ **Replaced by D28 (26 Oct 2026): in-region eu-west-1**, as ap-south-1 offers only the Global endpoint | S9 |
 
 ### Decisions added 26 Oct 2026
 
@@ -616,3 +616,4 @@ Taken by the product owner on the recommendations in discussion (D15–D19), and
 | D25 | R3 test | R3 only when day-to-day operations and support run in the zone through a local entity; supervised or approved access stays R2 | S7 |
 | D26 | R4 wording | Facts only (owner, operator, operator's law, technology supplier), with "Whether this meets R4 is for your counsel" | S7 |
 | D27 | US government clouds | R3 for US data, with an eligibility caveat | S7 |
+| D28 | Where AI inference runs (replaces D14) | In-region `eu-west-1` (Ireland): inference stays in one EU region, 10% regional premium. ap-south-1 serves current Claude models on the Global endpoint only | S9 |
