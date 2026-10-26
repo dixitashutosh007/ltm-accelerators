@@ -17,13 +17,14 @@
 | S4 | Scoring audit and recalibration | S3 | Audit invariants pass in CI; reference scenarios agree; golden outputs approved |
 | S5 | One page: executive, workshop and client modes | S3; WS-S7 | Every question renders and can be answered; save and resume on the server; client mode hides internals |
 | S6 | Outputs: PDF and technical backlog | S3; WS-S4 | Server-rendered PDF with methodology and sources; backlog CSV; every number traces to an engine field |
-| S7 | Platform playbook entries | S3; WS-S3 | Every finding with a technical remedy has entries for each platform the client selected, each with a verification step |
-| S8 | How LTM can help and SOW | S7; WS-S5 | Every finding mapped to a typed offering with scope range and execution outline; consultant-only SOW export |
+| S7 | Sovereign Cloud Advisory and platform playbook (revised 26 Oct 2026) | S3, S6; WS-S3 | Placement matrix for AWS, Azure and Google Cloud: each kind of data has a required level, minimum rung, gap and actions; every finding with a technical remedy has entries for each platform the client selected, each with a verification step |
+| S7b | SEAL view (added 26 Oct 2026) | S3, S6; S7 for tender criteria | SEAL wording verified; per-class minimum SEAL per objective, objective support and tender check on a SEAL tab and in the report; no provider SEAL rating |
+| S8 | How LTM can help and SOW | S7, S7b; WS-S5 | Every finding mapped to a typed offering with scope range and execution outline; consultant-only SOW export |
 | S9 | AI on Bedrock with toggle | S6; WS-S1 | Off by default; per-engagement toggle; grounding check passes 100% of the eval set; prompts and outputs logged |
-| S10 | Client-data protection and legal counsel gate | S2–S9; WS-S6 | Transfer basis, TIA, privacy notice, retention live; counsel sign-off for EU/UK, US and APAC |
+| S10 | Client-data protection and legal counsel gate | S2–S9 (incl. S7b); WS-S6 | Transfer basis, TIA, privacy notice, retention live; counsel sign-off for EU/UK, US and APAC |
 | S11 | Re-score against all 13 areas | S0–S10 | Validation report re-issued with all 13 Pass, or Partials accepted in writing |
 
-S0 starts now and does not wait for any decision. S2 content research can run beside S1. S5–S8 can run in parallel once S3's contract is fixed. S9 needs WS-S1; S10 needs WS-S6.
+S0 starts now and does not wait for any decision. S2 content research can run beside S1. S5–S8 can run in parallel once S3's contract is fixed. **Order from 26 Oct 2026 (D18):** owner review of Gate S6, then S7, with S7b beside it once the SEAL wording is verified; then S8. S9 needs WS-S1; S10 needs WS-S6.
 
 ---
 
@@ -380,28 +381,97 @@ The 28 P claims cite a primary URL whose article text was not re-read. They are 
 - **Tests:** `sovereign-iq-v4-report.test.ts` (sections, traced numbers, charts, client edition, backlog, PDF renders), report service tests, and a browser test that downloads both files. Full suites: 911 unit tests and 83 browser tests pass.
 ---
 
-## S7: Platform playbook entries (WS-S3)
+## S7: Sovereign Cloud Advisory and platform playbook (WS-S3)
 
-**Objective:** each finding ends in concrete, verifiable actions on the platforms the client selected. Providers appear as options driven by the client's requirement, with alternatives.
+**Revised 26 Oct 2026 (D15, D17, D19).** S7 was "platform playbook entries". It now also gives clients already on AWS, Azure or Google Cloud a placement plan: for each kind of data, where it should sit and on which kind of provider service. Other platforms get the playbook entries only.
+
+**Objective:** a client already on AWS, Azure or Google Cloud learns, for each kind of data, the level it needs, where it sits today, where it should sit, which kind of provider service fits, and the actions that close the gap. Every finding ends in concrete actions you can check on the platforms the client selected. Providers appear as options driven by the client's requirement, always with alternatives.
+
+### What is built
+
+| # | Item | Detail |
+|---|---|---|
+| 1 | Catalogue schema (WS-S3) | `platform-playbook.json` with a schema shared with Resilience IQ R10 item 7. One entry per control and platform: approach, service families, verification, owner role, minimum level, source with status (V/S/UNSOURCED), review date, and a "confirm regional availability" flag |
+| 2 | Placement ladder | For AWS, Azure and Google Cloud, five rungs from the lightest change to the heaviest (table below). Each LTM level has a minimum rung. The provider offerings named at each rung are sourced from the providers' own documentation by `sovereignty-compliance-lead` |
+| 3 | Zone coverage | The ladder is defined for each allowed zone in scope (EU, UK, US, SG, AU, IN, JP and others in A2). Where a provider has no sovereign offering in a zone, the matrix says so and shows the alternatives: another rung, another provider, or private cloud |
+| 4 | New question C1 (workshop follow-up) | "For each kind of data on AWS, Azure or Google Cloud, which kinds of service hold it?" Service families: storage and backup, databases, analytics, AI and machine learning, compute and containers, identity and keys, collaboration SaaS (for example Microsoft 365 or Google Workspace). Asked only when P1 includes `aws`, `azure` or `gcp`. A scope question, never scored |
+| 5 | Placement matrix (engine) | One row per kind of data and selected hyperscaler: where it sits today (D3, L2), required level, minimum rung, current rung, gap, actions (playbook entries for the failed controls of that class), verification, alternatives. A pure function of the engine result; engine 4.3.0 with a golden diff |
+| 6 | Playbook entries for every platform | Every finding with a technical remedy has an entry for each platform in P1. AWS, Azure and Google Cloud get service-level entries; on-premises, colocation, Oracle, IBM, sovereign providers, partner-operated clouds and SaaS get approach-level entries (D17). Initial entries are in the table below |
+| 7 | Page | New **Cloud advisory** tab: placement matrix, then actions by platform. Shown in client mode, without notes or source status |
+| 8 | Report and backlog | New report section "Sovereign cloud advisory" after Findings. The backlog CSV gains platform, service family, rung and verification columns |
+| 9 | Review cadence | Provider offerings change fast. Each offering in the ladder gets a 90-day review (D8) and a named review owner; CI fails on an overdue review |
+
+### Placement ladder (AWS, Azure, Google Cloud)
+
+| Rung | What it means | Minimum for | Examples to be sourced in WS-S3 (provider documentation only) |
+|---|---|---|---|
+| R0 | Standard region, no sovereignty controls | L0 | Any standard region |
+| R1 | Standard region inside the allowed zone, with region guardrails | L1 | AWS Organizations SCP region restriction; Azure Policy allowed locations; Google Cloud resource-locations org policy |
+| R2 | R1, plus customer-held keys, provider access approval and the provider's data boundary where one exists | L2 | AWS KMS External Key Store; Azure customer-managed keys with Managed HSM and Customer Lockbox, EU Data Boundary; Google Cloud External Key Manager, Access Approval, Access Transparency, Assured Workloads |
+| R3 | The provider's sovereign offering, run by staff in the zone through a local entity | L3 | AWS European Sovereign Cloud; Microsoft's sovereign cloud offerings; Google Cloud sovereign offerings and partner-operated clouds (for example S3NS). Names, scope and availability to be confirmed per zone |
+| R4 | No provider in the chain can be compelled by a law from outside the zone, or the system is disconnected | L4 | Partner-operated cloud with no foreign-parent control, a sovereign provider, private cloud, or a disconnected deployment. **Whether any hyperscaler-linked offering meets R4 is an LTM judgement that counsel must confirm (S10)** |
+
+### Initial playbook entries
 
 | Control | Platform level | Approach, then options (examples to be sourced in WS-S3) | Verification |
 |---|---|---|---|
 | `SOV.RES.REGION_LOCK` | Platform | Region guardrail policy. AWS: Organizations SCP region restriction. Azure: Policy allowed locations, EU Data Boundary. GCP: resource-locations org policy, Assured Workloads. On-prem: data-centre location register. Sovereign providers (e.g. OVHcloud, S3NS, STACKIT, Scaleway, national clouds): region choice by contract | Policy compliance report shows no regulated data outside allowed regions |
+| `SOV.RES.LOCATION` | Stack | Move primary storage and processing of the class into the allowed zone, on the rung its level needs | Location report per class shows only allowed regions |
 | `SOV.KEY.CUSTODY` | Platform, stack | Keys held outside the provider for L2+. AWS: KMS External Key Store. Azure: options per service, confirm with Microsoft documentation. GCP: Cloud External Key Manager. On-prem/sovereign: customer HSMs or third-party key managers | Key ownership attestation; revocation test makes test data unreadable |
 | `SOV.XFER.BASIS` | Application | Transfer register per flow: adequacy (incl. DPF/UK bridge), SCCs/IDTA with TIA, derogation | Every flow in the register has a basis and review date |
 | `SOV.OPS.ADMIN_ACCESS` | Platform, SaaS | Provider access approval and logging (e.g. Customer Lockbox, Access Approval, Access Transparency); sovereign operating models for L3 | Access logs reviewed monthly; zero unapproved access |
+| `SOV.OPS.PERSONNEL_ZONE` | Platform | Move the class to rung R3 or above on the current provider, or to a provider operated in the zone | Provider attestation of in-zone personnel and local entity |
 | `SOV.BACKUP.LOCATION` | Stack | Backup and replica regions inside the allowed zone; independent keys | Restore test from in-zone copy; location report |
 | `SOV.SAAS.SUBPROCESSOR` | Application | Sub-processor register, notification and objection rights | Register complete for critical SaaS |
-| `SOV.EXIT.TESTED` | Platform, application | Portability (containers, open formats), exit plan per critical service; referral to Resilience IQ for testing | Exit plan reviewed; partial migration rehearsal |
+| `SOV.EXIT.PLAN` | Platform, application | Portability (containers, open formats), exit plan per critical service; referral to Resilience IQ for testing | Exit plan reviewed; partial migration rehearsal |
 | `SOV.AI.DATA_LOCATION` | Stack | In-zone model hosting or provider data-zone options; no training on client data | Inference endpoints and logs located in zone |
-| `SOV.OOB.MGMT` | On-prem | Isolated management network, vendor call-home controlled | Network scan shows no unmanaged outbound management traffic |
-| `SOV.PLATFORM.TARGET` | Platform | Sovereign landing zone on the selected target: hyperscaler sovereign offering, partner cloud, sovereign provider, or private cloud | Landing zone conformance report |
+| `SOV.OPS.OOB_MGMT` | On-prem | Isolated management network, vendor call-home controlled | Network scan shows no unmanaged outbound management traffic |
+| `SOV.JUR.IMMUNITY` | Platform | Sovereign landing zone on rung R4: partner cloud with no foreign-parent control, sovereign provider, or private cloud | Landing zone conformance report; counsel view on jurisdiction |
 
-**Rules:** application level states that specific plans need technical discovery data (Layer 3) beyond the questionnaire. Each entry has a source, owner role, review date and "confirm regional availability" where needed.
+The earlier draft used `SOV.EXIT.TESTED`, `SOV.OOB.MGMT` and `SOV.PLATFORM.TARGET`. These are replaced by the catalogue IDs `SOV.EXIT.PLAN`, `SOV.OPS.OOB_MGMT` and the placement ladder.
 
-**Dependencies:** S3; WS-S3 catalogue schema (shared with Resilience IQ R10 item 7).
+**Rules:**
+- No "best provider". The matrix shows the minimum rung and every option that meets it, in a fixed order that does not rank providers.
+- Provider nationality is a fact, never a score below L4 (D3). The ladder changes the advice, not the maturity score.
+- Service families, not individual products (D19). A named product appears only as an example under a family, with its source and review date.
+- Application-level plans state that specific designs need technical discovery data (Layer 3) beyond the questionnaire.
+- Each entry has a source, owner role, review date and "confirm regional availability" where needed.
 
-**Gate S7:** a test confirms no action without a finding and no selected platform without options; 100% of entries sourced and reviewed.
+**Dependencies:** S3; S6 (report and backlog); WS-S3 catalogue schema (shared with Resilience IQ R10 item 7).
+
+**Gate S7:**
+- Tests confirm: no action without a finding; no selected platform without options; every hyperscaler, zone and level in scope has a minimum rung; every rung option has a source and review date; C1 is never scored.
+- 100% of entries sourced and reviewed by `sovereignty-compliance-lead`.
+- The owner approves the R4 wording.
+- A consultant reviews the placement matrix for the five archetypes.
+
+---
+
+## S7b: SEAL view (EU Cloud Sovereignty Framework)
+
+**Added 26 Oct 2026 (D15, D16).** Puts the SEAL mapping already in the design (DESIGN.md 3.4, D12) in front of the client, as a simple way to explain sovereignty. It uses answers the client has already given; there is no separate questionnaire.
+
+**Objective:** the client sees, in the EU Commission's SEAL 0–4 vocabulary, what level of provider service each kind of data needs, and which of its own controls support each sovereignty objective. SEAL rates a provider's service per objective, not the client, so the view never says "you are SEAL-x".
+
+| # | Item | Detail |
+|---|---|---|
+| 1 | Verify the source first | `sovereignty-compliance-lead` checks against the Commission's *Cloud Sovereignty Framework* PDF (v1.2.1 or later): SEAL-4 wording and SEAL-3 label (now status S), the eight objectives and the objective weights. Claims register updated; anything not verified is labelled on screen |
+| 2 | Explainer | A plain-language SEAL 0–4 ladder beside question L1, also in the report's methodology. Each L1 option shows the SEAL objectives it implies |
+| 3 | Engine `seal` block | For each kind of data: the minimum SEAL per objective SOV-2 to SOV-6 from the DESIGN.md 3.4 mapping. An organisation row takes the highest across classes. Engine 4.4.0 with a golden diff |
+| 4 | Objective support | For each objective: the client's controls tagged to it (catalogue `seal` field), in place and gaps. Labelled "controls that support this objective", not a rating |
+| 5 | Tender minimums (new question L3, workshop follow-up) | "Must you meet minimum SEALs per objective in an EU tender?" Asked when A2 includes the EU and the entity is a public body or supplies EU public bodies. Minimums for SOV-2 to SOV-6 raise the required level by the reverse mapping (3.4); SOV-1, SOV-7 and SOV-8 minimums become provider-selection criteria in the S7 placement matrix |
+| 6 | Page | New **SEAL view** tab: the ladder, the per-class table, objective support and tender check. Shown in client mode |
+| 7 | Report | New section "EU sovereignty levels (SEAL)" after the required level by kind of data |
+| 8 | Wording | Fixed callouts: "LTM mapping, not the Commission's"; "SEAL rates provider services; this is not a SEAL assessment or certification" |
+
+**Not in scope (D16):** rating any provider's service at a SEAL. The Commission has not published provider scores. Revisit only if it does, and only with counsel review (S10).
+
+**Dependencies:** S3; S6; S7 for the provider-selection criteria in item 5 (the rest can run beside S7).
+
+**Gate S7b:**
+- SEAL wording verified (status V), or labelled where not.
+- Tests: every class at L1 or above has a SEAL row; the reverse mapping from tender minimums; the language lint rejects "you are SEAL", "SEAL-certified" and any provider SEAL rating.
+- The owner reviews the tab and the report section.
 
 ---
 
@@ -420,7 +490,7 @@ The 28 P claims cite a primary URL whose article text was not re-read. They are 
 
 Scope ranges appear only in the consultant SOW draft (D7). The client sees type, purpose and execution outline.
 
-**Dependencies:** S7; WS-S5 catalogue.
+**Dependencies:** S7 (offerings map to placement rungs: R1–R2 to the sovereign landing zone, R3–R4 to migration to a sovereign platform), S7b; WS-S5 catalogue.
 
 **Gate S8:** test: every finding maps to at least one offering; SOW export is consultant-only; language lint passes.
 
@@ -489,7 +559,7 @@ Scope ranges appear only in the consultant SOW draft (D7). The client sees type,
 | 8 | Sources | Register complete; CI review dates |
 | 9 | Legal validity | Counsel sign-off; disclaimer; S6 documented |
 | 10 | AI scope and toggle | Bedrock only; eval 100% |
-| 11 | Technical execution | Playbook per selected platform with verification |
+| 11 | Technical execution | Placement matrix for AWS, Azure and Google Cloud; playbook per selected platform with verification |
 | 12 | Commercial pull-through | Every finding in How LTM can help; SOW consultant-only |
 | 13 | Report defensibility | Number trace and assumption register complete; no inflated figure; delivery-grade roadmap; CIO challenge test passed for all five archetypes |
 
@@ -516,3 +586,15 @@ All recommended defaults are **accepted**, with one change: **D11**. The owner d
 | D12 | Sovereignty level vocabulary | Align with EU Cloud Sovereignty Framework SEAL objectives, with LTM wording | S1 |
 | D13 | Boundary with Resilience IQ | Sovereign IQ flags exit and concentration; Resilience IQ owns exit testing | S1 |
 | D14 | Bedrock region | ap-south-1 only, no cross-region inference without approval | S9 |
+
+### Decisions added 26 Oct 2026
+
+Taken by the product owner on the recommendations in discussion.
+
+| # | Decision | Taken | Needed by |
+|---|---|---|---|
+| D15 | SEAL in the output | A separate SEAL view tab and report section, with a SEAL 0–4 explainer beside L1; derived from existing answers, no separate questionnaire | S7b |
+| D16 | Rating providers at a SEAL | Not shown. Revisit only if the Commission publishes provider scores, and then with counsel | S7b, S10 |
+| D17 | Sovereign Cloud Advisory scope | Widen S7: placement matrix and service-level entries for AWS, Azure and Google Cloud; approach-level entries for every other platform | S7 |
+| D18 | Order | Owner review of Gate S6, then S7, with S7b beside it once the SEAL wording is verified | — |
+| D19 | Advisory granularity | Service families, not individual products; named products only as sourced examples with review dates | S7 |
