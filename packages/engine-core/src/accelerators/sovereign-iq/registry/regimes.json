@@ -1,6 +1,6 @@
 {
-  "registryVersion": "1.0.0",
-  "statusAsOf": "2026-10-14",
+  "registryVersion": "1.1.0",
+  "statusAsOf": "2026-10-25",
   "predicates": {
     "eu_financial_entity": {
       "fact": "ent.flags",
@@ -1083,56 +1083,116 @@
       "requiredControls": [
         {
           "control": "SOV.TP.REGISTER",
-          "basis": "DORA Art. 28(3) register of information [CLM-SOV-038]",
+          "basis": "DORA Art. 28(3) register of information [CLM-SOV-038]; financial entities only: a designated critical ICT third-party provider is overseen under Art. 31-35, not bound by these duties (S4 reference scenario S4REF05)",
           "verification": {
             "status": "V",
             "checked": "2026-10-14",
             "by": "sovereignty-compliance-lead (agent)"
+          },
+          "when": {
+            "any": [
+              {
+                "derived": "eu_financial_entity"
+              },
+              {
+                "derived": "financial_sector"
+              }
+            ]
           }
         },
         {
           "control": "SOV.EXIT.PLAN",
-          "basis": "DORA Art. 28(8) exit strategies [CLM-SOV-039]",
+          "basis": "DORA Art. 28(8) exit strategies [CLM-SOV-039]; financial entities only: a designated critical ICT third-party provider is overseen under Art. 31-35, not bound by these duties (S4 reference scenario S4REF05)",
           "verification": {
             "status": "V",
             "checked": "2026-10-14",
             "by": "sovereignty-compliance-lead (agent)"
+          },
+          "when": {
+            "any": [
+              {
+                "derived": "eu_financial_entity"
+              },
+              {
+                "derived": "financial_sector"
+              }
+            ]
           }
         },
         {
           "control": "SOV.CONC.PROVIDER",
-          "basis": "DORA Art. 29 ICT concentration risk [CLM-SOV-040]",
+          "basis": "DORA Art. 29 ICT concentration risk [CLM-SOV-040]; financial entities only: a designated critical ICT third-party provider is overseen under Art. 31-35, not bound by these duties (S4 reference scenario S4REF05)",
           "verification": {
             "status": "S",
             "checked": "2026-10-14",
             "by": "sovereignty-compliance-lead (agent)"
+          },
+          "when": {
+            "any": [
+              {
+                "derived": "eu_financial_entity"
+              },
+              {
+                "derived": "financial_sector"
+              }
+            ]
           }
         },
         {
           "control": "SOV.TP.AUDIT",
-          "basis": "DORA Art. 30 access, inspection and audit rights [CLM-SOV-041]",
+          "basis": "DORA Art. 30 access, inspection and audit rights [CLM-SOV-041]; financial entities only: a designated critical ICT third-party provider is overseen under Art. 31-35, not bound by these duties (S4 reference scenario S4REF05)",
           "verification": {
             "status": "S",
             "checked": "2026-10-14",
             "by": "sovereignty-compliance-lead (agent)"
+          },
+          "when": {
+            "any": [
+              {
+                "derived": "eu_financial_entity"
+              },
+              {
+                "derived": "financial_sector"
+              }
+            ]
           }
         },
         {
           "control": "SOV.SAAS.SUBPROCESSOR",
-          "basis": "Delegated Regulation (EU) 2025/532 on sub-contracting [CLM-SOV-042]",
+          "basis": "Delegated Regulation (EU) 2025/532 on sub-contracting [CLM-SOV-042]; financial entities only: a designated critical ICT third-party provider is overseen under Art. 31-35, not bound by these duties (S4 reference scenario S4REF05)",
           "verification": {
             "status": "V",
             "checked": "2026-10-14",
             "by": "sovereignty-compliance-lead (agent)"
+          },
+          "when": {
+            "any": [
+              {
+                "derived": "eu_financial_entity"
+              },
+              {
+                "derived": "financial_sector"
+              }
+            ]
           }
         },
         {
           "control": "SOV.IR.REPORTING",
-          "basis": "DORA Art. 19; Delegated Regulation (EU) 2025/301: 4 h / 24 h initial notification [CLM-SOV-036]",
+          "basis": "DORA Art. 19; Delegated Regulation (EU) 2025/301: 4 h / 24 h initial notification [CLM-SOV-036]; financial entities only: a designated critical ICT third-party provider is overseen under Art. 31-35, not bound by these duties (S4 reference scenario S4REF05)",
           "verification": {
             "status": "V",
             "checked": "2026-10-14",
             "by": "sovereignty-compliance-lead (agent)"
+          },
+          "when": {
+            "any": [
+              {
+                "derived": "eu_financial_entity"
+              },
+              {
+                "derived": "financial_sector"
+              }
+            ]
           }
         }
       ],

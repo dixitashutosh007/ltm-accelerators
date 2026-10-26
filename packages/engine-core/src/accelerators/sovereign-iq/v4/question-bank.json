@@ -169,7 +169,7 @@
       "text": "Are you responsible for critical infrastructure under any of these regimes?",
       "trigger": { "any": [
         { "fact": "ent.flags", "op": "includes", "value": "critical_infrastructure_operator" },
-        { "all": [ { "fact": "org.sector", "op": "in", "value": ["energy", "transport", "water", "health", "digital_infrastructure"] }, { "fact": "org.establishments", "op": "includes_any", "value": ["au", "uk", "sg", "cn"] } ] }
+        { "all": [ { "fact": "org.sector", "op": "in", "value": ["energy", "transport", "water", "health", "digital_infrastructure", "banking", "financial_market_infra", "insurance", "food", "space"] }, { "fact": "org.establishments", "op": "includes_any", "value": ["au", "uk", "sg", "cn"] } ] }
       ] },
       "options": [
         { "value": "au_soci_responsible_entity", "label": "Australia SOCI responsible entity" },
@@ -342,7 +342,8 @@
       "text": "For transfers under contractual clauses or BCRs: have you assessed whether the destination's laws, including government access, undermine the protection, and recorded the result?",
       "trigger": { "fact": "xfer.mechanisms", "op": "includes_any", "value": ["sccs", "idta_or_addendum", "bcr"] },
       "options": [
-        { "value": "complete", "label": "Yes, for every such transfer, reviewed regularly", "state": 3 },
+        { "value": "complete", "label": "Yes, for every such transfer, reviewed regularly, and the safeguards close the risks found", "state": 3 },
+        { "value": "risks_open", "label": "Yes, but for some transfers the destination's laws are not offset by the safeguards in place", "state": 3, "help": "The assessment is recorded (this control), but those transfers have no valid basis: SOV.XFER.BASIS scores 0 for them (CJEU C-311/18; EDPB Recommendations 01/2020)" },
         { "value": "partial", "label": "For some transfers, or not reviewed", "state": 1 },
         { "value": "none", "label": "No", "state": 0 }, { "value": "unknown", "label": "Unknown", "state": "unknown" }
       ],

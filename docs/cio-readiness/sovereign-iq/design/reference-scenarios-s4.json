@@ -1,0 +1,2431 @@
+{
+  "version": "1.0.0",
+  "statusAsOf": "2026-10-25",
+  "note": "Sovereign IQ S4 item 4: reference scenarios built from public decisions and published regulatory expectations, written by the sovereignty-compliance-lead agent on 25 Oct 2026 from DESIGN.md sections 2-8, the registry rule IDs and the question bank, BEFORE any engine run and without reading the golden files or evaluate.ts. Answers are for workshop mode; follow-ups are included only where their trigger is true under the design rules. Controls the public record does not address are answered at their best state (D4 current, R1 enforced, K1 external, K3 all, O1 approve_log, V1 all, V2 yes, V3 full, V4 full, X1 tested, X2 diversified, G1 exec_forum, G2 tested) so every expected gap traces to a public fact or a stated assumption; W1-W3 are fixed and not scored. Expected outcomes follow the design rules; where the public outcome differs, \"disagreementsWithDesign\" says so and \"why\" marks the PUBLIC OUTCOME. Maturity scores are not predicted. Severity follows DESIGN 8.3; RAG follows 7.2. Not legal advice; counsel reviews at S10. Sources were checked on 25 Oct 2026; EUR-Lex, legislation.gov.uk and fedlex could not be read directly from this environment, so those items are status S.",
+  "scenarios": [
+    {
+      "id": "S4REF01_META_IE_SCCS_2023",
+      "name": "EU establishment of a US social network transferring EEA user data to the US under SCCs (Meta, DPC 2023)",
+      "summary": "Built from the Irish DPC final decision of 12 May 2023 (announced 22 May 2023) adopted under EDPB Binding Decision 1/2023: Meta Platforms Ireland transferred EEA Facebook users' personal data to Meta Platforms Inc. in the US under the 2021 SCCs with supplementary measures; the DPC found an Art. 46(1) infringement, fined EUR 1.2bn and ordered transfers suspended within five months and US storage of unlawfully transferred data to cease within six months. Assessment scope: the EEA Facebook service only (people column EEA only, US states \"none\"). Facts as at the decision (before the EU-US DPF). Assumptions not in the public record: platform modelled as the group's own data centres (onprem, parent = group HQ US); recommender systems make the entity a provider of AI systems; board choice L0. Controls the public record does not address are answered at their best state, so every expected gap comes from public facts only.",
+      "sources": [
+        {
+          "url": "https://www.dataprotection.ie/en/news-media/press-releases/Data-Protection-Commission-announces-conclusion-of-inquiry-into-Meta-Ireland",
+          "title": "Data Protection Commission press release: conclusion of inquiry into Meta Ireland",
+          "date": "2023-05-22 (checked 2026-10-25)",
+          "says": "Final decision 12 May 2023; Meta Ireland infringed Art. 46(1) GDPR by continuing transfers to the US after Schrems II; the 2021 SCCs with supplementary measures did not address the risks identified by the CJEU; EUR 1.2bn fine; suspension of future transfers within five months (Art. 58(2)(j)); compliance order within six months including ceasing US storage of unlawfully transferred data (Art. 58(2)(d))."
+        },
+        {
+          "url": "https://www.edpb.europa.eu/our-work-tools/consistency-findings/binding-decisions_en",
+          "title": "EDPB binding decisions (Binding Decision 1/2023 on Meta Platforms Ireland, Facebook transfers)",
+          "date": "2023-04-13 (checked 2026-10-25 via search results)",
+          "says": "EDPB Art. 65 binding decision of 13 April 2023 that the DPC's final decision implements (fine and order to stop unlawful storage). Status S: page content seen through search results."
+        },
+        {
+          "url": "https://www.edpb.europa.eu/system/files/2023-02/edpb_guidelines_05-2021_interplay_between_the_application_of_art3-chapter_v_of_the_gdpr_v2_en_0.pdf",
+          "title": "EDPB Guidelines 05/2021 on the interplay between Art. 3 and Chapter V, version 2.0",
+          "date": "2023-02-24 (read 2026-10-25)",
+          "says": "Three cumulative criteria for a transfer: exporter subject to the GDPR; exporter discloses or makes data available to another controller or processor; importer in a third country. Used here to confirm that an EU establishment sending data to its US parent is a transfer."
+        }
+      ],
+      "answers": {
+        "D4": "current",
+        "R1": "enforced",
+        "K1": "external",
+        "K3": "all",
+        "O1": "approve_log",
+        "V1": "all",
+        "V2": "yes",
+        "V3": "full",
+        "V4": "full",
+        "X1": "tested",
+        "X2": "diversified",
+        "G1": "exec_forum",
+        "G2": "tested",
+        "W1": "minimal",
+        "W2": "medium",
+        "W3": [
+          "compliance"
+        ],
+        "A1": "us",
+        "A2": {
+          "entity": [
+            "us",
+            "eea"
+          ],
+          "people": [
+            "eea"
+          ]
+        },
+        "A3": "digital_providers",
+        "A4": {
+          "staff_band": "250plus",
+          "turnover_band_eur": "gt10bn"
+        },
+        "A5": {
+          "balance_sheet_band_eur": "gt43m"
+        },
+        "A6": [
+          "IE"
+        ],
+        "A7": [
+          "none"
+        ],
+        "B1": [
+          "none"
+        ],
+        "B2": {
+          "self_class": "not_assessed",
+          "special_type": "none"
+        },
+        "B4": [
+          "provider_ai_system"
+        ],
+        "D1": [
+          "personal",
+          "proprietary"
+        ],
+        "D2": "gt1m",
+        "D3": {
+          "personal": {
+            "primary": [
+              "eea",
+              "us"
+            ],
+            "backup": [
+              "eea",
+              "us"
+            ]
+          },
+          "proprietary": {
+            "primary": [
+              "eea",
+              "us"
+            ],
+            "backup": [
+              "eea",
+              "us"
+            ]
+          }
+        },
+        "P1": [
+          "onprem"
+        ],
+        "L1": "L0",
+        "L2": {
+          "personal": {
+            "level": "L0",
+            "zones": [
+              "eea",
+              "us"
+            ],
+            "platforms": [
+              "onprem"
+            ]
+          },
+          "proprietary": {
+            "level": "L0",
+            "zones": [
+              "eea",
+              "us"
+            ],
+            "platforms": [
+              "onprem"
+            ]
+          }
+        },
+        "T1": [
+          "sccs"
+        ],
+        "T2": "complete",
+        "I1": "in_zone_unclear",
+        "I2": "complete"
+      },
+      "expected": {
+        "regimes": [
+          {
+            "regime": "EU_GDPR",
+            "grade": "applies",
+            "rule": "EU_GDPR.1",
+            "why": "EU establishment (Meta Platforms Ireland), GDPR Art. 3(1)."
+          },
+          {
+            "regime": "EU_NIS2",
+            "grade": "applies",
+            "rule": "EU_NIS2.8",
+            "why": "Social networking platform (Annex II digital providers), large; annotation \"important\". Self-class not assessed, so the derived class is used. Subject to Irish transposition (not checked)."
+          },
+          {
+            "regime": "EU_AI_ACT",
+            "grade": "applies",
+            "rule": "EU_AI_ACT.2",
+            "why": "Provider of AI systems established in the EU (assumption: recommender systems), Art. 2(1)(a)."
+          },
+          {
+            "regime": "US_CLOUD_ACT",
+            "grade": "advisory",
+            "rule": "US_CLOUD_ACT.1",
+            "why": "Own data centres take the group HQ (US) as parent jurisdiction."
+          },
+          {
+            "regime": "US_FISA_702",
+            "grade": "advisory",
+            "rule": "US_FISA_702.1",
+            "why": "US-parent infrastructure holds data of non-US persons (EEA users)."
+          }
+        ],
+        "requiredLevels": {
+          "personal": "L0",
+          "proprietary": "L0"
+        },
+        "gaps": [],
+        "exposure": [
+          {
+            "regime": "EU_GDPR",
+            "rag": "green",
+            "why": "Under the design rules: personal data stored in the US makes derived.personal_transfer true; T1 = sccs is an EU route, so SOV.XFER.BASIS = 3; T2 = complete, so SOV.XFER.TIA = 3; other required controls at 3. Largest cap: GDPR Art. 83(5) 4% from the gt10bn band (at least EUR 400M), labelled cap, not expected fine. PUBLIC OUTCOME: Art. 46(1) infringement, EUR 1.2bn fine and suspension order. See disagreements."
+          },
+          {
+            "regime": "EU_NIS2",
+            "rag": "green",
+            "why": "Required controls (incident reporting, supplier visibility, encryption, governance) answered at best state."
+          },
+          {
+            "regime": "EU_AI_ACT",
+            "rag": "green",
+            "why": "SOV.AI.GOVERNANCE answered complete."
+          }
+        ],
+        "disagreementsWithDesign": [
+          "CORE: the design scores SOV.XFER.BASIS = 3 whenever T1 names a route valid for the regime (here SCCs), whatever the destination law. The DPC and EDPB found that the 2021 SCCs with supplementary measures did not address US surveillance law and that the transfers infringed Art. 46(1): the transfer basis itself failed. The engine would show GDPR Green with no transfer finding for the largest GDPR fine to date. Recommendation: SOV.XFER.BASIS for SCC, IDTA or BCR routes should be capped by the TIA outcome, and T2 needs an option such as \"assessed: risks not closed by supplementary measures\" that sets XFER.BASIS to 0 (Critical where GDPR applies).",
+          "US_FISA_702 (the law whose effect invalidated the transfers) is advisory and \"no penalty on you\"; nothing links the foreign-access exposure line to the transfer test. Recommendation: where a US-parent provider or importer holds EEA data under SCCs and T2 is below complete, the FISA line should point to the transfer finding.",
+          "Time context: the engine has no \"as at\" date for facts. Re-run today with T1 = eu_us_dpf for a DPF-certified recipient, the Green result would be correct (DPF adequacy, no TIA needed). Reference scenarios built from historical decisions therefore need the route that existed at the time.",
+          "NIS2 is graded applies (EU_NIS2.8) regardless of whether the member state of main establishment has transposed the Directive; the registry flags national transposition as volatile but the grade does not show it. Irish transposition status was not checked (UNSOURCED)."
+        ]
+      }
+    },
+    {
+      "id": "S4REF02_UBER_NL_NO_TOOL_2024",
+      "name": "US ride-hailing group transferring EU drivers' data to US HQ without a transfer tool (Uber, Dutch DPA 2024)",
+      "summary": "Built from the Dutch DPA (Autoriteit Persoonsgegevens) decision announced 26 August 2024: EUR 290M fine on Uber Technologies Inc. and Uber B.V. for a serious infringement of Art. 44 GDPR. Uber transferred EU drivers' personal data (account and taxi licence details, location data, photos, payment details, identity documents and in some cases criminal and medical data) to its US headquarters for over two years without a transfer tool, having stopped using SCCs from August 2021; the case started from complaints by more than 170 French drivers and was coordinated with the CNIL. Scope: EU drivers. Assumptions not in the public record: platform modelled as the group's own infrastructure (parent = US), AI use internal only, roughly 100k-1M records, board choice L0. Other controls at best state.",
+      "sources": [
+        {
+          "url": "https://www.autoriteitpersoonsgegevens.nl/en/current/dutch-supervisory-authority-imposes-a-fine-of-290-million-euros-on-uber",
+          "title": "Autoriteit Persoonsgegevens press release (returned HTTP 403 to this environment on 2026-10-25)",
+          "date": "2024-08-26",
+          "says": "Not read directly; content taken from the reports below, which quote the AP decision. Status S."
+        },
+        {
+          "url": "https://www.njb.nl/nieuws/bestuurlijke-boete-van-290-miljoen-euro-voor-uber-vanwege-delen-chauffeursgegevens/",
+          "title": "Nederlands Juristenblad: administrative fine of EUR 290M for Uber",
+          "date": "2024-08-26 (checked 2026-10-25 via search results)",
+          "says": "AP fine of EUR 290M for a serious infringement of Art. 44 GDPR; Uber had not used standard contractual clauses since August 2021, so EU drivers' data were insufficiently protected."
+        },
+        {
+          "url": "https://www.securitymanagement.nl/privacywaakhond-legt-uber-boete-op-van-290-miljoen-euro/",
+          "title": "Security Management (reproduces the AP statement)",
+          "date": "2024-08-26 (checked 2026-10-25 via search results)",
+          "says": "Data categories: account details and taxi licences, location data, photos, payment details, identity documents, and in some cases criminal and medical data; transfers for more than two years without a transfer instrument; Uber has since ended the infringement and is objecting to the fine."
+        },
+        {
+          "url": "https://advisera.com/nis2/sectors-of-high-criticality/",
+          "title": "NIS2 Annex I (secondary reproduction; official text https://eur-lex.europa.eu/eli/dir/2022/2555/oj)",
+          "date": "checked 2026-10-25",
+          "says": "Annex I sector 2 Transport, sub-sector (d) Road: road authorities and operators of intelligent transport systems. Status S (EUR-Lex blocked from this environment)."
+        }
+      ],
+      "answers": {
+        "D4": "current",
+        "R1": "enforced",
+        "K1": "external",
+        "K3": "all",
+        "O1": "approve_log",
+        "V1": "all",
+        "V2": "yes",
+        "V3": "full",
+        "V4": "full",
+        "X1": "tested",
+        "X2": "diversified",
+        "G1": "exec_forum",
+        "G2": "tested",
+        "W1": "minimal",
+        "W2": "medium",
+        "W3": [
+          "compliance"
+        ],
+        "A1": "us",
+        "A2": {
+          "entity": [
+            "us",
+            "eea"
+          ],
+          "people": [
+            "eea"
+          ]
+        },
+        "A3": "transport",
+        "A4": {
+          "staff_band": "250plus",
+          "turnover_band_eur": "gt10bn"
+        },
+        "A5": {
+          "balance_sheet_band_eur": "gt43m"
+        },
+        "A6": [
+          "NL",
+          "FR"
+        ],
+        "A7": [
+          "none"
+        ],
+        "B1": [
+          "none"
+        ],
+        "B2": {
+          "self_class": "not_assessed",
+          "special_type": "none"
+        },
+        "B4": [
+          "deployer_internal"
+        ],
+        "D1": [
+          "personal",
+          "special",
+          "financial"
+        ],
+        "D2": "100k_1m",
+        "D3": {
+          "personal": {
+            "primary": [
+              "eea",
+              "us"
+            ],
+            "backup": [
+              "eea",
+              "us"
+            ]
+          },
+          "special": {
+            "primary": [
+              "eea",
+              "us"
+            ],
+            "backup": [
+              "eea",
+              "us"
+            ]
+          },
+          "financial": {
+            "primary": [
+              "eea",
+              "us"
+            ],
+            "backup": [
+              "eea",
+              "us"
+            ]
+          }
+        },
+        "P1": [
+          "onprem"
+        ],
+        "L1": "L0",
+        "L2": {
+          "personal": {
+            "level": "L0",
+            "zones": [
+              "eea",
+              "us"
+            ],
+            "platforms": [
+              "onprem"
+            ]
+          },
+          "special": {
+            "level": "L0",
+            "zones": [
+              "eea",
+              "us"
+            ],
+            "platforms": [
+              "onprem"
+            ]
+          },
+          "financial": {
+            "level": "L0",
+            "zones": [
+              "eea",
+              "us"
+            ],
+            "platforms": [
+              "onprem"
+            ]
+          }
+        },
+        "T1": [
+          "undocumented"
+        ],
+        "I1": "in_zone_no_training",
+        "I2": "complete"
+      },
+      "expected": {
+        "regimes": [
+          {
+            "regime": "EU_GDPR",
+            "grade": "applies",
+            "rule": "EU_GDPR.1",
+            "why": "EU establishment (Uber B.V., Amsterdam), Art. 3(1)."
+          },
+          {
+            "regime": "EU_NIS2",
+            "grade": "applies",
+            "rule": "EU_NIS2.8",
+            "why": "Sector answered \"transport\" (Annex I) and large; annotation \"essential\". See disagreement: Annex I road covers road authorities and ITS operators."
+          },
+          {
+            "regime": "EU_AI_ACT",
+            "grade": "applies",
+            "rule": "EU_AI_ACT.4",
+            "why": "Deployer established in the EU, Art. 2(1)(b)."
+          },
+          {
+            "regime": "US_CLOUD_ACT",
+            "grade": "advisory",
+            "rule": "US_CLOUD_ACT.1",
+            "why": "Infrastructure parent is the US group."
+          },
+          {
+            "regime": "US_FISA_702",
+            "grade": "advisory",
+            "rule": "US_FISA_702.1",
+            "why": "US-parent infrastructure holds EEA persons' data."
+          }
+        ],
+        "requiredLevels": {
+          "personal": "L0",
+          "special": "L0",
+          "financial": "L0"
+        },
+        "gaps": [
+          {
+            "control": "SOV.XFER.BASIS",
+            "severity": "Critical",
+            "why": "T1 = undocumented sets the state to 0; weight C; strong driver (EU_GDPR applies). Matches the AP finding (Art. 44, no transfer tool from August 2021)."
+          }
+        ],
+        "exposure": [
+          {
+            "regime": "EU_GDPR",
+            "rag": "red",
+            "why": "C-weight required control at 0. Largest cap: GDPR Art. 83(5) 4% from the gt10bn band (at least EUR 400M), cap not expected fine; the actual EUR 290M fine sits below the cap, consistent with the cap label."
+          },
+          {
+            "regime": "EU_NIS2",
+            "rag": "green",
+            "why": "Required controls at best state (but the grade itself is questionable, see disagreements)."
+          },
+          {
+            "regime": "EU_AI_ACT",
+            "rag": "green",
+            "why": "SOV.AI.GOVERNANCE complete."
+          }
+        ],
+        "disagreementsWithDesign": [
+          "NIS2 sector granularity: A3 offers one \"Transport\" option, and EU_NIS2.8 grades any large Annex I entity \"applies, essential\". NIS2 Annex I road transport covers road authorities and operators of intelligent transport systems; a ride-hailing platform is not obviously in scope (CJEU C-434/15 treated Uber's service as a transport service, but that is not the NIS2 entity test). The engine would show an essential-entity cap (at least EUR 10M or 2%) that may not exist. Recommendation: split A3 transport into the Annex I sub-sectors, or grade transport likely_confirm.",
+          "Agreement on the transfer: the engine and the AP agree (Critical gap, GDPR Red). Note for the transfer test generally: EDPB Guidelines 05/2021 Example 1 says a non-EU controller collecting directly from people in the EU under Art. 3(2) makes no transfer. Here an EU establishment (Uber B.V.) was joint controller, so a transfer occurred; for a non-EU company with no EU establishment the engine's storage-location test would still report a transfer."
+        ]
+      }
+    },
+    {
+      "id": "S4REF03_NETDOKTOR_AT_GOOGLE_ANALYTICS_2021",
+      "name": "Austrian health-information website using Google Analytics under SCCs (Austrian DSB 2021, CNIL 2022)",
+      "summary": "Built from the Austrian DSB partial decision of 21/22 December 2021 (published 13 January 2022) on netdoktor.at and the CNIL decision of 10 February 2022, both on noyb complaints after Schrems II: the website operator relied on SCCs with Google; identifiers and IP data reached Google LLC in the US; the authorities held that Google's supplementary measures (including encryption) did not exclude access by US intelligence services, so the transfer breached Art. 44. Facts as at the decisions (before the DPF). Assumptions: medium-sized operator (50-249 staff, EUR 10-50M), sector \"other\" (online publishing, not a healthcare provider), no AI, board choice L0, website on colocation hosting. The operator relied on Google's measures and had not completed its own assessment (T2 partial).",
+      "sources": [
+        {
+          "url": "https://goodwinlaw.com/en/insights/blogs/2022/02/use-of-google-analytics-by-eu-websites-violates-gd",
+          "title": "Goodwin: use of Google Analytics by EU websites violates GDPR (summary of the DSB decision)",
+          "date": "2022-02 (checked 2026-10-25 via search results)",
+          "says": "DSB published on 13 January 2022 its decision on netdoktor.at: the operator violated Art. 44 GDPR; it had SCCs with Google; measures such as encryption were not sufficient to address the risk. Status S (secondary)."
+        },
+        {
+          "url": "https://haerting.de/en/insights/cnil-judges-use-of-google-analytics-to-be-unlawful-as-well/",
+          "title": "Härting: CNIL judges use of Google Analytics to be unlawful as well",
+          "date": "2022-02 (checked 2026-10-25 via search results)",
+          "says": "CNIL decision of 10 February 2022: Google's additional measures were not sufficient to exclude access by US intelligence services; one month to comply. Status S (secondary)."
+        }
+      ],
+      "answers": {
+        "D4": "current",
+        "R1": "enforced",
+        "K1": "external",
+        "K3": "all",
+        "O1": "approve_log",
+        "V1": "all",
+        "V2": "yes",
+        "V3": "full",
+        "V4": "full",
+        "X1": "tested",
+        "X2": "diversified",
+        "G1": "exec_forum",
+        "G2": "tested",
+        "W1": "minimal",
+        "W2": "medium",
+        "W3": [
+          "compliance"
+        ],
+        "A1": "eea",
+        "A2": {
+          "entity": [
+            "eea"
+          ],
+          "people": [
+            "eea"
+          ]
+        },
+        "A3": "other",
+        "A4": {
+          "staff_band": "50_249",
+          "turnover_band_eur": "10m_50m"
+        },
+        "A5": {
+          "balance_sheet_band_eur": "10m_43m"
+        },
+        "A6": [
+          "AT"
+        ],
+        "B1": [
+          "none"
+        ],
+        "B4": [
+          "none"
+        ],
+        "D1": [
+          "personal"
+        ],
+        "D2": "100k_1m",
+        "D3": {
+          "personal": {
+            "primary": [
+              "eea",
+              "us"
+            ],
+            "backup": [
+              "eea",
+              "us"
+            ]
+          }
+        },
+        "P1": [
+          "colo",
+          "saas_major"
+        ],
+        "P2": [
+          "eea",
+          "us"
+        ],
+        "L1": "L0",
+        "L2": {
+          "personal": {
+            "level": "L0",
+            "zones": [
+              "eea"
+            ],
+            "platforms": [
+              "colo",
+              "saas_major"
+            ]
+          }
+        },
+        "T1": [
+          "sccs"
+        ],
+        "T2": "partial"
+      },
+      "expected": {
+        "regimes": [
+          {
+            "regime": "EU_GDPR",
+            "grade": "applies",
+            "rule": "EU_GDPR.1",
+            "why": "Austrian establishment."
+          },
+          {
+            "regime": "EU_DATA_ACT",
+            "grade": "advisory",
+            "rule": "EU_DATA_ACT.2",
+            "why": "EU customer of a major SaaS: switching rights."
+          },
+          {
+            "regime": "US_CLOUD_ACT",
+            "grade": "advisory",
+            "rule": "US_CLOUD_ACT.1",
+            "why": "P2 names a US parent (Google)."
+          },
+          {
+            "regime": "US_FISA_702",
+            "grade": "advisory",
+            "rule": "US_FISA_702.1",
+            "why": "US-parent provider holds EEA persons' data."
+          },
+          {
+            "regime": "EU_AI_ACT",
+            "grade": "not_applicable",
+            "rule": "EU_AI_ACT.1",
+            "why": "No AI use."
+          },
+          {
+            "regime": "EU_NIS2",
+            "grade": "not_applicable",
+            "rule": "default",
+            "why": "Sector \"other\" is outside Annexes I and II."
+          }
+        ],
+        "requiredLevels": {
+          "personal": "L0"
+        },
+        "gaps": [
+          {
+            "control": "SOV.XFER.TIA",
+            "severity": "Medium",
+            "why": "T2 partial = 1; weight H; strong driver (GDPR applies) gives Medium. SOV.XFER.BASIS = 3 because SCCs are an EU route."
+          }
+        ],
+        "exposure": [
+          {
+            "regime": "EU_GDPR",
+            "rag": "amber",
+            "why": "Only required control below 3 is SOV.XFER.TIA at 1 (not 0), so Amber, not Red. Cap: the 10m_50m band gives 4% of at most EUR 2M, so the fixed EUR 20M limb is shown as one figure. PUBLIC OUTCOME: the transfer was unlawful (Art. 44)."
+          }
+        ],
+        "disagreementsWithDesign": [
+          "Same root as S4REF01 with a weaker TIA: two DPAs held the transfer unlawful, which in the engine's terms is SOV.XFER.BASIS failing; the engine shows a Medium TIA gap and GDPR Amber. A transfer that a DPA would order stopped should not read as Amber. Recommendation as S4REF01 (cap XFER.BASIS by the TIA outcome).",
+          "Agreement for today's facts: if the recipient is certified under the EU-US DPF and T1 = eu_us_dpf, the engine gives XFER.BASIS 3 and asks no TIA (TIA is required only for SCCs and BCRs). That matches the DPF adequacy decision (CLM-SOV-013)."
+        ]
+      }
+    },
+    {
+      "id": "S4REF04_EU_INVESTMENT_FIRM_DORA",
+      "name": "EU investment firm on a US hyperscaler and SaaS, measured against DORA's published third-party expectations",
+      "summary": "Built from DORA's ICT third-party risk articles and the ESAs' published supervisory evidence rather than an enforcement case: register of information (Art. 28(3); ITS (EU) 2024/2956), exit strategies (Art. 28(8)), concentration (Art. 29), mandatory contract terms including data locations (Art. 30(2)(b)) and full access, inspection and audit rights (Art. 30(3)), subcontracting RTS (EU) 2025/532, and incident reporting (Art. 19). The ESAs' 2024 dry run found that only 6.5% of registers from almost 1,000 entities passed all data quality checks, so the register is answered \"partial\". Typical state of a mid-size firm one year into DORA: exit plans documented but not tested; reports-only audit rights for SaaS; KMS-held keys (BYOK); provider support access logged but not approved. Data stays in the EEA; support access from the US is covered by SCCs and DPF. Luxembourg and Germany, 250+ staff, EUR 250M-1bn turnover.",
+      "sources": [
+        {
+          "url": "https://eur-lex.europa.eu/eli/reg/2022/2554/oj",
+          "title": "Regulation (EU) 2022/2554 (DORA)",
+          "date": "checked 2026-10-25 (EUR-Lex blocked; via secondary reproductions and existing claims)",
+          "says": "Art. 28(3) register of information (CLM-SOV-038); Art. 28(8) exit strategies, \"comprehensive, documented and sufficiently tested\" per secondary reproductions; Art. 29 concentration; Art. 30(2)(b) contracts state where services are provided and data processed and stored, with advance notice of changes; Art. 30(3) full access, inspection and audit rights for critical or important functions; Art. 19 incident reporting."
+        },
+        {
+          "url": "https://myctrl.tools/frameworks/eu-dora/article-30-2-b",
+          "title": "DORA Art. 30(2)(b) (secondary reproduction)",
+          "date": "checked 2026-10-25",
+          "says": "Contracts specify the regions or countries where functions and ICT services are provided and where data is processed, including storage location, and require advance notice of changes. Status S."
+        },
+        {
+          "url": "https://www.eiopa.europa.eu/esas-dry-run-exercise-shows-goal-reporting-registers-information-under-digital-operational-2024-12-17_en",
+          "title": "ESAs: dry run exercise on registers of information",
+          "date": "2024-12-17 (fetched 2026-10-25)",
+          "says": "Almost 1,000 financial entities submitted registers; 6.5% passed all data quality checks; sufficient quality in 2025 reachable with additional industry effort."
+        }
+      ],
+      "answers": {
+        "D4": "current",
+        "R1": "enforced",
+        "K1": "byok",
+        "K3": "all",
+        "O1": "log_only",
+        "V1": "all",
+        "V2": "partial",
+        "V3": "full",
+        "V4": "reports_only",
+        "X1": "documented",
+        "X2": "concentrated_aware",
+        "G1": "exec_forum",
+        "G2": "documented_untested",
+        "W1": "minimal",
+        "W2": "medium",
+        "W3": [
+          "compliance"
+        ],
+        "A1": "eea",
+        "A2": {
+          "entity": [
+            "eea"
+          ],
+          "people": [
+            "eea"
+          ]
+        },
+        "A3": "other_financial",
+        "A4": {
+          "staff_band": "250plus",
+          "turnover_band_eur": "250m_1bn"
+        },
+        "A5": {
+          "balance_sheet_band_eur": "gt43m"
+        },
+        "A6": [
+          "LU",
+          "DE"
+        ],
+        "B1": [
+          "eu_investment_firm"
+        ],
+        "B4": [
+          "deployer_internal"
+        ],
+        "D1": [
+          "personal",
+          "financial",
+          "proprietary"
+        ],
+        "D2": "100k_1m",
+        "D3": {
+          "personal": {
+            "primary": [
+              "eea"
+            ],
+            "backup": [
+              "eea"
+            ]
+          },
+          "financial": {
+            "primary": [
+              "eea"
+            ],
+            "backup": [
+              "eea"
+            ]
+          },
+          "proprietary": {
+            "primary": [
+              "eea",
+              "us"
+            ],
+            "backup": [
+              "eea"
+            ]
+          }
+        },
+        "P1": [
+          "aws",
+          "saas_major"
+        ],
+        "P2": [
+          "us"
+        ],
+        "L1": "L2",
+        "L2": {
+          "personal": {
+            "level": "L2",
+            "zones": [
+              "eea"
+            ],
+            "platforms": [
+              "aws",
+              "saas_major"
+            ]
+          },
+          "financial": {
+            "level": "L2",
+            "zones": [
+              "eea"
+            ],
+            "platforms": [
+              "aws"
+            ]
+          },
+          "proprietary": {
+            "level": "L1",
+            "zones": [
+              "eea",
+              "us"
+            ],
+            "platforms": [
+              "saas_major"
+            ]
+          }
+        },
+        "T1": [
+          "sccs",
+          "eu_us_dpf"
+        ],
+        "T2": "partial",
+        "B5": "partial",
+        "I1": "in_zone_no_training",
+        "I2": "complete"
+      },
+      "expected": {
+        "regimes": [
+          {
+            "regime": "EU_DORA",
+            "grade": "applies",
+            "rule": "EU_DORA.2",
+            "why": "EU investment firm established in the EU, Art. 2(1)."
+          },
+          {
+            "regime": "EU_GDPR",
+            "grade": "applies",
+            "rule": "EU_GDPR.1",
+            "why": "EU establishment."
+          },
+          {
+            "regime": "EU_AI_ACT",
+            "grade": "applies",
+            "rule": "EU_AI_ACT.4",
+            "why": "Deployer established in the EU."
+          },
+          {
+            "regime": "EU_DATA_ACT",
+            "grade": "advisory",
+            "rule": "EU_DATA_ACT.2",
+            "why": "EU cloud customer: switching rights."
+          },
+          {
+            "regime": "US_CLOUD_ACT",
+            "grade": "advisory",
+            "rule": "US_CLOUD_ACT.1",
+            "why": "AWS and SaaS parents in the US."
+          },
+          {
+            "regime": "US_FISA_702",
+            "grade": "advisory",
+            "rule": "US_FISA_702.1",
+            "why": "US-parent providers hold EEA persons' data."
+          },
+          {
+            "regime": "EU_NIS2",
+            "grade": "not_applicable",
+            "rule": "default",
+            "why": "Investment firms are not in NIS2 Annex I banking (credit institutions) or FMI; no rule matches."
+          }
+        ],
+        "requiredLevels": {
+          "personal": "L2",
+          "financial": "L2",
+          "proprietary": "L1"
+        },
+        "gaps": [
+          {
+            "control": "SOV.KEY.CUSTODY",
+            "severity": "High",
+            "why": "BYOK = 1; weight C; strong (classes at L2)."
+          },
+          {
+            "control": "SOV.OPS.ADMIN_ACCESS",
+            "severity": "High",
+            "why": "log_only = 1; weight C; strong (L2)."
+          },
+          {
+            "control": "SOV.TP.REGISTER",
+            "severity": "Medium",
+            "why": "partial = 1; weight H; strong (DORA applies). Consistent with the ESAs' dry-run evidence."
+          },
+          {
+            "control": "SOV.XFER.TIA",
+            "severity": "Medium",
+            "why": "partial = 1; H; strong (GDPR applies; SCCs in use)."
+          },
+          {
+            "control": "SOV.SAAS.SUBPROCESSOR",
+            "severity": "Medium",
+            "why": "partial = 1; H; strong (DORA and GDPR apply; L2)."
+          },
+          {
+            "control": "SOV.IR.REPORTING",
+            "severity": "Medium",
+            "why": "documented_untested = 1; H; strong (DORA Art. 19, GDPR Art. 33)."
+          },
+          {
+            "control": "SOV.EXIT.PLAN",
+            "severity": "Low",
+            "why": "documented = 2; H; strong (DORA applies)."
+          },
+          {
+            "control": "SOV.TP.AUDIT",
+            "severity": "Low",
+            "why": "reports_only = 1; weight S gives Low whatever the driver."
+          },
+          {
+            "control": "SOV.CONC.PROVIDER",
+            "severity": "Low",
+            "why": "X2 concentrated_aware = 1 (B6 not asked); weight S."
+          }
+        ],
+        "exposure": [
+          {
+            "regime": "EU_DORA",
+            "rag": "amber",
+            "why": "Lowest H control (register, sub-outsourcing, incident reporting) is at 1, none at 0. Penalty model national: not quantified."
+          },
+          {
+            "regime": "EU_GDPR",
+            "rag": "amber",
+            "why": "TIA, sub-processor and incident controls at 1. Cap from the 250m_1bn band: EUR 20M to EUR 40M (Art. 83(5)), cap not expected fine; the largest computable cap."
+          },
+          {
+            "regime": "EU_AI_ACT",
+            "rag": "green",
+            "why": "AI governance complete; deployer_internal is not quantified."
+          }
+        ],
+        "disagreementsWithDesign": [
+          "DORA Art. 30(3) makes full access, inspection and audit rights a mandatory contract term for ICT services supporting critical or important functions. SOV.TP.AUDIT has weight S, so \"reports only\" is always Low and never turns DORA Red. For a DORA financial entity this is a contractual non-compliance, not a hygiene item. Recommendation: weight H when DORA (or CPS 230, SS2/21) requires the control, or a regime-specific weight.",
+          "DORA Art. 28(8) asks for exit plans that are sufficiently tested (per secondary reproductions of the text). The design scores \"documented, not rehearsed\" as 2 (Low) and refers testing to Resilience IQ. For DORA firms the untested plan is itself a DORA gap; the report should at least say that the Low rating excludes the testing duty.",
+          "DORA Art. 30(2)(b) requires contracts to state where data is processed and stored and to give advance notice of changes. SOV.TP.VISIBILITY is required only by level (L1+) or by NIS2 and CPS 234, not by EU_DORA. A DORA firm that sets L0 would never be asked about provider data locations. Recommendation: add SOV.TP.VISIBILITY to EU_DORA requiredControls (basis Art. 30(2)(b))."
+        ]
+      }
+    },
+    {
+      "id": "S4REF05_IN_ICT_PROVIDER_DORA_CTPP",
+      "name": "India-headquartered IT services firm designated a DORA critical ICT third-party provider (TCS, ESAs list of 18 November 2025)",
+      "summary": "Built from the ESAs' first list of designated critical ICT third-party providers (18 November 2025), which names Tata Consultancy Services Limited among 19 providers, and from DORA Art. 31(12) (financial entities may use a third-country CTPP only if it establishes an EU subsidiary within 12 months of designation) and Art. 35 (periodic penalty up to 1% of average daily worldwide turnover for up to six months, CLM-SOV-045). Scope: services to EU financial entities. Delivery from India and the EEA; EU and UK client data under SCCs and the UK Addendum with completed assessments. Assumptions: EU subsidiaries in the Netherlands and Germany; client contracts allow EEA and India (allowed zones); self-class under NIS2 not assessed; the firm builds AI systems for clients. The firm does not keep a DORA register of information, because that is a financial-entity duty (B5 \"none\"). Other controls at best state.",
+      "sources": [
+        {
+          "url": "https://www.esma.europa.eu/sites/default/files/2025-11/List_of_designated_CTPPs.pdf",
+          "title": "ESAs: list of designated critical ICT third-party service providers (Art. 31(9) DORA)",
+          "date": "2025-11-18 (fetched and read 2026-10-25)",
+          "says": "19 designated CTPPs in alphabetical order, including Tata Consultancy Services Limited, Accenture plc, Amazon Web Services EMEA Sarl, Capgemini SE, Google Cloud EMEA Limited, IBM, Kyndryl, Microsoft Ireland Operations Limited, NTT DATA Inc., Oracle Nederland B.V. and SAP SE."
+        },
+        {
+          "url": "https://www.esma.europa.eu/press-news/esma-news/european-supervisory-authorities-designate-critical-ict-third-party-providers",
+          "title": "ESMA news: ESAs designate critical ICT third-party providers",
+          "date": "2025-11-18 (fetched 2026-10-25)",
+          "says": "Direct oversight of designated CTPPs to assess risk management and governance frameworks for the services they provide to financial entities."
+        },
+        {
+          "url": "https://advisera.com/dora-regulation/designation-of-critical-ict-third-party-service-providers/",
+          "title": "DORA Art. 31 text (secondary reproduction)",
+          "date": "checked 2026-10-25",
+          "says": "Art. 31(12): financial entities shall only make use of the services of a third-country ICT provider designated as critical if it has established a subsidiary in the Union within 12 months following designation. Status S."
+        }
+      ],
+      "answers": {
+        "D4": "current",
+        "R1": "enforced",
+        "K1": "external",
+        "K3": "all",
+        "O1": "approve_log",
+        "V1": "all",
+        "V2": "yes",
+        "V3": "full",
+        "V4": "reports_only",
+        "X1": "documented",
+        "X2": "diversified",
+        "G1": "exec_forum",
+        "G2": "tested",
+        "W1": "minimal",
+        "W2": "medium",
+        "W3": [
+          "compliance"
+        ],
+        "A1": "in",
+        "A2": {
+          "entity": [
+            "in",
+            "eea",
+            "uk"
+          ],
+          "people": [
+            "eea",
+            "uk",
+            "in"
+          ]
+        },
+        "A3": "ict_service_management_b2b",
+        "A4": {
+          "staff_band": "250plus",
+          "turnover_band_eur": "gt10bn"
+        },
+        "A5": {
+          "balance_sheet_band_eur": "gt43m"
+        },
+        "A6": [
+          "NL",
+          "DE"
+        ],
+        "B1": [
+          "ict_provider_to_eu_fs",
+          "dora_ctpp_designated"
+        ],
+        "B2": {
+          "self_class": "not_assessed",
+          "special_type": "none"
+        },
+        "B4": [
+          "provider_ai_system",
+          "deployer_internal"
+        ],
+        "D1": [
+          "personal",
+          "financial",
+          "proprietary"
+        ],
+        "D2": "gt1m",
+        "D3": {
+          "personal": {
+            "primary": [
+              "eea",
+              "in"
+            ],
+            "backup": [
+              "eea",
+              "in"
+            ]
+          },
+          "financial": {
+            "primary": [
+              "eea",
+              "in"
+            ],
+            "backup": [
+              "eea"
+            ]
+          },
+          "proprietary": {
+            "primary": [
+              "in",
+              "eea"
+            ],
+            "backup": [
+              "in"
+            ]
+          }
+        },
+        "P1": [
+          "onprem",
+          "aws",
+          "azure",
+          "gcp"
+        ],
+        "L1": "L1",
+        "L2": {
+          "personal": {
+            "level": "L1",
+            "zones": [
+              "eea",
+              "in"
+            ],
+            "platforms": [
+              "onprem",
+              "aws",
+              "azure"
+            ]
+          },
+          "financial": {
+            "level": "L1",
+            "zones": [
+              "eea",
+              "in"
+            ],
+            "platforms": [
+              "onprem",
+              "aws"
+            ]
+          },
+          "proprietary": {
+            "level": "L0",
+            "zones": [
+              "in",
+              "eea"
+            ],
+            "platforms": [
+              "onprem",
+              "gcp"
+            ]
+          }
+        },
+        "T1": [
+          "sccs",
+          "idta_or_addendum"
+        ],
+        "T2": "complete",
+        "B5": "none",
+        "I1": "in_zone_no_training",
+        "I2": "complete"
+      },
+      "expected": {
+        "regimes": [
+          {
+            "regime": "EU_DORA",
+            "grade": "applies",
+            "rule": "EU_DORA.1",
+            "why": "Designated CTPP: oversight framework, Art. 31-35."
+          },
+          {
+            "regime": "EU_NIS2",
+            "grade": "applies",
+            "rule": "EU_NIS2.8",
+            "why": "Managed ICT services B2B (Annex I), large; annotation \"essential\"."
+          },
+          {
+            "regime": "EU_GDPR",
+            "grade": "applies",
+            "rule": "EU_GDPR.1",
+            "why": "EU establishments."
+          },
+          {
+            "regime": "UK_GDPR",
+            "grade": "applies",
+            "rule": "UK_GDPR.1",
+            "why": "UK establishment."
+          },
+          {
+            "regime": "EU_AI_ACT",
+            "grade": "applies",
+            "rule": "EU_AI_ACT.2",
+            "why": "Provider of AI systems established in the EU."
+          },
+          {
+            "regime": "EU_DATA_ACT",
+            "grade": "advisory",
+            "rule": "EU_DATA_ACT.2",
+            "why": "EU customer of hyperscalers."
+          },
+          {
+            "regime": "IN_DPDP",
+            "grade": "applies",
+            "rule": "IN_DPDP.1",
+            "why": "Indian establishment and people in India; most duties from 13 May 2027."
+          },
+          {
+            "regime": "IN_CERT_IN",
+            "grade": "applies",
+            "rule": "IN_CERT_IN.1",
+            "why": "Indian establishment."
+          },
+          {
+            "regime": "UK_CSR_BILL",
+            "grade": "advisory",
+            "rule": "UK_CSR_BILL.1",
+            "why": "UK managed service provider; Bill pending."
+          },
+          {
+            "regime": "US_CLOUD_ACT",
+            "grade": "advisory",
+            "rule": "US_CLOUD_ACT.1",
+            "why": "AWS, Azure and GCP parents in the US."
+          },
+          {
+            "regime": "US_FISA_702",
+            "grade": "advisory",
+            "rule": "US_FISA_702.1",
+            "why": "US-parent providers hold non-US persons' data."
+          }
+        ],
+        "requiredLevels": {
+          "personal": "L1",
+          "financial": "L1",
+          "proprietary": "L0"
+        },
+        "gaps": [
+          {
+            "control": "SOV.TP.REGISTER",
+            "severity": "High",
+            "why": "B5 none = 0; weight H; strong (EU_DORA applies). Produced by the design rules, but the Art. 28(3) register is a financial-entity duty, not a CTPP duty: see disagreements."
+          },
+          {
+            "control": "SOV.EXIT.PLAN",
+            "severity": "Low",
+            "why": "documented = 2; H; strong (EU_DORA applies). Again an Art. 28(8) financial-entity duty."
+          },
+          {
+            "control": "SOV.TP.AUDIT",
+            "severity": "Low",
+            "why": "reports_only = 1; weight S. Art. 30 is a financial-entity contract duty."
+          }
+        ],
+        "exposure": [
+          {
+            "regime": "EU_DORA",
+            "rag": "red",
+            "why": "Under the design rules: H-weight SOV.TP.REGISTER at 0. Penalty: periodic, up to 1% of average daily worldwide turnover for up to six months (Art. 35(7)-(8)), shown as a daily-rate formula, never multiplied out. PUBLIC MATERIAL implies no register duty for a CTPP, so this Red is a false positive."
+          },
+          {
+            "regime": "EU_NIS2",
+            "rag": "green",
+            "why": "Required controls at best state. Cap at least EUR 10M or 2% (essential), at least EUR 200M from the gt10bn band."
+          },
+          {
+            "regime": "EU_GDPR",
+            "rag": "green",
+            "why": "SCCs plus completed TIA; other controls at best state. Largest computable cap: Art. 83(5) 4%, at least EUR 400M from the band."
+          },
+          {
+            "regime": "UK_GDPR",
+            "rag": "green",
+            "why": "UK Addendum plus completed TRA."
+          },
+          {
+            "regime": "EU_AI_ACT",
+            "rag": "green",
+            "why": "AI governance complete."
+          },
+          {
+            "regime": "IN_CERT_IN",
+            "rag": "green",
+            "why": "Incident reporting tested."
+          },
+          {
+            "regime": "IN_DPDP",
+            "rag": "not rated",
+            "why": "All its required controls apply from 13 May 2027 (future obligations do not score yet)."
+          }
+        ],
+        "disagreementsWithDesign": [
+          "CORE: EU_DORA requiredControls (register Art. 28(3), exit Art. 28(8), concentration Art. 29, contract terms Art. 30, sub-outsourcing RTS 2025/532, incident reporting Art. 19) have no condition, so a provider graded \"applies\" through EU_DORA.1 (designated CTPP) is held to financial-entity duties. The design produces a High register finding and DORA Red for a duty the CTPP does not have. Recommendation: add when: eu_financial_entity to these rows and give the CTPP path its own obligations.",
+          "Missing CTPP obligations: DORA Art. 31(12) (third-country CTPP needs an EU subsidiary within 12 months of designation, or EU financial entities may not use it), cooperation with the Lead Overseer and the oversight fee, and follow-up of Lead Overseer recommendations (Art. 35, 42). None of these has a question, control or finding. Designation was 18 November 2025, so the 12-month point falls around November 2026 (exact start date depends on notification; not verified)."
+        ]
+      }
+    },
+    {
+      "id": "S4REF06_AU_INSURER_CPS230_OFFSHORE",
+      "name": "Australian general insurer with offshore claims processing in India, measured against APRA CPS 230 and CPS 234",
+      "summary": "Built from APRA CPS 230 (in force 1 July 2025; pre-existing service contracts from the earlier of renewal or 1 July 2026): register of material service providers, agreements with APRA access and on-site rights (para 55), termination and orderly exit (paras 54, 56), notification to APRA within 20 business days of entering or materially changing a material arrangement and BEFORE entering any material offshoring arrangement (para 61), incident notification within 72 hours (24 hours for critical operations outside tolerance); CPS 234 information security. The insurer uses AWS Sydney and Microsoft 365, with an offshore claims-processing provider in India that accesses personal and health data under contract (APP 8 route). New Zealand policyholders. Typical state: register complete, exit plans documented not rehearsed, one main cloud with documented alternatives. Whether APRA was notified before the offshoring is not asked by the engine. Other controls at best state.",
+      "sources": [
+        {
+          "url": "https://www.apra.gov.au/sites/default/files/2023-07/Prudential%20Standard%20CPS%20230%20Operational%20Risk%20Management%20-%20clean.pdf",
+          "title": "APRA Prudential Standard CPS 230 Operational Risk Management",
+          "date": "2023-07 (checked through existing claims CLM-SOV-149 to 152)",
+          "says": "Applies from 1 July 2025; 72-hour and 24-hour incident notification; material service provider management: register, formal agreements with access and audit rights, termination and exit, concentration."
+        },
+        {
+          "url": "https://www.apra.gov.au/node/42105",
+          "title": "APRA consultation on targeted amendments to CPS 230 (draft paras 53-62)",
+          "date": "2025-12-10 (fetched 2026-10-25)",
+          "says": "Para 61: notify APRA as soon as possible and not more than 20 business days after entering into or materially changing an agreement for a service relied on for a critical operation, and prior to entering into any material offshoring arrangement; para 55: APRA access to documentation and data and right to an on-site visit; para 56(4): orderly exit. Draft text; targeted changes expected before 1 July 2026 (final text not re-read)."
+        },
+        {
+          "url": "https://www.oaic.gov.au/privacy/australian-privacy-principles/australian-privacy-principles-guidelines/chapter-8-app-8-cross-border-disclosure-of-personal-information",
+          "title": "OAIC APP Guidelines chapter 8 (APP 8)",
+          "date": "last updated 2025-10-03 (fetched 2026-10-25)",
+          "says": "Para 8.14: providing data to an overseas cloud provider for storage only, under a binding contract with effective control, may be a use rather than a disclosure; s.16C accountability for overseas recipients (paras 8.60-8.63)."
+        }
+      ],
+      "answers": {
+        "D4": "current",
+        "R1": "enforced",
+        "K1": "external",
+        "K3": "all",
+        "O1": "approve_log",
+        "V1": "all",
+        "V2": "yes",
+        "V3": "full",
+        "V4": "full",
+        "X1": "documented",
+        "X2": "managed",
+        "G1": "exec_forum",
+        "G2": "tested",
+        "W1": "minimal",
+        "W2": "medium",
+        "W3": [
+          "compliance"
+        ],
+        "A1": "au",
+        "A2": {
+          "entity": [
+            "au"
+          ],
+          "people": [
+            "au",
+            "nz"
+          ]
+        },
+        "A3": "insurance",
+        "A4": {
+          "staff_band": "250plus",
+          "turnover_band_eur": "1bn_10bn"
+        },
+        "A5": {
+          "balance_sheet_band_eur": "gt43m"
+        },
+        "B1": [
+          "au_apra_regulated"
+        ],
+        "B4": [
+          "deployer_high_impact"
+        ],
+        "D1": [
+          "personal",
+          "special",
+          "financial"
+        ],
+        "D2": "gt1m",
+        "D3": {
+          "personal": {
+            "primary": [
+              "au",
+              "in"
+            ],
+            "backup": [
+              "au"
+            ]
+          },
+          "special": {
+            "primary": [
+              "au",
+              "in"
+            ],
+            "backup": [
+              "au"
+            ]
+          },
+          "financial": {
+            "primary": [
+              "au"
+            ],
+            "backup": [
+              "au"
+            ]
+          }
+        },
+        "P1": [
+          "aws",
+          "saas_major"
+        ],
+        "P2": [
+          "us"
+        ],
+        "L1": "L1",
+        "L2": {
+          "personal": {
+            "level": "L1",
+            "zones": [
+              "au",
+              "in"
+            ],
+            "platforms": [
+              "aws",
+              "saas_major"
+            ]
+          },
+          "special": {
+            "level": "L1",
+            "zones": [
+              "au",
+              "in"
+            ],
+            "platforms": [
+              "aws",
+              "saas_major"
+            ]
+          },
+          "financial": {
+            "level": "L1",
+            "zones": [
+              "au"
+            ],
+            "platforms": [
+              "aws"
+            ]
+          }
+        },
+        "T1": [
+          "apac_contract_or_consent"
+        ],
+        "B5": "complete",
+        "I1": "in_zone_no_training"
+      },
+      "expected": {
+        "regimes": [
+          {
+            "regime": "AU_APRA_CPS230",
+            "grade": "applies",
+            "rule": "AU_APRA_CPS230.1",
+            "why": "APRA-regulated."
+          },
+          {
+            "regime": "AU_APRA_CPS234",
+            "grade": "applies",
+            "rule": "AU_APRA_CPS234.1",
+            "why": "APRA-regulated."
+          },
+          {
+            "regime": "AU_PRIVACY",
+            "grade": "applies",
+            "rule": "AU_PRIVACY.2",
+            "why": "Australian establishment above the small-business threshold."
+          },
+          {
+            "regime": "AU_SOCI",
+            "grade": "likely_confirm",
+            "rule": "AU_SOCI.2",
+            "why": "Insurance sector in Australia with CI status unknown (B3 was not asked; see disagreements)."
+          },
+          {
+            "regime": "NZ_PRIVACY",
+            "grade": "likely_confirm",
+            "rule": "NZ_PRIVACY.2",
+            "why": "Holds personal data of people in New Zealand."
+          },
+          {
+            "regime": "US_CLOUD_ACT",
+            "grade": "advisory",
+            "rule": "US_CLOUD_ACT.1",
+            "why": "AWS and Microsoft parents in the US."
+          },
+          {
+            "regime": "US_FISA_702",
+            "grade": "advisory",
+            "rule": "US_FISA_702.1",
+            "why": "US-parent providers hold non-US persons' data."
+          },
+          {
+            "regime": "EU_AI_ACT",
+            "grade": "not_applicable",
+            "rule": "default",
+            "why": "No EU establishment or EU people."
+          }
+        ],
+        "requiredLevels": {
+          "personal": "L1",
+          "special": "L1",
+          "financial": "L1"
+        },
+        "gaps": [
+          {
+            "control": "SOV.EXIT.PLAN",
+            "severity": "Low",
+            "why": "documented = 2; H; strong (CPS 230 applies)."
+          },
+          {
+            "control": "SOV.CONC.PROVIDER",
+            "severity": "Low",
+            "why": "X2 managed = 2 (B6 not asked); weight S."
+          }
+        ],
+        "exposure": [
+          {
+            "regime": "AU_APRA_CPS230",
+            "rag": "amber",
+            "why": "Exit plan and concentration at 2. Not quantified."
+          },
+          {
+            "regime": "AU_APRA_CPS234",
+            "rag": "green",
+            "why": "Incident, encryption and supplier visibility at best state."
+          },
+          {
+            "regime": "AU_PRIVACY",
+            "rag": "green",
+            "why": "APP 8 route documented (apac_contract_or_consent). Cap: A$50M fixed limb shown alone (adjusted turnover not collected, S3 build choice 5)."
+          },
+          {
+            "regime": "AU_SOCI",
+            "rag": "green",
+            "why": "Incident reporting tested (likely_confirm regime)."
+          },
+          {
+            "regime": "NZ_PRIVACY",
+            "rag": "green",
+            "why": "APAC route covers IPP 12; incident reporting tested."
+          }
+        ],
+        "disagreementsWithDesign": [
+          "CPS 230 para 61 requires notifying APRA before entering any material offshoring arrangement (and within 20 business days of entering or materially changing a material arrangement). The engine has no question or control for regulator notification, so offshore claims processing in India yields no finding at all. Recommendation: add a regulator-notification control required by AU_APRA_CPS230 (and by UK_PRA_SS2_21, which expects notification of material outsourcing in its chapter 5).",
+          "Trigger mismatch from the rules alone: B3 (critical-infrastructure roles) is triggered only by the critical_infrastructure_operator flag or by energy, transport, water, health and digital infrastructure sectors, while AU_SOCI.2 also covers banking, financial market infrastructure, insurance, food and space with ent.ci_regimes unknown. An insurer therefore gets a SOCI scope_confirmation it was never asked to resolve. Recommendation: align the B3 trigger with AU_SOCI.2 (and UK_NIS.2).",
+          "CPS 230 para 55 requires APRA's own access and on-site rights at the service provider; V4 asks only about the client's audit rights, so \"full\" can hide a missing regulator-access clause. Recommendation: mention regulator access in V4 for APRA, DORA and PRA firms."
+        ]
+      }
+    },
+    {
+      "id": "S4REF07_EU_UNION_ENTITY_SEAL_TENDER_2026",
+      "name": "EU agency buying sovereign cloud through the Commission's 2026 tender under the Cloud Sovereignty Framework",
+      "summary": "Built from the Commission's award of 17 April 2026 (IP/26/833): a EUR 180M, six-year tender under the Cloud III Dynamic Purchasing System that lets EU institutions, bodies, offices and agencies (Union entities) buy sovereign cloud from four providers (Post Telecom with CleverCloud and OVHcloud; STACKIT; Scaleway; Proximus with S3NS, Clarence and Mistral), selected against the Cloud Sovereignty Framework's eight objectives with minimum assurance levels; four parallel contracts to avoid over-reliance on one provider; \"non-European technologies, when operated within a strict and appropriate framework, can meet the minimum level of sovereignty\". Also from the EDPS Microsoft 365 case (Union entities are supervised under Regulation (EU) 2018/1725). The buyer is a Union agency in Belgium and Luxembourg: sensitive and government data at L3 on an EU provider, personal data at L2 also on a partner-operated cloud and Microsoft 365 (DPF-certified). Typical state: external keys on the sovereign platforms but provider keys on SaaS (mixed); revocation not tested; exit documented. Other controls at best state.",
+      "sources": [
+        {
+          "url": "https://ec.europa.eu/commission/presscorner/detail/en/ip_26_833",
+          "title": "Commission press release IP/26/833: EUR 180M sovereign cloud tender awarded to four European providers",
+          "date": "2026-04-17 (PDF read 2026-10-25)",
+          "says": "Union entities may procure sovereign cloud up to EUR 180M over 6 years; four providers; selection on the Cloud Sovereignty Framework's eight objectives; eligibility required assurance levels limiting control by non-EU third parties; four contracts in parallel for diversification; non-European technologies operated within a strict framework can meet the minimum level; launched under Cloud III DPS in October 2025."
+        },
+        {
+          "url": "https://commission.europa.eu/news-and-media/news/sovereign-cloud-framework-explained-2026-06-01_en",
+          "title": "Commission: Sovereign Cloud Framework explained",
+          "date": "2026-06-01 (fetched 2026-10-25)",
+          "says": "SEAL levels and an overall score from 48 criteria in eight categories; does not publish the per-objective minimum SEALs used in the tender or the providers' scores."
+        },
+        {
+          "url": "https://www.helpnetsecurity.com/2026/04/20/eu-sovereign-cloud-tender-180-million-eu/",
+          "title": "Help Net Security: EU awards EUR 180M to four providers",
+          "date": "2026-04-20 (checked 2026-10-25 via search results)",
+          "says": "Secondary report: three consortia reached SEAL-3 and the Proximus consortium (S3NS) SEAL-2. Not in the Commission's release: status S, unconfirmed."
+        },
+        {
+          "url": "https://www.edps.europa.eu/press-publications/press-news/press-releases/2025/european-commission-brings-use-microsoft-365-compliance-data-protection-rules-eu-institutions-and-bodies",
+          "title": "EDPS: Commission brings use of Microsoft 365 into compliance with data protection rules for EU institutions",
+          "date": "2025-07 (checked 2026-10-25 via search results)",
+          "says": "EDPS 2024 decision found infringements of Regulation (EU) 2018/1725 (purpose limitation, international transfers, unauthorised disclosures); remedied as of July 2025. Shows that Union entities' cloud use is supervised by the EDPS under 2018/1725, not by DPAs under the GDPR."
+        },
+        {
+          "url": "https://www.edps.europa.eu/sites/default/files/publication/19-09-27_admin_fines_sanctions_en.pdf",
+          "title": "EDPS: administrative fines under Regulation (EU) 2018/1725",
+          "date": "2019-09-27 (checked 2026-10-25 via search results)",
+          "says": "Art. 66: up to EUR 25,000 per infringement and EUR 250,000 per year (first category), EUR 50,000 and EUR 500,000 (second category). Status S."
+        },
+        {
+          "url": "https://eur-lex.europa.eu/eli/reg/2023/2841/oj/eng",
+          "title": "Regulation (EU, Euratom) 2023/2841 on cybersecurity at Union institutions, bodies, offices and agencies",
+          "date": "in force 2024-01-07 (checked 2026-10-25 via search results)",
+          "says": "Common cybersecurity framework for Union entities, overseen by the IICB and CERT-EU. Status S."
+        }
+      ],
+      "answers": {
+        "D4": "current",
+        "R1": "enforced",
+        "K1": "mixed",
+        "K3": "all",
+        "O1": "mixed",
+        "V1": "all",
+        "V2": "yes",
+        "V3": "full",
+        "V4": "full",
+        "X1": "documented",
+        "X2": "diversified",
+        "G1": "exec_forum",
+        "G2": "tested",
+        "W1": "minimal",
+        "W2": "medium",
+        "W3": [
+          "compliance"
+        ],
+        "A1": "eea",
+        "A2": {
+          "entity": [
+            "eea"
+          ],
+          "people": [
+            "eea"
+          ]
+        },
+        "A3": "public_administration",
+        "A4": {
+          "staff_band": "250plus",
+          "turnover_band_eur": "not_given"
+        },
+        "A5": {
+          "balance_sheet_band_eur": "unknown"
+        },
+        "A6": [
+          "BE",
+          "LU"
+        ],
+        "B1": [
+          "public_sector_body"
+        ],
+        "B2": {
+          "self_class": "not_in_scope",
+          "special_type": "none"
+        },
+        "B4": [
+          "deployer_internal"
+        ],
+        "D1": [
+          "personal",
+          "special",
+          "government",
+          "proprietary"
+        ],
+        "D2": "10k_100k",
+        "D3": {
+          "personal": {
+            "primary": [
+              "eea"
+            ],
+            "backup": [
+              "eea"
+            ]
+          },
+          "special": {
+            "primary": [
+              "eea"
+            ],
+            "backup": [
+              "eea"
+            ]
+          },
+          "government": {
+            "primary": [
+              "eea"
+            ],
+            "backup": [
+              "eea"
+            ]
+          },
+          "proprietary": {
+            "primary": [
+              "eea"
+            ],
+            "backup": [
+              "eea"
+            ]
+          }
+        },
+        "P1": [
+          "eu_sovereign_provider",
+          "partner_operated_cloud",
+          "saas_major"
+        ],
+        "P2": [
+          "eea",
+          "us"
+        ],
+        "L1": "L3",
+        "L2": {
+          "personal": {
+            "level": "L2",
+            "zones": [
+              "eea"
+            ],
+            "platforms": [
+              "eu_sovereign_provider",
+              "partner_operated_cloud",
+              "saas_major"
+            ]
+          },
+          "special": {
+            "level": "L3",
+            "zones": [
+              "eea"
+            ],
+            "platforms": [
+              "eu_sovereign_provider"
+            ]
+          },
+          "government": {
+            "level": "L3",
+            "zones": [
+              "eea"
+            ],
+            "platforms": [
+              "eu_sovereign_provider",
+              "partner_operated_cloud"
+            ]
+          },
+          "proprietary": {
+            "level": "L1",
+            "zones": [
+              "eea"
+            ],
+            "platforms": [
+              "saas_major"
+            ]
+          }
+        },
+        "T1": [
+          "eu_us_dpf"
+        ],
+        "K2": "possible_untested",
+        "K4": "none",
+        "O2": "zone_local_entity",
+        "I1": "in_zone_no_training",
+        "I2": "complete",
+        "G3": "recognised_high"
+      },
+      "expected": {
+        "regimes": [
+          {
+            "regime": "EU_GDPR",
+            "grade": "applies",
+            "rule": "EU_GDPR.1",
+            "why": "Produced by the design rules (EEA establishment). WRONG REGIME for a Union entity: Regulation (EU) 2018/1725 applies instead (GDPR Art. 2(3)). See disagreements."
+          },
+          {
+            "regime": "EU_NIS2",
+            "grade": "likely_confirm",
+            "rule": "EU_NIS2.6",
+            "why": "Public administration; rule 6 fires because the self-class \"not_in_scope\" only matters for essential or important. Union entities fall under Regulation 2023/2841, not NIS2."
+          },
+          {
+            "regime": "EU_AI_ACT",
+            "grade": "applies",
+            "rule": "EU_AI_ACT.4",
+            "why": "Deployer located in the Union (the AI Act covers Union institutions as deployers)."
+          },
+          {
+            "regime": "EU_CSF_SEAL",
+            "grade": "advisory",
+            "rule": "EU_CSF_SEAL.1",
+            "why": "Public body in the EU: minimum SEALs in cloud tenders."
+          },
+          {
+            "regime": "EU_DATA_ACT",
+            "grade": "advisory",
+            "rule": "EU_DATA_ACT.2",
+            "why": "EU cloud customer."
+          },
+          {
+            "regime": "US_CLOUD_ACT",
+            "grade": "advisory",
+            "rule": "US_CLOUD_ACT.1",
+            "why": "P2 names a US parent (Microsoft 365)."
+          },
+          {
+            "regime": "US_FISA_702",
+            "grade": "advisory",
+            "rule": "US_FISA_702.1",
+            "why": "US-parent provider holds EEA persons' data."
+          },
+          {
+            "regime": "FR_SECNUMCLOUD",
+            "grade": "not_applicable",
+            "rule": "default",
+            "why": "No French establishment (A6 Belgium, Luxembourg)."
+          }
+        ],
+        "requiredLevels": {
+          "personal": "L2",
+          "special": "L3",
+          "government": "L3",
+          "proprietary": "L1"
+        },
+        "gaps": [
+          {
+            "control": "SOV.KEY.CUSTODY",
+            "severity": "High",
+            "why": "mixed = 1; weight C; strong (L2 and L3 classes)."
+          },
+          {
+            "control": "SOV.KEY.REVOCATION",
+            "severity": "Medium",
+            "why": "possible_untested = 1; H; strong (L3)."
+          },
+          {
+            "control": "SOV.OPS.ADMIN_ACCESS",
+            "severity": "Medium",
+            "why": "mixed = 2; C; strong."
+          },
+          {
+            "control": "SOV.EXIT.PLAN",
+            "severity": "Low",
+            "why": "documented = 2; H; strong (L3)."
+          }
+        ],
+        "exposure": [
+          {
+            "regime": "EU_GDPR",
+            "rag": "green",
+            "why": "DPF route, other controls at best state; cap not quantified (turnover not given). The real regime is Regulation 2018/1725 with EDPS fines of at most EUR 50,000 per infringement and EUR 500,000 per year."
+          },
+          {
+            "regime": "EU_NIS2",
+            "rag": "green",
+            "why": "Required controls at best state (likely_confirm)."
+          },
+          {
+            "regime": "EU_AI_ACT",
+            "rag": "green",
+            "why": "AI governance complete."
+          }
+        ],
+        "disagreementsWithDesign": [
+          "Union entities are outside the GDPR (Art. 2(3)) and are governed by Regulation (EU) 2018/1725, supervised by the EDPS (as in the Microsoft 365 case), with Art. 66 fines capped at EUR 50,000 per infringement and EUR 500,000 per year. The engine grades EU_GDPR applies with the GDPR penalty model. Recommendation: a B1 option for EU institutions, bodies, offices and agencies, an EU_EUDPR regime (same transfer and processor controls, EDPS caps) and EU_GDPR not_applicable for them.",
+          "NIS2 does not cover Union entities (Regulation 2023/2841 does). EU_NIS2.6 grades public administration likely_confirm, and a self-classification of \"not_in_scope\" cannot stop it because rule 3 reads only essential or important. Recommendation: the same B1 option should route to a 2023/2841 advisory and make EU_NIS2 not_applicable; more generally, let \"not_in_scope\" with a recorded reason downgrade rule 6 to advisory.",
+          "The tender's minimum SEAL per objective is not published; the Commission's release speaks of \"rigorous assurance levels\" and only a secondary source reports SEAL-3 for three consortia and SEAL-2 for the S3NS-based one. The 3.4 reverse mapping (tender minimums to an LTM level) cannot be validated against this tender; the L3 choice here is judgement. UNSOURCED until the tender documents or framework update are published.",
+          "Agreement: the release says non-European technologies operated within a strict framework can meet the minimum level. The design gives partner_operated_cloud SOV.JUR.IMMUNITY 2 (not 0) at L4 and never lowers maturity for provider nationality below L4, which is consistent."
+        ]
+      }
+    },
+    {
+      "id": "S4REF08_UK_BUILDING_SOCIETY_CTP",
+      "name": "UK building society relying on designated critical third parties (HM Treasury designations effective 13 July 2026)",
+      "summary": "Built from HM Treasury's designation of Amazon Web Services EMEA SARL, Google Cloud EMEA Limited, Microsoft Ireland Operations Ltd and Oracle Corporation UK Limited as critical third parties (announced 10 July 2026, effective 13 July 2026), the PRA/FCA policy that the CTP rules bind the designated provider while the firm keeps its own outsourcing and operational resilience duties, PRA SS2/21 (outsourcing register, materiality, access and audit rights, exit plans, concentration, and notification of material outsourcing in chapter 5) and SS1/21. The society runs core banking on premises and in AWS London with disaster recovery in AWS Ireland, Microsoft 365 in the UK, and follow-the-sun support from the US and India under the UK IDTA/Addendum. Typical state: CTP dependency mapping partial, one main cloud with the concentration risk accepted, exit plans documented, KMS-held keys, approval-based access on core platforms only.",
+      "sources": [
+        {
+          "url": "https://www.gov.uk/government/news/uk-financial-system-strengthened-with-new-safeguards-for-major-technology-providers",
+          "title": "HM Treasury: designation of critical third parties",
+          "date": "2026-07-10 (CLM-SOV-091)",
+          "says": "AWS EMEA SARL, Google Cloud EMEA Ltd, Microsoft Ireland Operations Ltd and Oracle Corporation UK Ltd designated as CTPs, effective 13 July 2026."
+        },
+        {
+          "url": "https://www.bankofengland.co.uk/prudential-regulation/publication/2024/november/operational-resilience-critical-third-parties-to-the-uk-financial-sector-policy-statement",
+          "title": "PRA/FCA policy statement on critical third parties",
+          "date": "2024-11 (CLM-SOV-092)",
+          "says": "The CTP rules bind the designated third party; firms keep their own outsourcing and operational resilience duties."
+        },
+        {
+          "url": "https://www.prarulebook.co.uk/guidance/supervisory-statements/ss02-21-outsourcing-and-third-party-risk-management",
+          "title": "PRA SS2/21 Outsourcing and third party risk management",
+          "date": "applies since 2022-03-31; updated 2024-11 (CLM-SOV-088, CLM-SOV-089; chapter 5 notification checked 2026-10-25 via search results)",
+          "says": "Register, materiality and concentration assessment, access and audit rights, exit plans; chapter 5 (pre-outsourcing) includes notifying the PRA of material outsourcing. Notification detail status S."
+        }
+      ],
+      "answers": {
+        "D4": "current",
+        "R1": "enforced",
+        "K1": "byok",
+        "K3": "all",
+        "O1": "mixed",
+        "V1": "all",
+        "V2": "yes",
+        "V3": "full",
+        "V4": "full",
+        "X1": "documented",
+        "X2": "concentrated_aware",
+        "G1": "exec_forum",
+        "G2": "tested",
+        "W1": "minimal",
+        "W2": "medium",
+        "W3": [
+          "compliance"
+        ],
+        "A1": "uk",
+        "A2": {
+          "entity": [
+            "uk"
+          ],
+          "people": [
+            "uk"
+          ]
+        },
+        "A3": "banking",
+        "A4": {
+          "staff_band": "250plus",
+          "turnover_band_eur": "1bn_10bn"
+        },
+        "A5": {
+          "balance_sheet_band_eur": "gt43m"
+        },
+        "B1": [
+          "uk_pra_regulated"
+        ],
+        "B4": [
+          "deployer_internal"
+        ],
+        "D1": [
+          "personal",
+          "financial",
+          "proprietary"
+        ],
+        "D2": "gt1m",
+        "D3": {
+          "personal": {
+            "primary": [
+              "uk",
+              "eea"
+            ],
+            "backup": [
+              "eea"
+            ]
+          },
+          "financial": {
+            "primary": [
+              "uk"
+            ],
+            "backup": [
+              "eea"
+            ]
+          },
+          "proprietary": {
+            "primary": [
+              "uk",
+              "us"
+            ],
+            "backup": [
+              "uk"
+            ]
+          }
+        },
+        "P1": [
+          "onprem",
+          "aws",
+          "saas_major"
+        ],
+        "P2": [
+          "us"
+        ],
+        "L1": "L1",
+        "L2": {
+          "personal": {
+            "level": "L1",
+            "zones": [
+              "uk",
+              "eea"
+            ],
+            "platforms": [
+              "aws",
+              "saas_major"
+            ]
+          },
+          "financial": {
+            "level": "L2",
+            "zones": [
+              "uk",
+              "eea"
+            ],
+            "platforms": [
+              "onprem",
+              "aws"
+            ]
+          },
+          "proprietary": {
+            "level": "L0",
+            "zones": [
+              "uk",
+              "us"
+            ],
+            "platforms": [
+              "saas_major"
+            ]
+          }
+        },
+        "T1": [
+          "adequacy",
+          "idta_or_addendum"
+        ],
+        "T2": "partial",
+        "B5": "complete",
+        "B6": "partial",
+        "I1": "in_zone_no_training",
+        "I2": "complete"
+      },
+      "expected": {
+        "regimes": [
+          {
+            "regime": "UK_GDPR",
+            "grade": "applies",
+            "rule": "UK_GDPR.1",
+            "why": "UK establishment."
+          },
+          {
+            "regime": "UK_OPRES",
+            "grade": "applies",
+            "rule": "UK_OPRES.1",
+            "why": "PRA-regulated; no required controls here (impact tolerances in Resilience IQ), so not RAG-rated."
+          },
+          {
+            "regime": "UK_PRA_SS2_21",
+            "grade": "applies",
+            "rule": "UK_PRA_SS2_21.1",
+            "why": "PRA-regulated."
+          },
+          {
+            "regime": "UK_CTP",
+            "grade": "advisory",
+            "rule": "UK_CTP.2",
+            "why": "PRA firm on AWS (designated CTP); the regime binds the CTP, the society's duties remain."
+          },
+          {
+            "regime": "US_CLOUD_ACT",
+            "grade": "advisory",
+            "rule": "US_CLOUD_ACT.1",
+            "why": "AWS and Microsoft parents in the US."
+          },
+          {
+            "regime": "US_FISA_702",
+            "grade": "advisory",
+            "rule": "US_FISA_702.1",
+            "why": "US-parent providers hold UK persons' data."
+          },
+          {
+            "regime": "EU_GDPR",
+            "grade": "not_applicable",
+            "rule": "default",
+            "why": "No EEA establishment or EEA people; storing UK data in the EEA does not bring the GDPR into play."
+          }
+        ],
+        "requiredLevels": {
+          "personal": "L1",
+          "financial": "L2",
+          "proprietary": "L0"
+        },
+        "gaps": [
+          {
+            "control": "SOV.KEY.CUSTODY",
+            "severity": "High",
+            "why": "BYOK = 1; C; strong (financial at L2)."
+          },
+          {
+            "control": "SOV.XFER.TIA",
+            "severity": "Medium",
+            "why": "partial = 1; H; strong (UK GDPR applies; IDTA/Addendum in use)."
+          },
+          {
+            "control": "SOV.OPS.ADMIN_ACCESS",
+            "severity": "Medium",
+            "why": "mixed = 2; C; strong (L2)."
+          },
+          {
+            "control": "SOV.EXIT.PLAN",
+            "severity": "Low",
+            "why": "documented = 2; H; strong (SS2/21 applies)."
+          },
+          {
+            "control": "SOV.CONC.PROVIDER",
+            "severity": "Low",
+            "why": "Lower of X2 (1) and B6 (1) = 1; weight S."
+          }
+        ],
+        "exposure": [
+          {
+            "regime": "UK_GDPR",
+            "rag": "amber",
+            "why": "TRA partial. EEA backups are not a transfer (UK adequacy regulations cover the EEA); the transfer test fires on T1 (remote support). Cap from the 1bn_10bn band: 4%, about EUR 40M to EUR 400M (GBP limbs converted at the dated ECB rate), cap not expected fine."
+          },
+          {
+            "regime": "UK_PRA_SS2_21",
+            "rag": "amber",
+            "why": "Exit plan 2 and concentration 1 (S weight), register and audit rights at 3. Not quantified."
+          }
+        ],
+        "disagreementsWithDesign": [
+          "SS2/21 chapter 5 expects firms to notify the PRA of material outsourcing (as CPS 230 para 61 does for APRA). No question or control covers regulator notification, so a material move to a CTP-provided service produces no finding. Recommendation as S4REF06.",
+          "Agreement: the engine treats UK_CTP as advisory with the society's duties unchanged, matching the PRA/FCA policy (CLM-SOV-092), and does not create a finding from provider nationality.",
+          "Observation, not a rule conflict: UK_OPRES has no required controls, so the regime most relevant to CTP dependency is never RAG-rated; the B6 mapping answer only reaches the report through SOV.CONC.PROVIDER under SS2/21 (weight S, Low). The report should cross-refer Resilience IQ for impact tolerances (D13) so a CIO does not read \"no RAG\" as \"no issue\"."
+        ]
+      }
+    },
+    {
+      "id": "S4REF09_US_HEALTH_DOJ_DSP_VENDOR",
+      "name": "US telehealth provider whose engineering vendor in China can access bulk US health and financial data (DOJ Data Security Program)",
+      "summary": "Built from the DOJ Data Security Program, 28 CFR Part 202 (effective 8 April 2025; subpart J due diligence and audit, annual reports and rejected-transaction reports effective 5 October 2025; limited enforcement policy ended 8 July 2025): a vendor agreement that gives a covered person (here a vendor in China, a country of concern) access to bulk US sensitive personal data above the 202.205 thresholds (health or financial data of more than 10,000 US persons) is a restricted transaction, allowed only if the CISA security requirements are met, with due diligence, records and audits; data brokerage to a country of concern is prohibited. IEEPA civil penalty up to the greater of USD 368,136 or twice the transaction value (CLM-SOV-108). The company is a HIPAA covered entity with patients in California, New York and other states; data stored only in AWS US regions; the vendor is captured through P1 \"other\" and P2 (parents US and China). Screening is partial: the company checks new vendors but has not applied the CISA requirements to the existing agreement.",
+      "sources": [
+        {
+          "url": "https://www.justice.gov/nsd/data-security",
+          "title": "DOJ National Security Division: Data Security Program",
+          "date": "page updated 2026-10-08 (fetched 2026-10-25)",
+          "says": "Effective 8 April 2025; subpart J, annual reports (202.1103) and rejected-transaction reports (202.1104) from 5 October 2025; Compliance Guide 11 April 2025; FAQ updated 24 September 2025; US persons in restricted transactions must comply with CISA's security requirements."
+        },
+        {
+          "url": "https://www.ecfr.gov/current/title-28/chapter-I/part-202",
+          "title": "28 CFR Part 202",
+          "date": "checked through CLM-SOV-105 to 108",
+          "says": "Prohibited and restricted covered data transactions; thresholds 202.205; countries of concern 202.601 (China including Hong Kong and Macau); penalties 202.1301."
+        }
+      ],
+      "answers": {
+        "D4": "current",
+        "R1": "enforced",
+        "K1": "external",
+        "K3": "all",
+        "O1": "approve_log",
+        "V1": "all",
+        "V2": "yes",
+        "V3": "full",
+        "V4": "full",
+        "X1": "tested",
+        "X2": "diversified",
+        "G1": "exec_forum",
+        "G2": "tested",
+        "W1": "minimal",
+        "W2": "medium",
+        "W3": [
+          "compliance"
+        ],
+        "A1": "us",
+        "A2": {
+          "entity": [
+            "us"
+          ],
+          "people": [
+            "us"
+          ]
+        },
+        "A3": "health",
+        "A4": {
+          "staff_band": "250plus",
+          "turnover_band_eur": "250m_1bn"
+        },
+        "A5": {
+          "balance_sheet_band_eur": "gt43m"
+        },
+        "A7": [
+          "CA",
+          "NY",
+          "other_comprehensive"
+        ],
+        "B1": [
+          "us_hipaa_covered_or_ba"
+        ],
+        "B4": [
+          "deployer_internal"
+        ],
+        "D1": [
+          "personal",
+          "special",
+          "financial"
+        ],
+        "D2": "100k_1m",
+        "D3": {
+          "personal": {
+            "primary": [
+              "us"
+            ],
+            "backup": [
+              "us"
+            ]
+          },
+          "special": {
+            "primary": [
+              "us"
+            ],
+            "backup": [
+              "us"
+            ]
+          },
+          "financial": {
+            "primary": [
+              "us"
+            ],
+            "backup": [
+              "us"
+            ]
+          }
+        },
+        "P1": [
+          "aws",
+          "other"
+        ],
+        "P2": [
+          "us",
+          "cn"
+        ],
+        "L1": "L0",
+        "L2": {
+          "personal": {
+            "level": "L0",
+            "zones": [
+              "us"
+            ],
+            "platforms": [
+              "aws"
+            ]
+          },
+          "special": {
+            "level": "L0",
+            "zones": [
+              "us"
+            ],
+            "platforms": [
+              "aws"
+            ]
+          },
+          "financial": {
+            "level": "L0",
+            "zones": [
+              "us"
+            ],
+            "platforms": [
+              "aws"
+            ]
+          }
+        },
+        "T1": [
+          "undocumented"
+        ],
+        "T3": {
+          "categories": [
+            "health",
+            "financial",
+            "identifiers"
+          ],
+          "screening": "partial"
+        },
+        "I1": "in_zone_no_training"
+      },
+      "expected": {
+        "regimes": [
+          {
+            "regime": "US_DOJ_DSP",
+            "grade": "applies",
+            "rule": "US_DOJ_DSP.1",
+            "why": "US person; link to a country of concern through a provider parent in China (P2); health and financial data with 100k-1M records."
+          },
+          {
+            "regime": "US_HIPAA",
+            "grade": "applies",
+            "rule": "US_HIPAA.1",
+            "why": "Covered entity."
+          },
+          {
+            "regime": "US_CCPA",
+            "grade": "applies",
+            "rule": "US_CCPA.1",
+            "why": "California consumers and turnover band at or above EUR 50-250M."
+          },
+          {
+            "regime": "US_STATE_PRIVACY",
+            "grade": "advisory",
+            "rule": "US_STATE_PRIVACY.1",
+            "why": "Other comprehensive-law states."
+          },
+          {
+            "regime": "US_CLOUD_ACT",
+            "grade": "advisory",
+            "rule": "US_CLOUD_ACT.1",
+            "why": "US-parent providers (relevant only as context for a US company)."
+          },
+          {
+            "regime": "US_FISA_702",
+            "grade": "not_applicable",
+            "rule": "default",
+            "why": "Only US persons' data."
+          }
+        ],
+        "requiredLevels": {
+          "personal": "L0",
+          "special": "L0",
+          "financial": "L0"
+        },
+        "gaps": [
+          {
+            "control": "SOV.XFER.US_BULK",
+            "severity": "Medium",
+            "why": "partial = 1; H; strong (DSP applies). T1 \"undocumented\" has no effect because no regime in scope requires SOV.XFER.BASIS for US persons' data."
+          }
+        ],
+        "exposure": [
+          {
+            "regime": "US_DOJ_DSP",
+            "rag": "amber",
+            "why": "Only required control at 1. Registry penalty model not_quantified, so no figure is shown."
+          },
+          {
+            "regime": "US_HIPAA",
+            "rag": "green",
+            "why": "BAAs, encryption and incident reporting at best state."
+          },
+          {
+            "regime": "US_CCPA",
+            "rag": "green",
+            "why": "Service-provider contracts and security at best state."
+          }
+        ],
+        "disagreementsWithDesign": [
+          "Severity: under 28 CFR Part 202 a restricted transaction that goes ahead without the CISA security requirements is a violation, not a partial control; the public material implies at least High and a Red DSP RAG for \"partial\" screening on an existing covered vendor agreement. The design yields Medium and Amber. Recommendation: split SOV.XFER.US_BULK into (a) screening and (b) CISA security requirements, due diligence and audit for restricted transactions, and treat a known covered transaction without (b) as state 0.",
+          "Prohibited versus restricted: the single control cannot tell a prohibited transaction (data brokerage with a country of concern, or access to bulk genomic data) from a restricted one. A prohibited transaction should be Critical regardless of screening maturity.",
+          "Penalty model: the registry has US_DOJ_DSP as not_quantified, but CLM-SOV-108 (V) sources the IEEPA civil penalty (greater of USD 368,136 or twice the transaction). Recommendation: show it as a per-violation formula, never multiplied.",
+          "Detection of the country-of-concern link depends on P2 being asked (P1 \"other\", \"saas_major\", \"partner_operated_cloud\", \"apac_national_cloud\" or \"unknown\"). A covered vendor or employee in China with remote access to US-stored data, recorded under any other platform value, leaves us_coc_link false and the DSP drops to advisory (US_DOJ_DSP.3). Recommendation: a direct question on access by covered persons (vendors, employees, investors) in countries of concern."
+        ]
+      }
+    },
+    {
+      "id": "S4REF10_IN_CARD_NETWORK_RBI_LOCALISATION_2021",
+      "name": "Foreign card network storing Indian payment data abroad (RBI restriction on Mastercard Asia/Pacific, 2021-2022)",
+      "summary": "Built from RBI press releases of 14 July 2021 and 16 June 2022 and the RBI FAQ on Storage of Payment System Data: RBI barred Mastercard Asia/Pacific Pte. Ltd. (an authorised payment system operator for a card network in India) from onboarding new domestic customers from 22 July 2021 under s.17 of the Payment and Settlement Systems Act 2007 for non-compliance with the 6 April 2018 directions (entire payment data stored only in India); existing customers unaffected; lifted on 16 June 2022 after satisfactory compliance. The FAQ allows processing abroad if the data is deleted abroad and brought back to India within one business day or 24 hours, and allows a copy of the domestic leg of cross-border transactions to be stored abroad. Facts as at the 2021 order: payment and cardholder data stored and backed up in the US. Assumptions: group HQ US with entities in Singapore and India; own data centres; no AI in scope; no technical guardrail keeping data in India (inferred from the non-compliance); board choice L0.",
+      "sources": [
+        {
+          "url": "https://rbi.org.in/Scripts/BS_PressReleaseDisplay.aspx?prid=51895",
+          "title": "RBI press release: supervisory action on Mastercard Asia/Pacific Pte. Ltd.",
+          "date": "2021-07-14 (fetched 2026-10-25)",
+          "says": "Restriction on onboarding new domestic debit, credit or prepaid customers from 22 July 2021; s.17 PSS Act 2007; non-compliance with the directions on Storage of Payment System Data despite considerable time; existing customers not affected."
+        },
+        {
+          "url": "https://rbi.org.in/scripts/BS_PressReleaseDisplay.aspx?prid=53877",
+          "title": "RBI press release: restrictions on Mastercard lifted",
+          "date": "2022-06-16 (fetched 2026-10-25)",
+          "says": "Restrictions lifted with immediate effect after satisfactory compliance with the 6 April 2018 circular."
+        },
+        {
+          "url": "https://rbi.org.in/scripts/FS_FAQs.aspx?Id=130",
+          "title": "RBI FAQ: Storage of Payment System Data",
+          "date": "checked 2026-10-25 (CLM-SOV-168)",
+          "says": "Entire payment data (end-to-end transaction details including customer data, payment-sensitive data, credentials and transaction data) stored only in India; processing abroad allowed if data abroad is deleted and brought back within one business day or 24 hours; a copy of the domestic component of cross-border transactions may be stored abroad; applies to all banks operating in India."
+        }
+      ],
+      "answers": {
+        "D4": "current",
+        "R1": "convention",
+        "K1": "external",
+        "K3": "all",
+        "O1": "approve_log",
+        "V1": "all",
+        "V2": "yes",
+        "V3": "full",
+        "V4": "full",
+        "X1": "tested",
+        "X2": "diversified",
+        "G1": "exec_forum",
+        "G2": "tested",
+        "W1": "minimal",
+        "W2": "medium",
+        "W3": [
+          "compliance"
+        ],
+        "A1": "us",
+        "A2": {
+          "entity": [
+            "us",
+            "sg",
+            "in"
+          ],
+          "people": [
+            "in"
+          ]
+        },
+        "A3": "other_financial",
+        "A4": {
+          "staff_band": "250plus",
+          "turnover_band_eur": "gt10bn"
+        },
+        "A5": {
+          "balance_sheet_band_eur": "gt43m"
+        },
+        "A7": [
+          "none"
+        ],
+        "B1": [
+          "in_rbi_payment_operator"
+        ],
+        "B4": [
+          "none"
+        ],
+        "D1": [
+          "personal",
+          "financial"
+        ],
+        "D2": "gt1m",
+        "D3": {
+          "personal": {
+            "primary": [
+              "us"
+            ],
+            "backup": [
+              "us"
+            ]
+          },
+          "financial": {
+            "primary": [
+              "us"
+            ],
+            "backup": [
+              "us"
+            ]
+          }
+        },
+        "P1": [
+          "onprem"
+        ],
+        "L1": "L0",
+        "L2": {
+          "personal": {
+            "level": "L0",
+            "zones": [
+              "us"
+            ],
+            "platforms": [
+              "onprem"
+            ]
+          },
+          "financial": {
+            "level": "L0",
+            "zones": [
+              "us"
+            ],
+            "platforms": [
+              "onprem"
+            ]
+          }
+        },
+        "T1": [
+          "apac_contract_or_consent"
+        ],
+        "B5": "complete"
+      },
+      "expected": {
+        "regimes": [
+          {
+            "regime": "IN_RBI_PAYMENT",
+            "grade": "applies",
+            "rule": "IN_RBI_PAYMENT.1",
+            "why": "RBI-authorised payment system operator holding payment data; level floor L1 in India for financial data."
+          },
+          {
+            "regime": "IN_DPDP",
+            "grade": "applies",
+            "rule": "IN_DPDP.1",
+            "why": "Indian establishment and people in India; duties mostly from 13 May 2027."
+          },
+          {
+            "regime": "IN_CERT_IN",
+            "grade": "applies",
+            "rule": "IN_CERT_IN.1",
+            "why": "Indian establishment."
+          },
+          {
+            "regime": "SG_PDPA",
+            "grade": "applies",
+            "rule": "SG_PDPA.1",
+            "why": "Singapore establishment (the operator entity)."
+          },
+          {
+            "regime": "SG_MAS_TRM",
+            "grade": "likely_confirm",
+            "rule": "SG_MAS_TRM.2",
+            "why": "Singapore establishment in financial services without a stated MAS licence."
+          },
+          {
+            "regime": "US_CLOUD_ACT",
+            "grade": "advisory",
+            "rule": "US_CLOUD_ACT.1",
+            "why": "Own data centres take the US group HQ as parent."
+          },
+          {
+            "regime": "US_FISA_702",
+            "grade": "advisory",
+            "rule": "US_FISA_702.1",
+            "why": "US-parent infrastructure holds Indian persons' data."
+          },
+          {
+            "regime": "US_DOJ_DSP",
+            "grade": "not_applicable",
+            "rule": "default",
+            "why": "No country-of-concern link and no US people in scope."
+          }
+        ],
+        "requiredLevels": {
+          "personal": "L0",
+          "financial": "L1"
+        },
+        "gaps": [
+          {
+            "control": "SOV.RES.LOCATION",
+            "severity": "Critical",
+            "why": "Financial data primary in the US, outside the floor zone India: state 0; C; strong (IN_RBI_PAYMENT applies and requires it)."
+          },
+          {
+            "control": "SOV.BACKUP.LOCATION",
+            "severity": "High",
+            "why": "Backups in the US: 0; H; strong (RBI)."
+          },
+          {
+            "control": "SOV.RES.REGION_LOCK",
+            "severity": "Medium",
+            "why": "convention = 0; H; normal driver (required only by the L1 level of the financial class, no regime requires it)."
+          }
+        ],
+        "exposure": [
+          {
+            "regime": "IN_RBI_PAYMENT",
+            "rag": "red",
+            "why": "C-weight location control at 0. Penalty not quantified, which matches the public record: the sanction was a business restriction (no new domestic customers for about 11 months), not a fine."
+          },
+          {
+            "regime": "SG_PDPA",
+            "rag": "green",
+            "why": "Transfer covered by an APAC route; incident reporting tested."
+          },
+          {
+            "regime": "SG_MAS_TRM",
+            "rag": "green",
+            "why": "Register complete; other required controls at best state."
+          },
+          {
+            "regime": "IN_CERT_IN",
+            "rag": "green",
+            "why": "Incident reporting tested."
+          },
+          {
+            "regime": "IN_DPDP",
+            "rag": "not rated",
+            "why": "Required controls apply from 13 May 2027."
+          }
+        ],
+        "disagreementsWithDesign": [
+          "Design ambiguity (deliberately tested by L2 financial zones = [us]): DESIGN 2.6 says the default allowed zone is the zone fixed by a localisation floor, and that workshop question L2 \"replaces the default per class\". Read literally, a client entering US as the allowed zone for financial data overrides the RBI floor zone (India), SOV.RES.LOCATION is measured against US and scores 3, and the Critical finding disappears. The expected outcome above assumes the floor zone wins (legal intent: the law, not the board, fixes the zone). Recommendation: state in 2.6 that a floor zone is intersected with, never replaced by, the L2 zones, and flag an L2 answer that conflicts with a floor as a conflict finding.",
+          "Transient processing abroad: the RBI FAQ allows processing outside India if the data is deleted abroad and returned within one business day or 24 hours. D3's primary column means \"stored and processed\", so a compliant operator that processes abroad and stores in India either answers \"in\" only (hiding the foreign processing) or adds \"us\" and gets RES.LOCATION 0 and a Critical finding. Recommendation: a D3 note or a follow-up for \"processed abroad, deleted within 24 hours\" under the RBI floor; similarly the FAQ lets a copy of the domestic leg of cross-border transactions sit abroad.",
+          "Floor coverage: the RBI \"entire payment data\" includes customer data, but the IN_RBI_PAYMENT floor covers only the financial class. Cardholder personal data a CIO records as \"personal\" stays at L0 and in the US without a finding. Recommendation: extend the floor to personal data held as part of payment data, or tell the consultant in D1 to record payment-message personal data as financial.",
+          "Exposure wording: the actual sanction was a business restriction under PSS Act s.17. \"Not quantified\" is correct, but the report should name non-monetary supervisory measures (onboarding bans, licence conditions) as the RBI exposure so a CIO does not read \"not quantified\" as \"low\"."
+        ]
+      }
+    }
+  ]
+}

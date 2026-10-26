@@ -35,7 +35,11 @@ const EXPECTED_DIFFERENCES: Record<string, Record<string, string>> = {
     largestCap: 'UK_GDPR GBP 17.5M (about EUR 20.7M at the ECB rate of 12 Oct 2026), not EU_GDPR EUR 20M: DESIGN 7.2 takes the highest cap among regimes that apply or likely apply, and UK_GDPR is likely_confirm here'
   },
   ARC5_IN_SERVICES_EU_CLIENTS: {
-    'exposure.US_CCPA': 'amber, not not_rated: S2 sourced the CCPA required controls, so they score (S2 design change 5, approved 23 Oct 2026)'
+    'exposure.US_CCPA': 'amber, not not_rated: S2 sourced the CCPA required controls, so they score (S2 design change 5, approved 23 Oct 2026)',
+    // S4 owner decision (25 Oct 2026): contractual clauses with only a partial transfer assessment are a partial basis.
+    'maturity.executive': 'score 52 Developing, not 67 Managed: SOV.XFER.BASIS is capped at partial by the partial transfer assessment (SCCs only)',
+    'maturity.workshop': 'score 40, not 45: the same transfer-basis cap',
+    topGaps: 'SOV.XFER.BASIS (High) joins the top gaps: the same transfer-basis cap'
   }
 };
 
@@ -178,7 +182,9 @@ describe('Sovereign IQ v4 reference archetypes (DESIGN.md section 10)', () => {
         const r = run(a.answers, mode);
         it(`${mode}: required levels and maturity as expected`, () => {
           expect(Object.fromEntries(r.requirements.map(x => [x.dataClass, x.required]))).toEqual(e.requiredLevels[mode]);
-          expect({ score: r.maturity.score, band: r.maturity.band, controlsAssessed: r.maturity.controlsAssessed }).toEqual(e.maturity[mode]);
+          const got = { score: r.maturity.score, band: r.maturity.band, controlsAssessed: r.maturity.controlsAssessed };
+          if (diff[`maturity.${mode}`]) expect(got, diff[`maturity.${mode}`]).not.toEqual(e.maturity[mode]);
+          else expect(got).toEqual(e.maturity[mode]);
         });
       }
       const r = run(a.answers);
@@ -200,7 +206,9 @@ describe('Sovereign IQ v4 reference archetypes (DESIGN.md section 10)', () => {
         else expect({ regime: c.regime, amount: Math.round(c.amount!), currency: c.currency }).toEqual({ regime: e.largestCap.regime, amount: e.largestCap.amount, currency: e.largestCap.currency });
       });
       it('top five gaps, in order, with severity as expected', () => {
-        expect(r.topGaps.map(f => `${f.control} ${f.severity}`)).toEqual(e.topGaps.map((x: any) => `${x.control} ${x.severity}`));
+        const got = r.topGaps.map(f => `${f.control} ${f.severity}`);
+        if (diff.topGaps) expect(got, diff.topGaps).not.toEqual(e.topGaps.map((x: any) => `${x.control} ${x.severity}`));
+        else expect(got).toEqual(e.topGaps.map((x: any) => `${x.control} ${x.severity}`));
       });
       it('scope confirmations and decisions as expected', () => {
         expect(r.findings.filter(f => f.type === 'scope_confirmation').map(f => `${f.regimes[0].regime} ${f.severity}`)).toEqual((e.scopeConfirmations ?? []).map((x: any) => `${x.regime} ${x.severity}`));
@@ -281,7 +289,8 @@ describe('Sovereign IQ v4 invariants (300 random questionnaires)', () => {
   it('monotonic: a better answer to one maturity question never lowers maturity', () => {
     for (const a of SAMPLES.slice(0, 120)) {
       for (const q of maturityQuestions) {
-        const states = q.options.filter((o: any) => typeof o.state === 'number').sort((x: any, y: any) => x.state - y.state);
+        // T2 'risks_open' records the assessment (state 3) but voids the transfer basis, so it is ordered on its own.
+        const states = q.options.filter((o: any) => typeof o.state === 'number' && o.value !== 'risks_open').sort((x: any, y: any) => x.state - y.state);
         for (let i = 1; i < states.length; i++) {
           const lo = run({ ...a, [q.id]: states[i - 1].value }).maturity.score ?? 0;
           const hi = run({ ...a, [q.id]: states[i].value }).maturity.score ?? 0;
@@ -364,5 +373,133 @@ describe('Sovereign IQ v4 invariants (300 random questionnaires)', () => {
         if (pf) expect(pf.wave, `${p} before ${f.control}`).toBeLessThanOrEqual(f.wave);
       }
     }
+  });
+});
+
+/* --------------------------- S4 reference scenarios -------------------------- */
+
+const S4: any[] = JSON.parse(readFileSync(join(DESIGN, 'reference-scenarios-s4.json'), 'utf8')).scenarios;
+/** Where the engine now differs from the written expectation because of an S4 owner decision (25 Oct 2026). */
+const S4_DECIDED: Record<string, { why: string; gaps?: string[]; exposure?: Record<string, string> }> = {
+  S4REF03_NETDOKTOR_AT_GOOGLE_ANALYTICS_2021: {
+    why: 'SCCs with a partial transfer assessment are a partial basis: SOV.XFER.BASIS (High) joins the TIA gap, towards the regulators\' finding',
+    gaps: ['SOV.XFER.BASIS High', 'SOV.XFER.TIA Medium']
+  },
+  S4REF05_IN_ICT_PROVIDER_DORA_CTPP: {
+    why: 'DORA\'s financial-entity duties no longer bind a designated critical ICT provider: the false DORA gaps and red rating are gone',
+    gaps: [], exposure: { EU_DORA: 'not_rated' }
+  }
+};
+
+describe('Sovereign IQ v4 S4 reference scenarios (public material, expectations written before the engine ran)', () => {
+  it('there are ten, each with its public sources', () => {
+    expect(S4).toHaveLength(10);
+    for (const s of S4) expect(s.sources.length, s.id).toBeGreaterThan(0);
+  });
+  for (const s of S4) {
+    describe(s.id, () => {
+      const parsed = parseSovereignIqV4Input({ mode: 'workshop', assessmentDate: DATE, answers: s.answers });
+      it('the answers pass the contract', () => expect(parsed.ok, JSON.stringify((parsed as any).errors)).toBe(true));
+      const r = run(s.answers);
+      it('regimes in scope, with grade and rule, as expected', () => {
+        for (const x of s.expected.regimes.filter((x: any) => x.grade !== 'not_applicable')) {
+          const g = r.regimes.find(y => y.regime === x.regime)!;
+          expect(`${g.grade} ${g.rule}`, x.regime).toBe(`${x.grade} ${x.rule}`);
+        }
+      });
+      it('required levels as expected', () => {
+        for (const [c, l] of Object.entries(s.expected.requiredLevels ?? {})) expect(r.requirements.find(x => x.dataClass === c)?.required, c).toBe(l);
+      });
+      it('gaps and their severity as expected, and no other gap', () => {
+        const got = r.findings.filter(f => f.type === 'control_gap').map(f => `${f.control} ${f.severity}`).sort();
+        const decided = S4_DECIDED[s.id];
+        expect(got, decided?.gaps ? decided.why : undefined).toEqual(decided?.gaps ? [...decided.gaps].sort() : (s.expected.gaps ?? []).map((g: any) => `${g.control} ${g.severity}`).sort());
+      });
+      it('exposure RAG as expected', () => {
+        for (const x of s.expected.exposure ?? []) {
+          const want = S4_DECIDED[s.id]?.exposure?.[x.regime] ?? x.rag;
+          expect(r.exposure.regimes.find(y => y.regime === x.regime)?.rag.replace('_', ' '), x.regime).toBe(want.replace('_', ' '));
+        }
+      });
+    });
+  }
+});
+
+describe('Sovereign IQ v4 S4 decisions (25 Oct 2026)', () => {
+  const meta = S4.find(s => s.id === 'S4REF01_META_IE_SCCS_2023')!;
+
+  it('contractual clauses whose destination risks are not closed give no transfer basis (Meta 2023, Google Analytics)', () => {
+    const r = run({ ...meta.answers, T2: 'risks_open' });
+    const basis = r.controls.find(c => c.control === 'SOV.XFER.BASIS')!;
+    expect(basis.state).toBe(0);
+    expect(r.findings.find(f => f.control === 'SOV.XFER.BASIS')!.severity).toBe('Critical');
+    expect(r.exposure.regimes.find(x => x.regime === 'EU_GDPR')!.rag).toBe('red');
+    expect(r.controls.find(c => c.control === 'SOV.XFER.TIA')!.state).toBe(3);
+  });
+
+  it('a partial or missing assessment caps clauses at partial; an adequacy or DPF route is not capped', () => {
+    for (const t2 of ['partial', 'none']) expect(run({ ...meta.answers, T2: t2 }).controls.find(c => c.control === 'SOV.XFER.BASIS')!.state, t2).toBe(1);
+    expect(run({ ...meta.answers, T1: ['sccs', 'eu_us_dpf'], T2: 'partial' }).controls.find(c => c.control === 'SOV.XFER.BASIS')!.state).toBe(3);
+  });
+
+  it('a designated critical ICT provider is not held to a financial entity\'s DORA duties (S4REF05)', () => {
+    const tcs = run(S4.find(s => s.id === 'S4REF05_IN_ICT_PROVIDER_DORA_CTPP')!.answers);
+    expect(tcs.regimes.find(x => x.regime === 'EU_DORA')!.grade).toBe('applies');
+    expect(tcs.controls.some(c => c.requiredBy.regimes.some(x => x.regime === 'EU_DORA'))).toBe(false);
+  });
+
+  it('a legal localisation floor beats the workshop regions, with a conflict finding (S4REF10)', () => {
+    const rbi = S4.find(s => s.id === 'S4REF10_IN_CARD_NETWORK_RBI_LOCALISATION_2021')!;
+    const r = run({ ...rbi.answers, L2: { ...rbi.answers.L2, financial: { ...rbi.answers.L2.financial, zones: ['in', 'us'] } } });
+    expect(r.requirements.find(x => x.dataClass === 'financial')!.allowedZone).toEqual(['in']);
+    expect(r.findings.some(f => f.type === 'conflict' && f.control === 'SOV.RES.LOCATION')).toBe(true);
+  });
+
+  it('neither mode shows a maturity number over fewer than 5 required controls; the controls are still listed', () => {
+    for (const mode of ['executive', 'workshop'] as const) {
+      let seen = false;
+      for (const a of SAMPLES) {
+        const r = run(a, mode);
+        if (r.maturity.controlsAssessed > 0 && r.maturity.controlsAssessed < 5) {
+          seen = true;
+          expect(r.maturity.score, mode).toBeNull();
+          expect(r.maturity.withheld).toBe(true);
+          expect(r.maturity.wording).toMatch(mode === 'executive' ? /workshop gives the score/ : /each control's state is shown/);
+          expect(r.controls.length).toBe(r.maturity.controlsAssessed);
+        } else expect(r.maturity.withheld).toBe(false);
+      }
+      expect(seen, mode).toBe(true);
+    }
+  });
+
+  // T2 is the one answer with two effects by design (owner decision 25 Oct 2026): it records the transfer assessment
+  // and caps contractual clauses as a transfer basis, so it can move a small executive set by up to about 28 points.
+  it('with at least 5 executive controls, no single answer except T2 moves maturity by more than 20 points', () => {
+    for (const a of SAMPLES.slice(0, 150)) {
+      const base = run(a, 'executive');
+      if (base.maturity.score == null) continue;
+      for (const q of maturityQuestions.filter(q => base.asked.includes(q.id) && q.id !== 'T2')) {
+        const st = q.options.filter((o: any) => typeof o.state === 'number' && o.value !== 'risks_open').sort((x: any, y: any) => x.state - y.state);
+        const lo = run({ ...a, [q.id]: st[0].value }, 'executive').maturity.score, hi = run({ ...a, [q.id]: st[st.length - 1].value }, 'executive').maturity.score;
+        if (lo != null && hi != null) expect(hi - lo, q.id).toBeLessThanOrEqual(20);
+      }
+    }
+  });
+
+  it('workshop, over at least 5 required controls: no single answer except T2 moves maturity by more than 20 points; T2 stays under 30', () => {
+    for (const a of SAMPLES.slice(0, 150)) {
+      const base = run(a);
+      if (base.maturity.controlsAssessed < 5) continue;
+      for (const q of maturityQuestions.filter(q => base.asked.includes(q.id))) {
+        const vals = q.options.filter((o: any) => typeof o.state === 'number').map((o: any) => o.value);
+        const scores = vals.map((v: string) => run({ ...a, [q.id]: v }).maturity.score ?? 0);
+        expect(Math.max(...scores) - Math.min(...scores), q.id).toBeLessThanOrEqual(q.id === 'T2' ? 30 : 20);
+      }
+    }
+  });
+
+  it('the critical-infrastructure question is asked wherever Australia\'s SOCI Act can be graded likely (S4REF06)', () => {
+    const r = run(S4.find(s => s.id === 'S4REF06_AU_INSURER_CPS230_OFFSHORE')!.answers);
+    if (r.regimes.find(x => x.regime === 'AU_SOCI')!.rule === 'AU_SOCI.2') expect(r.asked).toContain('B3');
   });
 });

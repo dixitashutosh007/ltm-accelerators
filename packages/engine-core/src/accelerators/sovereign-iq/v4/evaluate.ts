@@ -18,7 +18,12 @@ import claimsRegister from '../../../claims/claims-register.json' with { type: '
 import { evaluate as holds, isUnknown, type Condition, type ConditionContext } from './conditions';
 import { DATA_CLASSES, LEVELS, PEOPLE_CLASSES, personalOutsideSubjects, personalTransfer, platformParents, scopeFacts, type Answers, type DataClass, type Facts, type Level } from './facts';
 
-export const ENGINE_VERSION = '4.0.0';
+export const ENGINE_VERSION = '4.1.0';
+/**
+ * S4 calibration: the smallest required set over which one answer moves maturity by at most 20 points (T2 aside).
+ * Below it no maturity number is shown, in either mode (owner decisions, 25 and 26 Oct 2026).
+ */
+export const MIN_SCORED_CONTROLS = 5;
 
 export type Mode = 'executive' | 'workshop';
 export type Grade = 'applies' | 'likely_confirm' | 'advisory' | 'not_applicable';
@@ -74,6 +79,8 @@ export interface ClassRequirement {
   dataClass: DataClass; required: Level; choice: Level | 'unknown' | null;
   floor: { level: Level; regime: string; zone: string[]; provisional: boolean; consultantOnly: boolean } | null;
   allowedZone: string[]; allowedZoneSource: 'floor' | 'workshop' | 'default' | 'none';
+  /** Workshop regions (L2) outside a legal floor's zone: the floor wins and a conflict finding is raised (S4). */
+  zoneConflict?: string[];
 }
 
 export interface ControlResult {
@@ -117,7 +124,7 @@ export interface SovereignIqV4Result {
   regimes: RegimeResult[];
   requirements: ClassRequirement[];
   maturity: {
-    score: number | null; band: string | null; wording: string;
+    score: number | null; band: string | null; wording: string; withheld: boolean;
     controlsAssessed: number; requiredControls: number; coverage: number; provisional: boolean;
     unconfirmed: string[]; notAnswered: string[]; label: string | null;
   };
@@ -223,10 +230,11 @@ function requirements(facts: Facts, regimes: RegimeResult[]): ClassRequirement[]
     // An UNSOURCED floor is consultant-only and provisional; it still sets the requirement the consultant sees.
     const required: Level = [floor?.level, chosen].filter(Boolean).reduce<Level>((a, b) => (LEVEL_NUM(b as Level) > LEVEL_NUM(a) ? (b as Level) : a), 'L0');
     let allowedZone: string[] = [], source: ClassRequirement['allowedZoneSource'] = 'none';
-    if (floor) { allowedZone = floor.zone; source = 'floor'; }
+    let zoneConflict: string[] | undefined;
+    if (floor) { allowedZone = floor.zone; source = 'floor'; const outside = (given[c] ?? []).filter(z => !floor!.zone.includes(z)); if (outside.length) zoneConflict = outside; }
     else if (given[c]?.length) { allowedZone = given[c]; source = 'workshop'; }
     else if (LEVEL_NUM(required) >= 1) { allowedZone = [...new Set([...hq, ...(PEOPLE_CLASSES.includes(c) ? people : est)])]; source = 'default'; }
-    return { dataClass: c, required, choice: ch, floor, allowedZone, allowedZoneSource: source };
+    return { dataClass: c, required, choice: ch, floor, allowedZone, allowedZoneSource: source, ...(zoneConflict ? { zoneConflict } : {}) };
   });
 }
 
@@ -276,7 +284,16 @@ function immunityState(c: DataClass, facts: Facts, allowed: string[]): State {
 }
 
 /** SOV.XFER.BASIS (DESIGN 4.2): the lowest state across the regimes that require a transfer basis. */
-function transferBasisState(facts: Facts, requiring: string[], asked: Set<string>): { state: State; conflict: boolean; missing: Array<{ regime: string; routes: string[] }> } {
+/** Art. 46 tools whose validity depends on a transfer impact (or risk) assessment of the destination's laws. */
+const ASSESSED_ROUTES = ['sccs', 'idta_or_addendum', 'bcr'];
+
+/**
+ * SOV.XFER.BASIS (DESIGN 4.2, S4 owner decision 25 Oct 2026): the lowest state across the regimes that require a
+ * transfer basis. A regime covered only by contractual clauses, the IDTA or Addendum, or BCRs is capped by the
+ * transfer assessment (T2): complete 3; partial or none 1; destination risks not closed by the safeguards 0 (CJEU
+ * C-311/18; EDPB Recommendations 01/2020; the Meta 2023 and Google Analytics decisions, S4 reference scenarios).
+ */
+function transferBasisState(facts: Facts, requiring: string[], asked: Set<string>, t2: unknown): { state: State; conflict: boolean; missing: Array<{ regime: string; routes: string[] }> } {
   if (!asked.has('T1') || isUnknown(facts['xfer.mechanisms']) && !list(facts['xfer.mechanisms']).length) return { state: 'not_answered', conflict: false, missing: [] };
   const mech = list(facts['xfer.mechanisms']);
   if (mech.includes('undocumented')) return { state: 0, conflict: false, missing: [] };
@@ -284,14 +301,18 @@ function transferBasisState(facts: Facts, requiring: string[], asked: Set<string
   if (mech.includes('no_transfer') && personalOutsideSubjects(facts)) return { state: 'unknown', conflict: true, missing: [] };
   const missing: Array<{ regime: string; routes: string[] }> = [];
   let lowest: State = 3;
+  const assessed: State = !asked.has('T2') ? 'not_answered' : t2 === 'complete' ? 3 : t2 === 'risks_open' ? 0 : t2 === 'partial' || t2 === 'none' ? 1 : t2 === 'unknown' ? 'unknown' : 'not_answered';
+  const states: State[] = [];
   for (const r of requiring) {
     const routes = ROUTES[r] ?? ROUTES.apac;
-    if (mech.some(m => routes.includes(m))) continue;
+    const covering = mech.filter(m => routes.includes(m));
+    if (covering.length && covering.every(m => ASSESSED_ROUTES.includes(m))) { states.push(assessed); continue; }
+    if (covering.length) continue;
     if (mech.includes('no_transfer') && !mech.some(m => m !== 'no_transfer')) continue;
     lowest = 1;
     if (!mech.includes('derogation')) missing.push({ regime: r, routes });
   }
-  return { state: lowest, conflict: false, missing };
+  return { state: minState([lowest, ...states]), conflict: false, missing };
 }
 
 /* ------------------------------ Penalty caps ------------------------------- */
@@ -417,7 +438,7 @@ export function evaluateSovereignIqV4(input: SovereignIqV4Input): SovereignIqV4R
 
   // 4. Control states.
   const transferRegimes = [...new Set(regimeRows.filter(x => x.control === 'SOV.XFER.BASIS').map(x => x.regime))];
-  const transfer = transferBasisState(facts, transferRegimes, askedSet);
+  const transfer = transferBasisState(facts, transferRegimes, askedSet, answers.T2);
   const orgState = (c: any): State => {
     if (c.id === 'SOV.XFER.BASIS') return transfer.state;
     // The lower of the feeding questions that were asked; a question the mode did not ask is left out, but one asked
@@ -472,9 +493,14 @@ export function evaluateSovereignIqV4(input: SovereignIqV4Input): SovereignIqV4R
   // Maturity (DESIGN 7.1): weighted mean of control scores; coverage below 60% makes the headline provisional.
   const wSum = results.reduce((a, r) => a + r.weight, 0);
   const answeredWeight = results.reduce((a, r) => a + (r.notAnswered && r.state === 'not_answered' ? 0 : r.weight), 0);
-  const score = wSum ? Math.round((100 * results.reduce((a, r) => a + r.weight * r.score, 0)) / wSum) : null;
+  // A number only over at least MIN_SCORED_CONTROLS controls: below that, one answer can move it by more than the
+  // agreed 20 points (S4 calibration).
+  const withheld = results.length > 0 && results.length < MIN_SCORED_CONTROLS;
+  const score = wSum && !withheld ? Math.round((100 * results.reduce((a, r) => a + r.weight * r.score, 0)) / wSum) : null;
   const band = score == null ? null : score >= 80 ? 'Sovereign-ready' : score >= 60 ? 'Managed' : score >= 40 ? 'Developing' : 'Exposed';
-  const wording = score == null ? 'Nothing required at the level you set' : {
+  const wording = withheld ? (mode === 'executive'
+    ? `Too few required controls are measured in executive mode for a reliable score (${results.length}); the workshop gives the score`
+    : `Too few controls are required at the level you set for a reliable score (${results.length}); each control's state is shown instead`) : score == null ? 'Nothing required at the level you set' : {
     'Sovereign-ready': 'Controls meet the level your data requires', Managed: 'Most required controls in place; gaps are specific',
     Developing: 'Some required controls in place; material gaps remain', Exposed: 'Controls do not yet meet the level your data requires'
   }[band!]!;
@@ -577,6 +603,15 @@ export function evaluateSovereignIqV4(input: SovereignIqV4Input): SovereignIqV4R
     businessConsequence: 'You said personal data never leaves its region, but the data locations place it outside the region of the people it concerns. The transfer basis is unconfirmed until this is resolved.',
     ownerRole: 'DPO', timeFrame: TIME_FRAME.High, remedy: 'Reconcile the data locations with the transfer answer.', offeringRefs: ['OFF.SOV.ASSESS'], sources: [], mode, consultantOnly: false, rank: 0, wave: 0
   });
+  let conflicts = transfer.conflict ? 1 : 0;
+  for (const r of reqs.filter(x => x.zoneConflict)) findings.push({
+    id: `F-CONFLICT-${++conflicts}`, type: 'conflict', control: 'SOV.RES.LOCATION', dataClasses: [r.dataClass], requiredLevel: r.required, unconfirmed: true,
+    regimes: [{ regime: r.floor!.regime, grade: graded.get(r.floor!.regime)!.grade, article: '' }], severity: 'High',
+    title: `Keep ${r.dataClass} data in ${r.floor!.zone.join(', ')}: the law requires it`,
+    businessConsequence: `The regions chosen in the workshop (${r.zoneConflict!.join(', ')}) are outside the zone ${graded.get(r.floor!.regime)!.name} requires for this data. The legal requirement is applied.`,
+    ownerRole: 'CIO with General Counsel', timeFrame: TIME_FRAME.High, remedy: 'Align the allowed regions with the legal localisation requirement.',
+    offeringRefs: ['OFF.DATA.RESIDENCY'], sources: [], mode, consultantOnly: false, rank: 0, wave: 0
+  });
   let decisions = 0;
   if (reqs.some(r => r.choice === 'unknown' || r.choice === null) && classes.length) findings.push({
     id: `F-DECISION-${++decisions}`, type: 'decision', dataClasses: reqs.filter(r => r.choice === 'unknown' || r.choice === null).map(r => r.dataClass), requiredLevel: null, unconfirmed: true,
@@ -613,6 +648,9 @@ export function evaluateSovereignIqV4(input: SovereignIqV4Input): SovereignIqV4R
   const zonesNoEntity = [...new Set((facts['derived.all_location_zones'] as string[]).filter(z => z !== 'unknown' && z !== 'other' && !list(facts['org.establishments']).includes(z)))];
   if (zonesNoEntity.length) notes.push(`Data is processed in ${zonesNoEntity.join(', ')} without an entity there; processing location alone does not trigger that country's law in v1 (Q11). Confirm with counsel.`);
   if (mode === 'executive') notes.push('Requirement set at one level for all data classes; the workshop confirms it per class.');
+  // S4 sourcing: Japan and Australia may not treat storage-only cloud as a transfer; the engine assumes it does.
+  const cautious = list(facts['data.subject_regions']).filter(z => z === 'jp' || z === 'au');
+  if (cautious.length && facts['derived.personal_transfer']) notes.push(`Storing data of people in ${cautious.map(z => (z === 'jp' ? 'Japan' : 'Australia')).join(' and ')} outside that country is treated as a transfer. Where the cloud provider only stores the data and does not handle it, ${cautious.length > 1 ? 'these laws' : 'the law'} may treat it as use rather than a transfer (APPI Art. 28; OAIC APP guidelines 8.14). Confirm with counsel.`);
 
   return {
     mode, assessmentDate,
@@ -622,7 +660,7 @@ export function evaluateSovereignIqV4(input: SovereignIqV4Input): SovereignIqV4R
     },
     asked, ignoredAnswers, facts, regimes, requirements: reqs,
     maturity: {
-      score, band, wording, controlsAssessed: results.length, requiredControls: totalRequiredControls, coverage: Math.round(coverage * 100) / 100,
+      score, band, wording, withheld, controlsAssessed: results.length, requiredControls: totalRequiredControls, coverage: Math.round(coverage * 100) / 100,
       provisional: coverage < 0.6, unconfirmed: results.filter(r => r.unconfirmed).map(r => r.control), notAnswered: results.filter(r => r.notAnswered).map(r => r.control),
       label: mode === 'executive' ? `Executive maturity, ${results.length} of ${totalRequiredControls} required controls assessed` : null
     },

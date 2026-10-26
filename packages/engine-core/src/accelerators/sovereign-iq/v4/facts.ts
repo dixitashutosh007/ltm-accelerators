@@ -121,14 +121,25 @@ export function sizeClass(f: Facts): string {
  * the transfer test needs; the transfer basis itself is scored from T1.
  */
 const NO_TRANSFER_ZONES: Partial<Record<Zone, Zone[]>> = {
+  // Sourced in S4 (25 Oct 2026). Canada counts for private-sector (PIPEDA) recipients, Japan for APPI business operators
+  // under the Supplementary Rules, Korea without credit information held by FSC-supervised institutions [CLM-SOV-201 to 206].
   eea: ['eea', 'uk', 'ch', 'ca', 'jp', 'kr', 'nz'],
   uk: ['uk', 'eea', 'ch', 'ca', 'jp', 'kr', 'nz'],
-  ch: ['ch', 'eea', 'uk'],
+  ch: ['ch', 'eea', 'uk', 'nz', 'ca'], // Swiss FDPIC Annex 1: New Zealand in full, Canada private sector [CLM-SOV-207]
+  // Conservative: storage on a foreign cloud whose provider does not handle the data is not an Art. 28 provision, but
+  // the engine cannot tell; the result notes it [CLM-SOV-208, 209].
   jp: ['jp', 'eea', 'uk'],
-  sg: ['sg'], au: ['au'], nz: ['nz', 'eea', 'uk'], kr: ['kr', 'eea'], cn: ['cn']
+  kr: ['kr', 'eea'], // UK recognition under review since 1 Oct 2026 [CLM-SOV-210, 211]
+  // Conservative: storage-only cloud under the client's effective control is a "use", not a disclosure (OAIC 8.14);
+  // the engine cannot tell; the result notes it [CLM-SOV-214].
+  au: ['au'],
+  sg: ['sg'], // storage abroad through a cloud provider is a transfer (PDPC 8.3) [CLM-SOV-215]
+  cn: ['cn'] // storage and remote access from abroad are exports; Hong Kong is outside [CLM-SOV-216]
 };
-// Regions without an entry (US, Canada, India until s.16 notifications, Hong Kong with s.33 not in operation, other)
-// place no restriction on where their people's data sits, so they never make storage a transfer.
+// Regions without an entry place no restriction on where their people's data is stored, so storage never makes a
+// transfer: US, India until s.16 notifications, Hong Kong (s.33 not in operation), other, New Zealand (storage by an
+// agent is not a disclosure, s.11 [CLM-SOV-212]) and Canada (except Quebec's s.17 assessment [CLM-SOV-219]).
+// Disclosures and remote access from abroad still need a route in T1 [CLM-SOV-217].
 
 /** DESIGN.md 2.6 derived.personal_transfer: personal data outside its subjects' zone, or any named transfer route. */
 export function personalTransfer(f: Facts): boolean {

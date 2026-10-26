@@ -1,6 +1,6 @@
 {
   "version": "0.1.0",
-  "updated": "2026-10-23",
+  "updated": "2026-10-25",
   "claims": [
     {
       "id": "CLM-SOV-001",
@@ -10265,6 +10265,442 @@
       "lastReviewed": "2026-10-23",
       "nextReview": "2027-04-23",
       "notes": "Fetched and read from the publisher's page on 2026-10-23 by the finops-cost-lead agent (page text retrieved and the quoted points located in it). Used by the platform playbook (src/playbook/finops-iq.json)."
+    },
+    {
+      "id": "CLM-SOV-201",
+      "accelerators": [
+        "sovereign-iq"
+      ],
+      "kind": "regulation",
+      "jurisdiction": "EU",
+      "statement": "The European Commission's list of adequacy decisions (GDPR Art. 45) covers Andorra, Argentina, Brazil (Implementing Decision of 26 January 2026), Canada (commercial organisations only), the Faroe Islands, Guernsey, Israel, the Isle of Man, Japan, Jersey, New Zealand, the Republic of Korea, Switzerland, the United Kingdom (renewed December 2025), the United States (commercial organisations participating in the EU-US Data Privacy Framework only), Uruguay and the European Patent Organisation. The first review of the Korea decision concluded on 23 July 2026 that Korea continues to provide adequate protection.",
+      "source": {
+        "url": "https://commission.europa.eu/law/law-topic/data-protection/international-dimension-data-protection/adequacy-decisions_en",
+        "title": "European Commission: adequacy decisions",
+        "article": "GDPR Art. 45",
+        "secondaryUrls": [
+          "https://eucrim.eu/news/eu-and-brazil-mutually-recognise-data-protection-standards/"
+        ]
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-25",
+      "clientVisible": true,
+      "owner": "sovereignty-compliance-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-25",
+      "nextReview": "2027-04-25",
+      "notes": "Commission page fetched and read on 2026-10-25. Pairing use: these are the only zones (besides the EEA) to which EEA personal data may be stored without another transfer tool. Brazil, Israel, Argentina, Uruguay, Andorra and the Crown Dependencies have no engine zone and fall under \"other\". The US entry is a transfer route for certified recipients, not a country-wide no-transfer zone."
+    },
+    {
+      "id": "CLM-SOV-202",
+      "accelerators": [
+        "sovereign-iq"
+      ],
+      "kind": "regulation",
+      "jurisdiction": "EU",
+      "statement": "The EU adequacy finding for Canada (Decision 2002/2/EC) covers only recipients subject to the Personal Information Protection and Electronic Documents Act (PIPEDA), i.e. organisations in commercial activities; public bodies, non-commercial organisations and much employee data fall outside it. The Commission's first review (15 January 2024) kept the decision in place.",
+      "source": {
+        "url": "https://commission.europa.eu/law/law-topic/data-protection/international-dimension-data-protection/adequacy-decisions_en",
+        "title": "European Commission: adequacy decisions (Canada: commercial organisations)",
+        "article": "Decision 2002/2/EC, Art. 1",
+        "secondaryUrls": [
+          "https://gowlingwlg.com/en/insights-resources/articles/2024/european-commission-protection-of-personal-data",
+          "https://www.legiscope.com/blog/canada-eu-data-transfers.html"
+        ]
+      },
+      "verification": "S",
+      "checkedOn": "2026-10-25",
+      "clientVisible": true,
+      "owner": "sovereignty-compliance-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-25",
+      "nextReview": "2027-04-25",
+      "notes": "The Commission page (V) labels Canada \"commercial organisations\"; the PIPEDA wording and the exclusions come from secondary sources. EUR-Lex, legislation.gov.uk and fedlex returned a bot challenge or a JavaScript-only page to this environment on 2026-10-25; checked through the sources named. Engine effect: EEA-to-Canada storage is a no-transfer pairing only for PIPEDA-scope recipients; qualify the pairing."
+    },
+    {
+      "id": "CLM-SOV-203",
+      "accelerators": [
+        "sovereign-iq"
+      ],
+      "kind": "regulation",
+      "jurisdiction": "EU",
+      "statement": "The EU adequacy decision for Japan (Implementing Decision (EU) 2019/419 of 23 January 2019) covers personal information handling business operators under the APPI, as complemented by the Supplementary Rules adopted by the PPC (binding on the Japanese recipients) and the government-access assurances in Annex II. The Commission's first review report is dated 3 April 2023.",
+      "source": {
+        "url": "https://eur-lex.europa.eu/eli/dec_impl/2019/419/oj",
+        "title": "Commission Implementing Decision (EU) 2019/419 (Japan)",
+        "article": "Art. 1; Annexes I-II",
+        "secondaryUrls": [
+          "https://www.stephensonharwood.com/insights/the-european-commission-has-concluded-its-first-review-of-japan-eu-mutual-adequacy-decision/"
+        ]
+      },
+      "verification": "S",
+      "checkedOn": "2026-10-25",
+      "clientVisible": true,
+      "owner": "sovereignty-compliance-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-25",
+      "nextReview": "2027-04-25",
+      "notes": "Scope taken from search results quoting the decision and the 2023 review. EUR-Lex, legislation.gov.uk and fedlex returned a bot challenge or a JavaScript-only page to this environment on 2026-10-25; checked through the sources named. Engine effect: EEA-to-Japan storage is a no-transfer pairing only where the recipient is an APPI business operator bound by the Supplementary Rules; qualify the pairing."
+    },
+    {
+      "id": "CLM-SOV-204",
+      "accelerators": [
+        "sovereign-iq"
+      ],
+      "kind": "regulation",
+      "jurisdiction": "EU",
+      "statement": "The EU adequacy decision for the Republic of Korea (Implementing Decision (EU) 2022/254 of 17 December 2021) covers controllers subject to the Personal Information Protection Act but excludes personal credit information processed by financial institutions supervised by the Financial Services Commission (and processing for religious missionary activities and political party nominations).",
+      "source": {
+        "url": "https://eur-lex.europa.eu/eli/dec_impl/2022/254/oj",
+        "title": "Commission Implementing Decision (EU) 2022/254 (Republic of Korea)",
+        "article": "Art. 1",
+        "secondaryUrls": [
+          "https://www.klgates.com/EU-Republic-of-Korea-Adequacy-Decisions-Finalized-1-10-2022",
+          "https://www.biia.com/european-union-and-korea-conclude-adequacy-decision-talks"
+        ]
+      },
+      "verification": "S",
+      "checkedOn": "2026-10-25",
+      "clientVisible": true,
+      "owner": "sovereignty-compliance-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-25",
+      "nextReview": "2027-04-25",
+      "notes": "Exclusions from law-firm commentary on the decision; the review concluded 23 July 2026 (CLM-SOV-201). EUR-Lex, legislation.gov.uk and fedlex returned a bot challenge or a JavaScript-only page to this environment on 2026-10-25; checked through the sources named. Engine effect: qualify the EEA-to-Korea pairing for credit information held by FSC-supervised institutions."
+    },
+    {
+      "id": "CLM-SOV-205",
+      "accelerators": [
+        "sovereign-iq"
+      ],
+      "kind": "regulation",
+      "jurisdiction": "UK",
+      "statement": "UK adequacy regulations (\"data bridges\") give full adequacy to the EEA states, EU and EEA institutions and bodies, Andorra, Argentina, the Faroe Islands, Gibraltar, Guernsey, the Isle of Man, Israel, Jersey, New Zealand, Switzerland, Uruguay and the Republic of Korea; partial adequacy to Canada (only data subject to PIPEDA), Japan (only private-sector personal information handling business operators within the APPI) and the United States (only transfers under the UK Extension to the EU-US Data Privacy Framework).",
+      "source": {
+        "url": "https://ico.org.uk/for-organisations/uk-gdpr-guidance-and-resources/international-transfers/adequacy-regulations/is-the-restricted-transfer-covered-by-adequacy-regulations",
+        "title": "ICO: is the restricted transfer covered by adequacy regulations?",
+        "article": "UK GDPR Art. 45A (post-DUAA numbering to confirm)",
+        "secondaryUrls": [
+          "https://www.gov.uk/government/publications/uk-approach-to-international-data-transfers/international-data-transfers-building-trust-delivering-growth-and-firing-up-innovation"
+        ]
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-25",
+      "clientVisible": true,
+      "owner": "sovereignty-compliance-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-25",
+      "nextReview": "2027-04-25",
+      "notes": "ICO page fetched and read on 2026-10-25; Brazil is not listed. GOV.UK list (published 26 Aug 2021) shows Korea from December 2022 and the US from September 2023. Engine effect: UK pairings eea, ch, nz, kr are full; ca and jp must be qualified; us is a route (uk_data_bridge), not a zone."
+    },
+    {
+      "id": "CLM-SOV-206",
+      "accelerators": [
+        "sovereign-iq"
+      ],
+      "kind": "regulation",
+      "jurisdiction": "EU",
+      "statement": "The Commission's renewed GDPR adequacy decision for the United Kingdom (December 2025, valid to 27 December 2031) also covers personal data transferred for UK immigration control purposes, which the 2021 decision had excluded.",
+      "source": {
+        "url": "https://ico.org.uk/for-organisations/data-protection-and-the-eu/data-protection-and-the-eu-in-detail",
+        "title": "ICO: data protection and the EU in detail",
+        "article": "GDPR Art. 45",
+        "secondaryUrls": [
+          "https://eucrim.eu/news/commission-renewed-adequacy-decisions-for-data-transfers-to-the-uk/",
+          "https://www.uea.ac.uk/about/law-school/research/research-blog/eu-uk-data-adequacy-decisions-renewed:-stability-in-data-flows-by-dr-karen-mc-cullagh"
+        ]
+      },
+      "verification": "S",
+      "checkedOn": "2026-10-25",
+      "clientVisible": true,
+      "owner": "sovereignty-compliance-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-25",
+      "nextReview": "2027-04-25",
+      "notes": "From search results quoting the ICO page and law-firm summaries; the GDPR renewal is reported as Implementing Decision (EU) 2025/2574 (number not confirmed). Engine effect: the EEA-to-UK pairing needs no immigration carve-out. Complements CLM-SOV-015."
+    },
+    {
+      "id": "CLM-SOV-207",
+      "accelerators": [
+        "sovereign-iq"
+      ],
+      "kind": "regulation",
+      "jurisdiction": "CH",
+      "statement": "Annex 1 of the Swiss Data Protection Ordinance lists as adequate the EEA states, the United Kingdom, Andorra, Argentina, Canada (private-sector processing under the federal law or substantially similar provincial laws), the Faroe Islands, Gibraltar, Guernsey, the Isle of Man, Israel, Jersey, Monaco, New Zealand, Uruguay and the United States (only organisations certified under the Swiss-US Data Privacy Framework, from 15 September 2024). Japan and the Republic of Korea are not listed.",
+      "source": {
+        "url": "https://prighter.com/resources/laws/swiss-fadp/dpo/articles/annex-1",
+        "title": "Swiss DPO Annex 1 (reproduction; official text on fedlex.admin.ch)",
+        "article": "FADP Art. 16(1); DPO Art. 8 and Annex 1",
+        "secondaryUrls": [
+          "https://www.bj.admin.ch/en/recognition-by-switzerland-of-states-that-guarantee-an-adequate-level-of-data-protection",
+          "https://admin.ch/gov/en/start/documentation/media-releases.msg-id-102054.html"
+        ]
+      },
+      "verification": "S",
+      "checkedOn": "2026-10-25",
+      "clientVisible": true,
+      "owner": "sovereignty-compliance-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-25",
+      "nextReview": "2027-04-25",
+      "notes": "Read from a reproduction of Annex 1 on 2026-10-25; the Federal Office of Justice page (22 Jan 2026) and the Federal Council release on the US (14 Aug 2024) confirm the shape. EUR-Lex, legislation.gov.uk and fedlex returned a bot challenge or a JavaScript-only page to this environment on 2026-10-25; checked through the sources named. Engine effect: add ca (qualified) and nz to the Swiss no-transfer zones; jp and kr stay out."
+    },
+    {
+      "id": "CLM-SOV-208",
+      "accelerators": [
+        "sovereign-iq"
+      ],
+      "kind": "regulation",
+      "jurisdiction": "JP",
+      "statement": "The PPC has designated the EU (the EU member states and Iceland, Liechtenstein and Norway) and the United Kingdom as foreign countries with a personal information protection system equivalent to Japan's for APPI Art. 28 (PPC Notice No. 1 of 2019, designation of 23 January 2019; UK designation kept after Brexit); after the first review the PPC decided on 22 March 2023 to continue both designations. No other country is designated.",
+      "source": {
+        "url": "https://www.ppc.go.jp/enforcement/cooperation/cooperation/sougoninshou/",
+        "title": "PPC: mutual adequacy with the EU and UK",
+        "article": "APPI Art. 28; PPC Rules Art. 15",
+        "secondaryUrls": [
+          "https://www.businesslawyers.jp/practices/1439"
+        ]
+      },
+      "verification": "S",
+      "checkedOn": "2026-10-25",
+      "clientVisible": true,
+      "owner": "sovereignty-compliance-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-25",
+      "nextReview": "2027-04-25",
+      "notes": "EU and UK designation and the 2023 continuation read on the PPC page on 2026-10-25 (V for those points); inclusion of Iceland, Liechtenstein and Norway and \"no other country\" from secondary sources (S). Engine effect: the Japan pairing (jp with eea and uk) is correct; Switzerland is not designated."
+    },
+    {
+      "id": "CLM-SOV-209",
+      "accelerators": [
+        "sovereign-iq"
+      ],
+      "kind": "obligation",
+      "jurisdiction": "JP",
+      "statement": "PPC FAQ A10-25: using a cloud service of a third party in a foreign country is not a \"provision\" of personal data to a third party where the cloud provider is set up not to handle the personal data; the business must still understand the foreign country's protection system, take security measures, and make the provider's and the server's countries (and the measures taken) available to the individual.",
+      "source": {
+        "url": "https://www.ppc.go.jp/all_faq_index/faq1-q10-25",
+        "title": "PPC FAQ Q10-25 (APPI)",
+        "article": "APPI Art. 23, 28, 32(1)(iv); Cabinet Order Art. 10(i)"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-25",
+      "clientVisible": true,
+      "owner": "sovereignty-compliance-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-25",
+      "nextReview": "2027-04-25",
+      "notes": "Japanese text read on the PPC site on 2026-10-25. Engine effect: storage abroad on a cloud that does not handle the data is not an APPI Art. 28 transfer, so the JP storage test over-reports transfers; the duty becomes disclosure and security, not a transfer basis."
+    },
+    {
+      "id": "CLM-SOV-210",
+      "accelerators": [
+        "sovereign-iq"
+      ],
+      "kind": "regulation",
+      "jurisdiction": "KR",
+      "statement": "Korea's PIPC recognised the EU (27 member states and Iceland, Liechtenstein and Norway) as providing equivalent protection under PIPA Art. 28-8(1)(5), effective 16 September 2025, its first equivalence recognition: personal information may be provided, entrusted or stored there without separate consent for the overseas transfer; resident registration numbers and personal credit information are excluded; review due before 15 September 2028.",
+      "source": {
+        "url": "https://commission.europa.eu/news-and-media/news/joint-press-statement-commissioner-michael-mcgrath-and-chairperson-haksoo-ko-entry-force-korean-2025-09-16_en",
+        "title": "Joint press statement, Commissioner McGrath and PIPC Chairperson Ko, 16 September 2025",
+        "article": "PIPA Art. 28-8(1)(5)",
+        "secondaryUrls": [
+          "https://www.bkl.co.kr/en/law/insight/newsletter/6256"
+        ]
+      },
+      "verification": "S",
+      "checkedOn": "2026-10-25",
+      "clientVisible": true,
+      "owner": "sovereignty-compliance-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-25",
+      "nextReview": "2027-04-25",
+      "notes": "Date and EU recognition from the Commission statement (V, fetched 2026-10-25); EEA coverage, exclusions, \"storing\" and the review date from Bae, Kim & Lee (S). Engine effect: the Korea pairing (kr with eea) is correct; qualify for resident registration numbers and credit information. Storage abroad counts as an overseas transfer under PIPA."
+    },
+    {
+      "id": "CLM-SOV-211",
+      "accelerators": [
+        "sovereign-iq"
+      ],
+      "kind": "regulation",
+      "jurisdiction": "KR",
+      "statement": "On 1 October 2026 the PIPC announced that it is reviewing whether the United Kingdom provides substantially equivalent protection under PIPA; no decision has been taken, so UK recipients are not a recognised destination for Korean personal data.",
+      "source": {
+        "url": "https://digitalpolicyalert.org/change/21747-united-kingdom-south-korea-equivalence-recognition-system-enabling-mutual-data-transfer-framework",
+        "title": "Digital Policy Alert: UK-Korea equivalence recognition (citing PIPC)",
+        "article": "PIPA Art. 28-8(1)(5)"
+      },
+      "verification": "S",
+      "checkedOn": "2026-10-25",
+      "volatile": true,
+      "clientVisible": true,
+      "owner": "sovereignty-compliance-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-25",
+      "nextReview": "2027-01-23",
+      "notes": "Volatile (D8): a decision would add uk to the Korean no-transfer zones. Settle: PIPC press release (pipc.go.kr). Secondary tracker only."
+    },
+    {
+      "id": "CLM-SOV-212",
+      "accelerators": [
+        "sovereign-iq"
+      ],
+      "kind": "obligation",
+      "jurisdiction": "NZ",
+      "statement": "New Zealand Privacy Act 2020: sending personal information to an overseas agent (for example a cloud storage provider) that holds or processes it only on the sender's behalf and does not use it for its own purposes is not a disclosure under IPP 12 (s.11); the New Zealand agency remains responsible for the agent's handling. IPP 12 applies to disclosures, which need a listed ground such as comparable safeguards, model contract clauses, a prescribed country or the individual's authorisation.",
+      "source": {
+        "url": "https://privacy.org.nz/assets/New-order/Privacy-Act-2020/Resources/Privacy-Act-2020-information-sheet-3.pdf",
+        "title": "Office of the Privacy Commissioner: Privacy Act 2020 information sheet 3 (overseas disclosures)",
+        "article": "s.11; IPP 12",
+        "secondaryUrls": [
+          "https://www.privacy.org.nz/privacy-principles/12/"
+        ]
+      },
+      "verification": "S",
+      "checkedOn": "2026-10-25",
+      "clientVisible": true,
+      "owner": "sovereignty-compliance-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-25",
+      "nextReview": "2027-04-25",
+      "notes": "From search results quoting the OPC information sheet and the IPP 12 page (read 2026-10-25). Engine effect: for storage by an agent, NZ restricts nothing; the NZ-to-EEA/UK pairing is not based on any NZ list and should be replaced by \"storage with an agent is not a disclosure; disclosures need a T1 route\"."
+    },
+    {
+      "id": "CLM-SOV-213",
+      "accelerators": [
+        "sovereign-iq"
+      ],
+      "kind": "regulation",
+      "jurisdiction": "NZ",
+      "statement": "No countries have been prescribed by regulations under the Privacy Act 2020 for IPP 12(1)(f), so no destination is automatically treated as offering comparable safeguards.",
+      "verification": "UNSOURCED",
+      "clientVisible": false,
+      "owner": "sovereignty-compliance-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-25",
+      "nextReview": "2027-04-25",
+      "basisNote": "Settle: search the New Zealand Legislation site for regulations made under Privacy Act 2020 s.214, or a Ministry of Justice or OPC statement on prescribed countries.",
+      "notes": "The 2020 Ministry of Justice consultation on prioritising countries was found; no regulations prescribing countries were found, but absence was not confirmed."
+    },
+    {
+      "id": "CLM-SOV-214",
+      "accelerators": [
+        "sovereign-iq"
+      ],
+      "kind": "obligation",
+      "jurisdiction": "AU",
+      "statement": "OAIC APP Guidelines chapter 8 (last updated 3 October 2025), para 8.14: providing personal information to an overseas cloud provider for storage and access only may be a \"use\" rather than a \"disclosure\" (so APP 8 does not apply) where a binding contract limits the provider to those purposes, binds subcontractors and gives the entity effective control; the entity still holds the information and answers for mishandling (para 8.15). APP 8.2 exceptions include recipients in a country prescribed by regulations; the guidelines list no prescribed country.",
+      "source": {
+        "url": "https://www.oaic.gov.au/privacy/australian-privacy-principles/australian-privacy-principles-guidelines/chapter-8-app-8-cross-border-disclosure-of-personal-information",
+        "title": "OAIC APP Guidelines, chapter 8 (APP 8)",
+        "article": "APP 8; paras 8.14-8.15, 8.28-8.30"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-25",
+      "clientVisible": true,
+      "owner": "sovereignty-compliance-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-25",
+      "nextReview": "2027-04-25",
+      "notes": "OAIC page fetched and read on 2026-10-25. Engine effect: treating any Australian personal data stored outside Australia as an APP 8 transfer is conservative; storage-only cloud with effective control is a use. Qualify the \"Australia own region only\" pairing."
+    },
+    {
+      "id": "CLM-SOV-215",
+      "accelerators": [
+        "sovereign-iq"
+      ],
+      "kind": "obligation",
+      "jurisdiction": "SG",
+      "statement": "PDPC Advisory Guidelines on the PDPA for Selected Topics, chapter 8 (cloud services), para 8.3: an organisation that engages a cloud service provider as a data intermediary is responsible for complying with the Transfer Limitation Obligation for any overseas transfer of personal data in using the cloud service, whether the provider is in Singapore or overseas.",
+      "source": {
+        "url": "https://www.pdpc.gov.sg/-/media/Files/PDPC/PDF-Files/Advisory-Guidelines/AG-on-Selected-Topics/Chapter-8-9-Oct-2019.pdf",
+        "title": "PDPC Advisory Guidelines on the PDPA for Selected Topics, chapter 8 (9 October 2019)",
+        "article": "PDPA s.26; para 8.3"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-25",
+      "clientVisible": true,
+      "owner": "sovereignty-compliance-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-25",
+      "nextReview": "2027-04-25",
+      "notes": "PDF downloaded from the PDPC site and its text read on 2026-10-25 (the 2019 chapter; later revisions not checked). Engine effect: the \"Singapore own region only\" pairing is right: storage abroad through a cloud provider is a transfer needing comparable protection (CLM-SOV-131); there is no whitelist."
+    },
+    {
+      "id": "CLM-SOV-216",
+      "accelerators": [
+        "sovereign-iq"
+      ],
+      "kind": "obligation",
+      "jurisdiction": "CN",
+      "statement": "Under the CAC's data export rules, a data export includes transmitting and storing outside mainland China data collected or generated in China, and access, download or export from abroad of data stored in China. The CAC Provisions on Promoting and Regulating Cross-Border Data Flows (22 March 2024) exempt some exports from the PIPL Art. 38 mechanisms (for example non-CIIO exports of fewer than 100,000 individuals' non-sensitive personal information from 1 January of the year, contract performance and cross-border HR management), but the export remains a cross-border provision.",
+      "source": {
+        "url": "https://www.linklaters.com/knowledge/publications/alerts-newsletters-and-guides/2022/september/01/completing-your-china-data-export-security-assessment-cac-guidance--released",
+        "title": "Linklaters: CAC data export security assessment guidance (2022)",
+        "article": "PIPL Art. 38-40; CAC Application Guidelines (2022); CAC Provisions (2024)",
+        "secondaryUrls": [
+          "https://www.simmons-simmons.com/en/publications/clu6e72no00hev8ro5igupnve/china-relaxes-cross-border-data-transfer-regime",
+          "https://www.simmons-simmons.com/en/publications/cl7t8ebrk6dad0a2649y8iru2/guidelines-on-chinese-data-export-security-assessment"
+        ]
+      },
+      "verification": "S",
+      "checkedOn": "2026-10-25",
+      "clientVisible": true,
+      "owner": "sovereignty-compliance-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-25",
+      "nextReview": "2027-04-25",
+      "notes": "Law-firm summaries only; CAC primary text not read. Engine effect: the \"China own region only\" pairing is right, and Hong Kong is outside mainland China for the PIPL (CLM-SOV-185)."
+    },
+    {
+      "id": "CLM-SOV-217",
+      "accelerators": [
+        "sovereign-iq"
+      ],
+      "kind": "regulation",
+      "jurisdiction": "EU",
+      "statement": "EDPB Guidelines 05/2021 (version 2.0, 24 February 2023): a transfer under GDPR Chapter V needs three cumulative criteria: (1) a controller or processor subject to the GDPR for the processing, (2) which discloses or makes the data available to another controller or processor, (3) located in a third country. A non-EU controller collecting directly from people in the EU under Art. 3(2) makes no transfer (Example 1), though its onward disclosure to a non-EEA processor is one (Example 2); remote access from a third country by a processor is a transfer (Example 11); an EU processor that is a subsidiary of a third-country parent is not an importer, so engaging it is not a transfer (Example 12).",
+      "source": {
+        "url": "https://www.edpb.europa.eu/system/files/2023-02/edpb_guidelines_05-2021_interplay_between_the_application_of_art3-chapter_v_of_the_gdpr_v2_en_0.pdf",
+        "title": "EDPB Guidelines 05/2021 on the interplay between Art. 3 and Chapter V GDPR, v2.0",
+        "article": "Section 2; Examples 1, 2, 11, 12"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-25",
+      "clientVisible": true,
+      "owner": "sovereignty-compliance-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-25",
+      "nextReview": "2027-04-25",
+      "notes": "PDF downloaded from the EDPB site and its text read on 2026-10-25. Engine effect: the storage-location test reports a transfer for a non-EU controller with no EU establishment that collects directly from EU users (e.g. archetype ARC3); under Example 1 that is not a Chapter V transfer unless a separate exporter discloses the data. Example 12 supports the engine treating EEA-located subsidiaries of US providers as in-zone."
+    },
+    {
+      "id": "CLM-SOV-218",
+      "accelerators": [
+        "sovereign-iq"
+      ],
+      "kind": "obligation",
+      "jurisdiction": "UK",
+      "statement": "ICO guidance (last updated 15 January 2026): a restricted transfer under the UK GDPR is sending personal information to, or making it accessible to, a separate organisation outside the UK, tested in three steps (UK GDPR applies; you initiate the transfer; the receiver is a separate legal entity); letting an overseas customer-services provider access data on UK systems is a restricted transfer.",
+      "source": {
+        "url": "https://ico.org.uk/for-organisations/uk-gdpr-guidance-and-resources/international-transfers/international-transfers-a-guide/",
+        "title": "ICO: international transfers, a guide",
+        "article": "UK GDPR Chapter V"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-25",
+      "clientVisible": true,
+      "owner": "sovereignty-compliance-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-25",
+      "nextReview": "2027-04-25",
+      "notes": "ICO page fetched and read on 2026-10-25. Engine effect: confirms that remote access from outside the UK is a transfer (T1 drives derived.personal_transfer even when storage stays in the UK)."
+    },
+    {
+      "id": "CLM-SOV-219",
+      "accelerators": [
+        "sovereign-iq"
+      ],
+      "kind": "obligation",
+      "jurisdiction": "CA",
+      "statement": "Quebec's Act respecting the protection of personal information in the private sector, s.17 (as amended by Law 25, in force 22 September 2023): before communicating personal information outside Quebec (including to another province) or entrusting its storage or processing to a party outside Quebec, an organisation must carry out a privacy impact assessment, and may proceed only if the information would receive adequate protection, under a written agreement.",
+      "source": {
+        "url": "https://www.blg.com/en/insights/2022/12/cross-border-transfers-of-personal-information-outside-quebec",
+        "title": "BLG: cross-border transfers of personal information outside Quebec",
+        "article": "s.17, s.17.1",
+        "secondaryUrls": [
+          "https://www.mccarthy.ca/en/insights/blogs/techlex/sweeping-privacy-reform-comes-force-quebec"
+        ]
+      },
+      "verification": "S",
+      "checkedOn": "2026-10-25",
+      "clientVisible": true,
+      "owner": "sovereignty-compliance-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-25",
+      "nextReview": "2027-04-25",
+      "notes": "Law-firm summaries; LégisQuébec text not read. Engine effect: \"Canada restricts nothing\" is right for federal PIPEDA (accountability, no transfer prohibition) but not for Quebec; qualify the Canada entry."
     }
   ]
 }
