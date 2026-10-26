@@ -2209,196 +2209,252 @@
       "name": "Data-location ownership",
       "means": "One accountable executive owns data-location decisions, with a governance forum",
       "ownerRole": "CIO",
-      "remedy": "Name one accountable executive for where data and workloads may run, with a governance forum that records decisions and exceptions"
+      "remedy": "Name one accountable executive for where data and workloads may run, with a governance forum that records decisions and exceptions",
+      "level": "L1",
+      "scored": true
     },
     {
       "id": "SOV.DATA.MAP",
       "name": "Data map and records of processing",
       "means": "A current map of data flows and records of processing (within 12 months)",
       "ownerRole": "DPO",
-      "remedy": "Keep a data-flow map and records of processing that are reviewed at least every 12 months"
+      "remedy": "Keep a data-flow map and records of processing that are reviewed at least every 12 months",
+      "level": "L1",
+      "scored": true
     },
     {
       "id": "SOV.RES.LOCATION",
       "name": "Data location",
       "means": "Primary storage and processing of the class sit only in its allowed zone",
       "ownerRole": "CIO",
-      "remedy": "Move primary storage and processing of the class into its allowed region"
+      "remedy": "Move primary storage and processing of the class into its allowed region",
+      "level": "L1",
+      "scored": true
     },
     {
       "id": "SOV.RES.REGION_LOCK",
       "name": "Region enforcement",
       "means": "The location rule is enforced technically (guardrails that block non-compliant deployments)",
       "ownerRole": "Head of cloud platform",
-      "remedy": "Enforce allowed regions with platform policies that block deployments elsewhere, on every platform and account"
+      "remedy": "Enforce allowed regions with platform policies that block deployments elsewhere, on every platform and account",
+      "level": "L1",
+      "scored": true
     },
     {
       "id": "SOV.BACKUP.LOCATION",
       "name": "Backup location",
       "means": "Backups, replicas and disaster-recovery copies of the class sit in its allowed zone",
       "ownerRole": "Head of infrastructure",
-      "remedy": "Keep backups, replicas and disaster-recovery copies of the class in its allowed region"
+      "remedy": "Keep backups, replicas and disaster-recovery copies of the class in its allowed region",
+      "level": "L1",
+      "scored": true
     },
     {
       "id": "SOV.XFER.BASIS",
       "name": "Transfer basis",
       "means": "Every personal-data transfer (including remote access from abroad) has a valid, documented basis for each regime that restricts transfers",
       "ownerRole": "DPO",
-      "remedy": "Document a valid transfer route for every transfer, including remote access from abroad, under each law that restricts transfers"
+      "remedy": "Document a valid transfer route for every transfer, including remote access from abroad, under each law that restricts transfers",
+      "level": null,
+      "scored": true
     },
     {
       "id": "SOV.XFER.TIA",
       "name": "Transfer impact assessment",
       "means": "A transfer impact (EU) or transfer risk (UK) assessment is recorded for each transfer under SCCs, IDTA, Addendum or BCRs",
       "ownerRole": "DPO with General Counsel",
-      "remedy": "Record a transfer impact or transfer risk assessment for every transfer under contractual clauses or BCRs, and review it regularly"
+      "remedy": "Record a transfer impact or transfer risk assessment for every transfer under contractual clauses or BCRs, and review it regularly",
+      "level": null,
+      "scored": true
     },
     {
       "id": "SOV.XFER.US_BULK",
       "name": "US bulk data screening",
       "means": "Transactions giving countries of concern access to bulk US sensitive data are screened, blocked or licensed, with records",
       "ownerRole": "General Counsel",
-      "remedy": "Screen data brokerage, vendor, employment and investment agreements for access by countries of concern; block or license covered transactions and keep records"
+      "remedy": "Screen data brokerage, vendor, employment and investment agreements for access by countries of concern; block or license covered transactions and keep records",
+      "level": null,
+      "scored": true
     },
     {
       "id": "SOV.KEY.CUSTODY",
       "name": "Key custody",
       "means": "For sensitive data in cloud and SaaS, the client controls the keys outside the provider's control",
       "ownerRole": "CISO",
-      "remedy": "Hold the keys for sensitive data outside the provider (external key manager or your own HSM)"
+      "remedy": "Hold the keys for sensitive data outside the provider (external key manager or your own HSM)",
+      "level": "L2",
+      "scored": true
     },
     {
       "id": "SOV.KEY.REVOCATION",
       "name": "Key revocation",
       "means": "Key revocation that makes provider-held copies unreadable has been tested",
       "ownerRole": "CISO",
-      "remedy": "Test that revoking your keys makes provider-held copies, backups and caches unreadable"
+      "remedy": "Test that revoking your keys makes provider-held copies, backups and caches unreadable",
+      "level": "L3",
+      "scored": true
     },
     {
       "id": "SOV.ENC.BASELINE",
       "name": "Encryption baseline",
       "means": "Regulated data is encrypted at rest and in transit everywhere",
       "ownerRole": "CISO",
-      "remedy": "Encrypt regulated data at rest and in transit everywhere, including internal traffic"
+      "remedy": "Encrypt regulated data at rest and in transit everywhere, including internal traffic",
+      "level": "L1",
+      "scored": true
     },
     {
       "id": "SOV.OPS.ADMIN_ACCESS",
       "name": "Provider access approval",
       "means": "Provider support or operations access needs the client's time-limited approval and is logged and reviewed",
       "ownerRole": "CISO",
-      "remedy": "Require your explicit, time-limited approval for every provider access to systems or data, and log and review each access"
+      "remedy": "Require your explicit, time-limited approval for every provider access to systems or data, and log and review each access",
+      "level": "L2",
+      "scored": true
     },
     {
       "id": "SOV.OPS.PERSONNEL_ZONE",
       "name": "In-zone operations",
       "means": "Services holding L3+ data are operated and supported only by staff in the zone, employed by a locally established entity under local law",
       "ownerRole": "Head of cloud platform with Procurement",
-      "remedy": "Have services holding this data run and supported only by staff in the region, employed by a local entity under local law"
+      "remedy": "Have services holding this data run and supported only by staff in the region, employed by a local entity under local law",
+      "level": "L3",
+      "scored": true
     },
     {
       "id": "SOV.OPS.OOB_MGMT",
       "name": "Out-of-band management",
       "means": "On-premises out-of-band management is isolated and vendor call-home is controlled",
       "ownerRole": "Head of infrastructure",
-      "remedy": "Isolate out-of-band management networks and block or approve vendor call-home"
+      "remedy": "Isolate out-of-band management networks and block or approve vendor call-home",
+      "level": "L3",
+      "scored": true
     },
     {
       "id": "SOV.CC.DATA_IN_USE",
       "name": "Confidential computing",
       "means": "Confidential computing protects L4 data while in use",
       "ownerRole": "CISO",
-      "remedy": "Process the most sensitive data in hardware-protected enclaves"
+      "remedy": "Process the most sensitive data in hardware-protected enclaves",
+      "level": "L4",
+      "scored": true
     },
     {
       "id": "SOV.TP.DPA",
       "name": "Processor agreements",
       "means": "Processor or service-provider agreements are in place with every processor",
       "ownerRole": "DPO with Procurement",
-      "remedy": "Put data-processing or service-provider agreements in place with every processor"
+      "remedy": "Put data-processing or service-provider agreements in place with every processor",
+      "level": null,
+      "scored": true
     },
     {
       "id": "SOV.SAAS.SUBPROCESSOR",
       "name": "Sub-processor control",
       "means": "Sub-processors of critical providers are known, with advance notice and a right to object to changes",
       "ownerRole": "Procurement",
-      "remedy": "Know the sub-processors of critical providers, with advance notice and a right to object to changes"
+      "remedy": "Know the sub-processors of critical providers, with advance notice and a right to object to changes",
+      "level": "L2",
+      "scored": true
     },
     {
       "id": "SOV.TP.VISIBILITY",
       "name": "Provider location visibility",
       "means": "The client knows where each key provider stores and processes its data",
       "ownerRole": "CIO",
-      "remedy": "Document where each key SaaS and ICT provider stores and processes your data"
+      "remedy": "Document where each key SaaS and ICT provider stores and processes your data",
+      "level": "L1",
+      "scored": true
     },
     {
       "id": "SOV.TP.REGISTER",
       "name": "ICT third-party register",
       "means": "A complete register of ICT third-party arrangements is maintained",
       "ownerRole": "Head of third-party risk",
-      "remedy": "Maintain a complete register of ICT third-party arrangements, ready to submit to your regulator"
+      "remedy": "Maintain a complete register of ICT third-party arrangements, ready to submit to your regulator",
+      "level": null,
+      "scored": true
     },
     {
       "id": "SOV.TP.AUDIT",
       "name": "Audit rights",
       "means": "Contracts give audit, access and inspection rights over data handling",
       "ownerRole": "Procurement with General Counsel",
-      "remedy": "Secure audit, access and inspection rights over data handling in cloud and ICT contracts"
+      "remedy": "Secure audit, access and inspection rights over data handling in cloud and ICT contracts",
+      "level": "L2",
+      "scored": true
     },
     {
       "id": "SOV.EXIT.PLAN",
       "name": "Exit plan",
       "means": "Critical services have a documented, realistic exit plan (testing is owned by Resilience IQ)",
       "ownerRole": "CIO",
-      "remedy": "Document realistic exit plans for critical services, with portable formats; verify exit capability in Resilience IQ"
+      "remedy": "Document realistic exit plans for critical services, with portable formats; verify exit capability in Resilience IQ",
+      "level": "L3",
+      "scored": true
     },
     {
       "id": "SOV.CONC.PROVIDER",
       "name": "Provider concentration",
       "means": "Concentration on one provider (including UK designated critical third parties) is assessed and managed",
       "ownerRole": "CRO",
-      "remedy": "Assess and manage concentration on one provider, including dependence on UK designated critical third parties; verify in Resilience IQ"
+      "remedy": "Assess and manage concentration on one provider, including dependence on UK designated critical third parties; verify in Resilience IQ",
+      "level": "L3",
+      "scored": true
     },
     {
       "id": "SOV.CERT.ASSURANCE",
       "name": "Assurance qualification",
       "means": "Services holding L3+ data hold an assurance qualification recognised for that level",
       "ownerRole": "CISO",
-      "remedy": "Use services holding a high-assurance qualification recognised by your regulators or customers"
+      "remedy": "Use services holding a high-assurance qualification recognised by your regulators or customers",
+      "level": "L3",
+      "scored": true
     },
     {
       "id": "SOV.JUR.IMMUNITY",
       "name": "Jurisdictional immunity",
       "means": "No provider holding the class can be compelled by a law from outside the zone, or the system is disconnected",
       "ownerRole": "CIO with General Counsel",
-      "remedy": "Hold this data only with providers whose parent is in the allowed region, or on disconnected systems"
+      "remedy": "Hold this data only with providers whose parent is in the allowed region, or on disconnected systems",
+      "level": "L4",
+      "scored": true
     },
     {
       "id": "SOV.AI.DATA_LOCATION",
       "name": "AI data location",
       "means": "AI training, fine-tuning and inference run in the allowed zone, and providers cannot train on client data",
       "ownerRole": "Head of data and AI",
-      "remedy": "Run AI training, fine-tuning and inference in the allowed region, with contractual no-training terms"
+      "remedy": "Run AI training, fine-tuning and inference in the allowed region, with contractual no-training terms",
+      "level": "L1",
+      "scored": true
     },
     {
       "id": "SOV.AI.GOVERNANCE",
       "name": "AI role and risk mapping",
       "means": "Each AI system's role and risk class is assessed and its obligations and dates are mapped",
       "ownerRole": "Head of data and AI with General Counsel",
-      "remedy": "Assess the AI Act role and risk class of each AI system and map its obligations and dates"
+      "remedy": "Assess the AI Act role and risk class of each AI system and map its obligations and dates",
+      "level": null,
+      "scored": true
     },
     {
       "id": "SOV.IR.REPORTING",
       "name": "Incident reporting",
       "means": "Incidents can be detected, classified and reported within the shortest window that applies",
       "ownerRole": "CISO",
-      "remedy": "Detect, classify and report incidents within the shortest regulatory window that applies, and test it in an exercise"
+      "remedy": "Detect, classify and report incidents within the shortest regulatory window that applies, and test it in an exercise",
+      "level": null,
+      "scored": true
     },
     {
       "id": "SOV.HW.PROVENANCE",
       "name": "Hardware provenance",
       "means": "Hardware and appliance provenance is assessed against supply-chain restrictions",
       "ownerRole": "Head of infrastructure",
-      "remedy": "Assess hardware and appliance provenance against the supply-chain restrictions that apply to you"
+      "remedy": "Assess hardware and appliance provenance against the supply-chain restrictions that apply to you",
+      "level": null,
+      "scored": false
     }
   ],
   "regimes": [

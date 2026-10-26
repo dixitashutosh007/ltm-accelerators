@@ -1,0 +1,50 @@
+/* Sovereign IQ page (PLAN S5): additions to the shared FinOps IQ design system (/assets/finops-iq/app.css). Same
+   tokens, WCAG 2.2 AA contrast and 360px layout. */
+
+/* Region matrix (A2) */
+.matrix-table th[scope="row"] { font-weight: 600; white-space: nowrap; }
+.matrix-table td { text-align: center; }
+.matrix-table input[type="checkbox"] { width: 20px; height: 20px; accent-color: var(--red); }
+.option.inline { margin-top: 10px; }
+
+/* Per-class rows (D3, L2) and compact choice chips */
+.class-rows { display: grid; gap: 12px; }
+.class-row { border: 1px solid var(--line-2); border-radius: var(--radius); padding: 12px 14px; background: var(--card); }
+.class-row h4 { margin-bottom: 6px; }
+.class-row select { max-width: 100%; }
+.field-title { font-size: 13px; font-weight: 600; color: var(--ink-2); margin: 8px 0 4px; display: block; }
+.options.chips-select { display: flex; flex-wrap: wrap; gap: 6px; }
+.options.chips-select .option.chip { padding: 4px 10px; min-height: 0; width: auto; flex: 0 0 auto; border-radius: 999px; font-size: 13px; }
+.compound { display: grid; gap: 6px; }
+.compound-field + .compound-field { border-top: 1px solid var(--line-2); padding-top: 6px; }
+.amount-row { display: flex; gap: 8px; flex-wrap: wrap; }
+.amount-row input { flex: 1 1 160px; min-width: 0; }
+
+/* Exposure */
+.rag-row { display: flex; gap: 6px; flex-wrap: wrap; margin: 6px 0; }
+.rag-chip { display: inline-block; font: 700 12px/1.6 var(--sans); padding: 2px 10px; border-radius: 999px; }
+.rag-chip.red { background: var(--crit-bg); color: var(--crit); }
+.rag-chip.amber { background: var(--amber-bg); color: var(--amber); }
+.rag-chip.green { background: var(--green-bg); color: var(--green); }
+.chip.grade.applies { background: var(--crit-bg); color: var(--crit); }
+.chip.grade.likely_confirm { background: var(--amber-bg); color: var(--amber); }
+.chip.grade.advisory { background: var(--blue-bg); color: var(--blue); }
+.regime { border: 1px solid var(--line-2); border-left: 4px solid var(--line); border-radius: 6px; padding: 12px 14px; margin-bottom: 10px; }
+.regime.red { border-left-color: var(--crit); }
+.regime.amber { border-left-color: var(--amber); }
+.regime.green { border-left-color: var(--green); }
+.regime-head { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-bottom: 4px; }
+.regime-head h3 { margin: 0; }
+.consultant-only { color: var(--amber); }
+
+/* Controls */
+.state-chip { display: inline-block; font: 700 12px/1.6 var(--sans); padding: 1px 8px; border-radius: 999px; background: var(--line-2); color: var(--ink-2); }
+.state-chip.gap0 { background: var(--green-bg); color: var(--green); }
+.state-chip.gap1, .state-chip.gap2 { background: var(--amber-bg); color: var(--amber); }
+.state-chip.gap3 { background: var(--crit-bg); color: var(--crit); }
+.block { display: block; }
+
+/* Roadmap */
+.wave + .wave { border-top: 1px solid var(--line-2); padding-top: 10px; margin-top: 10px; }
+.wave ol { margin: 0; padding-left: 20px; }
+.wave li { margin-bottom: 4px; }

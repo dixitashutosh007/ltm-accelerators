@@ -39,7 +39,7 @@ export function publicQuestionSchema() {
       basis: q.basis.map((b: any) => b.citation),
       ...(q.feeds?.controls?.length ? { control: q.feeds.controls[0] } : {})
     })),
-    controls: CONTROLS.map(c => ({ id: c.id, name: c.name, means: c.means, ownerRole: c.ownerRole, remedy: c.remedy })),
+    controls: CONTROLS.map(c => ({ id: c.id, name: c.name, means: c.means, ownerRole: c.ownerRole, remedy: c.remedy, level: c.level, scored: c.scored !== false })),
     regimes: REGIMES.map(r => ({ id: r.id, name: r.name, kind: r.kind, market: r.market, citation: String(r.citation?.text ?? '').replace(/\s*\[CLM-[^\]]+\]/g, ''), url: r.citation?.url })),
     zones: ZONE_LABELS, dataClasses: DATA_CLASS_LABELS, levels: LEVEL_LABELS,
     notices: {

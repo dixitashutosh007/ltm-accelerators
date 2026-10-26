@@ -26,6 +26,8 @@ import { handler as strategyIq } from '../amplify/functions/evaluate-strategy-iq
 import { handler as modernizationIq } from '../amplify/functions/evaluate-modernization-iq/handler';
 import { createHandler as finopsAssessment } from '../amplify/functions/manage-finops-assessment/handler';
 import { setPermissionSource } from '../amplify/functions/_shared/access';
+import { createHandler as sovereignAssessment } from '../amplify/functions/manage-sovereign-assessment/handler';
+import { memoryStore as sovereignStore } from '../amplify/functions/manage-sovereign-assessment/store';
 import { memoryStore, type FinOpsAssessmentRecord } from '../amplify/functions/manage-finops-assessment/store';
 import { createHandler as finopsReport } from '../amplify/functions/finops-iq-report/handler';
 
@@ -85,10 +87,17 @@ const assessments = memoryStore({
   load: () => { const f = join(DATA_DIR, 'finops-assessments.json'); return existsSync(f) ? JSON.parse(readFileSync(f, 'utf8')) as FinOpsAssessmentRecord[] : []; },
   save: items => { mkdirSync(DATA_DIR, { recursive: true }); writeFileSync(join(DATA_DIR, 'finops-assessments.json'), JSON.stringify(items, null, 2)); }
 });
+const sovereignAssessments = sovereignStore({
+  load: () => { const f = join(DATA_DIR, 'sovereign-assessments.json'); return existsSync(f) ? JSON.parse(readFileSync(f, 'utf8')) : []; },
+  save: items => { mkdirSync(DATA_DIR, { recursive: true }); writeFileSync(join(DATA_DIR, 'sovereign-assessments.json'), JSON.stringify(items, null, 2)); }
+});
 const ROUTES: Record<string, LambdaHandler> = {
   'POST /api/evaluate/finops-iq/v3': finopsIq,
   'POST /api/evaluate/posture-iq': postureIq,
   'POST /api/evaluate/sovereign-iq': sovereignIq,
+  'POST /api/evaluate/sovereign-iq/v4': sovereignIq,
+  'GET /api/sovereign-iq/assessment': sovereignAssessment(sovereignAssessments),
+  'POST /api/sovereign-iq/assessment': sovereignAssessment(sovereignAssessments),
   'POST /api/evaluate/cloud-iq': cloudIq,
   'POST /api/evaluate/strategy-iq': strategyIq,
   'POST /api/evaluate/modernization-iq': modernizationIq,

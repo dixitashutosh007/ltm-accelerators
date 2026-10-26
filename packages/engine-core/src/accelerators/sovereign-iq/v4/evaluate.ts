@@ -317,6 +317,7 @@ function transferBasisState(facts: Facts, requiring: string[], asked: Set<string
 
 /* ------------------------------ Penalty caps ------------------------------- */
 
+const BAND_LABEL: Record<string, string> = { lt10m: 'under EUR 10M', '10m_50m': 'EUR 10M-50M', '50m_250m': 'EUR 50M-250M', '250m_1bn': 'EUR 250M-1bn', '1bn_10bn': 'EUR 1bn-10bn', gt10bn: 'over EUR 10bn' };
 const BAND_EUR: Record<string, [number, number | null]> = {
   lt10m: [0, 10e6], '10m_50m': [10e6, 50e6], '50m_250m': [50e6, 250e6], '250m_1bn': [250e6, 1e9], '1bn_10bn': [1e9, 10e9], gt10bn: [10e9, null]
 };
@@ -373,7 +374,7 @@ function regimeCap(r: any, g: RegimeResult, facts: Facts): CapFigure | null {
       const lo = combine(fixedEur, pct(band[0]))!, hi = band[1] == null ? null : combine(fixedEur, pct(band[1]));
       fig = {
         regime: r.id, grade: g.grade, article: t.article, label: 'cap, not expected fine', amount: null, range: [Math.round(lo), hi == null ? null : Math.round(hi)], currency: 'EUR', eur: hi ?? lo,
-        basis: `From the turnover band (${facts['org.turnover_band_eur']}): ${t.fixedAmount != null ? `${money(t.fixedAmount, t.currency)} or ` : ''}${t.turnoverPercent}% of turnover${t.fixedAmount != null ? (model === 'turnover_lower_of' || sme ? ', whichever is lower' : ', whichever is higher') : ''}`,
+        basis: `From the turnover band (${BAND_LABEL[facts['org.turnover_band_eur'] as string]}): ${t.fixedAmount != null ? `${money(t.fixedAmount, t.currency)} or ` : ''}${t.turnoverPercent}% of turnover${t.fixedAmount != null ? (model === 'turnover_lower_of' || sme ? ', whichever is lower' : ', whichever is higher') : ''}`,
         rateDate: t.currency && t.currency !== 'EUR' ? (fx as any).date : null, claims: [...claims, ...rateClaims(t.currency)]
       };
     } else if (fixedEur != null && (!t.turnoverPercent || !worldwide)) {

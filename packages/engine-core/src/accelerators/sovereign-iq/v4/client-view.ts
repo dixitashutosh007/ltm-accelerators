@@ -21,6 +21,8 @@ export function clientView(result: SovereignIqV4Result) {
   return {
     view: 'client' as const,
     mode: r.mode, assessmentDate: r.assessmentDate, versions: r.versions,
+    // Which questions the page shows (follow-ups included); not a scoring internal.
+    asked: r.asked,
     regimes: shown.map(({ rule, claims, verification, consultantOnly, ...g }) => g),
     regimesNotApplicable: r.regimes.length - shown.length,
     requirements: r.requirements.map(q => ({
