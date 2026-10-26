@@ -17,6 +17,7 @@
   var EVALUATE = '/api/evaluate/sovereign-iq/v4';
   var ASSESSMENT = '/api/sovereign-iq/assessment';
   var REPORT = '/api/sovereign-iq/report';
+  var NARRATIVE = '/api/sovereign-iq/narrative';
   var MODE_INFO = {
     executive: { label: 'Executive', duration: '15–20 minutes', text: 'Which regulations apply, how exposed are we, and do our controls meet the level our data needs? 17 questions for the CIO.' },
     workshop: { label: 'Workshop', duration: '60–90 minutes', text: 'Requirement per kind of data, every control, and a ranked roadmap. Consultant-led, with the CISO, DPO or General Counsel and the head of cloud.' }
@@ -226,7 +227,7 @@
     state = {
       assessmentId: a.assessmentId, clientName: a.clientName, clientSector: a.clientSector || undefined, respondentEmail: a.respondentEmail,
       status: a.status, startedAt: a.startedAt, completedAt: a.completedAt, mode: a.mode, answers: req.answers || {},
-      consultantNotes: a.consultantNotes || '', result: a.result || null, errors: [],
+      consultantNotes: a.consultantNotes || '', result: a.result || null, errors: [], aiEnabled: !!a.aiEnabled, narrative: a.narrative || null,
       step: a.result && (a.status === 'completed' || a.status === 'archived') ? 'results' : schema.steps[0].id,
       view: view === 'client' ? 'client' : 'consultant', saveStatus: a.status === 'completed' || a.status === 'archived' ? statusLabel(a.status) : 'Saved'
     };
@@ -745,6 +746,8 @@
   }
 
   function overviewPanel(p, r) {
+    var ai = aiCard();
+    if (ai) p.appendChild(ai);
     var grid = h('div', { class: 'dash-grid' });
     grid.appendChild(card('Required level by kind of data', 'The higher of the legal minimum and the board\'s choice', h('div', { class: 'table-wrap' }, h('table', null,
       h('thead', null, h('tr', null, ['Data', 'Required level', 'Allowed regions', 'Set by'].map(function (t) { return h('th', { scope: 'col' }, t); }))),
@@ -770,6 +773,57 @@
     var notes = r.notes || [];
     if (notes.length) grid.appendChild(card('Notes', null, h('ul', { class: 'small' }, notes.map(function (n) { return h('li', null, n); })), 'wide'));
     p.appendChild(grid);
+  }
+
+  /**
+   * AI narrative (PLAN S9): the consultant's per-engagement switch and "Write narrative"; the narrative itself, labelled,
+   * only when it passed the grounding check. Clients see the narrative only.
+   */
+  function aiCard() {
+    var n = state.narrative, consultant = state.view !== 'client';
+    if (!consultant && !(n && n.narrative)) return null;
+    var body = h('div', { class: 'ai-body' });
+    if (consultant) {
+      var status = h('p', { class: 'small', id: 'ai-status', role: 'status', 'aria-live': 'polite' }, state.aiMessage || '');
+      var focus = h('input', { type: 'text', id: 'ai-focus', maxlength: '300', placeholder: 'Optional: what to emphasise, e.g. DORA and the cloud placement', value: state.aiFocus || '', disabled: !state.aiEnabled || !isFinal(),
+        oninput: function (e) { state.aiFocus = e.target.value; } });
+      body.appendChild(h('div', { class: 'ai-controls' },
+        h('label', { class: 'ai-switch', for: 'ai-on' }, h('input', { type: 'checkbox', id: 'ai-on', role: 'switch', checked: !!state.aiEnabled, 'aria-checked': state.aiEnabled ? 'true' : 'false', onchange: function (e) { toggleAi(e.target.checked); } }),
+          h('span', null, 'Use AI narrative for this engagement')),
+        h('label', { class: 'field-title', for: 'ai-focus' }, 'Focus (optional)'), focus,
+        h('button', { class: 'btn primary small', type: 'button', disabled: !state.aiEnabled || !isFinal() || state.aiBusy, onclick: writeNarrative }, state.aiBusy ? 'Writing…' : n && n.narrative ? 'Write again' : 'Write narrative'),
+        status));
+      if (n && n.status && n.status !== 'ok') body.appendChild(h('p', { class: 'small consultant-only' }, n.status === 'rejected' ? 'The last AI draft added facts that are not in the result (' + n.violations + ' found), so it was not used.' : 'The last attempt failed; no narrative was stored.'));
+    }
+    if (n && n.narrative) {
+      body.appendChild(h('div', { class: 'ai-narrative' },
+        n.narrative.summary.split(/\n\s*\n/).map(function (para) { return h('p', null, para); }),
+        h('h3', null, 'Priorities'), h('ul', null, n.narrative.priorities.map(function (x) { return h('li', null, x); })),
+        h('h3', null, 'Next steps'), h('ul', null, n.narrative.nextSteps.map(function (x) { return h('li', null, x); })),
+        h('p', { class: 'small muted' }, 'Written by an AI model (' + n.modelId + ') on ' + String(n.generatedAt).slice(0, 10) + ' from this result only, and checked: every number, date, regulation and provider in it appears in the result. The tabs below are the assessment of record.')));
+    }
+    return card('Narrative summary (AI-written)', consultant ? 'Off by default. When switched on, an AI model writes a plain-language summary from the result; text that adds anything not in the result is rejected.' : null, body, 'wide ai-card');
+  }
+
+  async function toggleAi(on) {
+    var res = await call(NARRATIVE, { method: 'POST', body: JSON.stringify({ action: on ? 'enable' : 'disable', assessmentId: state.assessmentId }) });
+    if (res.status === 200) { state.aiEnabled = res.body.data.aiEnabled; state.aiMessage = state.aiEnabled ? 'AI narrative switched on for this engagement.' : 'AI narrative switched off for this engagement.'; }
+    else state.aiMessage = res.body.message || 'The switch could not be changed.';
+    render();
+  }
+
+  async function writeNarrative() {
+    state.aiBusy = true; state.aiMessage = 'Writing the narrative…'; render();
+    var body = { action: 'generate', assessmentId: state.assessmentId };
+    if (state.aiFocus && state.aiFocus.trim()) body.focus = state.aiFocus.trim();
+    var res = await call(NARRATIVE, { method: 'POST', body: JSON.stringify(body) });
+    state.aiBusy = false;
+    if (res.status === 200) { state.narrative = Object.assign({ status: 'ok' }, res.body.data); state.aiMessage = 'Narrative written and checked against the result.'; }
+    else {
+      state.aiMessage = res.body.message || 'The narrative could not be written.';
+      if (res.body.data && res.body.data.status) state.narrative = { status: res.body.data.status, violations: res.body.data.violations, narrative: null };
+    }
+    render();
   }
 
   function controlHeatmap(r) {

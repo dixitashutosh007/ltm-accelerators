@@ -517,6 +517,10 @@ Scope ranges appear only in the consultant SOW draft (D7). The client sees type,
 
 **Dependencies:** WS-S1; S6.
 
+**Status (26 Oct 2026): built, off, waiting on the owner's region decision.** The shared service (WS-S1) is `packages/engine-core/src/ai/` (grounding check: every number, regulation and provider must be in the input; legal conclusions, provider recommendations, SEAL ratings of the client and sales phrases rejected; one retry with the violations listed, then fail closed) with Sovereign IQ's redacted, client-visible input, lexicon and instructions in `v4/narrative.ts`. Service `sovereign-iq-narrative` (`POST /api/sovereign-iq/narrative`: per-engagement switch and generate) on Claude in Amazon Bedrock (`@anthropic-ai/bedrock-sdk` 1.1.0, `anthropic.claude-opus-5-5`, structured output, client-side refusal fallback to `anthropic.claude-opus-4-8`), behind `AI_ENABLED=false`; prompt and output logged to CloudWatch (1 year until S10). Page: AI card on the Overview (switch, optional focus with the client name redacted, labelled narrative); clients see only grounded text. Report: labelled "Narrative summary (AI-written)" section when present, and the AI state on the cover status line. Tests: `sovereign-iq-v4-narrative.test.ts` (20) and the service spec (5), with a stub model; live eval `scripts/eval-sovereign-narrative.ts` (10 archetype runs plus 8 adversarial focus notes) not yet run.
+
+**Region finding (26 Oct 2026, Anthropic documentation for Claude in Amazon Bedrock):** `ap-south-1` (Mumbai) serves the current Claude models on the **Global** endpoint only, which routes across all regions; it has no regional or in-region option. D14 ("ap-south-1 only, no cross-region inference without approval") cannot be met as written. Options for the owner: (a) Global from ap-south-1; (b) an in-region-only EU endpoint (`eu-west-1` or `eu-north-1`) so inference stays in one EU region; (c) a geography profile (EU, US, JP or AU). The input is the redacted engine result (no client name, answers or notes).
+
 **Gate S9:** grounding check passes 100% of the eval set; AI text labelled; no browser AI (already enforced since S0).
 
 ---

@@ -5,7 +5,12 @@
 import { graphql } from '../_shared/resilience-data';
 import { isLive, newestFirst, memoryStore as sharedMemoryStore, type FinOpsAssessmentRecord } from '../manage-finops-assessment/store';
 
-export type SovereignAssessmentRecord = Omit<FinOpsAssessmentRecord, 'clientLogo'>;
+export type SovereignAssessmentRecord = Omit<FinOpsAssessmentRecord, 'clientLogo'> & {
+  /** The consultant's per-engagement AI narrative switch (PLAN S9); off when absent. */
+  aiEnabled?: boolean | null;
+  /** The last narrative run (NarrativeResult plus the redacted focus), JSON. */
+  narrativeJson?: string | null;
+};
 
 export interface SovereignAssessmentStore {
   get(assessmentId: string): Promise<SovereignAssessmentRecord | null>;
@@ -18,7 +23,7 @@ export interface SovereignAssessmentStore {
 }
 
 export const SUMMARY_FIELDS = 'assessmentId clientName clientSector respondentEmail status mode engineVersion startedAt completedAt archivedAt expiresAt createdAt updatedAt';
-export const FIELDS = `${SUMMARY_FIELDS} requestJson consultantNotes resultJson`;
+export const FIELDS = `${SUMMARY_FIELDS} requestJson consultantNotes resultJson aiEnabled narrativeJson`;
 const PAGE_SIZE = 200, MAX_PAGES = 50;
 
 export const appSyncStore: SovereignAssessmentStore = {

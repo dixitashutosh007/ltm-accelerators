@@ -4,6 +4,7 @@ import { manageResilienceEvidenceFunction } from '../functions/manage-resilience
 import { manageFinOpsAssessmentFunction } from '../functions/manage-finops-assessment/resource';
 import { manageSovereignAssessmentFunction } from '../functions/manage-sovereign-assessment/resource';
 import { sovereignIqReportFunction } from '../functions/sovereign-iq-report/resource';
+import { sovereignIqNarrativeFunction } from '../functions/sovereign-iq-narrative/resource';
 import { finopsIqReportFunction } from '../functions/finops-iq-report/resource';
 
 /**
@@ -193,6 +194,9 @@ const schema = a.schema({
       requestJson: a.string().required(),
       consultantNotes: a.string(),
       resultJson: a.string(),
+      // AI narrative (PLAN S9): the consultant's per-engagement switch and the last grounded run.
+      aiEnabled: a.boolean(),
+      narrativeJson: a.string(),
       startedAt: a.datetime().required(),
       completedAt: a.datetime(),
       archivedAt: a.datetime(),
@@ -221,6 +225,7 @@ const schema = a.schema({
   allow.resource(manageFinOpsAssessmentFunction).to(['query', 'mutate']),
   allow.resource(manageSovereignAssessmentFunction).to(['query', 'mutate']),
   allow.resource(sovereignIqReportFunction).to(['query']),
+  allow.resource(sovereignIqNarrativeFunction).to(['query', 'mutate']),
   // The report reads completed assessments only.
   allow.resource(finopsIqReportFunction).to(['query'])
 ]);

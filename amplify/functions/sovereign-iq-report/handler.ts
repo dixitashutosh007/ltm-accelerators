@@ -17,6 +17,7 @@ import { sovereignIqBacklog, sovereignIqReport } from '../../../packages/engine-
 import { renderPdf } from '../../../packages/engine-core/src/report/pdf';
 import { toCsv } from '../../../packages/engine-core/src/report/csv';
 import { appSyncStore, type SovereignAssessmentStore } from '../manage-sovereign-assessment/store';
+import { narrativeView } from '../manage-sovereign-assessment/handler';
 
 const FORMATS = new Set(['pdf', 'csv']);
 const REPORTABLE = new Set(['completed', 'archived']);
@@ -54,7 +55,7 @@ export function createHandler(store: SovereignAssessmentStore) {
           body: toCsv(sovereignIqBacklog(result, view))
         };
       }
-      const doc = sovereignIqReport(result, { client: item.clientName, preparedBy: `LTM consultant (${item.respondentEmail})`, dataProvidedBy: item.clientName, view, notes: view === 'consultant' ? item.consultantNotes ?? undefined : undefined });
+      const doc = sovereignIqReport(result, { client: item.clientName, preparedBy: `LTM consultant (${item.respondentEmail})`, dataProvidedBy: item.clientName, view, notes: view === 'consultant' ? item.consultantNotes ?? undefined : undefined, aiEnabled: !!item.aiEnabled, narrative: narrativeView(item.narrativeJson, true) });
       const pdf = await renderPdf(doc);
       return {
         statusCode: 200,

@@ -21,19 +21,28 @@ import { appSyncStore, type SovereignAssessmentRecord, type SovereignAssessmentS
 
 const ACTIONS = new Set(['save', 'complete', 'archive', 'delete']);
 
+/** The AI narrative as a viewer may see it (PLAN S9): only a run that passed the grounding check carries text. */
+export function narrativeView(json: string | null | undefined, client: boolean) {
+  if (!json) return null;
+  const n = JSON.parse(json);
+  if (client) return n.status === 'ok' ? { narrative: n.narrative, modelId: n.modelId, generatedAt: n.generatedAt } : null;
+  return { status: n.status, narrative: n.status === 'ok' ? n.narrative : null, modelId: n.modelId, generatedAt: n.generatedAt, attempts: n.attempts, violations: (n.violations ?? []).length, focus: n.focus ?? null };
+}
+
 function view(r: SovereignAssessmentRecord, client = false) {
-  const { requestJson, resultJson, consultantNotes, ...rest } = r;
+  const { requestJson, resultJson, consultantNotes, narrativeJson, aiEnabled, ...rest } = r;
   const result = resultJson ? JSON.parse(resultJson) : undefined;
   return {
     ...rest,
-    ...(client ? {} : { consultantNotes }),
+    ...(client ? {} : { consultantNotes, aiEnabled: !!aiEnabled }),
+    narrative: narrativeView(narrativeJson, client),
     ...(requestJson ? { request: JSON.parse(requestJson) } : {}),
     ...(result ? { result: client ? clientView(result) : result } : {})
   };
 }
 
 function summary(r: SovereignAssessmentRecord) {
-  const { requestJson, resultJson, consultantNotes, ...rest } = r;
+  const { requestJson, resultJson, consultantNotes, narrativeJson, ...rest } = r;
   return rest;
 }
 

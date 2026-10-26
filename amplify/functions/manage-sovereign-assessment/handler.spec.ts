@@ -12,6 +12,7 @@ import { memoryStore, type SovereignAssessmentStore } from './store';
 import { handler as scoreHandler } from '../evaluate-sovereign-iq/handler';
 import { setPermissionSource } from '../_shared/access';
 import { createHandler as createReportHandler } from '../sovereign-iq-report/handler';
+import { ENGINE_VERSION } from '../../../packages/engine-core/src/accelerators/sovereign-iq/v4';
 
 const ARCHETYPES: any[] = JSON.parse(readFileSync(join(__dirname, '../../../docs/cio-readiness/sovereign-iq/design/archetypes.json'), 'utf8')).archetypes;
 const ARC1 = ARCHETYPES.find(a => a.id === 'ARC1_EU_BANK_DORA')!.answers;
@@ -64,7 +65,7 @@ describe('Sovereign IQ assessment API', () => {
     expect(done.status).toBe(200);
     expect(done.body.data.result.assessmentDate).toBe('2026-10-26');
     expect(done.body.data.result.maturity.score).toBe(55);
-    expect(done.body.data.result.versions.engine).toBe('4.2.0');
+    expect(done.body.data.result.versions.engine).toBe(ENGINE_VERSION);
   });
 
   it('a completed assessment is immutable: it can be archived or deleted, not changed', async () => {
@@ -117,7 +118,7 @@ describe('POST /api/evaluate/sovereign-iq/v4', () => {
   it('scores with the v4 engine, dated today on the server, whatever date the browser sends', async () => {
     const res = await score({ mode: 'workshop', answers: ARC1, assessmentDate: '1999-01-01' });
     expect(res.status).toBe(200);
-    expect(res.body.data.versions.engine).toBe('4.2.0');
+    expect(res.body.data.versions.engine).toBe(ENGINE_VERSION);
     expect(res.body.data.assessmentDate).toBe(new Date().toISOString().slice(0, 10));
     expect(res.body.data.asked).toContain('L2');
   });
@@ -127,7 +128,7 @@ describe('POST /api/evaluate/sovereign-iq/v4', () => {
   });
   it('the current page\'s plain route still scores with the current engine', async () => {
     const res = await call(event('POST', { body: {}, path: '/api/evaluate/sovereign-iq' }), scoreHandler);
-    expect(res.body.data?.versions?.engine).not.toBe('4.2.0');
+    expect(res.body.data?.versions?.engine).not.toBe(ENGINE_VERSION);
   });
 });
 

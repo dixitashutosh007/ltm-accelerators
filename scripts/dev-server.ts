@@ -29,6 +29,8 @@ import { setPermissionSource } from '../amplify/functions/_shared/access';
 import { createHandler as sovereignAssessment } from '../amplify/functions/manage-sovereign-assessment/handler';
 import { memoryStore as sovereignStore } from '../amplify/functions/manage-sovereign-assessment/store';
 import { createHandler as sovereignReport } from '../amplify/functions/sovereign-iq-report/handler';
+import { createHandler as sovereignNarrative } from '../amplify/functions/sovereign-iq-narrative/handler';
+import { aiConfig, bedrockNarrativeModel } from '../amplify/functions/_shared/bedrock-narrative';
 import { memoryStore, type FinOpsAssessmentRecord } from '../amplify/functions/manage-finops-assessment/store';
 import { createHandler as finopsReport } from '../amplify/functions/finops-iq-report/handler';
 
@@ -100,6 +102,8 @@ const ROUTES: Record<string, LambdaHandler> = {
   'GET /api/sovereign-iq/assessment': sovereignAssessment(sovereignAssessments),
   'POST /api/sovereign-iq/assessment': sovereignAssessment(sovereignAssessments),
   'GET /api/sovereign-iq/report': sovereignReport(sovereignAssessments),
+  // AI narrative: off unless AI_ENABLED=true and AWS credentials for Bedrock are in the environment (PLAN S9).
+  'POST /api/sovereign-iq/narrative': sovereignNarrative(sovereignAssessments, { enabled: () => aiConfig().enabled, model: () => bedrockNarrativeModel(aiConfig()) }),
   'POST /api/evaluate/cloud-iq': cloudIq,
   'POST /api/evaluate/strategy-iq': strategyIq,
   'POST /api/evaluate/modernization-iq': modernizationIq,

@@ -27,7 +27,12 @@ const GRADE: Record<string, string> = { applies: 'Applies', likely_confirm: 'Lik
 const RAG: Record<string, string> = { red: 'Red', amber: 'Amber', green: 'Green', not_rated: 'Not rated' };
 const MARKET: Record<string, string> = { eu_uk: 'EU and UK', us: 'United States', apac: 'Asia-Pacific' };
 
-export interface SovereignReportOptions { client: string; preparedBy: string; dataProvidedBy: string; view: 'client' | 'consultant'; notes?: string }
+export interface SovereignReportOptions {
+  client: string; preparedBy: string; dataProvidedBy: string; view: 'client' | 'consultant'; notes?: string;
+  /** PLAN S9: the engagement's AI switch, and a narrative that passed the grounding check (null otherwise). */
+  aiEnabled?: boolean;
+  narrative?: { narrative: { summary: string; priorities: string[]; nextSteps: string[] }; modelId: string; generatedAt: string } | null;
+}
 
 const strip = (t: string) => String(t ?? '').replace(/\s*\[CLM-[A-Z]+-\d+\]/g, '');
 const claimsIn = (t: string) => [...new Set(String(t ?? '').match(/CLM-[A-Z]+-\d+/g) ?? [])];
@@ -93,6 +98,20 @@ function summary(c: Ctx): ReportSection {
 }
 
 const regimeName = (r: SovereignIqV4Result, id: string) => r.regimes.find(g => g.regime === id)?.name ?? id;
+
+/** PLAN S9: the AI narrative, labelled, only when one passed the grounding check. Never replaces the engine's sections. */
+function narrativeSection(c: Ctx): ReportSection | null {
+  const n = c.opts.narrative;
+  if (!n) return null;
+  return { id: 'narrative', title: 'Narrative summary (AI-written)', blocks: [
+    { kind: 'callout', tone: 'info', segs: [`Written by an AI model (${n.modelId}) on ${n.generatedAt.slice(0, 10)} from this report's results only, and checked automatically: every number, date, regulation and provider in it appears in the results. The sections that follow are the assessment of record.`] },
+    ...n.narrative.summary.split(/\n\s*\n/).filter(p => p.trim()).map(p => ({ kind: 'paragraph', segs: [p.trim()] }) as Block),
+    { kind: 'subheading', text: 'Priorities' },
+    { kind: 'list', items: n.narrative.priorities.map(p => [p]) },
+    { kind: 'subheading', text: 'Next steps' },
+    { kind: 'list', items: n.narrative.nextSteps.map(p => [p]) }
+  ] };
+}
 
 function requirement(c: Ctx): ReportSection {
   const { r } = c;
@@ -376,9 +395,9 @@ export function sovereignIqReport(result: SovereignIqV4Result, opts: SovereignRe
       client: opts.client, preparedBy: opts.preparedBy, dataProvidedBy: opts.dataProvidedBy, date: result.assessmentDate,
       version: `Sovereign IQ engine ${result.versions.engine} · regulation registry ${result.versions.registry}`, view: opts.view,
       footer: `${PLATFORM} · ${PRODUCT} · Confidential`,
-      status: 'Internal consultant use until the legal review. Not legal advice.'
+      status: `Internal consultant use until the legal review. Not legal advice. AI narrative: ${opts.narrative ? `included, labelled (${opts.narrative.modelId})` : opts.aiEnabled ? 'on, none included' : 'off'}.`
     },
-    sections: [summary(c), requirement(c), sealSection(c), maturity(c), exposure(c), findingsSection(c), ...[advisorySection(c)].filter((s): s is ReportSection => !!s), roadmap(c), helpSection(c), methodology(c)]
+    sections: [summary(c), ...[narrativeSection(c)].filter((s): s is ReportSection => !!s), requirement(c), sealSection(c), maturity(c), exposure(c), findingsSection(c), ...[advisorySection(c)].filter((s): s is ReportSection => !!s), roadmap(c), helpSection(c), methodology(c)]
   };
   const claims = new Set<string>();
   for (const s of doc.sections) for (const b of s.blocks) {
