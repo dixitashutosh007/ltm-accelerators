@@ -17,9 +17,10 @@ import registry from '../registry/regimes.json' with { type: 'json' };
 import claimsRegister from '../../../claims/claims-register.json' with { type: 'json' };
 import { evaluate as holds, isUnknown, type Condition, type ConditionContext } from './conditions';
 import { advisory as cloudAdvisory, type Advisory } from './advisory';
+import { sealView, tenderLevel, type SealView } from './seal';
 import { DATA_CLASSES, LEVELS, PEOPLE_CLASSES, personalOutsideSubjects, personalTransfer, platformParents, scopeFacts, type Answers, type DataClass, type Facts, type Level } from './facts';
 
-export const ENGINE_VERSION = '4.3.0';
+export const ENGINE_VERSION = '4.4.0';
 /**
  * S4 calibration: the smallest required set over which one answer moves maturity by at most 20 points (T2 aside).
  * Below it no maturity number is shown, in either mode (owner decisions, 25 and 26 Oct 2026).
@@ -79,6 +80,8 @@ export interface RegimeResult {
 
 export interface ClassRequirement {
   dataClass: DataClass; required: Level; choice: Level | 'unknown' | null;
+  /** The level an EU tender's minimum SEALs need (L3, DESIGN 3.4 reverse use); null when no tender covers the class. */
+  tender: Level | null;
   floor: { level: Level; regime: string; zone: string[]; provisional: boolean; consultantOnly: boolean } | null;
   allowedZone: string[]; allowedZoneSource: 'floor' | 'workshop' | 'default' | 'none';
   /** Workshop regions (L2) outside a legal floor's zone: the floor wins and a conflict finding is raised (S4). */
@@ -142,6 +145,8 @@ export interface SovereignIqV4Result {
   notes: string[];
   /** Sovereign Cloud Advisory: placement on AWS, Azure and Google Cloud, and platform actions per finding (PLAN S7). */
   advisory: Advisory;
+  /** The SEAL view: minimum provider SEAL per objective for each kind of data, and tender minimums (PLAN S7b). */
+  seal: SealView;
 }
 
 /* ---------------------------------- Engine --------------------------------- */
@@ -217,6 +222,9 @@ function requirements(facts: Facts, regimes: RegimeResult[]): ClassRequirement[]
   const hq = isUnknown(facts['org.hq']) ? [] : [facts['org.hq'] as string];
   const people = list(facts['data.subject_regions']).filter(z => z !== 'unknown');
   const est = list(facts['org.establishments']).filter(z => z !== 'unknown' && z !== 'none_outside_hq');
+  const minimums = facts['data.tender_minimums'] as Record<string, number> | undefined;
+  const tenderFor = minimums ? tenderLevel(minimums).level : null;
+  const tenderClasses = list(facts['data.tender_classes']);
   return classes.map(c => {
     // Legal floor: the highest floor of a regime graded applies or likely_confirm whose condition holds for the class.
     let floor: ClassRequirement['floor'] = null;
@@ -234,13 +242,14 @@ function requirements(facts: Facts, regimes: RegimeResult[]): ClassRequirement[]
     const ch = choice[c] ?? null;
     const chosen = ch && ch !== 'unknown' ? ch : null;
     // An UNSOURCED floor is consultant-only and provisional; it still sets the requirement the consultant sees.
-    const required: Level = [floor?.level, chosen].filter(Boolean).reduce<Level>((a, b) => (LEVEL_NUM(b as Level) > LEVEL_NUM(a) ? (b as Level) : a), 'L0');
+    const tender = tenderFor && tenderClasses.includes(c) ? tenderFor : null;
+    const required: Level = [floor?.level, chosen, tender].filter(Boolean).reduce<Level>((a, b) => (LEVEL_NUM(b as Level) > LEVEL_NUM(a) ? (b as Level) : a), 'L0');
     let allowedZone: string[] = [], source: ClassRequirement['allowedZoneSource'] = 'none';
     let zoneConflict: string[] | undefined;
     if (floor) { allowedZone = floor.zone; source = 'floor'; const outside = (given[c] ?? []).filter(z => !floor!.zone.includes(z)); if (outside.length) zoneConflict = outside; }
     else if (given[c]?.length) { allowedZone = given[c]; source = 'workshop'; }
     else if (LEVEL_NUM(required) >= 1) { allowedZone = [...new Set([...hq, ...(PEOPLE_CLASSES.includes(c) ? people : est)])]; source = 'default'; }
-    return { dataClass: c, required, choice: ch, floor, allowedZone, allowedZoneSource: source, ...(zoneConflict ? { zoneConflict } : {}) };
+    return { dataClass: c, required, choice: ch, tender, floor, allowedZone, allowedZoneSource: source, ...(zoneConflict ? { zoneConflict } : {}) };
   });
 }
 
@@ -685,7 +694,8 @@ export function evaluateSovereignIqV4(input: SovereignIqV4Input): SovereignIqV4R
       capNote: largestCap ? 'Largest single statutory maximum among regimes that apply or likely apply: a cap, not an expected fine, and never summed across regimes.' : turnoverGiven ? 'No regime in scope has a computable statutory maximum.' : 'Not quantified – turnover not given.'
     },
     foreignAccess, findings, topGaps, roadmap, pendingSource, notes,
-    advisory: cloudAdvisory({ facts, requirements: reqs, controls: results, findings })
+    advisory: cloudAdvisory({ facts, requirements: reqs, controls: results, findings }),
+    seal: sealView({ facts, requirements: reqs, controls: results })
   };
 }
 

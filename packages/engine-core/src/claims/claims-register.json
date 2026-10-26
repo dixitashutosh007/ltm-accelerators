@@ -1,6 +1,6 @@
 {
   "version": "0.1.0",
-  "updated": "2026-10-25",
+  "updated": "2026-10-26",
   "claims": [
     {
       "id": "CLM-SOV-001",
@@ -10701,6 +10701,1178 @@
       "lastReviewed": "2026-10-25",
       "nextReview": "2027-04-25",
       "notes": "Law-firm summaries; LégisQuébec text not read. Engine effect: \"Canada restricts nothing\" is right for federal PIPEDA (accountability, no transfer prohibition) but not for Quebec; qualify the Canada entry."
+    },
+    {
+      "id": "CLM-SOV-220",
+      "accelerators": [
+        "sovereign-iq"
+      ],
+      "kind": "framework",
+      "jurisdiction": "EU",
+      "statement": "The Commission's Cloud Sovereignty Framework, version 1.2.1 (October 2025), names eight Sovereignty Objectives: SOV-1 Strategic Sovereignty, SOV-2 Legal & Jurisdictional Sovereignty, SOV-3 Data & AI Sovereignty, SOV-4 Operational Sovereignty, SOV-5 Supply Chain Sovereignty, SOV-6 Technology Sovereignty, SOV-7 Security & Compliance Sovereignty, SOV-8 Environmental Sustainability.",
+      "source": {
+        "url": "https://commission.europa.eu/document/download/09579818-64a6-4dd5-9577-446ab6219113_en?filename=Cloud-Sovereignty-Framework.pdf",
+        "title": "European Commission, Cloud Sovereignty Framework v1.2.1 (Oct 2025)",
+        "article": "Section 2, table of Sovereignty Objectives",
+        "publisher": "European Commission (DG DIGIT)",
+        "secondaryUrls": [
+          "https://commission.europa.eu/document/09579818-64a6-4dd5-9577-446ab6219113_en"
+        ]
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-26",
+      "clientVisible": true,
+      "owner": "sovereignty-compliance-lead",
+      "lastReviewed": "2026-10-26",
+      "nextReview": "2027-01-24",
+      "notes": "Commission document page dates the action document 20 Oct 2025. Supersedes the ppc.land copy cited as DESIGN.md [S2]. Fetched directly from the official source on 26 Oct 2026."
+    },
+    {
+      "id": "CLM-SOV-221",
+      "accelerators": [
+        "sovereign-iq"
+      ],
+      "kind": "framework",
+      "jurisdiction": "EU",
+      "statement": "Cloud Sovereignty Framework v1.2.1 defines the levels as: SEAL-0 No Sovereignty (service, technology or operations under exclusive control of non-EU third parties, governed entirely in non-EU jurisdictions); SEAL-1 Jurisdictional Sovereignty (EU law formally applies with limited practical enforceability; exclusive control of non-EU third parties); SEAL-2 Data Sovereignty (EU law applicable and enforceable, with material non-EU dependencies remaining; indirect control of non-EU third parties); SEAL-3 Digital Resilience (EU law applicable and enforceable, EU actors exercising meaningful but not full influence; marginal control of non-EU third parties); SEAL-4 Full Digital Sovereignty (technology and operations under complete EU control, subject only to EU law, with no critical non-EU dependencies).",
+      "source": {
+        "url": "https://commission.europa.eu/document/download/09579818-64a6-4dd5-9577-446ab6219113_en?filename=Cloud-Sovereignty-Framework.pdf",
+        "title": "European Commission, Cloud Sovereignty Framework v1.2.1 (Oct 2025)",
+        "article": "Section 3, Sovereignty Effectiveness Assurance Levels",
+        "publisher": "European Commission (DG DIGIT)",
+        "secondaryUrls": [
+          "https://commission.europa.eu/document/09579818-64a6-4dd5-9577-446ab6219113_en"
+        ]
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-26",
+      "clientVisible": true,
+      "owner": "sovereignty-compliance-lead",
+      "lastReviewed": "2026-10-26",
+      "nextReview": "2027-01-24",
+      "notes": "Settles the SEAL-3 label and SEAL-4 wording previously at status S in DESIGN.md 3.4 and CLM-SOV-067. The framework spells the term both \"Sovereignty Effective Assurance Level\" and \"Sovereignty Effectiveness Assurance Level\". Fetched directly from the official source on 26 Oct 2026."
+    },
+    {
+      "id": "CLM-SOV-222",
+      "accelerators": [
+        "sovereign-iq"
+      ],
+      "kind": "framework",
+      "jurisdiction": "EU",
+      "statement": "Later Commission documents label SEAL-3 differently from v1.2.1: the Implementation guidance (1 June 2026) calls it 'Technological Sovereignty' and words SEAL-2 and SEAL-3 as 'EU jurisdictions apply' and SEAL-4 as 'subject only to EU jurisdiction'; the 1 June 2026 news item calls SEAL-3 'technological autonomy'; the 17 April 2026 news item calls it 'Digital Resilience', as v1.2.1 does.",
+      "source": {
+        "url": "https://commission.europa.eu/document/download/2ad80a48-166f-4c77-a513-80c53ca2a128_en?filename=Cloud%20Sovereignty%20Framework%20-%20Implementation%20guidance.pdf",
+        "title": "European Commission, Cloud Sovereignty Framework - Implementation guidance (1 Jun 2026)",
+        "article": "Sovereignty Effective Assurance Levels table (pp. 2-3)",
+        "publisher": "European Commission (DG DIGIT)",
+        "secondaryUrls": [
+          "https://commission.europa.eu/news-and-media/news/sovereign-cloud-framework-explained-2026-06-01_en",
+          "https://commission.europa.eu/news-and-media/news/commission-advances-cloud-sovereignty-through-strategic-procurement-2026-04-17_en"
+        ]
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-26",
+      "clientVisible": true,
+      "owner": "sovereignty-compliance-lead",
+      "lastReviewed": "2026-10-26",
+      "nextReview": "2027-01-24",
+      "notes": "LTM recommendation: use the v1.2.1 wording as the normative text and footnote the guidance label. Fetched directly from the official source on 26 Oct 2026."
+    },
+    {
+      "id": "CLM-SOV-223",
+      "accelerators": [
+        "sovereign-iq"
+      ],
+      "kind": "framework",
+      "jurisdiction": "EU",
+      "statement": "Cloud Sovereignty Framework v1.2.1 weights the Sovereignty Score as: SOV-1 15%, SOV-2 10%, SOV-3 10%, SOV-4 15%, SOV-5 20%, SOV-6 15%, SOV-7 10%, SOV-8 5% (total 100%), noting that the procedure already has significant safeguards for SOV-2 and SOV-7.",
+      "source": {
+        "url": "https://commission.europa.eu/document/download/09579818-64a6-4dd5-9577-446ab6219113_en?filename=Cloud-Sovereignty-Framework.pdf",
+        "title": "European Commission, Cloud Sovereignty Framework v1.2.1 (Oct 2025)",
+        "article": "Section 5, Computation of Sovereignty Score",
+        "publisher": "European Commission (DG DIGIT)",
+        "secondaryUrls": [
+          "https://commission.europa.eu/document/09579818-64a6-4dd5-9577-446ab6219113_en"
+        ]
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-26",
+      "clientVisible": true,
+      "owner": "sovereignty-compliance-lead",
+      "lastReviewed": "2026-10-26",
+      "nextReview": "2027-01-24",
+      "notes": "Confirms the weights noted in CLM-SOV-067. Fetched directly from the official source on 26 Oct 2026."
+    },
+    {
+      "id": "CLM-SOV-224",
+      "accelerators": [
+        "sovereign-iq"
+      ],
+      "kind": "framework",
+      "jurisdiction": "EU",
+      "statement": "The Commission's Sovereignty assessment calculator (annex published 1 June 2026) applies different objective weights from v1.2.1: SOV-1 20%, SOV-2 10%, SOV-3 10%, SOV-4 15%, SOV-5 10%, SOV-6 15%, SOV-7 15%, SOV-8 5%. The Implementation guidance says the answer scores can be adapted by contracting authorities.",
+      "source": {
+        "url": "https://commission.europa.eu/document/download/3acb8fe8-8a4a-4339-ae74-f56138d913d1_en?filename=Annex%20-%20Sovereignty%20assessment%20calculator.xlsx",
+        "title": "European Commission, Annex - Sovereignty assessment calculator (xlsx, 1 Jun 2026)",
+        "article": "Column C weights per objective; Implementation guidance p. 11",
+        "publisher": "European Commission (DG DIGIT)",
+        "secondaryUrls": [
+          "https://commission.europa.eu/document/download/2ad80a48-166f-4c77-a513-80c53ca2a128_en?filename=Cloud%20Sovereignty%20Framework%20-%20Implementation%20guidance.pdf",
+          "https://commission.europa.eu/funding-and-tenders/find-calls-tender/tender-opportunities-department/tender-opportunities-digital-services_en"
+        ]
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-26",
+      "clientVisible": true,
+      "owner": "sovereignty-compliance-lead",
+      "lastReviewed": "2026-10-26",
+      "nextReview": "2027-01-24",
+      "notes": "Explains the \"one source differs\" note in CLM-SOV-067. Sovereign IQ does not compute Sovereignty Scores, so weights need not be shown to clients. Fetched directly from the official source on 26 Oct 2026."
+    },
+    {
+      "id": "CLM-SOV-225",
+      "accelerators": [
+        "sovereign-iq"
+      ],
+      "kind": "framework",
+      "jurisdiction": "EU",
+      "statement": "Under the Cloud Sovereignty Framework the tender specifications set a minimum SEAL for each Sovereignty Objective, and tenders that do not reach the minimum consistently across all objectives are rejected; a separate Sovereignty Score ranks compliant offers. The Implementation guidance adds that the overall SEAL is the lowest SEAL achieved in any objective and that the SEAL criterion prevails over the score.",
+      "source": {
+        "url": "https://commission.europa.eu/document/download/09579818-64a6-4dd5-9577-446ab6219113_en?filename=Cloud-Sovereignty-Framework.pdf",
+        "title": "European Commission, Cloud Sovereignty Framework v1.2.1 (Oct 2025)",
+        "article": "Section 1 and 4; Implementation guidance pp. 9-10",
+        "publisher": "European Commission (DG DIGIT)",
+        "secondaryUrls": [
+          "https://commission.europa.eu/document/download/2ad80a48-166f-4c77-a513-80c53ca2a128_en?filename=Cloud%20Sovereignty%20Framework%20-%20Implementation%20guidance.pdf"
+        ]
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-26",
+      "clientVisible": true,
+      "owner": "sovereignty-compliance-lead",
+      "lastReviewed": "2026-10-26",
+      "nextReview": "2027-01-24",
+      "notes": "Fetched directly from the official source on 26 Oct 2026."
+    },
+    {
+      "id": "CLM-SOV-226",
+      "accelerators": [
+        "sovereign-iq"
+      ],
+      "kind": "framework",
+      "jurisdiction": "EU",
+      "statement": "In its 2026 sovereign cloud tender (up to EUR 180 million over six years, four contracts), the Commission set SEAL-2 as the eligibility minimum and reported that the Post Telecom-led partnership (with OVHcloud and CleverCloud), STACKIT and Scaleway reached SEAL-3, and the Proximus-led partnership using S3NS, Clarence and Mistral reached SEAL-2. No per-objective SEALs or Sovereignty Scores were published.",
+      "source": {
+        "url": "https://commission.europa.eu/news-and-media/news/commission-advances-cloud-sovereignty-through-strategic-procurement-2026-04-17_en",
+        "title": "European Commission, Commission advances cloud sovereignty through strategic procurement (17 Apr 2026)",
+        "article": "Sections \"How were the providers selected?\" and \"State-of-the-art European technology\"",
+        "publisher": "European Commission (DG DIGIT)",
+        "secondaryUrls": [
+          "https://commission.europa.eu/document/download/2ad80a48-166f-4c77-a513-80c53ca2a128_en?filename=Cloud%20Sovereignty%20Framework%20-%20Implementation%20guidance.pdf"
+        ]
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-26",
+      "clientVisible": false,
+      "owner": "sovereignty-compliance-lead",
+      "lastReviewed": "2026-10-26",
+      "nextReview": "2027-01-24",
+      "notes": "These are tender-specific results for the offers as bid, not general ratings of the providers. Decision D16 keeps provider SEAL ratings out of the client view; this claim is consultant-only until the owner revisits D16 with counsel. Fetched directly from the official source on 26 Oct 2026."
+    },
+    {
+      "id": "CLM-SOV-227",
+      "accelerators": [
+        "sovereign-iq"
+      ],
+      "kind": "framework",
+      "jurisdiction": "EU",
+      "statement": "The Commission has said it will publish an updated Cloud Sovereignty Framework based on the tender's lessons; on 26 Oct 2026 its tender page listed only v1.2.1, the Implementation guidance and the calculator (both 1 June 2026). The guidance's lessons learnt say SEAL-4 is not relevant today given dependence on specific supply chains (chips, hardware) and that relaxing it, at least temporarily, would better differentiate providers.",
+      "source": {
+        "url": "https://commission.europa.eu/funding-and-tenders/find-calls-tender/tender-opportunities-department/tender-opportunities-digital-services_en",
+        "title": "European Commission, Tender opportunities - Digital Services: Cloud Sovereignty Framework section",
+        "article": "Cloud Sovereignty Framework section; Implementation guidance p. 13 \"Lessons learnt\"",
+        "publisher": "European Commission (DG DIGIT)",
+        "secondaryUrls": [
+          "https://commission.europa.eu/news-and-media/news/commission-advances-cloud-sovereignty-through-strategic-procurement-2026-04-17_en",
+          "https://commission.europa.eu/document/download/2ad80a48-166f-4c77-a513-80c53ca2a128_en?filename=Cloud%20Sovereignty%20Framework%20-%20Implementation%20guidance.pdf"
+        ]
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-26",
+      "clientVisible": true,
+      "owner": "sovereignty-compliance-lead",
+      "lastReviewed": "2026-10-26",
+      "nextReview": "2027-01-24",
+      "notes": "Review when the updated framework is published. Fetched directly from the official source on 26 Oct 2026."
+    },
+    {
+      "id": "CLM-SOV-228",
+      "accelerators": [
+        "sovereign-iq"
+      ],
+      "kind": "provider",
+      "jurisdiction": "global",
+      "statement": "AWS offers Region guardrails: AWS Control Tower Region deny controls (AWS-GR_REGION_DENY for the landing zone; CT.MULTISERVICE.PV.1 for chosen OUs) and IAM or service control policies using the aws:RequestedRegion condition key to deny actions outside allowed Regions.",
+      "source": {
+        "url": "https://docs.aws.amazon.com/controltower/latest/userguide/region-deny.html",
+        "title": "AWS Control Tower User Guide: Configure the Region deny control",
+        "publisher": "AWS",
+        "secondaryUrls": [
+          "https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_examples_aws_deny-requested-region.html"
+        ]
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-26",
+      "volatile": true,
+      "clientVisible": true,
+      "owner": "sovereignty-compliance-lead",
+      "lastReviewed": "2026-10-26",
+      "nextReview": "2027-01-24",
+      "notes": "Rung R1 example. Fetched directly from the official source on 26 Oct 2026."
+    },
+    {
+      "id": "CLM-SOV-229",
+      "accelerators": [
+        "sovereign-iq"
+      ],
+      "kind": "provider",
+      "jurisdiction": "global",
+      "statement": "AWS KMS external key stores let customers protect AWS resources with keys held in an external key manager they own and operate outside AWS (hold your own keys); AWS KMS cannot create, view, manage or delete those keys and talks only to a customer-provided XKS proxy.",
+      "source": {
+        "url": "https://docs.aws.amazon.com/kms/latest/developerguide/keystore-external.html",
+        "title": "AWS KMS Developer Guide: External key stores",
+        "publisher": "AWS"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-26",
+      "volatile": true,
+      "clientVisible": true,
+      "owner": "sovereignty-compliance-lead",
+      "lastReviewed": "2026-10-26",
+      "nextReview": "2027-01-24",
+      "notes": "Rung R2 example. Service integration varies; confirm per service. Fetched directly from the official source on 26 Oct 2026."
+    },
+    {
+      "id": "CLM-SOV-230",
+      "accelerators": [
+        "sovereign-iq"
+      ],
+      "kind": "provider",
+      "jurisdiction": "global",
+      "statement": "AWS states that the Nitro System is designed so that no one, including AWS operators, can access customer workloads on EC2, that this is backed in the AWS Service Terms, and that services including AWS KMS, EC2 (Nitro), Lambda, EKS and Wickr are designed with zero operator access.",
+      "source": {
+        "url": "https://aws.eu/faq/",
+        "title": "AWS European Sovereign Cloud FAQ",
+        "article": "Security section",
+        "publisher": "AWS",
+        "secondaryUrls": [
+          "https://aws.amazon.com/compliance/digital-sovereignty/"
+        ]
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-26",
+      "volatile": true,
+      "clientVisible": true,
+      "owner": "sovereignty-compliance-lead",
+      "lastReviewed": "2026-10-26",
+      "nextReview": "2027-01-24",
+      "notes": "Rung R2 example for SOV.OPS.ADMIN_ACCESS. A per-request customer approval workflow equivalent to Customer Lockbox or Access Approval was not found in the AWS sources reviewed (open item). Fetched directly from the official source on 26 Oct 2026."
+    },
+    {
+      "id": "CLM-SOV-231",
+      "accelerators": [
+        "sovereign-iq"
+      ],
+      "kind": "provider",
+      "jurisdiction": "EU",
+      "statement": "The AWS European Sovereign Cloud became generally available on 14 January 2026 (US Pacific time) with its first Region in Brandenburg, Germany (partition aws-eusc, Region eusc-de-east-1). It is physically and logically separate from other AWS Regions, needs a new AWS account, and is available to customers wherever they are located.",
+      "source": {
+        "url": "https://aws.amazon.com/blogs/aws/opening-the-aws-european-sovereign-cloud/",
+        "title": "AWS News Blog: Opening the AWS European Sovereign Cloud (14 Jan 2026)",
+        "publisher": "AWS",
+        "secondaryUrls": [
+          "https://aws.eu/faq/",
+          "https://press.aboutamazon.com/2026/1/aws-launches-aws-european-sovereign-cloud-and-announces-expansion-across-europe"
+        ]
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-26",
+      "volatile": true,
+      "clientVisible": true,
+      "owner": "sovereignty-compliance-lead",
+      "lastReviewed": "2026-10-26",
+      "nextReview": "2027-01-24",
+      "notes": "Rung R3 candidate (EU zone). Press coverage dates GA 15 Jan 2026 in Europe. Fetched directly from the official source on 26 Oct 2026."
+    },
+    {
+      "id": "CLM-SOV-232",
+      "accelerators": [
+        "sovereign-iq"
+      ],
+      "kind": "provider",
+      "jurisdiction": "EU",
+      "statement": "AWS states the AWS European Sovereign Cloud is operated only by personnel who are EU residents located in the EU, with a gradual transition to EU citizens; it is run by German-law entities (AWS European Sovereign Cloud GmbH as parent of a development centre GmbH, an infrastructure GmbH and a trust services GmbH) led by EU-citizen managing directors, with a five-member EU-citizen advisory board including at least two independent members and a dedicated SOC. For EU customers the contracting party is Amazon Web Services EMEA SARL (Luxembourg), and the AWS European Sovereign Cloud Addendum (AWS Service Terms section 1.29) adds residency, governance and law-enforcement-request commitments.",
+      "source": {
+        "url": "https://aws.eu/faq/",
+        "title": "AWS European Sovereign Cloud FAQ",
+        "article": "Governance and Leadership; Operational Autonomy; contracting party",
+        "publisher": "AWS"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-26",
+      "volatile": true,
+      "clientVisible": true,
+      "owner": "sovereignty-compliance-lead",
+      "lastReviewed": "2026-10-26",
+      "nextReview": "2027-01-24",
+      "notes": "Corrects VALIDATION.md row 77 detail: the contracting party is AWS EMEA SARL, the operating entities are German GmbHs. Fetched directly from the official source on 26 Oct 2026."
+    },
+    {
+      "id": "CLM-SOV-233",
+      "accelerators": [
+        "sovereign-iq"
+      ],
+      "kind": "provider",
+      "jurisdiction": "EU",
+      "statement": "AWS has announced sovereign Local Zones in Belgium, the Netherlands and Portugal that follow the AWS European Sovereign Cloud operating model, and says Dedicated Local Zones and Outposts can extend it to customer-selected locations. No general-availability date for the three Local Zones was found.",
+      "source": {
+        "url": "https://aws.eu/faq/",
+        "title": "AWS European Sovereign Cloud FAQ",
+        "article": "Infrastructure section",
+        "publisher": "AWS",
+        "secondaryUrls": [
+          "https://aws.amazon.com/blogs/aws/opening-the-aws-european-sovereign-cloud/"
+        ]
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-26",
+      "volatile": true,
+      "clientVisible": true,
+      "owner": "sovereignty-compliance-lead",
+      "lastReviewed": "2026-10-26",
+      "nextReview": "2027-01-24",
+      "notes": "Status in the matrix: announced, not GA. Re-check at each 90-day review. Fetched directly from the official source on 26 Oct 2026."
+    },
+    {
+      "id": "CLM-SOV-234",
+      "accelerators": [
+        "sovereign-iq"
+      ],
+      "kind": "provider",
+      "jurisdiction": "EU",
+      "statement": "Facts for R4 review of the AWS European Sovereign Cloud: it is operated by AWS-established German entities within the Amazon group; AWS states that customer content and customer-created metadata can only be accessed by its EU operators, and that under the CLOUD Act it has disclosed no enterprise or government customer content stored outside the US to the US government since it began reporting in 2020. Whether this meets R4 (no provider in the chain compellable by non-zone law) is for the owner and counsel.",
+      "source": {
+        "url": "https://aws.eu/faq/",
+        "title": "AWS European Sovereign Cloud FAQ",
+        "article": "CLOUD Act and government request answers",
+        "publisher": "AWS"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-26",
+      "volatile": true,
+      "clientVisible": true,
+      "owner": "sovereignty-compliance-lead",
+      "lastReviewed": "2026-10-26",
+      "nextReview": "2027-01-24",
+      "notes": "Provider statements, not a legal conclusion. 18 U.S.C. 2713 applies to providers within US jurisdiction (CLM register, DESIGN.md S24). Counsel gate S10. Fetched directly from the official source on 26 Oct 2026."
+    },
+    {
+      "id": "CLM-SOV-235",
+      "accelerators": [
+        "sovereign-iq"
+      ],
+      "kind": "provider",
+      "jurisdiction": "US",
+      "statement": "AWS GovCloud (US) comprises two physically and logically isolated US Regions (US-East and US-West) operated by US citizens on US soil.",
+      "source": {
+        "url": "https://aws.amazon.com/govcloud-us/",
+        "title": "AWS GovCloud (US)",
+        "publisher": "AWS"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-26",
+      "volatile": true,
+      "clientVisible": true,
+      "owner": "sovereignty-compliance-lead",
+      "lastReviewed": "2026-10-26",
+      "nextReview": "2027-01-24",
+      "notes": "Rung R3 candidate for the US zone. Fetched directly from the official source on 26 Oct 2026."
+    },
+    {
+      "id": "CLM-SOV-236",
+      "accelerators": [
+        "sovereign-iq"
+      ],
+      "kind": "provider",
+      "jurisdiction": "global",
+      "statement": "AWS Dedicated Local Zones are AWS-managed infrastructure for exclusive use by a customer or community in a customer-specified location; AWS says they can be operated by local AWS personnel, with options to enforce security clearance or other criteria on those personnel. Singapore's Smart Nation and Digital Government Group was the first named customer (August 2023).",
+      "source": {
+        "url": "https://aws.amazon.com/blogs/security/aws-digital-sovereignty-pledge-announcing-new-dedicated-infrastructure-options/",
+        "title": "AWS Security Blog: Announcing new dedicated infrastructure options",
+        "publisher": "AWS",
+        "secondaryUrls": [
+          "https://aws.amazon.com/dedicatedlocalzones/"
+        ]
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-26",
+      "volatile": true,
+      "clientVisible": true,
+      "owner": "sovereignty-compliance-lead",
+      "lastReviewed": "2026-10-26",
+      "nextReview": "2027-01-24",
+      "notes": "Per-engagement option in any zone (SG reference); confirm availability, operating personnel and services with AWS. Fetched directly from the official source on 26 Oct 2026."
+    },
+    {
+      "id": "CLM-SOV-237",
+      "accelerators": [
+        "sovereign-iq"
+      ],
+      "kind": "provider",
+      "jurisdiction": "global",
+      "statement": "No AWS sovereign offering operated by in-zone personnel through a local entity (rung R3) was found for the UK, Australia, India or Japan as of 26 Oct 2026; Dedicated Local Zones are a per-engagement option only.",
+      "verification": "UNSOURCED",
+      "checkedOn": "2026-10-26",
+      "volatile": true,
+      "clientVisible": false,
+      "owner": "sovereignty-compliance-lead",
+      "lastReviewed": "2026-10-26",
+      "nextReview": "2027-01-24",
+      "basisNote": "Negative finding from AWS documentation and search on 26 Oct 2026. Settle with written confirmation from AWS for each zone, or an AWS announcement."
+    },
+    {
+      "id": "CLM-SOV-238",
+      "accelerators": [
+        "sovereign-iq"
+      ],
+      "kind": "provider",
+      "jurisdiction": "global",
+      "statement": "Azure Policy has a built-in 'Allowed locations' policy definition (ID e56962a6-4747-49cd-b67b-bf8b01975c4c) to restrict the locations where resources can be deployed.",
+      "source": {
+        "url": "https://learn.microsoft.com/en-us/azure/governance/policy/samples/built-in-policies",
+        "title": "Azure Policy: List of built-in policy definitions",
+        "article": "General: Allowed locations",
+        "publisher": "Microsoft"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-26",
+      "volatile": true,
+      "clientVisible": true,
+      "owner": "sovereignty-compliance-lead",
+      "lastReviewed": "2026-10-26",
+      "nextReview": "2027-01-24",
+      "notes": "Rung R1 example. Fetched directly from the official source on 26 Oct 2026."
+    },
+    {
+      "id": "CLM-SOV-239",
+      "accelerators": [
+        "sovereign-iq"
+      ],
+      "kind": "provider",
+      "jurisdiction": "EU",
+      "statement": "Microsoft announced completion of the EU Data Boundary on 26 February 2025: for Azure, Dynamics 365, Power Platform and Microsoft 365, Microsoft commits to store and process Customer Data and personal data in the EU Data Boundary, subject to documented limited transfers.",
+      "source": {
+        "url": "https://learn.microsoft.com/en-us/privacy/eudb/eu-data-boundary-learn",
+        "title": "Microsoft Learn: What is the EU Data Boundary?",
+        "publisher": "Microsoft",
+        "secondaryUrls": [
+          "https://blogs.microsoft.com/on-the-issues/2025/02/26/microsoft-completes-landmark-eu-data-boundary-offering-enhanced-data-residency-and-transparency/"
+        ]
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-26",
+      "volatile": true,
+      "clientVisible": true,
+      "owner": "sovereignty-compliance-lead",
+      "lastReviewed": "2026-10-26",
+      "nextReview": "2027-01-24",
+      "notes": "Rung R2 element (provider data boundary). Read the documented transfers before relying on it for a class. Fetched directly from the official source on 26 Oct 2026."
+    },
+    {
+      "id": "CLM-SOV-240",
+      "accelerators": [
+        "sovereign-iq"
+      ],
+      "kind": "provider",
+      "jurisdiction": "global",
+      "statement": "Customer Lockbox for Microsoft Azure gives customers an interface to approve or reject Microsoft engineer requests to access customer data, for a published list of supported services.",
+      "source": {
+        "url": "https://learn.microsoft.com/en-us/azure/security/fundamentals/customer-lockbox-overview",
+        "title": "Microsoft Learn: Customer Lockbox for Microsoft Azure",
+        "article": "Supported services",
+        "publisher": "Microsoft"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-26",
+      "volatile": true,
+      "clientVisible": true,
+      "owner": "sovereignty-compliance-lead",
+      "lastReviewed": "2026-10-26",
+      "nextReview": "2027-01-24",
+      "notes": "Rung R2 example for SOV.OPS.ADMIN_ACCESS. Check the supported-services list per class. Fetched directly from the official source on 26 Oct 2026."
+    },
+    {
+      "id": "CLM-SOV-241",
+      "accelerators": [
+        "sovereign-iq"
+      ],
+      "kind": "provider",
+      "jurisdiction": "EU",
+      "statement": "Microsoft Sovereign Cloud has three models: Sovereign Public Cloud (Microsoft-operated European datacenter regions with Data Guardian, External Key Management, confidential computing and tamper-evident access logs), Sovereign Private Cloud (Azure Local, Microsoft 365 Local and related services in customer-controlled or partner-operated datacentres, connected or disconnected) and National Partner Clouds; Microsoft Learn says it is available across European datacenter regions for European customers.",
+      "source": {
+        "url": "https://learn.microsoft.com/en-us/azure/azure-sovereign-clouds/microsoft-sovereign-cloud",
+        "title": "Microsoft Learn: What is Microsoft Sovereign Cloud? (updated 15 Jul 2026)",
+        "publisher": "Microsoft",
+        "secondaryUrls": [
+          "https://blogs.microsoft.com/blog/2025/06/16/announcing-comprehensive-sovereign-solutions-empowering-european-organizations/"
+        ]
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-26",
+      "volatile": true,
+      "clientVisible": true,
+      "owner": "sovereignty-compliance-lead",
+      "lastReviewed": "2026-10-26",
+      "nextReview": "2027-01-24",
+      "notes": "Replaces \"Microsoft Cloud for Sovereignty\" (VALIDATION.md row 78). Fetched directly from the official source on 26 Oct 2026."
+    },
+    {
+      "id": "CLM-SOV-242",
+      "accelerators": [
+        "sovereign-iq"
+      ],
+      "kind": "provider",
+      "jurisdiction": "EU",
+      "statement": "On 20 October 2026 Microsoft said it is rolling out Data Guardian for customers in the EU and EFTA, adding European-resident oversight by a trusted EU partner for qualifying Microsoft engineer remote access to in-scope production systems, with Production Touch Ledger records under phased rollout; Sovereign Control Panel enters public preview at Ignite (November 2026).",
+      "source": {
+        "url": "https://blogs.microsoft.com/blog/2026/10/20/advancing-digital-sovereignty-with-greater-control-and-choice/",
+        "title": "Official Microsoft Blog: Advancing digital sovereignty with greater control and choice (20 Oct 2026)",
+        "publisher": "Microsoft",
+        "secondaryUrls": [
+          "https://learn.microsoft.com/en-us/azure/azure-sovereign-clouds/public/data-guardian",
+          "https://news.microsoft.com/source/emea/2026/10/advancing-digital-sovereignty-with-greater-control-and-choice/"
+        ]
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-26",
+      "volatile": true,
+      "clientVisible": true,
+      "owner": "sovereignty-compliance-lead",
+      "lastReviewed": "2026-10-26",
+      "nextReview": "2027-01-24",
+      "notes": "Rolling out, not GA. The Learn page (updated 12 Aug 2026) says authorised Microsoft personnel residing in the region approve and monitor access; the 20 Oct post says a trusted EU partner provides oversight. Data Guardian supervises access from outside Europe; it does not make operations exclusively in-zone (relevant to R2 vs R3). Fetched directly from the official source on 26 Oct 2026."
+    },
+    {
+      "id": "CLM-SOV-243",
+      "accelerators": [
+        "sovereign-iq"
+      ],
+      "kind": "provider",
+      "jurisdiction": "global",
+      "statement": "Microsoft announced on 20 October 2026 that External Key Management with Azure Key Vault Managed HSM is generally available, letting customers keep the root key in an HSM they own and operate on-premises or with a trusted third party; the Microsoft Learn page (updated 8 Jul 2026) still labels it preview and calls it a last-resort option for hard legal or contractual mandates.",
+      "source": {
+        "url": "https://blogs.microsoft.com/blog/2026/10/20/advancing-digital-sovereignty-with-greater-control-and-choice/",
+        "title": "Official Microsoft Blog: Advancing digital sovereignty with greater control and choice (20 Oct 2026)",
+        "publisher": "Microsoft",
+        "secondaryUrls": [
+          "https://learn.microsoft.com/en-us/azure/azure-sovereign-clouds/public/external-key-management"
+        ]
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-26",
+      "volatile": true,
+      "clientVisible": true,
+      "owner": "sovereignty-compliance-lead",
+      "lastReviewed": "2026-10-26",
+      "nextReview": "2027-01-24",
+      "notes": "Rung R2 example for SOV.KEY.CUSTODY. Supported Azure services were not listed in the sources; confirm per service. Fetched directly from the official source on 26 Oct 2026."
+    },
+    {
+      "id": "CLM-SOV-244",
+      "accelerators": [
+        "sovereign-iq"
+      ],
+      "kind": "provider",
+      "jurisdiction": "global",
+      "statement": "Microsoft Sovereign Private Cloud runs on Azure Local in customer-operated environments; as of 20 October 2026 SQL Server on Azure Local and confidential VMs on Azure Local are GA, connected-to-disconnected transition and DocumentDB and Blob Storage on Azure Local enter public preview, Microsoft 365 Local is in preview for approved customers, and GitHub Enterprise Local and Foundry Local are to become GA at Ignite.",
+      "source": {
+        "url": "https://blogs.microsoft.com/blog/2026/10/20/advancing-digital-sovereignty-with-greater-control-and-choice/",
+        "title": "Official Microsoft Blog: Advancing digital sovereignty with greater control and choice (20 Oct 2026)",
+        "publisher": "Microsoft",
+        "secondaryUrls": [
+          "https://learn.microsoft.com/en-us/azure/azure-sovereign-clouds/private/overview-sovereign-private-cloud"
+        ]
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-26",
+      "volatile": true,
+      "clientVisible": true,
+      "owner": "sovereignty-compliance-lead",
+      "lastReviewed": "2026-10-26",
+      "nextReview": "2027-01-24",
+      "notes": "Private-cloud option at R3/R4 depending on who operates it; Microsoft remains the software supplier. Fetched directly from the official source on 26 Oct 2026."
+    },
+    {
+      "id": "CLM-SOV-245",
+      "accelerators": [
+        "sovereign-iq"
+      ],
+      "kind": "provider",
+      "jurisdiction": "EU",
+      "statement": "Microsoft describes National Partner Clouds as independently operated environments run by local entities under national law with Microsoft supplying the technology: Bleu in France (a joint venture of Orange and Capgemini, designed to meet SecNumCloud) and Delos Cloud in Germany (an SAP subsidiary, aligned with the German Cloud Platform Requirements).",
+      "source": {
+        "url": "https://learn.microsoft.com/en-us/azure/azure-sovereign-clouds/partner/overview-national-partner-clouds",
+        "title": "Microsoft Learn: National Partner Clouds (updated 31 Mar 2026)",
+        "publisher": "Microsoft",
+        "secondaryUrls": [
+          "https://blogs.microsoft.com/blog/2026/10/20/advancing-digital-sovereignty-with-greater-control-and-choice/"
+        ]
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-26",
+      "volatile": true,
+      "clientVisible": true,
+      "owner": "sovereignty-compliance-lead",
+      "lastReviewed": "2026-10-26",
+      "nextReview": "2027-01-24",
+      "notes": "R3 candidates (FR, DE public sector focus). R4 facts: operators are French or German companies; the technology supplier is Microsoft. R4 is the owner and counsel call. Fetched directly from the official source on 26 Oct 2026."
+    },
+    {
+      "id": "CLM-SOV-246",
+      "accelerators": [
+        "sovereign-iq"
+      ],
+      "kind": "provider",
+      "jurisdiction": "FR",
+      "statement": "Bleu had not obtained SecNumCloud qualification by October 2026; Bleu told the press it is still in the qualification process for its IaaS, PaaS and CaaS catalogue and aims for qualification by the end of 2026, with Microsoft 365 in a second phase.",
+      "source": {
+        "url": "https://next.ink/260765/secnumcloud-bleu-vise-desormais-une-qualification-pour-la-fin-dannee/",
+        "title": "Next: SecNumCloud - Bleu vise desormais une qualification pour la fin d annee (9 Oct 2026)",
+        "secondaryUrls": [
+          "https://www.leto.legal/news/bleu-secnumcloud-qualification-reportee-fin-2026"
+        ]
+      },
+      "verification": "S",
+      "checkedOn": "2026-10-26",
+      "volatile": true,
+      "clientVisible": false,
+      "owner": "sovereignty-compliance-lead",
+      "lastReviewed": "2026-10-26",
+      "nextReview": "2027-01-24",
+      "notes": "Secondary only. Settle against the ANSSI list of qualified SecNumCloud providers on cyber.gouv.fr (not reachable from this environment)."
+    },
+    {
+      "id": "CLM-SOV-247",
+      "accelerators": [
+        "sovereign-iq"
+      ],
+      "kind": "provider",
+      "jurisdiction": "DE",
+      "statement": "The general-availability scope and BSI-related assurance status of Delos Cloud as of October 2026 are not confirmed.",
+      "verification": "UNSOURCED",
+      "checkedOn": "2026-10-26",
+      "volatile": true,
+      "clientVisible": false,
+      "owner": "sovereignty-compliance-lead",
+      "lastReviewed": "2026-10-26",
+      "nextReview": "2027-01-24",
+      "basisNote": "No official Delos, SAP or BSI document found on 26 Oct 2026 (delos-cloud.de not reachable). Settle with Delos Cloud service documentation or BSI publication."
+    },
+    {
+      "id": "CLM-SOV-248",
+      "accelerators": [
+        "sovereign-iq"
+      ],
+      "kind": "provider",
+      "jurisdiction": "US",
+      "statement": "Azure Government uses physically isolated datacenters and networks in the US only and contractually limits potential access to systems processing customer data to screened US persons.",
+      "source": {
+        "url": "https://learn.microsoft.com/en-us/azure/azure-government/documentation-government-welcome",
+        "title": "Microsoft Learn: Azure Government overview",
+        "publisher": "Microsoft"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-26",
+      "volatile": true,
+      "clientVisible": true,
+      "owner": "sovereignty-compliance-lead",
+      "lastReviewed": "2026-10-26",
+      "nextReview": "2027-01-24",
+      "notes": "Rung R3 candidate for the US zone (eligibility restricted to US government and its partners; confirm). Fetched directly from the official source on 26 Oct 2026."
+    },
+    {
+      "id": "CLM-SOV-249",
+      "accelerators": [
+        "sovereign-iq"
+      ],
+      "kind": "provider",
+      "jurisdiction": "global",
+      "statement": "The Microsoft 365 Advanced Data Residency add-on commits Customer Data at rest to the tenant's Local Region Geography; eligible geographies include Australia, India, Japan and the United Kingdom, among others, but not Singapore or the US, and the EU is not available as a single ADR geography.",
+      "source": {
+        "url": "https://learn.microsoft.com/en-us/microsoft-365/enterprise/advanced-data-residency",
+        "title": "Microsoft Learn: Advanced Data Residency overview and requirements",
+        "article": "Eligibility requirements",
+        "publisher": "Microsoft"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-26",
+      "volatile": true,
+      "clientVisible": true,
+      "owner": "sovereignty-compliance-lead",
+      "lastReviewed": "2026-10-26",
+      "nextReview": "2027-01-24",
+      "notes": "Collaboration SaaS residency (rung R1/R2 element) for UK, AU, IN, JP. Fetched directly from the official source on 26 Oct 2026."
+    },
+    {
+      "id": "CLM-SOV-250",
+      "accelerators": [
+        "sovereign-iq"
+      ],
+      "kind": "provider",
+      "jurisdiction": "global",
+      "statement": "No Microsoft-operated offering that keeps operations with in-zone personnel through a local entity (rung R3) was found for the UK, Singapore, Australia, India or Japan as of 26 Oct 2026; Data Guardian is scoped to the EU and EFTA.",
+      "verification": "UNSOURCED",
+      "checkedOn": "2026-10-26",
+      "volatile": true,
+      "clientVisible": false,
+      "owner": "sovereignty-compliance-lead",
+      "lastReviewed": "2026-10-26",
+      "nextReview": "2027-01-24",
+      "basisNote": "Negative finding from Microsoft Learn and Microsoft announcements on 26 Oct 2026 (Data Guardian scope is sourced in CLM-SOV-242). Settle with written confirmation from Microsoft per zone; check whether Azure Australia Central government regions qualify."
+    },
+    {
+      "id": "CLM-SOV-251",
+      "accelerators": [
+        "sovereign-iq"
+      ],
+      "kind": "provider",
+      "jurisdiction": "global",
+      "statement": "Google Cloud's resource locations organisation policy constraint (gcp.resourceLocations) restricts the locations where location-based resources can be created.",
+      "source": {
+        "url": "https://cloud.google.com/resource-manager/docs/organization-policy/defining-locations",
+        "title": "Google Cloud: Restrict resource locations",
+        "publisher": "Google Cloud"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-26",
+      "volatile": true,
+      "clientVisible": true,
+      "owner": "sovereignty-compliance-lead",
+      "lastReviewed": "2026-10-26",
+      "nextReview": "2027-01-24",
+      "notes": "Rung R1 example. Fetched directly from the official source on 26 Oct 2026."
+    },
+    {
+      "id": "CLM-SOV-252",
+      "accelerators": [
+        "sovereign-iq"
+      ],
+      "kind": "provider",
+      "jurisdiction": "global",
+      "statement": "Google Cloud offers Cloud External Key Manager (keys in a supported external key manager outside Google Cloud), Access Approval (customer authorises Google personnel requests to access Customer Data), Access Transparency (logs of Google personnel access) and Key Access Justifications.",
+      "source": {
+        "url": "https://cloud.google.com/kms/docs/ekm",
+        "title": "Google Cloud: Cloud External Key Manager",
+        "publisher": "Google Cloud",
+        "secondaryUrls": [
+          "https://cloud.google.com/assured-workloads/access-approval/docs/overview",
+          "https://cloud.google.com/assured-workloads/access-transparency/docs/overview",
+          "https://cloud.google.com/assured-workloads/key-access-justifications/docs/overview"
+        ]
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-26",
+      "volatile": true,
+      "clientVisible": true,
+      "owner": "sovereignty-compliance-lead",
+      "lastReviewed": "2026-10-26",
+      "nextReview": "2027-01-24",
+      "notes": "Rung R2 examples. Service coverage varies; confirm per service. Fetched directly from the official source on 26 Oct 2026."
+    },
+    {
+      "id": "CLM-SOV-253",
+      "accelerators": [
+        "sovereign-iq"
+      ],
+      "kind": "provider",
+      "jurisdiction": "global",
+      "statement": "Assured Workloads control packages include data boundaries for the EU (also 'and Support', with EU support personnel based in the EU, and 'with Access Justifications'), UK, US, Japan, India, Singapore and Australia ('and Support' restricts support to personnel in the US, Canada, Australia, New Zealand and the UK), and US regulatory packages (FedRAMP High, IL4, IL5, ITAR with US persons in the US, CJIS).",
+      "source": {
+        "url": "https://cloud.google.com/assured-workloads/docs/control-packages",
+        "title": "Google Cloud: Assured Workloads control packages",
+        "publisher": "Google Cloud"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-26",
+      "volatile": true,
+      "clientVisible": true,
+      "owner": "sovereignty-compliance-lead",
+      "lastReviewed": "2026-10-26",
+      "nextReview": "2027-01-24",
+      "notes": "UK, Japan, India and Singapore packages set data location only. Rung R2 data boundary; US regulatory packages are R3 candidates for the US zone. Fetched directly from the official source on 26 Oct 2026."
+    },
+    {
+      "id": "CLM-SOV-254",
+      "accelerators": [
+        "sovereign-iq"
+      ],
+      "kind": "provider",
+      "jurisdiction": "global",
+      "statement": "Google's sovereign portfolio comprises Google Cloud Data Boundary (residency, access and key controls, optional partner supervision), Google Cloud Dedicated (dedicated infrastructure with independent operations by a local partner; in France operated by S3NS) and Google Distributed Cloud, connected or air-gapped, which Google says runs independently and cannot be remotely shut down by Google.",
+      "source": {
+        "url": "https://cloud.google.com/sovereign-cloud",
+        "title": "Google Cloud: Sovereign Cloud from Google",
+        "publisher": "Google Cloud",
+        "secondaryUrls": [
+          "https://cloud.google.com/distributed-cloud-air-gapped"
+        ]
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-26",
+      "volatile": true,
+      "clientVisible": true,
+      "owner": "sovereignty-compliance-lead",
+      "lastReviewed": "2026-10-26",
+      "nextReview": "2027-01-24",
+      "notes": "Fetched directly from the official source on 26 Oct 2026."
+    },
+    {
+      "id": "CLM-SOV-255",
+      "accelerators": [
+        "sovereign-iq"
+      ],
+      "kind": "provider",
+      "jurisdiction": "EU",
+      "statement": "Google's Sovereign Controls by Partners data boundaries are generally available from S3NS (France), T-Systems (Germany), Polo Strategico Nazionale (Italy) and CNTXT (Saudi Arabia), providing data residency, personnel controls, regional support and controls such as Cloud EKM, Cloud HSM and Key Access Justifications.",
+      "source": {
+        "url": "https://cloud.google.com/sovereign-controls-by-partners/docs/overview",
+        "title": "Google Cloud: Overview of Sovereign Controls by Partners",
+        "publisher": "Google Cloud",
+        "secondaryUrls": [
+          "https://cloud.google.com/assured-workloads/docs/control-packages"
+        ]
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-26",
+      "volatile": true,
+      "clientVisible": true,
+      "owner": "sovereignty-compliance-lead",
+      "lastReviewed": "2026-10-26",
+      "nextReview": "2027-01-24",
+      "notes": "Google still operates the infrastructure; the partner supervises keys, support and audits. LTM view: R2 (upper), not R3. Fetched directly from the official source on 26 Oct 2026."
+    },
+    {
+      "id": "CLM-SOV-256",
+      "accelerators": [
+        "sovereign-iq"
+      ],
+      "kind": "provider",
+      "jurisdiction": "FR",
+      "statement": "S3NS describes PREMI3NS as a public cloud based on Google Cloud technology, qualified SecNumCloud 3.2 by ANSSI, run by a French-law company with three datacentres in France.",
+      "source": {
+        "url": "https://www.s3ns.io/en",
+        "title": "S3NS: Thales x Google Cloud trusted cloud",
+        "publisher": "S3NS",
+        "secondaryUrls": [
+          "https://www.googlecloudpresscorner.com/2026-05-20-Thales-Announces-Strategic-Partnership-with-Google-Cloud-to-Launch-a-New-Sovereign-Cloud-in-Germany"
+        ]
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-26",
+      "volatile": true,
+      "clientVisible": true,
+      "owner": "sovereignty-compliance-lead",
+      "lastReviewed": "2026-10-26",
+      "nextReview": "2027-01-24",
+      "notes": "R3 candidate (FR). Qualification date 17 Dec 2025 in CLM-SOV-069. Fetched directly from the official source on 26 Oct 2026."
+    },
+    {
+      "id": "CLM-SOV-257",
+      "accelerators": [
+        "sovereign-iq"
+      ],
+      "kind": "provider",
+      "jurisdiction": "FR",
+      "statement": "S3NS is majority-owned and controlled by Thales, with Google holding an undisclosed minority stake; the Commission describes it as a joint venture between Thales and Google Cloud.",
+      "source": {
+        "url": "https://www.thalesgroup.com/en/news-centre/press-releases/thales-introduces-s3ns-partnership-google-cloud-and-unveils-its-0",
+        "title": "Thales press release: Thales introduces S3NS, in partnership with Google Cloud (2022)",
+        "secondaryUrls": [
+          "https://commission.europa.eu/news-and-media/news/commission-advances-cloud-sovereignty-through-strategic-procurement-2026-04-17_en",
+          "https://www.techzine.eu/news/infrastructure/82209/thales-founds-s3ns-a-cloud-service-venture-powered-by-google/"
+        ]
+      },
+      "verification": "S",
+      "checkedOn": "2026-10-26",
+      "volatile": true,
+      "clientVisible": false,
+      "owner": "sovereignty-compliance-lead",
+      "lastReviewed": "2026-10-26",
+      "nextReview": "2027-01-24",
+      "notes": "Thales page not reachable from this environment; ownership read from search excerpts. R4 facts only: operator French; technology supplier Google. Settle with the S3NS or Thales registry filing."
+    },
+    {
+      "id": "CLM-SOV-258",
+      "accelerators": [
+        "sovereign-iq"
+      ],
+      "kind": "provider",
+      "jurisdiction": "DE",
+      "statement": "Thales announced on 20 May 2026 a sovereign cloud in Germany on Google Cloud technology, operated on dedicated infrastructure by a new German entity fully owned and controlled by Thales, legally and operationally independent from Google Cloud and staffed by local German personnel; it is in preview with general availability aimed for the end of 2026, targeting C5 and C3A.",
+      "source": {
+        "url": "https://www.googlecloudpresscorner.com/2026-05-20-Thales-Announces-Strategic-Partnership-with-Google-Cloud-to-Launch-a-New-Sovereign-Cloud-in-Germany",
+        "title": "Thales press release: strategic partnership with Google Cloud for a new sovereign cloud in Germany (20 May 2026)",
+        "publisher": "Thales / Google Cloud press corner"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-26",
+      "volatile": true,
+      "clientVisible": true,
+      "owner": "sovereignty-compliance-lead",
+      "lastReviewed": "2026-10-26",
+      "nextReview": "2027-01-24",
+      "notes": "Preview: may not meet a minimum rung until GA. Entity name not yet announced. Fetched directly from the official source on 26 Oct 2026."
+    },
+    {
+      "id": "CLM-SOV-259",
+      "accelerators": [
+        "sovereign-iq"
+      ],
+      "kind": "provider",
+      "jurisdiction": "global",
+      "statement": "No Google-operated or partner-operated offering with in-zone operations through a local entity (rung R3) was found for the UK, Singapore, Australia, India or Japan as of 26 Oct 2026; in those zones the sourced options are Assured Workloads data boundaries and Google Distributed Cloud.",
+      "verification": "UNSOURCED",
+      "checkedOn": "2026-10-26",
+      "volatile": true,
+      "clientVisible": false,
+      "owner": "sovereignty-compliance-lead",
+      "lastReviewed": "2026-10-26",
+      "nextReview": "2027-01-24",
+      "basisNote": "Negative finding from Google Cloud documentation and search on 26 Oct 2026. Settle with written confirmation from Google per zone."
+    },
+    {
+      "id": "CLM-SOV-260",
+      "accelerators": [
+        "sovereign-iq"
+      ],
+      "kind": "provider",
+      "jurisdiction": "global",
+      "statement": "Amazon Bedrock cross-Region inference offers geographic inference profiles (for example US or EU) that route requests to Regions within that geography, and global profiles that may route to any commercial AWS Region.",
+      "source": {
+        "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/cross-region-inference.html",
+        "title": "Amazon Bedrock User Guide: cross-Region inference",
+        "publisher": "AWS"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-26",
+      "volatile": true,
+      "clientVisible": true,
+      "owner": "sovereignty-compliance-lead",
+      "lastReviewed": "2026-10-26",
+      "nextReview": "2027-01-24",
+      "notes": "SOV.AI.DATA_LOCATION example: use in-Region or geographic profiles, not global, for zoned classes. Fetched directly from the official source on 26 Oct 2026."
+    },
+    {
+      "id": "CLM-SOV-261",
+      "accelerators": [
+        "sovereign-iq"
+      ],
+      "kind": "provider",
+      "jurisdiction": "global",
+      "statement": "In Microsoft Foundry Models, data at rest stays in the designated Azure geography; Global deployment types may process inference in any Azure region, while Data Zone types process only within the Microsoft-specified data zone (US, EU or APAC).",
+      "source": {
+        "url": "https://learn.microsoft.com/en-us/azure/ai-foundry/foundry-models/concepts/deployment-types",
+        "title": "Microsoft Learn: Deployment types in Microsoft Foundry Models",
+        "publisher": "Microsoft"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-26",
+      "volatile": true,
+      "clientVisible": true,
+      "owner": "sovereignty-compliance-lead",
+      "lastReviewed": "2026-10-26",
+      "nextReview": "2027-01-24",
+      "notes": "SOV.AI.DATA_LOCATION example. APAC data zone spans several countries; it is not a single-country zone. Fetched directly from the official source on 26 Oct 2026."
+    },
+    {
+      "id": "CLM-SOV-262",
+      "accelerators": [
+        "sovereign-iq"
+      ],
+      "kind": "provider",
+      "jurisdiction": "global",
+      "statement": "Google's Gemini Enterprise Agent Platform (the Vertex AI documentation set) keeps stored data in the chosen location; requests to global endpoints may be processed in any Google Cloud location with no data residency commitment; and Google's Service Specific Terms restrict use of customer data to train or fine-tune models without prior permission or instruction.",
+      "source": {
+        "url": "https://cloud.google.com/vertex-ai/generative-ai/docs/learn/data-residency",
+        "title": "Google Cloud: Data residency (Gemini Enterprise Agent Platform)",
+        "publisher": "Google Cloud",
+        "secondaryUrls": [
+          "https://cloud.google.com/vertex-ai/generative-ai/docs/data-governance"
+        ]
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-26",
+      "volatile": true,
+      "clientVisible": true,
+      "owner": "sovereignty-compliance-lead",
+      "lastReviewed": "2026-10-26",
+      "nextReview": "2027-01-24",
+      "notes": "SOV.AI.DATA_LOCATION example. Fetched directly from the official source on 26 Oct 2026."
+    },
+    {
+      "id": "CLM-SOV-263",
+      "accelerators": [
+        "sovereign-iq"
+      ],
+      "kind": "provider",
+      "jurisdiction": "global",
+      "statement": "Google Workspace data regions let administrators of supported editions store covered data in the United States or the European Union, or set no preference.",
+      "source": {
+        "url": "https://support.google.com/a/answer/7630496?hl=en",
+        "title": "Google Workspace Admin Help: Choose a geographic location for your data",
+        "publisher": "Google"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-26",
+      "volatile": true,
+      "clientVisible": true,
+      "owner": "sovereignty-compliance-lead",
+      "lastReviewed": "2026-10-26",
+      "nextReview": "2027-01-24",
+      "notes": "Collaboration SaaS example. No UK, SG, AU, IN or JP data region option in this source. Fetched directly from the official source on 26 Oct 2026."
+    },
+    {
+      "id": "CLM-SOV-264",
+      "accelerators": [
+        "sovereign-iq"
+      ],
+      "kind": "provider",
+      "jurisdiction": "global",
+      "statement": "Google Workspace client-side encryption lets customers encrypt content with keys they control through a third-party key service, so Google cannot decrypt it.",
+      "source": {
+        "url": "https://support.google.com/a/answer/10741897?hl=en",
+        "title": "Google Workspace Admin Help: About client-side encryption",
+        "publisher": "Google"
+      },
+      "verification": "P",
+      "checkedOn": "2026-10-26",
+      "volatile": true,
+      "clientVisible": false,
+      "owner": "sovereignty-compliance-lead",
+      "lastReviewed": "2026-10-26",
+      "nextReview": "2027-01-24",
+      "notes": "Page reached; the exact wording was not re-read on 26 Oct 2026."
+    },
+    {
+      "id": "CLM-SOV-265",
+      "accelerators": [
+        "sovereign-iq"
+      ],
+      "kind": "provider",
+      "jurisdiction": "global",
+      "statement": "Microsoft Purview Customer Key lets customers provide and control the root keys used to encrypt Microsoft 365 data at rest, including revoking them.",
+      "source": {
+        "url": "https://learn.microsoft.com/en-us/purview/customer-key-overview",
+        "title": "Microsoft Learn: Overview of Customer Key",
+        "publisher": "Microsoft"
+      },
+      "verification": "P",
+      "checkedOn": "2026-10-26",
+      "volatile": true,
+      "clientVisible": false,
+      "owner": "sovereignty-compliance-lead",
+      "lastReviewed": "2026-10-26",
+      "nextReview": "2027-01-24",
+      "notes": "Page reached; the exact wording was not re-read on 26 Oct 2026."
+    },
+    {
+      "id": "CLM-SOV-266",
+      "accelerators": [
+        "sovereign-iq"
+      ],
+      "kind": "provider",
+      "jurisdiction": "EU",
+      "statement": "Oracle states that its EU Sovereign Cloud regions are operated by EU-incorporated legal entities established by Oracle that own the hardware and datacentre leases, with EU-resident operations and support kept separate from global operations.",
+      "source": {
+        "url": "https://www.oracle.com/cloud/eu-sovereign-cloud/",
+        "title": "Oracle: EU Sovereign Cloud",
+        "article": "Organizational controls",
+        "publisher": "Oracle"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-26",
+      "volatile": true,
+      "clientVisible": true,
+      "owner": "sovereignty-compliance-lead",
+      "lastReviewed": "2026-10-26",
+      "nextReview": "2027-01-24",
+      "notes": "Approach-level example for oci. R4 facts: operator entities are EU companies established by Oracle; the parent group is Oracle (its jurisdiction was not re-read on 26 Oct 2026). Fetched directly from the official source on 26 Oct 2026."
+    },
+    {
+      "id": "CLM-SOV-267",
+      "accelerators": [
+        "sovereign-iq"
+      ],
+      "kind": "provider",
+      "jurisdiction": "global",
+      "statement": "AWS has standard Regions in each Sovereign IQ zone in scope, for example Europe (Frankfurt) eu-central-1, Europe (London) eu-west-2, US East (N. Virginia) us-east-1, Asia Pacific (Singapore) ap-southeast-1, (Sydney) ap-southeast-2, (Mumbai) ap-south-1 and (Tokyo) ap-northeast-1.",
+      "source": {
+        "url": "https://docs.aws.amazon.com/global-infrastructure/latest/regions/aws-regions.html",
+        "title": "AWS Regions (Global Infrastructure documentation)",
+        "publisher": "AWS"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-26",
+      "volatile": true,
+      "clientVisible": true,
+      "owner": "sovereignty-compliance-lead",
+      "lastReviewed": "2026-10-26",
+      "nextReview": "2027-01-24",
+      "notes": "Rung R0/R1 precondition: a standard region exists inside each zone. Fetched directly from the official source on 26 Oct 2026."
+    },
+    {
+      "id": "CLM-SOV-268",
+      "accelerators": [
+        "sovereign-iq"
+      ],
+      "kind": "provider",
+      "jurisdiction": "global",
+      "statement": "Azure has regions in each Sovereign IQ zone in scope, for example Germany West Central, UK South, East US, Southeast Asia (Singapore), Australia East, Central India and Japan East.",
+      "source": {
+        "url": "https://learn.microsoft.com/en-us/azure/reliability/regions-list",
+        "title": "Microsoft Learn: Azure regions list",
+        "publisher": "Microsoft"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-26",
+      "volatile": true,
+      "clientVisible": true,
+      "owner": "sovereignty-compliance-lead",
+      "lastReviewed": "2026-10-26",
+      "nextReview": "2027-01-24",
+      "notes": "Rung R0/R1 precondition: a standard region exists inside each zone. Fetched directly from the official source on 26 Oct 2026."
+    },
+    {
+      "id": "CLM-SOV-269",
+      "accelerators": [
+        "sovereign-iq"
+      ],
+      "kind": "provider",
+      "jurisdiction": "global",
+      "statement": "Google Cloud has regions in each Sovereign IQ zone in scope, for example europe-west3, europe-west2 (London), us-central1, asia-southeast1 (Singapore), australia-southeast1 (Sydney), asia-south1 (Mumbai) and asia-northeast1 (Tokyo).",
+      "source": {
+        "url": "https://cloud.google.com/compute/docs/regions-zones",
+        "title": "Google Cloud: Regions and zones",
+        "publisher": "Google Cloud"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-26",
+      "volatile": true,
+      "clientVisible": true,
+      "owner": "sovereignty-compliance-lead",
+      "lastReviewed": "2026-10-26",
+      "nextReview": "2027-01-24",
+      "notes": "Rung R0/R1 precondition: a standard region exists inside each zone. Fetched directly from the official source on 26 Oct 2026."
     }
   ]
 }

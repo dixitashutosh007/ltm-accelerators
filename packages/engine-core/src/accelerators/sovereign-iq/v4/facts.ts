@@ -99,6 +99,15 @@ export function scopeFacts(a: Answers, mode: 'executive' | 'workshop'): Facts {
   f['data.allowed_zone_given'] = zones;
   f['data.class_platforms'] = platforms;
   f['data.class_services'] = services;
+  // L3 (S7b): tender minimum SEAL per objective, and the kinds of data the tender covers (all when none chosen).
+  const l3 = (a.L3 ?? {}) as Record<string, unknown>;
+  const minimums: Record<string, number> = {};
+  for (let i = 1; i <= 8; i++) { const v = l3[`sov_${i}`]; if (typeof v === 'string' && /^seal_[0-4]$/.test(v)) minimums[`SOV-${i}`] = Number(v.slice(5)); }
+  if (Object.keys(minimums).length) {
+    f['data.tender_minimums'] = minimums;
+    const covered = known(list(l3.classes)).filter(c => classes.includes(c as DataClass));
+    f['data.tender_classes'] = covered.length ? covered : classes;
+  }
 
   // Provider parents (2.4), the union of every location zone (S2 design change 1), the size class and the transfer test.
   f['prov.parent_jurisdictions'] = [...new Set(list(f['plat.in_scope']).flatMap(p => platformParents(p, f)))];

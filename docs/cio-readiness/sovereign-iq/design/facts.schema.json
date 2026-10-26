@@ -169,6 +169,16 @@
           "propertyNames": { "$ref": "#/$defs/dataClass" },
           "additionalProperties": { "type": "array", "uniqueItems": true, "items": { "$ref": "#/$defs/platform" } }
         },
+        "tender_minimums": {
+          "description": "Minimum SEAL per sovereignty objective set by an EU cloud tender (L3, PLAN S7b).",
+          "type": "object",
+          "propertyNames": { "pattern": "^SOV-[1-8]$" },
+          "additionalProperties": { "type": "integer", "minimum": 0, "maximum": 4 }
+        },
+        "tender_classes": {
+          "description": "Kinds of data the tender covers (L3); all selected classes when none are chosen.",
+          "type": "array", "uniqueItems": true, "items": { "$ref": "#/$defs/dataClass" }
+        },
         "class_services": {
           "description": "Kinds of service holding each class on AWS, Azure or Google Cloud (C1, PLAN S7). Scope only, never scored; when absent, actions cover every kind.",
           "type": "object",

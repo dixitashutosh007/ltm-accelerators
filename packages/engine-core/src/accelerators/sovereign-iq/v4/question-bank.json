@@ -1,5 +1,5 @@
 {
-  "questionSetVersion": "4.1.0",
+  "questionSetVersion": "4.2.0",
   "questions": [
     {
       "id": "A1", "theme": "footprint", "kind": "scope", "mode": "executive", "type": "single",
@@ -327,6 +327,32 @@
       },
       "feeds": { "facts": ["data.choice_level", "data.allowed_zone", "data.class_platforms"] },
       "basis": [{ "citation": "As L1; tender minimum SEALs translated with the LTM mapping", "status": "S" }]
+    },
+    {
+      "id": "L3", "theme": "requirement", "kind": "scope", "mode": "follow_up", "type": "compound",
+      "text": "Must you meet minimum SEAL levels in an EU cloud tender? Enter the minimum for each sovereignty objective the tender sets, and the kinds of data it covers.",
+      "help": "From the tender documents. Leave an objective blank when the tender sets no minimum for it. SEAL levels rate the provider's service, not you.",
+      "trigger": { "any": [
+        { "fact": "derived.grade.eu_csf_seal", "op": "in", "value": ["applies", "likely_confirm", "advisory"] },
+        { "all": [{ "fact": "ent.flags", "op": "includes", "value": "cloud_or_data_processing_provider" }, { "fact": "org.establishments", "op": "includes", "value": "eea" }] }
+      ] },
+      "options": [
+        { "value": "seal_0", "label": "SEAL-0" }, { "value": "seal_1", "label": "SEAL-1" }, { "value": "seal_2", "label": "SEAL-2" },
+        { "value": "seal_3", "label": "SEAL-3" }, { "value": "seal_4", "label": "SEAL-4" }
+      ],
+      "fields": [
+        { "key": "sov_1", "label": "SOV-1 Strategic", "type": "single", "optionsFrom": "L3", "optional": true },
+        { "key": "sov_2", "label": "SOV-2 Legal and jurisdictional", "type": "single", "optionsFrom": "L3", "optional": true },
+        { "key": "sov_3", "label": "SOV-3 Data and AI", "type": "single", "optionsFrom": "L3", "optional": true },
+        { "key": "sov_4", "label": "SOV-4 Operational", "type": "single", "optionsFrom": "L3", "optional": true },
+        { "key": "sov_5", "label": "SOV-5 Supply chain", "type": "single", "optionsFrom": "L3", "optional": true },
+        { "key": "sov_6", "label": "SOV-6 Technology", "type": "single", "optionsFrom": "L3", "optional": true },
+        { "key": "sov_7", "label": "SOV-7 Security and compliance", "type": "single", "optionsFrom": "L3", "optional": true },
+        { "key": "sov_8", "label": "SOV-8 Environmental sustainability", "type": "single", "optionsFrom": "L3", "optional": true },
+        { "key": "classes", "label": "Kinds of data the tender covers", "type": "multi", "optionsFrom": "D1" }
+      ],
+      "feeds": { "facts": ["data.tender_minimums", "data.tender_classes"] },
+      "basis": [{ "citation": "EU Cloud Sovereignty Framework v1.2.1: the contracting authority sets a minimum SEAL per objective; LTM reverse mapping to a required level (DESIGN.md 3.4)", "status": "S" }]
     },
     {
       "id": "R1", "theme": "residency", "kind": "maturity", "mode": "executive", "type": "single",
