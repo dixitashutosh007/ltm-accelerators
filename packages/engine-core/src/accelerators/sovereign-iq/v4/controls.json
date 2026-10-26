@@ -2,6 +2,19 @@
   "catalogueVersion": "4.0.0",
   "rule": "Sovereign IQ control catalogue (DESIGN.md 4.1-4.2, owner-approved 14 Oct 2026). Weights C 3, H 2, S 1 are LTM judgement, calibrated in S4. 'level' is the lowest requirement level that needs the control (levels are cumulative); null means required only by regimes (4.3). 'exec' marks the controls measured in executive mode. Class-scope controls are scored per data class and averaged over the classes that need them. SOV.HW.PROVENANCE is recorded but not scored until its basis is sourced.",
   "weights": { "C": 3, "H": 2, "S": 1 },
+  "domainsRule": "Areas for the maturity breakdown (radar on the page, bars in the report): each scored control sits in exactly one area; an area's score is the weighted share of its required controls in place, as for the headline.",
+  "domains": [
+    { "id": "governance", "label": "Governance and data map", "controls": ["SOV.GOV.OWNER", "SOV.DATA.MAP"] },
+    { "id": "residency", "label": "Residency", "controls": ["SOV.RES.LOCATION", "SOV.RES.REGION_LOCK", "SOV.BACKUP.LOCATION"] },
+    { "id": "transfers", "label": "Transfers", "controls": ["SOV.XFER.BASIS", "SOV.XFER.TIA", "SOV.XFER.US_BULK"] },
+    { "id": "keys", "label": "Keys and encryption", "controls": ["SOV.KEY.CUSTODY", "SOV.KEY.REVOCATION", "SOV.ENC.BASELINE", "SOV.CC.DATA_IN_USE"] },
+    { "id": "operations", "label": "Operational control", "controls": ["SOV.OPS.ADMIN_ACCESS", "SOV.OPS.PERSONNEL_ZONE", "SOV.OPS.OOB_MGMT"] },
+    { "id": "third_parties", "label": "Third parties", "controls": ["SOV.TP.DPA", "SOV.SAAS.SUBPROCESSOR", "SOV.TP.VISIBILITY", "SOV.TP.REGISTER", "SOV.TP.AUDIT"] },
+    { "id": "exit", "label": "Exit and concentration", "controls": ["SOV.EXIT.PLAN", "SOV.CONC.PROVIDER"] },
+    { "id": "assurance", "label": "Assurance and jurisdiction", "controls": ["SOV.CERT.ASSURANCE", "SOV.JUR.IMMUNITY"] },
+    { "id": "ai", "label": "AI", "controls": ["SOV.AI.DATA_LOCATION", "SOV.AI.GOVERNANCE"] },
+    { "id": "incidents", "label": "Incident reporting", "controls": ["SOV.IR.REPORTING"] }
+  ],
   "controls": [
     { "id": "SOV.GOV.OWNER", "name": "Data-location ownership", "means": "One accountable executive owns data-location decisions, with a governance forum", "weight": "S", "scope": "org", "level": "L1", "exec": false, "questions": ["G1"], "seal": ["SOV-1"], "ownerRole": "CIO", "remedy": "Name one accountable executive for where data and workloads may run, with a governance forum that records decisions and exceptions", "offering": "OFF.SOV.ASSESS" },
     { "id": "SOV.DATA.MAP", "name": "Data map and records of processing", "means": "A current map of data flows and records of processing (within 12 months)", "weight": "H", "scope": "org", "level": "L1", "exec": false, "questions": ["D4"], "seal": ["SOV-3"], "ownerRole": "DPO", "remedy": "Keep a data-flow map and records of processing that are reviewed at least every 12 months", "offering": "OFF.SOV.ASSESS" },

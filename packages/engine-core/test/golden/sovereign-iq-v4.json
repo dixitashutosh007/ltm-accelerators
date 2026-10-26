@@ -1,7 +1,7 @@
 {
   "ARC1_EU_BANK_DORA executive": {
     "versions": {
-      "engine": "4.1.0",
+      "engine": "4.2.0",
       "questionSet": "4.0.0",
       "controls": "4.0.0",
       "registry": "1.1.0",
@@ -101,7 +101,45 @@
       "provisional": false,
       "unconfirmed": [],
       "notAnswered": [],
-      "label": "Executive maturity, 9 of 20 required controls assessed"
+      "label": "Executive maturity, 9 of 20 required controls assessed",
+      "byDomain": [
+        {
+          "domain": "residency",
+          "label": "Residency",
+          "score": 57,
+          "controls": 3
+        },
+        {
+          "domain": "transfers",
+          "label": "Transfers",
+          "score": 73,
+          "controls": 2
+        },
+        {
+          "domain": "keys",
+          "label": "Keys and encryption",
+          "score": 33,
+          "controls": 1
+        },
+        {
+          "domain": "operations",
+          "label": "Operational control",
+          "score": 33,
+          "controls": 1
+        },
+        {
+          "domain": "exit",
+          "label": "Exit and concentration",
+          "score": 33,
+          "controls": 1
+        },
+        {
+          "domain": "ai",
+          "label": "AI",
+          "score": 33,
+          "controls": 1
+        }
+      ]
     },
     "controls": [
       {
@@ -357,7 +395,7 @@
   },
   "ARC1_EU_BANK_DORA workshop": {
     "versions": {
-      "engine": "4.1.0",
+      "engine": "4.2.0",
       "questionSet": "4.0.0",
       "controls": "4.0.0",
       "registry": "1.1.0",
@@ -483,7 +521,69 @@
       "provisional": false,
       "unconfirmed": [],
       "notAnswered": [],
-      "label": null
+      "label": null,
+      "byDomain": [
+        {
+          "domain": "governance",
+          "label": "Governance and data map",
+          "score": 56,
+          "controls": 2
+        },
+        {
+          "domain": "residency",
+          "label": "Residency",
+          "score": 81,
+          "controls": 3
+        },
+        {
+          "domain": "transfers",
+          "label": "Transfers",
+          "score": 73,
+          "controls": 2
+        },
+        {
+          "domain": "keys",
+          "label": "Keys and encryption",
+          "score": 43,
+          "controls": 3
+        },
+        {
+          "domain": "operations",
+          "label": "Operational control",
+          "score": 33,
+          "controls": 3
+        },
+        {
+          "domain": "third_parties",
+          "label": "Third parties",
+          "score": 56,
+          "controls": 5
+        },
+        {
+          "domain": "exit",
+          "label": "Exit and concentration",
+          "score": 33,
+          "controls": 2
+        },
+        {
+          "domain": "assurance",
+          "label": "Assurance and jurisdiction",
+          "score": 33,
+          "controls": 1
+        },
+        {
+          "domain": "ai",
+          "label": "AI",
+          "score": 33,
+          "controls": 2
+        },
+        {
+          "domain": "incidents",
+          "label": "Incident reporting",
+          "score": 100,
+          "controls": 1
+        }
+      ]
     },
     "controls": [
       {
@@ -897,7 +997,7 @@
   },
   "ARC2_UK_INSURER_OPRES_CTP executive": {
     "versions": {
-      "engine": "4.1.0",
+      "engine": "4.2.0",
       "questionSet": "4.0.0",
       "controls": "4.0.0",
       "registry": "1.1.0",
@@ -992,7 +1092,45 @@
       "provisional": false,
       "unconfirmed": [],
       "notAnswered": [],
-      "label": "Executive maturity, 9 of 19 required controls assessed"
+      "label": "Executive maturity, 9 of 19 required controls assessed",
+      "byDomain": [
+        {
+          "domain": "residency",
+          "label": "Residency",
+          "score": 67,
+          "controls": 3
+        },
+        {
+          "domain": "transfers",
+          "label": "Transfers",
+          "score": 60,
+          "controls": 2
+        },
+        {
+          "domain": "keys",
+          "label": "Keys and encryption",
+          "score": 67,
+          "controls": 1
+        },
+        {
+          "domain": "operations",
+          "label": "Operational control",
+          "score": 100,
+          "controls": 1
+        },
+        {
+          "domain": "exit",
+          "label": "Exit and concentration",
+          "score": 67,
+          "controls": 1
+        },
+        {
+          "domain": "ai",
+          "label": "AI",
+          "score": 33,
+          "controls": 1
+        }
+      ]
     },
     "controls": [
       {
@@ -1217,7 +1355,7 @@
   },
   "ARC2_UK_INSURER_OPRES_CTP workshop": {
     "versions": {
-      "engine": "4.1.0",
+      "engine": "4.2.0",
       "questionSet": "4.0.0",
       "controls": "4.0.0",
       "registry": "1.1.0",
@@ -1333,7 +1471,63 @@
       "provisional": false,
       "unconfirmed": [],
       "notAnswered": [],
-      "label": null
+      "label": null,
+      "byDomain": [
+        {
+          "domain": "governance",
+          "label": "Governance and data map",
+          "score": 100,
+          "controls": 2
+        },
+        {
+          "domain": "residency",
+          "label": "Residency",
+          "score": 90,
+          "controls": 3
+        },
+        {
+          "domain": "transfers",
+          "label": "Transfers",
+          "score": 60,
+          "controls": 2
+        },
+        {
+          "domain": "keys",
+          "label": "Keys and encryption",
+          "score": 80,
+          "controls": 2
+        },
+        {
+          "domain": "operations",
+          "label": "Operational control",
+          "score": 100,
+          "controls": 1
+        },
+        {
+          "domain": "third_parties",
+          "label": "Third parties",
+          "score": 100,
+          "controls": 5
+        },
+        {
+          "domain": "exit",
+          "label": "Exit and concentration",
+          "score": 56,
+          "controls": 2
+        },
+        {
+          "domain": "ai",
+          "label": "AI",
+          "score": 33,
+          "controls": 1
+        },
+        {
+          "domain": "incidents",
+          "label": "Incident reporting",
+          "score": 100,
+          "controls": 1
+        }
+      ]
     },
     "controls": [
       {
@@ -1592,7 +1786,7 @@
   },
   "ARC3_US_HEALTHTECH_EU_CUSTOMERS executive": {
     "versions": {
-      "engine": "4.1.0",
+      "engine": "4.2.0",
       "questionSet": "4.0.0",
       "controls": "4.0.0",
       "registry": "1.1.0",
@@ -1732,7 +1926,27 @@
       "provisional": false,
       "unconfirmed": [],
       "notAnswered": [],
-      "label": "Executive maturity, 6 of 14 required controls assessed"
+      "label": "Executive maturity, 6 of 14 required controls assessed",
+      "byDomain": [
+        {
+          "domain": "residency",
+          "label": "Residency",
+          "score": 81,
+          "controls": 3
+        },
+        {
+          "domain": "transfers",
+          "label": "Transfers",
+          "score": 20,
+          "controls": 2
+        },
+        {
+          "domain": "ai",
+          "label": "AI",
+          "score": 33,
+          "controls": 1
+        }
+      ]
     },
     "controls": [
       {
@@ -1983,7 +2197,7 @@
   },
   "ARC3_US_HEALTHTECH_EU_CUSTOMERS workshop": {
     "versions": {
-      "engine": "4.1.0",
+      "engine": "4.2.0",
       "questionSet": "4.0.0",
       "controls": "4.0.0",
       "registry": "1.1.0",
@@ -2137,7 +2351,57 @@
       "provisional": false,
       "unconfirmed": [],
       "notAnswered": [],
-      "label": null
+      "label": null,
+      "byDomain": [
+        {
+          "domain": "governance",
+          "label": "Governance and data map",
+          "score": 33,
+          "controls": 2
+        },
+        {
+          "domain": "residency",
+          "label": "Residency",
+          "score": 81,
+          "controls": 3
+        },
+        {
+          "domain": "transfers",
+          "label": "Transfers",
+          "score": 20,
+          "controls": 2
+        },
+        {
+          "domain": "keys",
+          "label": "Keys and encryption",
+          "score": 27,
+          "controls": 2
+        },
+        {
+          "domain": "operations",
+          "label": "Operational control",
+          "score": 0,
+          "controls": 1
+        },
+        {
+          "domain": "third_parties",
+          "label": "Third parties",
+          "score": 43,
+          "controls": 4
+        },
+        {
+          "domain": "ai",
+          "label": "AI",
+          "score": 17,
+          "controls": 2
+        },
+        {
+          "domain": "incidents",
+          "label": "Incident reporting",
+          "score": 33,
+          "controls": 1
+        }
+      ]
     },
     "controls": [
       {
@@ -2547,7 +2811,7 @@
   },
   "ARC4_SG_AU_FINANCIAL_GROUP executive": {
     "versions": {
-      "engine": "4.1.0",
+      "engine": "4.2.0",
       "questionSet": "4.0.0",
       "controls": "4.0.0",
       "registry": "1.1.0",
@@ -2680,7 +2944,45 @@
       "provisional": false,
       "unconfirmed": [],
       "notAnswered": [],
-      "label": "Executive maturity, 8 of 17 required controls assessed"
+      "label": "Executive maturity, 8 of 17 required controls assessed",
+      "byDomain": [
+        {
+          "domain": "residency",
+          "label": "Residency",
+          "score": 86,
+          "controls": 3
+        },
+        {
+          "domain": "transfers",
+          "label": "Transfers",
+          "score": 100,
+          "controls": 1
+        },
+        {
+          "domain": "keys",
+          "label": "Keys and encryption",
+          "score": 100,
+          "controls": 1
+        },
+        {
+          "domain": "operations",
+          "label": "Operational control",
+          "score": 100,
+          "controls": 1
+        },
+        {
+          "domain": "exit",
+          "label": "Exit and concentration",
+          "score": 67,
+          "controls": 1
+        },
+        {
+          "domain": "ai",
+          "label": "AI",
+          "score": 33,
+          "controls": 1
+        }
+      ]
     },
     "controls": [
       {
@@ -2921,7 +3223,7 @@
   },
   "ARC4_SG_AU_FINANCIAL_GROUP workshop": {
     "versions": {
-      "engine": "4.1.0",
+      "engine": "4.2.0",
       "questionSet": "4.0.0",
       "controls": "4.0.0",
       "registry": "1.1.0",
@@ -3074,7 +3376,69 @@
       "provisional": false,
       "unconfirmed": [],
       "notAnswered": [],
-      "label": null
+      "label": null,
+      "byDomain": [
+        {
+          "domain": "governance",
+          "label": "Governance and data map",
+          "score": 100,
+          "controls": 2
+        },
+        {
+          "domain": "residency",
+          "label": "Residency",
+          "score": 86,
+          "controls": 3
+        },
+        {
+          "domain": "transfers",
+          "label": "Transfers",
+          "score": 100,
+          "controls": 1
+        },
+        {
+          "domain": "keys",
+          "label": "Keys and encryption",
+          "score": 100,
+          "controls": 3
+        },
+        {
+          "domain": "operations",
+          "label": "Operational control",
+          "score": 78,
+          "controls": 3
+        },
+        {
+          "domain": "third_parties",
+          "label": "Third parties",
+          "score": 100,
+          "controls": 4
+        },
+        {
+          "domain": "exit",
+          "label": "Exit and concentration",
+          "score": 67,
+          "controls": 2
+        },
+        {
+          "domain": "assurance",
+          "label": "Assurance and jurisdiction",
+          "score": 100,
+          "controls": 1
+        },
+        {
+          "domain": "ai",
+          "label": "AI",
+          "score": 33,
+          "controls": 1
+        },
+        {
+          "domain": "incidents",
+          "label": "Incident reporting",
+          "score": 33,
+          "controls": 1
+        }
+      ]
     },
     "controls": [
       {
@@ -3401,7 +3765,7 @@
   },
   "ARC5_IN_SERVICES_EU_CLIENTS executive": {
     "versions": {
-      "engine": "4.1.0",
+      "engine": "4.2.0",
       "questionSet": "4.0.0",
       "controls": "4.0.0",
       "registry": "1.1.0",
@@ -3562,7 +3926,27 @@
       "provisional": false,
       "unconfirmed": [],
       "notAnswered": [],
-      "label": "Executive maturity, 6 of 14 required controls assessed"
+      "label": "Executive maturity, 6 of 14 required controls assessed",
+      "byDomain": [
+        {
+          "domain": "residency",
+          "label": "Residency",
+          "score": 71,
+          "controls": 3
+        },
+        {
+          "domain": "transfers",
+          "label": "Transfers",
+          "score": 33,
+          "controls": 2
+        },
+        {
+          "domain": "ai",
+          "label": "AI",
+          "score": 33,
+          "controls": 1
+        }
+      ]
     },
     "controls": [
       {
@@ -3849,7 +4233,7 @@
   },
   "ARC5_IN_SERVICES_EU_CLIENTS workshop": {
     "versions": {
-      "engine": "4.1.0",
+      "engine": "4.2.0",
       "questionSet": "4.0.0",
       "controls": "4.0.0",
       "registry": "1.1.0",
@@ -4020,7 +4404,57 @@
       "provisional": false,
       "unconfirmed": [],
       "notAnswered": [],
-      "label": null
+      "label": null,
+      "byDomain": [
+        {
+          "domain": "governance",
+          "label": "Governance and data map",
+          "score": 33,
+          "controls": 2
+        },
+        {
+          "domain": "residency",
+          "label": "Residency",
+          "score": 48,
+          "controls": 3
+        },
+        {
+          "domain": "transfers",
+          "label": "Transfers",
+          "score": 33,
+          "controls": 2
+        },
+        {
+          "domain": "keys",
+          "label": "Keys and encryption",
+          "score": 47,
+          "controls": 2
+        },
+        {
+          "domain": "operations",
+          "label": "Operational control",
+          "score": 33,
+          "controls": 1
+        },
+        {
+          "domain": "third_parties",
+          "label": "Third parties",
+          "score": 43,
+          "controls": 4
+        },
+        {
+          "domain": "ai",
+          "label": "AI",
+          "score": 33,
+          "controls": 2
+        },
+        {
+          "domain": "incidents",
+          "label": "Incident reporting",
+          "score": 33,
+          "controls": 1
+        }
+      ]
     },
     "controls": [
       {

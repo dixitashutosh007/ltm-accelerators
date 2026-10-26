@@ -129,9 +129,9 @@ if (legacyApi && String(legacy).toLowerCase() !== 'true') {
 
 // Accelerator access on the server (24 Oct 2026): every accelerator service can read the saved permissions.
 {
-  const services = /(evaluate(finops|posture|sovereign|cloud|strategy|modernization|resilience)iq|manage(finops|sovereign)assessment|finopsiqreport|manageresilience(assessment|evidence))lambda/i;
+  const services = /(evaluate(finops|posture|sovereign|cloud|strategy|modernization|resilience)iq|manage(finops|sovereign)assessment|(finops|sovereign)iqreport|manageresilience(assessment|evidence))lambda/i;
   const fns = ofType('AWS::Lambda::Function').filter(f => services.test(f.id));
-  check(fns.length === 12, `expected 12 accelerator services, found ${fns.length}`);
+  check(fns.length === 13, `expected 13 accelerator services, found ${fns.length}`);
   for (const f of fns) {
     const env = f.Properties.Environment?.Variables || {};
     check(!!env.REPORTS_BUCKET && 'SUPER_ADMIN_EMAILS' in env && !!env.ADMIN_GROUP, `${f.id} cannot check accelerator access (REPORTS_BUCKET, SUPER_ADMIN_EMAILS, ADMIN_GROUP)`);

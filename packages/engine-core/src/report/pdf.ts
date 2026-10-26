@@ -7,7 +7,7 @@
 import pdfMake from 'pdfmake/build/pdfmake.js';
 import vfsFonts from 'pdfmake/build/vfs_fonts.js';
 import type { Content, TDocumentDefinitions, TableCell } from 'pdfmake/interfaces';
-import type { Block, ReportDocument, Seg } from './model';
+import type { Block, ReportDocument, Seg, Tone } from './model';
 
 const VFS: Record<string, string> = (vfsFonts as any).pdfMake?.vfs ?? (vfsFonts as any).vfs ?? (vfsFonts as any);
 const FONTS = {
@@ -15,6 +15,15 @@ const FONTS = {
 };
 
 const INK = '#141414', MUTED = '#4B5563', RED = '#D33826', LINE = '#D1D5DB', FILL = '#F3F4F6', AMBER_BG = '#FDF6EB', BLUE_BG = '#EEF7FA';
+
+/** Fills and text colours for heatmap cells and bars (WCAG AA text on each fill). */
+const TONE: Record<Tone, { fill: string; text: string; bar: string }> = {
+  good: { fill: '#DDF1E4', text: '#1E5132', bar: '#3C8D5A' },
+  partial: { fill: '#FBF0D2', text: '#6B4A00', bar: '#C99A2E' },
+  weak: { fill: '#FBDEC8', text: '#7A3A10', bar: '#D9822B' },
+  bad: { fill: '#F9D0CA', text: '#7F1D12', bar: '#C0392B' },
+  unknown: { fill: '#EEF0F2', text: '#374151', bar: '#9CA3AF' }
+};
 
 const run = (segs: Seg[]): Content[] => segs.map(s => (typeof s === 'string' ? { text: s } : { text: s.text, bold: s.strong || undefined, italics: s.italic || undefined }));
 
@@ -44,6 +53,10 @@ function block(b: Block): Content {
       };
     case 'table':
       return table(b);
+    case 'heatmap':
+      return heatmap(b);
+    case 'bars':
+      return bars(b);
   }
 }
 
@@ -64,6 +77,46 @@ function table(b: Extract<Block, { kind: 'table' }>, title?: string): Content {
       paddingTop: () => 3, paddingBottom: () => 3, paddingLeft: () => 4, paddingRight: () => 4
     },
     style: b.small ? 'tableSmall' : 'table', margin: [0, 2, 0, 10]
+  };
+}
+
+/** A heatmap: one row per group, its cells four to a line, each filled by tone; a legend under it. */
+function heatmap(b: Extract<Block, { kind: 'heatmap' }>): Content {
+  const PER = 4;
+  const body: TableCell[][] = [];
+  for (const r of b.rows) {
+    for (let i = 0; i < r.cells.length; i += PER) {
+      const cells = r.cells.slice(i, i + PER);
+      body.push([
+        i === 0 ? { text: r.label, bold: true, fontSize: 8 } : { text: '' },
+        ...Array.from({ length: PER }, (_, k) => {
+          const c = cells[k];
+          return c ? { stack: [{ text: c.label, bold: true, fontSize: 7.5, color: TONE[c.tone].text }, ...(c.note ? [{ text: c.note, fontSize: 7, color: TONE[c.tone].text } as Content] : [])], fillColor: TONE[c.tone].fill, margin: [3, 2, 3, 2] } as TableCell : { text: '' };
+        })
+      ]);
+    }
+  }
+  const legend: Content[] = b.legend ? [{
+    columns: b.legend.map(l => ({ width: 'auto', columns: [{ canvas: [{ type: 'rect', x: 0, y: 1, w: 8, h: 8, color: TONE[l.tone].fill, lineColor: TONE[l.tone].bar }], width: 12 }, { text: l.label, fontSize: 7, color: MUTED, width: 'auto' }], columnGap: 2 })),
+    columnGap: 10, margin: [0, 0, 0, 10]
+  } as Content] : [];
+  return { stack: [{ table: { widths: [86, '*', '*', '*', '*'], body, dontBreakRows: true }, layout: { hLineColor: () => '#FFFFFF', vLineColor: () => '#FFFFFF', hLineWidth: () => 2, vLineWidth: () => 2 }, margin: [0, 2, 0, 4] }, ...legend] };
+}
+
+/** Bars: label, a bar to scale on a light track, and the shown value. */
+function bars(b: Extract<Block, { kind: 'bars' }>): Content {
+  const W = 220;
+  return {
+    table: {
+      widths: [150, W + 4, '*'],
+      body: b.items.map(i => [
+        { text: i.label, fontSize: 8 },
+        { canvas: [{ type: 'rect', x: 0, y: 2, w: W, h: 8, color: '#EEF0F2' }, { type: 'rect', x: 0, y: 2, w: Math.max(1, Math.round((W * Math.max(0, Math.min(i.value, b.max))) / b.max)), h: 8, color: TONE[i.tone].bar }] },
+        { text: run(i.shown), fontSize: 8, bold: true }
+      ]),
+      dontBreakRows: true
+    },
+    layout: 'noBorders', margin: [0, 2, 0, 10]
   };
 }
 

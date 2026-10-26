@@ -16,6 +16,7 @@
   var C = window.FinOpsIqCharts;
   var EVALUATE = '/api/evaluate/sovereign-iq/v4';
   var ASSESSMENT = '/api/sovereign-iq/assessment';
+  var REPORT = '/api/sovereign-iq/report';
   var MODE_INFO = {
     executive: { label: 'Executive', duration: '15–20 minutes', text: 'Which regulations apply, how exposed are we, and do our controls meet the level our data needs? 17 questions for the CIO.' },
     workshop: { label: 'Workshop', duration: '60–90 minutes', text: 'Requirement per kind of data, every control, and a ranked roadmap. Consultant-led, with the CISO, DPO or General Counsel and the head of cloud.' }
@@ -679,8 +680,14 @@
     C.countUp(fc.querySelector('.count'), gaps, function (x) { return String(Math.round(x)); }, 900);
     kpis.push(fc);
     var acts = h('div', { class: 'hero-actions' });
+    var status = h('p', { class: 'small hero-status', id: 'report-status', role: 'status', 'aria-live': 'polite' });
+    if (isFinal()) {
+      acts.appendChild(h('button', { class: 'btn primary', type: 'button', onclick: function (e) { download('pdf', e.currentTarget, status); } }, 'Download report (PDF)'));
+      acts.appendChild(h('button', { class: 'btn ghost', type: 'button', onclick: function (e) { download('csv', e.currentTarget, status); } }, 'Download backlog (CSV)'));
+    }
     if (isFinal() && state.status === 'completed' && state.mode === 'executive' && state.view !== 'client') acts.appendChild(h('button', { class: 'btn ghost', type: 'button', onclick: continueInWorkshop }, 'Continue in workshop mode'));
     if (isFinal() && state.status === 'completed' && state.view !== 'client') acts.appendChild(h('button', { class: 'btn ghost', type: 'button', onclick: archive }, 'Archive assessment'));
+    acts.appendChild(status);
     return h('section', { class: 'hero', 'aria-labelledby': 'hero-h' },
       h('div', { class: 'hero-top' }, h('div', null,
         h('p', { class: 'hero-eyebrow' }, 'Sovereign IQ · ' + MODE_INFO[state.mode].label + ' assessment'),
@@ -704,6 +711,17 @@
           h('td', null, q.allowedZone.length ? q.allowedZone.map(zoneName).join(', ') : 'No restriction'),
           h('td', null, q.floor ? 'Law: ' + regimeName(q.floor.regime) + (q.floor.provisional ? ' (provisional – confirm)' : '') : q.choice && q.choice !== 'unknown' ? 'Board choice' : 'Legal minimum only'));
       })))), 'wide'));
+    var dom = (r.maturity.byDomain || []).filter(function (d) { return d.score >= 0; });
+    if (dom.length >= 3) {
+      grid.appendChild(card('Maturity by area', 'Share of each area\'s required controls in place; the outer ring is 100, the dashed line 80 (sovereign-ready)', h('div', { class: 'radar-wrap' }, C.radar({
+        label: 'Maturity by area: ' + dom.map(function (d) { return d.label + ' ' + d.score + ' of 100'; }).join('; '),
+        max: 4, levels: ['25', '50', '75', '100'],
+        axes: dom.map(function (d) { return { label: d.label, today: d.score / 25, todayLabel: d.score + ' of 100', target: 3.2, targetLabel: '80' }; })
+      }), h('ul', { class: 'legend' }, h('li', null, h('i', { class: 'lg-today', 'aria-hidden': 'true' }), h('span', null, 'Today')), h('li', null, h('i', { class: 'lg-target', 'aria-hidden': 'true' }), h('span', null, 'Sovereign-ready (80)'))))));
+    }
+    var sevParts = SEVERITIES.map(function (k) { var n = r.findings.filter(function (f) { return f.severity === k; }).length; return { value: n, color: SEV_COLOR[k], label: k, display: n }; });
+    grid.appendChild(card('Findings by severity', 'Gaps, scope confirmations and decisions', h('div', { class: 'donut-wrap' }, C.donut({ label: 'Findings by severity: ' + sevParts.map(function (x) { return x.label + ' ' + x.value; }).join(', '), parts: sevParts, center: String(r.findings.length), sub: 'findings' }), C.legend(sevParts))));
+    grid.appendChild(card('Regulation heatmap', 'Regulations in scope by market; red, amber or green against your controls, grey where no duty is rated', regulationHeatmap(r), 'wide'));
     grid.appendChild(card('Control heatmap', 'Each required control by the level that needs it; green in place, amber to red below, grey unconfirmed or not answered', controlHeatmap(r), 'wide'));
     var top = r.topGaps.map(function (id) { return typeof id === 'string' ? r.findings.find(function (f) { return f.id === id; }) : id; }).filter(Boolean);
     if (top.length) grid.appendChild(card('Top gaps', 'Where to start', h('div', null, top.map(findingCard)), 'wide'));
@@ -720,6 +738,48 @@
     }).filter(function (x) { return x.cells.length; });
     if (!data.length) return h('p', { class: 'muted' }, 'No control is required at the level you set.');
     return C.heatmap({ label: 'Control heatmap: ' + data.map(function (x) { return x.label + ': ' + x.cells.map(function (c) { return c.title; }).join('; '); }).join('. '), rows: data });
+  }
+
+  function regulationHeatmap(r) {
+    var exp = {};
+    r.exposure.regimes.forEach(function (e) { exp[e.regime] = e; });
+    var markets = [['eu_uk', 'EU and UK'], ['us', 'United States'], ['apac', 'Asia-Pacific']];
+    var cls = { red: 'gap3', amber: 'gap2', green: 'gap0', not_rated: 'unknown' };
+    var rows = markets.map(function (m) {
+      var regs = inScope(r).filter(function (g) { var info = schema.regimes.find(function (x) { return x.id === g.regime; }); return info && info.market === m[0]; });
+      return { label: m[1], cells: regs.map(function (g) { var e = exp[g.regime] || {}; var word = GRADE[g.grade] + (e.rag && e.rag !== 'not_rated' ? ' · ' + RAG[e.rag] : ''); return { label: g.name, sub: word, cls: cls[e.rag] || 'unknown', title: g.name + ': ' + word }; }) };
+    }).filter(function (x) { return x.cells.length; });
+    if (!rows.length) return h('p', { class: 'muted' }, 'No regulation is in scope on these answers.');
+    return C.heatmap({ label: 'Regulation heatmap: ' + rows.map(function (x) { return x.label + ': ' + x.cells.map(function (c) { return c.title; }).join('; '); }).join('. '), rows: rows });
+  }
+
+  /** The report PDF or backlog CSV of the completed assessment, built on the server from the stored result. */
+  async function download(format, btn, status) {
+    var q = new URLSearchParams({ assessmentId: state.assessmentId, format: format });
+    if (state.view === 'client') q.set('view', 'client');
+    btn.disabled = true;
+    status.textContent = format === 'pdf' ? 'Preparing the report…' : 'Preparing the backlog…';
+    try {
+      var request = API.fetch(REPORT + '?' + q.toString(), { method: 'GET' });
+      var res = format === 'pdf'
+        ? await working(['Reading the stored result', 'Laying out the LTM report', 'Adding the heatmaps and the roadmap', 'Adding methodology and sources'], request, 'Report ready')
+        : await request;
+      if (res.status !== 200) {
+        var err = await res.json().catch(function () { return {}; });
+        status.textContent = err.message || 'The file could not be produced. Please try again.';
+        return;
+      }
+      var name = /filename="([^"]+)"/.exec(res.headers.get('Content-Disposition') || '');
+      var url = URL.createObjectURL(await res.blob());
+      var a = h('a', { href: url, download: name ? name[1] : 'sovereign-iq.' + format });
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(function () { URL.revokeObjectURL(url); }, 10000);
+      status.textContent = 'Downloaded.';
+    } catch (e) {
+      status.textContent = 'The file could not be produced. Please try again.';
+    } finally {
+      btn.disabled = false;
+    }
   }
 
   function regulationsPanel(p, r) {

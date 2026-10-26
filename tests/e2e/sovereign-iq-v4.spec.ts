@@ -12,6 +12,8 @@ import AxeBuilder from '@axe-core/playwright';
 import { handler as scoreHandler } from '../../amplify/functions/evaluate-sovereign-iq/handler';
 import { createHandler } from '../../amplify/functions/manage-sovereign-assessment/handler';
 import { memoryStore } from '../../amplify/functions/manage-sovereign-assessment/store';
+import { createHandler as createReportHandler } from '../../amplify/functions/sovereign-iq-report/handler';
+import { readFileSync } from 'node:fs';
 import { setPermissionSource } from '../../amplify/functions/_shared/access';
 import { QUESTIONS } from '../../packages/engine-core/src/accelerators/sovereign-iq/v4';
 
@@ -31,10 +33,18 @@ let scored: Array<{ query: Record<string, string>; data: any }>;
 test.beforeEach(async ({ context, world }) => {
   setPermissionSource(async () => ({ take: ['sovereign-iq'] }));
   scored = [];
-  const persistence = createHandler(memoryStore());
+  const store = memoryStore();
+  const persistence = createHandler(store);
+  const report = createReportHandler(store);
   world.on('POST', '/api/evaluate/sovereign-iq/v4', async req => { const out = await lambda(scoreHandler, req); scored.push({ query: req.query, data: out.body.data }); return out; });
   world.on('GET', '/api/sovereign-iq/assessment', req => lambda(persistence, req));
   world.on('POST', '/api/sovereign-iq/assessment', req => lambda(persistence, req));
+  world.on('GET', '/api/sovereign-iq/report', async req => {
+    const out: any = await report({ headers: {}, queryStringParameters: req.query, requestContext: { requestId: 'e2e', http: { method: 'GET' }, authorizer: { jwt: { claims: req.claims } } } } as any);
+    if (out.statusCode !== 200) return { status: out.statusCode, body: JSON.parse(out.body) };
+    const { 'Content-Type': type, 'Content-Disposition': disposition } = out.headers;
+    return { body: null, raw: { body: out.isBase64Encoded ? Buffer.from(out.body, 'base64') : out.body, headers: { 'content-type': type, 'content-disposition': disposition } } };
+  });
   await signedIn(context, { email: EMAIL, token: makeIdToken(EMAIL), role: 'super_admin', permissions: {} });
 });
 
@@ -131,7 +141,7 @@ test('executive: every question asked renders and can be answered; complete; bot
   const url = page.url();
   await page.goto(url);
   await expect(page.locator('#hero-h')).toHaveText('Example Bank');
-  expect(scored.every(s => s.data?.versions?.engine === '4.1.0')).toBe(true);
+  expect(scored.every(s => s.data?.versions?.engine === '4.2.0')).toBe(true);
 });
 
 test('workshop: the per-class requirement rows follow the data chosen, and the follow-ups appear', async ({ page }) => {
@@ -140,7 +150,7 @@ test('workshop: the per-class requirement rows follow the data chosen, and the f
   const seen = await answerAll(page);
   for (const id of QUESTIONS.filter(q => q.mode !== 'follow_up').map(q => q.id)) expect(seen.has(id), id).toBe(true);
   await page.locator('nav.steps button', { hasText: 'Sovereignty requirement' }).click();
-  await expect(page.locator('#q-L2 .class-row h4')).toHaveText(['Personal data']);
+  await expect(page.locator('#q-L2 .class-row h4')).toHaveText(['Personal']);
   expect(seen.has('B5'), 'an EU bank is asked about its ICT register').toBe(true);
   await complete(page);
   await page.getByRole('tab', { name: 'Controls' }).click();
@@ -226,4 +236,18 @@ test('every form control has an accessible name', async ({ page }) => {
     }).map(e => e.outerHTML.slice(0, 100)));
     expect(unnamed, label).toEqual([]);
   }
+});
+
+test('the completed assessment downloads its report PDF and backlog CSV; the overview shows the radar and the heatmaps', async ({ page }) => {
+  test.setTimeout(120_000);
+  await start(page, 'workshop', 'Report Bank');
+  await answerAll(page);
+  await complete(page);
+  for (const title of ['Maturity by area', 'Findings by severity', 'Regulation heatmap', 'Control heatmap']) await expect(page.getByRole('heading', { name: title })).toBeVisible();
+  const [pdf] = await Promise.all([page.waitForEvent('download'), page.getByRole('button', { name: 'Download report (PDF)' }).click()]);
+  expect(pdf.suggestedFilename()).toMatch(/^sovereign-iq-report-bank-\d{4}-\d{2}-\d{2}\.pdf$/);
+  expect(readFileSync((await pdf.path())!).subarray(0, 5).toString()).toBe('%PDF-');
+  await expect(page.locator('#report-status')).toHaveText('Downloaded.');
+  const [csv] = await Promise.all([page.waitForEvent('download'), page.getByRole('button', { name: 'Download backlog (CSV)' }).click()]);
+  expect(readFileSync((await csv.path())!, 'utf8')).toMatch(/ID,Wave,Severity/);
 });

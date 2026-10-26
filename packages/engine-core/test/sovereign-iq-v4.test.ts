@@ -64,6 +64,9 @@ describe('Sovereign IQ v4 data files', () => {
       expect(QUESTIONS.some(q => q.feeds.controls?.includes(c.id)), c.id).toBe(true);
     }
     expect(CONTROLS).toHaveLength(28);
+    // Every scored control sits in exactly one maturity area.
+    const domains = (require('../src/accelerators/sovereign-iq/v4/controls.json') as any).domains as Array<{ controls: string[] }>;
+    for (const c of CONTROLS.filter(c => c.scored !== false)) expect(domains.filter(d => d.controls.includes(c.id)), c.id).toHaveLength(1);
     expect(CONTROLS.filter(c => c.exec).map(c => c.id)).toHaveLength(10);
   });
 

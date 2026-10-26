@@ -3,6 +3,7 @@ import { manageResilienceAssessmentFunction } from '../functions/manage-resilien
 import { manageResilienceEvidenceFunction } from '../functions/manage-resilience-evidence/resource';
 import { manageFinOpsAssessmentFunction } from '../functions/manage-finops-assessment/resource';
 import { manageSovereignAssessmentFunction } from '../functions/manage-sovereign-assessment/resource';
+import { sovereignIqReportFunction } from '../functions/sovereign-iq-report/resource';
 import { finopsIqReportFunction } from '../functions/finops-iq-report/resource';
 
 /**
@@ -219,6 +220,7 @@ const schema = a.schema({
   allow.resource(manageResilienceEvidenceFunction).to(['query', 'mutate']),
   allow.resource(manageFinOpsAssessmentFunction).to(['query', 'mutate']),
   allow.resource(manageSovereignAssessmentFunction).to(['query', 'mutate']),
+  allow.resource(sovereignIqReportFunction).to(['query']),
   // The report reads completed assessments only.
   allow.resource(finopsIqReportFunction).to(['query'])
 ]);

@@ -35,7 +35,13 @@ export type Block =
   | { kind: 'list'; items: Seg[][]; small?: boolean }
   | { kind: 'table'; head: string[]; rows: Seg[][][]; widths?: Array<number | '*' | 'auto'>; small?: boolean }
   | { kind: 'kpis'; items: Array<{ label: string; value: Seg[]; note?: Seg[] }> }
-  | { kind: 'callout'; title?: string; segs: Seg[]; tone?: 'info' | 'warn' };
+  | { kind: 'callout'; title?: string; segs: Seg[]; tone?: 'info' | 'warn' }
+  /** A grid of labelled cells by row, each coloured by tone (good, partial, weak, bad, unknown), with an optional legend. */
+  | { kind: 'heatmap'; rows: Array<{ label: string; cells: Array<{ label: string; note?: string; tone: Tone }> }>; legend?: Array<{ tone: Tone; label: string }> }
+  /** Horizontal bars, 0 to max, each with its shown value (a traced segment) and tone. */
+  | { kind: 'bars'; max: number; items: Array<{ label: string; value: number; shown: Seg[]; tone: Tone }> };
+
+export type Tone = 'good' | 'partial' | 'weak' | 'bad' | 'unknown';
 
 export interface ReportSection {
   id: string;
@@ -81,6 +87,7 @@ export function walkSegments(doc: ReportDocument, visit: (seg: Seg, section: Rep
         : b.kind === 'list' ? b.items
         : b.kind === 'table' ? b.rows.flat()
         : b.kind === 'kpis' ? b.items.flatMap(i => [i.value, ...(i.note ? [i.note] : [])])
+        : b.kind === 'bars' ? b.items.map(i => i.shown)
         : [];
       for (const run of runs) for (const seg of run) visit(seg, section);
     }

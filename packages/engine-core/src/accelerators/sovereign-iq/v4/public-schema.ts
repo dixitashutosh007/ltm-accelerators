@@ -19,8 +19,12 @@ export const STEPS = [
 ] as const;
 
 export const ZONE_LABELS: Record<string, string> = Object.fromEntries((QUESTIONS.find(q => q.id === 'A1')!.options as any[]).map(o => [o.value, o.label]));
-export const DATA_CLASS_LABELS: Record<string, string> = Object.fromEntries(
-  (QUESTIONS.find(q => q.id === 'D1')!.options as any[]).filter(o => (DATA_CLASSES as string[]).includes(o.value)).map(o => [o.value, o.label.split(':')[0].replace(/ about .*/, '')]));
+/** Short names for the kinds of data, for tables, charts and the report (D1 carries the full wording). */
+export const DATA_CLASS_LABELS: Record<string, string> = {
+  personal: 'Personal', special: 'Sensitive personal', financial: 'Financial and payment', ai_training: 'AI training',
+  proprietary: 'Proprietary', government: 'Government', ot_ci: 'OT and critical infrastructure'
+};
+for (const c of DATA_CLASSES) if (!DATA_CLASS_LABELS[c]) throw new Error(`public-schema: no short name for data class ${c}`);
 export const LEVEL_LABELS: Record<string, string> = { L0: 'L0 No location requirement', L1: 'L1 Residency', L2: 'L2 Residency with access control and key custody', L3: 'L3 Operational sovereignty', L4: 'L4 Jurisdictional immunity or disconnected' };
 
 const stripOption = ({ state, ...o }: any) => o;

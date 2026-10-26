@@ -371,6 +371,13 @@ The 28 P claims cite a primary URL whose article text was not re-read. They are 
 
 **Gate S6:** visual review of PDFs for the five archetypes; trace test passes; backlog imports cleanly into a spreadsheet.
 
+
+**Status (26 Oct 2026): built, for the owner's review.** Engine 4.2.0 adds maturity by control area (ten areas in `controls.json`; empty when no headline number is shown).
+- **Report** (`v4/report.ts`) in the FinOps IQ format, on the shared report model and PDF renderer: cover and contents; executive summary (lead, five headline figures, "Where to start", decisions and confirmations, the not-legal-advice callout); required level by kind of data; control maturity (bars by area, heatmap by level, the controls); compliance exposure (heatmap by market, the regulations with grade, reason, rating and statutory maximum, foreign-access exposure); findings; roadmap by wave; methodology; sources; consultant checks (consultant edition only: regulations that do not apply with their rule, items pending a source, engine notes, consultant notes). Every number is a traced segment matched to the engine result; registry text cites its claims and no claim ID is shown. The shared renderer gains two chart blocks, `heatmap` and `bars`, available to every accelerator.
+- **Backlog CSV:** one row per finding in roadmap order.
+- **Service:** `GET /api/sovereign-iq/report?assessmentId=&format=pdf|csv&view=client` (`sovereign-iq-report`), completed assessments only, ownership checked, behind the authorizer and the access check.
+- **Page:** Download report (PDF) and backlog (CSV) in the result header; the overview adds a radar of maturity by area, findings by severity and a regulation heatmap by market.
+- **Tests:** `sovereign-iq-v4-report.test.ts` (sections, traced numbers, charts, client edition, backlog, PDF renders), report service tests, and a browser test that downloads both files. Full suites: 911 unit tests and 83 browser tests pass.
 ---
 
 ## S7: Platform playbook entries (WS-S3)

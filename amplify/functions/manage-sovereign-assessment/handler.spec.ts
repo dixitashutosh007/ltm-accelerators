@@ -11,6 +11,7 @@ import { createHandler } from './handler';
 import { memoryStore, type SovereignAssessmentStore } from './store';
 import { handler as scoreHandler } from '../evaluate-sovereign-iq/handler';
 import { setPermissionSource } from '../_shared/access';
+import { createHandler as createReportHandler } from '../sovereign-iq-report/handler';
 
 const ARCHETYPES: any[] = JSON.parse(readFileSync(join(__dirname, '../../../docs/cio-readiness/sovereign-iq/design/archetypes.json'), 'utf8')).archetypes;
 const ARC1 = ARCHETYPES.find(a => a.id === 'ARC1_EU_BANK_DORA')!.answers;
@@ -63,7 +64,7 @@ describe('Sovereign IQ assessment API', () => {
     expect(done.status).toBe(200);
     expect(done.body.data.result.assessmentDate).toBe('2026-10-26');
     expect(done.body.data.result.maturity.score).toBe(55);
-    expect(done.body.data.result.versions.engine).toBe('4.1.0');
+    expect(done.body.data.result.versions.engine).toBe('4.2.0');
   });
 
   it('a completed assessment is immutable: it can be archived or deleted, not changed', async () => {
@@ -116,7 +117,7 @@ describe('POST /api/evaluate/sovereign-iq/v4', () => {
   it('scores with the v4 engine, dated today on the server, whatever date the browser sends', async () => {
     const res = await score({ mode: 'workshop', answers: ARC1, assessmentDate: '1999-01-01' });
     expect(res.status).toBe(200);
-    expect(res.body.data.versions.engine).toBe('4.1.0');
+    expect(res.body.data.versions.engine).toBe('4.2.0');
     expect(res.body.data.assessmentDate).toBe(new Date().toISOString().slice(0, 10));
     expect(res.body.data.asked).toContain('L2');
   });
@@ -126,6 +127,27 @@ describe('POST /api/evaluate/sovereign-iq/v4', () => {
   });
   it('the current page\'s plain route still scores with the current engine', async () => {
     const res = await call(event('POST', { body: {}, path: '/api/evaluate/sovereign-iq' }), scoreHandler);
-    expect(res.body.data?.versions?.engine).not.toBe('4.1.0');
+    expect(res.body.data?.versions?.engine).not.toBe('4.2.0');
+  });
+});
+
+describe('GET /api/sovereign-iq/report', () => {
+  const report = (query: Record<string, string>, claims?: Record<string, unknown>) => createReportHandler(store)(event('GET', { query, claims, path: '/api/sovereign-iq/report' })) as Promise<APIGatewayProxyStructuredResultV2>;
+  it('a completed assessment gives a PDF and a backlog CSV, in either edition', async () => {
+    await save({ status: 'completed' }, 'complete');
+    const pdf = await report({ assessmentId: 'SIQ-0001-test', format: 'pdf' });
+    expect(pdf.statusCode).toBe(200);
+    expect(Buffer.from(String(pdf.body), 'base64').subarray(0, 5).toString()).toBe('%PDF-');
+    expect(String(pdf.headers!['Content-Disposition'])).toMatch(/sovereign-iq-example-bank-2026-10-26\.pdf/);
+    const client = await report({ assessmentId: 'SIQ-0001-test', format: 'pdf', view: 'client' });
+    expect(String(client.headers!['Content-Disposition'])).toMatch(/-client\.pdf/);
+    const csv = await report({ assessmentId: 'SIQ-0001-test', format: 'csv' });
+    expect(String(csv.body).split('\n')[0]).toMatch(/^\ufeff?ID,Wave,Severity/);
+  }, 60_000);
+  it('a draft has no report; another user cannot read it; a bad format is refused', async () => {
+    await save();
+    expect((await report({ assessmentId: 'SIQ-0001-test' })).statusCode).toBe(409);
+    expect((await report({ assessmentId: 'SIQ-0001-test' }, { email: 'other@example.com' })).statusCode).toBe(403);
+    expect((await report({ assessmentId: 'SIQ-0001-test', format: 'docx' })).statusCode).toBe(400);
   });
 });

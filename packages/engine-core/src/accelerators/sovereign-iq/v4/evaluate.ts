@@ -18,7 +18,7 @@ import claimsRegister from '../../../claims/claims-register.json' with { type: '
 import { evaluate as holds, isUnknown, type Condition, type ConditionContext } from './conditions';
 import { DATA_CLASSES, LEVELS, PEOPLE_CLASSES, personalOutsideSubjects, personalTransfer, platformParents, scopeFacts, type Answers, type DataClass, type Facts, type Level } from './facts';
 
-export const ENGINE_VERSION = '4.1.0';
+export const ENGINE_VERSION = '4.2.0';
 /**
  * S4 calibration: the smallest required set over which one answer moves maturity by at most 20 points (T2 aside).
  * Below it no maturity number is shown, in either mode (owner decisions, 25 and 26 Oct 2026).
@@ -46,6 +46,7 @@ const PREDICATES = (registry as any).predicates as Record<string, Condition>;
 const WEIGHT: Record<string, number> = (catalogue as any).weights;
 const CONTROL = new Map<string, any>(CONTROLS.map(c => [c.id, c]));
 const QUESTION = new Map<string, any>(QUESTIONS.map(q => [q.id, q]));
+const REGIME_NAME = new Map<string, string>(REGIMES.map(r => [r.id, r.name]));
 const RATES = (fx as any).rates as Record<string, { rate: number; claim?: string }>;
 const LEVEL_NUM = (l: Level) => LEVELS.indexOf(l);
 const SEVERITY_ORDER: Severity[] = ['Critical', 'High', 'Medium', 'Low'];
@@ -127,6 +128,8 @@ export interface SovereignIqV4Result {
     score: number | null; band: string | null; wording: string; withheld: boolean;
     controlsAssessed: number; requiredControls: number; coverage: number; provisional: boolean;
     unconfirmed: string[]; notAnswered: string[]; label: string | null;
+    /** Maturity by control area (controls.json domains); empty when no headline number is shown. */
+    byDomain: Array<{ domain: string; label: string; score: number; controls: number }>;
   };
   controls: ControlResult[];
   exposure: { regimes: ExposureResult[]; summary: string; largestCap: CapFigure | null; capNote: string };
@@ -506,6 +509,11 @@ export function evaluateSovereignIqV4(input: SovereignIqV4Input): SovereignIqV4R
     Developing: 'Some required controls in place; material gaps remain', Exposed: 'Controls do not yet meet the level your data requires'
   }[band!]!;
   const coverage = wSum ? answeredWeight / wSum : 1;
+  const byDomain = score == null ? [] : ((catalogue as any).domains as Array<{ id: string; label: string; controls: string[] }>).map(d => {
+    const rs = results.filter(r => d.controls.includes(r.control));
+    const w = rs.reduce((a, r) => a + r.weight, 0);
+    return { domain: d.id, label: d.label, score: w ? Math.round((100 * rs.reduce((a, r) => a + r.weight * r.score, 0)) / w) : -1, controls: rs.length };
+  }).filter(d => d.controls > 0);
   const totalRequiredControls = mode === 'executive' ? countRequired(classes, reqOf, regimeRows, aiUsed, platforms) : results.length;
 
   // Exposure view (DESIGN 7.2).
@@ -663,7 +671,8 @@ export function evaluateSovereignIqV4(input: SovereignIqV4Input): SovereignIqV4R
     maturity: {
       score, band, wording, withheld, controlsAssessed: results.length, requiredControls: totalRequiredControls, coverage: Math.round(coverage * 100) / 100,
       provisional: coverage < 0.6, unconfirmed: results.filter(r => r.unconfirmed).map(r => r.control), notAnswered: results.filter(r => r.notAnswered).map(r => r.control),
-      label: mode === 'executive' ? `Executive maturity, ${results.length} of ${totalRequiredControls} required controls assessed` : null
+      label: mode === 'executive' ? `Executive maturity, ${results.length} of ${totalRequiredControls} required controls assessed` : null,
+      byDomain
     },
     controls: results,
     exposure: {
@@ -713,7 +722,7 @@ const STATE_WORD = (s: State) => (s === 3 ? 'in place' : s === 2 || s === 1 ? 'p
 function consequence(c: any, r: ControlResult, level: Level | null, missing: Array<{ regime: string; routes: string[] }>): string {
   const parts = [`${c.name} is ${STATE_WORD(r.state)}${r.byClass ? ` for ${Object.entries(r.byClass).filter(([, s]) => s !== 3).map(([k]) => k).join(', ')} data` : ''}.`];
   if (level && r.requiredBy.levels.length) parts.push(`The ${level} level set for this data requires it.`);
-  if (r.requiredBy.regimes.length) parts.push(`Required by ${r.requiredBy.regimes.map(x => `${x.regime.replace(/_/g, ' ')} (${articleOf(x.basis)})`).join('; ')}.`);
-  if (c.id === 'SOV.XFER.BASIS' && missing.length) parts.push(`No transfer route recorded for ${missing.map(m => m.regime.replace(/_/g, ' ')).join(', ')}.`);
+  if (r.requiredBy.regimes.length) parts.push(`Required by ${r.requiredBy.regimes.map(x => `${REGIME_NAME.get(x.regime) ?? x.regime} (${articleOf(x.basis)})`).join('; ')}.`);
+  if (c.id === 'SOV.XFER.BASIS' && missing.length) parts.push(`No transfer route recorded for ${missing.map(m => REGIME_NAME.get(m.regime) ?? m.regime).join(', ')}.`);
   return parts.join(' ');
 }

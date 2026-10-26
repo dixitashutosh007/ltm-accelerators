@@ -21,6 +21,7 @@ import { manageResilienceEvidenceFunction } from './functions/manage-resilience-
 import { manageResilienceAssessmentFunction } from './functions/manage-resilience-assessment/resource';
 import { manageFinOpsAssessmentFunction } from './functions/manage-finops-assessment/resource';
 import { manageSovereignAssessmentFunction } from './functions/manage-sovereign-assessment/resource';
+import { sovereignIqReportFunction } from './functions/sovereign-iq-report/resource';
 import { finopsIqReportFunction } from './functions/finops-iq-report/resource';
 import {
   ADMIN_GROUP, API_GATEWAY_CORS_ORIGINS, API_BURST_LIMIT, API_RATE_LIMIT, KEEP_LEGACY_API,
@@ -43,6 +44,7 @@ export const backend = defineBackend({
   manageResilienceAssessmentFunction,
   manageFinOpsAssessmentFunction,
   manageSovereignAssessmentFunction,
+  sovereignIqReportFunction,
   finopsIqReportFunction
 });
 
@@ -81,7 +83,7 @@ for (const fn of [
   backend.evaluateFinOpsIqFunction, backend.manageFinOpsAssessmentFunction, backend.finopsIqReportFunction,
   backend.evaluatePostureIqFunction, backend.evaluateSovereignIqFunction, backend.evaluateCloudIqFunction,
   backend.evaluateStrategyIqFunction, backend.evaluateModernizationIqFunction, backend.evaluateResilienceIqFunction,
-  backend.manageResilienceAssessmentFunction, backend.manageResilienceEvidenceFunction, backend.manageSovereignAssessmentFunction
+  backend.manageResilienceAssessmentFunction, backend.manageResilienceEvidenceFunction, backend.manageSovereignAssessmentFunction, backend.sovereignIqReportFunction
 ]) {
   fn.addEnvironment('REPORTS_BUCKET', REPORTS_BUCKET);
   fn.addEnvironment('SUPER_ADMIN_EMAILS', SUPER_ADMIN_EMAILS);
@@ -149,6 +151,7 @@ const integrations = {
   finopsIq: integrate('AdvisoryFinOpsIq', backend.evaluateFinOpsIqFunction),
   finopsAssessment: integrate('AdvisoryFinOpsIqAssessment', backend.manageFinOpsAssessmentFunction),
   sovereignAssessment: integrate('AdvisorySovereignIqAssessment', backend.manageSovereignAssessmentFunction),
+  sovereignReport: integrate('AdvisorySovereignIqReport', backend.sovereignIqReportFunction),
   finopsReport: integrate('AdvisoryFinOpsIqReport', backend.finopsIqReportFunction),
   posture: integrate('AdvisoryPostureIq', backend.evaluatePostureIqFunction),
   sovereign: integrate('AdvisorySovereignIq', backend.evaluateSovereignIqFunction),
@@ -174,6 +177,7 @@ route('/api/evaluate/sovereign-iq', [HttpMethod.POST], integrations.sovereign);
 // the switch-over.
 route('/api/evaluate/sovereign-iq/v4', [HttpMethod.POST], integrations.sovereign);
 route('/api/sovereign-iq/assessment', [HttpMethod.GET, HttpMethod.POST], integrations.sovereignAssessment);
+route('/api/sovereign-iq/report', [HttpMethod.GET], integrations.sovereignReport);
 route('/api/evaluate/cloud-iq', [HttpMethod.POST], integrations.cloud);
 route('/api/evaluate/strategy-iq', [HttpMethod.POST], integrations.strategy);
 route('/api/evaluate/modernization-iq', [HttpMethod.POST], integrations.modernization);

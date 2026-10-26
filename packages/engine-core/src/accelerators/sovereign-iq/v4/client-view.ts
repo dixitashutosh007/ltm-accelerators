@@ -33,7 +33,7 @@ export function clientView(result: SovereignIqV4Result) {
       score: r.maturity.score, band: r.maturity.band, wording: r.maturity.wording, withheld: r.maturity.withheld,
       controlsAssessed: r.maturity.controlsAssessed, requiredControls: r.maturity.requiredControls,
       coverage: r.maturity.coverage, provisional: r.maturity.provisional, label: r.maturity.label,
-      unconfirmed: r.maturity.unconfirmed.length, notAnswered: r.maturity.notAnswered.length
+      unconfirmed: r.maturity.unconfirmed.length, notAnswered: r.maturity.notAnswered.length, byDomain: r.maturity.byDomain
     },
     controls: r.controls.map(c => ({
       control: c.control, name: c.name, status: word(c.state),
