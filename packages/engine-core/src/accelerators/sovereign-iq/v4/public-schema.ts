@@ -5,7 +5,7 @@
  * Written to Accelerators/assets/sovereign-iq/questions.json by `npm run build:sovereign-iq-questions`.
  */
 import { CONTROLS, QUESTIONS, REGIMES, ENGINE_VERSION, MIN_SCORED_CONTROLS } from './evaluate';
-import { DATA_CLASSES } from './facts';
+import { DATA_CLASSES, DATA_CLASS_LABELS } from './facts';
 import { LADDER } from './advisory';
 import { SEAL } from './seal';
 
@@ -21,11 +21,7 @@ export const STEPS = [
 ] as const;
 
 export const ZONE_LABELS: Record<string, string> = Object.fromEntries((QUESTIONS.find(q => q.id === 'A1')!.options as any[]).map(o => [o.value, o.label]));
-/** Short names for the kinds of data, for tables, charts and the report (D1 carries the full wording). */
-export const DATA_CLASS_LABELS: Record<string, string> = {
-  personal: 'Personal', special: 'Sensitive personal', financial: 'Financial and payment', ai_training: 'AI training',
-  proprietary: 'Proprietary', government: 'Government', ot_ci: 'OT and critical infrastructure'
-};
+export { DATA_CLASS_LABELS };
 for (const c of DATA_CLASSES) if (!DATA_CLASS_LABELS[c]) throw new Error(`public-schema: no short name for data class ${c}`);
 /** Names for the platforms of the playbook and the placement matrix (page and report share them). */
 export const PLATFORM_LABELS: Record<string, string> = {

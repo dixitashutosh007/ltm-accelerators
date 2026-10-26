@@ -78,15 +78,18 @@ describe('Sovereign IQ report', () => {
     }
   });
 
-  it('the client edition shows no rule IDs, claim IDs, consultant notes or list of regulations that do not apply', () => {
+  it('the client edition shows no rule IDs, claim IDs or consultant notes, and lists the regulations that do not apply only in their appendix', () => {
     for (const x of runs.filter(y => y.view === 'client')) {
       const t = allText(x.doc);
       expect(t, x.label).not.toMatch(/\[[A-Z]{2}_[A-Z0-9_]+\.\d+\]|CLM-[A-Z]+-\d+|Board wants L3/);
+      // S6 challenge Q8: the list is shown to the client, with the reason, in one appendix and nowhere else.
+      const na = x.doc.sections.find(s => s.id === 'not-applicable')!;
+      expect(na, x.label).toBeTruthy();
       for (const g of x.r.regimes.filter(g => g.grade === 'not_applicable')) {
-        // The Sources appendix may cite a statute as a source (e.g. Data Act switching rights for an exit plan); that is not
-        // a list of regulations that do not apply.
-        const tables = x.doc.sections.filter(s => s.id !== 'sources').flatMap(s => s.blocks).filter(b => b.kind === 'table') as any[];
+        // The Sources appendix may cite a statute as a source (e.g. Data Act switching rights for an exit plan).
+        const tables = x.doc.sections.filter(s => s.id !== 'sources' && s.id !== 'not-applicable').flatMap(s => s.blocks).filter(b => b.kind === 'table') as any[];
         expect(tables.some(tb => tb.rows.some((row: any) => text(row[0]) === g.name)), `${x.label} ${g.regime}`).toBe(false);
+        expect((na.blocks[0] as any).rows.some((row: any) => text(row[0]) === g.name), `${x.label} ${g.regime} listed`).toBe(true);
       }
     }
   });

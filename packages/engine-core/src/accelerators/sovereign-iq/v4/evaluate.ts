@@ -19,9 +19,9 @@ import { evaluate as holds, isUnknown, type Condition, type ConditionContext } f
 import { advisory as cloudAdvisory, type Advisory } from './advisory';
 import { sealView, tenderLevel, type SealView } from './seal';
 import { howLtmCanHelp, type HelpItem } from './help';
-import { DATA_CLASSES, LEVELS, PEOPLE_CLASSES, personalOutsideSubjects, personalTransfer, platformParents, scopeFacts, type Answers, type DataClass, type Facts, type Level } from './facts';
+import { DATA_CLASSES, DATA_CLASS_LABELS, LEVELS, PEOPLE_CLASSES, personalOutsideSubjects, personalTransfer, platformParents, scopeFacts, type Answers, type DataClass, type Facts, type Level } from './facts';
 
-export const ENGINE_VERSION = '4.5.0';
+export const ENGINE_VERSION = '4.6.0';
 /**
  * S4 calibration: the smallest required set over which one answer moves maturity by at most 20 points (T2 aside).
  * Below it no maturity number is shown, in either mode (owner decisions, 25 and 26 Oct 2026).
@@ -50,6 +50,10 @@ const WEIGHT: Record<string, number> = (catalogue as any).weights;
 const CONTROL = new Map<string, any>(CONTROLS.map(c => [c.id, c]));
 const QUESTION = new Map<string, any>(QUESTIONS.map(q => [q.id, q]));
 const REGIME_NAME = new Map<string, string>(REGIMES.map(r => [r.id, r.name]));
+const ZONE_NAME = new Map<string, string>((QUESTION.get('A1').options as any[]).map(o => [o.value, o.label]));
+/** Display names in finding text (S6 challenge D11): the lower-case short name of a kind of data, a zone's name. */
+const dataName = (c: string) => { const l = DATA_CLASS_LABELS[c] ?? c; return /^[A-Z][a-z]/.test(l) ? l[0].toLowerCase() + l.slice(1) : l; };
+const zoneName = (z: string) => ZONE_NAME.get(z) ?? z;
 const RATES = (fx as any).rates as Record<string, { rate: number; claim?: string }>;
 const LEVEL_NUM = (l: Level) => LEVELS.indexOf(l);
 const SEVERITY_ORDER: Severity[] = ['Critical', 'High', 'Medium', 'Low'];
@@ -516,8 +520,8 @@ export function evaluateSovereignIqV4(input: SovereignIqV4Input): SovereignIqV4R
   // agreed 20 points (S4 calibration).
   const withheld = results.length > 0 && results.length < MIN_SCORED_CONTROLS;
   const score = wSum && !withheld ? Math.round((100 * results.reduce((a, r) => a + r.weight * r.score, 0)) / wSum) : null;
-  const band = score == null ? null : score >= 80 ? 'Sovereign-ready' : score >= 60 ? 'Managed' : score >= 40 ? 'Developing' : 'Exposed';
-  const wording = withheld ? (mode === 'executive'
+  let band = score == null ? null : score >= 80 ? 'Sovereign-ready' : score >= 60 ? 'Managed' : score >= 40 ? 'Developing' : 'Exposed';
+  let wording = withheld ? (mode === 'executive'
     ? `Too few required controls are measured in executive mode for a reliable score (${results.length}); the workshop gives the score`
     : `Too few controls are required at the level you set for a reliable score (${results.length}); each control's state is shown instead`) : score == null ? 'Nothing required at the level you set' : {
     'Sovereign-ready': 'Controls meet the level your data requires', Managed: 'Most required controls in place; gaps are specific',
@@ -588,7 +592,7 @@ export function evaluateSovereignIqV4(input: SovereignIqV4Input): SovereignIqV4R
       id: `F-${r.control}`, type: 'control_gap', control: r.control, dataClasses: affected, requiredLevel: reqLevel,
       state: r.state, unconfirmed: r.unconfirmed || r.notAnswered,
       regimes: r.requiredBy.regimes.map(x => ({ regime: x.regime, grade: x.grade, article: articleOf(x.basis) })),
-      severity, title: c.remedy, businessConsequence: consequence(c, r, reqLevel, transfer.missing),
+      severity, title: c.remedy, businessConsequence: consequence(c, r, reqLevel, transfer.missing, askedSet.has('B6')),
       ownerRole: c.ownerRole, timeFrame: TIME_FRAME[severity], remedy: c.means,
       offeringRefs: c.offering ? [c.offering] : [], referral: c.referral, sources: claimsOf(r.requiredBy.regimes.map(x => x.basis)),
       mode, consultantOnly: false, rank: 0, wave: 0,
@@ -631,8 +635,8 @@ export function evaluateSovereignIqV4(input: SovereignIqV4Input): SovereignIqV4R
   for (const r of reqs.filter(x => x.zoneConflict)) findings.push({
     id: `F-CONFLICT-${++conflicts}`, type: 'conflict', control: 'SOV.RES.LOCATION', dataClasses: [r.dataClass], requiredLevel: r.required, unconfirmed: true,
     regimes: [{ regime: r.floor!.regime, grade: graded.get(r.floor!.regime)!.grade, article: '' }], severity: 'High',
-    title: `Keep ${r.dataClass} data in ${r.floor!.zone.join(', ')}: the law requires it`,
-    businessConsequence: `The regions chosen in the workshop (${r.zoneConflict!.join(', ')}) are outside the zone ${graded.get(r.floor!.regime)!.name} requires for this data. The legal requirement is applied.`,
+    title: `Keep ${dataName(r.dataClass)} data in ${r.floor!.zone.map(zoneName).join(', ')}: the law requires it`,
+    businessConsequence: `The regions chosen in the workshop (${r.zoneConflict!.map(zoneName).join(', ')}) are outside the zone ${graded.get(r.floor!.regime)!.name} requires for this data. The legal requirement is applied.`,
     ownerRole: 'CIO with General Counsel', timeFrame: TIME_FRAME.High, remedy: 'Align the allowed regions with the legal localisation requirement.',
     offeringRefs: ['OFF.DATA.RESIDENCY'], sources: [], mode, consultantOnly: false, rank: 0, wave: 0
   });
@@ -648,7 +652,7 @@ export function evaluateSovereignIqV4(input: SovereignIqV4Input): SovereignIqV4R
     const foreign = (perClass?.length ? perClass : platforms).filter(p => platformParents(p, facts).some(z => z !== 'unknown' && !r.allowedZone.includes(z)));
     if (foreign.length) findings.push({
       id: `F-DECISION-${++decisions}`, type: 'decision', dataClasses: [r.dataClass], requiredLevel: 'L4', unconfirmed: false, regimes: [], severity: 'High',
-      title: `Decide the platform for ${r.dataClass} data at L4`,
+      title: `Decide the platform for ${dataName(r.dataClass)} data at L4`,
       businessConsequence: `L4 needs providers whose parent is in the allowed region, or disconnected systems; ${foreign.join(', ')} ${foreign.length === 1 ? 'has' : 'have'} a parent outside it.`,
       ownerRole: 'CIO with General Counsel', timeFrame: TIME_FRAME.High, remedy: 'Choose a sovereign platform or a disconnected design, or lower the level.', offeringRefs: ['OFF.SOV.MIGRATION'], sources: [], mode, consultantOnly: false, rank: 0, wave: 0
     });
@@ -667,16 +671,21 @@ export function evaluateSovereignIqV4(input: SovereignIqV4Input): SovereignIqV4R
   const waves = [...new Set(findings.map(f => f.wave))].sort();
   const roadmap = waves.map(w => ({ wave: w, findings: orderInWave(findings.filter(f => f.wave === w)).map(f => f.id) }));
   const topGaps = findings.filter(f => f.type === 'control_gap' && !f.upcoming).slice(0, 5);
+  // S6 challenge D9: the top band is never shown beside a critical finding or a red regulation.
+  if (band === 'Sovereign-ready' && (findings.some(f => f.severity === 'Critical') || exposure.some(e => e.rag === 'red'))) {
+    band = 'Managed';
+    wording = findings.some(f => f.severity === 'Critical') ? 'Most required controls in place, but a critical gap remains' : 'Most required controls in place, but a regulation in scope is rated red';
+  }
 
   const notes: string[] = [];
   const zonesNoEntity = [...new Set((facts['derived.all_location_zones'] as string[]).filter(z => z !== 'unknown' && z !== 'other' && !list(facts['org.establishments']).includes(z)))];
-  if (zonesNoEntity.length) notes.push(`Data is processed in ${zonesNoEntity.join(', ')} without an entity there; processing location alone does not trigger that country's law in v1 (Q11). Confirm with counsel.`);
+  if (zonesNoEntity.length) notes.push(`Data is processed in ${zonesNoEntity.map(zoneName).join(', ')} without an entity there; this assessment does not treat processing location alone as bringing in that country's law. Confirm with counsel.`);
   if (mode === 'executive') notes.push('Requirement set at one level for all data classes; the workshop confirms it per class.');
   // S4 sourcing: Japan and Australia may not treat storage-only cloud as a transfer; the engine assumes it does.
   const cautious = list(facts['data.subject_regions']).filter(z => z === 'jp' || z === 'au');
   if (cautious.length && facts['derived.personal_transfer']) notes.push(`Storing data of people in ${cautious.map(z => (z === 'jp' ? 'Japan' : 'Australia')).join(' and ')} outside that country is treated as a transfer. Where the cloud provider only stores the data and does not handle it, ${cautious.length > 1 ? 'these laws' : 'the law'} may treat it as use rather than a transfer (APPI Art. 28; OAIC APP guidelines 8.14). Confirm with counsel.`);
 
-  const advisory = cloudAdvisory({ facts, requirements: reqs, controls: results, findings });
+  const advisory = cloudAdvisory({ facts, requirements: reqs, controls: results, findings, regimes });
   return {
     mode, assessmentDate,
     versions: {
@@ -735,10 +744,16 @@ function orderInWave(fs: Finding[]): Finding[] {
 
 const articleOf = (basis: string) => basis.replace(/\s*\[CLM-[^\]]+\]/g, '').split(';')[0].trim();
 const claimsOf = (texts: string[]) => [...new Set(texts.flatMap(t => t.match(/CLM-[A-Z]+-\d+/g) ?? []))];
-const STATE_WORD = (s: State) => (s === 3 ? 'in place' : s === 2 || s === 1 ? 'partly in place' : s === 0 ? 'not in place' : s === 'unknown' ? 'unconfirmed' : 'not answered');
+/** The same state words as the control table (S6 challenge D6: "largely" is never reported as "partly"). */
+const STATE_WORD = (s: State) => (s === 3 ? 'in place' : s === 2 ? 'largely in place' : s === 1 ? 'partly in place' : s === 0 ? 'not in place' : s === 'unknown' ? 'unconfirmed' : 'not answered');
 
-function consequence(c: any, r: ControlResult, level: Level | null, missing: Array<{ regime: string; routes: string[] }>): string {
-  const parts = [`${c.name} is ${STATE_WORD(r.state)}${r.byClass ? ` for ${Object.entries(r.byClass).filter(([, s]) => s !== 3).map(([k]) => k).join(', ')} data` : ''}.`];
+function consequence(c: any, r: ControlResult, level: Level | null, missing: Array<{ regime: string; routes: string[] }>, ukCtp: boolean): string {
+  const below = r.byClass ? (Object.entries(r.byClass).filter(([, s]) => s !== 3) as Array<[string, State]>) : [];
+  // Class controls: the state of each kind of data below full, so the sentence matches the table (D6).
+  const parts = [r.byClass
+    ? `${c.name} is ${[...new Set(below.map(([, s]) => s))].length === 1 ? `${STATE_WORD(below[0][1])} for ${below.map(([k]) => dataName(k)).join(', ')} data` : below.map(([k, s]) => `${STATE_WORD(s)} for ${dataName(k)} data`).join(', ')}.`
+    : `${c.name} is ${STATE_WORD(r.state)}.`];
+  if (c.id === 'SOV.CONC.PROVIDER' && ukCtp) parts.push('This includes dependence on the UK designated critical third parties.');
   if (level && r.requiredBy.levels.length) parts.push(`The ${level} level set for this data requires it.`);
   if (r.requiredBy.regimes.length) parts.push(`Required by ${r.requiredBy.regimes.map(x => `${REGIME_NAME.get(x.regime) ?? x.regime} (${articleOf(x.basis)})`).join('; ')}.`);
   if (c.id === 'SOV.XFER.BASIS' && missing.length) parts.push(`No transfer route recorded for ${missing.map(m => REGIME_NAME.get(m.regime) ?? m.regime).join(', ')}.`);

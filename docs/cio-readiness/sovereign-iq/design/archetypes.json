@@ -2,7 +2,7 @@
   "$schema": "finding.schema.json#/$defs/archetypeFile",
   "version": "0.1.0-s1-draft",
   "statusAsOf": "2026-10-13",
-  "note": "Expected outcomes written before any engine exists (DESIGN.md section 10). Question IDs and option values are those in DESIGN.md section 6. Maturity follows DESIGN.md 7.1 and top gaps follow the ranking rule in 8.3; S4 may recalibrate weights with an approved golden diff. Not legal advice; internal consultant use only.",
+  "note": "Expected outcomes written before any engine exists (DESIGN.md section 10). Question IDs and option values are those in DESIGN.md section 6. Maturity follows DESIGN.md 7.1 and top gaps follow the ranking rule in 8.3; S4 may recalibrate weights with an approved golden diff. Since engine 4.6.0 (S6 CIO challenge D9) the band is capped at Managed while any finding is critical or any regulation is red, so ARC2 (workshop) and ARC4 read Managed at scores of 84 and 85. Not legal advice; internal consultant use only.",
   "archetypes": [
     {
       "id": "ARC1_EU_BANK_DORA",
@@ -510,7 +510,7 @@
           },
           "workshop": {
             "score": 84,
-            "band": "Sovereign-ready",
+            "band": "Managed",
             "controlsAssessed": 19
           }
         },
@@ -1234,12 +1234,12 @@
         "maturity": {
           "executive": {
             "score": 85,
-            "band": "Sovereign-ready",
+            "band": "Managed",
             "controlsAssessed": 8
           },
           "workshop": {
             "score": 85,
-            "band": "Sovereign-ready",
+            "band": "Managed",
             "controlsAssessed": 21
           }
         },

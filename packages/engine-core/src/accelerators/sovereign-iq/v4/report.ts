@@ -14,6 +14,7 @@ import { traced } from '../../../report/model';
 import registerData from '../../../claims/claims-register.json' with { type: 'json' };
 import { CONTROLS, type Finding, type SovereignIqV4Result, type State } from './evaluate';
 import { DATA_CLASS_LABELS, LEVEL_LABELS, PLATFORM_LABELS, ZONE_LABELS } from './public-schema';
+import { RETENTION_MONTHS } from '../../finops-iq/v3/retention';
 import { SEAL } from './seal';
 import { OFFERINGS, sovereignSow } from './help';
 import { LADDER, COUNSEL_NOTE, clientCleared, type AdvisoryAction, type LadderOption, type PlacementStatus } from './advisory';
@@ -26,6 +27,16 @@ const WORD: Record<string, string> = { 3: 'In place', 2: 'Largely in place', 1: 
 const GRADE: Record<string, string> = { applies: 'Applies', likely_confirm: 'Likely – confirm', advisory: 'Advisory', not_applicable: 'Not applicable' };
 const RAG: Record<string, string> = { red: 'Red', amber: 'Amber', green: 'Green', not_rated: 'Not rated' };
 const MARKET: Record<string, string> = { eu_uk: 'EU and UK', us: 'United States', apac: 'Asia-Pacific' };
+const RETENTION_WORDS = ({ 12: 'one year', 24: 'two years', 36: 'three years' } as Record<number, string>)[RETENTION_MONTHS];
+if (!RETENTION_WORDS) throw new Error(`No wording for a retention period of ${RETENTION_MONTHS} months`);
+/** Backlog values a spreadsheet reader recognises (S6 challenge D11). */
+const TYPE_LABEL: Record<string, string> = { control_gap: 'Control gap', scope_confirmation: 'Confirm scope', conflict: 'Resolve conflicting answers', decision: 'Board decision' };
+const SERVICE_LABEL: Record<string, string> = {
+  storage_backup: 'Storage and backup', databases: 'Databases', analytics: 'Analytics', ai_ml: 'AI and machine learning',
+  compute_containers: 'Compute and containers', identity_keys: 'Identity and keys', collaboration_saas: 'Collaboration SaaS'
+};
+/** An option from the client's view: shown with its note; an option whose source is still being verified keeps its name with "status to confirm" (S6 challenge D5). */
+const STATUS_TO_CONFIRM = 'status to confirm with the provider';
 
 export interface SovereignReportOptions {
   client: string; preparedBy: string; dataProvidedBy: string; view: 'client' | 'consultant'; notes?: string;
@@ -116,12 +127,27 @@ function narrativeSection(c: Ctx): ReportSection | null {
 function requirement(c: Ctx): ReportSection {
   const { r } = c;
   const blocks: Block[] = [{ kind: 'paragraph', segs: ['Each kind of data gets a required sovereignty level: the higher of what the law requires and what the board chose. The level decides which controls are needed.'] }];
-  blocks.push({ kind: 'table', head: ['Data', 'Required level', 'Allowed regions', 'Set by'], widths: [100, 150, '*', 110], rows: r.requirements.map(q => [
+  const floorShown = (q: SovereignIqV4Result['requirements'][number]) => !!q.floor && !(c.client && q.floor.consultantOnly);
+  blocks.push({ kind: 'table', head: ['Data', 'Required level', 'Legal minimum', 'Allowed regions', 'Set by'], widths: [90, 130, 120, '*', 90], rows: r.requirements.map(q => [
     [className(q.dataClass)], [ref(LEVEL_LABELS[q.required] ?? q.required)],
+    [floorShown(q) ? quote(`${q.floor!.level}: ${regimeName(r, q.floor!.regime)}${q.floor!.provisional ? ' (provisional – confirm)' : ''}`) : 'L0: no localisation law found for this data in your markets'],
     [q.allowedZone.length ? q.allowedZone.map(zone).join(', ') : 'No restriction'],
-    [q.floor && !(c.client && q.floor.consultantOnly) ? quote(`Law: ${regimeName(r, q.floor.regime)}${q.floor.provisional ? ' (provisional – confirm)' : ''}`) : q.choice && q.choice !== 'unknown' ? 'Board choice' : 'Legal minimum only']
+    [q.tender && q.tender === q.required ? 'EU tender minimums' : floorShown(q) && q.floor!.level === q.required ? 'Law' : q.choice && q.choice !== 'unknown' ? 'Board choice' : 'Legal minimum only']
   ]) });
   blocks.push({ kind: 'list', small: true, items: Object.entries(LEVEL_LABELS).map(([k, v]) => [ref(v)]) });
+  // S6 challenge Q5: where the board's choice sets the level, what one level lower would leave out.
+  const lower = r.requirements.filter(q => q.required !== 'L0' && q.choice === q.required && !(floorShown(q) && q.floor!.level === q.required) && q.tender !== q.required).map(q => {
+    const only = c.findings.filter(f => f.type === 'control_gap' && f.control && CONTROL.get(f.control)?.level === q.required && f.dataClasses.includes(q.dataClass)
+      && !r.controls.find(x => x.control === f.control)?.requiredBy.regimes.some(g => c.shownRegimes.has(g.regime)));
+    return { q, only };
+  }).filter(x => x.only.length);
+  if (lower.length) {
+    blocks.push({ kind: 'subheading', text: 'What a lower level would change' });
+    blocks.push({ kind: 'list', small: true, items: lower.map(({ q, only }) => {
+      const to = `L${Number(q.required.slice(1)) - 1}`;
+      return [strong(`${className(q.dataClass)} at ${to} instead of ${q.required}: `), `these findings would not arise: ${only.map(f => strip(f.title).replace(/^\w/, ch => ch.toLowerCase())).join('; ')}.`];
+    }) });
+  }
   return { id: 'requirement', title: 'Required sovereignty level', blocks };
 }
 
@@ -133,6 +159,9 @@ function sealSection(c: Ctx): ReportSection {
   const mapped = SEAL.objectives.filter(o => o.mapped);
   const short = (name: string) => name.replace(/ sovereignty$/, '');
   const blocks: Block[] = [{ kind: 'paragraph', segs: [{ text: SEAL.intro, cite: SEAL.claimIds }, ' This view uses an LTM mapping from the required level, not the Commission\'s, and is not a SEAL assessment or certification.'] }];
+  // S6 challenge D10: say why an EU scale is shown to a client with no EU footprint.
+  const f = c.r.facts, has = (k: string) => Array.isArray(f[k]) && (f[k] as string[]).includes('eea');
+  if (!(f['org.hq'] === 'eea' || has('org.establishments') || has('data.subject_regions') || v.tender)) blocks.push({ kind: 'paragraph', style: 'note', segs: ['You have no EU establishment or EU customers on your answers. The scale is shown as a common vocabulary for comparing sovereign cloud offerings; it does not apply to you directly.'] });
   blocks.push({ kind: 'list', small: true, items: SEAL.levels.map(l => [strong(`SEAL-${l.id} ${l.name}: `), { text: l.plain, cite: SEAL.claimIds }, ...(l.note ? [` (${l.note})`] : [])]) });
   if (v.byClass.length) {
     blocks.push({ kind: 'subheading', text: 'Provider SEAL your data needs, by objective' });
@@ -231,7 +260,9 @@ function exposure(c: Ctx): ReportSection {
   }
   if (c.client) {
     const others = r.regimes.length - c.shownRegimes.size;
-    if (others) blocks.push({ kind: 'paragraph', style: 'note', segs: [count('regimes[not_shown]', others), ' other regulations were checked and do not apply on your answers; your consultant holds the list.'] });
+    const na = r.regimes.filter(g => g.grade === 'not_applicable').length;
+    if (na) blocks.push({ kind: 'paragraph', style: 'note', segs: [count('regimes[not_applicable]', na), ' other regulations were checked and do not apply on your answers; they are listed, with the reason, in the appendix "Regulations checked that do not apply".'] });
+    if (others > na) blocks.push({ kind: 'paragraph', style: 'note', segs: [count('regimes[pending]', others - na), ` ${plural(others - na, 'regulation rests', 'regulations rest')} on a source still being verified and ${plural(others - na, 'is', 'are')} not shown in this edition.`] });
   }
   return { id: 'exposure', title: 'Compliance exposure', blocks };
 }
@@ -250,9 +281,10 @@ const PLACEMENT: Record<PlacementStatus, [string, Tone]> = { meets: ['Meets the 
 const platformName = (p: string) => PLATFORM_LABELS[p] ?? p;
 const AVAILABILITY: Record<string, string> = { preview: 'preview', announced: 'announced, not yet available', per_engagement: 'per engagement' };
 const optionText = (o: LadderOption) => o.name + (AVAILABILITY[o.availability] ? ` (${AVAILABILITY[o.availability]})` : '') + (o.caveat ? `: ${o.caveat}` : '');
+const playbookOptionText = (o: AdvisoryAction['options'][number]) => o.name + (o.note ? ` (${o.note})` : '');
 const rungName = (id: string) => `${id} ${LADDER.rungs.find(x => x.id === id)?.label ?? ''}`.trim();
 const actionSegs = (a: AdvisoryAction): Seg[] => [strong(`${a.action}.`), ' ', { text: a.approach, cite: a.claimIds }, '.',
-  ...(a.options.length ? ['\nOptions: ', { text: a.options.map(o => o.name).join('; '), cite: a.claimIds }, a.confirmRegionalAvailability ? ' (confirm availability in your regions)' : ''] : []),
+  ...(a.options.length ? ['\nOptions: ', { text: a.options.map(playbookOptionText).join('; '), cite: a.claimIds }, a.confirmRegionalAvailability ? ' (confirm availability in your regions)' : ''] : []),
   '\nCheck: ', a.verification];
 
 /**
@@ -279,7 +311,9 @@ function advisorySection(c: Ctx): ReportSection | null {
     if (open.length) {
       blocks.push({ kind: 'subheading', text: 'What to do' });
       blocks.push({ kind: 'table', small: true, head: ['Data and platform', 'Next move', 'Actions'], widths: [95, 150, '*'], rows: open.map(p => {
-        const options = keep(p.options), alts = keep(p.alternatives);
+        // Client edition: an option still being verified keeps its name with a status note, without the uncleared detail (D5).
+        const options = c.client ? p.options.map(o => (clientCleared(o) ? o : { ...o, caveat: STATUS_TO_CONFIRM, claimIds: [] })) : p.options;
+        const alts = keep(p.alternatives);
         const move: Seg[] = [`Needs ${rungName(p.minimumRung)} for ${p.allowedZone.length ? p.allowedZone.map(zone).join(', ') : 'any region'}.`,
           ...(p.confirmOperatingModel ? [' Confirm who operates and supports these services: standard regions of a provider based outside the region.'] : []),
           ...(options.length ? ['\nOptions:', { text: options.map(o => `\n• ${optionText(o)}`).join(''), cite: options.flatMap(o => o.claimIds) }] : []),
@@ -319,7 +353,7 @@ function roadmap(c: Ctx): ReportSection {
 function helpSection(c: Ctx): ReportSection {
   const ids = new Set(c.findings.map(f => f.id));
   const help = c.r.help.map(h => ({ ...h, findingIds: h.findingIds.filter(id => ids.has(id)) })).filter(h => h.findingIds.length);
-  const blocks: Block[] = [{ kind: 'paragraph', segs: ['What could help with the findings, and the kind of work each is. Providers are chosen from your requirements, with alternatives (see the sovereign cloud advisory).'] }];
+  const blocks: Block[] = [{ kind: 'paragraph', segs: ['Each item below can be delivered by your own teams or by another firm; the findings and the roadmap do not depend on it. Where LTM could help, this is the kind of work and how it would be done. Providers are chosen from your requirements, with alternatives (see the sovereign cloud advisory).'] }];
   if (!help.length) blocks.push({ kind: 'paragraph', segs: ['No finding calls for further work.'] });
   for (const h of help) {
     blocks.push({ kind: 'subheading', text: `${h.offering.name} (${h.offering.typeLabel})` });
@@ -346,8 +380,45 @@ function methodology(c: Ctx): ReportSection {
     { kind: 'paragraph', segs: ['Scope answers (footprint, entities, data, platforms) decide which regulations apply, through rules held as data in a sourced regulation registry: the first rule that matches grades each regulation applies, likely – confirm, advisory or not applicable. Scope answers are never scored.'] },
     { kind: 'paragraph', segs: ['Each kind of data gets a required level, L0 to L4: the higher of any legal localisation minimum and the board\'s choice. Every control that level needs, plus every control a regulation in scope requires, is rated from the maturity answers. Maturity is the weighted share of those controls in place, shown only when at least five controls are required. "Unknown" counts as not in place; an unanswered control counts as not in place and is listed as not answered. Provider nationality matters only at L4.'] },
     { kind: 'paragraph', segs: ['Statutory maximums come from the cited articles: computed from the worldwide turnover given, as a range from the turnover band otherwise, or not quantified without it. Currency conversions use the dated ECB reference rates in the claims register. Caps are never added together.'] },
+    { kind: 'callout', tone: 'info', title: 'Scope and limitations', segs: [scopeAndLimitations(c)] },
+    { kind: 'paragraph', segs: [strong('How your data is handled. '), dataNotice(c)] },
     { kind: 'paragraph', style: 'small', segs: ['Versions: ', ref(`engine ${v.engine} · questions ${v.questionSet} · controls ${v.controls} · regulation registry ${v.registry} (status as of ${v.registryStatusAsOf}) · claims register ${v.claimsRegister}`)] }
   ] };
+}
+
+/** S6 challenge Q8: what the assessment does not cover, and how many items this edition leaves out pending a source. */
+function scopeAndLimitations(c: Ctx): string {
+  const { r } = c;
+  const hiddenRegimes = r.regimes.filter(g => g.consultantOnly && g.grade !== 'not_applicable').length;
+  const hiddenActions = c.client ? r.advisory.technical.filter(x => !clientCleared(x)).length : 0;
+  const pending = (c.client ? hiddenRegimes + hiddenActions : 0) + r.pendingSource.length;
+  const upcoming = r.exposure.regimes.reduce((a, e) => a + e.upcoming.length, 0);
+  return [
+    'The answers are self-reported and have not been tested or audited.',
+    'No technical discovery was done: application-level designs need architecture and configuration data beyond this assessment.',
+    'Regulatory content comes from LTM\'s sourced regulation registry; review by qualified counsel is pending, so this is not legal advice.',
+    upcoming ? `${upcoming} ${plural(upcoming, 'obligation applies', 'obligations apply')} from a later date: listed as upcoming and not yet scored.` : 'Obligations that apply from a later date are listed as upcoming and not yet scored.',
+    pending ? `${pending} ${plural(pending, 'item rests', 'items rest')} on a source still being verified and ${plural(pending, 'is', 'are')} not shown or scored.` : ''
+  ].filter(Boolean).join(' ');
+}
+
+/**
+ * S6 challenge Q4: where the tool runs and what happens to the client's data, adapted from the FinOps IQ data notice
+ * (M6). Draft until the S10 counsel gate.
+ */
+function dataNotice(c: Ctx): string {
+  const ai = c.opts.narrative || c.opts.aiEnabled
+    ? 'The AI narrative is switched on for this engagement: the engine result, with your organisation\'s name and the consultant\'s notes removed, is processed by Claude in Amazon Bedrock in the EU (Ireland) region, and the prompt and output are logged for one year.'
+    : 'The AI narrative is off for this assessment, so no AI model has seen your data.';
+  return `LTM is responsible for the information held in this assessment. It is hosted in Amazon Web Services, Mumbai region (India); if you are in the EU or UK, what you enter is transferred to India, which the EU and the UK have not recognised as giving adequate data protection. We hold your answers, your organisation's name and sector, any turnover figure you give, the consultant's notes and the consultant's email address, used only to produce this assessment and its report. The assessment needs no personal details about individuals, so please do not enter any. We keep each assessment for ${RETENTION_WORDS} after its last change and then delete it automatically; ask your consultant to delete it sooner. Access logs, which record the consultant's email and network address, are kept for one year. ${ai} Draft wording, pending legal review.`;
+}
+
+/** Every regulation checked that does not apply, with the reason (S6 challenge Q8: shown to the client, without rule IDs). */
+function notApplicableAppendix(c: Ctx): ReportSection {
+  const na = c.r.regimes.filter(g => g.grade === 'not_applicable');
+  return { id: 'not-applicable', title: 'Regulations checked that do not apply', appendix: true, blocks: na.length
+    ? [{ kind: 'table', small: true, head: ['Regulation', 'Why it does not apply'], widths: [140, '*'], rows: na.map(g => [[g.name], [quote(g.reason, g.claims)]]) }]
+    : [{ kind: 'paragraph', segs: ['Every regulation in the registry applies or may apply on your answers.'] }] };
 }
 
 function sourcesAppendix(ids: string[], c: Ctx): Block[] {
@@ -404,9 +475,18 @@ export function sovereignIqReport(result: SovereignIqV4Result, opts: SovereignRe
     const runs: Seg[][] = b.kind === 'paragraph' || b.kind === 'callout' ? [b.segs] : b.kind === 'list' ? b.items : b.kind === 'table' ? b.rows.flat() : b.kind === 'kpis' ? b.items.flatMap(i => [i.value, ...(i.note ? [i.note] : [])]) : b.kind === 'steps' ? b.rows.map(i => i.shown) : b.kind === 'bars' ? b.items.map(i => i.shown) : [];
     for (const run of runs) for (const seg of run) if (typeof seg !== 'string') { seg.cite?.forEach(id => claims.add(id)); seg.trace?.claimIds.forEach(id => claims.add(id)); }
   }
+  if (client) doc.sections.push(notApplicableAppendix(c));
   doc.sections.push({ id: 'sources', title: 'Sources', appendix: true, blocks: sourcesAppendix([...claims].sort(), c) });
   if (!client) doc.sections.push(sowAppendix(c), consultantAppendix(c));
   return doc;
+}
+
+/** S6 challenge D8: a finding no regulation requires says what set its level, instead of a blank column. */
+function levelBasis(r: SovereignIqV4Result, f: Finding): string {
+  if (f.type !== 'control_gap' || !f.requiredLevel) return '';
+  const reqs = r.requirements.filter(q => f.dataClasses.includes(q.dataClass) && q.required === f.requiredLevel);
+  const law = reqs.find(q => q.floor && q.floor.level === q.required && !q.floor.consultantOnly);
+  return law ? `Level ${f.requiredLevel} set by ${regimeName(r, law.floor!.regime)}` : `Level ${f.requiredLevel} set by the board; no regulation in scope requires this control`;
 }
 
 /** The backlog CSV: one row per finding, in roadmap order, with its platforms, placement rung and checks (S7). */
@@ -420,9 +500,9 @@ export function sovereignIqBacklog(result: SovereignIqV4Result, view: 'client' |
   return {
     header: ['ID', 'Wave', 'Severity', 'Type', 'Action', 'Why', 'Control', 'Data', 'Regulations', 'Owner', 'Time frame', 'Platforms', 'Placement rung', 'Service families', 'Verification'],
     rows: [...fs].sort((a, b) => (order.get(a.id) ?? 999) - (order.get(b.id) ?? 999)).map(f => [
-      f.id, f.wave, f.severity, f.type, strip(f.title), strip(f.businessConsequence), f.control ?? '', f.dataClasses.map(className).join('; '),
-      f.regimes.map(x => regimeName(result, x.regime)).join('; '), f.ownerRole, f.timeFrame,
-      join(acts(f.id).map(x => platformName(x.platform))), rungs(f.id).join('; '), join(acts(f.id).flatMap(x => x.serviceFamilies ?? []).map(s => s.replace(/_/g, ' '))),
+      f.id, f.wave, f.severity, TYPE_LABEL[f.type] ?? f.type, strip(f.title), strip(f.businessConsequence), f.control ?? '', f.dataClasses.map(className).join('; '),
+      f.regimes.length ? f.regimes.map(x => regimeName(result, x.regime)).join('; ') : levelBasis(result, f), f.ownerRole, f.timeFrame,
+      join(acts(f.id).map(x => platformName(x.platform))), rungs(f.id).join('; '), join(acts(f.id).flatMap(x => x.serviceFamilies ?? []).map(s => SERVICE_LABEL[s] ?? s)),
       join(acts(f.id).map(x => `${platformName(x.platform)}: ${x.verification}`))
     ])
   };

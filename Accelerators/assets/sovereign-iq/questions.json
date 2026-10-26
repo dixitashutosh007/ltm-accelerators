@@ -1,5 +1,5 @@
 {
-  "engineVersion": "4.5.0",
+  "engineVersion": "4.6.0",
   "minScoredControls": 5,
   "steps": [
     {
@@ -2394,9 +2394,9 @@
     {
       "id": "SOV.RES.LOCATION",
       "name": "Data location",
-      "means": "Primary storage and processing of the class sit only in its allowed zone",
+      "means": "Primary storage and processing of this data sit only in its allowed region",
       "ownerRole": "CIO",
-      "remedy": "Move primary storage and processing of the class into its allowed region",
+      "remedy": "Move primary storage and processing of this data into its allowed region",
       "level": "L1",
       "scored": true
     },
@@ -2412,9 +2412,9 @@
     {
       "id": "SOV.BACKUP.LOCATION",
       "name": "Backup location",
-      "means": "Backups, replicas and disaster-recovery copies of the class sit in its allowed zone",
+      "means": "Backups, replicas and disaster-recovery copies of this data sit in its allowed region",
       "ownerRole": "Head of infrastructure",
-      "remedy": "Keep backups, replicas and disaster-recovery copies of the class in its allowed region",
+      "remedy": "Keep backups, replicas and disaster-recovery copies of this data in its allowed region",
       "level": "L1",
       "scored": true
     },
@@ -2565,9 +2565,9 @@
     {
       "id": "SOV.CONC.PROVIDER",
       "name": "Provider concentration",
-      "means": "Concentration on one provider (including UK designated critical third parties) is assessed and managed",
+      "means": "Concentration on one provider is assessed and managed",
       "ownerRole": "CRO",
-      "remedy": "Assess and manage concentration on one provider, including dependence on UK designated critical third parties; verify in Resilience IQ",
+      "remedy": "Assess and manage concentration on one provider; verify in Resilience IQ",
       "level": "L3",
       "scored": true
     },
@@ -2583,7 +2583,7 @@
     {
       "id": "SOV.JUR.IMMUNITY",
       "name": "Jurisdictional immunity",
-      "means": "No provider holding the class can be compelled by a law from outside the zone, or the system is disconnected",
+      "means": "No provider holding this data can be compelled by a law from outside the zone, or the system is disconnected",
       "ownerRole": "CIO with General Counsel",
       "remedy": "Hold this data only with providers whose parent is in the allowed region, or on disconnected systems",
       "level": "L4",
