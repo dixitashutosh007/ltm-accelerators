@@ -168,6 +168,16 @@
           "type": "object",
           "propertyNames": { "$ref": "#/$defs/dataClass" },
           "additionalProperties": { "type": "array", "uniqueItems": true, "items": { "$ref": "#/$defs/platform" } }
+        },
+        "class_services": {
+          "description": "Kinds of service holding each class on AWS, Azure or Google Cloud (C1, PLAN S7). Scope only, never scored; when absent, actions cover every kind.",
+          "type": "object",
+          "propertyNames": { "$ref": "#/$defs/dataClass" },
+          "additionalProperties": {
+            "type": "object",
+            "propertyNames": { "enum": ["aws", "azure", "gcp"] },
+            "additionalProperties": { "type": "array", "uniqueItems": true, "items": { "enum": ["storage_backup", "databases", "analytics", "ai_ml", "compute_containers", "identity_keys", "collaboration_saas", "unknown"] } }
+          }
         }
       }
     },

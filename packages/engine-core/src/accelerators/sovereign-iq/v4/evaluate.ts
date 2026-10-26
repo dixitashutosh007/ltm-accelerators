@@ -16,9 +16,10 @@ import fx from './exchange-rates.json' with { type: 'json' };
 import registry from '../registry/regimes.json' with { type: 'json' };
 import claimsRegister from '../../../claims/claims-register.json' with { type: 'json' };
 import { evaluate as holds, isUnknown, type Condition, type ConditionContext } from './conditions';
+import { advisory as cloudAdvisory, type Advisory } from './advisory';
 import { DATA_CLASSES, LEVELS, PEOPLE_CLASSES, personalOutsideSubjects, personalTransfer, platformParents, scopeFacts, type Answers, type DataClass, type Facts, type Level } from './facts';
 
-export const ENGINE_VERSION = '4.2.0';
+export const ENGINE_VERSION = '4.3.0';
 /**
  * S4 calibration: the smallest required set over which one answer moves maturity by at most 20 points (T2 aside).
  * Below it no maturity number is shown, in either mode (owner decisions, 25 and 26 Oct 2026).
@@ -139,6 +140,8 @@ export interface SovereignIqV4Result {
   roadmap: Array<{ wave: number; findings: string[] }>;
   pendingSource: Array<{ regime: string; control: string }>;
   notes: string[];
+  /** Sovereign Cloud Advisory: placement on AWS, Azure and Google Cloud, and platform actions per finding (PLAN S7). */
+  advisory: Advisory;
 }
 
 /* ---------------------------------- Engine --------------------------------- */
@@ -681,7 +684,8 @@ export function evaluateSovereignIqV4(input: SovereignIqV4Input): SovereignIqV4R
       largestCap,
       capNote: largestCap ? 'Largest single statutory maximum among regimes that apply or likely apply: a cap, not an expected fine, and never summed across regimes.' : turnoverGiven ? 'No regime in scope has a computable statutory maximum.' : 'Not quantified – turnover not given.'
     },
-    foreignAccess, findings, topGaps, roadmap, pendingSource, notes
+    foreignAccess, findings, topGaps, roadmap, pendingSource, notes,
+    advisory: cloudAdvisory({ facts, requirements: reqs, controls: results, findings })
   };
 }
 

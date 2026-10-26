@@ -1,0 +1,16 @@
+{
+  "catalogueVersion": "1.0.0",
+  "accelerator": "sovereign-iq",
+  "statusAsOf": "2026-10-26",
+  "rule": "Sovereign IQ platform playbook (PLAN S7, WS-S3). Service-level entries for AWS, Azure and Google Cloud; approach-level entries for every other platform (D17). Service families, not product lists (D19); each option is sourced in the claims register with a 90-day review (D8). Technical controls need an entry on every platform that holds the affected data; process controls (transfer register, sub-processors, exit plan) use one 'any' entry.",
+  "technicalControls": [
+    "SOV.RES.LOCATION",
+    "SOV.RES.REGION_LOCK",
+    "SOV.BACKUP.LOCATION",
+    "SOV.KEY.CUSTODY",
+    "SOV.OPS.ADMIN_ACCESS",
+    "SOV.OPS.PERSONNEL_ZONE",
+    "SOV.AI.DATA_LOCATION"
+  ],
+  "entries": []
+}

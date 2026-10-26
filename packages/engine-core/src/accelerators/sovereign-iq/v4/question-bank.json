@@ -1,5 +1,5 @@
 {
-  "questionSetVersion": "4.0.0",
+  "questionSetVersion": "4.1.0",
   "questions": [
     {
       "id": "A1", "theme": "footprint", "kind": "scope", "mode": "executive", "type": "single",
@@ -278,6 +278,28 @@
       "feeds": { "facts": ["prov.parent_jurisdictions"] },
       "basis": [{ "citation": "CLOUD Act, 18 U.S.C. § 2713 (possession, custody or control)", "status": "V" }],
       "replaces": ["Q4.1", "H1"]
+    },
+    {
+      "id": "C1", "theme": "platform", "kind": "scope", "mode": "follow_up", "type": "matrix",
+      "text": "For each kind of data on AWS, Azure or Google Cloud: which kinds of service hold it?",
+      "help": "Used only to focus the cloud advisory on the services you use. Never scored.",
+      "trigger": { "fact": "plat.in_scope", "op": "includes_any", "value": ["aws", "azure", "gcp"] },
+      "options": [
+        { "value": "storage_backup", "label": "Storage and backup" }, { "value": "databases", "label": "Databases" },
+        { "value": "analytics", "label": "Analytics and data warehouses" }, { "value": "ai_ml", "label": "AI and machine learning" },
+        { "value": "compute_containers", "label": "Compute and containers" }, { "value": "identity_keys", "label": "Identity and key management" },
+        { "value": "collaboration_saas", "label": "Collaboration SaaS (for example Microsoft 365 or Google Workspace)" }, { "value": "unknown", "label": "Not sure" }
+      ],
+      "matrix": {
+        "rowsFrom": "D1",
+        "columns": [
+          { "key": "aws", "label": "AWS", "type": "multi", "optionsFrom": "C1" },
+          { "key": "azure", "label": "Microsoft Azure", "type": "multi", "optionsFrom": "C1" },
+          { "key": "gcp", "label": "Google Cloud", "type": "multi", "optionsFrom": "C1" }
+        ]
+      },
+      "feeds": { "facts": ["data.class_services"] },
+      "basis": [{ "citation": "Sovereign Cloud Advisory scope (PLAN S7, D17); service families, not products (D19)", "status": "S" }]
     },
     {
       "id": "L1", "theme": "requirement", "kind": "scope", "mode": "executive", "type": "single",

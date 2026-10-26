@@ -1,0 +1,19 @@
+{
+  "ladderVersion": "1.0.0",
+  "statusAsOf": "2026-10-26",
+  "rule": "Sovereign Cloud Advisory placement ladder (PLAN S7, D17, D19). Rungs are cumulative: a kind of data needs every control of its minimum rung and of the rungs below it. The minimum rung is the one whose level equals the data's required level. A 'platformMove' rung cannot be reached in a provider's standard regions when the provider's parent is outside the data's allowed zone: the data moves to an offering at that rung (LTM judgement, owner approval at Gate S7; counsel confirms R4 at S10). The ladder changes the advice, never the maturity score (D3). Options are examples of service families, each sourced in the claims register with a review date; they are listed in a fixed order that does not rank providers.",
+  "rungs": [
+    { "id": "R0", "level": "L0", "label": "Standard region", "means": "Any standard region; no sovereignty controls required", "controls": [] },
+    { "id": "R1", "level": "L1", "label": "In-zone region with guardrails", "means": "A standard region inside the allowed zone, with policies that block deployments elsewhere; backups and replicas in the zone too", "controls": ["SOV.RES.LOCATION", "SOV.BACKUP.LOCATION", "SOV.RES.REGION_LOCK"] },
+    { "id": "R2", "level": "L2", "label": "Customer-held keys and approved access", "means": "R1, plus keys held outside the provider, provider access only with your approval, and the provider's data boundary where one exists", "controls": ["SOV.KEY.CUSTODY", "SOV.OPS.ADMIN_ACCESS"] },
+    { "id": "R3", "level": "L3", "label": "Sovereign offering run in the zone", "means": "R2, plus a service operated and supported only by staff in the zone, employed by a local entity under local law", "controls": ["SOV.OPS.PERSONNEL_ZONE"], "platformMove": true },
+    { "id": "R4", "level": "L4", "label": "Out of foreign-law reach, or disconnected", "means": "R3, plus no provider in the chain can be compelled by a law from outside the zone, or the system is disconnected", "controls": [], "platformMove": true }
+  ],
+  "providers": {
+    "aws": { "label": "AWS", "parent": "us" },
+    "azure": { "label": "Microsoft Azure", "parent": "us" },
+    "gcp": { "label": "Google Cloud", "parent": "us" }
+  },
+  "options": [],
+  "alternatives": []
+}

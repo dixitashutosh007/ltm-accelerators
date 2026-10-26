@@ -1,8 +1,8 @@
 {
   "ARC1_EU_BANK_DORA executive": {
     "versions": {
-      "engine": "4.2.0",
-      "questionSet": "4.0.0",
+      "engine": "4.3.0",
+      "questionSet": "4.1.0",
       "controls": "4.0.0",
       "registry": "1.1.0",
       "registryStatusAsOf": "2026-10-25",
@@ -391,12 +391,58 @@
     "notes": [
       "Data is processed in us without an entity there; processing location alone does not trigger that country's law in v1 (Q11). Confirm with counsel.",
       "Requirement set at one level for all data classes; the workshop confirms it per class."
+    ],
+    "placement": [
+      {
+        "dataClass": "personal",
+        "platform": "azure",
+        "minimumRung": "R2",
+        "status": "gap",
+        "noOfferingZones": [
+          "eea"
+        ],
+        "findingIds": [
+          "F-SOV.RES.REGION_LOCK",
+          "F-SOV.KEY.CUSTODY",
+          "F-SOV.OPS.ADMIN_ACCESS"
+        ]
+      },
+      {
+        "dataClass": "financial",
+        "platform": "azure",
+        "minimumRung": "R2",
+        "status": "gap",
+        "noOfferingZones": [
+          "eea"
+        ],
+        "findingIds": [
+          "F-SOV.RES.REGION_LOCK",
+          "F-SOV.KEY.CUSTODY",
+          "F-SOV.OPS.ADMIN_ACCESS"
+        ]
+      },
+      {
+        "dataClass": "proprietary",
+        "platform": "azure",
+        "minimumRung": "R2",
+        "status": "gap",
+        "noOfferingZones": [
+          "eea"
+        ],
+        "findingIds": [
+          "F-SOV.RES.LOCATION",
+          "F-SOV.BACKUP.LOCATION",
+          "F-SOV.RES.REGION_LOCK",
+          "F-SOV.KEY.CUSTODY",
+          "F-SOV.OPS.ADMIN_ACCESS"
+        ]
+      }
     ]
   },
   "ARC1_EU_BANK_DORA workshop": {
     "versions": {
-      "engine": "4.2.0",
-      "questionSet": "4.0.0",
+      "engine": "4.3.0",
+      "questionSet": "4.1.0",
       "controls": "4.0.0",
       "registry": "1.1.0",
       "registryStatusAsOf": "2026-10-25",
@@ -418,6 +464,7 @@
       "D4",
       "P1",
       "P2",
+      "C1",
       "L1",
       "L2",
       "R1",
@@ -993,12 +1040,43 @@
     "pendingSource": [],
     "notes": [
       "Data is processed in us without an entity there; processing location alone does not trigger that country's law in v1 (Q11). Confirm with counsel."
+    ],
+    "placement": [
+      {
+        "dataClass": "personal",
+        "platform": "azure",
+        "minimumRung": "R2",
+        "status": "gap",
+        "noOfferingZones": [
+          "eea"
+        ],
+        "findingIds": [
+          "F-SOV.RES.REGION_LOCK",
+          "F-SOV.KEY.CUSTODY",
+          "F-SOV.OPS.ADMIN_ACCESS"
+        ]
+      },
+      {
+        "dataClass": "financial",
+        "platform": "azure",
+        "minimumRung": "R3",
+        "status": "move",
+        "noOfferingZones": [
+          "eea"
+        ],
+        "findingIds": [
+          "F-SOV.RES.REGION_LOCK",
+          "F-SOV.KEY.CUSTODY",
+          "F-SOV.OPS.ADMIN_ACCESS",
+          "F-SOV.OPS.PERSONNEL_ZONE"
+        ]
+      }
     ]
   },
   "ARC2_UK_INSURER_OPRES_CTP executive": {
     "versions": {
-      "engine": "4.2.0",
-      "questionSet": "4.0.0",
+      "engine": "4.3.0",
+      "questionSet": "4.1.0",
       "controls": "4.0.0",
       "registry": "1.1.0",
       "registryStatusAsOf": "2026-10-25",
@@ -1351,12 +1429,92 @@
     "notes": [
       "Data is processed in eea without an entity there; processing location alone does not trigger that country's law in v1 (Q11). Confirm with counsel.",
       "Requirement set at one level for all data classes; the workshop confirms it per class."
+    ],
+    "placement": [
+      {
+        "dataClass": "personal",
+        "platform": "aws",
+        "minimumRung": "R2",
+        "status": "gap",
+        "noOfferingZones": [
+          "uk"
+        ],
+        "findingIds": [
+          "F-SOV.RES.LOCATION",
+          "F-SOV.BACKUP.LOCATION",
+          "F-SOV.KEY.CUSTODY"
+        ]
+      },
+      {
+        "dataClass": "personal",
+        "platform": "azure",
+        "minimumRung": "R2",
+        "status": "gap",
+        "noOfferingZones": [
+          "uk"
+        ],
+        "findingIds": [
+          "F-SOV.RES.LOCATION",
+          "F-SOV.BACKUP.LOCATION",
+          "F-SOV.KEY.CUSTODY"
+        ]
+      },
+      {
+        "dataClass": "special",
+        "platform": "aws",
+        "minimumRung": "R2",
+        "status": "gap",
+        "noOfferingZones": [
+          "uk"
+        ],
+        "findingIds": [
+          "F-SOV.BACKUP.LOCATION",
+          "F-SOV.KEY.CUSTODY"
+        ]
+      },
+      {
+        "dataClass": "special",
+        "platform": "azure",
+        "minimumRung": "R2",
+        "status": "gap",
+        "noOfferingZones": [
+          "uk"
+        ],
+        "findingIds": [
+          "F-SOV.BACKUP.LOCATION",
+          "F-SOV.KEY.CUSTODY"
+        ]
+      },
+      {
+        "dataClass": "financial",
+        "platform": "aws",
+        "minimumRung": "R2",
+        "status": "gap",
+        "noOfferingZones": [
+          "uk"
+        ],
+        "findingIds": [
+          "F-SOV.KEY.CUSTODY"
+        ]
+      },
+      {
+        "dataClass": "financial",
+        "platform": "azure",
+        "minimumRung": "R2",
+        "status": "gap",
+        "noOfferingZones": [
+          "uk"
+        ],
+        "findingIds": [
+          "F-SOV.KEY.CUSTODY"
+        ]
+      }
     ]
   },
   "ARC2_UK_INSURER_OPRES_CTP workshop": {
     "versions": {
-      "engine": "4.2.0",
-      "questionSet": "4.0.0",
+      "engine": "4.3.0",
+      "questionSet": "4.1.0",
       "controls": "4.0.0",
       "registry": "1.1.0",
       "registryStatusAsOf": "2026-10-25",
@@ -1377,6 +1535,7 @@
       "D4",
       "P1",
       "P2",
+      "C1",
       "L1",
       "L2",
       "R1",
@@ -1782,12 +1941,59 @@
     "pendingSource": [],
     "notes": [
       "Data is processed in eea without an entity there; processing location alone does not trigger that country's law in v1 (Q11). Confirm with counsel."
+    ],
+    "placement": [
+      {
+        "dataClass": "personal",
+        "platform": "aws",
+        "minimumRung": "R1",
+        "status": "meets",
+        "noOfferingZones": [],
+        "findingIds": []
+      },
+      {
+        "dataClass": "special",
+        "platform": "aws",
+        "minimumRung": "R2",
+        "status": "gap",
+        "noOfferingZones": [
+          "uk"
+        ],
+        "findingIds": [
+          "F-SOV.BACKUP.LOCATION",
+          "F-SOV.KEY.CUSTODY"
+        ]
+      },
+      {
+        "dataClass": "financial",
+        "platform": "aws",
+        "minimumRung": "R2",
+        "status": "gap",
+        "noOfferingZones": [
+          "uk"
+        ],
+        "findingIds": [
+          "F-SOV.KEY.CUSTODY"
+        ]
+      },
+      {
+        "dataClass": "financial",
+        "platform": "azure",
+        "minimumRung": "R2",
+        "status": "gap",
+        "noOfferingZones": [
+          "uk"
+        ],
+        "findingIds": [
+          "F-SOV.KEY.CUSTODY"
+        ]
+      }
     ]
   },
   "ARC3_US_HEALTHTECH_EU_CUSTOMERS executive": {
     "versions": {
-      "engine": "4.2.0",
-      "questionSet": "4.0.0",
+      "engine": "4.3.0",
+      "questionSet": "4.1.0",
       "controls": "4.0.0",
       "registry": "1.1.0",
       "registryStatusAsOf": "2026-10-25",
@@ -2193,12 +2399,54 @@
     "pendingSource": [],
     "notes": [
       "Requirement set at one level for all data classes; the workshop confirms it per class."
+    ],
+    "placement": [
+      {
+        "dataClass": "personal",
+        "platform": "aws",
+        "minimumRung": "R1",
+        "status": "gap",
+        "noOfferingZones": [],
+        "findingIds": [
+          "F-SOV.RES.REGION_LOCK"
+        ]
+      },
+      {
+        "dataClass": "special",
+        "platform": "aws",
+        "minimumRung": "R1",
+        "status": "gap",
+        "noOfferingZones": [],
+        "findingIds": [
+          "F-SOV.RES.REGION_LOCK"
+        ]
+      },
+      {
+        "dataClass": "ai_training",
+        "platform": "aws",
+        "minimumRung": "R1",
+        "status": "gap",
+        "noOfferingZones": [],
+        "findingIds": [
+          "F-SOV.RES.REGION_LOCK"
+        ]
+      },
+      {
+        "dataClass": "proprietary",
+        "platform": "aws",
+        "minimumRung": "R1",
+        "status": "gap",
+        "noOfferingZones": [],
+        "findingIds": [
+          "F-SOV.RES.REGION_LOCK"
+        ]
+      }
     ]
   },
   "ARC3_US_HEALTHTECH_EU_CUSTOMERS workshop": {
     "versions": {
-      "engine": "4.2.0",
-      "questionSet": "4.0.0",
+      "engine": "4.3.0",
+      "questionSet": "4.1.0",
       "controls": "4.0.0",
       "registry": "1.1.0",
       "registryStatusAsOf": "2026-10-25",
@@ -2221,6 +2469,7 @@
       "D4",
       "P1",
       "P2",
+      "C1",
       "L1",
       "L2",
       "R1",
@@ -2807,12 +3056,49 @@
       }
     ],
     "pendingSource": [],
-    "notes": []
+    "notes": [],
+    "placement": [
+      {
+        "dataClass": "personal",
+        "platform": "aws",
+        "minimumRung": "R1",
+        "status": "gap",
+        "noOfferingZones": [],
+        "findingIds": [
+          "F-SOV.RES.REGION_LOCK"
+        ]
+      },
+      {
+        "dataClass": "special",
+        "platform": "aws",
+        "minimumRung": "R2",
+        "status": "gap",
+        "noOfferingZones": [
+          "us",
+          "eea"
+        ],
+        "findingIds": [
+          "F-SOV.RES.REGION_LOCK",
+          "F-SOV.KEY.CUSTODY",
+          "F-SOV.OPS.ADMIN_ACCESS"
+        ]
+      },
+      {
+        "dataClass": "ai_training",
+        "platform": "aws",
+        "minimumRung": "R1",
+        "status": "gap",
+        "noOfferingZones": [],
+        "findingIds": [
+          "F-SOV.RES.REGION_LOCK"
+        ]
+      }
+    ]
   },
   "ARC4_SG_AU_FINANCIAL_GROUP executive": {
     "versions": {
-      "engine": "4.2.0",
-      "questionSet": "4.0.0",
+      "engine": "4.3.0",
+      "questionSet": "4.1.0",
       "controls": "4.0.0",
       "registry": "1.1.0",
       "registryStatusAsOf": "2026-10-25",
@@ -3219,12 +3505,96 @@
       "Data is processed in us without an entity there; processing location alone does not trigger that country's law in v1 (Q11). Confirm with counsel.",
       "Requirement set at one level for all data classes; the workshop confirms it per class.",
       "Storing data of people in Australia outside that country is treated as a transfer. Where the cloud provider only stores the data and does not handle it, the law may treat it as use rather than a transfer (APPI Art. 28; OAIC APP guidelines 8.14). Confirm with counsel."
+    ],
+    "placement": [
+      {
+        "dataClass": "personal",
+        "platform": "aws",
+        "minimumRung": "R2",
+        "status": "meets",
+        "noOfferingZones": [
+          "sg",
+          "au",
+          "hk",
+          "in"
+        ],
+        "findingIds": []
+      },
+      {
+        "dataClass": "personal",
+        "platform": "azure",
+        "minimumRung": "R2",
+        "status": "meets",
+        "noOfferingZones": [
+          "sg",
+          "au",
+          "hk",
+          "in"
+        ],
+        "findingIds": []
+      },
+      {
+        "dataClass": "financial",
+        "platform": "aws",
+        "minimumRung": "R2",
+        "status": "meets",
+        "noOfferingZones": [
+          "sg",
+          "au",
+          "hk",
+          "in"
+        ],
+        "findingIds": []
+      },
+      {
+        "dataClass": "financial",
+        "platform": "azure",
+        "minimumRung": "R2",
+        "status": "meets",
+        "noOfferingZones": [
+          "sg",
+          "au",
+          "hk",
+          "in"
+        ],
+        "findingIds": []
+      },
+      {
+        "dataClass": "proprietary",
+        "platform": "aws",
+        "minimumRung": "R2",
+        "status": "gap",
+        "noOfferingZones": [
+          "sg",
+          "au",
+          "hk",
+          "in"
+        ],
+        "findingIds": [
+          "F-SOV.RES.LOCATION"
+        ]
+      },
+      {
+        "dataClass": "proprietary",
+        "platform": "azure",
+        "minimumRung": "R2",
+        "status": "gap",
+        "noOfferingZones": [
+          "sg",
+          "au",
+          "hk",
+          "in"
+        ],
+        "findingIds": [
+          "F-SOV.RES.LOCATION"
+        ]
+      }
     ]
   },
   "ARC4_SG_AU_FINANCIAL_GROUP workshop": {
     "versions": {
-      "engine": "4.2.0",
-      "questionSet": "4.0.0",
+      "engine": "4.3.0",
+      "questionSet": "4.1.0",
       "controls": "4.0.0",
       "registry": "1.1.0",
       "registryStatusAsOf": "2026-10-25",
@@ -3245,6 +3615,7 @@
       "D4",
       "P1",
       "P2",
+      "C1",
       "L1",
       "L2",
       "R1",
@@ -3761,12 +4132,49 @@
     "notes": [
       "Data is processed in us without an entity there; processing location alone does not trigger that country's law in v1 (Q11). Confirm with counsel.",
       "Storing data of people in Australia outside that country is treated as a transfer. Where the cloud provider only stores the data and does not handle it, the law may treat it as use rather than a transfer (APPI Art. 28; OAIC APP guidelines 8.14). Confirm with counsel."
+    ],
+    "placement": [
+      {
+        "dataClass": "personal",
+        "platform": "aws",
+        "minimumRung": "R2",
+        "status": "meets",
+        "noOfferingZones": [
+          "sg",
+          "au",
+          "hk",
+          "in"
+        ],
+        "findingIds": []
+      },
+      {
+        "dataClass": "financial",
+        "platform": "aws",
+        "minimumRung": "R3",
+        "status": "move",
+        "noOfferingZones": [
+          "sg",
+          "au"
+        ],
+        "findingIds": [
+          "F-SOV.RES.LOCATION",
+          "F-SOV.OPS.PERSONNEL_ZONE"
+        ]
+      },
+      {
+        "dataClass": "proprietary",
+        "platform": "azure",
+        "minimumRung": "R1",
+        "status": "meets",
+        "noOfferingZones": [],
+        "findingIds": []
+      }
     ]
   },
   "ARC5_IN_SERVICES_EU_CLIENTS executive": {
     "versions": {
-      "engine": "4.2.0",
-      "questionSet": "4.0.0",
+      "engine": "4.3.0",
+      "questionSet": "4.1.0",
       "controls": "4.0.0",
       "registry": "1.1.0",
       "registryStatusAsOf": "2026-10-25",
@@ -4229,12 +4637,94 @@
     "pendingSource": [],
     "notes": [
       "Requirement set at one level for all data classes; the workshop confirms it per class."
+    ],
+    "placement": [
+      {
+        "dataClass": "personal",
+        "platform": "aws",
+        "minimumRung": "R1",
+        "status": "gap",
+        "noOfferingZones": [],
+        "findingIds": [
+          "F-SOV.RES.REGION_LOCK"
+        ]
+      },
+      {
+        "dataClass": "personal",
+        "platform": "azure",
+        "minimumRung": "R1",
+        "status": "gap",
+        "noOfferingZones": [],
+        "findingIds": [
+          "F-SOV.RES.REGION_LOCK"
+        ]
+      },
+      {
+        "dataClass": "special",
+        "platform": "aws",
+        "minimumRung": "R1",
+        "status": "gap",
+        "noOfferingZones": [],
+        "findingIds": [
+          "F-SOV.RES.REGION_LOCK"
+        ]
+      },
+      {
+        "dataClass": "special",
+        "platform": "azure",
+        "minimumRung": "R1",
+        "status": "gap",
+        "noOfferingZones": [],
+        "findingIds": [
+          "F-SOV.RES.REGION_LOCK"
+        ]
+      },
+      {
+        "dataClass": "financial",
+        "platform": "aws",
+        "minimumRung": "R1",
+        "status": "gap",
+        "noOfferingZones": [],
+        "findingIds": [
+          "F-SOV.RES.REGION_LOCK"
+        ]
+      },
+      {
+        "dataClass": "financial",
+        "platform": "azure",
+        "minimumRung": "R1",
+        "status": "gap",
+        "noOfferingZones": [],
+        "findingIds": [
+          "F-SOV.RES.REGION_LOCK"
+        ]
+      },
+      {
+        "dataClass": "proprietary",
+        "platform": "aws",
+        "minimumRung": "R1",
+        "status": "gap",
+        "noOfferingZones": [],
+        "findingIds": [
+          "F-SOV.RES.REGION_LOCK"
+        ]
+      },
+      {
+        "dataClass": "proprietary",
+        "platform": "azure",
+        "minimumRung": "R1",
+        "status": "gap",
+        "noOfferingZones": [],
+        "findingIds": [
+          "F-SOV.RES.REGION_LOCK"
+        ]
+      }
     ]
   },
   "ARC5_IN_SERVICES_EU_CLIENTS workshop": {
     "versions": {
-      "engine": "4.2.0",
-      "questionSet": "4.0.0",
+      "engine": "4.3.0",
+      "questionSet": "4.1.0",
       "controls": "4.0.0",
       "registry": "1.1.0",
       "registryStatusAsOf": "2026-10-25",
@@ -4257,6 +4747,7 @@
       "D4",
       "P1",
       "P2",
+      "C1",
       "L1",
       "L2",
       "R1",
@@ -4896,6 +5387,44 @@
       }
     ],
     "pendingSource": [],
-    "notes": []
+    "notes": [],
+    "placement": [
+      {
+        "dataClass": "personal",
+        "platform": "aws",
+        "minimumRung": "R1",
+        "status": "gap",
+        "noOfferingZones": [],
+        "findingIds": [
+          "F-SOV.RES.REGION_LOCK"
+        ]
+      },
+      {
+        "dataClass": "personal",
+        "platform": "azure",
+        "minimumRung": "R1",
+        "status": "gap",
+        "noOfferingZones": [],
+        "findingIds": [
+          "F-SOV.RES.REGION_LOCK"
+        ]
+      },
+      {
+        "dataClass": "financial",
+        "platform": "aws",
+        "minimumRung": "R2",
+        "status": "gap",
+        "noOfferingZones": [
+          "eea"
+        ],
+        "findingIds": [
+          "F-SOV.RES.LOCATION",
+          "F-SOV.BACKUP.LOCATION",
+          "F-SOV.RES.REGION_LOCK",
+          "F-SOV.KEY.CUSTODY",
+          "F-SOV.OPS.ADMIN_ACCESS"
+        ]
+      }
+    ]
   }
 }

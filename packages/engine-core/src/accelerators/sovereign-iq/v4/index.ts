@@ -5,3 +5,4 @@ export * from './assessment';
 export { clientView, STATE_WORD, type SovereignIqV4ClientResult } from './client-view';
 export { publicQuestionSchema, STEPS } from './public-schema';
 export { sovereignIqReport, sovereignIqBacklog, type SovereignReportOptions } from './report';
+export { advisory, LADDER, PLAYBOOK as SOVEREIGN_PLAYBOOK, HYPERSCALERS, playbookPlatforms, type Advisory, type PlacementRow, type Ladder } from './advisory';

@@ -49,7 +49,7 @@ export const NOTICES = {
 /** Playbook platforms that are not providers, by name; page and report share them, so no raw key is shown (M7 D6). */
 export const PLATFORM_LABELS: Record<string, string> = {
   any: 'Any', on_prem: 'Data centre and private cloud', saas: 'SaaS and licensing', kubernetes: 'Kubernetes',
-  data_platform: 'Data platform', other_public: 'Other public cloud'
+  data_platform: 'Data platform', other_public: 'Other public cloud', sovereign_cloud: 'Sovereign cloud', ai_api: 'AI model APIs'
 };
 
 const labelsFrom = (questionId: string) => Object.fromEntries((B.questions.find((q: any) => q.id === questionId).options as any[]).map(o => [o.value, o.label]));

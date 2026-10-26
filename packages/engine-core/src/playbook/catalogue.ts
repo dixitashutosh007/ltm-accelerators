@@ -11,11 +11,14 @@
  */
 
 /** Where an action applies. Providers match the FinOps contract's PROVIDERS; the rest are estate scopes. */
-export const PLATFORMS = ['aws', 'azure', 'gcp', 'oci', 'ibm', 'alibaba', 'other_public', 'kubernetes', 'on_prem', 'saas', 'data_platform', 'any'] as const;
+export const PLATFORMS = ['aws', 'azure', 'gcp', 'oci', 'ibm', 'alibaba', 'other_public', 'sovereign_cloud', 'kubernetes', 'on_prem', 'saas', 'ai_api', 'data_platform', 'any'] as const;
 export type Platform = typeof PLATFORMS[number];
 export const LEVELS = ['platform', 'stack', 'application'] as const;
 export type PlaybookLevel = typeof LEVELS[number];
 export const OPTION_KINDS = ['native', 'open_source', 'third_party', 'practice'] as const;
+/** Kinds of service an entry acts on (Sovereign IQ C1); an entry without them applies to every kind. */
+export const SERVICE_FAMILIES = ['storage_backup', 'databases', 'analytics', 'ai_ml', 'compute_containers', 'identity_keys', 'collaboration_saas'] as const;
+export type ServiceFamily = typeof SERVICE_FAMILIES[number];
 
 export interface PlaybookOption {
   /** Product or practice name as the provider writes it, e.g. "AWS Data Exports (FOCUS 1.2)". */
@@ -44,6 +47,8 @@ export interface PlaybookEntry {
   /** Required at application level: the discovery the action needs (billing data, telemetry, architecture review). */
   discoveryNeeded?: string;
   confirmRegionalAvailability: boolean;
+  /** The kinds of service the action acts on; absent means every kind. */
+  serviceFamilies?: ServiceFamily[];
   confidence: 'High' | 'Medium' | 'Low';
   /** True when this platform needs no action for the control; `action` then says why. */
   noPlatformAction?: boolean;
@@ -66,7 +71,7 @@ export interface PlaybookCatalogue {
 }
 
 const DATE = /^\d{4}-\d{2}-\d{2}$/;
-const ID = /^PB\.[A-Z]+\.[A-Za-z0-9_-]+\.[a-z_]+\.(platform|stack|application)$/;
+const ID = /^PB\.[A-Z]+\.[A-Za-z0-9_.-]+\.[a-z_]+\.(platform|stack|application)$/;
 
 /**
  * Checks a catalogue against the schema and the 5.1 rules that need no engine: field forms, unique IDs, the ID
@@ -86,6 +91,7 @@ export function validateCatalogue(cat: PlaybookCatalogue, claimIds: Set<string>,
     if (!(PLATFORMS as readonly string[]).includes(e.platform)) out.push(`${at}: unknown platform ${e.platform}`);
     if (!(LEVELS as readonly string[]).includes(e.level)) out.push(`${at}: unknown level ${e.level}`);
     for (const k of ['action', 'approach', 'verification', 'ownerRole', 'owner'] as const) if (typeof e[k] !== 'string' || !e[k].trim()) out.push(`${at}: ${k} is required`);
+    for (const s of e.serviceFamilies ?? []) if (!(SERVICE_FAMILIES as readonly string[]).includes(s)) out.push(`${at}: unknown service family ${s}`);
     if (!['S', 'M', 'L'].includes(e.effort)) out.push(`${at}: effort must be S, M or L`);
     if (!['High', 'Medium', 'Low'].includes(e.confidence)) out.push(`${at}: confidence must be High, Medium or Low`);
     if (typeof e.confirmRegionalAvailability !== 'boolean') out.push(`${at}: confirmRegionalAvailability must be true or false`);

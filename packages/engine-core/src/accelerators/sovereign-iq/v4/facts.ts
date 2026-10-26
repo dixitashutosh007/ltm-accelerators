@@ -83,17 +83,22 @@ export function scopeFacts(a: Answers, mode: 'executive' | 'workshop'): Facts {
   const choice: Record<string, Level | 'unknown'> = {};
   const zones: Record<string, string[]> = {};
   const platforms: Record<string, string[]> = {};
+  // C1 (S7): kinds of service per class and hyperscaler; scope only, for the cloud advisory.
+  const c1 = (mode === 'workshop' ? a.C1 ?? {} : {}) as Record<string, Record<string, unknown>>;
+  const services: Record<string, Record<string, string[]>> = {};
   for (const c of classes) {
     if (d3[c]) location[c] = { primary: d3[c].primary !== undefined ? list(d3[c].primary) : undefined, backup: d3[c].backup !== undefined ? list(d3[c].backup) : undefined };
     const lv = level(l2[c]?.level) ?? level(a.L1);
     if (lv) choice[c] = lv;
     if (list(l2[c]?.zones).length) zones[c] = known(list(l2[c]?.zones));
     if (list(l2[c]?.platforms).length) platforms[c] = list(l2[c]?.platforms);
+    for (const p of ['aws', 'azure', 'gcp']) if (known(list(c1[c]?.[p])).length) (services[c] ??= {})[p] = known(list(c1[c]?.[p]));
   }
   f['data.location'] = location;
   f['data.choice_level'] = choice;
   f['data.allowed_zone_given'] = zones;
   f['data.class_platforms'] = platforms;
+  f['data.class_services'] = services;
 
   // Provider parents (2.4), the union of every location zone (S2 design change 1), the size class and the transfer test.
   f['prov.parent_jurisdictions'] = [...new Set(list(f['plat.in_scope']).flatMap(p => platformParents(p, f)))];

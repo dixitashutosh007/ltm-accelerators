@@ -50,11 +50,11 @@ describe('Sovereign IQ v4 data files', () => {
   const ajv = new Ajv2020({ allErrors: true, strict: false, logger: false });
   for (const f of ['facts.schema.json', 'regime.schema.json']) ajv.addSchema(JSON.parse(readFileSync(join(DESIGN, f), 'utf8')));
 
-  it('the question bank matches question.schema.json: 47 questions, 17 executive, 15 workshop, 15 follow-ups', () => {
+  it('the question bank matches question.schema.json: 48 questions, 17 executive, 15 workshop, 16 follow-ups', () => {
     const v = ajv.compile(JSON.parse(readFileSync(join(DESIGN, 'question.schema.json'), 'utf8')));
     expect(v(bank), JSON.stringify(v.errors?.slice(0, 3))).toBe(true);
     const by = (m: string) => QUESTIONS.filter(q => q.mode === m).length;
-    expect([QUESTIONS.length, by('executive'), by('workshop'), by('follow_up')]).toEqual([47, 17, 15, 15]);
+    expect([QUESTIONS.length, by('executive'), by('workshop'), by('follow_up')]).toEqual([48, 17, 15, 16]);
   });
 
   it('every maturity question feeds a catalogued control, and every scored control is measured', () => {
@@ -233,7 +233,8 @@ function approved(r: SovereignIqV4Result) {
     controls: r.controls.map(c => ({ control: c.control, state: c.state, byClass: c.byClass, score: Math.round(c.score * 1000) / 1000 })),
     exposure: { summary: r.exposure.summary, largestCap: r.exposure.largestCap, regimes: r.exposure.regimes.map(x => ({ regime: x.regime, rag: x.rag, assessed: x.assessed, required: x.required, cap: x.cap && { amount: x.cap.amount, range: x.cap.range, currency: x.cap.currency } })) },
     findings: r.findings.map(f => ({ id: f.id, severity: f.severity, wave: f.wave, timeFrame: f.timeFrame, dataClasses: f.dataClasses })),
-    roadmap: r.roadmap, pendingSource: r.pendingSource, notes: r.notes
+    roadmap: r.roadmap, pendingSource: r.pendingSource, notes: r.notes,
+    placement: r.advisory.placement.map(p => ({ dataClass: p.dataClass, platform: p.platform, minimumRung: p.minimumRung, status: p.status, noOfferingZones: p.noOfferingZones, findingIds: p.findingIds }))
   };
 }
 
