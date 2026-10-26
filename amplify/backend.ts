@@ -9,7 +9,6 @@ import { LogGroup, RetentionDays } from 'aws-cdk-lib/aws-logs';
 import { auth } from './auth/resource';
 import { data } from './data/resource';
 import { evaluateFinOpsIqFunction } from './functions/evaluate-finops-iq/resource';
-import { evaluatePostureIqFunction } from './functions/evaluate-posture-iq/resource';
 import { evaluateSovereignIqFunction } from './functions/evaluate-sovereign-iq/resource';
 import { evaluateCloudIqFunction } from './functions/evaluate-cloud-iq/resource';
 import { evaluateCostIqFunction } from './functions/evaluate-cost-iq/resource';
@@ -33,7 +32,6 @@ export const backend = defineBackend({
   auth,
   data,
   evaluateFinOpsIqFunction,
-  evaluatePostureIqFunction,
   evaluateSovereignIqFunction,
   evaluateCloudIqFunction,
   evaluateCostIqFunction,
@@ -83,7 +81,7 @@ backend.data.resources.cfnResources.amplifyDynamoDbTables['SovereignIqAssessment
  * ------------------------------------------------------------------ */
 for (const fn of [
   backend.evaluateFinOpsIqFunction, backend.manageFinOpsAssessmentFunction, backend.finopsIqReportFunction,
-  backend.evaluatePostureIqFunction, backend.evaluateSovereignIqFunction, backend.evaluateCloudIqFunction,
+  backend.evaluateSovereignIqFunction, backend.evaluateCloudIqFunction,
   backend.evaluateStrategyIqFunction, backend.evaluateModernizationIqFunction, backend.evaluateResilienceIqFunction,
   backend.manageResilienceAssessmentFunction, backend.manageResilienceEvidenceFunction, backend.manageSovereignAssessmentFunction, backend.sovereignIqReportFunction,
   backend.sovereignIqNarrativeFunction
@@ -157,7 +155,6 @@ const integrations = {
   sovereignReport: integrate('AdvisorySovereignIqReport', backend.sovereignIqReportFunction),
   sovereignNarrative: integrate('AdvisorySovereignIqNarrative', backend.sovereignIqNarrativeFunction),
   finopsReport: integrate('AdvisoryFinOpsIqReport', backend.finopsIqReportFunction),
-  posture: integrate('AdvisoryPostureIq', backend.evaluatePostureIqFunction),
   sovereign: integrate('AdvisorySovereignIq', backend.evaluateSovereignIqFunction),
   cloud: integrate('AdvisoryCloudIq', backend.evaluateCloudIqFunction),
   strategy: integrate('AdvisoryStrategyIq', backend.evaluateStrategyIqFunction),
@@ -175,10 +172,8 @@ route('/api/evaluate/finops-iq/v3', [HttpMethod.POST], integrations.finopsIq);
 route('/api/finops-iq/assessment', [HttpMethod.GET, HttpMethod.POST], integrations.finopsAssessment);
 // Report PDF and backlog CSV of a completed assessment (execution phase M4).
 route('/api/finops-iq/report', [HttpMethod.GET], integrations.finopsReport);
-route('/api/evaluate/posture-iq', [HttpMethod.POST], integrations.posture);
-route('/api/evaluate/sovereign-iq', [HttpMethod.POST], integrations.sovereign);
-// Merged Sovereign IQ (engine v4, PLAN S5): scoring and save/resume for the new page, beside the current one until
-// the switch-over.
+// Sovereign IQ (engine v4; Posture IQ is part of it). The v1 engine, the Posture IQ engine and their routes were
+// retired at the switch-over (PLAN S5, 26 Oct 2026).
 route('/api/evaluate/sovereign-iq/v4', [HttpMethod.POST], integrations.sovereign);
 route('/api/sovereign-iq/assessment', [HttpMethod.GET, HttpMethod.POST], integrations.sovereignAssessment);
 route('/api/sovereign-iq/report', [HttpMethod.GET], integrations.sovereignReport);
@@ -291,11 +286,10 @@ legacyRoute('/api/evaluate/cost-iq/{proxy+}', [HttpMethod.GET, HttpMethod.POST, 
 legacyRoute('/api/evaluate/cost-iq/ai-review', [HttpMethod.POST, HttpMethod.OPTIONS], costIqIntegration);
 legacyRoute('/api/evaluate/cost-iq/ai-report', [HttpMethod.POST, HttpMethod.OPTIONS], costIqIntegration);
 
-// Advisory-API accelerators: old unauthenticated routes, kept only during cutover. FinOps IQ and FinOps Value
-// Case are already off (CIO-readiness F0, decision D11): their pages use the Advisory API only.
+// Advisory-API accelerators: old unauthenticated routes, kept only during cutover. FinOps IQ, FinOps Value
+// Case, Sovereign IQ and Posture IQ are already off (CIO-readiness F0, decision D11; Sovereign IQ PLAN S5): their pages
+// use the Advisory API only.
 if (KEEP_LEGACY_API) {
-  legacyRoute('/api/evaluate/posture-iq', [HttpMethod.POST, HttpMethod.OPTIONS], integrate('EvaluatePostureIqIntegration', backend.evaluatePostureIqFunction));
-  legacyRoute('/api/evaluate/sovereign-iq', [HttpMethod.POST, HttpMethod.OPTIONS], integrate('EvaluateSovereignIqIntegration', backend.evaluateSovereignIqFunction));
   legacyRoute('/api/evaluate/cloud-iq', [HttpMethod.POST, HttpMethod.OPTIONS], integrate('EvaluateCloudIqIntegration', backend.evaluateCloudIqFunction));
   legacyRoute('/api/evaluate/strategy-iq', [HttpMethod.POST, HttpMethod.OPTIONS], integrate('EvaluateStrategyIqIntegration', backend.evaluateStrategyIqFunction));
   legacyRoute('/api/evaluate/modernization-iq', [HttpMethod.POST, HttpMethod.OPTIONS], integrate('EvaluateModernizationIqIntegration', backend.evaluateModernizationIqFunction));

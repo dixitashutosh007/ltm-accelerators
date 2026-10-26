@@ -51,7 +51,7 @@ test.beforeEach(async ({ context, world }) => {
 const settled = (page: Page) => expect.poll(() => page.evaluate(() => (window as any).SOVEREIGN_IQ.busy()), { timeout: 10_000 }).toBe(false);
 
 async function start(page: Page, mode: 'executive' | 'workshop', client = 'Example Bank') {
-  await page.goto('/sovereign-iq-v4');
+  await page.goto('/sovereign-iq');
   await page.getByLabel('Client organisation').fill(client);
   await page.getByRole('radio', { name: new RegExp(mode === 'executive' ? '^Executive' : '^Workshop') }).check();
   await page.getByRole('button', { name: 'Start assessment' }).click();
@@ -182,7 +182,7 @@ test('client view: no notes, rule IDs, numeric states or list of regimes that do
 });
 
 test('the start screen shows the disclaimer and how client data is handled (PLAN S10)', async ({ page }) => {
-  await page.goto('/sovereign-iq-v4');
+  await page.goto('/sovereign-iq');
   await expect(page.getByText('which LTM has not audited or verified')).toBeVisible();
   await page.getByText('How your data is handled').click();
   await expect(page.locator('#data-notice')).toContainText('Mumbai region (India)');
@@ -191,16 +191,16 @@ test('the start screen shows the disclaimer and how client data is handled (PLAN
 
 test('a Posture IQ permission opens the merged page; a user without either is sent back', async ({ page, context }) => {
   await signedIn(context, { email: 'posture@ltm.com', token: makeIdToken('posture@ltm.com'), role: 'custom', permissions: { take: ['posture-iq'] } });
-  await page.goto('/sovereign-iq-v4');
+  await page.goto('/sovereign-iq');
   await expect(page.getByRole('heading', { level: 1, name: 'Sovereign IQ' })).toBeVisible();
   await signedIn(context, { email: 'cloud@ltm.com', token: makeIdToken('cloud@ltm.com'), role: 'custom', permissions: { take: ['cloud-iq'] } });
-  await page.goto('/sovereign-iq-v4');
-  await expect(page).not.toHaveURL(/sovereign-iq-v4/);
+  await page.goto('/sovereign-iq');
+  await expect(page).not.toHaveURL(/sovereign-iq/);
 });
 
 test('accessibility: no WCAG 2.2 AA violations on the start screen, a question step, review and every result tab', async ({ page }) => {
   test.setTimeout(150_000);
-  await page.goto('/sovereign-iq-v4');
+  await page.goto('/sovereign-iq');
   await expect(page.getByRole('heading', { level: 1, name: 'Sovereign IQ' })).toBeVisible();
   await axe(page, 'start');
   await start(page, 'workshop', 'Axe Bank');
@@ -224,7 +224,7 @@ test('usable at 360px: no horizontal scroll on the start screen, the data step o
     const [sw, cw] = await page.evaluate(() => [document.documentElement.scrollWidth, document.documentElement.clientWidth]);
     expect(sw, where).toBeLessThanOrEqual(cw + 1);
   };
-  await page.goto('/sovereign-iq-v4');
+  await page.goto('/sovereign-iq');
   await expect(page.getByRole('heading', { level: 1, name: 'Sovereign IQ' })).toBeVisible();
   await noScroll('start');
   await start(page, 'executive', 'Narrow Bank');

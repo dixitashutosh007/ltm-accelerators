@@ -197,7 +197,7 @@ Reviewer: Claude (AI, in a counsel role, 26 Oct 2026). Not a qualified lawyer (s
 | C15 | Singapore: a consultant's business email is business contact information, outside the PDPA's transfer limitation (S). IP addresses fall under s.26 and PDP Regulations 2021 (legally enforceable obligations, met by the intra-group agreement) (S) | Intra-group agreement at go-live | Deferred |
 | C16 | Australia: disclosure to the Indian entity engages APP 8 unless the employee-records exemption (s.7B(3), S) or related-body rules apply; the s.13B and APP 8 interplay is UNSOURCED | Counsel | Open |
 | C17 | India: LTM is a Data Fiduciary. EU and UK data processed under the intra-group contract is largely exempt (s.17(1)(d), V), but s.8(5) security applies. Platform DPDP notice and breach process by 13 May 2027 (as M6 C9) | WS-S6 | Routed |
-| C18 | Legacy `sovereign-iq.html` and `posture-iq.html`: localStorage and legacy AI code | Retire at the S5 switch-over, before external use | Open (A8) |
+| C18 | Legacy `sovereign-iq.html` and `posture-iq.html`: localStorage and legacy AI code | Retire at the S5 switch-over, before external use | Done 26 Oct 2026 (A8): both addresses forward to the merged page; the old pages, engines and routes are removed |
 | C19 | Retention test gap: no Sovereign-specific expiry spec | A5 | Open |
 | C20 | Cap turnover: GDPR caps use the undertaking's (group) turnover (C-383/23, S); the turnover question should ask for group worldwide turnover | Question wording, with counsel | Recommended |
 
@@ -212,7 +212,7 @@ Reviewer: Claude (AI, in a counsel role, 26 Oct 2026). Not a qualified lawyer (s
 | A5 | Add a Sovereign handler spec: writes set `expiresAt`; expired records are not listed, opened, reported or narrated | Build | Gate S10 ("retention job tested") |
 | A6 | A qualified lawyer reviews sections 3 to 7 and the TIA, and signs off per market (EU, with FR and DE on 5.1; UK; US; SG; AU; IN) using the ranked list in 6.2 | Owner / LTM legal | First external client |
 | A7 | `sovereignty-compliance-lead` re-verifies FISA 702 and the other volatile claims before S11 | Agent | S11 |
-| A8 | Retire the legacy pages at the S5 switch-over | Owner | External use |
+| A8 | Retire the legacy pages at the S5 switch-over. **Done 26 Oct 2026** | Owner | External use |
 | A9 | Optional, recommended: log the Cognito `sub` instead of the email in the API access log (TIA M5) | Owner | — |
 
 ## 9. Limits of this review

@@ -62,7 +62,7 @@ test.describe('Session handling', () => {
 
   test('a user without access to an accelerator is sent back to the portal', async ({ page, context }) => {
     await signedIn(context, consultant(makeIdToken('consultant@ltm.com', 3600), 'refresh-consultant@ltm.com'));
-    await page.goto('/posture-iq');
+    await page.goto('/strategy-iq');
     await expect(page).toHaveURL(/\/$/);
   });
 });

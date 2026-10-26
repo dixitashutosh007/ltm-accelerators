@@ -1,44 +1,18 @@
 <!DOCTYPE html>
 <!--
   Copyright © 2026 LTM Limited. All rights reserved.
-  Sovereign IQ (merged with Posture IQ): engine v4, scoring on the server only (PLAN S5).
-  Served at /sovereign-iq-v4 beside the current Sovereign IQ and Posture IQ pages until the owner approves the
-  switch-over. Shares the FinOps IQ design system (app.css) and charts (charts.js).
+  Sovereign IQ moved to /sovereign-iq at the switch-over (PLAN S5, 26 Oct 2026). This page forwards links saved
+  during the build, keeping their query (an ?assessment= link opens the same assessment).
 -->
 <html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Sovereign IQ — Data Sovereignty and Compliance Exposure Assessment · LTM Vantage</title>
-  <script src="/assets/runtime-config.js"></script>
-  <script src="/assets/ltm-api.js"></script>
-  <script src="/assets/rbac-guard.js" data-tool="sovereign-iq posture-iq"></script>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/assets/finops-iq/app.css">
-  <link rel="stylesheet" href="/assets/sovereign-iq/app.css">
+  <script>location.replace('/sovereign-iq' + location.search + location.hash);</script>
+  <meta http-equiv="refresh" content="0; url=/sovereign-iq">
+  <title>Sovereign IQ has moved · LTM Vantage</title>
 </head>
 <body>
-  <a class="skip" href="#main">Skip to content</a>
-  <div class="review-banner" role="note">Internal consultant use only until the legal review. Not legal advice: confirm applicability and obligations with counsel.</div>
-  <header class="topbar">
-    <div class="topbar-inner">
-      <a class="brand" href="/" aria-label="LTM Vantage home">
-        <img src="/assets/ltm-logo.png" alt="LTM" width="72" height="24">
-        <span class="brand-text"><strong>Sovereign IQ</strong><span>LTM Vantage · Responsible Advisory</span></span>
-      </a>
-      <div class="topbar-actions" id="topbar-actions"></div>
-    </div>
-  </header>
-  <main id="main" tabindex="-1">
-    <div id="app"><p class="loading">Loading Sovereign IQ…</p></div>
-    <div id="live" class="visually-hidden" aria-live="polite"></div>
-  </main>
-  <footer class="footer">
-    <p>LTM Vantage · Responsible Advisory · Sovereign IQ · Confidential</p>
-  </footer>
-  <script src="/assets/finops-iq/charts.js"></script>
-  <script src="/assets/sovereign-iq/app.js"></script>
+  <p>Sovereign IQ has moved. <a href="/sovereign-iq">Continue to Sovereign IQ</a>.</p>
 </body>
 </html>

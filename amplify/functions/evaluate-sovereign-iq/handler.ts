@@ -1,7 +1,5 @@
 import type { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
 import { corsHeaders } from '../_shared/http';
-import { evaluateSovereignIq } from '../../../packages/engine-core/src/accelerators/sovereign-iq/evaluate';
-import { parseSovereignIqRequest } from '../../../packages/engine-core/src/accelerators/sovereign-iq/contract';
 import { clientView, evaluateSovereignIqV4, parseSovereignIqV4Input } from '../../../packages/engine-core/src/accelerators/sovereign-iq/v4';
 import { withAcceleratorAccess } from '../_shared/access';
 
@@ -30,35 +28,14 @@ const serve = async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResu
       return { statusCode: 400, headers: CORS_HEADERS, body: JSON.stringify({ ok: false, error: 'Request body is not valid JSON.' }) };
     }
 
-    // POST /api/evaluate/sovereign-iq/v4 scores the merged Sovereign IQ (PLAN S5), dated today on the server; the
-    // current page keeps the plain route until the switch-over. ?view=client returns the client-mode result.
-    if (String(event.rawPath || '').replace(/\/+$/, '').endsWith('/v4')) {
-      const v4 = parseSovereignIqV4Input({ ...body, assessmentDate: new Date().toISOString().slice(0, 10) });
-      if (!v4.ok) return { statusCode: 400, headers: CORS_HEADERS, body: JSON.stringify({ ok: false, error: 'Invalid assessment payload.', details: v4.errors.slice(0, 20) }) };
-      const scored = evaluateSovereignIqV4(v4.input);
-      const data = event.queryStringParameters?.view === 'client' ? clientView(scored) : scored;
-      return { statusCode: 200, headers: CORS_HEADERS, body: JSON.stringify({ ok: true, data }) };
-    }
-
-    const parsed = parseSovereignIqRequest(body);
-    if (!parsed.ok) {
-      return {
-        statusCode: 400,
-        headers: CORS_HEADERS,
-        body: JSON.stringify({ ok: false, error: 'Invalid assessment payload.', details: parsed.errors.slice(0, 20) })
-      };
-    }
-
-    const result = evaluateSovereignIq(parsed.value);
-
-    return {
-      statusCode: 200,
-      headers: CORS_HEADERS,
-      body: JSON.stringify({
-        ok: true,
-        data: result
-      })
-    };
+    // POST /api/evaluate/sovereign-iq/v4 scores Sovereign IQ (Posture IQ merged in), dated today on the server.
+    // ?view=client returns the client-mode result. The v1 engine and its route were retired at the switch-over
+    // (PLAN S5, 26 Oct 2026).
+    const v4 = parseSovereignIqV4Input({ ...body, assessmentDate: new Date().toISOString().slice(0, 10) });
+    if (!v4.ok) return { statusCode: 400, headers: CORS_HEADERS, body: JSON.stringify({ ok: false, error: 'Invalid assessment payload.', details: v4.errors.slice(0, 20) }) };
+    const scored = evaluateSovereignIqV4(v4.input);
+    const data = event.queryStringParameters?.view === 'client' ? clientView(scored) : scored;
+    return { statusCode: 200, headers: CORS_HEADERS, body: JSON.stringify({ ok: true, data }) };
   } catch (error: any) {
     console.error('[EvaluateSovereignIq] Error evaluating assessment:', error);
     return {

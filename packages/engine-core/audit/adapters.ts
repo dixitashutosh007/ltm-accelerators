@@ -8,10 +8,6 @@ import strategyKb from '../src/accelerators/strategy-iq/knowledge-base.json' wit
 import { evaluateCloudIq } from '../src/accelerators/cloud-iq/evaluate';
 import cloudKb from '../src/accelerators/cloud-iq/knowledge-base.json' with { type: 'json' };
 import { evaluateFinOpsIqV3, QUESTIONS as FIQ3_QUESTIONS, type Facts as Fiq3Facts, type Mode as Fiq3Mode } from '../src/accelerators/finops-iq/v3';
-import { evaluatePostureIq } from '../src/accelerators/posture-iq/evaluate';
-import postureKb from '../src/accelerators/posture-iq/knowledge-base.json' with { type: 'json' };
-import { evaluateSovereignIq } from '../src/accelerators/sovereign-iq/evaluate';
-import sovereignKb from '../src/accelerators/sovereign-iq/knowledge-base.json' with { type: 'json' };
 import { evaluateResilienceIq } from '../src/accelerators/resilience-iq/evaluate';
 import { resilienceKnowledge } from '../src/accelerators/resilience-iq/knowledge';
 
@@ -232,44 +228,6 @@ function fiq3Adapter(mode: Fiq3Mode): Adapter {
   };
 }
 
-/* ------------------------------- Posture IQ -------------------------------- */
-const PST: any = postureKb;
-function pstVariants(q: any): unknown[] {
-  if (q.type === 'single' || q.type === 'boolean') return q.options.map((o: any) => o.value);
-  if (q.type === 'multi') return [[], ...q.options.map((o: any) => [o.value]), q.options.map((o: any) => o.value)];
-  if (q.type === 'scale') return q.scale.map((s: any) => s.v);
-  if (q.type === 'matrix') return q.cols.map((c: any) => Object.fromEntries(q.rows.map((r: any) => [r.id, c.id])));
-  return [];
-}
-const sevRank: Record<string, number> = { positive: 5, low: 4, medium: 3, high: 2, critical: 1 };
-const pstExtreme = (best: boolean) => ({
-  answers: Object.fromEntries(PST.questions.map((q: any) => {
-    const by = (arr: any[], key: (x: any) => number) => arr.reduce((m, x) => ((best ? key(x) > key(m) : key(x) < key(m)) ? x : m));
-    if (q.type === 'single' || q.type === 'boolean') return [q.id, by(q.options, (o: any) => sevRank[o.sev] ?? 3).value];
-    if (q.type === 'scale') return [q.id, by(q.scale, (s: any) => sevRank[s.sev] ?? 3).v];
-    if (q.type === 'multi') return [q.id, best ? q.options.filter((o: any) => !(o.findings || []).length).map((o: any) => o.value) : q.options.map((o: any) => o.value)];
-    if (q.type === 'matrix') { const col = by(q.cols, (c: any) => sevRank[c.sev] ?? 3).id; return [q.id, Object.fromEntries(q.rows.map((r: any) => [r.id, col]))]; }
-    return [q.id, undefined];
-  })),
-  org: { turnover: 1e9 }, regulations: ['gdpr', 'nis2', 'dora', 'aiact']
-});
-
-/* ------------------------------ Sovereign IQ ------------------------------- */
-const SOV: any = sovereignKb;
-function sovVariants(q: any): unknown[] {
-  if (q.type === 'single') return range(q.opts.length);
-  if (q.type === 'multi') return subsets(q.opts.length);
-  if (q.type === 'slider') return [q.min, Math.round((q.min + q.max) / 2), q.max];
-  return [];
-}
-const sovExtreme = (best: boolean) => ({
-  answers: Object.fromEntries(SOV.questions.filter((q: any) => q.type === 'single').map((q: any) => {
-    const scored = q.opts.map((o: any, i: number) => ({ i, s: typeof o.score === 'number' ? o.score : null })).filter((x: any) => x.s !== null);
-    if (!scored.length) return [q.id, 0];
-    return [q.id, scored.reduce((m: any, x: any) => ((best ? x.s > m.s : x.s < m.s) ? x : m)).i];
-  }))
-});
-
 /* ------------------------------ Resilience IQ ------------------------------ */
 // A completed assessment: every executive question answered (as the page requires) and, because the engine
 // withholds a result until triggered follow-ups are answered, each advisory question answered with probability 0.8.
@@ -336,39 +294,6 @@ export const ADAPTERS: Adapter[] = [
   },
   fiq3Adapter('executive'),
   fiq3Adapter('workshop'),
-  {
-    id: 'posture-iq', name: 'Posture IQ',
-    questions: PST.questions.map((q: any) => ({ id: q.id, label: q.text })),
-    random: r => ({
-      answers: Object.fromEntries(PST.questions.filter(() => r() < 0.85).map((q: any) => [q.id, pick(r, pstVariants(q))])),
-      org: { turnover: 1e9 }, regulations: ['gdpr', 'nis2', 'dora', 'aiact']
-    }),
-    variants: id => pstVariants(PST.questions.find((q: any) => q.id === id)),
-    withAnswer: setAnswer, withoutAnswer: dropAnswer,
-    evaluate: i => evaluatePostureIq(i),
-    headlines: [
-      { name: 'Posture score (0-100)', scale: [0, 100], higherIsBetter: true, get: r => r.overallScore },
-      { name: 'Critical + high findings', scale: [0, Infinity], higherIsBetter: false, get: r => r.counts.critical + r.counts.high },
-      { name: 'Largest statutory ceiling ($)', scale: [0, Infinity], higherIsBetter: null, get: r => r.penalties.totalValueAtStake }
-    ],
-    band: { get: r => r.label.t, all: ['Defensible', 'Improving / Managed', 'Material Exposure', 'Critical Non-Compliance'] },
-    extremes: { best: () => pstExtreme(true), worst: () => pstExtreme(false) }
-  },
-  {
-    id: 'sovereign-iq', name: 'Sovereign IQ',
-    questions: SOV.questions.map((q: any) => ({ id: q.id, label: q.q })),
-    random: r => ({ answers: Object.fromEntries(SOV.questions.filter(() => r() < 0.9).map((q: any) => [q.id, pick(r, sovVariants(q))])) }),
-    variants: id => sovVariants(SOV.questions.find((q: any) => q.id === id)),
-    withAnswer: setAnswer, withoutAnswer: dropAnswer,
-    evaluate: i => evaluateSovereignIq(i),
-    headlines: [
-      { name: 'Sovereignty maturity (0-100)', scale: [0, 100], higherIsBetter: true, get: r => r.maturity.score },
-      { name: 'Regimes in scope (applies)', scale: [0, Infinity], higherIsBetter: null, get: r => r.inScopeRegimes.filter((x: any) => x.grade === 'applies').length },
-      { name: 'Statutory ceiling ($)', scale: [0, Infinity], higherIsBetter: null, get: r => r.fin.statutoryCeiling }
-    ],
-    band: { get: r => r.maturity.stage?.label ?? '(none)', all: SOV.maturityStages.map((s: any) => s.label) },
-    extremes: { best: () => sovExtreme(true), worst: () => sovExtreme(false) }
-  },
   {
     id: 'resilience-iq', name: 'Resilience IQ',
     questions: RIQ_QUESTIONS.map((q: any) => ({ id: q.id, label: q.text })),
