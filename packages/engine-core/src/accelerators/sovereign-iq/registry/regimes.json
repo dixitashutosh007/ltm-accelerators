@@ -2731,7 +2731,7 @@
               "value": "uk_pra_regulated"
             },
             "grade": "applies",
-            "reason": "As a PRA-regulated firm you must keep important business services within your impact tolerances. Impact-tolerance maturity is assessed in Resilience IQ.",
+            "reason": "You said you are a PRA-regulated firm. The PRA's operational resilience rules (SS1/21) require firms in scope to stay within impact tolerances for important business services; confirm your firm is in scope. Impact-tolerance maturity is assessed in Resilience IQ.",
             "basis": "PRA SS1/21",
             "claims": [
               "CLM-SOV-085"
@@ -2857,7 +2857,7 @@
               "value": "uk_pra_regulated"
             },
             "grade": "applies",
-            "reason": "As a PRA-regulated firm you must manage outsourcing and third-party risk under SS2/21.",
+            "reason": "You said you are a PRA-regulated firm. The PRA's outsourcing and third-party risk management expectations (SS2/21) apply to firms in scope; confirm your firm is in scope.",
             "basis": "PRA SS2/21",
             "claims": [
               "CLM-SOV-088"
@@ -3387,7 +3387,7 @@
               "derived": "uses_us_parent_provider"
             },
             "grade": "advisory",
-            "reason": "A US provider must produce data in its possession, custody or control wherever it is stored. Keys you hold outside the provider's control limit what it can technically produce, but not its legal duty.",
+            "reason": "When served with valid US legal process, a provider of electronic communication or remote computing services subject to US jurisdiction must disclose data in its possession, custody or control, wherever it is stored (18 U.S.C. § 2713); in limited cases it can ask a court to modify or quash the order (§ 2703(h)). Keys you hold outside the provider's control limit what it can technically produce, not its legal duty.",
             "basis": "18 U.S.C. § 2713",
             "claims": [
               "CLM-SOV-098",
@@ -3475,7 +3475,7 @@
               ]
             },
             "grade": "advisory",
-            "reason": "Section 702 targets non-US persons outside the US through US electronic communication service providers. Its statutory authority lapsed in June 2026 and reauthorisation is pending; collection continues under existing certifications (status as of 14 Oct 2026).",
+            "reason": "Section 702 targets non-US persons outside the US through US electronic communication service providers. Its statutory authority lapsed in June 2026 and no reauthorisation had been enacted by mid-September 2026; collection continues under certifications that run to March 2027 (status as of 26 Oct 2026; re-check before quoting).",
             "basis": "50 U.S.C. § 1881a",
             "claims": [
               "CLM-SOV-102",
@@ -4557,7 +4557,7 @@
               "value": "us_sec_registrant"
             },
             "grade": "applies",
-            "reason": "As an SEC registrant you must disclose material cybersecurity incidents within four business days of the materiality determination and report on cybersecurity governance annually.",
+            "reason": "You said you are an SEC registrant. The SEC's cybersecurity disclosure rules apply to registrants: domestic registrants file Form 8-K Item 1.05 within four business days of determining materiality; foreign private issuers use Forms 6-K and 20-F. Annual reporting on cybersecurity governance also applies. Confirm your filer status with counsel.",
             "basis": "Form 8-K Item 1.05; Reg. S-K Item 106",
             "claims": [
               "CLM-SOV-126",
@@ -5317,6 +5317,7 @@
             "currency": "AUD",
             "turnoverPercent": 30,
             "turnoverBasis": "adjusted_turnover",
+            "otherLimbs": "three times the benefit obtained",
             "article": "s.13G",
             "claims": [
               "CLM-SOV-147"
@@ -6018,7 +6019,7 @@
               ]
             },
             "grade": "applies",
-            "reason": "You process digital personal data of people in India from India; most duties apply from 13 May 2027.",
+            "reason": "You process digital personal data in India, so the DPDP Act applies (s.3(a)); most duties apply from 13 May 2027. Processing in India of data about people outside India under a contract with a foreign party is largely exempt (s.17(1)(d)).",
             "basis": "s.3(a)",
             "claims": [
               "CLM-SOV-162",
@@ -6235,7 +6236,7 @@
               ]
             },
             "grade": "applies",
-            "reason": "As an authorised payment system operator (or part of its ecosystem) you must store the entire payment system data only in India.",
+            "reason": "You said you are an authorised payment system operator or part of its ecosystem. RBI's storage of payment system data directive requires the entire payment system data to be stored only in India; RBI's FAQs describe limited exceptions. Confirm scope with counsel.",
             "basis": "RBI circular 6 Apr 2018",
             "claims": [
               "CLM-SOV-168"

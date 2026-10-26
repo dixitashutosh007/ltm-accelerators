@@ -1,0 +1,59 @@
+{
+  "deliveryVersion": "1.0.0",
+  "statusAsOf": "2026-10-26",
+  "owner": "sovereignty-compliance-lead (agent); approver: product owner",
+  "nextReview": "2027-01-24",
+  "rule": "Delivery attributes for the roadmap (S6 CIO challenge Q7 and D4; scorecard area 13(c)). LTM heuristic, not a market fact: for review by sovereignty-compliance-lead and approval by the product owner. Effort is the work needed, as a band; duration is the typical elapsed time for one organisation to put the control in place, set by the type of work and never by severity. Severity sets when the work starts; a dependent action starts only once its prerequisite is expected to reach its milestone (the end of the prerequisite's duration); decisions and scope confirmations start at once. 'movedDuration' applies to data location when the placement matrix says the data needs a sovereign offering (a migration, not a reconfiguration).",
+  "effortBands": {
+    "S": "Up to one FTE-month",
+    "M": "One to three FTE-months",
+    "L": "Three to nine FTE-months",
+    "XL": "A programme: several teams, more than nine FTE-months"
+  },
+  "startMonthBySeverity": { "Critical": 0, "High": 1, "Medium": 3, "Low": 6 },
+  "prerequisites": {
+    "SOV.XFER.BASIS": ["SOV.DATA.MAP", "SOV.TP.VISIBILITY"],
+    "SOV.XFER.TIA": ["SOV.XFER.BASIS"],
+    "SOV.RES.LOCATION": ["SOV.DATA.MAP", "SOV.TP.VISIBILITY", "SOV.RES.REGION_LOCK"],
+    "SOV.BACKUP.LOCATION": ["SOV.RES.REGION_LOCK"],
+    "SOV.KEY.REVOCATION": ["SOV.KEY.CUSTODY"],
+    "SOV.TP.REGISTER": ["SOV.TP.VISIBILITY"],
+    "SOV.OPS.PERSONNEL_ZONE": ["SOV.DATA.MAP"],
+    "SOV.JUR.IMMUNITY": ["SOV.DATA.MAP"]
+  },
+  "controls": {
+    "SOV.GOV.OWNER": { "effort": "S", "durationMonths": [1, 2], "milestone": "Accountable executive named; sovereignty forum chartered", "kpi": "Sovereignty decisions recorded by the forum each quarter", "risk": "Ownership split between the CIO, CISO and DPO stalls decisions" },
+    "SOV.DATA.MAP": { "effort": "M", "durationMonths": [3, 6], "milestone": "Data-flow map and records of processing approved", "kpi": "Share of critical systems with a flow reviewed in the last 12 months", "risk": "SaaS and shadow-IT flows are missed" },
+    "SOV.RES.LOCATION": { "effort": "L", "durationMonths": [6, 12], "movedEffort": "XL", "movedDuration": [9, 18], "milestone": "Primary storage and processing of the data sit in allowed regions", "kpi": "Location report shows only allowed regions for the data", "risk": "Application dependencies and data volumes lengthen the move" },
+    "SOV.RES.REGION_LOCK": { "effort": "S", "durationMonths": [1, 3], "milestone": "Region guardrail policies enforced on every account and subscription", "kpi": "Policy compliance report shows no deployment outside allowed regions", "risk": "Global services that ignore region policies" },
+    "SOV.BACKUP.LOCATION": { "effort": "M", "durationMonths": [2, 4], "milestone": "Backups, replicas and recovery copies in allowed regions", "kpi": "Restore test from an in-region copy passes", "risk": "The recovery design depends on a region pair outside the zone" },
+    "SOV.XFER.BASIS": { "effort": "M", "durationMonths": [2, 4], "milestone": "Transfer register complete, with a route for every flow", "kpi": "Share of transfers with a documented route and review date", "risk": "Remote support access from abroad is overlooked" },
+    "SOV.XFER.TIA": { "effort": "M", "durationMonths": [2, 4], "milestone": "Transfer impact assessment recorded for every transfer under contractual clauses, IDTA or BCRs", "kpi": "Assessments reviewed within the last 12 months", "risk": "Destination-law analysis needs counsel time" },
+    "SOV.XFER.US_BULK": { "effort": "S", "durationMonths": [1, 3], "milestone": "Covered agreements screened", "kpi": "Share of in-scope agreements screened", "risk": "Supplier chains hide access by countries of concern" },
+    "SOV.KEY.CUSTODY": { "effort": "L", "durationMonths": [3, 6], "milestone": "Keys for the data held outside the provider", "kpi": "Key ownership attested for every in-scope service", "risk": "Not every service supports keys held outside the provider" },
+    "SOV.KEY.REVOCATION": { "effort": "M", "durationMonths": [2, 3], "milestone": "Key revocation test passed", "kpi": "Test data unreadable after revocation, on every in-scope service", "risk": "Caches and derived copies sit outside the key's scope" },
+    "SOV.ENC.BASELINE": { "effort": "M", "durationMonths": [3, 6], "milestone": "Encryption at rest and in transit everywhere, internal traffic included", "kpi": "Encryption coverage of regulated data stores at 100%", "risk": "Legacy protocols on internal links" },
+    "SOV.OPS.ADMIN_ACCESS": { "effort": "M", "durationMonths": [2, 4], "milestone": "Provider access needs your approval and is logged", "kpi": "No unapproved provider access; access log reviewed monthly", "risk": "Some providers offer no per-request approval" },
+    "SOV.OPS.PERSONNEL_ZONE": { "effort": "XL", "durationMonths": [9, 18], "milestone": "Services holding the data run and supported by in-region staff of a local entity", "kpi": "Provider attestation of in-region operations for every in-scope service", "risk": "Availability and feature gaps of in-region offerings" },
+    "SOV.OPS.OOB_MGMT": { "effort": "S", "durationMonths": [1, 3], "milestone": "Out-of-band management isolated; vendor call-home approved or blocked", "kpi": "Network scan shows no unmanaged outbound management traffic", "risk": "Appliances that need call-home for support" },
+    "SOV.CC.DATA_IN_USE": { "effort": "L", "durationMonths": [6, 12], "milestone": "The most sensitive processing runs in hardware-protected enclaves", "kpi": "Share of in-scope workloads in attested enclaves", "risk": "Application changes and performance cost" },
+    "SOV.TP.DPA": { "effort": "M", "durationMonths": [2, 4], "milestone": "Data-processing agreements signed with every processor", "kpi": "Share of processors with a signed agreement", "risk": "Long-tail suppliers are slow to sign" },
+    "SOV.SAAS.SUBPROCESSOR": { "effort": "S", "durationMonths": [1, 3], "milestone": "Sub-processor register for critical providers, with notice and objection rights", "kpi": "Share of critical providers with a current sub-processor list", "risk": "Objection rights only come at renewal" },
+    "SOV.TP.VISIBILITY": { "effort": "S", "durationMonths": [1, 3], "milestone": "Storage and processing locations documented for key providers", "kpi": "Share of key providers with confirmed locations", "risk": "Providers disclose regions only in contracts" },
+    "SOV.TP.REGISTER": { "effort": "M", "durationMonths": [2, 4], "milestone": "Register of ICT third-party arrangements complete and ready to submit", "kpi": "Register passes the regulator's validation checks", "risk": "Contract data is spread across business units" },
+    "SOV.TP.AUDIT": { "effort": "M", "durationMonths": [3, 6], "milestone": "Audit, access and inspection rights in critical contracts", "kpi": "Share of critical contracts with the rights", "risk": "Rights can often be added only at renewal" },
+    "SOV.EXIT.PLAN": { "effort": "M", "durationMonths": [3, 6], "milestone": "Exit plans documented for critical services", "kpi": "Exit plans reviewed; partial migration rehearsed (Resilience IQ)", "risk": "Proprietary services with no portable equivalent" },
+    "SOV.CONC.PROVIDER": { "effort": "S", "durationMonths": [1, 3], "milestone": "Concentration assessment approved by the risk committee", "kpi": "Concentration reviewed at least yearly", "risk": "Concentration hides in sub-contracting chains" },
+    "SOV.CERT.ASSURANCE": { "effort": "L", "durationMonths": [6, 12], "milestone": "Services holding the data on offerings with a recognised qualification", "kpi": "Share of in-scope services with a recognised qualification", "risk": "Qualified offerings lag on features" },
+    "SOV.JUR.IMMUNITY": { "effort": "XL", "durationMonths": [12, 24], "milestone": "The data held only with providers whose parent is in the allowed region, or on disconnected systems", "kpi": "No provider with a parent outside the region in the data's chain", "risk": "Few providers qualify; capability trade-offs" },
+    "SOV.AI.DATA_LOCATION": { "effort": "M", "durationMonths": [2, 4], "milestone": "AI training and inference in allowed regions, with no-training terms", "kpi": "Inference endpoints and logs located in allowed regions", "risk": "Models are not available in every region" },
+    "SOV.AI.GOVERNANCE": { "effort": "M", "durationMonths": [2, 4], "milestone": "AI systems inventoried with role, risk class and dated obligations", "kpi": "Share of AI systems with a recorded role and risk class", "risk": "AI use outside IT's view" },
+    "SOV.IR.REPORTING": { "effort": "M", "durationMonths": [2, 4], "milestone": "Incident classification and reporting runbook tested", "kpi": "Exercise meets the shortest reporting window that applies", "risk": "Overlapping regimes run different clocks" },
+    "SOV.HW.PROVENANCE": { "effort": "M", "durationMonths": [2, 4], "milestone": "Hardware and appliance provenance assessed", "kpi": "Share of in-scope appliances assessed", "risk": "Supplier disclosure is limited" }
+  },
+  "findingTypes": {
+    "scope_confirmation": { "effort": "S", "durationMonths": [1, 2], "milestone": "Counsel's view on scope recorded", "kpi": "Scope confirmed or ruled out", "risk": "Waiting for counsel delays the dependent controls" },
+    "decision": { "effort": "S", "durationMonths": [1, 2], "milestone": "Board decision minuted", "kpi": "Level recorded for each kind of data", "risk": "The decision is deferred and later work is built on assumptions" },
+    "conflict": { "effort": "S", "durationMonths": [1, 2], "milestone": "Conflicting answers reconciled", "kpi": "Assessment updated and re-run", "risk": "The underlying data location is not what was assumed" }
+  }
+}

@@ -1,7 +1,7 @@
 {
   "ARC1_EU_BANK_DORA executive": {
     "versions": {
-      "engine": "4.6.0",
+      "engine": "4.7.0",
       "questionSet": "4.2.0",
       "controls": "4.0.0",
       "registry": "1.1.0",
@@ -199,7 +199,7 @@
       }
     ],
     "exposure": {
-      "summary": "3 regimes apply, 0 likely – confirm, 4 advisory; 0 red, 2 amber, 0 green.",
+      "summary": "3 regimes apply on your answers, 0 may apply – confirm, 4 for awareness; 0 with major control gaps, 2 with some gaps, 0 with no gaps found.",
       "largestCap": {
         "regime": "EU_GDPR",
         "grade": "applies",
@@ -289,7 +289,7 @@
         "id": "F-SOV.RES.LOCATION",
         "severity": "Critical",
         "wave": 1,
-        "timeFrame": "0–3 months",
+        "timeFrame": "Start in month 4; 6–12 months",
         "dataClasses": [
           "proprietary"
         ]
@@ -298,7 +298,7 @@
         "id": "F-SOV.KEY.CUSTODY",
         "severity": "High",
         "wave": 2,
-        "timeFrame": "3–6 months",
+        "timeFrame": "Start in month 2; 3–6 months",
         "dataClasses": [
           "personal",
           "financial",
@@ -309,7 +309,7 @@
         "id": "F-SOV.OPS.ADMIN_ACCESS",
         "severity": "High",
         "wave": 2,
-        "timeFrame": "3–6 months",
+        "timeFrame": "Start in month 2; 2–4 months",
         "dataClasses": [
           "personal",
           "financial",
@@ -320,7 +320,7 @@
         "id": "F-SOV.BACKUP.LOCATION",
         "severity": "High",
         "wave": 2,
-        "timeFrame": "3–6 months",
+        "timeFrame": "Start in month 4; 2–4 months",
         "dataClasses": [
           "proprietary"
         ]
@@ -329,7 +329,7 @@
         "id": "F-SOV.AI.DATA_LOCATION",
         "severity": "Medium",
         "wave": 3,
-        "timeFrame": "6–12 months",
+        "timeFrame": "Start in month 4; 2–4 months",
         "dataClasses": [
           "personal",
           "financial",
@@ -340,14 +340,14 @@
         "id": "F-SOV.EXIT.PLAN",
         "severity": "Medium",
         "wave": 3,
-        "timeFrame": "6–12 months",
+        "timeFrame": "Start in month 4; 3–6 months",
         "dataClasses": []
       },
       {
         "id": "F-SOV.RES.REGION_LOCK",
         "severity": "Medium",
         "wave": 1,
-        "timeFrame": "6–12 months",
+        "timeFrame": "Start now; 1–3 months",
         "dataClasses": [
           "personal",
           "financial",
@@ -358,13 +358,14 @@
         "id": "F-SOV.XFER.TIA",
         "severity": "Medium",
         "wave": 3,
-        "timeFrame": "6–12 months",
+        "timeFrame": "Start in month 4; 2–4 months",
         "dataClasses": []
       }
     ],
     "roadmap": [
       {
         "wave": 1,
+        "theme": "decide",
         "findings": [
           "F-SOV.RES.REGION_LOCK",
           "F-SOV.RES.LOCATION"
@@ -372,6 +373,7 @@
       },
       {
         "wave": 2,
+        "theme": "high",
         "findings": [
           "F-SOV.KEY.CUSTODY",
           "F-SOV.OPS.ADMIN_ACCESS",
@@ -380,6 +382,7 @@
       },
       {
         "wave": 3,
+        "theme": "medium",
         "findings": [
           "F-SOV.AI.DATA_LOCATION",
           "F-SOV.EXIT.PLAN",
@@ -448,10 +451,8 @@
       {
         "offering": "OFF.SOV.LZ",
         "findingIds": [
-          "F-SOV.RES.LOCATION",
           "F-SOV.KEY.CUSTODY",
           "F-SOV.OPS.ADMIN_ACCESS",
-          "F-SOV.BACKUP.LOCATION",
           "F-SOV.RES.REGION_LOCK"
         ]
       },
@@ -472,7 +473,7 @@
   },
   "ARC1_EU_BANK_DORA workshop": {
     "versions": {
-      "engine": "4.6.0",
+      "engine": "4.7.0",
       "questionSet": "4.2.0",
       "controls": "4.0.0",
       "registry": "1.1.0",
@@ -796,7 +797,7 @@
       }
     ],
     "exposure": {
-      "summary": "3 regimes apply, 0 likely – confirm, 4 advisory; 0 red, 3 amber, 0 green.",
+      "summary": "3 regimes apply on your answers, 0 may apply – confirm, 4 for awareness; 0 with major control gaps, 3 with some gaps, 0 with no gaps found.",
       "largestCap": {
         "regime": "EU_GDPR",
         "grade": "applies",
@@ -876,8 +877,8 @@
       {
         "id": "F-SOV.KEY.CUSTODY",
         "severity": "High",
-        "wave": 2,
-        "timeFrame": "3–6 months",
+        "wave": 1,
+        "timeFrame": "Start in month 2; 3–6 months",
         "dataClasses": [
           "personal",
           "financial"
@@ -886,8 +887,8 @@
       {
         "id": "F-SOV.OPS.ADMIN_ACCESS",
         "severity": "High",
-        "wave": 2,
-        "timeFrame": "3–6 months",
+        "wave": 1,
+        "timeFrame": "Start in month 2; 2–4 months",
         "dataClasses": [
           "personal",
           "financial"
@@ -896,8 +897,8 @@
       {
         "id": "F-SOV.SAAS.SUBPROCESSOR",
         "severity": "Medium",
-        "wave": 3,
-        "timeFrame": "6–12 months",
+        "wave": 2,
+        "timeFrame": "Start in month 4; 1–3 months",
         "dataClasses": [
           "personal",
           "financial"
@@ -906,8 +907,8 @@
       {
         "id": "F-SOV.DATA.MAP",
         "severity": "Medium",
-        "wave": 3,
-        "timeFrame": "6–12 months",
+        "wave": 2,
+        "timeFrame": "Start in month 4; 3–6 months",
         "dataClasses": [
           "personal",
           "financial",
@@ -917,8 +918,8 @@
       {
         "id": "F-SOV.EXIT.PLAN",
         "severity": "Medium",
-        "wave": 3,
-        "timeFrame": "6–12 months",
+        "wave": 2,
+        "timeFrame": "Start in month 4; 3–6 months",
         "dataClasses": [
           "financial"
         ]
@@ -926,8 +927,8 @@
       {
         "id": "F-SOV.AI.DATA_LOCATION",
         "severity": "Medium",
-        "wave": 3,
-        "timeFrame": "6–12 months",
+        "wave": 2,
+        "timeFrame": "Start in month 4; 2–4 months",
         "dataClasses": [
           "personal",
           "financial",
@@ -937,15 +938,15 @@
       {
         "id": "F-SOV.AI.GOVERNANCE",
         "severity": "Medium",
-        "wave": 3,
-        "timeFrame": "6–12 months",
+        "wave": 2,
+        "timeFrame": "Start in month 4; 2–4 months",
         "dataClasses": []
       },
       {
         "id": "F-SOV.KEY.REVOCATION",
         "severity": "Medium",
-        "wave": 3,
-        "timeFrame": "6–12 months",
+        "wave": 2,
+        "timeFrame": "Start in month 8; 2–3 months",
         "dataClasses": [
           "financial"
         ]
@@ -953,8 +954,8 @@
       {
         "id": "F-SOV.OPS.PERSONNEL_ZONE",
         "severity": "Medium",
-        "wave": 3,
-        "timeFrame": "6–12 months",
+        "wave": 2,
+        "timeFrame": "Start in month 10; 9–18 months",
         "dataClasses": [
           "financial"
         ]
@@ -962,8 +963,8 @@
       {
         "id": "F-SOV.RES.REGION_LOCK",
         "severity": "Medium",
-        "wave": 3,
-        "timeFrame": "6–12 months",
+        "wave": 2,
+        "timeFrame": "Start in month 4; 1–3 months",
         "dataClasses": [
           "personal",
           "financial",
@@ -973,15 +974,15 @@
       {
         "id": "F-SOV.TP.REGISTER",
         "severity": "Medium",
-        "wave": 3,
-        "timeFrame": "6–12 months",
+        "wave": 2,
+        "timeFrame": "Start in month 7; 2–4 months",
         "dataClasses": []
       },
       {
         "id": "F-SOV.TP.VISIBILITY",
         "severity": "Medium",
-        "wave": 3,
-        "timeFrame": "6–12 months",
+        "wave": 2,
+        "timeFrame": "Start in month 4; 1–3 months",
         "dataClasses": [
           "personal",
           "financial",
@@ -991,15 +992,15 @@
       {
         "id": "F-SOV.XFER.TIA",
         "severity": "Medium",
-        "wave": 3,
-        "timeFrame": "6–12 months",
+        "wave": 2,
+        "timeFrame": "Start in month 4; 2–4 months",
         "dataClasses": []
       },
       {
         "id": "F-SOV.ENC.BASELINE",
         "severity": "Low",
-        "wave": 4,
-        "timeFrame": "12–24 months",
+        "wave": 3,
+        "timeFrame": "Start in month 7; 3–6 months",
         "dataClasses": [
           "personal",
           "financial",
@@ -1009,8 +1010,8 @@
       {
         "id": "F-SOV.CONC.PROVIDER",
         "severity": "Low",
-        "wave": 4,
-        "timeFrame": "12–24 months",
+        "wave": 3,
+        "timeFrame": "Start in month 7; 1–3 months",
         "dataClasses": [
           "financial"
         ]
@@ -1018,8 +1019,8 @@
       {
         "id": "F-SOV.CERT.ASSURANCE",
         "severity": "Low",
-        "wave": 4,
-        "timeFrame": "12–24 months",
+        "wave": 3,
+        "timeFrame": "Start in month 7; 6–12 months",
         "dataClasses": [
           "financial"
         ]
@@ -1027,8 +1028,8 @@
       {
         "id": "F-SOV.OPS.OOB_MGMT",
         "severity": "Low",
-        "wave": 4,
-        "timeFrame": "12–24 months",
+        "wave": 3,
+        "timeFrame": "Start in month 7; 1–3 months",
         "dataClasses": [
           "financial"
         ]
@@ -1036,14 +1037,16 @@
     ],
     "roadmap": [
       {
-        "wave": 2,
+        "wave": 1,
+        "theme": "high",
         "findings": [
           "F-SOV.KEY.CUSTODY",
           "F-SOV.OPS.ADMIN_ACCESS"
         ]
       },
       {
-        "wave": 3,
+        "wave": 2,
+        "theme": "medium",
         "findings": [
           "F-SOV.SAAS.SUBPROCESSOR",
           "F-SOV.DATA.MAP",
@@ -1053,13 +1056,14 @@
           "F-SOV.KEY.REVOCATION",
           "F-SOV.OPS.PERSONNEL_ZONE",
           "F-SOV.RES.REGION_LOCK",
-          "F-SOV.TP.REGISTER",
           "F-SOV.TP.VISIBILITY",
+          "F-SOV.TP.REGISTER",
           "F-SOV.XFER.TIA"
         ]
       },
       {
-        "wave": 4,
+        "wave": 3,
+        "theme": "later",
         "findings": [
           "F-SOV.ENC.BASELINE",
           "F-SOV.CONC.PROVIDER",
@@ -1131,10 +1135,7 @@
       {
         "offering": "OFF.SOV.MIGRATION",
         "findingIds": [
-          "F-SOV.KEY.CUSTODY",
-          "F-SOV.OPS.ADMIN_ACCESS",
           "F-SOV.OPS.PERSONNEL_ZONE",
-          "F-SOV.RES.REGION_LOCK",
           "F-SOV.CERT.ASSURANCE"
         ]
       },
@@ -1149,7 +1150,7 @@
   },
   "ARC2_UK_INSURER_OPRES_CTP executive": {
     "versions": {
-      "engine": "4.6.0",
+      "engine": "4.7.0",
       "questionSet": "4.2.0",
       "controls": "4.0.0",
       "registry": "1.1.0",
@@ -1342,7 +1343,7 @@
       }
     ],
     "exposure": {
-      "summary": "3 regimes apply, 0 likely – confirm, 3 advisory; 1 red, 1 amber, 0 green.",
+      "summary": "3 regimes apply on your answers, 0 may apply – confirm, 3 for awareness; 1 with major control gaps, 1 with some gaps, 0 with no gaps found.",
       "largestCap": {
         "regime": "UK_GDPR",
         "grade": "applies",
@@ -1419,7 +1420,7 @@
         "id": "F-SOV.RES.LOCATION",
         "severity": "Critical",
         "wave": 1,
-        "timeFrame": "0–3 months",
+        "timeFrame": "Start now; 6–12 months",
         "dataClasses": [
           "personal"
         ]
@@ -1428,7 +1429,7 @@
         "id": "F-SOV.BACKUP.LOCATION",
         "severity": "High",
         "wave": 2,
-        "timeFrame": "3–6 months",
+        "timeFrame": "Start in month 2; 2–4 months",
         "dataClasses": [
           "personal",
           "special"
@@ -1438,14 +1439,14 @@
         "id": "F-SOV.XFER.TIA",
         "severity": "High",
         "wave": 2,
-        "timeFrame": "3–6 months",
+        "timeFrame": "Start in month 2; 2–4 months",
         "dataClasses": []
       },
       {
         "id": "F-SOV.KEY.CUSTODY",
         "severity": "Medium",
         "wave": 3,
-        "timeFrame": "6–12 months",
+        "timeFrame": "Start in month 4; 3–6 months",
         "dataClasses": [
           "personal",
           "special",
@@ -1456,7 +1457,7 @@
         "id": "F-SOV.AI.DATA_LOCATION",
         "severity": "Medium",
         "wave": 3,
-        "timeFrame": "6–12 months",
+        "timeFrame": "Start in month 4; 2–4 months",
         "dataClasses": [
           "personal",
           "special",
@@ -1467,19 +1468,21 @@
         "id": "F-SOV.EXIT.PLAN",
         "severity": "Low",
         "wave": 4,
-        "timeFrame": "12–24 months",
+        "timeFrame": "Start in month 7; 3–6 months",
         "dataClasses": []
       }
     ],
     "roadmap": [
       {
         "wave": 1,
+        "theme": "decide",
         "findings": [
           "F-SOV.RES.LOCATION"
         ]
       },
       {
         "wave": 2,
+        "theme": "high",
         "findings": [
           "F-SOV.BACKUP.LOCATION",
           "F-SOV.XFER.TIA"
@@ -1487,6 +1490,7 @@
       },
       {
         "wave": 3,
+        "theme": "medium",
         "findings": [
           "F-SOV.KEY.CUSTODY",
           "F-SOV.AI.DATA_LOCATION"
@@ -1494,6 +1498,7 @@
       },
       {
         "wave": 4,
+        "theme": "later",
         "findings": [
           "F-SOV.EXIT.PLAN"
         ]
@@ -1588,8 +1593,6 @@
       {
         "offering": "OFF.SOV.LZ",
         "findingIds": [
-          "F-SOV.RES.LOCATION",
-          "F-SOV.BACKUP.LOCATION",
           "F-SOV.KEY.CUSTODY"
         ]
       },
@@ -1610,7 +1613,7 @@
   },
   "ARC2_UK_INSURER_OPRES_CTP workshop": {
     "versions": {
-      "engine": "4.6.0",
+      "engine": "4.7.0",
       "questionSet": "4.2.0",
       "controls": "4.0.0",
       "registry": "1.1.0",
@@ -1719,7 +1722,7 @@
     "maturity": {
       "score": 84,
       "band": "Managed",
-      "wording": "Most required controls in place, but a regulation in scope is rated red",
+      "wording": "Most required controls in place, but a regulation in scope has major control gaps",
       "withheld": false,
       "controlsAssessed": 19,
       "requiredControls": 19,
@@ -1893,7 +1896,7 @@
       }
     ],
     "exposure": {
-      "summary": "3 regimes apply, 0 likely – confirm, 3 advisory; 1 red, 1 amber, 0 green.",
+      "summary": "3 regimes apply on your answers, 0 may apply – confirm, 3 for awareness; 1 with major control gaps, 1 with some gaps, 0 with no gaps found.",
       "largestCap": {
         "regime": "UK_GDPR",
         "grade": "applies",
@@ -1963,8 +1966,8 @@
       {
         "id": "F-SOV.BACKUP.LOCATION",
         "severity": "High",
-        "wave": 2,
-        "timeFrame": "3–6 months",
+        "wave": 1,
+        "timeFrame": "Start in month 2; 2–4 months",
         "dataClasses": [
           "special"
         ]
@@ -1972,15 +1975,15 @@
       {
         "id": "F-SOV.XFER.TIA",
         "severity": "High",
-        "wave": 2,
-        "timeFrame": "3–6 months",
+        "wave": 1,
+        "timeFrame": "Start in month 2; 2–4 months",
         "dataClasses": []
       },
       {
         "id": "F-SOV.KEY.CUSTODY",
         "severity": "Medium",
-        "wave": 3,
-        "timeFrame": "6–12 months",
+        "wave": 2,
+        "timeFrame": "Start in month 4; 3–6 months",
         "dataClasses": [
           "special",
           "financial"
@@ -1989,8 +1992,8 @@
       {
         "id": "F-SOV.AI.DATA_LOCATION",
         "severity": "Medium",
-        "wave": 3,
-        "timeFrame": "6–12 months",
+        "wave": 2,
+        "timeFrame": "Start in month 4; 2–4 months",
         "dataClasses": [
           "personal",
           "special",
@@ -2000,35 +2003,38 @@
       {
         "id": "F-SOV.EXIT.PLAN",
         "severity": "Low",
-        "wave": 4,
-        "timeFrame": "12–24 months",
+        "wave": 3,
+        "timeFrame": "Start in month 7; 3–6 months",
         "dataClasses": []
       },
       {
         "id": "F-SOV.CONC.PROVIDER",
         "severity": "Low",
-        "wave": 4,
-        "timeFrame": "12–24 months",
+        "wave": 3,
+        "timeFrame": "Start in month 7; 1–3 months",
         "dataClasses": []
       }
     ],
     "roadmap": [
       {
-        "wave": 2,
+        "wave": 1,
+        "theme": "high",
         "findings": [
           "F-SOV.BACKUP.LOCATION",
           "F-SOV.XFER.TIA"
         ]
       },
       {
-        "wave": 3,
+        "wave": 2,
+        "theme": "medium",
         "findings": [
           "F-SOV.KEY.CUSTODY",
           "F-SOV.AI.DATA_LOCATION"
         ]
       },
       {
-        "wave": 4,
+        "wave": 3,
+        "theme": "later",
         "findings": [
           "F-SOV.EXIT.PLAN",
           "F-SOV.CONC.PROVIDER"
@@ -2097,7 +2103,6 @@
       {
         "offering": "OFF.SOV.LZ",
         "findingIds": [
-          "F-SOV.BACKUP.LOCATION",
           "F-SOV.KEY.CUSTODY"
         ]
       },
@@ -2117,7 +2122,7 @@
   },
   "ARC3_US_HEALTHTECH_EU_CUSTOMERS executive": {
     "versions": {
-      "engine": "4.6.0",
+      "engine": "4.7.0",
       "questionSet": "4.2.0",
       "controls": "4.0.0",
       "registry": "1.1.0",
@@ -2324,21 +2329,20 @@
       }
     ],
     "exposure": {
-      "summary": "5 regimes apply, 2 likely – confirm, 5 advisory; 1 red, 1 amber, 0 green.",
+      "summary": "5 regimes apply on your answers, 2 may apply – confirm, 5 for awareness; 1 with major control gaps, 1 with some gaps, 0 with no gaps found.",
       "largestCap": {
-        "regime": "UK_GDPR",
-        "grade": "likely_confirm",
-        "article": "UK GDPR Art. 83(5); DPA 2018 s.157",
+        "regime": "EU_GDPR",
+        "grade": "applies",
+        "article": "Art. 83(5)",
         "label": "cap, not expected fine",
-        "amount": 20715453,
+        "amount": 20000000,
         "range": null,
         "currency": "EUR",
-        "eur": 20715452.543857574,
-        "basis": "From the turnover band (EUR 50M-250M): GBP 17.5M or 4% of turnover, whichever is higher",
-        "rateDate": "2026-10-12",
+        "eur": 20000000,
+        "basis": "From the turnover band (EUR 50M-250M): EUR 20M or 4% of turnover, whichever is higher",
+        "rateDate": null,
         "claims": [
-          "CLM-SOV-084",
-          "CLM-SOV-192"
+          "CLM-SOV-016"
         ]
       },
       "regimes": [
@@ -2370,8 +2374,11 @@
           "assessed": 0,
           "required": 1,
           "cap": {
-            "amount": 15000000,
-            "range": null,
+            "amount": null,
+            "range": [
+              1500000,
+              15000000
+            ],
             "currency": "EUR"
           }
         },
@@ -2449,35 +2456,35 @@
         "id": "F-SOV.XFER.BASIS",
         "severity": "High",
         "wave": 2,
-        "timeFrame": "3–6 months",
+        "timeFrame": "Start in month 2; 2–4 months",
         "dataClasses": []
       },
       {
         "id": "F-SOV.XFER.TIA",
         "severity": "High",
         "wave": 2,
-        "timeFrame": "3–6 months",
+        "timeFrame": "Start in month 6; 2–4 months",
         "dataClasses": []
       },
       {
         "id": "F-SCOPE-UK_GDPR",
         "severity": "High",
         "wave": 1,
-        "timeFrame": "3–6 months",
+        "timeFrame": "Start now; 1–2 months",
         "dataClasses": []
       },
       {
         "id": "F-SCOPE-US_CCPA",
         "severity": "Medium",
         "wave": 1,
-        "timeFrame": "6–12 months",
+        "timeFrame": "Start now; 1–2 months",
         "dataClasses": []
       },
       {
         "id": "F-SOV.AI.DATA_LOCATION",
         "severity": "Low",
-        "wave": 4,
-        "timeFrame": "12–24 months",
+        "wave": 3,
+        "timeFrame": "Start in month 7; 2–4 months",
         "dataClasses": [
           "personal",
           "special",
@@ -2488,8 +2495,8 @@
       {
         "id": "F-SOV.RES.REGION_LOCK",
         "severity": "Low",
-        "wave": 4,
-        "timeFrame": "12–24 months",
+        "wave": 3,
+        "timeFrame": "Start in month 7; 1–3 months",
         "dataClasses": [
           "personal",
           "special",
@@ -2501,6 +2508,7 @@
     "roadmap": [
       {
         "wave": 1,
+        "theme": "decide",
         "findings": [
           "F-SCOPE-UK_GDPR",
           "F-SCOPE-US_CCPA"
@@ -2508,13 +2516,15 @@
       },
       {
         "wave": 2,
+        "theme": "high",
         "findings": [
           "F-SOV.XFER.BASIS",
           "F-SOV.XFER.TIA"
         ]
       },
       {
-        "wave": 4,
+        "wave": 3,
+        "theme": "later",
         "findings": [
           "F-SOV.AI.DATA_LOCATION",
           "F-SOV.RES.REGION_LOCK"
@@ -2593,7 +2603,7 @@
   },
   "ARC3_US_HEALTHTECH_EU_CUSTOMERS workshop": {
     "versions": {
-      "engine": "4.6.0",
+      "engine": "4.7.0",
       "questionSet": "4.2.0",
       "controls": "4.0.0",
       "registry": "1.1.0",
@@ -2899,22 +2909,21 @@
       }
     ],
     "exposure": {
-      "summary": "6 regimes apply, 1 likely – confirm, 5 advisory; 2 red, 4 amber, 0 green.",
+      "summary": "6 regimes apply on your answers, 1 may apply – confirm, 5 for awareness; 2 with major control gaps, 4 with some gaps, 0 with no gaps found.",
       "largestCap": {
-        "regime": "UK_GDPR",
-        "grade": "likely_confirm",
-        "article": "UK GDPR Art. 83(5); DPA 2018 s.157",
+        "regime": "EU_GDPR",
+        "grade": "applies",
+        "article": "Art. 83(5)",
         "label": "cap, not expected fine",
-        "amount": 17500000,
+        "amount": 20000000,
         "range": null,
-        "currency": "GBP",
-        "eur": 20715452.543857574,
-        "basis": "GBP 17.5M fixed limb (4% of USD 75M is lower)",
+        "currency": "EUR",
+        "eur": 20000000,
+        "basis": "EUR 20M fixed limb (4% of USD 75M is lower)",
         "rateDate": "2026-10-12",
         "claims": [
-          "CLM-SOV-084",
-          "CLM-SOV-191",
-          "CLM-SOV-192"
+          "CLM-SOV-016",
+          "CLM-SOV-191"
         ]
       },
       "regimes": [
@@ -2946,8 +2955,11 @@
           "assessed": 1,
           "required": 1,
           "cap": {
-            "amount": 15000000,
-            "range": null,
+            "amount": null,
+            "range": [
+              2012342,
+              15000000
+            ],
             "currency": "EUR"
           }
         },
@@ -3025,7 +3037,7 @@
         "id": "F-SOV.KEY.CUSTODY",
         "severity": "Critical",
         "wave": 1,
-        "timeFrame": "0–3 months",
+        "timeFrame": "Start now; 3–6 months",
         "dataClasses": [
           "special"
         ]
@@ -3034,7 +3046,7 @@
         "id": "F-SOV.OPS.ADMIN_ACCESS",
         "severity": "Critical",
         "wave": 1,
-        "timeFrame": "0–3 months",
+        "timeFrame": "Start now; 2–4 months",
         "dataClasses": [
           "special"
         ]
@@ -3043,42 +3055,42 @@
         "id": "F-SOV.XFER.BASIS",
         "severity": "High",
         "wave": 2,
-        "timeFrame": "3–6 months",
+        "timeFrame": "Start in month 8; 2–4 months",
         "dataClasses": []
       },
       {
         "id": "F-SOV.AI.GOVERNANCE",
         "severity": "High",
         "wave": 2,
-        "timeFrame": "3–6 months",
+        "timeFrame": "Start in month 2; 2–4 months",
         "dataClasses": []
       },
       {
         "id": "F-SOV.XFER.TIA",
         "severity": "High",
         "wave": 2,
-        "timeFrame": "3–6 months",
+        "timeFrame": "Start in month 12; 2–4 months",
         "dataClasses": []
       },
       {
         "id": "F-SCOPE-UK_GDPR",
         "severity": "High",
         "wave": 1,
-        "timeFrame": "3–6 months",
+        "timeFrame": "Start now; 1–2 months",
         "dataClasses": []
       },
       {
         "id": "F-SOV.IR.REPORTING",
         "severity": "Medium",
         "wave": 3,
-        "timeFrame": "6–12 months",
+        "timeFrame": "Start in month 4; 2–4 months",
         "dataClasses": []
       },
       {
         "id": "F-SOV.DATA.MAP",
         "severity": "Medium",
         "wave": 2,
-        "timeFrame": "6–12 months",
+        "timeFrame": "Start in month 2; 3–6 months",
         "dataClasses": [
           "personal",
           "special",
@@ -3089,7 +3101,7 @@
         "id": "F-SOV.SAAS.SUBPROCESSOR",
         "severity": "Medium",
         "wave": 3,
-        "timeFrame": "6–12 months",
+        "timeFrame": "Start in month 4; 1–3 months",
         "dataClasses": [
           "special"
         ]
@@ -3098,7 +3110,7 @@
         "id": "F-SOV.TP.VISIBILITY",
         "severity": "Medium",
         "wave": 2,
-        "timeFrame": "6–12 months",
+        "timeFrame": "Start in month 2; 1–3 months",
         "dataClasses": [
           "personal",
           "special",
@@ -3109,7 +3121,7 @@
         "id": "F-SOV.AI.DATA_LOCATION",
         "severity": "Medium",
         "wave": 3,
-        "timeFrame": "6–12 months",
+        "timeFrame": "Start in month 4; 2–4 months",
         "dataClasses": [
           "personal",
           "special",
@@ -3120,7 +3132,7 @@
         "id": "F-SOV.RES.REGION_LOCK",
         "severity": "Medium",
         "wave": 3,
-        "timeFrame": "6–12 months",
+        "timeFrame": "Start in month 4; 1–3 months",
         "dataClasses": [
           "personal",
           "special",
@@ -3131,7 +3143,7 @@
         "id": "F-SOV.ENC.BASELINE",
         "severity": "Low",
         "wave": 4,
-        "timeFrame": "12–24 months",
+        "timeFrame": "Start in month 7; 3–6 months",
         "dataClasses": [
           "personal",
           "special",
@@ -3142,14 +3154,14 @@
         "id": "F-SOV.TP.DPA",
         "severity": "Low",
         "wave": 4,
-        "timeFrame": "12–24 months",
+        "timeFrame": "Start in month 7; 2–4 months",
         "dataClasses": []
       },
       {
         "id": "F-SOV.GOV.OWNER",
         "severity": "Low",
         "wave": 4,
-        "timeFrame": "12–24 months",
+        "timeFrame": "Start in month 7; 1–2 months",
         "dataClasses": [
           "personal",
           "special",
@@ -3160,7 +3172,7 @@
         "id": "F-SOV.TP.AUDIT",
         "severity": "Low",
         "wave": 4,
-        "timeFrame": "12–24 months",
+        "timeFrame": "Start in month 7; 3–6 months",
         "dataClasses": [
           "special"
         ]
@@ -3169,6 +3181,7 @@
     "roadmap": [
       {
         "wave": 1,
+        "theme": "decide",
         "findings": [
           "F-SOV.KEY.CUSTODY",
           "F-SOV.OPS.ADMIN_ACCESS",
@@ -3177,6 +3190,7 @@
       },
       {
         "wave": 2,
+        "theme": "high",
         "findings": [
           "F-SOV.DATA.MAP",
           "F-SOV.TP.VISIBILITY",
@@ -3187,6 +3201,7 @@
       },
       {
         "wave": 3,
+        "theme": "medium",
         "findings": [
           "F-SOV.IR.REPORTING",
           "F-SOV.SAAS.SUBPROCESSOR",
@@ -3196,6 +3211,7 @@
       },
       {
         "wave": 4,
+        "theme": "later",
         "findings": [
           "F-SOV.ENC.BASELINE",
           "F-SOV.TP.DPA",
@@ -3281,7 +3297,7 @@
   },
   "ARC4_SG_AU_FINANCIAL_GROUP executive": {
     "versions": {
-      "engine": "4.6.0",
+      "engine": "4.7.0",
       "questionSet": "4.2.0",
       "controls": "4.0.0",
       "registry": "1.1.0",
@@ -3507,7 +3523,7 @@
       }
     ],
     "exposure": {
-      "summary": "8 regimes apply, 1 likely – confirm, 3 advisory; 0 red, 2 amber, 2 green.",
+      "summary": "8 regimes apply on your answers, 1 may apply – confirm, 3 for awareness; 0 with major control gaps, 2 with some gaps, 2 with no gaps found.",
       "largestCap": {
         "regime": "AU_PRIVACY",
         "grade": "applies",
@@ -3517,12 +3533,13 @@
         "range": null,
         "currency": "AUD",
         "eur": 31187624.750499003,
-        "basis": "AUD 50M fixed limb; the 30% limb is not computed (it rests on a turnover the assessment does not collect)",
+        "basis": "The greatest of AUD 50M, three times the benefit obtained, or 30% of adjusted turnover in the breach period; only the fixed amount is computed, because the assessment does not collect that turnover",
         "rateDate": "2026-10-12",
         "claims": [
           "CLM-SOV-147",
           "CLM-SOV-194"
-        ]
+        ],
+        "atLeast": true
       },
       "regimes": [
         {
@@ -3632,7 +3649,7 @@
         "id": "F-SOV.RES.LOCATION",
         "severity": "Critical",
         "wave": 1,
-        "timeFrame": "0–3 months",
+        "timeFrame": "Start now; 6–12 months",
         "dataClasses": [
           "proprietary"
         ]
@@ -3640,8 +3657,8 @@
       {
         "id": "F-SOV.AI.DATA_LOCATION",
         "severity": "Medium",
-        "wave": 3,
-        "timeFrame": "6–12 months",
+        "wave": 2,
+        "timeFrame": "Start in month 4; 2–4 months",
         "dataClasses": [
           "personal",
           "financial",
@@ -3652,33 +3669,36 @@
         "id": "F-SCOPE-AU_SOCI",
         "severity": "Medium",
         "wave": 1,
-        "timeFrame": "6–12 months",
+        "timeFrame": "Start now; 1–2 months",
         "dataClasses": []
       },
       {
         "id": "F-SOV.EXIT.PLAN",
         "severity": "Low",
-        "wave": 4,
-        "timeFrame": "12–24 months",
+        "wave": 3,
+        "timeFrame": "Start in month 7; 3–6 months",
         "dataClasses": []
       }
     ],
     "roadmap": [
       {
         "wave": 1,
+        "theme": "decide",
         "findings": [
           "F-SOV.RES.LOCATION",
           "F-SCOPE-AU_SOCI"
         ]
       },
       {
-        "wave": 3,
+        "wave": 2,
+        "theme": "medium",
         "findings": [
           "F-SOV.AI.DATA_LOCATION"
         ]
       },
       {
-        "wave": 4,
+        "wave": 3,
+        "theme": "later",
         "findings": [
           "F-SOV.EXIT.PLAN"
         ]
@@ -3758,12 +3778,6 @@
         ]
       },
       {
-        "offering": "OFF.SOV.LZ",
-        "findingIds": [
-          "F-SOV.RES.LOCATION"
-        ]
-      },
-      {
         "offering": "OFF.DATA.RESIDENCY",
         "findingIds": [
           "F-SOV.RES.LOCATION"
@@ -3779,7 +3793,7 @@
   },
   "ARC4_SG_AU_FINANCIAL_GROUP workshop": {
     "versions": {
-      "engine": "4.6.0",
+      "engine": "4.7.0",
       "questionSet": "4.2.0",
       "controls": "4.0.0",
       "registry": "1.1.0",
@@ -4115,7 +4129,7 @@
       }
     ],
     "exposure": {
-      "summary": "9 regimes apply, 0 likely – confirm, 3 advisory; 0 red, 7 amber, 0 green.",
+      "summary": "9 regimes apply on your answers, 0 may apply – confirm, 3 for awareness; 0 with major control gaps, 7 with some gaps, 0 with no gaps found.",
       "largestCap": {
         "regime": "AU_PRIVACY",
         "grade": "applies",
@@ -4125,12 +4139,13 @@
         "range": null,
         "currency": "AUD",
         "eur": 31187624.750499003,
-        "basis": "AUD 50M fixed limb; the 30% limb is not computed (it rests on a turnover the assessment does not collect)",
+        "basis": "The greatest of AUD 50M, three times the benefit obtained, or 30% of adjusted turnover in the breach period; only the fixed amount is computed, because the assessment does not collect that turnover",
         "rateDate": "2026-10-12",
         "claims": [
           "CLM-SOV-147",
           "CLM-SOV-194"
-        ]
+        ],
+        "atLeast": true
       },
       "regimes": [
         {
@@ -4240,7 +4255,7 @@
         "id": "F-SOV.RES.LOCATION",
         "severity": "Critical",
         "wave": 1,
-        "timeFrame": "0–3 months",
+        "timeFrame": "Start now; 9–18 months",
         "dataClasses": [
           "financial"
         ]
@@ -4248,15 +4263,15 @@
       {
         "id": "F-SOV.IR.REPORTING",
         "severity": "Medium",
-        "wave": 3,
-        "timeFrame": "6–12 months",
+        "wave": 2,
+        "timeFrame": "Start in month 4; 2–4 months",
         "dataClasses": []
       },
       {
         "id": "F-SOV.AI.DATA_LOCATION",
         "severity": "Medium",
-        "wave": 3,
-        "timeFrame": "6–12 months",
+        "wave": 2,
+        "timeFrame": "Start in month 4; 2–4 months",
         "dataClasses": [
           "personal",
           "financial",
@@ -4266,8 +4281,8 @@
       {
         "id": "F-SOV.OPS.PERSONNEL_ZONE",
         "severity": "Medium",
-        "wave": 3,
-        "timeFrame": "6–12 months",
+        "wave": 2,
+        "timeFrame": "Start in month 4; 9–18 months",
         "dataClasses": [
           "financial"
         ]
@@ -4275,8 +4290,8 @@
       {
         "id": "F-SOV.EXIT.PLAN",
         "severity": "Low",
-        "wave": 4,
-        "timeFrame": "12–24 months",
+        "wave": 3,
+        "timeFrame": "Start in month 7; 3–6 months",
         "dataClasses": [
           "financial"
         ]
@@ -4284,8 +4299,8 @@
       {
         "id": "F-SOV.CONC.PROVIDER",
         "severity": "Low",
-        "wave": 4,
-        "timeFrame": "12–24 months",
+        "wave": 3,
+        "timeFrame": "Start in month 7; 1–3 months",
         "dataClasses": [
           "financial"
         ]
@@ -4294,12 +4309,14 @@
     "roadmap": [
       {
         "wave": 1,
+        "theme": "decide",
         "findings": [
           "F-SOV.RES.LOCATION"
         ]
       },
       {
-        "wave": 3,
+        "wave": 2,
+        "theme": "medium",
         "findings": [
           "F-SOV.IR.REPORTING",
           "F-SOV.AI.DATA_LOCATION",
@@ -4307,7 +4324,8 @@
         ]
       },
       {
-        "wave": 4,
+        "wave": 3,
+        "theme": "later",
         "findings": [
           "F-SOV.EXIT.PLAN",
           "F-SOV.CONC.PROVIDER"
@@ -4361,12 +4379,6 @@
         ]
       },
       {
-        "offering": "OFF.DATA.RESIDENCY",
-        "findingIds": [
-          "F-SOV.RES.LOCATION"
-        ]
-      },
-      {
         "offering": "OFF.SOV.MIGRATION",
         "findingIds": [
           "F-SOV.RES.LOCATION",
@@ -4383,7 +4395,7 @@
   },
   "ARC5_IN_SERVICES_EU_CLIENTS executive": {
     "versions": {
-      "engine": "4.6.0",
+      "engine": "4.7.0",
       "questionSet": "4.2.0",
       "controls": "4.0.0",
       "registry": "1.1.0",
@@ -4611,7 +4623,7 @@
       }
     ],
     "exposure": {
-      "summary": "7 regimes apply, 1 likely – confirm, 7 advisory; 0 red, 2 amber, 0 green.",
+      "summary": "7 regimes apply on your answers, 1 may apply – confirm, 7 for awareness; 0 with major control gaps, 2 with some gaps, 0 with no gaps found.",
       "largestCap": {
         "regime": "EU_GDPR",
         "grade": "applies",
@@ -4775,21 +4787,21 @@
         "id": "F-SOV.XFER.BASIS",
         "severity": "High",
         "wave": 2,
-        "timeFrame": "3–6 months",
+        "timeFrame": "Start in month 2; 2–4 months",
         "dataClasses": []
       },
       {
         "id": "F-SOV.XFER.TIA",
         "severity": "Medium",
         "wave": 3,
-        "timeFrame": "6–12 months",
+        "timeFrame": "Start in month 6; 2–4 months",
         "dataClasses": []
       },
       {
         "id": "F-SOV.RES.REGION_LOCK",
         "severity": "Medium",
         "wave": 3,
-        "timeFrame": "6–12 months",
+        "timeFrame": "Start in month 4; 1–3 months",
         "dataClasses": [
           "personal",
           "special",
@@ -4801,14 +4813,14 @@
         "id": "F-SCOPE-US_CCPA",
         "severity": "Medium",
         "wave": 1,
-        "timeFrame": "6–12 months",
+        "timeFrame": "Start now; 1–2 months",
         "dataClasses": []
       },
       {
         "id": "F-SOV.AI.DATA_LOCATION",
         "severity": "Low",
         "wave": 4,
-        "timeFrame": "12–24 months",
+        "timeFrame": "Start in month 7; 2–4 months",
         "dataClasses": [
           "personal",
           "special",
@@ -4820,18 +4832,21 @@
     "roadmap": [
       {
         "wave": 1,
+        "theme": "decide",
         "findings": [
           "F-SCOPE-US_CCPA"
         ]
       },
       {
         "wave": 2,
+        "theme": "high",
         "findings": [
           "F-SOV.XFER.BASIS"
         ]
       },
       {
         "wave": 3,
+        "theme": "medium",
         "findings": [
           "F-SOV.XFER.TIA",
           "F-SOV.RES.REGION_LOCK"
@@ -4839,6 +4854,7 @@
       },
       {
         "wave": 4,
+        "theme": "later",
         "findings": [
           "F-SOV.AI.DATA_LOCATION"
         ]
@@ -4955,7 +4971,7 @@
   },
   "ARC5_IN_SERVICES_EU_CLIENTS workshop": {
     "versions": {
-      "engine": "4.6.0",
+      "engine": "4.7.0",
       "questionSet": "4.2.0",
       "controls": "4.0.0",
       "registry": "1.1.0",
@@ -5277,7 +5293,7 @@
       }
     ],
     "exposure": {
-      "summary": "8 regimes apply, 0 likely – confirm, 7 advisory; 0 red, 7 amber, 0 green.",
+      "summary": "8 regimes apply on your answers, 0 may apply – confirm, 7 for awareness; 0 with major control gaps, 7 with some gaps, 0 with no gaps found.",
       "largestCap": {
         "regime": "EU_GDPR",
         "grade": "applies",
@@ -5427,7 +5443,7 @@
         "id": "F-SOV.RES.LOCATION",
         "severity": "Critical",
         "wave": 1,
-        "timeFrame": "0–3 months",
+        "timeFrame": "Start in month 7; 6–12 months",
         "dataClasses": [
           "financial"
         ]
@@ -5436,14 +5452,14 @@
         "id": "F-SOV.XFER.BASIS",
         "severity": "High",
         "wave": 2,
-        "timeFrame": "3–6 months",
+        "timeFrame": "Start in month 7; 2–4 months",
         "dataClasses": []
       },
       {
         "id": "F-SOV.KEY.CUSTODY",
         "severity": "High",
         "wave": 2,
-        "timeFrame": "3–6 months",
+        "timeFrame": "Start in month 2; 3–6 months",
         "dataClasses": [
           "financial"
         ]
@@ -5452,7 +5468,7 @@
         "id": "F-SOV.OPS.ADMIN_ACCESS",
         "severity": "High",
         "wave": 2,
-        "timeFrame": "3–6 months",
+        "timeFrame": "Start in month 2; 2–4 months",
         "dataClasses": [
           "financial"
         ]
@@ -5461,7 +5477,7 @@
         "id": "F-SOV.BACKUP.LOCATION",
         "severity": "High",
         "wave": 2,
-        "timeFrame": "3–6 months",
+        "timeFrame": "Start in month 4; 2–4 months",
         "dataClasses": [
           "financial"
         ]
@@ -5470,7 +5486,7 @@
         "id": "F-SOV.RES.REGION_LOCK",
         "severity": "High",
         "wave": 1,
-        "timeFrame": "3–6 months",
+        "timeFrame": "Start now; 1–3 months",
         "dataClasses": [
           "personal",
           "special",
@@ -5481,14 +5497,14 @@
         "id": "F-SOV.IR.REPORTING",
         "severity": "Medium",
         "wave": 3,
-        "timeFrame": "6–12 months",
+        "timeFrame": "Start in month 4; 2–4 months",
         "dataClasses": []
       },
       {
         "id": "F-SOV.DATA.MAP",
         "severity": "Medium",
         "wave": 1,
-        "timeFrame": "6–12 months",
+        "timeFrame": "Start now; 3–6 months",
         "dataClasses": [
           "personal",
           "special",
@@ -5499,7 +5515,7 @@
         "id": "F-SOV.SAAS.SUBPROCESSOR",
         "severity": "Medium",
         "wave": 3,
-        "timeFrame": "6–12 months",
+        "timeFrame": "Start in month 4; 1–3 months",
         "dataClasses": [
           "financial"
         ]
@@ -5508,7 +5524,7 @@
         "id": "F-SOV.TP.VISIBILITY",
         "severity": "Medium",
         "wave": 1,
-        "timeFrame": "6–12 months",
+        "timeFrame": "Start now; 1–3 months",
         "dataClasses": [
           "personal",
           "special",
@@ -5519,14 +5535,14 @@
         "id": "F-SOV.XFER.TIA",
         "severity": "Medium",
         "wave": 3,
-        "timeFrame": "6–12 months",
+        "timeFrame": "Start in month 11; 2–4 months",
         "dataClasses": []
       },
       {
         "id": "F-SOV.AI.DATA_LOCATION",
         "severity": "Medium",
         "wave": 3,
-        "timeFrame": "6–12 months",
+        "timeFrame": "Start in month 4; 2–4 months",
         "dataClasses": [
           "personal",
           "special",
@@ -5537,14 +5553,14 @@
         "id": "F-SOV.AI.GOVERNANCE",
         "severity": "Medium",
         "wave": 3,
-        "timeFrame": "6–12 months",
+        "timeFrame": "Start in month 4; 2–4 months",
         "dataClasses": []
       },
       {
         "id": "F-SOV.ENC.BASELINE",
         "severity": "Low",
         "wave": 4,
-        "timeFrame": "12–24 months",
+        "timeFrame": "Start in month 7; 3–6 months",
         "dataClasses": [
           "personal",
           "special",
@@ -5555,14 +5571,14 @@
         "id": "F-SOV.TP.DPA",
         "severity": "Low",
         "wave": 4,
-        "timeFrame": "12–24 months",
+        "timeFrame": "Start in month 7; 2–4 months",
         "dataClasses": []
       },
       {
         "id": "F-SOV.GOV.OWNER",
         "severity": "Low",
         "wave": 4,
-        "timeFrame": "12–24 months",
+        "timeFrame": "Start in month 7; 1–2 months",
         "dataClasses": [
           "personal",
           "special",
@@ -5573,7 +5589,7 @@
         "id": "F-SOV.TP.AUDIT",
         "severity": "Low",
         "wave": 4,
-        "timeFrame": "12–24 months",
+        "timeFrame": "Start in month 7; 3–6 months",
         "dataClasses": [
           "financial"
         ]
@@ -5582,6 +5598,7 @@
     "roadmap": [
       {
         "wave": 1,
+        "theme": "decide",
         "findings": [
           "F-SOV.DATA.MAP",
           "F-SOV.TP.VISIBILITY",
@@ -5591,6 +5608,7 @@
       },
       {
         "wave": 2,
+        "theme": "high",
         "findings": [
           "F-SOV.XFER.BASIS",
           "F-SOV.KEY.CUSTODY",
@@ -5600,6 +5618,7 @@
       },
       {
         "wave": 3,
+        "theme": "medium",
         "findings": [
           "F-SOV.IR.REPORTING",
           "F-SOV.SAAS.SUBPROCESSOR",
@@ -5610,6 +5629,7 @@
       },
       {
         "wave": 4,
+        "theme": "later",
         "findings": [
           "F-SOV.ENC.BASELINE",
           "F-SOV.TP.DPA",
@@ -5679,10 +5699,8 @@
       {
         "offering": "OFF.SOV.LZ",
         "findingIds": [
-          "F-SOV.RES.LOCATION",
           "F-SOV.KEY.CUSTODY",
           "F-SOV.OPS.ADMIN_ACCESS",
-          "F-SOV.BACKUP.LOCATION",
           "F-SOV.RES.REGION_LOCK",
           "F-SOV.ENC.BASELINE"
         ]

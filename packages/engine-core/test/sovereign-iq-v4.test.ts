@@ -31,8 +31,8 @@ const run = (answers: any, mode: 'executive' | 'workshop' = 'workshop') => evalu
  */
 const EXPECTED_DIFFERENCES: Record<string, Record<string, string>> = {
   ARC3_US_HEALTHTECH_EU_CUSTOMERS: {
-    'exposure.US_CCPA': 'amber, not not_rated: S2 sourced the CCPA required controls, so they score (S2 design change 5, approved 23 Oct 2026)',
-    largestCap: 'UK_GDPR GBP 17.5M (about EUR 20.7M at the ECB rate of 12 Oct 2026), not EU_GDPR EUR 20M: DESIGN 7.2 takes the highest cap among regimes that apply or likely apply, and UK_GDPR is likely_confirm here'
+    'exposure.US_CCPA': 'amber, not not_rated: S2 sourced the CCPA required controls, so they score (S2 design change 5, approved 23 Oct 2026)'
+    // Since engine 4.6.0 the headline cap comes from a regime that applies (S6 challenge D3d), so EU_GDPR leads again.
   },
   ARC5_IN_SERVICES_EU_CLIENTS: {
     'exposure.US_CCPA': 'amber, not not_rated: S2 sourced the CCPA required controls, so they score (S2 design change 5, approved 23 Oct 2026)',

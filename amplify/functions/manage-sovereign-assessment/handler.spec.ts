@@ -113,6 +113,29 @@ describe('Sovereign IQ assessment API', () => {
   });
 });
 
+describe('Sovereign IQ retention (PLAN S10, A5)', () => {
+  // 24 months after the last change, from the handler's clock (COMPLETED_AT).
+  const DUE = Date.parse('2028-10-26T10:00:00Z') / 1000;
+  const report = (query: Record<string, string>) => createReportHandler(store)(event('GET', { query, path: '/api/sovereign-iq/report' })) as Promise<APIGatewayProxyStructuredResultV2>;
+  it('every write (save, complete, archive) sets expiresAt 24 months after the change', async () => {
+    await save({ status: 'draft' });
+    expect((await store.get('SIQ-0001-test'))!.expiresAt).toBe(DUE);
+    await store.update({ assessmentId: 'SIQ-0001-test', expiresAt: 1 + Date.now() / 1000 + 86400 });
+    await save({ status: 'completed' }, 'complete');
+    expect((await store.get('SIQ-0001-test'))!.expiresAt).toBe(DUE);
+    await store.update({ assessmentId: 'SIQ-0001-test', expiresAt: 1 + Date.now() / 1000 + 86400 });
+    await save({ status: 'archived' }, 'archive');
+    expect((await store.get('SIQ-0001-test'))!.expiresAt).toBe(DUE);
+  });
+  it('a record past expiresAt is treated as deleted before time to live removes it: not listed, not found, no report', async () => {
+    await save({ status: 'completed' }, 'complete');
+    await store.update({ assessmentId: 'SIQ-0001-test', expiresAt: Math.floor(Date.now() / 1000) - 1 });
+    expect((await call(event('GET'))).body.data).toEqual([]);
+    expect((await call(event('GET', { query: { assessmentId: 'SIQ-0001-test' } }))).status).toBe(404);
+    expect((await report({ assessmentId: 'SIQ-0001-test', format: 'csv' })).statusCode).toBe(404);
+  });
+});
+
 describe('POST /api/evaluate/sovereign-iq/v4', () => {
   const score = (body: unknown, query?: Record<string, string>) => call(event('POST', { body, query, path: '/api/evaluate/sovereign-iq/v4' }), scoreHandler);
   it('scores with the v4 engine, dated today on the server, whatever date the browser sends', async () => {

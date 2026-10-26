@@ -1,5 +1,5 @@
 {
-  "engineVersion": "4.6.0",
+  "engineVersion": "4.7.0",
   "minScoredControls": 5,
   "steps": [
     {
@@ -1240,7 +1240,7 @@
         },
         {
           "value": "L4",
-          "label": "Make it immune from foreign laws, or keep it disconnected"
+          "label": "Keep it only with providers controlled from inside the zone, or disconnected"
         },
         {
           "value": "unknown",
@@ -2582,10 +2582,10 @@
     },
     {
       "id": "SOV.JUR.IMMUNITY",
-      "name": "Jurisdictional immunity",
-      "means": "No provider holding this data can be compelled by a law from outside the zone, or the system is disconnected",
+      "name": "Jurisdictional separation",
+      "means": "No company in the chain of providers holding this data is owned or controlled from outside the zone, or the system is disconnected",
       "ownerRole": "CIO with General Counsel",
-      "remedy": "Hold this data only with providers whose parent is in the allowed region, or on disconnected systems",
+      "remedy": "Hold this data only with providers controlled from inside the allowed region, or on disconnected systems",
       "level": "L4",
       "scored": true
     },
@@ -2994,7 +2994,7 @@
     "L1": "L1 Residency",
     "L2": "L2 Residency with access control and key custody",
     "L3": "L3 Operational sovereignty",
-    "L4": "L4 Jurisdictional immunity or disconnected"
+    "L4": "L4 Jurisdictional separation or disconnected"
   },
   "platforms": {
     "aws": "AWS",
@@ -3040,8 +3040,8 @@
     {
       "id": "R4",
       "level": "L4",
-      "label": "Out of foreign-law reach, or disconnected",
-      "means": "R3, plus no provider in the chain can be compelled by a law from outside the zone, or the system is disconnected"
+      "label": "No foreign control in the provider chain, or disconnected",
+      "means": "R3, plus no company in the provider chain is owned or controlled from outside the zone, or the system is disconnected"
     }
   ],
   "seal": {
@@ -3144,8 +3144,9 @@
     }
   },
   "notices": {
-    "disclaimer": "Indicative assessment from self-reported answers. Not legal advice: confirm applicability and obligations with counsel before acting.",
+    "disclaimer": "Sovereign IQ gives an indicative assessment based on the answers you provide, which LTM has not audited or verified. It is not legal advice and is not a substitute for advice from a qualified lawyer; LTM is not a law firm. Confirm with your counsel which laws apply to you and what they require before acting. The regulatory content is stated as at 25 October 2026. Statutory maximums are caps, not expected fines, and are never added together. The assessment is for your organisation's internal use: any reliance on it is governed by your agreement with LTM, if there is one, and LTM accepts no responsibility to anyone else who relies on it.",
     "caps": "Statutory maximums are caps, not expected fines, and are never added together.",
-    "review": "Internal consultant use only until the legal review (PLAN S10)."
+    "review": "Internal consultant use until a qualified lawyer has reviewed it (PLAN S10).",
+    "data": "LTM is responsible for the information held in this assessment. It is hosted in Amazon Web Services, Mumbai region (India); if you are in the EU or UK, what you enter is transferred to India, which the EU and the UK have not recognised as giving adequate data protection. We hold your organisation's name and sector, your answers (including any turnover figure), the computed result, the consultant's notes and the consultant's email address, and use them only to produce this assessment and its report. The assessment needs no personal details about individuals, so please do not enter any, including in notes. We keep each assessment for two years after its last change and then delete it automatically; ask your consultant to delete it sooner. Reports are generated when requested and are not stored by LTM. Access and service logs, which record the consultant's email and network address, are kept in India for one year. The AI narrative is off unless your consultant switches it on for this engagement. LTM's privacy notice explains your data protection rights and how to contact LTM's data protection team."
   }
 }

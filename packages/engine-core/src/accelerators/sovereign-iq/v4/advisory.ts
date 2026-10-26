@@ -36,7 +36,7 @@ export interface R4Fact {
   id: string; name: string; owner: string; operator: string; operatorLaw: string; technologySupplier: string;
   zones: string[]; claimIds: string[];
 }
-export const COUNSEL_NOTE = 'Whether this meets R4 is for your counsel.';
+export const COUNSEL_NOTE = 'Whether this meets R4 is for your counsel. Your own organisation, or a parent or subsidiary, can still be compelled by a foreign law to produce data it controls, whatever the provider.';
 export interface LadderAlternative {
   id: string; rung: Rung; name: string; kind: 'partner_operated' | 'sovereign_provider' | 'private_cloud' | 'disconnected';
   zones: string[]; detail: string; claimIds: string[];
