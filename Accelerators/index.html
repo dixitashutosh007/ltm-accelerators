@@ -1343,9 +1343,69 @@
     </div>
 
     <!-- ============================================================
+         SALES PREVIEW: the validated accelerators first (owner decision, 26 Oct 2026)
+         ============================================================ -->
+    <section class="practice-section" id="sectionPreview" data-group="preview">
+      <div class="practice-header">
+        <div class="practice-title-group">
+          <h2 class="practice-title">Sales Preview</h2>
+        </div>
+        <p class="practice-desc">Validated by the practice leads and the product owner, and ready for consultant-led client sessions.</p>
+      </div>
+
+      <div class="acc-grid">
+        <!-- 1. FinOps IQ -->
+        <div class="acc-card card-finops-iq" data-group="finops">
+          <div class="card-top">
+            <div class="card-meta-row">
+              <span class="card-eyebrow">CAPABILITY, VALUE &amp; ROADMAP</span>
+              <span class="release-badge preview" title="Validated by its practice lead and the product owner; cleared to show clients in a consultant-led session">Sales Preview</span>
+            </div>
+            <h3 class="card-title">FinOps IQ</h3>
+            <p class="card-desc">Rates FinOps capabilities on the FinOps Foundation's Crawl, Walk, Run scale, sizes the value of closing the gaps as a conservative, expected and upper range, and produces an LTM report, roadmap and backlog.</p>
+            <div class="chip-row">
+              <span class="chip">Executive &amp; Workshop Modes</span>
+              <span class="chip">LTM Report (PDF)</span>
+              <span class="chip">Roadmap &amp; Backlog</span>
+            </div>
+          </div>
+
+          <div class="card-footer" style="justify-content:flex-end;">
+            <div class="card-actions">
+              <button class="btn-action-launch" data-tool="finops-iq" onclick="handleLaunchClick('finops-iq', '/finops-iq')">Take Assessment &rarr;</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3. Sovereign IQ -->
+        <div class="acc-card card-sovereign-iq" data-group="sovereignty">
+          <div class="card-top">
+            <div class="card-meta-row">
+              <span class="card-eyebrow orange">SOVEREIGNTY, EXPOSURE &amp; ROADMAP</span>
+              <span class="release-badge preview" title="Validated by its practice lead and the product owner; cleared to show clients in a consultant-led session">Sales Preview</span>
+            </div>
+            <h3 class="card-title">Sovereign IQ</h3>
+            <p class="card-desc">Where each kind of data may run, which of 42 regulations apply across the EU and UK, the US and Asia-Pacific, how exposed you are under each, and whether your controls meet the sovereignty level your data needs. Now includes Posture IQ.</p>
+            <div class="chip-row">
+              <span class="chip">Executive &amp; Workshop Modes</span>
+              <span class="chip">42 Regulations</span>
+              <span class="chip">Exposure &amp; Roadmap</span>
+            </div>
+          </div>
+
+          <div class="card-footer" style="justify-content:flex-end;">
+            <div class="card-actions">
+              <button class="btn-action-launch" data-tool="sovereign-iq" onclick="handleLaunchClick('sovereign-iq', '/sovereign-iq-v4')">Take Assessment &rarr;</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
          GROUP 0: STRATEGIC IT ADVISORY
          ============================================================ -->
-    <section class="practice-section" id="sectionStrategy">
+    <section class="practice-section" id="sectionStrategy" data-group="strategy">
       <div class="practice-header">
         <div class="practice-title-group">
           <h2 class="practice-title">Strategic IT Advisory Suite</h2>
@@ -1395,46 +1455,9 @@
     </section>
 
     <!-- ============================================================
-         GROUP 1: FINOPS & CLOUD FINANCIAL MANAGEMENT
-         ============================================================ -->
-    <section class="practice-section" id="sectionFinOps">
-      <div class="practice-header">
-        <div class="practice-title-group">
-          <h2 class="practice-title">FinOps &amp; Value Realisation Suite</h2>
-        </div>
-        <p class="practice-desc">Quantify unmanaged cloud financial waste, establish unit economics, and transition through staged maturity gating from crawl to run.</p>
-      </div>
-
-      <div class="acc-grid">
-        <!-- 1. FinOps IQ -->
-        <div class="acc-card card-finops-iq">
-          <div class="card-top">
-            <div class="card-meta-row">
-              <span class="card-eyebrow">CAPABILITY, VALUE &amp; ROADMAP</span>
-              <span class="release-badge preview" title="Validated by its practice lead and the product owner; cleared to show clients in a consultant-led session">Sales Preview</span>
-            </div>
-            <h3 class="card-title">FinOps IQ</h3>
-            <p class="card-desc">Rates FinOps capabilities on the FinOps Foundation's Crawl, Walk, Run scale, sizes the value of closing the gaps as a conservative, expected and upper range, and produces an LTM report, roadmap and backlog.</p>
-            <div class="chip-row">
-              <span class="chip">Executive &amp; Workshop Modes</span>
-              <span class="chip">LTM Report (PDF)</span>
-              <span class="chip">Roadmap &amp; Backlog</span>
-            </div>
-          </div>
-
-          <div class="card-footer" style="justify-content:flex-end;">
-            <div class="card-actions">
-              <button class="btn-action-launch" data-tool="finops-iq" onclick="handleLaunchClick('finops-iq', '/finops-iq')">Take Assessment &rarr;</button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ============================================================
          GROUP 1B: TECHNOLOGY COST & VALUE
          ============================================================ -->
-    <section class="practice-section" id="sectionCostIq">
+    <section class="practice-section" id="sectionCostIq" data-group="costiq">
       <div class="practice-header">
         <div class="practice-title-group">
           <h2 class="practice-title">Technology Cost &amp; Value Advisory</h2>
@@ -1470,7 +1493,7 @@
     <!-- ============================================================
          GROUP 2: DIGITAL SOVEREIGNTY & STATUTORY POSTURE
          ============================================================ -->
-    <section class="practice-section" id="sectionSovereignty">
+    <section class="practice-section" id="sectionSovereignty" data-group="sovereignty">
       <div class="practice-header">
         <div class="practice-title-group">
           <h2 class="practice-title">Digital Sovereignty &amp; Statutory Posture Suite</h2>
@@ -1479,30 +1502,6 @@
       </div>
 
       <div class="acc-grid">
-        <!-- 3. Sovereign IQ -->
-        <div class="acc-card card-sovereign-iq">
-          <div class="card-top">
-            <div class="card-meta-row">
-              <span class="card-eyebrow orange">SOVEREIGNTY, EXPOSURE &amp; ROADMAP</span>
-              <span class="release-badge preview" title="Validated by its practice lead and the product owner; cleared to show clients in a consultant-led session">Sales Preview</span>
-            </div>
-            <h3 class="card-title">Sovereign IQ</h3>
-            <p class="card-desc">Where each kind of data may run, which of 42 regulations apply across the EU and UK, the US and Asia-Pacific, how exposed you are under each, and whether your controls meet the sovereignty level your data needs. Now includes Posture IQ.</p>
-            <div class="chip-row">
-              <span class="chip">Executive &amp; Workshop Modes</span>
-              <span class="chip">42 Regulations</span>
-              <span class="chip">Exposure &amp; Roadmap</span>
-            </div>
-          </div>
-
-          <div class="card-footer" style="justify-content:flex-end;">
-            <div class="card-actions">
-              <button class="btn-action-edit" data-tool="sovereign-iq" onclick="handleEditClick('sovereign-iq')">Edit</button>
-              <button class="btn-action-launch" data-tool="sovereign-iq" onclick="handleLaunchClick('sovereign-iq', '/sovereign-iq-v4')">Take Assessment &rarr;</button>
-            </div>
-          </div>
-        </div>
-
         <!-- 4. Posture IQ -->
         <div class="acc-card card-posture-iq">
           <div class="card-top">
@@ -1532,7 +1531,7 @@
     <!-- ============================================================
          GROUP 3: HYBRID CLOUD & INFRASTRUCTURE MODERNIZATION
          ============================================================ -->
-    <section class="practice-section" id="sectionCloud">
+    <section class="practice-section" id="sectionCloud" data-group="cloud">
       <div class="practice-header">
         <div class="practice-title-group">
           <h2 class="practice-title">Hybrid Cloud &amp; Modernization Suite</h2>
@@ -3287,53 +3286,22 @@
     }
 
     function filterPracticeGroup(group, btn) {
-      const tabs = document.querySelectorAll('.hero-tab');
-      tabs.forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.hero-tab').forEach(t => t.classList.remove('active'));
       if (btn) btn.classList.add('active');
-
-      const secStrategy = document.getElementById('sectionStrategy');
-      const secFinOps = document.getElementById('sectionFinOps');
-      const secCostIq = document.getElementById('sectionCostIq');
-      const secSovereignty = document.getElementById('sectionSovereignty');
-      const secCloud = document.getElementById('sectionCloud');
-
-      if (group === 'strategy') {
-        if (secStrategy) secStrategy.style.display = 'block';
-        if (secFinOps) secFinOps.style.display = 'none';
-        if (secCostIq) secCostIq.style.display = 'none';
-        if (secSovereignty) secSovereignty.style.display = 'none';
-        if (secCloud) secCloud.style.display = 'none';
-      } else if (group === 'finops') {
-        if (secStrategy) secStrategy.style.display = 'none';
-        if (secFinOps) secFinOps.style.display = 'block';
-        if (secCostIq) secCostIq.style.display = 'none';
-        if (secSovereignty) secSovereignty.style.display = 'none';
-        if (secCloud) secCloud.style.display = 'none';
-      } else if (group === 'costiq') {
-        if (secStrategy) secStrategy.style.display = 'none';
-        if (secFinOps) secFinOps.style.display = 'none';
-        if (secCostIq) secCostIq.style.display = 'block';
-        if (secSovereignty) secSovereignty.style.display = 'none';
-        if (secCloud) secCloud.style.display = 'none';
-      } else if (group === 'sovereignty') {
-        if (secStrategy) secStrategy.style.display = 'none';
-        if (secFinOps) secFinOps.style.display = 'none';
-        if (secCostIq) secCostIq.style.display = 'none';
-        if (secSovereignty) secSovereignty.style.display = 'block';
-        if (secCloud) secCloud.style.display = 'none';
-      } else if (group === 'cloud') {
-        if (secStrategy) secStrategy.style.display = 'none';
-        if (secFinOps) secFinOps.style.display = 'none';
-        if (secCostIq) secCostIq.style.display = 'none';
-        if (secSovereignty) secSovereignty.style.display = 'none';
-        if (secCloud) secCloud.style.display = 'block';
-      } else {
-        if (secStrategy) secStrategy.style.display = 'block';
-        if (secFinOps) secFinOps.style.display = 'block';
-        if (secCostIq) secCostIq.style.display = 'block';
-        if (secSovereignty) secSovereignty.style.display = 'block';
-        if (secCloud) secCloud.style.display = 'block';
-      }
+      document.querySelectorAll('.practice-section[data-group]').forEach(sec => {
+        if (sec.dataset.group === 'preview') {
+          // Sales Preview shows the validated cards of the chosen practice (FinOps IQ under FinOps, Sovereign IQ under Sovereignty).
+          let any = false;
+          sec.querySelectorAll('.acc-card[data-group]').forEach(card => {
+            const show = group === 'all' || card.dataset.group === group;
+            card.style.display = show ? '' : 'none';
+            any = any || show;
+          });
+          sec.style.display = any ? 'block' : 'none';
+        } else {
+          sec.style.display = group === 'all' || sec.dataset.group === group ? 'block' : 'none';
+        }
+      });
     }
 
     // Initialize on page load
