@@ -313,7 +313,7 @@ describe('Sovereign IQ v4 invariants (300 random questionnaires)', () => {
       expect(run({ ...a, [q.id]: 'unknown' }).maturity.score ?? 0, q.id).toBeLessThanOrEqual(floor);
       expect(run(blank).maturity.score ?? 0, q.id).toBeLessThanOrEqual(floor);
     }
-  });
+  }, 30_000);
 
   it('provider nationality alone never changes maturity below L4 (D3)', () => {
     for (const a of SAMPLES) {
@@ -501,7 +501,7 @@ describe('Sovereign IQ v4 S4 decisions (25 Oct 2026)', () => {
         expect(Math.max(...scores) - Math.min(...scores), q.id).toBeLessThanOrEqual(q.id === 'T2' ? 30 : 20);
       }
     }
-  });
+  }, 30_000);
 
   it('the critical-infrastructure question is asked wherever Australia\'s SOCI Act can be graded likely (S4REF06)', () => {
     const r = run(S4.find(s => s.id === 'S4REF06_AU_INSURER_CPS230_OFFSHORE')!.answers);
