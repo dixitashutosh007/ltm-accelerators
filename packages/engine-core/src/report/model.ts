@@ -39,7 +39,12 @@ export type Block =
   /** A grid of labelled cells by row, each coloured by tone (good, partial, weak, bad, unknown), with an optional legend. */
   | { kind: 'heatmap'; rows: Array<{ label: string; cells: Array<{ label: string; note?: string; tone: Tone }> }>; legend?: Array<{ tone: Tone; label: string }> }
   /** Horizontal bars, 0 to max, each with its shown value (a traced segment) and tone. */
-  | { kind: 'bars'; max: number; items: Array<{ label: string; value: number; shown: Seg[]; tone: Tone }> };
+  | { kind: 'bars'; max: number; items: Array<{ label: string; value: number; shown: Seg[]; tone: Tone }> }
+  /**
+   * Stepped levels (e.g. SEAL-1 to SEAL-4): per row, the steps up to `value` are filled; `marker` outlines one step
+   * (e.g. a tender minimum). Levels are ordinal, not good or bad, so there is no tone. `null` fills nothing.
+   */
+  | { kind: 'steps'; steps: string[]; rows: Array<{ label: string; value: number | null; marker?: number | null; shown: Seg[] }>; legend?: string };
 
 export type Tone = 'good' | 'partial' | 'weak' | 'bad' | 'unknown';
 
@@ -88,6 +93,7 @@ export function walkSegments(doc: ReportDocument, visit: (seg: Seg, section: Rep
         : b.kind === 'table' ? b.rows.flat()
         : b.kind === 'kpis' ? b.items.flatMap(i => [i.value, ...(i.note ? [i.note] : [])])
         : b.kind === 'bars' ? b.items.map(i => i.shown)
+        : b.kind === 'steps' ? b.rows.map(i => i.shown)
         : [];
       for (const run of runs) for (const seg of run) visit(seg, section);
     }

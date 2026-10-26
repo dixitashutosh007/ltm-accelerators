@@ -42,13 +42,18 @@ function resolve(r: SovereignIqV4Result, field: string): number | undefined {
     const c = cap[2] ? r.exposure.regimes.find(e => e.regime === cap[2])?.cap : r.exposure.largestCap;
     return cap[3] === 'amount' ? c?.amount ?? undefined : c?.range?.[Number(cap[4])] ?? undefined;
   }
+  const obj = /^seal\.objectives\[(SOV-\d)\]\.inPlace$/.exec(field);
+  if (obj) return r.seal.objectives.find(o => o.id === obj[1])?.inPlace;
+  const place = /^advisory\.placement\[(\w+)\]$/.exec(field);
+  if (place) return r.advisory.placement.filter(p => p.status === place[1]).length;
   return undefined;
 }
 
 describe('Sovereign IQ report', () => {
   it.each(runs.map(x => [x.label, x]))('%s: the sections, in the FinOps IQ order and format', (_, x: any) => {
     const ids = x.doc.sections.map((s: any) => s.id);
-    expect(ids.slice(0, 10)).toEqual(['summary', 'requirement', 'seal', 'maturity', 'exposure', 'findings', 'advisory', 'roadmap', 'help', 'methodology']);
+    const advisory = x.r.advisory.placement.length || x.r.advisory.technical.length ? ['advisory'] : [];
+    expect(ids.slice(0, 9 + advisory.length)).toEqual(['summary', 'requirement', 'seal', 'maturity', 'exposure', 'findings', ...advisory, 'roadmap', 'help', 'methodology']);
     expect(ids.includes('sow')).toBe(x.view === 'consultant');
     expect(ids.includes('sources')).toBe(true);
     expect(ids.includes('consultant')).toBe(x.view === 'consultant');
@@ -120,6 +125,19 @@ describe('Sovereign IQ report', () => {
       expect(t, x.label).not.toMatch(/you are SEAL|SEAL-certified|certified at SEAL|your SEAL is/i);
       expect(/Post Telecom|STACKIT|Scaleway/.test(t), x.label).toBe(x.view === 'consultant');
     }
+  });
+
+  it('the advisory section appears only when it applies: cloud advisory on a hyperscaler, platform actions otherwise, none without actions', () => {
+    const base = ARCHETYPES.find((a: any) => a.id === 'ARC1_EU_BANK_DORA')!.answers;
+    const onprem = { ...base, P1: ['onprem'], L2: Object.fromEntries(Object.entries(base.L2 ?? {}).map(([k, v]: any) => [k, { ...v, platforms: ['onprem'] }])) };
+    const r1 = evaluateSovereignIqV4({ mode: 'workshop', answers: onprem, assessmentDate: '2026-10-26' });
+    expect(r1.advisory.placement).toEqual([]);
+    const s1 = sovereignIqReport(r1, { client: 'X', preparedBy: 'L', dataProvidedBy: 'C', view: 'client' }).sections.find(s => s.id === 'advisory');
+    expect(r1.advisory.technical.length > 0 ? s1?.title : s1).toBe(r1.advisory.technical.length > 0 ? 'Platform actions' : undefined);
+    const none = { ...r1, advisory: { ...r1.advisory, placement: [], technical: [] } };
+    expect(sovereignIqReport(none, { client: 'X', preparedBy: 'L', dataProvidedBy: 'C', view: 'client' }).sections.some(s => s.id === 'advisory')).toBe(false);
+    const cloud = runs.find(y => y.r.advisory.placement.length)!;
+    expect(cloud.doc.sections.find((s: any) => s.id === 'advisory')?.title).toBe('Sovereign cloud advisory');
   });
 
   it('the advisory section has a row for every placement and leaves catalogue gaps out of the client edition', () => {

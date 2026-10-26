@@ -112,23 +112,36 @@ const sealName = (n: number | null | undefined) => (n == null ? '—' : `SEAL-${
 function sealSection(c: Ctx): ReportSection {
   const v = c.r.seal;
   const mapped = SEAL.objectives.filter(o => o.mapped);
+  const short = (name: string) => name.replace(/ sovereignty$/, '');
   const blocks: Block[] = [{ kind: 'paragraph', segs: [{ text: SEAL.intro, cite: SEAL.claimIds }, ' This view uses an LTM mapping from the required level, not the Commission\'s, and is not a SEAL assessment or certification.'] }];
   blocks.push({ kind: 'list', small: true, items: SEAL.levels.map(l => [strong(`SEAL-${l.id} ${l.name}: `), { text: l.plain, cite: SEAL.claimIds }, ...(l.note ? [` (${l.note})`] : [])]) });
   if (v.byClass.length) {
+    blocks.push({ kind: 'subheading', text: 'Provider SEAL your data needs, by objective' });
+    blocks.push({ kind: 'steps', steps: ['SEAL-1', 'SEAL-2', 'SEAL-3', 'SEAL-4'],
+      rows: mapped.map(o => {
+        const n = v.organisation[o.id];
+        const drivers = v.byClass.filter(x => n != null && x.minimums[o.id] === n).map(x => className(x.dataClass));
+        return { label: `${o.id} ${short(o.name)}`, value: n, marker: v.tender?.minimums[o.id] ?? null, shown: [n == null ? 'None needed' : `${sealName(n)}${drivers.length ? ` (${drivers.join(', ')})` : ''}`] };
+      }),
+      legend: `Filled: the highest SEAL any kind of data needs from its providers.${v.tender ? ' Outlined: the tender minimum.' : ''}` });
     blocks.push({ kind: 'subheading', text: 'Minimum provider SEAL by kind of data' });
-    blocks.push({ kind: 'table', small: true, head: ['Data', 'Level', ...mapped.map(o => o.id)], widths: [90, 35, ...mapped.map(() => '*' as const)], rows: [
+    blocks.push({ kind: 'table', small: true, head: ['Data', 'Level', ...mapped.map(o => `${o.id} ${short(o.name)}`)], widths: [80, 30, ...mapped.map(() => '*' as const)], rows: [
       ...v.byClass.map(x => [[className(x.dataClass)], [x.level], ...mapped.map(o => [sealName(x.minimums[o.id])])]),
       [[strong('Highest needed')], [''], ...mapped.map(o => [strong(sealName(v.organisation[o.id]))])]
     ] });
-    blocks.push({ kind: 'paragraph', style: 'small', segs: [mapped.map(o => `${o.id} ${o.name}`).join('; '), '.'] });
   } else blocks.push({ kind: 'paragraph', style: 'note', segs: ['No kind of data needs more than L0, so no minimum SEAL applies.'] });
   if (v.l4Note) blocks.push({ kind: 'paragraph', style: 'note', segs: [{ text: v.l4Note, cite: ['CLM-SOV-227'] }] });
-  blocks.push({ kind: 'subheading', text: 'Your controls by sovereignty objective' });
-  blocks.push({ kind: 'table', small: true, head: ['Objective', 'In place', 'Controls'], widths: [130, 45, '*'], rows: v.objectives.map(o => [
-    [`${o.id} ${o.name}${o.mapped ? '' : ' (provider selection)'}`],
-    [o.controls.length ? [count(`seal.objectives[${o.id}].inPlace`, o.inPlace), ` of ${o.controls.length}`] as any : '—'].flat(),
-    [o.controls.length ? o.controls.map(x => `${CONTROL.get(x.control)?.name ?? x.control} (${word(x.state).toLowerCase()})`).join('; ') : o.mapped ? 'No required control' : 'Assessed when choosing a provider']
-  ]) });
+  const measured = v.objectives.filter(o => o.controls.length);
+  if (measured.length) {
+    blocks.push({ kind: 'subheading', text: 'Your controls by sovereignty objective' });
+    blocks.push({ kind: 'paragraph', style: 'small', segs: ['The share of the required controls tagged to each objective that are in place: a count of your controls, not a SEAL rating.'] });
+    blocks.push({ kind: 'bars', max: 100, items: measured.map(o => {
+      const pct = Math.round((100 * o.inPlace) / o.controls.length);
+      return { label: `${o.id} ${short(o.name)}${o.mapped ? '' : ' (provider selection)'}`, value: pct, shown: [count(`seal.objectives[${o.id}].inPlace`, o.inPlace), ` of ${o.controls.length} in place`], tone: (pct >= 80 ? 'good' : pct >= 50 ? 'partial' : pct > 0 ? 'weak' : 'bad') as Tone };
+    }) });
+    const gaps = measured.filter(o => o.inPlace < o.controls.length);
+    if (gaps.length) blocks.push({ kind: 'list', small: true, items: gaps.map(o => [strong(`${o.id}: `), o.controls.filter(x => x.state !== 3).map(x => `${CONTROL.get(x.control)?.name ?? x.control} (${word(x.state).toLowerCase()})`).join('; ')]) });
+  }
   const t = v.tender;
   if (t) {
     blocks.push({ kind: 'subheading', text: 'EU tender minimums' });
@@ -223,16 +236,23 @@ const actionSegs = (a: AdvisoryAction): Seg[] => [strong(`${a.action}.`), ' ', {
   ...(a.options.length ? ['\nOptions: ', { text: a.options.map(o => o.name).join('; '), cite: a.claimIds }, a.confirmRegionalAvailability ? ' (confirm availability in your regions)' : ''] : []),
   '\nCheck: ', a.verification];
 
-/** PLAN S7: where each kind of data should sit on AWS, Azure or Google Cloud, then the actions by platform. */
-function advisorySection(c: Ctx): ReportSection {
+/**
+ * PLAN S7: where each kind of data should sit on AWS, Azure or Google Cloud, then the actions by platform. Only when it
+ * applies (owner, 26 Oct 2026): "Sovereign cloud advisory" when data at L1 or above sits on a hyperscaler, "Platform
+ * actions" when only other platforms have actions, and no section otherwise.
+ */
+function advisorySection(c: Ctx): ReportSection | null {
   const a = c.r.advisory;
   const ids = new Set(c.findings.map(f => f.id));
   const keep = <T extends { claimIds: string[] }>(xs: T[]) => (c.client ? xs.filter(clientCleared) : xs);
   const actions = (xs: AdvisoryAction[]) => keep(xs).filter(x => ids.has(x.findingId));
-  const blocks: Block[] = [{ kind: 'paragraph', segs: ['For each kind of data held on AWS, Microsoft Azure or Google Cloud, the placement ladder gives the lowest rung its required level needs. Each rung adds controls to the one below; R3 and R4 need an offering run in the allowed region when the provider is based outside it. The ladder changes the advice, not the maturity score.'] }];
-  blocks.push({ kind: 'list', small: true, items: LADDER.rungs.map(r => [strong(`${r.id} ${r.label} (${r.level}): `), r.means]) });
-  if (!a.placement.length) blocks.push({ kind: 'paragraph', style: 'note', segs: ['No data at L1 or above is held on AWS, Azure or Google Cloud.'] });
-  else {
+  if (!a.placement.length && !actions(a.technical).length) return null;
+  const blocks: Block[] = [];
+  if (a.placement.length) {
+    blocks.push({ kind: 'paragraph', segs: ['For each kind of data held on AWS, Microsoft Azure or Google Cloud, the placement ladder gives the lowest rung its required level needs. Each rung adds controls to the one below; R3 and R4 need an offering run in the allowed region when the provider is based outside it. The ladder changes the advice, not the maturity score.'] });
+    const n = (s: PlacementStatus) => a.placement.filter(p => p.status === s).length;
+    blocks.push({ kind: 'kpis', items: (['meets', 'gap', 'unconfirmed', 'move'] as PlacementStatus[]).map(s => ({ label: PLACEMENT[s][0], value: [count(`advisory.placement[${s}]`, n(s))], note: [`of ${a.placement.length} placements`] })) });
+    blocks.push({ kind: 'list', small: true, items: LADDER.rungs.map(r => [strong(`${r.id} ${r.label} (${r.level}): `), r.means]) });
     blocks.push({ kind: 'subheading', text: 'Placement matrix' });
     blocks.push({ kind: 'heatmap', rows: a.placement.map(p => ({ label: `${className(p.dataClass)} · ${platformName(p.platform)}`, cells: [{ label: rungName(p.minimumRung), note: PLACEMENT[p.status][0].toLowerCase(), tone: PLACEMENT[p.status][1] }] })),
       legend: (Object.keys(PLACEMENT) as PlacementStatus[]).map(k => ({ tone: PLACEMENT[k][1], label: PLACEMENT[k][0] })) });
@@ -254,12 +274,13 @@ function advisorySection(c: Ctx): ReportSection {
   const tech = actions(a.technical);
   const platforms = [...new Set(tech.map(x => x.platform))];
   if (platforms.length) {
-    blocks.push({ kind: 'subheading', text: 'Actions by platform' });
+    if (!a.placement.length) blocks.push({ kind: 'paragraph', segs: ['Every gap with a technical remedy, on each platform that holds the affected data.'] });
+    else blocks.push({ kind: 'subheading', text: 'Actions by platform' });
     blocks.push({ kind: 'table', small: true, head: ['Platform', 'Action', 'Owner'], widths: [90, '*', 90], rows: platforms.flatMap(pl => tech.filter(x => x.platform === pl).map(x => [[platformName(pl)], actionSegs(x), [x.ownerRole]])) });
   }
   if (!c.client && a.gaps.length) blocks.push({ kind: 'paragraph', style: 'small', segs: ['Playbook gaps (consultant edition): ', a.gaps.map(g => `${CONTROL.get(g.control)?.name ?? g.control} on ${g.platforms.map(platformName).join(', ')}`).join('; '), '.'] });
   blocks.push({ kind: 'callout', tone: 'info', segs: [a.statement] });
-  return { id: 'advisory', title: 'Sovereign cloud advisory', blocks };
+  return { id: 'advisory', title: a.placement.length ? 'Sovereign cloud advisory' : 'Platform actions', blocks };
 }
 
 function roadmap(c: Ctx): ReportSection {
@@ -357,11 +378,11 @@ export function sovereignIqReport(result: SovereignIqV4Result, opts: SovereignRe
       footer: `${PLATFORM} · ${PRODUCT} · Confidential`,
       status: 'Internal consultant use until the legal review. Not legal advice.'
     },
-    sections: [summary(c), requirement(c), sealSection(c), maturity(c), exposure(c), findingsSection(c), advisorySection(c), roadmap(c), helpSection(c), methodology(c)]
+    sections: [summary(c), requirement(c), sealSection(c), maturity(c), exposure(c), findingsSection(c), ...[advisorySection(c)].filter((s): s is ReportSection => !!s), roadmap(c), helpSection(c), methodology(c)]
   };
   const claims = new Set<string>();
   for (const s of doc.sections) for (const b of s.blocks) {
-    const runs: Seg[][] = b.kind === 'paragraph' || b.kind === 'callout' ? [b.segs] : b.kind === 'list' ? b.items : b.kind === 'table' ? b.rows.flat() : b.kind === 'kpis' ? b.items.flatMap(i => [i.value, ...(i.note ? [i.note] : [])]) : [];
+    const runs: Seg[][] = b.kind === 'paragraph' || b.kind === 'callout' ? [b.segs] : b.kind === 'list' ? b.items : b.kind === 'table' ? b.rows.flat() : b.kind === 'kpis' ? b.items.flatMap(i => [i.value, ...(i.note ? [i.note] : [])]) : b.kind === 'steps' ? b.rows.map(i => i.shown) : b.kind === 'bars' ? b.items.map(i => i.shown) : [];
     for (const run of runs) for (const seg of run) if (typeof seg !== 'string') { seg.cite?.forEach(id => claims.add(id)); seg.trace?.claimIds.forEach(id => claims.add(id)); }
   }
   doc.sections.push({ id: 'sources', title: 'Sources', appendix: true, blocks: sourcesAppendix([...claims].sort(), c) });

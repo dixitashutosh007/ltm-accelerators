@@ -643,6 +643,7 @@
   function renderResults(body) {
     var r = state.result;
     if (!r) { body.appendChild(h('p', { class: 'muted' }, 'Loading the result…')); return; }
+    var TABS = resultTabs(r);
     var tab = TABS.some(function (t) { return t.id === state.tab; }) ? state.tab : 'overview';
     body.appendChild(hero(r));
     body.appendChild(h('div', { class: 'tabs', role: 'tablist', 'aria-label': 'Result views' }, TABS.map(function (t) {
@@ -664,6 +665,20 @@
     else if (tab === 'roadmap') roadmapPanel(panel, r);
     else methodPanel(panel, r);
     body.appendChild(panel);
+  }
+
+  /**
+   * The result tabs. The advisory tab appears only when it applies (owner, 26 Oct 2026): "Cloud advisory" when data at
+   * L1 or above sits on AWS, Azure or Google Cloud; "Platform actions" when only other platforms have actions; none
+   * otherwise.
+   */
+  function resultTabs(r) {
+    var a = r.advisory || { placement: [], technical: [] };
+    return TABS.map(function (t) {
+      if (t.id !== 'advisory') return t;
+      if (a.placement.length) return t;
+      return a.technical && a.technical.length ? { id: 'advisory', label: 'Platform actions' } : null;
+    }).filter(Boolean);
   }
 
   function inScope(r) { return r.regimes.filter(function (g) { return g.grade !== 'not_applicable'; }); }
@@ -900,20 +915,59 @@
   function sealPanel(p, r) {
     var v = r.seal;
     if (!v) { p.appendChild(h('p', { class: 'muted' }, 'The SEAL view needs a newer result; complete the assessment again.')); return; }
-    var mapped = schema.seal.objectives.filter(function (o) { return o.mapped; });
-    p.appendChild(card('Minimum provider SEAL by kind of data', 'From the required level, using the LTM mapping; SEAL rates the provider\'s service, not you', v.byClass.length ? h('div', { class: 'table-wrap' }, h('table', null,
-      h('thead', null, h('tr', null, [h('th', { scope: 'col' }, 'Data'), h('th', { scope: 'col' }, 'Level')].concat(mapped.map(function (o) { return h('th', { scope: 'col' }, o.id + ' ' + o.name.replace(/ sovereignty$/, '')); })))),
-      h('tbody', null, v.byClass.map(function (c) {
-        return h('tr', null, [h('th', { scope: 'row' }, className(c.dataClass)), h('td', null, c.level)].concat(mapped.map(function (o) { return h('td', null, sealName(c.minimums[o.id])); })));
-      }).concat([h('tr', null, [h('th', { scope: 'row' }, 'Highest needed'), h('td', null, '')].concat(mapped.map(function (o) { return h('td', null, h('strong', null, sealName(v.organisation[o.id]))); })))])))) : h('p', { class: 'muted' }, 'No kind of data needs more than L0, so no minimum SEAL applies.'), 'wide'));
-    if (v.l4Note) p.appendChild(h('p', { class: 'small muted' }, v.l4Note));
-    p.appendChild(card('Your controls by sovereignty objective', 'The required controls that support each objective; a count of controls, not a rating', h('div', { class: 'table-wrap' }, h('table', null,
-      h('thead', null, h('tr', null, ['Objective', 'In place', 'Controls'].map(function (t) { return h('th', { scope: 'col' }, t); }))),
-      h('tbody', null, v.objectives.map(function (o) {
-        return h('tr', null, h('th', { scope: 'row' }, o.id + ' ' + o.name + (o.mapped ? '' : ' (provider selection)')),
-          h('td', null, o.controls.length ? o.inPlace + ' of ' + o.controls.length : '—'),
-          h('td', { class: 'small' }, o.controls.length ? o.controls.map(function (c) { return controlInfo(c.control).name + ' (' + stateWord(c) + ')'; }).join('; ') : o.mapped ? 'No required control' : 'Assessed when choosing a provider (Cloud advisory)'));
-      })))), 'wide'));
+    var s = schema.seal;
+    var mapped = s.objectives.filter(function (o) { return o.mapped; });
+    var short = function (n) { return n.replace(/ sovereignty$/, ''); };
+    var top = Math.max.apply(null, [0].concat(mapped.map(function (o) { return v.organisation[o.id] || 0; })));
+
+    // 1. The scale, with the highest level any kind of data needs from its providers marked.
+    p.appendChild(card('The SEAL scale', 'How the European Commission rates a provider\'s service on each sovereignty objective. SEAL rates the provider, not you', h('div', null,
+      h('ol', { class: 'seal-scale', 'aria-label': 'SEAL-0 to SEAL-4' + (top ? '; your data needs up to SEAL-' + top : '') }, s.levels.map(function (l) {
+        return h('li', { class: 'seal-tile lv' + l.id + (v.byClass.length && l.id === top ? ' top' : '') },
+          h('span', { class: 'seal-tile-id' }, 'SEAL-' + l.id), h('strong', null, l.name), h('span', { class: 'seal-tile-text' }, l.plain),
+          v.byClass.length && l.id === top ? h('span', { class: 'seal-badge' }, 'Highest your data needs') : null);
+      })),
+      h('p', { class: 'small muted' }, 'Source: ' + s.framework + '. ' + (s.levels[3] && s.levels[3].note ? s.levels[3].note + '.' : ''))), 'wide'));
+
+    if (!v.byClass.length) { p.appendChild(h('p', { class: 'muted' }, 'No kind of data needs more than L0, so no minimum SEAL applies.')); }
+    else {
+      // 2. Per objective: a four-step track filled to the highest SEAL needed; the tender minimum outlined.
+      p.appendChild(card('Provider SEAL your data needs, by objective', 'Filled to the highest level any kind of data needs' + (v.tender ? '; outlined: your tender minimum' : ''), h('div', { class: 'seal-tracks' },
+        h('div', { class: 'seal-track-head', 'aria-hidden': 'true' }, h('span'), h('div', { class: 'seal-steps' }, [1, 2, 3, 4].map(function (n) { return h('span', null, 'SEAL-' + n); })), h('span')),
+        mapped.map(function (o) {
+          var n = v.organisation[o.id], min = v.tender ? v.tender.minimums[o.id] : null;
+          var drivers = v.byClass.filter(function (c) { return n != null && c.minimums[o.id] === n; }).map(function (c) { return className(c.dataClass); });
+          var label = o.id + ' ' + short(o.name) + ': ' + (n == null ? 'no minimum' : 'SEAL-' + n + ' needed') + (min != null ? '; tender minimum SEAL-' + min : '');
+          return h('div', { class: 'seal-track', role: 'img', 'aria-label': label },
+            h('span', { class: 'seal-track-label' }, h('strong', null, o.id), ' ' + short(o.name)),
+            h('div', { class: 'seal-steps' }, [1, 2, 3, 4].map(function (k) { return h('i', { class: 'seal-step' + (n != null && k <= n ? ' f' + k : '') + (min === k ? ' marker' : '') }); })),
+            h('span', { class: 'seal-track-value' }, n == null ? 'None' : 'SEAL-' + n, drivers.length ? h('small', null, drivers.join(', ')) : null));
+        })), 'wide'));
+
+      // 3. By kind of data: a grid graded by level.
+      p.appendChild(card('By kind of data', 'The minimum SEAL each kind of data needs from its providers, from its required level (LTM mapping)', h('div', { class: 'table-wrap' }, h('table', { class: 'seal-grid' },
+        h('thead', null, h('tr', null, [h('th', { scope: 'col' }, 'Data'), h('th', { scope: 'col' }, 'Level')].concat(mapped.map(function (o) { return h('th', { scope: 'col' }, h('span', { class: 'block' }, o.id), h('small', null, short(o.name))); })))),
+        h('tbody', null, v.byClass.map(function (c) {
+          return h('tr', null, [h('th', { scope: 'row' }, className(c.dataClass)), h('td', null, h('span', { class: 'chip' }, c.level))].concat(mapped.map(function (o) {
+            var n = c.minimums[o.id];
+            return h('td', { class: 'seal-cell lv' + (n == null ? 'x' : n) }, n == null ? '—' : 'SEAL-' + n);
+          })));
+        })))), 'wide'));
+      if (v.l4Note) p.appendChild(h('p', { class: 'small muted' }, v.l4Note));
+    }
+
+    // 4. Your controls by objective: share in place, with the controls behind it.
+    var measured = v.objectives.filter(function (o) { return o.controls.length; });
+    if (measured.length) p.appendChild(card('Your controls by sovereignty objective', 'The share of the required controls tagged to each objective that are in place: a count of your controls, not a SEAL rating', h('div', { class: 'obj-bars' }, measured.map(function (o) {
+      var pct = Math.round(100 * o.inPlace / o.controls.length);
+      var tone = pct >= 80 ? 'good' : pct >= 50 ? 'partial' : pct > 0 ? 'weak' : 'bad';
+      return h('details', { class: 'obj-bar' },
+        h('summary', null, h('span', { class: 'obj-name' }, h('strong', null, o.id), ' ' + o.name + (o.mapped ? '' : ' (provider selection)')),
+          h('span', { class: 'obj-track', role: 'img', 'aria-label': o.inPlace + ' of ' + o.controls.length + ' in place' }, h('i', { class: tone, style: 'width:' + Math.max(pct, 2) + '%' })),
+          h('span', { class: 'obj-count' }, o.inPlace + ' of ' + o.controls.length)),
+        h('ul', { class: 'small' }, o.controls.map(function (c) { return h('li', null, controlInfo(c.control).name + ' ', h('span', { class: 'state-chip ' + stateCls(c) }, stateWord(c))); })));
+    })), 'wide'));
+
     var t = v.tender;
     if (t) p.appendChild(card('EU tender minimums', 'From your answer to L3', h('div', null,
       h('p', { class: 'small' }, 'Minimums: ' + Object.keys(t.minimums).map(function (o) { return o + ' ' + sealName(t.minimums[o]); }).join('; ') + '. These need at least ' + t.level + ' for ' + t.classes.map(className).join(', ') + '.'),
@@ -925,51 +979,86 @@
   }
 
   function rungName(id) { var x = (schema.rungs || []).find(function (g) { return g.id === id; }); return x ? id + ' ' + x.label : id; }
+  var AVAIL_BADGE = { ga: ['Available', 'ok'], preview: ['Preview', 'medium'], announced: ['Announced', 'medium'], per_engagement: ['Per engagement', 'medium'] };
 
-  /** One playbook action: what to do, the approach, options and how to check it (PLAN S7). */
+  /** One playbook action: what to do, then the approach, options and how to check it (PLAN S7). */
   function actionItem(a) {
-    return h('li', { class: 'small' }, h('strong', null, a.action + '.'), ' ', a.approach + '.',
-      a.options && a.options.length ? h('span', { class: 'block' }, 'Options: ' + a.options.map(function (o) { return o.name; }).join('; ') + (a.confirmRegionalAvailability ? ' (confirm availability in your regions)' : '')) : null,
-      h('span', { class: 'block muted' }, 'Check: ' + a.verification + ' · Owner: ' + a.ownerRole + (a.discoveryNeeded ? ' · Needs: ' + a.discoveryNeeded : '')));
+    return h('li', { class: 'action-item' },
+      h('details', null, h('summary', null, h('strong', null, a.action), a.level ? h('span', { class: 'chip' }, a.level) : null),
+        h('p', { class: 'small' }, a.approach + '.'),
+        a.options && a.options.length ? h('p', { class: 'small' }, h('strong', null, 'Options: '), a.options.map(function (o) { return o.name; }).join('; ') + (a.confirmRegionalAvailability ? ' (confirm availability in your regions)' : '')) : null,
+        h('p', { class: 'small muted' }, 'Check: ' + a.verification + ' · Owner: ' + a.ownerRole + (a.discoveryNeeded ? ' · Needs: ' + a.discoveryNeeded : ''))));
+  }
+
+  /** The R1 to R4 ladder for one row, with the rung it needs marked. */
+  function miniLadder(x) {
+    return h('ol', { class: 'mini-ladder', 'aria-label': 'Needs ' + rungName(x.minimumRung) }, ['R1', 'R2', 'R3', 'R4'].map(function (id) {
+      var need = id === x.minimumRung, below = id < x.minimumRung;
+      return h('li', { class: (need ? 'need ' + x.status : below ? 'below' : '') }, h('span', null, id), need ? h('small', null, 'needed') : null);
+    }));
   }
 
   /** Cloud advisory (PLAN S7): where each kind of data should sit on AWS, Azure or Google Cloud, then actions by platform. */
   function advisoryPanel(p, r) {
     var a = r.advisory || { placement: [], technical: [] };
     var rows = a.placement;
-    p.appendChild(card('Placement matrix', 'For each kind of data on AWS, Azure or Google Cloud: the lowest rung of the placement ladder its level needs, and whether it is there today', rows.length ? h('div', { class: 'table-wrap' }, h('table', null,
-      h('thead', null, h('tr', null, ['Data', 'Platform', 'Required level', 'Needs', 'Today'].map(function (t) { return h('th', { scope: 'col' }, t); }))),
-      h('tbody', null, rows.map(function (x) {
+    if (rows.length) {
+      // Summary: how many placements meet the level, and what the rest need.
+      var n = function (s) { return rows.filter(function (x) { return x.status === s; }).length; };
+      p.appendChild(h('div', { class: 'adv-kpis' }, ['meets', 'gap', 'unconfirmed', 'move'].map(function (s) {
+        return h('div', { class: 'adv-kpi ' + PLACEMENT[s][1] }, h('strong', null, String(n(s))), h('span', null, PLACEMENT[s][0]));
+      })));
+
+      // Placement grid: kinds of data by hyperscaler.
+      var clouds = HYPERSCALERS.filter(function (pl) { return rows.some(function (x) { return x.platform === pl; }); });
+      var classes = rows.map(function (x) { return x.dataClass; }).filter(function (c, i, all) { return all.indexOf(c) === i; });
+      p.appendChild(card('Placement matrix', 'For each kind of data: the lowest rung of the placement ladder its level needs on each platform that holds it, and where it stands today', h('div', null,
+        h('div', { class: 'table-wrap' }, h('table', { class: 'place-grid' },
+          h('thead', null, h('tr', null, [h('th', { scope: 'col' }, 'Data')].concat(clouds.map(function (pl) { return h('th', { scope: 'col' }, schema.platforms[pl]); })))),
+          h('tbody', null, classes.map(function (c) {
+            return h('tr', null, [h('th', { scope: 'row' }, className(c))].concat(clouds.map(function (pl) {
+              var x = rows.find(function (y) { return y.dataClass === c && y.platform === pl; });
+              if (!x) return h('td', { class: 'place-cell none' }, 'Not held here');
+              var st = PLACEMENT[x.status];
+              return h('td', { class: 'place-cell ' + st[1] }, h('strong', null, rungName(x.minimumRung)), h('small', null, x.requiredLevel + ' · ' + st[0]));
+            })));
+          })))),
+        h('ul', { class: 'legend' }, ['meets', 'gap', 'unconfirmed', 'move'].map(function (s) { return h('li', null, h('i', { class: 'lg-sq ' + PLACEMENT[s][1], 'aria-hidden': 'true' }), h('span', null, PLACEMENT[s][0])); }))), 'wide'));
+
+      // A card per placement that is not met.
+      rows.filter(function (x) { return x.status !== 'meets'; }).forEach(function (x) {
         var st = PLACEMENT[x.status];
-        return h('tr', null, h('th', { scope: 'row' }, className(x.dataClass)), h('td', null, schema.platforms[x.platform]), h('td', null, x.requiredLevel),
-          h('td', null, rungName(x.minimumRung)), h('td', null, h('span', { class: 'state-chip ' + st[1] }, st[0])));
-      })))) : h('p', { class: 'muted' }, 'No data at L1 or above is held on AWS, Azure or Google Cloud.'), 'wide'));
+        var ctl = x.rungControls.filter(function (c) { return stateWord(c) !== 'in place'; });
+        var title = className(x.dataClass) + ' data on ' + schema.platforms[x.platform];
+        p.appendChild(h('section', { class: 'card adv-row ' + st[1], 'aria-label': title },
+          h('div', { class: 'adv-row-head' }, h('h3', null, title), h('span', { class: 'state-chip ' + st[1] }, st[0])),
+          h('div', { class: 'adv-cols' },
+            h('div', { class: 'adv-col' }, h('p', { class: 'adv-label' }, 'What it needs'), miniLadder(x),
+              h('p', { class: 'small' }, x.requiredLevel + ' in ' + (x.allowedZone.length ? x.allowedZone.map(zoneName).join(', ') : 'any region') + '.' + (x.services.length ? ' Services: ' + x.services.join(', ').replace(/_/g, ' ') + '.' : '')),
+              ctl.length ? h('div', { class: 'gap-chips' }, ctl.map(function (c) { return h('span', { class: 'state-chip ' + stateCls(c) }, controlInfo(c.control).name + ': ' + stateWord(c)); })) : null,
+              x.confirmOperatingModel ? h('p', { class: 'small' }, 'Your answer says these services are run only by staff in the region through a local entity, but the data sits in standard regions of a provider based outside it. Confirm who operates and supports them, including escalations.') : null),
+            h('div', { class: 'adv-col' }, h('p', { class: 'adv-label' }, 'Options on ' + schema.platforms[x.platform] + ' at ' + x.minimumRung),
+              x.options.length ? h('ul', { class: 'opt-list' }, x.options.map(function (o) {
+                var b = AVAIL_BADGE[o.availability] || ['', ''];
+                return h('li', null, h('div', { class: 'opt-head' }, h('strong', null, o.name), h('span', { class: 'chip ' + b[1] }, b[0])), o.detail ? h('span', { class: 'small block' }, o.detail) : null, o.caveat ? h('span', { class: 'small muted block' }, o.caveat) : null);
+              })) : h('p', { class: 'small muted' }, x.minimumRung === 'R4' ? 'No offering is presented as meeting R4.' : 'None listed.'),
+              x.noOfferingZones.length ? h('p', { class: 'small' }, h('strong', null, 'No option at ' + x.minimumRung + ' for ' + x.noOfferingZones.map(zoneName).join(', ') + '. '), x.alternatives.length ? 'Alternatives:' : 'Ask your consultant for alternatives.') : null,
+              x.alternatives.length ? h('ul', { class: 'opt-list alt' }, x.alternatives.map(function (o) { return h('li', null, h('strong', null, (o.provider ? schema.platforms[o.provider] + ': ' : '') + o.name), o.detail ? h('span', { class: 'small muted block' }, o.detail) : null); })) : null)),
+          x.r4Facts && x.r4Facts.length ? h('div', null, h('p', { class: 'adv-label' }, 'Facts for counsel'), h('div', { class: 'table-wrap' }, h('table', null,
+            h('thead', null, h('tr', null, ['Offering', 'Owner', 'Operator', 'Operator\'s law', 'Technology'].map(function (t) { return h('th', { scope: 'col' }, t); }))),
+            h('tbody', null, x.r4Facts.map(function (f) { return h('tr', null, h('th', { scope: 'row' }, f.name), h('td', { class: 'small' }, f.owner), h('td', { class: 'small' }, f.operator), h('td', { class: 'small' }, f.operatorLaw), h('td', { class: 'small' }, f.technologySupplier)); })))),
+            h('p', { class: 'small muted' }, 'Whether this meets R4 is for your counsel.')) : null,
+          x.actions.length ? h('div', null, h('p', { class: 'adv-label' }, 'Actions (' + x.actions.length + ')'), h('ul', { class: 'action-list' }, x.actions.map(actionItem))) : null));
+      });
+    }
 
-    rows.filter(function (x) { return x.status !== 'meets'; }).forEach(function (x) {
-      var st = PLACEMENT[x.status];
-      var ctl = x.rungControls.filter(function (c) { return stateWord(c) !== 'in place'; });
-      p.appendChild(h('section', { class: 'card', 'aria-label': className(x.dataClass) + ' data on ' + schema.platforms[x.platform] },
-        h('div', { class: 'header-row', style: 'margin:0' }, h('h3', { style: 'margin:0' }, className(x.dataClass) + ' data on ' + schema.platforms[x.platform]), h('span', { class: 'state-chip ' + st[1] }, st[0])),
-        h('p', { class: 'small muted' }, 'Required ' + x.requiredLevel + ' in ' + (x.allowedZone.length ? x.allowedZone.map(zoneName).join(', ') : 'any region') + ': needs ' + rungName(x.minimumRung) + '.' + (x.services.length ? ' Services: ' + x.services.join(', ').replace(/_/g, ' ') + '.' : '')),
-        x.confirmOperatingModel ? h('p', { class: 'small' }, 'Your answer says these services are run only by staff in the region through a local entity, but the data sits in standard regions of a provider based outside it. Confirm who operates and supports them, including escalations.') : null,
-        ctl.length ? h('p', { class: 'small' }, h('strong', null, 'Not yet in place: '), ctl.map(function (c) { return controlInfo(c.control).name + ' (' + stateWord(c) + ')'; }).join('; ')) : null,
-        x.options.length ? h('div', null, h('p', { class: 'small' }, h('strong', null, 'Options on ' + schema.platforms[x.platform] + ' at ' + x.minimumRung + ':')),
-          h('ul', null, x.options.map(function (o) { return h('li', { class: 'small' }, h('strong', null, o.name), AVAILABILITY[o.availability] ? ' (' + AVAILABILITY[o.availability] + ')' : '', o.detail ? ': ' + o.detail : '', o.caveat ? h('span', { class: 'block muted' }, o.caveat) : null, o.confirmRegionalAvailability && !o.caveat ? h('span', { class: 'block muted' }, 'Confirm availability in your regions.') : null); }))) : null,
-        x.r4Facts && x.r4Facts.length ? h('div', null, h('p', { class: 'small' }, h('strong', null, 'Facts for counsel')), h('div', { class: 'table-wrap' }, h('table', null,
-          h('thead', null, h('tr', null, ['Offering', 'Owner', 'Operator', 'Operator\'s law', 'Technology'].map(function (t) { return h('th', { scope: 'col' }, t); }))),
-          h('tbody', null, x.r4Facts.map(function (f) { return h('tr', null, h('th', { scope: 'row' }, f.name), h('td', { class: 'small' }, f.owner), h('td', { class: 'small' }, f.operator), h('td', { class: 'small' }, f.operatorLaw), h('td', { class: 'small' }, f.technologySupplier)); })))),
-          h('p', { class: 'small muted' }, 'Whether this meets R4 is for your counsel.')) : null,
-        x.noOfferingZones.length ? h('p', { class: 'small' }, schema.platforms[x.platform] + ' has no option at ' + x.minimumRung + ' listed for ' + x.noOfferingZones.map(zoneName).join(', ') + (x.alternatives.length ? '. Alternatives:' : '. Ask your consultant for alternatives.')) : null,
-        x.alternatives.length ? h('ul', null, x.alternatives.map(function (o) { return h('li', { class: 'small' }, (o.provider ? schema.platforms[o.provider] + ': ' : '') + o.name + (o.detail ? ': ' + o.detail : '')); })) : null,
-        x.actions.length ? h('div', null, h('p', { class: 'small' }, h('strong', null, 'Actions')), h('ul', null, x.actions.map(actionItem))) : null));
-    });
-
+    // Actions by platform, one panel per platform.
     var by = {};
     (a.technical || []).forEach(function (x) { (by[x.platform] = by[x.platform] || []).push(x); });
     var platforms = Object.keys(by);
-    p.appendChild(card('Actions by platform', 'Every gap with a technical remedy, on each platform that holds the affected data', platforms.length ? h('div', null, platforms.map(function (k) {
-      return h('details', { class: 'basis' }, h('summary', null, schema.platforms[k] + ' (' + by[k].length + ')'), h('ul', null, by[k].map(actionItem)));
-    })) : h('p', { class: 'muted' }, 'Platform actions are being sourced for this release.'), 'wide'));
+    p.appendChild(card(rows.length ? 'Actions by platform' : 'Platform actions', 'Every gap with a technical remedy, on each platform that holds the affected data', platforms.length ? h('div', { class: 'plat-groups' }, platforms.map(function (k) {
+      return h('details', { class: 'plat-group' }, h('summary', null, h('strong', null, schema.platforms[k]), h('span', { class: 'chip' }, by[k].length + (by[k].length === 1 ? ' action' : ' actions'))), h('ul', { class: 'action-list' }, by[k].map(actionItem)));
+    })) : h('p', { class: 'muted' }, 'No platform action is needed.'), 'wide'));
     if (state.view !== 'client' && a.gaps && a.gaps.length) p.appendChild(h('p', { class: 'small consultant-only' }, 'Playbook gaps (consultant only): ' + a.gaps.map(function (g) { return controlInfo(g.control).name + ' on ' + g.platforms.map(function (x) { return schema.platforms[x] || x; }).join(', '); }).join('; ')));
     p.appendChild(h('p', { class: 'small muted' }, a.statement || ''));
   }

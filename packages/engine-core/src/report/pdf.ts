@@ -57,6 +57,8 @@ function block(b: Block): Content {
       return heatmap(b);
     case 'bars':
       return bars(b);
+    case 'steps':
+      return steps(b);
   }
 }
 
@@ -118,6 +120,32 @@ function bars(b: Extract<Block, { kind: 'bars' }>): Content {
     },
     layout: 'noBorders', margin: [0, 2, 0, 10]
   };
+}
+
+/** Stepped levels: one box per step, filled up to the row's value, with an outlined marker step. */
+function steps(b: Extract<Block, { kind: 'steps' }>): Content {
+  const BOX = 40, GAP = 3, W = b.steps.length * (BOX + GAP);
+  const FILL = ['#CFE3EC', '#9CC6D8', '#5E9FBB', '#1F5F78'];
+  const shade = (i: number) => FILL[Math.min(FILL.length - 1, Math.round((i * (FILL.length - 1)) / Math.max(1, b.steps.length - 1)))];
+  const head = [{ text: '', fontSize: 7 }, { columns: b.steps.map(s => ({ text: s, width: BOX + GAP, fontSize: 6.5, color: MUTED, alignment: 'center' })), columnGap: 0 }, { text: '', fontSize: 7 }];
+  const row = (r: Extract<Block, { kind: 'steps' }>['rows'][number]) => [
+    { text: r.label, fontSize: 8 },
+    { canvas: b.steps.flatMap((_, i) => {
+      const x = i * (BOX + GAP), filled = r.value != null && i < r.value;
+      return [
+        { type: 'rect', x, y: 1, w: BOX, h: 10, color: filled ? shade(i) : '#EEF0F2' },
+        ...(r.marker != null && i === r.marker - 1 ? [{ type: 'rect', x: x - 1, y: 0, w: BOX + 2, h: 12, lineColor: '#D33826', lineWidth: 1.2 }] : [])
+      ];
+    }) },
+    { text: run(r.shown), fontSize: 8, bold: true }
+  ];
+  return {
+    stack: [
+      { table: { widths: [150, W + 4, '*'], body: [head, ...b.rows.map(row)], dontBreakRows: true }, layout: 'noBorders' },
+      ...(b.legend ? [{ text: b.legend, fontSize: 7, color: MUTED, margin: [0, 2, 0, 0] } as Content] : [])
+    ],
+    margin: [0, 2, 0, 10]
+  } as Content;
 }
 
 /** headlineLevel marks headings (1 section, 2 subheading); RUNNING marks the page header and footer text. */
