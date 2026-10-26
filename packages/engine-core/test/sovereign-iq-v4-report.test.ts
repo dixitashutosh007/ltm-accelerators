@@ -48,7 +48,7 @@ function resolve(r: SovereignIqV4Result, field: string): number | undefined {
 describe('Sovereign IQ report', () => {
   it.each(runs.map(x => [x.label, x]))('%s: the sections, in the FinOps IQ order and format', (_, x: any) => {
     const ids = x.doc.sections.map((s: any) => s.id);
-    expect(ids.slice(0, 7)).toEqual(['summary', 'requirement', 'maturity', 'exposure', 'findings', 'roadmap', 'methodology']);
+    expect(ids.slice(0, 8)).toEqual(['summary', 'requirement', 'maturity', 'exposure', 'findings', 'advisory', 'roadmap', 'methodology']);
     expect(ids.includes('sources')).toBe(true);
     expect(ids.includes('consultant')).toBe(x.view === 'consultant');
     expect(x.doc.meta.product).toBe('Sovereign IQ');
@@ -100,6 +100,25 @@ describe('Sovereign IQ report', () => {
       expect(b.rows.length, x.label).toBe(x.r.findings.filter(f => x.view === 'consultant' || !f.consultantOnly).length);
       const waves = b.rows.map(r => Number(r[1]));
       expect([...waves].sort((p, q) => p - q), x.label).toEqual(waves);
+      expect(b.header.slice(-4), x.label).toEqual(['Platforms', 'Placement rung', 'Service families', 'Verification']);
+      // A finding's placement rung is the one its placement rows need (PLAN S7).
+      for (const row of b.rows) {
+        const need = [...new Set(x.r.advisory.placement.filter(p => p.findingIds.includes(String(row[0]))).map(p => p.minimumRung))].sort().join('; ');
+        expect(row[12], `${x.label} ${row[0]}`).toBe(need);
+      }
+    }
+  });
+
+  it('the advisory section has a row for every placement and leaves catalogue gaps out of the client edition', () => {
+    for (const x of runs) {
+      const s: any = x.doc.sections.find((y: any) => y.id === 'advisory');
+      const heat = s.blocks.find((b: any) => b.kind === 'heatmap');
+      expect(heat ? heat.rows.length : 0, x.label).toBe(x.r.advisory.placement.length);
+      const shown: string[] = [];
+      walkSegments(x.doc, (seg: Seg, sec: any) => { if (sec.id === 'advisory') shown.push(typeof seg === 'string' ? seg : seg.text); });
+      const text = shown.join(' ');
+      if (x.view === 'client') expect(text, x.label).not.toContain('Playbook gaps');
+      expect(text, x.label).not.toMatch(/CLM-[A-Z]+-\d+/);
     }
   });
 

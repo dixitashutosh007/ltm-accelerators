@@ -12,10 +12,8 @@
  * and the version stamps stay.
  */
 import type { SovereignIqV4Result, State } from './evaluate';
-import register from '../../../claims/claims-register.json' with { type: 'json' };
+import { clientCleared as cleared } from './advisory';
 
-const HIDDEN_CLAIMS = new Set<string>(((register as any).claims as any[]).filter(c => c.clientVisible === false).map(c => c.id));
-const cleared = (x: { claimIds: string[] }) => !x.claimIds.some(id => HIDDEN_CLAIMS.has(id));
 const noClaims = <T extends { claimIds: string[] }>({ claimIds, ...x }: T) => x;
 const noEntry = <T extends { claimIds: string[]; entryId: string }>({ claimIds, entryId, ...x }: T) => x;
 

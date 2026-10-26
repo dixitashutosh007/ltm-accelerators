@@ -2,7 +2,8 @@
  * The Sovereign IQ executive report (PLAN S6), in the FinOps IQ report format (shared model and PDF renderer,
  * src/report): cover and contents, executive summary with the two headlines, required level by kind of data,
  * control maturity (bars by area, heatmap by level, the controls), compliance exposure (heatmap by market, the
- * regulations with their statutory maximums), findings, roadmap, methodology, sources, and the consultant appendix.
+ * regulations with their statutory maximums), findings, the sovereign cloud advisory (S7), roadmap, methodology, sources,
+ * and the consultant appendix.
  *
  * Built on the server from the stored result. The client edition leaves out what client mode leaves out (DESIGN 9):
  * rule IDs, regulations that do not apply (count only), consultant-only items, requirements pending a source and
@@ -12,7 +13,8 @@ import type { Backlog, Block, ReportDocument, ReportSection, Seg, Tone } from '.
 import { traced } from '../../../report/model';
 import registerData from '../../../claims/claims-register.json' with { type: 'json' };
 import { CONTROLS, type Finding, type SovereignIqV4Result, type State } from './evaluate';
-import { DATA_CLASS_LABELS, LEVEL_LABELS, ZONE_LABELS } from './public-schema';
+import { DATA_CLASS_LABELS, LEVEL_LABELS, PLATFORM_LABELS, ZONE_LABELS } from './public-schema';
+import { LADDER, clientCleared, type AdvisoryAction, type PlacementStatus } from './advisory';
 
 const PLATFORM = 'LTM Vantage · Responsible Advisory';
 const PRODUCT = 'Sovereign IQ';
@@ -172,6 +174,51 @@ function findingsSection(c: Ctx): ReportSection {
   return { id: 'findings', title: 'Findings', blocks };
 }
 
+const PLACEMENT: Record<PlacementStatus, [string, Tone]> = { meets: ['Meets the level', 'good'], gap: ['Gap to close', 'weak'], unconfirmed: ['To confirm', 'unknown'], move: ['Needs a sovereign offering', 'bad'] };
+const platformName = (p: string) => PLATFORM_LABELS[p] ?? p;
+const rungName = (id: string) => `${id} ${LADDER.rungs.find(x => x.id === id)?.label ?? ''}`.trim();
+const actionSegs = (a: AdvisoryAction): Seg[] => [strong(a.action), ' ', { text: a.approach, cite: a.claimIds },
+  ...(a.options.length ? ['\nOptions: ', { text: a.options.map(o => o.name).join('; '), cite: a.claimIds }, a.confirmRegionalAvailability ? ' (confirm availability in your regions)' : ''] : []),
+  '\nCheck: ', a.verification];
+
+/** PLAN S7: where each kind of data should sit on AWS, Azure or Google Cloud, then the actions by platform. */
+function advisorySection(c: Ctx): ReportSection {
+  const a = c.r.advisory;
+  const ids = new Set(c.findings.map(f => f.id));
+  const keep = <T extends { claimIds: string[] }>(xs: T[]) => (c.client ? xs.filter(clientCleared) : xs);
+  const actions = (xs: AdvisoryAction[]) => keep(xs).filter(x => ids.has(x.findingId));
+  const blocks: Block[] = [{ kind: 'paragraph', segs: ['For each kind of data held on AWS, Microsoft Azure or Google Cloud, the placement ladder gives the lowest rung its required level needs. Each rung adds controls to the one below; R3 and R4 need an offering run in the allowed region when the provider is based outside it. The ladder changes the advice, not the maturity score.'] }];
+  blocks.push({ kind: 'list', small: true, items: LADDER.rungs.map(r => [strong(`${r.id} ${r.label} (${r.level}): `), r.means]) });
+  if (!a.placement.length) blocks.push({ kind: 'paragraph', style: 'note', segs: ['No data at L1 or above is held on AWS, Azure or Google Cloud.'] });
+  else {
+    blocks.push({ kind: 'subheading', text: 'Placement matrix' });
+    blocks.push({ kind: 'heatmap', rows: a.placement.map(p => ({ label: `${className(p.dataClass)} · ${platformName(p.platform)}`, cells: [{ label: rungName(p.minimumRung), note: PLACEMENT[p.status][0].toLowerCase(), tone: PLACEMENT[p.status][1] }] })),
+      legend: (Object.keys(PLACEMENT) as PlacementStatus[]).map(k => ({ tone: PLACEMENT[k][1], label: PLACEMENT[k][0] })) });
+    const open = a.placement.filter(p => p.status !== 'meets');
+    if (open.length) {
+      blocks.push({ kind: 'subheading', text: 'What to do' });
+      blocks.push({ kind: 'table', small: true, head: ['Data and platform', 'Next move', 'Actions'], widths: [95, 150, '*'], rows: open.map(p => {
+        const options = keep(p.options), alts = keep(p.alternatives);
+        const move: Seg[] = [`Needs ${rungName(p.minimumRung)} for ${p.allowedZone.length ? p.allowedZone.map(zone).join(', ') : 'any region'}.`,
+          ...(p.confirmOperatingModel ? [' Confirm who operates and supports these services: standard regions of a provider based outside the region.'] : []),
+          ...(options.length ? ['\nOptions: ', { text: options.map(o => o.name + (o.availability !== 'ga' ? ` (${o.availability})` : '')).join('; '), cite: options.flatMap(o => o.claimIds) }] : []),
+          ...(p.noOfferingZones.length ? [`\nNo option at ${p.minimumRung} listed for ${p.noOfferingZones.map(zone).join(', ')}`, alts.length ? ': alternatives ' : '.', ...(alts.length ? [{ text: alts.map(x => ('provider' in x ? `${platformName(x.provider)}: ` : '') + x.name).join('; '), cite: alts.flatMap(x => x.claimIds) }] : [])] : [])];
+        const acts = actions(p.actions);
+        return [[strong(className(p.dataClass)), '\n', platformName(p.platform), '\n', PLACEMENT[p.status][0]], move, acts.length ? acts.flatMap((x, i) => [...(i ? ['\n\n'] : []), ...actionSegs(x)]) : ['See the findings.']];
+      }) });
+    }
+  }
+  const tech = actions(a.technical);
+  const platforms = [...new Set(tech.map(x => x.platform))];
+  if (platforms.length) {
+    blocks.push({ kind: 'subheading', text: 'Actions by platform' });
+    blocks.push({ kind: 'table', small: true, head: ['Platform', 'Action', 'Owner'], widths: [90, '*', 90], rows: platforms.flatMap(pl => tech.filter(x => x.platform === pl).map(x => [[platformName(pl)], actionSegs(x), [x.ownerRole]])) });
+  }
+  if (!c.client && a.gaps.length) blocks.push({ kind: 'paragraph', style: 'small', segs: ['Playbook gaps (consultant edition): ', a.gaps.map(g => `${CONTROL.get(g.control)?.name ?? g.control} on ${g.platforms.map(platformName).join(', ')}`).join('; '), '.'] });
+  blocks.push({ kind: 'callout', tone: 'info', segs: [a.statement] });
+  return { id: 'advisory', title: 'Sovereign cloud advisory', blocks };
+}
+
 function roadmap(c: Ctx): ReportSection {
   const ids = new Set(c.findings.map(f => f.id));
   const names: Record<number, string> = { 1: 'Wave 1: decide, confirm and close critical gaps', 2: 'Wave 2: high-severity gaps', 3: 'Wave 3: medium-severity gaps', 4: 'Wave 4: lower-severity gaps and upcoming obligations' };
@@ -242,7 +289,7 @@ export function sovereignIqReport(result: SovereignIqV4Result, opts: SovereignRe
       footer: `${PLATFORM} · ${PRODUCT} · Confidential`,
       status: 'Internal consultant use until the legal review. Not legal advice.'
     },
-    sections: [summary(c), requirement(c), maturity(c), exposure(c), findingsSection(c), roadmap(c), methodology(c)]
+    sections: [summary(c), requirement(c), maturity(c), exposure(c), findingsSection(c), advisorySection(c), roadmap(c), methodology(c)]
   };
   const claims = new Set<string>();
   for (const s of doc.sections) for (const b of s.blocks) {
@@ -254,15 +301,21 @@ export function sovereignIqReport(result: SovereignIqV4Result, opts: SovereignRe
   return doc;
 }
 
-/** The backlog CSV: one row per finding, in roadmap order. */
+/** The backlog CSV: one row per finding, in roadmap order, with its platforms, placement rung and checks (S7). */
 export function sovereignIqBacklog(result: SovereignIqV4Result, view: 'client' | 'consultant' = 'consultant'): Backlog {
   const fs = result.findings.filter(f => view === 'consultant' || !f.consultantOnly);
   const order = new Map(result.roadmap.flatMap(w => w.findings).map((id, i) => [id, i]));
+  const a = result.advisory;
+  const acts = (id: string) => a.technical.filter(x => x.findingId === id && (view === 'consultant' || clientCleared(x)));
+  const rungs = (id: string) => [...new Set(a.placement.filter(p => p.findingIds.includes(id)).map(p => p.minimumRung))].sort();
+  const join = (xs: string[]) => [...new Set(xs)].join('; ');
   return {
-    header: ['ID', 'Wave', 'Severity', 'Type', 'Action', 'Why', 'Control', 'Data', 'Regulations', 'Owner', 'Time frame'],
+    header: ['ID', 'Wave', 'Severity', 'Type', 'Action', 'Why', 'Control', 'Data', 'Regulations', 'Owner', 'Time frame', 'Platforms', 'Placement rung', 'Service families', 'Verification'],
     rows: [...fs].sort((a, b) => (order.get(a.id) ?? 999) - (order.get(b.id) ?? 999)).map(f => [
       f.id, f.wave, f.severity, f.type, strip(f.title), strip(f.businessConsequence), f.control ?? '', f.dataClasses.map(className).join('; '),
-      f.regimes.map(x => regimeName(result, x.regime)).join('; '), f.ownerRole, f.timeFrame
+      f.regimes.map(x => regimeName(result, x.regime)).join('; '), f.ownerRole, f.timeFrame,
+      join(acts(f.id).map(x => platformName(x.platform))), rungs(f.id).join('; '), join(acts(f.id).flatMap(x => x.serviceFamilies ?? []).map(s => s.replace(/_/g, ' '))),
+      join(acts(f.id).map(x => `${platformName(x.platform)}: ${x.verification}`))
     ])
   };
 }

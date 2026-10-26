@@ -9,6 +9,7 @@
  * maturity score (D3).
  */
 import ladderData from './placement-ladder.json' with { type: 'json' };
+import register from '../../../claims/claims-register.json' with { type: 'json' };
 import playbookData from '../../../playbook/sovereign-iq.json' with { type: 'json' };
 import { selectActions, type Platform, type PlaybookCatalogue, type PlaybookEntry } from '../../../playbook/catalogue';
 import type { DataClass, Facts, Level } from './facts';
@@ -37,6 +38,10 @@ export interface Ladder {
   options: LadderOption[]; alternatives: LadderAlternative[];
 }
 export const LADDER = ladderData as unknown as Ladder;
+
+const HIDDEN_CLAIMS = new Set<string>(((register as any).claims as any[]).filter(c => c.clientVisible === false).map(c => c.id));
+/** True when an option, alternative or action rests only on claims cleared for clients (client edition, PLAN S7). */
+export const clientCleared = (x: { claimIds: string[] }) => !x.claimIds.some(id => HIDDEN_CLAIMS.has(id));
 
 /** The part of the engine result the advisory reads (SovereignIqV4Result satisfies it). */
 export interface AdvisoryInput {
