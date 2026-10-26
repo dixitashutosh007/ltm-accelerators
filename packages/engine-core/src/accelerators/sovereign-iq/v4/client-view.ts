@@ -5,11 +5,19 @@
  *     unconfirmed, not answered), and the maturity formula is explained in the methodology, not shown;
  *   - no rule IDs, no list of regimes that do not apply (their count only), nothing consultant-only (rules and
  *     floors pending a source, and their findings), no requirements pending a source, no consultant notes;
- *   - no raw facts or question bookkeeping.
+ *   - no raw facts or question bookkeeping;
+ *   - in the cloud advisory, no claim IDs, no catalogue gaps, and no provider option or action resting on a claim
+ *     that is not cleared for clients (clientVisible false: anything not verified, PLAN S7).
  * Both headlines, every applicable regime with its reason, obligations' dates, findings, the roadmap, methodology
  * and the version stamps stay.
  */
 import type { SovereignIqV4Result, State } from './evaluate';
+import register from '../../../claims/claims-register.json' with { type: 'json' };
+
+const HIDDEN_CLAIMS = new Set<string>(((register as any).claims as any[]).filter(c => c.clientVisible === false).map(c => c.id));
+const cleared = (x: { claimIds: string[] }) => !x.claimIds.some(id => HIDDEN_CLAIMS.has(id));
+const noClaims = <T extends { claimIds: string[] }>({ claimIds, ...x }: T) => x;
+const noEntry = <T extends { claimIds: string[]; entryId: string }>({ claimIds, entryId, ...x }: T) => x;
 
 export const STATE_WORD: Record<string, string> = { 3: 'in place', 2: 'largely in place', 1: 'partly in place', 0: 'not in place', unknown: 'unconfirmed', not_answered: 'not answered' };
 const word = (s: State | undefined) => STATE_WORD[String(s)] ?? 'not answered';
@@ -48,7 +56,16 @@ export function clientView(result: SovereignIqV4Result) {
     findings: r.findings.filter(f => !f.consultantOnly).map(({ state, consultantOnly, ...f }) => ({ ...f, status: f.type === 'control_gap' ? word(state) : undefined, regimes: f.regimes.filter(x => shownIds.has(x.regime)) })),
     topGaps: r.topGaps.filter(f => !f.consultantOnly).map(f => f.id),
     roadmap: r.roadmap.map(w => ({ wave: w.wave, findings: w.findings.filter(id => r.findings.some(f => f.id === id && !f.consultantOnly)) })).filter(w => w.findings.length),
-    notes: r.notes.filter(n => !/\(Q11\)/.test(n))
+    notes: r.notes.filter(n => !/\(Q11\)/.test(n)),
+    advisory: {
+      ladderVersion: r.advisory.ladderVersion, catalogueVersion: r.advisory.catalogueVersion, statusAsOf: r.advisory.statusAsOf, statement: r.advisory.statement,
+      placement: r.advisory.placement.map(p => ({
+        ...p, rungControls: p.rungControls.map(x => ({ rung: x.rung, control: x.control, status: word(x.state) })),
+        options: p.options.filter(cleared).map(noClaims), alternatives: p.alternatives.filter(cleared).map(noClaims),
+        actions: p.actions.filter(cleared).map(noEntry)
+      })),
+      technical: r.advisory.technical.filter(cleared).map(noEntry)
+    }
   };
 }
 

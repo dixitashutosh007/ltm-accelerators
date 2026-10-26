@@ -33,8 +33,11 @@
   var CURRENCIES = ['EUR', 'USD', 'GBP', 'CHF', 'INR', 'SGD', 'AUD', 'NZD', 'JPY', 'HKD', 'CNY', 'KRW', 'CAD'];
   var TABS = [
     { id: 'overview', label: 'Overview' }, { id: 'regulations', label: 'Regulations' }, { id: 'controls', label: 'Controls' },
-    { id: 'findings', label: 'Findings' }, { id: 'roadmap', label: 'Roadmap' }, { id: 'method', label: 'Method' }
+    { id: 'findings', label: 'Findings' }, { id: 'advisory', label: 'Cloud advisory' }, { id: 'roadmap', label: 'Roadmap' }, { id: 'method', label: 'Method' }
   ];
+  /** Placement status (PLAN S7) in words, with the heatmap colour it shares with control states. */
+  var PLACEMENT = { meets: ['Meets the level', 'gap0'], gap: ['Gap to close', 'gap2'], unconfirmed: ['To confirm', 'unknown'], move: ['Needs a sovereign offering', 'gap3'] };
+  var HYPERSCALERS = ['aws', 'azure', 'gcp'];
 
   var schema = null;
   var Q = {};
@@ -535,6 +538,7 @@
     if (q.id === 'A2') return regionMatrix(q);
     if (q.id === 'D3') return locationMatrix(q);
     if (q.id === 'L2') return requirementMatrix(q);
+    if (q.id === 'C1') return serviceMatrix(q);
     return h('p', { class: 'muted' }, 'Unsupported question type.');
   }
 
@@ -613,6 +617,25 @@
     }));
   }
 
+  /** C1: for each kind of data, the kinds of service holding it on each hyperscaler chosen in P1 (or in L2 for that data). */
+  function serviceMatrix(q) {
+    var classes = chosenClasses();
+    if (!classes.length) return h('p', { class: 'muted' }, 'Choose the kinds of data you hold (D1) first.');
+    var p1 = [].concat(state.answers.P1 || []);
+    var l2 = state.answers.L2 || {};
+    var v = value(q) || {};
+    return h('div', { class: 'class-rows' }, classes.map(function (c) {
+      var held = [].concat((l2[c] || {}).platforms || []);
+      var clouds = HYPERSCALERS.filter(function (p) { return p1.indexOf(p) >= 0 && (!held.length || held.indexOf(p) >= 0); });
+      var row = v[c] || {};
+      var put = function (key, x) { var out = JSON.parse(JSON.stringify(value(q) || {})); out[c] = Object.assign({}, out[c] || {}); if (x && x.length) out[c][key] = x; else delete out[c][key]; if (!Object.keys(out[c]).length) delete out[c]; setAnswer(q, Object.keys(out).length ? out : undefined); };
+      return h('div', { class: 'class-row' }, h('h4', null, className(c)),
+        clouds.length ? clouds.map(function (p) {
+          return [h('p', { class: 'field-title' }, schema.platforms[p]), checks('a-C1-' + c + '-' + p, optionsOf(q), row[p], function (x) { put(p, x); }, true)];
+        }) : h('p', { class: 'small muted' }, 'Not held on AWS, Azure or Google Cloud.'));
+    }));
+  }
+
   /* --------------------------------- Results -------------------------------- */
 
   function renderResults(body) {
@@ -634,6 +657,7 @@
     else if (tab === 'regulations') regulationsPanel(panel, r);
     else if (tab === 'controls') controlsPanel(panel, r);
     else if (tab === 'findings') findingsPanel(panel, r);
+    else if (tab === 'advisory') advisoryPanel(panel, r);
     else if (tab === 'roadmap') roadmapPanel(panel, r);
     else methodPanel(panel, r);
     body.appendChild(panel);
@@ -850,6 +874,52 @@
         'Owner: ' + f.ownerRole, f.upcoming ? 'By ' + f.upcoming : 'Time frame: ' + f.timeFrame, f.dataClasses && f.dataClasses.length ? 'Data: ' + f.dataClasses.map(className).join(', ') : null,
         f.referral ? 'Verify in ' + f.referral : null].filter(Boolean).join(' · ')),
       f.remedy ? h('p', { class: 'small' }, h('strong', null, 'What good looks like: '), f.remedy) : null);
+  }
+
+  function rungName(id) { var x = (schema.rungs || []).find(function (g) { return g.id === id; }); return x ? id + ' ' + x.label : id; }
+
+  /** One playbook action: what to do, the approach, options and how to check it (PLAN S7). */
+  function actionItem(a) {
+    return h('li', { class: 'small' }, h('strong', null, a.action), ' ', a.approach,
+      a.options && a.options.length ? h('span', { class: 'block' }, 'Options: ' + a.options.map(function (o) { return o.name; }).join('; ') + (a.confirmRegionalAvailability ? ' (confirm availability in your regions)' : '')) : null,
+      h('span', { class: 'block muted' }, 'Check: ' + a.verification + ' · Owner: ' + a.ownerRole + (a.discoveryNeeded ? ' · Needs: ' + a.discoveryNeeded : '')));
+  }
+
+  /** Cloud advisory (PLAN S7): where each kind of data should sit on AWS, Azure or Google Cloud, then actions by platform. */
+  function advisoryPanel(p, r) {
+    var a = r.advisory || { placement: [], technical: [] };
+    var rows = a.placement;
+    p.appendChild(card('Placement matrix', 'For each kind of data on AWS, Azure or Google Cloud: the lowest rung of the placement ladder its level needs, and whether it is there today', rows.length ? h('div', { class: 'table-wrap' }, h('table', null,
+      h('thead', null, h('tr', null, ['Data', 'Platform', 'Required level', 'Needs', 'Today'].map(function (t) { return h('th', { scope: 'col' }, t); }))),
+      h('tbody', null, rows.map(function (x) {
+        var st = PLACEMENT[x.status];
+        return h('tr', null, h('th', { scope: 'row' }, className(x.dataClass)), h('td', null, schema.platforms[x.platform]), h('td', null, x.requiredLevel),
+          h('td', null, rungName(x.minimumRung)), h('td', null, h('span', { class: 'state-chip ' + st[1] }, st[0])));
+      })))) : h('p', { class: 'muted' }, 'No data at L1 or above is held on AWS, Azure or Google Cloud.'), 'wide'));
+
+    rows.filter(function (x) { return x.status !== 'meets'; }).forEach(function (x) {
+      var st = PLACEMENT[x.status];
+      var ctl = x.rungControls.filter(function (c) { return stateWord(c) !== 'in place'; });
+      p.appendChild(h('section', { class: 'card', 'aria-label': className(x.dataClass) + ' data on ' + schema.platforms[x.platform] },
+        h('div', { class: 'header-row', style: 'margin:0' }, h('h3', { style: 'margin:0' }, className(x.dataClass) + ' data on ' + schema.platforms[x.platform]), h('span', { class: 'state-chip ' + st[1] }, st[0])),
+        h('p', { class: 'small muted' }, 'Required ' + x.requiredLevel + ' in ' + (x.allowedZone.length ? x.allowedZone.map(zoneName).join(', ') : 'any region') + ': needs ' + rungName(x.minimumRung) + '.' + (x.services.length ? ' Services: ' + x.services.join(', ').replace(/_/g, ' ') + '.' : '')),
+        x.confirmOperatingModel ? h('p', { class: 'small' }, 'Your answer says these services are run only by staff in the region through a local entity, but the data sits in standard regions of a provider based outside it. Confirm who operates and supports them, including escalations.') : null,
+        ctl.length ? h('p', { class: 'small' }, h('strong', null, 'Not yet in place: '), ctl.map(function (c) { return controlInfo(c.control).name + ' (' + stateWord(c) + ')'; }).join('; ')) : null,
+        x.options.length ? h('div', null, h('p', { class: 'small' }, h('strong', null, 'Options on ' + schema.platforms[x.platform] + ' at ' + x.minimumRung + ':')),
+          h('ul', null, x.options.map(function (o) { return h('li', { class: 'small' }, o.name + (o.availability !== 'ga' ? ' (' + o.availability + ')' : '') + (o.detail ? ': ' + o.detail : '') + (o.confirmRegionalAvailability ? ' · confirm availability in your regions' : '')); }))) : null,
+        x.noOfferingZones.length ? h('p', { class: 'small' }, schema.platforms[x.platform] + ' has no option at ' + x.minimumRung + ' listed for ' + x.noOfferingZones.map(zoneName).join(', ') + (x.alternatives.length ? '. Alternatives:' : '. Ask your consultant for alternatives.')) : null,
+        x.alternatives.length ? h('ul', null, x.alternatives.map(function (o) { return h('li', { class: 'small' }, (o.provider ? schema.platforms[o.provider] + ': ' : '') + o.name + (o.detail ? ': ' + o.detail : '')); })) : null,
+        x.actions.length ? h('div', null, h('p', { class: 'small' }, h('strong', null, 'Actions')), h('ul', null, x.actions.map(actionItem))) : null));
+    });
+
+    var by = {};
+    (a.technical || []).forEach(function (x) { (by[x.platform] = by[x.platform] || []).push(x); });
+    var platforms = Object.keys(by);
+    p.appendChild(card('Actions by platform', 'Every gap with a technical remedy, on each platform that holds the affected data', platforms.length ? h('div', null, platforms.map(function (k) {
+      return h('details', { class: 'basis' }, h('summary', null, schema.platforms[k] + ' (' + by[k].length + ')'), h('ul', null, by[k].map(actionItem)));
+    })) : h('p', { class: 'muted' }, 'Platform actions are being sourced for this release.'), 'wide'));
+    if (state.view !== 'client' && a.gaps && a.gaps.length) p.appendChild(h('p', { class: 'small consultant-only' }, 'Playbook gaps (consultant only): ' + a.gaps.map(function (g) { return controlInfo(g.control).name + ' on ' + g.platforms.map(function (x) { return schema.platforms[x] || x; }).join(', '); }).join('; ')));
+    p.appendChild(h('p', { class: 'small muted' }, a.statement || ''));
   }
 
   function roadmapPanel(p, r) {

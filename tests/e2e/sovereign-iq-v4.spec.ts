@@ -15,7 +15,7 @@ import { memoryStore } from '../../amplify/functions/manage-sovereign-assessment
 import { createHandler as createReportHandler } from '../../amplify/functions/sovereign-iq-report/handler';
 import { readFileSync } from 'node:fs';
 import { setPermissionSource } from '../../amplify/functions/_shared/access';
-import { QUESTIONS } from '../../packages/engine-core/src/accelerators/sovereign-iq/v4';
+import { QUESTIONS, ENGINE_VERSION } from '../../packages/engine-core/src/accelerators/sovereign-iq/v4';
 
 const EMAIL = 'consultant@ltm.com';
 
@@ -141,7 +141,7 @@ test('executive: every question asked renders and can be answered; complete; bot
   const url = page.url();
   await page.goto(url);
   await expect(page.locator('#hero-h')).toHaveText('Example Bank');
-  expect(scored.every(s => s.data?.versions?.engine === '4.2.0')).toBe(true);
+  expect(scored.every(s => s.data?.versions?.engine === ENGINE_VERSION)).toBe(true);
 });
 
 test('workshop: the per-class requirement rows follow the data chosen, and the follow-ups appear', async ({ page }) => {
@@ -155,6 +155,9 @@ test('workshop: the per-class requirement rows follow the data chosen, and the f
   await complete(page);
   await page.getByRole('tab', { name: 'Controls' }).click();
   await expect(page.getByRole('heading', { name: /Required controls \(\d+\)/ })).toBeVisible();
+  await page.getByRole('tab', { name: 'Cloud advisory' }).click();
+  await expect(page.getByRole('heading', { name: 'Placement matrix' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Actions by platform' })).toBeVisible();
   await page.getByRole('tab', { name: 'Roadmap' }).click();
   await expect(page.getByRole('heading', { name: 'Roadmap' })).toBeVisible();
 });
@@ -198,7 +201,7 @@ test('accessibility: no WCAG 2.2 AA violations on the start screen, a question s
   await page.locator('nav.steps button', { hasText: 'Review & complete' }).click();
   await axe(page, 'review');
   await complete(page);
-  for (const t of ['Overview', 'Regulations', 'Controls', 'Findings', 'Roadmap', 'Method']) {
+  for (const t of ['Overview', 'Regulations', 'Controls', 'Findings', 'Cloud advisory', 'Roadmap', 'Method']) {
     await page.getByRole('tab', { name: t }).click();
     await axe(page, `results: ${t}`);
   }

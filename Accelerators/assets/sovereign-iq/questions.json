@@ -2897,6 +2897,54 @@
     "L3": "L3 Operational sovereignty",
     "L4": "L4 Jurisdictional immunity or disconnected"
   },
+  "platforms": {
+    "aws": "AWS",
+    "azure": "Microsoft Azure",
+    "gcp": "Google Cloud",
+    "oci": "Oracle Cloud",
+    "ibm": "IBM Cloud",
+    "alibaba": "Alibaba Cloud",
+    "other_public": "Other public cloud",
+    "sovereign_cloud": "Sovereign and partner-operated clouds",
+    "kubernetes": "Kubernetes",
+    "on_prem": "Data centres and colocation",
+    "saas": "SaaS",
+    "ai_api": "AI model APIs",
+    "data_platform": "Data platform",
+    "any": "Any platform"
+  },
+  "rungs": [
+    {
+      "id": "R0",
+      "level": "L0",
+      "label": "Standard region",
+      "means": "Any standard region; no sovereignty controls required"
+    },
+    {
+      "id": "R1",
+      "level": "L1",
+      "label": "In-zone region with guardrails",
+      "means": "A standard region inside the allowed zone, with policies that block deployments elsewhere; backups and replicas in the zone too"
+    },
+    {
+      "id": "R2",
+      "level": "L2",
+      "label": "Customer-held keys and approved access",
+      "means": "R1, plus keys held outside the provider, provider access only with your approval, and the provider's data boundary where one exists"
+    },
+    {
+      "id": "R3",
+      "level": "L3",
+      "label": "Sovereign offering run in the zone",
+      "means": "R2, plus a service operated and supported only by staff in the zone, employed by a local entity under local law"
+    },
+    {
+      "id": "R4",
+      "level": "L4",
+      "label": "Out of foreign-law reach, or disconnected",
+      "means": "R3, plus no provider in the chain can be compelled by a law from outside the zone, or the system is disconnected"
+    }
+  ],
   "notices": {
     "disclaimer": "Indicative assessment from self-reported answers. Not legal advice: confirm applicability and obligations with counsel before acting.",
     "caps": "Statutory maximums are caps, not expected fines, and are never added together.",

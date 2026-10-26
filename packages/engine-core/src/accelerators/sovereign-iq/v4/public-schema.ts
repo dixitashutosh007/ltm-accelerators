@@ -6,6 +6,7 @@
  */
 import { CONTROLS, QUESTIONS, REGIMES, ENGINE_VERSION, MIN_SCORED_CONTROLS } from './evaluate';
 import { DATA_CLASSES } from './facts';
+import { LADDER } from './advisory';
 
 /** The page's steps, in order, and the question themes each holds. */
 export const STEPS = [
@@ -25,6 +26,12 @@ export const DATA_CLASS_LABELS: Record<string, string> = {
   proprietary: 'Proprietary', government: 'Government', ot_ci: 'OT and critical infrastructure'
 };
 for (const c of DATA_CLASSES) if (!DATA_CLASS_LABELS[c]) throw new Error(`public-schema: no short name for data class ${c}`);
+/** Names for the platforms of the playbook and the placement matrix (page and report share them). */
+export const PLATFORM_LABELS: Record<string, string> = {
+  aws: 'AWS', azure: 'Microsoft Azure', gcp: 'Google Cloud', oci: 'Oracle Cloud', ibm: 'IBM Cloud', alibaba: 'Alibaba Cloud', other_public: 'Other public cloud',
+  sovereign_cloud: 'Sovereign and partner-operated clouds', kubernetes: 'Kubernetes', on_prem: 'Data centres and colocation', saas: 'SaaS', ai_api: 'AI model APIs',
+  data_platform: 'Data platform', any: 'Any platform'
+};
 export const LEVEL_LABELS: Record<string, string> = { L0: 'L0 No location requirement', L1: 'L1 Residency', L2: 'L2 Residency with access control and key custody', L3: 'L3 Operational sovereignty', L4: 'L4 Jurisdictional immunity or disconnected' };
 
 const stripOption = ({ state, ...o }: any) => o;
@@ -45,7 +52,8 @@ export function publicQuestionSchema() {
     })),
     controls: CONTROLS.map(c => ({ id: c.id, name: c.name, means: c.means, ownerRole: c.ownerRole, remedy: c.remedy, level: c.level, scored: c.scored !== false })),
     regimes: REGIMES.map(r => ({ id: r.id, name: r.name, kind: r.kind, market: r.market, citation: String(r.citation?.text ?? '').replace(/\s*\[CLM-[^\]]+\]/g, ''), url: r.citation?.url })),
-    zones: ZONE_LABELS, dataClasses: DATA_CLASS_LABELS, levels: LEVEL_LABELS,
+    zones: ZONE_LABELS, dataClasses: DATA_CLASS_LABELS, levels: LEVEL_LABELS, platforms: PLATFORM_LABELS,
+    rungs: LADDER.rungs.map(r => ({ id: r.id, level: r.level, label: r.label, means: r.means })),
     notices: {
       disclaimer: 'Indicative assessment from self-reported answers. Not legal advice: confirm applicability and obligations with counsel before acting.',
       caps: 'Statutory maximums are caps, not expected fines, and are never added together.',
