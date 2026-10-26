@@ -18,9 +18,10 @@ import claimsRegister from '../../../claims/claims-register.json' with { type: '
 import { evaluate as holds, isUnknown, type Condition, type ConditionContext } from './conditions';
 import { advisory as cloudAdvisory, type Advisory } from './advisory';
 import { sealView, tenderLevel, type SealView } from './seal';
+import { howLtmCanHelp, type HelpItem } from './help';
 import { DATA_CLASSES, LEVELS, PEOPLE_CLASSES, personalOutsideSubjects, personalTransfer, platformParents, scopeFacts, type Answers, type DataClass, type Facts, type Level } from './facts';
 
-export const ENGINE_VERSION = '4.4.0';
+export const ENGINE_VERSION = '4.5.0';
 /**
  * S4 calibration: the smallest required set over which one answer moves maturity by at most 20 points (T2 aside).
  * Below it no maturity number is shown, in either mode (owner decisions, 25 and 26 Oct 2026).
@@ -147,6 +148,8 @@ export interface SovereignIqV4Result {
   advisory: Advisory;
   /** The SEAL view: minimum provider SEAL per objective for each kind of data, and tender minimums (PLAN S7b). */
   seal: SealView;
+  /** How LTM can help: the offerings the findings and the placement matrix call for, client-visible part only (PLAN S8). */
+  help: HelpItem[];
 }
 
 /* ---------------------------------- Engine --------------------------------- */
@@ -673,6 +676,7 @@ export function evaluateSovereignIqV4(input: SovereignIqV4Input): SovereignIqV4R
   const cautious = list(facts['data.subject_regions']).filter(z => z === 'jp' || z === 'au');
   if (cautious.length && facts['derived.personal_transfer']) notes.push(`Storing data of people in ${cautious.map(z => (z === 'jp' ? 'Japan' : 'Australia')).join(' and ')} outside that country is treated as a transfer. Where the cloud provider only stores the data and does not handle it, ${cautious.length > 1 ? 'these laws' : 'the law'} may treat it as use rather than a transfer (APPI Art. 28; OAIC APP guidelines 8.14). Confirm with counsel.`);
 
+  const advisory = cloudAdvisory({ facts, requirements: reqs, controls: results, findings });
   return {
     mode, assessmentDate,
     versions: {
@@ -694,8 +698,8 @@ export function evaluateSovereignIqV4(input: SovereignIqV4Input): SovereignIqV4R
       capNote: largestCap ? 'Largest single statutory maximum among regimes that apply or likely apply: a cap, not an expected fine, and never summed across regimes.' : turnoverGiven ? 'No regime in scope has a computable statutory maximum.' : 'Not quantified – turnover not given.'
     },
     foreignAccess, findings, topGaps, roadmap, pendingSource, notes,
-    advisory: cloudAdvisory({ facts, requirements: reqs, controls: results, findings }),
-    seal: sealView({ facts, requirements: reqs, controls: results })
+    advisory, seal: sealView({ facts, requirements: reqs, controls: results }),
+    help: howLtmCanHelp(findings, advisory.placement)
   };
 }
 

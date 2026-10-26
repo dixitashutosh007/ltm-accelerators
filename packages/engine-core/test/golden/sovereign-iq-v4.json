@@ -1,7 +1,7 @@
 {
   "ARC1_EU_BANK_DORA executive": {
     "versions": {
-      "engine": "4.4.0",
+      "engine": "4.5.0",
       "questionSet": "4.2.0",
       "controls": "4.0.0",
       "registry": "1.1.0",
@@ -431,11 +431,48 @@
           "F-SOV.OPS.ADMIN_ACCESS"
         ]
       }
+    ],
+    "help": [
+      {
+        "offering": "OFF.SOV.ASSESS",
+        "findingIds": [
+          "F-SOV.XFER.TIA"
+        ]
+      },
+      {
+        "offering": "OFF.REG.PROGRAMME",
+        "findingIds": [
+          "F-SOV.EXIT.PLAN"
+        ]
+      },
+      {
+        "offering": "OFF.SOV.LZ",
+        "findingIds": [
+          "F-SOV.RES.LOCATION",
+          "F-SOV.KEY.CUSTODY",
+          "F-SOV.OPS.ADMIN_ACCESS",
+          "F-SOV.BACKUP.LOCATION",
+          "F-SOV.RES.REGION_LOCK"
+        ]
+      },
+      {
+        "offering": "OFF.DATA.RESIDENCY",
+        "findingIds": [
+          "F-SOV.RES.LOCATION",
+          "F-SOV.BACKUP.LOCATION"
+        ]
+      },
+      {
+        "offering": "OFF.SOV.AI",
+        "findingIds": [
+          "F-SOV.AI.DATA_LOCATION"
+        ]
+      }
     ]
   },
   "ARC1_EU_BANK_DORA workshop": {
     "versions": {
-      "engine": "4.4.0",
+      "engine": "4.5.0",
       "questionSet": "4.2.0",
       "controls": "4.0.0",
       "registry": "1.1.0",
@@ -1061,11 +1098,58 @@
           "F-SOV.OPS.PERSONNEL_ZONE"
         ]
       }
+    ],
+    "help": [
+      {
+        "offering": "OFF.SOV.ASSESS",
+        "findingIds": [
+          "F-SOV.SAAS.SUBPROCESSOR",
+          "F-SOV.DATA.MAP",
+          "F-SOV.TP.VISIBILITY",
+          "F-SOV.XFER.TIA"
+        ]
+      },
+      {
+        "offering": "OFF.REG.PROGRAMME",
+        "findingIds": [
+          "F-SOV.EXIT.PLAN",
+          "F-SOV.TP.REGISTER",
+          "F-SOV.CONC.PROVIDER"
+        ]
+      },
+      {
+        "offering": "OFF.SOV.LZ",
+        "findingIds": [
+          "F-SOV.KEY.CUSTODY",
+          "F-SOV.OPS.ADMIN_ACCESS",
+          "F-SOV.KEY.REVOCATION",
+          "F-SOV.RES.REGION_LOCK",
+          "F-SOV.ENC.BASELINE",
+          "F-SOV.OPS.OOB_MGMT"
+        ]
+      },
+      {
+        "offering": "OFF.SOV.MIGRATION",
+        "findingIds": [
+          "F-SOV.KEY.CUSTODY",
+          "F-SOV.OPS.ADMIN_ACCESS",
+          "F-SOV.OPS.PERSONNEL_ZONE",
+          "F-SOV.RES.REGION_LOCK",
+          "F-SOV.CERT.ASSURANCE"
+        ]
+      },
+      {
+        "offering": "OFF.SOV.AI",
+        "findingIds": [
+          "F-SOV.AI.DATA_LOCATION",
+          "F-SOV.AI.GOVERNANCE"
+        ]
+      }
     ]
   },
   "ARC2_UK_INSURER_OPRES_CTP executive": {
     "versions": {
-      "engine": "4.4.0",
+      "engine": "4.5.0",
       "questionSet": "4.2.0",
       "controls": "4.0.0",
       "registry": "1.1.0",
@@ -1487,11 +1571,46 @@
           "F-SOV.KEY.CUSTODY"
         ]
       }
+    ],
+    "help": [
+      {
+        "offering": "OFF.SOV.ASSESS",
+        "findingIds": [
+          "F-SOV.XFER.TIA"
+        ]
+      },
+      {
+        "offering": "OFF.REG.PROGRAMME",
+        "findingIds": [
+          "F-SOV.EXIT.PLAN"
+        ]
+      },
+      {
+        "offering": "OFF.SOV.LZ",
+        "findingIds": [
+          "F-SOV.RES.LOCATION",
+          "F-SOV.BACKUP.LOCATION",
+          "F-SOV.KEY.CUSTODY"
+        ]
+      },
+      {
+        "offering": "OFF.DATA.RESIDENCY",
+        "findingIds": [
+          "F-SOV.RES.LOCATION",
+          "F-SOV.BACKUP.LOCATION"
+        ]
+      },
+      {
+        "offering": "OFF.SOV.AI",
+        "findingIds": [
+          "F-SOV.AI.DATA_LOCATION"
+        ]
+      }
     ]
   },
   "ARC2_UK_INSURER_OPRES_CTP workshop": {
     "versions": {
-      "engine": "4.4.0",
+      "engine": "4.5.0",
       "questionSet": "4.2.0",
       "controls": "4.0.0",
       "registry": "1.1.0",
@@ -1960,11 +2079,45 @@
           "F-SOV.KEY.CUSTODY"
         ]
       }
+    ],
+    "help": [
+      {
+        "offering": "OFF.SOV.ASSESS",
+        "findingIds": [
+          "F-SOV.XFER.TIA"
+        ]
+      },
+      {
+        "offering": "OFF.REG.PROGRAMME",
+        "findingIds": [
+          "F-SOV.EXIT.PLAN",
+          "F-SOV.CONC.PROVIDER"
+        ]
+      },
+      {
+        "offering": "OFF.SOV.LZ",
+        "findingIds": [
+          "F-SOV.BACKUP.LOCATION",
+          "F-SOV.KEY.CUSTODY"
+        ]
+      },
+      {
+        "offering": "OFF.DATA.RESIDENCY",
+        "findingIds": [
+          "F-SOV.BACKUP.LOCATION"
+        ]
+      },
+      {
+        "offering": "OFF.SOV.AI",
+        "findingIds": [
+          "F-SOV.AI.DATA_LOCATION"
+        ]
+      }
     ]
   },
   "ARC3_US_HEALTHTECH_EU_CUSTOMERS executive": {
     "versions": {
-      "engine": "4.4.0",
+      "engine": "4.5.0",
       "questionSet": "4.2.0",
       "controls": "4.0.0",
       "registry": "1.1.0",
@@ -2413,11 +2566,34 @@
           "F-SOV.RES.REGION_LOCK"
         ]
       }
+    ],
+    "help": [
+      {
+        "offering": "OFF.SOV.ASSESS",
+        "findingIds": [
+          "F-SOV.XFER.BASIS",
+          "F-SOV.XFER.TIA",
+          "F-SCOPE-UK_GDPR",
+          "F-SCOPE-US_CCPA"
+        ]
+      },
+      {
+        "offering": "OFF.SOV.LZ",
+        "findingIds": [
+          "F-SOV.RES.REGION_LOCK"
+        ]
+      },
+      {
+        "offering": "OFF.SOV.AI",
+        "findingIds": [
+          "F-SOV.AI.DATA_LOCATION"
+        ]
+      }
     ]
   },
   "ARC3_US_HEALTHTECH_EU_CUSTOMERS workshop": {
     "versions": {
-      "engine": "4.4.0",
+      "engine": "4.5.0",
       "questionSet": "4.2.0",
       "controls": "4.0.0",
       "registry": "1.1.0",
@@ -3063,11 +3239,49 @@
           "F-SOV.RES.REGION_LOCK"
         ]
       }
+    ],
+    "help": [
+      {
+        "offering": "OFF.SOV.ASSESS",
+        "findingIds": [
+          "F-SOV.XFER.BASIS",
+          "F-SOV.XFER.TIA",
+          "F-SCOPE-UK_GDPR",
+          "F-SOV.DATA.MAP",
+          "F-SOV.SAAS.SUBPROCESSOR",
+          "F-SOV.TP.VISIBILITY",
+          "F-SOV.TP.DPA",
+          "F-SOV.GOV.OWNER"
+        ]
+      },
+      {
+        "offering": "OFF.REG.PROGRAMME",
+        "findingIds": [
+          "F-SOV.IR.REPORTING",
+          "F-SOV.TP.AUDIT"
+        ]
+      },
+      {
+        "offering": "OFF.SOV.LZ",
+        "findingIds": [
+          "F-SOV.KEY.CUSTODY",
+          "F-SOV.OPS.ADMIN_ACCESS",
+          "F-SOV.RES.REGION_LOCK",
+          "F-SOV.ENC.BASELINE"
+        ]
+      },
+      {
+        "offering": "OFF.SOV.AI",
+        "findingIds": [
+          "F-SOV.AI.GOVERNANCE",
+          "F-SOV.AI.DATA_LOCATION"
+        ]
+      }
     ]
   },
   "ARC4_SG_AU_FINANCIAL_GROUP executive": {
     "versions": {
-      "engine": "4.4.0",
+      "engine": "4.5.0",
       "questionSet": "4.2.0",
       "controls": "4.0.0",
       "registry": "1.1.0",
@@ -3529,11 +3743,43 @@
           "F-SOV.RES.LOCATION"
         ]
       }
+    ],
+    "help": [
+      {
+        "offering": "OFF.SOV.ASSESS",
+        "findingIds": [
+          "F-SCOPE-AU_SOCI"
+        ]
+      },
+      {
+        "offering": "OFF.REG.PROGRAMME",
+        "findingIds": [
+          "F-SOV.EXIT.PLAN"
+        ]
+      },
+      {
+        "offering": "OFF.SOV.LZ",
+        "findingIds": [
+          "F-SOV.RES.LOCATION"
+        ]
+      },
+      {
+        "offering": "OFF.DATA.RESIDENCY",
+        "findingIds": [
+          "F-SOV.RES.LOCATION"
+        ]
+      },
+      {
+        "offering": "OFF.SOV.AI",
+        "findingIds": [
+          "F-SOV.AI.DATA_LOCATION"
+        ]
+      }
     ]
   },
   "ARC4_SG_AU_FINANCIAL_GROUP workshop": {
     "versions": {
-      "engine": "4.4.0",
+      "engine": "4.5.0",
       "questionSet": "4.2.0",
       "controls": "4.0.0",
       "registry": "1.1.0",
@@ -4104,11 +4350,40 @@
         "noOfferingZones": [],
         "findingIds": []
       }
+    ],
+    "help": [
+      {
+        "offering": "OFF.REG.PROGRAMME",
+        "findingIds": [
+          "F-SOV.IR.REPORTING",
+          "F-SOV.EXIT.PLAN",
+          "F-SOV.CONC.PROVIDER"
+        ]
+      },
+      {
+        "offering": "OFF.DATA.RESIDENCY",
+        "findingIds": [
+          "F-SOV.RES.LOCATION"
+        ]
+      },
+      {
+        "offering": "OFF.SOV.MIGRATION",
+        "findingIds": [
+          "F-SOV.RES.LOCATION",
+          "F-SOV.OPS.PERSONNEL_ZONE"
+        ]
+      },
+      {
+        "offering": "OFF.SOV.AI",
+        "findingIds": [
+          "F-SOV.AI.DATA_LOCATION"
+        ]
+      }
     ]
   },
   "ARC5_IN_SERVICES_EU_CLIENTS executive": {
     "versions": {
-      "engine": "4.4.0",
+      "engine": "4.5.0",
       "questionSet": "4.2.0",
       "controls": "4.0.0",
       "registry": "1.1.0",
@@ -4654,11 +4929,33 @@
           "F-SOV.RES.REGION_LOCK"
         ]
       }
+    ],
+    "help": [
+      {
+        "offering": "OFF.SOV.ASSESS",
+        "findingIds": [
+          "F-SOV.XFER.BASIS",
+          "F-SOV.XFER.TIA",
+          "F-SCOPE-US_CCPA"
+        ]
+      },
+      {
+        "offering": "OFF.SOV.LZ",
+        "findingIds": [
+          "F-SOV.RES.REGION_LOCK"
+        ]
+      },
+      {
+        "offering": "OFF.SOV.AI",
+        "findingIds": [
+          "F-SOV.AI.DATA_LOCATION"
+        ]
+      }
     ]
   },
   "ARC5_IN_SERVICES_EU_CLIENTS workshop": {
     "versions": {
-      "engine": "4.4.0",
+      "engine": "4.5.0",
       "questionSet": "4.2.0",
       "controls": "4.0.0",
       "registry": "1.1.0",
@@ -5356,6 +5653,52 @@
           "F-SOV.RES.REGION_LOCK",
           "F-SOV.KEY.CUSTODY",
           "F-SOV.OPS.ADMIN_ACCESS"
+        ]
+      }
+    ],
+    "help": [
+      {
+        "offering": "OFF.SOV.ASSESS",
+        "findingIds": [
+          "F-SOV.XFER.BASIS",
+          "F-SOV.DATA.MAP",
+          "F-SOV.SAAS.SUBPROCESSOR",
+          "F-SOV.TP.VISIBILITY",
+          "F-SOV.XFER.TIA",
+          "F-SOV.TP.DPA",
+          "F-SOV.GOV.OWNER"
+        ]
+      },
+      {
+        "offering": "OFF.REG.PROGRAMME",
+        "findingIds": [
+          "F-SOV.IR.REPORTING",
+          "F-SOV.TP.AUDIT"
+        ]
+      },
+      {
+        "offering": "OFF.SOV.LZ",
+        "findingIds": [
+          "F-SOV.RES.LOCATION",
+          "F-SOV.KEY.CUSTODY",
+          "F-SOV.OPS.ADMIN_ACCESS",
+          "F-SOV.BACKUP.LOCATION",
+          "F-SOV.RES.REGION_LOCK",
+          "F-SOV.ENC.BASELINE"
+        ]
+      },
+      {
+        "offering": "OFF.DATA.RESIDENCY",
+        "findingIds": [
+          "F-SOV.RES.LOCATION",
+          "F-SOV.BACKUP.LOCATION"
+        ]
+      },
+      {
+        "offering": "OFF.SOV.AI",
+        "findingIds": [
+          "F-SOV.AI.DATA_LOCATION",
+          "F-SOV.AI.GOVERNANCE"
         ]
       }
     ]

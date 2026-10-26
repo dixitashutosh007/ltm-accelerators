@@ -15,6 +15,7 @@ import registerData from '../../../claims/claims-register.json' with { type: 'js
 import { CONTROLS, type Finding, type SovereignIqV4Result, type State } from './evaluate';
 import { DATA_CLASS_LABELS, LEVEL_LABELS, PLATFORM_LABELS, ZONE_LABELS } from './public-schema';
 import { SEAL } from './seal';
+import { OFFERINGS, sovereignSow } from './help';
 import { LADDER, COUNSEL_NOTE, clientCleared, type AdvisoryAction, type LadderOption, type PlacementStatus } from './advisory';
 
 const PLATFORM = 'LTM Vantage · Responsible Advisory';
@@ -274,6 +275,31 @@ function roadmap(c: Ctx): ReportSection {
   return { id: 'roadmap', title: 'Roadmap', blocks };
 }
 
+/** PLAN S8: advice on what to do next and who could do it; type, purpose and outline only (no scope, no price). */
+function helpSection(c: Ctx): ReportSection {
+  const ids = new Set(c.findings.map(f => f.id));
+  const help = c.r.help.map(h => ({ ...h, findingIds: h.findingIds.filter(id => ids.has(id)) })).filter(h => h.findingIds.length);
+  const blocks: Block[] = [{ kind: 'paragraph', segs: ['What could help with the findings, and the kind of work each is. Providers are chosen from your requirements, with alternatives (see the sovereign cloud advisory).'] }];
+  if (!help.length) blocks.push({ kind: 'paragraph', segs: ['No finding calls for further work.'] });
+  for (const h of help) {
+    blocks.push({ kind: 'subheading', text: `${h.offering.name} (${h.offering.typeLabel})` });
+    blocks.push({ kind: 'paragraph', segs: [{ text: h.offering.purpose, cite: h.claimIds }, ' ', { text: `Delivered by: ${h.offering.practice}.`, cite: h.claimIds, italic: true }] });
+    if (h.offering.outline.length) blocks.push({ kind: 'list', small: true, items: h.offering.outline.map(o => [{ text: o, cite: h.claimIds }]) });
+    blocks.push({ kind: 'paragraph', style: 'small', segs: [strong('For: '), h.findingIds.map(id => strip(c.findings.find(f => f.id === id)!.title)).join('; '), '.'] });
+  }
+  return { id: 'help', title: 'How LTM can help', blocks };
+}
+
+/** Consultant-only SOW draft (S8): offerings with indicative scope and the findings behind each. Never in the client edition. */
+function sowAppendix(c: Ctx): ReportSection {
+  const { lines, routes } = sovereignSow(c.findings, c.r.advisory.placement);
+  const blocks: Block[] = [{ kind: 'callout', tone: 'warn', segs: ['Consultant edition only. Draft for discussion, subject to contract: not an offer or a quotation. Indicative scope is an LTM heuristic to be agreed per engagement.'] }];
+  blocks.push({ kind: 'table', small: true, head: ['Offering', 'Type', 'Indicative scope', 'Findings'], widths: ['*', 90, 70, 150],
+    rows: lines.map(l => [[l.offering.name], [l.offering.type], [{ text: l.offering.indicativeScope ?? '—', cite: OFFERINGS.claimIds }], [ref(l.findingIds.join(', '))]]) });
+  if (routes.length) blocks.push({ kind: 'paragraph', style: 'small', segs: ['Routed to other accelerators: ', routes.map(r => `${r.offering.name} (${r.findingIds.join(', ')})`).join('; '), '.'] });
+  return { id: 'sow', title: 'Statement of work draft', appendix: true, blocks };
+}
+
 function methodology(c: Ctx): ReportSection {
   const v = c.r.versions;
   return { id: 'methodology', title: 'Methodology', blocks: [
@@ -331,7 +357,7 @@ export function sovereignIqReport(result: SovereignIqV4Result, opts: SovereignRe
       footer: `${PLATFORM} · ${PRODUCT} · Confidential`,
       status: 'Internal consultant use until the legal review. Not legal advice.'
     },
-    sections: [summary(c), requirement(c), sealSection(c), maturity(c), exposure(c), findingsSection(c), advisorySection(c), roadmap(c), methodology(c)]
+    sections: [summary(c), requirement(c), sealSection(c), maturity(c), exposure(c), findingsSection(c), advisorySection(c), roadmap(c), helpSection(c), methodology(c)]
   };
   const claims = new Set<string>();
   for (const s of doc.sections) for (const b of s.blocks) {
@@ -339,7 +365,7 @@ export function sovereignIqReport(result: SovereignIqV4Result, opts: SovereignRe
     for (const run of runs) for (const seg of run) if (typeof seg !== 'string') { seg.cite?.forEach(id => claims.add(id)); seg.trace?.claimIds.forEach(id => claims.add(id)); }
   }
   doc.sections.push({ id: 'sources', title: 'Sources', appendix: true, blocks: sourcesAppendix([...claims].sort(), c) });
-  if (!client) doc.sections.push(consultantAppendix(c));
+  if (!client) doc.sections.push(sowAppendix(c), consultantAppendix(c));
   return doc;
 }
 

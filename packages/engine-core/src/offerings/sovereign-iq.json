@@ -1,0 +1,175 @@
+{
+  "catalogueVersion": "1.0.0",
+  "statusAsOf": "2026-10-26",
+  "rule": "How LTM can help for Sovereign IQ (WS-S5; PLAN S8). Generic practice names only; providers appear only as options in the Cloud advisory, chosen from the client's requirement, with alternatives. No partner claims. The client sees type, purpose and execution outline; indicative scope appears only in the consultant's SOW draft (D7). Outline items with scopes show only when a finding the offering serves names one: a regulation ID, a control ID, a placement rung (R1-R4) or a platform. The text reads as advice, never as a sales pitch.",
+  "claimIds": [
+    "CLM-SOV-271"
+  ],
+  "offerings": [
+    {
+      "id": "OFF.SOV.ASSESS",
+      "name": "Sovereignty and transfer assessment",
+      "practice": "Sovereign Cloud",
+      "type": "Advisory",
+      "purpose": "Settle what is still unknown or unconfirmed: where data goes, which regulations apply, and the level each kind of data needs.",
+      "outline": [
+        "Map data flows and records of processing for each kind of data",
+        {
+          "text": "Build the transfer register, with transfer impact or risk assessments prepared with your counsel",
+          "scopes": [
+            "SOV.XFER.BASIS",
+            "SOV.XFER.TIA",
+            "EU_GDPR",
+            "UK_GDPR"
+          ]
+        },
+        {
+          "text": "Screen agreements for access to bulk US sensitive data by countries of concern",
+          "scopes": [
+            "SOV.XFER.US_BULK"
+          ]
+        },
+        "Confirm with your counsel the regulations marked \"likely – confirm\"",
+        "Agree the board's sovereignty level for each kind of data"
+      ],
+      "indicativeScope": "4–6 weeks"
+    },
+    {
+      "id": "OFF.REG.PROGRAMME",
+      "name": "Regulatory programme support for third-party and resilience rules",
+      "practice": "Resilience Engineering",
+      "type": "Advisory",
+      "purpose": "Close the gaps a regulation in scope requires, starting with third-party registers, audit rights and exit plans.",
+      "outline": [
+        "Gap assessment against the requirements of each regulation in scope",
+        {
+          "text": "DORA register of information and ICT third-party policy",
+          "scopes": [
+            "EU_DORA"
+          ]
+        },
+        {
+          "text": "NIS2 risk-management measures and incident reporting",
+          "scopes": [
+            "EU_NIS2"
+          ]
+        },
+        {
+          "text": "PRA outsourcing and UK critical third-party dependencies",
+          "scopes": [
+            "UK_PRA_SS2_21",
+            "UK_CTP"
+          ]
+        },
+        {
+          "text": "CPS 230 material service providers, and MAS outsourcing requirements",
+          "scopes": [
+            "AU_APRA_CPS230",
+            "SG_MAS_TRM"
+          ]
+        },
+        "Audit and access rights, and exit plans for critical providers"
+      ],
+      "indicativeScope": "6–12 weeks"
+    },
+    {
+      "id": "OFF.SOV.LZ",
+      "name": "Sovereign landing zone",
+      "practice": "Cloud Transformation",
+      "type": "Implementation",
+      "purpose": "Put the controls of the required rung in place on the platforms you already use.",
+      "outline": [
+        "Region guardrails on every account, subscription and project",
+        {
+          "text": "Customer-held keys and your approval of provider access (rung R2)",
+          "scopes": [
+            "R2",
+            "SOV.KEY.CUSTODY",
+            "SOV.OPS.ADMIN_ACCESS"
+          ]
+        },
+        {
+          "text": "Tested key revocation that makes provider-held copies unreadable",
+          "scopes": [
+            "SOV.KEY.REVOCATION"
+          ]
+        },
+        "Logging and policy as code, so the controls stay in place",
+        "Built with the options shown in the Cloud advisory for each platform, confirmed for your regions"
+      ],
+      "indicativeScope": "8–12 weeks"
+    },
+    {
+      "id": "OFF.DATA.RESIDENCY",
+      "name": "Data residency remediation",
+      "practice": "Data and AI",
+      "type": "Implementation",
+      "purpose": "Move data, backups and replicas that sit outside the allowed region back inside it.",
+      "outline": [
+        "Re-platform storage, databases and replicas into the allowed region",
+        {
+          "text": "Move backups and disaster-recovery copies into the region, with separate keys",
+          "scopes": [
+            "SOV.BACKUP.LOCATION"
+          ]
+        },
+        "Verify with a location report and a restore test"
+      ],
+      "indicativeScope": "6–16 weeks"
+    },
+    {
+      "id": "OFF.SOV.MIGRATION",
+      "name": "Migration to a sovereign platform",
+      "practice": "Cloud Transformation",
+      "type": "Advisory, then transformation",
+      "purpose": "Where the required level cannot be met on the current platform, choose a target from your requirements and move to it.",
+      "outline": [
+        "Select the target from your requirements, comparing the options and alternatives in the Cloud advisory",
+        {
+          "text": "Collect the ownership, operator and governing-law facts for your counsel before choosing an R4 target",
+          "scopes": [
+            "R4",
+            "SOV.JUR.IMMUNITY"
+          ]
+        },
+        {
+          "text": "Confirm assurance qualifications the target needs, such as SecNumCloud or C5",
+          "scopes": [
+            "SOV.CERT.ASSURANCE"
+          ]
+        },
+        "Plan migration waves by kind of data and dependency",
+        "Migrate, verify and decommission the old placement"
+      ],
+      "indicativeScope": "6–18 months"
+    },
+    {
+      "id": "OFF.SOV.AI",
+      "name": "Sovereign AI enablement",
+      "practice": "Data and AI",
+      "type": "Implementation",
+      "purpose": "Keep AI training, fine-tuning and inference in the allowed region, on terms that protect your data.",
+      "outline": [
+        "Move model hosting and inference into the allowed region",
+        "Contract terms that bar providers from training on your data",
+        {
+          "text": "EU AI Act role and risk classification for each AI system, with your counsel",
+          "scopes": [
+            "EU_AI_ACT",
+            "SOV.AI.GOVERNANCE"
+          ]
+        }
+      ],
+      "indicativeScope": "6–10 weeks"
+    },
+    {
+      "id": "REF.RESILIENCE_IQ",
+      "name": "Resilience IQ",
+      "practice": "Resilience Engineering",
+      "type": "Route",
+      "purpose": "Exit capability and provider concentration are tested in Resilience IQ (D13).",
+      "outline": [],
+      "indicativeScope": null
+    }
+  ]
+}

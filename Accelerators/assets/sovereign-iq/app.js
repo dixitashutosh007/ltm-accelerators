@@ -984,6 +984,17 @@
         h('ol', null, w.findings.map(function (id) { var f = byId[id]; return f ? h('li', null, h('strong', null, f.title), h('span', { class: 'small muted' }, ' · ' + f.severity + ' · ' + f.ownerRole + ' · ' + (f.upcoming ? 'by ' + f.upcoming : f.timeFrame))) : null; }))));
     });
     p.appendChild(sec);
+    var help = r.help || [];
+    var hs = h('section', { class: 'card', 'aria-labelledby': 'help-h' }, h('h2', { id: 'help-h' }, 'How LTM can help'),
+      h('p', { class: 'small muted' }, 'What could help with the findings, and the kind of work each is. Providers are chosen from your requirements, with alternatives (Cloud advisory).'));
+    if (!help.length) hs.appendChild(h('p', { class: 'muted' }, 'No finding calls for further work.'));
+    help.forEach(function (x) {
+      hs.appendChild(h('article', { class: 'finding' }, h('h3', { style: 'margin:0' }, x.offering.name, ' ', h('span', { class: 'chip' }, x.offering.typeLabel)),
+        h('p', { class: 'small' }, x.offering.purpose + ' ', h('em', null, 'Delivered by: ' + x.offering.practice + '.')),
+        x.offering.outline.length ? h('ul', { class: 'small' }, x.offering.outline.map(function (o) { return h('li', null, o); })) : null,
+        h('p', { class: 'small muted' }, 'For: ' + x.findingIds.map(function (id) { return byId[id] ? byId[id].title : id; }).join('; '))));
+    });
+    p.appendChild(hs);
   }
 
   function methodPanel(p, r) {

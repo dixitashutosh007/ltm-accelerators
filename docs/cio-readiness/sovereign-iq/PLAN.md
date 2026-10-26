@@ -496,6 +496,8 @@ Scope ranges appear only in the consultant SOW draft (D7). The client sees type,
 
 **Dependencies:** S7 (offerings map to placement rungs: R1–R2 to the sovereign landing zone, R3–R4 to migration to a sovereign platform), S7b; WS-S5 catalogue.
 
+**Status (26 Oct 2026): built, for the owner's review.** Engine 4.5.0. `offerings/sovereign-iq.json` (six offerings from the table above, typed; migration is "advisory, then transformation"; route to Resilience IQ for exit and concentration, consultant SOW only) with CLM-SOV-271; `help.ts` selects offerings from each finding's offering and from the placement matrix (R1–R2 gaps to the sovereign landing zone, rows needing a sovereign offering to migration); outline items keyed to the finding's regulations, controls, rungs and platforms. Page: "How LTM can help" under the roadmap. Report: section after the roadmap; "Statement of work draft" appendix in the consultant edition only. The claims checker now scans the Sovereign IQ catalogues. Tests: `sovereign-iq-v4-help.test.ts`.
+
 **Gate S8:** test: every finding maps to at least one offering; SOW export is consultant-only; language lint passes.
 
 ---

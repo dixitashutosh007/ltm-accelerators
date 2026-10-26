@@ -234,7 +234,8 @@ function approved(r: SovereignIqV4Result) {
     exposure: { summary: r.exposure.summary, largestCap: r.exposure.largestCap, regimes: r.exposure.regimes.map(x => ({ regime: x.regime, rag: x.rag, assessed: x.assessed, required: x.required, cap: x.cap && { amount: x.cap.amount, range: x.cap.range, currency: x.cap.currency } })) },
     findings: r.findings.map(f => ({ id: f.id, severity: f.severity, wave: f.wave, timeFrame: f.timeFrame, dataClasses: f.dataClasses })),
     roadmap: r.roadmap, pendingSource: r.pendingSource, notes: r.notes,
-    placement: r.advisory.placement.map(p => ({ dataClass: p.dataClass, platform: p.platform, minimumRung: p.minimumRung, status: p.status, noOfferingZones: p.noOfferingZones, findingIds: p.findingIds }))
+    placement: r.advisory.placement.map(p => ({ dataClass: p.dataClass, platform: p.platform, minimumRung: p.minimumRung, status: p.status, noOfferingZones: p.noOfferingZones, findingIds: p.findingIds })),
+    help: r.help.map(h => ({ offering: h.offering.id, findingIds: h.findingIds }))
   };
 }
 

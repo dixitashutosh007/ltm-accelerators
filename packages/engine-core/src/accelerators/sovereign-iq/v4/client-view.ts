@@ -57,6 +57,8 @@ export function clientView(result: SovereignIqV4Result) {
     notes: r.notes.filter(n => !/\(Q11\)/.test(n)),
     // SEAL view: control states as words; the Commission's tender results stay in the consultant view (D20).
     seal: (({ commissionTenderResults, objectives, ...s }) => ({ ...s, objectives: objectives.map(o => ({ ...o, controls: o.controls.map(c => ({ control: c.control, status: word(c.state) })) })) }))(r.seal),
+    // How LTM can help: only the findings the client edition shows (no consultant-only finding names an offering here).
+    help: r.help.map(x => ({ ...x, findingIds: x.findingIds.filter(id => r.findings.some(f => f.id === id && !f.consultantOnly)) })).filter(x => x.findingIds.length),
     advisory: {
       ladderVersion: r.advisory.ladderVersion, catalogueVersion: r.advisory.catalogueVersion, statusAsOf: r.advisory.statusAsOf, statement: r.advisory.statement,
       placement: r.advisory.placement.map(p => ({

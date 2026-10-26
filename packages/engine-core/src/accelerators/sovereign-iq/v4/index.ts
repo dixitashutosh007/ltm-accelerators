@@ -7,3 +7,4 @@ export { publicQuestionSchema, STEPS } from './public-schema';
 export { sovereignIqReport, sovereignIqBacklog, type SovereignReportOptions } from './report';
 export { advisory, LADDER, PLAYBOOK as SOVEREIGN_PLAYBOOK, HYPERSCALERS, playbookPlatforms, type Advisory, type PlacementRow, type Ladder } from './advisory';
 export { sealView, tenderLevel, SEAL, type SealView } from './seal';
+export { howLtmCanHelp, sovereignSow, offeringIdsOf, OFFERINGS as SOVEREIGN_OFFERINGS, type HelpItem } from './help';

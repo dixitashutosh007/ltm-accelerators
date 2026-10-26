@@ -48,7 +48,8 @@ function resolve(r: SovereignIqV4Result, field: string): number | undefined {
 describe('Sovereign IQ report', () => {
   it.each(runs.map(x => [x.label, x]))('%s: the sections, in the FinOps IQ order and format', (_, x: any) => {
     const ids = x.doc.sections.map((s: any) => s.id);
-    expect(ids.slice(0, 9)).toEqual(['summary', 'requirement', 'seal', 'maturity', 'exposure', 'findings', 'advisory', 'roadmap', 'methodology']);
+    expect(ids.slice(0, 10)).toEqual(['summary', 'requirement', 'seal', 'maturity', 'exposure', 'findings', 'advisory', 'roadmap', 'help', 'methodology']);
+    expect(ids.includes('sow')).toBe(x.view === 'consultant');
     expect(ids.includes('sources')).toBe(true);
     expect(ids.includes('consultant')).toBe(x.view === 'consultant');
     expect(x.doc.meta.product).toBe('Sovereign IQ');

@@ -24,7 +24,12 @@ const FINOPS_REGISTRY = [
 // FinOps IQ v3 engine content (plans F3 and F4): the merged question bank, the engine's and the value model's wording and rules.
 const FINOPS_V3 = ['question-bank.json', 'engine-rules.json', 'value-rules.json'].map(f => `packages/engine-core/src/accelerators/finops-iq/v3/${f}`);
 // Shared catalogues (WS-S3 platform playbook, WS-S5 offerings), FinOps IQ the first consumer (execution phase M5).
-const SHARED_CATALOGUES = ['packages/engine-core/src/playbook/finops-iq.json', 'packages/engine-core/src/offerings/finops-iq.json'];
+const SHARED_CATALOGUES = [
+  'packages/engine-core/src/playbook/finops-iq.json', 'packages/engine-core/src/offerings/finops-iq.json',
+  // Sovereign IQ S7 and S8 (placement ladder, SEAL view, platform playbook, offerings).
+  'packages/engine-core/src/playbook/sovereign-iq.json', 'packages/engine-core/src/offerings/sovereign-iq.json',
+  'packages/engine-core/src/accelerators/sovereign-iq/v4/placement-ladder.json', 'packages/engine-core/src/accelerators/sovereign-iq/v4/seal.json'
+];
 const REFERENCING_FILES = [
   'packages/engine-core/src/accelerators/sovereign-iq/registry/regimes.json',
   ...FINOPS_REGISTRY,
