@@ -63,6 +63,11 @@ describe('accelerator access on the server', () => {
     expect(grants({ take: ['finops-value-case'] }, 'cloud-iq')).toBe(false);
   });
 
+  it('a Posture IQ permission opens the merged Sovereign IQ', async () => {
+    expect(grants({ take: ['posture-iq'] }, 'sovereign-iq')).toBe(true);
+    expect(grants({ take: ['sovereign-iq'] }, 'posture-iq')).toBe(false);
+  });
+
   it('fails closed when the permissions cannot be read', async () => {
     setPermissionSource(async () => { throw new Error('S3 unavailable'); });
     const res = await call(handler, { email: 'taker@ltm.com' });

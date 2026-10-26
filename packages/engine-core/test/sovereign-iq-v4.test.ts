@@ -503,3 +503,19 @@ describe('Sovereign IQ v4 S4 decisions (25 Oct 2026)', () => {
     if (r.regimes.find(x => x.regime === 'AU_SOCI')!.rule === 'AU_SOCI.2') expect(r.asked).toContain('B3');
   });
 });
+
+/* ------------------------------ Page data (S5) ------------------------------ */
+
+describe('Sovereign IQ v4 page data', () => {
+  it('the page\'s question file is up to date (npm run build:sovereign-iq-questions) and carries no scoring data', async () => {
+    const { publicQuestionSchema } = await import('../src/accelerators/sovereign-iq/v4');
+    const file = readFileSync(join(__dirname, '../../../Accelerators/assets/sovereign-iq/questions.json'), 'utf8');
+    expect(JSON.parse(file)).toEqual(publicQuestionSchema());
+    expect(file).not.toMatch(/"state"|"weight"|"applicability"|"when"/);
+  });
+  it('every question sits in exactly one step', async () => {
+    const { STEPS } = await import('../src/accelerators/sovereign-iq/v4');
+    const themes = STEPS.flatMap(s => s.themes as readonly string[]);
+    for (const q of QUESTIONS) expect(themes.filter(t => t === q.theme), q.id).toHaveLength(1);
+  });
+});

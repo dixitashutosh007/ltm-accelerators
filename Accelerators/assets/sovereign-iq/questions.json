@@ -1,0 +1,2779 @@
+{
+  "engineVersion": "4.1.0",
+  "minScoredControls": 5,
+  "steps": [
+    {
+      "id": "footprint",
+      "label": "Footprint and entities",
+      "themes": [
+        "footprint",
+        "entity"
+      ],
+      "intro": "Where the group operates, whose personal data it holds, and the regulated roles that decide which laws apply. These answers set scope; they are never scored.",
+      "questions": [
+        "A1",
+        "A2",
+        "A3",
+        "A4",
+        "A5",
+        "A6",
+        "A7",
+        "B1",
+        "B2",
+        "B3",
+        "B4"
+      ]
+    },
+    {
+      "id": "data",
+      "label": "Data and platforms",
+      "themes": [
+        "data",
+        "platform"
+      ],
+      "intro": "The kinds of data you hold, where each sits today, and the platforms that hold it.",
+      "questions": [
+        "D1",
+        "D2",
+        "D3",
+        "D4",
+        "P1",
+        "P2"
+      ]
+    },
+    {
+      "id": "requirement",
+      "label": "Sovereignty requirement",
+      "themes": [
+        "requirement"
+      ],
+      "intro": "How much control the board wants over its data, on top of what the law requires. The required level of each kind of data is the higher of the two.",
+      "questions": [
+        "L1",
+        "L2"
+      ]
+    },
+    {
+      "id": "controls",
+      "label": "Location, transfers and keys",
+      "themes": [
+        "residency",
+        "transfer",
+        "keys"
+      ],
+      "intro": "How data location is enforced, what covers transfers, and who holds the keys.",
+      "questions": [
+        "R1",
+        "T1",
+        "T2",
+        "T3",
+        "K1",
+        "K2",
+        "K3",
+        "K4"
+      ]
+    },
+    {
+      "id": "operations",
+      "label": "Operations and third parties",
+      "themes": [
+        "operations",
+        "third_party",
+        "exit"
+      ],
+      "intro": "Who can reach your data, what your contracts give you, and how ready you are to leave a provider.",
+      "questions": [
+        "O1",
+        "O2",
+        "O3",
+        "V1",
+        "V2",
+        "V3",
+        "V4",
+        "B5",
+        "B6",
+        "X1",
+        "X2"
+      ]
+    },
+    {
+      "id": "governance",
+      "label": "AI and governance",
+      "themes": [
+        "ai",
+        "governance"
+      ],
+      "intro": "AI data location and governance, ownership, incident reporting and assurance.",
+      "questions": [
+        "I1",
+        "I2",
+        "G1",
+        "G2",
+        "G3",
+        "H1"
+      ]
+    },
+    {
+      "id": "preferences",
+      "label": "Outcome preferences",
+      "themes": [
+        "preference"
+      ],
+      "intro": "How the board wants remediation sequenced. Not scored.",
+      "questions": [
+        "W1",
+        "W2",
+        "W3"
+      ]
+    }
+  ],
+  "questions": [
+    {
+      "id": "A1",
+      "theme": "footprint",
+      "kind": "scope",
+      "mode": "executive",
+      "type": "single",
+      "text": "Where is your group headquartered?",
+      "options": [
+        {
+          "value": "eea",
+          "label": "EU or EEA"
+        },
+        {
+          "value": "uk",
+          "label": "United Kingdom"
+        },
+        {
+          "value": "ch",
+          "label": "Switzerland"
+        },
+        {
+          "value": "us",
+          "label": "United States"
+        },
+        {
+          "value": "ca",
+          "label": "Canada"
+        },
+        {
+          "value": "in",
+          "label": "India"
+        },
+        {
+          "value": "sg",
+          "label": "Singapore"
+        },
+        {
+          "value": "au",
+          "label": "Australia"
+        },
+        {
+          "value": "nz",
+          "label": "New Zealand"
+        },
+        {
+          "value": "jp",
+          "label": "Japan"
+        },
+        {
+          "value": "hk",
+          "label": "Hong Kong"
+        },
+        {
+          "value": "kr",
+          "label": "South Korea"
+        },
+        {
+          "value": "cn",
+          "label": "Mainland China"
+        },
+        {
+          "value": "other",
+          "label": "Other"
+        }
+      ],
+      "basis": [
+        "Default allowed zone (DESIGN 2.6); US person test, 28 CFR Part 202"
+      ]
+    },
+    {
+      "id": "A2",
+      "theme": "footprint",
+      "kind": "scope",
+      "mode": "executive",
+      "type": "matrix",
+      "text": "For each region: do you have a legal entity, branch or office there, and do you hold personal data about people located there (customers, employees, users)?",
+      "help": "The EU and EEA count as one region. Japan, Hong Kong, Australia and New Zealand are separate rows.",
+      "matrix": {
+        "rowsFrom": "A1",
+        "columns": [
+          {
+            "key": "entity",
+            "label": "We have an entity or office here",
+            "type": "multi",
+            "optionsFrom": "A1"
+          },
+          {
+            "key": "people",
+            "label": "We hold personal data of people here",
+            "type": "multi",
+            "optionsFrom": "A1"
+          }
+        ]
+      },
+      "basis": [
+        "GDPR Art. 3(1)-(2); UK GDPR Art. 3; AI Act Art. 2(1); PDPA; DPDP s.3; PIPL Art. 3"
+      ]
+    },
+    {
+      "id": "A3",
+      "theme": "footprint",
+      "kind": "scope",
+      "mode": "executive",
+      "type": "single",
+      "text": "Which sector best describes your main business?",
+      "help": "A SaaS or cloud provider choosing digital infrastructure is treated as a cloud computing service provider under NIS2.",
+      "options": [
+        {
+          "value": "banking",
+          "label": "Banking (credit institutions)"
+        },
+        {
+          "value": "financial_market_infra",
+          "label": "Financial market infrastructure (trading venues, central counterparties)"
+        },
+        {
+          "value": "insurance",
+          "label": "Insurance and pensions"
+        },
+        {
+          "value": "other_financial",
+          "label": "Payments, e-money, investment, crypto-assets and other financial services"
+        },
+        {
+          "value": "energy",
+          "label": "Energy"
+        },
+        {
+          "value": "transport",
+          "label": "Transport"
+        },
+        {
+          "value": "health",
+          "label": "Healthcare providers, pharmaceutical and medical-device manufacturing"
+        },
+        {
+          "value": "water",
+          "label": "Drinking water and waste water"
+        },
+        {
+          "value": "digital_infrastructure",
+          "label": "Digital infrastructure (cloud, data centres, CDN, DNS, trust services, telecoms)"
+        },
+        {
+          "value": "ict_service_management_b2b",
+          "label": "Managed IT or managed security services for other businesses"
+        },
+        {
+          "value": "public_administration",
+          "label": "Public administration"
+        },
+        {
+          "value": "space",
+          "label": "Space"
+        },
+        {
+          "value": "postal",
+          "label": "Postal and courier"
+        },
+        {
+          "value": "waste_management",
+          "label": "Waste management"
+        },
+        {
+          "value": "chemicals",
+          "label": "Chemicals"
+        },
+        {
+          "value": "food",
+          "label": "Food production and distribution"
+        },
+        {
+          "value": "manufacturing_critical",
+          "label": "Manufacturing of medical devices, electronics, electrical equipment, machinery or vehicles"
+        },
+        {
+          "value": "digital_providers",
+          "label": "Online marketplaces, search engines or social networks"
+        },
+        {
+          "value": "research",
+          "label": "Research organisations"
+        },
+        {
+          "value": "professional_services",
+          "label": "Professional, consulting or IT services that are not managed IT services"
+        },
+        {
+          "value": "retail_consumer",
+          "label": "Retail and consumer"
+        },
+        {
+          "value": "other",
+          "label": "Other"
+        },
+        {
+          "value": "unknown",
+          "label": "Not sure"
+        }
+      ],
+      "basis": [
+        "NIS2 Annexes I and II; NIS2 Art. 6(30) and recital 33 (SaaS as a cloud computing service)"
+      ]
+    },
+    {
+      "id": "A4",
+      "theme": "footprint",
+      "kind": "scope",
+      "mode": "executive",
+      "type": "compound",
+      "text": "Roughly how large is the group? (headcount and annual turnover, euro equivalent, including companies you control)",
+      "fields": [
+        {
+          "key": "staff_band",
+          "label": "Headcount",
+          "type": "single",
+          "options": [
+            {
+              "value": "lt50",
+              "label": "Under 50"
+            },
+            {
+              "value": "50_249",
+              "label": "50 to 249"
+            },
+            {
+              "value": "250plus",
+              "label": "250 or more"
+            },
+            {
+              "value": "unknown",
+              "label": "Not sure"
+            }
+          ]
+        },
+        {
+          "key": "turnover_band_eur",
+          "label": "Annual turnover",
+          "type": "single",
+          "options": [
+            {
+              "value": "lt10m",
+              "label": "Under €10M"
+            },
+            {
+              "value": "10m_50m",
+              "label": "€10M–50M"
+            },
+            {
+              "value": "50m_250m",
+              "label": "€50M–250M"
+            },
+            {
+              "value": "250m_1bn",
+              "label": "€250M–1bn"
+            },
+            {
+              "value": "1bn_10bn",
+              "label": "€1bn–10bn"
+            },
+            {
+              "value": "gt10bn",
+              "label": "Over €10bn"
+            },
+            {
+              "value": "not_given",
+              "label": "Prefer not to say"
+            }
+          ]
+        }
+      ],
+      "basis": [
+        "NIS2 Art. 2(1) and Recommendation 2003/361/EC; CCPA revenue test; Privacy Act small-business threshold"
+      ]
+    },
+    {
+      "id": "A5",
+      "theme": "footprint",
+      "kind": "scope",
+      "mode": "workshop",
+      "type": "compound",
+      "text": "For the exposure view: what was last year's worldwide turnover, and the balance-sheet total?",
+      "fields": [
+        {
+          "key": "turnover_amount",
+          "label": "Worldwide turnover",
+          "type": "number_with_currency",
+          "optional": true
+        },
+        {
+          "key": "balance_sheet_band_eur",
+          "label": "Balance-sheet total",
+          "type": "single",
+          "options": [
+            {
+              "value": "le10m",
+              "label": "Up to €10M"
+            },
+            {
+              "value": "10m_43m",
+              "label": "€10M–43M"
+            },
+            {
+              "value": "gt43m",
+              "label": "Over €43M"
+            },
+            {
+              "value": "unknown",
+              "label": "Not sure"
+            }
+          ]
+        }
+      ],
+      "basis": [
+        "GDPR Art. 83(4)-(5); NIS2 Art. 34; AI Act Art. 99; Recommendation 2003/361/EC Art. 2"
+      ]
+    },
+    {
+      "id": "A6",
+      "theme": "footprint",
+      "kind": "scope",
+      "mode": "follow_up",
+      "type": "multi",
+      "text": "In which EU and EEA countries do you have entities or offices?",
+      "options": [
+        {
+          "value": "AT",
+          "label": "Austria"
+        },
+        {
+          "value": "BE",
+          "label": "Belgium"
+        },
+        {
+          "value": "BG",
+          "label": "Bulgaria"
+        },
+        {
+          "value": "HR",
+          "label": "Croatia"
+        },
+        {
+          "value": "CY",
+          "label": "Cyprus"
+        },
+        {
+          "value": "CZ",
+          "label": "Czechia"
+        },
+        {
+          "value": "DK",
+          "label": "Denmark"
+        },
+        {
+          "value": "EE",
+          "label": "Estonia"
+        },
+        {
+          "value": "FI",
+          "label": "Finland"
+        },
+        {
+          "value": "FR",
+          "label": "France"
+        },
+        {
+          "value": "DE",
+          "label": "Germany"
+        },
+        {
+          "value": "GR",
+          "label": "Greece"
+        },
+        {
+          "value": "HU",
+          "label": "Hungary"
+        },
+        {
+          "value": "IE",
+          "label": "Ireland"
+        },
+        {
+          "value": "IT",
+          "label": "Italy"
+        },
+        {
+          "value": "LV",
+          "label": "Latvia"
+        },
+        {
+          "value": "LT",
+          "label": "Lithuania"
+        },
+        {
+          "value": "LU",
+          "label": "Luxembourg"
+        },
+        {
+          "value": "MT",
+          "label": "Malta"
+        },
+        {
+          "value": "NL",
+          "label": "Netherlands"
+        },
+        {
+          "value": "PL",
+          "label": "Poland"
+        },
+        {
+          "value": "PT",
+          "label": "Portugal"
+        },
+        {
+          "value": "RO",
+          "label": "Romania"
+        },
+        {
+          "value": "SK",
+          "label": "Slovakia"
+        },
+        {
+          "value": "SI",
+          "label": "Slovenia"
+        },
+        {
+          "value": "ES",
+          "label": "Spain"
+        },
+        {
+          "value": "SE",
+          "label": "Sweden"
+        },
+        {
+          "value": "IS",
+          "label": "Iceland"
+        },
+        {
+          "value": "LI",
+          "label": "Liechtenstein"
+        },
+        {
+          "value": "NO",
+          "label": "Norway"
+        },
+        {
+          "value": "unknown",
+          "label": "Not sure"
+        }
+      ],
+      "basis": [
+        "NIS2 national transposition; national schemes (SecNumCloud, C5)"
+      ]
+    },
+    {
+      "id": "A7",
+      "theme": "footprint",
+      "kind": "scope",
+      "mode": "follow_up",
+      "type": "multi",
+      "text": "In which US states do you have customers or employees whose personal data you hold?",
+      "options": [
+        {
+          "value": "CA",
+          "label": "California"
+        },
+        {
+          "value": "NY",
+          "label": "New York"
+        },
+        {
+          "value": "other_comprehensive",
+          "label": "Other states with comprehensive privacy laws"
+        },
+        {
+          "value": "none",
+          "label": "None of these"
+        },
+        {
+          "value": "unknown",
+          "label": "Not sure"
+        }
+      ],
+      "basis": [
+        "CCPA (Cal. Civ. Code § 1798.140); other state comprehensive privacy laws"
+      ]
+    },
+    {
+      "id": "B1",
+      "theme": "entity",
+      "kind": "scope",
+      "mode": "executive",
+      "type": "multi",
+      "text": "Which of these describe your organisation or a group company? Select all that apply.",
+      "options": [
+        {
+          "value": "eu_credit_institution",
+          "label": "EU bank or credit institution",
+          "group": "EU financial (DORA)"
+        },
+        {
+          "value": "eu_investment_firm",
+          "label": "EU investment firm, asset manager or trading venue",
+          "group": "EU financial (DORA)"
+        },
+        {
+          "value": "eu_insurer",
+          "label": "EU insurer, reinsurer or occupational pension fund",
+          "group": "EU financial (DORA)"
+        },
+        {
+          "value": "eu_payment_emi",
+          "label": "EU payment or e-money institution",
+          "group": "EU financial (DORA)"
+        },
+        {
+          "value": "eu_casp",
+          "label": "EU crypto-asset service provider",
+          "group": "EU financial (DORA)"
+        },
+        {
+          "value": "eu_other_financial",
+          "label": "Other EU financial entity under DORA",
+          "group": "EU financial (DORA)"
+        },
+        {
+          "value": "ict_provider_to_eu_fs",
+          "label": "We provide ICT services to EU financial entities",
+          "group": "EU financial (DORA)"
+        },
+        {
+          "value": "dora_ctpp_designated",
+          "label": "We are designated a critical ICT third-party provider under DORA",
+          "group": "EU financial (DORA)"
+        },
+        {
+          "value": "uk_pra_regulated",
+          "label": "PRA-regulated (bank, building society, PRA-designated investment firm, insurer)",
+          "group": "UK"
+        },
+        {
+          "value": "uk_fca_solo_regulated",
+          "label": "FCA solo-regulated financial firm",
+          "group": "UK"
+        },
+        {
+          "value": "uk_ctp_designated",
+          "label": "Designated as a UK critical third party",
+          "group": "UK"
+        },
+        {
+          "value": "sg_mas_licensed",
+          "label": "Licensed or regulated by MAS",
+          "group": "APAC"
+        },
+        {
+          "value": "au_apra_regulated",
+          "label": "APRA-regulated",
+          "group": "APAC"
+        },
+        {
+          "value": "hk_hkma_authorised",
+          "label": "HKMA-authorised institution",
+          "group": "APAC"
+        },
+        {
+          "value": "in_rbi_payment_operator",
+          "label": "RBI-authorised payment system operator, or part of its payment ecosystem",
+          "group": "APAC"
+        },
+        {
+          "value": "in_sebi_irdai_regulated",
+          "label": "SEBI- or IRDAI-regulated",
+          "group": "APAC"
+        },
+        {
+          "value": "us_nydfs_licensed",
+          "label": "Licensed by NYDFS",
+          "group": "US"
+        },
+        {
+          "value": "us_sec_registrant",
+          "label": "SEC registrant (listed in the US)",
+          "group": "US"
+        },
+        {
+          "value": "us_hipaa_covered_or_ba",
+          "label": "HIPAA covered entity or business associate",
+          "group": "US"
+        },
+        {
+          "value": "us_glba_fi",
+          "label": "Financial institution under GLBA",
+          "group": "US"
+        },
+        {
+          "value": "us_federal_cloud_supplier",
+          "label": "Cloud supplier to US federal agencies",
+          "group": "US"
+        },
+        {
+          "value": "critical_infrastructure_operator",
+          "label": "Operator of critical infrastructure in any country",
+          "group": "Other"
+        },
+        {
+          "value": "cloud_or_data_processing_provider",
+          "label": "We provide cloud or data-processing services to customers",
+          "group": "Other"
+        },
+        {
+          "value": "digital_product_vendor_eu",
+          "label": "We sell software or connected products in the EU",
+          "group": "Other"
+        },
+        {
+          "value": "public_sector_body",
+          "label": "We are a public-sector body",
+          "group": "Other"
+        },
+        {
+          "value": "none",
+          "label": "None of these"
+        },
+        {
+          "value": "unknown",
+          "label": "Not sure"
+        }
+      ],
+      "basis": [
+        "DORA Art. 2; PRA SS1/21 and FCA PS21/3; FSMA 2000 ss.312L-312Z (critical third parties); MAS, APRA, HKMA, RBI; 23 NYCRR 500; SEC Form 8-K; 45 CFR 160.103; Data Act Ch. VI; CRA"
+      ]
+    },
+    {
+      "id": "B2",
+      "theme": "entity",
+      "kind": "scope",
+      "mode": "follow_up",
+      "type": "compound",
+      "text": "Under NIS2: how have you classified yourselves, and are you one of the special entity types?",
+      "fields": [
+        {
+          "key": "self_class",
+          "label": "Your NIS2 classification",
+          "type": "single",
+          "options": [
+            {
+              "value": "essential",
+              "label": "Essential"
+            },
+            {
+              "value": "important",
+              "label": "Important"
+            },
+            {
+              "value": "not_in_scope",
+              "label": "Assessed as not in scope"
+            },
+            {
+              "value": "not_assessed",
+              "label": "Not assessed"
+            }
+          ]
+        },
+        {
+          "key": "special_type",
+          "label": "Special entity type",
+          "type": "single",
+          "options": [
+            {
+              "value": "qtsp",
+              "label": "Qualified trust service provider"
+            },
+            {
+              "value": "non_qualified_tsp",
+              "label": "Non-qualified trust service provider"
+            },
+            {
+              "value": "tld_registry",
+              "label": "Top-level domain registry"
+            },
+            {
+              "value": "dns_provider",
+              "label": "DNS service provider"
+            },
+            {
+              "value": "public_ecomms",
+              "label": "Public electronic communications network or service"
+            },
+            {
+              "value": "none",
+              "label": "None of these"
+            },
+            {
+              "value": "unknown",
+              "label": "Not sure"
+            }
+          ]
+        }
+      ],
+      "basis": [
+        "NIS2 Art. 2(2), 3(1)-(2)"
+      ]
+    },
+    {
+      "id": "B3",
+      "theme": "entity",
+      "kind": "scope",
+      "mode": "follow_up",
+      "type": "multi",
+      "text": "Are you responsible for critical infrastructure under any of these regimes?",
+      "options": [
+        {
+          "value": "au_soci_responsible_entity",
+          "label": "Australia SOCI responsible entity"
+        },
+        {
+          "value": "uk_nis_oes",
+          "label": "UK operator of essential services"
+        },
+        {
+          "value": "uk_nis_rdsp",
+          "label": "UK relevant digital service provider (cloud, marketplace, search)"
+        },
+        {
+          "value": "sg_cii_owner",
+          "label": "Singapore CII owner"
+        },
+        {
+          "value": "cn_ciio",
+          "label": "China critical information infrastructure operator"
+        },
+        {
+          "value": "none",
+          "label": "None of these"
+        },
+        {
+          "value": "unknown",
+          "label": "Not sure"
+        }
+      ],
+      "basis": [
+        "SOCI Act 2018; UK NIS Regulations 2018; Singapore Cybersecurity Act 2018; PIPL Art. 40"
+      ]
+    },
+    {
+      "id": "B4",
+      "theme": "entity",
+      "kind": "scope",
+      "mode": "executive",
+      "type": "multi",
+      "text": "How does your organisation use AI today? Select all that apply.",
+      "options": [
+        {
+          "value": "none",
+          "label": "We do not use AI in production"
+        },
+        {
+          "value": "deployer_internal",
+          "label": "We use AI tools or third-party models for internal work"
+        },
+        {
+          "value": "deployer_high_impact",
+          "label": "We use AI in decisions about people (credit, insurance pricing, hiring, biometric identification, access to essential services)"
+        },
+        {
+          "value": "provider_ai_system",
+          "label": "We build AI systems and sell or deploy them for others"
+        },
+        {
+          "value": "gpai_provider",
+          "label": "We train or provide general-purpose AI models"
+        },
+        {
+          "value": "integrator_own_name",
+          "label": "We put third-party AI models into products sold under our name"
+        },
+        {
+          "value": "unknown",
+          "label": "Not sure"
+        }
+      ],
+      "basis": [
+        "AI Act Art. 2(1), 3, 25(1), Annex III items 1, 4, 5(b), 5(c)"
+      ]
+    },
+    {
+      "id": "D1",
+      "theme": "data",
+      "kind": "scope",
+      "mode": "executive",
+      "type": "multi",
+      "text": "Which kinds of data do you hold? Select all that apply.",
+      "options": [
+        {
+          "value": "personal",
+          "label": "Personal data about customers, employees or users"
+        },
+        {
+          "value": "special",
+          "label": "Sensitive personal data: health, genetic, biometric, ethnicity, beliefs, sex life or orientation, criminal records"
+        },
+        {
+          "value": "financial",
+          "label": "Financial account, card and payment-transaction data"
+        },
+        {
+          "value": "ai_training",
+          "label": "Datasets used to train or fine-tune AI models"
+        },
+        {
+          "value": "proprietary",
+          "label": "Trade secrets, source code and other commercially sensitive non-personal data"
+        },
+        {
+          "value": "government",
+          "label": "Classified data, or data held for a government client under contract restrictions"
+        },
+        {
+          "value": "ot_ci",
+          "label": "Operational-technology and critical-infrastructure telemetry"
+        },
+        {
+          "value": "unknown",
+          "label": "Not sure"
+        }
+      ],
+      "basis": [
+        "GDPR Art. 4(1), 9, 10; RBI payment data; Data Act Art. 32 (non-personal data)"
+      ]
+    },
+    {
+      "id": "D2",
+      "theme": "data",
+      "kind": "scope",
+      "mode": "workshop",
+      "type": "single",
+      "text": "Roughly how many people's personal records do you hold in total?",
+      "options": [
+        {
+          "value": "lt10k",
+          "label": "Under 10,000"
+        },
+        {
+          "value": "10k_100k",
+          "label": "10,000–100,000"
+        },
+        {
+          "value": "100k_1m",
+          "label": "100,000–1 million"
+        },
+        {
+          "value": "gt1m",
+          "label": "Over 1 million"
+        },
+        {
+          "value": "unknown",
+          "label": "Not sure"
+        }
+      ],
+      "basis": [
+        "28 CFR 202.205 thresholds; CCPA 100,000 test; CAC 2024 Provisions"
+      ]
+    },
+    {
+      "id": "D3",
+      "theme": "data",
+      "kind": "scope",
+      "mode": "executive",
+      "type": "matrix",
+      "text": "For each kind of data you hold: where is it stored and processed today, and where are its backups and disaster-recovery copies?",
+      "help": "The EU and EEA count as one region.",
+      "matrix": {
+        "rowsFrom": "D1",
+        "columns": [
+          {
+            "key": "primary",
+            "label": "Stored and processed",
+            "type": "multi",
+            "optionsFrom": "A1"
+          },
+          {
+            "key": "backup",
+            "label": "Backups and disaster recovery",
+            "type": "multi",
+            "optionsFrom": "A1"
+          }
+        ]
+      },
+      "basis": [
+        "GDPR Ch. V (EEA as one area); RBI Storage of Payment System Data; PIPL Art. 40; NIST SP 800-53 SA-9(5)"
+      ]
+    },
+    {
+      "id": "D4",
+      "theme": "data",
+      "kind": "maturity",
+      "mode": "workshop",
+      "type": "single",
+      "text": "Is there a current map of where your data flows, with records of processing, updated in the last 12 months?",
+      "options": [
+        {
+          "value": "current",
+          "label": "Yes, current within 12 months"
+        },
+        {
+          "value": "partial",
+          "label": "Partial or out of date"
+        },
+        {
+          "value": "none",
+          "label": "No"
+        },
+        {
+          "value": "unknown",
+          "label": "Unknown"
+        }
+      ],
+      "basis": [
+        "GDPR Art. 30; EDPB Recommendations 01/2020 step 1"
+      ],
+      "control": "SOV.DATA.MAP"
+    },
+    {
+      "id": "P1",
+      "theme": "platform",
+      "kind": "scope",
+      "mode": "executive",
+      "type": "multi",
+      "text": "Which platforms run your production systems and hold your data? Select all that apply.",
+      "help": "Provider names are examples only; S7 sources each one.",
+      "options": [
+        {
+          "value": "onprem",
+          "label": "Our own data centres"
+        },
+        {
+          "value": "colo",
+          "label": "Colocation or managed hosting"
+        },
+        {
+          "value": "aws",
+          "label": "AWS (standard regions)"
+        },
+        {
+          "value": "azure",
+          "label": "Microsoft Azure (standard regions)"
+        },
+        {
+          "value": "gcp",
+          "label": "Google Cloud (standard regions)"
+        },
+        {
+          "value": "oci",
+          "label": "Oracle Cloud"
+        },
+        {
+          "value": "ibm",
+          "label": "IBM Cloud"
+        },
+        {
+          "value": "hyperscaler_sovereign_offering",
+          "label": "A hyperscaler's sovereign offering"
+        },
+        {
+          "value": "partner_operated_cloud",
+          "label": "Hyperscaler technology run by an independent local operator"
+        },
+        {
+          "value": "eu_sovereign_provider",
+          "label": "A European-owned cloud provider"
+        },
+        {
+          "value": "apac_national_cloud",
+          "label": "A locally owned cloud in APAC"
+        },
+        {
+          "value": "cn_cloud",
+          "label": "A China-headquartered cloud"
+        },
+        {
+          "value": "saas_major",
+          "label": "Major SaaS"
+        },
+        {
+          "value": "ai_api_provider",
+          "label": "Third-party AI model APIs"
+        },
+        {
+          "value": "other",
+          "label": "Other"
+        },
+        {
+          "value": "unknown",
+          "label": "Not sure"
+        }
+      ],
+      "basis": [
+        "Platform playbook scope (S7); provider parent jurisdiction is a fact, never a score (D3)"
+      ]
+    },
+    {
+      "id": "P2",
+      "theme": "platform",
+      "kind": "scope",
+      "mode": "follow_up",
+      "type": "multi",
+      "text": "Where are the parent companies of the providers that hold your regulated data headquartered?",
+      "help": "Refines the default derived from your platforms.",
+      "optionsFrom": "A1",
+      "basis": [
+        "CLOUD Act, 18 U.S.C. § 2713 (possession, custody or control)"
+      ]
+    },
+    {
+      "id": "L1",
+      "theme": "requirement",
+      "kind": "scope",
+      "mode": "executive",
+      "type": "single",
+      "text": "Beyond what the law requires, how much control does the board want over its data?",
+      "help": "Sets the client's choice for every kind of data selected; the workshop refines it per kind of data.",
+      "options": [
+        {
+          "value": "L0",
+          "label": "Meet the legal minimum only"
+        },
+        {
+          "value": "L1",
+          "label": "Keep the data in our chosen region"
+        },
+        {
+          "value": "L2",
+          "label": "Keep it in region and hold the keys, so the provider cannot read it without us"
+        },
+        {
+          "value": "L3",
+          "label": "Have it run and supported only by staff in our region through a local entity"
+        },
+        {
+          "value": "L4",
+          "label": "Make it immune from foreign laws, or keep it disconnected"
+        },
+        {
+          "value": "unknown",
+          "label": "Not decided"
+        }
+      ],
+      "basis": [
+        "EU Cloud Sovereignty Framework SEAL levels (LTM mapping, not the Commission's)"
+      ]
+    },
+    {
+      "id": "L2",
+      "theme": "requirement",
+      "kind": "scope",
+      "mode": "workshop",
+      "type": "matrix",
+      "text": "For each kind of data: which level do you need, in which region(s) may it sit, and which platforms hold it?",
+      "matrix": {
+        "rowsFrom": "D1",
+        "columns": [
+          {
+            "key": "level",
+            "label": "Level",
+            "type": "single",
+            "optionsFrom": "L1"
+          },
+          {
+            "key": "zones",
+            "label": "Allowed regions",
+            "type": "multi",
+            "optionsFrom": "A1"
+          },
+          {
+            "key": "platforms",
+            "label": "Platforms",
+            "type": "multi",
+            "optionsFrom": "P1"
+          }
+        ]
+      },
+      "basis": [
+        "As L1; tender minimum SEALs translated with the LTM mapping"
+      ]
+    },
+    {
+      "id": "R1",
+      "theme": "residency",
+      "kind": "maturity",
+      "mode": "executive",
+      "type": "single",
+      "text": "How is the rule on where data may be stored enforced?",
+      "options": [
+        {
+          "value": "enforced",
+          "label": "Technically enforced everywhere: policies block deployments outside the allowed regions"
+        },
+        {
+          "value": "partial",
+          "label": "Enforced on some platforms or accounts only"
+        },
+        {
+          "value": "convention",
+          "label": "By convention or manual review only"
+        },
+        {
+          "value": "unknown",
+          "label": "Unknown"
+        }
+      ],
+      "basis": [
+        "NIST SP 800-53 SA-9(5)"
+      ],
+      "control": "SOV.RES.REGION_LOCK"
+    },
+    {
+      "id": "T1",
+      "theme": "transfer",
+      "kind": "maturity",
+      "mode": "executive",
+      "type": "multi",
+      "text": "When personal data leaves the region where it was collected (including remote access from another country), what covers it? Select all that apply.",
+      "options": [
+        {
+          "value": "no_transfer",
+          "label": "It never leaves, including remote access"
+        },
+        {
+          "value": "adequacy",
+          "label": "An adequacy decision or adequacy regulations"
+        },
+        {
+          "value": "eu_us_dpf",
+          "label": "EU-US Data Privacy Framework, recipient certified"
+        },
+        {
+          "value": "uk_data_bridge",
+          "label": "UK Extension to the DPF (\"data bridge\"), recipient certified"
+        },
+        {
+          "value": "sccs",
+          "label": "EU Standard Contractual Clauses"
+        },
+        {
+          "value": "idta_or_addendum",
+          "label": "UK IDTA or UK Addendum"
+        },
+        {
+          "value": "bcr",
+          "label": "Binding corporate rules"
+        },
+        {
+          "value": "apac_contract_or_consent",
+          "label": "Contracts, consent or other routes required by APAC laws"
+        },
+        {
+          "value": "derogation",
+          "label": "Only derogations (e.g. explicit consent, contract necessity)"
+        },
+        {
+          "value": "undocumented",
+          "label": "Some transfers have no documented basis"
+        },
+        {
+          "value": "unknown",
+          "label": "Unknown"
+        }
+      ],
+      "basis": [
+        "GDPR Art. 44-46, 49; Decision (EU) 2023/1795 (appeal C-703/25 P pending); UK GDPR Art. 44A (DUAA); PDPA s.26; APP 8; APPI Art. 28; PIPA Art. 28-8; PIPL Art. 38"
+      ],
+      "control": "SOV.XFER.BASIS"
+    },
+    {
+      "id": "T2",
+      "theme": "transfer",
+      "kind": "maturity",
+      "mode": "executive",
+      "type": "single",
+      "text": "For transfers under contractual clauses or BCRs: have you assessed whether the destination's laws, including government access, undermine the protection, and recorded the result?",
+      "options": [
+        {
+          "value": "complete",
+          "label": "Yes, for every such transfer, reviewed regularly, and the safeguards close the risks found"
+        },
+        {
+          "value": "risks_open",
+          "label": "Yes, but for some transfers the destination's laws are not offset by the safeguards in place",
+          "help": "The assessment is recorded (this control), but those transfers have no valid basis: SOV.XFER.BASIS scores 0 for them (CJEU C-311/18; EDPB Recommendations 01/2020)"
+        },
+        {
+          "value": "partial",
+          "label": "For some transfers, or not reviewed"
+        },
+        {
+          "value": "none",
+          "label": "No"
+        },
+        {
+          "value": "unknown",
+          "label": "Unknown"
+        }
+      ],
+      "basis": [
+        "CJEU C-311/18 (Schrems II); EDPB Recommendations 01/2020; ICO transfer risk assessment guidance"
+      ],
+      "control": "SOV.XFER.TIA"
+    },
+    {
+      "id": "T3",
+      "theme": "transfer",
+      "kind": "maturity",
+      "mode": "follow_up",
+      "type": "compound",
+      "text": "US bulk sensitive data: which covered categories do you hold about US persons, and do you screen transactions that could give a country of concern access to them?",
+      "help": "The options are those of the screening field, which sets the control; the categories field sets a fact.",
+      "options": [
+        {
+          "value": "screened",
+          "label": "We screen and block or license covered transactions and keep records"
+        },
+        {
+          "value": "partial",
+          "label": "Partly"
+        },
+        {
+          "value": "none",
+          "label": "No"
+        },
+        {
+          "value": "unknown",
+          "label": "Unknown"
+        }
+      ],
+      "fields": [
+        {
+          "key": "categories",
+          "label": "Covered categories",
+          "type": "multi",
+          "options": [
+            {
+              "value": "genomic",
+              "label": "Genomic"
+            },
+            {
+              "value": "biometric",
+              "label": "Biometric"
+            },
+            {
+              "value": "precise_geolocation",
+              "label": "Precise geolocation"
+            },
+            {
+              "value": "health",
+              "label": "Health"
+            },
+            {
+              "value": "financial",
+              "label": "Financial"
+            },
+            {
+              "value": "identifiers",
+              "label": "Covered personal identifiers"
+            },
+            {
+              "value": "government_related",
+              "label": "Data linked to US government personnel or sites"
+            },
+            {
+              "value": "none",
+              "label": "None"
+            },
+            {
+              "value": "unknown",
+              "label": "Not sure"
+            }
+          ]
+        },
+        {
+          "key": "screening",
+          "label": "Screening",
+          "type": "single",
+          "options": [
+            {
+              "value": "screened",
+              "label": "We screen and block or license covered transactions and keep records"
+            },
+            {
+              "value": "partial",
+              "label": "Partly"
+            },
+            {
+              "value": "none",
+              "label": "No"
+            },
+            {
+              "value": "unknown",
+              "label": "Unknown"
+            }
+          ]
+        }
+      ],
+      "basis": [
+        "28 CFR Part 202 (202.205, 202.601)"
+      ],
+      "control": "SOV.XFER.US_BULK"
+    },
+    {
+      "id": "K1",
+      "theme": "keys",
+      "kind": "maturity",
+      "mode": "executive",
+      "type": "single",
+      "text": "For your most sensitive data in cloud and SaaS, who controls the encryption keys?",
+      "options": [
+        {
+          "value": "external",
+          "label": "We hold the keys outside the provider (external key manager or our own HSM); the provider cannot use them without us"
+        },
+        {
+          "value": "dedicated_hsm",
+          "label": "Keys in a single-tenant HSM in the provider's data centre that only we administer"
+        },
+        {
+          "value": "byok",
+          "label": "We create or import keys into the provider's key service, which the provider operates"
+        },
+        {
+          "value": "mixed",
+          "label": "Varies: external keys on some platforms, provider keys on others"
+        },
+        {
+          "value": "provider",
+          "label": "The provider creates and manages the keys"
+        },
+        {
+          "value": "none",
+          "label": "Some sensitive data is not encrypted at rest"
+        },
+        {
+          "value": "unknown",
+          "label": "Unknown"
+        }
+      ],
+      "basis": [
+        "NIST SP 800-53 SC-12, SC-28; EDPB Recommendations 01/2020 Annex 2"
+      ],
+      "control": "SOV.KEY.CUSTODY"
+    },
+    {
+      "id": "K2",
+      "theme": "keys",
+      "kind": "maturity",
+      "mode": "follow_up",
+      "type": "single",
+      "text": "Have you tested that revoking your keys makes provider-held copies, including backups and caches, unreadable?",
+      "options": [
+        {
+          "value": "tested",
+          "label": "Yes, tested"
+        },
+        {
+          "value": "possible_untested",
+          "label": "Possible but not tested"
+        },
+        {
+          "value": "not_possible",
+          "label": "Not possible: the provider manages the key lifecycle"
+        },
+        {
+          "value": "unknown",
+          "label": "Unknown"
+        }
+      ],
+      "basis": [
+        "NIST SP 800-53 SC-12"
+      ],
+      "control": "SOV.KEY.REVOCATION"
+    },
+    {
+      "id": "K3",
+      "theme": "keys",
+      "kind": "maturity",
+      "mode": "workshop",
+      "type": "single",
+      "text": "Is regulated data encrypted at rest and in transit everywhere?",
+      "options": [
+        {
+          "value": "all",
+          "label": "Yes, everywhere"
+        },
+        {
+          "value": "most",
+          "label": "At rest everywhere; some internal traffic unencrypted"
+        },
+        {
+          "value": "partial",
+          "label": "Partly"
+        },
+        {
+          "value": "no",
+          "label": "No"
+        },
+        {
+          "value": "unknown",
+          "label": "Unknown"
+        }
+      ],
+      "basis": [
+        "GDPR Art. 32(1)(a); NIS2 Art. 21(2)(h); NIST SP 800-53 SC-8, SC-28"
+      ],
+      "control": "SOV.ENC.BASELINE"
+    },
+    {
+      "id": "K4",
+      "theme": "keys",
+      "kind": "maturity",
+      "mode": "follow_up",
+      "type": "single",
+      "text": "Do you use confidential computing (hardware-protected enclaves) for your most sensitive data while it is being processed?",
+      "options": [
+        {
+          "value": "production",
+          "label": "In production"
+        },
+        {
+          "value": "poc",
+          "label": "Pilot or proof of concept"
+        },
+        {
+          "value": "none",
+          "label": "No"
+        },
+        {
+          "value": "unknown",
+          "label": "Unknown"
+        }
+      ],
+      "basis": [
+        "LTM heuristic for L4; provider documentation sourced in S7"
+      ],
+      "control": "SOV.CC.DATA_IN_USE"
+    },
+    {
+      "id": "O1",
+      "theme": "operations",
+      "kind": "maturity",
+      "mode": "executive",
+      "type": "single",
+      "text": "When your cloud, SaaS or hosting providers need to reach your systems or data for support or operations, what happens?",
+      "options": [
+        {
+          "value": "approve_log",
+          "label": "Access needs our explicit, time-limited approval, and every access is logged and reviewed"
+        },
+        {
+          "value": "mixed",
+          "label": "Approval and logging on our main platforms, not on all SaaS"
+        },
+        {
+          "value": "log_only",
+          "label": "Access is logged and visible to us but needs no approval"
+        },
+        {
+          "value": "standard",
+          "label": "Provider staff access under the provider's standard terms; we have no visibility"
+        },
+        {
+          "value": "unknown",
+          "label": "Unknown"
+        }
+      ],
+      "basis": [
+        "NIST SP 800-53 MA-4, AC-2; GDPR Art. 28(3)(b)-(c), 32"
+      ],
+      "control": "SOV.OPS.ADMIN_ACCESS"
+    },
+    {
+      "id": "O2",
+      "theme": "operations",
+      "kind": "maturity",
+      "mode": "follow_up",
+      "type": "single",
+      "text": "For services holding your most sensitive data: who operates and supports them, and under which entity and law?",
+      "options": [
+        {
+          "value": "zone_local_entity",
+          "label": "Only staff located in the allowed region, employed by a locally established entity under local law, including escalations"
+        },
+        {
+          "value": "zone_staff_foreign_entity",
+          "label": "Staff in the region, but the operating company or contract is foreign"
+        },
+        {
+          "value": "follow_the_sun",
+          "label": "Global follow-the-sun support"
+        },
+        {
+          "value": "unknown",
+          "label": "Unknown"
+        }
+      ],
+      "basis": [
+        "EU Cloud Sovereignty Framework SOV-4 (operational); NIST SP 800-53 PS-3"
+      ],
+      "control": "SOV.OPS.PERSONNEL_ZONE"
+    },
+    {
+      "id": "O3",
+      "theme": "operations",
+      "kind": "maturity",
+      "mode": "follow_up",
+      "type": "single",
+      "text": "For on-premises hardware, is remote out-of-band management (e.g. iDRAC, iLO) isolated, and is vendor call-home controlled?",
+      "options": [
+        {
+          "value": "isolated",
+          "label": "Isolated management network; vendor call-home blocked or approved"
+        },
+        {
+          "value": "partial",
+          "label": "Partly"
+        },
+        {
+          "value": "connected",
+          "label": "Connected, with vendor telemetry enabled"
+        },
+        {
+          "value": "unknown",
+          "label": "Unknown"
+        }
+      ],
+      "basis": [
+        "NIST SP 800-53 MA-4"
+      ],
+      "control": "SOV.OPS.OOB_MGMT"
+    },
+    {
+      "id": "V1",
+      "theme": "third_party",
+      "kind": "maturity",
+      "mode": "workshop",
+      "type": "single",
+      "text": "Do you have data-processing (or service-provider) agreements with every processor?",
+      "options": [
+        {
+          "value": "all",
+          "label": "Yes, all"
+        },
+        {
+          "value": "most",
+          "label": "Most, with some gaps"
+        },
+        {
+          "value": "major_only",
+          "label": "Only major vendors"
+        },
+        {
+          "value": "none",
+          "label": "No"
+        },
+        {
+          "value": "unknown",
+          "label": "Unknown"
+        }
+      ],
+      "basis": [
+        "GDPR Art. 28(3); HIPAA business associate agreements; DPDP s.8(2); CCPA § 1798.100(d); 16 CFR 314.4(f); 23 NYCRR 500.11"
+      ],
+      "control": "SOV.TP.DPA"
+    },
+    {
+      "id": "V2",
+      "theme": "third_party",
+      "kind": "maturity",
+      "mode": "workshop",
+      "type": "single",
+      "text": "For critical SaaS and cloud providers: do you know their sub-processors, and do you get advance notice and a right to object to changes?",
+      "options": [
+        {
+          "value": "yes",
+          "label": "Yes"
+        },
+        {
+          "value": "partial",
+          "label": "For some providers"
+        },
+        {
+          "value": "no",
+          "label": "No"
+        },
+        {
+          "value": "unknown",
+          "label": "Unknown"
+        }
+      ],
+      "basis": [
+        "GDPR Art. 28(2), (4); DORA Delegated Regulation (EU) 2025/532"
+      ],
+      "control": "SOV.SAAS.SUBPROCESSOR"
+    },
+    {
+      "id": "V3",
+      "theme": "third_party",
+      "kind": "maturity",
+      "mode": "workshop",
+      "type": "single",
+      "text": "Do you know where each key SaaS and ICT provider actually stores and processes your data?",
+      "options": [
+        {
+          "value": "full",
+          "label": "Yes, documented per provider"
+        },
+        {
+          "value": "partial",
+          "label": "For some"
+        },
+        {
+          "value": "none",
+          "label": "Little or no visibility"
+        },
+        {
+          "value": "unknown",
+          "label": "Unknown"
+        }
+      ],
+      "basis": [
+        "NIS2 Art. 21(2)(d); EDPB Recommendations 01/2020 step 1"
+      ],
+      "control": "SOV.TP.VISIBILITY"
+    },
+    {
+      "id": "V4",
+      "theme": "third_party",
+      "kind": "maturity",
+      "mode": "workshop",
+      "type": "single",
+      "text": "Do your cloud and ICT contracts give you audit, access and inspection rights over how your data is handled?",
+      "options": [
+        {
+          "value": "full",
+          "label": "Full audit and inspection rights"
+        },
+        {
+          "value": "reports_only",
+          "label": "Reports only (e.g. SOC 2, ISO certificates)"
+        },
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "unknown",
+          "label": "Unknown"
+        }
+      ],
+      "basis": [
+        "DORA Art. 30; PRA SS2/21; MAS Guidelines on Outsourcing"
+      ],
+      "control": "SOV.TP.AUDIT"
+    },
+    {
+      "id": "B5",
+      "theme": "third_party",
+      "kind": "maturity",
+      "mode": "follow_up",
+      "type": "single",
+      "text": "Do you keep a complete register of your ICT third-party arrangements (the DORA register of information, or your regulator's equivalent)?",
+      "options": [
+        {
+          "value": "complete",
+          "label": "Complete, maintained, and submitted when requested"
+        },
+        {
+          "value": "partial",
+          "label": "In progress or incomplete"
+        },
+        {
+          "value": "none",
+          "label": "No"
+        },
+        {
+          "value": "unknown",
+          "label": "Unknown"
+        }
+      ],
+      "basis": [
+        "DORA Art. 28(3); APRA CPS 230; PRA SS2/21"
+      ],
+      "control": "SOV.TP.REGISTER"
+    },
+    {
+      "id": "B6",
+      "theme": "third_party",
+      "kind": "maturity",
+      "mode": "follow_up",
+      "type": "single",
+      "text": "Have you mapped which important business services depend on the UK designated critical third parties, and what duties stay with you?",
+      "options": [
+        {
+          "value": "mapped",
+          "label": "Yes, mapped and owned"
+        },
+        {
+          "value": "partial",
+          "label": "Partly"
+        },
+        {
+          "value": "not_mapped",
+          "label": "No"
+        },
+        {
+          "value": "no_ctp_dependency",
+          "label": "We do not use any designated CTP"
+        },
+        {
+          "value": "unknown",
+          "label": "Unknown"
+        }
+      ],
+      "basis": [
+        "UK critical third party designations from 13 Jul 2026 (FSMA 2000 ss.312L-312Z)"
+      ],
+      "control": "SOV.CONC.PROVIDER"
+    },
+    {
+      "id": "X1",
+      "theme": "exit",
+      "kind": "maturity",
+      "mode": "executive",
+      "type": "single",
+      "text": "If your main cloud or SaaS provider became unavailable or no longer acceptable (for example after a change in law), how ready are you to move critical services?",
+      "options": [
+        {
+          "value": "tested",
+          "label": "Documented exit plans for critical services, portable formats, and a rehearsal or partial migration done"
+        },
+        {
+          "value": "documented",
+          "label": "Documented exit plans with a realistic timeline, not rehearsed"
+        },
+        {
+          "value": "partial",
+          "label": "Plans for some services only, or a timeline over 18 months"
+        },
+        {
+          "value": "none",
+          "label": "No exit plan; effectively locked in"
+        },
+        {
+          "value": "unknown",
+          "label": "Unknown"
+        }
+      ],
+      "basis": [
+        "DORA Art. 28(8); APRA CPS 230; PRA SS2/21; Data Act Art. 29. Exit testing is assessed in Resilience IQ"
+      ],
+      "control": "SOV.EXIT.PLAN"
+    },
+    {
+      "id": "X2",
+      "theme": "exit",
+      "kind": "maturity",
+      "mode": "workshop",
+      "type": "single",
+      "text": "How concentrated are your critical services on one provider?",
+      "options": [
+        {
+          "value": "diversified",
+          "label": "Critical services can run on more than one provider or on-premises"
+        },
+        {
+          "value": "managed",
+          "label": "One main provider, with documented alternatives for critical services"
+        },
+        {
+          "value": "concentrated_aware",
+          "label": "One provider hosts most critical services; the risk is assessed and accepted by the board"
+        },
+        {
+          "value": "concentrated",
+          "label": "One provider hosts most critical services; not assessed"
+        },
+        {
+          "value": "unknown",
+          "label": "Unknown"
+        }
+      ],
+      "basis": [
+        "DORA Art. 29; APRA CPS 230"
+      ],
+      "control": "SOV.CONC.PROVIDER"
+    },
+    {
+      "id": "I1",
+      "theme": "ai",
+      "kind": "maturity",
+      "mode": "executive",
+      "type": "single",
+      "text": "Where do your AI models run (training, fine-tuning and inference), and can the provider use your data to train its own models?",
+      "options": [
+        {
+          "value": "in_zone_no_training",
+          "label": "In our allowed region, and the provider contractually cannot train on our data"
+        },
+        {
+          "value": "in_zone_unclear",
+          "label": "In our region, but the training-use terms are not confirmed"
+        },
+        {
+          "value": "out_of_zone_contract",
+          "label": "Outside our region, with contractual no-training and data-handling terms"
+        },
+        {
+          "value": "out_of_zone",
+          "label": "Outside our region, terms not reviewed"
+        },
+        {
+          "value": "unknown",
+          "label": "Unknown"
+        }
+      ],
+      "basis": [
+        "GDPR Ch. V for personal data in AI pipelines; AI Act Art. 10"
+      ],
+      "control": "SOV.AI.DATA_LOCATION"
+    },
+    {
+      "id": "I2",
+      "theme": "ai",
+      "kind": "maturity",
+      "mode": "follow_up",
+      "type": "single",
+      "text": "Have you assessed your role under the EU AI Act for each AI system, classified each system by risk, and mapped the obligations and their dates? (For UK firms: also against ICO, FCA and PRA expectations.)",
+      "options": [
+        {
+          "value": "complete",
+          "label": "Yes, for every system"
+        },
+        {
+          "value": "partial",
+          "label": "For some systems"
+        },
+        {
+          "value": "none",
+          "label": "No"
+        },
+        {
+          "value": "unknown",
+          "label": "Unknown"
+        }
+      ],
+      "basis": [
+        "AI Act Art. 2, 6, 25, 26, 50, Annex III; dates per Regulation (EU) 2026/1744"
+      ],
+      "control": "SOV.AI.GOVERNANCE"
+    },
+    {
+      "id": "G1",
+      "theme": "governance",
+      "kind": "maturity",
+      "mode": "workshop",
+      "type": "single",
+      "text": "Who owns decisions on where your data and workloads may run?",
+      "options": [
+        {
+          "value": "exec_forum",
+          "label": "One named executive, with a governance forum"
+        },
+        {
+          "value": "shared",
+          "label": "Shared across teams, no single owner"
+        },
+        {
+          "value": "none",
+          "label": "No clear owner"
+        },
+        {
+          "value": "unknown",
+          "label": "Unknown"
+        }
+      ],
+      "basis": [
+        "NIS2 Art. 20; DORA Art. 5"
+      ],
+      "control": "SOV.GOV.OWNER"
+    },
+    {
+      "id": "G2",
+      "theme": "governance",
+      "kind": "maturity",
+      "mode": "workshop",
+      "type": "single",
+      "text": "Can you detect, classify and report an incident within the shortest window that applies to you (for example 1 hour under MAS notices, 4 hours under DORA, 6 hours under CERT-In directions, 12 hours under SOCI, 24 hours under NIS2, 72 hours under GDPR)?",
+      "options": [
+        {
+          "value": "tested",
+          "label": "Yes, tested in an exercise"
+        },
+        {
+          "value": "documented_untested",
+          "label": "Documented but untested, or unclear for cross-border incidents"
+        },
+        {
+          "value": "none",
+          "label": "No reliable process"
+        },
+        {
+          "value": "unknown",
+          "label": "Unknown"
+        }
+      ],
+      "basis": [
+        "MAS TRM Notices; DORA RTS (EU) 2025/301; CERT-In Directions 2022; SOCI; NIS2 Art. 23; GDPR Art. 33"
+      ],
+      "control": "SOV.IR.REPORTING"
+    },
+    {
+      "id": "G3",
+      "theme": "governance",
+      "kind": "maturity",
+      "mode": "follow_up",
+      "type": "single",
+      "text": "Do the services holding your most sensitive data hold an assurance qualification that your regulators or customers recognise for that level?",
+      "options": [
+        {
+          "value": "recognised_high",
+          "label": "Yes, a national high-assurance qualification where one applies (for example SecNumCloud, BSI C5, IRAP, MTCS, ISMAP, FedRAMP)"
+        },
+        {
+          "value": "baseline",
+          "label": "ISO/IEC 27001 or SOC 2 only"
+        },
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "unknown",
+          "label": "Unknown"
+        }
+      ],
+      "basis": [
+        "SecNumCloud 3.2; other national schemes; EUCS not listed because not adopted"
+      ],
+      "control": "SOV.CERT.ASSURANCE"
+    },
+    {
+      "id": "H1",
+      "theme": "governance",
+      "kind": "maturity",
+      "mode": "follow_up",
+      "type": "single",
+      "text": "For on-premises hardware, appliances and network equipment, have you assessed provenance against supply-chain restrictions that apply to you?",
+      "help": "Recorded only: not scored until its legal basis is sourced.",
+      "options": [
+        {
+          "value": "audited",
+          "label": "Fully assessed"
+        },
+        {
+          "value": "partial",
+          "label": "Partly"
+        },
+        {
+          "value": "not_audited",
+          "label": "Not assessed"
+        },
+        {
+          "value": "unknown",
+          "label": "Unknown"
+        }
+      ],
+      "basis": [
+        "NDAA § 889 (pending source)"
+      ],
+      "control": "SOV.HW.PROVENANCE"
+    },
+    {
+      "id": "W1",
+      "theme": "preference",
+      "kind": "preference",
+      "mode": "workshop",
+      "type": "single",
+      "text": "How much compliance risk will the board accept while remediating?",
+      "options": [
+        {
+          "value": "zero",
+          "label": "None"
+        },
+        {
+          "value": "minimal",
+          "label": "Minimal, with a short-term plan"
+        },
+        {
+          "value": "moderate",
+          "label": "Moderate if residual risk is low"
+        },
+        {
+          "value": "flexible",
+          "label": "Flexible: cost and performance come first"
+        }
+      ],
+      "basis": [
+        "Roadmap sequencing only; not scored"
+      ]
+    },
+    {
+      "id": "W2",
+      "theme": "preference",
+      "kind": "preference",
+      "mode": "workshop",
+      "type": "single",
+      "text": "What is the appetite for remediation investment over the next 12 months?",
+      "options": [
+        {
+          "value": "high",
+          "label": "High"
+        },
+        {
+          "value": "medium",
+          "label": "Phased over 6–12 months"
+        },
+        {
+          "value": "low",
+          "label": "Quick wins only"
+        },
+        {
+          "value": "tbd",
+          "label": "Under review"
+        }
+      ],
+      "basis": [
+        "Roadmap sequencing; SOW sizing (consultant only); not scored"
+      ]
+    },
+    {
+      "id": "W3",
+      "theme": "preference",
+      "kind": "preference",
+      "mode": "workshop",
+      "type": "multi",
+      "text": "Which outcomes matter most for the target architecture? (pick up to three)",
+      "options": [
+        {
+          "value": "compliance",
+          "label": "Compliance"
+        },
+        {
+          "value": "sovereignty_differentiator",
+          "label": "Sovereignty as a differentiator"
+        },
+        {
+          "value": "resilience",
+          "label": "Resilience"
+        },
+        {
+          "value": "cost",
+          "label": "Cost"
+        },
+        {
+          "value": "performance",
+          "label": "Performance"
+        },
+        {
+          "value": "speed",
+          "label": "Speed"
+        }
+      ],
+      "basis": [
+        "Ordering of options in the playbook (S7); not scored"
+      ]
+    }
+  ],
+  "controls": [
+    {
+      "id": "SOV.GOV.OWNER",
+      "name": "Data-location ownership",
+      "means": "One accountable executive owns data-location decisions, with a governance forum",
+      "ownerRole": "CIO",
+      "remedy": "Name one accountable executive for where data and workloads may run, with a governance forum that records decisions and exceptions"
+    },
+    {
+      "id": "SOV.DATA.MAP",
+      "name": "Data map and records of processing",
+      "means": "A current map of data flows and records of processing (within 12 months)",
+      "ownerRole": "DPO",
+      "remedy": "Keep a data-flow map and records of processing that are reviewed at least every 12 months"
+    },
+    {
+      "id": "SOV.RES.LOCATION",
+      "name": "Data location",
+      "means": "Primary storage and processing of the class sit only in its allowed zone",
+      "ownerRole": "CIO",
+      "remedy": "Move primary storage and processing of the class into its allowed region"
+    },
+    {
+      "id": "SOV.RES.REGION_LOCK",
+      "name": "Region enforcement",
+      "means": "The location rule is enforced technically (guardrails that block non-compliant deployments)",
+      "ownerRole": "Head of cloud platform",
+      "remedy": "Enforce allowed regions with platform policies that block deployments elsewhere, on every platform and account"
+    },
+    {
+      "id": "SOV.BACKUP.LOCATION",
+      "name": "Backup location",
+      "means": "Backups, replicas and disaster-recovery copies of the class sit in its allowed zone",
+      "ownerRole": "Head of infrastructure",
+      "remedy": "Keep backups, replicas and disaster-recovery copies of the class in its allowed region"
+    },
+    {
+      "id": "SOV.XFER.BASIS",
+      "name": "Transfer basis",
+      "means": "Every personal-data transfer (including remote access from abroad) has a valid, documented basis for each regime that restricts transfers",
+      "ownerRole": "DPO",
+      "remedy": "Document a valid transfer route for every transfer, including remote access from abroad, under each law that restricts transfers"
+    },
+    {
+      "id": "SOV.XFER.TIA",
+      "name": "Transfer impact assessment",
+      "means": "A transfer impact (EU) or transfer risk (UK) assessment is recorded for each transfer under SCCs, IDTA, Addendum or BCRs",
+      "ownerRole": "DPO with General Counsel",
+      "remedy": "Record a transfer impact or transfer risk assessment for every transfer under contractual clauses or BCRs, and review it regularly"
+    },
+    {
+      "id": "SOV.XFER.US_BULK",
+      "name": "US bulk data screening",
+      "means": "Transactions giving countries of concern access to bulk US sensitive data are screened, blocked or licensed, with records",
+      "ownerRole": "General Counsel",
+      "remedy": "Screen data brokerage, vendor, employment and investment agreements for access by countries of concern; block or license covered transactions and keep records"
+    },
+    {
+      "id": "SOV.KEY.CUSTODY",
+      "name": "Key custody",
+      "means": "For sensitive data in cloud and SaaS, the client controls the keys outside the provider's control",
+      "ownerRole": "CISO",
+      "remedy": "Hold the keys for sensitive data outside the provider (external key manager or your own HSM)"
+    },
+    {
+      "id": "SOV.KEY.REVOCATION",
+      "name": "Key revocation",
+      "means": "Key revocation that makes provider-held copies unreadable has been tested",
+      "ownerRole": "CISO",
+      "remedy": "Test that revoking your keys makes provider-held copies, backups and caches unreadable"
+    },
+    {
+      "id": "SOV.ENC.BASELINE",
+      "name": "Encryption baseline",
+      "means": "Regulated data is encrypted at rest and in transit everywhere",
+      "ownerRole": "CISO",
+      "remedy": "Encrypt regulated data at rest and in transit everywhere, including internal traffic"
+    },
+    {
+      "id": "SOV.OPS.ADMIN_ACCESS",
+      "name": "Provider access approval",
+      "means": "Provider support or operations access needs the client's time-limited approval and is logged and reviewed",
+      "ownerRole": "CISO",
+      "remedy": "Require your explicit, time-limited approval for every provider access to systems or data, and log and review each access"
+    },
+    {
+      "id": "SOV.OPS.PERSONNEL_ZONE",
+      "name": "In-zone operations",
+      "means": "Services holding L3+ data are operated and supported only by staff in the zone, employed by a locally established entity under local law",
+      "ownerRole": "Head of cloud platform with Procurement",
+      "remedy": "Have services holding this data run and supported only by staff in the region, employed by a local entity under local law"
+    },
+    {
+      "id": "SOV.OPS.OOB_MGMT",
+      "name": "Out-of-band management",
+      "means": "On-premises out-of-band management is isolated and vendor call-home is controlled",
+      "ownerRole": "Head of infrastructure",
+      "remedy": "Isolate out-of-band management networks and block or approve vendor call-home"
+    },
+    {
+      "id": "SOV.CC.DATA_IN_USE",
+      "name": "Confidential computing",
+      "means": "Confidential computing protects L4 data while in use",
+      "ownerRole": "CISO",
+      "remedy": "Process the most sensitive data in hardware-protected enclaves"
+    },
+    {
+      "id": "SOV.TP.DPA",
+      "name": "Processor agreements",
+      "means": "Processor or service-provider agreements are in place with every processor",
+      "ownerRole": "DPO with Procurement",
+      "remedy": "Put data-processing or service-provider agreements in place with every processor"
+    },
+    {
+      "id": "SOV.SAAS.SUBPROCESSOR",
+      "name": "Sub-processor control",
+      "means": "Sub-processors of critical providers are known, with advance notice and a right to object to changes",
+      "ownerRole": "Procurement",
+      "remedy": "Know the sub-processors of critical providers, with advance notice and a right to object to changes"
+    },
+    {
+      "id": "SOV.TP.VISIBILITY",
+      "name": "Provider location visibility",
+      "means": "The client knows where each key provider stores and processes its data",
+      "ownerRole": "CIO",
+      "remedy": "Document where each key SaaS and ICT provider stores and processes your data"
+    },
+    {
+      "id": "SOV.TP.REGISTER",
+      "name": "ICT third-party register",
+      "means": "A complete register of ICT third-party arrangements is maintained",
+      "ownerRole": "Head of third-party risk",
+      "remedy": "Maintain a complete register of ICT third-party arrangements, ready to submit to your regulator"
+    },
+    {
+      "id": "SOV.TP.AUDIT",
+      "name": "Audit rights",
+      "means": "Contracts give audit, access and inspection rights over data handling",
+      "ownerRole": "Procurement with General Counsel",
+      "remedy": "Secure audit, access and inspection rights over data handling in cloud and ICT contracts"
+    },
+    {
+      "id": "SOV.EXIT.PLAN",
+      "name": "Exit plan",
+      "means": "Critical services have a documented, realistic exit plan (testing is owned by Resilience IQ)",
+      "ownerRole": "CIO",
+      "remedy": "Document realistic exit plans for critical services, with portable formats; verify exit capability in Resilience IQ"
+    },
+    {
+      "id": "SOV.CONC.PROVIDER",
+      "name": "Provider concentration",
+      "means": "Concentration on one provider (including UK designated critical third parties) is assessed and managed",
+      "ownerRole": "CRO",
+      "remedy": "Assess and manage concentration on one provider, including dependence on UK designated critical third parties; verify in Resilience IQ"
+    },
+    {
+      "id": "SOV.CERT.ASSURANCE",
+      "name": "Assurance qualification",
+      "means": "Services holding L3+ data hold an assurance qualification recognised for that level",
+      "ownerRole": "CISO",
+      "remedy": "Use services holding a high-assurance qualification recognised by your regulators or customers"
+    },
+    {
+      "id": "SOV.JUR.IMMUNITY",
+      "name": "Jurisdictional immunity",
+      "means": "No provider holding the class can be compelled by a law from outside the zone, or the system is disconnected",
+      "ownerRole": "CIO with General Counsel",
+      "remedy": "Hold this data only with providers whose parent is in the allowed region, or on disconnected systems"
+    },
+    {
+      "id": "SOV.AI.DATA_LOCATION",
+      "name": "AI data location",
+      "means": "AI training, fine-tuning and inference run in the allowed zone, and providers cannot train on client data",
+      "ownerRole": "Head of data and AI",
+      "remedy": "Run AI training, fine-tuning and inference in the allowed region, with contractual no-training terms"
+    },
+    {
+      "id": "SOV.AI.GOVERNANCE",
+      "name": "AI role and risk mapping",
+      "means": "Each AI system's role and risk class is assessed and its obligations and dates are mapped",
+      "ownerRole": "Head of data and AI with General Counsel",
+      "remedy": "Assess the AI Act role and risk class of each AI system and map its obligations and dates"
+    },
+    {
+      "id": "SOV.IR.REPORTING",
+      "name": "Incident reporting",
+      "means": "Incidents can be detected, classified and reported within the shortest window that applies",
+      "ownerRole": "CISO",
+      "remedy": "Detect, classify and report incidents within the shortest regulatory window that applies, and test it in an exercise"
+    },
+    {
+      "id": "SOV.HW.PROVENANCE",
+      "name": "Hardware provenance",
+      "means": "Hardware and appliance provenance is assessed against supply-chain restrictions",
+      "ownerRole": "Head of infrastructure",
+      "remedy": "Assess hardware and appliance provenance against the supply-chain restrictions that apply to you"
+    }
+  ],
+  "regimes": [
+    {
+      "id": "EU_GDPR",
+      "name": "General Data Protection Regulation",
+      "kind": "obligation",
+      "market": "eu_uk",
+      "citation": "Regulation (EU) 2016/679",
+      "url": "https://eur-lex.europa.eu/eli/reg/2016/679/oj"
+    },
+    {
+      "id": "EU_NIS2",
+      "name": "NIS2 Directive",
+      "kind": "obligation",
+      "market": "eu_uk",
+      "citation": "Directive (EU) 2022/2555, as transposed by each member state",
+      "url": "https://eur-lex.europa.eu/eli/dir/2022/2555/oj"
+    },
+    {
+      "id": "EU_DORA",
+      "name": "Digital Operational Resilience Act",
+      "kind": "obligation",
+      "market": "eu_uk",
+      "citation": "Regulation (EU) 2022/2554",
+      "url": "https://eur-lex.europa.eu/eli/reg/2022/2554/oj"
+    },
+    {
+      "id": "EU_AI_ACT",
+      "name": "AI Act",
+      "kind": "obligation",
+      "market": "eu_uk",
+      "citation": "Regulation (EU) 2024/1689, as amended by Regulation (EU) 2026/1744",
+      "url": "https://eur-lex.europa.eu/eli/reg/2024/1689/oj"
+    },
+    {
+      "id": "EU_DATA_ACT",
+      "name": "Data Act",
+      "kind": "obligation",
+      "market": "eu_uk",
+      "citation": "Regulation (EU) 2023/2854",
+      "url": "https://eur-lex.europa.eu/eli/reg/2023/2854/oj"
+    },
+    {
+      "id": "EU_CRA",
+      "name": "Cyber Resilience Act",
+      "kind": "obligation",
+      "market": "eu_uk",
+      "citation": "Regulation (EU) 2024/2847",
+      "url": "https://eur-lex.europa.eu/eli/reg/2024/2847/oj"
+    },
+    {
+      "id": "EU_CSF_SEAL",
+      "name": "EU Cloud Sovereignty Framework (SEAL)",
+      "kind": "framework",
+      "market": "eu_uk",
+      "citation": "European Commission, Cloud Sovereignty Framework v1.2.1 (Oct 2025)",
+      "url": "https://commission.europa.eu/news-and-media/news/commission-advances-cloud-sovereignty-through-strategic-procurement-2026-04-17_en"
+    },
+    {
+      "id": "FR_SECNUMCLOUD",
+      "name": "ANSSI SecNumCloud",
+      "kind": "scheme",
+      "market": "eu_uk",
+      "citation": "ANSSI SecNumCloud qualification (v3.2); Law no. 2024-449 (SREN) Art. 31",
+      "url": "https://technical-regulation-information-system.ec.europa.eu/fr/notification/26621/print"
+    },
+    {
+      "id": "DE_C5",
+      "name": "BSI C5 (Cloud Computing Compliance Criteria Catalogue)",
+      "kind": "scheme",
+      "market": "eu_uk",
+      "citation": "BSI C5; SGB V § 393 for health-sector cloud use",
+      "url": "https://www.gesetze-im-internet.de/sgb_5/__393.html"
+    },
+    {
+      "id": "UK_GDPR",
+      "name": "UK GDPR and Data Protection Act 2018 (as amended by the Data (Use and Access) Act 2025)",
+      "kind": "obligation",
+      "market": "eu_uk",
+      "citation": "UK GDPR; Data Protection Act 2018; Data (Use and Access) Act 2025",
+      "url": "https://www.legislation.gov.uk/eur/2016/679/contents"
+    },
+    {
+      "id": "UK_OPRES",
+      "name": "UK operational resilience (PRA SS1/21, FCA PS21/3 / SYSC 15A)",
+      "kind": "obligation",
+      "market": "eu_uk",
+      "citation": "PRA SS1/21; FCA SYSC 15A",
+      "url": "https://www.bankofengland.co.uk/prudential-regulation/publication/2021/march/operational-resilience-impact-tolerances-for-important-business-services-ss"
+    },
+    {
+      "id": "UK_PRA_SS2_21",
+      "name": "PRA SS2/21 Outsourcing and third party risk management",
+      "kind": "obligation",
+      "market": "eu_uk",
+      "citation": "PRA Supervisory Statement SS2/21 (Nov 2024 update)",
+      "url": "https://www.bankofengland.co.uk/-/media/boe/files/prudential-regulation/supervisory-statement/2024/ss221-november-2024-update.pdf"
+    },
+    {
+      "id": "UK_CTP",
+      "name": "UK critical third parties regime",
+      "kind": "obligation",
+      "market": "eu_uk",
+      "citation": "FSMA 2000 ss.312L-312Z, inserted by the Financial Services and Markets Act 2023",
+      "url": "https://www.legislation.gov.uk/ukpga/2000/8/section/312L"
+    },
+    {
+      "id": "UK_NIS",
+      "name": "Network and Information Systems Regulations 2018",
+      "kind": "obligation",
+      "market": "eu_uk",
+      "citation": "SI 2018/506",
+      "url": "https://www.legislation.gov.uk/uksi/2018/506"
+    },
+    {
+      "id": "UK_CSR_BILL",
+      "name": "Cyber Security and Resilience (Network and Information Systems) Bill",
+      "kind": "obligation",
+      "market": "eu_uk",
+      "citation": "Bill 4035, before Parliament",
+      "url": "https://bills.parliament.uk/bills/4035"
+    },
+    {
+      "id": "US_CLOUD_ACT",
+      "name": "CLOUD Act",
+      "kind": "exposure",
+      "market": "us",
+      "citation": "18 U.S.C. § 2713, § 2703(h), § 2523",
+      "url": "https://www.law.cornell.edu/uscode/text/18/2713"
+    },
+    {
+      "id": "US_FISA_702",
+      "name": "FISA Section 702",
+      "kind": "exposure",
+      "market": "us",
+      "citation": "50 U.S.C. § 1881a",
+      "url": "https://www.govinfo.gov/link/uscode/50/1881a"
+    },
+    {
+      "id": "US_DOJ_DSP",
+      "name": "DOJ Data Security Program (bulk sensitive data)",
+      "kind": "obligation",
+      "market": "us",
+      "citation": "28 CFR Part 202",
+      "url": "https://www.ecfr.gov/current/title-28/chapter-I/part-202"
+    },
+    {
+      "id": "US_CCPA",
+      "name": "California Consumer Privacy Act, as amended by the CPRA",
+      "kind": "obligation",
+      "market": "us",
+      "citation": "Cal. Civ. Code § 1798.100 ff.",
+      "url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?sectionNum=1798.100.&lawCode=CIV"
+    },
+    {
+      "id": "US_STATE_PRIVACY",
+      "name": "Other US state comprehensive privacy laws",
+      "kind": "obligation",
+      "market": "us",
+      "citation": "State statutes (about 20 in effect in 2026)",
+      "url": "https://iapp.org/resources/article/us-state-privacy-legislation-tracker/"
+    },
+    {
+      "id": "US_HIPAA",
+      "name": "HIPAA Privacy, Security and Breach Notification Rules",
+      "kind": "obligation",
+      "market": "us",
+      "citation": "45 CFR Parts 160 and 164",
+      "url": "https://www.ecfr.gov/current/title-45/subtitle-A/subchapter-C"
+    },
+    {
+      "id": "US_GLBA",
+      "name": "Gramm-Leach-Bliley Act and FTC Safeguards Rule",
+      "kind": "obligation",
+      "market": "us",
+      "citation": "15 U.S.C. § 6801 ff.; 16 CFR Part 314",
+      "url": "https://www.ecfr.gov/current/title-16/chapter-I/subchapter-C/part-314"
+    },
+    {
+      "id": "US_NYDFS_500",
+      "name": "NYDFS Cybersecurity Regulation (23 NYCRR Part 500)",
+      "kind": "obligation",
+      "market": "us",
+      "citation": "23 NYCRR Part 500",
+      "url": "https://www.dfs.ny.gov/industry_guidance/cybersecurity"
+    },
+    {
+      "id": "US_SEC_CYBER",
+      "name": "SEC cybersecurity disclosure rules",
+      "kind": "obligation",
+      "market": "us",
+      "citation": "Form 8-K Item 1.05; Regulation S-K Item 106",
+      "url": "https://www.sec.gov/files/rules/final/2023/33-11216.pdf"
+    },
+    {
+      "id": "US_FEDRAMP",
+      "name": "FedRAMP",
+      "kind": "framework",
+      "market": "us",
+      "citation": "FedRAMP Authorization Act, 44 U.S.C. §§ 3607-3616",
+      "url": "https://www.fedramp.gov/"
+    },
+    {
+      "id": "SG_PDPA",
+      "name": "Personal Data Protection Act 2012",
+      "kind": "obligation",
+      "market": "apac",
+      "citation": "Personal Data Protection Act 2012",
+      "url": "https://sso.agc.gov.sg/Act/PDPA2012"
+    },
+    {
+      "id": "SG_MAS_TRM",
+      "name": "MAS Technology Risk Management and Outsourcing requirements",
+      "kind": "obligation",
+      "market": "apac",
+      "citation": "MAS TRM Guidelines; TRM Notices (e.g. FSM-N09); Notice 658 and Guidelines on Outsourcing",
+      "url": "https://www.mas.gov.sg/-/media/mas-media-library/regulation/notices/trpd/notice-fsm-n09/mas-notice-fsm-n09.pdf"
+    },
+    {
+      "id": "SG_CYBERSECURITY_ACT",
+      "name": "Cybersecurity Act 2018 (critical information infrastructure)",
+      "kind": "obligation",
+      "market": "apac",
+      "citation": "Cybersecurity Act 2018, as amended by the Cybersecurity (Amendment) Act 2024",
+      "url": "https://sso.agc.gov.sg/Act/CA2018"
+    },
+    {
+      "id": "AU_PRIVACY",
+      "name": "Privacy Act 1988 (Cth)",
+      "kind": "obligation",
+      "market": "apac",
+      "citation": "Privacy Act 1988 (Cth), including the Australian Privacy Principles",
+      "url": "https://www.legislation.gov.au/C2004A03712/latest"
+    },
+    {
+      "id": "AU_APRA_CPS230",
+      "name": "APRA CPS 230 Operational Risk Management",
+      "kind": "obligation",
+      "market": "apac",
+      "citation": "APRA Prudential Standard CPS 230",
+      "url": "https://www.apra.gov.au/sites/default/files/2023-07/Prudential%20Standard%20CPS%20230%20Operational%20Risk%20Management%20-%20clean.pdf"
+    },
+    {
+      "id": "AU_APRA_CPS234",
+      "name": "APRA CPS 234 Information Security",
+      "kind": "obligation",
+      "market": "apac",
+      "citation": "APRA Prudential Standard CPS 234",
+      "url": "https://www.brightlaw.com.au/breach-notification-by-apra-regulated-institutions-under-cps-234-information-security/"
+    },
+    {
+      "id": "AU_SOCI",
+      "name": "Security of Critical Infrastructure Act 2018",
+      "kind": "obligation",
+      "market": "apac",
+      "citation": "Security of Critical Infrastructure Act 2018 (Cth)",
+      "url": "https://www.legislation.gov.au/C2018A00029/latest"
+    },
+    {
+      "id": "NZ_PRIVACY",
+      "name": "Privacy Act 2020",
+      "kind": "obligation",
+      "market": "apac",
+      "citation": "Privacy Act 2020 (New Zealand)",
+      "url": "https://www.legislation.govt.nz/act/public/2020/0031/latest/whole.html"
+    },
+    {
+      "id": "IN_DPDP",
+      "name": "Digital Personal Data Protection Act 2023 and DPDP Rules 2025",
+      "kind": "obligation",
+      "market": "apac",
+      "citation": "DPDP Act 2023; DPDP Rules 2025",
+      "url": "https://www.meity.gov.in/data-protection-framework"
+    },
+    {
+      "id": "IN_RBI_PAYMENT",
+      "name": "RBI Storage of Payment System Data",
+      "kind": "obligation",
+      "market": "apac",
+      "citation": "RBI circular of 6 April 2018 and FAQ",
+      "url": "https://rbi.org.in/scripts/FS_FAQs.aspx?Id=130"
+    },
+    {
+      "id": "IN_CERT_IN",
+      "name": "CERT-In Directions of 28 April 2022",
+      "kind": "obligation",
+      "market": "apac",
+      "citation": "CERT-In Directions under s.70B(6) of the IT Act 2000",
+      "url": "https://www.cert-in.org.in/PDF/CERT-In_Directions_70B_28.04.2022.pdf"
+    },
+    {
+      "id": "IN_SEBI_IRDAI",
+      "name": "SEBI and IRDAI cloud and cyber security rules",
+      "kind": "obligation",
+      "market": "apac",
+      "citation": "SEBI cloud framework (Mar 2023) and CSCRF (Aug 2024); IRDAI ICS Guidelines 2023",
+      "url": "https://www.medianama.com/2023/03/223-sebi-mandates-data-loclisation-regulated-entities/"
+    },
+    {
+      "id": "JP_APPI",
+      "name": "Act on the Protection of Personal Information",
+      "kind": "obligation",
+      "market": "apac",
+      "citation": "Act on the Protection of Personal Information (APPI)",
+      "url": "https://www.ppc.go.jp/en/legal/"
+    },
+    {
+      "id": "HK_PDPO",
+      "name": "Personal Data (Privacy) Ordinance",
+      "kind": "obligation",
+      "market": "apac",
+      "citation": "Cap. 486",
+      "url": "https://www.elegislation.gov.hk/hk/cap486"
+    },
+    {
+      "id": "HK_HKMA",
+      "name": "HKMA Supervisory Policy Manual (technology risk, outsourcing, operational resilience)",
+      "kind": "obligation",
+      "market": "apac",
+      "citation": "HKMA SPM TM-G-1, SA-2, OR-2; Guidance on Cloud Computing (31 Aug 2022)",
+      "url": "https://resourcehub.bakermckenzie.com/en/resources/cloud-compliance-center/apac/hong-kong/topics/rules-for-cloud-outsourcing"
+    },
+    {
+      "id": "KR_PIPA",
+      "name": "Personal Information Protection Act",
+      "kind": "obligation",
+      "market": "apac",
+      "citation": "Personal Information Protection Act (as amended, in force 15 Sep 2023)",
+      "url": "https://www.pipc.go.kr/eng/index.do"
+    },
+    {
+      "id": "CN_PIPL",
+      "name": "Personal Information Protection Law",
+      "kind": "obligation",
+      "market": "apac",
+      "citation": "Personal Information Protection Law of the PRC (2021)",
+      "url": "https://prighter.com/resources/laws/chinese-pipl/articles/article-3"
+    }
+  ],
+  "zones": {
+    "eea": "EU or EEA",
+    "uk": "United Kingdom",
+    "ch": "Switzerland",
+    "us": "United States",
+    "ca": "Canada",
+    "in": "India",
+    "sg": "Singapore",
+    "au": "Australia",
+    "nz": "New Zealand",
+    "jp": "Japan",
+    "hk": "Hong Kong",
+    "kr": "South Korea",
+    "cn": "Mainland China",
+    "other": "Other"
+  },
+  "dataClasses": {
+    "personal": "Personal data",
+    "special": "Sensitive personal data",
+    "financial": "Financial account, card and payment-transaction data",
+    "ai_training": "Datasets used to train or fine-tune AI models",
+    "proprietary": "Trade secrets, source code and other commercially sensitive non-personal data",
+    "government": "Classified data, or data held for a government client under contract restrictions",
+    "ot_ci": "Operational-technology and critical-infrastructure telemetry"
+  },
+  "levels": {
+    "L0": "L0 No location requirement",
+    "L1": "L1 Residency",
+    "L2": "L2 Residency with access control and key custody",
+    "L3": "L3 Operational sovereignty",
+    "L4": "L4 Jurisdictional immunity or disconnected"
+  },
+  "notices": {
+    "disclaimer": "Indicative assessment from self-reported answers. Not legal advice: confirm applicability and obligations with counsel before acting.",
+    "caps": "Statutory maximums are caps, not expected fines, and are never added together.",
+    "review": "Internal consultant use only until the legal review (PLAN S10)."
+  }
+}

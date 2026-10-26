@@ -3,7 +3,7 @@
  * tool; this check refuses the request. A caller may use an accelerator when they are an administrator (Cognito
  * Admin group or a bootstrap address in SUPER_ADMIN_EMAILS) or their saved permissions grant it under the same rule
  * as the page guard: the accelerator's take or full flag, or the accelerator (or '*') in their take or view list.
- * Permissions live in the reports bucket (config/rbac-permissions.json), written by the Access Control screen.
+ * Posture IQ's permission opens the merged Sovereign IQ (PLAN S5). Permissions live in the reports bucket (config/rbac-permissions.json), written by the Access Control screen.
  *
  * A request with no verified identity (a route without the Cognito authorizer, such as the old Accelerators API
  * routes) is refused, and so is any request when the permissions cannot be read: the check fails closed.
@@ -22,7 +22,7 @@ export interface Permissions {
 export type PermissionSource = (email: string) => Promise<Permissions | null>;
 
 /** A retired accelerator's permission opens its replacement (FinOps Value Case → FinOps IQ, 22 Oct 2026). */
-const ALIASES: Record<string, string[]> = { 'finops-iq': ['finops-value-case'] };
+const ALIASES: Record<string, string[]> = { 'finops-iq': ['finops-value-case'], 'sovereign-iq': ['posture-iq'] };
 const CACHE_MS = 60_000;
 const KEY = 'config/rbac-permissions.json';
 

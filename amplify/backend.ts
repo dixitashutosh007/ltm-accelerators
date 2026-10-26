@@ -20,6 +20,7 @@ import { evaluateResilienceIqFunction } from './functions/evaluate-resilience-iq
 import { manageResilienceEvidenceFunction } from './functions/manage-resilience-evidence/resource';
 import { manageResilienceAssessmentFunction } from './functions/manage-resilience-assessment/resource';
 import { manageFinOpsAssessmentFunction } from './functions/manage-finops-assessment/resource';
+import { manageSovereignAssessmentFunction } from './functions/manage-sovereign-assessment/resource';
 import { finopsIqReportFunction } from './functions/finops-iq-report/resource';
 import {
   ADMIN_GROUP, API_GATEWAY_CORS_ORIGINS, API_BURST_LIMIT, API_RATE_LIMIT, KEEP_LEGACY_API,
@@ -41,6 +42,7 @@ export const backend = defineBackend({
   manageResilienceEvidenceFunction,
   manageResilienceAssessmentFunction,
   manageFinOpsAssessmentFunction,
+  manageSovereignAssessmentFunction,
   finopsIqReportFunction
 });
 
@@ -67,6 +69,7 @@ const COGNITO_ISSUER = `https://cognito-idp.${REGION}.amazonaws.com/${USER_POOL_
  * assessment once expiresAt passes, 24 months after its last change.
  * ------------------------------------------------------------------ */
 backend.data.resources.cfnResources.amplifyDynamoDbTables['FinOpsIqAssessment'].timeToLiveAttribute = { attributeName: 'expiresAt', enabled: true };
+backend.data.resources.cfnResources.amplifyDynamoDbTables['SovereignIqAssessment'].timeToLiveAttribute = { attributeName: 'expiresAt', enabled: true };
 
 /* ------------------------------------------------------------------
  * Accelerator access on the server (amplify/functions/_shared/access.ts):
@@ -78,7 +81,7 @@ for (const fn of [
   backend.evaluateFinOpsIqFunction, backend.manageFinOpsAssessmentFunction, backend.finopsIqReportFunction,
   backend.evaluatePostureIqFunction, backend.evaluateSovereignIqFunction, backend.evaluateCloudIqFunction,
   backend.evaluateStrategyIqFunction, backend.evaluateModernizationIqFunction, backend.evaluateResilienceIqFunction,
-  backend.manageResilienceAssessmentFunction, backend.manageResilienceEvidenceFunction
+  backend.manageResilienceAssessmentFunction, backend.manageResilienceEvidenceFunction, backend.manageSovereignAssessmentFunction
 ]) {
   fn.addEnvironment('REPORTS_BUCKET', REPORTS_BUCKET);
   fn.addEnvironment('SUPER_ADMIN_EMAILS', SUPER_ADMIN_EMAILS);
@@ -145,6 +148,7 @@ const integrate = (id: string, fn: { resources: { lambda: IFunction } }) =>
 const integrations = {
   finopsIq: integrate('AdvisoryFinOpsIq', backend.evaluateFinOpsIqFunction),
   finopsAssessment: integrate('AdvisoryFinOpsIqAssessment', backend.manageFinOpsAssessmentFunction),
+  sovereignAssessment: integrate('AdvisorySovereignIqAssessment', backend.manageSovereignAssessmentFunction),
   finopsReport: integrate('AdvisoryFinOpsIqReport', backend.finopsIqReportFunction),
   posture: integrate('AdvisoryPostureIq', backend.evaluatePostureIqFunction),
   sovereign: integrate('AdvisorySovereignIq', backend.evaluateSovereignIqFunction),
@@ -166,6 +170,10 @@ route('/api/finops-iq/assessment', [HttpMethod.GET, HttpMethod.POST], integratio
 route('/api/finops-iq/report', [HttpMethod.GET], integrations.finopsReport);
 route('/api/evaluate/posture-iq', [HttpMethod.POST], integrations.posture);
 route('/api/evaluate/sovereign-iq', [HttpMethod.POST], integrations.sovereign);
+// Merged Sovereign IQ (engine v4, PLAN S5): scoring and save/resume for the new page, beside the current one until
+// the switch-over.
+route('/api/evaluate/sovereign-iq/v4', [HttpMethod.POST], integrations.sovereign);
+route('/api/sovereign-iq/assessment', [HttpMethod.GET, HttpMethod.POST], integrations.sovereignAssessment);
 route('/api/evaluate/cloud-iq', [HttpMethod.POST], integrations.cloud);
 route('/api/evaluate/strategy-iq', [HttpMethod.POST], integrations.strategy);
 route('/api/evaluate/modernization-iq', [HttpMethod.POST], integrations.modernization);

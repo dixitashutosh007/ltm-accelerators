@@ -179,8 +179,9 @@ function includesAny(list, ...values) {
   return Array.isArray(list) && values.some(v => list.includes(v));
 }
 
-// A retired accelerator's permission carries over to its replacement (FinOps Value Case → FinOps IQ, 22 Oct 2026).
-const PERMISSION_ALIASES = { 'finops-iq': ['finops-value-case'] };
+// A retired accelerator's permission carries over to its replacement (FinOps Value Case → FinOps IQ, 22 Oct 2026;
+// Posture IQ → the merged Sovereign IQ, PLAN S5).
+const PERMISSION_ALIASES = { 'finops-iq': ['finops-value-case'], 'sovereign-iq': ['posture-iq'] };
 
 function canAccessAccelerator(perms, acceleratorId) {
   return [acceleratorId, ...(PERMISSION_ALIASES[acceleratorId] || [])].some(id => canAccessOne(perms, id));

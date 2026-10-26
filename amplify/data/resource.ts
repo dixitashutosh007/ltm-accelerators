@@ -2,6 +2,7 @@ import { type ClientSchema, a, defineData } from '@aws-amplify/backend';
 import { manageResilienceAssessmentFunction } from '../functions/manage-resilience-assessment/resource';
 import { manageResilienceEvidenceFunction } from '../functions/manage-resilience-evidence/resource';
 import { manageFinOpsAssessmentFunction } from '../functions/manage-finops-assessment/resource';
+import { manageSovereignAssessmentFunction } from '../functions/manage-sovereign-assessment/resource';
 import { finopsIqReportFunction } from '../functions/finops-iq-report/resource';
 
 /**
@@ -13,6 +14,7 @@ import { finopsIqReportFunction } from '../functions/finops-iq-report/resource';
  * 5. ResilienceEvidence: Governed evidence metadata and validation lifecycle for Resilience IQ
  * 6. UserAllowlist: Pre-approved email directory with RBAC roles
  * 7. FinOpsIqAssessment: saved FinOps IQ assessments (request, consultant notes, server-computed result)
+ * 8. SovereignIqAssessment: saved Sovereign IQ v4 assessments (same shape, no logo)
 
  */
 const schema = a.schema({
@@ -178,6 +180,29 @@ const schema = a.schema({
       allow.group('Admin').to(['read'])
     ]),
 
+  SovereignIqAssessment: a
+    .model({
+      assessmentId: a.string().required(),
+      clientName: a.string().required(),
+      clientSector: a.string(),
+      respondentEmail: a.string().required(),
+      status: a.string().required(),
+      mode: a.string().required(),
+      engineVersion: a.string().required(),
+      requestJson: a.string().required(),
+      consultantNotes: a.string(),
+      resultJson: a.string(),
+      startedAt: a.datetime().required(),
+      completedAt: a.datetime(),
+      archivedAt: a.datetime(),
+      // Epoch seconds 24 months after the last change; DynamoDB time to live deletes the record then.
+      expiresAt: a.integer()
+    })
+    .identifier(['assessmentId'])
+    .authorization(allow => [
+      allow.group('Admin').to(['read'])
+    ]),
+
   UserAllowlist: a
     .model({
       email: a.string().required(),
@@ -193,6 +218,7 @@ const schema = a.schema({
   allow.resource(manageResilienceAssessmentFunction).to(['query', 'mutate']),
   allow.resource(manageResilienceEvidenceFunction).to(['query', 'mutate']),
   allow.resource(manageFinOpsAssessmentFunction).to(['query', 'mutate']),
+  allow.resource(manageSovereignAssessmentFunction).to(['query', 'mutate']),
   // The report reads completed assessments only.
   allow.resource(finopsIqReportFunction).to(['query'])
 ]);
