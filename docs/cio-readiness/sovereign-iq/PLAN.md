@@ -24,7 +24,7 @@
 | S10 | Client-data protection and legal counsel gate | S2–S9 (incl. S7b); WS-S6 | Transfer basis, TIA, privacy notice, retention live; counsel sign-off for EU/UK, US and APAC |
 | S11 | Re-score against all 13 areas | S0–S10 | Validation report re-issued with all 13 Pass, or Partials accepted in writing |
 
-S0 starts now and does not wait for any decision. S2 content research can run beside S1. S5–S8 can run in parallel once S3's contract is fixed. **Order from 26 Oct 2026 (D18):** owner review of Gate S6, then S7, with S7b beside it once the SEAL wording is verified; then S8. S9 needs WS-S1; S10 needs WS-S6.
+S0 starts now and does not wait for any decision. S2 content research can run beside S1. S5–S8 can run in parallel once S3's contract is fixed. **Order from 26 Oct 2026 (D18):** owner review of Gate S6, then S7, with S7b beside it once the SEAL wording is verified; then S8. S9 needs WS-S1; S10 needs WS-S6. **Gates S0 to S8 (S7b included) approved by 26 Oct 2026; next: S9 (blocked on Bedrock access for the AWS account), S10, S11.**
 
 ---
 
@@ -373,12 +373,32 @@ The 28 P claims cite a primary URL whose article text was not re-read. They are 
 **Gate S6:** visual review of PDFs for the five archetypes; trace test passes; backlog imports cleanly into a spreadsheet.
 
 
+**Gate S6: approved by the owner on 26 Oct 2026**, after the CIO challenge re-test (10 of 10) and the re-test fixes (engine 4.6.0).
+
 **Status (26 Oct 2026): built, for the owner's review.** Engine 4.2.0 adds maturity by control area (ten areas in `controls.json`; empty when no headline number is shown).
 - **Report** (`v4/report.ts`) in the FinOps IQ format, on the shared report model and PDF renderer: cover and contents; executive summary (lead, five headline figures, "Where to start", decisions and confirmations, the not-legal-advice callout); required level by kind of data; control maturity (bars by area, heatmap by level, the controls); compliance exposure (heatmap by market, the regulations with grade, reason, rating and statutory maximum, foreign-access exposure); findings; roadmap by wave; methodology; sources; consultant checks (consultant edition only: regulations that do not apply with their rule, items pending a source, engine notes, consultant notes). Every number is a traced segment matched to the engine result; registry text cites its claims and no claim ID is shown. The shared renderer gains two chart blocks, `heatmap` and `bars`, available to every accelerator.
 - **Backlog CSV:** one row per finding in roadmap order.
 - **Service:** `GET /api/sovereign-iq/report?assessmentId=&format=pdf|csv&view=client` (`sovereign-iq-report`), completed assessments only, ownership checked, behind the authorizer and the access check.
 - **Page:** Download report (PDF) and backlog (CSV) in the result header; the overview adds a radar of maturity by area, findings by severity and a regulation heatmap by market.
 - **Tests:** `sovereign-iq-v4-report.test.ts` (sections, traced numbers, charts, client edition, backlog, PDF renders), report service tests, and a browser test that downloads both files. Full suites: 911 unit tests and 83 browser tests pass.
+
+**CIO challenge test (26 Oct 2026): 3 of 10 on the first run; fixes built (engine 4.6.0).** The first run by `sovereignty-compliance-lead` ([design/S6-cio-challenge.md](design/S6-cio-challenge.md)) did not meet the gate (9 of 10). Built on branch `sovereign-iq-s6-fixes`:
+- Q4: "How your data is handled" in the methodology (hosting, data held, retention, logs, AI state), marked draft until S10. Q8: a "Scope and limitations" box, and a client appendix of the regulations that do not apply.
+- Q1/D2: "How we calculated this" (maturity control by control, areas, each statutory maximum with rule, input and rate, every traced number) and an assumption register (`v4/assumptions.json`, ASM-SOV-001 to 014).
+- D3: statutory maximums. "At least" where a turnover limb is not collected (Singapore PDPA, Australian Privacy Act, with every limb named); NIS2 as "at least", with the entity class; AI Act range while SME status is unsettled; advisory regimes read "No direct penalty on you".
+- Q7/D4: a delivery-grade roadmap from `v4/delivery.json` (LTM heuristic): effort, start and duration by type of work, dependencies, milestone, KPI and key risk; consecutive waves; the backlog gains the same columns and a check on every row.
+- Q5: "Legal minimum" column and "What a lower level would change". Q6/D5: playbook options filtered by allowed zone and regime, status notes kept in the client edition, Managed HSM labelled. Q10: independence sentence, one primary offering per finding, outline lines keyed to the result. D6 to D11, D17: state words, display names, band rule, backlog values, sources with URLs and LTM method notes.
+
+**Re-test (26 Oct 2026): 10 of 10, gate met** ([design/S6-cio-challenge-retest.md](design/S6-cio-challenge-retest.md)). The practice lead recommends approving S6 once N1 and N2 are fixed; both are fixed, with N3 to N8 and R3: "what a lower level would change" lists only findings no other kind of data needs; the summary says why Sovereign-ready is withheld; an "at least" headline says it is the largest computable amount; dependents wait for the end of a prerequisite's duration; decisions and scope confirmations start in month 1; no internal references in the client edition; the backlog lists every level behind a board-set control; regulations that do not apply show their main scope test; NIS2 explains an essential class that overrides the client's own. The assumption register carries reasoning, FTE-months and a review date.
+
+**Departures from the approved design, approved by the owner on 26 Oct 2026 (D29 to D33):**
+1. DESIGN 7.2: the headline statutory cap comes from a regulation that applies; one still to confirm leads only when none that applies has a cap (D3d).
+2. The maturity band is capped at Managed while a finding is critical or a regulation is red (D9); ARC2 workshop and ARC4 now read Managed at 84 and 85.
+3. S8: each finding calls for one primary offering (migration where the data must move, otherwise the control's own offering); the R1–R2 and move mapping holds at row level.
+4. The client edition lists the regulations that do not apply (DESIGN 9 kept them consultant-only).
+5. `delivery.json` and ASM-SOV-012 and 013 (effort bands, durations, start months) as LTM heuristics.
+
+**Open, needing sources (practice lead):** D13 to D15 (AI Act phase-in lines, SEC foreign-private-issuer branch, FISA 702 certification date), D7(c) primary sources in place of news, D8 related-obligation attribution (DORA Art. 9(4)(d), RTS 2024/1774 Art. 6–7 and 21), EKM general availability (D24).
 ---
 
 ## S7: Sovereign Cloud Advisory and platform playbook (WS-S3)
@@ -439,6 +459,8 @@ The earlier draft used `SOV.EXIT.TESTED`, `SOV.OOB.MGMT` and `SOV.PLATFORM.TARGE
 
 **Dependencies:** S3; S6 (report and backlog); WS-S3 catalogue schema (shared with Resilience IQ R10 item 7).
 
+**Gate S7: approved by the owner on 26 Oct 2026**, with O1 and O5 to O8 tracked: each is labelled on screen or falls back safely, and `sovereignty-compliance-lead` sources them before external use.
+
 **Status (26 Oct 2026): built, for the owner's review.** Owner feedback (26 Oct 2026) applied: the Cloud advisory appears only when it applies (data at L1 or above on AWS, Azure or Google Cloud); with platform actions only for other platforms it is shown as "Platform actions"; otherwise there is no tab and no report section. The page has a status summary, a placement grid by kind of data and platform, a card per placement not met (rung ladder, gaps, options with availability, alternatives, facts for counsel, collapsible actions) and actions grouped by platform; the report section adds the status summary. Engine 4.3.0 to 4.4.0; ladder 1.1.0 (24 provider options, 4 alternatives, 7 facts-only R4 entries) and playbook 1.1.0 (72 entries on 10 platforms), all from [S7-SOURCES.md](design/S7-SOURCES.md) (CLM-SOV-220 to 270) with decisions D20–D27. Question C1; Cloud advisory tab; "Sovereign cloud advisory" report section; four backlog columns; client mode keeps only content cleared for clients. Tests: `sovereign-iq-v4-advisory.test.ts` including both content gates (no technical gap on any archetype platform; R2 options in every zone, alternatives wherever R3 has none). Open: O1 (AWS per-request approval), O5 (Bleu and Delos status), O6 (local sovereign providers for UK and APAC alternatives), O7 (approach-level examples), O8 (government cloud eligibility).
 
 **Gate S7:**
@@ -470,6 +492,8 @@ The earlier draft used `SOV.EXIT.TESTED`, `SOV.OOB.MGMT` and `SOV.PLATFORM.TARGE
 
 **Dependencies:** S3; S6; S7 for the provider-selection criteria in item 5 (the rest can run beside S7).
 
+**Gate S7b: approved by the owner on 26 Oct 2026.**
+
 **Status (26 Oct 2026): built, for the owner's review.** Owner feedback (26 Oct 2026) applied: the SEAL view tab shows the SEAL scale with the highest level needed, stepped tracks per objective (tender minimum outlined), a graded grid by kind of data and support bars per objective; the report section carries the same visuals (a new shared `steps` block). SEAL wording verified (CLM-SOV-220 to 227); `seal.json` and `seal.ts`; question L3 with the reverse mapping; SEAL 0–4 explainer beside L1; SEAL view tab; report section "EU sovereignty levels (SEAL)"; the Commission's tender results in the consultant view only (D20). Tests: `sovereign-iq-v4-seal.test.ts` and the report lint.
 
 **Gate S7b:**
@@ -495,6 +519,8 @@ The earlier draft used `SOV.EXIT.TESTED`, `SOV.OOB.MGMT` and `SOV.PLATFORM.TARGE
 Scope ranges appear only in the consultant SOW draft (D7). The client sees type, purpose and execution outline.
 
 **Dependencies:** S7 (offerings map to placement rungs: R1–R2 to the sovereign landing zone, R3–R4 to migration to a sovereign platform), S7b; WS-S5 catalogue.
+
+**Gate S8: approved by the owner on 26 Oct 2026** (with D31: one primary offering per finding).
 
 **Status (26 Oct 2026): built, for the owner's review.** Engine 4.5.0. `offerings/sovereign-iq.json` (six offerings from the table above, typed; migration is "advisory, then transformation"; route to Resilience IQ for exit and concentration, consultant SOW only) with CLM-SOV-271; `help.ts` selects offerings from each finding's offering and from the placement matrix (R1–R2 gaps to the sovereign landing zone, rows needing a sovereign offering to migration); outline items keyed to the finding's regulations, controls, rungs and platforms. Page: "How LTM can help" under the roadmap. Report: section after the roadmap; "Statement of work draft" appendix in the consultant edition only. The claims checker now scans the Sovereign IQ catalogues. Tests: `sovereign-iq-v4-help.test.ts`.
 
@@ -541,6 +567,12 @@ Scope ranges appear only in the consultant SOW draft (D7). The client sees type,
 **Dependencies:** WS-S6; S2–S9 content frozen for review.
 
 **Gate S10:** written counsel sign-off per market; TIA and privacy notice published; retention job tested.
+
+**Status (26 Oct 2026): internal use approved on the AI review; gate open until a qualified lawyer signs off per market (owner decision, as FinOps IQ M6).** The review in a counsel role by `sovereignty-compliance-lead` is [design/S10-data-protection.md](design/S10-data-protection.md) (comments C1 to C20, actions A1 to A9) with a draft transfer impact assessment, [design/S10-TIA.md](design/S10-TIA.md): India's public-authority access law meets the EDPB "problematic legislation" test in principle; residual risk is low because only consultants' business contact data and network addresses are held, for a short time. Built (engine 4.7.0):
+- Notice and disclaimer from one source (`NOTICES`, `v4/public-schema.ts`) on the start screen and in the report, in the review's wording (4.2, 4.3), approved by the owner on 26 Oct 2026: "not a substitute for advice from a qualified lawyer; LTM is not a law firm", the date the content is stated at, and a privilege sentence. The AI sentence never claims no model has seen the data (W4).
+- Wording W1 to W14 (5.2): "Linked legal duties" for regulations that apply and "If X applies to you" for those to confirm (W1); CLOUD Act, DPDP, FISA 702 (status of mid-September 2026, re-check before quoting), PRA, SEC and RBI reasons (W2, W3, W5, W13); groups "Applies on your answers / May apply – confirm / For awareness / Does not apply on your answers" (W6, W7); "Why it is needed" and "Linked to regulations" (W8); "Control gaps" ratings, not a compliance finding (W9); "Jurisdictional separation" and the extended counsel line (W10, W11); localisation findings name the regulation and send exceptions to counsel (W12); scope and limitations (W14); SEAL heading; SOW and offering lines that legal conclusions are for counsel.
+- Retention: the scoring function keeps logs one year; the backend check asserts time to live and one-year logs for all four Sovereign functions; handler tests for expiry on every write and expired records treated as deleted (A5). The AI focus field says "do not name individuals".
+- **Open:** A6 lawyer sign-off per market, using the ranked list in section 6.2 (France and India on the practice-of-law point); A4 Bedrock retention mode `none` in eu-west-1 before AI is switched on; A8 retire `sovereign-iq.html` and `posture-iq.html` before external use; A9 (optional) log the Cognito user ID instead of the email. The transfer instrument (A1) is deferred to the LTM go-live.
 
 ---
 
@@ -617,3 +649,8 @@ Taken by the product owner on the recommendations in discussion (D15–D19), and
 | D26 | R4 wording | Facts only (owner, operator, operator's law, technology supplier), with "Whether this meets R4 is for your counsel" | S7 |
 | D27 | US government clouds | R3 for US data, with an eligibility caveat | S7 |
 | D28 | Where AI inference runs (replaces D14) | In-region `eu-west-1` (Ireland): inference stays in one EU region, 10% regional premium. ap-south-1 serves current Claude models on the Global endpoint only | S9 |
+| D29 | Headline statutory cap (replaces part of DESIGN 7.2) | From a regulation that applies; one still to confirm leads only when none that applies has a cap | S6 |
+| D30 | Top maturity band | Sovereign-ready is withheld (Managed shown, with the reason) while a finding is critical or a regulation is red | S6 |
+| D31 | Offerings per finding | One primary offering per finding: migration where the data must move, otherwise the control's own offering; R1–R2 and move mapping at row level | S8 |
+| D32 | Regulations that do not apply | Listed in the client edition, with the scope test, in an appendix (DESIGN 9 kept them consultant-only) | S6 |
+| D33 | Roadmap planning estimates | `v4/delivery.json` and ASM-SOV-012 and 013 as LTM heuristics (Low confidence), reviewed every 90 days by `sovereignty-compliance-lead` | S6 |

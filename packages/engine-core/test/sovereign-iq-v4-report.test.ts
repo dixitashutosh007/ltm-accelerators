@@ -78,15 +78,18 @@ describe('Sovereign IQ report', () => {
     }
   });
 
-  it('the client edition shows no rule IDs, claim IDs, consultant notes or list of regulations that do not apply', () => {
+  it('the client edition shows no rule IDs, claim IDs or consultant notes, and lists the regulations that do not apply only in their appendix', () => {
     for (const x of runs.filter(y => y.view === 'client')) {
       const t = allText(x.doc);
       expect(t, x.label).not.toMatch(/\[[A-Z]{2}_[A-Z0-9_]+\.\d+\]|CLM-[A-Z]+-\d+|Board wants L3/);
+      // S6 challenge Q8: the list is shown to the client, with the reason, in one appendix and nowhere else.
+      const na = x.doc.sections.find(s => s.id === 'not-applicable')!;
+      expect(na, x.label).toBeTruthy();
       for (const g of x.r.regimes.filter(g => g.grade === 'not_applicable')) {
-        // The Sources appendix may cite a statute as a source (e.g. Data Act switching rights for an exit plan); that is not
-        // a list of regulations that do not apply.
-        const tables = x.doc.sections.filter(s => s.id !== 'sources').flatMap(s => s.blocks).filter(b => b.kind === 'table') as any[];
+        // The Sources appendix may cite a statute as a source (e.g. Data Act switching rights for an exit plan).
+        const tables = x.doc.sections.filter(s => s.id !== 'sources' && s.id !== 'not-applicable').flatMap(s => s.blocks).filter(b => b.kind === 'table') as any[];
         expect(tables.some(tb => tb.rows.some((row: any) => text(row[0]) === g.name)), `${x.label} ${g.regime}`).toBe(false);
+        expect((na.blocks[0] as any).rows.some((row: any) => text(row[0]) === g.name), `${x.label} ${g.regime} listed`).toBe(true);
       }
     }
   });
@@ -96,6 +99,26 @@ describe('Sovereign IQ report', () => {
     const t = allText(x.doc);
     expect(t).toMatch(/Regulations checked that do not apply/);
     expect(t).toMatch(/Board wants L3 for payments/);
+  });
+
+  it('the roadmap never starts an action before its prerequisites reach their milestone (S6 challenge D4)', () => {
+    for (const x of runs) for (const f of x.r.findings) for (const id of f.dependsOn) {
+      const p = x.r.findings.find(y => y.id === id)!;
+      expect(f.startMonth, `${x.label} ${f.id} after ${id}`).toBeGreaterThanOrEqual(p.startMonth + p.durationMonths[0]);
+    }
+  });
+
+  it('every section number traces: "How we calculated this" shows the maturity arithmetic and every statutory maximum in scope', () => {
+    for (const x of runs) {
+      const calc = x.doc.sections.find(s => s.id === 'calculation')!;
+      expect(calc, x.label).toBeTruthy();
+      expect(x.doc.sections.some(s => s.id === 'assumptions'), x.label).toBe(true);
+      const t: string[] = [];
+      walkSegments({ ...x.doc, sections: [calc] }, (seg: Seg) => t.push(typeof seg === 'string' ? seg : seg.text));
+      if (x.r.maturity.score != null) expect(t.join(' '), x.label).toMatch(new RegExp(`=\\s+${x.r.maturity.score}\\b`));
+      const capRows = (calc.blocks.find(b => b.kind === 'table' && (b as any).head[0] === 'Regulation') as any)?.rows ?? [];
+      expect(capRows.length, x.label).toBe(x.r.exposure.regimes.filter(e => e.cap && (x.view === 'consultant' || !x.r.regimes.find(g => g.regime === e.regime)!.consultantOnly)).length);
+    }
   });
 
   it('no claim ID is shown in any edition (they are kept as citations)', () => {
@@ -108,11 +131,14 @@ describe('Sovereign IQ report', () => {
       expect(b.rows.length, x.label).toBe(x.r.findings.filter(f => x.view === 'consultant' || !f.consultantOnly).length);
       const waves = b.rows.map(r => Number(r[1]));
       expect([...waves].sort((p, q) => p - q), x.label).toEqual(waves);
+      // S6 challenge D4: waves are numbered 1, 2, 3 with no gap, and every row has a check, an effort and a milestone.
+      expect([...new Set(waves)], x.label).toEqual([...new Set(waves)].map((_, i) => i + 1));
+      for (const row of b.rows) for (const col of ['Verification', 'Effort', 'Milestone', 'KPI']) expect(String(row[b.header.indexOf(col)]).trim(), `${x.label} ${row[0]} ${col}`).not.toBe('');
       expect(b.header.slice(-4), x.label).toEqual(['Platforms', 'Placement rung', 'Service families', 'Verification']);
       // A finding's placement rung is the one its placement rows need (PLAN S7).
       for (const row of b.rows) {
         const need = [...new Set(x.r.advisory.placement.filter(p => p.findingIds.includes(String(row[0]))).map(p => p.minimumRung))].sort().join('; ');
-        expect(row[12], `${x.label} ${row[0]}`).toBe(need);
+        expect(row[b.header.indexOf('Placement rung')], `${x.label} ${row[0]}`).toBe(need);
       }
     }
   });

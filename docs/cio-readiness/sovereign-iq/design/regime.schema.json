@@ -161,6 +161,7 @@
         "turnoverPercent": { "type": "number", "minimum": 0, "maximum": 100 },
         "turnoverBasis": { "enum": ["worldwide_annual", "worldwide_prior_year", "average_daily_worldwide", "national_annual", "adjusted_turnover", "total_revenue_excluding_unrelated"] },
         "perViolation": { "type": "boolean" },
+        "otherLimbs": { "type": "string", "description": "Limbs of a greater-of maximum the assessment cannot compute, in words (e.g. three times the benefit obtained)" },
         "article": { "type": "string" },
         "claims": { "type": "array", "items": { "$ref": "#/$defs/claimId" } }
       }

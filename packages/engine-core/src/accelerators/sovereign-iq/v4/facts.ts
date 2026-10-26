@@ -13,6 +13,11 @@ export type Facts = Record<string, unknown>;
 export const ZONES: Zone[] = ['eea', 'uk', 'ch', 'us', 'ca', 'in', 'sg', 'au', 'nz', 'jp', 'hk', 'kr', 'cn', 'other'];
 export const DATA_CLASSES: DataClass[] = ['personal', 'special', 'financial', 'ai_training', 'proprietary', 'government', 'ot_ci'];
 export const LEVELS: Level[] = ['L0', 'L1', 'L2', 'L3', 'L4'];
+/** Short names for the kinds of data, for engine text, tables, charts and the report (D1 carries the full wording). */
+export const DATA_CLASS_LABELS: Record<string, string> = {
+  personal: 'Personal', special: 'Sensitive personal', financial: 'Financial and payment', ai_training: 'AI training',
+  proprietary: 'Proprietary', government: 'Government', ot_ci: 'OT and critical infrastructure'
+};
 /** Classes whose allowed zone defaults to where their people are; the others default to where the group has entities. */
 export const PEOPLE_CLASSES: DataClass[] = ['personal', 'special', 'financial'];
 

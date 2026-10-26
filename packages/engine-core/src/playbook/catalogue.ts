@@ -25,6 +25,12 @@ export interface PlaybookOption {
   name: string;
   kind: typeof OPTION_KINDS[number];
   detail?: string;
+  /** Allowed zones the option serves (S6 challenge D5); absent means any zone. */
+  zones?: string[];
+  /** Shown with the option in every edition, e.g. a status still to confirm (S6 challenge D5). */
+  note?: string;
+  /** Shown only when this regime applies or likely applies, e.g. Data Act switching rights (S6 challenge D10). */
+  requiresRegime?: string;
 }
 
 export interface PlaybookEntry {

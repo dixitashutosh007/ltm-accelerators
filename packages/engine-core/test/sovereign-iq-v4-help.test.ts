@@ -52,12 +52,18 @@ describe('Sovereign IQ Gate S8 over the archetypes', () => {
       for (const f of x.r.findings) expect(listed.has(f.id) || routed.has(f.id), f.id).toBe(true);
     });
 
-    it(`${x.label}: placement rows call for the landing zone (R1-R2 gaps) or migration (sovereign offering needed)`, () => {
-      for (const p of x.r.advisory.placement) for (const id of p.findingIds) {
-        const f = x.r.findings.find(y => y.id === id)!;
-        if (p.status === 'move') expect(offeringIdsOf(f, x.r.advisory.placement), `${p.dataClass} ${p.platform} ${id}`).toContain('OFF.SOV.MIGRATION');
-        if (p.status === 'gap' && ['R1', 'R2'].includes(p.minimumRung)) expect(offeringIdsOf(f, x.r.advisory.placement), `${p.dataClass} ${p.platform} ${id}`).toContain('OFF.SOV.LZ');
+    it(`${x.label}: placement rows call for the landing zone (R1-R2 gaps) or migration (sovereign offering needed), one offering per finding`, () => {
+      const ids = (id: string) => offeringIdsOf(x.r.findings.find(y => y.id === id)!, x.r.advisory.placement);
+      for (const p of x.r.advisory.placement) {
+        // S6 challenge Q10: a row that needs a sovereign offering calls for migration through the control a move closes;
+        // its other gaps keep their own offering. An R1-R2 gap with no offering of its own calls for the landing zone.
+        if (p.status === 'move' && p.findingIds.length) expect(p.findingIds.some(id => ids(id).includes('OFF.SOV.MIGRATION')), `${p.dataClass} ${p.platform}`).toBe(true);
+        if (p.status === 'gap' && ['R1', 'R2'].includes(p.minimumRung)) for (const id of p.findingIds) {
+          const f = x.r.findings.find(y => y.id === id)!;
+          if (!f.offeringRefs.length) expect(ids(id), `${p.dataClass} ${p.platform} ${id}`).toContain('OFF.SOV.LZ');
+        }
       }
+      for (const f of x.r.findings) expect(offeringIdsOf(f, x.r.advisory.placement).filter(o => o.startsWith('OFF.')).length, f.id).toBeLessThanOrEqual(1);
     });
 
     it(`${x.label}: no scope, price or route reaches the client; the SOW draft is in the consultant edition only`, () => {

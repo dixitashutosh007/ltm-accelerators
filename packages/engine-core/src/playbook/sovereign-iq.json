@@ -478,7 +478,10 @@
       "options": [
         {
           "name": "PREMI3NS by S3NS",
-          "kind": "native"
+          "kind": "native",
+          "zones": [
+            "eea"
+          ]
         },
         {
           "name": "Thales sovereign cloud in Germany (preview)",
@@ -876,11 +879,13 @@
       "options": [
         {
           "name": "Azure Key Vault Managed HSM",
-          "kind": "native"
+          "kind": "native",
+          "note": "keys you control in a Microsoft-operated HSM; on its own this does not hold keys outside the provider"
         },
         {
           "name": "External Key Management with Managed HSM",
-          "kind": "native"
+          "kind": "native",
+          "note": "keeps the key-encryption key outside Microsoft; confirm general availability with Microsoft"
         }
       ],
       "verification": "Key ownership attestation; a revocation test makes test data unreadable",
@@ -1386,11 +1391,18 @@
       "options": [
         {
           "name": "AWS European Sovereign Cloud",
-          "kind": "native"
+          "kind": "native",
+          "zones": [
+            "eea"
+          ]
         },
         {
           "name": "AWS GovCloud (US)",
-          "kind": "native"
+          "kind": "native",
+          "zones": [
+            "us"
+          ],
+          "note": "for eligible US public-sector and regulated workloads; confirm eligibility with AWS"
         },
         {
           "name": "AWS Dedicated Local Zones (per engagement)",
@@ -1423,7 +1435,11 @@
       "options": [
         {
           "name": "Bleu or Delos Cloud (National Partner Clouds)",
-          "kind": "native"
+          "kind": "native",
+          "zones": [
+            "eea"
+          ],
+          "note": "scope and status per partner to confirm; Bleu's SecNumCloud qualification is pending"
         },
         {
           "name": "Sovereign Private Cloud (Azure Local)",
@@ -1431,7 +1447,11 @@
         },
         {
           "name": "Azure Government",
-          "kind": "native"
+          "kind": "native",
+          "zones": [
+            "us"
+          ],
+          "note": "for eligible US government customers; confirm eligibility with Microsoft"
         }
       ],
       "verification": "Partner attestation; operating contract",
@@ -1459,7 +1479,10 @@
       "options": [
         {
           "name": "PREMI3NS by S3NS",
-          "kind": "native"
+          "kind": "native",
+          "zones": [
+            "eea"
+          ]
         },
         {
           "name": "Thales sovereign cloud in Germany (preview)",
@@ -1687,11 +1710,12 @@
       "platform": "azure",
       "level": "stack",
       "action": "Use Regional or Data Zone deployments that match the zone",
-      "approach": "Regional or Data Zone deployments matching the zone; no Global deployment types for zoned data. The APAC data zone spans several countries",
+      "approach": "Regional or Data Zone deployments matching the zone; no Global deployment types for zoned data",
       "options": [
         {
           "name": "Azure AI Foundry Regional and Data Zone deployments",
-          "kind": "native"
+          "kind": "native",
+          "note": "a Data Zone can span several countries (the APAC one does); check it fits your allowed region"
         }
       ],
       "verification": "Deployment-type inventory",
@@ -2019,11 +2043,12 @@
       "platform": "any",
       "level": "platform",
       "action": "Write an exit plan for each critical service, using portable formats",
-      "approach": "Containers and open data formats; an exit plan per critical service; Data Act switching rights. Partner-operated clouds on hyperscaler technology keep a dependency on that technology. Exit testing is verified in Resilience IQ",
+      "approach": "Containers and open data formats; an exit plan per critical service; use statutory switching rights where they apply. Partner-operated clouds on hyperscaler technology keep a dependency on that technology. Exit testing is verified in Resilience IQ",
       "options": [
         {
           "name": "Data Act switching rights",
-          "kind": "practice"
+          "kind": "practice",
+          "requiresRegime": "EU_DATA_ACT"
         },
         {
           "name": "Containers and open formats",

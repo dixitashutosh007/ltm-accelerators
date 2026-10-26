@@ -174,7 +174,12 @@ const finopsTable = resources.find(r => r.Type === 'Custom::AmplifyDynamoDBTable
 check(!!finopsTable, 'FinOpsIqAssessment table not found');
 const ttl = finopsTable?.Properties.timeToLiveSpecification || finopsTable?.Properties.TimeToLiveSpecification;
 check(ttl?.attributeName === 'expiresAt' && ttl?.enabled === true || ttl?.AttributeName === 'expiresAt' && ttl?.Enabled === true, `FinOpsIqAssessment time to live is not enabled on expiresAt: ${JSON.stringify(ttl)}`);
-for (const fn of ['evaluate-finops-iq', 'manage-finops-assessment', 'finops-iq-report']) {
+// Sovereign IQ retention (PLAN S10): the same rules.
+const sovereignTable = resources.find(r => r.Type === 'Custom::AmplifyDynamoDBTable' && /^SovereignIqAssessment/.test(r.Properties?.tableName?.['Fn::Join']?.[1]?.[0] ?? r.Properties?.tableName ?? ''));
+check(!!sovereignTable, 'SovereignIqAssessment table not found');
+const sttl = sovereignTable?.Properties.timeToLiveSpecification || sovereignTable?.Properties.TimeToLiveSpecification;
+check(sttl?.attributeName === 'expiresAt' && sttl?.enabled === true || sttl?.AttributeName === 'expiresAt' && sttl?.Enabled === true, `SovereignIqAssessment time to live is not enabled on expiresAt: ${JSON.stringify(sttl)}`);
+for (const fn of ['evaluate-finops-iq', 'manage-finops-assessment', 'finops-iq-report', 'evaluate-sovereign-iq', 'manage-sovereign-assessment', 'sovereign-iq-report', 'sovereign-iq-narrative']) {
   const groups = ofType('AWS::Logs::LogGroup').filter(g => JSON.stringify(g.Properties.LogGroupName ?? '').includes(fn) || g.id.toLowerCase().includes(fn.replace(/-/g, '')));
   check(groups.length > 0 && groups.every(g => g.Properties.RetentionInDays === 365), `${fn} log group must keep logs for one year (found ${groups.map(g => g.Properties.RetentionInDays).join(', ') || 'none'})`);
 }

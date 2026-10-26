@@ -131,7 +131,7 @@ test('executive: every question asked renders and can be answered; complete; bot
   expect(executive.filter(id => !seen.has(id))).toEqual([]);
   await complete(page);
   // The dashboard: maturity (or why there is no number), regulations, exposure, largest cap, findings.
-  for (const label of ['Sovereignty control maturity', 'Regulations in scope', 'Compliance exposure', 'Largest single statutory cap', 'Findings']) await expect(page.locator('.kpi-label', { hasText: label })).toBeVisible();
+  for (const label of ['Sovereignty control maturity', 'Regulations in scope', 'Control gaps by regulation', 'Largest single statutory cap', 'Findings']) await expect(page.locator('.kpi-label', { hasText: label })).toBeVisible();
   await page.getByRole('tab', { name: 'Regulations' }).click();
   await expect(page.locator('.regime h3', { hasText: 'General Data Protection Regulation' })).toBeVisible();
   await expect(page.locator('.regime h3', { hasText: /DORA|Digital Operational Resilience/ })).toBeVisible();
@@ -179,6 +179,14 @@ test('client view: no notes, rule IDs, numeric states or list of regimes that do
   const data = await page.evaluate(() => (window as any).SOVEREIGN_IQ.state().result);
   expect(data.view).toBe('client');
   expect(JSON.stringify(data)).not.toMatch(/"rule":|"weight":|"consultantNotes"/);
+});
+
+test('the start screen shows the disclaimer and how client data is handled (PLAN S10)', async ({ page }) => {
+  await page.goto('/sovereign-iq-v4');
+  await expect(page.getByText('which LTM has not audited or verified')).toBeVisible();
+  await page.getByText('How your data is handled').click();
+  await expect(page.locator('#data-notice')).toContainText('Mumbai region (India)');
+  await expect(page.locator('#data-notice')).toContainText('two years after its last change');
 });
 
 test('a Posture IQ permission opens the merged page; a user without either is sent back', async ({ page, context }) => {

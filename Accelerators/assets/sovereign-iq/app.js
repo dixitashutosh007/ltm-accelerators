@@ -27,8 +27,9 @@
   /** Scope questions the result depends on: marked required on the Review step. */
   var REQUIRED_SCOPE = ['A1', 'A2', 'A3', 'A4', 'B1', 'B4', 'D1', 'D3', 'P1', 'L1'];
   var STATE_WORD = { 3: 'in place', 2: 'largely in place', 1: 'partly in place', 0: 'not in place', unknown: 'unconfirmed', not_answered: 'not answered' };
-  var GRADE = { applies: 'Applies', likely_confirm: 'Likely – confirm', advisory: 'Advisory', not_applicable: 'Not applicable' };
-  var RAG = { red: 'Red', amber: 'Amber', green: 'Green', not_rated: 'Not rated' };
+  // PLAN S10 W6, W9: groups and ratings state the scope test and the control gaps, not a legal conclusion.
+  var GRADE = { applies: 'Applies on your answers', likely_confirm: 'May apply – confirm', advisory: 'For awareness', not_applicable: 'Does not apply on your answers' };
+  var RAG = { red: 'Major gaps', amber: 'Some gaps', green: 'No gaps found', not_rated: 'Not rated' };
   var SEVERITIES = ['Critical', 'High', 'Medium', 'Low'];
   var SEV_COLOR = { Critical: '#9F1D12', High: '#D9822B', Medium: '#2F7FA0', Low: '#3C8D5A' };
   var CURRENCIES = ['EUR', 'USD', 'GBP', 'CHF', 'INR', 'SGD', 'AUD', 'NZD', 'JPY', 'HKD', 'CNY', 'KRW', 'CAD'];
@@ -149,8 +150,9 @@
     append(app, [
       h('h1', null, 'Sovereign IQ'),
       h('p', { class: 'muted' }, 'Where each kind of your data may run, which regulations apply across the EU and UK, the US and Asia-Pacific, how exposed you are under each, and whether your controls meet the sovereignty level your data needs. Sovereign IQ now includes Posture IQ.'),
-      h('div', { class: 'notice', role: 'note' }, h('strong', null, 'Not legal advice. '), schema.notices.disclaimer.replace(/^.*?Not legal advice: /, '')),
+      h('div', { class: 'notice', role: 'note' }, h('strong', null, 'Not legal advice. '), schema.notices.disclaimer),
       h('section', { class: 'card start', 'aria-labelledby': 'new-h' }, h('h2', { id: 'new-h' }, 'New assessment'), form),
+      h('details', { class: 'card small', id: 'data-notice' }, h('summary', null, 'How your data is handled'), h('p', null, schema.notices.data)),
       listCard
     ]);
     var res = await call(ASSESSMENT);
@@ -686,7 +688,7 @@
   function sevCounts(r) { var s = {}; r.findings.forEach(function (f) { s[f.severity] = (s[f.severity] || 0) + 1; }); return s; }
   function capText(c) {
     if (!c) return null;
-    var fig = c.amount != null ? money(c.amount, c.currency) : c.range ? (c.range[1] != null ? money(c.range[0], c.currency) + ' to ' + money(c.range[1], c.currency) : 'at least ' + money(c.range[0], c.currency)) : '—';
+    var fig = c.amount != null ? (c.atLeast ? 'at least ' : '') + money(c.amount, c.currency) : c.range ? (c.range[1] != null ? money(c.range[0], c.currency) + ' to ' + money(c.range[1], c.currency) : 'at least ' + money(c.range[0], c.currency)) : '—';
     return fig;
   }
 
@@ -707,15 +709,15 @@
     var parts = [{ k: 'applies', color: '#9F1D12' }, { k: 'likely_confirm', color: '#D9822B' }, { k: 'advisory', color: '#2F7FA0' }].map(function (x) { return { value: counts[x.k], color: x.color, label: GRADE[x.k], display: counts[x.k] }; });
     kpis.push(h('div', { class: 'kpi-card' }, h('span', { class: 'kpi-label' }, 'Regulations in scope'),
       h('div', { class: 'kpi-donut' }, C.donut({ label: 'Regulations: ' + parts.map(function (x) { return x.label + ' ' + x.value; }).join(', '), parts: parts, center: String(regs.length) })),
-      h('span', { class: 'kpi-sub' }, counts.applies + ' apply · ' + counts.likely_confirm + ' to confirm · ' + counts.advisory + ' advisory')));
+      h('span', { class: 'kpi-sub' }, counts.applies + ' apply · ' + counts.likely_confirm + ' may apply · ' + counts.advisory + ' for awareness')));
     var rag = { red: 0, amber: 0, green: 0 };
     r.exposure.regimes.forEach(function (e) { if (rag[e.rag] !== undefined) rag[e.rag]++; });
-    kpis.push(h('div', { class: 'kpi-card' }, h('span', { class: 'kpi-label' }, 'Compliance exposure'), h('div', { class: 'rag-row' },
+    kpis.push(h('div', { class: 'kpi-card' }, h('span', { class: 'kpi-label' }, 'Control gaps by regulation'), h('div', { class: 'rag-row' },
       ['red', 'amber', 'green'].map(function (k) { return h('span', { class: 'rag-chip ' + k }, h('strong', null, String(rag[k])), ' ' + RAG[k]); })),
-      h('span', { class: 'kpi-sub' }, 'Obligations rated against your controls')));
+      h('span', { class: 'kpi-sub' }, 'Linked controls only; not a compliance finding')));
     var cap = r.exposure.largestCap;
     kpis.push(h('div', { class: 'kpi-card kpi-money' }, h('span', { class: 'kpi-label' }, 'Largest single statutory cap'), h('strong', { class: 'kpi-big' + (cap ? '' : ' small-big') }, cap ? capText(cap) : 'Not quantified'),
-      h('span', { class: 'kpi-sub' }, cap ? regimeName(cap.regime) + ' ' + cap.article + (cap.grade === 'likely_confirm' ? ' · likely – confirm' : '') + ' · cap, not expected fine' : r.exposure.capNote)));
+      h('span', { class: 'kpi-sub' }, cap ? regimeName(cap.regime) + ' ' + cap.article + (cap.grade === 'likely_confirm' ? ' · may apply – confirm' : '') + ' · cap, not expected fine' : r.exposure.capNote)));
     var sev = sevCounts(r), gaps = r.findings.length;
     var fc = h('div', { class: 'kpi-card' }, h('span', { class: 'kpi-label' }, 'Findings'), h('strong', { class: 'kpi-big count' }),
       h('div', { class: 'sev-strip', 'aria-hidden': 'true' }, SEVERITIES.map(function (k) { return sev[k] ? h('i', { style: 'flex:' + sev[k] + ';background:' + SEV_COLOR[k], title: k + ': ' + sev[k] }) : null; })),
@@ -766,7 +768,7 @@
     }
     var sevParts = SEVERITIES.map(function (k) { var n = r.findings.filter(function (f) { return f.severity === k; }).length; return { value: n, color: SEV_COLOR[k], label: k, display: n }; });
     grid.appendChild(card('Findings by severity', 'Gaps, scope confirmations and decisions', h('div', { class: 'donut-wrap' }, C.donut({ label: 'Findings by severity: ' + sevParts.map(function (x) { return x.label + ' ' + x.value; }).join(', '), parts: sevParts, center: String(r.findings.length), sub: 'findings' }), C.legend(sevParts))));
-    grid.appendChild(card('Regulation heatmap', 'Regulations in scope by market; red, amber or green against your controls, grey where no duty is rated', regulationHeatmap(r), 'wide'));
+    grid.appendChild(card('Regulation heatmap', 'Regulations in scope by market: control gaps against your controls, grey where no duty is rated', regulationHeatmap(r), 'wide'));
     grid.appendChild(card('Control heatmap', 'Each required control by the level that needs it; green in place, amber to red below, grey unconfirmed or not answered', controlHeatmap(r), 'wide'));
     var top = r.topGaps.map(function (id) { return typeof id === 'string' ? r.findings.find(function (f) { return f.id === id; }) : id; }).filter(Boolean);
     if (top.length) grid.appendChild(card('Top gaps', 'Where to start', h('div', null, top.map(findingCard)), 'wide'));
@@ -790,7 +792,7 @@
       body.appendChild(h('div', { class: 'ai-controls' },
         h('label', { class: 'ai-switch', for: 'ai-on' }, h('input', { type: 'checkbox', id: 'ai-on', role: 'switch', checked: !!state.aiEnabled, 'aria-checked': state.aiEnabled ? 'true' : 'false', onchange: function (e) { toggleAi(e.target.checked); } }),
           h('span', null, 'Use AI narrative for this engagement')),
-        h('label', { class: 'field-title', for: 'ai-focus' }, 'Focus (optional)'), focus,
+        h('label', { class: 'field-title', for: 'ai-focus' }, 'Focus (optional; do not name individuals)'), focus,
         h('button', { class: 'btn primary small', type: 'button', disabled: !state.aiEnabled || !isFinal() || state.aiBusy, onclick: writeNarrative }, state.aiBusy ? 'Writing…' : n && n.narrative ? 'Write again' : 'Write narrative'),
         status));
       if (n && n.status && n.status !== 'ok') body.appendChild(h('p', { class: 'small consultant-only' }, n.status === 'rejected' ? 'The last AI draft added facts that are not in the result (' + n.violations + ' found), so it was not used.' : 'The last attempt failed; no narrative was stored.'));
@@ -827,7 +829,7 @@
   }
 
   function controlHeatmap(r) {
-    var rows = [['L1', 'Residency (L1)'], ['L2', 'Access and keys (L2)'], ['L3', 'Operational (L3)'], ['L4', 'Jurisdictional (L4)'], [null, 'Required by regulations']];
+    var rows = [['L1', 'Residency (L1)'], ['L2', 'Access and keys (L2)'], ['L3', 'Operational (L3)'], ['L4', 'Jurisdictional (L4)'], [null, 'Linked to regulations']];
     var data = rows.map(function (x) {
       var cs = r.controls.filter(function (c) { return (controlInfo(c.control).level || null) === x[0]; });
       return { label: x[1], cells: cs.map(function (c) { var w = stateWord(c); return { label: c.name, sub: w, cls: stateCls(c), title: c.name + ': ' + w }; }) };
@@ -895,7 +897,7 @@
         e.controls && e.controls.length ? h('p', { class: 'small' }, h('strong', null, 'Controls required: '), e.controls.map(function (c) { return controlInfo(c.control).name + ' (' + stateWord(c) + ')'; }).join('; ')) : e.reason ? h('p', { class: 'small muted' }, e.reason) : null,
         e.upcoming && e.upcoming.length ? h('p', { class: 'small' }, h('strong', null, 'Upcoming: '), e.upcoming.map(function (u) { return controlInfo(u.control).name + ' from ' + u.appliesFrom; }).join('; ')) : null,
         e.pendingSource && e.pendingSource.length ? h('p', { class: 'small consultant-only' }, 'Requirement pending source (consultant only): ' + e.pendingSource.map(function (c) { return controlInfo(c).name; }).join('; ')) : null,
-        cap ? h('p', { class: 'small' }, h('strong', null, 'Statutory maximum: '), capText(cap) + ' · ' + cap.article + ' · ' + clean(cap.basis) + ' (cap, not expected fine)') : e.penaltyNote ? h('p', { class: 'small muted' }, clean(e.penaltyNote)) : null));
+        cap ? h('p', { class: 'small' }, h('strong', null, 'Statutory maximum: '), capText(cap) + ' · ' + cap.article + (cap.qualifier ? ' (' + cap.qualifier + ')' : '') + ' · ' + clean(cap.basis) + ' (cap, not expected fine)') : e.penaltyNote ? h('p', { class: 'small muted' }, clean(e.penaltyNote)) : null));
     });
     p.appendChild(sec);
     if (state.view !== 'client') {
@@ -910,7 +912,7 @@
     var sec = h('section', { class: 'card', 'aria-labelledby': 'ctl-h' }, h('h2', { id: 'ctl-h' }, 'Required controls (' + r.controls.length + ')'),
       h('p', { class: 'small muted' }, m.wording + (m.score != null ? ' (' + m.score + '/100).' : '.') + ' Unknown answers count as not in place and are shown as unconfirmed; unanswered ones as not answered.'));
     sec.appendChild(h('div', { class: 'table-wrap' }, h('table', null,
-      h('thead', null, h('tr', null, ['Control', 'State', 'Required by', 'Owner'].map(function (t) { return h('th', { scope: 'col' }, t); }))),
+      h('thead', null, h('tr', null, ['Control', 'State', 'Why it is needed', 'Owner'].map(function (t) { return h('th', { scope: 'col' }, t); }))),
       h('tbody', null, r.controls.map(function (c) {
         var info = controlInfo(c.control);
         var by = [].concat(c.requiredBy.levels.length ? ['Level: ' + c.requiredBy.levels.map(className).join(', ')] : [], (c.requiredBy.regimes || []).map(function (x) { return regimeName(typeof x === 'string' ? x : x.regime); }));
@@ -924,7 +926,7 @@
 
   function findingsPanel(p, r) {
     var fs = r.findings;
-    var waves = [1, 2, 3, 4];
+    var waves = r.roadmap.map(function (w) { return w.wave; });
     var cells = SEVERITIES.map(function (s) { return waves.map(function (w) { return { count: fs.filter(function (f) { return f.severity === s && f.wave === w; }).length }; }); });
     var pick = state.findingFilter;
     var list = pick ? fs.filter(function (f) { return f.severity === SEVERITIES[pick[0]] && f.wave === waves[pick[1]]; }) : fs;
@@ -943,7 +945,7 @@
       h('div', { class: 'header-row', style: 'margin:0' }, h('h3', { style: 'margin:0' }, f.title), h('span', { class: 'chip ' + String(f.severity).toLowerCase() }, f.severity)),
       h('p', { class: 'small' }, clean(f.businessConsequence)),
       h('p', { class: 'small muted' }, [f.type === 'control_gap' ? 'Gap' : f.type === 'scope_confirmation' ? 'Confirm scope' : f.type === 'conflict' ? 'Conflicting answers' : 'Decision',
-        'Owner: ' + f.ownerRole, f.upcoming ? 'By ' + f.upcoming : 'Time frame: ' + f.timeFrame, f.dataClasses && f.dataClasses.length ? 'Data: ' + f.dataClasses.map(className).join(', ') : null,
+        'Owner: ' + f.ownerRole, f.timeFrame, f.dataClasses && f.dataClasses.length ? 'Data: ' + f.dataClasses.map(className).join(', ') : null,
         f.referral ? 'Verify in ' + f.referral : null].filter(Boolean).join(' · ')),
       f.remedy ? h('p', { class: 'small' }, h('strong', null, 'What good looks like: '), f.remedy) : null);
   }
@@ -1120,16 +1122,23 @@
   function roadmapPanel(p, r) {
     var byId = {};
     r.findings.forEach(function (f) { byId[f.id] = f; });
-    var names = { 1: 'Wave 1 · decide, confirm and fix critical gaps', 2: 'Wave 2 · high-severity gaps', 3: 'Wave 3 · medium-severity gaps', 4: 'Wave 4 · lower-severity and upcoming obligations' };
-    var sec = h('section', { class: 'card', 'aria-labelledby': 'roadmap-h' }, h('h2', { id: 'roadmap-h' }, 'Roadmap'), h('p', { class: 'small muted' }, 'Waves follow severity, then dependencies: what a control needs comes first in the same wave or earlier.'));
-    r.roadmap.forEach(function (w) {
-      sec.appendChild(h('div', { class: 'wave' }, h('h3', null, names[w.wave] || 'Wave ' + w.wave),
-        h('ol', null, w.findings.map(function (id) { var f = byId[id]; return f ? h('li', null, h('strong', null, f.title), h('span', { class: 'small muted' }, ' · ' + f.severity + ' · ' + f.ownerRole + ' · ' + (f.upcoming ? 'by ' + f.upcoming : f.timeFrame))) : null; }))));
+    var names = { decide: 'decide, confirm and close critical gaps', high: 'high-severity gaps', medium: 'medium-severity gaps', later: 'lower-severity gaps and upcoming obligations' };
+    var sec = h('section', { class: 'card', 'aria-labelledby': 'roadmap-h' }, h('h2', { id: 'roadmap-h' }, 'Roadmap'), h('p', { class: 'small muted' }, 'Severity sets when each action starts; the type of work sets its effort and duration. An action that depends on another starts once that one reaches its milestone. Months count from the start of the programme; durations and effort are LTM planning estimates.'));
+    r.roadmap.forEach(function (w, i) {
+      sec.appendChild(h('div', { class: 'wave' }, h('h3', null, 'Wave ' + (i + 1) + ' · ' + (names[w.theme] || '')),
+        h('ol', null, w.findings.map(function (id) {
+          var f = byId[id];
+          if (!f) return null;
+          var after = (f.dependsOn || []).map(function (d) { return byId[d] ? byId[d].title : null; }).filter(Boolean);
+          return h('li', null, h('strong', null, f.title),
+            h('span', { class: 'small muted' }, ' · ' + f.severity + ' · ' + f.ownerRole + ' · ' + f.timeFrame + ' · effort ' + f.effort),
+            f.milestone ? h('div', { class: 'small' }, 'Milestone: ' + f.milestone + '. KPI: ' + f.kpi + (after.length ? '. After: ' + after.join('; ') : '') + '.') : null);
+        }))));
     });
     p.appendChild(sec);
     var help = r.help || [];
     var hs = h('section', { class: 'card', 'aria-labelledby': 'help-h' }, h('h2', { id: 'help-h' }, 'How LTM can help'),
-      h('p', { class: 'small muted' }, 'What could help with the findings, and the kind of work each is. Providers are chosen from your requirements, with alternatives (Cloud advisory).'));
+      h('p', { class: 'small muted' }, 'Each item below can be delivered by your own teams or by another firm; the findings and the roadmap do not depend on it. Where LTM could help, this is the kind of work and how it would be done. Providers are chosen from your requirements, with alternatives (Cloud advisory).'));
     if (!help.length) hs.appendChild(h('p', { class: 'muted' }, 'No finding calls for further work.'));
     help.forEach(function (x) {
       hs.appendChild(h('article', { class: 'finding' }, h('h3', { style: 'margin:0' }, x.offering.name, ' ', h('span', { class: 'chip' }, x.offering.typeLabel)),
@@ -1144,7 +1153,7 @@
     var v = r.versions;
     p.appendChild(h('section', { class: 'card methodology', 'aria-labelledby': 'method-h' }, h('h2', { id: 'method-h' }, 'Methodology and sources'),
       h('p', null, 'Each kind of data gets a required sovereignty level, L0 to L4: the higher of what the law requires and what the board chose. Every control that level needs, plus every control a regulation in scope requires, is rated from your answers. Maturity is the weighted share of those controls in place; it is shown only when at least ' + schema.minScoredControls + ' controls are required, because below that one answer would decide it. Unknown answers count as not in place.'),
-      h('p', null, 'Compliance exposure is rated per regulation: red when a critical or high-weight control it requires is absent, unconfirmed or not answered, amber when any is below full, green when all are in place. Statutory maximums come from the cited articles; they are caps, not expected fines, and are never added together. Provider nationality matters only at L4; foreign-access laws are shown as exposure, never as a duty on you.'),
+      h('p', null, 'Each regulation shows the control gaps linked to it: major gaps when a critical or high-weight linked control is absent, unconfirmed or not answered, some gaps when any is below full, no gaps found when all are in place. It is not a finding that you comply or do not comply. Statutory maximums come from the cited articles; they are caps, not expected fines, and are never added together. Provider nationality matters only at L4; foreign-access laws are shown as exposure, never as a duty on you.'),
       h('p', { class: 'small muted' }, schema.notices.disclaimer + ' ' + schema.notices.review),
       h('p', { class: 'small muted' }, 'Engine ' + v.engine + ' · questions ' + v.questionSet + ' · controls ' + v.controls + ' · regulation registry ' + v.registry + ' (status as of ' + v.registryStatusAsOf + ') · claims register ' + v.claimsRegister + (r.assessmentDate ? ' · assessed ' + r.assessmentDate : ''))));
   }

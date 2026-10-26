@@ -13,15 +13,16 @@
 import bank from './question-bank.json' with { type: 'json' };
 import catalogue from './controls.json' with { type: 'json' };
 import fx from './exchange-rates.json' with { type: 'json' };
+import delivery from './delivery.json' with { type: 'json' };
 import registry from '../registry/regimes.json' with { type: 'json' };
 import claimsRegister from '../../../claims/claims-register.json' with { type: 'json' };
 import { evaluate as holds, isUnknown, type Condition, type ConditionContext } from './conditions';
 import { advisory as cloudAdvisory, type Advisory } from './advisory';
 import { sealView, tenderLevel, type SealView } from './seal';
 import { howLtmCanHelp, type HelpItem } from './help';
-import { DATA_CLASSES, LEVELS, PEOPLE_CLASSES, personalOutsideSubjects, personalTransfer, platformParents, scopeFacts, type Answers, type DataClass, type Facts, type Level } from './facts';
+import { DATA_CLASSES, DATA_CLASS_LABELS, LEVELS, PEOPLE_CLASSES, personalOutsideSubjects, personalTransfer, platformParents, scopeFacts, type Answers, type DataClass, type Facts, type Level } from './facts';
 
-export const ENGINE_VERSION = '4.5.0';
+export const ENGINE_VERSION = '4.7.0';
 /**
  * S4 calibration: the smallest required set over which one answer moves maturity by at most 20 points (T2 aside).
  * Below it no maturity number is shown, in either mode (owner decisions, 25 and 26 Oct 2026).
@@ -32,6 +33,7 @@ export type Mode = 'executive' | 'workshop';
 export type Grade = 'applies' | 'likely_confirm' | 'advisory' | 'not_applicable';
 export type State = 0 | 1 | 2 | 3 | 'unknown' | 'not_answered';
 export type Severity = 'Critical' | 'High' | 'Medium' | 'Low';
+export type Effort = 'S' | 'M' | 'L' | 'XL';
 
 export interface SovereignIqV4Input {
   mode: Mode;
@@ -50,22 +52,29 @@ const WEIGHT: Record<string, number> = (catalogue as any).weights;
 const CONTROL = new Map<string, any>(CONTROLS.map(c => [c.id, c]));
 const QUESTION = new Map<string, any>(QUESTIONS.map(q => [q.id, q]));
 const REGIME_NAME = new Map<string, string>(REGIMES.map(r => [r.id, r.name]));
+const ZONE_NAME = new Map<string, string>((QUESTION.get('A1').options as any[]).map(o => [o.value, o.label]));
+/** Display names in finding text (S6 challenge D11): the lower-case short name of a kind of data, a zone's name. */
+const dataName = (c: string) => { const l = DATA_CLASS_LABELS[c] ?? c; return /^[A-Z][a-z]/.test(l) ? l[0].toLowerCase() + l.slice(1) : l; };
+const zoneName = (z: string) => ZONE_NAME.get(z) ?? z;
 const RATES = (fx as any).rates as Record<string, { rate: number; claim?: string }>;
 const LEVEL_NUM = (l: Level) => LEVELS.indexOf(l);
 const SEVERITY_ORDER: Severity[] = ['Critical', 'High', 'Medium', 'Low'];
-const TIME_FRAME: Record<Severity, string> = { Critical: '0–3 months', High: '3–6 months', Medium: '6–12 months', Low: '12–24 months' };
+/** Set by planDelivery once the findings are ranked (S6 challenge D4). */
+const UNPLANNED = { effort: 'S' as Effort, startMonth: 0, durationMonths: [0, 0] as [number, number], dependsOn: [] as string[], milestone: '', kpi: '', risk: '' };
 /** Transfer routes each regime accepts for SOV.XFER.BASIS (DESIGN 4.2). */
 const ROUTES: Record<string, string[]> = {
   EU_GDPR: ['adequacy', 'eu_us_dpf', 'sccs', 'bcr'],
   UK_GDPR: ['adequacy', 'uk_data_bridge', 'idta_or_addendum', 'bcr'],
   apac: ['apac_contract_or_consent', 'adequacy', 'bcr']
 };
-/** Roadmap dependencies (DESIGN 8.5): the prerequisite is never scheduled after the control that needs it. */
-const PREREQUISITES: Record<string, string[]> = {
-  'SOV.XFER.BASIS': ['SOV.DATA.MAP', 'SOV.TP.VISIBILITY'],
-  'SOV.RES.LOCATION': ['SOV.DATA.MAP', 'SOV.TP.VISIBILITY', 'SOV.RES.REGION_LOCK'],
-  'SOV.KEY.REVOCATION': ['SOV.KEY.CUSTODY']
-};
+/** Roadmap dependencies (DESIGN 8.5; delivery.json): the prerequisite starts first and reaches its milestone before the dependent starts. */
+const PREREQUISITES: Record<string, string[]> = (delivery as any).prerequisites;
+type Delivery = { effort: Effort; durationMonths: [number, number]; movedEffort?: Effort; movedDuration?: [number, number]; milestone: string; kpi: string; risk: string };
+const DELIVERY_CONTROLS: Record<string, Delivery> = (delivery as any).controls;
+const DELIVERY_TYPES: Record<string, Delivery> = (delivery as any).findingTypes;
+const START_MONTH: Record<Severity, number> = (delivery as any).startMonthBySeverity;
+/** Wave themes, numbered consecutively over the waves that have findings (S6 challenge D4). */
+export const WAVE_THEMES = ['decide', 'high', 'medium', 'later'] as const;
 const AI_ROLES = ['deployer_internal', 'deployer_high_impact', 'provider_ai_system', 'gpai_provider', 'integrator_own_name'];
 
 /* --------------------------------- Results --------------------------------- */
@@ -110,6 +119,10 @@ export interface CapFigure {
   /** Exact when the worldwide turnover is given (A5); a range from the A4 band otherwise (Q2); null when not computable. */
   amount: number | null; range: [number, number | null] | null; currency: string;
   eur: number; basis: string; rateDate: string | null; claims: string[];
+  /** The figure is the least the maximum can be: a greater-of limb the assessment cannot compute, or a national maximum set at "at least" (S6 challenge D3). */
+  atLeast?: boolean;
+  /** Shown with the article, e.g. the NIS2 entity class the figure uses. */
+  qualifier?: string;
 }
 
 export interface Finding {
@@ -120,6 +133,10 @@ export interface Finding {
   severity: Severity; title: string; businessConsequence: string; ownerRole: string; timeFrame: string; remedy: string;
   offeringRefs: string[]; referral?: string; sources: string[]; mode: Mode; consultantOnly: boolean;
   rank: number; wave: number;
+  /** Delivery plan (delivery.json, LTM heuristic): effort band, start month from the programme start, elapsed duration,
+   *  the findings that must reach their milestone first, and the milestone, KPI and key risk. */
+  effort: Effort; startMonth: number; durationMonths: [number, number]; dependsOn: string[];
+  milestone: string; kpi: string; risk: string;
 }
 
 export interface SovereignIqV4Result {
@@ -141,7 +158,7 @@ export interface SovereignIqV4Result {
   foreignAccess: Array<{ dataClass: DataClass; parents: string[]; controls: Array<{ control: string; state: State }> }>;
   findings: Finding[];
   topGaps: Finding[];
-  roadmap: Array<{ wave: number; findings: string[] }>;
+  roadmap: Array<{ wave: number; theme: typeof WAVE_THEMES[number]; findings: string[] }>;
   pendingSource: Array<{ regime: string; control: string }>;
   notes: string[];
   /** Sovereign Cloud Advisory: placement on AWS, Azure and Google Cloud, and platform actions per finding (PLAN S7). */
@@ -342,6 +359,9 @@ const BAND_EUR: Record<string, [number, number | null]> = {
 const toEur = (amount: number, currency: string) => amount / (RATES[currency]?.rate ?? NaN);
 const fromEur = (eur: number, currency: string) => eur * (RATES[currency]?.rate ?? NaN);
 const rateClaims = (...currencies: string[]) => [...new Set(currencies.map(c => RATES[c]?.claim).filter(Boolean) as string[])];
+/** Turnover bases the assessment never collects, in words. */
+const TURNOVER_WORDS: Record<string, string> = { national_annual: 'annual turnover in that country', adjusted_turnover: 'adjusted turnover in the breach period', total_revenue_excluding_unrelated: 'revenue excluding unrelated business' };
+const NIS2_CLASS: Record<string, string> = { essential: 'essential entity', important: 'important entity', essential_or_important: 'essential or important entity: size not settled, essential figure shown' };
 const money = (n: number, cur: string) => `${cur} ${n >= 1e9 ? `${+(n / 1e9).toFixed(2)}bn` : n >= 1e6 ? `${+(n / 1e6).toFixed(1)}M` : n.toLocaleString('en-GB')}`;
 
 /** The tiers that can set this regime's headline cap (DESIGN 7.2): the tier tied to the obligations in scope. */
@@ -364,10 +384,26 @@ function regimeCap(r: any, g: RegimeResult, facts: Facts): CapFigure | null {
   const model = r.penalty?.model;
   if (!['turnover_greater_of', 'turnover_lower_of', 'national_minimum_maximum', 'turnover_percent', 'fixed', 'either_or'].includes(model)) return null;
   if (r.penalty.quantifyWhen && !holds(r.penalty.quantifyWhen, ctxOf(facts))) return null;
+  const size = facts['derived.size_class_eu'] as string;
+  // AI Act Art. 99(6): an SME's cap is the lower of the two limbs. When SME status is not settled, show both ends (D3c).
+  if (r.id === 'EU_AI_ACT' && (size === 'medium_or_large' || size === 'uncertain')) {
+    const asSme = tierCap(r, g, facts, true), asLarge = tierCap(r, g, facts, false);
+    if (!asSme || !asLarge) return asLarge ?? asSme;
+    if (Math.abs(asLarge.eur - asSme.eur) < 1) return asLarge;
+    return {
+      ...asLarge, amount: null, currency: 'EUR', range: [Math.round(asSme.range?.[0] ?? asSme.eur), Math.round(asLarge.eur)], eur: asLarge.eur,
+      basis: `Depends on SME status, which your answers do not settle (Art. 99(6)): as an SME, ${asSme.basis}; otherwise ${asLarge.basis}`,
+      rateDate: asLarge.rateDate ?? asSme.rateDate, claims: [...new Set([...asSme.claims, ...asLarge.claims])]
+    };
+  }
+  return tierCap(r, g, facts, r.id === 'EU_AI_ACT' && ['small_or_micro', 'medium'].includes(size));
+}
+
+function tierCap(r: any, g: RegimeResult, facts: Facts, sme: boolean): CapFigure | null {
+  const model = r.penalty?.model;
   const exact = facts['org.turnover_amount'] as { amount: number; currency: string } | undefined;
   const band = BAND_EUR[facts['org.turnover_band_eur'] as string];
   const turnover = exact && exact.amount > 0 && RATES[exact.currency] ? exact : null;
-  const sme = r.id === 'EU_AI_ACT' && ['small_or_micro', 'medium'].includes(facts['derived.size_class_eu'] as string);
   let best: CapFigure | null = null;
   for (const t of headlineTiers(r, g, facts)) {
     const fixedEur = t.fixedAmount != null ? toEur(t.fixedAmount, t.currency) : null;
@@ -396,11 +432,17 @@ function regimeCap(r: any, g: RegimeResult, facts: Facts): CapFigure | null {
         rateDate: t.currency && t.currency !== 'EUR' ? (fx as any).date : null, claims: [...claims, ...rateClaims(t.currency)]
       };
     } else if (fixedEur != null && (!t.turnoverPercent || !worldwide)) {
-      // A fixed maximum, or a fixed limb whose percentage limb rests on a turnover we never collect.
+      // A fixed maximum, or a fixed limb whose percentage limb rests on a turnover we never collect. Under a greater-of
+      // rule the fixed limb is then only the least the maximum can be (D3a: Singapore PDPA, Australian Privacy Act).
+      const floorOnly = !!t.turnoverPercent && model !== 'turnover_lower_of';
+      const limbs = [`${money(t.fixedAmount, t.currency)}`, ...(t.otherLimbs ? [t.otherLimbs] : []), `${t.turnoverPercent}% of ${TURNOVER_WORDS[t.turnoverBasis] ?? 'turnover'}`];
       fig = {
         regime: r.id, grade: g.grade, article: t.article, label: 'cap, not expected fine', amount: t.fixedAmount, range: null, currency: t.currency, eur: fixedEur,
-        basis: t.turnoverPercent ? `${money(t.fixedAmount, t.currency)} fixed limb; the ${t.turnoverPercent}% limb is not computed (it rests on a turnover the assessment does not collect)` : `${money(t.fixedAmount, t.currency)} fixed maximum`,
-        rateDate: t.currency !== 'EUR' ? (fx as any).date : null, claims: [...claims, ...rateClaims(t.currency)]
+        basis: !t.turnoverPercent ? `${money(t.fixedAmount, t.currency)} fixed maximum`
+          : floorOnly ? `The ${limbs.length > 2 ? 'greatest' : 'higher'} of ${limbs.slice(0, -1).join(', ')}${limbs.length > 2 ? ',' : ''} or ${limbs[limbs.length - 1]}; only the fixed amount is computed, because the assessment does not collect that turnover`
+          : `${money(t.fixedAmount, t.currency)} fixed limb; the ${t.turnoverPercent}% limb is not computed (it rests on a turnover the assessment does not collect)`,
+        rateDate: t.currency !== 'EUR' ? (fx as any).date : null, claims: [...claims, ...rateClaims(t.currency)],
+        ...(floorOnly ? { atLeast: true } : {})
       };
     }
     // A band whose ends give the same cap (the fixed limb wins across it) is one figure, not a range.
@@ -408,7 +450,8 @@ function regimeCap(r: any, g: RegimeResult, facts: Facts): CapFigure | null {
     if (fig && (!best || fig.eur > best.eur)) best = fig;
   }
   if (best && model === 'either_or') best = { ...best, basis: `${best.basis}; theoretical upper bound of two alternative ceilings (Art. 66)` };
-  if (best && model === 'national_minimum_maximum') best = { ...best, basis: `At least ${best.basis} (national law may set higher)` };
+  // NIS2 Art. 34(4)-(5) set the least each national maximum may be, not the maximum itself (D3b).
+  if (best && model === 'national_minimum_maximum') best = { ...best, atLeast: true, basis: `At least ${best.basis}; national law sets the maximum`, ...(g.nis2Class ? { qualifier: g.rule === 'EU_NIS2.3' && facts['ent.nis2_self_class'] === 'important' && g.nis2Class === 'essential' ? 'essential entity: a large entity in an Annex I sector is essential whatever its own classification (Art. 3(1)(a))' : NIS2_CLASS[g.nis2Class] } : {}) };
   return best;
 }
 
@@ -516,8 +559,8 @@ export function evaluateSovereignIqV4(input: SovereignIqV4Input): SovereignIqV4R
   // agreed 20 points (S4 calibration).
   const withheld = results.length > 0 && results.length < MIN_SCORED_CONTROLS;
   const score = wSum && !withheld ? Math.round((100 * results.reduce((a, r) => a + r.weight * r.score, 0)) / wSum) : null;
-  const band = score == null ? null : score >= 80 ? 'Sovereign-ready' : score >= 60 ? 'Managed' : score >= 40 ? 'Developing' : 'Exposed';
-  const wording = withheld ? (mode === 'executive'
+  let band = score == null ? null : score >= 80 ? 'Sovereign-ready' : score >= 60 ? 'Managed' : score >= 40 ? 'Developing' : 'Exposed';
+  let wording = withheld ? (mode === 'executive'
     ? `Too few required controls are measured in executive mode for a reliable score (${results.length}); the workshop gives the score`
     : `Too few controls are required at the level you set for a reliable score (${results.length}); each control's state is shown instead`) : score == null ? 'Nothing required at the level you set' : {
     'Sovereign-ready': 'Controls meet the level your data requires', Managed: 'Most required controls in place; gaps are specific',
@@ -562,7 +605,9 @@ export function evaluateSovereignIqV4(input: SovereignIqV4Input): SovereignIqV4R
   const count = (g: Grade) => regimes.filter(r => r.grade === g).length;
   const countRag = (x: string) => exposure.filter(e => e.rag === x).length;
   const caps = exposure.map(e => e.cap).filter(Boolean) as CapFigure[];
-  const largestCap = caps.reduce<CapFigure | null>((a, c) => (!a || c.eur > a.eur ? c : a), null);
+  // The headline comes from a regime that applies; one still to confirm leads only when none that applies has a cap (D3d).
+  const largestOf = (xs: CapFigure[]) => xs.reduce<CapFigure | null>((a, c) => (!a || c.eur > a.eur ? c : a), null);
+  const largestCap = largestOf(caps.filter(c => c.grade === 'applies')) ?? largestOf(caps);
   const turnoverGiven = !!facts['org.turnover_amount'] || !!BAND_EUR[facts['org.turnover_band_eur'] as string];
 
   // Foreign-access exposure line (informational): classes held by providers whose parent is outside the class's zone.
@@ -588,10 +633,10 @@ export function evaluateSovereignIqV4(input: SovereignIqV4Input): SovereignIqV4R
       id: `F-${r.control}`, type: 'control_gap', control: r.control, dataClasses: affected, requiredLevel: reqLevel,
       state: r.state, unconfirmed: r.unconfirmed || r.notAnswered,
       regimes: r.requiredBy.regimes.map(x => ({ regime: x.regime, grade: x.grade, article: articleOf(x.basis) })),
-      severity, title: c.remedy, businessConsequence: consequence(c, r, reqLevel, transfer.missing),
-      ownerRole: c.ownerRole, timeFrame: TIME_FRAME[severity], remedy: c.means,
+      severity, title: c.remedy, businessConsequence: consequence(c, r, reqLevel, transfer.missing, askedSet.has('B6')),
+      ownerRole: c.ownerRole, timeFrame: '', remedy: c.means,
       offeringRefs: c.offering ? [c.offering] : [], referral: c.referral, sources: claimsOf(r.requiredBy.regimes.map(x => x.basis)),
-      mode, consultantOnly: false, rank: 0, wave: 0,
+      mode, consultantOnly: false, rank: 0, wave: 0, ...UNPLANNED,
       _drivers: appliesRegimes.length + (strongClasses.length ? 1 : 0)
     } as Finding & { _drivers: number });
   }
@@ -605,8 +650,8 @@ export function evaluateSovereignIqV4(input: SovereignIqV4Input): SovereignIqV4R
     findings.push({
       id: `F-${u.control}`, type: 'control_gap', control: u.control, dataClasses: [], requiredLevel: null, state, unconfirmed: typeof state !== 'number',
       upcoming: u.appliesFrom, regimes: [{ regime: u.regime, grade: graded.get(u.regime)!.grade, article: '' }], severity,
-      title: c.remedy, businessConsequence: `${graded.get(u.regime)!.name} requires this from ${u.appliesFrom}.`, ownerRole: c.ownerRole,
-      timeFrame: `by ${u.appliesFrom}`, remedy: c.means, offeringRefs: c.offering ? [c.offering] : [], sources: [], mode, consultantOnly: false, rank: 0, wave: 0
+      title: c.remedy, businessConsequence: `${graded.get(u.regime)!.name} adds a linked duty from ${u.appliesFrom}.`, ownerRole: c.ownerRole,
+      timeFrame: '', remedy: c.means, offeringRefs: c.offering ? [c.offering] : [], sources: [], mode, consultantOnly: false, rank: 0, wave: 0, ...UNPLANNED
     });
   }
   for (const g of regimes.filter(r => r.grade === 'likely_confirm')) {
@@ -615,9 +660,9 @@ export function evaluateSovereignIqV4(input: SovereignIqV4Input): SovereignIqV4R
     findings.push({
       id: `F-SCOPE-${g.regime}`, type: 'scope_confirmation', dataClasses: [], requiredLevel: null, unconfirmed: true,
       regimes: [{ regime: g.regime, grade: g.grade, article: g.basis }], severity: quantifiable ? 'High' : 'Medium',
-      title: `Confirm whether ${g.name} applies`, businessConsequence: g.reason, ownerRole: 'General Counsel', timeFrame: TIME_FRAME[quantifiable ? 'High' : 'Medium'],
+      title: `Confirm whether ${g.name} applies`, businessConsequence: g.reason, ownerRole: 'General Counsel', timeFrame: '',
       remedy: 'Confirm the scope test with counsel; the requirement and exposure change with the answer.', offeringRefs: ['OFF.SOV.ASSESS'],
-      sources: g.claims, mode, consultantOnly: g.consultantOnly, rank: 0, wave: 0
+      sources: g.claims, mode, consultantOnly: g.consultantOnly, rank: 0, wave: 0, ...UNPLANNED
     });
   }
   if (transfer.conflict) findings.push({
@@ -625,32 +670,32 @@ export function evaluateSovereignIqV4(input: SovereignIqV4Input): SovereignIqV4R
     regimes: transferRegimes.map(x => ({ regime: x, grade: graded.get(x)!.grade, article: '' })), severity: 'High',
     title: 'Resolve where personal data goes: the answers contradict each other',
     businessConsequence: 'You said personal data never leaves its region, but the data locations place it outside the region of the people it concerns. The transfer basis is unconfirmed until this is resolved.',
-    ownerRole: 'DPO', timeFrame: TIME_FRAME.High, remedy: 'Reconcile the data locations with the transfer answer.', offeringRefs: ['OFF.SOV.ASSESS'], sources: [], mode, consultantOnly: false, rank: 0, wave: 0
+    ownerRole: 'DPO', timeFrame: '', remedy: 'Reconcile the data locations with the transfer answer.', offeringRefs: ['OFF.SOV.ASSESS'], sources: [], mode, consultantOnly: false, rank: 0, wave: 0, ...UNPLANNED
   });
   let conflicts = transfer.conflict ? 1 : 0;
   for (const r of reqs.filter(x => x.zoneConflict)) findings.push({
     id: `F-CONFLICT-${++conflicts}`, type: 'conflict', control: 'SOV.RES.LOCATION', dataClasses: [r.dataClass], requiredLevel: r.required, unconfirmed: true,
     regimes: [{ regime: r.floor!.regime, grade: graded.get(r.floor!.regime)!.grade, article: '' }], severity: 'High',
-    title: `Keep ${r.dataClass} data in ${r.floor!.zone.join(', ')}: the law requires it`,
-    businessConsequence: `The regions chosen in the workshop (${r.zoneConflict!.join(', ')}) are outside the zone ${graded.get(r.floor!.regime)!.name} requires for this data. The legal requirement is applied.`,
-    ownerRole: 'CIO with General Counsel', timeFrame: TIME_FRAME.High, remedy: 'Align the allowed regions with the legal localisation requirement.',
-    offeringRefs: ['OFF.DATA.RESIDENCY'], sources: [], mode, consultantOnly: false, rank: 0, wave: 0
+    title: `Keep ${dataName(r.dataClass)} data in ${r.floor!.zone.map(zoneName).join(', ')}: ${graded.get(r.floor!.regime)!.name} sets a localisation requirement`,
+    businessConsequence: `The regions chosen in the workshop (${r.zoneConflict!.map(zoneName).join(', ')}) are outside the zone ${graded.get(r.floor!.regime)!.name} sets for this data. The requirement is applied; confirm its scope and any permitted exceptions with counsel.`,
+    ownerRole: 'CIO with General Counsel', timeFrame: '', remedy: 'Align the allowed regions with the legal localisation requirement.',
+    offeringRefs: ['OFF.DATA.RESIDENCY'], sources: [], mode, consultantOnly: false, rank: 0, wave: 0, ...UNPLANNED
   });
   let decisions = 0;
   if (reqs.some(r => r.choice === 'unknown' || r.choice === null) && classes.length) findings.push({
     id: `F-DECISION-${++decisions}`, type: 'decision', dataClasses: reqs.filter(r => r.choice === 'unknown' || r.choice === null).map(r => r.dataClass), requiredLevel: null, unconfirmed: true,
     regimes: [], severity: 'High', title: 'Set the board\'s sovereignty ambition',
-    businessConsequence: 'Board sovereignty ambition not set: maturity is measured against the legal minimum only.', ownerRole: 'CIO', timeFrame: TIME_FRAME.High,
-    remedy: 'Agree the level each kind of data needs (L0 to L4).', offeringRefs: ['OFF.SOV.ASSESS'], sources: [], mode, consultantOnly: false, rank: 0, wave: 0
+    businessConsequence: 'Board sovereignty ambition not set: maturity is measured against the legal minimum only.', ownerRole: 'CIO', timeFrame: '',
+    remedy: 'Agree the level each kind of data needs (L0 to L4).', offeringRefs: ['OFF.SOV.ASSESS'], sources: [], mode, consultantOnly: false, rank: 0, wave: 0, ...UNPLANNED
   });
   for (const r of reqs.filter(x => x.required === 'L4')) {
     const perClass = (facts['data.class_platforms'] as Record<string, string[]>)[r.dataClass];
     const foreign = (perClass?.length ? perClass : platforms).filter(p => platformParents(p, facts).some(z => z !== 'unknown' && !r.allowedZone.includes(z)));
     if (foreign.length) findings.push({
       id: `F-DECISION-${++decisions}`, type: 'decision', dataClasses: [r.dataClass], requiredLevel: 'L4', unconfirmed: false, regimes: [], severity: 'High',
-      title: `Decide the platform for ${r.dataClass} data at L4`,
+      title: `Decide the platform for ${dataName(r.dataClass)} data at L4`,
       businessConsequence: `L4 needs providers whose parent is in the allowed region, or disconnected systems; ${foreign.join(', ')} ${foreign.length === 1 ? 'has' : 'have'} a parent outside it.`,
-      ownerRole: 'CIO with General Counsel', timeFrame: TIME_FRAME.High, remedy: 'Choose a sovereign platform or a disconnected design, or lower the level.', offeringRefs: ['OFF.SOV.MIGRATION'], sources: [], mode, consultantOnly: false, rank: 0, wave: 0
+      ownerRole: 'CIO with General Counsel', timeFrame: '', remedy: 'Choose a sovereign platform or a disconnected design, or lower the level.', offeringRefs: ['OFF.SOV.MIGRATION'], sources: [], mode, consultantOnly: false, rank: 0, wave: 0, ...UNPLANNED
     });
   }
 
@@ -664,19 +709,27 @@ export function evaluateSovereignIqV4(input: SovereignIqV4Input): SovereignIqV4R
     const pre = findings.find(x => x.control === p && x.type === 'control_gap');
     if (pre && pre.wave > f.wave) pre.wave = f.wave;
   }
-  const waves = [...new Set(findings.map(f => f.wave))].sort();
-  const roadmap = waves.map(w => ({ wave: w, findings: orderInWave(findings.filter(f => f.wave === w)).map(f => f.id) }));
+  // Waves are numbered 1, 2, 3 over the themes that have findings: no Wave 2 without a Wave 1 (D4).
+  const themes = [...new Set(findings.map(f => f.wave))].sort();
+  for (const f of findings) f.wave = themes.indexOf(f.wave) + 1;
+  const roadmap = themes.map((t, i) => ({ wave: i + 1, theme: WAVE_THEMES[t - 1], findings: orderInWave(findings.filter(f => f.wave === i + 1)).map(f => f.id) }));
   const topGaps = findings.filter(f => f.type === 'control_gap' && !f.upcoming).slice(0, 5);
+  // S6 challenge D9: the top band is never shown beside a critical finding or a red regulation.
+  if (band === 'Sovereign-ready' && (findings.some(f => f.severity === 'Critical') || exposure.some(e => e.rag === 'red'))) {
+    band = 'Managed';
+    wording = findings.some(f => f.severity === 'Critical') ? 'Most required controls in place, but a critical gap remains' : 'Most required controls in place, but a regulation in scope has major control gaps';
+  }
 
   const notes: string[] = [];
   const zonesNoEntity = [...new Set((facts['derived.all_location_zones'] as string[]).filter(z => z !== 'unknown' && z !== 'other' && !list(facts['org.establishments']).includes(z)))];
-  if (zonesNoEntity.length) notes.push(`Data is processed in ${zonesNoEntity.join(', ')} without an entity there; processing location alone does not trigger that country's law in v1 (Q11). Confirm with counsel.`);
+  if (zonesNoEntity.length) notes.push(`Data is processed in ${zonesNoEntity.map(zoneName).join(', ')} without an entity there; this assessment does not treat processing location alone as bringing in that country's law. Confirm with counsel.`);
   if (mode === 'executive') notes.push('Requirement set at one level for all data classes; the workshop confirms it per class.');
   // S4 sourcing: Japan and Australia may not treat storage-only cloud as a transfer; the engine assumes it does.
   const cautious = list(facts['data.subject_regions']).filter(z => z === 'jp' || z === 'au');
   if (cautious.length && facts['derived.personal_transfer']) notes.push(`Storing data of people in ${cautious.map(z => (z === 'jp' ? 'Japan' : 'Australia')).join(' and ')} outside that country is treated as a transfer. Where the cloud provider only stores the data and does not handle it, ${cautious.length > 1 ? 'these laws' : 'the law'} may treat it as use rather than a transfer (APPI Art. 28; OAIC APP guidelines 8.14). Confirm with counsel.`);
 
-  const advisory = cloudAdvisory({ facts, requirements: reqs, controls: results, findings });
+  const advisory = cloudAdvisory({ facts, requirements: reqs, controls: results, findings, regimes });
+  planDelivery(findings, advisory);
   return {
     mode, assessmentDate,
     versions: {
@@ -693,9 +746,9 @@ export function evaluateSovereignIqV4(input: SovereignIqV4Input): SovereignIqV4R
     controls: results,
     exposure: {
       regimes: exposure,
-      summary: `${count('applies')} regimes apply, ${count('likely_confirm')} likely – confirm, ${count('advisory')} advisory; ${countRag('red')} red, ${countRag('amber')} amber, ${countRag('green')} green.`,
+      summary: `${count('applies')} regimes apply on your answers, ${count('likely_confirm')} may apply – confirm, ${count('advisory')} for awareness; ${countRag('red')} with major control gaps, ${countRag('amber')} with some gaps, ${countRag('green')} with no gaps found.`,
       largestCap,
-      capNote: largestCap ? 'Largest single statutory maximum among regimes that apply or likely apply: a cap, not an expected fine, and never summed across regimes.' : turnoverGiven ? 'No regime in scope has a computable statutory maximum.' : 'Not quantified – turnover not given.'
+      capNote: largestCap ? `Largest single statutory maximum among regimes that ${largestCap.grade === 'applies' ? 'apply' : 'likely apply (none that applies has one)'}: a cap, not an expected fine, and never summed across regimes.` : turnoverGiven ? 'No regime in scope has a computable statutory maximum.' : 'Not quantified – turnover not given.'
     },
     foreignAccess, findings, topGaps, roadmap, pendingSource, notes,
     advisory, seal: sealView({ facts, requirements: reqs, controls: results }),
@@ -721,6 +774,42 @@ function severityOf(weight: string, strong: boolean, state: State | undefined): 
   return row[`${weight},${strong}`][s];
 }
 
+/**
+ * The delivery plan (S6 challenge Q7, D4; delivery.json, LTM heuristic). Severity sets when work starts; the type of
+ * work sets the effort and how long it takes; a dependent starts only once each prerequisite reaches its milestone (the
+ * high end of the prerequisite's duration). Data location becomes a migration when the placement matrix says the data
+ * needs a sovereign offering. The time frame reads "Start now" or "Start in month n", then the duration.
+ */
+function planDelivery(findings: Finding[], advisory: Advisory): void {
+  const preOf = (f: Finding) => f.type === 'control_gap' ? (PREREQUISITES[f.control!] ?? []).map(c => findings.find(x => x.control === c && x.type === 'control_gap')).filter((x): x is Finding => !!x) : [];
+  // A prerequisite starts as early as the most urgent action waiting on it, directly or through others.
+  // Decisions and scope confirmations start at once: their answer can change the rest (S6 re-test N5).
+  const earliest = new Map(findings.map(f => [f.id, f.type === 'control_gap' ? START_MONTH[f.severity] : 0]));
+  for (let changed = true; changed;) {
+    changed = false;
+    for (const f of findings) for (const p of preOf(f)) if (earliest.get(p.id)! > earliest.get(f.id)!) { earliest.set(p.id, earliest.get(f.id)!); changed = true; }
+  }
+  const done = new Set<string>();
+  const plan = (f: Finding): Finding => {
+    if (done.has(f.id)) return f;
+    done.add(f.id);
+    const d = (f.type === 'control_gap' ? DELIVERY_CONTROLS[f.control!] : DELIVERY_TYPES[f.type]) ?? DELIVERY_TYPES.decision;
+    const moved = f.control === 'SOV.RES.LOCATION' && advisory.placement.some(p => p.status === 'move' && f.dataClasses.includes(p.dataClass));
+    const pre = preOf(f);
+    for (const p of pre) plan(p);
+    f.effort = moved && d.movedEffort ? d.movedEffort : d.effort;
+    f.durationMonths = moved && d.movedDuration ? d.movedDuration : d.durationMonths;
+    // A dependent waits for the end of each prerequisite's duration, not its earliest finish (S6 re-test N4).
+    f.startMonth = Math.max(earliest.get(f.id)!, ...pre.map(p => p.startMonth + p.durationMonths[1]));
+    f.dependsOn = pre.map(p => p.id);
+    f.milestone = d.milestone; f.kpi = d.kpi; f.risk = d.risk;
+    const [lo, hi] = f.durationMonths;
+    f.timeFrame = `${f.startMonth === 0 ? 'Start now' : `Start in month ${f.startMonth + 1}`}; ${lo}–${hi} months${f.upcoming ? `; in place by ${f.upcoming}` : ''}`;
+    return f;
+  };
+  findings.forEach(plan);
+}
+
 /** Within a wave, prerequisites come before the controls that need them; otherwise the ranking order holds. */
 function orderInWave(fs: Finding[]): Finding[] {
   const out: Finding[] = [];
@@ -735,12 +824,22 @@ function orderInWave(fs: Finding[]): Finding[] {
 
 const articleOf = (basis: string) => basis.replace(/\s*\[CLM-[^\]]+\]/g, '').split(';')[0].trim();
 const claimsOf = (texts: string[]) => [...new Set(texts.flatMap(t => t.match(/CLM-[A-Z]+-\d+/g) ?? []))];
-const STATE_WORD = (s: State) => (s === 3 ? 'in place' : s === 2 || s === 1 ? 'partly in place' : s === 0 ? 'not in place' : s === 'unknown' ? 'unconfirmed' : 'not answered');
+/** The same state words as the control table (S6 challenge D6: "largely" is never reported as "partly"). */
+const STATE_WORD = (s: State) => (s === 3 ? 'in place' : s === 2 ? 'largely in place' : s === 1 ? 'partly in place' : s === 0 ? 'not in place' : s === 'unknown' ? 'unconfirmed' : 'not answered');
 
-function consequence(c: any, r: ControlResult, level: Level | null, missing: Array<{ regime: string; routes: string[] }>): string {
-  const parts = [`${c.name} is ${STATE_WORD(r.state)}${r.byClass ? ` for ${Object.entries(r.byClass).filter(([, s]) => s !== 3).map(([k]) => k).join(', ')} data` : ''}.`];
+function consequence(c: any, r: ControlResult, level: Level | null, missing: Array<{ regime: string; routes: string[] }>, ukCtp: boolean): string {
+  const below = r.byClass ? (Object.entries(r.byClass).filter(([, s]) => s !== 3) as Array<[string, State]>) : [];
+  // Class controls: the state of each kind of data below full, so the sentence matches the table (D6).
+  const parts = [r.byClass
+    ? `${c.name} is ${[...new Set(below.map(([, s]) => s))].length === 1 ? `${STATE_WORD(below[0][1])} for ${below.map(([k]) => dataName(k)).join(', ')} data` : below.map(([k, s]) => `${STATE_WORD(s)} for ${dataName(k)} data`).join(', ')}.`
+    : `${c.name} is ${STATE_WORD(r.state)}.`];
+  if (c.id === 'SOV.CONC.PROVIDER' && ukCtp) parts.push('This includes dependence on the UK designated critical third parties.');
   if (level && r.requiredBy.levels.length) parts.push(`The ${level} level set for this data requires it.`);
-  if (r.requiredBy.regimes.length) parts.push(`Required by ${r.requiredBy.regimes.map(x => `${REGIME_NAME.get(x.regime) ?? x.regime} (${articleOf(x.basis)})`).join('; ')}.`);
+  // S10 W1: duties of regulations that apply are "linked", never "required by"; one still to confirm is conditional.
+  const duty = (x: { regime: string; basis: string }) => `${REGIME_NAME.get(x.regime) ?? x.regime} (${articleOf(x.basis)})`;
+  const applies = r.requiredBy.regimes.filter(x => x.grade === 'applies'), toConfirm = r.requiredBy.regimes.filter(x => x.grade !== 'applies');
+  if (applies.length) parts.push(`Linked legal duties: ${applies.map(duty).join('; ')}. The action is LTM's recommended way to meet them; confirm what each requires of you with counsel.`);
+  for (const x of toConfirm) parts.push(`If ${REGIME_NAME.get(x.regime) ?? x.regime} applies to you: ${duty(x)}.`);
   if (c.id === 'SOV.XFER.BASIS' && missing.length) parts.push(`No transfer route recorded for ${missing.map(m => REGIME_NAME.get(m.regime) ?? m.regime).join(', ')}.`);
   return parts.join(' ');
 }

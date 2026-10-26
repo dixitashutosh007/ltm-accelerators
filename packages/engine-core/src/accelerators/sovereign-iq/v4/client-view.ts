@@ -24,6 +24,11 @@ export function clientView(result: SovereignIqV4Result) {
   const r: SovereignIqV4Result = JSON.parse(JSON.stringify(result));
   const shown = r.regimes.filter(g => g.grade !== 'not_applicable' && !g.consultantOnly);
   const shownIds = new Set(shown.map(g => g.regime));
+  // Waves the client sees are numbered 1, 2, 3 again once consultant-only findings are left out (S6 challenge D4).
+  const shownFindings = new Set(r.findings.filter(f => !f.consultantOnly).map(f => f.id));
+  const clientRoadmap = r.roadmap.map(w => ({ ...w, findings: w.findings.filter(id => shownFindings.has(id)) })).filter(w => w.findings.length);
+  const clientWave = new Map(clientRoadmap.map((w, i) => [w.wave, i + 1]));
+  clientRoadmap.forEach((w, i) => { w.wave = i + 1; });
   return {
     view: 'client' as const,
     mode: r.mode, assessmentDate: r.assessmentDate, versions: r.versions,
@@ -51,10 +56,11 @@ export function clientView(result: SovereignIqV4Result) {
       regimes: r.exposure.regimes.filter(e => shownIds.has(e.regime)).map(({ pendingSource, controls, ...e }) => ({ ...e, controls: controls.map(c => ({ control: c.control, status: word(c.state) })) }))
     },
     foreignAccess: r.foreignAccess.map(f => ({ ...f, controls: f.controls.map(c => ({ control: c.control, status: word(c.state) })) })),
-    findings: r.findings.filter(f => !f.consultantOnly).map(({ state, consultantOnly, ...f }) => ({ ...f, status: f.type === 'control_gap' ? word(state) : undefined, regimes: f.regimes.filter(x => shownIds.has(x.regime)) })),
+    findings: r.findings.filter(f => !f.consultantOnly).map(({ state, consultantOnly, ...f }) => ({ ...f, wave: clientWave.get(f.wave) ?? f.wave, dependsOn: f.dependsOn.filter(id => shownFindings.has(id)), status: f.type === 'control_gap' ? word(state) : undefined, regimes: f.regimes.filter(x => shownIds.has(x.regime)) })),
     topGaps: r.topGaps.filter(f => !f.consultantOnly).map(f => f.id),
-    roadmap: r.roadmap.map(w => ({ wave: w.wave, findings: w.findings.filter(id => r.findings.some(f => f.id === id && !f.consultantOnly)) })).filter(w => w.findings.length),
-    notes: r.notes.filter(n => !/\(Q11\)/.test(n)),
+    roadmap: clientRoadmap,
+    // The processing-location note is for the consultant (it qualifies the applicability model).
+    notes: r.notes.filter(n => !/without an entity there/.test(n)),
     // SEAL view: control states as words; the Commission's tender results stay in the consultant view (D20).
     seal: (({ commissionTenderResults, objectives, ...s }) => ({ ...s, objectives: objectives.map(o => ({ ...o, controls: o.controls.map(c => ({ control: c.control, status: word(c.state) })) })) }))(r.seal),
     // How LTM can help: only the findings the client edition shows (no consultant-only finding names an offering here).

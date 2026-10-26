@@ -13,7 +13,13 @@
       "type": "Advisory",
       "purpose": "Settle what is still unknown or unconfirmed: where data goes, which regulations apply, and the level each kind of data needs.",
       "outline": [
-        "Map data flows and records of processing for each kind of data",
+        {
+          "text": "Map data flows and records of processing for each kind of data",
+          "scopes": [
+            "SOV.DATA.MAP",
+            "SOV.TP.VISIBILITY"
+          ]
+        },
         {
           "text": "Build the transfer register, with transfer impact or risk assessments prepared with your counsel",
           "scopes": [
@@ -29,8 +35,19 @@
             "SOV.XFER.US_BULK"
           ]
         },
-        "Confirm with your counsel the regulations marked \"likely – confirm\"",
-        "Agree the board's sovereignty level for each kind of data"
+        {
+          "text": "Confirm with your counsel the regulations marked \"likely – confirm\"",
+          "scopes": [
+            "SCOPE_CONFIRMATION"
+          ]
+        },
+        {
+          "text": "Agree the board's sovereignty level for each kind of data",
+          "scopes": [
+            "BOARD_DECISION"
+          ]
+        },
+        "LTM supplies the data flows and technical facts; your counsel owns the legal assessment"
       ],
       "indicativeScope": "4–6 weeks"
     },
@@ -68,7 +85,19 @@
             "SG_MAS_TRM"
           ]
         },
-        "Audit and access rights, and exit plans for critical providers"
+        {
+          "text": "Audit and access rights in critical contracts",
+          "scopes": [
+            "SOV.TP.AUDIT",
+            "SOV.TP.REGISTER"
+          ]
+        },
+        {
+          "text": "Exit plans for critical providers",
+          "scopes": [
+            "SOV.EXIT.PLAN"
+          ]
+        }
       ],
       "indicativeScope": "6–12 weeks"
     },
@@ -106,7 +135,12 @@
       "type": "Implementation",
       "purpose": "Move data, backups and replicas that sit outside the allowed region back inside it.",
       "outline": [
-        "Re-platform storage, databases and replicas into the allowed region",
+        {
+          "text": "Re-platform storage, databases and replicas into the allowed region",
+          "scopes": [
+            "SOV.RES.LOCATION"
+          ]
+        },
         {
           "text": "Move backups and disaster-recovery copies into the region, with separate keys",
           "scopes": [
@@ -150,15 +184,26 @@
       "type": "Implementation",
       "purpose": "Keep AI training, fine-tuning and inference in the allowed region, on terms that protect your data.",
       "outline": [
-        "Move model hosting and inference into the allowed region",
-        "Contract terms that bar providers from training on your data",
+        {
+          "text": "Move model hosting and inference into the allowed region",
+          "scopes": [
+            "SOV.AI.DATA_LOCATION"
+          ]
+        },
+        {
+          "text": "Contract terms that bar providers from training on your data",
+          "scopes": [
+            "SOV.AI.DATA_LOCATION"
+          ]
+        },
         {
           "text": "EU AI Act role and risk classification for each AI system, with your counsel",
           "scopes": [
             "EU_AI_ACT",
             "SOV.AI.GOVERNANCE"
           ]
-        }
+        },
+        "LTM supplies the data flows and technical facts; your counsel owns the legal assessment"
       ],
       "indicativeScope": "6–10 weeks"
     },

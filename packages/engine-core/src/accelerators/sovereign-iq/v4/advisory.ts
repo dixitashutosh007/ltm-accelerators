@@ -36,7 +36,7 @@ export interface R4Fact {
   id: string; name: string; owner: string; operator: string; operatorLaw: string; technologySupplier: string;
   zones: string[]; claimIds: string[];
 }
-export const COUNSEL_NOTE = 'Whether this meets R4 is for your counsel.';
+export const COUNSEL_NOTE = 'Whether this meets R4 is for your counsel. Your own organisation, or a parent or subsidiary, can still be compelled by a foreign law to produce data it controls, whatever the provider.';
 export interface LadderAlternative {
   id: string; rung: Rung; name: string; kind: 'partner_operated' | 'sovereign_provider' | 'private_cloud' | 'disconnected';
   zones: string[]; detail: string; claimIds: string[];
@@ -59,6 +59,8 @@ export interface AdvisoryInput {
   requirements: Array<{ dataClass: DataClass; required: Level; allowedZone: string[] }>;
   controls: Array<{ control: string; state: State; byClass?: Partial<Record<DataClass, State>> }>;
   findings: Array<{ id: string; type: string; control?: string; dataClasses: DataClass[] }>;
+  /** Regime grades, for options shown only where a regime is in scope (e.g. Data Act switching rights). */
+  regimes?: Array<{ regime: string; grade: string }>;
 }
 
 export type PlacementStatus = 'meets' | 'gap' | 'unconfirmed' | 'move';
@@ -116,7 +118,11 @@ function classPlatforms(facts: Facts, c: DataClass): string[] {
 const covers = (zones: string[], z: string) => zones.includes('any') || zones.includes(z);
 const forServices = (entries: PlaybookEntry[], services: string[]) =>
   services.length ? entries.filter(e => !e.serviceFamilies?.length || e.serviceFamilies.some(s => services.includes(s))) : entries;
-const toAction = ({ id, owner, lastReviewed, nextReview, ...e }: PlaybookEntry, findingId: string): AdvisoryAction => ({ ...e, entryId: id, findingId, reviewedOn: lastReviewed });
+/** The entry as an action, keeping only the options that serve the data's allowed zones and whose regime is in scope (S6 challenge D5, D10). */
+const toAction = ({ id, owner, lastReviewed, nextReview, ...e }: PlaybookEntry, findingId: string, zones: string[], regimes: Set<string>): AdvisoryAction => ({
+  ...e, entryId: id, findingId, reviewedOn: lastReviewed,
+  options: e.options.filter(o => (!o.zones?.length || !zones.length || o.zones.some(z => zones.includes(z))) && (!o.requiresRegime || regimes.has(o.requiresRegime)))
+});
 
 export function advisory(r: AdvisoryInput, ladder: Ladder = LADDER, cat: PlaybookCatalogue = PLAYBOOK): Advisory {
   const control = new Map(r.controls.map(c => [c.control, c]));
@@ -127,6 +133,8 @@ export function advisory(r: AdvisoryInput, ladder: Ladder = LADDER, cat: Playboo
   };
   const findingOf = (id: string) => r.findings.find(f => f.type === 'control_gap' && f.control === id);
   const services = (r.facts['data.class_services'] ?? {}) as Record<string, Record<string, string[]>>;
+  const inScope = new Set((r.regimes ?? []).filter(g => g.grade === 'applies' || g.grade === 'likely_confirm').map(g => g.regime));
+  const zonesOf = (classes: DataClass[]) => [...new Set(r.requirements.filter(q => !classes.length || classes.includes(q.dataClass)).flatMap(q => q.allowedZone))];
 
   const placement: PlacementRow[] = [];
   for (const req of r.requirements) {
@@ -168,7 +176,7 @@ export function advisory(r: AdvisoryInput, ladder: Ladder = LADDER, cat: Playboo
         const f = findingOf(cid);
         if (!f || (f.dataClasses.length && !f.dataClasses.includes(req.dataClass))) continue;
         findingIds.push(f.id);
-        for (const sel of selectActions(cat, [cid], [platform])) for (const e of forServices(sel.entries, svc)) actions.push(toAction(e, f.id));
+        for (const sel of selectActions(cat, [cid], [platform])) for (const e of forServices(sel.entries, svc)) actions.push(toAction(e, f.id, zones, inScope));
       }
       placement.push({
         dataClass: req.dataClass, platform, requiredLevel: req.required, allowedZone: zones, minimumRung, status,
@@ -186,7 +194,8 @@ export function advisory(r: AdvisoryInput, ladder: Ladder = LADDER, cat: Playboo
     const holding = f.dataClasses.length ? [...new Set(f.dataClasses.flatMap(c => classPlatforms(r.facts, c)))] : list(r.facts['plat.in_scope']);
     const platforms = playbookPlatforms(holding);
     const sel = selectActions(cat, [f.control!], platforms);
-    for (const s of sel) for (const e of s.entries) technical.push(toAction(e, f.id));
+    const zones = zonesOf(f.dataClasses);
+    for (const s of sel) for (const e of s.entries) technical.push(toAction(e, f.id, zones, inScope));
     if (!technicalControls.has(f.control!)) continue;
     const missing = sel.length ? sel[0].missingPlatforms : platforms;
     if (missing.length) gaps.push({ findingId: f.id, control: f.control!, platforms: missing });
