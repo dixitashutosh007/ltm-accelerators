@@ -5,8 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>LTM Vantage — Responsible Advisory</title>
   
-  <!-- CDNs for Visual Charting -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   <!-- S3 Customer Reports Client -->
   <script src="/assets/runtime-config.js"></script>
   <script src="/assets/ltm-api.js"></script>
@@ -15,21 +13,22 @@
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Manrope:wght@600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/assets/vantage/vantage.css">
 
   <style>
     :root {
       --coral: #FF5E4F;
       --coral-hover: #E5412F;
       --coral-subtle: rgba(255, 94, 79, 0.12);
-      --dark-page: #080C10;
-      --dark-surface: #0E141C;
-      --card-bg: #131A24;
-      --card-hover: #17212E;
-      --border-subtle: #1E2836;
+      --dark-page: #0B0B0C;
+      --dark-surface: #111113;
+      --card-bg: #141416;
+      --card-hover: #1A1A1D;
+      --border-subtle: rgba(255, 255, 255, 0.1);
       --border-accent: rgba(255, 94, 79, 0.35);
-      --text-main: #F3F4F6;
-      --text-muted: #9CA3AF;
+      --text-main: #F4F4F5;
+      --text-muted: #A1A1AA;
       --text-dim: #6B7280;
       --teal: #3C829B;
       --teal-bg: rgba(60, 130, 155, 0.15);
@@ -37,409 +36,21 @@
       --green-bg: rgba(16, 185, 129, 0.12);
       --amber: #F59E0B;
       --amber-bg: rgba(245, 158, 11, 0.12);
-      --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-      --font-heading: 'Manrope', sans-serif;
-      --font-mono: 'JetBrains Mono', monospace;
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-heading: 'Inter Tight', 'Inter', sans-serif;
+      --font-mono: ui-monospace, 'SF Mono', Menlo, monospace;
     }
 
     * { margin: 0; padding: 0; box-sizing: border-box; }
     
     body {
+      margin: 0;
       font-family: var(--font-sans);
-      background-color: var(--dark-page);
+      background: #0B0B0C;
       color: var(--text-main);
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
       line-height: 1.5;
       overflow-x: hidden;
-      background-image: 
-        radial-gradient(circle at 15% 10%, rgba(255, 94, 79, 0.04) 0%, transparent 45%),
-        radial-gradient(circle at 85% 60%, rgba(60, 130, 155, 0.05) 0%, transparent 50%),
-        radial-gradient(circle at 50% 100%, rgba(16, 185, 129, 0.03) 0%, transparent 50%);
-      background-attachment: fixed;
-    }
-
-    /* ============================================================
-       FANCY SPLASH SCREEN
-       ============================================================ */
-    #splashScreen {
-      position: fixed;
-      inset: 0;
-      z-index: 99999;
-      background: #06090D;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      transition: opacity 0.65s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.65s;
-    }
-
-    #splashScreen.fade-out {
-      opacity: 0;
-      visibility: hidden;
-      pointer-events: none;
-    }
-
-    .splash-glow {
-      position: absolute;
-      width: 500px;
-      height: 500px;
-      border-radius: 50%;
-      background: radial-gradient(circle, rgba(255, 94, 79, 0.18) 0%, rgba(60, 130, 155, 0.08) 50%, transparent 70%);
-      filter: blur(60px);
-      pointer-events: none;
-      animation: pulseGlow 3s ease-in-out infinite alternate;
-    }
-
-    @keyframes pulseGlow {
-      0% { transform: scale(0.9); opacity: 0.7; }
-      100% { transform: scale(1.15); opacity: 1; }
-    }
-
-    .splash-content {
-      position: relative;
-      z-index: 2;
-      text-align: center;
-      max-width: 520px;
-      padding: 0 24px;
-    }
-
-    .splash-brand-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      background: rgba(255, 94, 79, 0.12);
-      border: 1px solid rgba(255, 94, 79, 0.3);
-      padding: 6px 14px;
-      border-radius: 999px;
-      font-size: 11px;
-      font-weight: 700;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: var(--coral);
-      margin-bottom: 20px;
-    }
-
-    .splash-radar-wrap {
-      position: relative;
-      width: 88px;
-      height: 88px;
-      margin: 0 auto 24px;
-    }
-
-    .splash-radar-ring {
-      position: absolute;
-      inset: 0;
-      border-radius: 50%;
-      border: 2px dashed rgba(255, 94, 79, 0.4);
-      animation: spinRadar 8s linear infinite;
-    }
-
-    .splash-radar-inner {
-      position: absolute;
-      inset: 12px;
-      border-radius: 50%;
-      border: 2px solid rgba(60, 130, 155, 0.6);
-      animation: spinRadarRev 5s linear infinite;
-    }
-
-    .splash-radar-center {
-      position: absolute;
-      inset: 26px;
-      border-radius: 50%;
-      background: var(--coral);
-      box-shadow: 0 0 20px var(--coral);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #fff;
-      font-weight: 800;
-      font-size: 14px;
-      letter-spacing: -0.02em;
-    }
-
-    @keyframes spinRadar { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-    @keyframes spinRadarRev { 0% { transform: rotate(360deg); } 100% { transform: rotate(0deg); } }
-
-    .splash-title {
-      font-family: var(--font-heading);
-      font-size: 28px;
-      font-weight: 800;
-      letter-spacing: -0.03em;
-      margin-bottom: 8px;
-      color: #FFFFFF;
-    }
-
-    .splash-sub {
-      font-size: 13.5px;
-      color: var(--text-muted);
-      margin-bottom: 28px;
-      line-height: 1.5;
-    }
-
-    .splash-bar-outer {
-      width: 100%;
-      height: 4px;
-      background: #1B232E;
-      border-radius: 4px;
-      overflow: hidden;
-      margin-bottom: 12px;
-      position: relative;
-    }
-
-    .splash-bar-inner {
-      width: 0%;
-      height: 100%;
-      background: linear-gradient(90deg, var(--coral), #3C829B, #10B981);
-      transition: width 0.3s ease;
-      box-shadow: 0 0 10px rgba(255, 94, 79, 0.7);
-    }
-
-    .splash-status-text {
-      font-family: var(--font-mono);
-      font-size: 11.5px;
-      color: var(--text-dim);
-      display: flex;
-      justify-content: space-between;
-    }
-
-    .splash-skip-btn {
-      position: absolute;
-      top: 24px;
-      right: 28px;
-      z-index: 10;
-      background: transparent;
-      border: 1px solid #2A3646;
-      color: var(--text-muted);
-      font-size: 12px;
-      font-weight: 600;
-      padding: 6px 14px;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-
-    .splash-skip-btn:hover {
-      background: rgba(255, 255, 255, 0.08);
-      color: #fff;
-    }
-
-    /* ============================================================
-       HEADER & NAVIGATION
-       ============================================================ */
-    header {
-      background: rgba(14, 20, 28, 0.85);
-      backdrop-filter: blur(16px);
-      border-bottom: 1px solid var(--border-subtle);
-      padding: 14px 36px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      position: sticky;
-      top: 0;
-      z-index: 1000;
-    }
-
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      text-decoration: none;
-      color: inherit;
-    }
-
-    .brand-badge {
-      background: linear-gradient(135deg, var(--coral) 0%, #D83B2A 100%);
-      color: #fff;
-      font-size: 11.5px;
-      font-weight: 800;
-      padding: 4px 9px;
-      border-radius: 7px;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      box-shadow: 0 2px 8px rgba(255, 94, 79, 0.35);
-    }
-
-    .brand-text {
-      display: flex;
-      flex-direction: column;
-    }
-
-    .brand-name {
-      font-family: var(--font-heading);
-      font-size: 16px;
-      font-weight: 800;
-      letter-spacing: -0.02em;
-      color: #FFFFFF;
-      line-height: 1.2;
-    }
-
-    .brand-sub {
-      font-size: 11px;
-      font-weight: 500;
-      color: var(--text-muted);
-    }
-
-    /* Unified Executive Navigation Island */
-    .nav-island {
-      display: inline-flex;
-      align-items: center;
-      gap: 3px;
-      padding: 4px 6px;
-      background: rgba(14, 21, 32, 0.72);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 999px;
-      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.08);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-    }
-
-    .nav-island-segment {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 6px 13px;
-      font-family: var(--font-body);
-      font-size: 12px;
-      font-weight: 600;
-      color: #94A3B8;
-      border-radius: 999px;
-      background: transparent;
-      border: none;
-      cursor: pointer;
-      text-decoration: none;
-      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-
-    .nav-island-segment:hover {
-      color: #FFFFFF;
-      background: rgba(255, 255, 255, 0.07);
-    }
-
-    .nav-island-segment.live-indicator {
-      cursor: default;
-      color: #34D399;
-      font-size: 11.5px;
-      padding: 6px 11px;
-    }
-
-    .nav-island-segment.live-indicator:hover {
-      background: transparent;
-      color: #34D399;
-    }
-
-    .live-dot {
-      position: relative;
-      width: 7px;
-      height: 7px;
-      background: #10B981;
-      border-radius: 50%;
-    }
-
-    .live-ping {
-      position: absolute;
-      inset: -3px;
-      border-radius: 50%;
-      background: rgba(16, 185, 129, 0.5);
-      animation: pingDot 1.8s cubic-bezier(0, 0, 0.2, 1) infinite;
-    }
-
-    @keyframes pingDot {
-      0% { transform: scale(1); opacity: 0.9; }
-      100% { transform: scale(2.6); opacity: 0; }
-    }
-
-    .nav-island-divider {
-      width: 1px;
-      height: 18px;
-      background: rgba(255, 255, 255, 0.1);
-      margin: 0 2px;
-    }
-
-    .nav-auth-wrapper {
-      display: inline-flex;
-      align-items: center;
-    }
-
-    .nav-sign-in-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 6px 15px;
-      background: rgba(255, 94, 79, 0.14);
-      border: 1px solid rgba(255, 94, 79, 0.35);
-      color: #FFA59E;
-      font-size: 12px;
-      font-weight: 700;
-      border-radius: 999px;
-      cursor: pointer;
-      transition: all 0.2s ease;
-    }
-
-    .nav-sign-in-btn:hover {
-      background: rgba(255, 94, 79, 0.25);
-      color: #FFFFFF;
-      box-shadow: 0 0 14px rgba(255, 94, 79, 0.35);
-    }
-
-    .nav-user-pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 4px 6px 4px 10px;
-      border-radius: 999px;
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      font-size: 11.5px;
-      color: #E2E8F0;
-    }
-
-    .nav-user-pill .user-role {
-      font-size: 9.5px;
-      font-weight: 700;
-      text-transform: uppercase;
-      padding: 2px 7px;
-      border-radius: 999px;
-      letter-spacing: 0.05em;
-    }
-
-    .nav-user-pill .user-role.super {
-      background: rgba(255, 94, 79, 0.18);
-      color: #FFA59E;
-      border: 1px solid rgba(255, 94, 79, 0.3);
-    }
-
-    .nav-user-pill .user-role.member {
-      background: rgba(59, 130, 246, 0.18);
-      color: #93C5FD;
-      border: 1px solid rgba(59, 130, 246, 0.3);
-    }
-
-    .nav-user-pill .user-name {
-      font-weight: 600;
-      max-width: 140px;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-
-    .nav-user-pill .btn-logout {
-      background: rgba(255, 255, 255, 0.08);
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      color: #94A3B8;
-      border-radius: 999px;
-      padding: 3px 8px;
-      font-size: 10.5px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.15s ease;
-    }
-
-    .nav-user-pill .btn-logout:hover {
-      background: rgba(239, 68, 68, 0.2);
-      color: #F87171;
-      border-color: rgba(239, 68, 68, 0.4);
+      -webkit-font-smoothing: antialiased;
     }
 
     .btn-auth {
@@ -475,380 +86,6 @@
     }
 
     /* ============================================================
-       MAIN CONTENT CONTAINER
-       ============================================================ */
-    main {
-      flex: 1;
-      max-width: 1240px;
-      width: 100%;
-      margin: 0 auto;
-      padding: 44px 28px 80px;
-    }
-
-    /* Advanced Cyber / IQ Theme Hero */
-    .hero-tech-container {
-      position: relative;
-      background: radial-gradient(circle at 50% 10%, rgba(255, 94, 79, 0.12) 0%, rgba(12, 18, 26, 0.95) 60%, #080C12 100%);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      border-radius: 20px;
-      padding: 38px 24px 30px;
-      margin-bottom: 40px;
-      overflow: hidden;
-      box-shadow: 0 16px 50px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.08);
-    }
-
-    #heroCyberCanvas {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      pointer-events: none;
-      opacity: 0.55;
-    }
-
-    .hero-tech-grid {
-      position: absolute;
-      inset: 0;
-      background-image: 
-        linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
-      background-size: 28px 28px;
-      mask-image: radial-gradient(circle at center, black 40%, transparent 85%);
-      -webkit-mask-image: radial-gradient(circle at center, black 40%, transparent 85%);
-      pointer-events: none;
-    }
-
-    .hero-tech-beam {
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 2px;
-      background: linear-gradient(90deg, transparent 0%, rgba(59, 130, 246, 0.4) 20%, var(--coral) 50%, rgba(16, 185, 129, 0.4) 80%, transparent 100%);
-      opacity: 0.9;
-      box-shadow: 0 0 20px rgba(255, 94, 79, 0.7);
-      animation: heroBeamSweep 4s ease-in-out infinite alternate;
-    }
-
-    @keyframes heroBeamSweep {
-      0% { transform: translateY(0); opacity: 0.6; }
-      50% { opacity: 1; }
-      100% { transform: translateY(2px); opacity: 0.8; }
-    }
-
-    .hero-tech-title {
-      font-family: var(--font-heading);
-      font-size: 44px;
-      font-weight: 800;
-      letter-spacing: -0.03em;
-      color: #FFFFFF;
-      margin: 0 0 18px;
-      line-height: 1.15;
-      background: linear-gradient(135deg, #FFFFFF 0%, #E2E8F0 60%, #FF9E95 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      filter: drop-shadow(0 2px 16px rgba(0,0,0,0.6));
-    }
-
-    .hero-practice-tabs {
-      display: flex;
-      justify-content: center;
-      gap: 10px;
-      margin-top: 0;
-      flex-wrap: wrap;
-    }
-
-    .hero-tab {
-      background: rgba(255, 255, 255, 0.03);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      color: var(--text-muted);
-      padding: 7px 18px;
-      border-radius: 999px;
-      font-size: 12px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.2s ease;
-    }
-
-    .hero-tab:hover {
-      background: rgba(255, 255, 255, 0.07);
-      color: #fff;
-      border-color: rgba(255, 255, 255, 0.18);
-    }
-
-    .hero-tab.active {
-      background: rgba(255, 94, 79, 0.12);
-      border-color: #FF5E4F;
-      color: #FF8A7A;
-      box-shadow: 0 0 14px rgba(255, 94, 79, 0.25);
-    }
-
-    /* ============================================================
-       PRACTICE GROUPS & ALIGNED CARDS
-       ============================================================ */
-    .practice-section {
-      margin-bottom: 56px;
-    }
-
-    .practice-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-end;
-      padding-bottom: 14px;
-      border-bottom: 1px solid var(--border-subtle);
-      margin-bottom: 22px;
-      flex-wrap: wrap;
-      gap: 12px;
-    }
-
-    .practice-title-group {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
-
-    .practice-badge {
-      font-family: var(--font-mono);
-      font-size: 10.5px;
-      font-weight: 700;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: var(--teal);
-    }
-
-    .practice-badge.orange {
-      color: #FB923C;
-    }
-
-    .practice-title {
-      font-family: var(--font-heading);
-      font-size: 22px;
-      font-weight: 800;
-      letter-spacing: -0.02em;
-      color: #F9FAFB;
-    }
-
-    .practice-desc {
-      font-size: 13.5px;
-      color: var(--text-muted);
-      max-width: 620px;
-    }
-
-    /* Clean, Non-Overlapping Grid */
-    .acc-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(440px, 1fr));
-      gap: 24px;
-    }
-
-    @media (max-width: 768px) {
-      .acc-grid {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    .acc-card {
-      background: var(--card-bg);
-      border: 1px solid var(--border-subtle);
-      border-radius: 18px;
-      padding: 28px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      min-height: 290px;
-      transition: all 0.24s cubic-bezier(0.16, 1, 0.3, 1);
-      position: relative;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
-      overflow: hidden;
-    }
-
-    .acc-card::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 3px;
-      background: linear-gradient(90deg, transparent 0%, var(--card-accent, #10B981) 50%, transparent 100%);
-      opacity: 0.75;
-      transition: opacity 0.3s;
-    }
-
-    .acc-card:hover {
-      background: var(--card-hover);
-      border-color: rgba(255, 94, 79, 0.45);
-      transform: translateY(-4px);
-      box-shadow: 0 20px 45px rgba(0,0,0,0.5), 0 0 25px rgba(255, 94, 79, 0.1);
-    }
-
-    .acc-card:hover::before {
-      opacity: 1;
-    }
-
-    .acc-card.card-finops-iq { --card-accent: #06B6D4; }
-    .acc-card.card-sovereign-iq { --card-accent: #FF5E4F; }
-    .acc-card.card-posture-iq { --card-accent: #F59E0B; }
-    .acc-card.card-cloud-iq { --card-accent: #226882; }
-    .acc-card.card-strategy-iq { --card-accent: #FF5E4F; }
-    .acc-card.card-modernization-iq { --card-accent: #35754D; }
-
-    .card-top {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-
-    .card-meta-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .card-eyebrow {
-      font-family: var(--font-mono);
-      font-size: 11px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: var(--teal);
-    }
-
-    .card-eyebrow.orange {
-      color: #FB923C;
-    }
-
-    /* Release status on each accelerator card (owner decision, 26 Oct 2026): Sales Preview once validated, Beta
-       otherwise. Contrast is AA on the dark cards. */
-    .release-badge {
-      flex: 0 0 auto;
-      font-family: var(--font-mono);
-      font-size: 10.5px;
-      font-weight: 700;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      padding: 3px 9px;
-      border-radius: 999px;
-      white-space: nowrap;
-    }
-    .release-badge.preview { color: #052E16; background: #4ADE80; }
-    .release-badge.beta { color: #FCD34D; border: 1px solid rgba(252, 211, 77, 0.55); }
-
-    .card-title {
-      font-family: var(--font-heading);
-      font-size: 21px;
-      font-weight: 800;
-      color: #FFFFFF;
-      letter-spacing: -0.02em;
-    }
-
-    .card-desc {
-      color: var(--text-muted);
-      font-size: 13.5px;
-      line-height: 1.55;
-      min-height: 44px;
-    }
-
-    .chip-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-top: 14px;
-    }
-
-    .chip {
-      font-size: 11px;
-      font-weight: 600;
-      padding: 4px 10px;
-      border-radius: 6px;
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      color: #D1D5DB;
-    }
-
-    /* Fixed Card Footer Alignment */
-    .card-footer {
-      margin-top: 24px;
-      padding-top: 18px;
-      border-top: 1px solid rgba(255, 255, 255, 0.07);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
-
-    .card-status {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 11.5px;
-      color: #9CA3AF;
-      font-weight: 500;
-    }
-
-    .card-actions {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .btn-action-edit {
-      text-decoration: none;
-      background: rgba(255, 255, 255, 0.04);
-      border: 1px solid #283546;
-      color: #CBD5E1;
-      padding: 8px 14px;
-      border-radius: 8px;
-      font-size: 12px;
-      font-weight: 700;
-      cursor: pointer;
-      transition: all 0.15s ease;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      white-space: nowrap;
-    }
-
-    .btn-action-edit:hover {
-      background: rgba(255, 255, 255, 0.1);
-      border-color: #4B5563;
-      color: #fff;
-    }
-
-    .btn-action-edit.admin-unlocked {
-      background: rgba(255, 94, 79, 0.12);
-      border-color: rgba(255, 94, 79, 0.35);
-      color: #FFA299;
-    }
-
-    .btn-action-edit.admin-unlocked:hover {
-      background: rgba(255, 94, 79, 0.22);
-      color: #fff;
-    }
-
-    .btn-action-launch {
-      text-decoration: none;
-      background: linear-gradient(135deg, var(--coral) 0%, #D83B2A 100%);
-      color: #fff;
-      padding: 8px 18px;
-      border-radius: 8px;
-      font-size: 12.5px;
-      font-weight: 700;
-      cursor: pointer;
-      transition: all 0.15s ease;
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      box-shadow: 0 2px 8px rgba(255, 94, 79, 0.25);
-      white-space: nowrap;
-    }
-
-    .btn-action-launch:hover {
-      background: var(--coral-hover);
-      transform: translateY(-1px);
-      box-shadow: 0 4px 14px rgba(255, 94, 79, 0.4);
-    }
-
-    /* ============================================================
        MODALS: COGNITO RBAC LOGIN & ACCESS CONTROL
        ============================================================ */
     .modal-overlay {
@@ -864,8 +101,8 @@
     }
 
     .modal-box {
-      background: #111823;
-      border: 1px solid #283749;
+      background: #141416;
+      border: 1px solid rgba(255, 255, 255, 0.12);
       border-radius: 16px;
       max-width: 440px;
       width: 100%;
@@ -953,7 +190,7 @@
     }
 
     .perm-tool-card {
-      background: #0B111A;
+      background: #0B0B0C;
       border: 1px solid #223042;
       border-radius: 8px;
       padding: 10px;
@@ -1057,17 +294,6 @@
     .perm-subpill.edit { background: rgba(245, 158, 11, 0.15); color: #FCD34D; border: 1px solid rgba(245, 158, 11, 0.3); }
     .perm-subpill.archive { background: rgba(16, 185, 129, 0.15); color: #6EE7B7; border: 1px solid rgba(16, 185, 129, 0.3); }
     .perm-subpill.full { background: rgba(255, 94, 79, 0.18); color: #FFA59E; border: 1px solid rgba(255, 94, 79, 0.35); }
-    .btn-action-launch.btn-locked {
-      background: rgba(255, 255, 255, 0.08);
-      border-color: rgba(255, 255, 255, 0.15);
-      color: #94A3B8;
-      box-shadow: none;
-    }
-    .btn-action-launch.btn-locked:hover {
-      background: rgba(255, 94, 79, 0.15);
-      color: #FFA59E;
-      border-color: rgba(255, 94, 79, 0.3);
-    }
 
     .role-badge {
       display: inline-block;
@@ -1213,6 +439,11 @@
       color: #fff;
     }
 
+    /* Reports filter chips */
+    .chip { height: 32px; padding: 0 12px; border-radius: 999px; border: 1px solid rgba(255,255,255,0.14); background: transparent; color: #C4C4CC; font: 500 13px var(--font-sans); cursor: pointer; }
+    .chip:hover { border-color: rgba(255,255,255,0.35); }
+    .chip.active-chip { border-color: var(--coral); background: rgba(255,94,79,0.12); color: #FFFFFF; }
+
     /* Toast Notifications */
     .toast-popup {
       position: fixed;
@@ -1240,354 +471,214 @@
       opacity: 1;
     }
 
-    /* Footer */
-    footer {
-      border-top: 1px solid var(--border-subtle);
-      padding: 24px 36px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 12px;
-      color: var(--text-dim);
-      flex-wrap: wrap;
-      gap: 12px;
-    }
   </style>
 </head>
 <body>
 
+  <a href="#catalogue" class="vt-skip">Skip to accelerators</a>
+
   <!-- ============================================================
-       FANCY EXECUTIVE SPLASH SCREEN
+       TOP BAR: logo, two destinations, search, account
        ============================================================ -->
-  <div id="splashScreen">
-    <div class="splash-glow"></div>
-    <button class="splash-skip-btn" onclick="dismissSplash()">Skip Intro &rarr;</button>
-
-    <div class="splash-content">
-      <div style="margin-bottom: 20px;">
-        <img src="/assets/ltm-logo.png" alt="LTM" style="height: 48px; width: auto; max-width: 260px; object-fit: contain; filter: drop-shadow(0 4px 20px rgba(255, 94, 79, 0.45));">
-      </div>
-      <div class="splash-brand-badge">ADVISORY ACCELERATORS</div>
-      
-      <div class="splash-radar-wrap">
-        <div class="splash-radar-ring"></div>
-        <div class="splash-radar-inner"></div>
-        <div class="splash-radar-center">LTM</div>
-      </div>
-
-      <h1 class="splash-title">LTM Vantage</h1>
-      <p class="splash-sub">Responsible Advisory</p>
-
-      <div class="splash-bar-outer">
-        <div class="splash-bar-inner" id="splashProgress"></div>
-      </div>
-
-      <div class="splash-status-text">
-        <span id="splashMsg">Initializing Secure Advisory Engine...</span>
-        <span id="splashPct">0%</span>
+  <header class="vt-topbar">
+    <div class="vt-topbar-inner">
+      <a href="/" class="vt-brand" aria-label="LTM Vantage home">
+        <img src="/assets/vantage/ltm-logo.svg" alt="LTM" width="81" height="22">
+        <span class="vt-brand-rule" aria-hidden="true"></span>
+        <span class="vt-brand-name">Vantage</span>
+      </a>
+      <nav class="vt-nav" aria-label="Main">
+        <a href="#catalogue" class="vt-nav-link" aria-current="page">Accelerators</a>
+        <button type="button" class="vt-nav-link" id="btnNavReports" onclick="openReportsModal()">Reports</button>
+      </nav>
+      <button type="button" class="vt-search-btn" onclick="openPalette()" aria-label="Search accelerators" aria-keyshortcuts="Meta+K Control+K">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        <span class="vt-search-label">Search</span>
+        <span class="vt-kbd" aria-hidden="true">⌘K</span>
+      </button>
+      <div id="authWidget" class="vt-account">
+        <button type="button" class="vt-signin-btn" onclick="openLoginModal()">Sign in</button>
       </div>
     </div>
-  </div>
-
-  <!-- ============================================================
-       HEADER: UNIFIED EXECUTIVE COMMAND BAR
-       ============================================================ -->
-  <header>
-    <a href="/" class="brand" title="LTM Vantage · Responsible Advisory">
-      <img src="/assets/ltm-logo.png" alt="LTM" style="height: 34px; width: auto; object-fit: contain; filter: drop-shadow(0 2px 8px rgba(255, 94, 79, 0.4));">
-      <div class="brand-text">
-        <div class="brand-name">Vantage</div>
-        <div class="brand-sub">Responsible Advisory</div>
-      </div>
-    </a>
-
-    <!-- Unified Executive Navigation Island -->
-    <nav class="nav-island">
-      <button class="nav-island-segment" onclick="openReportsModal()" id="btnNavReports" title="Customer Deliverables &amp; Archived Reports">
-        <span>📑 Reports</span>
-      </button>
-
-      <button class="nav-island-segment" onclick="openAccessControlModal()" id="btnNavAccessControl" style="display:none;" title="User Directory &amp; RBAC (Super Admin Access)">
-        <span>👥 Access Control</span>
-      </button>
-
-      <div class="nav-island-divider"></div>
-
-      <div id="authWidget" class="nav-auth-wrapper">
-        <button class="nav-sign-in-btn" onclick="openLoginModal()">🔐 Sign In</button>
-      </div>
-    </nav>
   </header>
 
-  <!-- ============================================================
-       MAIN DASHBOARD
-       ============================================================ -->
-  <main>
-    <!-- Modern Tech / IQ Theme Hero -->
-    <div class="hero-tech-container">
-      <canvas id="heroCyberCanvas"></canvas>
-      <div class="hero-tech-grid"></div>
-      <div class="hero-tech-beam"></div>
-
-      <div style="position:relative;z-index:2;text-align:center;">
-        <h1 class="hero-tech-title">Advisory Accelerators</h1>
-        <div class="hero-practice-tabs">
-          <button class="hero-tab active" onclick="filterPracticeGroup('all', this)">All Accelerators (8)</button>
-          <button class="hero-tab" onclick="filterPracticeGroup('strategy', this)">Strategic IT Advisory</button>
-          <button class="hero-tab" onclick="filterPracticeGroup('finops', this)">FinOps Practice</button>
-          <button class="hero-tab" onclick="filterPracticeGroup('costiq', this)">Cost &amp; Value</button>
-          <button class="hero-tab" onclick="filterPracticeGroup('sovereignty', this)">Digital Sovereignty</button>
-          <button class="hero-tab" onclick="filterPracticeGroup('cloud', this)">Hybrid Cloud &amp; Infra</button>
-        </div>
+  <main class="vt-page" id="main">
+    <!-- Hero: the LTM ribbon in slow motion -->
+    <section class="vt-hero" aria-labelledby="heroTitle">
+      <div class="vt-hero-art" aria-hidden="true">
+        <img src="/assets/vantage/ribbon.webp" alt="" class="vt-ribbon" width="1440" height="664" fetchpriority="high">
       </div>
-    </div>
+      <div class="vt-hero-shade" aria-hidden="true"></div>
+      <div class="vt-wrap vt-hero-body">
+        <p class="vt-eyebrow vt-up">LTM Vantage</p>
+        <h1 id="heroTitle" class="vt-up vt-d1">Advice your board can stand behind.</h1>
+        <p class="vt-hero-lede vt-up vt-d2">Consultant-led assessments for cost, sovereignty, resilience, cloud and strategy. Scored on the server, every figure sourced, every finding traced to a decision.</p>
+        <div class="vt-hero-actions vt-up vt-d3">
+          <a href="#sectionPreview" class="vt-btn vt-btn-primary vt-btn-lg">Explore Sales Preview
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+          <button type="button" class="vt-btn vt-btn-ghost vt-btn-lg" onclick="openReportsModal()">Your reports</button>
+        </div>
+        <dl class="vt-stats vt-up vt-d4">
+          <div><dt>Accelerators</dt><dd>8</dd></div>
+          <div><dt>Validated for clients</dt><dd>2</dd></div>
+          <div><dt>Regulations mapped</dt><dd>42</dd></div>
+        </dl>
+      </div>
+    </section>
 
     <!-- ============================================================
          SALES PREVIEW: the validated accelerators first (owner decision, 26 Oct 2026)
          ============================================================ -->
-    <section class="practice-section" id="sectionPreview" data-group="preview">
-      <div class="practice-header">
-        <div class="practice-title-group">
-          <h2 class="practice-title">Sales Preview</h2>
+    <section class="vt-wrap vt-featured" id="sectionPreview" data-group="preview" aria-labelledby="previewTitle">
+      <div class="vt-section-head">
+        <div>
+          <p class="vt-eyebrow">Sales Preview</p>
+          <h2 id="previewTitle">Ready for client conversations</h2>
         </div>
-        <p class="practice-desc">Validated by the practice leads and the product owner, and ready for consultant-led client sessions.</p>
+        <p>Validated by the practice leads and the product owner. Use them in consultant-led sessions; each produces an LTM report in client and consultant editions.</p>
       </div>
 
-      <div class="acc-grid">
-        <!-- 1. FinOps IQ -->
-        <div class="acc-card card-finops-iq" data-group="finops">
-          <div class="card-top">
-            <div class="card-meta-row">
-              <span class="card-eyebrow">CAPABILITY, VALUE &amp; ROADMAP</span>
-              <span class="release-badge preview" title="Validated by its practice lead and the product owner; cleared to show clients in a consultant-led session">Sales Preview</span>
+      <div class="vt-grid-feature">
+        <article class="vt-card feature vt-reveal" data-group="cost" data-name="FinOps IQ">
+          <div class="vt-card-top">
+            <span class="vt-practice">Cost and value</span>
+            <span class="vt-badge preview" title="Validated by its practice lead and the product owner; cleared to show clients in a consultant-led session">Sales Preview</span>
+          </div>
+          <div class="vt-feature-body">
+            <div>
+              <h3>FinOps IQ</h3>
+              <p class="vt-card-text">Rates FinOps capabilities on the FinOps Foundation's Crawl, Walk, Run scale, sizes the value of closing each gap as a conservative, expected and upper range, and produces a roadmap and backlog.</p>
             </div>
-            <h3 class="card-title">FinOps IQ</h3>
-            <p class="card-desc">Rates FinOps capabilities on the FinOps Foundation's Crawl, Walk, Run scale, sizes the value of closing the gaps as a conservative, expected and upper range, and produces an LTM report, roadmap and backlog.</p>
-            <div class="chip-row">
-              <span class="chip">Executive &amp; Workshop Modes</span>
-              <span class="chip">LTM Report (PDF)</span>
-              <span class="chip">Roadmap &amp; Backlog</span>
+            <svg class="vt-feature-art" width="132" height="132" viewBox="0 0 132 132" aria-hidden="true">
+              <circle cx="66" cy="66" r="52" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="10"/>
+              <circle cx="66" cy="66" r="52" fill="none" stroke="#FF5E4F" stroke-width="10" stroke-linecap="round" stroke-dasharray="230 327" transform="rotate(-90 66 66)"/>
+              <circle cx="66" cy="66" r="34" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="8"/>
+              <circle cx="66" cy="66" r="34" fill="none" stroke="#FFB4AC" stroke-width="8" stroke-linecap="round" stroke-dasharray="120 214" transform="rotate(-90 66 66)"/>
+            </svg>
+          </div>
+          <ul class="vt-tags">
+            <li>Executive and workshop modes</li>
+            <li>LTM report (PDF)</li>
+            <li>Roadmap and backlog</li>
+          </ul>
+          <div class="vt-card-actions">
+            <button type="button" class="vt-btn vt-btn-primary btn-action-launch" data-tool="finops-iq" data-label="Start assessment" onclick="handleLaunchClick('finops-iq', '/finops-iq')">Start assessment</button>
+          </div>
+        </article>
+
+        <article class="vt-card feature vt-reveal" data-group="sovereignty" data-name="Sovereign IQ">
+          <div class="vt-card-top">
+            <span class="vt-practice">Sovereignty and compliance</span>
+            <span class="vt-badge preview" title="Validated by its practice lead and the product owner; cleared to show clients in a consultant-led session">Sales Preview</span>
+          </div>
+          <div class="vt-feature-body">
+            <div>
+              <h3>Sovereign IQ</h3>
+              <p class="vt-card-text">Where each kind of data may run, which of 42 regulations apply across the EU and UK, the US and Asia-Pacific, how exposed you are under each, and whether your controls meet the level your data needs. Now includes Posture IQ.</p>
+            </div>
+            <div class="vt-feature-art vt-heat" aria-hidden="true">
+              <span class="h3"></span><span class="h2"></span><span></span><span class="h1"></span>
+              <span></span><span class="h3"></span><span class="h1"></span><span class="h2"></span>
+              <span class="h1"></span><span></span><span class="h2"></span><span></span>
+              <span class="h2"></span><span class="h1"></span><span class="h3"></span><span class="h1"></span>
             </div>
           </div>
-
-          <div class="card-footer" style="justify-content:flex-end;">
-            <div class="card-actions">
-              <button class="btn-action-launch" data-tool="finops-iq" onclick="handleLaunchClick('finops-iq', '/finops-iq')">Take Assessment &rarr;</button>
-            </div>
+          <ul class="vt-tags">
+            <li>Executive and workshop modes</li>
+            <li>42 regulations</li>
+            <li>Exposure and roadmap</li>
+          </ul>
+          <div class="vt-card-actions">
+            <button type="button" class="vt-btn vt-btn-primary btn-action-launch" data-tool="sovereign-iq" data-label="Start assessment" onclick="handleLaunchClick('sovereign-iq', '/sovereign-iq-v4')">Start assessment</button>
           </div>
-        </div>
-
-        <!-- 3. Sovereign IQ -->
-        <div class="acc-card card-sovereign-iq" data-group="sovereignty">
-          <div class="card-top">
-            <div class="card-meta-row">
-              <span class="card-eyebrow orange">SOVEREIGNTY, EXPOSURE &amp; ROADMAP</span>
-              <span class="release-badge preview" title="Validated by its practice lead and the product owner; cleared to show clients in a consultant-led session">Sales Preview</span>
-            </div>
-            <h3 class="card-title">Sovereign IQ</h3>
-            <p class="card-desc">Where each kind of data may run, which of 42 regulations apply across the EU and UK, the US and Asia-Pacific, how exposed you are under each, and whether your controls meet the sovereignty level your data needs. Now includes Posture IQ.</p>
-            <div class="chip-row">
-              <span class="chip">Executive &amp; Workshop Modes</span>
-              <span class="chip">42 Regulations</span>
-              <span class="chip">Exposure &amp; Roadmap</span>
-            </div>
-          </div>
-
-          <div class="card-footer" style="justify-content:flex-end;">
-            <div class="card-actions">
-              <button class="btn-action-launch" data-tool="sovereign-iq" onclick="handleLaunchClick('sovereign-iq', '/sovereign-iq-v4')">Take Assessment &rarr;</button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ============================================================
-         GROUP 0: STRATEGIC IT ADVISORY
-         ============================================================ -->
-    <section class="practice-section" id="sectionStrategy" data-group="strategy">
-      <div class="practice-header">
-        <div class="practice-title-group">
-          <h2 class="practice-title">Strategic IT Advisory Suite</h2>
-        </div>
-        <p class="practice-desc">Assess business-IT alignment, operating model maturity, application portfolio rationalization (TIME), technical debt drag, and capability sourcing.</p>
-      </div>
-
-      <div class="acc-grid">
-<div class="acc-card" onclick="handleLaunchClick('resilience-iq','resilience-iq.html')">
-  <div class="acc-header">
-    <div class="acc-title">Resilience IQ</div>
-    <span style="display:flex;gap:8px;align-items:center"><span class="release-badge beta" title="Under validation; internal use only">Beta</span><span class="pill pill-green">Executive Scan</span></span>
-  </div>
-  <p class="acc-desc">Evidence-aware resilience assessment covering BCP, DR, cyber recovery, operational resilience, third-party dependency and infrastructure resilience.</p>
-  <div style="display:flex;justify-content:space-between;align-items:center;">
-    <span class="pill">20 Questions · CIO/CTO Resilience</span>
-    <div style="display:flex;gap:8px;align-items:center"><a href="resilience-iq-question-bank.html" onclick="event.stopPropagation()" style="font-size:12px;font-weight:700;color:#64748B;text-decoration:none;border:1px solid #CBD5E1;border-radius:6px;padding:8px 10px;">Question Bank Studio</a><button class="btn-action-launch" data-tool="resilience-iq" onclick="event.stopPropagation();handleLaunchClick('resilience-iq','resilience-iq.html')">Take Assessment &rarr;</button></div>
-  </div>
-</div>
-
-
-        <!-- Strategy IQ -->
-        <div class="acc-card card-strategy-iq">
-          <div class="card-top">
-            <div class="card-meta-row">
-              <span class="card-eyebrow" style="color:#FF5E4F;border-color:rgba(255,94,79,0.3);background:rgba(255,94,79,0.08);">6 STRATEGIC PILLARS &amp; TECH DEBT</span>
-              <span class="release-badge beta" title="Under validation; internal use only">Beta</span>
-            </div>
-            <h3 class="card-title">Strategy IQ</h3>
-            <p class="card-desc">Diagnostic platform evaluating 6 strategic pillars, 24 diagnostic vectors, TIME portfolio rationalization, and tech debt dollar drag sizing.</p>
-            <div class="chip-row">
-              <span class="chip">24 Diagnostic Questions</span>
-              <span class="chip">6 Strategic Pillars</span>
-              <span class="chip">TIME Rationalization</span>
-              <span class="chip">Debt Drag Sizing</span>
-            </div>
-          </div>
-
-          <div class="card-footer" style="justify-content:flex-end;">
-            <div class="card-actions">
-              <button class="btn-action-edit" data-tool="strategy-iq" onclick="handleEditClick('strategy-iq')">Edit</button>
-              <button class="btn-action-launch" data-tool="strategy-iq" onclick="handleLaunchClick('strategy-iq', '/strategy-iq')">Take Assessment &rarr;</button>
-            </div>
-          </div>
-        </div>
+        </article>
       </div>
     </section>
 
     <!-- ============================================================
-         GROUP 1B: TECHNOLOGY COST & VALUE
+         CATALOGUE: one card template for every other accelerator
          ============================================================ -->
-    <section class="practice-section" id="sectionCostIq" data-group="costiq">
-      <div class="practice-header">
-        <div class="practice-title-group">
-          <h2 class="practice-title">Technology Cost &amp; Value Advisory</h2>
+    <section class="vt-wrap vt-catalogue" id="catalogue" data-group="catalogue" aria-labelledby="catalogueTitle">
+      <div class="vt-section-head">
+        <div>
+          <p class="vt-eyebrow muted">In beta</p>
+          <h2 id="catalogueTitle">All accelerators</h2>
         </div>
-        <p class="practice-desc">Enterprise technology cost and value diagnostic covering spend transparency, cloud and software economics, infrastructure, workforce, vendors, applications, investment effectiveness and FinOps capability maturity.</p>
-      </div>
-      <div class="acc-grid">
-        <div class="acc-card" style="--card-accent:#A78BFA;">
-          <div class="card-top">
-            <div class="card-meta-row">
-              <span class="card-eyebrow">TECHNOLOGY COST &amp; VALUE DIAGNOSTIC</span>
-              <span class="release-badge beta" title="Under validation; internal use only">Beta</span>
-            </div>
-            <h3 class="card-title">Cost IQ</h3>
-            <p class="card-desc">Configuration-driven CIO diagnostic producing Cost IQ, Value IQ, confidence, calibrated findings, opportunity gates and technology-wide FinOps capability signals.</p>
-            <div class="chip-row">
-              <span class="chip">105 Questions</span>
-              <span class="chip">16 Dimensions</span>
-              <span class="chip">20 Findings</span>
-              <span class="chip">22 FinOps Capabilities</span>
-            </div>
-          </div>
-          <div class="card-footer" style="justify-content:flex-end;">
-            <div class="card-actions">
-              <button class="btn-action-edit" data-tool="cost-iq" onclick="handleEditClick('cost-iq')">Edit</button>
-              <button class="btn-action-launch" data-tool="cost-iq" onclick="handleLaunchClick('cost-iq', '/cost-iq-v10')">Take Assessment &rarr;</button>
-            </div>
-          </div>
+        <div class="vt-chips" role="group" aria-label="Filter by practice">
+          <button type="button" class="vt-chip" aria-pressed="true" onclick="filterPracticeGroup('all', this)">All</button>
+          <button type="button" class="vt-chip" aria-pressed="false" onclick="filterPracticeGroup('strategy', this)">Strategy</button>
+          <button type="button" class="vt-chip" aria-pressed="false" onclick="filterPracticeGroup('cost', this)">Cost and value</button>
+          <button type="button" class="vt-chip" aria-pressed="false" onclick="filterPracticeGroup('sovereignty', this)">Sovereignty</button>
+          <button type="button" class="vt-chip" aria-pressed="false" onclick="filterPracticeGroup('cloud', this)">Cloud and infrastructure</button>
         </div>
       </div>
-    </section>
 
-    <!-- ============================================================
-         GROUP 2: DIGITAL SOVEREIGNTY & STATUTORY POSTURE
-         ============================================================ -->
-    <section class="practice-section" id="sectionSovereignty" data-group="sovereignty">
-      <div class="practice-header">
-        <div class="practice-title-group">
-          <h2 class="practice-title">Digital Sovereignty &amp; Statutory Posture Suite</h2>
-        </div>
-        <p class="practice-desc">Audit extraterritorial jurisdiction risks, enforce HYOK cryptographic custody, and ensure supervisory defensibility across DORA, NIS2, and the EU AI Act.</p>
-      </div>
-
-      <div class="acc-grid">
-        <!-- 4. Posture IQ -->
-        <div class="acc-card card-posture-iq">
-          <div class="card-top">
-            <div class="card-meta-row">
-              <span class="card-eyebrow orange">MULTI-CLOUD FORENSIC STATUTORY AUDIT</span>
-              <span class="release-badge beta" title="Under validation; internal use only">Beta</span>
-            </div>
-            <h3 class="card-title">Posture IQ</h3>
-            <p class="card-desc">Automated forensic statutory posture accelerator auditing NIS2, DORA, and GDPR compliance with dynamic facilitator probes and SOW generation.</p>
-            <div class="chip-row">
-              <span class="chip">35 Granular Questions</span>
-              <span class="chip">5 Statutory Pillars</span>
-              <span class="chip">Facilitator Probes</span>
-            </div>
+      <div class="vt-grid" id="catalogueGrid">
+        <article class="vt-card vt-reveal" data-group="strategy" data-name="Resilience IQ">
+          <div class="vt-card-top"><span class="vt-practice">Strategic IT advisory</span><span class="vt-badge beta" title="Under validation; internal use only">Beta</span></div>
+          <h3>Resilience IQ</h3>
+          <p class="vt-card-text">Evidence-aware resilience across BCP, DR, cyber recovery, operational resilience, third-party dependency and infrastructure.</p>
+          <p class="vt-card-meta">20 questions · CIO and CTO</p>
+          <div class="vt-card-actions">
+            <button type="button" class="vt-btn vt-btn-sm vt-btn-quiet btn-action-edit" data-tool="resilience-iq" onclick="handleEditClick('resilience-iq')">Edit</button>
+            <button type="button" class="vt-btn vt-btn-sm vt-btn-outline btn-action-launch" data-tool="resilience-iq" data-label="Take assessment" onclick="handleLaunchClick('resilience-iq', '/resilience-iq.html')">Take assessment</button>
           </div>
+        </article>
 
-          <div class="card-footer" style="justify-content:flex-end;">
-            <div class="card-actions">
-              <button class="btn-action-edit" data-tool="posture-iq" onclick="handleEditClick('posture-iq')">Edit</button>
-              <button class="btn-action-launch" data-tool="posture-iq" onclick="handleLaunchClick('posture-iq', '/posture-iq')">Take Assessment &rarr;</button>
-            </div>
+        <article class="vt-card vt-reveal" data-group="strategy" data-name="Strategy IQ">
+          <div class="vt-card-top"><span class="vt-practice">Strategic IT advisory</span><span class="vt-badge beta" title="Under validation; internal use only">Beta</span></div>
+          <h3>Strategy IQ</h3>
+          <p class="vt-card-text">Six strategic pillars and 24 diagnostic questions, TIME portfolio rationalisation and the cost of technical debt.</p>
+          <p class="vt-card-meta">24 questions · 6 pillars</p>
+          <div class="vt-card-actions">
+            <button type="button" class="vt-btn vt-btn-sm vt-btn-quiet btn-action-edit" data-tool="strategy-iq" onclick="handleEditClick('strategy-iq')">Edit</button>
+            <button type="button" class="vt-btn vt-btn-sm vt-btn-outline btn-action-launch" data-tool="strategy-iq" data-label="Take assessment" onclick="handleLaunchClick('strategy-iq', '/strategy-iq')">Take assessment</button>
           </div>
-        </div>
-      </div>
-    </section>
+        </article>
 
-    <!-- ============================================================
-         GROUP 3: HYBRID CLOUD & INFRASTRUCTURE MODERNIZATION
-         ============================================================ -->
-    <section class="practice-section" id="sectionCloud" data-group="cloud">
-      <div class="practice-header">
-        <div class="practice-title-group">
-          <h2 class="practice-title">Hybrid Cloud &amp; Modernization Suite</h2>
-        </div>
-        <p class="practice-desc">Evaluate 8-dimension architectural maturity, financial leakage decomposition, VMware Broadcom renewal defense, and colocation data centre exit roadmaps.</p>
-      </div>
-
-      <div class="acc-grid">
-        <!-- 5. Cloud IQ -->
-        <div class="acc-card card-cloud-iq">
-          <div class="card-top">
-            <div class="card-meta-row">
-              <span class="card-eyebrow blue">8-DIMENSION ARCHITECTURE &amp; DC EXIT</span>
-              <span class="release-badge beta" title="Under validation; internal use only">Beta</span>
-            </div>
-            <h3 class="card-title">Cloud IQ</h3>
-            <p class="card-desc">Enterprise diagnostic platform evaluating 8 capability dimensions, dual transformation tracks, financial leakage breakdown, and 4-phase modernization roadmaps.</p>
-            <div class="chip-row">
-              <span class="chip">40 Diagnostic Questions</span>
-              <span class="chip">8 Architectural Dimensions</span>
-              <span class="chip">4-Phase Modernization Roadmap</span>
-            </div>
+        <article class="vt-card vt-reveal" data-group="cost" data-name="Cost IQ">
+          <div class="vt-card-top"><span class="vt-practice">Cost and value</span><span class="vt-badge beta" title="Under validation; internal use only">Beta</span></div>
+          <h3>Cost IQ</h3>
+          <p class="vt-card-text">Technology cost and value: spend transparency, cloud and software economics, vendors, workforce and investment effectiveness.</p>
+          <p class="vt-card-meta">105 questions · 16 dimensions</p>
+          <div class="vt-card-actions">
+            <button type="button" class="vt-btn vt-btn-sm vt-btn-quiet btn-action-edit" data-tool="cost-iq" onclick="handleEditClick('cost-iq')">Edit</button>
+            <button type="button" class="vt-btn vt-btn-sm vt-btn-outline btn-action-launch" data-tool="cost-iq" data-label="Take assessment" onclick="handleLaunchClick('cost-iq', '/cost-iq-v10')">Take assessment</button>
           </div>
+        </article>
 
-          <div class="card-footer" style="justify-content:flex-end;">
-            <div class="card-actions">
-              <button class="btn-action-edit" data-tool="cloud-iq" onclick="handleEditClick('cloud-iq')">Edit</button>
-              <button class="btn-action-launch" data-tool="cloud-iq" onclick="handleLaunchClick('cloud-iq', '/cloud-iq')">Take Assessment &rarr;</button>
-            </div>
+        <article class="vt-card vt-reveal" data-group="sovereignty" data-name="Posture IQ">
+          <div class="vt-card-top"><span class="vt-practice">Sovereignty and compliance</span><span class="vt-badge beta" title="Under validation; internal use only">Beta</span></div>
+          <h3>Posture IQ</h3>
+          <p class="vt-card-text">Statutory posture across NIS2, DORA and GDPR. Now part of Sovereign IQ; kept here until the switch-over.</p>
+          <p class="vt-card-meta">35 questions · 5 pillars</p>
+          <div class="vt-card-actions">
+            <button type="button" class="vt-btn vt-btn-sm vt-btn-quiet btn-action-edit" data-tool="posture-iq" onclick="handleEditClick('posture-iq')">Edit</button>
+            <button type="button" class="vt-btn vt-btn-sm vt-btn-outline btn-action-launch" data-tool="posture-iq" data-label="Take assessment" onclick="handleLaunchClick('posture-iq', '/posture-iq')">Take assessment</button>
           </div>
-        </div>
+        </article>
 
-        <!-- 6. Modernize IQ -->
-        <div class="acc-card card-modernization-iq">
-          <div class="card-top">
-            <div class="card-meta-row">
-              <span class="card-eyebrow" style="color:#35754D;border-color:rgba(53,117,77,0.3);background:rgba(53,117,77,0.08);">DATA CENTRE &amp; COMPUTE CAPACITY</span>
-              <span class="release-badge beta" title="Under validation; internal use only">Beta</span>
-            </div>
-            <h3 class="card-title">Modernize IQ</h3>
-            <p class="card-desc">Diagnostic platform evaluating 6 strategic dimensions, utility power ceilings, high-density AI/GPU compute siting, 6R dispositions, and DC exit factory velocity.</p>
-            <div class="chip-row">
-              <span class="chip">18 Diagnostic Questions</span>
-              <span class="chip">6 Strategic Dimensions</span>
-              <span class="chip">Power &amp; Thermal Limits</span>
-              <span class="chip">AI/GPU Compute Siting</span>
-            </div>
+        <article class="vt-card vt-reveal" data-group="cloud" data-name="Cloud IQ">
+          <div class="vt-card-top"><span class="vt-practice">Cloud and infrastructure</span><span class="vt-badge beta" title="Under validation; internal use only">Beta</span></div>
+          <h3>Cloud IQ</h3>
+          <p class="vt-card-text">Eight capability dimensions, financial leakage and a four-phase modernisation roadmap.</p>
+          <p class="vt-card-meta">40 questions · 8 dimensions</p>
+          <div class="vt-card-actions">
+            <button type="button" class="vt-btn vt-btn-sm vt-btn-quiet btn-action-edit" data-tool="cloud-iq" onclick="handleEditClick('cloud-iq')">Edit</button>
+            <button type="button" class="vt-btn vt-btn-sm vt-btn-outline btn-action-launch" data-tool="cloud-iq" data-label="Take assessment" onclick="handleLaunchClick('cloud-iq', '/cloud-iq')">Take assessment</button>
           </div>
+        </article>
 
-          <div class="card-footer" style="justify-content:flex-end;">
-            <div class="card-actions">
-              <button class="btn-action-edit" data-tool="modernization-iq" onclick="handleEditClick('modernization-iq')">Edit</button>
-              <button class="btn-action-launch" data-tool="modernization-iq" onclick="handleLaunchClick('modernization-iq', '/modernization-iq')">Take Assessment &rarr;</button>
-            </div>
+        <article class="vt-card vt-reveal" data-group="cloud" data-name="Modernize IQ">
+          <div class="vt-card-top"><span class="vt-practice">Cloud and infrastructure</span><span class="vt-badge beta" title="Under validation; internal use only">Beta</span></div>
+          <h3>Modernize IQ</h3>
+          <p class="vt-card-text">Data centre and compute capacity: power ceilings, AI and GPU siting, 6R dispositions and exit velocity.</p>
+          <p class="vt-card-meta">18 questions · 6 dimensions</p>
+          <div class="vt-card-actions">
+            <button type="button" class="vt-btn vt-btn-sm vt-btn-quiet btn-action-edit" data-tool="modernization-iq" onclick="handleEditClick('modernization-iq')">Edit</button>
+            <button type="button" class="vt-btn vt-btn-sm vt-btn-outline btn-action-launch" data-tool="modernization-iq" data-label="Take assessment" onclick="handleLaunchClick('modernization-iq', '/modernization-iq')">Take assessment</button>
           </div>
-        </div>
+        </article>
       </div>
     </section>
   </main>
@@ -1602,10 +693,8 @@
       <!-- View 1: Sign In -->
       <div id="modalViewSignIn">
         <div class="modal-head">
-          <div style="font-family:var(--font-mono);font-size:11px;font-weight:700;color:var(--coral);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:6px">
-            RBAC ACCESS GATE
-          </div>
-          <h3 class="modal-title">Administrator Authentication</h3>
+          <img src="/assets/vantage/ltm-logo.svg" alt="LTM" width="66" height="18" style="display:block;margin-bottom:18px">
+          <h3 class="modal-title">Sign in to Vantage</h3>
           <p class="modal-desc">Sign in with your LTM Vantage account to run assessments, manage question banks and access client deliverables.</p>
         </div>
 
@@ -1613,17 +702,17 @@
 
         <form onsubmit="handleCognitoLogin(event)">
           <div class="form-group">
-            <label class="form-label">Email</label>
+            <label class="form-label" for="loginEmail">Email</label>
             <input type="email" id="loginEmail" class="form-input" placeholder="name@ltm.com" autocomplete="username" required>
           </div>
 
           <div class="form-group">
-            <label class="form-label">Password</label>
+            <label class="form-label" for="loginPassword">Password</label>
             <input type="password" id="loginPassword" class="form-input" placeholder="••••••••••••" required autofocus>
           </div>
 
           <button type="submit" id="btnSubmitLogin" class="btn-auth primary" style="width:100%;justify-content:center;padding:11px;font-size:13.5px;margin-top:8px;">
-            Verify Credentials &rarr;
+            Sign in
           </button>
         </form>
 
@@ -2112,13 +1201,24 @@
     <span id="toastMsg">Notification</span>
   </div>
 
-  <!-- Footer -->
-  <footer>
-    <div>&copy; 2026 LTM &middot; <b>LTM Vantage</b> &middot; Responsible Advisory</div>
-    <div style="display:flex;gap:18px;">
-      <a href="/" style="color:inherit;text-decoration:none;">Showcase Portal</a>
-      <a href="/studio" style="color:inherit;text-decoration:none;">Question Bank Studio</a>
-      <span style="color:#10B981;">&#9679; Advisory Engine Online</span>
+  <!-- Search palette -->
+  <div class="vt-palette" id="vtPalette" role="dialog" aria-modal="true" aria-label="Search accelerators" onclick="if(event.target===this)closePalette()">
+    <div class="vt-palette-box">
+      <input class="vt-palette-input" id="vtPaletteInput" type="search" placeholder="Search accelerators" aria-label="Search accelerators" aria-controls="vtPaletteList" autocomplete="off">
+      <ul class="vt-palette-list" id="vtPaletteList" role="listbox" aria-label="Accelerators"></ul>
+    </div>
+  </div>
+
+  <footer class="vt-footer">
+    <div class="vt-wrap vt-footer-inner">
+      <div style="display:flex;align-items:center;gap:12px;">
+        <img src="/assets/vantage/ltm-logo.svg" alt="LTM" width="52" height="14">
+        <span>&copy; 2026 LTM &middot; Vantage &middot; Responsible Advisory &middot; Confidential</span>
+      </div>
+      <div style="display:flex;gap:20px;">
+        <button type="button" onclick="openReportsModal()">Reports</button>
+        <a href="/studio">Question banks</a>
+      </div>
     </div>
   </footer>
 
@@ -2147,49 +1247,6 @@
       toast("Session expired. Please sign in again.", "🔐");
     }
     window.LTM_onSessionExpired = handleSessionExpired;
-
-    /* ---------- Splash Screen Controller ---------- */
-    function initSplash() {
-      const splash = document.getElementById('splashScreen');
-      const seen = sessionStorage.getItem('ltm_portal_splash_seen');
-
-      if (seen) {
-        splash.style.display = 'none';
-        return;
-      }
-
-      const pBar = document.getElementById('splashProgress');
-      const pPct = document.getElementById('splashPct');
-      const pMsg = document.getElementById('splashMsg');
-
-      const steps = [
-        { p: 25, msg: "Connecting to Diagnostic Engine..." },
-        { p: 60, msg: "Initializing Advisory Frameworks..." },
-        { p: 88, msg: "Calibrating FinOps & Sovereignty Practice Suites..." },
-        { p: 100, msg: "Platform Ready." }
-      ];
-
-      let idx = 0;
-      const interval = setInterval(() => {
-        if (idx < steps.length) {
-          const step = steps[idx];
-          pBar.style.width = step.p + '%';
-          pPct.textContent = step.p + '%';
-          pMsg.textContent = step.msg;
-          idx++;
-        } else {
-          clearInterval(interval);
-          setTimeout(dismissSplash, 400);
-        }
-      }, 350);
-    }
-
-    function dismissSplash() {
-      const splash = document.getElementById('splashScreen');
-      splash.classList.add('fade-out');
-      sessionStorage.setItem('ltm_portal_splash_seen', 'true');
-      setTimeout(() => { splash.style.display = 'none'; }, 700);
-    }
 
     /* ---------- Authentication & RBAC ---------- */
     function initAuth() {
@@ -2274,80 +1331,80 @@
       window.location.href = targetUrl;
     }
 
+    const ARROW_ICON = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
+    const LOCK_ICON = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>';
+
+    function escapeHtml(v) {
+      return String(v == null ? '' : v).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    }
+
+    function initials(name, email) {
+      const parts = String(name || '').trim().split(/\s+/).filter(Boolean);
+      if (parts.length >= 2) return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+      if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+      return String(email || '?').slice(0, 2).toUpperCase();
+    }
+
+    function toggleAccountMenu() {
+      const menu = document.getElementById('vtAccountMenu');
+      const btn = document.getElementById('vtAccountBtn');
+      if (!menu) return;
+      const open = !menu.classList.contains('open');
+      menu.classList.toggle('open', open);
+      btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+      if (open) { const first = menu.querySelector('.vt-menu-item'); if (first) first.focus(); }
+    }
+    function closeAccountMenu() {
+      const menu = document.getElementById('vtAccountMenu');
+      const btn = document.getElementById('vtAccountBtn');
+      if (menu) menu.classList.remove('open');
+      if (btn) btn.setAttribute('aria-expanded', 'false');
+    }
+
+    function setButton(b, label, title, locked) {
+      b.classList.toggle('is-locked', !!locked);
+      b.innerHTML = (locked ? LOCK_ICON : '') + '<span>' + label + '</span>' + (!locked && b.classList.contains('btn-action-launch') ? ARROW_ICON : '');
+      b.title = title;
+    }
+
     function renderAuthWidget() {
       const w = document.getElementById('authWidget');
-      const btnAC = document.getElementById('btnNavAccessControl');
       const editBtns = document.querySelectorAll('.btn-action-edit');
       const launchBtns = document.querySelectorAll('.btn-action-launch:not([disabled])');
 
-      if (isSuperAdmin()) {
-        if (btnAC) btnAC.style.display = 'inline-flex';
+      if (AUTH_USER && AUTH_USER.email) {
+        const admin = isSuperAdmin();
+        const name = AUTH_USER.name || AUTH_USER.email.split('@')[0];
+        const role = admin ? 'Super admin' : ((AUTH_USER.role && AUTH_USER.role.replace(/_/g, ' ')) || 'Member');
         w.innerHTML = `
-          <div class="nav-user-pill">
-            <span class="user-role super">Super Admin</span>
-            <span class="user-name" title="${AUTH_USER.email}">${AUTH_USER.name || AUTH_USER.email.split('@')[0]}</span>
-            <button class="btn-logout" onclick="logout()" title="Sign Out">Sign Out</button>
+          <button type="button" class="vt-account-btn" id="vtAccountBtn" onclick="toggleAccountMenu()" aria-haspopup="menu" aria-expanded="false" aria-controls="vtAccountMenu" aria-label="Account menu for ${escapeHtml(name)}">
+            <span class="vt-avatar" aria-hidden="true">${escapeHtml(initials(AUTH_USER.name, AUTH_USER.email))}</span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#A1A1AA" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+          </button>
+          <div class="vt-menu" id="vtAccountMenu" role="menu" aria-label="Account">
+            <div class="vt-menu-head">
+              <div class="vt-menu-name">${escapeHtml(name)}</div>
+              <div class="vt-menu-sub">${escapeHtml(AUTH_USER.email)}</div>
+              <span class="vt-menu-role">${escapeHtml(role)}</span>
+            </div>
+            ${admin ? '<button type="button" role="menuitem" class="vt-menu-item" id="btnNavAccessControl" onclick="closeAccountMenu();openAccessControlModal()">Access control</button>' : ''}
+            <button type="button" role="menuitem" class="vt-menu-item" onclick="closeAccountMenu();openReportsModal()">Reports</button>
+            <button type="button" role="menuitem" class="vt-menu-item" onclick="closeAccountMenu();logout()">Sign out</button>
           </div>
         `;
         editBtns.forEach(b => {
-          b.classList.add('admin-unlocked');
-          b.innerHTML = '⚙️ Edit';
-          b.title = 'Authorized to edit question bank';
+          if (canUserEdit(b.getAttribute('data-tool'))) setButton(b, 'Edit', 'Edit this question bank', false);
+          else setButton(b, 'Edit', 'Edit permission is needed for this question bank', true);
         });
         launchBtns.forEach(b => {
-          b.classList.remove('btn-locked');
-          b.innerHTML = 'Take Assessment &rarr;';
-          b.title = 'Authorized: Super Admin Access';
-        });
-      } else if (AUTH_USER && AUTH_USER.email) {
-        if (btnAC) btnAC.style.display = 'none';
-        const roleLabel = (AUTH_USER.role && AUTH_USER.role.replace(/_/g, ' ').toUpperCase()) || 'MEMBER';
-        w.innerHTML = `
-          <div class="nav-user-pill">
-            <span class="user-role member">${roleLabel}</span>
-            <span class="user-name" title="${AUTH_USER.email}">${AUTH_USER.name || AUTH_USER.email.split('@')[0]}</span>
-            <button class="btn-logout" onclick="logout()" title="Sign Out">Sign Out</button>
-          </div>
-        `;
-        editBtns.forEach(b => {
-          const toolId = b.getAttribute('data-tool');
-          if (canUserEdit(toolId)) {
-            b.classList.add('admin-unlocked');
-            b.innerHTML = '⚙️ Edit';
-            b.title = 'Authorized to edit this question bank';
-          } else {
-            b.classList.remove('admin-unlocked');
-            b.innerHTML = '🔒 Edit';
-            b.title = 'Edit permissions required for this question bank';
-          }
-        });
-        launchBtns.forEach(b => {
-          const toolId = b.getAttribute('data-tool');
-          if (canUserTakeAssessment(toolId)) {
-            b.classList.remove('btn-locked');
-            b.innerHTML = 'Take Assessment &rarr;';
-            b.title = 'Authorized to take this assessment';
-          } else {
-            b.classList.add('btn-locked');
-            b.innerHTML = '🔒 Restricted';
-            b.title = 'Permission required to take this assessment';
-          }
+          const label = b.dataset.label || 'Take assessment';
+          if (canUserTakeAssessment(b.getAttribute('data-tool'))) setButton(b, label, '', false);
+          else setButton(b, 'Restricted', 'Ask a super admin for access to this assessment', true);
         });
       } else {
-        if (btnAC) btnAC.style.display = 'none';
-        w.innerHTML = `
-          <button class="nav-sign-in-btn" onclick="openLoginModal()">🔐 Sign In</button>
-        `;
-        editBtns.forEach(b => {
-          b.classList.remove('admin-unlocked');
-          b.innerHTML = '🔒 Edit';
-          b.title = 'Sign in as administrator or authorized practice editor to edit';
-        });
-        launchBtns.forEach(b => {
-          b.classList.remove('btn-locked');
-          b.innerHTML = '🔒 Take Assessment';
-          b.title = 'Sign in to access this diagnostic assessment';
-        });
+        w.innerHTML = '<button type="button" class="vt-signin-btn" onclick="openLoginModal()">Sign in</button>';
+        editBtns.forEach(b => setButton(b, 'Edit', 'Sign in as an administrator or practice editor to edit', true));
+        launchBtns.forEach(b => setButton(b, b.dataset.label || 'Take assessment', 'Sign in to start this assessment', false));
       }
     }
 
@@ -2493,7 +1550,7 @@
       const btn = document.getElementById('btnSubmitLogin');
 
       btn.disabled = true;
-      btn.textContent = 'Authenticating...';
+      btn.textContent = 'Signing in…';
       errDiv.style.display = 'none';
 
       try {
@@ -2531,7 +1588,7 @@
         errDiv.style.display = 'block';
       } finally {
         btn.disabled = false;
-        btn.textContent = 'Verify Credentials & Unlock Studio →';
+        btn.textContent = 'Sign in';
       }
     }
 
@@ -2542,9 +1599,11 @@
       toast("Signed out of session", "ℹ️");
     }
 
+    // Resilience IQ has its own question bank page rather than the shared studio.
+    const EDIT_PAGES = { 'resilience-iq': '/resilience-iq-question-bank.html' };
     function handleEditClick(toolId) {
       if (canUserEdit(toolId)) {
-        window.location.href = `/studio?tool=${toolId}`;
+        window.location.href = EDIT_PAGES[toolId] || `/studio?tool=${toolId}`;
       } else {
         if (!AUTH_USER) {
           openLoginModal();
@@ -3213,102 +2272,103 @@
       }
     }
 
-    /* ---------- Cyber Hero Canvas Animation & Filter Tabs ---------- */
-    function initHeroAnimation() {
-      const canvas = document.getElementById('heroCyberCanvas');
-      if (!canvas) return;
-      const ctx = canvas.getContext('2d');
-      if (!ctx) return;
-
-      let width, height;
-      function resize() {
-        width = canvas.width = canvas.offsetWidth;
-        height = canvas.height = canvas.offsetHeight;
-      }
-      resize();
-      window.addEventListener('resize', resize);
-
-      const particles = [];
-      const count = Math.min(Math.floor(width / 22), 40);
-
-      for (let i = 0; i < count; i++) {
-        particles.push({
-          x: Math.random() * width,
-          y: Math.random() * height,
-          vx: (Math.random() - 0.5) * 0.45,
-          vy: (Math.random() - 0.5) * 0.45,
-          radius: Math.random() * 1.8 + 0.8,
-          color: Math.random() > 0.4 ? '#FF5E4F' : '#3B82F6'
+    /* ---------- Practice filter, scroll reveal and search palette ---------- */
+    function filterPracticeGroup(group, btn) {
+      document.querySelectorAll('.vt-chip').forEach(c => c.setAttribute('aria-pressed', c === btn ? 'true' : 'false'));
+      document.querySelectorAll('section[data-group]').forEach(sec => {
+        // Sales Preview shows the validated card of the chosen practice and hides when it has none.
+        let any = false;
+        sec.querySelectorAll('.vt-card[data-group]').forEach(card => {
+          const show = group === 'all' || card.dataset.group === group;
+          card.style.display = show ? '' : 'none';
+          if (show) card.classList.add('in');
+          any = any || show;
         });
-      }
-
-      function render() {
-        ctx.clearRect(0, 0, width, height);
-
-        for (let i = 0; i < particles.length; i++) {
-          for (let j = i + 1; j < particles.length; j++) {
-            const dx = particles[i].x - particles[j].x;
-            const dy = particles[i].y - particles[j].y;
-            const dist = Math.sqrt(dx * dx + dy * dy);
-            if (dist < 110) {
-              ctx.beginPath();
-              ctx.moveTo(particles[i].x, particles[i].y);
-              ctx.lineTo(particles[j].x, particles[j].y);
-              ctx.strokeStyle = `rgba(255, 94, 79, ${0.16 * (1 - dist / 110)})`;
-              ctx.lineWidth = 0.8;
-              ctx.stroke();
-            }
-          }
-        }
-
-        particles.forEach(p => {
-          ctx.beginPath();
-          ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-          ctx.fillStyle = p.color;
-          ctx.shadowBlur = 8;
-          ctx.shadowColor = p.color;
-          ctx.fill();
-          ctx.shadowBlur = 0;
-
-          p.x += p.vx;
-          p.y += p.vy;
-
-          if (p.x < 0) p.x = width;
-          if (p.x > width) p.x = 0;
-          if (p.y < 0) p.y = height;
-          if (p.y > height) p.y = 0;
-        });
-
-        requestAnimationFrame(render);
-      }
-
-      render();
+        if (sec.dataset.group === 'preview') sec.style.display = any ? '' : 'none';
+      });
     }
 
-    function filterPracticeGroup(group, btn) {
-      document.querySelectorAll('.hero-tab').forEach(t => t.classList.remove('active'));
-      if (btn) btn.classList.add('active');
-      document.querySelectorAll('.practice-section[data-group]').forEach(sec => {
-        if (sec.dataset.group === 'preview') {
-          // Sales Preview shows the validated cards of the chosen practice (FinOps IQ under FinOps, Sovereign IQ under Sovereignty).
-          let any = false;
-          sec.querySelectorAll('.acc-card[data-group]').forEach(card => {
-            const show = group === 'all' || card.dataset.group === group;
-            card.style.display = show ? '' : 'none';
-            any = any || show;
-          });
-          sec.style.display = any ? 'block' : 'none';
-        } else {
-          sec.style.display = group === 'all' || sec.dataset.group === group ? 'block' : 'none';
-        }
+    function initReveal() {
+      const cards = document.querySelectorAll('.vt-reveal');
+      if (!('IntersectionObserver' in window)) { cards.forEach(c => c.classList.add('in')); return; }
+      const io = new IntersectionObserver(entries => {
+        entries.forEach(e => {
+          if (!e.isIntersecting) return;
+          // Stagger siblings that enter together.
+          const i = Array.prototype.indexOf.call(e.target.parentNode.children, e.target);
+          e.target.style.transitionDelay = (i % 3) * 70 + 'ms';
+          e.target.classList.add('in');
+          io.unobserve(e.target);
+        });
+      }, { rootMargin: '0px 0px -8% 0px' });
+      cards.forEach(c => io.observe(c));
+    }
+
+    let PALETTE_ITEMS = [];
+    let PALETTE_ACTIVE = 0;
+    function initPalette() {
+      PALETTE_ITEMS = Array.from(document.querySelectorAll('.vt-card[data-name]')).map(card => ({
+        name: card.dataset.name,
+        practice: (card.querySelector('.vt-practice') || {}).textContent || '',
+        text: (card.querySelector('.vt-card-text') || {}).textContent || '',
+        launch: card.querySelector('.btn-action-launch')
+      }));
+      const input = document.getElementById('vtPaletteInput');
+      input.addEventListener('input', () => { PALETTE_ACTIVE = 0; renderPalette(); });
+      input.addEventListener('keydown', e => {
+        const n = document.querySelectorAll('#vtPaletteList button').length;
+        if (e.key === 'ArrowDown') { e.preventDefault(); PALETTE_ACTIVE = Math.min(PALETTE_ACTIVE + 1, n - 1); renderPalette(); }
+        else if (e.key === 'ArrowUp') { e.preventDefault(); PALETTE_ACTIVE = Math.max(PALETTE_ACTIVE - 1, 0); renderPalette(); }
+        else if (e.key === 'Enter') { e.preventDefault(); const b = document.querySelectorAll('#vtPaletteList button')[PALETTE_ACTIVE]; if (b) b.click(); }
       });
+      document.addEventListener('keydown', e => {
+        if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') { e.preventDefault(); openPalette(); }
+        else if (e.key === 'Escape') { closePalette(); closeAccountMenu(); }
+      });
+      document.addEventListener('click', e => {
+        if (!e.target.closest('.vt-account')) closeAccountMenu();
+      });
+    }
+    function renderPalette() {
+      const q = document.getElementById('vtPaletteInput').value.trim().toLowerCase();
+      const list = document.getElementById('vtPaletteList');
+      const hits = PALETTE_ITEMS.filter(t => !q || (t.name + ' ' + t.practice + ' ' + t.text).toLowerCase().includes(q));
+      list.innerHTML = '';
+      if (!hits.length) { list.innerHTML = '<li class="vt-palette-empty">No accelerator matches that search.</li>'; return; }
+      hits.forEach((t, i) => {
+        const li = document.createElement('li');
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.setAttribute('role', 'option');
+        b.setAttribute('aria-selected', i === PALETTE_ACTIVE ? 'true' : 'false');
+        if (i === PALETTE_ACTIVE) b.className = 'active';
+        const name = document.createElement('span'); name.textContent = t.name;
+        const practice = document.createElement('span'); practice.textContent = t.practice;
+        b.append(name, practice);
+        b.addEventListener('click', () => { closePalette(); t.launch.click(); });
+        li.appendChild(b);
+        list.appendChild(li);
+      });
+    }
+    function openPalette() {
+      const p = document.getElementById('vtPalette');
+      p.classList.add('open');
+      const input = document.getElementById('vtPaletteInput');
+      input.value = '';
+      PALETTE_ACTIVE = 0;
+      renderPalette();
+      input.focus();
+    }
+    function closePalette() {
+      const p = document.getElementById('vtPalette');
+      if (p) p.classList.remove('open');
     }
 
     // Initialize on page load
     window.addEventListener('DOMContentLoaded', () => {
-      initSplash();
       initAuth();
-      initHeroAnimation();
+      initReveal();
+      initPalette();
 
       // Check query params for direct onboarding link or required login
       const params = new URLSearchParams(window.location.search);
