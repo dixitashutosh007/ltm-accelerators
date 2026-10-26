@@ -718,6 +718,22 @@
       color: #FB923C;
     }
 
+    /* Release status on each accelerator card (owner decision, 26 Oct 2026): Sales Preview once validated, Beta
+       otherwise. Contrast is AA on the dark cards. */
+    .release-badge {
+      flex: 0 0 auto;
+      font-family: var(--font-mono);
+      font-size: 10.5px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 3px 9px;
+      border-radius: 999px;
+      white-space: nowrap;
+    }
+    .release-badge.preview { color: #052E16; background: #4ADE80; }
+    .release-badge.beta { color: #FCD34D; border: 1px solid rgba(252, 211, 77, 0.55); }
+
     .card-title {
       font-family: var(--font-heading);
       font-size: 21px;
@@ -1341,7 +1357,7 @@
 <div class="acc-card" onclick="handleLaunchClick('resilience-iq','resilience-iq.html')">
   <div class="acc-header">
     <div class="acc-title">Resilience IQ</div>
-    <span class="pill pill-green">Executive Scan</span>
+    <span style="display:flex;gap:8px;align-items:center"><span class="release-badge beta" title="Under validation; internal use only">Beta</span><span class="pill pill-green">Executive Scan</span></span>
   </div>
   <p class="acc-desc">Evidence-aware resilience assessment covering BCP, DR, cyber recovery, operational resilience, third-party dependency and infrastructure resilience.</p>
   <div style="display:flex;justify-content:space-between;align-items:center;">
@@ -1356,6 +1372,7 @@
           <div class="card-top">
             <div class="card-meta-row">
               <span class="card-eyebrow" style="color:#FF5E4F;border-color:rgba(255,94,79,0.3);background:rgba(255,94,79,0.08);">6 STRATEGIC PILLARS &amp; TECH DEBT</span>
+              <span class="release-badge beta" title="Under validation; internal use only">Beta</span>
             </div>
             <h3 class="card-title">Strategy IQ</h3>
             <p class="card-desc">Diagnostic platform evaluating 6 strategic pillars, 24 diagnostic vectors, TIME portfolio rationalization, and tech debt dollar drag sizing.</p>
@@ -1394,6 +1411,7 @@
           <div class="card-top">
             <div class="card-meta-row">
               <span class="card-eyebrow">CAPABILITY, VALUE &amp; ROADMAP</span>
+              <span class="release-badge preview" title="Validated by its practice lead and the product owner; cleared to show clients in a consultant-led session">Sales Preview</span>
             </div>
             <h3 class="card-title">FinOps IQ</h3>
             <p class="card-desc">Rates FinOps capabilities on the FinOps Foundation's Crawl, Walk, Run scale, sizes the value of closing the gaps as a conservative, expected and upper range, and produces an LTM report, roadmap and backlog.</p>
@@ -1428,6 +1446,7 @@
           <div class="card-top">
             <div class="card-meta-row">
               <span class="card-eyebrow">TECHNOLOGY COST &amp; VALUE DIAGNOSTIC</span>
+              <span class="release-badge beta" title="Under validation; internal use only">Beta</span>
             </div>
             <h3 class="card-title">Cost IQ</h3>
             <p class="card-desc">Configuration-driven CIO diagnostic producing Cost IQ, Value IQ, confidence, calibrated findings, opportunity gates and technology-wide FinOps capability signals.</p>
@@ -1464,21 +1483,22 @@
         <div class="acc-card card-sovereign-iq">
           <div class="card-top">
             <div class="card-meta-row">
-              <span class="card-eyebrow orange">JURISDICTIONAL DEFENSE &amp; CLOUD ACT</span>
+              <span class="card-eyebrow orange">SOVEREIGNTY, EXPOSURE &amp; ROADMAP</span>
+              <span class="release-badge preview" title="Validated by its practice lead and the product owner; cleared to show clients in a consultant-led session">Sales Preview</span>
             </div>
             <h3 class="card-title">Sovereign IQ</h3>
-            <p class="card-desc">Architectural diagnostic auditing US CLOUD Act reach, foreign subpoena exposures, HYOK cryptographic autonomy, and compliance with 30+ global regimes.</p>
+            <p class="card-desc">Where each kind of data may run, which of 42 regulations apply across the EU and UK, the US and Asia-Pacific, how exposed you are under each, and whether your controls meet the sovereignty level your data needs. Now includes Posture IQ.</p>
             <div class="chip-row">
-              <span class="chip">21 Strategic Questions</span>
-              <span class="chip">4 Transformation Waves</span>
-              <span class="chip">Geopolitical Wargame</span>
+              <span class="chip">Executive &amp; Workshop Modes</span>
+              <span class="chip">42 Regulations</span>
+              <span class="chip">Exposure &amp; Roadmap</span>
             </div>
           </div>
 
           <div class="card-footer" style="justify-content:flex-end;">
             <div class="card-actions">
               <button class="btn-action-edit" data-tool="sovereign-iq" onclick="handleEditClick('sovereign-iq')">Edit</button>
-              <button class="btn-action-launch" data-tool="sovereign-iq" onclick="handleLaunchClick('sovereign-iq', '/sovereign-iq')">Take Assessment &rarr;</button>
+              <button class="btn-action-launch" data-tool="sovereign-iq" onclick="handleLaunchClick('sovereign-iq', '/sovereign-iq-v4')">Take Assessment &rarr;</button>
             </div>
           </div>
         </div>
@@ -1488,6 +1508,7 @@
           <div class="card-top">
             <div class="card-meta-row">
               <span class="card-eyebrow orange">MULTI-CLOUD FORENSIC STATUTORY AUDIT</span>
+              <span class="release-badge beta" title="Under validation; internal use only">Beta</span>
             </div>
             <h3 class="card-title">Posture IQ</h3>
             <p class="card-desc">Automated forensic statutory posture accelerator auditing NIS2, DORA, and GDPR compliance with dynamic facilitator probes and SOW generation.</p>
@@ -1525,6 +1546,7 @@
           <div class="card-top">
             <div class="card-meta-row">
               <span class="card-eyebrow blue">8-DIMENSION ARCHITECTURE &amp; DC EXIT</span>
+              <span class="release-badge beta" title="Under validation; internal use only">Beta</span>
             </div>
             <h3 class="card-title">Cloud IQ</h3>
             <p class="card-desc">Enterprise diagnostic platform evaluating 8 capability dimensions, dual transformation tracks, financial leakage breakdown, and 4-phase modernization roadmaps.</p>
@@ -1548,6 +1570,7 @@
           <div class="card-top">
             <div class="card-meta-row">
               <span class="card-eyebrow" style="color:#35754D;border-color:rgba(53,117,77,0.3);background:rgba(53,117,77,0.08);">DATA CENTRE &amp; COMPUTE CAPACITY</span>
+              <span class="release-badge beta" title="Under validation; internal use only">Beta</span>
             </div>
             <h3 class="card-title">Modernize IQ</h3>
             <p class="card-desc">Diagnostic platform evaluating 6 strategic dimensions, utility power ceilings, high-density AI/GPU compute siting, 6R dispositions, and DC exit factory velocity.</p>
