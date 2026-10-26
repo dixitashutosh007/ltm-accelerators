@@ -3044,6 +3044,105 @@
       "means": "R3, plus no provider in the chain can be compelled by a law from outside the zone, or the system is disconnected"
     }
   ],
+  "seal": {
+    "intro": "When the European Commission buys cloud services, it rates each provider's service from SEAL-0 to SEAL-4 on eight sovereignty objectives, such as legal, data, operational and supply chain. SEAL rates a provider's service, not your organisation. Sovereign IQ uses SEAL to show what level of provider service each kind of your data needs.",
+    "framework": "European Commission, Cloud Sovereignty Framework v1.2.1 (Oct 2025)",
+    "statusAsOf": "2026-10-26",
+    "levels": [
+      {
+        "id": 0,
+        "name": "No sovereignty",
+        "plain": "The service is controlled and governed entirely outside the EU."
+      },
+      {
+        "id": 1,
+        "name": "Jurisdictional sovereignty",
+        "plain": "EU law applies on paper, but control sits outside the EU and EU law is hard to enforce."
+      },
+      {
+        "id": 2,
+        "name": "Data sovereignty",
+        "plain": "EU law applies and can be enforced, but the service still depends materially on parties outside the EU."
+      },
+      {
+        "id": 3,
+        "name": "Digital resilience",
+        "plain": "EU law applies and can be enforced, and EU actors have meaningful, though not full, influence over the service.",
+        "note": "Later Commission documents (1 Jun 2026) call this level Technological Sovereignty or technological autonomy; v1.2.1 wording shown"
+      },
+      {
+        "id": 4,
+        "name": "Full digital sovereignty",
+        "plain": "The service is fully under EU control, subject only to EU law, with no critical dependence on parties outside the EU."
+      }
+    ],
+    "objectives": [
+      {
+        "id": "SOV-1",
+        "name": "Strategic sovereignty",
+        "mapped": false
+      },
+      {
+        "id": "SOV-2",
+        "name": "Legal and jurisdictional sovereignty",
+        "mapped": true
+      },
+      {
+        "id": "SOV-3",
+        "name": "Data and AI sovereignty",
+        "mapped": true
+      },
+      {
+        "id": "SOV-4",
+        "name": "Operational sovereignty",
+        "mapped": true
+      },
+      {
+        "id": "SOV-5",
+        "name": "Supply chain sovereignty",
+        "mapped": true
+      },
+      {
+        "id": "SOV-6",
+        "name": "Technology sovereignty",
+        "mapped": true
+      },
+      {
+        "id": "SOV-7",
+        "name": "Security and compliance",
+        "mapped": false
+      },
+      {
+        "id": "SOV-8",
+        "name": "Environmental sustainability",
+        "mapped": false
+      }
+    ],
+    "mapping": {
+      "L0": {},
+      "L1": {
+        "SOV-3": 1
+      },
+      "L2": {
+        "SOV-2": 1,
+        "SOV-3": 2,
+        "SOV-4": 1
+      },
+      "L3": {
+        "SOV-2": 2,
+        "SOV-3": 3,
+        "SOV-4": 3,
+        "SOV-5": 2
+      },
+      "L4": {
+        "SOV-2": 4,
+        "SOV-3": 4,
+        "SOV-4": 4,
+        "SOV-5": 3,
+        "SOV-6": 3
+      }
+    }
+  },
   "notices": {
     "disclaimer": "Indicative assessment from self-reported answers. Not legal advice: confirm applicability and obligations with counsel before acting.",
     "caps": "Statutory maximums are caps, not expected fines, and are never added together.",

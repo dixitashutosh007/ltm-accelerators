@@ -33,11 +33,12 @@
   var CURRENCIES = ['EUR', 'USD', 'GBP', 'CHF', 'INR', 'SGD', 'AUD', 'NZD', 'JPY', 'HKD', 'CNY', 'KRW', 'CAD'];
   var TABS = [
     { id: 'overview', label: 'Overview' }, { id: 'regulations', label: 'Regulations' }, { id: 'controls', label: 'Controls' },
-    { id: 'findings', label: 'Findings' }, { id: 'advisory', label: 'Cloud advisory' }, { id: 'roadmap', label: 'Roadmap' }, { id: 'method', label: 'Method' }
+    { id: 'findings', label: 'Findings' }, { id: 'seal', label: 'SEAL view' }, { id: 'advisory', label: 'Cloud advisory' }, { id: 'roadmap', label: 'Roadmap' }, { id: 'method', label: 'Method' }
   ];
   /** Placement status (PLAN S7) in words, with the heatmap colour it shares with control states. */
   var PLACEMENT = { meets: ['Meets the level', 'gap0'], gap: ['Gap to close', 'gap2'], unconfirmed: ['To confirm', 'unknown'], move: ['Needs a sovereign offering', 'gap3'] };
   var HYPERSCALERS = ['aws', 'azure', 'gcp'];
+  var AVAILABILITY = { preview: 'preview', announced: 'announced, not yet available', per_engagement: 'per engagement' };
 
   var schema = null;
   var Q = {};
@@ -493,6 +494,7 @@
       q.control ? h('span', { class: 'q-cap' }, controlInfo(q.control).name) : h('span', { class: 'q-cap' }, q.kind === 'preference' ? 'Not scored' : 'Scope: never scored'),
       q.mode === 'follow_up' ? h('span', { class: 'q-follow' }, 'Follow-up') : null, statusPill(st)));
     if (q.help) wrap.appendChild(h('p', { class: 'help' }, q.help));
+    if (q.id === 'L1' && schema.seal) wrap.appendChild(sealExplainer());
     wrap.appendChild(control(q));
     var foot = h('div', { class: 'q-foot' });
     if (q.basis && q.basis.length) foot.appendChild(h('details', { class: 'basis' }, h('summary', null, 'Basis'), h('ul', null, q.basis.map(function (b) { return h('li', null, b); }))));
@@ -657,6 +659,7 @@
     else if (tab === 'regulations') regulationsPanel(panel, r);
     else if (tab === 'controls') controlsPanel(panel, r);
     else if (tab === 'findings') findingsPanel(panel, r);
+    else if (tab === 'seal') sealPanel(panel, r);
     else if (tab === 'advisory') advisoryPanel(panel, r);
     else if (tab === 'roadmap') roadmapPanel(panel, r);
     else methodPanel(panel, r);
@@ -876,11 +879,56 @@
       f.remedy ? h('p', { class: 'small' }, h('strong', null, 'What good looks like: '), f.remedy) : null);
   }
 
+  function sealName(n) { return n == null ? '—' : 'SEAL-' + n; }
+
+  /** Beside L1 (PLAN S7b): the SEAL 0–4 ladder in plain words, and the SEAL each level implies. */
+  function sealExplainer() {
+    var s = schema.seal;
+    var mapped = s.objectives.filter(function (o) { return o.mapped; });
+    return h('details', { class: 'basis seal-explainer' }, h('summary', null, 'What the EU SEAL levels mean'),
+      h('p', { class: 'small' }, s.intro + ' This is an LTM mapping, not the Commission\'s, and it is not a SEAL assessment or certification.'),
+      h('ul', { class: 'small' }, s.levels.map(function (l) { return h('li', null, h('strong', null, 'SEAL-' + l.id + ', ' + l.name.toLowerCase() + '. '), l.plain, l.note ? h('span', { class: 'block muted' }, l.note) : null); })),
+      h('p', { class: 'small' }, h('strong', null, 'What each choice asks of your providers: ')),
+      h('ul', { class: 'small' }, ['L1', 'L2', 'L3', 'L4'].map(function (lv) {
+        var m = s.mapping[lv] || {};
+        return h('li', null, h('strong', null, lv + ': '), mapped.filter(function (o) { return m[o.id] != null; }).map(function (o) { return o.name + ' ' + sealName(m[o.id]); }).join('; '));
+      })),
+      h('p', { class: 'small muted' }, 'Source: ' + s.framework + '. Status as of ' + s.statusAsOf + '.'));
+  }
+
+  /** SEAL view (PLAN S7b): the minimum provider SEAL each kind of data needs, and the controls behind each objective. */
+  function sealPanel(p, r) {
+    var v = r.seal;
+    if (!v) { p.appendChild(h('p', { class: 'muted' }, 'The SEAL view needs a newer result; complete the assessment again.')); return; }
+    var mapped = schema.seal.objectives.filter(function (o) { return o.mapped; });
+    p.appendChild(card('Minimum provider SEAL by kind of data', 'From the required level, using the LTM mapping; SEAL rates the provider\'s service, not you', v.byClass.length ? h('div', { class: 'table-wrap' }, h('table', null,
+      h('thead', null, h('tr', null, [h('th', { scope: 'col' }, 'Data'), h('th', { scope: 'col' }, 'Level')].concat(mapped.map(function (o) { return h('th', { scope: 'col' }, o.id + ' ' + o.name.replace(/ sovereignty$/, '')); })))),
+      h('tbody', null, v.byClass.map(function (c) {
+        return h('tr', null, [h('th', { scope: 'row' }, className(c.dataClass)), h('td', null, c.level)].concat(mapped.map(function (o) { return h('td', null, sealName(c.minimums[o.id])); })));
+      }).concat([h('tr', null, [h('th', { scope: 'row' }, 'Highest needed'), h('td', null, '')].concat(mapped.map(function (o) { return h('td', null, h('strong', null, sealName(v.organisation[o.id]))); })))])))) : h('p', { class: 'muted' }, 'No kind of data needs more than L0, so no minimum SEAL applies.'), 'wide'));
+    if (v.l4Note) p.appendChild(h('p', { class: 'small muted' }, v.l4Note));
+    p.appendChild(card('Your controls by sovereignty objective', 'The required controls that support each objective; a count of controls, not a rating', h('div', { class: 'table-wrap' }, h('table', null,
+      h('thead', null, h('tr', null, ['Objective', 'In place', 'Controls'].map(function (t) { return h('th', { scope: 'col' }, t); }))),
+      h('tbody', null, v.objectives.map(function (o) {
+        return h('tr', null, h('th', { scope: 'row' }, o.id + ' ' + o.name + (o.mapped ? '' : ' (provider selection)')),
+          h('td', null, o.controls.length ? o.inPlace + ' of ' + o.controls.length : '—'),
+          h('td', { class: 'small' }, o.controls.length ? o.controls.map(function (c) { return controlInfo(c.control).name + ' (' + stateWord(c) + ')'; }).join('; ') : o.mapped ? 'No required control' : 'Assessed when choosing a provider (Cloud advisory)'));
+      })))), 'wide'));
+    var t = v.tender;
+    if (t) p.appendChild(card('EU tender minimums', 'From your answer to L3', h('div', null,
+      h('p', { class: 'small' }, 'Minimums: ' + Object.keys(t.minimums).map(function (o) { return o + ' ' + sealName(t.minimums[o]); }).join('; ') + '. These need at least ' + t.level + ' for ' + t.classes.map(className).join(', ') + '.'),
+      t.raised.length ? h('p', { class: 'small' }, 'Raised the required level of ' + t.raised.map(function (x) { return className(x.dataClass) + ' from ' + x.from + ' to ' + x.to; }).join('; ') + '.') : null,
+      t.beyondMapping.length ? h('p', { class: 'small' }, 'No level in the mapping reaches the minimum for ' + t.beyondMapping.join(', ') + ': discuss with your consultant.') : null,
+      t.selectionCriteria.length ? h('p', { class: 'small' }, 'Provider-selection criteria: ' + t.selectionCriteria.map(function (x) { return x.objective + ' ' + sealName(x.minimum); }).join('; ') + '.') : null), 'wide'));
+    if (state.view !== 'client' && v.commissionTenderResults) p.appendChild(h('p', { class: 'small consultant-only' }, 'Consultant only: ' + v.commissionTenderResults.statement));
+    p.appendChild(h('p', { class: 'small muted' }, v.statement));
+  }
+
   function rungName(id) { var x = (schema.rungs || []).find(function (g) { return g.id === id; }); return x ? id + ' ' + x.label : id; }
 
   /** One playbook action: what to do, the approach, options and how to check it (PLAN S7). */
   function actionItem(a) {
-    return h('li', { class: 'small' }, h('strong', null, a.action), ' ', a.approach,
+    return h('li', { class: 'small' }, h('strong', null, a.action + '.'), ' ', a.approach + '.',
       a.options && a.options.length ? h('span', { class: 'block' }, 'Options: ' + a.options.map(function (o) { return o.name; }).join('; ') + (a.confirmRegionalAvailability ? ' (confirm availability in your regions)' : '')) : null,
       h('span', { class: 'block muted' }, 'Check: ' + a.verification + ' · Owner: ' + a.ownerRole + (a.discoveryNeeded ? ' · Needs: ' + a.discoveryNeeded : '')));
   }
@@ -906,7 +954,11 @@
         x.confirmOperatingModel ? h('p', { class: 'small' }, 'Your answer says these services are run only by staff in the region through a local entity, but the data sits in standard regions of a provider based outside it. Confirm who operates and supports them, including escalations.') : null,
         ctl.length ? h('p', { class: 'small' }, h('strong', null, 'Not yet in place: '), ctl.map(function (c) { return controlInfo(c.control).name + ' (' + stateWord(c) + ')'; }).join('; ')) : null,
         x.options.length ? h('div', null, h('p', { class: 'small' }, h('strong', null, 'Options on ' + schema.platforms[x.platform] + ' at ' + x.minimumRung + ':')),
-          h('ul', null, x.options.map(function (o) { return h('li', { class: 'small' }, o.name + (o.availability !== 'ga' ? ' (' + o.availability + ')' : '') + (o.detail ? ': ' + o.detail : '') + (o.confirmRegionalAvailability ? ' · confirm availability in your regions' : '')); }))) : null,
+          h('ul', null, x.options.map(function (o) { return h('li', { class: 'small' }, h('strong', null, o.name), AVAILABILITY[o.availability] ? ' (' + AVAILABILITY[o.availability] + ')' : '', o.detail ? ': ' + o.detail : '', o.caveat ? h('span', { class: 'block muted' }, o.caveat) : null, o.confirmRegionalAvailability && !o.caveat ? h('span', { class: 'block muted' }, 'Confirm availability in your regions.') : null); }))) : null,
+        x.r4Facts && x.r4Facts.length ? h('div', null, h('p', { class: 'small' }, h('strong', null, 'Facts for counsel')), h('div', { class: 'table-wrap' }, h('table', null,
+          h('thead', null, h('tr', null, ['Offering', 'Owner', 'Operator', 'Operator\'s law', 'Technology'].map(function (t) { return h('th', { scope: 'col' }, t); }))),
+          h('tbody', null, x.r4Facts.map(function (f) { return h('tr', null, h('th', { scope: 'row' }, f.name), h('td', { class: 'small' }, f.owner), h('td', { class: 'small' }, f.operator), h('td', { class: 'small' }, f.operatorLaw), h('td', { class: 'small' }, f.technologySupplier)); })))),
+          h('p', { class: 'small muted' }, 'Whether this meets R4 is for your counsel.')) : null,
         x.noOfferingZones.length ? h('p', { class: 'small' }, schema.platforms[x.platform] + ' has no option at ' + x.minimumRung + ' listed for ' + x.noOfferingZones.map(zoneName).join(', ') + (x.alternatives.length ? '. Alternatives:' : '. Ask your consultant for alternatives.')) : null,
         x.alternatives.length ? h('ul', null, x.alternatives.map(function (o) { return h('li', { class: 'small' }, (o.provider ? schema.platforms[o.provider] + ': ' : '') + o.name + (o.detail ? ': ' + o.detail : '')); })) : null,
         x.actions.length ? h('div', null, h('p', { class: 'small' }, h('strong', null, 'Actions')), h('ul', null, x.actions.map(actionItem))) : null));

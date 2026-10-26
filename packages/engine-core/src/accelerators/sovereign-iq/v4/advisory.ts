@@ -24,9 +24,19 @@ type State = 0 | 1 | 2 | 3 | 'unknown' | 'not_answered';
 export interface LadderOption {
   id: string; provider: Hyperscaler; rung: Rung; name: string; kind: 'native' | 'partner';
   /** Zones where it is offered; 'any' for a feature available in every region. */
-  zones: string[]; availability: 'ga' | 'preview' | 'announced'; detail: string;
+  zones: string[];
+  /** Only 'ga' meets a rung (D24); the others are shown, labelled. 'per_engagement' needs the provider's written confirmation. */
+  availability: 'ga' | 'preview' | 'announced' | 'per_engagement'; detail: string;
+  /** Shown with the option, e.g. eligibility for government clouds (D27). */
+  caveat?: string;
   claimIds: string[]; confirmRegionalAvailability: boolean;
 }
+/** R4 is never claimed for an offering: the facts a counsel needs, and the fixed line (D26). */
+export interface R4Fact {
+  id: string; name: string; owner: string; operator: string; operatorLaw: string; technologySupplier: string;
+  zones: string[]; claimIds: string[];
+}
+export const COUNSEL_NOTE = 'Whether this meets R4 is for your counsel.';
 export interface LadderAlternative {
   id: string; rung: Rung; name: string; kind: 'partner_operated' | 'sovereign_provider' | 'private_cloud' | 'disconnected';
   zones: string[]; detail: string; claimIds: string[];
@@ -35,7 +45,7 @@ export interface Ladder {
   ladderVersion: string; statusAsOf: string; rule: string;
   rungs: Array<{ id: Rung; level: Level; label: string; means: string; controls: string[]; platformMove?: boolean }>;
   providers: Record<Hyperscaler, { label: string; parent: string }>;
-  options: LadderOption[]; alternatives: LadderAlternative[];
+  options: LadderOption[]; alternatives: LadderAlternative[]; r4Facts: R4Fact[];
 }
 export const LADDER = ladderData as unknown as Ladder;
 
@@ -67,6 +77,8 @@ export interface PlacementRow {
   /** Allowed zones with no option from this provider at the rung (the matrix says so and shows alternatives). */
   noOfferingZones: string[];
   alternatives: Array<LadderOption | LadderAlternative>;
+  /** At R4 only: facts about offerings in the zone, for counsel; never presented as meeting R4 (D26). */
+  r4Facts: R4Fact[];
   actions: AdvisoryAction[];
   findingIds: string[];
 }
@@ -137,11 +149,13 @@ export function advisory(r: AdvisoryInput, ladder: Ladder = LADDER, cat: Playboo
       const zones = req.allowedZone;
       const atRung = ladder.options.filter(o => o.rung === minimumRung);
       const options = atRung.filter(o => o.provider === platform && zones.some(z => covers(o.zones, z)));
-      const noOfferingZones = minimumRung === 'R1' ? [] : zones.filter(z => !options.some(o => covers(o.zones, z)));
+      // Only generally available options meet the rung (D24); at R4 none does, by rule (D26).
+      const meetsIn = (z: string) => minimumRung !== 'R4' && options.some(o => o.availability === 'ga' && covers(o.zones, z));
+      const noOfferingZones = minimumRung === 'R1' ? [] : zones.filter(z => !meetsIn(z));
       // Alternatives only where this provider has nothing for a zone: other providers' options at the rung, then the
       // non-hyperscaler routes, each in catalogue order (no ranking).
       const alternatives = noOfferingZones.length ? [
-        ...atRung.filter(o => o.provider !== platform && noOfferingZones.some(z => covers(o.zones, z))),
+        ...atRung.filter(o => o.provider !== platform && o.availability === 'ga' && noOfferingZones.some(z => covers(o.zones, z))),
         ...ladder.alternatives.filter(a => a.rung === minimumRung && noOfferingZones.some(z => covers(a.zones, z)))
       ] : [];
 
@@ -158,7 +172,8 @@ export function advisory(r: AdvisoryInput, ladder: Ladder = LADDER, cat: Playboo
       }
       placement.push({
         dataClass: req.dataClass, platform, requiredLevel: req.required, allowedZone: zones, minimumRung, status,
-        rungControls, confirmOperatingModel, services: svc, options, noOfferingZones, alternatives, actions, findingIds
+        rungControls, confirmOperatingModel, services: svc, options, noOfferingZones, alternatives,
+        r4Facts: minimumRung === 'R4' ? ladder.r4Facts.filter(f => zones.some(z => covers(f.zones, z))) : [], actions, findingIds
       });
     }
   }
@@ -178,7 +193,7 @@ export function advisory(r: AdvisoryInput, ladder: Ladder = LADDER, cat: Playboo
   }
 
   const claimIds = [...new Set([
-    ...placement.flatMap(p => [...p.options, ...p.alternatives].flatMap(o => o.claimIds)),
+    ...placement.flatMap(p => [...p.options, ...p.alternatives, ...p.r4Facts].flatMap(o => o.claimIds)),
     ...placement.flatMap(p => p.actions.flatMap(a => a.claimIds)),
     ...technical.flatMap(a => a.claimIds)
   ])];

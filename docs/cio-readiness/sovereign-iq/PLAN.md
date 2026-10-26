@@ -408,7 +408,7 @@ The 28 P claims cite a primary URL whose article text was not re-read. They are 
 | R0 | Standard region, no sovereignty controls | L0 | Any standard region |
 | R1 | Standard region inside the allowed zone, with region guardrails | L1 | AWS Organizations SCP region restriction; Azure Policy allowed locations; Google Cloud resource-locations org policy |
 | R2 | R1, plus customer-held keys, provider access approval and the provider's data boundary where one exists | L2 | AWS KMS External Key Store; Azure customer-managed keys with Managed HSM and Customer Lockbox, EU Data Boundary; Google Cloud External Key Manager, Access Approval, Access Transparency, Assured Workloads |
-| R3 | The provider's sovereign offering, run by staff in the zone through a local entity | L3 | AWS European Sovereign Cloud; Microsoft's sovereign cloud offerings; Google Cloud sovereign offerings and partner-operated clouds (for example S3NS). Names, scope and availability to be confirmed per zone |
+| R3 | The provider's sovereign offering, run by staff in the zone through a local entity | L3 | AWS European Sovereign Cloud (EU), AWS GovCloud (US); Microsoft National Partner Clouds Bleu and Delos (EU), Azure Government (US); Google Cloud Dedicated PREMI3NS by S3NS (France), Google US regulatory packages. Supervised-access offerings (Microsoft Sovereign Public Cloud, Google partner data boundaries) are R2 (D25). Sourced in [S7-SOURCES.md](design/S7-SOURCES.md) |
 | R4 | No provider in the chain can be compelled by a law from outside the zone, or the system is disconnected | L4 | Partner-operated cloud with no foreign-parent control, a sovereign provider, private cloud, or a disconnected deployment. **Whether any hyperscaler-linked offering meets R4 is an LTM judgement that counsel must confirm (S10)** |
 
 ### Initial playbook entries
@@ -439,6 +439,8 @@ The earlier draft used `SOV.EXIT.TESTED`, `SOV.OOB.MGMT` and `SOV.PLATFORM.TARGE
 
 **Dependencies:** S3; S6 (report and backlog); WS-S3 catalogue schema (shared with Resilience IQ R10 item 7).
 
+**Status (26 Oct 2026): built, for the owner's review.** Engine 4.3.0 to 4.4.0; ladder 1.1.0 (24 provider options, 4 alternatives, 7 facts-only R4 entries) and playbook 1.1.0 (72 entries on 10 platforms), all from [S7-SOURCES.md](design/S7-SOURCES.md) (CLM-SOV-220 to 270) with decisions D20–D27. Question C1; Cloud advisory tab; "Sovereign cloud advisory" report section; four backlog columns; client mode keeps only content cleared for clients. Tests: `sovereign-iq-v4-advisory.test.ts` including both content gates (no technical gap on any archetype platform; R2 options in every zone, alternatives wherever R3 has none). Open: O1 (AWS per-request approval), O5 (Bleu and Delos status), O6 (local sovereign providers for UK and APAC alternatives), O7 (approach-level examples), O8 (government cloud eligibility).
+
 **Gate S7:**
 - Tests confirm: no action without a finding; no selected platform without options; every hyperscaler, zone and level in scope has a minimum rung; every rung option has a source and review date; C1 is never scored.
 - 100% of entries sourced and reviewed by `sovereignty-compliance-lead`.
@@ -464,9 +466,11 @@ The earlier draft used `SOV.EXIT.TESTED`, `SOV.OOB.MGMT` and `SOV.PLATFORM.TARGE
 | 7 | Report | New section "EU sovereignty levels (SEAL)" after the required level by kind of data |
 | 8 | Wording | Fixed callouts: "LTM mapping, not the Commission's"; "SEAL rates provider services; this is not a SEAL assessment or certification" |
 
-**Not in scope (D16):** rating any provider's service at a SEAL. The Commission has not published provider scores. Revisit only if it does, and only with counsel review (S10).
+**Not in scope (D16, revised by D20):** LTM never rates any provider's service at a SEAL. The Commission's own published tender results (17 Apr 2026: three awarded bids at SEAL-3, the Proximus/S3NS-based bid at SEAL-2) are shown as dated, tender-specific facts in the consultant view only (CLM-SOV-226).
 
 **Dependencies:** S3; S6; S7 for the provider-selection criteria in item 5 (the rest can run beside S7).
+
+**Status (26 Oct 2026): built, for the owner's review.** SEAL wording verified (CLM-SOV-220 to 227); `seal.json` and `seal.ts`; question L3 with the reverse mapping; SEAL 0–4 explainer beside L1; SEAL view tab; report section "EU sovereignty levels (SEAL)"; the Commission's tender results in the consultant view only (D20). Tests: `sovereign-iq-v4-seal.test.ts` and the report lint.
 
 **Gate S7b:**
 - SEAL wording verified (status V), or labelled where not.
@@ -589,7 +593,7 @@ All recommended defaults are **accepted**, with one change: **D11**. The owner d
 
 ### Decisions added 26 Oct 2026
 
-Taken by the product owner on the recommendations in discussion.
+Taken by the product owner on the recommendations in discussion (D15–D19), and on `sovereignty-compliance-lead`'s recommendations after the S7 sources pack (D20–D27).
 
 | # | Decision | Taken | Needed by |
 |---|---|---|---|
@@ -598,3 +602,11 @@ Taken by the product owner on the recommendations in discussion.
 | D17 | Sovereign Cloud Advisory scope | Widen S7: placement matrix and service-level entries for AWS, Azure and Google Cloud; approach-level entries for every other platform | S7 |
 | D18 | Order | Owner review of Gate S6, then S7, with S7b beside it once the SEAL wording is verified | — |
 | D19 | Advisory granularity | Service families, not individual products; named products only as sourced examples with review dates | S7 |
+| D20 | D16 after the Commission published its tender SEAL results | Show them as dated, tender-specific facts, consultant view only; LTM never rates a provider | S7b |
+| D21 | SEAL-3 label | Framework v1.2.1 "Digital Resilience", with a footnote giving the later label ("Technological Sovereignty") | S7b |
+| D22 | L4 mapping row asks for SEAL-4 | Keep it, with a note that the Commission says SEAL-4 is not relevant today; revisit when the framework is updated | S7b |
+| D23 | Objective weights | Not shown in the client view; Sovereign IQ computes no Sovereignty Score | S7b |
+| D24 | Announced or preview offerings | Shown, labelled; never count as meeting a rung until generally available | S7 |
+| D25 | R3 test | R3 only when day-to-day operations and support run in the zone through a local entity; supervised or approved access stays R2 | S7 |
+| D26 | R4 wording | Facts only (owner, operator, operator's law, technology supplier), with "Whether this meets R4 is for your counsel" | S7 |
+| D27 | US government clouds | R3 for US data, with an eligibility caveat | S7 |

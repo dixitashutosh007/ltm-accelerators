@@ -155,6 +155,8 @@ test('workshop: the per-class requirement rows follow the data chosen, and the f
   await complete(page);
   await page.getByRole('tab', { name: 'Controls' }).click();
   await expect(page.getByRole('heading', { name: /Required controls \(\d+\)/ })).toBeVisible();
+  await page.getByRole('tab', { name: 'SEAL view' }).click();
+  await expect(page.getByRole('heading', { name: 'Your controls by sovereignty objective' })).toBeVisible();
   await page.getByRole('tab', { name: 'Cloud advisory' }).click();
   await expect(page.getByRole('heading', { name: 'Placement matrix' })).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Actions by platform' })).toBeVisible();
@@ -201,7 +203,7 @@ test('accessibility: no WCAG 2.2 AA violations on the start screen, a question s
   await page.locator('nav.steps button', { hasText: 'Review & complete' }).click();
   await axe(page, 'review');
   await complete(page);
-  for (const t of ['Overview', 'Regulations', 'Controls', 'Findings', 'Cloud advisory', 'Roadmap', 'Method']) {
+  for (const t of ['Overview', 'Regulations', 'Controls', 'Findings', 'SEAL view', 'Cloud advisory', 'Roadmap', 'Method']) {
     await page.getByRole('tab', { name: t }).click();
     await axe(page, `results: ${t}`);
   }

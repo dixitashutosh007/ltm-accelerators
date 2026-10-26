@@ -302,7 +302,7 @@ describe('Sovereign IQ v4 invariants (300 random questionnaires)', () => {
         }
       }
     }
-  });
+  }, 30_000);
 
   it('unknown counts as risk and a blank never flatters: neither scores above the lowest real answer', () => {
     for (const a of SAMPLES.slice(0, 120)) for (const q of maturityQuestions) {

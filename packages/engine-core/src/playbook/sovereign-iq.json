@@ -1,5 +1,5 @@
 {
-  "catalogueVersion": "1.0.0",
+  "catalogueVersion": "1.1.0",
   "accelerator": "sovereign-iq",
   "statusAsOf": "2026-10-26",
   "rule": "Sovereign IQ platform playbook (PLAN S7, WS-S3). Service-level entries for AWS, Azure and Google Cloud; approach-level entries for every other platform (D17). Service families, not product lists (D19); each option is sourced in the claims register with a 90-day review (D8). Technical controls need an entry on every platform that holds the affected data; process controls (transfer register, sub-processors, exit plan) use one 'any' entry.",
@@ -12,5 +12,2167 @@
     "SOV.OPS.PERSONNEL_ZONE",
     "SOV.AI.DATA_LOCATION"
   ],
-  "entries": []
+  "entries": [
+    {
+      "id": "PB.SOV.RES.REGION_LOCK.aws.platform",
+      "control": "SOV.RES.REGION_LOCK",
+      "platform": "aws",
+      "level": "platform",
+      "action": "Deny every Region outside the allowed zone at organisation level",
+      "approach": "Deny all Regions outside the zone at organisation level and exempt global services explicitly",
+      "options": [
+        {
+          "name": "AWS Control Tower Region deny control",
+          "kind": "native"
+        },
+        {
+          "name": "Service control policy on aws:RequestedRegion",
+          "kind": "native"
+        }
+      ],
+      "verification": "Control Tower compliance shows the control on every account, and a test deployment in a blocked Region fails",
+      "effort": "S",
+      "ownerRole": "Head of cloud platform",
+      "confirmRegionalAvailability": false,
+      "confidence": "High",
+      "claimIds": [
+        "CLM-SOV-228",
+        "CLM-SOV-270"
+      ],
+      "owner": "sovereignty-compliance-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-26",
+      "nextReview": "2027-01-24"
+    },
+    {
+      "id": "PB.SOV.RES.REGION_LOCK.azure.platform",
+      "control": "SOV.RES.REGION_LOCK",
+      "platform": "azure",
+      "level": "platform",
+      "action": "Assign \"Allowed locations\" at the root management group",
+      "approach": "Assign the allowed-locations policy at the management-group root; for EU data, add the EU Data Boundary scope",
+      "options": [
+        {
+          "name": "Azure Policy \"Allowed locations\"",
+          "kind": "native"
+        },
+        {
+          "name": "EU Data Boundary (EU only)",
+          "kind": "native"
+        }
+      ],
+      "verification": "Azure Policy compliance report shows no non-compliant resources",
+      "effort": "S",
+      "ownerRole": "Head of cloud platform",
+      "confirmRegionalAvailability": false,
+      "confidence": "High",
+      "claimIds": [
+        "CLM-SOV-238",
+        "CLM-SOV-239",
+        "CLM-SOV-270"
+      ],
+      "owner": "sovereignty-compliance-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-26",
+      "nextReview": "2027-01-24"
+    },
+    {
+      "id": "PB.SOV.RES.REGION_LOCK.gcp.platform",
+      "control": "SOV.RES.REGION_LOCK",
+      "platform": "gcp",
+      "level": "platform",
+      "action": "Set the resource-locations constraint at organisation or folder level",
+      "approach": "Set gcp.resourceLocations at organisation or folder level and use an Assured Workloads folder for regulated data",
+      "options": [
+        {
+          "name": "Organisation policy gcp.resourceLocations",
+          "kind": "native"
+        },
+        {
+          "name": "Assured Workloads data boundary package",
+          "kind": "native"
+        }
+      ],
+      "verification": "Organisation policy report and the Assured Workloads violations view show no breach",
+      "effort": "S",
+      "ownerRole": "Head of cloud platform",
+      "confirmRegionalAvailability": true,
+      "confidence": "High",
+      "claimIds": [
+        "CLM-SOV-251",
+        "CLM-SOV-253",
+        "CLM-SOV-270"
+      ],
+      "owner": "sovereignty-compliance-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-26",
+      "nextReview": "2027-01-24"
+    },
+    {
+      "id": "PB.SOV.RES.REGION_LOCK.on_prem.platform",
+      "control": "SOV.RES.REGION_LOCK",
+      "platform": "on_prem",
+      "level": "platform",
+      "action": "Keep a data-centre location register and fix the sites in contract",
+      "approach": "Data-centre location register; contracts fix the site",
+      "options": [
+        {
+          "name": "Data-centre location register",
+          "kind": "practice"
+        }
+      ],
+      "verification": "The register matches the configuration database",
+      "effort": "S",
+      "ownerRole": "Head of cloud platform",
+      "confirmRegionalAvailability": false,
+      "confidence": "Medium",
+      "claimIds": [
+        "CLM-SOV-270"
+      ],
+      "owner": "sovereignty-compliance-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-26",
+      "nextReview": "2027-01-24"
+    },
+    {
+      "id": "PB.SOV.RES.REGION_LOCK.oci.platform",
+      "control": "SOV.RES.REGION_LOCK",
+      "platform": "oci",
+      "level": "platform",
+      "action": "Subscribe the tenancy only to in-zone Regions",
+      "approach": "Limit the tenancy Region subscriptions to in-zone Regions; for EU data, consider the EU Sovereign Cloud Regions",
+      "options": [
+        {
+          "name": "Tenancy Region subscriptions",
+          "kind": "native"
+        },
+        {
+          "name": "Oracle EU Sovereign Cloud",
+          "kind": "native"
+        }
+      ],
+      "verification": "The subscribed-Regions list shows only in-zone Regions",
+      "effort": "M",
+      "ownerRole": "Head of cloud platform",
+      "confirmRegionalAvailability": true,
+      "confidence": "Medium",
+      "claimIds": [
+        "CLM-SOV-266",
+        "CLM-SOV-270"
+      ],
+      "owner": "sovereignty-compliance-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-26",
+      "nextReview": "2027-01-24"
+    },
+    {
+      "id": "PB.SOV.RES.REGION_LOCK.ibm.platform",
+      "control": "SOV.RES.REGION_LOCK",
+      "platform": "ibm",
+      "level": "platform",
+      "action": "Restrict account Regions and resource-group locations",
+      "approach": "Restrict the account Regions and resource-group locations to the zone",
+      "options": [
+        {
+          "name": "Account and resource-group location settings",
+          "kind": "practice"
+        }
+      ],
+      "verification": "Account Region report shows only in-zone Regions",
+      "effort": "M",
+      "ownerRole": "Head of cloud platform",
+      "confirmRegionalAvailability": true,
+      "confidence": "Low",
+      "claimIds": [
+        "CLM-SOV-270"
+      ],
+      "owner": "sovereignty-compliance-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-26",
+      "nextReview": "2027-01-24"
+    },
+    {
+      "id": "PB.SOV.RES.REGION_LOCK.sovereign_cloud.platform",
+      "control": "SOV.RES.REGION_LOCK",
+      "platform": "sovereign_cloud",
+      "level": "platform",
+      "action": "Fix the Region in the contract and the service description",
+      "approach": "Region choice fixed in the contract and the service description",
+      "options": [
+        {
+          "name": "Contract schedule naming the Regions",
+          "kind": "practice"
+        }
+      ],
+      "verification": "Contract schedule and the provider location report agree",
+      "effort": "M",
+      "ownerRole": "Head of cloud platform",
+      "confirmRegionalAvailability": true,
+      "confidence": "Medium",
+      "claimIds": [
+        "CLM-SOV-245",
+        "CLM-SOV-256",
+        "CLM-SOV-270"
+      ],
+      "owner": "sovereignty-compliance-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-26",
+      "nextReview": "2027-01-24"
+    },
+    {
+      "id": "PB.SOV.RES.REGION_LOCK.saas.platform",
+      "control": "SOV.RES.REGION_LOCK",
+      "platform": "saas",
+      "level": "platform",
+      "action": "Set the tenant data residency to its strictest available level",
+      "approach": "Tenant data-residency setting at its strictest available level",
+      "options": [
+        {
+          "name": "Microsoft 365 Advanced Data Residency",
+          "kind": "native"
+        },
+        {
+          "name": "Google Workspace data regions (US or EU)",
+          "kind": "native"
+        }
+      ],
+      "verification": "Tenant residency report shows the allowed geography",
+      "effort": "M",
+      "ownerRole": "Head of cloud platform",
+      "confirmRegionalAvailability": true,
+      "serviceFamilies": [
+        "collaboration_saas"
+      ],
+      "confidence": "Medium",
+      "claimIds": [
+        "CLM-SOV-249",
+        "CLM-SOV-263",
+        "CLM-SOV-270"
+      ],
+      "owner": "sovereignty-compliance-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-26",
+      "nextReview": "2027-01-24"
+    },
+    {
+      "id": "PB.SOV.RES.REGION_LOCK.ai_api.platform",
+      "control": "SOV.RES.REGION_LOCK",
+      "platform": "ai_api",
+      "level": "platform",
+      "action": "Fix the processing region of each AI API in the contract and the account settings",
+      "approach": "Third-party AI APIs give you no region guardrail of your own: choose providers that commit to an in-zone processing region, or call models hosted on your own platform in the zone",
+      "options": [
+        {
+          "name": "Contractual processing region",
+          "kind": "practice"
+        },
+        {
+          "name": "Models hosted on your cloud platform in the zone",
+          "kind": "practice"
+        }
+      ],
+      "verification": "The contract states the processing region and the account setting matches it",
+      "effort": "M",
+      "ownerRole": "Head of cloud platform",
+      "confirmRegionalAvailability": true,
+      "serviceFamilies": [
+        "ai_ml"
+      ],
+      "confidence": "Low",
+      "claimIds": [
+        "CLM-SOV-270"
+      ],
+      "owner": "sovereignty-compliance-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-26",
+      "nextReview": "2027-01-24"
+    },
+    {
+      "id": "PB.SOV.RES.LOCATION.aws.stack",
+      "control": "SOV.RES.LOCATION",
+      "platform": "aws",
+      "level": "stack",
+      "action": "Move primary storage and processing of the data into the allowed zone",
+      "approach": "Inventory the data's resources by Region, then move primary stores and processing into the zone, on the rung its level needs (see the placement matrix)",
+      "options": [
+        {
+          "name": "In-zone Regions and the placement-matrix options for the rung",
+          "kind": "native"
+        }
+      ],
+      "verification": "A location report per kind of data shows only allowed Regions",
+      "effort": "L",
+      "ownerRole": "CIO",
+      "confirmRegionalAvailability": true,
+      "serviceFamilies": [
+        "storage_backup",
+        "databases",
+        "analytics",
+        "compute_containers",
+        "ai_ml"
+      ],
+      "confidence": "Medium",
+      "claimIds": [
+        "CLM-SOV-267",
+        "CLM-SOV-270"
+      ],
+      "owner": "sovereignty-compliance-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-26",
+      "nextReview": "2027-01-24"
+    },
+    {
+      "id": "PB.SOV.RES.LOCATION.azure.stack",
+      "control": "SOV.RES.LOCATION",
+      "platform": "azure",
+      "level": "stack",
+      "action": "Move primary storage and processing of the data into the allowed zone",
+      "approach": "Inventory the data's resources by Region, then move primary stores and processing into the zone, on the rung its level needs (see the placement matrix)",
+      "options": [
+        {
+          "name": "In-zone Regions and the placement-matrix options for the rung",
+          "kind": "native"
+        }
+      ],
+      "verification": "A location report per kind of data shows only allowed Regions",
+      "effort": "L",
+      "ownerRole": "CIO",
+      "confirmRegionalAvailability": true,
+      "serviceFamilies": [
+        "storage_backup",
+        "databases",
+        "analytics",
+        "compute_containers",
+        "ai_ml"
+      ],
+      "confidence": "Medium",
+      "claimIds": [
+        "CLM-SOV-268",
+        "CLM-SOV-270"
+      ],
+      "owner": "sovereignty-compliance-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-26",
+      "nextReview": "2027-01-24"
+    },
+    {
+      "id": "PB.SOV.RES.LOCATION.gcp.stack",
+      "control": "SOV.RES.LOCATION",
+      "platform": "gcp",
+      "level": "stack",
+      "action": "Move primary storage and processing of the data into the allowed zone",
+      "approach": "Inventory the data's resources by Region, then move primary stores and processing into the zone, on the rung its level needs (see the placement matrix)",
+      "options": [
+        {
+          "name": "In-zone Regions and the placement-matrix options for the rung",
+          "kind": "native"
+        }
+      ],
+      "verification": "A location report per kind of data shows only allowed Regions",
+      "effort": "L",
+      "ownerRole": "CIO",
+      "confirmRegionalAvailability": true,
+      "serviceFamilies": [
+        "storage_backup",
+        "databases",
+        "analytics",
+        "compute_containers",
+        "ai_ml"
+      ],
+      "confidence": "Medium",
+      "claimIds": [
+        "CLM-SOV-269",
+        "CLM-SOV-270"
+      ],
+      "owner": "sovereignty-compliance-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-26",
+      "nextReview": "2027-01-24"
+    },
+    {
+      "id": "PB.SOV.RES.LOCATION.on_prem.stack",
+      "control": "SOV.RES.LOCATION",
+      "platform": "on_prem",
+      "level": "stack",
+      "action": "Confirm the site location and replicate only to in-zone sites",
+      "approach": "Confirm the site location; replicate only to in-zone sites",
+      "options": [
+        {
+          "name": "Site register",
+          "kind": "practice"
+        }
+      ],
+      "verification": "Site register shows only in-zone sites",
+      "effort": "M",
+      "ownerRole": "CIO",
+      "confirmRegionalAvailability": false,
+      "serviceFamilies": [
+        "storage_backup",
+        "databases",
+        "compute_containers"
+      ],
+      "confidence": "Medium",
+      "claimIds": [
+        "CLM-SOV-270"
+      ],
+      "owner": "sovereignty-compliance-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-26",
+      "nextReview": "2027-01-24"
+    },
+    {
+      "id": "PB.SOV.RES.LOCATION.oci.stack",
+      "control": "SOV.RES.LOCATION",
+      "platform": "oci",
+      "level": "stack",
+      "action": "Move primary storage and processing of the data into in-zone Regions",
+      "approach": "As for the hyperscalers, at approach level",
+      "options": [
+        {
+          "name": "In-zone Regions",
+          "kind": "practice"
+        }
+      ],
+      "verification": "The provider location report shows only in-zone Regions",
+      "effort": "L",
+      "ownerRole": "CIO",
+      "confirmRegionalAvailability": true,
+      "serviceFamilies": [
+        "storage_backup",
+        "databases",
+        "compute_containers"
+      ],
+      "confidence": "Low",
+      "claimIds": [
+        "CLM-SOV-266",
+        "CLM-SOV-270"
+      ],
+      "owner": "sovereignty-compliance-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-26",
+      "nextReview": "2027-01-24"
+    },
+    {
+      "id": "PB.SOV.RES.LOCATION.ibm.stack",
+      "control": "SOV.RES.LOCATION",
+      "platform": "ibm",
+      "level": "stack",
+      "action": "Move primary storage and processing of the data into in-zone Regions",
+      "approach": "As for the hyperscalers, at approach level",
+      "options": [
+        {
+          "name": "In-zone Regions",
+          "kind": "practice"
+        }
+      ],
+      "verification": "The provider location report shows only in-zone Regions",
+      "effort": "L",
+      "ownerRole": "CIO",
+      "confirmRegionalAvailability": true,
+      "serviceFamilies": [
+        "storage_backup",
+        "databases",
+        "compute_containers"
+      ],
+      "confidence": "Low",
+      "claimIds": [
+        "CLM-SOV-270"
+      ],
+      "owner": "sovereignty-compliance-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-26",
+      "nextReview": "2027-01-24"
+    },
+    {
+      "id": "PB.SOV.RES.LOCATION.sovereign_cloud.stack",
+      "control": "SOV.RES.LOCATION",
+      "platform": "sovereign_cloud",
+      "level": "stack",
+      "action": "Migrate the data to the provider's in-zone Regions",
+      "approach": "Migrate to the provider's in-zone Regions after checking the managed services you need exist there",
+      "options": [
+        {
+          "name": "PREMI3NS by S3NS",
+          "kind": "native"
+        },
+        {
+          "name": "Thales sovereign cloud in Germany (preview)",
+          "kind": "native"
+        }
+      ],
+      "verification": "Location report and a service catalogue check",
+      "effort": "L",
+      "ownerRole": "CIO",
+      "confirmRegionalAvailability": true,
+      "serviceFamilies": [
+        "storage_backup",
+        "databases",
+        "analytics",
+        "compute_containers",
+        "ai_ml"
+      ],
+      "confidence": "Medium",
+      "claimIds": [
+        "CLM-SOV-256",
+        "CLM-SOV-258",
+        "CLM-SOV-270"
+      ],
+      "owner": "sovereignty-compliance-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-26",
+      "nextReview": "2027-01-24"
+    },
+    {
+      "id": "PB.SOV.RES.LOCATION.saas.stack",
+      "control": "SOV.RES.LOCATION",
+      "platform": "saas",
+      "level": "stack",
+      "action": "Set the tenant geography and move existing data with the vendor's migration route",
+      "approach": "Set the tenant geography; move existing data with the vendor's migration route",
+      "options": [
+        {
+          "name": "Microsoft 365 Advanced Data Residency",
+          "kind": "native"
+        },
+        {
+          "name": "Google Workspace data regions",
+          "kind": "native"
+        }
+      ],
+      "verification": "The tenant's data-location page shows the allowed geography",
+      "effort": "M",
+      "ownerRole": "CIO",
+      "confirmRegionalAvailability": true,
+      "serviceFamilies": [
+        "collaboration_saas"
+      ],
+      "confidence": "Medium",
+      "claimIds": [
+        "CLM-SOV-249",
+        "CLM-SOV-263",
+        "CLM-SOV-270"
+      ],
+      "owner": "sovereignty-compliance-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-26",
+      "nextReview": "2027-01-24"
+    },
+    {
+      "id": "PB.SOV.RES.LOCATION.ai_api.stack",
+      "control": "SOV.RES.LOCATION",
+      "platform": "ai_api",
+      "level": "stack",
+      "action": "Send this data only to AI endpoints that process it in the allowed zone",
+      "approach": "Route the data to in-zone endpoints only; where a provider cannot commit to the zone, use a model hosted on your own platform in the zone",
+      "options": [
+        {
+          "name": "In-zone regional endpoints",
+          "kind": "practice"
+        }
+      ],
+      "verification": "Endpoint inventory shows only in-zone processing for this data",
+      "effort": "M",
+      "ownerRole": "CIO",
+      "confirmRegionalAvailability": true,
+      "serviceFamilies": [
+        "ai_ml"
+      ],
+      "confidence": "Medium",
+      "claimIds": [
+        "CLM-SOV-260",
+        "CLM-SOV-261",
+        "CLM-SOV-262",
+        "CLM-SOV-270"
+      ],
+      "owner": "sovereignty-compliance-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-26",
+      "nextReview": "2027-01-24"
+    },
+    {
+      "id": "PB.SOV.BACKUP.LOCATION.aws.stack",
+      "control": "SOV.BACKUP.LOCATION",
+      "platform": "aws",
+      "level": "stack",
+      "action": "Keep backup vaults, replicas and recovery Regions inside the zone",
+      "approach": "Backup vaults, replicas and DR Regions inside the zone; cross-Region copies only to in-zone Regions; independent keys",
+      "options": [
+        {
+          "name": "Region guardrails on backup and replication targets",
+          "kind": "native"
+        }
+      ],
+      "verification": "Restore test from the in-zone copy; backup vault location report",
+      "effort": "M",
+      "ownerRole": "Head of infrastructure",
+      "confirmRegionalAvailability": true,
+      "serviceFamilies": [
+        "storage_backup",
+        "databases"
+      ],
+      "confidence": "Medium",
+      "claimIds": [
+        "CLM-SOV-228",
+        "CLM-SOV-270"
+      ],
+      "owner": "sovereignty-compliance-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-26",
+      "nextReview": "2027-01-24"
+    },
+    {
+      "id": "PB.SOV.BACKUP.LOCATION.azure.stack",
+      "control": "SOV.BACKUP.LOCATION",
+      "platform": "azure",
+      "level": "stack",
+      "action": "Keep backup vaults, replicas and recovery regions inside the zone",
+      "approach": "As for AWS: backups, replicas and DR in-zone, with a paired or DR region inside the zone",
+      "options": [
+        {
+          "name": "Allowed locations on backup and replica resources",
+          "kind": "native"
+        }
+      ],
+      "verification": "Restore test from the in-zone copy; backup vault location report",
+      "effort": "M",
+      "ownerRole": "Head of infrastructure",
+      "confirmRegionalAvailability": true,
+      "serviceFamilies": [
+        "storage_backup",
+        "databases"
+      ],
+      "confidence": "Medium",
+      "claimIds": [
+        "CLM-SOV-238",
+        "CLM-SOV-270"
+      ],
+      "owner": "sovereignty-compliance-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-26",
+      "nextReview": "2027-01-24"
+    },
+    {
+      "id": "PB.SOV.BACKUP.LOCATION.gcp.stack",
+      "control": "SOV.BACKUP.LOCATION",
+      "platform": "gcp",
+      "level": "stack",
+      "action": "Keep backups, replicas and recovery regions inside the zone",
+      "approach": "As for AWS: backups, replicas and DR in-zone",
+      "options": [
+        {
+          "name": "Resource locations on backup and replica resources",
+          "kind": "native"
+        }
+      ],
+      "verification": "Restore test from the in-zone copy; backup location report",
+      "effort": "M",
+      "ownerRole": "Head of infrastructure",
+      "confirmRegionalAvailability": true,
+      "serviceFamilies": [
+        "storage_backup",
+        "databases"
+      ],
+      "confidence": "Medium",
+      "claimIds": [
+        "CLM-SOV-251",
+        "CLM-SOV-270"
+      ],
+      "owner": "sovereignty-compliance-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-26",
+      "nextReview": "2027-01-24"
+    },
+    {
+      "id": "PB.SOV.BACKUP.LOCATION.on_prem.stack",
+      "control": "SOV.BACKUP.LOCATION",
+      "platform": "on_prem",
+      "level": "stack",
+      "action": "Use a second in-zone site or an in-zone backup provider",
+      "approach": "Second in-zone site or in-zone backup provider",
+      "options": [
+        {
+          "name": "Second in-zone site",
+          "kind": "practice"
+        }
+      ],
+      "verification": "Restore test",
+      "effort": "M",
+      "ownerRole": "Head of infrastructure",
+      "confirmRegionalAvailability": false,
+      "serviceFamilies": [
+        "storage_backup"
+      ],
+      "confidence": "Medium",
+      "claimIds": [
+        "CLM-SOV-270"
+      ],
+      "owner": "sovereignty-compliance-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-26",
+      "nextReview": "2027-01-24"
+    },
+    {
+      "id": "PB.SOV.BACKUP.LOCATION.oci.stack",
+      "control": "SOV.BACKUP.LOCATION",
+      "platform": "oci",
+      "level": "stack",
+      "action": "Keep the recovery Region inside the zone",
+      "approach": "DR Region within the zone",
+      "options": [
+        {
+          "name": "In-zone DR Region",
+          "kind": "practice"
+        }
+      ],
+      "verification": "Restore test",
+      "effort": "M",
+      "ownerRole": "Head of infrastructure",
+      "confirmRegionalAvailability": true,
+      "serviceFamilies": [
+        "storage_backup",
+        "databases"
+      ],
+      "confidence": "Low",
+      "claimIds": [
+        "CLM-SOV-270"
+      ],
+      "owner": "sovereignty-compliance-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-26",
+      "nextReview": "2027-01-24"
+    },
+    {
+      "id": "PB.SOV.BACKUP.LOCATION.ibm.stack",
+      "control": "SOV.BACKUP.LOCATION",
+      "platform": "ibm",
+      "level": "stack",
+      "action": "Keep the recovery Region inside the zone",
+      "approach": "DR Region within the zone",
+      "options": [
+        {
+          "name": "In-zone DR Region",
+          "kind": "practice"
+        }
+      ],
+      "verification": "Restore test",
+      "effort": "M",
+      "ownerRole": "Head of infrastructure",
+      "confirmRegionalAvailability": true,
+      "serviceFamilies": [
+        "storage_backup",
+        "databases"
+      ],
+      "confidence": "Low",
+      "claimIds": [
+        "CLM-SOV-270"
+      ],
+      "owner": "sovereignty-compliance-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-26",
+      "nextReview": "2027-01-24"
+    },
+    {
+      "id": "PB.SOV.BACKUP.LOCATION.sovereign_cloud.stack",
+      "control": "SOV.BACKUP.LOCATION",
+      "platform": "sovereign_cloud",
+      "level": "stack",
+      "action": "Keep the recovery Region inside the zone",
+      "approach": "DR Region within the zone",
+      "options": [
+        {
+          "name": "In-zone DR Region",
+          "kind": "practice"
+        }
+      ],
+      "verification": "Restore test",
+      "effort": "M",
+      "ownerRole": "Head of infrastructure",
+      "confirmRegionalAvailability": true,
+      "serviceFamilies": [
+        "storage_backup",
+        "databases"
+      ],
+      "confidence": "Medium",
+      "claimIds": [
+        "CLM-SOV-258",
+        "CLM-SOV-270"
+      ],
+      "owner": "sovereignty-compliance-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-26",
+      "nextReview": "2027-01-24"
+    },
+    {
+      "id": "PB.SOV.BACKUP.LOCATION.saas.stack",
+      "control": "SOV.BACKUP.LOCATION",
+      "platform": "saas",
+      "level": "stack",
+      "action": "Back up the tenant to a third-party store in the zone",
+      "approach": "Third-party backup stored in the zone",
+      "options": [
+        {
+          "name": "Third-party SaaS backup in the zone",
+          "kind": "third_party"
+        }
+      ],
+      "verification": "Restore test; backup location report",
+      "effort": "M",
+      "ownerRole": "Head of infrastructure",
+      "confirmRegionalAvailability": true,
+      "serviceFamilies": [
+        "collaboration_saas"
+      ],
+      "confidence": "Medium",
+      "claimIds": [
+        "CLM-SOV-270"
+      ],
+      "owner": "sovereignty-compliance-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-26",
+      "nextReview": "2027-01-24"
+    },
+    {
+      "id": "PB.SOV.BACKUP.LOCATION.ai_api.stack",
+      "control": "SOV.BACKUP.LOCATION",
+      "platform": "ai_api",
+      "level": "stack",
+      "action": "Limit the provider's retention of prompts and outputs, and confirm where logs are kept",
+      "approach": "AI APIs keep logs and cached content: set the shortest retention the provider allows and confirm the log location is in the zone",
+      "options": [
+        {
+          "name": "Contractual retention and log location",
+          "kind": "practice"
+        }
+      ],
+      "verification": "Provider terms state retention and log location; reviewed yearly",
+      "effort": "M",
+      "ownerRole": "Head of infrastructure",
+      "confirmRegionalAvailability": true,
+      "serviceFamilies": [
+        "ai_ml"
+      ],
+      "confidence": "Low",
+      "claimIds": [
+        "CLM-SOV-262",
+        "CLM-SOV-270"
+      ],
+      "owner": "sovereignty-compliance-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-26",
+      "nextReview": "2027-01-24"
+    },
+    {
+      "id": "PB.SOV.KEY.CUSTODY.aws.platform",
+      "control": "SOV.KEY.CUSTODY",
+      "platform": "aws",
+      "level": "platform",
+      "action": "Hold the keys for this data in an external key store backed by your own HSM",
+      "approach": "For L2 and above: KMS keys in an external key store backed by your HSM, and customer-managed keys for every service holding the data",
+      "options": [
+        {
+          "name": "AWS KMS external key store (XKS)",
+          "kind": "native"
+        }
+      ],
+      "verification": "Key ownership attestation; a revocation test makes test data unreadable",
+      "effort": "L",
+      "ownerRole": "CISO",
+      "confirmRegionalAvailability": true,
+      "serviceFamilies": [
+        "identity_keys",
+        "storage_backup",
+        "databases",
+        "analytics"
+      ],
+      "confidence": "Medium",
+      "claimIds": [
+        "CLM-SOV-229",
+        "CLM-SOV-270"
+      ],
+      "owner": "sovereignty-compliance-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-26",
+      "nextReview": "2027-01-24"
+    },
+    {
+      "id": "PB.SOV.KEY.CUSTODY.azure.platform",
+      "control": "SOV.KEY.CUSTODY",
+      "platform": "azure",
+      "level": "platform",
+      "action": "Hold the keys in Managed HSM, with External Key Management where key hardware must sit outside Microsoft",
+      "approach": "For L2 and above: Managed HSM keys; External Key Management where the key hardware must sit outside Microsoft",
+      "options": [
+        {
+          "name": "Azure Key Vault Managed HSM",
+          "kind": "native"
+        },
+        {
+          "name": "External Key Management with Managed HSM",
+          "kind": "native"
+        }
+      ],
+      "verification": "Key ownership attestation; a revocation test makes test data unreadable",
+      "effort": "L",
+      "ownerRole": "CISO",
+      "confirmRegionalAvailability": true,
+      "serviceFamilies": [
+        "identity_keys",
+        "storage_backup",
+        "databases",
+        "analytics"
+      ],
+      "confidence": "Medium",
+      "claimIds": [
+        "CLM-SOV-243",
+        "CLM-SOV-270"
+      ],
+      "owner": "sovereignty-compliance-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-26",
+      "nextReview": "2027-01-24"
+    },
+    {
+      "id": "PB.SOV.KEY.CUSTODY.gcp.platform",
+      "control": "SOV.KEY.CUSTODY",
+      "platform": "gcp",
+      "level": "platform",
+      "action": "Hold the keys in Cloud External Key Manager with Key Access Justifications policies",
+      "approach": "For L2 and above: Cloud EKM keys with Key Access Justifications policies",
+      "options": [
+        {
+          "name": "Cloud External Key Manager",
+          "kind": "native"
+        },
+        {
+          "name": "Key Access Justifications",
+          "kind": "native"
+        }
+      ],
+      "verification": "Key ownership attestation; revocation test; a KAJ deny test",
+      "effort": "L",
+      "ownerRole": "CISO",
+      "confirmRegionalAvailability": true,
+      "serviceFamilies": [
+        "identity_keys",
+        "storage_backup",
+        "databases",
+        "analytics"
+      ],
+      "confidence": "Medium",
+      "claimIds": [
+        "CLM-SOV-252",
+        "CLM-SOV-270"
+      ],
+      "owner": "sovereignty-compliance-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-26",
+      "nextReview": "2027-01-24"
+    },
+    {
+      "id": "PB.SOV.KEY.CUSTODY.on_prem.platform",
+      "control": "SOV.KEY.CUSTODY",
+      "platform": "on_prem",
+      "level": "platform",
+      "action": "Hold the keys in your own HSMs with a key ceremony and split knowledge",
+      "approach": "Customer-owned HSMs; key ceremony and split knowledge",
+      "options": [
+        {
+          "name": "Customer-owned HSM",
+          "kind": "practice"
+        }
+      ],
+      "verification": "HSM audit log; revocation test",
+      "effort": "M",
+      "ownerRole": "CISO",
+      "confirmRegionalAvailability": false,
+      "serviceFamilies": [
+        "identity_keys"
+      ],
+      "confidence": "Medium",
+      "claimIds": [
+        "CLM-SOV-270"
+      ],
+      "owner": "sovereignty-compliance-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-26",
+      "nextReview": "2027-01-24"
+    },
+    {
+      "id": "PB.SOV.KEY.CUSTODY.oci.platform",
+      "control": "SOV.KEY.CUSTODY",
+      "platform": "oci",
+      "level": "platform",
+      "action": "Use the provider's customer-held key option for this data",
+      "approach": "Customer-managed or customer-held key options per provider",
+      "options": [
+        {
+          "name": "Customer-held key option (to confirm with the provider)",
+          "kind": "practice"
+        }
+      ],
+      "verification": "Provider key attestation; revocation test",
+      "effort": "M",
+      "ownerRole": "CISO",
+      "confirmRegionalAvailability": true,
+      "serviceFamilies": [
+        "identity_keys"
+      ],
+      "confidence": "Low",
+      "claimIds": [
+        "CLM-SOV-270"
+      ],
+      "owner": "sovereignty-compliance-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-26",
+      "nextReview": "2027-01-24"
+    },
+    {
+      "id": "PB.SOV.KEY.CUSTODY.ibm.platform",
+      "control": "SOV.KEY.CUSTODY",
+      "platform": "ibm",
+      "level": "platform",
+      "action": "Use the provider's customer-held key option for this data",
+      "approach": "Customer-managed or customer-held key options per provider",
+      "options": [
+        {
+          "name": "Customer-held key option (to confirm with the provider)",
+          "kind": "practice"
+        }
+      ],
+      "verification": "Provider key attestation; revocation test",
+      "effort": "M",
+      "ownerRole": "CISO",
+      "confirmRegionalAvailability": true,
+      "serviceFamilies": [
+        "identity_keys"
+      ],
+      "confidence": "Low",
+      "claimIds": [
+        "CLM-SOV-270"
+      ],
+      "owner": "sovereignty-compliance-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-26",
+      "nextReview": "2027-01-24"
+    },
+    {
+      "id": "PB.SOV.KEY.CUSTODY.sovereign_cloud.platform",
+      "control": "SOV.KEY.CUSTODY",
+      "platform": "sovereign_cloud",
+      "level": "platform",
+      "action": "Keep the keys under your control in a provider or third-party HSM",
+      "approach": "Provider or third-party HSM with keys under your control; partner-supervised key management where offered",
+      "options": [
+        {
+          "name": "Sovereign Controls by Partners key management and HSM",
+          "kind": "native"
+        },
+        {
+          "name": "Third-party key manager",
+          "kind": "third_party"
+        }
+      ],
+      "verification": "Attestation; revocation test",
+      "effort": "M",
+      "ownerRole": "CISO",
+      "confirmRegionalAvailability": true,
+      "serviceFamilies": [
+        "identity_keys"
+      ],
+      "confidence": "Medium",
+      "claimIds": [
+        "CLM-SOV-255",
+        "CLM-SOV-270"
+      ],
+      "owner": "sovereignty-compliance-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-26",
+      "nextReview": "2027-01-24"
+    },
+    {
+      "id": "PB.SOV.KEY.CUSTODY.saas.platform",
+      "control": "SOV.KEY.CUSTODY",
+      "platform": "saas",
+      "level": "platform",
+      "action": "Use customer-controlled root keys or client-side encryption for this data",
+      "approach": "Customer-controlled root keys or client-side encryption for the data",
+      "options": [
+        {
+          "name": "Microsoft 365 Customer Key",
+          "kind": "native"
+        },
+        {
+          "name": "Google Workspace client-side encryption",
+          "kind": "native"
+        }
+      ],
+      "verification": "Revocation or decryption-denial test on test content",
+      "effort": "M",
+      "ownerRole": "CISO",
+      "confirmRegionalAvailability": true,
+      "serviceFamilies": [
+        "collaboration_saas"
+      ],
+      "confidence": "Medium",
+      "claimIds": [
+        "CLM-SOV-264",
+        "CLM-SOV-265",
+        "CLM-SOV-270"
+      ],
+      "owner": "sovereignty-compliance-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-26",
+      "nextReview": "2027-01-24"
+    },
+    {
+      "id": "PB.SOV.KEY.CUSTODY.ai_api.platform",
+      "control": "SOV.KEY.CUSTODY",
+      "platform": "ai_api",
+      "level": "platform",
+      "action": "Keep L2 data out of third-party AI APIs unless they support keys you hold",
+      "approach": "Most AI APIs offer no customer-held keys: use a model hosted on your own cloud platform with your keys for this data",
+      "options": [
+        {
+          "name": "Model hosted on your platform with your keys",
+          "kind": "practice"
+        }
+      ],
+      "verification": "No L2 data reaches an AI API without customer-held keys (endpoint inventory)",
+      "effort": "M",
+      "ownerRole": "CISO",
+      "confirmRegionalAvailability": true,
+      "serviceFamilies": [
+        "ai_ml"
+      ],
+      "confidence": "Low",
+      "claimIds": [
+        "CLM-SOV-260",
+        "CLM-SOV-270"
+      ],
+      "owner": "sovereignty-compliance-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-26",
+      "nextReview": "2027-01-24"
+    },
+    {
+      "id": "PB.SOV.OPS.ADMIN_ACCESS.aws.platform",
+      "control": "SOV.OPS.ADMIN_ACCESS",
+      "platform": "aws",
+      "level": "platform",
+      "action": "Use zero-operator-access services for this data and log every access path",
+      "approach": "Rely on zero-operator-access services and log all access paths; no per-request approval workflow was found, so record the gap",
+      "options": [
+        {
+          "name": "AWS Nitro System and zero-operator-access services",
+          "kind": "native"
+        }
+      ],
+      "verification": "Monthly access log review; the services used are on AWS's zero-operator-access list",
+      "effort": "M",
+      "ownerRole": "CISO",
+      "confirmRegionalAvailability": true,
+      "serviceFamilies": [
+        "compute_containers",
+        "identity_keys",
+        "storage_backup"
+      ],
+      "confidence": "Medium",
+      "claimIds": [
+        "CLM-SOV-230",
+        "CLM-SOV-270"
+      ],
+      "owner": "sovereignty-compliance-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-26",
+      "nextReview": "2027-01-24"
+    },
+    {
+      "id": "PB.SOV.OPS.ADMIN_ACCESS.azure.platform",
+      "control": "SOV.OPS.ADMIN_ACCESS",
+      "platform": "azure",
+      "level": "platform",
+      "action": "Turn on Customer Lockbox for every supported service",
+      "approach": "Customer Lockbox on all supported services; Data Guardian for the EU and EFTA when available",
+      "options": [
+        {
+          "name": "Customer Lockbox for Microsoft Azure",
+          "kind": "native"
+        },
+        {
+          "name": "Data Guardian (rolling out)",
+          "kind": "native"
+        }
+      ],
+      "verification": "Lockbox request log reviewed monthly; zero unapproved access",
+      "effort": "S",
+      "ownerRole": "CISO",
+      "confirmRegionalAvailability": true,
+      "confidence": "Medium",
+      "claimIds": [
+        "CLM-SOV-240",
+        "CLM-SOV-242",
+        "CLM-SOV-270"
+      ],
+      "owner": "sovereignty-compliance-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-26",
+      "nextReview": "2027-01-24"
+    },
+    {
+      "id": "PB.SOV.OPS.ADMIN_ACCESS.gcp.platform",
+      "control": "SOV.OPS.ADMIN_ACCESS",
+      "platform": "gcp",
+      "level": "platform",
+      "action": "Turn on Access Approval and Access Transparency for every supported service",
+      "approach": "Access Approval and Access Transparency on all supported services; Key Access Justifications for key use",
+      "options": [
+        {
+          "name": "Access Approval",
+          "kind": "native"
+        },
+        {
+          "name": "Access Transparency",
+          "kind": "native"
+        },
+        {
+          "name": "Key Access Justifications",
+          "kind": "native"
+        }
+      ],
+      "verification": "Approval and transparency logs reviewed monthly",
+      "effort": "S",
+      "ownerRole": "CISO",
+      "confirmRegionalAvailability": true,
+      "confidence": "Medium",
+      "claimIds": [
+        "CLM-SOV-252",
+        "CLM-SOV-270"
+      ],
+      "owner": "sovereignty-compliance-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-26",
+      "nextReview": "2027-01-24"
+    },
+    {
+      "id": "PB.SOV.OPS.ADMIN_ACCESS.on_prem.platform",
+      "control": "SOV.OPS.ADMIN_ACCESS",
+      "platform": "on_prem",
+      "level": "platform",
+      "action": "Allow vendor remote access only by ticket, time-boxed and recorded",
+      "approach": "Vendor remote access by ticket, time-boxed and recorded",
+      "options": [
+        {
+          "name": "Privileged access management",
+          "kind": "practice"
+        }
+      ],
+      "verification": "Privileged-access logs reviewed monthly",
+      "effort": "M",
+      "ownerRole": "CISO",
+      "confirmRegionalAvailability": false,
+      "serviceFamilies": [
+        "compute_containers"
+      ],
+      "confidence": "Medium",
+      "claimIds": [
+        "CLM-SOV-270"
+      ],
+      "owner": "sovereignty-compliance-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-26",
+      "nextReview": "2027-01-24"
+    },
+    {
+      "id": "PB.SOV.OPS.ADMIN_ACCESS.oci.platform",
+      "control": "SOV.OPS.ADMIN_ACCESS",
+      "platform": "oci",
+      "level": "platform",
+      "action": "Require your approval for provider access in the contract, with logs you can see",
+      "approach": "Contractual approval of provider access, with logs available to you",
+      "options": [
+        {
+          "name": "Contract clause on provider access and logs",
+          "kind": "practice"
+        }
+      ],
+      "verification": "Access log review; contract clause in place",
+      "effort": "M",
+      "ownerRole": "CISO",
+      "confirmRegionalAvailability": true,
+      "confidence": "Low",
+      "claimIds": [
+        "CLM-SOV-270"
+      ],
+      "owner": "sovereignty-compliance-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-26",
+      "nextReview": "2027-01-24"
+    },
+    {
+      "id": "PB.SOV.OPS.ADMIN_ACCESS.ibm.platform",
+      "control": "SOV.OPS.ADMIN_ACCESS",
+      "platform": "ibm",
+      "level": "platform",
+      "action": "Require your approval for provider access in the contract, with logs you can see",
+      "approach": "Contractual approval of provider access, with logs available to you",
+      "options": [
+        {
+          "name": "Contract clause on provider access and logs",
+          "kind": "practice"
+        }
+      ],
+      "verification": "Access log review; contract clause in place",
+      "effort": "M",
+      "ownerRole": "CISO",
+      "confirmRegionalAvailability": true,
+      "confidence": "Low",
+      "claimIds": [
+        "CLM-SOV-270"
+      ],
+      "owner": "sovereignty-compliance-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-26",
+      "nextReview": "2027-01-24"
+    },
+    {
+      "id": "PB.SOV.OPS.ADMIN_ACCESS.sovereign_cloud.platform",
+      "control": "SOV.OPS.ADMIN_ACCESS",
+      "platform": "sovereign_cloud",
+      "level": "platform",
+      "action": "Require your approval for provider access in the contract, with logs you can see",
+      "approach": "Contractual approval of provider access, with logs available to you",
+      "options": [
+        {
+          "name": "Contract clause on provider access and logs",
+          "kind": "practice"
+        }
+      ],
+      "verification": "Access log review; contract clause in place",
+      "effort": "M",
+      "ownerRole": "CISO",
+      "confirmRegionalAvailability": true,
+      "confidence": "Medium",
+      "claimIds": [
+        "CLM-SOV-245",
+        "CLM-SOV-255",
+        "CLM-SOV-256",
+        "CLM-SOV-270"
+      ],
+      "owner": "sovereignty-compliance-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-26",
+      "nextReview": "2027-01-24"
+    },
+    {
+      "id": "PB.SOV.OPS.ADMIN_ACCESS.saas.platform",
+      "control": "SOV.OPS.ADMIN_ACCESS",
+      "platform": "saas",
+      "level": "platform",
+      "action": "Turn on the vendor's customer-approval control for engineer access where offered",
+      "approach": "Customer-lockbox-type controls where the vendor offers them",
+      "options": [
+        {
+          "name": "Vendor customer approval of engineer access",
+          "kind": "practice"
+        }
+      ],
+      "verification": "Request log review",
+      "effort": "M",
+      "ownerRole": "CISO",
+      "confirmRegionalAvailability": true,
+      "serviceFamilies": [
+        "collaboration_saas"
+      ],
+      "confidence": "Low",
+      "claimIds": [
+        "CLM-SOV-270"
+      ],
+      "owner": "sovereignty-compliance-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-26",
+      "nextReview": "2027-01-24"
+    },
+    {
+      "id": "PB.SOV.OPS.ADMIN_ACCESS.ai_api.platform",
+      "control": "SOV.OPS.ADMIN_ACCESS",
+      "platform": "ai_api",
+      "level": "platform",
+      "action": "Require contract terms on provider staff access to prompts and outputs, with logs",
+      "approach": "Contract terms limiting provider staff access to prompts, outputs and fine-tuning data, with access logs",
+      "options": [
+        {
+          "name": "Contract clause on staff access",
+          "kind": "practice"
+        }
+      ],
+      "verification": "Contract clause in place; provider access reports reviewed",
+      "effort": "M",
+      "ownerRole": "CISO",
+      "confirmRegionalAvailability": true,
+      "serviceFamilies": [
+        "ai_ml"
+      ],
+      "confidence": "Low",
+      "claimIds": [
+        "CLM-SOV-270"
+      ],
+      "owner": "sovereignty-compliance-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-26",
+      "nextReview": "2027-01-24"
+    },
+    {
+      "id": "PB.SOV.OPS.PERSONNEL_ZONE.aws.platform",
+      "control": "SOV.OPS.PERSONNEL_ZONE",
+      "platform": "aws",
+      "level": "platform",
+      "action": "Move this data to an AWS offering operated in the zone",
+      "approach": "European Sovereign Cloud for the EU, GovCloud for the US; elsewhere Dedicated Local Zones with written confirmation of local personnel, or an alternative from the placement matrix",
+      "options": [
+        {
+          "name": "AWS European Sovereign Cloud",
+          "kind": "native"
+        },
+        {
+          "name": "AWS GovCloud (US)",
+          "kind": "native"
+        },
+        {
+          "name": "AWS Dedicated Local Zones (per engagement)",
+          "kind": "native"
+        }
+      ],
+      "verification": "Provider attestation of in-zone personnel and a local entity",
+      "effort": "L",
+      "ownerRole": "Head of cloud platform with Procurement",
+      "confirmRegionalAvailability": true,
+      "confidence": "Medium",
+      "claimIds": [
+        "CLM-SOV-231",
+        "CLM-SOV-232",
+        "CLM-SOV-235",
+        "CLM-SOV-236",
+        "CLM-SOV-270"
+      ],
+      "owner": "sovereignty-compliance-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-26",
+      "nextReview": "2027-01-24"
+    },
+    {
+      "id": "PB.SOV.OPS.PERSONNEL_ZONE.azure.platform",
+      "control": "SOV.OPS.PERSONNEL_ZONE",
+      "platform": "azure",
+      "level": "platform",
+      "action": "Move this data to a Microsoft-technology cloud operated in the zone",
+      "approach": "A National Partner Cloud in the EU, or a Sovereign Private Cloud you or a partner operate; Azure Government for the US. Sovereign Public Cloud alone is R2",
+      "options": [
+        {
+          "name": "Bleu or Delos Cloud (National Partner Clouds)",
+          "kind": "native"
+        },
+        {
+          "name": "Sovereign Private Cloud (Azure Local)",
+          "kind": "native"
+        },
+        {
+          "name": "Azure Government",
+          "kind": "native"
+        }
+      ],
+      "verification": "Partner attestation; operating contract",
+      "effort": "L",
+      "ownerRole": "Head of cloud platform with Procurement",
+      "confirmRegionalAvailability": true,
+      "confidence": "Medium",
+      "claimIds": [
+        "CLM-SOV-244",
+        "CLM-SOV-245",
+        "CLM-SOV-248",
+        "CLM-SOV-270"
+      ],
+      "owner": "sovereignty-compliance-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-26",
+      "nextReview": "2027-01-24"
+    },
+    {
+      "id": "PB.SOV.OPS.PERSONNEL_ZONE.gcp.platform",
+      "control": "SOV.OPS.PERSONNEL_ZONE",
+      "platform": "gcp",
+      "level": "platform",
+      "action": "Move this data to a Google-technology cloud operated in the zone",
+      "approach": "Google Cloud Dedicated (S3NS in France; Thales in Germany after general availability), US regulatory packages for the US. Partner data boundaries alone are R2",
+      "options": [
+        {
+          "name": "PREMI3NS by S3NS",
+          "kind": "native"
+        },
+        {
+          "name": "Thales sovereign cloud in Germany (preview)",
+          "kind": "native"
+        },
+        {
+          "name": "Assured Workloads US regulatory packages",
+          "kind": "native"
+        }
+      ],
+      "verification": "Partner attestation; qualification certificate",
+      "effort": "L",
+      "ownerRole": "Head of cloud platform with Procurement",
+      "confirmRegionalAvailability": true,
+      "confidence": "Medium",
+      "claimIds": [
+        "CLM-SOV-253",
+        "CLM-SOV-256",
+        "CLM-SOV-258",
+        "CLM-SOV-270"
+      ],
+      "owner": "sovereignty-compliance-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-26",
+      "nextReview": "2027-01-24"
+    },
+    {
+      "id": "PB.SOV.OPS.PERSONNEL_ZONE.on_prem.platform",
+      "control": "SOV.OPS.PERSONNEL_ZONE",
+      "platform": "on_prem",
+      "level": "platform",
+      "action": "Operate with your own staff or in-zone contractors, and vendor support from inside the zone",
+      "approach": "Own staff or in-zone contractors; vendor support from inside the zone",
+      "options": [
+        {
+          "name": "In-zone support contracts",
+          "kind": "practice"
+        }
+      ],
+      "verification": "HR and contract records",
+      "effort": "M",
+      "ownerRole": "Head of cloud platform with Procurement",
+      "confirmRegionalAvailability": false,
+      "serviceFamilies": [
+        "compute_containers"
+      ],
+      "confidence": "Medium",
+      "claimIds": [
+        "CLM-SOV-270"
+      ],
+      "owner": "sovereignty-compliance-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-26",
+      "nextReview": "2027-01-24"
+    },
+    {
+      "id": "PB.SOV.OPS.PERSONNEL_ZONE.oci.platform",
+      "control": "SOV.OPS.PERSONNEL_ZONE",
+      "platform": "oci",
+      "level": "platform",
+      "action": "Use the Oracle EU Sovereign Cloud for EU data",
+      "approach": "EU Sovereign Cloud for EU data; confirm the operating entity elsewhere",
+      "options": [
+        {
+          "name": "Oracle EU Sovereign Cloud",
+          "kind": "native"
+        }
+      ],
+      "verification": "Provider attestation",
+      "effort": "M",
+      "ownerRole": "Head of cloud platform with Procurement",
+      "confirmRegionalAvailability": true,
+      "confidence": "Medium",
+      "claimIds": [
+        "CLM-SOV-266",
+        "CLM-SOV-270"
+      ],
+      "owner": "sovereignty-compliance-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-26",
+      "nextReview": "2027-01-24"
+    },
+    {
+      "id": "PB.SOV.OPS.PERSONNEL_ZONE.ibm.platform",
+      "control": "SOV.OPS.PERSONNEL_ZONE",
+      "platform": "ibm",
+      "level": "platform",
+      "action": "Confirm the operating entity, personnel location and support chain in the contract",
+      "approach": "Confirm the operating entity, the personnel location and the support chain in the contract",
+      "options": [
+        {
+          "name": "Contract and attestation",
+          "kind": "practice"
+        }
+      ],
+      "verification": "Attestation; contract",
+      "effort": "M",
+      "ownerRole": "Head of cloud platform with Procurement",
+      "confirmRegionalAvailability": true,
+      "confidence": "Low",
+      "claimIds": [
+        "CLM-SOV-270"
+      ],
+      "owner": "sovereignty-compliance-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-26",
+      "nextReview": "2027-01-24"
+    },
+    {
+      "id": "PB.SOV.OPS.PERSONNEL_ZONE.sovereign_cloud.platform",
+      "control": "SOV.OPS.PERSONNEL_ZONE",
+      "platform": "sovereign_cloud",
+      "level": "platform",
+      "action": "Confirm the operating entity, personnel location and support chain in the contract",
+      "approach": "Confirm the operating entity, the personnel location and the support chain in the contract",
+      "options": [
+        {
+          "name": "Contract and attestation",
+          "kind": "practice"
+        }
+      ],
+      "verification": "Attestation; contract",
+      "effort": "M",
+      "ownerRole": "Head of cloud platform with Procurement",
+      "confirmRegionalAvailability": true,
+      "confidence": "Medium",
+      "claimIds": [
+        "CLM-SOV-270"
+      ],
+      "owner": "sovereignty-compliance-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-26",
+      "nextReview": "2027-01-24"
+    },
+    {
+      "id": "PB.SOV.OPS.PERSONNEL_ZONE.saas.platform",
+      "control": "SOV.OPS.PERSONNEL_ZONE",
+      "platform": "saas",
+      "level": "platform",
+      "action": "Use an on-premises or partner-operated equivalent for L3 data",
+      "approach": "SaaS is rarely operated only in-zone: consider an on-premises or partner-operated equivalent for L3 data",
+      "options": [
+        {
+          "name": "Microsoft 365 Local (preview)",
+          "kind": "native"
+        }
+      ],
+      "verification": "Vendor attestation",
+      "effort": "M",
+      "ownerRole": "Head of cloud platform with Procurement",
+      "confirmRegionalAvailability": true,
+      "serviceFamilies": [
+        "collaboration_saas"
+      ],
+      "confidence": "Low",
+      "claimIds": [
+        "CLM-SOV-244",
+        "CLM-SOV-270"
+      ],
+      "owner": "sovereignty-compliance-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-26",
+      "nextReview": "2027-01-24"
+    },
+    {
+      "id": "PB.SOV.OPS.PERSONNEL_ZONE.ai_api.platform",
+      "control": "SOV.OPS.PERSONNEL_ZONE",
+      "platform": "ai_api",
+      "level": "platform",
+      "action": "Use models hosted in the zone instead of a third-party API for L3 data",
+      "approach": "Third-party AI APIs are not operated only in-zone: host models in the zone, on a sovereign cloud or locally",
+      "options": [
+        {
+          "name": "Foundry Local",
+          "kind": "native"
+        },
+        {
+          "name": "Google Distributed Cloud",
+          "kind": "native"
+        }
+      ],
+      "verification": "Endpoint inventory shows no L3 data sent to third-party APIs",
+      "effort": "M",
+      "ownerRole": "Head of cloud platform with Procurement",
+      "confirmRegionalAvailability": true,
+      "serviceFamilies": [
+        "ai_ml"
+      ],
+      "confidence": "Medium",
+      "claimIds": [
+        "CLM-SOV-244",
+        "CLM-SOV-254",
+        "CLM-SOV-270"
+      ],
+      "owner": "sovereignty-compliance-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-26",
+      "nextReview": "2027-01-24"
+    },
+    {
+      "id": "PB.SOV.AI.DATA_LOCATION.aws.stack",
+      "control": "SOV.AI.DATA_LOCATION",
+      "platform": "aws",
+      "level": "stack",
+      "action": "Invoke models in-Region or through geographic inference profiles inside the zone",
+      "approach": "In-Region model invocation or geographic inference profiles inside the zone; no global profiles for zoned data",
+      "options": [
+        {
+          "name": "Amazon Bedrock geographic cross-Region inference",
+          "kind": "native"
+        }
+      ],
+      "verification": "Inference endpoints and logs are in the zone; inference profile list reviewed",
+      "effort": "M",
+      "ownerRole": "Head of data and AI",
+      "confirmRegionalAvailability": true,
+      "serviceFamilies": [
+        "ai_ml"
+      ],
+      "confidence": "Medium",
+      "claimIds": [
+        "CLM-SOV-260",
+        "CLM-SOV-270"
+      ],
+      "owner": "sovereignty-compliance-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-26",
+      "nextReview": "2027-01-24"
+    },
+    {
+      "id": "PB.SOV.AI.DATA_LOCATION.azure.stack",
+      "control": "SOV.AI.DATA_LOCATION",
+      "platform": "azure",
+      "level": "stack",
+      "action": "Use Regional or Data Zone deployments that match the zone",
+      "approach": "Regional or Data Zone deployments matching the zone; no Global deployment types for zoned data. The APAC data zone spans several countries",
+      "options": [
+        {
+          "name": "Azure AI Foundry Regional and Data Zone deployments",
+          "kind": "native"
+        }
+      ],
+      "verification": "Deployment-type inventory",
+      "effort": "M",
+      "ownerRole": "Head of data and AI",
+      "confirmRegionalAvailability": true,
+      "serviceFamilies": [
+        "ai_ml"
+      ],
+      "confidence": "Medium",
+      "claimIds": [
+        "CLM-SOV-261",
+        "CLM-SOV-270"
+      ],
+      "owner": "sovereignty-compliance-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-26",
+      "nextReview": "2027-01-24"
+    },
+    {
+      "id": "PB.SOV.AI.DATA_LOCATION.gcp.stack",
+      "control": "SOV.AI.DATA_LOCATION",
+      "platform": "gcp",
+      "level": "stack",
+      "action": "Use regional endpoints only, and check the training restriction",
+      "approach": "Regional endpoints only, no global endpoint for zoned data; check the training restriction in the terms",
+      "options": [
+        {
+          "name": "Vertex AI regional endpoints",
+          "kind": "native"
+        }
+      ],
+      "verification": "Endpoint inventory; log location",
+      "effort": "M",
+      "ownerRole": "Head of data and AI",
+      "confirmRegionalAvailability": true,
+      "serviceFamilies": [
+        "ai_ml"
+      ],
+      "confidence": "Medium",
+      "claimIds": [
+        "CLM-SOV-262",
+        "CLM-SOV-270"
+      ],
+      "owner": "sovereignty-compliance-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-26",
+      "nextReview": "2027-01-24"
+    },
+    {
+      "id": "PB.SOV.AI.DATA_LOCATION.on_prem.stack",
+      "control": "SOV.AI.DATA_LOCATION",
+      "platform": "on_prem",
+      "level": "stack",
+      "action": "Host models locally or disconnected",
+      "approach": "Local or disconnected model hosting",
+      "options": [
+        {
+          "name": "Foundry Local",
+          "kind": "native"
+        },
+        {
+          "name": "Google Distributed Cloud",
+          "kind": "native"
+        }
+      ],
+      "verification": "Endpoint inventory",
+      "effort": "M",
+      "ownerRole": "Head of data and AI",
+      "confirmRegionalAvailability": true,
+      "serviceFamilies": [
+        "ai_ml"
+      ],
+      "confidence": "Medium",
+      "claimIds": [
+        "CLM-SOV-244",
+        "CLM-SOV-254",
+        "CLM-SOV-270"
+      ],
+      "owner": "sovereignty-compliance-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-26",
+      "nextReview": "2027-01-24"
+    },
+    {
+      "id": "PB.SOV.AI.DATA_LOCATION.oci.stack",
+      "control": "SOV.AI.DATA_LOCATION",
+      "platform": "oci",
+      "level": "stack",
+      "action": "Host models in the zone, with a contract that bars training on your data",
+      "approach": "In-zone model hosting; contract bars training on your data",
+      "options": [
+        {
+          "name": "In-zone model hosting",
+          "kind": "practice"
+        }
+      ],
+      "verification": "Contract clause; endpoint location",
+      "effort": "M",
+      "ownerRole": "Head of data and AI",
+      "confirmRegionalAvailability": true,
+      "serviceFamilies": [
+        "ai_ml"
+      ],
+      "confidence": "Low",
+      "claimIds": [
+        "CLM-SOV-270"
+      ],
+      "owner": "sovereignty-compliance-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-26",
+      "nextReview": "2027-01-24"
+    },
+    {
+      "id": "PB.SOV.AI.DATA_LOCATION.ibm.stack",
+      "control": "SOV.AI.DATA_LOCATION",
+      "platform": "ibm",
+      "level": "stack",
+      "action": "Host models in the zone, with a contract that bars training on your data",
+      "approach": "In-zone model hosting; contract bars training on your data",
+      "options": [
+        {
+          "name": "In-zone model hosting",
+          "kind": "practice"
+        }
+      ],
+      "verification": "Contract clause; endpoint location",
+      "effort": "M",
+      "ownerRole": "Head of data and AI",
+      "confirmRegionalAvailability": true,
+      "serviceFamilies": [
+        "ai_ml"
+      ],
+      "confidence": "Low",
+      "claimIds": [
+        "CLM-SOV-270"
+      ],
+      "owner": "sovereignty-compliance-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-26",
+      "nextReview": "2027-01-24"
+    },
+    {
+      "id": "PB.SOV.AI.DATA_LOCATION.sovereign_cloud.stack",
+      "control": "SOV.AI.DATA_LOCATION",
+      "platform": "sovereign_cloud",
+      "level": "stack",
+      "action": "Host models in the zone, with a contract that bars training on your data",
+      "approach": "In-zone model hosting; contract bars training on your data",
+      "options": [
+        {
+          "name": "In-zone model hosting",
+          "kind": "practice"
+        }
+      ],
+      "verification": "Contract clause; endpoint location",
+      "effort": "M",
+      "ownerRole": "Head of data and AI",
+      "confirmRegionalAvailability": true,
+      "serviceFamilies": [
+        "ai_ml"
+      ],
+      "confidence": "Low",
+      "claimIds": [
+        "CLM-SOV-270"
+      ],
+      "owner": "sovereignty-compliance-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-26",
+      "nextReview": "2027-01-24"
+    },
+    {
+      "id": "PB.SOV.AI.DATA_LOCATION.saas.stack",
+      "control": "SOV.AI.DATA_LOCATION",
+      "platform": "saas",
+      "level": "stack",
+      "action": "Confirm each AI feature's processing geography and training terms",
+      "approach": "Vendor AI features: confirm the processing geography and training terms per feature",
+      "options": [
+        {
+          "name": "Vendor documentation per feature",
+          "kind": "practice"
+        }
+      ],
+      "verification": "Vendor documentation reviewed per feature",
+      "effort": "M",
+      "ownerRole": "Head of data and AI",
+      "confirmRegionalAvailability": true,
+      "serviceFamilies": [
+        "collaboration_saas",
+        "ai_ml"
+      ],
+      "confidence": "Low",
+      "claimIds": [
+        "CLM-SOV-270"
+      ],
+      "owner": "sovereignty-compliance-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-26",
+      "nextReview": "2027-01-24"
+    },
+    {
+      "id": "PB.SOV.AI.DATA_LOCATION.ai_api.stack",
+      "control": "SOV.AI.DATA_LOCATION",
+      "platform": "ai_api",
+      "level": "stack",
+      "action": "Use regional endpoints in the zone with contractual no-training terms",
+      "approach": "Regional endpoints in the zone; contract bars training on your data",
+      "options": [
+        {
+          "name": "Regional endpoints",
+          "kind": "practice"
+        },
+        {
+          "name": "Contractual no-training terms",
+          "kind": "practice"
+        }
+      ],
+      "verification": "Endpoint inventory; contract clause",
+      "effort": "M",
+      "ownerRole": "Head of data and AI",
+      "confirmRegionalAvailability": true,
+      "serviceFamilies": [
+        "ai_ml"
+      ],
+      "confidence": "Medium",
+      "claimIds": [
+        "CLM-SOV-260",
+        "CLM-SOV-261",
+        "CLM-SOV-262",
+        "CLM-SOV-270"
+      ],
+      "owner": "sovereignty-compliance-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-26",
+      "nextReview": "2027-01-24"
+    },
+    {
+      "id": "PB.SOV.OPS.OOB_MGMT.on_prem.platform",
+      "control": "SOV.OPS.OOB_MGMT",
+      "platform": "on_prem",
+      "level": "platform",
+      "action": "Isolate the management network and control vendor call-home",
+      "approach": "Isolated management network; vendor call-home disabled, or proxied and approved; BMC firmware inventory",
+      "options": [
+        {
+          "name": "Isolated management network",
+          "kind": "practice"
+        }
+      ],
+      "verification": "Network scan shows no unmanaged outbound management traffic",
+      "effort": "M",
+      "ownerRole": "Head of infrastructure",
+      "confirmRegionalAvailability": false,
+      "serviceFamilies": [
+        "compute_containers"
+      ],
+      "confidence": "Medium",
+      "claimIds": [
+        "CLM-SOV-270"
+      ],
+      "owner": "sovereignty-compliance-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-26",
+      "nextReview": "2027-01-24"
+    },
+    {
+      "id": "PB.SOV.XFER.BASIS.any.application",
+      "control": "SOV.XFER.BASIS",
+      "platform": "any",
+      "level": "application",
+      "action": "Keep a transfer register with a basis for every flow, including remote support from abroad",
+      "approach": "One register per flow recording the basis: adequacy, the EU-US Data Privacy Framework or UK bridge, SCCs or the IDTA or Addendum with a transfer assessment, or the APAC route",
+      "options": [
+        {
+          "name": "Transfer register",
+          "kind": "practice"
+        },
+        {
+          "name": "Providers' data processing terms and sub-processor lists",
+          "kind": "practice"
+        }
+      ],
+      "verification": "Every flow in the register has a basis and a review date",
+      "effort": "M",
+      "ownerRole": "DPO",
+      "discoveryNeeded": "Technical discovery of the data flows and providers involved (Layer 3), beyond this questionnaire",
+      "confirmRegionalAvailability": false,
+      "confidence": "Medium",
+      "claimIds": [
+        "CLM-SOV-011",
+        "CLM-SOV-013",
+        "CLM-SOV-201",
+        "CLM-SOV-270"
+      ],
+      "owner": "sovereignty-compliance-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-26",
+      "nextReview": "2027-01-24"
+    },
+    {
+      "id": "PB.SOV.SAAS.SUBPROCESSOR.any.application",
+      "control": "SOV.SAAS.SUBPROCESSOR",
+      "platform": "any",
+      "level": "application",
+      "action": "Keep a sub-processor register for critical providers, with notice and a right to object",
+      "approach": "Sub-processor register for critical providers: advance notice and a right to object; the DORA register where it applies",
+      "options": [
+        {
+          "name": "Sub-processor register",
+          "kind": "practice"
+        },
+        {
+          "name": "Provider sub-processor notifications",
+          "kind": "practice"
+        }
+      ],
+      "verification": "Register complete for critical SaaS and cloud; notifications subscribed",
+      "effort": "M",
+      "ownerRole": "Procurement",
+      "discoveryNeeded": "Technical discovery of the data flows and providers involved (Layer 3), beyond this questionnaire",
+      "confirmRegionalAvailability": false,
+      "confidence": "Medium",
+      "claimIds": [
+        "CLM-SOV-038",
+        "CLM-SOV-270"
+      ],
+      "owner": "sovereignty-compliance-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-26",
+      "nextReview": "2027-01-24"
+    },
+    {
+      "id": "PB.SOV.EXIT.PLAN.any.platform",
+      "control": "SOV.EXIT.PLAN",
+      "platform": "any",
+      "level": "platform",
+      "action": "Write an exit plan for each critical service, using portable formats",
+      "approach": "Containers and open data formats; an exit plan per critical service; Data Act switching rights. Partner-operated clouds on hyperscaler technology keep a dependency on that technology. Exit testing is verified in Resilience IQ",
+      "options": [
+        {
+          "name": "Data Act switching rights",
+          "kind": "practice"
+        },
+        {
+          "name": "Containers and open formats",
+          "kind": "open_source"
+        }
+      ],
+      "verification": "Exit plan reviewed; partial migration rehearsal (Resilience IQ)",
+      "effort": "L",
+      "ownerRole": "CIO",
+      "confirmRegionalAvailability": false,
+      "confidence": "Medium",
+      "claimIds": [
+        "CLM-SOV-060",
+        "CLM-SOV-061",
+        "CLM-SOV-270"
+      ],
+      "owner": "sovereignty-compliance-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-26",
+      "nextReview": "2027-01-24"
+    },
+    {
+      "id": "PB.SOV.JUR.IMMUNITY.aws.platform",
+      "control": "SOV.JUR.IMMUNITY",
+      "platform": "aws",
+      "level": "platform",
+      "action": "Decide with counsel whether any offering meets R4, from the facts in the placement matrix",
+      "approach": "Sovereign landing zone on R4. The matrix states facts only (owner, operator, governing law, technology supplier); whether an offering linked to this provider meets R4 is for counsel",
+      "options": [
+        {
+          "name": "Counsel review of the R4 facts",
+          "kind": "practice"
+        }
+      ],
+      "verification": "Counsel's written view on jurisdiction; landing zone conformance report",
+      "effort": "L",
+      "ownerRole": "CIO with General Counsel",
+      "confirmRegionalAvailability": true,
+      "confidence": "Low",
+      "claimIds": [
+        "CLM-SOV-098",
+        "CLM-SOV-270"
+      ],
+      "owner": "sovereignty-compliance-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-26",
+      "nextReview": "2027-01-24"
+    },
+    {
+      "id": "PB.SOV.JUR.IMMUNITY.azure.platform",
+      "control": "SOV.JUR.IMMUNITY",
+      "platform": "azure",
+      "level": "platform",
+      "action": "Decide with counsel whether any offering meets R4, from the facts in the placement matrix",
+      "approach": "Sovereign landing zone on R4. The matrix states facts only (owner, operator, governing law, technology supplier); whether an offering linked to this provider meets R4 is for counsel",
+      "options": [
+        {
+          "name": "Counsel review of the R4 facts",
+          "kind": "practice"
+        }
+      ],
+      "verification": "Counsel's written view on jurisdiction; landing zone conformance report",
+      "effort": "L",
+      "ownerRole": "CIO with General Counsel",
+      "confirmRegionalAvailability": true,
+      "confidence": "Low",
+      "claimIds": [
+        "CLM-SOV-098",
+        "CLM-SOV-270"
+      ],
+      "owner": "sovereignty-compliance-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-26",
+      "nextReview": "2027-01-24"
+    },
+    {
+      "id": "PB.SOV.JUR.IMMUNITY.gcp.platform",
+      "control": "SOV.JUR.IMMUNITY",
+      "platform": "gcp",
+      "level": "platform",
+      "action": "Decide with counsel whether any offering meets R4, from the facts in the placement matrix",
+      "approach": "Sovereign landing zone on R4. The matrix states facts only (owner, operator, governing law, technology supplier); whether an offering linked to this provider meets R4 is for counsel",
+      "options": [
+        {
+          "name": "Counsel review of the R4 facts",
+          "kind": "practice"
+        }
+      ],
+      "verification": "Counsel's written view on jurisdiction; landing zone conformance report",
+      "effort": "L",
+      "ownerRole": "CIO with General Counsel",
+      "confirmRegionalAvailability": true,
+      "confidence": "Low",
+      "claimIds": [
+        "CLM-SOV-098",
+        "CLM-SOV-270"
+      ],
+      "owner": "sovereignty-compliance-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-26",
+      "nextReview": "2027-01-24"
+    },
+    {
+      "id": "PB.SOV.JUR.IMMUNITY.on_prem.platform",
+      "control": "SOV.JUR.IMMUNITY",
+      "platform": "on_prem",
+      "level": "platform",
+      "action": "Operate it yourself, optionally disconnected, with in-zone suppliers",
+      "approach": "Customer-operated, optionally disconnected, with in-zone suppliers",
+      "options": [
+        {
+          "name": "Disconnected operation",
+          "kind": "practice"
+        }
+      ],
+      "verification": "Conformance report; supplier jurisdiction review",
+      "effort": "L",
+      "ownerRole": "CIO with General Counsel",
+      "confirmRegionalAvailability": false,
+      "confidence": "Medium",
+      "claimIds": [
+        "CLM-SOV-270"
+      ],
+      "owner": "sovereignty-compliance-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-26",
+      "nextReview": "2027-01-24"
+    },
+    {
+      "id": "PB.SOV.JUR.IMMUNITY.sovereign_cloud.platform",
+      "control": "SOV.JUR.IMMUNITY",
+      "platform": "sovereign_cloud",
+      "level": "platform",
+      "action": "Confirm from registry filings that no parent sits outside the zone, and record the technology supplier",
+      "approach": "A provider or partner with no parent outside the zone: confirm ownership from registry filings and record the technology supplier separately",
+      "options": [
+        {
+          "name": "Ownership and control evidence",
+          "kind": "practice"
+        }
+      ],
+      "verification": "Ownership evidence; counsel view",
+      "effort": "L",
+      "ownerRole": "CIO with General Counsel",
+      "confirmRegionalAvailability": true,
+      "confidence": "Low",
+      "claimIds": [
+        "CLM-SOV-245",
+        "CLM-SOV-257",
+        "CLM-SOV-270"
+      ],
+      "owner": "sovereignty-compliance-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-26",
+      "nextReview": "2027-01-24"
+    }
+  ]
 }

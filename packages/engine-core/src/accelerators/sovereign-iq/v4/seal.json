@@ -4,6 +4,13 @@
   "framework": "European Commission, Cloud Sovereignty Framework v1.2.1 (Oct 2025)",
   "claimIds": ["CLM-SOV-220", "CLM-SOV-221", "CLM-SOV-222", "CLM-SOV-227"],
   "rule": "SEAL view (PLAN S7b, D12, D15, D16). SEAL rates a provider's service per sovereignty objective; this view states the minimum SEAL a provider service should reach, per objective, for each kind of data to meet its LTM level (DESIGN.md 3.4: LTM mapping, not the Commission's). It never rates the client or any provider. SOV-1, SOV-7 and SOV-8 are not mapped: they are provider-selection criteria in the placement matrix (S7). For zones outside the EU, read 'EU' as 'the allowed zone' (LTM generalisation).",
+  "intro": "When the European Commission buys cloud services, it rates each provider's service from SEAL-0 to SEAL-4 on eight sovereignty objectives, such as legal, data, operational and supply chain. SEAL rates a provider's service, not your organisation. Sovereign IQ uses SEAL to show what level of provider service each kind of your data needs.",
+  "l4Note": "The L4 row asks for SEAL-4 on several objectives. The Commission's implementation guidance (1 Jun 2026) says SEAL-4 is not relevant today, given the dependence on chips and hardware; LTM will revisit the row when the updated framework is published (D22).",
+  "tenderResults": {
+    "date": "2026-04-17",
+    "statement": "Commission sovereign cloud tender, as reported by the Commission on 17 Apr 2026: eligibility minimum SEAL-2; the Post Telecom-led partnership (with OVHcloud and CleverCloud), STACKIT and Scaleway reached SEAL-3; the Proximus-led partnership using S3NS reached SEAL-2. Results for the offers in that tender only; no per-objective levels or scores were published. Consultant view only (D20).",
+    "claimIds": ["CLM-SOV-226"]
+  },
   "levels": [
     { "id": 0, "name": "No sovereignty", "wording": "Service, technology or operations under exclusive control of non-EU third parties, governed entirely in non-EU jurisdictions", "plain": "The service is controlled and governed entirely outside the EU.", "status": "V" },
     { "id": 1, "name": "Jurisdictional sovereignty", "wording": "EU law formally applies with limited practical enforceability; exclusive control of non-EU third parties", "plain": "EU law applies on paper, but control sits outside the EU and EU law is hard to enforce.", "status": "V" },

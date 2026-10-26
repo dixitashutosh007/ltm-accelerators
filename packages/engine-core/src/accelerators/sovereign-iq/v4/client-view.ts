@@ -55,11 +55,13 @@ export function clientView(result: SovereignIqV4Result) {
     topGaps: r.topGaps.filter(f => !f.consultantOnly).map(f => f.id),
     roadmap: r.roadmap.map(w => ({ wave: w.wave, findings: w.findings.filter(id => r.findings.some(f => f.id === id && !f.consultantOnly)) })).filter(w => w.findings.length),
     notes: r.notes.filter(n => !/\(Q11\)/.test(n)),
+    // SEAL view: control states as words; the Commission's tender results stay in the consultant view (D20).
+    seal: (({ commissionTenderResults, objectives, ...s }) => ({ ...s, objectives: objectives.map(o => ({ ...o, controls: o.controls.map(c => ({ control: c.control, status: word(c.state) })) })) }))(r.seal),
     advisory: {
       ladderVersion: r.advisory.ladderVersion, catalogueVersion: r.advisory.catalogueVersion, statusAsOf: r.advisory.statusAsOf, statement: r.advisory.statement,
       placement: r.advisory.placement.map(p => ({
         ...p, rungControls: p.rungControls.map(x => ({ rung: x.rung, control: x.control, status: word(x.state) })),
-        options: p.options.filter(cleared).map(noClaims), alternatives: p.alternatives.filter(cleared).map(noClaims),
+        options: p.options.filter(cleared).map(noClaims), alternatives: p.alternatives.filter(cleared).map(noClaims), r4Facts: p.r4Facts.filter(cleared).map(noClaims),
         actions: p.actions.filter(cleared).map(noEntry)
       })),
       technical: r.advisory.technical.filter(cleared).map(noEntry)

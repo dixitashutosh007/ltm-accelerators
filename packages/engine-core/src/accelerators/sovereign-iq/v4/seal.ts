@@ -12,7 +12,8 @@ import catalogue from './controls.json' with { type: 'json' };
 import { LEVELS, type DataClass, type Level } from './facts';
 
 export interface SealData {
-  sealVersion: string; statusAsOf: string; framework: string; claimIds: string[]; rule: string;
+  sealVersion: string; statusAsOf: string; framework: string; claimIds: string[]; rule: string; intro: string; l4Note: string;
+  tenderResults: { date: string; statement: string; claimIds: string[] };
   levels: Array<{ id: number; name: string; wording: string; plain: string; status: string; note?: string }>;
   objectives: Array<{ id: string; name: string; mapped: boolean }>;
   mapping: Record<Level, Record<string, number>>;
@@ -50,6 +51,10 @@ export interface SealView {
   organisation: Record<string, number | null>;
   objectives: Array<{ id: string; name: string; mapped: boolean; controls: Array<{ control: string; state: State }>; inPlace: number }>;
   tender: (TenderLevel & { minimums: Record<string, number>; classes: DataClass[]; raised: Array<{ dataClass: DataClass; from: Level; to: Level }> }) | null;
+  /** Shown when a kind of data needs L4 (D22). */
+  l4Note: string | null;
+  /** The Commission's own published tender results: dated facts, consultant view only (D20). */
+  commissionTenderResults: { date: string; statement: string; claimIds: string[] };
   statement: string;
 }
 
@@ -87,6 +92,8 @@ export function sealView(r: SealInput): SealView {
   return {
     sealVersion: SEAL.sealVersion, framework: SEAL.framework, statusAsOf: SEAL.statusAsOf, claimIds: SEAL.claimIds,
     byClass, organisation, objectives, tender,
+    l4Note: byClass.some(c => c.level === 'L4') ? SEAL.l4Note : null,
+    commissionTenderResults: SEAL.tenderResults,
     statement: 'SEAL levels rate a provider\'s service, one sovereignty objective at a time. This view shows the minimum each kind of data needs from its providers, using an LTM mapping from the required level, not the Commission\'s. It is not a SEAL assessment or certification of you or of any provider.'
   };
 }

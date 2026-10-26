@@ -7,6 +7,7 @@
 import { CONTROLS, QUESTIONS, REGIMES, ENGINE_VERSION, MIN_SCORED_CONTROLS } from './evaluate';
 import { DATA_CLASSES } from './facts';
 import { LADDER } from './advisory';
+import { SEAL } from './seal';
 
 /** The page's steps, in order, and the question themes each holds. */
 export const STEPS = [
@@ -54,6 +55,7 @@ export function publicQuestionSchema() {
     regimes: REGIMES.map(r => ({ id: r.id, name: r.name, kind: r.kind, market: r.market, citation: String(r.citation?.text ?? '').replace(/\s*\[CLM-[^\]]+\]/g, ''), url: r.citation?.url })),
     zones: ZONE_LABELS, dataClasses: DATA_CLASS_LABELS, levels: LEVEL_LABELS, platforms: PLATFORM_LABELS,
     rungs: LADDER.rungs.map(r => ({ id: r.id, level: r.level, label: r.label, means: r.means })),
+    seal: { intro: SEAL.intro, framework: SEAL.framework, statusAsOf: SEAL.statusAsOf, levels: SEAL.levels.map(({ id, name, plain, note }) => ({ id, name, plain, ...(note ? { note } : {}) })), objectives: SEAL.objectives, mapping: SEAL.mapping },
     notices: {
       disclaimer: 'Indicative assessment from self-reported answers. Not legal advice: confirm applicability and obligations with counsel before acting.',
       caps: 'Statutory maximums are caps, not expected fines, and are never added together.',

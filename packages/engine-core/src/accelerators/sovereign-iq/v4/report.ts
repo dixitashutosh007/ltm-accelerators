@@ -14,7 +14,8 @@ import { traced } from '../../../report/model';
 import registerData from '../../../claims/claims-register.json' with { type: 'json' };
 import { CONTROLS, type Finding, type SovereignIqV4Result, type State } from './evaluate';
 import { DATA_CLASS_LABELS, LEVEL_LABELS, PLATFORM_LABELS, ZONE_LABELS } from './public-schema';
-import { LADDER, clientCleared, type AdvisoryAction, type PlacementStatus } from './advisory';
+import { SEAL } from './seal';
+import { LADDER, COUNSEL_NOTE, clientCleared, type AdvisoryAction, type LadderOption, type PlacementStatus } from './advisory';
 
 const PLATFORM = 'LTM Vantage · Responsible Advisory';
 const PRODUCT = 'Sovereign IQ';
@@ -104,6 +105,44 @@ function requirement(c: Ctx): ReportSection {
   return { id: 'requirement', title: 'Required sovereignty level', blocks };
 }
 
+const sealName = (n: number | null | undefined) => (n == null ? '—' : `SEAL-${n}`);
+
+/** PLAN S7b: the minimum provider SEAL per objective for each kind of data, the controls behind each objective. */
+function sealSection(c: Ctx): ReportSection {
+  const v = c.r.seal;
+  const mapped = SEAL.objectives.filter(o => o.mapped);
+  const blocks: Block[] = [{ kind: 'paragraph', segs: [{ text: SEAL.intro, cite: SEAL.claimIds }, ' This view uses an LTM mapping from the required level, not the Commission\'s, and is not a SEAL assessment or certification.'] }];
+  blocks.push({ kind: 'list', small: true, items: SEAL.levels.map(l => [strong(`SEAL-${l.id} ${l.name}: `), { text: l.plain, cite: SEAL.claimIds }, ...(l.note ? [` (${l.note})`] : [])]) });
+  if (v.byClass.length) {
+    blocks.push({ kind: 'subheading', text: 'Minimum provider SEAL by kind of data' });
+    blocks.push({ kind: 'table', small: true, head: ['Data', 'Level', ...mapped.map(o => o.id)], widths: [90, 35, ...mapped.map(() => '*' as const)], rows: [
+      ...v.byClass.map(x => [[className(x.dataClass)], [x.level], ...mapped.map(o => [sealName(x.minimums[o.id])])]),
+      [[strong('Highest needed')], [''], ...mapped.map(o => [strong(sealName(v.organisation[o.id]))])]
+    ] });
+    blocks.push({ kind: 'paragraph', style: 'small', segs: [mapped.map(o => `${o.id} ${o.name}`).join('; '), '.'] });
+  } else blocks.push({ kind: 'paragraph', style: 'note', segs: ['No kind of data needs more than L0, so no minimum SEAL applies.'] });
+  if (v.l4Note) blocks.push({ kind: 'paragraph', style: 'note', segs: [{ text: v.l4Note, cite: ['CLM-SOV-227'] }] });
+  blocks.push({ kind: 'subheading', text: 'Your controls by sovereignty objective' });
+  blocks.push({ kind: 'table', small: true, head: ['Objective', 'In place', 'Controls'], widths: [130, 45, '*'], rows: v.objectives.map(o => [
+    [`${o.id} ${o.name}${o.mapped ? '' : ' (provider selection)'}`],
+    [o.controls.length ? [count(`seal.objectives[${o.id}].inPlace`, o.inPlace), ` of ${o.controls.length}`] as any : '—'].flat(),
+    [o.controls.length ? o.controls.map(x => `${CONTROL.get(x.control)?.name ?? x.control} (${word(x.state).toLowerCase()})`).join('; ') : o.mapped ? 'No required control' : 'Assessed when choosing a provider']
+  ]) });
+  const t = v.tender;
+  if (t) {
+    blocks.push({ kind: 'subheading', text: 'EU tender minimums' });
+    blocks.push({ kind: 'list', small: true, items: [
+      [`Minimums: ${Object.entries(t.minimums).map(([o, n]) => `${o} ${sealName(n)}`).join('; ')}. These need at least ${t.level} for ${t.classes.map(className).join(', ')}.`],
+      ...(t.raised.length ? [[`Raised the required level of ${t.raised.map(x => `${className(x.dataClass)} from ${x.from} to ${x.to}`).join('; ')}.`]] : []),
+      ...(t.beyondMapping.length ? [[`No level in the mapping reaches the minimum for ${t.beyondMapping.join(', ')}.`]] : []),
+      ...(t.selectionCriteria.length ? [[`Provider-selection criteria: ${t.selectionCriteria.map(x => `${x.objective} ${sealName(x.minimum)}`).join('; ')}.`]] : [])
+    ] });
+  }
+  if (!c.client) blocks.push({ kind: 'paragraph', style: 'small', segs: ['Consultant edition: ', { text: v.commissionTenderResults.statement, cite: v.commissionTenderResults.claimIds }] });
+  blocks.push({ kind: 'callout', tone: 'info', segs: [v.statement] });
+  return { id: 'seal', title: 'EU sovereignty levels (SEAL)', blocks };
+}
+
 function maturity(c: Ctx): ReportSection {
   const { r } = c, m = r.maturity;
   const blocks: Block[] = [];
@@ -176,8 +215,10 @@ function findingsSection(c: Ctx): ReportSection {
 
 const PLACEMENT: Record<PlacementStatus, [string, Tone]> = { meets: ['Meets the level', 'good'], gap: ['Gap to close', 'weak'], unconfirmed: ['To confirm', 'unknown'], move: ['Needs a sovereign offering', 'bad'] };
 const platformName = (p: string) => PLATFORM_LABELS[p] ?? p;
+const AVAILABILITY: Record<string, string> = { preview: 'preview', announced: 'announced, not yet available', per_engagement: 'per engagement' };
+const optionText = (o: LadderOption) => o.name + (AVAILABILITY[o.availability] ? ` (${AVAILABILITY[o.availability]})` : '') + (o.caveat ? `: ${o.caveat}` : '');
 const rungName = (id: string) => `${id} ${LADDER.rungs.find(x => x.id === id)?.label ?? ''}`.trim();
-const actionSegs = (a: AdvisoryAction): Seg[] => [strong(a.action), ' ', { text: a.approach, cite: a.claimIds },
+const actionSegs = (a: AdvisoryAction): Seg[] => [strong(`${a.action}.`), ' ', { text: a.approach, cite: a.claimIds }, '.',
   ...(a.options.length ? ['\nOptions: ', { text: a.options.map(o => o.name).join('; '), cite: a.claimIds }, a.confirmRegionalAvailability ? ' (confirm availability in your regions)' : ''] : []),
   '\nCheck: ', a.verification];
 
@@ -201,8 +242,9 @@ function advisorySection(c: Ctx): ReportSection {
         const options = keep(p.options), alts = keep(p.alternatives);
         const move: Seg[] = [`Needs ${rungName(p.minimumRung)} for ${p.allowedZone.length ? p.allowedZone.map(zone).join(', ') : 'any region'}.`,
           ...(p.confirmOperatingModel ? [' Confirm who operates and supports these services: standard regions of a provider based outside the region.'] : []),
-          ...(options.length ? ['\nOptions: ', { text: options.map(o => o.name + (o.availability !== 'ga' ? ` (${o.availability})` : '')).join('; '), cite: options.flatMap(o => o.claimIds) }] : []),
-          ...(p.noOfferingZones.length ? [`\nNo option at ${p.minimumRung} listed for ${p.noOfferingZones.map(zone).join(', ')}`, alts.length ? ': alternatives ' : '.', ...(alts.length ? [{ text: alts.map(x => ('provider' in x ? `${platformName(x.provider)}: ` : '') + x.name).join('; '), cite: alts.flatMap(x => x.claimIds) }] : [])] : [])];
+          ...(options.length ? ['\nOptions:', { text: options.map(o => `\n• ${optionText(o)}`).join(''), cite: options.flatMap(o => o.claimIds) }] : []),
+          ...(keep(p.r4Facts).length ? ['\nFacts for counsel: ', { text: keep(p.r4Facts).map(f => `${f.name}: owner ${f.owner}; operator ${f.operator}; law ${f.operatorLaw}; technology ${f.technologySupplier}`).join(' | '), cite: keep(p.r4Facts).flatMap(f => f.claimIds) }, ` ${COUNSEL_NOTE}`] : []),
+          ...(p.noOfferingZones.length ? [`\nNo option at ${p.minimumRung} listed for ${p.noOfferingZones.map(zone).join(', ')}.`, ...(alts.length ? [' Alternatives:', { text: alts.map(x => `\n• ${'provider' in x ? `${platformName(x.provider)}: ` : ''}${x.name}`).join(''), cite: alts.flatMap(x => x.claimIds) }] : [])] : [])];
         const acts = actions(p.actions);
         return [[strong(className(p.dataClass)), '\n', platformName(p.platform), '\n', PLACEMENT[p.status][0]], move, acts.length ? acts.flatMap((x, i) => [...(i ? ['\n\n'] : []), ...actionSegs(x)]) : ['See the findings.']];
       }) });
@@ -289,7 +331,7 @@ export function sovereignIqReport(result: SovereignIqV4Result, opts: SovereignRe
       footer: `${PLATFORM} · ${PRODUCT} · Confidential`,
       status: 'Internal consultant use until the legal review. Not legal advice.'
     },
-    sections: [summary(c), requirement(c), maturity(c), exposure(c), findingsSection(c), advisorySection(c), roadmap(c), methodology(c)]
+    sections: [summary(c), requirement(c), sealSection(c), maturity(c), exposure(c), findingsSection(c), advisorySection(c), roadmap(c), methodology(c)]
   };
   const claims = new Set<string>();
   for (const s of doc.sections) for (const b of s.blocks) {

@@ -48,7 +48,7 @@ function resolve(r: SovereignIqV4Result, field: string): number | undefined {
 describe('Sovereign IQ report', () => {
   it.each(runs.map(x => [x.label, x]))('%s: the sections, in the FinOps IQ order and format', (_, x: any) => {
     const ids = x.doc.sections.map((s: any) => s.id);
-    expect(ids.slice(0, 8)).toEqual(['summary', 'requirement', 'maturity', 'exposure', 'findings', 'advisory', 'roadmap', 'methodology']);
+    expect(ids.slice(0, 9)).toEqual(['summary', 'requirement', 'seal', 'maturity', 'exposure', 'findings', 'advisory', 'roadmap', 'methodology']);
     expect(ids.includes('sources')).toBe(true);
     expect(ids.includes('consultant')).toBe(x.view === 'consultant');
     expect(x.doc.meta.product).toBe('Sovereign IQ');
@@ -77,7 +77,9 @@ describe('Sovereign IQ report', () => {
       const t = allText(x.doc);
       expect(t, x.label).not.toMatch(/\[[A-Z]{2}_[A-Z0-9_]+\.\d+\]|CLM-[A-Z]+-\d+|Board wants L3/);
       for (const g of x.r.regimes.filter(g => g.grade === 'not_applicable')) {
-        const tables = x.doc.sections.flatMap(s => s.blocks).filter(b => b.kind === 'table') as any[];
+        // The Sources appendix may cite a statute as a source (e.g. Data Act switching rights for an exit plan); that is not
+        // a list of regulations that do not apply.
+        const tables = x.doc.sections.filter(s => s.id !== 'sources').flatMap(s => s.blocks).filter(b => b.kind === 'table') as any[];
         expect(tables.some(tb => tb.rows.some((row: any) => text(row[0]) === g.name)), `${x.label} ${g.regime}`).toBe(false);
       }
     }
@@ -106,6 +108,16 @@ describe('Sovereign IQ report', () => {
         const need = [...new Set(x.r.advisory.placement.filter(p => p.findingIds.includes(String(row[0]))).map(p => p.minimumRung))].sort().join('; ');
         expect(row[12], `${x.label} ${row[0]}`).toBe(need);
       }
+    }
+  });
+
+  it('the SEAL section never rates the client or a provider, and keeps the Commission tender results to the consultant edition (D16, D20)', () => {
+    for (const x of runs) {
+      const shown: string[] = [];
+      walkSegments(x.doc, (seg: Seg, sec: any) => { if (sec.id === 'seal') shown.push(typeof seg === 'string' ? seg : seg.text); });
+      const t = shown.join(' ');
+      expect(t, x.label).not.toMatch(/you are SEAL|SEAL-certified|certified at SEAL|your SEAL is/i);
+      expect(/Post Telecom|STACKIT|Scaleway/.test(t), x.label).toBe(x.view === 'consultant');
     }
   });
 

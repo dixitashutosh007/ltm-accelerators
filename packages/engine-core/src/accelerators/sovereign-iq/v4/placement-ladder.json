@@ -1,19 +1,636 @@
 {
-  "ladderVersion": "1.0.0",
+  "ladderVersion": "1.1.0",
   "statusAsOf": "2026-10-26",
-  "rule": "Sovereign Cloud Advisory placement ladder (PLAN S7, D17, D19). Rungs are cumulative: a kind of data needs every control of its minimum rung and of the rungs below it. The minimum rung is the one whose level equals the data's required level. A 'platformMove' rung cannot be reached in a provider's standard regions when the provider's parent is outside the data's allowed zone: the data moves to an offering at that rung (LTM judgement, owner approval at Gate S7; counsel confirms R4 at S10). The ladder changes the advice, never the maturity score (D3). Options are examples of service families, each sourced in the claims register with a review date; they are listed in a fixed order that does not rank providers.",
+  "rule": "Sovereign Cloud Advisory placement ladder (PLAN S7, D17, D19). Rungs are cumulative: a kind of data needs every control of its minimum rung and of the rungs below it. The minimum rung is the one whose level equals the data's required level. A 'platformMove' rung cannot be reached in a provider's standard regions when the provider's parent is outside the data's allowed zone: the data moves to an offering at that rung (LTM judgement, owner approval at Gate S7; counsel confirms R4 at S10). The ladder changes the advice, never the maturity score (D3). Only generally available options meet a rung; announced, preview and per-engagement options are shown, labelled (D24). R3 needs day-to-day operations and support in the zone through a local entity; supervised access is R2 (D25). No offering is presented as meeting R4: the matrix lists facts for counsel (D26). Government clouds are R3 for US data, with an eligibility caveat (D27). Options are examples of service families, each sourced in the claims register with a review date; they are listed in a fixed order that does not rank providers.",
   "rungs": [
-    { "id": "R0", "level": "L0", "label": "Standard region", "means": "Any standard region; no sovereignty controls required", "controls": [] },
-    { "id": "R1", "level": "L1", "label": "In-zone region with guardrails", "means": "A standard region inside the allowed zone, with policies that block deployments elsewhere; backups and replicas in the zone too", "controls": ["SOV.RES.LOCATION", "SOV.BACKUP.LOCATION", "SOV.RES.REGION_LOCK"] },
-    { "id": "R2", "level": "L2", "label": "Customer-held keys and approved access", "means": "R1, plus keys held outside the provider, provider access only with your approval, and the provider's data boundary where one exists", "controls": ["SOV.KEY.CUSTODY", "SOV.OPS.ADMIN_ACCESS"] },
-    { "id": "R3", "level": "L3", "label": "Sovereign offering run in the zone", "means": "R2, plus a service operated and supported only by staff in the zone, employed by a local entity under local law", "controls": ["SOV.OPS.PERSONNEL_ZONE"], "platformMove": true },
-    { "id": "R4", "level": "L4", "label": "Out of foreign-law reach, or disconnected", "means": "R3, plus no provider in the chain can be compelled by a law from outside the zone, or the system is disconnected", "controls": [], "platformMove": true }
+    {
+      "id": "R0",
+      "level": "L0",
+      "label": "Standard region",
+      "means": "Any standard region; no sovereignty controls required",
+      "controls": []
+    },
+    {
+      "id": "R1",
+      "level": "L1",
+      "label": "In-zone region with guardrails",
+      "means": "A standard region inside the allowed zone, with policies that block deployments elsewhere; backups and replicas in the zone too",
+      "controls": [
+        "SOV.RES.LOCATION",
+        "SOV.BACKUP.LOCATION",
+        "SOV.RES.REGION_LOCK"
+      ]
+    },
+    {
+      "id": "R2",
+      "level": "L2",
+      "label": "Customer-held keys and approved access",
+      "means": "R1, plus keys held outside the provider, provider access only with your approval, and the provider's data boundary where one exists",
+      "controls": [
+        "SOV.KEY.CUSTODY",
+        "SOV.OPS.ADMIN_ACCESS"
+      ]
+    },
+    {
+      "id": "R3",
+      "level": "L3",
+      "label": "Sovereign offering run in the zone",
+      "means": "R2, plus a service operated and supported only by staff in the zone, employed by a local entity under local law",
+      "controls": [
+        "SOV.OPS.PERSONNEL_ZONE"
+      ],
+      "platformMove": true
+    },
+    {
+      "id": "R4",
+      "level": "L4",
+      "label": "Out of foreign-law reach, or disconnected",
+      "means": "R3, plus no provider in the chain can be compelled by a law from outside the zone, or the system is disconnected",
+      "controls": [],
+      "platformMove": true
+    }
   ],
   "providers": {
-    "aws": { "label": "AWS", "parent": "us" },
-    "azure": { "label": "Microsoft Azure", "parent": "us" },
-    "gcp": { "label": "Google Cloud", "parent": "us" }
+    "aws": {
+      "label": "AWS",
+      "parent": "us"
+    },
+    "azure": {
+      "label": "Microsoft Azure",
+      "parent": "us"
+    },
+    "gcp": {
+      "label": "Google Cloud",
+      "parent": "us"
+    }
   },
-  "options": [],
-  "alternatives": []
+  "options": [
+    {
+      "id": "OPT.AWS.R1.REGION_DENY",
+      "provider": "aws",
+      "rung": "R1",
+      "name": "AWS Control Tower Region deny controls and aws:RequestedRegion policies",
+      "kind": "native",
+      "zones": [
+        "any"
+      ],
+      "availability": "ga",
+      "detail": "Blocks deployments outside the allowed Regions",
+      "claimIds": [
+        "CLM-SOV-228"
+      ],
+      "confirmRegionalAvailability": false
+    },
+    {
+      "id": "OPT.AWS.R2.XKS",
+      "provider": "aws",
+      "rung": "R2",
+      "name": "AWS KMS external key store (XKS)",
+      "kind": "native",
+      "zones": [
+        "any"
+      ],
+      "availability": "ga",
+      "detail": "Keys held in your own key manager outside AWS; AWS KMS cannot view or manage them",
+      "caveat": "Confirm support per Region and per service.",
+      "claimIds": [
+        "CLM-SOV-229"
+      ],
+      "confirmRegionalAvailability": true
+    },
+    {
+      "id": "OPT.AWS.R2.NITRO",
+      "provider": "aws",
+      "rung": "R2",
+      "name": "AWS Nitro System and zero-operator-access services",
+      "kind": "native",
+      "zones": [
+        "any"
+      ],
+      "availability": "ga",
+      "detail": "Operator access restricted by design and in the Service Terms",
+      "caveat": "No per-request customer approval of operator access found; record the gap.",
+      "claimIds": [
+        "CLM-SOV-230"
+      ],
+      "confirmRegionalAvailability": true
+    },
+    {
+      "id": "OPT.AWS.R3.ESC",
+      "provider": "aws",
+      "rung": "R3",
+      "name": "AWS European Sovereign Cloud",
+      "kind": "native",
+      "zones": [
+        "eea"
+      ],
+      "availability": "ga",
+      "detail": "Separate partition with a Germany Region, operated by EU residents through German entities; contracting party AWS EMEA SARL; a new account is needed",
+      "claimIds": [
+        "CLM-SOV-231",
+        "CLM-SOV-232",
+        "CLM-SOV-233"
+      ],
+      "confirmRegionalAvailability": true
+    },
+    {
+      "id": "OPT.AWS.R3.ESC_LZ",
+      "provider": "aws",
+      "rung": "R3",
+      "name": "AWS European Sovereign Cloud sovereign Local Zones (Belgium, Netherlands, Portugal)",
+      "kind": "native",
+      "zones": [
+        "eea"
+      ],
+      "availability": "announced",
+      "detail": "Announced extension of the European Sovereign Cloud",
+      "claimIds": [
+        "CLM-SOV-231"
+      ],
+      "confirmRegionalAvailability": true
+    },
+    {
+      "id": "OPT.AWS.R3.GOVCLOUD",
+      "provider": "aws",
+      "rung": "R3",
+      "name": "AWS GovCloud (US)",
+      "kind": "native",
+      "zones": [
+        "us"
+      ],
+      "availability": "ga",
+      "detail": "Isolated US Regions operated by US citizens on US soil",
+      "caveat": "Eligibility rules apply: confirm the client qualifies.",
+      "claimIds": [
+        "CLM-SOV-235"
+      ],
+      "confirmRegionalAvailability": true
+    },
+    {
+      "id": "OPT.AWS.R3.DLZ",
+      "provider": "aws",
+      "rung": "R3",
+      "name": "AWS Dedicated Local Zones",
+      "kind": "native",
+      "zones": [
+        "any"
+      ],
+      "availability": "per_engagement",
+      "detail": "AWS-managed infrastructure for your exclusive use in a location you choose; can be operated by local AWS personnel",
+      "caveat": "Counts as R3 only when AWS confirms local personnel and a local entity in writing.",
+      "claimIds": [
+        "CLM-SOV-236"
+      ],
+      "confirmRegionalAvailability": true
+    },
+    {
+      "id": "OPT.AZ.R1.ALLOWED",
+      "provider": "azure",
+      "rung": "R1",
+      "name": "Azure Policy \"Allowed locations\"",
+      "kind": "native",
+      "zones": [
+        "any"
+      ],
+      "availability": "ga",
+      "detail": "Blocks resources outside the allowed locations",
+      "claimIds": [
+        "CLM-SOV-238"
+      ],
+      "confirmRegionalAvailability": false
+    },
+    {
+      "id": "OPT.AZ.R2.EKM",
+      "provider": "azure",
+      "rung": "R2",
+      "name": "Azure Key Vault Managed HSM with External Key Management",
+      "kind": "native",
+      "zones": [
+        "any"
+      ],
+      "availability": "ga",
+      "detail": "Single-tenant HSM keys; External Key Management keeps the root key in your own HSM outside Microsoft",
+      "caveat": "Supported services are not published: confirm per service.",
+      "claimIds": [
+        "CLM-SOV-243"
+      ],
+      "confirmRegionalAvailability": true
+    },
+    {
+      "id": "OPT.AZ.R2.LOCKBOX",
+      "provider": "azure",
+      "rung": "R2",
+      "name": "Customer Lockbox for Microsoft Azure",
+      "kind": "native",
+      "zones": [
+        "any"
+      ],
+      "availability": "ga",
+      "detail": "You approve or reject Microsoft engineer access to your data",
+      "caveat": "Confirm the service is on the supported list.",
+      "claimIds": [
+        "CLM-SOV-240"
+      ],
+      "confirmRegionalAvailability": true
+    },
+    {
+      "id": "OPT.AZ.R2.EUDB",
+      "provider": "azure",
+      "rung": "R2",
+      "name": "EU Data Boundary",
+      "kind": "native",
+      "zones": [
+        "eea"
+      ],
+      "availability": "ga",
+      "detail": "Customer data and personal data stored and processed in the EU, with documented exceptions",
+      "claimIds": [
+        "CLM-SOV-239"
+      ],
+      "confirmRegionalAvailability": false
+    },
+    {
+      "id": "OPT.AZ.R2.SPC",
+      "provider": "azure",
+      "rung": "R2",
+      "name": "Microsoft Sovereign Public Cloud (Data Guardian, Production Touch Ledger)",
+      "kind": "native",
+      "zones": [
+        "eea"
+      ],
+      "availability": "ga",
+      "detail": "European regions; European-resident oversight of remote engineer access and tamper-evident access records",
+      "caveat": "Data Guardian and Touch Ledger are rolling out. Supervised access, so R2, not R3.",
+      "claimIds": [
+        "CLM-SOV-241",
+        "CLM-SOV-242"
+      ],
+      "confirmRegionalAvailability": true
+    },
+    {
+      "id": "OPT.AZ.R2.M365ADR",
+      "provider": "azure",
+      "rung": "R2",
+      "name": "Microsoft 365 Advanced Data Residency",
+      "kind": "native",
+      "zones": [
+        "uk",
+        "au",
+        "in",
+        "jp"
+      ],
+      "availability": "ga",
+      "detail": "Microsoft 365 data at rest in the local geography",
+      "claimIds": [
+        "CLM-SOV-249"
+      ],
+      "confirmRegionalAvailability": true
+    },
+    {
+      "id": "OPT.AZ.R3.NPC",
+      "provider": "azure",
+      "rung": "R3",
+      "name": "Microsoft National Partner Clouds: Bleu (France), Delos Cloud (Germany)",
+      "kind": "partner",
+      "zones": [
+        "eea"
+      ],
+      "availability": "ga",
+      "detail": "Operated independently by local entities under national law; Microsoft supplies the technology",
+      "caveat": "Scope and status per partner to confirm; Bleu SecNumCloud qualification pending.",
+      "claimIds": [
+        "CLM-SOV-245",
+        "CLM-SOV-246",
+        "CLM-SOV-247"
+      ],
+      "confirmRegionalAvailability": true
+    },
+    {
+      "id": "OPT.AZ.R3.GOV",
+      "provider": "azure",
+      "rung": "R3",
+      "name": "Azure Government",
+      "kind": "native",
+      "zones": [
+        "us"
+      ],
+      "availability": "ga",
+      "detail": "Isolated US datacentres; access limited to screened US persons",
+      "caveat": "Eligibility rules apply: confirm the client qualifies.",
+      "claimIds": [
+        "CLM-SOV-248"
+      ],
+      "confirmRegionalAvailability": true
+    },
+    {
+      "id": "OPT.GCP.R1.LOCATIONS",
+      "provider": "gcp",
+      "rung": "R1",
+      "name": "Organisation policy resource locations; Assured Workloads location data boundaries",
+      "kind": "native",
+      "zones": [
+        "any"
+      ],
+      "availability": "ga",
+      "detail": "Blocks resources outside the allowed locations",
+      "claimIds": [
+        "CLM-SOV-251",
+        "CLM-SOV-253"
+      ],
+      "confirmRegionalAvailability": false
+    },
+    {
+      "id": "OPT.GCP.R2.EKM",
+      "provider": "gcp",
+      "rung": "R2",
+      "name": "Cloud External Key Manager, Access Approval, Access Transparency, Key Access Justifications",
+      "kind": "native",
+      "zones": [
+        "any"
+      ],
+      "availability": "ga",
+      "detail": "Keys outside Google; your approval and logging of Google personnel access; key-access justifications",
+      "caveat": "Coverage varies by service.",
+      "claimIds": [
+        "CLM-SOV-252"
+      ],
+      "confirmRegionalAvailability": true
+    },
+    {
+      "id": "OPT.GCP.R2.AW_EU",
+      "provider": "gcp",
+      "rung": "R2",
+      "name": "Assured Workloads EU Data Boundary and Support",
+      "kind": "native",
+      "zones": [
+        "eea"
+      ],
+      "availability": "ga",
+      "detail": "EU location with support personnel based in the EU",
+      "claimIds": [
+        "CLM-SOV-253"
+      ],
+      "confirmRegionalAvailability": true
+    },
+    {
+      "id": "OPT.GCP.R2.AW_AU",
+      "provider": "gcp",
+      "rung": "R2",
+      "name": "Assured Workloads Australia Data Boundary and Support",
+      "kind": "native",
+      "zones": [
+        "au"
+      ],
+      "availability": "ga",
+      "detail": "Australian location with support controls",
+      "caveat": "Support personnel may be in the US, Canada, Australia, New Zealand or the UK, not Australia only.",
+      "claimIds": [
+        "CLM-SOV-253"
+      ],
+      "confirmRegionalAvailability": true
+    },
+    {
+      "id": "OPT.GCP.R2.AW_US",
+      "provider": "gcp",
+      "rung": "R2",
+      "name": "Assured Workloads US Data Boundary and Support",
+      "kind": "native",
+      "zones": [
+        "us"
+      ],
+      "availability": "ga",
+      "detail": "US location with US support personnel",
+      "claimIds": [
+        "CLM-SOV-253"
+      ],
+      "confirmRegionalAvailability": true
+    },
+    {
+      "id": "OPT.GCP.R2.PARTNERS",
+      "provider": "gcp",
+      "rung": "R2",
+      "name": "Sovereign Controls by Partners: France Data Boundary by S3NS, Germany Data Boundary by T-Systems, Italy Data Boundary by PSN",
+      "kind": "partner",
+      "zones": [
+        "eea"
+      ],
+      "availability": "ga",
+      "detail": "Partner-supervised residency, personnel controls and key management; Google operates the infrastructure",
+      "claimIds": [
+        "CLM-SOV-255"
+      ],
+      "confirmRegionalAvailability": true
+    },
+    {
+      "id": "OPT.GCP.R3.PREMI3NS",
+      "provider": "gcp",
+      "rung": "R3",
+      "name": "Google Cloud Dedicated: PREMI3NS by S3NS",
+      "kind": "partner",
+      "zones": [
+        "eea"
+      ],
+      "availability": "ga",
+      "detail": "Dedicated infrastructure run by S3NS, a French-law company with datacentres in France; SecNumCloud 3.2",
+      "caveat": "France only.",
+      "claimIds": [
+        "CLM-SOV-254",
+        "CLM-SOV-256",
+        "CLM-SOV-069"
+      ],
+      "confirmRegionalAvailability": true
+    },
+    {
+      "id": "OPT.GCP.R3.THALES_DE",
+      "provider": "gcp",
+      "rung": "R3",
+      "name": "Thales sovereign cloud in Germany on Google Cloud technology",
+      "kind": "partner",
+      "zones": [
+        "eea"
+      ],
+      "availability": "preview",
+      "detail": "Run by a German entity fully owned by Thales, staffed by German personnel",
+      "claimIds": [
+        "CLM-SOV-258"
+      ],
+      "confirmRegionalAvailability": true
+    },
+    {
+      "id": "OPT.GCP.R3.US_PACKAGES",
+      "provider": "gcp",
+      "rung": "R3",
+      "name": "Assured Workloads US regulatory packages (FedRAMP High, IL4, IL5, ITAR, CJIS)",
+      "kind": "native",
+      "zones": [
+        "us"
+      ],
+      "availability": "ga",
+      "detail": "Personnel controls such as support restricted to US persons in the US",
+      "caveat": "Eligibility rules apply: confirm the client qualifies.",
+      "claimIds": [
+        "CLM-SOV-253"
+      ],
+      "confirmRegionalAvailability": true
+    }
+  ],
+  "alternatives": [
+    {
+      "id": "ALT.R3.PROVIDER_ONPREM",
+      "rung": "R3",
+      "name": "Provider-delivered on-premises run by you or a partner in the region (Microsoft Azure Local; Google Distributed Cloud)",
+      "kind": "private_cloud",
+      "zones": [
+        "any"
+      ],
+      "detail": "The rung depends on who operates it; confirm availability per country",
+      "claimIds": [
+        "CLM-SOV-244",
+        "CLM-SOV-254"
+      ]
+    },
+    {
+      "id": "ALT.R3.PRIVATE",
+      "rung": "R3",
+      "name": "Private cloud or on-premises operated in the region",
+      "kind": "private_cloud",
+      "zones": [
+        "any"
+      ],
+      "detail": "Your staff or in-region contractors; vendor support from inside the region",
+      "claimIds": [
+        "CLM-SOV-270"
+      ]
+    },
+    {
+      "id": "ALT.R4.DISCONNECTED_PROVIDER",
+      "rung": "R4",
+      "name": "Disconnected provider-delivered on-premises (Azure Local disconnected; Google Distributed Cloud air-gapped)",
+      "kind": "disconnected",
+      "zones": [
+        "any"
+      ],
+      "detail": "Run by you; the provider supplies the software. Whether this meets R4 is for your counsel",
+      "claimIds": [
+        "CLM-SOV-244",
+        "CLM-SOV-254"
+      ]
+    },
+    {
+      "id": "ALT.R4.PRIVATE",
+      "rung": "R4",
+      "name": "Private cloud or on-premises operated in the region, optionally disconnected, with in-region suppliers",
+      "kind": "disconnected",
+      "zones": [
+        "any"
+      ],
+      "detail": "Whether this meets R4 is for your counsel",
+      "claimIds": [
+        "CLM-SOV-270"
+      ]
+    }
+  ],
+  "r4Facts": [
+    {
+      "id": "R4.AWS.ESC",
+      "name": "AWS European Sovereign Cloud",
+      "owner": "Amazon group (German GmbH entities)",
+      "operator": "EU-resident staff of the European Sovereign Cloud entities",
+      "operatorLaw": "German law; EU contracting party AWS EMEA SARL (Luxembourg)",
+      "technologySupplier": "AWS",
+      "zones": [
+        "eea"
+      ],
+      "claimIds": [
+        "CLM-SOV-232",
+        "CLM-SOV-234",
+        "CLM-SOV-098"
+      ]
+    },
+    {
+      "id": "R4.AZ.BLEU",
+      "name": "Bleu (Microsoft National Partner Cloud)",
+      "owner": "Orange and Capgemini joint venture (France)",
+      "operator": "Bleu",
+      "operatorLaw": "French law",
+      "technologySupplier": "Microsoft",
+      "zones": [
+        "eea"
+      ],
+      "claimIds": [
+        "CLM-SOV-245"
+      ]
+    },
+    {
+      "id": "R4.AZ.DELOS",
+      "name": "Delos Cloud (Microsoft National Partner Cloud)",
+      "owner": "SAP subsidiary (Germany)",
+      "operator": "Delos Cloud",
+      "operatorLaw": "German law",
+      "technologySupplier": "Microsoft",
+      "zones": [
+        "eea"
+      ],
+      "claimIds": [
+        "CLM-SOV-245"
+      ]
+    },
+    {
+      "id": "R4.GCP.PREMI3NS",
+      "name": "PREMI3NS by S3NS",
+      "owner": "Thales majority, with a Google minority stake",
+      "operator": "S3NS",
+      "operatorLaw": "French law",
+      "technologySupplier": "Google",
+      "zones": [
+        "eea"
+      ],
+      "claimIds": [
+        "CLM-SOV-256",
+        "CLM-SOV-257"
+      ]
+    },
+    {
+      "id": "R4.GCP.THALES_DE",
+      "name": "Thales sovereign cloud in Germany (preview)",
+      "owner": "Thales (German entity, fully owned)",
+      "operator": "The Thales German entity",
+      "operatorLaw": "German law",
+      "technologySupplier": "Google",
+      "zones": [
+        "eea"
+      ],
+      "claimIds": [
+        "CLM-SOV-258"
+      ]
+    },
+    {
+      "id": "R4.AZ.LOCAL",
+      "name": "Microsoft Sovereign Private Cloud, disconnected",
+      "owner": "You",
+      "operator": "You or your partner",
+      "operatorLaw": "Your own",
+      "technologySupplier": "Microsoft",
+      "zones": [
+        "any"
+      ],
+      "claimIds": [
+        "CLM-SOV-244"
+      ]
+    },
+    {
+      "id": "R4.GCP.GDC",
+      "name": "Google Distributed Cloud air-gapped",
+      "owner": "You",
+      "operator": "You or your partner",
+      "operatorLaw": "Your own",
+      "technologySupplier": "Google",
+      "zones": [
+        "any"
+      ],
+      "claimIds": [
+        "CLM-SOV-254"
+      ]
+    }
+  ]
 }

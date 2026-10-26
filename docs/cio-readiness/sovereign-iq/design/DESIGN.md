@@ -167,17 +167,17 @@ Most regimes in scope do **not** impose a data-location requirement; they impose
 
 **Source.** European Commission, *Cloud Sovereignty Framework*, version 1.2.1, October 2025, used in the Commission's 2026 cloud tender [S2, S3, S4]. It defines eight sovereignty objectives (SOV-1 Strategic, SOV-2 Legal and jurisdictional, SOV-3 Data and AI, SOV-4 Operational, SOV-5 Supply chain, SOV-6 Technology, SOV-7 Security and compliance, SOV-8 Environmental sustainability), each assessed on a Sovereignty Effective Assurance Level from SEAL-0 to SEAL-4. Contracting authorities set a minimum SEAL per objective and rank compliant bids on a weighted Sovereignty Score [S2] (status S: framework PDF quoted in search results; weights from secondary sources only).
 
-SEAL wording from the framework [S2] (status V for SEAL-0 to SEAL-3 via search excerpt of the Commission PDF; SEAL-4 wording from secondary sources, status S):
+SEAL wording from the framework [S2] (all five verified against the Commission's PDF on 26 Oct 2026, CLM-SOV-221; see [S7-SOURCES.md](S7-SOURCES.md) Task A):
 
 | SEAL | Framework wording |
 |---|---|
 | SEAL-0 | No sovereignty: service, technology or operations under exclusive control of non-EU third parties, governed entirely in non-EU jurisdictions |
 | SEAL-1 | Jurisdictional sovereignty: EU law formally applies with limited practical enforceability; exclusive control of non-EU third parties |
 | SEAL-2 | Data sovereignty: EU law applicable and enforceable, with material non-EU dependencies; indirect control of non-EU third parties |
-| SEAL-3 | Digital resilience: EU law applicable and enforceable, EU actors exercising meaningful but not full influence |
-| SEAL-4 | Full digital sovereignty: complete EU control, subject only to EU law |
+| SEAL-3 | Digital resilience: EU law applicable and enforceable, EU actors exercising meaningful but not full influence; marginal control of non-EU third parties |
+| SEAL-4 | Full digital sovereignty: technology and operations under complete EU control, subject only to EU law, with no critical non-EU dependencies |
 
-Note: the Commission's explainer of 1 Jun 2026 [S3] describes the SEAL-3 threshold as "technological autonomy"; S2 must confirm the authoritative label.
+Note: later Commission documents label SEAL-3 "Technological Sovereignty" (implementation guidance, 1 Jun 2026) or "technological autonomy" [S3]; the product shows the v1.2.1 label with a footnote (D21, CLM-SOV-222). The guidance also says SEAL-4 is not relevant today; the L4 row is kept with a note (D22, CLM-SOV-227).
 
 **LTM mapping (judgement, not the Commission's).** Sovereign IQ levels are requirements on a client's data class; SEAL levels assess a provider's service per objective. The mapping states the minimum SEAL a provider service should reach, per objective, to be able to meet an LTM level. For non-EU zones, read "EU" as "the allowed zone" (LTM generalisation; the framework itself is EU-only).
 
@@ -1291,7 +1291,7 @@ All checked **13 Oct 2026**. Direct fetches of EUR-Lex, legislation.gov.uk, eCFR
 | Ref | Source | URL(s) |
 |---|---|---|
 | S1 | Sovereign IQ validation report, sections 7–8 (85 statements verified) | [../VALIDATION.md](../VALIDATION.md) |
-| S2 | European Commission, Cloud Sovereignty Framework v1.2.1 (Oct 2025): SEAL-0 to SEAL-4, eight sovereignty objectives | https://ppc.land/content/files/2025/11/Cloud-Sovereignty-Framework.pdf (copy of the Commission document); secondary: https://ayedo.de/en/cloud-sovereignty-framework/ , https://www.blackberry.com/en/secure-communications/insights/blog/sovereignty-effective-assurance-levels-explainer |
+| S2 | European Commission, Cloud Sovereignty Framework v1.2.1 (Oct 2025): SEAL-0 to SEAL-4, eight sovereignty objectives | https://commission.europa.eu/document/09579818-64a6-4dd5-9577-446ab6219113_en (Commission document page, verified 26 Oct 2026); earlier copy: https://ppc.land/content/files/2025/11/Cloud-Sovereignty-Framework.pdf ; secondary: https://ayedo.de/en/cloud-sovereignty-framework/ , https://www.blackberry.com/en/secure-communications/insights/blog/sovereignty-effective-assurance-levels-explainer |
 | S3 | European Commission, "Sovereign cloud framework explained" (1 Jun 2026) | https://commission.europa.eu/news-and-media/news/sovereign-cloud-framework-explained-2026-06-01_en |
 | S4 | European Commission, cloud sovereignty through strategic procurement (17 Apr 2026) | https://commission.europa.eu/news-and-media/news/commission-advances-cloud-sovereignty-through-strategic-procurement-2026-04-17_en |
 | S5 | NIS2 Directive (EU) 2022/2555 (Art. 2, 3, 20, 21, 23, 26, 34; Annexes I–II) | https://eur-lex.europa.eu/eli/dir/2022/2555/oj ; secondary: https://nisd2.eu/en/wiki/scope/who-is-in-scope-full-test , https://mayerbrown.com/ja/insights/publications/2024/08/new-eu-cyber-rules-implementation-of-nis2-in-the-eu-member-states , https://advisera.com/nis2/essential-and-important-entities/ , https://www.springlex.eu/en/packages/nis2/nis2-directive/article-34/ |
