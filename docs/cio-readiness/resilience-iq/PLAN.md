@@ -359,22 +359,24 @@ Recommended default (D10): **no AI in v1.** The report is clear without generate
 
 ## Decisions needed from the owner
 
+**Decided 27 Oct 2026: the owner accepted every recommended default below (D1–D15).** RQ1 can start.
+
 Full options are in [VALIDATION.md](VALIDATION.md) section 9. Recommended defaults in short:
 
 | # | Decision | Recommended default | Needed by |
 |---|---|---|---|
-| D1 | Decision and buyer | "Which recovery strategy and cyber-recovery capability to fund for each critical service, and can we stay within impact tolerance"; CIO with CRO or head of operational resilience, CISO and BCM lead | RQ1 |
-| D2 | R9 decisions 1–6 | Accept 1, 2, 3, 5 and 6 as recommended; 4 superseded by D3 | RQ1 |
-| D3 | Strategy rule | Written ladder, max of the RTO and RPO rungs; DR-05 only for RTO < 15 min with near-zero RPO; modifiers add controls, not rungs | RQ1 |
-| D4 | Headline | One posture score with its cap explained; retire the hidden risk-adjusted score | RQ1 |
-| D5 | Money | Client-input cost per hour as a range; no market default; published data as context only | RQ1 |
-| D6 | Regulatory scope v1 | DORA, SS1/21 and SYSC 15A (PS26/2 and PS7/26 dated), CPS 230, MAS BCM, NYDFS 500.16, FFIEC BCM; applicability shared with Sovereign IQ | RQ1 |
-| D7 | Modes | Executive, workshop and server-side client view | RQ1 |
-| D8 | Evidence validation | Consultant or Admin only, with a server-checkable role | RQ6 |
-| D9 | Question bank studio | Admin only; production edits by PR | RQ0 |
-| D10 | AI | None in v1; if added, WS-S1 on `in.anthropic.claude-opus-5` from ap-south-1 (D29) | RQ10 |
-| D11 | Evidence uploads for EU/UK clients | Reference-only until the S6 basis; 24-month retention | RQ0, RQ11 |
-| D12 | Overlaps | Cloud IQ routes DR here; Strategy IQ renames "Resilience (%)"; Sovereign boundary confirmed | RQ1 |
-| D13 | Back-testing | Five public-source reference scenarios with outcomes written first | RQ1 |
-| D14 | Volatile items | 90-day review for providers and UK reporting; 12 months for standards | RQ2 |
-| D15 | Use until re-score | Consultant-led only, once the RQ0 hotfix ships; no client self-service before RQ12 | RQ0 |
+| D1 | Decision and buyer | "Which recovery strategy and cyber-recovery capability to fund for each critical service, and can we stay within impact tolerance"; CIO with CRO or head of operational resilience, CISO and BCM lead **(accepted 27 Oct 2026)** | RQ1 |
+| D2 | R9 decisions 1–6 | Accept 1, 2, 3, 5 and 6 as recommended; 4 superseded by D3 **(accepted 27 Oct 2026)** | RQ1 |
+| D3 | Strategy rule | Written ladder, max of the RTO and RPO rungs; DR-05 only for RTO < 15 min with near-zero RPO; modifiers add controls, not rungs **(accepted 27 Oct 2026)** | RQ1 |
+| D4 | Headline | One posture score with its cap explained; retire the hidden risk-adjusted score **(accepted 27 Oct 2026)** | RQ1 |
+| D5 | Money | Client-input cost per hour as a range; no market default; published data as context only **(accepted 27 Oct 2026)** | RQ1 |
+| D6 | Regulatory scope v1 | DORA, SS1/21 and SYSC 15A (PS26/2 and PS7/26 dated), CPS 230, MAS BCM, NYDFS 500.16, FFIEC BCM; applicability shared with Sovereign IQ **(accepted 27 Oct 2026)** | RQ1 |
+| D7 | Modes | Executive, workshop and server-side client view **(accepted 27 Oct 2026)** | RQ1 |
+| D8 | Evidence validation | Consultant or Admin only, with a server-checkable role **(accepted 27 Oct 2026)** | RQ6 |
+| D9 | Question bank studio | Admin only; production edits by PR **(accepted 27 Oct 2026)** | RQ0 |
+| D10 | AI | None in v1; if added, WS-S1 on `in.anthropic.claude-opus-5` from ap-south-1 (D29) **(accepted 27 Oct 2026)** | RQ10 |
+| D11 | Evidence uploads for EU/UK clients | Reference-only until the S6 basis; 24-month retention **(accepted 27 Oct 2026)** | RQ0, RQ11 |
+| D12 | Overlaps | Cloud IQ routes DR here; Strategy IQ renames "Resilience (%)"; Sovereign boundary confirmed **(accepted 27 Oct 2026)** | RQ1 |
+| D13 | Back-testing | Five public-source reference scenarios with outcomes written first **(accepted 27 Oct 2026)** | RQ1 |
+| D14 | Volatile items | 90-day review for providers and UK reporting; 12 months for standards **(accepted 27 Oct 2026)** | RQ2 |
+| D15 | Use until re-score | Consultant-led only, once the RQ0 hotfix ships; no client self-service before RQ12 **(accepted 27 Oct 2026)** | RQ0 |
