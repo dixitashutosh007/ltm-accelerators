@@ -1,5 +1,7 @@
 # FinOps IQ: screen-reader pass (VoiceOver, about 15 minutes)
 
+> **Not required (owner decision, 27 Oct 2026).** The person-run pass is no longer part of the FinOps IQ plan. This checklist is kept for reference only; the automated accessibility checks (axe WCAG 2.2 AA scan, keyboard test and the screen-reader structure test in CI) remain.
+
 The automated WCAG 2.2 AA scan and keyboard test pass (M7 section 4). This is the person-run check that automation cannot do: what a screen reader actually says. Run it once before the first external client, on the production page, and note anything that sounds wrong.
 
 ## Before you start
