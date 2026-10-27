@@ -39,7 +39,7 @@
         {
           "name": "FOCUS-conformant FinOps platform of your choice",
           "kind": "third_party",
-          "detail": "Ingests the same export; selection under FinOps Tools & Services"
+          "detail": "Ingests the same export; selection under Automation, Tools & Services"
         }
       ],
       "verification": "Every billing account, subscription, project or compartment in scope is present in the central dataset; data refreshed at least daily; the monthly total reconciles to the invoice, with differences explained.",
@@ -2682,7 +2682,7 @@
       "control": "FIN.LEV-06",
       "platform": "gcp",
       "level": "stack",
-      "action": "Move interruption-tolerant workloads to Spot VMs or GKE Spot node pools and Spot Pods, handling the 30-second preemption notice.",
+      "action": "Move interruption-tolerant workloads to Spot VMs or GKE Spot node pools and Spot Pods, handling the preemption notice (set a 120-second notice duration for workloads that need time to shut down; none is given by default).",
       "approach": "Use interruptible capacity only for workloads that tolerate interruption (stateless, batch, CI, some development and test), diversify instance types, handle the provider's interruption notice, and keep a fallback to on-demand capacity.",
       "options": [
         {

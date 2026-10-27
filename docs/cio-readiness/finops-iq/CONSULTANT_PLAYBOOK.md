@@ -50,7 +50,7 @@ Assessments are kept for 24 months after their last change and then deleted; del
 3. **Understand Usage & Cost**: Data Ingestion, Allocation, Reporting & Analytics, Anomaly Management.
 4. **Quantify Business Value**: Planning & Estimating, Forecasting, Budgeting, KPIs & Benchmarking, Unit Economics.
 5. **Optimize Usage & Cost**: Architecting & Workload Placement, Usage Optimization, Rate Optimization, Licensing & SaaS, Sustainability.
-6. **Manage the FinOps Practice**: Executive Strategy Alignment, FinOps Practice Operations, Governance, Policy & Risk, FinOps Education & Enablement, Invoicing & Chargeback, FinOps Assessment, FinOps Tools & Services, Intersecting Disciplines.
+6. **Manage the FinOps Practice**: Executive Strategy Alignment, FinOps Practice Operations, Governance, Policy & Risk, FinOps Education & Enablement, Invoicing & Chargeback, FinOps Assessment, Automation, Tools & Services, Intersecting Disciplines.
 7. **Value inputs**: the shares and evidence each lever needs (section 7).
 8. **Results**, then **Complete**: the server records the result and dates it. Then download the report (client or consultant edition) and the backlog CSV, archive the PDF to Reports if wanted, and use client view (with teaser mode if the readout comes later) on screen.
 
@@ -778,7 +778,7 @@ Default target by tier: Tier 1 Crawl, Tier 2 Crawl, Tier 3 Walk. Owner: FinOps l
   - Don't know → Don't know
   *Basis:* CLM-FIN-030, CLM-FIN-164
 
-#### FinOps Tools & Services
+#### Automation, Tools & Services
 
 Select FinOps tools and services against requirements and integrate them (data, allocation, anomaly, commitment management, automation of routine actions).
 
