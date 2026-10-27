@@ -1,0 +1,67 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:ltm:resilience-iq:v2:question",
+  "title": "Resilience IQ v2 question record",
+  "description": "Shape of a question in the v2 bank (DESIGN.md section 12). Every question states what it is based on, offers Unknown (scored as risk) unless it is a scope or diagnostic question, and says whether it is asked per service or once for the enterprise. Scores are not part of this record: option scores live in scoring-model.json and are registered as assumptions in RQ2. Draft for owner approval (gate RQ1).",
+  "$ref": "#/$defs/question",
+  "$defs": {
+    "status": { "enum": ["V", "S", "P", "UNSOURCED", "LTM heuristic"] },
+    "basis": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["citation", "status"],
+      "properties": {
+        "citation": { "type": "string", "description": "Article, paragraph or section, e.g. 'APRA CPS 230 para 38(b)'." },
+        "url": { "type": "string" },
+        "status": { "$ref": "#/$defs/status" },
+        "claim": { "type": "string", "pattern": "^CLM-(RES|SOV)-([0-9]{3}|TBD)$" }
+      }
+    },
+    "option": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["value", "label"],
+      "properties": {
+        "value": { "type": "string" },
+        "label": { "type": "string" },
+        "unknown": { "type": "boolean", "description": "true for the Unknown option; scored as risk, never as a middle value." },
+        "help": { "type": "string" }
+      }
+    },
+    "question": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "mapStatus", "text", "type", "domain", "scope", "modes", "role", "basis"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^(EX-[0-9]{2}|AF-[A-Z]+-[0-9]{2}|REG-[0-9]{2}|TOL-[0-9]{2}|SAAS-01|DC-01|AUD-01|EXIT-01|REV-01)$" },
+        "mapStatus": { "enum": ["keep", "reword", "retire", "new", "referral"] },
+        "retiredReason": { "type": "string" },
+        "replacedBy": { "type": "string" },
+        "text": { "type": "string" },
+        "help": { "type": "string" },
+        "type": { "enum": ["single_select", "multi_select", "text_short", "fact_select"] },
+        "options": { "type": "array", "items": { "$ref": "#/$defs/option" } },
+        "domain": { "enum": ["BCP", "DR", "CYBER", "OPS", "TP", "INFRA", "SCOPE"] },
+        "family": { "enum": ["EXEC", "AF-BIA", "AF-DR", "AF-CYBER", "AF-TP", "AF-CLOUD", "AF-ONPREM", "AF-TEST", "AF-GOV", "AF-REG", "AF-DATA"] },
+        "scope": { "enum": ["service", "enterprise"], "description": "service = asked once per critical business service (up to five in workshop mode); enterprise = asked once." },
+        "modes": { "type": "array", "items": { "enum": ["executive", "workshop"] }, "minItems": 1 },
+        "trigger": { "type": "string", "description": "Workshop trigger, or 'on_demand'." },
+        "role": { "enum": ["scored", "requirement", "scope", "diagnostic", "evidence_confidence", "referral"], "description": "requirement = defines the target (any defined answer scores the same, R9 decision 5 / R3 D3); scope and diagnostic are never scored." },
+        "unknownOffered": { "type": "boolean" },
+        "setsFacts": { "type": "array", "items": { "type": "string" }, "description": "Fact ids, shared with Sovereign IQ where they exist (ent.flags, org.establishments, org.sector)." },
+        "prefill": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "from": { "enum": ["sovereign_iq"] },
+            "question": { "type": "string" },
+            "requiresConsultantConfirmation": { "const": true }
+          }
+        },
+        "obligations": { "type": "array", "items": { "type": "string" } },
+        "controls": { "type": "array", "items": { "type": "string", "pattern": "^RES\\.[A-Z]+\\.[A-Z_]+$" } },
+        "basis": { "type": "array", "items": { "$ref": "#/$defs/basis" }, "minItems": 1 }
+      }
+    }
+  }
+}

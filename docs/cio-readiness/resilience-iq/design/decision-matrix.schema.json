@@ -1,0 +1,212 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:ltm:resilience-iq:v2:decision-matrix",
+  "title": "Resilience IQ v2 recovery strategy ladder (decision matrix)",
+  "description": "The written strategy ladder the engine reads (DESIGN.md section 4, owner decision D3). The recommended rung is a pure function of the effective recovery time and recovery point requirements: rung = the higher of the RTO rung and the RPO rung. Modifiers add controls, never a higher rung. A requirement floor (an obligation that caps the RTO) tightens the requirement before the ladder runs and is recorded with its article. Draft for owner approval (gate RQ1).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["id", "version", "statusAsOf", "author", "rungs", "scales", "selection", "businessChoices", "requirementConsistency", "requirementFloors", "alwaysAdd", "modifiers", "invariants", "sources"],
+  "properties": {
+    "$schema": { "type": "string" },
+    "id": { "const": "resilience-iq.decision-matrix" },
+    "version": { "type": "string" },
+    "statusAsOf": { "type": "string", "format": "date" },
+    "author": { "type": "string" },
+    "ownerDecision": { "type": "string" },
+    "note": { "type": "string" },
+    "rungs": {
+      "type": "array",
+      "minItems": 5,
+      "maxItems": 5,
+      "items": { "$ref": "#/$defs/rung" }
+    },
+    "scales": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["rto", "rpo"],
+      "properties": {
+        "rto": { "type": "array", "items": { "$ref": "#/$defs/scaleStep" } },
+        "rpo": { "type": "array", "items": { "$ref": "#/$defs/scaleStep" } }
+      }
+    },
+    "selection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["rule", "description", "whenUnknown"],
+      "properties": {
+        "rule": { "const": "max_rank" },
+        "description": { "type": "string" },
+        "whenUnknown": { "const": "withhold" },
+        "whenUnknownDescription": { "type": "string" },
+        "decisionLog": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "businessChoices": { "type": "array", "items": { "$ref": "#/$defs/businessChoice" } },
+    "requirementConsistency": { "type": "array", "items": { "$ref": "#/$defs/consistencyRule" } },
+    "requirementFloors": { "type": "array", "items": { "$ref": "#/$defs/requirementFloor" } },
+    "alwaysAdd": { "type": "array", "items": { "$ref": "#/$defs/modifier" } },
+    "modifiers": { "type": "array", "items": { "$ref": "#/$defs/modifier" } },
+    "invariants": { "type": "array", "items": { "type": "string" }, "minItems": 1 },
+    "grid": {
+      "type": "object",
+      "description": "The full RTO x RPO result, written out so the monotonicity test (RQ3, RQ4) has an expected table.",
+      "additionalProperties": false,
+      "required": ["rtoColumns", "rows"],
+      "properties": {
+        "rtoColumns": { "type": "array", "items": { "type": "string" } },
+        "rows": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["rpo", "rungs"],
+            "properties": {
+              "rpo": { "type": "string" },
+              "rungs": { "type": "array", "items": { "$ref": "#/$defs/rungId" } },
+              "businessChoice": { "type": "array", "items": { "type": ["string", "null"] } }
+            }
+          }
+        }
+      }
+    },
+    "sources": { "type": "array", "items": { "$ref": "#/$defs/source" }, "minItems": 1 }
+  },
+  "$defs": {
+    "rungId": { "enum": ["DR-01", "DR-02", "DR-03", "DR-04", "DR-05"] },
+    "status": {
+      "enum": ["V", "S", "P", "UNSOURCED", "LTM heuristic"],
+      "description": "V verified from the primary text on the checked date; S secondary only; P primary URL, passage not re-read; UNSOURCED not verified; LTM heuristic is a judgement with its reasoning stated."
+    },
+    "basis": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["ref", "status"],
+      "properties": {
+        "ref": { "type": "string", "description": "Source id from sources[], or 'LTM' for a heuristic." },
+        "passage": { "type": "string" },
+        "status": { "$ref": "#/$defs/status" },
+        "reasoning": { "type": "string" },
+        "claim": { "type": "string", "pattern": "^CLM-RES-([0-9]{3}|TBD)$", "description": "Claims-register id, assigned in RQ2." }
+      }
+    },
+    "providerEquivalent": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["provider", "pattern", "status"],
+      "properties": {
+        "provider": { "enum": ["aws", "azure", "google_cloud", "on_premises", "sovereign_and_other"] },
+        "pattern": { "type": "string" },
+        "rto": { "type": "string" },
+        "rpo": { "type": "string" },
+        "ref": { "type": "string" },
+        "status": { "$ref": "#/$defs/status" },
+        "note": { "type": "string" }
+      }
+    },
+    "rung": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "rank", "name", "plainName", "legacyLadderId", "definition", "providerEquivalents", "basis"],
+      "properties": {
+        "id": { "$ref": "#/$defs/rungId" },
+        "rank": { "type": "integer", "minimum": 1, "maximum": 5 },
+        "name": { "type": "string" },
+        "plainName": { "type": "string", "description": "Wording shown to a CIO; codes are never headings." },
+        "legacyLadderId": { "enum": ["S1", "S2", "S3", "S4", "S5"] },
+        "definition": { "type": "string" },
+        "costOrder": { "type": "integer", "minimum": 1, "maximum": 5 },
+        "providerEquivalents": { "type": "array", "items": { "$ref": "#/$defs/providerEquivalent" } },
+        "basis": { "type": "array", "items": { "$ref": "#/$defs/basis" }, "minItems": 1 }
+      }
+    },
+    "scaleStep": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["answer", "minMinutes", "maxMinutes", "rung", "basis"],
+      "properties": {
+        "answer": { "type": "string", "description": "Answer value exactly as in the question bank (EX-03 / EX-04)." },
+        "minMinutes": { "type": "number", "minimum": 0 },
+        "maxMinutes": { "type": ["number", "null"], "description": "null = open-ended band." },
+        "rung": { "$ref": "#/$defs/rungId" },
+        "basis": { "type": "array", "items": { "$ref": "#/$defs/basis" }, "minItems": 1 }
+      }
+    },
+    "businessChoice": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "when", "recommended", "offer", "why", "basis"],
+      "properties": {
+        "id": { "type": "string" },
+        "when": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": { "rto": { "type": "string" }, "rpo": { "type": "string" } }
+        },
+        "recommended": { "$ref": "#/$defs/rungId" },
+        "offer": { "$ref": "#/$defs/rungId" },
+        "why": { "type": "string" },
+        "basis": { "type": "array", "items": { "$ref": "#/$defs/basis" } }
+      }
+    },
+    "consistencyRule": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "requirement", "boundBy", "onConflict", "basis"],
+      "properties": {
+        "id": { "type": "string" },
+        "requirement": { "type": "string", "description": "Question id of the objective (EX-03 or EX-04)." },
+        "boundBy": { "type": "string", "description": "Question id of the tolerance it must not exceed (EX-02 or TOL-02)." },
+        "onConflict": { "type": "string" },
+        "finding": { "type": "string" },
+        "openQuestion": { "type": "string" },
+        "basis": { "type": "array", "items": { "$ref": "#/$defs/basis" } }
+      }
+    },
+    "requirementFloor": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "regime", "article", "when", "field", "maxMinutes", "record", "basis"],
+      "properties": {
+        "id": { "type": "string" },
+        "regime": { "type": "string" },
+        "article": { "type": "string" },
+        "when": { "type": "string", "description": "Condition in words; the engine form uses the Sovereign IQ condition language (urn:ltm:sovereign-iq:v4:regime#/$defs/condition) over the shared fact ids." },
+        "whenCondition": { "type": "object" },
+        "field": { "enum": ["rto", "rpo"] },
+        "maxMinutes": { "type": "number" },
+        "record": { "type": "string" },
+        "openQuestion": { "type": "string" },
+        "basis": { "type": "array", "items": { "$ref": "#/$defs/basis" } }
+      }
+    },
+    "modifier": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "name", "when", "addControls", "neverRaisesRung", "basis"],
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "when": { "type": "string" },
+        "addControls": { "type": "array", "items": { "type": "string", "pattern": "^RES\\.[A-Z]+\\.[A-Z_]+$" } },
+        "addPatterns": { "type": "array", "items": { "type": "string" } },
+        "finding": { "type": "string" },
+        "neverRaisesRung": { "const": true },
+        "basis": { "type": "array", "items": { "$ref": "#/$defs/basis" }, "minItems": 1 }
+      }
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "title", "url", "checked", "status"],
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "url": { "type": "string" },
+        "checked": { "type": "string", "format": "date" },
+        "status": { "$ref": "#/$defs/status" },
+        "pageDate": { "type": "string" },
+        "note": { "type": "string" }
+      }
+    }
+  }
+}

@@ -135,6 +135,14 @@ Five scenarios built from public material, each with its URLs and the expected o
 4. US state-chartered bank under NYDFS Part 500;
 5. Singapore payments firm under MAS BCM, on-premises with one hyperscaler and a sovereign provider.
 
+**Status (27 Oct 2026): built, for the owner's approval.** The pack is in [design/](design/DESIGN.md):
+- `DESIGN.md`;
+- `decision-matrix.json` and its schema (the ladder grid is checked for monotonicity);
+- `reference-scenarios.json` and its schema (five scenarios, expected outcomes written before any engine run);
+- `obligation.schema.json`, `finding.schema.json` and `question.schema.json`.
+
+Both data files validate against their schemas. Open questions Q1–Q15 carry recommended defaults (DESIGN.md section 16). Q1, Q2, Q3, Q6 and Q11 are needed before RQ3. Q5 and Q14 also need the Sovereign IQ owner. Items not verified are handed to RQ2 (DESIGN.md section 17).
+
 **Gate RQ1:**
 - owner approval of the design pack and D1–D15;
 - the Sovereign IQ boundary confirmed by both owners (it is also a Sovereign gate S1 condition).

@@ -1,0 +1,134 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:ltm:resilience-iq:v2:obligation",
+  "title": "Resilience IQ v2 obligation layer (owner decision D6)",
+  "description": "Operational-resilience obligations as capability checks. Applicability is never re-decided here: it is read from the Sovereign IQ regime registry (same regime ids, same fact ids, same condition language) where the regime exists there, and from a Resilience-owned record using the same condition language where it does not (SG_MAS_BCM, US_FFIEC_BCM). Each obligation is assessed from named questions and gives a status of met, partly, not evidenced or not assessed. It is never a compliance verdict (DESIGN.md section 7). Draft for owner approval (gate RQ1).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["version", "statusAsOf", "regimes"],
+  "properties": {
+    "$schema": { "type": "string" },
+    "version": { "type": "string" },
+    "statusAsOf": { "type": "string", "format": "date" },
+    "regimes": { "type": "array", "items": { "$ref": "#/$defs/regimeObligations" } }
+  },
+  "$defs": {
+    "regimeId": { "type": "string", "pattern": "^(EU|UK|US|SG|AU)_[A-Z0-9_]+$" },
+    "verification": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "checked"],
+      "properties": {
+        "status": { "enum": ["V", "S", "P", "UNSOURCED"] },
+        "checked": { "type": "string", "format": "date" },
+        "url": { "type": "string" },
+        "by": { "type": "string" },
+        "counsel": { "type": "string", "description": "Counsel comment, recorded at RQ11 (WS-S6)." }
+      }
+    },
+    "applicability": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["source", "regime"],
+          "properties": {
+            "source": { "const": "sovereign_registry" },
+            "regime": { "$ref": "#/$defs/regimeId" },
+            "note": { "type": "string" }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["source", "rules", "default"],
+          "properties": {
+            "source": { "const": "resilience_record" },
+            "rules": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["id", "when", "grade", "reason", "basis"],
+                "properties": {
+                  "id": { "type": "string" },
+                  "when": { "$ref": "urn:ltm:sovereign-iq:v4:regime#/$defs/condition" },
+                  "grade": { "enum": ["applies", "likely_confirm", "advisory", "not_applicable"] },
+                  "reason": { "type": "string" },
+                  "basis": { "type": "string" },
+                  "verification": { "$ref": "#/$defs/verification" }
+                }
+              }
+            },
+            "default": { "enum": ["not_applicable", "advisory"] }
+          }
+        }
+      ]
+    },
+    "check": {
+      "type": "object",
+      "description": "One capability check: a question and how its answers count for this obligation. Answers not listed count as 'fails'. 'Unknown' always counts as 'fails' (Unknown counts as risk). A question not asked in the mode is 'not asked'.",
+      "additionalProperties": false,
+      "required": ["question", "meets"],
+      "properties": {
+        "question": { "type": "string", "pattern": "^(EX-[0-9]{2}|AF-[A-Z]+-[0-9]{2}|REG-[0-9]{2}|TOL-[0-9]{2}|SAAS-01|DC-01|AUD-01|EXIT-01|REV-01)$" },
+        "meets": { "type": "array", "items": { "type": "string" }, "minItems": 1 },
+        "partly": { "type": "array", "items": { "type": "string" } },
+        "compare": { "type": "string", "description": "For comparisons between answers, for example 'AF-DR-01 within EX-02'." }
+      }
+    },
+    "obligation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "article", "summary", "kind", "dateState", "ownedBy", "verification"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^(EU|UK|US|SG|AU)_[A-Z0-9_]+\\.[A-Z0-9_]+$" },
+        "article": { "type": "string" },
+        "summary": { "type": "string", "description": "Plain-English wording shown to the client." },
+        "kind": { "enum": ["rule", "guideline", "examination_expectation"], "description": "rule = binding text; guideline = regulator guidance the supervisor reviews against; examination_expectation = examiner guidance that imposes no new requirement." },
+        "appliesFrom": { "type": "string", "format": "date" },
+        "dateState": { "enum": ["applies_now", "applies_later"] },
+        "scope": { "enum": ["service", "enterprise"] },
+        "conditions": { "type": "string", "description": "Further applicability inside the regime, for example 'not microenterprises' or 'only if identified for TLPT'." },
+        "ownedBy": { "enum": ["resilience_iq", "sovereign_iq"], "description": "sovereign_iq = assessed in Sovereign IQ (reporting windows, registers, contract terms); listed here with status 'assessed in Sovereign IQ'." },
+        "checks": { "type": "array", "items": { "$ref": "#/$defs/check" } },
+        "statusRule": { "enum": ["all_checks", "any_check"], "default": "all_checks" },
+        "findingControls": { "type": "array", "items": { "type": "string", "pattern": "^RES\\.[A-Z]+\\.[A-Z_]+$" } },
+        "evidence": { "type": "array", "items": { "type": "string" }, "description": "Evidence items that, once validated by a consultant, change 'met (self-reported)' to 'met (evidenced)'." },
+        "verification": { "$ref": "#/$defs/verification" },
+        "claims": { "type": "array", "items": { "type": "string", "pattern": "^CLM-(RES|SOV)-([0-9]{3}|TBD)$" } }
+      }
+    },
+    "regimeObligations": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["regime", "name", "applicability", "obligations"],
+      "properties": {
+        "regime": { "$ref": "#/$defs/regimeId" },
+        "name": { "type": "string" },
+        "citation": { "type": "object", "additionalProperties": false, "required": ["text", "url"], "properties": { "text": { "type": "string" }, "url": { "type": "string" } } },
+        "applicability": { "$ref": "#/$defs/applicability" },
+        "obligations": { "type": "array", "items": { "$ref": "#/$defs/obligation" }, "minItems": 1 }
+      }
+    },
+    "obligationResult": {
+      "description": "One row of the obligation table in the result.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["obligation", "regime", "article", "status", "questions"],
+      "properties": {
+        "obligation": { "type": "string" },
+        "regime": { "$ref": "#/$defs/regimeId" },
+        "grade": { "enum": ["applies", "likely_confirm", "advisory"] },
+        "article": { "type": "string" },
+        "status": { "enum": ["met", "partly", "not_evidenced", "not_assessed", "applies_later", "assessed_in_sovereign_iq"] },
+        "evidenced": { "type": "boolean", "description": "true only when every check that meets is backed by consultant-validated evidence." },
+        "service": { "type": "string" },
+        "questions": { "type": "array", "items": { "type": "string" } },
+        "findingIds": { "type": "array", "items": { "type": "string" } },
+        "appliesFrom": { "type": "string", "format": "date" },
+        "label": { "const": "Indicative status from your answers; not a compliance opinion." }
+      }
+    }
+  }
+}
