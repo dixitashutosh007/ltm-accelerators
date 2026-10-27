@@ -1,6 +1,6 @@
 {
   "version": "0.1.0",
-  "updated": "2026-10-26",
+  "updated": "2026-10-27",
   "claims": [
     {
       "id": "CLM-SOV-001",
@@ -4733,24 +4733,20 @@
       ],
       "kind": "framework",
       "jurisdiction": "global",
-      "statement": "Paraphrase of the Foundation's maturity characteristics: Crawl has basic KPIs, processes and policies with little reporting or tooling; Walk has automation and processes covering most requirements with some difficult edge cases still open; Run is understood and followed by all relevant teams, with edge cases handled and high KPIs. FinOps IQ's 'Not yet' rating sits below Crawl and is an LTM addition.",
+      "statement": "Paraphrase of the Foundation's maturity characteristics: Crawl has very little reporting and tooling, basic KPIs, processes and policies, and the capability is understood but not followed by all major teams; Walk is understood and followed within the organisation, automation or processes cover most requirements, and the most difficult edge cases are identified with the effort to resolve them estimated; Run is understood and followed by all teams, difficult edge cases are being addressed, goals and KPIs are very high and automation is the preferred approach. FinOps IQ's 'Not yet' rating sits below Crawl and is an LTM addition.",
       "source": {
         "url": "https://www.finops.org/framework/maturity-model/",
         "title": "FinOps Foundation: FinOps Maturity Model",
-        "publisher": "FinOps Foundation",
-        "secondaryUrls": [
-          "https://www.gartner.com/peer-community/poll/where-organization-finops-foundation-maturity-model",
-          "https://www.globaldots.com/resources/blog/optimizing-cloud-spend-through-finops-maturity-assessment/"
-        ]
+        "publisher": "FinOps Foundation"
       },
-      "verification": "S",
-      "checkedOn": "2026-10-14",
+      "verification": "V",
+      "checkedOn": "2026-10-27",
       "volatile": false,
       "clientVisible": true,
       "owner": "finops-cost-lead (agent); approver: product owner",
-      "lastReviewed": "2026-10-14",
-      "nextReview": "2027-04-14",
-      "notes": "The exact Foundation wording was not in any search result; the characteristics come from secondary restatements (a Gartner peer poll and a GlobalDots article). Shown to clients as LTM's paraphrase, not a quotation. Settle by reading the maturity-model page and quoting with attribution. Direct fetches of finops.org, focus.finops.org, provider sites (aws.amazon.com, docs.aws.amazon.com, learn.microsoft.com, azure.microsoft.com, cloud.google.com, oracle.com) and flexera.com are blocked from this environment; checked through web-search results that quote or link the page."
+      "lastReviewed": "2026-10-27",
+      "nextReview": "2027-04-27",
+      "notes": "Checked against the Crawl, Walk and Run lists on the maturity-model page; the statement now follows the Foundation's wording more closely ('very high goals/KPIs', 'difficult edge cases are being addressed', 'automation is the preferred approach'). Still shown as LTM's paraphrase with attribution, not a quotation. The Gartner and GlobalDots secondary links are removed. Previously S (checked 2026-10-14). Read at the primary page on 27 Oct 2026 by finops-cost-lead; finops.org, data.finops.org, docs.aws.amazon.com, learn.microsoft.com, docs.cloud.google.com, docs.oracle.com and karpenter.sh were reachable from this environment."
     },
     {
       "id": "CLM-FIN-006",
@@ -4788,14 +4784,14 @@
         "article": "Phases; Principles",
         "publisher": "FinOps Foundation"
       },
-      "verification": "P",
-      "checkedOn": "2026-10-14",
+      "verification": "V",
+      "checkedOn": "2026-10-27",
       "volatile": false,
       "clientVisible": true,
       "owner": "finops-cost-lead (agent); approver: product owner",
-      "lastReviewed": "2026-10-14",
-      "nextReview": "2027-04-14",
-      "notes": "Phases confirmed in VALIDATION.md row 1; the principles count is from the Cost IQ overlay (P1 to P6) and was not re-read in F2. Context only; never scored. Direct fetches of finops.org, focus.finops.org, provider sites (aws.amazon.com, docs.aws.amazon.com, learn.microsoft.com, azure.microsoft.com, cloud.google.com, oracle.com) and flexera.com are blocked from this environment; checked through web-search results that quote or link the page."
+      "lastReviewed": "2026-10-27",
+      "nextReview": "2027-04-27",
+      "notes": "The framework page lists six principles (teams collaborate; business value drives technology decisions; everyone takes ownership of their technology usage; FinOps data is accessible, timely and accurate; FinOps is enabled centrally; take advantage of the variable cost model of the cloud) and says 'The FinOps journey consists of Inform, Optimize and Operate.' Context only; never scored. Previously P (checked 2026-10-14). Read at the primary page on 27 Oct 2026 by finops-cost-lead; finops.org, data.finops.org, docs.aws.amazon.com, learn.microsoft.com, docs.cloud.google.com, docs.oracle.com and karpenter.sh were reachable from this environment."
     },
     {
       "id": "CLM-FIN-008",
@@ -4852,24 +4848,24 @@
       ],
       "kind": "framework",
       "jurisdiction": "global",
-      "statement": "The 2026 Framework replaces 'Architecting for Cloud' with Architecting & Workload Placement and renames 'Policy & Governance' to Governance, Policy & Risk; a secondary source reports that Onboarding Workloads was merged into Architecting & Workload Placement.",
+      "statement": "The 2026 Framework (announced 19 March 2026) renames Architecting for Cloud to Architecting & Workload Placement, Policy & Governance to Governance, Policy & Risk, and FinOps Tools & Services to Automation, Tools & Services, and adds Executive Strategy Alignment. Onboarding Workloads no longer appears in the capability list; the Architecting & Workload Placement capability now covers onboarding.",
       "source": {
         "url": "https://www.finops.org/insights/2026-finops-framework/",
         "title": "FinOps Framework 2026",
         "publisher": "FinOps Foundation",
         "secondaryUrls": [
-          "https://www.finops.org/framework/capabilities/governance/",
-          "https://virtasant.com/blog/finops-framework-2026"
+          "https://www.finops.org/framework/",
+          "https://www.finops.org/framework/capabilities/architecting-workload-placement/"
         ]
       },
-      "verification": "S",
-      "checkedOn": "2026-10-14",
+      "verification": "V",
+      "checkedOn": "2026-10-27",
       "volatile": false,
       "clientVisible": true,
       "owner": "finops-cost-lead (agent); approver: product owner",
-      "lastReviewed": "2026-10-14",
-      "nextReview": "2027-04-14",
-      "notes": "The rename of Policy & Governance and the successor relationship for Architecting for Cloud are quoted from finops.org in search results; the Onboarding Workloads merger appears only in secondary summaries. Explains why the capability list has 22 entries. Direct fetches of finops.org, focus.finops.org, provider sites (aws.amazon.com, docs.aws.amazon.com, learn.microsoft.com, azure.microsoft.com, cloud.google.com, oracle.com) and flexera.com are blocked from this environment; checked through web-search results that quote or link the page."
+      "lastReviewed": "2026-10-27",
+      "nextReview": "2027-04-27",
+      "notes": "Renames and the new capability quoted from the Foundation's 2026 announcement ('formerly Architecting for Cloud', 'formerly Policy & Governance', 'formerly FinOps Tools & Services'). The announcement does not mention Onboarding Workloads; the framework page lists 22 capabilities without it, and the Architecting & Workload Placement definition covers onboarding ('the process of executing the chosen workload placement decision'). The earlier wording ('a secondary source reports ... merged') is replaced by what the primary pages show; the Virtasant blog link is removed. Previously S (checked 2026-10-14). Read at the primary page on 27 Oct 2026 by finops-cost-lead; finops.org, data.finops.org, docs.aws.amazon.com, learn.microsoft.com, docs.cloud.google.com, docs.oracle.com and karpenter.sh were reachable from this environment."
     },
     {
       "id": "CLM-FIN-011",
@@ -5358,24 +5354,24 @@
       ],
       "kind": "framework",
       "jurisdiction": "global",
-      "statement": "FinOps Framework capability FinOps Tools & Services (domain Manage the FinOps Practice): developing criteria and methods to select and integrate FinOps tools (software supporting one or more capabilities) and services (third-party training, consulting, managed services or outsourcing) aligned to the Framework capabilities.",
+      "statement": "FinOps Framework capability Automation, Tools & Services (domain Manage the FinOps Practice; named FinOps Tools & Services before the 2026 Framework): developing criteria and methodologies to evaluate and integrate software tools, automation solutions and professional services aligned with the Framework capabilities and operationalised within FinOps Scopes. A FinOps professional service is a third-party engagement covering training, consultancy, managed services or outsourcing of parts of the practice.",
       "source": {
         "url": "https://www.finops.org/framework/capabilities/finops-tools-services/",
-        "title": "FinOps Foundation: FinOps Tools & Services",
+        "title": "FinOps Foundation: Automation, Tools & Services",
         "publisher": "FinOps Foundation",
         "secondaryUrls": [
-          "https://finops.org/wp-content/uploads/2025/03/FinOps-Framework-Poster-2025.pdf",
-          "https://learn.microsoft.com/en-us/cloud-computing/finops/framework/capabilities"
+          "https://www.finops.org/insights/2026-finops-framework/",
+          "https://www.finops.org/framework/"
         ]
       },
-      "verification": "P",
-      "checkedOn": "2026-10-14",
+      "verification": "V",
+      "checkedOn": "2026-10-27",
       "volatile": false,
       "clientVisible": true,
       "owner": "finops-cost-lead (agent); approver: product owner",
-      "lastReviewed": "2026-10-14",
-      "nextReview": "2027-04-14",
-      "notes": "Definition quoted in search results from the capability page (V for the content). The display name 'FinOps Tools & Services' is confirmed for the 2025 poster and the live page URL; no source found for a 2026 rename to include 'Automation'. Status P until the 2026 capabilities page is read. Resolves DESIGN.md Q2: display 'FinOps Tools & Services' (overlay ID AUTOMATION_TOOLS_SERVICES unchanged). Direct fetches of finops.org, focus.finops.org, provider sites (aws.amazon.com, docs.aws.amazon.com, learn.microsoft.com, azure.microsoft.com, cloud.google.com, oracle.com) and flexera.com are blocked from this environment; checked through web-search results that quote or link the page."
+      "lastReviewed": "2026-10-27",
+      "nextReview": "2027-04-27",
+      "notes": "CORRECTED 27 Oct 2026. The capability page title, its breadcrumb and the framework page all read 'Automation, Tools & Services', and the 2026 announcement says it was formerly FinOps Tools & Services; the old statement and display name were the 2025 name. The definition is the page's 2026 wording. Engine impact (not changed here; owner to approve): capabilities.json displayName 'FinOps Tools & Services' and the citations in capabilities.json and v3/question-bank.json, the generated Accelerators/assets/finops-iq/questions.json, playbook entry text 'selection under FinOps Tools & Services', and the consultant playbook. DESIGN.md Q2 already says to use the name on the current Framework page. No score changes. Previously P (checked 2026-10-14). Read at the primary page on 27 Oct 2026 by finops-cost-lead; finops.org, data.finops.org, docs.aws.amazon.com, learn.microsoft.com, docs.cloud.google.com, docs.oracle.com and karpenter.sh were reachable from this environment."
     },
     {
       "id": "CLM-FIN-032",
@@ -5435,25 +5431,24 @@
       ],
       "kind": "threshold",
       "jurisdiction": "global",
-      "statement": "FinOps Foundation sample goals for allocation (share of cost allocated to a known owner), current maturity-model page: Crawl about 70%, Walk 85%, Run more than 90%. An earlier version of the page gave at least 50% (Crawl), at least 80% (Walk) and more than 90% (Run). The Foundation labels these sample goals from the FinOps community (data.finops.org), not requirements.",
+      "statement": "FinOps Foundation sample goals for allocation, current maturity-model page: Crawl 'able to allocate at least 70% of cost to known owner'; Walk at least 85%; Run 'greater than 90% of spend can be allocated'. The Foundation labels these 'Sample goals/KPI from the FinOps Community (data.finops.org)', not requirements.",
       "source": {
         "url": "https://www.finops.org/framework/maturity-model/",
         "title": "FinOps Foundation: FinOps Maturity Model",
         "article": "Sample goals/KPI",
         "publisher": "FinOps Foundation",
         "secondaryUrls": [
-          "https://docs.vantage.sh/guides/getting_started_playbook",
-          "https://help.aliyun.com/en/user-center/finops-maturity"
+          "https://data.finops.org/"
         ]
       },
-      "verification": "S",
-      "checkedOn": "2026-10-14",
+      "verification": "V",
+      "checkedOn": "2026-10-27",
       "volatile": true,
       "clientVisible": true,
       "owner": "finops-cost-lead (agent); approver: product owner",
-      "lastReviewed": "2026-10-14",
-      "nextReview": "2027-01-12",
-      "notes": "Walk 85% and Run >90% and the 'sample goals' label are reported from the current finops.org page in search results; the Crawl 70% figure appears in one search summary and in a vendor playbook (Vantage) only. The older 50/80/90 set is mirrored by Alibaba Cloud's help page. The two versions explain the 80% vs 85% inconsistency in the legacy FinOps IQ (VALIDATION.md row 25). Settle: read the table on the maturity-model page. Direct fetches of finops.org, focus.finops.org, provider sites (aws.amazon.com, docs.aws.amazon.com, learn.microsoft.com, azure.microsoft.com, cloud.google.com, oracle.com) and flexera.com are blocked from this environment; checked through web-search results that quote or link the page."
+      "lastReviewed": "2026-10-27",
+      "nextReview": "2027-01-25",
+      "notes": "Values and label read on the maturity-model page. The earlier version of the page (at least 50% / 80% / more than 90%) is now only in the notes: it is mirrored by Alibaba Cloud's help page (https://help.aliyun.com/en/user-center/finops-maturity) but could not be read at source (web.archive.org is not reachable from this environment). It explains the 80% vs 85% inconsistency in the legacy FinOps IQ (VALIDATION.md row 25). The Vantage playbook link is removed. Previously S (checked 2026-10-14). Read at the primary page on 27 Oct 2026 by finops-cost-lead; finops.org, data.finops.org, docs.aws.amazon.com, learn.microsoft.com, docs.cloud.google.com, docs.oracle.com and karpenter.sh were reachable from this environment."
     },
     {
       "id": "CLM-FIN-036",
@@ -5462,24 +5457,24 @@
       ],
       "kind": "threshold",
       "jurisdiction": "global",
-      "statement": "FinOps Foundation sample goals for commitment discount coverage, current maturity-model page: Crawl about 60%, Walk more than 75%, Run more than 80%. The earlier version gave about 60%, about 70% and about 80%.",
+      "statement": "FinOps Foundation sample goals for commitment discount coverage, current maturity-model page: Crawl approximately 60%; Walk greater than 75%; Run greater than 80 (the page omits the per cent sign). Sample goals from the FinOps community, not requirements.",
       "source": {
         "url": "https://www.finops.org/framework/maturity-model/",
         "title": "FinOps Foundation: FinOps Maturity Model",
         "article": "Sample goals/KPI",
         "publisher": "FinOps Foundation",
         "secondaryUrls": [
-          "https://help.aliyun.com/en/user-center/finops-maturity"
+          "https://data.finops.org/"
         ]
       },
-      "verification": "S",
-      "checkedOn": "2026-10-14",
+      "verification": "V",
+      "checkedOn": "2026-10-27",
       "volatile": true,
       "clientVisible": true,
       "owner": "finops-cost-lead (agent); approver: product owner",
-      "lastReviewed": "2026-10-14",
-      "nextReview": "2027-01-12",
-      "notes": "Reported from the current and earlier finops.org page in search results; table not read directly. The two versions explain the 70% vs 75% inconsistency in the legacy FinOps IQ (VALIDATION.md row 24). FinOps IQ v3 does not rate maturity on coverage (DESIGN.md 8.1, FIQ.O1); these figures are shown only as published KPI context. Direct fetches of finops.org, focus.finops.org, provider sites (aws.amazon.com, docs.aws.amazon.com, learn.microsoft.com, azure.microsoft.com, cloud.google.com, oracle.com) and flexera.com are blocked from this environment; checked through web-search results that quote or link the page."
+      "lastReviewed": "2026-10-27",
+      "nextReview": "2027-01-25",
+      "notes": "Read on the maturity-model page. The earlier version (about 60% / 70% / 80%) is mirrored by Alibaba Cloud's help page only and is kept here as background: it explains the 70% vs 75% inconsistency in the legacy FinOps IQ (VALIDATION.md row 24). FinOps IQ v3 does not rate maturity on coverage (DESIGN.md 8.1, FIQ.O1); these figures are KPI context only. Previously S (checked 2026-10-14). Read at the primary page on 27 Oct 2026 by finops-cost-lead; finops.org, data.finops.org, docs.aws.amazon.com, learn.microsoft.com, docs.cloud.google.com, docs.oracle.com and karpenter.sh were reachable from this environment."
     },
     {
       "id": "CLM-FIN-037",
@@ -5488,25 +5483,24 @@
       ],
       "kind": "threshold",
       "jurisdiction": "global",
-      "statement": "FinOps Foundation sample goals for forecast variance (actual against forecast), current maturity-model page: Crawl under 20%, Walk under 10%, Run under 5%. The earlier version gave 20%, 15% and 12%.",
+      "statement": "FinOps Foundation sample goals for forecast variance (forecast against actual spend), current maturity-model page: Crawl below 20%; Walk less than 10%; Run less than 5%. Sample goals from the FinOps community, not requirements.",
       "source": {
         "url": "https://www.finops.org/framework/maturity-model/",
         "title": "FinOps Foundation: FinOps Maturity Model",
         "article": "Sample goals/KPI",
         "publisher": "FinOps Foundation",
         "secondaryUrls": [
-          "https://help.aliyun.com/en/user-center/finops-maturity",
-          "https://spendark.com/blog/forecast-cloud-spend/"
+          "https://data.finops.org/"
         ]
       },
-      "verification": "S",
-      "checkedOn": "2026-10-14",
+      "verification": "V",
+      "checkedOn": "2026-10-27",
       "volatile": true,
       "clientVisible": true,
       "owner": "finops-cost-lead (agent); approver: product owner",
-      "lastReviewed": "2026-10-14",
-      "nextReview": "2027-01-12",
-      "notes": "Reported from the current and earlier finops.org page in search results; table not read directly. Replaces the LTM ladder of 5/15/30% (VALIDATION.md row 28) as DESIGN.md 3.5 and section 14 provided. Direct fetches of finops.org, focus.finops.org, provider sites (aws.amazon.com, docs.aws.amazon.com, learn.microsoft.com, azure.microsoft.com, cloud.google.com, oracle.com) and flexera.com are blocked from this environment; checked through web-search results that quote or link the page."
+      "lastReviewed": "2026-10-27",
+      "nextReview": "2027-01-25",
+      "notes": "Read on the maturity-model page. The earlier version (20% / 15% / 12%) is mirrored by secondary pages only and kept here as background. Replaces the LTM ladder of 5/15/30% (VALIDATION.md row 28) as DESIGN.md 3.5 and section 14 provided. Previously S (checked 2026-10-14). Read at the primary page on 27 Oct 2026 by finops-cost-lead; finops.org, data.finops.org, docs.aws.amazon.com, learn.microsoft.com, docs.cloud.google.com, docs.oracle.com and karpenter.sh were reachable from this environment."
     },
     {
       "id": "CLM-FIN-038",
@@ -5515,20 +5509,20 @@
       ],
       "kind": "threshold",
       "jurisdiction": "global",
-      "statement": "An earlier version of the Foundation's anomaly capability page related maturity to how quickly teams become aware of unexpected cost increases, from State of FinOps 2024 practitioner responses: Run within hours; Walk up to a day or several days; Crawl a week or more.",
+      "statement": "An earlier version of the Foundation's anomaly capability page related maturity to how quickly teams become aware of unexpected cost increases, from State of FinOps practitioner responses: Run within hours; Walk up to a day or several days; Crawl a week or more. The page links the State of FinOps 2024 survey but does not state which survey year the data comes from.",
       "source": {
         "url": "https://www.finops.org/framework/previous-capabilities/manage-anomalies",
         "title": "FinOps Foundation: Manage Anomalies (previous Framework version)",
         "publisher": "FinOps Foundation"
       },
-      "verification": "S",
-      "checkedOn": "2026-10-14",
+      "verification": "V",
+      "checkedOn": "2026-10-27",
       "volatile": false,
       "clientVisible": true,
       "owner": "finops-cost-lead (agent); approver: product owner",
-      "lastReviewed": "2026-10-14",
-      "nextReview": "2027-04-14",
-      "notes": "Quoted in a search summary of the previous-version page; these are survey observations, not prescribed targets. Used as the cross-check for the LTM anomaly thresholds (CLM-FIN-123). Direct fetches of finops.org, focus.finops.org, provider sites (aws.amazon.com, docs.aws.amazon.com, learn.microsoft.com, azure.microsoft.com, cloud.google.com, oracle.com) and flexera.com are blocked from this environment; checked through web-search results that quote or link the page."
+      "lastReviewed": "2026-10-27",
+      "nextReview": "2027-04-27",
+      "notes": "CORRECTED 27 Oct 2026: the old statement attributed the data to State of FinOps 2024, which the page does not say. Bands quoted from the previous-capabilities page. Survey observations, not prescribed targets. Cross-check for the LTM anomaly thresholds (CLM-FIN-123); no threshold changes. Previously S (checked 2026-10-14). Read at the primary page on 27 Oct 2026 by finops-cost-lead; finops.org, data.finops.org, docs.aws.amazon.com, learn.microsoft.com, docs.cloud.google.com, docs.oracle.com and karpenter.sh were reachable from this environment."
     },
     {
       "id": "CLM-FIN-040",
@@ -5658,23 +5652,24 @@
       ],
       "kind": "market_data",
       "jurisdiction": "global",
-      "statement": "State of FinOps 2026 (n = 1,192): nine in ten respondents (90%) are asked to manage SaaS spend, 64% software licensing and 48% data centre spend.",
+      "statement": "State of FinOps 2026 (n = 1,192): 90% of respondents manage SaaS spend or plan to (the Linux Foundation release: 'nine of 10 practitioners are now being asked to manage SaaS'), 64% manage software licensing and 48% data centre spend.",
       "source": {
         "url": "https://www.linuxfoundation.org/press/state-of-finops-survey-ai-value-and-skills-top-priorities-as-finops-matures-across-technology-value-98-manage-ai-90-saas-64-licensing-48-data-center-1",
         "title": "Linux Foundation press release: State of FinOps 2026",
         "publisher": "Linux Foundation / FinOps Foundation",
         "secondaryUrls": [
-          "https://www.usu.com/en/blog/6-takeaways-from-the-state-of-finops-report-2026"
+          "https://www.usu.com/en/blog/6-takeaways-from-the-state-of-finops-report-2026",
+          "https://data.finops.org/"
         ]
       },
       "verification": "V",
-      "checkedOn": "2026-10-14",
+      "checkedOn": "2026-10-27",
       "volatile": true,
       "clientVisible": true,
       "owner": "finops-cost-lead (agent); approver: product owner",
-      "lastReviewed": "2026-10-14",
-      "nextReview": "2027-01-12",
-      "notes": "Licensing and data centre shares quoted from the release; SaaS described there as 'nine of 10'. One secondary summary says '90% manage SaaS (or plan to)'; show as 'about nine in ten' to avoid overstating. Direct fetches of finops.org, focus.finops.org, provider sites (aws.amazon.com, docs.aws.amazon.com, learn.microsoft.com, azure.microsoft.com, cloud.google.com, oracle.com) and flexera.com are blocked from this environment; checked through web-search results that quote or link the page."
+      "lastReviewed": "2026-10-27",
+      "nextReview": "2027-01-25",
+      "notes": "CORRECTED 27 Oct 2026: the report site (data.finops.org) says '90% of respondents now manage SaaS or have plans to', so the share includes those planning to; licensing 64% and data centre 48% read in the release and on the report site. Read at the primary page on 27 Oct 2026 by finops-cost-lead; finops.org, data.finops.org, docs.aws.amazon.com, learn.microsoft.com, docs.cloud.google.com, docs.oracle.com and karpenter.sh were reachable from this environment."
     },
     {
       "id": "CLM-FIN-046",
@@ -5683,23 +5678,23 @@
       ],
       "kind": "market_data",
       "jurisdiction": "global",
-      "statement": "State of FinOps 2026: 57% of respondents manage private cloud spend.",
+      "statement": "State of FinOps 2026 (n = 1,192): 57% of respondents manage private cloud spend.",
       "source": {
-        "url": "https://finout.io/blog/state-of-finops-2026-report-key-trends-insights-and-what-comes-next",
-        "title": "Finout: State of FinOps 2026 report key trends",
-        "publisher": "Finout (secondary)",
+        "url": "https://data.finops.org/",
+        "title": "FinOps Foundation: State of FinOps 2026 Report",
+        "publisher": "FinOps Foundation",
         "secondaryUrls": [
-          "https://data.finops.org/"
+          "https://www.linuxfoundation.org/press/state-of-finops-survey-ai-value-and-skills-top-priorities-as-finops-matures-across-technology-value-98-manage-ai-90-saas-64-licensing-48-data-center-1"
         ]
       },
-      "verification": "S",
-      "checkedOn": "2026-10-14",
+      "verification": "V",
+      "checkedOn": "2026-10-27",
       "volatile": true,
-      "clientVisible": false,
+      "clientVisible": true,
       "owner": "finops-cost-lead (agent); approver: product owner",
-      "lastReviewed": "2026-10-14",
-      "nextReview": "2027-01-12",
-      "notes": "Secondary summary only; consultant-only until read on data.finops.org. Direct fetches of finops.org, focus.finops.org, provider sites (aws.amazon.com, docs.aws.amazon.com, learn.microsoft.com, azure.microsoft.com, cloud.google.com, oracle.com) and flexera.com are blocked from this environment; checked through web-search results that quote or link the page."
+      "lastReviewed": "2026-10-27",
+      "nextReview": "2027-01-25",
+      "notes": "'57% manage private cloud' read on the report site (data.finops.org) and in the Linux Foundation release of 19 Feb 2026. Client-visible now that it is read at source; not referenced by any engine file. Previously S (checked 2026-10-14). Read at the primary page on 27 Oct 2026 by finops-cost-lead; finops.org, data.finops.org, docs.aws.amazon.com, learn.microsoft.com, docs.cloud.google.com, docs.oracle.com and karpenter.sh were reachable from this environment."
     },
     {
       "id": "CLM-FIN-047",
@@ -5708,24 +5703,23 @@
       ],
       "kind": "market_data",
       "jurisdiction": "global",
-      "statement": "State of FinOps 2026: workload optimisation and waste reduction remains practitioners' top current priority, with many reporting diminishing returns after the large, obvious waste has been addressed; FinOps for AI is the top forward-looking priority.",
+      "statement": "State of FinOps 2026: workload optimisation and waste reduction remain the single top current priority for FinOps teams; mature practitioners report diminishing returns on traditional optimisation approaches; FinOps for AI is the top forward-looking priority.",
       "source": {
-        "url": "https://www.linuxfoundation.org/press/state-of-finops-survey-ai-value-and-skills-top-priorities-as-finops-matures-across-technology-value-98-manage-ai-90-saas-64-licensing-48-data-center-1",
-        "title": "Linux Foundation press release: State of FinOps 2026",
-        "publisher": "Linux Foundation / FinOps Foundation",
+        "url": "https://data.finops.org/",
+        "title": "FinOps Foundation: State of FinOps 2026 Report",
+        "publisher": "FinOps Foundation",
         "secondaryUrls": [
-          "https://finout.io/blog/state-of-finops-2026-report-key-trends-insights-and-what-comes-next",
-          "https://www.arrow.com/globalecs/ie/arrow-channel-advisor/the-future-of-finops-what-comes-next-in-the-era-of-cloud/"
+          "https://www.linuxfoundation.org/press/state-of-finops-survey-ai-value-and-skills-top-priorities-as-finops-matures-across-technology-value-98-manage-ai-90-saas-64-licensing-48-data-center-1"
         ]
       },
-      "verification": "S",
-      "checkedOn": "2026-10-14",
+      "verification": "V",
+      "checkedOn": "2026-10-27",
       "volatile": true,
       "clientVisible": true,
       "owner": "finops-cost-lead (agent); approver: product owner",
-      "lastReviewed": "2026-10-14",
-      "nextReview": "2027-01-12",
-      "notes": "Priority wording comes from secondary summaries citing the report (one gives 50% ranking optimisation first; not used). The release headline names AI, value and skills as top priorities. Direct fetches of finops.org, focus.finops.org, provider sites (aws.amazon.com, docs.aws.amazon.com, learn.microsoft.com, azure.microsoft.com, cloud.google.com, oracle.com) and flexera.com are blocked from this environment; checked through web-search results that quote or link the page."
+      "lastReviewed": "2026-10-27",
+      "nextReview": "2027-01-25",
+      "notes": "Wording read on the report site (data.finops.org). The Linux Foundation release says the same about FinOps for AI and calls core optimisation 'table stakes'. The Finout and Arrow secondary links are removed. Previously S (checked 2026-10-14). Read at the primary page on 27 Oct 2026 by finops-cost-lead; finops.org, data.finops.org, docs.aws.amazon.com, learn.microsoft.com, docs.cloud.google.com, docs.oracle.com and karpenter.sh were reachable from this environment."
     },
     {
       "id": "CLM-FIN-060",
@@ -5925,20 +5919,20 @@
       ],
       "kind": "provider",
       "jurisdiction": "global",
-      "statement": "Oracle Cloud Infrastructure: preemptible instances run on unused capacity at a 50% discount compared with on-demand rates and can be reclaimed after a short notice.",
+      "statement": "Oracle Cloud Infrastructure: preemptible capacity costs 50% less than on-demand capacity in all regions; it can be reclaimed at any time, and an instance preemption event is emitted two minutes before termination begins.",
       "source": {
-        "url": "https://blogs.oracle.com/cloud-infrastructure/post/announcing-preemptible-instances-a-new-kind-of-compute-instance-available-at-a-50-discount",
-        "title": "Oracle: Announcing preemptible instances at a 50% discount",
+        "url": "https://docs.oracle.com/en-us/iaas/Content/Compute/Concepts/preemptible.htm",
+        "title": "Oracle Cloud Infrastructure documentation: Preemptible Instances",
         "publisher": "Oracle"
       },
-      "verification": "P",
-      "checkedOn": "2026-10-14",
+      "verification": "V",
+      "checkedOn": "2026-10-27",
       "volatile": true,
       "clientVisible": false,
       "owner": "finops-cost-lead (agent); approver: product owner",
-      "lastReviewed": "2026-10-14",
-      "nextReview": "2027-01-12",
-      "notes": "Oracle's own blog, several years old; not confirmed on a current OCI pricing or documentation page. Consultant-only and not used to quantify LEV-06 until confirmed on oracle.com pricing. Direct fetches of finops.org, focus.finops.org, provider sites (aws.amazon.com, docs.aws.amazon.com, learn.microsoft.com, azure.microsoft.com, cloud.google.com, oracle.com) and flexera.com are blocked from this environment; checked through web-search results that quote or link the page."
+      "lastReviewed": "2026-10-27",
+      "nextReview": "2027-01-25",
+      "notes": "Read on the OCI documentation page (replaces the old Oracle blog source). Kept consultant-only and not used to quantify LEV-06 for OCI: whether to add 50% as the OCI Spot maximum in value-rules.json and market-data.json is an owner decision (it would change figures for OCI estates). Previously P (checked 2026-10-14). Read at the primary page on 27 Oct 2026 by finops-cost-lead; finops.org, data.finops.org, docs.aws.amazon.com, learn.microsoft.com, docs.cloud.google.com, docs.oracle.com and karpenter.sh were reachable from this environment."
     },
     {
       "id": "CLM-FIN-069",
@@ -5947,15 +5941,25 @@
       ],
       "kind": "provider",
       "jurisdiction": "global",
-      "statement": "Published maximum commitment discounts for Oracle Cloud Infrastructure, IBM Cloud and Alibaba Cloud, usable as a LEV-01 upper rate.",
-      "verification": "UNSOURCED",
-      "checkedOn": "2026-10-14",
+      "statement": "Published maximum commitment discounts: IBM Cloud virtual server reservations for VPC, up to 60% with 1-year or 3-year terms (bare metal servers for VPC up to 35% for 1 year, 55% for 3 years); Alibaba Cloud savings plans, up to 76% off pay-as-you-go. Oracle Cloud Infrastructure publishes no standard commitment discount rate: Universal Credits discounts are set in the order.",
+      "verification": "P",
+      "checkedOn": "2026-10-27",
       "volatile": true,
       "clientVisible": false,
       "owner": "finops-cost-lead (agent); approver: product owner",
-      "lastReviewed": "2026-10-14",
-      "nextReview": "2027-01-12",
-      "basisNote": "No trusted source read in F1 or F2. Settle: each provider's current pricing or documentation page for commitment or reserved pricing, with date. Until then LEV-01 is not quantified for these providers (DESIGN.md 10.2)."
+      "lastReviewed": "2026-10-27",
+      "nextReview": "2027-01-25",
+      "basisNote": "IBM and Alibaba figures read at source on 27 Oct 2026 (V for those parts). The OCI part is P: oracle.com returned 403 to this environment, and the statement that no standard rate is published rests on search results. Settle: read the Oracle Universal Credits page. Using the IBM or Alibaba maxima for LEV-01 is an owner decision; until then LEV-01 stays not quantified for these providers (DESIGN.md 10.2).",
+      "source": {
+        "url": "https://www.ibm.com/products/cloud/pricing/reservations",
+        "title": "IBM Cloud Reservations pricing; Alibaba Cloud savings plan FAQ; Oracle Universal Credits",
+        "publisher": "IBM; Alibaba Cloud; Oracle",
+        "secondaryUrls": [
+          "https://www.alibabacloud.com/help/en/ecs/cost-optimization-faqs",
+          "https://www.oracle.com/cloud/universal-credits/"
+        ]
+      },
+      "notes": "Was UNSOURCED. IBM: 'Reduce your spend by up to 60% with 1-year or 3-year virtual server capacity reservations' (IBM Cloud Reservations page). Alibaba: 'Reduces pay-as-you-go costs by up to 76%' (Alibaba Cloud help centre, updated 8 Oct 2026; the product page still says up to 70%). Consultant-only. Engine impact: none now; levers.json LEV-01 rows for oci, ibm and alibaba still read 'No published maximum read yet' with status UNSOURCED and should be updated when the owner decides. Previously UNSOURCED (checked 2026-10-14). Read at the primary page on 27 Oct 2026 by finops-cost-lead; finops.org, data.finops.org, docs.aws.amazon.com, learn.microsoft.com, docs.cloud.google.com, docs.oracle.com and karpenter.sh were reachable from this environment."
     },
     {
       "id": "CLM-FIN-070",
@@ -6114,14 +6118,14 @@
         "title": "Managing your costs with AWS Budgets",
         "publisher": "Amazon Web Services"
       },
-      "verification": "P",
-      "checkedOn": "2026-10-14",
+      "verification": "V",
+      "checkedOn": "2026-10-27",
       "volatile": false,
       "clientVisible": true,
       "owner": "finops-cost-lead (agent); approver: product owner",
-      "lastReviewed": "2026-10-14",
-      "nextReview": "2027-04-14",
-      "notes": "Primary URL known; not re-read in F2. Direct fetches of finops.org, focus.finops.org, provider sites (aws.amazon.com, docs.aws.amazon.com, learn.microsoft.com, azure.microsoft.com, cloud.google.com, oracle.com) and flexera.com are blocked from this environment; checked through web-search results that quote or link the page."
+      "lastReviewed": "2026-10-27",
+      "nextReview": "2027-04-27",
+      "notes": "Read on the AWS Budgets page: alerts on actual and forecasted spend, cost, usage, RI and Savings Plans utilisation and coverage budgets. Previously P (checked 2026-10-14). Read at the primary page on 27 Oct 2026 by finops-cost-lead; finops.org, data.finops.org, docs.aws.amazon.com, learn.microsoft.com, docs.cloud.google.com, docs.oracle.com and karpenter.sh were reachable from this environment."
     },
     {
       "id": "CLM-FIN-086",
@@ -6159,16 +6163,19 @@
       "source": {
         "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-lifecycle-mgmt.html",
         "title": "Managing the lifecycle of objects (Amazon S3)",
-        "publisher": "Amazon Web Services"
+        "publisher": "Amazon Web Services",
+        "secondaryUrls": [
+          "https://docs.aws.amazon.com/AmazonS3/latest/userguide/intelligent-tiering-overview.html"
+        ]
       },
-      "verification": "P",
-      "checkedOn": "2026-10-14",
+      "verification": "V",
+      "checkedOn": "2026-10-27",
       "volatile": false,
       "clientVisible": true,
       "owner": "finops-cost-lead (agent); approver: product owner",
-      "lastReviewed": "2026-10-14",
-      "nextReview": "2027-04-14",
-      "notes": "Primary URL known; behaviour confirmed only by secondary summaries in search results. Direct fetches of finops.org, focus.finops.org, provider sites (aws.amazon.com, docs.aws.amazon.com, learn.microsoft.com, azure.microsoft.com, cloud.google.com, oracle.com) and flexera.com are blocked from this environment; checked through web-search results that quote or link the page."
+      "lastReviewed": "2026-10-27",
+      "nextReview": "2027-04-27",
+      "notes": "Lifecycle transition and expiration actions read on the S3 lifecycle page; Intelligent-Tiering ('monitors access patterns and automatically moves objects to the Infrequent Access tier when they haven't been accessed for 30 consecutive days') read on the Intelligent-Tiering page. Previously P (checked 2026-10-14). Read at the primary page on 27 Oct 2026 by finops-cost-lead; finops.org, data.finops.org, docs.aws.amazon.com, learn.microsoft.com, docs.cloud.google.com, docs.oracle.com and karpenter.sh were reachable from this environment."
     },
     {
       "id": "CLM-FIN-088",
@@ -6206,16 +6213,19 @@
       "source": {
         "url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/spot-instance-termination-notices.html",
         "title": "Spot Instance interruption notices",
-        "publisher": "Amazon Web Services"
+        "publisher": "Amazon Web Services",
+        "secondaryUrls": [
+          "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/rebalance-recommendations.html"
+        ]
       },
-      "verification": "S",
-      "checkedOn": "2026-10-14",
+      "verification": "V",
+      "checkedOn": "2026-10-27",
       "volatile": false,
       "clientVisible": true,
       "owner": "finops-cost-lead (agent); approver: product owner",
-      "lastReviewed": "2026-10-14",
-      "nextReview": "2027-04-14",
-      "notes": "Two-minute notice confirmed by secondary sources only in this session; primary page not quoted. Direct fetches of finops.org, focus.finops.org, provider sites (aws.amazon.com, docs.aws.amazon.com, learn.microsoft.com, azure.microsoft.com, cloud.google.com, oracle.com) and flexera.com are blocked from this environment; checked through web-search results that quote or link the page."
+      "lastReviewed": "2026-10-27",
+      "nextReview": "2027-04-27",
+      "notes": "'A warning that is issued two minutes before Amazon EC2 stops or terminates your Spot Instance', available in instance metadata and EventBridge, read on the interruption-notice page (except hibernation, which gets no two-minute warning). The rebalance recommendation 'can arrive sooner than the two-minute Spot Instance interruption notice' (rebalance page). Previously S (checked 2026-10-14). Read at the primary page on 27 Oct 2026 by finops-cost-lead; finops.org, data.finops.org, docs.aws.amazon.com, learn.microsoft.com, docs.cloud.google.com, docs.oracle.com and karpenter.sh were reachable from this environment."
     },
     {
       "id": "CLM-FIN-090",
@@ -6226,22 +6236,22 @@
       "jurisdiction": "global",
       "statement": "Microsoft Cost Management exports can deliver cost and usage data in the FOCUS format (one dataset combining actual and amortised cost), alongside price sheet and reservation datasets; the enhanced exports experience became generally available in April 2025.",
       "source": {
-        "url": "https://azure.microsoft.com/updates/export-cost-using-focus",
-        "title": "Azure update: Export cost details using FOCUS",
+        "url": "https://learn.microsoft.com/en-us/azure/cost-management-billing/costs/tutorial-improved-exports",
+        "title": "Tutorial: Create and manage Cost Management exports (Microsoft Learn)",
         "publisher": "Microsoft",
         "secondaryUrls": [
-          "https://focus.finops.org/get-started/microsoft/",
-          "https://azure.microsoft.com/blog/democratizing-finops-transform-your-practice-with-focus-and-microsoft-fabric/"
+          "https://azure.microsoft.com/en-us/blog/microsoft-cost-management-updates-april-2025/",
+          "https://learn.microsoft.com/en-us/azure/cost-management-billing/dataset-schema/cost-usage-details-focus"
         ]
       },
-      "verification": "S",
-      "checkedOn": "2026-10-14",
+      "verification": "V",
+      "checkedOn": "2026-10-27",
       "volatile": true,
       "clientVisible": true,
       "owner": "finops-cost-lead (agent); approver: product owner",
-      "lastReviewed": "2026-10-14",
-      "nextReview": "2027-01-12",
-      "notes": "Reported from Microsoft blog and update pages in search results; the Learn export documentation was not reached, and the FOCUS version Microsoft exports was not confirmed (VALIDATION.md row 8 notes 1.2 preview from secondary sources). Direct fetches of finops.org, focus.finops.org, provider sites (aws.amazon.com, docs.aws.amazon.com, learn.microsoft.com, azure.microsoft.com, cloud.google.com, oracle.com) and flexera.com are blocked from this environment; checked through web-search results that quote or link the page."
+      "lastReviewed": "2026-10-27",
+      "nextReview": "2027-01-25",
+      "notes": "Learn: 'Cost and usage details (FOCUS) ... It combines actual and amortized costs', with price sheet and reservation datasets. Microsoft's Cost Management update of 30 April 2025 announced 'the general availability of the enhanced Exports capability across all clouds and regions'. The FOCUS schema page lists versions 1.0, 1.0r2 and 1.2-preview. The old Azure update address now returns an empty updates page and is replaced. Previously S (checked 2026-10-14). Read at the primary page on 27 Oct 2026 by finops-cost-lead; finops.org, data.finops.org, docs.aws.amazon.com, learn.microsoft.com, docs.cloud.google.com, docs.oracle.com and karpenter.sh were reachable from this environment."
     },
     {
       "id": "CLM-FIN-091",
@@ -6303,14 +6313,14 @@
         "title": "Assign policy definitions for tag compliance",
         "publisher": "Microsoft"
       },
-      "verification": "P",
-      "checkedOn": "2026-10-14",
+      "verification": "V",
+      "checkedOn": "2026-10-27",
       "volatile": false,
       "clientVisible": true,
       "owner": "finops-cost-lead (agent); approver: product owner",
-      "lastReviewed": "2026-10-14",
-      "nextReview": "2027-04-14",
-      "notes": "Primary URL known; only secondary summaries in search results. Direct fetches of finops.org, focus.finops.org, provider sites (aws.amazon.com, docs.aws.amazon.com, learn.microsoft.com, azure.microsoft.com, cloud.google.com, oracle.com) and flexera.com are blocked from this environment; checked through web-search results that quote or link the page."
+      "lastReviewed": "2026-10-27",
+      "nextReview": "2027-04-27",
+      "notes": "Built-in definitions read on the Learn page: 'Require a tag on resources' (deny), 'Add a tag to resources' (modify), 'Inherit a tag from the resource group' (modify) and others. Previously P (checked 2026-10-14). Read at the primary page on 27 Oct 2026 by finops-cost-lead; finops.org, data.finops.org, docs.aws.amazon.com, learn.microsoft.com, docs.cloud.google.com, docs.oracle.com and karpenter.sh were reachable from this environment."
     },
     {
       "id": "CLM-FIN-094",
@@ -6319,24 +6329,24 @@
       ],
       "kind": "provider",
       "jurisdiction": "global",
-      "statement": "The cost analysis add-on for Azure Kubernetes Service, built on OpenCost, breaks cluster infrastructure cost down by Kubernetes constructs such as namespace in Cost Management for Standard and Premium tier clusters; it became generally available in 2024.",
+      "statement": "The cost analysis add-on for Azure Kubernetes Service, built on OpenCost, shows cluster cost by Kubernetes constructs such as cluster and namespace in Cost Management, for Standard and Premium tier clusters (not Free); Microsoft announced the AKS cost views as generally available in April 2024.",
       "source": {
-        "url": "https://learn.microsoft.com/en-us/azure/aks/understand-aks-costs",
-        "title": "Understand Azure Kubernetes Service (AKS) usage and costs",
+        "url": "https://learn.microsoft.com/en-us/azure/aks/cost-analysis",
+        "title": "Azure Kubernetes Service (AKS) cost analysis (Microsoft Learn)",
         "publisher": "Microsoft",
         "secondaryUrls": [
-          "https://azure.microsoft.com/updates/public-preview-cost-analysis-addon-for-aks/",
-          "https://opencost.io/blog/aks-cost-analysis"
+          "https://learn.microsoft.com/en-us/azure/aks/understand-aks-costs",
+          "https://azure.microsoft.com/en-us/blog/microsoft-cost-management-updates-march-2024/"
         ]
       },
-      "verification": "S",
-      "checkedOn": "2026-10-14",
+      "verification": "V",
+      "checkedOn": "2026-10-27",
       "volatile": false,
       "clientVisible": true,
       "owner": "finops-cost-lead (agent); approver: product owner",
-      "lastReviewed": "2026-10-14",
-      "nextReview": "2027-04-14",
-      "notes": "From Azure update pages and the OpenCost blog in search results; the Learn page content was not returned. Direct fetches of finops.org, focus.finops.org, provider sites (aws.amazon.com, docs.aws.amazon.com, learn.microsoft.com, azure.microsoft.com, cloud.google.com, oracle.com) and flexera.com are blocked from this environment; checked through web-search results that quote or link the page."
+      "lastReviewed": "2026-10-27",
+      "nextReview": "2027-04-27",
+      "notes": "Add-on, OpenCost, namespace views and the Standard or Premium tier prerequisite read on the Learn cost-analysis page. GA wording from Microsoft's Cost Management blog of 10 April 2024 ('the AKS cost views are now generally available in Cost analysis'). Kubernetes cost views are limited to EA and MCA offer types. OpenCost blog link removed. Previously S (checked 2026-10-14). Read at the primary page on 27 Oct 2026 by finops-cost-lead; finops.org, data.finops.org, docs.aws.amazon.com, learn.microsoft.com, docs.cloud.google.com, docs.oracle.com and karpenter.sh were reachable from this environment."
     },
     {
       "id": "CLM-FIN-095",
@@ -6367,20 +6377,20 @@
       ],
       "kind": "provider",
       "jurisdiction": "global",
-      "statement": "Start/Stop VMs v2 (Microsoft) schedules Azure virtual machines to start and stop, for example outside working hours.",
+      "statement": "Start/Stop VMs v2 (Microsoft) starts or stops Azure virtual machines on user-defined schedules, for example outside working hours. Microsoft has moved its documentation to the previous-versions archive and states that no further development or enhancements will be made except to stay on supported components.",
       "source": {
-        "url": "https://learn.microsoft.com/en-us/azure/azure-functions/start-stop-vms/overview",
-        "title": "Start/Stop VMs v2 overview",
+        "url": "https://learn.microsoft.com/en-us/previous-versions/azure/functions/start-stop-vms/overview",
+        "title": "Start/Stop VMs v2 overview (Microsoft Learn, previous versions)",
         "publisher": "Microsoft"
       },
-      "verification": "P",
-      "checkedOn": "2026-10-14",
+      "verification": "V",
+      "checkedOn": "2026-10-27",
       "volatile": false,
       "clientVisible": true,
       "owner": "finops-cost-lead (agent); approver: product owner",
-      "lastReviewed": "2026-10-14",
-      "nextReview": "2027-04-14",
-      "notes": "Primary URL known; not re-read in F2. Direct fetches of finops.org, focus.finops.org, provider sites (aws.amazon.com, docs.aws.amazon.com, learn.microsoft.com, azure.microsoft.com, cloud.google.com, oracle.com) and flexera.com are blocked from this environment; checked through web-search results that quote or link the page."
+      "lastReviewed": "2026-10-27",
+      "nextReview": "2027-04-27",
+      "notes": "Read on Learn; the old address now resolves to the previous-versions archive. Impact to review (not changed here): playbook entry PB.FIN.LEV-04.azure.platform recommends 'Deploy Start/Stop VMs v2'; the owner may want an alternative option (for example a scheduled automation the client already runs) listed beside it. The capability statement is still true. Previously P (checked 2026-10-14). Read at the primary page on 27 Oct 2026 by finops-cost-lead; finops.org, data.finops.org, docs.aws.amazon.com, learn.microsoft.com, docs.cloud.google.com, docs.oracle.com and karpenter.sh were reachable from this environment."
     },
     {
       "id": "CLM-FIN-097",
@@ -6389,7 +6399,7 @@
       ],
       "kind": "provider",
       "jurisdiction": "global",
-      "statement": "Azure Blob Storage lifecycle management runs rules daily to move blobs to cooler tiers (hot to cool, cold or archive) or delete them, scoped by account, container or prefix.",
+      "statement": "Azure Blob Storage lifecycle management policies move current versions, previous versions or snapshots of blobs to cooler tiers, or delete them, using rules that apply to a whole storage account, to selected containers, or to blobs filtered by name prefix or blob index tag. An active policy runs periodically; new or changed rules can take up to 24 hours to take effect.",
       "source": {
         "url": "https://learn.microsoft.com/en-us/azure/storage/blobs/lifecycle-management-overview",
         "title": "Azure Blob Storage lifecycle management overview",
@@ -6398,14 +6408,14 @@
           "https://docs.azure.cn/es-es/storage/blobs/lifecycle-management-overview"
         ]
       },
-      "verification": "S",
-      "checkedOn": "2026-10-14",
+      "verification": "V",
+      "checkedOn": "2026-10-27",
       "volatile": false,
       "clientVisible": true,
       "owner": "finops-cost-lead (agent); approver: product owner",
-      "lastReviewed": "2026-10-14",
-      "nextReview": "2027-04-14",
-      "notes": "Behaviour from secondary summaries and a non-English Microsoft mirror in search results. Direct fetches of finops.org, focus.finops.org, provider sites (aws.amazon.com, docs.aws.amazon.com, learn.microsoft.com, azure.microsoft.com, cloud.google.com, oracle.com) and flexera.com are blocked from this environment; checked through web-search results that quote or link the page."
+      "lastReviewed": "2026-10-27",
+      "nextReview": "2027-04-27",
+      "notes": "CORRECTED 27 Oct 2026: the old statement said rules run 'daily'; the current Learn page says an active policy 'processes objects periodically' and that changes can take up to 24 hours. Provider-statement PRV-FIN-27 aligned. No playbook text depends on 'daily'. Previously S (checked 2026-10-14). Read at the primary page on 27 Oct 2026 by finops-cost-lead; finops.org, data.finops.org, docs.aws.amazon.com, learn.microsoft.com, docs.cloud.google.com, docs.oracle.com and karpenter.sh were reachable from this environment."
     },
     {
       "id": "CLM-FIN-098",
@@ -6414,20 +6424,20 @@
       ],
       "kind": "provider",
       "jurisdiction": "global",
-      "statement": "Azure Spot Virtual Machines receive about 30 seconds' notice before eviction.",
+      "statement": "Azure evicts Spot Virtual Machines with 30 seconds' notice when it needs the capacity back; in-VM notice through Scheduled Events is best effort, up to 30 seconds before eviction.",
       "source": {
         "url": "https://learn.microsoft.com/en-us/azure/virtual-machines/spot-vms",
         "title": "Use Azure Spot Virtual Machines",
         "publisher": "Microsoft"
       },
-      "verification": "S",
-      "checkedOn": "2026-10-14",
+      "verification": "V",
+      "checkedOn": "2026-10-27",
       "volatile": false,
       "clientVisible": true,
       "owner": "finops-cost-lead (agent); approver: product owner",
-      "lastReviewed": "2026-10-14",
-      "nextReview": "2027-04-14",
-      "notes": "Secondary sources only in this session. Direct fetches of finops.org, focus.finops.org, provider sites (aws.amazon.com, docs.aws.amazon.com, learn.microsoft.com, azure.microsoft.com, cloud.google.com, oracle.com) and flexera.com are blocked from this environment; checked through web-search results that quote or link the page."
+      "lastReviewed": "2026-10-27",
+      "nextReview": "2027-04-27",
+      "notes": "Learn: 'the Azure infrastructure will evict Azure Spot Virtual Machines with 30-seconds notice'; Scheduled Events 'are delivered on a best effort basis up to 30 seconds prior to the eviction'. Previously S (checked 2026-10-14). Read at the primary page on 27 Oct 2026 by finops-cost-lead; finops.org, data.finops.org, docs.aws.amazon.com, learn.microsoft.com, docs.cloud.google.com, docs.oracle.com and karpenter.sh were reachable from this environment."
     },
     {
       "id": "CLM-FIN-100",
@@ -6535,21 +6545,21 @@
       "jurisdiction": "global",
       "statement": "Google Cloud Storage Object Lifecycle Management sets rules to change storage class or delete objects; Autoclass moves objects to colder classes automatically based on last access.",
       "source": {
-        "url": "https://cloud.google.com/storage/docs/lifecycle",
-        "title": "Object Lifecycle Management",
+        "url": "https://docs.cloud.google.com/storage/docs/lifecycle",
+        "title": "Object Lifecycle Management (Google Cloud Storage)",
         "publisher": "Google Cloud",
         "secondaryUrls": [
-          "https://cloud.google.com/storage/docs/autoclass"
+          "https://docs.cloud.google.com/storage/docs/autoclass"
         ]
       },
-      "verification": "S",
-      "checkedOn": "2026-10-14",
+      "verification": "V",
+      "checkedOn": "2026-10-27",
       "volatile": false,
       "clientVisible": true,
       "owner": "finops-cost-lead (agent); approver: product owner",
-      "lastReviewed": "2026-10-14",
-      "nextReview": "2027-04-14",
-      "notes": "Secondary summaries in search results; primary pages not quoted. Direct fetches of finops.org, focus.finops.org, provider sites (aws.amazon.com, docs.aws.amazon.com, learn.microsoft.com, azure.microsoft.com, cloud.google.com, oracle.com) and flexera.com are blocked from this environment; checked through web-search results that quote or link the page."
+      "lastReviewed": "2026-10-27",
+      "nextReview": "2027-04-27",
+      "notes": "Lifecycle actions (Delete, SetStorageClass, AbortIncompleteMultipartUpload) read on the lifecycle page; Autoclass 'automatically transitions objects in your bucket to appropriate storage classes', and an object not accessed for 30 days moves to Nearline. Addresses updated to docs.cloud.google.com, where cloud.google.com now redirects. Previously S (checked 2026-10-14). Read at the primary page on 27 Oct 2026 by finops-cost-lead; finops.org, data.finops.org, docs.aws.amazon.com, learn.microsoft.com, docs.cloud.google.com, docs.oracle.com and karpenter.sh were reachable from this environment."
     },
     {
       "id": "CLM-FIN-105",
@@ -6560,18 +6570,18 @@
       "jurisdiction": "global",
       "statement": "Compute Engine instance schedules start and stop VMs at set times.",
       "source": {
-        "url": "https://cloud.google.com/compute/docs/instances/schedule-instance-start-stop",
-        "title": "Schedule a VM to start and stop",
+        "url": "https://docs.cloud.google.com/compute/docs/instances/schedule-instance-start-stop",
+        "title": "Schedule a VM to start and stop (Compute Engine)",
         "publisher": "Google Cloud"
       },
-      "verification": "P",
-      "checkedOn": "2026-10-14",
+      "verification": "V",
+      "checkedOn": "2026-10-27",
       "volatile": false,
       "clientVisible": true,
       "owner": "finops-cost-lead (agent); approver: product owner",
-      "lastReviewed": "2026-10-14",
-      "nextReview": "2027-04-14",
-      "notes": "Primary URL known; not re-read in F2. Direct fetches of finops.org, focus.finops.org, provider sites (aws.amazon.com, docs.aws.amazon.com, learn.microsoft.com, azure.microsoft.com, cloud.google.com, oracle.com) and flexera.com are blocked from this environment; checked through web-search results that quote or link the page."
+      "lastReviewed": "2026-10-27",
+      "nextReview": "2027-04-27",
+      "notes": "'Instance schedules let you start and stop virtual machine (VM) instances automatically.' Address updated to docs.cloud.google.com (redirect). Previously P (checked 2026-10-14). Read at the primary page on 27 Oct 2026 by finops-cost-lead; finops.org, data.finops.org, docs.aws.amazon.com, learn.microsoft.com, docs.cloud.google.com, docs.oracle.com and karpenter.sh were reachable from this environment."
     },
     {
       "id": "CLM-FIN-106",
@@ -6580,20 +6590,23 @@
       ],
       "kind": "provider",
       "jurisdiction": "global",
-      "statement": "Google Cloud Spot VMs and preemptible VMs receive about 30 seconds' notice before preemption.",
+      "statement": "Google Cloud Spot VMs receive a preemption notice through the VM's metadata. By default (notice duration 0 seconds) there is no dedicated delay before shutdown starts; a 120-second notice duration can be set when the VM is created, which Google recommends for workloads that need one. The shutdown period itself is best effort and up to 30 seconds. Preemptible VMs have the same best-effort shutdown period of up to 30 seconds and always stop after 24 hours.",
       "source": {
-        "url": "https://cloud.google.com/compute/docs/instances/spot",
-        "title": "Spot VMs",
-        "publisher": "Google Cloud"
+        "url": "https://docs.cloud.google.com/compute/docs/instances/spot",
+        "title": "Spot VMs (Compute Engine)",
+        "publisher": "Google Cloud",
+        "secondaryUrls": [
+          "https://docs.cloud.google.com/compute/docs/instances/preemptible"
+        ]
       },
-      "verification": "S",
-      "checkedOn": "2026-10-14",
+      "verification": "V",
+      "checkedOn": "2026-10-27",
       "volatile": false,
       "clientVisible": true,
       "owner": "finops-cost-lead (agent); approver: product owner",
-      "lastReviewed": "2026-10-14",
-      "nextReview": "2027-04-14",
-      "notes": "Secondary sources only in this session. Direct fetches of finops.org, focus.finops.org, provider sites (aws.amazon.com, docs.aws.amazon.com, learn.microsoft.com, azure.microsoft.com, cloud.google.com, oracle.com) and flexera.com are blocked from this environment; checked through web-search results that quote or link the page."
+      "lastReviewed": "2026-10-27",
+      "nextReview": "2027-04-27",
+      "notes": "CORRECTED 27 Oct 2026: the old statement ('about 30 seconds' notice') confused the shutdown period with a notice. Read on the Spot VMs and preemptible VMs pages. Engine impact (not changed here; owner to approve): playbook entry PB.FIN.LEV-06.gcp.stack says 'handling the 30-second preemption notice'; suggested wording 'handling the preemption notice (set a 120-second notice duration for workloads that need time to shut down)'. Provider-statement PRV-FIN-46 aligned. No value or score changes. Previously S (checked 2026-10-14). Read at the primary page on 27 Oct 2026 by finops-cost-lead; finops.org, data.finops.org, docs.aws.amazon.com, learn.microsoft.com, docs.cloud.google.com, docs.oracle.com and karpenter.sh were reachable from this environment."
     },
     {
       "id": "CLM-FIN-107",
@@ -6678,23 +6691,23 @@
       ],
       "kind": "provider",
       "jurisdiction": "global",
-      "statement": "Karpenter is an open-source Kubernetes node autoscaler that provisions right-sized nodes for pending pods, consolidates empty or under-used nodes (deleting them or replacing them with cheaper ones) and can use Spot capacity with interruption handling.",
+      "statement": "Karpenter is an open-source node lifecycle management project for Kubernetes: it launches nodes that meet the needs of pods the scheduler cannot place, consolidates by deleting empty or under-used nodes or replacing them with cheaper ones, and on a Spot interruption warning drains the node while provisioning a replacement.",
       "source": {
         "url": "https://karpenter.sh/docs/",
         "title": "Karpenter documentation",
         "publisher": "Karpenter project",
         "secondaryUrls": [
-          "https://aws.amazon.com/blogs/containers/using-amazon-ec2-spot-instances-with-karpenter/"
+          "https://karpenter.sh/docs/concepts/disruption/"
         ]
       },
-      "verification": "S",
-      "checkedOn": "2026-10-14",
+      "verification": "V",
+      "checkedOn": "2026-10-27",
       "volatile": false,
       "clientVisible": true,
       "owner": "finops-cost-lead (agent); approver: product owner",
-      "lastReviewed": "2026-10-14",
-      "nextReview": "2027-04-14",
-      "notes": "Consolidation behaviour quoted from an AWS containers blog in search results; karpenter.sh documentation not reached. Named only as one option (alternatives: Cluster Autoscaler, provider-managed node autoprovisioning). Direct fetches of finops.org, focus.finops.org, provider sites (aws.amazon.com, docs.aws.amazon.com, learn.microsoft.com, azure.microsoft.com, cloud.google.com, oracle.com) and flexera.com are blocked from this environment; checked through web-search results that quote or link the page."
+      "lastReviewed": "2026-10-27",
+      "nextReview": "2027-04-27",
+      "notes": "Read on karpenter.sh (overview and disruption pages). Karpenter's own documentation does not call it an 'autoscaler', so the wording follows the project. Named only as one option (alternatives: Cluster Autoscaler, provider-managed node autoprovisioning). AWS containers blog link removed. Provider-statement PRV-FIN-62 aligned. Previously S (checked 2026-10-14). Read at the primary page on 27 Oct 2026 by finops-cost-lead; finops.org, data.finops.org, docs.aws.amazon.com, learn.microsoft.com, docs.cloud.google.com, docs.oracle.com and karpenter.sh were reachable from this environment."
     },
     {
       "id": "CLM-FIN-113",
@@ -6827,7 +6840,7 @@
       ],
       "kind": "threshold",
       "jurisdiction": "global",
-      "statement": "UN-04 allocation bands, measured by cost: Run = more than 90% of spend allocated to an accountable owner; Walk = 85-90%; Crawl = below 85% (70-84%, or below 70% where allocation is measured; owner decision 15 Oct 2026); Not yet = not measured. The band floors adopt the FinOps Foundation's current sample goals (Crawl about 70%, Walk 85%, Run more than 90%, CLM-FIN-035); turning sample goals into band floors and adding 'Not yet' are LTM's adaptation.",
+      "statement": "UN-04 allocation bands, measured by cost: Run = more than 90% of spend allocated to an accountable owner; Walk = 85-90%; Crawl = below 85% (70-84%, or below 70% where allocation is measured; owner decision 15 Oct 2026); Not yet = not measured. The band floors adopt the FinOps Foundation's current sample goals (Crawl at least 70%, Walk at least 85%, Run more than 90%, CLM-FIN-035); turning sample goals into band floors and adding 'Not yet' are LTM's adaptation.",
       "source": {
         "url": "https://www.finops.org/framework/maturity-model/",
         "title": "FinOps Foundation: FinOps Maturity Model (sample goals), adapted by LTM",
@@ -6837,15 +6850,15 @@
           "https://github.com/dixitashutosh007/ltm-accelerators/blob/main/docs/cio-readiness/finops-iq/design/DESIGN.md"
         ]
       },
-      "verification": "S",
-      "checkedOn": "2026-10-14",
+      "verification": "V",
+      "checkedOn": "2026-10-27",
       "volatile": true,
       "clientVisible": true,
       "owner": "finops-cost-lead (agent); approver: product owner",
-      "lastReviewed": "2026-10-14",
-      "nextReview": "2027-01-12",
+      "lastReviewed": "2026-10-27",
+      "nextReview": "2027-01-25",
       "basisNote": "DESIGN.md 3.5 and section 14 provided that Foundation example KPIs, if found in F2, replace LTM's 40/70/90 bands. Measured by cost, not resource count, because unallocated spend is what cannot be owned or charged back. Resolves the legacy 80% vs 85% inconsistency (VALIDATION.md row 25), which came from mixing the earlier (80%) and current (85%) Foundation Walk goals. Sensitivity: one capability moves one level.",
-      "notes": "Band floors take the Foundation's current sample goals as reported in search results (status S, see CLM-FIN-035); using goals as band floors and the 'Not yet' band are LTM's adaptation, labelled as such. Supersedes the F1 value (40/70/90) as DESIGN.md 3.5 provided. Reference scenarios record levels, not percentages, so their expected outputs are unchanged; F3 updates the option labels. Direct fetches of finops.org, focus.finops.org, provider sites (aws.amazon.com, docs.aws.amazon.com, learn.microsoft.com, azure.microsoft.com, cloud.google.com, oracle.com) and flexera.com are blocked from this environment; checked through web-search results that quote or link the page."
+      "notes": "The Foundation's sample goals are now read at source (CLM-FIN-035, V); 'about 70%' corrected to the page's 'at least 70%'. Using goals as band floors and the 'Not yet' band are LTM's adaptation, labelled as such (ASM-FIN-020). Bands unchanged. Previously S (checked 2026-10-14). Read at the primary page on 27 Oct 2026 by finops-cost-lead; finops.org, data.finops.org, docs.aws.amazon.com, learn.microsoft.com, docs.cloud.google.com, docs.oracle.com and karpenter.sh were reachable from this environment."
     },
     {
       "id": "CLM-FIN-125",
@@ -6888,15 +6901,15 @@
           "https://github.com/dixitashutosh007/ltm-accelerators/blob/main/docs/cio-readiness/finops-iq/design/DESIGN.md"
         ]
       },
-      "verification": "S",
-      "checkedOn": "2026-10-14",
+      "verification": "V",
+      "checkedOn": "2026-10-27",
       "volatile": true,
       "clientVisible": true,
       "owner": "finops-cost-lead (agent); approver: product owner",
-      "lastReviewed": "2026-10-14",
-      "nextReview": "2027-01-12",
+      "lastReviewed": "2026-10-27",
+      "nextReview": "2027-01-25",
       "basisNote": "DESIGN.md 3.5 and section 14 provided that Foundation example KPIs replace LTM's 5/15/30 ladder (VALIDATION.md row 28). The earlier Foundation version (20/15/12) is recorded in CLM-FIN-037. Sensitivity: one capability moves one level.",
-      "notes": "Band floors take the Foundation's current sample goals as reported in search results (status S, see CLM-FIN-037); using goals as band floors and the 'Not yet' band are LTM's adaptation, labelled as such. Supersedes the F1 value (5/15/30) as DESIGN.md 3.5 provided. Reference scenarios record levels, not percentages, so their expected outputs are unchanged; F3 updates the option labels. Direct fetches of finops.org, focus.finops.org, provider sites (aws.amazon.com, docs.aws.amazon.com, learn.microsoft.com, azure.microsoft.com, cloud.google.com, oracle.com) and flexera.com are blocked from this environment; checked through web-search results that quote or link the page."
+      "notes": "The Foundation's sample goals are now read at source (CLM-FIN-037, V). Using goals as band floors and the 'Not yet' band are LTM's adaptation, labelled as such (ASM-FIN-023). Bands unchanged. Previously S (checked 2026-10-14). Read at the primary page on 27 Oct 2026 by finops-cost-lead; finops.org, data.finops.org, docs.aws.amazon.com, learn.microsoft.com, docs.cloud.google.com, docs.oracle.com and karpenter.sh were reachable from this environment."
     },
     {
       "id": "CLM-FIN-127",
@@ -7949,15 +7962,15 @@
           "https://learn.microsoft.com/en-au/training/modules/save-money-with-azure-reserved-instances/6-monitor-optimize-reservations"
         ]
       },
-      "verification": "P",
-      "checkedOn": "2026-10-14",
+      "verification": "V",
+      "checkedOn": "2026-10-27",
       "volatile": true,
       "clientVisible": true,
       "owner": "finops-cost-lead (agent); approver: product owner",
-      "lastReviewed": "2026-10-14",
-      "nextReview": "2027-01-12",
+      "lastReviewed": "2026-10-27",
+      "nextReview": "2027-01-25",
       "basisNote": "Why LEV-06 leaves out tolerant usage already covered by commitments: moving it to Spot would strand the commitment.",
-      "notes": "The USD 50,000 limit was read through search results quoting Microsoft Learn (F4 review H2); the exact wording on the primary exchange-and-refund page was not seen, so verification is P. Re-read the primary page before quoting the amount to a client."
+      "notes": "Learn (page dated 22 Jul 2026): 'the sum of all canceled reservation commitments in your billing scope ... can't exceed USD 50,000 in a 12-month rolling window'; no early termination fee is charged today (a 12% fee may apply in future). Also on the page: from 1 February 2027, reservations bought after that date for services covered by savings plans (for example Virtual Machines, App Service, SQL Database) cannot be exchanged; earlier reservations keep one final exchange. Worth adding to the commitment workstream's risks before February 2027 (not changed here). Previously P (checked 2026-10-14). Read at the primary page on 27 Oct 2026 by finops-cost-lead; finops.org, data.finops.org, docs.aws.amazon.com, learn.microsoft.com, docs.cloud.google.com, docs.oracle.com and karpenter.sh were reachable from this environment."
     },
     {
       "id": "CLM-FIN-175",

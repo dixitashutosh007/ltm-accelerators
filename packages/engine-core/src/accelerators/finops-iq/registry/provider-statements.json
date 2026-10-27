@@ -1,6 +1,6 @@
 {
   "registryVersion": "1.0.0",
-  "statusAsOf": "2026-10-14",
+  "statusAsOf": "2026-10-27",
   "rule": "Every tool or service named in a remediation, playbook entry or offering outline. Providers and tools appear only as options chosen from the client's requirements, always with alternatives; no partner claims (FRAMEWORK.md). Statements with status S or P are re-read on the provider page before external use.",
   "statements": [
     {
@@ -132,10 +132,10 @@
       ],
       "statement": "Cost and usage budgets with alerts on actual or forecast amounts.",
       "claimId": "CLM-FIN-085",
-      "status": "P",
-      "checked": "2026-10-14",
+      "status": "V",
+      "checked": "2026-10-27",
       "volatile": false,
-      "reviewBy": "2027-04-14",
+      "reviewBy": "2027-04-27",
       "clientVisible": true,
       "alternatives": [
         "PRV-FIN-21",
@@ -178,10 +178,10 @@
       ],
       "statement": "Rules that move objects to cheaper storage classes or expire them; a storage class that tiers by access automatically.",
       "claimId": "CLM-FIN-087",
-      "status": "P",
-      "checked": "2026-10-14",
+      "status": "V",
+      "checked": "2026-10-27",
       "volatile": false,
-      "reviewBy": "2027-04-14",
+      "reviewBy": "2027-04-27",
       "clientVisible": true,
       "alternatives": [
         "PRV-FIN-27",
@@ -221,10 +221,10 @@
       ],
       "statement": "Two-minute warning before a Spot Instance is reclaimed, plus earlier rebalance recommendations.",
       "claimId": "CLM-FIN-089",
-      "status": "S",
-      "checked": "2026-10-14",
+      "status": "V",
+      "checked": "2026-10-27",
       "volatile": false,
-      "reviewBy": "2027-04-14",
+      "reviewBy": "2027-04-27",
       "clientVisible": true,
       "alternatives": [
         "PRV-FIN-28",
@@ -242,10 +242,10 @@
       ],
       "statement": "Exports Azure cost and usage in FOCUS format (actual and amortised cost in one dataset).",
       "claimId": "CLM-FIN-090",
-      "status": "S",
-      "checked": "2026-10-14",
+      "status": "V",
+      "checked": "2026-10-27",
       "volatile": true,
-      "reviewBy": "2027-01-12",
+      "reviewBy": "2027-01-25",
       "clientVisible": true,
       "alternatives": [
         "PRV-FIN-01",
@@ -312,10 +312,10 @@
       ],
       "statement": "Built-in policies to require, add or inherit tags.",
       "claimId": "CLM-FIN-093",
-      "status": "P",
-      "checked": "2026-10-14",
+      "status": "V",
+      "checked": "2026-10-27",
       "volatile": false,
-      "reviewBy": "2027-04-14",
+      "reviewBy": "2027-04-27",
       "clientVisible": true,
       "alternatives": [
         "PRV-FIN-09"
@@ -334,10 +334,10 @@
       ],
       "statement": "Breaks AKS cluster cost down by namespace and other Kubernetes constructs (built on OpenCost).",
       "claimId": "CLM-FIN-094",
-      "status": "S",
-      "checked": "2026-10-14",
+      "status": "V",
+      "checked": "2026-10-27",
       "volatile": false,
-      "reviewBy": "2027-04-14",
+      "reviewBy": "2027-04-27",
       "clientVisible": true,
       "alternatives": [
         "PRV-FIN-05",
@@ -376,12 +376,12 @@
       "leverIds": [
         "LEV-04"
       ],
-      "statement": "Scheduled start and stop of Azure virtual machines.",
+      "statement": "Scheduled start and stop of Azure virtual machines (Microsoft no longer develops it beyond keeping it supported).",
       "claimId": "CLM-FIN-096",
-      "status": "P",
-      "checked": "2026-10-14",
+      "status": "V",
+      "checked": "2026-10-27",
       "volatile": false,
-      "reviewBy": "2027-04-14",
+      "reviewBy": "2027-04-27",
       "clientVisible": true,
       "alternatives": [
         "PRV-FIN-07",
@@ -399,12 +399,12 @@
       "leverIds": [
         "LEV-05"
       ],
-      "statement": "Daily rules that move blobs to cooler tiers or delete them.",
+      "statement": "Rules that move blobs to cooler tiers or delete them.",
       "claimId": "CLM-FIN-097",
-      "status": "S",
-      "checked": "2026-10-14",
+      "status": "V",
+      "checked": "2026-10-27",
       "volatile": false,
-      "reviewBy": "2027-04-14",
+      "reviewBy": "2027-04-27",
       "clientVisible": true,
       "alternatives": [
         "PRV-FIN-08",
@@ -422,12 +422,12 @@
       "leverIds": [
         "LEV-06"
       ],
-      "statement": "About 30 seconds' notice before a Spot VM is evicted.",
+      "statement": "30 seconds' notice before a Spot VM is evicted (Scheduled Events, best effort).",
       "claimId": "CLM-FIN-098",
-      "status": "S",
-      "checked": "2026-10-14",
+      "status": "V",
+      "checked": "2026-10-27",
       "volatile": false,
-      "reviewBy": "2027-04-14",
+      "reviewBy": "2027-04-27",
       "clientVisible": true,
       "alternatives": [
         "PRV-FIN-10",
@@ -539,10 +539,10 @@
       ],
       "statement": "Rules to change storage class or delete objects; automatic tiering by last access.",
       "claimId": "CLM-FIN-104",
-      "status": "S",
-      "checked": "2026-10-14",
+      "status": "V",
+      "checked": "2026-10-27",
       "volatile": false,
-      "reviewBy": "2027-04-14",
+      "reviewBy": "2027-04-27",
       "clientVisible": true,
       "alternatives": [
         "PRV-FIN-08",
@@ -562,10 +562,10 @@
       ],
       "statement": "Start and stop VMs at set times.",
       "claimId": "CLM-FIN-105",
-      "status": "P",
-      "checked": "2026-10-14",
+      "status": "V",
+      "checked": "2026-10-27",
       "volatile": false,
-      "reviewBy": "2027-04-14",
+      "reviewBy": "2027-04-27",
       "clientVisible": true,
       "alternatives": [
         "PRV-FIN-07",
@@ -583,12 +583,12 @@
       "leverIds": [
         "LEV-06"
       ],
-      "statement": "About 30 seconds' notice before a Spot VM is preempted.",
+      "statement": "Preemption notice through VM metadata: no dedicated delay by default, 120 seconds if set at creation; shutdown up to 30 seconds.",
       "claimId": "CLM-FIN-106",
-      "status": "S",
-      "checked": "2026-10-14",
+      "status": "V",
+      "checked": "2026-10-27",
       "volatile": false,
-      "reviewBy": "2027-04-14",
+      "reviewBy": "2027-04-27",
       "clientVisible": true,
       "alternatives": [
         "PRV-FIN-10",
@@ -706,12 +706,12 @@
         "LEV-07",
         "LEV-06"
       ],
-      "statement": "Open-source node autoscaler that right-sizes and consolidates nodes and can use Spot capacity.",
+      "statement": "Open-source node provisioning that launches right-sized nodes, consolidates under-used ones and handles Spot interruptions.",
       "claimId": "CLM-FIN-112",
-      "status": "S",
-      "checked": "2026-10-14",
+      "status": "V",
+      "checked": "2026-10-27",
       "volatile": false,
-      "reviewBy": "2027-04-14",
+      "reviewBy": "2027-04-27",
       "clientVisible": true,
       "alternatives": [
         "PRV-FIN-63"

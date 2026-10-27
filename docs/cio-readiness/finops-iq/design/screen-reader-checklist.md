@@ -46,3 +46,18 @@ From an automated read of the page's accessibility tree and live announcements o
 - The capability heatmap's image name was a generic sentence; it now lists each capability's rating and gap, like the capability profile chart.
 
 Covered by the end-to-end test "screen readers: focus follows the view, the working screen reads one line, answers are not announced, headings nest".
+
+## Automated pre-check after the shared top bar (27 Oct 2026)
+
+PR #53 replaced the page header with the shared LTM Vantage top bar, after the checks above. Before the person-run pass, the page's accessibility tree was read again in Chromium (Playwright `ariaSnapshot`) on the start screen and after starting a workshop assessment:
+
+| Row | Result | What the tree shows |
+|---|---|---|
+| 1 | Holds | The first Tab lands on "Skip to content", a link to `#main` |
+| 2 | **Changed: expect one more landmark** | banner (the top bar), **navigation "Main"** (Accelerators, FinOps IQ), main, and contentinfo (footer). Inside main, the step list is a second navigation, "Assessment steps". When VO + U lists landmarks, "Main" navigation is new and expected |
+| 3 | Holds | After Start assessment, focus is on "Your estate", heading level 2 |
+| 4 | Holds (structure) | Every control in the estate step has an accessible name (30 checkboxes, text boxes, combo boxes and number fields named), also asserted by the browser test "every form control has an accessible name" |
+
+The browser test "screen readers: focus follows the view, the working screen reads one line, answers are not announced, headings nest" still passes, covering rows 3, 6, 7, 11, 12 and 15.
+
+What automation cannot settle, and the person-run pass is for: what VoiceOver actually says (wording, order, pronunciation of "FinOps"), that typing in a spend box is not interrupted (row 5), the live announcements as heard (rows 8, 9, 11, 17, 18), and the charts' image names read in context (row 14).
