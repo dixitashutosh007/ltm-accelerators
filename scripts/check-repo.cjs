@@ -14,8 +14,8 @@ const read = f => fs.readFileSync(path.join(root, f), 'utf8');
 const failures = [];
 const fail = (rule, file, detail) => failures.push(`[${rule}] ${file}${detail ? ': ' + detail : ''}`);
 
-// Cost IQ and Resilience IQ are maintained separately (another toolchain) and are not held to
-// these rules here. They are listed explicitly so any other file still gets checked.
+// Cost IQ is maintained separately (another toolchain) and is not held to these rules here; Resilience IQ is
+// checked like every other accelerator. The exemptions are listed explicitly so any other file still gets checked.
 const SEPARATELY_MAINTAINED = [
   /^Accelerators\/cost-iq/, /^Accelerators\/assets\/cost-iq-/,
   /^amplify\/functions\/evaluate-cost-iq\//,

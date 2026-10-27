@@ -82,6 +82,23 @@ test.describe('Resilience IQ', () => {
     expect(out.body.data.evidenceRequests).toContain('BIA');
   });
 
+  test('the question bank studio needs sign-in (it opened without one)', async ({ page }) => {
+    await page.goto('/resilience-iq-question-bank');
+    await expect(page).toHaveURL(/\/\?require_login=1&redirect=%2Fresilience-iq-question-bank/);
+  });
+
+  test('the question bank studio turns away a user who may take the assessment but not edit it', async ({ page, context }) => {
+    await signedIn(context, permitted(makeIdToken('consultant@ltm.com')));
+    await page.goto('/resilience-iq-question-bank');
+    await expect(page).toHaveURL(/\/$/);
+  });
+
+  test('the question bank studio opens for a user with edit permission', async ({ page, context }) => {
+    await signedIn(context, { ...permitted(makeIdToken('editor@ltm.com')), permissions: { edit: ['resilience-iq'] } });
+    await page.goto('/resilience-iq-question-bank');
+    await expect(page.locator('body')).toContainText('EX-01');
+  });
+
   test('the Resilience IQ question bank studio loads and runs (its script had a syntax error)', async ({ page, context, world }) => {
     await signedIn(context, { email: 'admin@ltm.com', token: makeIdToken('admin@ltm.com'), role: 'super_admin', permissions: {} });
     await page.goto('/resilience-iq-question-bank');
@@ -159,7 +176,8 @@ test.describe('Resilience IQ', () => {
       const expected = evaluateResilienceIq(plan as any);
       expect(text).toContain(String(expected.preferredPattern));
       expect(text).toContain(expected.executiveReport.recommendationSensitivity[0].trigger);
-      expect(text).toContain('LTM heuristics reviewed by the BCP/DR practice');
+      expect(text).toContain('LTM heuristics, pending practice-lead review; not an industry benchmark');
+      expect(text).not.toContain('reviewed by the BCP/DR practice');
       expect(world.pageErrors).toEqual([]);
       expect(world.missingFiles).toEqual([]);
     });
@@ -174,6 +192,28 @@ test.describe('Resilience IQ', () => {
       await expect.poll(() => page.evaluate('questions[idx].id'), { timeout: 15_000 }).toMatch(/^AF-/);
       await expect(page.locator('#scanMode')).toHaveText('Advisory deep dive');
       await expect(page.getByRole('heading', { name: 'Advisory questions unavailable' })).toHaveCount(0);
+
+      // Every advisory round through to the report: the first option of each question, every matrix row in the
+      // first column, the ranking as shown.
+      const report = page.getByRole('heading', { name: 'Transformation Roadmap' });
+      for (let round = 0; round < 80 && !(await report.isVisible()); round++) {
+        const q = await page.evaluate('({ id: questions[idx].id, type: questions[idx].type, rows: questions[idx].rows, cols: questions[idx].cols })') as any;
+        if (q.type === 'matrix') {
+          const cells = page.locator('.matrix button');
+          for (let r = 0; r < q.rows.length; r++) await cells.nth(r * q.cols.length).click();
+        } else if (q.type === 'slider') await page.locator('.scale-pick').first().click();
+        else if (q.type !== 'rank') await page.locator('.option').first().click();
+        await page.getByRole('button', { name: /Next|Run Resilience Assessment/ }).click();
+        await expect.poll(async () => (await report.isVisible()) || (await page.evaluate('questions[idx].id')) !== q.id, { timeout: 15_000 }).toBe(true);
+      }
+      await expect(report).toBeVisible();
+      expect(await page.evaluate('result.status')).toBe('ready');
+
+      // What the page sent is valid, includes the advisory answers, and holds no empty placeholders.
+      const sent = evaluations[evaluations.length - 1];
+      expect(parseResilienceIqRequest(sent).ok).toBe(true);
+      expect(Object.keys(sent.answers).some(id => id.startsWith('AF-'))).toBe(true);
+      for (const v of Object.values(sent.answers)) expect(v === undefined || (Array.isArray(v) && v.length === 0)).toBe(false);
       expect(world.pageErrors).toEqual([]);
     });
 

@@ -74,6 +74,16 @@ RQ0 starts now and waits for no decision. RQ2 research can run beside RQ1. RQ6, 
 | 8 | **Owner close-out (R7.1–4)** | The live journey on production now includes a gated assessment. Branch protection, Admin group and the sandbox pool remain owner actions |
 | 9 | Housekeeping | Correct the stale `check-repo.cjs` comment (M7) |
 
+**Status (27 Oct 2026): built; owner production check (item 8) open.**
+- Item 1: the crash is fixed in #65 (`#scanMode`, null-safe); `mapAnswers` now leaves unanswered questions out (no `[]`, `{}` or default ranking is sent).
+- Item 2: the gated-path browser test runs `retailer-untested-gated` through the executive scan, every advisory round and the report (`ready`), and checks the answers sent pass the contract with no empty placeholders. Not done: a smoke step on every shared-top-bar page; all other pages' scripts were checked by hand for removed header elements (none).
+- Item 3: page and `scoring-model.json` now say "LTM heuristics, pending practice-lead review; not an industry benchmark"; the test asserts the old claim is gone.
+- Item 4: mappings corrected (rows 20–24, 26); no golden output records them.
+- Item 5: the studio loads `rbac-guard` with `data-permission="edit"` (super admin, `accelerators[id].edit|full`, or `edit` list, as the home page's Edit button); three browser tests (signed out, assess-only, edit).
+- Item 6: one notice on the setup screen and the report: not legal or regulatory advice, inputs not audited, held in AWS Mumbai.
+- Item 7: the evidence section tells EU and UK clients to record where evidence is held rather than upload it.
+- Item 9: `check-repo.cjs` comment corrected.
+
 **Gate RQ0:**
 - the new gated-path test passes;
 - full CI green;
