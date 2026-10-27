@@ -43,3 +43,11 @@ playwright-report/
 # Amplify Hosting copies generated client config into the static frontend
 !Accelerators/amplify_outputs.json
 .claude/worktrees/
+
+# graphify: commit the graph (graph.json) and its report; the rest is regenerated locally
+graphify-out/cache/
+graphify-out/20*/
+graphify-out/graph.html
+graphify-out/.graphify_*
+graphify-out/.cloud-cta-shown
+graphify-out/manifest.json
