@@ -51,9 +51,11 @@ check(!!advisory, 'Advisory API (ltm-advisory-api) is missing');
 
 if (advisory) {
   const routes = ofType('AWS::ApiGatewayV2::Route').filter(r => r.Properties.ApiId?.Ref === advisory.id);
-  // 5 scoring routes, FinOps IQ v3 scoring, save/resume and report, identity, user administration and reports archive routes.
-  const required = ['POST /api/evaluate/posture-iq',
-    'POST /api/evaluate/sovereign-iq', 'POST /api/evaluate/cloud-iq', 'POST /api/evaluate/strategy-iq',
+  // 3 scoring routes; FinOps IQ v3 and Sovereign IQ v4 scoring, save/resume and report (and Sovereign IQ's narrative);
+  // identity, user administration and reports archive routes.
+  const required = ['POST /api/evaluate/cloud-iq', 'POST /api/evaluate/strategy-iq',
+    'POST /api/evaluate/sovereign-iq/v4', 'GET /api/sovereign-iq/assessment', 'POST /api/sovereign-iq/assessment',
+    'GET /api/sovereign-iq/report', 'POST /api/sovereign-iq/narrative',
     'POST /api/evaluate/modernization-iq', 'POST /api/evaluate/finops-iq/v3', 'GET /api/finops-iq/assessment',
     'POST /api/finops-iq/assessment', 'GET /api/finops-iq/report', 'GET /api/me', 'GET /api/users', 'POST /api/users/create',
     'POST /api/users/set-password', 'POST /api/users/permissions', 'GET /api/reports/list',
@@ -129,9 +131,9 @@ if (legacyApi && String(legacy).toLowerCase() !== 'true') {
 
 // Accelerator access on the server (24 Oct 2026): every accelerator service can read the saved permissions.
 {
-  const services = /(evaluate(finops|posture|sovereign|cloud|strategy|modernization|resilience)iq|manage(finops|sovereign)assessment|(finops|sovereign)iqreport|manageresilience(assessment|evidence))lambda/i;
+  const services = /(evaluate(finops|sovereign|cloud|strategy|modernization|resilience)iq|manage(finops|sovereign)assessment|(finops|sovereign)iqreport|manageresilience(assessment|evidence))lambda/i;
   const fns = ofType('AWS::Lambda::Function').filter(f => services.test(f.id));
-  check(fns.length === 13, `expected 13 accelerator services, found ${fns.length}`);
+  check(fns.length === 12, `expected 12 accelerator services, found ${fns.length}`);
   for (const f of fns) {
     const env = f.Properties.Environment?.Variables || {};
     check(!!env.REPORTS_BUCKET && 'SUPER_ADMIN_EMAILS' in env && !!env.ADMIN_GROUP, `${f.id} cannot check accelerator access (REPORTS_BUCKET, SUPER_ADMIN_EMAILS, ADMIN_GROUP)`);
@@ -142,6 +144,12 @@ if (legacyApi && String(legacy).toLowerCase() !== 'true') {
 {
   const retired = ofType('AWS::ApiGatewayV2::Route').filter(r => /finops-value-case|\/api\/evaluate\/finops-iq$/.test(r.Properties.RouteKey)).map(r => r.Properties.RouteKey);
   check(retired.length === 0, `retired FinOps routes remain: ${retired.join(', ')}`);
+}
+
+// Posture IQ and the Sovereign IQ v1 engine are retired (Sovereign IQ PLAN S5, 26 Oct 2026): no route for either on any API.
+{
+  const retired = ofType('AWS::ApiGatewayV2::Route').filter(r => /\/api\/evaluate\/(posture-iq|sovereign-iq)$/.test(r.Properties.RouteKey)).map(r => r.Properties.RouteKey);
+  check(retired.length === 0, `retired Sovereign IQ and Posture IQ routes remain: ${retired.join(', ')}`);
 }
 
 // FinOps IQ and FinOps Value Case never have an unauthenticated route (F0, D11), whatever LTM_KEEP_LEGACY_API says.

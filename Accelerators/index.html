@@ -589,7 +589,7 @@
             <li>Exposure and roadmap</li>
           </ul>
           <div class="vt-card-actions">
-            <button type="button" class="vt-btn vt-btn-primary btn-action-launch" data-tool="sovereign-iq" data-label="Start assessment" onclick="handleLaunchClick('sovereign-iq', '/sovereign-iq-v4')">Start assessment</button>
+            <button type="button" class="vt-btn vt-btn-primary btn-action-launch" data-tool="sovereign-iq" data-label="Start assessment" onclick="handleLaunchClick('sovereign-iq', '/sovereign-iq')">Start assessment</button>
           </div>
         </article>
       </div>
@@ -644,17 +644,6 @@
           <div class="vt-card-actions">
             <button type="button" class="vt-btn vt-btn-sm vt-btn-quiet btn-action-edit" data-tool="cost-iq" onclick="handleEditClick('cost-iq')">Edit</button>
             <button type="button" class="vt-btn vt-btn-sm vt-btn-outline btn-action-launch" data-tool="cost-iq" data-label="Take assessment" onclick="handleLaunchClick('cost-iq', '/cost-iq-v10')">Take assessment</button>
-          </div>
-        </article>
-
-        <article class="vt-card vt-reveal" data-group="sovereignty" data-name="Posture IQ">
-          <div class="vt-card-top"><span class="vt-practice">Sovereignty and compliance</span><span class="vt-badge beta" title="Under validation; internal use only">Beta</span></div>
-          <h3>Posture IQ</h3>
-          <p class="vt-card-text">Statutory posture across NIS2, DORA and GDPR. Now part of Sovereign IQ; kept here until the switch-over.</p>
-          <p class="vt-card-meta">35 questions · 5 pillars</p>
-          <div class="vt-card-actions">
-            <button type="button" class="vt-btn vt-btn-sm vt-btn-quiet btn-action-edit" data-tool="posture-iq" onclick="handleEditClick('posture-iq')">Edit</button>
-            <button type="button" class="vt-btn vt-btn-sm vt-btn-outline btn-action-launch" data-tool="posture-iq" data-label="Take assessment" onclick="handleLaunchClick('posture-iq', '/posture-iq')">Take assessment</button>
           </div>
         </article>
 
@@ -798,7 +787,6 @@
           <button class="chip active-chip" onclick="setReportsFilter('', this)">All Reports</button>
           <button class="chip" onclick="setReportsFilter('strategy-iq', this)">Strategy IQ</button>
           <button class="chip" onclick="setReportsFilter('finops-iq', this)">FinOps IQ</button>
-          <button class="chip" onclick="setReportsFilter('posture-iq', this)">Posture IQ</button>
           <button class="chip" onclick="setReportsFilter('sovereign-iq', this)">Sovereign IQ</button>
           <button class="chip" onclick="setReportsFilter('cloud-iq', this)">Cloud IQ</button>
           <button class="chip" onclick="setReportsFilter('modernization-iq', this)">Modernize IQ</button>
@@ -925,19 +913,6 @@
                     <label><input type="checkbox" id="perm_create_sovereign-iq_take" onchange="syncAccFull('create', 'sovereign-iq')" checked> Take Assessment</label>
                     <label><input type="checkbox" id="perm_create_sovereign-iq_edit" onchange="syncAccFull('create', 'sovereign-iq')"> Edit Engine</label>
                     <label><input type="checkbox" id="perm_create_sovereign-iq_archive" onchange="syncAccFull('create', 'sovereign-iq')"> View Archive</label>
-                  </div>
-                </div>
-
-                <!-- Posture IQ -->
-                <div class="granular-acc-card">
-                  <div class="granular-acc-head">
-                    <span class="granular-acc-name">⚡ Posture IQ</span>
-                    <label class="full-perm-label"><input type="checkbox" id="perm_create_posture-iq_full" onchange="toggleAccFull('create', 'posture-iq', this.checked)"> Full</label>
-                  </div>
-                  <div class="granular-acc-options">
-                    <label><input type="checkbox" id="perm_create_posture-iq_take" onchange="syncAccFull('create', 'posture-iq')" checked> Take Assessment</label>
-                    <label><input type="checkbox" id="perm_create_posture-iq_edit" onchange="syncAccFull('create', 'posture-iq')"> Edit Engine</label>
-                    <label><input type="checkbox" id="perm_create_posture-iq_archive" onchange="syncAccFull('create', 'posture-iq')"> View Archive</label>
                   </div>
                 </div>
 
@@ -1121,18 +1096,6 @@
             </div>
           </div>
 
-          <!-- Posture IQ -->
-          <div class="granular-acc-card">
-            <div class="granular-acc-head">
-              <span class="granular-acc-name">⚡ Posture IQ</span>
-              <label class="full-perm-label"><input type="checkbox" id="perm_editperm_posture-iq_full" onchange="toggleAccFull('editperm', 'posture-iq', this.checked)"> Full</label>
-            </div>
-            <div class="granular-acc-options">
-              <label><input type="checkbox" id="perm_editperm_posture-iq_take" onchange="syncAccFull('editperm', 'posture-iq')"> Take Assessment</label>
-              <label><input type="checkbox" id="perm_editperm_posture-iq_edit" onchange="syncAccFull('editperm', 'posture-iq')"> Edit Engine</label>
-              <label><input type="checkbox" id="perm_editperm_posture-iq_archive" onchange="syncAccFull('editperm', 'posture-iq')"> View Archive</label>
-            </div>
-          </div>
 
           <!-- Cloud IQ -->
           <div class="granular-acc-card">
@@ -1265,8 +1228,9 @@
       return !!(AUTH_USER && AUTH_USER.role === 'super_admin');
     }
 
-    // A retired tool's permission carries over to the tool that replaced it (FinOps Value Case → FinOps IQ, 22 Oct 2026).
-    const PERMISSION_ALIASES = { 'finops-iq': ['finops-value-case'] };
+    // A retired tool's permission carries over to the tool that replaced it (FinOps Value Case → FinOps IQ, 22 Oct 2026;
+    // Posture IQ → Sovereign IQ, 26 Oct 2026).
+    const PERMISSION_ALIASES = { 'finops-iq': ['finops-value-case'], 'sovereign-iq': ['posture-iq'] };
     function canUserTakeAssessment(toolId) {
       if ((PERMISSION_ALIASES[toolId] || []).some(canTakeOne)) return true;
       return canTakeOne(toolId);
@@ -1685,7 +1649,7 @@
     function renderReportsList() {
       const container = document.getElementById('reportsListContainer');
       const filtered = CURRENT_REPORTS_FILTER 
-        ? CACHED_REPORTS.filter(r => r.acceleratorId === CURRENT_REPORTS_FILTER)
+        ? CACHED_REPORTS.filter(r => r.acceleratorId === CURRENT_REPORTS_FILTER || (PERMISSION_ALIASES[CURRENT_REPORTS_FILTER] || []).includes(r.acceleratorId))
         : CACHED_REPORTS;
 
       if (!filtered.length) {
@@ -1867,7 +1831,6 @@
       { id: 'strategy-iq', name: 'Strategy IQ', icon: '🎯' },
       { id: 'finops-iq', name: 'FinOps IQ', icon: '📊' },
       { id: 'sovereign-iq', name: 'Sovereign IQ', icon: '🛡️' },
-      { id: 'posture-iq', name: 'Posture IQ', icon: '⚡' },
       { id: 'cloud-iq', name: 'Cloud IQ', icon: '☁️' },
       { id: 'modernization-iq', name: 'Modernize IQ', icon: '🏗️' },
       { id: 'cost-iq', name: 'Cost IQ', icon: '💡' },

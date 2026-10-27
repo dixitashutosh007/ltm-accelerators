@@ -1,6 +1,6 @@
 # AGENT.md — LTM Accelerators
 
-LTM Vantage advisory accelerators: CIO-facing diagnostics (Strategy IQ, Cloud IQ, FinOps IQ, Posture IQ, Sovereign IQ, Resilience IQ, Cost IQ; FinOps Value Case was retired on 22 Oct 2026 and is now FinOps IQ's executive mode), served from `Accelerators/` on AWS Amplify Gen 2 with an authenticated API in `amplify/`.
+LTM Vantage advisory accelerators: CIO-facing diagnostics (Strategy IQ, Cloud IQ, FinOps IQ, Sovereign IQ, Resilience IQ, Cost IQ; FinOps Value Case was retired on 22 Oct 2026 and is now FinOps IQ's executive mode, and Posture IQ was merged into Sovereign IQ on 26 Oct 2026), served from `Accelerators/` on AWS Amplify Gen 2 with an authenticated API in `amplify/`.
 
 ## Where things stand
 

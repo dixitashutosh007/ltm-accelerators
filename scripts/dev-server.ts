@@ -19,7 +19,6 @@ import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { serveSite } from '../tests/support/static-server.mjs';
 import { handler as finopsIq } from '../amplify/functions/evaluate-finops-iq/handler';
-import { handler as postureIq } from '../amplify/functions/evaluate-posture-iq/handler';
 import { handler as sovereignIq } from '../amplify/functions/evaluate-sovereign-iq/handler';
 import { handler as cloudIq } from '../amplify/functions/evaluate-cloud-iq/handler';
 import { handler as strategyIq } from '../amplify/functions/evaluate-strategy-iq/handler';
@@ -96,8 +95,6 @@ const sovereignAssessments = sovereignStore({
 });
 const ROUTES: Record<string, LambdaHandler> = {
   'POST /api/evaluate/finops-iq/v3': finopsIq,
-  'POST /api/evaluate/posture-iq': postureIq,
-  'POST /api/evaluate/sovereign-iq': sovereignIq,
   'POST /api/evaluate/sovereign-iq/v4': sovereignIq,
   'GET /api/sovereign-iq/assessment': sovereignAssessment(sovereignAssessments),
   'POST /api/sovereign-iq/assessment': sovereignAssessment(sovereignAssessments),

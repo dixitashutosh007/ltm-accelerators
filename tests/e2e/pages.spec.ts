@@ -4,7 +4,7 @@ import { test, expect, makeIdToken, signedIn } from './fixtures';
 // (Cost IQ and Resilience IQ are maintained separately and have their own test suites.)
 const PAGES = [
   '/', '/strategy-iq', '/modernization-iq', '/finops-iq',
-  '/cloud-iq', '/sovereign-iq', '/posture-iq', '/ai-readiness-iq', '/studio',
+  '/cloud-iq', '/sovereign-iq', '/ai-readiness-iq', '/studio',
   '/cloud-iq-sample-report', '/sovereign-iq-sample-report', '/portal'
 ];
 
@@ -31,7 +31,7 @@ for (const path of PAGES) {
 
 test('no page sends data to third-party AI services on load', async ({ page, context, world }) => {
   await signedIn(context, { email: 'admin@ltm.com', token: makeIdToken('admin@ltm.com'), role: 'super_admin', permissions: {} });
-  for (const path of ['/strategy-iq', '/cloud-iq', '/sovereign-iq', '/posture-iq', '/finops-iq']) {
+  for (const path of ['/strategy-iq', '/cloud-iq', '/sovereign-iq', '/finops-iq']) {
     await page.goto(path);
     await page.waitForLoadState('networkidle');
   }
@@ -54,4 +54,17 @@ test('FinOps IQ cutover (M8): /finops-iq-v3 links forward to /finops-iq with the
   await page.goto('/finops-iq-v3?mode=workshop');
   await page.waitForURL(/\/finops-iq\?mode=workshop$/);
   await expect(page.getByRole('radio', { name: /^Workshop/ })).toBeChecked();
+});
+
+test('Sovereign IQ switch-over (S5): /sovereign-iq-v4 links forward with their query kept; Posture IQ forwards to Sovereign IQ and the portal no longer lists it', async ({ page, context }) => {
+  await signedIn(context, { email: 'posture@ltm.com', token: makeIdToken('posture@ltm.com'), role: 'custom', permissions: { take: ['posture-iq'] } });
+  await page.goto('/sovereign-iq-v4?assessment=SIQ-0001');
+  await page.waitForURL(/\/sovereign-iq\?assessment=SIQ-0001$/);
+  await page.goto('/posture-iq');
+  await page.waitForURL(/\/sovereign-iq$/);
+  // A Posture IQ permission opens Sovereign IQ (PLAN S5).
+  await expect(page.getByRole('heading', { level: 1, name: 'Sovereign IQ' })).toBeVisible();
+  await page.goto('/');
+  await expect(page.getByRole('heading', { name: 'Sovereign IQ', exact: true })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Posture IQ' })).toHaveCount(0);
 });

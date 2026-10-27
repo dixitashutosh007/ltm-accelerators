@@ -1,6 +1,4 @@
 /** Representative engine inputs shared by the Vitest suite and the demo runner. */
-import postureKb from '../src/accelerators/posture-iq/knowledge-base.json' with { type: 'json' };
-import sovereignKb from '../src/accelerators/sovereign-iq/knowledge-base.json' with { type: 'json' };
 
 export const cloudIqAnswers: Record<string, any> = {
   'Q0.1': 0, // CIO / CTO
@@ -60,5 +58,3 @@ export const modernizationIqAnswers: Record<string, any> = {
 };
 export const modernizationIqOrg = { clientName: 'Global FinTech Corp', industry: 'Banking / Capital Markets', workloadCount: '1,400', dcCount: '3 Owned / 2 Colocation', annualDcSpend: '$24.5M', targetExitHorizon: '24 Months' };
 
-export const postureArchetypes = (postureKb as any).demoArchetypes as Record<string, any>;
-export const sovereignArchetypes = (sovereignKb as any).demoArchetypes as Record<string, any>;
