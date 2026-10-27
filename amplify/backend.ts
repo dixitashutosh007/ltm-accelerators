@@ -182,13 +182,22 @@ route('/api/sovereign-iq/narrative', [HttpMethod.POST], integrations.sovereignNa
 /* ------------------------------------------------------------------
  * AI narrative (Sovereign IQ PLAN S9, WS-S1): Claude in Amazon Bedrock
  * through the Messages API. The function only calls the model when
- * AI_ENABLED is 'true'. Inference stays in eu-west-1 (owner decision
- * D28): the permission is limited to requests made in that region.
+ * AI_ENABLED is 'true'. Inference stays in India (owner decision D29):
+ * the role may invoke only the India inference profile from Mumbai, and
+ * the model only in the two regions that profile routes to (Mumbai and
+ * Hyderabad), and only through that profile.
  * ------------------------------------------------------------------ */
-backend.sovereignIqNarrativeFunction.resources.lambda.addToRolePolicy(new PolicyStatement({
-  actions: ['bedrock-mantle:CreateInference'],
-  resources: ['*'],
-  conditions: { StringEquals: { 'aws:RequestedRegion': 'eu-west-1' } }
+const narrativeLambda = backend.sovereignIqNarrativeFunction.resources.lambda;
+const narrativeAccount = Stack.of(narrativeLambda).account;
+const indiaProfileArn = `arn:aws:bedrock:ap-south-1:${narrativeAccount}:inference-profile/in.anthropic.claude-opus-5`;
+narrativeLambda.addToRolePolicy(new PolicyStatement({
+  actions: ['bedrock:InvokeModel', 'bedrock:InvokeModelWithResponseStream'],
+  resources: [indiaProfileArn]
+}));
+narrativeLambda.addToRolePolicy(new PolicyStatement({
+  actions: ['bedrock:InvokeModel', 'bedrock:InvokeModelWithResponseStream'],
+  resources: ['ap-south-1', 'ap-south-2'].map(r => `arn:aws:bedrock:${r}::foundation-model/anthropic.claude-opus-5`),
+  conditions: { StringEquals: { 'bedrock:InferenceProfileArn': indiaProfileArn } }
 }));
 route('/api/evaluate/cloud-iq', [HttpMethod.POST], integrations.cloud);
 route('/api/evaluate/strategy-iq', [HttpMethod.POST], integrations.strategy);
