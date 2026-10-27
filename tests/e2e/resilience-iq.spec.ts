@@ -164,6 +164,19 @@ test.describe('Resilience IQ', () => {
       expect(world.missingFiles).toEqual([]);
     });
 
+    test('when the engine asks for advisory questions, the deep dive opens (it crashed after the shared top bar landed)', async ({ page, world }) => {
+      const gated = ARCHETYPES['retailer-untested-gated'];
+      const ids: string[] = await page.evaluate('questions.map(q => q.id)');
+      for (const id of ids) {
+        await answer(page, id, gated[id]);
+        await page.getByRole('button', { name: /Next|Run Resilience Assessment/ }).click();
+      }
+      await expect.poll(() => page.evaluate('questions[idx].id'), { timeout: 15_000 }).toMatch(/^AF-/);
+      await expect(page.locator('#scanMode')).toHaveText('Advisory deep dive');
+      await expect(page.getByRole('heading', { name: 'Advisory questions unavailable' })).toHaveCount(0);
+      expect(world.pageErrors).toEqual([]);
+    });
+
     test('an untouched recovery-objective slider is not an answer: the user must choose a value', async ({ page }) => {
       await answer(page, 'EX-01', plan['EX-01']);
       await page.getByRole('button', { name: /Next/ }).click();

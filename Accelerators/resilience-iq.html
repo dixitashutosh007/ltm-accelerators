@@ -36,7 +36,7 @@ html,body{background:var(--bg)!important;color:var(--ink)!important;font-family:
       <span class="vt-nav-link vt-nav-current" aria-current="page">Resilience IQ</span>
     </nav>
     <div class="vt-actions">
-      <span class="vt-badge beta">Executive scan</span>
+      <span class="vt-badge beta" id="scanMode">Executive scan</span>
       <a href="./resilience-iq-question-bank.html" class="vt-btn vt-btn-quiet vt-btn-sm">Edit question bank</a>
     </div>
   </div>
@@ -265,7 +265,7 @@ async function loadAdvisoryQuestions(nextQuestions){
   result=null;
   for(const q of additions) answers[q.id]=undefined;
   idx=questions.length-additions.length;
-  document.querySelector('.badge').textContent='ADVISORY DEEP DIVE';
+  const mode=document.getElementById('scanMode'); if(mode) mode.textContent='Advisory deep dive';
   render();
  }catch(e){
   document.getElementById('app').innerHTML='<div class="panel"><h2>Advisory questions unavailable</h2><p class="danger">'+esc(e.message)+'</p><button class="btn primary" onclick="evaluate()">Retry</button></div>';
