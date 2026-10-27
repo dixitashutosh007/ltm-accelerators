@@ -1084,7 +1084,7 @@
       "platform": "azure",
       "level": "platform",
       "action": "Run a savings plan and reservations portfolio at billing scope using Azure purchase recommendations and reservation utilization alerts, without buying both instruments for the same usage at once.",
-      "approach": "Manage commitments centrally as a portfolio: size them from steady-state usage after rightsizing and idle clean-up, prefer flexible instruments first, stagger terms so renewals spread across the year, and alert on utilisation and expiry. Provider recommendations are an input, not a purchase order. Azure self-service reservation refunds are capped, so size conservatively.",
+      "approach": "Manage commitments centrally as a portfolio: size them from steady-state usage after rightsizing and idle clean-up, prefer flexible instruments first, stagger terms so renewals spread across the year, and alert on utilisation and expiry. Provider recommendations are an input, not a purchase order. Azure self-service reservation refunds are capped, so size conservatively. From 1 February 2027, reservations bought for services that savings plans cover (such as Virtual Machines, App Service and SQL Database) can no longer be exchanged, and reservations bought before then keep one final exchange: prefer the savings plan where the workload may change.",
       "options": [
         {
           "name": "Azure savings plan for compute",
@@ -1117,7 +1117,7 @@
         "CLM-FIN-174"
       ],
       "owner": "finops-cost-lead",
-      "lastReviewed": "2026-10-22",
+      "lastReviewed": "2026-10-27",
       "nextReview": "2027-01-12"
     },
     {
@@ -2031,12 +2031,22 @@
       "control": "FIN.LEV-04",
       "platform": "azure",
       "level": "platform",
-      "action": "Deploy Start/Stop VMs v2 with schedules for non-production virtual machines, driven by tags.",
+      "action": "Schedule non-production virtual machines to stop outside agreed hours, driven by tags, with Scheduled Actions for Azure VMs or Azure Automation runbooks; keep Start/Stop VMs v2 only where it is already deployed.",
       "approach": "Tag non-production resources with environment and schedule, stop them outside agreed hours by automation, and give teams a self-service override with an expiry.",
       "options": [
         {
-          "name": "Start/Stop VMs v2",
+          "name": "Scheduled Actions for Azure VMs",
+          "kind": "native",
+          "detail": "Generally available since November 2025; confirm it supports the operations you need (start, stop, hibernate, deallocate)"
+        },
+        {
+          "name": "Azure Automation runbooks",
           "kind": "native"
+        },
+        {
+          "name": "Start/Stop VMs v2",
+          "kind": "native",
+          "detail": "Archived by Microsoft, with no further development; for existing deployments only"
         },
         {
           "name": "Azure Policy built-in tag definitions",
@@ -2051,10 +2061,11 @@
       "confidence": "Medium",
       "claimIds": [
         "CLM-FIN-096",
+        "CLM-FIN-273",
         "CLM-FIN-093"
       ],
       "owner": "finops-cost-lead",
-      "lastReviewed": "2026-10-22",
+      "lastReviewed": "2026-10-27",
       "nextReview": "2027-04-14"
     },
     {
