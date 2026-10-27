@@ -2,7 +2,7 @@
 
 Execution phase M7 (PLAN F12, expanded). Status at 22 Oct 2026, updated 23 Oct 2026. Branch `finops-iq-merge`, build after 625e4d9 (engine 3.6.1 after the M7 fixes; value model 1.2.0, playbook 1.0.0); now live on main at d83fd18 (engine 3.6.3, playbook 1.1.0). Prepared by the build; the owner decides.
 
-**Status at 23 Oct 2026: every gate passes.** The owner ran a full assessment in production and approved the result and the report. Open before the first external client only: A1 (transfer instrument, deferred to the move to LTM's environment), A2 (trademark search), a lawyer's read, a screen-reader pass by a person, and the reports bucket expiry rule (deferred to the move to LTM's environment).
+**Status at 23 Oct 2026: every gate passes.** The owner ran a full assessment in production and approved the result and the report. Open before the first external client only: A1 (transfer instrument, deferred to the move to LTM's environment), A2 (trademark search), a lawyer's read, and the reports bucket expiry rule (deferred to the move to LTM's environment).
 
 **Gate M7:** functional, legal, technical and security, UI, report, PDF and presentability each Pass with evidence; CIO challenge at least 9 of 10; live smoke test.
 
@@ -61,7 +61,7 @@ Low-risk notes, no change made:
   - The focus ring was a 45% transparent shadow, about 1.9:1 against white (below the 3:1 of WCAG 1.4.11), and disappears in Windows forced-colours mode. Now a solid 3px outline.
   - After Delete, keyboard focus fell to the page body (WCAG 2.4.3). Focus now moves to the confirm button, back to Delete on Cancel, and to a "deleted" announcement after the list reloads.
 - No horizontal scroll at 360px (existing test); every control has an accessible name (existing test).
-- **Not covered by automation:** a screen-reader pass (VoiceOver or NVDA) by a person. Recommended before external use; the structure (labelled fieldsets, live status regions, headings) is in place.
+- **Not covered by automation:** a screen-reader pass (VoiceOver or NVDA) by a person. **Not required: the owner dropped it on 27 Oct 2026**, relying on the automated checks below; the structure (labelled fieldsets, live status regions, headings) is in place.
 - **Screen-reader preparation (23 Oct 2026):** an automated read of the accessibility tree and live announcements on every screen found and fixed five issues (working screen read in full at each step, save status announced after every answer, focus lost after start and completion, skipped heading level on the results, generic heatmap name). The person-run pass follows `screen-reader-checklist.md` (18 checks, about 15 minutes).
 
 ## 5. Report, PDF and presentability
