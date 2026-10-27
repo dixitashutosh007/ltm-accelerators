@@ -22,8 +22,7 @@
   <script src="/assets/rbac-guard.js" data-tool="strategy-iq"></script>
 
   <style>
-    @import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap");
-
+    
     :root {
       --ltm-navy: #0F172A;
       --ltm-coral: #FF5E4F;
@@ -49,7 +48,7 @@
       --ink3: #64748B;
       --ink-muted: #94A3B8;
 
-      --font-sans: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       --font-mono: "JetBrains Mono", ui-monospace, Menlo, monospace;
       
       --shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.05);
@@ -1238,6 +1237,10 @@
       .card, .results-hero { box-shadow: none; border-color: #CCCCCC; }
     }
   </style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/vantage/vantage.css">
 </head>
 <body>
 
@@ -1280,22 +1283,24 @@
 </div>
 
 <!-- Topbar Navigation -->
-<div class="topbar no-print">
-  <div class="wrap">
-    <a href="#" class="brand">
-      <span class="brand-badge">LTM</span>
-      <div>
-        <div class="brand-title">Strategy IQ</div>
-        <div class="brand-sub">LTM Vantage &middot; Responsible Advisory</div>
-      </div>
+<header class="vt-topbar vt-work vt-light">
+  <div class="vt-topbar-inner">
+    <a href="/" class="vt-brand" aria-label="LTM Vantage home">
+      <img src="/assets/vantage/ltm-logo.svg" alt="LTM" width="81" height="22">
+      <span class="vt-brand-rule" aria-hidden="true"></span>
+      <span class="vt-brand-name">Vantage</span>
     </a>
-    <div class="topbar-actions">
+    <nav class="vt-nav" aria-label="Main">
+      <a href="/" class="vt-nav-link">Accelerators</a>
+      <span class="vt-nav-link vt-nav-current" aria-current="page">Strategy IQ</span>
+    </nav>
+    <div class="vt-actions">
       <button class="btn btn-ghost btn-sm" onclick="openAIConfigModal()">AI Settings (BYOK)</button>
       <button class="btn btn-ghost btn-sm" onclick="openQuestionDrawer()">Question Bank</button>
       <button class="btn btn-ghost btn-sm" id="btn-top-restart" onclick="restartAssessment()" style="display:none">Restart</button>
     </div>
   </div>
-</div>
+</header>
 
 <!-- SCREEN 1: INTAKE SCREEN -->
 <section class="screen active" id="screen-intake">
@@ -3565,7 +3570,7 @@ function initRadarChart() {
           max: 5,
           ticks: { stepSize: 1, display: false },
           pointLabels: {
-            font: { family: 'Plus Jakarta Sans', size: 10, weight: '700' },
+            font: { family: 'Inter', size: 10, weight: '700' },
             color: '#334155'
           },
           grid: { color: '#E2E8F0' },
@@ -3575,7 +3580,7 @@ function initRadarChart() {
       plugins: {
         legend: {
           position: 'bottom',
-          labels: { font: { family: 'Plus Jakarta Sans', size: 11 }, boxWidth: 12 }
+          labels: { font: { family: 'Inter', size: 11 }, boxWidth: 12 }
         }
       }
     }

@@ -96,6 +96,19 @@
 .vt-light .vt-nav-link:hover, .vt-light .vt-nav-link[aria-current="page"] { color: #18181B; }
 .vt-light .vt-nav-link[aria-current="page"] { background: #F4F4F5; }
 
+/* Work pages: the bar holds the page's own actions and grows to fit them. Pages keep their own
+   older element rules (header { ... }), so the bar resets what it relies on. */
+.vt-topbar { display: block; margin: 0; padding: 0; text-align: left; }
+.vt-work .vt-topbar-inner { height: auto; min-height: 64px; padding-top: 10px; padding-bottom: 10px; flex-wrap: wrap; row-gap: 8px; }
+.vt-nav-current { color: #FFFFFF; font-weight: 600; cursor: default; }
+.vt-light .vt-nav-current { color: #18181B; }
+.vt-actions { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 8px; margin-left: auto; }
+@media (max-width: 760px) {
+  .vt-work.vt-topbar { position: static; }  /* the bar wraps on a phone: let it scroll away */
+  .vt-nav-current { display: none; }
+}
+@media print { .vt-topbar { display: none !important; } }
+
 /* ---------- Buttons ---------- */
 .vt-btn {
   display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 44px; padding: 0 18px;
