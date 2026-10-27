@@ -5,7 +5,7 @@
  * grounding check (status ok); a rejected or failed case fails the gate, even though nothing ungrounded is shown.
  *
  * Costs money and needs AWS credentials with Bedrock access, so it is not part of CI (the stub-model tests are):
- *   AI_REGION=<region> AI_MODEL_ID=anthropic.claude-opus-5-5 npx tsx scripts/eval-sovereign-narrative.ts
+ *   AI_REGION=ap-south-1 AI_MODEL_ID=in.anthropic.claude-opus-5 npx tsx scripts/eval-sovereign-narrative.ts
  * Writes docs/cio-readiness/sovereign-iq/design/S9-EVAL.md with each case's status, attempts and violations.
  */
 import { readFileSync, writeFileSync } from 'node:fs';
