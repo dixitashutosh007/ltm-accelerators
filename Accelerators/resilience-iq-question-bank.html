@@ -3,17 +3,38 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Question Bank Studio | Resilience IQ | LTM Vantage</title>
-<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/vantage/vantage.css">
 <style>
 :root{--bg:#f8fafc;--panel:#fff;--line:#cbd5e1;--ink:#0f172a;--muted:#64748b;--red:#ff5e4f;--red2:#e54536;--green:#35754d;--amber:#b7791f}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:14px 'Plus Jakarta Sans',sans-serif}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:14px 'Inter',system-ui,sans-serif}
 .top{height:62px;background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 24px;position:sticky;top:0;z-index:10}.brand{display:flex;align-items:center;gap:10px;font-weight:800}.logo{width:34px;height:34px;border-radius:8px;background:linear-gradient(135deg,var(--red),var(--red2));color:#fff;display:grid;place-items:center}.mono{font:10px 'JetBrains Mono';color:var(--muted);letter-spacing:.08em;text-transform:uppercase}
 .actions{display:flex;gap:8px}.btn{border:1px solid var(--line);background:#fff;border-radius:6px;padding:9px 13px;font-weight:700;cursor:pointer}.btn.primary{background:var(--red);border-color:var(--red);color:#fff}.btn:hover{filter:brightness(.97)}
 .layout{max-width:1320px;margin:auto;padding:24px;display:grid;grid-template-columns:270px 1fr;gap:20px}.side,.editor,.preview{background:var(--panel);border:1px solid var(--line);border-radius:8px}.side{padding:16px;height:calc(100vh - 110px);position:sticky;top:86px;overflow:auto}.side h3{margin:4px 0 14px;font-size:13px}.qitem{padding:11px;border:1px solid transparent;border-radius:6px;cursor:pointer;margin-bottom:4px}.qitem:hover{background:#f8fafc}.qitem.active{background:#fff4f2;border-color:#ffd0ca}.qitem small{display:block;color:var(--muted);font:10px 'JetBrains Mono';margin-top:3px}.main{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:20px}.editor{padding:24px}.field{margin-bottom:18px}.field label{display:block;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:7px}.field input,.field textarea,.field select{width:100%;border:1px solid var(--line);border-radius:6px;padding:10px 11px;font:inherit;background:#fff;color:var(--ink)}textarea{min-height:92px;resize:vertical}.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}.chips{display:flex;flex-wrap:wrap;gap:7px}.chip{border:1px solid var(--line);padding:6px 9px;border-radius:5px;font-size:11px}.option-row{display:flex;gap:7px;margin-bottom:7px}.option-row input{flex:1}.iconbtn{width:36px;border:1px solid var(--line);background:#fff;border-radius:6px;cursor:pointer}.check{display:flex;align-items:center;gap:8px;font-size:13px}.status{padding:10px 12px;border-radius:6px;background:#f1f5f9;color:var(--muted);font-size:12px}.status.ok{background:#edf7f0;color:var(--green)}.status.warn{background:#fff8e8;color:var(--amber)}.preview{padding:18px;height:max-content;position:sticky;top:86px}.preview h3{margin:0 0 16px}.pvq{font-size:18px;font-weight:800;line-height:1.35;margin-bottom:12px}.pvo{padding:9px;border:1px solid var(--line);border-radius:5px;margin:6px 0;font-size:12px}.empty{color:var(--muted);padding:30px;text-align:center}@media(max-width:950px){.layout{grid-template-columns:1fr}.side{height:auto;position:static}.main{grid-template-columns:1fr}.preview{position:static}.qitem{display:inline-block;width:180px;vertical-align:top}.side{white-space:nowrap}.row2{grid-template-columns:1fr}}
 </style></head>
 <body>
-<header class="top"><div class="brand"><span class="logo">L</span><span>LTM Vantage<br><span class="mono">Resilience IQ · Question Bank Studio</span></span></div><div class="actions"><button class="btn" id="validate">Validate Bank</button><button class="btn" id="import">Import JSON</button><button class="btn primary" id="export">Export JSON</button><input id="file" type="file" accept=".json" hidden></div></header>
+<header class="vt-topbar vt-work vt-light">
+  <div class="vt-topbar-inner">
+    <a href="/" class="vt-brand" aria-label="LTM Vantage home">
+      <img src="/assets/vantage/ltm-logo.svg" alt="LTM" width="81" height="22">
+      <span class="vt-brand-rule" aria-hidden="true"></span>
+      <span class="vt-brand-name">Vantage</span>
+    </a>
+    <nav class="vt-nav" aria-label="Main">
+      <a href="/" class="vt-nav-link">Accelerators</a>
+      <a href="/resilience-iq.html" class="vt-nav-link">Resilience IQ</a>
+      <span class="vt-nav-link vt-nav-current" aria-current="page">Question bank</span>
+    </nav>
+    <div class="vt-actions">
+      <button class="btn" id="validate">Validate Bank</button>
+      <button class="btn" id="import">Import JSON</button>
+      <button class="btn primary" id="export">Export JSON</button>
+      <input id="file" type="file" accept=".json" hidden>
+    </div>
+  </div>
+</header>
 <div class="layout"><aside class="side"><h3>Executive Questions <span id="count"></span></h3><div id="list"></div></aside>
 <section class="main"><div class="editor"><div id="editor"></div></div><aside class="preview"><h3>Live Preview</h3><div id="preview"></div></aside></section></div>
 <script>

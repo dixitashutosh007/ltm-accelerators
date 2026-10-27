@@ -98,7 +98,11 @@
 
 /* Work pages: the bar holds the page's own actions and grows to fit them. Pages keep their own
    older element rules (header { ... }), so the bar resets what it relies on. */
-.vt-topbar { display: block; margin: 0; padding: 0; text-align: left; }
+.vt-topbar { display: block; margin: 0; padding: 0; text-align: left; box-sizing: border-box; }
+.vt-topbar * { box-sizing: border-box; }
+.vt-light .vt-badge.beta { border-color: #D4D4D8; color: #52525B; }
+.vt-light .vt-btn-quiet { border-color: #D4D4D8; color: #3F3F46; }
+.vt-light .vt-btn-quiet:hover { border-color: #A1A1AA; color: #18181B; }
 .vt-work .vt-topbar-inner { height: auto; min-height: 64px; padding-top: 10px; padding-bottom: 10px; flex-wrap: wrap; row-gap: 8px; }
 .vt-nav-current { color: #FFFFFF; font-weight: 600; cursor: default; }
 .vt-light .vt-nav-current { color: #18181B; }
