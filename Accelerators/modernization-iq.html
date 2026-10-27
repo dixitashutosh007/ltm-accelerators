@@ -17,7 +17,6 @@
 <script src="/assets/rbac-guard.js" data-tool="modernization-iq"></script>
 
 <style>
-@import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap");
 
 :root {
   --ground: #F8FAFC;
@@ -53,8 +52,8 @@
   --shadow-card: 0 1px 3px rgba(15,23,42,0.06), 0 8px 24px rgba(15,23,42,0.05);
   --shadow-pop: 0 12px 36px rgba(15,23,42,0.12);
   
-  --font-display: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  --font-body: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-display: "Inter Tight", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-body: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, Menlo, monospace;
 }
 
@@ -728,33 +727,26 @@ h3 { font-size: 14px; font-weight: 700; letter-spacing: 0.08em; text-transform: 
   .rating-lbl { font-size: 9.5px; }
 }
 </style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/vantage/vantage.css">
 </head>
 <body>
 
-<!-- Family Nav -->
-<nav id="ltm-family-nav" aria-label="LTM Vantage accelerators">
-  <div class="ltm-fam-inner">
-    <div class="ltm-fam-brand"><span class="ltm-fam-b">LTM</span><span class="ltm-fam-s">Vantage · Responsible Advisory</span></div>
-    <div class="ltm-fam-links">
-      <a href="cloud-iq.html" class="ltm-fam-link" data-fam="cloud">Cloud IQ <span class="ltm-fam-tag">front door</span></a>
-      <a href="strategy-iq.html" class="ltm-fam-link" data-fam="strategy">Strategy IQ</a>
-      <a href="modernization-iq.html" class="ltm-fam-link current" data-fam="moderniz" aria-current="page">Modernization IQ</a>
-      <a href="sovereign-screen.html" class="ltm-fam-link" data-fam="sovereign">Sovereign IQ</a>
-      <a href="Data-Residency-Jurisdiction-Audit.html" class="ltm-fam-link" data-fam="posture">Posture IQ</a>
-      <a href="finops-screen.html" class="ltm-fam-link" data-fam="finops">FinOps IQ</a>
-      <a href="ai-readiness-iq.html" class="ltm-fam-link" data-fam="ai">AI Readiness IQ</a>
+<header class="vt-topbar vt-work vt-light">
+  <div class="vt-topbar-inner">
+    <a href="/" class="vt-brand" aria-label="LTM Vantage home">
+      <img src="/assets/vantage/ltm-logo.svg" alt="LTM" width="81" height="22">
+      <span class="vt-brand-rule" aria-hidden="true"></span>
+      <span class="vt-brand-name">Vantage</span>
+    </a>
+    <nav class="vt-nav" aria-label="Main">
+      <a href="/" class="vt-nav-link">Accelerators</a>
+      <span class="vt-nav-link vt-nav-current" aria-current="page">Modernize IQ</span>
+    </nav>
+    <div class="vt-actions">
     </div>
-  </div>
-</nav>
-
-<!-- Header -->
-<header class="top">
-  <div class="wrap">
-    <div class="ltmlogo">
-      <img src="data:image/png;base64,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" alt="LTM" />
-      <span class="ltmword"><b>Modernization IQ</b><span>v3.0 · DC & Compute Capacity Strategy</span></span>
-    </div>
-    <div class="kicker">Pillar 03.5 — LTM Vantage · Responsible Advisory</div>
   </div>
 </header>
 
@@ -2294,7 +2286,7 @@ function initRadarChart() {
           min: 0,
           max: 5,
           ticks: { stepSize: 1, display: false },
-          pointLabels: { font: { size: 10.5, family: 'Plus Jakarta Sans', weight: '600' } }
+          pointLabels: { font: { size: 10.5, family: 'Inter', weight: '600' } }
         }
       },
       plugins: {
