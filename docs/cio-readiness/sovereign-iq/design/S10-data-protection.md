@@ -199,7 +199,7 @@ Reviewer: Claude (AI, in a counsel role, 26 Oct 2026). Not a qualified lawyer (s
 | C17 | India: LTM is a Data Fiduciary. EU and UK data processed under the intra-group contract is largely exempt (s.17(1)(d), V), but s.8(5) security applies. Platform DPDP notice and breach process by 13 May 2027 (as M6 C9) | WS-S6 | Routed |
 | C18 | Legacy `sovereign-iq.html` and `posture-iq.html`: localStorage and legacy AI code | Retire at the S5 switch-over, before external use | Done 26 Oct 2026 (A8): both addresses forward to the merged page; the old pages, engines and routes are removed |
 | C19 | Retention test gap: no Sovereign-specific expiry spec | A5 | Done (found 27 Oct 2026: `handler.spec.ts`) |
-| C20 | Cap turnover: GDPR caps use the undertaking's (group) turnover (C-383/23, S); the turnover question should ask for group worldwide turnover | Question wording, with counsel | Recommended |
+| C20 | Cap turnover: GDPR caps use the undertaking's (group) turnover (C-383/23, S); the turnover question should ask for group worldwide turnover | Question wording, with counsel | Done 27 Oct 2026: A5 asks for the group's worldwide turnover; EU counsel to confirm (brief EU-3) |
 
 ## 8. Actions for LTM
 

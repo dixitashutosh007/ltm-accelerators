@@ -74,9 +74,9 @@
     },
     {
       "id": "A5", "theme": "footprint", "kind": "scope", "mode": "workshop", "type": "compound",
-      "text": "For the exposure view: what was last year's worldwide turnover, and the balance-sheet total?",
+      "text": "For the exposure view: what was the group's worldwide turnover last year, and its balance-sheet total? (all companies you control: the GDPR, NIS2, AI Act and DORA caps use the group figure)",
       "fields": [
-        { "key": "turnover_amount", "label": "Worldwide turnover", "type": "number_with_currency", "optional": true },
+        { "key": "turnover_amount", "label": "Group worldwide turnover", "type": "number_with_currency", "optional": true },
         { "key": "balance_sheet_band_eur", "label": "Balance-sheet total", "type": "single", "options": [
           { "value": "le10m", "label": "Up to €10M" }, { "value": "10m_43m", "label": "€10M–43M" }, { "value": "gt43m", "label": "Over €43M" }, { "value": "unknown", "label": "Not sure" } ] }
       ],
