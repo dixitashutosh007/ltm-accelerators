@@ -1079,4 +1079,4 @@ Findings map to these offerings. Indicative scope is an LTM heuristic to be agre
 
 ## 11. Sources
 
-FinOps IQ rests on 236 claims in `packages/engine-core/src/claims/claims-register.json`: 234 verified against the source (V), 1 from a secondary source (S), 0 pending (P), and 1 LTM heuristics or other statuses. Each question above lists its claim IDs; the report's methodology appendix cites them for the client.
+FinOps IQ rests on 237 claims in `packages/engine-core/src/claims/claims-register.json`: 234 verified against the source (V), 2 from a secondary source (S), 0 pending (P), and 1 LTM heuristics or other statuses. Each question above lists its claim IDs; the report's methodology appendix cites them for the client.

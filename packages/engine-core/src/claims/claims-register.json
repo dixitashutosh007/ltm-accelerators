@@ -7953,7 +7953,7 @@
       ],
       "kind": "provider",
       "jurisdiction": "global",
-      "statement": "Microsoft Azure: self-service cancellation of reservations is limited; the cancelled commitment refunded is capped (USD 50,000 per rolling 12-month window per billing scope, as quoted by Microsoft Learn), and exchanges move a commitment rather than remove it.",
+      "statement": "Microsoft Azure: self-service cancellation of reservations is limited; the cancelled commitment refunded is capped (USD 50,000 per rolling 12-month window per billing scope, as quoted by Microsoft Learn), and exchanges move a commitment rather than remove it. From 1 February 2027, reservations purchased after that date are not eligible for exchange where the service is supported by savings plans (for example Azure Virtual Machines, App Service and SQL Database); reservations purchased before then retain one final exchange.",
       "source": {
         "url": "https://learn.microsoft.com/en-us/azure/cost-management-billing/reservations/exchange-and-refund-azure-reservations",
         "title": "Self-service exchanges and refunds for Azure Reservations (Microsoft Learn)",
@@ -7970,7 +7970,7 @@
       "lastReviewed": "2026-10-27",
       "nextReview": "2027-01-25",
       "basisNote": "Why LEV-06 leaves out tolerant usage already covered by commitments: moving it to Spot would strand the commitment.",
-      "notes": "Learn (page dated 22 Jul 2026): 'the sum of all canceled reservation commitments in your billing scope ... can't exceed USD 50,000 in a 12-month rolling window'; no early termination fee is charged today (a 12% fee may apply in future). Also on the page: from 1 February 2027, reservations bought after that date for services covered by savings plans (for example Virtual Machines, App Service, SQL Database) cannot be exchanged; earlier reservations keep one final exchange. Worth adding to the commitment workstream's risks before February 2027 (not changed here). Previously P (checked 2026-10-14). Read at the primary page on 27 Oct 2026 by finops-cost-lead; finops.org, data.finops.org, docs.aws.amazon.com, learn.microsoft.com, docs.cloud.google.com, docs.oracle.com and karpenter.sh were reachable from this environment."
+      "notes": "27 Oct 2026: the exchange policy change was read on the Microsoft Learn page (updated 22 Jul 2026). Learn (page dated 22 Jul 2026): 'the sum of all canceled reservation commitments in your billing scope ... can't exceed USD 50,000 in a 12-month rolling window'; no early termination fee is charged today (a 12% fee may apply in future). Also on the page: from 1 February 2027, reservations bought after that date for services covered by savings plans (for example Virtual Machines, App Service, SQL Database) cannot be exchanged; earlier reservations keep one final exchange. Worth adding to the commitment workstream's risks before February 2027 (not changed here). Previously P (checked 2026-10-14). Read at the primary page on 27 Oct 2026 by finops-cost-lead; finops.org, data.finops.org, docs.aws.amazon.com, learn.microsoft.com, docs.cloud.google.com, docs.oracle.com and karpenter.sh were reachable from this environment."
     },
     {
       "id": "CLM-FIN-175",
@@ -10279,6 +10279,31 @@
       "lastReviewed": "2026-10-23",
       "nextReview": "2027-04-23",
       "notes": "Fetched and read from the publisher's page on 2026-10-23 by the finops-cost-lead agent (page text retrieved and the quoted points located in it). Used by the platform playbook (src/playbook/finops-iq.json)."
+    },
+    {
+      "id": "CLM-FIN-273",
+      "accelerators": [
+        "finops-iq"
+      ],
+      "kind": "provider",
+      "jurisdiction": "global",
+      "statement": "Scheduled Actions for Azure VMs runs start, stop and hibernate operations on virtual machines on a schedule, through a separate resource provider that calls the Azure APIs on the subscription's behalf; Microsoft announced it as generally available in November 2025.",
+      "source": {
+        "url": "https://techcommunity.microsoft.com/blog/azurecompute/-/4470797",
+        "title": "Azure Compute blog: Scheduled Actions for Azure VMs",
+        "article": "General availability announcement",
+        "secondaryUrls": [
+          "https://mc.merill.net/message/AZ530797"
+        ]
+      },
+      "verification": "S",
+      "checkedOn": "2026-10-27",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "finops-cost-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-27",
+      "nextReview": "2027-01-25",
+      "notes": "Read through the Azure Updates entry AZ530797 and Microsoft's announcement as quoted in search results on 27 Oct 2026; the Learn overview page was not found at the expected address. The SDK documentation lists deallocate as well as start and hibernate, while the announcement lists stop, start and hibernate: the playbook asks the consultant to confirm the operations needed."
     },
     {
       "id": "CLM-SOV-201",
