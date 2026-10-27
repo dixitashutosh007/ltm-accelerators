@@ -24,9 +24,10 @@
   <style>
     
     :root {
-      --ltm-navy: #0F172A;
-      --ltm-coral: #FF5E4F;
-      --ltm-coral-dk: #E54536;
+      --ltm-navy: #18181B;
+      --ltm-coral: #D33826;   /* text and buttons: 4.8:1 on white (AA) */
+      --ltm-coral-fill: #FF5E4F;  /* brand coral, fills and accents only */
+      --ltm-coral-dk: #B82E1A;
       --ltm-coral-tint: #FCF0EE;
       --ltm-blue: #226882;
       --ltm-blue-tint: #EBF4F7;
@@ -37,16 +38,16 @@
       --ltm-amber: #D97706;
       --ltm-amber-tint: #FEF3C7;
       
-      --bg: #F8FAFC;
-      --bg2: #F1F5F9;
+      --bg: #F8F9FA;
+      --bg2: #F4F4F5;
       --card-bg: #FFFFFF;
-      --line: #E2E8F0;
-      --line-subtle: #F1F5F9;
+      --line: #E4E4E7;
+      --line-subtle: #F4F4F5;
       
-      --ink: #0F172A;
-      --ink2: #334155;
-      --ink3: #64748B;
-      --ink-muted: #94A3B8;
+      --ink: #18181B;
+      --ink2: #3F3F46;
+      --ink3: #52525B;
+      --ink-muted: #71717A;
 
       --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       --font-mono: "JetBrains Mono", ui-monospace, Menlo, monospace;
@@ -199,15 +200,17 @@
     }
 
     /* Hero / Intake Section */
+    /* Hero: a light card on the light work page, as FinOps IQ and Sovereign IQ (LTM Vantage, 27 Oct 2026) */
     .cio-executive-banner {
-      background: radial-gradient(circle at 85% 20%, #1E293B 0%, #0F172A 70%, #080D1A 100%);
-      color: #FFFFFF;
+      background: var(--card-bg);
+      color: var(--ink);
+      border: 1px solid var(--line);
+      border-top: 4px solid var(--ltm-coral-fill);
       border-radius: var(--radius-lg);
-      padding: 36px 40px;
+      padding: 32px 36px;
       margin: 28px 0 24px;
       position: relative;
-      overflow: hidden;
-      box-shadow: var(--shadow-lg);
+      box-shadow: var(--shadow-sm);
     }
     .banner-top-row {
       display: flex;
@@ -218,56 +221,51 @@
       gap: 8px;
     }
     .banner-tag {
-      background: rgba(255, 94, 79, 0.2);
-      color: #FFA399;
-      border: 1px solid rgba(255, 94, 79, 0.4);
-      font-size: 11px;
-      font-weight: 700;
+      color: var(--ltm-coral);
+      font-size: 12px;
+      font-weight: 600;
       letter-spacing: 0.12em;
       text-transform: uppercase;
-      padding: 4px 10px;
-      border-radius: 999px;
     }
     .banner-version {
       font-family: var(--font-mono);
       font-size: 11px;
-      color: rgba(255, 255, 255, 0.6);
+      color: var(--ink3);
       letter-spacing: 0.08em;
     }
     .banner-title {
-      font-size: clamp(24px, 3.5vw, 36px);
-      font-weight: 800;
+      font-family: 'Inter Tight', var(--font-sans);
+      font-size: clamp(24px, 3.5vw, 34px);
+      font-weight: 600;
       letter-spacing: -0.02em;
       line-height: 1.2;
       margin-bottom: 12px;
-      background: linear-gradient(90deg, #FFFFFF 0%, #F1F5F9 60%, #E2E8F0 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
+      color: var(--ink);
+      text-wrap: balance;
     }
     .banner-desc {
-      font-size: 14.5px;
-      color: rgba(255, 255, 255, 0.85);
+      font-size: 15px;
+      color: var(--ink2);
       max-width: 820px;
       line-height: 1.6;
-      margin-bottom: 24px;
+      margin-bottom: 22px;
     }
     .banner-pills {
       display: flex;
-      gap: 12px;
+      gap: 10px;
       flex-wrap: wrap;
     }
     .bp-item {
-      background: rgba(255, 255, 255, 0.08);
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      backdrop-filter: blur(8px);
-      padding: 8px 14px;
+      background: var(--bg2);
+      padding: 7px 12px;
       border-radius: var(--radius-sm);
-      font-size: 12.5px;
+      font-size: 13px;
       display: flex;
       align-items: center;
       gap: 7px;
-      color: rgba(255, 255, 255, 0.9);
+      color: var(--ink2);
     }
+    .bp-item b { color: var(--ink); }
 
     /* Intake Cards */
     .card {
