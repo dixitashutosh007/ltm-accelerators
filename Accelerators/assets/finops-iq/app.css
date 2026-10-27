@@ -1,4 +1,5 @@
-/* FinOps IQ page (execution phase M3). LTM Vantage colours and type; WCAG 2.2 AA contrast; usable at 360px. */
+/* FinOps IQ page (execution phase M3). LTM Vantage colours and type; WCAG 2.2 AA contrast; usable at 360px.
+   The top bar comes from the shared design system (/assets/vantage/vantage.css, light variant). */
 :root {
   --red: #D33826;          /* 4.8:1 on white, 4.5:1 on the selected-option tint; for text, buttons and focus. The brand #FF5E4F is used for fills only */
   --red-fill: #FF5E4F;
@@ -17,8 +18,8 @@
   --blue-bg: #EEF7FA;
   --crit: #9F1D12;
   --crit-bg: #FDECEA;
-  --sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --head: 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --head: 'Inter Tight', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   --radius: 8px;
 }
 * { box-sizing: border-box; }
@@ -35,14 +36,12 @@ a { color: var(--red); }
 .review-banner { background: #3B2A0B; color: #FDE7B0; font: 600 12px/1.5 var(--sans); text-align: center; padding: 7px 16px; }
 .loading { color: var(--ink-3); }
 
-.topbar { background: var(--ink); color: #fff; }
-.topbar-inner { max-width: 1180px; margin: 0 auto; padding: 10px 16px; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
-.brand { display: flex; align-items: center; gap: 12px; color: #fff; text-decoration: none; min-width: 0; }
-.brand img { height: 24px; width: auto; background: #fff; border-radius: 4px; padding: 2px 4px; }
-.brand-text { display: flex; flex-direction: column; line-height: 1.2; }
-.brand-text strong { font-family: var(--head); font-size: 17px; }
-.brand-text span { font-size: 11px; color: #D1D5DB; letter-spacing: .04em; }
-.topbar-actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+/* Shared top bar on a work page: the bar grows to fit the assessment's actions (save status, client view, list). */
+.vt-topbar .vt-topbar-inner { max-width: 1180px; height: auto; min-height: 64px; padding: 10px 16px; flex-wrap: wrap; row-gap: 8px; }  /* same column as main */
+.vt-topbar .vt-nav { flex: 1 1 auto; }
+.vt-nav-current { color: #18181B; font-weight: 600; cursor: default; }
+@media (max-width: 760px) { .vt-topbar { position: static; } .steps { top: 12px; } }  /* the bar wraps on a phone: let it scroll away */
+.topbar-actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; justify-content: flex-end; }
 .footer { text-align: center; font-size: 12px; color: var(--ink-3); padding: 16px; border-top: 1px solid var(--line-2); background: var(--card); }
 
 .btn { font: 600 14px/1.2 var(--sans); border-radius: 6px; border: 1px solid var(--line); background: var(--card); color: var(--ink); padding: 10px 16px; cursor: pointer; min-height: 44px; }
@@ -57,9 +56,8 @@ td.actions { display: table-cell; white-space: nowrap; }
 td.actions .delete { margin-left: 8px; }
 .btn.danger { background: var(--crit); border-color: var(--crit); color: #fff; }
 .text-error { color: var(--crit); }
-.topbar .btn { background: transparent; color: #fff; border-color: #6B7280; }
-.topbar .btn[aria-pressed="true"] { background: #fff; color: var(--ink); }
-.status { font-size: 12px; color: #D1D5DB; }
+.vt-topbar .btn[aria-pressed="true"] { background: var(--ink); border-color: var(--ink); color: #fff; }
+.status { font-size: 12px; color: var(--ink-3); }
 
 .card { background: var(--card); border: 1px solid var(--line-2); border-radius: var(--radius); padding: 20px; margin-bottom: 16px; }
 .muted { color: var(--ink-3); }
@@ -93,7 +91,7 @@ th { font-size: 12px; text-transform: uppercase; letter-spacing: .04em; color: v
 
 /* Assessment layout */
 .layout { display: grid; grid-template-columns: 250px minmax(0, 1fr); gap: 24px; align-items: start; }
-.steps { position: sticky; top: 12px; background: var(--card); border: 1px solid var(--line-2); border-radius: 12px; padding: 8px; box-shadow: 0 1px 2px rgba(16, 24, 40, .04); }
+.steps { position: sticky; top: 80px;  /* clears the 64px sticky top bar */ background: var(--card); border: 1px solid var(--line-2); border-radius: 12px; padding: 8px; box-shadow: 0 1px 2px rgba(16, 24, 40, .04); }
 .steps ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
 .steps button { display: grid; grid-template-columns: 26px minmax(0, 1fr) auto; align-items: center; gap: 10px; width: 100%; text-align: left; background: none; border: none; padding: 9px 10px; border-radius: 8px; font: 600 14px var(--sans); color: var(--ink-2); cursor: pointer; min-height: 44px; transition: background .15s; }
 .steps button:hover:not([disabled]) { background: var(--bg); }
@@ -240,10 +238,10 @@ details.basis ul { margin: 6px 0 0; padding-left: 18px; }
   .row-item { grid-template-columns: minmax(0, 1fr); }
   .finding dl { grid-template-columns: minmax(0, 1fr); }
   .card { padding: 14px; }
-  .brand-text span { display: none; }
+  .vt-nav-current { display: none; }
 }
 @media print {
-  .topbar, .review-banner, .steps, .nav-row, .btn, .footer { display: none !important; }
+  .vt-topbar, .review-banner, .steps, .nav-row, .btn, .footer { display: none !important; }
   .layout { display: block; }
 }
 
@@ -259,7 +257,7 @@ details.basis ul { margin: 6px 0 0; padding-left: 18px; }
 .working-emblem .hex { width: 64px; height: 64px; background: linear-gradient(135deg, #FF7B6E, #FF1E27); clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%); filter: drop-shadow(0 0 24px rgba(255, 30, 39, .6)); }
 .working-org { display: inline-block; margin: 0 0 12px; padding: 4px 14px; border: 1px solid rgba(255, 255, 255, .14); border-radius: 20px; font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: rgba(255, 255, 255, .8); }
 .working-org strong { color: #FF7B6E; }
-.working-title { margin: 0 0 24px; font-family: Manrope, sans-serif; font-size: 38px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; }
+.working-title { margin: 0 0 24px; font-family: var(--head); font-size: 38px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; }
 .working-title span { color: #FF7B6E; }
 .working-step { min-height: 1.5em; margin: 0 0 10px; font-size: 14px; color: #FFD0CB; }
 .working-track { height: 5px; border-radius: 3px; background: rgba(255, 255, 255, .12); overflow: hidden; }
