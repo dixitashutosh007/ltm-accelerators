@@ -150,30 +150,40 @@
             "quantified": false,
             "source": {
               "claimId": "CLM-FIN-069",
-              "citation": "No published maximum read yet",
-              "status": "UNSOURCED",
-              "checked": "2026-10-14",
-              "reviewBy": "2027-01-12"
+              "citation": "Oracle publishes no standard commitment discount: Universal Credits discounts are set in the order",
+              "status": "P",
+              "checked": "2026-10-27",
+              "reviewBy": "2027-01-25"
             }
           },
           "ibm": {
-            "quantified": false,
+            "quantified": true,
+            "indicative": true,
+            "value": 0.6,
+            "instrument": "IBM Cloud virtual server reservations for VPC (1-year or 3-year)",
+            "caveat": "Indicative: the provider's published 'up to' rate, used as a ceiling on LTM's judgement. Actual discounts depend on the contract, term, region and resource type; confirm with the provider before relying on the figure.",
             "source": {
               "claimId": "CLM-FIN-069",
-              "citation": "No published maximum read yet",
-              "status": "UNSOURCED",
-              "checked": "2026-10-14",
-              "reviewBy": "2027-01-12"
+              "citation": "IBM Cloud Reservations: up to 60% with 1-year or 3-year virtual server reservations",
+              "url": "https://www.ibm.com/products/cloud/pricing/reservations",
+              "status": "V",
+              "checked": "2026-10-27",
+              "reviewBy": "2027-01-25"
             }
           },
           "alibaba": {
-            "quantified": false,
+            "quantified": true,
+            "indicative": true,
+            "value": 0.76,
+            "instrument": "Alibaba Cloud savings plans",
+            "caveat": "Indicative: the provider's published 'up to' rate, used as a ceiling on LTM's judgement. Actual discounts depend on the contract, term, region and resource type; confirm with the provider before relying on the figure.",
             "source": {
               "claimId": "CLM-FIN-069",
-              "citation": "No published maximum read yet",
-              "status": "UNSOURCED",
-              "checked": "2026-10-14",
-              "reviewBy": "2027-01-12"
+              "citation": "Alibaba Cloud savings plans: up to 76% off pay-as-you-go",
+              "url": "https://www.alibabacloud.com/help/en/ecs/cost-optimization-faqs",
+              "status": "V",
+              "checked": "2026-10-27",
+              "reviewBy": "2027-01-25"
             }
           },
           "other_public": {
@@ -226,7 +236,8 @@
         "CLM-FIN-133",
         "CLM-FIN-134",
         "CLM-FIN-135",
-        "CLM-FIN-139"
+        "CLM-FIN-139",
+        "CLM-FIN-069"
       ]
     },
     {
@@ -566,7 +577,19 @@
             }
           },
           "oci": {
-            "quantified": false
+            "quantified": true,
+            "indicative": true,
+            "value": 0.5,
+            "instrument": "OCI preemptible instances (fixed discount)",
+            "caveat": "Indicative: the provider's published 'up to' rate, used as a ceiling on LTM's judgement. Actual discounts depend on the contract, term, region and resource type; confirm with the provider before relying on the figure.",
+            "source": {
+              "claimId": "CLM-FIN-068",
+              "citation": "OCI preemptible capacity: 50% less than on-demand in all regions",
+              "url": "https://docs.oracle.com/en-us/iaas/Content/Compute/Concepts/preemptible.htm",
+              "status": "V",
+              "checked": "2026-10-27",
+              "reviewBy": "2027-01-25"
+            }
           },
           "ibm": {
             "quantified": false
@@ -620,7 +643,8 @@
         "CLM-FIN-133",
         "CLM-FIN-134",
         "CLM-FIN-135",
-        "CLM-FIN-139"
+        "CLM-FIN-139",
+        "CLM-FIN-068"
       ]
     },
     {

@@ -1752,7 +1752,7 @@
     {
       "id": "ASM-FIN-060",
       "title": "Provider published maximum discounts",
-      "value": "AWS 72% (Savings Plans / RIs), Azure 72% (reservations), Google Cloud 55% (resource-based CUD); Spot AWS 90%, Azure 90%, Google Cloud 91%; OCI, IBM, Alibaba not quantified",
+      "value": "AWS 72% (Savings Plans / RIs), Azure 72% (reservations), Google Cloud 55% (resource-based CUD), IBM 60% (VPC reservations, indicative), Alibaba 76% (savings plans, indicative); Spot AWS 90%, Azure 90%, Google Cloud 91%, OCI 50% (preemptible, indicative); OCI commitments not quantified",
       "basis": "published_source",
       "claimIds": [
         "CLM-FIN-060",
@@ -1761,15 +1761,16 @@
         "CLM-FIN-064",
         "CLM-FIN-065",
         "CLM-FIN-067",
+        "CLM-FIN-068",
         "CLM-FIN-069"
       ],
-      "reasoning": "Read on 14 Oct 2026 through web-search results quoting the provider pricing pages (direct fetches are blocked from the build environment), as the claims register records; volatile, reviewed every 90 days (D14). A maximum on covered usage, not a bill-level saving.",
+      "reasoning": "Read on 14 Oct 2026 through web-search results quoting the provider pricing pages (direct fetches are blocked from the build environment), as the claims register records; volatile, reviewed every 90 days (D14). A maximum on covered usage, not a bill-level saving. OCI, IBM and Alibaba maxima were added on 27 Oct 2026 by owner decision as indicative ceilings: the provider's published 'up to' rate, shown with a caveat that actual discounts depend on the contract, term, region and resource type.",
       "confidence": "High",
       "sensitivity": "LEV-01 and LEV-06 in proportion; a lower Spot maximum also shifts usage back to LEV-01",
       "usedBy": [
         "value model"
       ],
-      "ownerApproval": "approved by the owner (F1, D1-D15 and Q1-Q14 defaults accepted)",
+      "ownerApproval": "approved by the owner (F1, D1-D15 and Q1-Q14 defaults accepted); OCI (Spot), IBM and Alibaba (commitments) added as indicative by the owner on 27 Oct 2026",
       "constants": [
         {
           "ref": "levers:levers[LEV-01].maxRate.byProvider.aws.value",
@@ -1794,6 +1795,18 @@
         {
           "ref": "levers:levers[LEV-06].maxRate.byProvider.gcp.value",
           "value": 0.91
+        },
+        {
+          "ref": "levers:levers[LEV-01].maxRate.byProvider.ibm.value",
+          "value": 0.6
+        },
+        {
+          "ref": "levers:levers[LEV-01].maxRate.byProvider.alibaba.value",
+          "value": 0.76
+        },
+        {
+          "ref": "levers:levers[LEV-06].maxRate.byProvider.oci.value",
+          "value": 0.5
         },
         {
           "ref": "levers:levers[LEV-01].maxRate.byProvider.aws.instruments",

@@ -407,14 +407,45 @@
       "status": "V",
       "checked": "2026-10-27",
       "reviewBy": "2027-01-25",
-      "clientVisible": false,
+      "clientVisible": true,
       "usedFor": [
-        "not used until the owner decides"
+        "LEV-06"
+      ],
+      "indicative": true
+    },
+    {
+      "provider": "ibm",
+      "instrument": "Virtual server reservations for VPC (1-year or 3-year)",
+      "maxDiscount": 0.6,
+      "basis": "Maximum on covered usage versus on-demand / pay-as-you-go; not a bill-level saving",
+      "claimId": "CLM-FIN-069",
+      "status": "V",
+      "checked": "2026-10-27",
+      "reviewBy": "2027-01-25",
+      "clientVisible": true,
+      "indicative": true,
+      "usedFor": [
+        "LEV-01"
       ]
     },
     {
-      "provider": "oci, ibm, alibaba",
-      "instrument": "Commitment discounts",
+      "provider": "alibaba",
+      "instrument": "Savings plans",
+      "maxDiscount": 0.76,
+      "basis": "Maximum on covered usage versus on-demand / pay-as-you-go; not a bill-level saving",
+      "claimId": "CLM-FIN-069",
+      "status": "V",
+      "checked": "2026-10-27",
+      "reviewBy": "2027-01-25",
+      "clientVisible": true,
+      "indicative": true,
+      "usedFor": [
+        "LEV-01"
+      ]
+    },
+    {
+      "provider": "oci",
+      "instrument": "Commitment discounts (Universal Credits, set in the order)",
       "maxDiscount": null,
       "basis": "Maximum on covered usage versus on-demand / pay-as-you-go; not a bill-level saving",
       "claimId": "CLM-FIN-069",
@@ -423,7 +454,7 @@
       "reviewBy": "2027-01-25",
       "clientVisible": false,
       "usedFor": [
-        "not quantified until the owner decides"
+        "not quantified: no standard published rate"
       ]
     }
   ],

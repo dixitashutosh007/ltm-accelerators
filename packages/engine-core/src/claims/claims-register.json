@@ -5928,11 +5928,11 @@
       "verification": "V",
       "checkedOn": "2026-10-27",
       "volatile": true,
-      "clientVisible": false,
+      "clientVisible": true,
       "owner": "finops-cost-lead (agent); approver: product owner",
       "lastReviewed": "2026-10-27",
       "nextReview": "2027-01-25",
-      "notes": "Read on the OCI documentation page (replaces the old Oracle blog source). Kept consultant-only and not used to quantify LEV-06 for OCI: whether to add 50% as the OCI Spot maximum in value-rules.json and market-data.json is an owner decision (it would change figures for OCI estates). Previously P (checked 2026-10-14). Read at the primary page on 27 Oct 2026 by finops-cost-lead; finops.org, data.finops.org, docs.aws.amazon.com, learn.microsoft.com, docs.cloud.google.com, docs.oracle.com and karpenter.sh were reachable from this environment."
+      "notes": "Owner decision 27 Oct 2026: used to quantify LEV-06 for OCI as an indicative maximum, shown with its caveat in the report. Read on the OCI documentation page (replaces the old Oracle blog source). Kept consultant-only and not used to quantify LEV-06 for OCI: whether to add 50% as the OCI Spot maximum in value-rules.json and market-data.json is an owner decision (it would change figures for OCI estates). Previously P (checked 2026-10-14). Read at the primary page on 27 Oct 2026 by finops-cost-lead; finops.org, data.finops.org, docs.aws.amazon.com, learn.microsoft.com, docs.cloud.google.com, docs.oracle.com and karpenter.sh were reachable from this environment."
     },
     {
       "id": "CLM-FIN-069",
@@ -5941,11 +5941,11 @@
       ],
       "kind": "provider",
       "jurisdiction": "global",
-      "statement": "Published maximum commitment discounts: IBM Cloud virtual server reservations for VPC, up to 60% with 1-year or 3-year terms (bare metal servers for VPC up to 35% for 1 year, 55% for 3 years); Alibaba Cloud savings plans, up to 76% off pay-as-you-go. Oracle Cloud Infrastructure publishes no standard commitment discount rate: Universal Credits discounts are set in the order.",
-      "verification": "P",
+      "statement": "Published maximum commitment discounts: IBM Cloud virtual server reservations for VPC, up to 60% with 1-year or 3-year terms (bare metal servers for VPC up to 35% for 1 year, 55% for 3 years); Alibaba Cloud savings plans, up to 76% off pay-as-you-go.",
+      "verification": "V",
       "checkedOn": "2026-10-27",
       "volatile": true,
-      "clientVisible": false,
+      "clientVisible": true,
       "owner": "finops-cost-lead (agent); approver: product owner",
       "lastReviewed": "2026-10-27",
       "nextReview": "2027-01-25",
@@ -5959,7 +5959,7 @@
           "https://www.oracle.com/cloud/universal-credits/"
         ]
       },
-      "notes": "Was UNSOURCED. IBM: 'Reduce your spend by up to 60% with 1-year or 3-year virtual server capacity reservations' (IBM Cloud Reservations page). Alibaba: 'Reduces pay-as-you-go costs by up to 76%' (Alibaba Cloud help centre, updated 8 Oct 2026; the product page still says up to 70%). Consultant-only. Engine impact: none now; levers.json LEV-01 rows for oci, ibm and alibaba still read 'No published maximum read yet' with status UNSOURCED and should be updated when the owner decides. Previously UNSOURCED (checked 2026-10-14). Read at the primary page on 27 Oct 2026 by finops-cost-lead; finops.org, data.finops.org, docs.aws.amazon.com, learn.microsoft.com, docs.cloud.google.com, docs.oracle.com and karpenter.sh were reachable from this environment."
+      "notes": "Owner decision 27 Oct 2026: IBM (60%) and Alibaba (76%) quantify LEV-01 as indicative maxima, shown with their caveat in the report. Oracle Cloud Infrastructure publishes no standard commitment discount rate (Universal Credits discounts are set in the order; oracle.com returned 403 on 27 Oct 2026), so LEV-01 stays unquantified for OCI. Was UNSOURCED. IBM: 'Reduce your spend by up to 60% with 1-year or 3-year virtual server capacity reservations' (IBM Cloud Reservations page). Alibaba: 'Reduces pay-as-you-go costs by up to 76%' (Alibaba Cloud help centre, updated 8 Oct 2026; the product page still says up to 70%). Consultant-only. Engine impact: none now; levers.json LEV-01 rows for oci, ibm and alibaba still read 'No published maximum read yet' with status UNSOURCED and should be updated when the owner decides. Previously UNSOURCED (checked 2026-10-14). Read at the primary page on 27 Oct 2026 by finops-cost-lead; finops.org, data.finops.org, docs.aws.amazon.com, learn.microsoft.com, docs.cloud.google.com, docs.oracle.com and karpenter.sh were reachable from this environment."
     },
     {
       "id": "CLM-FIN-070",

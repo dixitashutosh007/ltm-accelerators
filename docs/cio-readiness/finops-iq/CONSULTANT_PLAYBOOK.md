@@ -894,7 +894,7 @@ Default target by tier: Tier 1 Crawl, Tier 2 Crawl, Tier 3 Walk. Owner: FinOps l
 | Type and capability | rate; Rate Optimization |
 | Quantified in | executive, workshop |
 | Addressable base | P_c x max(0, S - C - n_u - t_u) x (1 - computeRemoved(LEV-02, LEV-03, LEV-07, LEV-10) / P_c), per provider; t_u = (tolerant - Spot) x (1 - C) where LEV-06 is quantified |
-| Maximum rate | AWS: 72%; Azure: 72%; Google Cloud: 55%; OCI: not quantified; IBM Cloud: not quantified; Alibaba Cloud: not quantified; Other public cloud: not quantified |
+| Maximum rate | AWS: 72%; Azure: 72%; Google Cloud: 55%; OCI: not quantified; IBM Cloud: 60%; Alibaba Cloud: 76%; Other public cloud: not quantified |
 | Evidence age limit | — |
 | Ramp (share of run-rate) | year 1 50%, year 2 100%, year 3 100% |
 | Internal effort (FTE-months) | Tier 1 1, Tier 2 2, Tier 3 4; ongoing 20% a year |
@@ -964,7 +964,7 @@ Default target by tier: Tier 1 Crawl, Tier 2 Crawl, Tier 3 Walk. Owner: FinOps l
 | Type and capability | rate; Rate Optimization |
 | Quantified in | workshop |
 | Addressable base | P_c x max(0, interruptionTolerantShare - spotShare) x (1 - eligibleCoverage) x (1 - computeRemoved(LEV-02, LEV-03, LEV-07, LEV-10) / P_c), per provider: only tolerant usage not already covered by commitments moves to Spot |
-| Maximum rate | AWS: 90%; Azure: 90%; Google Cloud: 91%; OCI: not quantified; IBM Cloud: not quantified; Alibaba Cloud: not quantified; Other public cloud: not quantified |
+| Maximum rate | AWS: 90%; Azure: 90%; Google Cloud: 91%; OCI: 50%; IBM Cloud: not quantified; Alibaba Cloud: not quantified; Other public cloud: not quantified |
 | Evidence age limit | — |
 | Ramp (share of run-rate) | year 1 25%, year 2 100%, year 3 100% |
 | Internal effort (FTE-months) | Tier 1 2, Tier 2 4, Tier 3 8; ongoing 20% a year |
@@ -1079,4 +1079,4 @@ Findings map to these offerings. Indicative scope is an LTM heuristic to be agre
 
 ## 11. Sources
 
-FinOps IQ rests on 236 claims in `packages/engine-core/src/claims/claims-register.json`: 233 verified against the source (V), 1 from a secondary source (S), 1 pending (P), and 1 LTM heuristics or other statuses. Each question above lists its claim IDs; the report's methodology appendix cites them for the client.
+FinOps IQ rests on 236 claims in `packages/engine-core/src/claims/claims-register.json`: 234 verified against the source (V), 1 from a secondary source (S), 0 pending (P), and 1 LTM heuristics or other statuses. Each question above lists its claim IDs; the report's methodology appendix cites them for the client.
