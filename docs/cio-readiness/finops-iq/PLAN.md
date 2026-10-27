@@ -111,7 +111,7 @@ Commits land on a local branch and are pushed when the owner asks.
 - **Route.** `GET /api/finops-iq/report?assessmentId=…&format=pdf|csv[&view=client]` on the Advisory API (JWT), own Lambda with read-only data access, 1,024 MB / 30 s. Completed or archived assessments only, from the stored result; ownership as for save and resume. `check:backend` requires the route. The API now exposes `Content-Disposition` so the page can name the file.
 - **Page.** A Report card on a completed assessment downloads the PDF and the CSV; client view downloads the client edition. The journey test downloads both.
 - **Not in M4:** How LTM can help and technical execution by platform (M5; the PDF says so on its cover); Jira import (later); retirement of jsPDF and "Export Audit JSON" on the current pages (M8, with the pages).
-- **Still open from the re-test (lead):** working-note caveats in the market data registry (D6b). Fixed in M5: the "not netted" line now always accounts for the FinOps team (its cost, "not costed without your internal cost rate", or "no FinOps team cost, as your answers show an accountable owner already").
+- **From the re-test (lead):** working-note caveats in the market data registry (D6b): **closed 27 Oct 2026**, see the close-out status below. Fixed in M5: the "not netted" line now always accounts for the FinOps team (its cost, "not costed without your internal cost rate", or "no FinOps team cost, as your answers show an accountable owner already").
 - **Gate notes:** the owner reviewed the scenario PDFs and approved ASM-FIN-086 (effort per level of gap). Open observation for the lead: in Tier 3 scenarios most workstreams reach band L, so tier-scaled band limits may separate them better.
 
 **M5 status (22 Oct 2026): gate approved by the owner.**
@@ -143,6 +143,27 @@ Commits land on a local branch and are pushed when the owner asks.
 - **Consultant playbook regenerated** from the engine and knowledge base: `docs/cio-readiness/finops-iq/CONSULTANT_PLAYBOOK.md`, built by `npm run build:finops-iq-playbook`; a test fails CI when it is out of date or uses banned language. Internal, so it is in `docs/`, not the hosted `Accelerators/`.
 - **Owner decisions (22 Oct 2026):** D2 keep 55% for Google Cloud commitments when the instrument is not stated (the flexible-CUD rate of 46% is not used; the "prefer flexible instruments" advice stays as guidance on what to buy). M6 A3: notice and disclaimer approved, so the report's draft markers are removed. Archived-report retention: 24-month S3 rule approved (`infra/s3/reports-bucket-lifecycle.json`); applying it to the bucket is the owner's step, as the agent's tool may not change the shared bucket.
 - **Open:** M6 A1, the transfer instrument LTM's privacy office confirms (the notice names none until then); M7 live smoke test and a screen-reader pass; Medium and Low items D8–D21.
+
+**Close-out status (27 Oct 2026, finops-cost-lead; for owner review).** Work that does not need the owner. finops.org, data.finops.org and the provider documentation sites are now reachable, so claims read only through search results on 14 Oct 2026 were re-read at source.
+- **D6b, market data caveats: closed.** In `registry/market-data.json`:
+  - every caveat is now written for the client, and the internal working notes are gone (MKT-FIN-02, 03, 04, 11, 15, 20, 21, 22, and the Foundation KPI sample note);
+  - the Flexera sample (753; 62% US, 23% Europe, 13% Asia-Pacific) is confirmed in Flexera's report methodology;
+  - the State of FinOps figures are confirmed on data.finops.org and in the Linux Foundation release;
+  - MKT-FIN-11 is relabelled "FinOps practitioners managing SaaS spend, or planning to", because the report says "manage SaaS or have plans to". The value (90%) is unchanged;
+  - the Foundation's sample goals (MKT-FIN-20 to 22) are now V, with the page's wording ("at least 70%" and so on);
+  - the earlier 50/80/90 version is kept only in the claim notes, because it could not be read at source;
+  - no number the engine uses changed. The client edition's market panel shows the new label and caveats.
+- **Claims re-verification.** FinOps claims move from 206 V, 19 S, 9 P and 2 UNSOURCED to **233 V, 1 S, 1 P and 1 UNSOURCED**:
+  - left as they are: CLM-FIN-224 (S; VMware's product documentation was not found), CLM-FIN-069 (now P; the IBM and Alibaba maxima were read, Oracle's page was blocked) and CLM-FIN-070 (UNSOURCED by design, because the storage price ratio is read for the client's region at engagement time);
+  - **corrected statements:** CLM-FIN-010, 031, 038, 045, 097, 106 and 124. Their scores, value figures and golden outputs are unchanged.
+- **Engine and content follow-ups for the owner** (not changed, because they alter client-facing content or numbers):
+  1. CLM-FIN-031: rename the capability "FinOps Tools & Services" to **"Automation, Tools & Services"** (its 2026 name), as DESIGN.md Q2 provides. The name appears in `capabilities.json`, the citations in `question-bank.json`, `Accelerators/assets/finops-iq/questions.json` (rebuild), the playbook entry detail and the consultant playbook (rebuild).
+  2. CLM-FIN-106: playbook entry PB.FIN.LEV-06.gcp.stack says "handling the 30-second preemption notice". Google Cloud gives no dedicated notice by default, offers an optional 120-second notice, and allows a shutdown of up to 30 seconds. Suggested wording: "handling the preemption notice (set a 120-second notice duration for workloads that need time to shut down)".
+  3. CLM-FIN-068 (OCI preemptible, 50%, now V) and CLM-FIN-069 (IBM VPC reservations up to 60%, Alibaba savings plans up to 76%): decide whether to quantify LEV-06 on OCI and LEV-01 on IBM and Alibaba. This changes figures for those estates. Until then, `levers.json` keeps "No published maximum read yet".
+  4. CLM-FIN-096: Microsoft has archived the Start/Stop VMs v2 documentation and stopped developing it. Consider listing an alternative beside it in PB.FIN.LEV-04.azure.platform.
+  5. CLM-FIN-174: from 1 February 2027, Azure reservations bought for services covered by savings plans cannot be exchanged. Add this to the commitment workstream's risks before then.
+- **A2, part 2:** USPTO searched. It has no record for FINOPS IQ or CLOUD FINOPS IQ. The bare FINOPS application was abandoned in 2020, one applicant disclaimed FINOPS, and three FINOPS marks are on the Supplemental Register. EUIPO, TMview, UKIPO, WIPO and IP India could not be searched from this environment. A2 stays open for a professional register search (`design/A2-trademark-check.md`).
+- **Checks:** `npx vitest run` passes (26 files, 910 tests) and so does `npm run check:repo`. The consultant playbook has been rebuilt for the new claim counts.
 
 ---
 

@@ -1,6 +1,6 @@
 {
   "registryVersion": "1.0.0",
-  "statusAsOf": "2026-10-14",
+  "statusAsOf": "2026-10-27",
   "displayRule": "Published market data is shown with source, year and sample, labelled 'published market data'. It is never presented as an LTM peer benchmark, as the client's position or as a target. LTM has no engagement history to benchmark against (FRAMEWORK.md, Data).",
   "surveys": [
     {
@@ -10,7 +10,7 @@
       "published": "2026-03-18",
       "year": 2026,
       "sample": 753,
-      "sampleNote": "Cloud decision-makers and users; 62% in the US; self-reported",
+      "sampleNote": "Cloud decision-makers and users; 62% in the US, 23% in Europe, 13% in Asia-Pacific; self-reported (report methodology)",
       "url": "https://www.flexera.com/about-us/press-center/flexera-finds-cloud-value-is-rising-while-ai-waste-grows",
       "claimIds": [
         "CLM-FIN-040",
@@ -46,7 +46,7 @@
           "reviewBy": "2027-01-12",
           "clientVisible": false,
           "use": [],
-          "caveat": "Not shown in reports (M7 D13): only secondary sources give the 2025 figure, and they disagree (27% or 28%)"
+          "caveat": "Not shown in reports: Flexera's 2026 release gives no prior-year figure, only that waste rose 'for the first time in five years'"
         },
         {
           "id": "MKT-FIN-03",
@@ -61,7 +61,7 @@
           "use": [
             "market_panel"
           ],
-          "caveat": "Share of respondents' organisations, as Flexera's release of 18 March 2026 states it"
+          "caveat": "Share of respondents' organisations (Flexera, 18 March 2026)"
         },
         {
           "id": "MKT-FIN-04",
@@ -76,7 +76,7 @@
           "use": [
             "market_panel"
           ],
-          "caveat": "Share naming it a top challenge, as Flexera's release of 18 March 2026 states it"
+          "caveat": "Share of respondents naming it a top challenge (Flexera, 18 March 2026)"
         }
       ]
     },
@@ -114,19 +114,19 @@
         },
         {
           "id": "MKT-FIN-11",
-          "label": "FinOps teams asked to manage SaaS spend",
+          "label": "FinOps practitioners managing SaaS spend, or planning to",
           "value": 0.9,
           "unit": "share",
           "claimId": "CLM-FIN-045",
           "status": "V",
-          "checked": "2026-10-14",
-          "reviewBy": "2027-01-12",
+          "checked": "2026-10-27",
+          "reviewBy": "2027-01-25",
           "clientVisible": true,
           "use": [
             "market_panel",
             "scope_context"
           ],
-          "caveat": "Share of FinOps practitioners surveyed; the release puts it as nine in ten"
+          "caveat": "Share of FinOps practitioners surveyed; includes those who plan to take on SaaS spend"
         },
         {
           "id": "MKT-FIN-12",
@@ -166,14 +166,14 @@
           "value": null,
           "unit": "text",
           "claimId": "CLM-FIN-047",
-          "status": "S",
-          "checked": "2026-10-14",
-          "reviewBy": "2027-01-12",
+          "status": "V",
+          "checked": "2026-10-27",
+          "reviewBy": "2027-01-25",
           "clientVisible": true,
           "use": [
             "market_panel"
           ],
-          "caveat": "Wording from secondary summaries citing the report"
+          "caveat": "Practitioners' reported priorities, not a measure of results; mature practitioners report diminishing returns on traditional optimisation"
         }
       ]
     },
@@ -184,7 +184,7 @@
       "published": null,
       "year": 2026,
       "sample": null,
-      "sampleNote": "Sample goals, not survey results or requirements; two versions exist (earlier and current)",
+      "sampleNote": "Sample goals from the FinOps community (data.finops.org), not survey results or requirements",
       "url": "https://www.finops.org/framework/maturity-model/",
       "claimIds": [
         "CLM-FIN-035",
@@ -196,18 +196,18 @@
         {
           "id": "MKT-FIN-20",
           "label": "Allocation to a known owner: Crawl / Walk / Run",
-          "value": "70% / 85% / more than 90%",
+          "value": "at least 70% / at least 85% / more than 90%",
           "unit": "text",
           "claimId": "CLM-FIN-035",
-          "status": "S",
-          "checked": "2026-10-14",
-          "reviewBy": "2027-01-12",
+          "status": "V",
+          "checked": "2026-10-27",
+          "reviewBy": "2027-01-25",
           "clientVisible": true,
           "use": [
             "threshold_basis",
             "kpi_context"
           ],
-          "caveat": "Earlier version 50% / 80% / more than 90%"
+          "caveat": "Sample goals from the FinOps community, not requirements; FinOps IQ uses them as band floors (LTM adaptation)"
         },
         {
           "id": "MKT-FIN-21",
@@ -215,30 +215,30 @@
           "value": "about 60% / more than 75% / more than 80%",
           "unit": "text",
           "claimId": "CLM-FIN-036",
-          "status": "S",
-          "checked": "2026-10-14",
-          "reviewBy": "2027-01-12",
+          "status": "V",
+          "checked": "2026-10-27",
+          "reviewBy": "2027-01-25",
           "clientVisible": true,
           "use": [
             "kpi_context"
           ],
-          "caveat": "Earlier version about 60% / 70% / 80%; not a maturity rating in FinOps IQ"
+          "caveat": "Sample goals from the FinOps community, not requirements; FinOps IQ does not rate maturity on coverage"
         },
         {
           "id": "MKT-FIN-22",
           "label": "Forecast variance: Crawl / Walk / Run",
-          "value": "under 20% / under 10% / under 5%",
+          "value": "below 20% / below 10% / below 5%",
           "unit": "text",
           "claimId": "CLM-FIN-037",
-          "status": "S",
-          "checked": "2026-10-14",
-          "reviewBy": "2027-01-12",
+          "status": "V",
+          "checked": "2026-10-27",
+          "reviewBy": "2027-01-25",
           "clientVisible": true,
           "use": [
             "threshold_basis",
             "kpi_context"
           ],
-          "caveat": "Earlier version 20% / 15% / 12%"
+          "caveat": "Sample goals from the FinOps community, not requirements; FinOps IQ uses them as band floors (LTM adaptation)"
         }
       ]
     }
@@ -404,12 +404,12 @@
       "maxDiscount": 0.5,
       "basis": "Maximum on covered usage versus on-demand / pay-as-you-go; not a bill-level saving",
       "claimId": "CLM-FIN-068",
-      "status": "P",
-      "checked": "2026-10-14",
-      "reviewBy": "2027-01-12",
+      "status": "V",
+      "checked": "2026-10-27",
+      "reviewBy": "2027-01-25",
       "clientVisible": false,
       "usedFor": [
-        "not used until confirmed"
+        "not used until the owner decides"
       ]
     },
     {
@@ -418,12 +418,12 @@
       "maxDiscount": null,
       "basis": "Maximum on covered usage versus on-demand / pay-as-you-go; not a bill-level saving",
       "claimId": "CLM-FIN-069",
-      "status": "UNSOURCED",
-      "checked": "2026-10-14",
-      "reviewBy": "2027-01-12",
+      "status": "P",
+      "checked": "2026-10-27",
+      "reviewBy": "2027-01-25",
       "clientVisible": false,
       "usedFor": [
-        "not quantified"
+        "not quantified until the owner decides"
       ]
     }
   ],
