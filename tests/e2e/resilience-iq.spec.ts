@@ -160,7 +160,7 @@ test.describe('Resilience IQ', () => {
         await answer(page, id, plan[id]);
         await page.getByRole('button', { name: /Next|Run Resilience Assessment/ }).click();
       }
-      await expect(page.getByRole('heading', { name: 'Transformation Roadmap' })).toBeVisible({ timeout: 15_000 });
+      await expect(page.locator('#rqClient')).toBeVisible({ timeout: 15_000 });
 
       expect(world.calls).toContain(`POST ${EVALUATE} auth=bearer`);
       const sent = evaluations[evaluations.length - 1];
@@ -170,7 +170,7 @@ test.describe('Resilience IQ', () => {
       expect(completion.snapshot.answers).toEqual(plan);
       expect(completion.snapshot.result).toBeUndefined(); // the server computes the stored result
 
-      const text = await page.locator('#app').innerText();
+      const text = (await page.locator('#app').textContent()) ?? '';
       expect(text).toContain('Acme Bank');
       expect(text).not.toMatch(/\bundefined\b|\bNaN\b|\bnull\b|\[object Object\]|\{"/);
       const expected = evaluateResilienceIq(plan as any);
@@ -195,7 +195,7 @@ test.describe('Resilience IQ', () => {
 
       // Every advisory round through to the report: the first option of each question, every matrix row in the
       // first column, the ranking as shown.
-      const report = page.getByRole('heading', { name: 'Transformation Roadmap' });
+      const report = page.locator('#rqClient');
       for (let round = 0; round < 80 && !(await report.isVisible()); round++) {
         const q = await page.evaluate('({ id: questions[idx].id, type: questions[idx].type, rows: questions[idx].rows, cols: questions[idx].cols })') as any;
         if (q.type === 'matrix') {
@@ -215,6 +215,31 @@ test.describe('Resilience IQ', () => {
       expect(Object.keys(sent.answers).some(id => id.startsWith('AF-'))).toBe(true);
       for (const v of Object.values(sent.answers)) expect(v === undefined || (Array.isArray(v) && v.length === 0)).toBe(false);
       expect(world.pageErrors).toEqual([]);
+    });
+
+    test('owner feedback (27 Oct 2026): a working screen while scoring, then a summary card, six tabs and a horizontal roadmap', async ({ page }) => {
+      const ids: string[] = await page.evaluate('questions.map(q => q.id)');
+      for (const id of ids) {
+        await answer(page, id, plan[id]);
+        await page.getByRole('button', { name: /Next|Run Resilience Assessment/ }).click();
+      }
+      const screen = page.locator('.working');
+      await expect(screen.locator('.working-step')).toHaveAttribute('role', 'status');
+      await expect(screen.locator('.working-list li')).toHaveCount(5);
+      await expect(screen).toHaveCount(0, { timeout: 15_000 });
+
+      await expect(page.locator('#rqClient')).toHaveText('Acme Bank');
+      await expect(page.locator('.rq-gauge')).toHaveAttribute('aria-label', /^Resilience posture \d+ of 100$/);
+      await expect(page.getByRole('tab')).toHaveText(['Overview', 'Recovery strategy', 'Gaps and risks', 'Roadmap', 'Evidence', 'Method']);
+      await expect(page.getByRole('heading', { name: 'Resilience by domain' })).toBeVisible();
+      // Target-state principles read as words, not internal IDs.
+      await page.getByRole('tab', { name: 'Recovery strategy' }).click();
+      await expect(page.locator('#tab-strategy')).not.toContainText('business_service_first');
+      await page.getByRole('tab', { name: 'Roadmap' }).click();
+      const waves = evaluateResilienceIq(plan as any).roadmap.length;
+      await expect(page.locator('#tab-roadmap .gt-row')).toHaveCount(waves);
+      await expect(page.locator('#tab-roadmap .gt-bar').first()).toBeVisible();
+      await expect(page.locator('#tab-overview')).toBeHidden();
     });
 
     test('an untouched recovery-objective slider is not an answer: the user must choose a value', async ({ page }) => {
@@ -238,7 +263,7 @@ test.describe('Resilience IQ', () => {
         await page.getByRole('button', { name: /Next|Run Resilience Assessment/ }).click();
       }
       await expect(page.getByRole('alert')).toContainText("We couldn't calculate your results");
-      await expect(page.getByRole('heading', { name: 'Transformation Roadmap' })).toHaveCount(0);
+      await expect(page.locator('#rqClient')).toHaveCount(0);
       expect(await page.evaluate('result')).toBeNull();
     });
 
@@ -256,6 +281,7 @@ test.describe('Resilience IQ', () => {
         return { body: { ok: true, data: {} } };
       });
       await page.evaluate(`result = evaluateResilienceIq_fixture; renderReport();`.replace('evaluateResilienceIq_fixture', JSON.stringify(evaluateResilienceIq(plan as any))));
+      await page.getByRole('tab', { name: 'Evidence' }).click();
       const first = page.locator(`[data-ev-row="${register[0].id}"]`);
       await expect(first.getByRole('button', { name: 'Mark provided' })).toBeVisible();
 
@@ -308,6 +334,7 @@ test.describe('Resilience IQ', () => {
       await page.route('https://files.example/**', route => route.fulfill({ status: 200, contentType: 'application/pdf', headers: { 'content-disposition': 'attachment; filename="report.pdf"' }, body: '%PDF-1.7 test' }));
 
       await page.evaluate(`result = ${JSON.stringify(evaluateResilienceIq(plan as any))}; renderReport();`);
+      await page.getByRole('tab', { name: 'Evidence' }).click();
       const first = page.locator(`[data-ev-row="${register[0].id}"]`);
       await first.locator('input[type=file]').setInputFiles({ name: 'DR test report.pdf', mimeType: 'application/pdf', buffer: Buffer.from('%PDF-1.7 restore test') });
       await expect(first.getByRole('button', { name: 'Download DR test report.pdf' })).toBeVisible();
@@ -319,7 +346,7 @@ test.describe('Resilience IQ', () => {
       const download = page.waitForEvent('download');
       await first.getByRole('button', { name: 'Download DR test report.pdf' }).click();
       expect((await download).suggestedFilename()).toBe('report.pdf');
-      await expect(page.getByRole('heading', { name: 'Evidence Traceability' })).toBeVisible();
+      await expect(page.getByRole('heading', { name: 'Evidence traceability' })).toBeVisible();
 
       // A file over 4 MB is refused in the page and never sent.
       const second = page.locator(`[data-ev-row="${register[1].id}"]`);
