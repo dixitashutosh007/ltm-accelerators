@@ -7,6 +7,8 @@
 (function () {
   var currentScript = document.currentScript;
   var toolId = currentScript ? currentScript.getAttribute('data-tool') : '';
+  // data-permission="edit" (question bank editors) admits only users who may edit the tool, as the home page's Edit button.
+  var needsEdit = !!currentScript && currentScript.getAttribute('data-permission') === 'edit';
   var api = window.LTM_API;
 
   function toSignIn() {
@@ -43,6 +45,7 @@
     var p = user.permissions || {};
     var hasAccess = toolId.split(/\s+/).some(function (id) {
       var acc = p.accelerators && p.accelerators[id];
+      if (needsEdit) return !!(acc && (acc.edit || acc.full)) || (Array.isArray(p.edit) && p.edit.indexOf(id) >= 0);
       return !!(acc && (acc.take || acc.full)) ||
         (Array.isArray(p.take) && p.take.indexOf(id) >= 0) ||
         (Array.isArray(p.view) && p.view.indexOf(id) >= 0);

@@ -1,13 +1,12 @@
 {
   "schema_version": "1.0",
-  "last_reviewed": "2026-10-04",
+  "last_reviewed": "2026-10-27",
   "note": "Service mappings are advisory families and must be validated against current provider capabilities, region availability, quotas, pricing, licensing and workload compatibility. Clean-room (CYBER-01) options are isolated, immutable backup vaults restored into an isolated environment; replication services are excluded because they copy a compromised state. Mappings are indicative and need SME review per engagement.",
   "aws": {
     "DR-01": [
       "AWS Backup",
       "Amazon S3",
-      "Amazon EBS snapshots",
-      "AWS Elastic Disaster Recovery"
+      "Amazon EBS snapshots"
     ],
     "DR-02": [
       "AWS Elastic Disaster Recovery",
@@ -24,13 +23,12 @@
     "DR-04": [
       "Amazon Route 53",
       "Elastic Load Balancing",
-      "Amazon RDS/Aurora replication options",
-      "AWS Elastic Disaster Recovery"
+      "Amazon RDS/Aurora replication options"
     ],
     "DR-05": [
       "Amazon Route 53",
       "AWS Global Accelerator",
-      "AWS Application Recovery Controller",
+      "Amazon Application Recovery Controller (ARC)",
       "regional replication services"
     ],
     "DATA-01": [
@@ -106,8 +104,7 @@
   "azure": {
     "DR-01": [
       "Azure Backup",
-      "Azure Blob Storage",
-      "Azure Site Recovery"
+      "Azure Blob Storage"
     ],
     "DR-02": [
       "Azure Site Recovery",
@@ -152,7 +149,7 @@
     ],
     "CYBER-01": [
       "isolated recovery subscription",
-      "Azure Backup immutable vault (confirm regional availability)",
+      "Azure Backup immutable vault",
       "clean-room restore and validation inside the isolated subscription"
     ],
     "CYBER-02": [
@@ -278,7 +275,7 @@
       "Cloud Interconnect plus diverse VPN/provider paths"
     ],
     "TEST-04": [
-      "Fault Injection Service where available",
+      "Fault Injection Testing (preview; confirm availability)",
       "automated recovery validation",
       "Cloud Monitoring"
     ]
