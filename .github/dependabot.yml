@@ -10,6 +10,10 @@ updates:
       testing:
         patterns: ['vitest', '@playwright/test', 'tsx', 'typescript']
     open-pull-requests-limit: 5
+    ignore:
+      # Node types follow the Node version in CI (20); move them with it, not ahead of it
+      - dependency-name: '@types/node'
+        update-types: ['version-update:semver-major']
   - package-ecosystem: npm
     directory: /services/reports-service
     schedule:
