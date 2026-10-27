@@ -245,31 +245,7 @@ details.basis ul { margin: 6px 0 0; padding-left: 18px; }
   .layout { display: block; }
 }
 
-/* Working screen (scoring and report): the LTM splash style of the former FinOps IQ page, with real steps. */
-.working { position: fixed; inset: 0; z-index: 1000; display: flex; align-items: center; justify-content: center; padding: 16px; background: #080A0F; color: #FFF; transition: opacity .3s ease; }
-.working.working-out { opacity: 0; pointer-events: none; }
-.working-glow { position: absolute; width: min(720px, 100vw); aspect-ratio: 1; border-radius: 50%; background: radial-gradient(circle, rgba(255, 30, 39, .18) 0%, rgba(255, 94, 79, .06) 40%, transparent 70%); filter: blur(60px); animation: working-glow 4s ease-in-out infinite alternate; }
-.working-card { position: relative; width: 100%; max-width: 440px; text-align: center; animation: working-in .5s cubic-bezier(.16, 1, .3, 1); }
-.working-emblem { position: relative; width: 104px; height: 104px; margin: 0 auto 22px; display: flex; align-items: center; justify-content: center; }
-.working-emblem .ring { position: absolute; inset: 0; border: 1px solid rgba(255, 94, 79, .35); border-radius: 50%; animation: working-pulse 2.2s ease-out infinite; }
-.working-emblem .r2 { animation-delay: .7s; }
-.working-emblem .r3 { animation-delay: 1.4s; }
-.working-emblem .hex { width: 64px; height: 64px; background: linear-gradient(135deg, #FF7B6E, #FF1E27); clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%); filter: drop-shadow(0 0 24px rgba(255, 30, 39, .6)); }
-.working-org { display: inline-block; margin: 0 0 12px; padding: 4px 14px; border: 1px solid rgba(255, 255, 255, .14); border-radius: 20px; font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: rgba(255, 255, 255, .8); }
-.working-org strong { color: #FF7B6E; }
-.working-title { margin: 0 0 24px; font-family: var(--head); font-size: 38px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; }
-.working-title span { color: #FF7B6E; }
-.working-step { min-height: 1.5em; margin: 0 0 10px; font-size: 14px; color: #FFD0CB; }
-.working-track { height: 5px; border-radius: 3px; background: rgba(255, 255, 255, .12); overflow: hidden; }
-.working-track i { display: block; height: 100%; width: 0; background: linear-gradient(90deg, #FF5E4F, #FF1E27); transition: width .4s ease-out; }
-@keyframes working-glow { from { transform: scale(.9); opacity: .6; } to { transform: scale(1.1); opacity: .95; } }
-@keyframes working-pulse { from { transform: scale(.6); opacity: .8; } to { transform: scale(1.5); opacity: 0; } }
-@keyframes working-in { from { opacity: 0; transform: translateY(12px) scale(.96); } to { opacity: 1; transform: none; } }
-@media (prefers-reduced-motion: reduce) {
-  .working-glow, .working-card, .working-emblem .ring { animation: none; }
-  .working-track i { transition: none; }
-}
-@media print { .working { display: none; } }
+/* The working screen (scoring and report) is shared by the work pages: /assets/vantage/vantage.css. */
 
 /* Client logo beside the client name (carried over from FinOps Value Case) */
 .client-id { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
@@ -430,17 +406,6 @@ button.mx-cell:hover { background: #fff; transform: translateY(-2px); box-shadow
 .gt-bar.sev-medium { background: linear-gradient(90deg, #5AA5C2, #2F7FA0); }
 .gt-bar.sev-low { background: linear-gradient(90deg, #6DB287, #3C8D5A); }
 
-/* Working screen: the step list */
-.working-client { margin: -14px 0 18px; font-size: 15px; color: #E7EAF0; }
-.working-list { list-style: none; margin: 18px auto 0; padding: 0; text-align: left; display: grid; gap: 8px; max-width: 340px; }
-.working-list li { display: flex; align-items: center; gap: 10px; font-size: 13px; color: rgba(255, 255, 255, .45); transition: color .3s; }
-.working-list .wl-icon { width: 18px; height: 18px; border-radius: 50%; border: 1.5px solid rgba(255, 255, 255, .25); flex: none; display: inline-flex; align-items: center; justify-content: center; font-size: 11px; }
-.working-list li.active { color: #fff; }
-.working-list li.active .wl-icon { border-color: #FF7B6E; border-top-color: transparent; animation: spin .8s linear infinite; }
-.working-list li.done { color: #FFD0CB; }
-.working-list li.done .wl-icon { background: #FF5E4F; border-color: #FF5E4F; color: #141414; }
-.working-list li.done .wl-icon::before { content: '✓'; font-weight: 800; }
-@keyframes spin { to { transform: rotate(360deg); } }
 
 @media (max-width: 860px) {
   .dash-grid { grid-template-columns: minmax(0, 1fr); }
@@ -468,7 +433,6 @@ button.mx-cell:hover { background: #fff; transform: translateY(-2px); box-shadow
 @media (prefers-reduced-motion: reduce) {
   .hero, .kpi-card, .dash-card, .hm-cell, .mx-bubble, .tab-panel, .question.q-new { animation: none; }
   .gauge .g-fill, .donut .d-seg, .rb-bar, .col-bars i, .gt-bar, .radar .r-shapes, .progress i { transition: none; }
-  .working-list li.active .wl-icon { animation: none; }
 }
 @media print {
   .tabs, .hero-actions { display: none !important; }
