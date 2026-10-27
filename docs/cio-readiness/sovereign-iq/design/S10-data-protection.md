@@ -16,7 +16,7 @@ Source status, as in [S10-TIA.md](S10-TIA.md): V (primary text read 26 Oct 2026)
 | 4 TIA | Draft for counsel ([S10-TIA.md](S10-TIA.md)): residual risk low |
 | 5 Notice and disclaimer | Reviewed; final recommended wording in section 4 for `NOTICES` in `public-schema.ts`; awaits owner approval (A2) |
 | 6 Legal-advice risk | Reviewed (section 5): nothing as built is a reserved legal activity in the UK, US (with the wording below), SG, AU or DE. France and India need counsel confirmation before external use there. Wording changes W1–W14 |
-| 7 Counsel review | AI review done: comments C1–C20. Ranked list for per-market sign-off (section 6.2) |
+| 7 Counsel review | AI review done: comments C1–C20. Ranked list for per-market sign-off (section 6.2). Second AI review 27 Oct 2026 ([S10-second-review.md](S10-second-review.md)): one correction (CCPA damages), five points for counsel; briefs per market in [S10-counsel-briefs.md](S10-counsel-briefs.md) |
 
 ## 1. Data inventory
 
@@ -198,7 +198,7 @@ Reviewer: Claude (AI, in a counsel role, 26 Oct 2026). Not a qualified lawyer (s
 | C16 | Australia: disclosure to the Indian entity engages APP 8 unless the employee-records exemption (s.7B(3), S) or related-body rules apply; the s.13B and APP 8 interplay is UNSOURCED | Counsel | Open |
 | C17 | India: LTM is a Data Fiduciary. EU and UK data processed under the intra-group contract is largely exempt (s.17(1)(d), V), but s.8(5) security applies. Platform DPDP notice and breach process by 13 May 2027 (as M6 C9) | WS-S6 | Routed |
 | C18 | Legacy `sovereign-iq.html` and `posture-iq.html`: localStorage and legacy AI code | Retire at the S5 switch-over, before external use | Done 26 Oct 2026 (A8): both addresses forward to the merged page; the old pages, engines and routes are removed |
-| C19 | Retention test gap: no Sovereign-specific expiry spec | A5 | Open |
+| C19 | Retention test gap: no Sovereign-specific expiry spec | A5 | Done (found 27 Oct 2026: `handler.spec.ts`) |
 | C20 | Cap turnover: GDPR caps use the undertaking's (group) turnover (C-383/23, S); the turnover question should ask for group worldwide turnover | Question wording, with counsel | Recommended |
 
 ## 8. Actions for LTM
@@ -209,7 +209,7 @@ Reviewer: Claude (AI, in a counsel role, 26 Oct 2026). Not a qualified lawyer (s
 | A2 | Approve the notice and disclaimer wording (4.2, 4.3) for `NOTICES`, then remove `status` | Owner | Gate S10 |
 | A3 | Decide W1–W5 (before internal use) and W6–W14 with the SEAL and SOW notes (before external use) | Owner | Internal use (W1–W5) |
 | A4 | Before switching S9 on: set the Bedrock data-retention mode to `none` in eu-west-1 and check that `anthropic.claude-opus-5-5` allows it (or disclose up to 30 days); label the focus field "Do not name individuals" | Owner | S9 switch-on |
-| A5 | Add a Sovereign handler spec: writes set `expiresAt`; expired records are not listed, opened, reported or narrated | Build | Gate S10 ("retention job tested") |
+| A5 | Add a Sovereign handler spec: writes set `expiresAt`; expired records are not listed, opened, reported or narrated. **Done** (`manage-sovereign-assessment/handler.spec.ts`, confirmed 27 Oct 2026) | Build | Gate S10 ("retention job tested") |
 | A6 | A qualified lawyer reviews sections 3 to 7 and the TIA, and signs off per market (EU, with FR and DE on 5.1; UK; US; SG; AU; IN) using the ranked list in 6.2 | Owner / LTM legal | First external client |
 | A7 | `sovereignty-compliance-lead` re-verifies FISA 702 and the other volatile claims before S11 | Agent | S11 |
 | A8 | Retire the legacy pages at the S5 switch-over. **Done 26 Oct 2026** | Owner | External use |
