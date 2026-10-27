@@ -682,7 +682,9 @@ function leverFormulas(c: Ctx): Block[] {
       rows: l.inputs.map(i => [[cite(inputInfo(i.fact).label, i.value.claimIds)], [i.kind], [fig(i.value, cur)], i.low ? [fig(i.low, cur)] : ['—'], i.high ? [fig(i.high, cur)] : ['—']]) });
     if (l.maxRate.length) {
       blocks.push({ kind: 'table', small: true, head: ['Provider', 'Maximum rate', 'Instrument'], widths: [80, 70, '*'],
-        rows: l.maxRate.map(m => [[providerName(m.provider)], [fig(m.rate, cur)], [m.instrument ? cite(m.instrument + (m.instrumentStated === false ? notStated(m.provider) : ''), m.rate.claimIds) : '—']]) });
+        rows: l.maxRate.map(m => [[providerName(m.provider) + (m.indicative ? ' (indicative)' : '')], [fig(m.rate, cur)], [m.instrument ? cite(m.instrument + (m.instrumentStated === false ? notStated(m.provider) : ''), m.rate.claimIds) : '—']]) });
+      const indicative = l.maxRate.filter(m => m.indicative);
+      if (indicative.length) blocks.push({ kind: 'paragraph', style: 'note', segs: [strong(indicative.map(m => providerName(m.provider)).join(', ') + ': '), indicative[0].indicative!] });
     }
     const e = l.cases!.expected;
     blocks.push({ kind: 'paragraph', style: 'small', segs: [

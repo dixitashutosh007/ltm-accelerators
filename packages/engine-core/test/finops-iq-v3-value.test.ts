@@ -13,6 +13,7 @@ import {
   evaluateFinOpsIqV3, QUESTIONS, type FinOpsIqV3Input, type FinOpsIqV3Result, type Facts, type Mode, type AnswerLevel
 } from '../src/accelerators/finops-iq/v3';
 import { resolveField, valueModelConstantReads, type Figure } from '../src/accelerators/finops-iq/v3/value-model';
+import { finopsIqReport } from '../src/accelerators/finops-iq/v3/report';
 import levers from '../src/accelerators/finops-iq/registry/levers.json' with { type: 'json' };
 import thresholds from '../src/accelerators/finops-iq/registry/thresholds.json' with { type: 'json' };
 import marketData from '../src/accelerators/finops-iq/registry/market-data.json' with { type: 'json' };
@@ -686,6 +687,37 @@ describe('FinOps IQ v3 value: reference scenarios against the ranges written in 
 /* ----------------------------- F4 review fixes ------------------------------ */
 
 const lever = (r: FinOpsIqV3Result, id: string) => r.value.levers.find(l => l.id === id)!;
+
+describe('FinOps IQ v3 value: OCI, IBM and Alibaba maxima (owner decision, 27 Oct 2026)', () => {
+  const s = SCENARIOS.find((x: any) => x.mode === 'workshop')!;
+  const input = scenarioInput(s);
+  const facts = JSON.parse(JSON.stringify(input.facts));
+  facts.footprint.publicCloudProviders = ['ibm', 'alibaba', 'oci'];
+  facts.spend.byScope = { ...facts.spend.byScope, ibm: { exact: 10_000_000 }, alibaba: { exact: 8_000_000 }, oci: { exact: 6_000_000 } };
+  for (const p of ['aws', 'azure', 'gcp']) delete facts.spend.byScope[p];
+  facts.base = { ...facts.base, computeShare: { exact: 0.6 }, steadyStateShare: { exact: 0.7 }, eligibleCoverage: { exact: 0.2 },
+    nonProdShare: { exact: 0.2 }, nonProdScheduledShare: { exact: 0 }, interruptionTolerantShare: { exact: 0.3 }, spotShare: { exact: 0 } };
+  const x = { ...input, facts };
+  const r = evaluateFinOpsIqV3(x);
+  const rates = (id: string) => Object.fromEntries(r.value.levers.find(l => l.id === id)!.maxRate.map(m => [m.provider, [m.rate.value, !!m.indicative]]));
+
+  it('quantifies LEV-01 for IBM (60%) and Alibaba (76%), and LEV-06 for OCI (50%), each marked indicative', () => {
+    expect(rates('LEV-01')).toEqual({ ibm: [0.6, true], alibaba: [0.76, true] });
+    expect(rates('LEV-06')).toEqual({ oci: [0.5, true] });
+  });
+
+  it('leaves OCI commitments unquantified (no standard published rate)', () => {
+    expect(Object.keys(rates('LEV-01'))).not.toContain('oci');
+  });
+
+  it('the report labels the rows indicative and states the caveat, in both views', () => {
+    for (const view of ['client', 'consultant'] as const) {
+      const text = JSON.stringify(finopsIqReport(r, { client: 'C', preparedBy: 'P', dataProvidedBy: 'C', view, input: x }));
+      expect(text).toContain('(indicative)');
+      expect(text).toContain("Indicative: the provider's published 'up to' rate");
+    }
+  });
+});
 
 describe('FinOps IQ v3 value: F4 review fixes', () => {
   it('H1: the cap metadata matches the code: all three cases, no evidence lift', () => guard((x, fail) => {

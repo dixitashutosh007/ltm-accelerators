@@ -81,7 +81,7 @@ interface LeverConst {
   id: string; name: string; type: string; capability: string; quantifiedIn: string[]; label: string; formula: string; rateFormula: string;
   claimIds: string[]; offeringIds: string[]; ramp: { year1: number | 'renewal_share'; year2: number; year3: number };
   effort: Record<string, number>; ongoing: number;
-  rateByProvider: Record<string, { rate: number; claimId: string; instrument: string; instruments?: Record<string, { value: number; claimId: string; label: string }>; defaultInstrument?: string } | null>;
+  rateByProvider: Record<string, { rate: number; claimId: string; instrument: string; instruments?: Record<string, { value: number; claimId: string; label: string }>; defaultInstrument?: string; indicative?: string } | null>;
   rate: number | null; rateClaimId: string | null; rampAssumption: string; effortAssumption: string;
 }
 const L = new Map<string, LeverConst>(LEVER_IDS.map(id => {
@@ -94,6 +94,8 @@ const L = new Map<string, LeverConst>(LEVER_IDS.map(id => {
       const bp = `${p}.maxRate.byProvider.${prov}`;
       byProvider[prov] = q ? {
         rate: K('levers', `${bp}.value`), claimId: K('levers', `${bp}.source.claimId`), instrument: K('levers', `${bp}.instrument`),
+        // Owner decision 27 Oct 2026: OCI, IBM and Alibaba maxima are quantified as indicative, with their caveat shown.
+        ...(pathGet(leverLibrary, `${bp}.indicative`) ? { indicative: K('levers', `${bp}.caveat`) } : {}),
         ...(pathGet(leverLibrary, `${bp}.instruments`) ? { instruments: K('levers', `${bp}.instruments`), defaultInstrument: K('levers', `${bp}.defaultInstrument`) } : {})
       } : null;
     }
@@ -467,7 +469,7 @@ export interface LeverValue {
   exclusion: { statement: string; expectedRunRate: Figure; oneOffCost: Figure; marginalNet3Year: Figure } | null;
   formula: string; rateFormula: string; basisLine: string;
   inputs: Array<{ fact: string; kind: InputKind; value: Figure; low: Figure | null; high: Figure | null }>;
-  maxRate: Array<{ provider: string; rate: Figure; instrument: string | null; instrumentStated: boolean | null }>;
+  maxRate: Array<{ provider: string; rate: Figure; instrument: string | null; instrumentStated: boolean | null; indicative: string | null }>;
   unsourcedProviders: string[];
   /** Roadmap start month of the finding that owns the lever; the ramp starts there (M3). */
   startMonth: Figure | null;
@@ -657,9 +659,9 @@ export function buildValueModel(ctx: ValueModelContext): ValueModelOutput {
       ? (pp.ratedProviders.get(id) ?? []).map(p => {
         const cr = id === 'LEV-01' ? pp.commitRate.get(p)! : null;
         const r = lc.rateByProvider[p]!;
-        return { provider: p, rate: fig(`${path}.maxRate[${p}].rate`, cr ? cr.rate : r.rate, 'share', [cr ? cr.claimId : r.claimId, ...claims], asm), instrument: cr ? cr.instrument : r.instrument, instrumentStated: cr ? cr.stated : null };
+        return { provider: p, rate: fig(`${path}.maxRate[${p}].rate`, cr ? cr.rate : r.rate, 'share', [cr ? cr.claimId : r.claimId, ...claims], asm), instrument: cr ? cr.instrument : r.instrument, instrumentStated: cr ? cr.stated : null, indicative: r.indicative ?? null };
       })
-      : lc.rate !== null ? [{ provider: 'all', rate: fig(`${path}.maxRate[all].rate`, share(lc.rate), 'share', [lc.rateClaimId ?? lc.claimIds[0], ...claims], asm), instrument: null, instrumentStated: null }]
+      : lc.rate !== null ? [{ provider: 'all', rate: fig(`${path}.maxRate[all].rate`, share(lc.rate), 'share', [lc.rateClaimId ?? lc.claimIds[0], ...claims], asm), instrument: null, instrumentStated: null, indicative: null }]
       : [];
     const ex = exclusions.get(id);
     const out: LeverValue = {
