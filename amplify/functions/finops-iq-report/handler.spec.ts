@@ -60,6 +60,28 @@ describe('FinOps IQ report API', () => {
     expect(Buffer.from(String(res.body), 'base64').subarray(0, 5).toString()).toBe('%PDF-');
   }, 30_000);
 
+  it('marks a report that passed the automated checks (REPORT-VALIDATION.md, Layer 1)', async () => {
+    await saveAs('completed');
+    const res = await call(event('GET', { assessmentId: ID }));
+    expect(res.statusCode).toBe(200);
+    expect(res.headers!['X-Report-Checks']).toMatch(/^pass R1 R2 R3 R4 R5 R7$/);
+  }, 30_000);
+
+  it('does not issue a report that fails an automated check: 422 with the reason, details in the log', async () => {
+    await saveAs('completed');
+    // A stored result whose levers no longer sum to the headline (R3).
+    const item = (await store.get(ID))!;
+    const result = JSON.parse(item.resultJson!);
+    result.value.totals.expected.grossRunRate.value += 1000;
+    await store.update({ assessmentId: ID, resultJson: JSON.stringify(result) });
+    const res = await call(event('GET', { assessmentId: ID }));
+    expect(res.statusCode).toBe(422);
+    const body = json(res);
+    expect(body.error).toBe('report_checks_failed');
+    expect(body.message).toMatch(/^The report was not issued: \d+ automated checks? failed \(.*R3.*\)/);
+    expect(console.error).toHaveBeenCalledWith('[FinOpsIqReport] report checks failed', expect.objectContaining({ assessmentId: ID }));
+  }, 30_000);
+
   it('returns the backlog CSV, client edition marked in the file name', async () => {
     await saveAs('completed');
     const res = await call(event('GET', { assessmentId: ID, format: 'csv', view: 'client' }));

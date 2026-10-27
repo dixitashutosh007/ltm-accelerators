@@ -16,6 +16,8 @@ import { renderPdf } from '../../../packages/engine-core/src/report/pdf';
 import { toCsv } from '../../../packages/engine-core/src/report/csv';
 import { appSyncStore, type FinOpsAssessmentStore } from '../manage-finops-assessment/store';
 import { withAcceleratorAccess } from '../_shared/access';
+import { checkFinOpsIqReport } from '../../../packages/engine-core/src/report-checks/accelerators';
+import { failureMessage } from '../../../packages/engine-core/src/report-checks';
 
 const FORMATS = new Set(['pdf', 'csv']);
 const REPORTABLE = new Set(['completed', 'archived']);
@@ -56,10 +58,16 @@ export function createHandler(store: FinOpsAssessmentStore) {
       }
       const input = JSON.parse(item.requestJson) as FinOpsIqV3Input;
       const doc = finopsIqReport(result, { client: item.clientName, preparedBy: `LTM consultant (${item.respondentEmail})`, dataProvidedBy: item.clientName, view, input, clientLogo: item.clientLogo ?? undefined });
+      // Layer 1 report checks (REPORT-VALIDATION.md): a report that fails any check is not issued.
+      const checked = checkFinOpsIqReport(doc, result, view, new Date().toISOString().slice(0, 10));
+      if (checked.status === 'fail') {
+        console.error('[FinOpsIqReport] report checks failed', { requestId, assessmentId: q.assessmentId, view, failures: checked.failures });
+        return respond(422, { ok: false, error: 'report_checks_failed', message: failureMessage(checked), failures: checked.failures });
+      }
       const pdf = await renderPdf(doc);
       return {
         statusCode: 200,
-        headers: { ...headers, 'Content-Type': 'application/pdf', 'Content-Disposition': `attachment; filename="${fileName(item.clientName, date, view, 'pdf')}"`, 'Cache-Control': 'no-store' },
+        headers: { ...headers, 'Content-Type': 'application/pdf', 'Content-Disposition': `attachment; filename="${fileName(item.clientName, date, view, 'pdf')}"`, 'Cache-Control': 'no-store', 'X-Report-Checks': `pass ${checked.checks.join(' ')}` },
         body: pdf.toString('base64'),
         isBase64Encoded: true
       };

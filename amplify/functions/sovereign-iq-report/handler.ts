@@ -12,6 +12,8 @@ import { randomUUID } from 'node:crypto';
 import { corsHeaders } from '../_shared/http';
 import { authorized, canAccess } from '../_shared/resilience-data';
 import { withAcceleratorAccess } from '../_shared/access';
+import { checkSovereignIqReport } from '../../../packages/engine-core/src/report-checks/accelerators';
+import { failureMessage } from '../../../packages/engine-core/src/report-checks';
 import type { SovereignIqV4Result } from '../../../packages/engine-core/src/accelerators/sovereign-iq/v4/evaluate';
 import { sovereignIqBacklog, sovereignIqReport } from '../../../packages/engine-core/src/accelerators/sovereign-iq/v4/report';
 import { renderPdf } from '../../../packages/engine-core/src/report/pdf';
@@ -56,10 +58,16 @@ export function createHandler(store: SovereignAssessmentStore) {
         };
       }
       const doc = sovereignIqReport(result, { client: item.clientName, preparedBy: `LTM consultant (${item.respondentEmail})`, dataProvidedBy: item.clientName, view, notes: view === 'consultant' ? item.consultantNotes ?? undefined : undefined, aiEnabled: !!item.aiEnabled, narrative: narrativeView(item.narrativeJson, true) });
+      // Layer 1 report checks (REPORT-VALIDATION.md): a report that fails any check is not issued.
+      const checked = checkSovereignIqReport(doc, result, view, new Date().toISOString().slice(0, 10));
+      if (checked.status === 'fail') {
+        console.error('[SovereignIqReport] report checks failed', { requestId, assessmentId: q.assessmentId, view, failures: checked.failures });
+        return respond(422, { ok: false, error: 'report_checks_failed', message: failureMessage(checked), failures: checked.failures });
+      }
       const pdf = await renderPdf(doc);
       return {
         statusCode: 200,
-        headers: { ...headers, 'Content-Type': 'application/pdf', 'Content-Disposition': `attachment; filename="${fileName(item.clientName, date, view, 'pdf')}"`, 'Cache-Control': 'no-store' },
+        headers: { ...headers, 'Content-Type': 'application/pdf', 'Content-Disposition': `attachment; filename="${fileName(item.clientName, date, view, 'pdf')}"`, 'Cache-Control': 'no-store', 'X-Report-Checks': `pass ${checked.checks.join(' ')}` },
         body: pdf.toString('base64'),
         isBase64Encoded: true
       };
