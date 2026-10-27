@@ -19,20 +19,20 @@
 <style>
 
 :root {
-  --ground: #F8FAFC;
+  --ground: #F8F9FA;
   --panel: #FFFFFF;
-  --panel2: #F1F5F9;
-  --panel3: #E2E8F0;
-  --line: #E2E8F0;
-  --line2: #CBD5E1;
-  --ink: #0F172A;
-  --ink2: #334155;
-  --mut: #64748B;
-  --mutd: #94A3B8;
+  --panel2: #F4F4F5;
+  --panel3: #E4E4E7;
+  --line: #E4E4E7;
+  --line2: #D4D4D8;
+  --ink: #18181B;
+  --ink2: #3F3F46;
+  --mut: #52525B;
+  --mutd: #71717A;
   
-  --coral: #FF5E4F;
-  --coral-dk: #E54536;
-  --coral-dkr: #CC2B1C;
+  --coral: #D33826; --coral-fill: #FF5E4F; /* text and buttons: 4.8:1 on white (AA); brand coral #FF5E4F stays for fills (LTM Vantage, 27 Oct 2026) */
+  --coral-dk: #B82E1A;
+  --coral-dkr: #9F2414;
   --coral-tint: #FFF4F2;
   
   --blue: #226882;
@@ -1355,12 +1355,12 @@ function renderIntakeScreen(container) {
       </p>
 
       <div style="margin: 18px 0">
-        <span class="pill">⚡ Power & Cooling Limits</span>
-        <span class="pill">🏢 Per-Facility Disposition</span>
-        <span class="pill">🤖 High-Density AI Siting</span>
-        <span class="pill">📦 6R Portfolio Mapping</span>
-        <span class="pill">🏭 Migration Factory Velocity</span>
-        <span class="pill">📊 Boardroom C-Suite Memorandum</span>
+        <span class="pill">Power & Cooling Limits</span>
+        <span class="pill">Per-Facility Disposition</span>
+        <span class="pill">High-Density AI Siting</span>
+        <span class="pill">6R Portfolio Mapping</span>
+        <span class="pill">Migration Factory Velocity</span>
+        <span class="pill">Boardroom C-Suite Memorandum</span>
       </div>
 
       <div class="intake-grid">
@@ -1448,7 +1448,7 @@ function renderAssessmentScreen(container) {
       <!-- Subjective Qualitative Input -->
       <div class="subjective-box">
         <label>
-          <span>✍️ Qualitative Context & Subjective Operational Realities (Optional)</span>
+          <span>Qualitative Context & Subjective Operational Realities (Optional)</span>
         </label>
         <textarea id="groupNote" placeholder="Enter nuances, team friction, legacy blockers, or specific vendor constraints for AI analysis..." oninput="updateNote('${escapeHtml(G.name)}', this.value)">${escapeHtml(currentNote)}</textarea>
       </div>
@@ -1749,7 +1749,7 @@ function renderClarificationScreen(container) {
 
     return `
       <div class="probe-card fade-in-up">
-        <span class="probe-badge">⚠️ Anomaly Discovery: ${p.name}</span>
+        <span class="probe-badge">Anomaly Discovery: ${p.name}</span>
         <div class="probe-assertion"><b>Contradiction Detected:</b> ${escapeHtml(p.finding)}</div>
         <div style="font-size:14px;font-weight:700;color:var(--ink);margin-bottom:10px">${p.clarificationQ}</div>
         <div style="display:flex;flex-direction:column;gap:6px">${optsHtml}</div>
@@ -2052,7 +2052,7 @@ function renderResultsScreen(container) {
         <div class="exec-card thesis">
           <div>
             <div class="exec-card-title">
-              <span>🏛️ 1. Executive Thesis & Estate Diagnostic</span>
+              <span>1. Executive Thesis & Estate Diagnostic</span>
             </div>
             <div class="exec-card-body">
               <p>Across <b>${escapeHtml(STATE.org.dcCount)}</b> data centre facilities hosting <b>${escapeHtml(STATE.org.workloadCount)}</b> applications, ${STATE.org.clientName}'s estate exhibits an overall maturity of <b>${R.overall.toFixed(1)}/5.0 (${R.band})</b>.</p>
@@ -2066,7 +2066,7 @@ function renderResultsScreen(container) {
         <div class="exec-card power">
           <div>
             <div class="exec-card-title">
-              <span>⚡ 2. Honest Power Ceilings & Facility Disposition</span>
+              <span>2. Honest Power Ceilings & Facility Disposition</span>
             </div>
             <div class="exec-card-body">
               <p>Annual facility run-rate stands at <b>${escapeHtml(STATE.org.annualDcSpend)}</b> with power constraints rated at <b>${R.dimScores["D2"].toFixed(1)}/5.0</b>.</p>
@@ -2083,7 +2083,7 @@ function renderResultsScreen(container) {
         <div class="exec-card ai">
           <div>
             <div class="exec-card-title">
-              <span>🤖 3. High-Density AI Siting & Sovereignty Boundaries</span>
+              <span>3. High-Density AI Siting & Sovereignty Boundaries</span>
             </div>
             <div class="exec-card-body">
               <p>AI compute readiness scores at <b>${R.dimScores["D3"].toFixed(1)}/5.0</b>. Enterprise AI workloads must be bifurcated:</p>
@@ -2100,7 +2100,7 @@ function renderResultsScreen(container) {
         <div class="exec-card financial">
           <div>
             <div class="exec-card-title">
-              <span>💼 4. Financial Economics & Stranded Asset Defense</span>
+              <span>4. Financial Economics & Stranded Asset Defense</span>
             </div>
             <div class="exec-card-body">
               <p>Financial governance scores at <b>${R.dimScores["D6"].toFixed(1)}/5.0</b>. Prevent dual-run cost bubbles:</p>
@@ -2126,7 +2126,7 @@ function renderResultsScreen(container) {
       <h2>Export Boardroom Deliverables</h2>
       <p style="font-size:13px;color:var(--mut);margin-bottom:16px">Generate presentation-grade PDF dossier or book an executive readout.</p>
       <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
-        <button class="btn big" onclick="exportPDF()">📄 Download Executive PDF Dossier</button>
+        <button class="btn big" onclick="exportPDF()">Download Executive PDF Dossier</button>
         <button class="btn ghost" onclick="restartAssessment()">Restart Assessment</button>
       </div>
     </div>
