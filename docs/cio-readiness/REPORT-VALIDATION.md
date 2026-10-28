@@ -90,6 +90,10 @@ For the pilot accelerator, build a **planted-defect set**: reports from the refe
 
 The set is kept in the repository and re-run whenever the reviewer prompt, model or a review pack changes.
 
+## Status
+
+**RV1 built (28 Oct 2026).** `packages/engine-core/src/report-checks/` runs R1, R2, R3 (FinOps IQ), R4, R5 and R7 on every FinOps IQ and Sovereign IQ report as it is built; a failing report returns 422 with the reason (`report_checks_failed`) and the details go to the log; a passing PDF carries the header `X-Report-Checks: pass ...`. The banned-phrase list moved to `report-checks/banned-phrases.json`, read by both the CI claims check and the report checks. Tests: all reference-scenario reports pass in both editions; one planted defect per check is caught; the report service returns 422 for a report that fails. Not in RV1: R6 (input consistency) and Sovereign IQ's R3, which come with the review packs (RV2); storing the check result on the assessment record, which comes with the acknowledgement flow (RV3). Found on the way: a live FinOps IQ journey (executive, Kubernetes spend unconfirmed) puts a question ID ("the SC-04 row") into the consultant edition's help and technical sections; allowed there, and the client edition's body is checked for IDs, as the D8 test does.
+
 ## Phases
 
 | # | Phase | Output | Gate |

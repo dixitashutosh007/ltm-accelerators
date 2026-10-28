@@ -43,12 +43,8 @@ const LANGUAGE_CHECKED = [
   ...FINOPS_V3,
   ...SHARED_CATALOGUES
 ];
-const BANNED = [
-  /legally void/i, /\bunenforceable\b/i, /injunction notice/i, /zero legal immunity/i, /\bguarantee[sd]?\b/i, /100% compliant/i, /attorney-drafted/i,
-  // FinOps IQ plan F2 item 6 and DESIGN.md 10.12 (overclaiming, endorsement and hype language).
-  /\brecoverable\b/i, /world[- ]class/i, /\belite\b/i, /\bBig (4|Four)\b/i, /McKinsey/i, /Deloitte/i, /passkey/i, /empirical benchmarks?/i,
-  /FinOps Foundation (audit|checkpoint)/i, /™/, /savings at stake/i, /waste recovery/i
-];
+// One list, shared with the report checks at report time (packages/engine-core/src/report-checks, R5).
+const BANNED = require('../packages/engine-core/src/report-checks/banned-phrases.json').phrases.map(p => new RegExp(p.pattern, p.flags));
 
 function checkClaims({ today = new Date().toISOString().slice(0, 10), register: registerOverride, files } = {}) {
   const failures = [];
