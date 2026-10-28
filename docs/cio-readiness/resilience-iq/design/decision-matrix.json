@@ -5,7 +5,7 @@
   "statusAsOf": "2026-10-27",
   "author": "resilience-lead (AI practice-lead agent). Advises; the product owner approves (gate RQ1).",
   "ownerDecision": "D3 accepted by the product owner on 27 Oct 2026: written ladder, the higher of the RTO and RPO rungs; DR-05 only for RTO under 15 minutes with near-zero RPO, shown beside DR-04 as a business choice; modifiers add controls, not rungs.",
-  "note": "Replaces resilience-iq/design/decision-matrix.json (S1-S5, not read by the engine) and the pattern bonuses in runtime.ts:586-591. In RQ3 this file moves to resilience-iq/knowledge/ and becomes the only source of the recommended rung. Band edges are LTM judgements grounded in the provider guidance cited; each carries its basis and status. Claim ids are assigned in RQ2.",
+  "note": "Replaces resilience-iq/design/decision-matrix.json (S1-S5, not read by the engine) and the pattern bonuses in runtime.ts:586-591. In RQ3 this file moves to resilience-iq/knowledge/ and becomes the only source of the recommended rung. Band edges are LTM judgements grounded in the provider guidance cited; each carries its basis and status. Claim ids assigned in RQ2 (28 Oct 2026).",
   "rungs": [
     {
       "id": "DR-01",
@@ -23,8 +23,8 @@
         { "provider": "sovereign_and_other", "pattern": "Provider backup service or customer-managed backup to a second location", "status": "LTM heuristic", "note": "Provider features found in discovery (playbook, RQ8)." }
       ],
       "basis": [
-        { "ref": "SRC-AWS-REL13", "passage": "Backup and restore (RPO in hours, RTO in 24 hours or less)", "status": "V", "claim": "CLM-RES-TBD" },
-        { "ref": "SRC-AZ-DRGUIDE", "passage": "Tier 3: RTO ranging from hours to days and RPO measured in hours; backup and restore", "status": "V", "claim": "CLM-RES-TBD" }
+        { "ref": "SRC-AWS-REL13", "passage": "Backup and restore (RPO in hours, RTO in 24 hours or less)", "status": "V", "claim": "CLM-RES-002" },
+        { "ref": "SRC-AZ-DRGUIDE", "passage": "Tier 3: RTO ranging from hours to days and RPO measured in hours; backup and restore", "status": "V", "claim": "CLM-RES-009" }
       ]
     },
     {
@@ -43,7 +43,7 @@
         { "provider": "sovereign_and_other", "pattern": "Replication to a second region or site of the provider, compute on demand", "status": "LTM heuristic" }
       ],
       "basis": [
-        { "ref": "SRC-AWS-REL13", "passage": "Pilot light (RPO in minutes, RTO in tens of minutes)", "status": "V", "claim": "CLM-RES-TBD" }
+        { "ref": "SRC-AWS-REL13", "passage": "Pilot light (RPO in minutes, RTO in tens of minutes)", "status": "V", "claim": "CLM-RES-003" }
       ]
     },
     {
@@ -62,7 +62,7 @@
         { "provider": "sovereign_and_other", "pattern": "Reduced-capacity standby in a second region or site", "status": "LTM heuristic" }
       ],
       "basis": [
-        { "ref": "SRC-AWS-REL13", "passage": "Warm standby (RPO in seconds, RTO in minutes)", "status": "V", "claim": "CLM-RES-TBD" }
+        { "ref": "SRC-AWS-REL13", "passage": "Warm standby (RPO in seconds, RTO in minutes)", "status": "V", "claim": "CLM-RES-004" }
       ]
     },
     {
@@ -81,7 +81,7 @@
         { "provider": "sovereign_and_other", "pattern": "Full-capacity standby in a second region or site", "status": "LTM heuristic" }
       ],
       "basis": [
-        { "ref": "SRC-AWS-REL13", "passage": "The more scaled-up the warm standby is, the lower RTO and control plane reliance will be. When fully scales this is known as hot standby.", "status": "V", "claim": "CLM-RES-TBD" }
+        { "ref": "SRC-AWS-REL13", "passage": "The more scaled-up the warm standby is, the lower RTO and control plane reliance will be. When fully scales this is known as hot standby.", "status": "V", "claim": "CLM-RES-004" }
       ]
     },
     {
@@ -100,7 +100,7 @@
         { "provider": "sovereign_and_other", "pattern": "Active-active across regions or providers", "status": "LTM heuristic" }
       ],
       "basis": [
-        { "ref": "SRC-AWS-REL13", "passage": "Multi-Region (multi-site) active-active (RPO near zero, RTO potentially zero) ... should only be selected when business requirements necessitate it.", "status": "V", "claim": "CLM-RES-TBD" }
+        { "ref": "SRC-AWS-REL13", "passage": "Multi-Region (multi-site) active-active (RPO near zero, RTO potentially zero) ... should only be selected when business requirements necessitate it.", "status": "V", "claim": "CLM-RES-005" }
       ]
     }
   ],
