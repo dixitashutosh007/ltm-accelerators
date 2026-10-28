@@ -755,7 +755,9 @@ Each scenario also lists the following, written in advance:
 
 ## 16. Open questions for the owner
 
-Each has a recommended default the owner can accept or change. None blocks RQ2. Q1, Q2, Q3, Q6 and Q11 must be settled before RQ3.
+**Decided 28 Oct 2026: the owner accepted every recommended default below (Q1–Q15).** Q5 and Q14 also touch Sovereign IQ (a new B1 fact and where the MAS BCM and FFIEC records live); they are built in RQ2 and RQ3 with Sovereign IQ's tests run alongside.
+
+Each had a recommended default the owner could accept or change.
 
 | # | Question | Options | Recommended default |
 |---|---|---|---|
