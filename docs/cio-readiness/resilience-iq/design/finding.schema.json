@@ -1,0 +1,178 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:ltm:resilience-iq:v2:finding",
+  "title": "Resilience IQ v2 finding (and headline, service result and impact shapes)",
+  "description": "A finding is created from a control below its required state, an undefined or inconsistent requirement, a business choice the client must make, or a referral to Sovereign IQ (DESIGN.md section 9). This file also defines the single headline (D4), the per-service result with the ladder decision (D3) and the impact range (D5). Draft for owner approval (gate RQ1).",
+  "$ref": "#/$defs/finding",
+  "$defs": {
+    "controlId": {
+      "enum": [
+        "RES.REQ.DEFINED", "RES.REQ.CONSISTENT", "RES.REQ.TOLERANCE",
+        "RES.DR.STRATEGY", "RES.DR.PROVEN", "RES.DR.SEPARATION", "RES.DR.ORCHESTRATION",
+        "RES.DATA.REPLICATION", "RES.BACKUP.RECOVERABLE", "RES.BACKUP.IMMUTABLE", "RES.BACKUP.PITR", "RES.SAAS.BACKUP",
+        "RES.CYBER.ISOLATION", "RES.CYBER.CLEANROOM", "RES.IDENTITY.RECOVERY",
+        "RES.DEPENDENCY.MAP", "RES.TP.CONCENTRATION", "RES.TP.EXIT", "RES.TP.CONTINUITY",
+        "RES.TEST.SCENARIO", "RES.TEST.CONTINUOUS",
+        "RES.BCP.WORKFORCE", "RES.BCP.CRISIS",
+        "RES.GOV.OVERSIGHT", "RES.GOV.REVIEW", "RES.GOV.AUDIT",
+        "RES.INFRA.SPOF", "RES.INFRA.REBUILD", "RES.INFRA.NETWORK"
+      ]
+    },
+    "rungId": { "enum": ["DR-01", "DR-02", "DR-03", "DR-04", "DR-05"] },
+    "serviceId": { "type": "string", "pattern": "^S[1-5]$" },
+    "severity": { "enum": ["Critical", "High", "Medium", "Low"] },
+    "ownerRole": {
+      "enum": [
+        "Business service owner", "CIO", "CISO", "Chief Risk Officer or head of operational resilience", "BCM lead",
+        "Head of infrastructure and platform engineering", "Identity and access lead", "Enterprise architecture lead",
+        "Procurement and third-party risk lead", "Head of internal audit"
+      ]
+    },
+    "offeringId": { "enum": ["OFF.RES.DR_ASSESS", "OFF.RES.REG_READINESS", "OFF.RES.CYBER_VAULT", "OFF.RES.DR_BUILD", "OFF.RES.TP_EXIT", "OFF.RES.PROGRAMME", "OFF.RES.MANAGED_TESTING", "REF.SOVEREIGN_IQ"] },
+    "platform": { "enum": ["on_premises", "aws", "azure", "google_cloud", "oracle_cloud", "ibm_cloud", "sovereign_provider", "other_public_cloud", "saas", "kubernetes"] },
+    "timeFrame": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["label"],
+      "properties": {
+        "label": { "enum": ["0-3 months", "3-6 months", "6-12 months", "12-24 months", "by date", "overdue"] },
+        "by": { "type": "string", "format": "date" },
+        "since": { "type": "string", "format": "date" },
+        "drivenBy": { "type": "string", "description": "Regime and article when a dated obligation sets the time frame." }
+      }
+    },
+    "finding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "type", "severity", "title", "businessConsequence", "decisionOrAction", "ownerRole", "timeFrame", "evidenceStatus", "basisQuestions", "offerings"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^F-(RES\\.[A-Z]+\\.[A-Z_]+(@S[1-5])?|CONFLICT-[0-9]+|DECISION-[0-9]+|REF-SOVEREIGN)$" },
+        "type": { "enum": ["control_gap", "requirement_gap", "conflict", "decision", "referral"] },
+        "control": { "$ref": "#/$defs/controlId" },
+        "legacyGap": { "enum": ["G-01", "G-02", "G-03", "G-04", "G-05", "G-06", "G-07", "G-08", "G-09", "G-10"], "description": "Gap id in blueprint-engine.json, kept for golden-diff continuity." },
+        "service": { "$ref": "#/$defs/serviceId" },
+        "severity": { "$ref": "#/$defs/severity" },
+        "severityReason": { "type": "string", "description": "Why this severity, including any obligation uplift." },
+        "evidenceStatus": { "enum": ["self_reported", "evidenced", "evidence_rejected"], "description": "evidenced only when a consultant or Admin has validated the evidence item (D8)." },
+        "title": { "type": "string", "description": "Plain words; no control code as the heading." },
+        "businessConsequence": { "type": "string" },
+        "decisionOrAction": { "type": "string", "description": "Ends in a decision or an action (scorecard area 6)." },
+        "ownerRole": { "$ref": "#/$defs/ownerRole" },
+        "timeFrame": { "$ref": "#/$defs/timeFrame" },
+        "obligations": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["obligation", "regime", "article", "status"],
+            "properties": {
+              "obligation": { "type": "string" },
+              "regime": { "type": "string" },
+              "article": { "type": "string" },
+              "status": { "enum": ["met", "partly", "not_evidenced", "not_assessed", "applies_later"] }
+            }
+          }
+        },
+        "playbookRefs": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["control", "platform", "level"],
+            "properties": {
+              "control": { "type": "string" },
+              "platform": { "$ref": "#/$defs/platform" },
+              "level": { "enum": ["platform", "stack", "application"] },
+              "needsDiscovery": { "type": "boolean" }
+            }
+          }
+        },
+        "offerings": { "type": "array", "items": { "$ref": "#/$defs/offeringId" }, "minItems": 1 },
+        "basisQuestions": { "type": "array", "items": { "type": "string" }, "minItems": 1 },
+        "claims": { "type": "array", "items": { "type": "string", "pattern": "^CLM-RES-([0-9]{3}|TBD)$" } },
+        "consultantNote": { "type": "string", "description": "Consultant view only; removed by the server client-view projection." }
+      }
+    },
+    "headline": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["postureScore", "ratingBand", "rating", "capped", "criticalExposure", "provisional"],
+      "properties": {
+        "postureScore": { "type": ["integer", "null"], "minimum": 0, "maximum": 100 },
+        "ratingBand": { "enum": ["Critical Exposure", "Fragile", "Managed", "Resilient", "Adaptive", null], "description": "Band the score falls in before any cap." },
+        "rating": { "enum": ["Critical Exposure", "Fragile", "Managed", "Resilient", "Adaptive", null], "description": "Rating after the exposure cap." },
+        "capped": { "type": "boolean" },
+        "capReason": { "type": "string", "description": "Required when capped, e.g. 'Capped at Managed because 2 critical gaps are open: cyber recovery, correlated recovery'." },
+        "maturity": { "type": ["string", "null"] },
+        "criticalExposure": { "enum": ["Low", "Moderate", "High", "Severe", null] },
+        "provisional": { "type": "boolean", "description": "true when the recovery objectives of the main service are unknown (open question Q2)." },
+        "assessedFor": { "type": "string", "description": "The service the posture is computed for (S1) in workshop mode." }
+      },
+      "if": { "properties": { "capped": { "const": true } } },
+      "then": { "required": ["capReason"] }
+    },
+    "impact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["shown"],
+      "properties": {
+        "shown": { "type": "boolean" },
+        "reasonNotShown": { "enum": ["no_cost_input", "recovery_within_objective", "objective_unknown", "proven_time_unknown"] },
+        "currency": { "type": "string", "pattern": "^[A-Z]{3}$" },
+        "costPerHour": { "type": "object", "additionalProperties": false, "required": ["low", "high"], "properties": { "low": { "type": "number", "minimum": 0 }, "high": { "type": "number", "minimum": 0 } } },
+        "gapHours": { "type": "object", "additionalProperties": false, "required": ["low", "high"], "properties": { "low": { "type": "number", "minimum": 0 }, "high": { "type": ["number", "null"] } } },
+        "range": { "type": "object", "additionalProperties": false, "required": ["low", "high"], "properties": { "low": { "type": "number", "minimum": 0 }, "high": { "type": ["number", "null"] } } },
+        "perAdditionalDay": { "type": "object", "additionalProperties": false, "properties": { "low": { "type": "number" }, "high": { "type": "number" } }, "description": "Shown when the proven recovery time is open-ended ('>24 hours')." },
+        "formula": { "const": "cost per hour (client input, low-high) x hours between proven recovery time (AF-DR-01) and required recovery time (EX-03)" },
+        "inputs": { "type": "array", "items": { "type": "string" } },
+        "label": { "const": "Indicative range from your own cost estimate; not a forecast of loss." }
+      }
+    },
+    "serviceResult": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["service", "name", "requirement", "ladder"],
+      "properties": {
+        "service": { "$ref": "#/$defs/serviceId" },
+        "name": { "type": "string" },
+        "requirement": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "impactTolerance": { "type": "string" },
+            "dataLossTolerance": { "type": "string" },
+            "minimumService": { "type": "string" },
+            "rto": { "type": "string" },
+            "rpo": { "type": "string" },
+            "effectiveRto": { "type": "string" },
+            "effectiveRpo": { "type": "string" },
+            "floorsApplied": { "type": "array", "items": { "type": "string" } },
+            "consistencyApplied": { "type": "array", "items": { "type": "string" } }
+          }
+        },
+        "proven": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": { "rto": { "type": "string" }, "rpo": { "type": "string" } }
+        },
+        "ladder": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["status"],
+          "properties": {
+            "status": { "enum": ["issued", "withheld"] },
+            "rtoRung": { "$ref": "#/$defs/rungId" },
+            "rpoRung": { "$ref": "#/$defs/rungId" },
+            "rung": { "$ref": "#/$defs/rungId" },
+            "businessChoice": { "$ref": "#/$defs/rungId" },
+            "alternativeBelow": { "$ref": "#/$defs/rungId", "description": "One rung down, with what it would not meet." },
+            "controlsAdded": { "type": "array", "items": { "$ref": "#/$defs/controlId" } },
+            "decisionLog": { "type": "array", "items": { "type": "string" } }
+          }
+        },
+        "impact": { "$ref": "#/$defs/impact" },
+        "findingIds": { "type": "array", "items": { "type": "string" } }
+      }
+    }
+  }
+}

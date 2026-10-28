@@ -1,0 +1,445 @@
+{
+  "$schema": "./reference-scenario.schema.json",
+  "version": "1.0.0-design",
+  "statusAsOf": "2026-10-27",
+  "author": "resilience-lead (AI practice-lead agent). Expected outcomes written on 27 Oct 2026, before any engine run. Advises; the product owner approves (gate RQ1).",
+  "note": "Five reference scenarios (owner decision D13). Each takes its shape from public material: an enforcement notice, a regulator statement, a provider incident report or regulator guidance. Answers that the public material does not state are scenario assumptions, listed per scenario. The scenarios are illustrative clients, never the named firms: no statement here describes the named firm's current controls. Expected outcomes follow the rules in DESIGN.md sections 4 to 9 and decision-matrix.json. The posture number is calibrated in RQ5 and is not predicted; the exposure level and the rating cap are.",
+  "conventions": [
+    "Answer values are the v2 option labels in DESIGN.md section 12.",
+    "Facts use the Sovereign IQ fact ids (ent.flags, org.establishments, org.sector) plus ent.res_flags for REG-02.",
+    "Obligation status rule (DESIGN.md 7.3): all asked checks meet and none unasked = met; no asked check meets or partly meets = not_evidenced; otherwise partly; nothing asked = not_assessed. Unknown counts as a failed check.",
+    "Proven-versus-tolerance comparison: proven band lower than the tolerance band = meets; same band = partly; higher band or 'Not proven' = fails.",
+    "Impact = cost per hour (client input, low-high) x hours between proven recovery time (AF-DR-01) and required RTO (EX-03); gap low = max(0, proven lower bound - RTO upper bound), gap high = proven upper bound - RTO lower bound.",
+    "Exposure: 3 or more Critical = Severe (rating at most Fragile); 1 or more Critical, or 4 or more High = High (rating at most Managed); 1 or more High = Moderate; otherwise Low."
+  ],
+  "scenarios": [
+    {
+      "id": "RS1",
+      "name": "UK retail bank under PRA SS1/21 and FCA SYSC 15A, after a failed platform migration run by a critical IT supplier (workshop mode)",
+      "illustrative": true,
+      "summary": "Shape from the FCA and PRA penalty against TSB (20 Dec 2022): an April 2018 migration to a new platform run by a critical third-party supplier failed; branch, telephone, online and mobile banking were disrupted, with some problems until December 2018. Here, a PRA-regulated retail bank whose main digital and branch banking service depends on one supplier's platform. Answers are scenario assumptions consistent with that shape.",
+      "mode": "workshop",
+      "sources": [
+        { "kind": "regulator_enforcement", "citation": "FCA press release, 'TSB fined £48.65m for operational resilience failings' (20 Dec 2022)", "url": "https://www.fca.org.uk/news/press-releases/tsb-fined-ps4865m-operational-resilience-failings", "status": "V", "checked": "2026-10-27", "usedFor": "Shape only: PRA- and FCA-regulated bank; platform migration failure; critical third-party supplier; months of customer disruption. No figure from the notice is used as an input." },
+        { "kind": "regulator_guidance", "citation": "PRA SS1/21 (March 2022), paras 2.10, 3.10-3.15, 4.12-4.16, 5.9, chapters 6 and 8", "url": "https://www.bankofengland.co.uk/-/media/boe/files/prudential-regulation/supervisory-statement/2021/ss121-march-22.pdf", "status": "V", "checked": "2026-10-27", "usedFor": "Obligation checks and dates (in force 31 Mar 2022; within tolerance no later than 31 Mar 2025)." },
+        { "kind": "regulation", "citation": "FCA Handbook SYSC 15A.2.1R, 15A.2.5R, 15A.2.9R, 15A.4.1R, 15A.5.3R, 15A.6.1R", "url": "https://www.handbook.fca.org.uk/handbook/SYSC/15A/", "status": "V", "checked": "2026-10-27", "usedFor": "Obligation articles." },
+        { "kind": "regulation", "citation": "FCA PS26/2 and PRA PS7/26, operational incident and third-party reporting (published 18 Mar 2026; apply from 18 Mar 2027)", "url": "https://www.fca.org.uk/publications/policy-statements/ps26-2-operational-incident-third-party-reporting", "status": "V", "checked": "2026-10-27", "usedFor": "Dated obligation shown as 'applies later'; reporting is assessed in Sovereign IQ." }
+      ],
+      "inputs": {
+        "facts": { "ent.flags": ["uk_pra_regulated"], "org.establishments": ["uk"], "org.sector": "banking", "ent.res_flags": ["none"] },
+        "enterpriseAnswers": {
+          "EX-12": "Some non-critical single points of failure", "EX-13": "Yes, documented", "EX-14": "Yes, exercised", "EX-15": "Yes, periodic review",
+          "EX-18": ["On-premises", "Azure", "SaaS"], "EX-19": "Yes, documented, not tested", "EX-20": "Documented, not fully tested",
+          "AUD-01": "1-3 years ago"
+        },
+        "services": [
+          {
+            "service": "S1",
+            "name": "Retail digital and branch banking",
+            "answers": {
+              "EX-01": ["Customer-facing services", "Revenue-generating services"], "EX-02": "4-24 hours", "EX-03": "1-4 hours", "EX-04": "<15 minutes", "TOL-02": "<15 minutes", "TOL-03": "Defined in words only",
+              "EX-05": "Partially", "EX-06": "Likely, but not recently tested", "EX-07": "1-2 years ago", "EX-08": "No - isolated by design, not tested",
+              "EX-09": "Immutable, restore not tested", "EX-10": "Yes, with no viable alternative", "EX-11": "High concentration", "EX-16": "Technical tests only", "EX-17": "Documented and reviewed, not tested",
+              "AF-DR-01": "4-24 hours", "AF-DR-02": "15-60 minutes", "AF-DR-04": "Partially", "AF-DR-05": "Partially automated",
+              "AF-TP-02": "High - no practical alternative", "AF-TP-03": "Weeks/months", "EXIT-01": "Plan documented, not tested",
+              "AF-TS-02": "Partially", "REV-01": "Within 12 months", "DC-01": "Configured, not tested", "SAAS-01": "Provider-native retention only"
+            },
+            "costPerHour": { "currency": "GBP", "low": 400000, "high": 1200000 }
+          }
+        ],
+        "assumptions": [
+          "All answers are scenario assumptions consistent with the public shape; none describes TSB's current controls.",
+          "Cost per hour GBP 400,000-1,200,000 is a scenario input standing in for the client's own estimate; it is not derived from the penalty or redress figures."
+        ]
+      },
+      "expected": {
+        "regimes": [
+          { "regime": "UK_OPRES", "grade": "applies", "why": "Sovereign IQ rule UK_OPRES.1: ent.flags includes uk_pra_regulated." }
+        ],
+        "services": [
+          {
+            "service": "S1",
+            "ladder": {
+              "status": "issued", "rtoRung": "DR-02", "rpoRung": "DR-03", "rung": "DR-03", "alternativeBelow": "DR-02",
+              "controlsAdded": ["RES.BACKUP.PITR", "RES.DATA.REPLICATION", "RES.CYBER.ISOLATION", "RES.BACKUP.IMMUTABLE", "RES.CYBER.CLEANROOM", "RES.IDENTITY.RECOVERY", "RES.DR.SEPARATION", "RES.TP.CONCENTRATION", "RES.DEPENDENCY.MAP", "RES.DR.ORCHESTRATION", "RES.TP.EXIT", "RES.TP.CONTINUITY", "RES.SAAS.BACKUP"],
+              "why": "RTO 1-4 hours gives pilot light; RPO under 15 minutes gives warm standby; the higher is warm standby. RTO is within the 4-24 hour tolerance, so no consistency rule applies. Pilot light, one rung down, would not reliably meet an RPO under 15 minutes."
+            },
+            "topFindings": [
+              { "control": "RES.DR.SEPARATION", "severity": "Critical", "why": "High concentration (EX-11) and recovery partly sharing the same failure domain (AF-DR-04): recovery may fail with production (G-04)." },
+              { "control": "RES.DR.STRATEGY", "severity": "High", "why": "Proven recovery 4-24 hours against a 1-4 hour RTO, and proven RPO 15-60 minutes against under 15 minutes. Same band as the tolerance, so a tolerance breach is not shown; High, not Critical.", "obligations": ["UK_OPRES.WITHIN_TOLERANCE"] },
+              { "control": "RES.TP.EXIT", "severity": "High", "why": "Critical supplier with no viable alternative (EX-10, AF-TP-02); exit plan documented but never tested (EXIT-01); exit would take weeks or months (AF-TP-03)." },
+              { "control": "RES.TEST.SCENARIO", "severity": "High", "why": "Only technical tests (EX-16); tests only partly measure against the impact tolerance (AF-TS-02).", "obligations": ["UK_OPRES.SCENARIO_TESTING"] },
+              { "control": "RES.DR.PROVEN", "severity": "High", "why": "Immutable backups whose restore has not been tested (EX-09, R9 decision 3), last end-to-end test 1-2 years ago (EX-07)." },
+              { "control": "RES.CYBER.ISOLATION", "severity": "High", "why": "Recovery isolated by design but never tested (EX-08)." },
+              { "control": "RES.IDENTITY.RECOVERY", "severity": "High", "why": "Break-glass path documented, not tested (EX-19)." },
+              { "control": "RES.DEPENDENCY.MAP", "severity": "High", "why": "Service only partly mapped (EX-05).", "obligations": ["UK_OPRES.MAPPING"] }
+            ],
+            "impact": { "shown": true, "currency": "GBP", "costPerHour": [400000, 1200000], "gapHours": [0, 23], "range": [0, 27600000] }
+          }
+        ],
+        "headline": { "criticalExposure": "High", "ratingCap": "Managed", "capReasonMentions": ["recovery may fail with production"], "provisional": false },
+        "obligations": [
+          { "obligation": "UK_OPRES.IBS", "status": "met", "why": "Service identified (EX-01) and reviewed within 12 months (REV-01)." },
+          { "obligation": "UK_OPRES.TOLERANCE", "status": "met", "why": "Time-based tolerance set (EX-02), as SS1/21 3.11 requires." },
+          { "obligation": "UK_OPRES.WITHIN_TOLERANCE", "status": "partly", "why": "EX-06 'likely' (partly) and proven recovery in the same band as the tolerance (partly)." },
+          { "obligation": "UK_OPRES.MAPPING", "status": "partly", "why": "EX-05 'Partially'." },
+          { "obligation": "UK_OPRES.SCENARIO_TESTING", "status": "partly", "why": "EX-16 technical tests only; AF-TS-02 partially." },
+          { "obligation": "UK_OPRES.SELF_ASSESSMENT", "status": "not_assessed", "why": "No question; evidence item for the consultant." },
+          { "obligation": "UK_OPRES.REPORTING", "status": "applies_later", "why": "PS26/2 and PS7/26 apply from 18 Mar 2027; assessed in Sovereign IQ." }
+        ],
+        "referrals": [],
+        "sensitivity": [
+          "RPO relaxed to 15-60 minutes: rung falls to DR-02 (pilot light).",
+          "RTO tightened to 15-60 minutes: rung stays DR-03.",
+          "Any change to concentration, cyber or identity answers: rung unchanged; findings change."
+        ],
+        "mustNot": [
+          "Recommend active-active or offer DR-05 (RTO is not under 15 minutes).",
+          "Show 'fit /100' pattern scores in the client view.",
+          "Say 'compliant' or 'non-compliant' for any obligation.",
+          "Show an impact figure that is not cost per hour x gap hours from the client's input."
+        ]
+      }
+    },
+    {
+      "id": "RS2",
+      "name": "EU insurer under DORA after a mass endpoint failure caused by a security vendor's update, with ransomware exposure (executive mode)",
+      "illustrative": true,
+      "summary": "Shape from the 18-19 Jul 2024 CrowdStrike content update that Microsoft estimated affected 8.5 million Windows devices, and from ENISA's 2025 threat landscape (ransomware the most impactful threat). An EU insurer's claims processing service: workplace devices and servers fail together through one security vendor, and backups are recoverable but not immutable. Tests that severe cyber exposure adds controls and findings but never a higher rung (D3).",
+      "mode": "executive",
+      "sources": [
+        { "kind": "provider_statement", "citation": "Microsoft, 'Helping our customers through the CrowdStrike outage' (20 Jul 2024)", "url": "https://blogs.microsoft.com/blog/2024/07/20/helping-our-customers-through-the-crowdstrike-outage/", "status": "V", "checked": "2026-10-27", "usedFor": "Shape only: one third-party security update disabled about 8.5 million Windows devices (under 1% of Windows machines)." },
+        { "kind": "published_research", "citation": "ENISA Threat Landscape 2025 (Jul 2024 - Jun 2025; 4,875 incidents)", "url": "https://www.enisa.europa.eu/news/eu-consistently-targeted-by-diverse-yet-convergent-threat-groups", "status": "P", "checked": "2026-10-27", "usedFor": "Context only: ransomware the most impactful threat. Not an input." },
+        { "kind": "regulation", "citation": "DORA, Regulation (EU) 2022/2554, Art. 11(3), 11(5), 11(6), 12(1)-(4), 12(6), 24(6), 26, 28(8) (OJ text via Springlex; EUR-Lex fetch returned an empty page)", "url": "https://www.springlex.eu/en/packages/dora/dora-regulation/article-12/", "status": "S", "checked": "2026-10-27", "usedFor": "Obligation checks. Official text: https://eur-lex.europa.eu/eli/reg/2022/2554/oj" }
+      ],
+      "inputs": {
+        "facts": { "ent.flags": ["eu_insurer"], "org.establishments": ["eea"], "org.sector": "insurance", "ent.res_flags": ["none"] },
+        "enterpriseAnswers": {
+          "EX-12": "Some non-critical single points of failure", "EX-13": "Partially", "EX-14": "Yes, documented", "EX-15": "Yes, periodic review",
+          "EX-18": ["On-premises", "AWS", "SaaS"], "EX-19": "No", "EX-20": "Documented, not fully tested"
+        },
+        "services": [
+          {
+            "service": "S1",
+            "name": "Claims processing",
+            "answers": {
+              "EX-01": ["Customer-facing services", "Regulatory/financial reporting"], "EX-02": "4-24 hours", "EX-03": "4-24 hours", "EX-04": "15-60 minutes", "TOL-02": "1-4 hours",
+              "EX-05": "Documented but stale", "EX-06": "Likely, but not recently tested", "EX-07": "3-12 months ago", "EX-08": "Yes",
+              "EX-09": "Recoverable but not immutable", "EX-10": "Yes, but alternatives exist", "EX-11": "Moderate concentration", "EX-16": "Yes, occasionally", "EX-17": "Contract terms only"
+            }
+          }
+        ],
+        "assumptions": [
+          "All answers are scenario assumptions; no statement describes any named insurer.",
+          "No cost input is given (executive mode), so no money is shown."
+        ]
+      },
+      "expected": {
+        "regimes": [
+          { "regime": "EU_DORA", "grade": "applies", "why": "Sovereign IQ rule EU_DORA.2: EEA establishment and eu_financial_entity (eu_insurer)." }
+        ],
+        "services": [
+          {
+            "service": "S1",
+            "ladder": {
+              "status": "issued", "rtoRung": "DR-01", "rpoRung": "DR-02", "rung": "DR-02", "alternativeBelow": "DR-01",
+              "controlsAdded": ["RES.BACKUP.PITR", "RES.CYBER.ISOLATION", "RES.BACKUP.IMMUTABLE", "RES.CYBER.CLEANROOM", "RES.IDENTITY.RECOVERY", "RES.TP.CONCENTRATION", "RES.DEPENDENCY.MAP", "RES.DR.ORCHESTRATION"],
+              "why": "RTO 4-24 hours gives backup and restore; RPO 15-60 minutes gives pilot light; the higher is pilot light. Cyber exposure, no identity recovery path and vendor concentration add controls, not a rung. SaaS is in scope but SAAS-01 is a workshop question, so no SaaS finding in executive mode."
+            },
+            "topFindings": [
+              { "control": "RES.CYBER.ISOLATION", "severity": "Critical", "why": "Ransomware could reach production and recovery copies (EX-08 'Yes'): G-05.", "obligations": ["EU_DORA.SEGREGATED_RESTORE"] },
+              { "control": "RES.BACKUP.IMMUTABLE", "severity": "Critical", "why": "Backups recoverable but not immutable (EX-09): G-03 is kept for this answer (R9 decision 3).", "obligations": ["EU_DORA.BACKUP_RESTORE"] },
+              { "control": "RES.IDENTITY.RECOVERY", "severity": "Critical", "why": "No privileged access path if the identity provider is compromised (EX-19 'No'): G-06." },
+              { "control": "RES.DR.PROVEN", "severity": "High", "why": "Recovery within RTO 'likely' but not recently tested (EX-06)." },
+              { "control": "RES.DEPENDENCY.MAP", "severity": "High", "why": "Mapping documented but stale (EX-05).", "obligations": ["EU_DORA.BIA"] },
+              { "control": "RES.TP.CONCENTRATION", "severity": "High", "why": "Moderate concentration (EX-11): G-08 only, not G-04 (R9 decision 6)." }
+            ],
+            "impact": { "shown": false, "reasonNotShown": "no_cost_input" }
+          }
+        ],
+        "headline": { "criticalExposure": "Severe", "ratingCap": "Fragile", "capReasonMentions": ["cyber recovery", "backups not immutable", "identity recovery"], "provisional": false },
+        "obligations": [
+          { "obligation": "EU_DORA.BIA", "status": "partly", "why": "Tolerance defined (EX-02) but mapping stale (EX-05)." },
+          { "obligation": "EU_DORA.BC_TESTING", "status": "partly", "why": "Tested within 12 months (EX-07) and scenarios occasionally (EX-16), but the cyber-attack scenario (AF-CY-04) is not asked in executive mode." },
+          { "obligation": "EU_DORA.BACKUP_RESTORE", "status": "partly", "why": "EX-09 'Recoverable but not immutable' counts as partly for Art. 12(1)-(2)." },
+          { "obligation": "EU_DORA.SEGREGATED_RESTORE", "status": "not_evidenced", "why": "EX-08 'Yes' fails; AF-CY-01 not asked." },
+          { "obligation": "EU_DORA.REDUNDANCY", "status": "partly", "why": "Non-critical single points of failure (EX-12); AF-DR-04 not asked." },
+          { "obligation": "EU_DORA.RECOVERY_OBJECTIVES", "status": "met", "why": "RTO and RPO defined (EX-03, EX-04)." },
+          { "obligation": "EU_DORA.TEST_PROGRAMME", "status": "partly", "why": "EX-07 within 12 months; AF-TS-03 not asked." },
+          { "obligation": "EU_DORA.TLPT", "status": "not_assessed", "why": "Applies only if the authority identifies the entity; outside this assessment." },
+          { "obligation": "EU_DORA.EXIT_TEST", "status": "not_assessed", "why": "EXIT-01 and AF-TP-03 are workshop questions." },
+          { "obligation": "EU_DORA.AUDIT", "status": "not_assessed", "why": "AUD-01 is a workshop question." },
+          { "obligation": "EU_DORA.INCIDENTS", "status": "assessed_in_sovereign_iq", "why": "Reporting windows are Sovereign IQ's (SOV.IR.REPORTING)." }
+        ],
+        "referrals": [],
+        "sensitivity": [
+          "RTO relaxed to >24 hours: rung stays DR-02 (set by the RPO).",
+          "RPO relaxed to 1-4 hours: rung falls to DR-01.",
+          "EX-08 changed to 'No - recovery is isolated and this has been tested': rung unchanged; RES.CYBER.ISOLATION finding removed; exposure falls to High."
+        ],
+        "mustNot": [
+          "Raise the rung because of cyber exposure, concentration or criticality.",
+          "Show money (no cost input).",
+          "Grade TLPT as not met.",
+          "Say 'compliant' or 'non-compliant'."
+        ]
+      }
+    },
+    {
+      "id": "RS3",
+      "name": "Australian superannuation fund under APRA CPS 230 after its cloud provider deleted its private cloud environment (workshop mode)",
+      "illustrative": true,
+      "summary": "Shape from Google Cloud's incident report (May 2024): a Google Cloud VMware Engine private cloud of one customer (UniSuper) was deleted after a parameter was left blank at deployment; backups in Google Cloud Storage in the same region were not affected and, with third-party backup software, were instrumental in the restoration, which took several days of 24x7 work. Here, an APRA-regulated fund whose member services run on one provider and region. Tests that the ladder correctly gives backup and restore for a relaxed objective while the finding targets the proven recovery time and the shared failure domain.",
+      "mode": "workshop",
+      "sources": [
+        { "kind": "provider_incident_report", "citation": "Google Cloud blog, 'Sharing details on a recent incident impacting one of our customers' (25 May 2024)", "url": "https://cloud.google.com/blog/products/infrastructure/details-of-google-cloud-gcve-incident", "status": "V", "checked": "2026-10-27", "usedFor": "Shape only: provider-side deletion of a whole private cloud; same-region backups survived; recovery over several days. The proven recovery time '>24 hours' is a scenario assumption drawn from 'several days'." },
+        { "kind": "regulation", "citation": "APRA CPS 230, paras 34-46 and 56 (commences 1 Jul 2025)", "url": "https://www.apra.gov.au/sites/default/files/2023-07/Prudential%20Standard%20CPS%20230%20Operational%20Risk%20Management%20-%20clean.pdf", "status": "V", "checked": "2026-10-27", "usedFor": "Obligation checks." }
+      ],
+      "inputs": {
+        "facts": { "ent.flags": ["au_apra_regulated"], "org.establishments": ["au"], "org.sector": "insurance", "ent.res_flags": ["none"] },
+        "enterpriseAnswers": {
+          "EX-12": "Some non-critical single points of failure", "EX-13": "Yes, documented", "EX-14": "Yes, exercised", "EX-15": "Yes, with metrics and actions",
+          "EX-18": ["Google Cloud", "SaaS"], "EX-19": "Yes, documented, not tested", "EX-20": "Tested by us",
+          "AUD-01": "1-3 years ago"
+        },
+        "services": [
+          {
+            "service": "S1",
+            "name": "Member online services and fund administration",
+            "answers": {
+              "EX-01": ["Customer-facing services", "Regulatory/financial reporting"], "EX-02": "4-24 hours", "EX-03": "4-24 hours", "EX-04": "1-4 hours", "TOL-02": "4-24 hours", "TOL-03": "Defined and measurable",
+              "EX-05": "Yes, current and validated", "EX-06": "Likely, but not recently tested", "EX-07": "3-12 months ago", "EX-08": "No - isolated by design, not tested",
+              "EX-09": "Yes - immutable and restore tested in the last 12 months", "EX-10": "Yes, but alternatives exist", "EX-11": "High concentration", "EX-16": "Yes, occasionally", "EX-17": "Documented and reviewed, not tested",
+              "AF-DR-01": ">24 hours", "AF-DR-02": "1-4 hours", "AF-DR-04": "Yes", "AF-DR-05": "Partially automated", "AF-CL-01": ["Availability Zone"],
+              "AF-TP-02": "Medium - migration required", "AF-TP-03": "Weeks/months", "EXIT-01": "Plan documented, not tested",
+              "REV-01": "Within 12 months", "DC-01": "Yes, point-in-time restore tested", "SAAS-01": "Provider-native retention only"
+            }
+          }
+        ],
+        "assumptions": [
+          "All answers are scenario assumptions; none describes UniSuper's current controls.",
+          "No cost input: the workshop still shows no money."
+        ]
+      },
+      "expected": {
+        "regimes": [
+          { "regime": "AU_APRA_CPS230", "grade": "applies", "why": "Sovereign IQ rule AU_APRA_CPS230.1: ent.flags includes au_apra_regulated." }
+        ],
+        "services": [
+          {
+            "service": "S1",
+            "ladder": {
+              "status": "issued", "rtoRung": "DR-01", "rpoRung": "DR-01", "rung": "DR-01",
+              "controlsAdded": ["RES.BACKUP.PITR", "RES.CYBER.ISOLATION", "RES.BACKUP.IMMUTABLE", "RES.CYBER.CLEANROOM", "RES.IDENTITY.RECOVERY", "RES.DR.SEPARATION", "RES.TP.CONCENTRATION", "RES.SAAS.BACKUP", "RES.TP.EXIT", "RES.TP.CONTINUITY"],
+              "why": "RTO 4-24 hours and RPO 1-4 hours both give backup and restore. The strategy is adequate on paper; the gap is that recovery has taken more than a day and shares the provider's failure domain."
+            },
+            "topFindings": [
+              { "control": "RES.DR.STRATEGY", "severity": "Critical", "why": "Proven recovery '>24 hours' is beyond the 4-24 hour tolerance: the service cannot be shown to stay within tolerance. Action: prove restore at full scale into a separate region or provider, with orchestration.", "obligations": ["AU_APRA_CPS230.BCP_CAPABILITY"] },
+              { "control": "RES.DR.SEPARATION", "severity": "Critical", "why": "High concentration (EX-11) and recovery depending on the same provider and region (AF-DR-04 'Yes'): G-04." },
+              { "control": "RES.TP.EXIT", "severity": "High", "why": "Exit plan documented, not tested (EXIT-01); exit in weeks or months (AF-TP-03).", "obligations": ["AU_APRA_CPS230.ORDERLY_EXIT"] },
+              { "control": "RES.TP.CONTINUITY", "severity": "High", "why": "Material provider continuity not tested with the fund (EX-17); High because CPS 230 para 44 applies.", "obligations": ["AU_APRA_CPS230.TESTING"] },
+              { "control": "RES.SAAS.BACKUP", "severity": "High", "why": "SaaS data relies on provider retention only (SAAS-01)." },
+              { "control": "RES.TP.CONCENTRATION", "severity": "High", "why": "Accompanies G-04 for high concentration." }
+            ],
+            "impact": { "shown": false, "reasonNotShown": "no_cost_input" }
+          }
+        ],
+        "headline": { "criticalExposure": "High", "ratingCap": "Managed", "capReasonMentions": ["recovery beyond tolerance", "recovery may fail with production"], "provisional": false },
+        "obligations": [
+          { "obligation": "AU_APRA_CPS230.CRITICAL_OPS", "status": "met", "why": "Service identified (EX-01) and mapped, current and validated (EX-05)." },
+          { "obligation": "AU_APRA_CPS230.TOLERANCE_LEVELS", "status": "met", "why": "Time (EX-02), data loss (TOL-02) and a measurable minimum service level (TOL-03): para 38(a)-(c)." },
+          { "obligation": "AU_APRA_CPS230.BCP_CAPABILITY", "status": "partly", "why": "Crisis plan exercised (EX-14 meets), workforce plan documented (EX-13 partly), proven recovery beyond tolerance (AF-DR-01 fails)." },
+          { "obligation": "AU_APRA_CPS230.NOTIFY_24H", "status": "assessed_in_sovereign_iq", "why": "Para 42 notification window is Sovereign IQ's (SOV.IR.REPORTING)." },
+          { "obligation": "AU_APRA_CPS230.TESTING", "status": "partly", "why": "Annual exercise (EX-07) and scenarios (EX-16) meet; material provider continuity not tested (EX-17 partly)." },
+          { "obligation": "AU_APRA_CPS230.ANNUAL_UPDATE", "status": "met", "why": "REV-01 within 12 months (para 45)." },
+          { "obligation": "AU_APRA_CPS230.INTERNAL_AUDIT", "status": "met", "why": "AUD-01 1-3 years ago counts as periodic review (para 46)." },
+          { "obligation": "AU_APRA_CPS230.ORDERLY_EXIT", "status": "partly", "why": "Plan documented, not tested (EXIT-01); exit in weeks or months (AF-TP-03)." }
+        ],
+        "referrals": [],
+        "sensitivity": [
+          "RPO tightened to 15-60 minutes: rung rises to DR-02.",
+          "AF-DR-01 '4-24 hours': proven recovery is in the same band as the RTO and the tolerance, so RES.DR.STRATEGY is not raised and the recovery check in AU_APRA_CPS230.BCP_CAPABILITY counts as partly; EX-06 still raises RES.DR.PROVEN (High); exposure stays High because G-04 remains.",
+          "EX-11 'Moderate concentration' and AF-DR-04 'No': G-04 removed; exposure stays High (one Critical remains)."
+        ],
+        "mustNot": [
+          "Raise the rung because the provider failed; the rung follows the objectives.",
+          "Show money (no cost input).",
+          "Present the incident as the named fund's current state."
+        ]
+      }
+    },
+    {
+      "id": "RS4",
+      "name": "New York state-chartered bank under NYDFS 23 NYCRR 500.16 and the FFIEC BCM booklet, with ransomware exposure (executive mode)",
+      "illustrative": true,
+      "summary": "Shape from the NYDFS ransomware guidance (30 Jun 2021): 74 ransomware attacks reported by DFS-regulated companies from Jan 2020 to May 2021; DFS expects segregated, offline backups and restore tests. Here, a NY state-chartered, federally supervised bank whose backups are immutable but whose restore has not been tested and whose recovery could be reached by an attacker.",
+      "mode": "executive",
+      "sources": [
+        { "kind": "regulator_guidance", "citation": "NYDFS Industry Letter, Ransomware Guidance (30 Jun 2021)", "url": "https://www.dfs.ny.gov/industry_guidance/industry_letters/il20210630_ransomware_guidance", "status": "V", "checked": "2026-10-27", "usedFor": "Shape: segregated offline backups; restore tests; 74 attacks reported." },
+        { "kind": "regulation", "citation": "23 NYCRR 500.16(a)(2), (d)(1)-(2), (e); 500.19(a) limited exemption excludes 500.16; 500.22(d)(2) one year after the second amendment", "url": "https://www.law.cornell.edu/regulations/new-york/23-NYCRR-500.16", "status": "S", "checked": "2026-10-27", "usedFor": "Obligation checks (Cornell LII reproduction; DFS primary text to be read in RQ2)." },
+        { "kind": "regulator_statement", "citation": "FDIC FIL-71-2019 (14 Nov 2019) and OCC Bulletin 2019-57: FFIEC Business Continuity Management booklet replaces the 2015 BCP booklet; imposes no new requirements", "url": "https://www.fdic.gov/news/inactive-financial-institution-letters/2019/fil19071.pdf", "status": "V", "checked": "2026-10-27", "usedFor": "Existence, date and themes of the booklet. Booklet section references UNSOURCED (booklet page returned 403)." }
+      ],
+      "inputs": {
+        "facts": { "ent.flags": ["us_nydfs_licensed", "us_federal_banking_supervised"], "org.establishments": ["us"], "org.sector": "banking", "ent.res_flags": ["none"] },
+        "enterpriseAnswers": {
+          "EX-12": "Some non-critical single points of failure", "EX-13": "Yes, documented", "EX-14": "Yes, documented", "EX-15": "Informal",
+          "EX-18": ["On-premises", "Azure", "SaaS"], "EX-19": "Yes, documented, not tested", "EX-20": "Documented, not fully tested"
+        },
+        "services": [
+          {
+            "service": "S1",
+            "name": "Payments and online banking",
+            "answers": {
+              "EX-01": ["Customer-facing services", "Revenue-generating services"], "EX-02": "1-4 hours", "EX-03": "15-60 minutes", "EX-04": "<15 minutes", "TOL-02": "<15 minutes",
+              "EX-05": "Partially", "EX-06": "Likely, but not recently tested", "EX-07": ">2 years ago", "EX-08": "Yes",
+              "EX-09": "Immutable, restore not tested", "EX-10": "Yes, but alternatives exist", "EX-11": "No material concentration", "EX-16": "No", "EX-17": "Contract terms only"
+            }
+          }
+        ],
+        "assumptions": [
+          "us_federal_banking_supervised is a proposed new value of the shared ent.flags fact (open question Q5). If the owners decline it, US_FFIEC_BCM is not shown and only NYDFS obligations appear.",
+          "All answers are scenario assumptions."
+        ]
+      },
+      "expected": {
+        "regimes": [
+          { "regime": "US_NYDFS_500", "grade": "applies", "why": "Sovereign IQ rule US_NYDFS_500.2; no limited exemption (REG-02)." },
+          { "regime": "US_FFIEC_BCM", "grade": "applies", "why": "Resilience record rule US_FFIEC_BCM.1 on the proposed flag; shown as an examination expectation." }
+        ],
+        "services": [
+          {
+            "service": "S1",
+            "ladder": {
+              "status": "issued", "rtoRung": "DR-03", "rpoRung": "DR-03", "rung": "DR-03", "alternativeBelow": "DR-02",
+              "controlsAdded": ["RES.BACKUP.PITR", "RES.DATA.REPLICATION", "RES.CYBER.ISOLATION", "RES.BACKUP.IMMUTABLE", "RES.CYBER.CLEANROOM", "RES.IDENTITY.RECOVERY", "RES.DEPENDENCY.MAP", "RES.DR.ORCHESTRATION"],
+              "why": "RTO 15-60 minutes and RPO under 15 minutes both give warm standby."
+            },
+            "topFindings": [
+              { "control": "RES.CYBER.ISOLATION", "severity": "Critical", "why": "Ransomware could reach recovery copies (EX-08 'Yes'): G-05.", "obligations": ["US_NYDFS_500.BACKUP_PROTECTION"] },
+              { "control": "RES.DR.PROVEN", "severity": "High", "why": "Immutable but restore not tested (EX-09, R9 decision 3); last end-to-end test over two years ago (EX-07).", "obligations": ["US_NYDFS_500.RESTORE_TESTING", "US_NYDFS_500.PLAN_TESTING"] },
+              { "control": "RES.TEST.SCENARIO", "severity": "High", "why": "No scenario exercises (EX-16 'No')." },
+              { "control": "RES.IDENTITY.RECOVERY", "severity": "High", "why": "Break-glass documented, not tested (EX-19)." },
+              { "control": "RES.DEPENDENCY.MAP", "severity": "High", "why": "Partially mapped (EX-05)." },
+              { "control": "RES.GOV.OVERSIGHT", "severity": "Medium", "why": "Informal leadership review (EX-15). FFIEC is an examination expectation, so no obligation uplift." }
+            ],
+            "impact": { "shown": false, "reasonNotShown": "no_cost_input" }
+          }
+        ],
+        "headline": { "criticalExposure": "High", "ratingCap": "Managed", "capReasonMentions": ["cyber recovery"], "provisional": false },
+        "obligations": [
+          { "obligation": "US_NYDFS_500.BCDR_PLAN", "status": "partly", "why": "Essentials partly identified (EX-05), third parties identified (EX-10), backups immutable but untested (EX-09 partly)." },
+          { "obligation": "US_NYDFS_500.PLAN_TESTING", "status": "not_evidenced", "why": "Last test over two years ago (EX-07) and crisis plan not exercised (EX-14 'documented'): 500.16(d)(1) requires at least annual testing." },
+          { "obligation": "US_NYDFS_500.RESTORE_TESTING", "status": "not_evidenced", "why": "Restore from backup not tested (EX-09): 500.16(d)(2)." },
+          { "obligation": "US_NYDFS_500.BACKUP_PROTECTION", "status": "partly", "why": "Immutable (EX-09 meets) but recovery reachable by an attacker (EX-08 fails): 500.16(e)." },
+          { "obligation": "US_NYDFS_500.NOTICE", "status": "assessed_in_sovereign_iq", "why": "500.17 notification is Sovereign IQ's." },
+          { "obligation": "US_FFIEC_BCM.BIA", "status": "partly", "why": "Tolerance set (EX-02), mapping partial (EX-05)." },
+          { "obligation": "US_FFIEC_BCM.EXERCISES_TESTS", "status": "not_evidenced", "why": "EX-07 over two years; EX-16 'No'." },
+          { "obligation": "US_FFIEC_BCM.BOARD_REPORTING", "status": "not_evidenced", "why": "EX-15 'Informal'." },
+          { "obligation": "US_FFIEC_BCM.THIRD_PARTIES", "status": "not_evidenced", "why": "EX-17 'Contract terms only'." },
+          { "obligation": "US_FFIEC_BCM.CYBER_RESILIENCE", "status": "partly", "why": "EX-09 immutable meets; EX-08 fails." }
+        ],
+        "referrals": [],
+        "sensitivity": [
+          "RTO relaxed to 1-4 hours: rung stays DR-03 (set by the RPO).",
+          "RPO relaxed to 15-60 minutes with RTO 15-60 minutes: rung stays DR-03 (set by the RTO).",
+          "EX-08 'No - recovery is isolated and this has been tested': Critical removed; exposure stays High (four High findings)."
+        ],
+        "mustNot": [
+          "Show FFIEC items as rules or as 'not met'; they are examination expectations.",
+          "Apply NYDFS 500.16 if REG-02 records the 500.19(a) limited exemption.",
+          "Show money (no cost input)."
+        ]
+      }
+    },
+    {
+      "id": "RS5",
+      "name": "Singapore payments firm under the MAS BCM Guidelines, on-premises with one hyperscaler and a sovereign provider, after a primary data-centre failure (workshop mode)",
+      "illustrative": true,
+      "summary": "Shape from MAS's statement on the 14 Oct 2023 outage at DBS and Citibank: the primary data centres failed, both banks activated their backup data centres but could not fully recover within the required timeframe; MAS requires critical systems to be restorable within four hours. Here, a MAS-licensed payments firm whose payment service runs in a colocation data centre, with recovery to a second site, a hyperscaler and a local sovereign provider. Tests the MAS TRM four-hour floor (recorded, no change), the three-yearly BCM audit and a sovereign provider in the playbook.",
+      "mode": "workshop",
+      "sources": [
+        { "kind": "regulator_statement", "citation": "MAS response to media queries on DBS Bank and Citibank (19 Oct 2023)", "url": "https://www.mas.gov.sg/news/media-releases/2023/mas-response-to-media-queries-on-dbs-bank-and-citibank", "status": "V", "checked": "2026-10-27", "usedFor": "Shape: primary data centre failure; backup data centre activated; not recovered within the required timeframe; four-hour expectation for critical systems." },
+        { "kind": "regulator_guidance", "citation": "MAS Guidelines on Business Continuity Management (June 2022), paras 1.9, 2.3, 2.5, 3.1-3.2, 4.1-4.4, 5, 6.7, 7.2-7.3, 8.2-8.3", "url": "https://www.mas.gov.sg/-/media/mas/regulations-and-financial-stability/regulatory-and-supervisory-framework/risk-management/bcm-guidelines/guidelines-on-bcm-june-2022.pdf", "status": "V", "checked": "2026-10-27", "usedFor": "Obligation checks." },
+        { "kind": "regulation", "citation": "MAS Notice FSM-N09 Technology Risk Management, para 6 (finance companies; effective 10 May 2024)", "url": "https://www.mas.gov.sg/-/media/mas-media-library/regulation/notices/trpd/notice-fsm-n09/mas-notice-fsm-n09.pdf", "status": "V", "checked": "2026-10-27", "usedFor": "Wording of the four-hour RTO floor. The payment institutions' equivalent notice is UNSOURCED; the floor is consultant view only until RQ2 sources it." }
+      ],
+      "inputs": {
+        "facts": { "ent.flags": ["sg_mas_licensed"], "org.establishments": ["sg"], "org.sector": "other_financial", "ent.res_flags": ["mas_critical_system"] },
+        "enterpriseAnswers": {
+          "EX-12": "Critical single points of failure exist", "EX-13": "Yes, proven", "EX-14": "Yes, exercised", "EX-15": "Yes, with metrics and actions",
+          "EX-18": ["On-premises", "AWS", "Sovereign or local cloud provider"], "EX-19": "Yes, separate path tested in the last 12 months", "EX-20": "Tested by us",
+          "AUD-01": "More than 3 years ago", "AF-GV-01": "Named business owner with technology counterpart"
+        },
+        "services": [
+          {
+            "service": "S1",
+            "name": "Retail payments (card and account-to-account)",
+            "answers": {
+              "EX-01": ["Customer-facing services", "Revenue-generating services"], "EX-02": "1-4 hours", "EX-03": "1-4 hours", "EX-04": "15-60 minutes", "TOL-02": "15-60 minutes", "TOL-03": "Defined and measurable",
+              "EX-05": "Partially", "EX-06": "No", "EX-07": "Within 3 months", "EX-08": "No - isolated by design, not tested",
+              "EX-09": "Yes - immutable and restore tested in the last 12 months", "EX-10": "Yes, but alternatives exist", "EX-11": "Moderate concentration", "EX-16": "Yes, regularly", "EX-17": "Documented and reviewed, not tested",
+              "AF-DR-01": "4-24 hours", "AF-DR-02": "15-60 minutes", "AF-DR-04": "Partially", "AF-DR-05": "Manual runbook",
+              "AF-OP-01": "Yes, tested", "AF-OP-02": "Yes, designed", "AF-TP-04": "Provider test evidence", "EXIT-01": "Tabletop walkthrough only",
+              "REV-01": "Within 12 months", "DC-01": "Yes, point-in-time restore tested"
+            },
+            "costPerHour": { "currency": "SGD", "low": 150000, "high": 400000 }
+          }
+        ],
+        "assumptions": [
+          "All answers are scenario assumptions; none describes DBS or Citibank.",
+          "The firm treats the payment platform as a critical system under its TRM Notice (REG-02 mas_critical_system), confirmed by the consultant.",
+          "Cost per hour SGD 150,000-400,000 is a scenario input standing in for the client's estimate."
+        ]
+      },
+      "expected": {
+        "regimes": [
+          { "regime": "SG_MAS_BCM", "grade": "applies", "why": "Resilience record rule SG_MAS_BCM.1: ent.flags includes sg_mas_licensed (Guidelines para 1.9: all FIs under the FSMA 2022)." },
+          { "regime": "SG_MAS_TRM", "grade": "applies", "why": "Sovereign IQ rule SG_MAS_TRM.1; four-hour floor shown in consultant view until the payment institutions' notice is sourced." }
+        ],
+        "services": [
+          {
+            "service": "S1",
+            "ladder": {
+              "status": "issued", "rtoRung": "DR-02", "rpoRung": "DR-02", "rung": "DR-02", "alternativeBelow": "DR-01",
+              "floorsApplied": ["FLOOR-MAS-TRM-RTO-4H (recorded; EX-03 already 1-4 hours, no change)"],
+              "controlsAdded": ["RES.BACKUP.PITR", "RES.CYBER.ISOLATION", "RES.BACKUP.IMMUTABLE", "RES.CYBER.CLEANROOM", "RES.TP.CONCENTRATION", "RES.DEPENDENCY.MAP", "RES.DR.ORCHESTRATION", "RES.TP.EXIT", "RES.TP.CONTINUITY"],
+              "why": "RTO 1-4 hours and RPO 15-60 minutes both give pilot light. The firm already has a second site; the issue is that recovery has not met the SRTO, not that a higher rung is needed."
+            },
+            "topFindings": [
+              { "control": "RES.DR.STRATEGY", "severity": "Critical", "why": "Recovery cannot be done within the SRTO (EX-06 'No'); proven 4-24 hours against a 1-4 hour tolerance (AF-DR-01 fails).", "obligations": ["SG_MAS_BCM.TESTING", "SG_MAS_TRM.RTO_4H"] },
+              { "control": "RES.INFRA.SPOF", "severity": "Critical", "why": "Critical single points of failure in facilities (EX-12), as in a primary data-centre cooling failure." },
+              { "control": "RES.GOV.AUDIT", "severity": "High", "why": "BCM last audited more than three years ago (AUD-01); MAS 8.2 expects at least once every three years, so the finding is raised to High.", "obligations": ["SG_MAS_BCM.AUDIT"] },
+              { "control": "RES.TP.CONTINUITY", "severity": "High", "why": "Colocation and other providers' continuity documented, not tested with the firm (EX-17); provider test evidence only (AF-TP-04).", "obligations": ["SG_MAS_BCM.THIRD_PARTIES"] },
+              { "control": "RES.TP.EXIT", "severity": "High", "why": "Exit rehearsed only as a tabletop (EXIT-01)." },
+              { "control": "RES.DEPENDENCY.MAP", "severity": "High", "why": "Partially mapped (EX-05).", "obligations": ["SG_MAS_BCM.DEPENDENCY_MAP"] },
+              { "control": "RES.DR.ORCHESTRATION", "severity": "Medium", "why": "Manual runbook (AF-DR-05) at rung DR-02." }
+            ],
+            "impact": { "shown": true, "currency": "SGD", "costPerHour": [150000, 400000], "gapHours": [0, 23], "range": [0, 9200000] }
+          }
+        ],
+        "headline": { "criticalExposure": "High", "ratingCap": "Managed", "capReasonMentions": ["recovery beyond tolerance", "single points of failure"], "provisional": false },
+        "obligations": [
+          { "obligation": "SG_MAS_BCM.CBS", "status": "met", "why": "Service identified (EX-01) with a named business owner (AF-GV-01)." },
+          { "obligation": "SG_MAS_BCM.SRTO", "status": "met", "why": "SRTO (EX-02), RTO (EX-03) and a measurable minimum service level (TOL-03)." },
+          { "obligation": "SG_MAS_BCM.DEPENDENCY_MAP", "status": "partly", "why": "EX-05 'Partially'." },
+          { "obligation": "SG_MAS_BCM.THIRD_PARTIES", "status": "partly", "why": "EX-17 documented not tested; AF-TP-04 provider evidence only." },
+          { "obligation": "SG_MAS_BCM.CONCENTRATION", "status": "partly", "why": "EX-11 'Moderate concentration'." },
+          { "obligation": "SG_MAS_BCM.ANNUAL_REVIEW", "status": "met", "why": "REV-01 within 12 months (para 6.7)." },
+          { "obligation": "SG_MAS_BCM.TESTING", "status": "partly", "why": "Regular scenario tests (EX-16 meets) but the SRTO is not met (EX-06 'No' fails)." },
+          { "obligation": "SG_MAS_BCM.AUDIT", "status": "not_evidenced", "why": "AUD-01 more than three years ago (para 8.2)." },
+          { "obligation": "SG_MAS_TRM.RTO_4H", "status": "partly", "why": "RTO set within four hours (EX-03 meets) but proven recovery 4-24 hours (AF-DR-01 fails). Consultant view only until sourced for payment institutions." }
+        ],
+        "referrals": [],
+        "sensitivity": [
+          "EX-03 answered '4-24 hours': the four-hour floor sets the effective RTO to '1-4 hours'; rung stays DR-02 and the decision log names the floor.",
+          "RPO tightened to under 15 minutes: rung rises to DR-03.",
+          "AUD-01 '1-3 years ago': SG_MAS_BCM.AUDIT met; RES.GOV.AUDIT removed."
+        ],
+        "mustNot": [
+          "Recommend a higher rung because the firm already runs a second data centre or a sovereign provider.",
+          "Show the four-hour floor in the client view before the payment institutions' TRM Notice is sourced.",
+          "Name a provider as 'best'; sovereign provider options appear in the playbook as found in discovery."
+        ]
+      }
+    }
+  ]
+}

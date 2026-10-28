@@ -74,7 +74,7 @@ RQ0 starts now and waits for no decision. RQ2 research can run beside RQ1. RQ6, 
 | 8 | **Owner close-out (R7.1–4)** | The live journey on production now includes a gated assessment. Branch protection, Admin group and the sandbox pool remain owner actions |
 | 9 | Housekeeping | Correct the stale `check-repo.cjs` comment (M7) |
 
-**Status (27 Oct 2026): built; owner production check (item 8) open.**
+**Status (28 Oct 2026): built; item 8 production check done by the owner** (the one-click recovery objectives and the advisory questions work on production). Branch protection, the Admin group and the sandbox pool (R7) remain owner actions.
 - Item 1: the crash is fixed in #65 (`#scanMode`, null-safe); `mapAnswers` now leaves unanswered questions out (no `[]`, `{}` or default ranking is sent).
 - Item 2: the gated-path browser test runs `retailer-untested-gated` through the executive scan, every advisory round and the report (`ready`), and checks the answers sent pass the contract with no empty placeholders. Not done: a smoke step on every shared-top-bar page; all other pages' scripts were checked by hand for removed header elements (none).
 - Item 3: page and `scoring-model.json` now say "LTM heuristics, pending practice-lead review; not an industry benchmark"; the test asserts the old claim is gone.
@@ -134,6 +134,14 @@ Five scenarios built from public material, each with its URLs and the expected o
 3. Australian superannuation fund under CPS 230;
 4. US state-chartered bank under NYDFS Part 500;
 5. Singapore payments firm under MAS BCM, on-premises with one hyperscaler and a sovereign provider.
+
+**Status (28 Oct 2026): approved by the owner, with every recommended default in DESIGN.md section 16 (Q1–Q15).** RQ2 and RQ3 can start. The pack is in [design/](design/DESIGN.md):
+- `DESIGN.md`;
+- `decision-matrix.json` and its schema (the ladder grid is checked for monotonicity);
+- `reference-scenarios.json` and its schema (five scenarios, expected outcomes written before any engine run);
+- `obligation.schema.json`, `finding.schema.json` and `question.schema.json`.
+
+Both data files validate against their schemas. Open questions Q1–Q15 carry recommended defaults (DESIGN.md section 16). Q1, Q2, Q3, Q6 and Q11 are needed before RQ3. Q5 and Q14 also need the Sovereign IQ owner. Items not verified are handed to RQ2 (DESIGN.md section 17).
 
 **Gate RQ1:**
 - owner approval of the design pack and D1–D15;

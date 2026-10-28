@@ -1,0 +1,156 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:ltm:resilience-iq:v2:reference-scenario",
+  "title": "Resilience IQ v2 reference scenario (owner decision D13)",
+  "description": "A reference scenario built from public material, with the expected outcome written before any engine run (DESIGN.md section 13). RQ5 runs each scenario and explains or fixes every disagreement. Numbers that are not in a public source are scenario assumptions and are labelled as such. Draft for owner approval (gate RQ1).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["version", "statusAsOf", "author", "conventions", "scenarios"],
+  "properties": {
+    "$schema": { "type": "string" },
+    "version": { "type": "string" },
+    "statusAsOf": { "type": "string", "format": "date" },
+    "author": { "type": "string" },
+    "note": { "type": "string" },
+    "conventions": { "type": "array", "items": { "type": "string" } },
+    "scenarios": { "type": "array", "items": { "$ref": "#/$defs/scenario" }, "minItems": 5, "maxItems": 5 }
+  },
+  "$defs": {
+    "rungId": { "enum": ["DR-01", "DR-02", "DR-03", "DR-04", "DR-05"] },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "citation", "url", "status", "checked", "usedFor"],
+      "properties": {
+        "kind": { "enum": ["regulator_enforcement", "regulator_statement", "regulation", "regulator_guidance", "provider_incident_report", "provider_statement", "published_research"] },
+        "citation": { "type": "string" },
+        "url": { "type": "string" },
+        "status": { "enum": ["V", "S", "P", "UNSOURCED"] },
+        "checked": { "type": "string", "format": "date" },
+        "usedFor": { "type": "string" }
+      }
+    },
+    "expectedFinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["control", "severity", "why"],
+      "properties": {
+        "control": { "$ref": "urn:ltm:resilience-iq:v2:finding#/$defs/controlId" },
+        "severity": { "$ref": "urn:ltm:resilience-iq:v2:finding#/$defs/severity" },
+        "why": { "type": "string" },
+        "obligations": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "expectedObligation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["obligation", "status", "why"],
+      "properties": {
+        "obligation": { "type": "string" },
+        "status": { "enum": ["met", "partly", "not_evidenced", "not_assessed", "applies_later", "assessed_in_sovereign_iq"] },
+        "why": { "type": "string" }
+      }
+    },
+    "expectedService": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["service", "ladder", "topFindings"],
+      "properties": {
+        "service": { "type": "string", "pattern": "^S[1-5]$" },
+        "ladder": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["status"],
+          "properties": {
+            "status": { "enum": ["issued", "withheld"] },
+            "rtoRung": { "$ref": "#/$defs/rungId" },
+            "rpoRung": { "$ref": "#/$defs/rungId" },
+            "rung": { "$ref": "#/$defs/rungId" },
+            "businessChoice": { "$ref": "#/$defs/rungId" },
+            "alternativeBelow": { "$ref": "#/$defs/rungId" },
+            "floorsApplied": { "type": "array", "items": { "type": "string" } },
+            "consistencyApplied": { "type": "array", "items": { "type": "string" } },
+            "controlsAdded": { "type": "array", "items": { "type": "string" } },
+            "why": { "type": "string" }
+          }
+        },
+        "topFindings": { "type": "array", "items": { "$ref": "#/$defs/expectedFinding" }, "minItems": 1 },
+        "impact": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["shown"],
+          "properties": {
+            "shown": { "type": "boolean" },
+            "reasonNotShown": { "type": "string" },
+            "currency": { "type": "string" },
+            "costPerHour": { "type": "array", "items": { "type": "number" }, "minItems": 2, "maxItems": 2 },
+            "gapHours": { "type": "array", "items": { "type": ["number", "null"] }, "minItems": 2, "maxItems": 2 },
+            "range": { "type": "array", "items": { "type": ["number", "null"] }, "minItems": 2, "maxItems": 2 }
+          }
+        }
+      }
+    },
+    "scenario": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "name", "illustrative", "summary", "mode", "sources", "inputs", "expected"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^RS[1-5]$" },
+        "name": { "type": "string" },
+        "illustrative": { "const": true },
+        "summary": { "type": "string" },
+        "mode": { "enum": ["executive", "workshop"] },
+        "sources": { "type": "array", "items": { "$ref": "#/$defs/source" }, "minItems": 1 },
+        "inputs": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["facts", "services"],
+          "properties": {
+            "facts": { "type": "object" },
+            "enterpriseAnswers": { "type": "object" },
+            "services": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["service", "name", "answers"],
+                "properties": {
+                  "service": { "type": "string", "pattern": "^S[1-5]$" },
+                  "name": { "type": "string" },
+                  "answers": { "type": "object" },
+                  "costPerHour": { "type": "object", "additionalProperties": false, "required": ["currency", "low", "high"], "properties": { "currency": { "type": "string" }, "low": { "type": "number" }, "high": { "type": "number" } } }
+                }
+              },
+              "minItems": 1
+            },
+            "assumptions": { "type": "array", "items": { "type": "string" } }
+          }
+        },
+        "expected": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["services", "headline", "obligations", "mustNot"],
+          "properties": {
+            "regimes": { "type": "array", "items": { "type": "object", "additionalProperties": false, "required": ["regime", "grade", "why"], "properties": { "regime": { "type": "string" }, "grade": { "type": "string" }, "why": { "type": "string" } } } },
+            "services": { "type": "array", "items": { "$ref": "#/$defs/expectedService" }, "minItems": 1 },
+            "headline": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["criticalExposure", "ratingCap"],
+              "properties": {
+                "criticalExposure": { "enum": ["Low", "Moderate", "High", "Severe"] },
+                "ratingCap": { "type": ["string", "null"], "description": "Highest rating the exposure allows; the posture number itself is calibrated in RQ5 and not predicted here." },
+                "capReasonMentions": { "type": "array", "items": { "type": "string" } },
+                "provisional": { "type": "boolean" }
+              }
+            },
+            "obligations": { "type": "array", "items": { "$ref": "#/$defs/expectedObligation" } },
+            "referrals": { "type": "array", "items": { "type": "string" } },
+            "sensitivity": { "type": "array", "items": { "type": "string" }, "description": "What a single change would do to the rung, written before the run (monotonicity probes)." },
+            "mustNot": { "type": "array", "items": { "type": "string" }, "minItems": 1 }
+          }
+        }
+      }
+    }
+  }
+}

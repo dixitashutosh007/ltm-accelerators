@@ -1,0 +1,349 @@
+{
+  "$schema": "./decision-matrix.schema.json",
+  "id": "resilience-iq.decision-matrix",
+  "version": "2.0.0-design",
+  "statusAsOf": "2026-10-27",
+  "author": "resilience-lead (AI practice-lead agent). Advises; the product owner approves (gate RQ1).",
+  "ownerDecision": "D3 accepted by the product owner on 27 Oct 2026: written ladder, the higher of the RTO and RPO rungs; DR-05 only for RTO under 15 minutes with near-zero RPO, shown beside DR-04 as a business choice; modifiers add controls, not rungs.",
+  "note": "Replaces resilience-iq/design/decision-matrix.json (S1-S5, not read by the engine) and the pattern bonuses in runtime.ts:586-591. In RQ3 this file moves to resilience-iq/knowledge/ and becomes the only source of the recommended rung. Band edges are LTM judgements grounded in the provider guidance cited; each carries its basis and status. Claim ids are assigned in RQ2.",
+  "rungs": [
+    {
+      "id": "DR-01",
+      "rank": 1,
+      "name": "Backup and restore",
+      "plainName": "Backup and restore",
+      "legacyLadderId": "S1",
+      "definition": "Data and configuration are backed up to a separate location; on disaster the infrastructure is redeployed (ideally from code), the application deployed and the data restored.",
+      "costOrder": 1,
+      "providerEquivalents": [
+        { "provider": "aws", "pattern": "Backup and restore", "rto": "24 hours or less", "rpo": "hours (point-in-time recovery can lower it to as low as 5 minutes in some cases)", "ref": "SRC-AWS-REL13", "status": "V" },
+        { "provider": "azure", "pattern": "Backup and restore (Tier 3, Administrative)", "rto": "hours to days", "rpo": "hours", "ref": "SRC-AZ-DRGUIDE", "status": "V" },
+        { "provider": "google_cloud", "pattern": "Cold", "rto": "no figure given (large RTO)", "rpo": "set by the last snapshot", "ref": "SRC-GCP-DRPLAN", "status": "V", "note": "Google gives no numeric bands; the mapping of cold to DR-01 is an LTM mapping." },
+        { "provider": "on_premises", "pattern": "Restore to a cold site or rebuilt infrastructure", "ref": "SRC-NIST-80034", "status": "P", "note": "NIST SP 800-34 Rev. 1 describes cold, warm, hot and mirrored alternate sites; section not re-read." },
+        { "provider": "sovereign_and_other", "pattern": "Provider backup service or customer-managed backup to a second location", "status": "LTM heuristic", "note": "Provider features found in discovery (playbook, RQ8)." }
+      ],
+      "basis": [
+        { "ref": "SRC-AWS-REL13", "passage": "Backup and restore (RPO in hours, RTO in 24 hours or less)", "status": "V", "claim": "CLM-RES-TBD" },
+        { "ref": "SRC-AZ-DRGUIDE", "passage": "Tier 3: RTO ranging from hours to days and RPO measured in hours; backup and restore", "status": "V", "claim": "CLM-RES-TBD" }
+      ]
+    },
+    {
+      "id": "DR-02",
+      "rank": 2,
+      "name": "Pilot light",
+      "plainName": "Pilot light (data replicated, core services ready, compute started on failover)",
+      "legacyLadderId": "S2",
+      "definition": "Data is replicated to the recovery location and core infrastructure is provisioned; application compute is not running and is started and scaled on failover.",
+      "costOrder": 2,
+      "providerEquivalents": [
+        { "provider": "aws", "pattern": "Pilot light", "rto": "tens of minutes", "rpo": "minutes", "ref": "SRC-AWS-REL13", "status": "V", "note": "AWS Elastic Disaster Recovery takes the pilot light approach with RPO in seconds and RTO in minutes; it is an option under DR-02 and DR-03, not DR-01 or DR-04." },
+        { "provider": "azure", "pattern": "Active-passive (cold standby): secondary infrastructure and replication ready, compute stopped", "rto": "hours (Tier 2)", "rpo": "hours (Tier 2)", "ref": "SRC-AZ-DRGUIDE", "status": "V", "note": "Azure's 'cold standby' is closer to AWS pilot light than to backup and restore: data replication and infrastructure as code are in place, compute is stopped." },
+        { "provider": "google_cloud", "pattern": "Warm (lower end)", "ref": "SRC-GCP-DRPLAN", "status": "V", "note": "Qualitative only; LTM mapping." },
+        { "provider": "on_premises", "pattern": "Warm site with replicated data", "ref": "SRC-NIST-80034", "status": "P" },
+        { "provider": "sovereign_and_other", "pattern": "Replication to a second region or site of the provider, compute on demand", "status": "LTM heuristic" }
+      ],
+      "basis": [
+        { "ref": "SRC-AWS-REL13", "passage": "Pilot light (RPO in minutes, RTO in tens of minutes)", "status": "V", "claim": "CLM-RES-TBD" }
+      ]
+    },
+    {
+      "id": "DR-03",
+      "rank": 3,
+      "name": "Warm standby",
+      "plainName": "Warm standby (a smaller copy always running)",
+      "legacyLadderId": "S3",
+      "definition": "A scaled-down but fully functional copy runs in the recovery location with live replicated data; on failover it is scaled up.",
+      "costOrder": 3,
+      "providerEquivalents": [
+        { "provider": "aws", "pattern": "Warm standby", "rto": "minutes", "rpo": "seconds", "ref": "SRC-AWS-REL13", "status": "V" },
+        { "provider": "azure", "pattern": "Active-passive (warm standby)", "rto": "minutes (Tier 1)", "rpo": "minutes (Tier 1)", "ref": "SRC-AZ-DRGUIDE", "status": "V", "note": "Azure Tier 1 uses 'a mix of active-active or warm standby'." },
+        { "provider": "google_cloud", "pattern": "Warm", "ref": "SRC-GCP-DRPLAN", "status": "V", "note": "Qualitative only; LTM mapping." },
+        { "provider": "on_premises", "pattern": "Warm or hot site with running reduced capacity", "ref": "SRC-NIST-80034", "status": "P" },
+        { "provider": "sovereign_and_other", "pattern": "Reduced-capacity standby in a second region or site", "status": "LTM heuristic" }
+      ],
+      "basis": [
+        { "ref": "SRC-AWS-REL13", "passage": "Warm standby (RPO in seconds, RTO in minutes)", "status": "V", "claim": "CLM-RES-TBD" }
+      ]
+    },
+    {
+      "id": "DR-04",
+      "rank": 4,
+      "name": "Hot standby (active-passive at full capacity)",
+      "plainName": "Hot standby (a full-size copy ready to take over)",
+      "legacyLadderId": "S4",
+      "definition": "A full-capacity copy runs in the recovery location with live replicated data and automated or one-step failover; it does not serve production traffic until failover.",
+      "costOrder": 4,
+      "providerEquivalents": [
+        { "provider": "aws", "pattern": "Hot standby (warm standby at full capacity)", "rto": "minutes, lower than warm standby", "rpo": "seconds", "ref": "SRC-AWS-REL13", "status": "V", "note": "AWS: 'When fully scaled this is known as hot standby'." },
+        { "provider": "azure", "pattern": "Active-passive warm standby scaled to full capacity with automatic failover", "ref": "SRC-AZ-DRGUIDE", "status": "LTM heuristic", "note": "Azure has no separately named full-capacity active-passive pattern, and its glossary uses 'hot standby' for active-active. Terminology differs; the report names the pattern in words." },
+        { "provider": "google_cloud", "pattern": "Hot (active-passive)", "ref": "SRC-GCP-DRPLAN", "status": "V", "note": "Qualitative only; LTM mapping." },
+        { "provider": "on_premises", "pattern": "Hot site", "ref": "SRC-NIST-80034", "status": "P" },
+        { "provider": "sovereign_and_other", "pattern": "Full-capacity standby in a second region or site", "status": "LTM heuristic" }
+      ],
+      "basis": [
+        { "ref": "SRC-AWS-REL13", "passage": "The more scaled-up the warm standby is, the lower RTO and control plane reliance will be. When fully scales this is known as hot standby.", "status": "V", "claim": "CLM-RES-TBD" }
+      ]
+    },
+    {
+      "id": "DR-05",
+      "rank": 5,
+      "name": "Multi-site active-active",
+      "plainName": "Active-active (two or more sites serving live traffic)",
+      "legacyLadderId": "S5",
+      "definition": "The service runs and serves traffic from two or more sites or regions at once, with data synchronised between them; a failed site is evacuated.",
+      "costOrder": 5,
+      "providerEquivalents": [
+        { "provider": "aws", "pattern": "Multi-Region (multi-site) active-active", "rto": "potentially zero", "rpo": "near zero", "ref": "SRC-AWS-REL13", "status": "V", "note": "AWS: replication does not protect against data corruption or destruction unless point-in-time recovery is included." },
+        { "provider": "azure", "pattern": "Active-active (Tier 0, Mission critical)", "rto": "seconds", "rpo": "approaching zero", "ref": "SRC-AZ-DRGUIDE", "status": "V" },
+        { "provider": "google_cloud", "pattern": "Hot (HA across both environments)", "ref": "SRC-GCP-DRAPPS", "status": "V", "note": "Qualitative only." },
+        { "provider": "on_premises", "pattern": "Mirrored sites", "ref": "SRC-NIST-80034", "status": "P" },
+        { "provider": "sovereign_and_other", "pattern": "Active-active across regions or providers", "status": "LTM heuristic" }
+      ],
+      "basis": [
+        { "ref": "SRC-AWS-REL13", "passage": "Multi-Region (multi-site) active-active (RPO near zero, RTO potentially zero) ... should only be selected when business requirements necessitate it.", "status": "V", "claim": "CLM-RES-TBD" }
+      ]
+    }
+  ],
+  "scales": {
+    "rto": [
+      { "answer": "<15 minutes", "minMinutes": 0, "maxMinutes": 15, "rung": "DR-04",
+        "basis": [ { "ref": "SRC-AWS-REL13", "passage": "Warm standby RTO in minutes; hot standby lowers RTO further", "status": "V" }, { "ref": "LTM", "status": "LTM heuristic", "reasoning": "Under 15 minutes leaves no time to scale a reduced standby reliably; a full-capacity standby is the lowest-cost pattern that meets it. Active-active is offered only as a business choice (businessChoices)." } ] },
+      { "answer": "15-60 minutes", "minMinutes": 15, "maxMinutes": 60, "rung": "DR-03",
+        "basis": [ { "ref": "SRC-AWS-REL13", "passage": "Warm standby RTO in minutes; pilot light RTO in tens of minutes", "status": "V" }, { "ref": "LTM", "status": "LTM heuristic", "reasoning": "Pilot light may meet the upper half of the band, but 'tens of minutes' overlaps the 15-minute lower edge, so the lowest-cost pattern that meets the whole band is warm standby. The report shows pilot light as the alternative one rung down, with that risk stated." } ] },
+      { "answer": "1-4 hours", "minMinutes": 60, "maxMinutes": 240, "rung": "DR-02",
+        "basis": [ { "ref": "SRC-AWS-REL13", "passage": "Pilot light RTO in tens of minutes", "status": "V" }, { "ref": "SRC-AZ-DRGUIDE", "passage": "Tier 2: RTO and RPO measured in hours; active-passive warm/cold", "status": "V" }, { "ref": "LTM", "status": "LTM heuristic", "reasoning": "Backup and restore is stated as 'RTO in 24 hours or less', with no lower bound; restores at scale often take more than 4 hours, so DR-01 is not relied on below 4 hours." } ] },
+      { "answer": "4-24 hours", "minMinutes": 240, "maxMinutes": 1440, "rung": "DR-01",
+        "basis": [ { "ref": "SRC-AWS-REL13", "passage": "Backup and restore (RTO in 24 hours or less)", "status": "V" }, { "ref": "SRC-AZ-DRGUIDE", "passage": "Tier 3: RTO from hours to days; backup and restore", "status": "V" } ] },
+      { "answer": ">24 hours", "minMinutes": 1440, "maxMinutes": null, "rung": "DR-01",
+        "basis": [ { "ref": "SRC-AWS-REL13", "passage": "Backup and restore (RTO in 24 hours or less)", "status": "V" } ] }
+    ],
+    "rpo": [
+      { "answer": "Near-zero", "minMinutes": 0, "maxMinutes": 0, "rung": "DR-03",
+        "basis": [ { "ref": "SRC-AWS-REL13", "passage": "Warm standby (RPO in seconds)", "status": "V" }, { "ref": "SRC-AZ-RE09", "passage": "Synchronous replication: changes are written to multiple locations simultaneously, ensuring zero data loss", "status": "V" }, { "ref": "LTM", "status": "LTM heuristic", "reasoning": "Near-zero data loss needs continuous (and, for zero, synchronous) replication with a live target, which is DR-03 or above. It does not by itself need active-active (R9 decision 4, superseded by D3)." } ] },
+      { "answer": "<15 minutes", "minMinutes": 0, "maxMinutes": 15, "rung": "DR-03",
+        "basis": [ { "ref": "SRC-AWS-REL13", "passage": "Warm standby (RPO in seconds); pilot light (RPO in minutes)", "status": "V" }, { "ref": "LTM", "status": "LTM heuristic", "reasoning": "'Minutes' for pilot light overlaps the 15-minute edge; warm standby is the lowest pattern that meets the whole band. AWS Elastic Disaster Recovery (pilot light approach, RPO in seconds) is a platform option inside this rung." } ] },
+      { "answer": "15-60 minutes", "minMinutes": 15, "maxMinutes": 60, "rung": "DR-02",
+        "basis": [ { "ref": "SRC-AWS-REL13", "passage": "Pilot light (RPO in minutes)", "status": "V" }, { "ref": "LTM", "status": "LTM heuristic", "reasoning": "Point-in-time recovery can bring backup and restore to as low as 5 minutes only 'in some cases', so DR-01 is not relied on below one hour." } ] },
+      { "answer": "1-4 hours", "minMinutes": 60, "maxMinutes": 240, "rung": "DR-01",
+        "basis": [ { "ref": "SRC-AWS-REL13", "passage": "Backup and restore (RPO in hours)", "status": "V" } ] },
+      { "answer": "4-24 hours", "minMinutes": 240, "maxMinutes": 1440, "rung": "DR-01",
+        "basis": [ { "ref": "SRC-AWS-REL13", "passage": "Backup and restore (RPO in hours)", "status": "V" } ] },
+      { "answer": ">24 hours", "minMinutes": 1440, "maxMinutes": null, "rung": "DR-01",
+        "basis": [ { "ref": "SRC-AWS-REL13", "passage": "Backup and restore (RPO in hours)", "status": "V" } ] }
+    ]
+  },
+  "selection": {
+    "rule": "max_rank",
+    "description": "Recommended rung = the higher-ranked of rung(effective RTO) and rung(effective RPO): the lowest-cost pattern that meets both. Effective values are the stated objectives after the consistency rules and any recorded requirement floor.",
+    "whenUnknown": "withhold",
+    "whenUnknownDescription": "If the effective RTO or RPO is Unknown or unanswered, no rung is issued for that service; finding RES.REQ.DEFINED (Critical) is raised. Never inferred from technology (validation row 33).",
+    "decisionLog": [
+      "Rung for your recovery time objective: <rto answer> -> <rung> (<basis>)",
+      "Rung for your recovery point objective: <rpo answer> -> <rung> (<basis>)",
+      "Recommended: <rung>, the higher of the two",
+      "Requirement tightened by <floor id> (<regime> <article>) from <answer> to <answer>, if any",
+      "Requirement tightened by <consistency rule id> because <objective> exceeded <tolerance>, if any",
+      "Business choice offered: <offer> beside <recommended>, if any",
+      "Controls added by modifiers: <list>; no modifier changes the rung"
+    ]
+  },
+  "businessChoices": [
+    {
+      "id": "BC-DR05",
+      "when": { "rto": "<15 minutes", "rpo": "Near-zero" },
+      "recommended": "DR-04",
+      "offer": "DR-05",
+      "why": "Hot standby meets an RTO under 15 minutes with near-zero data loss. Active-active removes the failover step and serves traffic from both sites, at the highest cost and operational complexity; AWS says it should only be selected when business requirements necessitate it. The client decides; the report records the decision.",
+      "basis": [
+        { "ref": "SRC-AWS-REL13", "passage": "Multi-site active/active is the most operationally complex of the DR strategies, and should only be selected when business requirements necessitate it.", "status": "V" },
+        { "ref": "SRC-AZ-DRGUIDE", "passage": "Tier 0: RTO measured in seconds and RPO approaching zero; an active-active, multi-region deployment is typically necessary", "status": "V" }
+      ]
+    }
+  ],
+  "requirementConsistency": [
+    {
+      "id": "RC-RTO-TOLERANCE",
+      "requirement": "EX-03",
+      "boundBy": "EX-02",
+      "onConflict": "If the stated RTO is longer than the impact tolerance (time), the ladder uses the impact tolerance band as the effective RTO.",
+      "finding": "RES.REQ.CONSISTENT (High): the recovery time objective allows a longer outage than the service can tolerate.",
+      "openQuestion": "Q1",
+      "basis": [
+        { "ref": "SRC-PRA-SS121", "passage": "3.14: requirements might include recovery time objectives and recovery point objectives ... set to enable the firm to deliver the important business service within its impact tolerance", "status": "V" },
+        { "ref": "SRC-MAS-BCM", "passage": "3.2: RTOs of the underlying business functions and their dependencies will meet the SRTOs", "status": "V" }
+      ]
+    },
+    {
+      "id": "RC-RPO-DATALOSS",
+      "requirement": "EX-04",
+      "boundBy": "TOL-02",
+      "onConflict": "If the stated RPO allows more data loss than the data-loss tolerance, the ladder uses the data-loss tolerance band as the effective RPO.",
+      "finding": "RES.REQ.CONSISTENT (High): the recovery point objective allows more data loss than the service can tolerate.",
+      "openQuestion": "Q1",
+      "basis": [
+        { "ref": "SRC-APRA-CPS230", "passage": "38(b): the maximum extent of data loss the entity would accept as a result of a disruption", "status": "V" }
+      ]
+    }
+  ],
+  "requirementFloors": [
+    {
+      "id": "FLOOR-MAS-TRM-RTO-4H",
+      "regime": "SG_MAS_TRM",
+      "article": "MAS TRM Notice for the licence type (for example Notice FSM-N09, para 6, finance companies: RTO of not more than 4 hours for each critical system)",
+      "when": "SG_MAS_TRM graded 'applies' (Sovereign IQ registry rule SG_MAS_TRM.1, fact ent.flags includes sg_mas_licensed) and the consultant confirms (REG-02 'mas_critical_system') that the service depends on a system the institution treats as a critical system under its TRM Notice.",
+      "whenCondition": { "all": [ { "fact": "ent.flags", "op": "includes", "value": "sg_mas_licensed" }, { "fact": "ent.res_flags", "op": "includes", "value": "mas_critical_system" } ] },
+      "field": "rto",
+      "maxMinutes": 240,
+      "record": "If EX-03 is '4-24 hours', '>24 hours' or longer than 4 hours, the effective RTO becomes '1-4 hours' and the decision log records the floor and article. The rung may rise as a result; the article is shown beside it.",
+      "openQuestion": "Q6",
+      "basis": [
+        { "ref": "SRC-MAS-N09", "passage": "6: A finance company must establish a recovery time objective ('RTO') of not more than 4 hours for each critical system.", "status": "V" },
+        { "ref": "SRC-MAS-MR-2023", "passage": "MAS requires critical systems to be restorable within four hours of an outage (MAS response, 19 Oct 2023)", "status": "V" },
+        { "ref": "LTM", "status": "UNSOURCED", "reasoning": "The equivalent paragraph in the TRM Notices for banks, payment institutions and other licence types has not been re-read; RQ2 confirms each notice before the floor is shown for that licence type." }
+      ]
+    }
+  ],
+  "alwaysAdd": [
+    {
+      "id": "ADD-PITR",
+      "name": "Point-in-time recovery for every rung",
+      "when": "Always, for every service with a rung",
+      "addControls": ["RES.BACKUP.PITR"],
+      "addPatterns": ["DATA-04"],
+      "finding": "Raised only if DC-01 shows point-in-time restore is missing or untested (RES.BACKUP.PITR).",
+      "neverRaisesRung": true,
+      "basis": [
+        { "ref": "SRC-AWS-REL13", "passage": "Continuous data replication protects you against some types of disaster, but it may not protect you against data corruption or destruction unless your strategy also includes versioning of stored data or options for point-in-time recovery.", "status": "V" },
+        { "ref": "SRC-AZ-DRGUIDE", "passage": "Backup and restore strategies must be part of all recovery strategies.", "status": "V" }
+      ]
+    },
+    {
+      "id": "ADD-REPLICATION",
+      "name": "Continuous data replication for RPO under 15 minutes",
+      "when": "Effective RPO is 'Near-zero' or '<15 minutes'",
+      "addControls": ["RES.DATA.REPLICATION"],
+      "addPatterns": ["DATA-03"],
+      "neverRaisesRung": true,
+      "basis": [
+        { "ref": "SRC-AWS-REL13", "passage": "Warm standby: Data is replicated and live in the recovery Region.", "status": "V" },
+        { "ref": "SRC-AZ-RE09", "passage": "Synchronous replication ... ensuring zero data loss; asynchronous replication ... allowing for some data loss", "status": "V" }
+      ]
+    }
+  ],
+  "modifiers": [
+    {
+      "id": "MOD-CYBER",
+      "name": "Cyber exposure of recovery assets",
+      "when": "EX-08 is 'Yes' or 'Unknown', or 'No - isolated by design, not tested'; or AF-CY-01 is not 'No'; or AF-CY-04 is not 'Yes, successfully'",
+      "addControls": ["RES.CYBER.ISOLATION", "RES.BACKUP.IMMUTABLE", "RES.CYBER.CLEANROOM"],
+      "addPatterns": ["CYBER-01", "DATA-01", "DATA-02", "CYBER-03"],
+      "finding": "G-05 Cyber recovery gap (Critical) when EX-08 is 'Yes' or 'Unknown'; High when isolated by design but not tested.",
+      "neverRaisesRung": true,
+      "basis": [
+        { "ref": "SRC-DORA-12", "passage": "Art. 12(3): restore on ICT systems that are physically and logically segregated from the source ICT system", "status": "S" },
+        { "ref": "SRC-NYDFS-50016", "passage": "500.16(e): backups adequately protected from unauthorized alterations or destruction", "status": "S" },
+        { "ref": "SRC-NYDFS-RANSOM", "passage": "at least one set of backups should be segregated from the network and offline", "status": "V" },
+        { "ref": "SRC-AWS-REL13", "passage": "replication ... will not protect you against data corruption or destruction", "status": "V" }
+      ]
+    },
+    {
+      "id": "MOD-IDENTITY",
+      "name": "Identity and control-plane recovery",
+      "when": "EX-19 is 'No', 'Unknown' or 'Yes, documented, not tested'",
+      "addControls": ["RES.IDENTITY.RECOVERY"],
+      "addPatterns": ["CYBER-02"],
+      "finding": "G-06 Identity recovery gap: Critical for 'No' or 'Unknown'; High for documented but not tested.",
+      "neverRaisesRung": true,
+      "basis": [
+        { "ref": "SRC-AZ-RE09", "passage": "Protect all DR assets, including plans, credentials, certificates, and scripts", "status": "V" },
+        { "ref": "SRC-AWS-REL13", "passage": "Common anti-pattern: dependency on control plane operations during recovery", "status": "V" }
+      ]
+    },
+    {
+      "id": "MOD-CONCENTRATION",
+      "name": "Concentration and correlated failure",
+      "when": "EX-11 is 'High concentration' or 'Unknown', or AF-DR-04 is 'Yes' or 'Unknown': correlation (G-04). EX-11 'Moderate concentration': concentration only (R9 decision 6).",
+      "addControls": ["RES.DR.SEPARATION", "RES.TP.CONCENTRATION"],
+      "addPatterns": ["TP-05", "TP-03", "INF-03", "INF-04"],
+      "finding": "G-04 Recovery-production correlation (Critical) for high or unknown; G-08 Third-party concentration (High) for moderate.",
+      "neverRaisesRung": true,
+      "basis": [
+        { "ref": "SRC-MAS-BCM", "passage": "Section 5 Concentration Risk", "status": "V" },
+        { "ref": "SRC-AZ-DRGUIDE", "passage": "Shared service dependencies can break your chain.", "status": "V" }
+      ]
+    },
+    {
+      "id": "MOD-DEPENDENCY",
+      "name": "Dependency mapping and recovery order",
+      "when": "EX-05 is not 'Yes, current and validated', or AF-DR-04 is 'Partially'",
+      "addControls": ["RES.DEPENDENCY.MAP", "RES.DR.ORCHESTRATION"],
+      "addPatterns": ["DR-07", "DR-08", "APP-04"],
+      "finding": "G-07 Dependency mapping gap (High).",
+      "neverRaisesRung": true,
+      "basis": [
+        { "ref": "SRC-MAS-BCM", "passage": "4.1: identify and map the end-to-end dependencies ... that support each critical business service", "status": "V" },
+        { "ref": "SRC-PRA-SS121", "passage": "5.9: update their mapping annually at a minimum", "status": "V" }
+      ]
+    },
+    {
+      "id": "MOD-THIRD-PARTY",
+      "name": "Critical third party without an alternative",
+      "when": "EX-10 is 'Yes, with no viable alternative' or 'Unknown'; or EXIT-01 is not 'Yes, partial migration or substitution rehearsed'",
+      "addControls": ["RES.TP.EXIT", "RES.TP.CONTINUITY"],
+      "addPatterns": ["TP-02", "TP-04", "BCP-05"],
+      "neverRaisesRung": true,
+      "basis": [
+        { "ref": "SRC-APRA-CPS230", "passage": "56: ensure it can conduct an orderly exit from the arrangement if needed", "status": "V" },
+        { "ref": "SRC-DORA-28", "passage": "Art. 28(8): exit plans shall be comprehensive, documented ... sufficiently tested and reviewed periodically", "status": "S" }
+      ]
+    },
+    {
+      "id": "MOD-SAAS",
+      "name": "SaaS data",
+      "when": "EX-18 includes 'SaaS' and SAAS-01 is not 'Yes, independent backup, restore tested'",
+      "addControls": ["RES.SAAS.BACKUP"],
+      "addPatterns": ["APP-05"],
+      "neverRaisesRung": true,
+      "basis": [
+        { "ref": "SRC-MS-SHARED", "passage": "Regardless of the type of deployment, you always retain ... Data: You're responsible for your data", "status": "V" }
+      ]
+    }
+  ],
+  "invariants": [
+    "Monotonic: a stricter RTO or RPO answer never yields a lower rung (checked over the full grid, RQ3 gate).",
+    "Modifiers, evidence, criticality, cyber exposure, concentration and environments never change the rung; they add controls and findings.",
+    "Only a recorded requirement floor or consistency rule changes the effective requirement, and the decision log names it with its article.",
+    "Unknown or unanswered RTO or RPO withholds the rung for that service; it is never inferred.",
+    "DR-05 is never the recommended rung; it is offered beside DR-04 only when RTO is under 15 minutes and RPO is near-zero."
+  ],
+  "grid": {
+    "rtoColumns": ["<15 minutes", "15-60 minutes", "1-4 hours", "4-24 hours", ">24 hours"],
+    "rows": [
+      { "rpo": "Near-zero", "rungs": ["DR-04", "DR-03", "DR-03", "DR-03", "DR-03"], "businessChoice": ["DR-05", null, null, null, null] },
+      { "rpo": "<15 minutes", "rungs": ["DR-04", "DR-03", "DR-03", "DR-03", "DR-03"] },
+      { "rpo": "15-60 minutes", "rungs": ["DR-04", "DR-03", "DR-02", "DR-02", "DR-02"] },
+      { "rpo": "1-4 hours", "rungs": ["DR-04", "DR-03", "DR-02", "DR-01", "DR-01"] },
+      { "rpo": "4-24 hours", "rungs": ["DR-04", "DR-03", "DR-02", "DR-01", "DR-01"] },
+      { "rpo": ">24 hours", "rungs": ["DR-04", "DR-03", "DR-02", "DR-01", "DR-01"] }
+    ]
+  },
+  "sources": [
+    { "id": "SRC-AWS-REL13", "title": "AWS Well-Architected Framework, Reliability pillar, REL13-BP02 Use defined recovery strategies to meet the recovery objectives", "url": "https://docs.aws.amazon.com/wellarchitected/latest/reliability-pillar/rel_planning_for_recovery_disaster_recovery.html", "checked": "2026-10-27", "status": "V" },
+    { "id": "SRC-AWS-DRWP", "title": "AWS whitepaper, Disaster Recovery of Workloads on AWS: Disaster recovery options in the cloud", "url": "https://docs.aws.amazon.com/whitepapers/latest/disaster-recovery-workloads-on-aws/disaster-recovery-options-in-the-cloud.html", "checked": "2026-10-27", "status": "V", "note": "Verified in VALIDATION.md rows 11-12 and 20 the same day." },
+    { "id": "SRC-AZ-RE09", "title": "Microsoft Azure Well-Architected Framework, RE:09 Architecture strategies for disaster recovery", "url": "https://learn.microsoft.com/en-us/azure/well-architected/reliability/disaster-recovery", "checked": "2026-10-27", "status": "V", "pageDate": "updated 20 Aug 2026" },
+    { "id": "SRC-AZ-DRGUIDE", "title": "Microsoft Azure Well-Architected Framework, Develop a disaster recovery plan for multi-region deployments (criticality tiers 0-3 and recovery strategies)", "url": "https://learn.microsoft.com/en-us/azure/well-architected/design-guides/disaster-recovery", "checked": "2026-10-27", "status": "V", "pageDate": "updated 30 Jul 2026" },
+    { "id": "SRC-GCP-DRPLAN", "title": "Google Cloud Architecture Center, Disaster recovery planning guide (cold, warm and hot patterns)", "url": "https://docs.cloud.google.com/architecture/dr-scenarios-planning-guide", "checked": "2026-10-27", "status": "V", "pageDate": "last updated 5 Jul 2024", "note": "No numeric RTO or RPO bands are given for the patterns." },
+    { "id": "SRC-GCP-DRAPPS", "title": "Google Cloud Architecture Center, Disaster recovery scenarios for applications", "url": "https://docs.cloud.google.com/architecture/dr-scenarios-for-applications", "checked": "2026-10-27", "status": "V", "pageDate": "last updated 5 Aug 2024", "note": "Relative statements only ('The smaller the RTO and RPO value, the higher the costs')." },
+    { "id": "SRC-NIST-80034", "title": "NIST SP 800-34 Rev. 1, Contingency Planning Guide for Federal Information Systems", "url": "https://csrc.nist.gov/pubs/sp/800/34/r1/upd1/final", "checked": "2026-10-27", "status": "P" },
+    { "id": "SRC-MAS-N09", "title": "MAS Notice FSM-N09 Technology Risk Management (finance companies), effective 10 May 2024", "url": "https://www.mas.gov.sg/-/media/mas-media-library/regulation/notices/trpd/notice-fsm-n09/mas-notice-fsm-n09.pdf", "checked": "2026-10-27", "status": "V" },
+    { "id": "SRC-MAS-MR-2023", "title": "MAS response to media queries on DBS Bank and Citibank (19 Oct 2023)", "url": "https://www.mas.gov.sg/news/media-releases/2023/mas-response-to-media-queries-on-dbs-bank-and-citibank", "checked": "2026-10-27", "status": "V" },
+    { "id": "SRC-MAS-BCM", "title": "MAS Guidelines on Business Continuity Management (June 2022)", "url": "https://www.mas.gov.sg/-/media/mas/regulations-and-financial-stability/regulatory-and-supervisory-framework/risk-management/bcm-guidelines/guidelines-on-bcm-june-2022.pdf", "checked": "2026-10-27", "status": "V" },
+    { "id": "SRC-APRA-CPS230", "title": "APRA Prudential Standard CPS 230 Operational Risk Management (commences 1 Jul 2025)", "url": "https://www.apra.gov.au/sites/default/files/2023-07/Prudential%20Standard%20CPS%20230%20Operational%20Risk%20Management%20-%20clean.pdf", "checked": "2026-10-27", "status": "V" },
+    { "id": "SRC-PRA-SS121", "title": "PRA SS1/21 Operational resilience: Impact tolerances for important business services (March 2022 version)", "url": "https://www.bankofengland.co.uk/-/media/boe/files/prudential-regulation/supervisory-statement/2021/ss121-march-22.pdf", "checked": "2026-10-27", "status": "V" },
+    { "id": "SRC-DORA-12", "title": "DORA, Regulation (EU) 2022/2554, Art. 12 (OJ text reproduced by Springlex; EUR-Lex fetch returned an empty page)", "url": "https://www.springlex.eu/en/packages/dora/dora-regulation/article-12/", "checked": "2026-10-27", "status": "S", "note": "Official: https://eur-lex.europa.eu/eli/reg/2022/2554/oj" },
+    { "id": "SRC-DORA-28", "title": "DORA, Art. 28(8) (OJ text reproduced by Springlex)", "url": "https://www.springlex.eu/en/packages/dora/dora-regulation/article-28/", "checked": "2026-10-27", "status": "S" },
+    { "id": "SRC-NYDFS-50016", "title": "23 NYCRR 500.16 (Cornell LII reproduction)", "url": "https://www.law.cornell.edu/regulations/new-york/23-NYCRR-500.16", "checked": "2026-10-27", "status": "S" },
+    { "id": "SRC-NYDFS-RANSOM", "title": "NYDFS Industry Letter, Ransomware Guidance (30 Jun 2021)", "url": "https://www.dfs.ny.gov/industry_guidance/industry_letters/il20210630_ransomware_guidance", "checked": "2026-10-27", "status": "V" },
+    { "id": "SRC-MS-SHARED", "title": "Microsoft Learn, Shared responsibility in the cloud", "url": "https://learn.microsoft.com/en-us/azure/security/fundamentals/shared-responsibility", "checked": "2026-10-27", "status": "V", "pageDate": "updated 24 Aug 2026" }
+  ]
+}
