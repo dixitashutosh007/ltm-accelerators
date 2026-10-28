@@ -1,6 +1,6 @@
 {
   "version": "0.1.0",
-  "updated": "2026-10-27",
+  "updated": "2026-10-28",
   "claims": [
     {
       "id": "CLM-SOV-001",
@@ -11958,6 +11958,2881 @@
       "nextReview": "2027-04-26",
       "statement": "LTM offering catalogue for Sovereign IQ: generic offerings typed advisory, implementation or advisory then transformation, each with a purpose and an execution outline, mapped from findings and from the placement matrix (rungs R1-R2 to a sovereign landing zone, R3-R4 to migration to a sovereign platform); exit and concentration findings route to Resilience IQ. Indicative scope ranges are LTM heuristics shown only in the consultant SOW draft (D7).",
       "basisNote": "Practice judgement for scoping; ranges to be agreed per engagement."
+    },
+    {
+      "id": "CLM-RES-001",
+      "accelerators": [
+        "resilience-iq"
+      ],
+      "kind": "provider",
+      "jurisdiction": "global",
+      "statement": "AWS lists its multi-Region disaster recovery strategies (backup and restore, pilot light, warm standby, multi-site active/active) in increasing order of cost and complexity and decreasing order of RTO and RPO, and advises avoiding a strategy more stringent than the business needs, as this incurs unnecessary costs.",
+      "source": {
+        "url": "https://docs.aws.amazon.com/wellarchitected/latest/reliability-pillar/rel_planning_for_recovery_disaster_recovery.html",
+        "title": "AWS Well-Architected Framework, Reliability pillar, REL13-BP02 Use defined recovery strategies to meet the recovery objectives",
+        "publisher": "Amazon Web Services",
+        "article": "REL13-BP02"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-28",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "resilience-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-28",
+      "nextReview": "2027-10-28",
+      "notes": "Read on 28 Oct 2026 (page fetched directly). Basis of the ladder rule (lowest-cost pattern that meets both objectives) and of the cost-order labels (A24)."
+    },
+    {
+      "id": "CLM-RES-002",
+      "accelerators": [
+        "resilience-iq"
+      ],
+      "kind": "provider",
+      "jurisdiction": "global",
+      "statement": "AWS: backup and restore has RPO in hours and RTO in 24 hours or less; automated or continuous backups permit point-in-time recovery, which can lower RPO to as low as 5 minutes in some cases.",
+      "source": {
+        "url": "https://docs.aws.amazon.com/wellarchitected/latest/reliability-pillar/rel_planning_for_recovery_disaster_recovery.html",
+        "title": "AWS Well-Architected Framework, Reliability pillar, REL13-BP02 Use defined recovery strategies to meet the recovery objectives",
+        "publisher": "Amazon Web Services",
+        "article": "REL13-BP02"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-28",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "resilience-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-28",
+      "nextReview": "2027-10-28",
+      "notes": "Quoted from the page on 28 Oct 2026. The \"in some cases\" qualifier is why the ladder does not place a 15-60 minute RPO on backup and restore."
+    },
+    {
+      "id": "CLM-RES-003",
+      "accelerators": [
+        "resilience-iq"
+      ],
+      "kind": "provider",
+      "jurisdiction": "global",
+      "statement": "AWS: pilot light has RPO in minutes and RTO in tens of minutes; a copy of the core workload infrastructure is provisioned in the recovery Region with data replicated, and application servers are created when needed.",
+      "source": {
+        "url": "https://docs.aws.amazon.com/wellarchitected/latest/reliability-pillar/rel_planning_for_recovery_disaster_recovery.html",
+        "title": "AWS Well-Architected Framework, Reliability pillar, REL13-BP02 Use defined recovery strategies to meet the recovery objectives",
+        "publisher": "Amazon Web Services",
+        "article": "REL13-BP02"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-28",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "resilience-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-28",
+      "nextReview": "2027-10-28",
+      "notes": "Quoted from the page on 28 Oct 2026."
+    },
+    {
+      "id": "CLM-RES-004",
+      "accelerators": [
+        "resilience-iq"
+      ],
+      "kind": "provider",
+      "jurisdiction": "global",
+      "statement": "AWS: warm standby keeps a scaled-down but fully functional copy always running, with RPO in seconds and RTO in minutes; the more scaled-up the warm standby, the lower the RTO and control-plane reliance, and when fully scaled it is known as hot standby.",
+      "source": {
+        "url": "https://docs.aws.amazon.com/wellarchitected/latest/reliability-pillar/rel_planning_for_recovery_disaster_recovery.html",
+        "title": "AWS Well-Architected Framework, Reliability pillar, REL13-BP02 Use defined recovery strategies to meet the recovery objectives",
+        "publisher": "Amazon Web Services",
+        "article": "REL13-BP02"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-28",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "resilience-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-28",
+      "nextReview": "2027-10-28",
+      "notes": "Quoted from the page on 28 Oct 2026 (the page reads \"When fully scales this is known as hot standby\"). Basis of the warm standby and hot standby rungs."
+    },
+    {
+      "id": "CLM-RES-005",
+      "accelerators": [
+        "resilience-iq"
+      ],
+      "kind": "provider",
+      "jurisdiction": "global",
+      "statement": "AWS: multi-Region (multi-site) active-active has RPO near zero and RTO potentially zero; it is the most operationally complex DR strategy and should only be selected when business requirements necessitate it.",
+      "source": {
+        "url": "https://docs.aws.amazon.com/wellarchitected/latest/reliability-pillar/rel_planning_for_recovery_disaster_recovery.html",
+        "title": "AWS Well-Architected Framework, Reliability pillar, REL13-BP02 Use defined recovery strategies to meet the recovery objectives",
+        "publisher": "Amazon Web Services",
+        "article": "REL13-BP02"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-28",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "resilience-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-28",
+      "nextReview": "2027-10-28",
+      "notes": "Quoted on 28 Oct 2026. Basis of offering active-active only as a business choice beside hot standby (D3)."
+    },
+    {
+      "id": "CLM-RES-006",
+      "accelerators": [
+        "resilience-iq"
+      ],
+      "kind": "provider",
+      "jurisdiction": "global",
+      "statement": "AWS: data replication protects against some types of disaster, but it will not protect against data corruption or destruction unless the solution also includes options for point-in-time recovery.",
+      "source": {
+        "url": "https://docs.aws.amazon.com/wellarchitected/latest/reliability-pillar/rel_planning_for_recovery_disaster_recovery.html",
+        "title": "AWS Well-Architected Framework, Reliability pillar, REL13-BP02 Use defined recovery strategies to meet the recovery objectives",
+        "publisher": "Amazon Web Services",
+        "article": "REL13-BP02"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-28",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "resilience-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-28",
+      "nextReview": "2027-10-28",
+      "notes": "Quoted on 28 Oct 2026. Basis of \"point-in-time recovery for every rung\" and of \"replication is never a cyber-recovery control\"."
+    },
+    {
+      "id": "CLM-RES-007",
+      "accelerators": [
+        "resilience-iq"
+      ],
+      "kind": "provider",
+      "jurisdiction": "global",
+      "statement": "AWS lists dependency on control plane operations during recovery as a common anti-pattern for disaster recovery.",
+      "source": {
+        "url": "https://docs.aws.amazon.com/wellarchitected/latest/reliability-pillar/rel_planning_for_recovery_disaster_recovery.html",
+        "title": "AWS Well-Architected Framework, Reliability pillar, REL13-BP02 Use defined recovery strategies to meet the recovery objectives",
+        "publisher": "Amazon Web Services",
+        "article": "REL13-BP02, common anti-patterns"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-28",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "resilience-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-28",
+      "nextReview": "2027-10-28",
+      "notes": "Phrase found on the page on 28 Oct 2026. Basis of the identity and control-plane modifier."
+    },
+    {
+      "id": "CLM-RES-008",
+      "accelerators": [
+        "resilience-iq"
+      ],
+      "kind": "provider",
+      "jurisdiction": "global",
+      "statement": "AWS: Elastic Disaster Recovery takes the pilot light approach and can offer RPO and RTO targets similar to warm standby (continual data protection with RPO measured in seconds) while keeping the low cost of pilot light; it is a platform option under pilot light and warm standby, not under backup and restore or hot standby.",
+      "source": {
+        "url": "https://docs.aws.amazon.com/wellarchitected/latest/reliability-pillar/rel_planning_for_recovery_disaster_recovery.html",
+        "title": "AWS Well-Architected Framework, Reliability pillar, REL13-BP02 Use defined recovery strategies to meet the recovery objectives",
+        "publisher": "Amazon Web Services",
+        "article": "REL13-BP02"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-28",
+      "volatile": true,
+      "clientVisible": true,
+      "owner": "resilience-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-28",
+      "nextReview": "2027-01-26",
+      "notes": "Provider feature name and positioning (90-day review, D14). Corrects validation rows 20-21 (applied in RQ0). The placement under DR-02 and DR-03 is an LTM mapping of the AWS text."
+    },
+    {
+      "id": "CLM-RES-009",
+      "accelerators": [
+        "resilience-iq"
+      ],
+      "kind": "provider",
+      "jurisdiction": "global",
+      "statement": "Azure Well-Architected sets four disaster recovery tiers: Tier 0 mission critical (RTO in seconds, RPO approaching zero; active-active multi-region typically necessary), Tier 1 business critical (RTO and RPO in minutes), Tier 2 business operational (RTO and RPO in hours) and Tier 3 administrative (RTO from hours to days, RPO in hours).",
+      "source": {
+        "url": "https://learn.microsoft.com/en-us/azure/well-architected/design-guides/disaster-recovery",
+        "title": "Azure Well-Architected Framework, Develop a disaster recovery plan for multi-region deployments (updated 30 Jul 2026)",
+        "publisher": "Microsoft",
+        "article": "Criticality tiers"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-28",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "resilience-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-28",
+      "nextReview": "2027-10-28",
+      "notes": "Quoted on 28 Oct 2026 (page updated 30 Jul 2026)."
+    },
+    {
+      "id": "CLM-RES-010",
+      "accelerators": [
+        "resilience-iq"
+      ],
+      "kind": "provider",
+      "jurisdiction": "global",
+      "statement": "Azure terms: \"active-active (hot standby)\" means two or more environments serving live traffic; \"active-passive (cold standby)\" keeps the secondary region's compute stopped until needed (ideal for Tier 2 or Tier 3); \"active-passive (warm standby)\" is a partially provisioned environment that scales up.",
+      "source": {
+        "url": "https://learn.microsoft.com/en-us/azure/well-architected/design-guides/disaster-recovery",
+        "title": "Azure Well-Architected Framework, Develop a disaster recovery plan for multi-region deployments (updated 30 Jul 2026)",
+        "publisher": "Microsoft",
+        "article": "Key terms; recovery strategy for active-passive (cold standby)"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-28",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "resilience-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-28",
+      "nextReview": "2027-10-28",
+      "notes": "Quoted on 28 Oct 2026. Azure \"hot standby\" is active-active; AWS \"hot standby\" is active-passive at full capacity. The report names each pattern in words for this reason."
+    },
+    {
+      "id": "CLM-RES-011",
+      "accelerators": [
+        "resilience-iq"
+      ],
+      "kind": "provider",
+      "jurisdiction": "global",
+      "statement": "Azure: backup and restore strategies must be part of all recovery strategies, as the foundation for every tier.",
+      "source": {
+        "url": "https://learn.microsoft.com/en-us/azure/well-architected/design-guides/disaster-recovery",
+        "title": "Azure Well-Architected Framework, Develop a disaster recovery plan for multi-region deployments (updated 30 Jul 2026)",
+        "publisher": "Microsoft",
+        "article": "Recovery strategy for backup and restore"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-28",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "resilience-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-28",
+      "nextReview": "2027-10-28",
+      "notes": "Quoted on 28 Oct 2026."
+    },
+    {
+      "id": "CLM-RES-012",
+      "accelerators": [
+        "resilience-iq"
+      ],
+      "kind": "provider",
+      "jurisdiction": "global",
+      "statement": "Azure: synchronous replication writes changes to multiple locations at once and ensures zero data loss at a possible latency cost; asynchronous replication allows some data loss. Point-in-time recovery restores data to a specific moment, typically to recover from corruption or accidental change.",
+      "source": {
+        "url": "https://learn.microsoft.com/en-us/azure/well-architected/reliability/disaster-recovery",
+        "title": "Azure Well-Architected Framework, RE:09 Architecture strategies for disaster recovery (updated 20 Aug 2026)",
+        "publisher": "Microsoft",
+        "article": "Definitions"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-28",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "resilience-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-28",
+      "nextReview": "2027-10-28",
+      "notes": "Quoted on 28 Oct 2026 (page updated 20 Aug 2026)."
+    },
+    {
+      "id": "CLM-RES-013",
+      "accelerators": [
+        "resilience-iq"
+      ],
+      "kind": "provider",
+      "jurisdiction": "global",
+      "statement": "Azure: protect all disaster recovery assets, including plans, credentials, certificates and scripts, replicate them across regions, and keep offline or printed copies for worst-case scenarios.",
+      "source": {
+        "url": "https://learn.microsoft.com/en-us/azure/well-architected/reliability/disaster-recovery",
+        "title": "Azure Well-Architected Framework, RE:09 Architecture strategies for disaster recovery (updated 20 Aug 2026)",
+        "publisher": "Microsoft",
+        "article": "Recommendations"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-28",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "resilience-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-28",
+      "nextReview": "2027-10-28",
+      "notes": "Quoted on 28 Oct 2026. Basis of identity and control-plane recovery and of break-glass access."
+    },
+    {
+      "id": "CLM-RES-014",
+      "accelerators": [
+        "resilience-iq"
+      ],
+      "kind": "provider",
+      "jurisdiction": "global",
+      "statement": "Google Cloud describes disaster recovery patterns as cold, warm or hot, indicating how readily a system can recover; the choice is dictated by budget and RTO and RPO values, and Google gives no numeric RTO or RPO bands for the patterns (for example, a large RTO and a cold pattern suit historical data).",
+      "source": {
+        "url": "https://docs.cloud.google.com/architecture/dr-scenarios-planning-guide",
+        "title": "Google Cloud Architecture Center, Disaster recovery planning guide (last updated 5 Jul 2024)",
+        "publisher": "Google Cloud",
+        "article": "DR patterns"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-28",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "resilience-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-28",
+      "nextReview": "2027-10-28",
+      "notes": "Quoted on 28 Oct 2026 from the planning guide (last updated 5 Jul 2024) and the applications scenarios page."
+    },
+    {
+      "id": "CLM-RES-015",
+      "accelerators": [
+        "resilience-iq"
+      ],
+      "kind": "heuristic",
+      "jurisdiction": "global",
+      "statement": "LTM mapping of provider terms to the five recovery patterns: Google cold = backup and restore; Google warm = pilot light (lower end) or warm standby; Google hot = hot standby or active-active; Azure active-passive cold standby = pilot light; Azure active-passive warm standby = warm standby; Azure has no separately named full-capacity active-passive pattern. The report describes each pattern in words beside its name.",
+      "source": {
+        "url": "https://github.com/dixitashutosh007/ltm-accelerators/blob/main/docs/cio-readiness/resilience-iq/design/DESIGN.md",
+        "title": "LTM Resilience IQ RQ1 design pack (approved by the product owner with defaults Q1-Q15, 28 Oct 2026)",
+        "publisher": "LTM",
+        "article": "4.1, 4.7"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-28",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "resilience-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-28",
+      "nextReview": "2027-04-28",
+      "basisNote": "Google gives no numeric bands and Azure uses \"hot standby\" for active-active, so a one-to-one mapping needs a judgement. Sensitivity: wording only; the recommended rung is set by the client's RTO and RPO, not by provider names.",
+      "notes": "LTM heuristic, not a market fact or a regulatory requirement. Verification V means the statement matches the owner-approved design pack (the source); the report shows it in the assumption register as an LTM heuristic with this reasoning. Calibrated on the reference scenarios in RQ5."
+    },
+    {
+      "id": "CLM-RES-016",
+      "accelerators": [
+        "resilience-iq"
+      ],
+      "kind": "framework",
+      "jurisdiction": "global",
+      "statement": "NIST SP 800-34 Rev. 1 describes alternate sites as cold (space and infrastructure only), warm (partially equipped), hot (sized and configured with hardware, infrastructure and support personnel) and mirrored (fully redundant with real-time mirroring; the most expensive, near 100% availability), and maps FIPS 199 low, moderate and high availability impact to relocate or cold site, cold or warm site, and hot site.",
+      "source": {
+        "url": "https://nvlpubs.nist.gov/nistpubs/Legacy/SP/nistspecialpublication800-34r1.pdf",
+        "title": "NIST SP 800-34 Rev. 1, Contingency Planning Guide for Federal Information Systems",
+        "publisher": "NIST",
+        "secondaryUrls": [
+          "https://csrc.nist.gov/pubs/sp/800/34/r1/upd1/final"
+        ],
+        "article": "3.4.3 Alternate Sites; Table 3-2"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-28",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "resilience-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-28",
+      "nextReview": "2027-10-28",
+      "notes": "Read in the NIST PDF on 28 Oct 2026. Used for the on-premises column of the pattern table."
+    },
+    {
+      "id": "CLM-RES-017",
+      "accelerators": [
+        "resilience-iq"
+      ],
+      "kind": "heuristic",
+      "jurisdiction": "global",
+      "statement": "Recommended recovery pattern for a service = the higher of the pattern its recovery time objective needs and the pattern its recovery point objective needs: the lowest-cost pattern that meets both. The rung moves only with the RTO and RPO (after any recorded floor or consistency rule).",
+      "source": {
+        "url": "https://github.com/dixitashutosh007/ltm-accelerators/blob/main/docs/cio-readiness/resilience-iq/design/DESIGN.md",
+        "title": "LTM Resilience IQ RQ1 design pack (approved by the product owner with defaults Q1-Q15, 28 Oct 2026)",
+        "publisher": "LTM",
+        "article": "4.3; decision-matrix.json selection"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-28",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "resilience-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-28",
+      "nextReview": "2027-04-28",
+      "basisNote": "Follows AWS's advice to avoid a strategy more stringent than needed and its cost order of the patterns. Monotonic by construction (a stricter answer never lowers the rung), checked over the full grid. Sensitivity: changes the recommended pattern for every service.",
+      "notes": "LTM heuristic, not a market fact or a regulatory requirement. Verification V means the statement matches the owner-approved design pack (the source); the report shows it in the assumption register as an LTM heuristic with this reasoning. Calibrated on the reference scenarios in RQ5."
+    },
+    {
+      "id": "CLM-RES-018",
+      "accelerators": [
+        "resilience-iq"
+      ],
+      "kind": "heuristic",
+      "jurisdiction": "global",
+      "statement": "An RTO under 15 minutes needs at least hot standby (a full-size copy ready to take over).",
+      "source": {
+        "url": "https://github.com/dixitashutosh007/ltm-accelerators/blob/main/docs/cio-readiness/resilience-iq/design/DESIGN.md",
+        "title": "LTM Resilience IQ RQ1 design pack (approved by the product owner with defaults Q1-Q15, 28 Oct 2026)",
+        "publisher": "LTM",
+        "article": "4.2 (RTO under 15 minutes)"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-28",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "resilience-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-28",
+      "nextReview": "2027-04-28",
+      "basisNote": "AWS: the more scaled-up the warm standby, the lower the RTO. A reduced standby cannot be relied on to scale up in under 15 minutes, so a full-capacity standby is the lowest pattern that meets it. Sensitivity: one rung up from warm standby for every service with this RTO.",
+      "notes": "LTM heuristic, not a market fact or a regulatory requirement. Verification V means the statement matches the owner-approved design pack (the source); the report shows it in the assumption register as an LTM heuristic with this reasoning. Calibrated on the reference scenarios in RQ5."
+    },
+    {
+      "id": "CLM-RES-019",
+      "accelerators": [
+        "resilience-iq"
+      ],
+      "kind": "heuristic",
+      "jurisdiction": "global",
+      "statement": "An RTO of 15-60 minutes needs at least warm standby; pilot light is shown as the alternative one rung down, with the risk that its \"tens of minutes\" may not meet the lower edge of the band.",
+      "source": {
+        "url": "https://github.com/dixitashutosh007/ltm-accelerators/blob/main/docs/cio-readiness/resilience-iq/design/DESIGN.md",
+        "title": "LTM Resilience IQ RQ1 design pack (approved by the product owner with defaults Q1-Q15, 28 Oct 2026)",
+        "publisher": "LTM",
+        "article": "4.2 (RTO 15-60 minutes)"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-28",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "resilience-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-28",
+      "nextReview": "2027-04-28",
+      "basisNote": "AWS: warm standby RTO in minutes; pilot light RTO in tens of minutes, which overlaps the 15-minute edge. Sensitivity: one rung.",
+      "notes": "LTM heuristic, not a market fact or a regulatory requirement. Verification V means the statement matches the owner-approved design pack (the source); the report shows it in the assumption register as an LTM heuristic with this reasoning. Calibrated on the reference scenarios in RQ5."
+    },
+    {
+      "id": "CLM-RES-020",
+      "accelerators": [
+        "resilience-iq"
+      ],
+      "kind": "heuristic",
+      "jurisdiction": "global",
+      "statement": "An RTO of 1-4 hours needs at least pilot light; backup and restore is not relied on below four hours.",
+      "source": {
+        "url": "https://github.com/dixitashutosh007/ltm-accelerators/blob/main/docs/cio-readiness/resilience-iq/design/DESIGN.md",
+        "title": "LTM Resilience IQ RQ1 design pack (approved by the product owner with defaults Q1-Q15, 28 Oct 2026)",
+        "publisher": "LTM",
+        "article": "4.2 (RTO 1-4 hours)"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-28",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "resilience-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-28",
+      "nextReview": "2027-04-28",
+      "basisNote": "AWS: pilot light RTO in tens of minutes; Azure Tier 2 RTO in hours. Backup and restore is stated only as \"24 hours or less\" with no lower bound, and restores at scale can take more than a day (reference scenario RS3). Sensitivity: one rung.",
+      "notes": "LTM heuristic, not a market fact or a regulatory requirement. Verification V means the statement matches the owner-approved design pack (the source); the report shows it in the assumption register as an LTM heuristic with this reasoning. Calibrated on the reference scenarios in RQ5."
+    },
+    {
+      "id": "CLM-RES-021",
+      "accelerators": [
+        "resilience-iq"
+      ],
+      "kind": "heuristic",
+      "jurisdiction": "global",
+      "statement": "An RTO of 4-24 hours, or longer than 24 hours, is met by backup and restore unless the RPO needs more.",
+      "source": {
+        "url": "https://github.com/dixitashutosh007/ltm-accelerators/blob/main/docs/cio-readiness/resilience-iq/design/DESIGN.md",
+        "title": "LTM Resilience IQ RQ1 design pack (approved by the product owner with defaults Q1-Q15, 28 Oct 2026)",
+        "publisher": "LTM",
+        "article": "4.2 (RTO 4-24 hours or longer)"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-28",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "resilience-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-28",
+      "nextReview": "2027-04-28",
+      "basisNote": "AWS: backup and restore RTO in 24 hours or less; Azure Tier 3 RTO from hours to days. Sensitivity: none below the AWS bound; the RPO can still raise the rung.",
+      "notes": "LTM heuristic, not a market fact or a regulatory requirement. Verification V means the statement matches the owner-approved design pack (the source); the report shows it in the assumption register as an LTM heuristic with this reasoning. Calibrated on the reference scenarios in RQ5."
+    },
+    {
+      "id": "CLM-RES-022",
+      "accelerators": [
+        "resilience-iq"
+      ],
+      "kind": "heuristic",
+      "jurisdiction": "global",
+      "statement": "RPO rungs: near-zero or under 15 minutes needs at least warm standby with continuous replication (synchronous where zero loss is required); 15-60 minutes needs at least pilot light; one hour or more is met by backup and restore. Near-zero RPO alone never requires active-active.",
+      "source": {
+        "url": "https://github.com/dixitashutosh007/ltm-accelerators/blob/main/docs/cio-readiness/resilience-iq/design/DESIGN.md",
+        "title": "LTM Resilience IQ RQ1 design pack (approved by the product owner with defaults Q1-Q15, 28 Oct 2026)",
+        "publisher": "LTM",
+        "article": "4.2 (RPO bands)"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-28",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "resilience-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-28",
+      "nextReview": "2027-04-28",
+      "basisNote": "AWS: warm standby RPO in seconds, pilot light RPO in minutes, backup and restore RPO in hours; Azure: synchronous replication for zero data loss. Pilot light's \"minutes\" overlaps the 15-minute edge, so warm standby below it. R9 decision 4 superseded by D3. Sensitivity: one rung.",
+      "notes": "LTM heuristic, not a market fact or a regulatory requirement. Verification V means the statement matches the owner-approved design pack (the source); the report shows it in the assumption register as an LTM heuristic with this reasoning. Calibrated on the reference scenarios in RQ5."
+    },
+    {
+      "id": "CLM-RES-023",
+      "accelerators": [
+        "resilience-iq"
+      ],
+      "kind": "heuristic",
+      "jurisdiction": "global",
+      "statement": "Active-active is never the recommended pattern. Where the RTO is under 15 minutes and the RPO is near-zero, hot standby is recommended and active-active is shown beside it as a business choice: it removes the failover step at the highest cost and operational complexity.",
+      "source": {
+        "url": "https://github.com/dixitashutosh007/ltm-accelerators/blob/main/docs/cio-readiness/resilience-iq/design/DESIGN.md",
+        "title": "LTM Resilience IQ RQ1 design pack (approved by the product owner with defaults Q1-Q15, 28 Oct 2026)",
+        "publisher": "LTM",
+        "article": "4.4; decision-matrix.json businessChoices"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-28",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "resilience-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-28",
+      "nextReview": "2027-04-28",
+      "basisNote": "AWS: active-active should only be selected when business requirements necessitate it; Azure: typically necessary for Tier 0 (RTO in seconds). Owner decision D3; open question Q9 kept for RQ5. Sensitivity: the client's choice is recorded as a decision finding.",
+      "notes": "LTM heuristic, not a market fact or a regulatory requirement. Verification V means the statement matches the owner-approved design pack (the source); the report shows it in the assumption register as an LTM heuristic with this reasoning. Calibrated on the reference scenarios in RQ5."
+    },
+    {
+      "id": "CLM-RES-024",
+      "accelerators": [
+        "resilience-iq"
+      ],
+      "kind": "heuristic",
+      "jurisdiction": "global",
+      "statement": "Cyber exposure, identity and control-plane exposure, concentration, dependencies, critical third parties and SaaS data add controls and findings; none of them changes the recommended pattern.",
+      "source": {
+        "url": "https://github.com/dixitashutosh007/ltm-accelerators/blob/main/docs/cio-readiness/resilience-iq/design/DESIGN.md",
+        "title": "LTM Resilience IQ RQ1 design pack (approved by the product owner with defaults Q1-Q15, 28 Oct 2026)",
+        "publisher": "LTM",
+        "article": "5; decision-matrix.json modifiers"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-28",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "resilience-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-28",
+      "nextReview": "2027-04-28",
+      "basisNote": "Owner decision D3: the pattern answers the recovery-time and data-loss requirement; exposure is treated by controls (isolation, retention-locked backups, clean room, break-glass identity, separation, exit). Avoids inflating the pattern and its cost. Sensitivity: the control list, not the rung.",
+      "notes": "LTM heuristic, not a market fact or a regulatory requirement. Verification V means the statement matches the owner-approved design pack (the source); the report shows it in the assumption register as an LTM heuristic with this reasoning. Calibrated on the reference scenarios in RQ5."
+    },
+    {
+      "id": "CLM-RES-025",
+      "accelerators": [
+        "resilience-iq"
+      ],
+      "kind": "heuristic",
+      "jurisdiction": "global",
+      "statement": "Every recovery pattern includes tested point-in-time recovery; continuous data replication is added when the effective RPO is under 15 minutes or near-zero.",
+      "source": {
+        "url": "https://github.com/dixitashutosh007/ltm-accelerators/blob/main/docs/cio-readiness/resilience-iq/design/DESIGN.md",
+        "title": "LTM Resilience IQ RQ1 design pack (approved by the product owner with defaults Q1-Q15, 28 Oct 2026)",
+        "publisher": "LTM",
+        "article": "4.5; decision-matrix.json alwaysAdd"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-28",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "resilience-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-28",
+      "nextReview": "2027-04-28",
+      "basisNote": "AWS: replication will not protect against corruption or destruction without point-in-time recovery; Azure: backup and restore must be part of all recovery strategies. Sensitivity: adds two controls; never raises the rung.",
+      "notes": "LTM heuristic, not a market fact or a regulatory requirement. Verification V means the statement matches the owner-approved design pack (the source); the report shows it in the assumption register as an LTM heuristic with this reasoning. Calibrated on the reference scenarios in RQ5."
+    },
+    {
+      "id": "CLM-RES-026",
+      "accelerators": [
+        "resilience-iq"
+      ],
+      "kind": "heuristic",
+      "jurisdiction": "global",
+      "statement": "If a service's RTO allows a longer outage than its impact tolerance, or its RPO allows more data loss than its data-loss tolerance, the ladder uses the stricter value and raises a High conflict finding.",
+      "source": {
+        "url": "https://github.com/dixitashutosh007/ltm-accelerators/blob/main/docs/cio-readiness/resilience-iq/design/DESIGN.md",
+        "title": "LTM Resilience IQ RQ1 design pack (approved by the product owner with defaults Q1-Q15, 28 Oct 2026)",
+        "publisher": "LTM",
+        "article": "3 (consistency rules); Q1"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-28",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "resilience-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-28",
+      "nextReview": "2027-04-28",
+      "basisNote": "SS1/21 3.14: recovery time and recovery point objectives are set to enable delivery within the impact tolerance; MAS BCM 3.2: function RTOs must meet the SRTO. Owner default Q1. Sensitivity: can raise the rung for that service, and the decision log names the rule.",
+      "notes": "LTM heuristic, not a market fact or a regulatory requirement. Verification V means the statement matches the owner-approved design pack (the source); the report shows it in the assumption register as an LTM heuristic with this reasoning. Calibrated on the reference scenarios in RQ5."
+    },
+    {
+      "id": "CLM-RES-027",
+      "accelerators": [
+        "resilience-iq"
+      ],
+      "kind": "heuristic",
+      "jurisdiction": "global",
+      "statement": "If a service's RTO or RPO is Unknown, no recovery pattern is recommended for it, a Critical \"requirement not defined\" finding is raised, and the posture is shown as provisional; the pattern is never inferred from technology.",
+      "source": {
+        "url": "https://github.com/dixitashutosh007/ltm-accelerators/blob/main/docs/cio-readiness/resilience-iq/design/DESIGN.md",
+        "title": "LTM Resilience IQ RQ1 design pack (approved by the product owner with defaults Q1-Q15, 28 Oct 2026)",
+        "publisher": "LTM",
+        "article": "3 (Unknown); Q2"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-28",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "resilience-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-28",
+      "nextReview": "2027-04-28",
+      "basisNote": "Unknown counts as risk (R9 decision 1); validation row 33. Owner default Q2. Sensitivity: rung and impact withheld for that service.",
+      "notes": "LTM heuristic, not a market fact or a regulatory requirement. Verification V means the statement matches the owner-approved design pack (the source); the report shows it in the assumption register as an LTM heuristic with this reasoning. Calibrated on the reference scenarios in RQ5."
+    },
+    {
+      "id": "CLM-RES-028",
+      "accelerators": [
+        "resilience-iq"
+      ],
+      "kind": "provider",
+      "jurisdiction": "global",
+      "statement": "AWS Backup logically air-gapped vault: always locked with a vault lock in compliance mode; it can be integrated with multi-party approval so backups can be recovered even if the vault-owning account is inaccessible, and shared with other accounts through AWS Resource Access Manager for recovery or restore testing. The isolation is logical, not physical.",
+      "source": {
+        "url": "https://docs.aws.amazon.com/aws-backup/latest/devguide/logicallyairgappedvault.html",
+        "title": "AWS Backup Developer Guide, Logically air-gapped vault",
+        "publisher": "Amazon Web Services"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-28",
+      "volatile": true,
+      "clientVisible": true,
+      "owner": "resilience-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-28",
+      "nextReview": "2027-01-26",
+      "notes": "Quoted on 28 Oct 2026. \"The isolation is logical, not physical\" is LTM's reading of the product name and description, stated so a client does not read it as an offline copy."
+    },
+    {
+      "id": "CLM-RES-029",
+      "accelerators": [
+        "resilience-iq"
+      ],
+      "kind": "provider",
+      "jurisdiction": "global",
+      "statement": "Azure Backup multi-user authorization uses a Resource Guard that can be in a different subscription or a different tenant from the vault, so that critical operations (for example disabling soft delete or immutability, or reducing retention) need approval outside the backup administrator's control.",
+      "source": {
+        "url": "https://learn.microsoft.com/en-us/azure/backup/multi-user-authorization-concept",
+        "title": "Azure Backup, Multi-user authorization using Resource Guard (updated 27 Oct 2026)",
+        "publisher": "Microsoft"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-28",
+      "volatile": true,
+      "clientVisible": true,
+      "owner": "resilience-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-28",
+      "nextReview": "2027-01-26",
+      "notes": "Quoted on 28 Oct 2026 (page updated 27 Oct 2026). The list of protected operations is summarised; RQ8 playbook entries quote it in full."
+    },
+    {
+      "id": "CLM-RES-030",
+      "accelerators": [
+        "resilience-iq"
+      ],
+      "kind": "provider",
+      "jurisdiction": "global",
+      "statement": "Azure Backup immutable vault: immutability (enabled and locked) is generally available in all Azure public and US government regions for Recovery Services and Backup vaults.",
+      "source": {
+        "url": "https://learn.microsoft.com/en-us/azure/backup/backup-azure-immutable-vault-concept",
+        "title": "Azure Backup, Immutable vault (updated 26 Oct 2026)",
+        "publisher": "Microsoft",
+        "article": "Supported scenarios"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-28",
+      "volatile": true,
+      "clientVisible": true,
+      "owner": "resilience-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-28",
+      "nextReview": "2027-01-26",
+      "notes": "Quoted on 28 Oct 2026 (page updated 26 Oct 2026). Closes validation row 24 (R11.4)."
+    },
+    {
+      "id": "CLM-RES-031",
+      "accelerators": [
+        "resilience-iq"
+      ],
+      "kind": "provider",
+      "jurisdiction": "global",
+      "statement": "Google Cloud Backup and DR backup vault: a Google-managed regional resource that provides isolated, immutable and indelible storage for backups; a baseline enforced retention of 1 day to 99 years applies vault-wide and can only be increased once locked; from 1 Nov 2026 a project-level lien is applied automatically to projects holding a backup vault with enforced-retention backups.",
+      "source": {
+        "url": "https://docs.cloud.google.com/backup-disaster-recovery/docs/concepts/backup-vault",
+        "title": "Google Cloud Backup and DR, Backup vault (last updated 26 Oct 2026)",
+        "publisher": "Google Cloud"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-28",
+      "volatile": true,
+      "clientVisible": true,
+      "owner": "resilience-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-28",
+      "nextReview": "2027-01-26",
+      "notes": "Quoted on 28 Oct 2026 (page last updated 26 Oct 2026). The lien date falls inside this review cycle."
+    },
+    {
+      "id": "CLM-RES-032",
+      "accelerators": [
+        "resilience-iq"
+      ],
+      "kind": "provider",
+      "jurisdiction": "global",
+      "statement": "Google Cloud Fault Injection Testing is in Preview (Pre-GA Offerings Terms); access is requested through the Google Cloud account manager. Confirm availability before relying on it.",
+      "source": {
+        "url": "https://docs.cloud.google.com/fault-injection-testing/overview",
+        "title": "Google Cloud, Fault Injection Testing overview (last updated 26 Oct 2026)",
+        "publisher": "Google Cloud"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-28",
+      "volatile": true,
+      "clientVisible": true,
+      "owner": "resilience-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-28",
+      "nextReview": "2027-01-26",
+      "notes": "Product page checked 28 Oct 2026 (last updated 26 Oct 2026) shows Preview. The Access Transparency release notes list \"Fault Injection Testing is generally available\" on 24 Sep 2026; LTM reads that entry as Access Transparency coverage for the product, not the product's launch stage. Re-check in 90 days."
+    },
+    {
+      "id": "CLM-RES-033",
+      "accelerators": [
+        "resilience-iq"
+      ],
+      "kind": "provider",
+      "jurisdiction": "global",
+      "statement": "Microsoft: regardless of the type of cloud deployment (SaaS, PaaS, IaaS or on-premises), the customer always retains responsibility for its data, including data classification, protection and compliance with data governance requirements.",
+      "source": {
+        "url": "https://learn.microsoft.com/en-us/azure/security/fundamentals/shared-responsibility",
+        "title": "Microsoft Learn, Shared responsibility in the cloud (updated 24 Aug 2026)",
+        "publisher": "Microsoft",
+        "article": "Responsibilities you always retain"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-28",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "resilience-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-28",
+      "nextReview": "2027-10-28",
+      "notes": "Quoted on 28 Oct 2026 (page updated 24 Aug 2026). Basis of the SaaS data backup question (SAAS-01)."
+    },
+    {
+      "id": "CLM-RES-034",
+      "accelerators": [
+        "resilience-iq"
+      ],
+      "kind": "heuristic",
+      "jurisdiction": "global",
+      "statement": "On-premises, Oracle Cloud, IBM Cloud and sovereign or local providers: immutability and isolation are taken from the platform's own write-once or retention-lock features, found in discovery and recorded in the playbook; they are never assumed.",
+      "source": {
+        "url": "https://github.com/dixitashutosh007/ltm-accelerators/blob/main/docs/cio-readiness/resilience-iq/design/DESIGN.md",
+        "title": "LTM Resilience IQ RQ1 design pack (approved by the product owner with defaults Q1-Q15, 28 Oct 2026)",
+        "publisher": "LTM",
+        "article": "9.3 (provider statements)"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-28",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "resilience-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-28",
+      "nextReview": "2027-04-28",
+      "basisNote": "LTM has not verified each provider's retention-lock features; RQ8 playbook entries cite each one. Sensitivity: wording of technology options only.",
+      "notes": "LTM heuristic, not a market fact or a regulatory requirement. Verification V means the statement matches the owner-approved design pack (the source); the report shows it in the assumption register as an LTM heuristic with this reasoning. Calibrated on the reference scenarios in RQ5."
+    },
+    {
+      "id": "CLM-RES-035",
+      "accelerators": [
+        "resilience-iq"
+      ],
+      "kind": "regulation",
+      "jurisdiction": "US-NY",
+      "statement": "NYDFS ransomware guidance (industry letter, 30 Jun 2021): at least one set of backups should be segregated from the network and offline, and backups should be tested periodically by actually restoring critical systems from them. It is guidance, not a rule.",
+      "source": {
+        "url": "https://www.dfs.ny.gov/industry_guidance/industry_letters/il20210630_ransomware_guidance",
+        "title": "NYDFS Industry Letter, Ransomware Guidance (30 Jun 2021)",
+        "publisher": "New York State Department of Financial Services"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-27",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "resilience-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-28",
+      "nextReview": "2027-10-28",
+      "notes": "Verified from the DFS page on 27 Oct 2026 (RQ1). Shown as context for NYDFS 500.16(d)(2) and (e)."
+    },
+    {
+      "id": "CLM-RES-036",
+      "accelerators": [
+        "resilience-iq"
+      ],
+      "kind": "framework",
+      "jurisdiction": "global",
+      "statement": "NIST SP 800-209 recommends that cyber-attack recovery copies are not mounted to hosts and are restored onto an isolated staging environment (IS-SS-R7), that organisations consider an air gap around them (IS-SS-R8) and immutable storage such as retention locking or vault locking (IS-SS-R10), and that isolation is reviewed at least once a year (IS-SS-R9). Immutability is the ability to lock data after creation, preventing alteration or deletion.",
+      "source": {
+        "url": "https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-209.pdf",
+        "title": "NIST SP 800-209, Security Guidelines for Storage Infrastructure",
+        "publisher": "NIST",
+        "article": "2.11.5; 4.7 IS-SS-R7 to R10"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-28",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "resilience-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-28",
+      "nextReview": "2027-10-28",
+      "notes": "Read in the NIST PDF on 28 Oct 2026. Basis of the isolation, immutability and clean-room controls and of the language rule that \"immutable\" is always stated with its mechanism."
+    },
+    {
+      "id": "CLM-RES-037",
+      "accelerators": [
+        "resilience-iq"
+      ],
+      "kind": "framework",
+      "jurisdiction": "global",
+      "statement": "NIST CSF 2.0: PR.DS-11 \"Backups of data are created, protected, maintained, and tested\"; RC.RP-03 \"The integrity of backups and other restoration assets is verified before using them for restoration\"; RC.RP-05 \"The integrity of restored assets is verified, systems and services are restored, and normal operating status is confirmed\".",
+      "source": {
+        "url": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf",
+        "title": "NIST Cybersecurity Framework (CSF) 2.0, NIST CSWP 29 (26 Feb 2024)",
+        "publisher": "NIST",
+        "article": "PR.DS-11; RC.RP-03; RC.RP-05"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-28",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "resilience-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-28",
+      "nextReview": "2027-10-28",
+      "notes": "Read in NIST CSWP 29 on 28 Oct 2026 (RC.RP-05 wording completed from the same list). Upgrades the design's S status to V."
+    },
+    {
+      "id": "CLM-RES-038",
+      "accelerators": [
+        "resilience-iq"
+      ],
+      "kind": "regulation",
+      "jurisdiction": "SG",
+      "statement": "MAS proposed in June 2026 (Consultation Paper P012-2026, comments closed 31 Jul 2026) to amend the eleven Technology Risk Management Notices to require, among other things, an immutable or offline backup of data supporting relevant business services, to take effect 12 months after the final notices are published. It is a proposal, not yet a requirement.",
+      "source": {
+        "url": "https://www.mas.gov.sg/-/media/mas-media-library/publications/consultations/trpd/2026/consultation-paper-on-proposed-amendments-to-notices-on-technology-risk-management.pdf",
+        "title": "MAS Consultation Paper P012-2026 on Proposed Amendments to Notices on Technology Risk Management (June 2026)",
+        "publisher": "Monetary Authority of Singapore",
+        "article": "1.1-1.4, 2.16-2.17, 2.22"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-28",
+      "volatile": true,
+      "clientVisible": true,
+      "owner": "resilience-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-28",
+      "nextReview": "2027-01-26",
+      "notes": "Read in the MAS PDF on 28 Oct 2026. Shown only as \"proposed\"; re-check for final notices each review. Related Sovereign claim CLM-SOV-136."
+    },
+    {
+      "id": "CLM-RES-039",
+      "accelerators": [
+        "resilience-iq"
+      ],
+      "kind": "obligation",
+      "jurisdiction": "EU",
+      "statement": "DORA Art. 11(5): as part of the overall business continuity policy, financial entities conduct a business impact analysis of their exposures to severe business disruptions, considering the criticality of business functions, support processes, third-party dependencies and information assets, and design ICT assets and services in full alignment with it, including redundancy of all critical components.",
+      "source": {
+        "url": "https://eur-lex.europa.eu/eli/reg/2022/2554/oj",
+        "title": "Regulation (EU) 2022/2554 (DORA), OJ L 333, 27.12.2022",
+        "publisher": "Official Journal of the European Union",
+        "secondaryUrls": [
+          "https://publications.europa.eu/resource/celex/32022R2554"
+        ],
+        "article": "Art. 11(5)"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-28",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "resilience-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-28",
+      "nextReview": "2027-10-28",
+      "notes": "EUR-Lex returns an empty page to this environment; the article text was read in the Official Journal version served by the EU Publications Office (secondary URL) on 28 Oct 2026."
+    },
+    {
+      "id": "CLM-RES-040",
+      "accelerators": [
+        "resilience-iq"
+      ],
+      "kind": "obligation",
+      "jurisdiction": "EU",
+      "statement": "DORA Art. 11(6): financial entities test the ICT business continuity plans and the ICT response and recovery plans at least yearly, and after substantive changes to ICT systems supporting critical or important functions; financial entities other than microenterprises include scenarios of cyber-attacks and switchovers between the primary ICT infrastructure and the redundant capacity, backups and redundant facilities.",
+      "source": {
+        "url": "https://eur-lex.europa.eu/eli/reg/2022/2554/oj",
+        "title": "Regulation (EU) 2022/2554 (DORA), OJ L 333, 27.12.2022",
+        "publisher": "Official Journal of the European Union",
+        "secondaryUrls": [
+          "https://publications.europa.eu/resource/celex/32022R2554"
+        ],
+        "article": "Art. 11(6)"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-28",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "resilience-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-28",
+      "nextReview": "2027-10-28",
+      "notes": "EUR-Lex returns an empty page to this environment; the article text was read in the Official Journal version served by the EU Publications Office (secondary URL) on 28 Oct 2026. Corrects the design summary: the cyber-attack and switchover scenarios are required of entities other than microenterprises."
+    },
+    {
+      "id": "CLM-RES-041",
+      "accelerators": [
+        "resilience-iq"
+      ],
+      "kind": "obligation",
+      "jurisdiction": "EU",
+      "statement": "DORA Art. 11(3): financial entities implement ICT response and recovery plans which, for entities other than microenterprises, are subject to independent internal audit reviews. DORA states no audit interval.",
+      "source": {
+        "url": "https://eur-lex.europa.eu/eli/reg/2022/2554/oj",
+        "title": "Regulation (EU) 2022/2554 (DORA), OJ L 333, 27.12.2022",
+        "publisher": "Official Journal of the European Union",
+        "secondaryUrls": [
+          "https://publications.europa.eu/resource/celex/32022R2554"
+        ],
+        "article": "Art. 11(3)"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-28",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "resilience-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-28",
+      "nextReview": "2027-10-28",
+      "notes": "EUR-Lex returns an empty page to this environment; the article text was read in the Official Journal version served by the EU Publications Office (secondary URL) on 28 Oct 2026. Corrects the design: the internal audit review does not apply to microenterprises."
+    },
+    {
+      "id": "CLM-RES-042",
+      "accelerators": [
+        "resilience-iq"
+      ],
+      "kind": "obligation",
+      "jurisdiction": "EU",
+      "statement": "DORA Art. 11(7): financial entities other than microenterprises have a crisis management function which, when ICT business continuity or response and recovery plans are activated, sets out clear procedures for internal and external crisis communications.",
+      "source": {
+        "url": "https://eur-lex.europa.eu/eli/reg/2022/2554/oj",
+        "title": "Regulation (EU) 2022/2554 (DORA), OJ L 333, 27.12.2022",
+        "publisher": "Official Journal of the European Union",
+        "secondaryUrls": [
+          "https://publications.europa.eu/resource/celex/32022R2554"
+        ],
+        "article": "Art. 11(7)"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-28",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "resilience-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-28",
+      "nextReview": "2027-10-28",
+      "notes": "EUR-Lex returns an empty page to this environment; the article text was read in the Official Journal version served by the EU Publications Office (secondary URL) on 28 Oct 2026."
+    },
+    {
+      "id": "CLM-RES-043",
+      "accelerators": [
+        "resilience-iq"
+      ],
+      "kind": "obligation",
+      "jurisdiction": "EU",
+      "statement": "DORA Art. 12(1)-(2): financial entities document backup policies (scope and minimum frequency by criticality) and restoration and recovery procedures, set up backup systems whose activation does not jeopardise security, and test the backup and the restoration and recovery procedures periodically.",
+      "source": {
+        "url": "https://eur-lex.europa.eu/eli/reg/2022/2554/oj",
+        "title": "Regulation (EU) 2022/2554 (DORA), OJ L 333, 27.12.2022",
+        "publisher": "Official Journal of the European Union",
+        "secondaryUrls": [
+          "https://publications.europa.eu/resource/celex/32022R2554"
+        ],
+        "article": "Art. 12(1)-(2)"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-28",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "resilience-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-28",
+      "nextReview": "2027-10-28",
+      "notes": "EUR-Lex returns an empty page to this environment; the article text was read in the Official Journal version served by the EU Publications Office (secondary URL) on 28 Oct 2026."
+    },
+    {
+      "id": "CLM-RES-044",
+      "accelerators": [
+        "resilience-iq"
+      ],
+      "kind": "obligation",
+      "jurisdiction": "EU",
+      "statement": "DORA Art. 12(3): when restoring backup data using their own systems, financial entities use ICT systems that are physically and logically segregated from the source ICT system, securely protected from unauthorised access or ICT corruption, and that allow timely restoration of services.",
+      "source": {
+        "url": "https://eur-lex.europa.eu/eli/reg/2022/2554/oj",
+        "title": "Regulation (EU) 2022/2554 (DORA), OJ L 333, 27.12.2022",
+        "publisher": "Official Journal of the European Union",
+        "secondaryUrls": [
+          "https://publications.europa.eu/resource/celex/32022R2554"
+        ],
+        "article": "Art. 12(3)"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-28",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "resilience-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-28",
+      "nextReview": "2027-10-28",
+      "notes": "EUR-Lex returns an empty page to this environment; the article text was read in the Official Journal version served by the EU Publications Office (secondary URL) on 28 Oct 2026. The design summary omitted \"when restoring backup data using own systems\"."
+    },
+    {
+      "id": "CLM-RES-045",
+      "accelerators": [
+        "resilience-iq"
+      ],
+      "kind": "obligation",
+      "jurisdiction": "EU",
+      "statement": "DORA Art. 12(4): financial entities other than microenterprises maintain redundant ICT capacities with resources, capabilities and functions adequate for business needs; microenterprises assess the need for them based on their risk profile.",
+      "source": {
+        "url": "https://eur-lex.europa.eu/eli/reg/2022/2554/oj",
+        "title": "Regulation (EU) 2022/2554 (DORA), OJ L 333, 27.12.2022",
+        "publisher": "Official Journal of the European Union",
+        "secondaryUrls": [
+          "https://publications.europa.eu/resource/celex/32022R2554"
+        ],
+        "article": "Art. 12(4)"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-28",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "resilience-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-28",
+      "nextReview": "2027-10-28",
+      "notes": "EUR-Lex returns an empty page to this environment; the article text was read in the Official Journal version served by the EU Publications Office (secondary URL) on 28 Oct 2026."
+    },
+    {
+      "id": "CLM-RES-046",
+      "accelerators": [
+        "resilience-iq"
+      ],
+      "kind": "obligation",
+      "jurisdiction": "EU",
+      "statement": "DORA Art. 12(5): the requirement for at least one secondary processing site at a geographical distance with a distinct risk profile applies to central securities depositories only.",
+      "source": {
+        "url": "https://eur-lex.europa.eu/eli/reg/2022/2554/oj",
+        "title": "Regulation (EU) 2022/2554 (DORA), OJ L 333, 27.12.2022",
+        "publisher": "Official Journal of the European Union",
+        "secondaryUrls": [
+          "https://publications.europa.eu/resource/celex/32022R2554"
+        ],
+        "article": "Art. 12(5)"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-28",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "resilience-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-28",
+      "nextReview": "2027-10-28",
+      "notes": "EUR-Lex returns an empty page to this environment; the article text was read in the Official Journal version served by the EU Publications Office (secondary URL) on 28 Oct 2026. Corrects the design, which cited Art. 12(4)-(5) as the basis for a geographically separate recovery site for any financial entity (AF-OP-01)."
+    },
+    {
+      "id": "CLM-RES-047",
+      "accelerators": [
+        "resilience-iq"
+      ],
+      "kind": "obligation",
+      "jurisdiction": "EU",
+      "statement": "DORA Art. 12(6): in determining recovery time and recovery point objectives for each function, financial entities take into account whether it is a critical or important function and the potential overall impact on market efficiency; the time objectives ensure that agreed service levels are met in extreme scenarios.",
+      "source": {
+        "url": "https://eur-lex.europa.eu/eli/reg/2022/2554/oj",
+        "title": "Regulation (EU) 2022/2554 (DORA), OJ L 333, 27.12.2022",
+        "publisher": "Official Journal of the European Union",
+        "secondaryUrls": [
+          "https://publications.europa.eu/resource/celex/32022R2554"
+        ],
+        "article": "Art. 12(6)"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-28",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "resilience-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-28",
+      "nextReview": "2027-10-28",
+      "notes": "EUR-Lex returns an empty page to this environment; the article text was read in the Official Journal version served by the EU Publications Office (secondary URL) on 28 Oct 2026."
+    },
+    {
+      "id": "CLM-RES-048",
+      "accelerators": [
+        "resilience-iq"
+      ],
+      "kind": "obligation",
+      "jurisdiction": "EU",
+      "statement": "DORA Art. 12(7): when recovering from an ICT-related incident, financial entities perform the checks and reconciliations needed to maintain the highest level of data integrity.",
+      "source": {
+        "url": "https://eur-lex.europa.eu/eli/reg/2022/2554/oj",
+        "title": "Regulation (EU) 2022/2554 (DORA), OJ L 333, 27.12.2022",
+        "publisher": "Official Journal of the European Union",
+        "secondaryUrls": [
+          "https://publications.europa.eu/resource/celex/32022R2554"
+        ],
+        "article": "Art. 12(7)"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-28",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "resilience-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-28",
+      "nextReview": "2027-10-28",
+      "notes": "EUR-Lex returns an empty page to this environment; the article text was read in the Official Journal version served by the EU Publications Office (secondary URL) on 28 Oct 2026."
+    },
+    {
+      "id": "CLM-RES-049",
+      "accelerators": [
+        "resilience-iq"
+      ],
+      "kind": "obligation",
+      "jurisdiction": "EU",
+      "statement": "DORA Art. 16(1): Articles 5 to 15 (including Art. 11 and 12) do not apply to small and non-interconnected investment firms, exempted payment and e-money institutions, certain exempted credit institutions and small institutions for occupational retirement provision; these entities apply a simplified ICT risk management framework that still requires business continuity plans with at least backup and restoration measures, tested on a regular basis (Art. 16(1)(f)-(g)).",
+      "source": {
+        "url": "https://eur-lex.europa.eu/eli/reg/2022/2554/oj",
+        "title": "Regulation (EU) 2022/2554 (DORA), OJ L 333, 27.12.2022",
+        "publisher": "Official Journal of the European Union",
+        "secondaryUrls": [
+          "https://publications.europa.eu/resource/celex/32022R2554"
+        ],
+        "article": "Art. 16(1)"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-28",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "resilience-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-28",
+      "nextReview": "2027-10-28",
+      "notes": "EUR-Lex returns an empty page to this environment; the article text was read in the Official Journal version served by the EU Publications Office (secondary URL) on 28 Oct 2026. Not in the design: REG-02 asks only about microenterprises. Owner decision needed (see PLAN RQ2 status)."
+    },
+    {
+      "id": "CLM-RES-050",
+      "accelerators": [
+        "resilience-iq"
+      ],
+      "kind": "regulation",
+      "jurisdiction": "EU",
+      "statement": "DORA Art. 3(60): a microenterprise is a financial entity, other than a trading venue, central counterparty, trade repository or central securities depository, which employs fewer than 10 persons and has an annual turnover and/or annual balance sheet total that does not exceed EUR 2 million.",
+      "source": {
+        "url": "https://eur-lex.europa.eu/eli/reg/2022/2554/oj",
+        "title": "Regulation (EU) 2022/2554 (DORA), OJ L 333, 27.12.2022",
+        "publisher": "Official Journal of the European Union",
+        "secondaryUrls": [
+          "https://publications.europa.eu/resource/celex/32022R2554"
+        ],
+        "article": "Art. 3(60)"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-28",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "resilience-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-28",
+      "nextReview": "2027-10-28",
+      "notes": "EUR-Lex returns an empty page to this environment; the article text was read in the Official Journal version served by the EU Publications Office (secondary URL) on 28 Oct 2026."
+    },
+    {
+      "id": "CLM-RES-051",
+      "accelerators": [
+        "resilience-iq"
+      ],
+      "kind": "obligation",
+      "jurisdiction": "EU",
+      "statement": "DORA Art. 24(6): financial entities other than microenterprises ensure, at least yearly, that appropriate tests are conducted on all ICT systems and applications supporting critical or important functions; Art. 24(4) requires the tests to be undertaken by independent parties, internal or external.",
+      "source": {
+        "url": "https://eur-lex.europa.eu/eli/reg/2022/2554/oj",
+        "title": "Regulation (EU) 2022/2554 (DORA), OJ L 333, 27.12.2022",
+        "publisher": "Official Journal of the European Union",
+        "secondaryUrls": [
+          "https://publications.europa.eu/resource/celex/32022R2554"
+        ],
+        "article": "Art. 24(4), 24(6)"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-28",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "resilience-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-28",
+      "nextReview": "2027-10-28",
+      "notes": "EUR-Lex returns an empty page to this environment; the article text was read in the Official Journal version served by the EU Publications Office (secondary URL) on 28 Oct 2026."
+    },
+    {
+      "id": "CLM-RES-052",
+      "accelerators": [
+        "resilience-iq"
+      ],
+      "kind": "obligation",
+      "jurisdiction": "EU",
+      "statement": "DORA Art. 28(8): for ICT services supporting critical or important functions, financial entities put in place exit strategies; exit plans are comprehensive, documented and sufficiently tested and reviewed periodically, with alternative solutions and transition plans to move the services and data to alternative providers or in-house.",
+      "source": {
+        "url": "https://eur-lex.europa.eu/eli/reg/2022/2554/oj",
+        "title": "Regulation (EU) 2022/2554 (DORA), OJ L 333, 27.12.2022",
+        "publisher": "Official Journal of the European Union",
+        "secondaryUrls": [
+          "https://publications.europa.eu/resource/celex/32022R2554"
+        ],
+        "article": "Art. 28(8)"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-28",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "resilience-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-28",
+      "nextReview": "2027-10-28",
+      "notes": "EUR-Lex returns an empty page to this environment; the article text was read in the Official Journal version served by the EU Publications Office (secondary URL) on 28 Oct 2026. Extends CLM-SOV-039 with the testing wording (\"sufficiently tested\"), which the design had at S."
+    },
+    {
+      "id": "CLM-RES-053",
+      "accelerators": [
+        "resilience-iq"
+      ],
+      "kind": "obligation",
+      "jurisdiction": "EU",
+      "statement": "Delegated Regulation (EU) 2024/1774 Art. 25: testing of ICT business continuity plans takes account of the business impact analysis, uses an adequate set of severe but plausible scenarios, includes ICT services from third-party providers where applicable and, for entities other than microenterprises, switchover to redundant capacity, backups and redundant facilities, and verifies that critical or important functions can operate for a sufficient period and normal functioning can be restored.",
+      "source": {
+        "url": "https://eur-lex.europa.eu/eli/reg_del/2024/1774/oj",
+        "title": "Commission Delegated Regulation (EU) 2024/1774 (RTS on the ICT risk management framework), OJ L, 25.6.2024",
+        "publisher": "Official Journal of the European Union",
+        "secondaryUrls": [
+          "https://publications.europa.eu/resource/celex/32024R1774"
+        ],
+        "article": "Art. 25(1)-(2)"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-28",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "resilience-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-28",
+      "nextReview": "2027-10-28",
+      "notes": "EUR-Lex returns an empty page to this environment; the article text was read in the Official Journal version served by the EU Publications Office (secondary URL) on 28 Oct 2026. The RTS entered into force on the twentieth day after publication (OJ of 25 Jun 2024) and supplements DORA, which applies from 17 Jan 2025 (CLM-SOV-033). Listed for v2 under Q12; cited here as the detail behind DORA Art. 11(6)."
+    },
+    {
+      "id": "CLM-RES-054",
+      "accelerators": [
+        "resilience-iq"
+      ],
+      "kind": "obligation",
+      "jurisdiction": "EU",
+      "statement": "Delegated Regulation (EU) 2024/1774 Art. 24(3)-(4): a central securities depository's ICT business continuity arrangements ensure an RTO for critical or important functions of no longer than 2 hours; a trading venue ensures trading can resume within or close to 2 hours of a disruptive incident and that the maximum data loss from any IT service is close to zero.",
+      "source": {
+        "url": "https://eur-lex.europa.eu/eli/reg_del/2024/1774/oj",
+        "title": "Commission Delegated Regulation (EU) 2024/1774 (RTS on the ICT risk management framework), OJ L, 25.6.2024",
+        "publisher": "Official Journal of the European Union",
+        "secondaryUrls": [
+          "https://publications.europa.eu/resource/celex/32024R1774"
+        ],
+        "article": "Art. 24(3)(b), 24(4)"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-28",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "resilience-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-28",
+      "nextReview": "2027-10-28",
+      "notes": "EUR-Lex returns an empty page to this environment; the article text was read in the Official Journal version served by the EU Publications Office (secondary URL) on 28 Oct 2026. A regulatory floor the design did not list. Not applied in v1 (Q12 keeps the RTS for v2); recorded for the owner's decision."
+    },
+    {
+      "id": "CLM-RES-055",
+      "accelerators": [
+        "resilience-iq"
+      ],
+      "kind": "obligation",
+      "jurisdiction": "UK",
+      "statement": "FCA SYSC 15A.2.1R-2.2R: a firm must identify its important business services and review that identification after a material change and in any event no later than one year after the last assessment; PRA SS1/21 2.10 expects firms to review their important business services at least annually.",
+      "source": {
+        "url": "https://www.handbook.fca.org.uk/handbook/SYSC/15A/",
+        "title": "FCA Handbook, SYSC 15A Operational resilience",
+        "publisher": "Financial Conduct Authority",
+        "article": "SYSC 15A.2.1R, 15A.2.2R; SS1/21 2.10",
+        "secondaryUrls": [
+          "https://www.bankofengland.co.uk/-/media/boe/files/prudential-regulation/supervisory-statement/2021/ss121-march-22.pdf"
+        ]
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-28",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "resilience-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-28",
+      "nextReview": "2027-10-28",
+      "notes": "SYSC 15A.2 read on the FCA Handbook on 28 Oct 2026; SS1/21 2.10 re-read in the PRA PDF the same day."
+    },
+    {
+      "id": "CLM-RES-056",
+      "accelerators": [
+        "resilience-iq"
+      ],
+      "kind": "obligation",
+      "jurisdiction": "UK",
+      "statement": "FCA SYSC 15A.2.5R: a firm must set an impact tolerance for each important business service. PRA SS1/21 3.10-3.12: at least one impact tolerance per service, always with a time-based metric, used where appropriate with other metrics (for example a volume of interrupted transactions, or delivering less than a percentage of normal capacity for a period).",
+      "source": {
+        "url": "https://www.handbook.fca.org.uk/handbook/SYSC/15A/",
+        "title": "FCA Handbook, SYSC 15A Operational resilience",
+        "publisher": "Financial Conduct Authority",
+        "article": "SYSC 15A.2.5R; SS1/21 3.10-3.12",
+        "secondaryUrls": [
+          "https://www.bankofengland.co.uk/-/media/boe/files/prudential-regulation/supervisory-statement/2021/ss121-march-22.pdf"
+        ]
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-28",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "resilience-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-28",
+      "nextReview": "2027-10-28",
+      "notes": "Read 28 Oct 2026. SS1/21 does not name a data-loss tolerance as such; the data-loss and minimum-service tolerances (TOL-02, TOL-03) rest on CPS 230 para 38 and MAS BCM, with SS1/21 3.11-3.12 as supporting \"other metrics\"."
+    },
+    {
+      "id": "CLM-RES-057",
+      "accelerators": [
+        "resilience-iq"
+      ],
+      "kind": "obligation",
+      "jurisdiction": "UK",
+      "statement": "PRA SS1/21 3.14: setting an impact tolerance lets firms set resilience requirements for the resources behind the service, which might include recovery time objectives and recovery point objectives, set to enable the firm to deliver the service within its impact tolerance.",
+      "source": {
+        "url": "https://www.bankofengland.co.uk/-/media/boe/files/prudential-regulation/supervisory-statement/2021/ss121-march-22.pdf",
+        "title": "PRA SS1/21 Operational resilience: Impact tolerances for important business services (March 2022)",
+        "publisher": "Bank of England, Prudential Regulation Authority",
+        "article": "3.14"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-28",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "resilience-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-28",
+      "nextReview": "2027-10-28",
+      "notes": "Re-read in the PRA PDF on 28 Oct 2026. Basis of the consistency rule (Q1)."
+    },
+    {
+      "id": "CLM-RES-058",
+      "accelerators": [
+        "resilience-iq"
+      ],
+      "kind": "obligation",
+      "jurisdiction": "UK",
+      "statement": "PRA SS1/21 3.15: continuing to deliver a service through disruption may be more harmful than suspending it, for example where the firm cannot sufficiently assure the integrity of the data underpinning the service.",
+      "source": {
+        "url": "https://www.bankofengland.co.uk/-/media/boe/files/prudential-regulation/supervisory-statement/2021/ss121-march-22.pdf",
+        "title": "PRA SS1/21 Operational resilience: Impact tolerances for important business services (March 2022)",
+        "publisher": "Bank of England, Prudential Regulation Authority",
+        "article": "3.15"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-28",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "resilience-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-28",
+      "nextReview": "2027-10-28",
+      "notes": "Re-read 28 Oct 2026. Basis of the point-in-time restore question (DC-01)."
+    },
+    {
+      "id": "CLM-RES-059",
+      "accelerators": [
+        "resilience-iq"
+      ],
+      "kind": "date",
+      "jurisdiction": "UK",
+      "statement": "FCA SYSC 15A.2.9R: a firm must ensure it can remain within its impact tolerance for each important business service in a severe but plausible disruption. PRA SS1/21 4.14 and 4.16: firms were to be able to remain within tolerance no later than 31 March 2025; after that date maintaining operational resilience is a continuing activity.",
+      "source": {
+        "url": "https://www.handbook.fca.org.uk/handbook/SYSC/15A/",
+        "title": "FCA Handbook, SYSC 15A Operational resilience",
+        "publisher": "Financial Conduct Authority",
+        "article": "SYSC 15A.2.9R; SS1/21 4.14, 4.16",
+        "secondaryUrls": [
+          "https://www.bankofengland.co.uk/-/media/boe/files/prudential-regulation/supervisory-statement/2021/ss121-march-22.pdf"
+        ]
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-28",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "resilience-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-28",
+      "nextReview": "2027-10-28",
+      "notes": "Read 28 Oct 2026. The compliance date has passed; an obligation not evidenced shows \"the date by which this was expected has passed\"."
+    },
+    {
+      "id": "CLM-RES-060",
+      "accelerators": [
+        "resilience-iq"
+      ],
+      "kind": "obligation",
+      "jurisdiction": "UK",
+      "statement": "PRA SS1/21 4.3-4.4: firms develop and implement remediation plans, with appropriate timing, for important business services that could not remain within their impact tolerance, and prioritise that work.",
+      "source": {
+        "url": "https://www.bankofengland.co.uk/-/media/boe/files/prudential-regulation/supervisory-statement/2021/ss121-march-22.pdf",
+        "title": "PRA SS1/21 Operational resilience: Impact tolerances for important business services (March 2022)",
+        "publisher": "Bank of England, Prudential Regulation Authority",
+        "article": "4.3-4.4"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-28",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "resilience-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-28",
+      "nextReview": "2027-10-28",
+      "notes": "Re-read 28 Oct 2026. Basis of AF-GV-02 and AF-GV-03."
+    },
+    {
+      "id": "CLM-RES-061",
+      "accelerators": [
+        "resilience-iq"
+      ],
+      "kind": "obligation",
+      "jurisdiction": "UK",
+      "statement": "FCA SYSC 15A.4.1R: a firm must identify and document the people, processes, technology, facilities and information necessary to deliver each important business service, sufficient to identify and remedy vulnerabilities. PRA SS1/21 5.9: firms update their mapping at least annually, or sooner after significant change.",
+      "source": {
+        "url": "https://www.handbook.fca.org.uk/handbook/SYSC/15A/",
+        "title": "FCA Handbook, SYSC 15A Operational resilience",
+        "publisher": "Financial Conduct Authority",
+        "article": "SYSC 15A.4.1R; SS1/21 5.9",
+        "secondaryUrls": [
+          "https://www.bankofengland.co.uk/-/media/boe/files/prudential-regulation/supervisory-statement/2021/ss121-march-22.pdf"
+        ]
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-28",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "resilience-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-28",
+      "nextReview": "2027-10-28",
+      "notes": "SYSC 15A.4.1R read on the FCA Handbook and SS1/21 5.9 re-read on 28 Oct 2026."
+    },
+    {
+      "id": "CLM-RES-062",
+      "accelerators": [
+        "resilience-iq"
+      ],
+      "kind": "obligation",
+      "jurisdiction": "UK",
+      "statement": "FCA SYSC 15A.5.1R and 15A.5.3R: a firm must keep a testing plan and carry out scenario testing of its ability to remain within impact tolerance for each important business service in a severe but plausible disruption (PRA SS1/21 chapter 6).",
+      "source": {
+        "url": "https://www.handbook.fca.org.uk/handbook/SYSC/15A/",
+        "title": "FCA Handbook, SYSC 15A Operational resilience",
+        "publisher": "Financial Conduct Authority",
+        "article": "SYSC 15A.5.1R, 15A.5.3R; SS1/21 ch. 6",
+        "secondaryUrls": [
+          "https://www.bankofengland.co.uk/-/media/boe/files/prudential-regulation/supervisory-statement/2021/ss121-march-22.pdf"
+        ]
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-28",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "resilience-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-28",
+      "nextReview": "2027-10-28",
+      "notes": "Read on the FCA Handbook on 28 Oct 2026."
+    },
+    {
+      "id": "CLM-RES-063",
+      "accelerators": [
+        "resilience-iq"
+      ],
+      "kind": "obligation",
+      "jurisdiction": "UK",
+      "statement": "FCA SYSC 15A.6.1R and 15A.7.1R: a firm must keep an up-to-date written self-assessment of its compliance with the operational resilience requirements, retained for at least 6 years, approved and regularly reviewed by its governing body (PRA SS1/21 chapter 8).",
+      "source": {
+        "url": "https://www.handbook.fca.org.uk/handbook/SYSC/15A/",
+        "title": "FCA Handbook, SYSC 15A Operational resilience",
+        "publisher": "Financial Conduct Authority",
+        "article": "SYSC 15A.6.1R, 15A.6.2R, 15A.7.1R; SS1/21 ch. 8",
+        "secondaryUrls": [
+          "https://www.bankofengland.co.uk/-/media/boe/files/prudential-regulation/supervisory-statement/2021/ss121-march-22.pdf"
+        ]
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-28",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "resilience-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-28",
+      "nextReview": "2027-10-28",
+      "notes": "Read on the FCA Handbook on 28 Oct 2026. Corrects the design's use of SYSC 15A.7 as a basis for leadership metrics (EX-15): 15A.7.1R concerns approval of the self-assessment."
+    },
+    {
+      "id": "CLM-RES-064",
+      "accelerators": [
+        "resilience-iq"
+      ],
+      "kind": "obligation",
+      "jurisdiction": "UK",
+      "statement": "PRA SS1/21 7.1-7.2: boards approve the important business services and their impact tolerances, and should have appropriate management information to challenge senior management on operational resilience.",
+      "source": {
+        "url": "https://www.bankofengland.co.uk/-/media/boe/files/prudential-regulation/supervisory-statement/2021/ss121-march-22.pdf",
+        "title": "PRA SS1/21 Operational resilience: Impact tolerances for important business services (March 2022)",
+        "publisher": "Bank of England, Prudential Regulation Authority",
+        "article": "7.1-7.2"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-28",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "resilience-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-28",
+      "nextReview": "2027-10-28",
+      "notes": "Re-read 28 Oct 2026. Basis of EX-15 (leadership review with metrics) and AF-GV-01."
+    },
+    {
+      "id": "CLM-RES-065",
+      "accelerators": [
+        "resilience-iq"
+      ],
+      "kind": "date",
+      "jurisdiction": "UK",
+      "statement": "UK operational incident and third-party reporting: FCA PS26/2 and PRA PS7/26 (both published 18 Mar 2026) create single FCA, PRA and Bank of England regimes for operational incident reporting and material third-party notification and reporting, applying from 18 March 2027.",
+      "source": {
+        "url": "https://www.fca.org.uk/publications/policy-statements/ps26-2-operational-incident-third-party-reporting",
+        "title": "FCA PS26/2 Operational incident and third party reporting (first published 18 Mar 2026)",
+        "publisher": "Financial Conduct Authority",
+        "article": "Summary; PS7/26 3.6",
+        "secondaryUrls": [
+          "https://www.bankofengland.co.uk/prudential-regulation/publication/2026/march/operational-incident-and-third-party-reporting-policy-statement"
+        ]
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-28",
+      "volatile": true,
+      "clientVisible": true,
+      "owner": "resilience-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-28",
+      "nextReview": "2027-01-26",
+      "notes": "FCA page and PRA PS7/26 read on 28 Oct 2026. PS7/26 3.6: implementation date 18 March 2027; incident reporting applies to UK banks, building societies, PRA-designated investment firms, branches of overseas banks, Solvency II firms and Lloyd's; third-party reporting to all PRA-regulated firms. Upgrades PS7/26 from P to V. Assessed in Sovereign IQ; listed here as \"applies later\"."
+    },
+    {
+      "id": "CLM-RES-066",
+      "accelerators": [
+        "resilience-iq"
+      ],
+      "kind": "obligation",
+      "jurisdiction": "AU",
+      "statement": "APRA CPS 230 paras 34(a), 35-36: an APRA-regulated entity defines, identifies and keeps a register of its critical operations (processes whose disruption beyond tolerance would materially harm customers or its role in the financial system), classifying at least specified operations (for example payments and deposit-taking for an ADI, claims processing for an insurer, investment management and fund administration for an RSE licensee, and customer enquiries for all).",
+      "source": {
+        "url": "https://www.apra.gov.au/sites/default/files/2023-07/Prudential%20Standard%20CPS%20230%20Operational%20Risk%20Management%20-%20clean.pdf",
+        "title": "APRA Prudential Standard CPS 230 Operational Risk Management",
+        "publisher": "Australian Prudential Regulation Authority",
+        "article": "paras 34(a), 35-36"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-28",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "resilience-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-28",
+      "nextReview": "2027-10-28",
+      "notes": "Re-read in the APRA PDF on 28 Oct 2026."
+    },
+    {
+      "id": "CLM-RES-067",
+      "accelerators": [
+        "resilience-iq"
+      ],
+      "kind": "obligation",
+      "jurisdiction": "AU",
+      "statement": "APRA CPS 230 para 38: for each critical operation an entity establishes tolerance levels for (a) the maximum period of time it would tolerate a disruption, (b) the maximum extent of data loss it would accept, and (c) minimum service levels while operating under alternative arrangements.",
+      "source": {
+        "url": "https://www.apra.gov.au/sites/default/files/2023-07/Prudential%20Standard%20CPS%20230%20Operational%20Risk%20Management%20-%20clean.pdf",
+        "title": "APRA Prudential Standard CPS 230 Operational Risk Management",
+        "publisher": "Australian Prudential Regulation Authority",
+        "article": "para 38(a)-(c)"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-28",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "resilience-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-28",
+      "nextReview": "2027-10-28",
+      "notes": "Re-read 28 Oct 2026. Basis of TOL-02 and TOL-03."
+    },
+    {
+      "id": "CLM-RES-068",
+      "accelerators": [
+        "resilience-iq"
+      ],
+      "kind": "obligation",
+      "jurisdiction": "AU",
+      "statement": "APRA CPS 230 paras 34(c), 40-41: an entity maintains a credible business continuity plan to keep critical operations within tolerance, including disaster recovery planning for critical information assets, with triggers, actions, execution risks and dependencies, and a communications strategy; it maintains the capabilities to execute the plan and reports any failure to meet tolerance levels, with a remediation plan, to the Board.",
+      "source": {
+        "url": "https://www.apra.gov.au/sites/default/files/2023-07/Prudential%20Standard%20CPS%20230%20Operational%20Risk%20Management%20-%20clean.pdf",
+        "title": "APRA Prudential Standard CPS 230 Operational Risk Management",
+        "publisher": "Australian Prudential Regulation Authority",
+        "article": "paras 34(c), 40-41"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-28",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "resilience-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-28",
+      "nextReview": "2027-10-28",
+      "notes": "Re-read 28 Oct 2026."
+    },
+    {
+      "id": "CLM-RES-069",
+      "accelerators": [
+        "resilience-iq"
+      ],
+      "kind": "obligation",
+      "jurisdiction": "AU",
+      "statement": "APRA CPS 230 paras 43-44: a systematic BCP testing programme covers all critical operations and includes an annual business continuity exercise, testing the ability to meet tolerance levels in a range of severe but plausible scenarios, including disruption of material service providers.",
+      "source": {
+        "url": "https://www.apra.gov.au/sites/default/files/2023-07/Prudential%20Standard%20CPS%20230%20Operational%20Risk%20Management%20-%20clean.pdf",
+        "title": "APRA Prudential Standard CPS 230 Operational Risk Management",
+        "publisher": "Australian Prudential Regulation Authority",
+        "article": "paras 43-44"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-28",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "resilience-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-28",
+      "nextReview": "2027-10-28",
+      "notes": "Re-read 28 Oct 2026. One of the three bases for the 12-month test rule (A9)."
+    },
+    {
+      "id": "CLM-RES-070",
+      "accelerators": [
+        "resilience-iq"
+      ],
+      "kind": "obligation",
+      "jurisdiction": "AU",
+      "statement": "APRA CPS 230 para 45: an entity updates its BCP as necessary on an annual basis.",
+      "source": {
+        "url": "https://www.apra.gov.au/sites/default/files/2023-07/Prudential%20Standard%20CPS%20230%20Operational%20Risk%20Management%20-%20clean.pdf",
+        "title": "APRA Prudential Standard CPS 230 Operational Risk Management",
+        "publisher": "Australian Prudential Regulation Authority",
+        "article": "para 45"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-28",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "resilience-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-28",
+      "nextReview": "2027-10-28",
+      "notes": "Re-read 28 Oct 2026."
+    },
+    {
+      "id": "CLM-RES-071",
+      "accelerators": [
+        "resilience-iq"
+      ],
+      "kind": "obligation",
+      "jurisdiction": "AU",
+      "statement": "APRA CPS 230 para 46: the internal audit function periodically reviews the BCP and gives the Board assurance that it is credible and that testing is adequate. CPS 230 states no interval.",
+      "source": {
+        "url": "https://www.apra.gov.au/sites/default/files/2023-07/Prudential%20Standard%20CPS%20230%20Operational%20Risk%20Management%20-%20clean.pdf",
+        "title": "APRA Prudential Standard CPS 230 Operational Risk Management",
+        "publisher": "Australian Prudential Regulation Authority",
+        "article": "para 46"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-28",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "resilience-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-28",
+      "nextReview": "2027-10-28",
+      "notes": "Re-read 28 Oct 2026."
+    },
+    {
+      "id": "CLM-RES-072",
+      "accelerators": [
+        "resilience-iq"
+      ],
+      "kind": "obligation",
+      "jurisdiction": "AU",
+      "statement": "APRA CPS 230 para 56: for each material service provider arrangement an entity manages the risks to ongoing service, ensures it can execute its BCP if needed, and ensures it can conduct an orderly exit from the arrangement if needed.",
+      "source": {
+        "url": "https://www.apra.gov.au/sites/default/files/2023-07/Prudential%20Standard%20CPS%20230%20Operational%20Risk%20Management%20-%20clean.pdf",
+        "title": "APRA Prudential Standard CPS 230 Operational Risk Management",
+        "publisher": "Australian Prudential Regulation Authority",
+        "article": "para 56"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-28",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "resilience-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-28",
+      "nextReview": "2027-10-28",
+      "notes": "Re-read 28 Oct 2026."
+    },
+    {
+      "id": "CLM-RES-073",
+      "accelerators": [
+        "resilience-iq"
+      ],
+      "kind": "regulation",
+      "jurisdiction": "SG",
+      "statement": "The MAS Guidelines on Business Continuity Management (June 2022) contain sound BCM principles that financial institutions are encouraged to adopt, and apply to all financial institutions as defined in section 2 of the Financial Services and Markets Act 2022.",
+      "source": {
+        "url": "https://www.mas.gov.sg/-/media/mas/regulations-and-financial-stability/regulatory-and-supervisory-framework/risk-management/bcm-guidelines/guidelines-on-bcm-june-2022.pdf",
+        "title": "MAS Guidelines on Business Continuity Management (June 2022)",
+        "publisher": "Monetary Authority of Singapore",
+        "article": "1.4, 1.9"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-28",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "resilience-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-28",
+      "nextReview": "2027-10-28",
+      "notes": "Re-read in the MAS PDF on 28 Oct 2026. Basis of the Resilience-owned SG_MAS_BCM applicability record (kind: guideline)."
+    },
+    {
+      "id": "CLM-RES-074",
+      "accelerators": [
+        "resilience-iq"
+      ],
+      "kind": "obligation",
+      "jurisdiction": "SG",
+      "statement": "MAS BCM Guidelines 2.3 and 2.5: a financial institution identifies its critical business services and functions by the impact of their unavailability, and appoints personnel accountable for the recovery and resumption of each critical business service.",
+      "source": {
+        "url": "https://www.mas.gov.sg/-/media/mas/regulations-and-financial-stability/regulatory-and-supervisory-framework/risk-management/bcm-guidelines/guidelines-on-bcm-june-2022.pdf",
+        "title": "MAS Guidelines on Business Continuity Management (June 2022)",
+        "publisher": "Monetary Authority of Singapore",
+        "article": "2.3, 2.5"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-28",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "resilience-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-28",
+      "nextReview": "2027-10-28",
+      "notes": "Re-read 28 Oct 2026."
+    },
+    {
+      "id": "CLM-RES-075",
+      "accelerators": [
+        "resilience-iq"
+      ],
+      "kind": "obligation",
+      "jurisdiction": "SG",
+      "statement": "MAS BCM Guidelines 3.1-3.2: a Service Recovery Time Objective (a time-based metric) is set for each critical business service; recovery strategies achieve the SRTOs and the service levels needed to meet business obligations, and the RTOs of the supporting business functions must meet the SRTO. A minimum service level is pre-determined by the institution as part of its recovery planning (glossary, footnote 1).",
+      "source": {
+        "url": "https://www.mas.gov.sg/-/media/mas/regulations-and-financial-stability/regulatory-and-supervisory-framework/risk-management/bcm-guidelines/guidelines-on-bcm-june-2022.pdf",
+        "title": "MAS Guidelines on Business Continuity Management (June 2022)",
+        "publisher": "Monetary Authority of Singapore",
+        "article": "3.1-3.2; footnote 1"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-28",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "resilience-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-28",
+      "nextReview": "2027-10-28",
+      "notes": "Re-read 28 Oct 2026."
+    },
+    {
+      "id": "CLM-RES-076",
+      "accelerators": [
+        "resilience-iq"
+      ],
+      "kind": "obligation",
+      "jurisdiction": "SG",
+      "statement": "MAS BCM Guidelines 4.1-4.2: a financial institution maps the end-to-end dependencies of its critical business services (people, processes, technology and other resources) and uses the map to verify that recovery of the functions and their dependencies can meet the SRTOs.",
+      "source": {
+        "url": "https://www.mas.gov.sg/-/media/mas/regulations-and-financial-stability/regulatory-and-supervisory-framework/risk-management/bcm-guidelines/guidelines-on-bcm-june-2022.pdf",
+        "title": "MAS Guidelines on Business Continuity Management (June 2022)",
+        "publisher": "Monetary Authority of Singapore",
+        "article": "4.1-4.2"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-28",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "resilience-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-28",
+      "nextReview": "2027-10-28",
+      "notes": "Re-read 28 Oct 2026."
+    },
+    {
+      "id": "CLM-RES-077",
+      "accelerators": [
+        "resilience-iq"
+      ],
+      "kind": "obligation",
+      "jurisdiction": "SG",
+      "statement": "MAS BCM Guidelines 4.4: a financial institution puts measures in place so that third parties can meet the SRTOs of its critical business services, such as agreements with measurable recovery expectations and review and verification that third parties' business continuity plans are tested.",
+      "source": {
+        "url": "https://www.mas.gov.sg/-/media/mas/regulations-and-financial-stability/regulatory-and-supervisory-framework/risk-management/bcm-guidelines/guidelines-on-bcm-june-2022.pdf",
+        "title": "MAS Guidelines on Business Continuity Management (June 2022)",
+        "publisher": "Monetary Authority of Singapore",
+        "article": "4.4"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-28",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "resilience-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-28",
+      "nextReview": "2027-10-28",
+      "notes": "Re-read 28 Oct 2026 (first measure quoted; the verification measure summarised)."
+    },
+    {
+      "id": "CLM-RES-078",
+      "accelerators": [
+        "resilience-iq"
+      ],
+      "kind": "obligation",
+      "jurisdiction": "SG",
+      "statement": "MAS BCM Guidelines section 5: concentration risk arises when people, technology or other required resources are concentrated in the same zone or on a single service provider; institutions could separate primary and secondary sites into different zones, and should manage the risks of alternate work arrangements.",
+      "source": {
+        "url": "https://www.mas.gov.sg/-/media/mas/regulations-and-financial-stability/regulatory-and-supervisory-framework/risk-management/bcm-guidelines/guidelines-on-bcm-june-2022.pdf",
+        "title": "MAS Guidelines on Business Continuity Management (June 2022)",
+        "publisher": "Monetary Authority of Singapore",
+        "article": "5.1-5.3"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-28",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "resilience-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-28",
+      "nextReview": "2027-10-28",
+      "notes": "Re-read 28 Oct 2026."
+    },
+    {
+      "id": "CLM-RES-079",
+      "accelerators": [
+        "resilience-iq"
+      ],
+      "kind": "obligation",
+      "jurisdiction": "SG",
+      "statement": "MAS BCM Guidelines 6.7: a financial institution updates its BCM policies, plans, procedures, training and test plans for changes in its environment and threat landscape, and reviews its critical business services and functions, their SRTOs and RTOs and dependencies at least annually or on material change.",
+      "source": {
+        "url": "https://www.mas.gov.sg/-/media/mas/regulations-and-financial-stability/regulatory-and-supervisory-framework/risk-management/bcm-guidelines/guidelines-on-bcm-june-2022.pdf",
+        "title": "MAS Guidelines on Business Continuity Management (June 2022)",
+        "publisher": "Monetary Authority of Singapore",
+        "article": "6.7"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-28",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "resilience-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-28",
+      "nextReview": "2027-10-28",
+      "notes": "Re-read 28 Oct 2026."
+    },
+    {
+      "id": "CLM-RES-080",
+      "accelerators": [
+        "resilience-iq"
+      ],
+      "kind": "obligation",
+      "jurisdiction": "SG",
+      "statement": "MAS BCM Guidelines 7.2-7.3: test activities validate the effectiveness of business continuity plans with metrics under severe but plausible scenarios and verify that SRTOs can be met; the types (for example data restoration testing and alternate data centre activation), frequency and scope of tests are commensurate with the criticality of the services.",
+      "source": {
+        "url": "https://www.mas.gov.sg/-/media/mas/regulations-and-financial-stability/regulatory-and-supervisory-framework/risk-management/bcm-guidelines/guidelines-on-bcm-june-2022.pdf",
+        "title": "MAS Guidelines on Business Continuity Management (June 2022)",
+        "publisher": "Monetary Authority of Singapore",
+        "article": "7.2-7.3; footnotes 17-18"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-28",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "resilience-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-28",
+      "nextReview": "2027-10-28",
+      "notes": "Re-read 28 Oct 2026."
+    },
+    {
+      "id": "CLM-RES-081",
+      "accelerators": [
+        "resilience-iq"
+      ],
+      "kind": "obligation",
+      "jurisdiction": "SG",
+      "statement": "MAS BCM Guidelines 8.2-8.3: a financial institution audits its overall BCM framework and the BCM of each critical business service at least once every three years, by a qualified party independent of the unit responsible for BCM.",
+      "source": {
+        "url": "https://www.mas.gov.sg/-/media/mas/regulations-and-financial-stability/regulatory-and-supervisory-framework/risk-management/bcm-guidelines/guidelines-on-bcm-june-2022.pdf",
+        "title": "MAS Guidelines on Business Continuity Management (June 2022)",
+        "publisher": "Monetary Authority of Singapore",
+        "article": "8.2-8.3"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-28",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "resilience-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-28",
+      "nextReview": "2027-10-28",
+      "notes": "Re-read 28 Oct 2026. The only regime in v1 with an audit interval."
+    },
+    {
+      "id": "CLM-RES-082",
+      "accelerators": [
+        "resilience-iq"
+      ],
+      "kind": "obligation",
+      "jurisdiction": "SG",
+      "statement": "MAS BCM Guidelines 9.2: senior management steers the institution out of a crisis, supported by a crisis management structure with clearly defined roles and responsibilities.",
+      "source": {
+        "url": "https://www.mas.gov.sg/-/media/mas/regulations-and-financial-stability/regulatory-and-supervisory-framework/risk-management/bcm-guidelines/guidelines-on-bcm-june-2022.pdf",
+        "title": "MAS Guidelines on Business Continuity Management (June 2022)",
+        "publisher": "Monetary Authority of Singapore",
+        "article": "9.2"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-28",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "resilience-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-28",
+      "nextReview": "2027-10-28",
+      "notes": "Re-read 28 Oct 2026."
+    },
+    {
+      "id": "CLM-RES-083",
+      "accelerators": [
+        "resilience-iq"
+      ],
+      "kind": "obligation",
+      "jurisdiction": "SG",
+      "statement": "MAS Technology Risk Management Notices require an institution to establish a recovery time objective of not more than 4 hours for each critical system, and to validate and document at least once every 12 months how it performs system recovery testing and when the RTO is validated (para 6). The requirement is in all eleven current notices: FSM-N03 (insurers), FSM-N05 (banks), FSM-N07 (card issuers), FSM-N09 (finance companies), FSM-N11 (merchant banks), FSM-N13 (designated payment systems and digital payment token service providers), FSM-N17 (credit bureaus), FSM-N19 (insurance brokers), FSM-N21 (capital markets institutions), FSM-N23 (financial advisers) and FSM-N25 (trust companies).",
+      "source": {
+        "url": "https://www.mas.gov.sg/-/media/mas-media-library/regulation/notices/trpd/notice-fsm-n05/mas-notice-fsm-n05.pdf",
+        "title": "MAS Notice FSM-N05 Technology Risk Management (banks; issued 9 May 2024)",
+        "publisher": "Monetary Authority of Singapore",
+        "article": "para 6",
+        "secondaryUrls": [
+          "https://www.mas.gov.sg/-/media/mas-media-library/regulation/faqs/trpd/faqs---notice-on-technology-risk-management/faqs---notice-on-trm/faq---notice-on-technology-risk-management.pdf"
+        ]
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-28",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "resilience-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-28",
+      "nextReview": "2027-10-28",
+      "notes": "Each notice's para 6 read in the MAS PDFs on 28 Oct 2026 (URL pattern notice-fsm-nNN/mas-notice-fsm-nNN.pdf; FSM-N03 at mas-notice-fsm-n03-1.pdf; FSM-N21 at fsm-n21/mas-notice-fsm-n21.pdf). The list of notices by licence type is the MAS FAQ, Q1. Settles DESIGN.md section 17 and open question Q6: the floor can be shown for every licence type."
+    },
+    {
+      "id": "CLM-RES-084",
+      "accelerators": [
+        "resilience-iq"
+      ],
+      "kind": "date",
+      "jurisdiction": "SG",
+      "statement": "The MAS TRM Notices issued under the Financial Services and Markets Act 2022 took effect on 10 May 2024 (for digital payment token service providers under FSM-N13, on 6 November 2024). FSM-N15 (money brokers) was cancelled with effect from 8 May 2026.",
+      "source": {
+        "url": "https://www.mas.gov.sg/-/media/mas-media-library/regulation/notices/trpd/notice-fsm-n05/mas-notice-fsm-n05.pdf",
+        "title": "MAS Notice FSM-N05 Technology Risk Management (banks; issued 9 May 2024)",
+        "publisher": "Monetary Authority of Singapore",
+        "article": "para 10",
+        "secondaryUrls": [
+          "https://www.mas.gov.sg/-/media/mas-media-library/regulation/notices/trpd/notice-911/mas-notice-911-and-fsm-n15-cancellation-8-may-2026.pdf"
+        ]
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-28",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "resilience-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-28",
+      "nextReview": "2027-10-28",
+      "notes": "Read 28 Oct 2026 in each notice's effective-date paragraph and the MAS cancellation notice of 7 May 2026."
+    },
+    {
+      "id": "CLM-RES-085",
+      "accelerators": [
+        "resilience-iq"
+      ],
+      "kind": "obligation",
+      "jurisdiction": "SG",
+      "statement": "MAS TRM Notices: a critical system is one whose failure will cause significant disruption to the institution's operations or materially impact its service to customers (for example time-critical transaction processing or essential customer services); every institution must have a framework and process to identify critical systems (para 4). MAS FAQ A13: a system identified as critical must have an RTO of not more than 4 hours even if a business impact analysis suggests 24 hours is sufficient.",
+      "source": {
+        "url": "https://www.mas.gov.sg/-/media/mas-media-library/regulation/notices/trpd/notice-fsm-n05/mas-notice-fsm-n05.pdf",
+        "title": "MAS Notice FSM-N05 Technology Risk Management (banks; issued 9 May 2024)",
+        "publisher": "Monetary Authority of Singapore",
+        "article": "paras 2, 4",
+        "secondaryUrls": [
+          "https://www.mas.gov.sg/-/media/mas-media-library/regulation/faqs/trpd/faqs---notice-on-technology-risk-management/faqs---notice-on-trm/faq---notice-on-technology-risk-management.pdf"
+        ]
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-28",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "resilience-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-28",
+      "nextReview": "2027-10-28",
+      "notes": "Read 28 Oct 2026. Basis of REG-02 \"this service runs on a MAS critical system\" (consultant-confirmed)."
+    },
+    {
+      "id": "CLM-RES-086",
+      "accelerators": [
+        "resilience-iq"
+      ],
+      "kind": "obligation",
+      "jurisdiction": "SG",
+      "statement": "MAS TRM Notices para 5: the maximum unscheduled downtime of each critical system that affects operations or service to customers must not exceed a total of 4 hours within any period of 12 months; partial or intermittent disruption counts (MAS FAQ A10.1).",
+      "source": {
+        "url": "https://www.mas.gov.sg/-/media/mas-media-library/regulation/notices/trpd/notice-fsm-n05/mas-notice-fsm-n05.pdf",
+        "title": "MAS Notice FSM-N05 Technology Risk Management (banks; issued 9 May 2024)",
+        "publisher": "Monetary Authority of Singapore",
+        "article": "para 5",
+        "secondaryUrls": [
+          "https://www.mas.gov.sg/-/media/mas-media-library/regulation/faqs/trpd/faqs---notice-on-technology-risk-management/faqs---notice-on-trm/faq---notice-on-technology-risk-management.pdf"
+        ]
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-28",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "resilience-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-28",
+      "nextReview": "2027-10-28",
+      "notes": "Read 28 Oct 2026. Not in the design; recorded so the TRM card can state it. Measured from incident records, not assessed by a question in v1."
+    },
+    {
+      "id": "CLM-RES-087",
+      "accelerators": [
+        "resilience-iq"
+      ],
+      "kind": "regulation",
+      "jurisdiction": "SG",
+      "statement": "MAS stated on 19 October 2023, after the DBS Bank and Citibank disruption, that it requires critical systems to be restorable within four hours of an outage.",
+      "source": {
+        "url": "https://www.mas.gov.sg/news/media-releases/2023/mas-response-to-media-queries-on-dbs-bank-and-citibank",
+        "title": "MAS response to media queries on DBS Bank and Citibank (19 Oct 2023)",
+        "publisher": "Monetary Authority of Singapore"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-27",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "resilience-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-28",
+      "nextReview": "2027-10-28",
+      "notes": "Verified on the MAS page on 27 Oct 2026 (RQ1). Context for the TRM four-hour floor and reference scenario RS5."
+    },
+    {
+      "id": "CLM-RES-088",
+      "accelerators": [
+        "resilience-iq"
+      ],
+      "kind": "obligation",
+      "jurisdiction": "US-NY",
+      "statement": "23 NYCRR 500.16(a)(2): a covered entity's business continuity and disaster recovery plan is designed to keep information systems and material services available in a cybersecurity-related disruption and, at minimum, identifies essential documents, data, facilities, infrastructure, services, personnel and competencies; names responsible supervisory personnel; sets out communications; includes procedures for timely recovery of critical data and systems and for backing up essential information with sufficient frequency and storing it offsite; and identifies necessary third parties.",
+      "source": {
+        "url": "https://www.dfs.ny.gov/system/files/documents/2023/12/rf23_nycrr_part_500_amend02_20231101.pdf",
+        "title": "23 NYCRR Part 500 as amended by the Second Amendment (effective 1 Nov 2023), NYDFS text",
+        "publisher": "New York State Department of Financial Services",
+        "secondaryUrls": [
+          "https://www.dfs.ny.gov/system/files/documents/2023/10/rf_fs_2amend23NYCRR500_notice_20231101.pdf"
+        ],
+        "article": "500.16(a)(2)"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-28",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "resilience-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-28",
+      "nextReview": "2027-10-28",
+      "notes": "Read in the DFS-published text of the Second Amendment on 28 Oct 2026 (DFS notes that document is not the official version; the official text is the Notice of Adoption, secondary URL). Upgrades S to V. The plan duty is framed around cybersecurity-related disruption."
+    },
+    {
+      "id": "CLM-RES-089",
+      "accelerators": [
+        "resilience-iq"
+      ],
+      "kind": "obligation",
+      "jurisdiction": "US-NY",
+      "statement": "23 NYCRR 500.16(a)(1): incident response plans address different types of cybersecurity events, including disruptive events such as ransomware, and cover recovery from backups among other areas.",
+      "source": {
+        "url": "https://www.dfs.ny.gov/system/files/documents/2023/12/rf23_nycrr_part_500_amend02_20231101.pdf",
+        "title": "23 NYCRR Part 500 as amended by the Second Amendment (effective 1 Nov 2023), NYDFS text",
+        "publisher": "New York State Department of Financial Services",
+        "secondaryUrls": [
+          "https://www.dfs.ny.gov/system/files/documents/2023/10/rf_fs_2amend23NYCRR500_notice_20231101.pdf"
+        ],
+        "article": "500.16(a)(1)(vii)"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-28",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "resilience-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-28",
+      "nextReview": "2027-10-28",
+      "notes": "Read 28 Oct 2026."
+    },
+    {
+      "id": "CLM-RES-090",
+      "accelerators": [
+        "resilience-iq"
+      ],
+      "kind": "obligation",
+      "jurisdiction": "US-NY",
+      "statement": "23 NYCRR 500.16(d): a covered entity tests, periodically and at a minimum annually, (1) its incident response and BCDR plans with all staff and management critical to the response, revising them as necessary, and (2) its ability to restore its critical data and information systems from backups.",
+      "source": {
+        "url": "https://www.dfs.ny.gov/system/files/documents/2023/12/rf23_nycrr_part_500_amend02_20231101.pdf",
+        "title": "23 NYCRR Part 500 as amended by the Second Amendment (effective 1 Nov 2023), NYDFS text",
+        "publisher": "New York State Department of Financial Services",
+        "secondaryUrls": [
+          "https://www.dfs.ny.gov/system/files/documents/2023/10/rf_fs_2amend23NYCRR500_notice_20231101.pdf"
+        ],
+        "article": "500.16(d)(1)-(2)"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-28",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "resilience-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-28",
+      "nextReview": "2027-10-28",
+      "notes": "Read 28 Oct 2026. One of the three bases for the 12-month test rule (A9)."
+    },
+    {
+      "id": "CLM-RES-091",
+      "accelerators": [
+        "resilience-iq"
+      ],
+      "kind": "obligation",
+      "jurisdiction": "US-NY",
+      "statement": "23 NYCRR 500.16(e): a covered entity maintains backups necessary to restore material operations, adequately protected from unauthorized alterations or destruction.",
+      "source": {
+        "url": "https://www.dfs.ny.gov/system/files/documents/2023/12/rf23_nycrr_part_500_amend02_20231101.pdf",
+        "title": "23 NYCRR Part 500 as amended by the Second Amendment (effective 1 Nov 2023), NYDFS text",
+        "publisher": "New York State Department of Financial Services",
+        "secondaryUrls": [
+          "https://www.dfs.ny.gov/system/files/documents/2023/10/rf_fs_2amend23NYCRR500_notice_20231101.pdf"
+        ],
+        "article": "500.16(e)"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-28",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "resilience-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-28",
+      "nextReview": "2027-10-28",
+      "notes": "Read 28 Oct 2026."
+    },
+    {
+      "id": "CLM-RES-092",
+      "accelerators": [
+        "resilience-iq"
+      ],
+      "kind": "regulation",
+      "jurisdiction": "US-NY",
+      "statement": "23 NYCRR 500.19(a): a covered entity with fewer than 20 employees and independent contractors (including affiliates), or less than USD 7.5 million gross annual revenue in each of the last three fiscal years, or less than USD 15 million year-end total assets, is exempt from 500.16 (and from 500.4, 500.5, 500.6, 500.8, 500.10, parts of 500.14 and 500.15).",
+      "source": {
+        "url": "https://www.dfs.ny.gov/system/files/documents/2023/12/rf23_nycrr_part_500_amend02_20231101.pdf",
+        "title": "23 NYCRR Part 500 as amended by the Second Amendment (effective 1 Nov 2023), NYDFS text",
+        "publisher": "New York State Department of Financial Services",
+        "secondaryUrls": [
+          "https://www.dfs.ny.gov/system/files/documents/2023/10/rf_fs_2amend23NYCRR500_notice_20231101.pdf"
+        ],
+        "article": "500.19(a)"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-28",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "resilience-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-28",
+      "nextReview": "2027-10-28",
+      "notes": "Read 28 Oct 2026. Basis of the REG-02 limited-exemption option (Q13)."
+    },
+    {
+      "id": "CLM-RES-093",
+      "accelerators": [
+        "resilience-iq"
+      ],
+      "kind": "date",
+      "jurisdiction": "US-NY",
+      "statement": "23 NYCRR 500.22(d)(2): covered entities had one year from the effective date of the Second Amendment (1 November 2023) to comply with the new requirements of 500.16, so the amended 500.16 duties apply from 1 November 2024.",
+      "source": {
+        "url": "https://www.dfs.ny.gov/system/files/documents/2023/12/rf23_nycrr_part_500_amend02_20231101.pdf",
+        "title": "23 NYCRR Part 500 as amended by the Second Amendment (effective 1 Nov 2023), NYDFS text",
+        "publisher": "New York State Department of Financial Services",
+        "secondaryUrls": [
+          "https://www.dfs.ny.gov/system/files/documents/2023/10/rf_fs_2amend23NYCRR500_notice_20231101.pdf"
+        ],
+        "article": "500.22(d)(2)"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-28",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "resilience-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-28",
+      "nextReview": "2027-10-28",
+      "notes": "Read 28 Oct 2026. The effective date of 1 Nov 2023 is stated by DFS (CLM-SOV-120)."
+    },
+    {
+      "id": "CLM-RES-094",
+      "accelerators": [
+        "resilience-iq"
+      ],
+      "kind": "regulation",
+      "jurisdiction": "US",
+      "statement": "The FFIEC IT Examination Handbook Business Continuity Management booklet (November 2019) replaced the February 2015 Business Continuity Planning booklet; it describes principles and practices examiners use to assess whether management adequately addresses risks to the availability of critical financial products and services, and the FDIC states that it does not impose new requirements on examined entities.",
+      "source": {
+        "url": "https://www.fdic.gov/news/inactive-financial-institution-letters/2019/fil19071.pdf",
+        "title": "FDIC FIL-71-2019, Updated FFIEC IT Examination Handbook, Business Continuity Management Booklet (14 Nov 2019)",
+        "publisher": "Federal Deposit Insurance Corporation",
+        "article": "Summary; Highlights",
+        "secondaryUrls": [
+          "https://occ.gov/news-issuances/bulletins/2019/bulletin-2019-57.html",
+          "https://www.federalreserve.gov/supervisionreg/srletters/SR1913.htm"
+        ]
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-28",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "resilience-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-28",
+      "nextReview": "2027-10-28",
+      "notes": "FDIC FIL-71-2019 re-read on 28 Oct 2026; OCC 2019-57 and Federal Reserve SR 19-13 read the same day. Shown as \"examination expectation\" with no severity uplift (Q5)."
+    },
+    {
+      "id": "CLM-RES-095",
+      "accelerators": [
+        "resilience-iq"
+      ],
+      "kind": "regulation",
+      "jurisdiction": "US",
+      "statement": "The FFIEC BCM booklet is applied by the federal banking agencies to the institutions they supervise: the Federal Reserve to all institutions it supervises (SR 19-13), the FDIC to all FDIC-supervised institutions (FIL-71-2019) and the OCC to national banks, federal savings associations and federal branches and agencies (Bulletin 2019-57).",
+      "source": {
+        "url": "https://www.federalreserve.gov/supervisionreg/srletters/SR1913.htm",
+        "title": "Federal Reserve SR 19-13, FFIEC IT Examination Handbook Business Continuity Management booklet (15 Nov 2019, revised 12 Dec 2019)",
+        "publisher": "Board of Governors of the Federal Reserve System",
+        "article": "Applicability",
+        "secondaryUrls": [
+          "https://www.fdic.gov/news/inactive-financial-institution-letters/2019/fil19071.pdf",
+          "https://occ.gov/news-issuances/bulletins/2019/bulletin-2019-57.html"
+        ]
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-28",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "resilience-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-28",
+      "nextReview": "2027-10-28",
+      "notes": "Read 28 Oct 2026. Basis of the new B1 value us_federal_banking_supervised (Q5)."
+    },
+    {
+      "id": "CLM-RES-096",
+      "accelerators": [
+        "resilience-iq"
+      ],
+      "kind": "obligation",
+      "jurisdiction": "US",
+      "statement": "The FFIEC BCM booklet covers BCM governance and its components, including resilience, strategies and plan development; training and awareness; exercises and tests; maintenance and improvement; reporting to the board of directors; and identification of critical business functions and interdependencies. The OCC notes that disruptions such as cyber events, natural disasters or man-made events can interrupt a bank's operations.",
+      "source": {
+        "url": "https://www.federalreserve.gov/supervisionreg/srletters/SR1913.htm",
+        "title": "Federal Reserve SR 19-13, FFIEC IT Examination Handbook Business Continuity Management booklet (15 Nov 2019, revised 12 Dec 2019)",
+        "publisher": "Board of Governors of the Federal Reserve System",
+        "article": "Summary",
+        "secondaryUrls": [
+          "https://occ.gov/news-issuances/bulletins/2019/bulletin-2019-57.html"
+        ]
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-28",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "resilience-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-28",
+      "nextReview": "2027-10-28",
+      "notes": "Themes read in SR 19-13 and OCC 2019-57 on 28 Oct 2026. The booklet itself returned HTTP 403 to every fetch (ithandbook.ffiec.gov page and PDF), so booklet section numbers are not cited."
+    },
+    {
+      "id": "CLM-RES-097",
+      "accelerators": [
+        "resilience-iq"
+      ],
+      "kind": "obligation",
+      "jurisdiction": "US",
+      "statement": "The FFIEC BCM booklet's specific expectations on business impact analysis, third-party service provider continuity and cyber resilience (for example protected or isolated backups) as section-level passages.",
+      "verification": "UNSOURCED",
+      "volatile": false,
+      "clientVisible": false,
+      "owner": "resilience-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-28",
+      "nextReview": "2027-01-26",
+      "basisNote": "Settled by reading the booklet PDF at ithandbook.ffiec.gov (HTTP 403 to this environment on 27 and 28 Oct 2026, by curl and WebFetch) or an agency-hosted copy. Until then the FFIEC BIA, third-party and cyber checks are shown in consultant view only.",
+      "notes": "Agency letters (FDIC, OCC, Federal Reserve) do not describe these themes at passage level."
+    },
+    {
+      "id": "CLM-RES-098",
+      "accelerators": [
+        "resilience-iq"
+      ],
+      "kind": "framework",
+      "jurisdiction": "global",
+      "statement": "ISO 22301:2019 (amended 2024) specifies requirements for a business continuity management system; its operation clause covers business impact analysis and risk assessment, business continuity strategies and solutions, plans and procedures, and the exercise programme.",
+      "source": {
+        "url": "https://www.iso.org/standard/88412.html",
+        "title": "ISO 22301:2019 Security and resilience, Business continuity management systems, Requirements (with Amd 1:2024)",
+        "publisher": "ISO",
+        "article": "Clause 8 (titles only)"
+      },
+      "verification": "P",
+      "checkedOn": "2026-10-28",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "resilience-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-28",
+      "nextReview": "2027-10-28",
+      "notes": "Paid standard; only the catalogue page is public. Clause titles are cited, never quoted text. Not re-read on 28 Oct 2026."
+    },
+    {
+      "id": "CLM-RES-099",
+      "accelerators": [
+        "resilience-iq"
+      ],
+      "kind": "framework",
+      "jurisdiction": "global",
+      "statement": "ISO/IEC 27031 gives guidance on ICT readiness for business continuity: the ICT side of business continuity management that supports an organisation's business continuity objectives.",
+      "source": {
+        "url": "https://www.iso.org/standard/27031",
+        "title": "ISO/IEC 27031 Information technology, Cybersecurity, ICT readiness for business continuity",
+        "publisher": "ISO/IEC"
+      },
+      "verification": "P",
+      "checkedOn": "2026-10-28",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "resilience-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-28",
+      "nextReview": "2027-10-28",
+      "notes": "Paid standard; catalogue page only. Used as a framework mapping, not quoted."
+    },
+    {
+      "id": "CLM-RES-100",
+      "accelerators": [
+        "resilience-iq"
+      ],
+      "kind": "framework",
+      "jurisdiction": "global",
+      "statement": "NIST SP 800-34 Rev. 1 sets out a contingency planning process: business impact analysis, preventive controls, recovery strategies (backup and recovery, offsite storage, alternate sites), plan development, and testing, training and exercises.",
+      "source": {
+        "url": "https://nvlpubs.nist.gov/nistpubs/Legacy/SP/nistspecialpublication800-34r1.pdf",
+        "title": "NIST SP 800-34 Rev. 1, Contingency Planning Guide for Federal Information Systems",
+        "publisher": "NIST",
+        "secondaryUrls": [
+          "https://csrc.nist.gov/pubs/sp/800/34/r1/upd1/final"
+        ],
+        "article": "Chapter 3"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-28",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "resilience-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-28",
+      "nextReview": "2027-10-28",
+      "notes": "Read in the NIST PDF on 28 Oct 2026 (table of contents and sections 3.4.1-3.4.3). Upgrades P to V for the strategy sections."
+    },
+    {
+      "id": "CLM-RES-101",
+      "accelerators": [
+        "resilience-iq"
+      ],
+      "kind": "market_data",
+      "jurisdiction": "global",
+      "statement": "IBM Cost of a Data Breach Report 2026 (published 29 Jul 2026; research by Ponemon Institute, sponsored and analysed by IBM; 602 organisations globally, breaches between March 2025 and February 2026): global average cost of a data breach USD 4.99 million; reported ransomware incidents 39% of breaches against 34% the year before.",
+      "source": {
+        "url": "https://newsroom.ibm.com/2026-07-29-ibm-study-one-in-four-malicious-breaches-are-ai-enabled,-costing-companies-6-million-on-average",
+        "title": "IBM newsroom: Cost of a Data Breach Report 2026 release (29 Jul 2026)",
+        "publisher": "IBM",
+        "secondaryUrls": [
+          "https://www.ibm.com/reports/data-breach"
+        ]
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-28",
+      "volatile": true,
+      "clientVisible": true,
+      "owner": "resilience-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-28",
+      "nextReview": "2027-01-26",
+      "notes": "Read on the IBM newsroom release on 28 Oct 2026. Context only in the Method tab, never multiplied by client values and never an LTM benchmark (D5). Replaces the design's secondary-source figure."
+    },
+    {
+      "id": "CLM-RES-102",
+      "accelerators": [
+        "resilience-iq"
+      ],
+      "kind": "market_data",
+      "jurisdiction": "global",
+      "statement": "IBM Cost of a Data Breach Report 2025 (published 30 Jul 2025; Ponemon Institute; 600 organisations, breaches between March 2024 and February 2025): global average cost of a data breach USD 4.44 million.",
+      "source": {
+        "url": "https://newsroom.ibm.com/2025-07-30-ibm-report-13-of-organizations-reported-breaches-of-ai-models-or-applications,-97-of-which-reported-lacking-proper-ai-access-controls",
+        "title": "IBM newsroom: Cost of a Data Breach Report 2025 release (30 Jul 2025)",
+        "publisher": "IBM"
+      },
+      "verification": "S",
+      "checkedOn": "2026-10-28",
+      "volatile": true,
+      "clientVisible": true,
+      "owner": "resilience-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-28",
+      "nextReview": "2027-01-26",
+      "notes": "Figures quoted from the IBM newsroom release in search results on 28 Oct 2026; the release itself was not fetched. Shown only as the prior-year comparison to the 2026 figure, if at all."
+    },
+    {
+      "id": "CLM-RES-103",
+      "accelerators": [
+        "resilience-iq"
+      ],
+      "kind": "market_data",
+      "jurisdiction": "global",
+      "statement": "Uptime Institute Annual outage analysis 2026: in Uptime's Global Data Center Survey 2025 (second quarter 2025, more than 800 operator respondents; 94 answered the outage-cost question), 57% said their most recent impactful outage cost more than USD 100,000 and one in five more than USD 1 million; per-site outage rates declined for the fifth consecutive year.",
+      "source": {
+        "url": "https://datacenter.uptimeinstitute.com/rs/711-RIA-145/images/2026.AnnualOutageAnalysis.pdf",
+        "title": "Uptime Institute, Annual outage analysis 2026 (keynote report)",
+        "publisher": "Uptime Institute",
+        "secondaryUrls": [
+          "https://uptimeinstitute.com/about-ui/press-releases/uptime-announces-annual-outage-analysis-report-2026"
+        ],
+        "article": "Key findings; Figure 16; Appendix: Sources and methodology"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-28",
+      "volatile": true,
+      "clientVisible": true,
+      "owner": "resilience-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-28",
+      "nextReview": "2027-01-26",
+      "notes": "Read in the Uptime PDF and press release (13 May 2026) on 28 Oct 2026. Self-reported estimates by data-centre operators, not a measured cost. Replaces the design's 2025 figures (54%, 20%), which were from the prior edition and secondary sources."
+    },
+    {
+      "id": "CLM-RES-104",
+      "accelerators": [
+        "resilience-iq"
+      ],
+      "kind": "market_data",
+      "jurisdiction": "global",
+      "statement": "ENISA Threat Landscape 2025 (October 2025): 4,875 incidents collected and analysed for 1 July 2024 to 30 June 2025, mainly from open sources plus anonymised information from EU Member States and partners; encrypting ransomware was the most directly impactful threat, and ransomware made up 81.1% of the cybercrime activity recorded against EU organisations.",
+      "source": {
+        "url": "https://www.enisa.europa.eu/sites/default/files/2025-11/ENISA%20Threat%20Landscape%202025.pdf",
+        "title": "ENISA Threat Landscape 2025 (October 2025)",
+        "publisher": "European Union Agency for Cybersecurity (ENISA)",
+        "secondaryUrls": [
+          "https://www.enisa.europa.eu/publications/enisa-threat-landscape-2025"
+        ],
+        "article": "2 Methodology; 6 Cybercrime"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-28",
+      "volatile": true,
+      "clientVisible": true,
+      "owner": "resilience-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-28",
+      "nextReview": "2027-01-26",
+      "notes": "Read in the ENISA PDF on 28 Oct 2026. ENISA notes open sources do not give a complete picture. Upgrades P to V."
+    },
+    {
+      "id": "CLM-RES-105",
+      "accelerators": [
+        "resilience-iq"
+      ],
+      "kind": "heuristic",
+      "jurisdiction": "global",
+      "statement": "Resilience posture (0-100) weights the six domains BCP 0.18, DR 0.20, Cyber recovery 0.18, Operations 0.16, Third parties 0.12, Infrastructure 0.16; each domain is the mean option score scaled by 0.7 + 0.3 x evidence confidence.",
+      "source": {
+        "url": "https://github.com/dixitashutosh007/ltm-accelerators/blob/main/docs/cio-readiness/resilience-iq/design/DESIGN.md",
+        "title": "LTM Resilience IQ RQ1 design pack (approved by the product owner with defaults Q1-Q15, 28 Oct 2026)",
+        "publisher": "LTM",
+        "article": "6 (posture)"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-28",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "resilience-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-28",
+      "nextReview": "2027-04-28",
+      "basisNote": "Weights reflect LTM's judgement that recovery capability and cyber recovery carry the most weight for a critical service; no published weighting exists. Sensitivity: moving 0.05 between two domains shifts posture by about 3-4 points (validation A1).",
+      "notes": "LTM heuristic, not a market fact or a regulatory requirement. Verification V means the statement matches the owner-approved design pack (the source); the report shows it in the assumption register as an LTM heuristic with this reasoning. Calibrated on the reference scenarios in RQ5."
+    },
+    {
+      "id": "CLM-RES-106",
+      "accelerators": [
+        "resilience-iq"
+      ],
+      "kind": "heuristic",
+      "jurisdiction": "global",
+      "statement": "Each answer option has a score from 0 to 100 set by LTM; Unknown scores as risk, never neutral, and every defined requirement value scores the same (a requirement is not a capability).",
+      "source": {
+        "url": "https://github.com/dixitashutosh007/ltm-accelerators/blob/main/docs/cio-readiness/resilience-iq/design/DESIGN.md",
+        "title": "LTM Resilience IQ RQ1 design pack (approved by the product owner with defaults Q1-Q15, 28 Oct 2026)",
+        "publisher": "LTM",
+        "article": "12.1; scoring-model question_scoring"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-28",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "resilience-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-28",
+      "nextReview": "2027-04-28",
+      "basisNote": "Option scores rank answers by the capability they show; R9 decision 1 makes Unknown a risk. Sensitivity: the largest single question (EX-12) moves posture by about 12 points (validation A2); RQ5 sets a per-answer limit.",
+      "notes": "LTM heuristic, not a market fact or a regulatory requirement. Verification V means the statement matches the owner-approved design pack (the source); the report shows it in the assumption register as an LTM heuristic with this reasoning. Calibrated on the reference scenarios in RQ5."
+    },
+    {
+      "id": "CLM-RES-107",
+      "accelerators": [
+        "resilience-iq"
+      ],
+      "kind": "heuristic",
+      "jurisdiction": "global",
+      "statement": "Evidence confidence: none 0.5, self-declared 0.7, documented 0.85, tested 0.95, independently validated 1.0; consultant-validated evidence raises confidence for the findings it covers.",
+      "source": {
+        "url": "https://github.com/dixitashutosh007/ltm-accelerators/blob/main/docs/cio-readiness/resilience-iq/design/DESIGN.md",
+        "title": "LTM Resilience IQ RQ1 design pack (approved by the product owner with defaults Q1-Q15, 28 Oct 2026)",
+        "publisher": "LTM",
+        "article": "6; scoring-model evidence_confidence"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-28",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "resilience-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-28",
+      "nextReview": "2027-04-28",
+      "basisNote": "Ordinal steps from claimed to independently validated; R10.4 and D8. Sensitivity: up to 15% on every domain score (validation A3).",
+      "notes": "LTM heuristic, not a market fact or a regulatory requirement. Verification V means the statement matches the owner-approved design pack (the source); the report shows it in the assumption register as an LTM heuristic with this reasoning. Calibrated on the reference scenarios in RQ5."
+    },
+    {
+      "id": "CLM-RES-108",
+      "accelerators": [
+        "resilience-iq"
+      ],
+      "kind": "heuristic",
+      "jurisdiction": "global",
+      "statement": "Posture ratings: Exposed 0-39, Fragile 40-59, Managed 60-74, Resilient 75-89, Adaptive 90-100.",
+      "source": {
+        "url": "https://github.com/dixitashutosh007/ltm-accelerators/blob/main/docs/cio-readiness/resilience-iq/design/DESIGN.md",
+        "title": "LTM Resilience IQ RQ1 design pack (approved by the product owner with defaults Q1-Q15, 28 Oct 2026)",
+        "publisher": "LTM",
+        "article": "6 (rating); Q15"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-28",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "resilience-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-28",
+      "nextReview": "2027-04-28",
+      "basisNote": "Five equal-meaning bands used across LTM accelerators; the lowest band is renamed from \"Critical Exposure\" to \"Exposed\" (Q15) so it is not confused with the critical-exposure measure. Sensitivity: label only; RQ5 checks every band is reachable.",
+      "notes": "LTM heuristic, not a market fact or a regulatory requirement. Verification V means the statement matches the owner-approved design pack (the source); the report shows it in the assumption register as an LTM heuristic with this reasoning. Calibrated on the reference scenarios in RQ5."
+    },
+    {
+      "id": "CLM-RES-109",
+      "accelerators": [
+        "resilience-iq"
+      ],
+      "kind": "heuristic",
+      "jurisdiction": "global",
+      "statement": "Critical exposure is Severe with 3 or more Critical findings and High with 1 or more Critical or 4 or more High findings; a Severe exposure caps the rating at Fragile and a High exposure at Managed, and the cap and its reason are always shown.",
+      "source": {
+        "url": "https://github.com/dixitashutosh007/ltm-accelerators/blob/main/docs/cio-readiness/resilience-iq/design/DESIGN.md",
+        "title": "LTM Resilience IQ RQ1 design pack (approved by the product owner with defaults Q1-Q15, 28 Oct 2026)",
+        "publisher": "LTM",
+        "article": "6 (exposure cap)"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-28",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "resilience-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-28",
+      "nextReview": "2027-04-28",
+      "basisNote": "R3 D1 confirmed by R9 decision 5 (D2): a high score must not hide gaps that can stop a critical service. Sensitivity: the rating label, not the number (for example 86 shown as Managed with its reason).",
+      "notes": "LTM heuristic, not a market fact or a regulatory requirement. Verification V means the statement matches the owner-approved design pack (the source); the report shows it in the assumption register as an LTM heuristic with this reasoning. Calibrated on the reference scenarios in RQ5."
+    },
+    {
+      "id": "CLM-RES-110",
+      "accelerators": [
+        "resilience-iq"
+      ],
+      "kind": "heuristic",
+      "jurisdiction": "global",
+      "statement": "A maturity of \"Tested\" or above needs an end-to-end recovery test within the last 12 months and scenario exercises.",
+      "source": {
+        "url": "https://github.com/dixitashutosh007/ltm-accelerators/blob/main/docs/cio-readiness/resilience-iq/design/DESIGN.md",
+        "title": "LTM Resilience IQ RQ1 design pack (approved by the product owner with defaults Q1-Q15, 28 Oct 2026)",
+        "publisher": "LTM",
+        "article": "5 (R9 decision 5); 6 (maturity)"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-28",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "resilience-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-28",
+      "nextReview": "2027-04-28",
+      "basisNote": "Grounded in DORA Art. 11(6) (at least yearly), APRA CPS 230 para 43 (annual business continuity exercise) and 23 NYCRR 500.16(d) (at least annually). Sensitivity: maturity at most Defined without a test in 12 months.",
+      "notes": "LTM heuristic, not a market fact or a regulatory requirement. Verification V means the statement matches the owner-approved design pack (the source); the report shows it in the assumption register as an LTM heuristic with this reasoning. Calibrated on the reference scenarios in RQ5."
+    },
+    {
+      "id": "CLM-RES-111",
+      "accelerators": [
+        "resilience-iq"
+      ],
+      "kind": "heuristic",
+      "jurisdiction": "global",
+      "statement": "Maturity is a secondary label from the posture: Reactive below 40, Documented 40-59, Defined 60-74, Tested 75-89, Adaptive 90 and above, lowered where critical exposure caps the rating or no recovery test was run in the last 12 months.",
+      "source": {
+        "url": "https://github.com/dixitashutosh007/ltm-accelerators/blob/main/docs/cio-readiness/resilience-iq/design/DESIGN.md",
+        "title": "LTM Resilience IQ RQ1 design pack (approved by the product owner with defaults Q1-Q15, 28 Oct 2026)",
+        "publisher": "LTM",
+        "article": "6 (maturity)"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-28",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "resilience-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-28",
+      "nextReview": "2027-04-28",
+      "basisNote": "Five-level scale used since v1 (scoring-model maturity_scale); thresholds match the rating bands so the two labels never contradict. Sensitivity: label only (validation A8).",
+      "notes": "LTM heuristic, not a market fact or a regulatory requirement. Verification V means the statement matches the owner-approved design pack (the source); the report shows it in the assumption register as an LTM heuristic with this reasoning. Calibrated on the reference scenarios in RQ5."
+    },
+    {
+      "id": "CLM-RES-112",
+      "accelerators": [
+        "resilience-iq"
+      ],
+      "kind": "heuristic",
+      "jurisdiction": "global",
+      "statement": "Finding severity: Critical where a gap can stop a critical service operating within its impact tolerance or invalidate recovery (for example no defined requirement, no usable backups or backups whose retention a compromised administrator could shorten, recovery correlated with production, recovery reachable by ransomware, no identity recovery path, proven recovery beyond tolerance); High, Medium and Low as set out in the design pack, with Unknown treated as the worse case.",
+      "source": {
+        "url": "https://github.com/dixitashutosh007/ltm-accelerators/blob/main/docs/cio-readiness/resilience-iq/design/DESIGN.md",
+        "title": "LTM Resilience IQ RQ1 design pack (approved by the product owner with defaults Q1-Q15, 28 Oct 2026)",
+        "publisher": "LTM",
+        "article": "9.4"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-28",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "resilience-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-28",
+      "nextReview": "2027-04-28",
+      "basisNote": "Built on the blueprint engine's Critical definition and R9 decisions 3 and 6 (\"immutable, restore not tested\" and moderate concentration are High). Sensitivity: exposure level and cap.",
+      "notes": "LTM heuristic, not a market fact or a regulatory requirement. Verification V means the statement matches the owner-approved design pack (the source); the report shows it in the assumption register as an LTM heuristic with this reasoning. Calibrated on the reference scenarios in RQ5."
+    },
+    {
+      "id": "CLM-RES-113",
+      "accelerators": [
+        "resilience-iq"
+      ],
+      "kind": "heuristic",
+      "jurisdiction": "global",
+      "statement": "A finding cited by an obligation that applies now (rule or guideline) with status \"not evidenced\" is at least High; FFIEC examination expectations never raise severity.",
+      "source": {
+        "url": "https://github.com/dixitashutosh007/ltm-accelerators/blob/main/docs/cio-readiness/resilience-iq/design/DESIGN.md",
+        "title": "LTM Resilience IQ RQ1 design pack (approved by the product owner with defaults Q1-Q15, 28 Oct 2026)",
+        "publisher": "LTM",
+        "article": "9.4 (obligation uplift)"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-28",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "resilience-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-28",
+      "nextReview": "2027-04-28",
+      "basisNote": "A regulatory duty not evidenced is a reportable supervisory risk; FFIEC guidance imposes no new requirement (FDIC FIL-71-2019). Sensitivity: can move a Medium finding to High.",
+      "notes": "LTM heuristic, not a market fact or a regulatory requirement. Verification V means the statement matches the owner-approved design pack (the source); the report shows it in the assumption register as an LTM heuristic with this reasoning. Calibrated on the reference scenarios in RQ5."
+    },
+    {
+      "id": "CLM-RES-114",
+      "accelerators": [
+        "resilience-iq"
+      ],
+      "kind": "heuristic",
+      "jurisdiction": "global",
+      "statement": "Default time frames: Critical 0-3 months, High 3-6 months, Medium 6-12 months, Low 12-24 months; an obligation that applies later sets \"by\" its date.",
+      "source": {
+        "url": "https://github.com/dixitashutosh007/ltm-accelerators/blob/main/docs/cio-readiness/resilience-iq/design/DESIGN.md",
+        "title": "LTM Resilience IQ RQ1 design pack (approved by the product owner with defaults Q1-Q15, 28 Oct 2026)",
+        "publisher": "LTM",
+        "article": "9.4 (time frames)"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-28",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "resilience-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-28",
+      "nextReview": "2027-04-28",
+      "basisNote": "Sequencing judgement for an 18-month roadmap; replaces the v1 windows (A15). Sensitivity: roadmap wave placement only.",
+      "notes": "LTM heuristic, not a market fact or a regulatory requirement. Verification V means the statement matches the owner-approved design pack (the source); the report shows it in the assumption register as an LTM heuristic with this reasoning. Calibrated on the reference scenarios in RQ5."
+    },
+    {
+      "id": "CLM-RES-115",
+      "accelerators": [
+        "resilience-iq"
+      ],
+      "kind": "heuristic",
+      "jurisdiction": "global",
+      "statement": "For DORA Art. 11(3) and CPS 230 para 46, which state no interval, an independent audit of business continuity more than three years ago counts as only partly meeting the obligation.",
+      "source": {
+        "url": "https://github.com/dixitashutosh007/ltm-accelerators/blob/main/docs/cio-readiness/resilience-iq/design/DESIGN.md",
+        "title": "LTM Resilience IQ RQ1 design pack (approved by the product owner with defaults Q1-Q15, 28 Oct 2026)",
+        "publisher": "LTM",
+        "article": "7.4 (EU_DORA.AUDIT, AU_APRA_CPS230.INTERNAL_AUDIT)"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-28",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "resilience-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-28",
+      "nextReview": "2027-04-28",
+      "basisNote": "Borrowed from the only interval in the v1 regimes, MAS BCM 8.2 (at least once every three years). Sensitivity: one obligation status (met to partly) per regime.",
+      "notes": "LTM heuristic, not a market fact or a regulatory requirement. Verification V means the statement matches the owner-approved design pack (the source); the report shows it in the assumption register as an LTM heuristic with this reasoning. Calibrated on the reference scenarios in RQ5."
+    },
+    {
+      "id": "CLM-RES-116",
+      "accelerators": [
+        "resilience-iq"
+      ],
+      "kind": "heuristic",
+      "jurisdiction": "global",
+      "statement": "A workshop assesses at most five critical business services; a client with more runs a second assessment or a business impact analysis engagement.",
+      "source": {
+        "url": "https://github.com/dixitashutosh007/ltm-accelerators/blob/main/docs/cio-readiness/resilience-iq/design/DESIGN.md",
+        "title": "LTM Resilience IQ RQ1 design pack (approved by the product owner with defaults Q1-Q15, 28 Oct 2026)",
+        "publisher": "LTM",
+        "article": "2 (five-service limit)"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-28",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "resilience-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-28",
+      "nextReview": "2027-04-28",
+      "basisNote": "Five keeps a workshop within one day. Sensitivity: scope only; no score effect.",
+      "notes": "LTM heuristic, not a market fact or a regulatory requirement. Verification V means the statement matches the owner-approved design pack (the source); the report shows it in the assumption register as an LTM heuristic with this reasoning. Calibrated on the reference scenarios in RQ5."
+    },
+    {
+      "id": "CLM-RES-117",
+      "accelerators": [
+        "resilience-iq"
+      ],
+      "kind": "heuristic",
+      "jurisdiction": "global",
+      "statement": "Each obligation's status (met, partly, not evidenced, not assessed, applies later, assessed in Sovereign IQ) is derived from named questions; Unknown fails a check; \"met\" is shown as self-reported unless consultant-validated evidence backs every check. The status is indicative, from the client's answers, and is not a compliance opinion.",
+      "source": {
+        "url": "https://github.com/dixitashutosh007/ltm-accelerators/blob/main/docs/cio-readiness/resilience-iq/design/DESIGN.md",
+        "title": "LTM Resilience IQ RQ1 design pack (approved by the product owner with defaults Q1-Q15, 28 Oct 2026)",
+        "publisher": "LTM",
+        "article": "7.3"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-28",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "resilience-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-28",
+      "nextReview": "2027-04-28",
+      "basisNote": "D6: the obligation layer never gives a compliance verdict; counsel reviews regulatory content before external use (RQ11). Sensitivity: status labels only.",
+      "notes": "LTM heuristic, not a market fact or a regulatory requirement. Verification V means the statement matches the owner-approved design pack (the source); the report shows it in the assumption register as an LTM heuristic with this reasoning. Calibrated on the reference scenarios in RQ5."
+    },
+    {
+      "id": "CLM-RES-118",
+      "accelerators": [
+        "resilience-iq"
+      ],
+      "kind": "heuristic",
+      "jurisdiction": "global",
+      "statement": "Impact is shown only when the client gives its own cost per hour of disruption as a low-high range: cost low x hours gap low to cost high x hours gap high, where the gap is between the proven recovery time and the required RTO (bands < 15 min, 15-60 min, 1-4 h, 4-24 h, > 24 h). No default or market figure is ever substituted; an open-ended proven time shows a lower bound plus the cost of each further day.",
+      "source": {
+        "url": "https://github.com/dixitashutosh007/ltm-accelerators/blob/main/docs/cio-readiness/resilience-iq/design/DESIGN.md",
+        "title": "LTM Resilience IQ RQ1 design pack (approved by the product owner with defaults Q1-Q15, 28 Oct 2026)",
+        "publisher": "LTM",
+        "article": "8 (impact model)"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-28",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "resilience-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-28",
+      "nextReview": "2027-04-28",
+      "basisNote": "D5 and Q10: no invented money. Sensitivity: proportional to the client's own estimate.",
+      "notes": "LTM heuristic, not a market fact or a regulatory requirement. Verification V means the statement matches the owner-approved design pack (the source); the report shows it in the assumption register as an LTM heuristic with this reasoning. Calibrated on the reference scenarios in RQ5."
+    },
+    {
+      "id": "CLM-RES-119",
+      "accelerators": [
+        "resilience-iq"
+      ],
+      "kind": "heuristic",
+      "jurisdiction": "global",
+      "statement": "Where data-residency or sovereignty constraints limit recovery options, or exit and concentration are driven by sovereignty, the finding is referred to Sovereign IQ rather than scored here.",
+      "source": {
+        "url": "https://github.com/dixitashutosh007/ltm-accelerators/blob/main/docs/cio-readiness/resilience-iq/design/DESIGN.md",
+        "title": "LTM Resilience IQ RQ1 design pack (approved by the product owner with defaults Q1-Q15, 28 Oct 2026)",
+        "publisher": "LTM",
+        "article": "7.5"
+      },
+      "verification": "V",
+      "checkedOn": "2026-10-28",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "resilience-lead (agent); approver: product owner",
+      "lastReviewed": "2026-10-28",
+      "nextReview": "2027-04-28",
+      "basisNote": "Boundary agreed with Sovereign IQ (D12; Sovereign DESIGN section 11). Sensitivity: none on the posture.",
+      "notes": "LTM heuristic, not a market fact or a regulatory requirement. Verification V means the statement matches the owner-approved design pack (the source); the report shows it in the assumption register as an LTM heuristic with this reasoning. Calibrated on the reference scenarios in RQ5."
     }
   ]
 }

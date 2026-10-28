@@ -1,5 +1,5 @@
 {
-  "note": "Overclaiming, legal-overreach, endorsement and hype phrases. Read by scripts/check-claims.cjs (CI) and by the report checks at report time (R5).",
+  "note": "Overclaiming, legal-overreach, endorsement and hype phrases. Read by scripts/check-claims.cjs (CI) and by the report checks at report time (R5). headingPatterns are checked against section titles and subheadings only.",
   "phrases": [
     {
       "pattern": "legally void",
@@ -30,8 +30,9 @@
       "flags": "i"
     },
     {
-      "pattern": "\\brecoverable\\b",
-      "flags": "i"
+      "pattern": "(?<![.\\w])recoverable\\b",
+      "flags": "i",
+      "note": "Prose only: dotted control codes such as RES.BACKUP.RECOVERABLE are not prose (Resilience IQ RQ2)."
     },
     {
       "pattern": "world[- ]class",
@@ -76,6 +77,43 @@
     {
       "pattern": "waste recovery",
       "flags": "i"
+    },
+    {
+      "pattern": "\\bcompliant with\\b",
+      "flags": "i",
+      "note": "Resilience IQ RQ2 item 5: never state compliance; obligations show an indicative status."
+    },
+    {
+      "pattern": "\\b(?:LTM[- ]certified|certified (?:by LTM|compliant|resilient|secure))\\b",
+      "flags": "i",
+      "note": "RQ2 item 5: no certification claims. Plain \"certified\" stays allowed for real schemes (for example DPF-certified recipients in Sovereign IQ)."
+    },
+    {
+      "pattern": "zero[- ]downtime",
+      "flags": "i",
+      "note": "RQ2 item 5."
+    },
+    {
+      "pattern": "\\bunbreakable\\b",
+      "flags": "i",
+      "note": "RQ2 item 5."
+    },
+    {
+      "pattern": "ransomware[- ]proof",
+      "flags": "i",
+      "note": "RQ2 item 5 (same family as \"unbreakable\")."
+    },
+    {
+      "pattern": "(?<![.\\w])immutab(?:le|ility)\\b(?![^.]*\\b(?:lock(?:ed|ing)?|retention|WORM|write[- ]once|legal hold|offline|air[- ]gap(?:ped)?)\\b)(?<!\\b(?:lock(?:ed|ing)?|retention|WORM|write[- ]once|legal hold|offline|air[- ]gap(?:ped)?)\\b[^.]*immutab(?:le|ility))",
+      "flags": "i",
+      "note": "RQ2 item 5: \"immutable\" must name its mechanism in the same sentence (retention lock, vault lock, WORM, legal hold, offline or air gap). Dotted control codes are skipped."
+    }
+  ],
+  "headingPatterns": [
+    {
+      "pattern": "^\\s*(?:DR-0[1-5]|G-\\d{2}|RA-\\d{2}|EX-\\d{2}|AF-[A-Z]{2,3}-\\d{2}|(?:REG|TOL)-\\d{2}|RES\\.[A-Z_.]+|CLM-[A-Z]{2,5}-\\d{3}|ASM-[A-Z]{2,5}-\\d{3})\\b",
+      "flags": "",
+      "note": "RQ2 item 5: codes are never headings; section titles and subheadings must start with words. Checked by the report checks (R5)."
     }
   ]
 }

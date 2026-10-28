@@ -1,0 +1,593 @@
+{
+  "registryVersion": "1.0.0",
+  "statusAsOf": "2026-10-28",
+  "rule": "Assumption register (FRAMEWORK.md area 13(b)) for Resilience IQ: the 24 assumptions of VALIDATION.md 4.4 (legacyId A1-A24) and the LTM heuristics flagged in DESIGN.md section 17, each with value, basis (client input / published source with claim ID / LTM heuristic with reasoning), confidence, sensitivity (what changes if it is wrong) and claim IDs. status says whether v2 keeps, changes or retires it. RQ3 adds the constants the v2 engine reads and a test that each matches the code, as FinOps IQ does.",
+  "basisValues": {
+    "client_input": "Given by the client (exact, band or evidence)",
+    "published_source": "Published source with a claim ID in the claims register",
+    "ltm_heuristic": "LTM heuristic with reasoning; not a market fact"
+  },
+  "statusValues": {
+    "kept_in_v2": "Kept as is",
+    "changed_in_v2": "Kept with the change stated",
+    "retired_in_v2": "Removed by RQ3; listed so the golden diff is explained",
+    "new_in_v2": "New in the v2 design",
+    "under_review_rq6": "Decided when the modes are timed (RQ6)"
+  },
+  "ownerApproval": "Design defaults approved by the owner on 28 Oct 2026 (D1-D15, Q1-Q15); values pending RQ5 calibration",
+  "assumptions": [
+    {
+      "id": "ASM-RES-001",
+      "legacyId": "A1",
+      "title": "Domain weights",
+      "value": "BCP 0.18, DR 0.20, Cyber 0.18, Operations 0.16, Third parties 0.12, Infrastructure 0.16",
+      "basis": "ltm_heuristic",
+      "claimIds": [
+        "CLM-RES-105"
+      ],
+      "reasoning": "Recovery and cyber recovery weigh most for a critical service; no published weighting exists.",
+      "confidence": "Low",
+      "sensitivity": "About 3-4 posture points per 0.05 moved between two domains",
+      "status": "kept_in_v2",
+      "currentSource": "resilience-iq/knowledge/scoring-model.json domain_weights"
+    },
+    {
+      "id": "ASM-RES-002",
+      "legacyId": "A2",
+      "title": "Option scores per question",
+      "value": "scoring-model.json question_scoring (0-100 per option)",
+      "basis": "ltm_heuristic",
+      "claimIds": [
+        "CLM-RES-106"
+      ],
+      "reasoning": "Ranks answers by the capability they show; Unknown scores as risk.",
+      "confidence": "Low",
+      "sensitivity": "EX-12 alone moves posture about 12 points; RQ5 sets a per-answer limit",
+      "status": "kept_in_v2",
+      "currentSource": "resilience-iq/knowledge/scoring-model.json question_scoring"
+    },
+    {
+      "id": "ASM-RES-003",
+      "legacyId": "A3",
+      "title": "Evidence confidence multiplier",
+      "value": "0.7 + 0.3 x (none 0.5 / self-declared 0.7 / documented 0.85 / tested 0.95 / independently validated 1.0)",
+      "basis": "ltm_heuristic",
+      "claimIds": [
+        "CLM-RES-107"
+      ],
+      "reasoning": "Ordinal steps from claimed to independently validated evidence.",
+      "confidence": "Low",
+      "sensitivity": "Up to -15% on every domain",
+      "status": "kept_in_v2",
+      "currentSource": "resilience-iq/knowledge/scoring-model.json evidence_confidence"
+    },
+    {
+      "id": "ASM-RES-004",
+      "legacyId": "A4",
+      "title": "Unanswered and Unknown answers never flatter",
+      "value": "v1: unanswered domain scores 0. v2: a blank question that was asked counts as Unknown (R9 decision 1)",
+      "basis": "ltm_heuristic",
+      "claimIds": [
+        "CLM-RES-106"
+      ],
+      "reasoning": "Product decision R8 and R9 decision 1: missing data must not raise the result.",
+      "confidence": "Medium",
+      "sensitivity": "Prevents the +6 posture flattering found at 30% blank answers (validation 4.5)",
+      "status": "changed_in_v2"
+    },
+    {
+      "id": "ASM-RES-005",
+      "legacyId": "A5",
+      "title": "Advisory domain adjustments",
+      "value": "advisory_adjustments per flag, domain cap 20; v1 overall penalty (cap 20) retired with the risk-adjusted score",
+      "basis": "ltm_heuristic",
+      "claimIds": [
+        "CLM-RES-105"
+      ],
+      "reasoning": "Advisory findings refine the domains they evidence; one effect per answer (Q11).",
+      "confidence": "Low",
+      "sensitivity": "Up to -20 on a domain",
+      "status": "changed_in_v2",
+      "currentSource": "resilience-iq/knowledge/scoring-model.json advisory_adjustments"
+    },
+    {
+      "id": "ASM-RES-006",
+      "legacyId": "A6",
+      "title": "Rating bands",
+      "value": "Exposed 0-39 (renamed from Critical Exposure, Q15), Fragile 40-59, Managed 60-74, Resilient 75-89, Adaptive 90-100",
+      "basis": "ltm_heuristic",
+      "claimIds": [
+        "CLM-RES-108"
+      ],
+      "reasoning": "Common five-band scale; rename avoids confusion with critical exposure.",
+      "confidence": "Low",
+      "sensitivity": "Label only",
+      "status": "changed_in_v2"
+    },
+    {
+      "id": "ASM-RES-007",
+      "legacyId": "A7",
+      "title": "Exposure caps",
+      "value": "Severe exposure caps the rating at Fragile; High exposure at Managed; cap reason always shown",
+      "basis": "ltm_heuristic",
+      "claimIds": [
+        "CLM-RES-109"
+      ],
+      "reasoning": "R3 D1, confirmed by R9 decision 5 (D2).",
+      "confidence": "Medium",
+      "sensitivity": "Rating label (for example 86 shown as Managed)",
+      "status": "kept_in_v2"
+    },
+    {
+      "id": "ASM-RES-008",
+      "legacyId": "A8",
+      "title": "Maturity thresholds",
+      "value": "Reactive < 40, Documented 40-59, Defined 60-74, Tested 75-89, Adaptive >= 90",
+      "basis": "ltm_heuristic",
+      "claimIds": [
+        "CLM-RES-111"
+      ],
+      "reasoning": "Aligned with the rating bands so the labels never contradict.",
+      "confidence": "Low",
+      "sensitivity": "Label only",
+      "status": "kept_in_v2",
+      "currentSource": "packages/engine-core/src/accelerators/resilience-iq/runtime.ts maturity()"
+    },
+    {
+      "id": "ASM-RES-009",
+      "legacyId": "A9",
+      "title": "\"Tested\" needs a test within 12 months and scenario exercises",
+      "value": "12 months",
+      "basis": "published_source",
+      "claimIds": [
+        "CLM-RES-110",
+        "CLM-RES-040",
+        "CLM-RES-069",
+        "CLM-RES-090"
+      ],
+      "reasoning": "DORA Art. 11(6), CPS 230 para 43 and 23 NYCRR 500.16(d) all require at least annual testing.",
+      "confidence": "High",
+      "sensitivity": "Maturity at most Defined without a test in 12 months",
+      "status": "kept_in_v2"
+    },
+    {
+      "id": "ASM-RES-010",
+      "legacyId": "A10",
+      "title": "Critical exposure levels",
+      "value": "Severe: 3 or more Critical; High: 1 or more Critical or 4 or more High",
+      "basis": "ltm_heuristic",
+      "claimIds": [
+        "CLM-RES-109"
+      ],
+      "reasoning": "A single Critical gap can stop a critical service; several High gaps compound.",
+      "confidence": "Low",
+      "sensitivity": "Drives the caps",
+      "status": "kept_in_v2"
+    },
+    {
+      "id": "ASM-RES-011",
+      "legacyId": "A11",
+      "title": "Pattern base score and bonuses",
+      "value": "v1: base 55, bonuses +22, +15, +18, +10, +24, +16, -10",
+      "basis": "ltm_heuristic",
+      "claimIds": [
+        "CLM-RES-017"
+      ],
+      "reasoning": "Replaced by the written ladder (D3); conflicted with AWS bands (C2).",
+      "confidence": "Low",
+      "sensitivity": "Changed the recommended strategy; removed in RQ3",
+      "status": "retired_in_v2"
+    },
+    {
+      "id": "ASM-RES-012",
+      "legacyId": "A12",
+      "title": "Cyber, concentration, dependency and advisory pattern bonuses",
+      "value": "v1 runtime.ts:593-628",
+      "basis": "ltm_heuristic",
+      "claimIds": [
+        "CLM-RES-024"
+      ],
+      "reasoning": "v2 modifiers add controls, never a rung (D3).",
+      "confidence": "Low",
+      "sensitivity": "Removed in RQ3",
+      "status": "retired_in_v2"
+    },
+    {
+      "id": "ASM-RES-013",
+      "legacyId": "A13",
+      "title": "Environment priority",
+      "value": "v1: AWS > Azure > Google Cloud > on-premises (+3 tie-break)",
+      "basis": "ltm_heuristic",
+      "claimIds": [
+        "CLM-RES-034"
+      ],
+      "reasoning": "v2 is vendor-neutral: playbook entries for every platform the client selects, with no priority.",
+      "confidence": "Low",
+      "sensitivity": "Removed in RQ3",
+      "status": "retired_in_v2"
+    },
+    {
+      "id": "ASM-RES-014",
+      "legacyId": "A14",
+      "title": "Confidence label from evidence",
+      "value": "v1: High >= 80, Moderate >= 60, else Low, with deductions; v2: from validated evidence per finding",
+      "basis": "ltm_heuristic",
+      "claimIds": [
+        "CLM-RES-107"
+      ],
+      "reasoning": "Evidence changes confidence (R10.4).",
+      "confidence": "Low",
+      "sensitivity": "Confidence label",
+      "status": "changed_in_v2"
+    },
+    {
+      "id": "ASM-RES-015",
+      "legacyId": "A15",
+      "title": "Roadmap windows",
+      "value": "v1: 0-30 days, 31-90 days, 3-6 months, 6-18 months; v2: time frames by severity",
+      "basis": "ltm_heuristic",
+      "claimIds": [
+        "CLM-RES-114"
+      ],
+      "reasoning": "Sequencing judgement over 18 months.",
+      "confidence": "Low",
+      "sensitivity": "Timing only",
+      "status": "changed_in_v2"
+    },
+    {
+      "id": "ASM-RES-016",
+      "legacyId": "A16",
+      "title": "Wave allocation, at most 4 actions per wave",
+      "value": "v1 code",
+      "basis": "ltm_heuristic",
+      "claimIds": [
+        "CLM-RES-114"
+      ],
+      "reasoning": "v2 puts every finding on the roadmap; nothing is dropped silently.",
+      "confidence": "Low",
+      "sensitivity": "Removed in RQ3/RQ7",
+      "status": "retired_in_v2"
+    },
+    {
+      "id": "ASM-RES-017",
+      "legacyId": "A17",
+      "title": "Flat penalties",
+      "value": "v1: 10 / 15 / 8 / 8 / 6 / 8 on the hidden risk-adjusted score",
+      "basis": "ltm_heuristic",
+      "claimIds": [
+        "CLM-RES-109",
+        "CLM-RES-112"
+      ],
+      "reasoning": "D4 and Q11: one headline, one effect per answer; severity is carried by gaps and the cap.",
+      "confidence": "Low",
+      "sensitivity": "Removed in RQ3",
+      "status": "retired_in_v2"
+    },
+    {
+      "id": "ASM-RES-018",
+      "legacyId": "A18",
+      "title": "Gap severities",
+      "value": "Critical, High, Medium, Low per DESIGN.md 9.4",
+      "basis": "ltm_heuristic",
+      "claimIds": [
+        "CLM-RES-112"
+      ],
+      "reasoning": "Critical = can stop a critical service within tolerance or invalidate recovery.",
+      "confidence": "Medium",
+      "sensitivity": "Exposure level and cap",
+      "status": "changed_in_v2"
+    },
+    {
+      "id": "ASM-RES-019",
+      "legacyId": "A19",
+      "title": "Unknown treated as the worse case",
+      "value": "v1: Unknown as \"Potentially\" (cyber) and moderate (concentration); v2: Unknown raises the Critical case (G-04, G-05, G-06)",
+      "basis": "ltm_heuristic",
+      "claimIds": [
+        "CLM-RES-112",
+        "CLM-RES-106"
+      ],
+      "reasoning": "Unknown counts as risk (R9 decision 1).",
+      "confidence": "Medium",
+      "sensitivity": "Findings and exposure",
+      "status": "changed_in_v2"
+    },
+    {
+      "id": "ASM-RES-020",
+      "legacyId": "A20",
+      "title": "Moderate concentration raises Critical G-04",
+      "value": "v1 decision tree",
+      "basis": "ltm_heuristic",
+      "claimIds": [
+        "CLM-RES-112"
+      ],
+      "reasoning": "R9 decision 6: moderate concentration gives G-08 (High) only.",
+      "confidence": "Low",
+      "sensitivity": "Removed in RQ3",
+      "status": "retired_in_v2"
+    },
+    {
+      "id": "ASM-RES-021",
+      "legacyId": "A21",
+      "title": "v1 rule: retention-locked backups with restore not proven = Critical G-03",
+      "value": "v1 decision tree",
+      "basis": "ltm_heuristic",
+      "claimIds": [
+        "CLM-RES-112"
+      ],
+      "reasoning": "R9 decision 3: becomes High \"Unproven recovery\".",
+      "confidence": "Low",
+      "sensitivity": "Removed in RQ3",
+      "status": "retired_in_v2"
+    },
+    {
+      "id": "ASM-RES-022",
+      "legacyId": "A22",
+      "title": "Answer bands in hours",
+      "value": "v1 minutes: < 15 min = 10, 4-24 h = 720, > 24 h = 1440; v2 ranges: [0, 0.25], [0.25, 1], [1, 4], [4, 24], [24, open)",
+      "basis": "ltm_heuristic",
+      "claimIds": [
+        "CLM-RES-118"
+      ],
+      "reasoning": "v2 uses the band bounds, so a gap is a range, never a point guess.",
+      "confidence": "Medium",
+      "sensitivity": "Impact range and proven-versus-required comparisons",
+      "status": "changed_in_v2"
+    },
+    {
+      "id": "ASM-RES-023",
+      "legacyId": "A23",
+      "title": "At most 8 advisory questions per round",
+      "value": "v1 runtime.ts:813",
+      "basis": "ltm_heuristic",
+      "claimIds": [
+        "CLM-RES-106"
+      ],
+      "reasoning": "Keeps a round short; RQ6 times the modes.",
+      "confidence": "Medium",
+      "sensitivity": "Depth and session length; no score effect",
+      "status": "under_review_rq6",
+      "shownToClient": false
+    },
+    {
+      "id": "ASM-RES-024",
+      "legacyId": "A24",
+      "title": "Pattern cost and complexity order",
+      "value": "Backup and restore < pilot light < warm standby < hot standby < active-active",
+      "basis": "published_source",
+      "claimIds": [
+        "CLM-RES-001"
+      ],
+      "reasoning": "AWS lists the strategies in increasing order of cost and complexity.",
+      "confidence": "High",
+      "sensitivity": "Ladder order",
+      "status": "kept_in_v2"
+    },
+    {
+      "id": "ASM-RES-025",
+      "title": "RTO band edges",
+      "value": "< 15 min hot standby; 15-60 min warm standby; 1-4 h pilot light; 4-24 h and > 24 h backup and restore",
+      "basis": "ltm_heuristic",
+      "claimIds": [
+        "CLM-RES-018",
+        "CLM-RES-019",
+        "CLM-RES-020",
+        "CLM-RES-021",
+        "CLM-RES-002",
+        "CLM-RES-003",
+        "CLM-RES-004"
+      ],
+      "reasoning": "Provider bands overlap the answer edges; the lowest pattern that meets the whole band is chosen.",
+      "confidence": "Medium",
+      "sensitivity": "One rung per service; calibrated on RS1-RS5 in RQ5",
+      "status": "new_in_v2",
+      "constants": [
+        {
+          "ref": "decision-matrix.json:scales.rto"
+        }
+      ]
+    },
+    {
+      "id": "ASM-RES-026",
+      "title": "RPO band edges",
+      "value": "Near-zero and < 15 min warm standby; 15-60 min pilot light; >= 1 h backup and restore",
+      "basis": "ltm_heuristic",
+      "claimIds": [
+        "CLM-RES-022",
+        "CLM-RES-002",
+        "CLM-RES-003",
+        "CLM-RES-004",
+        "CLM-RES-012"
+      ],
+      "reasoning": "As ASM-RES-025; point-in-time recovery reaches 5 minutes only \"in some cases\".",
+      "confidence": "Medium",
+      "sensitivity": "One rung per service",
+      "status": "new_in_v2",
+      "constants": [
+        {
+          "ref": "decision-matrix.json:scales.rpo"
+        }
+      ]
+    },
+    {
+      "id": "ASM-RES-027",
+      "title": "Ladder rule",
+      "value": "Recommended rung = max(rung for RTO, rung for RPO)",
+      "basis": "ltm_heuristic",
+      "claimIds": [
+        "CLM-RES-017",
+        "CLM-RES-001"
+      ],
+      "reasoning": "Lowest-cost pattern that meets both objectives.",
+      "confidence": "High",
+      "sensitivity": "Every recommendation",
+      "status": "new_in_v2",
+      "constants": [
+        {
+          "ref": "decision-matrix.json:selection.rule",
+          "value": "max_rank"
+        }
+      ]
+    },
+    {
+      "id": "ASM-RES-028",
+      "title": "Active-active only as a business choice",
+      "value": "Offered beside hot standby only when RTO < 15 min and RPO near-zero",
+      "basis": "ltm_heuristic",
+      "claimIds": [
+        "CLM-RES-023",
+        "CLM-RES-005",
+        "CLM-RES-009"
+      ],
+      "reasoning": "D3; Q9 kept for RQ5.",
+      "confidence": "Medium",
+      "sensitivity": "One grid cell",
+      "status": "new_in_v2"
+    },
+    {
+      "id": "ASM-RES-029",
+      "title": "Consistency rule",
+      "value": "RTO or RPO looser than the tolerance: the stricter value is used and a High conflict raised",
+      "basis": "ltm_heuristic",
+      "claimIds": [
+        "CLM-RES-026",
+        "CLM-RES-057",
+        "CLM-RES-075"
+      ],
+      "reasoning": "Owner default Q1.",
+      "confidence": "High",
+      "sensitivity": "Can raise the rung for that service",
+      "status": "new_in_v2"
+    },
+    {
+      "id": "ASM-RES-030",
+      "title": "Severity rules",
+      "value": "DESIGN.md 9.4 table",
+      "basis": "ltm_heuristic",
+      "claimIds": [
+        "CLM-RES-112"
+      ],
+      "reasoning": "Built on the blueprint Critical definition.",
+      "confidence": "Medium",
+      "sensitivity": "Exposure and cap",
+      "status": "new_in_v2"
+    },
+    {
+      "id": "ASM-RES-031",
+      "title": "Severity time frames",
+      "value": "Critical 0-3 months, High 3-6, Medium 6-12, Low 12-24",
+      "basis": "ltm_heuristic",
+      "claimIds": [
+        "CLM-RES-114"
+      ],
+      "reasoning": "Sequencing judgement.",
+      "confidence": "Low",
+      "sensitivity": "Roadmap placement",
+      "status": "new_in_v2"
+    },
+    {
+      "id": "ASM-RES-032",
+      "title": "Obligation uplift",
+      "value": "Applies-now obligation not evidenced: finding at least High; never for FFIEC",
+      "basis": "ltm_heuristic",
+      "claimIds": [
+        "CLM-RES-113",
+        "CLM-RES-094"
+      ],
+      "reasoning": "Regulatory duty not evidenced is a supervisory risk.",
+      "confidence": "Medium",
+      "sensitivity": "Medium to High for cited findings",
+      "status": "new_in_v2"
+    },
+    {
+      "id": "ASM-RES-033",
+      "title": "Three-year audit line",
+      "value": "DORA Art. 11(3) and CPS 230 para 46: audit more than 3 years ago = partly",
+      "basis": "ltm_heuristic",
+      "claimIds": [
+        "CLM-RES-115",
+        "CLM-RES-081",
+        "CLM-RES-041",
+        "CLM-RES-071"
+      ],
+      "reasoning": "Borrowed from MAS BCM 8.2, the only stated interval.",
+      "confidence": "Low",
+      "sensitivity": "One obligation status per regime",
+      "status": "new_in_v2"
+    },
+    {
+      "id": "ASM-RES-034",
+      "title": "Five-service limit",
+      "value": "At most 5 services per workshop",
+      "basis": "ltm_heuristic",
+      "claimIds": [
+        "CLM-RES-116"
+      ],
+      "reasoning": "Keeps a workshop within a day.",
+      "confidence": "Medium",
+      "sensitivity": "Scope only",
+      "status": "new_in_v2"
+    },
+    {
+      "id": "ASM-RES-035",
+      "title": "Provider term mapping",
+      "value": "Google cold/warm/hot and Azure terms mapped to the five patterns",
+      "basis": "ltm_heuristic",
+      "claimIds": [
+        "CLM-RES-015",
+        "CLM-RES-014",
+        "CLM-RES-010"
+      ],
+      "reasoning": "Google gives no bands; Azure \"hot standby\" is active-active.",
+      "confidence": "Medium",
+      "sensitivity": "Wording only",
+      "status": "new_in_v2"
+    },
+    {
+      "id": "ASM-RES-036",
+      "title": "Cost per hour of disruption",
+      "value": "Client input, low-high range per service; no default",
+      "basis": "client_input",
+      "claimIds": [
+        "CLM-RES-118"
+      ],
+      "reasoning": "D5: no invented money; published data is context only.",
+      "confidence": "High",
+      "sensitivity": "Proportional to the client estimate",
+      "status": "new_in_v2"
+    },
+    {
+      "id": "ASM-RES-037",
+      "title": "MAS four-hour RTO floor",
+      "value": "Effective RTO at most 1-4 hours where the consultant confirms a MAS critical system",
+      "basis": "published_source",
+      "claimIds": [
+        "CLM-RES-083",
+        "CLM-RES-085"
+      ],
+      "reasoning": "TRM Notices para 6 for all eleven current licence types (Q6 settled).",
+      "confidence": "High",
+      "sensitivity": "Can raise the rung for that service",
+      "status": "new_in_v2",
+      "constants": [
+        {
+          "ref": "decision-matrix.json:requirementFloors[FLOOR-MAS-TRM-RTO-4H].maxMinutes",
+          "value": 240
+        }
+      ]
+    },
+    {
+      "id": "ASM-RES-038",
+      "title": "Obligation status rule",
+      "value": "All checks meet = met; some = partly; none = not evidenced; Unknown fails",
+      "basis": "ltm_heuristic",
+      "claimIds": [
+        "CLM-RES-117"
+      ],
+      "reasoning": "D6: indicative, never a compliance opinion.",
+      "confidence": "Medium",
+      "sensitivity": "Status labels",
+      "status": "new_in_v2"
+    }
+  ]
+}

@@ -1,0 +1,878 @@
+{
+  "registryVersion": "1.0.0",
+  "statusAsOf": "2026-10-28",
+  "rule": "Every Resilience IQ v2 question (DESIGN.md section 12) cites its basis as claim IDs in the claims register, plus the reference frameworks it maps to (settles validation row 3). Diagnostic questions that cite no requirement carry an empty list and a note. RQ3 reads this file into the v2 question bank; test/resilience-iq-content.test.ts checks coverage.",
+  "retired": [
+    "AF-BIA-01",
+    "AF-CY-03",
+    "AF-CY-05"
+  ],
+  "questions": [
+    {
+      "id": "EX-01",
+      "map": "reword",
+      "mode": "executive",
+      "scope": "service",
+      "role": "scope",
+      "claimIds": [
+        "CLM-RES-055",
+        "CLM-RES-066",
+        "CLM-RES-074"
+      ],
+      "frameworks": [
+        "ISO 22301 clause 8",
+        "NIST SP 800-34 Rev. 1"
+      ]
+    },
+    {
+      "id": "EX-02",
+      "map": "reword",
+      "mode": "executive",
+      "scope": "service",
+      "role": "requirement",
+      "claimIds": [
+        "CLM-RES-056",
+        "CLM-RES-067",
+        "CLM-RES-075"
+      ],
+      "frameworks": [
+        "ISO 22301 clause 8",
+        "NIST SP 800-34 Rev. 1"
+      ]
+    },
+    {
+      "id": "EX-03",
+      "map": "reword",
+      "mode": "executive",
+      "scope": "service",
+      "role": "requirement",
+      "claimIds": [
+        "CLM-RES-047",
+        "CLM-RES-057",
+        "CLM-RES-075",
+        "CLM-RES-083",
+        "CLM-RES-017"
+      ],
+      "frameworks": [
+        "ISO 22301 clause 8",
+        "NIST SP 800-34 Rev. 1",
+        "Provider DR guidance (AWS, Azure, Google)"
+      ]
+    },
+    {
+      "id": "EX-04",
+      "map": "reword",
+      "mode": "executive",
+      "scope": "service",
+      "role": "requirement",
+      "claimIds": [
+        "CLM-RES-047",
+        "CLM-RES-057",
+        "CLM-RES-022"
+      ],
+      "frameworks": [
+        "ISO 22301 clause 8",
+        "NIST SP 800-34 Rev. 1",
+        "Provider DR guidance (AWS, Azure, Google)"
+      ]
+    },
+    {
+      "id": "EX-05",
+      "map": "reword",
+      "mode": "executive",
+      "scope": "service",
+      "role": "scored",
+      "claimIds": [
+        "CLM-RES-061",
+        "CLM-RES-076",
+        "CLM-RES-068",
+        "CLM-RES-088"
+      ],
+      "frameworks": [
+        "ISO 22301 clause 8",
+        "NIST SP 800-34 Rev. 1"
+      ]
+    },
+    {
+      "id": "EX-06",
+      "map": "keep",
+      "mode": "executive",
+      "scope": "service",
+      "role": "scored",
+      "claimIds": [
+        "CLM-RES-059",
+        "CLM-RES-080"
+      ],
+      "frameworks": [
+        "ISO 22301 clause 8",
+        "NIST SP 800-34 Rev. 1"
+      ]
+    },
+    {
+      "id": "EX-07",
+      "map": "keep",
+      "mode": "executive",
+      "scope": "service",
+      "role": "scored",
+      "claimIds": [
+        "CLM-RES-040",
+        "CLM-RES-051",
+        "CLM-RES-069",
+        "CLM-RES-090",
+        "CLM-RES-110"
+      ],
+      "frameworks": [
+        "ISO 22301 clause 8",
+        "NIST SP 800-34 Rev. 1",
+        "NIST CSF 2.0 Recover"
+      ]
+    },
+    {
+      "id": "EX-08",
+      "map": "reword",
+      "mode": "executive",
+      "scope": "service",
+      "role": "scored",
+      "claimIds": [
+        "CLM-RES-044",
+        "CLM-RES-091",
+        "CLM-RES-035",
+        "CLM-RES-036",
+        "CLM-RES-037"
+      ],
+      "frameworks": [
+        "NIST SP 800-209",
+        "NIST CSF 2.0 Recover"
+      ]
+    },
+    {
+      "id": "EX-09",
+      "map": "reword",
+      "mode": "executive",
+      "scope": "service",
+      "role": "scored",
+      "claimIds": [
+        "CLM-RES-043",
+        "CLM-RES-090",
+        "CLM-RES-091",
+        "CLM-RES-037"
+      ],
+      "frameworks": [
+        "NIST SP 800-209",
+        "NIST CSF 2.0 Recover"
+      ]
+    },
+    {
+      "id": "EX-10",
+      "map": "keep",
+      "mode": "executive",
+      "scope": "service",
+      "role": "scored",
+      "claimIds": [
+        "CLM-RES-052",
+        "CLM-RES-072",
+        "CLM-RES-077"
+      ],
+      "frameworks": [
+        "ISO 22301 clause 8"
+      ]
+    },
+    {
+      "id": "EX-11",
+      "map": "keep",
+      "mode": "executive",
+      "scope": "service",
+      "role": "scored",
+      "claimIds": [
+        "CLM-RES-078",
+        "CLM-SOV-040"
+      ],
+      "frameworks": [
+        "ISO 22301 clause 8",
+        "Provider DR guidance (AWS, Azure, Google)"
+      ]
+    },
+    {
+      "id": "EX-12",
+      "map": "reword",
+      "mode": "executive",
+      "scope": "enterprise",
+      "role": "scored",
+      "claimIds": [
+        "CLM-RES-039",
+        "CLM-RES-045",
+        "CLM-RES-001"
+      ],
+      "frameworks": [
+        "NIST SP 800-34 Rev. 1",
+        "Provider DR guidance (AWS, Azure, Google)"
+      ]
+    },
+    {
+      "id": "EX-13",
+      "map": "keep",
+      "mode": "executive",
+      "scope": "enterprise",
+      "role": "scored",
+      "claimIds": [
+        "CLM-RES-068",
+        "CLM-RES-078"
+      ],
+      "frameworks": [
+        "ISO 22301 clause 8"
+      ]
+    },
+    {
+      "id": "EX-14",
+      "map": "reword",
+      "mode": "executive",
+      "scope": "enterprise",
+      "role": "scored",
+      "claimIds": [
+        "CLM-RES-068",
+        "CLM-RES-082",
+        "CLM-RES-042"
+      ],
+      "frameworks": [
+        "ISO 22301 clause 8",
+        "NIST CSF 2.0 Recover"
+      ]
+    },
+    {
+      "id": "EX-15",
+      "map": "reword",
+      "mode": "executive",
+      "scope": "enterprise",
+      "role": "scored",
+      "claimIds": [
+        "CLM-RES-064",
+        "CLM-RES-068",
+        "CLM-RES-096"
+      ],
+      "frameworks": [
+        "ISO 22301 clause 8"
+      ],
+      "note": "Design cited SYSC 15A.7; 15A.7.1R concerns approval of the self-assessment, so SS1/21 7.1-7.2 is the basis."
+    },
+    {
+      "id": "EX-16",
+      "map": "keep",
+      "mode": "executive",
+      "scope": "service",
+      "role": "scored",
+      "claimIds": [
+        "CLM-RES-062",
+        "CLM-RES-069",
+        "CLM-RES-080",
+        "CLM-RES-040"
+      ],
+      "frameworks": [
+        "ISO 22301 clause 8",
+        "NIST SP 800-34 Rev. 1"
+      ]
+    },
+    {
+      "id": "EX-17",
+      "map": "reword",
+      "mode": "executive",
+      "scope": "service",
+      "role": "scored",
+      "claimIds": [
+        "CLM-RES-069",
+        "CLM-RES-072",
+        "CLM-RES-077",
+        "CLM-RES-052"
+      ],
+      "frameworks": [
+        "ISO 22301 clause 8"
+      ]
+    },
+    {
+      "id": "EX-18",
+      "map": "reword",
+      "mode": "executive",
+      "scope": "service",
+      "role": "scope",
+      "claimIds": [
+        "CLM-RES-034"
+      ],
+      "frameworks": [
+        "Provider DR guidance (AWS, Azure, Google)"
+      ],
+      "note": "Scope question; drives playbook entries per selected platform (FRAMEWORK area 11)."
+    },
+    {
+      "id": "EX-19",
+      "map": "reword",
+      "mode": "executive",
+      "scope": "enterprise",
+      "role": "scored",
+      "claimIds": [
+        "CLM-RES-007",
+        "CLM-RES-013"
+      ],
+      "frameworks": [
+        "Provider DR guidance (AWS, Azure, Google)",
+        "NIST CSF 2.0 Recover"
+      ]
+    },
+    {
+      "id": "EX-20",
+      "map": "reword",
+      "mode": "executive",
+      "scope": "enterprise",
+      "role": "evidence_confidence",
+      "claimIds": [
+        "CLM-RES-081",
+        "CLM-RES-107"
+      ],
+      "frameworks": [
+        "ISO 22301 clause 8"
+      ]
+    },
+    {
+      "id": "AF-BIA-02",
+      "map": "reword",
+      "mode": "workshop",
+      "scope": "service",
+      "role": "scored",
+      "claimIds": [
+        "CLM-RES-061",
+        "CLM-RES-076"
+      ],
+      "frameworks": [
+        "ISO 22301 clause 8",
+        "NIST SP 800-34 Rev. 1"
+      ]
+    },
+    {
+      "id": "AF-BIA-03",
+      "map": "reword",
+      "mode": "workshop",
+      "scope": "service",
+      "role": "diagnostic",
+      "claimIds": [
+        "CLM-RES-055",
+        "CLM-RES-074"
+      ],
+      "frameworks": [
+        "ISO 22301 clause 8"
+      ]
+    },
+    {
+      "id": "AF-BIA-04",
+      "map": "reword",
+      "mode": "workshop",
+      "scope": "service",
+      "role": "scored",
+      "claimIds": [
+        "CLM-RES-076",
+        "CLM-RES-007"
+      ],
+      "frameworks": [
+        "ISO 22301 clause 8",
+        "Provider DR guidance (AWS, Azure, Google)"
+      ]
+    },
+    {
+      "id": "AF-DR-01",
+      "map": "keep",
+      "mode": "workshop",
+      "scope": "service",
+      "role": "scored",
+      "claimIds": [
+        "CLM-RES-059",
+        "CLM-RES-080",
+        "CLM-RES-118"
+      ],
+      "frameworks": [
+        "NIST SP 800-34 Rev. 1",
+        "Provider DR guidance (AWS, Azure, Google)"
+      ]
+    },
+    {
+      "id": "AF-DR-02",
+      "map": "keep",
+      "mode": "workshop",
+      "scope": "service",
+      "role": "scored",
+      "claimIds": [
+        "CLM-RES-059",
+        "CLM-RES-080"
+      ],
+      "frameworks": [
+        "NIST SP 800-34 Rev. 1",
+        "Provider DR guidance (AWS, Azure, Google)"
+      ]
+    },
+    {
+      "id": "AF-DR-03",
+      "map": "reword",
+      "mode": "workshop",
+      "scope": "service",
+      "role": "scored",
+      "claimIds": [
+        "CLM-RES-040",
+        "CLM-RES-080",
+        "CLM-RES-090"
+      ],
+      "frameworks": [
+        "NIST SP 800-34 Rev. 1",
+        "NIST CSF 2.0 Recover"
+      ]
+    },
+    {
+      "id": "AF-DR-04",
+      "map": "reword",
+      "mode": "workshop",
+      "scope": "service",
+      "role": "scored",
+      "claimIds": [
+        "CLM-RES-010",
+        "CLM-RES-007"
+      ],
+      "frameworks": [
+        "Provider DR guidance (AWS, Azure, Google)"
+      ]
+    },
+    {
+      "id": "AF-DR-05",
+      "map": "keep",
+      "mode": "workshop",
+      "scope": "service",
+      "role": "scored",
+      "claimIds": [
+        "CLM-RES-001",
+        "CLM-RES-011"
+      ],
+      "frameworks": [
+        "Provider DR guidance (AWS, Azure, Google)"
+      ]
+    },
+    {
+      "id": "AF-DR-06",
+      "map": "keep",
+      "mode": "workshop",
+      "scope": "service",
+      "role": "diagnostic",
+      "claimIds": [],
+      "frameworks": [],
+      "note": "Diagnostic and unscored; cites no requirement. \"Data residency\" flags a Sovereign IQ referral."
+    },
+    {
+      "id": "AF-CY-01",
+      "map": "reword",
+      "mode": "workshop",
+      "scope": "service",
+      "role": "scored",
+      "claimIds": [
+        "CLM-RES-044",
+        "CLM-RES-091",
+        "CLM-RES-028",
+        "CLM-RES-029"
+      ],
+      "frameworks": [
+        "NIST SP 800-209"
+      ]
+    },
+    {
+      "id": "AF-CY-02",
+      "map": "reword",
+      "mode": "workshop",
+      "scope": "service",
+      "role": "scored",
+      "claimIds": [
+        "CLM-RES-037",
+        "CLM-RES-036"
+      ],
+      "frameworks": [
+        "NIST CSF 2.0 Recover",
+        "NIST SP 800-209"
+      ]
+    },
+    {
+      "id": "AF-CY-04",
+      "map": "keep",
+      "mode": "workshop",
+      "scope": "service",
+      "role": "scored",
+      "claimIds": [
+        "CLM-RES-040",
+        "CLM-RES-035"
+      ],
+      "frameworks": [
+        "NIST CSF 2.0 Recover"
+      ]
+    },
+    {
+      "id": "AF-TP-01",
+      "map": "reword",
+      "mode": "workshop",
+      "scope": "service",
+      "role": "scored",
+      "claimIds": [
+        "CLM-RES-072",
+        "CLM-RES-077",
+        "CLM-SOV-041"
+      ],
+      "frameworks": [
+        "ISO 22301 clause 8"
+      ]
+    },
+    {
+      "id": "AF-TP-02",
+      "map": "keep",
+      "mode": "workshop",
+      "scope": "service",
+      "role": "scored",
+      "claimIds": [
+        "CLM-RES-078",
+        "CLM-SOV-040"
+      ],
+      "frameworks": [
+        "ISO 22301 clause 8"
+      ]
+    },
+    {
+      "id": "AF-TP-03",
+      "map": "keep",
+      "mode": "workshop",
+      "scope": "service",
+      "role": "scored",
+      "claimIds": [
+        "CLM-RES-052",
+        "CLM-RES-072"
+      ],
+      "frameworks": [
+        "ISO 22301 clause 8"
+      ]
+    },
+    {
+      "id": "AF-TP-04",
+      "map": "reword",
+      "mode": "workshop",
+      "scope": "service",
+      "role": "scored",
+      "claimIds": [
+        "CLM-RES-077",
+        "CLM-RES-069"
+      ],
+      "frameworks": [
+        "ISO 22301 clause 8"
+      ]
+    },
+    {
+      "id": "AF-CL-01",
+      "map": "reword",
+      "mode": "workshop",
+      "scope": "service",
+      "role": "scored",
+      "claimIds": [
+        "CLM-RES-001",
+        "CLM-RES-009"
+      ],
+      "frameworks": [
+        "Provider DR guidance (AWS, Azure, Google)"
+      ]
+    },
+    {
+      "id": "AF-CL-02",
+      "map": "keep",
+      "mode": "workshop",
+      "scope": "service",
+      "role": "scored",
+      "claimIds": [
+        "CLM-RES-007"
+      ],
+      "frameworks": [
+        "Provider DR guidance (AWS, Azure, Google)"
+      ]
+    },
+    {
+      "id": "AF-CL-03",
+      "map": "referral",
+      "mode": "workshop",
+      "scope": "enterprise",
+      "role": "referral",
+      "claimIds": [
+        "CLM-RES-119"
+      ],
+      "frameworks": []
+    },
+    {
+      "id": "AF-CL-04",
+      "map": "keep",
+      "mode": "workshop",
+      "scope": "service",
+      "role": "scored",
+      "claimIds": [
+        "CLM-RES-002",
+        "CLM-RES-013"
+      ],
+      "frameworks": [
+        "Provider DR guidance (AWS, Azure, Google)"
+      ]
+    },
+    {
+      "id": "AF-OP-01",
+      "map": "keep",
+      "mode": "workshop",
+      "scope": "service",
+      "role": "scored",
+      "claimIds": [
+        "CLM-RES-045",
+        "CLM-RES-078",
+        "CLM-RES-016"
+      ],
+      "frameworks": [
+        "NIST SP 800-34 Rev. 1"
+      ],
+      "note": "Corrected basis: DORA Art. 12(5) (secondary site at a distance) applies to central securities depositories only; Art. 12(4) and MAS 5.2 are the general bases."
+    },
+    {
+      "id": "AF-OP-02",
+      "map": "keep",
+      "mode": "workshop",
+      "scope": "service",
+      "role": "scored",
+      "claimIds": [
+        "CLM-RES-045"
+      ],
+      "frameworks": [
+        "NIST SP 800-34 Rev. 1"
+      ]
+    },
+    {
+      "id": "AF-OP-03",
+      "map": "keep",
+      "mode": "workshop",
+      "scope": "service",
+      "role": "scored",
+      "claimIds": [
+        "CLM-RES-013"
+      ],
+      "frameworks": [
+        "Provider DR guidance (AWS, Azure, Google)"
+      ]
+    },
+    {
+      "id": "AF-TS-01",
+      "map": "reword",
+      "mode": "workshop",
+      "scope": "service",
+      "role": "diagnostic",
+      "claimIds": [],
+      "frameworks": [],
+      "note": "Diagnostic and unscored; cites no requirement."
+    },
+    {
+      "id": "AF-TS-02",
+      "map": "keep",
+      "mode": "workshop",
+      "scope": "service",
+      "role": "scored",
+      "claimIds": [
+        "CLM-RES-062",
+        "CLM-RES-069",
+        "CLM-RES-080"
+      ],
+      "frameworks": [
+        "ISO 22301 clause 8"
+      ]
+    },
+    {
+      "id": "AF-TS-03",
+      "map": "reword",
+      "mode": "workshop",
+      "scope": "service",
+      "role": "scored",
+      "claimIds": [
+        "CLM-RES-040",
+        "CLM-RES-079"
+      ],
+      "frameworks": [
+        "ISO 22301 clause 8"
+      ]
+    },
+    {
+      "id": "AF-GV-01",
+      "map": "reword",
+      "mode": "workshop",
+      "scope": "service",
+      "role": "scored",
+      "claimIds": [
+        "CLM-RES-074",
+        "CLM-RES-064"
+      ],
+      "frameworks": [
+        "ISO 22301 clause 8"
+      ]
+    },
+    {
+      "id": "AF-GV-02",
+      "map": "reword",
+      "mode": "workshop",
+      "scope": "enterprise",
+      "role": "scored",
+      "claimIds": [
+        "CLM-RES-060"
+      ],
+      "frameworks": [
+        "ISO 22301 clause 8"
+      ]
+    },
+    {
+      "id": "AF-GV-03",
+      "map": "reword",
+      "mode": "workshop",
+      "scope": "enterprise",
+      "role": "scored",
+      "claimIds": [
+        "CLM-RES-060"
+      ],
+      "frameworks": [
+        "ISO 22301 clause 8"
+      ]
+    },
+    {
+      "id": "REG-01",
+      "map": "new",
+      "mode": "executive",
+      "scope": "enterprise",
+      "role": "scope",
+      "claimIds": [
+        "CLM-SOV-033",
+        "CLM-SOV-085",
+        "CLM-SOV-149",
+        "CLM-SOV-120",
+        "CLM-RES-073",
+        "CLM-RES-095"
+      ],
+      "frameworks": []
+    },
+    {
+      "id": "REG-02",
+      "map": "new",
+      "mode": "workshop",
+      "scope": "enterprise",
+      "role": "scope",
+      "claimIds": [
+        "CLM-RES-050",
+        "CLM-RES-049",
+        "CLM-SOV-037",
+        "CLM-RES-092",
+        "CLM-RES-085"
+      ],
+      "frameworks": [],
+      "note": "Proposed added option: \"DORA simplified ICT risk management framework (Art. 16)\" (owner decision)."
+    },
+    {
+      "id": "TOL-02",
+      "map": "new",
+      "mode": "executive",
+      "scope": "service",
+      "role": "requirement",
+      "claimIds": [
+        "CLM-RES-067",
+        "CLM-RES-056"
+      ],
+      "frameworks": [
+        "ISO 22301 clause 8"
+      ]
+    },
+    {
+      "id": "TOL-03",
+      "map": "new",
+      "mode": "workshop",
+      "scope": "service",
+      "role": "requirement",
+      "claimIds": [
+        "CLM-RES-067",
+        "CLM-RES-075",
+        "CLM-RES-056"
+      ],
+      "frameworks": [
+        "ISO 22301 clause 8"
+      ]
+    },
+    {
+      "id": "SAAS-01",
+      "map": "new",
+      "mode": "workshop",
+      "scope": "service",
+      "role": "scored",
+      "claimIds": [
+        "CLM-RES-033",
+        "CLM-RES-043",
+        "CLM-RES-091"
+      ],
+      "frameworks": [
+        "NIST CSF 2.0 Recover"
+      ]
+    },
+    {
+      "id": "DC-01",
+      "map": "new",
+      "mode": "workshop",
+      "scope": "service",
+      "role": "scored",
+      "claimIds": [
+        "CLM-RES-006",
+        "CLM-RES-012",
+        "CLM-RES-058",
+        "CLM-RES-048"
+      ],
+      "frameworks": [
+        "NIST CSF 2.0 Recover",
+        "Provider DR guidance (AWS, Azure, Google)"
+      ]
+    },
+    {
+      "id": "AUD-01",
+      "map": "new",
+      "mode": "workshop",
+      "scope": "enterprise",
+      "role": "scored",
+      "claimIds": [
+        "CLM-RES-081",
+        "CLM-RES-071",
+        "CLM-RES-041",
+        "CLM-RES-115"
+      ],
+      "frameworks": [
+        "ISO 22301 clause 8"
+      ]
+    },
+    {
+      "id": "EXIT-01",
+      "map": "new",
+      "mode": "workshop",
+      "scope": "service",
+      "role": "scored",
+      "claimIds": [
+        "CLM-RES-052",
+        "CLM-RES-072",
+        "CLM-RES-077"
+      ],
+      "frameworks": [
+        "ISO 22301 clause 8"
+      ]
+    },
+    {
+      "id": "REV-01",
+      "map": "new",
+      "mode": "workshop",
+      "scope": "service",
+      "role": "scored",
+      "claimIds": [
+        "CLM-RES-055",
+        "CLM-RES-061",
+        "CLM-RES-079",
+        "CLM-RES-070"
+      ],
+      "frameworks": [
+        "ISO 22301 clause 8"
+      ]
+    }
+  ]
+}

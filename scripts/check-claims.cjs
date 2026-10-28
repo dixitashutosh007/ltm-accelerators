@@ -30,18 +30,23 @@ const SHARED_CATALOGUES = [
   'packages/engine-core/src/playbook/sovereign-iq.json', 'packages/engine-core/src/offerings/sovereign-iq.json',
   'packages/engine-core/src/accelerators/sovereign-iq/v4/placement-ladder.json', 'packages/engine-core/src/accelerators/sovereign-iq/v4/seal.json'
 ];
+// Resilience IQ RQ2 content: obligations, question basis and assumption register (the v2 engine reads them from RQ3).
+const RESILIENCE_REGISTRY = ['obligations.json', 'question-basis.json', 'assumptions.json'].map(f => `packages/engine-core/src/accelerators/resilience-iq/registry/${f}`);
 const REFERENCING_FILES = [
   'packages/engine-core/src/accelerators/sovereign-iq/registry/regimes.json',
   ...FINOPS_REGISTRY,
   ...FINOPS_V3,
-  ...SHARED_CATALOGUES
+  ...SHARED_CATALOGUES,
+  ...RESILIENCE_REGISTRY,
+  'docs/cio-readiness/resilience-iq/design/decision-matrix.json'
 ];
 // Client-facing files checked for banned phrases (decision D8 / plan S2 item 7). Add pages as they are rebuilt.
 const LANGUAGE_CHECKED = [
   'packages/engine-core/src/accelerators/sovereign-iq/registry/regimes.json',
   ...FINOPS_REGISTRY,
   ...FINOPS_V3,
-  ...SHARED_CATALOGUES
+  ...SHARED_CATALOGUES,
+  ...RESILIENCE_REGISTRY
 ];
 // One list, shared with the report checks at report time (packages/engine-core/src/report-checks, R5).
 const BANNED = require('../packages/engine-core/src/report-checks/banned-phrases.json').phrases.map(p => new RegExp(p.pattern, p.flags));

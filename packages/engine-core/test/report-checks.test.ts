@@ -86,6 +86,12 @@ describe('report checks: planted defects are caught', () => {
     expect(checks(doc)).toContain('R5');
   });
 
+  it('R5: a code used as a heading (RQ2 language lint)', () => {
+    const doc = clone(base.doc);
+    (doc.sections.find(s => s.id === 'summary')!.blocks as any[]).push({ kind: 'subheading', text: 'DR-03' });
+    expect(checks(doc)).toContain('R5');
+  });
+
   it('R5: internal text in the client edition', () => {
     const doc = clone(base.doc);
     (doc.sections.find(s => s.id === 'methodology')!.blocks as any[]).push({ kind: 'paragraph', segs: ['See docs/cio-readiness/finops-iq/DESIGN.md for null values.'] });

@@ -1,0 +1,1970 @@
+{
+  "$comment": "Resilience IQ obligation layer (DESIGN.md section 7; owner default Q14: Resilience-owned file read with Sovereign IQ conditions.ts). Validated against docs/cio-readiness/resilience-iq/design/obligation.schema.json in test/resilience-iq-content.test.ts. Answer labels are the v1 option labels for kept questions and the v2 labels in DESIGN.md section 12 for reworded and new questions, except EX-09, whose labels are reworded so they pass the language lint (the labels name the retention lock behind immutability, and the v1 word for a usable backup is on the shared banned list): owner decision recorded in PLAN.md RQ2; RQ3 binds them to the v2 question bank and a test then fails on any label not in the bank. Status shown to the client is always \"Indicative status from your answers; not a compliance opinion.\" Not legal advice; counsel review before external use (RQ11).",
+  "version": "1.0.0",
+  "statusAsOf": "2026-10-28",
+  "regimes": [
+    {
+      "regime": "EU_DORA",
+      "name": "Digital Operational Resilience Act, Regulation (EU) 2022/2554",
+      "citation": {
+        "text": "Regulation (EU) 2022/2554, applies from 17 Jan 2025 [CLM-SOV-033]",
+        "url": "https://eur-lex.europa.eu/eli/reg/2022/2554/oj"
+      },
+      "applicability": {
+        "source": "sovereign_registry",
+        "regime": "EU_DORA",
+        "note": "Entities under the simplified framework of Art. 16(1) are outside Art. 11-12 (REG-02 option proposed: dora_art16_simplified; owner decision). Microenterprise carve-outs are per obligation (REG-02 dora_microenterprise)."
+      },
+      "obligations": [
+        {
+          "dateState": "applies_now",
+          "ownedBy": "resilience_iq",
+          "id": "EU_DORA.BIA",
+          "article": "Art. 11(5)",
+          "summary": "Carry out a business impact analysis of severe business disruptions, covering critical functions, third-party dependencies and information assets.",
+          "kind": "rule",
+          "appliesFrom": "2025-01-17",
+          "scope": "service",
+          "conditions": "Not Art. 16(1) simplified-framework entities.",
+          "checks": [
+            {
+              "question": "EX-02",
+              "meets": [
+                "<15 minutes",
+                "15-60 minutes",
+                "1-4 hours",
+                "4-24 hours",
+                ">24 hours"
+              ]
+            },
+            {
+              "question": "EX-05",
+              "meets": [
+                "Yes, current and validated"
+              ],
+              "partly": [
+                "Partially",
+                "Documented but stale"
+              ]
+            }
+          ],
+          "findingControls": [
+            "RES.REQ.DEFINED",
+            "RES.DEPENDENCY.MAP"
+          ],
+          "evidence": [
+            "Business impact analysis for the service"
+          ],
+          "verification": {
+            "status": "V",
+            "checked": "2026-10-28",
+            "by": "resilience-lead (agent)"
+          },
+          "claims": [
+            "CLM-RES-039",
+            "CLM-RES-049"
+          ]
+        },
+        {
+          "dateState": "applies_now",
+          "ownedBy": "resilience_iq",
+          "id": "EU_DORA.BC_TESTING",
+          "article": "Art. 11(6)",
+          "summary": "Test ICT business continuity and response and recovery plans at least yearly and after substantive changes; include cyber-attack and switchover scenarios (not microenterprises).",
+          "kind": "rule",
+          "appliesFrom": "2025-01-17",
+          "scope": "service",
+          "conditions": "Not Art. 16(1) simplified-framework entities; cyber-attack and switchover scenarios not required of microenterprises.",
+          "checks": [
+            {
+              "question": "EX-07",
+              "meets": [
+                "Within 3 months",
+                "3-12 months ago"
+              ]
+            },
+            {
+              "question": "EX-16",
+              "meets": [
+                "Yes, regularly",
+                "Yes, occasionally"
+              ],
+              "partly": [
+                "Technical tests only"
+              ]
+            },
+            {
+              "question": "AF-CY-04",
+              "meets": [
+                "Yes, successfully"
+              ],
+              "partly": [
+                "Partially",
+                "Tabletop only"
+              ]
+            }
+          ],
+          "findingControls": [
+            "RES.DR.PROVEN",
+            "RES.TEST.SCENARIO",
+            "RES.CYBER.CLEANROOM"
+          ],
+          "evidence": [
+            "Test report within 12 months with scenarios and results"
+          ],
+          "verification": {
+            "status": "V",
+            "checked": "2026-10-28",
+            "by": "resilience-lead (agent)"
+          },
+          "claims": [
+            "CLM-RES-040",
+            "CLM-RES-053"
+          ]
+        },
+        {
+          "dateState": "applies_now",
+          "ownedBy": "resilience_iq",
+          "id": "EU_DORA.AUDIT",
+          "article": "Art. 11(3)",
+          "summary": "Have ICT response and recovery plans reviewed by independent internal audit (not microenterprises).",
+          "kind": "rule",
+          "appliesFrom": "2025-01-17",
+          "scope": "enterprise",
+          "conditions": "Not microenterprises; not Art. 16(1) entities. DORA states no interval; more than three years counts as partly (LTM heuristic).",
+          "checks": [
+            {
+              "question": "AUD-01",
+              "meets": [
+                "Within 12 months",
+                "1-3 years ago"
+              ],
+              "partly": [
+                "More than 3 years ago"
+              ]
+            }
+          ],
+          "findingControls": [
+            "RES.GOV.AUDIT"
+          ],
+          "evidence": [
+            "Internal audit report"
+          ],
+          "verification": {
+            "status": "V",
+            "checked": "2026-10-28",
+            "by": "resilience-lead (agent)"
+          },
+          "claims": [
+            "CLM-RES-041",
+            "CLM-RES-115"
+          ]
+        },
+        {
+          "dateState": "applies_now",
+          "ownedBy": "resilience_iq",
+          "id": "EU_DORA.BACKUP_RESTORE",
+          "article": "Art. 12(1)-(2)",
+          "summary": "Document backup policies and restoration procedures, and test backup and restoration periodically.",
+          "kind": "rule",
+          "appliesFrom": "2025-01-17",
+          "scope": "service",
+          "conditions": "Not Art. 16(1) simplified-framework entities.",
+          "checks": [
+            {
+              "question": "EX-09",
+              "meets": [
+                "Yes, retention-locked (immutable) and restore tested in the last 12 months"
+              ],
+              "partly": [
+                "Retention-locked (immutable), restore not tested",
+                "Usable backups, retention not locked"
+              ]
+            }
+          ],
+          "findingControls": [
+            "RES.BACKUP.RECOVERABLE",
+            "RES.DR.PROVEN"
+          ],
+          "evidence": [
+            "Backup policy; restore test record"
+          ],
+          "verification": {
+            "status": "V",
+            "checked": "2026-10-28",
+            "by": "resilience-lead (agent)"
+          },
+          "claims": [
+            "CLM-RES-043"
+          ]
+        },
+        {
+          "dateState": "applies_now",
+          "ownedBy": "resilience_iq",
+          "id": "EU_DORA.SEGREGATED_RESTORE",
+          "article": "Art. 12(3)",
+          "summary": "When restoring backup data on own systems, use ICT systems physically and logically segregated from the source system and protected from unauthorised access or corruption.",
+          "kind": "rule",
+          "appliesFrom": "2025-01-17",
+          "scope": "service",
+          "conditions": "Not Art. 16(1) simplified-framework entities.",
+          "checks": [
+            {
+              "question": "EX-08",
+              "meets": [
+                "No, recovery is isolated and this has been tested"
+              ],
+              "partly": [
+                "No, isolated by design, not tested"
+              ]
+            },
+            {
+              "question": "AF-CY-01",
+              "meets": [
+                "No, separate credentials and approval"
+              ],
+              "partly": [
+                "Partly"
+              ]
+            }
+          ],
+          "findingControls": [
+            "RES.CYBER.ISOLATION",
+            "RES.CYBER.CLEANROOM"
+          ],
+          "evidence": [
+            "Recovery environment design showing separate trust boundary"
+          ],
+          "verification": {
+            "status": "V",
+            "checked": "2026-10-28",
+            "by": "resilience-lead (agent)"
+          },
+          "claims": [
+            "CLM-RES-044"
+          ]
+        },
+        {
+          "dateState": "applies_now",
+          "ownedBy": "resilience_iq",
+          "id": "EU_DORA.REDUNDANCY",
+          "article": "Art. 12(4)",
+          "summary": "Maintain redundant ICT capacities adequate for business needs (microenterprises assess the need).",
+          "kind": "rule",
+          "appliesFrom": "2025-01-17",
+          "scope": "service",
+          "conditions": "Not microenterprises; not Art. 16(1) entities.",
+          "checks": [
+            {
+              "question": "EX-12",
+              "meets": [
+                "No known single points of failure"
+              ],
+              "partly": [
+                "Some non-critical single points of failure"
+              ]
+            },
+            {
+              "question": "AF-DR-04",
+              "meets": [
+                "No"
+              ],
+              "partly": [
+                "Partially"
+              ]
+            }
+          ],
+          "findingControls": [
+            "RES.INFRA.SPOF",
+            "RES.DR.SEPARATION"
+          ],
+          "verification": {
+            "status": "V",
+            "checked": "2026-10-28",
+            "by": "resilience-lead (agent)"
+          },
+          "claims": [
+            "CLM-RES-045",
+            "CLM-RES-039"
+          ]
+        },
+        {
+          "dateState": "applies_now",
+          "ownedBy": "resilience_iq",
+          "id": "EU_DORA.RECOVERY_OBJECTIVES",
+          "article": "Art. 12(6)",
+          "summary": "Set recovery time and recovery point objectives for each function, considering whether it is critical or important.",
+          "kind": "rule",
+          "appliesFrom": "2025-01-17",
+          "scope": "service",
+          "conditions": "Not Art. 16(1) simplified-framework entities.",
+          "checks": [
+            {
+              "question": "EX-03",
+              "meets": [
+                "<15 minutes",
+                "15-60 minutes",
+                "1-4 hours",
+                "4-24 hours",
+                ">24 hours"
+              ]
+            },
+            {
+              "question": "EX-04",
+              "meets": [
+                "Near-zero",
+                "<15 minutes",
+                "15-60 minutes",
+                "1-4 hours",
+                "4-24 hours",
+                ">24 hours"
+              ]
+            }
+          ],
+          "findingControls": [
+            "RES.REQ.DEFINED"
+          ],
+          "verification": {
+            "status": "V",
+            "checked": "2026-10-28",
+            "by": "resilience-lead (agent)"
+          },
+          "claims": [
+            "CLM-RES-047"
+          ]
+        },
+        {
+          "dateState": "applies_now",
+          "ownedBy": "resilience_iq",
+          "id": "EU_DORA.TEST_PROGRAMME",
+          "article": "Art. 24(6)",
+          "summary": "Run appropriate tests at least yearly on all ICT systems and applications supporting critical or important functions (not microenterprises).",
+          "kind": "rule",
+          "appliesFrom": "2025-01-17",
+          "scope": "service",
+          "conditions": "Not microenterprises.",
+          "checks": [
+            {
+              "question": "EX-07",
+              "meets": [
+                "Within 3 months",
+                "3-12 months ago"
+              ]
+            },
+            {
+              "question": "AF-TS-03",
+              "meets": [
+                "Automatically/continuously",
+                "Per major change",
+                "Quarterly/annually"
+              ],
+              "partly": [
+                "Ad hoc"
+              ]
+            }
+          ],
+          "findingControls": [
+            "RES.DR.PROVEN",
+            "RES.TEST.CONTINUOUS"
+          ],
+          "verification": {
+            "status": "V",
+            "checked": "2026-10-28",
+            "by": "resilience-lead (agent)"
+          },
+          "claims": [
+            "CLM-RES-051"
+          ]
+        },
+        {
+          "dateState": "applies_now",
+          "ownedBy": "resilience_iq",
+          "id": "EU_DORA.TLPT",
+          "article": "Art. 26",
+          "summary": "Threat-led penetration testing at least every three years, only if identified by the competent authority.",
+          "kind": "rule",
+          "appliesFrom": "2025-01-17",
+          "scope": "enterprise",
+          "conditions": "Only when REG-02 records identification for TLPT. Security testing: not assessed here.",
+          "checks": [],
+          "findingControls": [],
+          "verification": {
+            "status": "V",
+            "checked": "2026-10-28",
+            "by": "resilience-lead (agent)"
+          },
+          "claims": [
+            "CLM-SOV-037"
+          ]
+        },
+        {
+          "dateState": "applies_now",
+          "ownedBy": "resilience_iq",
+          "id": "EU_DORA.EXIT_TEST",
+          "article": "Art. 28(8)",
+          "summary": "Have documented exit plans for ICT services supporting critical or important functions, sufficiently tested and reviewed periodically.",
+          "kind": "rule",
+          "appliesFrom": "2025-01-17",
+          "scope": "service",
+          "checks": [
+            {
+              "question": "EXIT-01",
+              "meets": [
+                "Yes, partial migration or substitution rehearsed"
+              ],
+              "partly": [
+                "Tabletop walkthrough only",
+                "Plan documented, not tested"
+              ]
+            },
+            {
+              "question": "AF-TP-03",
+              "meets": [
+                "Within impact tolerance"
+              ],
+              "partly": [
+                "Within days"
+              ]
+            }
+          ],
+          "findingControls": [
+            "RES.TP.EXIT"
+          ],
+          "evidence": [
+            "Exit plan and test record"
+          ],
+          "verification": {
+            "status": "V",
+            "checked": "2026-10-28",
+            "by": "resilience-lead (agent)"
+          },
+          "claims": [
+            "CLM-RES-052",
+            "CLM-SOV-039"
+          ]
+        },
+        {
+          "dateState": "applies_now",
+          "ownedBy": "sovereign_iq",
+          "id": "EU_DORA.INCIDENTS",
+          "article": "Art. 19",
+          "summary": "Major ICT-related incident reporting.",
+          "kind": "rule",
+          "appliesFrom": "2025-01-17",
+          "checks": [],
+          "verification": {
+            "status": "V",
+            "checked": "2026-10-28",
+            "by": "resilience-lead (agent)"
+          },
+          "claims": [
+            "CLM-SOV-036"
+          ]
+        }
+      ]
+    },
+    {
+      "regime": "UK_OPRES",
+      "name": "UK operational resilience: PRA SS1/21 and Operational Resilience Parts; FCA SYSC 15A",
+      "citation": {
+        "text": "PRA SS1/21; FCA SYSC 15A [CLM-SOV-085] [CLM-SOV-086]",
+        "url": "https://www.handbook.fca.org.uk/handbook/SYSC/15A/"
+      },
+      "applicability": {
+        "source": "sovereign_registry",
+        "regime": "UK_OPRES"
+      },
+      "obligations": [
+        {
+          "dateState": "applies_now",
+          "ownedBy": "resilience_iq",
+          "id": "UK_OPRES.IBS",
+          "article": "SYSC 15A.2.1R, 15A.2.2R; SS1/21 2.10",
+          "summary": "Identify important business services and review them at least annually.",
+          "kind": "rule",
+          "appliesFrom": "2022-03-31",
+          "scope": "service",
+          "checks": [
+            {
+              "question": "EX-01",
+              "meets": [
+                "Named"
+              ]
+            },
+            {
+              "question": "REV-01",
+              "meets": [
+                "Within 12 months"
+              ],
+              "partly": [
+                "1-2 years ago"
+              ]
+            }
+          ],
+          "findingControls": [
+            "RES.GOV.REVIEW"
+          ],
+          "verification": {
+            "status": "V",
+            "checked": "2026-10-28",
+            "by": "resilience-lead (agent)"
+          },
+          "claims": [
+            "CLM-RES-055"
+          ]
+        },
+        {
+          "dateState": "applies_now",
+          "ownedBy": "resilience_iq",
+          "id": "UK_OPRES.TOLERANCE",
+          "article": "SYSC 15A.2.5R; SS1/21 3.10-3.12",
+          "summary": "Set an impact tolerance for each important business service, with a time-based metric.",
+          "kind": "rule",
+          "appliesFrom": "2022-03-31",
+          "scope": "service",
+          "checks": [
+            {
+              "question": "EX-02",
+              "meets": [
+                "<15 minutes",
+                "15-60 minutes",
+                "1-4 hours",
+                "4-24 hours",
+                ">24 hours"
+              ]
+            }
+          ],
+          "findingControls": [
+            "RES.REQ.DEFINED"
+          ],
+          "verification": {
+            "status": "V",
+            "checked": "2026-10-28",
+            "by": "resilience-lead (agent)"
+          },
+          "claims": [
+            "CLM-RES-056"
+          ]
+        },
+        {
+          "dateState": "applies_now",
+          "ownedBy": "resilience_iq",
+          "id": "UK_OPRES.WITHIN_TOLERANCE",
+          "article": "SYSC 15A.2.9R; SS1/21 4.14, 4.16",
+          "summary": "Be able to remain within impact tolerance in a severe but plausible disruption; expected no later than 31 Mar 2025.",
+          "kind": "rule",
+          "appliesFrom": "2025-03-31",
+          "scope": "service",
+          "checks": [
+            {
+              "question": "EX-06",
+              "meets": [
+                "Yes, proven by testing"
+              ],
+              "partly": [
+                "Likely, but not recently tested"
+              ]
+            },
+            {
+              "question": "AF-DR-01",
+              "meets": [
+                "within"
+              ],
+              "partly": [
+                "same band"
+              ],
+              "compare": "AF-DR-01 within EX-02"
+            }
+          ],
+          "findingControls": [
+            "RES.DR.STRATEGY",
+            "RES.DR.PROVEN"
+          ],
+          "evidence": [
+            "Scenario test showing recovery within tolerance"
+          ],
+          "verification": {
+            "status": "V",
+            "checked": "2026-10-28",
+            "by": "resilience-lead (agent)"
+          },
+          "claims": [
+            "CLM-RES-059"
+          ]
+        },
+        {
+          "dateState": "applies_now",
+          "ownedBy": "resilience_iq",
+          "id": "UK_OPRES.MAPPING",
+          "article": "SYSC 15A.4.1R; SS1/21 5.9",
+          "summary": "Map the people, processes, technology, facilities and information behind each service; update at least annually.",
+          "kind": "rule",
+          "appliesFrom": "2022-03-31",
+          "scope": "service",
+          "checks": [
+            {
+              "question": "EX-05",
+              "meets": [
+                "Yes, current and validated"
+              ],
+              "partly": [
+                "Partially",
+                "Documented but stale"
+              ]
+            }
+          ],
+          "findingControls": [
+            "RES.DEPENDENCY.MAP"
+          ],
+          "verification": {
+            "status": "V",
+            "checked": "2026-10-28",
+            "by": "resilience-lead (agent)"
+          },
+          "claims": [
+            "CLM-RES-061"
+          ]
+        },
+        {
+          "dateState": "applies_now",
+          "ownedBy": "resilience_iq",
+          "id": "UK_OPRES.SCENARIO_TESTING",
+          "article": "SYSC 15A.5.1R, 15A.5.3R; SS1/21 ch. 6",
+          "summary": "Keep a testing plan and carry out scenario testing of the ability to remain within impact tolerance.",
+          "kind": "rule",
+          "appliesFrom": "2022-03-31",
+          "scope": "service",
+          "checks": [
+            {
+              "question": "EX-16",
+              "meets": [
+                "Yes, regularly",
+                "Yes, occasionally"
+              ],
+              "partly": [
+                "Technical tests only"
+              ]
+            },
+            {
+              "question": "AF-TS-02",
+              "meets": [
+                "Yes"
+              ],
+              "partly": [
+                "Partially"
+              ]
+            }
+          ],
+          "findingControls": [
+            "RES.TEST.SCENARIO"
+          ],
+          "verification": {
+            "status": "V",
+            "checked": "2026-10-28",
+            "by": "resilience-lead (agent)"
+          },
+          "claims": [
+            "CLM-RES-062"
+          ]
+        },
+        {
+          "dateState": "applies_now",
+          "ownedBy": "resilience_iq",
+          "id": "UK_OPRES.SELF_ASSESSMENT",
+          "article": "SYSC 15A.6.1R, 15A.7.1R; SS1/21 ch. 8",
+          "summary": "Keep an up-to-date written self-assessment, approved and regularly reviewed by the governing body.",
+          "kind": "rule",
+          "appliesFrom": "2022-03-31",
+          "scope": "enterprise",
+          "conditions": "Evidence item only: not assessed unless a consultant validates the document.",
+          "checks": [],
+          "evidence": [
+            "Written self-assessment approved by the governing body"
+          ],
+          "verification": {
+            "status": "V",
+            "checked": "2026-10-28",
+            "by": "resilience-lead (agent)"
+          },
+          "claims": [
+            "CLM-RES-063"
+          ]
+        },
+        {
+          "dateState": "applies_later",
+          "ownedBy": "sovereign_iq",
+          "id": "UK_OPRES.REPORTING",
+          "article": "FCA PS26/2; PRA PS7/26",
+          "summary": "Operational incident and material third-party reporting.",
+          "kind": "rule",
+          "appliesFrom": "2027-03-18",
+          "checks": [],
+          "verification": {
+            "status": "V",
+            "checked": "2026-10-28",
+            "by": "resilience-lead (agent)"
+          },
+          "claims": [
+            "CLM-RES-065"
+          ]
+        }
+      ]
+    },
+    {
+      "regime": "AU_APRA_CPS230",
+      "name": "APRA CPS 230 Operational Risk Management",
+      "citation": {
+        "text": "APRA CPS 230, applies from 1 Jul 2025 [CLM-SOV-149]",
+        "url": "https://www.apra.gov.au/sites/default/files/2023-07/Prudential%20Standard%20CPS%20230%20Operational%20Risk%20Management%20-%20clean.pdf"
+      },
+      "applicability": {
+        "source": "sovereign_registry",
+        "regime": "AU_APRA_CPS230"
+      },
+      "obligations": [
+        {
+          "dateState": "applies_now",
+          "ownedBy": "resilience_iq",
+          "id": "AU_APRA_CPS230.CRITICAL_OPS",
+          "article": "paras 34(a), 35-36",
+          "summary": "Keep a register of critical operations.",
+          "kind": "rule",
+          "appliesFrom": "2025-07-01",
+          "scope": "service",
+          "checks": [
+            {
+              "question": "EX-01",
+              "meets": [
+                "Named"
+              ]
+            },
+            {
+              "question": "EX-05",
+              "meets": [
+                "Yes, current and validated"
+              ],
+              "partly": [
+                "Partially",
+                "Documented but stale"
+              ]
+            }
+          ],
+          "findingControls": [
+            "RES.DEPENDENCY.MAP"
+          ],
+          "verification": {
+            "status": "V",
+            "checked": "2026-10-28",
+            "by": "resilience-lead (agent)"
+          },
+          "claims": [
+            "CLM-RES-066"
+          ]
+        },
+        {
+          "dateState": "applies_now",
+          "ownedBy": "resilience_iq",
+          "id": "AU_APRA_CPS230.TOLERANCE_LEVELS",
+          "article": "para 38(a)-(c)",
+          "summary": "Set tolerance levels for maximum disruption time, maximum data loss and minimum service levels.",
+          "kind": "rule",
+          "appliesFrom": "2025-07-01",
+          "scope": "service",
+          "checks": [
+            {
+              "question": "EX-02",
+              "meets": [
+                "<15 minutes",
+                "15-60 minutes",
+                "1-4 hours",
+                "4-24 hours",
+                ">24 hours"
+              ]
+            },
+            {
+              "question": "TOL-02",
+              "meets": [
+                "Near-zero",
+                "<15 minutes",
+                "15-60 minutes",
+                "1-4 hours",
+                "4-24 hours",
+                ">24 hours"
+              ]
+            },
+            {
+              "question": "TOL-03",
+              "meets": [
+                "Defined and measurable"
+              ],
+              "partly": [
+                "Defined in words only"
+              ]
+            }
+          ],
+          "findingControls": [
+            "RES.REQ.DEFINED",
+            "RES.REQ.TOLERANCE"
+          ],
+          "verification": {
+            "status": "V",
+            "checked": "2026-10-28",
+            "by": "resilience-lead (agent)"
+          },
+          "claims": [
+            "CLM-RES-067"
+          ]
+        },
+        {
+          "dateState": "applies_now",
+          "ownedBy": "resilience_iq",
+          "id": "AU_APRA_CPS230.BCP_CAPABILITY",
+          "article": "paras 34(c), 40-41",
+          "summary": "Maintain a credible business continuity plan, including disaster recovery for critical information assets, and the capabilities to execute it.",
+          "kind": "rule",
+          "appliesFrom": "2025-07-01",
+          "scope": "service",
+          "checks": [
+            {
+              "question": "EX-13",
+              "meets": [
+                "Yes, proven"
+              ],
+              "partly": [
+                "Yes, documented",
+                "Partially"
+              ]
+            },
+            {
+              "question": "EX-14",
+              "meets": [
+                "Yes, exercised"
+              ],
+              "partly": [
+                "Yes, documented",
+                "Partially"
+              ]
+            },
+            {
+              "question": "AF-DR-01",
+              "meets": [
+                "within"
+              ],
+              "partly": [
+                "same band"
+              ],
+              "compare": "AF-DR-01 within EX-02"
+            }
+          ],
+          "findingControls": [
+            "RES.BCP.WORKFORCE",
+            "RES.BCP.CRISIS",
+            "RES.DR.STRATEGY"
+          ],
+          "verification": {
+            "status": "V",
+            "checked": "2026-10-28",
+            "by": "resilience-lead (agent)"
+          },
+          "claims": [
+            "CLM-RES-068"
+          ]
+        },
+        {
+          "dateState": "applies_now",
+          "ownedBy": "sovereign_iq",
+          "id": "AU_APRA_CPS230.NOTIFY_24H",
+          "article": "para 42",
+          "summary": "Notify APRA within 24 hours of a disruption to a critical operation outside tolerance.",
+          "kind": "rule",
+          "appliesFrom": "2025-07-01",
+          "checks": [],
+          "verification": {
+            "status": "V",
+            "checked": "2026-10-28",
+            "by": "resilience-lead (agent)"
+          },
+          "claims": [
+            "CLM-SOV-150"
+          ]
+        },
+        {
+          "dateState": "applies_now",
+          "ownedBy": "resilience_iq",
+          "id": "AU_APRA_CPS230.TESTING",
+          "article": "paras 43-44",
+          "summary": "Run a systematic testing programme with an annual business continuity exercise and severe but plausible scenarios, including material service provider disruption.",
+          "kind": "rule",
+          "appliesFrom": "2025-07-01",
+          "scope": "service",
+          "checks": [
+            {
+              "question": "EX-07",
+              "meets": [
+                "Within 3 months",
+                "3-12 months ago"
+              ]
+            },
+            {
+              "question": "EX-16",
+              "meets": [
+                "Yes, regularly",
+                "Yes, occasionally"
+              ],
+              "partly": [
+                "Technical tests only"
+              ]
+            },
+            {
+              "question": "EX-17",
+              "meets": [
+                "Yes, tested with us in the last 12 months"
+              ],
+              "partly": [
+                "Documented and reviewed, not tested"
+              ]
+            }
+          ],
+          "findingControls": [
+            "RES.DR.PROVEN",
+            "RES.TEST.SCENARIO",
+            "RES.TP.CONTINUITY"
+          ],
+          "verification": {
+            "status": "V",
+            "checked": "2026-10-28",
+            "by": "resilience-lead (agent)"
+          },
+          "claims": [
+            "CLM-RES-069"
+          ]
+        },
+        {
+          "dateState": "applies_now",
+          "ownedBy": "resilience_iq",
+          "id": "AU_APRA_CPS230.ANNUAL_UPDATE",
+          "article": "para 45",
+          "summary": "Update the business continuity plan as necessary every year.",
+          "kind": "rule",
+          "appliesFrom": "2025-07-01",
+          "scope": "service",
+          "checks": [
+            {
+              "question": "REV-01",
+              "meets": [
+                "Within 12 months"
+              ],
+              "partly": [
+                "1-2 years ago"
+              ]
+            }
+          ],
+          "findingControls": [
+            "RES.GOV.REVIEW"
+          ],
+          "verification": {
+            "status": "V",
+            "checked": "2026-10-28",
+            "by": "resilience-lead (agent)"
+          },
+          "claims": [
+            "CLM-RES-070"
+          ]
+        },
+        {
+          "dateState": "applies_now",
+          "ownedBy": "resilience_iq",
+          "id": "AU_APRA_CPS230.INTERNAL_AUDIT",
+          "article": "para 46",
+          "summary": "Internal audit periodically reviews the business continuity plan and testing and gives the Board assurance.",
+          "kind": "rule",
+          "appliesFrom": "2025-07-01",
+          "scope": "enterprise",
+          "conditions": "CPS 230 states no interval; more than three years counts as partly (LTM heuristic).",
+          "checks": [
+            {
+              "question": "AUD-01",
+              "meets": [
+                "Within 12 months",
+                "1-3 years ago"
+              ],
+              "partly": [
+                "More than 3 years ago"
+              ]
+            }
+          ],
+          "findingControls": [
+            "RES.GOV.AUDIT"
+          ],
+          "verification": {
+            "status": "V",
+            "checked": "2026-10-28",
+            "by": "resilience-lead (agent)"
+          },
+          "claims": [
+            "CLM-RES-071",
+            "CLM-RES-115"
+          ]
+        },
+        {
+          "dateState": "applies_now",
+          "ownedBy": "resilience_iq",
+          "id": "AU_APRA_CPS230.ORDERLY_EXIT",
+          "article": "para 56",
+          "summary": "Be able to execute the business continuity plan and conduct an orderly exit from each material service provider arrangement.",
+          "kind": "rule",
+          "appliesFrom": "2025-07-01",
+          "scope": "service",
+          "checks": [
+            {
+              "question": "EXIT-01",
+              "meets": [
+                "Yes, partial migration or substitution rehearsed"
+              ],
+              "partly": [
+                "Tabletop walkthrough only",
+                "Plan documented, not tested"
+              ]
+            },
+            {
+              "question": "AF-TP-03",
+              "meets": [
+                "Within impact tolerance"
+              ],
+              "partly": [
+                "Within days"
+              ]
+            }
+          ],
+          "findingControls": [
+            "RES.TP.EXIT"
+          ],
+          "verification": {
+            "status": "V",
+            "checked": "2026-10-28",
+            "by": "resilience-lead (agent)"
+          },
+          "claims": [
+            "CLM-RES-072"
+          ]
+        }
+      ]
+    },
+    {
+      "regime": "SG_MAS_BCM",
+      "name": "MAS Guidelines on Business Continuity Management (June 2022)",
+      "citation": {
+        "text": "MAS Guidelines on BCM, June 2022",
+        "url": "https://www.mas.gov.sg/-/media/mas/regulations-and-financial-stability/regulatory-and-supervisory-framework/risk-management/bcm-guidelines/guidelines-on-bcm-june-2022.pdf"
+      },
+      "applicability": {
+        "source": "resilience_record",
+        "rules": [
+          {
+            "id": "SG_MAS_BCM.1",
+            "when": {
+              "fact": "ent.flags",
+              "op": "includes",
+              "value": "sg_mas_licensed"
+            },
+            "grade": "applies",
+            "reason": "The MAS Guidelines on Business Continuity Management apply to all financial institutions regulated by MAS. They are guidelines: sound principles MAS encourages institutions to adopt and reviews against.",
+            "basis": "MAS BCM Guidelines 1.4, 1.9 [CLM-RES-073]",
+            "verification": {
+              "status": "V",
+              "checked": "2026-10-28",
+              "by": "resilience-lead (agent)"
+            }
+          },
+          {
+            "id": "SG_MAS_BCM.2",
+            "when": {
+              "all": [
+                {
+                  "fact": "org.establishments",
+                  "op": "includes",
+                  "value": "sg"
+                },
+                {
+                  "derived": "financial_sector"
+                }
+              ]
+            },
+            "grade": "likely_confirm",
+            "reason": "You provide financial services in Singapore but have not stated a MAS licence. Confirm whether the MAS business continuity guidelines apply.",
+            "basis": "MAS BCM Guidelines 1.9 [CLM-RES-073]",
+            "verification": {
+              "status": "V",
+              "checked": "2026-10-28",
+              "by": "resilience-lead (agent)"
+            }
+          }
+        ],
+        "default": "not_applicable"
+      },
+      "obligations": [
+        {
+          "dateState": "applies_now",
+          "ownedBy": "resilience_iq",
+          "id": "SG_MAS_BCM.CBS",
+          "article": "2.3, 2.5",
+          "summary": "Identify critical business services and appoint people accountable for their recovery.",
+          "kind": "guideline",
+          "scope": "service",
+          "checks": [
+            {
+              "question": "EX-01",
+              "meets": [
+                "Named"
+              ]
+            },
+            {
+              "question": "AF-GV-01",
+              "meets": [
+                "Named business owner with technology counterpart"
+              ],
+              "partly": [
+                "Technology owner only",
+                "Shared but informal"
+              ]
+            }
+          ],
+          "findingControls": [
+            "RES.GOV.OVERSIGHT"
+          ],
+          "verification": {
+            "status": "V",
+            "checked": "2026-10-28",
+            "by": "resilience-lead (agent)"
+          },
+          "claims": [
+            "CLM-RES-074"
+          ]
+        },
+        {
+          "dateState": "applies_now",
+          "ownedBy": "resilience_iq",
+          "id": "SG_MAS_BCM.SRTO",
+          "article": "3.1-3.2; footnote 1",
+          "summary": "Set a service recovery time objective for each critical business service, with function RTOs that meet it and a pre-determined minimum service level.",
+          "kind": "guideline",
+          "scope": "service",
+          "checks": [
+            {
+              "question": "EX-02",
+              "meets": [
+                "<15 minutes",
+                "15-60 minutes",
+                "1-4 hours",
+                "4-24 hours",
+                ">24 hours"
+              ]
+            },
+            {
+              "question": "EX-03",
+              "meets": [
+                "<15 minutes",
+                "15-60 minutes",
+                "1-4 hours",
+                "4-24 hours",
+                ">24 hours"
+              ]
+            },
+            {
+              "question": "TOL-03",
+              "meets": [
+                "Defined and measurable"
+              ],
+              "partly": [
+                "Defined in words only"
+              ]
+            }
+          ],
+          "findingControls": [
+            "RES.REQ.DEFINED",
+            "RES.REQ.TOLERANCE",
+            "RES.REQ.CONSISTENT"
+          ],
+          "verification": {
+            "status": "V",
+            "checked": "2026-10-28",
+            "by": "resilience-lead (agent)"
+          },
+          "claims": [
+            "CLM-RES-075"
+          ]
+        },
+        {
+          "dateState": "applies_now",
+          "ownedBy": "resilience_iq",
+          "id": "SG_MAS_BCM.DEPENDENCY_MAP",
+          "article": "4.1-4.2",
+          "summary": "Map end-to-end dependencies and use the map to verify that recovery can meet the SRTO.",
+          "kind": "guideline",
+          "scope": "service",
+          "checks": [
+            {
+              "question": "EX-05",
+              "meets": [
+                "Yes, current and validated"
+              ],
+              "partly": [
+                "Partially",
+                "Documented but stale"
+              ]
+            }
+          ],
+          "findingControls": [
+            "RES.DEPENDENCY.MAP"
+          ],
+          "verification": {
+            "status": "V",
+            "checked": "2026-10-28",
+            "by": "resilience-lead (agent)"
+          },
+          "claims": [
+            "CLM-RES-076"
+          ]
+        },
+        {
+          "dateState": "applies_now",
+          "ownedBy": "resilience_iq",
+          "id": "SG_MAS_BCM.THIRD_PARTIES",
+          "article": "4.4",
+          "summary": "Put measures in place so third parties can meet the SRTO, including checking their continuity plans are tested.",
+          "kind": "guideline",
+          "scope": "service",
+          "checks": [
+            {
+              "question": "EX-17",
+              "meets": [
+                "Yes, tested with us in the last 12 months"
+              ],
+              "partly": [
+                "Documented and reviewed, not tested"
+              ]
+            },
+            {
+              "question": "AF-TP-04",
+              "meets": [
+                "Independent validation",
+                "Customer test"
+              ],
+              "partly": [
+                "Provider test evidence"
+              ]
+            }
+          ],
+          "findingControls": [
+            "RES.TP.CONTINUITY"
+          ],
+          "verification": {
+            "status": "V",
+            "checked": "2026-10-28",
+            "by": "resilience-lead (agent)"
+          },
+          "claims": [
+            "CLM-RES-077"
+          ]
+        },
+        {
+          "dateState": "applies_now",
+          "ownedBy": "resilience_iq",
+          "id": "SG_MAS_BCM.CONCENTRATION",
+          "article": "section 5",
+          "summary": "Manage concentration risk in people, technology, sites and service providers.",
+          "kind": "guideline",
+          "scope": "service",
+          "checks": [
+            {
+              "question": "EX-11",
+              "meets": [
+                "No material concentration"
+              ],
+              "partly": [
+                "Moderate concentration"
+              ]
+            }
+          ],
+          "findingControls": [
+            "RES.TP.CONCENTRATION",
+            "RES.DR.SEPARATION"
+          ],
+          "verification": {
+            "status": "V",
+            "checked": "2026-10-28",
+            "by": "resilience-lead (agent)"
+          },
+          "claims": [
+            "CLM-RES-078"
+          ]
+        },
+        {
+          "dateState": "applies_now",
+          "ownedBy": "resilience_iq",
+          "id": "SG_MAS_BCM.ANNUAL_REVIEW",
+          "article": "6.7",
+          "summary": "Review critical services, SRTOs, RTOs and dependencies at least annually.",
+          "kind": "guideline",
+          "scope": "service",
+          "checks": [
+            {
+              "question": "REV-01",
+              "meets": [
+                "Within 12 months"
+              ],
+              "partly": [
+                "1-2 years ago"
+              ]
+            }
+          ],
+          "findingControls": [
+            "RES.GOV.REVIEW"
+          ],
+          "verification": {
+            "status": "V",
+            "checked": "2026-10-28",
+            "by": "resilience-lead (agent)"
+          },
+          "claims": [
+            "CLM-RES-079"
+          ]
+        },
+        {
+          "dateState": "applies_now",
+          "ownedBy": "resilience_iq",
+          "id": "SG_MAS_BCM.TESTING",
+          "article": "7.2-7.3",
+          "summary": "Test under severe but plausible scenarios and verify the SRTO can be met, at a frequency set by criticality.",
+          "kind": "guideline",
+          "scope": "service",
+          "checks": [
+            {
+              "question": "EX-16",
+              "meets": [
+                "Yes, regularly",
+                "Yes, occasionally"
+              ],
+              "partly": [
+                "Technical tests only"
+              ]
+            },
+            {
+              "question": "EX-06",
+              "meets": [
+                "Yes, proven by testing"
+              ],
+              "partly": [
+                "Likely, but not recently tested"
+              ]
+            }
+          ],
+          "findingControls": [
+            "RES.TEST.SCENARIO",
+            "RES.DR.PROVEN"
+          ],
+          "verification": {
+            "status": "V",
+            "checked": "2026-10-28",
+            "by": "resilience-lead (agent)"
+          },
+          "claims": [
+            "CLM-RES-080"
+          ]
+        },
+        {
+          "dateState": "applies_now",
+          "ownedBy": "resilience_iq",
+          "id": "SG_MAS_BCM.AUDIT",
+          "article": "8.2-8.3",
+          "summary": "Audit the BCM framework and each critical service's BCM at least once every three years, by a qualified independent party.",
+          "kind": "guideline",
+          "scope": "enterprise",
+          "checks": [
+            {
+              "question": "AUD-01",
+              "meets": [
+                "Within 12 months",
+                "1-3 years ago"
+              ]
+            }
+          ],
+          "findingControls": [
+            "RES.GOV.AUDIT"
+          ],
+          "verification": {
+            "status": "V",
+            "checked": "2026-10-28",
+            "by": "resilience-lead (agent)"
+          },
+          "claims": [
+            "CLM-RES-081"
+          ]
+        }
+      ]
+    },
+    {
+      "regime": "SG_MAS_TRM",
+      "name": "MAS Technology Risk Management Notices (FSM-N03 to FSM-N25)",
+      "citation": {
+        "text": "MAS TRM Notices, para 5-6",
+        "url": "https://www.mas.gov.sg/-/media/mas-media-library/regulation/notices/trpd/notice-fsm-n05/mas-notice-fsm-n05.pdf"
+      },
+      "applicability": {
+        "source": "sovereign_registry",
+        "regime": "SG_MAS_TRM",
+        "note": "The four-hour floor applies only where the consultant confirms (REG-02 mas_critical_system) that the service runs on a system the institution treats as critical. All eleven current notices carry it, so the floor is client-visible for every licence type (settles Q6)."
+      },
+      "obligations": [
+        {
+          "dateState": "applies_now",
+          "ownedBy": "resilience_iq",
+          "id": "SG_MAS_TRM.RTO_4H",
+          "article": "TRM Notice for the licence type, para 6",
+          "summary": "Recovery time objective of no more than 4 hours for each critical system, with recovery testing validated at least every 12 months.",
+          "kind": "rule",
+          "appliesFrom": "2024-05-10",
+          "scope": "service",
+          "conditions": "Only when REG-02 records mas_critical_system for the service. Digital payment token service providers from 6 Nov 2024.",
+          "checks": [
+            {
+              "question": "EX-03",
+              "meets": [
+                "<15 minutes",
+                "15-60 minutes",
+                "1-4 hours"
+              ]
+            },
+            {
+              "question": "AF-DR-01",
+              "meets": [
+                "<15 minutes",
+                "15-60 minutes",
+                "1-4 hours"
+              ]
+            }
+          ],
+          "findingControls": [
+            "RES.REQ.DEFINED",
+            "RES.DR.STRATEGY"
+          ],
+          "evidence": [
+            "Critical-system list; recovery test record within 12 months"
+          ],
+          "verification": {
+            "status": "V",
+            "checked": "2026-10-28",
+            "by": "resilience-lead (agent)"
+          },
+          "claims": [
+            "CLM-RES-083",
+            "CLM-RES-085",
+            "CLM-RES-084"
+          ]
+        },
+        {
+          "dateState": "applies_now",
+          "ownedBy": "resilience_iq",
+          "id": "SG_MAS_TRM.DOWNTIME_4H",
+          "article": "TRM Notice for the licence type, para 5",
+          "summary": "Total unscheduled downtime of each critical system no more than 4 hours in any 12 months.",
+          "kind": "rule",
+          "appliesFrom": "2024-05-10",
+          "scope": "service",
+          "conditions": "Measured from incident records; not assessed by a question in v1.",
+          "checks": [],
+          "evidence": [
+            "Unscheduled downtime record for each critical system"
+          ],
+          "verification": {
+            "status": "V",
+            "checked": "2026-10-28",
+            "by": "resilience-lead (agent)"
+          },
+          "claims": [
+            "CLM-RES-086"
+          ]
+        },
+        {
+          "dateState": "applies_now",
+          "ownedBy": "sovereign_iq",
+          "id": "SG_MAS_TRM.NOTIFY_1H",
+          "article": "TRM Notice for the licence type, para 7",
+          "summary": "Notify MAS within 1 hour of discovering a relevant incident.",
+          "kind": "rule",
+          "appliesFrom": "2024-05-10",
+          "checks": [],
+          "verification": {
+            "status": "V",
+            "checked": "2026-10-28",
+            "by": "resilience-lead (agent)"
+          },
+          "claims": [
+            "CLM-SOV-135"
+          ]
+        }
+      ]
+    },
+    {
+      "regime": "US_NYDFS_500",
+      "name": "NYDFS Cybersecurity Regulation, 23 NYCRR Part 500",
+      "citation": {
+        "text": "23 NYCRR 500.16 [CLM-SOV-120]",
+        "url": "https://www.dfs.ny.gov/system/files/documents/2023/12/rf23_nycrr_part_500_amend02_20231101.pdf"
+      },
+      "applicability": {
+        "source": "sovereign_registry",
+        "regime": "US_NYDFS_500",
+        "note": "Not applicable when REG-02 records the 500.19(a) limited exemption (consultant-confirmed)."
+      },
+      "obligations": [
+        {
+          "dateState": "applies_now",
+          "ownedBy": "resilience_iq",
+          "id": "US_NYDFS_500.BCDR_PLAN",
+          "article": "500.16(a)(2)",
+          "summary": "Keep a business continuity and disaster recovery plan for cybersecurity-related disruption: essential data, systems and people, third parties, recovery procedures, and offsite backups.",
+          "kind": "rule",
+          "appliesFrom": "2024-11-01",
+          "scope": "service",
+          "checks": [
+            {
+              "question": "EX-05",
+              "meets": [
+                "Yes, current and validated"
+              ],
+              "partly": [
+                "Partially"
+              ]
+            },
+            {
+              "question": "EX-10",
+              "meets": [
+                "No",
+                "Yes, but alternatives exist",
+                "Yes, with no viable alternative"
+              ]
+            },
+            {
+              "question": "EX-09",
+              "meets": [
+                "Yes, retention-locked (immutable) and restore tested in the last 12 months"
+              ],
+              "partly": [
+                "Retention-locked (immutable), restore not tested",
+                "Usable backups, retention not locked"
+              ]
+            }
+          ],
+          "findingControls": [
+            "RES.DEPENDENCY.MAP",
+            "RES.BACKUP.RECOVERABLE"
+          ],
+          "verification": {
+            "status": "V",
+            "checked": "2026-10-28",
+            "by": "resilience-lead (agent)"
+          },
+          "claims": [
+            "CLM-RES-088",
+            "CLM-RES-093"
+          ]
+        },
+        {
+          "dateState": "applies_now",
+          "ownedBy": "resilience_iq",
+          "id": "US_NYDFS_500.PLAN_TESTING",
+          "article": "500.16(d)(1)",
+          "summary": "Test incident response and BCDR plans at least annually with all critical staff and management.",
+          "kind": "rule",
+          "appliesFrom": "2024-11-01",
+          "scope": "service",
+          "checks": [
+            {
+              "question": "EX-07",
+              "meets": [
+                "Within 3 months",
+                "3-12 months ago"
+              ]
+            },
+            {
+              "question": "EX-14",
+              "meets": [
+                "Yes, exercised"
+              ]
+            }
+          ],
+          "findingControls": [
+            "RES.DR.PROVEN",
+            "RES.BCP.CRISIS"
+          ],
+          "verification": {
+            "status": "V",
+            "checked": "2026-10-28",
+            "by": "resilience-lead (agent)"
+          },
+          "claims": [
+            "CLM-RES-090"
+          ]
+        },
+        {
+          "dateState": "applies_now",
+          "ownedBy": "resilience_iq",
+          "id": "US_NYDFS_500.RESTORE_TESTING",
+          "article": "500.16(d)(2)",
+          "summary": "Test at least annually the ability to restore critical data and information systems from backups.",
+          "kind": "rule",
+          "appliesFrom": "2024-11-01",
+          "scope": "service",
+          "checks": [
+            {
+              "question": "EX-09",
+              "meets": [
+                "Yes, retention-locked (immutable) and restore tested in the last 12 months"
+              ]
+            },
+            {
+              "question": "AF-DR-03",
+              "meets": [
+                "Data restore"
+              ]
+            }
+          ],
+          "findingControls": [
+            "RES.DR.PROVEN"
+          ],
+          "verification": {
+            "status": "V",
+            "checked": "2026-10-28",
+            "by": "resilience-lead (agent)"
+          },
+          "claims": [
+            "CLM-RES-090",
+            "CLM-RES-035"
+          ]
+        },
+        {
+          "dateState": "applies_now",
+          "ownedBy": "resilience_iq",
+          "id": "US_NYDFS_500.BACKUP_PROTECTION",
+          "article": "500.16(e)",
+          "summary": "Maintain backups needed to restore material operations, adequately protected from unauthorised alteration or destruction.",
+          "kind": "rule",
+          "appliesFrom": "2024-11-01",
+          "scope": "service",
+          "checks": [
+            {
+              "question": "EX-09",
+              "meets": [
+                "Yes, retention-locked (immutable) and restore tested in the last 12 months",
+                "Retention-locked (immutable), restore not tested"
+              ]
+            },
+            {
+              "question": "EX-08",
+              "meets": [
+                "No, recovery is isolated and this has been tested"
+              ],
+              "partly": [
+                "No, isolated by design, not tested"
+              ]
+            },
+            {
+              "question": "AF-CY-01",
+              "meets": [
+                "No, separate credentials and approval"
+              ],
+              "partly": [
+                "Partly"
+              ]
+            }
+          ],
+          "findingControls": [
+            "RES.BACKUP.IMMUTABLE",
+            "RES.CYBER.ISOLATION"
+          ],
+          "verification": {
+            "status": "V",
+            "checked": "2026-10-28",
+            "by": "resilience-lead (agent)"
+          },
+          "claims": [
+            "CLM-RES-091",
+            "CLM-RES-035"
+          ]
+        },
+        {
+          "dateState": "applies_now",
+          "ownedBy": "sovereign_iq",
+          "id": "US_NYDFS_500.NOTICE",
+          "article": "500.17",
+          "summary": "72-hour notice of cybersecurity incidents.",
+          "kind": "rule",
+          "appliesFrom": "2023-12-01",
+          "checks": [],
+          "verification": {
+            "status": "S",
+            "checked": "2026-10-28",
+            "by": "resilience-lead (agent)"
+          },
+          "claims": [
+            "CLM-SOV-121"
+          ]
+        }
+      ]
+    },
+    {
+      "regime": "US_FFIEC_BCM",
+      "name": "FFIEC IT Examination Handbook, Business Continuity Management booklet (November 2019)",
+      "citation": {
+        "text": "FFIEC BCM booklet; FDIC FIL-71-2019; OCC Bulletin 2019-57; Federal Reserve SR 19-13",
+        "url": "https://ithandbook.ffiec.gov/it-booklets/business-continuity-management/"
+      },
+      "applicability": {
+        "source": "resilience_record",
+        "rules": [
+          {
+            "id": "US_FFIEC_BCM.1",
+            "when": {
+              "fact": "ent.flags",
+              "op": "includes",
+              "value": "us_federal_banking_supervised"
+            },
+            "grade": "applies",
+            "reason": "Your US federal banking supervisor examines business continuity management against the FFIEC booklet. It is examiner guidance and imposes no new requirements; items are shown as examination expectations.",
+            "basis": "FDIC FIL-71-2019; OCC 2019-57; SR 19-13 [CLM-RES-094] [CLM-RES-095]",
+            "verification": {
+              "status": "V",
+              "checked": "2026-10-28",
+              "by": "resilience-lead (agent)"
+            }
+          },
+          {
+            "id": "US_FFIEC_BCM.2",
+            "when": {
+              "all": [
+                {
+                  "fact": "org.establishments",
+                  "op": "includes",
+                  "value": "us"
+                },
+                {
+                  "fact": "org.sector",
+                  "op": "eq",
+                  "value": "banking"
+                },
+                {
+                  "not": {
+                    "fact": "ent.flags",
+                    "op": "includes",
+                    "value": "us_federal_banking_supervised"
+                  }
+                }
+              ]
+            },
+            "grade": "likely_confirm",
+            "reason": "You provide banking services in the US; confirm whether you are supervised by the Federal Reserve, FDIC or OCC.",
+            "basis": "SR 19-13; FIL-71-2019; OCC 2019-57 [CLM-RES-095]",
+            "verification": {
+              "status": "V",
+              "checked": "2026-10-28",
+              "by": "resilience-lead (agent)"
+            }
+          }
+        ],
+        "default": "not_applicable"
+      },
+      "obligations": [
+        {
+          "dateState": "applies_now",
+          "ownedBy": "resilience_iq",
+          "id": "US_FFIEC_BCM.CRITICAL_FUNCTIONS",
+          "article": "BCM booklet (themes per SR 19-13)",
+          "summary": "Identify critical business functions and their interdependencies.",
+          "kind": "examination_expectation",
+          "appliesFrom": "2019-11-14",
+          "scope": "service",
+          "checks": [
+            {
+              "question": "EX-02",
+              "meets": [
+                "<15 minutes",
+                "15-60 minutes",
+                "1-4 hours",
+                "4-24 hours",
+                ">24 hours"
+              ]
+            },
+            {
+              "question": "EX-05",
+              "meets": [
+                "Yes, current and validated"
+              ],
+              "partly": [
+                "Partially"
+              ]
+            }
+          ],
+          "findingControls": [
+            "RES.REQ.DEFINED",
+            "RES.DEPENDENCY.MAP"
+          ],
+          "verification": {
+            "status": "V",
+            "checked": "2026-10-28",
+            "by": "resilience-lead (agent)"
+          },
+          "claims": [
+            "CLM-RES-096",
+            "CLM-RES-094"
+          ]
+        },
+        {
+          "dateState": "applies_now",
+          "ownedBy": "resilience_iq",
+          "id": "US_FFIEC_BCM.EXERCISES_TESTS",
+          "article": "BCM booklet (themes per SR 19-13)",
+          "summary": "Exercises and tests of business continuity.",
+          "kind": "examination_expectation",
+          "appliesFrom": "2019-11-14",
+          "scope": "service",
+          "checks": [
+            {
+              "question": "EX-07",
+              "meets": [
+                "Within 3 months",
+                "3-12 months ago"
+              ]
+            },
+            {
+              "question": "EX-16",
+              "meets": [
+                "Yes, regularly",
+                "Yes, occasionally"
+              ]
+            }
+          ],
+          "findingControls": [
+            "RES.DR.PROVEN",
+            "RES.TEST.SCENARIO"
+          ],
+          "verification": {
+            "status": "V",
+            "checked": "2026-10-28",
+            "by": "resilience-lead (agent)"
+          },
+          "claims": [
+            "CLM-RES-096"
+          ]
+        },
+        {
+          "dateState": "applies_now",
+          "ownedBy": "resilience_iq",
+          "id": "US_FFIEC_BCM.BOARD_REPORTING",
+          "article": "BCM booklet (themes per SR 19-13)",
+          "summary": "Reporting on business continuity to the board of directors.",
+          "kind": "examination_expectation",
+          "appliesFrom": "2019-11-14",
+          "scope": "enterprise",
+          "checks": [
+            {
+              "question": "EX-15",
+              "meets": [
+                "Yes, with metrics and actions"
+              ],
+              "partly": [
+                "Yes, periodic review"
+              ]
+            }
+          ],
+          "findingControls": [
+            "RES.GOV.OVERSIGHT"
+          ],
+          "verification": {
+            "status": "V",
+            "checked": "2026-10-28",
+            "by": "resilience-lead (agent)"
+          },
+          "claims": [
+            "CLM-RES-096"
+          ]
+        },
+        {
+          "dateState": "applies_now",
+          "ownedBy": "resilience_iq",
+          "id": "US_FFIEC_BCM.THIRD_PARTIES",
+          "article": "BCM booklet (passage not read)",
+          "summary": "Continuity of third-party service providers.",
+          "kind": "examination_expectation",
+          "appliesFrom": "2019-11-14",
+          "scope": "service",
+          "conditions": "Consultant view only until the booklet passage is read (claim UNSOURCED).",
+          "checks": [
+            {
+              "question": "EX-17",
+              "meets": [
+                "Yes, tested with us in the last 12 months"
+              ],
+              "partly": [
+                "Documented and reviewed, not tested"
+              ]
+            }
+          ],
+          "findingControls": [
+            "RES.TP.CONTINUITY"
+          ],
+          "verification": {
+            "status": "UNSOURCED",
+            "checked": "2026-10-28",
+            "by": "resilience-lead (agent)"
+          },
+          "claims": [
+            "CLM-RES-097"
+          ]
+        },
+        {
+          "dateState": "applies_now",
+          "ownedBy": "resilience_iq",
+          "id": "US_FFIEC_BCM.CYBER_RESILIENCE",
+          "article": "BCM booklet (passage not read)",
+          "summary": "Resilience to cyber events, including protected backups.",
+          "kind": "examination_expectation",
+          "appliesFrom": "2019-11-14",
+          "scope": "service",
+          "conditions": "Consultant view only until the booklet passage is read (claim UNSOURCED). The OCC names cyber events among disruptions.",
+          "checks": [
+            {
+              "question": "EX-09",
+              "meets": [
+                "Yes, retention-locked (immutable) and restore tested in the last 12 months",
+                "Retention-locked (immutable), restore not tested"
+              ]
+            },
+            {
+              "question": "EX-08",
+              "meets": [
+                "No, recovery is isolated and this has been tested"
+              ],
+              "partly": [
+                "No, isolated by design, not tested"
+              ]
+            }
+          ],
+          "findingControls": [
+            "RES.BACKUP.IMMUTABLE",
+            "RES.CYBER.ISOLATION"
+          ],
+          "verification": {
+            "status": "UNSOURCED",
+            "checked": "2026-10-28",
+            "by": "resilience-lead (agent)"
+          },
+          "claims": [
+            "CLM-RES-097",
+            "CLM-RES-096"
+          ]
+        }
+      ]
+    }
+  ]
+}

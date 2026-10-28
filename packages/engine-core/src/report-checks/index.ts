@@ -37,6 +37,8 @@ export interface ReportRules {
 interface Claim { id: string; verification?: string; clientVisible?: boolean; nextReview?: string }
 const CLAIMS = new Map<string, Claim>((register as { claims: Claim[] }).claims.map(c => [c.id, c]));
 const BANNED = (banned as { phrases: Array<{ pattern: string; flags: string }> }).phrases.map(p => new RegExp(p.pattern, p.flags));
+/** Codes are never headings (Resilience IQ RQ2 item 5): checked against section titles and subheadings. */
+const HEADINGS = ((banned as { headingPatterns?: Array<{ pattern: string; flags: string }> }).headingPatterns ?? []).map(p => new RegExp(p.pattern, p.flags));
 type Traced = Exclude<Seg, string> & { trace: Trace };
 /** The text around the first number, for the failure message. */
 const around = (t: string) => { const i = t.search(/\d/); return (i > 40 ? '…' : '') + t.slice(Math.max(0, i - 40), i + 40) + (i + 40 < t.length ? '…' : ''); };
@@ -108,6 +110,9 @@ export function runReportChecks(doc: ReportDocument, view: View, rules: ReportRu
   // R5 language: no banned phrase; the client edition holds no "null", "undefined" or internal file path.
   const text = documentText(doc);
   for (const re of BANNED) { const m = text.match(re); if (m) fail('R5', `banned phrase "${m[0]}"`); }
+  for (const h of doc.sections.flatMap(x => [x.title, ...x.blocks.flatMap(bl => bl.kind === 'subheading' ? [bl.text] : [])])) {
+    for (const re of HEADINGS) if (re.test(h)) fail('R5', `code used as a heading: "${h}"`);
+  }
   if (view === 'client') {
     for (const re of [/\bnull\b/, /\bundefined\b/, /\bNaN\b/, /\[object Object\]/, /(?:^|[\s(])(?:packages|amplify|scripts|docs\/cio-readiness)\/[\w./-]+/, /github\.com/, ...(rules.clientForbidden ?? [])]) { const m = text.match(re); if (m) fail('R5', `internal text in the client edition: "${m[0]}"`); }
   }
