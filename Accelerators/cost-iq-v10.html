@@ -149,9 +149,9 @@ async function loadSavedAssessments(epoch){
 }
 // The section of the first unanswered question, where a resume lands, and the share answered: saved with each update.
 function costIqProgress(){
-  const secs=sections();const answered=questions.filter(q=>answers[q.id]!==undefined).length;
-  const stage=secs.find(s=>questions.filter(q=>q.section===s).some(q=>answers[q.id]===undefined))||secs[secs.length-1];
-  return {stage:stage,percent:questions.length?Math.round(100*answered/questions.length):0};
+  const secs=sections(),all=vq();const answered=all.filter(q=>answers[q.id]!==undefined).length;
+  const stage=secs.find(s=>all.filter(q=>q.section===s).some(q=>answers[q.id]===undefined))||secs[secs.length-1];
+  return {stage:stage,percent:all.length?Math.round(100*answered/all.length):0};
 }
 function askDelete(card,id){
   const cell=[...card.querySelectorAll('[data-delete-for]')].find(c=>c.dataset.deleteFor===id);if(!cell)return;
@@ -186,7 +186,7 @@ async function resumeAssessment(id){
     questions=allQuestions.filter(q=>BASELINE.includes(q.section)||selectedAreas.some(a=>(AREAS[a]||[]).includes(q.section)));
     testScenario=false;sectionIndex=0;
     if(record.status==='completed'&&record.resultJson){assessment=JSON.parse(record.resultJson);aiReview=null;preliminary();return}
-    const secs=sections();const first=secs.findIndex(s=>questions.filter(q=>q.section===s).some(q=>answers[q.id]===undefined));sectionIndex=first<0?Math.max(0,secs.length-1):first;renderAssessment();persistStatus('Assessment resumed');
+    const secs=sections();const first=secs.findIndex(s=>vq().filter(q=>q.section===s).some(q=>answers[q.id]===undefined));sectionIndex=first<0?Math.max(0,secs.length-1):first;renderAssessment();persistStatus('Assessment resumed');
   }catch(e){alert('Could not resume this assessment: '+e.message)}
 }
 function toggleArea(el,a){
@@ -256,11 +256,14 @@ async function begin(){
   }else persistStatus('Session only · persistence endpoint unavailable');
   renderAssessment();
 }
-function sections(){const seen=[];questions.forEach(function(q){if(!seen.includes(q.section))seen.push(q.section)});return seen}
+// A question with applicableWhen is asked, scored and counted only when the footprint answer (CORE-01) names the estate.
+function applies(q){const w=q.applicableWhen;if(!w)return true;const a=answers[w.questionId];return (Array.isArray(a)?a:a==null?[]:[a]).some(v=>w.anyOf.includes(String(v)))}
+function vq(){return questions.filter(applies)}
+function sections(){const seen=[];vq().forEach(function(q){if(!seen.includes(q.section))seen.push(q.section)});return seen}
 function renderAssessment(){
-  const secs=sections();const sec=secs[sectionIndex];const qs=questions.filter(q=>q.section===sec);
+  const secs=sections();const sec=secs[sectionIndex];const qs=vq().filter(q=>q.section===sec);
   if(!qs.length){sectionIndex++;qIndex=0;if(sectionIndex>=secs.length){runEngine();return}renderAssessment();return}
-  const answered=questions.filter(q=>answers[q.id]!==undefined).length,total=questions.length,pct=Math.round(answered/total*100);
+  const answered=vq().filter(q=>answers[q.id]!==undefined).length,total=vq().length,pct=Math.round(answered/total*100);
   const rail=secs.map(function(s,i){return '<div class="rail-item '+(i===sectionIndex?'active':'')+' '+(i<sectionIndex?'done':'')+'">'+(i<sectionIndex?'✓ ':'')+esc(s)+'</div>'}).join('');
   const cards=qs.map(function(q,i){return '<div class="q-card" style="margin-bottom:16px">'+questionHTML(q,i+1,qs.length)+'</div>'}).join('');
   $('app').innerHTML='<div class="assessment"><aside class="rail"><div class="rail-card"><div class="mono" style="color:#9fb0bb">COST IQ</div><h3 style="margin:7px 0 12px">Diagnostic</h3><div style="font-size:11px;color:#9fb0bb;margin-bottom:10px">QUESTIONS IN ASSESSMENT</div><div style="font-size:28px;font-weight:800">'+total+'</div>'+rail+'<div style="margin-top:14px;font-size:10px;color:#8797a2">'+answered+' of '+total+' answered</div><div class="progress" style="margin-top:7px"><i style="width:'+pct+'%"></i></div></div></aside><section><div class="mini" style="margin-bottom:8px">SECTION '+(sectionIndex+1)+' OF '+secs.length+' · '+esc(sec)+' · '+qs.length+' QUESTIONS</div>'+cards+'<div class="nav"><button class="btn" onclick="backQ()">← Back</button><div class="mini">Section '+(sectionIndex+1)+' of '+secs.length+'</div><button class="btn primary" onclick="nextSection()">'+(sectionIndex===secs.length-1?'Complete assessment →':'Next section →')+'</button></div></section></div>';
@@ -277,7 +280,7 @@ function questionHTML(q,n,total){
   return '<span class="q-no">'+esc(q.id)+' · QUESTION '+n+' OF '+total+'</span><h2 class="q-title">'+esc(q.prompt)+'</h2>'+(q.answerGuidance?'<div class="help"><b>How to answer:</b> '+esc(q.answerGuidance)+'</div>':'')+body+sub;
 }
 function pick(id,v){answers[id]=v;scheduleProgressSave();renderAssessment()}function toggle(id,v){const a=Array.isArray(answers[id])?[...answers[id]]:[];const i=a.indexOf(v);if(i>=0)a.splice(i,1);else a.push(v);answers[id]=a;scheduleProgressSave();renderAssessment()}function setStar(id,v){answers[id]=v;scheduleProgressSave();renderAssessment()}function setSlider(id,v){answers[id]=Number(v);scheduleProgressSave();const x=$('sv');if(x)x.textContent=v}
-function currentSectionQuestions(){return questions.filter(q=>q.section===sections()[sectionIndex])}
+function currentSectionQuestions(){return vq().filter(q=>q.section===sections()[sectionIndex])}
 function sectionValid(){
   const qs=currentSectionQuestions();
   return qs.every(function(q){

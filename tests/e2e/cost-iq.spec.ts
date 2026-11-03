@@ -84,4 +84,21 @@ test.describe('Cost IQ', () => {
     expect(world.calls.filter(c => c.includes('/ai-'))).toEqual([]);
     expect(world.pageErrors).toEqual([]);
   });
+
+  test('an estate question is shown only when the footprint names that estate', async ({ page, context, world }) => {
+    await signedIn(context, permitted(makeIdToken('consultant@ltm.com')));
+    world.on('GET', ASSESSMENT, () => ({ body: { ok: true, data: [] } }));
+    await page.goto('/cost-iq-v10');
+    await expect(page.getByRole('button', { name: /Configure diagnostic/ })).toBeVisible();
+    const visible = (footprint?: string[]) => page.evaluate(`(function(f){
+      answers = f ? { 'CORE-01': f } : {};
+      questions = allQuestions.filter(q => ['CORE-01', 'ADP-13', 'ADP-14', 'ADP-09'].includes(q.id));
+      return vq().map(q => q.id);
+    })(${JSON.stringify(footprint ?? null)})`);
+    expect(await visible()).toEqual(['CORE-01']);
+    expect(await visible(['PUBLIC_CLOUD'])).toEqual(['CORE-01']);
+    expect(await visible(['COLO'])).toEqual(['CORE-01', 'ADP-13']);
+    expect(await visible(['VMWARE', 'EXTERNAL'])).toEqual(['CORE-01', 'ADP-09', 'ADP-14']);
+    expect(world.pageErrors).toEqual([]);
+  });
 });

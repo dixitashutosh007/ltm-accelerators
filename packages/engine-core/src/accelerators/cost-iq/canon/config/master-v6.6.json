@@ -165,6 +165,14 @@
           "label": "Public cloud services"
         },
         {
+          "id": "VMWARE",
+          "label": "VMware or other virtualization platforms"
+        },
+        {
+          "id": "COLO",
+          "label": "Colocation or third-party data-centre facilities"
+        },
+        {
           "id": "SAAS",
           "label": "SaaS applications and subscriptions"
         },
@@ -1548,73 +1556,6 @@
       "answerGuidance": "Think about the trigger for intervention and whether leaders can change funding, scope, ownership or continuation.",
       "opportunityImplication": "Create portfolio challenge and stop/reduce mechanisms to prevent low-value spend from persisting.",
       "confidenceImpact": "Weak intervention history lowers confidence that economically attractive rationalization is practically executable."
-    },
-    {
-      "id": "CORE-23",
-      "section": "Cloud & SaaS Economics",
-      "prompt": "Which technology environments are materially used today and should be included in the cost and value analysis?",
-      "intent": "Activate only the environment-specific diagnostics that are relevant to the enterprise.",
-      "interaction": "multi-select",
-      "answerDesign": "Select every environment that is materially used. Choose 'None of these are material' only when none is a meaningful part of the technology estate.",
-      "required": true,
-      "adaptiveTrigger": "Activates environment-specific deep dives",
-      "costDimension": null,
-      "valueDimension": null,
-      "evidenceImplication": "Use architecture/inventory evidence to confirm the material environment footprint.",
-      "findingImplication": "Determines which cloud, virtualization, infrastructure and service-economics findings can be considered.",
-      "options": [
-        {
-          "id": "PUBLIC_CLOUD",
-          "label": "Public cloud platforms and services"
-        },
-        {
-          "id": "PRIVATE_CLOUD",
-          "label": "Private cloud or hosted private infrastructure"
-        },
-        {
-          "id": "VMWARE",
-          "label": "VMware or other virtualization platforms"
-        },
-        {
-          "id": "ON_PREM",
-          "label": "Traditional on-premises infrastructure and data centres"
-        },
-        {
-          "id": "SAAS",
-          "label": "SaaS applications and subscriptions"
-        },
-        {
-          "id": "COLO",
-          "label": "Colocation or third-party data-centre facilities"
-        },
-        {
-          "id": "MANAGED",
-          "label": "Managed infrastructure or technology services"
-        },
-        {
-          "id": "NONE",
-          "label": "None of these are material"
-        }
-      ],
-      "scoring": {
-        "signalOnly": true,
-        "signals": [
-          "environment-scope"
-        ],
-        "note": "Scope trigger only; never score by number of environments selected."
-      },
-      "active": true,
-      "version": 4,
-      "findingIds": [],
-      "recommendationIds": [],
-      "answerGuidance": "Think about environments that materially drive spend, contracts, operations or technology decisions—not every environment that exists somewhere in the business.",
-      "questionDesignVersion": "6.4",
-      "opportunityImplication": "Sets the addressable spend scope; does not itself create an opportunity.",
-      "confidenceImpact": "Scope completeness; selected environments become the minimum evidence boundary.",
-      "control": {
-        "noneOption": "NONE"
-      },
-      "reviewStatus": "Reviewed v6.4"
     },
     {
       "id": "CORE-26",
@@ -3145,9 +3086,14 @@
         "dimensionIds": [
           "COST-05"
         ],
-        "valueDimensionIds": [
-          "VALUE-05"
-        ]
+        "defaultMap": {
+          "INTEGRATED": 100.0,
+          "MATERIAL_REVIEW": 80.0,
+          "SEPARATE": 60.0,
+          "REACTIVE": 40.0,
+          "UNKNOWN": 20.0
+        },
+        "basis": "Ordered scale of how integrated the decision is: INTEGRATED (total-cost case across licensing, infrastructure, workload fit and migration) down to UNKNOWN. Mirrors the Walk/Run idea in the FinOps Licensing and SaaS capability (a pre-signature check of options against validated demand); the application to virtualisation is LTM heuristic. SEPARATE and REACTIVE can both be true at once, so the order of those two is a judgement. The question also carries valueDimensionIds VALUE-05; the engine ignores valueDimensionIds, and putting it in dimensionIds would count one answer in both the Cost and Value headlines, so score COST-05 only. Needs applicability gating (clients with no virtualised estate must not be asked)."
       },
       "active": true,
       "version": 2,
@@ -3157,7 +3103,13 @@
       "findingIds": [],
       "recommendationIds": [],
       "questionDesignVersion": "6.6",
-      "answerGuidance": "Think about platform alternatives, workload fit, infrastructure footprint, licensing changes and migration cost—not license price alone."
+      "answerGuidance": "Think about platform alternatives, workload fit, infrastructure footprint, licensing changes and migration cost—not license price alone.",
+      "applicableWhen": {
+        "questionId": "CORE-01",
+        "anyOf": [
+          "VMWARE"
+        ]
+      }
     },
     {
       "id": "ADP-10",
@@ -3197,7 +3149,15 @@
       "recommendationIds": [],
       "questionDesignVersion": "6.6",
       "answerGuidance": "Consider age, utilization, application fit, licensing exposure, platform dependency and business criticality. Do not assume every VM is a migration candidate.",
-      "confidenceNote": "Low until workload-level evidence confirms candidate population."
+      "confidenceNote": "Low until workload-level evidence confirms candidate population.",
+      "applicableWhen": {
+        "questionId": "CORE-01",
+        "anyOf": [
+          "VMWARE",
+          "ON_PREM",
+          "PRIVATE_CLOUD"
+        ]
+      }
     },
     {
       "id": "ADP-11",
@@ -3216,9 +3176,14 @@
         "dimensionIds": [
           "COST-05"
         ],
-        "valueDimensionIds": [
-          "VALUE-05"
-        ]
+        "defaultMap": {
+          "1": 20.0,
+          "2": 40.0,
+          "3": 60.0,
+          "4": 80.0,
+          "5": 100.0
+        },
+        "basis": "Five anchored levels from \"visible excess capacity or no reliable demand data\" to \"actively optimised against demand, resilience and forecast\". Missing demand data sits in level 1, so lack of knowledge does not flatter. To keep one scale shape across COST-05 (option maps run 100 to 20), use a keyed map 1 to 5 mapped to 20 to 100 instead of the linear star method (0 to 100). A numeric answer matches the map key in scoreQuestion; do not set scaleMax or method on this question. Basis is LTM heuristic; the Data Center scope in the FinOps Framework exists but I could not read its content (the capability page returned 404). The prompt says \"How confident are you\" while the anchors describe practice; consider \"How well is\" (minor, owner optional). Needs applicability gating (ON_PREM)."
       },
       "active": true,
       "version": 2,
@@ -3239,7 +3204,14 @@
         ]
       },
       "questionDesignVersion": "6.6",
-      "answerGuidance": "Consider compute, storage, power, cooling and floor space. Include required headroom for resilience and known demand peaks."
+      "answerGuidance": "Consider compute, storage, power, cooling and floor space. Include required headroom for resilience and known demand peaks.",
+      "applicableWhen": {
+        "questionId": "CORE-01",
+        "anyOf": [
+          "ON_PREM",
+          "PRIVATE_CLOUD"
+        ]
+      }
     },
     {
       "id": "ADP-12",
@@ -3342,7 +3314,15 @@
       "scoring": {
         "dimensionIds": [
           "COST-05"
-        ]
+        ],
+        "defaultMap": {
+          "CONTINUOUS": 100.0,
+          "PLANNED": 80.0,
+          "PERIODIC": 60.0,
+          "RENEWAL": 40.0,
+          "UNCLEAR": 20.0
+        },
+        "basis": "Ordered review cadence scale, continuous to renewal-only to not visible; follows the Crawl/Walk/Run pattern (review at renewal only = Crawl). Step values are LTM heuristic. Dependency: there is no \"we do not use colocation\" option, so a client without colocation would be forced to pick UNCLEAR and be scored low. The question must be gated on COLO (CORE-23 option; keep it when merged into CORE-01). If gating cannot be built, a not-applicable option is needed, which changes what a client sees and needs the owner."
       },
       "active": true,
       "version": 2,
@@ -3352,7 +3332,13 @@
       "findingIds": [],
       "recommendationIds": [],
       "questionDesignVersion": "6.6",
-      "answerGuidance": "Consider committed space/power, utilization, connectivity, expansion rights, exit flexibility and the cost of unused capacity."
+      "answerGuidance": "Consider committed space/power, utilization, connectivity, expansion rights, exit flexibility and the cost of unused capacity.",
+      "applicableWhen": {
+        "questionId": "CORE-01",
+        "anyOf": [
+          "COLO"
+        ]
+      }
     },
     {
       "id": "ADP-14",
@@ -3392,7 +3378,15 @@
       "scoring": {
         "dimensionIds": [
           "COST-07"
-        ]
+        ],
+        "defaultMap": {
+          "OUTCOME_LINKED": 100.0,
+          "DEMAND_LINKED": 80.0,
+          "SLA_ONLY": 60.0,
+          "FIXED": 40.0,
+          "UNRECONCILED": 20.0
+        },
+        "basis": "Ordered by how closely charges are tied to consumption and outcomes: OUTCOME_LINKED, DEMAND_LINKED, SLA_ONLY, FIXED, UNRECONCILED. A CIO recognises the ladder (outcome-based, volume-based, service-level, fixed fee, unreconciled). No published scale found; LTM heuristic. Order of SLA_ONLY above FIXED is a judgement. Gate on MANAGED services being in the footprint."
       },
       "active": true,
       "version": 2,
@@ -3402,7 +3396,13 @@
       "findingIds": [],
       "recommendationIds": [],
       "answerGuidance": "Consider volume drivers, service tiers, SLA performance, business outcomes and whether charges change when demand changes.",
-      "questionDesignVersion": "6.6"
+      "questionDesignVersion": "6.6",
+      "applicableWhen": {
+        "questionId": "CORE-01",
+        "anyOf": [
+          "EXTERNAL"
+        ]
+      }
     },
     {
       "id": "ADP-15",

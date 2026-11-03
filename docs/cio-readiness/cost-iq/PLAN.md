@@ -208,3 +208,12 @@ Effect on the reference answer sets: headline Cost IQ unchanged on all three; Va
 **Problems the agent found with the questions:** the engine ignores `valueDimensionIds`, so nine questions carry a value dimension that never receives a score (VALUE-01 has no scored question at all); sliders cannot record "Unknown", so a skipped slider leaves a gap instead of scoring low; ADP-06 counts are not normalised by estate size, so it is a screen, not a benchmark. Not verified: ISO/IEC 19770-1 clauses (iso.org returned 403), the TBM taxonomy towers (members only) and a published shadow-IT percentage.
 
 A new test checks every score map against its options: keys are real options, order follows the options, and "Unknown" is never rated above the lowest level.
+
+### CQ3b slice 3: footprint gating (4 Nov 2026)
+
+- **CORE-23 merged into CORE-01.** The footprint question now names virtualization (VMWARE) and colocation (COLO) as well; managed services was already EXTERNAL. CORE-23 is gone; the count is 96 everywhere.
+- **Applicability.** A question with `applicableWhen` is asked, scored and counted in completeness only when the CORE-01 answer names the estate, and an unanswered footprint means not applicable, so a client is never scored low for an estate they may not have. Gated: ADP-09 (VMWARE), ADP-10 (VMWARE, ON_PREM, PRIVATE_CLOUD), ADP-11 (ON_PREM, PRIVATE_CLOUD), ADP-13 (COLO), ADP-14 (EXTERNAL). The engine and the page both apply the rule; progress and the saved stage count only the questions shown.
+- **Batch 1 maps for ADP-09, 11, 13, 14** are applied now that gating exists.
+- **Cloud findings need cloud.** F-005 and F-006 can fire only when PUBLIC_CLOUD is in the footprint.
+- **State:** 96 questions; 38 score nothing and are not labelled (ADP-15 and ADP-18 await the owner; ADP-21 to ADP-41 and ADP-44 to ADP-60 are in batch 2 and later). Note: the owner decisions on ADP-15, ADP-18 and the F-017 threshold are still open.
+

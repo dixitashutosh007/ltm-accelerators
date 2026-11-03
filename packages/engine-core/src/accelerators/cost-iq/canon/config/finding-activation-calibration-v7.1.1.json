@@ -103,7 +103,13 @@
           "LIMITED",
           "NONE",
           "UNKNOWN"
-        ]
+        ],
+        "applicableWhen": {
+          "questionId": "CORE-01",
+          "anyOf": [
+            "PUBLIC_CLOUD"
+          ]
+        }
       }
     ],
     "F-007": [
@@ -153,7 +159,13 @@
           "D",
           "E",
           "F"
-        ]
+        ],
+        "applicableWhen": {
+          "questionId": "CORE-01",
+          "anyOf": [
+            "PUBLIC_CLOUD"
+          ]
+        }
       }
     ],
     "F-011": [

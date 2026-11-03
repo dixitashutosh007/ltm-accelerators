@@ -20,9 +20,9 @@ const triggers = new Set(Object.values(calibration).flat().map((t: any) => t.que
 
 // Still to score or label in CQ3b (BOUNDARY.md task 6). Remove an ID when it is fixed; never add one.
 // Still to score or label in CQ3b (BOUNDARY.md task 6). Remove an ID when it is fixed; never add one. Held back from batch 1:
-// ADP-09, 11, 13, 14 until footprint gating exists (task 4), ADP-15 (drop) and ADP-18 (rewrite) until the owner approves.
+// ADP-15 (drop) and ADP-18 (rewrite) until the owner approves.
 const INERT = [
-  'ADP-09', 'ADP-11', 'ADP-13', 'ADP-14', 'ADP-15', 'ADP-18', 'ADP-21', 'ADP-22',
+  'ADP-15', 'ADP-18', 'ADP-21', 'ADP-22',
   'ADP-23', 'ADP-24', 'ADP-25', 'ADP-26', 'ADP-27', 'ADP-28', 'ADP-29', 'ADP-30',
   'ADP-31', 'ADP-32', 'ADP-33', 'ADP-34', 'ADP-35', 'ADP-36', 'ADP-37', 'ADP-38',
   'ADP-39', 'ADP-40', 'ADP-41', 'ADP-44', 'ADP-45', 'ADP-46', 'ADP-47', 'ADP-48',
@@ -66,8 +66,8 @@ describe('Cost IQ question bank', () => {
 
   it('can raise the findings whose triggers moved: F-005 from ADP-42 and F-007 from CORE-26', () => {
     const ids = (answers: object) => adapter.evaluateCostIq({ answers }).findings.map((f: any) => f.id);
-    expect(ids({ 'ADP-42': 'NONE' })).toContain('F-005');
-    expect(ids({ 'ADP-42': 'INTELLIGENT' })).not.toContain('F-005');
+    expect(ids({ 'CORE-01': ['PUBLIC_CLOUD'], 'ADP-42': 'NONE' })).toContain('F-005');
+    expect(ids({ 'CORE-01': ['PUBLIC_CLOUD'], 'ADP-42': 'INTELLIGENT' })).not.toContain('F-005');
     expect(ids({ 'CORE-26': 'COUNT' })).toContain('F-007');
   });
 
@@ -75,7 +75,7 @@ describe('Cost IQ question bank', () => {
     const inert = questions.filter((q: any) => !isContext(q) && !scores(q) && !triggers.has(q.id)).map((q: any) => q.id);
     const extra = inert.filter((id: string) => !INERT.includes(id));
     expect(extra, 'new inert questions').toEqual([]);
-    expect(inert.length).toBeLessThanOrEqual(42);
+    expect(inert.length).toBeLessThanOrEqual(38);
   });
 
   it('returns no FinOps overlay fields', () => {
@@ -109,5 +109,30 @@ describe('Cost IQ question bank', () => {
     for (const id of ['CORE-01', 'CORE-05', 'CORE-07', 'CORE-09', 'ADP-10', 'ADP-12', 'ADP-17', 'ADP-19', 'ADP-20']) expect(isContext(q(id)), id).toBe(true);
     // Context never carries a dimension that could be scored from it.
     for (const id of ['CORE-01', 'ADP-20']) expect(q(id).scoring.dimensionIds).toBeUndefined();
+  });
+
+  it('merges CORE-23 into CORE-01, which now names virtualization and colocation', () => {
+    expect(questions.find((q: any) => q.id === 'CORE-23')).toBeUndefined();
+    const ids = questions.find((q: any) => q.id === 'CORE-01').options.map((o: any) => o.id);
+    for (const id of ['VMWARE', 'COLO', 'EXTERNAL', 'ON_PREM', 'PUBLIC_CLOUD']) expect(ids).toContain(id);
+  });
+
+  it('asks, scores and counts an estate question only when the footprint names that estate', () => {
+    const run = (answers: object) => adapter.evaluateCostIq({ answers });
+    const cost05 = (r: any) => r.dimensions.find((d: any) => d.id === 'COST-05').score;
+    // Colocation: scored when the footprint includes it, not scored when it does not or is unanswered.
+    expect(cost05(run({ 'CORE-01': ['COLO'], 'ADP-13': 'CONTINUOUS' }))).toBe(100);
+    expect(cost05(run({ 'CORE-01': ['PUBLIC_CLOUD'], 'ADP-13': 'UNCLEAR' }))).toBeNull();
+    expect(cost05(run({ 'ADP-13': 'UNCLEAR' }))).toBeNull();
+    // Their answers do not count towards completeness when hidden.
+    const gated = ['ADP-09', 'ADP-11', 'ADP-13', 'ADP-14'].map(id => questions.find((q: any) => q.id === id));
+    for (const q of gated) expect(q.applicableWhen.questionId).toBe('CORE-01');
+  });
+
+  it('raises the cloud findings only when public cloud is in the footprint', () => {
+    const ids = (answers: object) => adapter.evaluateCostIq({ answers }).findings.map((f: any) => f.id);
+    expect(ids({ 'ADP-42': 'NONE' })).not.toContain('F-005');
+    expect(ids({ 'CORE-01': ['ON_PREM'], 'ADP-42': 'NONE' })).not.toContain('F-005');
+    expect(ids({ 'CORE-01': ['PUBLIC_CLOUD'], 'ADP-42': 'NONE' })).toContain('F-005');
   });
 });
