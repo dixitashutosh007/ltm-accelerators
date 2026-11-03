@@ -21,6 +21,7 @@ import { manageResilienceEvidenceFunction } from './functions/manage-resilience-
 import { manageResilienceAssessmentFunction } from './functions/manage-resilience-assessment/resource';
 import { manageFinOpsAssessmentFunction } from './functions/manage-finops-assessment/resource';
 import { manageSovereignAssessmentFunction } from './functions/manage-sovereign-assessment/resource';
+import { retentionSweepFunction } from './functions/retention-sweep/resource';
 import { manageSessionFunction } from './functions/manage-session/resource';
 import { sovereignIqReportFunction } from './functions/sovereign-iq-report/resource';
 import { sovereignIqNarrativeFunction } from './functions/sovereign-iq-narrative/resource';
@@ -46,6 +47,7 @@ export const backend = defineBackend({
   manageFinOpsAssessmentFunction,
   manageSovereignAssessmentFunction,
   manageSessionFunction,
+  retentionSweepFunction,
   sovereignIqReportFunction,
   sovereignIqNarrativeFunction,
   finopsIqReportFunction
@@ -173,8 +175,8 @@ reportsLambda.addToRolePolicy(new PolicyStatement({
   resources: [userPool.userPoolArn]
 }));
 
-// Deleting a Resilience IQ assessment also deletes its evidence files, and only those.
-backend.manageResilienceAssessmentFunction.resources.lambda.addToRolePolicy(new PolicyStatement({
+// Deleting a Resilience IQ assessment, or the daily retention sweep, also deletes evidence files, and only those.
+for (const fn of [backend.manageResilienceAssessmentFunction, backend.retentionSweepFunction]) fn.resources.lambda.addToRolePolicy(new PolicyStatement({
   actions: ['s3:DeleteObject'],
   resources: [`arn:aws:s3:::${REPORTS_BUCKET}/resilience-iq/evidence/*`]
 }));
