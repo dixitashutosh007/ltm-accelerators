@@ -13,6 +13,10 @@ class FakeBucket {
   objects = new Map<string, { body: string; etag: string }>();
   seq = 0;
   down = false;
+  /** S3 answers AccessDenied, not NoSuchKey, for a missing object when the caller cannot list the bucket. */
+  denyMissing = false;
+  /** A 404 that is not a missing object: the bucket itself is gone or misnamed. */
+  noBucket = false;
   failAudit = false;
   sent: string[] = [];
   async send(cmd: any): Promise<any> {
@@ -21,6 +25,8 @@ class FakeBucket {
     if (this.down) throw Object.assign(new Error('network'), { name: 'TimeoutError' });
     if (cmd instanceof GetObjectCommand) {
       const o = this.objects.get(i.Key);
+      if (this.noBucket) throw Object.assign(new Error('no bucket'), { name: 'NoSuchBucket', $metadata: { httpStatusCode: 404 } });
+      if (!o && this.denyMissing) throw Object.assign(new Error('denied'), { name: 'AccessDenied', $metadata: { httpStatusCode: 403 } });
       if (!o) throw Object.assign(new Error('missing'), { name: 'NoSuchKey' });
       return { Body: { transformToString: async () => o.body }, ETag: o.etag };
     }
@@ -156,5 +162,46 @@ describe('changing', () => {
     await store.change({ op: 'remove', id: doc.rules[0].id }, 'boss@ltm.com');
     tick(FRESH_MS + 1);
     expect((await store.check('a@ey.com')).allowed).toBe(true);
+  });
+});
+
+describe('a missing rules file (the first deploy)', () => {
+  it('a reader that cannot list the bucket gets AccessDenied for a missing file and refuses everyone but the protected addresses', async () => {
+    const { store, bucket } = setup();
+    bucket.denyMissing = true;
+    expect(await store.check('a@ey.com')).toEqual({ allowed: false, reason: 'rules_unavailable' });
+    expect(await store.check('boss@ltm.com')).toMatchObject({ allowed: true });
+  });
+  it('seeding creates the file once, empty, and never overwrites an existing one', async () => {
+    const { store, bucket, make } = setup();
+    expect(await store.seedIfMissing()).toBe('created');
+    expect(JSON.parse(bucket.objects.get(RULES_KEY)!.body)).toEqual({ version: 1, rules: [] });
+    await store.change(set('partner.com'), 'boss@ltm.com');
+    const before = bucket.objects.get(RULES_KEY)!.body;
+    expect(await make().seedIfMissing()).toBe('exists');
+    expect(bucket.objects.get(RULES_KEY)!.body).toBe(before);
+  });
+  it('after seeding, a reader that cannot list the bucket reads the (empty) file and applies the setup lists', async () => {
+    const { store, bucket, make } = setup();
+    await store.seedIfMissing();
+    bucket.denyMissing = true; // the file exists now, so this no longer matters
+    const reader = make();
+    expect(await reader.check('a@ey.com')).toMatchObject({ allowed: true, reason: 'baseline_domain' });
+    expect(await reader.check('a@other.com')).toMatchObject({ allowed: false, reason: 'not_listed' });
+  });
+  it('two containers seeding at once leave one file: the second finds it', async () => {
+    const { bucket, make } = setup();
+    const results = await Promise.all([make().seedIfMissing(), make().seedIfMissing()]);
+    expect(results.sort()).toEqual(['created', 'exists']);
+    expect(bucket.objects.size).toBe(1);
+  });
+  it('a 404 that is not a missing file (a wrong or deleted bucket) is an outage, not an empty list: blocks are not dropped', async () => {
+    const { store, bucket, tick } = setup();
+    await store.change(set('ey.com', 'block'), 'boss@ltm.com');
+    tick(FRESH_MS + STALE_MS + 1);
+    bucket.noBucket = true;
+    expect(await store.check('a@ey.com')).toEqual({ allowed: false, reason: 'rules_unavailable' });
+    expect(await store.check('a@partner.com')).toEqual({ allowed: false, reason: 'rules_unavailable' });
+    await expect(store.seedIfMissing()).rejects.toThrow();
   });
 });

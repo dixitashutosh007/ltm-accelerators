@@ -64,6 +64,7 @@ async function listDirectory() {
   return out;
 }
 
+let rulesSeeded = false;
 const DOMAIN_ERROR_STATUS = { conflict: 409, rules_unavailable: 503, not_found: 404 };
 
 const ALL_ACCELERATORS = ['strategy-iq', 'modernization-iq', 'finops-iq', 'sovereign-iq', 'posture-iq', 'cloud-iq', 'cost-iq', 'resilience-iq'];
@@ -279,6 +280,12 @@ export const handler = async (event) => {
       return standing.reason === 'rules_unavailable'
         ? reply(503, { ok: false, error: 'access_check_unavailable', message: 'Access could not be checked. Please try again.' })
         : reply(403, { ok: false, error: 'account_blocked', message: 'Access for this account has been withdrawn. Contact your administrator.' });
+    }
+
+    // The rules file must exist before the services that can only read it are asked about it (they get AccessDenied for a
+    // missing object and would refuse everyone but the protected addresses). Done once per container, never overwriting.
+    if (!rulesSeeded) {
+      try { await domains().seedIfMissing(); rulesSeeded = true; } catch (err) { console.warn('[ReportsService] Domain rules file not seeded:', err?.name || err?.message); }
     }
 
     const permConfig = await getPermissionsConfig();
