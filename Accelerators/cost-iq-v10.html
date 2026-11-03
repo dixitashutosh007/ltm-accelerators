@@ -44,7 +44,8 @@ const API=window.COST_IQ_API||'';
 const $=id=>document.getElementById(id);
 let allQuestions=[],questions=[],answers={},subjective={},selectedAreas=[],sectionIndex=0,qIndex=0,assessment=null,aiReview=null;
 let aiEnabled=false,assessmentMetadata={},savedAssessment=null,persistTimer=null,persistQueue=Promise.resolve(),testScenario=false,viewEpoch=0;
-const BASELINE=['Enterprise Context','CIO Priorities','Spend & Financial Visibility','Cost Governance & Investment'];
+// 'Regulated Industry' (ADP-28, the share of spend driven by regulation) is asked of every client: a sector outside the usual regulated list can be regulated too.
+const BASELINE=['Enterprise Context','CIO Priorities','Spend & Financial Visibility','Cost Governance & Investment','Regulated Industry'];
 const DEFAULT_AREAS=['Cloud Economics','Cost Governance'];
 const AREAS={
  'Cloud Economics':['Cloud & SaaS Economics'],

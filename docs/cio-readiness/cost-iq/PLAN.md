@@ -228,3 +228,9 @@ A new test checks every score map against its options: keys are real options, or
 
 Effect on the reference answer sets: Cost IQ 80 to 85, 57 to 58 and 36 to 31 (best, middle, worst); Value IQ 92 to 89, 58 to 57 and 24 to 26; F-017 appears on the worst set.
 
+### CQ3b slice 5: owner decisions applied (4 Nov 2026)
+
+The owner accepted the recommendations on the held items: **ADP-15 dropped** (it duplicated CORE-29 and CORE-31; rule TR-07 now names ADP-16 only); **ADP-18 rewritten** to one scale (how the internal and contractor mix is decided and reviewed) and scored; **AI added to the footprint** (a CORE-01 option, "AI platforms, models and AI-enabled services") and ADP-31 and ADP-32 gated on it, which makes **F-019 reachable**; **ADP-28 asked of every client** (its section joins the baseline); the **F-017 threshold on ADP-08 set at 30%**, recorded as an LTM heuristic with no published source.
+
+State: **95 questions; 51 score, 27 are context, 2 only trigger a finding, 15 do neither** (ADP-44 to 48 and ADP-51 to 60, batch 3). All 20 findings now have a reachable trigger except those whose questions are in batch 3.
+

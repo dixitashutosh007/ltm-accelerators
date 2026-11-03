@@ -205,6 +205,10 @@
           "label": "End-user computing and workplace technology"
         },
         {
+          "id": "AI",
+          "label": "AI platforms, models and AI-enabled services"
+        },
+        {
           "id": "OTHER",
           "label": "Other material technology spend"
         }
@@ -3405,88 +3409,6 @@
       }
     },
     {
-      "id": "ADP-15",
-      "section": "Software",
-      "prompt": "Which software categories create the greatest renewal, licensing or commercial exposure over the next 24 months?",
-      "intent": "Identify where evidence-led licensing and commercial validation should focus first.",
-      "interaction": "multi-select",
-      "answerDesign": "Select all material categories; avoid selecting categories that are merely present but not economically significant.",
-      "required": false,
-      "adaptiveTrigger": "Software=Yes",
-      "costDimension": "SaaS & Software Economics",
-      "valueDimension": null,
-      "evidenceImplication": "Validate using contract calendar, entitlement records, deployment/usage data, vendor pricing models and renewal values.",
-      "findingImplication": "L3 Commercial Leakage / Software renewal exposure",
-      "options": [
-        {
-          "id": "DATABASE",
-          "label": "Database platforms"
-        },
-        {
-          "id": "VIRTUALIZATION",
-          "label": "Virtualization platforms"
-        },
-        {
-          "id": "OPERATING_SYSTEMS",
-          "label": "Operating systems"
-        },
-        {
-          "id": "ERP",
-          "label": "ERP platforms"
-        },
-        {
-          "id": "CRM",
-          "label": "CRM platforms"
-        },
-        {
-          "id": "MIDDLEWARE",
-          "label": "Middleware / integration platforms"
-        },
-        {
-          "id": "DEVELOPER",
-          "label": "Developer / engineering tools"
-        },
-        {
-          "id": "SECURITY",
-          "label": "Security software"
-        },
-        {
-          "id": "END_USER",
-          "label": "End-user / workplace software"
-        },
-        {
-          "id": "ANALYTICS",
-          "label": "Data / analytics software"
-        },
-        {
-          "id": "OTHER",
-          "label": "Other material software category"
-        },
-        {
-          "id": "NONE",
-          "label": "No material renewal or licensing exposure identified"
-        }
-      ],
-      "scoring": {
-        "dimensionIds": [
-          "COST-04"
-        ]
-      },
-      "active": true,
-      "version": 2,
-      "control": {
-        "maxSelections": null
-      },
-      "leakageSignal": "L3 Commercial Leakage",
-      "opportunityTheme": "Software licensing strategy",
-      "weightClass": "High",
-      "findingIds": [],
-      "recommendationIds": [],
-      "questionDesignVersion": "6.6",
-      "answerGuidance": "Think about vendors with material renewal value, audit exposure, changing licensing models or significant user/asset counts.",
-      "scoringNote": "Hotspot signal only; selection count is not a maturity score."
-    },
-    {
       "id": "ADP-16",
       "section": "Software",
       "prompt": "How routinely are software entitlements reconciled against actual deployment and usage before renewal or true-up decisions?",
@@ -3616,7 +3538,7 @@
     {
       "id": "ADP-18",
       "section": "People",
-      "prompt": "How deliberately does the organization balance internal capability development with external contractor or contingent capacity?",
+      "prompt": "How is the balance between internal staff and external contractors decided and reviewed?",
       "intent": "Assess whether workforce sourcing choices reflect strategic skills, demand variability and total economics.",
       "interaction": "single-select",
       "answerDesign": "Choose the pattern that best describes how build-buy-borrow decisions are made.",
@@ -3628,33 +3550,38 @@
       "findingImplication": "L5 Workforce Leakage / Build-buy-borrow",
       "options": [
         {
-          "id": "STRATEGIC_BUILD",
-          "label": "Strategic capabilities are deliberately built internally; external capacity fills targeted or variable gaps."
+          "id": "ECONOMICS_LED",
+          "label": "The mix is decided from demand, skills and total cost, and reviewed at least annually."
         },
         {
-          "id": "ECONOMIC_BALANCE",
-          "label": "Internal and external capacity are balanced using demand, skills and total economics."
+          "id": "POLICY_LED",
+          "label": "There is a stated sourcing policy (for example, build scarce skills, buy variable demand) that is mostly applied."
         },
         {
-          "id": "EXTERNAL_DEPENDENT",
-          "label": "External capacity is used broadly because internal capability or capacity is insufficient."
+          "id": "CAPACITY_LED",
+          "label": "External capacity is used mainly because internal capacity or skills are short; the economics are not reviewed."
         },
         {
-          "id": "LEGACY_DEPENDENT",
-          "label": "External capacity persists because knowledge transfer or transition back in-house is difficult."
+          "id": "LOCKED_IN",
+          "label": "External capacity persists because knowledge sits with contractors and moving it in-house is hard."
         },
         {
           "id": "UNMEASURED",
-          "label": "The capability mix and economics are not measured well enough to make the trade-off confidently."
+          "label": "The mix and its economics are not measured well enough to decide."
         }
       ],
       "scoring": {
         "dimensionIds": [
           "COST-06"
         ],
-        "valueDimensionIds": [
-          "VALUE-04"
-        ]
+        "defaultMap": {
+          "ECONOMICS_LED": 100.0,
+          "POLICY_LED": 80.0,
+          "CAPACITY_LED": 60.0,
+          "LOCKED_IN": 40.0,
+          "UNMEASURED": 20.0
+        },
+        "basis": "The options mix two scales: the first two describe a deliberate decision (build strategic skills; balance by economics), the last three describe a state of dependence or missing data. Whether STRATEGIC_BUILD ranks above ECONOMIC_BALANCE is not a maturity question, and the file elsewhere (CORE-36) states a higher external share is not inherently worse. No monotonic map is defensible on the current options. Replacement wording below keeps one scale, how the mix is decided and reviewed. The wording and scale are LTM heuristic; I found no published maturity scale for build-buy-borrow. The question also carries valueDimensionIds VALUE-04, ignored by the engine."
       },
       "active": true,
       "version": 2,
@@ -3663,7 +3590,7 @@
       "weightClass": "High",
       "findingIds": [],
       "recommendationIds": [],
-      "answerGuidance": "Consider scarce skills, recurring demand, knowledge retention, rate economics and the cost of converting external capacity to internal capability.",
+      "answerGuidance": "Select the statement that best describes how the mix of internal staff and external contractors is decided and reviewed.",
       "questionDesignVersion": "6.6"
     },
     {
@@ -4322,7 +4249,13 @@
       "findingIds": [],
       "recommendationIds": [],
       "answerGuidance": "Select the operating state that most closely matches the current enterprise reality.",
-      "questionDesignVersion": "6.0"
+      "questionDesignVersion": "6.0",
+      "applicableWhen": {
+        "questionId": "CORE-01",
+        "anyOf": [
+          "AI"
+        ]
+      }
     },
     {
       "id": "ADP-32",
@@ -4380,7 +4313,13 @@
       "findingIds": [],
       "recommendationIds": [],
       "answerGuidance": "Select the operating state that most closely matches the current enterprise reality.",
-      "questionDesignVersion": "6.0"
+      "questionDesignVersion": "6.0",
+      "applicableWhen": {
+        "questionId": "CORE-01",
+        "anyOf": [
+          "AI"
+        ]
+      }
     },
     {
       "id": "ADP-33",
@@ -5972,12 +5911,12 @@
       "id": "TR-07",
       "area": "Technology",
       "condition": "Enterprise software materially present",
-      "action": "Activate ADP-15 to ADP-16",
+      "action": "Activate ADP-16 (ADP-15 was dropped as a duplicate of CORE-29 and CORE-31)",
       "triggerKey": "Software",
       "enabled": true,
       "version": 1,
       "adaptiveAction": [
-        "ADP-15 to ADP-16"
+        "ADP-16"
       ],
       "questionRefs": []
     },

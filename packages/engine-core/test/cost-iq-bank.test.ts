@@ -21,10 +21,10 @@ const triggers = new Set(Object.values(calibration).flat().map((t: any) => t.que
 // Still to score or label in CQ3b (BOUNDARY.md task 6). Remove an ID when it is fixed; never add one.
 // Still to score or label in CQ3b (BOUNDARY.md task 6). Remove an ID when it is fixed; never add one. Held back from batch 1:
 // ADP-15 (drop) and ADP-18 (rewrite) until the owner approves.
-// Still to score or label in CQ3b (BOUNDARY.md task 6). Remove an ID when it is fixed; never add one. ADP-15 (drop) and ADP-18
-// (rewrite) wait for the owner; ADP-44 to ADP-48 and ADP-51 to ADP-60 are in later batches.
+// Still to score or label in CQ3b (BOUNDARY.md task 6). Remove an ID when it is fixed; never add one. ADP-44 to ADP-48 and
+// ADP-51 to ADP-60 are in batch 3.
 const INERT = [
-  'ADP-15', 'ADP-18', 'ADP-44', 'ADP-45', 'ADP-46', 'ADP-47', 'ADP-48', 'ADP-51', 'ADP-52',
+  'ADP-44', 'ADP-45', 'ADP-46', 'ADP-47', 'ADP-48', 'ADP-51', 'ADP-52',
   'ADP-53', 'ADP-54', 'ADP-55', 'ADP-56', 'ADP-57', 'ADP-58', 'ADP-59', 'ADP-60'
 ];
 
@@ -73,7 +73,7 @@ describe('Cost IQ question bank', () => {
     const inert = questions.filter((q: any) => !isContext(q) && !scores(q) && !triggers.has(q.id)).map((q: any) => q.id);
     const extra = inert.filter((id: string) => !INERT.includes(id));
     expect(extra, 'new inert questions').toEqual([]);
-    expect(inert.length).toBeLessThanOrEqual(17);
+    expect(inert.length).toBeLessThanOrEqual(15);
   });
 
   it('returns no FinOps overlay fields', () => {
@@ -149,5 +149,28 @@ describe('Cost IQ question bank', () => {
     expect(ids({ 'CORE-16': 'FALSE', 'ADP-33': 'NONE' })).not.toContain('F-017');
     expect(ids({ 'ADP-33': 'NONE' })).not.toContain('F-017');
     expect(ids({ 'CORE-16': 'TRUE', 'ADP-33': 'INFLUENCE' })).not.toContain('F-017');
+  });
+
+  it('applies the owner decisions of 4 Nov 2026: ADP-15 dropped, ADP-18 rewritten and scored, AI in the footprint, ADP-28 asked of everyone', () => {
+    const q = (id: string) => questions.find((x: any) => x.id === id);
+    expect(q('ADP-15')).toBeUndefined();
+    expect(q('ADP-18').options.map((o: any) => o.id)).toEqual(['ECONOMICS_LED', 'POLICY_LED', 'CAPACITY_LED', 'LOCKED_IN', 'UNMEASURED']);
+    expect(engine.scoreQuestion(q('ADP-18'), 'ECONOMICS_LED', {})).toBeGreaterThan(engine.scoreQuestion(q('ADP-18'), 'UNMEASURED', {}));
+    expect(q('CORE-01').options.map((o: any) => o.id)).toContain('AI');
+    expect(q('ADP-28').applicableWhen).toBeUndefined();
+  });
+
+  it('can raise F-019 (AI investment economics) only when AI is in the footprint', () => {
+    const ids = (answers: object) => adapter.evaluateCostIq({ answers }).findings.map((f: any) => f.id);
+    expect(ids({ 'CORE-01': ['AI'], 'ADP-31': 'NONE' })).toContain('F-019');
+    expect(ids({ 'CORE-01': ['AI'], 'ADP-32': 'EXPERIMENTAL' })).toContain('F-019');
+    expect(ids({ 'CORE-01': ['PUBLIC_CLOUD'], 'ADP-31': 'NONE' })).not.toContain('F-019');
+    expect(ids({ 'ADP-31': 'NONE' })).not.toContain('F-019');
+  });
+
+  it('raises F-017 when more than 30 percent of SaaS spend sits outside central governance (an LTM heuristic threshold)', () => {
+    const ids = (answers: object) => adapter.evaluateCostIq({ answers }).findings.map((f: any) => f.id);
+    expect(ids({ 'ADP-08': 31 })).toContain('F-017');
+    expect(ids({ 'ADP-08': 30 })).not.toContain('F-017');
   });
 });

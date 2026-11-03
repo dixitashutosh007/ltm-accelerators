@@ -265,6 +265,12 @@
     ],
     "F-017": [
       {
+        "questionId": "ADP-08",
+        "type": "numeric",
+        "operator": "gt",
+        "value": 30
+      },
+      {
         "questionId": "ADP-33",
         "type": "option",
         "triggerOptions": [
@@ -290,6 +296,36 @@
           "anyOf": [
             "TRUE",
             "UNSURE"
+          ]
+        }
+      }
+    ],
+    "F-019": [
+      {
+        "questionId": "ADP-31",
+        "type": "option",
+        "triggerOptions": [
+          "NONE",
+          "UNKNOWN"
+        ],
+        "applicableWhen": {
+          "questionId": "CORE-01",
+          "anyOf": [
+            "AI"
+          ]
+        }
+      },
+      {
+        "questionId": "ADP-32",
+        "type": "option",
+        "triggerOptions": [
+          "EXPERIMENTAL",
+          "UNKNOWN"
+        ],
+        "applicableWhen": {
+          "questionId": "CORE-01",
+          "anyOf": [
+            "AI"
           ]
         }
       }
