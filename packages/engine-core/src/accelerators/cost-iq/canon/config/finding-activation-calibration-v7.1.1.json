@@ -69,14 +69,6 @@
     ],
     "F-018": [
       {
-        "questionId": "CORE-20",
-        "type": "option",
-        "triggerOptions": [
-          "USAGE",
-          "NONE"
-        ]
-      },
-      {
         "questionId": "CORE-44",
         "type": "option",
         "triggerOptions": [
@@ -120,7 +112,13 @@
           "SELECTIVE",
           "COUNT",
           "UNKNOWN"
-        ]
+        ],
+        "applicableWhen": {
+          "questionId": "CORE-01",
+          "anyOf": [
+            "SAAS"
+          ]
+        }
       },
       {
         "questionId": "CORE-27",
@@ -129,7 +127,13 @@
           "D",
           "E",
           "F"
-        ]
+        ],
+        "applicableWhen": {
+          "questionId": "CORE-01",
+          "anyOf": [
+            "SAAS"
+          ]
+        }
       }
     ],
     "F-013": [
@@ -140,7 +144,13 @@
           "D",
           "E",
           "F"
-        ]
+        ],
+        "applicableWhen": {
+          "questionId": "CORE-01",
+          "anyOf": [
+            "SAAS"
+          ]
+        }
       },
       {
         "questionId": "CORE-41",
@@ -176,7 +186,14 @@
           "D",
           "E",
           "F"
-        ]
+        ],
+        "applicableWhen": {
+          "questionId": "CORE-01",
+          "anyOf": [
+            "PUBLIC_CLOUD",
+            "SAAS"
+          ]
+        }
       },
       {
         "questionId": "CORE-37",
@@ -195,7 +212,13 @@
           "D",
           "E",
           "F"
-        ]
+        ],
+        "applicableWhen": {
+          "questionId": "CORE-01",
+          "anyOf": [
+            "SOFTWARE"
+          ]
+        }
       }
     ],
     "F-009": [
@@ -288,7 +311,13 @@
         "questionId": "ADP-08",
         "type": "numeric",
         "operator": "gt",
-        "value": 30
+        "value": 30,
+        "applicableWhen": {
+          "questionId": "CORE-01",
+          "anyOf": [
+            "SAAS"
+          ]
+        }
       },
       {
         "questionId": "ADP-33",

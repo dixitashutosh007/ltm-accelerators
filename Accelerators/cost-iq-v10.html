@@ -45,29 +45,9 @@ const API=window.COST_IQ_API||'';
 const $=id=>document.getElementById(id);
 let allQuestions=[],questions=[],answers={},subjective={},selectedAreas=[],sectionIndex=0,qIndex=0,assessment=null,aiReview=null;
 let aiEnabled=false,assessmentMetadata={},savedAssessment=null,persistTimer=null,persistQueue=Promise.resolve(),testScenario=false,viewEpoch=0;
-// 'Regulated Industry' (ADP-28, the share of spend driven by regulation) is asked of every client: a sector outside the usual regulated list can be regulated too.
-const BASELINE=['Enterprise Context','CIO Priorities','Spend & Financial Visibility','Cost Governance & Investment','Regulated Industry'];
-const DEFAULT_AREAS=['Cloud Economics','Cost Governance'];
-const AREAS={
- 'Cloud Economics':['Cloud & SaaS Economics'],
- 'SaaS & Licensing':['Cloud & SaaS Economics','SaaS','Software','Software & Licensing'],
- 'Infrastructure':['Infrastructure & Operations','On-Prem','Data Center','Colocation','Disaster Recovery','VMware'],
- 'Applications':['Architecture & Applications','Applications','Product Operating Model'],
- 'Workforce':['People & Vendors','People'],
- 'Vendors & Commercials':['People & Vendors','Vendors','Procurement','Contracts','Outsourcing','Managed Services'],
- 'Cost Governance':['Cost Governance & Investment'],
- 'Technology Value':['Technology Value','Value Management','Investment Redirection','Cost Reduction'],
- 'Architecture & Technical Debt':['Architecture','Technical Debt','Architecture & Applications'],
- 'Data':['Data'],
- 'Network':['Network'],
- 'Security':['Security'],
- 'AI & Emerging Technology':['AI'],
- 'Transformation':['Transformation'],
- 'Business-led IT':['Business-led IT'],
- 'M&A':['M&A'],
- 'Geography':['Geography'],
- 'Operations & Service Management':['ITSM','Observability','Operating Model']
-};
+// Which questions a client is asked comes from the engine (settings.selection): baseline sections, the sections of each focus area, and the
+// default areas. The page and the engine use one definition, so completeness is counted over the questions shown.
+let BASELINE=[],DEFAULT_AREAS=[],AREAS={};
 const AREA_DESC={
  'Cloud Economics':'Cloud and SaaS footprint and commitments, with a pointer to FinOps IQ for cloud cost practice.',
  'SaaS & Licensing':'SaaS usage, licensing, overlap and renewal economics.',
@@ -102,7 +82,7 @@ async function authedFetch(url,opts){
 async function api(path,opts){const r=await authedFetch(API+path,opts);const t=await r.text();let d={};try{d=t?JSON.parse(t):{}}catch(e){throw Error('Invalid API response ('+r.status+')')}if(!r.ok)throw Error(d.message||d.error||('HTTP '+r.status));return d}
 function boot(){
   showSplash(['Loading Cost IQ engine…','Loading diagnostic framework…','Preparing adaptive assessment…'],function(){
-    Promise.all([api('/api/evaluate/cost-iq/questions'),api('/api/evaluate/cost-iq/metadata')]).then(function(values){allQuestions=values[0].questions||[];assessmentMetadata=values[1].release||{};aiEnabled=!!(values[1].ai&&values[1].ai.enabled);home()}).catch(function(e){fail(e.message)});
+    Promise.all([api('/api/evaluate/cost-iq/questions'),api('/api/evaluate/cost-iq/metadata')]).then(function(values){allQuestions=values[0].questions||[];BASELINE=(values[0].selection||{}).baselineSections||[];DEFAULT_AREAS=(values[0].selection||{}).defaultAreas||[];AREAS=(values[0].selection||{}).areas||{};assessmentMetadata=values[1].release||{};aiEnabled=!!(values[1].ai&&values[1].ai.enabled);home()}).catch(function(e){fail(e.message)});
   });
 }
 function showSplash(steps,done){
@@ -110,13 +90,8 @@ function showSplash(steps,done){
   steps.forEach(function(x,i){setTimeout(function(){document.querySelectorAll('.step').forEach(function(s){s.classList.remove('active')});const s=document.getElementById('sp'+i);if(s)s.classList.add('active')},i*650)});
   setTimeout(function(){o.remove();done()},steps.length*650+650);
 }
-function questionCountForSelection(){
-  const q=allQuestions.filter(function(q){
-    if(BASELINE.includes(q.section)) return true;
-    return selectedAreas.some(function(a){return (AREAS[a]||[]).includes(q.section)});
-  });
-  return q.filter(function(q){return true}).length;
-}
+// Questions that are always asked for this selection; estate questions gated on the footprint are added as the footprint is answered.
+function questionCountForSelection(){return selectQuestions(selectedAreas).filter(function(q){return !(q.applicableWhen&&q.applicableWhen.questionId==='CORE-01')}).length}
 function updateQuestionCount(){
   const el=$('selectionQuestionCount');
   if(el) el.textContent=questionCountForSelection();
@@ -130,7 +105,7 @@ function home(){
     const checked=selectedAreas.includes(a);
     return '<label class="area '+(checked?'selected':'')+'" data-area="'+esc(a)+'"><input type="checkbox" '+(checked?'checked':'')+' onchange="toggleArea(this,\''+esc(a).replace(/'/g,"\\'")+'\')"><span class="check">'+(checked?'✓':'')+'</span><h3>'+esc(a)+'</h3><p>'+esc(AREA_DESC[a])+'</p></label>';
   }).join('');
-  $('app').innerHTML='<div class="hero"><div class="eyebrow">LTM VANTAGE · RESPONSIBLE ADVISORY</div><h1>Technology Cost & Value Diagnostic</h1><p>Cost IQ helps leadership understand where technology spend is going, where value is being created, and where management attention may be required.</p><div class="actions"><button class="btn primary" onclick="begin()">Configure diagnostic →</button></div><div class="card" style="margin-top:16px"><div class="eyebrow">DEVELOPER TEST DATA</div><h3>Fast regression scenarios</h3><p class="muted">Pre-answer the full assessment with deterministic test data. Use these only for development and validation.</p><div class="actions"><button class="btn" onclick="loadTestScenario(\'healthy\')">Load Healthy</button><button class="btn" onclick="loadTestScenario(\'typical\')">Load Typical</button><button class="btn" onclick="loadTestScenario(\'challenge\')">Load Cost Challenge</button></div></div></div><div class="stat-grid"><div class="stat"><span class="mini">Questions</span><br><b id="selectionQuestionCount">'+questionCountForSelection()+'</b><div class="mini">Questions for this selection</div></div><div class="stat"><span class="mini">Baseline</span><br><b>16</b><div class="mini">Cost & value dimensions</div></div><div class="stat"><span class="mini">Engine</span><br><b>20</b><div class="mini">Calibrated findings</div></div><div class="stat"><span class="mini">AI</span><br><b>Review</b><div class="mini">Anomaly & report synthesis</div></div></div><div class="card"><div class="eyebrow" style="color:#60717d">STEP 01 · FOCUS AREAS</div><h2>What would you like to diagnose?</h2><p class="muted">Select one or more focus areas. Two are pre-selected to give you a useful starting point. Baseline questions remain part of every assessment.</p><div class="baseline">✓ Enterprise context, CIO priorities, spend visibility and cost governance remain part of every assessment.</div><div class="section-grid" style="margin-top:16px">'+cards+'</div><div class="actions"><button class="btn primary" onclick="begin()">Start focused assessment →</button></div></div>';
+  $('app').innerHTML='<div class="hero"><div class="eyebrow">LTM VANTAGE · RESPONSIBLE ADVISORY</div><h1>Technology Cost & Value Diagnostic</h1><p>Cost IQ helps leadership understand where technology spend is going, where value is being created, and where management attention may be required.</p><div class="actions"><button class="btn primary" onclick="begin()">Configure diagnostic →</button></div><div class="card" style="margin-top:16px"><div class="eyebrow">DEVELOPER TEST DATA</div><h3>Fast regression scenarios</h3><p class="muted">Pre-answer the full assessment with deterministic test data. Use these only for development and validation.</p><div class="actions"><button class="btn" onclick="loadTestScenario(\'healthy\')">Load Healthy</button><button class="btn" onclick="loadTestScenario(\'typical\')">Load Typical</button><button class="btn" onclick="loadTestScenario(\'challenge\')">Load Cost Challenge</button></div></div></div><div class="stat-grid"><div class="stat"><span class="mini">Questions</span><br><b id="selectionQuestionCount">'+questionCountForSelection()+'</b><div class="mini">Questions for this selection, plus any estate questions your footprint calls for</div></div><div class="stat"><span class="mini">Baseline</span><br><b>16</b><div class="mini">Cost & value dimensions</div></div><div class="stat"><span class="mini">Engine</span><br><b>20</b><div class="mini">Calibrated findings</div></div><div class="stat"><span class="mini">AI</span><br><b>Review</b><div class="mini">Anomaly & report synthesis</div></div></div><div class="card"><div class="eyebrow" style="color:#60717d">STEP 01 · FOCUS AREAS</div><h2>What would you like to diagnose?</h2><p class="muted">Select one or more focus areas. Two are pre-selected to give you a useful starting point. Baseline questions remain part of every assessment.</p><div class="baseline">✓ Enterprise context, CIO priorities, spend visibility and cost governance remain part of every assessment.</div><div class="section-grid" style="margin-top:16px">'+cards+'</div><div class="actions"><button class="btn primary" onclick="begin()">Start focused assessment →</button></div></div>';
   if(window.CostIqPersistence?.configured()) loadSavedAssessments(epoch);
   else {const note=document.createElement('div');note.className='card';note.innerHTML='<div class="eyebrow">SAVED ASSESSMENTS</div><p class="muted">Assessment saving is not configured in this environment yet. You can still complete a session in this browser.</p>';$('app').appendChild(note)}
 }
@@ -185,7 +160,7 @@ async function resumeAssessment(id){
     const record=await window.CostIqPersistence.get(id);if(!record)throw new Error('Assessment not found or access denied.');
     if(epoch!==viewEpoch)return;
     savedAssessment=record;selectedAreas=JSON.parse(record.selectedAreasJson||'[]');answers=JSON.parse(record.answersJson||'{}');subjective=JSON.parse(record.subjectiveJson||'{}');
-    questions=allQuestions.filter(q=>BASELINE.includes(q.section)||selectedAreas.some(a=>(AREAS[a]||[]).includes(q.section)));
+    questions=selectQuestions(selectedAreas);
     testScenario=false;sectionIndex=0;
     if(record.status==='completed'&&record.resultJson){assessment=JSON.parse(record.resultJson);aiReview=null;preliminary();return}
     const secs=sections();const first=secs.findIndex(s=>vq().filter(q=>q.section===s).some(q=>answers[q.id]===undefined));sectionIndex=first<0?Math.max(0,secs.length-1):first;renderAssessment();persistStatus('Assessment resumed');
@@ -232,21 +207,14 @@ async function loadTestScenario(profile){
   ++viewEpoch;
   if(!allQuestions.length){alert('Questions are still loading. Please wait a moment and try again.');return}
   selectedAreas=Object.keys(AREAS);
-  questions=allQuestions.filter(function(q){
-    if(BASELINE.includes(q.section))return true;
-    return selectedAreas.some(function(a){return (AREAS[a]||[]).includes(q.section)});
-  }).filter(function(q){return true});
+  questions=selectQuestions(selectedAreas);
   answers={};subjective={};sectionIndex=0;qIndex=0;testScenario=true;savedAssessment=null;
   questions.forEach(function(q){answers[q.id]=testAnswer(q,profile)});
   await runEngine();
 }
 async function begin(){
   ++viewEpoch;
-  const q=allQuestions.filter(function(q){
-    if(BASELINE.includes(q.section))return true;
-    return selectedAreas.some(function(a){return (AREAS[a]||[]).includes(q.section)});
-  });
-  questions=q.filter(function(q){return true});
+  questions=selectQuestions(selectedAreas);
   answers={};subjective={};sectionIndex=0;qIndex=0;testScenario=false;savedAssessment=null;
   if(window.CostIqPersistence?.configured()){
     persistStatus('Creating draft…');
@@ -261,6 +229,7 @@ async function begin(){
 // A question with applicableWhen is asked, scored and counted only when the footprint answer (CORE-01) names the estate.
 // Size-class bands (CORE-03, CORE-04) are labelled in the reporting currency chosen in CTX-01; a currency with no registered rate falls back to the US dollar labels.
 function optionLabel(q,o){const t=q.labelsByCurrency&&q.labelsByCurrency[answers[q.labelCurrencyQuestion]];return (t&&t[o.id])||o.label}
+function selectQuestions(areas){return allQuestions.filter(q=>BASELINE.includes(q.section)||areas.some(a=>(AREAS[a]||[]).includes(q.section))||(q.applicableWhen&&q.applicableWhen.questionId==='CORE-01'))}
 function applies(q){const w=q.applicableWhen;if(!w)return true;const a=answers[w.questionId];return (Array.isArray(a)?a:a==null?[]:[a]).some(v=>w.anyOf.includes(String(v)))}
 function vq(){return questions.filter(applies)}
 function sections(){const seen=[];vq().forEach(function(q){if(!seen.includes(q.section))seen.push(q.section)});return seen}

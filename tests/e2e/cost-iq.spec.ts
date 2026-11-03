@@ -167,5 +167,25 @@ test.describe('Cost IQ', () => {
     await expect(page.getByRole('cell', { name: /300,?000/ }).first()).toBeVisible();
     expect(world.pageErrors).toEqual([]);
   });
+
+  test('the page takes which questions it asks from the engine: default areas, footprint-gated estate questions, no copy of its own', async ({ page, context, world }) => {
+    await signedIn(context, permitted(makeIdToken('consultant@ltm.com')));
+    world.on('GET', ASSESSMENT, () => ({ body: { ok: true, data: [] } }));
+    await page.goto('/cost-iq-v10');
+    await expect(page.getByRole('button', { name: /Configure diagnostic/ })).toBeVisible();
+    expect(await page.evaluate('DEFAULT_AREAS')).toEqual(['Infrastructure', 'Applications']);
+    expect(await page.evaluate('selectedAreas')).toEqual(['Infrastructure', 'Applications']);
+    const ids = (footprint: string[]) => page.evaluate(`(function(f){
+      selectedAreas = DEFAULT_AREAS.slice(); answers = { 'CORE-01': f }; questions = selectQuestions(selectedAreas);
+      return vq().map(q => q.id);
+    })(${JSON.stringify(footprint)})`);
+    const saas = await ids(['SAAS']) as string[];
+    const onprem = await ids(['ON_PREM']) as string[];
+    expect(saas).toContain('ADP-06');
+    expect(onprem).not.toContain('ADP-06');
+    expect(onprem).toContain('ADP-11');
+    expect(saas).not.toContain('ADP-11');
+    expect(world.pageErrors).toEqual([]);
+  });
 });
 

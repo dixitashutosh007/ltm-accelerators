@@ -65,7 +65,8 @@ describe('Cost IQ question bank', () => {
     const ids = (answers: object) => adapter.evaluateCostIq({ answers }).findings.map((f: any) => f.id);
     expect(ids({ 'CORE-01': ['PUBLIC_CLOUD'], 'ADP-42': 'NONE' })).toContain('F-005');
     expect(ids({ 'CORE-01': ['PUBLIC_CLOUD'], 'ADP-42': 'INTELLIGENT' })).not.toContain('F-005');
-    expect(ids({ 'CORE-26': 'COUNT' })).toContain('F-007');
+    expect(ids({ 'CORE-01': ['SAAS'], 'CORE-26': 'COUNT' })).toContain('F-007');
+    expect(ids({ 'CORE-26': 'COUNT' })).not.toContain('F-007');
   });
 
   it('has no more inert questions than the list, and the list only shrinks', () => {
@@ -169,8 +170,9 @@ describe('Cost IQ question bank', () => {
 
   it('raises F-017 when more than 30 percent of SaaS spend sits outside central governance (an LTM heuristic threshold)', () => {
     const ids = (answers: object) => adapter.evaluateCostIq({ answers }).findings.map((f: any) => f.id);
-    expect(ids({ 'ADP-08': 31 })).toContain('F-017');
-    expect(ids({ 'ADP-08': 30 })).not.toContain('F-017');
+    expect(ids({ 'CORE-01': ['SAAS'], 'ADP-08': 31 })).toContain('F-017');
+    expect(ids({ 'CORE-01': ['SAAS'], 'ADP-08': 30 })).not.toContain('F-017');
+    expect(ids({ 'ADP-08': 31 })).not.toContain('F-017');
   });
 
   it('applies batch 3: sliders score inverted, the rest by option order, and the remaining questions are context', () => {
@@ -237,13 +239,15 @@ describe('Cost IQ question bank', () => {
     expect(currencyBands.usdFallback).toEqual(['USD', 'AED', 'SAR', 'OTHER']);
   });
 
-  it('shows every question somewhere: each section is in the baseline or in a focus area of the page', () => {
-    const html = require('node:fs').readFileSync(require('node:path').join(__dirname, '../../../Accelerators/cost-iq-v10.html'), 'utf8');
-    const quoted = (s: string) => new Set<string>([...s.matchAll(/'([^']+)'/g)].map(m => m[1]));
-    const baseline = quoted(html.match(/const BASELINE=\[(.*?)\]/)![1]);
-    const areas = quoted(html.match(/const AREAS=\{([\s\S]*?)\n\};/)![1]);
-    const hidden = [...new Set<string>(questions.map((q: any) => q.section))].filter(s => !baseline.has(s) && !areas.has(s));
+  it('shows every question somewhere: each section is in the baseline or in a focus area', () => {
+    const { selection } = adapter.questions();
+    const reach = new Set<string>([...selection.baselineSections, ...Object.values<string[]>(selection.areas).flat()]);
+    const hidden = [...new Set<string>(questions.map((q: any) => q.section))].filter(s => !reach.has(s));
     expect(hidden, 'sections no client can reach').toEqual([]);
+    // The page takes its selection from the engine and keeps no copy of its own.
+    const html = require('node:fs').readFileSync(require('node:path').join(__dirname, '../../../Accelerators/cost-iq-v10.html'), 'utf8');
+    expect(html).toContain('let BASELINE=[],DEFAULT_AREAS=[],AREAS={};');
+    expect(html).toContain('(values[0].selection||{}).areas');
   });
 
   it('labels the size classes as context: a number rule on option answers never scored', () => {
@@ -252,5 +256,59 @@ describe('Cost IQ question bank', () => {
       expect(isContext(q), id).toBe(true);
       expect(q.scoring.normalize, id).toBeUndefined();
     }
+  });
+
+  it('gates the nine cloud, SaaS and software questions on the footprint, so a client without that estate is not asked or scored', () => {
+    const q = (id: string) => questions.find((x: any) => x.id === id);
+    const want: Record<string, string[]> = { 'CORE-26': ['SAAS'], 'CORE-27': ['SAAS'], 'ADP-06': ['SAAS'], 'ADP-07': ['SAAS'], 'ADP-08': ['SAAS'], 'CORE-28': ['PUBLIC_CLOUD', 'SAAS'], 'ADP-42': ['PUBLIC_CLOUD'], 'CORE-30': ['SOFTWARE'], 'ADP-16': ['SOFTWARE'] };
+    for (const [id, anyOf] of Object.entries(want)) expect(q(id).applicableWhen, id).toEqual({ questionId: 'CORE-01', anyOf });
+  });
+
+  it('counts completeness over the questions shown: a fully answered default run reads complete, not 61 percent', () => {
+    const { selection } = adapter.questions();
+    const cfg = require('../src/accelerators/cost-iq/canon/config/master-v6.6.json');
+    const answers: Record<string, unknown> = { 'CORE-01': ['ON_PREM', 'EXTERNAL'], 'CORE-16': 'FALSE' };
+    const shown: Set<string> = engine.shownQuestionIds(cfg, selection.defaultAreas, answers);
+    for (const q of questions) {
+      if (!shown.has(q.id) || q.id in answers) continue;
+      const opts = (q.options || []).map((o: any) => o.id);
+      answers[q.id] = opts.length ? (q.interaction === 'multi-select' ? [opts[0]] : opts[0]) : q.interaction === 'stars' ? 3 : 50;
+    }
+    const r = adapter.evaluateCostIq({ answers, scope: { selectedAreas: selection.defaultAreas } });
+    expect(r.evidence.assessmentCompleteness).toBe(100);
+    expect(r.evidence.confidence).toBe('high');
+    // Without the areas the old behaviour remains: every required question counts.
+    expect(adapter.evaluateCostIq({ answers }).evidence.assessmentCompleteness).toBeLessThan(100);
+  });
+
+  it('gives an executive run, by default areas and footprint, a score for at least 10 of 16 dimensions, whatever the estate', () => {
+    const { selection } = adapter.questions();
+    const cfg = require('../src/accelerators/cost-iq/canon/config/master-v6.6.json');
+    const profiles: Record<string, string[]> = {
+      'on-premises-heavy': ['ON_PREM', 'VMWARE', 'COLO', 'EXTERNAL', 'NETWORK'], 'cloud-heavy': ['PUBLIC_CLOUD', 'SAAS', 'AI', 'DATA'],
+      'SaaS-heavy': ['SAAS', 'END_USER', 'SOFTWARE'], 'outsourced': ['EXTERNAL', 'SOFTWARE', 'NETWORK'], 'mixed': ['ON_PREM', 'PUBLIC_CLOUD', 'SAAS', 'SOFTWARE', 'EXTERNAL', 'AI']
+    };
+    for (const [name, footprint] of Object.entries(profiles)) {
+      const answers: Record<string, unknown> = { 'CORE-01': footprint, 'CORE-16': 'TRUE' };
+      const shown: Set<string> = engine.shownQuestionIds(cfg, selection.defaultAreas, answers);
+      let seed = 1; const next = () => ((seed = (seed * 1664525 + 1013904223) >>> 0) / 2 ** 32);
+      for (const q of questions) {
+        if (!shown.has(q.id) || q.id === 'CORE-01') continue;
+        const opts = (q.options || []).map((o: any) => o.id);
+        if (opts.length) answers[q.id] = q.interaction === 'multi-select' ? [opts[0]] : opts[Math.floor(next() * opts.length)];
+        else if (q.interaction === 'stars') answers[q.id] = 3; else if (['slider', 'range'].includes(q.interaction)) answers[q.id] = Math.floor(next() * 100);
+      }
+      const r = adapter.evaluateCostIq({ answers, scope: { selectedAreas: selection.defaultAreas } });
+      expect(r.dimensions.filter((d: any) => d.score !== null).length, name).toBeGreaterThanOrEqual(10);
+      expect(shown.size, `${name}: questions asked`).toBeLessThanOrEqual(60);
+    }
+  });
+
+  it('gives F-004 and F-018 different triggers', () => {
+    const ids = (answers: object) => adapter.evaluateCostIq({ answers }).findings.map((f: any) => f.id);
+    expect(ids({ 'CORE-20': 'USAGE' })).toContain('F-004');
+    expect(ids({ 'CORE-20': 'USAGE' })).not.toContain('F-018');
+    expect(ids({ 'CORE-44': 'NOT_MEASURED' })).toContain('F-018');
+    expect(ids({ 'CORE-44': 'NOT_MEASURED' })).not.toContain('F-004');
   });
 });

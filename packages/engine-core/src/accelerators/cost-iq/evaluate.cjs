@@ -6,11 +6,12 @@ const calibration = require('./canon/config/finding-activation-calibration-v7.1.
 const opportunityGates = require('./canon/config/opportunity-recommendation-gates-v7.1.0.json');
 const RELEASE_MANIFEST = require('./canon/RELEASE_MANIFEST.json');
 
-function evaluateCostIq({ answers = {}, evidence = {}, feasibilityEvidence = {}, options = {} } = {}) {
+function evaluateCostIq({ answers = {}, scope = null, evidence = {}, feasibilityEvidence = {}, options = {} } = {}) {
   return canon.evaluate(config, {
     calibration,
     opportunityGates,
     answers,
+    selectedAreas: Array.isArray(scope?.selectedAreas) ? scope.selectedAreas : null,
     options: { ...options, evidence, feasibilityEvidence }
   });
 }
@@ -33,7 +34,8 @@ function questions() {
   return {
     manifest: config.manifest,
     questions: config.questions,
-    dimensions: config.dimensions
+    dimensions: config.dimensions,
+    selection: config.settings.selection
   };
 }
 

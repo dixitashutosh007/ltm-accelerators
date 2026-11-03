@@ -2158,7 +2158,13 @@
           "5": "Usage and business need routinely drive subscription quantities and renewal decisions"
         }
       },
-      "reviewStatus": "Reviewed v6.4"
+      "reviewStatus": "Reviewed v6.4",
+      "applicableWhen": {
+        "questionId": "CORE-01",
+        "anyOf": [
+          "SAAS"
+        ]
+      }
     },
     {
       "id": "CORE-27",
@@ -2226,7 +2232,13 @@
       "answerGuidance": "Focus on whether overlap leads to consolidation, ownership decisions and measurable value release—or simply gets documented.",
       "opportunityImplication": "Can activate duplicate-SaaS consolidation opportunity sizing.",
       "confidenceImpact": "Medium; validate material overlap and actual decisions.",
-      "reviewStatus": "Reviewed v6.4"
+      "reviewStatus": "Reviewed v6.4",
+      "applicableWhen": {
+        "questionId": "CORE-01",
+        "anyOf": [
+          "SAAS"
+        ]
+      }
     },
     {
       "id": "CORE-28",
@@ -2298,7 +2310,14 @@
       "practicalConstraintSignals": [
         "CONTRACT_LOCK_IN"
       ],
-      "reviewStatus": "Reviewed v6.4"
+      "reviewStatus": "Reviewed v6.4",
+      "applicableWhen": {
+        "questionId": "CORE-01",
+        "anyOf": [
+          "PUBLIC_CLOUD",
+          "SAAS"
+        ]
+      }
     },
     {
       "id": "CORE-29",
@@ -2440,7 +2459,13 @@
       "answerGuidance": "Think about what happens before renewals, audits, migrations or major deployment changes—not only whether an inventory tool exists.",
       "opportunityImplication": "Can activate licence optimization, contract preparation and audit-risk diagnostics.",
       "confidenceImpact": "Medium; actual entitlement/usage reconciliation evidence is required for financial sizing.",
-      "reviewStatus": "Reviewed v6.4"
+      "reviewStatus": "Reviewed v6.4",
+      "applicableWhen": {
+        "questionId": "CORE-01",
+        "anyOf": [
+          "SOFTWARE"
+        ]
+      }
     },
     {
       "id": "CORE-31",
@@ -3480,7 +3505,13 @@
       "findingIds": [],
       "recommendationIds": [],
       "questionDesignVersion": "6.6",
-      "answerGuidance": "Count meaningful capability overlap where two or more major products could plausibly serve substantially the same business need."
+      "answerGuidance": "Count meaningful capability overlap where two or more major products could plausibly serve substantially the same business need.",
+      "applicableWhen": {
+        "questionId": "CORE-01",
+        "anyOf": [
+          "SAAS"
+        ]
+      }
     },
     {
       "id": "ADP-07",
@@ -3538,7 +3569,13 @@
       "findingIds": [],
       "recommendationIds": [],
       "questionDesignVersion": "6.6",
-      "answerGuidance": "Consider HR/identity integration, inactivity thresholds, manager review and whether cleanup happens across major platforms—not just a few."
+      "answerGuidance": "Consider HR/identity integration, inactivity thresholds, manager review and whether cleanup happens across major platforms—not just a few.",
+      "applicableWhen": {
+        "questionId": "CORE-01",
+        "anyOf": [
+          "SAAS"
+        ]
+      }
     },
     {
       "id": "ADP-08",
@@ -3576,7 +3613,13 @@
       "findingIds": [],
       "recommendationIds": [],
       "questionDesignVersion": "6.6",
-      "answerGuidance": "Include business-owned SaaS where the spend is material. Exclude centrally governed services simply used by business teams."
+      "answerGuidance": "Include business-owned SaaS where the spend is material. Exclude centrally governed services simply used by business teams.",
+      "applicableWhen": {
+        "questionId": "CORE-01",
+        "anyOf": [
+          "SAAS"
+        ]
+      }
     },
     {
       "id": "ADP-09",
@@ -3991,7 +4034,13 @@
       "findingIds": [],
       "recommendationIds": [],
       "answerGuidance": "Consider whether entitlement, deployment and usage data are reconciled in time to change a commercial decision.",
-      "questionDesignVersion": "6.6"
+      "questionDesignVersion": "6.6",
+      "applicableWhen": {
+        "questionId": "CORE-01",
+        "anyOf": [
+          "SOFTWARE"
+        ]
+      }
     },
     {
       "id": "ADP-17",
@@ -5449,7 +5498,13 @@
       "findingIds": [],
       "recommendationIds": [],
       "answerGuidance": "Select the operating state that most closely matches the current enterprise reality.",
-      "questionDesignVersion": "6.0"
+      "questionDesignVersion": "6.0",
+      "applicableWhen": {
+        "questionId": "CORE-01",
+        "anyOf": [
+          "PUBLIC_CLOUD"
+        ]
+      }
     },
     {
       "id": "ADP-44",
@@ -7396,6 +7451,99 @@
           "ifWrong": "Labels drift from current size classes; the claims register review date forces a refresh."
         }
       ]
+    },
+    "selection": {
+      "purpose": "Which questions a client is asked: the baseline sections always; the sections of each chosen focus area; and every question gated on the footprint (CORE-01), which appears when the footprint names its estate. One definition for the page and the engine, so completeness is counted over the questions shown.",
+      "baselineSections": [
+        "Enterprise Context",
+        "CIO Priorities",
+        "Spend & Financial Visibility",
+        "Cost Governance & Investment",
+        "Regulated Industry"
+      ],
+      "defaultAreas": [
+        "Infrastructure",
+        "Applications"
+      ],
+      "areas": {
+        "Cloud Economics": [
+          "Cloud & SaaS Economics"
+        ],
+        "SaaS & Licensing": [
+          "Cloud & SaaS Economics",
+          "SaaS",
+          "Software",
+          "Software & Licensing"
+        ],
+        "Infrastructure": [
+          "Infrastructure & Operations",
+          "On-Prem",
+          "Data Center",
+          "Colocation",
+          "Disaster Recovery",
+          "VMware"
+        ],
+        "Applications": [
+          "Architecture & Applications",
+          "Applications",
+          "Product Operating Model"
+        ],
+        "Workforce": [
+          "People & Vendors",
+          "People"
+        ],
+        "Vendors & Commercials": [
+          "People & Vendors",
+          "Vendors",
+          "Procurement",
+          "Contracts",
+          "Outsourcing",
+          "Managed Services"
+        ],
+        "Cost Governance": [
+          "Cost Governance & Investment"
+        ],
+        "Technology Value": [
+          "Technology Value",
+          "Value Management",
+          "Investment Redirection",
+          "Cost Reduction"
+        ],
+        "Architecture & Technical Debt": [
+          "Architecture",
+          "Technical Debt",
+          "Architecture & Applications"
+        ],
+        "Data": [
+          "Data"
+        ],
+        "Network": [
+          "Network"
+        ],
+        "Security": [
+          "Security"
+        ],
+        "AI & Emerging Technology": [
+          "AI"
+        ],
+        "Transformation": [
+          "Transformation"
+        ],
+        "Business-led IT": [
+          "Business-led IT"
+        ],
+        "M&A": [
+          "M&A"
+        ],
+        "Geography": [
+          "Geography"
+        ],
+        "Operations & Service Management": [
+          "ITSM",
+          "Observability",
+          "Operating Model"
+        ]
+      }
     }
   },
   "audit": {

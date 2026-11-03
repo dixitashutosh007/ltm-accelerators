@@ -80,6 +80,7 @@ export const evaluate = async (event: APIGatewayProxyEventV2): Promise<APIGatewa
 
     const result = await evaluateCostIq({
       answers: body.answers,
+      scope: body.scope && Array.isArray(body.scope.selectedAreas) ? { selectedAreas: body.scope.selectedAreas.filter((a: unknown) => typeof a === 'string').slice(0, 40) } : null,
       evidence: body.evidence || body.options?.evidence || {},
       feasibilityEvidence: body.feasibilityEvidence || body.options?.feasibilityEvidence || {},
       options: body.options || {}
