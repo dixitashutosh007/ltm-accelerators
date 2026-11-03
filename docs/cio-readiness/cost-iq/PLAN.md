@@ -238,3 +238,15 @@ State: **95 questions; 51 score, 27 are context, 2 only trigger a finding, 15 do
 
 Four defects in the current page, fixed ahead of the server-rendered report (CQ5) because they made the deliverable read empty: finding descriptions never printed (the page read `f.detail`; the engine field is `description`), the "priority" panel listed the first four dimensions in configuration order (it now lists the four weakest), every recommendation showed a hard-coded "Confidence: Medium", and the "Confidence" label described answer completeness, not confidence in a result. The label now reads "Evidence completeness" and shows the engine's value; the hard-coded Medium is gone. A browser test checks the description and the label. Still open from C4: the value figure itself (C3), which needs the shared value model (CQ4).
 
+## Shared value model: staged build (4 Nov 2026)
+
+The rule (BOUNDARY.md section 3): one estate has **one cloud figure**, computed once by FinOps IQ; Cost IQ shows it as its cloud line and never computes, restates or adds to it. Cost IQ's total is its own non-cloud levers plus that line; with no FinOps IQ result the cloud line reads "Not quantified. Run FinOps IQ" and the total says "excluding cloud". Decisions O3, O4, O5 and O7 were accepted at their defaults (3 Nov 2026).
+
+| Stage | What | State |
+|---|---|---|
+| 1 Contract | FinOps IQ gives a versioned, read-only summary built from its client view: ranges by case, net and years one to three, cap with source, year and sample, confidence, capability profile, the levers it owns, no money unless FinOps IQ shows money. No approved figure or golden output changes | **Done** (`cost-iq-summary.ts`; schema `finops-iq-cost-summary/1`; tested on the nine reference scenarios) |
+| 2 Link | The consultant picks the FinOps IQ session to import (same owner or Admin); Cost IQ stores only the summary it imported. Needs a check that the Cost IQ save service can read FinOps IQ's saved sessions | Open; check first |
+| 3 Non-cloud levers | Evidence-based only unless a public source supports a ceiling: the client's measured base times a share up to 100%, expected case half, IDs after LEV-10 in the same library, each with claim and assumption entries | Sourcing search commissioned (`non-cloud-lever-sources.md`); build after it reports |
+| 4 Guard | Total = non-cloud plus cloud; CI fails if Cost IQ computes any lever in `FINOPS_IQ_LEVER_IDS`, if a lever exceeds its addressable base, or if one dollar is counted twice | Open |
+| 5 Report | Cloud line, total "excluding cloud" where needed, trace and assumption appendix | CQ5 |
+
