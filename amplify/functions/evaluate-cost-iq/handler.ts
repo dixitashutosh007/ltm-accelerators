@@ -14,6 +14,10 @@ function makeRequestId(event: APIGatewayProxyEventV2): string {
   return event.requestContext?.requestId || crypto.randomUUID();
 }
 
+// AI is off unless COST_IQ_AI_ENABLED is "true" (CQ0 finding C2: it was on by default, ungrounded and sent free text to a
+// third party). The proper fix, the shared Bedrock service with a per-engagement toggle and a grounding check, is CQ8.
+const aiEnabled = () => process.env.COST_IQ_AI_ENABLED === 'true';
+
 export const evaluate = async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> => {
   current = event;
   const id = makeRequestId(event);
@@ -23,7 +27,7 @@ export const evaluate = async (event: APIGatewayProxyEventV2): Promise<APIGatewa
   if (method === 'OPTIONS') return { statusCode: 200, headers: { ...corsHeaders(event, 'OPTIONS,GET,POST', 'X-Request-Id'), 'X-Request-Id': id }, body: '' };
 
   try {
-    if (method === 'GET' && path.endsWith('/metadata')) return response(200, metadata(), id);
+    if (method === 'GET' && path.endsWith('/metadata')) return response(200, { ...metadata(), ai: { enabled: aiEnabled() } }, id);
     if (method === 'GET' && path.endsWith('/questions')) return response(200, questions(), id);
 
     if (method !== 'POST') return response(405, { error: 'method_not_allowed', requestId: id }, id);
@@ -44,6 +48,9 @@ export const evaluate = async (event: APIGatewayProxyEventV2): Promise<APIGatewa
     }
     if (!body || typeof body !== 'object' || Array.isArray(body)) {
       return response(400, { error: 'json_object_required', requestId: id }, id);
+    }
+    if (method === 'POST' && (path.endsWith('/ai-review') || path.endsWith('/ai-report')) && !aiEnabled()) {
+      return response(403, { error: 'ai_disabled', message: 'AI assistance is switched off for Cost IQ.', requestId: id }, id);
     }
     if (method === 'POST' && path.endsWith('/ai-review')) {
       return response(200, await aiReview(body), id);

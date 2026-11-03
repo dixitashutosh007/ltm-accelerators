@@ -43,7 +43,7 @@
 const API=window.COST_IQ_API||'';
 const $=id=>document.getElementById(id);
 let allQuestions=[],questions=[],answers={},subjective={},selectedAreas=[],sectionIndex=0,qIndex=0,assessment=null,aiReview=null;
-let assessmentMetadata={},savedAssessment=null,persistTimer=null,persistQueue=Promise.resolve(),testScenario=false,viewEpoch=0;
+let aiEnabled=false,assessmentMetadata={},savedAssessment=null,persistTimer=null,persistQueue=Promise.resolve(),testScenario=false,viewEpoch=0;
 const BASELINE=['Enterprise Context','CIO Priorities','Spend & Financial Visibility','Cost Governance & Investment'];
 const DEFAULT_AREAS=['Cloud Economics','Cost Governance'];
 const AREAS={
@@ -102,7 +102,7 @@ async function authedFetch(url,opts){
 async function api(path,opts){const r=await authedFetch(API+path,opts);const t=await r.text();let d={};try{d=t?JSON.parse(t):{}}catch(e){throw Error('Invalid API response ('+r.status+')')}if(!r.ok)throw Error(d.message||d.error||('HTTP '+r.status));return d}
 function boot(){
   showSplash(['Loading Cost IQ engine…','Loading diagnostic framework…','Preparing adaptive assessment…'],function(){
-    Promise.all([api('/api/evaluate/cost-iq/questions'),api('/api/evaluate/cost-iq/metadata')]).then(function(values){allQuestions=values[0].questions||[];assessmentMetadata=values[1].release||{};home()}).catch(function(e){fail(e.message)});
+    Promise.all([api('/api/evaluate/cost-iq/questions'),api('/api/evaluate/cost-iq/metadata')]).then(function(values){allQuestions=values[0].questions||[];assessmentMetadata=values[1].release||{};aiEnabled=!!(values[1].ai&&values[1].ai.enabled);home()}).catch(function(e){fail(e.message)});
   });
 }
 function showSplash(steps,done){
@@ -304,6 +304,7 @@ function showEngineOverlay(done){
   showSplash(['Normalizing assessment responses…','Evaluating cost dimensions…','Evaluating value dimensions…','Checking evidence & confidence…','Preparing AI diagnostic review…'],done)
 }
 async function aiCheck(){
+  if(!aiEnabled){aiReview={needsClarification:false,observations:[]};preliminary();return}
   try{
     aiReview=await api('/api/evaluate/cost-iq/ai-review',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({answers:answers,selectedAreas:selectedAreas,context:subjective})});
     if(aiReview.needsClarification&&aiReview.questions&&aiReview.questions.length){clarify(0);return}
@@ -369,6 +370,7 @@ function openBooking(){
 async function generateDetailedReport(){
   const overlaySteps=['Reading assessment evidence…','Mapping cost & value dimensions…','Analyzing concentration patterns…','Correlating AI observations…','Building opportunity signals…','Constructing executive roadmap…','Rendering visual report…'];
   showSplash(overlaySteps,async function(){
+    if(!aiEnabled){renderReport({executiveSummary:'',keyMessages:[],priorityAreas:[],opportunities:[],roadmap:[],consultingRecommendations:[],limitations:'No AI narrative was generated for this report. Every score and finding comes from the deterministic engine.'});return}
     try{
       const ai=await api('/api/evaluate/cost-iq/ai-report',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({assessment:assessment,answers:answers,subjective:subjective,aiReview:aiReview,selectedAreas:selectedAreas})});
       renderReport(ai);

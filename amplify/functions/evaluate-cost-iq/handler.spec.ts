@@ -56,3 +56,23 @@ describe('Cost IQ scoring service access', () => {
     expect(r.headers['Access-Control-Allow-Origin']).toBe('https://app.example.com');
   });
 });
+
+describe('Cost IQ AI switch (CQ0 finding C2)', () => {
+  it('refuses both AI routes for a permitted caller while AI is off, and says so in the metadata', async () => {
+    delete process.env.COST_IQ_AI_ENABLED;
+    for (const p of ['/api/evaluate/cost-iq/ai-review', '/api/evaluate/cost-iq/ai-report']) {
+      const r = await call(event('POST', p, { body: { answers: {} } }));
+      expect(r.status, p).toBe(403);
+      expect(r.body.error).toBe('ai_disabled');
+    }
+    expect((await call(event('GET', '/api/evaluate/cost-iq/metadata'))).body.ai).toEqual({ enabled: false });
+  });
+
+  it('is on only when COST_IQ_AI_ENABLED is exactly "true"', async () => {
+    process.env.COST_IQ_AI_ENABLED = 'yes';
+    expect((await call(event('GET', '/api/evaluate/cost-iq/metadata'))).body.ai.enabled).toBe(false);
+    process.env.COST_IQ_AI_ENABLED = 'true';
+    expect((await call(event('GET', '/api/evaluate/cost-iq/metadata'))).body.ai.enabled).toBe(true);
+    delete process.env.COST_IQ_AI_ENABLED;
+  });
+});

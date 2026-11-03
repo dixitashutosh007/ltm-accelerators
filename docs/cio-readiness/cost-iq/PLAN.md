@@ -1,6 +1,6 @@
 # Cost IQ: phased plan
 
-**Date:** 3 Nov 2026  **Status:** proposed; the product owner approves each phase. `finops-cost-lead` advises and does not sign off.
+**Date:** 3 Nov 2026  **Status:** approved by the owner on 3 Nov 2026 and re-cut after the [validation report](VALIDATION.md) (CQ0). `finops-cost-lead` advises and does not sign off.
 
 **Starting point.** No validation report exists yet, so every statement about quality below is a hypothesis for CQ0 to confirm or reject. What is known from the repository:
 
@@ -16,6 +16,26 @@
 **Goal.** Cost IQ passes all 13 scorecard areas ([FRAMEWORK.md](../FRAMEWORK.md)) and reads as a consulting-engagement accelerator, not a questionnaire.
 
 **Boundary (owner decision D1, FinOps IQ plan).** Cost IQ is the whole-estate technology cost and value diagnostic. Its cloud and FinOps findings (FIN-01 to FIN-12, R-003) hand off to FinOps IQ, which uses the same capability model and lever library, so a client sees one waste figure per estate.
+
+
+## Where it stands and the re-cut (3 Nov 2026)
+
+CQ0 is done: Cost IQ scores 0 Pass, 3 Partial and 10 Fail, with six Critical findings ([VALIDATION.md](VALIDATION.md), section 1). The work is mostly **content and scoring**, not platform. The owner approved the re-cut below on 3 Nov 2026.
+
+| Phase | State | Change from the first plan |
+|---|---|---|
+| CQ0 Validate | **Done** | none |
+| CQ1 Platform parity | **Done in code** (`2a8142d`), not deployed | The older persistence tests now assert the new owner-only rules. The Configuration Studio and the old runtime page are behind the page guard with edit permission (CQ2, first step) |
+| AI containment | **Done**: Gemini is off | Brought forward from CQ8: `COST_IQ_AI_ENABLED` defaults to off; both AI routes return `ai_disabled`; the page skips the AI check and the AI narrative and says so in the report. CQ8 remains the proper fix |
+| CQ2 One live artefact | Started | Small and urgent. First step done (studio and runtime pages guarded). Left: remove or archive the dead pages and the empty `v9_1` folder, and reconcile the question count (the manifest says 105, the API returns 117) and the version string |
+| CQ3 Content | **Split** | **CQ3a:** decide the boundary with FinOps IQ line by line (D1), then delete or hand off the FinOps overlay content (FIN-01 to FIN-12 and the capability model), so no effort goes into sourcing questions that will move. **CQ3b:** rewrite the retained questions with a cited basis each, so every shown question scores or is a labelled context question; add the global-coverage questions (below) |
+| CQ4 Engine | Widened | Adds: applicability routing (which findings and benchmarks apply by footprint, currency and sector); a minimum number of answers per dimension before it scores; completeness measured over shown questions only; an audit adapter so `audit:engines` includes Cost IQ; reference-client goldens |
+| CQ5, CQ6 | As written | CQ5's gate adds the number-trace test and the inflation guard for the new value model. CQ6 reuses FinOps IQ's playbook and offerings catalogue (S3, S5) instead of building new ones |
+| CQ7 | As written | First tasks: keyboard access and the 360 px overflow, then the shared shell; remove the "Developer test data" block from the customer home page; ask for a client name |
+| CQ8 AI scope | Later | The proper fix: the shared Bedrock service, off by default, with a grounding check |
+| CQ9 to CQ11 | As written | none |
+
+Global-coverage items that land in CQ3b and CQ4 are listed in [GLOBAL-COVERAGE.md](../GLOBAL-COVERAGE.md): reporting currency, foreign-currency share of spend, countries of operation, onshore/offshore delivery mix, and three more industries. They are context facts; they route applicability and never re-weight a score.
 
 ## Quality bar for every phase
 
@@ -142,12 +162,16 @@ Replace the browser-built PDF with the shared server-rendered report used by Fin
 | CQ9 | CQ5 | after CQ5 |
 | CQ10, CQ11 | all above | last |
 
-## Owner decisions needed
+## Owner decisions
 
-| # | Decision | Recommended |
+| # | Decision | Outcome |
 |---|---|---|
-| CD1 | Persistence route (CQ1): keep `CostIqAssessment` or move to the shared service | Keep it and add access check, activity, expiry and delete; no migration of live data |
-| CD2 | Retention for Cost IQ assessments | 24 months after the last change, as the other accelerators |
-| CD3 | Which of the page generations is the live one | CQ0 confirms; the owner approves retiring the rest |
-| CD4 | Boundary with FinOps IQ, line by line | As D1: Cost IQ routes cloud and FinOps findings to FinOps IQ |
-| CD5 | Markets for regulatory or tax statements | EU and UK, US and APAC, as FRAMEWORK.md |
+| CD1 | Persistence route (CQ1) | **Decided 3 Nov 2026:** keep `CostIqAssessment` and add the access check, activity, expiry and delete through one service; no data migration. Saved before CQ1, records have no owner and only Admins can reach them: a list for review is offered |
+| CD2 | Retention | **Decided:** 24 months after the last change, as the other accelerators |
+| CD3 | Which page is live | **Decided:** `cost-iq-v10.html` only; the dead pages are guarded now and removed in CQ2 |
+| CD4 | Boundary with FinOps IQ | **Decided:** Cost IQ keeps the whole estate; the FIN questions and cloud-practice depth move to FinOps IQ (confirmed line by line in CQ3a) |
+| CD5 | Markets | **Decided:** EU and UK, US and APAC, plus Switzerland and India; see GLOBAL-COVERAGE.md |
+| CD6 | Inert questions | **Decided 3 Nov 2026 (re-cut agreed):** score, delete or keep as a labelled context question, in CQ3b |
+| CD7 | AI for client use | **Decided:** off now; CQ8 is the proper fix |
+| CD8 | Currency and global changes | **Decided:** adopt the currency, foreign-currency, geography and delivery-mix questions as context facts; bands in the client's currency, any FX conversion a registered, dated assumption |
+| CD9 | Dimensions | **Proposed default, not yet confirmed by the owner:** keep the 16 as LTM's own constructs, label them so, and add a mapping to a published cost taxonomy in CQ3b |

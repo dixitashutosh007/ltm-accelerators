@@ -1,5 +1,5 @@
 import { test, expect, makeIdToken, signedIn, TEST_API } from './fixtures';
-import { metadata, questions } from '../../packages/engine-core/src/accelerators/cost-iq/evaluate.cjs';
+import { evaluateCostIq, metadata, questions } from '../../packages/engine-core/src/accelerators/cost-iq/evaluate.cjs';
 
 // Cost IQ reads its API address from cost-iq-runtime-config.js, which the Amplify build generates; the tests serve it.
 const QUESTIONS = '/api/evaluate/cost-iq/questions';
@@ -68,6 +68,20 @@ test.describe('Cost IQ', () => {
     expect(sent[0]).toMatchObject({ action: 'save', snapshot: { acceleratorId: 'cost-iq', status: 'draft' } });
     expect(sent[0].progress).toMatchObject({ percent: 0 });
     expect(typeof sent[0].progress.stage).toBe('string');
+    expect(world.pageErrors).toEqual([]);
+  });
+
+  test('with AI switched off the page never calls the AI routes', async ({ page, context, world }) => {
+    await signedIn(context, permitted(makeIdToken('consultant@ltm.com')));
+    world.on('GET', ASSESSMENT, () => ({ body: { ok: true, data: [] } }));
+    world.on('POST', '/api/evaluate/cost-iq', ({ body }) => ({ body: evaluateCostIq({ answers: body.answers, scope: body.scope }) }));
+    await page.goto('/cost-iq-v10');
+    await page.getByRole('button', { name: 'Load Healthy' }).click();
+    // The engine runs, the page goes straight to the preliminary result with no AI check, and a detailed report needs no AI call.
+    await expect.poll(() => world.calls.some(c => c.startsWith('POST /api/evaluate/cost-iq ')), { timeout: 15000 }).toBe(true);
+    await page.waitForTimeout(1500);
+    expect(await page.evaluate('aiEnabled')).toBe(false);
+    expect(world.calls.filter(c => c.includes('/ai-'))).toEqual([]);
     expect(world.pageErrors).toEqual([]);
   });
 });

@@ -27,10 +27,18 @@ for (const field of requiredFields) {
 assert.match(source, /completedAt:\s*a\.datetime\(\)/);
 assert.match(source, /resultJson:\s*a\.string\(\)/);
 assert.match(source, /\.identifier\(\['assessmentId'\]\)/);
-assert.match(source, /allow\.owner\(\)\.to\(\['create', 'read', 'update'\]\)/);
+assert.match(source, /respondentEmail:\s*a\.string\(\)/);
+assert.match(source, /expiresAt:\s*a\.integer\(\)/);
 assert.doesNotMatch(source, /allow\.resource\(evaluateCostIqFunction\)/);
-assert.match(source, /allow\.group\('Admin'\)/);
-assert.match(source, /allow\.group\('Consultant'\)/);
+assert.match(source, /allow\.resource\(manageCostAssessmentFunction\)\.to\(\['query', 'mutate'\]\)/);
+
+// CQ1: only the service writes, and it checks ownership from the caller's token. The browser must not hold direct access:
+// no owner rule and no Consultant group on this model, where every Consultant could read every assessment.
+const start = source.indexOf('CostIqAssessment: a');
+const costBlock = source.slice(start, source.indexOf('.authorization', start) + 200);
+assert.match(costBlock, /allow\.group\('Admin'\)\.to\(\['read'\]\)/);
+assert.doesNotMatch(costBlock, /allow\.owner\(\)/);
+assert.doesNotMatch(costBlock, /allow\.group\('Consultant'\)/);
 
 const lifecycleStates = ['draft', 'in_progress', 'completed'];
 for (const state of lifecycleStates) {
@@ -43,5 +51,5 @@ console.log(JSON.stringify({
   requiredFields,
   lifecycleStates,
   versioned: true,
-  ownerAccess: true
+  ownerAccess: 'enforced by the service from the caller token'
 }, null, 2));
