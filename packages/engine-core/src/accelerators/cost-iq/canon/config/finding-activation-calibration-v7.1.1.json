@@ -262,6 +262,37 @@
         "operator": "gt",
         "value": 20
       }
+    ],
+    "F-017": [
+      {
+        "questionId": "ADP-33",
+        "type": "option",
+        "triggerOptions": [
+          "LIMITED",
+          "NONE"
+        ],
+        "applicableWhen": {
+          "questionId": "CORE-16",
+          "anyOf": [
+            "TRUE",
+            "UNSURE"
+          ]
+        }
+      },
+      {
+        "questionId": "ADP-34",
+        "type": "option",
+        "triggerOptions": [
+          "NONE"
+        ],
+        "applicableWhen": {
+          "questionId": "CORE-16",
+          "anyOf": [
+            "TRUE",
+            "UNSURE"
+          ]
+        }
+      }
     ]
   }
 }

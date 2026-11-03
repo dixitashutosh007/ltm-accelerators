@@ -21,13 +21,11 @@ const triggers = new Set(Object.values(calibration).flat().map((t: any) => t.que
 // Still to score or label in CQ3b (BOUNDARY.md task 6). Remove an ID when it is fixed; never add one.
 // Still to score or label in CQ3b (BOUNDARY.md task 6). Remove an ID when it is fixed; never add one. Held back from batch 1:
 // ADP-15 (drop) and ADP-18 (rewrite) until the owner approves.
+// Still to score or label in CQ3b (BOUNDARY.md task 6). Remove an ID when it is fixed; never add one. ADP-15 (drop) and ADP-18
+// (rewrite) wait for the owner; ADP-44 to ADP-48 and ADP-51 to ADP-60 are in later batches.
 const INERT = [
-  'ADP-15', 'ADP-18', 'ADP-21', 'ADP-22',
-  'ADP-23', 'ADP-24', 'ADP-25', 'ADP-26', 'ADP-27', 'ADP-28', 'ADP-29', 'ADP-30',
-  'ADP-31', 'ADP-32', 'ADP-33', 'ADP-34', 'ADP-35', 'ADP-36', 'ADP-37', 'ADP-38',
-  'ADP-39', 'ADP-40', 'ADP-41', 'ADP-44', 'ADP-45', 'ADP-46', 'ADP-47', 'ADP-48',
-  'ADP-51', 'ADP-52', 'ADP-53', 'ADP-54', 'ADP-55', 'ADP-56', 'ADP-57', 'ADP-58',
-  'ADP-59', 'ADP-60'
+  'ADP-15', 'ADP-18', 'ADP-44', 'ADP-45', 'ADP-46', 'ADP-47', 'ADP-48', 'ADP-51', 'ADP-52',
+  'ADP-53', 'ADP-54', 'ADP-55', 'ADP-56', 'ADP-57', 'ADP-58', 'ADP-59', 'ADP-60'
 ];
 
 describe('Cost IQ question bank', () => {
@@ -75,7 +73,7 @@ describe('Cost IQ question bank', () => {
     const inert = questions.filter((q: any) => !isContext(q) && !scores(q) && !triggers.has(q.id)).map((q: any) => q.id);
     const extra = inert.filter((id: string) => !INERT.includes(id));
     expect(extra, 'new inert questions').toEqual([]);
-    expect(inert.length).toBeLessThanOrEqual(38);
+    expect(inert.length).toBeLessThanOrEqual(17);
   });
 
   it('returns no FinOps overlay fields', () => {
@@ -134,5 +132,22 @@ describe('Cost IQ question bank', () => {
     expect(ids({ 'ADP-42': 'NONE' })).not.toContain('F-005');
     expect(ids({ 'CORE-01': ['ON_PREM'], 'ADP-42': 'NONE' })).not.toContain('F-005');
     expect(ids({ 'CORE-01': ['PUBLIC_CLOUD'], 'ADP-42': 'NONE' })).toContain('F-005');
+  });
+
+  it('applies batch 2: sliders score inverted, the stars map is keyed 1 to 5, estate questions are gated by the footprint', () => {
+    const q = (id: string) => questions.find((x: any) => x.id === id);
+    expect(engine.scoreQuestion(q('ADP-22'), 10, {})).toBeGreaterThan(engine.scoreQuestion(q('ADP-22'), 80, {}));
+    expect(engine.scoreQuestion(q('ADP-26'), 5, {})).toBeGreaterThan(engine.scoreQuestion(q('ADP-26'), 1, {}));
+    for (const id of ['ADP-35', 'ADP-36']) expect(q(id).applicableWhen).toEqual({ questionId: 'CORE-01', anyOf: ['EXTERNAL'] });
+    for (const id of ['ADP-21', 'ADP-24', 'ADP-28', 'ADP-40']) expect(isContext(q(id)), id).toBe(true);
+  });
+
+  it('can raise F-017 (business-led spend not governed) from ADP-33 and ADP-34, only when business-led spend is reported', () => {
+    const ids = (answers: object) => adapter.evaluateCostIq({ answers }).findings.map((f: any) => f.id);
+    expect(ids({ 'CORE-16': 'TRUE', 'ADP-33': 'NONE' })).toContain('F-017');
+    expect(ids({ 'CORE-16': 'UNSURE', 'ADP-34': 'NONE' })).toContain('F-017');
+    expect(ids({ 'CORE-16': 'FALSE', 'ADP-33': 'NONE' })).not.toContain('F-017');
+    expect(ids({ 'ADP-33': 'NONE' })).not.toContain('F-017');
+    expect(ids({ 'CORE-16': 'TRUE', 'ADP-33': 'INFLUENCE' })).not.toContain('F-017');
   });
 });

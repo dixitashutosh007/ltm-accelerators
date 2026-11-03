@@ -3786,9 +3786,12 @@
       "evidenceImplication": "Validate with targeted evidence before quantifying any opportunity.",
       "findingImplication": "L6 Portfolio Leakage / Application portfolio",
       "scoring": {
-        "dimensionIds": [
-          "COST-10"
-        ]
+        "method": "constraint-signal",
+        "signals": [
+          "portfolio-criticality-concentration"
+        ],
+        "note": "Feeds the application-rationalisation narrative (a high share of business-critical applications constrains how fast and how far the portfolio can be simplified, as CORE-42 BUSINESS_CRITICALITY does) and the sequencing of application recommendations. No score. Feeds COST-10 text only; never re-weights a score (GLOBAL-COVERAGE rule).",
+        "basis": "A proportion of the portfolio that is critical is a fact about the business, not a better-to-worse condition: a bank may rightly have 60 percent and a distributor 10 percent. Scoring it would mark some sectors down for what they are. It is useful as a constraint on rationalisation pace. LTM heuristic; no published benchmark found or claimed. The slider cannot record Unknown (batch 1, problem 2; the master sets control.unknown but the page does not record it), so an unanswered slider is unscored, never rated good."
       },
       "active": true,
       "version": 1,
@@ -3824,7 +3827,9 @@
       "scoring": {
         "dimensionIds": [
           "COST-10"
-        ]
+        ],
+        "normalize": "invert-0-100",
+        "basis": "Share of applications with unclear ownership, unclear value or very limited usage: 0 percent best, so it scores inverted like ADP-08. This is a count of applications, not of spend, and a screen, not a benchmark. It partly overlaps CORE-39 (UNCLEAR_OWNER, LOW_USAGE); ADP-22 quantifies what CORE-39 only flags, so keep both but do not double count in the report. Three conditions are combined in one number, so the respondent cannot tell which drives it. LTM heuristic; I found no published percentage with method and sample for ownerless or unused applications and cite none. The slider cannot record Unknown (batch 1, problem 2; the master sets control.unknown but the page does not record it), so an unanswered slider is unscored, never rated good."
       },
       "active": true,
       "version": 1,
@@ -3882,7 +3887,15 @@
       "scoring": {
         "dimensionIds": [
           "COST-10"
-        ]
+        ],
+        "defaultMap": {
+          "MANAGED": 100.0,
+          "PERIODIC": 80.0,
+          "PROJECT": 60.0,
+          "LIMITED": 40.0,
+          "NONE": 20.0
+        },
+        "basis": "Ordered scale of how lifecycle decisions use value and total cost: all four factors together, periodic portfolio review, only when a project or technology event forces it, ownership without comparison, no consistent governance. LTM heuristic: the step values (100/80/60/40/20) are an LTM convention, not a benchmark. PROJECT is placed above LIMITED because an event-driven decision at least makes a decision; this is a judgement. There is no Unknown option, so NONE is the lowest level; adding UNKNOWN at 20 is recommended (a client-visible change, owner optional). Overlaps in theme with CORE-41 (how retain, modernise, retire is decided); ADP-23 asks about the link to value and cost, so keep. No published source verified."
       },
       "active": true,
       "version": 1,
@@ -3938,9 +3951,12 @@
         }
       ],
       "scoring": {
-        "dimensionIds": [
-          "COST-05"
-        ]
+        "method": "hypothesis-signal",
+        "signals": [
+          "data-cost-hotspots"
+        ],
+        "note": "Multi-select set of candidate data-cost issues. Feeds opportunity sizing and the data section of the report (which issues to validate first). Do not score by selection count; NONE must be exclusive of the others (check the control). TRANSFER (egress) and PROCESSING on cloud are FinOps IQ territory: show them but do not quantify them in Cost IQ (single-figure rule, BOUNDARY section 3). No score. Never re-weights a score (GLOBAL-COVERAGE rule).",
+        "basis": "An unordered set of issue types. More selections can mean a larger or a more honest estate; fewer can mean less visibility, so a count cannot be scored in either direction. LTM heuristic."
       },
       "active": true,
       "version": 1,
@@ -3990,7 +4006,15 @@
       "scoring": {
         "dimensionIds": [
           "COST-09"
-        ]
+        ],
+        "defaultMap": {
+          "BALANCED": 100.0,
+          "POLICY": 80.0,
+          "MIXED": 60.0,
+          "COST_LAST": 40.0,
+          "UNKNOWN": 20.0
+        },
+        "basis": "Ordered scale from retention explicitly mapped to cost and reviewed by the data owner, down to not being able to judge. Options are in best-to-worst order in the master, UNKNOWN last at the lowest level. LTM heuristic: the step values (100/80/60/40/20) are an LTM convention, not a benchmark. Retention periods can be set by law or contract; the scale rewards knowing and balancing the cost, not shortening retention. The dimension is COST-09 in the master although the question sits in the Data section; kept as is. No published source verified."
       },
       "active": true,
       "version": 1,
@@ -4018,7 +4042,15 @@
       "scoring": {
         "dimensionIds": [
           "COST-05"
-        ]
+        ],
+        "defaultMap": {
+          "1": 20.0,
+          "2": 40.0,
+          "3": 60.0,
+          "4": 80.0,
+          "5": 100.0
+        },
+        "basis": "Five anchored levels from \"Poor visibility\" to \"Comprehensively validated\". Missing visibility sits in level 1, so lack of knowledge does not flatter. Same keyed 1 to 5 map (20 to 100) as ADP-11 so COST-05 keeps one scale shape; do not set scaleMax or method. The prompt says \"How confidently can you say\" while the labels describe the understanding, which is consistent enough. LTM heuristic: the step values (100/80/60/40/20) are an LTM convention, not a benchmark. No published source verified for network contract fit."
       },
       "active": true,
       "version": 1,
@@ -4079,7 +4111,15 @@
       "scoring": {
         "dimensionIds": [
           "VALUE-02"
-        ]
+        ],
+        "defaultMap": {
+          "OUTCOME": 100.0,
+          "MEASURED": 80.0,
+          "PARTIAL": 60.0,
+          "CONTROL": 40.0,
+          "UNKNOWN": 20.0
+        },
+        "basis": "Ordered scale of how far security spend is tied to risk reduction and outcomes: quantified before investment, measured after deployment, partial, reported only as controls or compliance, no evidence. LTM heuristic: the step values (100/80/60/40/20) are an LTM convention, not a benchmark. The PARTIAL over CONTROL order is a judgement: a compliance-only view is a legitimate state for a regulated client, so the owner may prefer to rate PARTIAL and CONTROL equally (both 50). Score the question as written. Security investment is often mandated, so the finding text should say \"not linked to outcomes\", not \"wasted\". No published source verified."
       },
       "active": true,
       "version": 1,
@@ -4105,9 +4145,12 @@
       "evidenceImplication": "Validate with targeted evidence before quantifying any opportunity.",
       "findingImplication": "L7 Value Leakage / Regulatory spend",
       "scoring": {
-        "dimensionIds": [
-          "VALUE-02"
-        ]
+        "method": "constraint-signal",
+        "signals": [
+          "regulatory-driven-spend-share"
+        ],
+        "note": "Feeds the addressable-spend statement in the report: spend driven by regulation is not discretionary, so optimisation figures should say they exclude it. Report layer only; does not change any score or any lever cap until the value model decides to use it. Never re-weights a score (GLOBAL-COVERAGE rule); no country or sector is used to adjust anything.",
+        "basis": "A share of spend that is compliance-driven is a fact, not a better or worse condition. It is a constraint on what can be optimised. LTM heuristic. The slider cannot record Unknown (batch 1, problem 2; the master sets control.unknown but the page does not record it), so an unanswered slider is unscored, never rated good."
       },
       "active": true,
       "version": 1,
@@ -4143,7 +4186,9 @@
       "scoring": {
         "dimensionIds": [
           "VALUE-03"
-        ]
+        ],
+        "normalize": "invert-0-100",
+        "basis": "Share of committed transformation spend with no clearly measurable business outcome: 0 percent best, inverted. It overlaps with CORE-44 (are benefits measured after) and CORE-19 (evidence required before funding) but is the only question that quantifies the amount; keep. The respondent must know the committed spend, which many cannot; unanswered is unscored. LTM heuristic; I found no published percentage of transformation spend lacking outcomes with a stated method and sample, and cite none. The slider cannot record Unknown (batch 1, problem 2; the master sets control.unknown but the page does not record it), so an unanswered slider is unscored, never rated good."
       },
       "active": true,
       "version": 1,
@@ -4201,7 +4246,15 @@
       "scoring": {
         "dimensionIds": [
           "VALUE-03"
-        ]
+        ],
+        "defaultMap": {
+          "ACTIVE": 100.0,
+          "GOVERNED": 80.0,
+          "PLANNED": 60.0,
+          "LATE": 40.0,
+          "NONE": 20.0
+        },
+        "basis": "Ordered scale of how reliably material changes in cost, timeline or benefit lead to a formal re-baseline. GAO guidance on IT programmes says a rebaseline policy should state valid reasons, require validation, management review and documentation (GAO-08-925), and that rebaselining resets reported cost growth to zero (GAO-20-195G), so re-baselining is a governance control and not an end in itself. Read through a search summary only; the PDFs were not read in full. Caution: ACTIVE (\"whenever economics change\") can mask variance if re-baselining is frequent but unreviewed, and the question title says \"how often\" while the options describe how. The map follows the option order; the owner may prefer to rate ACTIVE and GOVERNED equally (for example both 90). LTM heuristic: the step values (100/80/60/40/20) are an LTM convention, not a benchmark. No Unknown option; NONE is lowest."
       },
       "active": true,
       "version": 1,
@@ -4251,7 +4304,15 @@
       "scoring": {
         "dimensionIds": [
           "VALUE-02"
-        ]
+        ],
+        "defaultMap": {
+          "SEPARATE": 100.0,
+          "PARTIAL": 80.0,
+          "MIXED": 60.0,
+          "NONE": 40.0,
+          "UNKNOWN": 20.0
+        },
+        "basis": "Ordered scale of how separately AI cost and benefit are tracked while still reconciling to enterprise spend. The FinOps for AI paper says to allocate at the grain the business measures value, and that FinOps supplies the cost while the business owns the value claim. It does not give a scale; the map is LTM heuristic. MIXED and NONE overlap in meaning (limited visibility versus not visible), so respondents may split them arbitrarily: consider collapsing to four options (owner optional). Cloud and GPU cost of AI is FinOps IQ territory; this question stays at whole-estate level."
       },
       "active": true,
       "version": 1,
@@ -4301,7 +4362,15 @@
       "scoring": {
         "dimensionIds": [
           "VALUE-03"
-        ]
+        ],
+        "defaultMap": {
+          "DEFINED": 100.0,
+          "KPIS": 80.0,
+          "ACTIVITY": 60.0,
+          "EXPERIMENTAL": 40.0,
+          "UNKNOWN": 20.0
+        },
+        "basis": "Ordered scale of how far AI investments have defined outcomes and adoption targets before funding, down to not visible. FinOps for AI: report cost per successful outcome and tie unit costs to outcomes an owner can defend. The scale confuses discipline with stage: an exploratory programme with firm spend limits is acceptable at Crawl, yet scores 40. LTM heuristic: the step values (100/80/60/40/20) are an LTM convention, not a benchmark. Overlaps in theme with CORE-44 (benefits measured) but is AI specific; keep."
       },
       "active": true,
       "version": 1,
@@ -4351,7 +4420,15 @@
       "scoring": {
         "dimensionIds": [
           "COST-01"
-        ]
+        ],
+        "defaultMap": {
+          "INFLUENCE": 100.0,
+          "REVIEW": 80.0,
+          "LATE": 60.0,
+          "LIMITED": 40.0,
+          "NONE": 20.0
+        },
+        "basis": "Ordered scale of how early IT shapes purchases made by business functions. The FinOps Licensing and SaaS capability describes a review process so teams do not buy what already exists, and FinOps involvement when licences or SaaS are acquired outside cloud providers (carried from batch 1). It gives no scale; the map is LTM heuristic. No Unknown option; NONE is lowest, and adding UNKNOWN at 20 is recommended (owner optional). CORE-16 (is there material business-led spend) is the natural gate; the master already says \"BusinessLedIT=Yes\" and CORE-16 says \"True/Unsure activates shadow-tech questions\"."
       },
       "active": true,
       "version": 1,
@@ -4361,7 +4438,14 @@
       "findingIds": [],
       "recommendationIds": [],
       "answerGuidance": "Select the operating state that most closely matches the current enterprise reality.",
-      "questionDesignVersion": "6.0"
+      "questionDesignVersion": "6.0",
+      "applicableWhen": {
+        "questionId": "CORE-16",
+        "anyOf": [
+          "TRUE",
+          "UNSURE"
+        ]
+      }
     },
     {
       "id": "ADP-34",
@@ -4401,7 +4485,15 @@
       "scoring": {
         "dimensionIds": [
           "COST-04"
-        ]
+        ],
+        "defaultMap": {
+          "SYSTEMATIC": 100.0,
+          "PERIODIC": 80.0,
+          "RENEWAL": 60.0,
+          "CASE": 40.0,
+          "NONE": 20.0
+        },
+        "basis": "Ordered scale of how often business-led purchases are consolidated with enterprise capability, best to worst. Same Licensing and SaaS basis as ADP-06 and ADP-33 (a review process so teams do not buy what exists). LTM heuristic: the step values (100/80/60/40/20) are an LTM convention, not a benchmark. Overlaps with ADP-06 (platform overlap count) and CORE-27 (what happens when two SaaS products overlap): ADP-34 is limited to business-led purchases; keep, but do not present the three as independent evidence. No Unknown option."
       },
       "active": true,
       "version": 1,
@@ -4411,7 +4503,14 @@
       "findingIds": [],
       "recommendationIds": [],
       "answerGuidance": "Select the operating state that most closely matches the current enterprise reality.",
-      "questionDesignVersion": "6.0"
+      "questionDesignVersion": "6.0",
+      "applicableWhen": {
+        "questionId": "CORE-16",
+        "anyOf": [
+          "TRUE",
+          "UNSURE"
+        ]
+      }
     },
     {
       "id": "ADP-35",
@@ -4451,7 +4550,15 @@
       "scoring": {
         "dimensionIds": [
           "COST-07"
-        ]
+        ],
+        "defaultMap": {
+          "OUTCOME": 100.0,
+          "USAGE": 80.0,
+          "SLA": 60.0,
+          "FIXED": 40.0,
+          "UNKNOWN": 20.0
+        },
+        "basis": "Ordered scale of how closely outsourced charges follow demand, outcomes and service levels, down to not reconcilable. LTM heuristic: the step values (100/80/60/40/20) are an LTM convention, not a benchmark. Demand-linked pricing is not always better (it moves volume risk to the client), so FIXED at 40 is a judgement; a stable service legitimately priced fixed is penalised. Gate on the EXTERNAL footprint option (as ADP-14), since there is no \"we outsource nothing\" option. No published source verified; I found no neutral source for a pricing-model maturity scale."
       },
       "active": true,
       "version": 1,
@@ -4461,7 +4568,13 @@
       "findingIds": [],
       "recommendationIds": [],
       "answerGuidance": "Select the operating state that most closely matches the current enterprise reality.",
-      "questionDesignVersion": "6.0"
+      "questionDesignVersion": "6.0",
+      "applicableWhen": {
+        "questionId": "CORE-01",
+        "anyOf": [
+          "EXTERNAL"
+        ]
+      }
     },
     {
       "id": "ADP-36",
@@ -4501,7 +4614,15 @@
       "scoring": {
         "dimensionIds": [
           "COST-07"
-        ]
+        ],
+        "defaultMap": {
+          "BENCHMARK": 100.0,
+          "PERIODIC": 80.0,
+          "RENEWAL": 60.0,
+          "LIMITED": 40.0,
+          "NONE": 20.0
+        },
+        "basis": "Ordered scale of how often outsourced services are challenged against internal or alternative sourcing. LTM heuristic: the step values (100/80/60/40/20) are an LTM convention, not a benchmark. Overlaps with CORE-37 (vendor governance, RENEWAL_LED) and ADP-19/20 (renewal and leverage context): ADP-36 is about make-or-buy challenge; keep, and do not present as independent of CORE-37. No Unknown option; NONE lowest. Gate on EXTERNAL. No published source verified."
       },
       "active": true,
       "version": 1,
@@ -4511,7 +4632,13 @@
       "findingIds": [],
       "recommendationIds": [],
       "answerGuidance": "Select the operating state that most closely matches the current enterprise reality.",
-      "questionDesignVersion": "6.0"
+      "questionDesignVersion": "6.0",
+      "applicableWhen": {
+        "questionId": "CORE-01",
+        "anyOf": [
+          "EXTERNAL"
+        ]
+      }
     },
     {
       "id": "ADP-37",
@@ -4529,7 +4656,9 @@
       "scoring": {
         "dimensionIds": [
           "COST-05"
-        ]
+        ],
+        "normalize": "invert-0-100",
+        "basis": "Share of data-centre capacity that is structurally underutilised after allowing for resilience and seasonality: lower is better, so inverted. The wording already nets out legitimate headroom, which makes 0 percent a fair best case. It is a self-estimate, a screen and not a measurement. Gate on an owned or leased data-centre footprint; a cloud-only or SaaS-only client has no answer. LTM heuristic; I could not verify a published utilisation range (the FinOps Data Center scope content was not readable in batch 1). The slider cannot record Unknown (batch 1, problem 2; the master sets control.unknown but the page does not record it), so an unanswered slider is unscored, never rated good."
       },
       "active": true,
       "version": 1,
@@ -4547,7 +4676,15 @@
       "findingIds": [],
       "recommendationIds": [],
       "questionDesignVersion": "6.0",
-      "answerGuidance": "Choose the option that best reflects the current enterprise reality; do not answer based on intended future state."
+      "answerGuidance": "Choose the option that best reflects the current enterprise reality; do not answer based on intended future state.",
+      "applicableWhen": {
+        "questionId": "CORE-01",
+        "anyOf": [
+          "ON_PREM",
+          "PRIVATE_CLOUD",
+          "COLO"
+        ]
+      }
     },
     {
       "id": "ADP-38",
@@ -4583,7 +4720,14 @@
       "scoring": {
         "dimensionIds": [
           "COST-05"
-        ]
+        ],
+        "defaultMap": {
+          "NONE": 100.0,
+          "SOME": 60.0,
+          "SIGNIFICANT": 40.0,
+          "UNKNOWN": 20.0
+        },
+        "basis": "Four ordered states: proportionate, some components larger than needed, a material portion exceeds requirement, cannot judge. Four options so the map is 100/60/40/20 (the 80 step is skipped to keep the same spacing at the low end). The answer is an opinion that capacity \"appears\" proportionate, so it is a screen. Unknown is lowest. LTM heuristic: the step values (100/80/60/40/20) are an LTM convention, not a benchmark. A SaaS-only client has no DR capacity to size, so gate on any non-SaaS estate. No published source verified; DR sizing depends on the recovery objectives, which this question does not ask for."
       },
       "active": true,
       "version": 1,
@@ -4593,7 +4737,17 @@
       "findingIds": [],
       "recommendationIds": [],
       "questionDesignVersion": "6.0",
-      "answerGuidance": "Choose the option that best reflects the current enterprise reality; do not answer based on intended future state."
+      "answerGuidance": "Choose the option that best reflects the current enterprise reality; do not answer based on intended future state.",
+      "applicableWhen": {
+        "questionId": "CORE-01",
+        "anyOf": [
+          "ON_PREM",
+          "PRIVATE_CLOUD",
+          "VMWARE",
+          "COLO",
+          "PUBLIC_CLOUD"
+        ]
+      }
     },
     {
       "id": "ADP-39",
@@ -4633,7 +4787,15 @@
       "scoring": {
         "dimensionIds": [
           "COST-08"
-        ]
+        ],
+        "defaultMap": {
+          "VALUE": 100.0,
+          "MANAGED": 80.0,
+          "PARTIAL": 60.0,
+          "GROWING": 40.0,
+          "UNKNOWN": 20.0
+        },
+        "basis": "Ordered scale of how observability tooling and telemetry cost is managed against value, down to not visible. LTM heuristic: the step values (100/80/60/40/20) are an LTM convention, not a benchmark. Telemetry growth is a cost driver in cloud estates, but I found no neutral published range and cite none. No footprint answer gates it reliably (observability applies to any estate); the Operations focus-area selection is the gate."
       },
       "active": true,
       "version": 1,
@@ -4685,9 +4847,12 @@
         }
       ],
       "scoring": {
-        "dimensionIds": [
-          "COST-08"
-        ]
+        "method": "hypothesis-signal",
+        "signals": [
+          "itsm-effort-driver"
+        ],
+        "note": "Names the dominant source of avoidable service-management effort. Feeds the operations recommendation (which lever to test first). No score. NONE is a valid answer. Overlaps with ADP-17 (manual-work hotspots, already context) and CORE-34 (manual share, scored): read them together in the report. Never re-weights a score (GLOBAL-COVERAGE rule).",
+        "basis": "An unordered set of causes (incidents, requests, process, tools, suppliers) with one pick; no cause is better than another. The one measurable condition is in CORE-34. LTM heuristic."
       },
       "active": true,
       "version": 1,
@@ -4737,7 +4902,15 @@
       "scoring": {
         "dimensionIds": [
           "COST-10"
-        ]
+        ],
+        "defaultMap": {
+          "FULL": 100.0,
+          "PARTIAL": 80.0,
+          "TECH_ONLY": 60.0,
+          "SHARED": 40.0,
+          "UNKNOWN": 20.0
+        },
+        "basis": "Ordered scale of how fully product or application teams own technology cost. The FinOps Allocation capability describes shared platform owners moving from absorbing shared costs (Crawl) to showback (Walk) to full allocation and chargeback (Run), and product and engineering being aware of their share; the Decision and Accountability Structure page (previous Framework version) moves authority to the edge as maturity grows. Neither gives a scale for this question; the map is LTM heuristic. The Product Operating Model section is shown with the Applications focus area. A client without a product model would answer SHARED and score 40; the owner may want a not-applicable option or a routing question (no setter exists today)."
       },
       "active": true,
       "version": 1,

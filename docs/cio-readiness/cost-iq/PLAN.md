@@ -217,3 +217,14 @@ A new test checks every score map against its options: keys are real options, or
 - **Cloud findings need cloud.** F-005 and F-006 can fire only when PUBLIC_CLOUD is in the footprint.
 - **State:** 96 questions; 38 score nothing and are not labelled (ADP-15 and ADP-18 await the owner; ADP-21 to ADP-41 and ADP-44 to ADP-60 are in batch 2 and later). Note: the owner decisions on ADP-15, ADP-18 and the F-017 threshold are still open.
 
+### CQ3b slice 4: scoring batch 2 (4 Nov 2026)
+
+`finops-cost-lead` proposed ADP-21 to ADP-41 ([scoring-batch-2.md](scoring-batch-2.md), [scoring-batch-2.json](scoring-batch-2.json)): 17 score, 4 context (ADP-21, 24, 28, 40). All applied: three sliders score inverted (ADP-22, 29, 37), ADP-26 is a stars map keyed 1 to 5, the rest are option maps. Estate questions carry `applicableWhen` (ADP-35 and 36 need managed services; ADP-37 and 38 need the infrastructure footprint; ADP-33 and 34 need business-led spend reported in CORE-16).
+
+- **F-017 (business-led spend not governed) is reachable for the first time.** ADP-33 (limited or none) and ADP-34 (none) raise it, only when CORE-16 reports business-led spend (yes or unsure). The ADP-08 trigger still waits for the owner's threshold.
+- **F-019 (AI investment economics) is still unreachable.** ADP-31 and ADP-32 are scored, but no question records AI scope, so the F-019 triggers wait for the owner's gate decision. The two questions are shown only when the client picks the AI focus area.
+- **ADP-28 is labelled context but never shown**: it has no focus area. The owner decides where it appears.
+- **State:** 96 questions; **50 score, 27 are context, 2 only trigger a finding, 17 do neither** (ADP-15 and ADP-18 await the owner; ADP-44 to 48 and ADP-51 to 60 are batch 3). Most maps rest on an LTM heuristic; the FinOps Framework gives three stages, not scores. The agent saw GAO material (ADP-30) only through a search summary and the FinOps accountability page is from a previous Framework version.
+
+Effect on the reference answer sets: Cost IQ 80 to 85, 57 to 58 and 36 to 31 (best, middle, worst); Value IQ 92 to 89, 58 to 57 and 24 to 26; F-017 appears on the worst set.
+
