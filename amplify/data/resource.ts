@@ -113,6 +113,10 @@ const schema = a.schema({
       startedAt: a.datetime().required(),
       updatedAt: a.datetime().required(),
       completedAt: a.datetime(),
+      // The FinOps IQ result this assessment uses as its cloud line (CQ3b, shared value model stage 2): the versioned summary
+      // only, as it was when linked, and the id of the FinOps IQ assessment it came from.
+      finopsAssessmentId: a.string(),
+      finopsSummaryJson: a.string(),
       // Epoch seconds 24 months after the last change; DynamoDB time to live deletes the record then.
       expiresAt: a.integer()
     })

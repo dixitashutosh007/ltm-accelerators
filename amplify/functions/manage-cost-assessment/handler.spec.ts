@@ -6,6 +6,10 @@ import { describe, it, expect, beforeEach, vi } from 'vitest';
 import type { APIGatewayProxyStructuredResultV2 } from 'aws-lambda';
 import { createHandler } from './handler';
 import { memoryStore, type CostIqAssessmentStore } from './store';
+import { memoryStore as finopsMemoryStore, type FinOpsAssessmentStore } from '../manage-finops-assessment/store';
+import { evaluateFinOpsIqV3 } from '../../../packages/engine-core/src/accelerators/finops-iq/v3/evaluate';
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
 import { setActivityStore } from '../_shared/activity-recorder.mjs';
 import { setPermissionSource, setDomainStore } from '../_shared/access';
 
@@ -14,11 +18,13 @@ const NOW = new Date('2026-11-04T10:00:00Z');
 const OTHER = { email: 'other@example.com', sub: 's2' };
 const ADMIN = { email: 'admin@example.com', sub: 's3', 'cognito:groups': ['Admin'] };
 let store: CostIqAssessmentStore;
+let finopsStore: FinOpsAssessmentStore;
 let handler: ReturnType<typeof createHandler>;
 let activity: { recordAssessment: ReturnType<typeof vi.fn>; removeAssessment: ReturnType<typeof vi.fn> };
 let scored: any[];
 
-setPermissionSource(async () => ({ take: ['cost-iq'] }));
+const NO_FINOPS = 'nofinops@example.com';
+setPermissionSource(async email => (email === NO_FINOPS ? { take: ['cost-iq'] } : { take: ['cost-iq', 'finops-iq'] }));
 setDomainStore({ check: async () => ({ allowed: true, reason: 'baseline_domain' }) });
 
 const event = (method: 'GET' | 'POST', opts: { body?: unknown; query?: Record<string, string>; claims?: Record<string, unknown> } = {}): any => ({
@@ -37,7 +43,8 @@ const save = (over: Record<string, unknown> = {}, action = 'save', claims?: Reco
 beforeEach(() => {
   store = memoryStore();
   scored = [];
-  handler = createHandler(store, () => NOW, args => { scored.push(args); return { headlines: { costIQ: 61 } }; });
+  finopsStore = finopsMemoryStore() as any;
+  handler = createHandler(store, () => NOW, args => { scored.push(args); return { headlines: { costIQ: 61 } }; }, finopsStore);
   activity = { recordAssessment: vi.fn(async () => {}), removeAssessment: vi.fn(async () => {}) };
   setActivityStore(activity as any);
   vi.spyOn(console, 'error').mockImplementation(() => {});
@@ -131,3 +138,104 @@ describe('Cost IQ assessment API', () => {
     expect((await save({ answersJson: JSON.stringify({ blob: 'x'.repeat(210_000) }) })).status).toBe(400);
   });
 });
+
+describe('Cost IQ links a FinOps IQ result as its cloud line (shared value model, stage 2)', () => {
+  const SCENARIOS: any[] = JSON.parse(readFileSync(join(__dirname, '../../../docs/cio-readiness/finops-iq/design/reference-scenarios.json'), 'utf8')).scenarios;
+  const CODE: Record<string, string> = { R: 'run', W: 'walk', C: 'crawl', N: 'not_yet', U: 'unknown' };
+  const REPORTS = ['cost_by_owner', 'forecast', 'anomaly_alerts', 'unit_cost_trend', 'commitment_coverage'];
+  const UN08: Record<string, any> = { run: REPORTS, walk: REPORTS.slice(0, 3), crawl: REPORTS.slice(0, 1), not_yet: [], unknown: 'unknown' };
+  const run = () => {
+    for (const sc of SCENARIOS) {
+      const answers = Object.fromEntries(Object.entries<string>(sc.inputs.answers).map(([q, c]) => [q, q === 'UN-08' ? UN08[CODE[c]] : CODE[c]]));
+      const r = evaluateFinOpsIqV3({ mode: sc.mode, facts: sc.inputs.facts, answers: answers as any, assessmentDate: '2026-10-14' });
+      if (r.value.moneyShown && r.value.status === 'quantified') return r;
+    }
+    throw new Error('no reference scenario shows money');
+  };
+  const finopsRecord = (over: Record<string, unknown> = {}) => ({
+    assessmentId: 'FIQ-0001-done', clientName: 'Example Bank', respondentEmail: ME, status: 'completed', mode: 'workshop', engineVersion: 'x',
+    requestJson: '{}', startedAt: '2026-10-14T00:00:00Z', completedAt: '2026-10-14T01:00:00Z', resultJson: JSON.stringify(run()), ...over
+  }) as any;
+  const link = (claims?: Record<string, unknown>, ids: { a?: string; f?: string } = {}) =>
+    call(event('POST', { body: { action: 'link_finops', assessmentId: ids.a ?? 'CIQ-0001-abcd', finopsAssessmentId: ids.f ?? 'FIQ-0001-done' }, claims }));
+
+  it("lists the caller's completed FinOps IQ assessments, and only theirs", async () => {
+    await finopsStore.create(finopsRecord());
+    await finopsStore.create(finopsRecord({ assessmentId: 'FIQ-0002-draft', status: 'in_progress', resultJson: null }));
+    await finopsStore.create(finopsRecord({ assessmentId: 'FIQ-0003-other', respondentEmail: OTHER.email }));
+    const list = await call(event('GET', { query: { finopsSessions: '1' } }));
+    expect(list.body.data.map((x: any) => x.assessmentId)).toEqual(['FIQ-0001-done']);
+    expect(list.body.data[0].resultJson).toBeUndefined();
+  });
+
+  it("stores FinOps IQ's own figures as the summary, and never recomputes them", async () => {
+    await save();
+    await finopsStore.create(finopsRecord());
+    const r = await link();
+    expect(r.status).toBe(200);
+    const one = await call(event('GET', { query: { assessmentId: 'CIQ-0001-abcd' } }));
+    expect(one.body.data.finopsAssessmentId).toBe('FIQ-0001-done');
+    const summary = JSON.parse(one.body.data.finopsSummaryJson);
+    const engine = run();
+    expect(summary.schema).toBe('finops-iq-cost-summary/1');
+    expect(summary.status).toBe('quantified');
+    expect(summary.cases.expected.grossRunRate.value).toBe(engine.value.totals!.expected.grossRunRate.value);
+    expect(scored).toEqual([]);
+  });
+
+  it('refuses another user\'s FinOps IQ assessment, an unfinished one, and a caller with no FinOps IQ access', async () => {
+    await save();
+    await finopsStore.create(finopsRecord({ assessmentId: 'FIQ-0003-other', respondentEmail: OTHER.email }));
+    await finopsStore.create(finopsRecord({ assessmentId: 'FIQ-0002-draft', status: 'in_progress', resultJson: null }));
+    expect((await link(undefined, { f: 'FIQ-0003-other' })).status).toBe(403);
+    expect((await link(undefined, { f: 'FIQ-0002-draft' })).status).toBe(409);
+    expect((await link(undefined, { f: 'FIQ-9999-none' })).status).toBe(404);
+    const noFinops = { email: NO_FINOPS, sub: 's9' };
+    await call(event('POST', { body: { action: 'save', snapshot: snapshot({ assessmentId: 'CIQ-0009-nofin' }) }, claims: noFinops }));
+    await finopsStore.create(finopsRecord({ assessmentId: 'FIQ-0009-nofin', respondentEmail: NO_FINOPS }));
+    expect((await link(noFinops, { a: 'CIQ-0009-nofin', f: 'FIQ-0009-nofin' })).status).toBe(403);
+    expect((await call(event('GET', { query: { finopsSessions: '1' }, claims: noFinops }))).status).toBe(403);
+    expect(JSON.parse((await call(event('GET', { query: { assessmentId: 'CIQ-0001-abcd' } }))).body.data.finopsSummaryJson ?? 'null')).toBeNull();
+  });
+
+  it("does not let a user link into someone else's Cost IQ assessment", async () => {
+    await save();
+    await finopsStore.create(finopsRecord());
+    await finopsStore.create(finopsRecord({ assessmentId: 'FIQ-0004-oth2', respondentEmail: OTHER.email }));
+    expect((await link(OTHER, { f: 'FIQ-0004-oth2' })).status).toBe(403);
+  });
+
+  it('links after completion without touching the answers or the Cost IQ result', async () => {
+    await save({}, 'complete');
+    await finopsStore.create(finopsRecord());
+    const before = (await call(event('GET', { query: { assessmentId: 'CIQ-0001-abcd' } }))).body.data;
+    expect((await link()).status).toBe(200);
+    const after = (await call(event('GET', { query: { assessmentId: 'CIQ-0001-abcd' } }))).body.data;
+    expect(after.status).toBe('completed');
+    expect(after.answersJson).toBe(before.answersJson);
+    expect(after.resultJson).toBe(before.resultJson);
+    expect(after.finopsAssessmentId).toBe('FIQ-0001-done');
+    expect((await save({ answersJson: JSON.stringify({ A1: 'z' }) })).status).toBe(409);
+  });
+
+  it('lets the owner unlink, which removes the summary', async () => {
+    await save();
+    await finopsStore.create(finopsRecord());
+    await link();
+    expect((await call(event('POST', { body: { action: 'unlink_finops', assessmentId: 'CIQ-0001-abcd' } }))).status).toBe(200);
+    const one = await call(event('GET', { query: { assessmentId: 'CIQ-0001-abcd' } }));
+    expect(one.body.data.finopsAssessmentId ?? null).toBeNull();
+    expect(one.body.data.finopsSummaryJson ?? null).toBeNull();
+  });
+
+  it('keeps the linked summary when the assessment is saved again, and carries nothing consultant-only', async () => {
+    await save();
+    await finopsStore.create(finopsRecord());
+    await link();
+    await save({ answersJson: JSON.stringify({ A1: 'y' }) });
+    const one = await call(event('GET', { query: { assessmentId: 'CIQ-0001-abcd' } }));
+    expect(one.body.data.finopsAssessmentId).toBe('FIQ-0001-done');
+    expect(one.body.data.finopsSummaryJson).not.toContain('"hypothesis"');
+  });
+});
+

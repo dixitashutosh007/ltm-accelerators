@@ -38,6 +38,10 @@
     update: record => post({ action: record.status === 'completed' ? 'complete' : 'save', snapshot: record, progress: progress() }),
     get: assessmentId => request(ENDPOINT + '?assessmentId=' + encodeURIComponent(assessmentId)),
     list: () => request(ENDPOINT),
-    remove: assessmentId => post({ action: 'delete', assessmentId })
+    remove: assessmentId => post({ action: 'delete', assessmentId }),
+    // The cloud line comes from FinOps IQ (one cloud figure per estate): list the caller's completed FinOps IQ assessments, link one, unlink it.
+    finopsSessions: () => request(ENDPOINT + '?finopsSessions=1'),
+    linkFinops: (assessmentId, finopsAssessmentId) => post({ action: 'link_finops', assessmentId, finopsAssessmentId }),
+    unlinkFinops: assessmentId => post({ action: 'unlink_finops', assessmentId })
   });
 })();

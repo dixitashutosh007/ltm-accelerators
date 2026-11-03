@@ -23,6 +23,9 @@ export interface CostIqAssessmentRecord {
   startedAt: string;
   updatedAt: string;
   completedAt?: string | null;
+  /** The FinOps IQ result linked as the cloud line: its id and the versioned summary as it was when linked (JSON). */
+  finopsAssessmentId?: string | null;
+  finopsSummaryJson?: string | null;
   /** Epoch seconds 24 months after the last change; DynamoDB time to live deletes the record then. */
   expiresAt?: number | null;
 }
@@ -36,8 +39,8 @@ export interface CostIqAssessmentStore {
   delete(assessmentId: string): Promise<void>;
 }
 
-export const SUMMARY_FIELDS = 'assessmentId acceleratorId releaseId methodologyVersion status respondentEmail clientName clientSector clientCurrency startedAt updatedAt completedAt expiresAt resultJson';
-export const FIELDS = `${SUMMARY_FIELDS} selectedAreasJson answersJson subjectiveJson`;
+export const SUMMARY_FIELDS = 'assessmentId acceleratorId releaseId methodologyVersion status respondentEmail clientName clientSector clientCurrency startedAt updatedAt completedAt expiresAt resultJson finopsAssessmentId';
+export const FIELDS = `${SUMMARY_FIELDS} selectedAreasJson answersJson subjectiveJson finopsAssessmentId finopsSummaryJson`;
 const PAGE_SIZE = 200, MAX_PAGES = 50;
 
 /** TTL deletes within days, not at once: a record past expiresAt counts as already deleted. */
@@ -86,7 +89,7 @@ export function memoryStore(persist?: { load: () => CostIqAssessmentRecord[]; sa
     async get(id) { const r = items.get(id); return isLive(r) ? copy(r) : null; },
     async listByRespondent(email) {
       return newestFirst([...items.values()].filter(r => r.respondentEmail === email && isLive(r)))
-        .map(({ answersJson, selectedAreasJson, subjectiveJson, ...rest }) => copy(rest) as CostIqAssessmentRecord);
+        .map(({ answersJson, selectedAreasJson, subjectiveJson, finopsSummaryJson, ...rest }) => copy(rest) as CostIqAssessmentRecord);
     },
     async create(record) {
       if (items.has(record.assessmentId)) throw new Error('conditional check failed: record exists');

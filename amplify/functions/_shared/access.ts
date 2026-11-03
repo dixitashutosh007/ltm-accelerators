@@ -82,6 +82,19 @@ export function caller(event: APIGatewayProxyEventV2): { email: string; admin: b
   return { email, admin: groups.includes(process.env.ADMIN_GROUP || 'Admin') || supers.includes(email) };
 }
 
+/**
+ * Whether the caller may use another accelerator as well, for a service that reads one accelerator's saved data on behalf of
+ * another (Cost IQ importing a FinOps IQ result). Permission only: the domain rules were already checked for this request by
+ * withAcceleratorAccess. Fails closed: an unreadable permission list means no.
+ */
+export async function holdsPermission(event: APIGatewayProxyEventV2, tool: string): Promise<boolean> {
+  const who = caller(event);
+  if (!who) return false;
+  if (who.admin) return true;
+  try { return grants(await source(who.email), tool); }
+  catch (err: any) { console.error(`[access] permissions unavailable for ${tool}:`, err?.message); return false; }
+}
+
 export function withAcceleratorAccess(tool: string, inner: (event: APIGatewayProxyEventV2) => Promise<APIGatewayProxyResultV2>) {
   return async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> => {
     if ((event.requestContext?.http?.method || '') === 'OPTIONS') return inner(event);

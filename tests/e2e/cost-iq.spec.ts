@@ -134,5 +134,38 @@ test.describe('Cost IQ', () => {
     expect(await labels('OTHER')).toEqual(['Below US$100M', 'US$100M–500M']);
     expect(world.pageErrors).toEqual([]);
   });
+
+  test('the result screen says the cloud line is not quantified, offers a completed FinOps IQ assessment, and shows its summary once linked', async ({ page, context, world }) => {
+    await signedIn(context, permitted(makeIdToken('consultant@ltm.com')));
+    const linked: any[] = [];
+    let summary: string | null = null;
+    const stored = { assessmentId: 'CIQ-cloudtest-1', acceleratorId: 'cost-iq', releaseId: 'r', methodologyVersion: 'm', status: 'draft', respondentEmail: 'consultant@ltm.com', selectedAreasJson: '[]', answersJson: '{}', startedAt: '2026-11-04T00:00:00Z', updatedAt: '2026-11-04T00:00:00Z' };
+    const summaryJson = JSON.stringify({
+      schema: 'finops-iq-cost-summary/1', status: 'quantified', currency: 'EUR', label: 'Indicative range', assessmentDate: '2026-10-14',
+      boundaryStatement: 'Cloud, AI and measured SaaS licence value in this report come from FinOps IQ.',
+      cases: Object.fromEntries(['conservative', 'expected', 'upper'].map((c, i) => [c, Object.fromEntries(['netRunRate', 'netYear1', 'net3Year'].map(k => [k, { value: (i + 1) * 100000 }]))])),
+      globalCap: { share: { value: 0.29 }, source: { citation: 'Flexera State of the Cloud', year: '2026', sample: 'n = 753' } }
+    });
+    world.on('GET', ASSESSMENT, ({ query }) => {
+      if (query.finopsSessions) return { body: { ok: true, data: [{ assessmentId: 'FIQ-1', clientName: 'Example Bank', completedAt: '2026-10-14T01:00:00Z' }] } };
+      if (query.assessmentId) return { body: { ok: true, data: { ...stored, finopsSummaryJson: summary } } };
+      return { body: { ok: true, data: [] } };
+    });
+    world.on('POST', ASSESSMENT, ({ body }) => {
+      if (body.action === 'link_finops') { linked.push(body); summary = summaryJson; return { body: { ok: true, data: stored } }; }
+      return { body: { ok: true, data: { ...body.snapshot, respondentEmail: 'consultant@ltm.com' } } };
+    });
+    world.on('POST', '/api/evaluate/cost-iq', ({ body }) => ({ body: evaluateCostIq({ answers: body.answers, scope: body.scope }) }));
+    await page.goto('/cost-iq-v10');
+    await page.getByRole('button', { name: 'Load Healthy' }).click();
+    await expect(page.getByText('Not quantified.')).toBeVisible({ timeout: 15000 });
+    await page.evaluate("savedAssessment = { assessmentId: 'CIQ-cloudtest-1' }; loadCloudLine()");
+    await expect(page.getByRole('button', { name: 'Use this result' })).toBeVisible();
+    await page.getByRole('button', { name: 'Use this result' }).click();
+    await expect(page.getByText('Cloud, AI and measured SaaS licence value in this report come from FinOps IQ.')).toBeVisible();
+    expect(linked).toEqual([{ action: 'link_finops', assessmentId: 'CIQ-cloudtest-1', finopsAssessmentId: 'FIQ-1' }]);
+    await expect(page.getByRole('cell', { name: /300,?000/ }).first()).toBeVisible();
+    expect(world.pageErrors).toEqual([]);
+  });
 });
 

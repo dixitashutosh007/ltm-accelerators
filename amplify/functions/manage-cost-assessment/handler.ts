@@ -5,6 +5,12 @@
  *   GET  /api/cost-iq/assessment?assessmentId=...   one assessment, with answers and, once completed, its result
  *   POST /api/cost-iq/assessment  { action: 'save' | 'complete', snapshot, progress }
  *   POST /api/cost-iq/assessment  { action: 'delete', assessmentId }          permanent
+ *   GET  /api/cost-iq/assessment?finopsSessions=1   the caller's completed FinOps IQ assessments, to pick one as the cloud line
+ *   POST /api/cost-iq/assessment  { action: 'link_finops', assessmentId, finopsAssessmentId }   store FinOps IQ's versioned summary
+ *   POST /api/cost-iq/assessment  { action: 'unlink_finops', assessmentId }
+ * One estate has one cloud figure, computed by FinOps IQ: Cost IQ keeps only the summary it was given and never recomputes it.
+ * Linking needs access to both accelerators and to both records (owner or Admin). It is allowed after completion: the cloud line is
+ * an import, and the answers and Cost IQ's own result stay immutable.
  * A record belongs to the address in the caller's token, never one named in the body; Admins may read or delete any (records saved
  * before CQ1 have no owner and only Admins can reach them). The result is
  * computed here on completion from the saved answers, never taken from the browser. A completed assessment is immutable.
@@ -14,11 +20,13 @@ import type { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda
 import { randomUUID } from 'node:crypto';
 import { corsHeaders } from '../_shared/http';
 import { authorized, canAccess, parseBody, userEmail } from '../_shared/resilience-data';
-import { withAcceleratorAccess } from '../_shared/access';
+import { holdsPermission, withAcceleratorAccess } from '../_shared/access';
 import { recordAssessment, removeAssessmentActivity } from '../_shared/activity-recorder.mjs';
 import { progressFor } from '../_shared/progress';
 import { expiresAt } from '../../../packages/engine-core/src/accelerators/finops-iq/v3/retention';
 import { evaluateCostIq } from '../../../packages/engine-core/src/accelerators/cost-iq/evaluate.cjs';
+import { costIqSummary } from '../../../packages/engine-core/src/accelerators/finops-iq/v3/cost-iq-summary';
+import { appSyncStore as finopsAppSyncStore, type FinOpsAssessmentStore } from '../manage-finops-assessment/store';
 import { appSyncStore, type CostIqAssessmentRecord, type CostIqAssessmentStore } from './store';
 
 const ID = /^[A-Za-z0-9_-]{8,80}$/;
@@ -37,7 +45,7 @@ function parseJson(raw: unknown, kind: 'array' | 'object', field: string): { ok:
   return { ok: true, json: raw, value };
 }
 
-export function createHandler(store: CostIqAssessmentStore, now: () => Date = () => new Date(), score: (args: any) => any = evaluateCostIq) {
+export function createHandler(store: CostIqAssessmentStore, now: () => Date = () => new Date(), score: (args: any) => any = evaluateCostIq, finops: FinOpsAssessmentStore = finopsAppSyncStore) {
   return async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> => {
     const requestId = event.requestContext?.requestId || randomUUID();
     const respond = (statusCode: number, body: Record<string, unknown>): APIGatewayProxyResultV2 => ({
@@ -50,6 +58,11 @@ export function createHandler(store: CostIqAssessmentStore, now: () => Date = ()
     if (!authorized(event)) return respond(403, { ok: false, error: 'forbidden' });
     try {
       if (method === 'GET') {
+        if (event.queryStringParameters?.finopsSessions) {
+          if (!(await holdsPermission(event, 'finops-iq'))) return respond(403, { ok: false, error: 'finops_access_denied' });
+          const done = (await finops.listByRespondent(userEmail(event))).filter(f => f.status === 'completed');
+          return respond(200, { ok: true, data: done.map(f => ({ assessmentId: f.assessmentId, clientName: f.clientName, mode: f.mode, completedAt: f.completedAt ?? null })) });
+        }
         const assessmentId = event.queryStringParameters?.assessmentId;
         if (!assessmentId) return respond(200, { ok: true, data: await store.listByRespondent(userEmail(event)) });
         const item = await store.get(assessmentId);
@@ -74,7 +87,31 @@ export function createHandler(store: CostIqAssessmentStore, now: () => Date = ()
         console.info('[ManageCostAssessment] deleted', { requestId, assessmentId: id });
         return respond(200, { ok: true, data: { assessmentId: id, deleted: true } });
       }
-      if (action !== 'save' && action !== 'complete') return respond(400, { ok: false, error: 'action: expected save, complete or delete' });
+      if (action === 'link_finops' || action === 'unlink_finops') {
+        const id = body?.assessmentId;
+        if (typeof id !== 'string' || !id) return respond(400, { ok: false, error: `${action} requires assessmentId.` });
+        const item = await store.get(id);
+        if (!item) return respond(404, { ok: false, error: 'assessment_not_found' });
+        if (!canAccess(event, item.respondentEmail)) return respond(403, { ok: false, error: 'assessment_access_denied' });
+        if (!item.respondentEmail) return respond(409, { ok: false, error: 'legacy_assessment_read_only' });
+        const at = now();
+        if (action === 'unlink_finops') {
+          const data = await store.update({ assessmentId: id, finopsAssessmentId: null, finopsSummaryJson: null, updatedAt: at.toISOString(), expiresAt: expiresAt(at) });
+          return respond(200, { ok: true, data });
+        }
+        const fid = body?.finopsAssessmentId;
+        if (typeof fid !== 'string' || !fid) return respond(400, { ok: false, error: 'link_finops requires finopsAssessmentId.' });
+        if (!(await holdsPermission(event, 'finops-iq'))) return respond(403, { ok: false, error: 'finops_access_denied' });
+        const source = await finops.get(fid);
+        if (!source) return respond(404, { ok: false, error: 'finops_assessment_not_found' });
+        if (!canAccess(event, source.respondentEmail)) return respond(403, { ok: false, error: 'finops_assessment_access_denied' });
+        if (source.status !== 'completed' || !source.resultJson) return respond(409, { ok: false, error: 'finops_assessment_not_completed' });
+        const summary = costIqSummary(JSON.parse(source.resultJson));
+        const data = await store.update({ assessmentId: id, finopsAssessmentId: fid, finopsSummaryJson: JSON.stringify(summary), updatedAt: at.toISOString(), expiresAt: expiresAt(at) });
+        console.info('[ManageCostAssessment] linked FinOps IQ result', { requestId, assessmentId: id, finopsAssessmentId: fid });
+        return respond(200, { ok: true, data });
+      }
+      if (action !== 'save' && action !== 'complete') return respond(400, { ok: false, error: 'action: expected save, complete, delete, link_finops or unlink_finops' });
 
       const s = body?.snapshot;
       if (!s || typeof s !== 'object' || Array.isArray(s)) return respond(400, { ok: false, error: 'snapshot is required.' });
