@@ -270,3 +270,19 @@ The rule (BOUNDARY.md section 3): one estate has **one cloud figure**, computed 
 
 Not verified by the agent: FOCUS column text, IAS 21, ISO 4217, ISIC section titles and the AED and SAR pegs in primary form.
 
+### CQ3b slice 7: batch 3 decisions and the global-coverage questions applied (4 Nov 2026)
+
+The owner accepted the recommendations on everything held from batch 3 and on the sourcing search (decisions A to C).
+
+- **Every question now scores or is labelled context.** 99 questions: **63 score, 36 are context, none does neither** (a test fails if one appears).
+- **M&A:** ADP-49 gained "No acquisition, merger or divestiture in the last three years" (scores nothing); ADP-50 and both F-020 triggers apply only after a transaction. The 20 percent F-020 threshold stays, recorded as an LTM heuristic.
+- **Geography:** ADP-51 and ADP-52 apply only to a multi-country client, set by the new countries question (CTX-05).
+- **Five new context questions:** CTX-01 reporting currency, CTX-02 share billed in another currency, CTX-03 regions of operation, CTX-04 onshore share, CTX-05 number of countries. None can score; a test shows the headlines and every dimension are identical with and without them.
+- **CORE-02** gained education, media and entertainment, and natural resources.
+- **CORE-03 and CORE-04 (revenue and technology spend bands)** keep their option IDs and now show their labels in the reporting currency chosen in CTX-01, for EUR, GBP, CHF, CAD, AUD, JPY, CNY, INR, SGD, BRL and ZAR. AED, SAR and Other fall back to US dollar bands. **The tables were regenerated from the ECB daily XML (rates dated 2 Nov 2026) and match the agent's tables exactly.** Conversion happens only when the table is built; the engine scores no money. The rate source, date and rounding are in `settings.currencyBands`, which the report's assumption register (CQ5) will print; the page tells the client the bands are converted at the ECB rate of that date.
+- **Label and wording changes:** ADP-47 rated LATE and RENEWAL equal; ADP-57's option labels read as words ("Data and AI"); ADP-55 kept as context; ADP-58 dropped (it duplicated CORE-45 and ADP-55).
+- **The "hypothesis versus findings" comparison has no consumer in the code.** `settings.hypothesisComparison` names CORE-09 only and nothing reads it, so ADP-55's answer feeds nothing yet. It is built with the report (CQ5).
+- **Sourcing search for non-cloud levers (decisions):** A, do not use Flexera ITAM 2023 as a software ceiling (show it as a cited context line at most, and wait for a current-year source); B, show public-sector operations-and-maintenance shares as labelled context for application rationalisation, labelled as US federal and one UK department; C, accept that most non-cloud levers stay evidence-based and give few figures in an executive run.
+
+**CQ3b still open:** the hand-off to FinOps IQ and its import (tasks 8 and 9; stage 2 of the value model), the CI guard (task 10), a cited basis for each kept question and a mapping of the 16 dimensions to a published cost taxonomy (task 11; most maps rest on an LTM heuristic today), and the coverage matrix (task 12).
+

@@ -9,7 +9,7 @@ const metadata = adapter.metadata();
 const questionSet = adapter.questions();
 
 assert.equal(metadata.product, 'Cost IQ');
-assert.equal(metadata.baseline.questions, 95);
+assert.equal(metadata.baseline.questions, 99);
 // One count: the API, the metadata and the release manifest all come from the bank (CQ3b).
 assert.equal(metadata.baseline.questions, adapter.RELEASE_MANIFEST.baseline.questions);
 assert.equal(metadata.baseline.dimensions, 16);
@@ -18,7 +18,7 @@ assert.equal(metadata.baseline.recommendations, 10);
 assert.equal(metadata.baseline.rules, 38);
 assert.equal(metadata.finops, undefined, 'FinOps content moved to FinOps IQ (CQ3a)');
 assert.ok(!questionSet.questions.some(q => /^FIN-/.test(q.id)));
-assert.equal(questionSet.questions.length, 95);
+assert.equal(questionSet.questions.length, 99);
 assert.equal(questionSet.dimensions.length, 16);
 
 const empty = adapter.evaluateCostIq({ answers: {} });

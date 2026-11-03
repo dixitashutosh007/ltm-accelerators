@@ -254,13 +254,33 @@
         "triggerOptions": [
           "LATE",
           "NONE"
-        ]
+        ],
+        "applicableWhen": {
+          "questionId": "ADP-49",
+          "anyOf": [
+            "TRACKED",
+            "GOVERNED",
+            "SELECTIVE",
+            "LATE",
+            "NONE"
+          ]
+        }
       },
       {
         "questionId": "ADP-50",
         "type": "numeric",
         "operator": "gt",
-        "value": 20
+        "value": 20,
+        "applicableWhen": {
+          "questionId": "ADP-49",
+          "anyOf": [
+            "TRACKED",
+            "GOVERNED",
+            "SELECTIVE",
+            "LATE",
+            "NONE"
+          ]
+        }
       }
     ],
     "F-017": [

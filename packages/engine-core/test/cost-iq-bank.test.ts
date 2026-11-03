@@ -25,7 +25,7 @@ const triggers = new Set(Object.values(calibration).flat().map((t: any) => t.que
 // Still to score or label in CQ3b (BOUNDARY.md task 6). Remove an ID when it is fixed; never add one. All six wait for an owner
 // decision (scoring-batch-3.md): ADP-47 (option order), ADP-51 and 52 (a gate on the new countries question), ADP-55, 57 and 58
 // (comparison with CORE-09 and CORE-45, option labels, drop).
-const INERT = ['ADP-47', 'ADP-51', 'ADP-52', 'ADP-55', 'ADP-57', 'ADP-58'];
+const INERT: string[] = [];
 
 describe('Cost IQ question bank', () => {
   it('has one count: the API, the metadata and the release manifest agree, and no FIN question remains', () => {
@@ -72,7 +72,7 @@ describe('Cost IQ question bank', () => {
     const inert = questions.filter((q: any) => !isContext(q) && !scores(q) && !triggers.has(q.id)).map((q: any) => q.id);
     const extra = inert.filter((id: string) => !INERT.includes(id));
     expect(extra, 'new inert questions').toEqual([]);
-    expect(inert.length).toBeLessThanOrEqual(6);
+    expect(inert.length).toBeLessThanOrEqual(0);
   });
 
   it('returns no FinOps overlay fields', () => {
@@ -181,5 +181,59 @@ describe('Cost IQ question bank', () => {
       const ids = q(id).options.map((o: any) => o.id);
       expect(engine.scoreQuestion(q(id), ids[0], {}), id).toBeGreaterThan(engine.scoreQuestion(q(id), ids[ids.length - 1], {}));
     }
+  });
+
+  it('applies the owner decisions on batch 3 (4 Nov 2026): every question scores, is context, or triggers a finding', () => {
+    const q = (id: string) => questions.find((x: any) => x.id === id);
+    expect(q('ADP-58')).toBeUndefined();
+    expect(engine.scoreQuestion(q('ADP-47'), 'LATE', {})).toBe(engine.scoreQuestion(q('ADP-47'), 'RENEWAL', {}));
+    expect(q('ADP-57').options.map((o: any) => o.label)).toContain('Data and AI');
+    expect(q('CORE-02').options.map((o: any) => o.id)).toEqual(expect.arrayContaining(['EDUCATION', 'MEDIA_ENTERTAINMENT', 'NATURAL_RESOURCES']));
+    for (const id of ['ADP-55', 'ADP-57']) expect(isContext(q(id)), id).toBe(true);
+  });
+
+  it('adds the five global-coverage context questions, none of which can score', () => {
+    for (const id of ['CTX-01', 'CTX-02', 'CTX-03', 'CTX-04', 'CTX-05']) {
+      const x = questions.find((q: any) => q.id === id);
+      expect(x, id).toBeDefined();
+      expect(isContext(x), id).toBe(true);
+      expect(x.scoring.dimensionIds, id).toBeUndefined();
+    }
+    const a = adapter.evaluateCostIq({ answers: { 'CTX-01': 'EUR', 'CTX-02': 'GT50', 'CTX-03': ['EU', 'INDIA'], 'CTX-04': 'LT30', 'CTX-05': 'GT20' } });
+    const b = adapter.evaluateCostIq({ answers: {} });
+    expect(a.headlines).toEqual(b.headlines);
+    expect(a.dimensions.map((d: any) => d.score)).toEqual(b.dimensions.map((d: any) => d.score));
+  });
+
+  it('shows the Geography questions only to a multi-country client, and M&A follow-ups only after a transaction', () => {
+    const q = (id: string) => questions.find((x: any) => x.id === id);
+    expect(q('ADP-51').applicableWhen).toEqual({ questionId: 'CTX-05', anyOf: ['2_5', '6_20', 'GT20'] });
+    const score = (answers: object, dim: string) => adapter.evaluateCostIq({ answers }).dimensions.find((d: any) => d.id === dim).score;
+    expect(score({ 'CTX-05': 'ONE', 'ADP-51': 'LOW' }, 'COST-01')).toBeNull();
+    // A client with no transaction: the slider cannot lift COST-10 and F-020 stays quiet.
+    const ids = (answers: object) => adapter.evaluateCostIq({ answers }).findings.map((f: any) => f.id);
+    expect(ids({ 'ADP-49': 'NOT_APPLICABLE', 'ADP-50': 40 })).not.toContain('F-020');
+    expect(ids({ 'ADP-49': 'NONE' })).toContain('F-020');
+    expect(engine.scoreQuestion(q('ADP-49'), 'NOT_APPLICABLE', {})).toBeNull();
+  });
+
+  it('labels the size classes in the reporting currency from the ECB table, keeps the option IDs, and falls back to US dollars', () => {
+    const q3 = questions.find((x: any) => x.id === 'CORE-03');
+    const q4 = questions.find((x: any) => x.id === 'CORE-04');
+    expect(q3.options.map((o: any) => o.id)).toEqual(['LT100M', '100M_500M', '500M_1B', '1B_5B', '5B_25B', 'GT25B', 'UNKNOWN']);
+    expect(q3.labelCurrencyQuestion).toBe('CTX-01');
+    expect(Object.keys(q3.labelsByCurrency).sort()).toEqual(['AUD', 'BRL', 'CAD', 'CHF', 'CNY', 'EUR', 'GBP', 'INR', 'JPY', 'SGD', 'ZAR']);
+    expect(q3.labelsByCurrency.EUR.LT100M).toBe('Below EUR 89M');
+    expect(q4.labelsByCurrency.GBP['5M_25M']).toBe('GBP 3.7M to 19M');
+    for (const cur of Object.keys(q3.labelsByCurrency)) {
+      expect(Object.keys(q3.labelsByCurrency[cur].CORE_03 ?? q3.labelsByCurrency[cur]).length).toBe(6);
+      expect(Object.keys(q4.labelsByCurrency[cur]).length).toBe(7);
+    }
+    const s = (adapter.questions() as any).questions;
+    expect(s.find((x: any) => x.id === 'CORE-03').labelsRateDate).toBe('2026-11-02');
+    // The rate table says where it came from and that nothing is converted at run time.
+    const { currencyBands } = require('../src/accelerators/cost-iq/canon/config/master-v6.6.json').settings;
+    expect(currencyBands.rateSource).toContain('ECB euro foreign exchange reference rates');
+    expect(currencyBands.usdFallback).toEqual(['USD', 'AED', 'SAR', 'OTHER']);
   });
 });

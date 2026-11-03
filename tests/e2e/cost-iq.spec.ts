@@ -117,4 +117,22 @@ test.describe('Cost IQ', () => {
     await expect(page.getByText('Confidence', { exact: true })).toHaveCount(0);
     expect(world.pageErrors).toEqual([]);
   });
+
+  test('revenue and spend bands follow the reporting currency, and fall back to US dollars', async ({ page, context, world }) => {
+    await signedIn(context, permitted(makeIdToken('consultant@ltm.com')));
+    world.on('GET', ASSESSMENT, () => ({ body: { ok: true, data: [] } }));
+    await page.goto('/cost-iq-v10');
+    await expect(page.getByRole('button', { name: /Configure diagnostic/ })).toBeVisible();
+    const labels = (currency?: string) => page.evaluate(`(function(c){
+      answers = c ? { 'CTX-01': c } : {};
+      const q = allQuestions.find(x => x.id === 'CORE-03');
+      return q.options.map(o => optionLabel(q, o)).slice(0, 2);
+    })(${JSON.stringify(currency ?? null)})`);
+    expect(await labels()).toEqual(['Below US$100M', 'US$100M–500M']);
+    expect(await labels('EUR')).toEqual(['Below EUR 89M', 'EUR 89M to 450M']);
+    expect(await labels('AED')).toEqual(['Below US$100M', 'US$100M–500M']);
+    expect(await labels('OTHER')).toEqual(['Below US$100M', 'US$100M–500M']);
+    expect(world.pageErrors).toEqual([]);
+  });
 });
+
