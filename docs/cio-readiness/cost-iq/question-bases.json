@@ -1,0 +1,2189 @@
+{
+ "meta": {
+  "accelerator": "Cost IQ",
+  "bank": "master-v6.6.json (99 questions: 63 score, 36 context)",
+  "date": "2026-11-03",
+  "author": "finops-cost-lead (advises; the product owner approves)",
+  "definitions": {
+   "kind": "As counted by the bank test: score = some real answer returns a number from the engine; context = labelled signal-only, hypothesis-signal, constraint-signal or tradeoff-signal. CORE-03 and CORE-04 count as score in the bank but feed no dimension and cannot score a band ID (see their notes).",
+   "sourceType": "published-framework = the question's construct or direction follows a published framework or guidance (never the numeric steps); published-research = rests on a published survey with stated sample; standard = a formal standard or open specification; LTM-heuristic = LTM's own judgement, with the reasoning stated. The 100/80/60/40/20 steps and every threshold are LTM conventions in all cases.",
+   "verified": "true only when every source listed for the question was opened by the author on the date checked; a question with no source listed is verified false. Some sources were read through a summarising fetch tool or as a committee or summary page rather than the full text: each source's whatItSays states what was read."
+  },
+  "notOpened": [
+   "ISO/IEC 20000-1:2018, ISO 22301:2019 and the iso.org catalogue pages (HTTP 403)",
+   "ITIL 4 practice guides (AXELOS pages return no practice text)",
+   "COBIT 2019 objective text (ISACA paywall; only the objective count was visible)",
+   "ISO/IEC 19770-1 clauses (only the JTC 1/SC 7 committee page)",
+   "IAS 21 text (summary page only)",
+   "GAO-20-195G beyond its product page (no mention of rebaselining there)",
+   "NAO Government approach to technology suppliers (Jan 2025): summary page had no lock-in or contract finding I could use"
+  ]
+ },
+ "questions": [
+  {
+   "id": "CORE-01",
+   "kind": "context",
+   "basis": "Records which parts of the technology estate carry material cost and routes applicability; it is never scored. The FinOps Framework 2026 lists five technology categories (Public Cloud, SaaS, Data Center, Data Cloud Platforms, AI) and the TBM Taxonomy 5.0.1 splits spend into cost pools (for example Cloud Services, Software & SaaS, Hardware, Data Center Facilities, Telecom, Staffing, Outside Services) and resource towers, so the footprint idea has published precedent.",
+   "sourceType": "published-framework",
+   "sources": [
+    {
+     "title": "FinOps Framework 2026 (announcement)",
+     "publisher": "FinOps Foundation",
+     "year": 2026,
+     "url": "https://www.finops.org/insights/2026-finops-framework/",
+     "whatItSays": "Published 19 Mar 2026 under CC BY 4.0. Technology categories listed: Public Cloud, SaaS, Data Center, Data Cloud Platforms and AI. A Scope is a segment of spending that can span technology categories, tied to business constructs. New capability Executive Strategy Alignment; six capabilities renamed.",
+     "verified": true,
+     "checked": "2026-11-03"
+    },
+    {
+     "title": "FinOps Framework: Scopes",
+     "publisher": "FinOps Foundation",
+     "year": 2026,
+     "url": "https://www.finops.org/framework/scopes/",
+     "whatItSays": "A Scope is a segment of spending organised around business context (product, cost centre, environment) that determines how FinOps is applied; spend can span categories beyond public cloud, for example a hybrid Kubernetes estate across public cloud and an on-premises data centre.",
+     "verified": true,
+     "checked": "2026-11-03"
+    },
+    {
+     "title": "TBM Taxonomy 5.0.1 (cost pools, resource towers, solutions, consumers)",
+     "publisher": "TBM Council",
+     "year": 2025,
+     "url": "https://www.tbmcouncil.org/taxonomy/",
+     "whatItSays": "Released 18 Jul 2025. Four layers: Technology Cost Pools (Staffing, Outside Services, Cloud Services, Hardware, Software & SaaS, Data Center Facilities, Telecom, Misc Costs, Cross Charges), Technology Resource Towers (Data Center, Compute, Storage, Network, Application, Data, Delivery, Tech Management, Security, Risk & Compliance, Smart Devices, End User), Technology Solutions and Technology Consumers. Read through a summarising fetch tool; the page text I could see states no licence or reuse terms.",
+     "verified": true,
+     "checked": "2026-11-03"
+    },
+    {
+     "title": "State of FinOps 2026 survey (press release)",
+     "publisher": "FinOps Foundation / Linux Foundation",
+     "year": 2026,
+     "url": "https://www.linuxfoundation.org/press/state-of-finops-survey-ai-value-and-skills-top-priorities-as-finops-matures-across-technology-value-98-manage-ai-90-saas-64-licensing-48-data-center-1",
+     "whatItSays": "98% of respondents manage AI spend, 90% SaaS, 64% licensing, 48% data centres (n = 1,192): the practice scope is wider than public cloud, which supports asking about the whole footprint.",
+     "verified": true,
+     "checked": "2026-11-03"
+    }
+   ],
+   "heuristicReasoning": "The 15 option labels are LTM's own list. Rough correspondence: ON_PREM and COLO to TBM Hardware, Data Center Facilities and the Data Center and Compute towers; PRIVATE_CLOUD and PUBLIC_CLOUD to Cloud Services; SAAS and SOFTWARE to Software & SaaS; NETWORK to Telecom and the Network tower; DATA to the Data and Storage towers; SECURITY to the Security tower; WORKFORCE to Staffing; EXTERNAL to Outside Services; END_USER to the End User tower; AI to the FinOps AI category. VMWARE has no TBM or FinOps counterpart (it is a platform choice, not a cost pool).",
+   "verified": true,
+   "notes": "Gates applicability for ADP-09 to 14, 31, 32, 35 to 38 and cloud findings F-005, F-006, F-019. The correspondence to TBM is mine and has not been confirmed by TBM Council; TBM page read through a summarising fetch tool. Earlier notes said the TBM towers were members-only: the public taxonomy page (5.0.1) lists them. Check TBM Council reuse terms before showing TBM names to clients (no terms were visible)."
+  },
+  {
+   "id": "CORE-02",
+   "kind": "context",
+   "basis": "Industry choice used only for wording and routing; it never changes a score. The 15 options are a pragmatic buyer list, not a statistical classification: UN ISIC Rev.5 is the reference classification, and most options correspond to one or two ISIC sections (for example mining and quarrying to Natural Resources, electricity and gas supply to Energy and Utilities, publishing and broadcasting to Media and Entertainment, financial and insurance activities to Banking and Insurance).",
+   "sourceType": "LTM-heuristic",
+   "sources": [
+    {
+     "title": "ISIC Revision 5: Introduction (11 Mar 2024)",
+     "publisher": "United Nations Statistics Division",
+     "year": 2024,
+     "url": "https://unstats.un.org/unsd/classifications/Econ/Download/In%20Text/ISIC5_Intro_11Mar2024.pdf",
+     "whatItSays": "ISIC Rev.5 codes its highest-level categories as lettered sections; those named in the text I read include A Agriculture, forestry and fishing, B Mining and quarrying, C Manufacturing, D Electricity, gas, steam and air conditioning supply, J Publishing, broadcasting, and content production and distribution activities, K Telecommunications, computer programming and related activities (title truncated in my extract), and L Financial and insurance activities.",
+     "verified": true,
+     "checked": "2026-11-03"
+    }
+   ],
+   "heuristicReasoning": "A buyer-recognisable list is easier for a CIO to answer in seconds than an ISIC section list; the cost is that groups such as Public Sector and Professional Services span several ISIC sections and Technology/Telecom straddle section K. Chosen for recognition, not for statistical comparability.",
+   "verified": true,
+   "notes": "Verified in the ISIC Rev.5 introduction that sections A, B, C, D, J, K and L exist with the names quoted; I did not check every option against every section. Where upstream oil and gas sits (Energy and Utilities or Natural Resources) is still an owner choice. Nothing in the engine reads this answer today except by routing text (matrix shows no gate on it)."
+  },
+  {
+   "id": "CTX-01",
+   "kind": "context",
+   "basis": "Reporting-currency fact so bands and figures show in the client's own currency; option IDs are ISO 4217 codes, and \"reporting currency\" follows IAS 21 vocabulary (presentation currency) without applying its accounting rules.",
+   "sourceType": "standard",
+   "sources": [
+    {
+     "title": "ISO 4217 currency codes (SIX, maintenance agency)",
+     "publisher": "SIX Group",
+     "year": 2026,
+     "url": "https://www.six-group.com/en/products-services/financial-information/data-standards.html",
+     "whatItSays": "SIX is the official Maintenance Agency for the ISO 4217 currency codes, used in IT systems for trade, commerce, banking and the public sector. The iso.org page itself was not opened.",
+     "verified": true,
+     "checked": "2026-11-03"
+    },
+    {
+     "title": "IAS 21 The Effects of Changes in Foreign Exchange Rates (IFRS Foundation summary page)",
+     "publisher": "IFRS Foundation",
+     "year": 2026,
+     "url": "https://www.ifrs.org/issued-standards/list-of-standards/ias-21-the-effects-of-changes-in-foreign-exchange-rates/",
+     "whatItSays": "IAS 21 covers foreign currency transactions, functional currency (the currency of the primary economic environment) and presentation currency (an entity may present in any currency). I read the summary page, not the standard text.",
+     "verified": true,
+     "checked": "2026-11-03"
+    }
+   ],
+   "heuristicReasoning": "The choice of 14 currencies plus Other is LTM's, built from the markets in coverage.ts and the owner's focus; it is a list of convenience, not a standard list. No score or finding depends on it.",
+   "verified": true,
+   "notes": "ISO 4217 confirmed through SIX (maintenance agency) not iso.org (not opened). IAS 21 summary page read, not the standard text. AED and SAR currently fall back to USD bands in CORE-03 and CORE-04."
+  },
+  {
+   "id": "CORE-03",
+   "kind": "score",
+   "basis": "Size class by annual revenue, used only to place the client; the bands are LTM size classes whose labels are converted from the original US dollar edges at the ECB euro reference rate dated 2 Nov 2026 and rounded to two significant figures.",
+   "sourceType": "LTM-heuristic",
+   "sources": [
+    {
+     "title": "ECB euro foreign exchange reference rates",
+     "publisher": "European Central Bank",
+     "year": 2026,
+     "url": "https://www.ecb.europa.eu/stats/policy_and_exchange_rates/euro_reference_exchange_rates/html/index.en.html",
+     "whatItSays": "Reference rates are published about 16:00 CET on working days, for information purposes only; the ECB strongly advises against using them for transactions.",
+     "verified": true,
+     "checked": "2026-11-03"
+    }
+   ],
+   "heuristicReasoning": "Seven bands (with Unknown) are a convenience for sizing a conversation. No published size taxonomy was used, so the edges carry no external authority; conversion is a labelled, dated assumption (settings.currencyBands), not a market statement.",
+   "verified": true,
+   "notes": "FLAG: the bank counts this as a scoring question (normalize range-band) but it feeds no dimension (no dimensionIds) and the answer is a band ID string that range-band does not accept, so it contributes nothing to any score. Treat as context. ECB says its rates are for information only and advises against using them for transactions; the labels are not transactions but the report must say so."
+  },
+  {
+   "id": "CORE-04",
+   "kind": "score",
+   "basis": "Technology-spend band for the assessment scope, used to place the client; labels converted from US dollar edges at the ECB reference rate dated 2 Nov 2026.",
+   "sourceType": "LTM-heuristic",
+   "sources": [
+    {
+     "title": "ECB euro foreign exchange reference rates",
+     "publisher": "European Central Bank",
+     "year": 2026,
+     "url": "https://www.ecb.europa.eu/stats/policy_and_exchange_rates/euro_reference_exchange_rates/html/index.en.html",
+     "whatItSays": "Reference rates are published about 16:00 CET on working days, for information purposes only; the ECB strongly advises against using them for transactions.",
+     "verified": true,
+     "checked": "2026-11-03"
+    }
+   ],
+   "heuristicReasoning": "Eight bands are an LTM convenience. No published technology-spend-to-revenue distribution was used and none is claimed.",
+   "verified": true,
+   "notes": "Same flag as CORE-03: counted as scoring but feeds no dimension and cannot score a string band ID. It is the base for CORE-05 reconciliation. Spend share of revenue could be derived from CORE-03 and CORE-04 only as a labelled indicative range."
+  },
+  {
+   "id": "CTX-02",
+   "kind": "context",
+   "basis": "The FOCUS specification already separates the currency a resource was priced in (PricingCurrency) from the currency a charge was billed in (BillingCurrency), which is why the question says \"invoiced or priced\". It records currency exposure as a caveat on figures and never as a score.",
+   "sourceType": "standard",
+   "sources": [
+    {
+     "title": "FOCUS Specification 1.2: BillingCurrency",
+     "publisher": "FinOps Foundation (FOCUS)",
+     "year": 2025,
+     "url": "https://focus.finops.org/docs/specification/v1-2/columns/cost-and-usage/billing-currency/",
+     "whatItSays": "BillingCurrency: \"Represents the currency that a charge was billed in.\" Specification text is CC BY 4.0. (The site lists v1.4 as latest; v1.2 is the version read.)",
+     "verified": true,
+     "checked": "2026-11-03"
+    },
+    {
+     "title": "FOCUS Specification 1.2: PricingCurrency",
+     "publisher": "FinOps Foundation (FOCUS)",
+     "year": 2025,
+     "url": "https://focus.finops.org/docs/specification/v1-2/columns/cost-and-usage/pricing-currency/",
+     "whatItSays": "PricingCurrency: \"The national or virtual currency denomination that a resource or service was priced in.\" Price currency and billing currency are separate columns.",
+     "verified": true,
+     "checked": "2026-11-03"
+    }
+   ],
+   "heuristicReasoning": "The share bands (under 5, 5 to 15, 15 to 30, 30 to 50, over 50 percent, Unknown) are LTM's; no published distribution of foreign-currency share of technology spend was found and none is claimed. The 15 percent caveat trigger is an LTM judgement.",
+   "verified": true,
+   "notes": "FOCUS 1.2 definitions read on focus.finops.org (v1.4 is the latest listed; the concept is stable). CC BY 4.0, so attribution needed if wording is reused."
+  },
+  {
+   "id": "CTX-03",
+   "kind": "context",
+   "basis": "Regions of operation, used for the coverage statement and the region caveat on any published figure; it gates nothing on its own.",
+   "sourceType": "LTM-heuristic",
+   "sources": [],
+   "heuristicReasoning": "The nine region options follow the owner's decisions G1 and G4 and the markets in coverage.ts (EU and UK separate because they are separate markets there). No external taxonomy was used.",
+   "verified": false,
+   "notes": "No source opened. Does not set the Geography gate: CTX-05 does (a multi-select cannot express \"two or more\" in the current applicableWhen)."
+  },
+  {
+   "id": "CTX-05",
+   "kind": "context",
+   "basis": "Number of countries, the smallest fact that sets the multi-country trigger (master rule TR-30) which no question set before; it gates ADP-51 and ADP-52 only.",
+   "sourceType": "LTM-heuristic",
+   "sources": [],
+   "heuristicReasoning": "Four bands (one, 2 to 5, 6 to 20, over 20) are LTM's and are not tied to any published definition of a multinational.",
+   "verified": false,
+   "notes": "No source opened. A client in one country is not asked ADP-51 and ADP-52."
+  },
+  {
+   "id": "CTX-04",
+   "kind": "context",
+   "basis": "Share of technology operations effort delivered onshore, as context for the workforce and vendor sections and for sovereignty routing; no answer is better.",
+   "sourceType": "LTM-heuristic",
+   "sources": [],
+   "heuristicReasoning": "No published definition of onshore, nearshore and offshore with method and sample was found; the working definitions are LTM's and labelled so. Bands follow CORE-36's pattern.",
+   "verified": false,
+   "notes": "No source opened. TBM separates Staffing (internal labour and staff augmentation) from Outside Services but does not define location, so it does not support this question."
+  },
+  {
+   "id": "CORE-05",
+   "kind": "context",
+   "basis": "Tests whether the spend figure in CORE-04 covers what CORE-01 says is material. The categories parallel TBM cost pools (what was purchased: staffing, outside services, cloud, hardware, software and SaaS, data-centre facilities, telecom), and a baseline that omits a material pool understates spend.",
+   "sourceType": "published-framework",
+   "sources": [
+    {
+     "title": "TBM Taxonomy 5.0.1 (cost pools, resource towers, solutions, consumers)",
+     "publisher": "TBM Council",
+     "year": 2025,
+     "url": "https://www.tbmcouncil.org/taxonomy/",
+     "whatItSays": "Released 18 Jul 2025. Four layers: Technology Cost Pools (Staffing, Outside Services, Cloud Services, Hardware, Software & SaaS, Data Center Facilities, Telecom, Misc Costs, Cross Charges), Technology Resource Towers (Data Center, Compute, Storage, Network, Application, Data, Delivery, Tech Management, Security, Risk & Compliance, Smart Devices, End User), Technology Solutions and Technology Consumers. Read through a summarising fetch tool; the page text I could see states no licence or reuse terms.",
+     "verified": true,
+     "checked": "2026-11-03"
+    }
+   ],
+   "heuristicReasoning": "The 12 options are LTM's own list and are not identical to TBM pools (APPS and DATA are towers in TBM, not pools). The comparison CORE-01 minus CORE-05 is an LTM method and nothing in the report builds it yet.",
+   "verified": true,
+   "notes": "Counting categories is not scored (a smaller estate legitimately includes fewer). UNKNOWN is a baseline-confidence flag. Check UNKNOWN is exclusive of the other options."
+  },
+  {
+   "id": "CORE-06",
+   "kind": "score",
+   "basis": "Self-rated confidence (1 to 5 stars) that the spend baseline is complete enough for executive decisions, scored linearly 0 to 100 into Spend Transparency.",
+   "sourceType": "LTM-heuristic",
+   "sources": [],
+   "heuristicReasoning": "Separating confidence in the data from maturity of the process is LTM's design choice. The linear star scale (1 star = 0, 5 stars = 100) is an LTM convention with no published calibration. No FinOps Framework statement sets a completeness standard for a spend baseline.",
+   "verified": false,
+   "notes": "The master carries no basis for this question (empty scoring.basis); this entry is new. Stars have no Unknown, so a skipped answer is a gap, not a low score. The question is in the baseline, so every client answers it."
+  },
+  {
+   "id": "CORE-07",
+   "kind": "context",
+   "basis": "The CIO's ranked top three outcomes to protect in trade-offs; it orders recommendations and is never scored (a priority is not a better-to-worse condition).",
+   "sourceType": "LTM-heuristic",
+   "sources": [
+    {
+     "title": "FinOps Framework: Executive Strategy Alignment",
+     "publisher": "FinOps Foundation",
+     "year": 2026,
+     "url": "https://www.finops.org/framework/capabilities/executive-strategy-alignment/",
+     "whatItSays": "Connects technology-related spend, usage and adoption to business strategy so leaders can compare options and govern investment for value. Crawl: sponsor identified, linkage to strategy limited and ad hoc. Walk: scopes span categories and are aligned to executive priorities, regular governance cadence. Run: FinOps is a required input to strategic investments and trade-offs, and alignment holds through change events such as M&A and leadership transitions.",
+     "verified": true,
+     "checked": "2026-11-03"
+    }
+   ],
+   "heuristicReasoning": "The ten outcome options are LTM's. The FinOps Executive Strategy Alignment capability supports linking technology spend to strategy in general but does not list or rank outcomes.",
+   "verified": true,
+   "notes": "This is the only question tagged to VALUE-01 Business Alignment alongside CORE-14 and CORE-17 (tag only), so VALUE-01 still has no scored question. See the taxonomy note."
+  },
+  {
+   "id": "CORE-08",
+   "kind": "context",
+   "basis": "Distinguishes routine efficiency expectations from a formal or urgent cost mandate, as context for how findings are framed; not scored.",
+   "sourceType": "LTM-heuristic",
+   "sources": [],
+   "heuristicReasoning": "Five ordered statements are LTM's; the order of pressure is not a maturity order, so a letter-keyed map that never matched was removed.",
+   "verified": false,
+   "notes": "No source opened."
+  },
+  {
+   "id": "CORE-09",
+   "kind": "context",
+   "basis": "The CIO's hypothesis about where the largest value opportunities lie, captured before findings are shown so a comparison is possible; declared no score impact.",
+   "sourceType": "LTM-heuristic",
+   "sources": [],
+   "heuristicReasoning": "The 10 areas are LTM's. The comparison is configured (settings.hypothesisComparison) but no code reads it, so this answer feeds nothing yet.",
+   "verified": false,
+   "notes": "CLOUD_PLATFORM_EFFICIENCY routes to FinOps IQ. Report consumer arrives with CQ5."
+  },
+  {
+   "id": "CORE-10",
+   "kind": "context",
+   "basis": "A preference for one funding-model change; an order of the options is not a maturity score.",
+   "sourceType": "LTM-heuristic",
+   "sources": [
+    {
+     "title": "FinOps Framework: Budgeting",
+     "publisher": "FinOps Foundation",
+     "year": 2026,
+     "url": "https://www.finops.org/framework/capabilities/budgeting/",
+     "whatItSays": "Crawl: budgets tracked manually, set once at approval and reconciled to actuals after the fact, annual cycle. Walk: regular cycle that is a hybrid of annual and shorter cycles; demand is checked against affordability at the prioritisation gate before funding is committed. Run: budgets aligned to allocation and chargeback structures, short rolling quarterly cycle, live execution thresholds enforced with a predefined response.",
+     "verified": true,
+     "checked": "2026-11-03"
+    }
+   ],
+   "heuristicReasoning": "The seven options are LTM's; FinOps Budgeting (annual versus rolling quarterly cycles) is background for the flexibility option only.",
+   "verified": true,
+   "notes": "Tagged to Cost Governance and Strategic Agility but feeds no dimension. Was previously a star scale with option IDs and scored nothing."
+  },
+  {
+   "id": "CORE-11",
+   "kind": "score",
+   "basis": "Scores how fast funding and capacity can be redirected when priorities change (Strategic Agility). The direction follows the FinOps Budgeting ladder (annual cycle, then hybrid, then short rolling quarterly cycle) and the GAO ITIM Stage 4 idea of reselecting and de-selecting low-value investments.",
+   "sourceType": "published-framework",
+   "sources": [
+    {
+     "title": "FinOps Framework: Budgeting",
+     "publisher": "FinOps Foundation",
+     "year": 2026,
+     "url": "https://www.finops.org/framework/capabilities/budgeting/",
+     "whatItSays": "Crawl: budgets tracked manually, set once at approval and reconciled to actuals after the fact, annual cycle. Walk: regular cycle that is a hybrid of annual and shorter cycles; demand is checked against affordability at the prioritisation gate before funding is committed. Run: budgets aligned to allocation and chargeback structures, short rolling quarterly cycle, live execution thresholds enforced with a predefined response.",
+     "verified": true,
+     "checked": "2026-11-03"
+    },
+    {
+     "title": "FinOps Framework: Executive Strategy Alignment",
+     "publisher": "FinOps Foundation",
+     "year": 2026,
+     "url": "https://www.finops.org/framework/capabilities/executive-strategy-alignment/",
+     "whatItSays": "Connects technology-related spend, usage and adoption to business strategy so leaders can compare options and govern investment for value. Crawl: sponsor identified, linkage to strategy limited and ad hoc. Walk: scopes span categories and are aligned to executive priorities, regular governance cadence. Run: FinOps is a required input to strategic investments and trade-offs, and alignment holds through change events such as M&A and leadership transitions.",
+     "verified": true,
+     "checked": "2026-11-03"
+    },
+    {
+     "title": "Information Technology Investment Management: A Framework for Assessing and Improving Process Maturity (GAO-04-394G, version 1.1)",
+     "publisher": "US Government Accountability Office",
+     "year": 2004,
+     "url": "https://www.gao.gov/products/gao-04-394g",
+     "whatItSays": "Five maturity stages. Stage 3 moves from project-centric to a portfolio approach; Stage 4 uses evaluation to improve the investment portfolio and can plan and implement de-selection of obsolete, high-risk or low-value IT investments. A post-implementation review examines differences between estimated and actual costs and benefits and measures success against the business case and organisational objectives. US federal context, 2004.",
+     "verified": true,
+     "checked": "2026-11-03"
+    }
+   ],
+   "heuristicReasoning": "The five options and the 100/80/60/40/20 steps are LTM's. The sources give direction (faster, more deliberate redirection is more mature), not a speed standard; \"within weeks\" and \"within a quarter\" are LTM wording.",
+   "verified": true,
+   "notes": "The master had no basis for this question; this entry is new. The FinOps maturity model warns Run is not the goal in every capability, so a client that deliberately commits funds annually is marked down by this scale. Only 3 questions feed VALUE-05."
+  },
+  {
+   "id": "CORE-12",
+   "kind": "score",
+   "basis": "Scores how far leaders can take a spend explanation, from vendor, tower or department views up to a reconciled view by category, owner, service and business use. This mirrors the FinOps Allocation ladder (accounts, then application or service level, then any granularity) and the TBM layering from cost pools and towers to solutions and consumers.",
+   "sourceType": "published-framework",
+   "sources": [
+    {
+     "title": "FinOps Framework: Allocation",
+     "publisher": "FinOps Foundation",
+     "year": 2026,
+     "url": "https://www.finops.org/framework/capabilities/allocation/",
+     "whatItSays": "Allocation assigns cost to the people responsible, through account structures, tags, labels and derived metadata. Crawl: mostly allocated by known account lists, ownership and metadata recorded manually and inconsistently, shared costs held centrally and not charged back. Walk: documented strategy, allocation to application or service level, shared costs split proportionally, fixed or evenly, platform owners can show back. Run: any granularity, near real time, ownership and metadata enforced at provisioning, platform owners fully allocate and charge back.",
+     "verified": true,
+     "checked": "2026-11-03"
+    },
+    {
+     "title": "TBM Taxonomy 5.0.1 (cost pools, resource towers, solutions, consumers)",
+     "publisher": "TBM Council",
+     "year": 2025,
+     "url": "https://www.tbmcouncil.org/taxonomy/",
+     "whatItSays": "Released 18 Jul 2025. Four layers: Technology Cost Pools (Staffing, Outside Services, Cloud Services, Hardware, Software & SaaS, Data Center Facilities, Telecom, Misc Costs, Cross Charges), Technology Resource Towers (Data Center, Compute, Storage, Network, Application, Data, Delivery, Tech Management, Security, Risk & Compliance, Smart Devices, End User), Technology Solutions and Technology Consumers. Read through a summarising fetch tool; the page text I could see states no licence or reuse terms.",
+     "verified": true,
+     "checked": "2026-11-03"
+    }
+   ],
+   "heuristicReasoning": "The A to E options and 100/80/60/40/20 steps are LTM's; the sources give the direction of travel, not scores. Option D (\"by vendors, towers, departments or projects\") deliberately uses the words of the lower TBM layers.",
+   "verified": true,
+   "notes": "The master basis said only \"direct maturity signal\"; this entry replaces it. In the baseline, so every client answers it. Triggers F-001 on D or E."
+  },
+  {
+   "id": "CORE-13",
+   "kind": "score",
+   "basis": "Scores the level at which cost can be routinely understood and challenged (service, business unit, tower, vendor, project, general ledger). FinOps Allocation moves from account-based allocation to service and product level, FinOps Invoicing & Chargeback separates showback from chargeback, and TBM places consumers and solutions above towers and cost pools.",
+   "sourceType": "published-framework",
+   "sources": [
+    {
+     "title": "FinOps Framework: Allocation",
+     "publisher": "FinOps Foundation",
+     "year": 2026,
+     "url": "https://www.finops.org/framework/capabilities/allocation/",
+     "whatItSays": "Allocation assigns cost to the people responsible, through account structures, tags, labels and derived metadata. Crawl: mostly allocated by known account lists, ownership and metadata recorded manually and inconsistently, shared costs held centrally and not charged back. Walk: documented strategy, allocation to application or service level, shared costs split proportionally, fixed or evenly, platform owners can show back. Run: any granularity, near real time, ownership and metadata enforced at provisioning, platform owners fully allocate and charge back.",
+     "verified": true,
+     "checked": "2026-11-03"
+    },
+    {
+     "title": "FinOps Framework: Invoicing & Chargeback",
+     "publisher": "FinOps Foundation",
+     "year": 2026,
+     "url": "https://www.finops.org/framework/capabilities/invoicing-chargeback/",
+     "whatItSays": "Showback is always needed; chargeback (formal posting to accounting budgets) depends on organisational accounting policy. Crawl: charges on estimates with material variance, shared costs held centrally, spreadsheets. Run: teams understand direct and allocated shared costs from actual consumption and chargeback is automated monthly.",
+     "verified": true,
+     "checked": "2026-11-03"
+    },
+    {
+     "title": "TBM Taxonomy 5.0.1 (cost pools, resource towers, solutions, consumers)",
+     "publisher": "TBM Council",
+     "year": 2025,
+     "url": "https://www.tbmcouncil.org/taxonomy/",
+     "whatItSays": "Released 18 Jul 2025. Four layers: Technology Cost Pools (Staffing, Outside Services, Cloud Services, Hardware, Software & SaaS, Data Center Facilities, Telecom, Misc Costs, Cross Charges), Technology Resource Towers (Data Center, Compute, Storage, Network, Application, Data, Delivery, Tech Management, Security, Risk & Compliance, Smart Devices, End User), Technology Solutions and Technology Consumers. Read through a summarising fetch tool; the page text I could see states no licence or reuse terms.",
+     "verified": true,
+     "checked": "2026-11-03"
+    }
+   ],
+   "heuristicReasoning": "The seven options and steps (100, 82, 65, 48, 35, 25 and MIXED 55) are LTM's; no source ranks vendor view above project view. The score reflects decision usefulness, not preference for a chargeback model, because FinOps says chargeback depends on accounting policy.",
+   "verified": true,
+   "notes": "MIXED is last in the option list but scored mid-scale (55): an order inconsistency to check in the page. Triggers F-002 on VENDORS, PROJECTS or GL."
+  },
+  {
+   "id": "CORE-14",
+   "kind": "context",
+   "basis": "Hotspots where cost is hardest to attribute to an owner, service or driver; the selection activates later diagnostics and is not scored by count.",
+   "sourceType": "LTM-heuristic",
+   "sources": [
+    {
+     "title": "FinOps Framework: Allocation",
+     "publisher": "FinOps Foundation",
+     "year": 2026,
+     "url": "https://www.finops.org/framework/capabilities/allocation/",
+     "whatItSays": "Allocation assigns cost to the people responsible, through account structures, tags, labels and derived metadata. Crawl: mostly allocated by known account lists, ownership and metadata recorded manually and inconsistently, shared costs held centrally and not charged back. Walk: documented strategy, allocation to application or service level, shared costs split proportionally, fixed or evenly, platform owners can show back. Run: any granularity, near real time, ownership and metadata enforced at provisioning, platform owners fully allocate and charge back.",
+     "verified": true,
+     "checked": "2026-11-03"
+    }
+   ],
+   "heuristicReasoning": "The 12 options are LTM's. FinOps Allocation notes shared costs are commonly left centrally budgeted (\"informed ignore\") and split by fixed, proportional or proxy methods, which is why shared infrastructure and cloud are listed.",
+   "verified": true,
+   "notes": "Tagged VALUE-01 only as a label; scores nothing."
+  },
+  {
+   "id": "CORE-15",
+   "kind": "score",
+   "basis": "Scores how fast executives can get a consolidated, current technology cost view. FinOps Reporting & Analytics, Budgeting and Forecasting all move from manual, annual or ad hoc reporting to automated, rolling views, but none sets a timeliness standard.",
+   "sourceType": "published-framework",
+   "sources": [
+    {
+     "title": "FinOps Framework: Reporting & Analytics",
+     "publisher": "FinOps Foundation",
+     "year": 2026,
+     "url": "https://www.finops.org/framework/capabilities/reporting-analytics/",
+     "whatItSays": "Crawl: reporting basic and mostly manual, actual spend and trend only. Walk: granular, customisable, showback and KPI tracking, self-service starts. Run: automated and embedded in workflows, variance surfaced automatically when a threshold is breached. The page sets no timeliness standard for cost data; it implies timeliness improves with maturity. It names observability data as an input where relevant.",
+     "verified": true,
+     "checked": "2026-11-03"
+    },
+    {
+     "title": "FinOps Framework: Budgeting",
+     "publisher": "FinOps Foundation",
+     "year": 2026,
+     "url": "https://www.finops.org/framework/capabilities/budgeting/",
+     "whatItSays": "Crawl: budgets tracked manually, set once at approval and reconciled to actuals after the fact, annual cycle. Walk: regular cycle that is a hybrid of annual and shorter cycles; demand is checked against affordability at the prioritisation gate before funding is committed. Run: budgets aligned to allocation and chargeback structures, short rolling quarterly cycle, live execution thresholds enforced with a predefined response.",
+     "verified": true,
+     "checked": "2026-11-03"
+    },
+    {
+     "title": "FinOps Framework: Forecasting",
+     "publisher": "FinOps Foundation",
+     "year": 2026,
+     "url": "https://www.finops.org/framework/capabilities/forecasting/",
+     "whatItSays": "Forecasting models expected future cost and value and becomes the baseline for budgeting. Cadence rises from ad hoc (Crawl) to regular but manual (Walk) to driver-based with real-time visibility (Run). Accuracy is forecast versus actual within a variance threshold each organisation sets.",
+     "verified": true,
+     "checked": "2026-11-03"
+    }
+   ],
+   "heuristicReasoning": "The seven cadence options and steps (100, 88, 72, 55, 40, 25, 15) are LTM's; \"monthly\" versus \"quarterly\" is a judgement. FinOps says explicitly only that timeliness improves with maturity.",
+   "verified": true,
+   "notes": "The master gave a one-line basis; this one adds the sources. Triggers F-001 on ANNUAL, ADHOC or NONE."
+  },
+  {
+   "id": "CORE-16",
+   "kind": "context",
+   "basis": "True/false/unsure on whether material technology spend is initiated or controlled outside the central technology organisation; it is a scope trigger that gates ADP-33 and ADP-34 and the F-017 triggers on them.",
+   "sourceType": "LTM-heuristic",
+   "sources": [
+    {
+     "title": "FinOps Framework: Licensing & SaaS",
+     "publisher": "FinOps Foundation",
+     "year": 2026,
+     "url": "https://www.finops.org/framework/capabilities/licensing-saas/",
+     "whatItSays": "Aim: plan appropriate use to minimise over-deployment (a compliance risk) and under-deployment (shelfware, waste). Crawl: terms reviewed at renewal, largely after the commitment is in place. Walk: FinOps consulted in renewals and included when licences or SaaS are bought outside cloud service providers; a pre-signature checklist compares options against validated demand. Run: reclamation triggers automated against usage thresholds, accountability set by policy, optimisation before each renewal.",
+     "verified": true,
+     "checked": "2026-11-03"
+    }
+   ],
+   "heuristicReasoning": "The question itself is LTM's. FinOps Licensing & SaaS (Walk) says FinOps should be included when licences or SaaS are bought outside cloud service providers, which is why business-led buying is an exposure worth probing.",
+   "verified": true,
+   "notes": "Context only, so it cannot trigger a finding alone. FALSE hides ADP-33 and ADP-34 from the client."
+  },
+  {
+   "id": "CORE-17",
+   "kind": "score",
+   "basis": "Share of technology spend traceable to an owner, service and cost driver, taken directly as a 0 to 100 score for Spend Transparency; FinOps Allocation describes allocation coverage rising from known-accounts to any granularity but gives no percentage.",
+   "sourceType": "LTM-heuristic",
+   "sources": [
+    {
+     "title": "FinOps Framework: Allocation",
+     "publisher": "FinOps Foundation",
+     "year": 2026,
+     "url": "https://www.finops.org/framework/capabilities/allocation/",
+     "whatItSays": "Allocation assigns cost to the people responsible, through account structures, tags, labels and derived metadata. Crawl: mostly allocated by known account lists, ownership and metadata recorded manually and inconsistently, shared costs held centrally and not charged back. Walk: documented strategy, allocation to application or service level, shared costs split proportionally, fixed or evenly, platform owners can show back. Run: any granularity, near real time, ownership and metadata enforced at provisioning, platform owners fully allocate and charge back.",
+     "verified": true,
+     "checked": "2026-11-03"
+    }
+   ],
+   "heuristicReasoning": "Direct mapping (50 percent traceable scores 50) is an LTM convention with no published threshold; the F-002 trigger below 50 is an LTM judgement. The answer is a client estimate.",
+   "verified": true,
+   "notes": "The master had no basis for this slider. Sliders cannot record Unknown. Tagged VALUE-01 in the master but feeds only COST-01, so the VALUE-01 tag has no effect."
+  },
+  {
+   "id": "CORE-18",
+   "kind": "score",
+   "basis": "Scores who has practical authority to challenge, reduce or stop underperforming spend. GAO ITIM expects investment boards that can de-select obsolete, high-risk or low-value investments, and FinOps Governance, Policy & Risk calls for clear accountability, escalation paths and decision-making processes.",
+   "sourceType": "published-framework",
+   "sources": [
+    {
+     "title": "Information Technology Investment Management: A Framework for Assessing and Improving Process Maturity (GAO-04-394G, version 1.1)",
+     "publisher": "US Government Accountability Office",
+     "year": 2004,
+     "url": "https://www.gao.gov/products/gao-04-394g",
+     "whatItSays": "Five maturity stages. Stage 3 moves from project-centric to a portfolio approach; Stage 4 uses evaluation to improve the investment portfolio and can plan and implement de-selection of obsolete, high-risk or low-value IT investments. A post-implementation review examines differences between estimated and actual costs and benefits and measures success against the business case and organisational objectives. US federal context, 2004.",
+     "verified": true,
+     "checked": "2026-11-03"
+    },
+    {
+     "title": "FinOps Framework: Governance, Policy & Risk",
+     "publisher": "FinOps Foundation",
+     "year": 2026,
+     "url": "https://www.finops.org/framework/capabilities/governance-policy-risk/",
+     "whatItSays": "Establishing, communicating and enforcing principles, rules and controls. The page does not use the term decision rights but calls for clear accountability, escalation paths and decision-making processes. Crawl: reactive, manual compliance checks. Walk: standardised policies, regular review cadence, risks documented and tracked. Run: policy embedded in build and deployment tooling and FinOps risk inputs in enterprise risk registers.",
+     "verified": true,
+     "checked": "2026-11-03"
+    }
+   ],
+   "heuristicReasoning": "The five options and steps (100, 82, 65, 45, 20) are LTM's. The FinOps page does not use the term \"decision rights\", so the wording is LTM's paraphrase. GAO ITIM is 2004 and US federal.",
+   "verified": true,
+   "notes": "Feeds COST-02 and VALUE-02 (counted in both headlines). Triggers F-003 on OWNER or NONE."
+  },
+  {
+   "id": "CORE-19",
+   "kind": "context",
+   "basis": "Which evidence is routinely required before funding (rationale, business case, total cost, benefits, risk, architecture, measurement plan). FinOps Planning & Estimating asks for lifecycle cost and expected business value before demand is prioritised, and GAO ITIM treats the business case as the yardstick for later review.",
+   "sourceType": "published-framework",
+   "sources": [
+    {
+     "title": "FinOps Framework: Planning & Estimating",
+     "publisher": "FinOps Foundation",
+     "year": 2026,
+     "url": "https://www.finops.org/framework/capabilities/planning-estimating/",
+     "whatItSays": "Business case: estimate lifecycle cost and expected business value before prioritising demand; compare projected avoidance with observed outcomes; track investment redirected or avoided. Run: estimates carry an explicit range and confidence, a documented counterfactual, and are checked against what actually happened to recalibrate later estimates.",
+     "verified": true,
+     "checked": "2026-11-03"
+    },
+    {
+     "title": "Information Technology Investment Management: A Framework for Assessing and Improving Process Maturity (GAO-04-394G, version 1.1)",
+     "publisher": "US Government Accountability Office",
+     "year": 2004,
+     "url": "https://www.gao.gov/products/gao-04-394g",
+     "whatItSays": "Five maturity stages. Stage 3 moves from project-centric to a portfolio approach; Stage 4 uses evaluation to improve the investment portfolio and can plan and implement de-selection of obsolete, high-risk or low-value IT investments. A post-implementation review examines differences between estimated and actual costs and benefits and measures success against the business case and organisational objectives. US federal context, 2004.",
+     "verified": true,
+     "checked": "2026-11-03"
+    }
+   ],
+   "heuristicReasoning": "The ten evidence items are LTM's checklist; the sources support that cost and value evidence should precede funding but do not list these items. Not scored because a longer list is not necessarily a better one.",
+   "verified": true,
+   "notes": "The master says to evaluate combinations in the engine; no code does. Tagged VALUE-03 but feeds nothing."
+  },
+  {
+   "id": "CORE-20",
+   "kind": "score",
+   "basis": "Scores what happens to expected benefits after go-live. GAO ITIM post-implementation review examines differences between estimated and actual costs and benefits, and FinOps Planning & Estimating compares projected with observed outcomes.",
+   "sourceType": "published-framework",
+   "sources": [
+    {
+     "title": "Information Technology Investment Management: A Framework for Assessing and Improving Process Maturity (GAO-04-394G, version 1.1)",
+     "publisher": "US Government Accountability Office",
+     "year": 2004,
+     "url": "https://www.gao.gov/products/gao-04-394g",
+     "whatItSays": "Five maturity stages. Stage 3 moves from project-centric to a portfolio approach; Stage 4 uses evaluation to improve the investment portfolio and can plan and implement de-selection of obsolete, high-risk or low-value IT investments. A post-implementation review examines differences between estimated and actual costs and benefits and measures success against the business case and organisational objectives. US federal context, 2004.",
+     "verified": true,
+     "checked": "2026-11-03"
+    },
+    {
+     "title": "FinOps Framework: Planning & Estimating",
+     "publisher": "FinOps Foundation",
+     "year": 2026,
+     "url": "https://www.finops.org/framework/capabilities/planning-estimating/",
+     "whatItSays": "Business case: estimate lifecycle cost and expected business value before prioritising demand; compare projected avoidance with observed outcomes; track investment redirected or avoided. Run: estimates carry an explicit range and confidence, a documented counterfactual, and are checked against what actually happened to recalibrate later estimates.",
+     "verified": true,
+     "checked": "2026-11-03"
+    }
+   ],
+   "heuristicReasoning": "The five options and steps are LTM's; the sources support the practice, not this ladder. \"Tracking usage only\" scoring 40 is an LTM judgement that delivery metrics are not outcomes.",
+   "verified": true,
+   "notes": "Triggers F-004 on USAGE or NONE and F-018 (with CORE-44)."
+  },
+  {
+   "id": "CORE-21",
+   "kind": "score",
+   "basis": "Scores how technology funding is organised (outcome, service, project, tower, fixed annual). FinOps Budgeting and Allocation describe movement from annual, centrally held budgets towards budgets aligned to allocation structures, but no source ranks product funding above project funding.",
+   "sourceType": "LTM-heuristic",
+   "sources": [
+    {
+     "title": "FinOps Framework: Budgeting",
+     "publisher": "FinOps Foundation",
+     "year": 2026,
+     "url": "https://www.finops.org/framework/capabilities/budgeting/",
+     "whatItSays": "Crawl: budgets tracked manually, set once at approval and reconciled to actuals after the fact, annual cycle. Walk: regular cycle that is a hybrid of annual and shorter cycles; demand is checked against affordability at the prioritisation gate before funding is committed. Run: budgets aligned to allocation and chargeback structures, short rolling quarterly cycle, live execution thresholds enforced with a predefined response.",
+     "verified": true,
+     "checked": "2026-11-03"
+    },
+    {
+     "title": "FinOps Framework: Allocation",
+     "publisher": "FinOps Foundation",
+     "year": 2026,
+     "url": "https://www.finops.org/framework/capabilities/allocation/",
+     "whatItSays": "Allocation assigns cost to the people responsible, through account structures, tags, labels and derived metadata. Crawl: mostly allocated by known account lists, ownership and metadata recorded manually and inconsistently, shared costs held centrally and not charged back. Walk: documented strategy, allocation to application or service level, shared costs split proportionally, fixed or evenly, platform owners can show back. Run: any granularity, near real time, ownership and metadata enforced at provisioning, platform owners fully allocate and charge back.",
+     "verified": true,
+     "checked": "2026-11-03"
+    }
+   ],
+   "heuristicReasoning": "Product-and-outcome funding scoring above project and tower funding is an LTM judgement widely held in practice but not established in the sources opened; the master itself says the model should not be judged in isolation. MIXED is placed mid-scale.",
+   "verified": true,
+   "notes": "Feeds COST-02 and VALUE-05. Triggers F-015 on TOWER or FIXED. MIXED is last in option order but scored 55."
+  },
+  {
+   "id": "CORE-22",
+   "kind": "score",
+   "basis": "Scores what normally happens when spend underperforms, from threshold-triggered intervention to rare challenge. GAO ITIM treats oversight and reselection as core control processes, and FinOps Budgeting Run enforces live thresholds against the budget with a predefined response.",
+   "sourceType": "published-framework",
+   "sources": [
+    {
+     "title": "Information Technology Investment Management: A Framework for Assessing and Improving Process Maturity (GAO-04-394G, version 1.1)",
+     "publisher": "US Government Accountability Office",
+     "year": 2004,
+     "url": "https://www.gao.gov/products/gao-04-394g",
+     "whatItSays": "Five maturity stages. Stage 3 moves from project-centric to a portfolio approach; Stage 4 uses evaluation to improve the investment portfolio and can plan and implement de-selection of obsolete, high-risk or low-value IT investments. A post-implementation review examines differences between estimated and actual costs and benefits and measures success against the business case and organisational objectives. US federal context, 2004.",
+     "verified": true,
+     "checked": "2026-11-03"
+    },
+    {
+     "title": "FinOps Framework: Budgeting",
+     "publisher": "FinOps Foundation",
+     "year": 2026,
+     "url": "https://www.finops.org/framework/capabilities/budgeting/",
+     "whatItSays": "Crawl: budgets tracked manually, set once at approval and reconciled to actuals after the fact, annual cycle. Walk: regular cycle that is a hybrid of annual and shorter cycles; demand is checked against affordability at the prioritisation gate before funding is committed. Run: budgets aligned to allocation and chargeback structures, short rolling quarterly cycle, live execution thresholds enforced with a predefined response.",
+     "verified": true,
+     "checked": "2026-11-03"
+    }
+   ],
+   "heuristicReasoning": "The five options and steps are LTM's; the sources support the direction (earlier, rule-based intervention is more mature) not the spacing.",
+   "verified": true,
+   "notes": "Feeds COST-02 and VALUE-02. Triggers F-003 on PROBLEM or RARE."
+  },
+  {
+   "id": "CORE-26",
+   "kind": "score",
+   "basis": "Scores how well SaaS subscriptions are matched to active usage before renewal. FinOps Licensing & SaaS moves from review at renewal after commitment (Crawl) through renewal involvement and pre-signature checks (Walk) to reclamation automated against usage thresholds (Run).",
+   "sourceType": "published-framework",
+   "sources": [
+    {
+     "title": "FinOps Framework: Licensing & SaaS",
+     "publisher": "FinOps Foundation",
+     "year": 2026,
+     "url": "https://www.finops.org/framework/capabilities/licensing-saas/",
+     "whatItSays": "Aim: plan appropriate use to minimise over-deployment (a compliance risk) and under-deployment (shelfware, waste). Crawl: terms reviewed at renewal, largely after the commitment is in place. Walk: FinOps consulted in renewals and included when licences or SaaS are bought outside cloud service providers; a pre-signature checklist compares options against validated demand. Run: reclamation triggers automated against usage thresholds, accountability set by policy, optimisation before each renewal.",
+     "verified": true,
+     "checked": "2026-11-03"
+    },
+    {
+     "title": "Flexera 2023 State of ITAM Report (press release)",
+     "publisher": "Flexera (software vendor)",
+     "year": 2023,
+     "url": "https://www.flexera.com/about-us/press-center/flexera-2023-state-of-itam-report-highlights-cost-savings-as-top-enterprise-priority",
+     "whatItSays": "Context only: respondents self-estimated 32% of SaaS spend as wasted or under-used (n = 500, vendor-run). Not used in any score or threshold.",
+     "verified": true,
+     "checked": "2026-11-03"
+    }
+   ],
+   "heuristicReasoning": "The five options and steps (100, 78, 56, 38, 20) are LTM's and differ by a few points from the batch-1 convention; no source gives scores. RENEWAL (\"reviewed before major renewals\") sits above the Framework's Crawl (\"largely after the commitment\").",
+   "verified": true,
+   "notes": "The master had no basis; this entry is new. Not gated on SaaS in the footprint, so a client without SaaS is still asked and can fire F-007 (see coverage matrix). Triggers F-007 on SELECTIVE, COUNT or UNKNOWN."
+  },
+  {
+   "id": "CORE-27",
+   "kind": "score",
+   "basis": "Scores what happens when two SaaS products overlap, from active consolidation to no visibility. FinOps Licensing & SaaS says FinOps should be involved when SaaS is bought and options compared against validated demand, but it does not describe overlap handling.",
+   "sourceType": "LTM-heuristic",
+   "sources": [
+    {
+     "title": "FinOps Framework: Licensing & SaaS",
+     "publisher": "FinOps Foundation",
+     "year": 2026,
+     "url": "https://www.finops.org/framework/capabilities/licensing-saas/",
+     "whatItSays": "Aim: plan appropriate use to minimise over-deployment (a compliance risk) and under-deployment (shelfware, waste). Crawl: terms reviewed at renewal, largely after the commitment is in place. Walk: FinOps consulted in renewals and included when licences or SaaS are bought outside cloud service providers; a pre-signature checklist compares options against validated demand. Run: reclamation triggers automated against usage thresholds, accountability set by policy, optimisation before each renewal.",
+     "verified": true,
+     "checked": "2026-11-03"
+    }
+   ],
+   "heuristicReasoning": "The six options and steps (100, 80, 60, 40, 20, 15) are LTM's; overlap governance is a widely used portfolio practice with no published scale found. F (no visibility) is placed below E (no process), a judgement.",
+   "verified": true,
+   "notes": "The master had no basis. Not footprint-gated. Triggers F-007 (D, E, F) and F-013 (with CORE-41)."
+  },
+  {
+   "id": "CORE-28",
+   "kind": "score",
+   "basis": "Scores practical flexibility to change cloud and SaaS commitments when demand shifts. FinOps Rate Optimization says discounts rise with restriction (flexibility and lock-in trade against discount depth) and that at Run commitment portfolios are continuously rebalanced against realised usage.",
+   "sourceType": "published-framework",
+   "sources": [
+    {
+     "title": "FinOps Framework: Rate Optimization",
+     "publisher": "FinOps Foundation",
+     "year": 2026,
+     "url": "https://www.finops.org/framework/capabilities/rate-optimization/",
+     "whatItSays": "Manages the rates paid across technology categories through negotiated discounts and commitments (typically 1 or 3 years). Discounts are higher the more restrictive the mechanism, so flexibility and lock-in trade against discount depth. Walk: pricing, commitment, marketplace and BYOL options compared against validated demand before purchase. Run: commitment portfolios continuously rebalanced against realised usage.",
+     "verified": true,
+     "checked": "2026-11-03"
+    }
+   ],
+   "heuristicReasoning": "The six options and steps are LTM's. The source warns that flexibility is not free (deeper discounts need longer commitments), so scoring flexibility as better is an LTM judgement that should be read as \"ability to adapt\", not \"no commitments\".",
+   "verified": true,
+   "notes": "The master had no basis. Feeds COST-07 and VALUE-05. Not footprint-gated although F-006 is gated on PUBLIC_CLOUD. Triggers F-006 and F-011 (D, E, F)."
+  },
+  {
+   "id": "CORE-29",
+   "kind": "context",
+   "basis": "Licensing areas that warrant the strongest economic or compliance review; used to target diagnostics, not scored by count. FinOps Licensing & SaaS frames the risk as over-deployment (compliance) and under-deployment (shelfware); ISO/IEC 19770-1 treats IT asset management as a management system with defined process areas.",
+   "sourceType": "LTM-heuristic",
+   "sources": [
+    {
+     "title": "FinOps Framework: Licensing & SaaS",
+     "publisher": "FinOps Foundation",
+     "year": 2026,
+     "url": "https://www.finops.org/framework/capabilities/licensing-saas/",
+     "whatItSays": "Aim: plan appropriate use to minimise over-deployment (a compliance risk) and under-deployment (shelfware, waste). Crawl: terms reviewed at renewal, largely after the commitment is in place. Walk: FinOps consulted in renewals and included when licences or SaaS are bought outside cloud service providers; a pre-signature checklist compares options against validated demand. Run: reclamation triggers automated against usage thresholds, accountability set by policy, optimisation before each renewal.",
+     "verified": true,
+     "checked": "2026-11-03"
+    },
+    {
+     "title": "ISO/IEC 19770-1:2017 IT asset management systems (JTC 1/SC 7 project page)",
+     "publisher": "ISO/IEC JTC 1/SC 7",
+     "year": 2017,
+     "url": "https://committee.iso.org/sites/jtc1sc7/home/projects/flagship-standards/isoiec-19770-12017.html",
+     "whatItSays": "Specifies requirements for establishing, implementing, maintaining and improving an IT asset management system (Plan-Do-Check-Act); normative Annex A sets out 15 ITAM process areas; informative Annex B suggests three tiers in recommended implementation order: Trustworthy Data, life cycle Integration, Optimization. I read the committee page, not the standard text; the iso.org catalogue page returned HTTP 403.",
+     "verified": true,
+     "checked": "2026-11-03"
+    }
+   ],
+   "heuristicReasoning": "The nine product areas (database, virtualization, ERP and so on) are LTM's list of where audit and renewal exposure commonly sits; no published ranking was used.",
+   "verified": true,
+   "notes": "Standard read via the JTC 1/SC 7 committee page only. Feeds nothing."
+  },
+  {
+   "id": "CORE-30",
+   "kind": "score",
+   "basis": "Scores how reliably licence entitlements are reconciled to deployment and usage before the next commercial event. FinOps Licensing & SaaS names over- and under-deployment as the risks, and ISO/IEC 19770-1 Annex B suggests implementing ITAM in tiers from trustworthy data through lifecycle integration to optimisation.",
+   "sourceType": "published-framework",
+   "sources": [
+    {
+     "title": "FinOps Framework: Licensing & SaaS",
+     "publisher": "FinOps Foundation",
+     "year": 2026,
+     "url": "https://www.finops.org/framework/capabilities/licensing-saas/",
+     "whatItSays": "Aim: plan appropriate use to minimise over-deployment (a compliance risk) and under-deployment (shelfware, waste). Crawl: terms reviewed at renewal, largely after the commitment is in place. Walk: FinOps consulted in renewals and included when licences or SaaS are bought outside cloud service providers; a pre-signature checklist compares options against validated demand. Run: reclamation triggers automated against usage thresholds, accountability set by policy, optimisation before each renewal.",
+     "verified": true,
+     "checked": "2026-11-03"
+    },
+    {
+     "title": "ISO/IEC 19770-1:2017 IT asset management systems (JTC 1/SC 7 project page)",
+     "publisher": "ISO/IEC JTC 1/SC 7",
+     "year": 2017,
+     "url": "https://committee.iso.org/sites/jtc1sc7/home/projects/flagship-standards/isoiec-19770-12017.html",
+     "whatItSays": "Specifies requirements for establishing, implementing, maintaining and improving an IT asset management system (Plan-Do-Check-Act); normative Annex A sets out 15 ITAM process areas; informative Annex B suggests three tiers in recommended implementation order: Trustworthy Data, life cycle Integration, Optimization. I read the committee page, not the standard text; the iso.org catalogue page returned HTTP 403.",
+     "verified": true,
+     "checked": "2026-11-03"
+    }
+   ],
+   "heuristicReasoning": "The six options and steps (100, 80, 60, 38, 20, 12) are LTM's. The ISO tiers are informative recommendations of order, not a scoring scale.",
+   "verified": true,
+   "notes": "The master had no basis. ISO/IEC 19770-1:2017 is the IT asset management system edition; the tiered software-asset-management scheme belongs to the 2012 edition, so do not attribute SAM tiers to 2017. Triggers F-008 on D, E, F."
+  },
+  {
+   "id": "CORE-31",
+   "kind": "context",
+   "basis": "Commercial events in the next 12 to 24 months (renewals, true-ups, price changes, expiries) that create decision windows; presence is a timing signal, not a maturity score. FinOps Rate Optimization notes commitments run 1 or 3 years and recommends spreading purchases so some are always expiring.",
+   "sourceType": "LTM-heuristic",
+   "sources": [
+    {
+     "title": "FinOps Framework: Rate Optimization",
+     "publisher": "FinOps Foundation",
+     "year": 2026,
+     "url": "https://www.finops.org/framework/capabilities/rate-optimization/",
+     "whatItSays": "Manages the rates paid across technology categories through negotiated discounts and commitments (typically 1 or 3 years). Discounts are higher the more restrictive the mechanism, so flexibility and lock-in trade against discount depth. Walk: pricing, commitment, marketplace and BYOL options compared against validated demand before purchase. Run: commitment portfolios continuously rebalanced against realised usage.",
+     "verified": true,
+     "checked": "2026-11-03"
+    }
+   ],
+   "heuristicReasoning": "The ten event types are LTM's list.",
+   "verified": true,
+   "notes": "Feeds nothing today."
+  },
+  {
+   "id": "CORE-32",
+   "kind": "context",
+   "basis": "Infrastructure areas with the clearest underutilisation or avoidable footprint, to target later work; not scored by count. FinOps Usage Optimization covers on-premises estates as well as cloud, and GAO's review of US federal data-centre optimisation tracks underutilised servers and virtualisation as measured targets.",
+   "sourceType": "LTM-heuristic",
+   "sources": [
+    {
+     "title": "FinOps Framework: Usage Optimization",
+     "publisher": "FinOps Foundation",
+     "year": 2026,
+     "url": "https://www.finops.org/framework/capabilities/usage-optimization/",
+     "whatItSays": "Resources should be properly selected, correctly sized and run only when needed; covers cloud, SaaS and on-premises environments. Crawl: periodic manual review of what already runs. Walk: structured, savings and effort estimated, basic automation of repeatable processes. Run: largely automated, idle resources actioned, rightsizing implemented with minimal manual work.",
+     "verified": true,
+     "checked": "2026-11-03"
+    },
+    {
+     "title": "GAO-23-105946: Data Center Optimization Initiative progress (27 Feb 2023)",
+     "publisher": "US Government Accountability Office",
+     "year": 2023,
+     "url": "https://www.gao.gov/products/gao-23-105946",
+     "whatItSays": "24 federal agencies; cumulative savings and avoidances FY2012 to FY2021 of USD 6.6 billion (agency-reported). GAO reports four OMB optimisation targets: virtualisation, availability, advanced energy metering and underutilised servers. The page does not mention facility utilisation. US federal only.",
+     "verified": true,
+     "checked": "2026-11-03"
+    }
+   ],
+   "heuristicReasoning": "The nine hotspot options are LTM's. The GAO material is US federal context and gives no utilisation range.",
+   "verified": true,
+   "notes": "Feeds nothing today."
+  },
+  {
+   "id": "CORE-33",
+   "kind": "score",
+   "basis": "Scores whether capacity is sized from demand and utilisation evidence rather than lifecycle refresh or headroom. FinOps Usage Optimization asks that resources be correctly sized and run only when needed across cloud and on-premises, and Architecting & Workload Placement compares public cloud, data centre and private cloud with a documented model.",
+   "sourceType": "published-framework",
+   "sources": [
+    {
+     "title": "FinOps Framework: Usage Optimization",
+     "publisher": "FinOps Foundation",
+     "year": 2026,
+     "url": "https://www.finops.org/framework/capabilities/usage-optimization/",
+     "whatItSays": "Resources should be properly selected, correctly sized and run only when needed; covers cloud, SaaS and on-premises environments. Crawl: periodic manual review of what already runs. Walk: structured, savings and effort estimated, basic automation of repeatable processes. Run: largely automated, idle resources actioned, rightsizing implemented with minimal manual work.",
+     "verified": true,
+     "checked": "2026-11-03"
+    },
+    {
+     "title": "FinOps Framework: Architecting & Workload Placement",
+     "publisher": "FinOps Foundation",
+     "year": 2026,
+     "url": "https://www.finops.org/framework/capabilities/architecting-workload-placement/",
+     "whatItSays": "Value and cost efficiency are best achieved by architecting them into a system design; covers modernisation, re-platforming, relocation, consolidation and retirement, and placement across public cloud, data centre and private cloud. Crawl: default patterns without a documented trade-off model. Walk: documented model weighing cost, value, sovereignty, resilience and sustainability. Run: design variance reported back so patterns improve. The definition warns against unintentionally building in tech debt.",
+     "verified": true,
+     "checked": "2026-11-03"
+    },
+    {
+     "title": "GAO-23-105946: Data Center Optimization Initiative progress (27 Feb 2023)",
+     "publisher": "US Government Accountability Office",
+     "year": 2023,
+     "url": "https://www.gao.gov/products/gao-23-105946",
+     "whatItSays": "24 federal agencies; cumulative savings and avoidances FY2012 to FY2021 of USD 6.6 billion (agency-reported). GAO reports four OMB optimisation targets: virtualisation, availability, advanced energy metering and underutilised servers. The page does not mention facility utilisation. US federal only.",
+     "verified": true,
+     "checked": "2026-11-03"
+    }
+   ],
+   "heuristicReasoning": "The six options and steps (100, 82, 64, 42, 24, 14) are LTM's. GAO cites utilisation targets for US federal data centres as context only; no neutral utilisation benchmark was found.",
+   "verified": true,
+   "notes": "The master had no basis. Not footprint-gated (it applies to cloud capacity too). Triggers F-009 on D, E, F."
+  },
+  {
+   "id": "CORE-34",
+   "kind": "score",
+   "basis": "Share of operations effort that is manual work which could be simplified or automated, scored inverted (less manual is better) into Operations Economics and Technology Productivity. The FinOps maturity model treats automation as the preferred approach at Run, which supports the direction.",
+   "sourceType": "LTM-heuristic",
+   "sources": [
+    {
+     "title": "FinOps Framework: Maturity model (Crawl, Walk, Run)",
+     "publisher": "FinOps Foundation",
+     "year": 2026,
+     "url": "https://www.finops.org/framework/maturity-model/",
+     "whatItSays": "Crawl is very little reporting and tooling with basic KPIs and processes; Walk is automation and/or process covering most of a capability, followed across the organisation; Run is automation as the preferred approach, followed by all teams. Every capability can be at a different maturity, and the goal should never be simply Run in every capability.",
+     "verified": true,
+     "checked": "2026-11-03"
+    }
+   ],
+   "heuristicReasoning": "The percentage and its inversion are LTM's. No published benchmark of manual effort share or of savings from automating IT operations was found (see non-cloud-lever-sources.md). The F-016 trigger above 50 is an LTM judgement.",
+   "verified": true,
+   "notes": "Slider cannot record Unknown. Feeds COST-08 and VALUE-04. Run-everywhere is not the Framework's goal, so a low share is not required of every client."
+  },
+  {
+   "id": "CORE-35",
+   "kind": "score",
+   "basis": "Scores how reliably workforce capacity and skills are matched to demand. No published scale was found; the options run from measured alignment to demand and skills not being measured.",
+   "sourceType": "LTM-heuristic",
+   "sources": [],
+   "heuristicReasoning": "Matching capacity and skills to demand is a standard workforce-planning idea, but no framework opened here gives levels. The five options and steps (100, 80, 60, 35, 20) are LTM's, with NOT_MEASURED at the lowest level so lack of data never flatters.",
+   "verified": false,
+   "notes": "COBIT 2019 APO07 (Managed Human Resources) and the SFIA skills framework are candidate references but were not opened (ISACA content is paywalled; the SFIA page returned a login). The only question feeding COST-06 beside ADP-18. Triggers F-010 on MISMATCH or NOT_MEASURED."
+  },
+  {
+   "id": "CORE-36",
+   "kind": "context",
+   "basis": "Share of workforce capacity supplied externally (managed services, contractors, integrators); an exposure signal, not better or worse. TBM keeps internal labour, staff augmentation and outside services (consulting, managed services) as distinct cost pools, which supports measuring the external share separately.",
+   "sourceType": "LTM-heuristic",
+   "sources": [
+    {
+     "title": "TBM Taxonomy 5.0.1 (cost pools, resource towers, solutions, consumers)",
+     "publisher": "TBM Council",
+     "year": 2025,
+     "url": "https://www.tbmcouncil.org/taxonomy/",
+     "whatItSays": "Released 18 Jul 2025. Four layers: Technology Cost Pools (Staffing, Outside Services, Cloud Services, Hardware, Software & SaaS, Data Center Facilities, Telecom, Misc Costs, Cross Charges), Technology Resource Towers (Data Center, Compute, Storage, Network, Application, Data, Delivery, Tech Management, Security, Risk & Compliance, Smart Devices, End User), Technology Solutions and Technology Consumers. Read through a summarising fetch tool; the page text I could see states no licence or reuse terms.",
+     "verified": true,
+     "checked": "2026-11-03"
+    }
+   ],
+   "heuristicReasoning": "The six bands (under 10 to over 75 percent, Unknown) are LTM's.",
+   "verified": true,
+   "notes": "Tagged VALUE-05; feeds nothing. CTX-04 adds the location dimension."
+  },
+  {
+   "id": "CORE-37",
+   "kind": "score",
+   "basis": "Scores whether vendor governance uses cost, consumption, outcomes and commercial levers beyond SLAs. FinOps Intersecting Disciplines (procurement) moves renewal, exit and consumption accountability from undefined (Crawl) to assigned at signature (Walk) to monitored against usage and entitlement (Run), and the UK Sourcing Playbook says payment mechanisms should incentivise outcomes and contract end should be planned early.",
+   "sourceType": "published-framework",
+   "sources": [
+    {
+     "title": "FinOps Framework: Intersecting Disciplines",
+     "publisher": "FinOps Foundation",
+     "year": 2026,
+     "url": "https://www.finops.org/framework/capabilities/intersecting-disciplines/",
+     "whatItSays": "Procurement: define renewal, exit and consumption accountability. Crawl: renewal and exit ownership undefined until the contract is close to expiring. Walk: assigned at signature with procurement and finance. Run: monitored continuously against usage and entitlement data, with renegotiation or exit triggered before the anniversary. ITAM/SAM covers contractual value and risk over the lifecycle of assets; ITSM is named as a discipline with no maturity statements.",
+     "verified": true,
+     "checked": "2026-11-03"
+    },
+    {
+     "title": "The Sourcing Playbook (version 4)",
+     "publisher": "UK Cabinet Office, Government Commercial Function",
+     "year": 2026,
+     "url": "https://gov.uk/government/publications/the-sourcing-and-consultancy-playbooks/the-sourcing-playbook-html",
+     "whatItSays": "Departments should do a proportionate delivery model assessment before deciding to outsource, insource or re-procure; it is iterated over time; all complex outsourcing in central government shall produce a Should Cost Model Estimate; pricing and payment mechanisms should incentivise desired outcomes; plan early for contract end. UK central government guidance; the page text I read was truncated before the pricing and termination chapters. The page shows an update date of 30 Sep 2026 (a search summary gave 6 Mar 2026).",
+     "verified": true,
+     "checked": "2026-11-03"
+    }
+   ],
+   "heuristicReasoning": "The five options and steps (100, 82, 62, 40, 20) are LTM's. The Playbook is UK central-government guidance and its pricing and termination chapters were not read in full.",
+   "verified": true,
+   "notes": "The master had no basis. Triggers F-011 on RENEWAL_LED or LIMITED."
+  },
+  {
+   "id": "CORE-38",
+   "kind": "context",
+   "basis": "The CIO's ranked guess at which supplier categories hold the most value, captured before evidence-led findings; not scored.",
+   "sourceType": "LTM-heuristic",
+   "sources": [],
+   "heuristicReasoning": "The seven supplier categories are LTM's.",
+   "verified": false,
+   "notes": "No consumer of this answer exists in the code. No source opened."
+  },
+  {
+   "id": "CORE-39",
+   "kind": "context",
+   "basis": "Application-portfolio conditions (duplication, legacy, low usage, unclear owner) driving avoidable cost; used to activate diagnostics and not scored by count. Public audit work shows the issue at scale in the public sector: GAO found about 200 consolidation opportunities across 26 US agencies and agencies report about 80 percent of federal IT spend goes to running existing systems.",
+   "sourceType": "LTM-heuristic",
+   "sources": [
+    {
+     "title": "GAO-14-65: review of the OMB PortfolioStat initiative (report title not captured in my read)",
+     "publisher": "US Government Accountability Office",
+     "year": 2013,
+     "url": "https://www.gao.gov/products/GAO-14-65",
+     "whatItSays": "Review of 26 federal agencies: about 200 IT consolidation opportunities and at least USD 5.8 billion potential savings through FY2015 (OMB had estimated USD 2.5 billion); four of five agencies reviewed in depth did not always support their estimates. Projected, not realised; US federal only.",
+     "verified": true,
+     "checked": "2026-11-03"
+    },
+    {
+     "title": "GAO-25-107795: federal legacy IT systems most in need of modernization (July 2025)",
+     "publisher": "US Government Accountability Office",
+     "year": 2025,
+     "url": "https://www.gao.gov/products/gao-25-107795",
+     "whatItSays": "69 legacy systems submitted by 24 agencies and scored on 16 attributes including age, vendor support and cybersecurity risk; agencies typically report about 80% of more than USD 100 billion of annual federal IT spend goes to operating and maintaining existing systems. A share of budget, not a saving; agency-submitted selection.",
+     "verified": true,
+     "checked": "2026-11-03"
+    }
+   ],
+   "heuristicReasoning": "The ten conditions are LTM's. The GAO figures are US federal, projected and agency-reported, and are context only, never a benchmark for a private-sector client.",
+   "verified": true,
+   "notes": "GAO-14-65 savings were projected, not realised, and four of five agencies reviewed did not always support their estimates."
+  },
+  {
+   "id": "CORE-40",
+   "kind": "score",
+   "basis": "Self-rated extent to which complexity or technical debt adds to run cost (1 to 5 stars, inverted into Architecture & Technology Economics). FinOps Architecting & Workload Placement warns against unintentionally building in tech debt, and public audits show ageing systems absorbing most of some public budgets (Defra 76 percent, a UK department's own estimate; US federal about 80 percent).",
+   "sourceType": "LTM-heuristic",
+   "sources": [
+    {
+     "title": "FinOps Framework: Architecting & Workload Placement",
+     "publisher": "FinOps Foundation",
+     "year": 2026,
+     "url": "https://www.finops.org/framework/capabilities/architecting-workload-placement/",
+     "whatItSays": "Value and cost efficiency are best achieved by architecting them into a system design; covers modernisation, re-platforming, relocation, consolidation and retirement, and placement across public cloud, data centre and private cloud. Crawl: default patterns without a documented trade-off model. Walk: documented model weighing cost, value, sovereignty, resilience and sustainability. Run: design variance reported back so patterns improve. The definition warns against unintentionally building in tech debt.",
+     "verified": true,
+     "checked": "2026-11-03"
+    },
+    {
+     "title": "Modernising ageing digital services (press release)",
+     "publisher": "UK National Audit Office",
+     "year": 2022,
+     "url": "https://www.nao.org.uk/press-releases/modernising-ageing-digital-services/",
+     "whatItSays": "Defra estimated that maintaining ageing systems absorbs 76% of its digital, data and technology spend and that nearly 30% of its legacy applications are unsupported; modernisation delayed by long-running underfunding. One UK department, its own estimate.",
+     "verified": true,
+     "checked": "2026-11-03"
+    },
+    {
+     "title": "GAO-25-107795: federal legacy IT systems most in need of modernization (July 2025)",
+     "publisher": "US Government Accountability Office",
+     "year": 2025,
+     "url": "https://www.gao.gov/products/gao-25-107795",
+     "whatItSays": "69 legacy systems submitted by 24 agencies and scored on 16 attributes including age, vendor support and cybersecurity risk; agencies typically report about 80% of more than USD 100 billion of annual federal IT spend goes to operating and maintaining existing systems. A share of budget, not a saving; agency-submitted selection.",
+     "verified": true,
+     "checked": "2026-11-03"
+    }
+   ],
+   "heuristicReasoning": "The star scale inverted linearly is LTM's; no published scale of technical-debt cost exists in the sources opened. The audit figures measure maintenance share of spend, which is not the same as the share attributable to debt, so they are context only.",
+   "verified": true,
+   "notes": "The master had no basis. Triggers F-012 on 4 or 5 stars. Feeds only COST-09 (VALUE-04 tag unused)."
+  },
+  {
+   "id": "CORE-41",
+   "kind": "score",
+   "basis": "Scores how systematically applications are retained, modernised, consolidated or retired. FinOps Architecting & Workload Placement covers modernisation, re-platforming, consolidation and retirement of existing workloads, and GAO ITIM Stage 4 plans the de-selection of obsolete, high-risk or low-value investments.",
+   "sourceType": "published-framework",
+   "sources": [
+    {
+     "title": "FinOps Framework: Architecting & Workload Placement",
+     "publisher": "FinOps Foundation",
+     "year": 2026,
+     "url": "https://www.finops.org/framework/capabilities/architecting-workload-placement/",
+     "whatItSays": "Value and cost efficiency are best achieved by architecting them into a system design; covers modernisation, re-platforming, relocation, consolidation and retirement, and placement across public cloud, data centre and private cloud. Crawl: default patterns without a documented trade-off model. Walk: documented model weighing cost, value, sovereignty, resilience and sustainability. Run: design variance reported back so patterns improve. The definition warns against unintentionally building in tech debt.",
+     "verified": true,
+     "checked": "2026-11-03"
+    },
+    {
+     "title": "Information Technology Investment Management: A Framework for Assessing and Improving Process Maturity (GAO-04-394G, version 1.1)",
+     "publisher": "US Government Accountability Office",
+     "year": 2004,
+     "url": "https://www.gao.gov/products/gao-04-394g",
+     "whatItSays": "Five maturity stages. Stage 3 moves from project-centric to a portfolio approach; Stage 4 uses evaluation to improve the investment portfolio and can plan and implement de-selection of obsolete, high-risk or low-value IT investments. A post-implementation review examines differences between estimated and actual costs and benefits and measures success against the business case and organisational objectives. US federal context, 2004.",
+     "verified": true,
+     "checked": "2026-11-03"
+    },
+    {
+     "title": "GAO-14-65: review of the OMB PortfolioStat initiative (report title not captured in my read)",
+     "publisher": "US Government Accountability Office",
+     "year": 2013,
+     "url": "https://www.gao.gov/products/GAO-14-65",
+     "whatItSays": "Review of 26 federal agencies: about 200 IT consolidation opportunities and at least USD 5.8 billion potential savings through FY2015 (OMB had estimated USD 2.5 billion); four of five agencies reviewed in depth did not always support their estimates. Projected, not realised; US federal only.",
+     "verified": true,
+     "checked": "2026-11-03"
+    }
+   ],
+   "heuristicReasoning": "The five options and steps (100, 82, 60, 40, 20) are LTM's. GAO-14-65 is US federal and its savings were projected.",
+   "verified": true,
+   "notes": "The master had no basis. Feeds COST-10 and VALUE-02. Triggers F-013 on VISIBLE_BUT_HARD or AD_HOC."
+  },
+  {
+   "id": "CORE-42",
+   "kind": "context",
+   "basis": "Constraints that make retirement or consolidation hard (criticality, dependencies, regulation, contracts); they feed the feasibility view and are not scored by count. The NAO's review of ageing systems at one UK department points to funding and long timelines as reasons modernisation is delayed.",
+   "sourceType": "LTM-heuristic",
+   "sources": [
+    {
+     "title": "Modernising ageing digital services (press release)",
+     "publisher": "UK National Audit Office",
+     "year": 2022,
+     "url": "https://www.nao.org.uk/press-releases/modernising-ageing-digital-services/",
+     "whatItSays": "Defra estimated that maintaining ageing systems absorbs 76% of its digital, data and technology spend and that nearly 30% of its legacy applications are unsupported; modernisation delayed by long-running underfunding. One UK department, its own estimate.",
+     "verified": true,
+     "checked": "2026-11-03"
+    }
+   ],
+   "heuristicReasoning": "The ten constraint options are LTM's; the NAO source is one department.",
+   "verified": true,
+   "notes": "Feeds nothing today."
+  },
+  {
+   "id": "CORE-43",
+   "kind": "score",
+   "basis": "How business leaders would rate the value they receive relative to cost seen (1 to 5 stars), taken independently of IT's own view. GAO ITIM notes success should be measured against organisational objectives, and that even with precise objectives there may not be a unified view of the value generated.",
+   "sourceType": "LTM-heuristic",
+   "sources": [
+    {
+     "title": "Information Technology Investment Management: A Framework for Assessing and Improving Process Maturity (GAO-04-394G, version 1.1)",
+     "publisher": "US Government Accountability Office",
+     "year": 2004,
+     "url": "https://www.gao.gov/products/gao-04-394g",
+     "whatItSays": "Five maturity stages. Stage 3 moves from project-centric to a portfolio approach; Stage 4 uses evaluation to improve the investment portfolio and can plan and implement de-selection of obsolete, high-risk or low-value IT investments. A post-implementation review examines differences between estimated and actual costs and benefits and measures success against the business case and organisational objectives. US federal context, 2004.",
+     "verified": true,
+     "checked": "2026-11-03"
+    }
+   ],
+   "heuristicReasoning": "No published scale for business-perceived technology value was found; the star scale is LTM's. The respondent is the CIO guessing the business view unless the business answers.",
+   "verified": true,
+   "notes": "The master had no basis. Triggers F-014 on 1 or 2 stars. One of only two questions feeding VALUE-06."
+  },
+  {
+   "id": "CORE-44",
+   "kind": "score",
+   "basis": "Scores how consistently achievement of expected business outcomes is measured for major investments. GAO ITIM post-implementation review compares actual with estimated benefits, FinOps Planning & Estimating tracks business-case and unit-cost variance, and FinOps benchmarking asks for a baseline and counterfactual before an intervention is credited.",
+   "sourceType": "published-framework",
+   "sources": [
+    {
+     "title": "Information Technology Investment Management: A Framework for Assessing and Improving Process Maturity (GAO-04-394G, version 1.1)",
+     "publisher": "US Government Accountability Office",
+     "year": 2004,
+     "url": "https://www.gao.gov/products/gao-04-394g",
+     "whatItSays": "Five maturity stages. Stage 3 moves from project-centric to a portfolio approach; Stage 4 uses evaluation to improve the investment portfolio and can plan and implement de-selection of obsolete, high-risk or low-value IT investments. A post-implementation review examines differences between estimated and actual costs and benefits and measures success against the business case and organisational objectives. US federal context, 2004.",
+     "verified": true,
+     "checked": "2026-11-03"
+    },
+    {
+     "title": "FinOps Framework: Planning & Estimating",
+     "publisher": "FinOps Foundation",
+     "year": 2026,
+     "url": "https://www.finops.org/framework/capabilities/planning-estimating/",
+     "whatItSays": "Business case: estimate lifecycle cost and expected business value before prioritising demand; compare projected avoidance with observed outcomes; track investment redirected or avoided. Run: estimates carry an explicit range and confidence, a documented counterfactual, and are checked against what actually happened to recalibrate later estimates.",
+     "verified": true,
+     "checked": "2026-11-03"
+    },
+    {
+     "title": "FinOps Framework: KPI & Benchmarking (page titled Benchmarking)",
+     "publisher": "FinOps Foundation",
+     "year": 2026,
+     "url": "https://www.finops.org/framework/capabilities/benchmarking/",
+     "whatItSays": "Benchmarking should be one part of assessing technology value. Walk: a baseline and counterfactual are documented before an intervention is credited with avoided cost. External benchmarking should be done carefully, and every organisation's usage and practice is unique.",
+     "verified": true,
+     "checked": "2026-11-03"
+    }
+   ],
+   "heuristicReasoning": "The five options and steps (100, 82, 60, 40, 20) are LTM's.",
+   "verified": true,
+   "notes": "The master had no basis. Triggers F-018 on INCONSISTENT or NOT_MEASURED and shares VALUE-03 with CORE-20, which asks a closely related thing."
+  },
+  {
+   "id": "CORE-45",
+   "kind": "context",
+   "basis": "A scenario asking where 10 percent of spend would be cut and where released money would be reinvested; a hypothesis signal compared with evidence-led findings and not scored by position.",
+   "sourceType": "LTM-heuristic",
+   "sources": [
+    {
+     "title": "FinOps Framework: Planning & Estimating",
+     "publisher": "FinOps Foundation",
+     "year": 2026,
+     "url": "https://www.finops.org/framework/capabilities/planning-estimating/",
+     "whatItSays": "Business case: estimate lifecycle cost and expected business value before prioritising demand; compare projected avoidance with observed outcomes; track investment redirected or avoided. Run: estimates carry an explicit range and confidence, a documented counterfactual, and are checked against what actually happened to recalibrate later estimates.",
+     "verified": true,
+     "checked": "2026-11-03"
+    }
+   ],
+   "heuristicReasoning": "The 10 percent is a scenario parameter and not a claim about achievable savings. FinOps Planning & Estimating tracks investment redirected or avoided, which is the same idea at project level.",
+   "verified": true,
+   "notes": "Comparison with findings has no consumer yet (CQ5)."
+  },
+  {
+   "id": "ADP-06",
+   "kind": "score",
+   "basis": "Scores how many major SaaS platforms materially overlap other products (fewer is better, Unknown rated worst). FinOps Licensing & SaaS has FinOps consulted when SaaS is bought and options compared against validated demand before signature, which supports checking for duplication.",
+   "sourceType": "LTM-heuristic",
+   "sources": [
+    {
+     "title": "FinOps Framework: Licensing & SaaS",
+     "publisher": "FinOps Foundation",
+     "year": 2026,
+     "url": "https://www.finops.org/framework/capabilities/licensing-saas/",
+     "whatItSays": "Aim: plan appropriate use to minimise over-deployment (a compliance risk) and under-deployment (shelfware, waste). Crawl: terms reviewed at renewal, largely after the commitment is in place. Walk: FinOps consulted in renewals and included when licences or SaaS are bought outside cloud service providers; a pre-signature checklist compares options against validated demand. Run: reclamation triggers automated against usage thresholds, accountability set by policy, optimisation before each renewal.",
+     "verified": true,
+     "checked": "2026-11-03"
+    }
+   ],
+   "heuristicReasoning": "The count bands are LTM's and are not normalised by estate size (30 platforms versus 1,000), so the result is a screen, not a benchmark. The 100/80/60/40/20 steps are an LTM convention; the FinOps Framework gives three stages, not scores.",
+   "verified": true,
+   "notes": "CORRECTION: the master basis says the capability \"asks leadership to have a process so teams do not buy what already exists\"; I could not find that sentence in the page as read (Walk says FinOps consults on renewals and joins purchases outside cloud providers, with a pre-signature checklist). Reworded here. Not footprint-gated on SaaS."
+  },
+  {
+   "id": "ADP-07",
+   "kind": "score",
+   "basis": "Scores how reliably unused SaaS licences are removed. Licensing & SaaS describes Run as \"reclamation triggers are automated against usage thresholds\", and Crawl as terms reviewed at renewal after the commitment, so AUTOMATED and RENEWAL anchor the top and the bottom of the options.",
+   "sourceType": "published-framework",
+   "sources": [
+    {
+     "title": "FinOps Framework: Licensing & SaaS",
+     "publisher": "FinOps Foundation",
+     "year": 2026,
+     "url": "https://www.finops.org/framework/capabilities/licensing-saas/",
+     "whatItSays": "Aim: plan appropriate use to minimise over-deployment (a compliance risk) and under-deployment (shelfware, waste). Crawl: terms reviewed at renewal, largely after the commitment is in place. Walk: FinOps consulted in renewals and included when licences or SaaS are bought outside cloud service providers; a pre-signature checklist compares options against validated demand. Run: reclamation triggers automated against usage thresholds, accountability set by policy, optimisation before each renewal.",
+     "verified": true,
+     "checked": "2026-11-03"
+    }
+   ],
+   "heuristicReasoning": "The 100/80/60/40/20 steps are an LTM convention; the FinOps Framework gives three stages, not scores. The master maps TIMELY and PERIODIC to \"Walk\"; the Walk text read concerns renewal involvement and pre-signature checklists, not periodic reclamation, so that anchor is LTM's reading.",
+   "verified": true,
+   "notes": "CORRECTION to the master basis: only the Run and Crawl anchors are confirmed in the page text. Not footprint-gated on SaaS."
+  },
+  {
+   "id": "ADP-08",
+   "kind": "score",
+   "basis": "Share of SaaS spend bought or owned by business functions outside central governance, scored inverted (0 percent best) into Spend Transparency. Licensing & SaaS (Walk) says FinOps should be included when SaaS is acquired outside cloud service providers.",
+   "sourceType": "LTM-heuristic",
+   "sources": [
+    {
+     "title": "FinOps Framework: Licensing & SaaS",
+     "publisher": "FinOps Foundation",
+     "year": 2026,
+     "url": "https://www.finops.org/framework/capabilities/licensing-saas/",
+     "whatItSays": "Aim: plan appropriate use to minimise over-deployment (a compliance risk) and under-deployment (shelfware, waste). Crawl: terms reviewed at renewal, largely after the commitment is in place. Walk: FinOps consulted in renewals and included when licences or SaaS are bought outside cloud service providers; a pre-signature checklist compares options against validated demand. Run: reclamation triggers automated against usage thresholds, accountability set by policy, optimisation before each renewal.",
+     "verified": true,
+     "checked": "2026-11-03"
+    }
+   ],
+   "heuristicReasoning": "The inversion is LTM's; not every business-bought service is bad (ADP-33 balances it). The 30 percent F-017 trigger is an LTM heuristic with no published source, recorded as such on the owner's decision of 4 Nov 2026. No published shadow-IT percentage with method and sample was found.",
+   "verified": true,
+   "notes": "Slider cannot record Unknown. Not footprint-gated on SaaS, so a client with no SaaS can raise F-017 through this question."
+  },
+  {
+   "id": "ADP-09",
+   "kind": "score",
+   "basis": "Scores how integrated virtualisation decisions are (licensing, infrastructure cost, alternatives, migration). FinOps Rate Optimization compares pricing, commitment and BYOL options against validated demand before purchase, and Architecting & Workload Placement uses a documented trade-off model; applying that to virtualisation is LTM's step.",
+   "sourceType": "LTM-heuristic",
+   "sources": [
+    {
+     "title": "FinOps Framework: Rate Optimization",
+     "publisher": "FinOps Foundation",
+     "year": 2026,
+     "url": "https://www.finops.org/framework/capabilities/rate-optimization/",
+     "whatItSays": "Manages the rates paid across technology categories through negotiated discounts and commitments (typically 1 or 3 years). Discounts are higher the more restrictive the mechanism, so flexibility and lock-in trade against discount depth. Walk: pricing, commitment, marketplace and BYOL options compared against validated demand before purchase. Run: commitment portfolios continuously rebalanced against realised usage.",
+     "verified": true,
+     "checked": "2026-11-03"
+    },
+    {
+     "title": "FinOps Framework: Architecting & Workload Placement",
+     "publisher": "FinOps Foundation",
+     "year": 2026,
+     "url": "https://www.finops.org/framework/capabilities/architecting-workload-placement/",
+     "whatItSays": "Value and cost efficiency are best achieved by architecting them into a system design; covers modernisation, re-platforming, relocation, consolidation and retirement, and placement across public cloud, data centre and private cloud. Crawl: default patterns without a documented trade-off model. Walk: documented model weighing cost, value, sovereignty, resilience and sustainability. Run: design variance reported back so patterns improve. The definition warns against unintentionally building in tech debt.",
+     "verified": true,
+     "checked": "2026-11-03"
+    }
+   ],
+   "heuristicReasoning": "No published scale for virtualisation-platform decisions was found (the Broadcom and VMware price-change literature is trade-press and Gartner predictions, not usable). The 100/80/60/40/20 steps are an LTM convention; the FinOps Framework gives three stages, not scores.",
+   "verified": true,
+   "notes": "UNREACHABLE: this question's section \"VMware\" belongs to no focus area and is not baseline, so the page never shows it even to a client with VMWARE in the footprint. Gated on VMWARE in the engine. See COVERAGE-MATRIX."
+  },
+  {
+   "id": "ADP-10",
+   "kind": "context",
+   "basis": "A self-estimated share of the virtualised estate worth investigating for consolidation or migration; an opportunity size, not a poor practice, so it is context.",
+   "sourceType": "LTM-heuristic",
+   "sources": [],
+   "heuristicReasoning": "No published range for the investigable share of a virtualised estate exists in the sources opened.",
+   "verified": false,
+   "notes": "UNREACHABLE for the same reason as ADP-09 (section \"VMware\" is in no area). Slider cannot record Unknown."
+  },
+  {
+   "id": "ADP-11",
+   "kind": "score",
+   "basis": "Five anchored levels of confidence that data-centre capacity matches realistic demand including resilience, mapped 20 to 100. FinOps Usage Optimization covers on-premises environments, and US federal data-centre reporting tracks underutilised servers, so utilisation evidence is a recognised management measure.",
+   "sourceType": "LTM-heuristic",
+   "sources": [
+    {
+     "title": "GAO-23-105946: Data Center Optimization Initiative progress (27 Feb 2023)",
+     "publisher": "US Government Accountability Office",
+     "year": 2023,
+     "url": "https://www.gao.gov/products/gao-23-105946",
+     "whatItSays": "24 federal agencies; cumulative savings and avoidances FY2012 to FY2021 of USD 6.6 billion (agency-reported). GAO reports four OMB optimisation targets: virtualisation, availability, advanced energy metering and underutilised servers. The page does not mention facility utilisation. US federal only.",
+     "verified": true,
+     "checked": "2026-11-03"
+    },
+    {
+     "title": "FinOps Framework: Usage Optimization",
+     "publisher": "FinOps Foundation",
+     "year": 2026,
+     "url": "https://www.finops.org/framework/capabilities/usage-optimization/",
+     "whatItSays": "Resources should be properly selected, correctly sized and run only when needed; covers cloud, SaaS and on-premises environments. Crawl: periodic manual review of what already runs. Walk: structured, savings and effort estimated, basic automation of repeatable processes. Run: largely automated, idle resources actioned, rightsizing implemented with minimal manual work.",
+     "verified": true,
+     "checked": "2026-11-03"
+    }
+   ],
+   "heuristicReasoning": "The anchors and the keyed 1-to-5 map are LTM's. GAO's page does not report facility utilisation, so no published range supports the scale.",
+   "verified": true,
+   "notes": "Gated on ON_PREM or PRIVATE_CLOUD. Stars have no Unknown; missing demand data sits in level 1."
+  },
+  {
+   "id": "ADP-12",
+   "kind": "context",
+   "basis": "Share of the on-premises estate near refresh, support expiry or end of life; a timing exposure driven by estate age, not by how well cost is managed. GAO scored federal legacy systems on attributes including age and vendor support, which is why age and support status are recognised risk factors.",
+   "sourceType": "LTM-heuristic",
+   "sources": [
+    {
+     "title": "GAO-25-107795: federal legacy IT systems most in need of modernization (July 2025)",
+     "publisher": "US Government Accountability Office",
+     "year": 2025,
+     "url": "https://www.gao.gov/products/gao-25-107795",
+     "whatItSays": "69 legacy systems submitted by 24 agencies and scored on 16 attributes including age, vendor support and cybersecurity risk; agencies typically report about 80% of more than USD 100 billion of annual federal IT spend goes to operating and maintaining existing systems. A share of budget, not a saving; agency-submitted selection.",
+     "verified": true,
+     "checked": "2026-11-03"
+    }
+   ],
+   "heuristicReasoning": "The five share bands are LTM's. The master could have argued it as a debt condition scale; context was chosen because age is not a management failing.",
+   "verified": true,
+   "notes": "Not gated on the footprint (applies to any client who answers; shown with the Infrastructure area). UNKNOWN is a visibility flag."
+  },
+  {
+   "id": "ADP-13",
+   "kind": "score",
+   "basis": "Scores how actively colocation capacity and contracts are optimised against demand, from continuous review to renewal-only to unclear. A colocation contract is most naturally a Data Center Facilities (Lease) cost in the TBM cost pools (my reading; the page does not name colocation), and review at renewal only is the Crawl pattern in the FinOps maturity model.",
+   "sourceType": "LTM-heuristic",
+   "sources": [
+    {
+     "title": "TBM Taxonomy 5.0.1 (cost pools, resource towers, solutions, consumers)",
+     "publisher": "TBM Council",
+     "year": 2025,
+     "url": "https://www.tbmcouncil.org/taxonomy/",
+     "whatItSays": "Released 18 Jul 2025. Four layers: Technology Cost Pools (Staffing, Outside Services, Cloud Services, Hardware, Software & SaaS, Data Center Facilities, Telecom, Misc Costs, Cross Charges), Technology Resource Towers (Data Center, Compute, Storage, Network, Application, Data, Delivery, Tech Management, Security, Risk & Compliance, Smart Devices, End User), Technology Solutions and Technology Consumers. Read through a summarising fetch tool; the page text I could see states no licence or reuse terms.",
+     "verified": true,
+     "checked": "2026-11-03"
+    },
+    {
+     "title": "FinOps Framework: Maturity model (Crawl, Walk, Run)",
+     "publisher": "FinOps Foundation",
+     "year": 2026,
+     "url": "https://www.finops.org/framework/maturity-model/",
+     "whatItSays": "Crawl is very little reporting and tooling with basic KPIs and processes; Walk is automation and/or process covering most of a capability, followed across the organisation; Run is automation as the preferred approach, followed by all teams. Every capability can be at a different maturity, and the goal should never be simply Run in every capability.",
+     "verified": true,
+     "checked": "2026-11-03"
+    }
+   ],
+   "heuristicReasoning": "No published colocation-optimisation scale was found; options and steps are LTM's.",
+   "verified": true,
+   "notes": "Gated on COLO. A client without colocation is not asked, which fixes the earlier dependency that would have scored it low."
+  },
+  {
+   "id": "ADP-14",
+   "kind": "score",
+   "basis": "Scores how clearly managed-service charges follow consumption and outcomes (outcome-linked, demand-linked, SLA-only, fixed, unreconciled). The UK Sourcing Playbook says payment mechanisms should be scrutinised so they incentivise the desired outcomes, and TBM carries managed services as part of its Outside Services pool.",
+   "sourceType": "LTM-heuristic",
+   "sources": [
+    {
+     "title": "The Sourcing Playbook (version 4)",
+     "publisher": "UK Cabinet Office, Government Commercial Function",
+     "year": 2026,
+     "url": "https://gov.uk/government/publications/the-sourcing-and-consultancy-playbooks/the-sourcing-playbook-html",
+     "whatItSays": "Departments should do a proportionate delivery model assessment before deciding to outsource, insource or re-procure; it is iterated over time; all complex outsourcing in central government shall produce a Should Cost Model Estimate; pricing and payment mechanisms should incentivise desired outcomes; plan early for contract end. UK central government guidance; the page text I read was truncated before the pricing and termination chapters. The page shows an update date of 30 Sep 2026 (a search summary gave 6 Mar 2026).",
+     "verified": true,
+     "checked": "2026-11-03"
+    },
+    {
+     "title": "TBM Taxonomy 5.0.1 (cost pools, resource towers, solutions, consumers)",
+     "publisher": "TBM Council",
+     "year": 2025,
+     "url": "https://www.tbmcouncil.org/taxonomy/",
+     "whatItSays": "Released 18 Jul 2025. Four layers: Technology Cost Pools (Staffing, Outside Services, Cloud Services, Hardware, Software & SaaS, Data Center Facilities, Telecom, Misc Costs, Cross Charges), Technology Resource Towers (Data Center, Compute, Storage, Network, Application, Data, Delivery, Tech Management, Security, Risk & Compliance, Smart Devices, End User), Technology Solutions and Technology Consumers. Read through a summarising fetch tool; the page text I could see states no licence or reuse terms.",
+     "verified": true,
+     "checked": "2026-11-03"
+    }
+   ],
+   "heuristicReasoning": "No published scale ranks these pricing models; the ladder is a CIO-recognisable LTM construct and the SLA_ONLY above FIXED order is a judgement.",
+   "verified": true,
+   "notes": "Gated on EXTERNAL. Playbook is UK central government guidance, text partly unread."
+  },
+  {
+   "id": "ADP-16",
+   "kind": "score",
+   "basis": "Scores how routinely software entitlements are reconciled with deployment and usage before renewal or true-up. FinOps Licensing & SaaS defines the aim as avoiding over-deployment (compliance risk) and under-deployment (shelfware), and ISO/IEC 19770-1 is the IT asset management system standard that this practice belongs to.",
+   "sourceType": "published-framework",
+   "sources": [
+    {
+     "title": "FinOps Framework: Licensing & SaaS",
+     "publisher": "FinOps Foundation",
+     "year": 2026,
+     "url": "https://www.finops.org/framework/capabilities/licensing-saas/",
+     "whatItSays": "Aim: plan appropriate use to minimise over-deployment (a compliance risk) and under-deployment (shelfware, waste). Crawl: terms reviewed at renewal, largely after the commitment is in place. Walk: FinOps consulted in renewals and included when licences or SaaS are bought outside cloud service providers; a pre-signature checklist compares options against validated demand. Run: reclamation triggers automated against usage thresholds, accountability set by policy, optimisation before each renewal.",
+     "verified": true,
+     "checked": "2026-11-03"
+    },
+    {
+     "title": "ISO/IEC 19770-1:2017 IT asset management systems (JTC 1/SC 7 project page)",
+     "publisher": "ISO/IEC JTC 1/SC 7",
+     "year": 2017,
+     "url": "https://committee.iso.org/sites/jtc1sc7/home/projects/flagship-standards/isoiec-19770-12017.html",
+     "whatItSays": "Specifies requirements for establishing, implementing, maintaining and improving an IT asset management system (Plan-Do-Check-Act); normative Annex A sets out 15 ITAM process areas; informative Annex B suggests three tiers in recommended implementation order: Trustworthy Data, life cycle Integration, Optimization. I read the committee page, not the standard text; the iso.org catalogue page returned HTTP 403.",
+     "verified": true,
+     "checked": "2026-11-03"
+    }
+   ],
+   "heuristicReasoning": "The 100/80/60/40/20 steps are an LTM convention; the FinOps Framework gives three stages, not scores.",
+   "verified": true,
+   "notes": "CORRECTION: the master calls ISO/IEC 19770-1:2017 a \"software and IT asset management system standard\"; the 2017 edition is an IT asset management system standard (15 process areas, informative three-tier order), and the older software-asset-management tiers belong to the 2012 edition. Clauses were not read; only the committee page. Not gated on SOFTWARE in the footprint."
+  },
+  {
+   "id": "ADP-17",
+   "kind": "context",
+   "basis": "Where repetitive manual work consumes the most capacity; it points to where to look and is not scored (the share of manual work is scored by CORE-34).",
+   "sourceType": "LTM-heuristic",
+   "sources": [],
+   "heuristicReasoning": "The seven areas are LTM's. The CLOUD option only records a hotspot and routes to FinOps IQ.",
+   "verified": false,
+   "notes": "No source opened."
+  },
+  {
+   "id": "ADP-18",
+   "kind": "score",
+   "basis": "Scores how the internal versus contractor balance is decided and reviewed (rewritten on 4 Nov 2026 to one scale). The UK Sourcing Playbook expects a proportionate delivery model assessment before outsourcing, insourcing or re-procuring and says it should be iterated over time, and TBM separates internal labour, staff augmentation and outside services.",
+   "sourceType": "published-framework",
+   "sources": [
+    {
+     "title": "The Sourcing Playbook (version 4)",
+     "publisher": "UK Cabinet Office, Government Commercial Function",
+     "year": 2026,
+     "url": "https://gov.uk/government/publications/the-sourcing-and-consultancy-playbooks/the-sourcing-playbook-html",
+     "whatItSays": "Departments should do a proportionate delivery model assessment before deciding to outsource, insource or re-procure; it is iterated over time; all complex outsourcing in central government shall produce a Should Cost Model Estimate; pricing and payment mechanisms should incentivise desired outcomes; plan early for contract end. UK central government guidance; the page text I read was truncated before the pricing and termination chapters. The page shows an update date of 30 Sep 2026 (a search summary gave 6 Mar 2026).",
+     "verified": true,
+     "checked": "2026-11-03"
+    },
+    {
+     "title": "TBM Taxonomy 5.0.1 (cost pools, resource towers, solutions, consumers)",
+     "publisher": "TBM Council",
+     "year": 2025,
+     "url": "https://www.tbmcouncil.org/taxonomy/",
+     "whatItSays": "Released 18 Jul 2025. Four layers: Technology Cost Pools (Staffing, Outside Services, Cloud Services, Hardware, Software & SaaS, Data Center Facilities, Telecom, Misc Costs, Cross Charges), Technology Resource Towers (Data Center, Compute, Storage, Network, Application, Data, Delivery, Tech Management, Security, Risk & Compliance, Smart Devices, End User), Technology Solutions and Technology Consumers. Read through a summarising fetch tool; the page text I could see states no licence or reuse terms.",
+     "verified": true,
+     "checked": "2026-11-03"
+    }
+   ],
+   "heuristicReasoning": "The options and steps are LTM's. The Playbook is UK central government guidance and the principle (decide on stated economics and review) is supported, not the specific ladder.",
+   "verified": true,
+   "notes": "Feeds COST-06 (VALUE-04 tag unused). One of only two questions feeding COST-06, the thinnest workforce coverage."
+  },
+  {
+   "id": "ADP-19",
+   "kind": "context",
+   "basis": "Count of material vendor renewals in 12 to 24 months; a larger pipeline is exposure and workload, not poorer practice, so it is context (the same reasoning as CORE-31).",
+   "sourceType": "LTM-heuristic",
+   "sources": [],
+   "heuristicReasoning": "Bands are LTM's; a count depends on estate size.",
+   "verified": false,
+   "notes": "No source opened. FinOps Intersecting Disciplines places renewal ownership with procurement but gives no volume measure."
+  },
+  {
+   "id": "ADP-20",
+   "kind": "context",
+   "basis": "Self-rated commercial leverage across major vendor contracts; leverage depends on market structure, spend concentration and alternatives rather than on how well costs are managed, so it is a constraint signal, not a score.",
+   "sourceType": "LTM-heuristic",
+   "sources": [],
+   "heuristicReasoning": "Five anchored levels are LTM's. The prompt says \"how much\" but the anchors read as ordered, which could mislead.",
+   "verified": false,
+   "notes": "No source opened."
+  },
+  {
+   "id": "ADP-21",
+   "kind": "context",
+   "basis": "Share of applications that are business-critical; a fact about the business (a bank may rightly have 60 percent), so it constrains rationalisation pace and is not scored.",
+   "sourceType": "LTM-heuristic",
+   "sources": [],
+   "heuristicReasoning": "No published benchmark for critical-application share exists in the sources opened.",
+   "verified": false,
+   "notes": "Slider cannot record Unknown."
+  },
+  {
+   "id": "ADP-22",
+   "kind": "score",
+   "basis": "Share of applications with unclear ownership, unclear value or little usage, scored inverted. Public audit work shows the pattern: GAO counted about 200 consolidation opportunities across 26 US agencies and the NAO reports nearly 30 percent of one UK department's legacy applications unsupported.",
+   "sourceType": "LTM-heuristic",
+   "sources": [
+    {
+     "title": "GAO-14-65: review of the OMB PortfolioStat initiative (report title not captured in my read)",
+     "publisher": "US Government Accountability Office",
+     "year": 2013,
+     "url": "https://www.gao.gov/products/GAO-14-65",
+     "whatItSays": "Review of 26 federal agencies: about 200 IT consolidation opportunities and at least USD 5.8 billion potential savings through FY2015 (OMB had estimated USD 2.5 billion); four of five agencies reviewed in depth did not always support their estimates. Projected, not realised; US federal only.",
+     "verified": true,
+     "checked": "2026-11-03"
+    },
+    {
+     "title": "Modernising ageing digital services (press release)",
+     "publisher": "UK National Audit Office",
+     "year": 2022,
+     "url": "https://www.nao.org.uk/press-releases/modernising-ageing-digital-services/",
+     "whatItSays": "Defra estimated that maintaining ageing systems absorbs 76% of its digital, data and technology spend and that nearly 30% of its legacy applications are unsupported; modernisation delayed by long-running underfunding. One UK department, its own estimate.",
+     "verified": true,
+     "checked": "2026-11-03"
+    }
+   ],
+   "heuristicReasoning": "A count of applications, not of spend, so a screen not a benchmark; the audit figures are different measures and context only. It overlaps CORE-39 (UNCLEAR_OWNER, LOW_USAGE), which flags what ADP-22 quantifies.",
+   "verified": true,
+   "notes": "Slider cannot record Unknown."
+  },
+  {
+   "id": "ADP-23",
+   "kind": "score",
+   "basis": "Scores how far application lifecycle decisions use value and total cost together. GAO ITIM moves from project-centric control to a portfolio approach and then to de-selecting low-value investments, and FinOps Architecting & Workload Placement covers retirement and consolidation of existing workloads.",
+   "sourceType": "published-framework",
+   "sources": [
+    {
+     "title": "Information Technology Investment Management: A Framework for Assessing and Improving Process Maturity (GAO-04-394G, version 1.1)",
+     "publisher": "US Government Accountability Office",
+     "year": 2004,
+     "url": "https://www.gao.gov/products/gao-04-394g",
+     "whatItSays": "Five maturity stages. Stage 3 moves from project-centric to a portfolio approach; Stage 4 uses evaluation to improve the investment portfolio and can plan and implement de-selection of obsolete, high-risk or low-value IT investments. A post-implementation review examines differences between estimated and actual costs and benefits and measures success against the business case and organisational objectives. US federal context, 2004.",
+     "verified": true,
+     "checked": "2026-11-03"
+    },
+    {
+     "title": "FinOps Framework: Architecting & Workload Placement",
+     "publisher": "FinOps Foundation",
+     "year": 2026,
+     "url": "https://www.finops.org/framework/capabilities/architecting-workload-placement/",
+     "whatItSays": "Value and cost efficiency are best achieved by architecting them into a system design; covers modernisation, re-platforming, relocation, consolidation and retirement, and placement across public cloud, data centre and private cloud. Crawl: default patterns without a documented trade-off model. Walk: documented model weighing cost, value, sovereignty, resilience and sustainability. Run: design variance reported back so patterns improve. The definition warns against unintentionally building in tech debt.",
+     "verified": true,
+     "checked": "2026-11-03"
+    }
+   ],
+   "heuristicReasoning": "The five options and steps are LTM's; the sources support the direction only. PROJECT (decisions only at a project event) scoring 60 is a judgement.",
+   "verified": true,
+   "notes": "Overlaps CORE-41 in theme and both feed COST-10; present with care, not as independent evidence. No Unknown option."
+  },
+  {
+   "id": "ADP-24",
+   "kind": "context",
+   "basis": "Which data-cost issues are most material (duplication, storage growth, retention, processing, transfer, quality); an unordered set, so a count cannot be scored either way.",
+   "sourceType": "LTM-heuristic",
+   "sources": [],
+   "heuristicReasoning": "The six options are LTM's; cloud transfer and processing belong to FinOps IQ.",
+   "verified": false,
+   "notes": "No source opened. NONE must be exclusive."
+  },
+  {
+   "id": "ADP-25",
+   "kind": "score",
+   "basis": "Scores how well data retention requirements are balanced against storage and processing cost, from retention mapped to cost and reviewed by the data owner down to not being able to judge.",
+   "sourceType": "LTM-heuristic",
+   "sources": [],
+   "heuristicReasoning": "No neutral published scale was found. Retention periods can be set by law, which is why the best option is a reviewed balance, not the shortest retention. The 100/80/60/40/20 steps are an LTM convention; the FinOps Framework gives three stages, not scores.",
+   "verified": false,
+   "notes": "Not footprint-gated on DATA. TBM has Data and Storage towers but no maturity scale."
+  },
+  {
+   "id": "ADP-26",
+   "kind": "score",
+   "basis": "Five anchored levels of confidence that network capacity and contracts reflect actual demand, mapped 20 to 100. A worked example of why contract fit matters: GSA estimated in 2010 that agencies could save 28.4 percent of their FTS2001 telecom spend by moving to Networx.",
+   "sourceType": "LTM-heuristic",
+   "sources": [
+    {
+     "title": "GAO-14-63: federal telecommunications Networx transition (report title not captured in my read)",
+     "publisher": "US Government Accountability Office",
+     "year": 2013,
+     "url": "https://gao.gov/assets/670/660000.txt",
+     "whatItSays": "GSA estimated in April 2010 that agencies could save 28.4% of FTS2001 spending by moving to Networx; GAO applied it to about USD 1.2 billion of spend and estimated about USD 329 million forgone through delay. One dated estimate on a large US federal contract rebid; not a general rate for enterprise network spend.",
+     "verified": true,
+     "checked": "2026-11-03"
+    }
+   ],
+   "heuristicReasoning": "That figure is one dated US federal contract rebid and is not a benchmark or a ceiling. The anchors and the keyed 1-to-5 map are LTM's; the prompt says \"how confidently\" while the labels describe practice.",
+   "verified": true,
+   "notes": "Not footprint-gated on NETWORK. Stars have no Unknown; poor visibility sits in level 1."
+  },
+  {
+   "id": "ADP-27",
+   "kind": "score",
+   "basis": "Scores how far security technology spend is measured against risk reduction and outcomes, from quantified before investment to no evidence.",
+   "sourceType": "LTM-heuristic",
+   "sources": [],
+   "heuristicReasoning": "No published scale was found. Security spend is often mandated, so the wording should read \"not linked to outcomes\", not \"wasted\"; PARTIAL above CONTROL is a judgement. The 100/80/60/40/20 steps are an LTM convention; the FinOps Framework gives three stages, not scores.",
+   "verified": false,
+   "notes": "Feeds VALUE-02. TBM has a Security tower but no measurement scale. Not footprint-gated on SECURITY."
+  },
+  {
+   "id": "ADP-28",
+   "kind": "context",
+   "basis": "Share of technology spend driven mainly by regulation or compliance; a fact that constrains what can be optimised, not a better or worse condition. TBM carries a Risk & Compliance tower (including Regulatory & Audit) for this kind of spend.",
+   "sourceType": "LTM-heuristic",
+   "sources": [
+    {
+     "title": "TBM Taxonomy 5.0.1 (cost pools, resource towers, solutions, consumers)",
+     "publisher": "TBM Council",
+     "year": 2025,
+     "url": "https://www.tbmcouncil.org/taxonomy/",
+     "whatItSays": "Released 18 Jul 2025. Four layers: Technology Cost Pools (Staffing, Outside Services, Cloud Services, Hardware, Software & SaaS, Data Center Facilities, Telecom, Misc Costs, Cross Charges), Technology Resource Towers (Data Center, Compute, Storage, Network, Application, Data, Delivery, Tech Management, Security, Risk & Compliance, Smart Devices, End User), Technology Solutions and Technology Consumers. Read through a summarising fetch tool; the page text I could see states no licence or reuse terms.",
+     "verified": true,
+     "checked": "2026-11-03"
+    }
+   ],
+   "heuristicReasoning": "No published share by sector was used.",
+   "verified": true,
+   "notes": "Asked of every client since 4 Nov 2026. Slider cannot record Unknown."
+  },
+  {
+   "id": "ADP-29",
+   "kind": "score",
+   "basis": "Share of committed transformation spend with no clearly measurable business outcome, scored inverted. GAO ITIM and FinOps Planning & Estimating both expect expected benefits to be defined and later compared with actuals.",
+   "sourceType": "LTM-heuristic",
+   "sources": [
+    {
+     "title": "Information Technology Investment Management: A Framework for Assessing and Improving Process Maturity (GAO-04-394G, version 1.1)",
+     "publisher": "US Government Accountability Office",
+     "year": 2004,
+     "url": "https://www.gao.gov/products/gao-04-394g",
+     "whatItSays": "Five maturity stages. Stage 3 moves from project-centric to a portfolio approach; Stage 4 uses evaluation to improve the investment portfolio and can plan and implement de-selection of obsolete, high-risk or low-value IT investments. A post-implementation review examines differences between estimated and actual costs and benefits and measures success against the business case and organisational objectives. US federal context, 2004.",
+     "verified": true,
+     "checked": "2026-11-03"
+    },
+    {
+     "title": "FinOps Framework: Planning & Estimating",
+     "publisher": "FinOps Foundation",
+     "year": 2026,
+     "url": "https://www.finops.org/framework/capabilities/planning-estimating/",
+     "whatItSays": "Business case: estimate lifecycle cost and expected business value before prioritising demand; compare projected avoidance with observed outcomes; track investment redirected or avoided. Run: estimates carry an explicit range and confidence, a documented counterfactual, and are checked against what actually happened to recalibrate later estimates.",
+     "verified": true,
+     "checked": "2026-11-03"
+    }
+   ],
+   "heuristicReasoning": "No published share of transformation spend without outcomes was found. The respondent must know the committed spend. It overlaps CORE-44 and CORE-19 but is the only question that quantifies the amount.",
+   "verified": true,
+   "notes": "Slider cannot record Unknown."
+  },
+  {
+   "id": "ADP-30",
+   "kind": "score",
+   "basis": "Scores whether material changes in cost, timeline or benefit lead to a formal re-baseline. GAO-08-925 (a random sample of 180 of 778 major federal IT projects) found about 48 percent had been rebaselined, that rebaselining can be legitimate or can mask overruns, and that sound policy states valid reasons, a process for a new baseline, validation, management review and documentation.",
+   "sourceType": "published-framework",
+   "sources": [
+    {
+     "title": "Information Technology: Agencies Need to Establish Comprehensive Policies to Address Changes to Projects' Cost, Schedule, and Performance Goals (GAO-08-925)",
+     "publisher": "US Government Accountability Office",
+     "year": 2008,
+     "url": "https://www.gao.gov/assets/gao-08-925.pdf",
+     "whatItSays": "Survey of managers of a random sample of 180 of 778 major federal IT projects (FY2008): about 48% had been rebaselined, 51% of those twice or more. Rebaselining can be done for valid reasons but can also mask cost overruns and schedule delays. A sound policy should state valid reasons, describe how a new baseline is built, require validation, require management review and require documentation.",
+     "verified": true,
+     "checked": "2026-11-03"
+    }
+   ],
+   "heuristicReasoning": "The option ladder and steps are LTM's; the GAO text supports the governance practice, not a score. ACTIVE can mask variance if re-baselining is frequent but unreviewed, so the question reads discipline, not frequency.",
+   "verified": true,
+   "notes": "CORRECTION: the master also cites GAO-20-195G for \"rebaselining resets reported cost growth to zero\". I could not confirm that: the GAO product page does not mention rebaselining. GAO-08-925 itself refers to a draft Cost Assessment Guide as the source of its five practices. GAO read from the PDF text; US federal, 2008. No Unknown option."
+  },
+  {
+   "id": "ADP-31",
+   "kind": "score",
+   "basis": "Scores how separately AI cost and benefit are tracked while still reconciling to enterprise spend. FinOps for AI says to allocate first (for example map each API key to one team and cost centre), to track cost per successful outcome as a range, and that FinOps supplies the cost while the business owns the value claim.",
+   "sourceType": "published-framework",
+   "sources": [
+    {
+     "title": "FinOps for AI Overview",
+     "publisher": "FinOps Foundation (working group)",
+     "year": 2026,
+     "url": "https://www.finops.org/wg/finops-for-ai-overview/",
+     "whatItSays": "Allocate first (map each API key to one team, application and cost centre); track cost per successful outcome and report it as a range; FinOps supplies the cost and the business owns the value claim. At Crawl, pilots and proofs of concept are acceptable if cost and time limits are set up front.",
+     "verified": true,
+     "checked": "2026-11-03"
+    }
+   ],
+   "heuristicReasoning": "The paper gives no scale; the options and steps are LTM's. MIXED and NONE overlap in wording.",
+   "verified": true,
+   "notes": "Gated on AI in the footprint (added 4 Nov 2026), and shown only when the AI focus area is picked. Triggers F-019 on NONE or UNKNOWN."
+  },
+  {
+   "id": "ADP-32",
+   "kind": "score",
+   "basis": "Scores how far AI investments have defined outcomes and adoption targets. FinOps for AI says to report cost per successful outcome and notes that at Crawl, pilots are acceptable when cost and time limits are set up front.",
+   "sourceType": "published-framework",
+   "sources": [
+    {
+     "title": "FinOps for AI Overview",
+     "publisher": "FinOps Foundation (working group)",
+     "year": 2026,
+     "url": "https://www.finops.org/wg/finops-for-ai-overview/",
+     "whatItSays": "Allocate first (map each API key to one team, application and cost centre); track cost per successful outcome and report it as a range; FinOps supplies the cost and the business owns the value claim. At Crawl, pilots and proofs of concept are acceptable if cost and time limits are set up front.",
+     "verified": true,
+     "checked": "2026-11-03"
+    }
+   ],
+   "heuristicReasoning": "The scale confuses discipline with stage: an exploratory pilot with firm limits scores low. The options and steps are LTM's, and the prompt says \"how confident\" while the options describe practice.",
+   "verified": true,
+   "notes": "Gated on AI. Triggers F-019 on EXPERIMENTAL or UNKNOWN."
+  },
+  {
+   "id": "ADP-33",
+   "kind": "score",
+   "basis": "Scores how early IT shapes purchases made by business functions. FinOps Licensing & SaaS (Walk) says FinOps should be included when licensing or SaaS is acquired outside cloud service providers, and Run notes purchases through other channels are common.",
+   "sourceType": "published-framework",
+   "sources": [
+    {
+     "title": "FinOps Framework: Licensing & SaaS",
+     "publisher": "FinOps Foundation",
+     "year": 2026,
+     "url": "https://www.finops.org/framework/capabilities/licensing-saas/",
+     "whatItSays": "Aim: plan appropriate use to minimise over-deployment (a compliance risk) and under-deployment (shelfware, waste). Crawl: terms reviewed at renewal, largely after the commitment is in place. Walk: FinOps consulted in renewals and included when licences or SaaS are bought outside cloud service providers; a pre-signature checklist compares options against validated demand. Run: reclamation triggers automated against usage thresholds, accountability set by policy, optimisation before each renewal.",
+     "verified": true,
+     "checked": "2026-11-03"
+    }
+   ],
+   "heuristicReasoning": "The page gives no scale; the map is LTM's and covers SaaS and licensing, not every technology purchase.",
+   "verified": true,
+   "notes": "Gated on CORE-16 TRUE or UNSURE. Triggers F-017 on LIMITED or NONE. No Unknown option."
+  },
+  {
+   "id": "ADP-34",
+   "kind": "score",
+   "basis": "Scores how often business-led purchases are consolidated or rationalised with enterprise capability. Same Licensing & SaaS background as ADP-06 and ADP-33.",
+   "sourceType": "LTM-heuristic",
+   "sources": [
+    {
+     "title": "FinOps Framework: Licensing & SaaS",
+     "publisher": "FinOps Foundation",
+     "year": 2026,
+     "url": "https://www.finops.org/framework/capabilities/licensing-saas/",
+     "whatItSays": "Aim: plan appropriate use to minimise over-deployment (a compliance risk) and under-deployment (shelfware, waste). Crawl: terms reviewed at renewal, largely after the commitment is in place. Walk: FinOps consulted in renewals and included when licences or SaaS are bought outside cloud service providers; a pre-signature checklist compares options against validated demand. Run: reclamation triggers automated against usage thresholds, accountability set by policy, optimisation before each renewal.",
+     "verified": true,
+     "checked": "2026-11-03"
+    }
+   ],
+   "heuristicReasoning": "No scale was found; options and steps are LTM's. It overlaps ADP-06 and CORE-27 in theme.",
+   "verified": true,
+   "notes": "Gated on CORE-16 TRUE or UNSURE. Triggers F-017 on NONE only (CASE excluded because F-017 is high severity)."
+  },
+  {
+   "id": "ADP-35",
+   "kind": "score",
+   "basis": "Scores how closely outsourced services are priced to demand, outcomes and service levels. The UK Sourcing Playbook says pricing and payment mechanisms deserve scrutiny so they incentivise the desired behaviours or outcomes.",
+   "sourceType": "LTM-heuristic",
+   "sources": [
+    {
+     "title": "The Sourcing Playbook (version 4)",
+     "publisher": "UK Cabinet Office, Government Commercial Function",
+     "year": 2026,
+     "url": "https://gov.uk/government/publications/the-sourcing-and-consultancy-playbooks/the-sourcing-playbook-html",
+     "whatItSays": "Departments should do a proportionate delivery model assessment before deciding to outsource, insource or re-procure; it is iterated over time; all complex outsourcing in central government shall produce a Should Cost Model Estimate; pricing and payment mechanisms should incentivise desired outcomes; plan early for contract end. UK central government guidance; the page text I read was truncated before the pricing and termination chapters. The page shows an update date of 30 Sep 2026 (a search summary gave 6 Mar 2026).",
+     "verified": true,
+     "checked": "2026-11-03"
+    }
+   ],
+   "heuristicReasoning": "Demand-linked pricing is not always better (it moves volume risk to the client), so FIXED at 40 is a judgement and a stable service on fixed price is penalised. No published scale was found.",
+   "verified": true,
+   "notes": "Gated on EXTERNAL. Playbook is UK central government guidance; pricing chapter text unread."
+  },
+  {
+   "id": "ADP-36",
+   "kind": "score",
+   "basis": "Scores how often outsourced services are challenged against an internal or alternative option. The UK Sourcing Playbook expects a proportionate delivery model assessment before outsourcing, insourcing or re-procuring, iterated over time, and warns that bringing services back in-house later can cost disproportionate effort.",
+   "sourceType": "published-framework",
+   "sources": [
+    {
+     "title": "The Sourcing Playbook (version 4)",
+     "publisher": "UK Cabinet Office, Government Commercial Function",
+     "year": 2026,
+     "url": "https://gov.uk/government/publications/the-sourcing-and-consultancy-playbooks/the-sourcing-playbook-html",
+     "whatItSays": "Departments should do a proportionate delivery model assessment before deciding to outsource, insource or re-procure; it is iterated over time; all complex outsourcing in central government shall produce a Should Cost Model Estimate; pricing and payment mechanisms should incentivise desired outcomes; plan early for contract end. UK central government guidance; the page text I read was truncated before the pricing and termination chapters. The page shows an update date of 30 Sep 2026 (a search summary gave 6 Mar 2026).",
+     "verified": true,
+     "checked": "2026-11-03"
+    }
+   ],
+   "heuristicReasoning": "The ladder and steps are LTM's. Challenge does not mean switching: the Playbook also notes that switching costs can be high.",
+   "verified": true,
+   "notes": "Gated on EXTERNAL. Overlaps CORE-37. No Unknown option."
+  },
+  {
+   "id": "ADP-37",
+   "kind": "score",
+   "basis": "Share of data-centre capacity structurally underutilised after allowing for resilience and seasonality, scored inverted. US federal data-centre reporting tracks underutilised servers as a measured target, so the idea is recognised.",
+   "sourceType": "LTM-heuristic",
+   "sources": [
+    {
+     "title": "GAO-23-105946: Data Center Optimization Initiative progress (27 Feb 2023)",
+     "publisher": "US Government Accountability Office",
+     "year": 2023,
+     "url": "https://www.gao.gov/products/gao-23-105946",
+     "whatItSays": "24 federal agencies; cumulative savings and avoidances FY2012 to FY2021 of USD 6.6 billion (agency-reported). GAO reports four OMB optimisation targets: virtualisation, availability, advanced energy metering and underutilised servers. The page does not mention facility utilisation. US federal only.",
+     "verified": true,
+     "checked": "2026-11-03"
+    }
+   ],
+   "heuristicReasoning": "The GAO page gives no utilisation range and does not mention facility utilisation; the self-estimate is a screen. No neutral published range was found.",
+   "verified": true,
+   "notes": "Gated on ON_PREM, PRIVATE_CLOUD or COLO. Slider cannot record Unknown."
+  },
+  {
+   "id": "ADP-38",
+   "kind": "score",
+   "basis": "Scores whether DR and continuity capacity is proportionate to demonstrated business requirements. NIST SP 800-34 Rev. 1 derives maximum tolerable downtime, recovery time and recovery point objectives from the business impact analysis and says the recovery time objective drives the choice of technology, so excess capacity beyond those objectives is a legitimate cost question.",
+   "sourceType": "published-framework",
+   "sources": [
+    {
+     "title": "Contingency Planning Guide for Federal Information Systems (NIST SP 800-34 Rev. 1)",
+     "publisher": "US National Institute of Standards and Technology",
+     "year": 2010,
+     "url": "https://csrc.nist.gov/pubs/sp/800/34/r1/upd1/final",
+     "whatItSays": "Defines Maximum Tolerable Downtime, Recovery Time Objective and Recovery Point Objective from the business impact analysis, and says determining RTO is important for selecting technologies best suited to meet the MTD. So recovery capacity should follow demonstrated requirements. Read from the full PDF (nvlpubs.nist.gov), May 2010, updated Nov 2010.",
+     "verified": true,
+     "checked": "2026-11-03"
+    }
+   ],
+   "heuristicReasoning": "The four-option ladder and the 100/60/40/20 map are LTM's, and the answer is an opinion (\"appears\") because the question does not ask for the objectives. NIST is a US federal guide (2010); ISO 22301 was not opened (iso.org returned 403).",
+   "verified": true,
+   "notes": "Gated on any non-SaaS estate (ON_PREM, PRIVATE_CLOUD, VMWARE, COLO or PUBLIC_CLOUD)."
+  },
+  {
+   "id": "ADP-39",
+   "kind": "score",
+   "basis": "Scores how well observability tools and telemetry cost are managed against value. FinOps Reporting & Analytics names observability data as an input to reporting but does not describe observability cost management.",
+   "sourceType": "LTM-heuristic",
+   "sources": [
+    {
+     "title": "FinOps Framework: Reporting & Analytics",
+     "publisher": "FinOps Foundation",
+     "year": 2026,
+     "url": "https://www.finops.org/framework/capabilities/reporting-analytics/",
+     "whatItSays": "Crawl: reporting basic and mostly manual, actual spend and trend only. Walk: granular, customisable, showback and KPI tracking, self-service starts. Run: automated and embedded in workflows, variance surfaced automatically when a threshold is breached. The page sets no timeliness standard for cost data; it implies timeliness improves with maturity. It names observability data as an input where relevant.",
+     "verified": true,
+     "checked": "2026-11-03"
+    }
+   ],
+   "heuristicReasoning": "Telemetry growth is a known cost driver in cloud estates but no neutral published range was found and none is cited. The 100/80/60/40/20 steps are an LTM convention; the FinOps Framework gives three stages, not scores.",
+   "verified": true,
+   "notes": "Not footprint-gated."
+  },
+  {
+   "id": "ADP-40",
+   "kind": "context",
+   "basis": "The dominant source of avoidable service-management effort (incidents, requests, process, tools, suppliers); an unordered set with one pick. FinOps names ITSM as an intersecting discipline with service catalogue, CMDB and ticket data, but has no ITSM maturity statements.",
+   "sourceType": "LTM-heuristic",
+   "sources": [
+    {
+     "title": "FinOps Framework: Intersecting Disciplines",
+     "publisher": "FinOps Foundation",
+     "year": 2026,
+     "url": "https://www.finops.org/framework/capabilities/intersecting-disciplines/",
+     "whatItSays": "Procurement: define renewal, exit and consumption accountability. Crawl: renewal and exit ownership undefined until the contract is close to expiring. Walk: assigned at signature with procurement and finance. Run: monitored continuously against usage and entitlement data, with renegotiation or exit triggered before the anniversary. ITAM/SAM covers contractual value and risk over the lifecycle of assets; ITSM is named as a discipline with no maturity statements.",
+     "verified": true,
+     "checked": "2026-11-03"
+    }
+   ],
+   "heuristicReasoning": "The five causes are LTM's; the measurable condition is in CORE-34.",
+   "verified": true,
+   "notes": "ITIL 4 and ISO/IEC 20000-1 are the natural references and were not opened (publisher pages paywalled or returning 403)."
+  },
+  {
+   "id": "ADP-41",
+   "kind": "score",
+   "basis": "Scores how fully product or application teams own the technology cost of their products. FinOps Allocation moves shared-platform owners from absorbing costs (Crawl) to showback (Walk) to full allocation and chargeback (Run), and Invoicing & Chargeback adds that showback is always needed while chargeback depends on accounting policy.",
+   "sourceType": "published-framework",
+   "sources": [
+    {
+     "title": "FinOps Framework: Allocation",
+     "publisher": "FinOps Foundation",
+     "year": 2026,
+     "url": "https://www.finops.org/framework/capabilities/allocation/",
+     "whatItSays": "Allocation assigns cost to the people responsible, through account structures, tags, labels and derived metadata. Crawl: mostly allocated by known account lists, ownership and metadata recorded manually and inconsistently, shared costs held centrally and not charged back. Walk: documented strategy, allocation to application or service level, shared costs split proportionally, fixed or evenly, platform owners can show back. Run: any granularity, near real time, ownership and metadata enforced at provisioning, platform owners fully allocate and charge back.",
+     "verified": true,
+     "checked": "2026-11-03"
+    },
+    {
+     "title": "FinOps Framework: Invoicing & Chargeback",
+     "publisher": "FinOps Foundation",
+     "year": 2026,
+     "url": "https://www.finops.org/framework/capabilities/invoicing-chargeback/",
+     "whatItSays": "Showback is always needed; chargeback (formal posting to accounting budgets) depends on organisational accounting policy. Crawl: charges on estimates with material variance, shared costs held centrally, spreadsheets. Run: teams understand direct and allocated shared costs from actual consumption and chargeback is automated monthly.",
+     "verified": true,
+     "checked": "2026-11-03"
+    }
+   ],
+   "heuristicReasoning": "The page gives no scale for this question; options and steps are LTM's. The earlier basis cited a \"Decision and Accountability Structure\" page from a previous Framework version; replaced here by two current pages.",
+   "verified": true,
+   "notes": "Not gated: a client with no product model answers SHARED and scores 40 (no setter exists). Feeds COST-10."
+  },
+  {
+   "id": "ADP-42",
+   "kind": "score",
+   "basis": "One self-reported answer on how mature the organisation's FinOps capability is in turning cloud cost data into action; a five-level ordinal over the FinOps Crawl, Walk, Run model that screens and routes to FinOps IQ.",
+   "sourceType": "published-framework",
+   "sources": [
+    {
+     "title": "FinOps Framework: Maturity model (Crawl, Walk, Run)",
+     "publisher": "FinOps Foundation",
+     "year": 2026,
+     "url": "https://www.finops.org/framework/maturity-model/",
+     "whatItSays": "Crawl is very little reporting and tooling with basic KPIs and processes; Walk is automation and/or process covering most of a capability, followed across the organisation; Run is automation as the preferred approach, followed by all teams. Every capability can be at a different maturity, and the goal should never be simply Run in every capability.",
+     "verified": true,
+     "checked": "2026-11-03"
+    },
+    {
+     "title": "FinOps Framework 2026 (announcement)",
+     "publisher": "FinOps Foundation",
+     "year": 2026,
+     "url": "https://www.finops.org/insights/2026-finops-framework/",
+     "whatItSays": "Published 19 Mar 2026 under CC BY 4.0. Technology categories listed: Public Cloud, SaaS, Data Center, Data Cloud Platforms and AI. A Scope is a segment of spending that can span technology categories, tied to business constructs. New capability Executive Strategy Alignment; six capabilities renamed.",
+     "verified": true,
+     "checked": "2026-11-03"
+    }
+   ],
+   "heuristicReasoning": "The five levels are LTM's over a three-stage model. The Framework says each capability can sit at a different level, so one overall answer is a simplification and Run everywhere is not the goal.",
+   "verified": true,
+   "notes": "The only question feeding COST-03 Cloud Economics. It is not gated on PUBLIC_CLOUD (only F-005 is), so a client with no public cloud who picks Cloud Economics is scored on it. Triggers F-005 on LIMITED, NONE or UNKNOWN when PUBLIC_CLOUD is in the footprint."
+  },
+  {
+   "id": "ADP-44",
+   "kind": "score",
+   "basis": "Scores how much flexibility major contracts give to change volumes, services or termination, with Unknown at the lowest level. FinOps Intersecting Disciplines assigns renewal and exit ownership at signature (Walk), and Rate Optimization shows flexibility trades against discount depth.",
+   "sourceType": "LTM-heuristic",
+   "sources": [
+    {
+     "title": "FinOps Framework: Intersecting Disciplines",
+     "publisher": "FinOps Foundation",
+     "year": 2026,
+     "url": "https://www.finops.org/framework/capabilities/intersecting-disciplines/",
+     "whatItSays": "Procurement: define renewal, exit and consumption accountability. Crawl: renewal and exit ownership undefined until the contract is close to expiring. Walk: assigned at signature with procurement and finance. Run: monitored continuously against usage and entitlement data, with renegotiation or exit triggered before the anniversary. ITAM/SAM covers contractual value and risk over the lifecycle of assets; ITSM is named as a discipline with no maturity statements.",
+     "verified": true,
+     "checked": "2026-11-03"
+    },
+    {
+     "title": "FinOps Framework: Rate Optimization",
+     "publisher": "FinOps Foundation",
+     "year": 2026,
+     "url": "https://www.finops.org/framework/capabilities/rate-optimization/",
+     "whatItSays": "Manages the rates paid across technology categories through negotiated discounts and commitments (typically 1 or 3 years). Discounts are higher the more restrictive the mechanism, so flexibility and lock-in trade against discount depth. Walk: pricing, commitment, marketplace and BYOL options compared against validated demand before purchase. Run: commitment portfolios continuously rebalanced against realised usage.",
+     "verified": true,
+     "checked": "2026-11-03"
+    }
+   ],
+   "heuristicReasoning": "Flexibility is not always better (a stable service on a committed contract earns a discount), so the scale reads ability to change, not absence of commitment. The 100/80/60/40/20 steps are an LTM convention; the FinOps Framework gives three stages, not scores.",
+   "verified": true,
+   "notes": "Overlaps CORE-37 and ADP-20 in theme."
+  },
+  {
+   "id": "ADP-45",
+   "kind": "score",
+   "basis": "Scores how often architecture standards are challenged when they create cost without value. FinOps Architecting & Workload Placement moves from default patterns to a documented trade-off model (Walk) to reporting design variance back so patterns improve (Run).",
+   "sourceType": "published-framework",
+   "sources": [
+    {
+     "title": "FinOps Framework: Architecting & Workload Placement",
+     "publisher": "FinOps Foundation",
+     "year": 2026,
+     "url": "https://www.finops.org/framework/capabilities/architecting-workload-placement/",
+     "whatItSays": "Value and cost efficiency are best achieved by architecting them into a system design; covers modernisation, re-platforming, relocation, consolidation and retirement, and placement across public cloud, data centre and private cloud. Crawl: default patterns without a documented trade-off model. Walk: documented model weighing cost, value, sovereignty, resilience and sustainability. Run: design variance reported back so patterns improve. The definition warns against unintentionally building in tech debt.",
+     "verified": true,
+     "checked": "2026-11-03"
+    }
+   ],
+   "heuristicReasoning": "The five options and steps are LTM's. LOCKED (a mechanism exists but is hard to change) scoring 40 is a judgement.",
+   "verified": true,
+   "notes": "No Unknown option."
+  },
+  {
+   "id": "ADP-46",
+   "kind": "score",
+   "basis": "Share of run cost attributable to legacy platforms, technical debt or duplicated capability, scored inverted. Public audit figures show how large ageing-system maintenance can be (Defra 76 percent, US federal about 80 percent of IT spend on operating existing systems).",
+   "sourceType": "LTM-heuristic",
+   "sources": [
+    {
+     "title": "Modernising ageing digital services (press release)",
+     "publisher": "UK National Audit Office",
+     "year": 2022,
+     "url": "https://www.nao.org.uk/press-releases/modernising-ageing-digital-services/",
+     "whatItSays": "Defra estimated that maintaining ageing systems absorbs 76% of its digital, data and technology spend and that nearly 30% of its legacy applications are unsupported; modernisation delayed by long-running underfunding. One UK department, its own estimate.",
+     "verified": true,
+     "checked": "2026-11-03"
+    },
+    {
+     "title": "GAO-25-107795: federal legacy IT systems most in need of modernization (July 2025)",
+     "publisher": "US Government Accountability Office",
+     "year": 2025,
+     "url": "https://www.gao.gov/products/gao-25-107795",
+     "whatItSays": "69 legacy systems submitted by 24 agencies and scored on 16 attributes including age, vendor support and cybersecurity risk; agencies typically report about 80% of more than USD 100 billion of annual federal IT spend goes to operating and maintaining existing systems. A share of budget, not a saving; agency-submitted selection.",
+     "verified": true,
+     "checked": "2026-11-03"
+    }
+   ],
+   "heuristicReasoning": "Those figures measure the share of spend on maintaining existing systems, not the share attributable to debt, so they are not comparable and not a benchmark. Three conditions are combined in one estimate. No published figure for a private enterprise was found.",
+   "verified": true,
+   "notes": "Overlaps CORE-40. Slider cannot record Unknown."
+  },
+  {
+   "id": "ADP-47",
+   "kind": "score",
+   "basis": "Scores how early procurement is involved in technology investment and renewal decisions. FinOps Intersecting Disciplines moves renewal and exit ownership from undefined until near expiry (Crawl) to assigned at signature with procurement and finance (Walk) to monitored continuously (Run).",
+   "sourceType": "published-framework",
+   "sources": [
+    {
+     "title": "FinOps Framework: Intersecting Disciplines",
+     "publisher": "FinOps Foundation",
+     "year": 2026,
+     "url": "https://www.finops.org/framework/capabilities/intersecting-disciplines/",
+     "whatItSays": "Procurement: define renewal, exit and consumption accountability. Crawl: renewal and exit ownership undefined until the contract is close to expiring. Walk: assigned at signature with procurement and finance. Run: monitored continuously against usage and entitlement data, with renegotiation or exit triggered before the anniversary. ITAM/SAM covers contractual value and risk over the lifecycle of assets; ITSM is named as a discipline with no maturity statements.",
+     "verified": true,
+     "checked": "2026-11-03"
+    }
+   ],
+   "heuristicReasoning": "The page covers renewal and exit ownership, not involvement at investment decisions generally; the options and steps are LTM's. LATE and RENEWAL were rated equal on 4 Nov 2026.",
+   "verified": true,
+   "notes": "No Unknown option."
+  },
+  {
+   "id": "ADP-48",
+   "kind": "score",
+   "basis": "Scores how consistently technology purchases are aggregated for commercial leverage, from enterprise-wide to independent by business unit, with Unknown at the lowest level.",
+   "sourceType": "LTM-heuristic",
+   "sources": [],
+   "heuristicReasoning": "No published scale was found; spend aggregation is a standard procurement practice but none of the opened sources describes levels. The 100/80/60/40/20 steps are an LTM convention; the FinOps Framework gives three stages, not scores.",
+   "verified": false,
+   "notes": "No source opened."
+  },
+  {
+   "id": "ADP-49",
+   "kind": "score",
+   "basis": "Scores how technology cost synergies are identified and tracked after acquisitions or divestitures. FinOps Executive Strategy Alignment says that at Run, alignment holds through change events such as M&A.",
+   "sourceType": "LTM-heuristic",
+   "sources": [
+    {
+     "title": "FinOps Framework: Executive Strategy Alignment",
+     "publisher": "FinOps Foundation",
+     "year": 2026,
+     "url": "https://www.finops.org/framework/capabilities/executive-strategy-alignment/",
+     "whatItSays": "Connects technology-related spend, usage and adoption to business strategy so leaders can compare options and govern investment for value. Crawl: sponsor identified, linkage to strategy limited and ad hoc. Walk: scopes span categories and are aligned to executive priorities, regular governance cadence. Run: FinOps is a required input to strategic investments and trade-offs, and alignment holds through change events such as M&A and leadership transitions.",
+     "verified": true,
+     "checked": "2026-11-03"
+    }
+   ],
+   "heuristicReasoning": "The page does not describe synergy tracking; the ladder and steps are LTM's. \"No acquisition in the last three years\" scores nothing and hides ADP-50 and both F-020 triggers.",
+   "verified": true,
+   "notes": "Triggers F-020 on LATE or NONE. NOT_APPLICABLE is unscored."
+  },
+  {
+   "id": "ADP-50",
+   "kind": "score",
+   "basis": "Share of technology capability still duplicated across merged organisations, scored inverted; asked only after a transaction.",
+   "sourceType": "LTM-heuristic",
+   "sources": [
+    {
+     "title": "FinOps Framework: Executive Strategy Alignment",
+     "publisher": "FinOps Foundation",
+     "year": 2026,
+     "url": "https://www.finops.org/framework/capabilities/executive-strategy-alignment/",
+     "whatItSays": "Connects technology-related spend, usage and adoption to business strategy so leaders can compare options and govern investment for value. Crawl: sponsor identified, linkage to strategy limited and ad hoc. Walk: scopes span categories and are aligned to executive priorities, regular governance cadence. Run: FinOps is a required input to strategic investments and trade-offs, and alignment holds through change events such as M&A and leadership transitions.",
+     "verified": true,
+     "checked": "2026-11-03"
+    }
+   ],
+   "heuristicReasoning": "The 20 percent F-020 threshold is an LTM heuristic with no published source (recorded on 4 Nov 2026). No published post-merger duplication figure was found.",
+   "verified": true,
+   "notes": "Gated on ADP-49 naming a transaction. Slider cannot record Unknown. Feeds COST-10."
+  },
+  {
+   "id": "ADP-51",
+   "kind": "score",
+   "basis": "Scores whether regional cost differences for similar capabilities are understood, not whether they exist (four options, so 100/80/40/20).",
+   "sourceType": "LTM-heuristic",
+   "sources": [],
+   "heuristicReasoning": "No published regional cost-variation benchmark was found and none is claimed (VALIDATION section 12). Scored into Spend Transparency, not into a regional dimension.",
+   "verified": false,
+   "notes": "Asked only when CTX-05 gives two or more countries."
+  },
+  {
+   "id": "ADP-52",
+   "kind": "score",
+   "basis": "Scores how deliberately technology services are standardised across regions where it would reduce cost or complexity. FinOps Architecting & Workload Placement weighs cost with sovereignty and resilience, which is why separation can be legitimate.",
+   "sourceType": "LTM-heuristic",
+   "sources": [
+    {
+     "title": "FinOps Framework: Architecting & Workload Placement",
+     "publisher": "FinOps Foundation",
+     "year": 2026,
+     "url": "https://www.finops.org/framework/capabilities/architecting-workload-placement/",
+     "whatItSays": "Value and cost efficiency are best achieved by architecting them into a system design; covers modernisation, re-platforming, relocation, consolidation and retirement, and placement across public cloud, data centre and private cloud. Crawl: default patterns without a documented trade-off model. Walk: documented model weighing cost, value, sovereignty, resilience and sustainability. Run: design variance reported back so patterns improve. The definition warns against unintentionally building in tech debt.",
+     "verified": true,
+     "checked": "2026-11-03"
+    }
+   ],
+   "heuristicReasoning": "The prompt limits the target to where standardisation would reduce cost, so a region that must stay separate for data reasons is not penalised; the ladder and steps are LTM's.",
+   "verified": true,
+   "notes": "Asked only for multi-country clients (CTX-05). No Unknown option."
+  },
+  {
+   "id": "ADP-53",
+   "kind": "context",
+   "basis": "Which business outcomes are hardest to quantify for technology; an unordered set whose count cannot be scored. FinOps Unit Economics ties cost to business outcomes and notes business outcome data is used little at Crawl.",
+   "sourceType": "LTM-heuristic",
+   "sources": [
+    {
+     "title": "FinOps Framework: Unit Economics",
+     "publisher": "FinOps Foundation",
+     "year": 2026,
+     "url": "https://www.finops.org/framework/capabilities/unit-economics/",
+     "whatItSays": "Unit economics links technology spend to the value it creates, with resource-efficiency metrics and business-unit metrics (cost per transaction, cost to serve). Crawl is direct variable cost in one category; Walk extends to SaaS and data centres for important scopes; Run applies unit metrics across all scopes and uses them early in build-versus-buy, architecture, placement and sourcing decisions.",
+     "verified": true,
+     "checked": "2026-11-03"
+    }
+   ],
+   "heuristicReasoning": "The seven outcome types are LTM's. The master trigger \"ValueMaturity<3\" is read by no code.",
+   "verified": true,
+   "notes": "VALUE-03 already has five scored questions."
+  },
+  {
+   "id": "ADP-54",
+   "kind": "score",
+   "basis": "Scores how often the business challenges technology on value versus cost. FinOps Executive Strategy Alignment (Walk) has a regular governance cadence that brings FinOps into investment planning, which supports routine challenge.",
+   "sourceType": "LTM-heuristic",
+   "sources": [
+    {
+     "title": "FinOps Framework: Executive Strategy Alignment",
+     "publisher": "FinOps Foundation",
+     "year": 2026,
+     "url": "https://www.finops.org/framework/capabilities/executive-strategy-alignment/",
+     "whatItSays": "Connects technology-related spend, usage and adoption to business strategy so leaders can compare options and govern investment for value. Crawl: sponsor identified, linkage to strategy limited and ad hoc. Walk: scopes span categories and are aligned to executive priorities, regular governance cadence. Run: FinOps is a required input to strategic investments and trade-offs, and alignment holds through change events such as M&A and leadership transitions.",
+     "verified": true,
+     "checked": "2026-11-03"
+    }
+   ],
+   "heuristicReasoning": "The ladder and steps are LTM's; no published scale of business challenge to IT value was found.",
+   "verified": true,
+   "notes": "One of two questions feeding VALUE-06 (with CORE-43). No Unknown option."
+  },
+  {
+   "id": "ADP-55",
+   "kind": "context",
+   "basis": "The executive hypothesis for the largest near-term cost opportunity; a hypothesis, not scored (as CORE-09).",
+   "sourceType": "LTM-heuristic",
+   "sources": [],
+   "heuristicReasoning": "Options overlap CORE-09 and the REDUCE_ options of CORE-45 but differ in wording.",
+   "verified": false,
+   "notes": "The hypothesis comparison reads CORE-09 only, so this answer feeds nothing yet."
+  },
+  {
+   "id": "ADP-56",
+   "kind": "context",
+   "basis": "The biggest practical barrier to realising savings; a constraint on how much of an opportunity is realisable, not a maturity condition, and scoring it would double count CORE-35, CORE-40 and ADP-44.",
+   "sourceType": "LTM-heuristic",
+   "sources": [],
+   "heuristicReasoning": "The nine barriers are LTM's.",
+   "verified": false,
+   "notes": "No source opened."
+  },
+  {
+   "id": "ADP-57",
+   "kind": "context",
+   "basis": "Capabilities to protect from broad cost reduction; a protected list is a business choice, not a maturity condition. It is the INVEST_ side of the CORE-45 trade-off.",
+   "sourceType": "LTM-heuristic",
+   "sources": [],
+   "heuristicReasoning": "Option labels were reworded on 4 Nov 2026; the capability list is LTM's.",
+   "verified": false,
+   "notes": "No source opened."
+  },
+  {
+   "id": "ADP-59",
+   "kind": "score",
+   "basis": "Scores how technology demand is prioritised against funding and capacity. FinOps Budgeting (Walk) checks demand against affordability at the prioritisation gate before funding is committed, and Planning & Estimating asks for lifecycle cost and expected value before demand is prioritised.",
+   "sourceType": "published-framework",
+   "sources": [
+    {
+     "title": "FinOps Framework: Budgeting",
+     "publisher": "FinOps Foundation",
+     "year": 2026,
+     "url": "https://www.finops.org/framework/capabilities/budgeting/",
+     "whatItSays": "Crawl: budgets tracked manually, set once at approval and reconciled to actuals after the fact, annual cycle. Walk: regular cycle that is a hybrid of annual and shorter cycles; demand is checked against affordability at the prioritisation gate before funding is committed. Run: budgets aligned to allocation and chargeback structures, short rolling quarterly cycle, live execution thresholds enforced with a predefined response.",
+     "verified": true,
+     "checked": "2026-11-03"
+    },
+    {
+     "title": "FinOps Framework: Planning & Estimating",
+     "publisher": "FinOps Foundation",
+     "year": 2026,
+     "url": "https://www.finops.org/framework/capabilities/planning-estimating/",
+     "whatItSays": "Business case: estimate lifecycle cost and expected business value before prioritising demand; compare projected avoidance with observed outcomes; track investment redirected or avoided. Run: estimates carry an explicit range and confidence, a documented counterfactual, and are checked against what actually happened to recalibrate later estimates.",
+     "verified": true,
+     "checked": "2026-11-03"
+    }
+   ],
+   "heuristicReasoning": "The five options and steps are LTM's.",
+   "verified": true,
+   "notes": "No Unknown option."
+  },
+  {
+   "id": "ADP-60",
+   "kind": "score",
+   "basis": "Scores how far service levels and cost are differentiated by business criticality, with Unknown at the lowest level.",
+   "sourceType": "LTM-heuristic",
+   "sources": [],
+   "heuristicReasoning": "No published scale was found; service-level differentiation is standard service-management practice (ITIL, ISO/IEC 20000-1) but those texts were not opened. The 100/80/60/40/20 steps are an LTM convention; the FinOps Framework gives three stages, not scores.",
+   "verified": false,
+   "notes": "Not footprint-gated."
+  }
+ ]
+}
