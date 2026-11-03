@@ -18,7 +18,7 @@ export function checkFinOpsIqReport(doc: ReportDocument, result: FinOpsIqV3Resul
   return runReportChecks(doc, view, {
     requiredSections: ['summary', 'profile', 'findings', 'roadmap', 'help', 'methodology', 'sources',
       ...(money ? ['value', 'calculation'] : []), ...(view === 'consultant' ? ['sow', 'consultant'] : [])],
-    requiredNotices: ['not a savings commitment', 'FinOps Framework', 'creativecommons.org/licenses/by/4.0'],
+    requiredNotices: ['not a savings commitment', 'FinOps Framework', 'creativecommons.org/licenses/by/4.0', 'does not assess legal, tax or regulatory obligations'],
     currency: result.value?.currency,
     resolve: field => resolveTraceField(shown, field),
     strictNumbers: true,
@@ -68,7 +68,7 @@ export function checkSovereignIqReport(doc: ReportDocument, result: SovereignIqV
   return runReportChecks(doc, view, {
     requiredSections: ['summary', 'requirement', 'seal', 'maturity', 'exposure', 'findings', 'roadmap', 'help', 'methodology', 'sources',
       ...(view === 'consultant' ? ['sow', 'consultant'] : [])],
-    requiredNotices: ['not legal advice', 'qualified lawyer', 'Statutory maximums'],
+    requiredNotices: ['not legal advice', 'qualified lawyer', 'Statutory maximums', 'local legal advice is needed'],
     resolve: field => resolveSovereign(result, field)
   }, today);
 }

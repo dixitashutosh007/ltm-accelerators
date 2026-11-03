@@ -11,6 +11,7 @@
  */
 import type { Backlog, Block, ReportDocument, ReportSection, Seg, Tone } from '../../../report/model';
 import { traced, walkSegments } from '../../../report/model';
+import { jurisdictionCoverage, marketOf, type MarketId } from '../../../report/coverage';
 import assumptionData from './assumptions.json' with { type: 'json' };
 import deliveryData from './delivery.json' with { type: 'json' };
 import fx from './exchange-rates.json' with { type: 'json' };
@@ -414,6 +415,7 @@ function methodology(c: Ctx): ReportSection {
     { kind: 'paragraph', segs: ['Each kind of data gets a required level, L0 to L4: the higher of any legal localisation minimum and the board\'s choice. Every control that level needs, plus every control a regulation in scope requires, is rated from the maturity answers. Maturity is the weighted share of those controls in place, shown only when at least five controls are required. "Unknown" counts as not in place; an unanswered control counts as not in place and is listed as not answered. Provider nationality matters only at L4.'] },
     { kind: 'paragraph', segs: ['Statutory maximums come from the cited articles: computed from the worldwide turnover given, as a range from the turnover band otherwise, or not quantified without it. Currency conversions use the dated ECB reference rates in the claims register. Caps are never added together.'] },
     { kind: 'callout', tone: 'info', title: 'Scope and limitations', segs: [scopeAndLimitations(c)] },
+    jurisdictionCoverage(REGIMES.map(r => marketOf(String(r.jurisdiction))).filter((m): m is MarketId => !!m), 'Sovereign IQ'),
     { kind: 'paragraph', segs: [strong('How your data is handled. '), dataNotice(c)] },
     { kind: 'paragraph', style: 'small', segs: [NOTICES.privilege] },
     { kind: 'paragraph', style: 'small', segs: ['Versions: ', ref(`engine ${v.engine} · questions ${v.questionSet} · controls ${v.controls} · regulation registry ${v.registry} (status as of ${v.registryStatusAsOf}) · claims register ${v.claimsRegister}`)] }
