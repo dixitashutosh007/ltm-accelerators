@@ -286,3 +286,7 @@ The owner accepted the recommendations on everything held from batch 3 and on th
 
 **CQ3b still open:** the hand-off to FinOps IQ and its import (tasks 8 and 9; stage 2 of the value model), the CI guard (task 10), a cited basis for each kept question and a mapping of the 16 dimensions to a published cost taxonomy (task 11; most maps rest on an LTM heuristic today), and the coverage matrix (task 12).
 
+### FinOps IQ side of the hand-off (4 Nov 2026)
+
+Decision O8 applied: FinOps IQ's pre-fill lists that named Cost IQ's deleted FIN questions are removed (19 `costIqPrefill` entries in the capability registry, 20 `prefillFrom` entries in the question bank, and the two schema properties). No code read them; FinOps IQ's own `prefilled` and `prefillConfirmed` contract flags are unchanged, and its tests and approved outputs are unchanged (all pass). **Not built yet:** the other direction of the hand-off, a "Cost IQ indicated" banner on FinOps IQ's start screen with facts pre-filled from a Cost IQ result (sector, currency, countries, footprint, spend band; facts only, never answers). FinOps IQ has no such banner today; it needs a Cost IQ read in FinOps IQ's save service, mirroring stage 2.
+
