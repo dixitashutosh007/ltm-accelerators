@@ -280,9 +280,14 @@ async function saveAssessment(status,action='save'){
   completedAt:status==='completed'?(assessment.completedAt||new Date().toISOString()):assessment.completedAt,
   finalizedAt:assessment.finalizedAt
  };
- // Share of questions answered, for My sessions and the Activity screen; the stage names come with the v2 design (RQ6).
+ // Share of questions answered and the domain being answered, for My sessions and the Activity screen.
  const answered=questions.filter(q=>answers[q.id]!==undefined&&answers[q.id]!==null).length;
  const progress={percent:questions.length?Math.round(100*answered/questions.length):0};
+ // The stage is the resilience domain of the first unanswered question, where a resume lands (the save runs before
+ // the page moves on); RQ6 may replace these with its own steps.
+ const current=questions.find(q=>answers[q.id]===undefined||answers[q.id]===null)||questions[questions.length-1];
+ const domain=DOMAIN_NAME[current?.domain];
+ if(domain)progress.stage=(current.advisory?'Advisory deep dive · ':'')+domain;
  const res=await authFetch(ASSESSMENT_API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action,snapshot,progress})});
  let j; try{j=await res.json();}catch{throw new Error('Persistence service returned an invalid response.');}
  if(!res.ok||!j.ok)throw new Error(j.message||j.error||('Persistence failed (HTTP '+res.status+').'));
@@ -364,7 +369,7 @@ async function appendAdvisoryQuestions(ids){
  const typeMap={multi_select:'multi',slider_choice:'slider',ranking:'rank',matrix:'matrix',scenario:'scenario',single_select:'single',yes_no:'single',evidence_select:'multi',number:'number',text:'text'};
  const additions=ids.map(id=>byId.get(id)).filter(Boolean).map(q=>{
    const interaction=q.ui?.interaction||q.type;
-   return {id:q.id,t:q.text,type:typeMap[interaction]||'single',o:q.options||[],rows:q.ui?.rows||[],cols:q.ui?.columns||[],required:true};
+   return {id:q.id,t:q.text,type:typeMap[interaction]||'single',o:q.options||[],rows:q.ui?.rows||[],cols:q.ui?.columns||[],required:true,domain:q.domain,advisory:true};
  }).filter(q=>!questions.some(existing=>existing.id===q.id));
  questions=[...questions,...additions];
  return additions;
@@ -564,7 +569,7 @@ async function loadQuestionBank(){
    const b=byId[q.id]; if(!b)return q;
    const ui=b.ui||{};
    const typeMap={ranking:'rank',slider_choice:'slider',matrix:'matrix',scenario:'scenario',multi_select:'multi',single_select:'single'};
-   const merged={...q,t:b.text||q.t};
+   const merged={...q,t:b.text||q.t,domain:b.domain||q.domain};
    if(ui.interaction)merged.type=typeMap[ui.interaction]||q.type;
    if(merged.type==='matrix'){merged.rows=ui.rows||q.rows;merged.cols=ui.columns||q.cols;}
    else if(Array.isArray(b.options))merged.o=b.options;

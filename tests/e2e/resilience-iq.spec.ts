@@ -153,6 +153,21 @@ test.describe('Resilience IQ', () => {
       }
     }
 
+    test('every save names the resilience domain being answered and the share answered', async ({ page }) => {
+      const first = saves.at(-1).progress;
+      expect(first.percent).toBe(0);
+      await answer(page, 'EX-01', plan['EX-01']);
+      await page.getByRole('button', { name: /Next/ }).click();
+      await expect.poll(() => page.evaluate('questions[idx].id')).toBe('EX-02');
+      await answer(page, 'EX-02', plan['EX-02']);
+      await page.getByRole('button', { name: /Next/ }).click();
+      await expect.poll(() => page.evaluate('questions[idx].id')).toBe('EX-03');
+      const domains: string[] = await page.evaluate('questions.slice(0,3).map(q => DOMAIN_NAME[q.domain])');
+      await expect.poll(() => saves.at(-1).progress.stage).toBe(domains[2]);
+      expect(domains[2]).toBe('Disaster recovery');
+      expect(saves.at(-1).progress.percent).toBeGreaterThan(0);
+    });
+
     test('20 answers are sent exactly as chosen, pass the contract, and the report renders without gaps', async ({ page, world }) => {
       const ids: string[] = await page.evaluate('questions.map(q => q.id)');
       expect(ids).toEqual(Object.keys(plan));
