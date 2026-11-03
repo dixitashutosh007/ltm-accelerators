@@ -3,6 +3,7 @@ import { manageResilienceAssessmentFunction } from '../functions/manage-resilien
 import { manageResilienceEvidenceFunction } from '../functions/manage-resilience-evidence/resource';
 import { manageFinOpsAssessmentFunction } from '../functions/manage-finops-assessment/resource';
 import { manageSovereignAssessmentFunction } from '../functions/manage-sovereign-assessment/resource';
+import { manageSessionFunction } from '../functions/manage-session/resource';
 import { sovereignIqReportFunction } from '../functions/sovereign-iq-report/resource';
 import { sovereignIqNarrativeFunction } from '../functions/sovereign-iq-narrative/resource';
 import { finopsIqReportFunction } from '../functions/finops-iq-report/resource';
@@ -208,6 +209,25 @@ const schema = a.schema({
       allow.group('Admin').to(['read'])
     ]),
 
+  SavedSession: a
+    .model({
+      sessionId: a.string().required(),
+      accelerator: a.string().required(),
+      ownerEmail: a.string().required(),
+      title: a.string().required(),
+      status: a.string().required(),
+      stage: a.string(),
+      percent: a.integer(),
+      // The accelerator's own snapshot, opaque to the service.
+      payloadJson: a.string().required(),
+      // Epoch seconds 90 days after the last save; DynamoDB time to live deletes the record then.
+      expiresAt: a.integer()
+    })
+    .identifier(['sessionId'])
+    .authorization(allow => [
+      allow.group('Admin').to(['read'])
+    ]),
+
   UserAllowlist: a
     .model({
       email: a.string().required(),
@@ -224,6 +244,7 @@ const schema = a.schema({
   allow.resource(manageResilienceEvidenceFunction).to(['query', 'mutate']),
   allow.resource(manageFinOpsAssessmentFunction).to(['query', 'mutate']),
   allow.resource(manageSovereignAssessmentFunction).to(['query', 'mutate']),
+  allow.resource(manageSessionFunction).to(['query', 'mutate']),
   allow.resource(sovereignIqReportFunction).to(['query']),
   allow.resource(sovereignIqNarrativeFunction).to(['query', 'mutate']),
   // The report reads completed assessments only.

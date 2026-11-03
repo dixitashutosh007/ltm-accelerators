@@ -21,6 +21,7 @@ import { manageResilienceEvidenceFunction } from './functions/manage-resilience-
 import { manageResilienceAssessmentFunction } from './functions/manage-resilience-assessment/resource';
 import { manageFinOpsAssessmentFunction } from './functions/manage-finops-assessment/resource';
 import { manageSovereignAssessmentFunction } from './functions/manage-sovereign-assessment/resource';
+import { manageSessionFunction } from './functions/manage-session/resource';
 import { sovereignIqReportFunction } from './functions/sovereign-iq-report/resource';
 import { sovereignIqNarrativeFunction } from './functions/sovereign-iq-narrative/resource';
 import { finopsIqReportFunction } from './functions/finops-iq-report/resource';
@@ -44,6 +45,7 @@ export const backend = defineBackend({
   manageResilienceAssessmentFunction,
   manageFinOpsAssessmentFunction,
   manageSovereignAssessmentFunction,
+  manageSessionFunction,
   sovereignIqReportFunction,
   sovereignIqNarrativeFunction,
   finopsIqReportFunction
@@ -103,6 +105,7 @@ const COGNITO_ISSUER = `https://cognito-idp.${REGION}.amazonaws.com/${USER_POOL_
  * ------------------------------------------------------------------ */
 backend.data.resources.cfnResources.amplifyDynamoDbTables['FinOpsIqAssessment'].timeToLiveAttribute = { attributeName: 'expiresAt', enabled: true };
 backend.data.resources.cfnResources.amplifyDynamoDbTables['SovereignIqAssessment'].timeToLiveAttribute = { attributeName: 'expiresAt', enabled: true };
+backend.data.resources.cfnResources.amplifyDynamoDbTables['SavedSession'].timeToLiveAttribute = { attributeName: 'expiresAt', enabled: true };
 
 /* ------------------------------------------------------------------
  * Accelerator access on the server (amplify/functions/_shared/access.ts):
@@ -114,7 +117,7 @@ for (const fn of [
   backend.evaluateFinOpsIqFunction, backend.manageFinOpsAssessmentFunction, backend.finopsIqReportFunction,
   backend.evaluateSovereignIqFunction, backend.evaluateCloudIqFunction,
   backend.evaluateStrategyIqFunction, backend.evaluateModernizationIqFunction, backend.evaluateResilienceIqFunction,
-  backend.manageResilienceAssessmentFunction, backend.manageResilienceEvidenceFunction, backend.manageSovereignAssessmentFunction, backend.sovereignIqReportFunction,
+  backend.manageResilienceAssessmentFunction, backend.manageResilienceEvidenceFunction, backend.manageSovereignAssessmentFunction, backend.manageSessionFunction, backend.sovereignIqReportFunction,
   backend.sovereignIqNarrativeFunction
 ]) {
   fn.addEnvironment('REPORTS_BUCKET', REPORTS_BUCKET);
@@ -132,7 +135,7 @@ for (const fn of [
 
 // The services that record assessment activity (P2) write one item per assessment; only those that can delete an
 // assessment may delete its activity item.
-for (const [fn, canDelete] of [[backend.manageFinOpsAssessmentFunction, true], [backend.manageSovereignAssessmentFunction, true], [backend.manageResilienceAssessmentFunction, false]] as const) {
+for (const [fn, canDelete] of [[backend.manageFinOpsAssessmentFunction, true], [backend.manageSovereignAssessmentFunction, true], [backend.manageSessionFunction, true], [backend.manageResilienceAssessmentFunction, false]] as const) {
   fn.addEnvironment('ACTIVITY_TABLE', activityTable.tableName);
   fn.resources.lambda.addToRolePolicy(new PolicyStatement({
     actions: canDelete ? ['dynamodb:UpdateItem', 'dynamodb:DeleteItem'] : ['dynamodb:UpdateItem'],
@@ -205,6 +208,7 @@ const integrations = {
   finopsIq: integrate('AdvisoryFinOpsIq', backend.evaluateFinOpsIqFunction),
   finopsAssessment: integrate('AdvisoryFinOpsIqAssessment', backend.manageFinOpsAssessmentFunction),
   sovereignAssessment: integrate('AdvisorySovereignIqAssessment', backend.manageSovereignAssessmentFunction),
+  sessions: integrate('AdvisorySessions', backend.manageSessionFunction),
   sovereignReport: integrate('AdvisorySovereignIqReport', backend.sovereignIqReportFunction),
   sovereignNarrative: integrate('AdvisorySovereignIqNarrative', backend.sovereignIqNarrativeFunction),
   finopsReport: integrate('AdvisoryFinOpsIqReport', backend.finopsIqReportFunction),
@@ -229,6 +233,7 @@ route('/api/finops-iq/report', [HttpMethod.GET], integrations.finopsReport);
 // retired at the switch-over (PLAN S5, 26 Oct 2026).
 route('/api/evaluate/sovereign-iq/v4', [HttpMethod.POST], integrations.sovereign);
 route('/api/sovereign-iq/assessment', [HttpMethod.GET, HttpMethod.POST], integrations.sovereignAssessment);
+route('/api/sessions', [HttpMethod.GET, HttpMethod.POST], integrations.sessions);
 route('/api/sovereign-iq/report', [HttpMethod.GET], integrations.sovereignReport);
 route('/api/sovereign-iq/narrative', [HttpMethod.POST], integrations.sovereignNarrative);
 
