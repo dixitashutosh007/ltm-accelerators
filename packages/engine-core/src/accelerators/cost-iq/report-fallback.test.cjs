@@ -44,7 +44,7 @@ vm.runInContext(`renderReport({
 for (const section of [
   'CONCENTRATION HEAT MAP',
   'DIMENSION RADAR',
-  'VALUE AREAS',
+  'PRIORITY AREAS',
   'What leadership should know',
   'Potential value levers',
   'Recommended action path',
