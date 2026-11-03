@@ -38,7 +38,8 @@ describe('Cost IQ scoring service access', () => {
   it('serves a permitted caller, and the questions carry the release manifest', async () => {
     const q = await call(event('GET', '/api/evaluate/cost-iq/questions'));
     expect(q.status).toBe(200);
-    expect(q.body.questions.length).toBeGreaterThan(100);
+    expect(q.body.questions.length).toBeGreaterThan(90);
+    expect(q.body.questions.some((x: any) => /^FIN-/.test(x.id))).toBe(false);
     const m = await call(event('GET', '/api/evaluate/cost-iq/metadata'));
     expect(m.body.release.product).toBe('Cost IQ');
   });

@@ -1,7 +1,7 @@
 import type { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
 import { corsHeaders } from '../_shared/http';
 import { withAcceleratorAccess } from '../_shared/access';
-import { evaluateCostIq, metadata, questions, orchestrate } from '../../../packages/engine-core/src/accelerators/cost-iq/evaluate.cjs';
+import { evaluateCostIq, metadata, questions } from '../../../packages/engine-core/src/accelerators/cost-iq/evaluate.cjs';
 
 // CORS echoes only the origins in ALLOWED_ORIGINS (_shared/http.ts); the routes sit behind the Cognito authorizer and the
 // accelerator access check, so a request without a signed-in, permitted caller never reaches the handler.
@@ -77,14 +77,9 @@ export const evaluate = async (event: APIGatewayProxyEventV2): Promise<APIGatewa
         return response(400, { error: 'invalid_answer_value', requestId: id }, id);
       }
     }
-    if (path.endsWith('/orchestrate')) {
-      return response(200, orchestrate({ answers: body.answers, options: body.options || {} }), id);
-    }
 
     const result = await evaluateCostIq({
       answers: body.answers,
-      scope: body.scope || null,
-      capabilityScores: body.capabilityScores || {},
       evidence: body.evidence || body.options?.evidence || {},
       feasibilityEvidence: body.feasibilityEvidence || body.options?.feasibilityEvidence || {},
       options: body.options || {}

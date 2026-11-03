@@ -47,15 +47,14 @@ let aiEnabled=false,assessmentMetadata={},savedAssessment=null,persistTimer=null
 const BASELINE=['Enterprise Context','CIO Priorities','Spend & Financial Visibility','Cost Governance & Investment'];
 const DEFAULT_AREAS=['Cloud Economics','Cost Governance'];
 const AREAS={
- 'Cloud Economics':['Cloud & SaaS Economics','Public Cloud'],
+ 'Cloud Economics':['Cloud & SaaS Economics'],
  'SaaS & Licensing':['Cloud & SaaS Economics','SaaS','Software','Software & Licensing'],
  'Infrastructure':['Infrastructure & Operations','On-Prem','Data Center','Colocation','Disaster Recovery'],
  'Applications':['Architecture & Applications','Applications','Product Operating Model'],
  'Workforce':['People & Vendors','People'],
  'Vendors & Commercials':['People & Vendors','Vendors','Procurement','Contracts','Outsourcing','Managed Services'],
- 'Cost Governance':['Cost Governance & Investment','FinOps'],
+ 'Cost Governance':['Cost Governance & Investment'],
  'Technology Value':['Technology Value','Value Management','Investment Redirection','Cost Reduction'],
- 'FinOps':['FinOps'],
  'Architecture & Technical Debt':['Architecture','Technical Debt','Architecture & Applications'],
  'Data':['Data'],
  'Network':['Network'],
@@ -68,7 +67,7 @@ const AREAS={
  'Operations & Service Management':['ITSM','Observability','Operating Model']
 };
 const AREA_DESC={
- 'Cloud Economics':'Consumption visibility, allocation, optimization and commercial commitments.',
+ 'Cloud Economics':'Cloud and SaaS footprint and commitments, with a pointer to FinOps IQ for cloud cost practice.',
  'SaaS & Licensing':'SaaS usage, licensing, overlap and renewal economics.',
  'Infrastructure':'Capacity, assets, facilities, network and infrastructure lifecycle economics.',
  'Applications':'Application portfolio, lifecycle, ownership and total cost.',
@@ -76,7 +75,6 @@ const AREA_DESC={
  'Vendors & Commercials':'Contracts, sourcing, vendor leverage and commercial optimization.',
  'Cost Governance':'Budgeting, forecasting, decision rights and cost governance.',
  'Technology Value':'Investment effectiveness, business alignment and benefits realization.',
- 'FinOps':'FinOps capabilities, operating model, data and continuous optimization.',
  'Architecture & Technical Debt':'Architecture choices, complexity and technical debt economics.',
  'Data':'Data platforms, storage and analytics economics.',
  'Network':'Connectivity and network economics.',
@@ -115,7 +113,7 @@ function questionCountForSelection(){
     if(BASELINE.includes(q.section)) return true;
     return selectedAreas.some(function(a){return (AREAS[a]||[]).includes(q.section)});
   });
-  return q.filter(function(q){return !String(q.id).startsWith('FIN-')||selectedAreas.includes('FinOps')}).length;
+  return q.filter(function(q){return true}).length;
 }
 function updateQuestionCount(){
   const el=$('selectionQuestionCount');
@@ -185,7 +183,7 @@ async function resumeAssessment(id){
     const record=await window.CostIqPersistence.get(id);if(!record)throw new Error('Assessment not found or access denied.');
     if(epoch!==viewEpoch)return;
     savedAssessment=record;selectedAreas=JSON.parse(record.selectedAreasJson||'[]');answers=JSON.parse(record.answersJson||'{}');subjective=JSON.parse(record.subjectiveJson||'{}');
-    questions=allQuestions.filter(q=>BASELINE.includes(q.section)||selectedAreas.some(a=>(AREAS[a]||[]).includes(q.section))).filter(q=>!String(q.id).startsWith('FIN-')||selectedAreas.includes('FinOps'));
+    questions=allQuestions.filter(q=>BASELINE.includes(q.section)||selectedAreas.some(a=>(AREAS[a]||[]).includes(q.section)));
     testScenario=false;sectionIndex=0;
     if(record.status==='completed'&&record.resultJson){assessment=JSON.parse(record.resultJson);aiReview=null;preliminary();return}
     const secs=sections();const first=secs.findIndex(s=>questions.filter(q=>q.section===s).some(q=>answers[q.id]===undefined));sectionIndex=first<0?Math.max(0,secs.length-1):first;renderAssessment();persistStatus('Assessment resumed');
@@ -235,7 +233,7 @@ async function loadTestScenario(profile){
   questions=allQuestions.filter(function(q){
     if(BASELINE.includes(q.section))return true;
     return selectedAreas.some(function(a){return (AREAS[a]||[]).includes(q.section)});
-  }).filter(function(q){return !String(q.id).startsWith('FIN-')||selectedAreas.includes('FinOps')});
+  }).filter(function(q){return true});
   answers={};subjective={};sectionIndex=0;qIndex=0;testScenario=true;savedAssessment=null;
   questions.forEach(function(q){answers[q.id]=testAnswer(q,profile)});
   await runEngine();
@@ -246,7 +244,7 @@ async function begin(){
     if(BASELINE.includes(q.section))return true;
     return selectedAreas.some(function(a){return (AREAS[a]||[]).includes(q.section)});
   });
-  questions=q.filter(function(q){return !String(q.id).startsWith('FIN-')||selectedAreas.includes('FinOps')});
+  questions=q.filter(function(q){return true});
   answers={};subjective={};sectionIndex=0;qIndex=0;testScenario=false;savedAssessment=null;
   if(window.CostIqPersistence?.configured()){
     persistStatus('Creating draft…');

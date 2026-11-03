@@ -771,20 +771,11 @@
         }
       ],
       "scoring": {
-        "dimensionIds": [
-          "COST-02",
-          "VALUE-05"
+        "signalOnly": true,
+        "signals": [
+          "funding-priority"
         ],
-        "defaultMap": {
-          "A": 100.0,
-          "B": 88.6,
-          "C": 77.1,
-          "D": 65.7,
-          "E": 54.3,
-          "F": 42.9,
-          "G": 31.4,
-          "H": 20.0
-        }
+        "note": "A preference for one funding-model change; an order of the options is not a maturity score."
       },
       "active": true,
       "version": 2,
@@ -833,11 +824,11 @@
           "VALUE-05"
         ],
         "defaultMap": {
-          "A": 100.0,
-          "B": 80.0,
-          "C": 60.0,
-          "D": 40.0,
-          "E": 20.0
+          "FAST": 100.0,
+          "QUARTER": 80.0,
+          "SLOW": 60.0,
+          "COMMITTED": 40.0,
+          "VERY_HARD": 20.0
         }
       },
       "active": true,
@@ -997,7 +988,8 @@
           "id": "CLOUD",
           "label": "Cloud consumption / shared cloud platforms"
         },
-        {          "id": "SHARED_INFRASTRUCTURE",
+        {
+          "id": "SHARED_INFRASTRUCTURE",
           "label": "Shared infrastructure / data-centre platforms"
         },
         {
@@ -1616,150 +1608,11 @@
       "reviewStatus": "Reviewed v6.4"
     },
     {
-      "id": "CORE-24",
-      "section": "Cloud & SaaS Economics",
-      "prompt": "When cloud spend changes materially, what normally happens to explain and act on the change?",
-      "intent": "Assess whether cloud economics are actively managed at workload and consumption level rather than only through budget reporting.",
-      "interaction": "single-select",
-      "answerDesign": "Choose the statement that best matches normal operating practice when cloud spend moves materially.",
-      "required": true,
-      "adaptiveTrigger": "Deepens cloud economics diagnostic when PUBLIC_CLOUD is selected",
-      "costDimension": "Cloud Economics",
-      "valueDimension": null,
-      "evidenceImplication": "Validate with cloud cost dashboards, allocation data, optimization actions and ownership records.",
-      "findingImplication": "May indicate consumption leakage when material spend movements cannot be explained or acted upon quickly.",
-      "options": [
-        {
-          "id": "A",
-          "label": "A material change is automatically surfaced to an accountable owner, investigated to workload level and followed by corrective action."
-        },
-        {
-          "id": "B",
-          "label": "FinOps or cloud owners review material changes regularly and take action within the normal reporting cycle."
-        },
-        {
-          "id": "C",
-          "label": "Changes are visible, but investigation and action depend on the individual team or issue."
-        },
-        {
-          "id": "D",
-          "label": "Spend is mostly reviewed through budget reports; root-cause analysis is usually reactive."
-        },
-        {
-          "id": "E",
-          "label": "Cloud spend can be seen, but we cannot consistently explain changes at workload or service level."
-        },
-        {
-          "id": "F",
-          "label": "We do not have dependable visibility into material cloud consumption changes."
-        }
-      ],
-      "scoring": {
-        "dimensionIds": [
-          "COST-03"
-        ],
-        "defaultMap": {
-          "A": 100.0,
-          "B": 82.0,
-          "C": 64.0,
-          "D": 46.0,
-          "E": 28.0,
-          "F": 15.0
-        }
-      },
-      "active": true,
-      "version": 4,
-      "findingIds": [
-        "F-005"
-      ],
-      "recommendationIds": [
-        "R-003"
-      ],
-      "questionDesignVersion": "6.4",
-      "answerGuidance": "Think about what really happens after a material increase or decrease: who investigates it, how quickly, and whether corrective action follows.",
-      "opportunityImplication": "Can activate cloud consumption optimization and rightsizing opportunity logic.",
-      "confidenceImpact": "Medium; validate against cloud cost and optimization evidence.",
-      "reviewStatus": "Reviewed v6.4"
-    },
-    {
-      "id": "CORE-25",
-      "section": "Cloud & SaaS Economics",
-      "prompt": "Which cloud cost-management practices are actually used in day-to-day technology decisions?",
-      "intent": "Identify cloud economics controls and practices that are operational—not merely planned or available in tooling.",
-      "interaction": "multi-select",
-      "answerDesign": "Select practices that are genuinely used to make decisions today. Do not select capabilities that exist only as policy, tooling features or future plans.",
-      "required": true,
-      "adaptiveTrigger": "Deepens cloud economics diagnostic",
-      "costDimension": "Cloud Economics",
-      "valueDimension": "Technology Productivity",
-      "evidenceImplication": "Validate selected practices with operating reports, policy configurations, optimization tickets and owner accountability.",
-      "findingImplication": "Patterns such as visibility without action or missing allocation/automation may indicate consumption or governance leakage.",
-      "options": [
-        {
-          "id": "ALLOCATION",
-          "label": "Cloud spend is allocated to business, product, service or accountable owner."
-        },
-        {
-          "id": "BUDGET_ALERTS",
-          "label": "Budgets, alerts or anomaly detection trigger action—not just notification."
-        },
-        {
-          "id": "RIGHTSIZING",
-          "label": "Rightsizing and workload optimization recommendations are routinely acted upon."
-        },
-        {
-          "id": "COMMITMENTS",
-          "label": "Reservations, Savings Plans or committed-use discounts are actively sized and reviewed."
-        },
-        {
-          "id": "FORECASTING",
-          "label": "Cloud forecasts are used in budgeting, product planning or investment decisions."
-        },
-        {
-          "id": "UNIT",
-          "label": "Cloud cost is linked to useful business/product demand or unit economics where appropriate."
-        },
-        {
-          "id": "POLICY",
-          "label": "Policies or guardrails prevent avoidable consumption before it occurs."
-        },
-        {
-          "id": "AUTOMATION",
-          "label": "Automated remediation handles recurring waste or non-compliant consumption."
-        },
-        {
-          "id": "NONE",
-          "label": "None of these practices are consistently used in day-to-day decisions."
-        }
-      ],
-      "scoring": {
-        "signalOnly": true,
-        "signals": [
-          "cloud-cost-practices"
-        ],
-        "note": "Do not score by selection count; evaluate combinations and evidence in the intelligence engine."
-      },
-      "active": true,
-      "version": 4,
-      "findingIds": [
-        "F-005",
-        "F-006"
-      ],
-      "recommendationIds": [
-        "R-003"
-      ],
-      "questionDesignVersion": "6.4",
-      "answerGuidance": "Choose what teams actually use when they allocate, forecast, optimize or approve cloud consumption.",
-      "opportunityImplication": "Activates specific cloud diagnostics rather than scoring the number of practices selected.",
-      "confidenceImpact": "Low-to-medium; presence of a practice does not prove effectiveness.",
-      "reviewStatus": "Reviewed v6.4"
-    },
-    {
       "id": "CORE-26",
       "section": "Cloud & SaaS Economics",
       "prompt": "How confidently can you match major SaaS subscriptions to active usage and business need before renewal?",
       "intent": "Assess whether SaaS economics are driven by actual usage and business need rather than purchased seat counts alone.",
-      "interaction": "stars",
+      "interaction": "single-select",
       "answerDesign": "Rate the level of confidence leadership has in using usage and business-need evidence before major SaaS renewals.",
       "required": true,
       "adaptiveTrigger": "Deepens SaaS economics diagnostic when SAAS is selected",
@@ -1794,11 +1647,11 @@
           "COST-04"
         ],
         "defaultMap": {
-          "1": 20.0,
-          "2": 38.0,
-          "3": 56.0,
-          "4": 78.0,
-          "5": 100.0
+          "CONTINUOUS": 100.0,
+          "RENEWAL": 78.0,
+          "SELECTIVE": 56.0,
+          "COUNT": 38.0,
+          "UNKNOWN": 20.0
         }
       },
       "active": true,
@@ -1996,7 +1849,8 @@
           "id": "OPERATING_SYSTEMS",
           "label": "Operating systems and infrastructure software"
         },
-        {          "id": "MIDDLEWARE_DATA",
+        {
+          "id": "MIDDLEWARE_DATA",
           "label": "Middleware, integration and data-platform licensing"
         },
         {
@@ -2729,7 +2583,7 @@
         ],
         "method": "scale",
         "scaleMax": 5,
-        "direction": "direct"
+        "direction": "invert"
       },
       "active": true,
       "version": 1,
@@ -2995,7 +2849,8 @@
       "prompt": "Assume leadership needs to redirect approximately 10% of current technology spend. Which areas would you reduce first, and where would you reinvest the released capacity?",
       "intent": "Capture the CIO's explicit cost-versus-value trade-off and intended reinvestment priorities before evidence-led recommendations are shown.",
       "interaction": "allocation-ranking",
-      "answerDesign": "Rank up to three reduction sources and up to three reinvestment themes. The diagnostic uses the pattern directionally; exact percentages are not required.",      "required": true,
+      "answerDesign": "Rank up to three reduction sources and up to three reinvestment themes. The diagnostic uses the pattern directionally; exact percentages are not required.",
+      "required": true,
       "adaptiveTrigger": "Creates executive trade-off profile for report and roadmap",
       "costDimension": null,
       "valueDimension": "Investment Effectiveness",
@@ -3077,243 +2932,6 @@
       "answerGuidance": "Select the trade-offs you would realistically make under pressure. You do not need to force the selections to mathematically sum to exactly 10%.",
       "questionDesignVersion": "6.5",
       "reviewStatus": "Reviewed v6.5"
-    },
-    {
-      "id": "ADP-01",
-      "section": "Public Cloud",
-      "prompt": "How is public-cloud spend made visible to the teams that consume and influence it?",
-      "intent": "Assess whether cloud economics are transparent enough for owners to act on consumption and commercial decisions.",
-      "interaction": "single-select",
-      "answerDesign": "Choose the description that best matches how cloud cost accountability works today across material workloads.",
-      "required": false,
-      "adaptiveTrigger": "Cloud=Yes",
-      "costDimension": "Cloud Economics",
-      "valueDimension": null,
-      "evidenceImplication": "Validate using cloud billing exports, tags/account structure, workload ownership and allocation coverage.",
-      "findingImplication": "L1 Visibility Leakage / Cloud accountability",
-      "options": [
-        {
-          "id": "OWNER_ACCOUNTABLE",
-          "label": "Material cloud spend is attributed to named owners with regular cost visibility and accountability."
-        },
-        {
-          "id": "SHOWBACK",
-          "label": "Owners receive showback or chargeback information and are expected to manage consumption."
-        },
-        {
-          "id": "MAJOR_WORKLOADS",
-          "label": "Major workloads can be attributed, but coverage and ownership are inconsistent."
-        },
-        {
-          "id": "POOL",
-          "label": "Most spend remains pooled, so owners have limited visibility into the cost they influence."
-        },
-        {
-          "id": "UNKNOWN",
-          "label": "We cannot reliably connect a meaningful share of cloud spend to owners or workloads."
-        }
-      ],
-      "scoring": {
-        "dimensionIds": [
-          "COST-03"
-        ]
-      },
-      "active": true,
-      "version": 2,
-      "leakageSignal": "L1 Visibility Leakage",
-      "opportunityTheme": "Cloud allocation and accountability",
-      "weightClass": "High",
-      "findingIds": [],
-      "recommendationIds": [],
-      "answerGuidance": "Think about whether product, application or business owners can see their relevant cost and are expected to act on it.",
-      "questionDesignVersion": "6.6",
-      "confidenceNote": "Medium until allocation coverage is evidenced."
-    },
-    {
-      "id": "ADP-02",
-      "section": "Public Cloud",
-      "prompt": "How effectively are non-production cloud environments controlled when they are not needed?",
-      "intent": "Identify avoidable non-production consumption and the degree to which control is automated.",
-      "interaction": "single-select",
-      "answerDesign": "Select the operating pattern that occurs in normal practice, not only in well-managed teams.",
-      "required": false,
-      "adaptiveTrigger": "Cloud=Yes",
-      "costDimension": "Cloud Economics",
-      "valueDimension": null,
-      "evidenceImplication": "Validate with cloud utilization, scheduling policies, non-production tags, idle-resource reports and exception logs.",
-      "findingImplication": "L2 Consumption Leakage / Non-production consumption",
-      "options": [
-        {
-          "id": "POLICY_AUTOMATED",
-          "label": "Most material non-production environments follow automated schedules or policy-based scale controls."
-        },
-        {
-          "id": "AUTOMATION_MIXED",
-          "label": "Automation covers a meaningful share, with manual exceptions for specific teams or workloads."
-        },
-        {
-          "id": "TEAM_MANAGED",
-          "label": "Teams manage shutdown and scaling themselves, with inconsistent adherence."
-        },
-        {
-          "id": "MANUAL_REACTIVE",
-          "label": "Control is mainly manual and often happens only after spend is noticed."
-        },
-        {
-          "id": "LITTLE_CONTROL",
-          "label": "There is little systematic control over non-production consumption."
-        }
-      ],
-      "scoring": {
-        "dimensionIds": [
-          "COST-03"
-        ]
-      },
-      "active": true,
-      "version": 2,
-      "leakageSignal": "L2 Consumption Leakage",
-      "opportunityTheme": "Idle and non-production optimization",
-      "weightClass": "High",
-      "findingIds": [],
-      "recommendationIds": [],
-      "questionDesignVersion": "6.6",
-      "answerGuidance": "Consider development, test, QA and other non-production environments. Include weekends, nights and inactive periods where relevant."
-    },
-    {
-      "id": "ADP-03",
-      "section": "Public Cloud",
-      "prompt": "How disciplined is the organization in sizing and managing cloud commitments such as reservations or savings plans?",
-      "intent": "Assess whether contractual cloud discounts are matched to durable demand without creating avoidable commitment risk.",
-      "interaction": "single-select",
-      "answerDesign": "Choose the pattern that best describes how commitments are forecast, purchased, monitored and rebalanced.",
-      "required": false,
-      "adaptiveTrigger": "Cloud=Yes",
-      "costDimension": "Cloud Economics",
-      "valueDimension": null,
-      "evidenceImplication": "Validate with commitment inventory, utilization, coverage, forecast assumptions and renewal history.",
-      "findingImplication": "L3 Commercial Leakage / Cloud commitments",
-      "options": [
-        {
-          "id": "DEMAND_LED",
-          "label": "Commitments are based on forecasted baseline demand, monitored continuously and rebalanced as demand changes."
-        },
-        {
-          "id": "MANAGED",
-          "label": "Commitments are centrally monitored and major under- or over-coverage is actively corrected."
-        },
-        {
-          "id": "PERIODIC",
-          "label": "Optimization is performed periodically, but provider or team practices vary."
-        },
-        {
-          "id": "RENEWAL_LED",
-          "label": "Commitments are mainly revisited around renewals or when utilization problems become visible."
-        },
-        {
-          "id": "UNCLEAR",
-          "label": "Coverage, utilization and commitment exposure are not sufficiently understood."
-        }
-      ],
-      "scoring": {
-        "dimensionIds": [
-          "COST-03"
-        ]
-      },
-      "active": true,
-      "version": 2,
-      "leakageSignal": "L3 Commercial Leakage",
-      "opportunityTheme": "Cloud commitment optimization",
-      "weightClass": "High",
-      "findingIds": [],
-      "recommendationIds": [],
-      "answerGuidance": "Consider forecasting quality, utilization, coverage, rebalancing and ownership—not just whether commitments have been purchased.",
-      "questionDesignVersion": "6.6"
-    },
-    {
-      "id": "ADP-04",
-      "section": "Public Cloud",
-      "prompt": "Approximately what share of public-cloud spend cannot currently be traced with confidence to a business owner, product or workload?",
-      "intent": "Quantify the visibility gap that limits cost accountability and opportunity sizing.",
-      "interaction": "slider",
-      "answerDesign": "Use a broad estimate; actual evidence can be supplied later.",
-      "required": false,
-      "adaptiveTrigger": "Cloud=Yes",
-      "costDimension": "Cloud Economics",
-      "valueDimension": null,
-      "evidenceImplication": "Validate using allocation coverage reports, tags, account hierarchy and workload ownership.",
-      "findingImplication": "L1 Visibility Leakage / Unallocated cloud spend",
-      "scoring": {
-        "dimensionIds": [
-          "COST-03"
-        ]
-      },
-      "active": true,
-      "version": 2,
-      "control": {
-        "min": 0,
-        "max": 100,
-        "step": 5,
-        "leftLabel": "0% — essentially attributable",
-        "rightLabel": "100% — largely unattributed",
-        "unknown": true
-      },
-      "leakageSignal": "L1 Visibility Leakage",
-      "opportunityTheme": "Unallocated cloud spend",
-      "weightClass": "High",
-      "findingIds": [],
-      "recommendationIds": [],
-      "questionDesignVersion": "6.6",
-      "answerGuidance": "Estimate the share of cloud spend that remains materially unattributed after normal tagging, account and allocation practices."
-    },
-    {
-      "id": "ADP-05",
-      "section": "Public Cloud",
-      "prompt": "How routinely is cloud cost considered alongside performance, resilience and security when architecture decisions are made?",
-      "intent": "Assess whether cost-aware architecture is embedded in design decisions rather than applied after the fact.",
-      "interaction": "single-select",
-      "answerDesign": "Choose the normal enterprise pattern for material architecture decisions.",
-      "required": false,
-      "adaptiveTrigger": "Cloud=Yes",
-      "costDimension": "Architecture & Technology Economics",
-      "valueDimension": null,
-      "evidenceImplication": "Validate using architecture standards, review templates, decision records and examples of material cost trade-offs.",
-      "findingImplication": "L4 Complexity Leakage / Cost-aware architecture",
-      "options": [
-        {
-          "id": "FIRST_CLASS",
-          "label": "Cost is a first-class architecture constraint and is evaluated with performance, resilience and security."
-        },
-        {
-          "id": "MATERIAL_DECISIONS",
-          "label": "Cost is routinely considered for material architecture choices."
-        },
-        {
-          "id": "TEAM_VARIATION",
-          "label": "Some teams consider cost well, but there is no consistent enterprise expectation."
-        },
-        {
-          "id": "LATE",
-          "label": "Cost is usually considered after the architecture is largely established."
-        },
-        {
-          "id": "RARE",
-          "label": "Cost is rarely part of architecture decisions."
-        }
-      ],
-      "scoring": {
-        "dimensionIds": [
-          "COST-09"
-        ]
-      },
-      "active": true,
-      "version": 2,
-      "leakageSignal": "L4 Complexity Leakage",
-      "opportunityTheme": "Cost-aware architecture",
-      "weightClass": "Medium",
-      "findingIds": [],
-      "recommendationIds": [],
-      "answerGuidance": "Think about architecture reviews, design standards and engineering decisions where a lower-cost option could materially change the outcome.",
-      "questionDesignVersion": "6.6"
     },
     {
       "id": "ADP-06",
@@ -3994,7 +3612,8 @@
         "dimensionIds": [
           "COST-06"
         ],
-        "valueDimensionIds": [          "VALUE-04"
+        "valueDimensionIds": [
+          "VALUE-04"
         ]
       },
       "active": true,
@@ -4993,7 +4612,8 @@
       "interaction": "single-select",
       "answerDesign": "Answer based on the current operating reality; use the closest evidence-backed description available.",
       "required": false,
-      "adaptiveTrigger": "ITSM=Yes",      "costDimension": "Operations Economics",
+      "adaptiveTrigger": "ITSM=Yes",
+      "costDimension": "Operations Economics",
       "valueDimension": null,
       "evidenceImplication": "Validate with targeted evidence before quantifying any opportunity.",
       "findingImplication": "L5 Workforce Leakage / ITSM productivity",
@@ -5090,7 +4710,7 @@
     },
     {
       "id": "ADP-42",
-      "section": "FinOps",
+      "section": "Cloud & SaaS Economics",
       "prompt": "How mature is the organization's FinOps capability in turning cloud cost data into action?",
       "intent": "Adaptive deep-dive triggered by FinOps=Yes. Quantify or qualify the finops maturity issue.",
       "interaction": "single-select",
@@ -5121,68 +4741,31 @@
         {
           "id": "NONE",
           "label": "There is no established FinOps capability."
+        },
+        {
+          "id": "UNKNOWN",
+          "label": "We do not know how mature our FinOps capability is."
         }
       ],
       "scoring": {
         "dimensionIds": [
           "COST-03"
-        ]
+        ],
+        "defaultMap": {
+          "INTELLIGENT": 100.0,
+          "MANAGED": 80.0,
+          "EMERGING": 60.0,
+          "LIMITED": 40.0,
+          "NONE": 20.0,
+          "UNKNOWN": 20.0
+        },
+        "basis": "LTM five-level ordinal scale over the FinOps Foundation maturity model (Crawl, Walk, Run). One self-reported answer: it screens and routes to FinOps IQ, which assesses each capability."
       },
       "active": true,
       "version": 1,
       "leakageSignal": "L2 Consumption Leakage",
       "opportunityTheme": "FinOps maturity",
       "weightClass": "High",
-      "findingIds": [],
-      "recommendationIds": [],
-      "answerGuidance": "Select the operating state that most closely matches the current enterprise reality.",
-      "questionDesignVersion": "6.0"
-    },
-    {
-      "id": "ADP-43",
-      "section": "FinOps",
-      "prompt": "How quickly can cloud cost anomalies be detected, explained, and acted upon?",
-      "intent": "Adaptive deep-dive triggered by FinOps=Yes. Quantify or qualify the anomaly management issue.",
-      "interaction": "single-select",
-      "answerDesign": "Answer based on the current operating reality; use the closest evidence-backed description available.",
-      "required": false,
-      "adaptiveTrigger": "FinOps=Yes",
-      "costDimension": "Cloud Economics",
-      "valueDimension": null,
-      "evidenceImplication": "Validate with targeted evidence before quantifying any opportunity.",
-      "findingImplication": "L2 Consumption Leakage / Anomaly management",
-      "options": [
-        {
-          "id": "REALTIME",
-          "label": "Material anomalies are detected automatically and assigned for action quickly."
-        },
-        {
-          "id": "SAME_DAY",
-          "label": "Material anomalies are normally identified and investigated within the day."
-        },
-        {
-          "id": "WEEKLY",
-          "label": "Anomaly detection is periodic and can take days to explain."
-        },
-        {
-          "id": "MANUAL",
-          "label": "Teams mainly discover anomalies through manual review."
-        },
-        {
-          "id": "NONE",
-          "label": "There is no reliable anomaly-management process."
-        }
-      ],
-      "scoring": {
-        "dimensionIds": [
-          "COST-03"
-        ]
-      },
-      "active": true,
-      "version": 1,
-      "leakageSignal": "L2 Consumption Leakage",
-      "opportunityTheme": "Anomaly management",
-      "weightClass": "Medium",
       "findingIds": [],
       "recommendationIds": [],
       "answerGuidance": "Select the operating state that most closely matches the current enterprise reality.",
@@ -5992,7 +5575,8 @@
       "recommendationIds": [],
       "questionDesignVersion": "6.0",
       "answerGuidance": "Choose the option that best reflects the current enterprise reality; do not answer based on intended future state."
-    },    {
+    },
+    {
       "id": "ADP-59",
       "section": "Operating Model",
       "prompt": "How effectively is technology demand prioritized against available funding and capacity?",
@@ -6098,13 +5682,11 @@
       "id": "TR-01",
       "area": "Environment",
       "condition": "Public Cloud selected",
-      "action": "Activate ADP-01 to ADP-05",
+      "action": "Moved to FinOps IQ (CQ3a): cloud practice questions ADP-01 to ADP-05 are no longer asked here",
       "triggerKey": "Public Cloud",
-      "enabled": true,
+      "enabled": false,
       "version": 1,
-      "adaptiveAction": [
-        "ADP-01 to ADP-05"
-      ],
+      "adaptiveAction": [],
       "questionRefs": []
     },
     {
@@ -6397,12 +5979,12 @@
       "id": "TR-24",
       "area": "Cloud",
       "condition": "FinOps capability selected",
-      "action": "Activate ADP-42 to ADP-43",
+      "action": "Activate ADP-42 (the cloud and FinOps summary question, which routes to FinOps IQ)",
       "triggerKey": "FinOps",
       "enabled": true,
       "version": 1,
       "adaptiveAction": [
-        "ADP-42 to ADP-43"
+        "ADP-42"
       ],
       "questionRefs": []
     },
@@ -6991,7 +6573,8 @@
       "reportLabel": "CIO Hypothesis vs Assessment-Identified Opportunities",
       "scoringImpact": "none",
       "interpretationRule": "Use the comparison as a consulting insight; do not penalize the CIO for an inaccurate initial hypothesis."
-    },    "opportunityModel": {
+    },
+    "opportunityModel": {
       "economicOpportunity": "Addressable Spend × Opportunity Factor × Confidence Modifier",
       "practicalOpportunity": "Economic Opportunity adjusted after feasibility/constraint assessment",
       "economicAndPracticalOutputsAreSeparate": true,

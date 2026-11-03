@@ -28,7 +28,7 @@ CQ0 is done: Cost IQ scores 0 Pass, 3 Partial and 10 Fail, with six Critical fin
 | CQ1 Platform parity | **Done in code** (`2a8142d`), not deployed | The older persistence tests now assert the new owner-only rules. The Configuration Studio and the old runtime page are behind the page guard with edit permission (CQ2, first step) |
 | AI containment | **Done**: Gemini is off | Brought forward from CQ8: `COST_IQ_AI_ENABLED` defaults to off; both AI routes return `ai_disabled`; the page skips the AI check and the AI narrative and says so in the report. CQ8 remains the proper fix |
 | CQ2 One live artefact | **Done except the count** (4 Nov 2026) | The Configuration Studio, the old runtime page and their configuration moved to `archive/cost-iq/` (not deployed); the empty `v9_1` folder is gone; a test fails if any other Cost IQ file appears under `Accelerators/`. Left: reconcile the question count (the manifest says 105, the API returns 117) and the version string. Both depend on what CQ3a decides about the FinOps overlay, so they are done in CQ3b |
-| CQ3 Content | **Split** | **CQ3a:** decide the boundary with FinOps IQ line by line (D1), then delete or hand off the FinOps overlay content (FIN-01 to FIN-12 and the capability model), so no effort goes into sourcing questions that will move. **CQ3b:** rewrite the retained questions with a cited basis each, so every shown question scores or is a labelled context question; add the global-coverage questions (below) |
+| CQ3 Content | **Split; CQ3a done, CQ3b slice 1 done (4 Nov 2026)** | **CQ3a:** decide the boundary with FinOps IQ line by line (D1), then delete or hand off the FinOps overlay content (FIN-01 to FIN-12 and the capability model), so no effort goes into sourcing questions that will move. **CQ3b:** rewrite the retained questions with a cited basis each, so every shown question scores or is a labelled context question; add the global-coverage questions (below) |
 | CQ4 Engine | Widened | Adds: applicability routing (which findings and benchmarks apply by footprint, currency and sector); a minimum number of answers per dimension before it scores; completeness measured over shown questions only; an audit adapter so `audit:engines` includes Cost IQ; reference-client goldens |
 | CQ5, CQ6 | As written | CQ5's gate adds the number-trace test and the inflation guard for the new value model. CQ6 reuses FinOps IQ's playbook and offerings catalogue (S3, S5) instead of building new ones |
 | CQ7 | As written | First tasks: keyboard access and the 360 px overflow, then the shared shell; remove the "Developer test data" block from the customer home page; ask for a client name |
@@ -175,3 +175,17 @@ Replace the browser-built PDF with the shared server-rendered report used by Fin
 | CD7 | AI for client use | **Decided:** off now; CQ8 is the proper fix |
 | CD8 | Currency and global changes | **Decided:** adopt the currency, foreign-currency, geography and delivery-mix questions as context facts; bands in the client's currency, any FX conversion a registered, dated assumption |
 | CD9 | Dimensions | **Proposed default, not yet confirmed by the owner:** keep the 16 as LTM's own constructs, label them so, and add a mapping to a published cost taxonomy in CQ3b |
+
+## CQ3b progress (4 Nov 2026)
+
+Decisions O1 to O9 in [BOUNDARY.md](BOUNDARY.md) were accepted at their defaults. Done in slice 1 (tasks 1, 2, 3 in part, and 6 in part):
+
+- **The FinOps overlay is gone.** The CORE-40 scoring override moved into the master; the overlay file, the orchestrator, the heatmap and the `/orchestrate` route are removed. FIN-01 to FIN-12 no longer exist in Cost IQ.
+- **Eight questions removed:** ADP-01 to ADP-05, ADP-43, CORE-24, CORE-25. **ADP-42 is the one cloud and FinOps summary question**: it gained an "Unknown" option, a scored map into COST-03 (Unknown rated as the lowest level) and the F-005 trigger (it replaces CORE-24).
+- **One count.** The API, the metadata and the release manifest all give 97; a test and the build check fail if they differ.
+- **Questions that looked scored and were not:** CORE-11 now scores; CORE-26 became a single-select (it was a star scale with option IDs), which also makes finding F-007 reachable for the first time; CORE-10 is labelled context (a preference for one change, not a maturity scale).
+- **Page:** the FinOps focus area and the FIN filters are gone; the Cloud Economics description points to FinOps IQ for cloud cost practice.
+
+Effect on the reference answer sets: headline Cost IQ unchanged on all three; Value IQ 25 to 24 on the worst set; COST-03 and VALUE-05 move a few points; F-007 now appears on the middle set.
+
+**Still to do for the CQ3b gate:** 55 questions score nothing and are not labelled as context (CORE-01, 05, 07, 09 and ADP-06 to ADP-41, 44 to 48, 51 to 60). Each needs a score map with a basis, or a context label; this is judgement work for `finops-cost-lead`. Also open: F-017 and F-019 triggers (task 5), the footprint and applicability questions (task 4), the global-coverage context questions (task 7), the hand-off (task 8), the FinOps IQ side (task 9), the single-figure design (task 10), claims and labels (task 11) and the coverage matrix (task 12). A test keeps the 55 from growing.
