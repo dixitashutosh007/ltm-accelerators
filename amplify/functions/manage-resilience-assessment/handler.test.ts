@@ -2,6 +2,7 @@ import type { APIGatewayProxyStructuredResultV2 } from 'aws-lambda';
 import { handler as rawHandler } from './handler';
 import { evaluateResilienceIq } from '../../../packages/engine-core/src/accelerators/resilience-iq/evaluate';
 import { ARCHETYPES } from '../../../packages/engine-core/test/resilience-iq-samples';
+import { setActivityStore } from '../_shared/activity-recorder.mjs';
 import { setPermissionSource, setDomainStore } from '../_shared/access';
 // Every test caller has Resilience IQ access (the access check is tested in _shared/access.spec.ts).
 setPermissionSource(async () => ({ take: ['resilience-iq'] }));
@@ -102,6 +103,19 @@ const forged=await handler(event('POST',{action:'complete',snapshot:snapshotFor(
 if(forged.statusCode!==200) throw new Error('A complete, valid assessment should be accepted');
 const stored=JSON.parse(mutations[0].resultJson);
 if(stored.score===100 || stored.rating!==evaluateResilienceIq(ready as any).rating) throw new Error('The stored result must be computed by the server, never taken from the browser');
+
+// ---- P2: a save records the owner, accelerator, id, status and times for the Activity screen; never answers or the client name ----
+const activity:any[]=[];
+setActivityStore({recordLogin:async()=>{},recordAssessment:async(email,a)=>{activity.push([email,a]);},removeAssessment:async()=>{}});
+mode='create'; mutations.length=0;
+const recorded=await handler(event('POST',{action:'complete',snapshot:snapshotFor({status:'completed',answers:ready})}));
+if(recorded.statusCode!==200) throw new Error('A completed assessment should be accepted: '+recorded.body);
+if(activity.length!==1 || activity[0][0]!=='consultant@example.com' || activity[0][1].accelerator!=='resilience-iq' || activity[0][1].assessmentId!=='RIQ-001' || activity[0][1].status!=='completed') throw new Error('The save must be recorded for the Activity screen: '+JSON.stringify(activity));
+if(/Test Client|answers|EX-0/.test(JSON.stringify(activity))) throw new Error('The activity record must hold no answers or client name');
+mode='create'; activity.length=0;
+const refusedActivity=await handler(event('POST',{action:'save',snapshot:snapshotFor({status:'in_progress',answers:{'EX-03':'not an option'}})}));
+if(refusedActivity.statusCode!==400 || activity.length!==0) throw new Error('A refused save must record nothing');
+setActivityStore(null);
 
 mutations.length=0;
 const incomplete=await handler(event('POST',{action:'complete',snapshot:snapshotFor({status:'completed',answers:ARCHETYPES['retailer-untested-gated']})}));

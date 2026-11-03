@@ -5,6 +5,7 @@ import { HttpJwtAuthorizer } from 'aws-cdk-lib/aws-apigatewayv2-authorizers';
 import { HttpLambdaIntegration } from 'aws-cdk-lib/aws-apigatewayv2-integrations';
 import { PolicyStatement } from 'aws-cdk-lib/aws-iam';
 import { Function as LambdaFunction, type IFunction } from 'aws-cdk-lib/aws-lambda';
+import { Table, AttributeType, BillingMode } from 'aws-cdk-lib/aws-dynamodb';
 import { LogGroup, RetentionDays } from 'aws-cdk-lib/aws-logs';
 import { auth } from './auth/resource';
 import { data } from './data/resource';
@@ -51,6 +52,22 @@ export const backend = defineBackend({
 const apiStack = backend.createStack('AcceleratorsApiStack');
 
 /* ------------------------------------------------------------------
+ * User activity (platform workstream P2): who signed in and when, and the status and times of each person's
+ * assessments (no answers, no client names). A table of its own, in a stack of its own, so the sign-in trigger has no
+ * dependency on the data stack. Every item expires 12 months after it was written (decision S4).
+ * ------------------------------------------------------------------ */
+const activityStack = backend.createStack('ActivityStack');
+const activityTable = new Table(activityStack, 'UserActivity', {
+  partitionKey: { name: 'pk', type: AttributeType.STRING },
+  sortKey: { name: 'sk', type: AttributeType.STRING },
+  billingMode: BillingMode.PAY_PER_REQUEST,
+  timeToLiveAttribute: 'expiresAt',
+  pointInTimeRecoverySpecification: { pointInTimeRecoveryEnabled: true },
+  deletionProtection: true,
+  removalPolicy: RemovalPolicy.RETAIN
+});
+
+/* ------------------------------------------------------------------
  * Sign-in: the user pool this backend defines. Accounts are created by
  * an administrator only (Access Control); the pre-sign-up trigger limits
  * them to the allowlist in config.ts. The portal signs in with
@@ -69,6 +86,11 @@ for (const node of Stack.of(userPool).node.findAll()) {
       actions: ['s3:GetObject'],
       resources: [`arn:aws:s3:::${REPORTS_BUCKET}/config/domain-rules.json`]
     }));
+  }
+  // The sign-in recorder (P2) may write a person's summary and sign-in items, and nothing else.
+  if (node instanceof LambdaFunction && /auth-post-authentication/i.test(node.node.path)) {
+    node.addEnvironment('ACTIVITY_TABLE', activityTable.tableName);
+    node.addToRolePolicy(new PolicyStatement({ actions: ['dynamodb:UpdateItem', 'dynamodb:PutItem'], resources: [activityTable.tableArn] }));
   }
 }
 const USER_POOL_ID = userPool.userPoolId;
@@ -108,6 +130,16 @@ for (const fn of [
   }));
 }
 
+// The services that record assessment activity (P2) write one item per assessment; only those that can delete an
+// assessment may delete its activity item.
+for (const [fn, canDelete] of [[backend.manageFinOpsAssessmentFunction, true], [backend.manageSovereignAssessmentFunction, true], [backend.manageResilienceAssessmentFunction, false]] as const) {
+  fn.addEnvironment('ACTIVITY_TABLE', activityTable.tableName);
+  fn.resources.lambda.addToRolePolicy(new PolicyStatement({
+    actions: canDelete ? ['dynamodb:UpdateItem', 'dynamodb:DeleteItem'] : ['dynamodb:UpdateItem'],
+    resources: [activityTable.tableArn]
+  }));
+}
+
 /* ------------------------------------------------------------------
  * Reports service permissions: the existing reports bucket and the
  * Cognito admin calls used by the Access Control screen.
@@ -125,6 +157,9 @@ reportsLambda.addToRolePolicy(new PolicyStatement({
   actions: ['s3:GetObject', 's3:PutObject'],
   resources: [`arn:aws:s3:::${REPORTS_BUCKET}/config/domain-rules.json`, `arn:aws:s3:::${REPORTS_BUCKET}/config/domain-rules-audit/*`]
 }));
+// The Activity screen reads the activity table (P2); it never writes it.
+backend.reportsServiceFunction.addEnvironment('ACTIVITY_TABLE', activityTable.tableName);
+reportsLambda.addToRolePolicy(new PolicyStatement({ actions: ['dynamodb:Query', 'dynamodb:Scan'], resources: [activityTable.tableArn] }));
 reportsLambda.addToRolePolicy(new PolicyStatement({
   actions: ['s3:ListBucket'],
   resources: [`arn:aws:s3:::${REPORTS_BUCKET}`]
@@ -231,6 +266,10 @@ route('/api/users/permissions', [HttpMethod.POST], integrations.reports);
 route('/api/domain-rules', [HttpMethod.GET, HttpMethod.POST], integrations.reports);
 route('/api/domain-rules/audit', [HttpMethod.GET], integrations.reports);
 route('/api/domain-rules/check', [HttpMethod.POST], integrations.reports);
+// Users and activity (P2): administrators only (checked in the service).
+route('/api/activity/users', [HttpMethod.GET], integrations.reports);
+route('/api/activity/user', [HttpMethod.GET], integrations.reports);
+route('/api/activity/export', [HttpMethod.GET], integrations.reports);
 route('/api/reports/list', [HttpMethod.GET], integrations.reports);
 route('/api/reports/save', [HttpMethod.POST], integrations.reports);
 route('/api/reports/delete', [HttpMethod.POST], integrations.reports);

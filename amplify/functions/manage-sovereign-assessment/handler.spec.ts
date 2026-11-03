@@ -3,11 +3,12 @@
  * completion, client mode, and the v4 scoring route. Runs against the in-memory store; AppSync is exercised on
  * deployment.
  */
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, afterAll, vi } from 'vitest';
 import type { APIGatewayProxyStructuredResultV2 } from 'aws-lambda';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { createHandler } from './handler';
+import { setActivityStore } from '../_shared/activity-recorder.mjs';
 import { memoryStore, type SovereignAssessmentStore } from './store';
 import { handler as scoreHandler } from '../evaluate-sovereign-iq/handler';
 import { setPermissionSource, setDomainStore } from '../_shared/access';
@@ -174,5 +175,46 @@ describe('GET /api/sovereign-iq/report', () => {
     expect((await report({ assessmentId: 'SIQ-0001-test' })).statusCode).toBe(409);
     expect((await report({ assessmentId: 'SIQ-0001-test' }, { email: 'other@example.com' })).statusCode).toBe(403);
     expect((await report({ assessmentId: 'SIQ-0001-test', format: 'docx' })).statusCode).toBe(400);
+  });
+});
+
+describe('Sovereign IQ assessment API: user activity (platform workstream P2)', () => {
+  const seen: any[] = [];
+  beforeEach(() => {
+    seen.length = 0;
+    setActivityStore({
+      recordLogin: async () => {},
+      recordAssessment: async (email, a) => { seen.push(['record', email, a]); },
+      removeAssessment: async (email, accelerator, id) => { seen.push(['remove', email, accelerator, id]); }
+    });
+  });
+  afterAll(() => setActivityStore(null));
+
+  it('a save records the owner, accelerator, id, status and start, and no answers or client name', async () => {
+    const res = await save();
+    expect(res.status).toBe(200);
+    expect(seen).toHaveLength(1);
+    const [kind, email, a] = seen[0];
+    expect([kind, email]).toEqual(['record', ME]);
+    expect(a).toMatchObject({ accelerator: 'sovereign-iq', assessmentId: snapshot().assessmentId, status: 'in_progress', startedAt: snapshot().startedAt });
+    expect(JSON.stringify(a)).not.toMatch(/Example Bank|answers|request/);
+  });
+  it('archiving records the new status; deleting removes the activity record with the assessment', async () => {
+    await save();
+    seen.length = 0;
+    const id = snapshot().assessmentId;
+    const res = await call(event('POST', { body: { action: 'delete', assessmentId: id } }));
+    expect(res.status).toBe(200);
+    expect(seen).toEqual([['remove', ME, 'sovereign-iq', id]]);
+  });
+  it('nothing is recorded for a refused save', async () => {
+    const res = await save({ respondentEmail: 'someone-else@example.com' });
+    expect(res.status).toBe(403);
+    expect(seen).toEqual([]);
+  });
+  it('a failing activity store never stops a save', async () => {
+    setActivityStore({ recordLogin: async () => { throw new Error('table down'); }, recordAssessment: async () => { throw new Error('table down'); }, removeAssessment: async () => { throw new Error('table down'); } });
+    expect((await save()).status).toBe(200);
+    expect((await call(event('POST', { body: { action: 'delete', assessmentId: snapshot().assessmentId } }))).status).toBe(200);
   });
 });

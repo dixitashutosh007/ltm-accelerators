@@ -1,6 +1,6 @@
 # Platform workstream: access control, user activity and saved sessions
 
-**Date:** 3 Nov 2026  **Status:** decisions recorded by the owner; P1 built on branch `platform-p1-domain-access` (runbook: `docs/security/DOMAIN_ACCESS_RUNBOOK.md`); P2 and P3 not started.
+**Date:** 3 Nov 2026  **Status:** decisions recorded by the owner; P1 is in PR #84 (runbook: `docs/security/DOMAIN_ACCESS_RUNBOOK.md`); P2 is built on branch `platform-p2-user-activity` (runbook: `docs/security/USER_ACTIVITY_RUNBOOK.md`); P3 not started.
 Independent of the Resilience IQ phases (RQ3 onward); the engine work continues in parallel.
 
 ## Requests

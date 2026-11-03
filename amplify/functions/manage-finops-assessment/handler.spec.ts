@@ -2,9 +2,10 @@
  * FinOps IQ save and resume (execution phase M2): ownership, lifecycle, contract checks and the server-computed
  * result. Runs in Vitest against the in-memory store; the AppSync store is exercised on deployment.
  */
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, afterAll, vi } from 'vitest';
 import type { APIGatewayProxyStructuredResultV2 } from 'aws-lambda';
 import { createHandler } from './handler';
+import { setActivityStore } from '../_shared/activity-recorder.mjs';
 import { memoryStore, type FinOpsAssessmentStore } from './store';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
@@ -228,5 +229,46 @@ describe('client logo (carried over from FinOps Value Case)', () => {
       expect(res.status, bad.slice(0, 30)).toBe(400);
       expect(res.body.error).toMatch(/clientLogo/);
     }
+  });
+});
+
+describe('FinOps IQ assessment API: user activity (platform workstream P2)', () => {
+  const seen: any[] = [];
+  beforeEach(() => {
+    seen.length = 0;
+    setActivityStore({
+      recordLogin: async () => {},
+      recordAssessment: async (email, a) => { seen.push(['record', email, a]); },
+      removeAssessment: async (email, accelerator, id) => { seen.push(['remove', email, accelerator, id]); }
+    });
+  });
+  afterAll(() => setActivityStore(null));
+
+  it('a save records the owner, accelerator, id, status and start, and no answers or client name', async () => {
+    const res = await save();
+    expect(res.status).toBe(200);
+    expect(seen).toHaveLength(1);
+    const [kind, email, a] = seen[0];
+    expect([kind, email]).toEqual(['record', ME]);
+    expect(a).toMatchObject({ accelerator: 'finops-iq', assessmentId: snapshot().assessmentId, status: 'in_progress', startedAt: snapshot().startedAt });
+    expect(JSON.stringify(a)).not.toMatch(/Example Bank|answers|request/);
+  });
+  it('archiving records the new status; deleting removes the activity record with the assessment', async () => {
+    await save();
+    seen.length = 0;
+    const id = snapshot().assessmentId;
+    const res = await call(event('POST', { body: { action: 'delete', assessmentId: id } }));
+    expect(res.status).toBe(200);
+    expect(seen).toEqual([['remove', ME, 'finops-iq', id]]);
+  });
+  it('nothing is recorded for a refused save', async () => {
+    const res = await save({ respondentEmail: 'someone-else@example.com' });
+    expect(res.status).toBe(403);
+    expect(seen).toEqual([]);
+  });
+  it('a failing activity store never stops a save', async () => {
+    setActivityStore({ recordLogin: async () => { throw new Error('table down'); }, recordAssessment: async () => { throw new Error('table down'); }, removeAssessment: async () => { throw new Error('table down'); } });
+    expect((await save()).status).toBe(200);
+    expect((await call(event('POST', { body: { action: 'delete', assessmentId: snapshot().assessmentId } }))).status).toBe(200);
   });
 });

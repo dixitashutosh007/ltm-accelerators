@@ -59,7 +59,8 @@ if (advisory) {
     'POST /api/evaluate/modernization-iq', 'POST /api/evaluate/finops-iq/v3', 'GET /api/finops-iq/assessment',
     'POST /api/finops-iq/assessment', 'GET /api/finops-iq/report', 'GET /api/me', 'GET /api/users', 'POST /api/users/create',
     'POST /api/users/set-password', 'POST /api/users/permissions', 'GET /api/domain-rules', 'POST /api/domain-rules',
-    'GET /api/domain-rules/audit', 'POST /api/domain-rules/check', 'GET /api/reports/list',
+    'GET /api/domain-rules/audit', 'POST /api/domain-rules/check', 'GET /api/activity/users', 'GET /api/activity/user',
+    'GET /api/activity/export', 'GET /api/reports/list',
     'POST /api/reports/save', 'POST /api/reports/delete', 'POST /api/reports/rename'];
   const keys = routes.map(r => r.Properties.RouteKey);
   for (const k of required) check(keys.includes(k), `Advisory API is missing route ${k}`);
@@ -125,6 +126,27 @@ if (advisory) {
       check(!actions.some(a => /Delete/.test(a)), `${p.id} can delete the domain rules or their audit trail`);
     }
   }
+
+  // User activity (P2, 3 Nov 2026): a table that expires its items, is kept if the stack goes, and is written only by the
+  // sign-in recorder and the assessment services (never with Scan or Query), and read only by the reports service.
+  const activityTables = ofType('AWS::DynamoDB::Table').filter(t => (t.Properties.KeySchema || []).length === 2 && (t.Properties.KeySchema || []).some(k => k.AttributeName === 'pk') && !JSON.stringify(t.Properties.TableName || '').includes('Amplify'));
+  check(activityTables.length === 1, `expected one user activity table, found ${activityTables.length}`);
+  for (const t of activityTables) {
+    check(t.Properties.TimeToLiveSpecification?.Enabled === true && t.Properties.TimeToLiveSpecification?.AttributeName === 'expiresAt', 'the activity table does not expire its items (expiresAt)');
+    check(t.Properties.DeletionProtectionEnabled === true, 'the activity table has no deletion protection');
+    check(t.DeletionPolicy === 'Retain', 'the activity table would be deleted with its stack');
+    check(t.Properties.PointInTimeRecoverySpecification?.PointInTimeRecoveryEnabled === true, 'the activity table has no point-in-time recovery');
+  }
+  const activityPolicies = ofType('AWS::IAM::Policy').map(p => ({ p, statements: [].concat(p.Properties.PolicyDocument.Statement || []).filter(st => /dynamodb:/.test(JSON.stringify(st.Action)) && /UserActivity/.test(JSON.stringify(st.Resource))) })).filter(x => x.statements.length);
+  check(activityPolicies.length >= 5, `expected the recorder, the three assessment services and the reports service to use the activity table, found ${activityPolicies.length} policies`);
+  for (const { p, statements } of activityPolicies) {
+    const actions = statements.flatMap(st => [].concat(st.Action));
+    const roles = JSON.stringify(p.Properties.Roles);
+    if (/reports/i.test(roles)) check(actions.every(a => /Query|Scan/.test(a)), `${p.id} (reports service) may do more than read the activity table: ${actions}`);
+    else check(actions.every(a => /UpdateItem|PutItem|DeleteItem/.test(a)) && !actions.some(a => /Scan|Query|GetItem|BatchGet/.test(a)), `${p.id} may read the activity table or do more than write it: ${actions}`);
+    check(!statements.some(st => JSON.stringify(st.Resource).includes('*') && !/UserActivity/.test(JSON.stringify(st.Resource))), `${p.id} reaches beyond the activity table`);
+  }
+  check(!!(pools[0]?.Properties.LambdaConfig || {}).PostAuthentication, 'the user pool has no post-authentication trigger');
 
   const stage = ofType('AWS::ApiGatewayV2::Stage').find(s => s.Properties.ApiId?.Ref === advisory.id);
   check(!!stage?.Properties.DefaultRouteSettings?.ThrottlingRateLimit, 'Advisory API stage is not throttled');

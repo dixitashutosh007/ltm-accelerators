@@ -7,6 +7,7 @@ import { evaluateResilienceIq } from '../../../packages/engine-core/src/accelera
 import { parseResilienceIqRequest } from '../../../packages/engine-core/src/accelerators/resilience-iq/contract';
 import { RESILIENCE_IQ_VERSION } from '../../../packages/engine-core/src/accelerators/resilience-iq/version';
 import { withAcceleratorAccess } from '../_shared/access';
+import { recordAssessment } from '../_shared/activity-recorder.mjs';
 
 // Lambdas run one request at a time per container, so the current request's headers are kept here for
 // response() to echo an allowed origin (see _shared/http.ts). Origins not in ALLOWED_ORIGINS get no CORS header.
@@ -68,6 +69,7 @@ const serve = async(event:APIGatewayProxyEventV2):Promise<APIGatewayProxyResultV
     if(action==='archive' && existing){
       const data=await graphql(`mutation UpdateResilienceAssessment($input: UpdateResilienceAssessmentInput!) { updateResilienceAssessment(input:$input) { ${fields} } }`,
         {input:{id:existing.id,status:'archived',finalizedAt:snapshot.finalizedAt?String(snapshot.finalizedAt):new Date().toISOString()}});
+      await recordAssessment(existing.respondentEmail,{accelerator:'resilience-iq',assessmentId,status:'archived'});
       return response(200,{ok:true,data:data.updateResilienceAssessment,requestId},requestId);
     }
 
@@ -105,6 +107,7 @@ const serve = async(event:APIGatewayProxyEventV2):Promise<APIGatewayProxyResultV
     };
     const mutation=existing ? `mutation UpdateResilienceAssessment($input: UpdateResilienceAssessmentInput!) { updateResilienceAssessment(input:$input) { ${fields} } }` : `mutation CreateResilienceAssessment($input: CreateResilienceAssessmentInput!) { createResilienceAssessment(input:$input) { ${fields} } }`;
     const data=await graphql(mutation,{input});
+    await recordAssessment(existing?.respondentEmail??String(snapshot.respondentEmail),{accelerator:'resilience-iq',assessmentId,status:String(snapshot.status),startedAt:String(snapshot.startedAt),completedAt:input.completedAt});
     return response(200,{ok:true,data:existing?data.updateResilienceAssessment:data.createResilienceAssessment,requestId},requestId);
   } catch(error:any) {
     console.error('[ManageResilienceAssessment]',{requestId,error});

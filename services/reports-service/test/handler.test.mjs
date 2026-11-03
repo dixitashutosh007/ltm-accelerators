@@ -33,11 +33,11 @@ S3Client.prototype.send=async function(cmd){const n=cmd.constructor.name;s3calls
   if(n==='ListObjectsV2Command')return{Contents:[{Key:'reports/cloud-iq/A_1.pdf',Size:10,LastModified:new Date()}]};
   if(n==='GetObjectCommand')return{Body:{transformToString:async()=>JSON.stringify({clientName:'Acme'})}};
   return {};};
-const cog=[]; CognitoIdentityProviderClient.prototype.send=async function(cmd){cog.push(cmd.constructor.name); if(cmd.constructor.name==='ListUsersCommand')return{Users:[]};return{};};
+const dir=[]; const cog=[]; CognitoIdentityProviderClient.prototype.send=async function(cmd){cog.push(cmd.constructor.name); if(cmd.constructor.name==='ListUsersCommand')return{Users:dir};return{};};
 
-const { handler } = await import('../index.mjs');
+const { handler, setActivityStore } = await import('../index.mjs');
 const ORIGIN='https://main.d199dq940iqyj2.amplifyapp.com';
-const call=(method,path,{token,body,origin=ORIGIN}={})=>handler({rawPath:path,requestContext:{http:{method}},headers:{origin,...(token?{authorization:'Bearer '+token}:{})},body:body?JSON.stringify(body):undefined}).then(r=>({...r,json:r.body?JSON.parse(r.body):null}));
+const call=(method,fullPath,{token,body,origin=ORIGIN}={})=>{const [path,query]=fullPath.split('?');return handler({rawPath:path,queryStringParameters:query?Object.fromEntries(new URLSearchParams(query)):undefined,requestContext:{http:{method}},headers:{origin,...(token?{authorization:'Bearer '+token}:{})},body:body?JSON.stringify(body):undefined}).then(r=>({...r,json:r.body?JSON.parse(r.body):null}));};
 
 const admin=tok({email:'owner@ltm.com',sub:'a'}), groupAdmin=tok({email:'boss@ltm.com','cognito:groups':['Admin']});
 const consultant=tok({email:'consultant@ltm.com'}), reporter=tok({email:'reporter@ltm.com'});
@@ -81,6 +81,20 @@ await t('domain rules: an unreadable rule list refuses ordinary users but never 
   }finally{Date.now=realNow;dom.down=false;}
   r=await call('GET','/api/domain-rules',{token:admin});assert.equal(r.statusCode,200);
 });
+// ---- User activity (P2) ----
+const person=(email,over={})=>({Username:email,Enabled:true,UserStatus:'CONFIRMED',UserCreateDate:new Date('2026-10-01T00:00:00Z'),Attributes:[{Name:'email',Value:email},{Name:'name',Value:email.split('@')[0]}],...over});
+const fakeActivity={
+  async listUsers(){return[{email:'consultant@ltm.com',firstLoginAt:'2026-11-01T09:00:00.000Z',lastLoginAt:'2026-11-03T09:00:00.000Z',loginCount:4,assessments:{total:2,completed:1,inProgress:1,archived:0},lastAssessmentAt:'2026-11-02T10:00:00.000Z'},{email:'gone@ltm.com',firstLoginAt:'2026-10-02T09:00:00.000Z',lastLoginAt:'2026-10-02T09:00:00.000Z',loginCount:1,assessments:{total:0,completed:0,inProgress:0,archived:0},lastAssessmentAt:null}];},
+  async listAssessments(){return[{email:'consultant@ltm.com',accelerator:'resilience-iq',assessmentId:'RIQ-1',status:'in_progress',stage:null,percent:null,startedAt:'2026-11-02T09:00:00.000Z',lastSavedAt:'2026-11-02T10:00:00.000Z',completedAt:null},{email:'=cmd@ltm.com',accelerator:'finops-iq',assessmentId:'F-1',status:'completed',stage:null,percent:null,startedAt:'2026-11-01T09:00:00.000Z',lastSavedAt:'2026-11-01T10:00:00.000Z',completedAt:'2026-11-01T10:00:00.000Z'}];},
+  async userDetail(email){return{email,firstLoginAt:null,lastLoginAt:null,loginCount:0,logins:[],assessments:[]};}
+};
+setActivityStore(fakeActivity);
+dir.push(person('consultant@ltm.com'),person('owner@ltm.com'),person('quiet@ltm.com',{Enabled:false}));
+await t('activity: non-admins cannot see any of it',async()=>{for(const p of ['/api/activity/users','/api/activity/user?email=a@b.co','/api/activity/export']){r=await call('GET',p,{token:consultant});assert.equal(r.statusCode,403,p);}});
+await t('activity: admin sees every account with its sign-ins and assessment counts, and activity from a removed account',async()=>{r=await call('GET','/api/activity/users',{token:admin});assert.equal(r.statusCode,200,JSON.stringify(r.json));const u=r.json.users;assert.deepEqual(u.map(x=>x.email),['consultant@ltm.com','gone@ltm.com','owner@ltm.com','quiet@ltm.com']);const c=u.find(x=>x.email==='consultant@ltm.com');assert.equal(c.loginCount,4);assert.equal(c.assessments.total,2);assert.equal(c.role,'advisor_viewer');assert.equal(c.inDirectory,true);const q=u.find(x=>x.email==='quiet@ltm.com');assert.equal(q.loginCount,0);assert.equal(q.lastLoginAt,null);assert.equal(q.enabled,false);const g=u.find(x=>x.email==='gone@ltm.com');assert.equal(g.inDirectory,false);assert.equal(g.accountStatus,'REMOVED');assert.equal(u.find(x=>x.email==='owner@ltm.com').role,'super_admin');assert.equal(r.json.retentionDays,365);});
+await t('activity: one person\'s detail needs a valid address',async()=>{r=await call('GET','/api/activity/user?email=not-an-address',{token:admin});assert.equal(r.statusCode,400);r=await call('GET','/api/activity/user?email=Consultant@LTM.com',{token:admin});assert.equal(r.statusCode,200);assert.equal(r.json.detail.email,'consultant@ltm.com');assert.equal(r.json.role,'advisor_viewer');});
+await t('activity: exports are CSV with a header, and a cell cannot run as a formula',async()=>{r=await call('GET','/api/activity/export?kind=users',{token:admin});assert.equal(r.statusCode,200);assert.equal(r.json.filename,'user-activity.csv');assert.ok(r.json.csv.startsWith('email,status,role,createdAt,firstLoginAt,lastLoginAt,loginCount'));assert.ok(r.json.csv.includes('quiet@ltm.com,disabled'));r=await call('GET','/api/activity/export?kind=assessments',{token:admin});assert.equal(r.json.filename,'assessment-activity.csv');assert.ok(r.json.csv.includes("'=cmd@ltm.com"));assert.ok(!/(^|\n)=/.test(r.json.csv));assert.ok(!/answers|clientName|result/i.test(r.json.csv.split('\r\n')[0]));});
+await t('activity: an unknown report is not found, and a blocked admin cannot read it',async()=>{r=await call('GET','/api/activity/nothing',{token:admin});assert.equal(r.statusCode,404);});
 await t('/api/me returns own permissions',async()=>{r=await call('GET','/api/me',{token:consultant});assert.equal(r.statusCode,200);assert.deepEqual(r.json.permissions.view,['cloud-iq']);r=await call('GET','/api/me',{token:admin});assert.equal(r.json.role,'super_admin');});
 await t('consultant cannot list reports',async()=>{r=await call('GET','/api/reports/list',{token:consultant});assert.equal(r.statusCode,403);});
 await t('reporter lists reports with 15-min URLs, no bucket name leak',async()=>{r=await call('GET','/api/reports/list',{token:reporter});assert.equal(r.statusCode,200);assert.equal(r.json.count,1);assert.match(r.json.reports[0].downloadUrl,/X-Amz-Expires=900/);assert.ok(!('bucket' in r.json));});
