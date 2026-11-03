@@ -101,4 +101,20 @@ test.describe('Cost IQ', () => {
     expect(await visible(['VMWARE', 'EXTERNAL'])).toEqual(['CORE-01', 'ADP-09', 'ADP-14']);
     expect(world.pageErrors).toEqual([]);
   });
+
+  test('the preliminary result prints each finding with its description, and says evidence completeness, not confidence', async ({ page, context, world }) => {
+    await signedIn(context, permitted(makeIdToken('consultant@ltm.com')));
+    world.on('GET', ASSESSMENT, () => ({ body: { ok: true, data: [] } }));
+    world.on('POST', '/api/evaluate/cost-iq', ({ body }) => ({ body: evaluateCostIq({ answers: body.answers, scope: body.scope }) }));
+    await page.goto('/cost-iq-v10');
+    await page.getByRole('button', { name: 'Load Cost Challenge' }).click();
+    await expect(page.getByText('Evidence completeness').first()).toBeVisible({ timeout: 15000 });
+    const result: any = await page.evaluate('assessment');
+    expect(result.findings.length).toBeGreaterThan(0);
+    const first = result.findings[0];
+    expect(first.description).toBeTruthy();
+    await expect(page.getByText(first.description, { exact: false }).first()).toBeVisible();
+    await expect(page.getByText('Confidence', { exact: true })).toHaveCount(0);
+    expect(world.pageErrors).toEqual([]);
+  });
 });

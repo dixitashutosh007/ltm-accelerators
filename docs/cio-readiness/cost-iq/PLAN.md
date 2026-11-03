@@ -234,3 +234,7 @@ The owner accepted the recommendations on the held items: **ADP-15 dropped** (it
 
 State: **95 questions; 51 score, 27 are context, 2 only trigger a finding, 15 do neither** (ADP-44 to 48 and ADP-51 to 60, batch 3). All 20 findings now have a reachable trigger except those whose questions are in batch 3.
 
+### Report fixes from CQ0 finding C4 (4 Nov 2026)
+
+Four defects in the current page, fixed ahead of the server-rendered report (CQ5) because they made the deliverable read empty: finding descriptions never printed (the page read `f.detail`; the engine field is `description`), the "priority" panel listed the first four dimensions in configuration order (it now lists the four weakest), every recommendation showed a hard-coded "Confidence: Medium", and the "Confidence" label described answer completeness, not confidence in a result. The label now reads "Evidence completeness" and shows the engine's value; the hard-coded Medium is gone. A browser test checks the description and the label. Still open from C4: the value figure itself (C3), which needs the shared value model (CQ4).
+
