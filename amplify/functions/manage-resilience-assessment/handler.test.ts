@@ -27,6 +27,7 @@ function event(method:'GET'|'POST', body?:unknown, claims:Record<string,unknown>
 
 const originalFetch=globalThis.fetch;
 let evidenceOnFile:any[]=[];
+let expiredRecord=false;
 let mode:'create'|'existing-completed'|'existing-other-owner'|'second-page'|'graphql-error'='create';
 const mutations:any[]=[];
 globalThis.fetch=async (_input:any, init:any)=>{
@@ -42,7 +43,7 @@ globalThis.fetch=async (_input:any, init:any)=>{
         ? {items:[{id:'db-9',assessmentId:'RIQ-001',status:'draft',respondentEmail:'consultant@example.com'}],nextToken:null}
         : {items:[],nextToken:'page-2'}});
     }
-    return ok({listResilienceAssessments:{items:mode==='existing-completed'?[{id:'db-1',assessmentId:'RIQ-001',status:'completed',respondentEmail:'consultant@example.com'}]
+    return ok({listResilienceAssessments:{items:mode==='existing-completed'?[{id:'db-1',assessmentId:'RIQ-001',status:'completed',respondentEmail:'consultant@example.com',...(expiredRecord?{expiresAt:1}:{})}]
       :mode==='existing-other-owner'?[{id:'db-2',assessmentId:'RIQ-001',status:'draft',respondentEmail:'someone.else@example.com'}]:[],nextToken:null}});
   }
   mutations.push(request.variables.input);
@@ -137,7 +138,7 @@ if(paged.statusCode!==200 || JSON.parse(String(paged.body)).data.id!=='db-9') th
 
 mode='existing-completed'; mutations.length=0;
 const archived=await handler(event('POST',{action:'archive',snapshot:snapshotFor({status:'archived',answers:{'EX-06':'No'}})}));
-if(archived.statusCode!==200 || Object.keys(mutations[0]).sort().join()!=='finalizedAt,id,status') throw new Error('Archiving must change only status and finalizedAt, never answers or result');
+if(archived.statusCode!==200 || Object.keys(mutations[0]).sort().join()!=='expiresAt,finalizedAt,id,status') throw new Error('Archiving must change only status and finalizedAt, never answers or result');
 
 // ---- P3a: stage and percent reach the activity record, cut to range; delete is for the owner or an Admin ----
 const seen:any[]=[], removed:any[]=[];
@@ -164,6 +165,16 @@ if(JSON.stringify(removed)!==JSON.stringify([['consultant@example.com','resilien
 mode='existing-other-owner'; mutations.length=0;
 const deleteAdmin=await handler(event('POST',{action:'delete',assessmentId:'RIQ-001'},{email:'admin@example.com','cognito:groups':['Admin']}));
 if(deleteAdmin.statusCode!==200 || JSON.stringify(mutations)!==JSON.stringify([{id:'db-2'}])) throw new Error('An Admin may delete any assessment');
+// ---- Retention: every write sets expiresAt 24 months ahead; a record past it is treated as already deleted ----
+mode='create'; mutations.length=0;
+await handler(event('POST',{action:'save',snapshot:snapshotFor({status:'in_progress',answers:{}})}));
+const months24=Date.now()/1000+23.9*30*86400;
+if(!(mutations[0].expiresAt>months24 && mutations[0].expiresAt<Date.now()/1000+24.1*31*86400)) throw new Error('A save must set expiresAt about 24 months ahead: '+mutations[0].expiresAt);
+expiredRecord=true; mode='existing-completed';
+const gone=await handler(event('GET',undefined,{email:'consultant@example.com'}));
+if(gone.statusCode!==404) throw new Error('A record past expiresAt must read as deleted: '+gone.statusCode+' '+gone.body);
+expiredRecord=false;
+
 // Deleting an assessment also deletes its evidence: files, then records, then the assessment itself.
 const removedFiles:string[]=[];
 deps.files={remove:async key=>{removedFiles.push(key);}};

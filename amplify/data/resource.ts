@@ -84,7 +84,9 @@ const schema = a.schema({
       recommendationSensitivityJson: a.string(),
       startedAt: a.datetime().required(),
       completedAt: a.datetime(),
-      finalizedAt: a.datetime()
+      finalizedAt: a.datetime(),
+      // Epoch seconds 24 months after the last change; DynamoDB time to live deletes the record then.
+      expiresAt: a.integer()
     })
     .authorization(allow => [
       allow.groups(['Admin', 'Consultant']).to(['create', 'read', 'update'])

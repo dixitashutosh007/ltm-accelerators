@@ -105,6 +105,7 @@ const COGNITO_ISSUER = `https://cognito-idp.${REGION}.amazonaws.com/${USER_POOL_
  * ------------------------------------------------------------------ */
 backend.data.resources.cfnResources.amplifyDynamoDbTables['FinOpsIqAssessment'].timeToLiveAttribute = { attributeName: 'expiresAt', enabled: true };
 backend.data.resources.cfnResources.amplifyDynamoDbTables['SovereignIqAssessment'].timeToLiveAttribute = { attributeName: 'expiresAt', enabled: true };
+backend.data.resources.cfnResources.amplifyDynamoDbTables['ResilienceAssessment'].timeToLiveAttribute = { attributeName: 'expiresAt', enabled: true };
 backend.data.resources.cfnResources.amplifyDynamoDbTables['SavedSession'].timeToLiveAttribute = { attributeName: 'expiresAt', enabled: true };
 
 /* ------------------------------------------------------------------

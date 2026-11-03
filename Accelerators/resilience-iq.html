@@ -206,7 +206,7 @@ function renderAssessmentSetup(){
  '</div><div class="panel"><div class="section"><h2>Previous Assessments</h2><div id="assessmentHistory"><p class="hint">Loading...</p></div></div></div>';
 }
 // Minimal notice (RQ0 item 6) until RQ11 replaces it with the approved wording.
-const NOTICE='Not legal or regulatory advice. Resilience IQ gives an indicative assessment from the answers you provide, which LTM has not audited; confirm your obligations with your counsel and your regulators. The assessment and any evidence files are held by LTM in Amazon Web Services, Mumbai region (India).';
+const NOTICE='Not legal or regulatory advice. Resilience IQ gives an indicative assessment from the answers you provide, which LTM has not audited; confirm your obligations with your counsel and your regulators. The assessment and any evidence files are held by LTM in Amazon Web Services, Mumbai region (India). An assessment is deleted automatically 24 months after its last change, or sooner at your request.';
 async function loadAssessmentHistory(){
  const host=document.getElementById('assessmentHistory');
  if(!host)return;

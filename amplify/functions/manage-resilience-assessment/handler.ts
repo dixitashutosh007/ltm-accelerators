@@ -2,13 +2,14 @@ import type { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda
 import { randomUUID } from 'node:crypto';
 import { assertAssessmentStatusTransition, type ResilienceAssessmentStatus } from '../../../packages/engine-core/src/accelerators/resilience-iq/assessment-lifecycle';
 import { corsHeaders } from '../_shared/http';
-import { ASSESSMENT_FIELDS as fields, authorized, canAccess, getAssessment, graphql, isAdmin, listWhere, parseBody, userEmail } from '../_shared/resilience-data';
+import { ASSESSMENT_FIELDS as fields, authorized, canAccess, getAssessment, graphql, isAdmin, isLive, listWhere, parseBody, userEmail } from '../_shared/resilience-data';
 import { evaluateResilienceIq } from '../../../packages/engine-core/src/accelerators/resilience-iq/evaluate';
 import { parseResilienceIqRequest } from '../../../packages/engine-core/src/accelerators/resilience-iq/contract';
 import { RESILIENCE_IQ_VERSION } from '../../../packages/engine-core/src/accelerators/resilience-iq/version';
 import { withAcceleratorAccess } from '../_shared/access';
 import { recordAssessment, removeAssessmentActivity } from '../_shared/activity-recorder.mjs';
 import { progressFor } from '../_shared/progress';
+import { expiresAt } from '../../../packages/engine-core/src/accelerators/finops-iq/v3/retention';
 import { s3EvidenceFiles, type EvidenceFiles } from './evidence-files';
 
 /** Where evidence files are removed from; tests replace it. */
@@ -24,7 +25,7 @@ function response(statusCode:number, body:unknown, requestId:string):APIGatewayP
 }
 async function listAssessments(email:string){
   const items=await listWhere('ResilienceAssessment',fields,{respondentEmail:{eq:email}});
-  return items.sort((a:any,b:any)=>String(b.updatedAt||b.startedAt||'').localeCompare(String(a.updatedAt||a.startedAt||'')));
+  return items.filter(r=>isLive(r)).sort((a:any,b:any)=>String(b.updatedAt||b.startedAt||'').localeCompare(String(a.updatedAt||a.startedAt||'')));
 }
 
 const serve = async(event:APIGatewayProxyEventV2):Promise<APIGatewayProxyResultV2>=>{
@@ -92,7 +93,7 @@ const serve = async(event:APIGatewayProxyEventV2):Promise<APIGatewayProxyResultV
     // Archiving a completed assessment changes only its status: answers and result stay as completed.
     if(action==='archive' && existing){
       const data=await graphql(`mutation UpdateResilienceAssessment($input: UpdateResilienceAssessmentInput!) { updateResilienceAssessment(input:$input) { ${fields} } }`,
-        {input:{id:existing.id,status:'archived',finalizedAt:snapshot.finalizedAt?String(snapshot.finalizedAt):new Date().toISOString()}});
+        {input:{id:existing.id,status:'archived',finalizedAt:snapshot.finalizedAt?String(snapshot.finalizedAt):new Date().toISOString(),expiresAt:expiresAt(new Date())}});
       await recordAssessment(existing.respondentEmail,{accelerator:'resilience-iq',assessmentId,status:'archived'});
       return response(200,{ok:true,data:data.updateResilienceAssessment,requestId},requestId);
     }
@@ -127,7 +128,9 @@ const serve = async(event:APIGatewayProxyEventV2):Promise<APIGatewayProxyResultV
       recommendationSensitivityJson:result ? JSON.stringify(result.executiveReport.recommendationSensitivity) : undefined,
       startedAt:String(snapshot.startedAt),
       completedAt:snapshot.status==='completed' ? String(snapshot.completedAt||new Date().toISOString()) : undefined,
-      finalizedAt:snapshot.finalizedAt ? String(snapshot.finalizedAt) : undefined
+      finalizedAt:snapshot.finalizedAt ? String(snapshot.finalizedAt) : undefined,
+      // 24 months after the last change, as FinOps IQ and Sovereign IQ (data notice).
+      expiresAt:expiresAt(new Date())
     };
     const mutation=existing ? `mutation UpdateResilienceAssessment($input: UpdateResilienceAssessmentInput!) { updateResilienceAssessment(input:$input) { ${fields} } }` : `mutation CreateResilienceAssessment($input: CreateResilienceAssessmentInput!) { createResilienceAssessment(input:$input) { ${fields} } }`;
     const data=await graphql(mutation,{input});
