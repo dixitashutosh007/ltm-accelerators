@@ -54,6 +54,8 @@ Three Critical findings:
 | RQ11 | Client data, counsel review and operations | RQ6–RQ9; WS-S6 | Notice, transfer basis and retention live; counsel comments on regulatory content recorded; monitoring and alarms tested; dev separated from production |
 | RQ12 | Re-score against all 13 areas | RQ0–RQ11 | All 13 Pass, or Partials accepted in writing; self-service decision recorded |
 
+Platform work that touches all accelerators (domain access, user activity, saved sessions) is planned separately in [docs/platform/ACCESS-AND-SESSIONS-PLAN.md](../../platform/ACCESS-AND-SESSIONS-PLAN.md) and runs beside RQ3. RQ6 plugs Resilience IQ's stage names into the shared saved-sessions component (P3).
+
 RQ0 starts now and waits for no decision. RQ2 research can run beside RQ1. RQ6, RQ8 and RQ9 can run in parallel once RQ3's contract is fixed. The critical path for area 13 is RQ3 → RQ4 → RQ7.
 
 ---
