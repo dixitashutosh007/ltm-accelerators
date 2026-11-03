@@ -250,3 +250,23 @@ The rule (BOUNDARY.md section 3): one estate has **one cloud figure**, computed 
 | 4 Guard | Total = non-cloud plus cloud; CI fails if Cost IQ computes any lever in `FINOPS_IQ_LEVER_IDS`, if a lever exceeds its addressable base, or if one dollar is counted twice | Open |
 | 5 Report | Cloud line, total "excluding cloud" where needed, trace and assumption appendix | CQ5 |
 
+### CQ3b slice 6: scoring batch 3 (4 Nov 2026)
+
+`finops-cost-lead` proposed ADP-44 to ADP-60 and the new global-coverage questions ([scoring-batch-3.md](scoring-batch-3.md), [scoring-batch-3.json](scoring-batch-3.json), [global-questions.json](global-questions.json)). Applied now (no owner decision needed): **score** ADP-44, 45, 46 (a slider, inverted), 48, 54, 59, 60; **context** ADP-53 and 56.
+
+**State: 95 questions; 58 score, 29 are context, 2 only trigger a finding (ADP-49, 50), 6 do neither.** The agent's structural check finds a reachable trigger for all 20 findings; nine of them need an opt-in focus area, listed in the proposal. VALUE-01 still has no scored question.
+
+**Held for the owner** (they change what a client sees, or add a gate):
+
+| Item | Decision |
+|---|---|
+| ADP-49 and ADP-50 | A client with no acquisition or divestiture who picks the M&A area can only answer NONE (scores 20 and raises F-020) or leave the slider at 0 (scores 100). Proposed: a NOT_APPLICABLE option on ADP-49, a gate on ADP-50 and on both F-020 triggers; confirm the 20 percent threshold (LTM heuristic) |
+| ADP-51 and ADP-52 (Geography) | Need a gate: the master rule says they apply to multi-country operations but nothing sets that. Proposed: the new CTX-05 (countries band). Without it a single-country client scores 100 |
+| ADP-47 | LATE is rated above RENEWAL by option order; a tie is as defensible |
+| ADP-55, ADP-57, ADP-58 | ADP-55 overlaps CORE-09; ADP-57's labels read as identifiers ("Data Ai"); ADP-58 duplicates CORE-45 and ADP-55 (drop) |
+| New questions CTX-01 to CTX-05 | Reporting currency, foreign-currency share, regions of operation, onshore share, countries band; all context, no scoring effect |
+| CORE-02 | Add EDUCATION, MEDIA_ENTERTAINMENT, NATURAL_RESOURCES (where upstream oil and gas sits is open) |
+| CORE-03 and CORE-04 | Rewrite so the bands follow the chosen currency; the proposal has band tables for nine non-USD currencies from ECB rates dated 2 Nov 2026, which must be regenerated from the ECB XML before use (the agent read them through a summarising fetch) |
+
+Not verified by the agent: FOCUS column text, IAS 21, ISO 4217, ISIC section titles and the AED and SAR pegs in primary form.
+

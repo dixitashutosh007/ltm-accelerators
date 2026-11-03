@@ -4962,7 +4962,15 @@
       "scoring": {
         "dimensionIds": [
           "COST-07"
-        ]
+        ],
+        "defaultMap": {
+          "HIGH": 100.0,
+          "MODERATE": 80.0,
+          "LIMITED": 60.0,
+          "LOCKED": 40.0,
+          "UNKNOWN": 20.0
+        },
+        "basis": "Ordered scale from contracts that allow volume, service and exit changes, down to significant lock-in, with UNKNOWN at the lowest level. Options are already in best-to-worst order and UNKNOWN is last. LTM heuristic: the step values (100/80/60/40/20) are an LTM convention, not a benchmark; the FinOps Framework gives three stages, not scores. Flexibility is not always better: a stable service on a committed contract earns a discount, so the scale reads the ability to change, not the absence of commitment. Overlaps in theme with CORE-37 (vendor renewal approach) and ADP-20 (negotiation leverage, context); ADP-44 asks about the contract terms themselves, so keep, but do not present as independent evidence. LOCKED and LIMITED are also a natural source for the CONTRACT_LOCK_IN practical-constraint signal in settings.practicalConstraintSignals; I found no code that reads that setting, so nothing is wired. The FinOps pages say what a mature practice does at renewal and exit; they do not give a lock-in measure."
       },
       "active": true,
       "version": 1,
@@ -5012,7 +5020,15 @@
       "scoring": {
         "dimensionIds": [
           "COST-09"
-        ]
+        ],
+        "defaultMap": {
+          "GOVERNED": 100.0,
+          "REVIEW": 80.0,
+          "RARE": 60.0,
+          "LOCKED": 40.0,
+          "NONE": 20.0
+        },
+        "basis": "Ordered scale of how architecture standards are challenged when cost and value diverge: actively, on review of exceptions, rarely, difficult to change, no mechanism. LTM heuristic: the step values (100/80/60/40/20) are an LTM convention, not a benchmark; the FinOps Framework gives three stages, not scores. LOCKED (a mechanism exists but is blocked by governance or platform constraints) is placed above NONE in the master's order; that is a judgement, and a tie at 30 would be as defensible. There is no Unknown option, so NONE is the lowest level; adding UNKNOWN at 20 is recommended (client-visible, owner optional). The prompt says 'How often' while the options describe practice, a minor mismatch. Overlaps in theme with CORE-40 and ADP-46 (all COST-09): they measure the cost of complexity, ADP-45 measures whether anyone challenges it. No published source verified."
       },
       "active": true,
       "version": 1,
@@ -5040,7 +5056,9 @@
       "scoring": {
         "dimensionIds": [
           "COST-09"
-        ]
+        ],
+        "normalize": "invert-0-100",
+        "basis": "Share of run cost attributed to legacy platforms, technical debt or duplicated capability: 0 percent best, so it scores inverted like ADP-22. Three conditions are combined in one number, so the respondent cannot tell which drives it, and the figure is an estimate. A screen, not a benchmark. LTM heuristic; I found no published percentage with method and sample and cite none. Overlap: CORE-40 rates the same theme on five stars and already triggers F-012; ADP-46 quantifies it, both score COST-09, so the dimension counts the idea twice. Keep both for the workshop (CORE-40 in executive mode) or drop ADP-46 if the owner wants one answer per idea. I do not add an F-012 trigger: F-012 is already reachable through CORE-40 (4 or 5 stars) and a second trigger at an unsourced threshold only raises sensitivity. If the owner wants one, 30 percent is the equivalent heuristic (LTM heuristic, UNSOURCED). The slider cannot record Unknown (batch 1, problem 2; the master sets control.unknown but the page does not record it), so an unanswered slider is unscored, never rated good."
       },
       "active": true,
       "version": 1,
@@ -5148,7 +5166,15 @@
       "scoring": {
         "dimensionIds": [
           "COST-07"
-        ]
+        ],
+        "defaultMap": {
+          "PORTFOLIO": 100.0,
+          "CATEGORY": 80.0,
+          "PROJECT": 60.0,
+          "LOCAL": 40.0,
+          "UNKNOWN": 20.0
+        },
+        "basis": "Ordered scale of how consistently purchases are aggregated for leverage: across the enterprise, by category, by project or team, independently by business unit despite overlap, cannot assess. UNKNOWN last at the lowest level. LTM heuristic: the step values (100/80/60/40/20) are an LTM convention, not a benchmark; the FinOps Framework gives three stages, not scores. Aggregation helps only where there is real overlap, which the options acknowledge ('when scale can improve terms'). The strongest statement, LOCAL, is a direct description of commercial leakage and could corroborate F-011; I do not propose that trigger because F-011 is already reachable through CORE-28 and CORE-37 and a single hit fires a high-severity finding. No published source verified."
       },
       "active": true,
       "version": 1,
@@ -5386,9 +5412,12 @@
         }
       ],
       "scoring": {
-        "dimensionIds": [
-          "VALUE-03"
-        ]
+        "method": "hypothesis-signal",
+        "signals": [
+          "value-measurement-gaps"
+        ],
+        "note": "Multi-select of the business outcomes the client finds hardest to quantify. Feeds the value-measurement narrative and which benefit types the roadmap asks for evidence on. Do not score by selection count; a longer list can mean a harder estate or a more honest respondent. No score. Never re-weights a score (GLOBAL-COVERAGE rule).",
+        "basis": "An unordered set of outcome types, no better-to-worse order, so no map is possible. Scoring the count would reward saying little. VALUE-03 Benefits Realization already has five scored questions (CORE-20, CORE-44, ADP-29, ADP-30, ADP-32). The master's adaptiveTrigger 'ValueMaturity<3' is read by no code, so the question is shown only through the Technology Value area. LTM heuristic."
       },
       "active": true,
       "version": 1,
@@ -5441,7 +5470,15 @@
       "scoring": {
         "dimensionIds": [
           "VALUE-06"
-        ]
+        ],
+        "defaultMap": {
+          "OFTEN": 100.0,
+          "QUARTERLY": 80.0,
+          "PLANNING": 60.0,
+          "ESCALATION": 40.0,
+          "RARE": 20.0
+        },
+        "basis": "Ordered scale of how routinely the business challenges technology on value versus cost: regularly and used to reprioritise, in periodic governance, at annual planning, only when dissatisfied or under cost pressure, rarely. LTM heuristic: the step values (100/80/60/40/20) are an LTM convention, not a benchmark; the FinOps Framework gives three stages, not scores. The scale reads how routinely the challenge happens, which is a governance practice; whether the business is satisfied is CORE-43's question (VALUE-06, stars), so the two together give VALUE-06 two scored answers and the dimension is still thin. There is no Unknown option, so RARE is the lowest level; adding UNKNOWN is optional. No published source verified."
       },
       "active": true,
       "version": 1,
@@ -5574,9 +5611,12 @@
         }
       ],
       "scoring": {
-        "dimensionIds": [
-          "VALUE-05"
-        ]
+        "method": "constraint-signal",
+        "signals": [
+          "savings-barriers"
+        ],
+        "note": "Up to three barriers to realising savings. Feeds the feasibility narrative and sequencing. Suggested mapping onto settings.practicalConstraintSignals: CONTRACTS -> CONTRACT_LOCK_IN; BUSINESS -> BUSINESS_CRITICALITY; TECH_DEBT -> PLATFORM_DEPENDENCY; SKILLS -> SKILLS_CONSTRAINT; CHANGE -> CHANGE_CAPACITY. DATA, GOVERNANCE, FUNDING and OTHER have no signal there. I found no code that reads practicalConstraintSignals, so the mapping is documentation until the value model (CQ4) uses it. No score. Never re-weights a score (GLOBAL-COVERAGE rule).",
+        "basis": "A barrier is a constraint on how much of an opportunity is realisable, not a better or worse maturity; a client with no barrier selected is not better run. Scoring it would also double count the questions about the same causes (contracts: ADP-44; skills: CORE-35; technical debt: CORE-40). VALUE-05 Strategic Agility keeps its three scored questions (CORE-11, CORE-21, CORE-28). Master adaptiveTrigger 'CostPressure=High' is read by no code. LTM heuristic."
       },
       "active": true,
       "version": 1,
@@ -5767,7 +5807,15 @@
       "scoring": {
         "dimensionIds": [
           "COST-08"
-        ]
+        ],
+        "defaultMap": {
+          "DISCIPLINED": 100.0,
+          "GOVERNED": 80.0,
+          "MIXED": 60.0,
+          "LIMITED": 40.0,
+          "NONE": 20.0
+        },
+        "basis": "Ordered scale of how technology demand is prioritised against funding and capacity: continuously ranked with lower-value demand stopped, governed in periodic cycles, prioritised but with differing approaches, sponsorship-led, no mechanism. LTM heuristic: the step values (100/80/60/40/20) are an LTM convention, not a benchmark; the FinOps Framework gives three stages, not scores. MIXED sits in the middle by option position. There is no Unknown option, so NONE is the lowest level; adding UNKNOWN is optional. The master's costDimension is empty and valueDimension reads 'Operations Economics' while scoring.dimensionIds is COST-08 (the Cost dimension of that name); the engine reads dimensionIds only, so it scores into COST-08. Overlaps in theme with CORE-18 and CORE-22 (challenge of low-value spend) and CORE-10 (funding); ADP-59 asks about the demand queue, not the funding model. No published source verified."
       },
       "active": true,
       "version": 1,
@@ -5817,7 +5865,15 @@
       "scoring": {
         "dimensionIds": [
           "COST-08"
-        ]
+        ],
+        "defaultMap": {
+          "DIFFERENTIATED": 100.0,
+          "MAJOR": 80.0,
+          "MIXED": 60.0,
+          "UNIFORM": 40.0,
+          "UNKNOWN": 20.0
+        },
+        "basis": "Ordered scale of how far service levels and cost are differentiated by business criticality: deliberately, for critical services only, some, uniform, not transparent enough to say. UNKNOWN last at the lowest level. LTM heuristic: the step values (100/80/60/40/20) are an LTM convention, not a benchmark; the FinOps Framework gives three stages, not scores. Uniform service levels are not always wasteful (a small estate may not justify tiers) and a regulator may require them; the scale reads whether the choice is deliberate. MIXED sits in the middle by option position. Overlaps ADP-21 (criticality concentration, context) and ADP-38 (disaster-recovery sizing); present with them. No published source verified."
       },
       "active": true,
       "version": 1,

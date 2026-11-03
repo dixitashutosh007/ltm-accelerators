@@ -21,12 +21,11 @@ const triggers = new Set(Object.values(calibration).flat().map((t: any) => t.que
 // Still to score or label in CQ3b (BOUNDARY.md task 6). Remove an ID when it is fixed; never add one.
 // Still to score or label in CQ3b (BOUNDARY.md task 6). Remove an ID when it is fixed; never add one. Held back from batch 1:
 // ADP-15 (drop) and ADP-18 (rewrite) until the owner approves.
-// Still to score or label in CQ3b (BOUNDARY.md task 6). Remove an ID when it is fixed; never add one. ADP-44 to ADP-48 and
-// ADP-51 to ADP-60 are in batch 3.
-const INERT = [
-  'ADP-44', 'ADP-45', 'ADP-46', 'ADP-47', 'ADP-48', 'ADP-51', 'ADP-52',
-  'ADP-53', 'ADP-54', 'ADP-55', 'ADP-56', 'ADP-57', 'ADP-58', 'ADP-59', 'ADP-60'
-];
+// Still to score or label in CQ3b (BOUNDARY.md task 6). Remove an ID when it is fixed; never add one. 
+// Still to score or label in CQ3b (BOUNDARY.md task 6). Remove an ID when it is fixed; never add one. All six wait for an owner
+// decision (scoring-batch-3.md): ADP-47 (option order), ADP-51 and 52 (a gate on the new countries question), ADP-55, 57 and 58
+// (comparison with CORE-09 and CORE-45, option labels, drop).
+const INERT = ['ADP-47', 'ADP-51', 'ADP-52', 'ADP-55', 'ADP-57', 'ADP-58'];
 
 describe('Cost IQ question bank', () => {
   it('has one count: the API, the metadata and the release manifest agree, and no FIN question remains', () => {
@@ -73,7 +72,7 @@ describe('Cost IQ question bank', () => {
     const inert = questions.filter((q: any) => !isContext(q) && !scores(q) && !triggers.has(q.id)).map((q: any) => q.id);
     const extra = inert.filter((id: string) => !INERT.includes(id));
     expect(extra, 'new inert questions').toEqual([]);
-    expect(inert.length).toBeLessThanOrEqual(15);
+    expect(inert.length).toBeLessThanOrEqual(6);
   });
 
   it('returns no FinOps overlay fields', () => {
@@ -172,5 +171,15 @@ describe('Cost IQ question bank', () => {
     const ids = (answers: object) => adapter.evaluateCostIq({ answers }).findings.map((f: any) => f.id);
     expect(ids({ 'ADP-08': 31 })).toContain('F-017');
     expect(ids({ 'ADP-08': 30 })).not.toContain('F-017');
+  });
+
+  it('applies batch 3: sliders score inverted, the rest by option order, and the remaining questions are context', () => {
+    const q = (id: string) => questions.find((x: any) => x.id === id);
+    expect(engine.scoreQuestion(q('ADP-46'), 5, {})).toBeGreaterThan(engine.scoreQuestion(q('ADP-46'), 80, {}));
+    for (const id of ['ADP-53', 'ADP-56']) expect(isContext(q(id)), id).toBe(true);
+    for (const id of ['ADP-44', 'ADP-45', 'ADP-48', 'ADP-54', 'ADP-59', 'ADP-60']) {
+      const ids = q(id).options.map((o: any) => o.id);
+      expect(engine.scoreQuestion(q(id), ids[0], {}), id).toBeGreaterThan(engine.scoreQuestion(q(id), ids[ids.length - 1], {}));
+    }
   });
 });
