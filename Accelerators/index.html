@@ -825,6 +825,7 @@
         <div class="ac-tabs-bar" style="margin-top:14px;">
           <button class="ac-tab-btn active" id="tabBtnUsers" onclick="switchACTab('users')">👥 User Directory &amp; RBAC</button>
           <button class="ac-tab-btn" id="tabBtnCreate" onclick="switchACTab('create')">➕ Provision App User</button>
+          <button class="ac-tab-btn" id="tabBtnDomains" onclick="switchACTab('domains')">🌐 Domain Access</button>
         </div>
       </div>
 
@@ -835,6 +836,51 @@
             <div class="spinner" style="width:28px;height:28px;border:3px solid rgba(255,255,255,0.1);border-top-color:#3B82F6;border-radius:50%;animation:spinRadar 0.8s linear infinite;margin:0 auto 12px;"></div>
             Loading user directory and permissions...
           </div>
+        </div>
+      </div>
+
+      <!-- Tab View 3: Domain access (platform workstream P1) -->
+      <div id="acViewDomains" class="ac-tab-content" style="display:none;padding-top:4px;">
+        <div class="modal-scrollable" style="max-height:calc(85vh - 220px);">
+          <p class="modal-desc" id="domainIntro">Choose which email domains and addresses may sign in. A block stops sign-in and any signed-in session on its next request. A rule on one address overrides the rule on its domain.</p>
+          <div id="domainProtected" class="modal-desc" style="margin-bottom:10px;"></div>
+          <form id="domainRuleForm" onsubmit="handleDomainRule(event)" aria-label="Add or change a domain rule">
+            <div class="form-row-2">
+              <div class="form-group">
+                <label class="form-label" for="domainRuleKind">Applies to</label>
+                <select id="domainRuleKind" class="form-input"><option value="domain">A whole domain (for example partner.com)</option><option value="email">One email address</option></select>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="domainRuleValue">Domain or address</label>
+                <input type="text" id="domainRuleValue" class="form-input" placeholder="partner.com" required autocomplete="off" spellcheck="false">
+              </div>
+            </div>
+            <div class="form-row-2">
+              <div class="form-group">
+                <label class="form-label" for="domainRuleAction">Rule</label>
+                <select id="domainRuleAction" class="form-input"><option value="allow">Allow sign-in</option><option value="block">Block sign-in</option></select>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="domainRuleNote">Note (optional)</label>
+                <input type="text" id="domainRuleNote" class="form-input" maxlength="300" placeholder="Why, and for whom">
+              </div>
+            </div>
+            <button type="submit" class="btn-auth primary" id="domainRuleSubmit">Save rule</button>
+            <span id="domainRuleStatus" role="status" aria-live="polite" style="margin-left:10px;font-size:12.5px;"></span>
+          </form>
+          <h4 style="margin:18px 0 6px;font-size:13px;">Rules</h4>
+          <div id="domainRulesTable"></div>
+          <h4 style="margin:18px 0 6px;font-size:13px;">Allowed from setup</h4>
+          <div id="domainBaseline" class="modal-desc"></div>
+          <h4 style="margin:18px 0 6px;font-size:13px;">Check an address</h4>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+            <label class="form-label" for="domainCheckEmail" style="position:absolute;left:-9999px;">Email address to check</label>
+            <input type="email" id="domainCheckEmail" class="form-input" placeholder="name@example.com" style="max-width:280px;">
+            <button type="button" class="btn-auth" onclick="handleDomainCheck()">Check</button>
+            <span id="domainCheckResult" role="status" aria-live="polite" style="font-size:12.5px;"></span>
+          </div>
+          <h4 style="margin:18px 0 6px;font-size:13px;">Recent changes <button type="button" class="btn-auth" style="font-size:11px;padding:2px 8px;margin-left:6px;" onclick="loadDomainAudit()">Load</button></h4>
+          <div id="domainAudit" class="modal-desc"></div>
         </div>
       </div>
 
@@ -1789,21 +1835,136 @@
     }
 
     function switchACTab(tab) {
-      const tabBtnUsers = document.getElementById('tabBtnUsers');
-      const tabBtnCreate = document.getElementById('tabBtnCreate');
-      const viewUsers = document.getElementById('acViewUsers');
-      const viewCreate = document.getElementById('acViewCreate');
+      const tabs = { users: ['tabBtnUsers', 'acViewUsers'], create: ['tabBtnCreate', 'acViewCreate'], domains: ['tabBtnDomains', 'acViewDomains'] };
+      for (const [name, [btn, view]] of Object.entries(tabs)) {
+        document.getElementById(btn).classList.toggle('active', name === tab);
+        document.getElementById(view).style.display = name === tab ? 'block' : 'none';
+      }
+      if (tab === 'domains') loadDomainRules();
+    }
 
-      if (tab === 'create') {
-        tabBtnUsers.classList.remove('active');
-        tabBtnCreate.classList.add('active');
-        viewUsers.style.display = 'none';
-        viewCreate.style.display = 'block';
-      } else {
-        tabBtnCreate.classList.remove('active');
-        tabBtnUsers.classList.add('active');
-        viewCreate.style.display = 'none';
-        viewUsers.style.display = 'block';
+    /* ---------- Domain access (platform workstream P1) ---------- */
+    const DOMAIN_MESSAGES = {
+      protected_domain: 'This domain is protected and cannot be blocked.',
+      protected_email: 'This address is protected and cannot be blocked.',
+      would_lock_out_self: 'This change would lock you out of your own account, so it was not saved.',
+      would_lock_out_protected: 'This change would block a protected address, so it was not saved.',
+      invalid_value: 'Enter an exact domain such as partner.com (no wildcards), or a full email address.',
+      too_many_rules: 'The list is full. Remove a rule first.',
+      conflict: 'Someone else changed the rules at the same time. The list was reloaded; please try again.',
+      rules_unavailable: 'The rules could not be read. Please try again in a moment.',
+      not_found: 'That rule no longer exists. The list was reloaded.'
+    };
+    let DOMAIN_RULES_STATE = null;
+
+    function domainStatus(id, text, ok) {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.textContent = text || '';
+      el.style.color = ok ? '#15803D' : '#B91C1C';
+    }
+
+    async function loadDomainRules() {
+      const table = document.getElementById('domainRulesTable');
+      table.textContent = 'Loading…';
+      try {
+        const res = await apiFetch('/api/domain-rules');
+        const data = await res.json();
+        if (!data.ok) throw new Error(data.error || 'Failed to load the rules.');
+        DOMAIN_RULES_STATE = data;
+        renderDomainRules();
+      } catch (err) {
+        table.textContent = 'The rules could not be loaded: ' + err.message;
+      }
+    }
+
+    function renderDomainRules() {
+      const d = DOMAIN_RULES_STATE;
+      if (!d) return;
+      document.getElementById('domainProtected').innerHTML =
+        'Always allowed, and never blockable: ' + (d.protected.domains.concat(d.protected.emails).map(x => '<code>' + escapeHtml(x) + '</code>').join(', ') || 'none') + '.';
+      document.getElementById('domainBaseline').innerHTML =
+        (d.baseline.domains.concat(d.baseline.emails).map(x => '<code>' + escapeHtml(x) + '</code>').join(', ') || 'none') +
+        '. A rule below can block any of these except the protected ones.';
+      const rows = d.rules.slice().sort((a, b) => (a.kind + a.value).localeCompare(b.kind + b.value));
+      document.getElementById('domainRulesTable').innerHTML = rows.length ? '<table style="width:100%;border-collapse:collapse;font-size:12.5px;"><thead><tr style="text-align:left;"><th>Applies to</th><th>Value</th><th>Rule</th><th>Note</th><th>Set by</th><th></th></tr></thead><tbody>' +
+        rows.map(r => '<tr style="border-top:1px solid rgba(128,128,128,0.25);"><td>' + (r.kind === 'domain' ? 'Domain' : 'Address') + '</td><td><code>' + escapeHtml(r.value) + '</code></td>' +
+          '<td><strong style="color:' + (r.action === 'block' ? '#B91C1C' : '#15803D') + '">' + (r.action === 'block' ? 'Blocked' : 'Allowed') + '</strong></td>' +
+          '<td>' + escapeHtml(r.note || '') + '</td><td>' + escapeHtml(r.addedBy) + '<br><small>' + escapeHtml(String(r.addedAt).slice(0, 10)) + '</small></td>' +
+          '<td><button type="button" class="btn-auth" style="font-size:11px;padding:2px 8px;" data-rule="' + escapeHtml(r.id) + '" onclick="handleDomainRemove(this.dataset.rule)">Remove</button></td></tr>').join('') +
+        '</tbody></table>' : 'No rules yet. Only the addresses allowed from setup can sign in.';
+    }
+
+    async function handleDomainRule(event) {
+      event.preventDefault();
+      const body = {
+        op: 'set',
+        kind: document.getElementById('domainRuleKind').value,
+        value: document.getElementById('domainRuleValue').value.trim(),
+        action: document.getElementById('domainRuleAction').value,
+        note: document.getElementById('domainRuleNote').value.trim()
+      };
+      if (body.action === 'block' && !confirm('Block ' + body.value + '? People using it are signed out of every service on their next request.')) return;
+      const button = document.getElementById('domainRuleSubmit');
+      button.disabled = true;
+      domainStatus('domainRuleStatus', 'Saving…', true);
+      try {
+        const res = await apiFetch('/api/domain-rules', { method: 'POST', body: JSON.stringify(body) });
+        const data = await res.json();
+        if (!data.ok) {
+          domainStatus('domainRuleStatus', DOMAIN_MESSAGES[data.error] || data.message || 'The rule was not saved.', false);
+          if (data.error === 'conflict' || data.error === 'not_found') loadDomainRules();
+          return;
+        }
+        domainStatus('domainRuleStatus', 'Saved.', true);
+        document.getElementById('domainRuleValue').value = '';
+        document.getElementById('domainRuleNote').value = '';
+        loadDomainRules();
+      } catch (err) {
+        domainStatus('domainRuleStatus', 'The rule was not saved: ' + err.message, false);
+      } finally {
+        button.disabled = false;
+      }
+    }
+
+    async function handleDomainRemove(id) {
+      const rule = DOMAIN_RULES_STATE && DOMAIN_RULES_STATE.rules.find(r => r.id === id);
+      if (!rule || !confirm('Remove the rule for ' + rule.value + '? It then follows the setup list again.')) return;
+      try {
+        const res = await apiFetch('/api/domain-rules', { method: 'POST', body: JSON.stringify({ op: 'remove', id }) });
+        const data = await res.json();
+        domainStatus('domainRuleStatus', data.ok ? 'Removed.' : (DOMAIN_MESSAGES[data.error] || data.message || 'The rule was not removed.'), data.ok);
+      } catch (err) {
+        domainStatus('domainRuleStatus', 'The rule was not removed: ' + err.message, false);
+      }
+      loadDomainRules();
+    }
+
+    async function handleDomainCheck() {
+      const email = document.getElementById('domainCheckEmail').value.trim();
+      if (!email) return;
+      try {
+        const res = await apiFetch('/api/domain-rules/check', { method: 'POST', body: JSON.stringify({ email }) });
+        const data = await res.json();
+        const reasons = { protected_email: 'protected address', protected_domain: 'protected domain', email_blocked: 'blocked by an address rule', email_allowed: 'allowed by an address rule', domain_blocked: 'blocked by a domain rule', domain_allowed: 'allowed by a domain rule', baseline_email: 'allowed from setup', baseline_domain: 'allowed from setup', not_listed: 'not on any list', invalid_email: 'not a valid address', rules_unavailable: 'the rules could not be read' };
+        domainStatus('domainCheckResult', (data.decision.allowed ? 'Can sign in: ' : 'Cannot sign in: ') + (reasons[data.decision.reason] || data.decision.reason) + '.', data.decision.allowed);
+      } catch (err) {
+        domainStatus('domainCheckResult', 'The check failed: ' + err.message, false);
+      }
+    }
+
+    async function loadDomainAudit() {
+      const el = document.getElementById('domainAudit');
+      el.textContent = 'Loading…';
+      try {
+        const res = await apiFetch('/api/domain-rules/audit');
+        const data = await res.json();
+        if (!data.ok) throw new Error(data.error || 'Failed to load.');
+        const verb = { add: 'added', replace: 'changed', remove: 'removed' };
+        el.innerHTML = data.entries.length ? '<ul style="margin:0;padding-left:18px;">' + data.entries.slice(0, 20).map(e =>
+          '<li>' + escapeHtml(String(e.at).replace('T', ' ').slice(0, 16)) + ' · ' + escapeHtml(e.by) + ' ' + (verb[e.op] || e.op) + ' the ' + (e.rule.action === 'block' ? 'block' : 'allow') + ' rule for <code>' + escapeHtml(e.rule.value) + '</code></li>').join('') + '</ul>' : 'No changes yet.';
+      } catch (err) {
+        el.textContent = 'The history could not be loaded: ' + err.message;
       }
     }
 

@@ -1,8 +1,9 @@
 import type { APIGatewayProxyStructuredResultV2 } from 'aws-lambda';
 import { handler as rawHandler } from './handler';
-import { setPermissionSource } from '../_shared/access';
+import { setPermissionSource, setDomainStore } from '../_shared/access';
 // Every test caller has Resilience IQ access (the access check is tested in _shared/access.spec.ts).
 setPermissionSource(async () => ({ take: ['resilience-iq'] }));
+setDomainStore({ check: async () => ({ allowed: true, reason: 'baseline_domain' }) }); // the domain rules are tested in _shared/domain-access.spec.ts
 
 const handler = async (e: any) => (await rawHandler(e)) as APIGatewayProxyStructuredResultV2;
 

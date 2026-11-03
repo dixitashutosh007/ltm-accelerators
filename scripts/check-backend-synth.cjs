@@ -58,7 +58,8 @@ if (advisory) {
     'GET /api/sovereign-iq/report', 'POST /api/sovereign-iq/narrative',
     'POST /api/evaluate/modernization-iq', 'POST /api/evaluate/finops-iq/v3', 'GET /api/finops-iq/assessment',
     'POST /api/finops-iq/assessment', 'GET /api/finops-iq/report', 'GET /api/me', 'GET /api/users', 'POST /api/users/create',
-    'POST /api/users/set-password', 'POST /api/users/permissions', 'GET /api/reports/list',
+    'POST /api/users/set-password', 'POST /api/users/permissions', 'GET /api/domain-rules', 'POST /api/domain-rules',
+    'GET /api/domain-rules/audit', 'POST /api/domain-rules/check', 'GET /api/reports/list',
     'POST /api/reports/save', 'POST /api/reports/delete', 'POST /api/reports/rename'];
   const keys = routes.map(r => r.Properties.RouteKey);
   for (const k of required) check(keys.includes(k), `Advisory API is missing route ${k}`);
@@ -100,6 +101,30 @@ if (advisory) {
   const preSignUp = ofType('AWS::Lambda::Function').find(f => /presignup/i.test(f.id));
   const allowed = String(preSignUp?.Properties.Environment?.Variables?.ALLOWED_DOMAINS || '').split(',');
   check(['ltm.com', 'ey.com'].every(d => allowed.includes(d)), `pre-sign-up allowlist is ${allowed.join(',') || 'missing'}`);
+
+  // Domain access (P1, 3 Nov 2026): a sign-in check beside the sign-up one, both able to read the rules and nothing else.
+  const triggers = ofType('AWS::Lambda::Function').filter(f => /pre-?sign-?up|pre-?authentication/i.test(f.id));
+  check(triggers.length === 2, `expected the pre-sign-up and pre-authentication triggers, found ${triggers.map(f => f.id).join(',') || 'none'}`);
+  for (const f of triggers) {
+    const env = f.Properties.Environment?.Variables || {};
+    check(!!env.PROTECTED_DOMAINS && !!env.REPORTS_BUCKET, `${f.id} has no protected entries or rules bucket`);
+  }
+  const lambdaConfig = pools[0]?.Properties.LambdaConfig || {};
+  check(!!lambdaConfig.PreAuthentication, 'the user pool has no pre-authentication trigger');
+  const policies = ofType('AWS::IAM::Policy');
+  const rulesRead = policies.filter(p => JSON.stringify(p.Properties.PolicyDocument).includes('config/domain-rules.json'));
+  check(rulesRead.length >= 3, `expected the triggers, the services and the reports service to read config/domain-rules.json, found ${rulesRead.length} policies`);
+  for (const p of rulesRead) {
+    const statements = [].concat(p.Properties.PolicyDocument.Statement || []);
+    const touching = statements.filter(st => JSON.stringify(st.Resource).includes('domain-rules'));
+    for (const st of touching) {
+      const actions = [].concat(st.Action);
+      const writes = actions.some(a => /Put|Delete/.test(a));
+      const reportsRole = JSON.stringify(p.Properties.Roles).includes('reports');
+      check(!writes || reportsRole, `${p.id} can write the domain rules but is not the reports service`);
+      check(!actions.some(a => /Delete/.test(a)), `${p.id} can delete the domain rules or their audit trail`);
+    }
+  }
 
   const stage = ofType('AWS::ApiGatewayV2::Stage').find(s => s.Properties.ApiId?.Ref === advisory.id);
   check(!!stage?.Properties.DefaultRouteSettings?.ThrottlingRateLimit, 'Advisory API stage is not throttled');

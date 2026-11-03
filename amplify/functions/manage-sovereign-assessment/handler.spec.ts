@@ -10,7 +10,7 @@ import { join } from 'node:path';
 import { createHandler } from './handler';
 import { memoryStore, type SovereignAssessmentStore } from './store';
 import { handler as scoreHandler } from '../evaluate-sovereign-iq/handler';
-import { setPermissionSource } from '../_shared/access';
+import { setPermissionSource, setDomainStore } from '../_shared/access';
 import { createHandler as createReportHandler } from '../sovereign-iq-report/handler';
 import { ENGINE_VERSION } from '../../../packages/engine-core/src/accelerators/sovereign-iq/v4';
 
@@ -22,6 +22,7 @@ let store: SovereignAssessmentStore;
 let handler: ReturnType<typeof createHandler>;
 
 setPermissionSource(async () => ({ take: ['sovereign-iq'] }));
+setDomainStore({ check: async () => ({ allowed: true, reason: 'baseline_domain' }) }); // the domain rules are tested in _shared/domain-access.spec.ts
 
 function event(method: 'GET' | 'POST', opts: { body?: unknown; query?: Record<string, string>; claims?: Record<string, unknown>; path?: string } = {}): any {
   return {

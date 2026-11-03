@@ -6,8 +6,8 @@ import { describe, it, expect } from 'vitest';
 import { applyChange, assertNoLockout, configFromEnv, decide, DomainRuleError, emptyRules, MAX_RULES, refusalMessage, type DomainRulesDocument } from './domain-access.mjs';
 
 const cfg = configFromEnv({
-  PROTECTED_DOMAINS: 'ltm.com', SUPER_ADMIN_EMAILS: 'owner@gmail.com,boss@ltm.com',
-  ALLOWED_DOMAINS: 'ltm.com,ey.com', ALLOWED_EMAILS: 'owner@gmail.com,friend@gmail.com'
+  PROTECTED_DOMAINS: 'ltm.com', SUPER_ADMIN_EMAILS: 'owner@home.example,boss@ltm.com',
+  ALLOWED_DOMAINS: 'ltm.com,ey.com', ALLOWED_EMAILS: 'owner@home.example,friend@home.example'
 });
 let n = 0;
 const ctx = (by: string) => ({ by, now: '2026-11-03T10:00:00.000Z', id: () => `r${++n}` });
@@ -17,7 +17,7 @@ const code = (fn: () => unknown) => { try { fn(); return null; } catch (e: any) 
 
 describe('configuration', () => {
   it('reads protected and baseline entries from the environment; "none" is empty; ltm.com is protected by default', () => {
-    expect(cfg.protectedEmails).toEqual(['owner@gmail.com', 'boss@ltm.com']);
+    expect(cfg.protectedEmails).toEqual(['owner@home.example', 'boss@ltm.com']);
     expect(configFromEnv({ SUPER_ADMIN_EMAILS: 'none' }).protectedEmails).toEqual([]);
     expect(configFromEnv({}).protectedDomains).toEqual(['ltm.com']);
   });
@@ -27,7 +27,7 @@ describe('decisions', () => {
   const none = emptyRules();
   it('baseline entries are allowed; everyone else is refused', () => {
     expect(decide('a@ey.com', none, cfg)).toMatchObject({ allowed: true, reason: 'baseline_domain' });
-    expect(decide('friend@gmail.com', none, cfg)).toMatchObject({ allowed: true, reason: 'baseline_email' });
+    expect(decide('friend@home.example', none, cfg)).toMatchObject({ allowed: true, reason: 'baseline_email' });
     expect(decide('x@other.com', none, cfg)).toMatchObject({ allowed: false, reason: 'not_listed' });
     expect(decide('x@in.ey.com', none, cfg).allowed).toBe(false); // exact domains only
   });
@@ -64,25 +64,25 @@ describe('protected addresses can never be locked out', () => {
   it('are allowed whatever the rules say, including malformed documents', () => {
     const hostile: any[] = [
       emptyRules(), null, undefined, {}, { rules: 'x' }, { rules: [null, 1, 'a', {}] },
-      { rules: [{ kind: 'domain', value: 'ltm.com', action: 'block' }, { kind: 'email', value: 'boss@ltm.com', action: 'block' }, { kind: 'email', value: 'owner@gmail.com', action: 'block' }, { kind: 'domain', value: 'gmail.com', action: 'block' }] }
+      { rules: [{ kind: 'domain', value: 'ltm.com', action: 'block' }, { kind: 'email', value: 'boss@ltm.com', action: 'block' }, { kind: 'email', value: 'owner@home.example', action: 'block' }, { kind: 'domain', value: 'home.example', action: 'block' }] }
     ];
     for (const doc of hostile) {
       expect(decide('boss@ltm.com', doc, cfg).allowed).toBe(true);
-      expect(decide('owner@gmail.com', doc, cfg).allowed).toBe(true);
+      expect(decide('owner@home.example', doc, cfg).allowed).toBe(true);
       expect(decide('anyone@ltm.com', doc, cfg).allowed).toBe(true);
     }
   });
   it('a change cannot block a protected domain or address', () => {
     expect(code(() => set(emptyRules(), 'domain', 'ltm.com', 'block'))).toBe('protected_domain');
     expect(code(() => set(emptyRules(), 'domain', ' @LTM.com ', 'block'))).toBe('protected_domain');
-    expect(code(() => set(emptyRules(), 'email', 'owner@gmail.com', 'block'))).toBe('protected_email');
+    expect(code(() => set(emptyRules(), 'email', 'owner@home.example', 'block'))).toBe('protected_email');
     expect(code(() => set(emptyRules(), 'email', 'someone@ltm.com', 'block'))).toBe('protected_email');
   });
   it('blocking a whole domain that holds a protected address is allowed, because the address stays protected', () => {
-    const doc = set(emptyRules(), 'domain', 'gmail.com', 'block');
-    expect(decide('owner@gmail.com', doc, cfg).allowed).toBe(true);
-    expect(decide('friend@gmail.com', doc, cfg).allowed).toBe(true); // an email baseline entry overrides its blocked domain
-    expect(decide('stranger@gmail.com', doc, cfg).allowed).toBe(false);
+    const doc = set(emptyRules(), 'domain', 'home.example', 'block');
+    expect(decide('owner@home.example', doc, cfg).allowed).toBe(true);
+    expect(decide('friend@home.example', doc, cfg).allowed).toBe(true); // an email baseline entry overrides its blocked domain
+    expect(decide('stranger@home.example', doc, cfg).allowed).toBe(false);
   });
   it('the assertion is a second line of defence for the acting administrator', () => {
     const blocksAdmin: DomainRulesDocument = { version: 1, rules: [{ id: 'z', kind: 'domain', value: 'ey.com', action: 'block', addedBy: 'b', addedAt: 't' }] };
@@ -153,8 +153,8 @@ describe('validation', () => {
 
 describe('property: no sequence of accepted changes locks anyone out', () => {
   const rng = (seed: number) => { let x = seed >>> 0 || 1; return () => ((x = (x * 1664525 + 1013904223) >>> 0) / 4294967296); };
-  const domains = ['ltm.com', 'ey.com', 'gmail.com', 'partner.com', 'a.org', 'b.org'];
-  const emails = ['owner@gmail.com', 'boss@ltm.com', 'x@ltm.com', 'friend@gmail.com', 'admin@ey.com', 'me@partner.com', 'u@a.org', 'v@b.org'];
+  const domains = ['ltm.com', 'ey.com', 'home.example', 'partner.com', 'a.org', 'b.org'];
+  const emails = ['owner@home.example', 'boss@ltm.com', 'x@ltm.com', 'friend@home.example', 'admin@ey.com', 'me@partner.com', 'u@a.org', 'v@b.org'];
   it('over 300 random histories of 80 changes by random administrators', () => {
     let accepted = 0, refused = 0;
     for (let seed = 1; seed <= 300; seed++) {

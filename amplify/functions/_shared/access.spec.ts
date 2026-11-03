@@ -3,7 +3,7 @@
  */
 import { describe, it, expect, beforeEach, afterAll } from 'vitest';
 import type { APIGatewayProxyStructuredResultV2 } from 'aws-lambda';
-import { withAcceleratorAccess, setPermissionSource, grants } from './access';
+import { withAcceleratorAccess, setPermissionSource, setDomainStore, grants } from './access';
 
 const reached: string[] = [];
 const handler = withAcceleratorAccess('cloud-iq', async () => { reached.push('cloud-iq'); return { statusCode: 200, body: '{"ok":true}' }; });
@@ -25,8 +25,9 @@ beforeEach(() => {
   reached.length = 0;
   process.env.SUPER_ADMIN_EMAILS = 'owner@ltm.com';
   setPermissionSource(async email => SAVED[email] ?? null);
+  setDomainStore({ check: async () => ({ allowed: true, reason: 'baseline_domain' }) });
 });
-afterAll(() => setPermissionSource(null));
+afterAll(() => { setPermissionSource(null); setDomainStore(null); });
 
 describe('accelerator access on the server', () => {
   it('a request with no verified identity is refused (old routes without the Cognito authorizer)', async () => {
@@ -73,5 +74,39 @@ describe('accelerator access on the server', () => {
     const res = await call(handler, { email: 'taker@ltm.com' });
     expect(res.statusCode).toBe(503);
     expect(reached).toEqual([]);
+  });
+
+  // ---- Domain access (platform workstream P1): the rules are checked on every request ----
+
+  it('a blocked address is refused with 403 even when its token is valid and its permissions grant the accelerator', async () => {
+    setDomainStore({ check: async e => (e === 'taker@ltm.com' ? { allowed: false, reason: 'domain_blocked' } : { allowed: true, reason: 'baseline_domain' }) });
+    const res = await call(handler, { email: 'taker@ltm.com' });
+    expect(res.statusCode).toBe(403);
+    expect(JSON.parse(res.body as string).error).toBe('account_blocked');
+    expect(reached).toEqual([]);
+    expect((await call(handler, { email: 'flag@ltm.com' })).statusCode).toBe(200);
+  });
+
+  it('a blocked administrator is refused too, unless protected', async () => {
+    setDomainStore({ check: async () => ({ allowed: false, reason: 'email_blocked' }) });
+    expect((await call(handler, { email: 'someone@ltm.com', 'cognito:groups': '[Admin]' })).statusCode).toBe(403);
+    setDomainStore({ check: async () => ({ allowed: true, reason: 'protected_email' }) });
+    expect((await call(handler, { email: 'owner@ltm.com' })).statusCode).toBe(200);
+  });
+
+  it('fails closed when the domain rules cannot be read, and does not reach the accelerator', async () => {
+    setDomainStore({ check: async () => ({ allowed: false, reason: 'rules_unavailable' }) });
+    const res = await call(handler, { email: 'taker@ltm.com' });
+    expect(res.statusCode).toBe(503);
+    expect(JSON.parse(res.body as string).error).toBe('access_check_unavailable');
+    expect(reached).toEqual([]);
+  });
+
+  it('the preflight and identity checks come first: no rules are read for a request with no identity', async () => {
+    let asked = 0;
+    setDomainStore({ check: async () => { asked++; return { allowed: true, reason: 'baseline_domain' }; } });
+    await call(handler);
+    await call(handler, undefined, 'OPTIONS');
+    expect(asked).toBe(0);
   });
 });

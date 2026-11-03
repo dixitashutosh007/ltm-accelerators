@@ -11,7 +11,7 @@ import { join } from 'node:path';
 import { createHandler } from './handler';
 import { createHandler as createAssessmentHandler } from '../manage-sovereign-assessment/handler';
 import { memoryStore, type SovereignAssessmentStore } from '../manage-sovereign-assessment/store';
-import { setPermissionSource } from '../_shared/access';
+import { setPermissionSource, setDomainStore } from '../_shared/access';
 import { sovereignBrief } from '../../../packages/engine-core/src/accelerators/sovereign-iq/v4/narrative';
 import { sovereignIqReport } from '../../../packages/engine-core/src/accelerators/sovereign-iq/v4/report';
 import type { NarrativeModel, NarrativeOutput } from '../../../packages/engine-core/src/ai/narrative';
@@ -19,6 +19,7 @@ import type { NarrativeModel, NarrativeOutput } from '../../../packages/engine-c
 const ARC1 = (JSON.parse(readFileSync(join(__dirname, '../../../docs/cio-readiness/sovereign-iq/design/archetypes.json'), 'utf8')).archetypes as any[]).find(a => a.id === 'ARC1_EU_BANK_DORA')!.answers;
 const ME = 'consultant@example.com';
 setPermissionSource(async () => ({ take: ['sovereign-iq'] }));
+setDomainStore({ check: async () => ({ allowed: true, reason: 'baseline_domain' }) }); // the domain rules are tested in _shared/domain-access.spec.ts
 
 const event = (method: string, body?: unknown, claims: Record<string, unknown> = { email: ME, sub: 'sub-1' }, query?: Record<string, string>): any => ({
   rawPath: '/api/sovereign-iq/narrative', requestContext: { requestId: 'req-1', http: { method }, authorizer: { jwt: { claims } } },

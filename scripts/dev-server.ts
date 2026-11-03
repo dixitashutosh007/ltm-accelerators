@@ -24,7 +24,7 @@ import { handler as cloudIq } from '../amplify/functions/evaluate-cloud-iq/handl
 import { handler as strategyIq } from '../amplify/functions/evaluate-strategy-iq/handler';
 import { handler as modernizationIq } from '../amplify/functions/evaluate-modernization-iq/handler';
 import { createHandler as finopsAssessment } from '../amplify/functions/manage-finops-assessment/handler';
-import { setPermissionSource } from '../amplify/functions/_shared/access';
+import { setPermissionSource, setDomainStore } from '../amplify/functions/_shared/access';
 import { createHandler as sovereignAssessment } from '../amplify/functions/manage-sovereign-assessment/handler';
 import { memoryStore as sovereignStore } from '../amplify/functions/manage-sovereign-assessment/store';
 import { createHandler as sovereignReport } from '../amplify/functions/sovereign-iq-report/handler';
@@ -45,6 +45,8 @@ const USERS: Record<string, { role: string; groups: string[] }> = {
 const PERMISSIONS = { take: ['*'], view: ['*', 'reports'], edit: ['reports'] };
 // The accelerator handlers' access check reads these instead of the reports bucket.
 setPermissionSource(async () => PERMISSIONS);
+// Local development has no rules bucket: every address is allowed.
+setDomainStore({ check: async () => ({ allowed: true, reason: 'baseline_domain' }) });
 const KEY = randomBytes(32);
 const TOKEN_SECONDS = 3600;
 

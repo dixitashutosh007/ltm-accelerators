@@ -4,7 +4,7 @@ import { CorsHttpMethod, HttpApi, HttpMethod, CfnStage, CfnRoute } from 'aws-cdk
 import { HttpJwtAuthorizer } from 'aws-cdk-lib/aws-apigatewayv2-authorizers';
 import { HttpLambdaIntegration } from 'aws-cdk-lib/aws-apigatewayv2-integrations';
 import { PolicyStatement } from 'aws-cdk-lib/aws-iam';
-import type { IFunction } from 'aws-cdk-lib/aws-lambda';
+import { Function as LambdaFunction, type IFunction } from 'aws-cdk-lib/aws-lambda';
 import { LogGroup, RetentionDays } from 'aws-cdk-lib/aws-logs';
 import { auth } from './auth/resource';
 import { data } from './data/resource';
@@ -25,7 +25,7 @@ import { sovereignIqNarrativeFunction } from './functions/sovereign-iq-narrative
 import { finopsIqReportFunction } from './functions/finops-iq-report/resource';
 import {
   ADMIN_GROUP, API_GATEWAY_CORS_ORIGINS, API_BURST_LIMIT, API_RATE_LIMIT, KEEP_LEGACY_API,
-  REGION, REPORTS_BUCKET, SUPER_ADMIN_EMAILS
+  REGION, REPORTS_BUCKET, SUPER_ADMIN_EMAILS, SIGNUP_ALLOWED_DOMAINS, SIGNUP_ALLOWED_EMAILS, PROTECTED_DOMAINS
 } from './config';
 
 export const backend = defineBackend({
@@ -62,6 +62,15 @@ const { cfnUserPool, cfnUserPoolClient } = backend.auth.resources.cfnResources;
 cfnUserPool.adminCreateUserConfig = { ...(cfnUserPool.adminCreateUserConfig as object), allowAdminCreateUserOnly: true };
 cfnUserPool.deletionProtection = 'ACTIVE';
 cfnUserPoolClient.explicitAuthFlows = ['ALLOW_USER_PASSWORD_AUTH', 'ALLOW_USER_SRP_AUTH', 'ALLOW_REFRESH_TOKEN_AUTH'];
+// The sign-up and sign-in triggers read the domain rules (P1). They live in the auth stack, so their role is found there.
+for (const node of Stack.of(userPool).node.findAll()) {
+  if (node instanceof LambdaFunction && /auth-pre-(sign-up|authentication)/i.test(node.node.path)) {
+    node.addToRolePolicy(new PolicyStatement({
+      actions: ['s3:GetObject'],
+      resources: [`arn:aws:s3:::${REPORTS_BUCKET}/config/domain-rules.json`]
+    }));
+  }
+}
 const USER_POOL_ID = userPool.userPoolId;
 const USER_POOL_CLIENT_ID = userPoolClient.userPoolClientId;
 const COGNITO_ISSUER = `https://cognito-idp.${REGION}.amazonaws.com/${USER_POOL_ID}`;
@@ -89,9 +98,13 @@ for (const fn of [
   fn.addEnvironment('REPORTS_BUCKET', REPORTS_BUCKET);
   fn.addEnvironment('SUPER_ADMIN_EMAILS', SUPER_ADMIN_EMAILS);
   fn.addEnvironment('ADMIN_GROUP', ADMIN_GROUP);
+  // The domain rules (P1): the baseline allow lists and the protected domains, and the one object that holds the rules.
+  fn.addEnvironment('ALLOWED_DOMAINS', SIGNUP_ALLOWED_DOMAINS);
+  fn.addEnvironment('ALLOWED_EMAILS', SIGNUP_ALLOWED_EMAILS);
+  fn.addEnvironment('PROTECTED_DOMAINS', PROTECTED_DOMAINS);
   fn.resources.lambda.addToRolePolicy(new PolicyStatement({
     actions: ['s3:GetObject'],
-    resources: [`arn:aws:s3:::${REPORTS_BUCKET}/config/rbac-permissions.json`]
+    resources: [`arn:aws:s3:::${REPORTS_BUCKET}/config/rbac-permissions.json`, `arn:aws:s3:::${REPORTS_BUCKET}/config/domain-rules.json`]
   }));
 }
 
@@ -106,6 +119,11 @@ const account = Stack.of(reportsLambda).account;
 reportsLambda.addToRolePolicy(new PolicyStatement({
   actions: ['s3:GetObject', 's3:PutObject', 's3:DeleteObject'],
   resources: [`arn:aws:s3:::${REPORTS_BUCKET}/reports/*`, `arn:aws:s3:::${REPORTS_BUCKET}/config/rbac-permissions.json`]
+}));
+// Domain rules (P1): read and write the rules, write and read the audit entries. Never delete: the audit trail is kept.
+reportsLambda.addToRolePolicy(new PolicyStatement({
+  actions: ['s3:GetObject', 's3:PutObject'],
+  resources: [`arn:aws:s3:::${REPORTS_BUCKET}/config/domain-rules.json`, `arn:aws:s3:::${REPORTS_BUCKET}/config/domain-rules-audit/*`]
 }));
 reportsLambda.addToRolePolicy(new PolicyStatement({
   actions: ['s3:ListBucket'],
@@ -209,6 +227,10 @@ route('/api/users', [HttpMethod.GET], integrations.reports);
 route('/api/users/create', [HttpMethod.POST], integrations.reports);
 route('/api/users/set-password', [HttpMethod.POST], integrations.reports);
 route('/api/users/permissions', [HttpMethod.POST], integrations.reports);
+// Domain access (P1): which domains and addresses may use the platform. Administrators only (checked in the service).
+route('/api/domain-rules', [HttpMethod.GET, HttpMethod.POST], integrations.reports);
+route('/api/domain-rules/audit', [HttpMethod.GET], integrations.reports);
+route('/api/domain-rules/check', [HttpMethod.POST], integrations.reports);
 route('/api/reports/list', [HttpMethod.GET], integrations.reports);
 route('/api/reports/save', [HttpMethod.POST], integrations.reports);
 route('/api/reports/delete', [HttpMethod.POST], integrations.reports);
@@ -228,6 +250,7 @@ stage.routeSettings = {
   'POST /api/users/create': tight,
   'POST /api/users/set-password': tight,
   'POST /api/users/permissions': tight,
+  'POST /api/domain-rules': tight,
   'POST /api/reports/delete': tight
 };
 // API Gateway rejects RouteSettings that name a route which does not exist yet, and CloudFormation

@@ -11,6 +11,8 @@
 import type { APIGatewayProxyEventV2, APIGatewayProxyEventV2WithJWTAuthorizer, APIGatewayProxyResultV2 } from 'aws-lambda';
 import { S3Client, GetObjectCommand } from '@aws-sdk/client-s3';
 import { corsHeaders } from './http';
+import { configFromEnv } from './domain-access.mjs';
+import { createDomainRulesStore, type DomainRulesStore } from './domain-rules-store.mjs';
 
 export interface Permissions {
   accelerators?: Record<string, { take?: boolean; full?: boolean } | undefined>;
@@ -46,6 +48,15 @@ const s3Source: PermissionSource = async email => {
   return cache.users[email]?.permissions ?? null;
 };
 
+/**
+ * The domain rules (platform workstream P1), checked on every request: Cognito does not run its sign-in trigger on a
+ * token refresh, so a blocked or removed address must also be refused here. Protected addresses always pass, and an
+ * unreadable rule list refuses everyone else (fail closed).
+ */
+let domains: Pick<DomainRulesStore, 'check'> | null = null;
+export function setDomainStore(store: Pick<DomainRulesStore, 'check'> | null) { domains = store; }
+const domainStore = () => (domains ??= createDomainRulesStore({ bucket: process.env.REPORTS_BUCKET || '', cfg: configFromEnv(process.env) }));
+
 let source: PermissionSource = s3Source;
 /** Tests and the local dev server supply their own permissions. */
 export function setPermissionSource(fn: PermissionSource | null) { source = fn ?? s3Source; cache = null; }
@@ -79,6 +90,15 @@ export function withAcceleratorAccess(tool: string, inner: (event: APIGatewayPro
     });
     const who = caller(event);
     if (!who) return deny(401, 'authentication_required', 'Sign in to use this accelerator.');
+    const domain = await domainStore().check(who.email);
+    if (!domain.allowed) {
+      if (domain.reason === 'rules_unavailable') {
+        console.error(`[access] domain rules unavailable for ${tool}`);
+        return deny(503, 'access_check_unavailable', 'Access could not be checked. Please try again.');
+      }
+      console.warn(`[access] ${who.email} refused (${domain.reason})`);
+      return deny(403, 'account_blocked', 'Access for this account has been withdrawn. Contact your administrator.');
+    }
     if (!who.admin) {
       let perms: Permissions | null;
       try { perms = await source(who.email); }
