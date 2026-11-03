@@ -453,7 +453,12 @@
         }
       ],
       "scoring": {
-        "normalize": "range-band"
+        "method": "signal-only",
+        "signals": [
+          "organisation-size"
+        ],
+        "note": "The size class of the organisation by revenue, in the reporting currency. Context for the report and for matching like with like; the size class never scores and never re-weights a score.",
+        "basis": "LTM heuristic. The earlier range-band rule applied only to a number, while the answers are option IDs, so it never scored; it is removed (CQ3b)."
       },
       "active": true,
       "version": 2,
@@ -607,7 +612,12 @@
         }
       ],
       "scoring": {
-        "normalize": "range-band"
+        "method": "signal-only",
+        "signals": [
+          "technology-spend-size"
+        ],
+        "note": "The size class of the technology spend in scope, in the reporting currency. Context for the report; it never scores and never re-weights a score.",
+        "basis": "LTM heuristic. The earlier range-band rule applied only to a number, while the answers are option IDs, so it never scored; it is removed (CQ3b)."
       },
       "active": true,
       "version": 2,

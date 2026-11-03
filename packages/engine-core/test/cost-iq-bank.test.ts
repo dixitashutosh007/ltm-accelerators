@@ -14,7 +14,7 @@ const { questions, dimensions } = adapter.questions();
 const CONTEXT_METHODS = ['signal-only', 'hypothesis-signal', 'tradeoff-signal', 'constraint-signal'];
 const isContext = (q: any) => q.signalOnly || q.scoring?.signalOnly || CONTEXT_METHODS.includes(q.scoring?.method);
 // Real answers only: the option IDs, and numbers for the numeric interactions. Map keys that match no option must not count as scoring.
-const probes = (q: any) => [...(q.options || []).map((o: any) => o.id), ...(['stars', 'slider', 'range'].includes(q.interaction) ? [1, 2, 3, 4, 5, 25, 50, 75, 100] : [])];
+const probes = (q: any) => (q.options || []).length ? q.options.map((o: any) => o.id) : (['stars', 'slider', 'range'].includes(q.interaction) ? [1, 2, 3, 4, 5, 25, 50, 75, 100] : []);
 const scores = (q: any) => probes(q).some(v => engine.scoreQuestion(q, v, {}) !== null);
 const triggers = new Set(Object.values(calibration).flat().map((t: any) => t.questionId));
 
@@ -235,5 +235,22 @@ describe('Cost IQ question bank', () => {
     const { currencyBands } = require('../src/accelerators/cost-iq/canon/config/master-v6.6.json').settings;
     expect(currencyBands.rateSource).toContain('ECB euro foreign exchange reference rates');
     expect(currencyBands.usdFallback).toEqual(['USD', 'AED', 'SAR', 'OTHER']);
+  });
+
+  it('shows every question somewhere: each section is in the baseline or in a focus area of the page', () => {
+    const html = require('node:fs').readFileSync(require('node:path').join(__dirname, '../../../Accelerators/cost-iq-v10.html'), 'utf8');
+    const quoted = (s: string) => new Set<string>([...s.matchAll(/'([^']+)'/g)].map(m => m[1]));
+    const baseline = quoted(html.match(/const BASELINE=\[(.*?)\]/)![1]);
+    const areas = quoted(html.match(/const AREAS=\{([\s\S]*?)\n\};/)![1]);
+    const hidden = [...new Set<string>(questions.map((q: any) => q.section))].filter(s => !baseline.has(s) && !areas.has(s));
+    expect(hidden, 'sections no client can reach').toEqual([]);
+  });
+
+  it('labels the size classes as context: a number rule on option answers never scored', () => {
+    for (const id of ['CORE-03', 'CORE-04']) {
+      const q = questions.find((x: any) => x.id === id);
+      expect(isContext(q), id).toBe(true);
+      expect(q.scoring.normalize, id).toBeUndefined();
+    }
   });
 });
