@@ -7,6 +7,8 @@ import {
   ListUsersCommand
 } from '@aws-sdk/client-cognito-identity-provider';
 import { createPublicKey, verify as cryptoVerify } from 'node:crypto';
+import { configFromEnv, DomainRuleError } from '../../amplify/functions/_shared/domain-access.mjs';
+import { createDomainRulesStore } from '../../amplify/functions/_shared/domain-rules-store.mjs';
 
 /* ------------------------------------------------------------------
  * Configuration (override via Lambda environment variables)
@@ -33,6 +35,12 @@ const APP_BASE_URL = process.env.APP_BASE_URL || 'https://main.d199dq940iqyj2.am
 const DOWNLOAD_URL_TTL_SECONDS = 900; // 15 minutes
 const MAX_PDF_BYTES = 5 * 1024 * 1024;
 const REPORT_KEY_PATTERN = /^reports\/[A-Za-z0-9_-]+\/[A-Za-z0-9_.-]+\.pdf$/;
+
+// Who may sign in (platform workstream P1): the baseline allow lists from amplify/config.ts and the rules an administrator keeps here.
+const DOMAIN_CONFIG = configFromEnv(process.env);
+let domainStore = null;
+const domains = () => (domainStore ??= createDomainRulesStore({ bucket: BUCKET_NAME, cfg: DOMAIN_CONFIG, s3: s3Client }));
+const DOMAIN_ERROR_STATUS = { conflict: 409, rules_unavailable: 503, not_found: 404 };
 
 const ALL_ACCELERATORS = ['strategy-iq', 'modernization-iq', 'finops-iq', 'sovereign-iq', 'posture-iq', 'cloud-iq', 'cost-iq', 'resilience-iq'];
 
@@ -240,8 +248,45 @@ export const handler = async (event) => {
   }
 
   try {
+    // A blocked or removed address is refused on every request: Cognito's sign-in check does not run on a token refresh.
+    // Protected addresses (ltm.com, the super administrators) always pass, so they can always repair the rules.
+    const standing = await domains().check(caller.email);
+    if (!standing.allowed) {
+      return standing.reason === 'rules_unavailable'
+        ? reply(503, { ok: false, error: 'access_check_unavailable', message: 'Access could not be checked. Please try again.' })
+        : reply(403, { ok: false, error: 'account_blocked', message: 'Access for this account has been withdrawn. Contact your administrator.' });
+    }
+
     const permConfig = await getPermissionsConfig();
     const access = resolveAccess(caller, permConfig);
+
+    // -------------------------------------------------------------
+    // Domain access (admin only): which domains and addresses may use the platform
+    //   GET  /api/domain-rules        rules, baseline and protected entries
+    //   POST /api/domain-rules        { op: 'set', kind, value, action, note } | { op: 'remove', id }
+    //   GET  /api/domain-rules/audit  the most recent changes
+    //   POST /api/domain-rules/check  { email } what the rules say about an address
+    // -------------------------------------------------------------
+    if (path.endsWith('/api/domain-rules') || path.includes('/api/domain-rules/')) {
+      if (!caller.isAdmin) return reply(403, { ok: false, error: 'Only administrators can manage domain access.' });
+      try {
+        if (method === 'GET' && path.endsWith('/api/domain-rules/audit')) return reply(200, { ok: true, entries: await domains().audit(100) });
+        if (method === 'GET' && path.endsWith('/api/domain-rules')) {
+          const { doc, source } = await domains().read({ force: true });
+          return reply(200, { ok: true, rules: doc.rules, source, baseline: { domains: DOMAIN_CONFIG.baselineDomains, emails: DOMAIN_CONFIG.baselineEmails }, protected: { domains: DOMAIN_CONFIG.protectedDomains, emails: DOMAIN_CONFIG.protectedEmails } });
+        }
+        if (method === 'POST' && path.endsWith('/api/domain-rules/check')) return reply(200, { ok: true, decision: await domains().check(body.email) });
+        if (method === 'POST' && path.endsWith('/api/domain-rules')) {
+          const { doc, record } = await domains().change(body, caller.email);
+          console.info('[ReportsService] Domain rule changed', { by: caller.email, op: record.op, kind: record.rule.kind, value: record.rule.value, action: record.rule.action });
+          return reply(200, { ok: true, rules: doc.rules, record });
+        }
+        return reply(405, { ok: false, error: 'Method not allowed.' });
+      } catch (err) {
+        if (err instanceof DomainRuleError) return reply(DOMAIN_ERROR_STATUS[err.code] || 400, { ok: false, error: err.code, message: err.message });
+        throw err;
+      }
+    }
 
     // -------------------------------------------------------------
     // GET /api/me — the caller's own role and permissions
