@@ -9,6 +9,10 @@ import { RESILIENCE_IQ_VERSION } from '../../../packages/engine-core/src/acceler
 import { withAcceleratorAccess } from '../_shared/access';
 import { recordAssessment, removeAssessmentActivity } from '../_shared/activity-recorder.mjs';
 import { progressFor } from '../_shared/progress';
+import { s3EvidenceFiles, type EvidenceFiles } from './evidence-files';
+
+/** Where evidence files are removed from; tests replace it. */
+export const deps: { files: EvidenceFiles } = { files: s3EvidenceFiles };
 
 // Lambdas run one request at a time per container, so the current request's headers are kept here for
 // response() to echo an allowed origin (see _shared/http.ts). Origins not in ALLOWED_ORIGINS get no CORS header.
@@ -53,6 +57,13 @@ const serve = async(event:APIGatewayProxyEventV2):Promise<APIGatewayProxyResultV
       const item=await getAssessment(id);
       if(!item) return response(404,{ok:false,error:'assessment_not_found',requestId},requestId);
       if(!canAccess(event,item.respondentEmail)) return response(403,{ok:false,error:'assessment_access_denied',requestId},requestId);
+      // The evidence goes first, files then records, and the assessment last: if any step fails the assessment stays
+      // and the delete can be retried, so no evidence is left behind with nothing to reach it.
+      const evidence=await listWhere('ResilienceEvidence','id evidenceFileKey',{assessmentId:{eq:id}});
+      for(const e of evidence){
+        if(e.evidenceFileKey) await deps.files.remove(String(e.evidenceFileKey));
+        await graphql(`mutation DeleteResilienceEvidence($input: DeleteResilienceEvidenceInput!) { deleteResilienceEvidence(input:$input) { id } }`,{input:{id:e.id}});
+      }
       await graphql(`mutation DeleteResilienceAssessment($input: DeleteResilienceAssessmentInput!) { deleteResilienceAssessment(input:$input) { id } }`,{input:{id:item.id}});
       await removeAssessmentActivity(item.respondentEmail,'resilience-iq',id);
       console.info('[ManageResilienceAssessment] deleted',{requestId,assessmentId:id});

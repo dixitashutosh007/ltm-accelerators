@@ -172,6 +172,12 @@ reportsLambda.addToRolePolicy(new PolicyStatement({
   resources: [userPool.userPoolArn]
 }));
 
+// Deleting a Resilience IQ assessment also deletes its evidence files, and only those.
+backend.manageResilienceAssessmentFunction.resources.lambda.addToRolePolicy(new PolicyStatement({
+  actions: ['s3:DeleteObject'],
+  resources: [`arn:aws:s3:::${REPORTS_BUCKET}/resilience-iq/evidence/*`]
+}));
+
 // Resilience IQ evidence files: read and write only under resilience-iq/evidence/ in the same bucket.
 backend.manageResilienceEvidenceFunction.resources.lambda.addToRolePolicy(new PolicyStatement({
   actions: ['s3:GetObject', 's3:PutObject'],

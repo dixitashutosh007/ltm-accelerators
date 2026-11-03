@@ -375,6 +375,21 @@ test.describe('Resilience IQ', () => {
       expect(world.pageErrors).toEqual([]);
     });
 
+    test('delete asks twice, names the evidence files, and removes the row once the server confirms', async ({ page, world }) => {
+      const sent: any[] = [];
+      let items = [stored];
+      world.on('GET', ASSESSMENT, () => ({ body: { ok: true, data: items } }));
+      world.on('POST', ASSESSMENT, ({ body }: any) => { sent.push(body); items = []; return { body: { ok: true, data: { deleted: true } } }; });
+      await page.goto('/resilience-iq');
+      await page.getByRole('button', { name: 'Delete', exact: true }).click();
+      await expect(page.getByText('Delete permanently, with its evidence files?')).toBeVisible();
+      expect(sent).toEqual([]);
+      await page.getByRole('button', { name: 'Confirm delete' }).click();
+      await expect(page.getByText('Acme Bank deleted.')).toBeVisible();
+      expect(sent).toEqual([{ action: 'delete', assessmentId: stored.assessmentId }]);
+      expect(world.pageErrors).toEqual([]);
+    });
+
     test('resuming restores executive and advisory answers', async ({ page, world }) => {
       world.on('GET', ASSESSMENT, () => ({ body: { ok: true, data: stored } }));
       await page.goto('/resilience-iq?assessmentId=' + encodeURIComponent(stored.assessmentId));

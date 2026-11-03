@@ -1,5 +1,5 @@
 import type { APIGatewayProxyStructuredResultV2 } from 'aws-lambda';
-import { handler as rawHandler } from './handler';
+import { handler as rawHandler, deps } from './handler';
 import { evaluateResilienceIq } from '../../../packages/engine-core/src/accelerators/resilience-iq/evaluate';
 import { ARCHETYPES } from '../../../packages/engine-core/test/resilience-iq-samples';
 import { setActivityStore } from '../_shared/activity-recorder.mjs';
@@ -26,12 +26,15 @@ function event(method:'GET'|'POST', body?:unknown, claims:Record<string,unknown>
 }
 
 const originalFetch=globalThis.fetch;
+let evidenceOnFile:any[]=[];
 let mode:'create'|'existing-completed'|'existing-other-owner'|'second-page'|'graphql-error'='create';
 const mutations:any[]=[];
 globalThis.fetch=async (_input:any, init:any)=>{
   const request=JSON.parse(init.body);
   const ok=(data:unknown)=>new Response(JSON.stringify({data}),{status:200,headers:{'content-type':'application/json'}});
   if(mode==='graphql-error') return new Response(JSON.stringify({errors:[{message:'DynamoDB:ConditionalCheckFailed table=ResilienceAssessment-internal'}]}),{status:200,headers:{'content-type':'application/json'}});
+  if(request.query.includes('listResilienceEvidences')) return ok({listResilienceEvidences:{items:evidenceOnFile,nextToken:null}});
+  if(request.query.includes('mutation DeleteResilienceEvidence')){ mutations.push({evidence:request.variables.input.id}); return ok({deleteResilienceEvidence:{id:request.variables.input.id}}); }
   if(request.query.includes('listResilienceAssessments')){
     if(mode==='second-page'){
       // Page one matches nothing (AppSync filters after reading the page); the record is on page two.
@@ -161,6 +164,20 @@ if(JSON.stringify(removed)!==JSON.stringify([['consultant@example.com','resilien
 mode='existing-other-owner'; mutations.length=0;
 const deleteAdmin=await handler(event('POST',{action:'delete',assessmentId:'RIQ-001'},{email:'admin@example.com','cognito:groups':['Admin']}));
 if(deleteAdmin.statusCode!==200 || JSON.stringify(mutations)!==JSON.stringify([{id:'db-2'}])) throw new Error('An Admin may delete any assessment');
+// Deleting an assessment also deletes its evidence: files, then records, then the assessment itself.
+const removedFiles:string[]=[];
+deps.files={remove:async key=>{removedFiles.push(key);}};
+evidenceOnFile=[{id:'ev-1',evidenceFileKey:'resilience-iq/evidence/RIQ-001/E1/a-plan.pdf'},{id:'ev-2',evidenceFileKey:null}];
+mode='existing-completed'; mutations.length=0;
+const withEvidence=await handler(event('POST',{action:'delete',assessmentId:'RIQ-001'},{email:'consultant@example.com'}));
+if(withEvidence.statusCode!==200 || JSON.stringify(removedFiles)!==JSON.stringify(['resilience-iq/evidence/RIQ-001/E1/a-plan.pdf'])) throw new Error('Deleting must remove the evidence files: '+JSON.stringify(removedFiles));
+if(JSON.stringify(mutations)!==JSON.stringify([{evidence:'ev-1'},{evidence:'ev-2'},{id:'db-1'}])) throw new Error('Evidence records go before the assessment: '+JSON.stringify(mutations));
+// A file that cannot be removed stops the delete with the assessment still in place, so it can be retried.
+deps.files={remove:async()=>{throw new Error('s3 down');}};
+mutations.length=0;
+const stuck=await handler(event('POST',{action:'delete',assessmentId:'RIQ-001'},{email:'consultant@example.com'}));
+if(stuck.statusCode!==500 || mutations.some(m=>m.id==='db-1')) throw new Error('A failed file removal must leave the assessment in place');
+evidenceOnFile=[];
 setActivityStore(null);
 
 mode='graphql-error';
