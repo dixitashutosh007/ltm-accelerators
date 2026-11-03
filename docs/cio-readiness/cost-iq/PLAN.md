@@ -189,3 +189,22 @@ Decisions O1 to O9 in [BOUNDARY.md](BOUNDARY.md) were accepted at their defaults
 Effect on the reference answer sets: headline Cost IQ unchanged on all three; Value IQ 25 to 24 on the worst set; COST-03 and VALUE-05 move a few points; F-007 now appears on the middle set.
 
 **Still to do for the CQ3b gate:** 55 questions score nothing and are not labelled as context (CORE-01, 05, 07, 09 and ADP-06 to ADP-41, 44 to 48, 51 to 60). Each needs a score map with a basis, or a context label; this is judgement work for `finops-cost-lead`. Also open: F-017 and F-019 triggers (task 5), the footprint and applicability questions (task 4), the global-coverage context questions (task 7), the hand-off (task 8), the FinOps IQ side (task 9), the single-figure design (task 10), claims and labels (task 11) and the coverage matrix (task 12). A test keeps the 55 from growing.
+
+### CQ3b slice 2: scoring batch 1 (4 Nov 2026)
+
+`finops-cost-lead` proposed maps and labels for 19 questions ([scoring-batch-1.md](scoring-batch-1.md), [scoring-batch-1.json](scoring-batch-1.json)). Applied now, because they need no owner decision and no gating: **score** ADP-06, 07, 08 (a slider, inverted), 16; **context** CORE-01, 05, 07, 09 and ADP-10, 12, 17, 19, 20. Also labelled context: CORE-02 (industry) and CORE-08 (cost pressure).
+
+**A correction to the earlier count.** The first inert check treated a question as scoring when a probe matched a map key, even where no real option had that key. CORE-02 and CORE-08 had letter-keyed maps (A to L, A to E) that matched no option and scored nothing, so they were never scoring. The check now probes real answers only. The state is: 97 questions, **29 score, 24 are context, 2 only trigger a finding, 42 do neither.**
+
+**Held back, and why:**
+
+| Held | Reason | What releases it |
+|---|---|---|
+| ADP-09, 11, 13, 14 | They have no "not applicable" option; a client without a virtualised estate, data centre or colocation would be scored low | Footprint gating (task 4): merge CORE-23 into CORE-01, keeping its COLO, VMWARE and MANAGED options, then show and score these only when the footprint says so |
+| ADP-15 (drop) | Duplicates CORE-29 and CORE-31; removes a question a client sees | Owner approval |
+| ADP-18 (rewrite) | The options mix two scales, so no monotonic map is possible; replacement wording is in the JSON | Owner approval of the wording |
+| F-017 trigger on ADP-08 | Fires above 30% of SaaS spend outside central governance; the 30% is an LTM heuristic with no published source | Owner confirms or changes the threshold (ADP-33 and ADP-34 should also trigger F-017; they are in batch 2) |
+
+**Problems the agent found with the questions:** the engine ignores `valueDimensionIds`, so nine questions carry a value dimension that never receives a score (VALUE-01 has no scored question at all); sliders cannot record "Unknown", so a skipped slider leaves a gap instead of scoring low; ADP-06 counts are not normalised by estate size, so it is a screen, not a benchmark. Not verified: ISO/IEC 19770-1 clauses (iso.org returned 403), the TBM taxonomy towers (members only) and a published shadow-IT percentage.
+
+A new test checks every score map against its options: keys are real options, order follows the options, and "Unknown" is never rated above the lowest level.

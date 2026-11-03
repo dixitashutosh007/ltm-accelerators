@@ -13,19 +13,21 @@ const { questions, dimensions } = adapter.questions();
 
 const CONTEXT_METHODS = ['signal-only', 'hypothesis-signal', 'tradeoff-signal', 'constraint-signal'];
 const isContext = (q: any) => q.signalOnly || q.scoring?.signalOnly || CONTEXT_METHODS.includes(q.scoring?.method);
-const probes = (q: any) => [...(q.options || []).map((o: any) => o.id), 0, 1, 2, 3, 4, 5, 25, 50, 75, 100, ...Object.keys(q.scoring?.defaultMap || {})];
+// Real answers only: the option IDs, and numbers for the numeric interactions. Map keys that match no option must not count as scoring.
+const probes = (q: any) => [...(q.options || []).map((o: any) => o.id), ...(['stars', 'slider', 'range'].includes(q.interaction) ? [1, 2, 3, 4, 5, 25, 50, 75, 100] : [])];
 const scores = (q: any) => probes(q).some(v => engine.scoreQuestion(q, v, {}) !== null);
 const triggers = new Set(Object.values(calibration).flat().map((t: any) => t.questionId));
 
 // Still to score or label in CQ3b (BOUNDARY.md task 6). Remove an ID when it is fixed; never add one.
+// Still to score or label in CQ3b (BOUNDARY.md task 6). Remove an ID when it is fixed; never add one. Held back from batch 1:
+// ADP-09, 11, 13, 14 until footprint gating exists (task 4), ADP-15 (drop) and ADP-18 (rewrite) until the owner approves.
 const INERT = [
-  'CORE-01', 'CORE-05', 'CORE-07', 'CORE-09', 'ADP-06', 'ADP-07', 'ADP-08', 'ADP-09',
-  'ADP-10', 'ADP-11', 'ADP-12', 'ADP-13', 'ADP-14', 'ADP-15', 'ADP-16', 'ADP-17',
-  'ADP-18', 'ADP-19', 'ADP-20', 'ADP-21', 'ADP-22', 'ADP-23', 'ADP-24', 'ADP-25',
-  'ADP-26', 'ADP-27', 'ADP-28', 'ADP-29', 'ADP-30', 'ADP-31', 'ADP-32', 'ADP-33',
-  'ADP-34', 'ADP-35', 'ADP-36', 'ADP-37', 'ADP-38', 'ADP-39', 'ADP-40', 'ADP-41',
-  'ADP-44', 'ADP-45', 'ADP-46', 'ADP-47', 'ADP-48', 'ADP-51', 'ADP-52', 'ADP-53',
-  'ADP-54', 'ADP-55', 'ADP-56', 'ADP-57', 'ADP-58', 'ADP-59', 'ADP-60'
+  'ADP-09', 'ADP-11', 'ADP-13', 'ADP-14', 'ADP-15', 'ADP-18', 'ADP-21', 'ADP-22',
+  'ADP-23', 'ADP-24', 'ADP-25', 'ADP-26', 'ADP-27', 'ADP-28', 'ADP-29', 'ADP-30',
+  'ADP-31', 'ADP-32', 'ADP-33', 'ADP-34', 'ADP-35', 'ADP-36', 'ADP-37', 'ADP-38',
+  'ADP-39', 'ADP-40', 'ADP-41', 'ADP-44', 'ADP-45', 'ADP-46', 'ADP-47', 'ADP-48',
+  'ADP-51', 'ADP-52', 'ADP-53', 'ADP-54', 'ADP-55', 'ADP-56', 'ADP-57', 'ADP-58',
+  'ADP-59', 'ADP-60'
 ];
 
 describe('Cost IQ question bank', () => {
@@ -73,7 +75,7 @@ describe('Cost IQ question bank', () => {
     const inert = questions.filter((q: any) => !isContext(q) && !scores(q) && !triggers.has(q.id)).map((q: any) => q.id);
     const extra = inert.filter((id: string) => !INERT.includes(id));
     expect(extra, 'new inert questions').toEqual([]);
-    expect(inert.length).toBeLessThanOrEqual(55);
+    expect(inert.length).toBeLessThanOrEqual(42);
   });
 
   it('returns no FinOps overlay fields', () => {
@@ -81,5 +83,31 @@ describe('Cost IQ question bank', () => {
     expect(r.finops).toBeUndefined();
     expect(r.adaptiveStopping).toBeUndefined();
     expect(r.methodology.overlay).toBeUndefined();
+  });
+
+  it('keeps every score map in the order of the options, with Unknown at the lowest level and every key a real option', () => {
+    const problems: string[] = [];
+    for (const q of questions) {
+      const m: Record<string, number> | undefined = q.scoring?.defaultMap;
+      if (!m || !(q.options || []).length) continue;
+      const ids = q.options.map((o: any) => o.id);
+      for (const k of Object.keys(m)) if (!ids.includes(k)) problems.push(`${q.id}: ${k} is not an option`);
+      // "MIXED" (an approach that mixes models) sits in the middle by design, outside the better-to-worse order.
+      const ordered = ids.filter((i: string) => i in m && i !== 'MIXED');
+      for (let i = 1; i < ordered.length; i++) if (m[ordered[i]] > m[ordered[i - 1]]) { problems.push(`${q.id}: ${ordered[i]} scores above ${ordered[i - 1]}`); break; }
+      const unknown = ids.find((i: string) => /^(UNKNOWN|UNCLEAR|UNRELIABLE|UNRECONCILED)$/.test(i));
+      if (unknown && unknown in m && m[unknown] > Math.min(...Object.values(m))) problems.push(`${q.id}: Unknown is rated above the lowest level`);
+    }
+    expect(problems).toEqual([]);
+  });
+
+  it('applies batch 1: the SaaS maps score, the footprint and priority questions are context, a slider scores inverted', () => {
+    const q = (id: string) => questions.find((x: any) => x.id === id);
+    expect(engine.scoreQuestion(q('ADP-06'), 'NONE', {})).toBeGreaterThan(engine.scoreQuestion(q('ADP-06'), 'GT10', {}));
+    expect(engine.scoreQuestion(q('ADP-06'), 'UNKNOWN', {})).toBe(engine.scoreQuestion(q('ADP-06'), 'GT10', {}));
+    expect(engine.scoreQuestion(q('ADP-08'), 5, {})).toBeGreaterThan(engine.scoreQuestion(q('ADP-08'), 60, {}));
+    for (const id of ['CORE-01', 'CORE-05', 'CORE-07', 'CORE-09', 'ADP-10', 'ADP-12', 'ADP-17', 'ADP-19', 'ADP-20']) expect(isContext(q(id)), id).toBe(true);
+    // Context never carries a dimension that could be scored from it.
+    for (const id of ['CORE-01', 'ADP-20']) expect(q(id).scoring.dimensionIds).toBeUndefined();
   });
 });
