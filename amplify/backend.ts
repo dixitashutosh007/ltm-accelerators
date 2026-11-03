@@ -22,6 +22,7 @@ import { manageResilienceAssessmentFunction } from './functions/manage-resilienc
 import { manageFinOpsAssessmentFunction } from './functions/manage-finops-assessment/resource';
 import { manageSovereignAssessmentFunction } from './functions/manage-sovereign-assessment/resource';
 import { retentionSweepFunction } from './functions/retention-sweep/resource';
+import { manageCostAssessmentFunction } from './functions/manage-cost-assessment/resource';
 import { manageSessionFunction } from './functions/manage-session/resource';
 import { sovereignIqReportFunction } from './functions/sovereign-iq-report/resource';
 import { sovereignIqNarrativeFunction } from './functions/sovereign-iq-narrative/resource';
@@ -47,6 +48,7 @@ export const backend = defineBackend({
   manageFinOpsAssessmentFunction,
   manageSovereignAssessmentFunction,
   manageSessionFunction,
+  manageCostAssessmentFunction,
   retentionSweepFunction,
   sovereignIqReportFunction,
   sovereignIqNarrativeFunction,
@@ -108,20 +110,21 @@ const COGNITO_ISSUER = `https://cognito-idp.${REGION}.amazonaws.com/${USER_POOL_
 backend.data.resources.cfnResources.amplifyDynamoDbTables['FinOpsIqAssessment'].timeToLiveAttribute = { attributeName: 'expiresAt', enabled: true };
 backend.data.resources.cfnResources.amplifyDynamoDbTables['SovereignIqAssessment'].timeToLiveAttribute = { attributeName: 'expiresAt', enabled: true };
 backend.data.resources.cfnResources.amplifyDynamoDbTables['ResilienceAssessment'].timeToLiveAttribute = { attributeName: 'expiresAt', enabled: true };
+backend.data.resources.cfnResources.amplifyDynamoDbTables['CostIqAssessment'].timeToLiveAttribute = { attributeName: 'expiresAt', enabled: true };
 backend.data.resources.cfnResources.amplifyDynamoDbTables['SavedSession'].timeToLiveAttribute = { attributeName: 'expiresAt', enabled: true };
 
 /* ------------------------------------------------------------------
  * Accelerator access on the server (amplify/functions/_shared/access.ts):
  * every accelerator service reads the saved permissions (read-only, the
- * one object) and knows who the administrators are. Cost IQ is maintained
- * separately and is not wrapped yet.
+ * one object) and knows who the administrators are. Cost IQ's scoring service is
+ * wrapped too (CQ1).
  * ------------------------------------------------------------------ */
 for (const fn of [
   backend.evaluateFinOpsIqFunction, backend.manageFinOpsAssessmentFunction, backend.finopsIqReportFunction,
   backend.evaluateSovereignIqFunction, backend.evaluateCloudIqFunction,
   backend.evaluateStrategyIqFunction, backend.evaluateModernizationIqFunction, backend.evaluateResilienceIqFunction,
-  backend.manageResilienceAssessmentFunction, backend.manageResilienceEvidenceFunction, backend.manageSovereignAssessmentFunction, backend.manageSessionFunction, backend.sovereignIqReportFunction,
-  backend.sovereignIqNarrativeFunction
+  backend.manageResilienceAssessmentFunction, backend.manageResilienceEvidenceFunction, backend.manageSovereignAssessmentFunction, backend.manageSessionFunction, backend.manageCostAssessmentFunction, backend.sovereignIqReportFunction,
+  backend.sovereignIqNarrativeFunction, backend.evaluateCostIqFunction
 ]) {
   fn.addEnvironment('REPORTS_BUCKET', REPORTS_BUCKET);
   fn.addEnvironment('SUPER_ADMIN_EMAILS', SUPER_ADMIN_EMAILS);
@@ -138,7 +141,7 @@ for (const fn of [
 
 // The services that record assessment activity (P2) write one item per assessment; only those that can delete an
 // assessment may delete its activity item.
-for (const [fn, canDelete] of [[backend.manageFinOpsAssessmentFunction, true], [backend.manageSovereignAssessmentFunction, true], [backend.manageSessionFunction, true], [backend.manageResilienceAssessmentFunction, false]] as const) {
+for (const [fn, canDelete] of [[backend.manageFinOpsAssessmentFunction, true], [backend.manageSovereignAssessmentFunction, true], [backend.manageSessionFunction, true], [backend.manageCostAssessmentFunction, true], [backend.manageResilienceAssessmentFunction, false]] as const) {
   fn.addEnvironment('ACTIVITY_TABLE', activityTable.tableName);
   fn.resources.lambda.addToRolePolicy(new PolicyStatement({
     actions: canDelete ? ['dynamodb:UpdateItem', 'dynamodb:DeleteItem'] : ['dynamodb:UpdateItem'],
@@ -218,6 +221,7 @@ const integrations = {
   finopsAssessment: integrate('AdvisoryFinOpsIqAssessment', backend.manageFinOpsAssessmentFunction),
   sovereignAssessment: integrate('AdvisorySovereignIqAssessment', backend.manageSovereignAssessmentFunction),
   sessions: integrate('AdvisorySessions', backend.manageSessionFunction),
+  costAssessment: integrate('AdvisoryCostIqAssessment', backend.manageCostAssessmentFunction),
   sovereignReport: integrate('AdvisorySovereignIqReport', backend.sovereignIqReportFunction),
   sovereignNarrative: integrate('AdvisorySovereignIqNarrative', backend.sovereignIqNarrativeFunction),
   finopsReport: integrate('AdvisoryFinOpsIqReport', backend.finopsIqReportFunction),
@@ -243,6 +247,7 @@ route('/api/finops-iq/report', [HttpMethod.GET], integrations.finopsReport);
 route('/api/evaluate/sovereign-iq/v4', [HttpMethod.POST], integrations.sovereign);
 route('/api/sovereign-iq/assessment', [HttpMethod.GET, HttpMethod.POST], integrations.sovereignAssessment);
 route('/api/sessions', [HttpMethod.GET, HttpMethod.POST], integrations.sessions);
+route('/api/cost-iq/assessment', [HttpMethod.GET, HttpMethod.POST], integrations.costAssessment);
 route('/api/sovereign-iq/report', [HttpMethod.GET], integrations.sovereignReport);
 route('/api/sovereign-iq/narrative', [HttpMethod.POST], integrations.sovereignNarrative);
 
@@ -366,10 +371,15 @@ for (const [path, integration, methods] of [
   acceleratorsApi.addRoutes({ path, methods: [...methods], integration, authorizer: resilienceAssessmentAuthorizer });
   legacyRoute(path, [HttpMethod.OPTIONS], integration);
 }
-legacyRoute('/api/evaluate/cost-iq', [HttpMethod.POST, HttpMethod.OPTIONS], costIqIntegration);
-legacyRoute('/api/evaluate/cost-iq/{proxy+}', [HttpMethod.GET, HttpMethod.POST, HttpMethod.OPTIONS], costIqIntegration);
-legacyRoute('/api/evaluate/cost-iq/ai-review', [HttpMethod.POST, HttpMethod.OPTIONS], costIqIntegration);
-legacyRoute('/api/evaluate/cost-iq/ai-report', [HttpMethod.POST, HttpMethod.OPTIONS], costIqIntegration);
+// Cost IQ scoring, questions and AI routes were open to anyone; they now need the platform Cognito token (CQ1) and the
+// handler checks the caller's Cost IQ access. OPTIONS stays open for the preflight, which the Lambda answers.
+for (const [path, methods] of [
+  ['/api/evaluate/cost-iq', [HttpMethod.POST]],
+  ['/api/evaluate/cost-iq/{proxy+}', [HttpMethod.GET, HttpMethod.POST]]
+] as const) {
+  acceleratorsApi.addRoutes({ path, methods: [...methods], integration: costIqIntegration, authorizer: resilienceAssessmentAuthorizer });
+  legacyRoute(path, [HttpMethod.OPTIONS], costIqIntegration);
+}
 
 // Advisory-API accelerators: old unauthenticated routes, kept only during cutover. FinOps IQ, FinOps Value
 // Case, Sovereign IQ and Posture IQ are already off (CIO-readiness F0, decision D11; Sovereign IQ PLAN S5): their pages

@@ -1,55 +1,43 @@
-/* Cost IQ browser persistence via the parent's Cognito session and Amplify Data API. */
+/* Cost IQ browser persistence through the Advisory API (CQ1). The API checks the signed-in caller and keeps every
+   assessment to its owner; the browser no longer calls the Data API. Records keep the shape the page already used. */
 (function () {
   'use strict';
 
-  const fields = 'assessmentId acceleratorId releaseId methodologyVersion status clientName clientSector clientCurrency selectedAreasJson answersJson subjectiveJson resultJson startedAt updatedAt completedAt';
-  const operations = {
-    create: 'mutation CreateCostIqAssessment($input: CreateCostIqAssessmentInput!) { createCostIqAssessment(input: $input) { ' + fields + ' } }',
-    update: 'mutation UpdateCostIqAssessment($input: UpdateCostIqAssessmentInput!) { updateCostIqAssessment(input: $input) { ' + fields + ' } }',
-    get: 'query GetCostIqAssessment($assessmentId: String!) { getCostIqAssessment(assessmentId: $assessmentId) { ' + fields + ' } }',
-    list: 'query ListCostIqAssessments($limit: Int, $nextToken: String) { listCostIqAssessments(limit: $limit, nextToken: $nextToken) { items { ' + fields + ' } nextToken } }'
-  };
+  const ENDPOINT = '/api/cost-iq/assessment';
 
-  function sessionToken() {
-    try {
-      const user = JSON.parse(sessionStorage.getItem('ltm_auth_user') || 'null');
-      return typeof user?.token === 'string' ? user.token : '';
-    } catch (_) { return ''; }
+  function toSignIn() {
+    location.href = '/?require_login=1&redirect=' + encodeURIComponent(location.pathname + location.search);
   }
 
-  async function graphql(operation, variables) {
-    const endpoint = window.COST_IQ_DATA_URL;
-    const token = sessionToken();
-    if (!endpoint) throw new Error('Cost IQ persistence is not configured. Deploy the generated Amplify Data endpoint to enable saved assessments.');
-    if (!token) throw new Error('Your parent app session has expired. Sign in again to save or resume assessments.');
-    const response = await fetch(endpoint, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', Authorization: token },
-      body: JSON.stringify({ query: operations[operation], variables })
-    });
-    let payload;
-    try { payload = await response.json(); } catch (_) { throw new Error('Cost IQ Data API returned an invalid response.'); }
-    if (!response.ok || payload.errors?.length) {
-      const messages = (payload.errors || []).map(error => error.message || 'Data API error');
-      throw new Error(messages.join('; ') || ('Cost IQ Data API request failed (' + response.status + ').'));
+  async function request(path, options) {
+    const lib = window.LTM_API;
+    const token = lib ? await lib.getIdToken() : '';
+    if (!token) { toSignIn(); throw new Error('Your session has expired. Sign in again to save or resume assessments.'); }
+    const send = t => fetch((window.COST_IQ_API || '') + path, Object.assign({}, options, {
+      headers: Object.assign({ 'Content-Type': 'application/json' }, options && options.headers, { Authorization: 'Bearer ' + t })
+    }));
+    let response = await send(token);
+    if (response.status === 401) {
+      const renewed = await lib.refreshIdToken();
+      if (renewed) response = await send(renewed);
+      if (response.status === 401) { toSignIn(); throw new Error('Your session has expired. Sign in again to save or resume assessments.'); }
     }
+    let payload;
+    try { payload = await response.json(); } catch (_) { throw new Error('Cost IQ returned an invalid response.'); }
+    if (!response.ok || !payload.ok) throw new Error(payload.message || payload.error || ('Cost IQ request failed (' + response.status + ').'));
     return payload.data;
   }
 
+  const post = body => request(ENDPOINT, { method: 'POST', body: JSON.stringify(body) });
+  const progress = () => (typeof window.costIqProgress === 'function' ? window.costIqProgress() : undefined);
+
   window.CostIqPersistence = Object.freeze({
-    configured: () => Boolean(window.COST_IQ_DATA_URL),
-    create: async record => (await graphql('create', { input: record })).createCostIqAssessment,
-    update: async record => (await graphql('update', { input: record })).updateCostIqAssessment,
-    get: async assessmentId => (await graphql('get', { assessmentId })).getCostIqAssessment,
-    list: async () => {
-      const items = [];
-      let nextToken = null;
-      do {
-        const page = (await graphql('list', { limit: 1000, nextToken })).listCostIqAssessments;
-        items.push(...(page?.items || []).filter(Boolean));
-        nextToken = page?.nextToken || null;
-      } while (nextToken);
-      return items;
-    }
+    configured: () => Boolean(window.COST_IQ_API),
+    create: record => post({ action: 'save', snapshot: record, progress: progress() }),
+    // A completed record asks the server to complete it: the result is computed there from the saved answers.
+    update: record => post({ action: record.status === 'completed' ? 'complete' : 'save', snapshot: record, progress: progress() }),
+    get: assessmentId => request(ENDPOINT + '?assessmentId=' + encodeURIComponent(assessmentId)),
+    list: () => request(ENDPOINT),
+    remove: assessmentId => post({ action: 'delete', assessmentId })
   });
 })();

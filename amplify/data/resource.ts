@@ -4,6 +4,7 @@ import { manageResilienceEvidenceFunction } from '../functions/manage-resilience
 import { manageFinOpsAssessmentFunction } from '../functions/manage-finops-assessment/resource';
 import { manageSovereignAssessmentFunction } from '../functions/manage-sovereign-assessment/resource';
 import { retentionSweepFunction } from '../functions/retention-sweep/resource';
+import { manageCostAssessmentFunction } from '../functions/manage-cost-assessment/resource';
 import { manageSessionFunction } from '../functions/manage-session/resource';
 import { sovereignIqReportFunction } from '../functions/sovereign-iq-report/resource';
 import { sovereignIqNarrativeFunction } from '../functions/sovereign-iq-narrative/resource';
@@ -103,19 +104,23 @@ const schema = a.schema({
       clientName: a.string(),
       clientSector: a.string(),
       clientCurrency: a.string(),
+      // From the caller's token (CQ1). Records saved before then have none and are visible to Admins only.
+      respondentEmail: a.string(),
       selectedAreasJson: a.string().required(),
       answersJson: a.string().required(),
       subjectiveJson: a.string(),
       resultJson: a.string(),
       startedAt: a.datetime().required(),
       updatedAt: a.datetime().required(),
-      completedAt: a.datetime()
+      completedAt: a.datetime(),
+      // Epoch seconds 24 months after the last change; DynamoDB time to live deletes the record then.
+      expiresAt: a.integer()
     })
     .identifier(['assessmentId'])
+    // Only the manage-cost-assessment service writes, and it checks ownership from the caller's token. The browser used to
+    // call the Data API directly, where every Consultant could read and change every assessment.
     .authorization(allow => [
-      allow.group('Admin').to(['create', 'read', 'update', 'delete']),
-      allow.group('Consultant').to(['create', 'read', 'update', 'delete']),
-      allow.owner().to(['create', 'read', 'update'])
+      allow.group('Admin').to(['read'])
     ]),
 
   AssessmentSubmission: a
@@ -248,6 +253,7 @@ const schema = a.schema({
   allow.resource(manageFinOpsAssessmentFunction).to(['query', 'mutate']),
   allow.resource(manageSovereignAssessmentFunction).to(['query', 'mutate']),
   allow.resource(manageSessionFunction).to(['query', 'mutate']),
+  allow.resource(manageCostAssessmentFunction).to(['query', 'mutate']),
   allow.resource(retentionSweepFunction).to(['query', 'mutate']),
   allow.resource(sovereignIqReportFunction).to(['query']),
   allow.resource(sovereignIqNarrativeFunction).to(['query', 'mutate']),

@@ -1,27 +1,26 @@
 import type { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
-import { createHash } from 'node:crypto';
+import { corsHeaders } from '../_shared/http';
+import { withAcceleratorAccess } from '../_shared/access';
 import { evaluateCostIq, metadata, questions, orchestrate } from '../../../packages/engine-core/src/accelerators/cost-iq/evaluate.cjs';
 
-const CORS_HEADERS = {
-  'Content-Type': 'application/json',
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'Content-Type,Authorization,X-Amz-Date,X-Api-Key,X-Amz-Security-Token,X-Request-Id',
-  'Access-Control-Allow-Methods': 'OPTIONS,GET,POST'
-};
-
+// CORS echoes only the origins in ALLOWED_ORIGINS (_shared/http.ts); the routes sit behind the Cognito authorizer and the
+// accelerator access check, so a request without a signed-in, permitted caller never reaches the handler.
+// A Lambda container serves one request at a time, so the current request is kept here for response() to read its origin.
+let current: APIGatewayProxyEventV2 | undefined;
 function response(statusCode: number, body: unknown, id: string): APIGatewayProxyResultV2 {
-  return { statusCode, headers: { ...CORS_HEADERS, 'X-Request-Id': id }, body: JSON.stringify(body) };
+  return { statusCode, headers: { ...corsHeaders(current, 'OPTIONS,GET,POST', 'X-Request-Id'), 'X-Request-Id': id }, body: JSON.stringify(body) };
 }
 function makeRequestId(event: APIGatewayProxyEventV2): string {
   return event.requestContext?.requestId || crypto.randomUUID();
 }
 
-export const handler = async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> => {
+export const evaluate = async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> => {
+  current = event;
   const id = makeRequestId(event);
   const method = event.requestContext?.http?.method || (event as any).httpMethod || 'GET';
   const path = event.requestContext?.http?.path || (event as any).path || '';
 
-  if (method === 'OPTIONS') return { statusCode: 200, headers: { ...CORS_HEADERS, 'X-Request-Id': id }, body: '' };
+  if (method === 'OPTIONS') return { statusCode: 200, headers: { ...corsHeaders(event, 'OPTIONS,GET,POST', 'X-Request-Id'), 'X-Request-Id': id }, body: '' };
 
   try {
     if (method === 'GET' && path.endsWith('/metadata')) return response(200, metadata(), id);
@@ -102,8 +101,6 @@ async function callGemini(instruction: string, input: string) {
   const key = process.env.GEMINI_API_KEY;
   if (!key) throw new Error('AI service is not configured. Add the GEMINI_API_KEY Amplify secret.');
   const model = process.env.GEMINI_MODEL || 'gemini-3.8-flash';
-  const fingerprint = createHash('sha256').update(key).digest('hex').slice(0, 12);
-  console.log('[CostIQ Gemini] key diagnostic', { present: true, length: key.length, fingerprint, model });
   const resp = await fetch('https://generativelanguage.googleapis.com/v1beta/models/' + encodeURIComponent(model) + ':generateContent', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', 'x-goog-api-key': key },
@@ -153,3 +150,6 @@ Return ONLY JSON:
 {"executiveSummary":"...","keyMessages":["..."],"priorityAreas":[{"name":"...","score":0,"why":"...","action":"..."}],"opportunities":[{"title":"...","description":"...","evidence":"...","confidence":"High|Medium|Low","nextStep":"..."}],"roadmap":[{"horizon":"0-30 days","actions":["..."]},{"horizon":"30-90 days","actions":["..."]},{"horizon":"90-180+ days","actions":["..."]}],"consultingRecommendations":["..."],"limitations":"..." }.`;
   return safeJsonText(await callGemini(instruction, payload));
 }
+
+// Only signed-in callers with access to Cost IQ reach the handler (amplify/functions/_shared/access.ts).
+export const handler = withAcceleratorAccess('cost-iq', evaluate);

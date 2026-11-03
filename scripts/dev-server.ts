@@ -27,6 +27,8 @@ import { createHandler as finopsAssessment } from '../amplify/functions/manage-f
 import { setPermissionSource, setDomainStore } from '../amplify/functions/_shared/access';
 import { createHandler as sovereignAssessment } from '../amplify/functions/manage-sovereign-assessment/handler';
 import { memoryStore as sovereignStore } from '../amplify/functions/manage-sovereign-assessment/store';
+import { createHandler as costAssessment } from '../amplify/functions/manage-cost-assessment/handler';
+import { memoryStore as costStore } from '../amplify/functions/manage-cost-assessment/store';
 import { createHandler as sessions } from '../amplify/functions/manage-session/handler';
 import { memoryStore as sessionStore } from '../amplify/functions/manage-session/store';
 import { createHandler as sovereignReport } from '../amplify/functions/sovereign-iq-report/handler';
@@ -101,7 +103,13 @@ const savedSessions = sessionStore({
   load: () => { const f = join(DATA_DIR, 'sessions.json'); return existsSync(f) ? JSON.parse(readFileSync(f, 'utf8')) : []; },
   save: items => { mkdirSync(DATA_DIR, { recursive: true }); writeFileSync(join(DATA_DIR, 'sessions.json'), JSON.stringify(items, null, 2)); }
 });
+const costAssessments = costStore({
+  load: () => { const f = join(DATA_DIR, 'cost-assessments.json'); return existsSync(f) ? JSON.parse(readFileSync(f, 'utf8')) : []; },
+  save: items => { mkdirSync(DATA_DIR, { recursive: true }); writeFileSync(join(DATA_DIR, 'cost-assessments.json'), JSON.stringify(items, null, 2)); }
+});
 const ROUTES: Record<string, LambdaHandler> = {
+  'GET /api/cost-iq/assessment': costAssessment(costAssessments),
+  'POST /api/cost-iq/assessment': costAssessment(costAssessments),
   'GET /api/sessions': sessions(savedSessions),
   'POST /api/sessions': sessions(savedSessions),
   'POST /api/evaluate/finops-iq/v3': finopsIq,
