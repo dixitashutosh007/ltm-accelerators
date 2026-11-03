@@ -253,6 +253,20 @@ describe('FinOps IQ assessment API: user activity (platform workstream P2)', () 
     expect(a).toMatchObject({ accelerator: 'finops-iq', assessmentId: snapshot().assessmentId, status: 'in_progress', startedAt: snapshot().startedAt });
     expect(JSON.stringify(a)).not.toMatch(/Example Bank|answers|request/);
   });
+  it('records the stage and percent the page sends, cut to range; none when it sends none', async () => {
+    const withProgress = (progress?: unknown) => call(event('POST', { body: { action: 'save', snapshot: snapshot(), progress } }));
+    expect((await withProgress({ stage: 'Cost allocation', percent: 180 })).status).toBe(200);
+    expect(seen[0][2]).toMatchObject({ stage: 'Cost allocation', percent: 100 });
+    seen.length = 0;
+    await withProgress();
+    expect(seen[0][2]).not.toHaveProperty('stage');
+    expect(seen[0][2]).not.toHaveProperty('percent');
+  });
+  it('a completed assessment is recorded as Completed at 100, whatever the page sent', async () => {
+    const res = await call(event('POST', { body: { action: 'complete', snapshot: snapshot({ status: 'completed' }), progress: { stage: 'Estate', percent: 5 } } }));
+    expect(res.status).toBe(200);
+    expect(seen[0][2]).toMatchObject({ stage: 'Completed', percent: 100 });
+  });
   it('archiving records the new status; deleting removes the activity record with the assessment', async () => {
     await save();
     seen.length = 0;

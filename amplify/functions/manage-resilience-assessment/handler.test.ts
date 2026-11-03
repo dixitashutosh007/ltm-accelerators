@@ -136,6 +136,33 @@ mode='existing-completed'; mutations.length=0;
 const archived=await handler(event('POST',{action:'archive',snapshot:snapshotFor({status:'archived',answers:{'EX-06':'No'}})}));
 if(archived.statusCode!==200 || Object.keys(mutations[0]).sort().join()!=='finalizedAt,id,status') throw new Error('Archiving must change only status and finalizedAt, never answers or result');
 
+// ---- P3a: stage and percent reach the activity record, cut to range; delete is for the owner or an Admin ----
+const seen:any[]=[], removed:any[]=[];
+setActivityStore({recordLogin:async()=>{},recordAssessment:async(email,a)=>{seen.push(a);},removeAssessment:async(...args)=>{removed.push(args);}});
+mode='create'; mutations.length=0;
+await handler(event('POST',{action:'save',snapshot:snapshotFor({status:'in_progress',answers:{}}),progress:{stage:'Recovery objectives',percent:140}}));
+if(seen[0]?.stage!=='Recovery objectives' || seen[0]?.percent!==100) throw new Error('A save must record the stage and a percent within 0 to 100: '+JSON.stringify(seen));
+seen.length=0;
+await handler(event('POST',{action:'save',snapshot:snapshotFor({status:'in_progress',answers:{}})}));
+if('stage' in seen[0] || 'percent' in seen[0]) throw new Error('A save with no progress must send none, so the stored progress is kept');
+
+mode='existing-other-owner'; mutations.length=0; removed.length=0;
+const deleteOther=await handler(event('POST',{action:'delete',assessmentId:'RIQ-001'},{email:'consultant@example.com'}));
+if(deleteOther.statusCode!==403 || mutations.length || removed.length) throw new Error("A non-admin must not delete another respondent's assessment");
+mode='create';
+const deleteMissing=await handler(event('POST',{action:'delete',assessmentId:'RIQ-404'},{email:'consultant@example.com'}));
+if(deleteMissing.statusCode!==404) throw new Error('Deleting an assessment that does not exist is a 404');
+const deleteNoId=await handler(event('POST',{action:'delete'},{email:'consultant@example.com'}));
+if(deleteNoId.statusCode!==400) throw new Error('Delete needs an assessmentId');
+mode='existing-completed'; mutations.length=0; removed.length=0;
+const deleteOwn=await handler(event('POST',{action:'delete',assessmentId:'RIQ-001'},{email:'consultant@example.com'}));
+if(deleteOwn.statusCode!==200 || JSON.stringify(mutations)!==JSON.stringify([{id:'db-1'}])) throw new Error('The owner may delete their assessment, completed or not: '+JSON.stringify(mutations));
+if(JSON.stringify(removed)!==JSON.stringify([['consultant@example.com','resilience-iq','RIQ-001']])) throw new Error('Deleting must also remove the activity pointer: '+JSON.stringify(removed));
+mode='existing-other-owner'; mutations.length=0;
+const deleteAdmin=await handler(event('POST',{action:'delete',assessmentId:'RIQ-001'},{email:'admin@example.com','cognito:groups':['Admin']}));
+if(deleteAdmin.statusCode!==200 || JSON.stringify(mutations)!==JSON.stringify([{id:'db-2'}])) throw new Error('An Admin may delete any assessment');
+setActivityStore(null);
+
 mode='graphql-error';
 const failed=await handler(event('GET',undefined,{email:'consultant@example.com'}));
 const failedBody=String(failed.body);

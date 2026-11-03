@@ -262,7 +262,10 @@ async function saveAssessment(status,action='save'){
   completedAt:status==='completed'?(assessment.completedAt||new Date().toISOString()):assessment.completedAt,
   finalizedAt:assessment.finalizedAt
  };
- const res=await authFetch(ASSESSMENT_API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action,snapshot})});
+ // Share of questions answered, for My sessions and the Activity screen; the stage names come with the v2 design (RQ6).
+ const answered=questions.filter(q=>answers[q.id]!==undefined&&answers[q.id]!==null).length;
+ const progress={percent:questions.length?Math.round(100*answered/questions.length):0};
+ const res=await authFetch(ASSESSMENT_API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action,snapshot,progress})});
  let j; try{j=await res.json();}catch{throw new Error('Persistence service returned an invalid response.');}
  if(!res.ok||!j.ok)throw new Error(j.message||j.error||('Persistence failed (HTTP '+res.status+').'));
  assessmentSaving=false;

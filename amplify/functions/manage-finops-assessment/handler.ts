@@ -20,6 +20,7 @@ import { expiresAt } from '../../../packages/engine-core/src/accelerators/finops
 import { appSyncStore, type FinOpsAssessmentRecord, type FinOpsAssessmentStore } from './store';
 import { withAcceleratorAccess } from '../_shared/access';
 import { recordAssessment, removeAssessmentActivity } from '../_shared/activity-recorder.mjs';
+import { progressFor } from '../_shared/progress';
 
 const ACTIONS = new Set(['save', 'complete', 'archive', 'delete']);
 
@@ -125,7 +126,7 @@ export function createHandler(store: FinOpsAssessmentStore, now: () => Date = ()
         expiresAt: expiresAt(now())
       };
       const data = existing ? await store.update(record) : await store.create(record);
-      await recordAssessment(record.respondentEmail, { accelerator: 'finops-iq', assessmentId: record.assessmentId, status: record.status, startedAt: record.startedAt, completedAt: record.completedAt });
+      await recordAssessment(record.respondentEmail, { accelerator: 'finops-iq', assessmentId: record.assessmentId, status: record.status, ...progressFor(record.status, body?.progress), startedAt: record.startedAt, completedAt: record.completedAt });
       return respond(200, { ok: true, data: view(data) });
     } catch (error: any) {
       console.error('[ManageFinOpsAssessment]', { requestId, error });

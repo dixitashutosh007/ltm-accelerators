@@ -7,7 +7,8 @@ import { evaluateResilienceIq } from '../../../packages/engine-core/src/accelera
 import { parseResilienceIqRequest } from '../../../packages/engine-core/src/accelerators/resilience-iq/contract';
 import { RESILIENCE_IQ_VERSION } from '../../../packages/engine-core/src/accelerators/resilience-iq/version';
 import { withAcceleratorAccess } from '../_shared/access';
-import { recordAssessment } from '../_shared/activity-recorder.mjs';
+import { recordAssessment, removeAssessmentActivity } from '../_shared/activity-recorder.mjs';
+import { progressFor } from '../_shared/progress';
 
 // Lambdas run one request at a time per container, so the current request's headers are kept here for
 // response() to echo an allowed origin (see _shared/http.ts). Origins not in ALLOWED_ORIGINS get no CORS header.
@@ -45,6 +46,18 @@ const serve = async(event:APIGatewayProxyEventV2):Promise<APIGatewayProxyResultV
     if(method!=='POST') return response(405,{ok:false,error:'method_not_allowed',requestId},requestId);
     const body=parseBody(event);
     const action=String(body.action||'save');
+    // Deletion is permanent and allowed in any status, to the respondent or an Admin.
+    if(action==='delete'){
+      const id=body.assessmentId;
+      if(typeof id!=='string' || !id) return response(400,{ok:false,error:'delete action requires assessmentId.',requestId},requestId);
+      const item=await getAssessment(id);
+      if(!item) return response(404,{ok:false,error:'assessment_not_found',requestId},requestId);
+      if(!canAccess(event,item.respondentEmail)) return response(403,{ok:false,error:'assessment_access_denied',requestId},requestId);
+      await graphql(`mutation DeleteResilienceAssessment($input: DeleteResilienceAssessmentInput!) { deleteResilienceAssessment(input:$input) { id } }`,{input:{id:item.id}});
+      await removeAssessmentActivity(item.respondentEmail,'resilience-iq',id);
+      console.info('[ManageResilienceAssessment] deleted',{requestId,assessmentId:id});
+      return response(200,{ok:true,data:{assessmentId:id,deleted:true},requestId},requestId);
+    }
     const snapshot=body.snapshot;
     if(!snapshot || typeof snapshot!=='object' || Array.isArray(snapshot)) return response(400,{ok:false,error:'snapshot is required.',requestId},requestId);
     const assessmentId=String(snapshot.assessmentId||'');
@@ -107,7 +120,7 @@ const serve = async(event:APIGatewayProxyEventV2):Promise<APIGatewayProxyResultV
     };
     const mutation=existing ? `mutation UpdateResilienceAssessment($input: UpdateResilienceAssessmentInput!) { updateResilienceAssessment(input:$input) { ${fields} } }` : `mutation CreateResilienceAssessment($input: CreateResilienceAssessmentInput!) { createResilienceAssessment(input:$input) { ${fields} } }`;
     const data=await graphql(mutation,{input});
-    await recordAssessment(existing?.respondentEmail??String(snapshot.respondentEmail),{accelerator:'resilience-iq',assessmentId,status:String(snapshot.status),startedAt:String(snapshot.startedAt),completedAt:input.completedAt});
+    await recordAssessment(existing?.respondentEmail??String(snapshot.respondentEmail),{accelerator:'resilience-iq',assessmentId,status:String(snapshot.status),...progressFor(String(snapshot.status),body.progress),startedAt:String(snapshot.startedAt),completedAt:input.completedAt});
     return response(200,{ok:true,data:existing?data.updateResilienceAssessment:data.createResilienceAssessment,requestId},requestId);
   } catch(error:any) {
     console.error('[ManageResilienceAssessment]',{requestId,error});

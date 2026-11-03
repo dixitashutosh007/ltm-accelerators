@@ -310,10 +310,17 @@
     return s;
   }
 
+  /** Where the assessment has got, for My sessions and the Activity screen: the step on screen, and required questions answered. */
+  function progress() {
+    var all = steps(), required = [], answered = 0;
+    all.forEach(function (st) { st.questions.forEach(function (q) { if (isRequired(q)) { required.push(q); if (isAnswered(q)) answered++; } }); });
+    return { stage: currentStep(all).label, percent: required.length ? Math.round(100 * answered / required.length) : 0 };
+  }
+
   async function persist(action) {
     var status = action === 'complete' ? 'completed' : action === 'archive' ? 'archived' : (state.status === 'draft' && !Object.keys(state.answers).length ? 'draft' : 'in_progress');
     showSave('Saving…');
-    var res = await call(ASSESSMENT, { method: 'POST', body: JSON.stringify({ action: action, snapshot: snapshot(status) }) });
+    var res = await call(ASSESSMENT, { method: 'POST', body: JSON.stringify({ action: action, snapshot: snapshot(status), progress: progress() }) });
     if (res.status !== 200) {
       showSave('Not saved');
       state.saveError = (res.body.details && res.body.details.length ? res.body.details : [res.body.message || res.body.error || 'The assessment could not be saved.']);
