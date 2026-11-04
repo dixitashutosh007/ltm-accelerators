@@ -86,7 +86,7 @@ const has = (answers: Record<string, unknown>, id: string) => answers[id] != nul
 interface Workstream { id: string; name: string; activities: string[]; ownerRole: string; ltmRole: string; durationWeeks: [number, number]; effortFteWeeks: [number, number]; dependsOn: string[]; milestone: string; kpis: string[] }
 interface Package {
   recommendationId: string; offeringType: 'advisory' | 'implementation' | 'transformation'; offeringName: string; scope: string; outcome: string; prerequisites: string[];
-  workstreams: Workstream[]; risks: Array<{ risk: string; mitigation: string }>; playbook: Array<{ topic: string; steps: string[]; verification: string; options: string[] }>;
+  workstreams: Workstream[]; risks: Array<{ risk: string; mitigation: string }>; playbook: Array<{ topic: string; platform?: string; steps: string[]; verification: string; options: string[]; sources?: Array<{ title: string; publisher: string; url: string; checked: string }> }>;
   sow: { objectives: string[]; deliverables: string[]; assumptions: string[]; exclusions: string[]; acceptance: string[] };
 }
 /** The delivery library (draft, owner review): one package per recommendation. Durations and effort are LTM planning ranges. */
@@ -390,7 +390,7 @@ function execution(c: Ctx): ReportSection {
   if (!act.length) blocks.push({ kind: 'paragraph', segs: ['No step is recommended on the answers given, so no execution detail applies.'] });
   for (const { p } of act) {
     blocks.push({ kind: 'subheading', text: p.offeringName });
-    blocks.push({ kind: 'table', head: ['Practice', 'Steps', 'How to check it worked', 'Options'], widths: [70, '*', 100, 80], small: true, rows: p.playbook.map(b => [[strong(lib(c, b.topic))], bullets(c, b.steps), [ref(lib(c, b.verification))], [ref(b.options.join('; '))]]) });
+    blocks.push({ kind: 'table', head: ['Practice', 'Steps', 'How to check it worked', 'Options'], widths: [70, '*', 100, 80], small: true, rows: p.playbook.map(b => [[strong(lib(c, b.topic)), ...(b.platform ? ['\n', ref(b.platform)] as Seg[] : [])], [...bullets(c, b.steps), ...(b.sources?.length ? ['\n', ref('Source: ' + b.sources.map(x => `${x.publisher}, ${x.title}`).join('; '))] as Seg[] : [])], [ref(lib(c, b.verification))], [ref(b.options.join('; '))]]) });
   }
   return { id: 'execution', title: 'Technical execution', blocks };
 }
@@ -462,6 +462,13 @@ function methodology(c: Ctx): ReportSection {
   ] };
 }
 
+/** Vendor documentation the platform playbook steps rest on, for the packages shown in this report. */
+function playbookSources(c: Ctx): Seg[][][] {
+  const seen = new Map<string, Seg[][]>();
+  for (const { p } of activePackages(c)) for (const b of p.playbook) for (const x of b.sources ?? []) if (!seen.has(x.url)) seen.set(x.url, [[ref(`${x.publisher}, ${x.title} (${x.url})`)], ['Platform-specific steps in the technical execution section'], [ref(String(x.checked).slice(0, 4))]]);
+  return [...seen.values()];
+}
+
 function sources(c: Ctx): ReportSection {
   return { id: 'sources', title: 'Sources', appendix: true, blocks: [
     { kind: 'paragraph', segs: ['The published sources the questions and mappings draw on. Published sources are global or sector references and are not benchmarks of the client\'s peers.'] },
@@ -470,6 +477,7 @@ function sources(c: Ctx): ReportSection {
       [[ref('TBM Council, TBM Taxonomy (https://www.tbmcouncil.org/taxonomy/)')], ['Closest reference for cost pools and towers behind the cost dimensions; reference only, not an endorsement'], [ref('2025')]],
       [[ref('US Government Accountability Office, Information Technology Investment Management (GAO-04-394G, https://www.gao.gov/products/gao-04-394g)')], ['Closest reference for investment selection, control and benefits review'], [ref('2004')]],
       ...(c.i.finops?.status === 'quantified' ? [[[ref(clean(c.i.finops.globalCap.source.citation))], ['Ceiling on the cloud line, applied by FinOps IQ'], [ref(c.i.finops.globalCap.source.year)]] as Seg[][], [[ref(`LTM FinOps IQ assessment dated ${c.i.finops.assessmentDate ?? 'not stated'}`)], ['The cloud line shown in this report'], [ref((c.i.finops.assessmentDate ?? '').slice(0, 4) || 'n/a')]] as Seg[][]] : []),
+      ...playbookSources(c),
       [[ref('European Central Bank, euro foreign exchange reference rates (https://www.ecb.europa.eu/stats/policy_and_exchange_rates/euro_reference_exchange_rates/html/index.en.html)')], ['Converting size bands into the reporting currency; for information only'], [ref('2026')]]
     ] },
     { kind: 'paragraph', style: 'small', segs: ['Where a score ladder or an activation rule is LTM\'s own, the assumptions list says so. The FinOps Framework is used under its licence; LTM\'s scores and findings are LTM\'s and are not the FinOps Foundation\'s.'] }
