@@ -6466,6 +6466,451 @@
       "recommendationIds": [],
       "answerGuidance": "Select the operating state that most closely matches the current enterprise reality.",
       "questionDesignVersion": "6.0"
+    },
+    {
+      "id": "ADP-61",
+      "section": "Cost Governance & Investment",
+      "prompt": "How clearly can your organization trace technology investment and run spend to named strategy objectives?",
+      "intent": "Assess whether technology spend is linked to the enterprise's named strategy objectives, so that the organization can show leadership what it is buying toward and stop spend that supports nothing.",
+      "interaction": "single-select",
+      "answerDesign": "Select the description that is true for most material technology spend today, not for the best single programme. If the enterprise strategy has no named objectives, choose the fourth option.",
+      "required": false,
+      "adaptiveTrigger": "Strategy=Not traced activates value alignment deep dive",
+      "costDimension": null,
+      "valueDimension": "Business Alignment",
+      "evidenceImplication": "Validate with the strategy document or objectives list, the investment portfolio or approved-initiative register showing the objective for each item, and the last portfolio review minutes.",
+      "findingImplication": "L7 Value Leakage / Strategy alignment of technology spend",
+      "options": [
+        {
+          "id": "PORTFOLIO_TRACED",
+          "label": "Most material technology spend, run and change, is mapped to named strategy objectives; the mapping is reviewed on a regular cycle and used to re-prioritise or stop investments."
+        },
+        {
+          "id": "APPROVAL_MAPPED",
+          "label": "Each new material investment must name the strategy objective it supports at approval, but existing run spend is not mapped or reviewed against objectives."
+        },
+        {
+          "id": "THEMES_ONLY",
+          "label": "Investments are grouped under broad strategic themes (for example growth, resilience, efficiency) without named objectives or owners."
+        },
+        {
+          "id": "ASSERTED",
+          "label": "Strategic fit is described in business cases in general terms, or the enterprise strategy has no named objectives to trace to; the link is not recorded or checked."
+        },
+        {
+          "id": "UNKNOWN",
+          "label": "We cannot say which strategy objectives most technology spend supports."
+        }
+      ],
+      "scoring": {
+        "dimensionIds": [
+          "VALUE-01"
+        ],
+        "defaultMap": {
+          "PORTFOLIO_TRACED": 100.0,
+          "APPROVAL_MAPPED": 80.0,
+          "THEMES_ONLY": 60.0,
+          "ASSERTED": 40.0,
+          "UNKNOWN": 20.0
+        },
+        "basis": "Ordered scale of how fully technology spend is traced to named strategy objectives, from the whole portfolio mapped and reviewed down to not known, with UNKNOWN at the lowest level. Scored on VALUE-01 only. The engine ignores valueDimensionIds, so nothing else is credited. This is the first scored question for VALUE-01, which had none (COVERAGE-MATRIX section 3). The construct follows the FinOps Executive Strategy Alignment capability and the GAO investment framework; the option wording and the steps are LTM's. The 100/80/60/40/20 steps are an LTM convention, not a benchmark; the FinOps Framework gives three stages (Crawl, Walk, Run), not scores. Strategy objectives vary in quality: a mapped portfolio against vague objectives scores high, so this reads traceability, not the quality of the strategy. Complements CORE-19 (evidence required before funding approval) and CORE-44 (whether outcomes are measured afterwards): this asks whether the objective link exists for the whole spend, run included."
+      },
+      "active": true,
+      "version": 1,
+      "leakageSignal": "L7 Value Leakage",
+      "opportunityTheme": "Technology spend to strategy traceability",
+      "weightClass": "High",
+      "findingIds": [],
+      "recommendationIds": [],
+      "questionDesignVersion": "6.6",
+      "answerGuidance": "Think of the last time leadership asked what technology spend is for. Use the strategy objectives as the enterprise states them. Answer on current practice, not intended practice."
+    },
+    {
+      "id": "ADP-62",
+      "section": "People",
+      "prompt": "How well does your organization know the fully loaded cost of its internal technology staff and contractors, and how far is it used in decisions?",
+      "intent": "Assess whether the largest technology cost pool, people, is costed completely enough to compare internal, contractor and managed-service options.",
+      "interaction": "single-select",
+      "answerDesign": "Select the description that matches how technology people cost is known and used today. Fully loaded means more than salary or day rate: include benefits, overheads, tools, facilities and management time.",
+      "required": false,
+      "adaptiveTrigger": "Workforce=Yes",
+      "costDimension": "Workforce Economics",
+      "valueDimension": null,
+      "evidenceImplication": "Validate with a loaded-rate table by role, the technology payroll and contractor cost extract, and a recent sourcing or business-case decision that used them.",
+      "findingImplication": "L5 Workforce Leakage / Workforce cost visibility",
+      "options": [
+        {
+          "id": "LOADED_USED",
+          "label": "Fully loaded cost (pay, benefits, overheads, tools, facilities, management time) is known for both internal staff and contractors by role or team and is used in sourcing, staffing and business-case decisions."
+        },
+        {
+          "id": "LOADED_REPORTED",
+          "label": "Fully loaded cost is known for both internal staff and contractors and reported, but is not routinely used in sourcing or investment decisions."
+        },
+        {
+          "id": "ONE_GROUP",
+          "label": "Fully loaded cost is known for one group only, usually contractors from invoices, while internal staff are costed at an average salary or headcount budget."
+        },
+        {
+          "id": "BUDGET_ONLY",
+          "label": "Only headcount budgets and contractor invoice totals are known; no loaded cost per role or team is calculated."
+        },
+        {
+          "id": "UNKNOWN",
+          "label": "We cannot say what technology staff and contractors cost in total."
+        }
+      ],
+      "scoring": {
+        "dimensionIds": [
+          "COST-06"
+        ],
+        "defaultMap": {
+          "LOADED_USED": 100.0,
+          "LOADED_REPORTED": 80.0,
+          "ONE_GROUP": 60.0,
+          "BUDGET_ONLY": 40.0,
+          "UNKNOWN": 20.0
+        },
+        "basis": "Ordered scale of how completely technology people cost is known and used, down to not known, with UNKNOWN at the lowest level. LTM heuristic: the options and the 100/80/60/40/20 steps are LTM's. The 100/80/60/40/20 steps are an LTM convention, not a benchmark; the FinOps Framework gives three stages (Crawl, Walk, Run), not scores. No published scale for workforce cost visibility was found. The TBM Staffing cost pool (internal labour plus staff augmentation) and the FinOps Unit Economics reference to fully loaded costs support the construct only; the FinOps wording is about unit cost of technology resources, not workforce. Gated on WORKFORCE or EXTERNAL in CORE-01 because there is no not-applicable option. Complements ADP-18 (how the internal and contractor mix is decided) and CORE-35 (capacity alignment): this asks whether the cost basis for those decisions exists. Do not present as independent evidence with ADP-18."
+      },
+      "active": true,
+      "version": 1,
+      "leakageSignal": "L5 Workforce Leakage",
+      "opportunityTheme": "Workforce cost visibility",
+      "weightClass": "High",
+      "findingIds": [],
+      "recommendationIds": [],
+      "questionDesignVersion": "6.6",
+      "answerGuidance": "Include permanent staff and contractors engaged to do technology work. Consider whether the figure would survive a finance review.",
+      "applicableWhen": {
+        "questionId": "CORE-01",
+        "anyOf": [
+          "WORKFORCE",
+          "EXTERNAL"
+        ]
+      }
+    },
+    {
+      "id": "ADP-63",
+      "section": "People",
+      "prompt": "How is demand for technology contractors governed: who approves it, what rates apply and how are long-running roles reviewed?",
+      "intent": "Assess whether contractor use is controlled at the point of demand, at the rate paid and over time, rather than only audited after the spend.",
+      "interaction": "single-select",
+      "answerDesign": "Select the description that best matches how contractors are requested, priced and reviewed today. If you use no contractors, choose the last option; it is not scored.",
+      "required": false,
+      "adaptiveTrigger": "Contractors=Yes",
+      "costDimension": "Workforce Economics",
+      "valueDimension": null,
+      "evidenceImplication": "Validate with the contractor request and approval process, the rate card or framework agreement, the contractor register with start dates, and any conversion review record.",
+      "findingImplication": "L5 Workforce Leakage / Contractor demand governance",
+      "options": [
+        {
+          "id": "GOVERNED",
+          "label": "Each contractor request needs a documented need and approval, rates follow a rate card or framework agreement, and long-running roles are reviewed at set intervals for conversion to employees, fixed-price work or a managed service."
+        },
+        {
+          "id": "APPROVED_RATES",
+          "label": "Requests are approved and rates are controlled by a rate card or framework, but long-running roles are not systematically reviewed for conversion."
+        },
+        {
+          "id": "APPROVED_ONLY",
+          "label": "Requests are approved by the hiring manager or budget holder, rates are negotiated case by case, and there is no conversion review."
+        },
+        {
+          "id": "UNCONTROLLED",
+          "label": "Teams engage contractors with little central approval or rate control."
+        },
+        {
+          "id": "UNKNOWN",
+          "label": "We cannot say how many contractors are engaged, at what rates or for how long."
+        },
+        {
+          "id": "NO_CONTRACTORS",
+          "label": "We use no technology contractors."
+        }
+      ],
+      "scoring": {
+        "dimensionIds": [
+          "COST-06"
+        ],
+        "defaultMap": {
+          "GOVERNED": 100.0,
+          "APPROVED_RATES": 80.0,
+          "APPROVED_ONLY": 60.0,
+          "UNCONTROLLED": 40.0,
+          "UNKNOWN": 20.0
+        },
+        "basis": "Ordered scale across the three controls named in the prompt (approval, rates, conversion), from all three in place to none and not known, with UNKNOWN at the lowest level. LTM heuristic: the ladder and the 100/80/60/40/20 steps are LTM's; no published scale for contractor governance was found. The 100/80/60/40/20 steps are an LTM convention, not a benchmark; the FinOps Framework gives three stages (Crawl, Walk, Run), not scores. NO_CONTRACTORS is an unscored option (it has no entry in the map), so a client with no contractors is not rated low. Gating on WORKFORCE or EXTERNAL narrows the audience but a client with no contractors would still be scored low if it answers; the answerDesign tells such clients to leave it unanswered, and an unanswered question is not scored. Owner may prefer a CORE-36 based gate (the share of workforce supplied externally is already asked) but applicableWhen supports only CORE-01 options. Complements ADP-18 (how the internal and contractor balance is decided: strategy level) and CORE-36 (external share, context): this asks about day-to-day demand control. Wording overlap with ADP-18's 'reviewed' is small but real: ADP-18 asks whether the mix is reviewed against economics, this asks about approval, rates and conversion of individual roles."
+      },
+      "active": true,
+      "version": 1,
+      "leakageSignal": "L5 Workforce Leakage",
+      "opportunityTheme": "Contractor spend governance",
+      "weightClass": "High",
+      "findingIds": [],
+      "recommendationIds": [],
+      "questionDesignVersion": "6.6",
+      "answerGuidance": "Consider time-and-material and staff-augmentation contractors, not consultants or managed services priced as an outcome. Answer on current practice for most contractor spend.",
+      "applicableWhen": {
+        "questionId": "CORE-01",
+        "anyOf": [
+          "WORKFORCE",
+          "EXTERNAL"
+        ]
+      }
+    },
+    {
+      "id": "ADP-64",
+      "section": "Infrastructure & Operations",
+      "prompt": "How well does your organization know what end-user devices and workplace software cost per user?",
+      "intent": "Assess whether end-user and workplace technology, the main infrastructure cost of many software-heavy and outsourced estates, is understood per user and by type of user.",
+      "interaction": "single-select",
+      "answerDesign": "Select the description that matches how end-user cost is known today. Include laptops, desktops, mobile devices, workplace software licences and end-user support; exclude data-centre and cloud infrastructure.",
+      "required": false,
+      "adaptiveTrigger": "EndUser=Yes",
+      "costDimension": "Infrastructure Economics",
+      "valueDimension": null,
+      "evidenceImplication": "Validate with the device and workplace-software spend by user type, user counts from HR or the directory, and the support cost per user.",
+      "findingImplication": "L2 Consumption Leakage / End-user cost per user",
+      "options": [
+        {
+          "id": "PER_PERSONA",
+          "label": "Fully loaded cost per user (devices, workplace software, support) is known by type of user (for example office, frontline, specialist) and is used to set standards or challenge them."
+        },
+        {
+          "id": "PER_USER",
+          "label": "A single average cost per user is known and reviewed at least annually, but not by type of user."
+        },
+        {
+          "id": "COMPONENTS",
+          "label": "Device, workplace-software and support costs are known separately, but not combined into a cost per user."
+        },
+        {
+          "id": "TOTAL_ONLY",
+          "label": "Only a total end-user or workplace technology budget is known."
+        },
+        {
+          "id": "UNKNOWN",
+          "label": "We cannot say what end-user technology costs per user."
+        }
+      ],
+      "scoring": {
+        "dimensionIds": [
+          "COST-05"
+        ],
+        "defaultMap": {
+          "PER_PERSONA": 100.0,
+          "PER_USER": 80.0,
+          "COMPONENTS": 60.0,
+          "TOTAL_ONLY": 40.0,
+          "UNKNOWN": 20.0
+        },
+        "basis": "Ordered scale of how completely end-user cost is known per user, from by-persona and used down to not known, with UNKNOWN at the lowest level. Scored on COST-05, as the owner-approved Q3 brief proposed ('COST-05 or a new workplace item'); the closest TBM element, the End User tower, is not one of the towers the taxonomy mapping names for COST-05 (Data Center, Compute, Storage, Network), so the mapping is a judgement. LTM heuristic: the ladder and steps are LTM's. The 100/80/60/40/20 steps are an LTM convention, not a benchmark; the FinOps Framework gives three stages (Crawl, Walk, Run), not scores. Gated on END_USER in CORE-01 because there is no not-applicable option. Overlaps in theme with ADP-06 and CORE-26 (SaaS overlap and licence counts) only where workplace software is a SaaS product: those ask about overlap and reclamation, this asks about cost per user. Complements ADP-65 (lifecycle and refresh)."
+      },
+      "active": true,
+      "version": 1,
+      "leakageSignal": "L2 Consumption Leakage",
+      "opportunityTheme": "End-user cost per user",
+      "weightClass": "Medium",
+      "findingIds": [],
+      "recommendationIds": [],
+      "questionDesignVersion": "6.6",
+      "answerGuidance": "A user is anyone issued a device or workplace-software licence by the organization. Answer on current practice, not on what could be built.",
+      "applicableWhen": {
+        "questionId": "CORE-01",
+        "anyOf": [
+          "END_USER"
+        ]
+      }
+    },
+    {
+      "id": "ADP-65",
+      "section": "Infrastructure & Operations",
+      "prompt": "How are the lifecycle and refresh of end-user devices and workplace software decided and controlled?",
+      "intent": "Assess whether end-user refresh is a managed cost and risk decision or happens by default, since refresh cycle length is the main driver of device cost over time.",
+      "interaction": "single-select",
+      "answerDesign": "Select the description that best matches how devices and workplace software are refreshed today. Answer for the majority of devices.",
+      "required": false,
+      "adaptiveTrigger": "EndUser=Yes",
+      "costDimension": "Infrastructure Economics",
+      "valueDimension": null,
+      "evidenceImplication": "Validate with the device inventory (count, age, model), the refresh policy, and the last three years of device purchases against the policy.",
+      "findingImplication": "L2 Consumption Leakage / End-user lifecycle",
+      "options": [
+        {
+          "id": "GOVERNED",
+          "label": "A device and workplace-software lifecycle policy (refresh cycle, standard models, extension or reuse, disposal or resale) is set on cost and risk, tracked in an asset inventory, and exceptions need approval."
+        },
+        {
+          "id": "POLICY_LED",
+          "label": "A refresh cycle is defined and mostly applied, but exceptions are common or cost and risk are not reviewed against it."
+        },
+        {
+          "id": "SUPPORT_DRIVEN",
+          "label": "Devices are tracked in an inventory, but replacement is driven mainly by warranty, vendor support end or operating-system end of life."
+        },
+        {
+          "id": "ON_FAILURE",
+          "label": "Devices are replaced mainly on failure or on request, with no reliable inventory."
+        },
+        {
+          "id": "UNKNOWN",
+          "label": "We cannot say how many devices are in service or how old they are."
+        }
+      ],
+      "scoring": {
+        "dimensionIds": [
+          "COST-05"
+        ],
+        "defaultMap": {
+          "GOVERNED": 100.0,
+          "POLICY_LED": 80.0,
+          "SUPPORT_DRIVEN": 60.0,
+          "ON_FAILURE": 40.0,
+          "UNKNOWN": 20.0
+        },
+        "basis": "Ordered scale of how deliberately end-user lifecycle is governed, from policy set on cost and risk with an inventory down to replacement on failure and not known, with UNKNOWN at the lowest level. LTM heuristic: the ladder and steps are LTM's; I found no published scale. The 100/80/60/40/20 steps are an LTM convention, not a benchmark; the FinOps Framework gives three stages (Crawl, Walk, Run), not scores. Longer is not always better: a short cycle can be right for security or productivity reasons, so the scale reads whether the cycle is decided and tracked, not its length. Gated on END_USER in CORE-01. Wording overlap: CORE-33 asks what drives infrastructure capacity planning and refresh (ungated, data-centre framing) and ADP-12 asks the on-premises share nearing end of life (context); this asks about devices and workplace software only, so it complements both. Do not present as independent evidence with CORE-33."
+      },
+      "active": true,
+      "version": 1,
+      "leakageSignal": "L2 Consumption Leakage",
+      "opportunityTheme": "End-user lifecycle governance",
+      "weightClass": "Medium",
+      "findingIds": [],
+      "recommendationIds": [],
+      "questionDesignVersion": "6.6",
+      "answerGuidance": "Consider laptops, desktops and mobile devices and the workplace software that runs on them. Answer on current practice.",
+      "applicableWhen": {
+        "questionId": "CORE-01",
+        "anyOf": [
+          "END_USER"
+        ]
+      }
+    },
+    {
+      "id": "ADP-66",
+      "section": "On-Prem",
+      "prompt": "How well does your organization know the unit cost of its own infrastructure, such as a virtual machine, a terabyte or a rack, and how far is it shown to consumers and compared with alternatives?",
+      "intent": "Assess whether internally run infrastructure is costed per unit, made visible to its consumers and tested against other ways of running the same workload.",
+      "interaction": "single-select",
+      "answerDesign": "Select the description that matches current practice for most internally run infrastructure (data centre, private cloud, virtualised estate, colocation). Showing costs back to consumers counts as much as formally charging them.",
+      "required": false,
+      "adaptiveTrigger": "OnPrem=Yes",
+      "costDimension": "Infrastructure Economics",
+      "valueDimension": null,
+      "evidenceImplication": "Validate with the unit-cost calculation by service (VM, storage, rack), the showback or chargeback report, and the last comparison against a cloud or colocation alternative.",
+      "findingImplication": "L1 Visibility Leakage / Internal infrastructure unit cost",
+      "options": [
+        {
+          "id": "UNIT_COMPARED",
+          "label": "Unit cost (per VM, per terabyte, per rack or per core) is calculated from full cost (hardware, facilities, power, licences, labour), shown or charged back to consumers, and compared with cloud, colocation or hosted alternatives at least annually."
+        },
+        {
+          "id": "UNIT_SHOWN_BACK",
+          "label": "Unit cost is calculated from full cost and shown or charged back to consumers, but is not compared with alternatives."
+        },
+        {
+          "id": "UNIT_INTERNAL",
+          "label": "Unit cost is calculated for some services for planning, but consumers do not see it and it is not compared with alternatives."
+        },
+        {
+          "id": "TOTAL_ONLY",
+          "label": "Only the total infrastructure budget or depreciation is known; no unit cost is calculated."
+        },
+        {
+          "id": "UNKNOWN",
+          "label": "We cannot say what a virtual machine, a terabyte or a rack costs us."
+        }
+      ],
+      "scoring": {
+        "dimensionIds": [
+          "COST-05"
+        ],
+        "defaultMap": {
+          "UNIT_COMPARED": 100.0,
+          "UNIT_SHOWN_BACK": 80.0,
+          "UNIT_INTERNAL": 60.0,
+          "TOTAL_ONLY": 40.0,
+          "UNKNOWN": 20.0
+        },
+        "basis": "Ordered scale of how fully internal infrastructure unit cost is known, shown and compared, from compared with alternatives down to not known, with UNKNOWN at the lowest level. Scored on COST-05 only; COST-01 is not credited because the engine would then count one answer in two dimensions (and valueDimensionIds is ignored). The construct follows FinOps Unit Economics (data centres at Walk; unit metrics shape workload placement at Run) and Architecting & Workload Placement (value comparison across placement options including data center and private cloud). The ladder and steps are LTM's. The 100/80/60/40/20 steps are an LTM convention, not a benchmark; the FinOps Framework gives three stages (Crawl, Walk, Run), not scores. FinOps Invoicing & Chargeback says chargeback is optional and neither showback nor chargeback is more mature; the ladder therefore credits showback or chargeback equally. Gated on ON_PREM, PRIVATE_CLOUD, VMWARE or COLO in CORE-01 because there is no not-applicable option. Overlaps: CORE-13 (the level at which cost is understood, whose top option names unit economics) is general; ADP-09 (virtualization licensing, infrastructure and alternatives, gated) asks about platform renewal analysis; ADP-11 and ADP-37 ask about capacity utilisation; ADP-13 asks about colocation contract economics. This question complements all of them by asking for unit cost and comparison; it should not be read as independent evidence with ADP-09."
+      },
+      "active": true,
+      "version": 1,
+      "leakageSignal": "L1 Visibility Leakage",
+      "opportunityTheme": "Internal infrastructure unit cost",
+      "weightClass": "High",
+      "findingIds": [],
+      "recommendationIds": [],
+      "questionDesignVersion": "6.6",
+      "answerGuidance": "Include the full cost of running the unit, not only hardware depreciation or the hosting fee. Answer for most of the internally run estate, not the best-managed platform.",
+      "applicableWhen": {
+        "questionId": "CORE-01",
+        "anyOf": [
+          "ON_PREM",
+          "PRIVATE_CLOUD",
+          "VMWARE",
+          "COLO"
+        ]
+      }
+    },
+    {
+      "id": "ADP-67",
+      "section": "Cost Governance & Investment",
+      "prompt": "How far does your organization track technology cost per unit of business output, such as per transaction, per employee or per revenue unit?",
+      "intent": "Assess whether technology cost is related to what the business produces, so that a rising bill can be told apart from rising volume.",
+      "interaction": "single-select",
+      "answerDesign": "Select the description that matches current practice. A unit of business output is whatever the business counts: transactions, customers, orders, employees or revenue.",
+      "required": false,
+      "adaptiveTrigger": "UnitCost=No activates technology productivity deep dive",
+      "costDimension": null,
+      "valueDimension": "Technology Productivity",
+      "evidenceImplication": "Validate with the unit-cost report, the denominator data source and a recent budget or investment decision that cites it.",
+      "findingImplication": "L7 Value Leakage / Technology cost per unit of output",
+      "options": [
+        {
+          "id": "UNIT_USED",
+          "label": "Technology cost per unit of business output (for example per transaction, per customer, per employee or per revenue unit) is tracked for the main business services, trended over time and used in budget and investment decisions."
+        },
+        {
+          "id": "UNIT_TRACKED",
+          "label": "Technology cost per unit of business output is tracked and reported to leadership for at least one major service, but not used in budget or investment decisions."
+        },
+        {
+          "id": "TOP_LEVEL",
+          "label": "One organisation-wide ratio, for example technology spend as a share of revenue or per employee, is calculated, but nothing by service or business output."
+        },
+        {
+          "id": "NOT_TRACKED",
+          "label": "Technology cost per unit of business output is not tracked, though it could be worked out on request."
+        },
+        {
+          "id": "UNKNOWN",
+          "label": "We do not know whether, or how, technology cost is related to business output."
+        }
+      ],
+      "scoring": {
+        "dimensionIds": [
+          "VALUE-04"
+        ],
+        "defaultMap": {
+          "UNIT_USED": 100.0,
+          "UNIT_TRACKED": 80.0,
+          "TOP_LEVEL": 60.0,
+          "NOT_TRACKED": 40.0,
+          "UNKNOWN": 20.0
+        },
+        "basis": "Ordered scale of how fully technology cost is related to business output, from used in decisions down to not known, with UNKNOWN at the lowest level. Scored on VALUE-04 only. VALUE-04 now holds CORE-34 (manual-effort share) and CORE-35 (workforce alignment), both shared with cost dimensions; this question is the first that feeds VALUE-04 from an output-based measure (COVERAGE-MATRIX section 11, Q5). The construct follows FinOps Unit Economics (business denominators per transaction, customer or case; revenue views) and Executive Strategy Alignment (unit measures such as cost per transaction or per active user); the ladder and steps are LTM's. The 100/80/60/40/20 steps are an LTM convention, not a benchmark; the FinOps Framework gives three stages (Crawl, Walk, Run), not scores. A top-level ratio such as IT spend as a share of revenue is shown as a weaker rung and no benchmark value is used. Overlaps: CORE-13 (the level at which cost is understood, top option mentions unit economics) is about cost allocation; ADP-66 asks the same idea for internal infrastructure only. Complements both; do not present as independent evidence with CORE-13."
+      },
+      "active": true,
+      "version": 1,
+      "leakageSignal": "L7 Value Leakage",
+      "opportunityTheme": "Technology unit economics",
+      "weightClass": "High",
+      "findingIds": [],
+      "recommendationIds": [],
+      "questionDesignVersion": "6.6",
+      "answerGuidance": "Pick the rung that matches what is routinely reported today, not what could be calculated if asked."
     }
   ],
   "rules": [

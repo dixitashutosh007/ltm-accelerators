@@ -1,7 +1,7 @@
 {
  "meta": {
   "accelerator": "Cost IQ",
-  "bank": "master-v6.6.json (99 questions: 63 score, 36 context)",
+  "bank": "master-v6.6.json (106 questions: 70 score, 36 context)",
   "date": "2026-11-03",
   "author": "finops-cost-lead (advises; the product owner approves)",
   "definitions": {
@@ -2184,6 +2184,209 @@
    "heuristicReasoning": "No published scale was found; service-level differentiation is standard service-management practice (ITIL, ISO/IEC 20000-1) but those texts were not opened. The 100/80/60/40/20 steps are an LTM convention; the FinOps Framework gives three stages, not scores.",
    "verified": false,
    "notes": "Not footprint-gated."
+  },
+  {
+   "id": "ADP-61",
+   "kind": "score",
+   "basis": "Scores how fully technology spend is traced to named strategy objectives. FinOps Executive Strategy Alignment connects technology spend, usage and adoption to business strategy and priorities and describes Crawl (limited, ad hoc link to initiatives) through Run (Scopes as the standard lens connecting strategy, funding and accountability). GAO-04-394G expects an investment board to evaluate alignment of IT projects and systems with strategic goals and objectives and to take corrective action (Stage 2) and a portfolio view against strategic goals (Stage 3).",
+   "sourceType": "published-framework",
+   "sources": [
+    {
+     "title": "FinOps Framework: Executive Strategy Alignment",
+     "publisher": "FinOps Foundation",
+     "year": 2026,
+     "url": "https://www.finops.org/framework/capabilities/executive-strategy-alignment/",
+     "whatItSays": "Capability in the Manage the FinOps Practice domain that connects technology spend, usage and adoption to the organization's business strategy and priorities. Executive Priority Alignment: map technology spend across cloud, SaaS, AI, licensing and data center to the initiatives leaders fund. Enable Strategic Decision Support: a portfolio view so leaders can see how spend maps to strategic priorities. Crawl: insights relate to strategic initiatives in a limited, ad hoc way. Walk: Scopes span several technology categories and are explicitly tied to executive priorities, with a regular governance cadence. Run: Scopes are the standard lens connecting strategy, funding and accountability; FinOps is a required input for major investments; alignment holds through restructuring, M&A and leadership change. The page defines no explicit success measure for tracing spend to objectives. Read through a summarising fetch tool.",
+     "verified": true,
+     "checked": "2026-11-03"
+    },
+    {
+     "title": "Information Technology Investment Management: A Framework for Assessing and Improving Process Maturity (GAO-04-394G, version 1.1)",
+     "publisher": "US Government Accountability Office",
+     "year": 2004,
+     "url": "https://www.gao.gov/products/gao-04-394g",
+     "whatItSays": "Read from the PDF text (https://www.gao.gov/assets/gao-04-394g.pdf), not the product page, which does not mention stages or strategic alignment. Stage 2 (Building the Investment Foundation, Meeting Business Need, PDF p. 45): the investment board periodically evaluates the alignment of its IT projects and systems with the organization's strategic goals and objectives and takes corrective action when misalignment occurs. Stage 3 (Developing a Complete Investment Portfolio, PDF p. 67): taking a portfolio perspective means investments address the strategic goals, objectives and mission and the impact projects have on one another. US federal context, 2004; it describes process maturity, not a measure of traceability.",
+     "verified": true,
+     "checked": "2026-11-03"
+    }
+   ],
+   "heuristicReasoning": "The five options and the 100/80/60/40/20 steps are LTM's. Neither source gives a ladder or a measure of traceability. The FinOps page itself defines no success measure for tracing spend to objectives, and GAO describes process maturity for a US federal agency in 2004.",
+   "verified": true,
+   "notes": "First scored VALUE-01 question. Complements CORE-19, CORE-44 and CORE-07 (context, VALUE-01 tag)."
+  },
+  {
+   "id": "ADP-62",
+   "kind": "score",
+   "basis": "Scores whether fully loaded internal and contractor cost is known and used. The TBM Staffing cost pool separates internal labour (salaries, benefits and related costs) from staff augmentation and time-and-material contractors, and FinOps Unit Economics describes unit views that include fully loaded costs at Walk and Run.",
+   "sourceType": "LTM-heuristic",
+   "sources": [
+    {
+     "title": "TBM Taxonomy 5.0.1: Staffing cost pool",
+     "publisher": "TBM Council",
+     "year": 2025,
+     "url": "https://www.tbmcouncil.org/taxonomy/",
+     "whatItSays": "Staffing includes salaries, benefits and other costs of internal personnel, plus Time & Material contractor and staff augmentation resources; it excludes consultant and managed service resources. Sub-pools: Internal Labor, Staff Augmentation (T&M contractors), Other Operating. No separate Contractors sub-pool. Read through a summarising fetch tool, first 100,000 of 204,029 characters; the page states no licence or reuse terms in the text read.",
+     "verified": true,
+     "checked": "2026-11-03"
+    },
+    {
+     "title": "FinOps Framework: Unit Economics",
+     "publisher": "FinOps Foundation",
+     "year": 2026,
+     "url": "https://www.finops.org/framework/capabilities/unit-economics/",
+     "whatItSays": "Unit Economics connects what an organization spends on technology to the value it creates. Metrics can be resource-efficiency measures (cost per GB, per vCPU, per token) or business-unit measures (per transaction, per customer, per case resolved; revenue and per-tenant views). Crawl: usually one technology category, technical metrics tied to direct variable cost, business outcome data not yet correlated. Walk: includes public cloud, SaaS use, data centers and others; unit views begin to include fully loaded costs; cost to serve becomes more trustworthy; decision use is moderate. Run: every operational Scope has defined unit metrics across all technology categories, including fully loaded costs, and unit economics shape build-versus-buy, architecture, workload placement, migration, sourcing and pricing decisions early. Read through a summarising fetch tool.",
+     "verified": true,
+     "checked": "2026-11-03"
+    }
+   ],
+   "heuristicReasoning": "The ladder and the steps are LTM's judgement: a CIO who cannot cost people on a like-for-like basis cannot judge build, buy or borrow, and the largest cost pool of many estates should not rest on salary alone. The cited sources support the cost-category split and the idea of fully loaded cost; neither describes a workforce cost-visibility maturity scale. This is not a benchmark.",
+   "verified": true,
+   "notes": "Second scored COST-06 question with ADP-63 (COST-06 would have four: CORE-35, ADP-18, ADP-62, ADP-63)."
+  },
+  {
+   "id": "ADP-63",
+   "kind": "score",
+   "basis": "Scores approval, rate control and conversion review for contractor demand. The TBM Staffing cost pool names staff augmentation and time-and-material contractors as a distinct cost from internal labour and from managed services, which is the boundary this question uses. No published source for the approval, rate-card and conversion ladder was found.",
+   "sourceType": "LTM-heuristic",
+   "sources": [
+    {
+     "title": "TBM Taxonomy 5.0.1: Staffing cost pool",
+     "publisher": "TBM Council",
+     "year": 2025,
+     "url": "https://www.tbmcouncil.org/taxonomy/",
+     "whatItSays": "Staffing includes salaries, benefits and other costs of internal personnel, plus Time & Material contractor and staff augmentation resources; it excludes consultant and managed service resources. Sub-pools: Internal Labor, Staff Augmentation (T&M contractors), Other Operating. No separate Contractors sub-pool. Read through a summarising fetch tool, first 100,000 of 204,029 characters; the page states no licence or reuse terms in the text read.",
+     "verified": true,
+     "checked": "2026-11-03"
+    }
+   ],
+   "heuristicReasoning": "Approval at the point of demand, a controlled rate and a periodic look at long-running roles are the three levers a CIO or procurement lead usually names for contractor spend; ordering them by how many are in place is LTM judgement. The TBM source supports only the cost category, not the controls or their order. No benchmark of contractor premium over employee cost is used or implied. Conversion is not always better: a short, specialist need is correctly met by a contractor.",
+   "verified": true,
+   "notes": "Both Q2 questions feed COST-06 only. Not independent of ADP-18 on the same theme."
+  },
+  {
+   "id": "ADP-64",
+   "kind": "score",
+   "basis": "Scores whether end-user and workplace cost is known per user. The TBM Taxonomy names an End User tower (workspace devices, mobile devices, help desk, deskside support) and FinOps Unit Economics describes unit metrics across technology categories including SaaS use, at Walk and Run.",
+   "sourceType": "LTM-heuristic",
+   "sources": [
+    {
+     "title": "TBM Taxonomy 5.0.1: End User tower",
+     "publisher": "TBM Council",
+     "year": 2025,
+     "url": "https://www.tbmcouncil.org/taxonomy/",
+     "whatItSays": "End User tower: resources enabling individual productivity, including user computing equipment, mobile technology, workspace devices and centralized support channels. Sub-towers: Conferencing & AV, Deskside Support, Help Desk, Mobile Devices, Network Printers, Workspace, and End User Software (marked retired). Workspace covers desktops, laptops, thin clients and peripherals and excludes software, labor and support. The visible page names no cost-per-user or per-device metric. Read through a summarising fetch tool, first 100,000 of 204,029 characters.",
+     "verified": true,
+     "checked": "2026-11-03"
+    },
+    {
+     "title": "FinOps Framework: Unit Economics",
+     "publisher": "FinOps Foundation",
+     "year": 2026,
+     "url": "https://www.finops.org/framework/capabilities/unit-economics/",
+     "whatItSays": "Unit Economics connects what an organization spends on technology to the value it creates. Metrics can be resource-efficiency measures (cost per GB, per vCPU, per token) or business-unit measures (per transaction, per customer, per case resolved; revenue and per-tenant views). Crawl: usually one technology category, technical metrics tied to direct variable cost, business outcome data not yet correlated. Walk: includes public cloud, SaaS use, data centers and others; unit views begin to include fully loaded costs; cost to serve becomes more trustworthy; decision use is moderate. Run: every operational Scope has defined unit metrics across all technology categories, including fully loaded costs, and unit economics shape build-versus-buy, architecture, workload placement, migration, sourcing and pricing decisions early. Read through a summarising fetch tool.",
+     "verified": true,
+     "checked": "2026-11-03"
+    }
+   ],
+   "heuristicReasoning": "The cost-per-user ladder is LTM's judgement: cost per user is the standard unit of measure for workplace technology in practice, but no source read gives a scale or a benchmark value, and the TBM page as read names no cost-per-user metric. The sources support the tower and the unit-metric idea only. No cost-per-user benchmark is used or implied; published figures vary by industry and user type and none was verified.",
+   "verified": true,
+   "notes": "First of two questions on the End User tower, which CORE-01 offers (END_USER) and CORE-05 lists but no question asked about."
+  },
+  {
+   "id": "ADP-65",
+   "kind": "score",
+   "basis": "Scores how deliberately end-user device and workplace-software lifecycle is governed. The TBM Taxonomy End User tower names workspace devices, mobile devices and support as resource components, which gives the scope. No source read describes refresh governance.",
+   "sourceType": "LTM-heuristic",
+   "sources": [
+    {
+     "title": "TBM Taxonomy 5.0.1: End User tower",
+     "publisher": "TBM Council",
+     "year": 2025,
+     "url": "https://www.tbmcouncil.org/taxonomy/",
+     "whatItSays": "End User tower: resources enabling individual productivity, including user computing equipment, mobile technology, workspace devices and centralized support channels. Sub-towers: Conferencing & AV, Deskside Support, Help Desk, Mobile Devices, Network Printers, Workspace, and End User Software (marked retired). Workspace covers desktops, laptops, thin clients and peripherals and excludes software, labor and support. The visible page names no cost-per-user or per-device metric. Read through a summarising fetch tool, first 100,000 of 204,029 characters.",
+     "verified": true,
+     "checked": "2026-11-03"
+    }
+   ],
+   "heuristicReasoning": "A defined refresh policy, an inventory, and a refresh driven by cost and risk rather than failure follow common asset-management practice; ordering them is LTM judgement. ISO/IEC 19770-1 (IT asset management) is relevant in principle but its clauses were not opened (iso.org returned HTTP 403 earlier on 3 Nov 2026), so it is not cited. No device-lifetime or refresh-cost figure is used.",
+   "verified": true,
+   "notes": "Complements CORE-33 and ADP-12."
+  },
+  {
+   "id": "ADP-66",
+   "kind": "score",
+   "basis": "Scores whether internal infrastructure unit cost is known, shown to consumers and compared with alternatives. FinOps Unit Economics extends unit metrics (for example cost per GB, per vCPU) to data centers at Walk and says unit economics shape workload placement at Run; FinOps Architecting & Workload Placement calls for value comparison across placement options such as public cloud, data center and private cloud; FinOps Invoicing & Chargeback says showback is required and chargeback is optional.",
+   "sourceType": "published-framework",
+   "sources": [
+    {
+     "title": "FinOps Framework: Unit Economics",
+     "publisher": "FinOps Foundation",
+     "year": 2026,
+     "url": "https://www.finops.org/framework/capabilities/unit-economics/",
+     "whatItSays": "Unit Economics connects what an organization spends on technology to the value it creates. Metrics can be resource-efficiency measures (cost per GB, per vCPU, per token) or business-unit measures (per transaction, per customer, per case resolved; revenue and per-tenant views). Crawl: usually one technology category, technical metrics tied to direct variable cost, business outcome data not yet correlated. Walk: includes public cloud, SaaS use, data centers and others; unit views begin to include fully loaded costs; cost to serve becomes more trustworthy; decision use is moderate. Run: every operational Scope has defined unit metrics across all technology categories, including fully loaded costs, and unit economics shape build-versus-buy, architecture, workload placement, migration, sourcing and pricing decisions early. Read through a summarising fetch tool.",
+     "verified": true,
+     "checked": "2026-11-03"
+    },
+    {
+     "title": "FinOps Framework: Architecting & Workload Placement",
+     "publisher": "FinOps Foundation",
+     "year": 2026,
+     "url": "https://www.finops.org/framework/capabilities/architecting-workload-placement/",
+     "whatItSays": "Covers designing solutions with cost in mind and choosing where workloads run within and across technology categories, connecting placement options to business unit metrics. Build the Decision Case calls for value comparisons across placement options such as public cloud, data center and private cloud; inputs include infrastructure cost, support and run cost, and migration cost. Crawl: case-by-case with rules of thumb and no documented trade-off model. Walk: a documented model weighs cost, value, sovereignty, resilience and sustainability. Run: built is tracked against modelled and variance feeds back. It recommends tracking unit cost trends against a business unit metric. Colocation is not mentioned and the page does not define on-premises boundaries. Read through a summarising fetch tool.",
+     "verified": true,
+     "checked": "2026-11-03"
+    },
+    {
+     "title": "FinOps Framework: Invoicing & Chargeback",
+     "publisher": "FinOps Foundation",
+     "year": 2026,
+     "url": "https://www.finops.org/framework/capabilities/invoicing-chargeback/",
+     "whatItSays": "Showback (showing groups the costs of their own scope) is required in every FinOps practice; chargeback (formal posting to accounting budgets) is optional, depends on accounting policy, and the page says neither is more mature than the other. Crawl: charged on estimates with material variance, spreadsheets. Run: teams see direct and allocated shared costs from actual consumption and chargeback is automated. The page does not address on-premises or data-centre costs specifically. Read through a summarising fetch tool.",
+     "verified": true,
+     "checked": "2026-11-03"
+    },
+    {
+     "title": "TBM Taxonomy 5.0.1: Compute and Data Center towers",
+     "publisher": "TBM Council",
+     "year": 2025,
+     "url": "https://www.tbmcouncil.org/taxonomy/",
+     "whatItSays": "Compute has sub-towers such as Servers, Converged Infrastructure, Mainframe, HPC and AI Compute; Data Center has Enterprise Data Center and Other Facilities. The part of the page read names no unit-cost metric (per VM, per terabyte) for these towers; the KPI section was not in the text read, so absence is not established. Cited only for the towers, not for any unit-cost method.",
+     "verified": true,
+     "checked": "2026-11-03"
+    }
+   ],
+   "heuristicReasoning": "The framework sources support the construct (unit cost for data centres, comparison of placement options, showback). They give no ladder and no unit-cost value. The five options and the steps are LTM's. TBM is cited for the towers only; the part of the page read names no unit-cost metric for them (absence not established), so none is attributed to TBM. Colocation is not mentioned by the FinOps placement page, so including COLO in the gate is LTM judgement.",
+   "verified": true,
+   "notes": "No finding trigger proposed. Complements CORE-13, ADP-09, ADP-11, ADP-13, ADP-37."
+  },
+  {
+   "id": "ADP-67",
+   "kind": "score",
+   "basis": "Scores whether technology cost per unit of business output is tracked and used. FinOps Unit Economics connects technology spend to the value it creates, lists business denominators (per transaction, per customer, per case resolved; revenue views), and at Run applies unit metrics across all technology categories and uses them in build-versus-buy, architecture and placement decisions. FinOps Executive Strategy Alignment names cost per transaction, cost to serve and cost per active user as executive-level unit measures.",
+   "sourceType": "published-framework",
+   "sources": [
+    {
+     "title": "FinOps Framework: Unit Economics",
+     "publisher": "FinOps Foundation",
+     "year": 2026,
+     "url": "https://www.finops.org/framework/capabilities/unit-economics/",
+     "whatItSays": "Unit Economics connects what an organization spends on technology to the value it creates. Metrics can be resource-efficiency measures (cost per GB, per vCPU, per token) or business-unit measures (per transaction, per customer, per case resolved; revenue and per-tenant views). Crawl: usually one technology category, technical metrics tied to direct variable cost, business outcome data not yet correlated. Walk: includes public cloud, SaaS use, data centers and others; unit views begin to include fully loaded costs; cost to serve becomes more trustworthy; decision use is moderate. Run: every operational Scope has defined unit metrics across all technology categories, including fully loaded costs, and unit economics shape build-versus-buy, architecture, workload placement, migration, sourcing and pricing decisions early. Read through a summarising fetch tool.",
+     "verified": true,
+     "checked": "2026-11-03"
+    },
+    {
+     "title": "FinOps Framework: Executive Strategy Alignment",
+     "publisher": "FinOps Foundation",
+     "year": 2026,
+     "url": "https://www.finops.org/framework/capabilities/executive-strategy-alignment/",
+     "whatItSays": "Capability in the Manage the FinOps Practice domain that connects technology spend, usage and adoption to the organization's business strategy and priorities. Executive Priority Alignment: map technology spend across cloud, SaaS, AI, licensing and data center to the initiatives leaders fund. Enable Strategic Decision Support: a portfolio view so leaders can see how spend maps to strategic priorities. Crawl: insights relate to strategic initiatives in a limited, ad hoc way. Walk: Scopes span several technology categories and are explicitly tied to executive priorities, with a regular governance cadence. Run: Scopes are the standard lens connecting strategy, funding and accountability; FinOps is a required input for major investments; alignment holds through restructuring, M&A and leadership change. The page defines no explicit success measure for tracing spend to objectives. Read through a summarising fetch tool.",
+     "verified": true,
+     "checked": "2026-11-03"
+    }
+   ],
+   "heuristicReasoning": "Both pages give the idea and the denominators; neither gives a ladder or a target. The five options and the steps are LTM's. The page says the most actionable view is usually a trend within a defined scope, which the top two options reflect, but a trend of a bad unit can still be a bad answer, so the scale reads practice, not performance. No unit-cost benchmark is used.",
+   "verified": true,
+   "notes": "Third scored VALUE-04 question; the first not shared with a cost dimension."
   }
  ]
 }

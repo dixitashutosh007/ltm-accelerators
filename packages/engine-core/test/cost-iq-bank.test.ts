@@ -300,7 +300,7 @@ describe('Cost IQ question bank', () => {
       }
       const r = adapter.evaluateCostIq({ answers, scope: { selectedAreas: selection.defaultAreas } });
       expect(r.dimensions.filter((d: any) => d.score !== null).length, name).toBeGreaterThanOrEqual(10);
-      expect(shown.size, `${name}: questions asked`).toBeLessThanOrEqual(60);
+      expect(shown.size, `${name}: questions asked`).toBeLessThanOrEqual(66);
     }
   });
 
