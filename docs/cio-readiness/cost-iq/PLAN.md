@@ -359,3 +359,11 @@ Offering types accepted as drafted. Durations and effort stay as stated planning
 
 ### CQ6: platform playbook (4 Nov 2026)
 Library 0.2-draft adds ten platform-specific playbook entries (R-004: Microsoft 365 and Entra ID, Okta, Oracle Database, SAP, IBM; R-005: VMware vSphere, ServiceNow CMDB; R-008: ServiceNow CMDB), each with vendor sources the practice lead opened on 4 Nov 2026; the report prints the platform and source on each and lists the pages under Sources. Not sourced and left generic: Broadcom/VMware licensing change, ITSM ticket data (R-006), SaaS management platforms as a class, log retention periods, IBM and SAP current-release report names. Two sources are weak and disclosed: the ServiceNow page is a Community article, and the SAP page is an old help set (the entry tells the consultant to confirm against the client's release). Test: every platform step carries a dated https source.
+
+### CQ7 progress (4 Nov 2026): page experience, first pass
+
+- **Start screen:** the organisation name is asked first and required (it goes on the report cover and is saved with the draft); the "Developer test data" panel is gone from the page and the regression scenarios appear only at `?scenarios=1`; the "AI review" tile now says Report; the hero is on the light work-page palette.
+- **Result screen:** the browser-built "full executive report" (AI-narrative view, prompt() boxes, hard-coded briefing e-mail, JSON and archive helpers) is removed. The screen points to the server-built report downloads (PDF, client edition, CSV) and says what is in it.
+- **Keyboard and labels:** answer options have roles, a tab stop, Enter and Space, and keep focus after the page redraws; question groups are labelled; focus rings are visible; question IDs are no longer shown to the respondent.
+- **Layout:** the content column is capped (1180 px) and the same at 1280 and 1920 px; no sideways scroll on the start, question or result screen at 360, 768, 1280 and 1920 px (browser test). Fields and buttons wrap at narrow widths.
+- **Still open in CQ7:** the executive/workshop modes with a visible step list; the radar chart labels clip at 360 px; screenshots for owner review; a contrast and reduced-motion audit; the same layout checks for the saved-assessments list.

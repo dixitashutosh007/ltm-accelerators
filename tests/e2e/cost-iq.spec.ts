@@ -63,11 +63,69 @@ test.describe('Cost IQ', () => {
     world.on('GET', ASSESSMENT, () => ({ body: { ok: true, data: [] } }));
     world.on('POST', ASSESSMENT, ({ body }) => { sent.push(body); return { body: { ok: true, data: { ...body.snapshot, respondentEmail: 'consultant@ltm.com' } } }; });
     await page.goto('/cost-iq-v10');
-    await page.getByRole('button', { name: /Configure diagnostic/ }).click();
+    // The organisation name is asked for first: without it nothing is created.
+    await page.getByRole('button', { name: /Start the assessment/ }).click();
+    await expect(page.getByText('Enter the organisation name')).toBeVisible();
+    await expect(page.getByLabel('Organisation this assessment is for')).toBeFocused();
+    expect(sent).toEqual([]);
+    await page.getByLabel('Organisation this assessment is for').fill('Example Bank plc');
+    await page.getByRole('button', { name: /Start the assessment/ }).click();
     await expect.poll(() => sent.length, { message: world.calls.join('\n') }).toBeGreaterThan(0);
-    expect(sent[0]).toMatchObject({ action: 'save', snapshot: { acceleratorId: 'cost-iq', status: 'draft' } });
+    expect(sent[0]).toMatchObject({ action: 'save', snapshot: { acceleratorId: 'cost-iq', status: 'draft', clientName: 'Example Bank plc' } });
     expect(sent[0].progress).toMatchObject({ percent: 0 });
     expect(typeof sent[0].progress.stage).toBe('string');
+    expect(world.pageErrors).toEqual([]);
+  });
+
+  test('the production page offers no developer test data, and a question can be answered from the keyboard', async ({ page, context, world }) => {
+    await signedIn(context, permitted(makeIdToken('consultant@ltm.com')));
+    world.on('GET', ASSESSMENT, () => ({ body: { ok: true, data: [] } }));
+    world.on('POST', ASSESSMENT, ({ body }) => ({ body: { ok: true, data: { ...body.snapshot, respondentEmail: 'consultant@ltm.com' } } }));
+    await page.goto('/cost-iq-v10');
+    await expect(page.getByText(/developer test data|regression scenarios/i)).toHaveCount(0);
+    await expect(page.getByRole('button', { name: 'Load Healthy' })).toHaveCount(0);
+    await page.getByLabel('Organisation this assessment is for').fill('Example Bank plc');
+    await page.getByRole('button', { name: /Start the assessment/ }).click();
+    await expect(page.locator('.q-card').first()).toBeVisible();
+    // No internal question ID is shown to the respondent.
+    await expect(page.locator('.q-no').first()).toHaveText(/^QUESTION \d+ OF \d+$/);
+    const first = page.locator('.q-card').first().locator('.option').first();
+    await expect(first).toHaveAttribute('role', /radio|checkbox/);
+    await first.focus();
+    await page.keyboard.press('Enter');
+    const again = page.locator('.q-card').first().locator('.option').first();
+    await expect(again).toHaveAttribute('aria-checked', 'true');
+    await expect(again).toBeFocused();
+    expect(world.pageErrors).toEqual([]);
+  });
+
+  test('one even column and no sideways scroll at 360, 768, 1280 and 1920 px: start, question and result screens', async ({ page, context, world }) => {
+    test.setTimeout(120_000);
+    await signedIn(context, permitted(makeIdToken('consultant@ltm.com')));
+    world.on('GET', ASSESSMENT, () => ({ body: { ok: true, data: [] } }));
+    world.on('POST', ASSESSMENT, ({ body }) => ({ body: { ok: true, data: { ...body.snapshot, respondentEmail: 'consultant@ltm.com' } } }));
+    world.on('POST', '/api/evaluate/cost-iq', ({ body }) => ({ body: evaluateCostIq({ answers: body.answers, scope: body.scope }) }));
+    const overflow = () => page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
+    const column = () => page.evaluate(() => Math.round(document.querySelector('main.wrap')!.getBoundingClientRect().width));
+    const columns: number[] = [];
+    for (const width of [360, 768, 1280, 1920]) {
+      await page.setViewportSize({ width, height: 900 });
+      await page.goto('/cost-iq-v10');
+      await expect(page.getByRole('button', { name: /Start the assessment/ })).toBeVisible();
+      expect(await overflow(), `start screen at ${width}`).toBeLessThanOrEqual(0);
+      await page.getByLabel('Organisation this assessment is for').fill('Example Bank plc');
+      await page.getByRole('button', { name: /Start the assessment/ }).click();
+      await expect(page.locator('.q-card').first()).toBeVisible();
+      expect(await overflow(), `question screen at ${width}`).toBeLessThanOrEqual(0);
+      await page.goto('/cost-iq-v10?scenarios=1');
+      await page.getByRole('button', { name: 'Load Healthy' }).click();
+      await expect(page.getByText('Your technology cost & value snapshot')).toBeVisible({ timeout: 15000 });
+      expect(await overflow(), `result screen at ${width}`).toBeLessThanOrEqual(0);
+      columns.push(await column());
+    }
+    // The content column is capped: the same width on a 1280 and a 1920 px screen, and never wider than the screen.
+    expect(columns[2]).toBe(columns[3]);
+    expect(columns[0]).toBeLessThanOrEqual(360);
     expect(world.pageErrors).toEqual([]);
   });
 
@@ -75,7 +133,7 @@ test.describe('Cost IQ', () => {
     await signedIn(context, permitted(makeIdToken('consultant@ltm.com')));
     world.on('GET', ASSESSMENT, () => ({ body: { ok: true, data: [] } }));
     world.on('POST', '/api/evaluate/cost-iq', ({ body }) => ({ body: evaluateCostIq({ answers: body.answers, scope: body.scope }) }));
-    await page.goto('/cost-iq-v10');
+    await page.goto('/cost-iq-v10?scenarios=1');
     await page.getByRole('button', { name: 'Load Healthy' }).click();
     // The engine runs, the page goes straight to the preliminary result with no AI check, and a detailed report needs no AI call.
     await expect.poll(() => world.calls.some(c => c.startsWith('POST /api/evaluate/cost-iq ')), { timeout: 15000 }).toBe(true);
@@ -89,7 +147,7 @@ test.describe('Cost IQ', () => {
     await signedIn(context, permitted(makeIdToken('consultant@ltm.com')));
     world.on('GET', ASSESSMENT, () => ({ body: { ok: true, data: [] } }));
     await page.goto('/cost-iq-v10');
-    await expect(page.getByRole('button', { name: /Configure diagnostic/ })).toBeVisible();
+    await expect(page.getByRole('button', { name: /Start the assessment/ })).toBeVisible();
     const visible = (footprint?: string[]) => page.evaluate(`(function(f){
       answers = f ? { 'CORE-01': f } : {};
       questions = allQuestions.filter(q => ['CORE-01', 'ADP-13', 'ADP-14', 'ADP-09'].includes(q.id));
@@ -106,7 +164,7 @@ test.describe('Cost IQ', () => {
     await signedIn(context, permitted(makeIdToken('consultant@ltm.com')));
     world.on('GET', ASSESSMENT, () => ({ body: { ok: true, data: [] } }));
     world.on('POST', '/api/evaluate/cost-iq', ({ body }) => ({ body: evaluateCostIq({ answers: body.answers, scope: body.scope }) }));
-    await page.goto('/cost-iq-v10');
+    await page.goto('/cost-iq-v10?scenarios=1');
     await page.getByRole('button', { name: 'Load Cost Challenge' }).click();
     await expect(page.getByText('Evidence completeness').first()).toBeVisible({ timeout: 15000 });
     const result: any = await page.evaluate('assessment');
@@ -122,7 +180,7 @@ test.describe('Cost IQ', () => {
     await signedIn(context, permitted(makeIdToken('consultant@ltm.com')));
     world.on('GET', ASSESSMENT, () => ({ body: { ok: true, data: [] } }));
     await page.goto('/cost-iq-v10');
-    await expect(page.getByRole('button', { name: /Configure diagnostic/ })).toBeVisible();
+    await expect(page.getByRole('button', { name: /Start the assessment/ })).toBeVisible();
     const labels = (currency?: string) => page.evaluate(`(function(c){
       answers = c ? { 'CTX-01': c } : {};
       const q = allQuestions.find(x => x.id === 'CORE-03');
@@ -156,7 +214,7 @@ test.describe('Cost IQ', () => {
       return { body: { ok: true, data: { ...body.snapshot, respondentEmail: 'consultant@ltm.com' } } };
     });
     world.on('POST', '/api/evaluate/cost-iq', ({ body }) => ({ body: evaluateCostIq({ answers: body.answers, scope: body.scope }) }));
-    await page.goto('/cost-iq-v10');
+    await page.goto('/cost-iq-v10?scenarios=1');
     await page.getByRole('button', { name: 'Load Healthy' }).click();
     await expect(page.getByText('Not quantified.')).toBeVisible({ timeout: 15000 });
     await page.evaluate("savedAssessment = { assessmentId: 'CIQ-cloudtest-1' }; loadCloudLine()");
@@ -178,7 +236,7 @@ test.describe('Cost IQ', () => {
       return { body: { ok: true, data: { ...body.snapshot, respondentEmail: 'consultant@ltm.com' } } };
     });
     world.on('POST', '/api/evaluate/cost-iq', ({ body }) => ({ body: evaluateCostIq({ answers: body.answers, scope: body.scope }) }));
-    await page.goto('/cost-iq-v10');
+    await page.goto('/cost-iq-v10?scenarios=1');
     await page.getByRole('button', { name: 'Load Healthy' }).click();
     await expect(page.getByText('Not quantified.')).toBeVisible({ timeout: 15000 });
     // Without a reporting currency the panel asks for it first.
@@ -206,7 +264,7 @@ test.describe('Cost IQ', () => {
     await signedIn(context, permitted(makeIdToken('consultant@ltm.com')));
     world.on('GET', ASSESSMENT, () => ({ body: { ok: true, data: [] } }));
     await page.goto('/cost-iq-v10');
-    await expect(page.getByRole('button', { name: /Configure diagnostic/ })).toBeVisible();
+    await expect(page.getByRole('button', { name: /Start the assessment/ })).toBeVisible();
     expect(await page.evaluate('DEFAULT_AREAS')).toEqual(['Infrastructure', 'Applications']);
     expect(await page.evaluate('selectedAreas')).toEqual(['Infrastructure', 'Applications']);
     const ids = (footprint: string[]) => page.evaluate(`(function(f){
@@ -249,7 +307,7 @@ test.describe('Cost IQ', () => {
     await signedIn(context, permitted(makeIdToken('consultant@ltm.com')));
     world.on('GET', ASSESSMENT, () => ({ body: { ok: true, data: [] } }));
     world.on('POST', '/api/evaluate/cost-iq', ({ body }) => ({ body: evaluateCostIq({ answers: body.answers, scope: body.scope }) }));
-    await page.goto('/cost-iq-v10');
+    await page.goto('/cost-iq-v10?scenarios=1');
     await page.getByRole('button', { name: 'Load Healthy' }).click();
     await expect(page.getByText('Evidence completeness').first()).toBeVisible({ timeout: 15000 });
     await expect(page.getByRole('button', { name: 'Report (PDF)' })).toHaveCount(0);
