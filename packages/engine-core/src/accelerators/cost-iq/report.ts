@@ -158,6 +158,11 @@ function summary(c: Ctx): ReportSection {
     blocks.push({ kind: 'paragraph', style: 'small', segs: ['These are the lowest-scoring areas on the answers given. A low score is a reason to look, not a finding: a finding is raised only where named answers meet LTM\'s rules, so a low-scoring area may have none yet.'] });
     blocks.push({ kind: 'table', head: ['Area', 'Score', 'Questions answered'], widths: ['*', 70, 110], rows: weakest.map(d => [[strong(d.name), '\n', quoted(d.definition)], [traced(`dimensions[${d.id}].score`, d.score as number, 'index', [])], [count(`dimensions[${d.id}].answered`, d.answered)]]) });
   }
+  blocks.push({ kind: 'callout', tone: 'info', title: 'Decision requested', segs: [
+    i.result.findings.length
+      ? ['The CIO, or the head of technology finance, is asked to name an owner for each finding and to release the evidence listed against it, within ', ref('30 days'), ' of receiving this report. Sizing starts when the evidence arrives; until then no saving is stated. The ', ref('30 days'), ' is a default to adjust to the organisation\'s own planning cycle.'] as Seg[]
+      : ['No finding is raised on the answers given. The CIO, or the head of technology finance, is asked to confirm the owner of the lowest-scoring areas above and to complete the unanswered questions within ', ref('30 days'), ' of receiving this report, so that findings can be tested. The ', ref('30 days'), ' is a default to adjust to the organisation\'s own planning cycle.'] as Seg[]
+  ].flat() });
   blocks.push({ kind: 'subheading', text: 'Cloud line (from FinOps IQ)' });
   blocks.push(...cloudLine(c));
   blocks.push({ kind: 'callout', tone: 'info', title: 'What this report sizes', segs: [

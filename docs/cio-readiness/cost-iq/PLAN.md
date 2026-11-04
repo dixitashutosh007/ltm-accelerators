@@ -322,3 +322,9 @@ Done: the Cost IQ report is built on the server (`packages/engine-core/src/accel
 Stated plainly in every edition: no non-cloud saving is sized, so the only amount is the cloud line; each finding lists the evidence needed first.
 
 Still open in CQ5: the non-cloud lever and the total (CQ4), the hypothesis-versus-findings comparison (ADP-55), a full delivery-grade roadmap and offerings (CQ6), the CIO challenge test (ten questions answered from the report's pages), and removal of the page's on-screen AI-style "full report" view (CQ7).
+
+### CQ5 progress (4 Nov 2026): slice 2
+
+- Decision line added to the executive summary ("Decision requested": the CIO or head of technology finance names an owner per finding and releases the evidence within a default of 30 days; the default is stated as adjustable). FX13 closed on the user's "go with recommendation".
+- Shared renderer (FX19), `report/pdf.ts`: a table of seven rows or fewer stays on one page together with the source note written under it, and callouts are never split across pages. This reaches FinOps IQ and Sovereign IQ as well: their report tests (area 13(a), D7 headings, PDF determinism) pass unchanged, 1,195 tests in all.
+- Not changed: lone rows at the foot of long tables (pdfmake has no widow control for table rows).
