@@ -118,6 +118,8 @@ const schema = a.schema({
       // only, as it was when linked, and the id of the FinOps IQ assessment it came from.
       finopsAssessmentId: a.string(),
       finopsSummaryJson: a.string(),
+      // Non-cloud lever evidence the consultant recorded from the client's own figures (CQ4); the report sizes the lever from it.
+      leverEvidenceJson: a.string(),
       // Epoch seconds 24 months after the last change; DynamoDB time to live deletes the record then.
       expiresAt: a.integer()
     })

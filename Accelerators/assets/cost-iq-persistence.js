@@ -42,6 +42,8 @@
     // The cloud line comes from FinOps IQ (one cloud figure per estate): list the caller's completed FinOps IQ assessments, link one, unlink it.
     finopsSessions: () => request(ENDPOINT + '?finopsSessions=1'),
     linkFinops: (assessmentId, finopsAssessmentId) => post({ action: 'link_finops', assessmentId, finopsAssessmentId }),
-    unlinkFinops: assessmentId => post({ action: 'unlink_finops', assessmentId })
+    unlinkFinops: assessmentId => post({ action: 'unlink_finops', assessmentId }),
+    // The client's measured figures for the non-cloud levers; null clears them.
+    setLeverEvidence: (assessmentId, evidence) => post({ action: 'set_lever_evidence', assessmentId, evidence })
   });
 })();

@@ -228,6 +228,36 @@ describe('Cost IQ links a FinOps IQ result as its cloud line (shared value model
     expect(one.body.data.finopsSummaryJson ?? null).toBeNull();
   });
 
+  describe('non-cloud lever evidence', () => {
+    const evidence = (over: Record<string, unknown> = {}) => ({ currency: 'GBP', internalRatePerFteMonth: 9000, levers: { 'LEV-11': { unusedAnnualCost: 800000, addressableSpend: 2000000 } }, ...over });
+    const setEv = (e: unknown, claims?: Record<string, unknown>) => call(event('POST', { body: { action: 'set_lever_evidence', assessmentId: 'CIQ-0001-abcd', evidence: e }, claims }));
+
+    it('stores the measured figures for the owner without touching answers or result, keeps them across a save, and clears them', async () => {
+      await save({ clientCurrency: 'GBP' });
+      const before = (await call(event('GET', { query: { assessmentId: 'CIQ-0001-abcd' } }))).body.data;
+      expect((await setEv(evidence())).status).toBe(200);
+      const after = (await call(event('GET', { query: { assessmentId: 'CIQ-0001-abcd' } }))).body.data;
+      expect(JSON.parse(after.leverEvidenceJson).levers['LEV-11'].unusedAnnualCost).toBe(800000);
+      expect(after.answersJson).toBe(before.answersJson);
+      await save({ clientCurrency: 'GBP', answersJson: JSON.stringify({ A1: 'q' }) });
+      expect(JSON.parse((await call(event('GET', { query: { assessmentId: 'CIQ-0001-abcd' } }))).body.data.leverEvidenceJson).currency).toBe('GBP');
+      expect((await setEv(null)).status).toBe(200);
+      expect((await call(event('GET', { query: { assessmentId: 'CIQ-0001-abcd' } }))).body.data.leverEvidenceJson ?? null).toBeNull();
+    });
+
+    it('refuses unknown levers, negative or non-numeric money, a share above one, and a currency other than the assessment\'s', async () => {
+      await save({ clientCurrency: 'GBP' });
+      for (const bad of [evidence({ levers: { 'LEV-09': { unusedAnnualCost: 1 } } }), evidence({ levers: { 'LEV-11': { unusedAnnualCost: -1 } } }), evidence({ levers: { 'LEV-11': { unusedAnnualCost: '9' } } }),
+        evidence({ levers: { 'LEV-11': { unusedAnnualCost: 1, renewingYear1Share: 1.5 } } }), evidence({ internalRatePerFteMonth: -3 }), evidence({ currency: 'USD' }), 'x'])
+        expect((await setEv(bad)).status, JSON.stringify(bad)).toBe(400);
+    });
+
+    it('refuses someone else\'s assessment', async () => {
+      await save({ clientCurrency: 'GBP' });
+      expect((await setEv(evidence(), OTHER)).status).toBe(403);
+    });
+  });
+
   it('keeps the linked summary when the assessment is saved again, and carries nothing consultant-only', async () => {
     await save();
     await finopsStore.create(finopsRecord());

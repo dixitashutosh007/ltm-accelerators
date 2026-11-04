@@ -73,6 +73,24 @@ describe('Cost IQ report service', () => {
     expect((await call(event({ assessmentId: 'CIQ-1' }, undefined, 'POST'))).statusCode).toBe(405);
   });
 
+  it('sizes the non-cloud lever from the stored evidence when its finding is raised, and the report still passes its checks', async () => {
+    const answers = { 'CORE-01': ['SOFTWARE'], 'CORE-16': 'TRUE', 'CORE-30': 'E' };
+    const selectedAreas = ['Software & Licensing'];
+    const evidence = { currency: 'GBP', internalRatePerFteMonth: 9000, levers: { 'LEV-11': { unusedAnnualCost: 800000, addressableSpend: 2000000 } } };
+    const raised = (await engine.evaluateCostIq({ answers, scope: { selectedAreas } })).findings.map((f: any) => f.id);
+    expect(raised).toContain('F-008');
+    await seed({ answersJson: JSON.stringify(answers), selectedAreasJson: JSON.stringify(selectedAreas), resultJson: JSON.stringify(await engine.evaluateCostIq({ answers, scope: { selectedAreas } })), leverEvidenceJson: JSON.stringify(evidence) });
+    const r = await call(event({ assessmentId: 'CIQ-1', view: 'client' }));
+    expect(r.statusCode).toBe(200);
+    expect(String(r.headers!['X-Report-Checks'])).toMatch(/^pass /);
+    // The same evidence on an assessment where the finding is not raised sizes nothing, and the report is still issued.
+    await seed({ assessmentId: 'CIQ-5', leverEvidenceJson: JSON.stringify(evidence) });
+    expect((await call(event({ assessmentId: 'CIQ-5' }))).statusCode).toBe(200);
+    // Evidence in a damaged form is ignored, not fatal.
+    await seed({ assessmentId: 'CIQ-6', leverEvidenceJson: '{"currency":' });
+    expect((await call(event({ assessmentId: 'CIQ-6' }))).statusCode).toBe(200);
+  });
+
   it('leaves out a FinOps IQ summary of a schema it does not know, and says the cloud line is not quantified', async () => {
     await seed({ finopsAssessmentId: 'F-1', finopsSummaryJson: JSON.stringify({ schema: 'finops-iq-cost-summary/99', status: 'quantified' }) });
     const r = await call(event({ assessmentId: 'CIQ-1' }));

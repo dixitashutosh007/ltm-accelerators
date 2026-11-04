@@ -15,6 +15,7 @@ import { withAcceleratorAccess } from '../_shared/access';
 import { checkCostIqReport } from '../../../packages/engine-core/src/report-checks/accelerators';
 import { failureMessage } from '../../../packages/engine-core/src/report-checks';
 import { costIqBacklog, costIqReport, type CostIqReportInput, type CostIqResult } from '../../../packages/engine-core/src/accelerators/cost-iq/report';
+import { evaluateNonCloud, parseNonCloudEvidence, reportingCurrency } from '../../../packages/engine-core/src/accelerators/cost-iq/non-cloud-levers';
 import { COST_IQ_SUMMARY_SCHEMA, type CostIqSummary } from '../../../packages/engine-core/src/accelerators/finops-iq/v3/cost-iq-summary';
 import { scopeCounts } from '../../../packages/engine-core/src/accelerators/cost-iq/evaluate.cjs';
 import { renderPdf } from '../../../packages/engine-core/src/report/pdf';
@@ -58,10 +59,14 @@ export function createHandler(store: CostIqAssessmentStore, now: () => Date = ()
         answers, selectedAreas,
         scope: scopeCounts({ answers, scope: { selectedAreas } }),
         assessmentDate: date,
-        currency: item.clientCurrency ?? undefined,
+        currency: reportingCurrency(item),
         // A summary this build does not know is left out, and the report says the cloud line is not quantified.
         finops: summary && summary.schema === COST_IQ_SUMMARY_SCHEMA ? summary : null
       };
+      // Sized here, from the stored evidence and the findings raised, so a later link or unlink moves the total with it.
+      const stored = parse<unknown>(item.leverEvidenceJson, null);
+      const evidence = stored ? parseNonCloudEvidence(stored) : null;
+      input.nonCloud = evidence?.ok ? evaluateNonCloud(evidence.value, input.result.findings.map(f => f.id), input.finops) : null;
       const client = item.clientName || 'the organisation';
       if (format === 'csv') {
         return {

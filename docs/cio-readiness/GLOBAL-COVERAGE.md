@@ -7,7 +7,7 @@
 | # | Decision |
 |---|---|
 | G1 | Add **Switzerland** as a covered market (UK/EU sovereignty is the focus). Add **India** to Resilience IQ (Sovereign IQ already holds four Indian regimes). |
-| G2 | **Revisit D1** (GCC content). Analysis and a recommendation are below; the decision is open. |
+| G2 | **Revisit D1** (GCC content). **Decided 4 Nov 2026, recommended option: A now, C when a named opportunity exists.** GCC content stays out; every report's coverage statement says so. |
 | G3 | Every report carries a **coverage statement**: the jurisdictions it assesses and those it does not. **Built** (below). |
 | G4 | **Currency (decided 3 Nov 2026, recommended option):** bands and figures in the client's own currency; any FX conversion is a dated, sourced rate recorded in the assumption register, never a silent default. |
 
@@ -56,6 +56,6 @@ What D1 did (Sovereign IQ PLAN, decision D1): removed GCC content from the clien
 
 ## What follows
 
-1. Owner answers G2 (D1). G4 (currency) is decided.
+1. G2 (D1) and G4 (currency) are decided.
 2. `sovereignty-compliance-lead` sources the Swiss regimes; `resilience-lead` sources the Swiss and Indian obligations; `finops-cost-lead` covers the Cost IQ footprint block (CQ3b) in its re-cut.
 3. Counsel gate before any of it reaches a customer.

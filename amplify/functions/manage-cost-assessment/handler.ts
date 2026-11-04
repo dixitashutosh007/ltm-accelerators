@@ -8,6 +8,7 @@
  *   GET  /api/cost-iq/assessment?finopsSessions=1   the caller's completed FinOps IQ assessments, to pick one as the cloud line
  *   POST /api/cost-iq/assessment  { action: 'link_finops', assessmentId, finopsAssessmentId }   store FinOps IQ's versioned summary
  *   POST /api/cost-iq/assessment  { action: 'unlink_finops', assessmentId }
+ *   POST /api/cost-iq/assessment  { action: 'set_lever_evidence', assessmentId, evidence | null }   the client's measured figures for the non-cloud levers
  * One estate has one cloud figure, computed by FinOps IQ: Cost IQ keeps only the summary it was given and never recomputes it.
  * Linking needs access to both accelerators and to both records (owner or Admin). It is allowed after completion: the cloud line is
  * an import, and the answers and Cost IQ's own result stay immutable.
@@ -25,6 +26,7 @@ import { recordAssessment, removeAssessmentActivity } from '../_shared/activity-
 import { progressFor } from '../_shared/progress';
 import { expiresAt } from '../../../packages/engine-core/src/accelerators/finops-iq/v3/retention';
 import { evaluateCostIq } from '../../../packages/engine-core/src/accelerators/cost-iq/evaluate.cjs';
+import { parseNonCloudEvidence, reportingCurrency } from '../../../packages/engine-core/src/accelerators/cost-iq/non-cloud-levers';
 import { costIqSummary } from '../../../packages/engine-core/src/accelerators/finops-iq/v3/cost-iq-summary';
 import { appSyncStore as finopsAppSyncStore, type FinOpsAssessmentStore } from '../manage-finops-assessment/store';
 import { appSyncStore, type CostIqAssessmentRecord, type CostIqAssessmentStore } from './store';
@@ -87,6 +89,24 @@ export function createHandler(store: CostIqAssessmentStore, now: () => Date = ()
         console.info('[ManageCostAssessment] deleted', { requestId, assessmentId: id });
         return respond(200, { ok: true, data: { assessmentId: id, deleted: true } });
       }
+      if (action === 'set_lever_evidence') {
+        const id = body?.assessmentId;
+        if (typeof id !== 'string' || !id) return respond(400, { ok: false, error: 'set_lever_evidence requires assessmentId.' });
+        const item = await store.get(id);
+        if (!item) return respond(404, { ok: false, error: 'assessment_not_found' });
+        if (!canAccess(event, item.respondentEmail)) return respond(403, { ok: false, error: 'assessment_access_denied' });
+        if (!item.respondentEmail) return respond(409, { ok: false, error: 'legacy_assessment_read_only' });
+        const at = now();
+        if (body.evidence === null) return respond(200, { ok: true, data: await store.update({ assessmentId: id, leverEvidenceJson: null, updatedAt: at.toISOString(), expiresAt: expiresAt(at) }) });
+        const parsed = parseNonCloudEvidence(body.evidence);
+        if (!parsed.ok) return respond(400, { ok: false, error: parsed.error });
+        // The figures are in the assessment's reporting currency; a different currency would be added to it unconverted.
+        const reporting = reportingCurrency(item);
+        if (reporting && reporting !== parsed.value.currency) return respond(400, { ok: false, error: `currency: the assessment reports in ${reporting}` });
+        const data = await store.update({ assessmentId: id, leverEvidenceJson: JSON.stringify(parsed.value), updatedAt: at.toISOString(), expiresAt: expiresAt(at) });
+        console.info('[ManageCostAssessment] recorded lever evidence', { requestId, assessmentId: id });
+        return respond(200, { ok: true, data });
+      }
       if (action === 'link_finops' || action === 'unlink_finops') {
         const id = body?.assessmentId;
         if (typeof id !== 'string' || !id) return respond(400, { ok: false, error: `${action} requires assessmentId.` });
@@ -111,7 +131,7 @@ export function createHandler(store: CostIqAssessmentStore, now: () => Date = ()
         console.info('[ManageCostAssessment] linked FinOps IQ result', { requestId, assessmentId: id, finopsAssessmentId: fid });
         return respond(200, { ok: true, data });
       }
-      if (action !== 'save' && action !== 'complete') return respond(400, { ok: false, error: 'action: expected save, complete, delete, link_finops or unlink_finops' });
+      if (action !== 'save' && action !== 'complete') return respond(400, { ok: false, error: 'action: expected save, complete, delete, link_finops, unlink_finops or set_lever_evidence' });
 
       const s = body?.snapshot;
       if (!s || typeof s !== 'object' || Array.isArray(s)) return respond(400, { ok: false, error: 'snapshot is required.' });

@@ -168,6 +168,40 @@ test.describe('Cost IQ', () => {
     expect(world.pageErrors).toEqual([]);
   });
 
+  test('the measured-figures panel records the non-cloud lever evidence in the reporting currency, validates it, and clears it', async ({ page, context, world }) => {
+    await signedIn(context, permitted(makeIdToken('consultant@ltm.com')));
+    const sent: any[] = [];
+    const stored = { assessmentId: 'CIQ-lever-1', acceleratorId: 'cost-iq', releaseId: 'r', methodologyVersion: 'm', status: 'completed', respondentEmail: 'consultant@ltm.com', selectedAreasJson: '[]', answersJson: '{}', startedAt: '2026-11-04T00:00:00Z', updatedAt: '2026-11-04T00:00:00Z' };
+    world.on('GET', ASSESSMENT, ({ query }) => (query.assessmentId ? { body: { ok: true, data: { ...stored, leverEvidenceJson: null } } } : { body: { ok: true, data: [] } }));
+    world.on('POST', ASSESSMENT, ({ body }) => {
+      if (body.action === 'set_lever_evidence') { sent.push(body); return { body: { ok: true, data: stored } }; }
+      return { body: { ok: true, data: { ...body.snapshot, respondentEmail: 'consultant@ltm.com' } } };
+    });
+    world.on('POST', '/api/evaluate/cost-iq', ({ body }) => ({ body: evaluateCostIq({ answers: body.answers, scope: body.scope }) }));
+    await page.goto('/cost-iq-v10');
+    await page.getByRole('button', { name: 'Load Healthy' }).click();
+    await expect(page.getByText('Not quantified.')).toBeVisible({ timeout: 15000 });
+    // Without a reporting currency the panel asks for it first.
+    await page.evaluate("delete answers['CTX-01']; document.getElementById('leverCard').outerHTML = leverPanelHtml()");
+    await expect(page.getByText('Choose the reporting currency in the context questions first')).toBeVisible();
+    await page.evaluate("answers['CTX-01'] = 'GBP'; savedAssessment = { assessmentId: 'CIQ-lever-1' }; document.getElementById('leverCard').outerHTML = leverPanelHtml(); loadLeverEvidence()");
+    await page.getByRole('button', { name: 'Save measured figures' }).click();
+    await expect(page.getByText('Enter the unused licence cost')).toBeVisible();
+    await page.getByLabel('Unused or over-entitled licence cost, a year').fill('800000');
+    await page.getByLabel('Share of those contracts renewing in year one, %').fill('150');
+    await page.getByRole('button', { name: 'Save measured figures' }).click();
+    await expect(page.getByText('The renewal share is between 0 and 100.')).toBeVisible();
+    await page.getByLabel('Share of those contracts renewing in year one, %').fill('40');
+    await page.getByLabel("Client's own cost of one FTE-month").fill('9000');
+    await page.getByRole('button', { name: 'Save measured figures' }).click();
+    await expect(page.getByText(/^Saved\./)).toBeVisible();
+    expect(sent).toEqual([{ action: 'set_lever_evidence', assessmentId: 'CIQ-lever-1', evidence: { currency: 'GBP', internalRatePerFteMonth: 9000, levers: { 'LEV-11': { unusedAnnualCost: 800000, renewingYear1Share: 0.4 } } } }]);
+    await page.getByRole('button', { name: 'Clear' }).click();
+    await expect.poll(() => sent.length).toBe(2);
+    expect(sent[1].evidence).toBeNull();
+    expect(world.pageErrors).toEqual([]);
+  });
+
   test('the page takes which questions it asks from the engine: default areas, footprint-gated estate questions, no copy of its own', async ({ page, context, world }) => {
     await signedIn(context, permitted(makeIdToken('consultant@ltm.com')));
     world.on('GET', ASSESSMENT, () => ({ body: { ok: true, data: [] } }));

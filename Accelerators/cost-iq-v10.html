@@ -351,13 +351,43 @@ async function loadCloudLine(){
     $('linkFinops').onclick=async function(){try{await window.CostIqPersistence.linkFinops(savedAssessment.assessmentId,$('finopsPick').value);loadCloudLine()}catch(e){host.insertAdjacentHTML('beforeend','<p class="muted" role="alert">Not linked: '+esc(e.message)+'</p>')}};
   }catch(e){host.innerHTML=none}
 }
+// Non-cloud levers are sized only from figures the client measured, never from the answers. The panel records them (licences outside SaaS, which sit in the FinOps IQ line) and the report sizes the lever when the licensing finding is raised.
+function leverPanelHtml(){
+  const cur=/^(?:[A-Z]{3}|OTHER)$/.test(String(answers['CTX-01']||''))?answers['CTX-01']:'';
+  return '<div class="card" id="leverCard" style="margin-top:16px"><div class="eyebrow">MEASURED FIGURES</div><h2>Software licences outside SaaS</h2><p class="muted">Enter figures from the client\'s own licence reconciliation'+(cur?' in '+esc(cur):'')+'. Nothing is sized from answers alone. SaaS and marketplace software are counted in the FinOps IQ line, so leave them out here.</p>'+
+  (cur?'<div id="leverBody"><p class="muted">Loading…</p></div>':'<p class="muted" role="status">Choose the reporting currency in the context questions first; the figures are recorded in that currency.</p>')+'</div>';
+}
+async function loadLeverEvidence(){
+  const host=$('leverBody');if(!host)return;
+  const cur=answers['CTX-01'];
+  if(!savedAssessment||!window.CostIqPersistence?.configured()){host.innerHTML='<p class="muted">Sign in and save the assessment to record measured figures.</p>';return}
+  let ev=null;try{const rec=await window.CostIqPersistence.get(savedAssessment.assessmentId);ev=rec&&rec.leverEvidenceJson?JSON.parse(rec.leverEvidenceJson):null}catch(e){ev=null}
+  const f=function(id,label,hint){return '<label for="'+id+'" class="muted">'+label+'</label><input class="input" id="'+id+'" type="number" min="0" step="any" inputmode="decimal" aria-describedby="'+id+'Hint"><div class="muted" id="'+id+'Hint" style="font-size:12px;margin-bottom:8px">'+hint+'</div>'};
+  host.innerHTML=f('levBase','Unused or over-entitled licence cost, a year','Required. From the licence reconciliation: entitlements held against what is deployed and used.')+f('levSpend','Total annual spend on these licences','Optional. If given, the unused cost may not exceed it.')+f('levRenew','Share of those contracts renewing in year one, %','Optional, 0 to 100. A quarter is assumed if blank.')+f('levRate','Client\'s own cost of one FTE-month','Required for a net figure. LTM does not assume a salary.')+
+    '<div class="actions"><button class="btn primary" type="button" id="levSave">Save measured figures</button><button class="btn" type="button" id="levClear">Clear</button></div><p class="muted" id="levMsg" role="status"></p>';
+  const L=ev&&ev.levers&&ev.levers['LEV-11']||{};
+  if(L.unusedAnnualCost!=null)$('levBase').value=L.unusedAnnualCost;if(L.addressableSpend!=null)$('levSpend').value=L.addressableSpend;if(L.renewingYear1Share!=null)$('levRenew').value=Math.round(L.renewingYear1Share*10000)/100;if(ev&&ev.internalRatePerFteMonth!=null)$('levRate').value=ev.internalRatePerFteMonth;
+  const num=function(id){const v=$(id).value;return v===''?undefined:Number(v)};
+  const say=function(t){$('levMsg').textContent=t};
+  $('levSave').onclick=async function(){
+    const base=num('levBase'),renew=num('levRenew');
+    if(base===undefined||!(base>=0))return say('Enter the unused licence cost as a number, not negative.');
+    if(renew!==undefined&&!(renew>=0&&renew<=100))return say('The renewal share is between 0 and 100.');
+    const lever={unusedAnnualCost:base};if(num('levSpend')!==undefined)lever.addressableSpend=num('levSpend');if(renew!==undefined)lever.renewingYear1Share=renew/100;
+    const evidence={currency:cur,levers:{'LEV-11':lever}};if(num('levRate')!==undefined)evidence.internalRatePerFteMonth=num('levRate');
+    try{await window.CostIqPersistence.setLeverEvidence(savedAssessment.assessmentId,evidence);say('Saved. The next report includes this lever if the licensing finding is raised.')}catch(e){say('Not saved: '+e.message)}
+  };
+  $('levClear').onclick=async function(){try{await window.CostIqPersistence.setLeverEvidence(savedAssessment.assessmentId,null);loadLeverEvidence()}catch(e){say('Not cleared: '+e.message)}};
+}
 function preliminary(){
   const h=assessment.headlines||{};const ev=assessment.evidence||{};const dims=scoreEntries();const findings=assessment.findings||[];
   const signals=findings.slice(0,4).map(function(f){return '<div class="signal"><b>'+esc(f.title||f.id||'Finding')+'</b><span>'+esc(f.severity||'Management attention required')+(f.description?' · '+esc(f.description):'')+'</span></div>'}).join('');
   $('app').innerHTML='<div class="hero"><div class="eyebrow">COST IQ · PRELIMINARY DIAGNOSTIC</div><h1>Your technology cost & value snapshot</h1><p>The assessment engine has completed its scoring. AI has checked the responses for ambiguity and can ask targeted clarification questions before the executive report is generated.</p></div><div class="report-kpi" style="margin-top:20px"><div class="score-card"><div class="score-label">Cost IQ</div><div class="score-num">'+esc(h.costIQ??'—')+'</div></div><div class="score-card"><div class="score-label">Value IQ</div><div class="score-num">'+esc(h.valueIQ??'—')+'</div></div><div class="score-card"><div class="score-label">Evidence completeness</div><div class="score-num" style="font-size:23px">'+esc(ev.confidence||'—')+'</div></div><div class="score-card"><div class="score-label">Completeness</div><div class="score-num">'+esc(ev.assessmentCompleteness??0)+'%</div></div></div><div class="card">'+visualSection(dims)+'</div><div class="card"><div class="eyebrow">INITIAL SIGNALS</div><h2>What the engine is seeing</h2><div class="report-band">'+(signals||'<div class="signal"><b>No calibrated findings activated</b><span>The detailed report will explain the evidence.</span></div>')+'</div></div><div class="gate"><div class="eyebrow" style="color:#a9bac6">FULL EXECUTIVE DIAGNOSTIC</div><h2>Generate the detailed Cost IQ report</h2><p>The final report combines deterministic scoring, AI-reviewed context, visual diagnostics, opportunity signals and a 3-horizon roadmap.</p><div class="actions"><button class="btn primary" onclick="generateDetailedReport()">Generate full report →</button></div><div class="card" id="reportCard"><div class="eyebrow">REPORT</div><h2>Download the report</h2>'+reportButtons()+'</div></div>';
   $('app').insertAdjacentHTML('beforeend',cloudPanelHtml());
+  $('app').insertAdjacentHTML('beforeend',leverPanelHtml());
   initVisuals();
   loadCloudLine();
+  loadLeverEvidence();
 }
 function openBooking(){
   const name=prompt('Your name (optional):',''); if(name===null)return;

@@ -338,3 +338,11 @@ Still open in CQ5: the non-cloud lever and the total (CQ4), the hypothesis-versu
 - **Report:** a "Value range" table in the executive summary and a "Non-cloud levers and total" section appear only when a lever is sized; otherwise the report is unchanged.
 - **Not yet built (slice 2):** capturing the lever evidence (base, spend, renewal share, rate) in the Cost IQ page, storing it with the assessment, and passing it through the report service. Until then the report service passes no evidence, so no client report shows a non-cloud amount. Other levers (contract reset, infrastructure, applications, workforce, network) have no public source and are evidence-based; each needs its own base definition.
 - **Still open in CQ4:** minimum scored answers per dimension (S5), reference-client goldens, shared value model audit (T5).
+
+### CQ4 progress (4 Nov 2026): slice 2, measured figures end to end
+
+- **Capture:** a "Measured figures" panel on the result screen (unused non-SaaS licence cost, optional total spend and renewal share, the client's own cost of an FTE-month), in the assessment's reporting currency. It asks for the currency first if none is chosen. Saved through `set_lever_evidence` on the assessment service; owner or Admin only, values validated (finite, not negative, share 0 to 1, known lever, currency equal to the assessment's), answers and result untouched, and kept when the assessment is saved again.
+- **Storage:** new `leverEvidenceJson` on `CostIqAssessment` (24-month expiry as the record). It needs the Amplify data deploy to exist; not verified here.
+- **Report:** the report service reads the evidence, sizes the lever at report time from the findings raised and the linked FinOps IQ summary (so linking or unlinking moves the total), and ignores damaged evidence. The reporting currency is now taken from CTX-01 when none was saved with the record (the page never saved one).
+- **D1/GCC:** decided as recommended (keep out, state it; reinstate only for a named opportunity).
+- **Open:** other levers need their own base definitions and sources; S5; reference-client goldens.

@@ -106,3 +106,29 @@ export function evaluateNonCloud(evidence: NonCloudEvidence | null | undefined, 
 }
 
 export const NON_CLOUD_LEVER_IDS: string[] = library.levers.map(l => l.id);
+
+const CURRENCY = /^(?:[A-Z]{3}|OTHER)$/;
+/** The only fields a request may carry, checked the same way wherever the evidence is stored. Money fields must be finite and not negative. */
+export function parseNonCloudEvidence(raw: unknown): { ok: true; value: NonCloudEvidence } | { ok: false; error: string } {
+  const o = raw as any;
+  if (!o || typeof o !== 'object' || Array.isArray(o)) return { ok: false, error: 'evidence must be an object' };
+  if (typeof o.currency !== 'string' || !CURRENCY.test(o.currency)) return { ok: false, error: 'currency: expected a three-letter code or OTHER' };
+  if (o.internalRatePerFteMonth !== undefined && !valid(o.internalRatePerFteMonth)) return { ok: false, error: 'internalRatePerFteMonth: expected a number, not negative' };
+  if (o.effortTier !== undefined && ![1, 2, 3].includes(o.effortTier)) return { ok: false, error: 'effortTier: expected 1, 2 or 3' };
+  if (!o.levers || typeof o.levers !== 'object' || Array.isArray(o.levers)) return { ok: false, error: 'levers must be an object' };
+  const levers: Record<string, LeverEvidence> = {};
+  for (const [id, e] of Object.entries<any>(o.levers)) {
+    if (!NON_CLOUD_LEVER_IDS.includes(id)) return { ok: false, error: `levers.${id}: unknown lever` };
+    if (!e || typeof e !== 'object' || !valid(e.unusedAnnualCost)) return { ok: false, error: `levers.${id}.unusedAnnualCost: expected a number, not negative` };
+    if (e.addressableSpend !== undefined && !valid(e.addressableSpend)) return { ok: false, error: `levers.${id}.addressableSpend: expected a number, not negative` };
+    if (e.renewingYear1Share !== undefined && !(valid(e.renewingYear1Share) && e.renewingYear1Share <= 1)) return { ok: false, error: `levers.${id}.renewingYear1Share: expected a share between 0 and 1` };
+    levers[id] = { unusedAnnualCost: e.unusedAnnualCost, ...(e.addressableSpend !== undefined ? { addressableSpend: e.addressableSpend } : {}), ...(e.renewingYear1Share !== undefined ? { renewingYear1Share: e.renewingYear1Share } : {}) };
+  }
+  return { ok: true, value: { currency: o.currency, ...(o.internalRatePerFteMonth !== undefined ? { internalRatePerFteMonth: o.internalRatePerFteMonth } : {}), ...(o.effortTier !== undefined ? { effortTier: o.effortTier } : {}), levers } };
+}
+
+/** The assessment's reporting currency: the one saved with it, else the answer to the currency question (CTX-01). */
+export function reportingCurrency(item: { clientCurrency?: string | null; answersJson?: string | null }): string | undefined {
+  if (item.clientCurrency) return item.clientCurrency;
+  try { const v = JSON.parse(item.answersJson ?? '{}')['CTX-01']; return typeof v === 'string' && CURRENCY.test(v) ? v : undefined; } catch { return undefined; }
+}
