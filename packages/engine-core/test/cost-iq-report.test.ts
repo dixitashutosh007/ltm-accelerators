@@ -124,6 +124,19 @@ describe('Cost IQ report', () => {
     expect(toCsv(client)).toContain('Evidence needed before sizing');
   });
 
+  it('answers the CIO challenge blockers: no contradiction on the total, no draft marker or raw keys, areas and findings numbered', () => {
+    for (const r of runs) {
+      const t = everything(r.doc);
+      expect(t, r.label).not.toMatch(/non-cloud levers plus/i);
+      expect(t, r.label).not.toMatch(/Nothing in this report describes them/);
+      expect(t, r.label).not.toMatch(/\b[A-Z]+_[A-Z_]+\b|not_assessed/);
+      expect(t, r.label).toContain('Questions answered');
+      if (r.view === 'client') expect(t, r.label).not.toMatch(/DRAFT/);
+      if (r.i.result.findings.length) expect(t, r.label).toContain('Finding 1:');
+      if (r.i.finops) { expect(t, r.label).toContain('capped at'); expect(t, r.label).toContain('linked to this report on'); }
+    }
+  });
+
   it('renders a PDF for every edition', async () => {
     for (const r of [runs[0], runs[1], runs[11]]) {
       const pdf = await renderPdf(r.doc);

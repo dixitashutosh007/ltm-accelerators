@@ -14,6 +14,7 @@ import { figure, traced } from '../../report/model';
 import { noRegulatoryCoverage } from '../../report/coverage';
 import type { CostIqSummary } from '../finops-iq/v3/cost-iq-summary';
 import config from './canon/config/master-v6.6.json' with { type: 'json' };
+import finopsRegistry from '../finops-iq/registry/capabilities.json' with { type: 'json' };
 
 const PLATFORM = 'LTM Vantage · Responsible Advisory';
 const PRODUCT = 'Cost IQ';
@@ -52,6 +53,13 @@ export interface CostIqReportOptions { client: string; preparedBy: string; dataP
 
 /** Claim references belong to the register, not to a reader. */
 const clean = (t: string) => String(t ?? '').replace(/\s*\[CLM-[A-Z]+-\d+(?:,\s*CLM-[A-Z]+-\d+)*\]/g, '');
+/** A catalogue key (DATA_INGESTION, not_assessed) as a reader's label. */
+const label = (k: string) => { const t = String(k ?? '').replace(/[_-]+/g, ' ').trim().toLowerCase(); return t.charAt(0).toUpperCase() + t.slice(1); };
+const FINOPS_DOMAIN = new Map<string, string>((finopsRegistry as any).domains.map((d: any) => [d.id, d.name]));
+const FINOPS_CAPABILITY = new Map<string, string>((finopsRegistry as any).capabilities.map((k: any) => [k.id, k.displayName]));
+const SEV_ORDER: Record<string, number> = { high: 0, medium: 1, low: 2 };
+/** Findings in the order the report lists them; the position is the number a reader uses to cross-refer. */
+const orderedFindings = (fs: Finding[]) => [...fs].sort((a, b) => (SEV_ORDER[a.severity] ?? 3) - (SEV_ORDER[b.severity] ?? 3));
 const questionsById = new Map<string, any>((config as any).questions.map((q: any) => [q.id, q]));
 const ref = (t: string): Seg => ({ text: t, ref: true });
 /** LTM-authored wording from the bank or catalogue: shown as written, digits allowed. */
@@ -117,11 +125,14 @@ function cloudLine(c: Ctx): Block[] {
   const blocks: Block[] = [{ kind: 'table', head: ['Case', 'Net run rate a year', 'Net, first three years'], widths: ['*', 130, 130], rows: CASES.map(k => [
     [strong(CASE_LABEL[k])], [figure(s.cases![k].netRunRate, cur)], [figure(s.cases![k].net3Year, cur)]
   ]) }];
-  blocks.push({ kind: 'paragraph', style: 'small', segs: [
-    `From the FinOps IQ assessment dated `, ref(s.assessmentDate ?? 'not stated'), `, engine `, ref(s.versions.engine), `; confidence ${s.confidence ?? 'not stated'}. `,
+  blocks.push({ kind: 'paragraph', style: 'small', segs: ([
+    `From the FinOps IQ assessment dated `, ref(s.assessmentDate ?? 'not stated'), c.i.finopsLinkedAt ? ', linked to this report on ' : '', c.i.finopsLinkedAt ? ref(c.i.finopsLinkedAt) : '', `, engine `, ref(s.versions.engine), `; confidence ${s.confidence ?? 'not stated'}. `,
+    s.cloudSpend?.low && s.cloudSpend.high ? ['In-scope public cloud spend ', figure(s.cloudSpend.low, cur), ' to ', figure(s.cloudSpend.high, cur), '. '] : [],
+    ['The range is capped at ', figure(s.globalCap.share, cur, 'share'), ' of that spend. '],
     quoted(clean(s.globalCap.source.citation)), ' (', quoted(clean(s.globalCap.source.sample)), '). ',
-    'Net of the cost to implement and phased over a realistic ramp. Cost IQ shows this line as FinOps IQ computed it and does not estimate it again.'
-  ] });
+    'Net of the cost to implement and phased over the first three years, as FinOps IQ models it. Cost IQ shows this line as FinOps IQ computed it and does not estimate it again.'
+  ] as Array<Seg | Seg[]>).flat() });
+  if (c.i.currency && c.i.currency !== cur) blocks.push({ kind: 'paragraph', style: 'small', segs: [`This line is in ${cur}, as FinOps IQ produced it; the reporting currency for this assessment is ${c.i.currency}. No conversion has been applied.`] });
   return blocks;
 }
 
@@ -138,19 +149,20 @@ function summary(c: Ctx): ReportSection {
   blocks.push({ kind: 'kpis', items: [
     { label: 'Cost management', value: h.costIQ != null ? [traced('headlines.costIQ', h.costIQ, 'index', []), OF100] : ['Not scored'], note: ['Spend visibility, governance, infrastructure, software, workforce and vendors'] },
     { label: 'Value management', value: h.valueIQ != null ? [traced('headlines.valueIQ', h.valueIQ, 'index', []), OF100] : ['Not scored'], note: ['Alignment, investment quality, benefits and agility'] },
-    { label: 'Evidence completeness', value: [traced('evidence.assessmentCompleteness', i.result.evidence.assessmentCompleteness, 'percent', [])], note: ['Questions answered of those asked; not confidence in a saving'] },
+    { label: 'Questions answered', value: [traced('evidence.assessmentCompleteness', i.result.evidence.assessmentCompleteness, 'percent', [])], note: ['Of the questions asked for the areas chosen; not confidence in a saving'] },
     { label: 'Dimensions scored', value: [count('dimensions.scored', c.scored.length), ' of ', count('dimensions.total', i.result.dimensions.length)], note: ['A dimension with no answer is not scored'] },
     { label: 'Findings', value: [count('findings.count', i.result.findings.length)], note: [count('findings[high]', i.result.findings.filter(f => f.severity === 'high').length), ' high'] }
   ] });
   if (weakest.length) {
     blocks.push({ kind: 'subheading', text: 'Where to look first' });
+    blocks.push({ kind: 'paragraph', style: 'small', segs: ['These are the lowest-scoring areas on the answers given. A low score is a reason to look, not a finding: a finding is raised only where named answers meet LTM\'s rules, so a low-scoring area may have none yet.'] });
     blocks.push({ kind: 'table', head: ['Area', 'Score', 'Questions answered'], widths: ['*', 70, 110], rows: weakest.map(d => [[strong(d.name), '\n', quoted(d.definition)], [traced(`dimensions[${d.id}].score`, d.score as number, 'index', [])], [count(`dimensions[${d.id}].answered`, d.answered)]]) });
   }
-  blocks.push({ kind: 'subheading', text: 'Cloud, AI and measured SaaS licence line' });
+  blocks.push({ kind: 'subheading', text: 'Cloud line (from FinOps IQ)' });
   blocks.push(...cloudLine(c));
   blocks.push({ kind: 'callout', tone: 'info', title: 'What this report sizes', segs: [
     c.i.finops?.status === 'quantified'
-      ? 'The only amount in this report is the cloud line above, taken from FinOps IQ. Cost IQ does not size any non-cloud saving in this edition: each finding lists the evidence needed first, so the total is the cloud line excluding anything else. '
+      ? 'The only amount in this report is the cloud line above, taken from FinOps IQ. Cost IQ does not size any non-cloud saving in this edition, so no total across the estate is stated: each finding lists the evidence needed first. '
       : 'No amount is stated. Cost IQ does not size a saving from self-reported answers: each finding lists the evidence needed first. ',
     'Figures that appear in later work are indicative ranges for planning. They are not a savings commitment and need validating against the organisation\'s own data.'
   ] });
@@ -170,9 +182,12 @@ function profile(c: Ctx): ReportSection {
       { label: 'Focus areas assessed', value: [count('scope.areas', i.selectedAreas.length), ' of ', count('scope.areasAvailable', Object.keys(sel.areas).length)], note: ['The rest are outside this report'] }
     ] }
   ];
+  const ctxNote = 'Questions answered counts every question asked, including context questions that are recorded but not scored; the scores below use the scored answers only, and one question can feed two dimensions.';
+  blocks.push({ kind: 'paragraph', style: 'small', segs: [ctxNote] });
   if (footprint.length) blocks.push({ kind: 'paragraph', segs: ['Estate described: ', footprint.map(f => optionLabel('CORE-01', f)).join('; '), '. Questions about an estate the client did not describe are not asked and do not lower any score.'] });
   blocks.push({ kind: 'paragraph', segs: ['Focus areas assessed: ', i.selectedAreas.join('; ') || 'none', '.'] });
-  if (notChosen.length) blocks.push({ kind: 'paragraph', style: 'small', segs: [`Focus areas not assessed in this edition: ${notChosen.join('; ')}. Nothing in this report describes them.`] });
+  blocks.push({ kind: 'paragraph', style: 'small', segs: ['Every client is also asked the baseline questions on enterprise context, priorities, spend visibility, cost governance and investment, so some dimensions are scored from those alone, whichever focus areas were chosen.'] });
+  if (notChosen.length) blocks.push({ kind: 'paragraph', style: 'small', segs: [`Focus areas not chosen, so without their deeper questions: ${notChosen.join('; ')}. Findings and scores in this report reflect the questions asked, and say nothing further about these areas.`] });
   return { id: 'profile', title: 'Scope and context', blocks };
 }
 
@@ -188,6 +203,12 @@ function scores(c: Ctx): ReportSection {
     { kind: 'subheading', text: 'Cost management' }, ...group('cost'),
     { kind: 'subheading', text: 'Value management' }, ...group('value')
   ];
+  blocks.push({ kind: 'paragraph', style: 'small', segs: ['Bar colours: ', ref('80 or more'), ' strong, ', ref('60 to 79'), ' partial, ', ref('40 to 59'), ' weak, below ', ref('40'), ' low. These bands are LTM\'s. The report makes no comparison with other organisations: no published peer data exists for these dimensions.'] });
+  const single = i.result.dimensions.filter(d => d.answered === 1 && d.score != null);
+  if (single.length) blocks.push({ kind: 'list', small: true, items: single.map(d => {
+    const qid = Object.keys(i.answers).find(k => { const q = questionsById.get(k); return q?.scoring?.dimensionIds?.includes(d.id) && has(i.answers, k); });
+    return [strong(d.name), ' rests on one question: ', quoted(qid ? questionsById.get(qid).prompt : 'one answered question'), ' Treat the score as a prompt for discussion.'];
+  }) });
   const unscored = i.result.dimensions.filter(d => d.score == null);
   if (unscored.length) blocks.push({ kind: 'paragraph', style: 'small', segs: [`Not scored, because no scored question feeding it was asked or answered: ${unscored.map(d => d.name).join('; ')}.`] });
   blocks.push({ kind: 'paragraph', style: 'small', segs: ['The ', count('dimensions.total', i.result.dimensions.length), ' dimensions are LTM\'s own constructs. They are not a published taxonomy; the closest published references are named under Methodology.'] });
@@ -203,10 +224,10 @@ function findingsSection(c: Ctx): ReportSection {
     return { id: 'findings', title: 'Findings', blocks };
   }
   blocks.push({ kind: 'paragraph', segs: ['Each finding comes from named answers and states what must be shown before it is turned into a saving. A finding is a reason to look, not a measured amount.'] });
-  const order = { high: 0, medium: 1, low: 2 } as Record<string, number>;
-  for (const f of [...c.findings].sort((a, b) => (order[a.severity] ?? 3) - (order[b.severity] ?? 3))) {
+  blocks.push({ kind: 'paragraph', style: 'small', segs: ['A finding is raised when the answers named under "Raised by" match one of LTM\'s activation rules, for example an answer describing no process, or unknown. The rating is LTM\'s view of how much the issue could affect cost or value if it is real; it is not a measured amount. Findings are numbered in the order listed, and the roadmap and backlog use the same numbers.'] });
+  orderedFindings(c.findings).forEach((f, k) => {
     const o = opp.get(f.id);
-    blocks.push({ kind: 'subheading', text: f.title });
+    blocks.push({ kind: 'subheading', text: `Finding ${k + 1}: ${f.title}` });
     const signals = (f.activation?.evidenceSignals ?? []);
     const rows: Seg[][][] = [
       [['Why it matters'], [quoted(f.description)]],
@@ -220,17 +241,18 @@ function findingsSection(c: Ctx): ReportSection {
     ];
     if (c.opts.view === 'consultant' && o?.practical.missingFactors?.length) rows.push([['Feasibility to agree'], [o.practical.missingFactors.join('; ')]]);
     blocks.push({ kind: 'table', head: ['Topic', 'Detail'], widths: [120, '*'], rows, small: true });
-  }
+  });
   return { id: 'findings', title: 'Findings', blocks };
 }
 
 function cloudSection(c: Ctx): ReportSection {
-  const blocks: Block[] = [{ kind: 'paragraph', segs: ['Cloud, AI and measured SaaS licence value for an estate is worked out once, by FinOps IQ. Cost IQ shows that figure as its cloud line and never re-estimates it, so the same saving cannot be counted twice.'] }, ...cloudLine(c)];
+  const blocks: Block[] = [{ kind: 'paragraph', segs: ['Value from public cloud and the other FinOps IQ levers is worked out once, by FinOps IQ, for each estate. Cost IQ shows that figure as its cloud line and does not estimate it again, to avoid counting the same saving twice. Cost IQ\'s own findings on software and SaaS licensing are separate and are not sized in this edition.'] }, ...cloudLine(c)];
   if (c.i.finops) {
     blocks.push({ kind: 'subheading', text: 'Cloud practice, side by side' });
     blocks.push({ kind: 'paragraph', style: 'small', segs: ['FinOps IQ rates cloud cost-management capabilities on its own scale. They are shown next to, and never merged with, the Cost IQ scores.'] });
-    if (c.i.finops.capabilities.length) blocks.push({ kind: 'table', head: ['Capability', 'Domain', 'Rating'], widths: ['*', 140, 80], small: true, rows: c.i.finops.capabilities.map(k => [[quoted(k.capability)], [quoted(k.domain)], [k.rating]]) });
-    blocks.push({ kind: 'paragraph', style: 'small', segs: [c.i.finops.boundaryStatement] });
+    const caps = c.i.finops.capabilities, rated = caps.filter(k => k.rating !== 'not_assessed');
+    if (rated.length) blocks.push({ kind: 'table', head: ['Capability', 'Domain', 'Rating'], widths: ['*', 140, 80], small: true, rows: rated.map(k => [[FINOPS_CAPABILITY.get(k.capability) ?? label(k.capability)], [FINOPS_DOMAIN.get(k.domain) ?? label(k.domain)], [label(k.rating)]]) });
+    if (caps.length > rated.length) blocks.push({ kind: 'paragraph', style: 'small', segs: ['FinOps IQ rated the capabilities above. Others in its framework were outside the scope of that assessment and are not rated.'] });
   }
   return { id: 'cloud', title: 'Cloud and FinOps', blocks };
 }
@@ -240,7 +262,7 @@ function roadmap(c: Ctx): ReportSection {
   const blocks: Block[] = [{ kind: 'paragraph', segs: ['The route from a finding to a saving has three steps, and no step is skipped. First, supply the evidence each finding names. Then size the opportunity from that evidence and agree what is feasible with the owners. Finally, plan delivery and track the result against the baseline.'] }];
   if (recs.length) {
     blocks.push({ kind: 'subheading', text: 'Recommended next steps' });
-    blocks.push({ kind: 'table', head: ['Step', 'What it covers', 'Findings addressed'], widths: [140, '*', 90], small: true, rows: recs.map(r => [[strong(r.title)], [quoted(r.description)], [r.findingIds.filter(id => c.findings.some(f => f.id === id)).map(id => c.findings.find(f => f.id === id)!.title).join('; ')]]) });
+    blocks.push({ kind: 'table', head: ['Step', 'What it covers', 'Findings addressed'], widths: [140, '*', 90], small: true, rows: recs.map(r => [[strong(r.title)], [quoted(r.description)], [ref(orderedFindings(c.findings).map((f, k) => (r.findingIds.includes(f.id) ? `Finding ${k + 1}` : '')).filter(Boolean).join('; ') || 'None raised')]]) });
   } else blocks.push({ kind: 'paragraph', segs: ['No step is recommended on the answers given.'] });
   return { id: 'roadmap', title: 'Roadmap', blocks };
 }
@@ -267,31 +289,32 @@ function assumptions(c: Ctx): ReportSection {
   const bands = (config as any).settings.currencyBands;
   const list: Array<{ id: string; what: string; value: string; basis: string; confidence: string; ifWrong: string }> = [
     { id: 'A-01', what: 'The value given to each answer', value: 'A fixed ladder on each question, from 100 for the strongest practice down to the lowest value for Unknown', basis: 'LTM heuristic. The FinOps Framework describes maturity in stages (Crawl, Walk, Run) and does not give scores, so the steps are LTM\'s convention and not a benchmark', confidence: 'Medium', ifWrong: 'Scores move by the same step in every client; the order of practices on a question does not change' },
-    { id: 'A-02', what: 'How questions combine into a score', value: 'A dimension is the mean of its scored answers; each counts equally; headlines are the mean of dimension scores', basis: 'LTM heuristic: no published weighting for these dimensions exists', confidence: 'Medium', ifWrong: 'A different weighting would change headline scores, not the findings or the evidence needed' },
+    { id: 'A-02', what: 'How questions combine into a score', value: 'A dimension is the mean of its scored answers; each counts equally; headlines are the mean of dimension scores, each dimension counting equally whatever the number of questions behind it', basis: 'LTM heuristic: no published weighting for these dimensions exists', confidence: 'Medium', ifWrong: 'Weighting dimensions by the number of questions answered, or giving some dimensions more weight, would change the headline scores, by several points where dimensions rest on very different numbers of questions; findings and the evidence needed would not change' },
     { id: 'A-03', what: 'Answers are accurate', value: 'Answers are self-reported and have not been audited or verified by LTM', basis: 'Client input', confidence: 'Varies by question', ifWrong: 'A score reflects what the respondent believed; evidence supplied later can raise or lower it' },
     { id: 'A-04', what: 'Which questions count', value: `${c.i.scope.shown} questions were asked, from the focus areas chosen and the estate described; questions about an estate not described are not asked`, basis: 'Client input: the focus areas chosen and the estate described', confidence: 'High', ifWrong: 'Areas not chosen would add questions and could add findings; scores for the areas assessed would not change' },
     { id: 'A-05', what: 'When a finding is raised', value: 'A finding is raised when named answers meet LTM\'s activation rules', basis: 'LTM heuristic: thresholds come from LTM calibration and are not published benchmarks', confidence: 'Medium', ifWrong: 'A finding may be raised that evidence later clears, or missed that evidence would raise' },
-    { id: 'A-06', what: 'Cloud figure', value: c.i.finops?.status === 'quantified' ? `The cloud line is the FinOps IQ result dated ${c.i.finops.assessmentDate ?? 'not stated'}, as it stood when linked` : 'No cloud figure is included', basis: 'Another LTM assessment (FinOps IQ), not recomputed here', confidence: c.i.finops?.confidence ?? 'Not applicable', ifWrong: 'Refreshing FinOps IQ and linking it again replaces the line; nothing else in this report moves' }
+    { id: 'A-06', what: 'Cloud figure', value: c.i.finops?.status === 'quantified' ? `The cloud line is the FinOps IQ result dated ${c.i.finops.assessmentDate ?? 'not stated'}, as it stood when linked. It covers the levers FinOps IQ quantified for the in-scope spend, capped at a published share of that spend, and is in ${c.i.finops.currency}` : 'No cloud figure is included', basis: 'Another LTM assessment (FinOps IQ), not recomputed here', confidence: c.i.finops?.confidence ?? 'Not applicable', ifWrong: 'Refreshing FinOps IQ and linking it again replaces the line; nothing else in this report moves' }
   ];
   if (c.i.currency && !['USD', 'AED', 'SAR', 'OTHER'].includes(c.i.currency)) {
     const a = bands.assumptions[0];
-    list.push({ id: 'A-07', what: 'Reporting currency band conversion for the organisation size and spend questions', value: a.value, basis: a.basis, confidence: a.confidence, ifWrong: a.ifWrong });
+    list.push({ id: 'A-07', what: 'Currency conversion of size bands', value: a.value, basis: a.basis, confidence: a.confidence.charAt(0).toUpperCase() + a.confidence.slice(1), ifWrong: a.ifWrong });
   }
   return { id: 'assumptions', title: 'Assumptions', appendix: true, blocks: [
     { kind: 'paragraph', segs: ['Every assumption behind the scores is listed, with its basis and what changes if it is wrong.'] },
-    { kind: 'table', head: ['Assumption', 'Value', 'Basis', 'Confidence', 'If wrong'], widths: [90, '*', '*', 55, '*'], small: true, rows: list.map(a => [[strong(a.what)], [quoted(a.value)], [quoted(a.basis)], [a.confidence], [quoted(a.ifWrong)]]) }
+    { kind: 'table', head: ['Assumption', 'Value', 'Basis', 'Confidence', 'If wrong'], widths: [90, '*', '*', 55, '*'], small: true, rows: list.map(a => [[ref(a.id + '  '), strong(a.what)], [quoted(a.value)], [quoted(a.basis)], [a.confidence], [quoted(a.ifWrong)]]) }
   ] };
 }
 
 function methodology(c: Ctx): ReportSection {
   return { id: 'methodology', title: 'Methodology', appendix: true, blocks: [
-    { kind: 'paragraph', segs: ['Cost IQ asks about cost and value management across the whole technology estate, scores the answers on fixed ladders, and raises findings where named answers meet LTM\'s activation rules. It sizes no saving from self-reported answers. Each finding states the evidence that must be shown first.'] },
+    { kind: 'paragraph', segs: ['Cost IQ asks about cost and value management across the whole technology estate, scores the answers on fixed ladders, and raises findings where named answers meet LTM\'s activation rules. Cost IQ itself sizes no saving from self-reported answers; the cloud line comes from FinOps IQ, which sizes from its own inputs. Each finding states the evidence that must be shown first.'] },
     { kind: 'paragraph', segs: ['The ', count('dimensions.total', c.i.result.dimensions.length), ' dimensions are LTM\'s own constructs. Each has a closest published reference, named in the sources; none is a claim of alignment to, or endorsement by, the body that publishes it.'] },
     { kind: 'subheading', text: 'Limits' },
     { kind: 'list', items: [
       ['The assessment rests on answers the respondent gave. LTM has not audited them.'],
       ['A dimension fed by few questions is a weaker signal than one fed by many.'],
       ['Scores describe how well cost and value are managed. They are not a prediction of savings.'],
+      ['Some answers are the respondent\'s own estimate, such as confidence in the spend baseline, or are marked unsure. They are scored as given, and the consultant appendix shows them.'],
       ['The report covers the focus areas chosen and the estate described. Anything outside them is not assessed.']
     ] },
     noRegulatoryCoverage('Cost IQ'),
@@ -299,13 +322,14 @@ function methodology(c: Ctx): ReportSection {
   ] };
 }
 
-function sources(): ReportSection {
+function sources(c: Ctx): ReportSection {
   return { id: 'sources', title: 'Sources', appendix: true, blocks: [
     { kind: 'paragraph', segs: ['The published sources the questions and mappings draw on. Published sources are global or sector references and are not benchmarks of the client\'s peers.'] },
     { kind: 'table', head: ['Source', 'Used for', 'Year'], widths: ['*', '*', 50], small: true, rows: [
       [[ref('FinOps Foundation, FinOps Framework (https://www.finops.org/framework/). Licensed under the Creative Commons Attribution licence (https://creativecommons.org/licenses/by/4.0/)')], ['Practice stages and the closest reference for governance, allocation and value dimensions'], [ref('2026')]],
       [[ref('TBM Council, TBM Taxonomy (https://www.tbmcouncil.org/taxonomy/)')], ['Closest reference for cost pools and towers behind the cost dimensions; reference only, not an endorsement'], [ref('2025')]],
       [[ref('US Government Accountability Office, Information Technology Investment Management (GAO-04-394G, https://www.gao.gov/products/gao-04-394g)')], ['Closest reference for investment selection, control and benefits review'], [ref('2004')]],
+      ...(c.i.finops?.status === 'quantified' ? [[[ref(clean(c.i.finops.globalCap.source.citation))], ['Ceiling on the cloud line, applied by FinOps IQ'], [ref(c.i.finops.globalCap.source.year)]] as Seg[][], [[ref(`LTM FinOps IQ assessment dated ${c.i.finops.assessmentDate ?? 'not stated'}`)], ['The cloud line shown in this report'], [ref((c.i.finops.assessmentDate ?? '').slice(0, 4) || 'n/a')]] as Seg[][]] : []),
       [[ref('European Central Bank, euro foreign exchange reference rates (https://www.ecb.europa.eu/stats/policy_and_exchange_rates/euro_reference_exchange_rates/html/index.en.html)')], ['Converting size bands into the reporting currency; for information only'], [ref('2026')]]
     ] },
     { kind: 'paragraph', style: 'small', segs: ['Where a score ladder or an activation rule is LTM\'s own, the assumptions list says so. The FinOps Framework is used under its licence; LTM\'s scores and findings are LTM\'s and are not the FinOps Foundation\'s.'] }
@@ -333,11 +357,11 @@ export function costIqReport(input: CostIqReportInput, opts: CostIqReportOptions
       platform: PLATFORM, product: PRODUCT, title: 'Technology cost and value diagnostic report',
       subtitle: 'How well cost and value are managed across the technology estate, where to look first, and the evidence needed before any saving is sized',
       client: opts.client, preparedBy: opts.preparedBy, dataProvidedBy: opts.dataProvidedBy, date: input.assessmentDate,
-      version: `Cost IQ ${(config as any).manifest.masterVersion} · release ${(config as any).manifest.releaseId}`, view: opts.view,
+      version: client ? `Cost IQ methodology ${(config as any).manifest.masterVersion}` : `Cost IQ ${(config as any).manifest.masterVersion} · release ${(config as any).manifest.releaseId}`, view: opts.view,
       footer: `${PLATFORM} · ${PRODUCT} · Confidential`,
       status: 'Indicative assessment from self-reported answers. Not a savings commitment.'
     },
-    sections: [summary(c), profile(c), scores(c), findingsSection(c), cloudSection(c), roadmap(c), help(c), calculation(c), assumptions(c), methodology(c), sources(), ...(client ? [] : [consultant(c)])]
+    sections: [summary(c), profile(c), scores(c), findingsSection(c), cloudSection(c), roadmap(c), help(c), calculation(c), assumptions(c), methodology(c), sources(c), ...(client ? [] : [consultant(c)])]
   };
 }
 
@@ -346,8 +370,8 @@ export function costIqBacklog(input: CostIqReportInput, view: 'client' | 'consul
   const opp = new Map(input.result.opportunities.map(o => [o.findingId, o]));
   const rec = new Map(input.result.recommendations.map(r => [r.id, r]));
   const order = { high: 0, medium: 1, low: 2 } as Record<string, number>;
-  const header = [...(view === 'consultant' ? ['Finding ID'] : []), 'Priority', 'Finding', 'Dimension', 'Severity', 'Why it matters', 'Evidence needed before sizing', 'Recommended step', 'LTM service', 'Status'];
-  const rows = [...input.result.findings].sort((a, b) => (order[a.severity] ?? 3) - (order[b.severity] ?? 3)).map((f, k) => {
+  const header = [...(view === 'consultant' ? ['Finding ID'] : []), 'Finding number', 'Finding', 'Dimension', 'Severity', 'Why it matters', 'Evidence needed before sizing', 'Recommended step', 'LTM service', 'Status'];
+  const rows = orderedFindings(input.result.findings).map((f, k) => {
     const r = rec.get(f.recommendationIds[0]);
     return [...(view === 'consultant' ? [f.id] : []), k + 1, f.title, f.dimension, SEVERITY[f.severity] ?? f.severity, f.description, (opp.get(f.id)?.economic.missingEvidence ?? []).join('; '), r?.title ?? '', r?.ltmService ?? '', 'Open'];
   });
