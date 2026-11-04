@@ -79,7 +79,7 @@ export function checkSovereignIqReport(doc: ReportDocument, result: SovereignIqV
 export function checkCostIqReport(doc: ReportDocument, input: CostIqReportInput, view: View, today: string): CheckResult {
   const quantified = input.finops?.status === 'quantified';
   return runReportChecks(doc, view, {
-    requiredSections: ['summary', 'profile', 'scores', 'findings', 'cloud', 'roadmap', 'help', 'calculation', 'assumptions', 'methodology', 'sources', ...(view === 'consultant' ? ['consultant'] : [])],
+    requiredSections: ['summary', 'profile', 'scores', 'findings', 'cloud', 'roadmap', 'help', 'execution', 'calculation', 'assumptions', 'methodology', 'sources', ...(view === 'consultant' ? ['sow', 'consultant'] : [])],
     requiredNotices: ['not a savings commitment', 'FinOps Framework', 'creativecommons.org/licenses/by/4.0', 'does not assess legal, tax or regulatory obligations', quantified ? 'does not estimate it again' : 'Not quantified'],
     // One currency per edition: skipped when the cloud line and the non-cloud levers are in different currencies (never converted).
     currency: input.nonCloud?.status === 'quantified' ? (!quantified || input.finops!.currency === input.nonCloud.currency ? input.nonCloud.currency : undefined) : quantified ? input.finops!.currency : undefined,
@@ -100,6 +100,6 @@ export function checkCostIqReport(doc: ReportDocument, input: CostIqReportInput,
     strictNumbers: true,
     numbersAllowedIn: ['consultant'],
     clientForbidden: [/CORE-\d+/, /ADP-\d+/],
-    ids: { pattern: /\b(?:CORE|ADP|CTX)-\d{2}\b|\b[FR]-\d{3}\b|\b(?:COST|VALUE)-\d{2}\b/, clientBannedIn: ['summary', 'profile', 'scores', 'findings', 'cloud', 'roadmap', 'help'] }
+    ids: { pattern: /\b(?:CORE|ADP|CTX)-\d{2}\b|\b[FR]-\d{3}\b|\b(?:COST|VALUE)-\d{2}\b/, clientBannedIn: ['summary', 'profile', 'scores', 'findings', 'cloud', 'roadmap', 'help', 'execution'] }
   }, today);
 }

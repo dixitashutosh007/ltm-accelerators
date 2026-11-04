@@ -15,6 +15,7 @@ import { noRegulatoryCoverage } from '../../report/coverage';
 import type { CostIqSummary } from '../finops-iq/v3/cost-iq-summary';
 import type { NonCloudResult } from './non-cloud-levers';
 import config from './canon/config/master-v6.6.json' with { type: 'json' };
+import delivery from './delivery-library.json' with { type: 'json' };
 import finopsRegistry from '../finops-iq/registry/capabilities.json' with { type: 'json' };
 
 const PLATFORM = 'LTM Vantage · Responsible Advisory';
@@ -81,6 +82,26 @@ const optionLabel = (qid: string, answer: unknown): string => {
   return Array.isArray(answer) ? answer.map(one).join('; ') : one(answer);
 };
 const has = (answers: Record<string, unknown>, id: string) => answers[id] != null && answers[id] !== '' && !(Array.isArray(answers[id]) && (answers[id] as unknown[]).length === 0);
+
+interface Workstream { id: string; name: string; activities: string[]; ownerRole: string; ltmRole: string; durationWeeks: [number, number]; effortFteWeeks: [number, number]; dependsOn: string[]; milestone: string; kpis: string[] }
+interface Package {
+  recommendationId: string; offeringType: 'advisory' | 'implementation' | 'transformation'; offeringName: string; scope: string; outcome: string; prerequisites: string[];
+  workstreams: Workstream[]; risks: Array<{ risk: string; mitigation: string }>; playbook: Array<{ topic: string; steps: string[]; verification: string; options: string[] }>;
+  sow: { objectives: string[]; deliverables: string[]; assumptions: string[]; exclusions: string[]; acceptance: string[] };
+}
+/** The delivery library (draft, owner review): one package per recommendation. Durations and effort are LTM planning ranges. */
+const PACKAGES = new Map<string, Package>(((delivery as any).packages as Package[]).map(p => [p.recommendationId, p]));
+const TYPE_LABEL: Record<string, string> = { advisory: 'Advisory', implementation: 'Implementation', transformation: 'Transformation' };
+const weeks = (r: [number, number]) => (r[0] === r[1] ? `${r[0]} weeks` : `${r[0]} to ${r[1]} weeks`);
+/** The elapsed weeks of a package: each workstream starts when those it depends on have ended; prerequisites start at zero. */
+function elapsed(p: Package): [number, number] {
+  const end = new Map<string, [number, number]>();
+  for (const w of p.workstreams) {
+    const start = w.dependsOn.reduce<[number, number]>((m, d) => { const e = end.get(d); return e ? [Math.max(m[0], e[0]), Math.max(m[1], e[1])] : m; }, [0, 0]);
+    end.set(w.id, [start[0] + w.durationWeeks[0], start[1] + w.durationWeeks[1]]);
+  }
+  return [...end.values()].reduce<[number, number]>((m, e) => [Math.max(m[0], e[0]), Math.max(m[1], e[1])], [0, 0]);
+}
 
 interface Ctx { i: CostIqReportInput; client: boolean; opts: CostIqReportOptions; scored: Dimension[]; findings: Finding[] }
 
@@ -312,6 +333,31 @@ function leversSection(c: Ctx): ReportSection | null {
   return { id: 'levers', title: 'Non-cloud levers and total', blocks };
 }
 
+/** Library text for the reader: the client edition carries no finding or recommendation IDs. */
+const lib = (c: Ctx, t: string) => (c.client ? t.replace(/\b[FR]-\d{3}\s\((.*?)\)/g, '"$1"').replace(/\s?\b[FR]-\d{3}\b/g, '') : t);
+const bullets = (c: Ctx, items: string[]): Seg[] => items.flatMap((t, k) => [k ? '\n' : '', ref('• ' + lib(c, t))] as Seg[]);
+const activePackages = (c: Ctx) => c.i.result.recommendations.map(r => ({ r, p: PACKAGES.get(r.id) })).filter((x): x is { r: Recommendation; p: Package } => !!x.p);
+
+function deliveryPlan(c: Ctx): Block[] {
+  const blocks: Block[] = [];
+  const act = activePackages(c);
+  if (!act.length) return blocks;
+  blocks.push({ kind: 'subheading', text: 'Delivery plan' });
+  blocks.push({ kind: 'paragraph', segs: ['One plan for each recommended step. Durations and effort are LTM planning ranges, not commitments (see the assumptions); sizing and the final plan are agreed once the evidence is in. Owners are roles at the client; names are agreed at mobilisation.'] });
+  for (const { r, p } of act) {
+    const [lo, hi] = elapsed(p);
+    blocks.push({ kind: 'subheading', text: `${p.offeringName}` });
+    blocks.push({ kind: 'paragraph', segs: [strong(TYPE_LABEL[p.offeringType]), ', indicative elapsed time ', ref(weeks([lo, hi])), '. ', quoted(lib(c, p.outcome))] });
+    blocks.push({ kind: 'paragraph', style: 'small', segs: [strong('Before work starts, the client supplies:')] });
+    blocks.push({ kind: 'list', small: true, items: p.prerequisites.map(t => [ref(lib(c, t))]) });
+    blocks.push({ kind: 'table', head: ['Workstream', 'Activities', 'Owner and LTM role', 'Duration', 'After', 'Milestone and measures'], widths: [58, '*', 66, 46, 56, 86], small: true, rows: p.workstreams.map(w => [
+      [strong(w.name)], bullets(c, w.activities), [ref(w.ownerRole), '\n', ref(w.ltmRole)], [ref(weeks(w.durationWeeks))], [ref(w.dependsOn.join(', ') || 'Start')], [ref(w.milestone), '\n', ...bullets(c, w.kpis)]
+    ]) });
+    blocks.push({ kind: 'table', head: ['Risk', 'How it is managed'], widths: ['*', '*'], small: true, rows: p.risks.map(k => [[ref(lib(c, k.risk))], [ref(lib(c, k.mitigation))]]) });
+  }
+  return blocks;
+}
+
 function roadmap(c: Ctx): ReportSection {
   const recs = c.i.result.recommendations;
   const blocks: Block[] = [{ kind: 'paragraph', segs: ['The route from a finding to a saving has three steps, and no step is skipped. First, supply the evidence each finding names. Then size the opportunity from that evidence and agree what is feasible with the owners. Finally, plan delivery and track the result against the baseline.'] }];
@@ -319,14 +365,47 @@ function roadmap(c: Ctx): ReportSection {
     blocks.push({ kind: 'subheading', text: 'Recommended next steps' });
     blocks.push({ kind: 'table', head: ['Step', 'What it covers', 'Findings addressed'], widths: [140, '*', 90], small: true, rows: recs.map(r => [[strong(r.title)], [quoted(r.description)], [ref(orderedFindings(c.findings).map((f, k) => (r.findingIds.includes(f.id) ? `Finding ${k + 1}` : '')).filter(Boolean).join('; ') || 'None raised')]]) });
   } else blocks.push({ kind: 'paragraph', segs: ['No step is recommended on the answers given.'] });
+  blocks.push(...deliveryPlan(c));
   return { id: 'roadmap', title: 'Roadmap', blocks };
 }
 
 function help(c: Ctx): ReportSection {
-  const recs = c.i.result.recommendations;
   const blocks: Block[] = [{ kind: 'paragraph', segs: ['LTM offers these services for the findings above. Scope, effort and price are agreed after the evidence is in; none is assumed here.'] }];
-  if (recs.length) blocks.push({ kind: 'table', head: ['Service', 'What it does'], widths: [180, '*'], small: true, rows: recs.map(r => [[strong(r.ltmService)], [quoted(r.description)]]) });
+  const recs = new Map(c.i.result.recommendations.map(r => [r.id, r]));
+  const fs = orderedFindings(c.findings);
+  if (fs.length) {
+    blocks.push({ kind: 'table', head: ['Finding', 'LTM offering', 'What LTM does', 'What the client has at the end'], widths: [110, 100, '*', '*'], small: true, rows: fs.map((f, k) => {
+      const p = f.recommendationIds.map(id => recs.has(id) ? PACKAGES.get(id) : undefined).find(Boolean);
+      const lead: Seg[] = [strong(`Finding ${k + 1}`), '\n', quoted(f.title)];
+      return p ? [lead, [strong(p.offeringName), '\n', TYPE_LABEL[p.offeringType]], [ref(lib(c, p.scope))], [ref(lib(c, p.outcome))]]
+        : [lead, ['Not mapped'], ['No LTM offering is defined for this finding yet. It can still be raised with the consultant.'], ['Not applicable']];
+    }) });
+  } else blocks.push({ kind: 'paragraph', segs: ['No finding is raised, so no offering is proposed.'] });
   return { id: 'help', title: 'How LTM can help', blocks };
+}
+
+function execution(c: Ctx): ReportSection {
+  const blocks: Block[] = [{ kind: 'paragraph', segs: ['The practice steps below are how the work is carried out, each with the check that shows it worked. They are generic practice; where a step depends on a particular provider or tool, the options are listed and the provider\'s own documentation is used at the time.'] }];
+  const act = activePackages(c);
+  if (!act.length) blocks.push({ kind: 'paragraph', segs: ['No step is recommended on the answers given, so no execution detail applies.'] });
+  for (const { p } of act) {
+    blocks.push({ kind: 'subheading', text: p.offeringName });
+    blocks.push({ kind: 'table', head: ['Practice', 'Steps', 'How to check it worked', 'Options'], widths: [70, '*', 100, 80], small: true, rows: p.playbook.map(b => [[strong(lib(c, b.topic))], bullets(c, b.steps), [ref(lib(c, b.verification))], [ref(b.options.join('; '))]]) });
+  }
+  return { id: 'execution', title: 'Technical execution', blocks };
+}
+
+function sow(c: Ctx): ReportSection {
+  const blocks: Block[] = [{ kind: 'callout', tone: 'warn', title: 'Draft for the consultant', segs: ['An outline to start a statement of work. It is not a quote or an offer: scope, price, timing and terms are agreed with the client, and the client\'s legal and procurement teams review any contract.'] }];
+  const act = activePackages(c);
+  if (!act.length) blocks.push({ kind: 'paragraph', segs: ['No step is recommended on the answers given, so there is nothing to scope.'] });
+  for (const { r, p } of act) {
+    blocks.push({ kind: 'subheading', text: `${p.offeringName} (${r.id})` });
+    blocks.push({ kind: 'table', head: ['Section', 'Draft content'], widths: [80, '*'], small: true, rows: [
+      ['Objectives', bullets(c, p.sow.objectives)], ['Deliverables', bullets(c, p.sow.deliverables)], ['Assumptions', bullets(c, p.sow.assumptions)], ['Exclusions', bullets(c, p.sow.exclusions)], ['Acceptance', bullets(c, p.sow.acceptance)]
+    ].map(([k, v]) => [[strong(k as string)], v as Seg[]]) });
+  }
+  return { id: 'sow', title: 'Draft statement of work', appendix: true, blocks };
 }
 
 /* ------------------------------- Appendices ------------------------------- */
@@ -350,6 +429,7 @@ function assumptions(c: Ctx): ReportSection {
     { id: 'A-05', what: 'When a finding is raised', value: 'A finding is raised when named answers meet LTM\'s activation rules', basis: 'LTM heuristic: thresholds come from LTM calibration and are not published benchmarks', confidence: 'Medium', ifWrong: 'A finding may be raised that evidence later clears, or missed that evidence would raise' },
     { id: 'A-06', what: 'Cloud figure', value: c.i.finops?.status === 'quantified' ? `The cloud line is the FinOps IQ result dated ${c.i.finops.assessmentDate ?? 'not stated'}, as it stood when linked. It covers the levers FinOps IQ quantified for the in-scope spend, capped at a published share of that spend, and is in ${c.i.finops.currency}` : 'No cloud figure is included', basis: 'Another LTM assessment (FinOps IQ), not recomputed here', confidence: c.i.finops?.confidence ?? 'Not applicable', ifWrong: 'Refreshing FinOps IQ and linking it again replaces the line; nothing else in this report moves' }
   ];
+  if (activePackages(c).length) list.push({ id: 'A-11', what: 'Delivery durations and effort', value: 'Each workstream has a range of weeks and of FTE-weeks. A workstream starts when those it depends on end, and elapsed time is the longest path', basis: 'LTM planning heuristic: not from a published source or from LTM delivery history', confidence: 'Low', ifWrong: 'Plans lengthen or shorten and effort changes in proportion; no saving figure depends on them' });
   if (sized(c)) list.push(
     { id: 'A-08', what: 'Lever cases', value: 'Conservative is a quarter, expected a half and upper all of the client\'s measured base', basis: 'LTM heuristic, the same rule FinOps IQ applies to licence levers. No published range exists for this lever', confidence: 'Low', ifWrong: 'Every case scales with the share; the base itself does not change' },
     { id: 'A-09', what: 'Phasing and cost to deliver', value: 'Year one earns the share of contracts renewing that year, or a quarter when the client gave none; years two and three earn the whole run rate. Delivery effort is a fixed number of FTE-months for the chosen tier, costed at the client\'s own rate, with a fifth of that cost recurring each year', basis: 'LTM heuristic, copied from the FinOps IQ licence lever pending calibration on delivered work', confidence: 'Low', ifWrong: 'Year-one and three-year figures move; the gross run rate does not' },
@@ -421,7 +501,7 @@ export function costIqReport(input: CostIqReportInput, opts: CostIqReportOptions
       footer: `${PLATFORM} · ${PRODUCT} · Confidential`,
       status: 'Indicative assessment from self-reported answers. Not a savings commitment.'
     },
-    sections: [summary(c), profile(c), scores(c), findingsSection(c), cloudSection(c), ...(leversSection(c) ? [leversSection(c)!] : []), roadmap(c), help(c), calculation(c), assumptions(c), methodology(c), sources(c), ...(client ? [] : [consultant(c)])]
+    sections: [summary(c), profile(c), scores(c), findingsSection(c), cloudSection(c), ...(leversSection(c) ? [leversSection(c)!] : []), roadmap(c), help(c), execution(c), calculation(c), assumptions(c), methodology(c), sources(c), ...(client ? [] : [sow(c), consultant(c)])]
   };
 }
 
@@ -430,10 +510,10 @@ export function costIqBacklog(input: CostIqReportInput, view: 'client' | 'consul
   const opp = new Map(input.result.opportunities.map(o => [o.findingId, o]));
   const rec = new Map(input.result.recommendations.map(r => [r.id, r]));
   const order = { high: 0, medium: 1, low: 2 } as Record<string, number>;
-  const header = [...(view === 'consultant' ? ['Finding ID'] : []), 'Finding number', 'Finding', 'Dimension', 'Severity', 'Why it matters', 'Evidence needed before sizing', 'Recommended step', 'LTM service', 'Status'];
+  const header = [...(view === 'consultant' ? ['Finding ID'] : []), 'Finding number', 'Finding', 'Dimension', 'Severity', 'Why it matters', 'Evidence needed before sizing', 'Recommended step', 'LTM service', 'Offering type', 'Status'];
   const rows = orderedFindings(input.result.findings).map((f, k) => {
     const r = rec.get(f.recommendationIds[0]);
-    return [...(view === 'consultant' ? [f.id] : []), k + 1, f.title, f.dimension, SEVERITY[f.severity] ?? f.severity, f.description, (opp.get(f.id)?.economic.missingEvidence ?? []).join('; '), r?.title ?? '', r?.ltmService ?? '', 'Open'];
+    return [...(view === 'consultant' ? [f.id] : []), k + 1, f.title, f.dimension, SEVERITY[f.severity] ?? f.severity, f.description, (opp.get(f.id)?.economic.missingEvidence ?? []).join('; '), r?.title ?? '', r?.ltmService ?? '', r && PACKAGES.get(r.id) ? TYPE_LABEL[PACKAGES.get(r.id)!.offeringType] : 'Not mapped', 'Open'];
   });
   return { header, rows };
 }
