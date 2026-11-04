@@ -129,7 +129,8 @@ describe('Cost IQ report', () => {
       const t = everything(r.doc);
       expect(t, r.label).not.toMatch(/non-cloud levers plus/i);
       expect(t, r.label).not.toMatch(/Nothing in this report describes them/);
-      expect(t, r.label).not.toMatch(/\b[A-Z]+_[A-Z_]+\b|not_assessed/);
+      // Oracle's DBA_ views are real product names used in the playbook, not catalogue keys.
+      expect(t.replace(/\bDBA_[A-Z_]+\b/g, ''), r.label).not.toMatch(/\b[A-Z]+_[A-Z_]+\b|not_assessed/);
       expect(t, r.label).toContain('Questions answered');
       if (r.view === 'client') expect(t, r.label).not.toMatch(/DRAFT/);
       if (r.i.result.findings.length) expect(t, r.label).toContain('Finding 1:');

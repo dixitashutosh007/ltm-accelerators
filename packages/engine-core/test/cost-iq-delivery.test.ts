@@ -89,6 +89,17 @@ describe('delivery library (CQ6)', () => {
     expect(text).not.toMatch(/[$£€]\s?\d|\d\s?%|\b(?:USD|GBP|EUR)\b/);
   });
 
+  it('backs every platform-specific playbook step with a dated vendor source, and names no cloud provider cost step', () => {
+    let n = 0;
+    for (const p of lib.packages) for (const b of p.playbook) if (b.platform) {
+      n++;
+      expect(b.sources?.length, `${p.recommendationId} ${b.topic}`).toBeGreaterThan(0);
+      for (const x of b.sources) { expect(x.url).toMatch(/^https:\/\//); expect(x.checked).toMatch(/^\d{4}-\d{2}-\d{2}$/); expect(x.publisher).toBeTruthy(); }
+      expect(`${b.platform} ${b.topic}`).not.toMatch(/\b(?:AWS|Azure|GCP|Google Cloud)\b/);
+    }
+    expect(n).toBeGreaterThan(0);
+  });
+
   it('keeps the cloud hand-off to FinOps IQ: no cloud lever or sizing in its package', () => {
     const t = JSON.stringify(lib.packages.find((p: any) => p.recommendationId === 'R-003')).toLowerCase();
     expect(t).toContain('finops iq');

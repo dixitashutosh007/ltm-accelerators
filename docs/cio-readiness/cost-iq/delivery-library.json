@@ -1,6 +1,6 @@
 {
   "schema": "cost-iq-delivery-library/1",
-  "version": "0.1-draft",
+  "version": "0.2-draft",
   "statusAsOf": "2026-11-04",
   "packages": [
     {
@@ -700,6 +700,182 @@
             "SaaS management platform",
             "Vendor usage reports"
           ]
+        },
+        {
+          "topic": "Microsoft 365 licence assignment against activity",
+          "platform": "Microsoft 365 and Entra ID",
+          "steps": [
+            "In the Microsoft 365 admin center, open Billing > Licenses to record licences assigned and unassigned per product",
+            "Open Users > Active users to list who is licensed, unlicensed or a guest",
+            "Open Reports > Usage and select the service reports in scope; use the 90-day or 180-day period so seasonal use is visible",
+            "Export the user-level reports (the page names Excel, Power BI and the Microsoft Graph reports API for large tenants) and note the last activity date per user",
+            "Join licence assignment to last activity date by user and list users with no recent activity for owner review"
+          ],
+          "verification": "The software asset manager reproduces the assigned-licence count from Billing > Licenses and agrees the joined list before any owner is asked to act. Records note that the reports exclude perpetual licence models.",
+          "options": [
+            "Microsoft 365 admin center export",
+            "Microsoft Graph reports API",
+            "Power BI usage analytics",
+            "Software asset management tool"
+          ],
+          "sources": [
+            {
+              "title": "Microsoft 365 Admin Center Usage Reports Overview",
+              "publisher": "Microsoft Learn",
+              "url": "https://learn.microsoft.com/en-us/microsoft-365/admin/activity-reports/activity-reports",
+              "checked": "2026-11-04"
+            }
+          ]
+        },
+        {
+          "topic": "Microsoft 365 usage-report access and privacy setting",
+          "platform": "Microsoft 365 and Entra ID",
+          "steps": [
+            "Confirm the client roles that can view usage reports (the page lists roles such as Reports Reader and Usage Summary Reports Reader, the latter without user details)",
+            "Check the Org Settings > Services > Reports setting that conceals user, group and site names; by default names are concealed",
+            "If user-level analysis is needed, the client's Global Administrator decides whether to show names, under the client's privacy practices; record the decision",
+            "Note that showing identifiable user information is a logged event in the Microsoft Purview audit log"
+          ],
+          "verification": "The privacy decision is recorded with its approver, and the exports used in the analysis show whether names were concealed or shown.",
+          "options": [
+            "Show names for the analysis period only",
+            "Analyse concealed data at aggregate level"
+          ],
+          "sources": [
+            {
+              "title": "Microsoft 365 Admin Center Usage Reports Overview",
+              "publisher": "Microsoft Learn",
+              "url": "https://learn.microsoft.com/en-us/microsoft-365/admin/activity-reports/activity-reports",
+              "checked": "2026-11-04"
+            }
+          ]
+        },
+        {
+          "topic": "Entra sign-in evidence of application use",
+          "platform": "Microsoft 365 and Entra ID",
+          "steps": [
+            "Open Entra ID > Monitoring & health > Sign-in logs (at least Reports Reader) and filter to the application in scope",
+            "Take interactive and non-interactive user sign-ins as separate log types and decide with the owner which count as use",
+            "Open Usage & insights for the application-activity reports",
+            "Export the result for the review period; log entries are system generated and cannot be changed",
+            "Record the log retention the client's tenant provides: the page does not state a period"
+          ],
+          "verification": "For a sample of applications, the owner confirms that the sign-in count matches their understanding of use, and the retention period is recorded against the evidence.",
+          "options": [
+            "Entra admin center export",
+            "Microsoft Graph API",
+            "Stream to a log analytics store"
+          ],
+          "sources": [
+            {
+              "title": "Sign-in logs in Microsoft Entra ID",
+              "publisher": "Microsoft Learn",
+              "url": "https://learn.microsoft.com/en-us/entra/identity/monitoring-health/concept-sign-ins",
+              "checked": "2026-11-04"
+            }
+          ]
+        },
+        {
+          "topic": "Okta application sign-in evidence",
+          "platform": "Okta",
+          "steps": [
+            "Use the System Log API (or the System Log in the Okta admin console as the client's administrator prefers) to read events for the review period",
+            "Filter for application sign-in events: the Okta event catalogue lists user.authentication.sso as an app sign-in step processed by Okta, and app.oauth2.signon for OIDC single sign-on to an app",
+            "Read the target AppInstance on each event to identify the application",
+            "Treat OIDC records with care: the catalogue says they can also reflect ID-token refresh rather than a new interactive sign-in",
+            "Record the log retention the client's Okta org provides: the System Log page does not state a period"
+          ],
+          "verification": "The owner of two or three applications agrees that the per-user last sign-in matches known use, and ID-token refresh has been considered in the counts.",
+          "options": [
+            "System Log API export",
+            "Log forwarding to the client's log store",
+            "SaaS management platform ingesting Okta data"
+          ],
+          "sources": [
+            {
+              "title": "Event Types (Okta Developer)",
+              "publisher": "Okta",
+              "url": "https://developer.okta.com/docs/reference/api/event-types/",
+              "checked": "2026-11-04"
+            },
+            {
+              "title": "System Log API (Okta Developer)",
+              "publisher": "Okta",
+              "url": "https://developer.okta.com/docs/reference/api/system-log/",
+              "checked": "2026-11-04"
+            }
+          ]
+        },
+        {
+          "topic": "Oracle Database feature usage evidence",
+          "platform": "Oracle Database",
+          "steps": [
+            "Ask the client's database administrators to export DBA_FEATURE_USAGE_STATISTICS for each in-scope database",
+            "Record NAME, VERSION, DETECTED_USAGES, CURRENTLY_USED, FIRST_USAGE_DATE, LAST_USAGE_DATE and LAST_SAMPLE_DATE",
+            "List features where usage was detected and pass them to the client's licensing specialist or counsel; LTM draws no licence conclusion from the view",
+            "Note the view reports feature detection by sampling, as described on the page, and may not reflect all usage"
+          ],
+          "verification": "The database administrator confirms the export is complete for each database and version, and the licensing specialist has received the list.",
+          "options": [
+            "Direct query by client DBA",
+            "Existing client database inventory tooling"
+          ],
+          "sources": [
+            {
+              "title": "DBA_FEATURE_USAGE_STATISTICS (Oracle Database 19c Reference)",
+              "publisher": "Oracle",
+              "url": "https://docs.oracle.com/en/database/oracle/oracle-database/19/refrn/DBA_FEATURE_USAGE_STATISTICS.html",
+              "checked": "2026-11-04"
+            }
+          ]
+        },
+        {
+          "topic": "SAP system measurement evidence",
+          "platform": "SAP",
+          "steps": [
+            "Ask the client's SAP Basis team for the most recent measurement run in transaction USMM for each in-scope system, and its measurement statistics and log",
+            "Record the clients included in the measurement and the date of the run",
+            "Record how users were classified (the page lists individual, reference-user and group classification, mass change and user-list methods)",
+            "For several systems, ask whether results were consolidated in the License Administration Workbench",
+            "Confirm the SAP release against the release-specific documentation: the page cited is an older help set"
+          ],
+          "verification": "The Basis team confirms the run date and clients covered for each system, and the classification method is recorded. LTM does not run or alter the measurement.",
+          "options": [
+            "Client Basis team export of USMM statistics",
+            "Software asset management tool with SAP connector"
+          ],
+          "sources": [
+            {
+              "title": "Process of System Measurement (SAP Help, NetWeaver 7.3 EhP1 help set)",
+              "publisher": "SAP",
+              "url": "https://help.sap.com/doc/saphelp_nw73ehp1/7.31.19/en-US/48/c6eb7b7a004da5e10000000a421937/content.htm?no_cache=true",
+              "checked": "2026-11-04"
+            }
+          ]
+        },
+        {
+          "topic": "IBM core-based software inventory evidence",
+          "platform": "IBM software",
+          "steps": [
+            "Ask whether IBM License Metric Tool is deployed; the page describes it as an inventory of core-based software for Full Capacity or Virtualization (Sub-)Capacity environments",
+            "If deployed, obtain its inventory report for the review period and the client's entitlement records",
+            "Compare deployed products and counts with entitlements and record gaps and excess by product",
+            "Where a tool is not deployed, record the alternative evidence the client uses and its confidence"
+          ],
+          "verification": "The software asset manager agrees the product list to the tool's inventory and the entitlement records; any contract or audit question goes to the client's legal team.",
+          "options": [
+            "IBM License Metric Tool report",
+            "Alternative inventory tool the client uses",
+            "Manual worksheet"
+          ],
+          "sources": [
+            {
+              "title": "License Metric Tool information (Passport Advantage)",
+              "publisher": "IBM",
+              "url": "https://www.ibm.com/software/passportadvantage/ibmlicensemetrictool",
+              "checked": "2026-11-04"
+            }
+          ]
         }
       ],
       "sow": {
@@ -861,6 +1037,53 @@
           "options": [
             "Asset management tool",
             "Spreadsheet"
+          ]
+        },
+        {
+          "topic": "vSphere host utilisation data",
+          "platform": "VMware vSphere",
+          "steps": [
+            "Ask the virtualisation team for host performance data from vCenter: the host charts cover CPU, disk, memory, network, GPU and storage usage",
+            "Record the collection level set for vCenter Server, because it determines which counters are available",
+            "Select a period that includes the client's peaks and export per host and cluster",
+            "Compute average and peak per cluster and review outliers with the owner"
+          ],
+          "verification": "The virtualisation team confirms the collection level, and owners confirm the period covers their peak.",
+          "options": [
+            "vCenter performance chart export",
+            "Existing monitoring platform",
+            "Infrastructure analytics tool"
+          ],
+          "sources": [
+            {
+              "title": "Hosts overview performance charts (vSphere Monitoring and Performance 8.0)",
+              "publisher": "Broadcom TechDocs",
+              "url": "https://techdocs.broadcom.com/us/en/vmware-cis/vsphere/vsphere/8-0/vsphere-monitoring-and-performance/monitoring-inventory-objects/overview-performance-charts/hosts.html",
+              "checked": "2026-11-04"
+            }
+          ]
+        },
+        {
+          "topic": "CMDB data quality before the footprint review",
+          "platform": "ServiceNow CMDB",
+          "steps": [
+            "Ask the CMDB owner for the CMDB Health results; the source describes completeness (required and recommended fields), correctness (duplicate, orphan and stale CIs) and compliance (audits against expected values)",
+            "Record the staleness period in use (the source gives 60 days as the default)",
+            "Exclude or flag stale and duplicate CIs before using the CMDB as the asset inventory",
+            "Reconcile a sample of CIs to finance and facility records"
+          ],
+          "verification": "The CMDB owner confirms the exclusions, and the sample reconciliation difference is recorded. Source is a vendor community article; confirm against the client's release documentation.",
+          "options": [
+            "CMDB Health dashboard export",
+            "Spreadsheet reconciliation"
+          ],
+          "sources": [
+            {
+              "title": "Understanding CMDB Health (ServiceNow Community article, not product documentation)",
+              "publisher": "ServiceNow",
+              "url": "https://www.servicenow.com/community/itsm-articles/understanding-cmdb-health/ta-p/2307033",
+              "checked": "2026-11-04"
+            }
           ]
         }
       ],
@@ -1402,6 +1625,29 @@
           "options": [
             "Configuration database",
             "Change-management records"
+          ]
+        },
+        {
+          "topic": "CMDB record completeness for the application inventory",
+          "platform": "ServiceNow CMDB",
+          "steps": [
+            "Take the application records from the CMDB as one input to the portfolio inventory",
+            "Use the completeness results (required and recommended fields not populated) to list application records missing owner or support data",
+            "Use the correctness results (duplicate and orphan CIs) to list likely duplicate application records",
+            "Send each gap to the named owner for confirmation; record the owner's answer"
+          ],
+          "verification": "Owners have confirmed or corrected the listed records, and the inventory shows which records were changed.",
+          "options": [
+            "CMDB Health dashboard export",
+            "Application portfolio management tool"
+          ],
+          "sources": [
+            {
+              "title": "Understanding CMDB Health (ServiceNow Community article, not product documentation)",
+              "publisher": "ServiceNow",
+              "url": "https://www.servicenow.com/community/itsm-articles/understanding-cmdb-health/ta-p/2307033",
+              "checked": "2026-11-04"
+            }
           ]
         }
       ],
