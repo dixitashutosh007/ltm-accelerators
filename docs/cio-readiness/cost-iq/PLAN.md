@@ -367,3 +367,8 @@ Library 0.2-draft adds ten platform-specific playbook entries (R-004: Microsoft 
 - **Keyboard and labels:** answer options have roles, a tab stop, Enter and Space, and keep focus after the page redraws; question groups are labelled; focus rings are visible; question IDs are no longer shown to the respondent.
 - **Layout:** the content column is capped (1180 px) and the same at 1280 and 1920 px; no sideways scroll on the start, question or result screen at 360, 768, 1280 and 1920 px (browser test). Fields and buttons wrap at narrow widths.
 - **Still open in CQ7:** the executive/workshop modes with a visible step list; the radar chart labels clip at 360 px; screenshots for owner review; a contrast and reduced-motion audit; the same layout checks for the saved-assessments list.
+
+### CQ7 progress (4 Nov 2026): radar labels, step list
+- Radar chart labels are shortened (12 characters under 520 px, 22 above) and the chart is taller on narrow screens, so labels no longer clip at 360 px.
+- The step list already exists: the left rail lists every section with done and current marks, and the "areas in scope" choice at the start is the executive-versus-full selector on one engine. No separate workshop mode is built; none was requested by a stakeholder.
+- Still open in CQ7: contrast and reduced-motion audit; width checks for the saved-assessments list; screenshots for owner review.
