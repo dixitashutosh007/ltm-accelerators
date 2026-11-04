@@ -13,6 +13,7 @@ import type { Backlog, Block, ReportDocument, ReportSection, Seg, Tone } from '.
 import { figure, traced } from '../../report/model';
 import { noRegulatoryCoverage } from '../../report/coverage';
 import type { CostIqSummary } from '../finops-iq/v3/cost-iq-summary';
+import type { NonCloudResult } from './non-cloud-levers';
 import config from './canon/config/master-v6.6.json' with { type: 'json' };
 import finopsRegistry from '../finops-iq/registry/capabilities.json' with { type: 'json' };
 
@@ -47,6 +48,8 @@ export interface CostIqReportInput {
   currency?: string;
   finops: CostIqSummary | null;
   finopsLinkedAt?: string | null;
+  /** Non-cloud levers sized from the client's own measured figures, and the total (CQ4); null when none is sized. */
+  nonCloud?: NonCloudResult | null;
 }
 
 export interface CostIqReportOptions { client: string; preparedBy: string; dataProvidedBy: string; view: 'client' | 'consultant'; notes?: string }
@@ -101,6 +104,7 @@ export function resolveCostIqField(i: CostIqReportInput, field: string): number 
   if (field === 'scope.areasAvailable') return Object.keys((config as any).settings.selection.areas).length;
   const ans = /^answers\[([\w-]+)\]$/.exec(field);
   if (ans) { const v = Number(i.answers[ans[1]]); return Number.isFinite(v) ? v : undefined; }
+  if (i.nonCloud && /^(levers\[|total\.)/.test(field)) return nonCloudFigures(i.nonCloud).get(field);
   const f = /^finops\.(.+)$/.exec(field);
   if (f && i.finops) {
     let o: any = i.finops;
@@ -109,6 +113,18 @@ export function resolveCostIqField(i: CostIqReportInput, field: string): number 
   }
   return undefined;
 }
+
+/** Every figure the non-cloud result carries, by its field name. */
+function nonCloudFigures(n: NonCloudResult): Map<string, number> {
+  const m = new Map<string, number>();
+  for (const l of n.lines) {
+    m.set(l.base.field, l.base.value);
+    for (const k of CASES) for (const f of Object.values(l.cases[k])) m.set(f.field, f.value);
+  }
+  if (n.total) for (const k of CASES) { m.set(n.total.cases[k].netRunRate.field, n.total.cases[k].netRunRate.value); m.set(n.total.cases[k].net3Year.field, n.total.cases[k].net3Year.value); }
+  return m;
+}
+const sized = (c: Ctx) => (c.i.nonCloud?.status === 'quantified' ? c.i.nonCloud : null);
 
 /* --------------------------------- Sections --------------------------------- */
 
@@ -158,6 +174,14 @@ function summary(c: Ctx): ReportSection {
     blocks.push({ kind: 'paragraph', style: 'small', segs: ['These are the lowest-scoring areas on the answers given. A low score is a reason to look, not a finding: a finding is raised only where named answers meet LTM\'s rules, so a low-scoring area may have none yet.'] });
     blocks.push({ kind: 'table', head: ['Area', 'Score', 'Questions answered'], widths: ['*', 70, 110], rows: weakest.map(d => [[strong(d.name), '\n', quoted(d.definition)], [traced(`dimensions[${d.id}].score`, d.score as number, 'index', [])], [count(`dimensions[${d.id}].answered`, d.answered)]]) });
   }
+  const nc = sized(c);
+  if (nc?.total) {
+    blocks.push({ kind: 'subheading', text: nc.total.cloudIncluded ? 'Value range: total across the estate' : 'Value range: total excluding cloud' });
+    blocks.push({ kind: 'table', head: ['Case', 'Net run rate a year', 'Net, first three years'], widths: ['*', 130, 130], rows: CASES.map(k => [
+      [strong(CASE_LABEL[k])], [figure(nc.total!.cases[k].netRunRate, nc.currency)], [figure(nc.total!.cases[k].net3Year, nc.currency)]
+    ]) });
+    blocks.push({ kind: 'paragraph', style: 'small', segs: [nc.total.cloudNote, ' Each case is net of the cost to deliver, phased as the lever sections explain. The range is indicative and depends on the client-measured figures set out under "Non-cloud levers and total".'] });
+  }
   blocks.push({ kind: 'callout', tone: 'info', title: 'Decision requested', segs: [
     i.result.findings.length
       ? ['The CIO, or the head of technology finance, is asked to name an owner for each finding and to release the evidence listed against it, within ', ref('30 days'), ' of receiving this report. Sizing starts when the evidence arrives; until then no saving is stated. The ', ref('30 days'), ' is a default to adjust to the organisation\'s own planning cycle.'] as Seg[]
@@ -166,8 +190,10 @@ function summary(c: Ctx): ReportSection {
   blocks.push({ kind: 'subheading', text: 'Cloud line (from FinOps IQ)' });
   blocks.push(...cloudLine(c));
   blocks.push({ kind: 'callout', tone: 'info', title: 'What this report sizes', segs: [
-    c.i.finops?.status === 'quantified'
-      ? 'The only amount in this report is the cloud line above, taken from FinOps IQ. Cost IQ does not size any non-cloud saving in this edition, so no total across the estate is stated: each finding lists the evidence needed first. '
+    nc
+      ? 'The amounts in this report are the non-cloud lever or levers sized from figures the client measured, and the cloud line taken from FinOps IQ where one is linked. Nothing is sized from questionnaire answers alone: every other finding lists the evidence needed first. '
+      : c.i.finops?.status === 'quantified'
+      ? 'The only amount in this report is the cloud line above, taken from FinOps IQ. Cost IQ does not size any non-cloud saving here, so no total across the estate is stated: each finding lists the evidence needed first. '
       : 'No amount is stated. Cost IQ does not size a saving from self-reported answers: each finding lists the evidence needed first. ',
     'Figures that appear in later work are indicative ranges for planning. They are not a savings commitment and need validating against the organisation\'s own data.'
   ] });
@@ -251,7 +277,7 @@ function findingsSection(c: Ctx): ReportSection {
 }
 
 function cloudSection(c: Ctx): ReportSection {
-  const blocks: Block[] = [{ kind: 'paragraph', segs: ['Value from public cloud and the other FinOps IQ levers is worked out once, by FinOps IQ, for each estate. Cost IQ shows that figure as its cloud line and does not estimate it again, to avoid counting the same saving twice. Cost IQ\'s own findings on software and SaaS licensing are separate and are not sized in this edition.'] }, ...cloudLine(c)];
+  const blocks: Block[] = [{ kind: 'paragraph', segs: ['Value from public cloud and the other FinOps IQ levers is worked out once, by FinOps IQ, for each estate. Cost IQ shows that figure as its cloud line and does not estimate it again, to avoid counting the same saving twice. ', sized(c) ? 'Cost IQ\'s non-cloud lever, set out in its own section, covers licences outside SaaS and is added to the total separately.' : 'Cost IQ\'s own findings on software and SaaS licensing are separate and are not sized here.'] }, ...cloudLine(c)];
   if (c.i.finops) {
     blocks.push({ kind: 'subheading', text: 'Cloud practice, side by side' });
     blocks.push({ kind: 'paragraph', style: 'small', segs: ['FinOps IQ rates cloud cost-management capabilities on its own scale. They are shown next to, and never merged with, the Cost IQ scores.'] });
@@ -260,6 +286,30 @@ function cloudSection(c: Ctx): ReportSection {
     if (caps.length > rated.length) blocks.push({ kind: 'paragraph', style: 'small', segs: ['FinOps IQ rated the capabilities above. Others in its framework were outside the scope of that assessment and are not rated.'] });
   }
   return { id: 'cloud', title: 'Cloud and FinOps', blocks };
+}
+
+function leversSection(c: Ctx): ReportSection | null {
+  const nc = sized(c);
+  if (!nc) return null;
+  const cur = nc.currency;
+  const blocks: Block[] = [{ kind: 'paragraph', segs: ['A non-cloud lever is sized only from a figure the client measured, never from questionnaire answers. Each case is a share of that figure, net of the cost to deliver, and phased over three years. No published percentage is applied, because no public source gives a range for these levers.'] }];
+  for (const l of nc.lines) {
+    blocks.push({ kind: 'subheading', text: l.name });
+    blocks.push({ kind: 'paragraph', segs: ['Measured base: ', figure(l.base, cur), ' a year, supplied by the client. ', quoted(l.label), ' Raised by the finding "', quoted(c.findings.find(f => f.id === l.findingId)?.title ?? l.findingId), '".'] });
+    blocks.push({ kind: 'table', head: ['Case', 'Gross run rate a year', 'Net run rate a year', 'Net, first three years'], widths: ['*', 100, 100, 110], rows: CASES.map(k => [
+      [strong(CASE_LABEL[k])], [figure(l.cases[k].runRate, cur)], [figure(l.cases[k].netRunRate, cur)], [figure(l.cases[k].net3Year, cur)]
+    ]) });
+    blocks.push({ kind: 'paragraph', style: 'small', segs: ['One-off cost to deliver, from the client\'s own cost of an FTE-month: ', figure(l.cases.expected.oneOffCost, cur), '; yearly running cost ', figure(l.cases.expected.ongoingCost, cur), '. Software already counted in the FinOps IQ cloud line (SaaS and marketplace) is outside this base, so the same saving is not counted twice.'] });
+  }
+  for (const n of nc.notSized) blocks.push({ kind: 'paragraph', style: 'small', segs: [`${n.name}: not sized. ${n.reason}`] });
+  if (nc.total) {
+    blocks.push({ kind: 'subheading', text: 'Total' });
+    blocks.push({ kind: 'table', head: ['Case', 'Net run rate a year', 'Net, first three years'], widths: ['*', 130, 130], rows: CASES.map(k => [
+      [strong(CASE_LABEL[k])], [figure(nc.total!.cases[k].netRunRate, cur)], [figure(nc.total!.cases[k].net3Year, cur)]
+    ]) });
+    blocks.push({ kind: 'paragraph', style: 'small', segs: [nc.total.cloudNote] });
+  }
+  return { id: 'levers', title: 'Non-cloud levers and total', blocks };
 }
 
 function roadmap(c: Ctx): ReportSection {
@@ -300,6 +350,11 @@ function assumptions(c: Ctx): ReportSection {
     { id: 'A-05', what: 'When a finding is raised', value: 'A finding is raised when named answers meet LTM\'s activation rules', basis: 'LTM heuristic: thresholds come from LTM calibration and are not published benchmarks', confidence: 'Medium', ifWrong: 'A finding may be raised that evidence later clears, or missed that evidence would raise' },
     { id: 'A-06', what: 'Cloud figure', value: c.i.finops?.status === 'quantified' ? `The cloud line is the FinOps IQ result dated ${c.i.finops.assessmentDate ?? 'not stated'}, as it stood when linked. It covers the levers FinOps IQ quantified for the in-scope spend, capped at a published share of that spend, and is in ${c.i.finops.currency}` : 'No cloud figure is included', basis: 'Another LTM assessment (FinOps IQ), not recomputed here', confidence: c.i.finops?.confidence ?? 'Not applicable', ifWrong: 'Refreshing FinOps IQ and linking it again replaces the line; nothing else in this report moves' }
   ];
+  if (sized(c)) list.push(
+    { id: 'A-08', what: 'Lever cases', value: 'Conservative is a quarter, expected a half and upper all of the client\'s measured base', basis: 'LTM heuristic, the same rule FinOps IQ applies to licence levers. No published range exists for this lever', confidence: 'Low', ifWrong: 'Every case scales with the share; the base itself does not change' },
+    { id: 'A-09', what: 'Phasing and cost to deliver', value: 'Year one earns the share of contracts renewing that year, or a quarter when the client gave none; years two and three earn the whole run rate. Delivery effort is a fixed number of FTE-months for the chosen tier, costed at the client\'s own rate, with a fifth of that cost recurring each year', basis: 'LTM heuristic, copied from the FinOps IQ licence lever pending calibration on delivered work', confidence: 'Low', ifWrong: 'Year-one and three-year figures move; the gross run rate does not' },
+    { id: 'A-10', what: 'The measured base', value: 'The unused or over-entitled licence cost is a figure the client supplied from its own reconciliation; LTM has not audited it. It excludes SaaS and marketplace software', basis: 'Client input', confidence: 'Varies', ifWrong: 'Every figure in this section scales with the base; an overstated base overstates the range in proportion' }
+  );
   if (c.i.currency && !['USD', 'AED', 'SAR', 'OTHER'].includes(c.i.currency)) {
     const a = bands.assumptions[0];
     list.push({ id: 'A-07', what: 'Currency conversion of size bands', value: a.value, basis: a.basis, confidence: a.confidence.charAt(0).toUpperCase() + a.confidence.slice(1), ifWrong: a.ifWrong });
@@ -366,7 +421,7 @@ export function costIqReport(input: CostIqReportInput, opts: CostIqReportOptions
       footer: `${PLATFORM} · ${PRODUCT} · Confidential`,
       status: 'Indicative assessment from self-reported answers. Not a savings commitment.'
     },
-    sections: [summary(c), profile(c), scores(c), findingsSection(c), cloudSection(c), roadmap(c), help(c), calculation(c), assumptions(c), methodology(c), sources(c), ...(client ? [] : [consultant(c)])]
+    sections: [summary(c), profile(c), scores(c), findingsSection(c), cloudSection(c), ...(leversSection(c) ? [leversSection(c)!] : []), roadmap(c), help(c), calculation(c), assumptions(c), methodology(c), sources(c), ...(client ? [] : [consultant(c)])]
   };
 }
 

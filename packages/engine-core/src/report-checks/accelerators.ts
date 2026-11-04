@@ -8,6 +8,7 @@ import { clientView as finopsClientView } from '../accelerators/finops-iq/v3/cli
 import { resolveTraceField } from '../accelerators/finops-iq/v3/report';
 import type { SovereignIqV4Result } from '../accelerators/sovereign-iq/v4';
 import { resolveCostIqField, type CostIqReportInput } from '../accelerators/cost-iq/report';
+import { FINOPS_IQ_LEVER_IDS } from '../accelerators/finops-iq/v3/cost-iq-summary';
 import { runReportChecks, type CheckResult, type View } from './index';
 
 const CASES = ['conservative', 'expected', 'upper'] as const;
@@ -80,8 +81,22 @@ export function checkCostIqReport(doc: ReportDocument, input: CostIqReportInput,
   return runReportChecks(doc, view, {
     requiredSections: ['summary', 'profile', 'scores', 'findings', 'cloud', 'roadmap', 'help', 'calculation', 'assumptions', 'methodology', 'sources', ...(view === 'consultant' ? ['consultant'] : [])],
     requiredNotices: ['not a savings commitment', 'FinOps Framework', 'creativecommons.org/licenses/by/4.0', 'does not assess legal, tax or regulatory obligations', quantified ? 'does not estimate it again' : 'Not quantified'],
-    currency: quantified ? input.finops!.currency : undefined,
+    // One currency per edition: skipped when the cloud line and the non-cloud levers are in different currencies (never converted).
+    currency: input.nonCloud?.status === 'quantified' ? (!quantified || input.finops!.currency === input.nonCloud.currency ? input.nonCloud.currency : undefined) : quantified ? input.finops!.currency : undefined,
     resolve: field => resolveCostIqField(input, field),
+    // The total is the non-cloud levers plus the cloud line, case by case (CQ4 reconciliation).
+    reconcile: () => {
+      const n = input.nonCloud;
+      if (!n?.total) return [];
+      const out: string[] = [];
+      const cloud = n.total.cloudIncluded ? input.finops : null;
+      for (const k of ['conservative', 'expected', 'upper'] as const) for (const m of ['netRunRate', 'net3Year'] as const) {
+        const want = n.lines.reduce((t, l) => t + l.cases[k][m].value, 0) + (cloud?.cases ? cloud.cases[k][m].value : 0);
+        if (Math.abs(want - n.total.cases[k][m].value) > 1) out.push(`total ${k} ${m} is ${n.total.cases[k][m].value} but the levers${cloud ? ' and the cloud line' : ''} sum to ${want}`);
+      }
+      for (const l of n.lines) if (FINOPS_IQ_LEVER_IDS.includes(l.id)) out.push(`${l.id} is a FinOps IQ lever and may not be computed by Cost IQ`);
+      return out;
+    },
     strictNumbers: true,
     numbersAllowedIn: ['consultant'],
     clientForbidden: [/CORE-\d+/, /ADP-\d+/],
