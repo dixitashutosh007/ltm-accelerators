@@ -314,3 +314,11 @@ The owner accepted the recommended defaults on the taxonomy (T1 to T5) and the c
 
 Open: minimum scored answers per dimension before a score shows (CQ4, S5).
 
+
+## CQ5 progress (4 Nov 2026): slice 1, the server-built report
+
+Done: the Cost IQ report is built on the server (`packages/engine-core/src/accelerators/cost-iq/report.ts`) in the shared model and PDF renderer, with a client and a consultant edition and a backlog CSV; a report service (`amplify/functions/cost-iq-report`, `GET /api/cost-iq/report`, access check, owner or Admin, completed assessments only); report checks (`checkCostIqReport`: required sections and notices, every traced number re-read from the engine result, no internal IDs in the client edition); the page's download buttons call the service, and the browser-built PDF and the jsPDF script are gone. Sections: executive summary, scope and context, scores by dimension, findings (each with the answers that raised it and the evidence needed before sizing), cloud and FinOps (FinOps IQ's summary as linked, or "not quantified"), roadmap, how LTM can help; appendices: how we calculated this, assumptions (seven, each with basis, confidence and what changes if wrong), methodology and limits, sources, and the consultant appendix (answers and notes).
+
+Stated plainly in every edition: no non-cloud saving is sized, so the only amount is the cloud line; each finding lists the evidence needed first.
+
+Still open in CQ5: the non-cloud lever and the total (CQ4), the hypothesis-versus-findings comparison (ADP-55), a full delivery-grade roadmap and offerings (CQ6), the CIO challenge test (ten questions answered from the report's pages), and removal of the page's on-screen AI-style "full report" view (CQ7).

@@ -39,4 +39,11 @@ function questions() {
   };
 }
 
-module.exports = { evaluateCostIq, metadata, questions, RELEASE_MANIFEST };
+// The questions a run is asked and the ones answered, by the same selection the engine counts completeness over.
+function scopeCounts({ answers = {}, scope = null } = {}) {
+  const shown = canon.shownQuestionIds(config, Array.isArray(scope?.selectedAreas) ? scope.selectedAreas : null, answers);
+  const has = id => answers[id] != null && answers[id] !== '' && !(Array.isArray(answers[id]) && answers[id].length === 0);
+  return { shown: shown.size, answered: [...shown].filter(has).length };
+}
+
+module.exports = { evaluateCostIq, metadata, questions, scopeCounts, RELEASE_MANIFEST };

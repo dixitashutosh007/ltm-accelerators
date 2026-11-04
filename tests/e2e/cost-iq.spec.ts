@@ -187,5 +187,40 @@ test.describe('Cost IQ', () => {
     expect(saas).not.toContain('ADP-11');
     expect(world.pageErrors).toEqual([]);
   });
+
+  test('a completed assessment downloads the server-built report: PDF, client edition and backlog, each through the API', async ({ page, context, world }) => {
+    await signedIn(context, permitted(makeIdToken('consultant@ltm.com')));
+    const answers = { 'CORE-01': ['PUBLIC_CLOUD'], 'CORE-16': 'TRUE', 'ADP-42': 'UNKNOWN' };
+    const areas = ['Infrastructure', 'Applications'];
+    const done = { ...stored, status: 'completed', selectedAreasJson: JSON.stringify(areas), answersJson: JSON.stringify(answers), subjectiveJson: '{}', resultJson: JSON.stringify(evaluateCostIq({ answers, scope: { selectedAreas: areas } })), completedAt: '2026-11-02T00:00:00.000Z' };
+    world.on('GET', ASSESSMENT, ({ query }) => ({ body: { ok: true, data: query.assessmentId ? done : [done] } }));
+    const asked: string[] = [];
+    world.on('GET', '/api/cost-iq/report', ({ query }) => {
+      asked.push(`?assessmentId=${query.assessmentId}&format=${query.format}&view=${query.view}`);
+      const csv = query.format === 'csv';
+      return { body: null, raw: { body: csv ? 'a,b' : '%PDF-1.4', headers: { 'content-type': csv ? 'text/csv' : 'application/pdf', 'content-disposition': `attachment; filename="cost-iq-acme-bank.${csv ? 'csv' : 'pdf'}"` } } };
+    });
+    await page.goto('/cost-iq-v10');
+    await page.getByRole('button', { name: 'View result' }).click();
+    const download = async (name: string) => { const [d] = await Promise.all([page.waitForEvent('download'), page.getByRole('button', { name, exact: true }).click()]); return d.suggestedFilename(); };
+    expect(await download('Report (PDF)')).toBe('cost-iq-acme-bank.pdf');
+    expect(await download('Client edition (PDF)')).toBe('cost-iq-acme-bank.pdf');
+    expect(await download('Backlog (CSV)')).toBe('cost-iq-acme-bank.csv');
+    expect(asked).toEqual(['?assessmentId=CIQ-stored-0001&format=pdf&view=consultant', '?assessmentId=CIQ-stored-0001&format=pdf&view=client', '?assessmentId=CIQ-stored-0001&format=csv&view=client']);
+    expect(await page.evaluate('typeof window.jspdf')).toBe('undefined');
+    expect(world.pageErrors).toEqual([]);
+  });
+
+  test('a trial scenario offers no report download, and says why', async ({ page, context, world }) => {
+    await signedIn(context, permitted(makeIdToken('consultant@ltm.com')));
+    world.on('GET', ASSESSMENT, () => ({ body: { ok: true, data: [] } }));
+    world.on('POST', '/api/evaluate/cost-iq', ({ body }) => ({ body: evaluateCostIq({ answers: body.answers, scope: body.scope }) }));
+    await page.goto('/cost-iq-v10');
+    await page.getByRole('button', { name: 'Load Healthy' }).click();
+    await expect(page.getByText('Evidence completeness').first()).toBeVisible({ timeout: 15000 });
+    await expect(page.getByRole('button', { name: 'Report (PDF)' })).toHaveCount(0);
+    await expect(page.getByText('produced from a saved, completed assessment')).toBeVisible();
+    expect(world.pageErrors).toEqual([]);
+  });
 });
 

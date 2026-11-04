@@ -7,6 +7,7 @@ import type { FinOpsIqV3Result } from '../accelerators/finops-iq/v3/evaluate';
 import { clientView as finopsClientView } from '../accelerators/finops-iq/v3/client-view';
 import { resolveTraceField } from '../accelerators/finops-iq/v3/report';
 import type { SovereignIqV4Result } from '../accelerators/sovereign-iq/v4';
+import { resolveCostIqField, type CostIqReportInput } from '../accelerators/cost-iq/report';
 import { runReportChecks, type CheckResult, type View } from './index';
 
 const CASES = ['conservative', 'expected', 'upper'] as const;
@@ -70,5 +71,20 @@ export function checkSovereignIqReport(doc: ReportDocument, result: SovereignIqV
       ...(view === 'consultant' ? ['sow', 'consultant'] : [])],
     requiredNotices: ['not legal advice', 'qualified lawyer', 'Statutory maximums', 'local legal advice is needed'],
     resolve: field => resolveSovereign(result, field)
+  }, today);
+}
+
+/** Cost IQ: sections from the report builder; every number traced and re-read from the engine result; the notices are present. */
+export function checkCostIqReport(doc: ReportDocument, input: CostIqReportInput, view: View, today: string): CheckResult {
+  const quantified = input.finops?.status === 'quantified';
+  return runReportChecks(doc, view, {
+    requiredSections: ['summary', 'profile', 'scores', 'findings', 'cloud', 'roadmap', 'help', 'calculation', 'assumptions', 'methodology', 'sources', ...(view === 'consultant' ? ['consultant'] : [])],
+    requiredNotices: ['not a savings commitment', 'FinOps Framework', 'creativecommons.org/licenses/by/4.0', 'does not assess legal, tax or regulatory obligations', quantified ? 'does not estimate it again' : 'Not quantified'],
+    currency: quantified ? input.finops!.currency : undefined,
+    resolve: field => resolveCostIqField(input, field),
+    strictNumbers: true,
+    numbersAllowedIn: ['consultant'],
+    clientForbidden: [/CORE-\d+/, /ADP-\d+/],
+    ids: { pattern: /\b(?:CORE|ADP|CTX)-\d{2}\b|\b[FR]-\d{3}\b|\b(?:COST|VALUE)-\d{2}\b/, clientBannedIn: ['summary', 'profile', 'scores', 'findings', 'cloud', 'roadmap', 'help'] }
   }, today);
 }

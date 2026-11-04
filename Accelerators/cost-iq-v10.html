@@ -6,7 +6,6 @@
 <title>Cost IQ — Technology Cost & Value Diagnostic · LTM Vantage</title>
 <script src="./cost-iq-runtime-config.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="/assets/ltm-api.js"></script>
 <script src="/assets/s3-reports.js"></script>
 <script src="/assets/rbac-guard.js" data-tool="cost-iq"></script>
@@ -355,7 +354,7 @@ async function loadCloudLine(){
 function preliminary(){
   const h=assessment.headlines||{};const ev=assessment.evidence||{};const dims=scoreEntries();const findings=assessment.findings||[];
   const signals=findings.slice(0,4).map(function(f){return '<div class="signal"><b>'+esc(f.title||f.id||'Finding')+'</b><span>'+esc(f.severity||'Management attention required')+(f.description?' · '+esc(f.description):'')+'</span></div>'}).join('');
-  $('app').innerHTML='<div class="hero"><div class="eyebrow">COST IQ · PRELIMINARY DIAGNOSTIC</div><h1>Your technology cost & value snapshot</h1><p>The assessment engine has completed its scoring. AI has checked the responses for ambiguity and can ask targeted clarification questions before the executive report is generated.</p></div><div class="report-kpi" style="margin-top:20px"><div class="score-card"><div class="score-label">Cost IQ</div><div class="score-num">'+esc(h.costIQ??'—')+'</div></div><div class="score-card"><div class="score-label">Value IQ</div><div class="score-num">'+esc(h.valueIQ??'—')+'</div></div><div class="score-card"><div class="score-label">Evidence completeness</div><div class="score-num" style="font-size:23px">'+esc(ev.confidence||'—')+'</div></div><div class="score-card"><div class="score-label">Completeness</div><div class="score-num">'+esc(ev.assessmentCompleteness??0)+'%</div></div></div><div class="card">'+visualSection(dims)+'</div><div class="card"><div class="eyebrow">INITIAL SIGNALS</div><h2>What the engine is seeing</h2><div class="report-band">'+(signals||'<div class="signal"><b>No calibrated findings activated</b><span>The detailed report will explain the evidence.</span></div>')+'</div></div><div class="gate"><div class="eyebrow" style="color:#a9bac6">FULL EXECUTIVE DIAGNOSTIC</div><h2>Generate the detailed Cost IQ report</h2><p>The final report combines deterministic scoring, AI-reviewed context, visual diagnostics, opportunity signals and a 3-horizon roadmap.</p><div class="actions"><button class="btn primary" onclick="generateDetailedReport()">Generate full report →</button></div></div>';
+  $('app').innerHTML='<div class="hero"><div class="eyebrow">COST IQ · PRELIMINARY DIAGNOSTIC</div><h1>Your technology cost & value snapshot</h1><p>The assessment engine has completed its scoring. AI has checked the responses for ambiguity and can ask targeted clarification questions before the executive report is generated.</p></div><div class="report-kpi" style="margin-top:20px"><div class="score-card"><div class="score-label">Cost IQ</div><div class="score-num">'+esc(h.costIQ??'—')+'</div></div><div class="score-card"><div class="score-label">Value IQ</div><div class="score-num">'+esc(h.valueIQ??'—')+'</div></div><div class="score-card"><div class="score-label">Evidence completeness</div><div class="score-num" style="font-size:23px">'+esc(ev.confidence||'—')+'</div></div><div class="score-card"><div class="score-label">Completeness</div><div class="score-num">'+esc(ev.assessmentCompleteness??0)+'%</div></div></div><div class="card">'+visualSection(dims)+'</div><div class="card"><div class="eyebrow">INITIAL SIGNALS</div><h2>What the engine is seeing</h2><div class="report-band">'+(signals||'<div class="signal"><b>No calibrated findings activated</b><span>The detailed report will explain the evidence.</span></div>')+'</div></div><div class="gate"><div class="eyebrow" style="color:#a9bac6">FULL EXECUTIVE DIAGNOSTIC</div><h2>Generate the detailed Cost IQ report</h2><p>The final report combines deterministic scoring, AI-reviewed context, visual diagnostics, opportunity signals and a 3-horizon roadmap.</p><div class="actions"><button class="btn primary" onclick="generateDetailedReport()">Generate full report →</button></div><div class="card" id="reportCard"><div class="eyebrow">REPORT</div><h2>Download the report</h2>'+reportButtons()+'</div></div>';
   $('app').insertAdjacentHTML('beforeend',cloudPanelHtml());
   initVisuals();
   loadCloudLine();
@@ -401,87 +400,28 @@ function renderReport(ai){
   const pri=(ai.priorityAreas||[]).map(function(x){return '<div class="signal"><b>'+esc(x.name)+'</b><span>Score '+esc(x.score)+' · '+esc(x.why)+'</span><p style="font-size:11px;margin:7px 0 0"><b>Next:</b> '+esc(x.action)+'</p></div>'}).join('');
   const opp=(ai.opportunities||[]).map(function(x){return '<div class="finding"><strong>'+esc(x.title)+'</strong><p>'+esc(x.description)+'</p><p><b>Evidence completeness:</b> '+esc(x.confidence)+' · '+esc(x.nextStep)+'</p></div>'}).join('');
   const roads=(ai.roadmap||[]).map(function(r){return '<div class="road"><h4>'+esc(r.horizon)+'</h4><ul>'+(r.actions||[]).map(function(a){return '<li>'+esc(a)+'</li>'}).join('')+'</ul></div>'}).join('');
-  $('app').innerHTML='<div id="report"><div class="hero"><div class="eyebrow">LTM · COST IQ EXECUTIVE REPORT</div><h1>Technology Cost & Value Diagnostic</h1><p>'+esc(ai.executiveSummary||'')+'</p></div><div class="report-kpi" style="margin-top:20px"><div class="score-card"><div class="score-label">Cost IQ</div><div class="score-num">'+esc(h.costIQ??'—')+'</div></div><div class="score-card"><div class="score-label">Value IQ</div><div class="score-num">'+esc(h.valueIQ??'—')+'</div></div><div class="score-card"><div class="score-label">Evidence completeness</div><div class="score-num" style="font-size:23px">'+esc((assessment.evidence||{}).confidence||'—')+'</div></div><div class="score-card"><div class="score-label">Findings</div><div class="score-num">'+findings.length+'</div></div></div><div class="card">'+visualSection(dims)+'</div><div class="card"><div class="eyebrow">EXECUTIVE SIGNALS</div><h2>What leadership should know</h2><div class="report-band">'+(pri||'<div class="signal"><b>AI priority map</b><span>No additional priority areas were returned.</span></div>')+'</div></div><div class="card"><div class="eyebrow">OPPORTUNITY SIGNALS</div><h2>Potential value levers</h2>'+(opp||'<p class="muted">No additional opportunity narrative returned.</p>')+'</div><div class="card"><div class="eyebrow">ROADMAP</div><h2>Recommended action path</h2><div class="roadmap">'+(roads||'<p class="muted">Roadmap will be developed during the advisory engagement.</p>')+'</div></div><div class="card"><div class="eyebrow">ENGINE FINDINGS</div><h2>Deterministic findings</h2>'+(findings.map(function(f){return '<div class="finding"><strong>'+esc(f.id)+' · '+esc(f.title)+'</strong><p>'+esc(f.severity||'')+' '+esc(f.detail||'')+'</p></div>'}).join('')||'<p class="muted">No calibrated findings.</p>')+'</div><div class="card"><div class="eyebrow">LTM INFRASTRUCTURE TECH ADVISORY</div><h2>Recommended next steps</h2><ul>'+((ai.consultingRecommendations||recs.map(function(x){return x.ltmService||x.title})).map(function(x){return '<li style="margin:7px 0">'+esc(x)+'</li>'}).join(''))+'</ul><p class="mini">'+esc(ai.limitations||'Scores and findings remain governed by the Cost IQ deterministic engine. AI is used for interpretation and report synthesis only.')+'</p></div></div><div class="actions"><button class="btn primary" onclick="downloadPDF()">Download Executive Report</button><button class="btn" onclick="archivePDF()">Archive to Secured Storage</button><button class="btn dark" onclick="home()">Start new assessment</button></div>';
+  $('app').innerHTML='<div id="report"><div class="hero"><div class="eyebrow">LTM · COST IQ EXECUTIVE REPORT</div><h1>Technology Cost & Value Diagnostic</h1><p>'+esc(ai.executiveSummary||'')+'</p></div><div class="report-kpi" style="margin-top:20px"><div class="score-card"><div class="score-label">Cost IQ</div><div class="score-num">'+esc(h.costIQ??'—')+'</div></div><div class="score-card"><div class="score-label">Value IQ</div><div class="score-num">'+esc(h.valueIQ??'—')+'</div></div><div class="score-card"><div class="score-label">Evidence completeness</div><div class="score-num" style="font-size:23px">'+esc((assessment.evidence||{}).confidence||'—')+'</div></div><div class="score-card"><div class="score-label">Findings</div><div class="score-num">'+findings.length+'</div></div></div><div class="card">'+visualSection(dims)+'</div><div class="card"><div class="eyebrow">EXECUTIVE SIGNALS</div><h2>What leadership should know</h2><div class="report-band">'+(pri||'<div class="signal"><b>AI priority map</b><span>No additional priority areas were returned.</span></div>')+'</div></div><div class="card"><div class="eyebrow">OPPORTUNITY SIGNALS</div><h2>Potential value levers</h2>'+(opp||'<p class="muted">No additional opportunity narrative returned.</p>')+'</div><div class="card"><div class="eyebrow">ROADMAP</div><h2>Recommended action path</h2><div class="roadmap">'+(roads||'<p class="muted">Roadmap will be developed during the advisory engagement.</p>')+'</div></div><div class="card"><div class="eyebrow">ENGINE FINDINGS</div><h2>Deterministic findings</h2>'+(findings.map(function(f){return '<div class="finding"><strong>'+esc(f.id)+' · '+esc(f.title)+'</strong><p>'+esc(f.severity||'')+' '+esc(f.detail||'')+'</p></div>'}).join('')||'<p class="muted">No calibrated findings.</p>')+'</div><div class="card"><div class="eyebrow">LTM INFRASTRUCTURE TECH ADVISORY</div><h2>Recommended next steps</h2><ul>'+((ai.consultingRecommendations||recs.map(function(x){return x.ltmService||x.title})).map(function(x){return '<li style="margin:7px 0">'+esc(x)+'</li>'}).join(''))+'</ul><p class="mini">'+esc(ai.limitations||'Scores and findings remain governed by the Cost IQ deterministic engine. AI is used for interpretation and report synthesis only.')+'</p></div></div><div class="actions">'+reportButtons()+'<button class="btn" onclick="archivePDF()">Archive to Secured Storage</button><button class="btn dark" onclick="home()">Start new assessment</button></div>';
   initVisuals();
 }
 function downloadJSON(){const blob=new Blob([JSON.stringify({assessment:assessment,answers:answers,aiReview:aiReview,selectedAreas:selectedAreas},null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='cost-iq-assessment.json';a.click();URL.revokeObjectURL(a.href)}
-function downloadPDF(){
-  if(!window.jspdf?.jsPDF){alert('PDF library is still loading. Please try again.');return}
-  const doc=new window.jspdf.jsPDF();
-  const h=assessment.headlines||{},ev=assessment.evidence||{},findings=assessment.findings||[],recs=assessment.recommendations||[],dims=scoreEntries(),ai=normalizeAI(window._renderCostReport||{});
-  window._renderCostReport=ai;
-  let y=18;
-  const left=14,right=196,width=182;
-  function page(){doc.addPage();y=18}
-  function ensure(height){if(y+height>280)page()}
-  function textBlock(text,size=10,indent=0,gap=4){
-    const lines=doc.splitTextToSize(String(text??''),width-indent);
-    ensure(lines.length*5+gap);doc.setFontSize(size);doc.text(lines,left+indent,y);y+=lines.length*5+gap;
-  }
-  function heading(title){
-    ensure(14);doc.setFontSize(14);doc.text(title,left,y);y+=8;
-  }
-  function subheading(title){
-    ensure(10);doc.setFontSize(11);doc.text(title,left,y);y+=6;
-  }
-  function bullet(text){
-    textBlock('• '+text,9,2,3);
-  }
-  doc.setFontSize(18);doc.text('LTM Cost IQ — Executive Report',left,y);y+=8;
-  doc.setFontSize(10);doc.text('Technology Cost & Value Diagnostic',left,y);y+=8;
-  doc.setFontSize(11);doc.text('Cost IQ: '+(h.costIQ??'—')+'   Value IQ: '+(h.valueIQ??'—')+'   Evidence completeness: '+(ev.confidence||'—'),left,y);y+=10;
-  doc.setFontSize(9);doc.text('Assessment completeness: '+(ev.assessmentCompleteness??'—')+'   Findings: '+findings.length, left,y);y+=9;
-
-  heading('Executive Summary');
-  textBlock(ai.executiveSummary||'The Cost IQ diagnostic has completed deterministic scoring.',10,0,6);
-
-  heading('Priority Areas');
-  (ai.priorityAreas||[]).slice(0,5).forEach(function(x){
-    subheading((x.name||'Priority area')+' — Score '+(x.score??'—'));
-    textBlock('Why: '+(x.why||'Management attention area.'),9,2,2);
-    textBlock('Action: '+(x.action||'Validate evidence, ownership and improvement actions.'),9,2,4);
-  });
-
-  heading('Dimension Scorecard');
-  dims.forEach(function(x){textBlock(x.name+': '+x.score+'/100',9,2,2)});
-
-  heading('Deterministic Findings');
-  if(findings.length){
-    findings.forEach(function(f){
-      subheading((f.id||'Finding')+' — '+(f.title||'Management attention'));
-      textBlock((f.severity||'')+(f.description?' — '+f.description:''),9,2,3);
-    });
-  } else textBlock('No calibrated findings were activated by the deterministic methodology.',9,2,4);
-
-  heading('Opportunity Signals');
-  (ai.opportunities||[]).forEach(function(x){
-    subheading(x.title||'Advisory opportunity');
-    textBlock(x.description||'Opportunity identified by the deterministic methodology.',9,2,2);
-    if(x.evidence)textBlock('Evidence: '+x.evidence,9,2,2);
-    textBlock('Evidence completeness: '+(x.confidence||'—')+(x.nextStep?' · Next: '+x.nextStep:''),9,2,4);
-  });
-
-  heading('Recommended Roadmap');
-  (ai.roadmap||[]).forEach(function(r){
-    subheading(r.horizon||'Next horizon');
-    (r.actions||[]).forEach(bullet);
-    y+=1;
-  });
-
-  heading('LTM Infrastructure Tech Advisory Recommendations');
-  const advisory=ai.consultingRecommendations||recs.map(function(x){return x.ltmService||x.title||x.id}).filter(Boolean);
-  if(advisory.length) advisory.forEach(bullet);
-  else textBlock('No additional advisory recommendations were activated.',9,2,4);
-
-  heading('Methodology & Limitations');
-  textBlock(ai.limitations||'Deterministic scores and findings remain the source of truth.',9,0,4);
-  textBlock('This report is generated from the Cost IQ deterministic assessment engine. AI narrative synthesis is optional and does not alter deterministic scores, findings or recommendations.',9,0,6);
-
-  const pages=doc.getNumberOfPages();
-  for(let p=1;p<=pages;p++){
-    doc.setPage(p);doc.setFontSize(8);doc.text('LTM Cost IQ · Confidential',left,289);doc.text('Page '+p+' of '+pages,176,289);
-  }
-  doc.save('cost-iq-executive-report.pdf');
+// The report is built on the server from the saved, completed assessment (CQ5): the same document for the screen, the PDF and the backlog.
+function reportReady(){return !!savedAssessment&&!testScenario&&savedAssessment.status==='completed'}
+function reportButtons(){
+  if(!reportReady())return '<p class="muted" id="reportNote">The downloadable report is produced from a saved, completed assessment.</p>';
+  return '<div class="actions" role="group" aria-label="Download the report"><button class="btn primary" onclick="downloadReport(\'pdf\',\'consultant\',this)">Report (PDF)</button><button class="btn" onclick="downloadReport(\'pdf\',\'client\',this)">Client edition (PDF)</button><button class="btn" onclick="downloadReport(\'csv\',\'client\',this)">Backlog (CSV)</button></div><p class="muted" id="reportNote" role="status"></p>';
+}
+async function downloadReport(format,view,btn){
+  const note=$('reportNote');const say=t=>{if(note)note.textContent=t};
+  if(!reportReady()){say('Complete and save the assessment first.');return}
+  if(btn)btn.disabled=true;say('Preparing the report…');
+  try{
+    const r=await authedFetch(API+'/api/cost-iq/report?assessmentId='+encodeURIComponent(savedAssessment.assessmentId)+'&format='+format+'&view='+view);
+    if(!r.ok){let m='HTTP '+r.status;try{const d=await r.json();m=d.message||d.error||m}catch(e){}throw Error(m)}
+    const blob=await r.blob();const m=/filename="([^"]+)"/.exec(r.headers.get('Content-Disposition')||'');
+    const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=m?m[1]:'cost-iq-report.'+format;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+    say('Downloaded.');
+  }catch(e){say('Not downloaded: '+e.message)}
+  finally{if(btn)btn.disabled=false}
 }
 async function archivePDF(){
   if(!window.LTM_S3){alert('Secure report archive is unavailable on this deployment.');return}

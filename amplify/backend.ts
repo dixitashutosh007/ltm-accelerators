@@ -24,6 +24,7 @@ import { manageSovereignAssessmentFunction } from './functions/manage-sovereign-
 import { retentionSweepFunction } from './functions/retention-sweep/resource';
 import { manageCostAssessmentFunction } from './functions/manage-cost-assessment/resource';
 import { manageSessionFunction } from './functions/manage-session/resource';
+import { costIqReportFunction } from './functions/cost-iq-report/resource';
 import { sovereignIqReportFunction } from './functions/sovereign-iq-report/resource';
 import { sovereignIqNarrativeFunction } from './functions/sovereign-iq-narrative/resource';
 import { finopsIqReportFunction } from './functions/finops-iq-report/resource';
@@ -51,6 +52,7 @@ export const backend = defineBackend({
   manageCostAssessmentFunction,
   retentionSweepFunction,
   sovereignIqReportFunction,
+  costIqReportFunction,
   sovereignIqNarrativeFunction,
   finopsIqReportFunction
 });
@@ -123,7 +125,7 @@ for (const fn of [
   backend.evaluateFinOpsIqFunction, backend.manageFinOpsAssessmentFunction, backend.finopsIqReportFunction,
   backend.evaluateSovereignIqFunction, backend.evaluateCloudIqFunction,
   backend.evaluateStrategyIqFunction, backend.evaluateModernizationIqFunction, backend.evaluateResilienceIqFunction,
-  backend.manageResilienceAssessmentFunction, backend.manageResilienceEvidenceFunction, backend.manageSovereignAssessmentFunction, backend.manageSessionFunction, backend.manageCostAssessmentFunction, backend.sovereignIqReportFunction,
+  backend.manageResilienceAssessmentFunction, backend.manageResilienceEvidenceFunction, backend.manageSovereignAssessmentFunction, backend.manageSessionFunction, backend.manageCostAssessmentFunction, backend.sovereignIqReportFunction, backend.costIqReportFunction,
   backend.sovereignIqNarrativeFunction, backend.evaluateCostIqFunction
 ]) {
   fn.addEnvironment('REPORTS_BUCKET', REPORTS_BUCKET);
@@ -222,6 +224,7 @@ const integrations = {
   sovereignAssessment: integrate('AdvisorySovereignIqAssessment', backend.manageSovereignAssessmentFunction),
   sessions: integrate('AdvisorySessions', backend.manageSessionFunction),
   costAssessment: integrate('AdvisoryCostIqAssessment', backend.manageCostAssessmentFunction),
+  costReport: integrate('AdvisoryCostIqReport', backend.costIqReportFunction),
   sovereignReport: integrate('AdvisorySovereignIqReport', backend.sovereignIqReportFunction),
   sovereignNarrative: integrate('AdvisorySovereignIqNarrative', backend.sovereignIqNarrativeFunction),
   finopsReport: integrate('AdvisoryFinOpsIqReport', backend.finopsIqReportFunction),
@@ -248,6 +251,7 @@ route('/api/evaluate/sovereign-iq/v4', [HttpMethod.POST], integrations.sovereign
 route('/api/sovereign-iq/assessment', [HttpMethod.GET, HttpMethod.POST], integrations.sovereignAssessment);
 route('/api/sessions', [HttpMethod.GET, HttpMethod.POST], integrations.sessions);
 route('/api/cost-iq/assessment', [HttpMethod.GET, HttpMethod.POST], integrations.costAssessment);
+route('/api/cost-iq/report', [HttpMethod.GET], integrations.costReport);
 route('/api/sovereign-iq/report', [HttpMethod.GET], integrations.sovereignReport);
 route('/api/sovereign-iq/narrative', [HttpMethod.POST], integrations.sovereignNarrative);
 

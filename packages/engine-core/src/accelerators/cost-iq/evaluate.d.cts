@@ -8,3 +8,4 @@ export function evaluateCostIq(input?: {
 }): Record<string, unknown>;
 export function metadata(): Record<string, unknown>;
 export function questions(): Record<string, unknown>;
+export function scopeCounts(input?: { answers?: Record<string, unknown>; scope?: Record<string, unknown> | null }): { shown: number; answered: number };

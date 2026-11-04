@@ -31,6 +31,7 @@ import { createHandler as costAssessment } from '../amplify/functions/manage-cos
 import { memoryStore as costStore } from '../amplify/functions/manage-cost-assessment/store';
 import { createHandler as sessions } from '../amplify/functions/manage-session/handler';
 import { memoryStore as sessionStore } from '../amplify/functions/manage-session/store';
+import { createHandler as costReport } from '../amplify/functions/cost-iq-report/handler';
 import { createHandler as sovereignReport } from '../amplify/functions/sovereign-iq-report/handler';
 import { createHandler as sovereignNarrative } from '../amplify/functions/sovereign-iq-narrative/handler';
 import { aiConfig, bedrockNarrativeModel } from '../amplify/functions/_shared/bedrock-narrative';
@@ -116,6 +117,7 @@ const ROUTES: Record<string, LambdaHandler> = {
   'POST /api/evaluate/sovereign-iq/v4': sovereignIq,
   'GET /api/sovereign-iq/assessment': sovereignAssessment(sovereignAssessments),
   'POST /api/sovereign-iq/assessment': sovereignAssessment(sovereignAssessments),
+  'GET /api/cost-iq/report': costReport(costAssessments),
   'GET /api/sovereign-iq/report': sovereignReport(sovereignAssessments),
   // AI narrative: off unless AI_ENABLED=true and AWS credentials for Bedrock are in the environment (PLAN S9).
   'POST /api/sovereign-iq/narrative': sovereignNarrative(sovereignAssessments, { enabled: () => aiConfig().enabled, model: () => bedrockNarrativeModel(aiConfig()) }),

@@ -6,6 +6,7 @@ import { manageSovereignAssessmentFunction } from '../functions/manage-sovereign
 import { retentionSweepFunction } from '../functions/retention-sweep/resource';
 import { manageCostAssessmentFunction } from '../functions/manage-cost-assessment/resource';
 import { manageSessionFunction } from '../functions/manage-session/resource';
+import { costIqReportFunction } from '../functions/cost-iq-report/resource';
 import { sovereignIqReportFunction } from '../functions/sovereign-iq-report/resource';
 import { sovereignIqNarrativeFunction } from '../functions/sovereign-iq-narrative/resource';
 import { finopsIqReportFunction } from '../functions/finops-iq-report/resource';
@@ -260,6 +261,7 @@ const schema = a.schema({
   allow.resource(manageCostAssessmentFunction).to(['query', 'mutate']),
   allow.resource(retentionSweepFunction).to(['query', 'mutate']),
   allow.resource(sovereignIqReportFunction).to(['query']),
+  allow.resource(costIqReportFunction).to(['query']),
   allow.resource(sovereignIqNarrativeFunction).to(['query', 'mutate']),
   // The report reads completed assessments only.
   allow.resource(finopsIqReportFunction).to(['query'])
