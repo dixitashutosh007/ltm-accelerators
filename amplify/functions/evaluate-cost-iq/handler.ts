@@ -15,10 +15,6 @@ function makeRequestId(event: APIGatewayProxyEventV2): string {
   return event.requestContext?.requestId || crypto.randomUUID();
 }
 
-// AI is off unless COST_IQ_AI_ENABLED is "true" (CQ0 finding C2: it was on by default, ungrounded and sent free text to a
-// third party). The proper fix, the shared Bedrock service with a per-engagement toggle and a grounding check, is CQ8.
-const aiEnabled = () => process.env.COST_IQ_AI_ENABLED === 'true';
-
 export const evaluate = async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> => {
   current = event;
   const id = makeRequestId(event);
@@ -28,7 +24,7 @@ export const evaluate = async (event: APIGatewayProxyEventV2): Promise<APIGatewa
   if (method === 'OPTIONS') return { statusCode: 200, headers: { ...corsHeaders(event, 'OPTIONS,GET,POST', 'X-Request-Id'), 'X-Request-Id': id }, body: '' };
 
   try {
-    if (method === 'GET' && path.endsWith('/metadata')) return response(200, { ...metadata(), ai: { enabled: aiEnabled() }, notices: NOTICES }, id);
+    if (method === 'GET' && path.endsWith('/metadata')) return response(200, { ...metadata(), notices: NOTICES }, id);
     if (method === 'GET' && path.endsWith('/questions')) return response(200, questions(), id);
 
     if (method !== 'POST') return response(405, { error: 'method_not_allowed', requestId: id }, id);
@@ -50,15 +46,8 @@ export const evaluate = async (event: APIGatewayProxyEventV2): Promise<APIGatewa
     if (!body || typeof body !== 'object' || Array.isArray(body)) {
       return response(400, { error: 'json_object_required', requestId: id }, id);
     }
-    if (method === 'POST' && (path.endsWith('/ai-review') || path.endsWith('/ai-report')) && !aiEnabled()) {
-      return response(403, { error: 'ai_disabled', message: 'AI assistance is switched off for Cost IQ.', requestId: id }, id);
-    }
-    if (method === 'POST' && path.endsWith('/ai-review')) {
-      return response(200, await aiReview(body), id);
-    }
-    if (method === 'POST' && path.endsWith('/ai-report')) {
-      return response(200, await aiReport(body), id);
-    }
+    // The AI routes of the earlier build are gone: the AI narrative is the shared Bedrock service at /api/cost-iq/narrative (CQ8).
+    if (path.endsWith('/ai-review') || path.endsWith('/ai-report')) return response(404, { error: 'not_found', requestId: id }, id);
 
     if (!body.answers || typeof body.answers !== 'object' || Array.isArray(body.answers)) {
       return response(400, { error: 'answers_object_required', requestId: id }, id);
@@ -100,60 +89,6 @@ export const evaluate = async (event: APIGatewayProxyEventV2): Promise<APIGatewa
     }, id);
   }
 };
-
-async function callGemini(instruction: string, input: string) {
-  const key = process.env.GEMINI_API_KEY;
-  if (!key) throw new Error('AI service is not configured. Add the GEMINI_API_KEY Amplify secret.');
-  const model = process.env.GEMINI_MODEL || 'gemini-3.8-flash';
-  const resp = await fetch('https://generativelanguage.googleapis.com/v1beta/models/' + encodeURIComponent(model) + ':generateContent', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'x-goog-api-key': key },
-    body: JSON.stringify({
-      contents: [{ role: 'user', parts: [{ text: instruction + '\n\nINPUT:\n' + input }] }],
-      generationConfig: { responseMimeType: 'application/json', temperature: 0.2 }
-    })
-  });
-  const data:any = await resp.json();
-  if (!resp.ok) throw new Error(data?.error?.message || ('Gemini HTTP ' + resp.status));
-  const extracted = data?.candidates?.[0]?.content?.parts?.map((part:any) => typeof part?.text === 'string' ? part.text : '').join('') || '';
-  if (!extracted) throw new Error('Gemini returned no output text.');
-  return extracted;
-}
-
-function safeJsonText(text: string) {
-  const match = text.match(/\{[\s\S]*\}/);
-  if (!match) throw new Error('AI returned an invalid structured response.');
-  return JSON.parse(match[0]);
-}
-
-async function aiReview(body:any) {
-  const payload = JSON.stringify({
-    selectedAreas: body.selectedAreas || [],
-    answers: body.answers || {},
-    context: body.context || {}
-  });
-  const instruction = `You are the Cost IQ diagnostic quality reviewer for LTM Infrastructure Technology Advisory.
-Review answers for contradictions, ambiguity, missing critical context and suspiciously strong claims.
-Do NOT change deterministic scores. Return ONLY JSON:
-{"needsClarification":true|false,"questions":[{"id":"AI-1","reason":"...","question":"...","options":["...","...","..."]}],"observations":["..."]}
-Ask at most 3 high-value questions. Do not ask for information already provided. Prefer questions that materially affect interpretation.`;
-  return safeJsonText(await callGemini(instruction, payload));
-}
-
-async function aiReport(body:any) {
-  const payload = JSON.stringify({
-    assessment: body.assessment || {},
-    answers: body.answers || {},
-    subjective: body.subjective || {},
-    aiReview: body.aiReview || {},
-    selectedAreas: body.selectedAreas || []
-  });
-  const instruction = `You are a senior LTM technology economics advisor. Produce an executive Cost IQ report using the supplied deterministic assessment as the source of truth.
-Do not invent scores, savings, facts or findings. Clearly distinguish evidence-backed observations from hypotheses.
-Return ONLY JSON:
-{"executiveSummary":"...","keyMessages":["..."],"priorityAreas":[{"name":"...","score":0,"why":"...","action":"..."}],"opportunities":[{"title":"...","description":"...","evidence":"...","confidence":"High|Medium|Low","nextStep":"..."}],"roadmap":[{"horizon":"0-30 days","actions":["..."]},{"horizon":"30-90 days","actions":["..."]},{"horizon":"90-180+ days","actions":["..."]}],"consultingRecommendations":["..."],"limitations":"..." }.`;
-  return safeJsonText(await callGemini(instruction, payload));
-}
 
 // Only signed-in callers with access to Cost IQ reach the handler (amplify/functions/_shared/access.ts).
 export const handler = withAcceleratorAccess('cost-iq', evaluate);

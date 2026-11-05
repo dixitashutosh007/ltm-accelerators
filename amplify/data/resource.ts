@@ -9,6 +9,7 @@ import { manageSessionFunction } from '../functions/manage-session/resource';
 import { costIqReportFunction } from '../functions/cost-iq-report/resource';
 import { sovereignIqReportFunction } from '../functions/sovereign-iq-report/resource';
 import { sovereignIqNarrativeFunction } from '../functions/sovereign-iq-narrative/resource';
+import { costIqNarrativeFunction } from '../functions/cost-iq-narrative/resource';
 import { finopsIqReportFunction } from '../functions/finops-iq-report/resource';
 
 /**
@@ -120,6 +121,9 @@ const schema = a.schema({
       finopsSummaryJson: a.string(),
       // Non-cloud lever evidence the consultant recorded from the client's own figures (CQ4); the report sizes the lever from it.
       leverEvidenceJson: a.string(),
+      // AI narrative (CQ8): the consultant's per-engagement switch and the last narrative that passed the grounding check.
+      aiEnabled: a.boolean(),
+      narrativeJson: a.string(),
       // Epoch seconds 24 months after the last change; DynamoDB time to live deletes the record then.
       expiresAt: a.integer()
     })
@@ -265,6 +269,7 @@ const schema = a.schema({
   allow.resource(sovereignIqReportFunction).to(['query']),
   allow.resource(costIqReportFunction).to(['query']),
   allow.resource(sovereignIqNarrativeFunction).to(['query', 'mutate']),
+  allow.resource(costIqNarrativeFunction).to(['query', 'mutate']),
   // The report reads completed assessments only.
   allow.resource(finopsIqReportFunction).to(['query'])
 ]);

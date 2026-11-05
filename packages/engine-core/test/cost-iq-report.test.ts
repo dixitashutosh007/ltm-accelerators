@@ -79,7 +79,8 @@ describe('Cost IQ report', () => {
     expect(NOTICES.data).toMatch(/Mumbai region/);
     expect(NOTICES.data).toMatch(/two years after its last change/);
     expect(NOTICES.data).toMatch(/ask your consultant to delete it sooner/);
-    expect(NOTICES.data).toMatch(/uses no AI features/);
+    expect(NOTICES.data).toMatch(/AI narrative is off unless your consultant switches it on/);
+    expect(NOTICES.dataWith(true)).toMatch(/Amazon Bedrock in India/);
     expect(NOTICES.disclaimer).toMatch(/not financial, accounting, tax, legal or regulatory advice/);
   });
 

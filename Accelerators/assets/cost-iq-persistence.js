@@ -44,6 +44,8 @@
     linkFinops: (assessmentId, finopsAssessmentId) => post({ action: 'link_finops', assessmentId, finopsAssessmentId }),
     unlinkFinops: assessmentId => post({ action: 'unlink_finops', assessmentId }),
     // The client's measured figures for the non-cloud levers; null clears them.
-    setLeverEvidence: (assessmentId, evidence) => post({ action: 'set_lever_evidence', assessmentId, evidence })
+    setLeverEvidence: (assessmentId, evidence) => post({ action: 'set_lever_evidence', assessmentId, evidence }),
+    // The AI narrative (CQ8): action is enable, disable or generate; the service refuses unless AI is on for the service and the engagement.
+    narrative: (assessmentId, action, focus) => request('/api/cost-iq/narrative', { method: 'POST', body: JSON.stringify({ action, assessmentId, focus }) })
   });
 })();

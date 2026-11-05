@@ -28,6 +28,9 @@ export interface CostIqAssessmentRecord {
   finopsSummaryJson?: string | null;
   /** The client's measured figures for the non-cloud levers (JSON, `NonCloudEvidence`). */
   leverEvidenceJson?: string | null;
+  /** The consultant's per-engagement AI switch (off unless set) and the last narrative that passed the grounding check (CQ8). */
+  aiEnabled?: boolean | null;
+  narrativeJson?: string | null;
   /** Epoch seconds 24 months after the last change; DynamoDB time to live deletes the record then. */
   expiresAt?: number | null;
 }
@@ -42,7 +45,7 @@ export interface CostIqAssessmentStore {
 }
 
 export const SUMMARY_FIELDS = 'assessmentId acceleratorId releaseId methodologyVersion status respondentEmail clientName clientSector clientCurrency startedAt updatedAt completedAt expiresAt resultJson finopsAssessmentId';
-export const FIELDS = `${SUMMARY_FIELDS} selectedAreasJson answersJson subjectiveJson finopsAssessmentId finopsSummaryJson leverEvidenceJson`;
+export const FIELDS = `${SUMMARY_FIELDS} selectedAreasJson answersJson subjectiveJson finopsAssessmentId finopsSummaryJson leverEvidenceJson aiEnabled narrativeJson`;
 const PAGE_SIZE = 200, MAX_PAGES = 50;
 
 /** TTL deletes within days, not at once: a record past expiresAt counts as already deleted. */
@@ -91,7 +94,7 @@ export function memoryStore(persist?: { load: () => CostIqAssessmentRecord[]; sa
     async get(id) { const r = items.get(id); return isLive(r) ? copy(r) : null; },
     async listByRespondent(email) {
       return newestFirst([...items.values()].filter(r => r.respondentEmail === email && isLive(r)))
-        .map(({ answersJson, selectedAreasJson, subjectiveJson, finopsSummaryJson, leverEvidenceJson, ...rest }) => copy(rest) as CostIqAssessmentRecord);
+        .map(({ answersJson, selectedAreasJson, subjectiveJson, finopsSummaryJson, leverEvidenceJson, narrativeJson, ...rest }) => copy(rest) as CostIqAssessmentRecord);
     },
     async create(record) {
       if (items.has(record.assessmentId)) throw new Error('conditional check failed: record exists');

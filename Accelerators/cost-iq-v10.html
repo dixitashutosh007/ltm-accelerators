@@ -50,8 +50,8 @@ img,canvas,svg{max-width:100%}.wrap{padding-inline:max(16px,env(safe-area-inset-
 <script>
 const API=window.COST_IQ_API||'';
 const $=id=>document.getElementById(id);
-let allQuestions=[],questions=[],answers={},subjective={},selectedAreas=[],sectionIndex=0,qIndex=0,assessment=null,aiReview=null;
-let aiEnabled=false,assessmentMetadata={},savedAssessment=null,persistTimer=null,persistQueue=Promise.resolve(),testScenario=false,viewEpoch=0;
+let allQuestions=[],questions=[],answers={},subjective={},selectedAreas=[],sectionIndex=0,qIndex=0,assessment=null;
+let assessmentMetadata={},savedAssessment=null,persistTimer=null,persistQueue=Promise.resolve(),testScenario=false,viewEpoch=0;
 // Which questions a client is asked comes from the engine (settings.selection): baseline sections, the sections of each focus area, and the
 // default areas. The page and the engine use one definition, so completeness is counted over the questions shown.
 let BASELINE=[],DEFAULT_AREAS=[],AREAS={};
@@ -89,7 +89,7 @@ async function authedFetch(url,opts){
 async function api(path,opts){const r=await authedFetch(API+path,opts);const t=await r.text();let d={};try{d=t?JSON.parse(t):{}}catch(e){throw Error('Invalid API response ('+r.status+')')}if(!r.ok)throw Error(d.message||d.error||('HTTP '+r.status));return d}
 function boot(){
   showSplash(['Loading Cost IQ engine…','Loading diagnostic framework…','Preparing adaptive assessment…'],function(){
-    Promise.all([api('/api/evaluate/cost-iq/questions'),api('/api/evaluate/cost-iq/metadata')]).then(function(values){allQuestions=values[0].questions||[];BASELINE=(values[0].selection||{}).baselineSections||[];DEFAULT_AREAS=(values[0].selection||{}).defaultAreas||[];AREAS=(values[0].selection||{}).areas||{};assessmentMetadata=values[1].release||{};aiEnabled=!!(values[1].ai&&values[1].ai.enabled);notices=values[1].notices||null;home()}).catch(function(e){fail(e.message)});
+    Promise.all([api('/api/evaluate/cost-iq/questions'),api('/api/evaluate/cost-iq/metadata')]).then(function(values){allQuestions=values[0].questions||[];BASELINE=(values[0].selection||{}).baselineSections||[];DEFAULT_AREAS=(values[0].selection||{}).defaultAreas||[];AREAS=(values[0].selection||{}).areas||{};assessmentMetadata=values[1].release||{};notices=values[1].notices||null;home()}).catch(function(e){fail(e.message)});
   });
 }
 function showSplash(steps,done){
@@ -169,7 +169,7 @@ async function resumeAssessment(id){
     savedAssessment=record;selectedAreas=JSON.parse(record.selectedAreasJson||'[]');answers=JSON.parse(record.answersJson||'{}');subjective=JSON.parse(record.subjectiveJson||'{}');
     questions=selectQuestions(selectedAreas);
     testScenario=false;sectionIndex=0;
-    if(record.status==='completed'&&record.resultJson){assessment=JSON.parse(record.resultJson);aiReview=null;preliminary();return}
+    if(record.status==='completed'&&record.resultJson){assessment=JSON.parse(record.resultJson);preliminary();return}
     const secs=sections();const first=secs.findIndex(s=>vq().filter(q=>q.section===s).some(q=>answers[q.id]===undefined));sectionIndex=first<0?Math.max(0,secs.length-1):first;renderAssessment();persistStatus('Assessment resumed');
   }catch(e){alert('Could not resume this assessment: '+e.message)}
 }
@@ -306,24 +306,11 @@ function backQ(){
 async function runEngine(){
   clearTimeout(persistTimer);persistTimer=null;
   $('app').innerHTML='<div class="card" style="text-align:center;padding:70px 30px"><div class="pulse" style="margin:auto"><div class="core"></div></div><h2>Reviewing your diagnostic…</h2><p class="muted">Cost IQ is evaluating the deterministic scoring engine before the AI review.</p></div>';
-  try{assessment=await api('/api/evaluate/cost-iq',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({answers:answers,scope:{selectedAreas:selectedAreas}})});if(savedAssessment){try{await persistQueue;savedAssessment=await window.CostIqPersistence.update({...persistenceRecord('completed'),completedAt:new Date().toISOString(),resultJson:JSON.stringify(assessment)});persistStatus('Assessment completed and saved')}catch(e){persistStatus('Score ready · save failed · '+e.message)}}showEngineOverlay(function(){aiCheck()})}catch(e){fail(e.message)}
+  try{assessment=await api('/api/evaluate/cost-iq',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({answers:answers,scope:{selectedAreas:selectedAreas}})});if(savedAssessment){try{await persistQueue;savedAssessment=await window.CostIqPersistence.update({...persistenceRecord('completed'),completedAt:new Date().toISOString(),resultJson:JSON.stringify(assessment)});persistStatus('Assessment completed and saved')}catch(e){persistStatus('Score ready · save failed · '+e.message)}}showEngineOverlay(function(){preliminary()})}catch(e){fail(e.message)}
 }
 function showEngineOverlay(done){
-  showSplash(['Normalizing assessment responses…','Evaluating cost dimensions…','Evaluating value dimensions…','Checking evidence & confidence…','Preparing AI diagnostic review…'],done)
+  showSplash(['Normalizing assessment responses…','Evaluating cost dimensions…','Evaluating value dimensions…','Checking evidence & confidence…','Preparing the result…'],done)
 }
-async function aiCheck(){
-  if(!aiEnabled){aiReview={needsClarification:false,observations:[]};preliminary();return}
-  try{
-    aiReview=await api('/api/evaluate/cost-iq/ai-review',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({answers:answers,selectedAreas:selectedAreas,context:subjective})});
-    if(aiReview.needsClarification&&aiReview.questions&&aiReview.questions.length){clarify(0);return}
-  }catch(e){aiReview={needsClarification:false,observations:['AI review unavailable; deterministic assessment retained.']}}
-  preliminary();
-}
-function clarify(i){
-  if(i>=(aiReview.questions||[]).length){preliminary();return}
-  const q=aiReview.questions[i];$('app').innerHTML='<div class="card" style="max-width:820px;margin:35px auto"><div class="eyebrow">AI DIAGNOSTIC CHECK · '+(i+1)+' OF '+aiReview.questions.length+'</div><h2>'+esc(q.question)+'</h2><p class="muted">'+esc(q.reason)+'</p>'+(q.options||[]).map(function(o,n){return '<div class="option" onclick="answerClarification('+i+', '+JSON.stringify(o).replace(/</g,'\\u003c')+')"><span class="letter">'+String.fromCharCode(65+n)+'</span><div class="option-title">'+esc(o)+'</div></div>'}).join('')+'</div>';
-}
-function answerClarification(i,v){answers['AI-'+i]=v;clarify(i+1)}
 function scoreEntries(){
   const src=assessment?.dimensionScores||assessment?.dimensions||assessment?.scores||{};
   let raw=[];
@@ -420,9 +407,41 @@ function preliminary(){
   $('app').innerHTML='<div class="hero"><div class="eyebrow">COST IQ · PRELIMINARY DIAGNOSTIC</div><h1>Your technology cost & value snapshot</h1><p>The engine has scored the answers. Each score and finding below comes from fixed rules, and the report explains how it was reached.</p></div><div class="report-kpi" style="margin-top:20px"><div class="score-card"><div class="score-label">Cost IQ</div><div class="score-num">'+esc(h.costIQ??'—')+'</div></div><div class="score-card"><div class="score-label">Value IQ</div><div class="score-num">'+esc(h.valueIQ??'—')+'</div></div><div class="score-card"><div class="score-label">Evidence completeness</div><div class="score-num" style="font-size:23px">'+esc(ev.confidence||'—')+'</div></div><div class="score-card"><div class="score-label">Completeness</div><div class="score-num">'+esc(ev.assessmentCompleteness??0)+'%</div></div></div><div class="card">'+visualSection(dims)+'</div><div class="card"><div class="eyebrow">INITIAL SIGNALS</div><h2>What the engine is seeing</h2><div class="report-band">'+(signals||'<div class="signal"><b>No calibrated findings activated</b><span>The detailed report will explain the evidence.</span></div>')+'</div></div><div class="card" id="reportCard"><div class="eyebrow">REPORT</div><h2>Your Cost IQ report</h2><p class="muted">Built on the server from the saved, completed assessment: scores, findings, a delivery plan, how LTM can help, and the assumptions and sources behind every figure. The client edition leaves out consultant notes and internal references.</p>'+reportButtons()+'</div>';
   $('app').insertAdjacentHTML('beforeend',cloudPanelHtml());
   $('app').insertAdjacentHTML('beforeend',leverPanelHtml());
+  if(reportReady())$('app').insertAdjacentHTML('beforeend',narrativePanelHtml());
   initVisuals();
   loadCloudLine();
   loadLeverEvidence();
+  loadNarrative();
+}
+// AI narrative (CQ8): off unless the consultant switches it on for this engagement. The service writes it from the scores, findings and recommendations only and rejects anything that fails the grounding check.
+function narrativePanelHtml(){
+  return '<div class="card" id="narrativeCard" style="margin-top:16px"><div class="eyebrow">AI NARRATIVE · OPTIONAL</div><h2>Written summary for the report</h2><div id="narrativeBody"><p class="muted">Loading…</p></div></div>';
+}
+function narrativeBox(n){
+  if(!n||!n.narrative)return '';
+  const nr=n.narrative;
+  return '<div class="signal"><b>Narrative summary</b><span>'+nr.summary.split(/\n\s*\n/).map(function(t){return esc(t)}).join('<br><br>')+'</span></div><p class="muted" style="font-size:12px">Written by '+esc(n.modelId||'an AI model')+' and checked against the result. It appears in the report when AI is on for this engagement.</p>';
+}
+async function loadNarrative(){
+  const host=$('narrativeBody');if(!host)return;
+  if(!savedAssessment||!window.CostIqPersistence?.configured()){host.innerHTML='<p class="muted">Sign in and save the assessment to use the AI narrative.</p>';return}
+  let rec=null;try{rec=await window.CostIqPersistence.get(savedAssessment.assessmentId)}catch(e){rec=null}
+  const on=!!(rec&&rec.aiEnabled);let stored=null;try{stored=rec&&rec.narrativeJson?JSON.parse(rec.narrativeJson):null}catch(e){stored=null}
+  const say=function(t){const m=$('narMsg');if(m)m.textContent=t};
+  host.innerHTML=(on
+    ?'<p class="muted">AI is on for this engagement. The scores, findings and recommendations, without the organisation\'s name, answers or figures, go to Claude in Amazon Bedrock in India. Nothing is sent until you choose to write.</p><label for="narFocus" class="muted">Optional focus note (up to 300 characters; the organisation\'s name is removed)</label><input class="input" id="narFocus" maxlength="300" type="text"><div class="actions"><button class="btn primary" type="button" id="narWrite">Write narrative</button><button class="btn" type="button" id="narOff">Switch off</button></div>'
+    :'<p class="muted">Off. The report is written without AI. Switching on records that this engagement uses AI, and the report\'s data notice says so.</p><div class="actions"><button class="btn primary" type="button" id="narOn">Switch on for this engagement</button></div>')
+    +'<div id="narResult">'+(stored&&stored.status==='ok'?narrativeBox(stored):stored?'<p class="muted">The last attempt was not used: it did not pass the checks.</p>':'')+'</div><p class="muted" id="narMsg" role="status"></p>';
+  const act=async function(action,focus){
+    try{return await window.CostIqPersistence.narrative(savedAssessment.assessmentId,action,focus)}catch(e){say(e.message);return null}
+  };
+  if($('narOn'))$('narOn').onclick=async function(){if(await act('enable'))loadNarrative()};
+  if($('narOff'))$('narOff').onclick=async function(){if(await act('disable'))loadNarrative()};
+  if($('narWrite'))$('narWrite').onclick=async function(){
+    say('Writing and checking the narrative. This can take a minute or two…');
+    const d=await act('generate',($('narFocus').value||'').trim()||undefined);
+    if(d){$('narResult').innerHTML=narrativeBox(d);say('Done. It will appear in the next report you download.')}
+  };
 }
 function reportReady(){return !!savedAssessment&&!testScenario&&savedAssessment.status==='completed'}
 function reportButtons(){

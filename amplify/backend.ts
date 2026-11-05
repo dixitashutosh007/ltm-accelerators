@@ -27,6 +27,7 @@ import { manageSessionFunction } from './functions/manage-session/resource';
 import { costIqReportFunction } from './functions/cost-iq-report/resource';
 import { sovereignIqReportFunction } from './functions/sovereign-iq-report/resource';
 import { sovereignIqNarrativeFunction } from './functions/sovereign-iq-narrative/resource';
+import { costIqNarrativeFunction } from './functions/cost-iq-narrative/resource';
 import { finopsIqReportFunction } from './functions/finops-iq-report/resource';
 import {
   ADMIN_GROUP, API_GATEWAY_CORS_ORIGINS, API_BURST_LIMIT, API_RATE_LIMIT, KEEP_LEGACY_API,
@@ -54,6 +55,7 @@ export const backend = defineBackend({
   sovereignIqReportFunction,
   costIqReportFunction,
   sovereignIqNarrativeFunction,
+  costIqNarrativeFunction,
   finopsIqReportFunction
 });
 
@@ -126,7 +128,7 @@ for (const fn of [
   backend.evaluateSovereignIqFunction, backend.evaluateCloudIqFunction,
   backend.evaluateStrategyIqFunction, backend.evaluateModernizationIqFunction, backend.evaluateResilienceIqFunction,
   backend.manageResilienceAssessmentFunction, backend.manageResilienceEvidenceFunction, backend.manageSovereignAssessmentFunction, backend.manageSessionFunction, backend.manageCostAssessmentFunction, backend.sovereignIqReportFunction, backend.costIqReportFunction,
-  backend.sovereignIqNarrativeFunction, backend.evaluateCostIqFunction
+  backend.sovereignIqNarrativeFunction, backend.costIqNarrativeFunction, backend.evaluateCostIqFunction
 ]) {
   fn.addEnvironment('REPORTS_BUCKET', REPORTS_BUCKET);
   fn.addEnvironment('SUPER_ADMIN_EMAILS', SUPER_ADMIN_EMAILS);
@@ -227,6 +229,7 @@ const integrations = {
   costReport: integrate('AdvisoryCostIqReport', backend.costIqReportFunction),
   sovereignReport: integrate('AdvisorySovereignIqReport', backend.sovereignIqReportFunction),
   sovereignNarrative: integrate('AdvisorySovereignIqNarrative', backend.sovereignIqNarrativeFunction),
+  costNarrative: integrate('AdvisoryCostIqNarrative', backend.costIqNarrativeFunction),
   finopsReport: integrate('AdvisoryFinOpsIqReport', backend.finopsIqReportFunction),
   sovereign: integrate('AdvisorySovereignIq', backend.evaluateSovereignIqFunction),
   cloud: integrate('AdvisoryCloudIq', backend.evaluateCloudIqFunction),
@@ -254,6 +257,7 @@ route('/api/cost-iq/assessment', [HttpMethod.GET, HttpMethod.POST], integrations
 route('/api/cost-iq/report', [HttpMethod.GET], integrations.costReport);
 route('/api/sovereign-iq/report', [HttpMethod.GET], integrations.sovereignReport);
 route('/api/sovereign-iq/narrative', [HttpMethod.POST], integrations.sovereignNarrative);
+route('/api/cost-iq/narrative', [HttpMethod.POST], integrations.costNarrative);
 
 /* ------------------------------------------------------------------
  * AI narrative (Sovereign IQ PLAN S9, WS-S1): Claude in Amazon Bedrock
@@ -263,18 +267,20 @@ route('/api/sovereign-iq/narrative', [HttpMethod.POST], integrations.sovereignNa
  * the model only in the two regions that profile routes to (Mumbai and
  * Hyderabad), and only through that profile.
  * ------------------------------------------------------------------ */
-const narrativeLambda = backend.sovereignIqNarrativeFunction.resources.lambda;
-const narrativeAccount = Stack.of(narrativeLambda).account;
+const narrativeAccount = Stack.of(backend.sovereignIqNarrativeFunction.resources.lambda).account;
 const indiaProfileArn = `arn:aws:bedrock:ap-south-1:${narrativeAccount}:inference-profile/in.anthropic.claude-opus-5`;
-narrativeLambda.addToRolePolicy(new PolicyStatement({
-  actions: ['bedrock:InvokeModel', 'bedrock:InvokeModelWithResponseStream'],
-  resources: [indiaProfileArn]
-}));
-narrativeLambda.addToRolePolicy(new PolicyStatement({
-  actions: ['bedrock:InvokeModel', 'bedrock:InvokeModelWithResponseStream'],
-  resources: ['ap-south-1', 'ap-south-2'].map(r => `arn:aws:bedrock:${r}::foundation-model/anthropic.claude-opus-5`),
-  conditions: { StringEquals: { 'bedrock:InferenceProfileArn': indiaProfileArn } }
-}));
+// The shared Bedrock service: Sovereign IQ and Cost IQ narratives (Cost IQ CQ8) have the same, narrow permission.
+for (const narrativeLambda of [backend.sovereignIqNarrativeFunction.resources.lambda, backend.costIqNarrativeFunction.resources.lambda]) {
+  narrativeLambda.addToRolePolicy(new PolicyStatement({
+    actions: ['bedrock:InvokeModel', 'bedrock:InvokeModelWithResponseStream'],
+    resources: [indiaProfileArn]
+  }));
+  narrativeLambda.addToRolePolicy(new PolicyStatement({
+    actions: ['bedrock:InvokeModel', 'bedrock:InvokeModelWithResponseStream'],
+    resources: ['ap-south-1', 'ap-south-2'].map(r => `arn:aws:bedrock:${r}::foundation-model/anthropic.claude-opus-5`),
+    conditions: { StringEquals: { 'bedrock:InferenceProfileArn': indiaProfileArn } }
+  }));
+}
 route('/api/evaluate/cloud-iq', [HttpMethod.POST], integrations.cloud);
 route('/api/evaluate/strategy-iq', [HttpMethod.POST], integrations.strategy);
 route('/api/evaluate/modernization-iq', [HttpMethod.POST], integrations.modernization);

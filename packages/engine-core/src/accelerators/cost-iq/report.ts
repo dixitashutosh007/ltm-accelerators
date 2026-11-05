@@ -54,7 +54,13 @@ export interface CostIqReportInput {
   nonCloud?: NonCloudResult | null;
 }
 
-export interface CostIqReportOptions { client: string; preparedBy: string; dataProvidedBy: string; view: 'client' | 'consultant'; notes?: string }
+export interface CostIqReportOptions {
+  client: string; preparedBy: string; dataProvidedBy: string; view: 'client' | 'consultant'; notes?: string;
+  /** CQ8: a narrative that passed the grounding check, shown only when the engagement's AI switch is on (null otherwise). */
+  /** The engagement's AI switch: the data notice says so. */
+  aiEnabled?: boolean;
+  narrative?: { narrative: { summary: string; priorities: string[]; nextSteps: string[] }; modelId: string; generatedAt: string } | null;
+}
 
 /** Claim references belong to the register, not to a reader. */
 const clean = (t: string) => String(t ?? '').replace(/\s*\[CLM-[A-Z]+-\d+(?:,\s*CLM-[A-Z]+-\d+)*\]/g, '');
@@ -459,8 +465,22 @@ function methodology(c: Ctx): ReportSection {
       ['The report covers the focus areas chosen and the estate described. Anything outside them is not assessed.']
     ] },
     noRegulatoryCoverage('Cost IQ'),
-    { kind: 'paragraph', segs: [strong('How your data is handled. '), NOTICES.data] },
+    { kind: 'paragraph', segs: [strong('How your data is handled. '), NOTICES.dataWith(!!c.opts.aiEnabled)] },
     { kind: 'callout', tone: 'info', title: 'Status', segs: [`${NOTICES.disclaimer} Prepared by ${c.opts.preparedBy}; data provided by ${c.opts.dataProvidedBy}.`] }
+  ] };
+}
+
+/** CQ8: the AI narrative, labelled, only when one passed the grounding check. It never replaces the engine's sections and holds no figure of its own. */
+function narrativeSection(c: Ctx): ReportSection | null {
+  const n = c.opts.narrative;
+  if (!n) return null;
+  return { id: 'narrative', title: 'Narrative summary (AI-written)', blocks: [
+    { kind: 'callout', tone: 'info', segs: [`Written by an AI model (${n.modelId}) on ${n.generatedAt.slice(0, 10)} from this report's scores, findings and recommendations only, and checked automatically: every number and vendor name in it appears in them, and it states no savings. The sections that follow are the assessment of record.`] },
+    ...n.narrative.summary.split(/\n\s*\n/).filter(p => p.trim()).map(p => ({ kind: 'paragraph', segs: [p.trim()] }) as Block),
+    { kind: 'subheading', text: 'Priorities' },
+    { kind: 'list', items: n.narrative.priorities.map(p => [p]) },
+    { kind: 'subheading', text: 'Next steps' },
+    { kind: 'list', items: n.narrative.nextSteps.map(p => [p]) }
   ] };
 }
 
@@ -511,7 +531,7 @@ export function costIqReport(input: CostIqReportInput, opts: CostIqReportOptions
       footer: `${PLATFORM} · ${PRODUCT} · Confidential`,
       status: 'Indicative assessment from self-reported answers. Not a savings commitment.'
     },
-    sections: [summary(c), profile(c), scores(c), findingsSection(c), cloudSection(c), ...(leversSection(c) ? [leversSection(c)!] : []), roadmap(c), help(c), execution(c), calculation(c), assumptions(c), methodology(c), sources(c), ...(client ? [] : [sow(c), consultant(c)])]
+    sections: [summary(c), ...(narrativeSection(c) ? [narrativeSection(c)!] : []), profile(c), scores(c), findingsSection(c), cloudSection(c), ...(leversSection(c) ? [leversSection(c)!] : []), roadmap(c), help(c), execution(c), calculation(c), assumptions(c), methodology(c), sources(c), ...(client ? [] : [sow(c), consultant(c)])]
   };
 }
 

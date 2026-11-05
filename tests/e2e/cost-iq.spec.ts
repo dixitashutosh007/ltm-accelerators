@@ -183,7 +183,7 @@ test.describe('Cost IQ', () => {
     expect(world.pageErrors).toEqual([]);
   });
 
-  test('with AI switched off the page never calls the AI routes', async ({ page, context, world }) => {
+  test('the page holds no AI review of its own and never calls an AI route unless the consultant switches the narrative on', async ({ page, context, world }) => {
     await signedIn(context, permitted(makeIdToken('consultant@ltm.com')));
     world.on('GET', ASSESSMENT, () => ({ body: { ok: true, data: [] } }));
     world.on('POST', '/api/evaluate/cost-iq', ({ body }) => ({ body: evaluateCostIq({ answers: body.answers, scope: body.scope }) }));
@@ -192,8 +192,39 @@ test.describe('Cost IQ', () => {
     // The engine runs, the page goes straight to the preliminary result with no AI check, and a detailed report needs no AI call.
     await expect.poll(() => world.calls.some(c => c.startsWith('POST /api/evaluate/cost-iq ')), { timeout: 15000 }).toBe(true);
     await page.waitForTimeout(1500);
-    expect(await page.evaluate('aiEnabled')).toBe(false);
+    expect(await page.evaluate("typeof aiEnabled")).toBe('undefined');
     expect(world.calls.filter(c => c.includes('/ai-'))).toEqual([]);
+    expect(world.pageErrors).toEqual([]);
+  });
+
+  test('the AI narrative panel is off by default; switching on, then writing, goes through the narrative service and shows the grounded text', async ({ page, context, world }) => {
+    await signedIn(context, permitted(makeIdToken('consultant@ltm.com')));
+    const sent: any[] = [];
+    let rec: any = { assessmentId: 'CIQ-ai-1', acceleratorId: 'cost-iq', releaseId: 'r', methodologyVersion: 'm', status: 'completed', respondentEmail: 'consultant@ltm.com', selectedAreasJson: '[]', answersJson: '{}', startedAt: '2026-11-04T00:00:00Z', updatedAt: '2026-11-04T00:00:00Z', aiEnabled: false, narrativeJson: null };
+    world.on('GET', ASSESSMENT, ({ query }) => (query.assessmentId ? { body: { ok: true, data: rec } } : { body: { ok: true, data: [] } }));
+    world.on('POST', ASSESSMENT, ({ body }) => ({ body: { ok: true, data: { ...body.snapshot, status: 'completed', respondentEmail: 'consultant@ltm.com' } } }));
+    world.on('POST', '/api/evaluate/cost-iq', ({ body }) => ({ body: evaluateCostIq({ answers: body.answers, scope: body.scope }) }));
+    world.on('POST', '/api/cost-iq/narrative', ({ body }) => {
+      sent.push(body);
+      if (body.action === 'enable') { rec = { ...rec, aiEnabled: true }; return { body: { ok: true, data: { assessmentId: 'CIQ-ai-1', aiEnabled: true } } }; }
+      if (body.action === 'disable') { rec = { ...rec, aiEnabled: false }; return { body: { ok: true, data: { assessmentId: 'CIQ-ai-1', aiEnabled: false } } }; }
+      return { body: { ok: true, data: { narrative: { summary: 'Governance is the weakest area.\n\nSecond paragraph.', priorities: ['One.'], nextSteps: ['Two.'] }, modelId: 'stub-model', generatedAt: '2026-11-05T10:00:00Z', status: 'ok' } } };
+    });
+    await page.goto('/cost-iq-v10?scenarios=1');
+    await page.getByRole('button', { name: 'Load Healthy' }).click();
+    await expect(page.getByText('Your technology cost & value snapshot')).toBeVisible({ timeout: 15000 });
+    await page.evaluate("testScenario = false; savedAssessment = { assessmentId: 'CIQ-ai-1', status: 'completed' }; document.getElementById('narrativeCard')?.remove(); document.getElementById('app').insertAdjacentHTML('beforeend', narrativePanelHtml()); loadNarrative()");
+    await expect(page.getByText('Off. The report is written without AI.')).toBeVisible();
+    expect(sent).toEqual([]);
+    await page.getByRole('button', { name: 'Switch on for this engagement' }).click();
+    await expect(page.getByText('AI is on for this engagement.')).toBeVisible();
+    expect(sent).toEqual([{ action: 'enable', assessmentId: 'CIQ-ai-1' }]);
+    await page.getByLabel(/Optional focus note/).fill('Stress governance');
+    await page.getByRole('button', { name: 'Write narrative' }).click();
+    await expect(page.getByText('Governance is the weakest area.')).toBeVisible();
+    expect(sent[1]).toEqual({ action: 'generate', assessmentId: 'CIQ-ai-1', focus: 'Stress governance' });
+    await page.getByRole('button', { name: 'Switch off' }).click();
+    await expect(page.getByText('Off. The report is written without AI.')).toBeVisible();
     expect(world.pageErrors).toEqual([]);
   });
 

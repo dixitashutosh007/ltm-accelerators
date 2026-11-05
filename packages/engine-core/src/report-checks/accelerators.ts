@@ -98,7 +98,8 @@ export function checkCostIqReport(doc: ReportDocument, input: CostIqReportInput,
       return out;
     },
     strictNumbers: true,
-    numbersAllowedIn: ['consultant'],
+    // The AI narrative may quote the scores it was given: its numbers are grounded when it is written (ai/grounding.ts), not traced.
+    numbersAllowedIn: ['consultant', 'narrative'],
     clientForbidden: [/CORE-\d+/, /ADP-\d+/],
     ids: { pattern: /\b(?:CORE|ADP|CTX)-\d{2}\b|\b[FR]-\d{3}\b|\b(?:COST|VALUE)-\d{2}\b/, clientBannedIn: ['summary', 'profile', 'scores', 'findings', 'cloud', 'roadmap', 'help', 'execution'] }
   }, today);
