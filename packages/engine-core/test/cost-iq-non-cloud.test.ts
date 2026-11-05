@@ -11,7 +11,7 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { evaluateNonCloud, NON_CLOUD_LEVER_IDS, type NonCloudEvidence } from '../src/accelerators/cost-iq/non-cloud-levers';
 import { FINOPS_IQ_LEVER_IDS } from '../src/accelerators/finops-iq/v3/cost-iq-summary';
-import { costIqReport, costIqBacklog, resolveCostIqField, type CostIqReportInput, type CostIqResult } from '../src/accelerators/cost-iq/report';
+import { uk, cloudless, costIqReport, costIqBacklog, resolveCostIqField, type CostIqReportInput, type CostIqResult } from '../src/accelerators/cost-iq/report';
 import { checkCostIqReport } from '../src/report-checks/accelerators';
 import { renderPdf } from '../src/report/pdf';
 import { toCsv } from '../src/report/csv';
@@ -197,7 +197,7 @@ describe('report fixes from the CIO challenge (CQ10)', () => {
   it('H3: every "Evidence for" in the delivery plan names a finding the same edition raises', () => {
     for (const x of cases) {
       const t = everything(x.doc);
-      const titles = new Set(x.i.result.findings.map(f => f.title));
+      const titles = new Set(x.i.result.findings.map(f => uk(f.title)));
       for (const m of t.matchAll(/Evidence for "([^"]+)"/g)) expect(titles.has(m[1]), `${x.label}: ${m[1]}`).toBe(true);
     }
   });
@@ -305,4 +305,71 @@ describe('phasing, confidence and first steps (CQ10 challenge M2, M3, M5)', () =
     }
     expect(seen).toBeGreaterThan(3);
   });
+});
+
+describe('report polish from the CIO challenge (CQ10 M10, M11, L2, L5, L7)', () => {
+  const eds = Object.entries(PROFILES).flatMap(([n, fp], k) => [null, GBP_SUMMARY].map(f => ({ n: `${n} ${f ? 'linked' : 'unlinked'}`, i: input(fp, k + 7, f) })));
+
+  it('M10: an estate with no public cloud, SaaS or AI is told the cloud line is not applicable, not to run FinOps IQ', () => {
+    let seen = 0;
+    for (const x of eds) {
+      const t = everything(costIqReport(x.i, { ...OPTS, view: 'client' }));
+      if (cloudless(x.i) && !x.i.finops) { seen++; expect(t, x.n).toContain('no cloud line to take from FinOps IQ'); expect(t, x.n).not.toContain('Run FinOps IQ and link it to this assessment to add the cloud'); }
+      if (!cloudless(x.i) && !x.i.finops) expect(t, x.n).toContain('Run FinOps IQ');
+    }
+    expect(cloudless(input(['ON_PREM', 'COLO'], 1, null))).toBe(true);
+    expect(cloudless(input(['ON_PREM', 'SAAS'], 1, null))).toBe(false);
+    expect(seen).toBeGreaterThan(0);
+  });
+
+  it('M11: a finding raised by an answer an earlier finding also uses says so; the CSV names the offering as the report does', () => {
+    let shared = 0;
+    for (const x of eds) {
+      const doc = costIqReport(x.i, { ...OPTS, view: 'client' });
+      const json = JSON.stringify(doc.sections.find(s => s.id === 'findings'));
+      shared += (json.match(/The same answer also raises/g) ?? []).length;
+      const csv = toCsv(costIqBacklog(x.i, 'client'));
+      const names = x.i.result.recommendations.map(r => JSON.stringify(doc.sections.find(s => s.id === 'help')).includes(uk(r.title)) ? 1 : 0);
+      void names;
+      expect(csv, x.n).not.toContain('Technology Operating Model');
+    }
+    expect(shared).toBeGreaterThan(0);
+  });
+
+  it('L2: the client edition uses British spelling in catalogue text', () => {
+    for (const x of eds) {
+      const t = everything(costIqReport(x.i, { ...OPTS, view: 'client' })).replace(/\b(?:Cost )?Optimization (?:Hub|pillar)\b/g, '');
+      expect(t, x.n).not.toMatch(/\b\w*(?:optimiz|realiz|rationaliz|utiliz|organiz|prioritiz)\w*\b/i);
+      // (a web address and IBM's product name keep their own spelling.)
+      expect(t.replace(/https?:\/\/\S+/g, '').replace(/License Metric Tool/g, ''), x.n).not.toMatch(/\bLicense\b|\blicenses\b/);
+    }
+    expect(uk('Software license optimization and realization')).toBe('Software licence optimisation and realisation');
+    expect(uk('Cost Optimization Hub')).toBe('Cost Optimization Hub');
+    expect(uk('see https://example.com/cost-optimization')).toBe('see https://example.com/cost-optimization');
+  });
+
+  it('L5: a second finding that maps to the same offering points back to the first instead of repeating its text', () => {
+    let repeats = 0;
+    for (const x of eds) { const json = JSON.stringify(costIqReport(x.i, { ...OPTS, view: 'client' }).sections.find(s => s.id === 'help')); repeats += (json.match(/the same offering/g) ?? []).length; }
+    expect(repeats).toBeGreaterThan(0);
+  });
+});
+
+describe('PDF layout (CQ10 challenge L4)', () => {
+  it('no page of the Cost IQ PDF ends on a heading or a table header row', async () => {
+    const { renderPdf } = await import('../src/report/pdf');
+    const pdfjs = await import('pdfjs-dist/legacy/build/pdf.mjs');
+    const cases = [['mixed', 5, 'client'], ['cloud-heavy', 7, 'consultant'], ['on-premises-heavy', 3, 'client'], ['SaaS-heavy', 11, 'consultant']] as const;
+    for (const [n, salt, view] of cases) {
+      const i = input(PROFILES[n === 'mixed' ? 'mixed' : n], salt, GBP_SUMMARY); i.nonCloud = evaluateNonCloud(EV(), ['F-008'], GBP_SUMMARY);
+      const pdf = await pdfjs.getDocument({ data: new Uint8Array(await renderPdf(costIqReport(i, { ...OPTS, view }))), verbosity: 0 }).promise;
+      for (let p = 2; p <= pdf.numPages; p++) {
+        const items = ((await (await pdf.getPage(p)).getTextContent()).items as any[]).filter(t => t.str.trim() && t.transform[5] > 60 && t.transform[5] < 800);
+        if (!items.length) continue;
+        const bottom = Math.min(...items.map(t => t.transform[5]));
+        const size = Math.max(...items.filter(t => Math.abs(t.transform[5] - bottom) < 2).map(t => Math.hypot(t.transform[0], t.transform[1])));
+        expect(size >= 10.9 || Math.abs(size - 8) < 0.05, `${n} ${view} page ${p} ends on a heading or table header`).toBe(false);
+      }
+    }
+  }, 90_000);
 });

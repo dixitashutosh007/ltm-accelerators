@@ -78,14 +78,32 @@ const orderedRecs = (c: { findings: Finding[]; i: CostIqReportInput }): Recommen
   return [...c.i.result.recommendations].sort((a, b) => first(a) - first(b));
 };
 const questionsById = new Map<string, any>((config as any).questions.map((q: any) => [q.id, q]));
-const ref = (t: string): Seg => ({ text: t, ref: true });
+const ref = (t: string): Seg => ({ text: uk(t), ref: true });
 /** LTM-authored wording from the bank or catalogue: shown as written, digits allowed. */
-const quoted = (t: string): Seg => ({ text: String(t ?? ''), ref: true });
+/**
+ * British spelling for LTM-authored catalogue text (CQ10 challenge L2): the catalogues mix US and UK forms. Text with a web
+ * address, and the names of AWS's Cost Optimization Hub and pillar, are left as written.
+ */
+const IZE = /\b\w*(?:optimi|reali|rationali|utili|organi|prioriti|standardi|centrali|categori|minimi|maximi|customi|normali|visuali|moneti|capitali|amorti|formali|harmoni|synchroni|operationali|analy|summari)z\w*\b/gi;
+export function uk(t: string): string {
+  const s = String(t ?? '');
+  if (/https?:/.test(s)) return s;
+  const keep: string[] = [];
+  const guarded = s.replace(/\b(?:Cost )?Optimization (?:Hub|pillar)\b/g, m => { keep.push(m); return `\u0000${keep.length - 1}\u0000`; });
+  const out = guarded
+    .replace(IZE, w => w.replace(/z/i, z => (z === 'Z' ? 'S' : 's')))
+    .replace(/\blicen[sc]e(s?)\b/g, (m, pl, off, whole) => (/\bto $/i.test(whole.slice(Math.max(0, off - 3), off)) ? m : `licence${pl}`))
+    .replace(/\bLicen[sc]e(s?)\b/g, 'Licence$1')
+    .replace(/\bcenter(s?)\b/g, 'centre$1').replace(/\bCenter(s?)\b/g, 'Centre$1')
+    .replace(/\bbehavior(s?)\b/g, 'behaviour$1').replace(/\bcatalog(s?)\b/g, 'catalogue$1');
+  return out.replace(/\u0000(\d+)\u0000/g, (_m, i) => keep[Number(i)]);
+}
+const quoted = (t: string): Seg => ({ text: uk(String(t ?? '')), ref: true });
 /** The scale printed beside a score: a label, not a figure the report claims. */
 const OF100 = ref(' / 100');
 const OUT100 = ref(' out of 100');
 /** A bold label from the catalogue or this builder (names, titles): wording, not a figure the report claims. */
-const strong = (t: string): Seg => ({ text: t, strong: true, ref: true });
+const strong = (t: string): Seg => ({ text: uk(t), strong: true, ref: true });
 const count = (field: string, n: number): Seg => traced(field, n, 'count', []);
 const plural = (n: number, one: string, many: string) => (n === 1 ? one : many);
 const tone = (score: number | null): Tone => (score == null ? 'unknown' : score >= 80 ? 'good' : score >= 60 ? 'partial' : score >= 40 ? 'weak' : 'bad');
@@ -175,8 +193,18 @@ function confidenceNote(c: Ctx): string {
   return `Confidence in the licence lever is Low: its cases are LTM planning shares of the client's measured figure, with no published range, and the upper case is all of it.${cloud}`;
 }
 
+/** An estate that described no public cloud, SaaS or AI has no cloud line to take from FinOps IQ (CQ10 challenge M10). */
+export function cloudless(i: CostIqReportInput): boolean {
+  const fp = i.answers['CORE-01'];
+  return Array.isArray(fp) && fp.length > 0 && !fp.some(x => ['PUBLIC_CLOUD', 'SAAS', 'AI'].includes(String(x)));
+}
+
 function cloudLine(c: Ctx): Block[] {
   const s = c.i.finops;
+  if ((!s || s.status !== 'quantified') && cloudless(c.i)) {
+    const lever = c.findings.some(f => f.id === 'F-008') && !sized(c) ? ' A non-cloud amount for software licences can be added when the consultant records the measured unused licence cost.' : '';
+    return [{ kind: 'callout', tone: 'info', title: 'Cloud line: not applicable', segs: ['No public cloud, SaaS or AI estate was described, so there is no cloud line to take from FinOps IQ. If that changes, run FinOps IQ and link it to this assessment.' + lever] }];
+  }
   if (!s || s.status !== 'quantified' || !s.cases) {
     return [{ kind: 'callout', tone: 'warn', title: 'Cloud line: not quantified', segs: [
       'The cloud line is not quantified. ',
@@ -271,7 +299,7 @@ function profile(c: Ctx): ReportSection {
   const footprint = has(i.answers, 'CORE-01') ? (i.answers['CORE-01'] as string[]) : [];
   const notChosen = Object.keys(sel.areas).filter(a => !i.selectedAreas.includes(a));
   const blocks: Block[] = [
-    { kind: 'paragraph', segs: ['Client: ', strong(c.opts.client), `. Data provided by ${c.opts.dataProvidedBy}. Assessed on `, ref(i.assessmentDate), i.currency ? `; reporting currency ${i.currency}.` : '.'] },
+    { kind: 'paragraph', segs: ['Client: ', { text: c.opts.client, strong: true, ref: true } as Seg, `. Data provided by ${c.opts.dataProvidedBy}. Assessed on `, ref(i.assessmentDate), i.currency ? `; reporting currency ${i.currency}.` : '.'] },
     { kind: 'kpis', items: [
       { label: 'Questions asked', value: [count('scope.shown', i.scope.shown)], note: ['From the focus areas chosen and the estate described'] },
       { label: 'Questions answered', value: [count('scope.answered', i.scope.answered)], note: [traced('evidence.assessmentCompleteness', i.result.evidence.assessmentCompleteness, 'percent', []), ' of those asked'] },
@@ -311,6 +339,12 @@ function scores(c: Ctx): ReportSection {
   return { id: 'scores', title: 'Scores by dimension', blocks };
 }
 
+/** Earlier-numbered findings raised by one of the same answers, so a reader does not take two findings for two pieces of evidence. */
+function sharedWith(c: Ctx, f: Finding, k: number): number[] {
+  const mine = new Set((f.activation?.evidenceSignals ?? []).map(s => s.questionId));
+  return orderedFindings(c.findings).slice(0, k).flatMap((g, n) => ((g.activation?.evidenceSignals ?? []).some(s => mine.has(s.questionId)) ? [n + 1] : []));
+}
+
 function findingsSection(c: Ctx): ReportSection {
   const { i } = c;
   const opp = new Map(i.result.opportunities.map(o => [o.findingId, o]));
@@ -333,6 +367,7 @@ function findingsSection(c: Ctx): ReportSection {
         const a = i.answers[s.questionId];
         return [k ? '\n' : '', quoted(q?.prompt ?? 'a question in the assessment'), ' Answer: ', typeof a === 'number' || (s.operator && Number.isFinite(Number(a))) ? traced(`answers[${s.questionId}]`, Number(a), 'percent', []) : quoted(optionLabel(s.questionId, a))];
       }).flat() : ['The combination of answers given']],
+      ...(sharedWith(c, f, k).length ? [[['Shares its trigger'], [ref(`The same answer also raises ${sharedWith(c, f, k).map(n => `Finding ${n}`).join(' and ')}.`)]]] as Seg[][][] : []),
       [['Needed before it is sized'], [o?.economic.missingEvidence?.length ? o.economic.missingEvidence.join('; ') : 'Evidence supplied; feasibility still to be agreed']]
     ];
     if (c.opts.view === 'consultant' && o?.practical.missingFactors?.length) rows.push([['Feasibility to agree'], [o.practical.missingFactors.join('; ')]]);
@@ -378,7 +413,7 @@ function leversSection(c: Ctx): ReportSection | null {
 }
 
 /** Library text for the reader: the client edition carries no finding or recommendation IDs. */
-const lib = (c: Ctx, t: string) => (c.client ? t.replace(/\b[FR]-\d{3}\s\((.*?)\)/g, '"$1"').replace(/\s?\b[FR]-\d{3}\b/g, '') : t);
+const lib = (c: Ctx, t: string) => uk(c.client ? t.replace(/\b[FR]-\d{3}\s\((.*?)\)/g, '"$1"').replace(/\s?\b[FR]-\d{3}\b/g, '') : t);
 const bullets = (c: Ctx, items: string[]): Seg[] => items.flatMap((t, k) => [k ? '\n' : '', ref('• ' + lib(c, t))] as Seg[]);
 /**
  * The package for a recommendation, as this report needs it. Evidence lines name their finding, so a line is kept only for a
@@ -386,8 +421,9 @@ const bullets = (c: Ctx, items: string[]): Seg[] => items.flatMap((t, k) => [k ?
  * short review of that result, so the report never asks the client to scope what it says is done (H4).
  */
 function pkg(c: Ctx, id: string): Package | undefined {
-  const base = PACKAGES.get(id);
-  if (!base) return undefined;
+  const found = PACKAGES.get(id);
+  if (!found) return undefined;
+  const base = { ...found, offeringName: uk(found.offeringName) };
   const raised = new Set(c.findings.map(f => f.id));
   const prerequisites = base.prerequisites.filter(t => { const m = /^Evidence for (F-\d{3})\b/.exec(t); return !m || raised.has(m[1]); });
   if (id !== 'R-003' || c.i.finops?.status !== 'quantified') return { ...base, prerequisites };
@@ -446,11 +482,15 @@ function help(c: Ctx): ReportSection {
   const blocks: Block[] = [{ kind: 'paragraph', segs: ['LTM offers these services for the findings above. Scope, effort and price are agreed after the evidence is in; none is assumed here.'] }];
   const recs = new Map(c.i.result.recommendations.map(r => [r.id, r]));
   const fs = orderedFindings(c.findings);
+  const shown = new Map<string, number>();
   if (fs.length) {
     blocks.push({ kind: 'table', head: ['Finding', 'LTM offering', 'What LTM does', 'What the client has at the end'], widths: [110, 100, '*', '*'], small: true, rows: fs.map((f, k) => {
       const p = f.recommendationIds.map(id => recs.has(id) ? pkg(c, id) : undefined).find(Boolean);
       const lead: Seg[] = [strong(`Finding ${k + 1}`), '\n', quoted(f.title)];
-      return p ? [lead, [strong(p.offeringName), '\n', TYPE_LABEL[p.offeringType]], [ref(lib(c, p.scope))], [ref(lib(c, p.outcome))]]
+      const again = p ? shown.get(p.offeringName) : undefined;
+      if (p && again === undefined) shown.set(p.offeringName, k + 1);
+      return p && again !== undefined ? [lead, [strong(p.offeringName), '\n', TYPE_LABEL[p.offeringType]], [ref(`As for Finding ${again}: the same offering.`)], [ref(`As for Finding ${again}.`)]]
+        : p ? [lead, [strong(p.offeringName), '\n', TYPE_LABEL[p.offeringType]], [ref(lib(c, p.scope))], [ref(lib(c, p.outcome))]]
         : [lead, ['Not mapped'], ['No LTM offering is defined for this finding yet. It can still be raised with the consultant.'], ['Not applicable']];
     }) });
   } else blocks.push({ kind: 'paragraph', segs: ['No finding is raised, so no offering is proposed.'] });
@@ -585,10 +625,22 @@ function consultant(c: Ctx): ReportSection {
 
 /* ----------------------------------- Report ----------------------------------- */
 
-export function costIqReport(input: CostIqReportInput, opts: CostIqReportOptions): ReportDocument {
+/** The engine result with its catalogue wording in British spelling (L2); ids, scores and counts are untouched. */
+function britishResult(r: CostIqResult): CostIqResult {
+  return {
+    ...r,
+    dimensions: r.dimensions.map(d => ({ ...d, name: uk(d.name), definition: uk(d.definition) })),
+    findings: r.findings.map(f => ({ ...f, title: uk(f.title), description: uk(f.description), dimension: uk(f.dimension) })),
+    recommendations: r.recommendations.map(x => ({ ...x, title: uk(x.title), description: uk(x.description), ltmService: uk(x.ltmService) })),
+    opportunities: r.opportunities.map(o => ({ ...o, economic: { ...o.economic, missingEvidence: o.economic.missingEvidence?.map(uk) }, practical: { ...o.practical, missingFactors: o.practical.missingFactors?.map(uk) } }))
+  };
+}
+
+export function costIqReport(rawInput: CostIqReportInput, opts: CostIqReportOptions): ReportDocument {
+  const input: CostIqReportInput = { ...rawInput, result: britishResult(rawInput.result) };
   const client = opts.view === 'client';
   const c: Ctx = { i: input, client, opts, scored: input.result.dimensions.filter(d => d.score != null), findings: input.result.findings };
-  return {
+  const doc: ReportDocument = {
     meta: {
       platform: PLATFORM, product: PRODUCT, title: 'Technology cost and value diagnostic report',
       subtitle: 'How well cost and value are managed across the technology estate, where to look first, and the evidence needed before any saving is sized',
@@ -599,6 +651,10 @@ export function costIqReport(input: CostIqReportInput, opts: CostIqReportOptions
     },
     sections: [summary(c), ...(narrativeSection(c) ? [narrativeSection(c)!] : []), profile(c), scores(c), findingsSection(c), cloudSection(c), ...(leversSection(c) ? [leversSection(c)!] : []), roadmap(c), help(c), execution(c), calculation(c), assumptions(c), methodology(c), sources(c), ...(client ? [] : [sow(c), consultant(c)])]
   };
+  // Last pass: every string in the sections in British spelling, the client's own name aside (L2).
+  const name = opts.client.trim();
+  const protect = (t: string) => (name.length >= 2 ? t.split(name).map(uk).join(name) : uk(t));
+  return { ...doc, sections: JSON.parse(JSON.stringify(doc.sections), (_k, v) => (typeof v === 'string' ? protect(v) : v)) };
 }
 
 /** The backlog CSV: one row per finding, with the evidence it needs and the service that follows. */
@@ -609,7 +665,7 @@ export function costIqBacklog(input: CostIqReportInput, view: 'client' | 'consul
   const header = [...(view === 'consultant' ? ['Finding ID'] : []), 'Finding number', 'Finding', 'Dimension', 'Severity', 'Why it matters', 'Evidence needed before sizing', 'Recommended step', 'LTM service', 'Offering type', 'Status'];
   const rows = orderedFindings(input.result.findings).map((f, k) => {
     const r = rec.get(f.recommendationIds[0]);
-    return [...(view === 'consultant' ? [f.id] : []), k + 1, f.title, f.dimension, SEVERITY[f.severity] ?? f.severity, f.description, (opp.get(f.id)?.economic.missingEvidence ?? []).join('; '), r?.title ?? '', r?.ltmService ?? '', r && PACKAGES.get(r.id) ? TYPE_LABEL[PACKAGES.get(r.id)!.offeringType] : 'Not mapped', 'Open'];
+    return [...(view === 'consultant' ? [f.id] : []), k + 1, f.title, f.dimension, SEVERITY[f.severity] ?? f.severity, f.description, (opp.get(f.id)?.economic.missingEvidence ?? []).join('; '), r?.title ?? '', (r && pkg({ i: input, findings: input.result.findings } as Ctx, r.id)?.offeringName) || r?.ltmService || '', r && PACKAGES.get(r.id) ? TYPE_LABEL[PACKAGES.get(r.id)!.offeringType] : 'Not mapped', 'Open'];
   });
   return { header, rows };
 }

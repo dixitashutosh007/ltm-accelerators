@@ -78,7 +78,7 @@ export function createHandler(store: CostIqAssessmentStore, now: () => Date = ()
       // The narrative goes in only when the engagement's AI switch is on and the stored one passed the grounding check.
       const stored2 = item.aiEnabled ? parse<any>(item.narrativeJson, null) : null;
       const narrative = stored2?.status === 'ok' ? { narrative: stored2.narrative, modelId: stored2.modelId, generatedAt: stored2.generatedAt } : null;
-      const doc = costIqReport(input, { client, preparedBy: `LTM consultant (${item.respondentEmail ?? 'unassigned'})`, dataProvidedBy: client, view, aiEnabled: !!item.aiEnabled, narrative });
+      const doc = costIqReport(input, { client, preparedBy: view === 'client' || !item.respondentEmail ? (view === 'client' ? 'LTM' : 'LTM consultant') : `LTM consultant (${item.respondentEmail})`, dataProvidedBy: client, view, aiEnabled: !!item.aiEnabled, narrative });
       // Layer 1 report checks (REPORT-VALIDATION.md): a report that fails any check is not issued.
       const checked = checkCostIqReport(doc, input, view, now().toISOString().slice(0, 10));
       if (checked.status === 'fail') {

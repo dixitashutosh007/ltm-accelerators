@@ -305,6 +305,24 @@ test.describe('Cost IQ', () => {
     expect(consoleErrors, consoleErrors.join('\n')).toEqual([]);
   });
 
+  test('an unfinished section shows an inline message, not a browser dialog, and the saved list uses words for status', async ({ page, context, world }) => {
+    await signedIn(context, permitted(makeIdToken('consultant@ltm.com')));
+    const dialogs: string[] = [];
+    page.on('dialog', d => dialogs.push(d.message()));
+    world.on('GET', ASSESSMENT, () => ({ body: { ok: true, data: [{ ...stored, status: 'in_progress', clientName: 'Words Bank' }] } }));
+    world.on('POST', ASSESSMENT, ({ body }) => ({ body: { ok: true, data: { ...body.snapshot, respondentEmail: 'consultant@ltm.com' } } }));
+    await page.goto('/cost-iq-v10');
+    await expect(page.getByText(/In progress · Updated/)).toBeVisible();
+    await expect(page.getByText('in_progress')).toHaveCount(0);
+    await page.getByLabel('Organisation this assessment is for').fill('Example Bank plc');
+    await page.getByRole('button', { name: /Start the assessment/ }).click();
+    await expect(page.locator('.q-card').first()).toBeVisible();
+    await page.getByRole('button', { name: /Next section|Complete assessment/ }).click();
+    await expect(page.getByRole('alert')).toContainText('Please answer all required questions');
+    expect(dialogs).toEqual([]);
+    expect(world.pageErrors).toEqual([]);
+  });
+
   test('an estate question is shown only when the footprint names that estate', async ({ page, context, world }) => {
     await signedIn(context, permitted(makeIdToken('consultant@ltm.com')));
     world.on('GET', ASSESSMENT, () => ({ body: { ok: true, data: [] } }));

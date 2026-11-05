@@ -7,7 +7,7 @@ import { describe, it, expect } from 'vitest';
 import { createRequire } from 'node:module';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { costIqReport, costIqBacklog, resolveCostIqField, type CostIqReportInput, type CostIqResult } from '../src/accelerators/cost-iq/report';
+import { cloudless, costIqReport, costIqBacklog, resolveCostIqField, type CostIqReportInput, type CostIqResult } from '../src/accelerators/cost-iq/report';
 import { NOTICES } from '../src/accelerators/cost-iq/notices';
 import { checkCostIqReport } from '../src/report-checks/accelerators';
 import { renderPdf } from '../src/report/pdf';
@@ -104,7 +104,7 @@ describe('Cost IQ report', () => {
     expect(SUMMARY?.status).toBe('quantified');
     for (const r of runs) {
       const t = everything(r.doc);
-      if (!r.i.finops) { expect(t.toLowerCase(), r.label).toContain('not quantified'); continue; }
+      if (!r.i.finops) { expect(t.toLowerCase(), r.label).toContain(cloudless(r.i) ? 'no cloud line to take from finops iq' : 'not quantified'); continue; }
       const f = r.i.finops;
       expect(resolveCostIqField(r.i, 'finops.cases.expected.netRunRate.value')).toBeUndefined();
       expect(resolveCostIqField(r.i, 'finops.cases.expected.netRunRate')).toBe(f.cases!.expected.netRunRate.value);
