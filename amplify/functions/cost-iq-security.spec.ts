@@ -28,7 +28,7 @@ const ev = (method: string, path: string, claims: Record<string, unknown> | null
   rawPath: path, headers, queryStringParameters: query, body: body === undefined ? undefined : JSON.stringify(body), isBase64Encoded: false,
   requestContext: { requestId: 'r1', http: { method }, ...(claims ? { authorizer: { jwt: { claims } } } : {}) }
 });
-const run = async (h: (e: any) => Promise<any>, e: any) => { const r = (await h(e)) as APIGatewayProxyStructuredResultV2; return { status: r.statusCode, body: String(r.body), headers: r.headers ?? {} }; };
+const run = async (h: (e: any) => Promise<any>, e: any) => { const r = (await h(e)) as APIGatewayProxyStructuredResultV2; return { status: r.statusCode ?? 0, body: String(r.body), headers: (r.headers ?? {}) as Record<string, any> }; };
 
 async function seed(id: string, owner: string | null, status = 'completed') {
   const answers = { 'CORE-01': ['PUBLIC_CLOUD', 'ON_PREM'], 'CORE-16': 'TRUE' };
