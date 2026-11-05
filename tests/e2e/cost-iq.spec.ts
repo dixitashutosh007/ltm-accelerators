@@ -1,3 +1,4 @@
+import AxeBuilder from '@axe-core/playwright';
 import { test, expect, makeIdToken, signedIn, TEST_API } from './fixtures';
 import { NOTICES } from '../../packages/engine-core/src/accelerators/cost-iq/notices';
 import { evaluateCostIq, metadata, questions } from '../../packages/engine-core/src/accelerators/cost-iq/evaluate.cjs';
@@ -137,6 +138,48 @@ test.describe('Cost IQ', () => {
     // The content column is capped: the same width on a 1280 and a 1920 px screen, and never wider than the screen.
     expect(columns[2]).toBe(columns[3]);
     expect(columns[0]).toBeLessThanOrEqual(360);
+    expect(world.pageErrors).toEqual([]);
+  });
+
+  test('the saved-assessments list fits at four widths, and the start, question and result screens have no WCAG 2.2 AA violations', async ({ page, context, world }) => {
+    test.setTimeout(120_000);
+    await signedIn(context, permitted(makeIdToken('consultant@ltm.com')));
+    const long = 'A very long organisation name that would push a row sideways if it were not allowed to wrap onto the next line Ltd';
+    const rows = [
+      { ...stored, assessmentId: 'CIQ-w-1', clientName: long, status: 'completed', updatedAt: '2026-11-04T10:00:00Z' },
+      { ...stored, assessmentId: 'CIQ-w-2', clientName: 'Example Bank plc', status: 'draft', updatedAt: '2026-11-03T10:00:00Z' }
+    ];
+    world.on('GET', ASSESSMENT, () => ({ body: { ok: true, data: rows } }));
+    world.on('POST', '/api/evaluate/cost-iq', ({ body }) => ({ body: evaluateCostIq({ answers: body.answers, scope: body.scope }) }));
+    const overflow = () => page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
+    const axe = async (where: string) => {
+      await page.evaluate(() => Promise.all(document.getAnimations().filter(a => a.effect?.getTiming().iterations !== Infinity).map(a => a.finished.catch(() => {}))));
+      const { violations } = await new AxeBuilder({ page }).include('main').withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa']).analyze();
+      expect(violations.map(v => `${v.id}: ${v.nodes.slice(0, 4).map(n => `${n.html.slice(0, 100)} [${(n.failureSummary || '').replace(/\s+/g, ' ').slice(0, 160)}]`).join(' | ')}`), where).toEqual([]);
+    };
+    for (const width of [360, 768, 1280, 1920]) {
+      await page.setViewportSize({ width, height: 900 });
+      await page.goto('/cost-iq-v10');
+      await expect(page.getByText('SAVED ASSESSMENTS')).toBeVisible();
+      const button = page.getByRole('button', { name: 'View result' }).first();
+      await button.scrollIntoViewIfNeeded();
+      await expect(button).toBeInViewport();
+      expect(await overflow(), `saved list at ${width}`).toBeLessThanOrEqual(0);
+    }
+    await page.setViewportSize({ width: 1280, height: 900 });
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await page.goto('/cost-iq-v10');
+    await expect(page.getByText('SAVED ASSESSMENTS')).toBeVisible();
+    await axe('start');
+    await page.getByLabel('Organisation this assessment is for').fill('Example Bank plc');
+    await page.getByRole('button', { name: /Start the assessment/ }).click();
+    await expect(page.locator('.q-card').first()).toBeVisible();
+    await axe('questions');
+    await page.goto('/cost-iq-v10?scenarios=1');
+    await page.getByRole('button', { name: 'Load Healthy' }).click();
+    await expect(page.getByText('Your technology cost & value snapshot')).toBeVisible({ timeout: 15000 });
+    await axe('result');
+    expect(await page.evaluate(() => document.getAnimations().filter(a => a.effect?.getTiming().iterations === Infinity).length)).toBe(0);
     expect(world.pageErrors).toEqual([]);
   });
 

@@ -379,3 +379,8 @@ Library 0.2-draft adds ten platform-specific playbook entries (R-004: Microsoft 
 - The metadata endpoint returns the notices and the start page shows them in a "Before you start" card, so the page holds no copy of its own.
 - Prices: the report quotes no list prices, so the dated-price rule has nothing to apply to. Regulatory and tax statements: none beyond "does not assess legal, tax or regulatory obligations".
 - Open for the gate: owner approval of the wording; counsel review before the first external client. Wording is a draft. The Mumbai statement matches the deployed region (ap-south-1) but is hosted today in a personal development account (see the development-preview notice); update the data notice when the move to the LTM account happens.
+
+### CQ9 approval and CQ7 close-out (5 Nov 2026)
+- Owner approved the CQ9 data notice and disclaimer wording on 5 Nov 2026. Counsel review before the first external client is still required; update the hosting sentence when the move to the LTM account happens.
+- CQ7: reduced-motion rule added (animations and transitions off when the visitor asks); eyebrow labels darkened from #a9bac6 (contrast 1.99) to #4f5f6b after an axe check found them failing WCAG AA. New Playwright test: no WCAG 2.2 AA violations on the start, question and result screens with reduced motion on, and the saved-assessments list (including a very long organisation name) has no sideways scroll at 360, 768, 1280 and 1920 px. Screenshots for owner review are in the session scratchpad (shots folder).
+- CQ7 gate: layout checks pass at four widths; owner screenshot review outstanding.
