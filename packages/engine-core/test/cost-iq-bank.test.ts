@@ -15,7 +15,7 @@ const CONTEXT_METHODS = ['signal-only', 'hypothesis-signal', 'tradeoff-signal', 
 const isContext = (q: any) => q.signalOnly || q.scoring?.signalOnly || CONTEXT_METHODS.includes(q.scoring?.method);
 // Real answers only: the option IDs, and numbers for the numeric interactions. Map keys that match no option must not count as scoring.
 const probes = (q: any) => (q.options || []).length ? q.options.map((o: any) => o.id) : (['stars', 'slider', 'range'].includes(q.interaction) ? [1, 2, 3, 4, 5, 25, 50, 75, 100] : []);
-const scores = (q: any) => probes(q).some(v => engine.scoreQuestion(q, v, {}) !== null);
+const scores = (q: any) => probes(q).some((v: any) => engine.scoreQuestion(q, v, {}) !== null);
 const triggers = new Set(Object.values(calibration).flat().map((t: any) => t.questionId));
 
 // Still to score or label in CQ3b (BOUNDARY.md task 6). Remove an ID when it is fixed; never add one.

@@ -8,6 +8,7 @@ import { createRequire } from 'node:module';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { costIqReport, costIqBacklog, resolveCostIqField, type CostIqReportInput, type CostIqResult } from '../src/accelerators/cost-iq/report';
+import { NOTICES } from '../src/accelerators/cost-iq/notices';
 import { checkCostIqReport } from '../src/report-checks/accelerators';
 import { renderPdf } from '../src/report/pdf';
 import { toCsv } from '../src/report/csv';
@@ -67,6 +68,19 @@ describe('Cost IQ report', () => {
 
   it('passes the shared report checks: every traced number equals its engine field', () => {
     for (const r of runs) { const c = checkCostIqReport(r.doc, r.i, r.view, TODAY); expect(c.failures, r.label).toEqual([]); }
+  });
+
+  it('carries the disclaimer and the data notice (hosting, retention, deletion on request, no AI) in both editions, from one source', () => {
+    for (const r of runs) {
+      const t = everything(r.doc);
+      expect(t, r.label).toContain(NOTICES.disclaimer);
+      expect(t, r.label).toContain(NOTICES.data);
+    }
+    expect(NOTICES.data).toMatch(/Mumbai region/);
+    expect(NOTICES.data).toMatch(/two years after its last change/);
+    expect(NOTICES.data).toMatch(/ask your consultant to delete it sooner/);
+    expect(NOTICES.data).toMatch(/uses no AI features/);
+    expect(NOTICES.disclaimer).toMatch(/not financial, accounting, tax, legal or regulatory advice/);
   });
 
   it('has the required sections, and the consultant appendix only in the consultant edition', () => {

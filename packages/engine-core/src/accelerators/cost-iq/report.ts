@@ -12,6 +12,7 @@
 import type { Backlog, Block, ReportDocument, ReportSection, Seg, Tone } from '../../report/model';
 import { figure, traced } from '../../report/model';
 import { noRegulatoryCoverage } from '../../report/coverage';
+import { NOTICES } from './notices';
 import type { CostIqSummary } from '../finops-iq/v3/cost-iq-summary';
 import type { NonCloudResult } from './non-cloud-levers';
 import config from './canon/config/master-v6.6.json' with { type: 'json' };
@@ -458,7 +459,8 @@ function methodology(c: Ctx): ReportSection {
       ['The report covers the focus areas chosen and the estate described. Anything outside them is not assessed.']
     ] },
     noRegulatoryCoverage('Cost IQ'),
-    { kind: 'callout', tone: 'info', title: 'Status', segs: [`An indicative assessment based on the answers and figures provided, which LTM has not audited or verified. Value figures are an indicative range, not a savings commitment, and need validating against the organisation's own data before any decision. This is not financial, accounting, tax or legal advice. Prepared by ${c.opts.preparedBy}; data provided by ${c.opts.dataProvidedBy}.`] }
+    { kind: 'paragraph', segs: [strong('How your data is handled. '), NOTICES.data] },
+    { kind: 'callout', tone: 'info', title: 'Status', segs: [`${NOTICES.disclaimer} Prepared by ${c.opts.preparedBy}; data provided by ${c.opts.dataProvidedBy}.`] }
   ] };
 }
 

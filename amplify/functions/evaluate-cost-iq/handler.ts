@@ -1,6 +1,7 @@
 import type { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
 import { corsHeaders } from '../_shared/http';
 import { withAcceleratorAccess } from '../_shared/access';
+import { NOTICES } from '../../../packages/engine-core/src/accelerators/cost-iq/notices';
 import { evaluateCostIq, metadata, questions } from '../../../packages/engine-core/src/accelerators/cost-iq/evaluate.cjs';
 
 // CORS echoes only the origins in ALLOWED_ORIGINS (_shared/http.ts); the routes sit behind the Cognito authorizer and the
@@ -27,7 +28,7 @@ export const evaluate = async (event: APIGatewayProxyEventV2): Promise<APIGatewa
   if (method === 'OPTIONS') return { statusCode: 200, headers: { ...corsHeaders(event, 'OPTIONS,GET,POST', 'X-Request-Id'), 'X-Request-Id': id }, body: '' };
 
   try {
-    if (method === 'GET' && path.endsWith('/metadata')) return response(200, { ...metadata(), ai: { enabled: aiEnabled() } }, id);
+    if (method === 'GET' && path.endsWith('/metadata')) return response(200, { ...metadata(), ai: { enabled: aiEnabled() }, notices: NOTICES }, id);
     if (method === 'GET' && path.endsWith('/questions')) return response(200, questions(), id);
 
     if (method !== 'POST') return response(405, { error: 'method_not_allowed', requestId: id }, id);

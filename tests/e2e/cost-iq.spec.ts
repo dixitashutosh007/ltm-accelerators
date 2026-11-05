@@ -1,4 +1,5 @@
 import { test, expect, makeIdToken, signedIn, TEST_API } from './fixtures';
+import { NOTICES } from '../../packages/engine-core/src/accelerators/cost-iq/notices';
 import { evaluateCostIq, metadata, questions } from '../../packages/engine-core/src/accelerators/cost-iq/evaluate.cjs';
 
 // Cost IQ reads its API address from cost-iq-runtime-config.js, which the Amplify build generates; the tests serve it.
@@ -21,7 +22,7 @@ test.describe('Cost IQ', () => {
       contentType: 'application/javascript', body: `window.COST_IQ_API='${TEST_API}';window.COST_IQ_DATA_URL='';`
     }));
     world.on('GET', QUESTIONS, () => ({ body: questions() }));
-    world.on('GET', METADATA, () => ({ body: metadata() }));
+    world.on('GET', METADATA, () => ({ body: { ...metadata(), notices: NOTICES } }));
   });
 
   test('sends the signed-in token with every call and lists the caller\'s saved assessments', async ({ page, context, world }) => {
@@ -33,6 +34,16 @@ test.describe('Cost IQ', () => {
     expect(cost.length).toBeGreaterThanOrEqual(3);
     expect(cost.every(c => c.endsWith('auth=bearer')), cost.join('\n')).toBe(true);
     expect(world.pageErrors).toEqual([]);
+  });
+
+  test('the start page shows the disclaimer and the data notice before the assessment begins', async ({ page, context }) => {
+    await signedIn(context, permitted(makeIdToken('consultant@ltm.com')));
+    await page.goto('/cost-iq-v10');
+    const card = page.locator('#dataNotice');
+    await expect(card).toContainText('not financial, accounting, tax, legal or regulatory advice');
+    await expect(card).toContainText('Mumbai region');
+    await expect(card).toContainText('two years after its last change');
+    await expect(card).toContainText('ask your consultant to delete it sooner');
   });
 
   test('without a session it goes to sign-in and calls nothing', async ({ page, world }) => {

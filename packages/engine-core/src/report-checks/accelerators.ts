@@ -80,7 +80,7 @@ export function checkCostIqReport(doc: ReportDocument, input: CostIqReportInput,
   const quantified = input.finops?.status === 'quantified';
   return runReportChecks(doc, view, {
     requiredSections: ['summary', 'profile', 'scores', 'findings', 'cloud', 'roadmap', 'help', 'execution', 'calculation', 'assumptions', 'methodology', 'sources', ...(view === 'consultant' ? ['sow', 'consultant'] : [])],
-    requiredNotices: ['not a savings commitment', 'FinOps Framework', 'creativecommons.org/licenses/by/4.0', 'does not assess legal, tax or regulatory obligations', quantified ? 'does not estimate it again' : 'Not quantified'],
+    requiredNotices: ['not a savings commitment', 'FinOps Framework', 'creativecommons.org/licenses/by/4.0', 'does not assess legal, tax or regulatory obligations', 'Mumbai region', 'qualified professional', quantified ? 'does not estimate it again' : 'Not quantified'],
     // One currency per edition: skipped when the cloud line and the non-cloud levers are in different currencies (never converted).
     currency: input.nonCloud?.status === 'quantified' ? (!quantified || input.finops!.currency === input.nonCloud.currency ? input.nonCloud.currency : undefined) : quantified ? input.finops!.currency : undefined,
     resolve: field => resolveCostIqField(input, field),

@@ -372,3 +372,10 @@ Library 0.2-draft adds ten platform-specific playbook entries (R-004: Microsoft 
 - Radar chart labels are shortened (12 characters under 520 px, 22 above) and the chart is taller on narrow screens, so labels no longer clip at 360 px.
 - The step list already exists: the left rail lists every section with done and current marks, and the "areas in scope" choice at the start is the executive-versus-full selector on one engine. No separate workshop mode is built; none was requested by a stakeholder.
 - Still open in CQ7: contrast and reduced-motion audit; width checks for the saved-assessments list; screenshots for owner review.
+
+### CQ9 progress (5 Nov 2026): data notice and disclaimer
+- One source, `cost-iq/notices.ts`: the disclaimer (not financial, accounting, tax, legal or regulatory advice; not audited; not a savings commitment; reliance governed by the client's agreement) and the data notice (AWS Mumbai region, transfer to India for EU/UK clients, what is held including internal rates and measured figures, 24 months then deleted, deletion on request, access logs one year, no AI features, privacy notice). Retention words come from the shared `RETENTION_MONTHS`.
+- The report carries both: the data notice as "How your data is handled" in the methodology section, the disclaimer in the Status callout. Report check R7 now requires "Mumbai region" and "qualified professional".
+- The metadata endpoint returns the notices and the start page shows them in a "Before you start" card, so the page holds no copy of its own.
+- Prices: the report quotes no list prices, so the dated-price rule has nothing to apply to. Regulatory and tax statements: none beyond "does not assess legal, tax or regulatory obligations".
+- Open for the gate: owner approval of the wording; counsel review before the first external client. Wording is a draft. The Mumbai statement matches the deployed region (ap-south-1) but is hosted today in a personal development account (see the development-preview notice); update the data notice when the move to the LTM account happens.
