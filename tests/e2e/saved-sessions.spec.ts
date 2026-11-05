@@ -49,7 +49,7 @@ test.describe('saved sessions (P3)', () => {
     await page.getByRole('button', { name: 'My sessions' }).click();
     const dialog = page.getByRole('dialog', { name: 'My sessions' });
     await expect(dialog).toContainText('In progress');
-    await expect(dialog).toContainText('Deleted automatically 90 days after its last save'.replace('Deleted', 'deleted'), { ignoreCase: true });
+    await expect(dialog).toContainText('deleted automatically two years after its last save');
     await dialog.getByRole('button', { name: 'Delete', exact: true }).click();
     await expect(dialog.getByText('Delete permanently?')).toBeVisible();
     expect(await store.listByOwner('consultant@ltm.com', 'cloud-iq')).toHaveLength(1);

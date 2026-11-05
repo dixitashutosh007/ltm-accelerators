@@ -4,6 +4,7 @@
  */
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import type { APIGatewayProxyStructuredResultV2 } from 'aws-lambda';
+import { expiresAt } from '../../../packages/engine-core/src/accelerators/finops-iq/v3/retention';
 import { createHandler, ACCELERATORS } from './handler';
 import { memoryStore, type SavedSessionStore } from './store';
 import { setActivityStore } from '../_shared/activity-recorder.mjs';
@@ -58,13 +59,13 @@ describe('saved sessions API', () => {
     expect(activity.recordAssessment).toHaveBeenCalledWith(ME, expect.objectContaining({ accelerator: 'cost-iq', assessmentId: 'sess-0001-abc', stage: 'Spend by service', percent: 40 }));
   });
 
-  it('sets expiry 90 days after the save and a second save updates the same session', async () => {
+  it('sets expiry 24 months after the save and a second save updates the same session', async () => {
     await save();
     const again = await save({ title: 'Renamed' });
     expect(again.status).toBe(200);
     const one = await call(event('GET', { query: { accelerator: 'cost-iq', sessionId: 'sess-0001-abc' } }));
     expect(one.body.data.title).toBe('Renamed');
-    expect(one.body.data.expiresAt).toBe(Math.floor(NOW.getTime() / 1000) + 90 * 86400);
+    expect(one.body.data.expiresAt).toBe(expiresAt(NOW));
   });
 
   it('records a completed session at 100 percent whatever the page sent', async () => {

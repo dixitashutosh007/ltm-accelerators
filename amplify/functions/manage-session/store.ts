@@ -16,7 +16,7 @@ export interface SavedSessionRecord {
   percent?: number | null;
   /** The accelerator's own snapshot, JSON. Opaque to the service. */
   payloadJson: string;
-  /** Epoch seconds after which DynamoDB time to live deletes the record (90 days after the last save). */
+  /** Epoch seconds after which DynamoDB time to live deletes the record (24 months after the last save). */
   expiresAt?: number | null;
   createdAt?: string;
   updatedAt?: string;

@@ -176,7 +176,7 @@
       + '<div role="dialog" aria-modal="true" aria-labelledby="ss-title" style="background:#fff;border-radius:10px;max-width:640px;width:100%;max-height:calc(100vh - 32px);display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,.35)">'
       + '<div style="display:flex;justify-content:space-between;align-items:center;padding:14px 18px;border-bottom:1px solid #e7e5e4"><h2 id="ss-title" style="margin:0;font-size:18px">My sessions</h2><button type="button" class="ss-btn" id="ss-close">Close</button></div>'
       + '<div id="ss-body" style="padding:14px 18px;overflow-y:auto"></div>'
-      + '<div style="padding:10px 18px;border-top:1px solid #e7e5e4;color:#57534e;font-size:12.5px">Saved to your account only; you and an administrator can see them. Each is deleted automatically 90 days after its last save.</div></div>';
+      + '<div style="padding:10px 18px;border-top:1px solid #e7e5e4;color:#57534e;font-size:12.5px">Saved to your account only; you and an administrator can see them. Each is deleted automatically two years after its last save.</div></div>';
     Array.prototype.forEach.call(document.body.children, function (el) { el.setAttribute('inert', ''); });
     document.body.appendChild(panel);
     panel.querySelector('#ss-close').onclick = close;

@@ -7,7 +7,7 @@
  *   POST /api/sessions  { accelerator, action: 'delete', sessionId }     permanent
  * A session belongs to its owner; Admins may read and delete any. The accelerator is part of the key a caller names, so a
  * session id from another accelerator is "not found", and the caller needs access to the accelerator named. The payload
- * is the accelerator's own snapshot and is never interpreted here. Every save sets expiresAt, 90 days after the save.
+ * is the accelerator's own snapshot and is never interpreted here. Every save sets expiresAt, 24 months after the save: the one retention period of every accelerator (finops-iq/v3/retention.ts).
  */
 import type { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
 import { randomUUID } from 'node:crypto';
@@ -16,15 +16,15 @@ import { authorized, canAccess, parseBody, userEmail } from '../_shared/resilien
 import { withAcceleratorAccess } from '../_shared/access';
 import { recordAssessment, removeAssessmentActivity } from '../_shared/activity-recorder.mjs';
 import { progressFor } from '../_shared/progress';
+import { expiresAt } from '../../../packages/engine-core/src/accelerators/finops-iq/v3/retention';
 import { appSyncStore, type SavedSessionRecord, type SavedSessionStore } from './store';
 
 /** Accelerators served here. Those with their own save service (FinOps, Sovereign, Resilience IQ) are not. */
 export const ACCELERATORS = new Set(['strategy-iq', 'cloud-iq', 'modernization-iq', 'ai-readiness-iq', 'cost-iq']);
-export const RETENTION_DAYS = 90;
 const MAX_PAYLOAD_BYTES = 300_000; // DynamoDB items stop at 400 KB
 const ID = /^[A-Za-z0-9_-]{8,80}$/;
 
-const expiry = (now: Date) => Math.floor(now.getTime() / 1000) + RETENTION_DAYS * 24 * 3600;
+const expiry = expiresAt;
 const clean = (v: unknown, max: number) => String(v ?? '').replace(/[\u0000-\u001f\u007f]/g, ' ').trim().slice(0, max);
 
 function summary(r: SavedSessionRecord) {
