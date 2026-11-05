@@ -429,3 +429,7 @@ Source: `CQ10-CIO-CHALLENGE.md` (practice-lead review; advisory). Fixed, each wi
 - **M7** The result screen now matches the report: "Cost management" and "Value management" out of 100, "Questions answered" (the confidence tile is gone), findings highest severity first, the Cost IQ sentence about the FinOps IQ line, "No findings raised".
 - **M4** "Where to look first" lists only dimensions that two or more answers support, and says that single-answer areas are left out. (The engine's own minimum-scored-answers rule, S5, remains open.)
 - Still open: M2, M3, M5, M6, M8 role check, M10, M11, L2, L4 to L8.
+
+### CQ10 closed (5 Nov 2026)
+- Gate: no open Critical or High finding (security review: F1 fixed in code; CIO challenge re-run on 5292baf: no High). CI green on the branch at `dbaf4ec` (manual run 41968760679): type check, unit tests, repository guards, secret scan, browser tests and backend synthesis, which includes the new narrative worker function and its permissions. 
+- Provisos carried to CQ11: F1 (asynchronous narrative) and the live narrative eval are unconfirmed in a real account; the Medium and Low items listed in `CQ10-CIO-CHALLENGE.md` remain open for the owner to fix or accept in writing; the font-host sentence in the data notice awaits owner confirmation.
