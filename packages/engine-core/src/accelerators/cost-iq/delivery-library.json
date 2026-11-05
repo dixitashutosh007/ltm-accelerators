@@ -831,26 +831,17 @@
         },
         {
           "topic": "SAP system measurement evidence",
-          "platform": "SAP",
           "steps": [
             "Ask the client's SAP Basis team for the most recent measurement run in transaction USMM for each in-scope system, and its measurement statistics and log",
             "Record the clients included in the measurement and the date of the run",
-            "Record how users were classified (the page lists individual, reference-user and group classification, mass change and user-list methods)",
+            "Record how users were classified for the measurement",
             "For several systems, ask whether results were consolidated in the License Administration Workbench",
-            "Confirm the SAP release against the release-specific documentation: the page cited is an older help set"
+            "The consultant must confirm every step above against SAP's documentation for the client's release before use: no current-release SAP page was verified for this entry, so it carries no source"
           ],
           "verification": "The Basis team confirms the run date and clients covered for each system, and the classification method is recorded. LTM does not run or alter the measurement.",
           "options": [
             "Client Basis team export of USMM statistics",
             "Software asset management tool with SAP connector"
-          ],
-          "sources": [
-            {
-              "title": "Process of System Measurement (SAP Help, NetWeaver 7.3 EhP1 help set)",
-              "publisher": "SAP",
-              "url": "https://help.sap.com/doc/saphelp_nw73ehp1/7.31.19/en-US/48/c6eb7b7a004da5e10000000a421937/content.htm?no_cache=true",
-              "checked": "2026-11-04"
-            }
           ]
         },
         {
@@ -1072,17 +1063,23 @@
             "Exclude or flag stale and duplicate CIs before using the CMDB as the asset inventory",
             "Reconcile a sample of CIs to finance and facility records"
           ],
-          "verification": "The CMDB owner confirms the exclusions, and the sample reconciliation difference is recorded. Source is a vendor community article; confirm against the client's release documentation.",
+          "verification": "The CMDB owner confirms the exclusions, and the sample reconciliation difference is recorded. Sources are ServiceNow product documentation for the Zurich release; confirm against the client's release documentation.",
           "options": [
             "CMDB Health dashboard export",
             "Spreadsheet reconciliation"
           ],
           "sources": [
             {
-              "title": "Understanding CMDB Health (ServiceNow Community article, not product documentation)",
+              "title": "Overview of CMDB Health (ServiceNow product documentation, Zurich release)",
               "publisher": "ServiceNow",
-              "url": "https://www.servicenow.com/community/itsm-articles/understanding-cmdb-health/ta-p/2307033",
-              "checked": "2026-11-04"
+              "url": "https://www.servicenow.com/docs/r/zurich/servicenow-platform/configuration-management-database-cmdb/overview-cmdb-health.html",
+              "checked": "2026-11-05"
+            },
+            {
+              "title": "CMDB Health KPIs and metrics (ServiceNow product documentation, Zurich release)",
+              "publisher": "ServiceNow",
+              "url": "https://www.servicenow.com/docs/r/zS6yb8e~gR8BPjeviYdV9g/mnIlomGC8p4vjiVA9tJpxA",
+              "checked": "2026-11-05"
             }
           ]
         }
@@ -1643,10 +1640,16 @@
           ],
           "sources": [
             {
-              "title": "Understanding CMDB Health (ServiceNow Community article, not product documentation)",
+              "title": "Overview of CMDB Health (ServiceNow product documentation, Zurich release)",
               "publisher": "ServiceNow",
-              "url": "https://www.servicenow.com/community/itsm-articles/understanding-cmdb-health/ta-p/2307033",
-              "checked": "2026-11-04"
+              "url": "https://www.servicenow.com/docs/r/zurich/servicenow-platform/configuration-management-database-cmdb/overview-cmdb-health.html",
+              "checked": "2026-11-05"
+            },
+            {
+              "title": "CMDB Health KPIs and metrics (ServiceNow product documentation, Zurich release)",
+              "publisher": "ServiceNow",
+              "url": "https://www.servicenow.com/docs/r/zS6yb8e~gR8BPjeviYdV9g/mnIlomGC8p4vjiVA9tJpxA",
+              "checked": "2026-11-05"
             }
           ]
         }

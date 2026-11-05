@@ -43,15 +43,15 @@ Ten platform-specific playbook entries were added with optional fields `platform
 | R-004 | Entra sign-in evidence of application use | Microsoft 365 and Entra ID | https://learn.microsoft.com/en-us/entra/identity/monitoring-health/concept-sign-ins |
 | R-004 | Okta application sign-in evidence | Okta | https://developer.okta.com/docs/reference/api/event-types/ and https://developer.okta.com/docs/reference/api/system-log/ |
 | R-004 | Oracle Database feature usage evidence | Oracle Database | https://docs.oracle.com/en/database/oracle/oracle-database/19/refrn/DBA_FEATURE_USAGE_STATISTICS.html (19c) |
-| R-004 | SAP system measurement evidence | SAP | https://help.sap.com/doc/saphelp_nw73ehp1/7.31.19/en-US/48/c6eb7b7a004da5e10000000a421937/content.htm?no_cache=true (older NetWeaver 7.3 EhP1 help set) |
+| R-004 | SAP system measurement evidence | none (generic entry) | No source: no current-release SAP page was verified on 5 Nov 2026; the consultant confirms against the client's release |
 | R-004 | IBM core-based software inventory evidence | IBM software | https://www.ibm.com/software/passportadvantage/ibmlicensemetrictool |
 | R-005 | vSphere host utilisation data | VMware vSphere | https://techdocs.broadcom.com/us/en/vmware-cis/vsphere/vsphere/8-0/vsphere-monitoring-and-performance/monitoring-inventory-objects/overview-performance-charts/hosts.html (vSphere 8.0) |
-| R-005 | CMDB data quality before the footprint review | ServiceNow CMDB | https://www.servicenow.com/community/itsm-articles/understanding-cmdb-health/ta-p/2307033 |
-| R-008 | CMDB record completeness for the application inventory | ServiceNow CMDB | same article |
+| R-005 | CMDB data quality before the footprint review | ServiceNow CMDB | https://www.servicenow.com/docs/r/zurich/servicenow-platform/configuration-management-database-cmdb/overview-cmdb-health.html and https://www.servicenow.com/docs/r/zS6yb8e~gR8BPjeviYdV9g/mnIlomGC8p4vjiVA9tJpxA (Zurich release, checked 5 Nov 2026) |
+| R-008 | CMDB record completeness for the application inventory | ServiceNow CMDB | same two pages |
 
 Caveats on the sources:
-- The ServiceNow source is a ServiceNow Community article, not product documentation. It is flagged in the entry. Replace it with product documentation when a page can be opened (the docs.servicenow.com page tried returned navigation only).
-- The SAP page is for an old release; the entry tells the user to confirm against the client's release documentation.
+- The ServiceNow sources are product documentation for the Zurich release (replacing a Community article on 5 Nov 2026); the entry still says to confirm against the client's release.
+- The SAP entry carries no source and is no longer a platform-specific entry: the only page found was an old NetWeaver 7.3 EhP1 help set, and no current-release page could be verified. The entry tells the consultant to confirm every step against the client's release.
 - Okta event names come from the event-type catalogue; the System Log page itself names no sign-in event.
 
 ### UNSOURCED (steps left generic or not added)
