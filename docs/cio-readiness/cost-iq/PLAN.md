@@ -409,3 +409,8 @@ Library 0.2-draft adds ten platform-specific playbook entries (R-004: Microsoft 
 - **Load check:** `CQ10-LOAD.md`. In process: scoring well under a millisecond even at the 256 KB limit; the consultant PDF builds, checks and renders in about 0.3 s (95th percentile 0.45 s). Through API Gateway and Lambda it is not measured.
 - **Accessibility:** axe on start, question and result screens, the saved list, and the saved result with its panels; reduced-motion and keyboard checks (CQ7).
 - **Open for the gate:** F1 decision; the final CIO challenge test (a practice-lead pass over the report and page, to be run with the CQ11 re-review); a CI run on the pushed branch (the checks run locally only).
+
+### CQ10 F1 fix (5 Nov 2026): asynchronous narrative
+- `cost-iq-narrative` (API, 15 s) records a pending state, starts `cost-iq-narrative-worker` (240 s, Bedrock) asynchronously and returns 202. The worker runs the model call and the grounding check, stores ok, rejected or error, and re-checks the switches. The page polls the stored state. One switch (`cost-iq-narrative/ai-switch.ts`) controls both functions. The API role may invoke only the worker; only the worker may call Bedrock.
+- Tests: pending, no duplicate start, stale restart, start failure, worker model failure, switch turned off before the worker runs; page waits and then shows the stored narrative.
+- Not confirmed live: the invocation, the permissions and the timing need the first run in a real account. The Sovereign IQ narrative keeps the 30-second limit until it is changed the same way.

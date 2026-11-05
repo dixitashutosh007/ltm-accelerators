@@ -7,7 +7,7 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import type { APIGatewayProxyStructuredResultV2 } from 'aws-lambda';
 import { createRequire } from 'node:module';
-import { createHandler } from './handler';
+import { createHandler, runGeneration, type NarrativeJob } from './handler';
 import { memoryStore, type CostIqAssessmentStore } from '../manage-cost-assessment/store';
 import { setPermissionSource, setDomainStore } from '../_shared/access';
 import { costBrief } from '../../../packages/engine-core/src/accelerators/cost-iq/narrative';
@@ -54,9 +54,12 @@ const grounded = (): NarrativeOutput => {
     nextSteps: b.recommendations.slice(0, 3).map(x => `The CIO to review: ${x.title}.`)
   };
 };
-const handler = (model: NarrativeModel, enabled = true) => createHandler(store, { enabled: () => enabled, model: () => model, now: () => NOW });
+// The API only starts a job; the worker runs it. `jobs` holds what was started, and `work` plays the worker.
+let jobs: NarrativeJob[];
+const handler = (model: NarrativeModel, enabled = true, now: () => Date = () => NOW) => createHandler(store, { enabled: () => enabled, start: async j => { jobs.push(j); }, now });
+const work = (model: NarrativeModel, job = jobs[jobs.length - 1]) => runGeneration(store, { model: () => model, now: () => NOW }, job);
 
-beforeEach(() => { store = memoryStore(); });
+beforeEach(() => { store = memoryStore(); jobs = []; });
 
 describe('Cost IQ narrative service', () => {
   it('is off by default: the service switch and the engagement switch both block generation', async () => {
@@ -66,30 +69,78 @@ describe('Cost IQ narrative service', () => {
     expect((await store.get('CIQ-1'))!.aiEnabled).toBeFalsy();
   });
 
-  it('writes a grounded narrative once switched on, removes the client name from the focus, and moves the retention', async () => {
+  it('answers at once with a pending state, then the worker writes a grounded narrative: the client name is out of the focus, and the retention moves', async () => {
     await seed();
     const s = stub([grounded()]);
     const h = handler(s.model);
     expect((await call(h, event({ action: 'enable', assessmentId: 'CIQ-1' }))).body.data.aiEnabled).toBe(true);
     const res = await call(h, event({ action: 'generate', assessmentId: 'CIQ-1', focus: 'For Example Bank, stress governance' }));
-    expect(res.status).toBe(200);
-    expect(res.body.data.narrative.summary.length).toBeGreaterThan(10);
+    expect([res.status, res.body.data.status]).toEqual([202, 'pending']);
+    expect(s.sent).toEqual([]);                                   // the model has not been called by the API
+    expect(JSON.parse((await store.get('CIQ-1'))!.narrativeJson!).status).toBe('pending');
+    expect(jobs).toHaveLength(1);
+    expect(jobs[0].focus).toBe('For [client], stress governance');   // redacted before it leaves the API
+    await work(s.model);
     expect(s.sent[0]).toContain('[client], stress governance');
     expect(s.sent[0]).not.toContain('Example Bank');
     const rec = (await store.get('CIQ-1'))!;
     expect(JSON.parse(rec.narrativeJson!).status).toBe('ok');
+    expect(JSON.parse(rec.narrativeJson!).narrative.summary.length).toBeGreaterThan(10);
     expect(rec.expiresAt).toBeGreaterThan(Math.floor(NOW.getTime() / 1000) + 23 * 30 * 86400);
   });
 
   it('never stores a rejected draft as text: an invented figure, vendor or promise fails closed', async () => {
     await seed();
     const bad: NarrativeOutput = { summary: 'The organisation will save 40% with Broadcom pricing.', priorities: ['Cut costs by 999.'], nextSteps: ['Done.'] };
-    const h = handler(stub([bad]).model);
+    const m = stub([bad]).model;
+    const h = handler(m);
     await call(h, event({ action: 'enable', assessmentId: 'CIQ-1' }));
-    const res = await call(h, event({ action: 'generate', assessmentId: 'CIQ-1' }));
-    expect([res.status, res.body.error]).toEqual([422, 'narrative_rejected']);
+    await call(h, event({ action: 'generate', assessmentId: 'CIQ-1' }));
+    await work(m);
     const stored = JSON.parse((await store.get('CIQ-1'))!.narrativeJson!);
     expect([stored.status, stored.narrative]).toEqual(['rejected', null]);
+  });
+
+  it('does not start a second job while one is pending, and starts again when the pending one is stale or has ended', async () => {
+    await seed();
+    const m = stub([grounded()]).model;
+    await call(handler(m), event({ action: 'enable', assessmentId: 'CIQ-1' }));
+    await call(handler(m), event({ action: 'generate', assessmentId: 'CIQ-1' }));
+    const again = await call(handler(m), event({ action: 'generate', assessmentId: 'CIQ-1' }));
+    expect([again.status, again.body.data.status, jobs.length]).toEqual([202, 'pending', 1]);
+    const later = () => new Date(NOW.getTime() + 6 * 60 * 1000);
+    expect((await call(handler(m, true, later), event({ action: 'generate', assessmentId: 'CIQ-1' }))).status).toBe(202);
+    expect(jobs.length).toBe(2);
+    await work(m);
+    await call(handler(m), event({ action: 'generate', assessmentId: 'CIQ-1' }));
+    expect(jobs.length).toBe(3);
+  });
+
+  it('records an error, and says so, when the worker cannot be started or the model fails', async () => {
+    await seed();
+    const m = stub([]).model;
+    const failing = createHandler(store, { enabled: () => true, start: async () => { throw new Error('no such function'); }, now: () => NOW });
+    await call(failing, event({ action: 'enable', assessmentId: 'CIQ-1' }));
+    const r = await call(failing, event({ action: 'generate', assessmentId: 'CIQ-1' }));
+    expect([r.status, r.body.error]).toEqual([502, 'narrative_failed']);
+    expect(JSON.parse((await store.get('CIQ-1'))!.narrativeJson!).status).toBe('error');
+    const boom: NarrativeModel = { id: 'x', async generate() { throw new Error('down'); } };
+    await work(boom, { assessmentId: 'CIQ-1', requestId: 'r' });
+    const stored = JSON.parse((await store.get('CIQ-1'))!.narrativeJson!);
+    expect([stored.status, stored.narrative]).toEqual(['error', null]);
+    void m;
+  });
+
+  it('the worker re-checks the switches: an engagement switched off after the request gets no model call', async () => {
+    await seed();
+    const s = stub([grounded()]);
+    const h = handler(s.model);
+    await call(h, event({ action: 'enable', assessmentId: 'CIQ-1' }));
+    await call(h, event({ action: 'generate', assessmentId: 'CIQ-1' }));
+    await call(h, event({ action: 'disable', assessmentId: 'CIQ-1' }));
+    await work(s.model);
+    expect(s.sent).toEqual([]);
+    expect(JSON.parse((await store.get('CIQ-1'))!.narrativeJson!).status).toBe('error');
   });
 
   it('refuses other people\'s assessments, long focus text and assessments that are not completed', async () => {

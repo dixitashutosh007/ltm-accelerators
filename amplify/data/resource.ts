@@ -10,6 +10,7 @@ import { costIqReportFunction } from '../functions/cost-iq-report/resource';
 import { sovereignIqReportFunction } from '../functions/sovereign-iq-report/resource';
 import { sovereignIqNarrativeFunction } from '../functions/sovereign-iq-narrative/resource';
 import { costIqNarrativeFunction } from '../functions/cost-iq-narrative/resource';
+import { costIqNarrativeWorkerFunction } from '../functions/cost-iq-narrative-worker/resource';
 import { finopsIqReportFunction } from '../functions/finops-iq-report/resource';
 
 /**
@@ -270,6 +271,7 @@ const schema = a.schema({
   allow.resource(costIqReportFunction).to(['query']),
   allow.resource(sovereignIqNarrativeFunction).to(['query', 'mutate']),
   allow.resource(costIqNarrativeFunction).to(['query', 'mutate']),
+  allow.resource(costIqNarrativeWorkerFunction).to(['query', 'mutate']),
   // The report reads completed assessments only.
   allow.resource(finopsIqReportFunction).to(['query'])
 ]);

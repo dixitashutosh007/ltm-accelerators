@@ -28,6 +28,7 @@ import { costIqReportFunction } from './functions/cost-iq-report/resource';
 import { sovereignIqReportFunction } from './functions/sovereign-iq-report/resource';
 import { sovereignIqNarrativeFunction } from './functions/sovereign-iq-narrative/resource';
 import { costIqNarrativeFunction } from './functions/cost-iq-narrative/resource';
+import { costIqNarrativeWorkerFunction } from './functions/cost-iq-narrative-worker/resource';
 import { finopsIqReportFunction } from './functions/finops-iq-report/resource';
 import {
   ADMIN_GROUP, API_GATEWAY_CORS_ORIGINS, API_BURST_LIMIT, API_RATE_LIMIT, KEEP_LEGACY_API,
@@ -56,6 +57,7 @@ export const backend = defineBackend({
   costIqReportFunction,
   sovereignIqNarrativeFunction,
   costIqNarrativeFunction,
+  costIqNarrativeWorkerFunction,
   finopsIqReportFunction
 });
 
@@ -269,8 +271,8 @@ route('/api/cost-iq/narrative', [HttpMethod.POST], integrations.costNarrative);
  * ------------------------------------------------------------------ */
 const narrativeAccount = Stack.of(backend.sovereignIqNarrativeFunction.resources.lambda).account;
 const indiaProfileArn = `arn:aws:bedrock:ap-south-1:${narrativeAccount}:inference-profile/in.anthropic.claude-opus-5`;
-// The shared Bedrock service: Sovereign IQ and Cost IQ narratives (Cost IQ CQ8) have the same, narrow permission.
-for (const narrativeLambda of [backend.sovereignIqNarrativeFunction.resources.lambda, backend.costIqNarrativeFunction.resources.lambda]) {
+// The shared Bedrock service: the Sovereign IQ narrative and the Cost IQ narrative worker (CQ8) have the same, narrow permission.
+for (const narrativeLambda of [backend.sovereignIqNarrativeFunction.resources.lambda, backend.costIqNarrativeWorkerFunction.resources.lambda]) {
   narrativeLambda.addToRolePolicy(new PolicyStatement({
     actions: ['bedrock:InvokeModel', 'bedrock:InvokeModelWithResponseStream'],
     resources: [indiaProfileArn]
@@ -281,6 +283,12 @@ for (const narrativeLambda of [backend.sovereignIqNarrativeFunction.resources.la
     conditions: { StringEquals: { 'bedrock:InferenceProfileArn': indiaProfileArn } }
   }));
 }
+// The Cost IQ narrative API starts its worker asynchronously (CQ10 F1): it may invoke that one function and nothing else.
+backend.costIqNarrativeFunction.addEnvironment('NARRATIVE_WORKER_FUNCTION', backend.costIqNarrativeWorkerFunction.resources.lambda.functionName);
+backend.costIqNarrativeFunction.resources.lambda.addToRolePolicy(new PolicyStatement({
+  actions: ['lambda:InvokeFunction'],
+  resources: [backend.costIqNarrativeWorkerFunction.resources.lambda.functionArn]
+}));
 route('/api/evaluate/cloud-iq', [HttpMethod.POST], integrations.cloud);
 route('/api/evaluate/strategy-iq', [HttpMethod.POST], integrations.strategy);
 route('/api/evaluate/modernization-iq', [HttpMethod.POST], integrations.modernization);

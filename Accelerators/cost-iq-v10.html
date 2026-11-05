@@ -414,6 +414,7 @@ function preliminary(){
   loadNarrative();
 }
 // AI narrative (CQ8): off unless the consultant switches it on for this engagement. The service writes it from the scores, findings and recommendations only and rejects anything that fails the grounding check.
+var narPollMs=4000;
 function narrativePanelHtml(){
   return '<div class="card" id="narrativeCard" style="margin-top:16px"><div class="eyebrow">AI NARRATIVE · OPTIONAL</div><h2>Written summary for the report</h2><div id="narrativeBody"><p class="muted">Loading…</p></div></div>';
 }
@@ -431,17 +432,36 @@ async function loadNarrative(){
   host.innerHTML=(on
     ?'<p class="muted">AI is on for this engagement. The scores, findings and recommendations, without the organisation\'s name, answers or figures, go to Claude in Amazon Bedrock in India. Nothing is sent until you choose to write.</p><label for="narFocus" class="muted">Optional focus note (up to 300 characters; the organisation\'s name is removed)</label><input class="input" id="narFocus" maxlength="300" type="text"><div class="actions"><button class="btn primary" type="button" id="narWrite">Write narrative</button><button class="btn" type="button" id="narOff">Switch off</button></div>'
     :'<p class="muted">Off. The report is written without AI. Switching on records that this engagement uses AI, and the report\'s data notice says so.</p><div class="actions"><button class="btn primary" type="button" id="narOn">Switch on for this engagement</button></div>')
-    +'<div id="narResult">'+(stored&&stored.status==='ok'?narrativeBox(stored):stored?'<p class="muted">The last attempt was not used: it did not pass the checks.</p>':'')+'</div><p class="muted" id="narMsg" role="status"></p>';
+    +'<div id="narResult">'+(stored&&stored.status==='ok'?narrativeBox(stored):stored&&stored.status!=='pending'?'<p class="muted">The last attempt was not used: it did not pass the checks, or could not be completed.</p>':'')+'</div><p class="muted" id="narMsg" role="status"></p>';
   const act=async function(action,focus){
     try{return await window.CostIqPersistence.narrative(savedAssessment.assessmentId,action,focus)}catch(e){say(e.message);return null}
   };
   if($('narOn'))$('narOn').onclick=async function(){if(await act('enable'))loadNarrative()};
   if($('narOff'))$('narOff').onclick=async function(){if(await act('disable'))loadNarrative()};
+  // The service starts the model call and answers at once; the stored state is read until it is ok, rejected or error.
+  const poll=async function(){
+    const until=Date.now()+5*60*1000;
+    while(Date.now()<until){
+      await new Promise(function(r){setTimeout(r,narPollMs)});
+      if(!$('narMsg'))return;
+      let r=null;try{r=await window.CostIqPersistence.get(savedAssessment.assessmentId)}catch(e){continue}
+      let n=null;try{n=r&&r.narrativeJson?JSON.parse(r.narrativeJson):null}catch(e){n=null}
+      if(!n||n.status==='pending')continue;
+      if(n.status==='ok'){$('narResult').innerHTML=narrativeBox(n);say('Done. It will appear in the next report you download.')}
+      else say(n.status==='rejected'?'The draft added facts that are not in the result, so it was not used. Try again, or use the report without it.':'The narrative could not be written. Please try again.');
+      const b=$('narWrite');if(b)b.disabled=false;return;
+    }
+    say('This is taking longer than expected. Check back later; the report is unaffected.');
+    const b=$('narWrite');if(b)b.disabled=false;
+  };
   if($('narWrite'))$('narWrite').onclick=async function(){
+    $('narWrite').disabled=true;
     say('Writing and checking the narrative. This can take a minute or two…');
     const d=await act('generate',($('narFocus').value||'').trim()||undefined);
-    if(d){$('narResult').innerHTML=narrativeBox(d);say('Done. It will appear in the next report you download.')}
+    if(d){poll()}else $('narWrite').disabled=false;
   };
+  // Opened while a job is already running (for example after a reload): wait for it.
+  if(stored&&stored.status==='pending'&&$('narWrite')){$('narWrite').disabled=true;say('A narrative is being written. This can take a minute or two…');poll()}
 }
 function reportReady(){return !!savedAssessment&&!testScenario&&savedAssessment.status==='completed'}
 function reportButtons(){

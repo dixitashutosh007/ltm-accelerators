@@ -45,7 +45,7 @@ beforeEach(() => {
   store = memoryStore();
   vi.spyOn(console, 'error').mockImplementation(() => {});
   const m = manage(store, () => NOW), r = report(store, () => NOW);
-  const n = narrative(store, { enabled: () => true, model: () => ({ id: 'x', async generate() { throw new Error('must not be called'); } }), now: () => NOW });
+  const n = narrative(store, { enabled: () => true, start: async () => { throw new Error('must not be called'); }, now: () => NOW });
   const A = (c: any, id: string) => (body: unknown) => run(m, ev('POST', '/api/cost-iq/assessment', c, body));
   routes = {
     'read one': c => run(m, ev('GET', '/api/cost-iq/assessment', c, undefined, { assessmentId: 'CIQ-0001-sec' })),

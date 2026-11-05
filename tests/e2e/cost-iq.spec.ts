@@ -213,7 +213,8 @@ test.describe('Cost IQ', () => {
       sent.push(body);
       if (body.action === 'enable') { rec = { ...rec, aiEnabled: true }; return { body: { ok: true, data: { assessmentId: 'CIQ-ai-1', aiEnabled: true } } }; }
       if (body.action === 'disable') { rec = { ...rec, aiEnabled: false }; return { body: { ok: true, data: { assessmentId: 'CIQ-ai-1', aiEnabled: false } } }; }
-      return { body: { ok: true, data: { narrative: { summary: 'Governance is the weakest area.\n\nSecond paragraph.', priorities: ['One.'], nextSteps: ['Two.'] }, modelId: 'stub-model', generatedAt: '2026-11-05T10:00:00Z', status: 'ok' } } };
+      rec = { ...rec, narrativeJson: JSON.stringify({ status: 'pending', startedAt: '2026-11-05T10:00:00Z', narrative: null }) };
+      return { status: 202, body: { ok: true, data: { status: 'pending', startedAt: '2026-11-05T10:00:00Z' } } };
     });
     await page.goto('/cost-iq-v10?scenarios=1');
     await page.getByRole('button', { name: 'Load Healthy' }).click();
@@ -225,7 +226,12 @@ test.describe('Cost IQ', () => {
     await expect(page.getByText('AI is on for this engagement.')).toBeVisible();
     expect(sent).toEqual([{ action: 'enable', assessmentId: 'CIQ-ai-1' }]);
     await page.getByLabel(/Optional focus note/).fill('Stress governance');
+    await page.evaluate('narPollMs = 200');
     await page.getByRole('button', { name: 'Write narrative' }).click();
+    await expect(page.getByText('Writing and checking the narrative.')).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Write narrative' })).toBeDisabled();
+    // The worker finishes some time later: the page picks the stored result up.
+    rec = { ...rec, narrativeJson: JSON.stringify({ status: 'ok', modelId: 'stub-model', generatedAt: '2026-11-05T10:00:30Z', narrative: { summary: 'Governance is the weakest area.\n\nSecond paragraph.', priorities: ['One.'], nextSteps: ['Two.'] } }) };
     await expect(page.getByText('Governance is the weakest area.')).toBeVisible();
     expect(sent[1]).toEqual({ action: 'generate', assessmentId: 'CIQ-ai-1', focus: 'Stress governance' });
     await page.getByRole('button', { name: 'Switch off' }).click();
