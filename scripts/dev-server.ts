@@ -27,6 +27,11 @@ import { createHandler as finopsAssessment } from '../amplify/functions/manage-f
 import { setPermissionSource, setDomainStore } from '../amplify/functions/_shared/access';
 import { createHandler as sovereignAssessment } from '../amplify/functions/manage-sovereign-assessment/handler';
 import { memoryStore as sovereignStore } from '../amplify/functions/manage-sovereign-assessment/store';
+import { createHandler as costAssessment } from '../amplify/functions/manage-cost-assessment/handler';
+import { memoryStore as costStore } from '../amplify/functions/manage-cost-assessment/store';
+import { createHandler as sessions } from '../amplify/functions/manage-session/handler';
+import { memoryStore as sessionStore } from '../amplify/functions/manage-session/store';
+import { createHandler as costReport } from '../amplify/functions/cost-iq-report/handler';
 import { createHandler as sovereignReport } from '../amplify/functions/sovereign-iq-report/handler';
 import { createHandler as sovereignNarrative } from '../amplify/functions/sovereign-iq-narrative/handler';
 import { aiConfig, bedrockNarrativeModel } from '../amplify/functions/_shared/bedrock-narrative';
@@ -95,11 +100,24 @@ const sovereignAssessments = sovereignStore({
   load: () => { const f = join(DATA_DIR, 'sovereign-assessments.json'); return existsSync(f) ? JSON.parse(readFileSync(f, 'utf8')) : []; },
   save: items => { mkdirSync(DATA_DIR, { recursive: true }); writeFileSync(join(DATA_DIR, 'sovereign-assessments.json'), JSON.stringify(items, null, 2)); }
 });
+const savedSessions = sessionStore({
+  load: () => { const f = join(DATA_DIR, 'sessions.json'); return existsSync(f) ? JSON.parse(readFileSync(f, 'utf8')) : []; },
+  save: items => { mkdirSync(DATA_DIR, { recursive: true }); writeFileSync(join(DATA_DIR, 'sessions.json'), JSON.stringify(items, null, 2)); }
+});
+const costAssessments = costStore({
+  load: () => { const f = join(DATA_DIR, 'cost-assessments.json'); return existsSync(f) ? JSON.parse(readFileSync(f, 'utf8')) : []; },
+  save: items => { mkdirSync(DATA_DIR, { recursive: true }); writeFileSync(join(DATA_DIR, 'cost-assessments.json'), JSON.stringify(items, null, 2)); }
+});
 const ROUTES: Record<string, LambdaHandler> = {
+  'GET /api/cost-iq/assessment': costAssessment(costAssessments),
+  'POST /api/cost-iq/assessment': costAssessment(costAssessments),
+  'GET /api/sessions': sessions(savedSessions),
+  'POST /api/sessions': sessions(savedSessions),
   'POST /api/evaluate/finops-iq/v3': finopsIq,
   'POST /api/evaluate/sovereign-iq/v4': sovereignIq,
   'GET /api/sovereign-iq/assessment': sovereignAssessment(sovereignAssessments),
   'POST /api/sovereign-iq/assessment': sovereignAssessment(sovereignAssessments),
+  'GET /api/cost-iq/report': costReport(costAssessments),
   'GET /api/sovereign-iq/report': sovereignReport(sovereignAssessments),
   // AI narrative: off unless AI_ENABLED=true and AWS credentials for Bedrock are in the environment (PLAN S9).
   'POST /api/sovereign-iq/narrative': sovereignNarrative(sovereignAssessments, { enabled: () => aiConfig().enabled, model: () => bedrockNarrativeModel(aiConfig()) }),

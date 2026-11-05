@@ -56,7 +56,8 @@ test.describe('Session handling', () => {
     world.refreshShouldFail = true;
     await signedIn(context, consultant(makeIdToken('consultant@ltm.com', -60), 'refresh-consultant@ltm.com'));
     await page.goto('/cloud-iq');
-    await page.evaluate(() => (window as any).LTM_API.fetch('/api/me').catch(() => {}));
+    // The page's own saved-sessions call may already have failed to renew and navigated away: either way the user is sent to sign in.
+    await page.evaluate(() => (window as any).LTM_API.fetch('/api/me').catch(() => {})).catch(() => {});
     await expect(page).toHaveURL(/require_login=1/);
   });
 

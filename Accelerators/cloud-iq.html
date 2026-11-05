@@ -11,6 +11,7 @@
 <!-- S3 Customer Reports Client & RBAC Guard -->
 <script src="/assets/runtime-config.js"></script>
 <script src="/assets/ltm-api.js"></script>
+<script src="/assets/saved-sessions.js"></script>
 <script src="/assets/s3-reports.js"></script>
 <script src="/assets/rbac-guard.js" data-tool="cloud-iq"></script>
 <style>
@@ -569,6 +570,7 @@ footer.foot{text-align:center;color:var(--mutd);font-size:12px;padding:28px 0 44
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/assets/vantage/vantage.css">
+<script src="/assets/legal-notice.js"></script>
 </head>
 <body>
 
@@ -671,7 +673,7 @@ footer.foot{text-align:center;color:var(--mutd);font-size:12px;padding:28px 0 44
         { p: 18, text: "Initializing Cloud Architecture & Modernization Diagnostic Engine (v2.2)..." },
         { p: 44, text: "Mounting FinOps Excellence, VMware Broadcom Risk & SecNumCloud 3.2 Frameworks..." },
         { p: 72, text: "Calibrating Dual-Horizon Track 1 (Value) & Track 2 (DC Exit) Archetypes..." },
-        { p: 90, text: "Synthesizing Statutory Boundaries, Statutory Ceilings & Peer Benchmarks..." },
+        { p: 90, text: "Synthesising maturity, constraints and moves..." },
         { p: 100, text: "Diagnostic Engine Ready · Launching Cloud IQ..." }
       ];
 
@@ -732,7 +734,6 @@ footer.foot{text-align:center;color:var(--mutd);font-size:12px;padding:28px 0 44
       <span class="vt-nav-link vt-nav-current" aria-current="page">Cloud IQ</span>
     </nav>
     <div class="vt-actions">
-      <a href="cloud-iq-sample-report.html" class="btn btn-ghost btn-sm" style="text-decoration:none;font-weight:700">Sample Report</a>
       <button class="btn btn-ghost btn-sm" onclick="openSessionModal()">Session</button>
       <button class="btn btn-ghost btn-sm" onclick="exportSessionJSON()" title="Save .ciq file">Save</button>
       <button class="btn btn-ghost btn-sm" onclick="triggerSessionLoad()" title="Load .ciq file">Load</button>
@@ -747,7 +748,7 @@ footer.foot{text-align:center;color:var(--mutd);font-size:12px;padding:28px 0 44
   <div class="wrap session-inner">
     <div class="session-fields">
       <span class="s-field">Client: <strong id="lblClient">Global Enterprise</strong></span>
-      <span class="s-field">Advisory Lead: <strong id="lblLead">Ashutosh Dixit</strong></span>
+      <span class="s-field">Advisory Lead: <strong id="lblLead">LTM advisory consultant</strong></span>
       <span class="s-field">Horizon: <strong id="lblHorizon">12-Month Modernization &amp; DC Exit</strong></span>
       <span class="s-badge" id="lblModeBadge">Workshop Mode (30m)</span>
     </div>
@@ -755,9 +756,6 @@ footer.foot{text-align:center;color:var(--mutd);font-size:12px;padding:28px 0 44
       <label style="display:inline-flex;align-items:center;gap:6px;cursor:pointer;font-size:11px;color:var(--mut)">
         <input type="checkbox" id="chkAnonymize" onchange="toggleAnonymize(this.checked)"> Anonymize for Readout
       </label>
-      <button class="btn secondary small" style="padding:3px 8px;font-size:10.5px" onclick="toggleConsultantUnlock()" id="btnConsultantUnlock">
-        Consultant Unlock: Off
-      </button>
     </div>
   </div>
 </div>
@@ -769,51 +767,6 @@ footer.foot{text-align:center;color:var(--mutd);font-size:12px;padding:28px 0 44
 <footer class="foot">
   LTM Vantage &middot; Responsible Advisory &nbsp;&middot;&nbsp; Cloud IQ Enterprise v2.1
 </footer>
-
-<!-- LTM Advisory Studio Drawer -->
-<div class="ai-drawer-overlay" id="aiDrawerOverlay" onclick="closeAiDrawer()"></div>
-<div class="ai-drawer" id="aiDrawer">
-  <div class="ai-drawer-header">
-    <div>
-      <h3 style="font-size:18px;font-weight:800">LTM Vantage Studio</h3>
-      <p style="font-size:12px;color:var(--mut)">Grounded executive briefing engine powered by Gemini, OpenAI, Claude, Offline LTM or LTM SLM</p>
-    </div>
-    <button class="btn ghost small" onclick="closeAiDrawer()">&times;</button>
-  </div>
-  <div class="ai-drawer-body">
-    <div style="background:var(--panel2);border:1px solid var(--line);border-radius:var(--radius-sm);padding:12px;margin-bottom:16px">
-      <div style="font-size:11px;font-weight:700;color:var(--mut);text-transform:uppercase;margin-bottom:6px">Model &amp; Execution Architecture</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-        <div>
-          <label style="font-size:11px;color:var(--mut);display:block;margin-bottom:4px">Advisory Engine</label>
-          <select id="aiProvider" style="width:100%;padding:6px;border-radius:4px;border:1px solid var(--line)">
-            <option value="gemini">Google Gemini (Gemini 1.5 Flash)</option>
-            <option value="openai">OpenAI (GPT-4o)</option>
-            <option value="anthropic">Anthropic (Claude 3.5 Sonnet)</option>
-            <option value="heuristic">Offline LTM Grounded Heuristic</option>
-            <option value="slm" disabled>LTM Vantage SLM (Roadmap · Private Enterprise / On-Prem)</option>
-          </select>
-        </div>
-        <div>
-          <label style="font-size:11px;color:var(--mut);display:block;margin-bottom:4px">API Key (session only)</label>
-          <input type="password" id="aiApiKey" placeholder="API key..." style="width:100%;padding:6px;border-radius:4px;border:1px solid var(--line)">
-        </div>
-      </div>
-    </div>
-
-    <div style="display:flex;gap:10px;margin-bottom:14px">
-      <button class="btn" style="flex:1" onclick="generateAiBriefing()">Generate Grounded Memo</button>
-      <button class="btn secondary" onclick="copyAiPromptPack()">Copy Prompt Pack</button>
-    </div>
-
-    <div id="aiMemoStatus" style="font-size:12px;color:var(--mut);font-family:var(--font-mono);margin-bottom:8px"></div>
-    <div class="ai-memo-box" id="aiMemoContent">Click "Generate Grounded Memo" to synthesize this estate's quantitative metrics, on-prem constraints, and contradiction analysis into an executive CIO briefing.</div>
-  </div>
-  <div class="ai-drawer-foot">
-    <span style="font-size:11px;color:var(--mut)">Direct browser connection · Zero server persistence</span>
-    <button class="btn ghost small" onclick="copyMemoText()">Copy Memo</button>
-  </div>
-</div>
 
 <!-- Boardroom Presentation Mode Modal -->
 <div id="boardroom-modal">
@@ -836,35 +789,6 @@ footer.foot{text-align:center;color:var(--mutd);font-size:12px;padding:28px 0 44
   </div>
 </div>
 
-<!-- AI Configuration Modal -->
-<div class="ai-modal-overlay" id="aiSettingsModalOverlay" onclick="closeAiSettingsModal()">
-  <div class="ai-modal-card" onclick="event.stopPropagation()">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
-      <div>
-        <h3 style="font-size:18px;font-weight:800;color:var(--ink)">Configure OpenAI / ChatGPT Live Engine</h3>
-        <p style="font-size:12px;color:var(--mut);margin-top:2px">Used to synthesize bespoke C-Suite executive memorandums via GPT-4o.</p>
-      </div>
-      <button class="btn ghost small" onclick="closeAiSettingsModal()">&times;</button>
-    </div>
-    <div style="margin-bottom:14px">
-      <label style="display:block;font-size:12px;font-weight:700;color:var(--ink);margin-bottom:6px">OpenAI API Key (Stored in Local Browser Only)</label>
-      <input type="password" id="cfgOpenAiKey" placeholder="sk-proj-..." style="width:100%;padding:10px;border-radius:6px;border:1.5px solid var(--line);font-family:var(--font-mono);font-size:13px" />
-      <div style="font-size:11px;color:var(--mutd);margin-top:4px">Zero server persistence. Your key is stored in localStorage to enable instant in-browser synthesis.</div>
-    </div>
-    <div style="margin-bottom:18px">
-      <label style="display:block;font-size:12px;font-weight:700;color:var(--ink);margin-bottom:6px">Model Selection</label>
-      <select id="cfgOpenAiModel" style="width:100%;padding:8px;border-radius:6px;border:1.5px solid var(--line);font-size:13px">
-        <option value="gpt-4o" selected>OpenAI GPT-4o (Recommended · Deepest Advisory Logic)</option>
-        <option value="gpt-4o-mini">OpenAI GPT-4o-mini (Faster Response)</option>
-      </select>
-    </div>
-    <div style="display:flex;gap:10px;justify-content:flex-end">
-      <button class="btn secondary" onclick="clearOpenAiKey()">Clear Key (Use Heuristic)</button>
-      <button class="btn" onclick="saveOpenAiKeyFromModal()">Save &amp; Activate Live Engine</button>
-    </div>
-  </div>
-</div>
-
 <script>
 /* ============================================================
    Cloud IQ v2.2 Enterprise Diagnostic Data Model
@@ -874,14 +798,17 @@ var STORE_KEY = "cloudiq.v2.state";
 var SHARE_PREFIX = "#s=";
 
 // Session Context
+/* Text the client or the consultant typed (names, notes, an imported .ciq file) is shown as text, never as markup (CL1, finding H6). */
+function esc(t){ return String(t == null ? '' : t).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
 var SESSION = {
   clientName: "Global Enterprise",
-  consultantLead: "Ashutosh Dixit",
+  consultantLead: "LTM advisory consultant",
   engagementDate: new Date().toISOString().slice(0,10),
   targetHorizon: "12-Month Modernization & DC Exit",
   mode: "workshop", // "flash" (10m) vs "workshop" (30m)
   anonymize: false,
-  isUnlocked: false, // Lead-gen gating flag
+  isUnlocked: true, // always true: the tool is signed in, so there is no lead-generation gate (CL1, D7)
   consultingProbes: {},
   consultingProbeNotes: {},
   questionNotes: {},
@@ -923,7 +850,7 @@ var QUESTIONS = [
   // ---- Estate & Footprint (Cloud + On-Premise Depth) ----
   {id:"Q0.7",sec:"Estate footprint",q:"Which public cloud providers run active workloads?",hint:"Select all in production.",type:"multi",mode:"both",
    opts:[["AWS"],["Microsoft Azure"],["Google Cloud (GCP)"],["Oracle Cloud Infrastructure (OCI)"],["Alibaba / Huawei"],["Private Cloud (OpenStack / Nutanix)"],["None / On-Premise Only"]]},
-  {id:"Q0.8",sec:"Estate footprint",q:"Approximate annual public-cloud spend?",hint:"Used to calculate the quantified financial leakage.",type:"single",mode:"both",
+  {id:"Q0.8",sec:"Estate footprint",q:"Approximate annual public-cloud spend?",hint:"Context for the footprint; the page does not turn it into a saving.",type:"single",mode:"both",
    opts:[["< $1M / Minimal"],["$1M–$5M"],["$5M–$20M"],["$20M–$50M"],["$50M–$100M"],["$100M+"]],
    midM:[0.5, 3, 12, 35, 75, 150]},
   {id:"Q0.9",sec:"Estate footprint",q:"Commitment discount coverage (RI, Savings Plans, CUDs)?",hint:"Share of compute spend covered by pricing commitments.",type:"single",mode:"both",
@@ -1087,33 +1014,16 @@ function updateSessionUI(){
     badge.textContent = "Executive Flash Mode (10m · Rapid Read)";
     badge.className = "s-badge mode-flash";
   }
-  const btnUnlock = document.getElementById('btnConsultantUnlock');
-  if(btnUnlock){
-    btnUnlock.textContent = SESSION.isUnlocked ? "Consultant Unlock: Active" : "Consultant Unlock: Off";
-    btnUnlock.style.background = SESSION.isUnlocked ? "var(--green-tint)" : "var(--panel2)";
-    btnUnlock.style.color = SESSION.isUnlocked ? "var(--green)" : "var(--ink)";
-    btnUnlock.style.borderColor = SESSION.isUnlocked ? "var(--green)" : "var(--line)";
-  }
 }
 
-function toggleConsultantUnlock(){
-  SESSION.isUnlocked = !SESSION.isUnlocked;
-  updateSessionUI();
-  if(RESULT) showResults(RESULT);
-}
 
-function saveState(){
-  try{ localStorage.setItem(STORE_KEY, JSON.stringify({SESSION, gIdx, A, ts:Date.now()})); }catch(e){}
-}
+// Saved to the account through the shared sessions component (platform P3); nothing is kept in this browser.
+function saveState(){ SavedSessions.touch(); }
 function loadState(){
-  try{
-    const raw = localStorage.getItem(STORE_KEY); if(!raw) return null;
-    const st = JSON.parse(raw);
-    if(st && st.A && typeof st.gIdx === "number") return st;
-    return null;
-  }catch(e){ return null; }
+  const st = SavedSessions.latest();
+  return st && st.A && typeof st.gIdx === "number" ? st : null;
 }
-function clearState(){ try{ localStorage.removeItem(STORE_KEY); }catch(e){} }
+function clearState(){ SavedSessions.fresh(); }
 function hydrate(st){
   if(st.SESSION) Object.assign(SESSION, st.SESSION);
   Object.keys(A).forEach(k=>delete A[k]);
@@ -1156,7 +1066,6 @@ function start(){
     <div class="card">
       <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:8px">
         <div class="sec-label">LTM Vantage · Diagnostic Platform</div>
-        <a href="cloud-iq-sample-report.html" class="btn ghost small" style="text-decoration:none">View Finished Sample Report →</a>
       </div>
       <h1 style="font-size:34px;line-height:1.2;margin-bottom:12px">Enterprise Cloud &amp; Hybrid Estate Diagnostic</h1>
       <p class="lead">
@@ -1166,7 +1075,6 @@ function start(){
       <div style="margin:16px 0">
         <span class="pill">2D Risk Heatmap</span>
         <span class="pill">4-Phase Horizon Roadmap</span>
-        <span class="pill">Quantified Cost Leakage ($)</span>
         <span class="pill">Boardroom PDF &amp; Slide Export</span>
       </div>
 
@@ -1273,7 +1181,7 @@ function renderGroup(){
             <span id="lbl_note_${Q.id}">${hasNote ? "Edit Context / Subjective Note" : "+ Add Context / Subjective Note (Optional)"}</span>
           </button>
           <div id="box_note_${Q.id}" style="display:${hasNote ? "block" : "none"};margin-top:6px">
-            <textarea class="q-note-textarea" oninput="saveQNote('${Q.id}', this.value)" placeholder="Enter subjective observations, legacy constraints, specific technologies, or organizational context for the AI report...">${savedNote}</textarea>
+            <textarea class="q-note-textarea" oninput="saveQNote('${Q.id}', this.value)" placeholder="Enter subjective observations, legacy constraints, specific technologies, or organizational context for the report...">${esc(savedNote)}</textarea>
           </div>
         </div>
       </div>
@@ -1690,7 +1598,7 @@ function renderConsultingDepthStep(probes, R){
         <div class="probe-q">${p.q}</div>
         ${optsHtml ? `<div class="probe-opts">${optsHtml}</div>` : ""}
         <div>
-          <textarea class="probe-notes" data-probe-id="${p.id}" placeholder="${p.subjectivePrompt}">${savedNote}</textarea>
+          <textarea class="probe-notes" data-probe-id="${p.id}" placeholder="${p.subjectivePrompt}">${esc(savedNote)}</textarea>
         </div>
       </div>
     `;
@@ -1854,7 +1762,7 @@ async function computeAndShow(){
 function showPreliminaryScorecard(R){
   R = R || RESULT;
   if(!R){ showScoringError(); return; }
-  RESULT = R;
+  RESULT = R; saveState();
   pfill.style.width = "100%";
   
   const client = SESSION.anonymize ? "Confidential Enterprise Client" : SESSION.clientName;
@@ -1872,7 +1780,7 @@ function showPreliminaryScorecard(R){
         <div>
           <div class="sec-label">Diagnostic Quality Gate Passed · Preliminary Readout</div>
           <h1 style="font-size:26px;margin-bottom:6px">Estate Maturity Preliminary Scorecard</h1>
-          <p style="font-size:14px;color:var(--mut);margin:0">Key indicators correlated across 8 architecture dimensions, FinOps commitment models, and peer benchmarks.</p>
+          <p style="font-size:14px;color:var(--mut);margin:0">Key indicators correlated across 8 architecture dimensions, and FinOps commitment practice.</p>
         </div>
         <span class="badge" style="background:var(--coral);font-size:13px;padding:6px 14px">${R.band.toUpperCase()}</span>
       </div>
@@ -1902,29 +1810,13 @@ function showPreliminaryScorecard(R){
           <p style="font-size:11.5px;color:var(--mut);line-height:1.4">${trackDesc}</p>
         </div>
 
-        <!-- Metric 3: Peer Benchmark Delta -->
-        <div class="kavach-stat-card ${R.peerDelta>=0?'accent-green':'accent-coral'}">
+        <!-- Cloud cost value (D3) and sector peer comparison (D4) are not shown: see CL1 -->
+        <div class="kavach-stat-card accent-blue">
           <div class="kavach-stat-head">
-            <span class="kavach-stat-label">Sector Benchmark</span>
-            <span class="kavach-stat-pill" style="background:${R.peerDelta>=0?'var(--green-tint)':'var(--coral-tint)'};color:${R.peerDelta>=0?'var(--green)':'var(--coral-dkr)'}">${R.peerDelta>=0?'Ahead of Peer':'Lagging Peer'}</span>
+            <span class="kavach-stat-label">Cloud cost value</span>
+            <span class="kavach-stat-pill" style="background:var(--panel2);color:var(--ink)">Not quantified here</span>
           </div>
-          <div class="kavach-num-row">
-            <span class="kavach-big-num" style="color:${R.peerDelta>=0?'var(--green)':'var(--coral)'}">${R.peerDelta>=0?'+':''}${R.peerDelta.toFixed(1)}</span>
-            <span class="kavach-sub-unit">vs Peer Median</span>
-          </div>
-          <div style="font-size:11.5px;color:var(--mut);margin-top:8px">Sector: ${R.industryKey.split(' ')[0]} (${R.peerBenchmark.overall.toFixed(1)} baseline)</div>
-        </div>
-
-        <!-- Metric 4: Annual Cost Leakage -->
-        <div class="kavach-stat-card accent-amber">
-          <div class="kavach-stat-head">
-            <span class="kavach-stat-label">Estimated annual cost leakage (indicative)</span>
-            <span class="kavach-stat-pill" style="background:var(--coral-tint);color:var(--coral-dkr)">Indicative</span>
-          </div>
-          <div class="kavach-num-row">
-            <span class="kavach-big-num" style="color:var(--coral)">${fmt(R.totalLeakage)}</span>
-          </div>
-          <div style="font-size:11.5px;color:var(--mut);margin-top:8px">Range: ${fmt(R.leakLow)} – ${fmt(R.leakHigh)} / yr</div>
+          <div style="font-size:12.5px;color:var(--mut);line-height:1.45">Cloud cost value is worked out once, by FinOps IQ, so the same saving is never counted twice. Run FinOps IQ for this estate to see it.</div>
         </div>
       </div>
 
@@ -1957,7 +1849,6 @@ function showPreliminaryScorecard(R){
 
       <div class="nav" style="margin-top:20px;border-top:1px solid var(--line2);padding-top:16px">
         <button class="btn ghost" onclick="reviewAssessmentAnswers()">← Review Assessment Answers</button>
-        <button class="btn secondary" onclick="openAiSettingsModal()">Configure ChatGPT / OpenAI Key</button>
       </div>
     </div>
   `;
@@ -1980,10 +1871,6 @@ async function startCinematicReportGeneration(){
     showResults(RESULT);
     window.scrollTo({top:0, behavior:'smooth'});
 
-    const storedKey = localStorage.getItem("cloud_iq_openai_key") || (document.getElementById('aiApiKey')?.value || '').trim();
-    if(storedKey){
-      generateAiBriefingWithKey(storedKey);
-    }
   });
 }
 
@@ -2008,7 +1895,7 @@ function showReportGenerationAnimation(callback){
       <div class="rg-core-dot"></div>
     </div>
     <div class="rg-title">Generating Executive Cloud Diagnostic</div>
-    <div class="rg-subtitle">Correlating responses against 8 architecture dimensions, FinOps commitment models, and sector peer medians...</div>
+    <div class="rg-subtitle">Correlating responses against 8 architecture dimensions, and FinOps commitment practice...</div>
     <ul class="rg-step-list">
       ${steps.map((s,i) => `
         <li class="rg-step" id="rg-step-${i}">
@@ -2064,133 +1951,6 @@ function showReportGenerationAnimation(callback){
   }, totalDuration);
 }
 
-function openAiSettingsModal(){
-  const modal = document.getElementById('aiSettingsModalOverlay');
-  if(!modal) return;
-  const key = localStorage.getItem('cloud_iq_openai_key') || '';
-  const model = localStorage.getItem('cloud_iq_openai_model') || 'gpt-4o';
-  const keyInput = document.getElementById('cfgOpenAiKey');
-  if(keyInput) keyInput.value = key;
-  const modelInput = document.getElementById('cfgOpenAiModel');
-  if(modelInput) modelInput.value = model;
-  modal.classList.add('open');
-}
-
-function closeAiSettingsModal(){
-  const modal = document.getElementById('aiSettingsModalOverlay');
-  if(modal) modal.classList.remove('open');
-}
-
-function saveOpenAiKeyFromModal(){
-  const key = (document.getElementById('cfgOpenAiKey')?.value || '').trim();
-  const model = document.getElementById('cfgOpenAiModel')?.value || 'gpt-4o';
-  if(key){
-    localStorage.setItem('cloud_iq_openai_key', key);
-    localStorage.setItem('cloud_iq_openai_model', model);
-    const aiKeyInput = document.getElementById('aiApiKey');
-    if(aiKeyInput) aiKeyInput.value = key;
-    const aiProvider = document.getElementById('aiProvider');
-    if(aiProvider) aiProvider.value = "openai";
-    const headerStatus = document.getElementById('lblHeaderAiStatus');
-    if(headerStatus) headerStatus.textContent = "OpenAI: " + model;
-    alert("OpenAI API key saved! Model: " + model + ". Live C-Suite advisory memo synthesis is now active.");
-  } else {
-    clearOpenAiKey();
-  }
-  closeAiSettingsModal();
-}
-
-function clearOpenAiKey(){
-  localStorage.removeItem('cloud_iq_openai_key');
-  const aiKeyInput = document.getElementById('aiApiKey');
-  if(aiKeyInput) aiKeyInput.value = '';
-  const aiProvider = document.getElementById('aiProvider');
-  if(aiProvider) aiProvider.value = "heuristic";
-  const headerStatus = document.getElementById('lblHeaderAiStatus');
-  if(headerStatus) headerStatus.textContent = "OpenAI Live AI: Ready";
-  alert("OpenAI key cleared. Diagnostic will use LTM Grounded Heuristic Engine.");
-  closeAiSettingsModal();
-}
-
-async function generateAiBriefingWithKey(apiKey){
-  const statusEl = document.getElementById('aiMemoStatus');
-  const contentEl = document.getElementById('aiMemoContent');
-  const memoCardContent = document.getElementById('reportMemoText');
-  const memoBadge = document.getElementById('reportMemoBadge');
-  const model = localStorage.getItem('cloud_iq_openai_model') || 'gpt-4o';
-
-  if(statusEl) statusEl.textContent = "Connecting to OpenAI " + model + "...";
-  if(contentEl) contentEl.textContent = "Synthesizing executive briefing via OpenAI...";
-  if(memoCardContent) memoCardContent.innerHTML = "<em>Live synthesis in progress via OpenAI " + model + "...</em>";
-
-  const prompt = buildGroundedPromptPayload();
-
-  try{
-    const resp = await fetch("https://api.openai.com/v1/chat/completions", {
-      method: "POST",
-      headers: { "Content-Type": "application/json", "Authorization": "Bearer " + apiKey },
-      body: JSON.stringify({
-        model: model,
-        messages: [
-          {role:"system", content:"You are an elite Senior Partner in LTM Infrastructure Tech Advisory. Author a bespoke, crisp, evidenced C-level advisory memo for CIOs and CTOs. Use British English. Never use generic consulting platitudes."},
-          {role:"user", content:prompt}
-        ],
-        temperature: 0.2
-      })
-    });
-    if(!resp.ok) throw new Error("HTTP " + resp.status);
-    const data = await resp.json();
-    const memoText = data.choices[0].message.content;
-    SESSION.memoText = memoText;
-    if(contentEl) contentEl.textContent = memoText;
-    if(statusEl) statusEl.innerHTML = `<span style="color:var(--green);font-weight:700">Live Synthesis Complete via OpenAI ${model}</span> (${new Date().toLocaleTimeString()})`;
-    if(memoCardContent) memoCardContent.textContent = memoText;
-    if(memoBadge){
-      memoBadge.textContent = "Generated via OpenAI " + model;
-      memoBadge.style.background = "var(--green-tint)";
-      memoBadge.style.color = "var(--green)";
-      memoBadge.style.borderColor = "var(--green)";
-    }
-  } catch(err){
-    console.warn("OpenAI API call failed, using heuristic:", err);
-    const fallbackMemo = generateRuleBasedMemo();
-    SESSION.memoText = fallbackMemo;
-    if(contentEl) contentEl.textContent = fallbackMemo;
-    if(statusEl) statusEl.textContent = "Generated via LTM Heuristic Engine (Offline fallback: " + err.message + ")";
-    if(memoCardContent) memoCardContent.textContent = fallbackMemo;
-    if(memoBadge){
-      memoBadge.textContent = "LTM Heuristic Engine";
-      memoBadge.style.background = "var(--panel2)";
-      memoBadge.style.color = "var(--ink)";
-      memoBadge.style.borderColor = "var(--line)";
-    }
-  }
-}
-
-function unlockReport(){
-  const email = (document.getElementById('leadEmail')?.value || '').trim();
-  const name = (document.getElementById('leadName')?.value || '').trim();
-  const company = (document.getElementById('leadCompany')?.value || '').trim();
-
-  if(!email || !email.includes('@') || !email.includes('.')){
-    alert("Please enter a valid business email address.");
-    return;
-  }
-  const domain = email.split('@')[1].toLowerCase();
-  const freeProviders = ['gmail.com', 'yahoo.com', 'hotmail.com', 'outlook.com', 'icloud.com', 'aol.com'];
-  if(freeProviders.includes(domain)){
-    alert("Please enter your corporate business email address (e.g. name@company.com) to access the executive report.");
-    return;
-  }
-
-  if(name) SESSION.consultantLead = name;
-  if(company) SESSION.clientName = company;
-  SESSION.isUnlocked = true;
-  updateSessionUI();
-  showResults(RESULT);
-}
-
-
 /* Kavach-style 60fps Cubic Ease-out Counter Animation */
 function animateCountUp(el, target, duration, decimals, prefix, suffix){
   prefix = prefix || '';
@@ -2211,9 +1971,7 @@ function animateCountUp(el, target, duration, decimals, prefix, suffix){
 function showResults(R){
   pfill.style.width = "100%";
   const client = SESSION.anonymize ? "Confidential Enterprise Client" : SESSION.clientName;
-  const deltaText = R.peerDelta >= 0.2 ? `Outperforming ${R.industryKey.split(" ")[0]} peer median (+${R.peerDelta.toFixed(1)})` :
-                    R.peerDelta <= -0.2 ? `Lagging ${R.industryKey.split(" ")[0]} peer median (${R.peerDelta.toFixed(1)})` :
-                    `In line with ${R.industryKey.split(" ")[0]} peer baseline`;
+
 
   // 1. Heatmap HTML Generation
   const heatmapRows = [
@@ -2290,43 +2048,12 @@ function showResults(R){
     `;
   }).join("");
 
-  const isUnlocked = SESSION.isUnlocked;
+  const isUnlocked = true;
 
   // Gated HTML wrapper
   const gatedClass = isUnlocked ? "" : "gated-content-blur";
 
-  const gateOverlayHtml = isUnlocked ? "" : `
-    <div class="gate-overlay-box">
-      <div style="font-size:12px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--coral);margin-bottom:8px">Restricted Advisory Deliverable</div>
-      <h3>Unlock Complete Executive Transformation Pack</h3>
-      <p>
-        Your visual maturity score, radar benchmark, 2D risk heatmap, and financial leakage are displayed above. Enter your business email to unlock your bespoke <b>4-Phase Modernization Roadmap</b>, <b>Migration Wave Schedule</b>, <b>LTM Vantage Studio Boardroom Memo</b>, and <b>Downloadable 3-Page Executive PDF Pack</b>.
-      </p>
-      <div class="gate-form">
-        <div>
-          <label>Full Name</label>
-          <input type="text" id="leadName" placeholder="e.g. Jane Doe" value="${SESSION.consultantLead!=='Ashutosh Dixit'?SESSION.consultantLead:''}">
-        </div>
-        <div>
-          <label>Corporate Business Email</label>
-          <input type="email" id="leadEmail" placeholder="e.g. j.doe@enterprise.com">
-        </div>
-        <div>
-          <label>Organization / Company</label>
-          <input type="text" id="leadCompany" placeholder="e.g. Global Financial Corp" value="${SESSION.clientName!=='Global Enterprise'?SESSION.clientName:''}">
-        </div>
-        <button class="btn big" style="width:100%;margin-top:8px" onclick="unlockReport()">Unlock Full Roadmap &amp; PDF Pack →</button>
-      </div>
-      <div style="margin-top:16px;padding-top:14px;border-top:1px solid var(--line2);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
-        <a href="mailto:ashutosh.dixit@ltm.com?subject=Cloud%20IQ%20Advisory%20Readout%20Request&body=Hi%20Advisory%20Team,%0A%0AWe%20completed%20the%20Cloud%20IQ%20diagnostic%20for%20our%20estate%20and%20would%20like%20to%20schedule%20an%20executive%20readout%20session.%0A%0AClient:%20${encodeURIComponent(SESSION.clientName)}%0AScore:%20${R.overall.toFixed(1)}/5.0" class="btn ghost small" style="text-decoration:none">
-          Book Readout with Our Advisory Team
-        </a>
-        <a href="javascript:void(0)" onclick="toggleConsultantUnlock()" style="font-size:11px;color:var(--mutd);text-decoration:underline">
-          LTM Consultant Bypass
-        </a>
-      </div>
-    </div>
-  `;
+  const gateOverlayHtml = "";
 
   app.innerHTML = `
     <!-- Kavach Cricket / Sports Analytics Inspired High-Impact Stats Hero -->
@@ -2356,56 +2083,14 @@ function showResults(R){
         </div>
       </div>
 
-      <!-- 2. Addressable Financial Leakage -->
-      <div class="kavach-stat-card accent-amber">
-        <div class="kavach-stat-head">
-          <span class="kavach-stat-label">Estimated annual cost leakage (indicative)</span>
-          <span class="kavach-stat-pill" style="background:var(--coral-tint);color:var(--coral-dkr)">Indicative</span>
-        </div>
-        <div class="kavach-num-row">
-          <span class="kavach-big-num" style="color:var(--coral)">${fmt(R.totalLeakage)}</span>
-        </div>
-        <div class="kavach-bars-list">
-          <div class="kavach-bar-row">
-            <span class="kavach-bar-label">Compute</span>
-            <div class="kavach-bar-track"><div class="kavach-bar-fill" style="width:${Math.round((R.decomp.compute/R.totalLeakage)*100)}%;background:var(--coral)"></div></div>
-            <span class="kavach-bar-val">${fmt(R.decomp.compute)}</span>
+      <!-- 2. Cloud cost value is not quantified here (D3); no peer comparison (D4) -->
+      <div class="kavach-stat-card accent-blue">
+          <div class="kavach-stat-head">
+            <span class="kavach-stat-label">Cloud cost value</span>
+            <span class="kavach-stat-pill" style="background:var(--panel2);color:var(--ink)">Not quantified here</span>
           </div>
-          <div class="kavach-bar-row">
-            <span class="kavach-bar-label">Commitments</span>
-            <div class="kavach-bar-track"><div class="kavach-bar-fill" style="width:${Math.round((R.decomp.commit/R.totalLeakage)*100)}%;background:var(--blue)"></div></div>
-            <span class="kavach-bar-val">${fmt(R.decomp.commit)}</span>
-          </div>
+          <div style="font-size:12.5px;color:var(--mut);line-height:1.45">Cloud cost value is worked out once, by FinOps IQ, so the same saving is never counted twice. Run FinOps IQ for this estate to see it.</div>
         </div>
-      </div>
-
-      <!-- 3. Head-to-Head Peer Comparison -->
-      <div class="kavach-stat-card ${R.peerDelta>=0?'accent-green':'accent-coral'}">
-        <div class="kavach-stat-head">
-          <span class="kavach-stat-label">Peer Benchmark</span>
-          <span class="kavach-stat-pill" style="background:${R.peerDelta>=0?'var(--green-tint)':'var(--coral-tint)'};color:${R.peerDelta>=0?'var(--green)':'var(--coral-dkr)'}">
-            ${R.peerDelta>=0?'+':''}${R.peerDelta.toFixed(1)} vs Peer
-          </span>
-        </div>
-        <div class="kavach-num-row">
-          <span class="kavach-big-num" style="color:${R.peerDelta>=0?'var(--green)':'var(--coral)'}">
-            ${R.peerDelta>=0?'+':''}${R.peerDelta.toFixed(1)}
-          </span>
-          <span class="kavach-sub-unit">vs ${R.industryKey.split(' ')[0]} Median</span>
-        </div>
-        <div class="kavach-bars-list">
-          <div class="kavach-bar-row">
-            <span class="kavach-bar-label">Estate</span>
-            <div class="kavach-bar-track"><div class="kavach-bar-fill" style="width:${Math.round((R.overall/5)*100)}%;background:var(--coral)"></div></div>
-            <span class="kavach-bar-val">${R.overall.toFixed(1)}</span>
-          </div>
-          <div class="kavach-bar-row">
-            <span class="kavach-bar-label">Sector Median</span>
-            <div class="kavach-bar-track"><div class="kavach-bar-fill" style="width:${Math.round((R.peerBenchmark.overall/5)*100)}%;background:var(--blue)"></div></div>
-            <span class="kavach-bar-val">${R.peerBenchmark.overall.toFixed(1)}</span>
-          </div>
-        </div>
-      </div>
 
       <!-- 4. Binding Constraint / Primary Friction -->
       <div class="kavach-stat-card accent-blue">
@@ -2429,24 +2114,14 @@ function showResults(R){
       <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px">
         <div>
           <div class="sec-label">Executive Diagnostic Readout</div>
-          <h1 style="font-size:26px;margin-bottom:6px">Engagement: ${client}</h1>
+          <h1 style="font-size:26px;margin-bottom:6px">Engagement: ${esc(client)}</h1>
           <p style="font-size:14px;color:var(--mut)">
             <b>Designated Track:</b> <span style="color:var(--coral);font-weight:700">${R.trackName}</span> &nbsp;|&nbsp; 
             <b>Maturity Score:</b> ${R.overall.toFixed(1)}/5.0 (${R.band})
           </p>
-          <div style="font-size:12.5px;color:var(--coral-dkr);font-weight:700;margin-top:4px">Sector Benchmark: ${deltaText}</div>
-          <div style="font-size:13px;color:var(--ink);margin-top:8px">
-            <b>Estimated annual cost leakage (indicative):</b> <span style="color:var(--coral);font-weight:800">${fmt(R.leakLow)} – ${fmt(R.leakHigh)}</span>
-          </div>
         </div>
         <div style="display:flex;gap:8px;flex-wrap:wrap">
-          ${isUnlocked ? `
-            <button class="btn" onclick="openAiDrawer()">LTM Vantage Studio</button>
             <button class="btn secondary" onclick="launchBoardroom()">Boardroom Mode</button>
-          ` : `
-            <button class="btn" onclick="document.getElementById('leadEmail')?.focus()">Unlock Full Pack</button>
-            <a href="mailto:ashutosh.dixit@ltm.com?subject=Cloud%20IQ%20Advisory%20Readout" class="btn secondary" style="text-decoration:none">Book with Our Advisory Team</a>
-          `}
         </div>
       </div>
     </div>
@@ -2454,7 +2129,7 @@ function showResults(R){
     <!-- Visual Maturity Scorecard & Spider Benchmark (Always Visible) -->
     <div class="res-grid">
       <div class="card">
-        <div class="sec-label">Comparative Benchmark</div>
+        <div class="sec-label">Maturity profile</div>
         <h3 style="font-size:18px">Maturity Scorecard &amp; Radar Profile</h3>
         <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;margin-top:6px">
           <span class="badge">Overall ${R.overall.toFixed(1)} / 5.0</span>
@@ -2466,7 +2141,6 @@ function showResults(R){
         </div>
         <div style="display:flex;justify-content:center;gap:16px;margin-top:10px;font-size:11.5px;font-family:var(--font-display)">
           <span style="display:inline-flex;align-items:center;gap:5px"><span style="width:10px;height:10px;background:#FF5E4F;border-radius:2px"></span> Estate (${R.overall.toFixed(1)})</span>
-          <span style="display:inline-flex;align-items:center;gap:5px"><span style="width:10px;height:10px;background:#226882;border-radius:2px"></span> ${R.industryKey.split(" ")[0]} Median (${R.peerBenchmark.overall.toFixed(1)})</span>
         </div>
       </div>
 
@@ -2501,46 +2175,6 @@ function showResults(R){
       </div>
     </div>
 
-    <!-- Quantified Decomposed Value Hook (Always Visible) -->
-    <div class="card">
-      <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:10px">
-        <div>
-          <div class="sec-label">Economic Business Case</div>
-          <h3 style="font-size:18px">Quantified Financial Value Hook</h3>
-          <p style="font-size:12.5px;color:var(--mut)">Indicative split of estimated annual cost leakage across cloud &amp; infrastructure</p>
-        </div>
-        <div style="text-align:right">
-          <div style="font-size:24px;font-weight:800;color:var(--coral);font-family:var(--font-display)">${fmt(R.leakLow)} – ${fmt(R.leakHigh)}</div>
-          <div style="font-size:11px;color:var(--mut)">Estimated annual cost leakage (indicative)</div>
-        </div>
-      </div>
-      <div class="decomp-grid">
-        <div class="decomp-card">
-          <div class="lbl">Compute Rightsizing</div>
-          <div class="val">${fmt(R.decomp.compute)}</div>
-          <div class="desc">Oversized instances, unattached EBS/managed disks, and idle non-production clusters.</div>
-        </div>
-        <div class="decomp-card">
-          <div class="lbl">Commitment Arbitrage</div>
-          <div class="val">${fmt(R.decomp.commit)}</div>
-          <div class="desc">Unoptimized on-demand spend eligible for Savings Plans, RIs, or CUDs.</div>
-        </div>
-        <div class="decomp-card">
-          <div class="lbl">Storage &amp; Egress</div>
-          <div class="val">${fmt(R.decomp.storage)}</div>
-          <div class="desc">Hot storage tiering bloat, uncompressed network cross-region traffic.</div>
-        </div>
-        <div class="decomp-card">
-          <div class="lbl">Licensing &amp; Hypervisors</div>
-          <div class="val">${fmt(R.decomp.licensing)}</div>
-          <div class="desc">VMware CPU model escalation risk and unoptimized SQL/Oracle core licensing.</div>
-        </div>
-      </div>
-      <div style="margin-top:14px;background:var(--panel2);border:1px solid var(--line);border-radius:var(--radius-sm);padding:12px 16px;font-size:12.5px;color:var(--ink)">
-        <b>CFO Self-Funding Potential:</b> Savings captured from compute rightsizing and commitment discounts can help fund the application modernization factory and DC exit.
-      </div>
-    </div>
-
     <!-- Gated Container Wrapper (Protecting Proprietary Execution Blueprint) -->
     <div class="gated-wrapper">
       ${gateOverlayHtml}
@@ -2571,7 +2205,7 @@ function showResults(R){
                 <div class="odoor">Engage via: ${OFFERINGS[o.code]?.door||"Advisory sprint"}</div>
               </div>
             `).join("")}
-            ${R.sovFlag ? `<div class="handoff"><b>Pillar 02 Digital Sovereignty Referral:</b> Strict residency / regulatory flags raised. Routes to <b>Sovereign IQ</b> and <b>Posture IQ</b>.</div>` : ""}
+            ${R.sovFlag ? `<div class="handoff"><b>Pillar 02 Digital Sovereignty Referral:</b> Strict residency / regulatory flags raised. Routes to <b>Sovereign IQ</b> .</div>` : ""}
             ${R.aiFlag ? `<div class="handoff"><b>Pillar 04 AI Infusion Referral:</b> AI ambition detected. Foundation engineering stays with <b>03.6</b>; full AI programme routes to <b>AI Readiness IQ</b>.</div>` : ""}
           </div>
         </div>
@@ -2585,17 +2219,14 @@ function showResults(R){
               <p style="font-size:12.5px;color:var(--mut)">Grounded executive readout tailored for CIO, CTO &amp; CFO leadership alignment</p>
             </div>
             <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
-              <span id="reportMemoBadge" class="kavach-stat-pill" style="background:${localStorage.getItem('cloud_iq_openai_key') ? 'var(--green-tint)' : 'var(--panel2)'};color:${localStorage.getItem('cloud_iq_openai_key') ? 'var(--green)' : 'var(--ink)'};border:1px solid var(--line)">
-                ${localStorage.getItem('cloud_iq_openai_key') ? 'Live OpenAI ' + (localStorage.getItem('cloud_iq_openai_model') || 'gpt-4o') : 'LTM Heuristic Engine'}
-              </span>
-              <button class="btn secondary small" onclick="openAiSettingsModal()">Model Settings</button>
+              <span id="reportMemoBadge" class="kavach-stat-pill" style="background:var(--panel2);color:var(--ink);border:1px solid var(--line)">Rule-based memo (no AI)</span>
               <button class="btn ghost small" onclick="copyReportMemo()">Copy Memo</button>
               <button class="btn ghost small" onclick="regenerateReportMemo()">Regenerate</button>
             </div>
           </div>
-          <div id="reportMemoText" style="white-space:pre-wrap;font-family:var(--font-mono, monospace);font-size:12.5px;line-height:1.6;background:var(--panel2);padding:18px;border-radius:var(--radius-sm);border:1px solid var(--line);max-height:480px;overflow-y:auto;color:var(--ink)">${SESSION.memoText || generateRuleBasedMemo()}</div>
+          <div id="reportMemoText" style="white-space:pre-wrap;font-family:var(--font-mono, monospace);font-size:12.5px;line-height:1.6;background:var(--panel2);padding:18px;border-radius:var(--radius-sm);border:1px solid var(--line);max-height:480px;overflow-y:auto;color:var(--ink)">${esc(SESSION.memoText || generateRuleBasedMemo())}</div>
           <div style="display:flex;justify-content:space-between;align-items:center;margin-top:12px;font-size:11.5px;color:var(--mut);flex-wrap:wrap;gap:8px">
-            <span>Author: <b>Ashutosh Dixit</b>, LTM Infrastructure Tech Advisory (ashutosh.dixit@ltm.com)</span>
+            <span>Prepared by LTM Infrastructure Technology Advisory</span>
             <span>Grounding: 8 Architecture Dimensions · FinOps Models · Consulting Field Probes</span>
           </div>
         </div>
@@ -2607,10 +2238,6 @@ function showResults(R){
           <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
             <button class="btn big" onclick="downloadExecutivePDF()">Download Executive PDF Pack</button>
             <button class="btn secondary" onclick="launchBoardroom()">Boardroom Presentation Mode</button>
-            <button class="btn secondary" onclick="openAiDrawer()">LTM Vantage Studio</button>
-            <a href="mailto:ashutosh.dixit@ltm.com?subject=Cloud%20IQ%20Readout%20Request%20—%20${encodeURIComponent(client)}&body=Hi%20Advisory%20Team,%0A%0AWe%20completed%20our%20Cloud%20IQ%20diagnostic%20for%20${encodeURIComponent(client)}%20and%20would%20like%20to%20schedule%20a%2030-minute%20readout%20session.%0A%0AScore:%20${R.overall.toFixed(1)}/5.0%20(${R.band})%0AValue%20at%20Stake:%20${fmt(R.leakLow)}%20-%20${fmt(R.leakHigh)}" class="btn secondary" style="text-decoration:none">
-              Book Readout with Our Advisory Team
-            </a>
             <button class="btn secondary" onclick="exportSessionJSON()">Save Session (.ciq)</button>
             <button class="btn ghost" onclick="start()">Restart Assessment</button>
           </div>
@@ -2631,7 +2258,6 @@ function drawSpiderChart(R){
   if(!ctx) return;
   const labels = Object.keys(DIM_NAMES);
   const dataScores = labels.map(d => R.dimScores[d]);
-  const peerScores = labels.map(d => R.peerBenchmark[d] ?? R.peerBenchmark.overall);
 
   if(spiderChartInstance) spiderChartInstance.destroy();
   spiderChartInstance = new Chart(ctx, {
@@ -2646,15 +2272,6 @@ function drawSpiderChart(R){
           borderColor: '#FF5E4F',
           pointBackgroundColor: '#282828',
           borderWidth: 2
-        },
-        {
-          label: 'Sector Peer Median',
-          data: peerScores,
-          backgroundColor: 'rgba(34,104,130,0.12)',
-          borderColor: '#226882',
-          borderDash: [4, 4],
-          borderWidth: 1.5,
-          pointRadius: 2
         }
       ]
     },
@@ -2678,142 +2295,7 @@ function drawSpiderChart(R){
   });
 }
 
-/* ============================================================
-   Grounded AI Advisory Studio Engine (Gemini, OpenAI, Claude)
-   ============================================================ */
-function openAiDrawer(){
-  document.getElementById('aiDrawerOverlay').classList.add('open');
-  document.getElementById('aiDrawer').classList.add('open');
-}
-function closeAiDrawer(){
-  document.getElementById('aiDrawerOverlay').classList.remove('open');
-  document.getElementById('aiDrawer').classList.remove('open');
-}
-
-function buildGroundedPromptPayload(){
-  if(!RESULT){ showScoringError(); return ""; }
-  const R = RESULT;
-  const client = SESSION.anonymize ? "Confidential Client" : SESSION.clientName;
-  const persona = QUESTIONS.find(x => x.id === "Q0.1").opts[A["Q0.1"]||0][0];
-
-  return `
-# LTM VANTAGE · RESPONSIBLE ADVISORY · BRIEFING SPECIFICATION
-
-## CLIENT & ENGAGEMENT METADATA
-- Client: ${client}
-- Stakeholder Role: ${persona}
-- Industry Sector: ${R.industryKey}
-- Mandate Track: ${R.trackName}
-- Target Horizon: ${SESSION.targetHorizon}
-- Estate Sizing: ~${QUESTIONS.find(x=>x.id==="Q0.5").apps[A["Q0.5"]||0]} apps | Cloud Spend: ~$${(R.totalCloudSpend/1000000).toFixed(1)}M/yr
-
-## QUANTIFIED MATURITY & VARIANCE
-- Overall Maturity: ${R.overall.toFixed(1)}/5.0 (${R.band})
-- Sector Benchmark Delta: ${R.peerDelta >= 0 ? "+" : ""}${R.peerDelta.toFixed(1)} vs ${R.industryKey} median
-- Dimension Scores:
-${Object.keys(DIM_NAMES).map(d => `  * ${d} ${DIM_NAMES[d]}: ${R.dimScores[d].toFixed(1)}/5.0 (Urgency: ${R.urgencyMap[d]===3?"HIGH":R.urgencyMap[d]===2?"MED":"LOW"})`).join("\n")}
-
-## CRITICAL HARDWARE & CONTRACT SIGNALS
-- VMware Renewal Exposure: ${R.vmwareRisk ? "CRITICAL (Imminent Broadcom price cliff)" : "Standard"}
-- Data Centre Lease Expiration: ${R.leaseCliff ? "CRITICAL (<12 months facility exit cliff)" : "Managed"}
-- SecNumCloud Mandate: ${R.secnumFlag ? "YES (French/EU Cloud de Confiance requirements active)" : "No"}
-- Stated #1 Objective: "${R.topObj}"
-- Estimated Annual Cost Leakage (indicative): $${(R.leakLow/1000).toFixed(0)}k – $${(R.leakHigh/1000).toFixed(0)}k (Compute: $${(R.decomp.compute/1000).toFixed(0)}k, Commitments: $${(R.decomp.commit/1000).toFixed(0)}k)
-
-## CONSULTING DEPTH READ & ANOMALY RESPONSES
-${formatConsultingProbesForPrompt()}
-
-## INSTRUCTIONS FOR ADVISORY SYNTHESIS
-You are an elite Senior Partner in LTM Infrastructure Tech Advisory. Author a bespoke, 3-part Executive Advisory Memo:
-1. EXECUTIVE DIAGNOSTIC: Pinpoint the client's single binding constraint. Expose the contradiction between their stated objective ("${R.topObj}") and their operational metrics.
-2. ARCHITECTURAL & COMMERCIAL IMPERATIVES: Name non-negotiable moves across Phase 1 (Immediate 0-30d), Phase 2 (Short-Term 30-90d), Phase 3 (Mid-Term 3-9m), and Phase 4 (Long-Term 9-18m).
-3. ESTIMATED ANNUAL COST LEAKAGE (INDICATIVE): Explain how up to an estimated $${(R.totalLeakage/1000).toFixed(0)}k of cost leakage could be reduced. Treat the figure as an indicative estimate, not a forecast.
-Maintain a crisp, boardroom tone (McKinsey / Big 4 style). Absolutely zero generic consulting platitudes.
-`;
-}
-
-function copyAiPromptPack(){
-  const prompt = buildGroundedPromptPayload();
-  navigator.clipboard.writeText(prompt).then(() => {
-    alert("LTM Vantage Studio Prompt Pack copied to clipboard! Paste into ChatGPT Enterprise, Claude, or Gemini.");
-  });
-}
-
-async function generateAiBriefing(){
-  const provider = document.getElementById('aiProvider').value;
-  const apiKey = document.getElementById('aiApiKey').value.trim();
-  const statusEl = document.getElementById('aiMemoStatus');
-  const contentEl = document.getElementById('aiMemoContent');
-
-  if(provider === "heuristic" || !apiKey){
-    statusEl.textContent = "Synthesizing grounded heuristic memo...";
-    contentEl.textContent = generateRuleBasedMemo();
-    statusEl.textContent = "Generated via LTM Heuristic Engine (Offline)";
-    return;
-  }
-
-  statusEl.textContent = "Connecting to " + provider.toUpperCase() + "...";
-  contentEl.textContent = "Synthesizing executive briefing...";
-
-  const prompt = buildGroundedPromptPayload();
-
-  try{
-    if(provider === "gemini"){
-      const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
-      const resp = await fetch(geminiUrl, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          contents: [{ parts: [{ text: "You are an elite partner in LTM Infrastructure Tech Advisory. Write a concise, high-impact, evidenced C-level advisory memo.\n\n" + prompt }] }]
-        })
-      });
-      if(!resp.ok) throw new Error("HTTP " + resp.status);
-      const data = await resp.json();
-      contentEl.textContent = data.candidates?.[0]?.content?.parts?.[0]?.text || "No memo generated.";
-      statusEl.textContent = "Generated via Google Gemini 1.5 Flash";
-    } else if(provider === "openai"){
-      const resp = await fetch("https://api.openai.com/v1/chat/completions", {
-        method: "POST",
-        headers: { "Content-Type": "application/json", "Authorization": "Bearer " + apiKey },
-        body: JSON.stringify({
-          model: "gpt-4o",
-          messages: [
-            {role:"system", content:"You are an elite partner in LTM Infrastructure Tech Advisory. Write concise, high-impact, evidenced advisory memos for CIOs."},
-            {role:"user", content:prompt}
-          ],
-          temperature: 0.2
-        })
-      });
-      if(!resp.ok) throw new Error("HTTP " + resp.status);
-      const data = await resp.json();
-      contentEl.textContent = data.choices[0].message.content;
-      statusEl.textContent = "Generated via OpenAI GPT-4o";
-    } else if(provider === "anthropic"){
-      const resp = await fetch("https://api.anthropic.com/v1/messages", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-api-key": apiKey,
-          "anthropic-version": "2023-06-01",
-          "anthropic-dangerous-direct-browser-access": "true"
-        },
-        body: JSON.stringify({
-          model: "claude-3-5-sonnet-20241022",
-          max_tokens: 1500,
-          messages: [{role:"user", content:prompt}]
-        })
-      });
-      if(!resp.ok) throw new Error("HTTP " + resp.status);
-      const data = await resp.json();
-      contentEl.textContent = data.content[0].text;
-      statusEl.textContent = "Generated via Claude 3.5 Sonnet";
-    }
-  }catch(err){
-    statusEl.textContent = "API call error (" + err.message + "). Defaulting to offline heuristic.";
-    contentEl.textContent = generateRuleBasedMemo();
-  }
-}
-
+const FINOPS_NOTE = "cloud cost value is worked out once, by FinOps IQ, so the same saving is never counted twice. Run FinOps IQ for this estate to size it.";
 function generateRuleBasedMemo(){
   if(!RESULT){ showScoringError(); return ""; }
   const R = RESULT;
@@ -2824,7 +2306,7 @@ function generateRuleBasedMemo(){
   if(SESSION.consultingProbes && Object.keys(SESSION.consultingProbes).length > 0){
     probesFindings = "\n\nCONSULTING FIELD CALIBRATION & ANOMALY FINDINGS:\n";
     if(SESSION.consultingProbes["P_FINOPS"]){
-      probesFindings += `• FINOPS ANOMALY: Leadership confirmed: "${SESSION.consultingProbes["P_FINOPS"]}". This visibility gap is consistent with an estimated, up to ${fmt(R.decomp.commit)} of commitment leakage.\n`;
+      probesFindings += `• FINOPS ANOMALY: Leadership confirmed: "${SESSION.consultingProbes["P_FINOPS"]}". This visibility gap is a reason to test commitment coverage with billing data.\n`;
     }
     if(SESSION.consultingProbes["P_DC_EXIT"]){
       probesFindings += `• DC EXIT TIMELINE: Client verified: "${SESSION.consultingProbes["P_DC_EXIT"]}". Failure to vacate within contractual notice windows triggers severe lease extension penalties.\n`;
@@ -2852,10 +2334,9 @@ function generateRuleBasedMemo(){
   if(R.leaseCliff) lines.push("• DC FACILITY DEADLINE: A data centre lease or hardware deadline sets a hard timeline. Moving workloads without disposition mapping risks carrying today's inefficiencies into the cloud.");
   if(R.secnumFlag) lines.push("• SECNUMCLOUD BOUNDARY: SecNumCloud requirements call for segregated enclaves for sensitive regulated workloads.");
   else if(R.sovFlag) lines.push("• SOVEREIGNTY REQUIREMENT: Binding residency or sovereignty obligations constrain where regulated workloads can run.");
-  if(commitLow && finopsReactive) lines.push(`• EXECUTION GAP: With commitment discount coverage under 40% and largely reactive FinOps practice, cloud spend is leaking an estimated ${fmt(R.leakLow)}–${fmt(R.leakHigh)} a year.`);
-  else if(commitLow) lines.push(`• COMMITMENT GAP: Commitment discount coverage is under 40%; estimated annual cost leakage is an estimated ${fmt(R.leakLow)}–${fmt(R.leakHigh)}.`);
-  else if(finopsReactive) lines.push(`• FINOPS GAP: Cost & FinOps maturity is ${R.dimScores.D3.toFixed(1)}/5; estimated annual cost leakage is an estimated ${fmt(R.leakLow)}–${fmt(R.leakHigh)}.`);
-  else lines.push(`• COST LEAKAGE: Estimated annual cost leakage is an estimated ${fmt(R.leakLow)}–${fmt(R.leakHigh)} (indicative).`);
+  if(commitLow && finopsReactive) lines.push("• EXECUTION GAP: Commitment discount coverage is under 40% and FinOps practice is largely reactive. FinOps IQ can size what that is worth.");
+  else if(commitLow) lines.push("• COMMITMENT GAP: Commitment discount coverage is under 40%. FinOps IQ can size what that is worth.");
+  else if(finopsReactive) lines.push(`• FINOPS GAP: Cost & FinOps maturity is ${R.dimScores.D3.toFixed(1)}/5. FinOps IQ can size what that is worth.`);
   const constraints = lines.join("\n");
   const phaseLine = (label, moves) => moves.length
     ? `• ${label}: ${moves.map(m => `${m.title} (LTM Offering ${m.code})`).join("; ")}.`
@@ -2869,12 +2350,13 @@ function generateRuleBasedMemo(){
   const outcomes = [];
   if(R.leaseCliff || R.movesPhase4.some(m => m.code === "03.5")) outcomes.push("reduce facility lease overhead for the sites exited");
   if(R.vmwareRisk) outcomes.push("contain hypervisor licensing costs");
-  outcomes.push(`reduce cloud cost leakage by an estimated, up to ${fmt(R.totalLeakage)} a year`);
-  const valueLines = `Executing this roadmap could help ${client} ${outcomes.join(", ")}. This figure is indicative and should be validated against billing data.`;
+  const valueLines = outcomes.length
+    ? `Executing this roadmap could help ${client} ${outcomes.join(", ")}. No cloud cost saving is stated here: ${FINOPS_NOTE}`
+    : `No cloud cost saving is stated here: ${FINOPS_NOTE}`;
 
   return `EXECUTIVE ADVISORY MEMO
 To: ${persona}, ${client}
-From: Ashutosh Dixit, LTM Infrastructure Tech Advisory (ashutosh.dixit@ltm.com)
+From: LTM Infrastructure Technology Advisory
 Date: ${new Date().toLocaleDateString()}
 Subject: Strategic Estate Diagnostic & 4-Phase Modernization Blueprint (${R.trackName})
 
@@ -2886,13 +2368,8 @@ ${constraints}${probesFindings}
 2. FOUR-PHASE MODERNIZATION BLUEPRINT
 ${phases}
 
-3. ESTIMATED ANNUAL COST LEAKAGE (INDICATIVE)
+3. VALUE
 ${valueLines}`;
-}
-
-function copyMemoText(){
-  const t = document.getElementById('aiMemoContent')?.textContent || '';
-  navigator.clipboard.writeText(t).then(() => alert("Executive Memo copied!"));
 }
 
 function copyReportMemo(){
@@ -2902,23 +2379,10 @@ function copyReportMemo(){
 }
 
 function regenerateReportMemo(){
-  const key = localStorage.getItem('cloud_iq_openai_key') || (document.getElementById('aiApiKey')?.value || '').trim();
-  if(key){
-    generateAiBriefingWithKey(key);
-  } else {
-    const memo = generateRuleBasedMemo();
-    SESSION.memoText = memo;
-    const memoCardContent = document.getElementById('reportMemoText');
-    if(memoCardContent) memoCardContent.textContent = memo;
-    const memoBadge = document.getElementById('reportMemoBadge');
-    if(memoBadge){
-      memoBadge.textContent = "LTM Heuristic Engine";
-      memoBadge.style.background = "var(--panel2)";
-      memoBadge.style.color = "var(--ink)";
-      memoBadge.style.borderColor = "var(--line)";
-    }
-    alert("Synthesised fresh executive memorandum via LTM Heuristic Engine.");
-  }
+  const memo = generateRuleBasedMemo();
+  SESSION.memoText = memo;
+  const memoCardContent = document.getElementById('reportMemoText');
+  if(memoCardContent) memoCardContent.textContent = memo;
 }
 
 /* ============================================================
@@ -2954,7 +2418,7 @@ function renderSlide(idx){
     container.innerHTML = `
       <div class="br-slide" style="text-align:center">
         <div style="font-family:var(--font-display);font-size:14px;letter-spacing:.16em;color:var(--coral);text-transform:uppercase;margin-bottom:12px">LTM Infrastructure Tech Advisory</div>
-        <h2 style="font-size:42px;margin-bottom:16px">${client}</h2>
+        <h2 style="font-size:42px;margin-bottom:16px">${esc(client)}</h2>
         <div style="font-size:22px;color:#EEE;margin-bottom:28px">Cloud &amp; Hybrid Infrastructure Diagnostic Readout</div>
         <p style="max-width:700px;margin:0 auto 28px;color:#AAA">
           A defensible, evidence-grounded assessment of your on-premises data centre, VMware licensing exposure, and public-cloud maturity across 8 core dimensions.
@@ -2975,13 +2439,12 @@ function renderSlide(idx){
             <p>Target Objective: <b>${R.topObj}</b></p>
             <p>Designated Track: <b>${R.trackName}</b></p>
             <p>Cloud Footprint: <b>$${(R.totalCloudSpend/1000000).toFixed(1)}M/yr</b> across ~<b>${QUESTIONS.find(x=>x.id==="Q0.5").apps[A["Q0.5"]||0]} apps</b></p>
-            <p style="margin-top:14px">Peer Comparison: <b>${R.peerDelta>=0?'+':''}${R.peerDelta.toFixed(1)}</b> variance vs ${R.industryKey.split(' ')[0]} median.</p>
           </div>
           <div>
             <h3 style="color:#FFB74D;font-size:18px;margin-bottom:10px">Acute Operational Pressures</h3>
             <p>${R.vmwareRisk ? "<b>VMware Renewal Cliff:</b> Steep price escalations require immediate hypervisor triage." : "VMware licensing within standard governance."}</p>
             <p style="margin-top:8px">${R.leaseCliff ? "<b>Data Centre Lease Expiration:</b> Facility deadline forces hard migration milestones." : "DC lease timeline manageable."}</p>
-            <p style="margin-top:8px"><b>Estimated annual cost leakage (indicative):</b> <b>${fmt(R.leakLow)}–${fmt(R.leakHigh)}</b>.</p>
+            <p style="margin-top:8px"><b>Cloud cost value:</b> not quantified here; FinOps IQ works it out once for the estate.</p>
           </div>
         </div>
       </div>
@@ -3006,30 +2469,8 @@ function renderSlide(idx){
   } else if(idx === 3){
     container.innerHTML = `
       <div class="br-slide">
-        <h2>Estimated annual cost leakage (indicative): ${fmt(R.leakLow)} – ${fmt(R.leakHigh)}</h2>
-        <p>Annual cost leakage decomposed across operational domains:</p>
-        <div class="two-col" style="margin-top:24px">
-          <div style="background:#282828;padding:20px;border-radius:10px">
-            <h3 style="color:var(--coral);font-size:22px;margin-bottom:6px">${fmt(R.decomp.compute)}</h3>
-            <b>Compute &amp; Zombie Resources</b>
-            <p style="font-size:13px;margin-top:4px">Oversized instances, unattached disks, unbudgeted sandbox sprawl.</p>
-          </div>
-          <div style="background:#282828;padding:20px;border-radius:10px">
-            <h3 style="color:var(--coral);font-size:22px;margin-bottom:6px">${fmt(R.decomp.commit)}</h3>
-            <b>Commitment Arbitrage</b>
-            <p style="font-size:13px;margin-top:4px">Uncovered on-demand spend eligible for Savings Plans / RIs.</p>
-          </div>
-          <div style="background:#282828;padding:20px;border-radius:10px">
-            <h3 style="color:var(--coral);font-size:22px;margin-bottom:6px">${fmt(R.decomp.storage)}</h3>
-            <b>Storage &amp; Egress Waste</b>
-            <p style="font-size:13px;margin-top:4px">Cold data on tier-1 block storage, cross-AZ traffic leakage.</p>
-          </div>
-          <div style="background:#282828;padding:20px;border-radius:10px">
-            <h3 style="color:var(--coral);font-size:22px;margin-bottom:6px">${fmt(R.decomp.licensing)}</h3>
-            <b>Hypervisor &amp; Licensing</b>
-            <p style="font-size:13px;margin-top:4px">VMware core licensing inflation &amp; unoptimized database cores.</p>
-          </div>
-        </div>
+        <h2>Cloud cost value is not quantified here</h2>
+        <p>Cloud cost value is worked out once, by FinOps IQ, so the same saving is never counted twice. Run FinOps IQ for this estate to see it.</p>
       </div>
     `;
   } else if(idx === 4){
@@ -3168,7 +2609,7 @@ function downloadExecutivePDF(){
   function footer(pageNum){
     doc.setDrawColor(220, 220, 220); doc.setLineWidth(1); doc.line(M, H - 36, W - M, H - 36);
     doc.setFont("helvetica", "normal"); doc.setFontSize(8); doc.setTextColor(140, 140, 140);
-    doc.text("LTM Vantage · Responsible Advisory · Lead: ashutosh.dixit@ltm.com", M, H - 22);
+    doc.text("LTM Vantage · Responsible Advisory", M, H - 22);
     doc.text(`Page ${pageNum} of ${totalPages} · Engagement: ${client}`, W - M, H - 22, { align: "right" });
   }
 
@@ -3186,14 +2627,14 @@ function downloadExecutivePDF(){
   doc.setFont("helvetica", "bold"); doc.setFontSize(12); doc.setTextColor(255, 255, 255);
   doc.text(`DESIGNATED TRACK: ${R.trackName}`, M + 16, y + 22);
   doc.setFont("helvetica", "normal"); doc.setFontSize(10);
-  doc.text(`Overall Estate Maturity: ${R.overall.toFixed(1)} / 5.0 (${R.band})   ·   Peer Variance: ${R.peerDelta>=0?'+':''}${R.peerDelta.toFixed(1)} vs ${R.industryKey}`, M + 16, y + 38);
+  doc.text(`Overall Estate Maturity: ${R.overall.toFixed(1)} / 5.0 (${R.band})`, M + 16, y + 38);
   y += 66;
 
   doc.setFillColor(...cream); doc.roundedRect(M, y, W - 2*M, 46, 6, 6, "F");
   doc.setFont("helvetica", "bold"); doc.setFontSize(10); doc.setTextColor(...dark);
-  doc.text(`ESTIMATED ANNUAL COST LEAKAGE (INDICATIVE): ${fmt(R.leakLow)} – ${fmt(R.leakHigh)}`, M + 16, y + 20);
+  doc.text("CLOUD COST VALUE: NOT QUANTIFIED HERE", M + 16, y + 20);
   doc.setFont("helvetica", "normal"); doc.setFontSize(9); doc.setTextColor(100, 100, 100);
-  doc.text(`Decomposed into: Compute Rightsizing (${fmt(R.decomp.compute)}) · Commitments (${fmt(R.decomp.commit)}) · Storage (${fmt(R.decomp.storage)})`, M + 16, y + 34);
+  doc.text("Worked out once, by FinOps IQ, so the same saving is never counted twice. Run FinOps IQ for this estate.", M + 16, y + 34);
   y += 60;
 
   if(spiderChartInstance){
@@ -3365,8 +2806,19 @@ function downloadExecutivePDF(){
   }
 }
 
+/* Earlier builds kept AI keys in this browser; the page makes no AI call now, so any left behind are removed. */
+try { ['cloud_iq_openai_key', 'cloud_iq_openai_model'].forEach(k => localStorage.removeItem(k)); } catch(e) {}
+
 /* Boot application */
-start();
+SavedSessions.attach({
+  accelerator: 'cloud-iq', legacyKey: STORE_KEY,
+  title: () => 'Cloud IQ · ' + (SESSION.clientName || 'assessment'),
+  snapshot: () => ({ SESSION, gIdx, A, done: !!RESULT }),
+  progress: () => ({ stage: (GROUPS[gIdx] && GROUPS[gIdx].name) || 'Start', percent: RESULT ? 100 : Math.round((gIdx / GROUPS.length) * 100) }),
+  status: () => (RESULT ? 'completed' : 'in_progress'),
+  restore: st => { hydrate(st); if(st.done) computeAndShow(); else renderGroup(); }
+});
+SavedSessions.ready().then(start);
 </script>
 </body>
 </html>

@@ -2,11 +2,18 @@ import type { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda
 import { randomUUID } from 'node:crypto';
 import { assertAssessmentStatusTransition, type ResilienceAssessmentStatus } from '../../../packages/engine-core/src/accelerators/resilience-iq/assessment-lifecycle';
 import { corsHeaders } from '../_shared/http';
-import { ASSESSMENT_FIELDS as fields, authorized, canAccess, getAssessment, graphql, isAdmin, listWhere, parseBody, userEmail } from '../_shared/resilience-data';
+import { ASSESSMENT_FIELDS as fields, authorized, canAccess, getAssessment, graphql, isAdmin, isLive, listWhere, parseBody, userEmail } from '../_shared/resilience-data';
 import { evaluateResilienceIq } from '../../../packages/engine-core/src/accelerators/resilience-iq/evaluate';
 import { parseResilienceIqRequest } from '../../../packages/engine-core/src/accelerators/resilience-iq/contract';
 import { RESILIENCE_IQ_VERSION } from '../../../packages/engine-core/src/accelerators/resilience-iq/version';
 import { withAcceleratorAccess } from '../_shared/access';
+import { recordAssessment, removeAssessmentActivity } from '../_shared/activity-recorder.mjs';
+import { progressFor } from '../_shared/progress';
+import { expiresAt } from '../../../packages/engine-core/src/accelerators/finops-iq/v3/retention';
+import { s3EvidenceFiles, type EvidenceFiles } from './evidence-files';
+
+/** Where evidence files are removed from; tests replace it. */
+export const deps: { files: EvidenceFiles } = { files: s3EvidenceFiles };
 
 // Lambdas run one request at a time per container, so the current request's headers are kept here for
 // response() to echo an allowed origin (see _shared/http.ts). Origins not in ALLOWED_ORIGINS get no CORS header.
@@ -18,7 +25,7 @@ function response(statusCode:number, body:unknown, requestId:string):APIGatewayP
 }
 async function listAssessments(email:string){
   const items=await listWhere('ResilienceAssessment',fields,{respondentEmail:{eq:email}});
-  return items.sort((a:any,b:any)=>String(b.updatedAt||b.startedAt||'').localeCompare(String(a.updatedAt||a.startedAt||'')));
+  return items.filter(r=>isLive(r)).sort((a:any,b:any)=>String(b.updatedAt||b.startedAt||'').localeCompare(String(a.updatedAt||a.startedAt||'')));
 }
 
 const serve = async(event:APIGatewayProxyEventV2):Promise<APIGatewayProxyResultV2>=>{
@@ -44,6 +51,25 @@ const serve = async(event:APIGatewayProxyEventV2):Promise<APIGatewayProxyResultV
     if(method!=='POST') return response(405,{ok:false,error:'method_not_allowed',requestId},requestId);
     const body=parseBody(event);
     const action=String(body.action||'save');
+    // Deletion is permanent and allowed in any status, to the respondent or an Admin.
+    if(action==='delete'){
+      const id=body.assessmentId;
+      if(typeof id!=='string' || !id) return response(400,{ok:false,error:'delete action requires assessmentId.',requestId},requestId);
+      const item=await getAssessment(id);
+      if(!item) return response(404,{ok:false,error:'assessment_not_found',requestId},requestId);
+      if(!canAccess(event,item.respondentEmail)) return response(403,{ok:false,error:'assessment_access_denied',requestId},requestId);
+      // The evidence goes first, files then records, and the assessment last: if any step fails the assessment stays
+      // and the delete can be retried, so no evidence is left behind with nothing to reach it.
+      const evidence=await listWhere('ResilienceEvidence','id evidenceFileKey',{assessmentId:{eq:id}});
+      for(const e of evidence){
+        if(e.evidenceFileKey) await deps.files.remove(String(e.evidenceFileKey));
+        await graphql(`mutation DeleteResilienceEvidence($input: DeleteResilienceEvidenceInput!) { deleteResilienceEvidence(input:$input) { id } }`,{input:{id:e.id}});
+      }
+      await graphql(`mutation DeleteResilienceAssessment($input: DeleteResilienceAssessmentInput!) { deleteResilienceAssessment(input:$input) { id } }`,{input:{id:item.id}});
+      await removeAssessmentActivity(item.respondentEmail,'resilience-iq',id);
+      console.info('[ManageResilienceAssessment] deleted',{requestId,assessmentId:id});
+      return response(200,{ok:true,data:{assessmentId:id,deleted:true},requestId},requestId);
+    }
     const snapshot=body.snapshot;
     if(!snapshot || typeof snapshot!=='object' || Array.isArray(snapshot)) return response(400,{ok:false,error:'snapshot is required.',requestId},requestId);
     const assessmentId=String(snapshot.assessmentId||'');
@@ -67,7 +93,8 @@ const serve = async(event:APIGatewayProxyEventV2):Promise<APIGatewayProxyResultV
     // Archiving a completed assessment changes only its status: answers and result stay as completed.
     if(action==='archive' && existing){
       const data=await graphql(`mutation UpdateResilienceAssessment($input: UpdateResilienceAssessmentInput!) { updateResilienceAssessment(input:$input) { ${fields} } }`,
-        {input:{id:existing.id,status:'archived',finalizedAt:snapshot.finalizedAt?String(snapshot.finalizedAt):new Date().toISOString()}});
+        {input:{id:existing.id,status:'archived',finalizedAt:snapshot.finalizedAt?String(snapshot.finalizedAt):new Date().toISOString(),expiresAt:expiresAt(new Date())}});
+      await recordAssessment(existing.respondentEmail,{accelerator:'resilience-iq',assessmentId,status:'archived'});
       return response(200,{ok:true,data:data.updateResilienceAssessment,requestId},requestId);
     }
 
@@ -101,10 +128,13 @@ const serve = async(event:APIGatewayProxyEventV2):Promise<APIGatewayProxyResultV
       recommendationSensitivityJson:result ? JSON.stringify(result.executiveReport.recommendationSensitivity) : undefined,
       startedAt:String(snapshot.startedAt),
       completedAt:snapshot.status==='completed' ? String(snapshot.completedAt||new Date().toISOString()) : undefined,
-      finalizedAt:snapshot.finalizedAt ? String(snapshot.finalizedAt) : undefined
+      finalizedAt:snapshot.finalizedAt ? String(snapshot.finalizedAt) : undefined,
+      // 24 months after the last change, as FinOps IQ and Sovereign IQ (data notice).
+      expiresAt:expiresAt(new Date())
     };
     const mutation=existing ? `mutation UpdateResilienceAssessment($input: UpdateResilienceAssessmentInput!) { updateResilienceAssessment(input:$input) { ${fields} } }` : `mutation CreateResilienceAssessment($input: CreateResilienceAssessmentInput!) { createResilienceAssessment(input:$input) { ${fields} } }`;
     const data=await graphql(mutation,{input});
+    await recordAssessment(existing?.respondentEmail??String(snapshot.respondentEmail),{accelerator:'resilience-iq',assessmentId,status:String(snapshot.status),...progressFor(String(snapshot.status),body.progress),startedAt:String(snapshot.startedAt),completedAt:input.completedAt});
     return response(200,{ok:true,data:existing?data.updateResilienceAssessment:data.createResilienceAssessment,requestId},requestId);
   } catch(error:any) {
     console.error('[ManageResilienceAssessment]',{requestId,error});

@@ -19,6 +19,8 @@ export interface Lexicon {
   regimes: string[];
   /** Every provider or product name the check knows. */
   providers: string[];
+  /** Further phrases this accelerator forbids (for example a promise of savings); optional. */
+  phrases?: RegExp[];
 }
 
 export interface Violation { kind: 'number' | 'regime' | 'provider' | 'phrase'; text: string; where: string }
@@ -71,7 +73,7 @@ export function checkText(text: string, allow: GroundingAllow, lexicon: Lexicon,
   for (const m of text.match(NUMBER) ?? []) if (!allow.numbers.has(toNumber(m))) out.push({ kind: 'number', text: m, where });
   for (const r of lexicon.regimes) if (!allow.regimes.has(r) && mentions(text, r)) out.push({ kind: 'regime', text: r, where });
   for (const p of lexicon.providers) if (!allow.providers.has(p) && mentions(text, p)) out.push({ kind: 'provider', text: p, where });
-  for (const re of FORBIDDEN_PHRASES) { const m = text.match(re); if (m) out.push({ kind: 'phrase', text: m[0], where }); }
+  for (const re of [...FORBIDDEN_PHRASES, ...(lexicon.phrases ?? [])]) { const m = text.match(re); if (m) out.push({ kind: 'phrase', text: m[0], where }); }
   return out;
 }
 

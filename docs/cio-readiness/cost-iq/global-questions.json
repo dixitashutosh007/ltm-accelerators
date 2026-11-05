@@ -1,0 +1,775 @@
+{
+  "meta": {
+    "date": "2026-11-03",
+    "author": "finops-cost-lead (advises; the product owner approves)",
+    "shape": "questions[] follow the master question shape plus proposal fields (insertAfter, feeds, relationToExisting, effects, basis, sources, needsOwner). Nothing here is applied to the bank.",
+    "rule": "Context facts only: method signal-only, no dimensionIds, never re-weight a score (GLOBAL-COVERAGE). Every question below is context; scoring effect none."
+  },
+  "questions": [
+    {
+      "adaptiveTrigger": null,
+      "costDimension": null,
+      "valueDimension": null,
+      "evidenceImplication": "Context fact. Routes applicability and wording; never scored and never re-weights a score (GLOBAL-COVERAGE rule).",
+      "active": true,
+      "version": 1,
+      "findingIds": [],
+      "recommendationIds": [],
+      "questionDesignVersion": "6.0",
+      "answerGuidance": "Choose the option that best reflects the current enterprise reality; do not answer based on intended future state.",
+      "id": "CTX-01",
+      "section": "Enterprise Context",
+      "prompt": "In which currency does the organisation report its technology spend?",
+      "intent": "Record the reporting currency so that revenue and spend bands, figures and the report use the client's own currency. Removes the silent assumption that every client reports in US dollars.",
+      "interaction": "single-select",
+      "answerDesign": "Choose the currency in which the technology budget and spend are reported to leadership. This is a labelling fact: no answer is better than another and it changes no score.",
+      "required": true,
+      "options": [
+        {
+          "id": "USD",
+          "label": "US dollar (USD)"
+        },
+        {
+          "id": "EUR",
+          "label": "Euro (EUR)"
+        },
+        {
+          "id": "GBP",
+          "label": "Pound sterling (GBP)"
+        },
+        {
+          "id": "CHF",
+          "label": "Swiss franc (CHF)"
+        },
+        {
+          "id": "CAD",
+          "label": "Canadian dollar (CAD)"
+        },
+        {
+          "id": "AUD",
+          "label": "Australian dollar (AUD)"
+        },
+        {
+          "id": "JPY",
+          "label": "Japanese yen (JPY)"
+        },
+        {
+          "id": "CNY",
+          "label": "Chinese renminbi (CNY)"
+        },
+        {
+          "id": "INR",
+          "label": "Indian rupee (INR)"
+        },
+        {
+          "id": "SGD",
+          "label": "Singapore dollar (SGD)"
+        },
+        {
+          "id": "AED",
+          "label": "UAE dirham (AED)"
+        },
+        {
+          "id": "SAR",
+          "label": "Saudi riyal (SAR)"
+        },
+        {
+          "id": "BRL",
+          "label": "Brazilian real (BRL)"
+        },
+        {
+          "id": "ZAR",
+          "label": "South African rand (ZAR)"
+        },
+        {
+          "id": "OTHER",
+          "label": "Other (record the three-letter currency code in the note)"
+        }
+      ],
+      "scoring": {
+        "method": "signal-only",
+        "signals": [
+          "reporting-currency"
+        ],
+        "note": "Sets the currency shown on CORE-03 and CORE-04 band labels, on every figure in the report, and the clientCurrency field of the saved record (amplify/data/resource.ts lines 106 and 131 already have it; no page element sets it today). Sets the wording of CTX-02. Carried to the FinOps IQ hand-off so the two tools are never added together across currencies without a registered, dated rate. No score. Never re-weights a score (GLOBAL-COVERAGE rule).",
+        "basis": "LTM heuristic for the list: major trading currencies (BIS 2025 ranking, partial) plus the currencies of the markets named in coverage.ts and the owner's focus (EU, UK, Switzerland, India, Gulf, Latin America, South Africa). Option IDs are ISO 4217 codes. 'Reporting currency' follows the vocabulary of IAS 21 (presentation currency), not its accounting rules."
+      },
+      "basis": "LTM heuristic for the list: major trading currencies (BIS 2025 ranking, partial) plus the currencies of the markets named in coverage.ts and the owner's focus (EU, UK, Switzerland, India, Gulf, Latin America, South Africa). Option IDs are ISO 4217 codes. 'Reporting currency' follows the vocabulary of IAS 21 (presentation currency), not its accounting rules.",
+      "sources": [
+        {
+          "title": "ISO 4217 currency codes (maintenance agency SIX); the option IDs are ISO 4217 alphabetic codes. Page not opened in this task; existence of the standard is not in doubt but no clause was read",
+          "url": "https://www.iso.org/iso-4217-currency-codes.html"
+        },
+        {
+          "title": "BIS Triennial Central Bank Survey 2025, OTC foreign exchange turnover (April 2025): USD 89.2%, EUR 28.9%, JPY 16.8%, GBP 10.2%, CNY 8.5%, CHF 6.4%, AUD about 6%, CAD about 6%, HKD 3.8%, SGD about 2% of turnover (shares sum to 200%). Read 3 Nov 2026 through a summarising fetch tool, so the figures should be re-checked on the page before they are quoted. INR, BRL, ZAR, AED and SAR were not on the page read",
+          "url": "https://www.bis.org/statistics/rpfx25_fx.htm"
+        },
+        {
+          "title": "IAS 21 The Effects of Changes in Foreign Exchange Rates: defines functional currency (IAS 21.8) and presentation currency, and requires disclosure when they differ (IAS 21.53). Seen in secondary summaries only; the IFRS Foundation text was not read. Used for the vocabulary only (a client's 'reporting currency'), never for a legal or accounting statement",
+          "url": "https://www.ifrs.org/issued-standards/list-of-standards/ias-21-the-effects-of-changes-in-foreign-exchange-rates/"
+        }
+      ],
+      "needsOwner": true,
+      "needsOwnerReason": "No default is preselected (a preselected USD would be the silent default G4 forbids). The question is required because the band labels and the report need it; the owner may prefer optional with USD shown as an explicit fallback. Whether to rename AED and SAR into 'Other' until a central-bank rate is sourced is also the owner's call (see bandTables).",
+      "insertAfter": "CORE-02",
+      "feeds": {
+        "applicability": "none",
+        "wording": "currency label on CORE-03, CORE-04, CTX-02 and every report figure; band labels per bandTables",
+        "coverageStatement": "none",
+        "report": "currency code printed with every monetary figure; entered in the assumption register as a client input",
+        "record": "clientCurrency"
+      },
+      "relationToExisting": "Complements CORE-03 and CORE-04 (their bands become relative to this answer). Replaces nothing. The persistence field clientCurrency already exists and is set by nothing today.",
+      "effects": {
+        "scoring": "none",
+        "engine": "none (the engine scores no money; it is currency-agnostic and stays so)",
+        "page": "CORE-03 and CORE-04 labels are chosen from bandTables by this answer, so CTX-01 must come before them; the answer must be saved to clientCurrency",
+        "report": "currency code on figures; assumption-register line (see assumptions)"
+      },
+      "gate": null
+    },
+    {
+      "adaptiveTrigger": null,
+      "costDimension": null,
+      "valueDimension": null,
+      "evidenceImplication": "Context fact. Routes applicability and wording; never scored and never re-weights a score (GLOBAL-COVERAGE rule).",
+      "active": true,
+      "version": 1,
+      "findingIds": [],
+      "recommendationIds": [],
+      "questionDesignVersion": "6.0",
+      "answerGuidance": "Choose the option that best reflects the current enterprise reality; do not answer based on intended future state.",
+      "id": "CTX-02",
+      "section": "Enterprise Context",
+      "prompt": "Roughly what share of annual technology spend is invoiced or priced in a currency other than your reporting currency?",
+      "intent": "Record foreign-currency exposure of technology spend (cloud and SaaS invoiced by global providers, vendor contracts, offshore labour) as context for commercial and budget-risk wording.",
+      "interaction": "single-select",
+      "answerDesign": "Include spend that a provider prices in another currency even when you are invoiced locally. A rough share is enough; Unknown is a valid answer.",
+      "required": false,
+      "options": [
+        {
+          "id": "LT5",
+          "label": "Under 5%"
+        },
+        {
+          "id": "5_15",
+          "label": "5% to 15%"
+        },
+        {
+          "id": "15_30",
+          "label": "15% to 30%"
+        },
+        {
+          "id": "30_50",
+          "label": "30% to 50%"
+        },
+        {
+          "id": "GT50",
+          "label": "More than 50%"
+        },
+        {
+          "id": "UNKNOWN",
+          "label": "Not known / not tracked"
+        }
+      ],
+      "scoring": {
+        "method": "signal-only",
+        "signals": [
+          "foreign-currency-spend-share"
+        ],
+        "note": "Feeds a constraint line in the commercial section of the report: where the share is 15% or more, cost figures and savings ranges move with exchange rates and the report says so; where UNKNOWN, the report records that currency exposure is not tracked (a visibility fact, not a score). Handed to FinOps IQ, which plans a billing-versus-reporting currency question (GLOBAL-COVERAGE, FinOps F3). No score. Never re-weights a score (GLOBAL-COVERAGE rule).",
+        "basis": "LTM heuristic for the bands (no published distribution of foreign-currency share of technology spend was found; none is claimed). The two currencies in the FOCUS 1.2 columns, PricingCurrency and BillingCurrency, show that cost data already treats a vendor's price currency and the invoice currency as separate facts, which is why the prompt says 'invoiced or priced'."
+      },
+      "basis": "LTM heuristic for the bands (no published distribution of foreign-currency share of technology spend was found; none is claimed). The two currencies in the FOCUS 1.2 columns, PricingCurrency and BillingCurrency, show that cost data already treats a vendor's price currency and the invoice currency as separate facts, which is why the prompt says 'invoiced or priced'.",
+      "sources": [
+        {
+          "title": "FinOps Foundation, FOCUS 1.2: PricingCurrency (the currency a resource or service was priced in) alongside BillingCurrency (the currency a charge was invoiced in); the specification does not define an effective rate between them. Seen through the FinOps Foundation FOCUS 1.2 article and Microsoft documentation via search summaries; the focus.finops.org column page returned 404, so the normative text was not read",
+          "url": "https://www.finops.org/insights/focus-1-2-available/"
+        }
+      ],
+      "needsOwner": false,
+      "needsOwnerReason": "",
+      "insertAfter": "CORE-04",
+      "feeds": {
+        "applicability": "none",
+        "wording": "exchange-rate caveat on figures and ranges when 15% or more; 'currency exposure not tracked' when UNKNOWN",
+        "coverageStatement": "none",
+        "report": "constraint note in the commercial section; assumption-register line only if a conversion is ever applied",
+        "record": "context answer"
+      },
+      "relationToExisting": "Complements CORE-04 (spend) and the FinOps IQ billing-currency question. Does not overlap ADP-35, ADP-36 or CORE-37 (pricing models), which ask how services are priced, not in which currency.",
+      "effects": {
+        "scoring": "none",
+        "engine": "none",
+        "page": "one single-select",
+        "report": "one caveat line; no figure changes"
+      },
+      "gate": null
+    },
+    {
+      "adaptiveTrigger": null,
+      "costDimension": null,
+      "valueDimension": null,
+      "evidenceImplication": "Context fact. Routes applicability and wording; never scored and never re-weights a score (GLOBAL-COVERAGE rule).",
+      "active": true,
+      "version": 1,
+      "findingIds": [],
+      "recommendationIds": [],
+      "questionDesignVersion": "6.0",
+      "answerGuidance": "Choose the option that best reflects the current enterprise reality; do not answer based on intended future state.",
+      "id": "CTX-03",
+      "section": "Enterprise Context",
+      "prompt": "In which regions does the organisation run technology operations or incur material technology spend?",
+      "intent": "Record the regions of operation so the report can state which markets it does and does not assess, and so wording and cautions fit the client's regions.",
+      "interaction": "multi-select",
+      "answerDesign": "Select every region where the organisation has material technology staff, facilities, providers or spend. Do not select a region for a few customers only.",
+      "required": true,
+      "options": [
+        {
+          "id": "EU",
+          "label": "European Union and European Economic Area"
+        },
+        {
+          "id": "UK",
+          "label": "United Kingdom"
+        },
+        {
+          "id": "CH",
+          "label": "Switzerland"
+        },
+        {
+          "id": "NORTH_AMERICA",
+          "label": "North America (United States, Canada, Mexico)"
+        },
+        {
+          "id": "INDIA",
+          "label": "India"
+        },
+        {
+          "id": "APAC_OTHER",
+          "label": "Asia-Pacific excluding India (for example Singapore, Japan, Australia, China)"
+        },
+        {
+          "id": "MIDDLE_EAST",
+          "label": "Middle East (for example the Gulf states)"
+        },
+        {
+          "id": "LATAM",
+          "label": "Latin America and the Caribbean"
+        },
+        {
+          "id": "AFRICA",
+          "label": "Africa"
+        }
+      ],
+      "control": {
+        "maxSelections": null
+      },
+      "scoring": {
+        "method": "signal-only",
+        "signals": [
+          "regions-of-operation"
+        ],
+        "note": "Feeds (1) the Cost IQ coverage statement (CQ5): the report names the regions the client selected and says that Cost IQ does not assess legal, tax or regulatory obligations in any of them, so local advice is needed (a client-specific version of noRegulatoryCoverage in coverage.ts). Mapping to the coverage MARKETS ids: EU to eu; UK to uk; CH to ch; NORTH_AMERICA to us and ca; INDIA to in; APAC_OTHER to sg, hk, jp, kr, cn, au, nz; MIDDLE_EAST to gcc (the Middle East is wider than the gcc entry); LATAM to latam; AFRICA to za (Africa is wider than the za entry). (2) The caveat on published figures: where a published value range comes from a global or other-region sample, the report says so for the client's regions (GLOBAL-COVERAGE, benchmark rule). (3) A routing suggestion to Sovereign IQ when EU, UK or CH is selected together with PUBLIC_CLOUD or AI in CORE-01. Does not gate any question by itself: the engine's applicableWhen cannot count selections, so the Geography gate uses CTX-05. No score. Never re-weights a score by region (GLOBAL-COVERAGE rule).",
+        "basis": "LTM heuristic for the region list: it follows the owner's decisions G1 and G4 and the markets in coverage.ts (eu, uk, ch, us, ca, in, sg, hk, jp, kr, cn, au, nz, gcc, latam, za), grouped so a CIO answers in one breath. EU and UK are separate options because they are separate markets in coverage.ts and their regimes differ since 2020; the owner's note grouped them, and merging is a one-line change."
+      },
+      "basis": "LTM heuristic for the region list: it follows the owner's decisions G1 and G4 and the markets in coverage.ts (eu, uk, ch, us, ca, in, sg, hk, jp, kr, cn, au, nz, gcc, latam, za), grouped so a CIO answers in one breath. EU and UK are separate options because they are separate markets in coverage.ts and their regimes differ since 2020; the owner's note grouped them, and merging is a one-line change.",
+      "sources": [
+        {
+          "title": "Repository: packages/engine-core/src/report/coverage.ts (MARKETS list used by the coverage statement); docs/cio-readiness/GLOBAL-COVERAGE.md decisions G1 to G4 (3 Nov 2026)",
+          "url": "docs/cio-readiness/GLOBAL-COVERAGE.md"
+        }
+      ],
+      "needsOwner": true,
+      "needsOwnerReason": "Owner to confirm: EU and UK as two options (recommended) or one; North America as one option; Middle East and Africa as single options although coverage.ts names only the Gulf and South Africa; and whether the question is required (recommended: yes, the coverage statement needs it). Wording of the coverage statement needs counsel review before external use (scorecard area 9).",
+      "insertAfter": "CORE-04",
+      "feeds": {
+        "applicability": "Sovereign IQ routing suggestion only; no Cost IQ question is gated by it",
+        "wording": "regions named in the coverage statement and in the published-figure caveat",
+        "coverageStatement": "yes: the regions of operation are listed against the jurisdictions not assessed",
+        "report": "Methodology section (coverage); assumption register line for region of published sources",
+        "record": "context answer"
+      },
+      "relationToExisting": "Complements ADP-51 and ADP-52 (which ask about cost variation and standardisation across regions and presuppose this answer). Replaces nothing. Overlaps GLOBAL-COVERAGE item 'countries of operation' exactly; no existing question records regions.",
+      "effects": {
+        "scoring": "none",
+        "engine": "none",
+        "page": "one multi-select, no exclusivity needed (no 'none of these' option)",
+        "report": "coverage statement for Cost IQ becomes client-specific (CQ5)"
+      },
+      "gate": null
+    },
+    {
+      "adaptiveTrigger": null,
+      "costDimension": null,
+      "valueDimension": null,
+      "evidenceImplication": "Context fact. Routes applicability and wording; never scored and never re-weights a score (GLOBAL-COVERAGE rule).",
+      "active": true,
+      "version": 1,
+      "findingIds": [],
+      "recommendationIds": [],
+      "questionDesignVersion": "6.0",
+      "answerGuidance": "Choose the option that best reflects the current enterprise reality; do not answer based on intended future state.",
+      "id": "CTX-04",
+      "section": "Enterprise Context",
+      "prompt": "Roughly what share of technology operations effort, in-house and contracted, is delivered onshore?",
+      "intent": "Record the onshore, nearshore and offshore delivery mix as context for the workforce and vendor sections and for data-access and sovereignty routing.",
+      "interaction": "single-select",
+      "answerDesign": "Working definitions, LTM's own: onshore is delivered in the country where the organisation mainly operates; nearshore is another country in the same or an adjacent time zone; offshore is a distant time zone, typically a lower labour-cost location. Count in-house staff and contracted providers together.",
+      "required": false,
+      "options": [
+        {
+          "id": "GT90",
+          "label": "More than 90% onshore"
+        },
+        {
+          "id": "60_90",
+          "label": "60% to 90% onshore; the rest nearshore or offshore"
+        },
+        {
+          "id": "30_60",
+          "label": "30% to 60% onshore; the rest nearshore or offshore"
+        },
+        {
+          "id": "LT30",
+          "label": "Under 30% onshore; mostly nearshore or offshore"
+        },
+        {
+          "id": "UNKNOWN",
+          "label": "Not known / not tracked"
+        }
+      ],
+      "scoring": {
+        "method": "signal-only",
+        "signals": [
+          "delivery-location-mix"
+        ],
+        "note": "Feeds the workforce and vendor narrative (a blended labour cost differs by location, and Cost IQ does not compare rates), the interpretation of CORE-36 (external workforce share) and ADP-17, 18, 35 and 36 (sourcing), and a routing suggestion to Sovereign IQ when delivery is outside the client's home region and CTX-03 includes EU, UK or CH (remote access to data from another country). Do not read a higher offshore share as better or worse. No score. Never re-weights a score (GLOBAL-COVERAGE rule).",
+        "basis": "LTM heuristic. No published definition of onshore, nearshore and offshore with method and sample was sourced in this task; the definitions in the help text are LTM's working definitions and are labelled as such. Bands follow CORE-36's pattern (shares with Unknown)."
+      },
+      "basis": "LTM heuristic. No published definition of onshore, nearshore and offshore with method and sample was sourced in this task; the definitions in the help text are LTM's working definitions and are labelled as such. Bands follow CORE-36's pattern (shares with Unknown).",
+      "sources": [],
+      "needsOwner": true,
+      "needsOwnerReason": "The question gives onshore share only and does not split nearshore from offshore. That is deliberate (one question, no compound options). If the owner wants labour-rate dispersion work later, add a follow-up multi-select 'where is the rest delivered' (NEARSHORE, OFFSHORE) gated on the three lower bands. The working definitions are LTM's and need the owner's approval because they are client-visible.",
+      "insertAfter": "CTX-05",
+      "feeds": {
+        "applicability": "Sovereign IQ routing suggestion only",
+        "wording": "workforce and vendor sections; interpretation note on CORE-36",
+        "coverageStatement": "none",
+        "report": "constraint note in the workforce section",
+        "record": "context answer"
+      },
+      "relationToExisting": "Complements CORE-36 (share of capacity supplied by external parties) and ADP-18 (internal and contractor mix): they ask who, this asks where. Replaces nothing. VALIDATION section 12 found no question on delivery location.",
+      "effects": {
+        "scoring": "none",
+        "engine": "none",
+        "page": "one single-select",
+        "report": "one note; no figure changes"
+      },
+      "gate": null
+    },
+    {
+      "adaptiveTrigger": null,
+      "costDimension": null,
+      "valueDimension": null,
+      "evidenceImplication": "Context fact. Routes applicability and wording; never scored and never re-weights a score (GLOBAL-COVERAGE rule).",
+      "active": true,
+      "version": 1,
+      "findingIds": [],
+      "recommendationIds": [],
+      "questionDesignVersion": "6.0",
+      "answerGuidance": "Choose the option that best reflects the current enterprise reality; do not answer based on intended future state.",
+      "id": "CTX-05",
+      "section": "Enterprise Context",
+      "prompt": "In how many countries does the organisation run technology operations or incur material technology spend?",
+      "intent": "Set the multi-country trigger (master rule TR-30, triggerKey Global) that no question sets today, so the Geography questions ADP-51 and ADP-52 are asked only of a multi-country operation.",
+      "interaction": "single-select",
+      "answerDesign": "Count countries with material staff, facilities, providers or spend, not countries where only a few customers are served.",
+      "required": false,
+      "options": [
+        {
+          "id": "ONE",
+          "label": "One country"
+        },
+        {
+          "id": "2_5",
+          "label": "Two to five countries"
+        },
+        {
+          "id": "6_20",
+          "label": "Six to twenty countries"
+        },
+        {
+          "id": "GT20",
+          "label": "More than twenty countries"
+        }
+      ],
+      "scoring": {
+        "method": "signal-only",
+        "signals": [
+          "country-count",
+          "multi-country-trigger"
+        ],
+        "note": "Gate for ADP-51 and ADP-52 (applicableWhen {questionId: CTX-05, anyOf: [2_5, 6_20, GT20]}). Also an input to the size of the coverage statement. No score. Never re-weights a score (GLOBAL-COVERAGE rule).",
+        "basis": "LTM heuristic. Master rule TR-30 says ADP-51 and ADP-52 apply to a 'multi-country operation selected' (triggerKey Global) but no question sets that trigger and no code reads it. A count of countries is the smallest fact that can set it with the engine's existing applicableWhen {questionId, anyOf}, which cannot express 'two or more selected' on a multi-select."
+      },
+      "basis": "LTM heuristic. Master rule TR-30 says ADP-51 and ADP-52 apply to a 'multi-country operation selected' (triggerKey Global) but no question sets that trigger and no code reads it. A count of countries is the smallest fact that can set it with the engine's existing applicableWhen {questionId, anyOf}, which cannot express 'two or more selected' on a multi-select.",
+      "sources": [
+        {
+          "title": "Repository: master-v6.6.json rule TR-30 (Multi-country operation selected: activate ADP-51 to ADP-52; triggerKey Global) and v10.1-routing-evidence-contract.json (the trigger is listed; no code reads the contract)",
+          "url": "packages/engine-core/src/accelerators/cost-iq/canon/config/master-v6.6.json"
+        }
+      ],
+      "needsOwner": true,
+      "needsOwnerReason": "An addition to the five questions the owner listed. It is the smallest way to give the Geography questions a gate with no engine change. Alternative: extend applicableWhen with a minimum number of selected options and gate on CTX-03 (an engine and page change, no scoring effect), which avoids a sixth question. No Unknown option is offered because a CIO knows how many countries; the owner may add one.",
+      "insertAfter": "CTX-03",
+      "feeds": {
+        "applicability": "ADP-51 and ADP-52 (Geography)",
+        "wording": "none",
+        "coverageStatement": "none",
+        "report": "none",
+        "record": "context answer"
+      },
+      "relationToExisting": "Complements CTX-03 (where) and ADP-51 and ADP-52 (what the spread costs). Replaces the unset 'Global=Yes' trigger.",
+      "effects": {
+        "scoring": "none",
+        "engine": "none (existing applicableWhen)",
+        "page": "one single-select; the Geography section must not be shown to ONE",
+        "report": "none"
+      },
+      "gate": null
+    }
+  ],
+  "core02AddedOptions": {
+    "question": "CORE-02",
+    "position": "before OTHER, after PROFESSIONAL_SERVICES, in the order listed",
+    "options": [
+      {
+        "id": "EDUCATION",
+        "label": "Education",
+        "after": "PROFESSIONAL_SERVICES"
+      },
+      {
+        "id": "MEDIA_ENTERTAINMENT",
+        "label": "Media / Entertainment",
+        "after": "EDUCATION"
+      },
+      {
+        "id": "NATURAL_RESOURCES",
+        "label": "Natural Resources / Mining and Metals",
+        "after": "MEDIA_ENTERTAINMENT"
+      }
+    ],
+    "basis": "LTM heuristic. The twelve existing options are a pragmatic buyer list; these three are named in GLOBAL-COVERAGE as missing. The UN ISIC Rev. 5 has 22 sections (UNSD classification page, adopted 2024, read 3 Nov 2026), but I could not read the section titles in this task, so the mapping of these three to ISIC sections (education, information and communication or arts and entertainment, mining and quarrying) is UNVERIFIED and from general knowledge.",
+    "source": {
+      "title": "UNSD, ISIC Rev. 5 classification detail (22 sections; titles not read)",
+      "url": "https://unstats.un.org/unsd/classifications/Family/Detail/2095"
+    },
+    "needsOwner": true,
+    "needsOwnerReason": "Where upstream oil and gas sits: ENERGY_UTILITIES or NATURAL_RESOURCES. The label proposes mining and metals only, to keep the two apart; the owner should confirm, and approve the labels (client-visible). Scoring effect: none (CORE-02 is signal-only); the audit and golden outputs are unaffected."
+  },
+  "core03core04Rewrite": {
+    "needsOwner": true,
+    "needsOwnerReason": "Changes what every client sees on two required questions, introduces conversion rates the owner must accept as registered assumptions, and decides whether saved option IDs are kept.",
+    "problem": "CORE-03 and CORE-04 offer bands in US dollars only (labels 'Below US$100M' and so on). Neither feeds a score, finding or the report today (VALIDATION section 12).",
+    "recommendation": "Yes: rewrite both so the bands are relative to the client's reporting currency (CTX-01). Recommended design (A): keep the seven and six size classes and their option IDs; show labels from bandTables for the chosen currency. Every table is a conversion of the USD edges at one dated ECB reference rate, rounded to two significant figures, and is a registered assumption (assumptions A1 to A3). Never converted at run time and never by a hidden default.",
+    "proposedWording": {
+      "CORE-03": "What is the organisation's approximate annual revenue, in your reporting currency? (Bands are shown in the currency you chose. They are size classes, approximately equal to the US dollar bands at the rate stated under Assumptions.)",
+      "CORE-04": "What is the approximate annual technology spend currently in scope for this assessment, in your reporting currency? (Same size classes as above.)",
+      "help": "Band labels follow the reporting currency chosen in the previous question. Where the currency is Other, AED or SAR, or no sourced rate is registered, the bands are shown in US dollars and labelled as such; pick the nearest band at your own rate."
+    },
+    "idHandling": "Keep the existing option IDs (LT100M, 100M_500M and so on). They name USD size classes and are read by no score. Cost: a raw saved record shows an ID that reads as dollars; record clientCurrency with it. Alternative: rename to neutral IDs (SIZE_1 to SIZE_7) with a one-off mapping of saved answers; cleaner, more work. Owner chooses.",
+    "alternativeB": "Alternative (B), not recommended now: replace the bands with a numeric entry in the reporting currency and derive the band only if a USD comparison is ever needed. It removes conversion entirely but needs a numeric input type the page does not have (interaction types today: single-select, multi-select, slider, range rendered as options, stars, ranking).",
+    "conversionRule": "Conversion happens in exactly one place: building the band-label table. Cross rate = (currency per EUR) divided by (USD per EUR), from the ECB reference rates dated 2 Nov 2026. Re-issue the table when the owner approves a new date. The report states the date and the source.",
+    "noConversionElsewhere": "The engine scores no money, so no conversion is needed for scoring. Percentage levers apply to amounts in the client's currency. Any later figure that mixes currencies (for example Cost IQ plus FinOps IQ in a single total) needs a registered rate of its own."
+  },
+  "bandTables": {
+    "rateSource": {
+      "title": "ECB euro foreign exchange reference rates: published around 16:00 CET on working days, 29 currencies, 'for information only' and strongly discouraged for transactions. Rates dated 2 Nov 2026 read 3 Nov 2026 from the daily XML through a summarising fetch tool; regenerate from the XML when the tables are built",
+      "url": "https://www.ecb.europa.eu/stats/policy_and_exchange_rates/euro_reference_exchange_rates/html/index.en.html"
+    },
+    "rateDate": "2026-11-02",
+    "readOn": "2026-11-03",
+    "ratesPerEUR": {
+      "USD": 1.1216,
+      "GBP": 0.8358,
+      "CHF": 0.9193,
+      "CAD": 1.5673,
+      "AUD": 1.6004,
+      "JPY": 177.1,
+      "CNY": 7.4567,
+      "INR": 106.4505,
+      "SGD": 1.4344,
+      "BRL": 6.099,
+      "ZAR": 18.6619,
+      "EUR": 1.0
+    },
+    "usdPerUnitDerived": {
+      "USD": 1.0,
+      "GBP": 0.7452,
+      "CHF": 0.8196,
+      "CAD": 1.3974,
+      "AUD": 1.4269,
+      "JPY": 157.8994,
+      "CNY": 6.6483,
+      "INR": 94.9095,
+      "SGD": 1.2789,
+      "BRL": 5.4378,
+      "ZAR": 16.6386,
+      "EUR": 0.8916
+    },
+    "rounding": "two significant figures, displayed with 'M' (million), 'bn' (billion) or 'trillion'; Indian crore is a presentation choice for the owner",
+    "status": "INDICATIVE and UNAPPROVED: generated by a script from rates read through a summarising fetch tool. Regenerate from the ECB XML and have the owner approve before the labels are used.",
+    "notCovered": "AED and SAR are not in the ECB list. Both are pegged to the US dollar in practice (AED 3.6725 reported by secondary sources only; the central-bank page was not found; SAR not searched), so no table is proposed until a central-bank source is read. They, and OTHER, fall back to US dollar bands with a visible label.",
+    "tables": {
+      "EUR": {
+        "revenue_CORE-03": {
+          "LT100M": "Below EUR 89M",
+          "100M_500M": "EUR 89M to 450M",
+          "500M_1B": "EUR 450M to 890M",
+          "1B_5B": "EUR 890M to 4.5bn",
+          "5B_25B": "EUR 4.5bn to 22bn",
+          "GT25B": "Above EUR 22bn"
+        },
+        "spend_CORE-04": {
+          "LT5M": "Below EUR 4.5M",
+          "5M_25M": "EUR 4.5M to 22M",
+          "25M_50M": "EUR 22M to 45M",
+          "50M_100M": "EUR 45M to 89M",
+          "100M_500M": "EUR 89M to 450M",
+          "500M_1B": "EUR 450M to 890M",
+          "GT1B": "Above EUR 890M"
+        }
+      },
+      "GBP": {
+        "revenue_CORE-03": {
+          "LT100M": "Below GBP 75M",
+          "100M_500M": "GBP 75M to 370M",
+          "500M_1B": "GBP 370M to 750M",
+          "1B_5B": "GBP 750M to 3.7bn",
+          "5B_25B": "GBP 3.7bn to 19bn",
+          "GT25B": "Above GBP 19bn"
+        },
+        "spend_CORE-04": {
+          "LT5M": "Below GBP 3.7M",
+          "5M_25M": "GBP 3.7M to 19M",
+          "25M_50M": "GBP 19M to 37M",
+          "50M_100M": "GBP 37M to 75M",
+          "100M_500M": "GBP 75M to 370M",
+          "500M_1B": "GBP 370M to 750M",
+          "GT1B": "Above GBP 750M"
+        }
+      },
+      "CHF": {
+        "revenue_CORE-03": {
+          "LT100M": "Below CHF 82M",
+          "100M_500M": "CHF 82M to 410M",
+          "500M_1B": "CHF 410M to 820M",
+          "1B_5B": "CHF 820M to 4.1bn",
+          "5B_25B": "CHF 4.1bn to 20bn",
+          "GT25B": "Above CHF 20bn"
+        },
+        "spend_CORE-04": {
+          "LT5M": "Below CHF 4.1M",
+          "5M_25M": "CHF 4.1M to 20M",
+          "25M_50M": "CHF 20M to 41M",
+          "50M_100M": "CHF 41M to 82M",
+          "100M_500M": "CHF 82M to 410M",
+          "500M_1B": "CHF 410M to 820M",
+          "GT1B": "Above CHF 820M"
+        }
+      },
+      "CAD": {
+        "revenue_CORE-03": {
+          "LT100M": "Below CAD 140M",
+          "100M_500M": "CAD 140M to 700M",
+          "500M_1B": "CAD 700M to 1.4bn",
+          "1B_5B": "CAD 1.4bn to 7bn",
+          "5B_25B": "CAD 7bn to 35bn",
+          "GT25B": "Above CAD 35bn"
+        },
+        "spend_CORE-04": {
+          "LT5M": "Below CAD 7M",
+          "5M_25M": "CAD 7M to 35M",
+          "25M_50M": "CAD 35M to 70M",
+          "50M_100M": "CAD 70M to 140M",
+          "100M_500M": "CAD 140M to 700M",
+          "500M_1B": "CAD 700M to 1.4bn",
+          "GT1B": "Above CAD 1.4bn"
+        }
+      },
+      "AUD": {
+        "revenue_CORE-03": {
+          "LT100M": "Below AUD 140M",
+          "100M_500M": "AUD 140M to 710M",
+          "500M_1B": "AUD 710M to 1.4bn",
+          "1B_5B": "AUD 1.4bn to 7.1bn",
+          "5B_25B": "AUD 7.1bn to 36bn",
+          "GT25B": "Above AUD 36bn"
+        },
+        "spend_CORE-04": {
+          "LT5M": "Below AUD 7.1M",
+          "5M_25M": "AUD 7.1M to 36M",
+          "25M_50M": "AUD 36M to 71M",
+          "50M_100M": "AUD 71M to 140M",
+          "100M_500M": "AUD 140M to 710M",
+          "500M_1B": "AUD 710M to 1.4bn",
+          "GT1B": "Above AUD 1.4bn"
+        }
+      },
+      "JPY": {
+        "revenue_CORE-03": {
+          "LT100M": "Below JPY 16bn",
+          "100M_500M": "JPY 16bn to 79bn",
+          "500M_1B": "JPY 79bn to 160bn",
+          "1B_5B": "JPY 160bn to 790bn",
+          "5B_25B": "JPY 790bn to 3.9 trillion",
+          "GT25B": "Above JPY 3.9 trillion"
+        },
+        "spend_CORE-04": {
+          "LT5M": "Below JPY 790M",
+          "5M_25M": "JPY 790M to 3.9bn",
+          "25M_50M": "JPY 3.9bn to 7.9bn",
+          "50M_100M": "JPY 7.9bn to 16bn",
+          "100M_500M": "JPY 16bn to 79bn",
+          "500M_1B": "JPY 79bn to 160bn",
+          "GT1B": "Above JPY 160bn"
+        }
+      },
+      "CNY": {
+        "revenue_CORE-03": {
+          "LT100M": "Below CNY 660M",
+          "100M_500M": "CNY 660M to 3.3bn",
+          "500M_1B": "CNY 3.3bn to 6.6bn",
+          "1B_5B": "CNY 6.6bn to 33bn",
+          "5B_25B": "CNY 33bn to 170bn",
+          "GT25B": "Above CNY 170bn"
+        },
+        "spend_CORE-04": {
+          "LT5M": "Below CNY 33M",
+          "5M_25M": "CNY 33M to 170M",
+          "25M_50M": "CNY 170M to 330M",
+          "50M_100M": "CNY 330M to 660M",
+          "100M_500M": "CNY 660M to 3.3bn",
+          "500M_1B": "CNY 3.3bn to 6.6bn",
+          "GT1B": "Above CNY 6.6bn"
+        }
+      },
+      "INR": {
+        "revenue_CORE-03": {
+          "LT100M": "Below INR 9.5bn",
+          "100M_500M": "INR 9.5bn to 47bn",
+          "500M_1B": "INR 47bn to 95bn",
+          "1B_5B": "INR 95bn to 470bn",
+          "5B_25B": "INR 470bn to 2.4 trillion",
+          "GT25B": "Above INR 2.4 trillion"
+        },
+        "spend_CORE-04": {
+          "LT5M": "Below INR 470M",
+          "5M_25M": "INR 470M to 2.4bn",
+          "25M_50M": "INR 2.4bn to 4.7bn",
+          "50M_100M": "INR 4.7bn to 9.5bn",
+          "100M_500M": "INR 9.5bn to 47bn",
+          "500M_1B": "INR 47bn to 95bn",
+          "GT1B": "Above INR 95bn"
+        }
+      },
+      "SGD": {
+        "revenue_CORE-03": {
+          "LT100M": "Below SGD 130M",
+          "100M_500M": "SGD 130M to 640M",
+          "500M_1B": "SGD 640M to 1.3bn",
+          "1B_5B": "SGD 1.3bn to 6.4bn",
+          "5B_25B": "SGD 6.4bn to 32bn",
+          "GT25B": "Above SGD 32bn"
+        },
+        "spend_CORE-04": {
+          "LT5M": "Below SGD 6.4M",
+          "5M_25M": "SGD 6.4M to 32M",
+          "25M_50M": "SGD 32M to 64M",
+          "50M_100M": "SGD 64M to 130M",
+          "100M_500M": "SGD 130M to 640M",
+          "500M_1B": "SGD 640M to 1.3bn",
+          "GT1B": "Above SGD 1.3bn"
+        }
+      },
+      "USD": {
+        "revenue_CORE-03": {
+          "LT100M": "Below US$100M",
+          "100M_500M": "US$100M-500M",
+          "500M_1B": "US$500M-1B",
+          "1B_5B": "US$1B-5B",
+          "5B_25B": "US$5B-25B",
+          "GT25B": "Above US$25B"
+        },
+        "spend_CORE-04": {
+          "LT5M": "Below US$5M",
+          "5M_25M": "US$5M-25M",
+          "25M_50M": "US$25M-50M",
+          "50M_100M": "US$50M-100M",
+          "100M_500M": "US$100M-500M",
+          "500M_1B": "US$500M-1B",
+          "GT1B": "Above US$1B"
+        },
+        "note": "Unchanged from the master."
+      }
+    }
+  },
+  "assumptions": [
+    {
+      "id": "A1",
+      "what": "Reporting currency band conversion for CORE-03 and CORE-04",
+      "value": "USD band edges converted at ECB euro reference rates dated 2 Nov 2026 (cross rates through EUR), rounded to two significant figures",
+      "basis": "published source: ECB euro foreign exchange reference rates (https://www.ecb.europa.eu/stats/policy_and_exchange_rates/euro_reference_exchange_rates/html/index.en.html), read 3 Nov 2026",
+      "confidence": "medium (the rate is real; a size class does not need precision)",
+      "ifWrong": "A band label is a few percent off its USD size class. No score, finding or lever uses the band, so nothing else moves; labels are re-issued."
+    },
+    {
+      "id": "A2",
+      "what": "Which currencies get a converted table",
+      "value": "USD, EUR, GBP, CHF, CAD, AUD, JPY, CNY, INR, SGD; AED, SAR and OTHER show US dollar bands with a visible label",
+      "basis": "LTM heuristic: only currencies the ECB publishes a reference rate for",
+      "confidence": "high",
+      "ifWrong": "A client in an uncovered currency picks the nearest USD band by their own rate."
+    },
+    {
+      "id": "A3",
+      "what": "Date of the rate",
+      "value": "2 Nov 2026; re-issue on owner approval, at least yearly",
+      "basis": "LTM heuristic",
+      "confidence": "medium",
+      "ifWrong": "Labels drift from current size classes; the claims register review date forces a refresh."
+    },
+    {
+      "id": "A4",
+      "what": "Region of published figures in the report",
+      "value": "Stated per source (the Flexera and FinOps Foundation figures are global samples) and compared with CTX-03 in the report",
+      "basis": "GLOBAL-COVERAGE benchmark rule",
+      "confidence": "high",
+      "ifWrong": "A client in a region the sample under-represents reads a global figure as local."
+    }
+  ],
+  "overlapCheck": {
+    "CORE-02": "Industry list: CTX questions do not overlap; three options are added (core02AddedOptions).",
+    "CORE-03": "Revenue bands in US dollars: rewritten to follow CTX-01 (core03core04Rewrite).",
+    "CORE-04": "Spend bands in US dollars: same.",
+    "ADP-51": "Cost variation across regions: complemented by CTX-03 and gated by CTX-05; not replaced.",
+    "ADP-52": "Service standardisation across regions: same.",
+    "CORE-36": "External workforce share: complemented by CTX-04 (who versus where).",
+    "CORE-16": "Business-led spend: unrelated.",
+    "sectionLength": "Enterprise Context goes from 6 to 11 questions (CTX-01 to CTX-05 added). Two of the five are required (CTX-01, CTX-03); the others can be skipped, so executive mode adds roughly three quick answers."
+  },
+  "suggestedOrder": [
+    "CORE-01",
+    "CORE-02",
+    "CTX-01",
+    "CORE-03",
+    "CORE-04",
+    "CTX-02",
+    "CTX-03",
+    "CTX-05",
+    "CTX-04",
+    "CORE-05",
+    "CORE-06"
+  ]
+}

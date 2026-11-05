@@ -472,6 +472,7 @@
     }
 
   </style>
+<script src="/assets/legal-notice.js"></script>
 </head>
 <body>
 
@@ -826,6 +827,7 @@
           <button class="ac-tab-btn active" id="tabBtnUsers" onclick="switchACTab('users')">👥 User Directory &amp; RBAC</button>
           <button class="ac-tab-btn" id="tabBtnCreate" onclick="switchACTab('create')">➕ Provision App User</button>
           <button class="ac-tab-btn" id="tabBtnDomains" onclick="switchACTab('domains')">🌐 Domain Access</button>
+          <button class="ac-tab-btn" id="tabBtnActivity" onclick="switchACTab('activity')">📈 Activity</button>
         </div>
       </div>
 
@@ -836,6 +838,24 @@
             <div class="spinner" style="width:28px;height:28px;border:3px solid rgba(255,255,255,0.1);border-top-color:#3B82F6;border-radius:50%;animation:spinRadar 0.8s linear infinite;margin:0 auto 12px;"></div>
             Loading user directory and permissions...
           </div>
+        </div>
+      </div>
+
+      <!-- Tab View 4: Users and activity (platform workstream P2) -->
+      <div id="acViewActivity" class="ac-tab-content" style="display:none;padding-top:4px;">
+        <div class="modal-scrollable" style="max-height:calc(85vh - 220px);">
+          <p class="modal-desc">LTM Vantage records when people sign in and the status and dates of the assessments they start or save (which tool, the assessment reference and the times). It does not record answers or clients' names in this log. Use it only to manage access, support users and answer audit questions, not to judge anyone's performance. Records are deleted 12 months after they were last updated. Times are UTC.</p>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:10px;">
+            <label for="activitySearch" style="position:absolute;left:-9999px;">Search people</label>
+            <input type="search" id="activitySearch" class="form-input" placeholder="Search by name or address" style="max-width:260px;" oninput="renderActivityUsers()">
+            <label style="font-size:12.5px;"><input type="checkbox" id="activityNeverOnly" onchange="renderActivityUsers()"> Never signed in</label>
+            <button type="button" class="btn-auth" style="font-size:11.5px;padding:5px 12px;" onclick="loadActivityUsers()">🔄 Refresh</button>
+            <button type="button" class="btn-auth" style="font-size:11.5px;padding:5px 12px;" onclick="downloadActivityCsv('users')">Download people (CSV)</button>
+            <button type="button" class="btn-auth" style="font-size:11.5px;padding:5px 12px;" onclick="downloadActivityCsv('assessments')">Download assessments (CSV)</button>
+            <span id="activityStatus" role="status" aria-live="polite" style="font-size:12.5px;"></span>
+          </div>
+          <div id="activityUsers">Loading…</div>
+          <div id="activityDetail" style="margin-top:16px;"></div>
         </div>
       </div>
 
@@ -1835,12 +1855,78 @@
     }
 
     function switchACTab(tab) {
-      const tabs = { users: ['tabBtnUsers', 'acViewUsers'], create: ['tabBtnCreate', 'acViewCreate'], domains: ['tabBtnDomains', 'acViewDomains'] };
+      const tabs = { users: ['tabBtnUsers', 'acViewUsers'], create: ['tabBtnCreate', 'acViewCreate'], domains: ['tabBtnDomains', 'acViewDomains'], activity: ['tabBtnActivity', 'acViewActivity'] };
       for (const [name, [btn, view]] of Object.entries(tabs)) {
         document.getElementById(btn).classList.toggle('active', name === tab);
         document.getElementById(view).style.display = name === tab ? 'block' : 'none';
       }
       if (tab === 'domains') loadDomainRules();
+      if (tab === 'activity') loadActivityUsers();
+    }
+
+    /* ---------- Users and activity (platform workstream P2) ---------- */
+    let ACTIVITY_USERS = [];
+    const activityTime = v => (v ? escapeHtml(String(v).replace('T', ' ').slice(0, 16)) : '<span style="opacity:.6">never</span>');
+
+    async function loadActivityUsers() {
+      const box = document.getElementById('activityUsers');
+      box.textContent = 'Loading…';
+      document.getElementById('activityDetail').innerHTML = '';
+      try {
+        const res = await apiFetch('/api/activity/users');
+        const data = await res.json();
+        if (!data.ok) throw new Error(data.error || 'Failed to load.');
+        ACTIVITY_USERS = data.users;
+        renderActivityUsers();
+      } catch (err) {
+        box.textContent = 'The activity could not be loaded: ' + err.message;
+      }
+    }
+
+    function renderActivityUsers() {
+      const q = (document.getElementById('activitySearch').value || '').trim().toLowerCase();
+      const never = document.getElementById('activityNeverOnly').checked;
+      const rows = ACTIVITY_USERS
+        .filter(u => (!q || (u.email + ' ' + (u.name || '')).toLowerCase().includes(q)) && (!never || !u.lastLoginAt))
+        .sort((a, b) => String(b.lastLoginAt || '').localeCompare(String(a.lastLoginAt || '')) || a.email.localeCompare(b.email));
+      document.getElementById('activityUsers').innerHTML = rows.length ? '<table style="width:100%;border-collapse:collapse;font-size:12.5px;"><thead><tr style="text-align:left;"><th>Person</th><th>Role</th><th>First sign-in</th><th>Last sign-in</th><th>Sign-ins</th><th>Assessments</th><th>Last assessment saved</th><th></th></tr></thead><tbody>' +
+        rows.map(u => '<tr style="border-top:1px solid rgba(128,128,128,0.25);"><td>' + escapeHtml(u.email) + (u.enabled ? '' : ' <small style="color:#B91C1C;">(' + (u.inDirectory ? 'disabled' : 'account removed') + ')</small>') + '</td>' +
+          '<td>' + escapeHtml(String(u.role || '').replace('_', ' ')) + '</td><td>' + activityTime(u.firstLoginAt) + '</td><td>' + activityTime(u.lastLoginAt) + '</td><td>' + (u.loginCount || 0) + '</td>' +
+          '<td>' + u.assessments.total + ' <small>(' + u.assessments.completed + ' done, ' + u.assessments.inProgress + ' in progress)</small></td><td>' + activityTime(u.lastAssessmentAt) + '</td>' +
+          '<td><button type="button" class="btn-auth" style="font-size:11px;padding:2px 8px;" data-email="' + escapeHtml(u.email) + '" onclick="showActivityDetail(this.dataset.email)">Details</button></td></tr>').join('') + '</tbody></table>' : 'No one matches.';
+    }
+
+    async function showActivityDetail(email) {
+      const box = document.getElementById('activityDetail');
+      box.textContent = 'Loading…';
+      try {
+        const res = await apiFetch('/api/activity/user?email=' + encodeURIComponent(email));
+        const data = await res.json();
+        if (!data.ok) throw new Error(data.error || 'Failed to load.');
+        const d = data.detail;
+        box.innerHTML = '<h4 style="margin:0 0 6px;font-size:13px;">' + escapeHtml(d.email) + '</h4>' +
+          '<div style="font-size:12.5px;margin-bottom:8px;">' + d.loginCount + ' sign-in(s). Latest: ' + (d.logins.length ? d.logins.slice(0, 10).map(activityTime).join(', ') : 'none') + (d.logins.length > 10 ? ' …' : '') + '</div>' +
+          (d.assessments.length ? '<table style="width:100%;border-collapse:collapse;font-size:12.5px;"><thead><tr style="text-align:left;"><th>Accelerator</th><th>Assessment</th><th>Status</th><th>Stage</th><th>Started</th><th>Last saved</th><th>Completed</th></tr></thead><tbody>' +
+            d.assessments.map(a => '<tr style="border-top:1px solid rgba(128,128,128,0.25);"><td>' + escapeHtml(a.accelerator) + '</td><td><code>' + escapeHtml(a.assessmentId) + '</code></td><td>' + escapeHtml(String(a.status).replace('_', ' ')) + '</td>' +
+              '<td>' + (a.stage ? escapeHtml(a.stage) + (a.percent !== null ? ' (' + a.percent + '%)' : '') : '<span style="opacity:.6">not recorded</span>') + '</td><td>' + activityTime(a.startedAt) + '</td><td>' + activityTime(a.lastSavedAt) + '</td><td>' + activityTime(a.completedAt) + '</td></tr>').join('') + '</tbody></table>' : '<div style="font-size:12.5px;">No assessments recorded.</div>');
+      } catch (err) {
+        box.textContent = 'The detail could not be loaded: ' + err.message;
+      }
+    }
+
+    async function downloadActivityCsv(kind) {
+      try {
+        const res = await apiFetch('/api/activity/export?kind=' + encodeURIComponent(kind));
+        const data = await res.json();
+        if (!data.ok) throw new Error(data.error || 'Failed to export.');
+        const url = URL.createObjectURL(new Blob([data.csv], { type: 'text/csv;charset=utf-8' }));
+        const a = document.createElement('a');
+        a.href = url; a.download = data.filename; document.body.appendChild(a); a.click(); a.remove();
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
+        domainStatus('activityStatus', 'Downloaded ' + data.filename + '.', true);
+      } catch (err) {
+        domainStatus('activityStatus', 'The download failed: ' + err.message, false);
+      }
     }
 
     /* ---------- Domain access (platform workstream P1) ---------- */

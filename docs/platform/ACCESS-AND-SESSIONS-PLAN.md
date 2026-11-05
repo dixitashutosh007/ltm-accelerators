@@ -1,6 +1,6 @@
 # Platform workstream: access control, user activity and saved sessions
 
-**Date:** 3 Nov 2026  **Status:** decisions recorded by the owner; P1 built on branch `platform-p1-domain-access` (runbook: `docs/security/DOMAIN_ACCESS_RUNBOOK.md`); P2 and P3 not started.
+**Date:** 3 Nov 2026  **Status:** decisions recorded by the owner; P1 is in PR #84 (runbook: `docs/security/DOMAIN_ACCESS_RUNBOOK.md`); P2 is built on branch `platform-p2-user-activity` (runbook: `docs/security/USER_ACTIVITY_RUNBOOK.md`); P3 not started.
 Independent of the Resilience IQ phases (RQ3 onward); the engine work continues in parallel.
 
 ## Requests
@@ -24,7 +24,7 @@ Independent of the Resilience IQ phases (RQ3 onward); the engine work continues 
 | S4 | Login and activity history is kept **12 months**, then deleted automatically. |
 
 Defaults applied unless the owner changes them:
-- Delete is permanent, by the owner or an Admin. Saved sessions expire after 90 days of inactivity, with a warning first.
+- Delete is permanent, by the owner or an Admin. Saved sessions expire after 24 months of inactivity (owner decision, 5 Nov 2026: one retention period for every accelerator, replacing the 90 days first proposed), with a warning first.
 - Stage is each accelerator's own step name plus a percent complete, written on every save.
 - Domain rules are managed by the Admin group only, every change logged. A single email can be allowed or blocked, overriding its domain. Block beats allow. `ltm.com` and the super-admin emails can never be locked out.
 - The activity screen is Admin only, with CSV export.
@@ -41,3 +41,11 @@ Defaults applied unless the owner changes them:
 - Login tracking of employees needs a notice and a retention statement before P2 goes live (12 months, S4).
 - Moving four accelerators off `localStorage` changes their save format; stored local data is not migrated and the page says so once.
 - The Question Bank Studio admin login is separate from this screen; P2 does not replace it unless the owner asks.
+
+
+## P3 progress (5 Nov 2026): front end
+- **Shared component** `Accelerators/assets/saved-sessions.js`: saves the current assessment through `/api/sessions` (owner or Admin only; 24 months after the last save), restores the latest unfinished one when the page opens, "My sessions" panel (open, delete in two steps, stage, percent, and a warning in the last 14 days before automatic deletion), a one-time notice that progress an earlier build kept in the browser is not carried over, and `discard()` for a page's "clear everything".
+- **Wired in:** Cloud IQ (offers resume on return), Modernize IQ (restores silently, as before; "clear" now deletes the saved session), Strategy IQ (had no save at all: now saves, and offers resume on return). None of them writes progress to `localStorage` any more. AI keys that Strategy, Cloud and Modernize IQ keep in the browser are a separate readiness item, not P3.
+- **Not wired, and why: AI Readiness IQ.** The page is not linked from the home page, loads neither `ltm-api.js` nor the access guard, and `ai-readiness-iq` is not an accelerator the permissions screen grants. Adding saved sessions would put it behind a sign-in and a permission nobody holds. Decision for the owner: retire the page, or bring it under access control first (then wire the component, which needs about ten lines).
+- Tests: `tests/e2e/saved-sessions.spec.ts` against the real sessions service with an in-memory store (save, resume, list, two-step delete, another user's session invisible, legacy notice, no console errors).
+- Not verified in a real account: the SavedSession data model deploy, TTL deletion and the activity pointer (P3b backend, unit-tested only).

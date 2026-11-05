@@ -1,0 +1,2035 @@
+{
+  "schema": "cost-iq-delivery-library/1",
+  "version": "0.2-draft",
+  "statusAsOf": "2026-11-04",
+  "packages": [
+    {
+      "recommendationId": "R-001",
+      "offeringType": "advisory",
+      "offeringName": "Technology Spend Baseline and Allocation",
+      "scope": "LTM builds a reconciled baseline of technology spend by category, owner and service from the client's ledger and supporting sources, and agrees allocation rules with finance. It includes material business-led spend. It does not change the client's ledger, chart of accounts or tooling.",
+      "outcome": "A reconciled baseline with documented gaps, an agreed allocation model and a named owner for each spend line.",
+      "prerequisites": [
+        "Evidence for F-001 (Technology spend baseline is not sufficiently transparent), to be supplied by the client before work starts: enterprise spend ledger or equivalent; major technology category totals; owner/service mapping.",
+        "Evidence for F-002 (Technology cost allocation is not sufficiently actionable), to be supplied by the client before work starts: allocation rules; service/product ownership mapping; cost-driver or unit-economics evidence.",
+        "Named client sponsor and a nominated data owner for each evidence item",
+        "Read access to the general ledger extract and procurement or accounts-payable data for the agreed period"
+      ],
+      "workstreams": [
+        {
+          "id": "WS1",
+          "name": "Scope and data collection",
+          "activities": [
+            "Agree categories, period, currency and entity scope with finance",
+            "Collect ledger, payroll, contract and invoice extracts",
+            "Collect business-led spend sources (departmental budgets, card and expense data)",
+            "Log each source with owner and completeness"
+          ],
+          "ownerRole": "Head of technology finance",
+          "ltmRole": "FinOps consultant",
+          "durationWeeks": [
+            1,
+            2
+          ],
+          "effortFteWeeks": [
+            2,
+            3
+          ],
+          "dependsOn": [
+            "Prerequisites"
+          ],
+          "milestone": "Scope and data request agreed",
+          "kpis": [
+            "Share of in-scope entities with an extract received",
+            "Evidence items received against requested"
+          ]
+        },
+        {
+          "id": "WS2",
+          "name": "Reconcile and classify",
+          "activities": [
+            "Map ledger accounts to a technology cost taxonomy",
+            "Reconcile totals to the audited or management accounts",
+            "Classify spend by category, owner and service",
+            "List unreconciled items and business-led spend found outside central IT"
+          ],
+          "ownerRole": "Financial controller",
+          "ltmRole": "FinOps consultant and data analyst",
+          "durationWeeks": [
+            3,
+            5
+          ],
+          "effortFteWeeks": [
+            5,
+            8
+          ],
+          "dependsOn": [
+            "WS1"
+          ],
+          "milestone": "Reconciled baseline reviewed with finance",
+          "kpis": [
+            "Unreconciled amount as a share of the total, tracked weekly",
+            "Spend lines with a named owner"
+          ]
+        },
+        {
+          "id": "WS3",
+          "name": "Allocation model",
+          "activities": [
+            "Review cost drivers for shared and platform services",
+            "Draft allocation rules (direct, driver-based, fixed)",
+            "Test the rules on one period and compare with owner expectations",
+            "Document unit-cost candidates where evidence supports them"
+          ],
+          "ownerRole": "Head of technology finance and service owners",
+          "ltmRole": "FinOps consultant",
+          "durationWeeks": [
+            2,
+            4
+          ],
+          "effortFteWeeks": [
+            3,
+            5
+          ],
+          "dependsOn": [
+            "WS2"
+          ],
+          "milestone": "Allocation rules agreed",
+          "kpis": [
+            "Share of spend allocated by an agreed rule",
+            "Open disputes from service owners"
+          ]
+        },
+        {
+          "id": "WS4",
+          "name": "Operating rhythm and handover",
+          "activities": [
+            "Define the monthly baseline refresh and owners",
+            "Write the data dictionary and reconciliation procedure",
+            "Present findings and gaps to the CIO and CFO"
+          ],
+          "ownerRole": "CIO",
+          "ltmRole": "FinOps consultant and engagement lead",
+          "durationWeeks": [
+            1,
+            2
+          ],
+          "effortFteWeeks": [
+            1,
+            3
+          ],
+          "dependsOn": [
+            "WS3"
+          ],
+          "milestone": "Baseline pack accepted",
+          "kpis": [
+            "Refresh completed by the client on the agreed date without LTM support"
+          ]
+        }
+      ],
+      "risks": [
+        {
+          "risk": "Source data is incomplete or late",
+          "mitigation": "Log gaps in the data register, state their effect on the baseline, and agree a date after which the baseline is issued with the gap shown"
+        },
+        {
+          "risk": "Business units withhold departmental spend",
+          "mitigation": "CIO and CFO sponsor sends the request; the baseline shows unconfirmed spend separately"
+        }
+      ],
+      "playbook": [
+        {
+          "topic": "Ledger-to-baseline reconciliation",
+          "steps": [
+            "Extract technology-related ledger accounts for the period",
+            "Map each account to a category in the agreed taxonomy",
+            "Compare the mapped total with the management accounts",
+            "Record differences with a reason and owner"
+          ],
+          "verification": "The mapped total agrees with the management accounts, or every difference is listed with a reason.",
+          "options": [
+            "Spreadsheet or data-notebook approach",
+            "Finance-system reporting module",
+            "Technology business management or financial planning tool"
+          ]
+        },
+        {
+          "topic": "Business-led spend discovery",
+          "steps": [
+            "List departments with their own technology budgets",
+            "Search accounts payable and corporate-card data for known technology suppliers",
+            "Ask each department head to confirm or correct the list"
+          ],
+          "verification": "Each department head has confirmed or corrected the list in writing, and new suppliers found in payables are on the register.",
+          "options": [
+            "Procurement analytics",
+            "Expense-management reports",
+            "Manual interviews"
+          ]
+        },
+        {
+          "topic": "Allocation rule testing",
+          "steps": [
+            "Choose one shared service and its cost driver",
+            "Allocate one period by the draft rule",
+            "Review the result with the service owner",
+            "Adjust or record the disagreement"
+          ],
+          "verification": "The service owner has seen the allocated figures and accepted the rule or logged an objection.",
+          "options": [
+            "Spreadsheet model",
+            "Allocation features in a cost-management platform"
+          ]
+        }
+      ],
+      "sow": {
+        "objectives": [
+          "Establish a reconciled technology spend baseline",
+          "Agree allocation rules with finance",
+          "Identify business-led spend outside central IT"
+        ],
+        "deliverables": [
+          "Baseline workbook with reconciliation",
+          "Allocation rules document",
+          "Data register of sources and gaps",
+          "Findings presentation"
+        ],
+        "assumptions": [
+          "Client supplies the evidence listed in prerequisites on time",
+          "Finance participates in reconciliation sessions",
+          "Client owners are available for validation sessions"
+        ],
+        "exclusions": [
+          "Changes to the general ledger or chart of accounts",
+          "Tool procurement or configuration",
+          "Savings quantification"
+        ],
+        "acceptance": [
+          "Baseline reviewed and accepted by the CIO and the finance owner",
+          "Every difference to management accounts is listed with a reason",
+          "Open items are recorded with an owner"
+        ]
+      }
+    },
+    {
+      "recommendationId": "R-002",
+      "offeringType": "implementation",
+      "offeringName": "Technology Cost and Value Governance",
+      "scope": "LTM designs and starts a governance forum with decision rights, challenge criteria and a stop-or-reduce process for technology spend, including business-led spend. LTM facilitates the first cycles. The client holds the decision rights; LTM does not approve or cancel spend.",
+      "outcome": "A running forum with charter, thresholds, a decision log and at least one completed challenge cycle.",
+      "prerequisites": [
+        "Evidence for F-003 (Low-value technology spend is not consistently challenged), to be supplied by the client before work starts: portfolio governance decisions; spend challenge/stop history; investment/value thresholds.",
+        "Evidence for F-017 (Business-led technology spend is not fully governed), to be supplied by the client before work starts: business-led spend inventory; ownership/governance model; procurement/billing evidence.",
+        "Named client sponsor and a nominated data owner for each evidence item",
+        "Executive sponsor with authority to chair the forum"
+      ],
+      "workstreams": [
+        {
+          "id": "WS1",
+          "name": "Current-state governance review",
+          "activities": [
+            "Review existing investment and architecture boards and their terms of reference",
+            "Review the last 12 months of spend decisions and challenges",
+            "Interview board members and budget holders"
+          ],
+          "ownerRole": "Head of portfolio office",
+          "ltmRole": "Governance consultant",
+          "durationWeeks": [
+            2,
+            3
+          ],
+          "effortFteWeeks": [
+            2,
+            4
+          ],
+          "dependsOn": [
+            "Prerequisites"
+          ],
+          "milestone": "Gap summary agreed",
+          "kpis": [
+            "Share of in-scope spend that passes through a board"
+          ]
+        },
+        {
+          "id": "WS2",
+          "name": "Design",
+          "activities": [
+            "Draft the charter, membership and decision rights",
+            "Define value and risk criteria and review thresholds",
+            "Define the challenge and stop-or-reduce process",
+            "Define how business-led spend enters the forum"
+          ],
+          "ownerRole": "CIO and CFO",
+          "ltmRole": "Governance consultant and FinOps consultant",
+          "durationWeeks": [
+            2,
+            4
+          ],
+          "effortFteWeeks": [
+            3,
+            5
+          ],
+          "dependsOn": [
+            "WS1"
+          ],
+          "milestone": "Charter approved",
+          "kpis": [
+            "Charter approved by the sponsor"
+          ]
+        },
+        {
+          "id": "WS3",
+          "name": "Launch and first cycles",
+          "activities": [
+            "Prepare the first challenge pack from the spend baseline",
+            "Run the first forum sessions with the client chair",
+            "Record decisions, owners and dates in a decision log"
+          ],
+          "ownerRole": "Forum chair",
+          "ltmRole": "Governance consultant",
+          "durationWeeks": [
+            4,
+            8
+          ],
+          "effortFteWeeks": [
+            4,
+            7
+          ],
+          "dependsOn": [
+            "WS2"
+          ],
+          "milestone": "First challenge cycle complete",
+          "kpis": [
+            "Decisions logged with owner and date",
+            "Items challenged per cycle"
+          ]
+        },
+        {
+          "id": "WS4",
+          "name": "Embed and review",
+          "activities": [
+            "Review forum effectiveness with members",
+            "Adjust thresholds and cadence",
+            "Hand over templates and the decision log"
+          ],
+          "ownerRole": "Head of portfolio office",
+          "ltmRole": "Governance consultant",
+          "durationWeeks": [
+            1,
+            2
+          ],
+          "effortFteWeeks": [
+            1,
+            2
+          ],
+          "dependsOn": [
+            "WS3"
+          ],
+          "milestone": "Handover accepted",
+          "kpis": [
+            "Forum held on schedule without LTM facilitation"
+          ]
+        }
+      ],
+      "risks": [
+        {
+          "risk": "Forum becomes a reporting meeting without decisions",
+          "mitigation": "Decision log reviewed each cycle; sponsor reviews decisions made against items presented"
+        },
+        {
+          "risk": "Business units bypass the forum",
+          "mitigation": "Link forum approval to procurement and budget release where the client agrees"
+        }
+      ],
+      "playbook": [
+        {
+          "topic": "Decision-rights and threshold design",
+          "steps": [
+            "List spend types and who decides today",
+            "Propose thresholds by amount and risk",
+            "Test the thresholds on last year's decisions",
+            "Agree exceptions"
+          ],
+          "verification": "Applying the thresholds to past decisions gives the routing the sponsor expects.",
+          "options": [
+            "RACI workshop",
+            "Existing portfolio-management tool"
+          ]
+        },
+        {
+          "topic": "Challenge pack",
+          "steps": [
+            "Take the top spend lines from the baseline",
+            "Add owner, outcome, cost trend and contract end date",
+            "Mark items for continue, reduce or stop review"
+          ],
+          "verification": "Each item in the pack has an owner who has confirmed the data.",
+          "options": [
+            "Spreadsheet pack",
+            "Portfolio or BI dashboard"
+          ]
+        }
+      ],
+      "sow": {
+        "objectives": [
+          "Design and launch a technology cost and value forum",
+          "Cover business-led spend",
+          "Run the first challenge cycles"
+        ],
+        "deliverables": [
+          "Charter and decision rights",
+          "Thresholds and challenge criteria",
+          "First challenge pack",
+          "Decision log and templates"
+        ],
+        "assumptions": [
+          "Sponsor chairs the forum",
+          "A spend baseline exists or R-001 is in progress",
+          "Client owners are available for validation sessions"
+        ],
+        "exclusions": [
+          "Decisions on individual spend items",
+          "Changes to delegations of authority",
+          "Legal, tax or accounting advice"
+        ],
+        "acceptance": [
+          "Charter approved by the sponsor",
+          "Two forum cycles held with decisions logged",
+          "Open items are recorded with an owner"
+        ]
+      }
+    },
+    {
+      "recommendationId": "R-003",
+      "offeringType": "advisory",
+      "offeringName": "Cloud Cost Management Scoping",
+      "scope": "A short scoping step that decides whether a FinOps IQ assessment of cloud cost management is warranted, who should take part and what evidence to collect. LTM runs the FinOps IQ assessment as the next step. This package does not size opportunities or recommend cloud changes.",
+      "outcome": "A scoping note naming the cloud estate in scope, participants, evidence owners and the date of a FinOps IQ assessment.",
+      "prerequisites": [
+        "Evidence for F-005 (Cloud consumption may contain avoidable leakage), to be supplied by the client before work starts: cloud billing/usage data; workload-level utilization; optimization/anomaly evidence.",
+        "Evidence for F-006 (Cloud commercial commitments may not be optimized), to be supplied by the client before work starts: commitment contracts; utilization history; renewal/commitment terms.",
+        "Name of the cloud accounts, subscriptions or projects holder (cloud platform or finance owner)"
+      ],
+      "workstreams": [
+        {
+          "id": "WS1",
+          "name": "Scope the cloud estate",
+          "activities": [
+            "Confirm providers, accounts and approximate share of technology spend in scope",
+            "Identify the cloud platform, finance and application owners",
+            "Confirm which evidence exists and who holds it"
+          ],
+          "ownerRole": "Head of cloud platform",
+          "ltmRole": "FinOps consultant",
+          "durationWeeks": [
+            1,
+            1
+          ],
+          "effortFteWeeks": [
+            0.5,
+            1
+          ],
+          "dependsOn": [
+            "Prerequisites"
+          ],
+          "milestone": "Scope note drafted",
+          "kpis": [
+            "Evidence items with a named holder"
+          ]
+        },
+        {
+          "id": "WS2",
+          "name": "Plan the FinOps IQ assessment",
+          "activities": [
+            "Agree participants and session dates",
+            "Choose executive or workshop mode with the client",
+            "Issue the evidence request"
+          ],
+          "ownerRole": "Head of technology finance",
+          "ltmRole": "FinOps consultant",
+          "durationWeeks": [
+            1,
+            1
+          ],
+          "effortFteWeeks": [
+            0.5,
+            1
+          ],
+          "dependsOn": [
+            "WS1"
+          ],
+          "milestone": "Assessment dates agreed",
+          "kpis": [
+            "Participants confirmed for the assessment"
+          ]
+        },
+        {
+          "id": "WS3",
+          "name": "Hand-off",
+          "activities": [
+            "Record the scoping note in the engagement file",
+            "Link the Cost IQ finding to the FinOps IQ assessment",
+            "Agree who receives the FinOps IQ output"
+          ],
+          "ownerRole": "CIO",
+          "ltmRole": "FinOps consultant",
+          "durationWeeks": [
+            1,
+            1
+          ],
+          "effortFteWeeks": [
+            0.5,
+            0.5
+          ],
+          "dependsOn": [
+            "WS2"
+          ],
+          "milestone": "Hand-off confirmed",
+          "kpis": [
+            "FinOps IQ assessment scheduled"
+          ]
+        }
+      ],
+      "risks": [
+        {
+          "risk": "Evidence holders are not identified",
+          "mitigation": "Do not schedule the assessment until each evidence item has a named holder"
+        }
+      ],
+      "playbook": [
+        {
+          "topic": "Assessment scoping",
+          "steps": [
+            "List cloud providers and accounts in scope",
+            "Name the owner of each evidence item",
+            "Record the mode and participants for FinOps IQ"
+          ],
+          "verification": "The scoping note lists each evidence item with a holder and a date.",
+          "options": [
+            "Executive mode",
+            "Workshop mode"
+          ]
+        }
+      ],
+      "sow": {
+        "objectives": [
+          "Define scope for a FinOps IQ assessment",
+          "Name evidence holders and participants",
+          "Give the CIO a documented basis for the next decision"
+        ],
+        "deliverables": [
+          "Scoping note",
+          "Evidence request",
+          "Assessment schedule"
+        ],
+        "assumptions": [
+          "The client agrees to a FinOps IQ assessment as the next step",
+          "Client owners are available for validation sessions",
+          "Durations and effort are planning heuristics and are confirmed in the statement of work"
+        ],
+        "exclusions": [
+          "Sizing of opportunities",
+          "Technical changes to any cloud environment",
+          "Commercial negotiation with providers"
+        ],
+        "acceptance": [
+          "Scoping note accepted by the CIO or delegate",
+          "Open items are recorded with an owner",
+          "Deliverables reviewed in a session with the client sponsor"
+        ]
+      }
+    },
+    {
+      "recommendationId": "R-004",
+      "offeringType": "implementation",
+      "offeringName": "SaaS and Software Licence Rationalisation",
+      "scope": "LTM builds a subscription and licence inventory, reconciles entitlements to deployment and usage, and prepares renewal decisions with business owners. LTM prepares positions; the client signs any contract change. LTM does not give legal advice or conduct a vendor audit.",
+      "outcome": "An owner-validated inventory, a reconciliation of entitlement against use, and a renewal calendar with decisions prepared per contract.",
+      "prerequisites": [
+        "Evidence for F-007 (SaaS usage and licensing may contain avoidable overlap or shelfware), to be supplied by the client before work starts: SaaS user/usage data; subscription inventory; business-owner validation.",
+        "Evidence for F-008 (Software licensing may be inefficient), to be supplied by the client before work starts: license entitlements; deployment/usage reconciliation; renewal/audit exposure.",
+        "Named client sponsor and a nominated data owner for each evidence item",
+        "Access to contract repository and, where available, identity and usage logs"
+      ],
+      "workstreams": [
+        {
+          "id": "WS1",
+          "name": "Inventory",
+          "activities": [
+            "Combine procurement, payables, identity and expense sources into one inventory",
+            "Record owner, contract term, notice date and cost",
+            "Identify unmanaged or business-bought subscriptions"
+          ],
+          "ownerRole": "Head of procurement",
+          "ltmRole": "FinOps consultant",
+          "durationWeeks": [
+            2,
+            4
+          ],
+          "effortFteWeeks": [
+            3,
+            5
+          ],
+          "dependsOn": [
+            "Prerequisites"
+          ],
+          "milestone": "Inventory baselined",
+          "kpis": [
+            "Subscriptions with a validated owner",
+            "Share of spend covered by the inventory"
+          ]
+        },
+        {
+          "id": "WS2",
+          "name": "Usage and entitlement reconciliation",
+          "activities": [
+            "Obtain usage data per application",
+            "Reconcile entitlements to deployments and active users",
+            "Flag overlap between applications with similar function",
+            "Record compliance exposure for the client's legal team"
+          ],
+          "ownerRole": "Software asset manager",
+          "ltmRole": "Licensing analyst",
+          "durationWeeks": [
+            3,
+            6
+          ],
+          "effortFteWeeks": [
+            4,
+            8
+          ],
+          "dependsOn": [
+            "WS1"
+          ],
+          "milestone": "Reconciliation reviewed with owners",
+          "kpis": [
+            "Applications reconciled",
+            "Open exceptions per vendor"
+          ]
+        },
+        {
+          "id": "WS3",
+          "name": "Owner validation and options",
+          "activities": [
+            "Review each finding with the business owner",
+            "Prepare options per contract (retain, reduce, consolidate, exit)",
+            "Sequence options by renewal and notice dates"
+          ],
+          "ownerRole": "Business application owners",
+          "ltmRole": "FinOps consultant",
+          "durationWeeks": [
+            2,
+            4
+          ],
+          "effortFteWeeks": [
+            2,
+            4
+          ],
+          "dependsOn": [
+            "WS2"
+          ],
+          "milestone": "Options agreed with owners",
+          "kpis": [
+            "Owner decisions recorded per contract"
+          ]
+        },
+        {
+          "id": "WS4",
+          "name": "Renewal calendar and process",
+          "activities": [
+            "Build the renewal calendar with notice deadlines",
+            "Set a pre-renewal review step",
+            "Hand over inventory maintenance procedure"
+          ],
+          "ownerRole": "Head of procurement",
+          "ltmRole": "FinOps consultant",
+          "durationWeeks": [
+            1,
+            2
+          ],
+          "effortFteWeeks": [
+            1,
+            2
+          ],
+          "dependsOn": [
+            "WS3"
+          ],
+          "milestone": "Renewal process live",
+          "kpis": [
+            "Renewals reviewed before the notice date"
+          ]
+        }
+      ],
+      "risks": [
+        {
+          "risk": "Usage data is not available from the vendor",
+          "mitigation": "Use identity logs or owner attestation and record the lower confidence"
+        },
+        {
+          "risk": "Notice dates pass before decisions",
+          "mitigation": "Prioritise contracts by notice date in WS3"
+        }
+      ],
+      "playbook": [
+        {
+          "topic": "Licence entitlement reconciliation",
+          "steps": [
+            "Collect entitlement records (contracts, order forms)",
+            "Collect deployment or assignment data",
+            "Compare quantities and metrics",
+            "Record gaps and excess by product"
+          ],
+          "verification": "Each product's reconciled figures have been reviewed by the software asset manager.",
+          "options": [
+            "Software asset management tool",
+            "Vendor admin console exports",
+            "Spreadsheet"
+          ]
+        },
+        {
+          "topic": "SaaS usage review",
+          "steps": [
+            "Export last-login or activity per user",
+            "Define inactivity with the business owner",
+            "List accounts above the inactivity threshold",
+            "Owner confirms before any change"
+          ],
+          "verification": "The owner has signed off the inactive-account list.",
+          "options": [
+            "Identity provider logs",
+            "SaaS management platform",
+            "Vendor usage reports"
+          ]
+        },
+        {
+          "topic": "Microsoft 365 licence assignment against activity",
+          "platform": "Microsoft 365 and Entra ID",
+          "steps": [
+            "In the Microsoft 365 admin center, open Billing > Licenses to record licences assigned and unassigned per product",
+            "Open Users > Active users to list who is licensed, unlicensed or a guest",
+            "Open Reports > Usage and select the service reports in scope; use the 90-day or 180-day period so seasonal use is visible",
+            "Export the user-level reports (the page names Excel, Power BI and the Microsoft Graph reports API for large tenants) and note the last activity date per user",
+            "Join licence assignment to last activity date by user and list users with no recent activity for owner review"
+          ],
+          "verification": "The software asset manager reproduces the assigned-licence count from Billing > Licenses and agrees the joined list before any owner is asked to act. Records note that the reports exclude perpetual licence models.",
+          "options": [
+            "Microsoft 365 admin center export",
+            "Microsoft Graph reports API",
+            "Power BI usage analytics",
+            "Software asset management tool"
+          ],
+          "sources": [
+            {
+              "title": "Microsoft 365 Admin Center Usage Reports Overview",
+              "publisher": "Microsoft Learn",
+              "url": "https://learn.microsoft.com/en-us/microsoft-365/admin/activity-reports/activity-reports",
+              "checked": "2026-11-04"
+            }
+          ]
+        },
+        {
+          "topic": "Microsoft 365 usage-report access and privacy setting",
+          "platform": "Microsoft 365 and Entra ID",
+          "steps": [
+            "Confirm the client roles that can view usage reports (the page lists roles such as Reports Reader and Usage Summary Reports Reader, the latter without user details)",
+            "Check the Org Settings > Services > Reports setting that conceals user, group and site names; by default names are concealed",
+            "If user-level analysis is needed, the client's Global Administrator decides whether to show names, under the client's privacy practices; record the decision",
+            "Note that showing identifiable user information is a logged event in the Microsoft Purview audit log"
+          ],
+          "verification": "The privacy decision is recorded with its approver, and the exports used in the analysis show whether names were concealed or shown.",
+          "options": [
+            "Show names for the analysis period only",
+            "Analyse concealed data at aggregate level"
+          ],
+          "sources": [
+            {
+              "title": "Microsoft 365 Admin Center Usage Reports Overview",
+              "publisher": "Microsoft Learn",
+              "url": "https://learn.microsoft.com/en-us/microsoft-365/admin/activity-reports/activity-reports",
+              "checked": "2026-11-04"
+            }
+          ]
+        },
+        {
+          "topic": "Entra sign-in evidence of application use",
+          "platform": "Microsoft 365 and Entra ID",
+          "steps": [
+            "Open Entra ID > Monitoring & health > Sign-in logs (at least Reports Reader) and filter to the application in scope",
+            "Take interactive and non-interactive user sign-ins as separate log types and decide with the owner which count as use",
+            "Open Usage & insights for the application-activity reports",
+            "Export the result for the review period; log entries are system generated and cannot be changed",
+            "Record the log retention the client's tenant provides: the page does not state a period"
+          ],
+          "verification": "For a sample of applications, the owner confirms that the sign-in count matches their understanding of use, and the retention period is recorded against the evidence.",
+          "options": [
+            "Entra admin center export",
+            "Microsoft Graph API",
+            "Stream to a log analytics store"
+          ],
+          "sources": [
+            {
+              "title": "Sign-in logs in Microsoft Entra ID",
+              "publisher": "Microsoft Learn",
+              "url": "https://learn.microsoft.com/en-us/entra/identity/monitoring-health/concept-sign-ins",
+              "checked": "2026-11-04"
+            }
+          ]
+        },
+        {
+          "topic": "Okta application sign-in evidence",
+          "platform": "Okta",
+          "steps": [
+            "Use the System Log API (or the System Log in the Okta admin console as the client's administrator prefers) to read events for the review period",
+            "Filter for application sign-in events: the Okta event catalogue lists user.authentication.sso as an app sign-in step processed by Okta, and app.oauth2.signon for OIDC single sign-on to an app",
+            "Read the target AppInstance on each event to identify the application",
+            "Treat OIDC records with care: the catalogue says they can also reflect ID-token refresh rather than a new interactive sign-in",
+            "Record the log retention the client's Okta org provides: the System Log page does not state a period"
+          ],
+          "verification": "The owner of two or three applications agrees that the per-user last sign-in matches known use, and ID-token refresh has been considered in the counts.",
+          "options": [
+            "System Log API export",
+            "Log forwarding to the client's log store",
+            "SaaS management platform ingesting Okta data"
+          ],
+          "sources": [
+            {
+              "title": "Event Types (Okta Developer)",
+              "publisher": "Okta",
+              "url": "https://developer.okta.com/docs/reference/api/event-types/",
+              "checked": "2026-11-04"
+            },
+            {
+              "title": "System Log API (Okta Developer)",
+              "publisher": "Okta",
+              "url": "https://developer.okta.com/docs/reference/api/system-log/",
+              "checked": "2026-11-04"
+            }
+          ]
+        },
+        {
+          "topic": "Oracle Database feature usage evidence",
+          "platform": "Oracle Database",
+          "steps": [
+            "Ask the client's database administrators to export DBA_FEATURE_USAGE_STATISTICS for each in-scope database",
+            "Record NAME, VERSION, DETECTED_USAGES, CURRENTLY_USED, FIRST_USAGE_DATE, LAST_USAGE_DATE and LAST_SAMPLE_DATE",
+            "List features where usage was detected and pass them to the client's licensing specialist or counsel; LTM draws no licence conclusion from the view",
+            "Note the view reports feature detection by sampling, as described on the page, and may not reflect all usage"
+          ],
+          "verification": "The database administrator confirms the export is complete for each database and version, and the licensing specialist has received the list.",
+          "options": [
+            "Direct query by client DBA",
+            "Existing client database inventory tooling"
+          ],
+          "sources": [
+            {
+              "title": "DBA_FEATURE_USAGE_STATISTICS (Oracle Database 19c Reference)",
+              "publisher": "Oracle",
+              "url": "https://docs.oracle.com/en/database/oracle/oracle-database/19/refrn/DBA_FEATURE_USAGE_STATISTICS.html",
+              "checked": "2026-11-04"
+            }
+          ]
+        },
+        {
+          "topic": "SAP system measurement evidence",
+          "steps": [
+            "Ask the client's SAP Basis team for the most recent measurement run in transaction USMM for each in-scope system, and its measurement statistics and log",
+            "Record the clients included in the measurement and the date of the run",
+            "Record how users were classified for the measurement",
+            "For several systems, ask whether results were consolidated in the License Administration Workbench",
+            "The consultant must confirm every step above against SAP's documentation for the client's release before use: no current-release SAP page was verified for this entry, so it carries no source"
+          ],
+          "verification": "The Basis team confirms the run date and clients covered for each system, and the classification method is recorded. LTM does not run or alter the measurement.",
+          "options": [
+            "Client Basis team export of USMM statistics",
+            "Software asset management tool with SAP connector"
+          ]
+        },
+        {
+          "topic": "IBM core-based software inventory evidence",
+          "platform": "IBM software",
+          "steps": [
+            "Ask whether IBM License Metric Tool is deployed; the page describes it as an inventory of core-based software for Full Capacity or Virtualization (Sub-)Capacity environments",
+            "If deployed, obtain its inventory report for the review period and the client's entitlement records",
+            "Compare deployed products and counts with entitlements and record gaps and excess by product",
+            "Where a tool is not deployed, record the alternative evidence the client uses and its confidence"
+          ],
+          "verification": "The software asset manager agrees the product list to the tool's inventory and the entitlement records; any contract or audit question goes to the client's legal team.",
+          "options": [
+            "IBM License Metric Tool report",
+            "Alternative inventory tool the client uses",
+            "Manual worksheet"
+          ],
+          "sources": [
+            {
+              "title": "License Metric Tool information (Passport Advantage)",
+              "publisher": "IBM",
+              "url": "https://www.ibm.com/software/passportadvantage/ibmlicensemetrictool",
+              "checked": "2026-11-04"
+            }
+          ]
+        }
+      ],
+      "sow": {
+        "objectives": [
+          "Build an owner-validated subscription and licence inventory",
+          "Reconcile entitlement to use",
+          "Prepare renewal decisions"
+        ],
+        "deliverables": [
+          "Inventory",
+          "Reconciliation workbook",
+          "Options per contract",
+          "Renewal calendar"
+        ],
+        "assumptions": [
+          "Contracts are available to LTM under confidentiality",
+          "Owners attend validation sessions",
+          "Client owners are available for validation sessions"
+        ],
+        "exclusions": [
+          "Legal advice on contract terms or audit response",
+          "Negotiation with vendors",
+          "Tool licences"
+        ],
+        "acceptance": [
+          "Inventory validated by owners for the agreed scope",
+          "Options documented for each in-scope contract",
+          "Open items are recorded with an owner"
+        ]
+      }
+    },
+    {
+      "recommendationId": "R-005",
+      "offeringType": "advisory",
+      "offeringName": "Infrastructure Footprint Review",
+      "scope": "LTM reviews capacity, utilisation, asset lifecycle and facility and network cost for the infrastructure in scope, on-premises and hosted, and identifies options with dependencies. It does not execute decommissioning or procurement.",
+      "outcome": "A footprint review with utilisation findings, lifecycle timeline, options and dependencies for each asset group.",
+      "prerequisites": [
+        "Evidence for F-009 (Infrastructure capacity or assets may be underutilized), to be supplied by the client before work starts: asset inventory; utilization/capacity data; refresh/lifecycle plan.",
+        "Named client sponsor and a nominated data owner for each evidence item",
+        "Access to the configuration database or asset inventory and monitoring data"
+      ],
+      "workstreams": [
+        {
+          "id": "WS1",
+          "name": "Inventory and data",
+          "activities": [
+            "Consolidate asset inventory from configuration, finance and facility records",
+            "Collect utilisation and capacity data for a representative period",
+            "Collect facility, power and network contract costs"
+          ],
+          "ownerRole": "Head of infrastructure",
+          "ltmRole": "Infrastructure consultant",
+          "durationWeeks": [
+            2,
+            3
+          ],
+          "effortFteWeeks": [
+            3,
+            5
+          ],
+          "dependsOn": [
+            "Prerequisites"
+          ],
+          "milestone": "Inventory and data pack complete",
+          "kpis": [
+            "Assets with an owner and a lifecycle date",
+            "Assets with utilisation data"
+          ]
+        },
+        {
+          "id": "WS2",
+          "name": "Utilisation and lifecycle analysis",
+          "activities": [
+            "Analyse utilisation by asset group",
+            "Map refresh and end-of-support dates",
+            "Identify idle or duplicated assets with dependency checks"
+          ],
+          "ownerRole": "Head of infrastructure",
+          "ltmRole": "Infrastructure consultant",
+          "durationWeeks": [
+            2,
+            4
+          ],
+          "effortFteWeeks": [
+            3,
+            6
+          ],
+          "dependsOn": [
+            "WS1"
+          ],
+          "milestone": "Analysis reviewed",
+          "kpis": [
+            "Asset groups analysed",
+            "Dependencies confirmed by application owners"
+          ]
+        },
+        {
+          "id": "WS3",
+          "name": "Options and sequencing",
+          "activities": [
+            "Prepare options per asset group (retain, consolidate, refresh, retire, move)",
+            "Record dependencies, risk and change capacity",
+            "Sequence options with contract and facility dates"
+          ],
+          "ownerRole": "CIO and Head of infrastructure",
+          "ltmRole": "Infrastructure consultant and FinOps consultant",
+          "durationWeeks": [
+            2,
+            3
+          ],
+          "effortFteWeeks": [
+            2,
+            4
+          ],
+          "dependsOn": [
+            "WS2"
+          ],
+          "milestone": "Options paper accepted",
+          "kpis": [
+            "Options with an owner and a decision date"
+          ]
+        }
+      ],
+      "risks": [
+        {
+          "risk": "Utilisation sample is not representative",
+          "mitigation": "State the period and peaks; extend the sample before recommending change"
+        },
+        {
+          "risk": "Hidden dependencies",
+          "mitigation": "Application owner confirmation before any asset is listed as an option"
+        }
+      ],
+      "playbook": [
+        {
+          "topic": "Capacity and utilisation review",
+          "steps": [
+            "Select the metrics (compute, memory, storage, network) per platform",
+            "Collect data for a period that includes peaks",
+            "Compute average and peak per asset group",
+            "Review outliers with the owner"
+          ],
+          "verification": "Owners have confirmed the data period covers their peak.",
+          "options": [
+            "Existing monitoring platform exports",
+            "Hypervisor management reports",
+            "Infrastructure analytics tool"
+          ]
+        },
+        {
+          "topic": "Lifecycle mapping",
+          "steps": [
+            "List vendor end-of-support dates from the vendors' public notices",
+            "Compare with the refresh plan",
+            "Mark assets past or near support end"
+          ],
+          "verification": "Each support date is traced to a vendor notice or contract.",
+          "options": [
+            "Asset management tool",
+            "Spreadsheet"
+          ]
+        },
+        {
+          "topic": "vSphere host utilisation data",
+          "platform": "VMware vSphere",
+          "steps": [
+            "Ask the virtualisation team for host performance data from vCenter: the host charts cover CPU, disk, memory, network, GPU and storage usage",
+            "Record the collection level set for vCenter Server, because it determines which counters are available",
+            "Select a period that includes the client's peaks and export per host and cluster",
+            "Compute average and peak per cluster and review outliers with the owner"
+          ],
+          "verification": "The virtualisation team confirms the collection level, and owners confirm the period covers their peak.",
+          "options": [
+            "vCenter performance chart export",
+            "Existing monitoring platform",
+            "Infrastructure analytics tool"
+          ],
+          "sources": [
+            {
+              "title": "Hosts overview performance charts (vSphere Monitoring and Performance 8.0)",
+              "publisher": "Broadcom TechDocs",
+              "url": "https://techdocs.broadcom.com/us/en/vmware-cis/vsphere/vsphere/8-0/vsphere-monitoring-and-performance/monitoring-inventory-objects/overview-performance-charts/hosts.html",
+              "checked": "2026-11-04"
+            }
+          ]
+        },
+        {
+          "topic": "CMDB data quality before the footprint review",
+          "platform": "ServiceNow CMDB",
+          "steps": [
+            "Ask the CMDB owner for the CMDB Health results; the source describes completeness (required and recommended fields), correctness (duplicate, orphan and stale CIs) and compliance (audits against expected values)",
+            "Record the staleness period in use (the source gives 60 days as the default)",
+            "Exclude or flag stale and duplicate CIs before using the CMDB as the asset inventory",
+            "Reconcile a sample of CIs to finance and facility records"
+          ],
+          "verification": "The CMDB owner confirms the exclusions, and the sample reconciliation difference is recorded. Sources are ServiceNow product documentation for the Zurich release; confirm against the client's release documentation.",
+          "options": [
+            "CMDB Health dashboard export",
+            "Spreadsheet reconciliation"
+          ],
+          "sources": [
+            {
+              "title": "Overview of CMDB Health (ServiceNow product documentation, Zurich release)",
+              "publisher": "ServiceNow",
+              "url": "https://www.servicenow.com/docs/r/zurich/servicenow-platform/configuration-management-database-cmdb/overview-cmdb-health.html",
+              "checked": "2026-11-05"
+            },
+            {
+              "title": "CMDB Health KPIs and metrics (ServiceNow product documentation, Zurich release)",
+              "publisher": "ServiceNow",
+              "url": "https://www.servicenow.com/docs/r/zS6yb8e~gR8BPjeviYdV9g/mnIlomGC8p4vjiVA9tJpxA",
+              "checked": "2026-11-05"
+            }
+          ]
+        }
+      ],
+      "sow": {
+        "objectives": [
+          "Review utilisation and lifecycle of in-scope infrastructure",
+          "Prepare sequenced options",
+          "Give the CIO a documented basis for the next decision"
+        ],
+        "deliverables": [
+          "Footprint review",
+          "Lifecycle timeline",
+          "Options paper"
+        ],
+        "assumptions": [
+          "Monitoring data covers a representative period",
+          "Client owners are available for validation sessions",
+          "Durations and effort are planning heuristics and are confirmed in the statement of work"
+        ],
+        "exclusions": [
+          "Decommissioning, migration or procurement",
+          "Facility contract negotiation",
+          "Legal, tax or accounting advice"
+        ],
+        "acceptance": [
+          "Review accepted by the Head of infrastructure and the CIO",
+          "Open items are recorded with an owner",
+          "Deliverables reviewed in a session with the client sponsor"
+        ]
+      }
+    },
+    {
+      "recommendationId": "R-006",
+      "offeringType": "transformation",
+      "offeringName": "Technology Workforce and Operations Optimisation",
+      "scope": "LTM analyses demand, skills, sourcing and recurring manual work, then designs and pilots changes to operating model and automation. The client decides on all employment and sourcing matters; LTM does not give employment-law advice.",
+      "outcome": "A workforce and operations baseline, a prioritised automation and sourcing plan and a pilot with measured results.",
+      "prerequisites": [
+        "Evidence for F-010 (Technology workforce capacity may not align to demand), to be supplied by the client before work starts: demand/capacity data; skills inventory; sourcing/workforce cost data.",
+        "Evidence for F-016 (Manual technology operations may create productivity leakage), to be supplied by the client before work starts: process inventory; manual effort/time evidence; automation candidates.",
+        "Named client sponsor and a nominated data owner for each evidence item",
+        "HR and finance agreement to share role and cost data in anonymised or aggregated form"
+      ],
+      "workstreams": [
+        {
+          "id": "WS1",
+          "name": "Demand and capacity baseline",
+          "activities": [
+            "Collect demand data (tickets, changes, projects) for a defined period",
+            "Collect role, skills and sourcing data in aggregate",
+            "Map effort to services"
+          ],
+          "ownerRole": "Head of IT operations",
+          "ltmRole": "Operating-model consultant",
+          "durationWeeks": [
+            3,
+            5
+          ],
+          "effortFteWeeks": [
+            4,
+            7
+          ],
+          "dependsOn": [
+            "Prerequisites"
+          ],
+          "milestone": "Baseline reviewed",
+          "kpis": [
+            "Services with demand and capacity data"
+          ]
+        },
+        {
+          "id": "WS2",
+          "name": "Manual work and automation candidates",
+          "activities": [
+            "Inventory recurring tasks and process steps",
+            "Estimate effort and frequency from logs or time samples",
+            "Rank candidates by volume, risk and feasibility"
+          ],
+          "ownerRole": "Process owners",
+          "ltmRole": "Automation consultant",
+          "durationWeeks": [
+            3,
+            5
+          ],
+          "effortFteWeeks": [
+            4,
+            6
+          ],
+          "dependsOn": [
+            "WS1"
+          ],
+          "milestone": "Candidate list ranked",
+          "kpis": [
+            "Candidates with evidence of effort"
+          ]
+        },
+        {
+          "id": "WS3",
+          "name": "Operating-model options",
+          "activities": [
+            "Compare skills supply with demand",
+            "Define sourcing options and transition risks",
+            "Agree the target model with the client's leadership"
+          ],
+          "ownerRole": "CIO and HR lead",
+          "ltmRole": "Operating-model consultant",
+          "durationWeeks": [
+            3,
+            5
+          ],
+          "effortFteWeeks": [
+            3,
+            5
+          ],
+          "dependsOn": [
+            "WS1"
+          ],
+          "milestone": "Target model agreed",
+          "kpis": [
+            "Roles mapped to services"
+          ]
+        },
+        {
+          "id": "WS4",
+          "name": "Pilot and scale plan",
+          "activities": [
+            "Select one or two automation candidates",
+            "Deliver the pilot with the client team",
+            "Measure effort before and after",
+            "Write the scale-up plan"
+          ],
+          "ownerRole": "Process owner",
+          "ltmRole": "Automation engineer",
+          "durationWeeks": [
+            6,
+            10
+          ],
+          "effortFteWeeks": [
+            8,
+            14
+          ],
+          "dependsOn": [
+            "WS2",
+            "WS3"
+          ],
+          "milestone": "Pilot results reviewed",
+          "kpis": [
+            "Effort per task before and after",
+            "Pilot adoption by the team"
+          ]
+        }
+      ],
+      "risks": [
+        {
+          "risk": "Staff concern about role changes",
+          "mitigation": "Involve HR early, communicate scope, use aggregated data"
+        },
+        {
+          "risk": "Automation of an unstable process",
+          "mitigation": "Standardise the process first; select candidates with stable steps"
+        }
+      ],
+      "playbook": [
+        {
+          "topic": "Task effort measurement",
+          "steps": [
+            "Select tasks from ticket categories",
+            "Sample effort from logs or short time diaries",
+            "Record frequency per month"
+          ],
+          "verification": "A second owner reviews the sampled figures for the largest tasks.",
+          "options": [
+            "IT service management reports",
+            "Time sampling",
+            "Process-mining tool"
+          ]
+        },
+        {
+          "topic": "Automation pilot",
+          "steps": [
+            "Define scope and success measure",
+            "Build and test in a non-production environment",
+            "Run in production with rollback",
+            "Compare against baseline"
+          ],
+          "verification": "Before and after effort for the pilot task is measured on the same method.",
+          "options": [
+            "Scripting and workflow tools",
+            "Robotic process automation",
+            "Infrastructure automation"
+          ]
+        }
+      ],
+      "sow": {
+        "objectives": [
+          "Baseline technology demand, skills and manual effort",
+          "Design operating-model and automation options",
+          "Pilot and measure"
+        ],
+        "deliverables": [
+          "Baseline report",
+          "Ranked automation list",
+          "Target operating-model options",
+          "Pilot results and scale plan"
+        ],
+        "assumptions": [
+          "HR and works-council or equivalent consultation, where required, is led by the client",
+          "Client owners are available for validation sessions",
+          "Durations and effort are planning heuristics and are confirmed in the statement of work"
+        ],
+        "exclusions": [
+          "Employment-law advice",
+          "Redundancy or recruitment decisions",
+          "Full-scale automation delivery"
+        ],
+        "acceptance": [
+          "Baseline accepted by the CIO",
+          "Pilot results reviewed against the agreed measure",
+          "Open items are recorded with an owner"
+        ]
+      }
+    },
+    {
+      "recommendationId": "R-007",
+      "offeringType": "advisory",
+      "offeringName": "Vendor Strategy and Commercial Review",
+      "scope": "LTM reviews strategic vendors, contract terms, sourcing mix and performance governance, and recommends a vendor strategy and negotiation priorities. The client leads negotiations; LTM does not act as the client's agent and gives no legal advice.",
+      "outcome": "A vendor strategy with a segmentation, commercial position per key vendor, performance governance model and a negotiation calendar.",
+      "prerequisites": [
+        "Evidence for F-011 (Vendor economics may contain commercial leakage), to be supplied by the client before work starts: contracts; vendor spend; commercial terms and benchmarks.",
+        "Evidence for F-020 (Technology duplication after M&A may dilute synergy), to be supplied by the client before work starts: M&A application/platform inventory; contract overlap; team/capability duplication evidence.",
+        "Named client sponsor and a nominated data owner for each evidence item",
+        "Procurement and legal agreement to share contracts under confidentiality"
+      ],
+      "workstreams": [
+        {
+          "id": "WS1",
+          "name": "Vendor and contract base",
+          "activities": [
+            "Build the vendor list from payables and contracts",
+            "Segment vendors by spend, criticality and substitutability",
+            "Extract key commercial terms, term dates and rights"
+          ],
+          "ownerRole": "Head of procurement",
+          "ltmRole": "Commercial consultant",
+          "durationWeeks": [
+            2,
+            4
+          ],
+          "effortFteWeeks": [
+            3,
+            5
+          ],
+          "dependsOn": [
+            "Prerequisites"
+          ],
+          "milestone": "Vendor base agreed",
+          "kpis": [
+            "Vendors with contracts reviewed",
+            "Spend covered by the segmentation"
+          ]
+        },
+        {
+          "id": "WS2",
+          "name": "Commercial and performance review",
+          "activities": [
+            "Compare terms with the client's policy and any available market references",
+            "Review service performance and governance records",
+            "Identify duplication across vendors, including after acquisitions"
+          ],
+          "ownerRole": "Vendor managers",
+          "ltmRole": "Commercial consultant",
+          "durationWeeks": [
+            3,
+            5
+          ],
+          "effortFteWeeks": [
+            4,
+            7
+          ],
+          "dependsOn": [
+            "WS1"
+          ],
+          "milestone": "Vendor findings reviewed",
+          "kpis": [
+            "Key vendors with documented performance review"
+          ]
+        },
+        {
+          "id": "WS3",
+          "name": "Strategy and calendar",
+          "activities": [
+            "Define target sourcing mix and consolidation options",
+            "Set negotiation priorities by renewal date and leverage",
+            "Define vendor governance cadence and scorecards"
+          ],
+          "ownerRole": "CIO and Head of procurement",
+          "ltmRole": "Commercial consultant",
+          "durationWeeks": [
+            2,
+            3
+          ],
+          "effortFteWeeks": [
+            2,
+            4
+          ],
+          "dependsOn": [
+            "WS2"
+          ],
+          "milestone": "Strategy accepted",
+          "kpis": [
+            "Key vendors with a scheduled review"
+          ]
+        }
+      ],
+      "risks": [
+        {
+          "risk": "Market reference data is thin or dated",
+          "mitigation": "State the source, year and sample; avoid relying on it where weak"
+        },
+        {
+          "risk": "Dependency on a vendor limits options",
+          "mitigation": "Record switching effort and risk as constraints in the strategy"
+        }
+      ],
+      "playbook": [
+        {
+          "topic": "Contract term extraction",
+          "steps": [
+            "List contracts for in-scope vendors",
+            "Extract term, renewal, notice, price mechanism, exit rights and service levels",
+            "Have procurement confirm the extraction"
+          ],
+          "verification": "Procurement confirms a sample of extracted terms against the source contract.",
+          "options": [
+            "Contract-lifecycle management tool",
+            "Spreadsheet template"
+          ]
+        },
+        {
+          "topic": "Vendor performance scorecard",
+          "steps": [
+            "Choose measures from contract service levels",
+            "Collect last twelve months of data",
+            "Review with the vendor manager"
+          ],
+          "verification": "The vendor manager agrees the data source for each measure.",
+          "options": [
+            "Service-management reports",
+            "Vendor-management tool"
+          ]
+        }
+      ],
+      "sow": {
+        "objectives": [
+          "Segment vendors and review commercial position",
+          "Define vendor strategy and governance",
+          "Give the CIO a documented basis for the next decision"
+        ],
+        "deliverables": [
+          "Vendor segmentation",
+          "Commercial review per key vendor",
+          "Vendor strategy",
+          "Negotiation calendar"
+        ],
+        "assumptions": [
+          "Contracts are available for review",
+          "Client owners are available for validation sessions",
+          "Durations and effort are planning heuristics and are confirmed in the statement of work"
+        ],
+        "exclusions": [
+          "Legal advice",
+          "Conduct of negotiations",
+          "Procurement system changes"
+        ],
+        "acceptance": [
+          "Strategy accepted by the CIO and the Head of procurement",
+          "Open items are recorded with an owner",
+          "Deliverables reviewed in a session with the client sponsor"
+        ]
+      }
+    },
+    {
+      "recommendationId": "R-008",
+      "offeringType": "transformation",
+      "offeringName": "Application and Technology Portfolio Rationalisation",
+      "scope": "LTM builds an application portfolio view, scores applications on cost, value, risk and complexity, identifies duplication including after acquisitions, and delivers the first rationalisation moves with the client. Large migrations are scoped separately.",
+      "outcome": "A scored portfolio, a disposition per application (retain, change, consolidate, retire), and the first moves under way with owners.",
+      "prerequisites": [
+        "Evidence for F-012 (Complexity and technical debt are contributing to run cost), to be supplied by the client before work starts: architecture/dependency evidence; technical-debt inventory; run/change effort evidence.",
+        "Evidence for F-013 (Application portfolio may contain avoidable cost), to be supplied by the client before work starts: application portfolio; usage/business value; run/support cost and duplication evidence.",
+        "Evidence for F-020 (Technology duplication after M&A may dilute synergy), to be supplied by the client before work starts: M&A application/platform inventory; contract overlap; team/capability duplication evidence.",
+        "Named client sponsor and a nominated data owner for each evidence item",
+        "Application owners available to validate records"
+      ],
+      "workstreams": [
+        {
+          "id": "WS1",
+          "name": "Portfolio inventory",
+          "activities": [
+            "Consolidate application records from configuration, finance and architecture sources",
+            "Add owner, users, run cost and support effort",
+            "Include acquired-entity applications"
+          ],
+          "ownerRole": "Enterprise architect",
+          "ltmRole": "Application portfolio consultant",
+          "durationWeeks": [
+            3,
+            5
+          ],
+          "effortFteWeeks": [
+            4,
+            7
+          ],
+          "dependsOn": [
+            "Prerequisites"
+          ],
+          "milestone": "Inventory validated by owners",
+          "kpis": [
+            "Applications with owner-validated record",
+            "Applications with run cost"
+          ]
+        },
+        {
+          "id": "WS2",
+          "name": "Scoring and duplication analysis",
+          "activities": [
+            "Agree scoring criteria with business and IT",
+            "Score applications on cost, value, risk and complexity",
+            "Identify functional and contract duplication",
+            "Check technical dependencies"
+          ],
+          "ownerRole": "Enterprise architect and business leads",
+          "ltmRole": "Application portfolio consultant",
+          "durationWeeks": [
+            3,
+            5
+          ],
+          "effortFteWeeks": [
+            4,
+            7
+          ],
+          "dependsOn": [
+            "WS1"
+          ],
+          "milestone": "Scores accepted",
+          "kpis": [
+            "Applications scored",
+            "Duplicated functions identified"
+          ]
+        },
+        {
+          "id": "WS3",
+          "name": "Disposition and roadmap",
+          "activities": [
+            "Assign a disposition to each application with owners",
+            "Sequence moves by dependencies, contracts and change capacity",
+            "Estimate delivery effort for the first wave"
+          ],
+          "ownerRole": "CIO",
+          "ltmRole": "Application portfolio consultant and architect",
+          "durationWeeks": [
+            2,
+            4
+          ],
+          "effortFteWeeks": [
+            3,
+            5
+          ],
+          "dependsOn": [
+            "WS2"
+          ],
+          "milestone": "Roadmap approved",
+          "kpis": [
+            "Applications with an agreed disposition"
+          ]
+        },
+        {
+          "id": "WS4",
+          "name": "First wave delivery",
+          "activities": [
+            "Plan each first-wave move with the owner",
+            "Run migration or retirement activities",
+            "Track costs removed and issues"
+          ],
+          "ownerRole": "Application owners",
+          "ltmRole": "Delivery lead",
+          "durationWeeks": [
+            8,
+            16
+          ],
+          "effortFteWeeks": [
+            10,
+            24
+          ],
+          "dependsOn": [
+            "WS3"
+          ],
+          "milestone": "First wave complete",
+          "kpis": [
+            "Applications retired or consolidated against plan",
+            "Open issues per move"
+          ]
+        }
+      ],
+      "risks": [
+        {
+          "risk": "Owners dispute scoring",
+          "mitigation": "Agree criteria before scoring and keep a record of overrides"
+        },
+        {
+          "risk": "Retirement disrupts hidden users",
+          "mitigation": "Usage data and a decommissioning checklist before each retirement"
+        }
+      ],
+      "playbook": [
+        {
+          "topic": "Application scoring",
+          "steps": [
+            "Define criteria and weights with stakeholders",
+            "Collect evidence for each criterion",
+            "Score and review outliers with owners"
+          ],
+          "verification": "Owners have reviewed their application's score and recorded any dispute.",
+          "options": [
+            "Application portfolio management tool",
+            "Scoring workbook"
+          ]
+        },
+        {
+          "topic": "Decommissioning checklist",
+          "steps": [
+            "Confirm users and integrations",
+            "Archive data per retention policy",
+            "Terminate contracts and access",
+            "Remove from inventory and monitoring"
+          ],
+          "verification": "Inventory, contract and access records show the application as retired.",
+          "options": [
+            "Configuration database",
+            "Change-management records"
+          ]
+        },
+        {
+          "topic": "CMDB record completeness for the application inventory",
+          "platform": "ServiceNow CMDB",
+          "steps": [
+            "Take the application records from the CMDB as one input to the portfolio inventory",
+            "Use the completeness results (required and recommended fields not populated) to list application records missing owner or support data",
+            "Use the correctness results (duplicate and orphan CIs) to list likely duplicate application records",
+            "Send each gap to the named owner for confirmation; record the owner's answer"
+          ],
+          "verification": "Owners have confirmed or corrected the listed records, and the inventory shows which records were changed.",
+          "options": [
+            "CMDB Health dashboard export",
+            "Application portfolio management tool"
+          ],
+          "sources": [
+            {
+              "title": "Overview of CMDB Health (ServiceNow product documentation, Zurich release)",
+              "publisher": "ServiceNow",
+              "url": "https://www.servicenow.com/docs/r/zurich/servicenow-platform/configuration-management-database-cmdb/overview-cmdb-health.html",
+              "checked": "2026-11-05"
+            },
+            {
+              "title": "CMDB Health KPIs and metrics (ServiceNow product documentation, Zurich release)",
+              "publisher": "ServiceNow",
+              "url": "https://www.servicenow.com/docs/r/zS6yb8e~gR8BPjeviYdV9g/mnIlomGC8p4vjiVA9tJpxA",
+              "checked": "2026-11-05"
+            }
+          ]
+        }
+      ],
+      "sow": {
+        "objectives": [
+          "Build and score the application portfolio",
+          "Agree dispositions",
+          "Deliver the first wave"
+        ],
+        "deliverables": [
+          "Validated inventory",
+          "Scoring model and results",
+          "Disposition roadmap",
+          "First-wave delivery report"
+        ],
+        "assumptions": [
+          "Owners are named for each application",
+          "First-wave scope is agreed in WS3",
+          "Client owners are available for validation sessions"
+        ],
+        "exclusions": [
+          "Large migrations beyond the first wave",
+          "New platform procurement",
+          "Legal review of contract exits"
+        ],
+        "acceptance": [
+          "Roadmap approved by the CIO",
+          "First-wave moves completed as agreed in WS3",
+          "Open items are recorded with an owner"
+        ]
+      }
+    },
+    {
+      "recommendationId": "R-009",
+      "offeringType": "implementation",
+      "offeringName": "Benefits Realisation Framework",
+      "scope": "LTM designs and implements a benefits process: baselines, targets, owners and post-implementation reviews, including for transformation and AI investments. It applies the process to a first set of live investments. It does not own benefits delivery.",
+      "outcome": "A benefits framework in use on selected investments, with baselines, owners, KPIs and review dates.",
+      "prerequisites": [
+        "Evidence for F-004 (Technology investment benefits are not consistently measured), to be supplied by the client before work starts: benefit baselines; benefit targets; post-delivery KPI evidence.",
+        "Evidence for F-014 (Business perception of technology value is weak or mixed), to be supplied by the client before work starts: business stakeholder evidence; service/product KPIs; satisfaction trend.",
+        "Evidence for F-018 (Transformation spend lacks measurable outcomes), to be supplied by the client before work starts: transformation business cases; outcome baselines/targets; post-delivery benefits evidence.",
+        "Evidence for F-019 (AI investment economics are not sufficiently defined), to be supplied by the client before work starts: AI workload/use-case cost data; unit economics; business outcome evidence.",
+        "Named client sponsor and a nominated data owner for each evidence item",
+        "List of current major investments and their business cases"
+      ],
+      "workstreams": [
+        {
+          "id": "WS1",
+          "name": "Current practice review",
+          "activities": [
+            "Review business cases and past post-implementation reviews",
+            "Interview sponsors and finance partners",
+            "Identify gaps in baselines and ownership"
+          ],
+          "ownerRole": "Head of portfolio office",
+          "ltmRole": "Benefits consultant",
+          "durationWeeks": [
+            2,
+            3
+          ],
+          "effortFteWeeks": [
+            2,
+            4
+          ],
+          "dependsOn": [
+            "Prerequisites"
+          ],
+          "milestone": "Review summary agreed",
+          "kpis": [
+            "Investments with a documented baseline"
+          ]
+        },
+        {
+          "id": "WS2",
+          "name": "Framework design",
+          "activities": [
+            "Define benefit types, measures and owner roles",
+            "Define baseline and target templates",
+            "Define review points and sign-off",
+            "Define cost and benefit measures for AI investments"
+          ],
+          "ownerRole": "CFO and CIO",
+          "ltmRole": "Benefits consultant",
+          "durationWeeks": [
+            2,
+            4
+          ],
+          "effortFteWeeks": [
+            3,
+            5
+          ],
+          "dependsOn": [
+            "WS1"
+          ],
+          "milestone": "Framework approved",
+          "kpis": [
+            "Framework approved by the CFO"
+          ]
+        },
+        {
+          "id": "WS3",
+          "name": "Apply to live investments",
+          "activities": [
+            "Select investments with the sponsor",
+            "Set baselines and targets with owners",
+            "Set up tracking of KPIs and costs"
+          ],
+          "ownerRole": "Investment sponsors",
+          "ltmRole": "Benefits consultant",
+          "durationWeeks": [
+            4,
+            8
+          ],
+          "effortFteWeeks": [
+            4,
+            8
+          ],
+          "dependsOn": [
+            "WS2"
+          ],
+          "milestone": "Baselines agreed on selected investments",
+          "kpis": [
+            "Selected investments with baseline, target and owner"
+          ]
+        },
+        {
+          "id": "WS4",
+          "name": "Review cycle and handover",
+          "activities": [
+            "Run the first review with sponsors",
+            "Adjust templates",
+            "Hand over to the portfolio office"
+          ],
+          "ownerRole": "Head of portfolio office",
+          "ltmRole": "Benefits consultant",
+          "durationWeeks": [
+            2,
+            3
+          ],
+          "effortFteWeeks": [
+            1,
+            3
+          ],
+          "dependsOn": [
+            "WS3"
+          ],
+          "milestone": "First review held",
+          "kpis": [
+            "Reviews held on schedule"
+          ]
+        }
+      ],
+      "risks": [
+        {
+          "risk": "Benefits attributed to the wrong cause",
+          "mitigation": "Define attribution rules with finance in WS2"
+        },
+        {
+          "risk": "Owners change during the programme",
+          "mitigation": "Record role-based, not only named, ownership"
+        }
+      ],
+      "playbook": [
+        {
+          "topic": "Baseline and target setting",
+          "steps": [
+            "Define the measure and unit",
+            "Collect the pre-change value for a defined period",
+            "Agree the target with the owner",
+            "Record data source and refresh"
+          ],
+          "verification": "Finance has reproduced the baseline figure from the stated source.",
+          "options": [
+            "Finance-system reports",
+            "Business intelligence dashboards",
+            "Benefit-tracking templates"
+          ]
+        },
+        {
+          "topic": "AI investment economics",
+          "steps": [
+            "List cost components (build, run, usage-based charges, support)",
+            "Define business outcome measure",
+            "Define a unit measure where evidence supports one",
+            "Set a review date"
+          ],
+          "verification": "Cost components reconcile to invoices or budget lines for the review period.",
+          "options": [
+            "Spreadsheet model",
+            "Cost-management reports from the platform used"
+          ]
+        }
+      ],
+      "sow": {
+        "objectives": [
+          "Implement a benefits realisation process",
+          "Apply it to selected investments",
+          "Include AI investments"
+        ],
+        "deliverables": [
+          "Benefits framework and templates",
+          "Baselines for selected investments",
+          "First review report"
+        ],
+        "assumptions": [
+          "Sponsors participate in baseline setting",
+          "Client owners are available for validation sessions",
+          "Durations and effort are planning heuristics and are confirmed in the statement of work"
+        ],
+        "exclusions": [
+          "Delivery of the benefits themselves",
+          "Audit or assurance opinions",
+          "Legal, tax or accounting advice"
+        ],
+        "acceptance": [
+          "Framework approved by the CFO and CIO",
+          "Selected investments have baseline, target and owner",
+          "Open items are recorded with an owner"
+        ]
+      }
+    },
+    {
+      "recommendationId": "R-010",
+      "offeringType": "advisory",
+      "offeringName": "Technology Investment Roadmap",
+      "scope": "LTM builds a 12 to 24 month investment roadmap that sequences cost, productivity and reinvestment actions against business priorities, committed contracts and funding. It draws on the other Cost IQ packages. It does not commit budget.",
+      "outcome": "A sequenced roadmap with dependencies, funding view, flexibility analysis and decision points.",
+      "prerequisites": [
+        "Evidence for F-015 (Technology investment is difficult to redirect), to be supplied by the client before work starts: contractual commitments; funding model; dependency/criticality evidence.",
+        "Evidence for F-019 (AI investment economics are not sufficiently defined), to be supplied by the client before work starts: AI workload/use-case cost data; unit economics; business outcome evidence.",
+        "Named client sponsor and a nominated data owner for each evidence item",
+        "Strategic priorities from the executive team and the current budget"
+      ],
+      "workstreams": [
+        {
+          "id": "WS1",
+          "name": "Inputs and constraints",
+          "activities": [
+            "Collect priorities, commitments and funding model",
+            "Collect outputs of other cost workstreams",
+            "Map committed contracts and exit dates"
+          ],
+          "ownerRole": "Head of strategy and planning",
+          "ltmRole": "Investment strategy consultant",
+          "durationWeeks": [
+            2,
+            3
+          ],
+          "effortFteWeeks": [
+            2,
+            4
+          ],
+          "dependsOn": [
+            "Prerequisites"
+          ],
+          "milestone": "Constraint map agreed",
+          "kpis": [
+            "Commitments with an end date"
+          ]
+        },
+        {
+          "id": "WS2",
+          "name": "Option design",
+          "activities": [
+            "Draft initiatives with outcome, cost and dependency",
+            "Estimate flexibility: share of spend that can be redirected and when",
+            "Include AI initiatives with their cost and value basis"
+          ],
+          "ownerRole": "CIO",
+          "ltmRole": "Investment strategy consultant",
+          "durationWeeks": [
+            3,
+            5
+          ],
+          "effortFteWeeks": [
+            3,
+            6
+          ],
+          "dependsOn": [
+            "WS1"
+          ],
+          "milestone": "Initiative longlist reviewed",
+          "kpis": [
+            "Initiatives with owner and dependency"
+          ]
+        },
+        {
+          "id": "WS3",
+          "name": "Sequencing and decisions",
+          "activities": [
+            "Sequence initiatives against capacity and funding",
+            "Set decision points and triggers",
+            "Agree governance with the cost and value forum"
+          ],
+          "ownerRole": "CIO and CFO",
+          "ltmRole": "Investment strategy consultant",
+          "durationWeeks": [
+            2,
+            3
+          ],
+          "effortFteWeeks": [
+            2,
+            4
+          ],
+          "dependsOn": [
+            "WS2"
+          ],
+          "milestone": "Roadmap presented",
+          "kpis": [
+            "Initiatives with a decision date"
+          ]
+        }
+      ],
+      "risks": [
+        {
+          "risk": "Priorities change during the work",
+          "mitigation": "Confirm priorities at the start of WS2 and WS3 and record the version"
+        },
+        {
+          "risk": "Assumed funding is not available",
+          "mitigation": "Show funding conditions explicitly on each initiative"
+        }
+      ],
+      "playbook": [
+        {
+          "topic": "Flexibility analysis",
+          "steps": [
+            "Split spend into committed and discretionary by contract end date",
+            "Show the profile over 24 months",
+            "Review with finance"
+          ],
+          "verification": "Finance reproduces the committed total from contract and budget data.",
+          "options": [
+            "Spreadsheet model",
+            "Financial planning tool"
+          ]
+        },
+        {
+          "topic": "Roadmap dependency mapping",
+          "steps": [
+            "List initiatives and prerequisites",
+            "Map shared teams and systems",
+            "Identify conflicts in the same period"
+          ],
+          "verification": "Each initiative's dependencies are confirmed by its owner.",
+          "options": [
+            "Roadmap tool",
+            "Portfolio tool"
+          ]
+        }
+      ],
+      "sow": {
+        "objectives": [
+          "Sequence cost, productivity and reinvestment initiatives",
+          "Show flexibility and funding conditions",
+          "Give the CIO a documented basis for the next decision"
+        ],
+        "deliverables": [
+          "12 to 24 month roadmap",
+          "Flexibility analysis",
+          "Decision calendar"
+        ],
+        "assumptions": [
+          "Other Cost IQ packages feed inputs where undertaken",
+          "Client owners are available for validation sessions",
+          "Durations and effort are planning heuristics and are confirmed in the statement of work"
+        ],
+        "exclusions": [
+          "Budget approval",
+          "Delivery of initiatives",
+          "Legal, tax or accounting advice"
+        ],
+        "acceptance": [
+          "Roadmap presented to and accepted by the CIO and CFO",
+          "Open items are recorded with an owner",
+          "Deliverables reviewed in a session with the client sponsor"
+        ]
+      }
+    }
+  ]
+}

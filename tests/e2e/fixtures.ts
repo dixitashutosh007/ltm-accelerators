@@ -148,6 +148,8 @@ export const test = base.extend<{ world: MockWorld }>({
     await world.install(context);
     world.watch(page);
     await context.addInitScript(() => sessionStorage.setItem('ltm_portal_splash_seen', '1'));
+    // The development-preview notice has its own tests (legal-notice.spec.ts); everywhere else it counts as accepted.
+    await context.addInitScript(() => sessionStorage.setItem('ltm_dev_notice_accepted', '2026-11-04.1'));
     await use(world);
   }, { auto: true }]
 });

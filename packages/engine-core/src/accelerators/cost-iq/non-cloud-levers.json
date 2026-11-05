@@ -1,0 +1,25 @@
+{
+  "schema": "cost-iq-non-cloud-levers/1",
+  "libraryVersion": "1.0",
+  "statusAsOf": "2026-11-04",
+  "rangeRule": {
+    "conservativeFactor": 0.25,
+    "expectedFactor": 0.5,
+    "upperFactor": 1,
+    "text": "Each case is a share of the client's own measured base: a quarter, a half, and all of it. The same rule as FinOps IQ (ASM-FIN-040 to ASM-FIN-042). It is not a published benchmark: no public source gives a saving range for this lever (non-cloud-lever-sources.md, section 2), so no ceiling is applied."
+  },
+  "levers": [
+    {
+      "id": "LEV-11",
+      "name": "Non-SaaS software licence true-down",
+      "findingId": "F-008",
+      "baseInput": "unusedAnnualCost",
+      "spendInput": "addressableSpend",
+      "baseText": "Annual cost of on-premises, enterprise-agreement and publisher-licensed software that the client's own reconciliation shows is unused or over-entitled. SaaS and cloud-marketplace software are excluded: they sit in the FinOps IQ cloud line.",
+      "ramp": { "year1ShareWithoutRenewalData": 0.25, "year2Share": 1, "year3Share": 1 },
+      "effortFteMonths": { "1": 1, "2": 3, "3": 6 },
+      "ongoingShareOfOneOff": 0.2,
+      "label": "Your measured unused licence cost, up to 100%, realisable at renewal; expected case is half."
+    }
+  ]
+}

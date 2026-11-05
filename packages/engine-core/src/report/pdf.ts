@@ -38,7 +38,7 @@ function block(b: Block): Content {
     case 'callout':
       return {
         table: { widths: ['*'], body: [[{ stack: [...(b.title ? [{ text: b.title, bold: true, margin: [0, 0, 0, 2] } as Content] : []), { text: run(b.segs) }], fillColor: b.tone === 'warn' ? AMBER_BG : BLUE_BG, margin: [8, 6, 8, 6] }]] },
-        layout: 'noBorders', margin: [0, 2, 0, 10], style: 'small'
+        layout: 'noBorders', margin: [0, 2, 0, 10], style: 'small', unbreakable: true
       };
     case 'kpis':
       return {
@@ -151,6 +151,8 @@ function steps(b: Extract<Block, { kind: 'steps' }>): Content {
 /** headlineLevel marks headings (1 section, 2 subheading); RUNNING marks the page header and footer text. */
 const RUNNING = 9;
 const BODY_BOTTOM = 842 - 56;
+/** Tables up to this many rows are kept whole on one page (a finding, a legend, a short list of figures). */
+const SHORT_TABLE_ROWS = 7;
 
 /**
  * A heading never ends a page (M7 CIO challenge D7): it moves to the next page when no body text follows it on this
@@ -172,11 +174,19 @@ export function definition(doc: ReportDocument): TDocumentDefinitions {
     const label = s.appendix ? `Appendix ${String.fromCharCode(65 + a++)}. ${s.title}` : `${++n}. ${s.title}`;
     body.push({ text: label, style: 'h2', pageBreak: s.appendix ? 'before' : undefined, id: s.id, tocItem: true, headlineLevel: 1 });
     body.push({ canvas: [{ type: 'line', x1: 0, y1: 0, x2: 495, y2: 0, lineWidth: 1, lineColor: RED }], margin: [0, 0, 0, 8] });
+    const skip = new Set<number>();
     s.blocks.forEach((b, i) => {
+      if (skip.has(i)) return;
       const next = s.blocks[i + 1];
       if (b.kind === 'subheading' && next?.kind === 'table') return;
       const prev = s.blocks[i - 1];
-      body.push(b.kind === 'table' && prev?.kind === 'subheading' ? table(b, prev.text) : block(b));
+      const t = b.kind === 'table' ? (prev?.kind === 'subheading' ? table(b, prev.text) : table(b)) : block(b);
+      if (b.kind !== 'table') { body.push(t); return; }
+      // A short table stays on one page, and keeps the source note written under it (a note is never left alone on the next page).
+      const note = next?.kind === 'paragraph' && (next.style === 'small' || next.style === 'note') ? next : undefined;
+      if (note) skip.add(i + 1);
+      if (b.rows.length <= SHORT_TABLE_ROWS) body.push({ stack: [t, ...(note ? [block(note)] : [])], unbreakable: true } as Content);
+      else body.push(t, ...(note ? [block(note)] : []));
     });
   }
   const cover: Content[] = [

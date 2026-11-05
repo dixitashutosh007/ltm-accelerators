@@ -153,6 +153,21 @@ test.describe('Resilience IQ', () => {
       }
     }
 
+    test('every save names the resilience domain being answered and the share answered', async ({ page }) => {
+      const first = saves.at(-1).progress;
+      expect(first.percent).toBe(0);
+      await answer(page, 'EX-01', plan['EX-01']);
+      await page.getByRole('button', { name: /Next/ }).click();
+      await expect.poll(() => page.evaluate('questions[idx].id')).toBe('EX-02');
+      await answer(page, 'EX-02', plan['EX-02']);
+      await page.getByRole('button', { name: /Next/ }).click();
+      await expect.poll(() => page.evaluate('questions[idx].id')).toBe('EX-03');
+      const domains: string[] = await page.evaluate('questions.slice(0,3).map(q => DOMAIN_NAME[q.domain])');
+      await expect.poll(() => saves.at(-1).progress.stage).toBe(domains[2]);
+      expect(domains[2]).toBe('Disaster recovery');
+      expect(saves.at(-1).progress.percent).toBeGreaterThan(0);
+    });
+
     test('20 answers are sent exactly as chosen, pass the contract, and the report renders without gaps', async ({ page, world }) => {
       const ids: string[] = await page.evaluate('questions.map(q => q.id)');
       expect(ids).toEqual(Object.keys(plan));
@@ -372,6 +387,21 @@ test.describe('Resilience IQ', () => {
       await page.goto('/resilience-iq');
       await page.getByRole('button', { name: 'Resume' }).click();
       await expect(page).toHaveURL(/assessmentId=RIQ-%22quoted%22-01/);
+      expect(world.pageErrors).toEqual([]);
+    });
+
+    test('delete asks twice, names the evidence files, and removes the row once the server confirms', async ({ page, world }) => {
+      const sent: any[] = [];
+      let items = [stored];
+      world.on('GET', ASSESSMENT, () => ({ body: { ok: true, data: items } }));
+      world.on('POST', ASSESSMENT, ({ body }: any) => { sent.push(body); items = []; return { body: { ok: true, data: { deleted: true } } }; });
+      await page.goto('/resilience-iq');
+      await page.getByRole('button', { name: 'Delete', exact: true }).click();
+      await expect(page.getByText('Delete permanently, with its evidence files?')).toBeVisible();
+      expect(sent).toEqual([]);
+      await page.getByRole('button', { name: 'Confirm delete' }).click();
+      await expect(page.getByText('Acme Bank deleted.')).toBeVisible();
+      expect(sent).toEqual([{ action: 'delete', assessmentId: stored.assessmentId }]);
       expect(world.pageErrors).toEqual([]);
     });
 

@@ -21,6 +21,7 @@ import { OFFERINGS, PLAYBOOK } from './execution';
 import { sowDraft } from '../../../offerings/catalogue';
 import questionBank from './question-bank.json' with { type: 'json' };
 import leverLibrary from '../registry/levers.json' with { type: 'json' };
+import { noRegulatoryCoverage } from '../../../report/coverage';
 import { figure, traced, walkSegments, type Backlog, type Block, type ReportDocument, type ReportSection, type Seg, type Trace } from '../../../report/model';
 
 const WS: any = workstreamRegistry;
@@ -637,6 +638,7 @@ function methodologySection(c: Ctx): ReportSection {
       { kind: 'paragraph', style: 'small', segs: NOTICES.attributionLinks.flatMap((l, i) => [i ? '; ' : '', l.label, ': ', ref(l.url)]) },
       { kind: 'paragraph', segs: edge(c) },
       { kind: 'paragraph', segs: [NOTICES.disclaimer] },
+      noRegulatoryCoverage('FinOps IQ'),
       { kind: 'paragraph', segs: [strong('How your data is handled. '), NOTICES.data] },
       { kind: 'paragraph', style: 'small', segs: [
         'Questions asked: ', traced('questions.asked.length', r.questions.asked.length, 'count', covIds), ', of which ', traced('coverage.asked', cov.asked, 'count', covIds),

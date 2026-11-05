@@ -1,0 +1,407 @@
+[
+  {
+    "id": "ADP-44",
+    "verdict": "score",
+    "dimensionIds": [
+      "COST-07"
+    ],
+    "findingTriggers": [],
+    "sources": [
+      {
+        "title": "FinOps Framework, Intersecting Disciplines capability (Procurement role: renewal, exit and consumption accountability; Crawl = undefined until the contract is close to expiring, Walk = assigned at signature with procurement and finance, Run = monitored continuously against usage); read 3 Nov 2026. Written for cloud and licensing; used here only to support the order of the options, never a score",
+        "url": "https://www.finops.org/framework/capabilities/intersecting-disciplines/"
+      },
+      {
+        "title": "FinOps Framework, Licensing and SaaS capability (terms reviewed at renewal; carried from batch 1, not re-fetched)",
+        "url": "https://www.finops.org/framework/capabilities/licensing-saas/"
+      }
+    ],
+    "needsOwner": false,
+    "needsOwnerReason": "",
+    "defaultMap": {
+      "HIGH": 100,
+      "MODERATE": 80,
+      "LIMITED": 60,
+      "LOCKED": 40,
+      "UNKNOWN": 20
+    },
+    "basis": "Ordered scale from contracts that allow volume, service and exit changes, down to significant lock-in, with UNKNOWN at the lowest level. Options are already in best-to-worst order and UNKNOWN is last. LTM heuristic: the step values (100/80/60/40/20) are an LTM convention, not a benchmark; the FinOps Framework gives three stages, not scores. Flexibility is not always better: a stable service on a committed contract earns a discount, so the scale reads the ability to change, not the absence of commitment. Overlaps in theme with CORE-37 (vendor renewal approach) and ADP-20 (negotiation leverage, context); ADP-44 asks about the contract terms themselves, so keep, but do not present as independent evidence. LOCKED and LIMITED are also a natural source for the CONTRACT_LOCK_IN practical-constraint signal in settings.practicalConstraintSignals; I found no code that reads that setting, so nothing is wired. The FinOps pages say what a mature practice does at renewal and exit; they do not give a lock-in measure."
+  },
+  {
+    "id": "ADP-45",
+    "verdict": "score",
+    "dimensionIds": [
+      "COST-09"
+    ],
+    "findingTriggers": [],
+    "sources": [],
+    "needsOwner": false,
+    "needsOwnerReason": "",
+    "defaultMap": {
+      "GOVERNED": 100,
+      "REVIEW": 80,
+      "RARE": 60,
+      "LOCKED": 40,
+      "NONE": 20
+    },
+    "basis": "Ordered scale of how architecture standards are challenged when cost and value diverge: actively, on review of exceptions, rarely, difficult to change, no mechanism. LTM heuristic: the step values (100/80/60/40/20) are an LTM convention, not a benchmark; the FinOps Framework gives three stages, not scores. LOCKED (a mechanism exists but is blocked by governance or platform constraints) is placed above NONE in the master's order; that is a judgement, and a tie at 30 would be as defensible. There is no Unknown option, so NONE is the lowest level; adding UNKNOWN at 20 is recommended (client-visible, owner optional). The prompt says 'How often' while the options describe practice, a minor mismatch. Overlaps in theme with CORE-40 and ADP-46 (all COST-09): they measure the cost of complexity, ADP-45 measures whether anyone challenges it. No published source verified."
+  },
+  {
+    "id": "ADP-46",
+    "verdict": "score",
+    "dimensionIds": [
+      "COST-09"
+    ],
+    "findingTriggers": [],
+    "sources": [],
+    "needsOwner": false,
+    "needsOwnerReason": "",
+    "scoreRule": {
+      "normalize": "invert-0-100",
+      "note": "Slider cannot use defaultMap; add scoring.normalize to the master. Floor 0 (not 20) because it is a continuous quantity, as ADP-08, ADP-22, CORE-17 and CORE-34. A higher share of run cost tied to legacy, debt or duplication is worse."
+    },
+    "basis": "Share of run cost attributed to legacy platforms, technical debt or duplicated capability: 0 percent best, so it scores inverted like ADP-22. Three conditions are combined in one number, so the respondent cannot tell which drives it, and the figure is an estimate. A screen, not a benchmark. LTM heuristic; I found no published percentage with method and sample and cite none. Overlap: CORE-40 rates the same theme on five stars and already triggers F-012; ADP-46 quantifies it, both score COST-09, so the dimension counts the idea twice. Keep both for the workshop (CORE-40 in executive mode) or drop ADP-46 if the owner wants one answer per idea. I do not add an F-012 trigger: F-012 is already reachable through CORE-40 (4 or 5 stars) and a second trigger at an unsourced threshold only raises sensitivity. If the owner wants one, 30 percent is the equivalent heuristic (LTM heuristic, UNSOURCED). The slider cannot record Unknown (batch 1, problem 2; the master sets control.unknown but the page does not record it), so an unanswered slider is unscored, never rated good.",
+    "findingNotProposed": "F-012 from ADP-46 above 30: possible, not proposed (F-012 already reachable via CORE-40)."
+  },
+  {
+    "id": "ADP-47",
+    "verdict": "score",
+    "dimensionIds": [
+      "COST-07"
+    ],
+    "findingTriggers": [],
+    "sources": [
+      {
+        "title": "FinOps Framework, Intersecting Disciplines capability (Procurement role: renewal, exit and consumption accountability; Crawl = undefined until the contract is close to expiring, Walk = assigned at signature with procurement and finance, Run = monitored continuously against usage); read 3 Nov 2026. Written for cloud and licensing; used here only to support the order of the options, never a score",
+        "url": "https://www.finops.org/framework/capabilities/intersecting-disciplines/"
+      }
+    ],
+    "needsOwner": true,
+    "needsOwnerReason": "LATE (procurement joins after the choice is made) is rated above RENEWAL (procurement strongest only at renewal) because the test requires the order of the options and because a purchase-stage presence at least touches the original terms. That is a judgement; a tie at 50 for both is as defensible. Owner to choose. There is also no Unknown option (NONE-like LIMITED is the lowest level).",
+    "defaultMap": {
+      "EARLY": 100,
+      "PLANNING": 80,
+      "LATE": 60,
+      "RENEWAL": 40,
+      "LIMITED": 20
+    },
+    "basis": "Ordered scale of how early procurement shapes technology decisions: early, at planning, after the choice, at renewal only, limited. The FinOps Intersecting Disciplines page supports the direction: its Crawl stage leaves renewal and exit ownership undefined until a contract is near expiry, Walk assigns it at signature with procurement and finance, Run monitors it continuously. It is written for cloud and licensing and gives no scores. LTM heuristic: the step values (100/80/60/40/20) are an LTM convention, not a benchmark; the FinOps Framework gives three stages, not scores. There is no Unknown option, so LIMITED is the lowest level. Overlaps in theme with ADP-48 and CORE-37; present them as one commercial picture, not independent evidence."
+  },
+  {
+    "id": "ADP-48",
+    "verdict": "score",
+    "dimensionIds": [
+      "COST-07"
+    ],
+    "findingTriggers": [],
+    "sources": [],
+    "needsOwner": false,
+    "needsOwnerReason": "",
+    "defaultMap": {
+      "PORTFOLIO": 100,
+      "CATEGORY": 80,
+      "PROJECT": 60,
+      "LOCAL": 40,
+      "UNKNOWN": 20
+    },
+    "basis": "Ordered scale of how consistently purchases are aggregated for leverage: across the enterprise, by category, by project or team, independently by business unit despite overlap, cannot assess. UNKNOWN last at the lowest level. LTM heuristic: the step values (100/80/60/40/20) are an LTM convention, not a benchmark; the FinOps Framework gives three stages, not scores. Aggregation helps only where there is real overlap, which the options acknowledge ('when scale can improve terms'). The strongest statement, LOCAL, is a direct description of commercial leakage and could corroborate F-011; I do not propose that trigger because F-011 is already reachable through CORE-28 and CORE-37 and a single hit fires a high-severity finding. No published source verified.",
+    "findingNotProposed": "F-011 from ADP-48 LOCAL: possible, not proposed (F-011 already reachable)."
+  },
+  {
+    "id": "ADP-49",
+    "verdict": "score",
+    "dimensionIds": [
+      "VALUE-02"
+    ],
+    "findingTriggers": [
+      {
+        "findingId": "F-020",
+        "existing": true,
+        "type": "option",
+        "triggerOptions": [
+          "LATE",
+          "NONE"
+        ],
+        "justified": true,
+        "note": "Already in the calibration file today. Late or no synergy tracking is a direct match to 'technology duplication after M&A may dilute synergy'. Recommended addition: applicableWhen so the trigger counts only when a real transaction took place (see gateWhen).",
+        "applicableWhen": {
+          "questionId": "ADP-49",
+          "anyOf": [
+            "TRACKED",
+            "GOVERNED",
+            "SELECTIVE",
+            "LATE",
+            "NONE"
+          ],
+          "note": "Self-gate: a NOT_APPLICABLE answer (proposed new option) must not fire F-020. Only needed if the owner adds NOT_APPLICABLE."
+        }
+      }
+    ],
+    "sources": [],
+    "needsOwner": true,
+    "needsOwnerReason": "A client that selects the M&A area but has done no acquisition or divestiture can only answer NONE, which scores 20 and raises F-020 (a false positive on a high-severity finding). Proposed fix: add an option NOT_APPLICABLE ('No acquisition, merger or divestiture in the last three years') as the last option. It has no map key, so it scores nothing, and the F-020 triggers above must not count it. This adds an option clients see, so it needs the owner. Also no Unknown option today.",
+    "defaultMap": {
+      "TRACKED": 100,
+      "GOVERNED": 80,
+      "SELECTIVE": 60,
+      "LATE": 40,
+      "NONE": 20
+    },
+    "optionAddition": {
+      "id": "NOT_APPLICABLE",
+      "label": "No acquisition, merger or divestiture in the last three years.",
+      "position": "last",
+      "map": "none (unscored)"
+    },
+    "basis": "Ordered scale of how technology synergies are identified and tracked after a transaction: named owners and baselines, tracked through integration governance, only the largest, after integration has progressed, none. Already triggers F-020 on LATE and NONE today but scores nothing, so the answer moved a finding and no dimension. LTM heuristic: the step values (100/80/60/40/20) are an LTM convention, not a benchmark; the FinOps Framework gives three stages, not scores. Master rule TR-29 treats the M&A area selection as 'M&A activity selected', so selecting the area is the only gate today. The dimension stays VALUE-02 as in the master (dimensionIds); the master's costDimension text says Investment Effectiveness, consistent. No published source verified."
+  },
+  {
+    "id": "ADP-50",
+    "verdict": "score",
+    "dimensionIds": [
+      "COST-10"
+    ],
+    "findingTriggers": [
+      {
+        "findingId": "F-020",
+        "existing": true,
+        "type": "numeric",
+        "operator": "gt",
+        "value": 20,
+        "justified": true,
+        "note": "Already in the calibration file today. The 20 percent threshold is an LTM heuristic, UNSOURCED (the calibration file gives no basis); the owner should confirm it as was done for ADP-08 (30 percent).",
+        "applicableWhen": {
+          "questionId": "ADP-49",
+          "anyOf": [
+            "TRACKED",
+            "GOVERNED",
+            "SELECTIVE",
+            "LATE",
+            "NONE"
+          ],
+          "note": "Only if the owner adds NOT_APPLICABLE to ADP-49: otherwise a client with no transaction can leave the slider at 0 and be rated 100."
+        }
+      }
+    ],
+    "sources": [],
+    "needsOwner": true,
+    "needsOwnerReason": "Same decision as ADP-49 (a NOT_APPLICABLE option and the gate on this question). Also the F-020 threshold (20 percent) is an LTM heuristic that needs the owner's confirmation.",
+    "scoreRule": {
+      "normalize": "invert-0-100",
+      "note": "Slider cannot use defaultMap; add scoring.normalize to the master. Floor 0 (not 20), as ADP-22. Higher duplication is worse."
+    },
+    "gateWhen": {
+      "questionId": "ADP-49",
+      "anyOf": [
+        "TRACKED",
+        "GOVERNED",
+        "SELECTIVE",
+        "LATE",
+        "NONE"
+      ],
+      "note": "Only if the owner adds NOT_APPLICABLE to ADP-49. ADP-49 comes before ADP-50 in the bank, so the gate can be read. Without a gate a client with no M&A who opens the slider scores 100 and cannot be told apart from one who has consolidated everything."
+    },
+    "basis": "Share of duplicated capability remaining across merged organisations: 0 percent best, scored inverted like ADP-22. Triggers F-020 above 20 today and scores nothing, so it moved a finding and no dimension. A screen, not a benchmark; overlaps ADP-22 (application ownership) and ADP-49 (tracking) in theme. LTM heuristic; I found no published post-merger duplication percentage with method and sample and cite none. The slider cannot record Unknown (batch 1, problem 2; the master sets control.unknown but the page does not record it), so an unanswered slider is unscored, never rated good."
+  },
+  {
+    "id": "ADP-51",
+    "verdict": "score",
+    "dimensionIds": [
+      "COST-01"
+    ],
+    "findingTriggers": [],
+    "sources": [],
+    "needsOwner": true,
+    "needsOwnerReason": "Needs the new CTX-05 (countries band) as the gate, or the owner accepts the Geography focus-area selection as the gate. Without a gate, a client with one country answers LOW and scores 100 on a question that does not apply to it. The map itself is safe to apply now; the gate is what flatters or does not.",
+    "defaultMap": {
+      "LOW": 100,
+      "MODERATE": 80,
+      "HIGH": 40,
+      "UNKNOWN": 20
+    },
+    "gateWhen": {
+      "questionId": "CTX-05",
+      "anyOf": [
+        "2_5",
+        "6_20",
+        "GT20"
+      ],
+      "note": "Depends on the new question CTX-05 (global-questions.json). Master rule TR-30 says ADP-51 and ADP-52 are for a multi-country operation ('Global=Yes'), but no question sets that trigger and no code reads it. Without a gate a single-country client answers LOW and is rated 100. Until CTX-05 is accepted, the Geography focus-area selection is the only gate."
+    },
+    "basis": "Four options, so the map is 100/80/40/20 (skip 60) rather than 100/80/60/40/20: the question reads whether regional cost differences are understood, not whether they exist. MODERATE (differences with clear local drivers) is a transparent state and scores close to LOW; HIGH (large differences with limited explanation) is a spend-transparency gap; UNKNOWN (no regional unit-cost comparison) at the lowest level. Dimension stays COST-01 Spend Transparency as in the master. Regional cost differences can be legitimate (labour, regulation, data residency), so the score is not a ranking of countries and must never be adjusted by region (GLOBAL-COVERAGE rule); the gate must be a fact about the client's operation, never the identity of a country. LTM heuristic: the step values (100/80/60/40/20) are an LTM convention, not a benchmark; the FinOps Framework gives three stages, not scores. LOW can also mean nobody has compared, a weakness the question cannot separate from true similarity; present it with that caveat. No published source verified."
+  },
+  {
+    "id": "ADP-52",
+    "verdict": "score",
+    "dimensionIds": [
+      "COST-08"
+    ],
+    "findingTriggers": [],
+    "sources": [],
+    "needsOwner": true,
+    "needsOwnerReason": "Needs the new CTX-05 (countries band) as the gate, or the owner accepts the Geography focus-area selection as the gate. Without a gate, a client with one country answers LOW and scores 100 on a question that does not apply to it. The map itself is safe to apply now; the gate is what flatters or does not. There is also no Unknown option (NONE is the lowest level).",
+    "defaultMap": {
+      "STANDARDIZED": 100,
+      "MOSTLY": 80,
+      "MIXED": 60,
+      "LOCAL": 40,
+      "NONE": 20
+    },
+    "gateWhen": {
+      "questionId": "CTX-05",
+      "anyOf": [
+        "2_5",
+        "6_20",
+        "GT20"
+      ],
+      "note": "Depends on the new question CTX-05 (global-questions.json). Master rule TR-30 says ADP-51 and ADP-52 are for a multi-country operation ('Global=Yes'), but no question sets that trigger and no code reads it. Without a gate a single-country client answers LOW and is rated 100. Until CTX-05 is accepted, the Geography focus-area selection is the only gate."
+    },
+    "basis": "Ordered scale of how deliberately technology services are standardised across regions where it would reduce cost or complexity: deliberately, mostly, mixed, regions run their own, little. The prompt limits the target to cases 'where standardization would reduce cost or complexity', so a region that must stay separate for data-residency or sovereignty reasons is not penalised by the wording; respondents should be told so. MIXED sits in the order by option position (the bank test excludes it from the monotonic check by design). LTM heuristic: the step values (100/80/60/40/20) are an LTM convention, not a benchmark; the FinOps Framework gives three stages, not scores. Complements, does not replace, ADP-51 (costs) and the new CTX-03 and CTX-05 (where and how many). No published source verified."
+  },
+  {
+    "id": "ADP-53",
+    "verdict": "context",
+    "dimensionIds": [],
+    "findingTriggers": [],
+    "sources": [],
+    "needsOwner": false,
+    "needsOwnerReason": "",
+    "contextLabel": {
+      "method": "hypothesis-signal",
+      "signals": [
+        "value-measurement-gaps"
+      ],
+      "note": "Multi-select of the business outcomes the client finds hardest to quantify. Feeds the value-measurement narrative and which benefit types the roadmap asks for evidence on. Do not score by selection count; a longer list can mean a harder estate or a more honest respondent. No score. Never re-weights a score (GLOBAL-COVERAGE rule)."
+    },
+    "basis": "An unordered set of outcome types, no better-to-worse order, so no map is possible. Scoring the count would reward saying little. VALUE-03 Benefits Realization already has five scored questions (CORE-20, CORE-44, ADP-29, ADP-30, ADP-32). The master's adaptiveTrigger 'ValueMaturity<3' is read by no code, so the question is shown only through the Technology Value area. LTM heuristic."
+  },
+  {
+    "id": "ADP-54",
+    "verdict": "score",
+    "dimensionIds": [
+      "VALUE-06"
+    ],
+    "findingTriggers": [],
+    "sources": [],
+    "needsOwner": false,
+    "needsOwnerReason": "",
+    "defaultMap": {
+      "OFTEN": 100,
+      "QUARTERLY": 80,
+      "PLANNING": 60,
+      "ESCALATION": 40,
+      "RARE": 20
+    },
+    "basis": "Ordered scale of how routinely the business challenges technology on value versus cost: regularly and used to reprioritise, in periodic governance, at annual planning, only when dissatisfied or under cost pressure, rarely. LTM heuristic: the step values (100/80/60/40/20) are an LTM convention, not a benchmark; the FinOps Framework gives three stages, not scores. The scale reads how routinely the challenge happens, which is a governance practice; whether the business is satisfied is CORE-43's question (VALUE-06, stars), so the two together give VALUE-06 two scored answers and the dimension is still thin. There is no Unknown option, so RARE is the lowest level; adding UNKNOWN is optional. No published source verified."
+  },
+  {
+    "id": "ADP-55",
+    "verdict": "context",
+    "dimensionIds": [],
+    "findingTriggers": [],
+    "sources": [],
+    "needsOwner": true,
+    "needsOwnerReason": "Overlap with CORE-09 (where the largest opportunities to improve technology value lie) and CORE-45 (what to reduce first). settings.hypothesisComparison reads CORE-09 only, so ADP-55's answers have no consumer unless the owner points the comparison at it too or drops ADP-55. Recommended default: keep as context and add it to the comparison, because its options are cost-specific and split SaaS from infrastructure, which CORE-09 does not. Alternative: drop it to cut respondent effort.",
+    "contextLabel": {
+      "method": "hypothesis-signal",
+      "signals": [
+        "cost-opportunity-hypothesis"
+      ],
+      "note": "The executive's own view of where the largest near-term cost opportunity lies (up to three). Feeds a 'hypothesis versus findings' comparison alongside CORE-09. CLOUD is kept as a hypothesis option and routes to FinOps IQ; it does not bring cloud practice depth back into Cost IQ. No score. Never re-weights a score (GLOBAL-COVERAGE rule)."
+    },
+    "basis": "A selection of areas, not an ordered scale, and a hypothesis, so it cannot be scored (as CORE-09). Master adaptiveTrigger 'CostPressure=High' is read by no code. Options overlap CORE-09 and the REDUCE_ options of CORE-45 in theme but are not identical in wording or granularity. LTM heuristic."
+  },
+  {
+    "id": "ADP-56",
+    "verdict": "context",
+    "dimensionIds": [],
+    "findingTriggers": [],
+    "sources": [],
+    "needsOwner": false,
+    "needsOwnerReason": "",
+    "contextLabel": {
+      "method": "constraint-signal",
+      "signals": [
+        "savings-barriers"
+      ],
+      "note": "Up to three barriers to realising savings. Feeds the feasibility narrative and sequencing. Suggested mapping onto settings.practicalConstraintSignals: CONTRACTS -> CONTRACT_LOCK_IN; BUSINESS -> BUSINESS_CRITICALITY; TECH_DEBT -> PLATFORM_DEPENDENCY; SKILLS -> SKILLS_CONSTRAINT; CHANGE -> CHANGE_CAPACITY. DATA, GOVERNANCE, FUNDING and OTHER have no signal there. I found no code that reads practicalConstraintSignals, so the mapping is documentation until the value model (CQ4) uses it. No score. Never re-weights a score (GLOBAL-COVERAGE rule)."
+    },
+    "basis": "A barrier is a constraint on how much of an opportunity is realisable, not a better or worse maturity; a client with no barrier selected is not better run. Scoring it would also double count the questions about the same causes (contracts: ADP-44; skills: CORE-35; technical debt: CORE-40). VALUE-05 Strategic Agility keeps its three scored questions (CORE-11, CORE-21, CORE-28). Master adaptiveTrigger 'CostPressure=High' is read by no code. LTM heuristic."
+  },
+  {
+    "id": "ADP-57",
+    "verdict": "context",
+    "dimensionIds": [],
+    "findingTriggers": [],
+    "sources": [],
+    "needsOwner": true,
+    "needsOwnerReason": "Option labels are title-cased identifiers that read as defects to a client: 'Data Ai', 'Business Critical Apps', 'Customer Digital', 'Core Platform'. Proposed labels (IDs unchanged): CYBERSECURITY 'Cybersecurity'; RESILIENCE 'Resilience and recovery'; CUSTOMER_DIGITAL 'Customer-facing digital products'; DATA_AI 'Data and AI'; BUSINESS_CRITICAL_APPS 'Business-critical applications'; CORE_PLATFORM 'Core platforms'; EMPLOYEE_PRODUCTIVITY 'Employee productivity and workplace'; TRANSFORMATION 'Transformation programmes'; OTHER 'Other'. Label wording is client-visible, so the owner approves.",
+    "contextLabel": {
+      "method": "constraint-signal",
+      "signals": [
+        "protected-capabilities"
+      ],
+      "note": "Capabilities the client wants protected from broad cost reduction (up to three). Feeds the addressable-spend statement and the sequencing of recommendations: nothing in a protected area is proposed as a cut without a stated reason. No score. Never re-weights a score (GLOBAL-COVERAGE rule)."
+    },
+    "labelFixes": {
+      "CYBERSECURITY": "Cybersecurity",
+      "RESILIENCE": "Resilience and recovery",
+      "CUSTOMER_DIGITAL": "Customer-facing digital products",
+      "DATA_AI": "Data and AI",
+      "BUSINESS_CRITICAL_APPS": "Business-critical applications",
+      "CORE_PLATFORM": "Core platforms",
+      "EMPLOYEE_PRODUCTIVITY": "Employee productivity and workplace",
+      "TRANSFORMATION": "Transformation programmes",
+      "OTHER": "Other"
+    },
+    "basis": "A protected list is a business choice, not a maturity condition; protecting security is not better or worse than protecting customer digital. VALUE-02 Investment Effectiveness already has five scored questions (CORE-18, CORE-22, CORE-41, ADP-27, ADP-31) and gains ADP-49 here. Related to CORE-45 (the INVEST_ half of the redirection question) but asks what to protect rather than what to reinvest in, so it complements it. Master adaptiveTrigger 'InvestmentPressure=High' is read by no code. LTM heuristic."
+  },
+  {
+    "id": "ADP-58",
+    "verdict": "drop",
+    "dimensionIds": [],
+    "findingTriggers": [],
+    "sources": [],
+    "needsOwner": true,
+    "needsOwnerReason": "Drop removes a question a client sees. Reasons: its eight reduction candidates (LEGACY, CLOUD_WASTE, SAAS_OVERLAP, SOFTWARE_UNUSED, VENDOR_SERVICES, APPLICATION_DUPLICATION, MANUAL_OPERATIONS, LOW_VALUE_PROJECTS) repeat the REDUCE_ options of CORE-45 and the hypothesis in ADP-55; its labels are title-cased identifiers ('Saas Overlap', 'Software Unused'). If the owner prefers to keep it: label it context (hypothesis-signal, 'reduction-candidates'), fix the labels, and add it to the same comparison as ADP-55.",
+    "basis": "Duplicates CORE-45 (which asks the same reduction choice with a ranking and a reinvest half) and overlaps ADP-55. Four unscored questions asking the same intent (CORE-09, CORE-45, ADP-55, ADP-58) add respondent effort and no information; a multi-select cannot be scored (no order). Dropping also leaves VALUE-02 unchanged. LTM judgement; no published source."
+  },
+  {
+    "id": "ADP-59",
+    "verdict": "score",
+    "dimensionIds": [
+      "COST-08"
+    ],
+    "findingTriggers": [],
+    "sources": [],
+    "needsOwner": false,
+    "needsOwnerReason": "",
+    "defaultMap": {
+      "DISCIPLINED": 100,
+      "GOVERNED": 80,
+      "MIXED": 60,
+      "LIMITED": 40,
+      "NONE": 20
+    },
+    "basis": "Ordered scale of how technology demand is prioritised against funding and capacity: continuously ranked with lower-value demand stopped, governed in periodic cycles, prioritised but with differing approaches, sponsorship-led, no mechanism. LTM heuristic: the step values (100/80/60/40/20) are an LTM convention, not a benchmark; the FinOps Framework gives three stages, not scores. MIXED sits in the middle by option position. There is no Unknown option, so NONE is the lowest level; adding UNKNOWN is optional. The master's costDimension is empty and valueDimension reads 'Operations Economics' while scoring.dimensionIds is COST-08 (the Cost dimension of that name); the engine reads dimensionIds only, so it scores into COST-08. Overlaps in theme with CORE-18 and CORE-22 (challenge of low-value spend) and CORE-10 (funding); ADP-59 asks about the demand queue, not the funding model. No published source verified."
+  },
+  {
+    "id": "ADP-60",
+    "verdict": "score",
+    "dimensionIds": [
+      "COST-08"
+    ],
+    "findingTriggers": [],
+    "sources": [],
+    "needsOwner": false,
+    "needsOwnerReason": "",
+    "defaultMap": {
+      "DIFFERENTIATED": 100,
+      "MAJOR": 80,
+      "MIXED": 60,
+      "UNIFORM": 40,
+      "UNKNOWN": 20
+    },
+    "basis": "Ordered scale of how far service levels and cost are differentiated by business criticality: deliberately, for critical services only, some, uniform, not transparent enough to say. UNKNOWN last at the lowest level. LTM heuristic: the step values (100/80/60/40/20) are an LTM convention, not a benchmark; the FinOps Framework gives three stages, not scores. Uniform service levels are not always wasteful (a small estate may not justify tiers) and a regulator may require them; the scale reads whether the choice is deliberate. MIXED sits in the middle by option position. Overlaps ADP-21 (criticality concentration, context) and ADP-38 (disaster-recovery sizing); present with them. No published source verified."
+  }
+]

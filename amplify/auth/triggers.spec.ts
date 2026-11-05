@@ -5,6 +5,7 @@
 import { describe, it, expect } from 'vitest';
 import { createHandler as signUp } from './pre-sign-up/handler';
 import { createHandler as signIn } from './pre-authentication/handler';
+import { createHandler as signedIn } from './post-authentication/handler';
 
 const allow = { check: async () => ({ allowed: true, reason: 'domain_allowed' }) };
 const refuse = (reason: string) => ({ check: async () => ({ allowed: false, reason }) });
@@ -48,5 +49,20 @@ describe('pre-authentication', () => {
   });
   it('refuses an event with no address', async () => {
     await expect(run(signIn(refuse('invalid_email')), { request: { userAttributes: {} } })).rejects.toThrow();
+  });
+});
+
+describe('post-authentication', () => {
+  it('records the sign-in by lower-case address and returns the event unchanged', async () => {
+    const seen: string[] = [];
+    const e = signInEvent('  Pat@Partner.com ');
+    expect(await run(signedIn(async (email: string) => { seen.push(email); }), e)).toBe(e);
+    expect(seen).toEqual(['pat@partner.com']);
+  });
+  it('is a no-op for an event with no address, and still lets the person in', async () => {
+    const seen: string[] = [];
+    const e: any = { request: { userAttributes: {} }, response: {} };
+    expect(await run(signedIn(async (email: string) => { seen.push(email); }), e)).toBe(e);
+    expect(seen).toEqual(['']);
   });
 });
