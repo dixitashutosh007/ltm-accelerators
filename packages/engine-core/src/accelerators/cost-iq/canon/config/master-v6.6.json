@@ -165,6 +165,14 @@
           "label": "Public cloud services"
         },
         {
+          "id": "VMWARE",
+          "label": "VMware or other virtualization platforms"
+        },
+        {
+          "id": "COLO",
+          "label": "Colocation or third-party data-centre facilities"
+        },
+        {
           "id": "SAAS",
           "label": "SaaS applications and subscriptions"
         },
@@ -197,11 +205,23 @@
           "label": "End-user computing and workplace technology"
         },
         {
+          "id": "AI",
+          "label": "AI platforms, models and AI-enabled services"
+        },
+        {
           "id": "OTHER",
           "label": "Other material technology spend"
         }
       ],
-      "scoring": {},
+      "scoring": {
+        "method": "signal-only",
+        "signals": [
+          "environment-scope",
+          "footprint"
+        ],
+        "note": "Scope trigger only; never score by number of areas selected. Feeds applicability routing (cloud findings only when PUBLIC_CLOUD or PRIVATE_CLOUD is selected; infrastructure questions ADP-09 to ADP-13 only when ON_PREM or PRIVATE_CLOUD) and the report scope statement. Keep required. When CORE-23 is merged into CORE-01 (BOUNDARY task 4) the merged question must keep the COLO, VMWARE and MANAGED options that CORE-23 has and CORE-01 lacks, or ADP-13 and ADP-09 lose their gating signal. Context facts never re-weight a score (GLOBAL-COVERAGE rule).",
+        "basis": "Footprint question: which areas materially drive technology cost. It records a fact and routes applicability; scoring it would reward a longer or shorter list. Categories follow the TBM Taxonomy idea of IT towers (cost sources by technology area) but the option list itself is LTM heuristic; the TBM page summary does not list the towers (members-only), so alignment to named TBM towers is UNVERIFIED."
+      },
       "active": true,
       "version": 2,
       "findingIds": [],
@@ -268,25 +288,29 @@
           "label": "Professional Services"
         },
         {
+          "id": "EDUCATION",
+          "label": "Education"
+        },
+        {
+          "id": "MEDIA_ENTERTAINMENT",
+          "label": "Media / Entertainment"
+        },
+        {
+          "id": "NATURAL_RESOURCES",
+          "label": "Natural Resources / Mining and Metals"
+        },
+        {
           "id": "OTHER",
           "label": "Other"
         }
       ],
       "scoring": {
-        "defaultMap": {
-          "A": 100.0,
-          "B": 92.7,
-          "C": 85.5,
-          "D": 78.2,
-          "E": 70.9,
-          "F": 63.6,
-          "G": 56.4,
-          "H": 49.1,
-          "I": 41.8,
-          "J": 34.5,
-          "K": 27.3,
-          "L": 20.0
-        }
+        "method": "signal-only",
+        "signals": [
+          "sector"
+        ],
+        "note": "Sector records context and routes applicability and wording. It is never scored: ranking industries would be meaningless. Context facts never re-weight a score.",
+        "basis": "LTM heuristic. A letter-keyed map that ranked the twelve industries from 100 to 20 never matched an option and scored nothing; it was removed (CQ3b)."
       },
       "active": true,
       "version": 2,
@@ -296,9 +320,99 @@
       "answerGuidance": "Choose the industry that best describes the organization’s principal revenue-generating business."
     },
     {
+      "adaptiveTrigger": null,
+      "costDimension": null,
+      "valueDimension": null,
+      "evidenceImplication": "Context fact. Routes applicability and wording; never scored and never re-weights a score (GLOBAL-COVERAGE rule).",
+      "active": true,
+      "version": 1,
+      "findingIds": [],
+      "recommendationIds": [],
+      "questionDesignVersion": "6.0",
+      "answerGuidance": "Choose the option that best reflects the current enterprise reality; do not answer based on intended future state.",
+      "id": "CTX-01",
+      "section": "Enterprise Context",
+      "prompt": "In which currency does the organisation report its technology spend?",
+      "intent": "Record the reporting currency so that revenue and spend bands, figures and the report use the client's own currency. Removes the silent assumption that every client reports in US dollars.",
+      "interaction": "single-select",
+      "answerDesign": "Choose the currency in which the technology budget and spend are reported to leadership. This is a labelling fact: no answer is better than another and it changes no score.",
+      "required": true,
+      "options": [
+        {
+          "id": "USD",
+          "label": "US dollar (USD)"
+        },
+        {
+          "id": "EUR",
+          "label": "Euro (EUR)"
+        },
+        {
+          "id": "GBP",
+          "label": "Pound sterling (GBP)"
+        },
+        {
+          "id": "CHF",
+          "label": "Swiss franc (CHF)"
+        },
+        {
+          "id": "CAD",
+          "label": "Canadian dollar (CAD)"
+        },
+        {
+          "id": "AUD",
+          "label": "Australian dollar (AUD)"
+        },
+        {
+          "id": "JPY",
+          "label": "Japanese yen (JPY)"
+        },
+        {
+          "id": "CNY",
+          "label": "Chinese renminbi (CNY)"
+        },
+        {
+          "id": "INR",
+          "label": "Indian rupee (INR)"
+        },
+        {
+          "id": "SGD",
+          "label": "Singapore dollar (SGD)"
+        },
+        {
+          "id": "AED",
+          "label": "UAE dirham (AED)"
+        },
+        {
+          "id": "SAR",
+          "label": "Saudi riyal (SAR)"
+        },
+        {
+          "id": "BRL",
+          "label": "Brazilian real (BRL)"
+        },
+        {
+          "id": "ZAR",
+          "label": "South African rand (ZAR)"
+        },
+        {
+          "id": "OTHER",
+          "label": "Other (record the three-letter currency code in the note)"
+        }
+      ],
+      "scoring": {
+        "method": "signal-only",
+        "signals": [
+          "reporting-currency"
+        ],
+        "note": "Sets the currency shown on CORE-03 and CORE-04 band labels, on every figure in the report, and the clientCurrency field of the saved record (amplify/data/resource.ts lines 106 and 131 already have it; no page element sets it today). Sets the wording of CTX-02. Carried to the FinOps IQ hand-off so the two tools are never added together across currencies without a registered, dated rate. No score. Never re-weights a score (GLOBAL-COVERAGE rule).",
+        "basis": "LTM heuristic for the list: major trading currencies (BIS 2025 ranking, partial) plus the currencies of the markets named in coverage.ts and the owner's focus (EU, UK, Switzerland, India, Gulf, Latin America, South Africa). Option IDs are ISO 4217 codes. 'Reporting currency' follows the vocabulary of IAS 21 (presentation currency), not its accounting rules."
+      },
+      "gate": null
+    },
+    {
       "id": "CORE-03",
       "section": "Enterprise Context",
-      "prompt": "What is the organization’s approximate annual revenue?",
+      "prompt": "What is the organization’s approximate annual revenue, in your reporting currency?",
       "intent": "Establish enterprise scale for interpreting technology economics and normalizing cost without requiring an exact financial figure.",
       "interaction": "range",
       "answerDesign": "Choose the closest annual revenue band. Use the USD-equivalent band if the enterprise reports in another currency.",
@@ -339,7 +453,12 @@
         }
       ],
       "scoring": {
-        "normalize": "range-band"
+        "method": "signal-only",
+        "signals": [
+          "organisation-size"
+        ],
+        "note": "The size class of the organisation by revenue, in the reporting currency. Context for the report and for matching like with like; the size class never scores and never re-weights a score.",
+        "basis": "LTM heuristic. The earlier range-band rule applied only to a number, while the answers are option IDs, so it never scored; it is removed (CQ3b)."
       },
       "active": true,
       "version": 2,
@@ -351,12 +470,104 @@
       "findingIds": [],
       "recommendationIds": [],
       "questionDesignVersion": "6.2",
-      "answerGuidance": "A broad, recent estimate is sufficient; exact revenue is not required."
+      "answerGuidance": "Bands are size classes shown in the currency chosen in the previous question; where no rate is registered they are shown in US dollars, so pick the nearest band at your own rate.",
+      "labelCurrencyQuestion": "CTX-01",
+      "labelsByCurrency": {
+        "EUR": {
+          "LT100M": "Below EUR 89M",
+          "100M_500M": "EUR 89M to 450M",
+          "500M_1B": "EUR 450M to 890M",
+          "1B_5B": "EUR 890M to 4.5bn",
+          "5B_25B": "EUR 4.5bn to 22bn",
+          "GT25B": "Above EUR 22bn"
+        },
+        "GBP": {
+          "LT100M": "Below GBP 75M",
+          "100M_500M": "GBP 75M to 370M",
+          "500M_1B": "GBP 370M to 750M",
+          "1B_5B": "GBP 750M to 3.7bn",
+          "5B_25B": "GBP 3.7bn to 19bn",
+          "GT25B": "Above GBP 19bn"
+        },
+        "CHF": {
+          "LT100M": "Below CHF 82M",
+          "100M_500M": "CHF 82M to 410M",
+          "500M_1B": "CHF 410M to 820M",
+          "1B_5B": "CHF 820M to 4.1bn",
+          "5B_25B": "CHF 4.1bn to 20bn",
+          "GT25B": "Above CHF 20bn"
+        },
+        "CAD": {
+          "LT100M": "Below CAD 140M",
+          "100M_500M": "CAD 140M to 700M",
+          "500M_1B": "CAD 700M to 1.4bn",
+          "1B_5B": "CAD 1.4bn to 7bn",
+          "5B_25B": "CAD 7bn to 35bn",
+          "GT25B": "Above CAD 35bn"
+        },
+        "AUD": {
+          "LT100M": "Below AUD 140M",
+          "100M_500M": "AUD 140M to 710M",
+          "500M_1B": "AUD 710M to 1.4bn",
+          "1B_5B": "AUD 1.4bn to 7.1bn",
+          "5B_25B": "AUD 7.1bn to 36bn",
+          "GT25B": "Above AUD 36bn"
+        },
+        "JPY": {
+          "LT100M": "Below JPY 16bn",
+          "100M_500M": "JPY 16bn to 79bn",
+          "500M_1B": "JPY 79bn to 160bn",
+          "1B_5B": "JPY 160bn to 790bn",
+          "5B_25B": "JPY 790bn to 3.9 trillion",
+          "GT25B": "Above JPY 3.9 trillion"
+        },
+        "CNY": {
+          "LT100M": "Below CNY 660M",
+          "100M_500M": "CNY 660M to 3.3bn",
+          "500M_1B": "CNY 3.3bn to 6.6bn",
+          "1B_5B": "CNY 6.6bn to 33bn",
+          "5B_25B": "CNY 33bn to 170bn",
+          "GT25B": "Above CNY 170bn"
+        },
+        "INR": {
+          "LT100M": "Below INR 9.5bn",
+          "100M_500M": "INR 9.5bn to 47bn",
+          "500M_1B": "INR 47bn to 95bn",
+          "1B_5B": "INR 95bn to 470bn",
+          "5B_25B": "INR 470bn to 2.4 trillion",
+          "GT25B": "Above INR 2.4 trillion"
+        },
+        "SGD": {
+          "LT100M": "Below SGD 130M",
+          "100M_500M": "SGD 130M to 640M",
+          "500M_1B": "SGD 640M to 1.3bn",
+          "1B_5B": "SGD 1.3bn to 6.4bn",
+          "5B_25B": "SGD 6.4bn to 32bn",
+          "GT25B": "Above SGD 32bn"
+        },
+        "BRL": {
+          "LT100M": "Below BRL 540M",
+          "100M_500M": "BRL 540M to 2.7bn",
+          "500M_1B": "BRL 2.7bn to 5.4bn",
+          "1B_5B": "BRL 5.4bn to 27bn",
+          "5B_25B": "BRL 27bn to 140bn",
+          "GT25B": "Above BRL 140bn"
+        },
+        "ZAR": {
+          "LT100M": "Below ZAR 1.7bn",
+          "100M_500M": "ZAR 1.7bn to 8.3bn",
+          "500M_1B": "ZAR 8.3bn to 17bn",
+          "1B_5B": "ZAR 17bn to 83bn",
+          "5B_25B": "ZAR 83bn to 420bn",
+          "GT25B": "Above ZAR 420bn"
+        }
+      },
+      "labelsRateDate": "2026-11-02"
     },
     {
       "id": "CORE-04",
       "section": "Enterprise Context",
-      "prompt": "What is the approximate annual technology spend currently in scope for this assessment?",
+      "prompt": "What is the approximate annual technology spend currently in scope for this assessment, in your reporting currency?",
       "intent": "Establish the financial baseline against which cost, value and opportunity signals will later be interpreted.",
       "interaction": "range",
       "answerDesign": "Choose the closest spend band. Include material technology spend in scope even where it sits outside the central IT budget.",
@@ -401,7 +612,12 @@
         }
       ],
       "scoring": {
-        "normalize": "range-band"
+        "method": "signal-only",
+        "signals": [
+          "technology-spend-size"
+        ],
+        "note": "The size class of the technology spend in scope, in the reporting currency. Context for the report; it never scores and never re-weights a score.",
+        "basis": "LTM heuristic. The earlier range-band rule applied only to a number, while the answers are option IDs, so it never scored; it is removed (CQ3b)."
       },
       "active": true,
       "version": 2,
@@ -413,7 +629,330 @@
       "findingIds": [],
       "recommendationIds": [],
       "questionDesignVersion": "6.2",
-      "answerGuidance": "Use the figure leadership would consider the most representative current technology-spend baseline."
+      "answerGuidance": "Bands are size classes shown in the currency chosen in the previous question; where no rate is registered they are shown in US dollars, so pick the nearest band at your own rate.",
+      "labelCurrencyQuestion": "CTX-01",
+      "labelsByCurrency": {
+        "EUR": {
+          "LT5M": "Below EUR 4.5M",
+          "5M_25M": "EUR 4.5M to 22M",
+          "25M_50M": "EUR 22M to 45M",
+          "50M_100M": "EUR 45M to 89M",
+          "100M_500M": "EUR 89M to 450M",
+          "500M_1B": "EUR 450M to 890M",
+          "GT1B": "Above EUR 890M"
+        },
+        "GBP": {
+          "LT5M": "Below GBP 3.7M",
+          "5M_25M": "GBP 3.7M to 19M",
+          "25M_50M": "GBP 19M to 37M",
+          "50M_100M": "GBP 37M to 75M",
+          "100M_500M": "GBP 75M to 370M",
+          "500M_1B": "GBP 370M to 750M",
+          "GT1B": "Above GBP 750M"
+        },
+        "CHF": {
+          "LT5M": "Below CHF 4.1M",
+          "5M_25M": "CHF 4.1M to 20M",
+          "25M_50M": "CHF 20M to 41M",
+          "50M_100M": "CHF 41M to 82M",
+          "100M_500M": "CHF 82M to 410M",
+          "500M_1B": "CHF 410M to 820M",
+          "GT1B": "Above CHF 820M"
+        },
+        "CAD": {
+          "LT5M": "Below CAD 7M",
+          "5M_25M": "CAD 7M to 35M",
+          "25M_50M": "CAD 35M to 70M",
+          "50M_100M": "CAD 70M to 140M",
+          "100M_500M": "CAD 140M to 700M",
+          "500M_1B": "CAD 700M to 1.4bn",
+          "GT1B": "Above CAD 1.4bn"
+        },
+        "AUD": {
+          "LT5M": "Below AUD 7.1M",
+          "5M_25M": "AUD 7.1M to 36M",
+          "25M_50M": "AUD 36M to 71M",
+          "50M_100M": "AUD 71M to 140M",
+          "100M_500M": "AUD 140M to 710M",
+          "500M_1B": "AUD 710M to 1.4bn",
+          "GT1B": "Above AUD 1.4bn"
+        },
+        "JPY": {
+          "LT5M": "Below JPY 790M",
+          "5M_25M": "JPY 790M to 3.9bn",
+          "25M_50M": "JPY 3.9bn to 7.9bn",
+          "50M_100M": "JPY 7.9bn to 16bn",
+          "100M_500M": "JPY 16bn to 79bn",
+          "500M_1B": "JPY 79bn to 160bn",
+          "GT1B": "Above JPY 160bn"
+        },
+        "CNY": {
+          "LT5M": "Below CNY 33M",
+          "5M_25M": "CNY 33M to 170M",
+          "25M_50M": "CNY 170M to 330M",
+          "50M_100M": "CNY 330M to 660M",
+          "100M_500M": "CNY 660M to 3.3bn",
+          "500M_1B": "CNY 3.3bn to 6.6bn",
+          "GT1B": "Above CNY 6.6bn"
+        },
+        "INR": {
+          "LT5M": "Below INR 470M",
+          "5M_25M": "INR 470M to 2.4bn",
+          "25M_50M": "INR 2.4bn to 4.7bn",
+          "50M_100M": "INR 4.7bn to 9.5bn",
+          "100M_500M": "INR 9.5bn to 47bn",
+          "500M_1B": "INR 47bn to 95bn",
+          "GT1B": "Above INR 95bn"
+        },
+        "SGD": {
+          "LT5M": "Below SGD 6.4M",
+          "5M_25M": "SGD 6.4M to 32M",
+          "25M_50M": "SGD 32M to 64M",
+          "50M_100M": "SGD 64M to 130M",
+          "100M_500M": "SGD 130M to 640M",
+          "500M_1B": "SGD 640M to 1.3bn",
+          "GT1B": "Above SGD 1.3bn"
+        },
+        "BRL": {
+          "LT5M": "Below BRL 27M",
+          "5M_25M": "BRL 27M to 140M",
+          "25M_50M": "BRL 140M to 270M",
+          "50M_100M": "BRL 270M to 540M",
+          "100M_500M": "BRL 540M to 2.7bn",
+          "500M_1B": "BRL 2.7bn to 5.4bn",
+          "GT1B": "Above BRL 5.4bn"
+        },
+        "ZAR": {
+          "LT5M": "Below ZAR 83M",
+          "5M_25M": "ZAR 83M to 420M",
+          "25M_50M": "ZAR 420M to 830M",
+          "50M_100M": "ZAR 830M to 1.7bn",
+          "100M_500M": "ZAR 1.7bn to 8.3bn",
+          "500M_1B": "ZAR 8.3bn to 17bn",
+          "GT1B": "Above ZAR 17bn"
+        }
+      },
+      "labelsRateDate": "2026-11-02"
+    },
+    {
+      "adaptiveTrigger": null,
+      "costDimension": null,
+      "valueDimension": null,
+      "evidenceImplication": "Context fact. Routes applicability and wording; never scored and never re-weights a score (GLOBAL-COVERAGE rule).",
+      "active": true,
+      "version": 1,
+      "findingIds": [],
+      "recommendationIds": [],
+      "questionDesignVersion": "6.0",
+      "answerGuidance": "Choose the option that best reflects the current enterprise reality; do not answer based on intended future state.",
+      "id": "CTX-02",
+      "section": "Enterprise Context",
+      "prompt": "Roughly what share of annual technology spend is invoiced or priced in a currency other than your reporting currency?",
+      "intent": "Record foreign-currency exposure of technology spend (cloud and SaaS invoiced by global providers, vendor contracts, offshore labour) as context for commercial and budget-risk wording.",
+      "interaction": "single-select",
+      "answerDesign": "Include spend that a provider prices in another currency even when you are invoiced locally. A rough share is enough; Unknown is a valid answer.",
+      "required": false,
+      "options": [
+        {
+          "id": "LT5",
+          "label": "Under 5%"
+        },
+        {
+          "id": "5_15",
+          "label": "5% to 15%"
+        },
+        {
+          "id": "15_30",
+          "label": "15% to 30%"
+        },
+        {
+          "id": "30_50",
+          "label": "30% to 50%"
+        },
+        {
+          "id": "GT50",
+          "label": "More than 50%"
+        },
+        {
+          "id": "UNKNOWN",
+          "label": "Not known / not tracked"
+        }
+      ],
+      "scoring": {
+        "method": "signal-only",
+        "signals": [
+          "foreign-currency-spend-share"
+        ],
+        "note": "Feeds a constraint line in the commercial section of the report: where the share is 15% or more, cost figures and savings ranges move with exchange rates and the report says so; where UNKNOWN, the report records that currency exposure is not tracked (a visibility fact, not a score). Handed to FinOps IQ, which plans a billing-versus-reporting currency question (GLOBAL-COVERAGE, FinOps F3). No score. Never re-weights a score (GLOBAL-COVERAGE rule).",
+        "basis": "LTM heuristic for the bands (no published distribution of foreign-currency share of technology spend was found; none is claimed). The two currencies in the FOCUS 1.2 columns, PricingCurrency and BillingCurrency, show that cost data already treats a vendor's price currency and the invoice currency as separate facts, which is why the prompt says 'invoiced or priced'."
+      },
+      "gate": null
+    },
+    {
+      "adaptiveTrigger": null,
+      "costDimension": null,
+      "valueDimension": null,
+      "evidenceImplication": "Context fact. Routes applicability and wording; never scored and never re-weights a score (GLOBAL-COVERAGE rule).",
+      "active": true,
+      "version": 1,
+      "findingIds": [],
+      "recommendationIds": [],
+      "questionDesignVersion": "6.0",
+      "answerGuidance": "Choose the option that best reflects the current enterprise reality; do not answer based on intended future state.",
+      "id": "CTX-03",
+      "section": "Enterprise Context",
+      "prompt": "In which regions does the organisation run technology operations or incur material technology spend?",
+      "intent": "Record the regions of operation so the report can state which markets it does and does not assess, and so wording and cautions fit the client's regions.",
+      "interaction": "multi-select",
+      "answerDesign": "Select every region where the organisation has material technology staff, facilities, providers or spend. Do not select a region for a few customers only.",
+      "required": true,
+      "options": [
+        {
+          "id": "EU",
+          "label": "European Union and European Economic Area"
+        },
+        {
+          "id": "UK",
+          "label": "United Kingdom"
+        },
+        {
+          "id": "CH",
+          "label": "Switzerland"
+        },
+        {
+          "id": "NORTH_AMERICA",
+          "label": "North America (United States, Canada, Mexico)"
+        },
+        {
+          "id": "INDIA",
+          "label": "India"
+        },
+        {
+          "id": "APAC_OTHER",
+          "label": "Asia-Pacific excluding India (for example Singapore, Japan, Australia, China)"
+        },
+        {
+          "id": "MIDDLE_EAST",
+          "label": "Middle East (for example the Gulf states)"
+        },
+        {
+          "id": "LATAM",
+          "label": "Latin America and the Caribbean"
+        },
+        {
+          "id": "AFRICA",
+          "label": "Africa"
+        }
+      ],
+      "control": {
+        "maxSelections": null
+      },
+      "scoring": {
+        "method": "signal-only",
+        "signals": [
+          "regions-of-operation"
+        ],
+        "note": "Feeds (1) the Cost IQ coverage statement (CQ5): the report names the regions the client selected and says that Cost IQ does not assess legal, tax or regulatory obligations in any of them, so local advice is needed (a client-specific version of noRegulatoryCoverage in coverage.ts). Mapping to the coverage MARKETS ids: EU to eu; UK to uk; CH to ch; NORTH_AMERICA to us and ca; INDIA to in; APAC_OTHER to sg, hk, jp, kr, cn, au, nz; MIDDLE_EAST to gcc (the Middle East is wider than the gcc entry); LATAM to latam; AFRICA to za (Africa is wider than the za entry). (2) The caveat on published figures: where a published value range comes from a global or other-region sample, the report says so for the client's regions (GLOBAL-COVERAGE, benchmark rule). (3) A routing suggestion to Sovereign IQ when EU, UK or CH is selected together with PUBLIC_CLOUD or AI in CORE-01. Does not gate any question by itself: the engine's applicableWhen cannot count selections, so the Geography gate uses CTX-05. No score. Never re-weights a score by region (GLOBAL-COVERAGE rule).",
+        "basis": "LTM heuristic for the region list: it follows the owner's decisions G1 and G4 and the markets in coverage.ts (eu, uk, ch, us, ca, in, sg, hk, jp, kr, cn, au, nz, gcc, latam, za), grouped so a CIO answers in one breath. EU and UK are separate options because they are separate markets in coverage.ts and their regimes differ since 2020; the owner's note grouped them, and merging is a one-line change."
+      },
+      "gate": null
+    },
+    {
+      "adaptiveTrigger": null,
+      "costDimension": null,
+      "valueDimension": null,
+      "evidenceImplication": "Context fact. Routes applicability and wording; never scored and never re-weights a score (GLOBAL-COVERAGE rule).",
+      "active": true,
+      "version": 1,
+      "findingIds": [],
+      "recommendationIds": [],
+      "questionDesignVersion": "6.0",
+      "answerGuidance": "Choose the option that best reflects the current enterprise reality; do not answer based on intended future state.",
+      "id": "CTX-05",
+      "section": "Enterprise Context",
+      "prompt": "In how many countries does the organisation run technology operations or incur material technology spend?",
+      "intent": "Set the multi-country trigger (master rule TR-30, triggerKey Global) that no question sets today, so the Geography questions ADP-51 and ADP-52 are asked only of a multi-country operation.",
+      "interaction": "single-select",
+      "answerDesign": "Count countries with material staff, facilities, providers or spend, not countries where only a few customers are served.",
+      "required": false,
+      "options": [
+        {
+          "id": "ONE",
+          "label": "One country"
+        },
+        {
+          "id": "2_5",
+          "label": "Two to five countries"
+        },
+        {
+          "id": "6_20",
+          "label": "Six to twenty countries"
+        },
+        {
+          "id": "GT20",
+          "label": "More than twenty countries"
+        }
+      ],
+      "scoring": {
+        "method": "signal-only",
+        "signals": [
+          "country-count",
+          "multi-country-trigger"
+        ],
+        "note": "Gate for ADP-51 and ADP-52 (applicableWhen {questionId: CTX-05, anyOf: [2_5, 6_20, GT20]}). Also an input to the size of the coverage statement. No score. Never re-weights a score (GLOBAL-COVERAGE rule).",
+        "basis": "LTM heuristic. Master rule TR-30 says ADP-51 and ADP-52 apply to a 'multi-country operation selected' (triggerKey Global) but no question sets that trigger and no code reads it. A count of countries is the smallest fact that can set it with the engine's existing applicableWhen {questionId, anyOf}, which cannot express 'two or more selected' on a multi-select."
+      },
+      "gate": null
+    },
+    {
+      "adaptiveTrigger": null,
+      "costDimension": null,
+      "valueDimension": null,
+      "evidenceImplication": "Context fact. Routes applicability and wording; never scored and never re-weights a score (GLOBAL-COVERAGE rule).",
+      "active": true,
+      "version": 1,
+      "findingIds": [],
+      "recommendationIds": [],
+      "questionDesignVersion": "6.0",
+      "answerGuidance": "Choose the option that best reflects the current enterprise reality; do not answer based on intended future state.",
+      "id": "CTX-04",
+      "section": "Enterprise Context",
+      "prompt": "Roughly what share of technology operations effort, in-house and contracted, is delivered onshore?",
+      "intent": "Record the onshore, nearshore and offshore delivery mix as context for the workforce and vendor sections and for data-access and sovereignty routing.",
+      "interaction": "single-select",
+      "answerDesign": "Working definitions, LTM's own: onshore is delivered in the country where the organisation mainly operates; nearshore is another country in the same or an adjacent time zone; offshore is a distant time zone, typically a lower labour-cost location. Count in-house staff and contracted providers together.",
+      "required": false,
+      "options": [
+        {
+          "id": "GT90",
+          "label": "More than 90% onshore"
+        },
+        {
+          "id": "60_90",
+          "label": "60% to 90% onshore; the rest nearshore or offshore"
+        },
+        {
+          "id": "30_60",
+          "label": "30% to 60% onshore; the rest nearshore or offshore"
+        },
+        {
+          "id": "LT30",
+          "label": "Under 30% onshore; mostly nearshore or offshore"
+        },
+        {
+          "id": "UNKNOWN",
+          "label": "Not known / not tracked"
+        }
+      ],
+      "scoring": {
+        "method": "signal-only",
+        "signals": [
+          "delivery-location-mix"
+        ],
+        "note": "Feeds the workforce and vendor narrative (a blended labour cost differs by location, and Cost IQ does not compare rates), the interpretation of CORE-36 (external workforce share) and ADP-17, 18, 35 and 36 (sourcing), and a routing suggestion to Sovereign IQ when delivery is outside the client's home region and CTX-03 includes EU, UK or CH (remote access to data from another country). Do not read a higher offshore share as better or worse. No score. Never re-weights a score (GLOBAL-COVERAGE rule).",
+        "basis": "LTM heuristic. No published definition of onshore, nearshore and offshore with method and sample was sourced in this task; the definitions in the help text are LTM's working definitions and are labelled as such. Bands follow CORE-36's pattern (shares with Unknown)."
+      },
+      "gate": null
     },
     {
       "id": "CORE-05",
@@ -483,9 +1022,13 @@
         }
       ],
       "scoring": {
-        "dimensionIds": [
-          "COST-01"
-        ]
+        "method": "signal-only",
+        "signals": [
+          "spend-baseline-scope",
+          "baseline-reconciliation-gap"
+        ],
+        "note": "Do not score by selection count. Feeds (a) the evidence-confidence flag on the spend baseline when UNKNOWN is selected, (b) a report line listing areas selected in CORE-01 but missing here (CORE-01 minus CORE-05, computed in the report layer, not in scoreQuestion), (c) F-001 evidence text only; no new trigger. Keep required. UNKNOWN must be exclusive of the other options (check the control). Context facts never re-weight a score (GLOBAL-COVERAGE rule).",
+        "basis": "Records what the spend figure in CORE-04 includes. A count of categories cannot be scored (the question says not to, and a smaller estate legitimately includes fewer categories). The useful reading is a comparison: categories material in CORE-01 but not included here show a baseline that understates spend; UNKNOWN shows the baseline cannot be reconciled. LTM heuristic; no published benchmark."
       },
       "active": true,
       "version": 2,
@@ -587,9 +1130,12 @@
         }
       ],
       "scoring": {
-        "dimensionIds": [
-          "VALUE-01"
-        ]
+        "method": "hypothesis-signal",
+        "signals": [
+          "cio-priorities"
+        ],
+        "note": "Feeds the report narrative and the ordering of recommendations (those serving a protected outcome are listed first). No score impact. Keep required. Context facts never re-weight a score (GLOBAL-COVERAGE rule).",
+        "basis": "A ranking of three outcomes the CIO would protect. It records a priority, not a better-to-worse condition; ranking position cannot be a score. Consequence: VALUE-01 Business Alignment still has no scored question after this batch (it had none before), so a VALUE-01 score cannot be shown until a scored question is added (see ADP-33 and CORE-14/17 for candidates outside this batch). LTM heuristic."
       },
       "active": true,
       "version": 2,
@@ -638,13 +1184,12 @@
         }
       ],
       "scoring": {
-        "defaultMap": {
-          "A": 100.0,
-          "B": 80.0,
-          "C": 60.0,
-          "D": 40.0,
-          "E": 20.0
-        }
+        "method": "constraint-signal",
+        "signals": [
+          "cost-pressure"
+        ],
+        "note": "The cost pressure leadership expects technology to absorb. An external condition, not a maturity of practice; it orders the recommendations and the report narrative. No score.",
+        "basis": "LTM heuristic. A letter-keyed map never matched an option and scored nothing; it was removed (CQ3b)."
       },
       "active": true,
       "version": 2,
@@ -709,9 +1254,12 @@
         }
       ],
       "scoring": {
-        "dimensionIds": [
-          "VALUE-02"
-        ]
+        "method": "hypothesis-signal",
+        "signals": [
+          "cio-hypothesis"
+        ],
+        "note": "Feeds a \"your hypothesis versus the findings\" panel in the executive report (build is a CQ5 item). No score impact. Keep required. Context facts never re-weight a score (GLOBAL-COVERAGE rule).",
+        "basis": "The question already declares itself a CIO starting hypothesis with no score impact (hypothesisRole, hypothesisComparison). It is a selection of areas plus a ranking, so scoring would invent an order. The comparison with engine-identified opportunity areas is configured but not built in the report (VALIDATION section 6). LTM heuristic. Note CLOUD_PLATFORM_EFFICIENCY is kept as a hypothesis option; it routes to FinOps IQ and does not bring cloud practice depth back into Cost IQ."
       },
       "active": true,
       "version": 3,
@@ -771,20 +1319,11 @@
         }
       ],
       "scoring": {
-        "dimensionIds": [
-          "COST-02",
-          "VALUE-05"
+        "signalOnly": true,
+        "signals": [
+          "funding-priority"
         ],
-        "defaultMap": {
-          "A": 100.0,
-          "B": 88.6,
-          "C": 77.1,
-          "D": 65.7,
-          "E": 54.3,
-          "F": 42.9,
-          "G": 31.4,
-          "H": 20.0
-        }
+        "note": "A preference for one funding-model change; an order of the options is not a maturity score."
       },
       "active": true,
       "version": 2,
@@ -833,11 +1372,11 @@
           "VALUE-05"
         ],
         "defaultMap": {
-          "A": 100.0,
-          "B": 80.0,
-          "C": 60.0,
-          "D": 40.0,
-          "E": 20.0
+          "FAST": 100.0,
+          "QUARTER": 80.0,
+          "SLOW": 60.0,
+          "COMMITTED": 40.0,
+          "VERY_HARD": 20.0
         }
       },
       "active": true,
@@ -997,7 +1536,8 @@
           "id": "CLOUD",
           "label": "Cloud consumption / shared cloud platforms"
         },
-        {          "id": "SHARED_INFRASTRUCTURE",
+        {
+          "id": "SHARED_INFRASTRUCTURE",
           "label": "Shared infrastructure / data-centre platforms"
         },
         {
@@ -1549,217 +2089,11 @@
       "confidenceImpact": "Weak intervention history lowers confidence that economically attractive rationalization is practically executable."
     },
     {
-      "id": "CORE-23",
-      "section": "Cloud & SaaS Economics",
-      "prompt": "Which technology environments are materially used today and should be included in the cost and value analysis?",
-      "intent": "Activate only the environment-specific diagnostics that are relevant to the enterprise.",
-      "interaction": "multi-select",
-      "answerDesign": "Select every environment that is materially used. Choose 'None of these are material' only when none is a meaningful part of the technology estate.",
-      "required": true,
-      "adaptiveTrigger": "Activates environment-specific deep dives",
-      "costDimension": null,
-      "valueDimension": null,
-      "evidenceImplication": "Use architecture/inventory evidence to confirm the material environment footprint.",
-      "findingImplication": "Determines which cloud, virtualization, infrastructure and service-economics findings can be considered.",
-      "options": [
-        {
-          "id": "PUBLIC_CLOUD",
-          "label": "Public cloud platforms and services"
-        },
-        {
-          "id": "PRIVATE_CLOUD",
-          "label": "Private cloud or hosted private infrastructure"
-        },
-        {
-          "id": "VMWARE",
-          "label": "VMware or other virtualization platforms"
-        },
-        {
-          "id": "ON_PREM",
-          "label": "Traditional on-premises infrastructure and data centres"
-        },
-        {
-          "id": "SAAS",
-          "label": "SaaS applications and subscriptions"
-        },
-        {
-          "id": "COLO",
-          "label": "Colocation or third-party data-centre facilities"
-        },
-        {
-          "id": "MANAGED",
-          "label": "Managed infrastructure or technology services"
-        },
-        {
-          "id": "NONE",
-          "label": "None of these are material"
-        }
-      ],
-      "scoring": {
-        "signalOnly": true,
-        "signals": [
-          "environment-scope"
-        ],
-        "note": "Scope trigger only; never score by number of environments selected."
-      },
-      "active": true,
-      "version": 4,
-      "findingIds": [],
-      "recommendationIds": [],
-      "answerGuidance": "Think about environments that materially drive spend, contracts, operations or technology decisions—not every environment that exists somewhere in the business.",
-      "questionDesignVersion": "6.4",
-      "opportunityImplication": "Sets the addressable spend scope; does not itself create an opportunity.",
-      "confidenceImpact": "Scope completeness; selected environments become the minimum evidence boundary.",
-      "control": {
-        "noneOption": "NONE"
-      },
-      "reviewStatus": "Reviewed v6.4"
-    },
-    {
-      "id": "CORE-24",
-      "section": "Cloud & SaaS Economics",
-      "prompt": "When cloud spend changes materially, what normally happens to explain and act on the change?",
-      "intent": "Assess whether cloud economics are actively managed at workload and consumption level rather than only through budget reporting.",
-      "interaction": "single-select",
-      "answerDesign": "Choose the statement that best matches normal operating practice when cloud spend moves materially.",
-      "required": true,
-      "adaptiveTrigger": "Deepens cloud economics diagnostic when PUBLIC_CLOUD is selected",
-      "costDimension": "Cloud Economics",
-      "valueDimension": null,
-      "evidenceImplication": "Validate with cloud cost dashboards, allocation data, optimization actions and ownership records.",
-      "findingImplication": "May indicate consumption leakage when material spend movements cannot be explained or acted upon quickly.",
-      "options": [
-        {
-          "id": "A",
-          "label": "A material change is automatically surfaced to an accountable owner, investigated to workload level and followed by corrective action."
-        },
-        {
-          "id": "B",
-          "label": "FinOps or cloud owners review material changes regularly and take action within the normal reporting cycle."
-        },
-        {
-          "id": "C",
-          "label": "Changes are visible, but investigation and action depend on the individual team or issue."
-        },
-        {
-          "id": "D",
-          "label": "Spend is mostly reviewed through budget reports; root-cause analysis is usually reactive."
-        },
-        {
-          "id": "E",
-          "label": "Cloud spend can be seen, but we cannot consistently explain changes at workload or service level."
-        },
-        {
-          "id": "F",
-          "label": "We do not have dependable visibility into material cloud consumption changes."
-        }
-      ],
-      "scoring": {
-        "dimensionIds": [
-          "COST-03"
-        ],
-        "defaultMap": {
-          "A": 100.0,
-          "B": 82.0,
-          "C": 64.0,
-          "D": 46.0,
-          "E": 28.0,
-          "F": 15.0
-        }
-      },
-      "active": true,
-      "version": 4,
-      "findingIds": [
-        "F-005"
-      ],
-      "recommendationIds": [
-        "R-003"
-      ],
-      "questionDesignVersion": "6.4",
-      "answerGuidance": "Think about what really happens after a material increase or decrease: who investigates it, how quickly, and whether corrective action follows.",
-      "opportunityImplication": "Can activate cloud consumption optimization and rightsizing opportunity logic.",
-      "confidenceImpact": "Medium; validate against cloud cost and optimization evidence.",
-      "reviewStatus": "Reviewed v6.4"
-    },
-    {
-      "id": "CORE-25",
-      "section": "Cloud & SaaS Economics",
-      "prompt": "Which cloud cost-management practices are actually used in day-to-day technology decisions?",
-      "intent": "Identify cloud economics controls and practices that are operational—not merely planned or available in tooling.",
-      "interaction": "multi-select",
-      "answerDesign": "Select practices that are genuinely used to make decisions today. Do not select capabilities that exist only as policy, tooling features or future plans.",
-      "required": true,
-      "adaptiveTrigger": "Deepens cloud economics diagnostic",
-      "costDimension": "Cloud Economics",
-      "valueDimension": "Technology Productivity",
-      "evidenceImplication": "Validate selected practices with operating reports, policy configurations, optimization tickets and owner accountability.",
-      "findingImplication": "Patterns such as visibility without action or missing allocation/automation may indicate consumption or governance leakage.",
-      "options": [
-        {
-          "id": "ALLOCATION",
-          "label": "Cloud spend is allocated to business, product, service or accountable owner."
-        },
-        {
-          "id": "BUDGET_ALERTS",
-          "label": "Budgets, alerts or anomaly detection trigger action—not just notification."
-        },
-        {
-          "id": "RIGHTSIZING",
-          "label": "Rightsizing and workload optimization recommendations are routinely acted upon."
-        },
-        {
-          "id": "COMMITMENTS",
-          "label": "Reservations, Savings Plans or committed-use discounts are actively sized and reviewed."
-        },
-        {
-          "id": "FORECASTING",
-          "label": "Cloud forecasts are used in budgeting, product planning or investment decisions."
-        },
-        {
-          "id": "UNIT",
-          "label": "Cloud cost is linked to useful business/product demand or unit economics where appropriate."
-        },
-        {
-          "id": "POLICY",
-          "label": "Policies or guardrails prevent avoidable consumption before it occurs."
-        },
-        {
-          "id": "AUTOMATION",
-          "label": "Automated remediation handles recurring waste or non-compliant consumption."
-        },
-        {
-          "id": "NONE",
-          "label": "None of these practices are consistently used in day-to-day decisions."
-        }
-      ],
-      "scoring": {
-        "signalOnly": true,
-        "signals": [
-          "cloud-cost-practices"
-        ],
-        "note": "Do not score by selection count; evaluate combinations and evidence in the intelligence engine."
-      },
-      "active": true,
-      "version": 4,
-      "findingIds": [
-        "F-005",
-        "F-006"
-      ],
-      "recommendationIds": [
-        "R-003"
-      ],
-      "questionDesignVersion": "6.4",
-      "answerGuidance": "Choose what teams actually use when they allocate, forecast, optimize or approve cloud consumption.",
-      "opportunityImplication": "Activates specific cloud diagnostics rather than scoring the number of practices selected.",
-      "confidenceImpact": "Low-to-medium; presence of a practice does not prove effectiveness.",
-      "reviewStatus": "Reviewed v6.4"
-    },
-    {
       "id": "CORE-26",
       "section": "Cloud & SaaS Economics",
       "prompt": "How confidently can you match major SaaS subscriptions to active usage and business need before renewal?",
       "intent": "Assess whether SaaS economics are driven by actual usage and business need rather than purchased seat counts alone.",
-      "interaction": "stars",
+      "interaction": "single-select",
       "answerDesign": "Rate the level of confidence leadership has in using usage and business-need evidence before major SaaS renewals.",
       "required": true,
       "adaptiveTrigger": "Deepens SaaS economics diagnostic when SAAS is selected",
@@ -1794,11 +2128,11 @@
           "COST-04"
         ],
         "defaultMap": {
-          "1": 20.0,
-          "2": 38.0,
-          "3": 56.0,
-          "4": 78.0,
-          "5": 100.0
+          "CONTINUOUS": 100.0,
+          "RENEWAL": 78.0,
+          "SELECTIVE": 56.0,
+          "COUNT": 38.0,
+          "UNKNOWN": 20.0
         }
       },
       "active": true,
@@ -1824,7 +2158,13 @@
           "5": "Usage and business need routinely drive subscription quantities and renewal decisions"
         }
       },
-      "reviewStatus": "Reviewed v6.4"
+      "reviewStatus": "Reviewed v6.4",
+      "applicableWhen": {
+        "questionId": "CORE-01",
+        "anyOf": [
+          "SAAS"
+        ]
+      }
     },
     {
       "id": "CORE-27",
@@ -1892,7 +2232,13 @@
       "answerGuidance": "Focus on whether overlap leads to consolidation, ownership decisions and measurable value release—or simply gets documented.",
       "opportunityImplication": "Can activate duplicate-SaaS consolidation opportunity sizing.",
       "confidenceImpact": "Medium; validate material overlap and actual decisions.",
-      "reviewStatus": "Reviewed v6.4"
+      "reviewStatus": "Reviewed v6.4",
+      "applicableWhen": {
+        "questionId": "CORE-01",
+        "anyOf": [
+          "SAAS"
+        ]
+      }
     },
     {
       "id": "CORE-28",
@@ -1964,7 +2310,14 @@
       "practicalConstraintSignals": [
         "CONTRACT_LOCK_IN"
       ],
-      "reviewStatus": "Reviewed v6.4"
+      "reviewStatus": "Reviewed v6.4",
+      "applicableWhen": {
+        "questionId": "CORE-01",
+        "anyOf": [
+          "PUBLIC_CLOUD",
+          "SAAS"
+        ]
+      }
     },
     {
       "id": "CORE-29",
@@ -1996,7 +2349,8 @@
           "id": "OPERATING_SYSTEMS",
           "label": "Operating systems and infrastructure software"
         },
-        {          "id": "MIDDLEWARE_DATA",
+        {
+          "id": "MIDDLEWARE_DATA",
           "label": "Middleware, integration and data-platform licensing"
         },
         {
@@ -2105,7 +2459,13 @@
       "answerGuidance": "Think about what happens before renewals, audits, migrations or major deployment changes—not only whether an inventory tool exists.",
       "opportunityImplication": "Can activate licence optimization, contract preparation and audit-risk diagnostics.",
       "confidenceImpact": "Medium; actual entitlement/usage reconciliation evidence is required for financial sizing.",
-      "reviewStatus": "Reviewed v6.4"
+      "reviewStatus": "Reviewed v6.4",
+      "applicableWhen": {
+        "questionId": "CORE-01",
+        "anyOf": [
+          "SOFTWARE"
+        ]
+      }
     },
     {
       "id": "CORE-31",
@@ -2729,7 +3089,7 @@
         ],
         "method": "scale",
         "scaleMax": 5,
-        "direction": "direct"
+        "direction": "invert"
       },
       "active": true,
       "version": 1,
@@ -2995,7 +3355,8 @@
       "prompt": "Assume leadership needs to redirect approximately 10% of current technology spend. Which areas would you reduce first, and where would you reinvest the released capacity?",
       "intent": "Capture the CIO's explicit cost-versus-value trade-off and intended reinvestment priorities before evidence-led recommendations are shown.",
       "interaction": "allocation-ranking",
-      "answerDesign": "Rank up to three reduction sources and up to three reinvestment themes. The diagnostic uses the pattern directionally; exact percentages are not required.",      "required": true,
+      "answerDesign": "Rank up to three reduction sources and up to three reinvestment themes. The diagnostic uses the pattern directionally; exact percentages are not required.",
+      "required": true,
       "adaptiveTrigger": "Creates executive trade-off profile for report and roadmap",
       "costDimension": null,
       "valueDimension": "Investment Effectiveness",
@@ -3079,243 +3440,6 @@
       "reviewStatus": "Reviewed v6.5"
     },
     {
-      "id": "ADP-01",
-      "section": "Public Cloud",
-      "prompt": "How is public-cloud spend made visible to the teams that consume and influence it?",
-      "intent": "Assess whether cloud economics are transparent enough for owners to act on consumption and commercial decisions.",
-      "interaction": "single-select",
-      "answerDesign": "Choose the description that best matches how cloud cost accountability works today across material workloads.",
-      "required": false,
-      "adaptiveTrigger": "Cloud=Yes",
-      "costDimension": "Cloud Economics",
-      "valueDimension": null,
-      "evidenceImplication": "Validate using cloud billing exports, tags/account structure, workload ownership and allocation coverage.",
-      "findingImplication": "L1 Visibility Leakage / Cloud accountability",
-      "options": [
-        {
-          "id": "OWNER_ACCOUNTABLE",
-          "label": "Material cloud spend is attributed to named owners with regular cost visibility and accountability."
-        },
-        {
-          "id": "SHOWBACK",
-          "label": "Owners receive showback or chargeback information and are expected to manage consumption."
-        },
-        {
-          "id": "MAJOR_WORKLOADS",
-          "label": "Major workloads can be attributed, but coverage and ownership are inconsistent."
-        },
-        {
-          "id": "POOL",
-          "label": "Most spend remains pooled, so owners have limited visibility into the cost they influence."
-        },
-        {
-          "id": "UNKNOWN",
-          "label": "We cannot reliably connect a meaningful share of cloud spend to owners or workloads."
-        }
-      ],
-      "scoring": {
-        "dimensionIds": [
-          "COST-03"
-        ]
-      },
-      "active": true,
-      "version": 2,
-      "leakageSignal": "L1 Visibility Leakage",
-      "opportunityTheme": "Cloud allocation and accountability",
-      "weightClass": "High",
-      "findingIds": [],
-      "recommendationIds": [],
-      "answerGuidance": "Think about whether product, application or business owners can see their relevant cost and are expected to act on it.",
-      "questionDesignVersion": "6.6",
-      "confidenceNote": "Medium until allocation coverage is evidenced."
-    },
-    {
-      "id": "ADP-02",
-      "section": "Public Cloud",
-      "prompt": "How effectively are non-production cloud environments controlled when they are not needed?",
-      "intent": "Identify avoidable non-production consumption and the degree to which control is automated.",
-      "interaction": "single-select",
-      "answerDesign": "Select the operating pattern that occurs in normal practice, not only in well-managed teams.",
-      "required": false,
-      "adaptiveTrigger": "Cloud=Yes",
-      "costDimension": "Cloud Economics",
-      "valueDimension": null,
-      "evidenceImplication": "Validate with cloud utilization, scheduling policies, non-production tags, idle-resource reports and exception logs.",
-      "findingImplication": "L2 Consumption Leakage / Non-production consumption",
-      "options": [
-        {
-          "id": "POLICY_AUTOMATED",
-          "label": "Most material non-production environments follow automated schedules or policy-based scale controls."
-        },
-        {
-          "id": "AUTOMATION_MIXED",
-          "label": "Automation covers a meaningful share, with manual exceptions for specific teams or workloads."
-        },
-        {
-          "id": "TEAM_MANAGED",
-          "label": "Teams manage shutdown and scaling themselves, with inconsistent adherence."
-        },
-        {
-          "id": "MANUAL_REACTIVE",
-          "label": "Control is mainly manual and often happens only after spend is noticed."
-        },
-        {
-          "id": "LITTLE_CONTROL",
-          "label": "There is little systematic control over non-production consumption."
-        }
-      ],
-      "scoring": {
-        "dimensionIds": [
-          "COST-03"
-        ]
-      },
-      "active": true,
-      "version": 2,
-      "leakageSignal": "L2 Consumption Leakage",
-      "opportunityTheme": "Idle and non-production optimization",
-      "weightClass": "High",
-      "findingIds": [],
-      "recommendationIds": [],
-      "questionDesignVersion": "6.6",
-      "answerGuidance": "Consider development, test, QA and other non-production environments. Include weekends, nights and inactive periods where relevant."
-    },
-    {
-      "id": "ADP-03",
-      "section": "Public Cloud",
-      "prompt": "How disciplined is the organization in sizing and managing cloud commitments such as reservations or savings plans?",
-      "intent": "Assess whether contractual cloud discounts are matched to durable demand without creating avoidable commitment risk.",
-      "interaction": "single-select",
-      "answerDesign": "Choose the pattern that best describes how commitments are forecast, purchased, monitored and rebalanced.",
-      "required": false,
-      "adaptiveTrigger": "Cloud=Yes",
-      "costDimension": "Cloud Economics",
-      "valueDimension": null,
-      "evidenceImplication": "Validate with commitment inventory, utilization, coverage, forecast assumptions and renewal history.",
-      "findingImplication": "L3 Commercial Leakage / Cloud commitments",
-      "options": [
-        {
-          "id": "DEMAND_LED",
-          "label": "Commitments are based on forecasted baseline demand, monitored continuously and rebalanced as demand changes."
-        },
-        {
-          "id": "MANAGED",
-          "label": "Commitments are centrally monitored and major under- or over-coverage is actively corrected."
-        },
-        {
-          "id": "PERIODIC",
-          "label": "Optimization is performed periodically, but provider or team practices vary."
-        },
-        {
-          "id": "RENEWAL_LED",
-          "label": "Commitments are mainly revisited around renewals or when utilization problems become visible."
-        },
-        {
-          "id": "UNCLEAR",
-          "label": "Coverage, utilization and commitment exposure are not sufficiently understood."
-        }
-      ],
-      "scoring": {
-        "dimensionIds": [
-          "COST-03"
-        ]
-      },
-      "active": true,
-      "version": 2,
-      "leakageSignal": "L3 Commercial Leakage",
-      "opportunityTheme": "Cloud commitment optimization",
-      "weightClass": "High",
-      "findingIds": [],
-      "recommendationIds": [],
-      "answerGuidance": "Consider forecasting quality, utilization, coverage, rebalancing and ownership—not just whether commitments have been purchased.",
-      "questionDesignVersion": "6.6"
-    },
-    {
-      "id": "ADP-04",
-      "section": "Public Cloud",
-      "prompt": "Approximately what share of public-cloud spend cannot currently be traced with confidence to a business owner, product or workload?",
-      "intent": "Quantify the visibility gap that limits cost accountability and opportunity sizing.",
-      "interaction": "slider",
-      "answerDesign": "Use a broad estimate; actual evidence can be supplied later.",
-      "required": false,
-      "adaptiveTrigger": "Cloud=Yes",
-      "costDimension": "Cloud Economics",
-      "valueDimension": null,
-      "evidenceImplication": "Validate using allocation coverage reports, tags, account hierarchy and workload ownership.",
-      "findingImplication": "L1 Visibility Leakage / Unallocated cloud spend",
-      "scoring": {
-        "dimensionIds": [
-          "COST-03"
-        ]
-      },
-      "active": true,
-      "version": 2,
-      "control": {
-        "min": 0,
-        "max": 100,
-        "step": 5,
-        "leftLabel": "0% — essentially attributable",
-        "rightLabel": "100% — largely unattributed",
-        "unknown": true
-      },
-      "leakageSignal": "L1 Visibility Leakage",
-      "opportunityTheme": "Unallocated cloud spend",
-      "weightClass": "High",
-      "findingIds": [],
-      "recommendationIds": [],
-      "questionDesignVersion": "6.6",
-      "answerGuidance": "Estimate the share of cloud spend that remains materially unattributed after normal tagging, account and allocation practices."
-    },
-    {
-      "id": "ADP-05",
-      "section": "Public Cloud",
-      "prompt": "How routinely is cloud cost considered alongside performance, resilience and security when architecture decisions are made?",
-      "intent": "Assess whether cost-aware architecture is embedded in design decisions rather than applied after the fact.",
-      "interaction": "single-select",
-      "answerDesign": "Choose the normal enterprise pattern for material architecture decisions.",
-      "required": false,
-      "adaptiveTrigger": "Cloud=Yes",
-      "costDimension": "Architecture & Technology Economics",
-      "valueDimension": null,
-      "evidenceImplication": "Validate using architecture standards, review templates, decision records and examples of material cost trade-offs.",
-      "findingImplication": "L4 Complexity Leakage / Cost-aware architecture",
-      "options": [
-        {
-          "id": "FIRST_CLASS",
-          "label": "Cost is a first-class architecture constraint and is evaluated with performance, resilience and security."
-        },
-        {
-          "id": "MATERIAL_DECISIONS",
-          "label": "Cost is routinely considered for material architecture choices."
-        },
-        {
-          "id": "TEAM_VARIATION",
-          "label": "Some teams consider cost well, but there is no consistent enterprise expectation."
-        },
-        {
-          "id": "LATE",
-          "label": "Cost is usually considered after the architecture is largely established."
-        },
-        {
-          "id": "RARE",
-          "label": "Cost is rarely part of architecture decisions."
-        }
-      ],
-      "scoring": {
-        "dimensionIds": [
-          "COST-09"
-        ]
-      },
-      "active": true,
-      "version": 2,
-      "leakageSignal": "L4 Complexity Leakage",
-      "opportunityTheme": "Cost-aware architecture",
-      "weightClass": "Medium",
-      "findingIds": [],
-      "recommendationIds": [],
-      "answerGuidance": "Think about architecture reviews, design standards and engineering decisions where a lower-cost option could materially change the outcome.",
-      "questionDesignVersion": "6.6"
-    },
-    {
       "id": "ADP-06",
       "section": "SaaS",
       "prompt": "How many major SaaS platforms currently overlap materially with other products in the estate?",
@@ -3357,7 +3481,16 @@
       "scoring": {
         "dimensionIds": [
           "COST-04"
-        ]
+        ],
+        "defaultMap": {
+          "NONE": 100.0,
+          "1_2": 80.0,
+          "3_5": 60.0,
+          "6_10": 40.0,
+          "GT10": 20.0,
+          "UNKNOWN": 20.0
+        },
+        "basis": "A condition scale: fewer materially overlapping SaaS platforms is better. FinOps Framework Licensing and SaaS capability asks leadership to have a process so teams do not buy what already exists or offers similar functionality; the count bands are LTM heuristic and are not normalised by estate size (30 platforms versus 1,000), so the score is a screen, not a benchmark. UNKNOWN is rated equal to the worst band."
       },
       "active": true,
       "version": 2,
@@ -3372,7 +3505,13 @@
       "findingIds": [],
       "recommendationIds": [],
       "questionDesignVersion": "6.6",
-      "answerGuidance": "Count meaningful capability overlap where two or more major products could plausibly serve substantially the same business need."
+      "answerGuidance": "Count meaningful capability overlap where two or more major products could plausibly serve substantially the same business need.",
+      "applicableWhen": {
+        "questionId": "CORE-01",
+        "anyOf": [
+          "SAAS"
+        ]
+      }
     },
     {
       "id": "ADP-07",
@@ -3412,7 +3551,15 @@
       "scoring": {
         "dimensionIds": [
           "COST-04"
-        ]
+        ],
+        "defaultMap": {
+          "AUTOMATED": 100.0,
+          "TIMELY": 80.0,
+          "PERIODIC": 60.0,
+          "RENEWAL": 40.0,
+          "UNCLEAR": 20.0
+        },
+        "basis": "Ordered process-maturity scale that maps onto the FinOps maturity model: AUTOMATED = Run (\"Reclamation triggers are automated against usage thresholds\" in the Licensing and SaaS capability); TIMELY and PERIODIC = Walk (a defined, repeated process); RENEWAL = Crawl (\"terms are reviewed at renewal, largely after the commitment is already in place\"); UNCLEAR = below Crawl. The numeric steps (100/80/60/40/20) are LTM heuristic."
       },
       "active": true,
       "version": 2,
@@ -3422,7 +3569,13 @@
       "findingIds": [],
       "recommendationIds": [],
       "questionDesignVersion": "6.6",
-      "answerGuidance": "Consider HR/identity integration, inactivity thresholds, manager review and whether cleanup happens across major platforms—not just a few."
+      "answerGuidance": "Consider HR/identity integration, inactivity thresholds, manager review and whether cleanup happens across major platforms—not just a few.",
+      "applicableWhen": {
+        "questionId": "CORE-01",
+        "anyOf": [
+          "SAAS"
+        ]
+      }
     },
     {
       "id": "ADP-08",
@@ -3440,7 +3593,9 @@
       "scoring": {
         "dimensionIds": [
           "COST-01"
-        ]
+        ],
+        "normalize": "invert-0-100",
+        "basis": "Share of SaaS spend bought or owned outside central technology governance. By its wording (outside governance) it is a visibility and control condition, 0% best, so it scores inverted like CORE-34. Not every business-bought service is bad, which is why ADP-33 (IT influence) is the balancing question. The FinOps Licensing and SaaS capability states a review process for new SaaS requests so teams do not buy duplicates, and requires FinOps involvement when licences or SaaS are acquired outside cloud providers (Walk), but gives no percentage. The 30% F-017 trigger is an LTM heuristic and UNSOURCED: a widely quoted \"shadow IT\" share exists in analyst commentary but I could not verify a primary source with method and sample, so none is cited. The owner should treat 30 as adjustable. Slider has no option map; the engine path is normalize invert-0-100. The page cannot record \"Unknown\" on a slider (VALIDATION section 6), so an unanswered slider is simply unscored, never rated as good."
       },
       "active": true,
       "version": 2,
@@ -3458,7 +3613,13 @@
       "findingIds": [],
       "recommendationIds": [],
       "questionDesignVersion": "6.6",
-      "answerGuidance": "Include business-owned SaaS where the spend is material. Exclude centrally governed services simply used by business teams."
+      "answerGuidance": "Include business-owned SaaS where the spend is material. Exclude centrally governed services simply used by business teams.",
+      "applicableWhen": {
+        "questionId": "CORE-01",
+        "anyOf": [
+          "SAAS"
+        ]
+      }
     },
     {
       "id": "ADP-09",
@@ -3499,9 +3660,14 @@
         "dimensionIds": [
           "COST-05"
         ],
-        "valueDimensionIds": [
-          "VALUE-05"
-        ]
+        "defaultMap": {
+          "INTEGRATED": 100.0,
+          "MATERIAL_REVIEW": 80.0,
+          "SEPARATE": 60.0,
+          "REACTIVE": 40.0,
+          "UNKNOWN": 20.0
+        },
+        "basis": "Ordered scale of how integrated the decision is: INTEGRATED (total-cost case across licensing, infrastructure, workload fit and migration) down to UNKNOWN. Mirrors the Walk/Run idea in the FinOps Licensing and SaaS capability (a pre-signature check of options against validated demand); the application to virtualisation is LTM heuristic. SEPARATE and REACTIVE can both be true at once, so the order of those two is a judgement. The question also carries valueDimensionIds VALUE-05; the engine ignores valueDimensionIds, and putting it in dimensionIds would count one answer in both the Cost and Value headlines, so score COST-05 only. Needs applicability gating (clients with no virtualised estate must not be asked)."
       },
       "active": true,
       "version": 2,
@@ -3511,7 +3677,13 @@
       "findingIds": [],
       "recommendationIds": [],
       "questionDesignVersion": "6.6",
-      "answerGuidance": "Think about platform alternatives, workload fit, infrastructure footprint, licensing changes and migration cost—not license price alone."
+      "answerGuidance": "Think about platform alternatives, workload fit, infrastructure footprint, licensing changes and migration cost—not license price alone.",
+      "applicableWhen": {
+        "questionId": "CORE-01",
+        "anyOf": [
+          "VMWARE"
+        ]
+      }
     },
     {
       "id": "ADP-10",
@@ -3527,12 +3699,12 @@
       "evidenceImplication": "Validate through VM inventory, utilization, workload dependency, licensing exposure, criticality and migration assessments.",
       "findingImplication": "L6 Portfolio Leakage / Virtualization modernization candidate",
       "scoring": {
-        "dimensionIds": [
-          "COST-05"
+        "method": "signal-only",
+        "signals": [
+          "virtualisation-candidate-exposure"
         ],
-        "valueDimensionIds": [
-          "VALUE-05"
-        ]
+        "note": "Feeds the evidence request and the opportunity narrative for infrastructure, only when ON_PREM or PRIVATE_CLOUD is in the footprint. Optional. ADP-10 is never shown today (VALIDATION section 6); it needs an area. Context facts never re-weight a score (GLOBAL-COVERAGE rule).",
+        "basis": "A self-estimated share of the virtualised estate worth investigating. High exposure is an opportunity size, not a poor practice, and the wording tells the client not to assume every VM is a candidate. Same reasoning as CORE-36 (exposure signal, not better or worse). LTM heuristic. The page cannot show Unknown on a slider."
       },
       "active": true,
       "version": 2,
@@ -3551,7 +3723,15 @@
       "recommendationIds": [],
       "questionDesignVersion": "6.6",
       "answerGuidance": "Consider age, utilization, application fit, licensing exposure, platform dependency and business criticality. Do not assume every VM is a migration candidate.",
-      "confidenceNote": "Low until workload-level evidence confirms candidate population."
+      "confidenceNote": "Low until workload-level evidence confirms candidate population.",
+      "applicableWhen": {
+        "questionId": "CORE-01",
+        "anyOf": [
+          "VMWARE",
+          "ON_PREM",
+          "PRIVATE_CLOUD"
+        ]
+      }
     },
     {
       "id": "ADP-11",
@@ -3570,9 +3750,14 @@
         "dimensionIds": [
           "COST-05"
         ],
-        "valueDimensionIds": [
-          "VALUE-05"
-        ]
+        "defaultMap": {
+          "1": 20.0,
+          "2": 40.0,
+          "3": 60.0,
+          "4": 80.0,
+          "5": 100.0
+        },
+        "basis": "Five anchored levels from \"visible excess capacity or no reliable demand data\" to \"actively optimised against demand, resilience and forecast\". Missing demand data sits in level 1, so lack of knowledge does not flatter. To keep one scale shape across COST-05 (option maps run 100 to 20), use a keyed map 1 to 5 mapped to 20 to 100 instead of the linear star method (0 to 100). A numeric answer matches the map key in scoreQuestion; do not set scaleMax or method on this question. Basis is LTM heuristic; the Data Center scope in the FinOps Framework exists but I could not read its content (the capability page returned 404). The prompt says \"How confident are you\" while the anchors describe practice; consider \"How well is\" (minor, owner optional). Needs applicability gating (ON_PREM)."
       },
       "active": true,
       "version": 2,
@@ -3593,7 +3778,14 @@
         ]
       },
       "questionDesignVersion": "6.6",
-      "answerGuidance": "Consider compute, storage, power, cooling and floor space. Include required headroom for resilience and known demand peaks."
+      "answerGuidance": "Consider compute, storage, power, cooling and floor space. Include required headroom for resilience and known demand peaks.",
+      "applicableWhen": {
+        "questionId": "CORE-01",
+        "anyOf": [
+          "ON_PREM",
+          "PRIVATE_CLOUD"
+        ]
+      }
     },
     {
       "id": "ADP-12",
@@ -3635,12 +3827,13 @@
         }
       ],
       "scoring": {
-        "dimensionIds": [
-          "COST-05"
+        "method": "signal-only",
+        "signals": [
+          "refresh-exposure",
+          "lifecycle-visibility-gap"
         ],
-        "valueDimensionIds": [
-          "VALUE-05"
-        ]
+        "note": "Feeds the infrastructure refresh timeline in the narrative and an evidence request for asset lifecycle data; UNKNOWN raises a data-visibility flag, not a score. Gate on ON_PREM. Optional. Check the page: VALIDATION lists ADP-09, 10 and 28 as never shown. Context facts never re-weight a score (GLOBAL-COVERAGE rule).",
+        "basis": "Share of the on-premises estate near refresh or end of support. It is a timing exposure, driven by estate age rather than by how well costs are managed; same logic as CORE-31 (commercial events are a timing signal). It could be argued as a technical-debt condition scale (CORE-40 is scored that way); I chose context because the question asks what forces a decision, not how debt is governed. LTM heuristic. UNKNOWN is a visibility gap and should be reported as one."
       },
       "active": true,
       "version": 2,
@@ -3695,7 +3888,15 @@
       "scoring": {
         "dimensionIds": [
           "COST-05"
-        ]
+        ],
+        "defaultMap": {
+          "CONTINUOUS": 100.0,
+          "PLANNED": 80.0,
+          "PERIODIC": 60.0,
+          "RENEWAL": 40.0,
+          "UNCLEAR": 20.0
+        },
+        "basis": "Ordered review cadence scale, continuous to renewal-only to not visible; follows the Crawl/Walk/Run pattern (review at renewal only = Crawl). Step values are LTM heuristic. Dependency: there is no \"we do not use colocation\" option, so a client without colocation would be forced to pick UNCLEAR and be scored low. The question must be gated on COLO (CORE-23 option; keep it when merged into CORE-01). If gating cannot be built, a not-applicable option is needed, which changes what a client sees and needs the owner."
       },
       "active": true,
       "version": 2,
@@ -3705,7 +3906,13 @@
       "findingIds": [],
       "recommendationIds": [],
       "questionDesignVersion": "6.6",
-      "answerGuidance": "Consider committed space/power, utilization, connectivity, expansion rights, exit flexibility and the cost of unused capacity."
+      "answerGuidance": "Consider committed space/power, utilization, connectivity, expansion rights, exit flexibility and the cost of unused capacity.",
+      "applicableWhen": {
+        "questionId": "CORE-01",
+        "anyOf": [
+          "COLO"
+        ]
+      }
     },
     {
       "id": "ADP-14",
@@ -3745,7 +3952,15 @@
       "scoring": {
         "dimensionIds": [
           "COST-07"
-        ]
+        ],
+        "defaultMap": {
+          "OUTCOME_LINKED": 100.0,
+          "DEMAND_LINKED": 80.0,
+          "SLA_ONLY": 60.0,
+          "FIXED": 40.0,
+          "UNRECONCILED": 20.0
+        },
+        "basis": "Ordered by how closely charges are tied to consumption and outcomes: OUTCOME_LINKED, DEMAND_LINKED, SLA_ONLY, FIXED, UNRECONCILED. A CIO recognises the ladder (outcome-based, volume-based, service-level, fixed fee, unreconciled). No published scale found; LTM heuristic. Order of SLA_ONLY above FIXED is a judgement. Gate on MANAGED services being in the footprint."
       },
       "active": true,
       "version": 2,
@@ -3755,89 +3970,13 @@
       "findingIds": [],
       "recommendationIds": [],
       "answerGuidance": "Consider volume drivers, service tiers, SLA performance, business outcomes and whether charges change when demand changes.",
-      "questionDesignVersion": "6.6"
-    },
-    {
-      "id": "ADP-15",
-      "section": "Software",
-      "prompt": "Which software categories create the greatest renewal, licensing or commercial exposure over the next 24 months?",
-      "intent": "Identify where evidence-led licensing and commercial validation should focus first.",
-      "interaction": "multi-select",
-      "answerDesign": "Select all material categories; avoid selecting categories that are merely present but not economically significant.",
-      "required": false,
-      "adaptiveTrigger": "Software=Yes",
-      "costDimension": "SaaS & Software Economics",
-      "valueDimension": null,
-      "evidenceImplication": "Validate using contract calendar, entitlement records, deployment/usage data, vendor pricing models and renewal values.",
-      "findingImplication": "L3 Commercial Leakage / Software renewal exposure",
-      "options": [
-        {
-          "id": "DATABASE",
-          "label": "Database platforms"
-        },
-        {
-          "id": "VIRTUALIZATION",
-          "label": "Virtualization platforms"
-        },
-        {
-          "id": "OPERATING_SYSTEMS",
-          "label": "Operating systems"
-        },
-        {
-          "id": "ERP",
-          "label": "ERP platforms"
-        },
-        {
-          "id": "CRM",
-          "label": "CRM platforms"
-        },
-        {
-          "id": "MIDDLEWARE",
-          "label": "Middleware / integration platforms"
-        },
-        {
-          "id": "DEVELOPER",
-          "label": "Developer / engineering tools"
-        },
-        {
-          "id": "SECURITY",
-          "label": "Security software"
-        },
-        {
-          "id": "END_USER",
-          "label": "End-user / workplace software"
-        },
-        {
-          "id": "ANALYTICS",
-          "label": "Data / analytics software"
-        },
-        {
-          "id": "OTHER",
-          "label": "Other material software category"
-        },
-        {
-          "id": "NONE",
-          "label": "No material renewal or licensing exposure identified"
-        }
-      ],
-      "scoring": {
-        "dimensionIds": [
-          "COST-04"
-        ]
-      },
-      "active": true,
-      "version": 2,
-      "control": {
-        "maxSelections": null
-      },
-      "leakageSignal": "L3 Commercial Leakage",
-      "opportunityTheme": "Software licensing strategy",
-      "weightClass": "High",
-      "findingIds": [],
-      "recommendationIds": [],
       "questionDesignVersion": "6.6",
-      "answerGuidance": "Think about vendors with material renewal value, audit exposure, changing licensing models or significant user/asset counts.",
-      "scoringNote": "Hotspot signal only; selection count is not a maturity score."
+      "applicableWhen": {
+        "questionId": "CORE-01",
+        "anyOf": [
+          "EXTERNAL"
+        ]
+      }
     },
     {
       "id": "ADP-16",
@@ -3877,7 +4016,15 @@
       "scoring": {
         "dimensionIds": [
           "COST-04"
-        ]
+        ],
+        "defaultMap": {
+          "CONTINUOUS": 100.0,
+          "PLANNED": 80.0,
+          "RENEWAL": 60.0,
+          "ENTITLEMENT_LED": 40.0,
+          "UNRELIABLE": 20.0
+        },
+        "basis": "Ordered reconciliation cadence, continuous to unreliable data. The FinOps Licensing and SaaS capability defines the aim as minimising over-deployment (compliance risk) and under-deployment (shelfware), and its Crawl level is review at renewal after commitment, so RENEWAL is the Crawl anchor. ISO/IEC 19770-1:2017 is the software and IT asset management system standard that this practice belongs to; I confirmed the standard exists and is current from its catalogue entry only and could not read its clauses, so no clause is cited. Step values LTM heuristic. UNRELIABLE is rated lowest."
       },
       "active": true,
       "version": 2,
@@ -3887,7 +4034,13 @@
       "findingIds": [],
       "recommendationIds": [],
       "answerGuidance": "Consider whether entitlement, deployment and usage data are reconciled in time to change a commercial decision.",
-      "questionDesignVersion": "6.6"
+      "questionDesignVersion": "6.6",
+      "applicableWhen": {
+        "questionId": "CORE-01",
+        "anyOf": [
+          "SOFTWARE"
+        ]
+      }
     },
     {
       "id": "ADP-17",
@@ -3937,9 +4090,12 @@
         }
       ],
       "scoring": {
-        "dimensionIds": [
-          "COST-08"
-        ]
+        "method": "signal-only",
+        "signals": [
+          "manual-work-hotspots"
+        ],
+        "note": "Feeds automation recommendations and the evidence request for the selected areas. NONE must be exclusive. Optional. Context facts never re-weight a score (GLOBAL-COVERAGE rule).",
+        "basis": "A selection of up to three areas with repetitive manual work, with NONE. It identifies where to look, not how mature the organisation is; scoring by area or count would invent a ranking. COST-08 is already scored by CORE-34 (addressable manual work). LTM heuristic. The CLOUD option only records a hotspot and routes to FinOps IQ; it does not reintroduce cloud practice depth."
       },
       "active": true,
       "version": 2,
@@ -3958,7 +4114,7 @@
     {
       "id": "ADP-18",
       "section": "People",
-      "prompt": "How deliberately does the organization balance internal capability development with external contractor or contingent capacity?",
+      "prompt": "How is the balance between internal staff and external contractors decided and reviewed?",
       "intent": "Assess whether workforce sourcing choices reflect strategic skills, demand variability and total economics.",
       "interaction": "single-select",
       "answerDesign": "Choose the pattern that best describes how build-buy-borrow decisions are made.",
@@ -3970,32 +4126,38 @@
       "findingImplication": "L5 Workforce Leakage / Build-buy-borrow",
       "options": [
         {
-          "id": "STRATEGIC_BUILD",
-          "label": "Strategic capabilities are deliberately built internally; external capacity fills targeted or variable gaps."
+          "id": "ECONOMICS_LED",
+          "label": "The mix is decided from demand, skills and total cost, and reviewed at least annually."
         },
         {
-          "id": "ECONOMIC_BALANCE",
-          "label": "Internal and external capacity are balanced using demand, skills and total economics."
+          "id": "POLICY_LED",
+          "label": "There is a stated sourcing policy (for example, build scarce skills, buy variable demand) that is mostly applied."
         },
         {
-          "id": "EXTERNAL_DEPENDENT",
-          "label": "External capacity is used broadly because internal capability or capacity is insufficient."
+          "id": "CAPACITY_LED",
+          "label": "External capacity is used mainly because internal capacity or skills are short; the economics are not reviewed."
         },
         {
-          "id": "LEGACY_DEPENDENT",
-          "label": "External capacity persists because knowledge transfer or transition back in-house is difficult."
+          "id": "LOCKED_IN",
+          "label": "External capacity persists because knowledge sits with contractors and moving it in-house is hard."
         },
         {
           "id": "UNMEASURED",
-          "label": "The capability mix and economics are not measured well enough to make the trade-off confidently."
+          "label": "The mix and its economics are not measured well enough to decide."
         }
       ],
       "scoring": {
         "dimensionIds": [
           "COST-06"
         ],
-        "valueDimensionIds": [          "VALUE-04"
-        ]
+        "defaultMap": {
+          "ECONOMICS_LED": 100.0,
+          "POLICY_LED": 80.0,
+          "CAPACITY_LED": 60.0,
+          "LOCKED_IN": 40.0,
+          "UNMEASURED": 20.0
+        },
+        "basis": "The options mix two scales: the first two describe a deliberate decision (build strategic skills; balance by economics), the last three describe a state of dependence or missing data. Whether STRATEGIC_BUILD ranks above ECONOMIC_BALANCE is not a maturity question, and the file elsewhere (CORE-36) states a higher external share is not inherently worse. No monotonic map is defensible on the current options. Replacement wording below keeps one scale, how the mix is decided and reviewed. The wording and scale are LTM heuristic; I found no published maturity scale for build-buy-borrow. The question also carries valueDimensionIds VALUE-04, ignored by the engine."
       },
       "active": true,
       "version": 2,
@@ -4004,7 +4166,7 @@
       "weightClass": "High",
       "findingIds": [],
       "recommendationIds": [],
-      "answerGuidance": "Consider scarce skills, recurring demand, knowledge retention, rate economics and the cost of converting external capacity to internal capability.",
+      "answerGuidance": "Select the statement that best describes how the mix of internal staff and external contractors is decided and reviewed.",
       "questionDesignVersion": "6.6"
     },
     {
@@ -4047,12 +4209,13 @@
         }
       ],
       "scoring": {
-        "dimensionIds": [
-          "COST-07"
+        "method": "signal-only",
+        "signals": [
+          "renewal-pipeline-volume",
+          "renewal-visibility-gap"
         ],
-        "valueDimensionIds": [
-          "VALUE-05"
-        ]
+        "note": "Feeds the renewal calendar and negotiation-sequencing narrative; UNKNOWN raises a data-visibility flag. Overlaps CORE-31 (events) in purpose but counts rather than types, so keep both. Optional. Context facts never re-weight a score (GLOBAL-COVERAGE rule).",
+        "basis": "Number of material vendor renewals in 12 to 24 months. A larger pipeline is exposure and workload, not poorer practice, and a count depends on estate size. Same reasoning as CORE-31. LTM heuristic. UNKNOWN is a visibility gap and is reported as such."
       },
       "active": true,
       "version": 2,
@@ -4083,12 +4246,12 @@
       "evidenceImplication": "Validate using contract terms, supplier concentration, spend levels, alternatives, notice periods and renewal timing.",
       "findingImplication": "L3 Commercial Leakage / Negotiation leverage",
       "scoring": {
-        "dimensionIds": [
-          "COST-07"
+        "method": "constraint-signal",
+        "signals": [
+          "negotiation-leverage"
         ],
-        "valueDimensionIds": [
-          "VALUE-05"
-        ]
+        "note": "Feeds the vendor and commercial recommendation (low leverage points to demand aggregation, alternatives and timing rather than price pressure). No score. Optional. valueDimensionIds VALUE-05 is ignored by the engine. Context facts never re-weight a score (GLOBAL-COVERAGE rule).",
+        "basis": "Self-rated commercial leverage on five anchored levels. The anchors are ordered, but leverage depends largely on market structure, spend concentration and alternatives, not on how well the client manages costs; scoring it would mark small or specialised buyers down for circumstances. Treated as a constraint signal. The prompt and anchors are consistent. LTM heuristic."
       },
       "active": true,
       "version": 2,
@@ -4126,9 +4289,12 @@
       "evidenceImplication": "Validate with targeted evidence before quantifying any opportunity.",
       "findingImplication": "L6 Portfolio Leakage / Application portfolio",
       "scoring": {
-        "dimensionIds": [
-          "COST-10"
-        ]
+        "method": "constraint-signal",
+        "signals": [
+          "portfolio-criticality-concentration"
+        ],
+        "note": "Feeds the application-rationalisation narrative (a high share of business-critical applications constrains how fast and how far the portfolio can be simplified, as CORE-42 BUSINESS_CRITICALITY does) and the sequencing of application recommendations. No score. Feeds COST-10 text only; never re-weights a score (GLOBAL-COVERAGE rule).",
+        "basis": "A proportion of the portfolio that is critical is a fact about the business, not a better-to-worse condition: a bank may rightly have 60 percent and a distributor 10 percent. Scoring it would mark some sectors down for what they are. It is useful as a constraint on rationalisation pace. LTM heuristic; no published benchmark found or claimed. The slider cannot record Unknown (batch 1, problem 2; the master sets control.unknown but the page does not record it), so an unanswered slider is unscored, never rated good."
       },
       "active": true,
       "version": 1,
@@ -4164,7 +4330,9 @@
       "scoring": {
         "dimensionIds": [
           "COST-10"
-        ]
+        ],
+        "normalize": "invert-0-100",
+        "basis": "Share of applications with unclear ownership, unclear value or very limited usage: 0 percent best, so it scores inverted like ADP-08. This is a count of applications, not of spend, and a screen, not a benchmark. It partly overlaps CORE-39 (UNCLEAR_OWNER, LOW_USAGE); ADP-22 quantifies what CORE-39 only flags, so keep both but do not double count in the report. Three conditions are combined in one number, so the respondent cannot tell which drives it. LTM heuristic; I found no published percentage with method and sample for ownerless or unused applications and cite none. The slider cannot record Unknown (batch 1, problem 2; the master sets control.unknown but the page does not record it), so an unanswered slider is unscored, never rated good."
       },
       "active": true,
       "version": 1,
@@ -4222,7 +4390,15 @@
       "scoring": {
         "dimensionIds": [
           "COST-10"
-        ]
+        ],
+        "defaultMap": {
+          "MANAGED": 100.0,
+          "PERIODIC": 80.0,
+          "PROJECT": 60.0,
+          "LIMITED": 40.0,
+          "NONE": 20.0
+        },
+        "basis": "Ordered scale of how lifecycle decisions use value and total cost: all four factors together, periodic portfolio review, only when a project or technology event forces it, ownership without comparison, no consistent governance. LTM heuristic: the step values (100/80/60/40/20) are an LTM convention, not a benchmark. PROJECT is placed above LIMITED because an event-driven decision at least makes a decision; this is a judgement. There is no Unknown option, so NONE is the lowest level; adding UNKNOWN at 20 is recommended (a client-visible change, owner optional). Overlaps in theme with CORE-41 (how retain, modernise, retire is decided); ADP-23 asks about the link to value and cost, so keep. No published source verified."
       },
       "active": true,
       "version": 1,
@@ -4278,9 +4454,12 @@
         }
       ],
       "scoring": {
-        "dimensionIds": [
-          "COST-05"
-        ]
+        "method": "hypothesis-signal",
+        "signals": [
+          "data-cost-hotspots"
+        ],
+        "note": "Multi-select set of candidate data-cost issues. Feeds opportunity sizing and the data section of the report (which issues to validate first). Do not score by selection count; NONE must be exclusive of the others (check the control). TRANSFER (egress) and PROCESSING on cloud are FinOps IQ territory: show them but do not quantify them in Cost IQ (single-figure rule, BOUNDARY section 3). No score. Never re-weights a score (GLOBAL-COVERAGE rule).",
+        "basis": "An unordered set of issue types. More selections can mean a larger or a more honest estate; fewer can mean less visibility, so a count cannot be scored in either direction. LTM heuristic."
       },
       "active": true,
       "version": 1,
@@ -4330,7 +4509,15 @@
       "scoring": {
         "dimensionIds": [
           "COST-09"
-        ]
+        ],
+        "defaultMap": {
+          "BALANCED": 100.0,
+          "POLICY": 80.0,
+          "MIXED": 60.0,
+          "COST_LAST": 40.0,
+          "UNKNOWN": 20.0
+        },
+        "basis": "Ordered scale from retention explicitly mapped to cost and reviewed by the data owner, down to not being able to judge. Options are in best-to-worst order in the master, UNKNOWN last at the lowest level. LTM heuristic: the step values (100/80/60/40/20) are an LTM convention, not a benchmark. Retention periods can be set by law or contract; the scale rewards knowing and balancing the cost, not shortening retention. The dimension is COST-09 in the master although the question sits in the Data section; kept as is. No published source verified."
       },
       "active": true,
       "version": 1,
@@ -4358,7 +4545,15 @@
       "scoring": {
         "dimensionIds": [
           "COST-05"
-        ]
+        ],
+        "defaultMap": {
+          "1": 20.0,
+          "2": 40.0,
+          "3": 60.0,
+          "4": 80.0,
+          "5": 100.0
+        },
+        "basis": "Five anchored levels from \"Poor visibility\" to \"Comprehensively validated\". Missing visibility sits in level 1, so lack of knowledge does not flatter. Same keyed 1 to 5 map (20 to 100) as ADP-11 so COST-05 keeps one scale shape; do not set scaleMax or method. The prompt says \"How confidently can you say\" while the labels describe the understanding, which is consistent enough. LTM heuristic: the step values (100/80/60/40/20) are an LTM convention, not a benchmark. No published source verified for network contract fit."
       },
       "active": true,
       "version": 1,
@@ -4419,7 +4614,15 @@
       "scoring": {
         "dimensionIds": [
           "VALUE-02"
-        ]
+        ],
+        "defaultMap": {
+          "OUTCOME": 100.0,
+          "MEASURED": 80.0,
+          "PARTIAL": 60.0,
+          "CONTROL": 40.0,
+          "UNKNOWN": 20.0
+        },
+        "basis": "Ordered scale of how far security spend is tied to risk reduction and outcomes: quantified before investment, measured after deployment, partial, reported only as controls or compliance, no evidence. LTM heuristic: the step values (100/80/60/40/20) are an LTM convention, not a benchmark. The PARTIAL over CONTROL order is a judgement: a compliance-only view is a legitimate state for a regulated client, so the owner may prefer to rate PARTIAL and CONTROL equally (both 50). Score the question as written. Security investment is often mandated, so the finding text should say \"not linked to outcomes\", not \"wasted\". No published source verified."
       },
       "active": true,
       "version": 1,
@@ -4445,9 +4648,12 @@
       "evidenceImplication": "Validate with targeted evidence before quantifying any opportunity.",
       "findingImplication": "L7 Value Leakage / Regulatory spend",
       "scoring": {
-        "dimensionIds": [
-          "VALUE-02"
-        ]
+        "method": "constraint-signal",
+        "signals": [
+          "regulatory-driven-spend-share"
+        ],
+        "note": "Feeds the addressable-spend statement in the report: spend driven by regulation is not discretionary, so optimisation figures should say they exclude it. Report layer only; does not change any score or any lever cap until the value model decides to use it. Never re-weights a score (GLOBAL-COVERAGE rule); no country or sector is used to adjust anything.",
+        "basis": "A share of spend that is compliance-driven is a fact, not a better or worse condition. It is a constraint on what can be optimised. LTM heuristic. The slider cannot record Unknown (batch 1, problem 2; the master sets control.unknown but the page does not record it), so an unanswered slider is unscored, never rated good."
       },
       "active": true,
       "version": 1,
@@ -4483,7 +4689,9 @@
       "scoring": {
         "dimensionIds": [
           "VALUE-03"
-        ]
+        ],
+        "normalize": "invert-0-100",
+        "basis": "Share of committed transformation spend with no clearly measurable business outcome: 0 percent best, inverted. It overlaps with CORE-44 (are benefits measured after) and CORE-19 (evidence required before funding) but is the only question that quantifies the amount; keep. The respondent must know the committed spend, which many cannot; unanswered is unscored. LTM heuristic; I found no published percentage of transformation spend lacking outcomes with a stated method and sample, and cite none. The slider cannot record Unknown (batch 1, problem 2; the master sets control.unknown but the page does not record it), so an unanswered slider is unscored, never rated good."
       },
       "active": true,
       "version": 1,
@@ -4541,7 +4749,15 @@
       "scoring": {
         "dimensionIds": [
           "VALUE-03"
-        ]
+        ],
+        "defaultMap": {
+          "ACTIVE": 100.0,
+          "GOVERNED": 80.0,
+          "PLANNED": 60.0,
+          "LATE": 40.0,
+          "NONE": 20.0
+        },
+        "basis": "Ordered scale of how reliably material changes in cost, timeline or benefit lead to a formal re-baseline. GAO guidance on IT programmes says a rebaseline policy should state valid reasons, require validation, management review and documentation (GAO-08-925), and that rebaselining resets reported cost growth to zero (GAO-20-195G), so re-baselining is a governance control and not an end in itself. Read through a search summary only; the PDFs were not read in full. Caution: ACTIVE (\"whenever economics change\") can mask variance if re-baselining is frequent but unreviewed, and the question title says \"how often\" while the options describe how. The map follows the option order; the owner may prefer to rate ACTIVE and GOVERNED equally (for example both 90). LTM heuristic: the step values (100/80/60/40/20) are an LTM convention, not a benchmark. No Unknown option; NONE is lowest."
       },
       "active": true,
       "version": 1,
@@ -4591,7 +4807,15 @@
       "scoring": {
         "dimensionIds": [
           "VALUE-02"
-        ]
+        ],
+        "defaultMap": {
+          "SEPARATE": 100.0,
+          "PARTIAL": 80.0,
+          "MIXED": 60.0,
+          "NONE": 40.0,
+          "UNKNOWN": 20.0
+        },
+        "basis": "Ordered scale of how separately AI cost and benefit are tracked while still reconciling to enterprise spend. The FinOps for AI paper says to allocate at the grain the business measures value, and that FinOps supplies the cost while the business owns the value claim. It does not give a scale; the map is LTM heuristic. MIXED and NONE overlap in meaning (limited visibility versus not visible), so respondents may split them arbitrarily: consider collapsing to four options (owner optional). Cloud and GPU cost of AI is FinOps IQ territory; this question stays at whole-estate level."
       },
       "active": true,
       "version": 1,
@@ -4601,7 +4825,13 @@
       "findingIds": [],
       "recommendationIds": [],
       "answerGuidance": "Select the operating state that most closely matches the current enterprise reality.",
-      "questionDesignVersion": "6.0"
+      "questionDesignVersion": "6.0",
+      "applicableWhen": {
+        "questionId": "CORE-01",
+        "anyOf": [
+          "AI"
+        ]
+      }
     },
     {
       "id": "ADP-32",
@@ -4641,7 +4871,15 @@
       "scoring": {
         "dimensionIds": [
           "VALUE-03"
-        ]
+        ],
+        "defaultMap": {
+          "DEFINED": 100.0,
+          "KPIS": 80.0,
+          "ACTIVITY": 60.0,
+          "EXPERIMENTAL": 40.0,
+          "UNKNOWN": 20.0
+        },
+        "basis": "Ordered scale of how far AI investments have defined outcomes and adoption targets before funding, down to not visible. FinOps for AI: report cost per successful outcome and tie unit costs to outcomes an owner can defend. The scale confuses discipline with stage: an exploratory programme with firm spend limits is acceptable at Crawl, yet scores 40. LTM heuristic: the step values (100/80/60/40/20) are an LTM convention, not a benchmark. Overlaps in theme with CORE-44 (benefits measured) but is AI specific; keep."
       },
       "active": true,
       "version": 1,
@@ -4651,7 +4889,13 @@
       "findingIds": [],
       "recommendationIds": [],
       "answerGuidance": "Select the operating state that most closely matches the current enterprise reality.",
-      "questionDesignVersion": "6.0"
+      "questionDesignVersion": "6.0",
+      "applicableWhen": {
+        "questionId": "CORE-01",
+        "anyOf": [
+          "AI"
+        ]
+      }
     },
     {
       "id": "ADP-33",
@@ -4691,7 +4935,15 @@
       "scoring": {
         "dimensionIds": [
           "COST-01"
-        ]
+        ],
+        "defaultMap": {
+          "INFLUENCE": 100.0,
+          "REVIEW": 80.0,
+          "LATE": 60.0,
+          "LIMITED": 40.0,
+          "NONE": 20.0
+        },
+        "basis": "Ordered scale of how early IT shapes purchases made by business functions. The FinOps Licensing and SaaS capability describes a review process so teams do not buy what already exists, and FinOps involvement when licences or SaaS are acquired outside cloud providers (carried from batch 1). It gives no scale; the map is LTM heuristic. No Unknown option; NONE is lowest, and adding UNKNOWN at 20 is recommended (owner optional). CORE-16 (is there material business-led spend) is the natural gate; the master already says \"BusinessLedIT=Yes\" and CORE-16 says \"True/Unsure activates shadow-tech questions\"."
       },
       "active": true,
       "version": 1,
@@ -4701,7 +4953,14 @@
       "findingIds": [],
       "recommendationIds": [],
       "answerGuidance": "Select the operating state that most closely matches the current enterprise reality.",
-      "questionDesignVersion": "6.0"
+      "questionDesignVersion": "6.0",
+      "applicableWhen": {
+        "questionId": "CORE-16",
+        "anyOf": [
+          "TRUE",
+          "UNSURE"
+        ]
+      }
     },
     {
       "id": "ADP-34",
@@ -4741,7 +5000,15 @@
       "scoring": {
         "dimensionIds": [
           "COST-04"
-        ]
+        ],
+        "defaultMap": {
+          "SYSTEMATIC": 100.0,
+          "PERIODIC": 80.0,
+          "RENEWAL": 60.0,
+          "CASE": 40.0,
+          "NONE": 20.0
+        },
+        "basis": "Ordered scale of how often business-led purchases are consolidated with enterprise capability, best to worst. Same Licensing and SaaS basis as ADP-06 and ADP-33 (a review process so teams do not buy what exists). LTM heuristic: the step values (100/80/60/40/20) are an LTM convention, not a benchmark. Overlaps with ADP-06 (platform overlap count) and CORE-27 (what happens when two SaaS products overlap): ADP-34 is limited to business-led purchases; keep, but do not present the three as independent evidence. No Unknown option."
       },
       "active": true,
       "version": 1,
@@ -4751,7 +5018,14 @@
       "findingIds": [],
       "recommendationIds": [],
       "answerGuidance": "Select the operating state that most closely matches the current enterprise reality.",
-      "questionDesignVersion": "6.0"
+      "questionDesignVersion": "6.0",
+      "applicableWhen": {
+        "questionId": "CORE-16",
+        "anyOf": [
+          "TRUE",
+          "UNSURE"
+        ]
+      }
     },
     {
       "id": "ADP-35",
@@ -4791,7 +5065,15 @@
       "scoring": {
         "dimensionIds": [
           "COST-07"
-        ]
+        ],
+        "defaultMap": {
+          "OUTCOME": 100.0,
+          "USAGE": 80.0,
+          "SLA": 60.0,
+          "FIXED": 40.0,
+          "UNKNOWN": 20.0
+        },
+        "basis": "Ordered scale of how closely outsourced charges follow demand, outcomes and service levels, down to not reconcilable. LTM heuristic: the step values (100/80/60/40/20) are an LTM convention, not a benchmark. Demand-linked pricing is not always better (it moves volume risk to the client), so FIXED at 40 is a judgement; a stable service legitimately priced fixed is penalised. Gate on the EXTERNAL footprint option (as ADP-14), since there is no \"we outsource nothing\" option. No published source verified; I found no neutral source for a pricing-model maturity scale."
       },
       "active": true,
       "version": 1,
@@ -4801,7 +5083,13 @@
       "findingIds": [],
       "recommendationIds": [],
       "answerGuidance": "Select the operating state that most closely matches the current enterprise reality.",
-      "questionDesignVersion": "6.0"
+      "questionDesignVersion": "6.0",
+      "applicableWhen": {
+        "questionId": "CORE-01",
+        "anyOf": [
+          "EXTERNAL"
+        ]
+      }
     },
     {
       "id": "ADP-36",
@@ -4841,7 +5129,15 @@
       "scoring": {
         "dimensionIds": [
           "COST-07"
-        ]
+        ],
+        "defaultMap": {
+          "BENCHMARK": 100.0,
+          "PERIODIC": 80.0,
+          "RENEWAL": 60.0,
+          "LIMITED": 40.0,
+          "NONE": 20.0
+        },
+        "basis": "Ordered scale of how often outsourced services are challenged against internal or alternative sourcing. LTM heuristic: the step values (100/80/60/40/20) are an LTM convention, not a benchmark. Overlaps with CORE-37 (vendor governance, RENEWAL_LED) and ADP-19/20 (renewal and leverage context): ADP-36 is about make-or-buy challenge; keep, and do not present as independent of CORE-37. No Unknown option; NONE lowest. Gate on EXTERNAL. No published source verified."
       },
       "active": true,
       "version": 1,
@@ -4851,7 +5147,13 @@
       "findingIds": [],
       "recommendationIds": [],
       "answerGuidance": "Select the operating state that most closely matches the current enterprise reality.",
-      "questionDesignVersion": "6.0"
+      "questionDesignVersion": "6.0",
+      "applicableWhen": {
+        "questionId": "CORE-01",
+        "anyOf": [
+          "EXTERNAL"
+        ]
+      }
     },
     {
       "id": "ADP-37",
@@ -4869,7 +5171,9 @@
       "scoring": {
         "dimensionIds": [
           "COST-05"
-        ]
+        ],
+        "normalize": "invert-0-100",
+        "basis": "Share of data-centre capacity that is structurally underutilised after allowing for resilience and seasonality: lower is better, so inverted. The wording already nets out legitimate headroom, which makes 0 percent a fair best case. It is a self-estimate, a screen and not a measurement. Gate on an owned or leased data-centre footprint; a cloud-only or SaaS-only client has no answer. LTM heuristic; I could not verify a published utilisation range (the FinOps Data Center scope content was not readable in batch 1). The slider cannot record Unknown (batch 1, problem 2; the master sets control.unknown but the page does not record it), so an unanswered slider is unscored, never rated good."
       },
       "active": true,
       "version": 1,
@@ -4887,7 +5191,15 @@
       "findingIds": [],
       "recommendationIds": [],
       "questionDesignVersion": "6.0",
-      "answerGuidance": "Choose the option that best reflects the current enterprise reality; do not answer based on intended future state."
+      "answerGuidance": "Choose the option that best reflects the current enterprise reality; do not answer based on intended future state.",
+      "applicableWhen": {
+        "questionId": "CORE-01",
+        "anyOf": [
+          "ON_PREM",
+          "PRIVATE_CLOUD",
+          "COLO"
+        ]
+      }
     },
     {
       "id": "ADP-38",
@@ -4923,7 +5235,14 @@
       "scoring": {
         "dimensionIds": [
           "COST-05"
-        ]
+        ],
+        "defaultMap": {
+          "NONE": 100.0,
+          "SOME": 60.0,
+          "SIGNIFICANT": 40.0,
+          "UNKNOWN": 20.0
+        },
+        "basis": "Four ordered states: proportionate, some components larger than needed, a material portion exceeds requirement, cannot judge. Four options so the map is 100/60/40/20 (the 80 step is skipped to keep the same spacing at the low end). The answer is an opinion that capacity \"appears\" proportionate, so it is a screen. Unknown is lowest. LTM heuristic: the step values (100/80/60/40/20) are an LTM convention, not a benchmark. A SaaS-only client has no DR capacity to size, so gate on any non-SaaS estate. No published source verified; DR sizing depends on the recovery objectives, which this question does not ask for."
       },
       "active": true,
       "version": 1,
@@ -4933,7 +5252,17 @@
       "findingIds": [],
       "recommendationIds": [],
       "questionDesignVersion": "6.0",
-      "answerGuidance": "Choose the option that best reflects the current enterprise reality; do not answer based on intended future state."
+      "answerGuidance": "Choose the option that best reflects the current enterprise reality; do not answer based on intended future state.",
+      "applicableWhen": {
+        "questionId": "CORE-01",
+        "anyOf": [
+          "ON_PREM",
+          "PRIVATE_CLOUD",
+          "VMWARE",
+          "COLO",
+          "PUBLIC_CLOUD"
+        ]
+      }
     },
     {
       "id": "ADP-39",
@@ -4973,7 +5302,15 @@
       "scoring": {
         "dimensionIds": [
           "COST-08"
-        ]
+        ],
+        "defaultMap": {
+          "VALUE": 100.0,
+          "MANAGED": 80.0,
+          "PARTIAL": 60.0,
+          "GROWING": 40.0,
+          "UNKNOWN": 20.0
+        },
+        "basis": "Ordered scale of how observability tooling and telemetry cost is managed against value, down to not visible. LTM heuristic: the step values (100/80/60/40/20) are an LTM convention, not a benchmark. Telemetry growth is a cost driver in cloud estates, but I found no neutral published range and cite none. No footprint answer gates it reliably (observability applies to any estate); the Operations focus-area selection is the gate."
       },
       "active": true,
       "version": 1,
@@ -4993,7 +5330,8 @@
       "interaction": "single-select",
       "answerDesign": "Answer based on the current operating reality; use the closest evidence-backed description available.",
       "required": false,
-      "adaptiveTrigger": "ITSM=Yes",      "costDimension": "Operations Economics",
+      "adaptiveTrigger": "ITSM=Yes",
+      "costDimension": "Operations Economics",
       "valueDimension": null,
       "evidenceImplication": "Validate with targeted evidence before quantifying any opportunity.",
       "findingImplication": "L5 Workforce Leakage / ITSM productivity",
@@ -5024,9 +5362,12 @@
         }
       ],
       "scoring": {
-        "dimensionIds": [
-          "COST-08"
-        ]
+        "method": "hypothesis-signal",
+        "signals": [
+          "itsm-effort-driver"
+        ],
+        "note": "Names the dominant source of avoidable service-management effort. Feeds the operations recommendation (which lever to test first). No score. NONE is a valid answer. Overlaps with ADP-17 (manual-work hotspots, already context) and CORE-34 (manual share, scored): read them together in the report. Never re-weights a score (GLOBAL-COVERAGE rule).",
+        "basis": "An unordered set of causes (incidents, requests, process, tools, suppliers) with one pick; no cause is better than another. The one measurable condition is in CORE-34. LTM heuristic."
       },
       "active": true,
       "version": 1,
@@ -5076,7 +5417,15 @@
       "scoring": {
         "dimensionIds": [
           "COST-10"
-        ]
+        ],
+        "defaultMap": {
+          "FULL": 100.0,
+          "PARTIAL": 80.0,
+          "TECH_ONLY": 60.0,
+          "SHARED": 40.0,
+          "UNKNOWN": 20.0
+        },
+        "basis": "Ordered scale of how fully product or application teams own technology cost. The FinOps Allocation capability describes shared platform owners moving from absorbing shared costs (Crawl) to showback (Walk) to full allocation and chargeback (Run), and product and engineering being aware of their share; the Decision and Accountability Structure page (previous Framework version) moves authority to the edge as maturity grows. Neither gives a scale for this question; the map is LTM heuristic. The Product Operating Model section is shown with the Applications focus area. A client without a product model would answer SHARED and score 40; the owner may want a not-applicable option or a routing question (no setter exists today)."
       },
       "active": true,
       "version": 1,
@@ -5090,7 +5439,7 @@
     },
     {
       "id": "ADP-42",
-      "section": "FinOps",
+      "section": "Cloud & SaaS Economics",
       "prompt": "How mature is the organization's FinOps capability in turning cloud cost data into action?",
       "intent": "Adaptive deep-dive triggered by FinOps=Yes. Quantify or qualify the finops maturity issue.",
       "interaction": "single-select",
@@ -5121,12 +5470,25 @@
         {
           "id": "NONE",
           "label": "There is no established FinOps capability."
+        },
+        {
+          "id": "UNKNOWN",
+          "label": "We do not know how mature our FinOps capability is."
         }
       ],
       "scoring": {
         "dimensionIds": [
           "COST-03"
-        ]
+        ],
+        "defaultMap": {
+          "INTELLIGENT": 100.0,
+          "MANAGED": 80.0,
+          "EMERGING": 60.0,
+          "LIMITED": 40.0,
+          "NONE": 20.0,
+          "UNKNOWN": 20.0
+        },
+        "basis": "LTM five-level ordinal scale over the FinOps Foundation maturity model (Crawl, Walk, Run). One self-reported answer: it screens and routes to FinOps IQ, which assesses each capability."
       },
       "active": true,
       "version": 1,
@@ -5136,57 +5498,13 @@
       "findingIds": [],
       "recommendationIds": [],
       "answerGuidance": "Select the operating state that most closely matches the current enterprise reality.",
-      "questionDesignVersion": "6.0"
-    },
-    {
-      "id": "ADP-43",
-      "section": "FinOps",
-      "prompt": "How quickly can cloud cost anomalies be detected, explained, and acted upon?",
-      "intent": "Adaptive deep-dive triggered by FinOps=Yes. Quantify or qualify the anomaly management issue.",
-      "interaction": "single-select",
-      "answerDesign": "Answer based on the current operating reality; use the closest evidence-backed description available.",
-      "required": false,
-      "adaptiveTrigger": "FinOps=Yes",
-      "costDimension": "Cloud Economics",
-      "valueDimension": null,
-      "evidenceImplication": "Validate with targeted evidence before quantifying any opportunity.",
-      "findingImplication": "L2 Consumption Leakage / Anomaly management",
-      "options": [
-        {
-          "id": "REALTIME",
-          "label": "Material anomalies are detected automatically and assigned for action quickly."
-        },
-        {
-          "id": "SAME_DAY",
-          "label": "Material anomalies are normally identified and investigated within the day."
-        },
-        {
-          "id": "WEEKLY",
-          "label": "Anomaly detection is periodic and can take days to explain."
-        },
-        {
-          "id": "MANUAL",
-          "label": "Teams mainly discover anomalies through manual review."
-        },
-        {
-          "id": "NONE",
-          "label": "There is no reliable anomaly-management process."
-        }
-      ],
-      "scoring": {
-        "dimensionIds": [
-          "COST-03"
+      "questionDesignVersion": "6.0",
+      "applicableWhen": {
+        "questionId": "CORE-01",
+        "anyOf": [
+          "PUBLIC_CLOUD"
         ]
-      },
-      "active": true,
-      "version": 1,
-      "leakageSignal": "L2 Consumption Leakage",
-      "opportunityTheme": "Anomaly management",
-      "weightClass": "Medium",
-      "findingIds": [],
-      "recommendationIds": [],
-      "answerGuidance": "Select the operating state that most closely matches the current enterprise reality.",
-      "questionDesignVersion": "6.0"
+      }
     },
     {
       "id": "ADP-44",
@@ -5226,7 +5544,15 @@
       "scoring": {
         "dimensionIds": [
           "COST-07"
-        ]
+        ],
+        "defaultMap": {
+          "HIGH": 100.0,
+          "MODERATE": 80.0,
+          "LIMITED": 60.0,
+          "LOCKED": 40.0,
+          "UNKNOWN": 20.0
+        },
+        "basis": "Ordered scale from contracts that allow volume, service and exit changes, down to significant lock-in, with UNKNOWN at the lowest level. Options are already in best-to-worst order and UNKNOWN is last. LTM heuristic: the step values (100/80/60/40/20) are an LTM convention, not a benchmark; the FinOps Framework gives three stages, not scores. Flexibility is not always better: a stable service on a committed contract earns a discount, so the scale reads the ability to change, not the absence of commitment. Overlaps in theme with CORE-37 (vendor renewal approach) and ADP-20 (negotiation leverage, context); ADP-44 asks about the contract terms themselves, so keep, but do not present as independent evidence. LOCKED and LIMITED are also a natural source for the CONTRACT_LOCK_IN practical-constraint signal in settings.practicalConstraintSignals; I found no code that reads that setting, so nothing is wired. The FinOps pages say what a mature practice does at renewal and exit; they do not give a lock-in measure."
       },
       "active": true,
       "version": 1,
@@ -5276,7 +5602,15 @@
       "scoring": {
         "dimensionIds": [
           "COST-09"
-        ]
+        ],
+        "defaultMap": {
+          "GOVERNED": 100.0,
+          "REVIEW": 80.0,
+          "RARE": 60.0,
+          "LOCKED": 40.0,
+          "NONE": 20.0
+        },
+        "basis": "Ordered scale of how architecture standards are challenged when cost and value diverge: actively, on review of exceptions, rarely, difficult to change, no mechanism. LTM heuristic: the step values (100/80/60/40/20) are an LTM convention, not a benchmark; the FinOps Framework gives three stages, not scores. LOCKED (a mechanism exists but is blocked by governance or platform constraints) is placed above NONE in the master's order; that is a judgement, and a tie at 30 would be as defensible. There is no Unknown option, so NONE is the lowest level; adding UNKNOWN at 20 is recommended (client-visible, owner optional). The prompt says 'How often' while the options describe practice, a minor mismatch. Overlaps in theme with CORE-40 and ADP-46 (all COST-09): they measure the cost of complexity, ADP-45 measures whether anyone challenges it. No published source verified."
       },
       "active": true,
       "version": 1,
@@ -5304,7 +5638,9 @@
       "scoring": {
         "dimensionIds": [
           "COST-09"
-        ]
+        ],
+        "normalize": "invert-0-100",
+        "basis": "Share of run cost attributed to legacy platforms, technical debt or duplicated capability: 0 percent best, so it scores inverted like ADP-22. Three conditions are combined in one number, so the respondent cannot tell which drives it, and the figure is an estimate. A screen, not a benchmark. LTM heuristic; I found no published percentage with method and sample and cite none. Overlap: CORE-40 rates the same theme on five stars and already triggers F-012; ADP-46 quantifies it, both score COST-09, so the dimension counts the idea twice. Keep both for the workshop (CORE-40 in executive mode) or drop ADP-46 if the owner wants one answer per idea. I do not add an F-012 trigger: F-012 is already reachable through CORE-40 (4 or 5 stars) and a second trigger at an unsourced threshold only raises sensitivity. If the owner wants one, 30 percent is the equivalent heuristic (LTM heuristic, UNSOURCED). The slider cannot record Unknown (batch 1, problem 2; the master sets control.unknown but the page does not record it), so an unanswered slider is unscored, never rated good."
       },
       "active": true,
       "version": 1,
@@ -5362,7 +5698,15 @@
       "scoring": {
         "dimensionIds": [
           "COST-07"
-        ]
+        ],
+        "defaultMap": {
+          "EARLY": 100.0,
+          "PLANNING": 80.0,
+          "LATE": 50.0,
+          "RENEWAL": 50.0,
+          "LIMITED": 20.0
+        },
+        "basis": "Ordered scale of how early procurement shapes technology decisions: early, at planning, after the choice, at renewal only, limited. The FinOps Intersecting Disciplines page supports the direction: its Crawl stage leaves renewal and exit ownership undefined until a contract is near expiry, Walk assigns it at signature with procurement and finance, Run monitors it continuously. It is written for cloud and licensing and gives no scores. LTM heuristic: the step values (100/80/60/40/20) are an LTM convention, not a benchmark; the FinOps Framework gives three stages, not scores. There is no Unknown option, so LIMITED is the lowest level. Overlaps in theme with ADP-48 and CORE-37; present them as one commercial picture, not independent evidence."
       },
       "active": true,
       "version": 1,
@@ -5412,7 +5756,15 @@
       "scoring": {
         "dimensionIds": [
           "COST-07"
-        ]
+        ],
+        "defaultMap": {
+          "PORTFOLIO": 100.0,
+          "CATEGORY": 80.0,
+          "PROJECT": 60.0,
+          "LOCAL": 40.0,
+          "UNKNOWN": 20.0
+        },
+        "basis": "Ordered scale of how consistently purchases are aggregated for leverage: across the enterprise, by category, by project or team, independently by business unit despite overlap, cannot assess. UNKNOWN last at the lowest level. LTM heuristic: the step values (100/80/60/40/20) are an LTM convention, not a benchmark; the FinOps Framework gives three stages, not scores. Aggregation helps only where there is real overlap, which the options acknowledge ('when scale can improve terms'). The strongest statement, LOCAL, is a direct description of commercial leakage and could corroborate F-011; I do not propose that trigger because F-011 is already reachable through CORE-28 and CORE-37 and a single hit fires a high-severity finding. No published source verified."
       },
       "active": true,
       "version": 1,
@@ -5457,12 +5809,24 @@
         {
           "id": "NONE",
           "label": "There is no systematic technology synergy tracking."
+        },
+        {
+          "id": "NOT_APPLICABLE",
+          "label": "No acquisition, merger or divestiture in the last three years."
         }
       ],
       "scoring": {
         "dimensionIds": [
           "VALUE-02"
-        ]
+        ],
+        "defaultMap": {
+          "TRACKED": 100.0,
+          "GOVERNED": 80.0,
+          "SELECTIVE": 60.0,
+          "LATE": 40.0,
+          "NONE": 20.0
+        },
+        "basis": "Ordered scale of how technology synergies are identified and tracked after a transaction: named owners and baselines, tracked through integration governance, only the largest, after integration has progressed, none. Already triggers F-020 on LATE and NONE today but scores nothing, so the answer moved a finding and no dimension. LTM heuristic: the step values (100/80/60/40/20) are an LTM convention, not a benchmark; the FinOps Framework gives three stages, not scores. Master rule TR-29 treats the M&A area selection as 'M&A activity selected', so selecting the area is the only gate today. The dimension stays VALUE-02 as in the master (dimensionIds); the master's costDimension text says Investment Effectiveness, consistent. No published source verified."
       },
       "active": true,
       "version": 1,
@@ -5490,7 +5854,9 @@
       "scoring": {
         "dimensionIds": [
           "COST-10"
-        ]
+        ],
+        "normalize": "invert-0-100",
+        "basis": "Share of duplicated capability remaining across merged organisations: 0 percent best, scored inverted like ADP-22. Triggers F-020 above 20 today and scores nothing, so it moved a finding and no dimension. A screen, not a benchmark; overlaps ADP-22 (application ownership) and ADP-49 (tracking) in theme. LTM heuristic; I found no published post-merger duplication percentage with method and sample and cite none. The slider cannot record Unknown (batch 1, problem 2; the master sets control.unknown but the page does not record it), so an unanswered slider is unscored, never rated good."
       },
       "active": true,
       "version": 1,
@@ -5508,7 +5874,17 @@
       "findingIds": [],
       "recommendationIds": [],
       "questionDesignVersion": "6.0",
-      "answerGuidance": "Choose the option that best reflects the current enterprise reality; do not answer based on intended future state."
+      "answerGuidance": "Choose the option that best reflects the current enterprise reality; do not answer based on intended future state.",
+      "applicableWhen": {
+        "questionId": "ADP-49",
+        "anyOf": [
+          "TRACKED",
+          "GOVERNED",
+          "SELECTIVE",
+          "LATE",
+          "NONE"
+        ]
+      }
     },
     {
       "id": "ADP-51",
@@ -5544,7 +5920,14 @@
       "scoring": {
         "dimensionIds": [
           "COST-01"
-        ]
+        ],
+        "defaultMap": {
+          "LOW": 100.0,
+          "MODERATE": 80.0,
+          "HIGH": 40.0,
+          "UNKNOWN": 20.0
+        },
+        "basis": "Four options, so the map is 100/80/40/20 (skip 60) rather than 100/80/60/40/20: the question reads whether regional cost differences are understood, not whether they exist. MODERATE (differences with clear local drivers) is a transparent state and scores close to LOW; HIGH (large differences with limited explanation) is a spend-transparency gap; UNKNOWN (no regional unit-cost comparison) at the lowest level. Dimension stays COST-01 Spend Transparency as in the master. Regional cost differences can be legitimate (labour, regulation, data residency), so the score is not a ranking of countries and must never be adjusted by region (GLOBAL-COVERAGE rule); the gate must be a fact about the client's operation, never the identity of a country. LTM heuristic: the step values (100/80/60/40/20) are an LTM convention, not a benchmark; the FinOps Framework gives three stages, not scores. LOW can also mean nobody has compared, a weakness the question cannot separate from true similarity; present it with that caveat. No published source verified."
       },
       "active": true,
       "version": 1,
@@ -5554,7 +5937,15 @@
       "findingIds": [],
       "recommendationIds": [],
       "questionDesignVersion": "6.0",
-      "answerGuidance": "Choose the option that best reflects the current enterprise reality; do not answer based on intended future state."
+      "answerGuidance": "Choose the option that best reflects the current enterprise reality; do not answer based on intended future state.",
+      "applicableWhen": {
+        "questionId": "CTX-05",
+        "anyOf": [
+          "2_5",
+          "6_20",
+          "GT20"
+        ]
+      }
     },
     {
       "id": "ADP-52",
@@ -5594,7 +5985,15 @@
       "scoring": {
         "dimensionIds": [
           "COST-08"
-        ]
+        ],
+        "defaultMap": {
+          "STANDARDIZED": 100.0,
+          "MOSTLY": 80.0,
+          "MIXED": 60.0,
+          "LOCAL": 40.0,
+          "NONE": 20.0
+        },
+        "basis": "Ordered scale of how deliberately technology services are standardised across regions where it would reduce cost or complexity: deliberately, mostly, mixed, regions run their own, little. The prompt limits the target to cases 'where standardization would reduce cost or complexity', so a region that must stay separate for data-residency or sovereignty reasons is not penalised by the wording; respondents should be told so. MIXED sits in the order by option position (the bank test excludes it from the monotonic check by design). LTM heuristic: the step values (100/80/60/40/20) are an LTM convention, not a benchmark; the FinOps Framework gives three stages, not scores. Complements, does not replace, ADP-51 (costs) and the new CTX-03 and CTX-05 (where and how many). No published source verified."
       },
       "active": true,
       "version": 1,
@@ -5604,7 +6003,15 @@
       "findingIds": [],
       "recommendationIds": [],
       "answerGuidance": "Select the operating state that most closely matches the current enterprise reality.",
-      "questionDesignVersion": "6.0"
+      "questionDesignVersion": "6.0",
+      "applicableWhen": {
+        "questionId": "CTX-05",
+        "anyOf": [
+          "2_5",
+          "6_20",
+          "GT20"
+        ]
+      }
     },
     {
       "id": "ADP-53",
@@ -5650,9 +6057,12 @@
         }
       ],
       "scoring": {
-        "dimensionIds": [
-          "VALUE-03"
-        ]
+        "method": "hypothesis-signal",
+        "signals": [
+          "value-measurement-gaps"
+        ],
+        "note": "Multi-select of the business outcomes the client finds hardest to quantify. Feeds the value-measurement narrative and which benefit types the roadmap asks for evidence on. Do not score by selection count; a longer list can mean a harder estate or a more honest respondent. No score. Never re-weights a score (GLOBAL-COVERAGE rule).",
+        "basis": "An unordered set of outcome types, no better-to-worse order, so no map is possible. Scoring the count would reward saying little. VALUE-03 Benefits Realization already has five scored questions (CORE-20, CORE-44, ADP-29, ADP-30, ADP-32). The master's adaptiveTrigger 'ValueMaturity<3' is read by no code, so the question is shown only through the Technology Value area. LTM heuristic."
       },
       "active": true,
       "version": 1,
@@ -5705,7 +6115,15 @@
       "scoring": {
         "dimensionIds": [
           "VALUE-06"
-        ]
+        ],
+        "defaultMap": {
+          "OFTEN": 100.0,
+          "QUARTERLY": 80.0,
+          "PLANNING": 60.0,
+          "ESCALATION": 40.0,
+          "RARE": 20.0
+        },
+        "basis": "Ordered scale of how routinely the business challenges technology on value versus cost: regularly and used to reprioritise, in periodic governance, at annual planning, only when dissatisfied or under cost pressure, rarely. LTM heuristic: the step values (100/80/60/40/20) are an LTM convention, not a benchmark; the FinOps Framework gives three stages, not scores. The scale reads how routinely the challenge happens, which is a governance practice; whether the business is satisfied is CORE-43's question (VALUE-06, stars), so the two together give VALUE-06 two scored answers and the dimension is still thin. There is no Unknown option, so RARE is the lowest level; adding UNKNOWN is optional. No published source verified."
       },
       "active": true,
       "version": 1,
@@ -5769,9 +6187,12 @@
         }
       ],
       "scoring": {
-        "dimensionIds": [
-          "VALUE-02"
-        ]
+        "method": "hypothesis-signal",
+        "signals": [
+          "cost-opportunity-hypothesis"
+        ],
+        "note": "The executive's own view of where the largest near-term cost opportunity lies (up to three). Feeds a 'hypothesis versus findings' comparison alongside CORE-09. CLOUD is kept as a hypothesis option and routes to FinOps IQ; it does not bring cloud practice depth back into Cost IQ. No score. Never re-weights a score (GLOBAL-COVERAGE rule).",
+        "basis": "A selection of areas, not an ordered scale, and a hypothesis, so it cannot be scored (as CORE-09). Master adaptiveTrigger 'CostPressure=High' is read by no code. Options overlap CORE-09 and the REDUCE_ options of CORE-45 in theme but are not identical in wording or granularity. LTM heuristic."
       },
       "active": true,
       "version": 1,
@@ -5838,9 +6259,12 @@
         }
       ],
       "scoring": {
-        "dimensionIds": [
-          "VALUE-05"
-        ]
+        "method": "constraint-signal",
+        "signals": [
+          "savings-barriers"
+        ],
+        "note": "Up to three barriers to realising savings. Feeds the feasibility narrative and sequencing. Suggested mapping onto settings.practicalConstraintSignals: CONTRACTS -> CONTRACT_LOCK_IN; BUSINESS -> BUSINESS_CRITICALITY; TECH_DEBT -> PLATFORM_DEPENDENCY; SKILLS -> SKILLS_CONSTRAINT; CHANGE -> CHANGE_CAPACITY. DATA, GOVERNANCE, FUNDING and OTHER have no signal there. I found no code that reads practicalConstraintSignals, so the mapping is documentation until the value model (CQ4) uses it. No score. Never re-weights a score (GLOBAL-COVERAGE rule).",
+        "basis": "A barrier is a constraint on how much of an opportunity is realisable, not a better or worse maturity; a client with no barrier selected is not better run. Scoring it would also double count the questions about the same causes (contracts: ADP-44; skills: CORE-35; technical debt: CORE-40). VALUE-05 Strategic Agility keeps its three scored questions (CORE-11, CORE-21, CORE-28). Master adaptiveTrigger 'CostPressure=High' is read by no code. LTM heuristic."
       },
       "active": true,
       "version": 1,
@@ -5875,31 +6299,31 @@
         },
         {
           "id": "RESILIENCE",
-          "label": "Resilience"
+          "label": "Resilience and recovery"
         },
         {
           "id": "CUSTOMER_DIGITAL",
-          "label": "Customer Digital"
+          "label": "Customer-facing digital products"
         },
         {
           "id": "DATA_AI",
-          "label": "Data Ai"
+          "label": "Data and AI"
         },
         {
           "id": "BUSINESS_CRITICAL_APPS",
-          "label": "Business Critical Apps"
+          "label": "Business-critical applications"
         },
         {
           "id": "CORE_PLATFORM",
-          "label": "Core Platform"
+          "label": "Core platforms"
         },
         {
           "id": "EMPLOYEE_PRODUCTIVITY",
-          "label": "Employee Productivity"
+          "label": "Employee productivity and workplace"
         },
         {
           "id": "TRANSFORMATION",
-          "label": "Transformation"
+          "label": "Transformation programmes"
         },
         {
           "id": "OTHER",
@@ -5907,9 +6331,12 @@
         }
       ],
       "scoring": {
-        "dimensionIds": [
-          "VALUE-02"
-        ]
+        "method": "constraint-signal",
+        "signals": [
+          "protected-capabilities"
+        ],
+        "note": "Capabilities the client wants protected from broad cost reduction (up to three). Feeds the addressable-spend statement and the sequencing of recommendations: nothing in a protected area is proposed as a cut without a stated reason. No score. Never re-weights a score (GLOBAL-COVERAGE rule).",
+        "basis": "A protected list is a business choice, not a maturity condition; protecting security is not better or worse than protecting customer digital. VALUE-02 Investment Effectiveness already has five scored questions (CORE-18, CORE-22, CORE-41, ADP-27, ADP-31) and gains ADP-49 here. Related to CORE-45 (the INVEST_ half of the redirection question) but asks what to protect rather than what to reinvest in, so it complements it. Master adaptiveTrigger 'InvestmentPressure=High' is read by no code. LTM heuristic."
       },
       "active": true,
       "version": 1,
@@ -5925,74 +6352,6 @@
       "answerGuidance": "Choose the option that best reflects the current enterprise reality; do not answer based on intended future state."
     },
     {
-      "id": "ADP-58",
-      "section": "Investment Redirection",
-      "prompt": "Which technology areas are realistic candidates for funding reduction, rationalization or retirement after evidence validation?",
-      "intent": "Identify plausible reduction candidates without claiming savings.",
-      "interaction": "multi-select",
-      "answerDesign": "Answer based on the current operating reality; use the closest evidence-backed description available.",
-      "required": false,
-      "adaptiveTrigger": "InvestmentPressure=High",
-      "costDimension": "Investment Effectiveness",
-      "valueDimension": null,
-      "evidenceImplication": "Validate with targeted evidence before quantifying any opportunity.",
-      "findingImplication": "L6 Portfolio Leakage / Investment challenge",
-      "options": [
-        {
-          "id": "LEGACY",
-          "label": "Legacy"
-        },
-        {
-          "id": "CLOUD_WASTE",
-          "label": "Cloud Waste"
-        },
-        {
-          "id": "SAAS_OVERLAP",
-          "label": "Saas Overlap"
-        },
-        {
-          "id": "SOFTWARE_UNUSED",
-          "label": "Software Unused"
-        },
-        {
-          "id": "VENDOR_SERVICES",
-          "label": "Vendor Services"
-        },
-        {
-          "id": "APPLICATION_DUPLICATION",
-          "label": "Application Duplication"
-        },
-        {
-          "id": "MANUAL_OPERATIONS",
-          "label": "Manual Operations"
-        },
-        {
-          "id": "LOW_VALUE_PROJECTS",
-          "label": "Low Value Projects"
-        },
-        {
-          "id": "OTHER",
-          "label": "Other"
-        }
-      ],
-      "scoring": {
-        "dimensionIds": [
-          "VALUE-02"
-        ]
-      },
-      "active": true,
-      "version": 1,
-      "control": {
-        "maxSelections": 3
-      },
-      "leakageSignal": "L6 Portfolio Leakage",
-      "opportunityTheme": "Investment challenge",
-      "weightClass": "High",
-      "findingIds": [],
-      "recommendationIds": [],
-      "questionDesignVersion": "6.0",
-      "answerGuidance": "Choose the option that best reflects the current enterprise reality; do not answer based on intended future state."
-    },    {
       "id": "ADP-59",
       "section": "Operating Model",
       "prompt": "How effectively is technology demand prioritized against available funding and capacity?",
@@ -6030,7 +6389,15 @@
       "scoring": {
         "dimensionIds": [
           "COST-08"
-        ]
+        ],
+        "defaultMap": {
+          "DISCIPLINED": 100.0,
+          "GOVERNED": 80.0,
+          "MIXED": 60.0,
+          "LIMITED": 40.0,
+          "NONE": 20.0
+        },
+        "basis": "Ordered scale of how technology demand is prioritised against funding and capacity: continuously ranked with lower-value demand stopped, governed in periodic cycles, prioritised but with differing approaches, sponsorship-led, no mechanism. LTM heuristic: the step values (100/80/60/40/20) are an LTM convention, not a benchmark; the FinOps Framework gives three stages, not scores. MIXED sits in the middle by option position. There is no Unknown option, so NONE is the lowest level; adding UNKNOWN is optional. The master's costDimension is empty and valueDimension reads 'Operations Economics' while scoring.dimensionIds is COST-08 (the Cost dimension of that name); the engine reads dimensionIds only, so it scores into COST-08. Overlaps in theme with CORE-18 and CORE-22 (challenge of low-value spend) and CORE-10 (funding); ADP-59 asks about the demand queue, not the funding model. No published source verified."
       },
       "active": true,
       "version": 1,
@@ -6080,7 +6447,15 @@
       "scoring": {
         "dimensionIds": [
           "COST-08"
-        ]
+        ],
+        "defaultMap": {
+          "DIFFERENTIATED": 100.0,
+          "MAJOR": 80.0,
+          "MIXED": 60.0,
+          "UNIFORM": 40.0,
+          "UNKNOWN": 20.0
+        },
+        "basis": "Ordered scale of how far service levels and cost are differentiated by business criticality: deliberately, for critical services only, some, uniform, not transparent enough to say. UNKNOWN last at the lowest level. LTM heuristic: the step values (100/80/60/40/20) are an LTM convention, not a benchmark; the FinOps Framework gives three stages, not scores. Uniform service levels are not always wasteful (a small estate may not justify tiers) and a regulator may require them; the scale reads whether the choice is deliberate. MIXED sits in the middle by option position. Overlaps ADP-21 (criticality concentration, context) and ADP-38 (disaster-recovery sizing); present with them. No published source verified."
       },
       "active": true,
       "version": 1,
@@ -6091,6 +6466,451 @@
       "recommendationIds": [],
       "answerGuidance": "Select the operating state that most closely matches the current enterprise reality.",
       "questionDesignVersion": "6.0"
+    },
+    {
+      "id": "ADP-61",
+      "section": "Cost Governance & Investment",
+      "prompt": "How clearly can your organization trace technology investment and run spend to named strategy objectives?",
+      "intent": "Assess whether technology spend is linked to the enterprise's named strategy objectives, so that the organization can show leadership what it is buying toward and stop spend that supports nothing.",
+      "interaction": "single-select",
+      "answerDesign": "Select the description that is true for most material technology spend today, not for the best single programme. If the enterprise strategy has no named objectives, choose the fourth option.",
+      "required": false,
+      "adaptiveTrigger": "Strategy=Not traced activates value alignment deep dive",
+      "costDimension": null,
+      "valueDimension": "Business Alignment",
+      "evidenceImplication": "Validate with the strategy document or objectives list, the investment portfolio or approved-initiative register showing the objective for each item, and the last portfolio review minutes.",
+      "findingImplication": "L7 Value Leakage / Strategy alignment of technology spend",
+      "options": [
+        {
+          "id": "PORTFOLIO_TRACED",
+          "label": "Most material technology spend, run and change, is mapped to named strategy objectives; the mapping is reviewed on a regular cycle and used to re-prioritise or stop investments."
+        },
+        {
+          "id": "APPROVAL_MAPPED",
+          "label": "Each new material investment must name the strategy objective it supports at approval, but existing run spend is not mapped or reviewed against objectives."
+        },
+        {
+          "id": "THEMES_ONLY",
+          "label": "Investments are grouped under broad strategic themes (for example growth, resilience, efficiency) without named objectives or owners."
+        },
+        {
+          "id": "ASSERTED",
+          "label": "Strategic fit is described in business cases in general terms, or the enterprise strategy has no named objectives to trace to; the link is not recorded or checked."
+        },
+        {
+          "id": "UNKNOWN",
+          "label": "We cannot say which strategy objectives most technology spend supports."
+        }
+      ],
+      "scoring": {
+        "dimensionIds": [
+          "VALUE-01"
+        ],
+        "defaultMap": {
+          "PORTFOLIO_TRACED": 100.0,
+          "APPROVAL_MAPPED": 80.0,
+          "THEMES_ONLY": 60.0,
+          "ASSERTED": 40.0,
+          "UNKNOWN": 20.0
+        },
+        "basis": "Ordered scale of how fully technology spend is traced to named strategy objectives, from the whole portfolio mapped and reviewed down to not known, with UNKNOWN at the lowest level. Scored on VALUE-01 only. The engine ignores valueDimensionIds, so nothing else is credited. This is the first scored question for VALUE-01, which had none (COVERAGE-MATRIX section 3). The construct follows the FinOps Executive Strategy Alignment capability and the GAO investment framework; the option wording and the steps are LTM's. The 100/80/60/40/20 steps are an LTM convention, not a benchmark; the FinOps Framework gives three stages (Crawl, Walk, Run), not scores. Strategy objectives vary in quality: a mapped portfolio against vague objectives scores high, so this reads traceability, not the quality of the strategy. Complements CORE-19 (evidence required before funding approval) and CORE-44 (whether outcomes are measured afterwards): this asks whether the objective link exists for the whole spend, run included."
+      },
+      "active": true,
+      "version": 1,
+      "leakageSignal": "L7 Value Leakage",
+      "opportunityTheme": "Technology spend to strategy traceability",
+      "weightClass": "High",
+      "findingIds": [],
+      "recommendationIds": [],
+      "questionDesignVersion": "6.6",
+      "answerGuidance": "Think of the last time leadership asked what technology spend is for. Use the strategy objectives as the enterprise states them. Answer on current practice, not intended practice."
+    },
+    {
+      "id": "ADP-62",
+      "section": "People",
+      "prompt": "How well does your organization know the fully loaded cost of its internal technology staff and contractors, and how far is it used in decisions?",
+      "intent": "Assess whether the largest technology cost pool, people, is costed completely enough to compare internal, contractor and managed-service options.",
+      "interaction": "single-select",
+      "answerDesign": "Select the description that matches how technology people cost is known and used today. Fully loaded means more than salary or day rate: include benefits, overheads, tools, facilities and management time.",
+      "required": false,
+      "adaptiveTrigger": "Workforce=Yes",
+      "costDimension": "Workforce Economics",
+      "valueDimension": null,
+      "evidenceImplication": "Validate with a loaded-rate table by role, the technology payroll and contractor cost extract, and a recent sourcing or business-case decision that used them.",
+      "findingImplication": "L5 Workforce Leakage / Workforce cost visibility",
+      "options": [
+        {
+          "id": "LOADED_USED",
+          "label": "Fully loaded cost (pay, benefits, overheads, tools, facilities, management time) is known for both internal staff and contractors by role or team and is used in sourcing, staffing and business-case decisions."
+        },
+        {
+          "id": "LOADED_REPORTED",
+          "label": "Fully loaded cost is known for both internal staff and contractors and reported, but is not routinely used in sourcing or investment decisions."
+        },
+        {
+          "id": "ONE_GROUP",
+          "label": "Fully loaded cost is known for one group only, usually contractors from invoices, while internal staff are costed at an average salary or headcount budget."
+        },
+        {
+          "id": "BUDGET_ONLY",
+          "label": "Only headcount budgets and contractor invoice totals are known; no loaded cost per role or team is calculated."
+        },
+        {
+          "id": "UNKNOWN",
+          "label": "We cannot say what technology staff and contractors cost in total."
+        }
+      ],
+      "scoring": {
+        "dimensionIds": [
+          "COST-06"
+        ],
+        "defaultMap": {
+          "LOADED_USED": 100.0,
+          "LOADED_REPORTED": 80.0,
+          "ONE_GROUP": 60.0,
+          "BUDGET_ONLY": 40.0,
+          "UNKNOWN": 20.0
+        },
+        "basis": "Ordered scale of how completely technology people cost is known and used, down to not known, with UNKNOWN at the lowest level. LTM heuristic: the options and the 100/80/60/40/20 steps are LTM's. The 100/80/60/40/20 steps are an LTM convention, not a benchmark; the FinOps Framework gives three stages (Crawl, Walk, Run), not scores. No published scale for workforce cost visibility was found. The TBM Staffing cost pool (internal labour plus staff augmentation) and the FinOps Unit Economics reference to fully loaded costs support the construct only; the FinOps wording is about unit cost of technology resources, not workforce. Gated on WORKFORCE or EXTERNAL in CORE-01 because there is no not-applicable option. Complements ADP-18 (how the internal and contractor mix is decided) and CORE-35 (capacity alignment): this asks whether the cost basis for those decisions exists. Do not present as independent evidence with ADP-18."
+      },
+      "active": true,
+      "version": 1,
+      "leakageSignal": "L5 Workforce Leakage",
+      "opportunityTheme": "Workforce cost visibility",
+      "weightClass": "High",
+      "findingIds": [],
+      "recommendationIds": [],
+      "questionDesignVersion": "6.6",
+      "answerGuidance": "Include permanent staff and contractors engaged to do technology work. Consider whether the figure would survive a finance review.",
+      "applicableWhen": {
+        "questionId": "CORE-01",
+        "anyOf": [
+          "WORKFORCE",
+          "EXTERNAL"
+        ]
+      }
+    },
+    {
+      "id": "ADP-63",
+      "section": "People",
+      "prompt": "How is demand for technology contractors governed: who approves it, what rates apply and how are long-running roles reviewed?",
+      "intent": "Assess whether contractor use is controlled at the point of demand, at the rate paid and over time, rather than only audited after the spend.",
+      "interaction": "single-select",
+      "answerDesign": "Select the description that best matches how contractors are requested, priced and reviewed today. If you use no contractors, choose the last option; it is not scored.",
+      "required": false,
+      "adaptiveTrigger": "Contractors=Yes",
+      "costDimension": "Workforce Economics",
+      "valueDimension": null,
+      "evidenceImplication": "Validate with the contractor request and approval process, the rate card or framework agreement, the contractor register with start dates, and any conversion review record.",
+      "findingImplication": "L5 Workforce Leakage / Contractor demand governance",
+      "options": [
+        {
+          "id": "GOVERNED",
+          "label": "Each contractor request needs a documented need and approval, rates follow a rate card or framework agreement, and long-running roles are reviewed at set intervals for conversion to employees, fixed-price work or a managed service."
+        },
+        {
+          "id": "APPROVED_RATES",
+          "label": "Requests are approved and rates are controlled by a rate card or framework, but long-running roles are not systematically reviewed for conversion."
+        },
+        {
+          "id": "APPROVED_ONLY",
+          "label": "Requests are approved by the hiring manager or budget holder, rates are negotiated case by case, and there is no conversion review."
+        },
+        {
+          "id": "UNCONTROLLED",
+          "label": "Teams engage contractors with little central approval or rate control."
+        },
+        {
+          "id": "UNKNOWN",
+          "label": "We cannot say how many contractors are engaged, at what rates or for how long."
+        },
+        {
+          "id": "NO_CONTRACTORS",
+          "label": "We use no technology contractors."
+        }
+      ],
+      "scoring": {
+        "dimensionIds": [
+          "COST-06"
+        ],
+        "defaultMap": {
+          "GOVERNED": 100.0,
+          "APPROVED_RATES": 80.0,
+          "APPROVED_ONLY": 60.0,
+          "UNCONTROLLED": 40.0,
+          "UNKNOWN": 20.0
+        },
+        "basis": "Ordered scale across the three controls named in the prompt (approval, rates, conversion), from all three in place to none and not known, with UNKNOWN at the lowest level. LTM heuristic: the ladder and the 100/80/60/40/20 steps are LTM's; no published scale for contractor governance was found. The 100/80/60/40/20 steps are an LTM convention, not a benchmark; the FinOps Framework gives three stages (Crawl, Walk, Run), not scores. NO_CONTRACTORS is an unscored option (it has no entry in the map), so a client with no contractors is not rated low. Gating on WORKFORCE or EXTERNAL narrows the audience but a client with no contractors would still be scored low if it answers; the answerDesign tells such clients to leave it unanswered, and an unanswered question is not scored. Owner may prefer a CORE-36 based gate (the share of workforce supplied externally is already asked) but applicableWhen supports only CORE-01 options. Complements ADP-18 (how the internal and contractor balance is decided: strategy level) and CORE-36 (external share, context): this asks about day-to-day demand control. Wording overlap with ADP-18's 'reviewed' is small but real: ADP-18 asks whether the mix is reviewed against economics, this asks about approval, rates and conversion of individual roles."
+      },
+      "active": true,
+      "version": 1,
+      "leakageSignal": "L5 Workforce Leakage",
+      "opportunityTheme": "Contractor spend governance",
+      "weightClass": "High",
+      "findingIds": [],
+      "recommendationIds": [],
+      "questionDesignVersion": "6.6",
+      "answerGuidance": "Consider time-and-material and staff-augmentation contractors, not consultants or managed services priced as an outcome. Answer on current practice for most contractor spend.",
+      "applicableWhen": {
+        "questionId": "CORE-01",
+        "anyOf": [
+          "WORKFORCE",
+          "EXTERNAL"
+        ]
+      }
+    },
+    {
+      "id": "ADP-64",
+      "section": "Infrastructure & Operations",
+      "prompt": "How well does your organization know what end-user devices and workplace software cost per user?",
+      "intent": "Assess whether end-user and workplace technology, the main infrastructure cost of many software-heavy and outsourced estates, is understood per user and by type of user.",
+      "interaction": "single-select",
+      "answerDesign": "Select the description that matches how end-user cost is known today. Include laptops, desktops, mobile devices, workplace software licences and end-user support; exclude data-centre and cloud infrastructure.",
+      "required": false,
+      "adaptiveTrigger": "EndUser=Yes",
+      "costDimension": "Infrastructure Economics",
+      "valueDimension": null,
+      "evidenceImplication": "Validate with the device and workplace-software spend by user type, user counts from HR or the directory, and the support cost per user.",
+      "findingImplication": "L2 Consumption Leakage / End-user cost per user",
+      "options": [
+        {
+          "id": "PER_PERSONA",
+          "label": "Fully loaded cost per user (devices, workplace software, support) is known by type of user (for example office, frontline, specialist) and is used to set standards or challenge them."
+        },
+        {
+          "id": "PER_USER",
+          "label": "A single average cost per user is known and reviewed at least annually, but not by type of user."
+        },
+        {
+          "id": "COMPONENTS",
+          "label": "Device, workplace-software and support costs are known separately, but not combined into a cost per user."
+        },
+        {
+          "id": "TOTAL_ONLY",
+          "label": "Only a total end-user or workplace technology budget is known."
+        },
+        {
+          "id": "UNKNOWN",
+          "label": "We cannot say what end-user technology costs per user."
+        }
+      ],
+      "scoring": {
+        "dimensionIds": [
+          "COST-05"
+        ],
+        "defaultMap": {
+          "PER_PERSONA": 100.0,
+          "PER_USER": 80.0,
+          "COMPONENTS": 60.0,
+          "TOTAL_ONLY": 40.0,
+          "UNKNOWN": 20.0
+        },
+        "basis": "Ordered scale of how completely end-user cost is known per user, from by-persona and used down to not known, with UNKNOWN at the lowest level. Scored on COST-05, as the owner-approved Q3 brief proposed ('COST-05 or a new workplace item'); the closest TBM element, the End User tower, is not one of the towers the taxonomy mapping names for COST-05 (Data Center, Compute, Storage, Network), so the mapping is a judgement. LTM heuristic: the ladder and steps are LTM's. The 100/80/60/40/20 steps are an LTM convention, not a benchmark; the FinOps Framework gives three stages (Crawl, Walk, Run), not scores. Gated on END_USER in CORE-01 because there is no not-applicable option. Overlaps in theme with ADP-06 and CORE-26 (SaaS overlap and licence counts) only where workplace software is a SaaS product: those ask about overlap and reclamation, this asks about cost per user. Complements ADP-65 (lifecycle and refresh)."
+      },
+      "active": true,
+      "version": 1,
+      "leakageSignal": "L2 Consumption Leakage",
+      "opportunityTheme": "End-user cost per user",
+      "weightClass": "Medium",
+      "findingIds": [],
+      "recommendationIds": [],
+      "questionDesignVersion": "6.6",
+      "answerGuidance": "A user is anyone issued a device or workplace-software licence by the organization. Answer on current practice, not on what could be built.",
+      "applicableWhen": {
+        "questionId": "CORE-01",
+        "anyOf": [
+          "END_USER"
+        ]
+      }
+    },
+    {
+      "id": "ADP-65",
+      "section": "Infrastructure & Operations",
+      "prompt": "How are the lifecycle and refresh of end-user devices and workplace software decided and controlled?",
+      "intent": "Assess whether end-user refresh is a managed cost and risk decision or happens by default, since refresh cycle length is the main driver of device cost over time.",
+      "interaction": "single-select",
+      "answerDesign": "Select the description that best matches how devices and workplace software are refreshed today. Answer for the majority of devices.",
+      "required": false,
+      "adaptiveTrigger": "EndUser=Yes",
+      "costDimension": "Infrastructure Economics",
+      "valueDimension": null,
+      "evidenceImplication": "Validate with the device inventory (count, age, model), the refresh policy, and the last three years of device purchases against the policy.",
+      "findingImplication": "L2 Consumption Leakage / End-user lifecycle",
+      "options": [
+        {
+          "id": "GOVERNED",
+          "label": "A device and workplace-software lifecycle policy (refresh cycle, standard models, extension or reuse, disposal or resale) is set on cost and risk, tracked in an asset inventory, and exceptions need approval."
+        },
+        {
+          "id": "POLICY_LED",
+          "label": "A refresh cycle is defined and mostly applied, but exceptions are common or cost and risk are not reviewed against it."
+        },
+        {
+          "id": "SUPPORT_DRIVEN",
+          "label": "Devices are tracked in an inventory, but replacement is driven mainly by warranty, vendor support end or operating-system end of life."
+        },
+        {
+          "id": "ON_FAILURE",
+          "label": "Devices are replaced mainly on failure or on request, with no reliable inventory."
+        },
+        {
+          "id": "UNKNOWN",
+          "label": "We cannot say how many devices are in service or how old they are."
+        }
+      ],
+      "scoring": {
+        "dimensionIds": [
+          "COST-05"
+        ],
+        "defaultMap": {
+          "GOVERNED": 100.0,
+          "POLICY_LED": 80.0,
+          "SUPPORT_DRIVEN": 60.0,
+          "ON_FAILURE": 40.0,
+          "UNKNOWN": 20.0
+        },
+        "basis": "Ordered scale of how deliberately end-user lifecycle is governed, from policy set on cost and risk with an inventory down to replacement on failure and not known, with UNKNOWN at the lowest level. LTM heuristic: the ladder and steps are LTM's; I found no published scale. The 100/80/60/40/20 steps are an LTM convention, not a benchmark; the FinOps Framework gives three stages (Crawl, Walk, Run), not scores. Longer is not always better: a short cycle can be right for security or productivity reasons, so the scale reads whether the cycle is decided and tracked, not its length. Gated on END_USER in CORE-01. Wording overlap: CORE-33 asks what drives infrastructure capacity planning and refresh (ungated, data-centre framing) and ADP-12 asks the on-premises share nearing end of life (context); this asks about devices and workplace software only, so it complements both. Do not present as independent evidence with CORE-33."
+      },
+      "active": true,
+      "version": 1,
+      "leakageSignal": "L2 Consumption Leakage",
+      "opportunityTheme": "End-user lifecycle governance",
+      "weightClass": "Medium",
+      "findingIds": [],
+      "recommendationIds": [],
+      "questionDesignVersion": "6.6",
+      "answerGuidance": "Consider laptops, desktops and mobile devices and the workplace software that runs on them. Answer on current practice.",
+      "applicableWhen": {
+        "questionId": "CORE-01",
+        "anyOf": [
+          "END_USER"
+        ]
+      }
+    },
+    {
+      "id": "ADP-66",
+      "section": "On-Prem",
+      "prompt": "How well does your organization know the unit cost of its own infrastructure, such as a virtual machine, a terabyte or a rack, and how far is it shown to consumers and compared with alternatives?",
+      "intent": "Assess whether internally run infrastructure is costed per unit, made visible to its consumers and tested against other ways of running the same workload.",
+      "interaction": "single-select",
+      "answerDesign": "Select the description that matches current practice for most internally run infrastructure (data centre, private cloud, virtualised estate, colocation). Showing costs back to consumers counts as much as formally charging them.",
+      "required": false,
+      "adaptiveTrigger": "OnPrem=Yes",
+      "costDimension": "Infrastructure Economics",
+      "valueDimension": null,
+      "evidenceImplication": "Validate with the unit-cost calculation by service (VM, storage, rack), the showback or chargeback report, and the last comparison against a cloud or colocation alternative.",
+      "findingImplication": "L1 Visibility Leakage / Internal infrastructure unit cost",
+      "options": [
+        {
+          "id": "UNIT_COMPARED",
+          "label": "Unit cost (per VM, per terabyte, per rack or per core) is calculated from full cost (hardware, facilities, power, licences, labour), shown or charged back to consumers, and compared with cloud, colocation or hosted alternatives at least annually."
+        },
+        {
+          "id": "UNIT_SHOWN_BACK",
+          "label": "Unit cost is calculated from full cost and shown or charged back to consumers, but is not compared with alternatives."
+        },
+        {
+          "id": "UNIT_INTERNAL",
+          "label": "Unit cost is calculated for some services for planning, but consumers do not see it and it is not compared with alternatives."
+        },
+        {
+          "id": "TOTAL_ONLY",
+          "label": "Only the total infrastructure budget or depreciation is known; no unit cost is calculated."
+        },
+        {
+          "id": "UNKNOWN",
+          "label": "We cannot say what a virtual machine, a terabyte or a rack costs us."
+        }
+      ],
+      "scoring": {
+        "dimensionIds": [
+          "COST-05"
+        ],
+        "defaultMap": {
+          "UNIT_COMPARED": 100.0,
+          "UNIT_SHOWN_BACK": 80.0,
+          "UNIT_INTERNAL": 60.0,
+          "TOTAL_ONLY": 40.0,
+          "UNKNOWN": 20.0
+        },
+        "basis": "Ordered scale of how fully internal infrastructure unit cost is known, shown and compared, from compared with alternatives down to not known, with UNKNOWN at the lowest level. Scored on COST-05 only; COST-01 is not credited because the engine would then count one answer in two dimensions (and valueDimensionIds is ignored). The construct follows FinOps Unit Economics (data centres at Walk; unit metrics shape workload placement at Run) and Architecting & Workload Placement (value comparison across placement options including data center and private cloud). The ladder and steps are LTM's. The 100/80/60/40/20 steps are an LTM convention, not a benchmark; the FinOps Framework gives three stages (Crawl, Walk, Run), not scores. FinOps Invoicing & Chargeback says chargeback is optional and neither showback nor chargeback is more mature; the ladder therefore credits showback or chargeback equally. Gated on ON_PREM, PRIVATE_CLOUD, VMWARE or COLO in CORE-01 because there is no not-applicable option. Overlaps: CORE-13 (the level at which cost is understood, whose top option names unit economics) is general; ADP-09 (virtualization licensing, infrastructure and alternatives, gated) asks about platform renewal analysis; ADP-11 and ADP-37 ask about capacity utilisation; ADP-13 asks about colocation contract economics. This question complements all of them by asking for unit cost and comparison; it should not be read as independent evidence with ADP-09."
+      },
+      "active": true,
+      "version": 1,
+      "leakageSignal": "L1 Visibility Leakage",
+      "opportunityTheme": "Internal infrastructure unit cost",
+      "weightClass": "High",
+      "findingIds": [],
+      "recommendationIds": [],
+      "questionDesignVersion": "6.6",
+      "answerGuidance": "Include the full cost of running the unit, not only hardware depreciation or the hosting fee. Answer for most of the internally run estate, not the best-managed platform.",
+      "applicableWhen": {
+        "questionId": "CORE-01",
+        "anyOf": [
+          "ON_PREM",
+          "PRIVATE_CLOUD",
+          "VMWARE",
+          "COLO"
+        ]
+      }
+    },
+    {
+      "id": "ADP-67",
+      "section": "Cost Governance & Investment",
+      "prompt": "How far does your organization track technology cost per unit of business output, such as per transaction, per employee or per revenue unit?",
+      "intent": "Assess whether technology cost is related to what the business produces, so that a rising bill can be told apart from rising volume.",
+      "interaction": "single-select",
+      "answerDesign": "Select the description that matches current practice. A unit of business output is whatever the business counts: transactions, customers, orders, employees or revenue.",
+      "required": false,
+      "adaptiveTrigger": "UnitCost=No activates technology productivity deep dive",
+      "costDimension": null,
+      "valueDimension": "Technology Productivity",
+      "evidenceImplication": "Validate with the unit-cost report, the denominator data source and a recent budget or investment decision that cites it.",
+      "findingImplication": "L7 Value Leakage / Technology cost per unit of output",
+      "options": [
+        {
+          "id": "UNIT_USED",
+          "label": "Technology cost per unit of business output (for example per transaction, per customer, per employee or per revenue unit) is tracked for the main business services, trended over time and used in budget and investment decisions."
+        },
+        {
+          "id": "UNIT_TRACKED",
+          "label": "Technology cost per unit of business output is tracked and reported to leadership for at least one major service, but not used in budget or investment decisions."
+        },
+        {
+          "id": "TOP_LEVEL",
+          "label": "One organisation-wide ratio, for example technology spend as a share of revenue or per employee, is calculated, but nothing by service or business output."
+        },
+        {
+          "id": "NOT_TRACKED",
+          "label": "Technology cost per unit of business output is not tracked, though it could be worked out on request."
+        },
+        {
+          "id": "UNKNOWN",
+          "label": "We do not know whether, or how, technology cost is related to business output."
+        }
+      ],
+      "scoring": {
+        "dimensionIds": [
+          "VALUE-04"
+        ],
+        "defaultMap": {
+          "UNIT_USED": 100.0,
+          "UNIT_TRACKED": 80.0,
+          "TOP_LEVEL": 60.0,
+          "NOT_TRACKED": 40.0,
+          "UNKNOWN": 20.0
+        },
+        "basis": "Ordered scale of how fully technology cost is related to business output, from used in decisions down to not known, with UNKNOWN at the lowest level. Scored on VALUE-04 only. VALUE-04 now holds CORE-34 (manual-effort share) and CORE-35 (workforce alignment), both shared with cost dimensions; this question is the first that feeds VALUE-04 from an output-based measure (COVERAGE-MATRIX section 11, Q5). The construct follows FinOps Unit Economics (business denominators per transaction, customer or case; revenue views) and Executive Strategy Alignment (unit measures such as cost per transaction or per active user); the ladder and steps are LTM's. The 100/80/60/40/20 steps are an LTM convention, not a benchmark; the FinOps Framework gives three stages (Crawl, Walk, Run), not scores. A top-level ratio such as IT spend as a share of revenue is shown as a weaker rung and no benchmark value is used. Overlaps: CORE-13 (the level at which cost is understood, top option mentions unit economics) is about cost allocation; ADP-66 asks the same idea for internal infrastructure only. Complements both; do not present as independent evidence with CORE-13."
+      },
+      "active": true,
+      "version": 1,
+      "leakageSignal": "L7 Value Leakage",
+      "opportunityTheme": "Technology unit economics",
+      "weightClass": "High",
+      "findingIds": [],
+      "recommendationIds": [],
+      "questionDesignVersion": "6.6",
+      "answerGuidance": "Pick the rung that matches what is routinely reported today, not what could be calculated if asked."
     }
   ],
   "rules": [
@@ -6098,13 +6918,11 @@
       "id": "TR-01",
       "area": "Environment",
       "condition": "Public Cloud selected",
-      "action": "Activate ADP-01 to ADP-05",
+      "action": "Moved to FinOps IQ (CQ3a): cloud practice questions ADP-01 to ADP-05 are no longer asked here",
       "triggerKey": "Public Cloud",
-      "enabled": true,
+      "enabled": false,
       "version": 1,
-      "adaptiveAction": [
-        "ADP-01 to ADP-05"
-      ],
+      "adaptiveAction": [],
       "questionRefs": []
     },
     {
@@ -6176,12 +6994,12 @@
       "id": "TR-07",
       "area": "Technology",
       "condition": "Enterprise software materially present",
-      "action": "Activate ADP-15 to ADP-16",
+      "action": "Activate ADP-16 (ADP-15 was dropped as a duplicate of CORE-29 and CORE-31)",
       "triggerKey": "Software",
       "enabled": true,
       "version": 1,
       "adaptiveAction": [
-        "ADP-15 to ADP-16"
+        "ADP-16"
       ],
       "questionRefs": []
     },
@@ -6397,12 +7215,12 @@
       "id": "TR-24",
       "area": "Cloud",
       "condition": "FinOps capability selected",
-      "action": "Activate ADP-42 to ADP-43",
+      "action": "Activate ADP-42 (the cloud and FinOps summary question, which routes to FinOps IQ)",
       "triggerKey": "FinOps",
       "enabled": true,
       "version": 1,
       "adaptiveAction": [
-        "ADP-42 to ADP-43"
+        "ADP-42"
       ],
       "questionRefs": []
     },
@@ -6514,13 +7332,11 @@
       "id": "TR-33",
       "area": "Investment",
       "condition": "High investment redirection pressure selected",
-      "action": "Activate ADP-57 to ADP-58",
+      "action": "ADP-58 was dropped as a duplicate of CORE-45 and ADP-55",
       "triggerKey": "InvestmentPressure=High",
       "enabled": true,
       "version": 1,
-      "adaptiveAction": [
-        "ADP-57 to ADP-58"
-      ],
+      "adaptiveAction": [],
       "questionRefs": []
     },
     {
@@ -6991,7 +7807,8 @@
       "reportLabel": "CIO Hypothesis vs Assessment-Identified Opportunities",
       "scoringImpact": "none",
       "interpretationRule": "Use the comparison as a consulting insight; do not penalize the CIO for an inaccurate initial hypothesis."
-    },    "opportunityModel": {
+    },
+    "opportunityModel": {
       "economicOpportunity": "Addressable Spend × Opportunity Factor × Confidence Modifier",
       "practicalOpportunity": "Economic Opportunity adjusted after feasibility/constraint assessment",
       "economicAndPracticalOutputsAreSeparate": true,
@@ -7026,6 +7843,152 @@
       "REGULATORY_CONTROL": "Regulatory, resilience, security or control requirements constrain optimization.",
       "CHANGE_CAPACITY": "Execution bandwidth limits the pace of value capture.",
       "SKILLS_CONSTRAINT": "Internal/external skills availability affects feasibility."
+    },
+    "currencyBands": {
+      "purpose": "Labels for the CORE-03 and CORE-04 size classes in the client's reporting currency. Conversion happens only here, once, when the table is built; the engine scores no money and converts nothing at run time.",
+      "rateSource": "ECB euro foreign exchange reference rates (daily XML, https://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml); for information only, not for transactions",
+      "rateDate": "2026-11-02",
+      "ratesPerEUR": {
+        "EUR": 1.0,
+        "GBP": 0.8358,
+        "CHF": 0.9193,
+        "CAD": 1.5673,
+        "AUD": 1.6004,
+        "JPY": 177.1,
+        "CNY": 7.4567,
+        "INR": 106.4505,
+        "SGD": 1.4344,
+        "BRL": 6.099,
+        "ZAR": 18.6619,
+        "USD": 1.1216
+      },
+      "rounding": "two significant figures",
+      "usdFallback": [
+        "USD",
+        "AED",
+        "SAR",
+        "OTHER"
+      ],
+      "status": "Regenerated from the ECB XML on 4 Nov 2026 by script; owner approved the approach on 4 Nov 2026. Re-issue on a new date with owner approval, at least yearly.",
+      "assumptions": [
+        {
+          "id": "A1",
+          "what": "Reporting currency band conversion for CORE-03 and CORE-04",
+          "value": "USD band edges converted at ECB euro reference rates dated 2 Nov 2026 (cross rates through EUR), rounded to two significant figures",
+          "basis": "published source: ECB euro foreign exchange reference rates (https://www.ecb.europa.eu/stats/policy_and_exchange_rates/euro_reference_exchange_rates/html/index.en.html), read 3 Nov 2026",
+          "confidence": "medium (the rate is real; a size class does not need precision)",
+          "ifWrong": "A band label is a few percent off its USD size class. No score, finding or lever uses the band, so nothing else moves; labels are re-issued."
+        },
+        {
+          "id": "A2",
+          "what": "Which currencies get a converted table",
+          "value": "USD, EUR, GBP, CHF, CAD, AUD, JPY, CNY, INR, SGD; AED, SAR and OTHER show US dollar bands with a visible label",
+          "basis": "LTM heuristic: only currencies the ECB publishes a reference rate for",
+          "confidence": "high",
+          "ifWrong": "A client in an uncovered currency picks the nearest USD band by their own rate."
+        },
+        {
+          "id": "A3",
+          "what": "Date of the rate",
+          "value": "2 Nov 2026; re-issue on owner approval, at least yearly",
+          "basis": "LTM heuristic",
+          "confidence": "medium",
+          "ifWrong": "Labels drift from current size classes; the claims register review date forces a refresh."
+        }
+      ]
+    },
+    "selection": {
+      "purpose": "Which questions a client is asked: the baseline sections always; the sections of each chosen focus area; and every question gated on the footprint (CORE-01), which appears when the footprint names its estate. One definition for the page and the engine, so completeness is counted over the questions shown.",
+      "baselineSections": [
+        "Enterprise Context",
+        "CIO Priorities",
+        "Spend & Financial Visibility",
+        "Cost Governance & Investment",
+        "Regulated Industry"
+      ],
+      "defaultAreas": [
+        "Infrastructure",
+        "Applications"
+      ],
+      "areas": {
+        "Cloud Economics": [
+          "Cloud & SaaS Economics"
+        ],
+        "SaaS & Licensing": [
+          "Cloud & SaaS Economics",
+          "SaaS",
+          "Software",
+          "Software & Licensing"
+        ],
+        "Infrastructure": [
+          "Infrastructure & Operations",
+          "On-Prem",
+          "Data Center",
+          "Colocation",
+          "Disaster Recovery",
+          "VMware"
+        ],
+        "Applications": [
+          "Architecture & Applications",
+          "Applications",
+          "Product Operating Model"
+        ],
+        "Workforce": [
+          "People & Vendors",
+          "People"
+        ],
+        "Vendors & Commercials": [
+          "People & Vendors",
+          "Vendors",
+          "Procurement",
+          "Contracts",
+          "Outsourcing",
+          "Managed Services"
+        ],
+        "Cost Governance": [
+          "Cost Governance & Investment"
+        ],
+        "Technology Value": [
+          "Technology Value",
+          "Value Management",
+          "Investment Redirection",
+          "Cost Reduction"
+        ],
+        "Architecture & Technical Debt": [
+          "Architecture",
+          "Technical Debt",
+          "Architecture & Applications"
+        ],
+        "Data": [
+          "Data"
+        ],
+        "Network": [
+          "Network"
+        ],
+        "Security": [
+          "Security"
+        ],
+        "AI & Emerging Technology": [
+          "AI"
+        ],
+        "Transformation": [
+          "Transformation"
+        ],
+        "Business-led IT": [
+          "Business-led IT"
+        ],
+        "M&A": [
+          "M&A"
+        ],
+        "Geography": [
+          "Geography"
+        ],
+        "Operations & Service Management": [
+          "ITSM",
+          "Observability",
+          "Operating Model"
+        ]
+      }
     }
   },
   "audit": {

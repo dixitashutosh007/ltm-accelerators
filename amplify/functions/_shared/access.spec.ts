@@ -3,7 +3,7 @@
  */
 import { describe, it, expect, beforeEach, afterAll } from 'vitest';
 import type { APIGatewayProxyStructuredResultV2 } from 'aws-lambda';
-import { withAcceleratorAccess, setPermissionSource, setDomainStore, grants } from './access';
+import { withAcceleratorAccess, setPermissionSource, setDomainStore, grants, holdsPermission } from './access';
 
 const reached: string[] = [];
 const handler = withAcceleratorAccess('cloud-iq', async () => { reached.push('cloud-iq'); return { statusCode: 200, body: '{"ok":true}' }; });
@@ -110,3 +110,19 @@ describe('accelerator access on the server', () => {
     expect(asked).toBe(0);
   });
 });
+
+describe('holdsPermission (one accelerator reading another\'s data)', () => {
+  const ev = (claims: Record<string, unknown> | null): any => ({ requestContext: { http: { method: 'POST' }, ...(claims ? { authorizer: { jwt: { claims } } } : {}) } });
+  it('is true for an Admin, for a user whose permissions grant the tool, and false otherwise', async () => {
+    setPermissionSource(async () => ({ take: ['cost-iq'] }));
+    expect(await holdsPermission(ev({ email: 'a@example.com', sub: 's', 'cognito:groups': ['Admin'] }), 'finops-iq')).toBe(true);
+    expect(await holdsPermission(ev({ email: 'u@example.com', sub: 's' }), 'cost-iq')).toBe(true);
+    expect(await holdsPermission(ev({ email: 'u@example.com', sub: 's' }), 'finops-iq')).toBe(false);
+    expect(await holdsPermission(ev(null), 'cost-iq')).toBe(false);
+  });
+  it('fails closed when the permission list cannot be read', async () => {
+    setPermissionSource(async () => { throw new Error('s3 down'); });
+    expect(await holdsPermission(ev({ email: 'u@example.com', sub: 's' }), 'cost-iq')).toBe(false);
+  });
+});
+

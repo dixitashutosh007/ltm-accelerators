@@ -3,8 +3,14 @@ import { manageResilienceAssessmentFunction } from '../functions/manage-resilien
 import { manageResilienceEvidenceFunction } from '../functions/manage-resilience-evidence/resource';
 import { manageFinOpsAssessmentFunction } from '../functions/manage-finops-assessment/resource';
 import { manageSovereignAssessmentFunction } from '../functions/manage-sovereign-assessment/resource';
+import { retentionSweepFunction } from '../functions/retention-sweep/resource';
+import { manageCostAssessmentFunction } from '../functions/manage-cost-assessment/resource';
+import { manageSessionFunction } from '../functions/manage-session/resource';
+import { costIqReportFunction } from '../functions/cost-iq-report/resource';
 import { sovereignIqReportFunction } from '../functions/sovereign-iq-report/resource';
 import { sovereignIqNarrativeFunction } from '../functions/sovereign-iq-narrative/resource';
+import { costIqNarrativeFunction } from '../functions/cost-iq-narrative/resource';
+import { costIqNarrativeWorkerFunction } from '../functions/cost-iq-narrative-worker/resource';
 import { finopsIqReportFunction } from '../functions/finops-iq-report/resource';
 
 /**
@@ -83,7 +89,9 @@ const schema = a.schema({
       recommendationSensitivityJson: a.string(),
       startedAt: a.datetime().required(),
       completedAt: a.datetime(),
-      finalizedAt: a.datetime()
+      finalizedAt: a.datetime(),
+      // Epoch seconds 24 months after the last change; DynamoDB time to live deletes the record then.
+      expiresAt: a.integer()
     })
     .authorization(allow => [
       allow.groups(['Admin', 'Consultant']).to(['create', 'read', 'update'])
@@ -99,19 +107,32 @@ const schema = a.schema({
       clientName: a.string(),
       clientSector: a.string(),
       clientCurrency: a.string(),
+      // From the caller's token (CQ1). Records saved before then have none and are visible to Admins only.
+      respondentEmail: a.string(),
       selectedAreasJson: a.string().required(),
       answersJson: a.string().required(),
       subjectiveJson: a.string(),
       resultJson: a.string(),
       startedAt: a.datetime().required(),
       updatedAt: a.datetime().required(),
-      completedAt: a.datetime()
+      completedAt: a.datetime(),
+      // The FinOps IQ result this assessment uses as its cloud line (CQ3b, shared value model stage 2): the versioned summary
+      // only, as it was when linked, and the id of the FinOps IQ assessment it came from.
+      finopsAssessmentId: a.string(),
+      finopsSummaryJson: a.string(),
+      // Non-cloud lever evidence the consultant recorded from the client's own figures (CQ4); the report sizes the lever from it.
+      leverEvidenceJson: a.string(),
+      // AI narrative (CQ8): the consultant's per-engagement switch and the last narrative that passed the grounding check.
+      aiEnabled: a.boolean(),
+      narrativeJson: a.string(),
+      // Epoch seconds 24 months after the last change; DynamoDB time to live deletes the record then.
+      expiresAt: a.integer()
     })
     .identifier(['assessmentId'])
+    // Only the manage-cost-assessment service writes, and it checks ownership from the caller's token. The browser used to
+    // call the Data API directly, where every Consultant could read and change every assessment.
     .authorization(allow => [
-      allow.group('Admin').to(['create', 'read', 'update', 'delete']),
-      allow.group('Consultant').to(['create', 'read', 'update', 'delete']),
-      allow.owner().to(['create', 'read', 'update'])
+      allow.group('Admin').to(['read'])
     ]),
 
   AssessmentSubmission: a
@@ -208,6 +229,25 @@ const schema = a.schema({
       allow.group('Admin').to(['read'])
     ]),
 
+  SavedSession: a
+    .model({
+      sessionId: a.string().required(),
+      accelerator: a.string().required(),
+      ownerEmail: a.string().required(),
+      title: a.string().required(),
+      status: a.string().required(),
+      stage: a.string(),
+      percent: a.integer(),
+      // The accelerator's own snapshot, opaque to the service.
+      payloadJson: a.string().required(),
+      // Epoch seconds 90 days after the last save; DynamoDB time to live deletes the record then.
+      expiresAt: a.integer()
+    })
+    .identifier(['sessionId'])
+    .authorization(allow => [
+      allow.group('Admin').to(['read'])
+    ]),
+
   UserAllowlist: a
     .model({
       email: a.string().required(),
@@ -224,8 +264,14 @@ const schema = a.schema({
   allow.resource(manageResilienceEvidenceFunction).to(['query', 'mutate']),
   allow.resource(manageFinOpsAssessmentFunction).to(['query', 'mutate']),
   allow.resource(manageSovereignAssessmentFunction).to(['query', 'mutate']),
+  allow.resource(manageSessionFunction).to(['query', 'mutate']),
+  allow.resource(manageCostAssessmentFunction).to(['query', 'mutate']),
+  allow.resource(retentionSweepFunction).to(['query', 'mutate']),
   allow.resource(sovereignIqReportFunction).to(['query']),
+  allow.resource(costIqReportFunction).to(['query']),
   allow.resource(sovereignIqNarrativeFunction).to(['query', 'mutate']),
+  allow.resource(costIqNarrativeFunction).to(['query', 'mutate']),
+  allow.resource(costIqNarrativeWorkerFunction).to(['query', 'mutate']),
   // The report reads completed assessments only.
   allow.resource(finopsIqReportFunction).to(['query'])
 ]);

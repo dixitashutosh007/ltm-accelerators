@@ -101,8 +101,11 @@ export function parseBody(event: APIGatewayProxyEventV2) {
   return JSON.parse(event.isBase64Encoded ? Buffer.from(event.body, 'base64').toString('utf8') : event.body);
 }
 
-export const ASSESSMENT_FIELDS = `id assessmentId clientName clientSector respondentEmail status questionBankVersion scoringModelVersion decisionTreeVersion blueprintEngineVersion executiveReportVersion engineVersion answersJson resultJson decisionLogJson recommendationSensitivityJson startedAt completedAt finalizedAt createdAt updatedAt`;
+export const ASSESSMENT_FIELDS = `id assessmentId clientName clientSector respondentEmail status questionBankVersion scoringModelVersion decisionTreeVersion blueprintEngineVersion executiveReportVersion engineVersion answersJson resultJson decisionLogJson recommendationSensitivityJson startedAt completedAt finalizedAt expiresAt createdAt updatedAt`;
+
+/** DynamoDB time to live deletes an expired record within days, not at once: past expiresAt it counts as deleted. */
+export const isLive = (r: { expiresAt?: number | null }, now = Date.now()) => r.expiresAt == null || r.expiresAt * 1000 > now;
 
 export async function getAssessment(assessmentId: string) {
-  return (await listWhere('ResilienceAssessment', ASSESSMENT_FIELDS, { assessmentId: { eq: assessmentId } }, true))[0] || null;
+  return (await listWhere('ResilienceAssessment', ASSESSMENT_FIELDS, { assessmentId: { eq: assessmentId } }, true)).filter(r => isLive(r))[0] || null;
 }

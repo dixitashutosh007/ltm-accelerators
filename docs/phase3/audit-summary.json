@@ -1114,5 +1114,123 @@
         "worstProfileShift": 0
       }
     ]
+  },
+  {
+    "id": "cost-iq",
+    "name": "Cost IQ",
+    "ranges": [
+      {
+        "headline": "Cost IQ (0-100)",
+        "scale": [
+          0,
+          100
+        ],
+        "min": 33,
+        "max": 80,
+        "outOfScale": 0,
+        "nulls": 0
+      },
+      {
+        "headline": "Value IQ (0-100)",
+        "scale": [
+          0,
+          100
+        ],
+        "min": 32,
+        "max": 91,
+        "outOfScale": 0,
+        "nulls": 0
+      }
+    ],
+    "sensitivity": [
+      {
+        "headline": "Cost IQ (0-100)",
+        "top": [
+          {
+            "qid": "CORE-34",
+            "swing": 13
+          },
+          {
+            "qid": "CORE-40",
+            "swing": 11
+          },
+          {
+            "qid": "ADP-42",
+            "swing": 9
+          },
+          {
+            "qid": "ADP-62",
+            "swing": 9
+          },
+          {
+            "qid": "ADP-63",
+            "swing": 9
+          }
+        ],
+        "share": 0.2765957446808511
+      },
+      {
+        "headline": "Value IQ (0-100)",
+        "top": [
+          {
+            "qid": "CORE-34",
+            "swing": 25
+          },
+          {
+            "qid": "ADP-32",
+            "swing": 20
+          },
+          {
+            "qid": "ADP-61",
+            "swing": 20
+          },
+          {
+            "qid": "CORE-20",
+            "swing": 16
+          },
+          {
+            "qid": "ADP-67",
+            "swing": 16
+          }
+        ],
+        "share": 0.423728813559322
+      }
+    ],
+    "dead": [
+      "CORE-02",
+      "CTX-01",
+      "CORE-03",
+      "CORE-04",
+      "CTX-02",
+      "CTX-03",
+      "CTX-05",
+      "CTX-04",
+      "CORE-05",
+      "CORE-07",
+      "CORE-08",
+      "CORE-09",
+      "CORE-10",
+      "CORE-14",
+      "CORE-19",
+      "CORE-32",
+      "CORE-39",
+      "CORE-42",
+      "ADP-10",
+      "ADP-12",
+      "ADP-21",
+      "ADP-28"
+    ],
+    "missing": [
+      {
+        "headline": "Cost IQ (0-100)",
+        "meanShift": -0.96,
+        "worstProfileShift": 1
+      },
+      {
+        "headline": "Value IQ (0-100)",
+        "meanShift": -0.51,
+        "worstProfileShift": 2
+      }
+    ]
   }
 ]

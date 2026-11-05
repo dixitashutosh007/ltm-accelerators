@@ -22,10 +22,8 @@ Administrators only: the Admin group and the super administrators. The services 
 - Two CSV downloads: people, and assessments. Cells that begin with `=`, `+`, `-` or `@` are prefixed with a quote so a spreadsheet cannot run them.
 - A person whose account was removed is shown as "account removed" until their records expire.
 
-## Notice to staff (wording to agree before the screen is used)
-> LTM Vantage records when you sign in and the status and dates of the assessments you start, save or complete (which tool, the assessment reference, and the times). It does not record your answers or your clients' names in this log. Administrators can see this log to manage access and support users. Records are deleted 12 months after they were last updated.
-
-Owner decision needed on the wording, and on whether privacy and legal review it before the tab is switched on for all administrators.
+## Notice to staff
+Draft wording for counsel, the legal questions to settle, and where to show it are in `USER_ACTIVITY_NOTICE.md`. The Activity tab carries the short notice. The link to the full notice is not in the tab yet: after counsel approves the text, publish it as a page that needs no sign-in and add the link to the tab and the sign-in screen. Administrators should not use the tab before the full notice is live.
 
 ## Known limits
 - **A sign-in is a password sign-in.** A person who stays signed in on a refresh token is not shown signing in again. "Last sign-in" can therefore be older than their last activity; "last assessment saved" is the better sign of use.

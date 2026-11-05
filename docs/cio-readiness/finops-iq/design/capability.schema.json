@@ -104,7 +104,6 @@
         },
         "leverIds": { "type": "array", "items": { "$ref": "urn:ltm:finops-iq:v3:facts#/$defs/leverId" } },
         "offeringIds": { "type": "array", "items": { "$ref": "urn:ltm:finops-iq:v3:facts#/$defs/offeringId" } },
-        "costIqPrefill": { "type": "array", "items": { "type": "string", "pattern": "^CIQ\\.FIN-[0-9]{2}$" } },
         "dependsOn": { "type": "array", "items": { "$ref": "urn:ltm:finops-iq:v3:facts#/$defs/capabilityId" }, "description": "Roadmap dependencies (DESIGN.md 5.4)." },
         "wave": { "enum": [1, 2, 3] },
         "description": { "type": "string", "description": "Added in F2: short description in LTM's words (a paraphrase, not a quotation of the Framework)." },

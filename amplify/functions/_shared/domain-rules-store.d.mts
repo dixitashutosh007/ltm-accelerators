@@ -6,6 +6,7 @@ export const FRESH_MS: number;
 export interface DomainRulesStore {
   read(opts?: { force?: boolean }): Promise<{ doc: DomainRulesDocument; etag: string | null; source: 'live' | 'cache' | 'stale' }>;
   check(email: unknown): Promise<DomainDecision>;
+  seedIfMissing(): Promise<'created' | 'exists'>;
   change(change: DomainRuleChange, by: string): Promise<{ doc: DomainRulesDocument; record: DomainAuditRecord }>;
   audit(limit?: number): Promise<DomainAuditRecord[]>;
 }

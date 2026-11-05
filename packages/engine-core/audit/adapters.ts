@@ -10,6 +10,7 @@ import cloudKb from '../src/accelerators/cloud-iq/knowledge-base.json' with { ty
 import { evaluateFinOpsIqV3, QUESTIONS as FIQ3_QUESTIONS, type Facts as Fiq3Facts, type Mode as Fiq3Mode } from '../src/accelerators/finops-iq/v3';
 import { evaluateResilienceIq } from '../src/accelerators/resilience-iq/evaluate';
 import { resilienceKnowledge } from '../src/accelerators/resilience-iq/knowledge';
+import { createRequire } from 'node:module';
 
 export type Rng = () => number;
 export function rng(seed: number): Rng {
@@ -259,6 +260,37 @@ function riqExtreme(best: boolean) {
   return { answers };
 }
 
+/* -------------------------------- Cost IQ ---------------------------------- */
+// The questions shown for the default focus areas and a mixed estate, so every scored question can be asked. A random
+// questionnaire answers most of them; extremes pick, per question, the answer the engine scores highest or lowest.
+const requireCjs = createRequire(import.meta.url);
+const COST_ENGINE = requireCjs('../src/accelerators/cost-iq/evaluate.cjs');
+const COST_CANON = requireCjs('../src/accelerators/cost-iq/canon/costiq-engine-v10.cjs');
+const COST_CFG = requireCjs('../src/accelerators/cost-iq/canon/config/master-v6.6.json');
+const COST_AREAS: string[] = COST_CFG.settings.selection.defaultAreas;
+const COST_FOOTPRINT = ['ON_PREM', 'PUBLIC_CLOUD', 'SAAS', 'SOFTWARE', 'EXTERNAL', 'AI', 'VMWARE', 'COLO', 'END_USER', 'NETWORK', 'DATA'];
+const COST_BASE = { 'CORE-01': COST_FOOTPRINT, 'CORE-16': 'TRUE' };
+const COST_SHOWN: Set<string> = COST_CANON.shownQuestionIds(COST_CFG, COST_AREAS, COST_BASE);
+const COST_QS: any[] = COST_CFG.questions.filter((q: any) => COST_SHOWN.has(q.id) && q.id !== 'CORE-01' && q.id !== 'CORE-16');
+function costVariants(q: any): unknown[] {
+  if ((q.options || []).length) return q.interaction === 'multi-select' ? [[], [q.options[0].id], q.options.map((o: any) => o.id)] : q.options.map((o: any) => o.id);
+  if (q.interaction === 'stars') return [1, 3, 5];
+  if (['slider', 'range'].includes(q.interaction)) return [0, 50, 100];
+  return [];
+}
+const costExtreme = (best: boolean) => ({
+  answers: {
+    ...COST_BASE,
+    ...Object.fromEntries(COST_QS.map(q => {
+      const vs = costVariants(q).map(v => [v, COST_ENGINE && COST_CANON.scoreQuestion(q, v, {})] as const).filter(([, sc]) => typeof sc === 'number');
+      if (!vs.length) return [q.id, costVariants(q)[0]];
+      const pickOne = vs.reduce((a, b) => ((best ? (b[1] as number) > (a[1] as number) : (b[1] as number) < (a[1] as number)) ? b : a));
+      return [q.id, pickOne[0]];
+    }).filter(([, v]) => v !== undefined))
+  }
+});
+const costEval = (i: any) => COST_ENGINE.evaluateCostIq({ answers: i.answers, scope: { selectedAreas: COST_AREAS } });
+
 export const ADAPTERS: Adapter[] = [
   {
     id: 'strategy-iq', name: 'Strategy IQ',
@@ -307,5 +339,18 @@ export const ADAPTERS: Adapter[] = [
     ],
     band: { get: r => r.rating ?? 'Withheld (incomplete)', all: ['Withheld (incomplete)', 'Critical Exposure', 'Fragile', 'Managed', 'Resilient', 'Adaptive'] },
     extremes: { best: () => riqExtreme(true), worst: () => riqExtreme(false) }
+  },
+  {
+    id: 'cost-iq', name: 'Cost IQ',
+    questions: COST_QS.map(q => ({ id: q.id, label: q.prompt })),
+    random: r => ({ answers: { ...COST_BASE, ...Object.fromEntries(COST_QS.filter(() => r() < 0.85).map(q => [q.id, pick(r, costVariants(q))]).filter(([, v]) => v !== undefined)) } }),
+    variants: id => costVariants(COST_QS.find(q => q.id === id)),
+    withAnswer: setAnswer, withoutAnswer: dropAnswer,
+    evaluate: costEval,
+    headlines: [
+      { name: 'Cost IQ (0-100)', scale: [0, 100], higherIsBetter: true, get: r => r.headlines.costIQ },
+      { name: 'Value IQ (0-100)', scale: [0, 100], higherIsBetter: true, get: r => r.headlines.valueIQ }
+    ],
+    extremes: { best: () => costExtreme(true), worst: () => costExtreme(false) }
   }
 ];

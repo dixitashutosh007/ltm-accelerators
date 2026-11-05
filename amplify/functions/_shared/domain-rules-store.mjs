@@ -17,7 +17,10 @@ export const STALE_MS = 15 * 60 * 1000;
 /** A copy this fresh is used without asking the bucket again. */
 export const FRESH_MS = 30 * 1000;
 
-const isMissing = err => err?.name === 'NoSuchKey' || err?.$metadata?.httpStatusCode === 404;
+// Only a missing object means "no rules yet". A 404 for any other reason (a wrong or deleted bucket: NoSuchBucket) is an
+// outage, not an empty list, so the blocks are not silently dropped. A caller without s3:ListBucket gets AccessDenied for a
+// missing object, so the reports service (which has it) creates the file on its first request: see seedIfMissing.
+const isMissing = err => err?.name === 'NoSuchKey';
 const isConflict = err => err?.name === 'PreconditionFailed' || err?.name === 'ConditionalRequestConflict' || err?.$metadata?.httpStatusCode === 412 || err?.$metadata?.httpStatusCode === 409;
 
 /** deps: { bucket, cfg, s3?, now?, id? }. The cache belongs to the store, so tests and Lambdas each have their own. */
@@ -52,6 +55,27 @@ export function createDomainRulesStore(deps) {
         return decide(addr, doc, deps.cfg);
       } catch (err) {
         if (err instanceof DomainRuleError) return { allowed: false, reason: 'rules_unavailable' };
+        throw err;
+      }
+    },
+    /**
+     * Creates the rules file, empty, if it does not exist. The services that only read the file get AccessDenied, not "not
+     * found", for a missing object, and would refuse everyone but the protected addresses until it exists.
+     * Returns 'created' or 'exists'. Never overwrites.
+     */
+    async seedIfMissing() {
+      try {
+        await s3.send(new GetObjectCommand({ Bucket: deps.bucket, Key: RULES_KEY }));
+        return 'exists';
+      } catch (err) {
+        if (!isMissing(err)) throw err;
+      }
+      try {
+        await s3.send(new PutObjectCommand({ Bucket: deps.bucket, Key: RULES_KEY, Body: Buffer.from(JSON.stringify(emptyRules(), null, 2)), ContentType: 'application/json', IfNoneMatch: '*' }));
+        cache = null;
+        return 'created';
+      } catch (err) {
+        if (isConflict(err)) return 'exists';
         throw err;
       }
     },

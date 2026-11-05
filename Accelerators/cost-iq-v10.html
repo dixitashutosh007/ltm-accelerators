@@ -5,20 +5,29 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Cost IQ — Technology Cost & Value Diagnostic · LTM Vantage</title>
 <script src="./cost-iq-runtime-config.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="/assets/vendor/chart-4.4.1.umd.js"></script>
+<script src="/assets/ltm-api.js"></script>
 <script src="/assets/s3-reports.js"></script>
 <script src="/assets/rbac-guard.js" data-tool="cost-iq"></script>
 <script src="/assets/cost-iq-persistence.js"></script>
 <style>
 :root{--bg:#F8F9FA;--panel:#fff;--ink:#18181B;--muted:#52525B;--line:#E4E4E7;--red:#D33826;--red2:#B82E1A;--red-fill:#FF5E4F;--teal:#226882;--green:#35754d;--amber:#c77b00;--nav:#17212b;--shadow:0 12px 35px rgba(22,34,45,.08)}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:"Inter",Arial,sans-serif;line-height:1.5}.wrap{max-width:1180px;margin:auto;padding:28px}
-.top{background:#fff;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:30}.top-in{max-width:1180px;margin:auto;padding:14px 28px;display:flex;align-items:center;justify-content:space-between}.brand{display:flex;align-items:center;gap:10px}.brand-badge{background:linear-gradient(135deg,var(--red),var(--red2));color:#fff;font-weight:800;padding:5px 9px;border-radius:6px}.brand-title{font-size:14px;font-weight:800}.mono{font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.08em;text-transform:uppercase}.muted{color:var(--muted)}.hero{background:linear-gradient(135deg,#17212b 0%,#243846 100%);color:#fff;border-radius:20px;padding:44px;position:relative;overflow:hidden;box-shadow:var(--shadow)}.hero:after{content:"";position:absolute;width:420px;height:420px;right:-140px;top:-190px;border-radius:50%;background:radial-gradient(circle,rgba(255,94,79,.28),transparent 68%)}.eyebrow{font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:#a9bac6}.hero h1{font-size:42px;line-height:1.08;margin:10px 0 12px;max-width:720px}.hero p{max-width:740px;color:#d5dde3}.btn{border:1px solid var(--line);background:#fff;color:var(--ink);border-radius:9px;padding:10px 15px;font-weight:800;cursor:pointer;font-family:inherit}.btn.primary{background:var(--red);border-color:var(--red);color:#fff}.btn.dark{background:#17212b;border-color:#17212b;color:#fff}.btn:disabled{opacity:.45;cursor:not-allowed}.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px}.stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:24px 0}.stat{background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px}.stat b{font-size:25px}.card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:24px;margin:18px 0;box-shadow:0 4px 18px rgba(22,34,45,.04)}.section-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.area{border:1px solid var(--line);border-radius:14px;padding:17px;cursor:pointer;transition:.18s;background:#fff;position:relative}.area:hover{transform:translateY(-2px);box-shadow:var(--shadow);border-color:#bfd0d9}.area.selected{border-color:var(--red);background:#fff7f5}.area input{position:absolute;opacity:0}.area .check{position:absolute;right:13px;top:13px;width:22px;height:22px;border:1px solid #c8d0d7;border-radius:50%;display:grid;place-items:center;font-size:12px}.area.selected .check{background:var(--red);color:#fff;border-color:var(--red)}.area h3{font-size:14px;margin:0 0 4px}.area p{font-size:12px;color:var(--muted);margin:0;padding-right:20px}.baseline{background:#eef6f8;border:1px solid #cfe2e8;color:#255e72;border-radius:10px;padding:12px 14px;font-size:12px}.assessment{display:grid;grid-template-columns:240px 1fr;gap:20px}.rail{position:sticky;top:82px;align-self:start}.rail-card{background:#17212b;color:#fff;border-radius:16px;padding:18px}.rail-item{padding:9px 10px;border-radius:8px;font-size:11px;color:#b9c6cf;margin:3px 0}.rail-item.active{background:rgba(255,255,255,.1);color:#fff}.rail-item.done{color:#9ce0b7}.q-card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:28px;box-shadow:var(--shadow)}.q-no{display:inline-flex;background:#eef2f5;color:#5d6a75;padding:4px 8px;border-radius:6px;font:600 10px "JetBrains Mono",monospace}.q-title{font-size:25px;line-height:1.25;margin:12px 0 7px}.help{background:#f4f8fa;border-left:3px solid var(--teal);padding:11px 14px;border-radius:8px;font-size:12px;color:#51606c;margin:16px 0}.option{border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin:9px 0;cursor:pointer;display:flex;gap:12px;align-items:flex-start;transition:.15s;background:#fff}.option:hover{border-color:#b9cbd4;transform:translateX(2px)}.option.selected{border-color:var(--red);background:#fff7f5;box-shadow:0 0 0 2px rgba(255,94,79,.08)}.letter{width:27px;height:27px;border-radius:7px;background:#eef2f5;display:grid;place-items:center;font-weight:800;font-size:11px;flex:none}.selected .letter{background:var(--red);color:#fff}.option-title{font-size:13px;font-weight:700}.option-desc{font-size:11.5px;color:var(--muted);margin-top:2px}.subjective{margin-top:15px}.subjective textarea{width:100%;min-height:88px;border:1px solid var(--line);border-radius:10px;padding:11px 12px;font:12px inherit;resize:vertical}.subjective textarea:focus{outline:2px solid rgba(34,104,130,.15);border-color:var(--teal)}.progress{height:6px;background:#edf0f2;border-radius:99px;overflow:hidden}.progress i{display:block;height:100%;background:linear-gradient(90deg,var(--red),#ff8b7e);transition:.25s}.nav{display:flex;justify-content:space-between;align-items:center;margin-top:20px}.score-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}.score-card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px}.score-num{font-size:35px;font-weight:800}.score-label{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}.dimension-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}.dim{border:1px solid var(--line);border-radius:12px;padding:14px}.dim-top{display:flex;justify-content:space-between;font-size:12px;font-weight:800}.dimbar{height:8px;background:#edf0f2;border-radius:99px;margin-top:9px;overflow:hidden}.dimbar i{height:100%;display:block;background:var(--red)}.finding{border:1px solid var(--line);border-left:4px solid var(--amber);border-radius:10px;padding:14px;margin:9px 0}.finding strong{font-size:13px}.finding p{font-size:12px;color:var(--muted);margin:4px 0 0}.gate{background:linear-gradient(135deg,#17212b,#243846);color:#fff;border-radius:18px;padding:28px;margin-top:20px}.gate p{color:#cbd6dd;font-size:12px}.roadmap{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.road{border:1px solid var(--line);border-radius:12px;padding:15px}.road h4{margin:0 0 8px}.road li{font-size:11.5px;margin:5px 0;color:#596773}.overlay{position:fixed;inset:0;background:rgba(9,15,20,.96);z-index:9999;color:#fff;display:grid;place-items:center;text-align:center}.engine{width:min(620px,90vw)}.pulse{width:110px;height:110px;border-radius:50%;border:1px solid rgba(255,94,79,.55);margin:0 auto 28px;display:grid;place-items:center;position:relative}.pulse:before,.pulse:after{content:"";position:absolute;inset:-15px;border:1px solid rgba(255,94,79,.25);border-radius:50%;animation:ping 1.8s infinite}.pulse:after{inset:-31px;animation-delay:.6s}.core{width:25px;height:25px;border-radius:50%;background:var(--red);box-shadow:0 0 30px rgba(255,94,79,.7)}@keyframes ping{0%{transform:scale(.65);opacity:.8}100%{transform:scale(1.25);opacity:0}}.engine h2{font-size:25px;margin:0}.engine .step{font:11px "JetBrains Mono",monospace;color:#82909b;margin:10px}.engine .step.active{color:#fff}.engine .step.done{color:#69d59a}.mini{font-size:11px;color:var(--muted)}.hidden{display:none!important}.visual-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:16px}.chart-card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px;min-height:330px}.chart-wrap{position:relative;height:280px}.heatmap{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.heat-cell{border-radius:10px;padding:12px;min-height:82px;display:flex;flex-direction:column;justify-content:space-between;border:1px solid rgba(23,33,43,.08)}.heat-cell .heat-score{font-size:22px;font-weight:800}.heat-cell .heat-name{font-size:10px;font-weight:700;line-height:1.25}.report-kpi{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.report-kpi .score-card{position:relative;overflow:hidden}.report-kpi .score-card:after{content:"";position:absolute;width:70px;height:70px;border-radius:50%;right:-25px;top:-25px;background:rgba(255,94,79,.09)}.report-band{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}.signal{border-radius:14px;padding:16px;border:1px solid var(--line);background:#fff}.signal b{display:block;font-size:13px;margin-bottom:5px}.signal span{font-size:11px;color:var(--muted)}.engine-data{display:flex;justify-content:center;gap:8px;margin:24px auto}.engine-data i{width:7px;height:42px;border-radius:99px;background:var(--red);animation:dataPulse 1s ease-in-out infinite}.engine-data i:nth-child(2){animation-delay:.12s}.engine-data i:nth-child(3){animation-delay:.24s}.engine-data i:nth-child(4){animation-delay:.36s}.engine-data i:nth-child(5){animation-delay:.48s}@keyframes dataPulse{0%,100%{transform:scaleY(.3);opacity:.35}50%{transform:scaleY(1);opacity:1}}.clarify-card{max-width:820px;margin:35px auto;border-top:4px solid var(--red)}@media(max-width:850px){.visual-grid,.report-band{grid-template-columns:1fr}.heatmap{grid-template-columns:repeat(2,1fr)}.report-kpi{grid-template-columns:1fr 1fr}.assessment{grid-template-columns:1fr}.rail{position:static}.section-grid{grid-template-columns:1fr 1fr}.stat-grid,.score-grid{grid-template-columns:1fr 1fr}.hero{padding:28px}.hero h1{font-size:32px}}{.assessment{grid-template-columns:1fr}.rail{position:static}.section-grid{grid-template-columns:1fr 1fr}.stat-grid,.score-grid{grid-template-columns:1fr 1fr}.hero{padding:28px}.hero h1{font-size:32px}}@media(max-width:600px){.wrap{padding:16px}.section-grid,.dimension-grid,.roadmap{grid-template-columns:1fr}.stat-grid,.score-grid{grid-template-columns:1fr 1fr}.q-title{font-size:21px}}
+.top{background:#fff;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:30}.top-in{max-width:1180px;margin:auto;padding:14px 28px;display:flex;align-items:center;justify-content:space-between}.brand{display:flex;align-items:center;gap:10px}.brand-badge{background:linear-gradient(135deg,var(--red),var(--red2));color:#fff;font-weight:800;padding:5px 9px;border-radius:6px}.brand-title{font-size:14px;font-weight:800}.mono{font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.08em;text-transform:uppercase}.muted{color:var(--muted)}.hero{background:linear-gradient(135deg,#17212b 0%,#243846 100%);color:#fff;border-radius:20px;padding:44px;position:relative;overflow:hidden;box-shadow:var(--shadow)}.hero:after{content:"";position:absolute;width:420px;height:420px;right:-140px;top:-190px;border-radius:50%;background:radial-gradient(circle,rgba(255,94,79,.28),transparent 68%)}.eyebrow{font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:#4f5f6b}.hero h1{font-size:42px;line-height:1.08;margin:10px 0 12px;max-width:720px}.hero p{max-width:740px;color:#d5dde3}.btn{border:1px solid var(--line);background:#fff;color:var(--ink);border-radius:9px;padding:10px 15px;font-weight:800;cursor:pointer;font-family:inherit}.btn.primary{background:var(--red);border-color:var(--red);color:#fff}.btn.dark{background:#17212b;border-color:#17212b;color:#fff}.btn:disabled{opacity:.45;cursor:not-allowed}.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px}.stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:24px 0}.stat{background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px}.stat b{font-size:25px}.card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:24px;margin:18px 0;box-shadow:0 4px 18px rgba(22,34,45,.04)}.section-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.area{border:1px solid var(--line);border-radius:14px;padding:17px;cursor:pointer;transition:.18s;background:#fff;position:relative}.area:hover{transform:translateY(-2px);box-shadow:var(--shadow);border-color:#bfd0d9}.area.selected{border-color:var(--red);background:#fff7f5}.area input{position:absolute;opacity:0}.area .check{position:absolute;right:13px;top:13px;width:22px;height:22px;border:1px solid #c8d0d7;border-radius:50%;display:grid;place-items:center;font-size:12px}.area.selected .check{background:var(--red);color:#fff;border-color:var(--red)}.area h3{font-size:14px;margin:0 0 4px}.area p{font-size:12px;color:var(--muted);margin:0;padding-right:20px}.baseline{background:#eef6f8;border:1px solid #cfe2e8;color:#255e72;border-radius:10px;padding:12px 14px;font-size:12px}.assessment{display:grid;grid-template-columns:240px 1fr;gap:20px}.rail{position:sticky;top:82px;align-self:start}.rail-card{background:#17212b;color:#fff;border-radius:16px;padding:18px}.rail-item{padding:9px 10px;border-radius:8px;font-size:11px;color:#b9c6cf;margin:3px 0}.rail-item.active{background:rgba(255,255,255,.1);color:#fff}.rail-item.done{color:#9ce0b7}.q-card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:28px;box-shadow:var(--shadow)}.q-no{display:inline-flex;background:#eef2f5;color:#5d6a75;padding:4px 8px;border-radius:6px;font:600 10px "JetBrains Mono",monospace}.q-title{font-size:25px;line-height:1.25;margin:12px 0 7px}.help{background:#f4f8fa;border-left:3px solid var(--teal);padding:11px 14px;border-radius:8px;font-size:12px;color:#51606c;margin:16px 0}.option{border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin:9px 0;cursor:pointer;display:flex;gap:12px;align-items:flex-start;transition:.15s;background:#fff}.option:hover{border-color:#b9cbd4;transform:translateX(2px)}.option.selected{border-color:var(--red);background:#fff7f5;box-shadow:0 0 0 2px rgba(255,94,79,.08)}.letter{width:27px;height:27px;border-radius:7px;background:#eef2f5;display:grid;place-items:center;font-weight:800;font-size:11px;flex:none}.selected .letter{background:var(--red);color:#fff}.option-title{font-size:13px;font-weight:700}.option-desc{font-size:11.5px;color:var(--muted);margin-top:2px}.subjective{margin-top:15px}.subjective textarea{width:100%;min-height:88px;border:1px solid var(--line);border-radius:10px;padding:11px 12px;font:12px inherit;resize:vertical}.subjective textarea:focus{outline:2px solid rgba(34,104,130,.15);border-color:var(--teal)}.progress{height:6px;background:#edf0f2;border-radius:99px;overflow:hidden}.progress i{display:block;height:100%;background:linear-gradient(90deg,var(--red),#ff8b7e);transition:.25s}.nav{display:flex;justify-content:space-between;align-items:center;margin-top:20px}.score-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}.score-card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px}.score-num{font-size:35px;font-weight:800}.score-label{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}.dimension-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}.dim{border:1px solid var(--line);border-radius:12px;padding:14px}.dim-top{display:flex;justify-content:space-between;font-size:12px;font-weight:800}.dimbar{height:8px;background:#edf0f2;border-radius:99px;margin-top:9px;overflow:hidden}.dimbar i{height:100%;display:block;background:var(--red)}.finding{border:1px solid var(--line);border-left:4px solid var(--amber);border-radius:10px;padding:14px;margin:9px 0}.finding strong{font-size:13px}.finding p{font-size:12px;color:var(--muted);margin:4px 0 0}.gate{background:linear-gradient(135deg,#17212b,#243846);color:#fff;border-radius:18px;padding:28px;margin-top:20px}.gate p{color:#cbd6dd;font-size:12px}.roadmap{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.road{border:1px solid var(--line);border-radius:12px;padding:15px}.road h4{margin:0 0 8px}.road li{font-size:11.5px;margin:5px 0;color:#596773}.overlay{position:fixed;inset:0;background:rgba(9,15,20,.96);z-index:9999;color:#fff;display:grid;place-items:center;text-align:center}.engine{width:min(620px,90vw)}.pulse{width:110px;height:110px;border-radius:50%;border:1px solid rgba(255,94,79,.55);margin:0 auto 28px;display:grid;place-items:center;position:relative}.pulse:before,.pulse:after{content:"";position:absolute;inset:-15px;border:1px solid rgba(255,94,79,.25);border-radius:50%;animation:ping 1.8s infinite}.pulse:after{inset:-31px;animation-delay:.6s}.core{width:25px;height:25px;border-radius:50%;background:var(--red);box-shadow:0 0 30px rgba(255,94,79,.7)}@keyframes ping{0%{transform:scale(.65);opacity:.8}100%{transform:scale(1.25);opacity:0}}.engine h2{font-size:25px;margin:0}.engine .step{font:11px "JetBrains Mono",monospace;color:#82909b;margin:10px}.engine .step.active{color:#fff}.engine .step.done{color:#69d59a}.mini{font-size:11px;color:var(--muted)}.hidden{display:none!important}.visual-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:16px}.chart-card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px;min-height:330px}.chart-wrap{position:relative;height:280px}@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}@media(max-width:520px){.chart-wrap{height:340px}}.heatmap{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.heat-cell{border-radius:10px;padding:12px;min-height:82px;display:flex;flex-direction:column;justify-content:space-between;border:1px solid rgba(23,33,43,.08)}.heat-cell .heat-score{font-size:22px;font-weight:800}.heat-cell .heat-name{font-size:10px;font-weight:700;line-height:1.25}.report-kpi{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.report-kpi .score-card{position:relative;overflow:hidden}.report-kpi .score-card:after{content:"";position:absolute;width:70px;height:70px;border-radius:50%;right:-25px;top:-25px;background:rgba(255,94,79,.09)}.report-band{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}.signal{border-radius:14px;padding:16px;border:1px solid var(--line);background:#fff}.signal b{display:block;font-size:13px;margin-bottom:5px}.signal span{font-size:11px;color:var(--muted)}.engine-data{display:flex;justify-content:center;gap:8px;margin:24px auto}.engine-data i{width:7px;height:42px;border-radius:99px;background:var(--red);animation:dataPulse 1s ease-in-out infinite}.engine-data i:nth-child(2){animation-delay:.12s}.engine-data i:nth-child(3){animation-delay:.24s}.engine-data i:nth-child(4){animation-delay:.36s}.engine-data i:nth-child(5){animation-delay:.48s}@keyframes dataPulse{0%,100%{transform:scaleY(.3);opacity:.35}50%{transform:scaleY(1);opacity:1}}.clarify-card{max-width:820px;margin:35px auto;border-top:4px solid var(--red)}@media(max-width:850px){.visual-grid,.report-band{grid-template-columns:1fr}.heatmap{grid-template-columns:repeat(2,1fr)}.report-kpi{grid-template-columns:1fr 1fr}.assessment{grid-template-columns:1fr}.rail{position:static}.section-grid{grid-template-columns:1fr 1fr}.stat-grid,.score-grid{grid-template-columns:1fr 1fr}.hero{padding:28px}.hero h1{font-size:32px}}{.assessment{grid-template-columns:1fr}.rail{position:static}.section-grid{grid-template-columns:1fr 1fr}.stat-grid,.score-grid{grid-template-columns:1fr 1fr}.hero{padding:28px}.hero h1{font-size:32px}}@media(max-width:600px){.wrap{padding:16px}.section-grid,.dimension-grid,.roadmap{grid-template-columns:1fr}.stat-grid,.score-grid{grid-template-columns:1fr 1fr}.q-title{font-size:21px}}
+.table-scroll{overflow-x:auto}table.data{width:100%;border-collapse:collapse;font-size:13px}table.data th,table.data td{padding:8px 10px;border-bottom:1px solid var(--line);text-align:left}
+/* CQ7: light work-page hero, visible focus, one even content column, fields */
+.hero{background:#fff;color:var(--ink);border:1px solid var(--line);box-shadow:none}.hero:after{display:none}.hero p{color:var(--muted)}
+.option:focus-visible,.btn:focus-visible,.area:focus-within,.field:focus-visible,.input:focus-visible{outline:3px solid var(--teal);outline-offset:2px}
+.field,.input{display:block;width:100%;max-width:480px;padding:10px 12px;border:1px solid #c8d0d7;border-radius:10px;font:inherit;background:#fff;color:var(--ink)}
+.field-label{display:block;font-weight:600;font-size:13px;margin:18px 0 6px}.field-error{color:var(--red);font-size:13px;margin-top:6px;min-height:1em}
+img,canvas,svg{max-width:100%}.wrap{padding-inline:max(16px,env(safe-area-inset-left))}
+@media(max-width:480px){.wrap{padding:16px}.hero{padding:22px}.hero h1{font-size:26px}.stat-grid,.score-grid,.report-kpi{grid-template-columns:1fr}.btn{white-space:normal}}
 </style>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/assets/vantage/vantage.css">
+<script src="/assets/legal-notice.js"></script>
 </head>
 <body>
 <header class="vt-topbar vt-work vt-light">
@@ -41,33 +50,13 @@
 <script>
 const API=window.COST_IQ_API||'';
 const $=id=>document.getElementById(id);
-let allQuestions=[],questions=[],answers={},subjective={},selectedAreas=[],sectionIndex=0,qIndex=0,assessment=null,aiReview=null;
+let allQuestions=[],questions=[],answers={},subjective={},selectedAreas=[],sectionIndex=0,qIndex=0,assessment=null;
 let assessmentMetadata={},savedAssessment=null,persistTimer=null,persistQueue=Promise.resolve(),testScenario=false,viewEpoch=0;
-const BASELINE=['Enterprise Context','CIO Priorities','Spend & Financial Visibility','Cost Governance & Investment'];
-const DEFAULT_AREAS=['Cloud Economics','Cost Governance'];
-const AREAS={
- 'Cloud Economics':['Cloud & SaaS Economics','Public Cloud'],
- 'SaaS & Licensing':['Cloud & SaaS Economics','SaaS','Software','Software & Licensing'],
- 'Infrastructure':['Infrastructure & Operations','On-Prem','Data Center','Colocation','Disaster Recovery'],
- 'Applications':['Architecture & Applications','Applications','Product Operating Model'],
- 'Workforce':['People & Vendors','People'],
- 'Vendors & Commercials':['People & Vendors','Vendors','Procurement','Contracts','Outsourcing','Managed Services'],
- 'Cost Governance':['Cost Governance & Investment','FinOps'],
- 'Technology Value':['Technology Value','Value Management','Investment Redirection','Cost Reduction'],
- 'FinOps':['FinOps'],
- 'Architecture & Technical Debt':['Architecture','Technical Debt','Architecture & Applications'],
- 'Data':['Data'],
- 'Network':['Network'],
- 'Security':['Security'],
- 'AI & Emerging Technology':['AI'],
- 'Transformation':['Transformation'],
- 'Business-led IT':['Business-led IT'],
- 'M&A':['M&A'],
- 'Geography':['Geography'],
- 'Operations & Service Management':['ITSM','Observability','Operating Model']
-};
+// Which questions a client is asked comes from the engine (settings.selection): baseline sections, the sections of each focus area, and the
+// default areas. The page and the engine use one definition, so completeness is counted over the questions shown.
+let BASELINE=[],DEFAULT_AREAS=[],AREAS={};
 const AREA_DESC={
- 'Cloud Economics':'Consumption visibility, allocation, optimization and commercial commitments.',
+ 'Cloud Economics':'Cloud and SaaS footprint and commitments, with a pointer to FinOps IQ for cloud cost practice.',
  'SaaS & Licensing':'SaaS usage, licensing, overlap and renewal economics.',
  'Infrastructure':'Capacity, assets, facilities, network and infrastructure lifecycle economics.',
  'Applications':'Application portfolio, lifecycle, ownership and total cost.',
@@ -75,7 +64,6 @@ const AREA_DESC={
  'Vendors & Commercials':'Contracts, sourcing, vendor leverage and commercial optimization.',
  'Cost Governance':'Budgeting, forecasting, decision rights and cost governance.',
  'Technology Value':'Investment effectiveness, business alignment and benefits realization.',
- 'FinOps':'FinOps capabilities, operating model, data and continuous optimization.',
  'Architecture & Technical Debt':'Architecture choices, complexity and technical debt economics.',
  'Data':'Data platforms, storage and analytics economics.',
  'Network':'Connectivity and network economics.',
@@ -88,10 +76,20 @@ const AREA_DESC={
  'Operations & Service Management':'IT operations, automation, service management and productivity.'
 };
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-async function api(path,opts){const r=await fetch(API+path,opts);const t=await r.text();let d={};try{d=t?JSON.parse(t):{}}catch(e){throw Error('Invalid API response ('+r.status+')')}if(!r.ok)throw Error(d.message||d.error||('HTTP '+r.status));return d}
+// The Cost IQ routes need the platform sign-in: send the Cognito ID token, renew it once on a 401, and go to sign-in if that fails.
+function toSignIn(){location.href='/?require_login=1&redirect='+encodeURIComponent(location.pathname+location.search)}
+async function authedFetch(url,opts){
+  const lib=window.LTM_API;const token=lib?await lib.getIdToken():'';
+  if(!token){toSignIn();throw Error('Your session has expired. Please sign in again.')}
+  const send=t=>fetch(url,Object.assign({},opts,{headers:Object.assign({},(opts&&opts.headers)||{},{Authorization:'Bearer '+t})}));
+  let r=await send(token);
+  if(r.status===401){const renewed=await lib.refreshIdToken();if(renewed)r=await send(renewed);if(r.status===401){toSignIn();throw Error('Your session has expired. Please sign in again.')}}
+  return r;
+}
+async function api(path,opts){const r=await authedFetch(API+path,opts);const t=await r.text();let d={};try{d=t?JSON.parse(t):{}}catch(e){throw Error('Invalid API response ('+r.status+')')}if(!r.ok)throw Error(d.message||d.error||('HTTP '+r.status));return d}
 function boot(){
   showSplash(['Loading Cost IQ engine…','Loading diagnostic framework…','Preparing adaptive assessment…'],function(){
-    Promise.all([api('/api/evaluate/cost-iq/questions'),api('/api/evaluate/cost-iq/metadata')]).then(function(values){allQuestions=values[0].questions||[];assessmentMetadata=values[1].release||{};home()}).catch(function(e){fail(e.message)});
+    Promise.all([api('/api/evaluate/cost-iq/questions'),api('/api/evaluate/cost-iq/metadata')]).then(function(values){allQuestions=values[0].questions||[];BASELINE=(values[0].selection||{}).baselineSections||[];DEFAULT_AREAS=(values[0].selection||{}).defaultAreas||[];AREAS=(values[0].selection||{}).areas||{};assessmentMetadata=values[1].release||{};notices=values[1].notices||null;home()}).catch(function(e){fail(e.message)});
   });
 }
 function showSplash(steps,done){
@@ -99,13 +97,8 @@ function showSplash(steps,done){
   steps.forEach(function(x,i){setTimeout(function(){document.querySelectorAll('.step').forEach(function(s){s.classList.remove('active')});const s=document.getElementById('sp'+i);if(s)s.classList.add('active')},i*650)});
   setTimeout(function(){o.remove();done()},steps.length*650+650);
 }
-function questionCountForSelection(){
-  const q=allQuestions.filter(function(q){
-    if(BASELINE.includes(q.section)) return true;
-    return selectedAreas.some(function(a){return (AREAS[a]||[]).includes(q.section)});
-  });
-  return q.filter(function(q){return !String(q.id).startsWith('FIN-')||selectedAreas.includes('FinOps')}).length;
-}
+// Questions that are always asked for this selection; estate questions gated on the footprint are added as the footprint is answered.
+function questionCountForSelection(){return selectQuestions(selectedAreas).filter(function(q){return !(q.applicableWhen&&q.applicableWhen.questionId==='CORE-01')}).length}
 function updateQuestionCount(){
   const el=$('selectionQuestionCount');
   if(el) el.textContent=questionCountForSelection();
@@ -119,7 +112,7 @@ function home(){
     const checked=selectedAreas.includes(a);
     return '<label class="area '+(checked?'selected':'')+'" data-area="'+esc(a)+'"><input type="checkbox" '+(checked?'checked':'')+' onchange="toggleArea(this,\''+esc(a).replace(/'/g,"\\'")+'\')"><span class="check">'+(checked?'✓':'')+'</span><h3>'+esc(a)+'</h3><p>'+esc(AREA_DESC[a])+'</p></label>';
   }).join('');
-  $('app').innerHTML='<div class="hero"><div class="eyebrow">LTM VANTAGE · RESPONSIBLE ADVISORY</div><h1>Technology Cost & Value Diagnostic</h1><p>Cost IQ helps leadership understand where technology spend is going, where value is being created, and where management attention may be required.</p><div class="actions"><button class="btn primary" onclick="begin()">Configure diagnostic →</button></div><div class="card" style="margin-top:16px"><div class="eyebrow">DEVELOPER TEST DATA</div><h3>Fast regression scenarios</h3><p class="muted">Pre-answer the full assessment with deterministic test data. Use these only for development and validation.</p><div class="actions"><button class="btn" onclick="loadTestScenario(\'healthy\')">Load Healthy</button><button class="btn" onclick="loadTestScenario(\'typical\')">Load Typical</button><button class="btn" onclick="loadTestScenario(\'challenge\')">Load Cost Challenge</button></div></div></div><div class="stat-grid"><div class="stat"><span class="mini">Questions</span><br><b id="selectionQuestionCount">'+questionCountForSelection()+'</b><div class="mini">Questions for this selection</div></div><div class="stat"><span class="mini">Baseline</span><br><b>16</b><div class="mini">Cost & value dimensions</div></div><div class="stat"><span class="mini">Engine</span><br><b>20</b><div class="mini">Calibrated findings</div></div><div class="stat"><span class="mini">AI</span><br><b>Review</b><div class="mini">Anomaly & report synthesis</div></div></div><div class="card"><div class="eyebrow" style="color:#60717d">STEP 01 · FOCUS AREAS</div><h2>What would you like to diagnose?</h2><p class="muted">Select one or more focus areas. Two are pre-selected to give you a useful starting point. Baseline questions remain part of every assessment.</p><div class="baseline">✓ Enterprise context, CIO priorities, spend visibility and cost governance remain part of every assessment.</div><div class="section-grid" style="margin-top:16px">'+cards+'</div><div class="actions"><button class="btn primary" onclick="begin()">Start focused assessment →</button></div></div>';
+  $('app').innerHTML='<div class="hero"><div class="eyebrow">LTM VANTAGE · RESPONSIBLE ADVISORY</div><h1>Technology Cost & Value Diagnostic</h1><p>Cost IQ helps leadership understand where technology spend is going, where value is being created, and where management attention may be required.</p><label class="field-label" for="clientName">Organisation this assessment is for</label><input class="field" id="clientName" type="text" maxlength="120" autocomplete="organization" aria-describedby="clientNameError" placeholder="For example, Example Bank plc"><div class="field-error" id="clientNameError" role="alert"></div><div class="actions"><button class="btn primary" onclick="begin()">Start the assessment →</button></div>'+scenarioCard()+'</div>'+noticeCard()+'<div class="stat-grid"><div class="stat"><span class="mini">Questions</span><br><b id="selectionQuestionCount">'+questionCountForSelection()+'</b><div class="mini">Questions for this selection, plus any estate questions your footprint calls for</div></div><div class="stat"><span class="mini">Baseline</span><br><b>16</b><div class="mini">Cost & value dimensions</div></div><div class="stat"><span class="mini">Engine</span><br><b>20</b><div class="mini">Findings the engine can raise</div></div><div class="stat"><span class="mini">Report</span><br><b>PDF</b><div class="mini">Client edition, consultant edition and a CSV backlog</div></div></div><div class="card"><div class="eyebrow" style="color:#60717d">STEP 01 · FOCUS AREAS</div><h2>What would you like to diagnose?</h2><p class="muted">Select one or more focus areas. Two are pre-selected to give you a useful starting point. Baseline questions remain part of every assessment.</p><div class="baseline">✓ Enterprise context, CIO priorities, spend visibility and cost governance remain part of every assessment.</div><div class="section-grid" style="margin-top:16px">'+cards+'</div><div class="actions"><button class="btn primary" onclick="begin()">Start focused assessment →</button></div></div>';
   if(window.CostIqPersistence?.configured()) loadSavedAssessments(epoch);
   else {const note=document.createElement('div');note.className='card';note.innerHTML='<div class="eyebrow">SAVED ASSESSMENTS</div><p class="muted">Assessment saving is not configured in this environment yet. You can still complete a session in this browser.</p>';$('app').appendChild(note)}
 }
@@ -129,12 +122,30 @@ async function loadSavedAssessments(epoch){
     if(epoch!==viewEpoch)return;
     const rows=records.sort((a,b)=>String(b.updatedAt||'').localeCompare(String(a.updatedAt||''))).map(function(r){
       let score=null;try{score=r.resultJson?JSON.parse(r.resultJson).headlines?.costIQ:null}catch(_){score=null}
-      return '<div class="signal"><b>'+esc(r.clientName||'Cost IQ assessment')+'</b><span>'+esc(r.status)+' · Updated '+esc(new Date(r.updatedAt).toLocaleString())+(score!==null&&score!==undefined?' · Cost IQ '+esc(score):'')+'</span><div class="actions"><button class="btn" data-assessment-id="'+esc(r.assessmentId)+'">'+(r.status==='completed'?'View result':'Resume')+'</button></div></div>';
+      return '<div class="signal"><b>'+esc(r.clientName||'Cost IQ assessment')+'</b><span>'+esc(({in_progress:'In progress',draft:'Draft',completed:'Completed'})[r.status]||r.status)+' · Updated '+esc(new Date(r.updatedAt).toLocaleString())+(score!==null&&score!==undefined?' · Cost management '+esc(score)+' / 100':'')+'</span><div class="actions"><button class="btn" data-assessment-id="'+esc(r.assessmentId)+'">'+(r.status==='completed'?'View result':'Resume')+'</button><span class="delete" data-delete-for="'+esc(r.assessmentId)+'"><button class="btn" type="button" data-delete="'+esc(r.assessmentId)+'">Delete</button></span></div></div>';
     }).join('');
     const card=document.createElement('div');card.className='card';card.innerHTML='<div class="eyebrow">SAVED ASSESSMENTS</div><h2>Continue where you left off</h2><div class="report-band">'+(rows||'<p class="muted">No saved assessments yet.</p>')+'</div>';
     card.querySelectorAll('[data-assessment-id]').forEach(button=>button.addEventListener('click',()=>resumeAssessment(button.dataset.assessmentId)));
+    // Deletion is permanent, so it asks for a second click in place.
+    card.querySelectorAll('[data-delete]').forEach(button=>button.addEventListener('click',()=>askDelete(card,button.dataset.delete)));
     $('app').appendChild(card);
   }catch(e){console.warn('Cost IQ history unavailable:',e.message)}
+}
+// The section of the first unanswered question, where a resume lands, and the share answered: saved with each update.
+function costIqProgress(){
+  const secs=sections(),all=vq();const answered=all.filter(q=>answers[q.id]!==undefined).length;
+  const stage=secs.find(s=>all.filter(q=>q.section===s).some(q=>answers[q.id]===undefined))||secs[secs.length-1];
+  return {stage:stage,percent:all.length?Math.round(100*answered/all.length):0};
+}
+function askDelete(card,id){
+  const cell=[...card.querySelectorAll('[data-delete-for]')].find(c=>c.dataset.deleteFor===id);if(!cell)return;
+  cell.innerHTML='<span class="muted" role="status">Delete permanently? </span><button class="btn" type="button" data-confirm>Confirm delete</button> <button class="btn" type="button" data-cancel>Cancel</button>';
+  cell.querySelector('[data-confirm]').focus();
+  cell.querySelector('[data-cancel]').addEventListener('click',()=>home());
+  cell.querySelector('[data-confirm]').addEventListener('click',async()=>{
+    try{await window.CostIqPersistence.remove(id);home()}
+    catch(e){cell.innerHTML='<span class="muted" role="alert">Not deleted: '+esc(e.message)+'</span>'}
+  });
 }
 function persistStatus(message){const el=$('status');if(el)el.textContent=message}
 function persistenceRecord(status){
@@ -156,11 +167,11 @@ async function resumeAssessment(id){
     const record=await window.CostIqPersistence.get(id);if(!record)throw new Error('Assessment not found or access denied.');
     if(epoch!==viewEpoch)return;
     savedAssessment=record;selectedAreas=JSON.parse(record.selectedAreasJson||'[]');answers=JSON.parse(record.answersJson||'{}');subjective=JSON.parse(record.subjectiveJson||'{}');
-    questions=allQuestions.filter(q=>BASELINE.includes(q.section)||selectedAreas.some(a=>(AREAS[a]||[]).includes(q.section))).filter(q=>!String(q.id).startsWith('FIN-')||selectedAreas.includes('FinOps'));
+    questions=selectQuestions(selectedAreas);
     testScenario=false;sectionIndex=0;
-    if(record.status==='completed'&&record.resultJson){assessment=JSON.parse(record.resultJson);aiReview=null;preliminary();return}
-    const secs=sections();const first=secs.findIndex(s=>questions.filter(q=>q.section===s).some(q=>answers[q.id]===undefined));sectionIndex=first<0?Math.max(0,secs.length-1):first;renderAssessment();persistStatus('Assessment resumed');
-  }catch(e){alert('Could not resume this assessment: '+e.message)}
+    if(record.status==='completed'&&record.resultJson){assessment=JSON.parse(record.resultJson);preliminary();return}
+    const secs=sections();const first=secs.findIndex(s=>vq().filter(q=>q.section===s).some(q=>answers[q.id]===undefined));sectionIndex=first<0?Math.max(0,secs.length-1):first;renderAssessment();persistStatus('Assessment resumed');
+  }catch(e){notify('Could not resume this assessment: '+e.message)}
 }
 function toggleArea(el,a){
   if(el.checked){
@@ -201,56 +212,66 @@ function testAnswer(q,profile){
 }
 async function loadTestScenario(profile){
   ++viewEpoch;
-  if(!allQuestions.length){alert('Questions are still loading. Please wait a moment and try again.');return}
+  if(!allQuestions.length){notify('Questions are still loading. Please wait a moment and try again.');return}
   selectedAreas=Object.keys(AREAS);
-  questions=allQuestions.filter(function(q){
-    if(BASELINE.includes(q.section))return true;
-    return selectedAreas.some(function(a){return (AREAS[a]||[]).includes(q.section)});
-  }).filter(function(q){return !String(q.id).startsWith('FIN-')||selectedAreas.includes('FinOps')});
+  questions=selectQuestions(selectedAreas);
   answers={};subjective={};sectionIndex=0;qIndex=0;testScenario=true;savedAssessment=null;
   questions.forEach(function(q){answers[q.id]=testAnswer(q,profile)});
   await runEngine();
 }
+// Test scenarios exist for regression runs only; the page offers them when the address carries ?scenarios=1.
+var notices=null;
+// Disclaimer and data notice come from the engine (cost-iq/notices.ts), the same text the report carries.
+function noticeCard(){return notices?'<div class="card" id="dataNotice"><div class="eyebrow">BEFORE YOU START</div><h3>How this assessment is used and how your data is handled</h3><p class="muted">'+esc(notices.disclaimer)+'</p><p class="muted">'+esc(notices.data)+'</p></div>':''}
+function scenarioCard(){
+  if(!new URLSearchParams(location.search).has('scenarios'))return '';
+  return '<div class="card" style="margin-top:16px"><div class="eyebrow">TEST DATA</div><h3>Regression scenarios</h3><p class="muted">Pre-answered assessments for validation. Not saved and no report is produced.</p><div class="actions"><button class="btn" onclick="loadTestScenario(\'healthy\')">Load Healthy</button><button class="btn" onclick="loadTestScenario(\'typical\')">Load Typical</button><button class="btn" onclick="loadTestScenario(\'challenge\')">Load Cost Challenge</button></div></div>';
+}
 async function begin(){
+  const nameEl=$('clientName');const clientName=nameEl?nameEl.value.trim():'';
+  if(!clientName){const e=$('clientNameError');if(e)e.textContent='Enter the organisation name; it appears on the report.';if(nameEl){nameEl.setAttribute('aria-invalid','true');nameEl.focus()}return}
   ++viewEpoch;
-  const q=allQuestions.filter(function(q){
-    if(BASELINE.includes(q.section))return true;
-    return selectedAreas.some(function(a){return (AREAS[a]||[]).includes(q.section)});
-  });
-  questions=q.filter(function(q){return !String(q.id).startsWith('FIN-')||selectedAreas.includes('FinOps')});
+  questions=selectQuestions(selectedAreas);
   answers={};subjective={};sectionIndex=0;qIndex=0;testScenario=false;savedAssessment=null;
   if(window.CostIqPersistence?.configured()){
     persistStatus('Creating draft…');
     const timestamp=new Date().toISOString();
     const manifest=assessmentMetadata.methodology||{};
-    const input={assessmentId:'CIQ-'+crypto.randomUUID(),acceleratorId:'cost-iq',releaseId:assessmentMetadata.release?.releaseId||'unknown',methodologyVersion:manifest.masterVersion||'unknown',status:'draft',selectedAreasJson:JSON.stringify(selectedAreas),answersJson:'{}',subjectiveJson:'{}',startedAt:timestamp,updatedAt:timestamp};
+    const input={assessmentId:'CIQ-'+crypto.randomUUID(),acceleratorId:'cost-iq',releaseId:assessmentMetadata.release?.releaseId||'unknown',methodologyVersion:manifest.masterVersion||'unknown',status:'draft',clientName:clientName,selectedAreasJson:JSON.stringify(selectedAreas),answersJson:'{}',subjectiveJson:'{}',startedAt:timestamp,updatedAt:timestamp};
     try{savedAssessment=await window.CostIqPersistence.create(input);persistStatus('Draft saved')}
     catch(e){savedAssessment=null;persistStatus('Saving unavailable · '+e.message)}
   }else persistStatus('Session only · persistence endpoint unavailable');
   renderAssessment();
 }
-function sections(){const seen=[];questions.forEach(function(q){if(!seen.includes(q.section))seen.push(q.section)});return seen}
+// A question with applicableWhen is asked, scored and counted only when the footprint answer (CORE-01) names the estate.
+// Size-class bands (CORE-03, CORE-04) are labelled in the reporting currency chosen in CTX-01; a currency with no registered rate falls back to the US dollar labels.
+function optionLabel(q,o){const t=q.labelsByCurrency&&q.labelsByCurrency[answers[q.labelCurrencyQuestion]];return (t&&t[o.id])||o.label}
+function selectQuestions(areas){return allQuestions.filter(q=>BASELINE.includes(q.section)||areas.some(a=>(AREAS[a]||[]).includes(q.section))||(q.applicableWhen&&q.applicableWhen.questionId==='CORE-01'))}
+function applies(q){const w=q.applicableWhen;if(!w)return true;const a=answers[w.questionId];return (Array.isArray(a)?a:a==null?[]:[a]).some(v=>w.anyOf.includes(String(v)))}
+function vq(){return questions.filter(applies)}
+function sections(){const seen=[];vq().forEach(function(q){if(!seen.includes(q.section))seen.push(q.section)});return seen}
 function renderAssessment(){
-  const secs=sections();const sec=secs[sectionIndex];const qs=questions.filter(q=>q.section===sec);
+  const secs=sections();const sec=secs[sectionIndex];const qs=vq().filter(q=>q.section===sec);
   if(!qs.length){sectionIndex++;qIndex=0;if(sectionIndex>=secs.length){runEngine();return}renderAssessment();return}
-  const answered=questions.filter(q=>answers[q.id]!==undefined).length,total=questions.length,pct=Math.round(answered/total*100);
+  const answered=vq().filter(q=>answers[q.id]!==undefined).length,total=vq().length,pct=Math.round(answered/total*100);
   const rail=secs.map(function(s,i){return '<div class="rail-item '+(i===sectionIndex?'active':'')+' '+(i<sectionIndex?'done':'')+'">'+(i<sectionIndex?'✓ ':'')+esc(s)+'</div>'}).join('');
   const cards=qs.map(function(q,i){return '<div class="q-card" style="margin-bottom:16px">'+questionHTML(q,i+1,qs.length)+'</div>'}).join('');
   $('app').innerHTML='<div class="assessment"><aside class="rail"><div class="rail-card"><div class="mono" style="color:#9fb0bb">COST IQ</div><h3 style="margin:7px 0 12px">Diagnostic</h3><div style="font-size:11px;color:#9fb0bb;margin-bottom:10px">QUESTIONS IN ASSESSMENT</div><div style="font-size:28px;font-weight:800">'+total+'</div>'+rail+'<div style="margin-top:14px;font-size:10px;color:#8797a2">'+answered+' of '+total+' answered</div><div class="progress" style="margin-top:7px"><i style="width:'+pct+'%"></i></div></div></aside><section><div class="mini" style="margin-bottom:8px">SECTION '+(sectionIndex+1)+' OF '+secs.length+' · '+esc(sec)+' · '+qs.length+' QUESTIONS</div>'+cards+'<div class="nav"><button class="btn" onclick="backQ()">← Back</button><div class="mini">Section '+(sectionIndex+1)+' of '+secs.length+'</div><button class="btn primary" onclick="nextSection()">'+(sectionIndex===secs.length-1?'Complete assessment →':'Next section →')+'</button></div></section></div>';
+  enhanceOptions();
 }
 function questionHTML(q,n,total){
   let body='';
   if(q.interaction==='slider'){const v=answers[q.id]??q.control?.min??0;body='<input id="sl" type="range" min="'+(q.control?.min??0)+'" max="'+(q.control?.max??100)+'" step="'+(q.control?.step||1)+'" value="'+v+'" oninput="setSlider(\''+q.id+'\',this.value)"><div class="nav"><span class="mini">'+esc(q.control?.leftLabel||'Lower')+'</span><b id="sv">'+v+'</b><span class="mini">'+esc(q.control?.rightLabel||'Higher')+'</span></div>'}
   else if(q.interaction==='stars'){const v=answers[q.id]||0;body='<div class="actions">'+[1,2,3,4,5].map(n=>'<button class="btn '+(v===n?'primary':'')+'" onclick="setStar(\''+q.id+'\','+n+')">★ '+n+'</button>').join('')+'</div>'}
-  else if(q.interaction==='multi-select'||q.interaction==='multi-select-ranking'||q.interaction==='allocation-ranking'){const vals=new Set(Array.isArray(answers[q.id])?answers[q.id]:[]);body=(q.options||[]).map(function(o,i){return '<div class="option '+(vals.has(o.id)?'selected':'')+'" onclick="toggle(\''+q.id+'\',\''+o.id+'\')"><span class="letter">'+String.fromCharCode(65+i)+'</span><div><div class="option-title">'+esc(o.label)+'</div></div></div>'}).join('')}
-  else if(q.interaction==='ranking'){body=(q.options||[]).map(function(o,i){return '<div class="option '+((answers[q.id]||[]).includes(o.id)?'selected':'')+'" onclick="toggle(\''+q.id+'\',\''+o.id+'\')"><span class="letter">'+(i+1)+'</span><div class="option-title">'+esc(o.label)+'</div></div>'}).join('')}
-  else {body=(q.options||[]).map(function(o,i){return '<div class="option '+(answers[q.id]===o.id?'selected':'')+'" onclick="pick(\''+q.id+'\',\''+o.id+'\')"><span class="letter">'+String.fromCharCode(65+i)+'</span><div><div class="option-title">'+esc(o.label)+'</div></div></div>'}).join('')}
+  else if(q.interaction==='multi-select'||q.interaction==='multi-select-ranking'||q.interaction==='allocation-ranking'){const vals=new Set(Array.isArray(answers[q.id])?answers[q.id]:[]);body=(q.options||[]).map(function(o,i){return '<div class="option '+(vals.has(o.id)?'selected':'')+'" onclick="toggle(\''+q.id+'\',\''+o.id+'\')"><span class="letter">'+String.fromCharCode(65+i)+'</span><div><div class="option-title">'+esc(optionLabel(q,o))+'</div></div></div>'}).join('')}
+  else if(q.interaction==='ranking'){body=(q.options||[]).map(function(o,i){return '<div class="option '+((answers[q.id]||[]).includes(o.id)?'selected':'')+'" onclick="toggle(\''+q.id+'\',\''+o.id+'\')"><span class="letter">'+(i+1)+'</span><div class="option-title">'+esc(optionLabel(q,o))+'</div></div>'}).join('')}
+  else {body=(q.options||[]).map(function(o,i){return '<div class="option '+(answers[q.id]===o.id?'selected':'')+'" onclick="pick(\''+q.id+'\',\''+o.id+'\')"><span class="letter">'+String.fromCharCode(65+i)+'</span><div><div class="option-title">'+esc(optionLabel(q,o))+'</div></div></div>'}).join('')}
   const subjectiveAllowed=!!(q.control?.allowActual||q.interaction==='range'||q.interaction==='slider'||q.interaction==='single-select'||q.interaction==='true-false'||q.interaction==='stars');
   const sub=subjectiveAllowed?'<div class="subjective"><div style="font-size:11px;font-weight:800;margin-bottom:5px">Additional context <span class="mini">· optional</span></div><textarea placeholder="Add context, evidence, exceptions or anything our AI reviewer should consider..." oninput="subjective['+JSON.stringify(q.id)+']=this.value;scheduleProgressSave()">'+esc(subjective[q.id]||'')+'</textarea></div>':'';
-  return '<span class="q-no">'+esc(q.id)+' · QUESTION '+n+' OF '+total+'</span><h2 class="q-title">'+esc(q.prompt)+'</h2>'+(q.answerGuidance?'<div class="help"><b>How to answer:</b> '+esc(q.answerGuidance)+'</div>':'')+body+sub;
+  return '<span class="q-no">QUESTION '+n+' OF '+total+'</span><h2 class="q-title">'+esc(q.prompt)+'</h2>'+(q.answerGuidance?'<div class="help"><b>How to answer:</b> '+esc(q.answerGuidance)+'</div>':'')+(q.labelsByCurrency&&q.labelsByCurrency[answers[q.labelCurrencyQuestion]]?'<div class="help">These bands are approximate size classes converted at the European Central Bank reference rate dated '+esc(q.labelsRateDate||'')+'.</div>':'')+body+sub;
 }
 function pick(id,v){answers[id]=v;scheduleProgressSave();renderAssessment()}function toggle(id,v){const a=Array.isArray(answers[id])?[...answers[id]]:[];const i=a.indexOf(v);if(i>=0)a.splice(i,1);else a.push(v);answers[id]=a;scheduleProgressSave();renderAssessment()}function setStar(id,v){answers[id]=v;scheduleProgressSave();renderAssessment()}function setSlider(id,v){answers[id]=Number(v);scheduleProgressSave();const x=$('sv');if(x)x.textContent=v}
-function currentSectionQuestions(){return questions.filter(q=>q.section===sections()[sectionIndex])}
+function currentSectionQuestions(){return vq().filter(q=>q.section===sections()[sectionIndex])}
 function sectionValid(){
   const qs=currentSectionQuestions();
   return qs.every(function(q){
@@ -258,8 +279,30 @@ function sectionValid(){
     return q.required===false||!(a===undefined||a===null||a===''||(Array.isArray(a)&&!a.length));
   });
 }
+// Options are divs: give them a role, a tab stop and Enter or Space, and return focus to the same option after the page redraws.
+let refocus=null;
+function enhanceOptions(){
+  document.querySelectorAll('.q-card').forEach(function(card){
+    const t=card.querySelector('.q-title');card.setAttribute('role','group');if(t)card.setAttribute('aria-label',t.textContent);
+    card.querySelectorAll('.option').forEach(function(o){const multi=/toggle\(/.test(o.getAttribute('onclick')||'');o.tabIndex=0;o.setAttribute('role',multi?'checkbox':'radio');o.setAttribute('aria-checked',o.classList.contains('selected')?'true':'false')});
+  });
+  if(refocus){const card=document.querySelectorAll('.q-card')[refocus.q];const o=card&&card.querySelectorAll('.option')[refocus.o];if(o)o.focus();refocus=null}
+}
+document.addEventListener('keydown',function(e){
+  const o=e.target.closest&&e.target.closest('.option');
+  if(!o||(e.key!=='Enter'&&e.key!==' '))return;
+  e.preventDefault();
+  const card=o.closest('.q-card');refocus={q:[].indexOf.call(document.querySelectorAll('.q-card'),card),o:[].indexOf.call(card.querySelectorAll('.option'),o)};
+  o.click();
+});
+// An inline message in place of a browser dialog: it is read out (role alert) and stays until the page is redrawn.
+function notify(msg){
+  let n=$('pageNotice');
+  if(!n){n=document.createElement('div');n.id='pageNotice';n.setAttribute('role','alert');n.className='card';n.style.cssText='border-left:4px solid #b36b00;margin-bottom:12px';const app=$('app');app.insertBefore(n,app.firstChild)}
+  n.textContent=msg;if(n.scrollIntoView)n.scrollIntoView({block:'nearest'});
+}
 function nextSection(){
-  if(!sectionValid()){alert('Please answer all required questions in this section before continuing.');return}
+  if(!sectionValid()){notify('Please answer all required questions in this section before continuing.');return}
   sectionIndex++;qIndex=0;
   if(sectionIndex>=sections().length)runEngine();else renderAssessment();
 }
@@ -269,23 +312,11 @@ function backQ(){
 async function runEngine(){
   clearTimeout(persistTimer);persistTimer=null;
   $('app').innerHTML='<div class="card" style="text-align:center;padding:70px 30px"><div class="pulse" style="margin:auto"><div class="core"></div></div><h2>Reviewing your diagnostic…</h2><p class="muted">Cost IQ is evaluating the deterministic scoring engine before the AI review.</p></div>';
-  try{assessment=await api('/api/evaluate/cost-iq',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({answers:answers,scope:{selectedAreas:selectedAreas}})});if(savedAssessment){try{await persistQueue;savedAssessment=await window.CostIqPersistence.update({...persistenceRecord('completed'),completedAt:new Date().toISOString(),resultJson:JSON.stringify(assessment)});persistStatus('Assessment completed and saved')}catch(e){persistStatus('Score ready · save failed · '+e.message)}}showEngineOverlay(function(){aiCheck()})}catch(e){fail(e.message)}
+  try{assessment=await api('/api/evaluate/cost-iq',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({answers:answers,scope:{selectedAreas:selectedAreas}})});if(savedAssessment){try{await persistQueue;savedAssessment=await window.CostIqPersistence.update({...persistenceRecord('completed'),completedAt:new Date().toISOString(),resultJson:JSON.stringify(assessment)});persistStatus('Assessment completed and saved')}catch(e){persistStatus('Score ready · save failed · '+e.message)}}showEngineOverlay(function(){preliminary()})}catch(e){fail(e.message)}
 }
 function showEngineOverlay(done){
-  showSplash(['Normalizing assessment responses…','Evaluating cost dimensions…','Evaluating value dimensions…','Checking evidence & confidence…','Preparing AI diagnostic review…'],done)
+  showSplash(['Normalizing assessment responses…','Evaluating cost dimensions…','Evaluating value dimensions…','Checking evidence & confidence…','Preparing the result…'],done)
 }
-async function aiCheck(){
-  try{
-    aiReview=await api('/api/evaluate/cost-iq/ai-review',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({answers:answers,selectedAreas:selectedAreas,context:subjective})});
-    if(aiReview.needsClarification&&aiReview.questions&&aiReview.questions.length){clarify(0);return}
-  }catch(e){aiReview={needsClarification:false,observations:['AI review unavailable; deterministic assessment retained.']}}
-  preliminary();
-}
-function clarify(i){
-  if(i>=(aiReview.questions||[]).length){preliminary();return}
-  const q=aiReview.questions[i];$('app').innerHTML='<div class="card" style="max-width:820px;margin:35px auto"><div class="eyebrow">AI DIAGNOSTIC CHECK · '+(i+1)+' OF '+aiReview.questions.length+'</div><h2>'+esc(q.question)+'</h2><p class="muted">'+esc(q.reason)+'</p>'+(q.options||[]).map(function(o,n){return '<div class="option" onclick="answerClarification('+i+', '+JSON.stringify(o).replace(/</g,'\\u003c')+')"><span class="letter">'+String.fromCharCode(65+n)+'</span><div class="option-title">'+esc(o)+'</div></div>'}).join('')+'</div>';
-}
-function answerClarification(i,v){answers['AI-'+i]=v;clarify(i+1)}
 function scoreEntries(){
   const src=assessment?.dimensionScores||assessment?.dimensions||assessment?.scores||{};
   let raw=[];
@@ -309,151 +340,152 @@ function scoreColor(v){
 }
 function visualSection(entries){
   const heat=entries.map(function(x){return '<div class="heat-cell" style="'+scoreColor(x.score)+'"><div class="heat-score">'+x.score+'</div><div class="heat-name">'+esc(x.name)+'</div></div>'}).join('');
-  return '<div class="visual-grid"><div class="chart-card"><div class="eyebrow">SCORE PROFILE</div><h3>Diagnostic score at a glance</h3><div class="chart-wrap"><canvas id="scoreProfile"></canvas></div></div><div class="chart-card"><div class="eyebrow">DIMENSION RADAR</div><h3>Cost & value profile</h3><div class="chart-wrap"><canvas id="costRadar"></canvas></div></div></div><div class="card"><div class="eyebrow">CONCENTRATION HEAT MAP</div><h3>Where management attention is concentrated</h3><div class="heatmap">'+(heat||'<p class="muted">No dimension scores were returned.</p>')+'</div></div><div class="visual-grid"><div class="chart-card"><div class="eyebrow">DIMENSION SCORECARD</div><h3>Relative strength by dimension</h3><div class="chart-wrap"><canvas id="costBars"></canvas></div></div><div class="chart-card"><div class="eyebrow">VALUE AREAS</div><h3>Priority value levers</h3><div class="report-band">'+(entries.slice(0,4).map(function(x){return '<div class="signal"><b>'+esc(x.name)+'</b><span>Score '+x.score+' — '+(x.score<50?'Priority opportunity':x.score<70?'Improvement opportunity':'Relatively healthy')+'</span></div>'}).join(''))+'</div></div></div>';
+  return '<div class="visual-grid"><div class="chart-card"><div class="eyebrow">SCORE PROFILE</div><h3>Diagnostic score at a glance</h3><div class="chart-wrap"><canvas id="scoreProfile"></canvas></div></div><div class="chart-card"><div class="eyebrow">DIMENSION RADAR</div><h3>Cost & value profile</h3><div class="chart-wrap"><canvas id="costRadar"></canvas></div></div></div><div class="card"><div class="eyebrow">CONCENTRATION HEAT MAP</div><h3>Where management attention is concentrated</h3><div class="heatmap">'+(heat||'<p class="muted">No dimension scores were returned.</p>')+'</div></div><div class="visual-grid"><div class="chart-card"><div class="eyebrow">DIMENSION SCORECARD</div><h3>Relative strength by dimension</h3><div class="chart-wrap"><canvas id="costBars"></canvas></div></div><div class="chart-card"><div class="eyebrow">PRIORITY AREAS</div><h3>Weakest dimensions</h3><div class="report-band">'+([...entries].sort(function(a,b){return a.score-b.score}).slice(0,4).map(function(x){return '<div class="signal"><b>'+esc(x.name)+'</b><span>Score '+x.score+' — '+(x.score<50?'Priority opportunity':x.score<70?'Improvement opportunity':'Relatively healthy')+'</span></div>'}).join(''))+'</div></div></div>';
 }
 function initVisuals(){
   const dims=scoreEntries(),labels=dims.map(x=>x.name),values=dims.map(x=>x.score),h=assessment.headlines||{};
   function make(id,type,l,v,title){
     const el=document.getElementById(id);if(!el||typeof Chart==='undefined')return;
-    const scales=type==='radar'?{r:{min:0,max:100,ticks:{stepSize:25,backdropColor:'transparent'},pointLabels:{font:{size:9}}}}:{y:{min:0,max:100}};
+    const scales=type==='radar'?{r:{min:0,max:100,ticks:{stepSize:25,backdropColor:'transparent'},pointLabels:{font:{size:9},callback:function(t){t=String(t);var n=window.innerWidth<520?12:22;return t.length>n?t.slice(0,n-1)+'…':t}}}}:{y:{min:0,max:100}};
     new Chart(el,{type:type,data:{labels:l,datasets:[{label:title,data:v,fill:type==='radar',borderWidth:2,pointRadius:3}]},options:{responsive:true,maintainAspectRatio:false,indexAxis:type==='bar'?'y':undefined,scales:scales,plugins:{legend:{display:false}}}});
   }
-  make('scoreProfile','bar',['Cost IQ','Value IQ','Completeness'],[Number(h.costIQ)||0,Number(h.valueIQ)||0,Number((assessment.evidence||{}).assessmentCompleteness)||0],'Diagnostic score');
+  make('scoreProfile','bar',['Cost management','Value management','Questions answered'],[Number(h.costIQ)||0,Number(h.valueIQ)||0,Number((assessment.evidence||{}).assessmentCompleteness)||0],'Diagnostic score');
   make('costRadar','radar',labels,values,'Dimension score');
   make('costBars','bar',labels,values,'Dimension score');
 }
-function preliminary(){
-  const h=assessment.headlines||{};const ev=assessment.evidence||{};const dims=scoreEntries();const findings=assessment.findings||[];
-  const signals=findings.slice(0,4).map(function(f){return '<div class="signal"><b>'+esc(f.title||f.id||'Finding')+'</b><span>'+esc(f.severity||'Management attention required')+'</span></div>'}).join('');
-  $('app').innerHTML='<div class="hero"><div class="eyebrow">COST IQ · PRELIMINARY DIAGNOSTIC</div><h1>Your technology cost & value snapshot</h1><p>The assessment engine has completed its scoring. AI has checked the responses for ambiguity and can ask targeted clarification questions before the executive report is generated.</p></div><div class="report-kpi" style="margin-top:20px"><div class="score-card"><div class="score-label">Cost IQ</div><div class="score-num">'+esc(h.costIQ??'—')+'</div></div><div class="score-card"><div class="score-label">Value IQ</div><div class="score-num">'+esc(h.valueIQ??'—')+'</div></div><div class="score-card"><div class="score-label">Confidence</div><div class="score-num" style="font-size:23px">'+esc(ev.confidence||'—')+'</div></div><div class="score-card"><div class="score-label">Completeness</div><div class="score-num">'+esc(ev.assessmentCompleteness??0)+'%</div></div></div><div class="card">'+visualSection(dims)+'</div><div class="card"><div class="eyebrow">INITIAL SIGNALS</div><h2>What the engine is seeing</h2><div class="report-band">'+(signals||'<div class="signal"><b>No calibrated findings activated</b><span>The detailed report will explain the evidence.</span></div>')+'</div></div><div class="gate"><div class="eyebrow" style="color:#a9bac6">FULL EXECUTIVE DIAGNOSTIC</div><h2>Generate the detailed Cost IQ report</h2><p>The final report combines deterministic scoring, AI-reviewed context, visual diagnostics, opportunity signals and a 3-horizon roadmap.</p><div class="actions"><button class="btn primary" onclick="generateDetailedReport()">Generate full report →</button></div></div>';
-  initVisuals();
+// Cloud, AI and measured SaaS value come from FinOps IQ, never from Cost IQ: one cloud figure per estate. The panel shows the linked summary, or says it is not quantified and offers the consultant's completed FinOps IQ assessments.
+function money(v,cur){try{return new Intl.NumberFormat(undefined,{style:'currency',currency:cur||'USD',maximumFractionDigits:0}).format(v)}catch(e){return String(Math.round(v))+' '+(cur||'')}}
+function cloudPanelHtml(){return '<div class="card" id="cloudLine" style="margin-top:16px"><div class="eyebrow">CLOUD AND FINOPS</div><h2>Cloud, AI and measured SaaS licences</h2><div id="cloudLineBody"><p class="muted">Checking for a FinOps IQ result…</p></div></div>'}
+function cloudSummaryHtml(sum){
+  if(sum.status!=='quantified')return '<p>FinOps IQ shows no value figure for this estate ('+esc(sum.label||'not quantified')+'). Cost IQ does not estimate one.</p>';
+  const cur=sum.currency,c=sum.cases;
+  const row=(label,k)=>'<tr><td>'+label+'</td><td>'+esc(money(c.conservative[k].value,cur))+'</td><td>'+esc(money(c.expected[k].value,cur))+'</td><td>'+esc(money(c.upper[k].value,cur))+'</td></tr>';
+  return '<p>This line is taken from FinOps IQ as it computed it. Cost IQ does not estimate it again.</p><div class="table-scroll"><table class="data"><thead><tr><th>Net, '+esc(cur)+'</th><th>Conservative</th><th>Expected</th><th>Upper</th></tr></thead><tbody>'+row('Annual run-rate','netRunRate')+row('Year 1','netYear1')+row('Three years','net3Year')+'</tbody></table></div><p class="muted" style="font-size:12px">From FinOps IQ'+(sum.assessmentDate?', assessed '+esc(sum.assessmentDate):'')+'. Indicative range, not a savings commitment; the cap of '+esc(String(Math.round(sum.globalCap.share.value*100)))+'% of in-scope public cloud spend is '+esc(sum.globalCap.source.citation)+' ('+esc(sum.globalCap.source.year)+', '+esc(sum.globalCap.source.sample)+').</p>'
 }
-function openBooking(){
-  const name=prompt('Your name (optional):',''); if(name===null)return;
-  const company=prompt('Organization / enterprise (optional):',''); if(company===null)return;
-  const email=prompt('Corporate email (optional):',''); if(email===null)return;
-  const subject='Cost IQ Executive Briefing Request'+(company?' — '+company:'');
-  const body=['Hi Ashutosh,','','I have completed a Cost IQ assessment and would like to schedule an executive briefing to review the full diagnostic report.','','Name: '+(name||'Executive'),'Company: '+(company||'Enterprise'),'Email: '+(email||''),'Cost IQ: '+(assessment.headlines?.costIQ??'—'),'Value IQ: '+(assessment.headlines?.valueIQ??'—'),'','Please get in touch to confirm the session.'].join('\\n');
-  window.location.href='mailto:ashutosh.dixit@ltm.com?subject='+encodeURIComponent(subject)+'&body='+encodeURIComponent(body);
-  generateDetailedReport();
-}
-async function generateDetailedReport(){
-  const overlaySteps=['Reading assessment evidence…','Mapping cost & value dimensions…','Analyzing concentration patterns…','Correlating AI observations…','Building opportunity signals…','Constructing executive roadmap…','Rendering visual report…'];
-  showSplash(overlaySteps,async function(){
-    try{
-      const ai=await api('/api/evaluate/cost-iq/ai-report',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({assessment:assessment,answers:answers,subjective:subjective,aiReview:aiReview,selectedAreas:selectedAreas})});
-      renderReport(ai);
-    }catch(e){
-      renderReport({executiveSummary:'The deterministic diagnostic completed successfully. AI narrative generation was unavailable for this run.',keyMessages:[],priorityAreas:[],opportunities:[],roadmap:[],consultingRecommendations:[],limitations:e.message});
+async function loadCloudLine(){
+  const host=$('cloudLineBody');if(!host)return;
+  const none='<p><b>Not quantified.</b> Run FinOps IQ for this estate; Cost IQ does not estimate cloud, AI or SaaS licence value itself, so the total excludes it.</p>';
+  if(!savedAssessment||!window.CostIqPersistence?.configured()){host.innerHTML=none;return}
+  try{
+    const rec=await window.CostIqPersistence.get(savedAssessment.assessmentId);
+    if(rec&&rec.finopsSummaryJson){
+      host.innerHTML=cloudSummaryHtml(JSON.parse(rec.finopsSummaryJson))+'<p><button class="btn" type="button" id="unlinkFinops">Remove the link</button></p>';
+      $('unlinkFinops').onclick=async function(){try{await window.CostIqPersistence.unlinkFinops(savedAssessment.assessmentId);loadCloudLine()}catch(e){host.insertAdjacentHTML('beforeend','<p class="muted" role="alert">Not removed: '+esc(e.message)+'</p>')}};
+      return;
     }
-  });
+    let list=[];try{list=await window.CostIqPersistence.finopsSessions()}catch(e){list=[]}
+    if(!list.length){host.innerHTML=none;return}
+    host.innerHTML=none+'<label class="muted" for="finopsPick">Use a completed FinOps IQ assessment as the cloud line</label><div class="actions"><select id="finopsPick">'+list.map(x=>'<option value="'+esc(x.assessmentId)+'">'+esc(x.clientName||x.assessmentId)+(x.completedAt?' · '+esc(String(x.completedAt).slice(0,10)):'')+'</option>').join('')+'</select><button class="btn primary" type="button" id="linkFinops">Use this result</button></div>';
+    $('linkFinops').onclick=async function(){try{await window.CostIqPersistence.linkFinops(savedAssessment.assessmentId,$('finopsPick').value);loadCloudLine()}catch(e){host.insertAdjacentHTML('beforeend','<p class="muted" role="alert">Not linked: '+esc(e.message)+'</p>')}};
+  }catch(e){host.innerHTML=none}
 }
-function normalizeAI(ai){
-  ai=ai||{};
-  const dims=scoreEntries(),findings=assessment?.findings||[],recs=assessment?.recommendations||[];
-  const ranked=[...dims].sort((a,b)=>a.score-b.score);
-  if(!Array.isArray(ai.priorityAreas)||!ai.priorityAreas.length) ai.priorityAreas=ranked.slice(0,5).map(x=>({name:x.name,score:x.score,why:x.score<50?'Priority management attention area.':x.score<70?'Improvement opportunity identified.':'Relatively healthy dimension.',action:'Validate evidence, ownership and improvement actions for this dimension.'}));
-  if(!Array.isArray(ai.keyMessages)||!ai.keyMessages.length) ai.keyMessages=findings.slice(0,5).map(f=>String(f.title||f.id||'Calibrated finding')+' — '+String(f.severity||'Management attention required.'));
-  if(!Array.isArray(ai.opportunities)||!ai.opportunities.length) ai.opportunities=recs.slice(0,6).map(r=>({title:r.title||r.id||'Advisory opportunity',description:r.description||r.summary||'Opportunity identified by the deterministic Cost IQ methodology.',evidence:'Deterministic Cost IQ recommendation activated from assessment evidence.',confidence:'Medium',nextStep:r.ltmService||r.action||'Validate with the consulting team.'}));
-  if(!Array.isArray(ai.roadmap)||!ai.roadmap.length) ai.roadmap=[{horizon:'0-30 days',actions:['Validate priority dimensions and evidence gaps','Confirm ownership for highest-priority findings']},{horizon:'30-90 days',actions:['Build quantified opportunity cases','Launch targeted optimization and governance workstreams']},{horizon:'90-180+ days',actions:['Embed operating-model changes','Track benefits realization and executive value outcomes']}];
-  if(!Array.isArray(ai.consultingRecommendations)||!ai.consultingRecommendations.length) ai.consultingRecommendations=recs.map(x=>x.ltmService||x.title||x.id).filter(Boolean);
-  ai.executiveSummary=ai.executiveSummary||'The Cost IQ diagnostic identifies the strongest management attention areas across technology cost transparency, governance, economics and value realization.';
-  ai.limitations=ai.limitations||'Deterministic scores and findings remain the source of truth. AI is used to interpret evidence and structure the executive narrative.';
-  return ai;
+// Non-cloud levers are sized only from figures the client measured, never from the answers. The panel records them (licences outside SaaS, which sit in the FinOps IQ line) and the report sizes the lever when the licensing finding is raised.
+function leverPanelHtml(){
+  const cur=/^(?:[A-Z]{3}|OTHER)$/.test(String(answers['CTX-01']||''))?answers['CTX-01']:'';
+  return '<div class="card" id="leverCard" style="margin-top:16px"><div class="eyebrow">MEASURED FIGURES</div><h2>Software licences outside SaaS</h2><p class="muted">Enter figures from the client\'s own licence reconciliation'+(cur?' in '+esc(cur):'')+'. Nothing is sized from answers alone. SaaS and marketplace software are counted in the FinOps IQ line, so leave them out here.</p>'+
+  (cur?'<div id="leverBody"><p class="muted">Loading…</p></div>':'<p class="muted" role="status">Choose the reporting currency in the context questions first; the figures are recorded in that currency.</p>')+'</div>';
 }
-function renderReport(ai){
-  ai=normalizeAI(ai);
-  window._renderCostReport=ai;
-  const h=assessment.headlines||{},findings=assessment.findings||[],recs=assessment.recommendations||[],dims=scoreEntries();
-  const pri=(ai.priorityAreas||[]).map(function(x){return '<div class="signal"><b>'+esc(x.name)+'</b><span>Score '+esc(x.score)+' · '+esc(x.why)+'</span><p style="font-size:11px;margin:7px 0 0"><b>Next:</b> '+esc(x.action)+'</p></div>'}).join('');
-  const opp=(ai.opportunities||[]).map(function(x){return '<div class="finding"><strong>'+esc(x.title)+'</strong><p>'+esc(x.description)+'</p><p><b>Confidence:</b> '+esc(x.confidence)+' · '+esc(x.nextStep)+'</p></div>'}).join('');
-  const roads=(ai.roadmap||[]).map(function(r){return '<div class="road"><h4>'+esc(r.horizon)+'</h4><ul>'+(r.actions||[]).map(function(a){return '<li>'+esc(a)+'</li>'}).join('')+'</ul></div>'}).join('');
-  $('app').innerHTML='<div id="report"><div class="hero"><div class="eyebrow">LTM · COST IQ EXECUTIVE REPORT</div><h1>Technology Cost & Value Diagnostic</h1><p>'+esc(ai.executiveSummary||'')+'</p></div><div class="report-kpi" style="margin-top:20px"><div class="score-card"><div class="score-label">Cost IQ</div><div class="score-num">'+esc(h.costIQ??'—')+'</div></div><div class="score-card"><div class="score-label">Value IQ</div><div class="score-num">'+esc(h.valueIQ??'—')+'</div></div><div class="score-card"><div class="score-label">Confidence</div><div class="score-num" style="font-size:23px">'+esc((assessment.evidence||{}).confidence||'—')+'</div></div><div class="score-card"><div class="score-label">Findings</div><div class="score-num">'+findings.length+'</div></div></div><div class="card">'+visualSection(dims)+'</div><div class="card"><div class="eyebrow">EXECUTIVE SIGNALS</div><h2>What leadership should know</h2><div class="report-band">'+(pri||'<div class="signal"><b>AI priority map</b><span>No additional priority areas were returned.</span></div>')+'</div></div><div class="card"><div class="eyebrow">OPPORTUNITY SIGNALS</div><h2>Potential value levers</h2>'+(opp||'<p class="muted">No additional opportunity narrative returned.</p>')+'</div><div class="card"><div class="eyebrow">ROADMAP</div><h2>Recommended action path</h2><div class="roadmap">'+(roads||'<p class="muted">Roadmap will be developed during the advisory engagement.</p>')+'</div></div><div class="card"><div class="eyebrow">ENGINE FINDINGS</div><h2>Deterministic findings</h2>'+(findings.map(function(f){return '<div class="finding"><strong>'+esc(f.id)+' · '+esc(f.title)+'</strong><p>'+esc(f.severity||'')+' '+esc(f.detail||'')+'</p></div>'}).join('')||'<p class="muted">No calibrated findings.</p>')+'</div><div class="card"><div class="eyebrow">LTM INFRASTRUCTURE TECH ADVISORY</div><h2>Recommended next steps</h2><ul>'+((ai.consultingRecommendations||recs.map(function(x){return x.ltmService||x.title})).map(function(x){return '<li style="margin:7px 0">'+esc(x)+'</li>'}).join(''))+'</ul><p class="mini">'+esc(ai.limitations||'Scores and findings remain governed by the Cost IQ deterministic engine. AI is used for interpretation and report synthesis only.')+'</p></div></div><div class="actions"><button class="btn primary" onclick="downloadPDF()">Download Executive Report</button><button class="btn" onclick="archivePDF()">Archive to Secured Storage</button><button class="btn dark" onclick="home()">Start new assessment</button></div>';
+async function loadLeverEvidence(){
+  const host=$('leverBody');if(!host)return;
+  const cur=answers['CTX-01'];
+  if(!savedAssessment||!window.CostIqPersistence?.configured()){host.innerHTML='<p class="muted">Sign in and save the assessment to record measured figures.</p>';return}
+  let ev=null;try{const rec=await window.CostIqPersistence.get(savedAssessment.assessmentId);ev=rec&&rec.leverEvidenceJson?JSON.parse(rec.leverEvidenceJson):null}catch(e){ev=null}
+  const f=function(id,label,hint){return '<label for="'+id+'" class="muted">'+label+'</label><input class="input" id="'+id+'" type="number" min="0" step="any" inputmode="decimal" aria-describedby="'+id+'Hint"><div class="muted" id="'+id+'Hint" style="font-size:12px;margin-bottom:8px">'+hint+'</div>'};
+  host.innerHTML=f('levBase','Unused or over-entitled licence cost, a year','Required. From the licence reconciliation: entitlements held against what is deployed and used.')+f('levSpend','Total annual spend on these licences','Optional. If given, the unused cost may not exceed it.')+f('levRenew','Share of those contracts renewing in year one, %','Optional, 0 to 100. A quarter is assumed if blank.')+f('levRate','Client\'s own cost of one FTE-month','Required: without it the lever is not sized. LTM does not assume a salary.')+
+    '<div class="actions"><button class="btn primary" type="button" id="levSave">Save measured figures</button><button class="btn" type="button" id="levClear">Clear</button></div><p class="muted" id="levMsg" role="status"></p>';
+  const L=ev&&ev.levers&&ev.levers['LEV-11']||{};
+  if(L.unusedAnnualCost!=null)$('levBase').value=L.unusedAnnualCost;if(L.addressableSpend!=null)$('levSpend').value=L.addressableSpend;if(L.renewingYear1Share!=null)$('levRenew').value=Math.round(L.renewingYear1Share*10000)/100;if(ev&&ev.internalRatePerFteMonth!=null)$('levRate').value=ev.internalRatePerFteMonth;
+  const num=function(id){const v=$(id).value;return v===''?undefined:Number(v)};
+  const say=function(t){$('levMsg').textContent=t};
+  $('levSave').onclick=async function(){
+    const base=num('levBase'),renew=num('levRenew');
+    if(base===undefined||!(base>=0))return say('Enter the unused licence cost as a number, not negative.');
+    if(renew!==undefined&&!(renew>=0&&renew<=100))return say('The renewal share is between 0 and 100.');
+    const lever={unusedAnnualCost:base};if(num('levSpend')!==undefined)lever.addressableSpend=num('levSpend');if(renew!==undefined)lever.renewingYear1Share=renew/100;
+    const evidence={currency:cur,levers:{'LEV-11':lever}};if(num('levRate')!==undefined)evidence.internalRatePerFteMonth=num('levRate');
+    try{await window.CostIqPersistence.setLeverEvidence(savedAssessment.assessmentId,evidence);say('Saved. The next report includes this lever if the licensing finding is raised.')}catch(e){say('Not saved: '+e.message)}
+  };
+  $('levClear').onclick=async function(){try{await window.CostIqPersistence.setLeverEvidence(savedAssessment.assessmentId,null);loadLeverEvidence()}catch(e){say('Not cleared: '+e.message)}};
+}
+function preliminary(){
+  const h=assessment.headlines||{};const ev=assessment.evidence||{};const dims=scoreEntries();const SEV={high:0,medium:1,low:2};const findings=(assessment.findings||[]).slice().sort(function(a,b){return (SEV[a.severity]??3)-(SEV[b.severity]??3)});
+  const signals=findings.slice(0,4).map(function(f){return '<div class="signal"><b>'+esc(f.title||f.id||'Finding')+'</b><span>'+esc(f.severity||'Management attention required')+(f.description?' · '+esc(f.description):'')+'</span></div>'}).join('');
+  $('app').innerHTML='<div class="hero"><div class="eyebrow">COST IQ · PRELIMINARY DIAGNOSTIC</div><h1>Your technology cost & value snapshot</h1><p>The engine has scored the answers. Each score and finding below comes from fixed rules, and the report explains how it was reached.</p></div><div class="report-kpi" style="margin-top:20px"><div class="score-card"><div class="score-label">Cost management</div><div class="score-num">'+esc(h.costIQ??'—')+'<span class="muted" style="font-size:15px"> / 100</span></div></div><div class="score-card"><div class="score-label">Value management</div><div class="score-num">'+esc(h.valueIQ??'—')+'<span class="muted" style="font-size:15px"> / 100</span></div></div><div class="score-card"><div class="score-label">Questions answered</div><div class="score-num">'+esc(ev.assessmentCompleteness??0)+'%</div><div class="muted" style="font-size:12px">Of the questions asked for the areas chosen; not confidence in a saving</div></div></div><div class="card">'+visualSection(dims)+'</div><div class="card"><div class="eyebrow">INITIAL SIGNALS</div><h2>What the engine is seeing</h2><div class="report-band">'+(signals||'<div class="signal"><b>No findings raised</b><span>The detailed report will explain the evidence.</span></div>')+'</div></div><div class="card" id="reportCard"><div class="eyebrow">REPORT</div><h2>Your Cost IQ report</h2><p class="muted">Built on the server from the saved, completed assessment: scores, findings, a delivery plan, how LTM can help, and the assumptions and sources behind every figure. The client edition leaves out consultant notes and internal references.</p>'+reportButtons()+'</div>';
+  $('app').insertAdjacentHTML('beforeend',cloudPanelHtml());
+  $('app').insertAdjacentHTML('beforeend',leverPanelHtml());
+  if(reportReady())$('app').insertAdjacentHTML('beforeend',narrativePanelHtml());
   initVisuals();
+  loadCloudLine();
+  loadLeverEvidence();
+  loadNarrative();
 }
-function downloadJSON(){const blob=new Blob([JSON.stringify({assessment:assessment,answers:answers,aiReview:aiReview,selectedAreas:selectedAreas},null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='cost-iq-assessment.json';a.click();URL.revokeObjectURL(a.href)}
-function downloadPDF(){
-  if(!window.jspdf?.jsPDF){alert('PDF library is still loading. Please try again.');return}
-  const doc=new window.jspdf.jsPDF();
-  const h=assessment.headlines||{},ev=assessment.evidence||{},findings=assessment.findings||[],recs=assessment.recommendations||[],dims=scoreEntries(),ai=normalizeAI(window._renderCostReport||{});
-  window._renderCostReport=ai;
-  let y=18;
-  const left=14,right=196,width=182;
-  function page(){doc.addPage();y=18}
-  function ensure(height){if(y+height>280)page()}
-  function textBlock(text,size=10,indent=0,gap=4){
-    const lines=doc.splitTextToSize(String(text??''),width-indent);
-    ensure(lines.length*5+gap);doc.setFontSize(size);doc.text(lines,left+indent,y);y+=lines.length*5+gap;
-  }
-  function heading(title){
-    ensure(14);doc.setFontSize(14);doc.text(title,left,y);y+=8;
-  }
-  function subheading(title){
-    ensure(10);doc.setFontSize(11);doc.text(title,left,y);y+=6;
-  }
-  function bullet(text){
-    textBlock('• '+text,9,2,3);
-  }
-  doc.setFontSize(18);doc.text('LTM Cost IQ — Executive Report',left,y);y+=8;
-  doc.setFontSize(10);doc.text('Technology Cost & Value Diagnostic',left,y);y+=8;
-  doc.setFontSize(11);doc.text('Cost IQ: '+(h.costIQ??'—')+'   Value IQ: '+(h.valueIQ??'—')+'   Confidence: '+(ev.confidence||'—'),left,y);y+=10;
-  doc.setFontSize(9);doc.text('Assessment completeness: '+(ev.assessmentCompleteness??'—')+'   Findings: '+findings.length, left,y);y+=9;
-
-  heading('Executive Summary');
-  textBlock(ai.executiveSummary||'The Cost IQ diagnostic has completed deterministic scoring.',10,0,6);
-
-  heading('Priority Areas');
-  (ai.priorityAreas||[]).slice(0,5).forEach(function(x){
-    subheading((x.name||'Priority area')+' — Score '+(x.score??'—'));
-    textBlock('Why: '+(x.why||'Management attention area.'),9,2,2);
-    textBlock('Action: '+(x.action||'Validate evidence, ownership and improvement actions.'),9,2,4);
-  });
-
-  heading('Dimension Scorecard');
-  dims.forEach(function(x){textBlock(x.name+': '+x.score+'/100',9,2,2)});
-
-  heading('Deterministic Findings');
-  if(findings.length){
-    findings.forEach(function(f){
-      subheading((f.id||'Finding')+' — '+(f.title||'Management attention'));
-      textBlock((f.severity||'')+(f.detail?' — '+f.detail:''),9,2,3);
-    });
-  } else textBlock('No calibrated findings were activated by the deterministic methodology.',9,2,4);
-
-  heading('Opportunity Signals');
-  (ai.opportunities||[]).forEach(function(x){
-    subheading(x.title||'Advisory opportunity');
-    textBlock(x.description||'Opportunity identified by the deterministic methodology.',9,2,2);
-    if(x.evidence)textBlock('Evidence: '+x.evidence,9,2,2);
-    textBlock('Confidence: '+(x.confidence||'—')+(x.nextStep?' · Next: '+x.nextStep:''),9,2,4);
-  });
-
-  heading('Recommended Roadmap');
-  (ai.roadmap||[]).forEach(function(r){
-    subheading(r.horizon||'Next horizon');
-    (r.actions||[]).forEach(bullet);
-    y+=1;
-  });
-
-  heading('LTM Infrastructure Tech Advisory Recommendations');
-  const advisory=ai.consultingRecommendations||recs.map(function(x){return x.ltmService||x.title||x.id}).filter(Boolean);
-  if(advisory.length) advisory.forEach(bullet);
-  else textBlock('No additional advisory recommendations were activated.',9,2,4);
-
-  heading('Methodology & Limitations');
-  textBlock(ai.limitations||'Deterministic scores and findings remain the source of truth.',9,0,4);
-  textBlock('This report is generated from the Cost IQ deterministic assessment engine. AI narrative synthesis is optional and does not alter deterministic scores, findings or recommendations.',9,0,6);
-
-  const pages=doc.getNumberOfPages();
-  for(let p=1;p<=pages;p++){
-    doc.setPage(p);doc.setFontSize(8);doc.text('LTM Cost IQ · Confidential',left,289);doc.text('Page '+p+' of '+pages,176,289);
-  }
-  doc.save('cost-iq-executive-report.pdf');
+// AI narrative (CQ8): off unless the consultant switches it on for this engagement. The service writes it from the scores, findings and recommendations only and rejects anything that fails the grounding check.
+var narPollMs=4000;
+function narrativePanelHtml(){
+  return '<div class="card" id="narrativeCard" style="margin-top:16px"><div class="eyebrow">AI NARRATIVE · OPTIONAL</div><h2>Written summary for the report</h2><div id="narrativeBody"><p class="muted">Loading…</p></div></div>';
 }
-async function archivePDF(){
-  if(!window.LTM_S3){alert('Secure report archive is unavailable on this deployment.');return}
-  const payload={tool:'Cost IQ',generatedAt:new Date().toISOString(),assessment:assessment,aiReport:window._renderCostReport||{}};
-  try{await LTM_S3.requestArchiveConsent(payload);await LTM_S3.saveReportToS3(payload);if(LTM_S3.showS3SuccessBanner)LTM_S3.showS3SuccessBanner();}catch(e){alert('Archive failed: '+e.message)}
+function narrativeBox(n){
+  if(!n||!n.narrative)return '';
+  const nr=n.narrative;
+  return '<div class="signal"><b>Narrative summary</b><span>'+nr.summary.split(/\n\s*\n/).map(function(t){return esc(t)}).join('<br><br>')+'</span></div><p class="muted" style="font-size:12px">Written by '+esc(n.modelId||'an AI model')+' and checked against the result. It appears in the report when AI is on for this engagement.</p>';
+}
+async function loadNarrative(){
+  const host=$('narrativeBody');if(!host)return;
+  if(!savedAssessment||!window.CostIqPersistence?.configured()){host.innerHTML='<p class="muted">Sign in and save the assessment to use the AI narrative.</p>';return}
+  let rec=null;try{rec=await window.CostIqPersistence.get(savedAssessment.assessmentId)}catch(e){rec=null}
+  const on=!!(rec&&rec.aiEnabled);let stored=null;try{stored=rec&&rec.narrativeJson?JSON.parse(rec.narrativeJson):null}catch(e){stored=null}
+  const say=function(t){const m=$('narMsg');if(m)m.textContent=t};
+  host.innerHTML=(on
+    ?'<p class="muted">AI is on for this engagement. The scores, findings and recommendations, without the organisation\'s name, answers or figures, go to Claude in Amazon Bedrock in India. Nothing is sent until you choose to write.</p><label for="narFocus" class="muted">Optional focus note (up to 300 characters; the organisation\'s name is removed)</label><input class="input" id="narFocus" maxlength="300" type="text"><div class="actions"><button class="btn primary" type="button" id="narWrite">Write narrative</button><button class="btn" type="button" id="narOff">Switch off</button></div>'
+    :'<p class="muted">Off. The report is written without AI. Switching on records that this engagement uses AI, and the report\'s data notice says so.</p><div class="actions"><button class="btn primary" type="button" id="narOn">Switch on for this engagement</button></div>')
+    +'<div id="narResult">'+(stored&&stored.status==='ok'?narrativeBox(stored):stored&&stored.status!=='pending'?'<p class="muted">The last attempt was not used: it did not pass the checks, or could not be completed.</p>':'')+'</div><p class="muted" id="narMsg" role="status"></p>';
+  const act=async function(action,focus){
+    try{return await window.CostIqPersistence.narrative(savedAssessment.assessmentId,action,focus)}catch(e){say(e.message);return null}
+  };
+  if($('narOn'))$('narOn').onclick=async function(){if(await act('enable'))loadNarrative()};
+  if($('narOff'))$('narOff').onclick=async function(){if(await act('disable'))loadNarrative()};
+  // The service starts the model call and answers at once; the stored state is read until it is ok, rejected or error.
+  const poll=async function(){
+    const until=Date.now()+5*60*1000;
+    while(Date.now()<until){
+      await new Promise(function(r){setTimeout(r,narPollMs)});
+      if(!$('narMsg'))return;
+      let r=null;try{r=await window.CostIqPersistence.get(savedAssessment.assessmentId)}catch(e){continue}
+      let n=null;try{n=r&&r.narrativeJson?JSON.parse(r.narrativeJson):null}catch(e){n=null}
+      if(!n||n.status==='pending')continue;
+      if(n.status==='ok'){$('narResult').innerHTML=narrativeBox(n);say('Done. It will appear in the next report you download.')}
+      else say(n.status==='rejected'?'The draft added facts that are not in the result, so it was not used. Try again, or use the report without it.':'The narrative could not be written. Please try again.');
+      const b=$('narWrite');if(b)b.disabled=false;return;
+    }
+    say('This is taking longer than expected. Check back later; the report is unaffected.');
+    const b=$('narWrite');if(b)b.disabled=false;
+  };
+  if($('narWrite'))$('narWrite').onclick=async function(){
+    $('narWrite').disabled=true;
+    say('Writing and checking the narrative. This can take a minute or two…');
+    const d=await act('generate',($('narFocus').value||'').trim()||undefined);
+    if(d){poll()}else $('narWrite').disabled=false;
+  };
+  // Opened while a job is already running (for example after a reload): wait for it.
+  if(stored&&stored.status==='pending'&&$('narWrite')){$('narWrite').disabled=true;say('A narrative is being written. This can take a minute or two…');poll()}
+}
+function reportReady(){return !!savedAssessment&&!testScenario&&savedAssessment.status==='completed'}
+function reportButtons(){
+  if(!reportReady())return '<p class="muted" id="reportNote">The downloadable report is produced from a saved, completed assessment.</p>';
+  return '<div class="actions" role="group" aria-label="Download the report"><button class="btn primary" onclick="downloadReport(\'pdf\',\'client\',this)">Client edition (PDF)</button><button class="btn" onclick="downloadReport(\'pdf\',\'consultant\',this)">Consultant edition (PDF)</button><button class="btn" onclick="downloadReport(\'csv\',\'client\',this)">Backlog (CSV)</button></div><p class="muted" id="reportNote" role="status"></p>';
+}
+async function downloadReport(format,view,btn){
+  const note=$('reportNote');const say=t=>{if(note)note.textContent=t};
+  if(!reportReady()){say('Complete and save the assessment first.');return}
+  if(btn)btn.disabled=true;say('Preparing the report…');
+  try{
+    const r=await authedFetch(API+'/api/cost-iq/report?assessmentId='+encodeURIComponent(savedAssessment.assessmentId)+'&format='+format+'&view='+view);
+    if(!r.ok){let m='HTTP '+r.status;try{const d=await r.json();m=d.message||d.error||m}catch(e){}throw Error(m)}
+    const blob=await r.blob();const m=/filename="([^"]+)"/.exec(r.headers.get('Content-Disposition')||'');
+    const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=m?m[1]:'cost-iq-report.'+format;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+    say('Downloaded.');
+  }catch(e){say('Not downloaded: '+e.message)}
+  finally{if(btn)btn.disabled=false}
 }
 function fail(m){$('app').innerHTML='<div class="card"><h2>Cost IQ is temporarily unavailable</h2><p class="muted">'+esc(m)+'</p><button class="btn primary" onclick="boot()">Retry</button></div>'}
 boot();

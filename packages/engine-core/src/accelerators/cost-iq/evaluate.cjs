@@ -1,21 +1,17 @@
 'use strict';
 
 const canon = require('./canon/costiq-engine-v10.cjs');
-const orchestrator = require('./canon/costiq-orchestrator-v10.2.cjs');
 const config = require('./canon/config/master-v6.6.json');
-const overlay = require('./canon/config/finops-overlay-v7.1.0.json');
 const calibration = require('./canon/config/finding-activation-calibration-v7.1.1.json');
 const opportunityGates = require('./canon/config/opportunity-recommendation-gates-v7.1.0.json');
 const RELEASE_MANIFEST = require('./canon/RELEASE_MANIFEST.json');
 
-function evaluateCostIq({ answers = {}, scope = null, capabilityScores = {}, evidence = {}, feasibilityEvidence = {}, options = {} } = {}) {
+function evaluateCostIq({ answers = {}, scope = null, evidence = {}, feasibilityEvidence = {}, options = {} } = {}) {
   return canon.evaluate(config, {
-    overlay,
     calibration,
     opportunityGates,
     answers,
-    scope: scope ? { ...scope, capabilityScores } : null,
-    capabilityScores,
+    selectedAreas: Array.isArray(scope?.selectedAreas) ? scope.selectedAreas : null,
     options: { ...options, evidence, feasibilityEvidence }
   });
 }
@@ -25,16 +21,11 @@ function metadata() {
     product: 'Cost IQ',
     release: RELEASE_MANIFEST,
     baseline: {
-      questions: config.questions.length + (overlay.supplementalQuestions || []).length,
+      questions: config.questions.length,
       dimensions: config.dimensions.length,
       findings: config.findings.length,
       recommendations: config.recommendations.length,
       rules: config.rules?.length || 0
-    },
-    finops: {
-      version: overlay.version,
-      capabilities: Object.keys(overlay.capabilityMappings || {}).length,
-      domains: (overlay.frameworkDomains || []).length
     }
   };
 }
@@ -42,13 +33,17 @@ function metadata() {
 function questions() {
   return {
     manifest: config.manifest,
-    questions: [...config.questions, ...(overlay.supplementalQuestions || [])],
-    dimensions: config.dimensions
+    questions: config.questions,
+    dimensions: config.dimensions,
+    selection: config.settings.selection
   };
 }
 
-function orchestrate(args = {}) {
-  return orchestrator.orchestrate({ overlay, ...args });
+// The questions a run is asked and the ones answered, by the same selection the engine counts completeness over.
+function scopeCounts({ answers = {}, scope = null } = {}) {
+  const shown = canon.shownQuestionIds(config, Array.isArray(scope?.selectedAreas) ? scope.selectedAreas : null, answers);
+  const has = id => answers[id] != null && answers[id] !== '' && !(Array.isArray(answers[id]) && answers[id].length === 0);
+  return { shown: shown.size, answered: [...shown].filter(has).length };
 }
 
-module.exports = { evaluateCostIq, metadata, questions, orchestrate, RELEASE_MANIFEST };
+module.exports = { evaluateCostIq, metadata, questions, scopeCounts, RELEASE_MANIFEST };

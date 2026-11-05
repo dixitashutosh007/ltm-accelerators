@@ -175,12 +175,12 @@ function pageFunction(from: string, to: string, name: string, deps: Record<strin
 }
 
 describe('Cloud IQ regressions fixed in Phase 3 (scoring audit)', () => {
-  it('returns the full sector benchmark, and the page draws peer bars and radar from it', () => {
+  it('the engine still returns the sector benchmark (removed in CL4), and the page no longer draws or states any peer comparison (CL1, decision D4)', () => {
     const r = evaluateCloudIq({ answers: { 'Q0.2': idx('Q0.2', 'Public') } });
     expect(r.peerBenchmark).toEqual((kb as any).benchmarks['Public Sector & Government']);
     expect(r.peerBenchmark.D7).toBe(3.5);
     expect(page).not.toMatch(/R\.peer\.overall|R\.peer\[/);
-    expect(page).toContain('R.peerBenchmark[d]');
+    expect(page).not.toMatch(/peerBenchmark|peerDelta|Peer Median|Sector Benchmark/);
   });
 
   it('an unanswered industry falls back to Other, not BFSI', () => {
@@ -275,18 +275,21 @@ describe('Cloud IQ regressions fixed in Phase 3 (scoring audit)', () => {
     for (const phrase of ['hovering at low levels', 'will permanently eliminate', 'reclaimable leakage', 'Value-at-Stake', 'Value at Stake', '2.5x–3.5x', 'will be reclaimed']) {
       expect(page, phrase).not.toContain(phrase);
     }
-    expect(page).toContain('Estimated annual cost leakage (indicative)');
+    // CL1 (decision D3): the page states no leakage amount; cloud cost value is FinOps IQ's, shown once.
+    expect(page).not.toMatch(/leakLow|leakHigh|totalLeakage|R\.decomp/);
     const memo = (answers: Record<string, unknown>) => {
       const RESULT = evaluateCloudIq({ answers });
       const fmt = (n: number) => '$' + Number(n).toLocaleString();
-      return pageFunction('function generateRuleBasedMemo', 'function copyMemoText', 'generateRuleBasedMemo', {
+      return pageFunction('function generateRuleBasedMemo', 'function copyReportMemo', 'generateRuleBasedMemo', {
         RESULT, A: answers, QUESTIONS: pageQuestions(), fmt, showScoringError: () => {},
+        FINOPS_NOTE: (page.match(/const FINOPS_NOTE = "([^"]+)"/) || [])[1],
         SESSION: { clientName: 'Acme', anonymize: false, consultingProbes: {} }
       })() as string;
     };
     const committed = memo({ 'Q0.9': idx('Q0.9', '80%+'), 'Q4.1': 4, 'Q4.4': 4, 'Q0.11': 0, 'Q0.12': 0 });
     expect(committed).not.toMatch(/under 40%|VMware|lease overhead/i);
-    expect(committed).toContain('estimated, up to');
+    expect(committed).not.toMatch(/leak|\$\d/i);
+    expect(committed).toContain('No cloud cost saving is stated here');
     expect(committed).not.toMatch(/\bwill\b/);
     const exposed = memo({ ...cloudIqAnswers });
     expect(exposed).toMatch(/VMware/);

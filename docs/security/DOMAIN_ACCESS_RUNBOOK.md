@@ -35,7 +35,13 @@ The services keep the last copy they read for 15 minutes. After that every addre
 - **No protected address works:** set `LTM_SUPER_ADMIN_EMAILS` (or `LTM_PROTECTED_DOMAINS`) in the Amplify console and redeploy.
 - **Rules are wrong and the screen is unusable:** delete `config/domain-rules.json` in the reports bucket. The platform then follows the setup lists only. Keep the audit entries.
 
+## First deploy
+The rules file does not exist until something creates it. The services and triggers can only read it, and S3 answers "access denied" (not "not found") for a missing object when the caller cannot list the bucket, so until the file exists everyone except the protected addresses would be refused. The reports service creates the empty file on its first authenticated request and never overwrites one. So after the first deploy, **sign in once as a protected administrator (ltm.com or a super administrator) and open the index page** before anyone else signs in. If people are refused ("could not be checked") right after a deploy, that is the cause.
+
 ## Known limits
+- **One person at ltm.com cannot be blocked with a rule.** `ltm.com` is protected as a whole, and a rule on a single ltm.com address is refused. To stop a leaver or a compromised account, disable the account in Cognito (Users, Disable user). Owner decision pending on allowing address rules inside a protected domain (the super administrators would stay protected).
+- The pre-authentication refusal says the address is not authorised, which tells someone trying addresses that a rule applies. It is a low risk; a uniform sign-in error would hide it at the cost of confusing blocked people.
+- The audit entry is written after the change, so a crash between the two leaves a change with no entry (logged). It never leaves an entry for a change that did not happen.
 - Cost IQ's service is not wrapped by `withAcceleratorAccess` yet, so a blocked person can call it until their ID token expires (about an hour) and cannot sign in again.
 - A cached copy lasts up to 30 seconds, so a new block takes effect within that time (up to 15 minutes in an outage, when the copy is stale).
 - Accounts of a blocked domain are kept, not disabled; saved assessments stay but cannot be reached until the domain is unblocked.
