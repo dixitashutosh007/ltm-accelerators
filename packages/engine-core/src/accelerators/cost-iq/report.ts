@@ -158,7 +158,7 @@ const sized = (c: Ctx) => (c.i.nonCloud?.status === 'quantified' ? c.i.nonCloud 
 
 /** What the reader needs next to any money range: the lever's confidence, and the cloud line's where one is included (CQ10 challenge H2, M3). */
 function confidenceNote(c: Ctx): string {
-  const cloud = c.i.finops?.status === 'quantified' && sized(c)?.total?.cloudIncluded ? ` The cloud line is of ${String(c.i.finops.confidence ?? 'not stated').toLowerCase()} confidence.` : '';
+  const cloud = c.i.finops?.status === 'quantified' && sized(c)?.total?.cloudIncluded ? ` Confidence in the cloud line is ${c.i.finops.confidence ?? 'not stated'}.` : '';
   return `Confidence in the licence lever is Low: its cases are LTM planning shares of the client's measured figure, with no published range, and the upper case is all of it.${cloud}`;
 }
 
@@ -379,6 +379,7 @@ function pkg(c: Ctx, id: string): Package | undefined {
     scope: 'A short advisory review of the FinOps IQ assessment already linked to this report: whether its cloud line and capability ratings explain this finding, which evidence is still missing and who holds it. No new FinOps IQ assessment is needed unless the review finds the linked one out of date or out of scope. This package does not size opportunities or recommend cloud changes.',
     outcome: 'A short review note stating what the linked FinOps IQ assessment already explains, which evidence is still missing and who holds it.',
     prerequisites,
+    risks: [{ risk: 'Evidence holders are not identified', mitigation: 'Do not start the review until each evidence item has a named holder' }],
     workstreams: [{
       id: 'WS1', name: 'Review the linked result',
       activities: ['Read the linked FinOps IQ result against this finding with the cloud platform and finance owners', 'Confirm the linked assessment still covers the in-scope accounts and the right period', 'List any evidence still missing and name its holder'],

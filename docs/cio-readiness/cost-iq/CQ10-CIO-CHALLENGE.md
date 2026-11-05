@@ -20,6 +20,31 @@ I also read `report.ts`, `notices.ts`, `delivery-library.json` (prerequisites, d
 
 **Not yet ready to put in front of a CIO or CFO, but close.** No Critical finding. The previous gate's blockers are genuinely fixed: no DRAFT or release ID on the client cover, no internal IDs, no promise language (I searched the client text for will save, guarantee, ensure, payback, ROI, up to n%: none), the total reconciles, and the one-figure rule holds. Four High findings remain, all fixable in `report.ts` and the delivery library with text and filter changes: the executive summary says "until then no saving is stated" directly above a GBP 2.49m expected total; the cloud line says "capped at 29% of that spend" without stating any spend; the delivery plan asks the client for evidence for findings that were never raised; and the report recommends a scoping step to decide whether to run a FinOps IQ assessment that is already linked in the same report.
 
+## Re-test of the fixes (5 Nov 2026, commit 5292baf)
+
+Same method: the same three profiles re-rendered (mixed, cloud-heavy, on-premises-heavy; client and consultant editions where sampled; 28, 28, 14 client pages), text layer read, page source read. Page images still not viewed; tests not run. The findings below are the original ones; their status is now:
+
+| Finding | Status | Evidence |
+|---|---|---|
+| H1 summary contradiction | **Fixed** | Mixed p. 3: "Sizing of the findings starts when the evidence arrives; until then the only amounts in this report are the cloud line from FinOps IQ and the licence lever sized from the client's measured figures." Agrees with the table above it. |
+| H2 "of that spend" and confidence | **Fixed, except Year 1 to 3 (known open, now M2)** | Mixed p. 4 and cloud-heavy: "FinOps IQ recorded no in-scope spend figure for this line, so the cap of 29% of spend cannot be shown as an amount." Total caption now states "Confidence in the licence lever is Low ... the upper case is all of it. The cloud line is of low confidence." Cloud line still shows confidence Low. |
+| H3 evidence for unraised findings | **Fixed** | Every "Evidence for" title in all three client editions appears among that edition's findings (on-premises: 3 titles for 3 findings; mixed: 10 for 10; cloud-heavy: 11). |
+| H4 scoping a linked FinOps IQ | **Fixed** | Mixed pp. 14, 19, 23: "Review of the Linked FinOps IQ Result", 1 week, "No new FinOps IQ assessment is needed unless the review finds the linked one out of date". On-premises (nothing linked) keeps the unlinked wording. Residue: see N1. |
+| M1 internal effort only | **Fixed** | Mixed p. 3 and p. 9: "net of the client's own internal cost to deliver (external fees, tools and contract penalties are not included and are agreed separately)"; also A-09. |
+| M4 single-answer dimensions | **Fixed** | Mixed "Where to look first" now Benefits 20 (2 answers), Productivity 31, SaaS 46, Spend Transparency 57; the 1-question Operations 2 and Cloud Economics are gone; the intro says why. Cloud-heavy likewise (lowest now Infrastructure 27 on 2 answers). |
+| M7 result screen | **Mostly fixed** | Tiles now "Cost management", "Value management", "Questions answered"; no `boundaryStatement` in the page. Residue: the chart labels at `cost-iq-v10.html:346` still read 'Cost IQ', 'Value IQ', 'Completeness'; saved list still shows the raw status (L6, open). |
+| M9 third-party resources | **Partly fixed** | Chart.js now self-hosted (`/assets/vendor/chart-4.4.1.umd.js`). Google Fonts is still loaded (`:26-28`), now disclosed in the data notice (mixed p. 27: "receives the visitor's network address and browser details; no assessment data is sent"). Disclosure is not removal; counsel to say whether it suffices (UNSOURCED); self-hosting the fonts would close it. |
+| L1 "1 weeks" | **Fixed** | Searched all editions: only "11 weeks" matches; R-003 now prints "1 week". |
+| L3 assumption order | **Fixed** | Mixed Appendix B prints A-01 to A-11 in order. |
+
+**New defects introduced by the fixes**
+
+- **N1 (Low).** The R-003 replacement keeps a risk row from the old scoping text: "Do not schedule the assessment until each evidence item has a named holder" (mixed p. 14), which no longer fits a review of an existing assessment. Reword to "Do not start the review until each evidence item has a named holder".
+- **N2 (Low).** The total caption ends "The cloud line is of low confidence." Inconsistent capitalisation with "confidence Low" two pages on, and it is a bare sentence after the lever sentence. Use "Confidence in the cloud line is Low (FinOps IQ)."
+- **N3 (Low).** The disclosure sentence about Google Fonts sits in the middle of the data notice before the AI sentence; fine for accuracy, but the page's own notice card and the report now carry a statement about a practice that can be removed (see M9).
+
+**Verdict: no High remains.** All four High findings are fixed in the samples. Open, as expected: M2, M3, M5, M6, M8 (role check), M10, M11, L2, L4 to L8. I found none of them worse.
+
 ## Questions asked
 
 Verdict key: **Pass** = checked and holds; **Partial** = answered in part or with a defect; **Fail** = not answered or contradicted. "Client p." means the client edition of the mixed sample unless stated.

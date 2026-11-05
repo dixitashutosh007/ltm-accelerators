@@ -343,7 +343,7 @@ function initVisuals(){
     const scales=type==='radar'?{r:{min:0,max:100,ticks:{stepSize:25,backdropColor:'transparent'},pointLabels:{font:{size:9},callback:function(t){t=String(t);var n=window.innerWidth<520?12:22;return t.length>n?t.slice(0,n-1)+'…':t}}}}:{y:{min:0,max:100}};
     new Chart(el,{type:type,data:{labels:l,datasets:[{label:title,data:v,fill:type==='radar',borderWidth:2,pointRadius:3}]},options:{responsive:true,maintainAspectRatio:false,indexAxis:type==='bar'?'y':undefined,scales:scales,plugins:{legend:{display:false}}}});
   }
-  make('scoreProfile','bar',['Cost IQ','Value IQ','Completeness'],[Number(h.costIQ)||0,Number(h.valueIQ)||0,Number((assessment.evidence||{}).assessmentCompleteness)||0],'Diagnostic score');
+  make('scoreProfile','bar',['Cost management','Value management','Questions answered'],[Number(h.costIQ)||0,Number(h.valueIQ)||0,Number((assessment.evidence||{}).assessmentCompleteness)||0],'Diagnostic score');
   make('costRadar','radar',labels,values,'Dimension score');
   make('costBars','bar',labels,values,'Dimension score');
 }
