@@ -41,3 +41,11 @@ Defaults applied unless the owner changes them:
 - Login tracking of employees needs a notice and a retention statement before P2 goes live (12 months, S4).
 - Moving four accelerators off `localStorage` changes their save format; stored local data is not migrated and the page says so once.
 - The Question Bank Studio admin login is separate from this screen; P2 does not replace it unless the owner asks.
+
+
+## P3 progress (5 Nov 2026): front end
+- **Shared component** `Accelerators/assets/saved-sessions.js`: saves the current assessment through `/api/sessions` (owner or Admin only; 90 days after the last save), restores the latest unfinished one when the page opens, "My sessions" panel (open, delete in two steps, stage, percent, and a warning in the last 14 days before automatic deletion), a one-time notice that progress an earlier build kept in the browser is not carried over, and `discard()` for a page's "clear everything".
+- **Wired in:** Cloud IQ (offers resume on return), Modernize IQ (restores silently, as before; "clear" now deletes the saved session), Strategy IQ (had no save at all: now saves, and offers resume on return). None of them writes progress to `localStorage` any more. AI keys that Strategy, Cloud and Modernize IQ keep in the browser are a separate readiness item, not P3.
+- **Not wired, and why: AI Readiness IQ.** The page is not linked from the home page, loads neither `ltm-api.js` nor the access guard, and `ai-readiness-iq` is not an accelerator the permissions screen grants. Adding saved sessions would put it behind a sign-in and a permission nobody holds. Decision for the owner: retire the page, or bring it under access control first (then wire the component, which needs about ten lines).
+- Tests: `tests/e2e/saved-sessions.spec.ts` against the real sessions service with an in-memory store (save, resume, list, two-step delete, another user's session invisible, legacy notice, no console errors).
+- Not verified in a real account: the SavedSession data model deploy, TTL deletion and the activity pointer (P3b backend, unit-tested only).

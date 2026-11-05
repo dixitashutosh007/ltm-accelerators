@@ -18,6 +18,7 @@
   <!-- S3 Customer Reports Client & RBAC Guard -->
   <script src="/assets/runtime-config.js"></script>
   <script src="/assets/ltm-api.js"></script>
+  <script src="/assets/saved-sessions.js"></script>
   <script src="/assets/s3-reports.js"></script>
   <script src="/assets/rbac-guard.js" data-tool="strategy-iq"></script>
 
@@ -2185,6 +2186,46 @@ function initializeDefaultAnswers() {
 }
 initializeDefaultAnswers();
 
+/* Saved sessions (platform P3): progress is kept on the account through the shared component, not in this browser. */
+function strategyPayload() {
+  const { intake, answers, subjectiveNotes, clarificationAnswers, currentSectionIdx } = STATE;
+  return { intake, answers, subjectiveNotes, clarificationAnswers, currentSectionIdx, done: !!STATE.computedResults };
+}
+function strategyRestore(st) {
+  Object.assign(STATE, { intake: st.intake || STATE.intake, answers: st.answers || {}, subjectiveNotes: st.subjectiveNotes || {}, clarificationAnswers: st.clarificationAnswers || {}, currentSectionIdx: st.currentSectionIdx || 0 });
+  initializeDefaultAnswers();
+  const fill = (id, v) => { const el = document.getElementById(id); if (el && v !== undefined && v !== null) el.value = v; };
+  fill('org-name', STATE.intake.orgName); fill('org-sector', STATE.intake.sector); fill('org-revenue', STATE.intake.revenue);
+  fill('org-it-spend', STATE.intake.itSpend); fill('exec-name', STATE.intake.execName); fill('exec-role', STATE.intake.execRole);
+  const banner = document.getElementById('resume-banner'); if (banner) banner.remove();
+  startAssessment();
+}
+SavedSessions.attach({
+  accelerator: 'strategy-iq',
+  title: () => 'Strategy IQ · ' + (STATE.intake.orgName || 'assessment'),
+  snapshot: strategyPayload,
+  progress: () => ({ stage: STRATEGY_SECTIONS[STATE.currentSectionIdx] ? STRATEGY_SECTIONS[STATE.currentSectionIdx].title : 'Start', percent: STATE.computedResults ? 100 : Math.round((STATE.currentSectionIdx / STRATEGY_SECTIONS.length) * 100) }),
+  status: () => (STATE.computedResults ? 'completed' : 'in_progress'),
+  restore: strategyRestore
+});
+SavedSessions.ready().then(() => {
+  const st = SavedSessions.latest();
+  const host = document.getElementById('screen-intake');
+  if (!st || !st.answers || !host || !Object.keys(st.answers).length) return;
+  const pct = Math.round(((st.currentSectionIdx || 0) / STRATEGY_SECTIONS.length) * 100);
+  const b = document.createElement('div');
+  b.id = 'resume-banner'; b.setAttribute('role', 'region'); b.setAttribute('aria-label', 'Unfinished assessment');
+  b.style.cssText = 'display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;border:1px solid #d6d3d1;border-left:4px solid #D33826;border-radius:8px;padding:12px 16px;margin-bottom:16px;background:#fff';
+  b.innerHTML = '<span><b>You have an unfinished assessment</b> (about ' + pct + '% through). Resume where you left off?</span><span style="display:flex;gap:8px"><button type="button" class="btn btn-primary" id="resume-yes">Resume</button><button type="button" class="btn btn-secondary" id="resume-no">Start fresh</button></span>';
+  host.insertBefore(b, host.firstChild);
+  document.getElementById('resume-yes').onclick = () => strategyRestore(st);
+  document.getElementById('resume-no').onclick = () => { SavedSessions.fresh(); b.remove(); };
+});
+// Answers change in many places; any edit on the assessment screen is saved shortly after.
+document.addEventListener('input', e => { if (e.target.closest && e.target.closest('#screen-assess')) SavedSessions.touch(); });
+document.addEventListener('change', e => { if (e.target.closest && e.target.closest('#screen-assess')) SavedSessions.touch(); });
+document.addEventListener('click', e => { if (e.target.closest && e.target.closest('#screen-assess')) SavedSessions.touch(); });
+
 function startAssessment() {
   saveIntakeFromUI();
   initializeDefaultAnswers();
@@ -2723,6 +2764,7 @@ function handleSubjectiveInput(qId, text) {
 
 function goToSection(idx) {
   STATE.currentSectionIdx = idx;
+  SavedSessions.touch();
   renderSectionNavRail();
   renderCurrentSectionQuestions();
   window.scrollTo({ top: 120, behavior: 'smooth' });
@@ -3000,6 +3042,7 @@ async function fetchStrategyEvaluation() {
     const json = await res.json().catch(() => null);
     if (res.ok && json && json.ok && json.data) {
       STATE.computedResults = json.data;
+      SavedSessions.touch();
       return json.data;
     }
     console.error('Strategy IQ evaluation error:', res.status, json);

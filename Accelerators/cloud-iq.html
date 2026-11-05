@@ -11,6 +11,7 @@
 <!-- S3 Customer Reports Client & RBAC Guard -->
 <script src="/assets/runtime-config.js"></script>
 <script src="/assets/ltm-api.js"></script>
+<script src="/assets/saved-sessions.js"></script>
 <script src="/assets/s3-reports.js"></script>
 <script src="/assets/rbac-guard.js" data-tool="cloud-iq"></script>
 <style>
@@ -1103,18 +1104,13 @@ function toggleConsultantUnlock(){
   if(RESULT) showResults(RESULT);
 }
 
-function saveState(){
-  try{ localStorage.setItem(STORE_KEY, JSON.stringify({SESSION, gIdx, A, ts:Date.now()})); }catch(e){}
-}
+// Saved to the account through the shared sessions component (platform P3); nothing is kept in this browser.
+function saveState(){ SavedSessions.touch(); }
 function loadState(){
-  try{
-    const raw = localStorage.getItem(STORE_KEY); if(!raw) return null;
-    const st = JSON.parse(raw);
-    if(st && st.A && typeof st.gIdx === "number") return st;
-    return null;
-  }catch(e){ return null; }
+  const st = SavedSessions.latest();
+  return st && st.A && typeof st.gIdx === "number" ? st : null;
 }
-function clearState(){ try{ localStorage.removeItem(STORE_KEY); }catch(e){} }
+function clearState(){ SavedSessions.fresh(); }
 function hydrate(st){
   if(st.SESSION) Object.assign(SESSION, st.SESSION);
   Object.keys(A).forEach(k=>delete A[k]);
@@ -1855,7 +1851,7 @@ async function computeAndShow(){
 function showPreliminaryScorecard(R){
   R = R || RESULT;
   if(!R){ showScoringError(); return; }
-  RESULT = R;
+  RESULT = R; saveState();
   pfill.style.width = "100%";
   
   const client = SESSION.anonymize ? "Confidential Enterprise Client" : SESSION.clientName;
@@ -3367,7 +3363,15 @@ function downloadExecutivePDF(){
 }
 
 /* Boot application */
-start();
+SavedSessions.attach({
+  accelerator: 'cloud-iq', legacyKey: STORE_KEY,
+  title: () => 'Cloud IQ · ' + (SESSION.clientName || 'assessment'),
+  snapshot: () => ({ SESSION, gIdx, A, done: !!RESULT }),
+  progress: () => ({ stage: (GROUPS[gIdx] && GROUPS[gIdx].name) || 'Start', percent: RESULT ? 100 : Math.round((gIdx / GROUPS.length) * 100) }),
+  status: () => (RESULT ? 'completed' : 'in_progress'),
+  restore: st => { hydrate(st); if(st.done) computeAndShow(); else renderGroup(); }
+});
+SavedSessions.ready().then(start);
 </script>
 </body>
 </html>
