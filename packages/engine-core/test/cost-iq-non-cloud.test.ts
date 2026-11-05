@@ -238,3 +238,23 @@ describe('assumptions print in ID order (CQ10 challenge L3)', () => {
     }
   });
 });
+
+describe('"Where to look first" (CQ10 challenge M4)', () => {
+  it('never lists a dimension scored from a single answer, and says how many were left out', () => {
+    let sawSingle = false;
+    for (const [n, fp] of Object.entries(PROFILES)) for (const salt of [3, 7, 11]) {
+      const i = input(fp, salt, null);
+      const doc = costIqReport(i, { ...OPTS, view: 'client' });
+      const sec = doc.sections.find(x => x.id === 'summary')!;
+      const idx = sec.blocks.findIndex(b => b.kind === 'subheading' && (b as any).text === 'Where to look first');
+      const singles = i.result.dimensions.filter(d => d.score != null && d.answered < 2);
+      if (singles.length) sawSingle = true;
+      if (idx < 0) continue;
+      const table: any = sec.blocks.slice(idx).find(b => b.kind === 'table');
+      const listed = table.rows.map((r: any[]) => r[0].map((x: any) => (typeof x === 'string' ? x : x.text)).join('')).join('|');
+      for (const d of singles) expect(listed, `${n} ${salt}`).not.toContain(d.name);
+      if (singles.length) expect(JSON.stringify(sec.blocks[idx + 1])).toContain('on a single answer');
+    }
+    expect(sawSingle).toBe(true);
+  });
+});

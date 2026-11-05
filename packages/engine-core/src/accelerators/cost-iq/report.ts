@@ -199,7 +199,10 @@ function sizing(c: Ctx): string {
 function summary(c: Ctx): ReportSection {
   const { i } = c, h = i.result.headlines;
   const blocks: Block[] = [];
-  const weakest = [...c.scored].sort((a, b) => (a.score as number) - (b.score as number)).slice(0, 4);
+  // A dimension scored from one answer is a weak signal and is never the headline "look first" (CQ10 challenge M4).
+  const MIN_ANSWERS = 2;
+  const weakest = c.scored.filter(d => d.answered >= MIN_ANSWERS).sort((a, b) => (a.score as number) - (b.score as number)).slice(0, 4);
+  const singles = c.scored.filter(d => d.answered < MIN_ANSWERS).length;
   blocks.push({ kind: 'paragraph', style: 'lead', segs: [
     h.costIQ != null ? ['On the answers given, technology cost management scores ', traced('headlines.costIQ', h.costIQ, 'index', []), OUT100] as Seg[] : ['Technology cost management could not be scored from the answers given'] as Seg[],
     h.valueIQ != null ? [' and technology value management scores ', traced('headlines.valueIQ', h.valueIQ, 'index', []), OUT100, '. '] as Seg[] : ['; value management could not be scored. '] as Seg[],
@@ -215,7 +218,7 @@ function summary(c: Ctx): ReportSection {
   ] });
   if (weakest.length) {
     blocks.push({ kind: 'subheading', text: 'Where to look first' });
-    blocks.push({ kind: 'paragraph', style: 'small', segs: ['These are the lowest-scoring areas on the answers given. A low score is a reason to look, not a finding: a finding is raised only where named answers meet LTM\'s rules, so a low-scoring area may have none yet.'] });
+    blocks.push({ kind: 'paragraph', style: 'small', segs: ['These are the lowest-scoring areas that two or more answers support. A low score is a reason to look, not a finding: a finding is raised only where named answers meet LTM\'s rules, so a low-scoring area may have none yet.' + (singles ? ' Areas that rest on a single answer are left out here as too weak a signal; the scores section shows them.' : '')] });
     blocks.push({ kind: 'table', head: ['Area', 'Score', 'Questions answered'], widths: ['*', 70, 110], rows: weakest.map(d => [[strong(d.name), '\n', quoted(d.definition)], [traced(`dimensions[${d.id}].score`, d.score as number, 'index', [])], [count(`dimensions[${d.id}].answered`, d.answered)]]) });
   }
   const nc = sized(c);

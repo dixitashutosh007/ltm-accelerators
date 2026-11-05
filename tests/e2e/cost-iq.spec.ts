@@ -322,16 +322,17 @@ test.describe('Cost IQ', () => {
     expect(world.pageErrors).toEqual([]);
   });
 
-  test('the preliminary result prints each finding with its description, and says evidence completeness, not confidence', async ({ page, context, world }) => {
+  test('the preliminary result prints each finding with its description, highest severity first, and says questions answered, not confidence', async ({ page, context, world }) => {
     await signedIn(context, permitted(makeIdToken('consultant@ltm.com')));
     world.on('GET', ASSESSMENT, () => ({ body: { ok: true, data: [] } }));
     world.on('POST', '/api/evaluate/cost-iq', ({ body }) => ({ body: evaluateCostIq({ answers: body.answers, scope: body.scope }) }));
     await page.goto('/cost-iq-v10?scenarios=1');
     await page.getByRole('button', { name: 'Load Cost Challenge' }).click();
-    await expect(page.getByText('Evidence completeness').first()).toBeVisible({ timeout: 15000 });
+    await expect(page.getByText('Questions answered').first()).toBeVisible({ timeout: 15000 });
     const result: any = await page.evaluate('assessment');
     expect(result.findings.length).toBeGreaterThan(0);
-    const first = result.findings[0];
+    const rank: Record<string, number> = { high: 0, medium: 1, low: 2 };
+    const first = [...result.findings].sort((a: any, b: any) => (rank[a.severity] ?? 3) - (rank[b.severity] ?? 3))[0];
     expect(first.description).toBeTruthy();
     await expect(page.getByText(first.description, { exact: false }).first()).toBeVisible();
     await expect(page.getByText('Confidence', { exact: true })).toHaveCount(0);
@@ -382,7 +383,7 @@ test.describe('Cost IQ', () => {
     await page.evaluate("savedAssessment = { assessmentId: 'CIQ-cloudtest-1' }; loadCloudLine()");
     await expect(page.getByRole('button', { name: 'Use this result' })).toBeVisible();
     await page.getByRole('button', { name: 'Use this result' }).click();
-    await expect(page.getByText('Cloud, AI and measured SaaS licence value in this report come from FinOps IQ.')).toBeVisible();
+    await expect(page.getByText('This line is taken from FinOps IQ as it computed it. Cost IQ does not estimate it again.')).toBeVisible();
     expect(linked).toEqual([{ action: 'link_finops', assessmentId: 'CIQ-cloudtest-1', finopsAssessmentId: 'FIQ-1' }]);
     await expect(page.getByRole('cell', { name: /300,?000/ }).first()).toBeVisible();
     expect(world.pageErrors).toEqual([]);
@@ -471,7 +472,7 @@ test.describe('Cost IQ', () => {
     world.on('POST', '/api/evaluate/cost-iq', ({ body }) => ({ body: evaluateCostIq({ answers: body.answers, scope: body.scope }) }));
     await page.goto('/cost-iq-v10?scenarios=1');
     await page.getByRole('button', { name: 'Load Healthy' }).click();
-    await expect(page.getByText('Evidence completeness').first()).toBeVisible({ timeout: 15000 });
+    await expect(page.getByText('Questions answered').first()).toBeVisible({ timeout: 15000 });
     await expect(page.getByRole('button', { name: 'Consultant edition (PDF)' })).toHaveCount(0);
     await expect(page.getByText('produced from a saved, completed assessment')).toBeVisible();
     expect(world.pageErrors).toEqual([]);
