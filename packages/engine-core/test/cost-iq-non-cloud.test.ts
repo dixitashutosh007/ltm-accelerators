@@ -230,12 +230,11 @@ describe('assumptions print in ID order (CQ10 challenge L3)', () => {
   it('A-01 before A-02 and so on, in every edition', () => {
     for (const fp of Object.values(PROFILES)) {
       const i = input(fp, 5, GBP_SUMMARY); i.nonCloud = evaluateNonCloud(EV(), ['F-008'], GBP_SUMMARY);
-      const t = everything(costIqReport(i, { ...OPTS, view: 'consultant' }));
-      const ids = [...t.matchAll(/\bA-(\d{2})\b/g)].map(m => m[1]);
-      const a = t.slice(t.indexOf('Assumption '));
-      const inTable = [...a.matchAll(/\bA-(\d{2})\s{2}/g)].map(m => m[1]);
-      expect(inTable.length).toBeGreaterThan(5);
-      expect(inTable).toEqual([...inTable].sort());
+      const sec = costIqReport(i, { ...OPTS, view: 'consultant' }).sections.find(x => x.id === 'assumptions')!;
+      const table: any = sec.blocks.find(b => b.kind === 'table');
+      const ids = table.rows.map((r: any[]) => /A-\d{2}/.exec(r[0].map((x: any) => (typeof x === 'string' ? x : x.text)).join(''))![0]);
+      expect(ids.length).toBeGreaterThan(5);
+      expect(ids).toEqual([...ids].sort());
     }
   });
 });
