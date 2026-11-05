@@ -397,3 +397,15 @@ Library 0.2-draft adds ten platform-specific playbook entries (R-004: Microsoft 
 - **Gate status:** offline gate passes. Live gate (every case returns status ok) is open until the script is run against Bedrock with the model enabled in the account.
 - **Owner approval needed:** the data notice's AI sentence changed from "This version uses no AI features" to the Sovereign IQ wording (off unless the consultant switches it on; when on, what is sent and where). Re-approve before AI is switched on for any engagement.
 - **Not done:** Cloud IQ still calls Gemini from the browser (separate accelerator, in the Cloud IQ plan).
+
+### CQ8 owner decisions (5 Nov 2026)
+- Live eval stays open until the model is enabled in the LTM account: accepted.
+- Data notice AI sentence (off unless the consultant switches it on; what is sent and where when on): approved.
+- Cloud IQ's browser Gemini call is left to the Cloud IQ plan: accepted.
+
+### CQ10 progress (5 Nov 2026): hardening
+- **Full-flow browser test** against the real assessment and report services (in-memory store): start, save, leave, resume with the answer kept, complete (server-computed result), reopen, download the report (checks run), delete; no page errors and no console errors; WCAG 2.2 AA check on the saved result with its measured-figures and AI panels.
+- **Security review:** `CQ10-SECURITY.md` and a ten-route access matrix test. One High finding on deployment (F1: the AI narrative can outlast the 30-second API limit), open and awaiting a decision; one Medium fixed (F4); two Low.
+- **Load check:** `CQ10-LOAD.md`. In process: scoring well under a millisecond even at the 256 KB limit; the consultant PDF builds, checks and renders in about 0.3 s (95th percentile 0.45 s). Through API Gateway and Lambda it is not measured.
+- **Accessibility:** axe on start, question and result screens, the saved list, and the saved result with its panels; reduced-motion and keyboard checks (CQ7).
+- **Open for the gate:** F1 decision; the final CIO challenge test (a practice-lead pass over the report and page, to be run with the CQ11 re-review); a CI run on the pushed branch (the checks run locally only).

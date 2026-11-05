@@ -52,6 +52,8 @@ export function createHandler(store: CostIqAssessmentStore, deps: { enabled: () 
       if (!item) return respond(404, { ok: false, error: 'assessment_not_found' });
       if (!canAccess(event, item.respondentEmail)) return respond(403, { ok: false, error: 'assessment_access_denied' });
 
+      // Saved before owners were recorded: read-only, so no AI switch or narrative on it (as in the assessment service).
+      if (!item.respondentEmail) return respond(409, { ok: false, error: 'legacy_assessment_read_only' });
       if (action !== 'generate') {
         const data = await store.update({ assessmentId: item.assessmentId, aiEnabled: action === 'enable', ...stamp() });
         console.info('[CostIqNarrative] switch', { requestId, assessmentId: item.assessmentId, aiEnabled: data.aiEnabled });

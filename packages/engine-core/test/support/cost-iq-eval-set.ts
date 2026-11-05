@@ -30,7 +30,7 @@ function answersFor(footprint: string[], salt: number): Record<string, unknown> 
 
 export const EVAL_SET = Object.entries(PROFILES).flatMap(([name, fp], k) => [3, 11, 29].map(salt => {
   const answers = answersFor(fp, salt + k);
-  return { id: `${name} #${salt}`, result: adapter.evaluateCostIq({ answers, scope: { selectedAreas: AREAS } }) };
+  return { id: `${name} #${salt}`, answers, result: adapter.evaluateCostIq({ answers, scope: { selectedAreas: AREAS } }) };
 }));
 
 /** Focus notes a consultant might type, the adversarial ones included (a promise, an invented figure, a vendor pick, an injection). */

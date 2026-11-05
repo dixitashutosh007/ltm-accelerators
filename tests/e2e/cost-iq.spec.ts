@@ -1,6 +1,11 @@
 import AxeBuilder from '@axe-core/playwright';
 import { test, expect, makeIdToken, signedIn, TEST_API } from './fixtures';
 import { NOTICES } from '../../packages/engine-core/src/accelerators/cost-iq/notices';
+import { createHandler as manageHandler } from '../../amplify/functions/manage-cost-assessment/handler';
+import { createHandler as reportHandler } from '../../amplify/functions/cost-iq-report/handler';
+import { memoryStore } from '../../amplify/functions/manage-cost-assessment/store';
+import { memoryStore as finopsMemoryStore } from '../../amplify/functions/manage-finops-assessment/store';
+import { setPermissionSource, setDomainStore } from '../../amplify/functions/_shared/access';
 import { evaluateCostIq, metadata, questions } from '../../packages/engine-core/src/accelerators/cost-iq/evaluate.cjs';
 
 // Cost IQ reads its API address from cost-iq-runtime-config.js, which the Amplify build generates; the tests serve it.
@@ -226,6 +231,72 @@ test.describe('Cost IQ', () => {
     await page.getByRole('button', { name: 'Switch off' }).click();
     await expect(page.getByText('Off. The report is written without AI.')).toBeVisible();
     expect(world.pageErrors).toEqual([]);
+  });
+
+  test('full flow against the real services: start, save, leave, resume, complete, reopen, download the report, delete; no console errors', async ({ page, context, world }) => {
+    test.setTimeout(120_000);
+    setPermissionSource(async () => ({ take: ['cost-iq', 'finops-iq'] }));
+    setDomainStore({ check: async () => ({ allowed: true, reason: 'baseline_domain' }) });
+    await signedIn(context, permitted(makeIdToken('consultant@ltm.com')));
+    const consoleErrors: string[] = [];
+    page.on('console', m => { if (m.type() === 'error') consoleErrors.push(`${m.text()} ${m.location().url}`); });
+    const store = memoryStore();
+    const manage = manageHandler(store, () => new Date(), evaluateCostIq, finopsMemoryStore()), report = reportHandler(store);
+    const ev = (method: string, path: string, claims: any, body: unknown, query: Record<string, string>): any => ({
+      rawPath: path, headers: {}, queryStringParameters: query, body: method === 'POST' ? JSON.stringify(body) : undefined, isBase64Encoded: false,
+      requestContext: { requestId: 'e2e', http: { method }, authorizer: { jwt: { claims } } }
+    });
+    world.on('GET', ASSESSMENT, async ({ claims, query }) => { const r: any = await manage(ev('GET', ASSESSMENT, claims, undefined, query)); return { status: r.statusCode, body: JSON.parse(r.body) }; });
+    world.on('POST', ASSESSMENT, async ({ claims, body }) => { const r: any = await manage(ev('POST', ASSESSMENT, claims, body, {})); return { status: r.statusCode, body: JSON.parse(r.body) }; });
+    world.on('POST', '/api/evaluate/cost-iq', ({ body }) => ({ body: evaluateCostIq({ answers: body.answers, scope: body.scope }) }));
+    world.on('GET', '/api/cost-iq/report', async ({ claims, query }) => {
+      const r: any = await report(ev('GET', '/api/cost-iq/report', claims, undefined, query));
+      return { status: r.statusCode, body: null, raw: { body: Buffer.from(r.body, r.isBase64Encoded ? 'base64' : 'utf8'), headers: { 'content-type': r.headers['Content-Type'], 'content-disposition': r.headers['Content-Disposition'] } } };
+    });
+
+    // Start: the organisation name, then the first section's answers.
+    await page.goto('/cost-iq-v10');
+    await page.getByLabel('Organisation this assessment is for').fill('Flow Test Bank plc');
+    await page.getByRole('button', { name: /Start the assessment/ }).click();
+    await expect(page.locator('.q-card').first()).toBeVisible();
+    await page.locator('.q-card').first().locator('.option').first().click();
+    // The answer is saved (a short while after the click), not only the empty draft made at Start.
+    await expect.poll(async () => { const id = (await store.listByRespondent('consultant@ltm.com'))[0]?.assessmentId; return id ? Object.keys(JSON.parse((await store.get(id))!.answersJson)).length : 0; }).toBeGreaterThan(0);
+
+    // Leave and come back: the draft is listed and resumes with its answer kept.
+    await page.goto('/cost-iq-v10');
+    await expect(page.getByText('Flow Test Bank plc')).toBeVisible();
+    await page.getByRole('button', { name: 'Resume' }).click();
+    await expect(page.locator('.q-card').first().locator('.option[aria-checked="true"]')).toHaveCount(1);
+
+    // Answer the rest and complete: the server computes and stores the result.
+    await page.evaluate(`(function(){ vq().forEach(function(q){ if(answers[q.id]!==undefined)return; if(q.options&&q.options.length)answers[q.id]=q.interaction==='multi-select'?[q.options[0].id]:q.options[0].id; else if(q.interaction==='stars')answers[q.id]=3; else if(q.interaction==='slider'||q.interaction==='range')answers[q.id]=50; }); sectionIndex=sections().length; runEngine(); })()`);
+    await expect(page.getByText('Your technology cost & value snapshot')).toBeVisible({ timeout: 20000 });
+    await expect.poll(async () => (await store.listByRespondent('consultant@ltm.com'))[0]?.status).toBe('completed');
+    const done = (await store.listByRespondent('consultant@ltm.com'))[0];
+    expect(done.resultJson).toBeTruthy();
+
+    // Reopen from the list, download the report (the real report service: checks run before it is issued), then delete.
+    await page.goto('/cost-iq-v10');
+    await page.getByRole('button', { name: 'View result' }).click();
+    await expect(page.getByText('Your technology cost & value snapshot')).toBeVisible();
+    // The saved result carries the measured-figures and AI-narrative panels: no WCAG 2.2 AA violations there either.
+    await expect(page.locator('#narrativeCard')).toBeVisible();
+    await expect(page.locator('#leverBody')).not.toContainText('Loading…');
+    expect(consoleErrors, consoleErrors.join('\n')).toEqual([]);
+    const { violations } = await new AxeBuilder({ page }).include('main').withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa']).analyze();
+    // (axe itself fetches the page's font stylesheet to measure contrast, which the page's CSP refuses: not a page error.)
+    consoleErrors.length = 0;
+    expect(violations.map(v => `${v.id}: ${v.nodes.slice(0, 3).map(n => n.html.slice(0, 100)).join(' | ')}`)).toEqual([]);
+    const [d] = await Promise.all([page.waitForEvent('download'), page.getByRole('button', { name: 'Report (PDF)', exact: true }).click()]);
+    expect(d.suggestedFilename()).toMatch(/^cost-iq-flow-test-bank-plc-\d{4}-\d{2}-\d{2}-consultant\.pdf$|^cost-iq-flow-test-bank-plc-\d{4}-\d{2}-\d{2}\.pdf$/);
+    await page.goto('/cost-iq-v10');
+    await page.getByRole('button', { name: 'Delete', exact: true }).click();
+    await page.getByRole('button', { name: 'Confirm delete' }).click();
+    await expect(page.getByText('No saved assessments yet.')).toBeVisible();
+    expect(await store.listByRespondent('consultant@ltm.com')).toEqual([]);
+    expect(world.pageErrors).toEqual([]);
+    expect(consoleErrors, consoleErrors.join('\n')).toEqual([]);
   });
 
   test('an estate question is shown only when the footprint names that estate', async ({ page, context, world }) => {
