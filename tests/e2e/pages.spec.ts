@@ -5,7 +5,7 @@ import { test, expect, makeIdToken, signedIn } from './fixtures';
 const PAGES = [
   '/', '/strategy-iq', '/modernization-iq', '/finops-iq',
   '/cloud-iq', '/sovereign-iq', '/ai-readiness-iq', '/studio',
-  '/cloud-iq-sample-report', '/sovereign-iq-sample-report', '/portal'
+  '/sovereign-iq-sample-report', '/portal'
 ];
 
 for (const path of PAGES) {

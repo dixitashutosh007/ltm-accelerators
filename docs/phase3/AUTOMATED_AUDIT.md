@@ -202,3 +202,26 @@ How to read it:
 | Resilience posture (0-100) | +6 | +0 |
 | Risk-adjusted score (0-100) | +7 | +0 |
 
+## Cost IQ
+
+| Headline | Scale | Observed min | Observed max | Out of scale | Null |
+|---|---|---|---|---|---|
+| Cost IQ (0-100) | 0–100 | 33 | 80 | 0 | 0 |
+| Value IQ (0-100) | 0–100 | 32 | 91 | 0 | 0 |
+
+**Sensitivity**
+
+| Headline | Largest single-answer swing (question: swing) | Share of range |
+|---|---|---|
+| Cost IQ (0-100) | CORE-34: 13, CORE-40: 11, ADP-42: 9, ADP-62: 9, ADP-63: 9 | 0.28 |
+| Value IQ (0-100) | CORE-34: 25, ADP-32: 20, ADP-61: 20, CORE-20: 16, ADP-67: 16 | 0.42 |
+
+**Dead questions** (no effect on any headline): CORE-02, CTX-01, CORE-03, CORE-04, CTX-02, CTX-03, CTX-05, CTX-04, CORE-05, CORE-07, CORE-08, CORE-09, CORE-10, CORE-14, CORE-19, CORE-32, CORE-39, CORE-42, ADP-10, ADP-12, ADP-21, ADP-28
+
+**Missing data** (positive = leaving answers blank flatters the result)
+
+| Headline | Mean shift, 30% unanswered | Worst profile, half unanswered |
+|---|---|---|
+| Cost IQ (0-100) | -0.96 | +1 |
+| Value IQ (0-100) | -0.51 | +2 |
+

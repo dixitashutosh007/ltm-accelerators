@@ -7,6 +7,8 @@ import type { FinOpsIqV3Result } from '../accelerators/finops-iq/v3/evaluate';
 import { clientView as finopsClientView } from '../accelerators/finops-iq/v3/client-view';
 import { resolveTraceField } from '../accelerators/finops-iq/v3/report';
 import type { SovereignIqV4Result } from '../accelerators/sovereign-iq/v4';
+import { cloudless, resolveCostIqField, type CostIqReportInput } from '../accelerators/cost-iq/report';
+import { FINOPS_IQ_LEVER_IDS } from '../accelerators/finops-iq/v3/cost-iq-summary';
 import { runReportChecks, type CheckResult, type View } from './index';
 
 const CASES = ['conservative', 'expected', 'upper'] as const;
@@ -18,7 +20,7 @@ export function checkFinOpsIqReport(doc: ReportDocument, result: FinOpsIqV3Resul
   return runReportChecks(doc, view, {
     requiredSections: ['summary', 'profile', 'findings', 'roadmap', 'help', 'methodology', 'sources',
       ...(money ? ['value', 'calculation'] : []), ...(view === 'consultant' ? ['sow', 'consultant'] : [])],
-    requiredNotices: ['not a savings commitment', 'FinOps Framework', 'creativecommons.org/licenses/by/4.0'],
+    requiredNotices: ['not a savings commitment', 'FinOps Framework', 'creativecommons.org/licenses/by/4.0', 'does not assess legal, tax or regulatory obligations'],
     currency: result.value?.currency,
     resolve: field => resolveTraceField(shown, field),
     strictNumbers: true,
@@ -68,7 +70,37 @@ export function checkSovereignIqReport(doc: ReportDocument, result: SovereignIqV
   return runReportChecks(doc, view, {
     requiredSections: ['summary', 'requirement', 'seal', 'maturity', 'exposure', 'findings', 'roadmap', 'help', 'methodology', 'sources',
       ...(view === 'consultant' ? ['sow', 'consultant'] : [])],
-    requiredNotices: ['not legal advice', 'qualified lawyer', 'Statutory maximums'],
+    requiredNotices: ['not legal advice', 'qualified lawyer', 'Statutory maximums', 'local legal advice is needed'],
     resolve: field => resolveSovereign(result, field)
+  }, today);
+}
+
+/** Cost IQ: sections from the report builder; every number traced and re-read from the engine result; the notices are present. */
+export function checkCostIqReport(doc: ReportDocument, input: CostIqReportInput, view: View, today: string): CheckResult {
+  const quantified = input.finops?.status === 'quantified';
+  return runReportChecks(doc, view, {
+    requiredSections: ['summary', 'profile', 'scores', 'findings', 'cloud', 'roadmap', 'help', 'execution', 'calculation', 'assumptions', 'methodology', 'sources', ...(view === 'consultant' ? ['sow', 'consultant'] : [])],
+    requiredNotices: ['not a savings commitment', 'FinOps Framework', 'creativecommons.org/licenses/by/4.0', 'does not assess legal, tax or regulatory obligations', 'Mumbai region', 'qualified professional', quantified ? 'does not estimate it again' : cloudless(input) ? 'Not applicable' : 'Not quantified'],
+    // One currency per edition: skipped when the cloud line and the non-cloud levers are in different currencies (never converted).
+    currency: input.nonCloud?.status === 'quantified' ? (!quantified || input.finops!.currency === input.nonCloud.currency ? input.nonCloud.currency : undefined) : quantified ? input.finops!.currency : undefined,
+    resolve: field => resolveCostIqField(input, field),
+    // The total is the non-cloud levers plus the cloud line, case by case (CQ4 reconciliation).
+    reconcile: () => {
+      const n = input.nonCloud;
+      if (!n?.total) return [];
+      const out: string[] = [];
+      const cloud = n.total.cloudIncluded ? input.finops : null;
+      for (const k of ['conservative', 'expected', 'upper'] as const) for (const m of ['netRunRate', 'netYear1', 'netYear2', 'netYear3', 'net3Year'] as const) {
+        const want = n.lines.reduce((t, l) => t + l.cases[k][m].value, 0) + (cloud?.cases ? cloud.cases[k][m].value : 0);
+        if (Math.abs(want - n.total.cases[k][m].value) > 1) out.push(`total ${k} ${m} is ${n.total.cases[k][m].value} but the levers${cloud ? ' and the cloud line' : ''} sum to ${want}`);
+      }
+      for (const l of n.lines) if (FINOPS_IQ_LEVER_IDS.includes(l.id)) out.push(`${l.id} is a FinOps IQ lever and may not be computed by Cost IQ`);
+      return out;
+    },
+    strictNumbers: true,
+    // The AI narrative may quote the scores it was given: its numbers are grounded when it is written (ai/grounding.ts), not traced.
+    numbersAllowedIn: ['consultant', 'narrative'],
+    clientForbidden: [/CORE-\d+/, /ADP-\d+/],
+    ids: { pattern: /\b(?:CORE|ADP|CTX)-\d{2}\b|\b[FR]-\d{3}\b|\b(?:COST|VALUE)-\d{2}\b/, clientBannedIn: ['summary', 'profile', 'scores', 'findings', 'cloud', 'roadmap', 'help', 'execution'] }
   }, today);
 }

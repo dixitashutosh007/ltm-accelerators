@@ -69,14 +69,6 @@
     ],
     "F-018": [
       {
-        "questionId": "CORE-20",
-        "type": "option",
-        "triggerOptions": [
-          "USAGE",
-          "NONE"
-        ]
-      },
-      {
         "questionId": "CORE-44",
         "type": "option",
         "triggerOptions": [
@@ -97,13 +89,19 @@
     ],
     "F-005": [
       {
-        "questionId": "CORE-24",
+        "questionId": "ADP-42",
         "type": "option",
         "triggerOptions": [
-          "D",
-          "E",
-          "F"
-        ]
+          "LIMITED",
+          "NONE",
+          "UNKNOWN"
+        ],
+        "applicableWhen": {
+          "questionId": "CORE-01",
+          "anyOf": [
+            "PUBLIC_CLOUD"
+          ]
+        }
       }
     ],
     "F-007": [
@@ -114,7 +112,13 @@
           "SELECTIVE",
           "COUNT",
           "UNKNOWN"
-        ]
+        ],
+        "applicableWhen": {
+          "questionId": "CORE-01",
+          "anyOf": [
+            "SAAS"
+          ]
+        }
       },
       {
         "questionId": "CORE-27",
@@ -123,7 +127,13 @@
           "D",
           "E",
           "F"
-        ]
+        ],
+        "applicableWhen": {
+          "questionId": "CORE-01",
+          "anyOf": [
+            "SAAS"
+          ]
+        }
       }
     ],
     "F-013": [
@@ -134,7 +144,13 @@
           "D",
           "E",
           "F"
-        ]
+        ],
+        "applicableWhen": {
+          "questionId": "CORE-01",
+          "anyOf": [
+            "SAAS"
+          ]
+        }
       },
       {
         "questionId": "CORE-41",
@@ -153,7 +169,13 @@
           "D",
           "E",
           "F"
-        ]
+        ],
+        "applicableWhen": {
+          "questionId": "CORE-01",
+          "anyOf": [
+            "PUBLIC_CLOUD"
+          ]
+        }
       }
     ],
     "F-011": [
@@ -164,7 +186,14 @@
           "D",
           "E",
           "F"
-        ]
+        ],
+        "applicableWhen": {
+          "questionId": "CORE-01",
+          "anyOf": [
+            "PUBLIC_CLOUD",
+            "SAAS"
+          ]
+        }
       },
       {
         "questionId": "CORE-37",
@@ -183,7 +212,13 @@
           "D",
           "E",
           "F"
-        ]
+        ],
+        "applicableWhen": {
+          "questionId": "CORE-01",
+          "anyOf": [
+            "SOFTWARE"
+          ]
+        }
       }
     ],
     "F-009": [
@@ -242,13 +277,106 @@
         "triggerOptions": [
           "LATE",
           "NONE"
-        ]
+        ],
+        "applicableWhen": {
+          "questionId": "ADP-49",
+          "anyOf": [
+            "TRACKED",
+            "GOVERNED",
+            "SELECTIVE",
+            "LATE",
+            "NONE"
+          ]
+        }
       },
       {
         "questionId": "ADP-50",
         "type": "numeric",
         "operator": "gt",
-        "value": 20
+        "value": 20,
+        "applicableWhen": {
+          "questionId": "ADP-49",
+          "anyOf": [
+            "TRACKED",
+            "GOVERNED",
+            "SELECTIVE",
+            "LATE",
+            "NONE"
+          ]
+        }
+      }
+    ],
+    "F-017": [
+      {
+        "questionId": "ADP-08",
+        "type": "numeric",
+        "operator": "gt",
+        "value": 30,
+        "applicableWhen": {
+          "questionId": "CORE-01",
+          "anyOf": [
+            "SAAS"
+          ]
+        }
+      },
+      {
+        "questionId": "ADP-33",
+        "type": "option",
+        "triggerOptions": [
+          "LIMITED",
+          "NONE"
+        ],
+        "applicableWhen": {
+          "questionId": "CORE-16",
+          "anyOf": [
+            "TRUE",
+            "UNSURE"
+          ]
+        }
+      },
+      {
+        "questionId": "ADP-34",
+        "type": "option",
+        "triggerOptions": [
+          "NONE"
+        ],
+        "applicableWhen": {
+          "questionId": "CORE-16",
+          "anyOf": [
+            "TRUE",
+            "UNSURE"
+          ]
+        }
+      }
+    ],
+    "F-019": [
+      {
+        "questionId": "ADP-31",
+        "type": "option",
+        "triggerOptions": [
+          "NONE",
+          "UNKNOWN"
+        ],
+        "applicableWhen": {
+          "questionId": "CORE-01",
+          "anyOf": [
+            "AI"
+          ]
+        }
+      },
+      {
+        "questionId": "ADP-32",
+        "type": "option",
+        "triggerOptions": [
+          "EXPERIMENTAL",
+          "UNKNOWN"
+        ],
+        "applicableWhen": {
+          "questionId": "CORE-01",
+          "anyOf": [
+            "AI"
+          ]
+        }
       }
     ]
   }

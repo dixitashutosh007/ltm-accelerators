@@ -5,10 +5,11 @@
 import { describe, it, expect } from 'vitest';
 import type { APIGatewayProxyStructuredResultV2 } from 'aws-lambda';
 import { handler } from './handler';
-import { setPermissionSource } from '../_shared/access';
+import { setPermissionSource, setDomainStore } from '../_shared/access';
 
 // A consultant with FinOps IQ access (the access check itself is tested in _shared/access.spec.ts).
 setPermissionSource(async () => ({ take: ['finops-iq'] }));
+setDomainStore({ check: async () => ({ allowed: true, reason: 'baseline_domain' }) }); // the domain rules are tested in _shared/domain-access.spec.ts
 
 const facts = {
   org: { currency: 'USD', consumingUnits: '5-19' },

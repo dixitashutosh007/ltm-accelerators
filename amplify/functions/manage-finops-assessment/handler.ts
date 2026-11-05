@@ -19,6 +19,8 @@ import { ENGINE_VERSION } from '../../../packages/engine-core/src/accelerators/f
 import { expiresAt } from '../../../packages/engine-core/src/accelerators/finops-iq/v3/retention';
 import { appSyncStore, type FinOpsAssessmentRecord, type FinOpsAssessmentStore } from './store';
 import { withAcceleratorAccess } from '../_shared/access';
+import { recordAssessment, removeAssessmentActivity } from '../_shared/activity-recorder.mjs';
+import { progressFor } from '../_shared/progress';
 
 const ACTIONS = new Set(['save', 'complete', 'archive', 'delete']);
 
@@ -74,6 +76,7 @@ export function createHandler(store: FinOpsAssessmentStore, now: () => Date = ()
         if (!item) return respond(404, { ok: false, error: 'assessment_not_found' });
         if (!canAccess(event, item.respondentEmail)) return respond(403, { ok: false, error: 'assessment_access_denied' });
         await store.delete(id);
+        await removeAssessmentActivity(item.respondentEmail, 'finops-iq', id);
         console.info('[ManageFinOpsAssessment] deleted', { requestId, assessmentId: id });
         return respond(200, { ok: true, data: { assessmentId: id, deleted: true } });
       }
@@ -91,6 +94,7 @@ export function createHandler(store: FinOpsAssessmentStore, now: () => Date = ()
         if (!canTransition(existing.status as FinOpsAssessmentStatus, 'archived')) return respond(409, { ok: false, error: 'assessment_immutable' });
         const at = now();
         const data = await store.update({ assessmentId: existing.assessmentId, status: 'archived', archivedAt: at.toISOString(), expiresAt: expiresAt(at) });
+        await recordAssessment(existing.respondentEmail, { accelerator: 'finops-iq', assessmentId: existing.assessmentId, status: 'archived' });
         return respond(200, { ok: true, data: view(data) });
       }
 
@@ -122,6 +126,7 @@ export function createHandler(store: FinOpsAssessmentStore, now: () => Date = ()
         expiresAt: expiresAt(now())
       };
       const data = existing ? await store.update(record) : await store.create(record);
+      await recordAssessment(record.respondentEmail, { accelerator: 'finops-iq', assessmentId: record.assessmentId, status: record.status, ...progressFor(record.status, body?.progress), startedAt: record.startedAt, completedAt: record.completedAt });
       return respond(200, { ok: true, data: view(data) });
     } catch (error: any) {
       console.error('[ManageFinOpsAssessment]', { requestId, error });

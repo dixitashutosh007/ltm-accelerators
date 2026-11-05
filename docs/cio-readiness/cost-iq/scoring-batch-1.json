@@ -1,0 +1,430 @@
+[
+  {
+    "id": "CORE-01",
+    "verdict": "context",
+    "dimensionIds": [],
+    "contextLabel": {
+      "method": "signal-only",
+      "signals": [
+        "environment-scope",
+        "footprint"
+      ],
+      "note": "Scope trigger only; never score by number of areas selected. Feeds applicability routing (cloud findings only when PUBLIC_CLOUD or PRIVATE_CLOUD is selected; infrastructure questions ADP-09 to ADP-13 only when ON_PREM or PRIVATE_CLOUD) and the report scope statement. Keep required. When CORE-23 is merged into CORE-01 (BOUNDARY task 4) the merged question must keep the COLO, VMWARE and MANAGED options that CORE-23 has and CORE-01 lacks, or ADP-13 and ADP-09 lose their gating signal. Context facts never re-weight a score (GLOBAL-COVERAGE rule)."
+    },
+    "basis": "Footprint question: which areas materially drive technology cost. It records a fact and routes applicability; scoring it would reward a longer or shorter list. Categories follow the TBM Taxonomy idea of IT towers (cost sources by technology area) but the option list itself is LTM heuristic; the TBM page summary does not list the towers (members-only), so alignment to named TBM towers is UNVERIFIED.",
+    "sources": [
+      {
+        "title": "TBM Council: TBM Taxonomy 4.1 (page summary; full layers are members-only); checked 3 Nov 2026",
+        "url": "https://www.tbmcouncil.org/learn-tbm/tbm-taxonomy/"
+      }
+    ],
+    "needsOwner": false,
+    "needsOwnerReason": ""
+  },
+  {
+    "id": "CORE-05",
+    "verdict": "context",
+    "dimensionIds": [
+      "COST-01"
+    ],
+    "contextLabel": {
+      "method": "signal-only",
+      "signals": [
+        "spend-baseline-scope",
+        "baseline-reconciliation-gap"
+      ],
+      "note": "Do not score by selection count. Feeds (a) the evidence-confidence flag on the spend baseline when UNKNOWN is selected, (b) a report line listing areas selected in CORE-01 but missing here (CORE-01 minus CORE-05, computed in the report layer, not in scoreQuestion), (c) F-001 evidence text only; no new trigger. Keep required. UNKNOWN must be exclusive of the other options (check the control). Context facts never re-weight a score (GLOBAL-COVERAGE rule)."
+    },
+    "basis": "Records what the spend figure in CORE-04 includes. A count of categories cannot be scored (the question says not to, and a smaller estate legitimately includes fewer categories). The useful reading is a comparison: categories material in CORE-01 but not included here show a baseline that understates spend; UNKNOWN shows the baseline cannot be reconciled. LTM heuristic; no published benchmark.",
+    "sources": [],
+    "needsOwner": false,
+    "needsOwnerReason": ""
+  },
+  {
+    "id": "CORE-07",
+    "verdict": "context",
+    "dimensionIds": [
+      "VALUE-01"
+    ],
+    "contextLabel": {
+      "method": "hypothesis-signal",
+      "signals": [
+        "cio-priorities"
+      ],
+      "note": "Feeds the report narrative and the ordering of recommendations (those serving a protected outcome are listed first). No score impact. Keep required. Context facts never re-weight a score (GLOBAL-COVERAGE rule)."
+    },
+    "basis": "A ranking of three outcomes the CIO would protect. It records a priority, not a better-to-worse condition; ranking position cannot be a score. Consequence: VALUE-01 Business Alignment still has no scored question after this batch (it had none before), so a VALUE-01 score cannot be shown until a scored question is added (see ADP-33 and CORE-14/17 for candidates outside this batch). LTM heuristic.",
+    "sources": [],
+    "needsOwner": false,
+    "needsOwnerReason": ""
+  },
+  {
+    "id": "CORE-09",
+    "verdict": "context",
+    "dimensionIds": [
+      "VALUE-02"
+    ],
+    "contextLabel": {
+      "method": "hypothesis-signal",
+      "signals": [
+        "cio-hypothesis"
+      ],
+      "note": "Feeds a \"your hypothesis versus the findings\" panel in the executive report (build is a CQ5 item). No score impact. Keep required. Context facts never re-weight a score (GLOBAL-COVERAGE rule)."
+    },
+    "basis": "The question already declares itself a CIO starting hypothesis with no score impact (hypothesisRole, hypothesisComparison). It is a selection of areas plus a ranking, so scoring would invent an order. The comparison with engine-identified opportunity areas is configured but not built in the report (VALIDATION section 6). LTM heuristic. Note CLOUD_PLATFORM_EFFICIENCY is kept as a hypothesis option; it routes to FinOps IQ and does not bring cloud practice depth back into Cost IQ.",
+    "sources": [],
+    "needsOwner": false,
+    "needsOwnerReason": ""
+  },
+  {
+    "id": "ADP-06",
+    "verdict": "score",
+    "dimensionIds": [
+      "COST-04"
+    ],
+    "defaultMap": {
+      "NONE": 100,
+      "1_2": 80,
+      "3_5": 60,
+      "6_10": 40,
+      "GT10": 20,
+      "UNKNOWN": 20
+    },
+    "basis": "A condition scale: fewer materially overlapping SaaS platforms is better. FinOps Framework Licensing and SaaS capability asks leadership to have a process so teams do not buy what already exists or offers similar functionality; the count bands are LTM heuristic and are not normalised by estate size (30 platforms versus 1,000), so the score is a screen, not a benchmark. UNKNOWN is rated equal to the worst band.",
+    "sources": [
+      {
+        "title": "FinOps Framework: Licensing and SaaS capability; checked 3 Nov 2026",
+        "url": "https://www.finops.org/framework/capabilities/licensing-saas/"
+      }
+    ],
+    "needsOwner": false,
+    "needsOwnerReason": ""
+  },
+  {
+    "id": "ADP-07",
+    "verdict": "score",
+    "dimensionIds": [
+      "COST-04"
+    ],
+    "defaultMap": {
+      "AUTOMATED": 100,
+      "TIMELY": 80,
+      "PERIODIC": 60,
+      "RENEWAL": 40,
+      "UNCLEAR": 20
+    },
+    "basis": "Ordered process-maturity scale that maps onto the FinOps maturity model: AUTOMATED = Run (\"Reclamation triggers are automated against usage thresholds\" in the Licensing and SaaS capability); TIMELY and PERIODIC = Walk (a defined, repeated process); RENEWAL = Crawl (\"terms are reviewed at renewal, largely after the commitment is already in place\"); UNCLEAR = below Crawl. The numeric steps (100/80/60/40/20) are LTM heuristic.",
+    "sources": [
+      {
+        "title": "FinOps Framework: Licensing and SaaS capability; checked 3 Nov 2026",
+        "url": "https://www.finops.org/framework/capabilities/licensing-saas/"
+      },
+      {
+        "title": "FinOps Framework 2026: maturity model (Crawl, Walk, Run); checked 3 Nov 2026",
+        "url": "https://www.finops.org/framework/maturity-model/"
+      }
+    ],
+    "needsOwner": false,
+    "needsOwnerReason": ""
+  },
+  {
+    "id": "ADP-08",
+    "verdict": "score",
+    "dimensionIds": [
+      "COST-01"
+    ],
+    "scoreRule": {
+      "normalize": "invert-0-100",
+      "note": "Sliders cannot use defaultMap; add scoring.normalize to the master. Floor is 0 (not 20) because it is a continuous quantity, as CORE-17 and CORE-34 are."
+    },
+    "findingTriggers": [
+      {
+        "findingId": "F-017",
+        "type": "numeric",
+        "operator": "gt",
+        "value": 30,
+        "note": "More than 30% of SaaS spend outside central governance. LTM heuristic threshold, UNSOURCED, owner to confirm."
+      }
+    ],
+    "basis": "Share of SaaS spend bought or owned outside central technology governance. By its wording (outside governance) it is a visibility and control condition, 0% best, so it scores inverted like CORE-34. Not every business-bought service is bad, which is why ADP-33 (IT influence) is the balancing question. The FinOps Licensing and SaaS capability states a review process for new SaaS requests so teams do not buy duplicates, and requires FinOps involvement when licences or SaaS are acquired outside cloud providers (Walk), but gives no percentage. The 30% F-017 trigger is an LTM heuristic and UNSOURCED: a widely quoted \"shadow IT\" share exists in analyst commentary but I could not verify a primary source with method and sample, so none is cited. The owner should treat 30 as adjustable. Slider has no option map; the engine path is normalize invert-0-100. The page cannot record \"Unknown\" on a slider (VALIDATION section 6), so an unanswered slider is simply unscored, never rated as good.",
+    "sources": [
+      {
+        "title": "FinOps Framework: Licensing and SaaS capability; checked 3 Nov 2026",
+        "url": "https://www.finops.org/framework/capabilities/licensing-saas/"
+      }
+    ],
+    "needsOwner": false,
+    "needsOwnerReason": ""
+  },
+  {
+    "id": "ADP-09",
+    "verdict": "score",
+    "dimensionIds": [
+      "COST-05"
+    ],
+    "defaultMap": {
+      "INTEGRATED": 100,
+      "MATERIAL_REVIEW": 80,
+      "SEPARATE": 60,
+      "REACTIVE": 40,
+      "UNKNOWN": 20
+    },
+    "basis": "Ordered scale of how integrated the decision is: INTEGRATED (total-cost case across licensing, infrastructure, workload fit and migration) down to UNKNOWN. Mirrors the Walk/Run idea in the FinOps Licensing and SaaS capability (a pre-signature check of options against validated demand); the application to virtualisation is LTM heuristic. SEPARATE and REACTIVE can both be true at once, so the order of those two is a judgement. The question also carries valueDimensionIds VALUE-05; the engine ignores valueDimensionIds, and putting it in dimensionIds would count one answer in both the Cost and Value headlines, so score COST-05 only. Needs applicability gating (clients with no virtualised estate must not be asked).",
+    "sources": [
+      {
+        "title": "FinOps Framework: Licensing and SaaS capability; checked 3 Nov 2026",
+        "url": "https://www.finops.org/framework/capabilities/licensing-saas/"
+      },
+      {
+        "title": "FinOps Framework 2026: maturity model (Crawl, Walk, Run); checked 3 Nov 2026",
+        "url": "https://www.finops.org/framework/maturity-model/"
+      }
+    ],
+    "needsOwner": false,
+    "needsOwnerReason": ""
+  },
+  {
+    "id": "ADP-10",
+    "verdict": "context",
+    "dimensionIds": [
+      "COST-05"
+    ],
+    "contextLabel": {
+      "method": "signal-only",
+      "signals": [
+        "virtualisation-candidate-exposure"
+      ],
+      "note": "Feeds the evidence request and the opportunity narrative for infrastructure, only when ON_PREM or PRIVATE_CLOUD is in the footprint. Optional. ADP-10 is never shown today (VALIDATION section 6); it needs an area. Context facts never re-weight a score (GLOBAL-COVERAGE rule)."
+    },
+    "basis": "A self-estimated share of the virtualised estate worth investigating. High exposure is an opportunity size, not a poor practice, and the wording tells the client not to assume every VM is a candidate. Same reasoning as CORE-36 (exposure signal, not better or worse). LTM heuristic. The page cannot show Unknown on a slider.",
+    "sources": [],
+    "needsOwner": false,
+    "needsOwnerReason": ""
+  },
+  {
+    "id": "ADP-11",
+    "verdict": "score",
+    "dimensionIds": [
+      "COST-05"
+    ],
+    "defaultMap": {
+      "1": 20,
+      "2": 40,
+      "3": 60,
+      "4": 80,
+      "5": 100
+    },
+    "basis": "Five anchored levels from \"visible excess capacity or no reliable demand data\" to \"actively optimised against demand, resilience and forecast\". Missing demand data sits in level 1, so lack of knowledge does not flatter. To keep one scale shape across COST-05 (option maps run 100 to 20), use a keyed map 1 to 5 mapped to 20 to 100 instead of the linear star method (0 to 100). A numeric answer matches the map key in scoreQuestion; do not set scaleMax or method on this question. Basis is LTM heuristic; the Data Center scope in the FinOps Framework exists but I could not read its content (the capability page returned 404). The prompt says \"How confident are you\" while the anchors describe practice; consider \"How well is\" (minor, owner optional). Needs applicability gating (ON_PREM).",
+    "sources": [
+      {
+        "title": "FinOps Framework: Scopes; checked 3 Nov 2026",
+        "url": "https://www.finops.org/framework/scopes/"
+      }
+    ],
+    "needsOwner": false,
+    "needsOwnerReason": ""
+  },
+  {
+    "id": "ADP-12",
+    "verdict": "context",
+    "dimensionIds": [
+      "COST-05"
+    ],
+    "contextLabel": {
+      "method": "signal-only",
+      "signals": [
+        "refresh-exposure",
+        "lifecycle-visibility-gap"
+      ],
+      "note": "Feeds the infrastructure refresh timeline in the narrative and an evidence request for asset lifecycle data; UNKNOWN raises a data-visibility flag, not a score. Gate on ON_PREM. Optional. Check the page: VALIDATION lists ADP-09, 10 and 28 as never shown. Context facts never re-weight a score (GLOBAL-COVERAGE rule)."
+    },
+    "basis": "Share of the on-premises estate near refresh or end of support. It is a timing exposure, driven by estate age rather than by how well costs are managed; same logic as CORE-31 (commercial events are a timing signal). It could be argued as a technical-debt condition scale (CORE-40 is scored that way); I chose context because the question asks what forces a decision, not how debt is governed. LTM heuristic. UNKNOWN is a visibility gap and should be reported as one.",
+    "sources": [],
+    "needsOwner": false,
+    "needsOwnerReason": ""
+  },
+  {
+    "id": "ADP-13",
+    "verdict": "score",
+    "dimensionIds": [
+      "COST-05"
+    ],
+    "defaultMap": {
+      "CONTINUOUS": 100,
+      "PLANNED": 80,
+      "PERIODIC": 60,
+      "RENEWAL": 40,
+      "UNCLEAR": 20
+    },
+    "basis": "Ordered review cadence scale, continuous to renewal-only to not visible; follows the Crawl/Walk/Run pattern (review at renewal only = Crawl). Step values are LTM heuristic. Dependency: there is no \"we do not use colocation\" option, so a client without colocation would be forced to pick UNCLEAR and be scored low. The question must be gated on COLO (CORE-23 option; keep it when merged into CORE-01). If gating cannot be built, a not-applicable option is needed, which changes what a client sees and needs the owner.",
+    "sources": [
+      {
+        "title": "FinOps Framework 2026: maturity model (Crawl, Walk, Run); checked 3 Nov 2026",
+        "url": "https://www.finops.org/framework/maturity-model/"
+      }
+    ],
+    "needsOwner": false,
+    "needsOwnerReason": ""
+  },
+  {
+    "id": "ADP-14",
+    "verdict": "score",
+    "dimensionIds": [
+      "COST-07"
+    ],
+    "defaultMap": {
+      "OUTCOME_LINKED": 100,
+      "DEMAND_LINKED": 80,
+      "SLA_ONLY": 60,
+      "FIXED": 40,
+      "UNRECONCILED": 20
+    },
+    "basis": "Ordered by how closely charges are tied to consumption and outcomes: OUTCOME_LINKED, DEMAND_LINKED, SLA_ONLY, FIXED, UNRECONCILED. A CIO recognises the ladder (outcome-based, volume-based, service-level, fixed fee, unreconciled). No published scale found; LTM heuristic. Order of SLA_ONLY above FIXED is a judgement. Gate on MANAGED services being in the footprint.",
+    "sources": [],
+    "needsOwner": false,
+    "needsOwnerReason": ""
+  },
+  {
+    "id": "ADP-15",
+    "verdict": "drop",
+    "dimensionIds": [
+      "COST-04"
+    ],
+    "duplicateOf": [
+      "CORE-29",
+      "CORE-31"
+    ],
+    "basis": "Duplicates CORE-29 (\"software and licensing areas that warrant the strongest economic or compliance review\"), which offers near-identical categories, and overlaps CORE-31 (renewal, audit and price-change events). Three multi-selects asking the same thing in different words add answer burden and no new fact. Recommend dropping ADP-15 and keeping CORE-29 (areas) and CORE-31 (events). If the owner prefers to keep it, label it context.",
+    "sources": [],
+    "needsOwner": true,
+    "needsOwnerReason": "Removes a question a client sees; the owner approves the drop (BOUNDARY O1 style)."
+  },
+  {
+    "id": "ADP-16",
+    "verdict": "score",
+    "dimensionIds": [
+      "COST-04"
+    ],
+    "defaultMap": {
+      "CONTINUOUS": 100,
+      "PLANNED": 80,
+      "RENEWAL": 60,
+      "ENTITLEMENT_LED": 40,
+      "UNRELIABLE": 20
+    },
+    "basis": "Ordered reconciliation cadence, continuous to unreliable data. The FinOps Licensing and SaaS capability defines the aim as minimising over-deployment (compliance risk) and under-deployment (shelfware), and its Crawl level is review at renewal after commitment, so RENEWAL is the Crawl anchor. ISO/IEC 19770-1:2017 is the software and IT asset management system standard that this practice belongs to; I confirmed the standard exists and is current from its catalogue entry only and could not read its clauses, so no clause is cited. Step values LTM heuristic. UNRELIABLE is rated lowest.",
+    "sources": [
+      {
+        "title": "FinOps Framework: Licensing and SaaS capability; checked 3 Nov 2026",
+        "url": "https://www.finops.org/framework/capabilities/licensing-saas/"
+      },
+      {
+        "title": "ISO/IEC 19770-1:2017 IT asset management systems, requirements (catalogue entry; standard text not opened, iso.org returned HTTP 403); checked 3 Nov 2026",
+        "url": "https://www.iso.org/standard/68531.html"
+      }
+    ],
+    "needsOwner": false,
+    "needsOwnerReason": ""
+  },
+  {
+    "id": "ADP-17",
+    "verdict": "context",
+    "dimensionIds": [
+      "COST-08"
+    ],
+    "contextLabel": {
+      "method": "signal-only",
+      "signals": [
+        "manual-work-hotspots"
+      ],
+      "note": "Feeds automation recommendations and the evidence request for the selected areas. NONE must be exclusive. Optional. Context facts never re-weight a score (GLOBAL-COVERAGE rule)."
+    },
+    "basis": "A selection of up to three areas with repetitive manual work, with NONE. It identifies where to look, not how mature the organisation is; scoring by area or count would invent a ranking. COST-08 is already scored by CORE-34 (addressable manual work). LTM heuristic. The CLOUD option only records a hotspot and routes to FinOps IQ; it does not reintroduce cloud practice depth.",
+    "sources": [],
+    "needsOwner": false,
+    "needsOwnerReason": ""
+  },
+  {
+    "id": "ADP-18",
+    "verdict": "rewrite",
+    "dimensionIds": [
+      "COST-06"
+    ],
+    "rewrite": {
+      "prompt": "How is the balance between internal staff and external contractors decided and reviewed?",
+      "options": [
+        {
+          "id": "ECONOMICS_LED",
+          "label": "The mix is decided from demand, skills and total cost, and reviewed at least annually."
+        },
+        {
+          "id": "POLICY_LED",
+          "label": "There is a stated sourcing policy (for example, build scarce skills, buy variable demand) that is mostly applied."
+        },
+        {
+          "id": "CAPACITY_LED",
+          "label": "External capacity is used mainly because internal capacity or skills are short; the economics are not reviewed."
+        },
+        {
+          "id": "LOCKED_IN",
+          "label": "External capacity persists because knowledge sits with contractors and moving it in-house is hard."
+        },
+        {
+          "id": "UNMEASURED",
+          "label": "The mix and its economics are not measured well enough to decide."
+        }
+      ],
+      "proposedMap": {
+        "ECONOMICS_LED": 100,
+        "POLICY_LED": 80,
+        "CAPACITY_LED": 60,
+        "LOCKED_IN": 40,
+        "UNMEASURED": 20
+      },
+      "dimensionIds": [
+        "COST-06"
+      ]
+    },
+    "basis": "The options mix two scales: the first two describe a deliberate decision (build strategic skills; balance by economics), the last three describe a state of dependence or missing data. Whether STRATEGIC_BUILD ranks above ECONOMIC_BALANCE is not a maturity question, and the file elsewhere (CORE-36) states a higher external share is not inherently worse. No monotonic map is defensible on the current options. Replacement wording below keeps one scale, how the mix is decided and reviewed. The wording and scale are LTM heuristic; I found no published maturity scale for build-buy-borrow. The question also carries valueDimensionIds VALUE-04, ignored by the engine.",
+    "sources": [],
+    "needsOwner": true,
+    "needsOwnerReason": "Replacement wording changes what a client sees."
+  },
+  {
+    "id": "ADP-19",
+    "verdict": "context",
+    "dimensionIds": [
+      "COST-07"
+    ],
+    "contextLabel": {
+      "method": "signal-only",
+      "signals": [
+        "renewal-pipeline-volume",
+        "renewal-visibility-gap"
+      ],
+      "note": "Feeds the renewal calendar and negotiation-sequencing narrative; UNKNOWN raises a data-visibility flag. Overlaps CORE-31 (events) in purpose but counts rather than types, so keep both. Optional. Context facts never re-weight a score (GLOBAL-COVERAGE rule)."
+    },
+    "basis": "Number of material vendor renewals in 12 to 24 months. A larger pipeline is exposure and workload, not poorer practice, and a count depends on estate size. Same reasoning as CORE-31. LTM heuristic. UNKNOWN is a visibility gap and is reported as such.",
+    "sources": [],
+    "needsOwner": false,
+    "needsOwnerReason": ""
+  },
+  {
+    "id": "ADP-20",
+    "verdict": "context",
+    "dimensionIds": [
+      "COST-07"
+    ],
+    "contextLabel": {
+      "method": "constraint-signal",
+      "signals": [
+        "negotiation-leverage"
+      ],
+      "note": "Feeds the vendor and commercial recommendation (low leverage points to demand aggregation, alternatives and timing rather than price pressure). No score. Optional. valueDimensionIds VALUE-05 is ignored by the engine. Context facts never re-weight a score (GLOBAL-COVERAGE rule)."
+    },
+    "basis": "Self-rated commercial leverage on five anchored levels. The anchors are ordered, but leverage depends largely on market structure, spend concentration and alternatives, not on how well the client manages costs; scoring it would mark small or specialised buyers down for circumstances. Treated as a constraint signal. The prompt and anchors are consistent. LTM heuristic.",
+    "sources": [],
+    "needsOwner": false,
+    "needsOwnerReason": ""
+  }
+]

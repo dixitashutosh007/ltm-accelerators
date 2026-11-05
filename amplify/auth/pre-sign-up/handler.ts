@@ -1,46 +1,23 @@
 import type { PreSignUpTriggerHandler } from 'aws-lambda';
+import { configFromEnv, refusalMessage } from '../../functions/_shared/domain-access.mjs';
+import { createDomainRulesStore, type DomainRulesStore } from '../../functions/_shared/domain-rules-store.mjs';
 
-// Corporate domain allowed by default. Individual addresses and extra domains come from the
-// ALLOWED_EMAILS / ALLOWED_DOMAINS environment variables (set in amplify/config.ts), never code.
-const DEFAULT_ALLOWED_EMAILS: string[] = [];
-
-const DEFAULT_ALLOWED_DOMAINS = [
-  'ltm.com'
-];
-
+// Who may have an account is decided by amplify/functions/_shared/domain-access.mjs from the baseline allow lists in
+// amplify/config.ts and the rules an administrator keeps in the Access Control screen (config/domain-rules.json).
+// Protected addresses (ltm.com and the super administrators) are always admitted.
 const ACCESS_CONTACT = process.env.ACCESS_CONTACT_EMAIL || 'your LTM Vantage administrator';
 
-export const handler: PreSignUpTriggerHandler = async (event) => {
+export const createHandler = (store: Pick<DomainRulesStore, 'check'>): PreSignUpTriggerHandler => async (event) => {
   const email = (event.request.userAttributes.email || '').toLowerCase().trim();
-  const domain = email.split('@')[1] || '';
+  const decision = await store.check(email);
 
-  const envAllowedEmails = (process.env.ALLOWED_EMAILS || '')
-    .split(',')
-    .map(e => e.toLowerCase().trim())
-    .filter(Boolean);
-
-  const envAllowedDomains = (process.env.ALLOWED_DOMAINS || '')
-    .split(',')
-    .map(d => d.toLowerCase().trim())
-    .filter(Boolean);
-
-  const isEmailAllowed =
-    DEFAULT_ALLOWED_EMAILS.includes(email) ||
-    envAllowedEmails.includes(email);
-
-  const isDomainAllowed =
-    DEFAULT_ALLOWED_DOMAINS.includes(domain) ||
-    envAllowedDomains.includes(domain);
-
-  if (!isEmailAllowed && !isDomainAllowed) {
-    console.warn(`[PreSignUp] Blocked registration attempt from unauthorized email: ${email}`);
-    throw new Error(
-      `Access denied: The email '${email}' is not authorized to access this platform. Please contact ${ACCESS_CONTACT} for access.`
-    );
+  if (!decision.allowed) {
+    console.warn(`[PreSignUp] Refused registration (${decision.reason}) for ${email}`);
+    throw new Error(refusalMessage(decision, ACCESS_CONTACT));
   }
 
-  console.info(`[PreSignUp] Authorized registration for email: ${email}`);
-  
+  console.info(`[PreSignUp] Authorized registration for email: ${email} (${decision.reason})`);
+
   // Only accounts created by an administrator are confirmed automatically. Self-registered
   // accounts must prove they own the address via Cognito's emailed verification code;
   // otherwise anyone could register an unclaimed allow-listed address (e.g. any @ltm.com).
@@ -50,4 +27,10 @@ export const handler: PreSignUpTriggerHandler = async (event) => {
   }
 
   return event;
+};
+
+let store: DomainRulesStore | undefined;
+export const handler: PreSignUpTriggerHandler = (event, context, callback) => {
+  store ??= createDomainRulesStore({ bucket: process.env.REPORTS_BUCKET || '', cfg: configFromEnv(process.env) });
+  return createHandler(store)(event, context, callback);
 };

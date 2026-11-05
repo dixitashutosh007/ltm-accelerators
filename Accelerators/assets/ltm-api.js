@@ -151,6 +151,16 @@
         throw new Error('Your session has expired. Please sign in again.');
       }
     }
+    // A blocked or removed address (platform workstream P1): end the session, so the person is not left with errors.
+    if (res.status === 403) {
+      var refusal = null;
+      try { refusal = await res.clone().json(); } catch (e) { refusal = null; }
+      if (refusal && refusal.error === 'account_blocked') {
+        clearSession();
+        redirectToSignIn();
+        throw new Error(refusal.message || 'Access for this account has been withdrawn.');
+      }
+    }
     return res;
   }
 

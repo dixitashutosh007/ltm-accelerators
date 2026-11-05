@@ -13,6 +13,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
 <script src="/assets/runtime-config.js"></script>
 <script src="/assets/ltm-api.js"></script>
+<script src="/assets/saved-sessions.js"></script>
 <script src="/assets/s3-reports.js"></script>
 <script src="/assets/rbac-guard.js" data-tool="modernization-iq"></script>
 
@@ -731,6 +732,7 @@ h3 { font-size: 14px; font-weight: 700; letter-spacing: 0.08em; text-transform: 
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/assets/vantage/vantage.css">
+<script src="/assets/legal-notice.js"></script>
 </head>
 <body>
 
@@ -1202,6 +1204,17 @@ const STATE = {
 // Initialize Defaults
 function init() {
   initSplash();
+  SavedSessions.attach({
+    accelerator: 'modernization-iq', legacyKey: STORE_KEY,
+    title: () => 'Modernize IQ · ' + ((STATE.org && STATE.org.clientName) || 'assessment'),
+    snapshot: () => STATE,
+    progress: () => ({ stage: STATE.screen === 'assess' && GROUPS[STATE.groupIndex] ? GROUPS[STATE.groupIndex].name : STATE.screen, percent: STATE.screen === 'results' ? 100 : Math.round(((STATE.groupIndex || 0) / GROUPS.length) * 100) }),
+    status: () => (STATE.screen === 'results' ? 'completed' : 'in_progress'),
+    restore: st => { Object.assign(STATE, st); render(); }
+  });
+  SavedSessions.ready().then(continueInit);
+}
+function continueInit() {
   loadStoredState();
   // Ensure default answers for non-traditional types so forms have starting state
   QUESTIONS.forEach(q => {
@@ -1303,17 +1316,14 @@ function initSplash() {
 /* =========================================================================
    STATE MANAGEMENT
    ========================================================================= */
-function saveState() {
-  try { localStorage.setItem(STORE_KEY, JSON.stringify(STATE)); } catch(e){}
-}
+// Saved to the account through the shared sessions component (platform P3); nothing is kept in this browser.
+function saveState() { SavedSessions.touch(); }
 function loadStoredState() {
-  try {
-    const raw = localStorage.getItem(STORE_KEY);
-    if (raw) Object.assign(STATE, JSON.parse(raw));
-  } catch(e){}
+  const st = SavedSessions.latest();
+  if (st && typeof st === 'object') Object.assign(STATE, st);
 }
-function clearAllState() {
-  try { localStorage.removeItem(STORE_KEY); } catch(e){}
+async function clearAllState() {
+  await SavedSessions.discard();
   location.reload();
 }
 

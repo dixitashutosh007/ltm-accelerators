@@ -7,6 +7,10 @@ import {
   ListUsersCommand
 } from '@aws-sdk/client-cognito-identity-provider';
 import { createPublicKey, verify as cryptoVerify } from 'node:crypto';
+import { configFromEnv, DomainRuleError } from '../../amplify/functions/_shared/domain-access.mjs';
+import { createDomainRulesStore } from '../../amplify/functions/_shared/domain-rules-store.mjs';
+import { createActivityStore, toCsv, USER_COLUMNS, ASSESSMENT_COLUMNS } from '../../amplify/functions/_shared/activity-store.mjs';
+import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 
 /* ------------------------------------------------------------------
  * Configuration (override via Lambda environment variables)
@@ -33,6 +37,35 @@ const APP_BASE_URL = process.env.APP_BASE_URL || 'https://main.d199dq940iqyj2.am
 const DOWNLOAD_URL_TTL_SECONDS = 900; // 15 minutes
 const MAX_PDF_BYTES = 5 * 1024 * 1024;
 const REPORT_KEY_PATTERN = /^reports\/[A-Za-z0-9_-]+\/[A-Za-z0-9_.-]+\.pdf$/;
+
+// Who may sign in (platform workstream P1): the baseline allow lists from amplify/config.ts and the rules an administrator keeps here.
+const DOMAIN_CONFIG = configFromEnv(process.env);
+let domainStore = null;
+const domains = () => (domainStore ??= createDomainRulesStore({ bucket: BUCKET_NAME, cfg: DOMAIN_CONFIG, s3: s3Client }));
+// User activity (platform workstream P2): read only here; the sign-in trigger and the assessment services write it.
+let activityStore = null;
+const activity = () => (activityStore ??= createActivityStore({ table: process.env.ACTIVITY_TABLE || '', ddb: new DynamoDBClient({ region: REGION }) }));
+/** Tests supply their own store. */
+export function setActivityStore(store) { activityStore = store; }
+
+/** Every account in the user pool, with the facts the Activity screen shows. */
+async function listDirectory() {
+  const out = [];
+  let token;
+  do {
+    const page = await cognitoClient.send(new ListUsersCommand({ UserPoolId: USER_POOL_ID, Limit: 60, PaginationToken: token }));
+    for (const u of page.Users || []) {
+      const attr = n => (u.Attributes || []).find(a => a.Name === n)?.Value;
+      const email = String(attr('email') || '').toLowerCase();
+      if (email) out.push({ email, name: attr('name') || '', enabled: u.Enabled !== false, accountStatus: u.UserStatus || '', createdAt: u.UserCreateDate ? new Date(u.UserCreateDate).toISOString() : null });
+    }
+    token = page.PaginationToken;
+  } while (token && out.length < 2000);
+  return out;
+}
+
+let rulesSeeded = false;
+const DOMAIN_ERROR_STATUS = { conflict: 409, rules_unavailable: 503, not_found: 404 };
 
 const ALL_ACCELERATORS = ['strategy-iq', 'modernization-iq', 'finops-iq', 'sovereign-iq', 'posture-iq', 'cloud-iq', 'cost-iq', 'resilience-iq'];
 
@@ -240,8 +273,82 @@ export const handler = async (event) => {
   }
 
   try {
+    // A blocked or removed address is refused on every request: Cognito's sign-in check does not run on a token refresh.
+    // Protected addresses (ltm.com, the super administrators) always pass, so they can always repair the rules.
+    const standing = await domains().check(caller.email);
+    if (!standing.allowed) {
+      return standing.reason === 'rules_unavailable'
+        ? reply(503, { ok: false, error: 'access_check_unavailable', message: 'Access could not be checked. Please try again.' })
+        : reply(403, { ok: false, error: 'account_blocked', message: 'Access for this account has been withdrawn. Contact your administrator.' });
+    }
+
+    // The rules file must exist before the services that can only read it are asked about it (they get AccessDenied for a
+    // missing object and would refuse everyone but the protected addresses). Done once per container, never overwriting.
+    if (!rulesSeeded) {
+      try { await domains().seedIfMissing(); rulesSeeded = true; } catch (err) { console.warn('[ReportsService] Domain rules file not seeded:', err?.name || err?.message); }
+    }
+
     const permConfig = await getPermissionsConfig();
     const access = resolveAccess(caller, permConfig);
+
+    // -------------------------------------------------------------
+    // Users and activity (admin only): who signed in and when, and the status and times of their assessments.
+    //   GET /api/activity/users          everyone in the directory with sign-ins and assessment counts
+    //   GET /api/activity/user?email=    one person's sign-ins and assessments
+    //   GET /api/activity/export?kind=   users | assessments, as CSV text
+    // Metadata only: no answers, results or client names are stored (amplify/functions/_shared/activity-store.mjs).
+    // -------------------------------------------------------------
+    if (method === 'GET' && path.includes('/api/activity/')) {
+      if (!caller.isAdmin) return reply(403, { ok: false, error: 'Only administrators can see user activity.' });
+      const roleOf = email => (SUPER_ADMIN_EMAILS.includes(email) ? 'super_admin' : (permConfig.users?.[email]?.role || 'advisor_viewer'));
+      if (path.endsWith('/api/activity/users') || path.endsWith('/api/activity/export')) {
+        const [directory, activityUsers] = await Promise.all([listDirectory(), activity().listUsers()]);
+        const byEmail = new Map(activityUsers.map(u => [u.email, u]));
+        const none = { firstLoginAt: null, lastLoginAt: null, loginCount: 0, assessments: { total: 0, completed: 0, inProgress: 0, archived: 0 }, lastAssessmentAt: null };
+        const rows = directory.map(d => ({ ...d, role: roleOf(d.email), inDirectory: true, ...(byEmail.get(d.email) || none) }));
+        // Activity from an account that no longer exists is kept for its 12 months and marked.
+        for (const u of activityUsers) if (!directory.some(d => d.email === u.email)) rows.push({ email: u.email, name: '', enabled: false, accountStatus: 'REMOVED', createdAt: null, role: roleOf(u.email), inDirectory: false, ...u });
+        rows.sort((a, b) => a.email.localeCompare(b.email));
+        if (path.endsWith('/api/activity/users')) return reply(200, { ok: true, users: rows, retentionDays: 365 });
+        const kind = (event.queryStringParameters || {}).kind;
+        if (kind === 'assessments') return reply(200, { ok: true, filename: 'assessment-activity.csv', csv: toCsv(ASSESSMENT_COLUMNS, await activity().listAssessments()) });
+        return reply(200, { ok: true, filename: 'user-activity.csv', csv: toCsv(USER_COLUMNS, rows.map(r => ({ email: r.email, status: r.enabled ? 'active' : 'disabled', role: r.role, createdAt: r.createdAt, firstLoginAt: r.firstLoginAt, lastLoginAt: r.lastLoginAt, loginCount: r.loginCount, assessments: r.assessments.total, completed: r.assessments.completed, inProgress: r.assessments.inProgress, lastAssessmentAt: r.lastAssessmentAt }))) });
+      }
+      if (path.endsWith('/api/activity/user')) {
+        const email = String((event.queryStringParameters || {}).email || '').trim().toLowerCase();
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return reply(400, { ok: false, error: 'Give the email address of the person.' });
+        return reply(200, { ok: true, detail: await activity().userDetail(email), role: roleOf(email) });
+      }
+      return reply(404, { ok: false, error: 'Unknown activity report.' });
+    }
+
+    // -------------------------------------------------------------
+    // Domain access (admin only): which domains and addresses may use the platform
+    //   GET  /api/domain-rules        rules, baseline and protected entries
+    //   POST /api/domain-rules        { op: 'set', kind, value, action, note } | { op: 'remove', id }
+    //   GET  /api/domain-rules/audit  the most recent changes
+    //   POST /api/domain-rules/check  { email } what the rules say about an address
+    // -------------------------------------------------------------
+    if (path.endsWith('/api/domain-rules') || path.includes('/api/domain-rules/')) {
+      if (!caller.isAdmin) return reply(403, { ok: false, error: 'Only administrators can manage domain access.' });
+      try {
+        if (method === 'GET' && path.endsWith('/api/domain-rules/audit')) return reply(200, { ok: true, entries: await domains().audit(100) });
+        if (method === 'GET' && path.endsWith('/api/domain-rules')) {
+          const { doc, source } = await domains().read({ force: true });
+          return reply(200, { ok: true, rules: doc.rules, source, baseline: { domains: DOMAIN_CONFIG.baselineDomains, emails: DOMAIN_CONFIG.baselineEmails }, protected: { domains: DOMAIN_CONFIG.protectedDomains, emails: DOMAIN_CONFIG.protectedEmails } });
+        }
+        if (method === 'POST' && path.endsWith('/api/domain-rules/check')) return reply(200, { ok: true, decision: await domains().check(body.email) });
+        if (method === 'POST' && path.endsWith('/api/domain-rules')) {
+          const { doc, record } = await domains().change(body, caller.email);
+          console.info('[ReportsService] Domain rule changed', { by: caller.email, op: record.op, kind: record.rule.kind, value: record.rule.value, action: record.rule.action });
+          return reply(200, { ok: true, rules: doc.rules, record });
+        }
+        return reply(405, { ok: false, error: 'Method not allowed.' });
+      } catch (err) {
+        if (err instanceof DomainRuleError) return reply(DOMAIN_ERROR_STATUS[err.code] || 400, { ok: false, error: err.code, message: err.message });
+        throw err;
+      }
+    }
 
     // -------------------------------------------------------------
     // GET /api/me — the caller's own role and permissions

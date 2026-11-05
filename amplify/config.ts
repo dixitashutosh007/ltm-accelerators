@@ -65,4 +65,9 @@ export const API_BURST_LIMIT = Number(env('LTM_API_BURST_LIMIT', '50'));
  */
 export const SIGNUP_ALLOWED_EMAILS = env('LTM_SIGNUP_ALLOWED_EMAILS', 'dixitashutosh007@gmail.com');
 export const SIGNUP_ALLOWED_DOMAINS = env('LTM_SIGNUP_ALLOWED_DOMAINS', 'ltm.com,ey.com');
+/**
+ * Domains that can never be blocked, and whose addresses always sign in (comma-separated). With the super administrators
+ * above they are the break-glass path: they do not depend on the domain rules being readable.
+ */
+export const PROTECTED_DOMAINS = env('LTM_PROTECTED_DOMAINS', 'ltm.com');
 export const ACCESS_CONTACT_EMAIL = env('LTM_ACCESS_CONTACT_EMAIL', 'ashutosh.dixit@ltm.com');

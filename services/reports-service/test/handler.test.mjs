@@ -14,16 +14,30 @@ function tok(claims,{key=privateKey,kid='k1'}={}){const h=b64({alg:'RS256',kid})
 
 // S3 + Cognito mocks
 const s3calls=[]; let perms={users:{'consultant@ltm.com':{role:'advisor_viewer',permissions:{view:['cloud-iq'],edit:[]}},'reporter@ltm.com':{permissions:{view:['reports'],edit:['reports']}},'fvc@ltm.com':{permissions:{take:['finops-value-case']}}}};
+// Domain rules (P1): one object with ETag-checked writes, plus the audit entries.
+const dom={obj:null,seq:0,audit:new Map(),down:false};
 S3Client.prototype.send=async function(cmd){const n=cmd.constructor.name;s3calls.push([n,cmd.input.Key]);
+  const K=cmd.input.Key||'', P=cmd.input.Prefix||'';
+  if(K==='config/domain-rules.json'||K.startsWith('config/domain-rules-audit/')||P.startsWith('config/domain-rules-audit/')){
+    if(dom.down)throw Object.assign(new Error('network'),{name:'TimeoutError'});
+    const pre=()=>Object.assign(new Error('precondition'),{name:'PreconditionFailed',$metadata:{httpStatusCode:412}});
+    if(K==='config/domain-rules.json'){
+      if(n==='GetObjectCommand'){if(!dom.obj)throw Object.assign(new Error('missing'),{name:'NoSuchKey'});return{Body:{transformToString:async()=>dom.obj.body},ETag:dom.obj.etag};}
+      if(n==='PutObjectCommand'){const i=cmd.input;if((i.IfMatch&&(!dom.obj||dom.obj.etag!==i.IfMatch))||(i.IfNoneMatch==='*'&&dom.obj))throw pre();dom.obj={body:Buffer.from(i.Body).toString(),etag:'"e'+(++dom.seq)+'"'};return{};}
+    }
+    if(n==='PutObjectCommand'){dom.audit.set(K,Buffer.from(cmd.input.Body).toString());return{};}
+    if(n==='ListObjectsV2Command')return{Contents:[...dom.audit.keys()].map(Key=>({Key})),IsTruncated:false};
+    if(n==='GetObjectCommand')return{Body:{transformToString:async()=>dom.audit.get(K)}};
+  }
   if(n==='GetObjectCommand'&&cmd.input.Key==='config/rbac-permissions.json')return{Body:{transformToString:async()=>JSON.stringify(perms)}};
   if(n==='ListObjectsV2Command')return{Contents:[{Key:'reports/cloud-iq/A_1.pdf',Size:10,LastModified:new Date()}]};
   if(n==='GetObjectCommand')return{Body:{transformToString:async()=>JSON.stringify({clientName:'Acme'})}};
   return {};};
-const cog=[]; CognitoIdentityProviderClient.prototype.send=async function(cmd){cog.push(cmd.constructor.name); if(cmd.constructor.name==='ListUsersCommand')return{Users:[]};return{};};
+const dir=[]; const cog=[]; CognitoIdentityProviderClient.prototype.send=async function(cmd){cog.push(cmd.constructor.name); if(cmd.constructor.name==='ListUsersCommand')return{Users:dir};return{};};
 
-const { handler } = await import('../index.mjs');
+const { handler, setActivityStore } = await import('../index.mjs');
 const ORIGIN='https://main.d199dq940iqyj2.amplifyapp.com';
-const call=(method,path,{token,body,origin=ORIGIN}={})=>handler({rawPath:path,requestContext:{http:{method}},headers:{origin,...(token?{authorization:'Bearer '+token}:{})},body:body?JSON.stringify(body):undefined}).then(r=>({...r,json:r.body?JSON.parse(r.body):null}));
+const call=(method,fullPath,{token,body,origin=ORIGIN}={})=>{const [path,query]=fullPath.split('?');return handler({rawPath:path,queryStringParameters:query?Object.fromEntries(new URLSearchParams(query)):undefined,requestContext:{http:{method}},headers:{origin,...(token?{authorization:'Bearer '+token}:{})},body:body?JSON.stringify(body):undefined}).then(r=>({...r,json:r.body?JSON.parse(r.body):null}));};
 
 const admin=tok({email:'owner@ltm.com',sub:'a'}), groupAdmin=tok({email:'boss@ltm.com','cognito:groups':['Admin']});
 const consultant=tok({email:'consultant@ltm.com'}), reporter=tok({email:'reporter@ltm.com'});
@@ -43,6 +57,45 @@ await t('consultant cannot list users even with requesterEmail spoof',async()=>{
 await t('consultant cannot set admin password (spoofed requesterEmail ignored)',async()=>{const n=cog.length;r=await call('POST','/api/users/set-password',{token:consultant,body:{email:'owner@ltm.com',newPassword:'Hacked123!',requesterEmail:'owner@ltm.com'}});assert.equal(r.statusCode,403);assert.equal(cog.length,n);});
 await t('consultant cannot create users / change permissions',async()=>{r=await call('POST','/api/users/create',{token:consultant,body:{email:'x@y.com',password:'Abcdefgh1!',requesterEmail:'owner@ltm.com'}});assert.equal(r.statusCode,403);r=await call('POST','/api/users/permissions',{token:consultant,body:{email:'consultant@ltm.com',permissions:{view:['reports']}}});assert.equal(r.statusCode,403);});
 await t('admin sets password',async()=>{r=await call('POST','/api/users/set-password',{token:admin,body:{email:'consultant@ltm.com',newPassword:'Abcdefgh1!'}});assert.equal(r.statusCode,200);});
+// ---- Domain access (P1) ----
+const partner=tok({email:'pat@partner.com'}), ally=tok({email:'ann@partner.com'});
+await t('domain rules: non-admins cannot read, change or check them',async()=>{for(const [m,p] of [['GET','/api/domain-rules'],['POST','/api/domain-rules'],['GET','/api/domain-rules/audit'],['POST','/api/domain-rules/check']]){r=await call(m,p,{token:consultant,body:{op:'set',kind:'domain',value:'x.com',action:'allow'}});assert.equal(r.statusCode,403,m+' '+p);}assert.deepEqual(JSON.parse(dom.obj.body).rules,[]);});
+await t('domain rules: the first request creates the empty rules file, so services that can only read it do not see a missing object',async()=>{assert.ok(dom.obj,'file created');assert.deepEqual(JSON.parse(dom.obj.body),{version:1,rules:[]});assert.ok(s3calls.some(c=>c[0]==='PutObjectCommand'&&c[1]==='config/domain-rules.json'));});
+await t('domain rules: admin lists the baseline and protected entries',async()=>{r=await call('GET','/api/domain-rules',{token:admin});assert.equal(r.statusCode,200);assert.deepEqual(r.json.rules,[]);assert.ok(r.json.protected.domains.includes('ltm.com'));assert.ok(r.json.protected.emails.includes('owner@ltm.com'));});
+await t('domain rules: an address that is not listed is refused on every request',async()=>{r=await call('GET','/api/me',{token:partner});assert.equal(r.statusCode,403);assert.equal(r.json.error,'account_blocked');});
+await t('domain rules: admin allows a domain, and its users get in',async()=>{r=await call('POST','/api/domain-rules',{token:admin,body:{op:'set',kind:'domain',value:'Partner.com',action:'allow',note:'Pilot'}});assert.equal(r.statusCode,200,JSON.stringify(r.json));assert.equal(r.json.rules[0].value,'partner.com');r=await call('GET','/api/me',{token:partner});assert.equal(r.statusCode,200);});
+await t('domain rules: blocking the domain stops them on their next request, even with a valid token',async()=>{r=await call('POST','/api/domain-rules',{token:admin,body:{op:'set',kind:'domain',value:'partner.com',action:'block'}});assert.equal(r.statusCode,200);r=await call('GET','/api/me',{token:partner});assert.equal(r.statusCode,403);assert.equal(r.json.error,'account_blocked');});
+await t('domain rules: one address can be allowed through a blocked domain',async()=>{r=await call('POST','/api/domain-rules',{token:admin,body:{op:'set',kind:'email',value:'ann@partner.com',action:'allow'}});assert.equal(r.statusCode,200);r=await call('GET','/api/me',{token:ally});assert.equal(r.statusCode,200);r=await call('GET','/api/me',{token:partner});assert.equal(r.statusCode,403);});
+await t('domain rules: a protected domain or address cannot be blocked',async()=>{for(const body of [{op:'set',kind:'domain',value:'ltm.com',action:'block'},{op:'set',kind:'email',value:'owner@ltm.com',action:'block'},{op:'set',kind:'email',value:'anyone@ltm.com',action:'block'}]){r=await call('POST','/api/domain-rules',{token:admin,body});assert.equal(r.statusCode,400,JSON.stringify(body));assert.match(r.json.error,/^protected_/);}});
+await t('domain rules: invalid values and unknown operations are refused with a reason',async()=>{for(const body of [{op:'set',kind:'domain',value:'*.x.com',action:'allow'},{op:'set',kind:'email',value:'nope',action:'allow'},{op:'set',kind:'domain',value:'x.com',action:'maybe'},{op:'nuke'},{op:'remove',id:'missing'}]){r=await call('POST','/api/domain-rules',{token:admin,body});assert.ok(r.statusCode===400||r.statusCode===404,JSON.stringify(body)+' '+r.statusCode);assert.ok(r.json.error);}});
+await t('domain rules: the check endpoint says what the rules decide, and the audit trail names who changed what',async()=>{r=await call('POST','/api/domain-rules/check',{token:admin,body:{email:'x@partner.com'}});assert.equal(r.json.decision.reason,'domain_blocked');r=await call('GET','/api/domain-rules/audit',{token:admin});assert.equal(r.statusCode,200);assert.ok(r.json.entries.length>=3);assert.ok(r.json.entries.every(e=>e.by==='owner@ltm.com'&&e.rule&&e.at));});
+await t('domain rules: removing the block lets the domain back in (after the short cache)',async()=>{const id=(await call('GET','/api/domain-rules',{token:admin})).json.rules.find(x=>x.kind==='domain').id;r=await call('POST','/api/domain-rules',{token:admin,body:{op:'remove',id}});assert.equal(r.statusCode,200);r=await call('POST','/api/domain-rules/check',{token:admin,body:{email:'x@partner.com'}});assert.equal(r.json.decision.allowed,false);assert.equal(r.json.decision.reason,'not_listed');});
+await t('domain rules: a stale write is refused with 409 and loses nothing',async()=>{const before=dom.obj.body;const realSend=S3Client.prototype.send;let first=true;S3Client.prototype.send=async function(cmd){if(first&&cmd.constructor.name==='PutObjectCommand'&&cmd.input.Key==='config/domain-rules.json'){first=false;dom.obj={body:dom.obj.body,etag:'"changed-elsewhere"'};}return realSend.call(this,cmd);};try{r=await call('POST','/api/domain-rules',{token:admin,body:{op:'set',kind:'domain',value:'late.com',action:'allow'}});}finally{S3Client.prototype.send=realSend;}assert.equal(r.statusCode,409);assert.equal(r.json.error,'conflict');assert.equal(dom.obj.body,before);});
+await t('domain rules: an unreadable rule list refuses ordinary users but never protected ones, who can still repair it',async()=>{
+  // A copy read within the last 15 minutes stands in for a short outage, so the clock is moved past that window.
+  const realNow=Date.now; Date.now=()=>realNow()+16*60*1000; dom.down=true;
+  try{
+    const a=tok({email:'ann@partner.com'}), c=tok({email:'consultant@ltm.com'}), ad=tok({email:'owner@ltm.com'});
+    r=await call('GET','/api/me',{token:a});assert.equal(r.statusCode,503);assert.equal(r.json.error,'access_check_unavailable');
+    r=await call('GET','/api/me',{token:c});assert.equal(r.statusCode,200);
+    r=await call('GET','/api/domain-rules',{token:ad});assert.equal(r.statusCode,503);
+  }finally{Date.now=realNow;dom.down=false;}
+  r=await call('GET','/api/domain-rules',{token:admin});assert.equal(r.statusCode,200);
+});
+// ---- User activity (P2) ----
+const person=(email,over={})=>({Username:email,Enabled:true,UserStatus:'CONFIRMED',UserCreateDate:new Date('2026-10-01T00:00:00Z'),Attributes:[{Name:'email',Value:email},{Name:'name',Value:email.split('@')[0]}],...over});
+const fakeActivity={
+  async listUsers(){return[{email:'consultant@ltm.com',firstLoginAt:'2026-11-01T09:00:00.000Z',lastLoginAt:'2026-11-03T09:00:00.000Z',loginCount:4,assessments:{total:2,completed:1,inProgress:1,archived:0},lastAssessmentAt:'2026-11-02T10:00:00.000Z'},{email:'gone@ltm.com',firstLoginAt:'2026-10-02T09:00:00.000Z',lastLoginAt:'2026-10-02T09:00:00.000Z',loginCount:1,assessments:{total:0,completed:0,inProgress:0,archived:0},lastAssessmentAt:null}];},
+  async listAssessments(){return[{email:'consultant@ltm.com',accelerator:'resilience-iq',assessmentId:'RIQ-1',status:'in_progress',stage:null,percent:null,startedAt:'2026-11-02T09:00:00.000Z',lastSavedAt:'2026-11-02T10:00:00.000Z',completedAt:null},{email:'=cmd@ltm.com',accelerator:'finops-iq',assessmentId:'F-1',status:'completed',stage:null,percent:null,startedAt:'2026-11-01T09:00:00.000Z',lastSavedAt:'2026-11-01T10:00:00.000Z',completedAt:'2026-11-01T10:00:00.000Z'}];},
+  async userDetail(email){return{email,firstLoginAt:null,lastLoginAt:null,loginCount:0,logins:[],assessments:[]};}
+};
+setActivityStore(fakeActivity);
+dir.push(person('consultant@ltm.com'),person('owner@ltm.com'),person('quiet@ltm.com',{Enabled:false}));
+await t('activity: non-admins cannot see any of it',async()=>{for(const p of ['/api/activity/users','/api/activity/user?email=a@b.co','/api/activity/export']){r=await call('GET',p,{token:consultant});assert.equal(r.statusCode,403,p);}});
+await t('activity: admin sees every account with its sign-ins and assessment counts, and activity from a removed account',async()=>{r=await call('GET','/api/activity/users',{token:admin});assert.equal(r.statusCode,200,JSON.stringify(r.json));const u=r.json.users;assert.deepEqual(u.map(x=>x.email),['consultant@ltm.com','gone@ltm.com','owner@ltm.com','quiet@ltm.com']);const c=u.find(x=>x.email==='consultant@ltm.com');assert.equal(c.loginCount,4);assert.equal(c.assessments.total,2);assert.equal(c.role,'advisor_viewer');assert.equal(c.inDirectory,true);const q=u.find(x=>x.email==='quiet@ltm.com');assert.equal(q.loginCount,0);assert.equal(q.lastLoginAt,null);assert.equal(q.enabled,false);const g=u.find(x=>x.email==='gone@ltm.com');assert.equal(g.inDirectory,false);assert.equal(g.accountStatus,'REMOVED');assert.equal(u.find(x=>x.email==='owner@ltm.com').role,'super_admin');assert.equal(r.json.retentionDays,365);});
+await t('activity: one person\'s detail needs a valid address',async()=>{r=await call('GET','/api/activity/user?email=not-an-address',{token:admin});assert.equal(r.statusCode,400);r=await call('GET','/api/activity/user?email=Consultant@LTM.com',{token:admin});assert.equal(r.statusCode,200);assert.equal(r.json.detail.email,'consultant@ltm.com');assert.equal(r.json.role,'advisor_viewer');});
+await t('activity: exports are CSV with a header, and a cell cannot run as a formula',async()=>{r=await call('GET','/api/activity/export?kind=users',{token:admin});assert.equal(r.statusCode,200);assert.equal(r.json.filename,'user-activity.csv');assert.ok(r.json.csv.startsWith('email,status,role,createdAt,firstLoginAt,lastLoginAt,loginCount'));assert.ok(r.json.csv.includes('quiet@ltm.com,disabled'));r=await call('GET','/api/activity/export?kind=assessments',{token:admin});assert.equal(r.json.filename,'assessment-activity.csv');assert.ok(r.json.csv.includes("'=cmd@ltm.com"));assert.ok(!/(^|\n)=/.test(r.json.csv));assert.ok(!/answers|clientName|result/i.test(r.json.csv.split('\r\n')[0]));});
+await t('activity: an unknown report is not found, and a blocked admin cannot read it',async()=>{r=await call('GET','/api/activity/nothing',{token:admin});assert.equal(r.statusCode,404);});
 await t('/api/me returns own permissions',async()=>{r=await call('GET','/api/me',{token:consultant});assert.equal(r.statusCode,200);assert.deepEqual(r.json.permissions.view,['cloud-iq']);r=await call('GET','/api/me',{token:admin});assert.equal(r.json.role,'super_admin');});
 await t('consultant cannot list reports',async()=>{r=await call('GET','/api/reports/list',{token:consultant});assert.equal(r.statusCode,403);});
 await t('reporter lists reports with 15-min URLs, no bucket name leak',async()=>{r=await call('GET','/api/reports/list',{token:reporter});assert.equal(r.statusCode,200);assert.equal(r.json.count,1);assert.match(r.json.reports[0].downloadUrl,/X-Amz-Expires=900/);assert.ok(!('bucket' in r.json));});

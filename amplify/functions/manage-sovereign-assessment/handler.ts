@@ -15,6 +15,8 @@ import { randomUUID } from 'node:crypto';
 import { corsHeaders } from '../_shared/http';
 import { authorized, canAccess, isAdmin, parseBody, userEmail } from '../_shared/resilience-data';
 import { withAcceleratorAccess } from '../_shared/access';
+import { recordAssessment, removeAssessmentActivity } from '../_shared/activity-recorder.mjs';
+import { progressFor } from '../_shared/progress';
 import { canTransition, clientView, evaluateSnapshot, parseSnapshot, snapshotMode, ENGINE_VERSION, type SovereignAssessmentStatus } from '../../../packages/engine-core/src/accelerators/sovereign-iq/v4';
 import { expiresAt } from '../../../packages/engine-core/src/accelerators/finops-iq/v3/retention';
 import { appSyncStore, type SovereignAssessmentRecord, type SovereignAssessmentStore } from './store';
@@ -79,6 +81,7 @@ export function createHandler(store: SovereignAssessmentStore, now: () => Date =
         if (!item) return respond(404, { ok: false, error: 'assessment_not_found' });
         if (!canAccess(event, item.respondentEmail)) return respond(403, { ok: false, error: 'assessment_access_denied' });
         await store.delete(id);
+        await removeAssessmentActivity(item.respondentEmail, 'sovereign-iq', id);
         console.info('[ManageSovereignAssessment] deleted', { requestId, assessmentId: id });
         return respond(200, { ok: true, data: { assessmentId: id, deleted: true } });
       }
@@ -94,6 +97,7 @@ export function createHandler(store: SovereignAssessmentStore, now: () => Date =
         if (!canTransition(existing.status as SovereignAssessmentStatus, 'archived')) return respond(409, { ok: false, error: 'assessment_immutable' });
         const at = now();
         const data = await store.update({ assessmentId: existing.assessmentId, status: 'archived', archivedAt: at.toISOString(), expiresAt: expiresAt(at) });
+        await recordAssessment(existing.respondentEmail, { accelerator: 'sovereign-iq', assessmentId: existing.assessmentId, status: 'archived' });
         return respond(200, { ok: true, data: view(data) });
       }
 
@@ -124,6 +128,7 @@ export function createHandler(store: SovereignAssessmentStore, now: () => Date =
         expiresAt: expiresAt(now())
       };
       const data = existing ? await store.update(record) : await store.create(record);
+      await recordAssessment(record.respondentEmail, { accelerator: 'sovereign-iq', assessmentId: record.assessmentId, status: record.status, ...progressFor(record.status, body?.progress), startedAt: record.startedAt, completedAt: record.completedAt });
       return respond(200, { ok: true, data: view(data) });
     } catch (error: any) {
       console.error('[ManageSovereignAssessment]', { requestId, error });
