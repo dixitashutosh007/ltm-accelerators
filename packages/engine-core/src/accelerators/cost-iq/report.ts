@@ -71,6 +71,12 @@ const FINOPS_CAPABILITY = new Map<string, string>((finopsRegistry as any).capabi
 const SEV_ORDER: Record<string, number> = { high: 0, medium: 1, low: 2 };
 /** Findings in the order the report lists them; the position is the number a reader uses to cross-refer. */
 const orderedFindings = (fs: Finding[]) => [...fs].sort((a, b) => (SEV_ORDER[a.severity] ?? 3) - (SEV_ORDER[b.severity] ?? 3));
+/** Recommended steps in one order everywhere: by the highest-severity finding each addresses (the order findings are numbered in). */
+const orderedRecs = (c: { findings: Finding[]; i: CostIqReportInput }): Recommendation[] => {
+  const rank = new Map(orderedFindings(c.findings).map((f, k) => [f.id, k]));
+  const first = (r: Recommendation) => Math.min(...r.findingIds.map(id => rank.get(id) ?? 99), 99);
+  return [...c.i.result.recommendations].sort((a, b) => first(a) - first(b));
+};
 const questionsById = new Map<string, any>((config as any).questions.map((q: any) => [q.id, q]));
 const ref = (t: string): Seg => ({ text: t, ref: true });
 /** LTM-authored wording from the bank or catalogue: shown as written, digits allowed. */
@@ -149,12 +155,19 @@ function nonCloudFigures(n: NonCloudResult): Map<string, number> {
     m.set(l.base.field, l.base.value);
     for (const k of CASES) for (const f of Object.values(l.cases[k])) m.set(f.field, f.value);
   }
-  if (n.total) for (const k of CASES) { m.set(n.total.cases[k].netRunRate.field, n.total.cases[k].netRunRate.value); m.set(n.total.cases[k].net3Year.field, n.total.cases[k].net3Year.value); }
+  if (n.total) for (const k of CASES) for (const f of Object.values(n.total.cases[k])) m.set(f.field, f.value);
   return m;
 }
 const sized = (c: Ctx) => (c.i.nonCloud?.status === 'quantified' ? c.i.nonCloud : null);
 
 /* --------------------------------- Sections --------------------------------- */
+
+/** The total, case by case: the run rate, each of the three years and the three-year sum. */
+function totalTable(t: NonNullable<NonCloudResult['total']>, cur: string): Block {
+  return { kind: 'table', small: true, head: ['Case', 'Net run rate a year', 'Year 1', 'Year 2', 'Year 3', 'First three years'], widths: ['*', 74, 66, 66, 66, 74], rows: CASES.map(k => [
+    [strong(CASE_LABEL[k])], [figure(t.cases[k].netRunRate, cur)], [figure(t.cases[k].netYear1, cur)], [figure(t.cases[k].netYear2, cur)], [figure(t.cases[k].netYear3, cur)], [figure(t.cases[k].net3Year, cur)]
+  ]) };
+}
 
 /** What the reader needs next to any money range: the lever's confidence, and the cloud line's where one is included (CQ10 challenge H2, M3). */
 function confidenceNote(c: Ctx): string {
@@ -172,8 +185,8 @@ function cloudLine(c: Ctx): Block[] {
     ] }];
   }
   const cur = s.currency;
-  const blocks: Block[] = [{ kind: 'table', head: ['Case', 'Net run rate a year', 'Net, first three years'], widths: ['*', 130, 130], rows: CASES.map(k => [
-    [strong(CASE_LABEL[k])], [figure(s.cases![k].netRunRate, cur)], [figure(s.cases![k].net3Year, cur)]
+  const blocks: Block[] = [{ kind: 'table', small: true, head: ['Case', 'Net run rate a year', 'Year 1', 'Year 2', 'Year 3', 'First three years'], widths: ['*', 74, 66, 66, 66, 74], rows: CASES.map(k => [
+    [strong(CASE_LABEL[k])], [figure(s.cases![k].netRunRate, cur)], [figure(s.cases![k].netYear1, cur)], [figure(s.cases![k].netYear2, cur)], [figure(s.cases![k].netYear3, cur)], [figure(s.cases![k].net3Year, cur)]
   ]) }];
   blocks.push({ kind: 'paragraph', style: 'small', segs: ([
     `From the FinOps IQ assessment dated `, ref(s.assessmentDate ?? 'not stated'), c.i.finopsLinkedAt ? ', linked to this report on ' : '', c.i.finopsLinkedAt ? ref(c.i.finopsLinkedAt) : '', `, engine `, ref(s.versions.engine), `; confidence ${s.confidence ?? 'not stated'}. `,
@@ -224,9 +237,7 @@ function summary(c: Ctx): ReportSection {
   const nc = sized(c);
   if (nc?.total) {
     blocks.push({ kind: 'subheading', text: nc.total.cloudIncluded ? 'Value range: total across the estate' : 'Value range: total excluding cloud' });
-    blocks.push({ kind: 'table', head: ['Case', 'Net run rate a year', 'Net, first three years'], widths: ['*', 130, 130], rows: CASES.map(k => [
-      [strong(CASE_LABEL[k])], [figure(nc.total!.cases[k].netRunRate, nc.currency)], [figure(nc.total!.cases[k].net3Year, nc.currency)]
-    ]) });
+    blocks.push(totalTable(nc.total, nc.currency));
     blocks.push({ kind: 'paragraph', style: 'small', segs: [nc.total.cloudNote, ' Each case is net of the client\'s own internal cost to deliver (external fees, tools and contract penalties are not included and are agreed separately), phased as the lever sections explain. The range is indicative and depends on the client-measured figures set out under "Non-cloud levers and total". ', confidenceNote(c)] });
   }
   blocks.push({ kind: 'callout', tone: 'info', title: 'Decision requested', segs: [
@@ -234,6 +245,13 @@ function summary(c: Ctx): ReportSection {
       ? ['The CIO, or the head of technology finance, is asked to name an owner for each finding and to release the evidence listed against it, within ', ref('30 days'), ' of receiving this report. ', ref(sizing(c)), ' The ', ref('30 days'), ' is a default to adjust to the organisation\'s own planning cycle.'] as Seg[]
       : ['No finding is raised on the answers given. The CIO, or the head of technology finance, is asked to confirm the owner of the lowest-scoring areas above and to complete the unanswered questions within ', ref('30 days'), ' of receiving this report, so that findings can be tested. The ', ref('30 days'), ' is a default to adjust to the organisation\'s own planning cycle.'] as Seg[]
   ].flat() });
+  const first = activePackages(c).slice(0, 3);
+  if (first.length) {
+    const longest = first.reduce<[number, number]>((m, { p }) => { const e = elapsed(p); return [Math.max(m[0], e[0]), Math.max(m[1], e[1])]; }, [0, 0]);
+    blocks.push({ kind: 'subheading', text: 'Recommended first steps' });
+    blocks.push({ kind: 'list', items: first.map(({ r, p }) => [strong(p.offeringName), `, ${TYPE_LABEL[p.offeringType].toLowerCase()}, indicative elapsed time `, ref(weeks(elapsed(p))), '. ', ref(`Addresses ${r.findingIds.filter(id => c.findings.some(f => f.id === id)).map(id => `Finding ${orderedFindings(c.findings).findIndex(f => f.id === id) + 1}`).join(', ')}.`)]) });
+    blocks.push({ kind: 'paragraph', style: 'small', segs: ['These are the steps for the most severe findings, in order. Started together, the longest of them would take about ', ref(weeks(longest)), ' on LTM\'s planning ranges, which are not commitments (see the assumptions). The roadmap lists every step.'] });
+  }
   blocks.push({ kind: 'subheading', text: 'Cloud line (from FinOps IQ)' });
   blocks.push(...cloudLine(c));
   blocks.push({ kind: 'callout', tone: 'info', title: 'What this report sizes', segs: [
@@ -343,17 +361,17 @@ function leversSection(c: Ctx): ReportSection | null {
   for (const l of nc.lines) {
     blocks.push({ kind: 'subheading', text: l.name });
     blocks.push({ kind: 'paragraph', segs: ['Measured base: ', figure(l.base, cur), ' a year, supplied by the client. ', quoted(l.label), ' Raised by the finding "', quoted(c.findings.find(f => f.id === l.findingId)?.title ?? l.findingId), '".'] });
-    blocks.push({ kind: 'table', head: ['Case', 'Gross run rate a year', 'Net run rate a year', 'Net, first three years'], widths: ['*', 100, 100, 110], rows: CASES.map(k => [
-      [strong(CASE_LABEL[k])], [figure(l.cases[k].runRate, cur)], [figure(l.cases[k].netRunRate, cur)], [figure(l.cases[k].net3Year, cur)]
+    blocks.push({ kind: 'table', small: true, head: ['Case', 'Gross run rate a year', 'Net run rate a year', 'Year 1', 'Year 2', 'Year 3', 'First three years'], widths: ['*', 62, 62, 58, 58, 58, 66], rows: CASES.map(k => [
+      [strong(CASE_LABEL[k])], [figure(l.cases[k].runRate, cur)], [figure(l.cases[k].netRunRate, cur)], [figure(l.cases[k].netYear1, cur)], [figure(l.cases[k].netYear2, cur)], [figure(l.cases[k].netYear3, cur)], [figure(l.cases[k].net3Year, cur)]
     ]) });
+    blocks.push({ kind: 'paragraph', style: 'small', segs: [confidenceNote(c)] });
+    blocks.push({ kind: 'paragraph', style: 'small', segs: ['Year one earns ', ref(l.year1Basis), '; years two and three earn the whole run rate. The years are net of the delivery cost: the one-off cost falls in year one and the running cost in every year.'] });
     blocks.push({ kind: 'paragraph', style: 'small', segs: ['One-off cost to deliver, from the client\'s own cost of an FTE-month (internal effort only; external fees, tools and contract penalties are excluded and agreed separately): ', figure(l.cases.expected.oneOffCost, cur), '; yearly running cost ', figure(l.cases.expected.ongoingCost, cur), '. Software already counted in the FinOps IQ cloud line (SaaS and marketplace) is outside this base, so the same saving is not counted twice.'] });
   }
   for (const n of nc.notSized) blocks.push({ kind: 'paragraph', style: 'small', segs: [`${n.name}: not sized. ${n.reason}`] });
   if (nc.total) {
     blocks.push({ kind: 'subheading', text: 'Total' });
-    blocks.push({ kind: 'table', head: ['Case', 'Net run rate a year', 'Net, first three years'], widths: ['*', 130, 130], rows: CASES.map(k => [
-      [strong(CASE_LABEL[k])], [figure(nc.total!.cases[k].netRunRate, cur)], [figure(nc.total!.cases[k].net3Year, cur)]
-    ]) });
+    blocks.push(totalTable(nc.total, cur));
     blocks.push({ kind: 'paragraph', style: 'small', segs: [nc.total.cloudNote, ' ', confidenceNote(c)] });
   }
   return { id: 'levers', title: 'Non-cloud levers and total', blocks };
@@ -390,7 +408,7 @@ function pkg(c: Ctx, id: string): Package | undefined {
     sow: { ...base.sow, objectives: ['Review the linked FinOps IQ result against the finding', 'Name evidence holders for any gap', 'Give the CIO a documented basis for the next decision'], deliverables: ['Review note'], assumptions: ['The linked FinOps IQ assessment is current and covers the in-scope cloud estate', 'Client owners are available for validation sessions', 'Durations and effort are planning heuristics and are confirmed in the statement of work'], exclusions: ['A new FinOps IQ assessment', 'Sizing of opportunities', 'Technical changes to any cloud environment'] }
   };
 }
-const activePackages = (c: Ctx) => c.i.result.recommendations.map(r => ({ r, p: pkg(c, r.id) })).filter((x): x is { r: Recommendation; p: Package } => !!x.p);
+const activePackages = (c: Ctx) => orderedRecs(c).map(r => ({ r, p: pkg(c, r.id) })).filter((x): x is { r: Recommendation; p: Package } => !!x.p);
 
 function deliveryPlan(c: Ctx): Block[] {
   const blocks: Block[] = [];
@@ -413,10 +431,11 @@ function deliveryPlan(c: Ctx): Block[] {
 }
 
 function roadmap(c: Ctx): ReportSection {
-  const recs = c.i.result.recommendations;
+  const recs = orderedRecs(c);
   const blocks: Block[] = [{ kind: 'paragraph', segs: ['The route from a finding to a saving has three steps, and no step is skipped. First, supply the evidence each finding names. Then size the opportunity from that evidence and agree what is feasible with the owners. Finally, plan delivery and track the result against the baseline.'] }];
   if (recs.length) {
     blocks.push({ kind: 'subheading', text: 'Recommended next steps' });
+    blocks.push({ kind: 'paragraph', style: 'small', segs: ['In order: each step is placed by the highest-severity finding it addresses, the order in which the findings are numbered.'] });
     blocks.push({ kind: 'table', head: ['Step', 'What it covers', 'Findings addressed'], widths: [140, '*', 90], small: true, rows: recs.map(r => [[strong(r.title)], [quoted(r.description)], [ref(orderedFindings(c.findings).map((f, k) => (r.findingIds.includes(f.id) ? `Finding ${k + 1}` : '')).filter(Boolean).join('; ') || 'None raised')]]) });
   } else blocks.push({ kind: 'paragraph', segs: ['No step is recommended on the answers given.'] });
   blocks.push(...deliveryPlan(c));

@@ -35,9 +35,11 @@ export interface NonCloudEvidence {
 }
 
 export interface Figure { field: string; value: number; unit: 'currency'; claimIds: string[]; assumptionIds: string[] }
-export interface LeverCase { runRate: Figure; year1: Figure; year2: Figure; year3: Figure; oneOffCost: Figure; ongoingCost: Figure; netRunRate: Figure; net3Year: Figure }
-export interface LeverLine { id: string; name: string; findingId: string; label: string; base: Figure; cases: Record<Case, LeverCase> }
-export interface TotalCase { netRunRate: Figure; net3Year: Figure }
+/** year1 to year3 are gross earnings; netYear1 to netYear3 take off the one-off cost (year one) and the running cost (every year), and sum to net3Year. */
+export interface LeverCase { runRate: Figure; year1: Figure; year2: Figure; year3: Figure; oneOffCost: Figure; ongoingCost: Figure; netRunRate: Figure; netYear1: Figure; netYear2: Figure; netYear3: Figure; net3Year: Figure }
+/** `year1Basis` says which year-one rule applied, in words (no digits, so the report's number check stays strict). */
+export interface LeverLine { id: string; name: string; findingId: string; label: string; base: Figure; year1Basis: string; cases: Record<Case, LeverCase> }
+export interface TotalCase { netRunRate: Figure; netYear1: Figure; netYear2: Figure; netYear3: Figure; net3Year: Figure }
 export interface NonCloudResult {
   schema: typeof NON_CLOUD_SCHEMA;
   libraryVersion: string;
@@ -81,10 +83,12 @@ export function evaluateNonCloud(evidence: NonCloudEvidence | null | undefined, 
       cases[c] = {
         runRate: fig(`${k}.runRate`, run), year1: fig(`${k}.year1`, y1), year2: fig(`${k}.year2`, y2), year3: fig(`${k}.year3`, y3),
         oneOffCost: fig(`${k}.oneOffCost`, oneOff), ongoingCost: fig(`${k}.ongoingCost`, ongoing),
-        netRunRate: fig(`${k}.netRunRate`, run - money(ongoing)), net3Year: fig(`${k}.net3Year`, y1 + y2 + y3 - money(oneOff) - 3 * money(ongoing))
+        netRunRate: fig(`${k}.netRunRate`, run - money(ongoing)),
+        netYear1: fig(`${k}.netYear1`, y1 - money(oneOff) - money(ongoing)), netYear2: fig(`${k}.netYear2`, y2 - money(ongoing)), netYear3: fig(`${k}.netYear3`, y3 - money(ongoing)),
+        net3Year: fig(`${k}.net3Year`, y1 + y2 + y3 - money(oneOff) - 3 * money(ongoing))
       };
     }
-    out.lines.push({ id: lever.id, name: lever.name, findingId: lever.findingId, label: lever.label, base: fig(`${p}.base`, e.unusedAnnualCost), cases });
+    out.lines.push({ id: lever.id, name: lever.name, findingId: lever.findingId, label: lever.label, base: fig(`${p}.base`, e.unusedAnnualCost), year1Basis: e.renewingYear1Share !== undefined && share === e.renewingYear1Share ? 'the client\'s own share of contracts renewing in year one' : 'a quarter, the default, because no renewal share was given', cases });
   }
   if (!out.lines.length) return out;
   out.status = 'quantified';
@@ -93,7 +97,8 @@ export function evaluateNonCloud(evidence: NonCloudEvidence | null | undefined, 
   for (const c of CASES) {
     const nr = out.lines.reduce((t, l) => t + l.cases[c].netRunRate.value, 0) + (cloud ? cloud.cases![c].netRunRate.value : 0);
     const n3 = out.lines.reduce((t, l) => t + l.cases[c].net3Year.value, 0) + (cloud ? cloud.cases![c].net3Year.value : 0);
-    totals[c] = { netRunRate: fig(`total.cases.${c}.netRunRate`, nr), net3Year: fig(`total.cases.${c}.net3Year`, n3) };
+    const yr = (m: 'netYear1' | 'netYear2' | 'netYear3') => out.lines.reduce((t, l) => t + l.cases[c][m].value, 0) + (cloud ? cloud.cases![c][m].value : 0);
+    totals[c] = { netRunRate: fig(`total.cases.${c}.netRunRate`, nr), netYear1: fig(`total.cases.${c}.netYear1`, yr('netYear1')), netYear2: fig(`total.cases.${c}.netYear2`, yr('netYear2')), netYear3: fig(`total.cases.${c}.netYear3`, yr('netYear3')), net3Year: fig(`total.cases.${c}.net3Year`, n3) };
   }
   out.total = {
     cloudIncluded: !!cloud,

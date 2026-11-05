@@ -433,3 +433,9 @@ Source: `CQ10-CIO-CHALLENGE.md` (practice-lead review; advisory). Fixed, each wi
 ### CQ10 closed (5 Nov 2026)
 - Gate: no open Critical or High finding (security review: F1 fixed in code; CIO challenge re-run on 5292baf: no High). CI green on the branch at `dbaf4ec` (manual run 41968760679): type check, unit tests, repository guards, secret scan, browser tests and backend synthesis, which includes the new narrative worker function and its permissions. 
 - Provisos carried to CQ11: F1 (asynchronous narrative) and the live narrative eval are unconfirmed in a real account; the Medium and Low items listed in `CQ10-CIO-CHALLENGE.md` remain open for the owner to fix or accept in writing; the font-host sentence in the data notice awaits owner confirmation.
+
+### CQ10 challenge fixes, third batch (5 Nov 2026)
+- **M2** Every money table (cloud line, lever, total, in the summary and in the lever section) now shows Year 1, Year 2 and Year 3 beside the run rate and the three-year figure; the years sum to the three-year figure (tested, and the report check reconciles the total's years); the report says which year-one rule applied (the client's renewal share, or a quarter by default). The lever years are net of the delivery cost.
+- **M3** The Low confidence of the licence lever, and that the upper case is all of the measured figure, now sits under the lever table as well as beside the totals. The upper case is not capped: no data supports a lower cap. Owner may still ask for one.
+- **M5** The summary lists up to three recommended first steps for the most severe findings, with the indicative elapsed time of the longest; the roadmap and the delivery plan use the same order, stated.
+- Still open: M6, M8 role check, M10, M11, L2, L4 to L8.

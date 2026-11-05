@@ -90,7 +90,7 @@ export function checkCostIqReport(doc: ReportDocument, input: CostIqReportInput,
       if (!n?.total) return [];
       const out: string[] = [];
       const cloud = n.total.cloudIncluded ? input.finops : null;
-      for (const k of ['conservative', 'expected', 'upper'] as const) for (const m of ['netRunRate', 'net3Year'] as const) {
+      for (const k of ['conservative', 'expected', 'upper'] as const) for (const m of ['netRunRate', 'netYear1', 'netYear2', 'netYear3', 'net3Year'] as const) {
         const want = n.lines.reduce((t, l) => t + l.cases[k][m].value, 0) + (cloud?.cases ? cloud.cases[k][m].value : 0);
         if (Math.abs(want - n.total.cases[k][m].value) > 1) out.push(`total ${k} ${m} is ${n.total.cases[k][m].value} but the levers${cloud ? ' and the cloud line' : ''} sum to ${want}`);
       }

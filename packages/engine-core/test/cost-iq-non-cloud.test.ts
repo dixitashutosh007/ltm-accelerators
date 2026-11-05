@@ -258,3 +258,51 @@ describe('"Where to look first" (CQ10 challenge M4)', () => {
     expect(sawSingle).toBe(true);
   });
 });
+
+describe('phasing, confidence and first steps (CQ10 challenge M2, M3, M5)', () => {
+  const lever = (() => { const i = input(PROFILES['SaaS-heavy'], 7, GBP_SUMMARY); i.nonCloud = evaluateNonCloud(EV({ renewingYear1Share: 0.6 }), ['F-008'], GBP_SUMMARY); return i; })();
+  const unrenewed = (() => { const i = input(PROFILES['SaaS-heavy'], 7, GBP_SUMMARY); i.nonCloud = evaluateNonCloud(EV(), ['F-008'], GBP_SUMMARY); return i; })();
+
+  it('M2: the three years sum to the three-year figure, for every lever case and the total, and the tables show them', () => {
+    for (const i of [lever, unrenewed]) {
+      const n = i.nonCloud!;
+      expect(n.status).toBe('quantified');
+      for (const k of ['conservative', 'expected', 'upper'] as const) {
+        for (const l of n.lines) { const c = l.cases[k]; expect(c.netYear1.value + c.netYear2.value + c.netYear3.value, `${l.id} ${k}`).toBeCloseTo(c.net3Year.value, -1); }
+        const t = n.total!.cases[k]; expect(t.netYear1.value + t.netYear2.value + t.netYear3.value, `total ${k}`).toBeCloseTo(t.net3Year.value, -1);
+      }
+      for (const view of ['client', 'consultant'] as const) {
+        const text = JSON.stringify(costIqReport(i, { ...OPTS, view }));
+        expect(text).toContain('"Year 1"'); expect(text).toContain('"Year 3"');
+        expect(checkCostIqReport(costIqReport(i, { ...OPTS, view }), i, view, TODAY).failures).toEqual([]);
+      }
+    }
+  });
+
+  it('M2: the report says which year-one rule applied', () => {
+    expect(everything(costIqReport(lever, { ...OPTS, view: 'client' }))).toContain("the client's own share of contracts renewing in year one");
+    expect(everything(costIqReport(unrenewed, { ...OPTS, view: 'client' }))).toContain('a quarter, the default, because no renewal share was given');
+  });
+
+  it('M3: the lever section carries the Low confidence and says the upper case is all of the measured figure', () => {
+    const sec = costIqReport(lever, { ...OPTS, view: 'client' }).sections.find(s => s.id === 'levers')!;
+    expect(JSON.stringify(sec)).toMatch(/Confidence in the licence lever is Low[^"]*upper case is all of it/);
+  });
+
+  it('M5: the summary lists at most three first steps for the most severe findings, and the roadmap is in the same order', () => {
+    let seen = 0;
+    for (const [n, fp] of Object.entries(PROFILES)) for (const salt of [3, 11]) {
+      const i = input(fp, salt, null);
+      const doc = costIqReport(i, { ...OPTS, view: 'client' });
+      const sum = doc.sections.find(s => s.id === 'summary')!;
+      const idx = sum.blocks.findIndex(b => b.kind === 'subheading' && (b as any).text === 'Recommended first steps');
+      if (!i.result.recommendations.length) { expect(idx, n).toBe(-1); continue; }
+      seen++;
+      expect(idx, n).toBeGreaterThan(-1);
+      expect((sum.blocks[idx + 1] as any).items.length).toBeLessThanOrEqual(3);
+      const road = doc.sections.find(s => s.id === 'roadmap')!;
+      expect(JSON.stringify(road)).toContain('In order: each step is placed by the highest-severity finding');
+    }
+    expect(seen).toBeGreaterThan(3);
+  });
+});
