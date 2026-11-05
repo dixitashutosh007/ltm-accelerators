@@ -165,3 +165,77 @@ describe('Cost IQ report with a sized non-cloud lever (CQ4)', () => {
     expect(t).not.toMatch(/Value range/);
   });
 });
+
+describe('report fixes from the CIO challenge (CQ10)', () => {
+  const edition = (fp: string[], salt: number, finops: typeof GBP_SUMMARY, lever: boolean, view: 'client' | 'consultant' = 'client') => {
+    const i = input(fp, salt, finops);
+    if (lever) i.nonCloud = evaluateNonCloud(EV(), ['F-008'], finops);
+    return { i, doc: costIqReport(i, { ...OPTS, view }) };
+  };
+  const cases = [
+    ...Object.entries(PROFILES).flatMap(([n, fp], k) => [null, GBP_SUMMARY].flatMap(f => [false, true].map(l => ({ label: `${n} ${f ? 'linked' : 'unlinked'} ${l ? 'lever' : 'no lever'}`, ...edition(fp, k + 7, f, l) }))))
+  ];
+
+  it('H1: the summary never says no saving is stated when an amount is shown, and says what the amounts are', () => {
+    for (const x of cases) {
+      const t = everything(x.doc);
+      const amounts = x.i.finops?.status === 'quantified' || x.i.nonCloud?.status === 'quantified';
+      if (amounts) expect(t, x.label).not.toContain('no saving is stated');
+      if (amounts && x.i.result.findings.length) expect(t, x.label).toMatch(/the only amounts? in this report (is|are) /);
+    }
+    expect(cases.some(x => x.i.nonCloud?.status === 'quantified')).toBe(true);
+  });
+
+  it('H2: when FinOps IQ held no spend figure, the cap is not described as a share "of that spend"; the lever and cloud confidence sit beside the range', () => {
+    for (const x of cases) {
+      const t = everything(x.doc);
+      if (x.i.finops?.status === 'quantified' && !(x.i.finops.cloudSpend?.low && x.i.finops.cloudSpend.high)) { expect(t, x.label).not.toContain('of that spend'); expect(t, x.label).toContain('recorded no in-scope spend figure'); }
+      if (x.i.nonCloud?.status === 'quantified') expect(t, x.label).toContain('Confidence in the licence lever is Low');
+    }
+  });
+
+  it('H3: every "Evidence for" in the delivery plan names a finding the same edition raises', () => {
+    for (const x of cases) {
+      const t = everything(x.doc);
+      const titles = new Set(x.i.result.findings.map(f => f.title));
+      for (const m of t.matchAll(/Evidence for "([^"]+)"/g)) expect(titles.has(m[1]), `${x.label}: ${m[1]}`).toBe(true);
+    }
+  });
+
+  it('H4: with a FinOps IQ result linked, the report does not ask the client to scope a FinOps IQ assessment', () => {
+    const linked = cases.filter(x => x.i.finops?.status === 'quantified' && x.i.result.recommendations.some(r => r.id === 'R-003'));
+    expect(linked.length).toBeGreaterThan(0);
+    for (const x of linked) { const t = everything(x.doc); expect(t, x.label).not.toMatch(/Cloud Cost Management Scoping|Plan the FinOps IQ assessment/); expect(t, x.label).toContain('Review of the Linked FinOps IQ Result'); }
+    const unlinked = cases.filter(x => !x.i.finops && x.i.result.recommendations.some(r => r.id === 'R-003'));
+    for (const x of unlinked) expect(everything(x.doc), x.label).toContain('Cloud Cost Management Scoping');
+  });
+
+  it('M1 and L1: the cost to deliver says it is internal effort only, and one week is not "1 weeks"', () => {
+    for (const x of cases) {
+      const t = everything(x.doc);
+      expect(t, x.label).not.toMatch(/\b1 weeks\b/);
+      if (x.i.nonCloud?.status === 'quantified') expect(t, x.label).toContain('internal effort only');
+    }
+  });
+
+  it('the edited reports still pass the report checks', () => {
+    for (const x of cases) for (const view of ['client', 'consultant'] as const) {
+      const d = costIqReport(x.i, { ...OPTS, view });
+      expect(checkCostIqReport(d, x.i, view, TODAY).failures, `${x.label} ${view}`).toEqual([]);
+    }
+  });
+});
+
+describe('assumptions print in ID order (CQ10 challenge L3)', () => {
+  it('A-01 before A-02 and so on, in every edition', () => {
+    for (const fp of Object.values(PROFILES)) {
+      const i = input(fp, 5, GBP_SUMMARY); i.nonCloud = evaluateNonCloud(EV(), ['F-008'], GBP_SUMMARY);
+      const t = everything(costIqReport(i, { ...OPTS, view: 'consultant' }));
+      const ids = [...t.matchAll(/\bA-(\d{2})\b/g)].map(m => m[1]);
+      const a = t.slice(t.indexOf('Assumption '));
+      const inTable = [...a.matchAll(/\bA-(\d{2})\s{2}/g)].map(m => m[1]);
+      expect(inTable.length).toBeGreaterThan(5);
+      expect(inTable).toEqual([...inTable].sort());
+    }
+  });
+});

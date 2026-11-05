@@ -414,3 +414,12 @@ Library 0.2-draft adds ten platform-specific playbook entries (R-004: Microsoft 
 - `cost-iq-narrative` (API, 15 s) records a pending state, starts `cost-iq-narrative-worker` (240 s, Bedrock) asynchronously and returns 202. The worker runs the model call and the grounding check, stores ok, rejected or error, and re-checks the switches. The page polls the stored state. One switch (`cost-iq-narrative/ai-switch.ts`) controls both functions. The API role may invoke only the worker; only the worker may call Bedrock.
 - Tests: pending, no duplicate start, stale restart, start failure, worker model failure, switch turned off before the worker runs; page waits and then shows the stored narrative.
 - Not confirmed live: the invocation, the permissions and the timing need the first run in a real account. The Sovereign IQ narrative keeps the 30-second limit until it is changed the same way.
+
+### CQ10 CIO-challenge fixes (5 Nov 2026)
+Source: `CQ10-CIO-CHALLENGE.md` (practice-lead review; advisory). Fixed, each with a test over all five profiles, linked and unlinked, with and without a sized lever:
+- **H1** The summary no longer says "no saving is stated" when an amount is shown; it names what the amounts are.
+- **H2** When FinOps IQ held no in-scope spend, the cap is no longer "of that spend" (summary note and A-06); the confidence of the licence lever, and of the cloud line where included, sits beside every money range. Not done: Year 1 to 3 rows (M2).
+- **H3** The delivery plan lists evidence only for findings the report raised.
+- **H4** With a FinOps IQ result linked, "Cloud Cost Management Scoping" becomes "Review of the Linked FinOps IQ Result" (one week); unlinked reports keep the scoping package.
+- **M1** The cost to deliver states it is the client's internal effort only (lever table and A-09). **M8 (labels)** The page offers "Client edition (PDF)" as the primary download and labels the other "Consultant edition (PDF)"; no role check yet. **L1** "1 week". **L3** Assumptions print in ID order.
+- **Open (for the owner to rank):** M2 year-by-year rows, M3 cap on the upper case, M4 single-question dimensions in "Where to look first" (the S5 item), M5 recommended first steps in the summary, M6 weak playbook sources and the Year column, M7 result screen versus report wording, M8 role check, M9 third-party Chart.js and fonts, M10 wording for estates with no cloud, M11 shared-trigger findings and CSV names, L2 UK spelling, L4 to L8.

@@ -466,7 +466,7 @@ async function loadNarrative(){
 function reportReady(){return !!savedAssessment&&!testScenario&&savedAssessment.status==='completed'}
 function reportButtons(){
   if(!reportReady())return '<p class="muted" id="reportNote">The downloadable report is produced from a saved, completed assessment.</p>';
-  return '<div class="actions" role="group" aria-label="Download the report"><button class="btn primary" onclick="downloadReport(\'pdf\',\'consultant\',this)">Report (PDF)</button><button class="btn" onclick="downloadReport(\'pdf\',\'client\',this)">Client edition (PDF)</button><button class="btn" onclick="downloadReport(\'csv\',\'client\',this)">Backlog (CSV)</button></div><p class="muted" id="reportNote" role="status"></p>';
+  return '<div class="actions" role="group" aria-label="Download the report"><button class="btn primary" onclick="downloadReport(\'pdf\',\'client\',this)">Client edition (PDF)</button><button class="btn" onclick="downloadReport(\'pdf\',\'consultant\',this)">Consultant edition (PDF)</button><button class="btn" onclick="downloadReport(\'csv\',\'client\',this)">Backlog (CSV)</button></div><p class="muted" id="reportNote" role="status"></p>';
 }
 async function downloadReport(format,view,btn){
   const note=$('reportNote');const say=t=>{if(note)note.textContent=t};

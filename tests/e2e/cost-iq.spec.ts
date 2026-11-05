@@ -294,7 +294,7 @@ test.describe('Cost IQ', () => {
     // (axe itself fetches the page's font stylesheet to measure contrast, which the page's CSP refuses: not a page error.)
     consoleErrors.length = 0;
     expect(violations.map(v => `${v.id}: ${v.nodes.slice(0, 3).map(n => n.html.slice(0, 100)).join(' | ')}`)).toEqual([]);
-    const [d] = await Promise.all([page.waitForEvent('download'), page.getByRole('button', { name: 'Report (PDF)', exact: true }).click()]);
+    const [d] = await Promise.all([page.waitForEvent('download'), page.getByRole('button', { name: 'Consultant edition (PDF)', exact: true }).click()]);
     expect(d.suggestedFilename()).toMatch(/^cost-iq-flow-test-bank-plc-\d{4}-\d{2}-\d{2}-consultant\.pdf$|^cost-iq-flow-test-bank-plc-\d{4}-\d{2}-\d{2}\.pdf$/);
     await page.goto('/cost-iq-v10');
     await page.getByRole('button', { name: 'Delete', exact: true }).click();
@@ -457,7 +457,7 @@ test.describe('Cost IQ', () => {
     await page.goto('/cost-iq-v10');
     await page.getByRole('button', { name: 'View result' }).click();
     const download = async (name: string) => { const [d] = await Promise.all([page.waitForEvent('download'), page.getByRole('button', { name, exact: true }).click()]); return d.suggestedFilename(); };
-    expect(await download('Report (PDF)')).toBe('cost-iq-acme-bank.pdf');
+    expect(await download('Consultant edition (PDF)')).toBe('cost-iq-acme-bank.pdf');
     expect(await download('Client edition (PDF)')).toBe('cost-iq-acme-bank.pdf');
     expect(await download('Backlog (CSV)')).toBe('cost-iq-acme-bank.csv');
     expect(asked).toEqual(['?assessmentId=CIQ-stored-0001&format=pdf&view=consultant', '?assessmentId=CIQ-stored-0001&format=pdf&view=client', '?assessmentId=CIQ-stored-0001&format=csv&view=client']);
@@ -472,7 +472,7 @@ test.describe('Cost IQ', () => {
     await page.goto('/cost-iq-v10?scenarios=1');
     await page.getByRole('button', { name: 'Load Healthy' }).click();
     await expect(page.getByText('Evidence completeness').first()).toBeVisible({ timeout: 15000 });
-    await expect(page.getByRole('button', { name: 'Report (PDF)' })).toHaveCount(0);
+    await expect(page.getByRole('button', { name: 'Consultant edition (PDF)' })).toHaveCount(0);
     await expect(page.getByText('produced from a saved, completed assessment')).toBeVisible();
     expect(world.pageErrors).toEqual([]);
   });

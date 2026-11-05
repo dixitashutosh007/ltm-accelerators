@@ -99,7 +99,7 @@ interface Package {
 /** The delivery library (draft, owner review): one package per recommendation. Durations and effort are LTM planning ranges. */
 const PACKAGES = new Map<string, Package>(((delivery as any).packages as Package[]).map(p => [p.recommendationId, p]));
 const TYPE_LABEL: Record<string, string> = { advisory: 'Advisory', implementation: 'Implementation', transformation: 'Transformation' };
-const weeks = (r: [number, number]) => (r[0] === r[1] ? `${r[0]} weeks` : `${r[0]} to ${r[1]} weeks`);
+const weeks = (r: [number, number]) => (r[0] === r[1] ? `${r[0]} ${r[0] === 1 ? 'week' : 'weeks'}` : `${r[0]} to ${r[1]} weeks`);
 /** The elapsed weeks of a package: each workstream starts when those it depends on have ended; prerequisites start at zero. */
 function elapsed(p: Package): [number, number] {
   const end = new Map<string, [number, number]>();
@@ -156,6 +156,12 @@ const sized = (c: Ctx) => (c.i.nonCloud?.status === 'quantified' ? c.i.nonCloud 
 
 /* --------------------------------- Sections --------------------------------- */
 
+/** What the reader needs next to any money range: the lever's confidence, and the cloud line's where one is included (CQ10 challenge H2, M3). */
+function confidenceNote(c: Ctx): string {
+  const cloud = c.i.finops?.status === 'quantified' && sized(c)?.total?.cloudIncluded ? ` The cloud line is of ${String(c.i.finops.confidence ?? 'not stated').toLowerCase()} confidence.` : '';
+  return `Confidence in the licence lever is Low: its cases are LTM planning shares of the client's measured figure, with no published range, and the upper case is all of it.${cloud}`;
+}
+
 function cloudLine(c: Ctx): Block[] {
   const s = c.i.finops;
   if (!s || s.status !== 'quantified' || !s.cases) {
@@ -172,12 +178,22 @@ function cloudLine(c: Ctx): Block[] {
   blocks.push({ kind: 'paragraph', style: 'small', segs: ([
     `From the FinOps IQ assessment dated `, ref(s.assessmentDate ?? 'not stated'), c.i.finopsLinkedAt ? ', linked to this report on ' : '', c.i.finopsLinkedAt ? ref(c.i.finopsLinkedAt) : '', `, engine `, ref(s.versions.engine), `; confidence ${s.confidence ?? 'not stated'}. `,
     s.cloudSpend?.low && s.cloudSpend.high ? ['In-scope public cloud spend ', figure(s.cloudSpend.low, cur), ' to ', figure(s.cloudSpend.high, cur), '. '] : [],
-    ['The range is capped at ', figure(s.globalCap.share, cur, 'share'), ' of that spend. '],
+    s.cloudSpend?.low && s.cloudSpend.high
+      ? ['The range is capped at ', figure(s.globalCap.share, cur, 'share'), ' of that spend. ']
+      : ['FinOps IQ recorded no in-scope spend figure for this line, so the cap of ', figure(s.globalCap.share, cur, 'share'), ' of spend cannot be shown as an amount. '],
     quoted(clean(s.globalCap.source.citation)), ' (', quoted(clean(s.globalCap.source.sample)), '). ',
     'Net of the cost to implement and phased over the first three years, as FinOps IQ models it. Cost IQ shows this line as FinOps IQ computed it and does not estimate it again.'
   ] as Array<Seg | Seg[]>).flat() });
   if (c.i.currency && c.i.currency !== cur) blocks.push({ kind: 'paragraph', style: 'small', segs: [`This line is in ${cur}, as FinOps IQ produced it; the reporting currency for this assessment is ${c.i.currency}. No conversion has been applied.`] });
   return blocks;
+}
+
+/** The sentence after the evidence request: it must agree with whether the report shows any amount (CQ10 challenge H1). */
+function sizing(c: Ctx): string {
+  const cloud = c.i.finops?.status === 'quantified', nc = !!sized(c);
+  if (!cloud && !nc) return 'Sizing starts when the evidence arrives; until then no saving is stated.';
+  const parts = [...(cloud ? ['the cloud line from FinOps IQ'] : []), ...(nc ? ['the licence lever sized from the client\'s measured figures'] : [])];
+  return `Sizing of the findings starts when the evidence arrives; until then the only ${parts.length > 1 ? 'amounts' : 'amount'} in this report ${parts.length > 1 ? 'are' : 'is'} ${parts.join(' and ')}.`;
 }
 
 function summary(c: Ctx): ReportSection {
@@ -208,11 +224,11 @@ function summary(c: Ctx): ReportSection {
     blocks.push({ kind: 'table', head: ['Case', 'Net run rate a year', 'Net, first three years'], widths: ['*', 130, 130], rows: CASES.map(k => [
       [strong(CASE_LABEL[k])], [figure(nc.total!.cases[k].netRunRate, nc.currency)], [figure(nc.total!.cases[k].net3Year, nc.currency)]
     ]) });
-    blocks.push({ kind: 'paragraph', style: 'small', segs: [nc.total.cloudNote, ' Each case is net of the cost to deliver, phased as the lever sections explain. The range is indicative and depends on the client-measured figures set out under "Non-cloud levers and total".'] });
+    blocks.push({ kind: 'paragraph', style: 'small', segs: [nc.total.cloudNote, ' Each case is net of the client\'s own internal cost to deliver (external fees, tools and contract penalties are not included and are agreed separately), phased as the lever sections explain. The range is indicative and depends on the client-measured figures set out under "Non-cloud levers and total". ', confidenceNote(c)] });
   }
   blocks.push({ kind: 'callout', tone: 'info', title: 'Decision requested', segs: [
     i.result.findings.length
-      ? ['The CIO, or the head of technology finance, is asked to name an owner for each finding and to release the evidence listed against it, within ', ref('30 days'), ' of receiving this report. Sizing starts when the evidence arrives; until then no saving is stated. The ', ref('30 days'), ' is a default to adjust to the organisation\'s own planning cycle.'] as Seg[]
+      ? ['The CIO, or the head of technology finance, is asked to name an owner for each finding and to release the evidence listed against it, within ', ref('30 days'), ' of receiving this report. ', ref(sizing(c)), ' The ', ref('30 days'), ' is a default to adjust to the organisation\'s own planning cycle.'] as Seg[]
       : ['No finding is raised on the answers given. The CIO, or the head of technology finance, is asked to confirm the owner of the lowest-scoring areas above and to complete the unanswered questions within ', ref('30 days'), ' of receiving this report, so that findings can be tested. The ', ref('30 days'), ' is a default to adjust to the organisation\'s own planning cycle.'] as Seg[]
   ].flat() });
   blocks.push({ kind: 'subheading', text: 'Cloud line (from FinOps IQ)' });
@@ -327,7 +343,7 @@ function leversSection(c: Ctx): ReportSection | null {
     blocks.push({ kind: 'table', head: ['Case', 'Gross run rate a year', 'Net run rate a year', 'Net, first three years'], widths: ['*', 100, 100, 110], rows: CASES.map(k => [
       [strong(CASE_LABEL[k])], [figure(l.cases[k].runRate, cur)], [figure(l.cases[k].netRunRate, cur)], [figure(l.cases[k].net3Year, cur)]
     ]) });
-    blocks.push({ kind: 'paragraph', style: 'small', segs: ['One-off cost to deliver, from the client\'s own cost of an FTE-month: ', figure(l.cases.expected.oneOffCost, cur), '; yearly running cost ', figure(l.cases.expected.ongoingCost, cur), '. Software already counted in the FinOps IQ cloud line (SaaS and marketplace) is outside this base, so the same saving is not counted twice.'] });
+    blocks.push({ kind: 'paragraph', style: 'small', segs: ['One-off cost to deliver, from the client\'s own cost of an FTE-month (internal effort only; external fees, tools and contract penalties are excluded and agreed separately): ', figure(l.cases.expected.oneOffCost, cur), '; yearly running cost ', figure(l.cases.expected.ongoingCost, cur), '. Software already counted in the FinOps IQ cloud line (SaaS and marketplace) is outside this base, so the same saving is not counted twice.'] });
   }
   for (const n of nc.notSized) blocks.push({ kind: 'paragraph', style: 'small', segs: [`${n.name}: not sized. ${n.reason}`] });
   if (nc.total) {
@@ -335,7 +351,7 @@ function leversSection(c: Ctx): ReportSection | null {
     blocks.push({ kind: 'table', head: ['Case', 'Net run rate a year', 'Net, first three years'], widths: ['*', 130, 130], rows: CASES.map(k => [
       [strong(CASE_LABEL[k])], [figure(nc.total!.cases[k].netRunRate, cur)], [figure(nc.total!.cases[k].net3Year, cur)]
     ]) });
-    blocks.push({ kind: 'paragraph', style: 'small', segs: [nc.total.cloudNote] });
+    blocks.push({ kind: 'paragraph', style: 'small', segs: [nc.total.cloudNote, ' ', confidenceNote(c)] });
   }
   return { id: 'levers', title: 'Non-cloud levers and total', blocks };
 }
@@ -343,7 +359,34 @@ function leversSection(c: Ctx): ReportSection | null {
 /** Library text for the reader: the client edition carries no finding or recommendation IDs. */
 const lib = (c: Ctx, t: string) => (c.client ? t.replace(/\b[FR]-\d{3}\s\((.*?)\)/g, '"$1"').replace(/\s?\b[FR]-\d{3}\b/g, '') : t);
 const bullets = (c: Ctx, items: string[]): Seg[] => items.flatMap((t, k) => [k ? '\n' : '', ref('• ' + lib(c, t))] as Seg[]);
-const activePackages = (c: Ctx) => c.i.result.recommendations.map(r => ({ r, p: PACKAGES.get(r.id) })).filter((x): x is { r: Recommendation; p: Package } => !!x.p);
+/**
+ * The package for a recommendation, as this report needs it. Evidence lines name their finding, so a line is kept only for a
+ * finding the report raised (CQ10 challenge H3). With a FinOps IQ result already linked, the cloud scoping package becomes a
+ * short review of that result, so the report never asks the client to scope what it says is done (H4).
+ */
+function pkg(c: Ctx, id: string): Package | undefined {
+  const base = PACKAGES.get(id);
+  if (!base) return undefined;
+  const raised = new Set(c.findings.map(f => f.id));
+  const prerequisites = base.prerequisites.filter(t => { const m = /^Evidence for (F-\d{3})\b/.exec(t); return !m || raised.has(m[1]); });
+  if (id !== 'R-003' || c.i.finops?.status !== 'quantified') return { ...base, prerequisites };
+  return {
+    ...base,
+    offeringName: 'Review of the Linked FinOps IQ Result',
+    scope: 'A short advisory review of the FinOps IQ assessment already linked to this report: whether its cloud line and capability ratings explain this finding, which evidence is still missing and who holds it. No new FinOps IQ assessment is needed unless the review finds the linked one out of date or out of scope. This package does not size opportunities or recommend cloud changes.',
+    outcome: 'A short review note stating what the linked FinOps IQ assessment already explains, which evidence is still missing and who holds it.',
+    prerequisites,
+    workstreams: [{
+      id: 'WS1', name: 'Review the linked result',
+      activities: ['Read the linked FinOps IQ result against this finding with the cloud platform and finance owners', 'Confirm the linked assessment still covers the in-scope accounts and the right period', 'List any evidence still missing and name its holder'],
+      ownerRole: 'Head of cloud platform', ltmRole: 'FinOps consultant', durationWeeks: [1, 1], effortFteWeeks: [0.5, 1], dependsOn: ['Prerequisites'],
+      milestone: 'Review note drafted', kpis: ['Evidence gaps with a named holder']
+    }],
+    playbook: [{ topic: 'Review of the linked result', steps: ['Compare the finding with the linked cloud line and capability ratings', 'Record what is explained and what is not', 'Name the owner of each missing evidence item'], verification: 'The review note lists each gap with a holder and a date.', options: [] }],
+    sow: { ...base.sow, objectives: ['Review the linked FinOps IQ result against the finding', 'Name evidence holders for any gap', 'Give the CIO a documented basis for the next decision'], deliverables: ['Review note'], assumptions: ['The linked FinOps IQ assessment is current and covers the in-scope cloud estate', 'Client owners are available for validation sessions', 'Durations and effort are planning heuristics and are confirmed in the statement of work'], exclusions: ['A new FinOps IQ assessment', 'Sizing of opportunities', 'Technical changes to any cloud environment'] }
+  };
+}
+const activePackages = (c: Ctx) => c.i.result.recommendations.map(r => ({ r, p: pkg(c, r.id) })).filter((x): x is { r: Recommendation; p: Package } => !!x.p);
 
 function deliveryPlan(c: Ctx): Block[] {
   const blocks: Block[] = [];
@@ -382,7 +425,7 @@ function help(c: Ctx): ReportSection {
   const fs = orderedFindings(c.findings);
   if (fs.length) {
     blocks.push({ kind: 'table', head: ['Finding', 'LTM offering', 'What LTM does', 'What the client has at the end'], widths: [110, 100, '*', '*'], small: true, rows: fs.map((f, k) => {
-      const p = f.recommendationIds.map(id => recs.has(id) ? PACKAGES.get(id) : undefined).find(Boolean);
+      const p = f.recommendationIds.map(id => recs.has(id) ? pkg(c, id) : undefined).find(Boolean);
       const lead: Seg[] = [strong(`Finding ${k + 1}`), '\n', quoted(f.title)];
       return p ? [lead, [strong(p.offeringName), '\n', TYPE_LABEL[p.offeringType]], [ref(lib(c, p.scope))], [ref(lib(c, p.outcome))]]
         : [lead, ['Not mapped'], ['No LTM offering is defined for this finding yet. It can still be raised with the consultant.'], ['Not applicable']];
@@ -434,12 +477,12 @@ function assumptions(c: Ctx): ReportSection {
     { id: 'A-03', what: 'Answers are accurate', value: 'Answers are self-reported and have not been audited or verified by LTM', basis: 'Client input', confidence: 'Varies by question', ifWrong: 'A score reflects what the respondent believed; evidence supplied later can raise or lower it' },
     { id: 'A-04', what: 'Which questions count', value: `${c.i.scope.shown} questions were asked, from the focus areas chosen and the estate described; questions about an estate not described are not asked`, basis: 'Client input: the focus areas chosen and the estate described', confidence: 'High', ifWrong: 'Areas not chosen would add questions and could add findings; scores for the areas assessed would not change' },
     { id: 'A-05', what: 'When a finding is raised', value: 'A finding is raised when named answers meet LTM\'s activation rules', basis: 'LTM heuristic: thresholds come from LTM calibration and are not published benchmarks', confidence: 'Medium', ifWrong: 'A finding may be raised that evidence later clears, or missed that evidence would raise' },
-    { id: 'A-06', what: 'Cloud figure', value: c.i.finops?.status === 'quantified' ? `The cloud line is the FinOps IQ result dated ${c.i.finops.assessmentDate ?? 'not stated'}, as it stood when linked. It covers the levers FinOps IQ quantified for the in-scope spend, capped at a published share of that spend, and is in ${c.i.finops.currency}` : 'No cloud figure is included', basis: 'Another LTM assessment (FinOps IQ), not recomputed here', confidence: c.i.finops?.confidence ?? 'Not applicable', ifWrong: 'Refreshing FinOps IQ and linking it again replaces the line; nothing else in this report moves' }
+    { id: 'A-06', what: 'Cloud figure', value: c.i.finops?.status === 'quantified' ? `The cloud line is the FinOps IQ result dated ${c.i.finops.assessmentDate ?? 'not stated'}, as it stood when linked. It covers the levers FinOps IQ quantified for the in-scope spend, capped at a published share of the in-scope spend, and is in ${c.i.finops.currency}` : 'No cloud figure is included', basis: 'Another LTM assessment (FinOps IQ), not recomputed here', confidence: c.i.finops?.confidence ?? 'Not applicable', ifWrong: 'Refreshing FinOps IQ and linking it again replaces the line; nothing else in this report moves' }
   ];
   if (activePackages(c).length) list.push({ id: 'A-11', what: 'Delivery durations and effort', value: 'Each workstream has a range of weeks and of FTE-weeks. A workstream starts when those it depends on end, and elapsed time is the longest path', basis: 'LTM planning heuristic: not from a published source or from LTM delivery history', confidence: 'Low', ifWrong: 'Plans lengthen or shorten and effort changes in proportion; no saving figure depends on them' });
   if (sized(c)) list.push(
     { id: 'A-08', what: 'Lever cases', value: 'Conservative is a quarter, expected a half and upper all of the client\'s measured base', basis: 'LTM heuristic, the same rule FinOps IQ applies to licence levers. No published range exists for this lever', confidence: 'Low', ifWrong: 'Every case scales with the share; the base itself does not change' },
-    { id: 'A-09', what: 'Phasing and cost to deliver', value: 'Year one earns the share of contracts renewing that year, or a quarter when the client gave none; years two and three earn the whole run rate. Delivery effort is a fixed number of FTE-months for the chosen tier, costed at the client\'s own rate, with a fifth of that cost recurring each year', basis: 'LTM heuristic, copied from the FinOps IQ licence lever pending calibration on delivered work', confidence: 'Low', ifWrong: 'Year-one and three-year figures move; the gross run rate does not' },
+    { id: 'A-09', what: 'Phasing and cost to deliver', value: 'Year one earns the share of contracts renewing that year, or a quarter when the client gave none; years two and three earn the whole run rate. Delivery effort is a fixed number of FTE-months for the chosen tier, costed at the client\'s own rate, with a fifth of that cost recurring each year. It is the client\'s internal effort only: external fees, tools and contract penalties are excluded and agreed separately', basis: 'LTM heuristic, copied from the FinOps IQ licence lever pending calibration on delivered work', confidence: 'Low', ifWrong: 'Year-one and three-year figures move; the gross run rate does not' },
     { id: 'A-10', what: 'The measured base', value: 'The unused or over-entitled licence cost is a figure the client supplied from its own reconciliation; LTM has not audited it. It excludes SaaS and marketplace software', basis: 'Client input', confidence: 'Varies', ifWrong: 'Every figure in this section scales with the base; an overstated base overstates the range in proportion' }
   );
   if (c.i.currency && !['USD', 'AED', 'SAR', 'OTHER'].includes(c.i.currency)) {
@@ -448,7 +491,7 @@ function assumptions(c: Ctx): ReportSection {
   }
   return { id: 'assumptions', title: 'Assumptions', appendix: true, blocks: [
     { kind: 'paragraph', segs: ['Every assumption behind the scores is listed, with its basis and what changes if it is wrong.'] },
-    { kind: 'table', head: ['Assumption', 'Value', 'Basis', 'Confidence', 'If wrong'], widths: [90, '*', '*', 55, '*'], small: true, rows: list.map(a => [[ref(a.id + '  '), strong(a.what)], [quoted(a.value)], [quoted(a.basis)], [a.confidence], [quoted(a.ifWrong)]]) }
+    { kind: 'table', head: ['Assumption', 'Value', 'Basis', 'Confidence', 'If wrong'], widths: [90, '*', '*', 55, '*'], small: true, rows: [...list].sort((x, y) => x.id.localeCompare(y.id)).map(a => [[ref(a.id + '  '), strong(a.what)], [quoted(a.value)], [quoted(a.basis)], [a.confidence], [quoted(a.ifWrong)]]) }
   ] };
 }
 
