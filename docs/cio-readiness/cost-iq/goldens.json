@@ -1,0 +1,1188 @@
+{
+ "schema": "cost-iq-goldens/1",
+ "engine": "costiq-engine-v10, master-v6.6",
+ "status": "proposed",
+ "approval": {
+  "approvedBy": null,
+  "approvedOn": null,
+  "note": "Awaiting owner and practice-lead approval"
+ },
+ "clients": [
+  {
+   "id": "profile: on-premises-heavy",
+   "answers": {
+    "CORE-01": [
+     "ON_PREM",
+     "VMWARE",
+     "COLO",
+     "EXTERNAL",
+     "NETWORK"
+    ],
+    "CORE-16": "UNSURE",
+    "CORE-02": "MANUFACTURING",
+    "CTX-01": "INR",
+    "CORE-03": "UNKNOWN",
+    "CORE-04": "GT1B",
+    "CTX-02": "15_30",
+    "CTX-03": [
+     "EU"
+    ],
+    "CTX-05": "GT20",
+    "CTX-04": "LT30",
+    "CORE-05": [
+     "INFRA"
+    ],
+    "CORE-06": 3,
+    "CORE-07": "ACCELERATE_TRANSFORMATION",
+    "CORE-08": "LOW",
+    "CORE-09": "PRODUCT_DELIVERY",
+    "CORE-10": "OUTCOMES",
+    "CORE-11": "COMMITTED",
+    "CORE-12": "C",
+    "CORE-13": "GL",
+    "CORE-14": [
+     "CLOUD"
+    ],
+    "CORE-15": "ANNUAL",
+    "CORE-17": 16,
+    "CORE-18": "TECH_LEADERSHIP",
+    "CORE-19": [
+     "STRATEGIC_RATIONALE"
+    ],
+    "CORE-20": "MAJOR_ONLY",
+    "CORE-21": "SERVICE",
+    "CORE-22": "BUDGET",
+    "CORE-32": [
+     "COMPUTE"
+    ],
+    "CORE-33": "B",
+    "CORE-34": 41,
+    "CORE-39": [
+     "DUPLICATION"
+    ],
+    "CORE-40": 3,
+    "CORE-41": "EVENT_DRIVEN",
+    "CORE-42": [
+     "BUSINESS_CRITICALITY"
+    ],
+    "ADP-09": "MATERIAL_REVIEW",
+    "ADP-10": 59,
+    "ADP-11": 3,
+    "ADP-12": "GT75",
+    "ADP-13": "UNCLEAR",
+    "ADP-14": "UNRECONCILED",
+    "ADP-21": 98,
+    "ADP-22": 10,
+    "ADP-23": "PROJECT",
+    "ADP-28": 26,
+    "ADP-35": "OUTCOME",
+    "ADP-36": "BENCHMARK",
+    "ADP-37": 39,
+    "ADP-38": "NONE",
+    "ADP-41": "SHARED",
+    "ADP-61": "ASSERTED",
+    "ADP-62": "LOADED_USED",
+    "ADP-63": "APPROVED_ONLY",
+    "ADP-66": "TOTAL_ONLY",
+    "ADP-67": "UNIT_TRACKED"
+   },
+   "expected": {
+    "headlines": {
+     "costIQ": 61,
+     "valueIQ": 64
+    },
+    "completeness": 100,
+    "dimensions": {
+     "COST-01": {
+      "score": 42,
+      "answered": 3
+     },
+     "COST-02": {
+      "score": 58,
+      "answered": 5
+     },
+     "COST-03": {
+      "score": null,
+      "answered": 0
+     },
+     "COST-04": {
+      "score": null,
+      "answered": 0
+     },
+     "COST-05": {
+      "score": 63,
+      "answered": 7
+     },
+     "COST-06": {
+      "score": 80,
+      "answered": 2
+     },
+     "COST-07": {
+      "score": 73,
+      "answered": 3
+     },
+     "COST-08": {
+      "score": 59,
+      "answered": 1
+     },
+     "COST-09": {
+      "score": 50,
+      "answered": 1
+     },
+     "COST-10": {
+      "score": 63,
+      "answered": 4
+     },
+     "VALUE-01": {
+      "score": 40,
+      "answered": 1
+     },
+     "VALUE-02": {
+      "score": 67,
+      "answered": 3
+     },
+     "VALUE-03": {
+      "score": 80,
+      "answered": 1
+     },
+     "VALUE-04": {
+      "score": 70,
+      "answered": 2
+     },
+     "VALUE-05": {
+      "score": 61,
+      "answered": 2
+     },
+     "VALUE-06": {
+      "score": null,
+      "answered": 0
+     }
+    },
+    "findings": [
+     "F-001",
+     "F-002"
+    ],
+    "recommendations": [
+     "R-001"
+    ]
+   }
+  },
+  {
+   "id": "profile: cloud-heavy",
+   "answers": {
+    "CORE-01": [
+     "PUBLIC_CLOUD",
+     "SAAS",
+     "AI",
+     "DATA"
+    ],
+    "CORE-16": "FALSE",
+    "CORE-02": "MANUFACTURING",
+    "CTX-01": "SGD",
+    "CORE-03": "1B_5B",
+    "CORE-04": "GT1B",
+    "CTX-02": "LT5",
+    "CTX-03": [
+     "EU"
+    ],
+    "CTX-05": "6_20",
+    "CTX-04": "GT90",
+    "CORE-05": [
+     "INFRA"
+    ],
+    "CORE-06": 3,
+    "CORE-07": "ACCELERATE_TRANSFORMATION",
+    "CORE-08": "PRIORITY",
+    "CORE-09": "BENEFITS_REALIZATION",
+    "CORE-10": "PORTFOLIO",
+    "CORE-11": "SLOW",
+    "CORE-12": "C",
+    "CORE-13": "PROJECTS",
+    "CORE-14": [
+     "CLOUD"
+    ],
+    "CORE-15": "NONE",
+    "CORE-17": 32,
+    "CORE-18": "TECH_LEADERSHIP",
+    "CORE-19": [
+     "STRATEGIC_RATIONALE"
+    ],
+    "CORE-20": "ESTIMATED",
+    "CORE-21": "SERVICE",
+    "CORE-22": "PORTFOLIO",
+    "CORE-26": "COUNT",
+    "CORE-27": "A",
+    "CORE-28": "D",
+    "CORE-32": [
+     "COMPUTE"
+    ],
+    "CORE-33": "C",
+    "CORE-34": 3,
+    "CORE-39": [
+     "DUPLICATION"
+    ],
+    "CORE-40": 3,
+    "CORE-41": "PERIODIC",
+    "CORE-42": [
+     "BUSINESS_CRITICALITY"
+    ],
+    "ADP-06": "GT10",
+    "ADP-07": "RENEWAL",
+    "ADP-08": 60,
+    "ADP-12": "GT75",
+    "ADP-21": 64,
+    "ADP-22": 22,
+    "ADP-23": "NONE",
+    "ADP-28": 58,
+    "ADP-31": "PARTIAL",
+    "ADP-32": "DEFINED",
+    "ADP-38": "SOME",
+    "ADP-41": "TECH_ONLY",
+    "ADP-42": "INTELLIGENT",
+    "ADP-61": "PORTFOLIO_TRACED",
+    "ADP-67": "NOT_TRACKED"
+   },
+   "expected": {
+    "headlines": {
+     "costIQ": 63,
+     "valueIQ": 78
+    },
+    "completeness": 100,
+    "dimensions": {
+     "COST-01": {
+      "score": 46,
+      "answered": 4
+     },
+     "COST-02": {
+      "score": 59,
+      "answered": 5
+     },
+     "COST-03": {
+      "score": 100,
+      "answered": 1
+     },
+     "COST-04": {
+      "score": 50,
+      "answered": 4
+     },
+     "COST-05": {
+      "score": 62,
+      "answered": 2
+     },
+     "COST-06": {
+      "score": null,
+      "answered": 0
+     },
+     "COST-07": {
+      "score": 42,
+      "answered": 1
+     },
+     "COST-08": {
+      "score": 97,
+      "answered": 1
+     },
+     "COST-09": {
+      "score": 50,
+      "answered": 1
+     },
+     "COST-10": {
+      "score": 60,
+      "answered": 4
+     },
+     "VALUE-01": {
+      "score": 100,
+      "answered": 1
+     },
+     "VALUE-02": {
+      "score": 81,
+      "answered": 4
+     },
+     "VALUE-03": {
+      "score": 80,
+      "answered": 2
+     },
+     "VALUE-04": {
+      "score": 69,
+      "answered": 2
+     },
+     "VALUE-05": {
+      "score": 61,
+      "answered": 3
+     },
+     "VALUE-06": {
+      "score": null,
+      "answered": 0
+     }
+    },
+    "findings": [
+     "F-001",
+     "F-002",
+     "F-007",
+     "F-006",
+     "F-011",
+     "F-017"
+    ],
+    "recommendations": [
+     "R-001",
+     "R-004",
+     "R-003",
+     "R-007",
+     "R-002"
+    ]
+   }
+  },
+  {
+   "id": "profile: SaaS-heavy",
+   "answers": {
+    "CORE-01": [
+     "SAAS",
+     "END_USER",
+     "SOFTWARE"
+    ],
+    "CORE-16": "UNSURE",
+    "CORE-02": "MANUFACTURING",
+    "CTX-01": "AED",
+    "CORE-03": "100M_500M",
+    "CORE-04": "GT1B",
+    "CTX-02": "GT50",
+    "CTX-03": [
+     "EU"
+    ],
+    "CTX-05": "2_5",
+    "CTX-04": "30_60",
+    "CORE-05": [
+     "INFRA"
+    ],
+    "CORE-06": 3,
+    "CORE-07": "MODERNIZE_ESTATE",
+    "CORE-08": "LOW",
+    "CORE-09": "BENEFITS_REALIZATION",
+    "CORE-10": "TRANSPARENCY",
+    "CORE-11": "FAST",
+    "CORE-12": "C",
+    "CORE-13": "PROJECTS",
+    "CORE-14": [
+     "CLOUD"
+    ],
+    "CORE-15": "MONTHLY",
+    "CORE-17": 47,
+    "CORE-18": "TECH_LEADERSHIP",
+    "CORE-19": [
+     "STRATEGIC_RATIONALE"
+    ],
+    "CORE-20": "NONE",
+    "CORE-21": "OUTCOME",
+    "CORE-22": "RARE",
+    "CORE-26": "RENEWAL",
+    "CORE-27": "E",
+    "CORE-28": "D",
+    "CORE-30": "D",
+    "CORE-32": [
+     "COMPUTE"
+    ],
+    "CORE-33": "C",
+    "CORE-34": 98,
+    "CORE-39": [
+     "DUPLICATION"
+    ],
+    "CORE-40": 3,
+    "CORE-41": "EVENT_DRIVEN",
+    "CORE-42": [
+     "BUSINESS_CRITICALITY"
+    ],
+    "ADP-06": "6_10",
+    "ADP-07": "TIMELY",
+    "ADP-08": 28,
+    "ADP-12": "GT75",
+    "ADP-16": "CONTINUOUS",
+    "ADP-21": 40,
+    "ADP-22": 97,
+    "ADP-23": "PERIODIC",
+    "ADP-28": 89,
+    "ADP-41": "PARTIAL",
+    "ADP-61": "THEMES_ONLY",
+    "ADP-64": "PER_USER",
+    "ADP-65": "UNKNOWN",
+    "ADP-67": "TOP_LEVEL"
+   },
+   "expected": {
+    "headlines": {
+     "costIQ": 48,
+     "valueIQ": 49
+    },
+    "completeness": 100,
+    "dimensions": {
+     "COST-01": {
+      "score": 57,
+      "answered": 4
+     },
+     "COST-02": {
+      "score": 65,
+      "answered": 5
+     },
+     "COST-03": {
+      "score": null,
+      "answered": 0
+     },
+     "COST-04": {
+      "score": 59,
+      "answered": 6
+     },
+     "COST-05": {
+      "score": 55,
+      "answered": 3
+     },
+     "COST-06": {
+      "score": null,
+      "answered": 0
+     },
+     "COST-07": {
+      "score": 42,
+      "answered": 1
+     },
+     "COST-08": {
+      "score": 2,
+      "answered": 1
+     },
+     "COST-09": {
+      "score": 50,
+      "answered": 1
+     },
+     "COST-10": {
+      "score": 56,
+      "answered": 4
+     },
+     "VALUE-01": {
+      "score": 60,
+      "answered": 1
+     },
+     "VALUE-02": {
+      "score": 54,
+      "answered": 3
+     },
+     "VALUE-03": {
+      "score": 20,
+      "answered": 1
+     },
+     "VALUE-04": {
+      "score": 31,
+      "answered": 2
+     },
+     "VALUE-05": {
+      "score": 81,
+      "answered": 3
+     },
+     "VALUE-06": {
+      "score": null,
+      "answered": 0
+     }
+    },
+    "findings": [
+     "F-002",
+     "F-003",
+     "F-004",
+     "F-007",
+     "F-013",
+     "F-011",
+     "F-008",
+     "F-016"
+    ],
+    "recommendations": [
+     "R-001",
+     "R-002",
+     "R-009",
+     "R-004",
+     "R-008",
+     "R-007",
+     "R-006"
+    ]
+   }
+  },
+  {
+   "id": "profile: outsourced",
+   "answers": {
+    "CORE-01": [
+     "EXTERNAL",
+     "SOFTWARE",
+     "NETWORK"
+    ],
+    "CORE-16": "TRUE",
+    "CORE-02": "MANUFACTURING",
+    "CTX-01": "BRL",
+    "CORE-03": "UNKNOWN",
+    "CORE-04": "UNKNOWN",
+    "CTX-02": "15_30",
+    "CTX-03": [
+     "EU"
+    ],
+    "CTX-05": "ONE",
+    "CTX-04": "UNKNOWN",
+    "CORE-05": [
+     "INFRA"
+    ],
+    "CORE-06": 3,
+    "CORE-07": "IMPROVE_BUSINESS_VALUE",
+    "CORE-08": "PRIORITY",
+    "CORE-09": "BUSINESS_ALIGNMENT",
+    "CORE-10": "PRODUCT",
+    "CORE-11": "VERY_HARD",
+    "CORE-12": "C",
+    "CORE-13": "PROJECTS",
+    "CORE-14": [
+     "CLOUD"
+    ],
+    "CORE-15": "QUARTERLY",
+    "CORE-17": 62,
+    "CORE-18": "FINANCE_PROCUREMENT",
+    "CORE-19": [
+     "STRATEGIC_RATIONALE"
+    ],
+    "CORE-20": "TRACKED",
+    "CORE-21": "MIXED",
+    "CORE-22": "PROBLEM",
+    "CORE-30": "F",
+    "CORE-32": [
+     "COMPUTE"
+    ],
+    "CORE-33": "C",
+    "CORE-34": 67,
+    "CORE-39": [
+     "DUPLICATION"
+    ],
+    "CORE-40": 3,
+    "CORE-41": "VISIBLE_BUT_HARD",
+    "CORE-42": [
+     "BUSINESS_CRITICALITY"
+    ],
+    "ADP-12": "UNKNOWN",
+    "ADP-14": "SLA_ONLY",
+    "ADP-16": "PLANNED",
+    "ADP-21": 31,
+    "ADP-22": 83,
+    "ADP-23": "NONE",
+    "ADP-28": 95,
+    "ADP-35": "OUTCOME",
+    "ADP-36": "BENCHMARK",
+    "ADP-41": "PARTIAL",
+    "ADP-61": "PORTFOLIO_TRACED",
+    "ADP-62": "BUDGET_ONLY",
+    "ADP-63": "GOVERNED",
+    "ADP-67": "UNIT_TRACKED"
+   },
+   "expected": {
+    "headlines": {
+     "costIQ": 55,
+     "valueIQ": 69
+    },
+    "completeness": 100,
+    "dimensions": {
+     "COST-01": {
+      "score": 57,
+      "answered": 3
+     },
+     "COST-02": {
+      "score": 53,
+      "answered": 5
+     },
+     "COST-03": {
+      "score": null,
+      "answered": 0
+     },
+     "COST-04": {
+      "score": 46,
+      "answered": 2
+     },
+     "COST-05": {
+      "score": 64,
+      "answered": 1
+     },
+     "COST-06": {
+      "score": 70,
+      "answered": 2
+     },
+     "COST-07": {
+      "score": 87,
+      "answered": 3
+     },
+     "COST-08": {
+      "score": 33,
+      "answered": 1
+     },
+     "COST-09": {
+      "score": 50,
+      "answered": 1
+     },
+     "COST-10": {
+      "score": 39,
+      "answered": 4
+     },
+     "VALUE-01": {
+      "score": 100,
+      "answered": 1
+     },
+     "VALUE-02": {
+      "score": 48,
+      "answered": 3
+     },
+     "VALUE-03": {
+      "score": 100,
+      "answered": 1
+     },
+     "VALUE-04": {
+      "score": 57,
+      "answered": 2
+     },
+     "VALUE-05": {
+      "score": 38,
+      "answered": 2
+     },
+     "VALUE-06": {
+      "score": null,
+      "answered": 0
+     }
+    },
+    "findings": [
+     "F-002",
+     "F-003",
+     "F-013",
+     "F-008",
+     "F-016"
+    ],
+    "recommendations": [
+     "R-001",
+     "R-002",
+     "R-008",
+     "R-004",
+     "R-006"
+    ]
+   }
+  },
+  {
+   "id": "profile: mixed",
+   "answers": {
+    "CORE-01": [
+     "ON_PREM",
+     "PUBLIC_CLOUD",
+     "SAAS",
+     "SOFTWARE",
+     "EXTERNAL",
+     "AI"
+    ],
+    "CORE-16": "UNSURE",
+    "CORE-02": "MANUFACTURING",
+    "CTX-01": "ZAR",
+    "CORE-03": "5B_25B",
+    "CORE-04": "UNKNOWN",
+    "CTX-02": "LT5",
+    "CTX-03": [
+     "EU"
+    ],
+    "CTX-05": "GT20",
+    "CTX-04": "60_90",
+    "CORE-05": [
+     "INFRA"
+    ],
+    "CORE-06": 3,
+    "CORE-07": "LOWER_RUN_COST",
+    "CORE-08": "LOW",
+    "CORE-09": "BUSINESS_ALIGNMENT",
+    "CORE-10": "NO_MAJOR_CHANGE",
+    "CORE-11": "SLOW",
+    "CORE-12": "C",
+    "CORE-13": "VENDORS",
+    "CORE-14": [
+     "CLOUD"
+    ],
+    "CORE-15": "ANNUAL",
+    "CORE-17": 77,
+    "CORE-18": "FINANCE_PROCUREMENT",
+    "CORE-19": [
+     "STRATEGIC_RATIONALE"
+    ],
+    "CORE-20": "ESTIMATED",
+    "CORE-21": "MIXED",
+    "CORE-22": "PORTFOLIO",
+    "CORE-26": "SELECTIVE",
+    "CORE-27": "A",
+    "CORE-28": "E",
+    "CORE-30": "F",
+    "CORE-32": [
+     "COMPUTE"
+    ],
+    "CORE-33": "C",
+    "CORE-34": 17,
+    "CORE-39": [
+     "DUPLICATION"
+    ],
+    "CORE-40": 3,
+    "CORE-41": "AD_HOC",
+    "CORE-42": [
+     "BUSINESS_CRITICALITY"
+    ],
+    "ADP-06": "NONE",
+    "ADP-07": "PERIODIC",
+    "ADP-08": 45,
+    "ADP-10": 10,
+    "ADP-11": 3,
+    "ADP-12": "LT10",
+    "ADP-14": "FIXED",
+    "ADP-16": "ENTITLEMENT_LED",
+    "ADP-21": 8,
+    "ADP-22": 60,
+    "ADP-23": "NONE",
+    "ADP-28": 26,
+    "ADP-31": "MIXED",
+    "ADP-32": "KPIS",
+    "ADP-35": "USAGE",
+    "ADP-36": "RENEWAL",
+    "ADP-37": 71,
+    "ADP-38": "SOME",
+    "ADP-41": "FULL",
+    "ADP-42": "UNKNOWN",
+    "ADP-61": "ASSERTED",
+    "ADP-62": "LOADED_REPORTED",
+    "ADP-63": "NO_CONTRACTORS",
+    "ADP-66": "UNIT_INTERNAL",
+    "ADP-67": "UNIT_USED"
+   },
+   "expected": {
+    "headlines": {
+     "costIQ": 56,
+     "valueIQ": 61
+    },
+    "completeness": 100,
+    "dimensions": {
+     "COST-01": {
+      "score": 61,
+      "answered": 4
+     },
+     "COST-02": {
+      "score": 58,
+      "answered": 5
+     },
+     "COST-03": {
+      "score": 20,
+      "answered": 1
+     },
+     "COST-04": {
+      "score": 61,
+      "answered": 6
+     },
+     "COST-05": {
+      "score": 55,
+      "answered": 5
+     },
+     "COST-06": {
+      "score": 80,
+      "answered": 1
+     },
+     "COST-07": {
+      "score": 51,
+      "answered": 4
+     },
+     "COST-08": {
+      "score": 83,
+      "answered": 1
+     },
+     "COST-09": {
+      "score": 50,
+      "answered": 1
+     },
+     "COST-10": {
+      "score": 45,
+      "answered": 4
+     },
+     "VALUE-01": {
+      "score": 40,
+      "answered": 1
+     },
+     "VALUE-02": {
+      "score": 56,
+      "answered": 4
+     },
+     "VALUE-03": {
+      "score": 70,
+      "answered": 2
+     },
+     "VALUE-04": {
+      "score": 92,
+      "answered": 2
+     },
+     "VALUE-05": {
+      "score": 47,
+      "answered": 3
+     },
+     "VALUE-06": {
+      "score": null,
+      "answered": 0
+     }
+    },
+    "findings": [
+     "F-001",
+     "F-002",
+     "F-005",
+     "F-007",
+     "F-013",
+     "F-006",
+     "F-011",
+     "F-008",
+     "F-017"
+    ],
+    "recommendations": [
+     "R-001",
+     "R-003",
+     "R-004",
+     "R-008",
+     "R-007",
+     "R-002"
+    ]
+   }
+  },
+  {
+   "id": "best possible answers",
+   "answers": {
+    "CORE-01": [
+     "ON_PREM",
+     "PUBLIC_CLOUD",
+     "SAAS",
+     "SOFTWARE",
+     "EXTERNAL",
+     "AI",
+     "VMWARE",
+     "COLO",
+     "END_USER",
+     "NETWORK",
+     "DATA"
+    ],
+    "CORE-16": "TRUE",
+    "CORE-02": "BANKING_FINANCIAL_SERVICES",
+    "CTX-01": "USD",
+    "CORE-03": "LT100M",
+    "CORE-04": "LT5M",
+    "CTX-02": "LT5",
+    "CTX-03": [],
+    "CTX-05": "ONE",
+    "CTX-04": "GT90",
+    "CORE-05": [],
+    "CORE-06": 5,
+    "CORE-07": "LOWER_RUN_COST",
+    "CORE-08": "LOW",
+    "CORE-09": "PORTFOLIO_RATIONALIZATION",
+    "CORE-10": "TRANSPARENCY",
+    "CORE-11": "FAST",
+    "CORE-12": "A",
+    "CORE-13": "SERVICES",
+    "CORE-14": [],
+    "CORE-15": "CONTINUOUS",
+    "CORE-17": 100,
+    "CORE-18": "ENTERPRISE_PORTFOLIO",
+    "CORE-19": [],
+    "CORE-20": "TRACKED",
+    "CORE-21": "OUTCOME",
+    "CORE-22": "THRESHOLD",
+    "CORE-26": "CONTINUOUS",
+    "CORE-27": "A",
+    "CORE-28": "A",
+    "CORE-30": "A",
+    "CORE-32": [],
+    "CORE-33": "A",
+    "CORE-34": 0,
+    "CORE-39": [],
+    "CORE-40": 1,
+    "CORE-41": "SYSTEMATIC",
+    "CORE-42": [],
+    "ADP-06": "NONE",
+    "ADP-07": "AUTOMATED",
+    "ADP-08": 0,
+    "ADP-09": "INTEGRATED",
+    "ADP-10": 0,
+    "ADP-11": 5,
+    "ADP-12": "LT10",
+    "ADP-13": "CONTINUOUS",
+    "ADP-14": "OUTCOME_LINKED",
+    "ADP-16": "CONTINUOUS",
+    "ADP-21": 0,
+    "ADP-22": 0,
+    "ADP-23": "MANAGED",
+    "ADP-28": 0,
+    "ADP-31": "SEPARATE",
+    "ADP-32": "DEFINED",
+    "ADP-35": "OUTCOME",
+    "ADP-36": "BENCHMARK",
+    "ADP-37": 0,
+    "ADP-38": "NONE",
+    "ADP-41": "FULL",
+    "ADP-42": "INTELLIGENT",
+    "ADP-61": "PORTFOLIO_TRACED",
+    "ADP-62": "LOADED_USED",
+    "ADP-63": "GOVERNED",
+    "ADP-64": "PER_PERSONA",
+    "ADP-65": "GOVERNED",
+    "ADP-66": "UNIT_COMPARED",
+    "ADP-67": "UNIT_USED"
+   },
+   "expected": {
+    "headlines": {
+     "costIQ": 100,
+     "valueIQ": 100
+    },
+    "completeness": 100,
+    "dimensions": {
+     "COST-01": {
+      "score": 100,
+      "answered": 4
+     },
+     "COST-02": {
+      "score": 100,
+      "answered": 5
+     },
+     "COST-03": {
+      "score": 100,
+      "answered": 1
+     },
+     "COST-04": {
+      "score": 100,
+      "answered": 6
+     },
+     "COST-05": {
+      "score": 100,
+      "answered": 9
+     },
+     "COST-06": {
+      "score": 100,
+      "answered": 2
+     },
+     "COST-07": {
+      "score": 100,
+      "answered": 4
+     },
+     "COST-08": {
+      "score": 100,
+      "answered": 1
+     },
+     "COST-09": {
+      "score": 100,
+      "answered": 1
+     },
+     "COST-10": {
+      "score": 100,
+      "answered": 4
+     },
+     "VALUE-01": {
+      "score": 100,
+      "answered": 1
+     },
+     "VALUE-02": {
+      "score": 100,
+      "answered": 4
+     },
+     "VALUE-03": {
+      "score": 100,
+      "answered": 2
+     },
+     "VALUE-04": {
+      "score": 100,
+      "answered": 2
+     },
+     "VALUE-05": {
+      "score": 100,
+      "answered": 3
+     },
+     "VALUE-06": {
+      "score": null,
+      "answered": 0
+     }
+    },
+    "findings": [],
+    "recommendations": []
+   }
+  },
+  {
+   "id": "worst possible answers",
+   "answers": {
+    "CORE-01": [
+     "ON_PREM",
+     "PUBLIC_CLOUD",
+     "SAAS",
+     "SOFTWARE",
+     "EXTERNAL",
+     "AI",
+     "VMWARE",
+     "COLO",
+     "END_USER",
+     "NETWORK",
+     "DATA"
+    ],
+    "CORE-16": "TRUE",
+    "CORE-02": "BANKING_FINANCIAL_SERVICES",
+    "CTX-01": "USD",
+    "CORE-03": "LT100M",
+    "CORE-04": "LT5M",
+    "CTX-02": "LT5",
+    "CTX-03": [],
+    "CTX-05": "ONE",
+    "CTX-04": "GT90",
+    "CORE-05": [],
+    "CORE-06": 1,
+    "CORE-07": "LOWER_RUN_COST",
+    "CORE-08": "LOW",
+    "CORE-09": "PORTFOLIO_RATIONALIZATION",
+    "CORE-10": "TRANSPARENCY",
+    "CORE-11": "VERY_HARD",
+    "CORE-12": "E",
+    "CORE-13": "GL",
+    "CORE-14": [],
+    "CORE-15": "NONE",
+    "CORE-17": 0,
+    "CORE-18": "NONE",
+    "CORE-19": [],
+    "CORE-20": "NONE",
+    "CORE-21": "FIXED",
+    "CORE-22": "RARE",
+    "CORE-26": "UNKNOWN",
+    "CORE-27": "F",
+    "CORE-28": "F",
+    "CORE-30": "F",
+    "CORE-32": [],
+    "CORE-33": "F",
+    "CORE-34": 100,
+    "CORE-39": [],
+    "CORE-40": 5,
+    "CORE-41": "AD_HOC",
+    "CORE-42": [],
+    "ADP-06": "GT10",
+    "ADP-07": "UNCLEAR",
+    "ADP-08": 100,
+    "ADP-09": "UNKNOWN",
+    "ADP-10": 0,
+    "ADP-11": 1,
+    "ADP-12": "LT10",
+    "ADP-13": "UNCLEAR",
+    "ADP-14": "UNRECONCILED",
+    "ADP-16": "UNRELIABLE",
+    "ADP-21": 0,
+    "ADP-22": 100,
+    "ADP-23": "NONE",
+    "ADP-28": 0,
+    "ADP-31": "UNKNOWN",
+    "ADP-32": "UNKNOWN",
+    "ADP-35": "UNKNOWN",
+    "ADP-36": "NONE",
+    "ADP-37": 100,
+    "ADP-38": "UNKNOWN",
+    "ADP-41": "UNKNOWN",
+    "ADP-42": "NONE",
+    "ADP-61": "UNKNOWN",
+    "ADP-62": "UNKNOWN",
+    "ADP-63": "UNKNOWN",
+    "ADP-64": "UNKNOWN",
+    "ADP-65": "UNKNOWN",
+    "ADP-66": "UNKNOWN",
+    "ADP-67": "UNKNOWN"
+   },
+   "expected": {
+    "headlines": {
+     "costIQ": 14,
+     "valueIQ": 18
+    },
+    "completeness": 100,
+    "dimensions": {
+     "COST-01": {
+      "score": 5,
+      "answered": 4
+     },
+     "COST-02": {
+      "score": 22,
+      "answered": 5
+     },
+     "COST-03": {
+      "score": 20,
+      "answered": 1
+     },
+     "COST-04": {
+      "score": 18,
+      "answered": 6
+     },
+     "COST-05": {
+      "score": 17,
+      "answered": 9
+     },
+     "COST-06": {
+      "score": 20,
+      "answered": 2
+     },
+     "COST-07": {
+      "score": 19,
+      "answered": 4
+     },
+     "COST-08": {
+      "score": 0,
+      "answered": 1
+     },
+     "COST-09": {
+      "score": 0,
+      "answered": 1
+     },
+     "COST-10": {
+      "score": 15,
+      "answered": 4
+     },
+     "VALUE-01": {
+      "score": 20,
+      "answered": 1
+     },
+     "VALUE-02": {
+      "score": 20,
+      "answered": 4
+     },
+     "VALUE-03": {
+      "score": 20,
+      "answered": 2
+     },
+     "VALUE-04": {
+      "score": 10,
+      "answered": 2
+     },
+     "VALUE-05": {
+      "score": 22,
+      "answered": 3
+     },
+     "VALUE-06": {
+      "score": null,
+      "answered": 0
+     }
+    },
+    "findings": [
+     "F-001",
+     "F-002",
+     "F-003",
+     "F-004",
+     "F-015",
+     "F-005",
+     "F-007",
+     "F-013",
+     "F-006",
+     "F-011",
+     "F-008",
+     "F-009",
+     "F-016",
+     "F-012",
+     "F-017",
+     "F-019"
+    ],
+    "recommendations": [
+     "R-001",
+     "R-002",
+     "R-009",
+     "R-010",
+     "R-003",
+     "R-004",
+     "R-008",
+     "R-007",
+     "R-005",
+     "R-006"
+    ]
+   }
+  }
+ ]
+}
