@@ -2164,24 +2164,25 @@
       ],
       "kind": "regulation",
       "jurisdiction": "UK",
-      "statement": "The Cyber Security and Resilience (Network and Information Systems) Bill (Bill 4035) completed House of Lords committee stage on 7 September 2026; Lords report stage was scheduled for 26 October 2026. It had not received Royal Assent as of 14 October 2026.",
+      "statement": "The Cyber Security and Resilience (Network and Information Systems) Bill (Bill 4035) completed Lords committee stage on 7 September 2026, Lords report stage on 26 October 2026 and Lords third reading on 2 November 2026. It has returned to the Commons for consideration of Lords amendments (no sitting date set on 5 November 2026). On 4 November 2026 the Commons agreed a carry-over motion so that the Bill lapses at the end of 29 April 2027 rather than 11 November 2026. It had not received Royal Assent as of 5 November 2026.",
       "source": {
-        "url": "https://www.parliament.uk/business/news/2026/august-2026/cyber-security-and-resilience-bill-house-of-lords-committee-stage/",
-        "title": "UK Parliament: cyber security bill completes Lords committee stage",
-        "article": "Bill 4035",
+        "url": "https://bills.parliament.uk/bills/4035",
+        "title": "UK Parliament: Cyber Security and Resilience (Network and Information Systems) Bill, stages and news (Bills API)",
+        "article": "Bill 4035; stages 1R to Commons consideration of Lords amendments",
         "secondaryUrls": [
-          "https://bills.parliament.uk/bills/4035",
-          "https://projectopengov.org/bills/4035/cyber-security-and-resilience-network-and-information-systems-bill/"
+          "https://bills-api.parliament.uk/api/v1/Bills/4035/Stages",
+          "https://bills-api.parliament.uk/api/v1/Bills/4035/NewsArticles",
+          "https://www.parliament.uk/business/news/2026/august-2026/cyber-security-and-resilience-bill-house-of-lords-committee-stage/"
         ]
       },
       "verification": "V",
-      "checkedOn": "2026-10-23",
+      "checkedOn": "2026-11-06",
       "volatile": true,
       "clientVisible": true,
       "owner": "sovereignty-compliance-lead (agent); approver: product owner",
-      "lastReviewed": "2026-10-23",
-      "nextReview": "2026-11-27",
-      "notes": "Volatile (D8). Corrects the S1 status (last confirmed Commons third reading). Direct fetches of official sites (EUR-Lex, legislation.gov.uk, eCFR, regulators) are blocked from this environment; checked through web-search results that quote or link the official text. Re-verified 23 Oct 2026: no change. Primary: UK Parliament Bills API (https://bills-api.parliament.uk/api/v1/Bills/4035/Stages and /Bills/4035, read 23 Oct 2026, record last updated 22 Oct 2026): current stage Lords report stage with a sitting on 26 Oct 2026; isAct false. Next review shortened because report stage is imminent."
+      "lastReviewed": "2026-11-06",
+      "nextReview": "2026-11-20",
+      "notes": "Volatile (D8). Read 6 Nov 2026 from the UK Parliament Bills API (bills-api.parliament.uk, the data behind bills.parliament.uk, which returns 403 to scripted fetches): Stages lists Lords 1st reading 17 Jun, 2nd reading 14 Jul, committee 1, 3 and 7 Sep, report stage 26 Oct, 3rd reading 2 Nov, Commons carry-over motion 4 Nov 2026 and 'Consideration of Lords amendments' with no sitting; Bill record: isAct false, isDefeated false, billWithdrawn null, currentHouse Commons, last update 5 Nov 2026. The News item quotes the carry-over motion (lapse date 29 April 2027 instead of 11 November 2026). Lords amendments are printed as Bill 175 (3 Nov 2026) but publications.parliament.uk is behind a bot challenge, so the amended text was not read. Corrects the 23 Oct statement, which gave report stage as scheduled. Next review 20 Nov 2026 (Commons consideration and possible Royal Assent). Check legislation.gov.uk for a 2026 Act before any quotation."
     },
     {
       "id": "CLM-SOV-097",
@@ -2190,7 +2191,7 @@
       ],
       "kind": "regulation",
       "jurisdiction": "UK",
-      "statement": "As introduced, the Bill would bring data centres and medium and large managed service providers into the NIS regime and raise the maximum penalty to the higher of GBP 17 million or 4% of annual turnover; most duties are expected to apply through secondary legislation.",
+      "statement": "As introduced (Bill 329, 12 November 2025), the Bill would bring data centres and medium and large managed service providers into the NIS regime and raise the maximum penalty to the higher of GBP 17 million or 4% of annual turnover; most duties are expected to apply through secondary legislation. The House of Lords has since amended the Bill (printed as Bill 175, 3 November 2026); the amended scope and penalties have not been confirmed here and may differ.",
       "source": {
         "url": "https://bills.parliament.uk/bills/4035",
         "title": "Cyber Security and Resilience (NIS) Bill",
@@ -2201,13 +2202,13 @@
         ]
       },
       "verification": "S",
-      "checkedOn": "2026-10-23",
+      "checkedOn": "2026-11-06",
       "volatile": true,
       "clientVisible": true,
       "owner": "sovereignty-compliance-lead (agent); approver: product owner",
-      "lastReviewed": "2026-10-23",
-      "nextReview": "2026-11-27",
-      "notes": "Direct fetches of official sites (EUR-Lex, legislation.gov.uk, eCFR, regulators) are blocked from this environment; checked through web-search results that quote or link the official text. Re-verified 23 Oct 2026: no change. The Bill is still before the Lords (UK Parliament Bills API, read 23 Oct 2026); the statement describes the Bill as introduced. Lords report stage (26 Oct 2026) may amend scope or penalties, so the next review is shortened."
+      "lastReviewed": "2026-11-06",
+      "nextReview": "2026-11-20",
+      "notes": "Volatile (D8). 6 Nov 2026: the Bills API shows the Bill passed the Lords on 2 Nov 2026 with amendments (Bill 175, Lords amendments, and its explanatory notes, published 3 Nov 2026); isAct false. Bill 175 and its notes sit on publications.parliament.uk, which returns a bot challenge to scripted fetches, so the amended scope and penalty clauses were not read. A secondary report (VinciWorks, search result) says the Government lost two Lords votes on the scope of the Bill; this is unconfirmed. The statement is limited to the Bill as introduced, which remains accurate, and now flags that the Lords changed it. Next review 20 Nov 2026: read Bill 175 or the Commons Library briefing, then restate scope and penalty."
     },
     {
       "id": "CLM-SOV-098",
@@ -2336,23 +2337,25 @@
       ],
       "kind": "date",
       "jurisdiction": "US",
-      "statement": "The statutory authority for FISA Section 702 lapsed at its June 2026 sunset after Congress did not pass a reauthorisation; collection continues for now under existing certifications.",
+      "statement": "The statutory authority for FISA Section 702 lapsed on 12 June 2026: Public Law 119-87 (30 April 2026) was the last extension of the Title VII repeal date and Congress has enacted no reauthorisation since. Orders, authorisations and directives issued before the repeal continue until they expire, so collection continues for now under existing certifications.",
       "source": {
-        "url": "https://www.npr.org/2026/06/12/nx-s1-5856291/fisa-702-surveillance-expiration-bill-pulte",
-        "title": "NPR: FISA 702 has lapsed (12 Jun 2026)",
-        "article": "Sunset",
+        "url": "https://www.govinfo.gov/content/pkg/PLAW-119publ87/html/PLAW-119publ87.htm",
+        "title": "Public Law 119-87 (S. 4465), approved 30 April 2026: Title VII repeal date moved to 12 June 2026",
+        "article": "Sec. 1(a), amending FISA Amendments Act of 2008 s.403(b)",
         "secondaryUrls": [
+          "https://www.congress.gov/crs-product/LSB11444",
+          "https://www.everycrsreport.com/reports/LSB11444.html",
           "https://www.brennancenter.org/our-work/research-reports/section-702-foreign-intelligence-surveillance-act-fisa-2026-resource-page"
         ]
       },
       "verification": "V",
-      "checkedOn": "2026-10-23",
+      "checkedOn": "2026-11-06",
       "volatile": true,
       "clientVisible": true,
       "owner": "sovereignty-compliance-lead (agent); approver: product owner",
-      "lastReviewed": "2026-10-23",
+      "lastReviewed": "2026-11-06",
       "nextReview": "2026-12-04",
-      "notes": "Verified in S1 (VALIDATION.md section 7, row 51). Direct fetches of official sites (EUR-Lex, legislation.gov.uk, eCFR, regulators) are blocked from this environment; checked through web-search results that quote or link the official text. Re-verified 23 Oct 2026: no change. Primary: Public Law 119-84 (approved 18 Apr 2026) and Public Law 119-87 (approved 30 Apr 2026) extended the Title VII repeal date to 30 Apr and then 12 Jun 2026 (https://www.govinfo.gov/app/details/PLAW-119publ87); the GovInfo public-law feed, read 23 Oct 2026 and covering laws up to PL 119-124, lists no later extension. Next review shortened: action is reportedly sought by November 2026, possibly in a defence bill."
+      "notes": "Volatile (D8). Closes S11 D7(c): the news source (NPR, 12 Jun 2026) is replaced by primary sources. Read 6 Nov 2026: (1) Public Law 119-87 on govinfo.gov: Sec. 1(a) replaces 'April 30, 2026' with 'June 12, 2026' in s.403(b)(1) and (2) of the FISA Amendments Act of 2008; (2) CRS Legal Sidebar LSB11444, 'The Impact of FISA Section 702's Repeal', 22 Jun 2026 (congress.gov returns 403 to scripted fetches, so read through the EveryCRSReport.com mirror, whose publisher field is CRS): 'automatically repealed on June 12, 2026, pursuant to the FISA Amendment Act of 2008, as amended by Public Law 119-87'; transition procedures keep orders and directives in effect until they expire; lawmakers say the FISC authorised surveillance for one year in March 2026; (3) api.congress.gov law list for the 119th Congress, read 6 Nov 2026, runs to Public Law 119-138 (3 Nov 2026), the 140 laws listed include no FISA law after PL 119-87 (PL 119-84 and 119-87 are the extensions). Not found: any later law. Next review 4 Dec 2026 (action reportedly sought before the certifications end in March 2027)."
     },
     {
       "id": "CLM-SOV-104",
@@ -2361,25 +2364,26 @@
       ],
       "kind": "regulation",
       "jurisdiction": "US",
-      "statement": "As of 14 October 2026 no Section 702 reauthorisation had been enacted: the House passed a three-year reauthorisation in April 2026, Senate passage was not confirmed, and the intelligence community reportedly asked Congress to act by late November 2026 so that new certifications can be sought; existing certifications are reported to run to about March 2027.",
+      "statement": "As of 6 November 2026 no Section 702 reauthorisation had been enacted: the House passed a three-year reauthorisation on 29 April 2026 (press reports, 235 to 191), the Senate failed a procedural vote on 5 June 2026 (reported), and Title VII was repealed on 12 June 2026. Existing orders continue until they expire; certifications approved in March 2026 are reported to run to about March 2027, after which Title I of FISA would govern.",
       "source": {
-        "url": "https://www.congress.gov/crs-product/R48592",
-        "title": "Congressional Research Service R48592: FISA Section 702 and RISAA",
-        "article": "Status",
+        "url": "https://www.congress.gov/crs-product/LSB11444",
+        "title": "Congressional Research Service LSB11444: The Impact of FISA Section 702's Repeal (22 Jun 2026)",
+        "article": "Effects of repeal; transition procedures",
         "secondaryUrls": [
-          "https://washingtontimes.com/news/2026/oct/13/world-not-end-doomsday-warnings-fisa-lapse-proven-wrong",
-          "https://www.lawfaremedia.org/article/house-passes-section-702-reauthorization",
-          "https://www.brennancenter.org/our-work/research-reports/section-702-foreign-intelligence-surveillance-act-fisa-2026-resource-page"
+          "https://www.govinfo.gov/content/pkg/PLAW-119publ87/html/PLAW-119publ87.htm",
+          "https://www.brennancenter.org/our-work/research-reports/section-702-foreign-intelligence-surveillance-act-fisa-2026-resource-page",
+          "https://rollcall.com/2026/04/29/house-sends-spy-reauthorization-bill-to-uncertain-senate-fate/",
+          "https://www.brennancenter.org/media/16217/download/bcj-702-march-2027-deadline-one-pager-9.22.26.pdf"
         ]
       },
       "verification": "S",
-      "checkedOn": "2026-10-23",
+      "checkedOn": "2026-11-06",
       "volatile": true,
       "clientVisible": true,
       "owner": "sovereignty-compliance-lead (agent); approver: product owner",
-      "lastReviewed": "2026-10-23",
+      "lastReviewed": "2026-11-06",
       "nextReview": "2026-12-04",
-      "notes": "Volatile (D8), 90-day review. Settle: congress.gov bill status and ODNI statements. Direct fetches of official sites (EUR-Lex, legislation.gov.uk, eCFR, regulators) are blocked from this environment; checked through web-search results that quote or link the official text. Re-verified 23 Oct 2026: no change. Primary: the GovInfo public-law feed (read 23 Oct 2026, laws up to PL 119-124) lists no Section 702 law after PL 119-87. Secondary: the Brennan Center explainer updated 16 Oct 2026 reports no enactment, bills pending in both chambers, and certifications approved in March 2026 valid to 17 Mar 2027; reports also record a failed Senate procedural vote (47-52) on 5 Jun 2026. Next review shortened because action is reportedly sought by November 2026."
+      "notes": "Volatile (D8), 90-day review. 6 Nov 2026: 'none enacted' rests on the primary law list (see CLM-SOV-103). The House vote and the 5 June Senate vote rest on press and advocacy pages (Roll Call 29 Apr 2026; Brennan Center resource page, updated 27 Oct 2026, whose latest congressional item is the 5 Jun Senate vote); the House-passed bill's number was not identified and api.congress.gov was rate-limited, so its latest congressional action date could not be read: UNSOURCED beyond 'no law enacted'. Removed from the statement: the 14 Oct claim that the intelligence community asked Congress to act by late November 2026 (S11 could not confirm it; the Brennan one-pager of 22 Sep 2026 says reauthorisation in November is not required). The certification expiry ('about March 2027') is from CRS (one year from March 2026) and the Brennan Center (17 Mar 2027, advocacy). Verification stays S. To settle: congress.gov bill status for the House-passed bill and ODNI/FISC statements."
     },
     {
       "id": "CLM-SOV-105",
@@ -3661,18 +3665,19 @@
         "title": "Press Information Bureau: DPDP Rules 2025",
         "article": "Rule 1(2)-(4)",
         "secondaryUrls": [
+          "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2190014",
           "https://www.mondaq.com/india/data-protection/1708164/digital-personal-data-protection-rules-2025-notified",
           "https://dpdp.myndsolution.com/wiki/guides/key-dates-and-commencement/index.md"
         ]
       },
       "verification": "S",
-      "checkedOn": "2026-10-23",
+      "checkedOn": "2026-11-06",
       "volatile": true,
       "clientVisible": true,
       "owner": "sovereignty-compliance-lead (agent); approver: product owner",
-      "lastReviewed": "2026-10-23",
-      "nextReview": "2026-11-16",
-      "notes": "Volatile (D8). Settle the exact date from the Gazette notification G.S.R. of 13 Nov 2025. Direct fetches of official sites (EUR-Lex, legislation.gov.uk, eCFR, regulators) are blocked from this environment; checked through web-search results that quote or link the official text. Re-verified 23 Oct 2026: no change. Source: web-search results (secondary). The Digital Personal Data Protection (Removal of Difficulties) Order, 2026 (S.O. 5458(E), 5 Oct 2026) corrects wording in s.9(1) and s.10(2)(c)(ii) of the Act and does not change any commencement date; the reported proposal to shorten the 18-month window has not been notified. Next review shortened to just after 13 Nov 2026 so that the Rule 4 date status can be moved to in force."
+      "lastReviewed": "2026-11-06",
+      "nextReview": "2026-11-20",
+      "notes": "Volatile (D8). Re-read 6 Nov 2026: the PIB explainer of 17 Nov 2025 (official, static.pib.gov.in PDF, 7 pages) says the Rules were notified on 14 November 2025 and 'introduce an eighteen-month period for phased compliance'; it is the source of the 14 November reading. The 13 November reading rests on the Gazette date reported by law firms. Gazette G.S.R. text itself not opened (MeitY pages return only a script shell). No notified amendment shortening the window was found; reports of discussions about shortening are not a notification. Rule 4 (consent managers) falls 13 or 14 November 2026, after this review, so its status stays 'future'. Next review set to 20 Nov 2026 to move Rule 4 to in force and to read the Gazette text. Counsel review before external use is still required. Earlier note: the Digital Personal Data Protection (Removal of Difficulties) Order, 2026 (S.O. 5458(E), 5 Oct 2026) corrects wording in s.9(1) and s.10(2)(c)(ii) of the Act and does not change any commencement date."
     },
     {
       "id": "CLM-SOV-162",
@@ -15381,6 +15386,50 @@
       "lastReviewed": "2026-11-06",
       "nextReview": "2027-01-12",
       "notes": "Volatile: wording changed by the Omnibus. Read in full on 6 Nov 2026 from the EUR-Lex Official Journal text of Regulation (EU) 2026/1744 (OJ L, 24.7.2026) and the original Regulation (EU) 2024/1689 (https://eur-lex.europa.eu/eli/reg/2024/1689/oj/eng); the Commission AI Act page (https://digital-strategy.ec.europa.eu/en/policies/regulatory-framework-ai, last update 19 Oct 2026) agrees. Counsel review before external use is still required."
+    },
+    {
+      "id": "CLM-SOV-274",
+      "accelerators": [
+        "sovereign-iq"
+      ],
+      "kind": "regulation",
+      "jurisdiction": "EU",
+      "statement": "DORA Art. 9(4)(c)-(d): as part of the ICT risk management framework a financial entity implements policies that limit physical or logical access to information assets and ICT assets to what is required for legitimate and approved functions, and policies and protocols for strong authentication and for protection measures of cryptographic keys, whereby data is encrypted based on approved data classification and ICT risk assessment. These are related obligations; DORA does not require keys to be held outside the cloud provider or each provider access to be approved by the client.",
+      "source": {
+        "url": "https://eur-lex.europa.eu/eli/reg/2022/2554/oj",
+        "title": "Regulation (EU) 2022/2554 (DORA), OJ L 333, 27.12.2022",
+        "article": "Art. 9(4)(c)-(d)"
+      },
+      "verification": "V",
+      "checkedOn": "2026-11-06",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "sovereignty-compliance-lead (agent); approver: product owner",
+      "lastReviewed": "2026-11-06",
+      "nextReview": "2027-05-06",
+      "notes": "Closes S11 D8 (DORA part). Read in full 6 Nov 2026 from the EUR-Lex HTML text (https://eur-lex.europa.eu/legal-content/EN/TXT/HTML/?uri=CELEX:32022R2554): Art. 9(4)(c) 'implement policies that limit the physical or logical access to information assets and ICT assets to what is required for legitimate and approved functions and activities only ...'; 9(4)(d) '... strong authentication mechanisms ... and protection measures of cryptographic keys whereby data is encrypted based on results of approved data classification and ICT risk assessment processes'. The last sentence of the statement is the practice lead's reading (judgement): neither provision names key location or per-access client approval. Counsel review before external use."
+    },
+    {
+      "id": "CLM-SOV-275",
+      "accelerators": [
+        "sovereign-iq"
+      ],
+      "kind": "regulation",
+      "jurisdiction": "EU",
+      "statement": "Commission Delegated Regulation (EU) 2024/1774 (RTS on the ICT risk management framework): Art. 6 requires a policy on encryption and cryptographic controls whose rules include cryptographic key management; Art. 7 requires key management across the whole lifecycle (generating, renewing, storing, backing up, archiving, retrieving, transmitting, retiring, revoking, destroying) with controls against loss, unauthorised access, disclosure and modification, and methods to replace lost or compromised keys; Art. 21 requires an access control policy (need-to-know and least privilege including for emergency access, privileged access on a need-to-use or ad-hoc basis, access rights reviewed at least every six months for systems supporting critical or important functions). They are related obligations; none requires customer-held keys or client approval of each provider access.",
+      "source": {
+        "url": "https://eur-lex.europa.eu/eli/reg_del/2024/1774/oj",
+        "title": "Commission Delegated Regulation (EU) 2024/1774, OJ L, 25.6.2024",
+        "article": "Art. 6, 7 and 21"
+      },
+      "verification": "V",
+      "checkedOn": "2026-11-06",
+      "volatile": false,
+      "clientVisible": true,
+      "owner": "sovereignty-compliance-lead (agent); approver: product owner",
+      "lastReviewed": "2026-11-06",
+      "nextReview": "2027-05-06",
+      "notes": "Closes S11 D8 (RTS part). Read in full 6 Nov 2026 from the EUR-Lex text (https://eur-lex.europa.eu/eli/reg_del/2024/1774/oj/eng): Art. 6 'Encryption and cryptographic controls' (1)-(3); Art. 7 'Cryptographic key management' (1)-(5); Art. 21 'Access control' (a)-(f), incl. (e)(iv) access rights updated at least once a year, and at least every 6 months for ICT systems supporting critical or important functions. The Regulation also has a simplified framework for entities under DORA Art. 16 (not read here). The last sentence of the statement is the practice lead's reading (judgement). Counsel review before external use."
     }
   ]
 }

@@ -1265,6 +1265,15 @@
           ]
         },
         {
+          "id": "EU_DORA.ICT_SECURITY_RELATED",
+          "article": "Art. 9(4)(c)-(d); Delegated Regulation (EU) 2024/1774 Art. 6, 7 and 21",
+          "summary": "Related obligations (they do not require customer-held keys or client approval of each provider access): policies on access to ICT assets, strong authentication, protection of cryptographic keys, an encryption policy and key management across the whole key lifecycle, and an access control policy with periodic review of access rights.",
+          "claims": [
+            "CLM-SOV-274",
+            "CLM-SOV-275"
+          ]
+        },
+        {
           "id": "EU_DORA.TLPT",
           "article": "Art. 26",
           "summary": "Threat-led penetration testing only if identified by the competent authority, at least every three years.",
@@ -1324,7 +1333,9 @@
         "CLM-SOV-043",
         "CLM-SOV-044",
         "CLM-SOV-045",
-        "CLM-SOV-046"
+        "CLM-SOV-046",
+        "CLM-SOV-274",
+        "CLM-SOV-275"
       ]
     },
     {
@@ -3305,7 +3316,7 @@
       },
       "kind": "obligation",
       "status": "pending",
-      "statusAsOf": "2026-10-14",
+      "statusAsOf": "2026-11-06",
       "dates": [
         {
           "label": "Lords committee stage concluded",
@@ -3316,9 +3327,17 @@
           ]
         },
         {
-          "label": "Lords report stage (scheduled)",
+          "label": "Lords report stage",
           "date": "2026-10-26",
-          "status": "future",
+          "status": "in_force",
+          "claims": [
+            "CLM-SOV-096"
+          ]
+        },
+        {
+          "label": "Lords third reading; Bill returned to the Commons for Lords amendments",
+          "date": "2026-11-02",
+          "status": "in_force",
           "claims": [
             "CLM-SOV-096"
           ]
@@ -3367,7 +3386,7 @@
               ]
             },
             "grade": "advisory",
-            "reason": "A Bill before Parliament (not yet law as of 14 Oct 2026) would bring data centres and medium and large managed service providers into the NIS regime and raise maximum penalties.",
+            "reason": "A Bill before Parliament (not yet law as of 6 Nov 2026; it has passed the Lords and awaits Commons consideration of Lords amendments) would bring data centres and medium and large managed service providers into the NIS regime and raise maximum penalties. The Lords amended the Bill, so scope and penalties may differ from the text as introduced.",
             "basis": "Bill 4035",
             "claims": [
               "CLM-SOV-096",
@@ -3375,7 +3394,7 @@
             ],
             "verification": {
               "status": "S",
-              "checked": "2026-10-14",
+              "checked": "2026-11-06",
               "by": "sovereignty-compliance-lead (agent)"
             }
           }
@@ -3384,10 +3403,10 @@
       },
       "penalty": {
         "model": "not_quantified",
-        "note": "Not law. As introduced, maximum would be the higher of GBP 17 million or 4% of turnover [CLM-SOV-097].",
+        "note": "Not law. As introduced, maximum would be the higher of GBP 17 million or 4% of turnover; the Lords have amended the Bill and the amended penalty has not been confirmed [CLM-SOV-097].",
         "verification": {
           "status": "S",
-          "checked": "2026-10-14",
+          "checked": "2026-11-06",
           "by": "sovereignty-compliance-lead (agent)"
         }
       },
@@ -3395,7 +3414,7 @@
       "reviewDays": 90,
       "verification": {
         "status": "S",
-        "checked": "2026-10-14",
+        "checked": "2026-11-06",
         "by": "sovereignty-compliance-lead (agent)",
         "note": "Worst status across citation and sourced applicability claims. All 2 claims referenced by this regime: 1 V, 1 S."
       },
@@ -3503,10 +3522,10 @@
       },
       "kind": "exposure",
       "status": "volatile",
-      "statusAsOf": "2026-10-14",
+      "statusAsOf": "2026-11-06",
       "dates": [
         {
-          "label": "Statutory authority lapsed at the June 2026 sunset; existing certifications continue",
+          "label": "Statutory authority repealed at the 12 June 2026 sunset (Public Law 119-87); existing orders and certifications continue until they expire",
           "date": "2026-06-12",
           "status": "lapsed",
           "claims": [
@@ -3530,7 +3549,7 @@
               ]
             },
             "grade": "advisory",
-            "reason": "Section 702 targets non-US persons outside the US through US electronic communication service providers. Its statutory authority lapsed in June 2026 and no reauthorisation had been enacted by mid-September 2026; collection continues under certifications that run to March 2027 (status as of 26 Oct 2026; re-check before quoting).",
+            "reason": "Section 702 targets non-US persons outside the US through US electronic communication service providers. Its statutory authority was repealed on 12 June 2026 and no reauthorisation had been enacted as of 6 Nov 2026; collection continues under orders and certifications that are reported to run to about March 2027 (status as of 6 Nov 2026; re-check before quoting).",
             "basis": "50 U.S.C. § 1881a",
             "claims": [
               "CLM-SOV-102",
@@ -3539,7 +3558,7 @@
             ],
             "verification": {
               "status": "S",
-              "checked": "2026-10-14",
+              "checked": "2026-11-06",
               "by": "sovereignty-compliance-lead (agent)"
             }
           }
@@ -3551,7 +3570,7 @@
         "note": "No penalty on you; disclosure exposure [CLM-SOV-102].",
         "verification": {
           "status": "V",
-          "checked": "2026-10-14",
+          "checked": "2026-11-06",
           "by": "sovereignty-compliance-lead (agent)"
         }
       },
@@ -3559,9 +3578,9 @@
       "reviewDays": 90,
       "verification": {
         "status": "S",
-        "checked": "2026-10-14",
+        "checked": "2026-11-06",
         "by": "sovereignty-compliance-lead (agent)",
-        "note": "Worst status across citation and sourced applicability claims. All 3 claims referenced by this regime: 2 V, 1 S."
+        "note": "Worst status across citation and sourced applicability claims. All 3 claims referenced by this regime: 2 V, 1 S (CLM-SOV-103 now V on primary sources)."
       },
       "claims": [
         "CLM-SOV-102",
@@ -6028,7 +6047,7 @@
       },
       "kind": "obligation",
       "status": "phased",
-      "statusAsOf": "2026-10-14",
+      "statusAsOf": "2026-11-06",
       "dates": [
         {
           "label": "Rules notified; Data Protection Board provisions apply",
