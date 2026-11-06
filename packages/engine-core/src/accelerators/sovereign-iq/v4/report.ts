@@ -274,6 +274,17 @@ function exposure(c: Ctx): ReportSection {
       : [quote(e.penaltyModel === 'not_applicable_to_client' ? 'No penalty on you' : g.grade === 'advisory' ? 'No direct penalty on you (advisory)' : e.penaltyModel === 'national' ? 'Set by national law' : e.penaltyModel === 'per_violation' ? 'Per violation' : 'Not quantified')];
     return [[strong(g.name), ...(g.volatile ? [' ', quote(`(status as of ${g.statusAsOf})`)] : [])], [GRADE[g.grade]], [quote(g.reason, g.claims), ...(!c.client && g.rule ? [' ', ref(`[${g.rule}]`)] : [])], [RAG[e.rag]], cap];
   }) });
+  // D13: dated phase-in lines (adopted law versus not yet applying) for each regulation that carries them.
+  for (const e of exp) {
+    const g = r.regimes.find(x => x.regime === e.regime)!;
+    if (!g.phaseIn?.length) continue;
+    const day = (d: string) => new Date(`${d}T00:00:00Z`).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' });
+    blocks.push({ kind: 'subheading', text: `${g.name}: what applies on ${day(r.assessmentDate)} and what applies later` });
+    if (g.phaseInNote) blocks.push({ kind: 'paragraph', style: 'small', segs: [quote(g.phaseInNote)] });
+    blocks.push({ kind: 'table', small: true, head: ['Applies from', 'Duty', 'Legal basis', `Position on ${day(r.assessmentDate)}`], widths: [70, '*', 105, 90], rows: g.phaseIn.map(p => [
+      [day(p.date)], [quote(p.duty, p.claims)], [p.basis], [p.state === 'applies' ? 'Applies today (law)' : 'Applies later (law, not yet in force)']
+    ]) });
+  }
   const fa = r.foreignAccess;
   if (fa.length) {
     blocks.push({ kind: 'subheading', text: 'Foreign-access exposure' });

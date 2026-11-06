@@ -121,6 +121,25 @@ describe('Sovereign IQ report', () => {
     }
   });
 
+  it('D13: both editions print the AI Act dates, split into applies today and applies later, as adopted law and not a proposal', () => {
+    const withAi = runs.filter(x => x.r.regimes.some(g => g.regime === 'EU_AI_ACT' && g.phaseIn && (x.view === 'consultant' || !g.consultantOnly) && g.grade !== 'not_applicable'));
+    expect(withAi.length).toBeGreaterThan(0);
+    for (const x of withAi) {
+      const t = allText(x.doc);
+      expect(t, x.label).toMatch(/AI Act: what applies on 26 October 2026 and what applies later/);
+      for (const d of ['2 February 2025', '2 August 2025', '2 August 2026', '2 December 2026', '2 December 2027', '2 August 2028']) expect(t, `${x.label} ${d}`).toContain(d);
+      expect(t, x.label).toMatch(/Applies today \(law\)/);
+      expect(t, x.label).toMatch(/Applies later \(law, not yet in force\)/);
+      expect(t, x.label).toMatch(/Regulation \(EU\) 2026\/1744/);
+      expect(t, x.label).toMatch(/None of them is a proposal/);
+      expect(t, x.label).toMatch(/ceiling set by Art\. 99, not an expected fine/);
+      const g = x.r.regimes.find(y => y.regime === 'EU_AI_ACT')!;
+      // The engine marks each line against the assessment date: high-risk dates are later on 26 Oct 2026, the 2026 dates split on 2 Aug.
+      expect(g.phaseIn!.filter(p => p.state === 'later').map(p => p.date)).toEqual(['2026-12-02', '2027-12-02', '2028-08-02']);
+      expect(g.phaseIn!.filter(p => p.state === 'applies').map(p => p.date)).toEqual(['2025-02-02', '2025-08-02', '2026-08-02']);
+    }
+  });
+
   it('no claim ID is shown in any edition (they are kept as citations)', () => {
     for (const x of runs) expect(allText(x.doc), x.label).not.toMatch(/\[CLM-/);
   });
