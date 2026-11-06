@@ -11,6 +11,8 @@ import { evaluateFinOpsIqV3, QUESTIONS as FIQ3_QUESTIONS, type Facts as Fiq3Fact
 import { evaluateResilienceIq } from '../src/accelerators/resilience-iq/evaluate';
 import { resilienceKnowledge } from '../src/accelerators/resilience-iq/knowledge';
 import { createRequire } from 'node:module';
+import { readFileSync } from 'node:fs';
+import { QUESTIONS as SOV_QUESTIONS, evaluateSovereignIqV4 } from '../src/accelerators/sovereign-iq/v4/evaluate';
 
 export type Rng = () => number;
 export function rng(seed: number): Rng {
@@ -291,6 +293,47 @@ const costExtreme = (best: boolean) => ({
 });
 const costEval = (i: any) => COST_ENGINE.evaluateCostIq({ answers: i.answers, scope: { selectedAreas: COST_AREAS } });
 
+/* ------------------------------- Sovereign IQ ------------------------------ */
+// The v4 engine scores control maturity (0-100) from answers about the controls, and grades regimes from facts. The audit
+// varies the maturity and scope answers; the random questionnaire is the one the unit tests use (every question answered,
+// 12% left blank). Matrix questions (A2, D3, L2) have no variants here: they are structural and are set by the random draw.
+const SOV_DATE = '2026-11-06';
+const SOV_ZONES = ['eea', 'uk', 'ch', 'us', 'ca', 'in', 'sg', 'au', 'nz', 'jp', 'hk', 'kr', 'cn', 'other'];
+const sovOptions = (x: any): string[] => (x.options ? x.options.map((o: any) => o.value) : x.optionsFrom ? sovOptions(SOV_QUESTIONS.find(q => q.id === x.optionsFrom)) : []);
+const sovCompoundDefault = (q: any) => Object.fromEntries(q.fields.map((f: any) => [f.key, f.type === 'number_with_currency' ? { amount: 1_000_000_000, currency: 'EUR' } : f.type === 'single' ? sovOptions(f)[0] : null]));
+function sovRandom(r: Rng) {
+  const some = <T,>(xs: T[], n = 3) => [...new Set(Array.from({ length: 1 + Math.floor(r() * n) }, () => pick(r, xs)))];
+  const a: Record<string, unknown> = {};
+  for (const q of SOV_QUESTIONS) {
+    if (r() < 0.12) continue;
+    if (q.type === 'single') a[q.id] = pick(r, sovOptions(q));
+    else if (q.type === 'multi') a[q.id] = some(sovOptions(q).filter(v => v !== 'unknown' && v !== 'none'));
+    else if (q.type === 'compound') a[q.id] = Object.fromEntries(q.fields.map((f: any) => [f.key, f.type === 'number_with_currency' ? { amount: Math.round(1e6 + r() * 5e9), currency: pick(r, ['EUR', 'USD', 'GBP']) } : f.type === 'single' ? pick(r, sovOptions(f)) : null]));
+  }
+  a.A2 = { entity: some(SOV_ZONES), people: some(SOV_ZONES) };
+  const classes = (a.D1 as string[] | undefined) ?? ['personal'];
+  a.D1 = classes;
+  a.D3 = Object.fromEntries(classes.map(c => [c, { primary: some([...SOV_ZONES, 'unknown'], 2), backup: some([...SOV_ZONES, 'unknown'], 2) }]));
+  if (r() < 0.6) a.L2 = Object.fromEntries(classes.map(c => [c, { level: pick(r, ['L0', 'L1', 'L2', 'L3', 'L4', 'unknown']), zones: some(SOV_ZONES, 2), platforms: some(sovOptions(SOV_QUESTIONS.find(q => q.id === 'P1')), 2) }]));
+  return { answers: a };
+}
+function sovVariants(q: any): unknown[] {
+  if (q.type === 'single') return sovOptions(q);
+  if (q.type === 'multi') { const v = sovOptions(q).filter(x => x !== 'unknown' && x !== 'none'); return [[], v.slice(0, 1), v.slice(0, 3)]; }
+  if (q.type === 'compound') { const f = q.fields.find((x: any) => x.type === 'single'); return f ? sovOptions(f).map(v => ({ ...sovCompoundDefault(q), [f.key]: v })) : []; }
+  return [];
+}
+const SOV_MATURITY = SOV_QUESTIONS.filter(q => q.kind === 'maturity' && q.type === 'single' && q.options.some((o: any) => typeof o.state === 'number'));
+const sovBase = () => JSON.parse(readFileSync(new URL('../../../docs/cio-readiness/sovereign-iq/design/archetypes.json', import.meta.url), 'utf8')).archetypes[0].answers as Record<string, unknown>;
+const sovExtreme = (best: boolean) => {
+  const answers = { ...sovBase() };
+  for (const q of SOV_MATURITY) {
+    const states = q.options.filter((o: any) => typeof o.state === 'number' && o.value !== 'risks_open').sort((x: any, y: any) => x.state - y.state);
+    answers[q.id] = (best ? states[states.length - 1] : states[0]).value;
+  }
+  return { answers };
+};
+
 export const ADAPTERS: Adapter[] = [
   {
     id: 'strategy-iq', name: 'Strategy IQ',
@@ -352,5 +395,21 @@ export const ADAPTERS: Adapter[] = [
       { name: 'Value IQ (0-100)', scale: [0, 100], higherIsBetter: true, get: r => r.headlines.valueIQ }
     ],
     extremes: { best: () => costExtreme(true), worst: () => costExtreme(false) }
+  },
+  {
+    id: 'sovereign-iq', name: 'Sovereign IQ',
+    questions: SOV_QUESTIONS.filter(q => sovVariants(q).length).map(q => ({ id: q.id, label: q.text })),
+    random: sovRandom,
+    variants: id => sovVariants(SOV_QUESTIONS.find(q => q.id === id)),
+    withAnswer: setAnswer, withoutAnswer: dropAnswer,
+    evaluate: i => evaluateSovereignIqV4({ mode: 'workshop', answers: i.answers, assessmentDate: SOV_DATE }),
+    headlines: [
+      { name: 'Control maturity (0-100)', scale: [0, 100], higherIsBetter: true, get: r => r.maturity.score },
+      // Scope facts (turnover, countries, sector) do not move maturity; they move which regimes apply and how large the statutory caps are.
+      { name: 'Regimes graded "applies" (count)', scale: [0, 60], higherIsBetter: null, get: r => r.regimes.filter((g: any) => g.grade === 'applies').length },
+      { name: 'Largest statutory cap (EUR)', scale: [0, Infinity], higherIsBetter: null, get: r => Math.max(0, ...r.exposure.regimes.map((e: any) => (e.cap ? e.cap.eur : 0))) }
+    ],
+    band: { get: r => r.maturity.band ?? 'Withheld (too few controls answered)', all: ['Exposed', 'Developing', 'Managed', 'Sovereign-ready', 'Withheld (too few controls answered)'] },
+    extremes: { best: () => sovExtreme(true), worst: () => sovExtreme(false) }
   }
 ];

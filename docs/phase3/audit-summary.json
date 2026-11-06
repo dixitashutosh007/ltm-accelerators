@@ -1232,5 +1232,151 @@
         "worstProfileShift": 2
       }
     ]
+  },
+  {
+    "id": "sovereign-iq",
+    "name": "Sovereign IQ",
+    "ranges": [
+      {
+        "headline": "Control maturity (0-100)",
+        "scale": [
+          0,
+          100
+        ],
+        "min": 5,
+        "max": 73,
+        "outOfScale": 0,
+        "nulls": 46
+      },
+      {
+        "headline": "Regimes graded \"applies\" (count)",
+        "scale": [
+          0,
+          60
+        ],
+        "min": 0,
+        "max": 10,
+        "outOfScale": 0,
+        "nulls": 0
+      },
+      {
+        "headline": "Largest statutory cap (EUR)",
+        "scale": [
+          0,
+          null
+        ],
+        "min": 0,
+        "max": 500000000,
+        "outOfScale": 0,
+        "nulls": 0
+      }
+    ],
+    "bands": {
+      "counts": {
+        "Exposed": 653,
+        "Developing": 96,
+        "Managed": 5,
+        "Sovereign-ready": 0,
+        "Withheld (too few controls answered)": 46
+      },
+      "best": "Sovereign-ready",
+      "worst": "Exposed",
+      "unreachable": []
+    },
+    "sensitivity": [
+      {
+        "headline": "Control maturity (0-100)",
+        "top": [
+          {
+            "qid": "D1",
+            "swing": 35
+          },
+          {
+            "qid": "L1",
+            "swing": 26
+          },
+          {
+            "qid": "T2",
+            "swing": 23
+          },
+          {
+            "qid": "A1",
+            "swing": 20
+          },
+          {
+            "qid": "A3",
+            "swing": 20
+          }
+        ],
+        "share": 0.5147058823529411
+      },
+      {
+        "headline": "Regimes graded \"applies\" (count)",
+        "top": [
+          {
+            "qid": "A1",
+            "swing": 4
+          },
+          {
+            "qid": "A3",
+            "swing": 3
+          },
+          {
+            "qid": "A4",
+            "swing": 3
+          },
+          {
+            "qid": "B1",
+            "swing": 3
+          },
+          {
+            "qid": "B3",
+            "swing": 3
+          }
+        ],
+        "share": 0.4
+      },
+      {
+        "headline": "Largest statutory cap (EUR)",
+        "top": [
+          {
+            "qid": "A1",
+            "swing": 476654277.8701231
+          },
+          {
+            "qid": "A5",
+            "swing": 450000000
+          },
+          {
+            "qid": "A4",
+            "swing": 399436079.6255569
+          },
+          {
+            "qid": "A3",
+            "swing": 0
+          },
+          {
+            "qid": "A6",
+            "swing": 0
+          }
+        ],
+        "share": 0.9533085557402462
+      }
+    ],
+    "dead": [
+      "A6",
+      "P2",
+      "H1",
+      "W1",
+      "W2",
+      "W3"
+    ],
+    "missing": [
+      {
+        "headline": "Control maturity (0-100)",
+        "meanShift": -7.748344370860927,
+        "worstProfileShift": -17
+      }
+    ]
   }
 ]
