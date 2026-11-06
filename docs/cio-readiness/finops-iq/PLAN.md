@@ -693,3 +693,8 @@ All recommended defaults **accepted** (D1–D15). D1 = option C: FinOps Value Ca
 | D13 | Billing-file import | Remove now; optional FOCUS-based evidence step later, never overwriting answers | F0, F3 |
 | D14 | Volatile items | 90-day review with "as of" dates | F2 |
 | D15 | Global value cap and ramp defaults | Expected ≤ Flexera 2026 average estimated waste (29%) without client evidence; ramp per lever labelled LTM heuristic | F4 |
+
+### F12 follow-ups (6 Nov 2026)
+- **Google commitment discounts:** the practice lead read Google's current pages (26 Oct to 4 Nov 2026) and corrected the text that misstated them (claims CLM-FIN-065, 066, 128; registry assumptions, market data and levers; one report sentence). Computed constants are unchanged. For the owner: whether to move the default for an unstated Google instrument from 55% to the recommended 46% (upper case 550,000 to 460,000 per 1,000,000 eligible), and LEV-01's Google 0.55 with the ASM-FIN-060 and 062 mirrors. Note: `design/F12-follow-up-CUD-and-low-flags.md`.
+- **Low-confidence playbook entries:** the 29 Low entries now carry a visible flag in the technical execution section of both editions, with a test.
+- Still open: A1, A2, a lawyer's read, the 62 search-only claims and review-date ownership, real-account checks.

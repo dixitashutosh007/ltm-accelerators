@@ -667,10 +667,10 @@ function methodologySection(c: Ctx): ReportSection {
 
 /**
  * Why this instrument when the client did not state one (ASM-FIN-062). Google Cloud takes the resource-based maximum,
- * which is higher than the flexible one, by product-owner decision (M7 D2), so it is not called the lower maximum.
+ * which is higher than the 46% three-year flexible CUD rate for most series (63% on M-series), by product-owner decision (M7 D2), so it is not called the lower maximum.
  */
 const notStated = (provider: string) => (provider === 'gcp'
-  ? ' (not stated; the resource-based maximum is used, which is higher than the flexible CUD maximum: confirm the instrument with the client)'
+  ? ' (not stated; the three-year resource-based maximum of 55% is used, which is higher than the 46% three-year compute flexible CUD rate for most series: confirm the instrument with the client)'
   : ' (not stated; the lower published maximum is used)');
 
 function leverFormulas(c: Ctx): Block[] {
@@ -836,7 +836,8 @@ function technicalSection(c: Ctx): ReportSection {
             [platformName(a.platform)],
             [LEVEL_TEXT[a.level]],
             [cite(own(a) ? `${sentence(a.action)} ${common ? '' : 'Approach: '}${rest(a)}` : sentence(a.action), a.claimIds), ...(a.discoveryNeeded && !sharedNeed ? [' ', { text: `Needs: ${sentence(a.discoveryNeeded)}`, cite: a.claimIds, italic: true }] : []),
-              ...(a.confirmRegionalAvailability ? [' Confirm regional availability.'] : [])],
+              ...(a.confirmRegionalAvailability ? [' Confirm regional availability.'] : []),
+              ...(a.confidence === 'Low' ? [' ', { text: LOW_CONFIDENCE_FLAG, italic: true }] : [])],
             a.options.length ? [cite(a.options.map(o => o.name + (o.kind === 'native' ? '' : ` (${o.kind.replace('_', ' ')})`)).join('; '), a.claimIds)] : ['—'],
             [cite(a.verification, a.claimIds)],
             [a.ownerRole]
@@ -849,6 +850,9 @@ function technicalSection(c: Ctx): ReportSection {
   }
   return { id: 'technical', title: 'Technical execution', blocks };
 }
+
+/** Shown on every Low-confidence playbook entry in the technical execution section, both editions (F12 follow-up B). */
+export const LOW_CONFIDENCE_FLAG = "Low confidence: confirm against the provider's current documentation before use.";
 
 /** Consultant-only SOW draft (F9): offerings with indicative scope and the findings behind each. Never in the client edition. */
 function sowAppendix(c: Ctx): ReportSection {

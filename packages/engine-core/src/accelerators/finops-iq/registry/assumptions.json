@@ -947,7 +947,7 @@
         "CLM-FIN-128",
         "CLM-FIN-066"
       ],
-      "reasoning": "PLAN F4 requires expected at most half of upper unless a sourced capture rate exists; Google's 1-year flexible CUD (28%) is close to half its 55% maximum.",
+      "reasoning": "PLAN F4 requires expected at most half of upper unless a sourced capture rate exists; a loose illustration only: half of Google's 55% three-year resource-based maximum (27.5%) is near its 28% one-year flexible CUD rate; like for like, one-year resource-based is up to 37% and one-year flexible is 28%, so half the upper case is conservative against published commitment rates (CLM-FIN-065, CLM-FIN-066).",
       "confidence": "Medium",
       "sensitivity": "Every expected figure moves in proportion",
       "usedBy": [
@@ -1876,7 +1876,7 @@
     {
       "id": "ASM-FIN-062",
       "title": "Commitment instrument default",
-      "value": "When the client does not state its main instrument: AWS 66% (Compute Savings Plans) and Azure 65% (savings plan for compute), the lower published maximum; Google Cloud 55% (resource-based CUDs), which is higher than the flexible CUD maximum, by product-owner decision (22 Oct 2026, M7 D2)",
+      "value": "When the client does not state its main instrument: AWS 66% (Compute Savings Plans) and Azure 65% (savings plan for compute), the lower published maximum; Google Cloud 55% (resource-based CUDs, three-year, non-memory-optimised series), which is higher than the 46% three-year compute flexible CUD rate for most series (63% for M-series, 54% for C4N and M4N), by product-owner decision (22 Oct 2026, M7 D2)",
       "basis": "ltm_heuristic",
       "claimIds": [
         "CLM-FIN-176",

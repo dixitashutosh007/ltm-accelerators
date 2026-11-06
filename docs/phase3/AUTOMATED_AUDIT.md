@@ -225,3 +225,37 @@ How to read it:
 | Cost IQ (0-100) | -0.96 | +1 |
 | Value IQ (0-100) | -0.51 | +2 |
 
+## Sovereign IQ
+
+| Headline | Scale | Observed min | Observed max | Out of scale | Null |
+|---|---|---|---|---|---|
+| Control maturity (0-100) | 0–100 | 5 | 73 | 0 | 46 |
+| Regimes graded "applies" (count) | 0–60 | 0 | 10 | 0 | 0 |
+| Largest statutory cap (EUR) | 0–InfinityM | 0 | 500.0M | 0 | 0 |
+
+**Bands** (share of random questionnaires; best answers → **Sovereign-ready**, worst answers → **Exposed**):
+
+| Band | Share |
+|---|---|
+| Exposed | 81.6% |
+| Developing | 12.0% |
+| Managed | 0.6% |
+| Sovereign-ready | 0.0% |
+| Withheld (too few controls answered) | 5.8% |
+
+**Sensitivity**
+
+| Headline | Largest single-answer swing (question: swing) | Share of range |
+|---|---|---|
+| Control maturity (0-100) | D1: 35, L1: 26, T2: 23, A1: 20, A3: 20 | 0.51 |
+| Regimes graded "applies" (count) | A1: 4, A3: 3, A4: 3, B1: 3, B3: 3 | 0.40 |
+| Largest statutory cap (EUR) | A1: 476.7M, A5: 450.0M, A4: 399.4M, A3: 0, A6: 0 | 0.95 |
+
+**Dead questions** (no effect on any headline): A6, P2, H1, W1, W2, W3
+
+**Missing data** (positive = leaving answers blank flatters the result)
+
+| Headline | Mean shift, 30% unanswered | Worst profile, half unanswered |
+|---|---|---|
+| Control maturity (0-100) | -7.75 | -17 |
+

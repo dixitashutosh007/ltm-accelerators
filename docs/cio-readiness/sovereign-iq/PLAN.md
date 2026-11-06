@@ -659,3 +659,8 @@ Taken by the product owner on the recommendations in discussion (D15–D19), and
 | D31 | Offerings per finding | One primary offering per finding: migration where the data must move, otherwise the control's own offering; R1–R2 and move mapping at row level | S8 |
 | D32 | Regulations that do not apply | Listed in the client edition, with the scope test, in an appendix (DESIGN 9 kept them consultant-only) | S6 |
 | D33 | Roadmap planning estimates | `v4/delivery.json` and ASM-SOV-012 and 013 as LTM heuristics (Low confidence), reviewed every 90 days by `sovereignty-compliance-lead` | S6 |
+
+### S11 follow-ups (6 Nov 2026)
+- **Area 5:** Sovereign IQ is now in `npm run audit:engines` (three headlines: control maturity, regimes graded "applies", largest statutory cap; band reachability, blank-answer bias, no-effect questions pinned) and in CI (`sovereign-iq-audit.test.ts`).
+- **D13 (AI Act dates):** the client and consultant reports print the dated phase-in lines (law today versus later). The Digital Omnibus is adopted law, Regulation (EU) 2026/1744, in force 27 Jul 2026 (read on EUR-Lex by the practice lead and confirmed by an independent search): Annex III high-risk moves to 2 Dec 2027 and Annex I to 2 Aug 2028; Art. 50 and the GPAI enforcement powers applied from 2 Aug 2026. Claims CLM-SOV-047 to 053 are now V (checked 6 Nov 2026), with CLM-SOV-272 and 273 added; CLM-SOV-050 and 053 are due for review on 4 Dec 2026. Counsel has not reviewed. Note: `design/D13-AI-ACT-DATES.md`.
+- Still open: counsel sign-off per market (A6), the transfer mechanism (A1), Bedrock retention mode and the live eval (A4), D7(c) and D8 sources.

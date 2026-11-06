@@ -86,6 +86,8 @@ export interface RegimeResult {
   verification: string; consultantOnly: boolean;
   nis2Class?: 'essential' | 'important' | 'essential_or_important';
   status: string; statusAsOf: string; volatile: boolean;
+  /** Dated phase-in lines from the registry (D13): each is adopted law; `state` is set against the assessment date. */
+  phaseIn?: Array<{ date: string; duty: string; basis: string; claims: string[]; state: 'applies' | 'later' }>; phaseInNote?: string;
 }
 
 export interface ClassRequirement {
@@ -191,7 +193,7 @@ function askedQuestions(mode: Mode, facts: Facts): string[] {
   }).map(q => q.id);
 }
 
-function applicability(facts: Facts): RegimeResult[] {
+function applicability(facts: Facts, assessmentDate: string): RegimeResult[] {
   const ctx = ctxOf(facts);
   return REGIMES.map(r => {
     const rule = r.applicability.rules.find((x: any) => holds(x.when, ctx));
@@ -201,7 +203,8 @@ function applicability(facts: Facts): RegimeResult[] {
       rule: rule ? rule.id : null, reason: rule ? rule.reason : 'No applicability rule matched your answers.',
       basis: rule?.basis ?? '', claims: rule?.claims ?? [], verification: rule?.verification?.status ?? 'V',
       consultantOnly: rule?.verification?.status === 'UNSOURCED' || grade === 'not_applicable',
-      status: r.status, statusAsOf: r.statusAsOf, volatile: !!r.volatile
+      status: r.status, statusAsOf: r.statusAsOf, volatile: !!r.volatile,
+      ...(r.phaseIn ? { phaseIn: r.phaseIn.map((p: any) => ({ date: p.date, duty: p.duty, basis: p.basis, claims: p.claims ?? [], state: p.date <= assessmentDate ? 'applies' as const : 'later' as const })), phaseInNote: r.phaseInNote } : {})
     };
     if (r.id === 'EU_NIS2' && grade === 'applies') out.nis2Class = nis2Class(facts, rule.id);
     return out;
@@ -467,7 +470,7 @@ export function evaluateSovereignIqV4(input: SovereignIqV4Input): SovereignIqV4R
   for (let pass = 0; pass < 6; pass++) {
     const given = Object.fromEntries(Object.entries(answers).filter(([q]) => pass === 0 ? QUESTION.get(q)?.mode !== 'follow_up' && (mode === 'workshop' || QUESTION.get(q)?.mode === 'executive') : asked.includes(q)));
     facts = scopeFacts(given, mode);
-    regimes = applicability(facts);
+    regimes = applicability(facts, assessmentDate);
     reqs = requirements(facts, regimes);
     facts = withDerived(facts, regimes, reqs);
     const next = askedQuestions(mode, facts);

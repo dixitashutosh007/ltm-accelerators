@@ -11,7 +11,7 @@ import { createRequire } from 'node:module';
 import { evaluateFinOpsIqV3, type AnswerLevel, type FinOpsIqV3Input, type FinOpsIqV3Result } from '../src/accelerators/finops-iq/v3/evaluate';
 import { clientView } from '../src/accelerators/finops-iq/v3/client-view';
 import {
-  BACKLOG_HEADER, effortBand, findingEffort, finopsIqBacklog, finopsIqReport, finopsIqRoadmap, finopsIqSensitivity, resolveTraceField
+  BACKLOG_HEADER, LOW_CONFIDENCE_FLAG, effortBand, findingEffort, finopsIqBacklog, finopsIqReport, finopsIqRoadmap, finopsIqSensitivity, resolveTraceField
 } from '../src/accelerators/finops-iq/v3/report';
 import { format, walkSegments, type ReportDocument, type Seg, type Trace } from '../src/report/model';
 import { cell, toCsv } from '../src/report/csv';
@@ -485,7 +485,7 @@ describe('FinOps IQ report: M7 CIO challenge backlog (D8 to D21)', () => {
     for (const x of runs.filter(y => y.r.technicalPlan?.actions.length)) {
       const t = x.doc.sections.find(s => s.id === 'technical')!;
       for (const b of t.blocks.filter(b => b.kind === 'table') as any[]) {
-        const cells = b.rows.map((r: Seg[][]) => r[2].map(s => (typeof s === 'string' ? s : s.text)).join(''));
+        const cells = b.rows.map((r: Seg[][]) => r[2].map(s => (typeof s === 'string' ? s : s.text)).join('').replace(LOW_CONFIDENCE_FLAG, '').trim());
         const sentences = cells.map((c: string) => c.split(/(?<=[.!?])\s+/));
         const everyRow = sentences.length > 1 ? sentences[0].filter((s: string) => s.length > 40 && sentences.every((y: string[]) => y.includes(s))) : [];
         expect(everyRow, x.label + ' ' + cells.join(' || ').slice(0, 600)).toEqual([]);
@@ -544,5 +544,38 @@ describe('FinOps IQ report: M7 CIO challenge backlog (D8 to D21)', () => {
       expect(text, x.label).not.toMatch(/Microsoft 365 group-based licensing;/);
       if (!x.input.facts.footprint.scopes.includes('kubernetes')) expect(sectionText(x.doc, ['help']), x.label).not.toMatch(/Kubernetes requests/);
     }
+  });
+});
+
+describe('FinOps IQ report: F12 follow-up B, Low-confidence playbook entries are flagged', () => {
+  const rowText = (cell: Seg[]) => cell.map(s => (typeof s === 'string' ? s : s.text)).join('');
+
+  it('every Low-confidence entry shows the flag in the technical execution section of both editions, and no other entry does', () => {
+    let low = 0, other = 0;
+    for (const x of runs.filter(y => y.r.technicalPlan?.actions.length)) {
+      // Rows appear in plan order: per finding, per control, the entries that have a platform action (see technicalSection).
+      const expected: string[] = [];
+      const byFinding = new Map<string, typeof x.r.technicalPlan.actions>();
+      for (const a of x.r.technicalPlan!.actions) byFinding.set(a.findingId, [...(byFinding.get(a.findingId) ?? []), a]);
+      for (const actions of byFinding.values()) for (const control of [...new Set(actions.map(a => a.control))]) {
+        for (const a of actions.filter(y => y.control === control && !y.noPlatformAction)) expected.push(a.confidence);
+      }
+      const t = x.doc.sections.find(s => s.id === 'technical')!;
+      const shown = (t.blocks.filter(b => b.kind === 'table') as any[]).flatMap(b => b.rows.map((r: Seg[][]) => rowText(r[2]).includes(LOW_CONFIDENCE_FLAG)));
+      expect(shown.length, x.label).toBe(expected.length);
+      expected.forEach((conf, i) => {
+        expect(shown[i], `${x.label} row ${i} (${conf})`).toBe(conf === 'Low');
+        if (conf === 'Low') low++; else other++;
+      });
+      // The flag appears nowhere else in the report, and not on a Not-applicable line.
+      const everywhere = sectionText(x.doc, x.doc.sections.map(s => s.id)).split(LOW_CONFIDENCE_FLAG).length - 1;
+      expect(everywhere, x.label).toBe(expected.filter(c => c === 'Low').length);
+    }
+    expect(low, 'the reference scenarios should exercise at least one Low entry').toBeGreaterThan(0);
+    expect(other).toBeGreaterThan(0);
+  });
+
+  it('the playbook source has Low entries and the flag wording names confirming against current documentation', () => {
+    expect(LOW_CONFIDENCE_FLAG).toMatch(/^Low confidence: confirm against the provider's current documentation before use\.$/);
   });
 });
