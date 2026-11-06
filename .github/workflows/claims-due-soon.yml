@@ -1,0 +1,27 @@
+name: Claims due soon
+
+# Every Monday: list the claims in the register that are overdue or due for review within 30 days, in the run summary, so a
+# review is scheduled before check-claims (rule 5) starts failing every pull request. The run fails only when something is
+# already overdue. Re-reading a claim is done by the practice-lead agent or a person, then the register is updated by pull request.
+on:
+  schedule:
+    - cron: '0 6 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  due-soon:
+    name: Claims due for review
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 20
+      - name: List claims due within 30 days
+        run: |
+          node scripts/claims-due-soon.cjs --days 30 --markdown | tee -a "$GITHUB_STEP_SUMMARY" || status=$?
+          node scripts/claims-due-soon.cjs --days 30
+          exit ${status:-0}
