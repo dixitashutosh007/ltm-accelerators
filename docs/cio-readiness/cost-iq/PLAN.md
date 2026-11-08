@@ -462,3 +462,22 @@ Source: `CQ10-CIO-CHALLENGE.md` (practice-lead review; advisory). Fixed, each wi
 
 ### CQ11 closed: release label (5 Nov 2026)
 The owner concluded the release label on 5 Nov 2026: `COSTIQ-0.7.8-DRAFT` becomes `COSTIQ-1.0.0` (`APPROVED_WITH_ACCEPTED_PARTIALS`). The accepted Partials, the conditions of use and what stays open are in `RELEASE-DECISION.md`. Cost IQ is complete as a phase plan; remaining work is the open list there.
+
+## CQ12: production readiness (from 8 Nov 2026)
+
+Started on the owner's instruction "let's fix Cost IQ first, and make it production ready", after the portfolio review (`docs/cio-readiness/PORTFOLIO-REVIEW-2026-11-08.md`). Release `COSTIQ-1.0.0` stays in place until CQ12 closes; the methodology version moves when the engine changes are complete.
+
+| Slice | Content | Gate |
+|---|---|---|
+| 1 | "Don't know" on every scored question; a shown question left blank counts as "Don't know"; the page names the blanks before completing; no AI wording while AI is off | Audit: missing data never flatters (+0); tests |
+| 2 | Every question used: the CIO's priorities shape the summary and the order of recommendations; hotspot answers qualify findings, and hotspots the scored answers did not confirm are listed | No collected question unused by score, finding or report (test) |
+| 3 | Finding depth: option-level triggers for the focus-area questions (the v7.1.1 rule against generic score thresholds is kept); a finding for every dimension; a second scored question for single-question dimensions (S5) | Every dimension has a finding; no dimension rests on one question in the bank |
+| 4 | CIO-first report: decision and money lead; "your view and the evidence"; a readable Appendix A | Report checks; text-layer review |
+| 5 | Published reference per dimension (T2), with source, year and sample | Claims registered |
+| 6 | Consultant edition by role (M8) | A non-consultant cannot download it (test) |
+| Outside code | LTM AWS account and real-account checks, counsel review, practice-lead approval of goldens, pilots | Owner and counsel |
+
+### CQ12 slice 1 (8 Nov 2026): Don't know, and blanks
+- **Finding.** 41 of 68 scored questions offered no "Don't know" (21 of them core questions, every star rating and every slider), and the server accepts a completion with blanks. Because a dimension averaged only what was answered, leaving a weak optional answer blank raised the score: the audit's worst profile was +1 (Cost IQ) and +2 (Value IQ).
+- **Change.** 28 choice questions gain "We do not know.", mapped to each question's lowest level (question versions bumped). Stars and sliders get a "Don't know" button, sent as `UNKNOWN` and scored at the lowest level by the engine (`lowestScore`). A question shown for the chosen areas and left blank counts as "Don't know" in its dimension and is counted as `unanswered`, not `answered`; without focus areas the engine cannot tell what was asked and skips blanks as before. A slider reads "Not answered" until moved. Before completing, the page says how many questions are blank and that each counts as "Don't know", with "Complete anyway". The waiting screen and the notes box no longer mention an AI review (AI is off at the service).
+- **Evidence.** `npm run audit:engines`: missing data worst profile **+0** on both headlines (was +1 and +2); largest single-answer swing on Value IQ 16 (was 25, CORE-34). Goldens unchanged (fully answered profiles score as before). Tests: `cost-iq-unknown.test.ts` (every scored question offers Don't know; it scores at the lowest level; a blank equals Don't know; removing any answer never raises a headline, from best answers and from all Don't know); browser test for the buttons, the slider state and the blank notice.

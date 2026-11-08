@@ -109,7 +109,7 @@ const plural = (n: number, one: string, many: string) => (n === 1 ? one : many);
 const tone = (score: number | null): Tone => (score == null ? 'unknown' : score >= 80 ? 'good' : score >= 60 ? 'partial' : score >= 40 ? 'weak' : 'bad');
 const optionLabel = (qid: string, answer: unknown): string => {
   const q = questionsById.get(qid);
-  const one = (a: unknown) => q?.options?.find((o: any) => o.id === String(a))?.label ?? String(a);
+  const one = (a: unknown) => q?.options?.find((o: any) => o.id === String(a))?.label ?? (a === 'UNKNOWN' ? 'We do not know.' : String(a));
   return Array.isArray(answer) ? answer.map(one).join('; ') : one(answer);
 };
 const has = (answers: Record<string, unknown>, id: string) => answers[id] != null && answers[id] !== '' && !(Array.isArray(answers[id]) && (answers[id] as unknown[]).length === 0);

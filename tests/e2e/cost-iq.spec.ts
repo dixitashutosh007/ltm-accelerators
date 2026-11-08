@@ -94,6 +94,40 @@ test.describe('Cost IQ', () => {
     expect(world.pageErrors).toEqual([]);
   });
 
+  test('stars and sliders offer Don’t know, a slider is not answered until moved, and blanks are named before completing (CQ12)', async ({ page, context, world }) => {
+    await signedIn(context, permitted(makeIdToken('consultant@ltm.com')));
+    world.on('GET', ASSESSMENT, () => ({ body: { ok: true, data: [] } }));
+    world.on('POST', ASSESSMENT, ({ body }) => ({ body: { ok: true, data: { ...body.snapshot, respondentEmail: 'consultant@ltm.com' } } }));
+    const evaluated: any[] = [];
+    world.on('POST', '/api/evaluate/cost-iq', ({ body }) => { evaluated.push(body); return { body: evaluateCostIq({ answers: body.answers, scope: body.scope }) }; });
+    await page.goto('/cost-iq-v10');
+    await page.getByLabel('Organisation this assessment is for').fill('Example Bank plc');
+    await page.getByRole('button', { name: /Start the assessment/ }).click();
+    await expect(page.locator('.q-card').first()).toBeVisible();
+    // The section holding the first star question and the first slider.
+    for (const kind of ['stars', 'slider']) {
+      const id: string = await page.evaluate(k => { const q = vq().find((x: any) => x.interaction === k); sectionIndex = sections().indexOf(q.section); renderAssessment(); return q.id; }, kind);
+      const card = page.locator('.q-card').filter({ has: page.getByRole('button', { name: 'Don’t know' }) }).filter({ hasText: await page.evaluate(i => vq().find((x: any) => x.id === i).prompt, id) });
+      if (kind === 'slider') await expect(card.getByText('Not answered')).toBeVisible();
+      await card.getByRole('button', { name: 'Don’t know' }).click();
+      expect(await page.evaluate(i => answers[i], id)).toBe('UNKNOWN');
+      await expect(page.locator('.q-card').filter({ hasText: await page.evaluate(i => vq().find((x: any) => x.id === i).prompt, id) }).getByRole('button', { name: 'Don’t know' })).toHaveAttribute('aria-pressed', 'true');
+    }
+    // Every required question answered, optional ones left blank: completing names how many count as Don't know, and nothing is sent.
+    await page.evaluate(() => { vq().forEach((q: any) => { if (q.required === false || answers[q.id] !== undefined) return; answers[q.id] = q.options && q.options.length ? (q.interaction === 'multi-select' ? [q.options[0].id] : q.options[0].id) : (q.interaction === 'stars' ? 3 : 50); }); sectionIndex = sections().length - 1; renderAssessment(); });
+    const blanks: number = await page.evaluate(() => blankScored().length);
+    expect(blanks).toBeGreaterThan(0);
+    await page.getByRole('button', { name: /Complete assessment/ }).click();
+    await expect(page.getByRole('alert')).toContainText(`${blanks} questions are unanswered. Each counts as “Don’t know”`);
+    expect(evaluated).toEqual([]);
+    await page.getByRole('button', { name: 'Complete anyway' }).click();
+    await expect(page.getByText('Your technology cost & value snapshot')).toBeVisible({ timeout: 20_000 });
+    expect(evaluated).toHaveLength(1);
+    // The page promises no AI review: the AI narrative is off at the service.
+    await expect(page.getByText(/AI review|AI reviewer/)).toHaveCount(0);
+    expect(world.pageErrors).toEqual([]);
+  });
+
   test('the production page offers no developer test data, and a question can be answered from the keyboard', async ({ page, context, world }) => {
     await signedIn(context, permitted(makeIdToken('consultant@ltm.com')));
     world.on('GET', ASSESSMENT, () => ({ body: { ok: true, data: [] } }));
