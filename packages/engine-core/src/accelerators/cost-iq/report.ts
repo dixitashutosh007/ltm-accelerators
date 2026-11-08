@@ -25,7 +25,15 @@ const CASES = ['conservative', 'expected', 'upper'] as const;
 const CASE_LABEL: Record<string, string> = { conservative: 'Conservative', expected: 'Expected', upper: 'Upper' };
 const SEVERITY: Record<string, string> = { high: 'High', medium: 'Medium', low: 'Low' };
 
-interface Dimension { id: string; name: string; definition: string; type: 'cost' | 'value'; weight: number; score: number | null; answered: number }
+interface Dimension { id: string; name: string; definition: string; type: 'cost' | 'value'; weight: number; score: number | null; answered: number; unanswered?: number }
+/** CQ12 slice 2: what the client said about context, priorities and hotspots (cio-context.cjs). Moves no score. */
+interface CioItem { questionId: string; kind: string; label: string; answer: unknown; findingId?: string | null }
+interface CioCompare { area: string; rank: number | null; findingIds: string[]; raised: string[]; status: 'confirmed' | 'not-confirmed' | 'not-assessed' }
+export interface CioContext {
+  profile: Record<string, unknown>; protect: string[]; pressure: string | null; fundingChange: string | null; fundingRecommendation: string | null; fundingRecommendationRaised: boolean;
+  redirect: string[]; barriers: string[]; protectCapabilities: string[]; expectations: CioCompare[]; costHypotheses: CioCompare[]; blindSpots: string[];
+  findingContext: Record<string, CioItem[]>; unconfirmedHotspots: CioItem[];
+}
 interface Finding { id: string; dimension: string; title: string; description: string; severity: string; recommendationIds: string[]; activation?: { evidenceSignals?: Array<{ questionId: string; triggerOptions?: string[]; operator?: string; value?: number }> } }
 interface Recommendation { id: string; title: string; description: string; ltmService: string; findingIds: string[] }
 interface Opportunity { findingId: string; economic: { status: string; missingEvidence?: string[] }; practical: { status: string; missingFactors?: string[] } }
@@ -36,6 +44,7 @@ export interface CostIqResult {
   findings: Finding[];
   recommendations: Recommendation[];
   opportunities: Opportunity[];
+  cio?: CioContext;
 }
 
 export interface CostIqReportInput {
@@ -71,6 +80,15 @@ const FINOPS_CAPABILITY = new Map<string, string>((finopsRegistry as any).capabi
 const SEV_ORDER: Record<string, number> = { high: 0, medium: 1, low: 2 };
 /** Findings in the order the report lists them; the position is the number a reader uses to cross-refer. */
 const orderedFindings = (fs: Finding[]) => [...fs].sort((a, b) => (SEV_ORDER[a.severity] ?? 3) - (SEV_ORDER[b.severity] ?? 3));
+/**
+ * The findings with those in the areas the client expected first, by the client's rank (CQ12 slice 2). `orderedFindings` sorts
+ * by severity and the sort is stable, so within one severity this order holds; report and backlog both start from it.
+ */
+function byClientPriority(r: CostIqResult): Finding[] {
+  const rank = new Map<string, number>();
+  for (const e of [...(r.cio?.expectations ?? []), ...(r.cio?.costHypotheses ?? [])]) for (const f of e.findingIds) rank.set(f, Math.min(rank.get(f) ?? 9, e.rank ?? 4));
+  return [...r.findings].sort((a, b) => (rank.get(a.id) ?? 9) - (rank.get(b.id) ?? 9));
+}
 /** Recommended steps in one order everywhere: by the highest-severity finding each addresses (the order findings are numbered in). */
 const orderedRecs = (c: { findings: Finding[]; i: CostIqReportInput }): Recommendation[] => {
   const rank = new Map(orderedFindings(c.findings).map((f, k) => [f.id, k]));
@@ -113,6 +131,15 @@ const optionLabel = (qid: string, answer: unknown): string => {
   return Array.isArray(answer) ? answer.map(one).join('; ') : one(answer);
 };
 const has = (answers: Record<string, unknown>, id: string) => answers[id] != null && answers[id] !== '' && !(Array.isArray(answers[id]) && (answers[id] as unknown[]).length === 0);
+/** An answer in words: option labels (size bands in the reporting currency), a slider as a percentage, stars out of 5. */
+function answerSegs(i: CostIqReportInput, qid: string, a: unknown): Seg[] {
+  const q = questionsById.get(qid);
+  if (typeof a === 'number') return q?.interaction === 'stars' ? [traced(`answers[${qid}]`, a, 'count', []), ref(' of 5')] : [traced(`answers[${qid}]`, a, 'percent', [])];
+  const cur = String(i.currency ?? i.answers['CTX-01'] ?? '');
+  const bands: Record<string, string> | undefined = q?.labelsByCurrency?.[cur];
+  const one = (v: unknown) => bands?.[String(v)] ?? optionLabel(qid, v);
+  return [quoted(Array.isArray(a) ? a.map(one).join('; ') : one(a))];
+}
 
 interface Workstream { id: string; name: string; activities: string[]; ownerRole: string; ltmRole: string; durationWeeks: [number, number]; effortFteWeeks: [number, number]; dependsOn: string[]; milestone: string; kpis: string[] }
 interface Package {
@@ -140,8 +167,8 @@ interface Ctx { i: CostIqReportInput; client: boolean; opts: CostIqReportOptions
 
 /** The value a traced field names, from the engine result, the answers, the scope or the linked FinOps IQ summary. */
 export function resolveCostIqField(i: CostIqReportInput, field: string): number | undefined {
-  const dim = /^dimensions\[([\w-]+)\]\.(score|answered)$/.exec(field);
-  if (dim) { const d = i.result.dimensions.find(x => x.id === dim[1]); return d ? (d[dim[2] as 'score' | 'answered'] ?? undefined) : undefined; }
+  const dim = /^dimensions\[([\w-]+)\]\.(score|answered|unanswered)$/.exec(field);
+  if (dim) { const d = i.result.dimensions.find(x => x.id === dim[1]); return d ? (d[dim[2] as 'score' | 'answered' | 'unanswered'] ?? undefined) : undefined; }
   if (field === 'headlines.costIQ') return i.result.headlines.costIQ ?? undefined;
   if (field === 'headlines.valueIQ') return i.result.headlines.valueIQ ?? undefined;
   if (field === 'evidence.assessmentCompleteness') return i.result.evidence.assessmentCompleteness;
@@ -254,7 +281,7 @@ function summary(c: Ctx): ReportSection {
     { label: 'Cost management', value: h.costIQ != null ? [traced('headlines.costIQ', h.costIQ, 'index', []), OF100] : ['Not scored'], note: ['Spend visibility, governance, infrastructure, software, workforce and vendors'] },
     { label: 'Value management', value: h.valueIQ != null ? [traced('headlines.valueIQ', h.valueIQ, 'index', []), OF100] : ['Not scored'], note: ['Alignment, investment quality, benefits and agility'] },
     { label: 'Questions answered', value: [traced('evidence.assessmentCompleteness', i.result.evidence.assessmentCompleteness, 'percent', [])], note: ['Of the questions asked for the areas chosen; not confidence in a saving'] },
-    { label: 'Dimensions scored', value: [count('dimensions.scored', c.scored.length), ' of ', count('dimensions.total', i.result.dimensions.length)], note: ['A dimension with no answer is not scored'] },
+    { label: 'Dimensions scored', value: [count('dimensions.scored', c.scored.length), ' of ', count('dimensions.total', i.result.dimensions.length)], note: ['A dimension with no question asked is not scored'] },
     { label: 'Findings', value: [count('findings.count', i.result.findings.length)], note: [count('findings[high]', i.result.findings.filter(f => f.severity === 'high').length), ' high'] }
   ] });
   if (weakest.length) {
@@ -315,9 +342,76 @@ function profile(c: Ctx): ReportSection {
   return { id: 'profile', title: 'Scope and context', blocks };
 }
 
+/**
+ * CQ12 slice 2: the client's situation and priorities, and their own view of where the opportunities are, set against what the
+ * scored answers raised. Built only from answers and the engine's `cio` block; it sizes nothing and moves no score.
+ */
+function yourView(c: Ctx): ReportSection | null {
+  const { i } = c, x = i.result.cio;
+  if (!x) return null;
+  const P = (key: string, qid: string) => (x.profile[key] != null ? answerSegs(i, qid, x.profile[key]) : null);
+  const num = (fid: string) => orderedFindings(c.findings).findIndex(f => f.id === fid) + 1;
+  const title = (fid: string) => c.findings.find(f => f.id === fid)?.title ?? fid;
+  const blocks: Block[] = [];
+
+  const situation: Seg[] = [];
+  const add = (lead: string, segs: Seg[] | null, tail = '') => { if (segs) situation.push(situation.length ? '; ' : '', lead, ...segs, tail); };
+  if (x.profile.industry != null) situation.push(quoted(optionLabel('CORE-02', x.profile.industry)));
+  add('annual revenue ', P('revenue', 'CORE-03'));
+  add('technology spend in scope ', P('spend', 'CORE-04'));
+  add('technology operations in ', P('countries', 'CTX-05'));
+  add('regions ', P('regions', 'CTX-03'));
+  add('operations delivered onshore: ', P('onshoreShare', 'CTX-04'));
+  add('spend priced in another currency: ', P('foreignPricedShare', 'CTX-02'));
+  if (situation.length) blocks.push({ kind: 'paragraph', style: 'lead', segs: ['As described by the client: ', ...situation, '.'] });
+  const inc = x.profile.spendIncludes;
+  if (Array.isArray(inc) && inc.length) {
+    const q = questionsById.get('CORE-05');
+    const missing = (q?.options ?? []).map((o: any) => o.id).filter((id: string) => !['OTHER', 'UNKNOWN'].includes(id) && !inc.includes(id));
+    blocks.push({ kind: 'paragraph', style: 'small', segs: inc.includes('UNKNOWN')
+      ? ['The client could not confidently say which categories the technology-spend figure includes, so any comparison with it is approximate.']
+      : ['The technology-spend figure includes: ', quoted(optionLabel('CORE-05', inc)), '.', ...(missing.length ? [' It does not include: ', quoted(optionLabel('CORE-05', missing)), '.'] : [])] });
+  }
+
+  const rows: Seg[][][] = [];
+  const row = (k: string, v: Seg[]) => rows.push([[k], v]);
+  if (x.protect.length) row('Outcomes to protect', [quoted(x.protect.map((o, n) => `${n + 1}. ${optionLabel('CORE-07', o)}`).join('  '))]);
+  if (x.pressure != null) row('Cost pressure', answerSegs(i, 'CORE-08', x.pressure));
+  if (x.protectCapabilities.length) row('Capabilities to protect from broad cuts', answerSegs(i, 'ADP-57', x.protectCapabilities));
+  if (x.redirect.length) row('Where 10% of spend would be redirected', answerSegs(i, 'CORE-45', x.redirect));
+  if (x.barriers.length) row('Barriers to realising savings', answerSegs(i, 'ADP-56', x.barriers));
+  if (x.fundingChange != null) {
+    const r = x.fundingRecommendation ? i.result.recommendations.find(y => y.id === x.fundingRecommendation) ?? (config as any).recommendations.find((y: any) => y.id === x.fundingRecommendation) : null;
+    row('Funding change that would help most', [...answerSegs(i, 'CORE-10', x.fundingChange), ...(r ? [' The matching step, ', quoted(uk(r.title)), x.fundingRecommendationRaised ? ', is in the roadmap.' : ', is not raised by the findings; it can be added to the roadmap at the client\'s request.'] : [])]);
+  }
+  if (rows.length) {
+    blocks.push({ kind: 'subheading', text: 'Priorities the client set' });
+    blocks.push({ kind: 'table', head: ['Topic', 'As answered'], widths: [170, '*'], rows, small: true });
+  }
+
+  const compare = [...x.expectations.map(e => ({ e, qid: 'CORE-09', as: 'Value opportunity' })), ...x.costHypotheses.map(e => ({ e, qid: 'ADP-55', as: 'Cost opportunity' }))];
+  if (compare.length) {
+    blocks.push({ kind: 'subheading', text: 'The client\'s view and the evidence' });
+    blocks.push({ kind: 'paragraph', style: 'small', segs: ['Before seeing any finding, the client named where it expected the largest opportunities. Each is set against the findings the scored answers raised. A finding confirms an area; an area not confirmed is worth testing with evidence, not dismissing. Within one rating, findings in the areas the client expected are listed first.'] });
+    blocks.push({ kind: 'table', small: true, head: ['Area named', 'Asked as', 'Rank', 'What the scored answers show'], widths: ['*', 90, 40, 190], rows: compare.map(({ e, qid, as }) => [
+      [quoted(optionLabel(qid, e.area))], [as], [e.rank ? ref(String(e.rank)) : '—'],
+      e.status === 'confirmed' ? [ref(`Confirmed: ${e.raised.map(f => `Finding ${num(f)}`).join(', ')}`)] : e.status === 'not-confirmed' ? ['Not confirmed by the scored answers'] : ['Outside what Cost IQ\'s findings assess']
+    ]) });
+  }
+  if (x.blindSpots.length) {
+    blocks.push({ kind: 'subheading', text: 'Raised, but not where the client expected' });
+    blocks.push({ kind: 'list', items: x.blindSpots.map(f => [ref(`Finding ${num(f)}`), ': ', quoted(title(f))]) });
+  }
+  if (x.unconfirmedHotspots.length) {
+    blocks.push({ kind: 'subheading', text: 'Issues named that the scored answers did not confirm' });
+    blocks.push({ kind: 'list', small: true, items: x.unconfirmedHotspots.map(h => [strong(h.label), ': ', ...answerSegs(i, h.questionId, h.answer), '. ', h.findingId ? 'Listed for validation: no finding is raised on the scored answers.' : 'No Cost IQ finding covers this area; listed for the consultant to follow up.']) });
+  }
+  return blocks.length ? { id: 'your-view', title: 'Priorities and the client\'s view', blocks } : null;
+}
+
 function scores(c: Ctx): ReportSection {
   const { i } = c;
-  const row = (d: Dimension) => ({ label: d.name, value: d.score ?? 0, shown: d.score != null ? [traced(`dimensions[${d.id}].score`, d.score, 'index', []), OF100, '  ·  ', count(`dimensions[${d.id}].answered`, d.answered), plural(d.answered, ' question', ' questions')] as Seg[] : ['Not scored'] as Seg[], tone: tone(d.score) });
+  const row = (d: Dimension) => ({ label: d.name, value: d.score ?? 0, shown: d.score != null ? [traced(`dimensions[${d.id}].score`, d.score, 'index', []), OF100, '  ·  ', count(`dimensions[${d.id}].answered`, d.answered), ' answered', ...(d.unanswered ? [', ', count(`dimensions[${d.id}].unanswered`, d.unanswered), ' left blank'] : [])] as Seg[] : ['Not scored'] as Seg[], tone: tone(d.score) });
   const group = (type: 'cost' | 'value'): Block[] => {
     const ds = i.result.dimensions.filter(d => d.type === type);
     return [{ kind: 'bars', max: 100, items: ds.map(row) }];
@@ -334,7 +428,7 @@ function scores(c: Ctx): ReportSection {
     return [strong(d.name), ' rests on one question: ', quoted(qid ? questionsById.get(qid).prompt : 'one answered question'), ' Treat the score as a prompt for discussion.'];
   }) });
   const unscored = i.result.dimensions.filter(d => d.score == null);
-  if (unscored.length) blocks.push({ kind: 'paragraph', style: 'small', segs: [`Not scored, because no scored question feeding it was asked or answered: ${unscored.map(d => d.name).join('; ')}.`] });
+  if (unscored.length) blocks.push({ kind: 'paragraph', style: 'small', segs: [`Not scored, because no scored question feeding it was asked: ${unscored.map(d => d.name).join('; ')}.`] });
   blocks.push({ kind: 'paragraph', style: 'small', segs: ['The ', count('dimensions.total', i.result.dimensions.length), ' dimensions are LTM\'s own constructs. They are not a published taxonomy; the closest published references are named under Methodology.'] });
   return { id: 'scores', title: 'Scores by dimension', blocks };
 }
@@ -365,9 +459,10 @@ function findingsSection(c: Ctx): ReportSection {
       [['Raised by'], signals.length ? signals.map((s, k) => {
         const q = questionsById.get(s.questionId);
         const a = i.answers[s.questionId];
-        return [k ? '\n' : '', quoted(q?.prompt ?? 'a question in the assessment'), ' Answer: ', typeof a === 'number' || (s.operator && Number.isFinite(Number(a))) ? traced(`answers[${s.questionId}]`, Number(a), 'percent', []) : quoted(optionLabel(s.questionId, a))];
+        return [k ? '\n' : '', quoted(q?.prompt ?? 'a question in the assessment'), ' Answer: ', ...(typeof a !== 'number' && s.operator && Number.isFinite(Number(a)) ? [traced(`answers[${s.questionId}]`, Number(a), 'percent', [])] : answerSegs(i, s.questionId, a))];
       }).flat() : ['The combination of answers given']],
       ...(sharedWith(c, f, k).length ? [[['Shares its trigger'], [ref(`The same answer also raises ${sharedWith(c, f, k).map(n => `Finding ${n}`).join(' and ')}.`)]]] as Seg[][][] : []),
+      ...((i.result.cio?.findingContext[f.id] ?? []).length ? [[['Where the client sees it'], (i.result.cio!.findingContext[f.id]).flatMap((x, n) => [n ? '\n' : '', strong(x.label), ': ', ...answerSegs(i, x.questionId, x.answer)])]] as Seg[][][] : []),
       [['Needed before it is sized'], [o?.economic.missingEvidence?.length ? o.economic.missingEvidence.join('; ') : 'Evidence supplied; feasibility still to be agreed']]
     ];
     if (c.opts.view === 'consultant' && o?.practical.missingFactors?.length) rows.push([['Feasibility to agree'], [o.practical.missingFactors.join('; ')]]);
@@ -524,11 +619,11 @@ function sow(c: Ctx): ReportSection {
 /* ------------------------------- Appendices ------------------------------- */
 
 function calculation(c: Ctx): ReportSection {
-  const rows = c.i.result.dimensions.map(d => [[strong(d.name)], [d.type], [d.score != null ? traced(`dimensions[${d.id}].score`, d.score, 'index', []) : 'Not scored'], [count(`dimensions[${d.id}].answered`, d.answered)]] as Seg[][]);
+  const rows = c.i.result.dimensions.map(d => [[strong(d.name)], [d.type], [d.score != null ? traced(`dimensions[${d.id}].score`, d.score, 'index', []) : 'Not scored'], [count(`dimensions[${d.id}].answered`, d.answered)], [count(`dimensions[${d.id}].unanswered`, d.unanswered ?? 0)]] as Seg[][]);
   return { id: 'calculation', title: 'How we calculated this', appendix: true, blocks: [
-    { kind: 'paragraph', segs: ['Each scored question maps every answer to a fixed value on a scale where a higher value is stronger practice. A dimension score is the mean of the values of the scored questions answered for it, each counting equally. The cost headline and the value headline are the means of their dimension scores, each dimension counting equally; a dimension with no answer is left out, not counted as zero.'] },
-    { kind: 'table', head: ['Dimension', 'Kind', 'Score', 'Questions answered'], widths: ['*', 60, 60, 110], small: true, rows },
-    { kind: 'paragraph', style: 'small', segs: ['Answers marked "Unknown" take the lowest value on their question, so not knowing never scores better than knowing. A question left blank is not scored. Context questions and hypotheses are recorded but never scored.'] }
+    { kind: 'paragraph', segs: ['Each scored question maps every answer to a fixed value on a scale where a higher value is stronger practice. A dimension score is the mean of the values of the scored questions asked for it, each counting equally; a question asked and left blank counts as "We do not know". The cost headline and the value headline are the means of their dimension scores, each dimension counting equally; a dimension with no question asked is left out, not counted as zero.'] },
+    { kind: 'table', head: ['Dimension', 'Kind', 'Score', 'Answered', 'Left blank'], widths: ['*', 50, 50, 60, 60], small: true, rows },
+    { kind: 'paragraph', style: 'small', segs: ['An answer of "We do not know" takes the lowest value on its question, and so does a question that was asked and left blank, so not knowing or skipping never scores better than answering. Context questions and hypotheses are recorded but never scored.'] }
   ] };
 }
 
@@ -639,7 +734,7 @@ function britishResult(r: CostIqResult): CostIqResult {
 export function costIqReport(rawInput: CostIqReportInput, opts: CostIqReportOptions): ReportDocument {
   const input: CostIqReportInput = { ...rawInput, result: britishResult(rawInput.result) };
   const client = opts.view === 'client';
-  const c: Ctx = { i: input, client, opts, scored: input.result.dimensions.filter(d => d.score != null), findings: input.result.findings };
+  const c: Ctx = { i: input, client, opts, scored: input.result.dimensions.filter(d => d.score != null), findings: byClientPriority(input.result) };
   const doc: ReportDocument = {
     meta: {
       platform: PLATFORM, product: PRODUCT, title: 'Technology cost and value diagnostic report',
@@ -649,7 +744,7 @@ export function costIqReport(rawInput: CostIqReportInput, opts: CostIqReportOpti
       footer: `${PLATFORM} · ${PRODUCT} · Confidential`,
       status: 'Indicative assessment from self-reported answers. Not a savings commitment.'
     },
-    sections: [summary(c), ...(narrativeSection(c) ? [narrativeSection(c)!] : []), profile(c), scores(c), findingsSection(c), cloudSection(c), ...(leversSection(c) ? [leversSection(c)!] : []), roadmap(c), help(c), execution(c), calculation(c), assumptions(c), methodology(c), sources(c), ...(client ? [] : [sow(c), consultant(c)])]
+    sections: [summary(c), ...(yourView(c) ? [yourView(c)!] : []), ...(narrativeSection(c) ? [narrativeSection(c)!] : []), profile(c), scores(c), findingsSection(c), cloudSection(c), ...(leversSection(c) ? [leversSection(c)!] : []), roadmap(c), help(c), execution(c), calculation(c), assumptions(c), methodology(c), sources(c), ...(client ? [] : [sow(c), consultant(c)])]
   };
   // Last pass: every string in the sections in British spelling, the client's own name aside (L2).
   const name = opts.client.trim();
@@ -663,7 +758,7 @@ export function costIqBacklog(input: CostIqReportInput, view: 'client' | 'consul
   const rec = new Map(input.result.recommendations.map(r => [r.id, r]));
   const order = { high: 0, medium: 1, low: 2 } as Record<string, number>;
   const header = [...(view === 'consultant' ? ['Finding ID'] : []), 'Finding number', 'Finding', 'Dimension', 'Severity', 'Why it matters', 'Evidence needed before sizing', 'Recommended step', 'LTM service', 'Offering type', 'Status'];
-  const rows = orderedFindings(input.result.findings).map((f, k) => {
+  const rows = orderedFindings(byClientPriority(input.result)).map((f, k) => {
     const r = rec.get(f.recommendationIds[0]);
     return [...(view === 'consultant' ? [f.id] : []), k + 1, f.title, f.dimension, SEVERITY[f.severity] ?? f.severity, f.description, (opp.get(f.id)?.economic.missingEvidence ?? []).join('; '), r?.title ?? '', (r && pkg({ i: input, findings: input.result.findings } as Ctx, r.id)?.offeringName) || r?.ltmService || '', r && PACKAGES.get(r.id) ? TYPE_LABEL[PACKAGES.get(r.id)!.offeringType] : 'Not mapped', 'Open'];
   });
