@@ -22,7 +22,7 @@ import { sealView, tenderLevel, type SealView } from './seal';
 import { howLtmCanHelp, type HelpItem } from './help';
 import { DATA_CLASSES, DATA_CLASS_LABELS, LEVELS, PEOPLE_CLASSES, personalOutsideSubjects, personalTransfer, platformParents, scopeFacts, type Answers, type DataClass, type Facts, type Level } from './facts';
 
-export const ENGINE_VERSION = '4.7.0';
+export const ENGINE_VERSION = '4.8.0';
 /**
  * S4 calibration: the smallest required set over which one answer moves maturity by at most 20 points (T2 aside).
  * Below it no maturity number is shown, in either mode (owner decisions, 25 and 26 Oct 2026).
@@ -56,6 +56,10 @@ const ZONE_NAME = new Map<string, string>((QUESTION.get('A1').options as any[]).
 /** Display names in finding text (S6 challenge D11): the lower-case short name of a kind of data, a zone's name. */
 const dataName = (c: string) => { const l = DATA_CLASS_LABELS[c] ?? c; return /^[A-Z][a-z]/.test(l) ? l[0].toLowerCase() + l.slice(1) : l; };
 const zoneName = (z: string) => ZONE_NAME.get(z) ?? z;
+/** The zones the registry holds regimes for (fr and de are EU member states; us_ca and us_ny are US states). */
+const COVERED_ZONES = new Set<string>(REGIMES.map(r => { const j = String(r.jurisdiction); return j === 'eu' || j === 'fr' || j === 'de' ? 'eea' : j.startsWith('us') ? 'us' : j; }));
+const andList = (xs: string[]) => (xs.length < 2 ? xs.join('') : `${xs.slice(0, -1).join(', ')} and ${xs[xs.length - 1]}`);
+export const COVERED_ZONE_NAMES = [...ZONE_NAME.keys()].filter(z => COVERED_ZONES.has(z)).map(zoneName);
 const RATES = (fx as any).rates as Record<string, { rate: number; claim?: string }>;
 const LEVEL_NUM = (l: Level) => LEVELS.indexOf(l);
 const SEVERITY_ORDER: Severity[] = ['Critical', 'High', 'Medium', 'Low'];
@@ -169,6 +173,12 @@ export interface SovereignIqV4Result {
   seal: SealView;
   /** How LTM can help: the offerings the findings and the placement matrix call for, client-visible part only (PLAN S8). */
   help: HelpItem[];
+  /**
+   * Coverage guard (portfolio review 0.1): where the client is headquartered, has entities or holds personal data, and
+   * which of those places the registry does not cover. Outside the registry no regime is graded, so "none applies"
+   * there means "not assessed", never "no obligations". `none` is true when no place in the footprint is covered.
+   */
+  jurisdictions: { footprint: string[]; notAssessed: Array<{ zone: string; name: string }>; none: boolean; covered: string[] };
 }
 
 /* ---------------------------------- Engine --------------------------------- */
@@ -668,6 +678,26 @@ export function evaluateSovereignIqV4(input: SovereignIqV4Input): SovereignIqV4R
       sources: g.claims, mode, consultantOnly: g.consultantOnly, rank: 0, wave: 0, ...UNPLANNED
     });
   }
+  // Coverage guard: places in the footprint outside the registry are not assessed, and the client is told so.
+  const footprint = [...new Set([facts['org.hq'], ...list(facts['org.establishments']), ...list(facts['data.subject_regions'])]
+    .filter((z): z is string => typeof z === 'string' && !isUnknown(z) && z !== 'none_outside_hq'))];
+  const notAssessed = footprint.filter(z => !COVERED_ZONES.has(z)).map(z => ({ zone: z, name: z === 'other' ? 'countries outside the listed markets' : zoneName(z) }));
+  // "None" only when no regime is graded at all: an answer elsewhere (an EU bank flag, say) can still bring one in.
+  const noneCovered = footprint.length > 0 && notAssessed.length === footprint.length && regimes.every(g => g.grade === 'not_applicable');
+  if (notAssessed.length) {
+    const names = andList(notAssessed.map(n => n.name));
+    findings.push({
+      id: 'F-SCOPE-COVERAGE', type: 'scope_confirmation', dataClasses: [], requiredLevel: null, unconfirmed: true, regimes: [],
+      severity: noneCovered ? 'Critical' : 'High',
+      title: `Take local legal advice for ${names}: outside this assessment`,
+      businessConsequence: noneCovered
+        ? `This assessment holds no regulations for ${names}, where you operate or hold personal data. No obligations are shown because none were assessed, not because none apply.`
+        : `This assessment holds no regulations for ${names}, where you operate or hold personal data. Obligations there are not assessed and are not in the exposure, the requirements or the roadmap.`,
+      ownerRole: 'General Counsel', timeFrame: '',
+      remedy: `Obtain advice from counsel qualified in ${names} on data protection, data localisation, sector and cyber-security duties, then set the required level for the data held there.`,
+      offeringRefs: ['OFF.SOV.ASSESS'], sources: [], mode, consultantOnly: false, rank: 0, wave: 0, ...UNPLANNED
+    });
+  }
   if (transfer.conflict) findings.push({
     id: 'F-CONFLICT-1', type: 'conflict', control: 'SOV.XFER.BASIS', dataClasses: PEOPLE_CLASSES.filter(c => classes.includes(c)), requiredLevel: null, unconfirmed: true,
     regimes: transferRegimes.map(x => ({ regime: x, grade: graded.get(x)!.grade, article: '' })), severity: 'High',
@@ -749,13 +779,16 @@ export function evaluateSovereignIqV4(input: SovereignIqV4Input): SovereignIqV4R
     controls: results,
     exposure: {
       regimes: exposure,
-      summary: `${count('applies')} regimes apply on your answers, ${count('likely_confirm')} may apply – confirm, ${count('advisory')} for awareness; ${countRag('red')} with major control gaps, ${countRag('amber')} with some gaps, ${countRag('green')} with no gaps found.`,
+      summary: noneCovered
+        ? `Not assessed: this assessment does not cover ${andList(notAssessed.map(n => n.name))}, so no regime is graded. This is not a finding that no obligations apply; take local legal advice.`
+        : `${notAssessed.length ? `Not assessed for ${andList(notAssessed.map(n => n.name))} (outside this assessment). ` : ''}${count('applies')} regimes apply on your answers, ${count('likely_confirm')} may apply – confirm, ${count('advisory')} for awareness; ${countRag('red')} with major control gaps, ${countRag('amber')} with some gaps, ${countRag('green')} with no gaps found.`,
       largestCap,
       capNote: largestCap ? `Largest single statutory maximum among regimes that ${largestCap.grade === 'applies' ? 'apply' : 'likely apply (none that applies has one)'}: a cap, not an expected fine, and never summed across regimes.` : turnoverGiven ? 'No regime in scope has a computable statutory maximum.' : 'Not quantified – turnover not given.'
     },
     foreignAccess, findings, topGaps, roadmap, pendingSource, notes,
     advisory, seal: sealView({ facts, requirements: reqs, controls: results }),
-    help: howLtmCanHelp(findings, advisory.placement)
+    help: howLtmCanHelp(findings, advisory.placement),
+    jurisdictions: { footprint, notAssessed, none: noneCovered, covered: COVERED_ZONE_NAMES }
   };
 }
 

@@ -69,14 +69,16 @@ async function stepLabels(page: Page) {
  * questions are asked. Other questions take their
  * first option.
  */
+let FOOTPRINT = 'EU or EEA';
 async function answerStep(page: Page) {
+  const eu = FOOTPRINT === 'EU or EEA';
   const ids = await page.locator('fieldset.question').evaluateAll(els => els.map(e => e.id.slice(2)));
   for (const id of ids) {
     const q = page.locator(`#q-${id}`);
-    if (id === 'A1') await q.getByRole('radio', { name: 'EU or EEA' }).check();
-    else if (id === 'A2') { await q.getByLabel('Entity or office in EU or EEA').check(); await q.getByLabel('Personal data of people in EU or EEA').check(); }
+    if (id === 'A1') await q.getByRole('radio', { name: FOOTPRINT, exact: true }).check();
+    else if (id === 'A2') { await q.getByLabel(`Entity or office in ${FOOTPRINT}`).check(); await q.getByLabel(`Personal data of people in ${FOOTPRINT}`).check(); }
     else if (id === 'A3') await q.getByRole('radio', { name: 'Banking (credit institutions)' }).check();
-    else if (id === 'B1') await q.getByRole('checkbox', { name: 'EU bank or credit institution' }).check();
+    else if (id === 'B1') { if (eu) await q.getByRole('checkbox', { name: 'EU bank or credit institution' }).check(); }
     else if (id === 'B4') await q.getByRole('checkbox', { name: 'We use AI tools or third-party models for internal work' }).check();
     else if (id === 'D1') { await q.getByRole('checkbox', { name: /^Personal data about/ }).check(); await settled(page); }
     else if (id === 'D3') {
@@ -142,6 +144,22 @@ test('executive: every question asked renders and can be answered; complete; bot
   await page.goto(url);
   await expect(page.locator('#hero-h')).toHaveText('Example Bank');
   expect(scored.every(s => s.data?.versions?.engine === ENGINE_VERSION)).toBe(true);
+});
+
+test('a client outside the registry sees "not assessed", not an empty list of regulations (coverage guard)', async ({ page }) => {
+  test.setTimeout(120_000);
+  FOOTPRINT = 'Switzerland';
+  try {
+    await start(page, 'executive', 'Example Swiss Bank');
+    await answerAll(page);
+    await complete(page);
+    const notice = page.locator('#coverage-notice');
+    await expect(notice).toContainText('Outside this assessment: Switzerland.');
+    // The other answers (a US cloud provider) still bring in foreign-access laws, so the partly covered wording shows.
+    await expect(notice).toContainText('Obligations there are not in the exposure, the requirements or the roadmap.');
+    await expect(notice).not.toContainText('Switzerland and');
+    await expect(page.locator('.hero-meta')).toContainText('Not assessed for Switzerland (outside this assessment).');
+  } finally { FOOTPRINT = 'EU or EEA'; }
 });
 
 test('workshop: the per-class requirement rows follow the data chosen, and the follow-ups appear', async ({ page }) => {

@@ -36,6 +36,8 @@ export function clientView(result: SovereignIqV4Result) {
     asked: r.asked,
     regimes: shown.map(({ rule, claims, verification, consultantOnly, ...g }) => g),
     regimesNotApplicable: r.regimes.length - shown.length,
+    // The coverage guard is the client's to see: places in their footprint this assessment does not cover.
+    jurisdictions: { notAssessed: r.jurisdictions.notAssessed, none: r.jurisdictions.none, covered: r.jurisdictions.covered },
     requirements: r.requirements.map(q => ({
       dataClass: q.dataClass, required: q.required, choice: q.choice, allowedZone: q.allowedZone,
       floor: q.floor && !q.floor.consultantOnly ? { level: q.floor.level, regime: q.floor.regime, zone: q.floor.zone, provisional: q.floor.provisional } : null
