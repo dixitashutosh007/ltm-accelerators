@@ -12,7 +12,7 @@ const checks=[
  // One count, derived from the bank: the API, the metadata and the release manifest must agree (CQ3b).
  ['questions',q.questions.length===m.baseline.questions&&m.baseline.questions===adapter.RELEASE_MANIFEST.baseline.questions],
  ['dimensions',q.dimensions.length===16&&m.baseline.dimensions===adapter.RELEASE_MANIFEST.baseline.dimensions],
- ['findings',m.baseline.findings===20&&m.baseline.findings===adapter.RELEASE_MANIFEST.baseline.findings],
+ ['findings',m.baseline.findings===22&&m.baseline.findings===adapter.RELEASE_MANIFEST.baseline.findings],
  ['recommendations',m.baseline.recommendations===10&&m.baseline.recommendations===adapter.RELEASE_MANIFEST.baseline.recommendations],
  ['no-finops-questions',!q.questions.some(x=>/^FIN-/.test(x.id))]
 ];

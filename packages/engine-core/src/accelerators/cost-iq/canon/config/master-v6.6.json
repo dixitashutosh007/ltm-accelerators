@@ -2036,7 +2036,8 @@
       "scoring": {
         "dimensionIds": [
           "COST-02",
-          "VALUE-05"
+          "VALUE-05",
+          "VALUE-01"
         ],
         "defaultMap": {
           "OUTCOME": 100.0,
@@ -2050,7 +2051,7 @@
         "note": "Model type is not judged in isolation; score should be reconciled with actual redirectability and governance evidence."
       },
       "active": true,
-      "version": 4,
+      "version": 5,
       "findingIds": [
         "F-015"
       ],
@@ -2331,7 +2332,8 @@
       "scoring": {
         "dimensionIds": [
           "COST-07",
-          "VALUE-05"
+          "VALUE-05",
+          "COST-03"
         ],
         "defaultMap": {
           "A": 100.0,
@@ -2344,7 +2346,7 @@
         }
       },
       "active": true,
-      "version": 5,
+      "version": 6,
       "findingIds": [
         "F-006",
         "F-011"
@@ -7792,6 +7794,30 @@
       ],
       "active": true,
       "version": 1
+    },
+    {
+      "id": "F-021",
+      "dimension": "Business Alignment",
+      "title": "Technology spend is not traceable to business strategy",
+      "description": "Without a traceable link from spend to named objectives, reductions and reinvestment cannot be tested against what the business needs most.",
+      "severity": "high",
+      "recommendationIds": [
+        "R-010"
+      ],
+      "active": true,
+      "version": 1
+    },
+    {
+      "id": "F-022",
+      "dimension": "Technology Productivity",
+      "title": "Technology unit costs are not tracked against business output",
+      "description": "Without cost per unit of business output, efficiency gains cannot be told apart from changes in volume, so productivity cannot be managed or shown.",
+      "severity": "medium",
+      "recommendationIds": [
+        "R-001"
+      ],
+      "active": true,
+      "version": 1
     }
   ],
   "recommendations": [
@@ -7802,7 +7828,8 @@
       "ltmService": "Technology Spend & Cost Baseline",
       "findingIds": [
         "F-001",
-        "F-002"
+        "F-002",
+        "F-022"
       ],
       "active": true,
       "version": 1
@@ -7912,7 +7939,8 @@
       "ltmService": "Technology Investment Strategy",
       "findingIds": [
         "F-015",
-        "F-019"
+        "F-019",
+        "F-021"
       ],
       "active": true,
       "version": 1

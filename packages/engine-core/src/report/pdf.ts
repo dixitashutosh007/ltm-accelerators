@@ -118,6 +118,7 @@ function bars(b: Extract<Block, { kind: 'bars' }>): Content {
       ]),
       dontBreakRows: true
     },
+    unbreakable: true,
     layout: 'noBorders', margin: [0, 2, 0, 10]
   };
 }
@@ -178,8 +179,10 @@ export function definition(doc: ReportDocument): TDocumentDefinitions {
     s.blocks.forEach((b, i) => {
       if (skip.has(i)) return;
       const next = s.blocks[i + 1];
-      if (b.kind === 'subheading' && next?.kind === 'table') return;
+      if (b.kind === 'subheading' && (next?.kind === 'table' || next?.kind === 'bars')) return;
       const prev = s.blocks[i - 1];
+      // A bar group moves to the next page whole, and takes its subheading with it (CQ12).
+      if (b.kind === 'bars') { body.push(prev?.kind === 'subheading' ? { stack: [block(prev), block(b)], unbreakable: true } as Content : block(b)); return; }
       const t = b.kind === 'table' ? (prev?.kind === 'subheading' ? table(b, prev.text) : table(b)) : block(b);
       if (b.kind !== 'table') { body.push(t); return; }
       // A short table stays on one page, and keeps the source note written under it (a note is never left alone on the next page).
