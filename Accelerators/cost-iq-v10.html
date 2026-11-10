@@ -261,16 +261,22 @@ function renderAssessment(){
 }
 function questionHTML(q,n,total){
   let body='';
-  if(q.interaction==='slider'){const v=answers[q.id]??q.control?.min??0;body='<input id="sl" type="range" min="'+(q.control?.min??0)+'" max="'+(q.control?.max??100)+'" step="'+(q.control?.step||1)+'" value="'+v+'" oninput="setSlider(\''+q.id+'\',this.value)"><div class="nav"><span class="mini">'+esc(q.control?.leftLabel||'Lower')+'</span><b id="sv">'+v+'</b><span class="mini">'+esc(q.control?.rightLabel||'Higher')+'</span></div>'}
-  else if(q.interaction==='stars'){const v=answers[q.id]||0;body='<div class="actions">'+[1,2,3,4,5].map(n=>'<button class="btn '+(v===n?'primary':'')+'" onclick="setStar(\''+q.id+'\','+n+')">★ '+n+'</button>').join('')+'</div>'}
+  // A slider shows "Not answered" until it is moved (its resting position is not an answer); stars and sliders offer "Don't know",
+  // which the engine scores at the lowest level, as every scored choice question's "We do not know." option is.
+  if(q.interaction==='slider'){const a=answers[q.id],num=typeof a==='number',v=num?a:(q.control?.min??0);const shown=num?String(a):a==='UNKNOWN'?'Don’t know':'Not answered';body='<input id="sl-'+esc(q.id)+'" type="range" aria-label="'+esc(q.prompt)+'" min="'+(q.control?.min??0)+'" max="'+(q.control?.max??100)+'" step="'+(q.control?.step||1)+'" value="'+v+'" oninput="setSlider(\''+q.id+'\',this.value)"><div class="nav"><span class="mini">'+esc(q.control?.leftLabel||'Lower')+'</span><b id="sv-'+esc(q.id)+'">'+shown+'</b><span class="mini">'+esc(q.control?.rightLabel||'Higher')+'</span></div>'+unknownButton(q)}
+  else if(q.interaction==='stars'){const v=answers[q.id]||0;body='<div class="actions">'+[1,2,3,4,5].map(n=>'<button class="btn '+(v===n?'primary':'')+'" onclick="setStar(\''+q.id+'\','+n+')">★ '+n+'</button>').join('')+'</div>'+unknownButton(q)}
   else if(q.interaction==='multi-select'||q.interaction==='multi-select-ranking'||q.interaction==='allocation-ranking'){const vals=new Set(Array.isArray(answers[q.id])?answers[q.id]:[]);body=(q.options||[]).map(function(o,i){return '<div class="option '+(vals.has(o.id)?'selected':'')+'" onclick="toggle(\''+q.id+'\',\''+o.id+'\')"><span class="letter">'+String.fromCharCode(65+i)+'</span><div><div class="option-title">'+esc(optionLabel(q,o))+'</div></div></div>'}).join('')}
   else if(q.interaction==='ranking'){body=(q.options||[]).map(function(o,i){return '<div class="option '+((answers[q.id]||[]).includes(o.id)?'selected':'')+'" onclick="toggle(\''+q.id+'\',\''+o.id+'\')"><span class="letter">'+(i+1)+'</span><div class="option-title">'+esc(optionLabel(q,o))+'</div></div>'}).join('')}
   else {body=(q.options||[]).map(function(o,i){return '<div class="option '+(answers[q.id]===o.id?'selected':'')+'" onclick="pick(\''+q.id+'\',\''+o.id+'\')"><span class="letter">'+String.fromCharCode(65+i)+'</span><div><div class="option-title">'+esc(optionLabel(q,o))+'</div></div></div>'}).join('')}
   const subjectiveAllowed=!!(q.control?.allowActual||q.interaction==='range'||q.interaction==='slider'||q.interaction==='single-select'||q.interaction==='true-false'||q.interaction==='stars');
-  const sub=subjectiveAllowed?'<div class="subjective"><div style="font-size:11px;font-weight:800;margin-bottom:5px">Additional context <span class="mini">· optional</span></div><textarea placeholder="Add context, evidence, exceptions or anything our AI reviewer should consider..." oninput="subjective['+JSON.stringify(q.id)+']=this.value;scheduleProgressSave()">'+esc(subjective[q.id]||'')+'</textarea></div>':'';
+  const sub=subjectiveAllowed?'<div class="subjective"><div style="font-size:11px;font-weight:800;margin-bottom:5px">Additional context <span class="mini">· optional</span></div><textarea placeholder="Add context, evidence or exceptions the consultant should know about…" oninput="subjective['+JSON.stringify(q.id)+']=this.value;scheduleProgressSave()">'+esc(subjective[q.id]||'')+'</textarea></div>':'';
   return '<span class="q-no">QUESTION '+n+' OF '+total+'</span><h2 class="q-title">'+esc(q.prompt)+'</h2>'+(q.answerGuidance?'<div class="help"><b>How to answer:</b> '+esc(q.answerGuidance)+'</div>':'')+(q.labelsByCurrency&&q.labelsByCurrency[answers[q.labelCurrencyQuestion]]?'<div class="help">These bands are approximate size classes converted at the European Central Bank reference rate dated '+esc(q.labelsRateDate||'')+'.</div>':'')+body+sub;
 }
-function pick(id,v){answers[id]=v;scheduleProgressSave();renderAssessment()}function toggle(id,v){const a=Array.isArray(answers[id])?[...answers[id]]:[];const i=a.indexOf(v);if(i>=0)a.splice(i,1);else a.push(v);answers[id]=a;scheduleProgressSave();renderAssessment()}function setStar(id,v){answers[id]=v;scheduleProgressSave();renderAssessment()}function setSlider(id,v){answers[id]=Number(v);scheduleProgressSave();const x=$('sv');if(x)x.textContent=v}
+function unknownButton(q){return '<div class="actions" style="margin-top:8px"><button class="btn '+(answers[q.id]==='UNKNOWN'?'primary':'')+'" aria-pressed="'+(answers[q.id]==='UNKNOWN')+'" onclick="setUnknown(\''+q.id+'\')">Don’t know</button></div>'}
+function pick(id,v){answers[id]=v;scheduleProgressSave();renderAssessment()}function toggle(id,v){const a=Array.isArray(answers[id])?[...answers[id]]:[];const i=a.indexOf(v);if(i>=0)a.splice(i,1);else a.push(v);answers[id]=a;scheduleProgressSave();renderAssessment()}function setStar(id,v){answers[id]=v;scheduleProgressSave();renderAssessment()}function setSlider(id,v){answers[id]=Number(v);scheduleProgressSave();const x=$('sv-'+id);if(x)x.textContent=v}function setUnknown(id){answers[id]='UNKNOWN';scheduleProgressSave();renderAssessment()}
+// Scored questions shown and left blank: the engine counts each as "Don't know" (lowest level). Said before completing, not after.
+function blankScored(){return vq().filter(function(q){const s=q.scoring||{};const scored=!q.signalOnly&&!/signal/.test(s.method||'')&&(s.defaultMap||s.normalize||s.method==='scale'||s.scaleMax!=null);const a=answers[q.id];return scored&&(a===undefined||a===null||a===''||(Array.isArray(a)&&!a.length))})}
+let blanksAccepted=false;
 function currentSectionQuestions(){return vq().filter(q=>q.section===sections()[sectionIndex])}
 function sectionValid(){
   const qs=currentSectionQuestions();
@@ -303,6 +309,7 @@ function notify(msg){
 }
 function nextSection(){
   if(!sectionValid()){notify('Please answer all required questions in this section before continuing.');return}
+  if(sectionIndex===sections().length-1&&!blanksAccepted){const b=blankScored();if(b.length){notify(b.length+(b.length===1?' question is':' questions are')+' unanswered. Each counts as “Don’t know”, which is scored at the lowest level. Go back to answer '+(b.length===1?'it':'them')+', or complete the assessment as it is.');const n=$('pageNotice');const btn=document.createElement('button');btn.className='btn primary';btn.style.marginLeft='10px';btn.textContent='Complete anyway';btn.onclick=function(){blanksAccepted=true;nextSection()};n.appendChild(btn);return}}
   sectionIndex++;qIndex=0;
   if(sectionIndex>=sections().length)runEngine();else renderAssessment();
 }
@@ -311,7 +318,7 @@ function backQ(){
 }
 async function runEngine(){
   clearTimeout(persistTimer);persistTimer=null;
-  $('app').innerHTML='<div class="card" style="text-align:center;padding:70px 30px"><div class="pulse" style="margin:auto"><div class="core"></div></div><h2>Reviewing your diagnostic…</h2><p class="muted">Cost IQ is evaluating the deterministic scoring engine before the AI review.</p></div>';
+  $('app').innerHTML='<div class="card" style="text-align:center;padding:70px 30px"><div class="pulse" style="margin:auto"><div class="core"></div></div><h2>Reviewing your diagnostic…</h2><p class="muted">Cost IQ is scoring your answers on the server.</p></div>';
   try{assessment=await api('/api/evaluate/cost-iq',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({answers:answers,scope:{selectedAreas:selectedAreas}})});if(savedAssessment){try{await persistQueue;savedAssessment=await window.CostIqPersistence.update({...persistenceRecord('completed'),completedAt:new Date().toISOString(),resultJson:JSON.stringify(assessment)});persistStatus('Assessment completed and saved')}catch(e){persistStatus('Score ready · save failed · '+e.message)}}showEngineOverlay(function(){preliminary()})}catch(e){fail(e.message)}
 }
 function showEngineOverlay(done){
@@ -470,9 +477,12 @@ async function loadNarrative(){
   if(stored&&stored.status==='pending'&&$('narWrite')){$('narWrite').disabled=true;say('A narrative is being written. This can take a minute or two…');poll()}
 }
 function reportReady(){return !!savedAssessment&&!testScenario&&savedAssessment.status==='completed'}
+// The consultant edition is for LTM consultants (Cognito Admin or Consultant group); the report service enforces it, and the page
+// does not offer a button the service would refuse (M8).
+function isConsultantUser(){try{const s=JSON.parse(sessionStorage.getItem('ltm_auth_user')||'null');if(s&&s.role==='super_admin')return true;const p=JSON.parse(atob(String(s&&s.token||'').split('.')[1].replace(/-/g,'+').replace(/_/g,'/')));const g=p['cognito:groups'];const list=Array.isArray(g)?g:String(g||'').replace(/^\[|\]$/g,'').split(/[\s,]+/);return list.includes('Admin')||list.includes('Consultant')}catch(e){return false}}
 function reportButtons(){
   if(!reportReady())return '<p class="muted" id="reportNote">The downloadable report is produced from a saved, completed assessment.</p>';
-  return '<div class="actions" role="group" aria-label="Download the report"><button class="btn primary" onclick="downloadReport(\'pdf\',\'client\',this)">Client edition (PDF)</button><button class="btn" onclick="downloadReport(\'pdf\',\'consultant\',this)">Consultant edition (PDF)</button><button class="btn" onclick="downloadReport(\'csv\',\'client\',this)">Backlog (CSV)</button></div><p class="muted" id="reportNote" role="status"></p>';
+  return '<div class="actions" role="group" aria-label="Download the report"><button class="btn primary" onclick="downloadReport(\'pdf\',\'client\',this)">Client edition (PDF)</button>'+(isConsultantUser()?'<button class="btn" onclick="downloadReport(\'pdf\',\'consultant\',this)">Consultant edition (PDF)</button>':'')+'<button class="btn" onclick="downloadReport(\'csv\',\'client\',this)">Backlog (CSV)</button></div><p class="muted" id="reportNote" role="status"></p>';
 }
 async function downloadReport(format,view,btn){
   const note=$('reportNote');const say=t=>{if(note)note.textContent=t};

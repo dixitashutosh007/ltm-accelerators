@@ -11,7 +11,7 @@ import type { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda
 import { randomUUID } from 'node:crypto';
 import { corsHeaders } from '../_shared/http';
 import { authorized, canAccess } from '../_shared/resilience-data';
-import { withAcceleratorAccess } from '../_shared/access';
+import { withAcceleratorAccess, isConsultant } from '../_shared/access';
 import { checkCostIqReport } from '../../../packages/engine-core/src/report-checks/accelerators';
 import { failureMessage } from '../../../packages/engine-core/src/report-checks';
 import { costIqBacklog, costIqReport, type CostIqReportInput, type CostIqResult } from '../../../packages/engine-core/src/accelerators/cost-iq/report';
@@ -41,7 +41,11 @@ export function createHandler(store: CostIqAssessmentStore, now: () => Date = ()
 
     const q = event.queryStringParameters ?? {};
     const format = q.format || 'pdf';
-    const view = q.view === 'client' ? 'client' : 'consultant';
+    // The consultant edition (statement-of-work draft, consultant notes, internal IDs) goes to LTM consultants only (M8); without a
+    // view, each caller gets the edition for their role.
+    const consultant = isConsultant(event);
+    if (q.view === 'consultant' && !consultant) return respond(403, { ok: false, error: 'consultant_role_required', message: 'The consultant edition is for LTM consultants. Download the client edition instead.' });
+    const view = q.view === 'client' || !consultant ? 'client' : 'consultant';
     if (!q.assessmentId) return respond(400, { ok: false, error: 'assessmentId is required' });
     if (!FORMATS.has(format)) return respond(400, { ok: false, error: 'format: expected pdf or csv' });
     try {

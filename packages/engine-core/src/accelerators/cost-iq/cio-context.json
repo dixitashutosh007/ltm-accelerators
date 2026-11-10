@@ -1,0 +1,297 @@
+{
+  "version": "1.0.0",
+  "purpose": "CQ12 slice 2: how the context, priority and hotspot answers reach the result. None of these moves a score; each is shown to the reader beside the finding or step it qualifies. LTM mapping; for practice-lead review.",
+  "profile": {
+    "industry": "CORE-02",
+    "reportingIn": "CTX-01",
+    "revenue": "CORE-03",
+    "spend": "CORE-04",
+    "spendIncludes": "CORE-05",
+    "foreignPricedShare": "CTX-02",
+    "regions": "CTX-03",
+    "onshoreShare": "CTX-04",
+    "countries": "CTX-05"
+  },
+  "priorities": {
+    "protect": "CORE-07",
+    "pressure": "CORE-08",
+    "expectedOpportunities": "CORE-09",
+    "fundingChange": "CORE-10",
+    "redirect": "CORE-45",
+    "costHypotheses": "ADP-55",
+    "barriers": "ADP-56",
+    "protectCapabilities": "ADP-57"
+  },
+  "expectedOpportunityFindings": {
+    "basis": "Each CORE-09 area is matched to the findings whose subject is that area (finding titles and dimensions in master-v6.6.json). An area with no matching finding is outside what Cost IQ's findings assess.",
+    "map": {
+      "PORTFOLIO_RATIONALIZATION": [
+        "F-013",
+        "F-020"
+      ],
+      "CLOUD_PLATFORM_EFFICIENCY": [
+        "F-005",
+        "F-006"
+      ],
+      "WORKFORCE_PRODUCTIVITY": [
+        "F-010",
+        "F-022"
+      ],
+      "VENDOR_ECONOMICS": [
+        "F-011",
+        "F-008"
+      ],
+      "DATA_AI": [
+        "F-019"
+      ],
+      "ARCHITECTURE_SIMPLIFICATION": [
+        "F-012"
+      ],
+      "AUTOMATION": [
+        "F-016"
+      ],
+      "PRODUCT_DELIVERY": [],
+      "BENEFITS_REALIZATION": [
+        "F-004",
+        "F-018"
+      ],
+      "BUSINESS_ALIGNMENT": [
+        "F-003",
+        "F-014",
+        "F-021"
+      ]
+    }
+  },
+  "fundingChangeRecommendation": {
+    "basis": "The recommended step whose content is that funding change (recommendation titles in master-v6.6.json).",
+    "map": {
+      "TRANSPARENCY": "R-001",
+      "OUTCOMES": "R-009",
+      "FLEXIBILITY": "R-010",
+      "PRODUCT": "R-010",
+      "PORTFOLIO": "R-002",
+      "DECISION_RIGHTS": "R-002",
+      "NO_MAJOR_CHANGE": null
+    }
+  },
+  "findingContext": {
+    "basis": "Each question names the finding it informs in master-v6.6.json (findingIds), or, where it names none, the finding whose subject it measures. 'none' lists the options that mean nothing to report. A null findingId means no Cost IQ finding covers the area; the answer is listed as named but not assessed.",
+    "questions": [
+      {
+        "questionId": "CORE-05",
+        "findingId": "F-001",
+        "kind": "spend-scope",
+        "label": "The spend figure includes",
+        "none": []
+      },
+      {
+        "questionId": "CORE-14",
+        "findingId": "F-002",
+        "kind": "where",
+        "label": "Hardest to attribute to an owner or driver",
+        "none": [
+          "NONE"
+        ]
+      },
+      {
+        "questionId": "ADP-28",
+        "findingId": "F-003",
+        "kind": "share",
+        "label": "Share of technology spend driven mainly by regulation or compliance",
+        "none": []
+      },
+      {
+        "questionId": "CORE-19",
+        "findingId": "F-004",
+        "kind": "evidence",
+        "label": "Evidence routinely required before a material investment is funded",
+        "none": []
+      },
+      {
+        "questionId": "CORE-32",
+        "findingId": "F-009",
+        "kind": "where",
+        "label": "Where excess capacity or avoidable footprint shows",
+        "none": [
+          "NONE"
+        ]
+      },
+      {
+        "questionId": "ADP-10",
+        "findingId": "F-009",
+        "kind": "share",
+        "label": "Share of the virtualised estate to investigate for consolidation, modernisation or migration",
+        "none": []
+      },
+      {
+        "questionId": "ADP-12",
+        "findingId": "F-009",
+        "kind": "share",
+        "label": "Share of the on-premises estate approaching refresh, support expiry or end of life",
+        "none": []
+      },
+      {
+        "questionId": "CTX-04",
+        "findingId": "F-010",
+        "kind": "share",
+        "label": "Technology operations effort delivered onshore",
+        "none": []
+      },
+      {
+        "questionId": "CTX-02",
+        "findingId": "F-011",
+        "kind": "share",
+        "label": "Share of technology spend priced in another currency",
+        "none": []
+      },
+      {
+        "questionId": "CORE-39",
+        "findingId": "F-013",
+        "kind": "where",
+        "label": "What adds avoidable cost or complexity in the portfolio",
+        "none": [
+          "NONE"
+        ]
+      },
+      {
+        "questionId": "CORE-42",
+        "findingId": "F-013",
+        "kind": "constraint",
+        "label": "What makes retirement or consolidation slow",
+        "none": []
+      },
+      {
+        "questionId": "ADP-21",
+        "findingId": "F-013",
+        "kind": "share",
+        "label": "Share of applications that are business-critical, which limits how far and how fast the portfolio can change",
+        "none": []
+      },
+      {
+        "questionId": "CORE-29",
+        "findingId": "F-008",
+        "kind": "where",
+        "label": "Licensing areas that warrant the strongest review",
+        "none": [
+          "NONE"
+        ]
+      },
+      {
+        "questionId": "CORE-31",
+        "findingId": "F-011",
+        "kind": "timing",
+        "label": "Commercial events expected in the next 12 to 24 months",
+        "none": [
+          "NONE"
+        ]
+      },
+      {
+        "questionId": "ADP-19",
+        "findingId": "F-011",
+        "kind": "share",
+        "label": "Material vendor renewals expected in the next 12 to 24 months",
+        "none": [
+          "NONE"
+        ]
+      },
+      {
+        "questionId": "CORE-38",
+        "findingId": "F-011",
+        "kind": "where",
+        "label": "Supplier categories you would investigate first",
+        "none": []
+      },
+      {
+        "questionId": "ADP-20",
+        "findingId": "F-011",
+        "kind": "constraint",
+        "label": "Commercial leverage with major vendors today, from 1 (very limited) to 5",
+        "none": []
+      },
+      {
+        "questionId": "CORE-36",
+        "findingId": "F-010",
+        "kind": "share",
+        "label": "Share of technology workforce capacity supplied by external parties",
+        "none": []
+      },
+      {
+        "questionId": "ADP-17",
+        "findingId": "F-016",
+        "kind": "where",
+        "label": "Where repetitive manual work takes most capacity",
+        "none": [
+          "NONE"
+        ]
+      },
+      {
+        "questionId": "ADP-40",
+        "findingId": "F-016",
+        "kind": "where",
+        "label": "Main source of avoidable service-management effort",
+        "none": [
+          "NONE"
+        ]
+      },
+      {
+        "questionId": "ADP-53",
+        "findingId": "F-004",
+        "kind": "where",
+        "label": "Outcomes hardest for technology to quantify",
+        "none": []
+      },
+      {
+        "questionId": "ADP-24",
+        "findingId": null,
+        "kind": "where",
+        "label": "Data-cost issues named",
+        "none": [
+          "NONE"
+        ]
+      }
+    ]
+  },
+  "unconfirmedHotspots": {
+    "basis": "A 'where' answer that names something (not 'none') while its finding is not raised by the scored answers: the client sees an issue the scored answers do not confirm, so it is listed for validation rather than dropped.",
+    "kinds": [
+      "where"
+    ]
+  },
+  "blindSpotSeverities": [
+    "critical",
+    "high"
+  ],
+  "costHypothesisFindings": {
+    "basis": "Each ADP-55 area matched to the findings whose subject is that area, as for CORE-09.",
+    "map": {
+      "CLOUD": [
+        "F-005",
+        "F-006"
+      ],
+      "SAAS": [
+        "F-007",
+        "F-008"
+      ],
+      "INFRA": [
+        "F-009"
+      ],
+      "VENDORS": [
+        "F-011"
+      ],
+      "APPS": [
+        "F-013",
+        "F-020"
+      ],
+      "PEOPLE": [
+        "F-010"
+      ],
+      "OPERATIONS": [
+        "F-016"
+      ],
+      "PROJECTS": [
+        "F-003"
+      ],
+      "OTHER": []
+    }
+  }
+}

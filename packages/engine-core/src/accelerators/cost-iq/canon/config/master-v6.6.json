@@ -2,10 +2,10 @@
   "manifest": {
     "product": "Cost IQ",
     "schemaVersion": "1.2",
-    "masterVersion": "6.6.0",
+    "masterVersion": "6.7.0",
     "releaseId": "COSTIQ-1.0.0",
     "releaseStatus": "approved",
-    "lastUpdated": "2026-11-05",
+    "lastUpdated": "2026-11-10",
     "author": "LTM Cost IQ Methodology",
     "canonicalSource": "master-config.json",
     "methodologyOwner": "Infrastructure Technology Advisory",
@@ -1365,6 +1365,10 @@
         {
           "id": "VERY_HARD",
           "label": "Redirecting funding or capacity is currently difficult and creates major disruption."
+        },
+        {
+          "id": "UNKNOWN",
+          "label": "We do not know."
         }
       ],
       "scoring": {
@@ -1376,11 +1380,12 @@
           "QUARTER": 80.0,
           "SLOW": 60.0,
           "COMMITTED": 40.0,
-          "VERY_HARD": 20.0
+          "VERY_HARD": 20.0,
+          "UNKNOWN": 20.0
         }
       },
       "active": true,
-      "version": 2,
+      "version": 3,
       "findingIds": [],
       "recommendationIds": [],
       "questionDesignVersion": "6.2",
@@ -1419,6 +1424,10 @@
         {
           "id": "E",
           "label": "We do not have a reliable enterprise technology spend baseline."
+        },
+        {
+          "id": "UNKNOWN",
+          "label": "We do not know."
         }
       ],
       "scoring": {
@@ -1430,12 +1439,13 @@
           "B": 80.0,
           "C": 60.0,
           "D": 40.0,
-          "E": 20.0
+          "E": 20.0,
+          "UNKNOWN": 20.0
         },
         "note": "Direct maturity signal for Spend Transparency."
       },
       "active": true,
-      "version": 3,
+      "version": 4,
       "findingIds": [
         "F-001"
       ],
@@ -1488,6 +1498,10 @@
         {
           "id": "MIXED",
           "label": "Several models coexist, but practice varies materially across the estate."
+        },
+        {
+          "id": "UNKNOWN",
+          "label": "We do not know."
         }
       ],
       "scoring": {
@@ -1501,12 +1515,13 @@
           "VENDORS": 48.0,
           "PROJECTS": 35.0,
           "GL": 25.0,
-          "MIXED": 55.0
+          "MIXED": 55.0,
+          "UNKNOWN": 25.0
         },
         "note": "Score reflects decision usefulness of cost attribution, not preference for a specific accounting model."
       },
       "active": true,
-      "version": 3,
+      "version": 4,
       "findingIds": [
         "F-002"
       ],
@@ -1642,6 +1657,10 @@
         {
           "id": "NONE",
           "label": "There is no dependable consolidated executive technology cost view."
+        },
+        {
+          "id": "UNKNOWN",
+          "label": "We do not know."
         }
       ],
       "scoring": {
@@ -1655,12 +1674,13 @@
           "SEMIA": 55.0,
           "ANNUAL": 40.0,
           "ADHOC": 25.0,
-          "NONE": 15.0
+          "NONE": 15.0,
+          "UNKNOWN": 15.0
         },
         "note": "Cadence is one contributor to governance maturity; data quality still drives confidence separately."
       },
       "active": true,
-      "version": 3,
+      "version": 4,
       "findingIds": [
         "F-001"
       ],
@@ -1796,6 +1816,10 @@
         {
           "id": "NONE",
           "label": "There is no consistent decision right; exceptions, commitments or business dependencies usually prevail."
+        },
+        {
+          "id": "UNKNOWN",
+          "label": "We do not know."
         }
       ],
       "scoring": {
@@ -1808,11 +1832,12 @@
           "TECH_LEADERSHIP": 82.0,
           "FINANCE_PROCUREMENT": 65.0,
           "OWNER": 45.0,
-          "NONE": 20.0
+          "NONE": 20.0,
+          "UNKNOWN": 20.0
         }
       },
       "active": true,
-      "version": 3,
+      "version": 4,
       "findingIds": [
         "F-003"
       ],
@@ -1932,6 +1957,10 @@
         {
           "id": "NONE",
           "label": "There is no systematic process for checking whether expected benefits were achieved."
+        },
+        {
+          "id": "UNKNOWN",
+          "label": "We do not know."
         }
       ],
       "scoring": {
@@ -1943,11 +1972,12 @@
           "MAJOR_ONLY": 80.0,
           "ESTIMATED": 60.0,
           "USAGE": 40.0,
-          "NONE": 20.0
+          "NONE": 20.0,
+          "UNKNOWN": 20.0
         }
       },
       "active": true,
-      "version": 3,
+      "version": 4,
       "findingIds": [
         "F-004",
         "F-018"
@@ -1997,12 +2027,17 @@
         {
           "id": "MIXED",
           "label": "Different funding models coexist and the enterprise has no clearly dominant model."
+        },
+        {
+          "id": "UNKNOWN",
+          "label": "We do not know."
         }
       ],
       "scoring": {
         "dimensionIds": [
           "COST-02",
-          "VALUE-05"
+          "VALUE-05",
+          "VALUE-01"
         ],
         "defaultMap": {
           "OUTCOME": 100.0,
@@ -2010,12 +2045,13 @@
           "PROJECT": 62.0,
           "TOWER": 48.0,
           "FIXED": 30.0,
-          "MIXED": 55.0
+          "MIXED": 55.0,
+          "UNKNOWN": 30.0
         },
         "note": "Model type is not judged in isolation; score should be reconciled with actual redirectability and governance evidence."
       },
       "active": true,
-      "version": 3,
+      "version": 5,
       "findingIds": [
         "F-015"
       ],
@@ -2060,6 +2096,10 @@
         {
           "id": "RARE",
           "label": "Underperforming spend is rarely challenged or materially changed."
+        },
+        {
+          "id": "UNKNOWN",
+          "label": "We do not know."
         }
       ],
       "scoring": {
@@ -2072,11 +2112,12 @@
           "PORTFOLIO": 80.0,
           "BUDGET": 60.0,
           "PROBLEM": 40.0,
-          "RARE": 20.0
+          "RARE": 20.0,
+          "UNKNOWN": 20.0
         }
       },
       "active": true,
-      "version": 3,
+      "version": 4,
       "findingIds": [
         "F-003"
       ],
@@ -2203,6 +2244,10 @@
         {
           "id": "F",
           "label": "We do not have enough visibility to identify meaningful SaaS overlap reliably."
+        },
+        {
+          "id": "UNKNOWN",
+          "label": "We do not know."
         }
       ],
       "scoring": {
@@ -2215,11 +2260,12 @@
           "C": 60.0,
           "D": 40.0,
           "E": 20.0,
-          "F": 15.0
+          "F": 15.0,
+          "UNKNOWN": 15.0
         }
       },
       "active": true,
-      "version": 4,
+      "version": 5,
       "findingIds": [
         "F-007",
         "F-013"
@@ -2277,12 +2323,17 @@
         {
           "id": "F",
           "label": "The organization does not have dependable visibility into the terms or flexibility of major commitments."
+        },
+        {
+          "id": "UNKNOWN",
+          "label": "We do not know."
         }
       ],
       "scoring": {
         "dimensionIds": [
           "COST-07",
-          "VALUE-05"
+          "VALUE-05",
+          "COST-03"
         ],
         "defaultMap": {
           "A": 100.0,
@@ -2290,11 +2341,12 @@
           "C": 62.0,
           "D": 42.0,
           "E": 25.0,
-          "F": 15.0
+          "F": 15.0,
+          "UNKNOWN": 15.0
         }
       },
       "active": true,
-      "version": 4,
+      "version": 6,
       "findingIds": [
         "F-006",
         "F-011"
@@ -2432,6 +2484,10 @@
         {
           "id": "F",
           "label": "We cannot reliably establish the current licence position for material software."
+        },
+        {
+          "id": "UNKNOWN",
+          "label": "We do not know."
         }
       ],
       "scoring": {
@@ -2444,11 +2500,12 @@
           "C": 60.0,
           "D": 38.0,
           "E": 20.0,
-          "F": 12.0
+          "F": 12.0,
+          "UNKNOWN": 12.0
         }
       },
       "active": true,
-      "version": 4,
+      "version": 5,
       "findingIds": [
         "F-008"
       ],
@@ -2659,6 +2716,10 @@
         {
           "id": "F",
           "label": "Utilization and demand are not reliable enough to determine whether the current footprint is appropriately sized."
+        },
+        {
+          "id": "UNKNOWN",
+          "label": "We do not know."
         }
       ],
       "scoring": {
@@ -2671,11 +2732,12 @@
           "C": 64.0,
           "D": 42.0,
           "E": 24.0,
-          "F": 14.0
+          "F": 14.0,
+          "UNKNOWN": 14.0
         }
       },
       "active": true,
-      "version": 4,
+      "version": 5,
       "findingIds": [
         "F-009"
       ],
@@ -2766,6 +2828,10 @@
         {
           "id": "NOT_MEASURED",
           "label": "Demand, capacity and skills are not measured consistently enough to judge the fit."
+        },
+        {
+          "id": "UNKNOWN",
+          "label": "We do not know."
         }
       ],
       "scoring": {
@@ -2779,11 +2845,12 @@
           "MOSTLY_ALIGNED": 80.0,
           "MIXED": 60.0,
           "MISMATCH": 35.0,
-          "NOT_MEASURED": 20.0
+          "NOT_MEASURED": 20.0,
+          "UNKNOWN": 20.0
         }
       },
       "active": true,
-      "version": 1,
+      "version": 2,
       "findingIds": [
         "F-010"
       ],
@@ -2893,6 +2960,10 @@
         {
           "id": "LIMITED",
           "label": "Ongoing commercial and value governance is limited after the contract is signed."
+        },
+        {
+          "id": "UNKNOWN",
+          "label": "We do not know."
         }
       ],
       "scoring": {
@@ -2905,11 +2976,12 @@
           "REGULAR": 82.0,
           "SLA_LED": 62.0,
           "RENEWAL_LED": 40.0,
-          "LIMITED": 20.0
+          "LIMITED": 20.0,
+          "UNKNOWN": 20.0
         }
       },
       "active": true,
-      "version": 1,
+      "version": 2,
       "findingIds": [
         "F-011"
       ],
@@ -3138,6 +3210,10 @@
         {
           "id": "AD_HOC",
           "label": "There is no consistent enterprise process for deciding what to retain, consolidate or retire."
+        },
+        {
+          "id": "UNKNOWN",
+          "label": "We do not know."
         }
       ],
       "scoring": {
@@ -3151,11 +3227,12 @@
           "PERIODIC": 82.0,
           "EVENT_DRIVEN": 60.0,
           "VISIBLE_BUT_HARD": 40.0,
-          "AD_HOC": 20.0
+          "AD_HOC": 20.0,
+          "UNKNOWN": 20.0
         }
       },
       "active": true,
-      "version": 1,
+      "version": 2,
       "findingIds": [
         "F-013"
       ],
@@ -3322,6 +3399,10 @@
         {
           "id": "NOT_MEASURED",
           "label": "We do not consistently measure whether expected business benefits were achieved."
+        },
+        {
+          "id": "UNKNOWN",
+          "label": "We do not know."
         }
       ],
       "scoring": {
@@ -3334,11 +3415,12 @@
           "KPI_REVIEW": 82.0,
           "ACTIVITY_ONLY": 60.0,
           "INCONSISTENT": 40.0,
-          "NOT_MEASURED": 20.0
+          "NOT_MEASURED": 20.0,
+          "UNKNOWN": 20.0
         }
       },
       "active": true,
-      "version": 1,
+      "version": 2,
       "findingIds": [
         "F-018"
       ],
@@ -4144,6 +4226,10 @@
         {
           "id": "UNMEASURED",
           "label": "The mix and its economics are not measured well enough to decide."
+        },
+        {
+          "id": "UNKNOWN",
+          "label": "We do not know."
         }
       ],
       "scoring": {
@@ -4155,12 +4241,13 @@
           "POLICY_LED": 80.0,
           "CAPACITY_LED": 60.0,
           "LOCKED_IN": 40.0,
-          "UNMEASURED": 20.0
+          "UNMEASURED": 20.0,
+          "UNKNOWN": 20.0
         },
         "basis": "The options mix two scales: the first two describe a deliberate decision (build strategic skills; balance by economics), the last three describe a state of dependence or missing data. Whether STRATEGIC_BUILD ranks above ECONOMIC_BALANCE is not a maturity question, and the file elsewhere (CORE-36) states a higher external share is not inherently worse. No monotonic map is defensible on the current options. Replacement wording below keeps one scale, how the mix is decided and reviewed. The wording and scale are LTM heuristic; I found no published maturity scale for build-buy-borrow. The question also carries valueDimensionIds VALUE-04, ignored by the engine."
       },
       "active": true,
-      "version": 2,
+      "version": 3,
       "leakageSignal": "L5 Workforce Leakage",
       "opportunityTheme": "Workforce sourcing and capability strategy",
       "weightClass": "High",
@@ -4385,6 +4472,10 @@
         {
           "id": "NONE",
           "label": "Applications have no consistent lifecycle governance."
+        },
+        {
+          "id": "UNKNOWN",
+          "label": "We do not know."
         }
       ],
       "scoring": {
@@ -4396,12 +4487,13 @@
           "PERIODIC": 80.0,
           "PROJECT": 60.0,
           "LIMITED": 40.0,
-          "NONE": 20.0
+          "NONE": 20.0,
+          "UNKNOWN": 20.0
         },
         "basis": "Ordered scale of how lifecycle decisions use value and total cost: all four factors together, periodic portfolio review, only when a project or technology event forces it, ownership without comparison, no consistent governance. LTM heuristic: the step values (100/80/60/40/20) are an LTM convention, not a benchmark. PROJECT is placed above LIMITED because an event-driven decision at least makes a decision; this is a judgement. There is no Unknown option, so NONE is the lowest level; adding UNKNOWN at 20 is recommended (a client-visible change, owner optional). Overlaps in theme with CORE-41 (how retain, modernise, retire is decided); ADP-23 asks about the link to value and cost, so keep. No published source verified."
       },
       "active": true,
-      "version": 1,
+      "version": 2,
       "leakageSignal": "L6 Portfolio Leakage",
       "opportunityTheme": "Lifecycle governance",
       "weightClass": "High",
@@ -4744,6 +4836,10 @@
         {
           "id": "NONE",
           "label": "Material changes rarely trigger formal re-baselining."
+        },
+        {
+          "id": "UNKNOWN",
+          "label": "We do not know."
         }
       ],
       "scoring": {
@@ -4755,12 +4851,13 @@
           "GOVERNED": 80.0,
           "PLANNED": 60.0,
           "LATE": 40.0,
-          "NONE": 20.0
+          "NONE": 20.0,
+          "UNKNOWN": 20.0
         },
         "basis": "Ordered scale of how reliably material changes in cost, timeline or benefit lead to a formal re-baseline. GAO guidance on IT programmes says a rebaseline policy should state valid reasons, require validation, management review and documentation (GAO-08-925), and that rebaselining resets reported cost growth to zero (GAO-20-195G), so re-baselining is a governance control and not an end in itself. Read through a search summary only; the PDFs were not read in full. Caution: ACTIVE (\"whenever economics change\") can mask variance if re-baselining is frequent but unreviewed, and the question title says \"how often\" while the options describe how. The map follows the option order; the owner may prefer to rate ACTIVE and GOVERNED equally (for example both 90). LTM heuristic: the step values (100/80/60/40/20) are an LTM convention, not a benchmark. No Unknown option; NONE is lowest."
       },
       "active": true,
-      "version": 1,
+      "version": 2,
       "leakageSignal": "L7 Value Leakage",
       "opportunityTheme": "Program governance",
       "weightClass": "Medium",
@@ -4930,6 +5027,10 @@
         {
           "id": "NONE",
           "label": "Business-led technology is largely outside technology governance."
+        },
+        {
+          "id": "UNKNOWN",
+          "label": "We do not know."
         }
       ],
       "scoring": {
@@ -4941,12 +5042,13 @@
           "REVIEW": 80.0,
           "LATE": 60.0,
           "LIMITED": 40.0,
-          "NONE": 20.0
+          "NONE": 20.0,
+          "UNKNOWN": 20.0
         },
         "basis": "Ordered scale of how early IT shapes purchases made by business functions. The FinOps Licensing and SaaS capability describes a review process so teams do not buy what already exists, and FinOps involvement when licences or SaaS are acquired outside cloud providers (carried from batch 1). It gives no scale; the map is LTM heuristic. No Unknown option; NONE is lowest, and adding UNKNOWN at 20 is recommended (owner optional). CORE-16 (is there material business-led spend) is the natural gate; the master already says \"BusinessLedIT=Yes\" and CORE-16 says \"True/Unsure activates shadow-tech questions\"."
       },
       "active": true,
-      "version": 1,
+      "version": 2,
       "leakageSignal": "L1 Visibility Leakage",
       "opportunityTheme": "Shadow IT governance",
       "weightClass": "High",
@@ -4995,6 +5097,10 @@
         {
           "id": "NONE",
           "label": "There is no systematic consolidation process."
+        },
+        {
+          "id": "UNKNOWN",
+          "label": "We do not know."
         }
       ],
       "scoring": {
@@ -5006,12 +5112,13 @@
           "PERIODIC": 80.0,
           "RENEWAL": 60.0,
           "CASE": 40.0,
-          "NONE": 20.0
+          "NONE": 20.0,
+          "UNKNOWN": 20.0
         },
         "basis": "Ordered scale of how often business-led purchases are consolidated with enterprise capability, best to worst. Same Licensing and SaaS basis as ADP-06 and ADP-33 (a review process so teams do not buy what exists). LTM heuristic: the step values (100/80/60/40/20) are an LTM convention, not a benchmark. Overlaps with ADP-06 (platform overlap count) and CORE-27 (what happens when two SaaS products overlap): ADP-34 is limited to business-led purchases; keep, but do not present the three as independent evidence. No Unknown option."
       },
       "active": true,
-      "version": 1,
+      "version": 2,
       "leakageSignal": "L6 Portfolio Leakage",
       "opportunityTheme": "Capability overlap",
       "weightClass": "High",
@@ -5124,6 +5231,10 @@
         {
           "id": "NONE",
           "label": "No meaningful make/buy or sourcing challenge process exists."
+        },
+        {
+          "id": "UNKNOWN",
+          "label": "We do not know."
         }
       ],
       "scoring": {
@@ -5135,12 +5246,13 @@
           "PERIODIC": 80.0,
           "RENEWAL": 60.0,
           "LIMITED": 40.0,
-          "NONE": 20.0
+          "NONE": 20.0,
+          "UNKNOWN": 20.0
         },
         "basis": "Ordered scale of how often outsourced services are challenged against internal or alternative sourcing. LTM heuristic: the step values (100/80/60/40/20) are an LTM convention, not a benchmark. Overlaps with CORE-37 (vendor governance, RENEWAL_LED) and ADP-19/20 (renewal and leverage context): ADP-36 is about make-or-buy challenge; keep, and do not present as independent of CORE-37. No Unknown option; NONE lowest. Gate on EXTERNAL. No published source verified."
       },
       "active": true,
-      "version": 1,
+      "version": 2,
       "leakageSignal": "L3 Commercial Leakage",
       "opportunityTheme": "Sourcing optimization",
       "weightClass": "Medium",
@@ -5597,6 +5709,10 @@
         {
           "id": "NONE",
           "label": "There is no meaningful challenge mechanism."
+        },
+        {
+          "id": "UNKNOWN",
+          "label": "We do not know."
         }
       ],
       "scoring": {
@@ -5608,12 +5724,13 @@
           "REVIEW": 80.0,
           "RARE": 60.0,
           "LOCKED": 40.0,
-          "NONE": 20.0
+          "NONE": 20.0,
+          "UNKNOWN": 20.0
         },
         "basis": "Ordered scale of how architecture standards are challenged when cost and value diverge: actively, on review of exceptions, rarely, difficult to change, no mechanism. LTM heuristic: the step values (100/80/60/40/20) are an LTM convention, not a benchmark; the FinOps Framework gives three stages, not scores. LOCKED (a mechanism exists but is blocked by governance or platform constraints) is placed above NONE in the master's order; that is a judgement, and a tie at 30 would be as defensible. There is no Unknown option, so NONE is the lowest level; adding UNKNOWN at 20 is recommended (client-visible, owner optional). The prompt says 'How often' while the options describe practice, a minor mismatch. Overlaps in theme with CORE-40 and ADP-46 (all COST-09): they measure the cost of complexity, ADP-45 measures whether anyone challenges it. No published source verified."
       },
       "active": true,
-      "version": 1,
+      "version": 2,
       "leakageSignal": "L4 Complexity Leakage",
       "opportunityTheme": "Architecture governance",
       "weightClass": "Medium",
@@ -5693,6 +5810,10 @@
         {
           "id": "LIMITED",
           "label": "Procurement has limited involvement in technology decisions."
+        },
+        {
+          "id": "UNKNOWN",
+          "label": "We do not know."
         }
       ],
       "scoring": {
@@ -5704,12 +5825,13 @@
           "PLANNING": 80.0,
           "LATE": 50.0,
           "RENEWAL": 50.0,
-          "LIMITED": 20.0
+          "LIMITED": 20.0,
+          "UNKNOWN": 20.0
         },
         "basis": "Ordered scale of how early procurement shapes technology decisions: early, at planning, after the choice, at renewal only, limited. The FinOps Intersecting Disciplines page supports the direction: its Crawl stage leaves renewal and exit ownership undefined until a contract is near expiry, Walk assigns it at signature with procurement and finance, Run monitors it continuously. It is written for cloud and licensing and gives no scores. LTM heuristic: the step values (100/80/60/40/20) are an LTM convention, not a benchmark; the FinOps Framework gives three stages, not scores. There is no Unknown option, so LIMITED is the lowest level. Overlaps in theme with ADP-48 and CORE-37; present them as one commercial picture, not independent evidence."
       },
       "active": true,
-      "version": 1,
+      "version": 2,
       "leakageSignal": "L3 Commercial Leakage",
       "opportunityTheme": "Procurement leverage",
       "weightClass": "Medium",
@@ -5813,6 +5935,10 @@
         {
           "id": "NOT_APPLICABLE",
           "label": "No acquisition, merger or divestiture in the last three years."
+        },
+        {
+          "id": "UNKNOWN",
+          "label": "We do not know."
         }
       ],
       "scoring": {
@@ -5824,12 +5950,13 @@
           "GOVERNED": 80.0,
           "SELECTIVE": 60.0,
           "LATE": 40.0,
-          "NONE": 20.0
+          "NONE": 20.0,
+          "UNKNOWN": 20.0
         },
         "basis": "Ordered scale of how technology synergies are identified and tracked after a transaction: named owners and baselines, tracked through integration governance, only the largest, after integration has progressed, none. Already triggers F-020 on LATE and NONE today but scores nothing, so the answer moved a finding and no dimension. LTM heuristic: the step values (100/80/60/40/20) are an LTM convention, not a benchmark; the FinOps Framework gives three stages, not scores. Master rule TR-29 treats the M&A area selection as 'M&A activity selected', so selecting the area is the only gate today. The dimension stays VALUE-02 as in the master (dimensionIds); the master's costDimension text says Investment Effectiveness, consistent. No published source verified."
       },
       "active": true,
-      "version": 1,
+      "version": 2,
       "leakageSignal": "L6 Portfolio Leakage",
       "opportunityTheme": "M&A synergy",
       "weightClass": "High",
@@ -5980,6 +6107,10 @@
         {
           "id": "NONE",
           "label": "There is little meaningful standardization across regions."
+        },
+        {
+          "id": "UNKNOWN",
+          "label": "We do not know."
         }
       ],
       "scoring": {
@@ -5991,12 +6122,13 @@
           "MOSTLY": 80.0,
           "MIXED": 60.0,
           "LOCAL": 40.0,
-          "NONE": 20.0
+          "NONE": 20.0,
+          "UNKNOWN": 20.0
         },
         "basis": "Ordered scale of how deliberately technology services are standardised across regions where it would reduce cost or complexity: deliberately, mostly, mixed, regions run their own, little. The prompt limits the target to cases 'where standardization would reduce cost or complexity', so a region that must stay separate for data-residency or sovereignty reasons is not penalised by the wording; respondents should be told so. MIXED sits in the order by option position (the bank test excludes it from the monotonic check by design). LTM heuristic: the step values (100/80/60/40/20) are an LTM convention, not a benchmark; the FinOps Framework gives three stages, not scores. Complements, does not replace, ADP-51 (costs) and the new CTX-03 and CTX-05 (where and how many). No published source verified."
       },
       "active": true,
-      "version": 1,
+      "version": 2,
       "leakageSignal": "L4 Complexity Leakage",
       "opportunityTheme": "Service standardization",
       "weightClass": "Medium",
@@ -6110,6 +6242,10 @@
         {
           "id": "RARE",
           "label": "Business leaders rarely challenge value versus cost explicitly."
+        },
+        {
+          "id": "UNKNOWN",
+          "label": "We do not know."
         }
       ],
       "scoring": {
@@ -6121,12 +6257,13 @@
           "QUARTERLY": 80.0,
           "PLANNING": 60.0,
           "ESCALATION": 40.0,
-          "RARE": 20.0
+          "RARE": 20.0,
+          "UNKNOWN": 20.0
         },
         "basis": "Ordered scale of how routinely the business challenges technology on value versus cost: regularly and used to reprioritise, in periodic governance, at annual planning, only when dissatisfied or under cost pressure, rarely. LTM heuristic: the step values (100/80/60/40/20) are an LTM convention, not a benchmark; the FinOps Framework gives three stages, not scores. The scale reads how routinely the challenge happens, which is a governance practice; whether the business is satisfied is CORE-43's question (VALUE-06, stars), so the two together give VALUE-06 two scored answers and the dimension is still thin. There is no Unknown option, so RARE is the lowest level; adding UNKNOWN is optional. No published source verified."
       },
       "active": true,
-      "version": 1,
+      "version": 2,
       "leakageSignal": "L7 Value Leakage",
       "opportunityTheme": "Value accountability",
       "weightClass": "Medium",
@@ -6384,6 +6521,10 @@
         {
           "id": "NONE",
           "label": "There is no consistent enterprise demand prioritization mechanism."
+        },
+        {
+          "id": "UNKNOWN",
+          "label": "We do not know."
         }
       ],
       "scoring": {
@@ -6395,12 +6536,13 @@
           "GOVERNED": 80.0,
           "MIXED": 60.0,
           "LIMITED": 40.0,
-          "NONE": 20.0
+          "NONE": 20.0,
+          "UNKNOWN": 20.0
         },
         "basis": "Ordered scale of how technology demand is prioritised against funding and capacity: continuously ranked with lower-value demand stopped, governed in periodic cycles, prioritised but with differing approaches, sponsorship-led, no mechanism. LTM heuristic: the step values (100/80/60/40/20) are an LTM convention, not a benchmark; the FinOps Framework gives three stages, not scores. MIXED sits in the middle by option position. There is no Unknown option, so NONE is the lowest level; adding UNKNOWN is optional. The master's costDimension is empty and valueDimension reads 'Operations Economics' while scoring.dimensionIds is COST-08 (the Cost dimension of that name); the engine reads dimensionIds only, so it scores into COST-08. Overlaps in theme with CORE-18 and CORE-22 (challenge of low-value spend) and CORE-10 (funding); ADP-59 asks about the demand queue, not the funding model. No published source verified."
       },
       "active": true,
-      "version": 1,
+      "version": 2,
       "leakageSignal": "L6 Portfolio Leakage",
       "opportunityTheme": "Demand governance",
       "weightClass": "Medium",
@@ -7652,6 +7794,30 @@
       ],
       "active": true,
       "version": 1
+    },
+    {
+      "id": "F-021",
+      "dimension": "Business Alignment",
+      "title": "Technology spend is not traceable to business strategy",
+      "description": "Without a traceable link from spend to named objectives, reductions and reinvestment cannot be tested against what the business needs most.",
+      "severity": "high",
+      "recommendationIds": [
+        "R-010"
+      ],
+      "active": true,
+      "version": 1
+    },
+    {
+      "id": "F-022",
+      "dimension": "Technology Productivity",
+      "title": "Technology unit costs are not tracked against business output",
+      "description": "Without cost per unit of business output, efficiency gains cannot be told apart from changes in volume, so productivity cannot be managed or shown.",
+      "severity": "medium",
+      "recommendationIds": [
+        "R-001"
+      ],
+      "active": true,
+      "version": 1
     }
   ],
   "recommendations": [
@@ -7662,7 +7828,8 @@
       "ltmService": "Technology Spend & Cost Baseline",
       "findingIds": [
         "F-001",
-        "F-002"
+        "F-002",
+        "F-022"
       ],
       "active": true,
       "version": 1
@@ -7772,7 +7939,8 @@
       "ltmService": "Technology Investment Strategy",
       "findingIds": [
         "F-015",
-        "F-019"
+        "F-019",
+        "F-021"
       ],
       "active": true,
       "version": 1

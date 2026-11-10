@@ -83,6 +83,20 @@ export function caller(event: APIGatewayProxyEventV2): { email: string; admin: b
 }
 
 /**
+ * Whether the caller is an LTM consultant: in the Cognito Admin or Consultant group, or a bootstrap super admin. Consultant-only
+ * material (a report's consultant edition, its statement-of-work draft and internal notes) is served on this alone (Cost IQ M8).
+ */
+export function isConsultant(event: APIGatewayProxyEventV2): boolean {
+  const who = caller(event);
+  if (!who) return false;
+  if (who.admin) return true;
+  const c = (event as APIGatewayProxyEventV2WithJWTAuthorizer).requestContext?.authorizer?.jwt?.claims;
+  const raw = c?.['cognito:groups'];
+  const groups = Array.isArray(raw) ? raw.map(String) : String(raw || '').replace(/^\[|\]$/g, '').split(/[\s,]+/).filter(Boolean);
+  return groups.includes(process.env.CONSULTANT_GROUP || 'Consultant');
+}
+
+/**
  * Whether the caller may use another accelerator as well, for a service that reads one accelerator's saved data on behalf of
  * another (Cost IQ importing a FinOps IQ result). Permission only: the domain rules were already checked for this request by
  * withAcceleratorAccess. Fails closed: an unreadable permission list means no.

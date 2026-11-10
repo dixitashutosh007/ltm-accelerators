@@ -1,6 +1,6 @@
 {
-  "version": "7.1.1",
-  "source": "v6.6 deterministic scoring maps",
+  "version": "7.2.0",
+  "source": "v6.6 deterministic scoring maps; CQ12 slice 3 (8 Nov 2026) adds option-level triggers for the focus-area questions: the options scored 48 or below (the two weakest levels, as v7.1.1), never Unknown; stars 1 or 2; inverted sliders above 50",
   "rule": "Only explicitly calibrated scored questions can activate an existing finding; signal/hypothesis/tradeoff/constraint questions remain evidence signals unless separately configured.",
   "findingActivation": {
     "F-001": [
@@ -20,6 +20,14 @@
           "ADHOC",
           "NONE"
         ]
+      },
+      {
+        "questionId": "CORE-06",
+        "type": "answer",
+        "triggerAnswers": [
+          1,
+          2
+        ]
       }
     ],
     "F-002": [
@@ -37,6 +45,37 @@
         "type": "numeric",
         "operator": "lt",
         "value": 50
+      },
+      {
+        "questionId": "ADP-51",
+        "type": "option",
+        "triggerOptions": [
+          "HIGH"
+        ],
+        "applicableWhen": {
+          "questionId": "CTX-05",
+          "anyOf": [
+            "2_5",
+            "6_20",
+            "GT20"
+          ]
+        }
+      },
+      {
+        "questionId": "ADP-66",
+        "type": "option",
+        "triggerOptions": [
+          "TOTAL_ONLY"
+        ],
+        "applicableWhen": {
+          "questionId": "CORE-01",
+          "anyOf": [
+            "ON_PREM",
+            "PRIVATE_CLOUD",
+            "VMWARE",
+            "COLO"
+          ]
+        }
       }
     ],
     "F-003": [
@@ -55,6 +94,14 @@
           "PROBLEM",
           "RARE"
         ]
+      },
+      {
+        "questionId": "ADP-59",
+        "type": "option",
+        "triggerOptions": [
+          "LIMITED",
+          "NONE"
+        ]
       }
     ],
     "F-004": [
@@ -64,6 +111,13 @@
         "triggerOptions": [
           "USAGE",
           "NONE"
+        ]
+      },
+      {
+        "questionId": "ADP-27",
+        "type": "option",
+        "triggerOptions": [
+          "CONTROL"
         ]
       }
     ],
@@ -75,6 +129,20 @@
           "INCONSISTENT",
           "NOT_MEASURED"
         ]
+      },
+      {
+        "questionId": "ADP-29",
+        "type": "numeric",
+        "operator": "gt",
+        "value": 50
+      },
+      {
+        "questionId": "ADP-30",
+        "type": "option",
+        "triggerOptions": [
+          "LATE",
+          "NONE"
+        ]
       }
     ],
     "F-015": [
@@ -84,6 +152,14 @@
         "triggerOptions": [
           "TOWER",
           "FIXED"
+        ]
+      },
+      {
+        "questionId": "CORE-11",
+        "type": "option",
+        "triggerOptions": [
+          "COMMITTED",
+          "VERY_HARD"
         ]
       }
     ],
@@ -134,6 +210,34 @@
             "SAAS"
           ]
         }
+      },
+      {
+        "questionId": "ADP-06",
+        "type": "option",
+        "triggerOptions": [
+          "6_10",
+          "GT10"
+        ],
+        "applicableWhen": {
+          "questionId": "CORE-01",
+          "anyOf": [
+            "SAAS"
+          ]
+        }
+      },
+      {
+        "questionId": "ADP-07",
+        "type": "option",
+        "triggerOptions": [
+          "RENEWAL",
+          "UNCLEAR"
+        ],
+        "applicableWhen": {
+          "questionId": "CORE-01",
+          "anyOf": [
+            "SAAS"
+          ]
+        }
       }
     ],
     "F-013": [
@@ -158,6 +262,27 @@
         "triggerOptions": [
           "VISIBLE_BUT_HARD",
           "AD_HOC"
+        ]
+      },
+      {
+        "questionId": "ADP-22",
+        "type": "numeric",
+        "operator": "gt",
+        "value": 50
+      },
+      {
+        "questionId": "ADP-23",
+        "type": "option",
+        "triggerOptions": [
+          "LIMITED",
+          "NONE"
+        ]
+      },
+      {
+        "questionId": "ADP-41",
+        "type": "option",
+        "triggerOptions": [
+          "SHARED"
         ]
       }
     ],
@@ -202,6 +327,68 @@
           "RENEWAL_LED",
           "LIMITED"
         ]
+      },
+      {
+        "questionId": "ADP-14",
+        "type": "option",
+        "triggerOptions": [
+          "FIXED",
+          "UNRECONCILED"
+        ],
+        "applicableWhen": {
+          "questionId": "CORE-01",
+          "anyOf": [
+            "EXTERNAL"
+          ]
+        }
+      },
+      {
+        "questionId": "ADP-35",
+        "type": "option",
+        "triggerOptions": [
+          "FIXED"
+        ],
+        "applicableWhen": {
+          "questionId": "CORE-01",
+          "anyOf": [
+            "EXTERNAL"
+          ]
+        }
+      },
+      {
+        "questionId": "ADP-36",
+        "type": "option",
+        "triggerOptions": [
+          "LIMITED",
+          "NONE"
+        ],
+        "applicableWhen": {
+          "questionId": "CORE-01",
+          "anyOf": [
+            "EXTERNAL"
+          ]
+        }
+      },
+      {
+        "questionId": "ADP-44",
+        "type": "option",
+        "triggerOptions": [
+          "LOCKED"
+        ]
+      },
+      {
+        "questionId": "ADP-47",
+        "type": "option",
+        "triggerOptions": [
+          "LIMITED"
+        ]
+      },
+      {
+        "questionId": "ADP-48",
+        "type": "option",
+        "triggerOptions": [
+          "LOCAL"
+        ]
       }
     ],
     "F-008": [
@@ -212,6 +399,20 @@
           "D",
           "E",
           "F"
+        ],
+        "applicableWhen": {
+          "questionId": "CORE-01",
+          "anyOf": [
+            "SOFTWARE"
+          ]
+        }
+      },
+      {
+        "questionId": "ADP-16",
+        "type": "option",
+        "triggerOptions": [
+          "ENTITLEMENT_LED",
+          "UNRELIABLE"
         ],
         "applicableWhen": {
           "questionId": "CORE-01",
@@ -230,6 +431,113 @@
           "E",
           "F"
         ]
+      },
+      {
+        "questionId": "ADP-09",
+        "type": "option",
+        "triggerOptions": [
+          "REACTIVE"
+        ],
+        "applicableWhen": {
+          "questionId": "CORE-01",
+          "anyOf": [
+            "VMWARE"
+          ]
+        }
+      },
+      {
+        "questionId": "ADP-11",
+        "type": "answer",
+        "triggerAnswers": [
+          1,
+          2
+        ],
+        "applicableWhen": {
+          "questionId": "CORE-01",
+          "anyOf": [
+            "ON_PREM",
+            "PRIVATE_CLOUD"
+          ]
+        }
+      },
+      {
+        "questionId": "ADP-13",
+        "type": "option",
+        "triggerOptions": [
+          "RENEWAL",
+          "UNCLEAR"
+        ],
+        "applicableWhen": {
+          "questionId": "CORE-01",
+          "anyOf": [
+            "COLO"
+          ]
+        }
+      },
+      {
+        "questionId": "ADP-26",
+        "type": "answer",
+        "triggerAnswers": [
+          1,
+          2
+        ]
+      },
+      {
+        "questionId": "ADP-37",
+        "type": "numeric",
+        "operator": "gt",
+        "value": 50,
+        "applicableWhen": {
+          "questionId": "CORE-01",
+          "anyOf": [
+            "ON_PREM",
+            "PRIVATE_CLOUD",
+            "COLO"
+          ]
+        }
+      },
+      {
+        "questionId": "ADP-38",
+        "type": "option",
+        "triggerOptions": [
+          "SIGNIFICANT"
+        ],
+        "applicableWhen": {
+          "questionId": "CORE-01",
+          "anyOf": [
+            "ON_PREM",
+            "PRIVATE_CLOUD",
+            "VMWARE",
+            "COLO",
+            "PUBLIC_CLOUD"
+          ]
+        }
+      },
+      {
+        "questionId": "ADP-64",
+        "type": "option",
+        "triggerOptions": [
+          "TOTAL_ONLY"
+        ],
+        "applicableWhen": {
+          "questionId": "CORE-01",
+          "anyOf": [
+            "END_USER"
+          ]
+        }
+      },
+      {
+        "questionId": "ADP-65",
+        "type": "option",
+        "triggerOptions": [
+          "ON_FAILURE"
+        ],
+        "applicableWhen": {
+          "questionId": "CORE-01",
+          "anyOf": [
+            "END_USER"
+          ]
+        }
       }
     ],
     "F-016": [
@@ -238,6 +546,36 @@
         "type": "numeric",
         "operator": "gt",
         "value": 50
+      },
+      {
+        "questionId": "ADP-39",
+        "type": "option",
+        "triggerOptions": [
+          "GROWING"
+        ]
+      },
+      {
+        "questionId": "ADP-52",
+        "type": "option",
+        "triggerOptions": [
+          "LOCAL",
+          "NONE"
+        ],
+        "applicableWhen": {
+          "questionId": "CTX-05",
+          "anyOf": [
+            "2_5",
+            "6_20",
+            "GT20"
+          ]
+        }
+      },
+      {
+        "questionId": "ADP-60",
+        "type": "option",
+        "triggerOptions": [
+          "UNIFORM"
+        ]
       }
     ],
     "F-010": [
@@ -248,6 +586,42 @@
           "MISMATCH",
           "NOT_MEASURED"
         ]
+      },
+      {
+        "questionId": "ADP-18",
+        "type": "option",
+        "triggerOptions": [
+          "LOCKED_IN",
+          "UNMEASURED"
+        ]
+      },
+      {
+        "questionId": "ADP-62",
+        "type": "option",
+        "triggerOptions": [
+          "BUDGET_ONLY"
+        ],
+        "applicableWhen": {
+          "questionId": "CORE-01",
+          "anyOf": [
+            "WORKFORCE",
+            "EXTERNAL"
+          ]
+        }
+      },
+      {
+        "questionId": "ADP-63",
+        "type": "option",
+        "triggerOptions": [
+          "UNCONTROLLED"
+        ],
+        "applicableWhen": {
+          "questionId": "CORE-01",
+          "anyOf": [
+            "WORKFORCE",
+            "EXTERNAL"
+          ]
+        }
       }
     ],
     "F-012": [
@@ -258,6 +632,27 @@
           4,
           5
         ]
+      },
+      {
+        "questionId": "ADP-25",
+        "type": "option",
+        "triggerOptions": [
+          "COST_LAST"
+        ]
+      },
+      {
+        "questionId": "ADP-45",
+        "type": "option",
+        "triggerOptions": [
+          "LOCKED",
+          "NONE"
+        ]
+      },
+      {
+        "questionId": "ADP-46",
+        "type": "numeric",
+        "operator": "gt",
+        "value": 50
       }
     ],
     "F-014": [
@@ -267,6 +662,14 @@
         "triggerAnswers": [
           1,
           2
+        ]
+      },
+      {
+        "questionId": "ADP-54",
+        "type": "option",
+        "triggerOptions": [
+          "ESCALATION",
+          "RARE"
         ]
       }
     ],
@@ -377,6 +780,24 @@
             "AI"
           ]
         }
+      }
+    ],
+    "F-021": [
+      {
+        "questionId": "ADP-61",
+        "type": "option",
+        "triggerOptions": [
+          "ASSERTED"
+        ]
+      }
+    ],
+    "F-022": [
+      {
+        "questionId": "ADP-67",
+        "type": "option",
+        "triggerOptions": [
+          "NOT_TRACKED"
+        ]
       }
     ]
   }

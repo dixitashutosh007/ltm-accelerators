@@ -154,7 +154,7 @@ describe('Cost IQ question bank', () => {
   it('applies the owner decisions of 4 Nov 2026: ADP-15 dropped, ADP-18 rewritten and scored, AI in the footprint, ADP-28 asked of everyone', () => {
     const q = (id: string) => questions.find((x: any) => x.id === id);
     expect(q('ADP-15')).toBeUndefined();
-    expect(q('ADP-18').options.map((o: any) => o.id)).toEqual(['ECONOMICS_LED', 'POLICY_LED', 'CAPACITY_LED', 'LOCKED_IN', 'UNMEASURED']);
+    expect(q('ADP-18').options.map((o: any) => o.id)).toEqual(['ECONOMICS_LED', 'POLICY_LED', 'CAPACITY_LED', 'LOCKED_IN', 'UNMEASURED', 'UNKNOWN']);
     expect(engine.scoreQuestion(q('ADP-18'), 'ECONOMICS_LED', {})).toBeGreaterThan(engine.scoreQuestion(q('ADP-18'), 'UNMEASURED', {}));
     expect(q('CORE-01').options.map((o: any) => o.id)).toContain('AI');
     expect(q('ADP-28').applicableWhen).toBeUndefined();

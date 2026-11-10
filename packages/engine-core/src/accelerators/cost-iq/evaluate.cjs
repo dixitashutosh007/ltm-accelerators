@@ -5,15 +5,18 @@ const config = require('./canon/config/master-v6.6.json');
 const calibration = require('./canon/config/finding-activation-calibration-v7.1.1.json');
 const opportunityGates = require('./canon/config/opportunity-recommendation-gates-v7.1.0.json');
 const RELEASE_MANIFEST = require('./canon/RELEASE_MANIFEST.json');
+const { cioContext } = require('./cio-context.cjs');
 
 function evaluateCostIq({ answers = {}, scope = null, evidence = {}, feasibilityEvidence = {}, options = {} } = {}) {
-  return canon.evaluate(config, {
+  const result = canon.evaluate(config, {
     calibration,
     opportunityGates,
     answers,
     selectedAreas: Array.isArray(scope?.selectedAreas) ? scope.selectedAreas : null,
     options: { ...options, evidence, feasibilityEvidence }
   });
+  // What the client said about their context, priorities and hotspots, set against the findings (CQ12 slice 2). Moves no score.
+  return { ...result, cio: cioContext(answers, result.findings) };
 }
 
 function metadata() {
