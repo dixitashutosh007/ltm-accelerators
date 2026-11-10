@@ -745,8 +745,21 @@
         h('h1', { id: 'hero-h', tabindex: '-1' }, state.clientName),
         h('p', { class: 'hero-meta' }, [statusLabel(state.status) + (state.completedAt ? ' ' + when(state.completedAt) : ''), r.exposure.summary, state.view === 'client' ? 'Client edition' : 'Consultant view'].join(' · '))), acts),
       m.label ? h('p', { class: 'hero-headline' }, m.label + (m.coverage < 1 ? ' · coverage ' + Math.round(m.coverage * 100) + '%' : '')) : null,
+      coverageNotice(r),
       h('div', { class: 'kpi-row' }, kpis));
   }
+
+  // Coverage guard (portfolio review 0.1): places in the footprint the registry does not cover. Results saved before it have no jurisdictions.
+  function coverageNotice(r) {
+    var j = r.jurisdictions;
+    if (!j || !j.notAssessed.length) return null;
+    var names = andList(j.notAssessed.map(function (x) { return x.name; }));
+    return h('div', { class: 'notice warn', role: 'note', id: 'coverage-notice' },
+      h('strong', null, 'Outside this assessment: ' + names + '. '),
+      (j.none ? 'No regulation is shown because none was assessed, not because none applies. ' : 'Obligations there are not in the exposure, the requirements or the roadmap. ') +
+      'Take advice from counsel qualified there. Sovereign IQ covers ' + andList(j.covered) + '.');
+  }
+  function andList(xs) { return xs.length < 2 ? xs.join('') : xs.slice(0, -1).join(', ') + ' and ' + xs[xs.length - 1]; }
 
   function card(title, sub, content, cls) {
     var id = 'c-' + title.toLowerCase().replace(/[^a-z]+/g, '-');

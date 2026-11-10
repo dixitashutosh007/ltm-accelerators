@@ -86,7 +86,18 @@ function summary(c: Ctx): ReportSection {
   const sev = (k: string) => c.findings.filter(f => f.severity === k).length;
   const m = r.maturity, cap = r.exposure.largestCap && c.shownRegimes.has(r.exposure.largestCap.regime) ? r.exposure.largestCap : null;
   const blocks: Block[] = [];
-  blocks.push({ kind: 'paragraph', style: 'lead', segs: [
+  // Coverage guard (portfolio review 0.1): a place in the footprint outside the registry is stated first, never left as a zero.
+  const gap = r.jurisdictions.notAssessed.map(x => x.name);
+  if (gap.length) blocks.push({ kind: 'callout', tone: 'warn', title: 'Outside this assessment', segs: [
+    `You operate in, or hold personal data of people in, ${andList(gap)}. This assessment does not cover ${gap.length === 1 ? 'that jurisdiction' : 'those jurisdictions'}: its obligations are not assessed and are not in the exposure, the requirements or the roadmap. `,
+    r.jurisdictions.none ? 'No regulation is shown below because none was assessed, not because none applies. ' : '',
+    `Take advice from counsel qualified there. This edition covers ${andList(r.jurisdictions.covered)}.`
+  ] });
+  if (r.jurisdictions.none) blocks.push({ kind: 'paragraph', style: 'lead', segs: [
+    'No regulation was assessed: every place you operate or hold personal data is outside this assessment. ',
+    m.score != null ? ['Your controls score ', traced('maturity.score', m.score, 'index', []), ' out of 100 against the level you set for your data; with no regulation assessed, that level is your own choice, not a legal floor.'] as any : [m.wording, '.']
+  ].flat() });
+  else blocks.push({ kind: 'paragraph', style: 'lead', segs: [
     'On your answers, ', count('regimes[applies]', n('applies')), ` ${plural(n('applies'), 'regulation applies', 'regulations apply')}, `,
     count('regimes[likely_confirm]', n('likely_confirm')), ' may ', 'apply and should be confirmed with counsel, and ',
     count('regimes[advisory]', n('advisory')), ' ', plural(n('advisory'), 'is', 'are'), ' for awareness. ',
@@ -95,7 +106,9 @@ function summary(c: Ctx): ReportSection {
   ].flat() });
   blocks.push({ kind: 'kpis', items: [
     { label: 'Control maturity', value: m.score != null ? [traced('maturity.score', m.score, 'index', []), ' / 100'] : ['No score'], note: [m.score != null ? `${m.band!}${bandWithheld(c) ? ' (top band withheld)' : ''}` : 'Too few controls required for a reliable number'] },
-    { label: 'Regulations in scope', value: [count('regimes[in_scope]', n('applies') + n('likely_confirm') + n('advisory'))], note: [count('regimes[applies]', n('applies')), ' apply · ', count('regimes[likely_confirm]', n('likely_confirm')), ' to confirm'] },
+    r.jurisdictions.none
+      ? { label: 'Regulations in scope', value: ['Not assessed'], note: ['Outside this assessment: ', andList(gap)] }
+      : { label: 'Regulations in scope', value: [count('regimes[in_scope]', n('applies') + n('likely_confirm') + n('advisory'))], note: [count('regimes[applies]', n('applies')), ' apply · ', count('regimes[likely_confirm]', n('likely_confirm')), ' to confirm', ...(gap.length ? ['; not assessed: ', andList(gap)] : [])] },
     { label: 'Control gaps by regulation', value: [count('exposure[red]', rag('red')), ' major'], note: [count('exposure[amber]', rag('amber')), ' some gaps · ', count('exposure[green]', rag('green')), ' none found'] },
     { label: 'Largest statutory cap', value: cap ? capSegs(cap, 'exposure.largestCap') : ['Not quantified'], note: cap ? [quote(`${regimeName(r, cap.regime)} ${cap.article}${cap.grade === 'likely_confirm' ? ' (may apply – confirm)' : ''}`), '; cap, not expected fine', ...(r.exposure.regimes.some(e => e.cap?.atLeast && c.shownRegimes.has(e.regime)) ? ['; largest of the amounts that can be computed: some maximums rest on a turnover not collected'] : [])] : [r.exposure.capNote] },
     { label: 'Findings', value: [count('findings', c.findings.length)], note: [count('findings[Critical]', sev('Critical')), ' critical · ', count('findings[High]', sev('High')), ' high'] }
@@ -114,6 +127,7 @@ function summary(c: Ctx): ReportSection {
   return { id: 'summary', title: 'Executive summary', blocks };
 }
 
+const andList = (xs: string[]) => (xs.length < 2 ? xs.join('') : `${xs.slice(0, -1).join(', ')} and ${xs[xs.length - 1]}`);
 const regimeName = (r: SovereignIqV4Result, id: string) => r.regimes.find(g => g.regime === id)?.name ?? id;
 
 /** S6 re-test N2: why a score of 80 or more reads Managed. */
