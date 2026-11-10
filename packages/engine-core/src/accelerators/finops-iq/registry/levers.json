@@ -122,17 +122,22 @@
           },
           "gcp": {
             "quantified": true,
-            "value": 0.55,
-            "instrument": "Resource-based committed use discounts (0.70 only where the client states memory-optimised series dominate)",
+            "value": 0.46,
+            "instrument": "Compute flexible committed use discounts, three-year rate for most series (resource-based CUDs at 0.55, or 0.70 on memory-optimised series, only where the client states them)",
             "source": {
-              "claimId": "CLM-FIN-065",
-              "citation": "Google Cloud resource-based committed use discounts: up to 55% (70% memory-optimised), three-year term; compute flexible CUDs are 46% for three years on most series",
+              "claimId": "CLM-FIN-066",
+              "citation": "Google Cloud compute flexible committed use discounts: 46% for three years on most series (owner decision 10 Nov 2026, M7 D2); resource-based CUDs up to 55% (70% memory-optimised) where stated",
               "url": "https://docs.cloud.google.com/compute/docs/instances/committed-use-discounts-overview",
               "status": "V",
               "checked": "2026-10-14",
               "reviewBy": "2027-01-12"
             },
             "instruments": {
+              "flexible_cud": {
+                "value": 0.46,
+                "claimId": "CLM-FIN-066",
+                "label": "Compute flexible committed use discounts"
+              },
               "resource_cud": {
                 "value": 0.55,
                 "claimId": "CLM-FIN-065",
@@ -144,7 +149,7 @@
                 "label": "Resource-based CUDs on memory-optimised series"
               }
             },
-            "defaultInstrument": "resource_cud"
+            "defaultInstrument": "flexible_cud"
           },
           "oci": {
             "quantified": false,

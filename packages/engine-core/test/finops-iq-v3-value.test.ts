@@ -623,7 +623,9 @@ describe('FinOps IQ v3 value: model rules (DESIGN.md 10)', () => {
  * apply, so year-1 figures are lower by design.
  * V5: Azure Spot sourced in F2 (RS2, RS4). V10: Spot counts only usage not covered by commitments (H2: RS2, RS3, RS4).
  * V11: LEV-01 at the lower published maximum when the instrument is not stated (M6: RS4). V12: a lever whose marginal
- * net is not positive leaves the headline (M1: RS4 LEV-06, with its effort).
+ * net is not positive leaves the headline (M1: RS4 LEV-06, with its effort). V13: Google Cloud LEV-01 at the 46% compute
+ * flexible CUD rate when the instrument is not stated, not the 55% resource-based maximum (owner decision M7 D2, 10 Nov 2026:
+ * RS5, RS6); the test below pins the change to exactly 46/55.
  */
 const VALUE_DIFFS: Record<string, { levers: string[]; totals: boolean; cases?: string[] }> = {
   RS2: { levers: ['LEV-06'], totals: true },
@@ -634,7 +636,10 @@ const VALUE_DIFFS: Record<string, { levers: string[]; totals: boolean; cases?: s
   // scope; it now reads SC-04's Kubernetes row, so LEV-04 is quantified and the totals move. RS8: LEV-02 is not worth
   // pursuing at this scale, so it has no case figures, only the expected figure behind its exclusion (X1).
   RS7: { levers: ['LEV-01', 'LEV-04'], totals: true },
-  RS8: { levers: ['LEV-02'], totals: false }
+  RS8: { levers: ['LEV-02'], totals: false },
+  // RS5's upper case is capped, so a smaller LEV-01 raises the pro-rata cap scale of the other levers (as RS3).
+  RS5: { levers: ['LEV-01'], totals: true, cases: ['upper'] },
+  RS6: { levers: ['LEV-01'], totals: true }
 };
 const within = (a: number, b: number, rel = 0.01) => Math.abs(a - b) <= Math.max(2, Math.abs(b) * rel);
 
@@ -667,6 +672,19 @@ describe('FinOps IQ v3 value: reference scenarios against the ranges written in 
       expect(e.confidence).toContain(r.value.confidence.overall!);
     });
   }
+
+  it('V13: Google Cloud LEV-01 moves by exactly 46/55 where no instrument is stated and the cap does not bind (RS5, RS6)', () => {
+    for (const id of ['RS5', 'RS6']) {
+      const s = SCENARIOS.find(x => x.id === id)!;
+      const r = scenarioRuns.find(x => x.label === id)!.r;
+      const l = r.value.levers.find(x => x.id === 'LEV-01')!;
+      expect(l.maxRate.find(m => m.provider === 'gcp')).toMatchObject({ rate: { value: 0.46 }, instrumentStated: false, instrument: 'Compute flexible committed use discounts' });
+      for (const c of ['conservative', 'expected'] as const) {
+        if (total(r, c).capBinding) continue;
+        expect(l.cases![c].runRate.value / s.expected.value[c].levers['LEV-01'], `${id} ${c}`).toBeCloseTo(46 / 55, 2);
+      }
+    }
+  });
 
   it('RS2: the recorded difference comes only from Spot (Azure sourced in F2, base net of coverage)', () => {
     // RS2 is Azure-only: with no Spot-movable usage the engine reproduces every F1 run-rate total within 1%.
