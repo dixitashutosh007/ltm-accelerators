@@ -16,7 +16,7 @@ const NOW = new Date('2026-11-04T10:00:00Z');
 setPermissionSource(async () => ({ take: ['cost-iq'] }));
 setDomainStore({ check: async () => ({ allowed: true, reason: 'baseline_domain' }) });
 
-const event = (query: Record<string, string>, claims: Record<string, unknown> = { email: ME, sub: 's1' }, method = 'GET'): any => ({
+const event = (query: Record<string, string>, claims: Record<string, unknown> = { email: ME, sub: 's1', 'cognito:groups': '[Consultant]' }, method = 'GET'): any => ({
   rawPath: '/api/cost-iq/report', headers: {}, queryStringParameters: query,
   requestContext: { requestId: 'r1', http: { method }, authorizer: { jwt: { claims } } }
 });
@@ -37,6 +37,25 @@ async function seed(over: Record<string, unknown> = {}) {
 beforeEach(() => { store = memoryStore(); handler = createHandler(store, () => NOW); vi.spyOn(console, 'error').mockImplementation(() => {}); });
 
 describe('Cost IQ report service', () => {
+  it('serves the consultant edition to LTM consultants only (M8): a non-consultant is refused it and gets the client edition by default', async () => {
+    await seed();
+    const plain = { email: ME, sub: 's1' };
+    const refused = await call(event({ assessmentId: 'CIQ-1', view: 'consultant' }, plain));
+    expect(refused.statusCode).toBe(403);
+    expect(JSON.parse(String(refused.body))).toMatchObject({ error: 'consultant_role_required' });
+    const byDefault = await call(event({ assessmentId: 'CIQ-1' }, plain));
+    expect(byDefault.statusCode).toBe(200);
+    expect(String(byDefault.headers!['Content-Disposition'])).toContain('-client.pdf');
+    const csv = await call(event({ assessmentId: 'CIQ-1', format: 'csv' }, plain));
+    expect(String(csv.body)).not.toContain('Finding ID');
+    // A consultant gets the consultant edition; an Admin does too.
+    for (const groups of ['[Consultant]', '[Admin]']) {
+      const r = await call(event({ assessmentId: 'CIQ-1', format: 'csv', view: 'consultant' }, { email: ME, sub: 's1', 'cognito:groups': groups }));
+      expect(r.statusCode, groups).toBe(200);
+      expect(String(r.body)).toContain('Finding ID');
+    }
+  });
+
   it('serves the PDF of a completed assessment to its respondent', async () => {
     await seed();
     const r = await call(event({ assessmentId: 'CIQ-1' }));

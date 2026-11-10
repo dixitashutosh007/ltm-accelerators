@@ -277,7 +277,7 @@ test.describe('Cost IQ', () => {
     test.setTimeout(120_000);
     setPermissionSource(async () => ({ take: ['cost-iq', 'finops-iq'] }));
     setDomainStore({ check: async () => ({ allowed: true, reason: 'baseline_domain' }) });
-    await signedIn(context, permitted(makeIdToken('consultant@ltm.com')));
+    await signedIn(context, permitted(makeIdToken('consultant@ltm.com', 3600, { 'cognito:groups': ['Consultant'] })));
     const consoleErrors: string[] = [];
     page.on('console', m => { if (m.type() === 'error') consoleErrors.push(`${m.text()} ${m.location().url}`); });
     const store = memoryStore();
@@ -495,8 +495,18 @@ test.describe('Cost IQ', () => {
     expect(world.pageErrors).toEqual([]);
   });
 
-  test('a completed assessment downloads the server-built report: PDF, client edition and backlog, each through the API', async ({ page, context, world }) => {
+  test('a user outside the Consultant group is offered the client edition only (M8)', async ({ page, context, world }) => {
     await signedIn(context, permitted(makeIdToken('consultant@ltm.com')));
+    world.on('GET', ASSESSMENT, () => ({ body: { ok: true, data: [] } }));
+    await page.goto('/cost-iq-v10');
+    await page.evaluate("savedAssessment = { assessmentId: 'CIQ-x', status: 'completed' }; testScenario = false; document.getElementById('app').innerHTML = reportButtons()");
+    await expect(page.getByRole('button', { name: 'Client edition (PDF)' })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Consultant edition (PDF)' })).toHaveCount(0);
+    expect(world.pageErrors).toEqual([]);
+  });
+
+  test('a completed assessment downloads the server-built report: PDF, client edition and backlog, each through the API', async ({ page, context, world }) => {
+    await signedIn(context, permitted(makeIdToken('consultant@ltm.com', 3600, { 'cognito:groups': ['Consultant'] })));
     const answers = { 'CORE-01': ['PUBLIC_CLOUD'], 'CORE-16': 'TRUE', 'ADP-42': 'UNKNOWN' };
     const areas = ['Infrastructure', 'Applications'];
     const done = { ...stored, status: 'completed', selectedAreasJson: JSON.stringify(areas), answersJson: JSON.stringify(answers), subjectiveJson: '{}', resultJson: JSON.stringify(evaluateCostIq({ answers, scope: { selectedAreas: areas } })), completedAt: '2026-11-02T00:00:00.000Z' };
