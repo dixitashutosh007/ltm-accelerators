@@ -1,5 +1,16 @@
 # Cost IQ release decision
 
+## COSTIQ-1.1.0 (10 Nov 2026)
+**Release label:** `COSTIQ-1.1.0`, status `APPROVED_WITH_ACCEPTED_PARTIALS`, methodology `6.7.0`, calibration `7.2.0`. Decided by the product owner on 10 Nov 2026 ("go with your recommendations"), after CQ12 merged (PR #105).
+
+Owner decisions recorded with it:
+- **Published spend-to-revenue average on.** Deloitte may be named as the publisher of a dated source citation (CLM-COST-026). `banned-phrases.json` is narrowed to allow only that form (and the source URL); any other mention of Deloitte is still refused by the report check R5 and the claims check.
+- **Consultant edition by role (M8 closed).** The consultant edition goes only to the Cognito `Admin` and `Consultant` groups. The owner will add LTM consultants to the `Consultant` group before deployment.
+- **Practice-lead review** of the CQ12 calibration judgement calls, the client-view mapping and the golden outputs: noted by the owner, still to come.
+
+The conditions of use below for `COSTIQ-1.0.0` still apply.
+
+## COSTIQ-1.0.0 (5 Nov 2026)
 **Release label:** `COSTIQ-1.0.0`, status `APPROVED_WITH_ACCEPTED_PARTIALS` (was `COSTIQ-0.7.8-DRAFT`, `ENGINEERING_INTEGRATION_BASELINE`).
 **Decided:** 5 Nov 2026, by the product owner, on the instruction "Conclude release label" given after the CQ11 re-score (`CQ11-REVIEW.md`: 1 Pass, 12 Partial, 0 Fail; baseline 3 Partial, 10 Fail). The label records the owner's decision to release with the Partials below accepted; it is not a claim that all 13 areas Pass.
 

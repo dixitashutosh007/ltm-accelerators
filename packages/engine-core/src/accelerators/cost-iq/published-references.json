@@ -2,8 +2,8 @@
   "version": "1.0.0",
   "purpose": "CQ12 slice 5: published references a CIO can set the assessment against. Each is a published figure with source, year and sample, shown as context and never as an LTM peer benchmark. The band edges are the size classes of CORE-03 and CORE-04 in US dollars; both questions use the same conversion, so their ratio does not depend on the reporting currency.",
   "spendToRevenue": {
-    "enabled": false,
-    "status": "Off pending an owner decision (10 Nov 2026). The only figure verified at its source is Deloitte's (CLM-COST-026), and the report lint bans naming Deloitte, a consulting competitor (banned-phrases.json, RV1). Flexera's Tech Spend Pulse gives its figure only in charts, so it could not be verified. With this off, the report shows the client's own ratio and says no published average is used.",
+    "enabled": true,
+    "status": "On by owner decision (10 Nov 2026): Deloitte may be named as the publisher of a dated source citation (banned-phrases.json narrowed accordingly). Flexera's Tech Spend Pulse gives its figure only in charts, so it could not be verified and is not used.",
     "claimId": "CLM-COST-026",
     "averagePercent": 6,
     "approximate": true,
