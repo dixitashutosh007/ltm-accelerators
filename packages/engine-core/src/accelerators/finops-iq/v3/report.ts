@@ -697,6 +697,81 @@ function leverFormulas(c: Ctx): Block[] {
   return blocks;
 }
 
+/**
+ * Client edition (portfolio review 0.4): an engine field in words, for the "Every number" table. A derived number names
+ * what it combines, each capability, lever or workstream once. The consultant edition keeps the engine paths.
+ */
+const CASE_WORD: Record<string, string> = { conservative: 'conservative case', expected: 'expected case', upper: 'upper case' };
+const TOTAL_WORD: Record<string, string> = {
+  annualRunCost: 'annual run cost', grossRunRate: 'gross saving per year at full run-rate', netRunRate: 'net saving per year at full run-rate',
+  netYear1: 'net saving in year one', netYear2: 'net saving in year two', netYear3: 'net saving in year three', net3Year: 'net saving over three years',
+  oneOffCost: 'one-off cost', pctOfP: 'net saving as a share of in-scope spend'
+};
+const LEVER_CASE_WORD: Record<string, string> = {
+  base: 'base', rate: 'maximum rate', factor: 'case factor', beforeGlobalCap: 'saving before the global cap', runRate: 'saving per year', year1: 'first-year saving', year1Share: 'first-year share'
+};
+/** An input's label without its bracketed note, which can name a question ID. */
+const inputLabel = (p: string) => inputInfo(p).label.replace(/\s*\([^()]*\)/g, '');
+const lcFirst = (t: string) => (/^[A-Z][a-z]/.test(t) ? t[0].toLowerCase() + t.slice(1) : t);
+const MILESTONE_WORD: Record<string, string> = { crawl: 'Crawl', walk: 'Walk', run: 'Run' };
+export function fieldWords(field: string, r: FinOpsIqV3Result, roadmap: RoadmapWorkstream[] = []): string {
+  const t = fieldWordsRaw(field, r, roadmap);
+  return t[0].toUpperCase() + t.slice(1);
+}
+function fieldWordsRaw(field: string, r: FinOpsIqV3Result, roadmap: RoadmapWorkstream[]): string {
+  const finding = (id: string) => {
+    const f = r.findings.find(x => x.id === id);
+    if (f?.type === 'capability_gap') return r.capabilities.find(p => p.capability === f.capability)?.displayName ?? f.capability;
+    const lev = /^F-FIN-(LEV-\d{2})$/.exec(id);
+    if (lev) return LEVER_NAME.get(lev[1]) ?? 'a saving lever';
+    const cap = r.capabilities.find(p => `F-FIN-${p.capability}` === id);
+    if (cap) return cap.displayName;
+    return f ? sentence(f.title).replace(/\.$/, '') : 'a finding';
+  };
+  const ws = (id: string) => roadmap.find(w => w.id === id)?.name ?? (WS.workstreams ?? []).find((w: any) => w.id === id)?.name ?? 'a workstream';
+  const one = (p: string): { what: string; of?: string } => {
+    let m: RegExpExecArray | null;
+    if ((m = /^value\.totals\.(\w+)\.saasLicensing\.(\w+)$/.exec(p))) return { what: `SaaS licensing ${m[2] === 'base' ? 'base' : m[2] === 'pctOfBase' ? 'saving as a share of its base' : 'saving per year'} (${CASE_WORD[m[1]]})` };
+    if ((m = /^value\.totals\.(\w+)\.(\w+)$/.exec(p))) return { what: `Value: ${TOTAL_WORD[m[2]] ?? 'total'}, ${CASE_WORD[m[1]] ?? m[1]}` };
+    if ((m = /^value\.levers\[(LEV-\d{2})\]\.cases\.(\w+)\.(\w+)$/.exec(p))) return { what: `${LEVER_NAME.get(m[1])}: ${LEVER_CASE_WORD[m[3]] ?? 'figure'}${m[3] === 'runRate' || m[2] !== 'expected' ? `, ${CASE_WORD[m[2]]}` : ''}` };
+    if ((m = /^value\.levers\[(LEV-\d{2})\]\.inputs\[([^\]]+)\]\.(\w+)$/.exec(p))) return { what: `${LEVER_NAME.get(m[1])}: ${lcFirst(inputLabel(m[2]))}${m[3] === 'value' ? '' : ` (${m[3]} end)`}` };
+    if ((m = /^value\.levers\[(LEV-\d{2})\]\.maxRate\[(\w+)\]\.rate$/.exec(p))) return { what: `${LEVER_NAME.get(m[1])}: maximum rate for ${providerName(m[2])}` };
+    if ((m = /^value\.levers\[(LEV-\d{2})\]\.effortFteMonths$/.exec(p))) return { what: 'effort', of: LEVER_NAME.get(m[1]) };
+    if ((m = /^findings\[([^\]]+)\]\.levelMilestones\.(\w+)$/.exec(p))) return { what: `${finding(m[1])}: months to reach ${MILESTONE_WORD[m[2]] ?? m[2]}`, of: finding(m[1]) };
+    if ((m = /^findings\[([^\]]+)\]\.start\.month$/.exec(p))) return { what: `${finding(m[1])}: start month`, of: finding(m[1]) };
+    if ((m = /^findings\[([^\]]+)\]\.targetDuration\.months$/.exec(p))) return { what: `${finding(m[1])}: duration in months`, of: finding(m[1]) };
+    if ((m = /^findings\[([^\]]+)\]\.value\.expected$/.exec(p))) return { what: `${finding(m[1])}: expected saving per year`, of: finding(m[1]) };
+    if ((m = /^findings\[([^\]]+)\]\.notAnsweredCount$/.exec(p))) return { what: `${finding(m[1])}: questions not answered` };
+    if ((m = /^findings\[([^\]]+)\]\.gap$/.exec(p))) return { what: `${finding(m[1])}: levels to close`, of: finding(m[1]) };
+    if ((m = /^capabilities\[(\w+)\]\.gap$/.exec(p))) return { what: `${r.capabilities.find(x => x.capability === m![1])?.displayName ?? 'Capability'}: levels below target` };
+    if ((m = /^report:roadmap\[([^\]]+)\]\.milestone\[([^\]]+)\]$/.exec(p))) return { what: `${ws(m[1])}: milestone for ${finding(m[2])}`, of: finding(m[2]) };
+    if ((m = /^report:sensitivity\[([^\]]+)\]\.(high|low)Input$/.exec(p))) return { what: `Sensitivity: ${lcFirst(inputLabel(m[1]))}, ${m[2]} value tested` };
+    const fixed: Record<string, string> = {
+      'coverage.answered': 'Questions answered', 'coverage.asked': 'Questions asked', 'coverage.blank': 'Questions left blank', 'coverage.unknown': 'Questions answered "Unknown"',
+      'questions.asked.length': 'Questions asked', 'headline.atOrAboveTarget': 'Capabilities at or above target', 'headline.inScope': 'Capabilities in scope',
+      'needVerdict.needIndex': 'Need-to-act index (methodology)', 'tier.tier': 'Complexity tier (methodology)', 'value.costs.effortFteMonths': 'Total delivery effort, FTE-months',
+      'value.finopsTeam.annualCost': 'FinOps team: annual cost', 'value.finopsTeam.fte': 'FinOps team: people (FTE)',
+      'value.spend.P': 'In-scope cloud spend per year', 'value.spend.low': 'In-scope cloud spend, low end of the band', 'value.spend.high': 'In-scope cloud spend, high end of the band'
+    };
+    if (fixed[p]) return { what: fixed[p] };
+    if (/^(base|spend|cost|evidence|org|footprint)\./.test(p)) return { what: inputLabel(p) };
+    return { what: 'Engine figure (consultant edition gives the field)' };
+  };
+  const named = (paths: string[]) => uniq(paths.map(p => one(p).of ?? one(p).what));
+  const names = (paths: string[]) => listOf(named(paths));
+  const d = /^(max|min|sum|effort|sensitivity) of (.*)$/.exec(field);
+  if (d) {
+    const parts = d[2].split(/,\s*(?=[a-z]|report:)/).map(s => s.trim()).filter(Boolean);
+    if (d[1] === 'sensitivity') return `Change in the expected net saving when ${parts.map(p => lcFirst(one(p).what)).join(', ')} moves across its range`;
+    if (!parts.length) return 'Delivery effort';
+    if (d[1] === 'effort') return `Delivery effort for ${names(parts)}`;
+    if (d[1] === 'min') return named(parts).length > 1 ? `Earliest start among ${names(parts)}` : `Start month of ${names(parts)}`;
+    if (d[1] === 'max') return named(parts).length > 1 ? `Latest milestone among ${names(parts)}` : `Latest milestone of ${names(parts)}`;
+    return parts.every(p => /\.value\.expected$/.test(p)) ? `Expected saving per year of ${names(parts)}` : `Start month plus duration for ${names(parts)}`;
+  }
+  return one(field).what;
+}
+
 /** One row per traced number in the document (deduplicated by field), with where it comes from. */
 function traceTable(doc: ReportDocument, c: Ctx): Block {
   const seen = new Map<string, Exclude<Seg, string>>();
@@ -708,9 +783,10 @@ function traceTable(doc: ReportDocument, c: Ctx): Block {
   const rows: Seg[][][] = [...seen.values()].map(s => {
     const t = s.trace!;
     const where = t.derived ? `${t.derived.op} of ${t.derived.of.join(', ')}` : t.field;
-    return [[{ text: s.text, trace: t }], [ref(wrap(where))], [ref(short(visible(t.claimIds), 'CLM-FIN-'))], [ref(short(t.assumptionIds, 'ASM-FIN-'))]];
+    // The client edition reads the field in words (portfolio review 0.4); engine paths are for the consultant.
+    return [[{ text: s.text, trace: t }], c.client ? [fieldWords(where, c.r, c.roadmap)] : [ref(wrap(where))], [ref(short(visible(t.claimIds), 'CLM-FIN-'))], [ref(short(t.assumptionIds, 'ASM-FIN-'))]];
   });
-  return { kind: 'table', small: true, head: ['Shown as', 'Engine field, or how it is derived', 'Claims (CLM-FIN-)', 'Assumptions (ASM-FIN-)'], widths: [55, '*', 95, 65], rows };
+  return { kind: 'table', small: true, head: ['Shown as', c.client ? 'What it is and how it is worked out' : 'Engine field, or how it is derived', 'Claims (CLM-FIN-)', 'Assumptions (ASM-FIN-)'], widths: [55, '*', 95, 65], rows };
 }
 
 function assumptionAppendix(used: Set<string>): Block[] {
@@ -908,7 +984,7 @@ export function finopsIqReport(result: FinOpsIqV3Result, opts: ReportOptions): R
   // "How we calculated this" lists every number shown before it, then the lever formulas, register and sensitivity.
   const sensitivity = sensitivityAppendix(c);
   doc.sections.push({ id: 'calculation', title: 'How we calculated this', appendix: true, blocks: [
-    { kind: 'paragraph', segs: ['The lever formulas and inputs, the sensitivity of the headline to the three most influential inputs, and then every number in this report: what it shows, the engine field it is read from (or how it is derived from engine fields), and the claims and assumptions behind it.'] },
+    { kind: 'paragraph', segs: [`The lever formulas and inputs, the sensitivity of the headline to the three most influential inputs, and then every number in this report: what it shows, ${client ? 'what it is and how it is worked out' : 'the engine field it is read from (or how it is derived from engine fields)'}, and the claims and assumptions behind it.`] },
     ...(r.value.moneyShown ? leverFormulas(c) : []),
     { kind: 'subheading', text: 'Sensitivity' }, ...sensitivity
   ] });
