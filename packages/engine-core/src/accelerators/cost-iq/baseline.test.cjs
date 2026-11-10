@@ -13,7 +13,7 @@ assert.equal(metadata.baseline.questions, 106);
 // One count: the API, the metadata and the release manifest all come from the bank (CQ3b).
 assert.equal(metadata.baseline.questions, adapter.RELEASE_MANIFEST.baseline.questions);
 assert.equal(metadata.baseline.dimensions, 16);
-assert.equal(metadata.baseline.findings, 20);
+assert.equal(metadata.baseline.findings, 22);
 assert.equal(metadata.baseline.recommendations, 10);
 assert.equal(metadata.baseline.rules, 38);
 assert.equal(metadata.finops, undefined, 'FinOps content moved to FinOps IQ (CQ3a)');
@@ -47,7 +47,8 @@ const low = adapter.evaluateCostIq({ answers: { 'CORE-06': 1 } });
 assert.equal(low.headlines.costIQ, 0);
 assert.equal(low.headlines.valueIQ, null);
 assert.equal(low.dimensions.find(d => d.id === 'COST-01').score, 0);
-assert.deepEqual(low.findings, []);
+// CQ12 slice 3: the lowest confidence in the spend baseline (1 or 2 of 5) raises the spend-baseline finding.
+assert.deepEqual(low.findings.map(f => f.id), ['F-001']);
 
 const calibrated = adapter.evaluateCostIq({ answers: { 'CORE-17': 49 } });
 assert.ok(calibrated.findings.some(f => f.id === 'F-002'));
