@@ -5,7 +5,8 @@
  */
 import { describe, it, expect } from 'vitest';
 import { createRequire } from 'node:module';
-import { costIqReport, costIqBacklog, uk, type CostIqReportInput, type CostIqResult } from '../src/accelerators/cost-iq/report';
+import { costIqReport, costIqBacklog, uk, spendShareOfRevenue, type CostIqReportInput, type CostIqResult } from '../src/accelerators/cost-iq/report';
+import refs from '../src/accelerators/cost-iq/published-references.json' with { type: 'json' };
 import { checkCostIqReport } from '../src/report-checks/accelerators';
 import { walkSegments, type ReportDocument } from '../src/report/model';
 
@@ -135,5 +136,44 @@ describe('Cost IQ report: priorities and the client’s view', () => {
       const sameSeverity = i.result.findings.filter(f => f.severity === f012.severity).map(f => f.title);
       expect(order.filter(t => sameSeverity.map(uk).includes(t))[0]).toBe(uk(f012.title));
     }
+  });
+});
+
+describe('Cost IQ report: technology spend as a share of revenue (CQ12 slice 5)', () => {
+
+  it('bounds the ratio from the two bands, open bands give one bound, unknown gives none', () => {
+    expect(spendShareOfRevenue({ 'CORE-03': '1B_5B', 'CORE-04': '50M_100M' })).toEqual({ low: 1, high: 10 });
+    expect(spendShareOfRevenue({ 'CORE-03': 'GT25B', 'CORE-04': '100M_500M' })).toEqual({ low: null, high: 2 });
+    expect(spendShareOfRevenue({ 'CORE-03': 'LT100M', 'CORE-04': '5M_25M' })).toEqual({ low: 5, high: null });
+    expect(spendShareOfRevenue({ 'CORE-03': 'UNKNOWN', 'CORE-04': '5M_25M' })).toBeNull();
+    expect(spendShareOfRevenue({ 'CORE-03': 'GT25B', 'CORE-04': 'LT5M' })).toEqual({ low: null, high: 0.1 });
+    // Neither bound: revenue below the first edge and spend below the first edge.
+    expect(spendShareOfRevenue({ 'CORE-03': 'LT100M', 'CORE-04': 'LT5M' })).toBeNull();
+  });
+
+  const build = (answers: Record<string, unknown>) => {
+    const scope = { selectedAreas: AREAS };
+    const i: CostIqReportInput = { result: adapter.evaluateCostIq({ answers, scope }) as CostIqResult, answers, selectedAreas: AREAS, scope: adapter.scopeCounts({ answers, scope }), assessmentDate: '2026-11-10', currency: 'USD', finops: null, finopsLinkedAt: null };
+    return { i, doc: costIqReport(i, { client: 'Example', preparedBy: 'LTM consultant', dataProvidedBy: 'Example', view: 'client' }) };
+  };
+  const base = { 'CORE-01': FOOTPRINT, 'CORE-02': 'MANUFACTURING', 'CORE-03': '5B_25B', 'CORE-04': '25M_50M' };
+
+  it('while the published average is off, shows the client’s own ratio, names no source, and passes the checks', () => {
+    expect(refs.spendToRevenue.enabled).toBe(false);
+    const { i, doc } = build(base);
+    const t = text(doc);
+    expect(t).toContain('From the size bands given, technology spend in scope is between 0.1% and 1% of revenue');
+    expect(t).toContain('No published average is set beside this figure');
+    expect(t).not.toMatch(/Deloitte|Flexera, State of Tech/);
+    expect(checkCostIqReport(doc, i, 'client', '2026-11-10').failures).toEqual([]);
+  });
+
+  it('switched on, places the range against the average; the lint then refuses the source by name, which is the owner’s decision to make', () => {
+    (refs as any).spendToRevenue.enabled = true;
+    try {
+      const { i, doc } = build(base);
+      expect(text(doc)).toContain('The client\'s range sits below that average.');
+      expect(checkCostIqReport(doc, i, 'client', '2026-11-10').failures.map(f => f.check)).toContain('R5');
+    } finally { (refs as any).spendToRevenue.enabled = false; }
   });
 });

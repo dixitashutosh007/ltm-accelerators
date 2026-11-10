@@ -18,6 +18,7 @@ import type { NonCloudResult } from './non-cloud-levers';
 import config from './canon/config/master-v6.6.json' with { type: 'json' };
 import delivery from './delivery-library.json' with { type: 'json' };
 import finopsRegistry from '../finops-iq/registry/capabilities.json' with { type: 'json' };
+import references from './published-references.json' with { type: 'json' };
 
 const PLATFORM = 'LTM Vantage · Responsible Advisory';
 const PRODUCT = 'Cost IQ';
@@ -131,6 +132,19 @@ const optionLabel = (qid: string, answer: unknown): string => {
   return Array.isArray(answer) ? answer.map(one).join('; ') : one(answer);
 };
 const has = (answers: Record<string, unknown>, id: string) => answers[id] != null && answers[id] !== '' && !(Array.isArray(answers[id]) && (answers[id] as unknown[]).length === 0);
+const REF = (references as any).spendToRevenue;
+/**
+ * Technology spend in scope as a share of revenue, from the two size bands (CQ12 slice 5), in percent: the smallest spend over the
+ * largest revenue, and the largest spend over the smallest revenue. An open band gives no bound on that side; null when either
+ * band is unanswered or unknown, or when neither bound exists.
+ */
+export function spendShareOfRevenue(answers: Record<string, unknown>): { low: number | null; high: number | null } | null {
+  const r = (references as any).bandsUsd.revenue[String(answers['CORE-03'])], sp = (references as any).bandsUsd.spend[String(answers['CORE-04'])];
+  if (!r || !sp) return null;
+  const low = r[1] == null || sp[0] === 0 ? null : Math.floor((sp[0] / r[1]) * 1000) / 10;
+  const high = r[0] === 0 || sp[1] == null ? null : Math.ceil((sp[1] / r[0]) * 1000) / 10;
+  return low == null && high == null ? null : { low, high };
+}
 /** An answer in words: option labels (size bands in the reporting currency), a slider as a percentage, stars out of 5. */
 function answerSegs(i: CostIqReportInput, qid: string, a: unknown): Seg[] {
   const q = questionsById.get(qid);
@@ -169,6 +183,8 @@ interface Ctx { i: CostIqReportInput; client: boolean; opts: CostIqReportOptions
 export function resolveCostIqField(i: CostIqReportInput, field: string): number | undefined {
   const dim = /^dimensions\[([\w-]+)\]\.(score|answered|unanswered)$/.exec(field);
   if (dim) { const d = i.result.dimensions.find(x => x.id === dim[1]); return d ? (d[dim[2] as 'score' | 'answered' | 'unanswered'] ?? undefined) : undefined; }
+  if (field === 'benchmark.average') return REF.averagePercent;
+  if (field === 'benchmark.low' || field === 'benchmark.high') { const b = spendShareOfRevenue(i.answers); return b ? (b[field === 'benchmark.low' ? 'low' : 'high'] ?? undefined) : undefined; }
   if (field.startsWith('cio.')) {
     const x = i.result.cio; if (!x) return undefined;
     const named = [...x.expectations, ...x.costHypotheses];
@@ -391,6 +407,25 @@ function yourView(c: Ctx): ReportSection | null {
     blocks.push({ kind: 'paragraph', style: 'small', segs: inc.includes('UNKNOWN')
       ? ['The client could not confidently say which categories the technology-spend figure includes, so any comparison with it is approximate.']
       : ['The technology-spend figure includes: ', quoted(optionLabel('CORE-05', inc)), '.', ...(missing.length ? [' It does not include: ', quoted(optionLabel('CORE-05', missing)), '.'] : [])] });
+  }
+
+  // Spend against a published average (CQ12 slice 5): a cross-industry reference, placed only when the bands allow it.
+  const b = spendShareOfRevenue(i.answers);
+  if (b) {
+    const avg = REF.averagePercent as number;
+    const pct = (f: string, v: number) => traced(f, v, 'percent', REF.enabled ? [REF.claimId] : []);
+    const range: Seg[] = b.low != null && b.high != null ? ['between ', pct('benchmark.low', b.low), ' and ', pct('benchmark.high', b.high)] : b.low != null ? ['at least ', pct('benchmark.low', b.low)] : ['no more than ', pct('benchmark.high', b.high!)];
+    const partial = Array.isArray(inc) && !inc.includes('UNKNOWN') && (questionsById.get('CORE-05')?.options ?? []).some((o: any) => !['OTHER', 'UNKNOWN'].includes(o.id) && !inc.includes(o.id));
+    blocks.push({ kind: 'subheading', text: REF.enabled ? 'Technology spend against a published average' : 'Technology spend as a share of revenue' });
+    if (REF.enabled) {
+      const place = b.high != null && b.high < avg ? 'below' : b.low != null && b.low > avg ? 'above' : null;
+      blocks.push({ kind: 'paragraph', segs: ['From the size bands given, technology spend in scope is ', ...range, ' of revenue. ', ref(REF.source), ' reports technology investment at about ', pct('benchmark.average', avg), ' of revenue on average (', ref(REF.sample), ', surveyed ', ref(REF.fieldwork), '). ',
+        place ? `The client's range sits ${place} that average.` : 'The bands are too wide to place the client above or below it; exact figures would.'] });
+      blocks.push({ kind: 'paragraph', style: 'small', segs: [REF.caveat, partial ? ' The spend figure here leaves out some categories (above), so the comparison understates the full technology spend.' : ''] });
+    } else {
+      blocks.push({ kind: 'paragraph', segs: ['From the size bands given, technology spend in scope is ', ...range, ' of revenue', partial ? ', for the categories included above' : '', '. Exact revenue and spend figures would narrow the range.'] });
+      blocks.push({ kind: 'paragraph', style: 'small', segs: ['No published average is set beside this figure: the free published surveys differ widely in who answers and in what they count as technology spend, and none gives a verified split by industry.'] });
+    }
   }
 
   const rows: Seg[][][] = [];
@@ -720,6 +755,7 @@ function sources(c: Ctx): ReportSection {
       [[ref('TBM Council, TBM Taxonomy (https://www.tbmcouncil.org/taxonomy/)')], ['Closest reference for cost pools and towers behind the cost dimensions; reference only, not an endorsement'], [ref('2025')]],
       [[ref('US Government Accountability Office, Information Technology Investment Management (GAO-04-394G, https://www.gao.gov/products/gao-04-394g)')], ['Closest reference for investment selection, control and benefits review'], [ref('2004')]],
       ...(c.i.finops?.status === 'quantified' ? [[[ref(clean(c.i.finops.globalCap.source.citation))], ['Ceiling on the cloud line, applied by FinOps IQ'], [ref(c.i.finops.globalCap.source.year)]] as Seg[][], [[ref(`LTM FinOps IQ assessment dated ${c.i.finops.assessmentDate ?? 'not stated'}`)], ['The cloud line shown in this report'], [ref((c.i.finops.assessmentDate ?? '').slice(0, 4) || 'n/a')]] as Seg[][]] : []),
+      ...(REF.enabled ? [[[ref(`${REF.source} (${REF.url})`)], ['Published average of technology spend as a share of revenue; a cross-industry reference, not a peer benchmark'], [ref(REF.year)]] as Seg[][]] : []),
       ...playbookSources(c),
       [[ref('European Central Bank, euro foreign exchange reference rates (https://www.ecb.europa.eu/stats/policy_and_exchange_rates/euro_reference_exchange_rates/html/index.en.html)')], ['Converting size bands into the reporting currency; for information only'], [ref('2026')]]
     ] },
