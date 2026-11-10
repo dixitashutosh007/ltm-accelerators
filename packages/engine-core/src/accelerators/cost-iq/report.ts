@@ -169,6 +169,11 @@ interface Ctx { i: CostIqReportInput; client: boolean; opts: CostIqReportOptions
 export function resolveCostIqField(i: CostIqReportInput, field: string): number | undefined {
   const dim = /^dimensions\[([\w-]+)\]\.(score|answered|unanswered)$/.exec(field);
   if (dim) { const d = i.result.dimensions.find(x => x.id === dim[1]); return d ? (d[dim[2] as 'score' | 'answered' | 'unanswered'] ?? undefined) : undefined; }
+  if (field.startsWith('cio.')) {
+    const x = i.result.cio; if (!x) return undefined;
+    const named = [...x.expectations, ...x.costHypotheses];
+    return field === 'cio.named' ? named.length : field === 'cio.confirmed' ? named.filter(e => e.status === 'confirmed').length : field === 'cio.blindSpots' ? x.blindSpots.length : undefined;
+  }
   if (field === 'headlines.costIQ') return i.result.headlines.costIQ ?? undefined;
   if (field === 'headlines.valueIQ') return i.result.headlines.valueIQ ?? undefined;
   if (field === 'evidence.assessmentCompleteness') return i.result.evidence.assessmentCompleteness;
@@ -271,34 +276,30 @@ function summary(c: Ctx): ReportSection {
   const MIN_ANSWERS = 2;
   const weakest = c.scored.filter(d => d.answered >= MIN_ANSWERS).sort((a, b) => (a.score as number) - (b.score as number)).slice(0, 4);
   const singles = c.scored.filter(d => d.answered < MIN_ANSWERS).length;
-  blocks.push({ kind: 'paragraph', style: 'lead', segs: [
-    h.costIQ != null ? ['On the answers given, technology cost management scores ', traced('headlines.costIQ', h.costIQ, 'index', []), OUT100] as Seg[] : ['Technology cost management could not be scored from the answers given'] as Seg[],
-    h.valueIQ != null ? [' and technology value management scores ', traced('headlines.valueIQ', h.valueIQ, 'index', []), OUT100, '. '] as Seg[] : ['; value management could not be scored. '] as Seg[],
-    [count('findings.count', i.result.findings.length), ` ${plural(i.result.findings.length, 'finding is', 'findings are')} raised, each listing the evidence needed before any saving is sized. `] as Seg[],
-    ['The scores describe how well cost and value are managed; they are not a measure of how much could be saved.'] as Seg[]
-  ].flat() });
-  blocks.push({ kind: 'kpis', items: [
-    { label: 'Cost management', value: h.costIQ != null ? [traced('headlines.costIQ', h.costIQ, 'index', []), OF100] : ['Not scored'], note: ['Spend visibility, governance, infrastructure, software, workforce and vendors'] },
-    { label: 'Value management', value: h.valueIQ != null ? [traced('headlines.valueIQ', h.valueIQ, 'index', []), OF100] : ['Not scored'], note: ['Alignment, investment quality, benefits and agility'] },
-    { label: 'Questions answered', value: [traced('evidence.assessmentCompleteness', i.result.evidence.assessmentCompleteness, 'percent', [])], note: ['Of the questions asked for the areas chosen; not confidence in a saving'] },
-    { label: 'Dimensions scored', value: [count('dimensions.scored', c.scored.length), ' of ', count('dimensions.total', i.result.dimensions.length)], note: ['A dimension with no question asked is not scored'] },
-    { label: 'Findings', value: [count('findings.count', i.result.findings.length)], note: [count('findings[high]', i.result.findings.filter(f => f.severity === 'high').length), ' high'] }
+  // CIO-first (CQ12 slice 4): the answer and the decision lead; the scores support them and come last.
+  const top = orderedFindings(c.findings).slice(0, 3);
+  const nHigh = i.result.findings.filter(f => f.severity === 'high').length;
+  blocks.push({ kind: 'paragraph', style: 'lead', segs: i.result.findings.length
+    ? [count('findings.count', i.result.findings.length), ` ${plural(i.result.findings.length, 'finding is', 'findings are')} raised, `, count('findings[high]', nHigh), ` ${plural(nHigh, 'of them', 'of them')} high. The most important: `,
+       ...top.flatMap((f, k) => [k ? '; ' : '', ref(`Finding ${k + 1}`), ', ', quoted(f.title.charAt(0).toLowerCase() + f.title.slice(1))]), '. Each lists the evidence needed before any saving is sized.']
+    : ['No finding is raised on the answers given. That reflects the areas assessed and the questions answered; it is not evidence that no saving exists.'] });
+  blocks.push({ kind: 'paragraph', segs: [
+    ...(h.costIQ != null ? ['On LTM\'s scale, technology cost management scores ', traced('headlines.costIQ', h.costIQ, 'index', []), OUT100] as Seg[] : ['Technology cost management could not be scored'] as Seg[]),
+    ...(h.valueIQ != null ? [' and value management ', traced('headlines.valueIQ', h.valueIQ, 'index', []), OUT100, '. '] as Seg[] : ['; value management could not be scored. '] as Seg[]),
+    'The scores describe how well cost and value are managed; they are not a measure of how much could be saved.'
   ] });
-  if (weakest.length) {
-    blocks.push({ kind: 'subheading', text: 'Where to look first' });
-    blocks.push({ kind: 'paragraph', style: 'small', segs: ['These are the lowest-scoring areas that two or more answers support. A low score is a reason to look, not a finding: a finding is raised only where named answers meet LTM\'s rules, so a low-scoring area may have none yet.' + (singles ? ' Areas that rest on a single answer are left out here as too weak a signal; the scores section shows them.' : '')] });
-    blocks.push({ kind: 'table', head: ['Area', 'Score', 'Questions answered'], widths: ['*', 70, 110], rows: weakest.map(d => [[strong(d.name), '\n', quoted(d.definition)], [traced(`dimensions[${d.id}].score`, d.score as number, 'index', [])], [count(`dimensions[${d.id}].answered`, d.answered)]]) });
-  }
-  const nc = sized(c);
-  if (nc?.total) {
-    blocks.push({ kind: 'subheading', text: nc.total.cloudIncluded ? 'Value range: total across the estate' : 'Value range: total excluding cloud' });
-    blocks.push(totalTable(nc.total, nc.currency));
-    blocks.push({ kind: 'paragraph', style: 'small', segs: [nc.total.cloudNote, ' Each case is net of the client\'s own internal cost to deliver (external fees, tools and contract penalties are not included and are agreed separately), phased as the lever sections explain. The range is indicative and depends on the client-measured figures set out under "Non-cloud levers and total". ', confidenceNote(c)] });
-  }
+  const x = i.result.cio;
+  const named = x ? [...x.expectations, ...x.costHypotheses] : [];
+  if (named.length) blocks.push({ kind: 'paragraph', segs: [
+    'Of the ', count('cio.named', named.length), ' opportunity areas the client named before seeing the findings, ', count('cio.confirmed', named.filter(e => e.status === 'confirmed').length), ' ',
+    plural(named.filter(e => e.status === 'confirmed').length, 'is', 'are'), ' confirmed by a finding',
+    ...(x!.blindSpots.length ? ['; ', count('cio.blindSpots', x!.blindSpots.length), ` high ${plural(x!.blindSpots.length, 'finding sits', 'findings sit')} outside them`] : []),
+    '. ', ref('Section 2'), ' sets the client\'s view against the evidence.'
+  ] });
   blocks.push({ kind: 'callout', tone: 'info', title: 'Decision requested', segs: [
     i.result.findings.length
       ? ['The CIO, or the head of technology finance, is asked to name an owner for each finding and to release the evidence listed against it, within ', ref('30 days'), ' of receiving this report. ', ref(sizing(c)), ' The ', ref('30 days'), ' is a default to adjust to the organisation\'s own planning cycle.'] as Seg[]
-      : ['No finding is raised on the answers given. The CIO, or the head of technology finance, is asked to confirm the owner of the lowest-scoring areas above and to complete the unanswered questions within ', ref('30 days'), ' of receiving this report, so that findings can be tested. The ', ref('30 days'), ' is a default to adjust to the organisation\'s own planning cycle.'] as Seg[]
+      : ['The CIO, or the head of technology finance, is asked to confirm the owner of the lowest-scoring areas below and to complete the unanswered questions within ', ref('30 days'), ' of receiving this report, so that findings can be tested. The ', ref('30 days'), ' is a default to adjust to the organisation\'s own planning cycle.'] as Seg[]
   ].flat() });
   const first = activePackages(c).slice(0, 3);
   if (first.length) {
@@ -306,6 +307,12 @@ function summary(c: Ctx): ReportSection {
     blocks.push({ kind: 'subheading', text: 'Recommended first steps' });
     blocks.push({ kind: 'list', items: first.map(({ r, p }) => [strong(p.offeringName), `, ${TYPE_LABEL[p.offeringType].toLowerCase()}, indicative elapsed time `, ref(weeks(elapsed(p))), '. ', ref(`Addresses ${r.findingIds.filter(id => c.findings.some(f => f.id === id)).map(id => `Finding ${orderedFindings(c.findings).findIndex(f => f.id === id) + 1}`).join(', ')}.`)]) });
     blocks.push({ kind: 'paragraph', style: 'small', segs: ['These are the steps for the most severe findings, in order. Started together, the longest of them would take about ', ref(weeks(longest)), ' on LTM\'s planning ranges, which are not commitments (see the assumptions). The roadmap lists every step.'] });
+  }
+  const nc = sized(c);
+  if (nc?.total) {
+    blocks.push({ kind: 'subheading', text: nc.total.cloudIncluded ? 'Value range: total across the estate' : 'Value range: total excluding cloud' });
+    blocks.push(totalTable(nc.total, nc.currency));
+    blocks.push({ kind: 'paragraph', style: 'small', segs: [nc.total.cloudNote, ' Each case is net of the client\'s own internal cost to deliver (external fees, tools and contract penalties are not included and are agreed separately), phased as the lever sections explain. The range is indicative and depends on the client-measured figures set out under "Non-cloud levers and total". ', confidenceNote(c)] });
   }
   blocks.push({ kind: 'subheading', text: 'Cloud line (from FinOps IQ)' });
   blocks.push(...cloudLine(c));
@@ -317,6 +324,19 @@ function summary(c: Ctx): ReportSection {
       : 'No amount is stated. Cost IQ does not size a saving from self-reported answers: each finding lists the evidence needed first. ',
     'Figures that appear in later work are indicative ranges for planning. They are not a savings commitment and need validating against the organisation\'s own data.'
   ] });
+  blocks.push({ kind: 'subheading', text: 'Scores at a glance' });
+  blocks.push({ kind: 'kpis', items: [
+    { label: 'Cost management', value: h.costIQ != null ? [traced('headlines.costIQ', h.costIQ, 'index', []), OF100] : ['Not scored'], note: ['Spend visibility, governance, infrastructure, software, workforce and vendors'] },
+    { label: 'Value management', value: h.valueIQ != null ? [traced('headlines.valueIQ', h.valueIQ, 'index', []), OF100] : ['Not scored'], note: ['Alignment, investment quality, benefits and agility'] },
+    { label: 'Questions answered', value: [traced('evidence.assessmentCompleteness', i.result.evidence.assessmentCompleteness, 'percent', [])], note: ['Of the questions asked for the areas chosen; not confidence in a saving'] },
+    { label: 'Dimensions scored', value: [count('dimensions.scored', c.scored.length), ' of ', count('dimensions.total', i.result.dimensions.length)], note: ['A dimension with no question asked is not scored'] },
+    { label: 'Findings', value: [count('findings.count', i.result.findings.length)], note: [count('findings[high]', nHigh), ' high'] }
+  ] });
+  if (weakest.length) {
+    blocks.push({ kind: 'subheading', text: 'Where to look first' });
+    blocks.push({ kind: 'paragraph', style: 'small', segs: ['These are the lowest-scoring areas that two or more answers support. A low score is a reason to look, not a finding: a finding is raised only where named answers meet LTM\'s rules, so a low-scoring area may have none yet.' + (singles ? ' Areas that rest on a single answer are left out here as too weak a signal; the scores section shows them.' : '')] });
+    blocks.push({ kind: 'table', head: ['Area', 'Score', 'Questions answered'], widths: ['*', 70, 110], rows: weakest.map(d => [[strong(d.name), '\n', quoted(d.definition)], [traced(`dimensions[${d.id}].score`, d.score as number, 'index', [])], [count(`dimensions[${d.id}].answered`, d.answered)]]) });
+  }
   return { id: 'summary', title: 'Executive summary', blocks };
 }
 
@@ -363,7 +383,7 @@ function yourView(c: Ctx): ReportSection | null {
   add('regions ', P('regions', 'CTX-03'));
   add('operations delivered onshore: ', P('onshoreShare', 'CTX-04'));
   add('spend priced in another currency: ', P('foreignPricedShare', 'CTX-02'));
-  if (situation.length) blocks.push({ kind: 'paragraph', style: 'lead', segs: ['As described by the client: ', ...situation, '.'] });
+  if (situation.length) blocks.push({ kind: 'paragraph', segs: ['As described by the client: ', ...situation, '.'] });
   const inc = x.profile.spendIncludes;
   if (Array.isArray(inc) && inc.length) {
     const q = questionsById.get('CORE-05');
