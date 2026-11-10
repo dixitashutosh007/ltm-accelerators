@@ -3,7 +3,7 @@
  * the Cognito JWT authorizer and the accelerator access check:
  *   GET  /api/sessions?accelerator=cost-iq                    the caller's sessions for that accelerator, newest first (no payload)
  *   GET  /api/sessions?accelerator=cost-iq&sessionId=...      one session, with its payload
- *   POST /api/sessions  { accelerator, action: 'save', session: { sessionId, title, status, payload }, progress }
+ *   POST /api/sessions  { accelerator, action: 'save', session: { sessionId, title, clientName?, status, payload }, progress }
  *   POST /api/sessions  { accelerator, action: 'delete', sessionId }     permanent
  * A session belongs to its owner; Admins may read and delete any. The accelerator is part of the key a caller names, so a
  * session id from another accelerator is "not found", and the caller needs access to the accelerator named. The payload
@@ -78,6 +78,8 @@ export function createHandler(store: SavedSessionStore, now: () => Date = () => 
       if (!s || typeof s !== 'object' || Array.isArray(s)) return respond(400, { ok: false, error: 'session is required.' });
       if (typeof s.sessionId !== 'string' || !ID.test(s.sessionId)) return respond(400, { ok: false, error: 'session.sessionId: 8 to 80 letters, digits, - or _.' });
       const title = clean(s.title, 120);
+      // The client the assessment is for, shown on the administrators' activity screen; optional.
+      const clientName = clean(s.clientName, 120) || null;
       if (!title) return respond(400, { ok: false, error: 'session.title is required.' });
       if (s.payload === undefined || s.payload === null || typeof s.payload !== 'object') return respond(400, { ok: false, error: 'session.payload must be an object.' });
       const payloadJson = JSON.stringify(s.payload);
@@ -96,7 +98,7 @@ export function createHandler(store: SavedSessionStore, now: () => Date = () => 
         payloadJson, expiresAt: expiry(now())
       };
       const data = existing ? await store.update(record) : await store.create(record);
-      await recordAssessment(record.ownerEmail, { accelerator, assessmentId: record.sessionId, status, ...progress, startedAt: data.createdAt, completedAt: status === 'completed' ? now().toISOString() : null });
+      await recordAssessment(record.ownerEmail, { accelerator, assessmentId: record.sessionId, clientName, status, ...progress, startedAt: data.createdAt, completedAt: status === 'completed' ? now().toISOString() : null });
       return respond(200, { ok: true, data: summary(data) });
     } catch (error: any) {
       console.error('[ManageSession]', { requestId, error });

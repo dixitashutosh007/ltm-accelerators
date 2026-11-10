@@ -7,6 +7,7 @@
      accelerator: 'cloud-iq',               the accelerator id the service knows
      legacyKey: 'cloudiq.v2.state',         optional: the old localStorage key; if present it is removed and the page says so once
      title:    () => 'Name shown in the list',
+     client:   () => 'Client name',          optional: shown to administrators on the activity screen
      snapshot: () => ({ ...the page's state, an object }),
      progress: () => ({ stage: 'Section name', percent: 0..100 }),
      status:   () => 'in_progress' | 'completed',
@@ -86,8 +87,9 @@
     cache = payload;
     if (!current) current = newId();
     var title = String(cfg.title() || 'Assessment').slice(0, 120);
+    var client = cfg.client ? String(cfg.client() || '').slice(0, 120) : '';
     try {
-      await call('/api/sessions', { method: 'POST', body: JSON.stringify({ accelerator: cfg.accelerator, action: 'save', session: { sessionId: current, title: title, status: cfg.status(), payload: payload }, progress: cfg.progress() }) });
+      await call('/api/sessions', { method: 'POST', body: JSON.stringify({ accelerator: cfg.accelerator, action: 'save', session: { sessionId: current, title: title, clientName: client || undefined, status: cfg.status(), payload: payload }, progress: cfg.progress() }) });
       status('Saved ' + new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
     } catch (e) { status('Not saved: ' + e.message); }
   }

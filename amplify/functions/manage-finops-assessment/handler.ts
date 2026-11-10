@@ -126,7 +126,7 @@ export function createHandler(store: FinOpsAssessmentStore, now: () => Date = ()
         expiresAt: expiresAt(now())
       };
       const data = existing ? await store.update(record) : await store.create(record);
-      await recordAssessment(record.respondentEmail, { accelerator: 'finops-iq', assessmentId: record.assessmentId, status: record.status, ...progressFor(record.status, body?.progress), startedAt: record.startedAt, completedAt: record.completedAt });
+      await recordAssessment(record.respondentEmail, { accelerator: 'finops-iq', assessmentId: record.assessmentId, clientName: record.clientName, status: record.status, ...progressFor(record.status, body?.progress), startedAt: record.startedAt, completedAt: record.completedAt });
       return respond(200, { ok: true, data: view(data) });
     } catch (error: any) {
       console.error('[ManageFinOpsAssessment]', { requestId, error });

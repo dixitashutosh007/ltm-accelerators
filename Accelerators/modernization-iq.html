@@ -1207,6 +1207,7 @@ function init() {
   SavedSessions.attach({
     accelerator: 'modernization-iq', legacyKey: STORE_KEY,
     title: () => 'Modernize IQ · ' + ((STATE.org && STATE.org.clientName) || 'assessment'),
+    client: () => STATE.org && STATE.org.clientName,
     snapshot: () => STATE,
     progress: () => ({ stage: STATE.screen === 'assess' && GROUPS[STATE.groupIndex] ? GROUPS[STATE.groupIndex].name : STATE.screen, percent: STATE.screen === 'results' ? 100 : Math.round(((STATE.groupIndex || 0) / GROUPS.length) * 100) }),
     status: () => (STATE.screen === 'results' ? 'completed' : 'in_progress'),

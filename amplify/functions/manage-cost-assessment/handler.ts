@@ -171,7 +171,7 @@ export function createHandler(store: CostIqAssessmentStore, now: () => Date = ()
         expiresAt: expiresAt(at)
       };
       const data = existing ? await store.update(record) : await store.create(record);
-      await recordAssessment(record.respondentEmail!, { accelerator: 'cost-iq', assessmentId: record.assessmentId, status: record.status, ...progressFor(record.status, body?.progress), startedAt: record.startedAt, completedAt: record.completedAt });
+      await recordAssessment(record.respondentEmail!, { accelerator: 'cost-iq', assessmentId: record.assessmentId, clientName: record.clientName, status: record.status, ...progressFor(record.status, body?.progress), startedAt: record.startedAt, completedAt: record.completedAt });
       return respond(200, { ok: true, data: data });
     } catch (error: any) {
       console.error('[ManageCostAssessment]', { requestId, error });

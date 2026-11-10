@@ -134,7 +134,7 @@ const serve = async(event:APIGatewayProxyEventV2):Promise<APIGatewayProxyResultV
     };
     const mutation=existing ? `mutation UpdateResilienceAssessment($input: UpdateResilienceAssessmentInput!) { updateResilienceAssessment(input:$input) { ${fields} } }` : `mutation CreateResilienceAssessment($input: CreateResilienceAssessmentInput!) { createResilienceAssessment(input:$input) { ${fields} } }`;
     const data=await graphql(mutation,{input});
-    await recordAssessment(existing?.respondentEmail??String(snapshot.respondentEmail),{accelerator:'resilience-iq',assessmentId,status:String(snapshot.status),...progressFor(String(snapshot.status),body.progress),startedAt:String(snapshot.startedAt),completedAt:input.completedAt});
+    await recordAssessment(existing?.respondentEmail??String(snapshot.respondentEmail),{accelerator:'resilience-iq',assessmentId,clientName:String(snapshot.clientName),status:String(snapshot.status),...progressFor(String(snapshot.status),body.progress),startedAt:String(snapshot.startedAt),completedAt:input.completedAt});
     return response(200,{ok:true,data:existing?data.updateResilienceAssessment:data.createResilienceAssessment,requestId},requestId);
   } catch(error:any) {
     console.error('[ManageResilienceAssessment]',{requestId,error});

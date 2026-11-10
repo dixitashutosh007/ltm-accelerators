@@ -244,14 +244,14 @@ describe('FinOps IQ assessment API: user activity (platform workstream P2)', () 
   });
   afterAll(() => setActivityStore(null));
 
-  it('a save records the owner, accelerator, id, status and start, and no answers or client name', async () => {
+  it('a save records the owner, client, accelerator, id, status and start, and no answers', async () => {
     const res = await save();
     expect(res.status).toBe(200);
     expect(seen).toHaveLength(1);
     const [kind, email, a] = seen[0];
     expect([kind, email]).toEqual(['record', ME]);
-    expect(a).toMatchObject({ accelerator: 'finops-iq', assessmentId: snapshot().assessmentId, status: 'in_progress', startedAt: snapshot().startedAt });
-    expect(JSON.stringify(a)).not.toMatch(/Example Bank|answers|request/);
+    expect(a).toMatchObject({ accelerator: 'finops-iq', assessmentId: snapshot().assessmentId, clientName: 'Example Bank', status: 'in_progress', startedAt: snapshot().startedAt });
+    expect(JSON.stringify(a)).not.toMatch(/answers|request/);
   });
   it('records the stage and percent the page sends, cut to range; none when it sends none', async () => {
     const withProgress = (progress?: unknown) => call(event('POST', { body: { action: 'save', snapshot: snapshot(), progress } }));

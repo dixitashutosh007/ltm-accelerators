@@ -292,11 +292,12 @@ export const handler = async (event) => {
     const access = resolveAccess(caller, permConfig);
 
     // -------------------------------------------------------------
-    // Users and activity (admin only): who signed in and when, and the status and times of their assessments.
+    // Users and activity (admin only): who signed in and when, and the client, status and times of their assessments.
     //   GET /api/activity/users          everyone in the directory with sign-ins and assessment counts
     //   GET /api/activity/user?email=    one person's sign-ins and assessments
+    //   GET /api/activity/assessments    every assessment by everyone, newest save first (the "All assessments" view)
     //   GET /api/activity/export?kind=   users | assessments, as CSV text
-    // Metadata only: no answers, results or client names are stored (amplify/functions/_shared/activity-store.mjs).
+    // No answers or results are stored (amplify/functions/_shared/activity-store.mjs).
     // -------------------------------------------------------------
     if (method === 'GET' && path.includes('/api/activity/')) {
       if (!caller.isAdmin) return reply(403, { ok: false, error: 'Only administrators can see user activity.' });
@@ -313,6 +314,11 @@ export const handler = async (event) => {
         const kind = (event.queryStringParameters || {}).kind;
         if (kind === 'assessments') return reply(200, { ok: true, filename: 'assessment-activity.csv', csv: toCsv(ASSESSMENT_COLUMNS, await activity().listAssessments()) });
         return reply(200, { ok: true, filename: 'user-activity.csv', csv: toCsv(USER_COLUMNS, rows.map(r => ({ email: r.email, status: r.enabled ? 'active' : 'disabled', role: r.role, createdAt: r.createdAt, firstLoginAt: r.firstLoginAt, lastLoginAt: r.lastLoginAt, loginCount: r.loginCount, assessments: r.assessments.total, completed: r.assessments.completed, inProgress: r.assessments.inProgress, lastAssessmentAt: r.lastAssessmentAt }))) });
+      }
+      if (path.endsWith('/api/activity/assessments')) {
+        const [directory, assessments] = await Promise.all([listDirectory(), activity().listAssessments()]);
+        const nameOf = new Map(directory.map(d => [d.email, d.name || '']));
+        return reply(200, { ok: true, assessments: assessments.map(a => ({ ...a, name: nameOf.get(a.email) ?? '', inDirectory: nameOf.has(a.email) })), retentionDays: 365 });
       }
       if (path.endsWith('/api/activity/user')) {
         const email = String((event.queryStringParameters || {}).email || '').trim().toLowerCase();

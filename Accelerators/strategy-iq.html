@@ -2203,6 +2203,7 @@ function strategyRestore(st) {
 SavedSessions.attach({
   accelerator: 'strategy-iq',
   title: () => 'Strategy IQ · ' + (STATE.intake.orgName || 'assessment'),
+  client: () => STATE.intake.orgName,
   snapshot: strategyPayload,
   progress: () => ({ stage: STRATEGY_SECTIONS[STATE.currentSectionIdx] ? STRATEGY_SECTIONS[STATE.currentSectionIdx].title : 'Start', percent: STATE.computedResults ? 100 : Math.round((STATE.currentSectionIdx / STRATEGY_SECTIONS.length) * 100) }),
   status: () => (STATE.computedResults ? 'completed' : 'in_progress'),
