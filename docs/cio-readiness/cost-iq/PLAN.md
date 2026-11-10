@@ -514,3 +514,6 @@ Started on the owner's instruction "let's fix Cost IQ first, and make it product
 ### CQ12 methodology version (10 Nov 2026)
 - Methodology `6.6.0` → **`6.7.0`** (`master-v6.6.json` manifest and `RELEASE_MANIFEST.json`): the bank (Don't know options, second dimensions), the calibration (7.2.0) and the findings (22) changed. The report prints the methodology version, so a report on the new logic no longer claims the old one. Assessments saved earlier keep the version they were made under. The release label stays `COSTIQ-1.0.0` until the owner decides (proposed: `COSTIQ-1.1.0`).
 - The standalone baseline contract (`baseline.test.cjs`, run by the Cost IQ Integration Validation workflow) now expects 22 findings, and that the lowest confidence in the spend baseline raises F-001.
+
+### After CQ12 (10 Nov 2026)
+PR #105 merged. Owner decisions: release label `COSTIQ-1.1.0`; the published spend-to-revenue average switched on, with Deloitte allowed only as the publisher in a dated citation (narrowed pattern in `banned-phrases.json`); LTM consultants to be added to the Cognito `Consultant` group; practice-lead review still to come. Recorded in `RELEASE-DECISION.md`.

@@ -158,22 +158,31 @@ describe('Cost IQ report: technology spend as a share of revenue (CQ12 slice 5)'
   };
   const base = { 'CORE-01': FOOTPRINT, 'CORE-02': 'MANUFACTURING', 'CORE-03': '5B_25B', 'CORE-04': '25M_50M' };
 
-  it('while the published average is off, shows the client’s own ratio, names no source, and passes the checks', () => {
-    expect(refs.spendToRevenue.enabled).toBe(false);
+  it('on by owner decision (10 Nov 2026): places the range against the cited average and passes the checks', () => {
+    expect(refs.spendToRevenue.enabled).toBe(true);
     const { i, doc } = build(base);
     const t = text(doc);
     expect(t).toContain('From the size bands given, technology spend in scope is between 0.1% and 1% of revenue');
-    expect(t).toContain('No published average is set beside this figure');
-    expect(t).not.toMatch(/Deloitte|Flexera, State of Tech/);
+    expect(t).toContain('Deloitte, 2026 Global Technology Leadership Study reports technology investment at about 6% of revenue');
+    expect(t).toContain('The client\'s range sits below that average.');
     expect(checkCostIqReport(doc, i, 'client', '2026-11-10').failures).toEqual([]);
   });
 
-  it('switched on, places the range against the average; the lint then refuses the source by name, which is the owner’s decision to make', () => {
-    (refs as any).spendToRevenue.enabled = true;
+  it('switched off, shows the client’s own ratio, names no source, and passes the checks', () => {
+    (refs as any).spendToRevenue.enabled = false;
     try {
       const { i, doc } = build(base);
-      expect(text(doc)).toContain('The client\'s range sits below that average.');
-      expect(checkCostIqReport(doc, i, 'client', '2026-11-10').failures.map(f => f.check)).toContain('R5');
-    } finally { (refs as any).spendToRevenue.enabled = false; }
+      const t = text(doc);
+      expect(t).toContain('No published average is set beside this figure');
+      expect(t).not.toMatch(/Deloitte|Flexera, State of Tech/);
+      expect(checkCostIqReport(doc, i, 'client', '2026-11-10').failures).toEqual([]);
+    } finally { (refs as any).spendToRevenue.enabled = true; }
+  });
+
+  it('the lint still refuses Deloitte outside a dated citation', () => {
+    const { i, doc } = build(base);
+    const s = doc.sections.find(x => x.id === 'your-view') ?? doc.sections[1];
+    s.blocks.push({ kind: 'paragraph', segs: ['Advice to Deloitte standard.'] });
+    expect(checkCostIqReport(doc, i, 'client', '2026-11-10').failures.map(f => f.check)).toContain('R5');
   });
 });
