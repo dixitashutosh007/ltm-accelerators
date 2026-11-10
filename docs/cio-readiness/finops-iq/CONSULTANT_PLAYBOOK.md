@@ -894,7 +894,7 @@ Default target by tier: Tier 1 Crawl, Tier 2 Crawl, Tier 3 Walk. Owner: FinOps l
 | Type and capability | rate; Rate Optimization |
 | Quantified in | executive, workshop |
 | Addressable base | P_c x max(0, S - C - n_u - t_u) x (1 - computeRemoved(LEV-02, LEV-03, LEV-07, LEV-10) / P_c), per provider; t_u = (tolerant - Spot) x (1 - C) where LEV-06 is quantified |
-| Maximum rate | AWS: 72%; Azure: 72%; Google Cloud: 55%; OCI: not quantified; IBM Cloud: 60%; Alibaba Cloud: 76%; Other public cloud: not quantified |
+| Maximum rate | AWS: 72%; Azure: 72%; Google Cloud: 46%; OCI: not quantified; IBM Cloud: 60%; Alibaba Cloud: 76%; Other public cloud: not quantified |
 | Evidence age limit | — |
 | Ramp (share of run-rate) | year 1 50%, year 2 100%, year 3 100% |
 | Internal effort (FTE-months) | Tier 1 1, Tier 2 2, Tier 3 4; ongoing 20% a year |

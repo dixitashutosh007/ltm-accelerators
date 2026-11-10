@@ -666,11 +666,11 @@ function methodologySection(c: Ctx): ReportSection {
 /* -------------------------------- Appendices -------------------------------- */
 
 /**
- * Why this instrument when the client did not state one (ASM-FIN-062). Google Cloud takes the resource-based maximum,
- * which is higher than the 46% three-year flexible CUD rate for most series (63% on M-series), by product-owner decision (M7 D2), so it is not called the lower maximum.
+ * Why this instrument when the client did not state one (ASM-FIN-062). Every provider takes its flexible instrument; for
+ * Google Cloud that is the 46% three-year compute flexible CUD rate for most series, not a maximum (owner decision M7 D2, 10 Nov 2026).
  */
 const notStated = (provider: string) => (provider === 'gcp'
-  ? ' (not stated; the three-year resource-based maximum of 55% is used, which is higher than the 46% three-year compute flexible CUD rate for most series: confirm the instrument with the client)'
+  ? ' (not stated; the three-year compute flexible CUD rate for most series is used, below the resource-based maximum: confirm the instrument with the client)'
   : ' (not stated; the lower published maximum is used)');
 
 function leverFormulas(c: Ctx): Block[] {

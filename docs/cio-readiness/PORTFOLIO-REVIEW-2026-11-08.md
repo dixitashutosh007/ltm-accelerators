@@ -116,7 +116,7 @@ Durations are indicative and assume the current pace (one owner plus AI agents);
 | 0.2 | Use the 11 unused questions or drop them: priorities order the recommendations; hotspots raise or qualify findings; else remove them from the default run | Cost | Audit: no unused non-context questions; new activation tests **Done in CQ12** (PR #105) |
 | 0.3 | Missing answers never flatter (+1/+2 today) | Cost | Audit worst profile +0 **Done in CQ12** (PR #105) |
 | 0.4 | Client-edition Appendix A in words (reuse Sovereign IQ's field labels); engine paths consultant-only | FinOps (check Cost) | Text-layer check: no `findings[` in a client edition **Done 10 Nov 2026** (`finops-iq/PLAN.md`; Cost IQ checked: no engine paths) |
-| 0.5 | Owner decision: Google default 55% or 46% | FinOps | Recorded; claims updated |
+| 0.5 | Owner decision: Google default 55% or 46% | FinOps | Recorded; claims updated **Done 10 Nov 2026: 46%** (`finops-iq/PLAN.md`) |
 
 ### Phase 1 (about 4 to 8 weeks, in parallel; critical path): go-live gates
 

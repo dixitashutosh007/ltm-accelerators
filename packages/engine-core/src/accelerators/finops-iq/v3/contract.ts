@@ -24,7 +24,7 @@ export const MIGRATION_STAGES = ['planning', 'early', 'in_flight', 'largely', 'c
 const SHARE_FACTS = ['computeShare', 'steadyStateShare', 'eligibleCoverage', 'nonProdShare', 'nonProdScheduledShare', 'interruptionTolerantShare', 'spotShare', 'storageShare', 'coldDataShare', 'dataTransferShare', 'kubernetesRequestUtilisation'];
 const RECOMMENDATION_TYPES = ['rightsizing', 'modernisation', 'idle', 'storage', 'commitments', 'other'];
 /** Main commitment instrument per provider (VB-02, F4 review M6). */
-export const INSTRUMENTS: Record<string, string[]> = { aws: ['ec2_instance_sp_or_ri', 'compute_sp'], azure: ['reservations', 'savings_plan'], gcp: ['resource_cud', 'memory_optimised_cud'] };
+export const INSTRUMENTS: Record<string, string[]> = { aws: ['ec2_instance_sp_or_ri', 'compute_sp'], azure: ['reservations', 'savings_plan'], gcp: ['flexible_cud', 'resource_cud', 'memory_optimised_cud'] };
 
 const isObject = (v: unknown): v is Record<string, any> => !!v && typeof v === 'object' && !Array.isArray(v);
 const isNumber = (v: unknown): v is number => typeof v === 'number' && Number.isFinite(v);

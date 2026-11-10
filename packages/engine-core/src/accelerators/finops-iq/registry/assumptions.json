@@ -1752,7 +1752,7 @@
     {
       "id": "ASM-FIN-060",
       "title": "Provider published maximum discounts",
-      "value": "AWS 72% (Savings Plans / RIs), Azure 72% (reservations), Google Cloud 55% (resource-based CUD), IBM 60% (VPC reservations, indicative), Alibaba 76% (savings plans, indicative); Spot AWS 90%, Azure 90%, Google Cloud 91%, OCI 50% (preemptible, indicative); OCI commitments not quantified",
+      "value": "AWS 72% (Savings Plans / RIs), Azure 72% (reservations), Google Cloud 46% (compute flexible CUD, three-year, most series; resource-based CUD up to 55% where stated), IBM 60% (VPC reservations, indicative), Alibaba 76% (savings plans, indicative); Spot AWS 90%, Azure 90%, Google Cloud 91%, OCI 50% (preemptible, indicative); OCI commitments not quantified",
       "basis": "published_source",
       "claimIds": [
         "CLM-FIN-060",
@@ -1760,6 +1760,7 @@
         "CLM-FIN-062",
         "CLM-FIN-064",
         "CLM-FIN-065",
+        "CLM-FIN-066",
         "CLM-FIN-067",
         "CLM-FIN-068",
         "CLM-FIN-069"
@@ -1770,7 +1771,7 @@
       "usedBy": [
         "value model"
       ],
-      "ownerApproval": "approved by the owner (F1, D1-D15 and Q1-Q14 defaults accepted); OCI (Spot), IBM and Alibaba (commitments) added as indicative by the owner on 27 Oct 2026",
+      "ownerApproval": "approved by the owner (F1, D1-D15 and Q1-Q14 defaults accepted); OCI (Spot), IBM and Alibaba (commitments) added as indicative by the owner on 27 Oct 2026; Google Cloud default moved to the 46% compute flexible CUD rate by the owner on 10 Nov 2026 (M7 D2)",
       "constants": [
         {
           "ref": "levers:levers[LEV-01].maxRate.byProvider.aws.value",
@@ -1782,7 +1783,7 @@
         },
         {
           "ref": "levers:levers[LEV-01].maxRate.byProvider.gcp.value",
-          "value": 0.55
+          "value": 0.46
         },
         {
           "ref": "levers:levers[LEV-06].maxRate.byProvider.aws.value",
@@ -1841,6 +1842,11 @@
         {
           "ref": "levers:levers[LEV-01].maxRate.byProvider.gcp.instruments",
           "value": {
+            "flexible_cud": {
+              "value": 0.46,
+              "claimId": "CLM-FIN-066",
+              "label": "Compute flexible committed use discounts"
+            },
             "resource_cud": {
               "value": 0.55,
               "claimId": "CLM-FIN-065",
@@ -1876,14 +1882,15 @@
     {
       "id": "ASM-FIN-062",
       "title": "Commitment instrument default",
-      "value": "When the client does not state its main instrument: AWS 66% (Compute Savings Plans) and Azure 65% (savings plan for compute), the lower published maximum; Google Cloud 55% (resource-based CUDs, three-year, non-memory-optimised series), which is higher than the 46% three-year compute flexible CUD rate for most series (63% for M-series, 54% for C4N and M4N), by product-owner decision (22 Oct 2026, M7 D2)",
+      "value": "When the client does not state its main instrument: AWS 66% (Compute Savings Plans), Azure 65% (savings plan for compute) and Google Cloud 46% (compute flexible CUDs, three-year rate for most series; 63% for M-series and 54% for C4N and M4N are not assumed): the flexible instrument in each case, by product-owner decision (10 Nov 2026, M7 D2; 55% before)",
       "basis": "ltm_heuristic",
       "claimIds": [
         "CLM-FIN-176",
         "CLM-FIN-060",
         "CLM-FIN-062",
         "CLM-FIN-063",
-        "CLM-FIN-065"
+        "CLM-FIN-065",
+        "CLM-FIN-066"
       ],
       "reasoning": "The higher maxima apply only to specific instruments; the conservative maximum avoids overstating LEV-01 (F4 review M6).",
       "confidence": "Medium",
@@ -1903,7 +1910,7 @@
         },
         {
           "ref": "levers:levers[LEV-01].maxRate.byProvider.gcp.defaultInstrument",
-          "value": "resource_cud"
+          "value": "flexible_cud"
         }
       ]
     },
