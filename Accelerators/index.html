@@ -844,7 +844,26 @@
       <!-- Tab View 4: Users and activity (platform workstream P2) -->
       <div id="acViewActivity" class="ac-tab-content" style="display:none;padding-top:4px;">
         <div class="modal-scrollable" style="max-height:calc(85vh - 220px);">
-          <p class="modal-desc">LTM Vantage records when people sign in and the status and dates of the assessments they start or save (which tool, the assessment reference and the times). It does not record answers or clients' names in this log. Use it only to manage access, support users and answer audit questions, not to judge anyone's performance. Records are deleted 12 months after they were last updated. Times are UTC.</p>
+          <p class="modal-desc">LTM Vantage records when people sign in and the status and dates of the assessments they start or save (which tool, which client, the assessment reference and the times). It does not record answers or results in this log. Use it only to manage access, support users and answer audit questions, not to judge anyone's performance. Records are deleted 12 months after they were last updated. Times are UTC.</p>
+          <div role="tablist" aria-label="Activity view" style="display:flex;gap:6px;margin-bottom:10px;">
+            <button type="button" role="tab" id="activityModePeople" class="btn-auth" aria-selected="true" style="font-size:12px;padding:5px 14px;" onclick="setActivityMode('people')">People</button>
+            <button type="button" role="tab" id="activityModeAll" class="btn-auth" aria-selected="false" style="font-size:12px;padding:5px 14px;opacity:.65;" onclick="setActivityMode('all')">All assessments</button>
+          </div>
+          <div id="activityAllView" style="display:none;">
+            <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:10px;">
+              <label for="assessmentSearch" style="position:absolute;left:-9999px;">Search client or person</label>
+              <input type="search" id="assessmentSearch" class="form-input" placeholder="Search client or person" style="max-width:240px;" oninput="renderAllAssessments()">
+              <label for="assessmentTool" style="position:absolute;left:-9999px;">Accelerator</label>
+              <select id="assessmentTool" class="form-input" style="max-width:180px;" onchange="renderAllAssessments()"><option value="">All accelerators</option></select>
+              <label for="assessmentState" style="position:absolute;left:-9999px;">Status</label>
+              <select id="assessmentState" class="form-input" style="max-width:160px;" onchange="renderAllAssessments()"><option value="">Any status</option><option value="open">Not finished</option><option value="completed">Completed</option><option value="archived">Archived</option></select>
+              <button type="button" class="btn-auth" style="font-size:11.5px;padding:5px 12px;" onclick="loadAllAssessments()">🔄 Refresh</button>
+              <button type="button" class="btn-auth" style="font-size:11.5px;padding:5px 12px;" onclick="downloadActivityCsv('assessments')">Download (CSV)</button>
+            </div>
+            <div id="assessmentSummary" style="font-size:12.5px;margin-bottom:8px;"></div>
+            <div id="assessmentList">Loading…</div>
+          </div>
+          <div id="activityPeopleView">
           <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:10px;">
             <label for="activitySearch" style="position:absolute;left:-9999px;">Search people</label>
             <input type="search" id="activitySearch" class="form-input" placeholder="Search by name or address" style="max-width:260px;" oninput="renderActivityUsers()">
@@ -856,6 +875,7 @@
           </div>
           <div id="activityUsers">Loading…</div>
           <div id="activityDetail" style="margin-top:16px;"></div>
+          </div>
         </div>
       </div>
 
@@ -1861,11 +1881,66 @@
         document.getElementById(view).style.display = name === tab ? 'block' : 'none';
       }
       if (tab === 'domains') loadDomainRules();
-      if (tab === 'activity') loadActivityUsers();
+      if (tab === 'activity') (ACTIVITY_MODE === 'all' ? loadAllAssessments() : loadActivityUsers());
     }
 
     /* ---------- Users and activity (platform workstream P2) ---------- */
     let ACTIVITY_USERS = [];
+    let ACTIVITY_MODE = 'people';
+    let ALL_ASSESSMENTS = [];
+    const ACCELERATOR_NAMES = { 'finops-iq': 'FinOps IQ', 'sovereign-iq': 'Sovereign IQ', 'cost-iq': 'Cost IQ', 'resilience-iq': 'Resilience IQ', 'cloud-iq': 'Cloud IQ', 'strategy-iq': 'Strategy IQ', 'modernization-iq': 'Modernize IQ', 'ai-readiness-iq': 'AI Readiness IQ' };
+    const acceleratorName = id => ACCELERATOR_NAMES[id] || id;
+    const STATUS_WORDS = { draft: 'Draft', in_progress: 'In progress', completed: 'Completed', archived: 'Archived' };
+
+    /* "All assessments": every assessment by everyone on one screen, with client, owner, stage and times (10 Nov 2026). */
+    function setActivityMode(mode) {
+      ACTIVITY_MODE = mode;
+      for (const [id, m] of [['activityModePeople', 'people'], ['activityModeAll', 'all']]) {
+        const b = document.getElementById(id);
+        b.setAttribute('aria-selected', String(m === mode));
+        b.style.opacity = m === mode ? '1' : '.65';
+      }
+      document.getElementById('activityPeopleView').style.display = mode === 'people' ? 'block' : 'none';
+      document.getElementById('activityAllView').style.display = mode === 'all' ? 'block' : 'none';
+      if (mode === 'all') loadAllAssessments(); else loadActivityUsers();
+    }
+
+    async function loadAllAssessments() {
+      const box = document.getElementById('assessmentList');
+      box.textContent = 'Loading…';
+      try {
+        const res = await apiFetch('/api/activity/assessments');
+        const data = await res.json();
+        if (!data.ok) throw new Error(data.error || 'Failed to load.');
+        ALL_ASSESSMENTS = data.assessments;
+        const tool = document.getElementById('assessmentTool');
+        const chosen = tool.value;
+        const ids = [...new Set(ALL_ASSESSMENTS.map(a => a.accelerator))].sort((a, b) => acceleratorName(a).localeCompare(acceleratorName(b)));
+        tool.innerHTML = '<option value="">All accelerators</option>' + ids.map(id => '<option value="' + escapeHtml(id) + '">' + escapeHtml(acceleratorName(id)) + '</option>').join('');
+        tool.value = ids.includes(chosen) ? chosen : '';
+        renderAllAssessments();
+      } catch (err) {
+        box.textContent = 'The assessments could not be loaded: ' + err.message;
+      }
+    }
+
+    function renderAllAssessments() {
+      const q = (document.getElementById('assessmentSearch').value || '').trim().toLowerCase();
+      const tool = document.getElementById('assessmentTool').value;
+      const state = document.getElementById('assessmentState').value;
+      const open = a => a.status !== 'completed' && a.status !== 'archived';
+      const rows = ALL_ASSESSMENTS.filter(a => (!q || [a.clientName, a.email, a.name].join(' ').toLowerCase().includes(q)) && (!tool || a.accelerator === tool) &&
+        (!state || (state === 'open' ? open(a) : a.status === state)));
+      const n = f => rows.filter(f).length;
+      document.getElementById('assessmentSummary').textContent = rows.length + ' assessment' + (rows.length === 1 ? '' : 's') + ': ' + n(open) + ' not finished, ' + n(a => a.status === 'completed') + ' completed, ' + n(a => a.status === 'archived') + ' archived · ' +
+        new Set(rows.map(a => (a.clientName || '').toLowerCase()).filter(Boolean)).size + ' client(s), ' + new Set(rows.map(a => a.email)).size + ' person(s).';
+      document.getElementById('assessmentList').innerHTML = rows.length ? '<div style="overflow-x:auto;"><table style="width:100%;border-collapse:collapse;font-size:12.5px;"><thead><tr style="text-align:left;"><th>Client</th><th>Accelerator</th><th>Person</th><th>Status</th><th>Stage</th><th>Started</th><th>Last saved</th><th>Completed</th></tr></thead><tbody>' +
+        rows.map(a => '<tr style="border-top:1px solid rgba(128,128,128,0.25);"><td>' + (a.clientName ? escapeHtml(a.clientName) : '<span style="opacity:.6">not recorded</span>') + '</td><td>' + escapeHtml(acceleratorName(a.accelerator)) + '</td>' +
+          '<td>' + escapeHtml(a.name || a.email) + (a.name ? '<br><small>' + escapeHtml(a.email) + '</small>' : '') + (a.inDirectory ? '' : ' <small style="color:#B91C1C;">(account removed)</small>') + '</td>' +
+          '<td>' + escapeHtml(STATUS_WORDS[a.status] || String(a.status).replace('_', ' ')) + '</td>' +
+          '<td>' + (a.stage ? escapeHtml(a.stage) + (a.percent !== null && a.percent !== undefined ? ' (' + a.percent + '%)' : '') : (a.percent !== null && a.percent !== undefined ? a.percent + '%' : '<span style="opacity:.6">not recorded</span>')) + '</td>' +
+          '<td>' + activityTime(a.startedAt) + '</td><td>' + activityTime(a.lastSavedAt) + '</td><td>' + activityTime(a.completedAt) + '</td></tr>').join('') + '</tbody></table></div>' : 'No assessments match.';
+    }
     const activityTime = v => (v ? escapeHtml(String(v).replace('T', ' ').slice(0, 16)) : '<span style="opacity:.6">never</span>');
 
     async function loadActivityUsers() {
@@ -1906,8 +1981,8 @@
         const d = data.detail;
         box.innerHTML = '<h4 style="margin:0 0 6px;font-size:13px;">' + escapeHtml(d.email) + '</h4>' +
           '<div style="font-size:12.5px;margin-bottom:8px;">' + d.loginCount + ' sign-in(s). Latest: ' + (d.logins.length ? d.logins.slice(0, 10).map(activityTime).join(', ') : 'none') + (d.logins.length > 10 ? ' …' : '') + '</div>' +
-          (d.assessments.length ? '<table style="width:100%;border-collapse:collapse;font-size:12.5px;"><thead><tr style="text-align:left;"><th>Accelerator</th><th>Assessment</th><th>Status</th><th>Stage</th><th>Started</th><th>Last saved</th><th>Completed</th></tr></thead><tbody>' +
-            d.assessments.map(a => '<tr style="border-top:1px solid rgba(128,128,128,0.25);"><td>' + escapeHtml(a.accelerator) + '</td><td><code>' + escapeHtml(a.assessmentId) + '</code></td><td>' + escapeHtml(String(a.status).replace('_', ' ')) + '</td>' +
+          (d.assessments.length ? '<table style="width:100%;border-collapse:collapse;font-size:12.5px;"><thead><tr style="text-align:left;"><th>Client</th><th>Accelerator</th><th>Assessment</th><th>Status</th><th>Stage</th><th>Started</th><th>Last saved</th><th>Completed</th></tr></thead><tbody>' +
+            d.assessments.map(a => '<tr style="border-top:1px solid rgba(128,128,128,0.25);"><td>' + (a.clientName ? escapeHtml(a.clientName) : '<span style="opacity:.6">not recorded</span>') + '</td><td>' + escapeHtml(acceleratorName(a.accelerator)) + '</td><td><code>' + escapeHtml(a.assessmentId) + '</code></td><td>' + escapeHtml(String(a.status).replace('_', ' ')) + '</td>' +
               '<td>' + (a.stage ? escapeHtml(a.stage) + (a.percent !== null ? ' (' + a.percent + '%)' : '') : '<span style="opacity:.6">not recorded</span>') + '</td><td>' + activityTime(a.startedAt) + '</td><td>' + activityTime(a.lastSavedAt) + '</td><td>' + activityTime(a.completedAt) + '</td></tr>').join('') + '</tbody></table>' : '<div style="font-size:12.5px;">No assessments recorded.</div>');
       } catch (err) {
         box.textContent = 'The detail could not be loaded: ' + err.message;

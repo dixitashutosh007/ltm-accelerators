@@ -5,15 +5,15 @@
 ## What the notice has to describe (facts from the build)
 | Fact | Value |
 |---|---|
-| Recorded | Work email address; time of each sign-in, first and last sign-in, number of sign-ins; for each assessment started, saved, completed or archived: tool, assessment reference, status, started, last saved and completed times, and the stage reached where the tool gives one |
-| Not recorded | Answers, results, client names, notes, IP address, device, location, anything typed |
+| Recorded | Work email address; time of each sign-in, first and last sign-in, number of sign-ins; for each assessment started, saved, completed or archived: tool, the client it is for (added 10 Nov 2026, owner decision), assessment reference, status, started, last saved and completed times, and the stage reached where the tool gives one |
+| Not recorded | Answers, results, notes, IP address, device, location, anything typed |
 | Who sees it | Platform administrators (Admin group and named super administrators) in the Access Control screen; CSV downloads |
 | Where | AWS, Mumbai region (ap-south-1), in LTM's account |
 | How long | Deleted automatically 12 months after the record was last updated; an assessment's record goes with the assessment when it is deleted |
 | Who is covered | LTM staff, EY staff and other people given an account (domain rules, P1) |
 
 ## 1. Short notice (shown on the Activity tab and linked from the sign-in screen)
-> LTM Vantage records when you sign in and the status and dates of the assessments you start or save (which tool, the assessment reference and the times). It does not record your answers or your clients' names in this log. Administrators use it to manage access and support users. Records are deleted 12 months after they were last updated. Read the full notice: [link]
+> LTM Vantage records when you sign in and the status and dates of the assessments you start or save (which tool, which client, the assessment reference and the times). It does not record your answers or the results in this log. Administrators use it to manage access and support users. Records are deleted 12 months after they were last updated. Read the full notice: [link]
 
 ## 2. Full notice (for all account holders)
 **LTM Vantage: how we record sign-ins and assessment activity**
@@ -23,9 +23,9 @@ Version 1.0, effective [date]
 
 **What we record.**
 - Your work email address and the date and time of each time you sign in. We keep your first sign-in, your latest sign-in and how many times you have signed in.
-- For each assessment you start, save, complete or archive: which tool it is in, the assessment reference, its status (for example draft, in progress, completed), when you started, last saved and completed it, and, where the tool shows one, the stage you reached.
+- For each assessment you start, save, complete or archive: which tool it is in, the name of the client it is for, the assessment reference, its status (for example draft, in progress, completed), when you started, last saved and completed it, and, where the tool shows one, the stage you reached.
 
-**What we do not record in this log.** Your answers, the results of an assessment, your clients' names, notes you write, your location or IP address, your device, or what else you do on your computer.
+**What we do not record in this log.** Your answers, the results of an assessment, notes you write, your location or IP address, your device, or what else you do on your computer.
 
 **Why we record it.**
 1. To keep the platform secure and to control who has access, including removing access.
@@ -59,7 +59,8 @@ We do not use this record to assess your performance or to make decisions about 
 5. **The personal address.** One named individual with a personal email address is a permitted account. Confirm the basis and the notice wording for a person who is not staff.
 6. **Purposes.** Whether usage totals (purpose 3) and client assurance (purpose 4) are acceptable as stated, and whether the "no performance use" promise is one LTM wants to make.
 7. **Retention.** Whether 12 months is justified for each purpose, or whether some purposes need less.
-8. **Administrator access.** Reading this record is itself access to personal data. We recommend logging which administrator opened the Activity tab or downloaded a file (not built yet).
+8. **Client names (added 10 Nov 2026).** The owner decided the log should name the client of each assessment so administrators can follow every engagement on one screen. A client's name is usually business information, but it can identify a person (a sole trader, a named individual) and is commercially confidential. Confirm that the purposes cover it, that client agreements allow LTM to record it for 12 months, and the notice wording above.
+9. **Administrator access.** Reading this record is itself access to personal data. We recommend logging which administrator opened the Activity tab or downloaded a file (not built yet).
 
 ## 6. Where to put it
 - Short notice: the Activity tab (in place, see `Accelerators/index.html`), and a link on the sign-in screen.

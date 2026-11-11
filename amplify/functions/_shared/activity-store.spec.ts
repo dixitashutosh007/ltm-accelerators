@@ -16,7 +16,11 @@ class FakeTable {
     this.commands.push(cmd);
     if (this.fail) throw new Error('dynamodb down');
     const i = cmd.input;
-    if (cmd instanceof PutItemCommand) { this.items.set(this.key(i.Item), { ...i.Item }); return {}; }
+    if (cmd instanceof PutItemCommand) {
+      if (i.ConditionExpression === 'attribute_not_exists(pk)' && this.items.has(this.key(i.Item))) throw Object.assign(new Error('exists'), { name: 'ConditionalCheckFailedException' });
+      this.items.set(this.key(i.Item), { ...i.Item });
+      return {};
+    }
     if (cmd instanceof UpdateItemCommand) {
       const item = this.items.get(this.key(i.Key)) ?? { ...i.Key };
       const [setPart, addPart] = i.UpdateExpression.replace(/^SET /, '').split(' ADD ');
@@ -85,7 +89,7 @@ describe('assessments', () => {
     tick(60_000);
     await store.recordAssessment('a@x.com', { ...base, status: 'completed', startedAt: '2026-11-03T09:30:00.000Z', completedAt: '2026-11-03T09:01:00.000Z' });
     const d = await store.userDetail('a@x.com');
-    expect(d.assessments).toEqual([{ accelerator: 'resilience-iq', assessmentId: 'RIQ-1', status: 'completed', stage: null, percent: null, startedAt: '2026-11-03T08:00:00.000Z', lastSavedAt: '2026-11-03T09:01:00.000Z', completedAt: '2026-11-03T09:01:00.000Z' }]);
+    expect(d.assessments).toEqual([{ accelerator: 'resilience-iq', assessmentId: 'RIQ-1', clientName: null, status: 'completed', stage: null, percent: null, startedAt: '2026-11-03T08:00:00.000Z', lastSavedAt: '2026-11-03T09:01:00.000Z', completedAt: '2026-11-03T09:01:00.000Z' }]);
   });
   it('keeps the stage and percent from an earlier save when a later save gives none', async () => {
     const { store } = setup();
@@ -107,11 +111,20 @@ describe('assessments', () => {
     }
     await expect(store.recordAssessment('', base)).rejects.toThrow();
   });
-  it('stores no answers, results or client names: only the fields it was given', async () => {
+  it('stores the client name but no answers or results: only the fields it knows (owner decision, 10 Nov 2026)', async () => {
     const { store, table } = setup();
-    await store.recordAssessment('a@x.com', { ...base, clientName: 'Acme', answers: { 'EX-01': 'x' }, result: { a: 1 } } as any);
+    await store.recordAssessment('a@x.com', { ...base, clientName: '  Acme\n Bank  ', answers: { 'EX-01': 'x' }, result: { a: 1 } } as any);
     const item = table.items.get('USER#a@x.com|ASSESSMENT#resilience-iq#RIQ-1')!;
-    expect(Object.keys(item).sort()).toEqual(['accelerator', 'assessmentId', 'expiresAt', 'lastSavedAt', 'pk', 'sk', 'startedAt', 'status']);
+    expect(Object.keys(item).sort()).toEqual(['accelerator', 'assessmentId', 'clientName', 'expiresAt', 'lastSavedAt', 'pk', 'sk', 'startedAt', 'status']);
+    expect(item.clientName.S).toBe('Acme Bank');
+  });
+  it('keeps the client name when a later save (an archive) does not give it, and cuts it to 120 characters', async () => {
+    const { store } = setup();
+    await store.recordAssessment('a@x.com', { ...base, clientName: 'Acme Bank' });
+    await store.recordAssessment('a@x.com', { ...base, status: 'archived' });
+    expect((await store.userDetail('a@x.com')).assessments[0]).toMatchObject({ clientName: 'Acme Bank', status: 'archived' });
+    await store.recordAssessment('a@x.com', { ...base, clientName: 'x'.repeat(300) });
+    expect((await store.listAssessments())[0].clientName).toHaveLength(120);
   });
 });
 
@@ -169,5 +182,21 @@ describe('failure', () => {
     const { store, table } = setup();
     table.fail = true;
     await expect(store.recordLogin('a@x.com')).rejects.toThrow('dynamodb down');
+  });
+});
+
+describe('backfill of assessments saved before the log existed', () => {
+  const old = { accelerator: 'finops-iq', assessmentId: 'FIQ-old', status: 'completed', clientName: 'Acme', startedAt: '2026-10-20T08:00:00.000Z', completedAt: '2026-10-21T09:00:00.000Z', lastSavedAt: '2026-10-21T09:00:00.000Z' };
+  it('writes the record with its own times, and expires 12 months after its last save', async () => {
+    const { store, table } = setup();
+    expect(await store.backfillAssessment('A@x.com', old)).toBe(true);
+    expect((await store.listAssessments())[0]).toMatchObject({ email: 'a@x.com', clientName: 'Acme', status: 'completed', lastSavedAt: '2026-10-21T09:00:00.000Z', startedAt: '2026-10-20T08:00:00.000Z' });
+    expect(Number(table.items.get('USER#a@x.com|ASSESSMENT#finops-iq#FIQ-old')!.expiresAt.N)).toBe(Date.parse(old.lastSavedAt) / 1000 + YEAR);
+  });
+  it('never overwrites a record a live save has written, and can be run again', async () => {
+    const { store } = setup();
+    await store.recordAssessment('a@x.com', { ...old, status: 'in_progress', clientName: 'Acme (live)' });
+    expect(await store.backfillAssessment('a@x.com', old)).toBe(false);
+    expect((await store.listAssessments())[0]).toMatchObject({ status: 'in_progress', clientName: 'Acme (live)' });
   });
 });

@@ -2813,6 +2813,7 @@ try { ['cloud_iq_openai_key', 'cloud_iq_openai_model'].forEach(k => localStorage
 SavedSessions.attach({
   accelerator: 'cloud-iq', legacyKey: STORE_KEY,
   title: () => 'Cloud IQ · ' + (SESSION.clientName || 'assessment'),
+  client: () => SESSION.clientName,
   snapshot: () => ({ SESSION, gIdx, A, done: !!RESULT }),
   progress: () => ({ stage: (GROUPS[gIdx] && GROUPS[gIdx].name) || 'Start', percent: RESULT ? 100 : Math.round((gIdx / GROUPS.length) * 100) }),
   status: () => (RESULT ? 'completed' : 'in_progress'),

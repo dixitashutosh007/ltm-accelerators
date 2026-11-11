@@ -59,6 +59,13 @@ describe('saved sessions API', () => {
     expect(activity.recordAssessment).toHaveBeenCalledWith(ME, expect.objectContaining({ accelerator: 'cost-iq', assessmentId: 'sess-0001-abc', stage: 'Spend by service', percent: 40 }));
   });
 
+  it('passes the client name to the activity log when the page gives one, and none when it does not', async () => {
+    expect((await save({ clientName: '  Acme\nBank ' })).status).toBe(200);
+    expect(activity.recordAssessment).toHaveBeenLastCalledWith(ME, expect.objectContaining({ clientName: 'Acme Bank' }));
+    expect((await save({ sessionId: 'sess-0002-abc' })).status).toBe(200);
+    expect(activity.recordAssessment).toHaveBeenLastCalledWith(ME, expect.objectContaining({ clientName: null }));
+  });
+
   it('sets expiry 24 months after the save and a second save updates the same session', async () => {
     await save();
     const again = await save({ title: 'Renamed' });

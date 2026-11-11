@@ -1,6 +1,8 @@
 /**
  * User activity (platform workstream P2): who signed in and when, and which assessments each person has taken, with
- * their status and times. Metadata only: no answers, no results and no client names are stored here. Every item
+ * their client, status and times. No answers or results are stored here. The client's name is kept so administrators can
+ * follow every engagement from one screen (owner decision, 10 Nov 2026; it reverses the earlier "no client names" choice
+ * and is covered by the staff notice). Every item
  * expires 12 months after it was last written (decision S4); DynamoDB removes expired items within about two days.
  *
  * One table, keyed by user:
@@ -19,6 +21,8 @@ const ACCELERATOR = /^[a-z0-9-]{2,40}$/;
 const S = v => ({ S: String(v) });
 const N = v => ({ N: String(v) });
 const normalizeEmail = v => String(v ?? '').trim().toLowerCase();
+/** A client's name as shown: one line, at most 120 characters. */
+const cleanName = v => String(v ?? '').replace(/[\u0000-\u001f\u007f]+/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 120);
 
 /** A plain object from a DynamoDB item of strings and numbers. */
 function plain(item) {
@@ -72,8 +76,8 @@ export function createActivityStore(deps) {
     },
 
     /**
-     * An assessment saved, completed or archived. `a` = { accelerator, assessmentId, status, stage?, percent?, startedAt?, completedAt? }.
-     * Writes only these fields; stage and percent are kept when a later save does not give them.
+     * An assessment saved, completed or archived. `a` = { accelerator, assessmentId, status, clientName?, stage?, percent?, startedAt?, completedAt? }.
+     * Writes only these fields; client, stage and percent are kept when a later save does not give them.
      */
     async recordAssessment(email, a) {
       const addr = normalizeEmail(email);
@@ -82,6 +86,8 @@ export function createActivityStore(deps) {
       if (!addr || !ACCELERATOR.test(accelerator) || !id || id.includes('#')) throw new Error('activity: an assessment needs an owner, an accelerator and an id');
       const names = ['accelerator = :a', 'assessmentId = :i', '#st = :s', 'lastSavedAt = :t', 'expiresAt = :x', 'startedAt = if_not_exists(startedAt, :b)'];
       const values = { ':a': S(accelerator), ':i': S(id), ':s': S(String(a.status ?? 'unknown').slice(0, 30)), ':t': S(iso()), ':x': N(expiry()), ':b': S(String(a.startedAt ?? iso()).slice(0, 40)) };
+      const client = cleanName(a.clientName);
+      if (client) { names.push('clientName = :n'); values[':n'] = S(client); }
       if (a.stage) { names.push('stage = :g'); values[':g'] = S(String(a.stage).slice(0, 80)); }
       if (Number.isFinite(a.percent)) { names.push('percent = :p'); values[':p'] = N(Math.max(0, Math.min(100, Math.round(a.percent)))); }
       if (a.completedAt) { names.push('completedAt = :c'); values[':c'] = S(String(a.completedAt).slice(0, 40)); }
@@ -92,6 +98,31 @@ export function createActivityStore(deps) {
         ExpressionAttributeNames: { '#st': 'status' },
         ExpressionAttributeValues: values
       }));
+    },
+
+    /**
+     * One assessment saved before this log existed (scripts/backfill-activity.mjs). Written with its own times and only
+     * when there is no record yet, so a live save is never overwritten; it expires 12 months after its last save.
+     */
+    async backfillAssessment(email, a) {
+      const addr = normalizeEmail(email);
+      const accelerator = String(a?.accelerator ?? '');
+      const id = String(a?.assessmentId ?? '').slice(0, 120);
+      if (!addr || !ACCELERATOR.test(accelerator) || !id || id.includes('#')) throw new Error('activity: an assessment needs an owner, an accelerator and an id');
+      const saved = Date.parse(a.lastSavedAt) || now();
+      const item = { pk: S(`USER#${addr}`), sk: S(`ASSESSMENT#${accelerator}#${id}`), accelerator: S(accelerator), assessmentId: S(id),
+        status: S(String(a.status ?? 'unknown').slice(0, 30)), startedAt: S(String(a.startedAt ?? a.lastSavedAt ?? iso()).slice(0, 40)),
+        lastSavedAt: S(new Date(saved).toISOString()), expiresAt: N(Math.floor(saved / 1000) + RETENTION_DAYS * 86400) };
+      const client = cleanName(a.clientName);
+      if (client) item.clientName = S(client);
+      if (a.completedAt) item.completedAt = S(String(a.completedAt).slice(0, 40));
+      try {
+        await send(new PutItemCommand({ TableName: deps.table, Item: item, ConditionExpression: 'attribute_not_exists(pk)' }));
+        return true;
+      } catch (err) {
+        if (err?.name === 'ConditionalCheckFailedException') return false;
+        throw err;
+      }
     },
 
     /** A deleted assessment leaves no trace here: its activity record goes with it. */
@@ -128,7 +159,7 @@ export function createActivityStore(deps) {
     /** Every assessment record with its owner, newest save first (for the export). */
     async listAssessments() {
       const items = await scanAll({ FilterExpression: 'begins_with(sk, :p)', ExpressionAttributeValues: { ':p': S('ASSESSMENT#') } });
-      return items.map(a => ({ email: String(a.pk).replace(/^USER#/, ''), accelerator: a.accelerator, assessmentId: a.assessmentId, status: a.status, stage: a.stage ?? null, percent: a.percent ?? null, startedAt: a.startedAt, lastSavedAt: a.lastSavedAt, completedAt: a.completedAt ?? null }))
+      return items.map(a => ({ email: String(a.pk).replace(/^USER#/, ''), clientName: a.clientName ?? null, accelerator: a.accelerator, assessmentId: a.assessmentId, status: a.status, stage: a.stage ?? null, percent: a.percent ?? null, startedAt: a.startedAt, lastSavedAt: a.lastSavedAt, completedAt: a.completedAt ?? null }))
         .sort((x, y) => String(y.lastSavedAt).localeCompare(String(x.lastSavedAt)));
     },
 
@@ -149,8 +180,8 @@ export function createActivityStore(deps) {
         email: addr,
         firstLoginAt: summary?.firstLoginAt ?? null, lastLoginAt: summary?.lastLoginAt ?? null, loginCount: summary?.loginCount ?? 0,
         logins: items.filter(i => i.sk.startsWith('LOGIN#')).map(i => i.at).sort().reverse().slice(0, MAX_LOGINS_SHOWN),
-        assessments: items.filter(i => i.sk.startsWith('ASSESSMENT#')).map(({ accelerator, assessmentId, status, stage, percent, startedAt, lastSavedAt, completedAt }) =>
-          ({ accelerator, assessmentId, status, stage: stage ?? null, percent: percent ?? null, startedAt, lastSavedAt, completedAt: completedAt ?? null }))
+        assessments: items.filter(i => i.sk.startsWith('ASSESSMENT#')).map(({ accelerator, assessmentId, clientName, status, stage, percent, startedAt, lastSavedAt, completedAt }) =>
+          ({ accelerator, assessmentId, clientName: clientName ?? null, status, stage: stage ?? null, percent: percent ?? null, startedAt, lastSavedAt, completedAt: completedAt ?? null }))
           .sort((x, y) => String(y.lastSavedAt).localeCompare(String(x.lastSavedAt)))
       };
     }
@@ -158,4 +189,4 @@ export function createActivityStore(deps) {
 }
 
 export const USER_COLUMNS = ['email', 'status', 'role', 'createdAt', 'firstLoginAt', 'lastLoginAt', 'loginCount', 'assessments', 'completed', 'inProgress', 'lastAssessmentAt'];
-export const ASSESSMENT_COLUMNS = ['email', 'accelerator', 'assessmentId', 'status', 'stage', 'percent', 'startedAt', 'lastSavedAt', 'completedAt'];
+export const ASSESSMENT_COLUMNS = ['clientName', 'email', 'accelerator', 'assessmentId', 'status', 'stage', 'percent', 'startedAt', 'lastSavedAt', 'completedAt'];
