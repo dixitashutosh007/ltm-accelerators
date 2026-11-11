@@ -59,7 +59,7 @@ if (advisory) {
     'POST /api/evaluate/modernization-iq', 'POST /api/evaluate/finops-iq/v3', 'GET /api/finops-iq/assessment',
     'POST /api/finops-iq/assessment', 'GET /api/finops-iq/report', 'GET /api/me', 'GET /api/users', 'POST /api/users/create',
     'POST /api/users/set-password', 'POST /api/users/permissions', 'GET /api/domain-rules', 'POST /api/domain-rules',
-    'GET /api/domain-rules/audit', 'POST /api/domain-rules/check', 'GET /api/activity/users', 'GET /api/activity/user',
+    'GET /api/domain-rules/audit', 'POST /api/domain-rules/check', 'GET /api/activity/users', 'GET /api/activity/user', 'GET /api/activity/assessments',
     'GET /api/activity/export', 'GET /api/reports/list',
     'POST /api/reports/save', 'POST /api/reports/delete', 'POST /api/reports/rename'];
   const keys = routes.map(r => r.Properties.RouteKey);
