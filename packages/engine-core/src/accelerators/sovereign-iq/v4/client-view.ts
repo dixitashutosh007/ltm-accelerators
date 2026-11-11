@@ -61,6 +61,8 @@ export function clientView(result: SovereignIqV4Result) {
     findings: r.findings.filter(f => !f.consultantOnly).map(({ state, consultantOnly, ...f }) => ({ ...f, wave: clientWave.get(f.wave) ?? f.wave, dependsOn: f.dependsOn.filter(id => shownFindings.has(id)), status: f.type === 'control_gap' ? word(state) : undefined, regimes: f.regimes.filter(x => shownIds.has(x.regime)) })),
     topGaps: r.topGaps.filter(f => !f.consultantOnly).map(f => f.id),
     roadmap: clientRoadmap,
+    // Cost to fix: an estimate over control gaps, which are never consultant-only, so the total is the same in both views.
+    costToFix: r.costToFix,
     // The processing-location note is for the consultant (it qualifies the applicability model).
     notes: r.notes.filter(n => !/without an entity there/.test(n)),
     // SEAL view: control states as words; the Commission's tender results stay in the consultant view (D20).

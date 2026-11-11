@@ -1,6 +1,6 @@
 {
-  "deliveryVersion": "1.0.0",
-  "statusAsOf": "2026-10-26",
+  "deliveryVersion": "1.1.0",
+  "statusAsOf": "2026-11-11",
   "owner": "sovereignty-compliance-lead (agent); approver: product owner",
   "nextReview": "2027-01-24",
   "rule": "Delivery attributes for the roadmap (S6 CIO challenge Q7 and D4; scorecard area 13(c)). LTM heuristic, not a market fact: for review by sovereignty-compliance-lead and approval by the product owner. Effort is the work needed, as a band; duration is the typical elapsed time for one organisation to put the control in place, set by the type of work and never by severity. Severity sets when the work starts; a dependent action starts only once its prerequisite is expected to reach its milestone (the end of the prerequisite's duration); decisions and scope confirmations start at once. 'movedDuration' applies to data location when the placement matrix says the data needs a sovereign offering (a migration, not a reconfiguration).",
@@ -9,6 +9,12 @@
     "M": "One to three FTE-months",
     "L": "Three to nine FTE-months",
     "XL": "A programme: several teams, more than nine FTE-months"
+  },
+  "costing": {
+    "rule": "Cost to fix (portfolio review 2.3; owner decision 11 Nov 2026): each control gap's effort band as a range of FTE-months, times a blended rate per FTE-month for the people doing the work, whoever they are (the client's staff, partners or LTM). An estimate of the cost of the work, not an LTM price or quotation. The rate is the client's own when given in the workshop (W4), otherwise the LTM default. Decisions, scope confirmations and conflicting answers are not costed: they take board, counsel and management time, not a delivery team. XL has no upper bound in the effort bands; 24 FTE-months is used as the top of the estimate, and a larger programme needs its own business case.",
+    "fteMonthsByEffort": { "S": [0.5, 1], "M": [1, 3], "L": [3, 9], "XL": [9, 24] },
+    "defaultRate": { "amount": 10000, "currency": "EUR" },
+    "convertedRateRoundsTo": 100
   },
   "startMonthBySeverity": { "Critical": 0, "High": 1, "Medium": 3, "Low": 6 },
   "prerequisites": {

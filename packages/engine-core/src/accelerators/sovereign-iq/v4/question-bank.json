@@ -1,5 +1,5 @@
 {
-  "questionSetVersion": "4.2.0",
+  "questionSetVersion": "4.3.0",
   "questions": [
     {
       "id": "A1", "theme": "footprint", "kind": "scope", "mode": "executive", "type": "single",
@@ -726,6 +726,15 @@
       "feeds": { "facts": ["pref.outcomes"] },
       "basis": [{ "citation": "Ordering of options in the playbook (S7); not scored", "status": "S" }],
       "replaces": ["K3"]
+    },
+    {
+      "id": "W4", "theme": "preference", "kind": "preference", "mode": "workshop", "type": "compound",
+      "text": "For the cost-to-fix estimate: what does one FTE-month of remediation work cost you, staff and partners blended? (leave blank to use LTM's default rate)",
+      "fields": [
+        { "key": "rate_per_fte_month", "label": "Blended cost of one FTE-month", "type": "number_with_currency", "optional": true }
+      ],
+      "feeds": { "facts": ["pref.rate_per_fte_month"] },
+      "basis": [{ "citation": "Cost-to-fix estimate only (ASM-SOV-016); not scored", "status": "S" }]
     }
   ]
 }

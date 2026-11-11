@@ -22,7 +22,7 @@ import { sealView, tenderLevel, type SealView } from './seal';
 import { howLtmCanHelp, type HelpItem } from './help';
 import { DATA_CLASSES, DATA_CLASS_LABELS, LEVELS, PEOPLE_CLASSES, personalOutsideSubjects, personalTransfer, platformParents, scopeFacts, type Answers, type DataClass, type Facts, type Level } from './facts';
 
-export const ENGINE_VERSION = '4.8.0';
+export const ENGINE_VERSION = '4.9.0';
 /**
  * S4 calibration: the smallest required set over which one answer moves maturity by at most 20 points (T2 aside).
  * Below it no maturity number is shown, in either mode (owner decisions, 25 and 26 Oct 2026).
@@ -64,7 +64,7 @@ const RATES = (fx as any).rates as Record<string, { rate: number; claim?: string
 const LEVEL_NUM = (l: Level) => LEVELS.indexOf(l);
 const SEVERITY_ORDER: Severity[] = ['Critical', 'High', 'Medium', 'Low'];
 /** Set by planDelivery once the findings are ranked (S6 challenge D4). */
-const UNPLANNED = { effort: 'S' as Effort, startMonth: 0, durationMonths: [0, 0] as [number, number], dependsOn: [] as string[], milestone: '', kpi: '', risk: '' };
+const UNPLANNED = { effort: 'S' as Effort, startMonth: 0, durationMonths: [0, 0] as [number, number], dependsOn: [] as string[], milestone: '', kpi: '', risk: '', cost: null };
 /** Transfer routes each regime accepts for SOV.XFER.BASIS (DESIGN 4.2). */
 const ROUTES: Record<string, string[]> = {
   EU_GDPR: ['adequacy', 'eu_us_dpf', 'sccs', 'bcr'],
@@ -143,6 +143,17 @@ export interface Finding {
    *  the findings that must reach their milestone first, and the milestone, KPI and key risk. */
   effort: Effort; startMonth: number; durationMonths: [number, number]; dependsOn: string[];
   milestone: string; kpi: string; risk: string;
+  /** Cost to fix (delivery.json costing; ASM-SOV-015 and 016): the effort band in FTE-months times the rate, in the
+   *  currency of costToFix. An estimate of the cost of the work, whoever does it. Null for anything but a control gap. */
+  cost: { fteMonths: [number, number]; amount: [number, number] } | null;
+}
+
+/** The estimate's basis and total over every control gap (portfolio review 2.3). */
+export interface CostToFix {
+  currency: string;
+  /** The rate used, in `currency`: the client's own (W4), or the LTM default, converted when a turnover in another currency is given. */
+  rate: { amount: number; source: 'client' | 'ltm_default'; conversion: { eurAmount: number; fxRate: number; rateDate: string } | null };
+  fteMonths: [number, number]; total: [number, number]; actions: number; claims: string[];
 }
 
 export interface SovereignIqV4Result {
@@ -179,6 +190,7 @@ export interface SovereignIqV4Result {
    * there means "not assessed", never "no obligations". `none` is true when no place in the footprint is covered.
    */
   jurisdictions: { footprint: string[]; notAssessed: Array<{ zone: string; name: string }>; none: boolean; covered: string[] };
+  costToFix: CostToFix;
 }
 
 /* ---------------------------------- Engine --------------------------------- */
@@ -763,6 +775,7 @@ export function evaluateSovereignIqV4(input: SovereignIqV4Input): SovereignIqV4R
 
   const advisory = cloudAdvisory({ facts, requirements: reqs, controls: results, findings, regimes });
   planDelivery(findings, advisory);
+  const costToFix = costFindings(findings, facts);
   return {
     mode, assessmentDate,
     versions: {
@@ -788,7 +801,8 @@ export function evaluateSovereignIqV4(input: SovereignIqV4Input): SovereignIqV4R
     foreignAccess, findings, topGaps, roadmap, pendingSource, notes,
     advisory, seal: sealView({ facts, requirements: reqs, controls: results }),
     help: howLtmCanHelp(findings, advisory.placement),
-    jurisdictions: { footprint, notAssessed, none: noneCovered, covered: COVERED_ZONE_NAMES }
+    jurisdictions: { footprint, notAssessed, none: noneCovered, covered: COVERED_ZONE_NAMES },
+    costToFix
   };
 }
 
@@ -844,6 +858,36 @@ function planDelivery(findings: Finding[], advisory: Advisory): void {
     return f;
   };
   findings.forEach(plan);
+}
+
+const COSTING = (delivery as any).costing as { fteMonthsByEffort: Record<Effort, [number, number]>; defaultRate: { amount: number; currency: string }; convertedRateRoundsTo: number };
+
+/**
+ * Cost to fix (portfolio review 2.3; owner decision 11 Nov 2026): each control gap's effort band in FTE-months
+ * (ASM-SOV-015) times a blended rate (ASM-SOV-016). The client's own rate (W4) is used as given, in its currency;
+ * otherwise the LTM default, converted at the ECB rate into the currency of a turnover given in another currency.
+ * Each amount is rounded to a whole unit and the total is their sum, so the roadmap adds up to it.
+ */
+function costFindings(findings: Finding[], facts: Facts): CostToFix {
+  const own = facts['pref.rate_per_fte_month'] as { amount: number; currency: string } | undefined;
+  const turnover = facts['org.turnover_amount'] as { amount: number; currency: string } | undefined;
+  const def = COSTING.defaultRate;
+  let currency = def.currency, rate: CostToFix['rate'] = { amount: def.amount, source: 'ltm_default', conversion: null };
+  if (own && own.amount > 0) { currency = own.currency; rate = { amount: own.amount, source: 'client', conversion: null }; }
+  else if (turnover && turnover.currency !== def.currency && RATES[turnover.currency]) {
+    const step = COSTING.convertedRateRoundsTo, fxRate = RATES[turnover.currency].rate / RATES[def.currency].rate;
+    currency = turnover.currency;
+    rate = { amount: Math.round(def.amount * fxRate / step) * step, source: 'ltm_default', conversion: { eurAmount: def.amount, fxRate, rateDate: (fx as any).date } };
+  }
+  const fte: [number, number] = [0, 0], total: [number, number] = [0, 0];
+  let actions = 0;
+  for (const f of findings) {
+    if (f.type !== 'control_gap') continue;
+    const [lo, hi] = COSTING.fteMonthsByEffort[f.effort];
+    f.cost = { fteMonths: [lo, hi], amount: [Math.round(lo * rate.amount), Math.round(hi * rate.amount)] };
+    fte[0] += lo; fte[1] += hi; total[0] += f.cost.amount[0]; total[1] += f.cost.amount[1]; actions++;
+  }
+  return { currency, rate, fteMonths: fte, total, actions, claims: rate.conversion ? rateClaims(currency) : [] };
 }
 
 /** Within a wave, prerequisites come before the controls that need them; otherwise the ranking order holds. */

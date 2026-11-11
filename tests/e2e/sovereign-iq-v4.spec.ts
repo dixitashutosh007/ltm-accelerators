@@ -133,7 +133,9 @@ test('executive: every question asked renders and can be answered; complete; bot
   expect(executive.filter(id => !seen.has(id))).toEqual([]);
   await complete(page);
   // The dashboard: maturity (or why there is no number), regulations, exposure, largest cap, findings.
-  for (const label of ['Sovereignty control maturity', 'Regulations in scope', 'Control gaps by regulation', 'Largest single statutory cap', 'Findings']) await expect(page.locator('.kpi-label', { hasText: label })).toBeVisible();
+  for (const label of ['Sovereignty control maturity', 'Regulations in scope', 'Control gaps by regulation', 'Largest single statutory cap', 'Findings', 'Estimated cost to fix']) await expect(page.locator('.kpi-label', { hasText: label })).toBeVisible();
+  // Cost to fix (portfolio review 2.3): every control is answered "in place" here, so nothing is costed and the tile says so.
+  await expect(page.locator('.kpi-card', { hasText: 'Estimated cost to fix' })).toContainText('NoneNo control gaps to cost');
   await page.getByRole('tab', { name: 'Regulations' }).click();
   await expect(page.locator('.regime h3', { hasText: 'General Data Protection Regulation' })).toBeVisible();
   await expect(page.locator('.regime h3', { hasText: /DORA|Digital Operational Resilience/ })).toBeVisible();

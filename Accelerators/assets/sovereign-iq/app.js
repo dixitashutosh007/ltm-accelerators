@@ -108,6 +108,9 @@
     catch (e) { return (cur || '') + ' ' + Math.round(n).toLocaleString('en-GB'); }
   }
   function clean(t) { return String(t || '').replace(/\s*\[CLM-[A-Z]+-\d+\]/g, ''); }
+  /** Cost to fix as a range (an estimate of the work, whoever does it; ASM-SOV-015 and 016). */
+  function costText(range, cur) { return money(range[0], cur) + ' to ' + money(range[1], cur); }
+  function rateText(k) { return Math.round(k.rate.amount).toLocaleString('en-GB') + ' ' + k.currency + ' per FTE-month, ' + (k.rate.source === 'client' ? 'your rate' : 'LTM default rate'); }
   function statusLabel(s) { return { draft: 'Draft', in_progress: 'In progress', completed: 'Completed', archived: 'Archived' }[s] || s; }
   function regimeName(id) { var r = schema.regimes.find(function (x) { return x.id === id; }); return r ? r.name : id; }
   function controlInfo(id) { return schema.controls.find(function (x) { return x.id === id; }) || { id: id, name: id }; }
@@ -730,6 +733,10 @@
       h('span', { class: 'kpi-sub' }, SEVERITIES.filter(function (k) { return sev[k]; }).map(function (k) { return sev[k] + ' ' + k.toLowerCase(); }).join(' · ') || 'No gaps'));
     C.countUp(fc.querySelector('.count'), gaps, function (x) { return String(Math.round(x)); }, 900);
     kpis.push(fc);
+    var k = r.costToFix;
+    if (k) kpis.push(h('div', { class: 'kpi-card kpi-money' }, h('span', { class: 'kpi-label' }, 'Estimated cost to fix'),
+      h('strong', { class: 'kpi-big' + (k.actions ? '' : ' small-big') }, k.actions ? costText(k.total, k.currency) : 'None'),
+      h('span', { class: 'kpi-sub' }, k.actions ? k.actions + ' control gaps · ' + k.fteMonths[0] + ' to ' + k.fteMonths[1] + ' FTE-months at ' + rateText(k) + ' · an estimate, not a quotation' : 'No control gaps to cost')));
     var acts = h('div', { class: 'hero-actions' });
     var status = h('p', { class: 'small hero-status', id: 'report-status', role: 'status', 'aria-live': 'polite' });
     if (isFinal()) {
@@ -1142,7 +1149,7 @@
     var byId = {};
     r.findings.forEach(function (f) { byId[f.id] = f; });
     var names = { decide: 'decide, confirm and close critical gaps', high: 'high-severity gaps', medium: 'medium-severity gaps', later: 'lower-severity gaps and upcoming obligations' };
-    var sec = h('section', { class: 'card', 'aria-labelledby': 'roadmap-h' }, h('h2', { id: 'roadmap-h' }, 'Roadmap'), h('p', { class: 'small muted' }, 'Severity sets when each action starts; the type of work sets its effort and duration. An action that depends on another starts once that one reaches its milestone. Months count from the start of the programme; durations and effort are LTM planning estimates.'));
+    var sec = h('section', { class: 'card', 'aria-labelledby': 'roadmap-h' }, h('h2', { id: 'roadmap-h' }, 'Roadmap'), h('p', { class: 'small muted' }, 'Severity sets when each action starts; the type of work sets its effort and duration. An action that depends on another starts once that one reaches its milestone. Months count from the start of the programme; durations and effort are LTM planning estimates.' + (r.costToFix ? ' Estimated cost: the effort in FTE-months at ' + rateText(r.costToFix) + '; the cost of the work whoever does it, not an LTM price.' : '')));
     r.roadmap.forEach(function (w, i) {
       sec.appendChild(h('div', { class: 'wave' }, h('h3', null, 'Wave ' + (i + 1) + ' · ' + (names[w.theme] || '')),
         h('ol', null, w.findings.map(function (id) {
@@ -1150,7 +1157,7 @@
           if (!f) return null;
           var after = (f.dependsOn || []).map(function (d) { return byId[d] ? byId[d].title : null; }).filter(Boolean);
           return h('li', null, h('strong', null, f.title),
-            h('span', { class: 'small muted' }, ' · ' + f.severity + ' · ' + f.ownerRole + ' · ' + f.timeFrame + ' · effort ' + f.effort),
+            h('span', { class: 'small muted' }, ' · ' + f.severity + ' · ' + f.ownerRole + ' · ' + f.timeFrame + ' · effort ' + f.effort + (f.cost && r.costToFix ? ' · est. ' + costText(f.cost.amount, r.costToFix.currency) : '')),
             f.milestone ? h('div', { class: 'small' }, 'Milestone: ' + f.milestone + '. KPI: ' + f.kpi + (after.length ? '. After: ' + after.join('; ') : '') + '.') : null);
         }))));
     });
