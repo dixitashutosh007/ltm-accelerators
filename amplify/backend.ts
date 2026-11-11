@@ -305,6 +305,7 @@ route('/api/domain-rules/audit', [HttpMethod.GET], integrations.reports);
 route('/api/domain-rules/check', [HttpMethod.POST], integrations.reports);
 // Users and activity (P2): administrators only (checked in the service).
 route('/api/activity/users', [HttpMethod.GET], integrations.reports);
+route('/api/activity/assessments', [HttpMethod.GET], integrations.reports);
 route('/api/activity/user', [HttpMethod.GET], integrations.reports);
 route('/api/activity/export', [HttpMethod.GET], integrations.reports);
 route('/api/reports/list', [HttpMethod.GET], integrations.reports);
