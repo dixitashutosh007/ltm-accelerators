@@ -7,7 +7,7 @@ import type { FinOpsIqV3Result } from '../accelerators/finops-iq/v3/evaluate';
 import { clientView as finopsClientView } from '../accelerators/finops-iq/v3/client-view';
 import { resolveTraceField } from '../accelerators/finops-iq/v3/report';
 import type { SovereignIqV4Result } from '../accelerators/sovereign-iq/v4';
-import { cloudless, resolveCostIqField, type CostIqReportInput } from '../accelerators/cost-iq/report';
+import { cloudless, indicativeFor, resolveCostIqField, type CostIqReportInput } from '../accelerators/cost-iq/report';
 import { FINOPS_IQ_LEVER_IDS } from '../accelerators/finops-iq/v3/cost-iq-summary';
 import { runReportChecks, type CheckResult, type View } from './index';
 
@@ -87,7 +87,16 @@ export function checkCostIqReport(doc: ReportDocument, input: CostIqReportInput,
     requiredSections: ['summary', 'profile', 'scores', 'findings', 'cloud', 'roadmap', 'help', 'execution', 'calculation', 'assumptions', 'methodology', 'sources', ...(view === 'consultant' ? ['sow', 'consultant'] : [])],
     requiredNotices: ['not a savings commitment', 'FinOps Framework', 'creativecommons.org/licenses/by/4.0', 'does not assess legal, tax or regulatory obligations', 'Mumbai region', 'qualified professional', quantified ? 'does not estimate it again' : cloudless(input) ? 'Not applicable' : 'Not quantified'],
     // One currency per edition: skipped when the cloud line and the non-cloud levers are in different currencies (never converted).
-    currency: input.nonCloud?.status === 'quantified' ? (!quantified || input.finops!.currency === input.nonCloud.currency ? input.nonCloud.currency : undefined) : quantified ? input.finops!.currency : undefined,
+    // The indicative ranges (A1) add their own currency when they show money.
+    currency: (() => {
+      const ind = indicativeFor(input);
+      const curs = new Set([
+        ...(input.nonCloud?.status === 'quantified' ? [input.nonCloud.currency] : []),
+        ...(quantified ? [input.finops!.currency] : []),
+        ...(ind.total && (ind.total.low != null || ind.total.high != null) ? [ind.currency] : [])
+      ]);
+      return curs.size === 1 ? [...curs][0] : undefined;
+    })(),
     resolve: field => resolveCostIqField(input, field),
     // The total is the non-cloud levers plus the cloud line, case by case (CQ4 reconciliation).
     reconcile: () => {

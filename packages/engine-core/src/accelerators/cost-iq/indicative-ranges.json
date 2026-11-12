@@ -1,0 +1,33 @@
+{
+  "schema": "cost-iq-indicative/1",
+  "libraryVersion": "1.0.0",
+  "statusAsOf": "2026-11-12",
+  "owner": "finops-cost-lead (agent); approver: product owner; calibration: LTM practice lead before external use",
+  "decision": "Owner decision of 12 Nov 2026 (PRODUCT-GRADE-PLAN.md, A1): size each cost finding with an LTM planning range, labelled as such, because no public source gives a savings range for these levers (non-cloud-lever-sources.md). Measured figures replace a range where the client supplies them.",
+  "rule": "For each raised cost finding: the share of in-scope technology spend in the finding's category (the category's typical share, rescaled over the categories the client said the spend figure includes) times the finding's planning rate. Findings in one category overlap, so a category counts once, at the largest range among its findings. Money is that share times both ends of the spend band the client chose, as the band was shown to them. Annual run rate at full delivery, before the cost to deliver and before phasing.",
+  "categoryShares": {
+    "note": "Typical share of an enterprise's technology spend, in percent, by the categories of CORE-05; they sum to 100. LTM heuristic for rescaling only: a category's share of the spend in scope, not a benchmark of any client.",
+    "INFRA": 14, "CLOUD": 10, "SAAS": 8, "SOFTWARE": 9, "APPS": 13, "NETWORK": 5, "DATA": 5, "SECURITY": 6, "PEOPLE": 16, "EXTERNAL": 8, "END_USER": 4, "OTHER": 2
+  },
+  "categoryLabels": {
+    "INFRA": "infrastructure and data centres", "CLOUD": "public and private cloud", "SAAS": "SaaS subscriptions", "SOFTWARE": "software licences", "APPS": "application development and support", "NETWORK": "network and connectivity", "DATA": "data platforms and analytics", "SECURITY": "cybersecurity", "PEOPLE": "the internal technology workforce", "EXTERNAL": "external services and systems integrators", "END_USER": "workplace and end-user computing", "OTHER": "other technology spend"
+  },
+  "findings": {
+    "F-008": { "category": "SOFTWARE", "rate": [0.05, 0.15], "lever": "Reconcile licences to use and true down at renewal" },
+    "F-009": { "category": "INFRA", "rate": [0.05, 0.15], "lever": "Consolidate and right-size infrastructure; retire idle capacity" },
+    "F-010": { "category": "PEOPLE", "rate": [0.03, 0.08], "lever": "Match workforce capacity and skills to demand" },
+    "F-011": { "category": "EXTERNAL", "rate": [0.03, 0.08], "lever": "Renegotiate and consolidate supplier contracts" },
+    "F-012": { "category": "APPS", "rate": [0.03, 0.08], "lever": "Reduce complexity and technical debt in the run estate" },
+    "F-013": { "category": "APPS", "rate": [0.05, 0.12], "lever": "Rationalise the application portfolio" },
+    "F-016": { "category": "PEOPLE", "rate": [0.03, 0.1], "lever": "Automate and standardise manual operations" },
+    "F-020": { "category": "APPS", "rate": [0.05, 0.15], "lever": "Remove duplicated applications after M&A" }
+  },
+  "elsewhere": {
+    "F-005": "cloud", "F-006": "cloud", "F-007": "cloud"
+  },
+  "notSizedReason": {
+    "cloud": "Sized by FinOps IQ as the cloud line, so that cloud and SaaS savings are counted once.",
+    "enabler": "Governance or value management: it makes the other savings measurable and lasting, or raises the value of spend, and is not sized as a saving on its own.",
+    "excluded": "The spend figure given does not include this category, so there is no base to size against."
+  }
+}
