@@ -3,6 +3,7 @@ import { corsHeaders } from '../_shared/http';
 import { withAcceleratorAccess } from '../_shared/access';
 import { NOTICES } from '../../../packages/engine-core/src/accelerators/cost-iq/notices';
 import { evaluateCostIq, metadata, questions } from '../../../packages/engine-core/src/accelerators/cost-iq/evaluate.cjs';
+import { plausibilityChecks } from '../../../packages/engine-core/src/accelerators/cost-iq/plausibility';
 
 // CORS echoes only the origins in ALLOWED_ORIGINS (_shared/http.ts); the routes sit behind the Cognito authorizer and the
 // accelerator access check, so a request without a signed-in, permitted caller never reaches the handler.
@@ -75,7 +76,8 @@ export const evaluate = async (event: APIGatewayProxyEventV2): Promise<APIGatewa
       feasibilityEvidence: body.feasibilityEvidence || body.options?.feasibilityEvidence || {},
       options: body.options || {}
     });
-    return response(200, result, id);
+    // A4: answers to confirm, shown to the consultant after scoring. They change nothing in the result.
+    return response(200, { ...result, plausibility: plausibilityChecks(body.answers) }, id);
   } catch (error) {
     console.error('[EvaluateCostIq] Request failed', {
       requestId: id,

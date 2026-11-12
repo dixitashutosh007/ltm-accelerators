@@ -567,3 +567,26 @@ Owner decision of 12 Nov 2026: the delivery detail and the technical execution m
   - The scope note appears in every edition that has an amount.
 
   Unit tests 1,387; Cost IQ browser tests 23; `validate:costiq` PASS.
+
+## Product-grade plan A4 (12 Nov 2026): plausibility checks
+- **Rules** (`plausibility.ts`). Every threshold is an LTM heuristic, and the report says so.
+  - P-01: technology spend at least 25% of revenue on the two bands.
+  - P-02: spend at most 0.5% of revenue.
+  - P-03: a waste slider above 80%: underused data-centre capacity, manual operations, unclear applications, transformation without outcomes, legacy run cost, M&A duplication.
+  - P-04: high confidence (4 or 5 stars) in a spend baseline described as weak.
+  - P-05: 80% or more of spend traced to owners, while cost is understood only by vendor, project or ledger.
+  - P-06: full reconciliation, but less than half of spend traced.
+  - P-07: business-critical and unclear applications together exceed the portfolio.
+
+  `spendShareOfRevenue` moves to the same module and is still exported from the report.
+- **Effect.** None on the scores, findings or ranges: the checks sit beside the result.
+- **Where it shows.**
+  - **On screen:** the evaluate API returns `plausibility` with the result. Consultants (Cognito Consultant or Admin) see an "Answers to confirm" card after scoring.
+  - **In the report:** "Answers to confirm" under Scope and context, in both editions, with the answers as given. Rule IDs appear in the consultant edition only.
+  - **On the summary:** when the spend band is doubtful (P-01 or P-02), the line under the indicative value says so, because every range scales with the band.
+- **Evidence.** Tests:
+  - `cost-iq-plausibility.test.ts`: each rule on both sides of its threshold, real question IDs, report checks in both editions.
+  - Handler spec: the API returns the checks, and the result is otherwise identical to the engine's.
+  - Browser test: a consultant sees the card, and a user outside the group does not.
+
+  Unit tests 1,396; Cost IQ browser tests 24; `validate:costiq` PASS.
