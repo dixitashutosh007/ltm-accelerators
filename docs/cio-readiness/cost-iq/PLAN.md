@@ -727,3 +727,18 @@ Owner decision of 12 Nov 2026: the delivery detail and the technical execution m
 - **Consent.** `BENCHMARK-CONSENT-DRAFT.md`: the wording the client would see, seven questions for counsel (authority, personal data, confidentiality, hosting, withdrawal, group size, competition law), and what the code enforces.
 - **Not built** (a separate change that needs approval): storage, the consent tick box and record, and the report section with peer figures.
 - **Evidence.** `cost-iq-benchmark.test.ts`: off by default; the consent gate; anonymisation (a leak test); no figure below 10; the floor holds against configuration; per-metric, per-group counts.
+
+## Product-grade plan E1 (12 Nov 2026): business case per lever
+- **Rule** (`business-case.ts`). For each counted indicative lever (one per category):
+  - **Run-rate saving:** its indicative range.
+  - **One-off cost:** the delivery library's effort (FTE-weeks) for the first recommended step that addresses it, at the client's own cost of one FTE-month. A step shared by two levers is costed once.
+  - **Payback:** the first month whose earnings cover the cost, best case (high saving, low cost) to worst.
+  - **Net over three years.**
+
+  Phasing follows the measured licence lever (A-09): year one earns a quarter, years two and three all of it, and a fifth of the one-off cost recurs each year (new assumption A-15, Low). The total run rate is the indicative total itself.
+- **Report.** "Business case by lever" sits at the end of "Indicative value", after the charts, with every figure traced (`case.*`).
+  - **Without the client's rate, or with a rate in another currency:** effort only, and how to cost it. LTM does not assume a salary.
+  - **Advisory steps:** they are costed on their own, and the report says their payback is optimistic, because the cost of the change itself is agreed once the saving is measured.
+- **Rate.** The client's cost of one FTE-month, already recorded with the measured figures, is passed in by the report service.
+- **Fixed while testing:** the total row first re-added rounded lines and came out £1 off the engine's total (an R2 failure). It now uses the indicative total.
+- **Evidence.** `cost-iq-business-case.test.ts`: costing, a shared step costed once, the three-year net formula, the payback month (earned covers cost that month, not the one before), effort only without a rate or with a currency mismatch, A-15, checks in both editions, and an R2 tamper test. Unit tests 1,442; Cost IQ browser tests 27; `validate:costiq` PASS.
