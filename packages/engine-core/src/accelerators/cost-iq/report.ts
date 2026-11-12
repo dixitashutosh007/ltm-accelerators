@@ -104,7 +104,7 @@ const ref = (t: string): Seg => ({ text: uk(t), ref: true });
  * British spelling for LTM-authored catalogue text (CQ10 challenge L2): the catalogues mix US and UK forms. Text with a web
  * address, and the names of AWS's Cost Optimization Hub and pillar, are left as written.
  */
-const IZE = /\b\w*(?:optimi|reali|rationali|utili|organi|prioriti|standardi|centrali|categori|minimi|maximi|customi|normali|visuali|moneti|capitali|amorti|formali|harmoni|synchroni|operationali|analy|summari)z\w*\b/gi;
+const IZE = /\b\w*(?:optimi|reali|rationali|utili|organi|prioriti|standardi|centrali|categori|minimi|maximi|customi|normali|visuali|moneti|capitali|amorti|formali|harmoni|synchroni|operationali|institutionali|analy|summari)z\w*\b/gi;
 export function uk(t: string): string {
   const s = String(t ?? '');
   if (/https?:/.test(s)) return s;
@@ -166,6 +166,7 @@ interface Package {
 const PACKAGES = new Map<string, Package>(((delivery as any).packages as Package[]).map(p => [p.recommendationId, p]));
 const TYPE_LABEL: Record<string, string> = { advisory: 'Advisory', implementation: 'Implementation', transformation: 'Transformation' };
 const weeks = (r: [number, number]) => (r[0] === r[1] ? `${r[0]} ${r[0] === 1 ? 'week' : 'weeks'}` : `${r[0]} to ${r[1]} weeks`);
+const andList = (xs: Array<string | number>) => (xs.length > 1 ? `${xs.slice(0, -1).join(', ')} and ${xs[xs.length - 1]}` : String(xs[0] ?? ''));
 /** The elapsed weeks of a package: each workstream starts when those it depends on have ended; prerequisites start at zero. */
 function elapsed(p: Package): [number, number] {
   const end = new Map<string, [number, number]>();
@@ -301,7 +302,7 @@ function valueSection(c: Ctx): ReportSection | null {
   const en = r.notSized.filter(n => n.reason === 'enabler');
   if (en.length) {
     const nos = en.map(n => findingNo(c, n.findingId)).sort((a, b) => a - b);
-    const list = nos.length === 1 ? `Finding ${nos[0]}` : `Findings ${nos.slice(0, -1).join(', ')} and ${nos[nos.length - 1]}`;
+    const list = `${nos.length === 1 ? 'Finding' : 'Findings'} ${andList(nos)}`;
     blocks.push({ kind: 'paragraph', style: 'small', segs: [ref(list), nos.length === 1 ? ' concerns governance or the value of spend: it makes the other savings measurable and lasting, or raises the value of what is spent, and is not sized as a saving on its own.' : ' concern governance or the value of spend: they make the other savings measurable and lasting, or raise the value of what is spent, and are not sized as savings on their own.'] });
   }
   return { id: 'value', title: 'Indicative value', blocks };
@@ -695,6 +696,22 @@ function deliveryPlan(c: Ctx): Block[] {
   const act = activePackages(c);
   if (!act.length) return blocks;
   blocks.push({ kind: 'subheading', text: 'Delivery plan' });
+  // Product-grade plan A5 (owner decision of 12 Nov 2026): the client edition carries a one-table summary; the workstreams,
+  // risks and technical practice steps are in the consultant edition and walked through with the client at mobilisation.
+  if (c.client) {
+    // The evidence lines repeat the findings section, so they are named by finding number; the sponsor line is common to all.
+    const numbered = orderedFindings(c.findings);
+    const supplies = (p: Package): Seg[] => {
+      const nums = p.prerequisites.map(t => /^Evidence for (F-\d{3})\b/.exec(t)?.[1]).filter((x): x is string => !!x).map(id => numbered.findIndex(f => f.id === id) + 1).filter(n => n > 0);
+      const rest = p.prerequisites.filter(t => !/^Evidence for F-\d{3}\b/.test(t) && !/^Named client sponsor\b/.test(t));
+      return bullets(c, [...(nums.length ? [`The evidence listed for ${nums.length === 1 ? 'Finding' : 'Findings'} ${andList(nums)}`] : []), ...rest]);
+    };
+    blocks.push({ kind: 'paragraph', segs: ['One line for each recommended step. Elapsed times are LTM planning ranges, not commitments (see the assumptions); sizing and the final plan are agreed once the evidence is in. Owners are roles at the client; names are agreed at mobilisation. Every step needs a named client sponsor and a data owner for each evidence item. LTM walks through the workstreams, their risks and the practice steps at mobilisation.'] });
+    blocks.push({ kind: 'table', head: ['Step', 'LTM offering', 'Elapsed time', 'Client owners', 'Before work starts, the client supplies'], widths: [100, 100, 55, 95, '*'], small: true, rows: act.map(({ r, p }) => [
+      [strong(r.title)], [ref(p.offeringName), '\n', TYPE_LABEL[p.offeringType]], [ref(weeks(elapsed(p)))], [ref([...new Set(p.workstreams.map(w => w.ownerRole))].join('\n'))], supplies(p)
+    ]) });
+    return blocks;
+  }
   blocks.push({ kind: 'paragraph', segs: ['One plan for each recommended step. Durations and effort are LTM planning ranges, not commitments (see the assumptions); sizing and the final plan are agreed once the evidence is in. Owners are roles at the client; names are agreed at mobilisation.'] });
   for (const { r, p } of act) {
     const [lo, hi] = elapsed(p);
@@ -856,7 +873,7 @@ function sources(c: Ctx): ReportSection {
       [[ref('US Government Accountability Office, Information Technology Investment Management (GAO-04-394G, https://www.gao.gov/products/gao-04-394g)')], ['Closest reference for investment selection, control and benefits review'], [ref('2004')]],
       ...(c.i.finops?.status === 'quantified' ? [[[ref(clean(c.i.finops.globalCap.source.citation))], ['Ceiling on the cloud line, applied by FinOps IQ'], [ref(c.i.finops.globalCap.source.year)]] as Seg[][], [[ref(`LTM FinOps IQ assessment dated ${c.i.finops.assessmentDate ?? 'not stated'}`)], ['The cloud line shown in this report'], [ref((c.i.finops.assessmentDate ?? '').slice(0, 4) || 'n/a')]] as Seg[][]] : []),
       ...(REF.enabled ? [[[ref(`${REF.source} (${REF.url})`)], ['Published average of technology spend as a share of revenue; a cross-industry reference, not a peer benchmark'], [ref(REF.year)]] as Seg[][]] : []),
-      ...playbookSources(c),
+      ...(c.client ? [] : playbookSources(c)),
       [[ref('European Central Bank, euro foreign exchange reference rates (https://www.ecb.europa.eu/stats/policy_and_exchange_rates/euro_reference_exchange_rates/html/index.en.html)')], ['Converting size bands into the reporting currency; for information only'], [ref('2026')]]
     ] },
     { kind: 'paragraph', style: 'small', segs: ['Where a score ladder or an activation rule is LTM\'s own, the assumptions list says so. The FinOps Framework is used under its licence; LTM\'s scores and findings are LTM\'s and are not the FinOps Foundation\'s.'] }
@@ -900,7 +917,7 @@ export function costIqReport(rawInput: CostIqReportInput, opts: CostIqReportOpti
       footer: `${PLATFORM} · ${PRODUCT} · Confidential`,
       status: 'Indicative assessment from self-reported answers. Not a savings commitment.'
     },
-    sections: [summary(c), ...(valueSection(c) ? [valueSection(c)!] : []), ...(yourView(c) ? [yourView(c)!] : []), ...(narrativeSection(c) ? [narrativeSection(c)!] : []), profile(c), scores(c), findingsSection(c), cloudSection(c), ...(leversSection(c) ? [leversSection(c)!] : []), roadmap(c), help(c), execution(c), calculation(c), assumptions(c), methodology(c), sources(c), ...(client ? [] : [sow(c), consultant(c)])]
+    sections: [summary(c), ...(valueSection(c) ? [valueSection(c)!] : []), ...(yourView(c) ? [yourView(c)!] : []), ...(narrativeSection(c) ? [narrativeSection(c)!] : []), profile(c), scores(c), findingsSection(c), cloudSection(c), ...(leversSection(c) ? [leversSection(c)!] : []), roadmap(c), help(c), ...(client ? [] : [execution(c)]), calculation(c), assumptions(c), methodology(c), sources(c), ...(client ? [] : [sow(c), consultant(c)])]
   };
   // Last pass: every string in the sections in British spelling, the client's own name aside (L2).
   const name = opts.client.trim();
