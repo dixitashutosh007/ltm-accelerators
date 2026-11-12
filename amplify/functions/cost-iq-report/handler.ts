@@ -74,6 +74,8 @@ export function createHandler(store: CostIqAssessmentStore, now: () => Date = ()
       const stored = parse<unknown>(item.leverEvidenceJson, null);
       const evidence = stored ? parseNonCloudEvidence(stored) : null;
       input.nonCloud = evidence?.ok ? evaluateNonCloud(evidence.value, input.result.findings.map(f => f.id), input.finops) : null;
+      // C1: the client's own spend baseline, when the consultant recorded one, narrows the indicative ranges.
+      input.baseline = evidence?.ok && evidence.value.baseline ? { ...evidence.value.baseline, currency: evidence.value.currency } : null;
       const client = item.clientName || 'the organisation';
       if (format === 'csv') {
         return {

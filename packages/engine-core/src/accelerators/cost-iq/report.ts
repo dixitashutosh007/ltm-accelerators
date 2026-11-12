@@ -14,7 +14,8 @@ import { figure, traced } from '../../report/model';
 import { noRegulatoryCoverage } from '../../report/coverage';
 import { NOTICES } from './notices';
 import type { CostIqSummary } from '../finops-iq/v3/cost-iq-summary';
-import type { NonCloudResult } from './non-cloud-levers';
+import type { NonCloudResult, SpendBaseline } from './non-cloud-levers';
+import tbm from './tbm-mapping.json' with { type: 'json' };
 import config from './canon/config/master-v6.6.json' with { type: 'json' };
 import delivery from './delivery-library.json' with { type: 'json' };
 import finopsRegistry from '../finops-iq/registry/capabilities.json' with { type: 'json' };
@@ -65,6 +66,8 @@ export interface CostIqReportInput {
   finopsLinkedAt?: string | null;
   /** Non-cloud levers sized from the client's own measured figures, and the total (CQ4); null when none is sized. */
   nonCloud?: NonCloudResult | null;
+  /** C1: the client's own spend baseline, recorded by the consultant, in `currency`; it replaces the band and the typical shares. */
+  baseline?: (SpendBaseline & { currency: string }) | null;
 }
 
 export interface CostIqReportOptions {
@@ -174,7 +177,7 @@ interface Ctx { i: CostIqReportInput; client: boolean; opts: CostIqReportOptions
 /** The indicative ranges for this input (A1): measured levers replace the range for their finding. */
 export function indicativeFor(i: CostIqReportInput): IndicativeResult {
   const measured = i.nonCloud?.status === 'quantified' ? i.nonCloud.lines.map(l => l.findingId) : [];
-  return evaluateIndicative(i.answers, i.result.findings.map(f => f.id), i.currency, measured);
+  return evaluateIndicative(i.answers, i.result.findings.map(f => f.id), i.currency, measured, i.baseline ?? null);
 }
 
 /* ------------------------------ Field resolver ------------------------------ */
@@ -361,12 +364,13 @@ function valueSection(c: Ctx): ReportSection | null {
   }
   blocks.push(...valueCharts(c));
   const notes: Seg[] = [];
-  if (r.spend && r.lines.length) notes.push('Spend band used: ', ...(r.spend.high == null ? ['above ', traced('indicative.spend.low', r.spend.low, 'currency', [], IND_ASM, r.currency)] : r.spend.low ? [traced('indicative.spend.low', r.spend.low, 'currency', [], IND_ASM, r.currency), ' to ', traced('indicative.spend.high', r.spend.high, 'currency', [], IND_ASM, r.currency)] : ['below ', traced('indicative.spend.high', r.spend.high, 'currency', [], IND_ASM, r.currency)]), ', as shown to the client when the band was chosen. ');
+  if (r.spend && r.lines.length && r.basis.spend === 'exact') notes.push('Spend used: ', traced('indicative.spend.low', r.spend.low, 'currency', [], IND_ASM, r.currency), ' a year, the client\'s own figure for the technology spend in scope, recorded by the consultant. ');
+  else if (r.spend && r.lines.length) notes.push('Spend band used: ', ...(r.spend.high == null ? ['above ', traced('indicative.spend.low', r.spend.low, 'currency', [], IND_ASM, r.currency)] : r.spend.low ? [traced('indicative.spend.low', r.spend.low, 'currency', [], IND_ASM, r.currency), ' to ', traced('indicative.spend.high', r.spend.high, 'currency', [], IND_ASM, r.currency)] : ['below ', traced('indicative.spend.high', r.spend.high, 'currency', [], IND_ASM, r.currency)]), ', as shown to the client when the band was chosen. ');
   if (r.spend && r.lines.length && c.i.currency && c.i.currency !== r.currency) notes.push(`The bands were shown in ${r.currency} for this reporting currency, so the ranges are in ${r.currency}. `);
   if (r.spend && r.lines.length && (r.spend.high == null || !r.spend.low)) notes.push('The band is open at one end, so the range is open at that end too. ');
   if (r.lines.length) {
-    notes.push(r.categoriesAssumed ? 'The client did not say which categories the spend figure includes, so every category is assumed to be in it; the shares are less certain. ' : 'Shares are rescaled to the categories the client said the spend figure includes. ');
-    notes.push('A narrower band, or the exact spend, narrows every range in proportion.');
+    notes.push(r.basis.shares === 'split' ? 'Shares are the client\'s own split of spend by category, recorded by the consultant. ' : r.categoriesAssumed ? 'The client did not say which categories the spend figure includes, so every category is assumed to be in it; the shares are less certain. ' : 'Shares are rescaled to the categories the client said the spend figure includes. ');
+    notes.push(r.basis.spend === 'exact' && r.basis.shares === 'split' ? 'Each range now rests only on the planning rates, which the evidence each finding lists replaces.' : r.basis.spend === 'exact' ? 'The client\'s own split of spend by category, recorded by the consultant, would replace the typical shares.' : 'The client\'s exact spend, recorded by the consultant, narrows every range to its planning rates.');
     blocks.push({ kind: 'paragraph', style: 'small', segs: notes });
   }
   const out = r.notSized.filter(n => n.reason !== 'enabler');
@@ -967,9 +971,11 @@ function assumptions(c: Ctx): ReportSection {
     { id: 'A-10', what: 'The measured base', value: 'The unused or over-entitled licence cost is a figure the client supplied from its own reconciliation; LTM has not audited it. It excludes SaaS and marketplace software', basis: 'Client input', confidence: 'Varies', ifWrong: 'Every figure in this section scales with the base; an overstated base overstates the range in proportion' }
   );
   if (c.ind.lines.length) list.push(
-    { id: 'A-12', what: 'Share of spend by category', value: `Typical shares of technology spend, rescaled to the categories the spend figure includes: ${Object.entries(INDICATIVE_LIBRARY.categoryShares).filter(([k]) => k !== 'note').map(([k, v]) => `${(INDICATIVE_LIBRARY.categoryLabels as Record<string, string>)[k]} ${v}%`).join('; ')}`, basis: 'LTM heuristic for rescaling, not a benchmark of the client; to be calibrated by LTM\'s practice lead', confidence: 'Low', ifWrong: 'A category\'s range moves in proportion to its share; the client\'s own split by category replaces it' },
+    c.ind.basis.shares === 'split'
+      ? { id: 'A-12', what: 'Share of spend by category', value: `The client's own split of the technology spend in scope by category, recorded by the consultant: ${Object.entries(c.i.baseline?.splitPercent ?? {}).map(([k, v]) => `${(INDICATIVE_LIBRARY.categoryLabels as Record<string, string>)[k]} ${v}%`).join('; ')}`, basis: 'Client input; LTM has not audited it', confidence: 'Medium', ifWrong: 'A category\'s range moves in proportion to its share' }
+      : { id: 'A-12', what: 'Share of spend by category', value: `Typical shares of technology spend, rescaled to the categories the spend figure includes: ${Object.entries(INDICATIVE_LIBRARY.categoryShares).filter(([k]) => k !== 'note').map(([k, v]) => `${(INDICATIVE_LIBRARY.categoryLabels as Record<string, string>)[k]} ${v}%`).join('; ')}`, basis: 'LTM heuristic for rescaling, not a benchmark of the client; to be calibrated by LTM\'s practice lead', confidence: 'Low', ifWrong: 'A category\'s range moves in proportion to its share; the client\'s own split by category replaces it' },
     { id: 'A-13', what: 'Planning rates', value: Object.entries(INDICATIVE_LIBRARY.findings).map(([, f]) => `${f.lever}: ${Math.round(f.rate[0] * 100)}% to ${Math.round(f.rate[1] * 100)}% of its category`).join('; '), basis: 'LTM heuristic: no public source gives a savings range for these levers (searched 3 Nov 2026); to be calibrated by LTM\'s practice lead against delivered work', confidence: 'Low', ifWrong: 'Each range scales with its rate; the evidence each finding lists replaces the rate with a measured figure' },
-    { id: 'A-14', what: 'Overlap, band and timing', value: 'Findings in one category overlap, so a category counts once, at its largest range. Money is the share times both ends of the spend band as it was shown to the client. Ranges are the annual run rate once delivered, before the cost to deliver and before phasing', basis: 'Design rule', confidence: 'High', ifWrong: 'Adding overlapping findings would count the same spend twice' }
+    { id: 'A-14', what: 'Overlap, band and timing', value: `Findings in one category overlap, so a category counts once, at its largest range. Money is the share times ${c.ind.basis.spend === 'exact' ? 'the client\'s exact spend figure' : 'both ends of the spend band as it was shown to the client'}. Ranges are the annual run rate once delivered, before the cost to deliver and before phasing`, basis: 'Design rule', confidence: 'High', ifWrong: 'Adding overlapping findings would count the same spend twice' }
   );
   if (c.i.currency && !['USD', 'AED', 'SAR', 'OTHER'].includes(c.i.currency)) {
     const a = bands.assumptions[0];
@@ -994,6 +1000,10 @@ function methodology(c: Ctx): ReportSection {
       ['Some answers are the respondent\'s own estimate, such as confidence in the spend baseline, or are marked unsure. They are scored as given, and the consultant appendix shows them.'],
       ['The report covers the focus areas chosen and the estate described. Anything outside them is not assessed.']
     ] },
+    // C1: where Cost IQ's spend categories sit in the TBM Taxonomy (LTM's reading, not the TBM Council's).
+    { kind: 'subheading', text: 'Spend categories and the TBM Taxonomy' },
+    { kind: 'paragraph', style: 'small', segs: ['How the spend categories in this report sit in the ', ref(`${tbm.source.title} ${tbm.source.version}`), ' published by the ', ref(tbm.source.publisher), '. The categories are LTM\'s and the mapping is LTM\'s reading of the taxonomy. The internal workforce and external services are cost pools rather than towers, so they spread across towers.'] },
+    { kind: 'table', head: ['Spend category', 'TBM towers', 'TBM cost pools'], widths: ['*', '*', '*'], small: true, rows: Object.entries(tbm.categories).map(([k, v]) => [[upperFirst((INDICATIVE_LIBRARY.categoryLabels as Record<string, string>)[k])], [ref(v.towers.join(', ') || 'Across towers')], [ref(v.costPools.join(', ') || 'By tower')]]) },
     noRegulatoryCoverage('Cost IQ'),
     { kind: 'paragraph', segs: [strong('How your data is handled. '), NOTICES.dataWith(!!c.opts.aiEnabled)] },
     { kind: 'callout', tone: 'info', title: 'Status', segs: [`${NOTICES.disclaimer} Prepared by ${c.opts.preparedBy}; data provided by ${c.opts.dataProvidedBy}.`] }
@@ -1026,7 +1036,7 @@ function sources(c: Ctx): ReportSection {
     { kind: 'paragraph', segs: ['The published sources the questions and mappings draw on. Published sources are global or sector references and are not benchmarks of the client\'s peers.'] },
     { kind: 'table', head: ['Source', 'Used for', 'Year'], widths: ['*', '*', 50], small: true, rows: [
       [[ref('FinOps Foundation, FinOps Framework (https://www.finops.org/framework/). Licensed under the Creative Commons Attribution licence (https://creativecommons.org/licenses/by/4.0/)')], ['Practice stages and the closest reference for governance, allocation and value dimensions'], [ref('2026')]],
-      [[ref('TBM Council, TBM Taxonomy (https://www.tbmcouncil.org/taxonomy/)')], ['Closest reference for cost pools and towers behind the cost dimensions; reference only, not an endorsement'], [ref('2025')]],
+      [[ref(`${tbm.source.publisher}, ${tbm.source.title} ${tbm.source.version} (${tbm.source.url})`)], ['Closest reference for cost pools and towers behind the cost dimensions, and the map of spend categories to towers in the methodology; reference only, not an endorsement'], [ref(tbm.source.released.slice(0, 4))]],
       [[ref('US Government Accountability Office, Information Technology Investment Management (GAO-04-394G, https://www.gao.gov/products/gao-04-394g)')], ['Closest reference for investment selection, control and benefits review'], [ref('2004')]],
       ...(c.i.finops?.status === 'quantified' ? [[[ref(clean(c.i.finops.globalCap.source.citation))], ['Ceiling on the cloud line, applied by FinOps IQ'], [ref(c.i.finops.globalCap.source.year)]] as Seg[][], [[ref(`LTM FinOps IQ assessment dated ${c.i.finops.assessmentDate ?? 'not stated'}`)], ['The cloud line shown in this report'], [ref((c.i.finops.assessmentDate ?? '').slice(0, 4) || 'n/a')]] as Seg[][]] : []),
       ...(REF.enabled ? [[[ref(`${REF.source} (${REF.url})`)], ['Published average of technology spend as a share of revenue; a cross-industry reference, not a peer benchmark'], [ref(REF.year)]] as Seg[][]] : []),

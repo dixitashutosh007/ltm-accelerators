@@ -11,6 +11,7 @@
 import library from './indicative-ranges.json' with { type: 'json' };
 import config from './canon/config/master-v6.6.json' with { type: 'json' };
 import references from './published-references.json' with { type: 'json' };
+import type { SpendBaseline } from './non-cloud-levers';
 
 export const INDICATIVE_SCHEMA = 'cost-iq-indicative/1';
 export const INDICATIVE_ASSUMPTIONS = ['A-12', 'A-13', 'A-14'];
@@ -37,6 +38,8 @@ export interface IndicativeResult {
   spend: { low: number; high: number | null } | null;
   /** True when the client did not say which categories the spend figure includes, so every category is assumed. */
   categoriesAssumed: boolean;
+  /** C1: what the ranges rest on. 'exact' is the client's own spend figure, 'split' the client's own shares by category. */
+  basis: { spend: 'band' | 'exact' | 'none'; shares: 'typical' | 'split' };
   lines: IndicativeLine[];
   notSized: Array<{ findingId: string; reason: 'cloud' | 'enabler' | 'excluded' | 'measured' }>;
   total: { shareLow: number; shareHigh: number; low: number | null; high: number | null } | null;
@@ -79,20 +82,24 @@ const round = (n: number) => Math.round(n);
  * The indicative ranges for the raised findings. `measured` lists findings sized from the client's own figures, which
  * replace their range.
  */
-export function evaluateIndicative(answers: Record<string, unknown>, raisedFindingIds: string[], reportingCurrency?: string, measured: string[] = []): IndicativeResult {
-  const band = spendBand(answers, reportingCurrency);
+export function evaluateIndicative(answers: Record<string, unknown>, raisedFindingIds: string[], reportingCurrency?: string, measured: string[] = [], baseline?: SpendBaseline & { currency?: string } | null): IndicativeResult {
+  // C1: the client's exact spend replaces the band (a range of one point), and the client's split replaces the typical shares.
+  const exact = baseline?.exactAnnualSpend && baseline.currency ? { currency: baseline.currency, low: baseline.exactAnnualSpend, high: baseline.exactAnnualSpend as number | null } : null;
+  const band = exact ?? spendBand(answers, reportingCurrency);
+  const split = baseline?.splitPercent && Object.keys(baseline.splitPercent).length ? baseline.splitPercent : null;
   const inc = Array.isArray(answers['CORE-05']) ? (answers['CORE-05'] as unknown[]).map(String).filter(x => CATEGORIES.includes(x)) : [];
-  const assumed = !inc.length || (Array.isArray(answers['CORE-05']) && (answers['CORE-05'] as unknown[]).includes('UNKNOWN'));
-  const scope = assumed ? CATEGORIES : inc;
+  const assumed = !split && (!inc.length || (Array.isArray(answers['CORE-05']) && (answers['CORE-05'] as unknown[]).includes('UNKNOWN')));
+  const scope = split ? Object.keys(split).filter(k => CATEGORIES.includes(k)) : assumed ? CATEGORIES : inc;
   const sum = scope.reduce((t, k) => t + SHARES[k], 0);
-  const out: IndicativeResult = { schema: INDICATIVE_SCHEMA, libraryVersion: library.libraryVersion, currency: band?.currency ?? String(reportingCurrency ?? 'USD'), spend: band ? { low: band.low, high: band.high } : null, categoriesAssumed: assumed, lines: [], notSized: [], total: null };
+  const shareOf = (cat: string) => (split ? (split[cat] ?? 0) / 100 : Math.min(1, SHARES[cat] / sum));
+  const out: IndicativeResult = { schema: INDICATIVE_SCHEMA, libraryVersion: library.libraryVersion, currency: band?.currency ?? String(reportingCurrency ?? 'USD'), spend: band ? { low: band.low, high: band.high } : null, categoriesAssumed: assumed, basis: { spend: exact ? 'exact' : band ? 'band' : 'none', shares: split ? 'split' : 'typical' }, lines: [], notSized: [], total: null };
   for (const id of raisedFindingIds) {
     if (ELSEWHERE[id]) { out.notSized.push({ findingId: id, reason: 'cloud' }); continue; }
     const f = FINDINGS[id];
     if (!f) { out.notSized.push({ findingId: id, reason: 'enabler' }); continue; }
     if (measured.includes(id)) { out.notSized.push({ findingId: id, reason: 'measured' }); continue; }
     if (!scope.includes(f.category)) { out.notSized.push({ findingId: id, reason: 'excluded' }); continue; }
-    const share = Math.min(1, SHARES[f.category] / sum);
+    const share = shareOf(f.category);
     const shareLow = share * f.rate[0], shareHigh = share * f.rate[1];
     out.lines.push({
       findingId: id, category: f.category, lever: f.lever,
