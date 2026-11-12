@@ -140,6 +140,7 @@ const optionLabel = (qid: string, answer: unknown): string => {
 };
 const has = (answers: Record<string, unknown>, id: string) => answers[id] != null && answers[id] !== '' && !(Array.isArray(answers[id]) && (answers[id] as unknown[]).length === 0);
 const REF = (references as any).spendToRevenue;
+const BY_INDUSTRY = (references as any).byIndustry as { searched: string; verified: Record<string, unknown> };
 /** Technology spend in scope as a share of revenue (CQ12 slice 5): computed in plausibility.ts, exported here as before. */
 export { spendShareOfRevenue };
 /** An answer in words: option labels (size bands in the reporting currency), a slider as a percentage, stars out of 5. */
@@ -656,7 +657,10 @@ function yourView(c: Ctx): ReportSection | null {
       : ['The technology-spend figure includes: ', quoted(optionLabel('CORE-05', inc)), '.', ...(missing.length ? [' It does not include: ', quoted(optionLabel('CORE-05', missing)), '.'] : [])] });
   }
 
-  // Spend against a published average (CQ12 slice 5): a cross-industry reference, placed only when the bands allow it.
+  // Spend against a published average (CQ12 slice 5): a cross-industry reference, placed only when the bands allow it. C3: the
+  // client's industry is named, and the report says no verified industry figure is published (published-references.json).
+  const ind2 = String(i.answers['CORE-02'] ?? '');
+  const industry = ind2 && ind2 !== 'OTHER' && !(ind2 in BY_INDUSTRY.verified) ? optionLabel('CORE-02', ind2).toLowerCase().replace(/ \/ /g, ' and ') : '';
   const b = spendShareOfRevenue(i.answers);
   if (b) {
     const avg = REF.averagePercent as number;
@@ -669,6 +673,7 @@ function yourView(c: Ctx): ReportSection | null {
       blocks.push({ kind: 'paragraph', segs: ['From the size bands given, technology spend in scope is ', ...range, ' of revenue. ', ref(REF.source), ' reports technology investment at about ', pct('benchmark.average', avg), ' of revenue on average (', ref(REF.sample), ', surveyed ', ref(REF.fieldwork), '). ',
         place ? `The client's range sits ${place} that average.` : 'The bands are too wide to place the client above or below it; exact figures would.'] });
       blocks.push({ kind: 'paragraph', style: 'small', segs: [REF.caveat, partial ? ' The spend figure here leaves out some categories (above), so the comparison understates the full technology spend.' : ''] });
+      if (industry) blocks.push({ kind: 'paragraph', style: 'small', segs: [`No free, verifiable published figure for ${industry} is available, so this comparison is cross-industry only. Industry splits exist in subscription research, which this report does not use (searched `, ref(BY_INDUSTRY.searched), ').'] });
     } else {
       blocks.push({ kind: 'paragraph', segs: ['From the size bands given, technology spend in scope is ', ...range, ' of revenue', partial ? ', for the categories included above' : '', '. Exact revenue and spend figures would narrow the range.'] });
       blocks.push({ kind: 'paragraph', style: 'small', segs: ['No published average is set beside this figure: the free published surveys differ widely in who answers and in what they count as technology spend, and none gives a verified split by industry.'] });

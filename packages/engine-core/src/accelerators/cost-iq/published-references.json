@@ -18,5 +18,16 @@
   "bandsUsd": {
     "revenue": { "LT100M": [0, 100e6], "100M_500M": [100e6, 500e6], "500M_1B": [500e6, 1e9], "1B_5B": [1e9, 5e9], "5B_25B": [5e9, 25e9], "GT25B": [25e9, null] },
     "spend": { "LT5M": [0, 5e6], "5M_25M": [5e6, 25e6], "25M_50M": [25e6, 50e6], "50M_100M": [50e6, 100e6], "100M_500M": [100e6, 500e6], "500M_1B": [500e6, 1e9], "GT1B": [1e9, null] }
+  },
+  "byIndustry": {
+    "note": "Product-grade plan C3: published references by industry, only from free, citable sources with year, sample and region (the CLM rule). None qualifies yet, so the report names the client's industry and says no verified figure is published for it. Add an industry here only with a claim in the register.",
+    "searched": "2026-11-12",
+    "verified": {},
+    "examined": [
+      { "source": "Avasant Computer Economics, IT Spending and Staffing Benchmarks", "finding": "Industry splits are in the paid study; only a cross-industry median is quoted publicly, second-hand" },
+      { "source": "Gartner, IT Key Metrics Data", "finding": "Industry splits are for subscribers only" },
+      { "source": "Flexera, State of Tech Spend", "finding": "Figures only in charts, sample skewed to large software-heavy firms; not verifiable as text" },
+      { "source": "Vendor blogs and budget calculators (several)", "finding": "Conflicting figures with no stated source, sample or year; not citable" }
+    ]
   }
 }
