@@ -44,6 +44,21 @@ describe('Cost IQ scoring service access', () => {
     expect(m.body.release.product).toBe('Cost IQ');
   });
 
+  it('returns the answers to confirm with the result (A4), and they leave the scores unchanged', async () => {
+    const answers = { 'CORE-01': ['ON_PREM'], 'CORE-03': 'GT25B', 'CORE-04': 'LT5M', 'CORE-34': 95 };
+    const r = await call(event('POST', '/api/evaluate/cost-iq', { body: { answers } }));
+    expect(r.status).toBe(200);
+    expect(r.body.plausibility.map((p: any) => p.id)).toEqual(['P-02', 'P-03:CORE-34']);
+    const plain = await call(event('POST', '/api/evaluate/cost-iq', { body: { answers: { ...answers, 'CORE-03': '100M_500M', 'CORE-34': 40 } } }));
+    expect(plain.body.plausibility).toEqual([]);
+    // The checks are added beside the engine result and change nothing in it.
+    const { evaluateCostIq } = await import('../../../packages/engine-core/src/accelerators/cost-iq/evaluate.cjs');
+    const direct = await evaluateCostIq({ answers, scope: null, evidence: {}, feasibilityEvidence: {}, options: {} });
+    const { plausibility, ...rest } = r.body;
+    expect(rest.headlines).toEqual(JSON.parse(JSON.stringify(direct)).headlines);
+    expect(rest.findings).toEqual(JSON.parse(JSON.stringify(direct)).findings);
+  });
+
   it('echoes an allowed origin and no other', async () => {
     const ok = await call(event('GET', '/api/evaluate/cost-iq/metadata', { origin: 'https://app.example.com' }));
     expect(ok.headers['Access-Control-Allow-Origin']).toBe('https://app.example.com');

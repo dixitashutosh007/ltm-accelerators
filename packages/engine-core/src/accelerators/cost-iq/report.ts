@@ -20,6 +20,7 @@ import delivery from './delivery-library.json' with { type: 'json' };
 import finopsRegistry from '../finops-iq/registry/capabilities.json' with { type: 'json' };
 import references from './published-references.json' with { type: 'json' };
 import { evaluateIndicative, indicativeFigures, INDICATIVE_LIBRARY, type IndicativeResult } from './indicative';
+import { plausibilityChecks, spendShareOfRevenue } from './plausibility';
 
 const PLATFORM = 'LTM Vantage · Responsible Advisory';
 const PRODUCT = 'Cost IQ';
@@ -134,18 +135,8 @@ const optionLabel = (qid: string, answer: unknown): string => {
 };
 const has = (answers: Record<string, unknown>, id: string) => answers[id] != null && answers[id] !== '' && !(Array.isArray(answers[id]) && (answers[id] as unknown[]).length === 0);
 const REF = (references as any).spendToRevenue;
-/**
- * Technology spend in scope as a share of revenue, from the two size bands (CQ12 slice 5), in percent: the smallest spend over the
- * largest revenue, and the largest spend over the smallest revenue. An open band gives no bound on that side; null when either
- * band is unanswered or unknown, or when neither bound exists.
- */
-export function spendShareOfRevenue(answers: Record<string, unknown>): { low: number | null; high: number | null } | null {
-  const r = (references as any).bandsUsd.revenue[String(answers['CORE-03'])], sp = (references as any).bandsUsd.spend[String(answers['CORE-04'])];
-  if (!r || !sp) return null;
-  const low = r[1] == null || sp[0] === 0 ? null : Math.floor((sp[0] / r[1]) * 1000) / 10;
-  const high = r[0] === 0 || sp[1] == null ? null : Math.ceil((sp[1] / r[0]) * 1000) / 10;
-  return low == null && high == null ? null : { low, high };
-}
+/** Technology spend in scope as a share of revenue (CQ12 slice 5): computed in plausibility.ts, exported here as before. */
+export { spendShareOfRevenue };
 /** An answer in words: option labels (size bands in the reporting currency), a slider as a percentage, stars out of 5. */
 function answerSegs(i: CostIqReportInput, qid: string, a: unknown): Seg[] {
   const q = questionsById.get(qid);
@@ -267,7 +258,7 @@ function valueLead(c: Ctx): Block[] {
   segs.push(counted.length > 1 ? 'Most of it sits in three moves: ' : 'It sits in one move: ', ...counted.flatMap((l, k) => [k ? '; ' : '', quoted(l.lever.charAt(0).toLowerCase() + l.lever.slice(1)), ' (', ref(`Finding ${findingNo(c, l.findingId)}`), ')']), '.');
   return [
     { kind: 'paragraph', style: 'lead', segs },
-    { kind: 'paragraph', style: 'small', segs: ['An LTM planning estimate, not a published benchmark and not a savings commitment: the annual run rate once delivered, before the cost to deliver it. ', ref('Section 2'), ' shows each range and how it is worked out; a measured figure replaces a range when the client supplies the evidence. ', scopeNote(c)] }
+    { kind: 'paragraph', style: 'small', segs: ['An LTM planning estimate, not a published benchmark and not a savings commitment: the annual run rate once delivered, before the cost to deliver it. ', ref('Section 2'), ' shows each range and how it is worked out; a measured figure replaces a range when the client supplies the evidence. ', scopeNote(c), ...(plausibilityChecks(c.i.answers).some(k => k.id === 'P-01' || k.id === 'P-02') ? [' The spend band is unusual against revenue and is listed to confirm under "Scope and context"; every range scales with it.'] : [])] }
   ];
 }
 
@@ -474,6 +465,21 @@ function summary(c: Ctx): ReportSection {
   return { id: 'summary', title: 'Executive summary', blocks };
 }
 
+/** A4: answers that are unlikely on their own or contradict each other. They change nothing in the scoring; they are checked first. */
+function toConfirm(c: Ctx): Block[] {
+  const checks = plausibilityChecks(c.i.answers);
+  if (!checks.length) return [];
+  return [
+    { kind: 'subheading', text: 'Answers to confirm' },
+    { kind: 'paragraph', style: 'small', segs: ['These answers are unlikely on their own or do not fit together. They are scored as given and change no score, finding or range here; LTM confirms them with the respondent before evidence is gathered against them. The thresholds are LTM\'s, not published benchmarks.'] },
+    { kind: 'table', head: ['What to confirm', 'Answers given', 'Why'], widths: [130, '*', 150], small: true, rows: checks.map(k => [
+      [strong(k.title), ...(c.client ? [] : ['\n', ref(k.id)] as Seg[])],
+      k.questionIds.flatMap((q, n) => [n ? '\n' : '', quoted(questionsById.get(q)?.prompt ?? q), ' Answer: ', ...answerSegs(c.i, q, c.i.answers[q])]),
+      [ref(k.confirm)]
+    ]) }
+  ];
+}
+
 function profile(c: Ctx): ReportSection {
   const { i } = c;
   const sel = (config as any).settings.selection;
@@ -493,6 +499,7 @@ function profile(c: Ctx): ReportSection {
   blocks.push({ kind: 'paragraph', segs: ['Focus areas assessed: ', i.selectedAreas.join('; ') || 'none', '.'] });
   blocks.push({ kind: 'paragraph', style: 'small', segs: ['Every client is also asked the baseline questions on enterprise context, priorities, spend visibility, cost governance and investment, so some dimensions are scored from those alone, whichever focus areas were chosen.'] });
   if (notChosen.length) blocks.push({ kind: 'paragraph', style: 'small', segs: [`Focus areas not chosen, so without their deeper questions: ${notChosen.join('; ')}. Findings and scores in this report reflect the questions asked, and say nothing further about these areas.`] });
+  blocks.push(...toConfirm(c));
   return { id: 'profile', title: 'Scope and context', blocks };
 }
 
