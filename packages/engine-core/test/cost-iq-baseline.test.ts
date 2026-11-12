@@ -9,6 +9,8 @@ import { parseNonCloudEvidence, BASELINE_CATEGORIES } from '../src/accelerators/
 import { evaluateIndicative } from '../src/accelerators/cost-iq/indicative';
 import library from '../src/accelerators/cost-iq/indicative-ranges.json' with { type: 'json' };
 import tbm from '../src/accelerators/cost-iq/tbm-mapping.json' with { type: 'json' };
+import { plausibilityChecks } from '../src/accelerators/cost-iq/plausibility';
+import { unitCosts } from '../src/accelerators/cost-iq/units';
 import { costIqReport, indicativeFor, type CostIqReportInput, type CostIqResult } from '../src/accelerators/cost-iq/report';
 import { checkCostIqReport } from '../src/report-checks/accelerators';
 import { walkSegments, type ReportDocument } from '../src/report/model';
@@ -107,5 +109,52 @@ describe('the TBM Taxonomy mapping', () => {
     const json = JSON.stringify(doc);
     expect(json).toContain('Spend categories and the TBM Taxonomy');
     expect(json).toContain('TBM Taxonomy 5.0.1 (https://www.tbmcouncil.org/taxonomy/)');
+  });
+});
+
+describe('unit measures (C2)', () => {
+  const answers: Record<string, unknown> = { 'CORE-01': ['ON_PREM', 'SOFTWARE'], 'CTX-01': 'GBP', 'CORE-04': '25M_50M', 'CORE-05': ['INFRA', 'APPS', 'PEOPLE'], 'CORE-34': 90, 'ADP-37': 70 };
+  const AREAS: string[] = Object.keys(cfg.settings.selection.areas);
+  const scope = { selectedAreas: AREAS };
+  const result = adapter.evaluateCostIq({ answers, scope }) as CostIqResult;
+  const mk = (baseline: CostIqReportInput['baseline']): CostIqReportInput => ({ result, answers, selectedAreas: AREAS, scope: adapter.scopeCounts({ answers, scope }), assessmentDate: '2026-11-12', currency: 'GBP', finops: null, finopsLinkedAt: null, baseline });
+
+  it('validates the counts', () => {
+    expect(parseNonCloudEvidence({ currency: 'GBP', levers: {}, baseline: { units: { employees: 4200, servers: 900 } } })).toMatchObject({ ok: true, value: { baseline: { units: { employees: 4200, servers: 900 } } } });
+    expect(parseNonCloudEvidence({ currency: 'GBP', levers: {}, baseline: { units: { employees: 4200.5 } } }).ok).toBe(false);
+    expect(parseNonCloudEvidence({ currency: 'GBP', levers: {}, baseline: { units: { desks: 10 } } }).ok).toBe(false);
+  });
+
+  it('divides the band, or the exact spend, by the counts; per server and per application need the client split', () => {
+    const band = mk({ currency: 'GBP', units: { employees: 5000, servers: 800 } });
+    const c1 = unitCosts(indicativeFor(band), band.baseline);
+    expect(c1.map(c => c.key)).toEqual(['perEmployee']);
+    expect(c1[0]).toMatchObject({ low: Math.round(19e6 / 5000), high: Math.round(37e6 / 5000) });
+    const exact = mk({ currency: 'GBP', exactAnnualSpend: 30e6, splitPercent: { INFRA: 40, APPS: 35, PEOPLE: 25 }, units: { employees: 5000, servers: 800, applications: 350 } });
+    const c2 = unitCosts(indicativeFor(exact), exact.baseline);
+    expect(c2.find(c => c.key === 'perServer')).toMatchObject({ low: 15000, high: 15000 });
+    expect(c2.find(c => c.key === 'perApplication')).toMatchObject({ low: 30000, high: 30000 });
+  });
+
+  it('shows the unit measures in Scope and context, traced, and passes the checks in both editions', () => {
+    const i = mk({ currency: 'GBP', exactAnnualSpend: 30e6, splitPercent: { INFRA: 40, APPS: 35, PEOPLE: 25 }, units: { employees: 5000, users: 5200, servers: 800, applications: 350 } });
+    for (const view of ['client', 'consultant'] as const) {
+      const doc = costIqReport(i, { client: 'Example Client', preparedBy: 'LTM', dataProvidedBy: 'Example Client', view });
+      expect(checkCostIqReport(doc, i, view, '2026-11-12').failures, view).toEqual([]);
+      const profile = JSON.stringify(doc.sections.find(s => s.id === 'profile'));
+      expect(profile).toContain('"Unit measures"');
+      expect(profile).toContain('Infrastructure spend per server');
+      expect(profile).toContain('No peer comparison is made');
+    }
+  });
+
+  it('flags counts that do not fit together', () => {
+    expect(plausibilityChecks({}, { employees: 5000, users: 20000 }).map(k => k.id)).toEqual(['P-08']);
+    expect(plausibilityChecks({}, { employees: 5000, users: 5500, applications: 6000 }).map(k => k.id)).toEqual(['P-09']);
+    expect(plausibilityChecks({}, { employees: 5000, users: 5500, applications: 400 })).toEqual([]);
+    const i = mk({ currency: 'GBP', units: { employees: 500, users: 5200 } });
+    const doc = costIqReport(i, { client: 'Example Client', preparedBy: 'LTM', dataProvidedBy: 'Example Client', view: 'client' });
+    expect(checkCostIqReport(doc, i, 'client', '2026-11-12').failures).toEqual([]);
+    expect(JSON.stringify(doc.sections.find(s => s.id === 'profile'))).toContain('Technology users and employees differ widely');
   });
 });

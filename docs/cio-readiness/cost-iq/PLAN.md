@@ -689,3 +689,20 @@ Owner decision of 12 Nov 2026: the delivery detail and the technical execution m
   - Handler spec: the baseline is stored, and a bad split is refused.
   - Browser test: the card validates the split, saves it and keeps the lever.
   - Unit tests 1,422; Cost IQ browser tests 27; `validate:costiq` PASS.
+
+## Product-grade plan C2 (12 Nov 2026): headcount and unit measures
+- **Counts.** The consultant can record employees, technology users, servers and applications (whole numbers) in the client baseline card. They are saved as `baseline.units`.
+- **Unit costs** (`units.ts`).
+  - Technology spend per employee and per user: the spend band divided by the count, which gives a range, or the exact spend, which gives one figure.
+  - Infrastructure spend per server and application spend per application: only where the client's own split by category is recorded, because typical shares are too rough for a per-unit cost.
+
+  Shown, traced, as "Unit measures" in Scope and context. No peer comparison is made, because no verified free benchmark for these unit costs is used.
+- **Plausibility.**
+  - P-08: technology users below half, or above three times, the employees.
+  - P-09: more applications than employees.
+
+  Both are listed under "Answers to confirm" with the counts recorded.
+- **Evidence.**
+  - Tests: count validation; band and exact unit costs; per server and per application only with a split; the report section in both editions with the checks passing; P-08 and P-09.
+  - Browser test: the counts are validated and saved with the baseline.
+  - Unit tests 1,426; Cost IQ browser tests 27; `validate:costiq` PASS.

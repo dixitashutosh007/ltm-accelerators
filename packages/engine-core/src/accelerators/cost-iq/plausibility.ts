@@ -6,6 +6,7 @@
  * Every threshold is an LTM heuristic, stated in the check's own words; none is a published benchmark.
  */
 import references from './published-references.json' with { type: 'json' };
+import type { UnitCounts } from './non-cloud-levers';
 
 export const PLAUSIBILITY_SCHEMA = 'cost-iq-plausibility/1';
 
@@ -45,7 +46,7 @@ const WASTE_SLIDERS: Record<string, string> = {
 const EXTREME = 80;
 const num = (a: Record<string, unknown>, id: string) => (typeof a[id] === 'number' && Number.isFinite(a[id]) ? (a[id] as number) : null);
 
-export function plausibilityChecks(answers: Record<string, unknown>): PlausibilityCheck[] {
+export function plausibilityChecks(answers: Record<string, unknown>, units?: UnitCounts | null): PlausibilityCheck[] {
   const out: PlausibilityCheck[] = [];
   const s = spendShareOfRevenue(answers);
   if (s?.low != null && s.low > 25) out.push({ id: 'P-01', title: 'Technology spend is more than a quarter of revenue', confirm: 'Confirm both size bands and the scope of the spend figure. Spend above 25% of revenue is rare outside technology companies, and every indicative range scales with the spend band.', questionIds: ['CORE-03', 'CORE-04'] });
@@ -61,5 +62,9 @@ export function plausibilityChecks(answers: Record<string, unknown>): Plausibili
   if (traced != null && traced < 50 && String(answers['CORE-12']) === 'A') out.push({ id: 'P-06', title: 'Full reconciliation of spend, but less than half of it traced to owners', confirm: 'Spend reconciled to owners and services would normally be mostly traceable to them. Confirm which answer describes the estate.', questionIds: ['CORE-12', 'CORE-17'] });
   const critical = num(answers, 'ADP-21'), unclear = num(answers, 'ADP-22');
   if (critical != null && unclear != null && critical + unclear > 100) out.push({ id: 'P-07', title: 'Business-critical applications and applications of unclear value overlap', confirm: 'Together the two shares exceed the whole portfolio, so some applications are counted as both business-critical and of unclear ownership or value. Confirm both shares.', questionIds: ['ADP-21', 'ADP-22'] });
+  // C2: the counts the consultant records. Technology users are normally close to the workforce; an estate with more
+  // applications than employees is rare. LTM heuristics, like the rest.
+  if (units?.employees && units.users && (units.users < units.employees * 0.5 || units.users > units.employees * 3)) out.push({ id: 'P-08', title: 'Technology users and employees differ widely', confirm: 'Technology users are normally close to the number of employees, contractors included. Confirm both counts and whether users includes customers or partners.', questionIds: [] });
+  if (units?.employees && units.applications && units.applications > units.employees) out.push({ id: 'P-09', title: 'More applications than employees', confirm: 'Confirm what was counted as an application: an inventory that counts components, instances or versions overstates the portfolio and lowers the cost per application.', questionIds: [] });
   return out;
 }

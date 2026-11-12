@@ -407,7 +407,10 @@ function renderBaseline(){
   host.innerHTML='<label for="blExact" class="muted">Exact annual technology spend in scope ('+esc(cur)+')</label><input class="input" id="blExact" type="number" min="0" step="any" inputmode="decimal" value="'+(b.exactAnnualSpend!=null?esc(b.exactAnnualSpend):'')+'">'
     +'<fieldset style="border:0;padding:0;margin:14px 0 0"><legend class="muted" style="margin-bottom:6px">Split by category, % of that spend (optional; must add up to 100)</legend><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:8px">'
     +cats.map(function(c){return '<label style="display:flex;justify-content:space-between;gap:8px;align-items:center;font-size:13px">'+esc(label(c))+'<input class="input blSplit" data-cat="'+c+'" type="number" min="0" max="100" step="any" style="width:90px" value="'+(split[c]!=null?esc(split[c]):'')+'"></label>'}).join('')
-    +'</div></fieldset><p class="muted" id="blSum" role="status"></p><div class="actions"><button class="btn primary" type="button" id="blSave">Save baseline</button><button class="btn" type="button" id="blClear">Clear baseline</button></div><p class="muted" id="blMsg" role="status"></p>';
+    +'</div></fieldset><p class="muted" id="blSum" role="status"></p>'
+    +'<fieldset style="border:0;padding:0;margin:14px 0 0"><legend class="muted" style="margin-bottom:6px">Counts, for unit costs (optional, whole numbers)</legend><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:8px">'
+    +[['employees','Employees'],['users','Technology users'],['servers','Servers'],['applications','Applications']].map(function(p){const u=(b.units||{})[p[0]];return '<label style="display:flex;justify-content:space-between;gap:8px;align-items:center;font-size:13px">'+p[1]+'<input class="input blUnit" data-unit="'+p[0]+'" type="number" min="1" step="1" style="width:110px" value="'+(u!=null?esc(u):'')+'"></label>'}).join('')
+    +'</div></fieldset><div class="actions"><button class="btn primary" type="button" id="blSave">Save baseline</button><button class="btn" type="button" id="blClear">Clear baseline</button></div><p class="muted" id="blMsg" role="status"></p>';
   const sum=function(){let t=0,any=false;document.querySelectorAll('.blSplit').forEach(function(i){if(i.value!==''){any=true;t+=Number(i.value)}});$('blSum').textContent=any?'Split adds up to '+(Math.round(t*10)/10)+'%.':'';return any?t:null};
   document.querySelectorAll('.blSplit').forEach(function(i){i.oninput=sum});sum();
   const say=function(t){$('blMsg').textContent=t};
@@ -416,8 +419,10 @@ function renderBaseline(){
     if(ex!==undefined&&!(ex>0))return say('Enter the exact spend as a positive number, or leave it blank.');
     const t=sum();const sp={};
     if(t!==null){if(Math.abs(t-100)>1)return say('The split adds up to '+(Math.round(t*10)/10)+'%, not 100%.');document.querySelectorAll('.blSplit').forEach(function(i){if(i.value!==''&&Number(i.value)>0)sp[i.dataset.cat]=Number(i.value)})}
-    const baseline={};if(ex!==undefined)baseline.exactAnnualSpend=ex;if(t!==null)baseline.splitPercent=sp;
-    if(!Object.keys(baseline).length)return say('Enter the exact spend, the split, or both.');
+    const units={};let badUnit=false;document.querySelectorAll('.blUnit').forEach(function(i){if(i.value==='')return;const v=Number(i.value);if(!(Number.isInteger(v)&&v>0))badUnit=true;else units[i.dataset.unit]=v});
+    if(badUnit)return say('Counts are whole numbers above zero.');
+    const baseline={};if(ex!==undefined)baseline.exactAnnualSpend=ex;if(t!==null)baseline.splitPercent=sp;if(Object.keys(units).length)baseline.units=units;
+    if(!Object.keys(baseline).length)return say('Enter the exact spend, the split, the counts, or any of them.');
     const evidence=Object.assign({currency:cur,levers:{}},leverEvidence||{},{currency:cur,baseline:baseline});
     try{await window.CostIqPersistence.setLeverEvidence(savedAssessment.assessmentId,evidence);leverEvidence=evidence;say('Saved. The next report narrows the indicative ranges with these figures.')}catch(e){say('Not saved: '+e.message)}
   };
