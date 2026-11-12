@@ -655,3 +655,20 @@ Owner decision of 12 Nov 2026: the delivery detail and the technical execution m
   - Handler spec: the answer's format; no answer without a range; the report's lead opens with exactly the screen's value and share.
   - Browser test: the answer heading, the moves and the caveat show, and the answer sits above the scores.
   - Unit tests 1,407; Cost IQ browser tests 25.
+
+## Product-grade plan B5 (12 Nov 2026): reduction scenarios for the consultant
+- **Rule** (`scenario.ts`). For a target reduction, as a share of the technology spend in scope:
+  - The counted indicative levers (one per category) are taken largest first, leaving out the categories that protected capabilities cover.
+  - They are added until their upper ends reach the target.
+  - Outcome: reached even at the low ends, reached only towards the high ends, or not reached by the sized levers.
+
+  Cloud and SaaS are FinOps IQ's and are not counted. A scenario is a planning view, never a commitment.
+- **Protections.** The client's ADP-57 answer, mapped to categories by `protects` in `indicative-ranges.json`. This is an LTM heuristic for the practice lead to confirm: cybersecurity takes out security; customer-facing digital and business-critical applications take out applications; data and AI takes out data; core platforms take out infrastructure; employee productivity takes out workplace. Resilience, transformation and other take out nothing.
+- **Where it shows.**
+  - **Consultant edition:** "Reduction scenarios" before the roadmap, with a row each for 5%, 10%, 15% and 20%. The outcome, the levers needed and the share they remove are all traced (`scenario[10].low`, …).
+  - **Screen:** consultants get a panel to set any target and change the protections. It runs the same rule on the levers the evaluate API returns.
+  - Never in the client edition, the brief or the deck.
+- **Evidence.**
+  - `cost-iq-scenario.test.ts`: the rule, the three outcomes, protections, and the mapping against the real ADP-57 options and categories. The section is consultant-only and passes the checks in both editions; a tampered scenario figure fails R2.
+  - Browser test: the panel's outcome and lever count equal `evaluateScenario` for three settings; a non-consultant sees no panel.
+  - Unit tests 1,413; Cost IQ browser tests 26; `validate:costiq` PASS.

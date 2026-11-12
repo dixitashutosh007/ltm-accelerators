@@ -4,7 +4,8 @@ import { withAcceleratorAccess } from '../_shared/access';
 import { NOTICES } from '../../../packages/engine-core/src/accelerators/cost-iq/notices';
 import { evaluateCostIq, metadata, questions } from '../../../packages/engine-core/src/accelerators/cost-iq/evaluate.cjs';
 import { plausibilityChecks } from '../../../packages/engine-core/src/accelerators/cost-iq/plausibility';
-import { evaluateIndicative } from '../../../packages/engine-core/src/accelerators/cost-iq/indicative';
+import { evaluateIndicative, INDICATIVE_LIBRARY } from '../../../packages/engine-core/src/accelerators/cost-iq/indicative';
+import { protectedFromAnswers } from '../../../packages/engine-core/src/accelerators/cost-iq/scenario';
 import { format } from '../../../packages/engine-core/src/report/model';
 
 /**
@@ -19,7 +20,11 @@ export function screenAnswer(answers: Record<string, unknown>, findingIds: strin
   const m = (v: number) => format(v, 'currency', r.currency);
   const value = t.low == null && t.high == null ? null : t.high == null ? `at least ${m(t.low!)}` : !t.low ? `up to ${m(t.high)}` : `${m(t.low)} to ${m(t.high)}`;
   const moves = r.lines.filter(l => l.counted).sort((a, b) => b.shareHigh - a.shareHigh).slice(0, 3).map(l => ({ findingId: l.findingId, lever: l.lever }));
-  return { currency: r.currency, value, share: `${format(t.shareLow, 'share')} to ${format(t.shareHigh, 'share')}`, moves };
+  // B5: what the consultant's scenario panel needs: the counted levers (one per category), the client's protected
+  // capabilities and the categories each one sets aside. The panel runs evaluateScenario's rule in the page.
+  const levers = r.lines.filter(l => l.counted).map(l => ({ findingId: l.findingId, category: l.category, lever: l.lever, shareLow: l.shareLow, shareHigh: l.shareHigh }));
+  const { note: _n, ...protects } = (INDICATIVE_LIBRARY as any).protects as Record<string, string[]>;
+  return { currency: r.currency, value, share: `${format(t.shareLow, 'share')} to ${format(t.shareHigh, 'share')}`, moves, scenario: { levers, protects, protectedDefault: protectedFromAnswers(answers) } };
 }
 
 // CORS echoes only the origins in ALLOWED_ORIGINS (_shared/http.ts); the routes sit behind the Cognito authorizer and the

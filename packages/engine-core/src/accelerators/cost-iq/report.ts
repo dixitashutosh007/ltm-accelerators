@@ -21,6 +21,7 @@ import finopsRegistry from '../finops-iq/registry/capabilities.json' with { type
 import references from './published-references.json' with { type: 'json' };
 import { evaluateIndicative, indicativeFigures, INDICATIVE_LIBRARY, type IndicativeResult } from './indicative';
 import { plausibilityChecks, spendShareOfRevenue } from './plausibility';
+import { evaluateScenario, protectedFromAnswers, scenarioFigures, SCENARIO_TARGETS } from './scenario';
 
 const PLATFORM = 'LTM Vantage · Responsible Advisory';
 const PRODUCT = 'Cost IQ';
@@ -205,6 +206,7 @@ export function resolveCostIqField(i: CostIqReportInput, field: string): number 
   if (ans) { const v = Number(i.answers[ans[1]]); return Number.isFinite(v) ? v : undefined; }
   if (i.nonCloud && /^(levers\[|total\.)/.test(field)) return nonCloudFigures(i.nonCloud).get(field);
   if (field.startsWith('indicative.')) return indicativeFigures(indicativeFor(i)).get(field);
+  if (field.startsWith('scenario[')) return scenarioFigures(indicativeFor(i), i.answers).get(field);
   const f = /^finops\.(.+)$/.exec(field);
   if (f && i.finops) {
     let o: any = i.finops;
@@ -315,6 +317,31 @@ function valueCharts(c: Ctx, only?: 'ranges' | 'matrix'): Block[] {
     });
   }
   return blocks;
+}
+
+/**
+ * B5: the consultant's scenario view. Whether a target reduction could be reached from the sized levers, once the capabilities
+ * the client protects are set aside; never in a client document and never a commitment.
+ */
+function scenarioSection(c: Ctx): ReportSection | null {
+  if (c.client || !c.ind.total) return null;
+  const caps = protectedFromAnswers(c.i.answers);
+  const OUT: Record<string, string> = { low: 'Reached even at the low ends', high: 'Reached only towards the high ends', short: 'Not reached by the sized levers' };
+  const label = (cat: string) => (INDICATIVE_LIBRARY.categoryLabels as Record<string, string>)[cat];
+  const rows: Seg[][][] = SCENARIO_TARGETS.map(t => {
+    const s = evaluateScenario(c.ind, t, caps), k = Math.round(t * 100);
+    return [[traced(`scenario[${k}].target`, t, 'share', [], IND_ASM)], [strong(OUT[s.outcome])], [ref(s.needed.map(l => `${upperFirst(l.lever.split(';')[0])} (Finding ${findingNo(c, l.findingId)})`).join('; ') || 'None')], [traced(`scenario[${k}].low`, s.low, 'share', [], IND_ASM), ' to ', traced(`scenario[${k}].high`, s.high, 'share', [], IND_ASM)]];
+  });
+  const first = evaluateScenario(c.ind, SCENARIO_TARGETS[0], caps);
+  const blocks: Block[] = [
+    { kind: 'callout', tone: 'warn', title: 'For the consultant: a planning view, not a commitment', segs: ['Whether a target reduction, as a share of the technology spend in scope, could be reached from the levers this report sizes, largest first, each category counted once. It is not in the client edition and is not a savings commitment. Cloud and SaaS are sized by FinOps IQ and are not counted here.'] },
+    { kind: 'paragraph', style: 'small', segs: [caps.length
+      ? `Protected by the client: ${caps.map(x => optionLabel('ADP-57', x)).join('; ')}. ${first.protectedCategories.length ? `These set aside ${first.protectedCategories.map(label).join(', ')} (an LTM mapping the consultant can change on screen).` : 'None of them sets aside a sized category.'}`
+      : 'The client named no protected capability, so every sized lever counts.'] },
+    { kind: 'table', head: ['Target reduction', 'Outcome', 'Levers needed, largest first', 'Share of spend they remove'], widths: [70, 110, '*', 100], small: true, rows }
+  ];
+  if (first.excluded.length) blocks.push({ kind: 'paragraph', style: 'small', segs: ['Set aside as protected: ', ref(first.excluded.map(l => `${upperFirst(l.lever.split(';')[0])} (Finding ${findingNo(c, l.findingId)})`).join('; ')), '.'] });
+  return { id: 'scenario', title: 'Reduction scenarios', blocks };
 }
 
 function valueSection(c: Ctx): ReportSection | null {
@@ -1047,7 +1074,7 @@ export function costIqReport(rawInput: CostIqReportInput, opts: CostIqReportOpti
       footer: `${PLATFORM} · ${PRODUCT} · Confidential`,
       status: 'Indicative assessment from self-reported answers. Not a savings commitment.'
     },
-    sections: [summary(c), ...(valueSection(c) ? [valueSection(c)!] : []), ...(yourView(c) ? [yourView(c)!] : []), ...(narrativeSection(c) ? [narrativeSection(c)!] : []), profile(c), scores(c), findingsSection(c), cloudSection(c), ...(leversSection(c) ? [leversSection(c)!] : []), roadmap(c), help(c), ...(client ? [] : [execution(c)]), calculation(c), assumptions(c), methodology(c), sources(c), ...(client ? [] : [sow(c), consultant(c)])]
+    sections: [summary(c), ...(valueSection(c) ? [valueSection(c)!] : []), ...(yourView(c) ? [yourView(c)!] : []), ...(narrativeSection(c) ? [narrativeSection(c)!] : []), profile(c), scores(c), findingsSection(c), cloudSection(c), ...(leversSection(c) ? [leversSection(c)!] : []), ...(scenarioSection(c) ? [scenarioSection(c)!] : []), roadmap(c), help(c), ...(client ? [] : [execution(c)]), calculation(c), assumptions(c), methodology(c), sources(c), ...(client ? [] : [sow(c), consultant(c)])]
   };
   // Last pass: every string in the sections in British spelling, the client's own name aside (L2).
   const name = opts.client.trim();

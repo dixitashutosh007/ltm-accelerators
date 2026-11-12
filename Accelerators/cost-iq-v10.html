@@ -424,6 +424,36 @@ function confirmCard(){
 }
 // B4: answer first. The indicative value and the moves that carry it lead; the scores support them below. Formatted on the
 // server exactly as the report formats them. Without a range (no cost finding, or no spend band), the snapshot hero as before.
+// B5: the consultant's reduction scenario. The same rule as scenario.ts (evaluateScenario): the counted levers, largest first,
+// without the protected categories, until their upper ends reach the target. A planning view, never a commitment.
+function pctShare(v){const x=Math.round(v*1e6)/1e4;const d=x%1!==0?1:0;return (Math.floor(v*100*Math.pow(10,d)+1e-9)/Math.pow(10,d)).toFixed(d)+'%'}
+function scenarioRun(sc,target,caps){
+  const cats=new Set();caps.forEach(function(c){(sc.protects[c]||[]).forEach(function(x){cats.add(x)})});
+  const ordered=sc.levers.slice().sort(function(a,b){return b.shareHigh-a.shareHigh});
+  const eligible=ordered.filter(function(l){return !cats.has(l.category)}),excluded=ordered.filter(function(l){return cats.has(l.category)});
+  const needed=[];let low=0,high=0;
+  for(const l of eligible){needed.push(l);low+=l.shareLow;high+=l.shareHigh;if(high>=target)break}
+  return {needed:needed,excluded:excluded,low:low,high:high,outcome:low>=target?'low':high>=target?'high':'short'};
+}
+function scenarioPanelHtml(){
+  const a=assessment&&assessment.answer;
+  if(!a||!a.scenario||!a.scenario.levers.length||!isConsultantUser())return '';
+  const q=(allQuestions||[]).find(function(x){return x.id==='ADP-57'});
+  const caps=Object.keys(a.scenario.protects);
+  const label=function(id){const o=q&&q.options&&q.options.find(function(x){return x.id===id});return o?o.label:id};
+  return '<div class="card" id="scenarioCard"><div class="eyebrow">FOR THE CONSULTANT</div><h2>Reduction scenario</h2><p class="muted">Could a target reduction be reached from the levers the report sizes, once protected capabilities are set aside? A planning view, not a commitment, and not shown to the client. Cloud and SaaS are sized by FinOps IQ and are not counted here.</p>'
+    +'<label style="display:block;margin:12px 0 6px;font-weight:700" for="scTarget">Target reduction, as a share of the technology spend in scope (%)</label><input id="scTarget" type="number" min="1" max="50" step="1" value="10" style="width:90px;padding:8px;border:1px solid var(--line);border-radius:8px" oninput="scenarioUpdate()">'
+    +'<fieldset style="border:0;padding:0;margin:14px 0"><legend style="font-weight:700;margin-bottom:6px">Protected capabilities (from the client\'s answer; change to test)</legend>'+caps.map(function(c){return '<label style="display:inline-flex;gap:6px;align-items:center;margin:4px 14px 4px 0;font-size:13px"><input type="checkbox" class="scCap" value="'+esc(c)+'"'+(a.scenario.protectedDefault.indexOf(c)>=0?' checked':'')+' onchange="scenarioUpdate()">'+esc(label(c))+'</label>'}).join('')+'</fieldset>'
+    +'<div id="scResult" role="status" aria-live="polite"></div></div>';
+}
+function scenarioUpdate(){
+  const a=assessment&&assessment.answer;const out=$('scResult');if(!a||!out)return;
+  const pct=Number(($('scTarget')||{}).value);if(!(pct>0&&pct<=50)){out.innerHTML='<p class="muted">Enter a target between 1% and 50%.</p>';return}
+  const caps=Array.prototype.slice.call(document.querySelectorAll('.scCap:checked')).map(function(x){return x.value});
+  const r=scenarioRun(a.scenario,pct/100,caps);
+  const OUT={low:'Reached even at the low ends',high:'Reached only towards the high ends',short:'Not reached by the sized levers'};
+  out.innerHTML='<p style="font-size:18px;font-weight:800;margin:6px 0" id="scOutcome">'+OUT[r.outcome]+'</p><p>The levers needed remove '+pctShare(r.low)+' to '+pctShare(r.high)+' of the spend in scope:</p><ol>'+r.needed.map(function(l){return '<li>'+esc(l.lever)+'</li>'}).join('')+'</ol>'+(r.excluded.length?'<p class="muted">Set aside as protected: '+r.excluded.map(function(l){return esc(l.lever)}).join('; ')+'.</p>':'');
+}
 function answerHero(){
   const a=assessment&&assessment.answer;
   if(!a)return '<div class="hero"><div class="eyebrow">COST IQ · PRELIMINARY DIAGNOSTIC</div><h1>Your technology cost & value snapshot</h1><p>The engine has scored the answers. Each score and finding below comes from fixed rules, and the report explains how it was reached.</p></div>';
@@ -434,6 +464,7 @@ function preliminary(){
   const h=assessment.headlines||{};const ev=assessment.evidence||{};const dims=scoreEntries();const SEV={high:0,medium:1,low:2};const findings=(assessment.findings||[]).slice().sort(function(a,b){return (SEV[a.severity]??3)-(SEV[b.severity]??3)});
   const signals=findings.slice(0,4).map(function(f){return '<div class="signal"><b>'+esc(f.title||f.id||'Finding')+'</b><span>'+esc(f.severity||'Management attention required')+(f.description?' · '+esc(f.description):'')+'</span></div>'}).join('');
   $('app').innerHTML=answerHero()+'<div class="report-kpi" style="margin-top:20px"><div class="score-card"><div class="score-label">Cost management</div><div class="score-num">'+esc(h.costIQ??'—')+'<span class="muted" style="font-size:15px"> / 100</span></div></div><div class="score-card"><div class="score-label">Value management</div><div class="score-num">'+esc(h.valueIQ??'—')+'<span class="muted" style="font-size:15px"> / 100</span></div></div><div class="score-card"><div class="score-label">Questions answered</div><div class="score-num">'+esc(ev.assessmentCompleteness??0)+'%</div><div class="muted" style="font-size:12px">Of the questions asked for the areas chosen; not confidence in a saving</div></div></div><div class="card">'+visualSection(dims)+'</div><div class="card"><div class="eyebrow">INITIAL SIGNALS</div><h2>What the engine is seeing</h2><div class="report-band">'+(signals||'<div class="signal"><b>No findings raised</b><span>The detailed report will explain the evidence.</span></div>')+'</div></div>'+confirmCard()+'<div class="card" id="reportCard"><div class="eyebrow">REPORT</div><h2>Your Cost IQ report</h2><p class="muted">Built on the server from the saved, completed assessment: scores, findings, a delivery plan, how LTM can help, and the assumptions and sources behind every figure. The client edition leaves out consultant notes and internal references.</p>'+reportButtons()+'</div>';
+  $('app').insertAdjacentHTML('beforeend',scenarioPanelHtml());scenarioUpdate();
   $('app').insertAdjacentHTML('beforeend',cloudPanelHtml());
   $('app').insertAdjacentHTML('beforeend',leverPanelHtml());
   if(reportReady())$('app').insertAdjacentHTML('beforeend',narrativePanelHtml());
