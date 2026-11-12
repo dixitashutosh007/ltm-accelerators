@@ -647,3 +647,11 @@ Owner decision of 12 Nov 2026: the delivery detail and the technical execution m
   - PowerPoint for Mac opened the sample deck without a repair prompt and exported it to PDF; the slides were inspected.
   - Backend synthesis passed (30 functions). Unit tests 1,406; Cost IQ browser tests 24.
 - **Not yet checked:** opening the deck in Keynote (no Keynote on the build machine). That is the owner's check before external use.
+
+## Product-grade plan B4 (12 Nov 2026): answer-first results screen
+- **API.** The evaluate response carries `answer`: the indicative value, its share of spend in scope and the moves that carry most of it. They are formatted by the report's own `format`, so the screen and the report say the same thing. `answer` is null when no cost finding has a range, and it changes nothing in the result.
+- **Screen.** The results page opens with "Indicative value: … a year", the share, the moves and the planning-estimate caveat. The score cards, charts and signals follow as supporting evidence. Without a range, the page shows the snapshot hero as before.
+- **Evidence.**
+  - Handler spec: the answer's format; no answer without a range; the report's lead opens with exactly the screen's value and share.
+  - Browser test: the answer heading, the moves and the caveat show, and the answer sits above the scores.
+  - Unit tests 1,407; Cost IQ browser tests 25.

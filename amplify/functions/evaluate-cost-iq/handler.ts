@@ -4,6 +4,23 @@ import { withAcceleratorAccess } from '../_shared/access';
 import { NOTICES } from '../../../packages/engine-core/src/accelerators/cost-iq/notices';
 import { evaluateCostIq, metadata, questions } from '../../../packages/engine-core/src/accelerators/cost-iq/evaluate.cjs';
 import { plausibilityChecks } from '../../../packages/engine-core/src/accelerators/cost-iq/plausibility';
+import { evaluateIndicative } from '../../../packages/engine-core/src/accelerators/cost-iq/indicative';
+import { format } from '../../../packages/engine-core/src/report/model';
+
+/**
+ * The answer that leads the results screen (product-grade plan B4): the indicative value and the moves that carry most of it,
+ * formatted exactly as the report formats them. Null when no cost finding has a range. Measured figures, linked later, can
+ * replace a range in the report; the screen says the report is the record.
+ */
+export function screenAnswer(answers: Record<string, unknown>, findingIds: string[]) {
+  const r = evaluateIndicative(answers, findingIds, String(answers['CTX-01'] ?? '') || undefined);
+  const t = r.total;
+  if (!t) return null;
+  const m = (v: number) => format(v, 'currency', r.currency);
+  const value = t.low == null && t.high == null ? null : t.high == null ? `at least ${m(t.low!)}` : !t.low ? `up to ${m(t.high)}` : `${m(t.low)} to ${m(t.high)}`;
+  const moves = r.lines.filter(l => l.counted).sort((a, b) => b.shareHigh - a.shareHigh).slice(0, 3).map(l => ({ findingId: l.findingId, lever: l.lever }));
+  return { currency: r.currency, value, share: `${format(t.shareLow, 'share')} to ${format(t.shareHigh, 'share')}`, moves };
+}
 
 // CORS echoes only the origins in ALLOWED_ORIGINS (_shared/http.ts); the routes sit behind the Cognito authorizer and the
 // accelerator access check, so a request without a signed-in, permitted caller never reaches the handler.
@@ -77,7 +94,9 @@ export const evaluate = async (event: APIGatewayProxyEventV2): Promise<APIGatewa
       options: body.options || {}
     });
     // A4: answers to confirm, shown to the consultant after scoring. They change nothing in the result.
-    return response(200, { ...result, plausibility: plausibilityChecks(body.answers) }, id);
+    // B4: the answer that leads the results screen, beside the result; it changes nothing in it.
+    const answer = screenAnswer(body.answers, ((result as any).findings ?? []).map((f: any) => String(f.id)));
+    return response(200, { ...result, plausibility: plausibilityChecks(body.answers), answer }, id);
   } catch (error) {
     console.error('[EvaluateCostIq] Request failed', {
       requestId: id,
