@@ -7,7 +7,7 @@ import { describe, it, expect } from 'vitest';
 import { createRequire } from 'node:module';
 import { bandEdges, spendBand, evaluateIndicative, indicativeFigures } from '../src/accelerators/cost-iq/indicative';
 import library from '../src/accelerators/cost-iq/indicative-ranges.json' with { type: 'json' };
-import { costIqReport, costIqBrief, costIqBacklog, indicativeFor, type CostIqReportInput, type CostIqResult } from '../src/accelerators/cost-iq/report';
+import { costIqReport, costIqBrief, costIqDeck, costIqBacklog, indicativeFor, type CostIqReportInput, type CostIqResult } from '../src/accelerators/cost-iq/report';
 import { checkCostIqReport } from '../src/report-checks/accelerators';
 import { walkSegments, type ReportDocument } from '../src/report/model';
 
@@ -301,6 +301,48 @@ describe('the CIO brief (B2)', () => {
     expect(p2).toContain('The first 100 days');
     expect(p2).not.toContain('see the assumptions');
     expect(p2).toContain('does not assess legal, tax or regulatory obligations');
+  }, 60_000);
+});
+
+describe('the slide deck (B3)', () => {
+  const answers: Record<string, unknown> = {
+    'CORE-01': ['ON_PREM', 'PUBLIC_CLOUD', 'SAAS', 'SOFTWARE', 'EXTERNAL'], 'CTX-01': 'GBP', 'CORE-04': '25M_50M',
+    'CORE-05': ['INFRA', 'SOFTWARE', 'APPS', 'PEOPLE', 'EXTERNAL', 'SAAS'], 'CORE-09': ['ARCHITECTURE_SIMPLIFICATION']
+  };
+  for (const id of Object.keys(library.findings)) {
+    const t = (calibration[id] ?? []).find((x: any) => x.type === 'option' && !x.applicableWhen && !answers[x.questionId]);
+    if (t) answers[t.questionId] = cfg.questions.find((q: any) => q.id === t.questionId)?.interaction?.startsWith('multi') ? [t.triggerOptions[0]] : t.triggerOptions[0];
+  }
+  const scope = { selectedAreas: AREAS };
+  const i: CostIqReportInput = { result: adapter.evaluateCostIq({ answers, scope }) as CostIqResult, answers, selectedAreas: AREAS, scope: adapter.scopeCounts({ answers, scope }), assessmentDate: '2026-11-12', currency: 'GBP', finops: null, finopsLinkedAt: null };
+  const opts = { client: 'Example Insurer', preparedBy: 'LTM', dataProvidedBy: 'Example Insurer' };
+  const deck = costIqDeck(i, opts);
+  const full = costIqReport(i, { ...opts, view: 'client' });
+  const traces = (doc: ReportDocument) => { const m = new Map<string, number>(); walkSegments(doc, s => { if (typeof s !== 'string' && s.trace) m.set(s.trace.field, s.trace.value); }); return m; };
+
+  it('passes the report checks as a deck, and every figure equals the full report', () => {
+    expect(checkCostIqReport(deck, i, 'client', '2026-11-12', 'deck').failures).toEqual([]);
+    const d = traces(deck), f = traces(full);
+    expect(d.size).toBeGreaterThan(10);
+    for (const [field, v] of d) expect(f.get(field), field).toBe(v);
+    expect(deck.sections.map(s => s.id)).toEqual(expect.arrayContaining(['deck-answer', 'deck-value', 'deck-priorities', 'deck-findings', 'deck-100', 'deck-roadmap', 'deck-asks', 'deck-basis']));
+  });
+
+  it('renders a .pptx in the LTM master: a title slide and one slide per section, with the figures as text', async () => {
+    const { renderPptx } = await import('../src/report/pptx');
+    const JSZip = (await import('jszip')).default;
+    const zip = await JSZip.loadAsync(await renderPptx(deck));
+    const slides = Object.keys(zip.files).filter(n => /^ppt\/slides\/slide\d+\.xml$/.test(n));
+    expect(slides.length).toBeGreaterThanOrEqual(deck.sections.length + 1);
+    expect(slides.length).toBeLessThanOrEqual(12);
+    const masters = Object.keys(zip.files).filter(n => /^ppt\/slideLayouts\/.*\.xml$/.test(n));
+    const layouts = (await Promise.all(masters.map(n => zip.file(n)!.async('string')))).join('');
+    expect(layouts).toContain('name="LTM"');
+    const xml = (await Promise.all(slides.map(n => zip.file(n)!.async('string')))).join('');
+    expect(xml).toContain('Indicative value: ');
+    expect(xml).toContain(`GBP ${(Math.floor(indicativeFor(i).total!.high! / 1e4) / 100).toFixed(2)}m`);
+    expect(xml).toContain('The first 100 days');
+    expect(xml).toContain('qualified professional');
   }, 60_000);
 });
 

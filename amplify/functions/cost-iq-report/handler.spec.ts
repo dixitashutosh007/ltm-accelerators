@@ -66,7 +66,7 @@ describe('Cost IQ report service', () => {
     expect(String(r.headers!['Content-Disposition'])).toContain('cost-iq-example-bank-2026-11-03.pdf');
   });
 
-  it('serves the two-page CIO brief (B2) to anyone with access, always as the client edition, after the same checks', async () => {
+  it('serves the two-page CIO brief (B2) and the slide deck (B3) to anyone with access, always as the client edition, after the same checks', async () => {
     await seed();
     for (const claims of [{ email: ME, sub: 's1' }, { email: ME, sub: 's1', 'cognito:groups': '[Consultant]' }]) {
       const r = await call(event({ assessmentId: 'CIQ-1', format: 'brief', view: 'consultant' }, claims));
@@ -76,6 +76,13 @@ describe('Cost IQ report service', () => {
       expect(String(r.headers!['Content-Disposition'])).toContain('cost-iq-brief-example-bank-2026-11-03-client.pdf');
     }
     expect((await call(event({ assessmentId: 'CIQ-1', format: 'docx' }))).statusCode).toBe(400);
+    // The slide deck (B3), the same way.
+    const d = await call(event({ assessmentId: 'CIQ-1', format: 'pptx', view: 'consultant' }, { email: ME, sub: 's1' }));
+    expect(d.statusCode).toBe(200);
+    expect(d.headers!['Content-Type']).toBe('application/vnd.openxmlformats-officedocument.presentationml.presentation');
+    expect(Buffer.from(String(d.body), 'base64').subarray(0, 2).toString()).toBe('PK');
+    expect(String(d.headers!['Content-Disposition'])).toContain('cost-iq-slides-example-bank-2026-11-03-client.pptx');
+    expect(String(d.headers!['X-Report-Checks'])).toMatch(/^pass /);
   });
 
   it('serves the backlog CSV, and the client edition by name', async () => {

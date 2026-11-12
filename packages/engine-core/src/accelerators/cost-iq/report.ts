@@ -1089,6 +1089,58 @@ export function costIqBrief(rawInput: CostIqReportInput, opts: Omit<CostIqReport
   return { ...doc, sections: JSON.parse(JSON.stringify(doc.sections), (_k, v) => (typeof v === 'string' ? protect(v) : v)) };
 }
 
+/**
+ * The slide deck (product-grade plan B3): about ten slides in the LTM master, from the same blocks and traced figures as the
+ * brief and the full report, checked with edition 'deck' before it is issued. Rendered by report/pptx.ts. Always the client
+ * edition; references point to the full report.
+ */
+export function costIqDeck(rawInput: CostIqReportInput, opts: Omit<CostIqReportOptions, 'view'>): ReportDocument {
+  const input: CostIqReportInput = { ...rawInput, result: britishResult(rawInput.result) };
+  const o: CostIqReportOptions = { ...opts, view: 'client' };
+  const c: Ctx = { i: input, client: true, opts: o, scored: input.result.dimensions.filter(d => d.score != null), findings: byClientPriority(input.result), ind: indicativeFor(input), brief: true };
+  // On a slide the slide title names the chart or table, so its own subheading is dropped.
+  const bare = (blocks: Block[]) => blocks.filter(b => b.kind !== 'subheading');
+  const SHORT: Record<string, string> = { cloud: 'Sized by FinOps IQ', enabler: 'Governance: not sized as a saving', excluded: 'Outside the spend figure given', measured: 'Measured: see the full report' };
+  const findingRows: Seg[][][] = orderedFindings(c.findings).map((f, k) => {
+    const l = c.ind.lines.find(x => x.findingId === f.id), n = c.ind.notSized.find(x => x.findingId === f.id);
+    const value: Seg[] = l ? (hasMoney(c) ? moneyRange(c, `indicative.findings[${f.id}]`, l.low, l.high) : shareRange(`indicative.findings[${f.id}]`, l.shareLow, l.shareHigh)) : [n ? SHORT[n.reason] : 'Not sized'];
+    return [[strong(`Finding ${k + 1}`), '  ', quoted(f.title)], [SEVERITY[f.severity] ?? f.severity], value];
+  });
+  const steps = activePackages(c);
+  const look = bare(lookFirst(c));
+  const doc: ReportDocument = {
+    meta: {
+      platform: PLATFORM, product: PRODUCT, title: 'Technology cost and value: the answer and the first 100 days',
+      subtitle: 'The answer, where the value is, the priorities and the first 100 days',
+      client: o.client, preparedBy: o.preparedBy, dataProvidedBy: o.dataProvidedBy, date: input.assessmentDate,
+      version: `Cost IQ methodology ${(config as any).manifest.masterVersion}`, view: 'client',
+      footer: `${PLATFORM} · ${PRODUCT} · Confidential`,
+      status: 'Indicative assessment from self-reported answers. Not a savings commitment.'
+    },
+    sections: [
+      { id: 'deck-answer', title: 'The answer', blocks: [...valueLead(c), answerTiles(c)] },
+      ...(valueCharts(c, 'ranges').length ? [{ id: 'deck-value', title: 'Where the value sits', blocks: [...bare(valueCharts(c, 'ranges')), { kind: 'paragraph', style: 'small', segs: ['Each category counts once, at its largest range. ', scopeNote(c)] } as Block] }] : []),
+      ...(valueCharts(c, 'matrix').length ? [{ id: 'deck-priorities', title: 'Value against time to deliver', blocks: bare(valueCharts(c, 'matrix')) }] : []),
+      { id: 'deck-findings', title: 'What the assessment found', blocks: [findingsLead(c), ...(findingRows.length ? [{ kind: 'table', head: ['Finding', 'Rating', 'Indicative value a year'], widths: ['*', 70, 150], rows: findingRows } as Block] : [])] },
+      ...(look.length ? [{ id: 'deck-scores', title: 'Where to look first', blocks: [answerTiles(c), ...look] }] : []),
+      { id: 'deck-100', title: 'The first 100 days', blocks: c.findings.length ? bare(first100(c)) : [{ kind: 'paragraph', segs: ['No finding is raised, so no first steps are proposed.'] } as Block] },
+      ...(steps.length ? [{ id: 'deck-roadmap', title: 'Recommended steps', blocks: [
+        { kind: 'paragraph', style: 'small', segs: ['In order of the most severe finding each addresses. Elapsed times are LTM planning ranges, not commitments; scope, effort and price are agreed once the evidence is in.'] },
+        { kind: 'table', head: ['Step', 'LTM offering', 'Elapsed time', 'Addresses'], widths: ['*', '*', 80, 110], rows: steps.map(({ r, p }) => [[strong(r.title)], [ref(p.offeringName), '\n', TYPE_LABEL[p.offeringType]], [ref(weeks(elapsed(p)))], [ref(findingsNamed(c, r.findingIds.filter(id => c.findings.some(f => f.id === id))) || 'None raised')]]) }
+      ] as Block[] }] : []),
+      { id: 'deck-asks', title: 'Decision requested', blocks: [decision(c), ...amounts(c)] },
+      { id: 'deck-basis', title: 'Basis', blocks: [
+        ...[noRegulatoryCoverage('Cost IQ')].map(b => (b.kind === 'callout' ? { kind: 'paragraph', style: 'fine', segs: [strong(`${b.title ?? ''}. `), ...b.segs] } as Block : b)),
+        { kind: 'paragraph', style: 'fine', segs: [strong('How your data is handled. '), NOTICES.dataWith(!!o.aiEnabled)] },
+        { kind: 'paragraph', style: 'fine', segs: [strong('Status. '), `${NOTICES.disclaimer} Prepared by ${o.preparedBy}; data provided by ${o.dataProvidedBy}.`] }
+      ] }
+    ] as ReportSection[]
+  };
+  const name = o.client.trim();
+  const protect = (t: string) => (name.length >= 2 ? t.split(name).map(uk).join(name) : uk(t));
+  return { ...doc, sections: JSON.parse(JSON.stringify(doc.sections), (_k, v) => (typeof v === 'string' ? protect(v) : v)) };
+}
+
 /** The backlog CSV: one row per finding, with the evidence it needs and the service that follows. */
 export function costIqBacklog(input: CostIqReportInput, view: 'client' | 'consultant'): Backlog {
   const opp = new Map(input.result.opportunities.map(o => [o.findingId, o]));

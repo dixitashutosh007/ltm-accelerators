@@ -538,7 +538,7 @@ test.describe('Cost IQ', () => {
     expect(world.pageErrors).toEqual([]);
   });
 
-  test('a completed assessment downloads the server-built report: PDF, client edition, backlog and CIO brief, each through the API', async ({ page, context, world }) => {
+  test('a completed assessment downloads the server-built report: PDF, client edition, backlog, CIO brief and slides, each through the API', async ({ page, context, world }) => {
     await signedIn(context, permitted(makeIdToken('consultant@ltm.com', 3600, { 'cognito:groups': ['Consultant'] })));
     const answers = { 'CORE-01': ['PUBLIC_CLOUD'], 'CORE-16': 'TRUE', 'ADP-42': 'UNKNOWN' };
     const areas = ['Infrastructure', 'Applications'];
@@ -547,8 +547,8 @@ test.describe('Cost IQ', () => {
     const asked: string[] = [];
     world.on('GET', '/api/cost-iq/report', ({ query }) => {
       asked.push(`?assessmentId=${query.assessmentId}&format=${query.format}&view=${query.view}`);
-      const csv = query.format === 'csv';
-      return { body: null, raw: { body: csv ? 'a,b' : '%PDF-1.4', headers: { 'content-type': csv ? 'text/csv' : 'application/pdf', 'content-disposition': `attachment; filename="cost-iq-acme-bank.${csv ? 'csv' : 'pdf'}"` } } };
+      const csv = query.format === 'csv', pptx = query.format === 'pptx';
+      return { body: null, raw: { body: csv ? 'a,b' : pptx ? 'PK' : '%PDF-1.4', headers: { 'content-type': csv ? 'text/csv' : pptx ? 'application/vnd.openxmlformats-officedocument.presentationml.presentation' : 'application/pdf', 'content-disposition': `attachment; filename="cost-iq-acme-bank.${csv ? 'csv' : pptx ? 'pptx' : 'pdf'}"` } } };
     });
     await page.goto('/cost-iq-v10');
     await page.getByRole('button', { name: 'View result' }).click();
@@ -557,7 +557,8 @@ test.describe('Cost IQ', () => {
     expect(await download('Client edition (PDF)')).toBe('cost-iq-acme-bank.pdf');
     expect(await download('Backlog (CSV)')).toBe('cost-iq-acme-bank.csv');
     expect(await download('CIO brief (PDF)')).toBe('cost-iq-acme-bank.pdf');
-    expect(asked).toEqual(['?assessmentId=CIQ-stored-0001&format=pdf&view=consultant', '?assessmentId=CIQ-stored-0001&format=pdf&view=client', '?assessmentId=CIQ-stored-0001&format=csv&view=client', '?assessmentId=CIQ-stored-0001&format=brief&view=client']);
+    expect(await download('Slides (PPTX)')).toBe('cost-iq-acme-bank.pptx');
+    expect(asked).toEqual(['?assessmentId=CIQ-stored-0001&format=pdf&view=consultant', '?assessmentId=CIQ-stored-0001&format=pdf&view=client', '?assessmentId=CIQ-stored-0001&format=csv&view=client', '?assessmentId=CIQ-stored-0001&format=brief&view=client', '?assessmentId=CIQ-stored-0001&format=pptx&view=client']);
     expect(await page.evaluate('typeof window.jspdf')).toBe('undefined');
     expect(world.pageErrors).toEqual([]);
   });

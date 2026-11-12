@@ -620,3 +620,30 @@ Owner decision of 12 Nov 2026: the delivery detail and the technical execution m
 - **Evidence.**
   - Tests: the brief passes the checks; every traced figure in it equals the same field in the full report; it renders to exactly two pages with the answer on page 1; the handler serves it to consultants and others alike and rejects unknown formats; the browser download test covers the new button.
   - Unit tests 1,404; Cost IQ browser tests 24.
+
+## Product-grade plan B3 (12 Nov 2026): slide export (PPTX) in the LTM master
+- **Renderer** (`report/pptx.ts`, shared). The deck is 16:9, built with pptxgenjs 4.0.1.
+  - **Masters:** an LTM slide master (logo, platform line, client, footer, slide number) and a title slide in LTM black with the ribbon, like the PDF cover.
+  - **Blocks:** each section becomes a slide with its blocks stacked; a section that does not fit continues on a second slide. Text, tables, tiles, range bars, the matrix and score bars are native, editable PowerPoint objects, not pictures.
+  - **Fonts:** Arial, so the deck lays out the same in PowerPoint and Keynote.
+  - **Logo:** a PNG rasterised from the SVG (`LTM_LOGO_PNG`), because SVG is unreliable in Keynote and older PowerPoint.
+- **Deck** (`costIqDeck`): about ten slides from the same blocks and traced figures as the brief and the full report.
+  - title slide
+  - the answer
+  - where the value sits
+  - value against time to deliver
+  - what the assessment found
+  - where to look first
+  - the first 100 days
+  - recommended steps
+  - decision requested
+  - basis
+
+  It is checked with `checkCostIqReport(…, 'deck')` before it is issued, and is always the client edition.
+- **Delivery.** `GET /api/cost-iq/report?format=pptx` returns `cost-iq-slides-<client>-<date>-client.pptx`. The results page has a "Slides (PPTX)" button.
+- **Dependency.** `pptxgenjs` 4.0.1, pinned. Its `image-size` dependency had two high advisories (GHSA-5p2g-fcmc-qvqq, GHSA-w3rx-r6r6-pgpr), so it is overridden to the patched 2.0.4. pptxgenjs never calls it (its image sizing requires a module called `sizeof`), so the override changes no behaviour. `npm audit --omit=dev`: 0 vulnerabilities.
+- **Evidence.**
+  - Tests: the deck passes the checks; every traced figure equals the full report's; the .pptx contains the LTM master, one slide per section and the figures as text; the handler serves it; the browser download test covers the button.
+  - PowerPoint for Mac opened the sample deck without a repair prompt and exported it to PDF; the slides were inspected.
+  - Backend synthesis passed (30 functions). Unit tests 1,406; Cost IQ browser tests 24.
+- **Not yet checked:** opening the deck in Keynote (no Keynote on the build machine). That is the owner's check before external use.
