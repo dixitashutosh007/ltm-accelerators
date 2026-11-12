@@ -203,6 +203,61 @@ describe('the report', () => {
   });
 });
 
+describe('value charts (B1)', () => {
+  const answers: Record<string, unknown> = {
+    'CORE-01': ['ON_PREM', 'PUBLIC_CLOUD', 'SAAS', 'SOFTWARE', 'EXTERNAL'], 'CTX-01': 'GBP', 'CORE-04': '25M_50M',
+    'CORE-05': ['INFRA', 'SOFTWARE', 'APPS', 'PEOPLE', 'EXTERNAL', 'SAAS'], 'CORE-09': ['ARCHITECTURE_SIMPLIFICATION']
+  };
+  for (const id of Object.keys(library.findings)) {
+    const t = (calibration[id] ?? []).find((x: any) => x.type === 'option' && !x.applicableWhen && !answers[x.questionId]);
+    if (t) answers[t.questionId] = cfg.questions.find((q: any) => q.id === t.questionId)?.interaction?.startsWith('multi') ? [t.triggerOptions[0]] : t.triggerOptions[0];
+  }
+  const scope = { selectedAreas: AREAS };
+  const i: CostIqReportInput = { result: adapter.evaluateCostIq({ answers, scope }) as CostIqResult, answers, selectedAreas: AREAS, scope: adapter.scopeCounts({ answers, scope }), assessmentDate: '2026-11-12', currency: 'GBP', finops: null, finopsLinkedAt: null };
+  const ind = indicativeFor(i);
+  const doc = costIqReport(i, { client: 'Example Insurer', preparedBy: 'LTM consultant', dataProvidedBy: 'Example Insurer', view: 'client' });
+  const value = doc.sections.find(s => s.id === 'value')!;
+  const chart = value.blocks.find(b => b.kind === 'ranges') as Extract<ReportDocument['sections'][number]['blocks'][number], { kind: 'ranges' }>;
+  const matrix = value.blocks.find(b => b.kind === 'matrix') as Extract<ReportDocument['sections'][number]['blocks'][number], { kind: 'matrix' }>;
+
+  it('draws one range per counted category and the total, from the traced figures, largest first', () => {
+    const counted = ind.lines.filter(l => l.counted);
+    expect(chart.items.length).toBe(counted.length + 1);
+    expect(chart.items.at(-1)).toMatchObject({ total: true, low: { trace: { field: 'indicative.total.low', value: ind.total!.low } }, high: { trace: { field: 'indicative.total.high', value: ind.total!.high } } });
+    const highs = chart.items.filter(x => !x.total).map(x => x.high!.trace.value);
+    expect(highs).toEqual([...highs].sort((a, b) => b - a));
+  });
+
+  it('places every sized finding with a step on the matrix, by its traced upper share', () => {
+    expect(matrix.points.length).toBeGreaterThan(1);
+    for (const p of matrix.points) {
+      const l = ind.lines.find(x => x.findingId === /\[(F-\d{3})\]/.exec(p.y.trace.field)![1])!;
+      expect(p.y.trace.value).toBe(l.shareHigh);
+      expect(p.x).toBeGreaterThan(0);
+      expect(p.x).toBeLessThanOrEqual(matrix.x.max);
+    }
+    expect(matrix.key.length).toBe(matrix.points.length);
+  });
+
+  it('a chart figure that does not match the engine fails the trace check', () => {
+    const bad = JSON.parse(JSON.stringify(doc)) as ReportDocument;
+    const r = bad.sections.find(s => s.id === 'value')!.blocks.find(b => b.kind === 'ranges') as any;
+    r.items[0].high.trace.value *= 2;
+    expect(checkCostIqReport(bad, i, 'client', '2026-11-12').failures.some(f => f.check === 'R2')).toBe(true);
+    expect(checkCostIqReport(doc, i, 'client', '2026-11-12').failures).toEqual([]);
+  });
+
+  it('renders to PDF with both charts', async () => {
+    const { renderPdf } = await import('../src/report/pdf');
+    const pdfjs = await import('pdfjs-dist/legacy/build/pdf.mjs');
+    const pdf = await pdfjs.getDocument({ data: new Uint8Array(await renderPdf(doc)), verbosity: 0 }).promise;
+    let all = '';
+    for (let n = 1; n <= pdf.numPages; n++) all += ((await (await pdf.getPage(n)).getTextContent()).items as any[]).map(x => x.str).join(' ') + ' ';
+    expect(all).toContain('Where the value sits');
+    expect(all).toContain('More value, sooner');
+  }, 60_000);
+});
+
 describe('finding catalogue lint (A3)', () => {
   it('titles are stated, not hedged, and "Why it matters" carries no "may"', () => {
     for (const f of cfg.findings) {

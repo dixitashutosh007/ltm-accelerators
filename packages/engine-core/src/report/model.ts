@@ -44,7 +44,22 @@ export type Block =
    * Stepped levels (e.g. SEAL-1 to SEAL-4): per row, the steps up to `value` are filled; `marker` outlines one step
    * (e.g. a tender minimum). Levels are ordinal, not good or bad, so there is no tone. `null` fills nothing.
    */
-  | { kind: 'steps'; steps: string[]; rows: Array<{ label: string; value: number | null; marker?: number | null; shown: Seg[] }>; legend?: string };
+  | { kind: 'steps'; steps: string[]; rows: Array<{ label: string; value: number | null; marker?: number | null; shown: Seg[] }>; legend?: string }
+  /**
+   * Range bars on one scale from zero (product-grade plan B1): each bar runs from `low` to `high`, both traced segments, so
+   * the chart is drawn only from traced figures and the checks re-read them. `high` null is an open range (an arrow to the
+   * edge). `total` rows are drawn darker, below a rule.
+   */
+  | { kind: 'ranges'; items: Array<{ label: string; low: TracedSeg; high: TracedSeg | null; shown: Seg[]; total?: boolean }> }
+  /**
+   * Points on two axes (product-grade plan B1): `y` is a traced segment, `x` an LTM planning figure named in the axis
+   * label. Each point carries a short label drawn in its marker; `key` lists what each label stands for.
+   */
+  | { kind: 'matrix'; x: { label: string; max: number; low: string; high: string }; y: { label: string; low: string; high: string }; quadrant?: string;
+      points: Array<{ label: string; x: number; y: TracedSeg }>; key: Seg[][] };
+
+/** A segment that shows one traced number. */
+export type TracedSeg = Exclude<Seg, string> & { trace: Trace };
 
 export type Tone = 'good' | 'partial' | 'weak' | 'bad' | 'unknown';
 
@@ -94,6 +109,8 @@ export function walkSegments(doc: ReportDocument, visit: (seg: Seg, section: Rep
         : b.kind === 'kpis' ? b.items.flatMap(i => [i.value, ...(i.note ? [i.note] : [])])
         : b.kind === 'bars' ? b.items.map(i => i.shown)
         : b.kind === 'steps' ? b.rows.map(i => i.shown)
+        : b.kind === 'ranges' ? b.items.flatMap(i => [[i.low], ...(i.high ? [[i.high]] : []), i.shown])
+        : b.kind === 'matrix' ? [...b.points.map(p => [p.y]), ...b.key]
         : [];
       for (const run of runs) for (const seg of run) visit(seg, section);
     }
