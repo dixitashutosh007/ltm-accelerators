@@ -706,3 +706,15 @@ Owner decision of 12 Nov 2026: the delivery detail and the technical execution m
   - Tests: count validation; band and exact unit costs; per server and per application only with a split; the report section in both editions with the checks passing; P-08 and P-09.
   - Browser test: the counts are validated and saved with the baseline.
   - Unit tests 1,426; Cost IQ browser tests 27; `validate:costiq` PASS.
+
+## Product-grade plan C3 (12 Nov 2026): published references by industry
+- **Search (12 Nov 2026).** No free, citable source gives technology spend by industry with a year, sample and region.
+  - Avasant Computer Economics: industry splits are in the paid study; only a cross-industry median is quoted publicly, and second-hand.
+  - Gartner IT Key Metrics: subscribers only.
+  - Flexera State of Tech Spend: figures only in charts, with a sample skewed to large software-heavy firms.
+  - Vendor blogs and budget calculators: conflicting figures, with no source, sample or year.
+
+  The search is recorded in `published-references.json` (`byIndustry`: what was examined and why it does not qualify). `verified` is empty.
+- **Report.** Under the spend-to-revenue comparison, the report names the client's industry and says no free, verifiable figure is published for it, so the comparison is cross-industry only. It names no paid source and shows no peer figure. Nothing changes for "Other".
+- **To add an industry later:** a claim in the register, then an entry in `verified`. This is the CLM rule.
+- **Evidence.** Tests: the record is in place; the industry sentence appears in both editions and the checks pass; no paid source is named; nothing is said for "Other". Cost IQ unit tests 200.

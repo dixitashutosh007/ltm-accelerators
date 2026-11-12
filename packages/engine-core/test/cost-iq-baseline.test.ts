@@ -158,3 +158,29 @@ describe('unit measures (C2)', () => {
     expect(JSON.stringify(doc.sections.find(s => s.id === 'profile'))).toContain('Technology users and employees differ widely');
   });
 });
+
+describe('industry references (C3)', () => {
+  const refs = require('../src/accelerators/cost-iq/published-references.json');
+  const AREAS: string[] = Object.keys(cfg.settings.selection.areas);
+  const scope = { selectedAreas: AREAS };
+  const mk = (answers: Record<string, unknown>): CostIqReportInput => ({ result: adapter.evaluateCostIq({ answers, scope }) as CostIqResult, answers, selectedAreas: AREAS, scope: adapter.scopeCounts({ answers, scope }), assessmentDate: '2026-11-12', currency: 'GBP', finops: null, finopsLinkedAt: null });
+
+  it('records the search: no free, verifiable industry figure qualifies yet', () => {
+    expect(refs.byIndustry.verified).toEqual({});
+    expect(refs.byIndustry.examined.length).toBeGreaterThan(2);
+    expect(refs.byIndustry.searched).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+  });
+
+  it('names the client industry and says the comparison is cross-industry only, without naming a peer figure', () => {
+    const i = mk({ 'CORE-01': ['ON_PREM'], 'CTX-01': 'GBP', 'CORE-02': 'BANKING_FINANCIAL_SERVICES', 'CORE-03': '1B_5B', 'CORE-04': '50M_100M' });
+    for (const view of ['client', 'consultant'] as const) {
+      const doc = costIqReport(i, { client: 'Example Bank', preparedBy: 'LTM', dataProvidedBy: 'Example Bank', view });
+      expect(checkCostIqReport(doc, i, view, '2026-11-12').failures, view).toEqual([]);
+      const t = text(doc);
+      expect(t).toContain('No free, verifiable published figure for banking and financial services is available, so this comparison is cross-industry only.');
+      expect(t).not.toMatch(/Gartner|Avasant|Flexera/);
+    }
+    const other = mk({ 'CORE-01': ['ON_PREM'], 'CORE-02': 'OTHER', 'CORE-03': '1B_5B', 'CORE-04': '50M_100M' });
+    expect(text(costIqReport(other, { client: 'X', preparedBy: 'LTM', dataProvidedBy: 'X', view: 'client' }))).not.toContain('No free, verifiable published figure for');
+  });
+});
