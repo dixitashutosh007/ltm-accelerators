@@ -62,6 +62,11 @@ function resolveSovereign(r: SovereignIqV4Result, field: string): number | undef
   if (obj) return r.seal.objectives.find(o => o.id === obj[1])?.inPlace;
   const place = /^advisory\.placement\[(\w+)\]$/.exec(field);
   if (place) return r.advisory.placement.filter(p => p.status === place[1]).length;
+  const cost = /^costToFix\.(total|fteMonths)\[(\d)\]$/.exec(field);
+  if (cost) return r.costToFix[cost[1] as 'total' | 'fteMonths'][Number(cost[2])];
+  if (field === 'costToFix.actions') return r.costToFix.actions;
+  const fc = /^findings\[([^\]]+)\]\.cost\[(\d)\]$/.exec(field);
+  if (fc) return r.findings.find(f => f.id === fc[1])?.cost?.amount[Number(fc[2])];
   return undefined;
 }
 

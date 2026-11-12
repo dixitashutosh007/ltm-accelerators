@@ -79,6 +79,7 @@ export function scopeFacts(a: Answers, mode: 'executive' | 'workshop'): Facts {
   set('pref.risk_appetite', a.W1);
   set('pref.investment_appetite', a.W2);
   set('pref.outcomes', a.W3);
+  set('pref.rate_per_fte_month', ((a.W4 ?? {}) as Record<string, unknown>).rate_per_fte_month);
 
   // Location, choice level, allowed zones and platforms per class (D3, L1, L2). Executive mode sets one level for all.
   const classes = list(f['data.classes']) as DataClass[];

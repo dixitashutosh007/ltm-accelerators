@@ -305,6 +305,8 @@ function sovRandom(r: Rng) {
   const some = <T,>(xs: T[], n = 3) => [...new Set(Array.from({ length: 1 + Math.floor(r() * n) }, () => pick(r, xs)))];
   const a: Record<string, unknown> = {};
   for (const q of SOV_QUESTIONS) {
+    // W4 (the client's rate) feeds only the cost-to-fix estimate, not a headline; skipped so the samples stay as approved.
+    if (q.id === 'W4') continue;
     if (r() < 0.12) continue;
     if (q.type === 'single') a[q.id] = pick(r, sovOptions(q));
     else if (q.type === 'multi') a[q.id] = some(sovOptions(q).filter(v => v !== 'unknown' && v !== 'none'));

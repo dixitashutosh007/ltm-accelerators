@@ -125,6 +125,24 @@
       "basis": "design_decision",
       "confidence": "Medium",
       "sensitivity": "A law with extraterritorial reach on processing alone would add a regulation; confirm with counsel"
+    },
+    {
+      "id": "ASM-SOV-015",
+      "title": "Effort in FTE-months",
+      "value": "S 0.5 to 1; M 1 to 3; L 3 to 9; XL 9 to 24 FTE-months. Only control gaps are costed; decisions, scope confirmations and conflicting answers are not",
+      "basis": "ltm_heuristic",
+      "confidence": "Low",
+      "sensitivity": "Each band spans a factor of two to three, so the estimate is a range, not a figure; a programme above 24 FTE-months is understated and needs its own business case",
+      "reasoning": "The ranges are the effort bands of ASM-SOV-013 in numbers. The XL band has no upper bound, so the estimate stops at two years of one FTE."
+    },
+    {
+      "id": "ASM-SOV-016",
+      "title": "Blended rate per FTE-month",
+      "value": "EUR 10,000 per FTE-month for the people doing the work, staff and partners together, unless the client gives its own rate in the workshop. Shown in the client's currency when the client gives its rate; the default is converted at the ECB reference rate (ASM-SOV-010) only when a turnover in another currency is given, rounded to the nearest 100",
+      "basis": "design_decision",
+      "confidence": "Low",
+      "sensitivity": "The estimate scales one for one with the rate: onshore EU, UK or US delivery can cost twice the default; the client's own rate replaces it",
+      "reasoning": "Owner decision, 11 November 2026: a blend leaning to offshore delivery. It prices the work, whoever does it; it is not an LTM price or quotation."
     }
   ],
   "owner": "sovereignty-compliance-lead (agent); approver: product owner",

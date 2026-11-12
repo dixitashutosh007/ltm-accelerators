@@ -63,6 +63,17 @@ const className = (c: string) => DATA_CLASS_LABELS[c] ?? c;
 const zone = (z: string) => ZONE_LABELS[z] ?? z;
 const count = (field: string, n: number): Seg => traced(field, n, 'count', []);
 const plural = (n: number, one: string, many: string) => (n === 1 ? one : many);
+/** Cost to fix as a traced range (ASM-SOV-015 and 016), in the estimate's currency. */
+const COST_ASM = ['ASM-SOV-015', 'ASM-SOV-016'];
+const costSegs = (r: SovereignIqV4Result, field: string, range: [number, number]): Seg[] =>
+  [traced(`${field}[0]`, range[0], 'currency', r.costToFix.claims, COST_ASM, r.costToFix.currency), ' to ', traced(`${field}[1]`, range[1], 'currency', r.costToFix.claims, COST_ASM, r.costToFix.currency)];
+const findingCost = (r: SovereignIqV4Result, f: Finding): Seg[] => (f.cost ? costSegs(r, `findings[${f.id}].cost`, f.cost.amount) : ['Not costed']);
+const exact = (n: number, cur: string) => `${cur} ${n.toLocaleString('en-GB')}`;
+/** Where the rate comes from, in words. */
+const rateWords = (r: SovereignIqV4Result) => {
+  const k = r.costToFix, rate = exact(k.rate.amount, k.currency);
+  return k.rate.source === 'client' ? `${rate} per FTE-month, the rate you gave` : `${rate} per FTE-month, LTM's default rate${k.rate.conversion ? ` (EUR ${k.rate.conversion.eurAmount.toLocaleString('en-GB')} converted)` : ''}`;
+};
 
 interface Ctx { r: SovereignIqV4Result; client: boolean; opts: SovereignReportOptions; shownRegimes: Set<string>; findings: Finding[] }
 
@@ -113,10 +124,17 @@ function summary(c: Ctx): ReportSection {
     { label: 'Largest statutory cap', value: cap ? capSegs(cap, 'exposure.largestCap') : ['Not quantified'], note: cap ? [quote(`${regimeName(r, cap.regime)} ${cap.article}${cap.grade === 'likely_confirm' ? ' (may apply – confirm)' : ''}`), '; cap, not expected fine', ...(r.exposure.regimes.some(e => e.cap?.atLeast && c.shownRegimes.has(e.regime)) ? ['; largest of the amounts that can be computed: some maximums rest on a turnover not collected'] : [])] : [r.exposure.capNote] },
     { label: 'Findings', value: [count('findings', c.findings.length)], note: [count('findings[Critical]', sev('Critical')), ' critical · ', count('findings[High]', sev('High')), ' high'] }
   ] });
+  // Cost to fix (portfolio review 2.3): its own row, so the range reads on one line.
+  const k = r.costToFix;
+  blocks.push({ kind: 'kpis', items: k.actions ? [
+    { label: 'Estimated cost to fix', value: costSegs(r, 'costToFix.total', k.total), note: ['An estimate, not a quotation: the cost of the work, whoever does it'] },
+    { label: 'Effort to fix', value: [traced('costToFix.fteMonths[0]', k.fteMonths[0], 'fte_months', [], COST_ASM), ' to ', traced('costToFix.fteMonths[1]', k.fteMonths[1], 'fte_months', [], COST_ASM)], note: [count('costToFix.actions', k.actions), ` control ${plural(k.actions, 'gap', 'gaps')} at ${rateWords(r)}`] }
+  ] : [{ label: 'Estimated cost to fix', value: ['None'], note: ['No control gaps to cost'] }] });
+  if (k.actions) blocks.push({ kind: 'paragraph', style: 'small', segs: ['The estimate prices the work whoever does it, from the effort band of each control gap; it is not an LTM price; discovery and a statement of work replace it. Board decisions and confirmations with counsel are not costed. The roadmap gives each action\'s estimate and the appendix the arithmetic.'] });
   const top = r.topGaps.filter(f => !c.client || !f.consultantOnly);
   if (top.length) {
     blocks.push({ kind: 'subheading', text: 'Where to start' });
-    blocks.push({ kind: 'table', head: ['Severity', 'Action', 'Owner', 'Start and duration'], widths: [50, '*', 100, 80], rows: top.map(f => [[f.severity], [strong(strip(f.title)), '\n', quote(f.businessConsequence, f.sources)], [f.ownerRole], [quote(f.timeFrame)]]) });
+    blocks.push({ kind: 'table', head: ['Severity', 'Action', 'Owner', 'Start and duration'], widths: [50, '*', 100, 80], rows: top.map(f => [[f.severity], [strong(strip(f.title)), '\n', quote(f.businessConsequence, f.sources)], [f.ownerRole], [quote(f.timeFrame), ...(f.cost ? ['\nEstimated cost: ', ...findingCost(r, f)] : [])]]) });
   }
   const confirm = c.findings.filter(f => f.type === 'scope_confirmation' || f.type === 'decision' || f.type === 'conflict');
   if (confirm.length) {
@@ -392,16 +410,22 @@ const WAVE_NAME: Record<string, string> = { decide: 'decide, confirm and close c
 function roadmap(c: Ctx): ReportSection {
   const ids = new Set(c.findings.map(f => f.id));
   const byId = new Map(c.findings.map(f => [f.id, f]));
-  const blocks: Block[] = [{ kind: 'paragraph', segs: ['Severity sets when each action starts; the type of work sets its effort and how long it takes. An action that depends on another starts once that one is expected to reach its milestone (the end of its duration). Month 1 is the first month of the programme. Effort: ', Object.entries(EFFORT).map(([k, v]) => `${k} ${v.toLowerCase()}`).join('; '), '. Durations and effort are LTM planning estimates (assumptions ASM-SOV-012 and 013) that discovery and a statement of work replace.'] }];
+  const blocks: Block[] = [{ kind: 'paragraph', segs: ['Severity sets when each action starts; the type of work sets its effort and how long it takes. An action that depends on another starts once that one is expected to reach its milestone (the end of its duration). Month 1 is the first month of the programme. Effort: ', Object.entries(EFFORT).map(([k, v]) => `${k} ${v.toLowerCase()}`).join('; '), '. Durations and effort are LTM planning estimates (assumptions ASM-SOV-012 and 013) that discovery and a statement of work replace. ',
+    `Estimated cost: the effort in FTE-months times ${rateWords(c.r)} (ASM-SOV-015 and 016); the cost of the work whoever does it, not an LTM price.`] }];
   let n = 0;
   for (const w of c.r.roadmap) {
     const fs = w.findings.filter(id => ids.has(id)).map(id => byId.get(id)!);
     if (!fs.length) continue;
     blocks.push({ kind: 'subheading', text: `Wave ${++n}: ${WAVE_NAME[w.theme] ?? ''}` });
-    blocks.push({ kind: 'table', small: true, head: ['Action', 'Owner', 'Start and duration', 'Effort', 'Milestone and KPI'], widths: ['*', 80, 75, 32, 150], rows: fs.map(f => {
+    blocks.push({ kind: 'table', small: true, head: ['Action', 'Owner', 'Start and duration', 'Effort', 'Estimated cost', 'Milestone and KPI'], widths: ['*', 70, 70, 30, 60, 125], rows: fs.map(f => {
       const after = f.dependsOn.filter(id => ids.has(id)).map(id => strip(byId.get(id)!.title));
-      return [[strong(strip(f.title)), ...(after.length ? ['\nAfter: ', after.join('; ')] : [])], [f.ownerRole], [quote(f.timeFrame)], [f.effort], [f.milestone, '\nKPI: ', f.kpi]];
+      return [[strong(strip(f.title)), ...(after.length ? ['\nAfter: ', after.join('; ')] : [])], [f.ownerRole], [quote(f.timeFrame)], [f.effort], findingCost(c.r, f), [f.milestone, '\nKPI: ', f.kpi]];
     }) });
+    const costed = fs.filter(f => f.cost);
+    if (costed.length) {
+      const sum = (i: 0 | 1) => costed.reduce((a, f) => a + f.cost!.amount[i], 0);
+      blocks.push({ kind: 'paragraph', style: 'small', segs: [strong(`Wave ${n} estimate: `), ...costSegs(c.r, `report:roadmap.wave[${n}].cost`, [sum(0), sum(1)]), '.'] });
+    }
     const risks = [...new Set(fs.map(f => f.risk).filter(Boolean))];
     if (risks.length) blocks.push({ kind: 'list', small: true, items: [[strong('Key risks: '), risks.join('; '), '.']] });
   }
@@ -439,6 +463,7 @@ function methodology(c: Ctx): ReportSection {
     { kind: 'paragraph', segs: ['Scope answers (footprint, entities, data, platforms) are read against rules held as data in a sourced regulation registry: the first rule that matches places each regulation in one of four groups: applies on your answers, may apply – confirm, for awareness, or does not apply on your answers. The groups are LTM\'s reading of each law\'s scope test against your answers, not a legal opinion. Scope answers are never scored.'] },
     { kind: 'paragraph', segs: ['Each kind of data gets a required level, L0 to L4: the higher of any legal localisation minimum and the board\'s choice. Every control that level needs, plus every control a regulation in scope requires, is rated from the maturity answers. Maturity is the weighted share of those controls in place, shown only when at least five controls are required. "Unknown" counts as not in place; an unanswered control counts as not in place and is listed as not answered. Provider nationality matters only at L4.'] },
     { kind: 'paragraph', segs: ['Statutory maximums come from the cited articles: computed from the worldwide turnover given, as a range from the turnover band otherwise, or not quantified without it. Currency conversions use the dated ECB reference rates in the claims register. Caps are never added together.'] },
+    { kind: 'paragraph', segs: ['The cost to fix is an estimate: each control gap\'s effort band, as a range of FTE-months, times a blended rate per FTE-month, the client\'s own when given and LTM\'s default otherwise. It prices the work whoever does it; it is not an LTM price or quotation.'] },
     { kind: 'callout', tone: 'info', title: 'Scope and limitations', segs: [scopeAndLimitations(c)] },
     jurisdictionCoverage(REGIMES.map(r => marketOf(String(r.jurisdiction))).filter((m): m is MarketId => !!m), 'Sovereign IQ'),
     { kind: 'paragraph', segs: [strong('How your data is handled. '), dataNotice(c)] },
@@ -509,6 +534,19 @@ function calculationAppendix(c: Ctx, doc: ReportDocument): ReportSection {
     return [[regimeName(r, e.regime)], [quote(cap.article)], [quote(cap.basis, cap.claims), ...(rate ? [`; EUR 1 = ${cap.currency} ${rate}`] : [])], capSegs(cap, `exposure.regimes[${e.regime}].cap`)];
   }) });
   else blocks.push({ kind: 'paragraph', style: 'small', segs: ['No regulation in scope has a computable maximum.'] });
+  blocks.push({ kind: 'subheading', text: 'Cost to fix' });
+  const k = r.costToFix, gaps = c.findings.filter(f => f.cost);
+  blocks.push({ kind: 'paragraph', style: 'small', segs: [
+    `Rate: ${rateWords(r)}`, k.rate.conversion ? `: EUR ${k.rate.conversion.eurAmount.toLocaleString('en-GB')} at the ECB reference rate of ${k.rate.conversion.rateDate}, EUR 1 = ${k.currency} ${+k.rate.conversion.fxRate.toFixed(5)}, rounded to the nearest 100` : '', ' (ASM-SOV-016). ',
+    'Each control gap\'s effort band is a range of FTE-months (ASM-SOV-015: ', Object.entries((deliveryData as any).costing.fteMonthsByEffort as Record<string, [number, number]>).map(([e, [lo, hi]]) => `${e} ${lo} to ${hi}`).join('; '),
+    '), multiplied by the rate and rounded to a whole unit; the total is the sum. Board decisions, scope confirmations and conflicting answers are not costed.'
+  ] });
+  if (gaps.length) {
+    blocks.push({ kind: 'table', small: true, head: ['Action', 'Effort', 'Calculation', 'Estimate'], widths: ['*', 35, 150, 95], rows: gaps.map(f => [
+      [strip(f.title)], [f.effort], [`${f.cost!.fteMonths[0]} to ${f.cost!.fteMonths[1]} FTE-months × ${exact(k.rate.amount, k.currency)}`], findingCost(r, f)
+    ]) });
+    blocks.push({ kind: 'paragraph', style: 'small', segs: ['Total: ', traced('costToFix.fteMonths[0]', k.fteMonths[0], 'fte_months', [], COST_ASM), ' to ', traced('costToFix.fteMonths[1]', k.fteMonths[1], 'fte_months', [], COST_ASM), ', ', ...costSegs(r, 'costToFix.total', k.total), '.'] });
+  } else blocks.push({ kind: 'paragraph', style: 'small', segs: ['No control gaps, so nothing to cost.'] });
   blocks.push({ kind: 'subheading', text: 'Every number' });
   const seen = new Map<string, Exclude<Seg, string>>();
   walkSegments(doc, s2 => { if (typeof s2 !== 'string' && s2.trace && !seen.has(s2.trace.field)) seen.set(s2.trace.field, s2); });
@@ -535,7 +573,12 @@ function FIELD_WORDS(field: string, r: SovereignIqV4Result): string {
     [/^exposure\.regimes\[(\w+)\]\.cap/, m => `Statutory maximum: ${regimeName(r, m[1])}`],
     [/^findings\[(\w+)\]$/, m => `Findings, ${key(m[1])}`], [/^findings$/, () => 'Findings'],
     [/^seal\.objectives\[([\w-]+)\]\.inPlace$/, m => `Controls in place for ${m[1]}`],
-    [/^advisory\.placement\[(\w+)\]$/, m => `Placements ${key(m[1])}`]
+    [/^advisory\.placement\[(\w+)\]$/, m => `Placements ${key(m[1])}`],
+    [/^costToFix\.total\[(\d)\]$/, m => `Estimated cost to fix, ${m[1] === '0' ? 'low' : 'high'} end (table above)`],
+    [/^costToFix\.fteMonths\[(\d)\]$/, m => `Effort to fix in FTE-months, ${m[1] === '0' ? 'low' : 'high'} end`],
+    [/^costToFix\.actions$/, () => 'Control gaps costed'],
+    [/^findings\[([^\]]+)\]\.cost\[(\d)\]$/, m => `Estimated cost, ${m[2] === '0' ? 'low' : 'high'} end: ${strip(r.findings.find(f => f.id === m[1])?.title ?? m[1])}`],
+    [/^report:roadmap\.wave\[(\d+)\]\.cost\[(\d)\]$/, m => `Estimated cost of wave ${m[1]}, ${m[2] === '0' ? 'low' : 'high'} end: sum of its actions`]
   ];
   for (const [re, f] of rules) { const m = re.exec(field); if (m) return f(m); }
   return field;
@@ -669,11 +712,11 @@ export function sovereignIqBacklog(result: SovereignIqV4Result, view: 'client' |
   // Waves the edition shows, numbered 1, 2, 3 (S6 challenge D4).
   const waveNo = new Map(result.roadmap.filter(w => w.findings.some(id => fs.some(f => f.id === id))).map((w, i) => [w.wave, i + 1]));
   return {
-    header: ['ID', 'Wave', 'Severity', 'Type', 'Action', 'Why', 'Control', 'Data', 'Regulations', 'Owner', 'Start and duration', 'Effort', 'Start month', 'Duration (months)', 'Depends on', 'Milestone', 'KPI', 'Source', 'Platforms', 'Placement rung', 'Service families', 'Verification'],
+    header: ['ID', 'Wave', 'Severity', 'Type', 'Action', 'Why', 'Control', 'Data', 'Regulations', 'Owner', 'Start and duration', 'Effort', 'Start month', 'Duration (months)', 'Estimated cost (low)', 'Estimated cost (high)', 'Cost currency', 'Depends on', 'Milestone', 'KPI', 'Source', 'Platforms', 'Placement rung', 'Service families', 'Verification'],
     rows: [...fs].sort((a, b) => (order.get(a.id) ?? 999) - (order.get(b.id) ?? 999)).map(f => [
       f.id, waveNo.get(f.wave) ?? f.wave, f.severity, TYPE_LABEL[f.type] ?? f.type, strip(f.title), strip(f.businessConsequence), f.control ?? '', f.dataClasses.map(className).join('; '),
       f.regimes.length ? f.regimes.map(x => regimeName(result, x.regime)).join('; ') : levelBasis(result, f), f.ownerRole, f.timeFrame,
-      f.effort, f.startMonth + 1, `${f.durationMonths[0]}–${f.durationMonths[1]}`, f.dependsOn.filter(id => fs.some(x => x.id === id)).join('; '), f.milestone, f.kpi, sources(f),
+      f.effort, f.startMonth + 1, `${f.durationMonths[0]}–${f.durationMonths[1]}`, f.cost?.amount[0] ?? '', f.cost?.amount[1] ?? '', f.cost ? result.costToFix.currency : '', f.dependsOn.filter(id => fs.some(x => x.id === id)).join('; '), f.milestone, f.kpi, sources(f),
       join(acts(f.id).map(x => platformName(x.platform))), rungs(f.id).join('; '), join(acts(f.id).flatMap(x => x.serviceFamilies ?? []).map(s => SERVICE_LABEL[s] ?? s)),
       // Every row has a check (D12): the platform verification steps, or the milestone's KPI where no platform action applies.
       acts(f.id).length ? join(acts(f.id).map(x => `${platformName(x.platform)}: ${x.verification}`)) : f.kpi

@@ -134,7 +134,7 @@ Durations are indicative and assume the current pace (one owner plus AI agents);
 |---|---|---|---|
 | 2.1 | Second scored question for each single-answer dimension (S5); findings for every dimension (20 to about 40); sector and size routing using CORE-02 and CORE-03; weighting decision | Cost | Audit; practice-lead-approved goldens |
 | 2.2 | Published reference per dimension (T2): IT spend ratios by industry from public sources, with source, year and sample | Cost | Claims registered; shown in the report |
-| 2.3 | Band calibration review (81.6% Exposed today); cost-to-fix ranges from effort and a rate card, labelled as estimates | Sovereign | Owner-approved bands; money traced |
+| 2.3 | Band calibration review (81.6% Exposed today); cost-to-fix ranges from effort and a rate card, labelled as estimates | Sovereign | Owner-approved bands; money traced. **Cost to fix done 11 Nov 2026** (engine 4.9.0; EUR 10,000 per FTE-month default, client rate optional; `sovereign-iq/PLAN.md`). Band calibration open |
 | 2.4 | Primary-source reading of 98 S and 30 P claims; resolve the 18 UNSOURCED | Sovereign | Register: no S or P on client-visible regulatory text |
 | 2.5 | Re-read the FinOps IQ V claims that were read through search results; a named human owner for review dates | FinOps, all | Register notes updated |
 
