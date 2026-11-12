@@ -24,6 +24,7 @@ import { evaluateIndicative, indicativeFigures, INDICATIVE_LIBRARY, type Indicat
 import { plausibilityChecks, spendShareOfRevenue } from './plausibility';
 import { evaluateScenario, protectedFromAnswers, scenarioFigures, SCENARIO_TARGETS } from './scenario';
 import { unitCosts, unitFigures } from './units';
+import { evaluateBusinessCase, businessCaseFigures, YEAR_ONE_SHARE, RUNNING_SHARE, type BusinessCase } from './business-case';
 
 const PLATFORM = 'LTM Vantage · Responsible Advisory';
 const PRODUCT = 'Cost IQ';
@@ -69,6 +70,8 @@ export interface CostIqReportInput {
   nonCloud?: NonCloudResult | null;
   /** C1: the client's own spend baseline, recorded by the consultant, in `currency`; it replaces the band and the typical shares. */
   baseline?: (SpendBaseline & { currency: string }) | null;
+  /** E1: the client's own cost of one FTE-month and its currency, recorded by the consultant; it costs the steps in the business case. */
+  rate?: { perFteMonth: number; currency: string } | null;
 }
 
 export interface CostIqReportOptions {
@@ -177,6 +180,17 @@ function elapsed(p: Package): [number, number] {
 interface Ctx { i: CostIqReportInput; client: boolean; opts: CostIqReportOptions; scored: Dimension[]; findings: Finding[]; ind: IndicativeResult; /** The two-page CIO brief (B2): references point to the full report. */ brief?: boolean }
 
 /** The indicative ranges for this input (A1): measured levers replace the range for their finding. */
+/** E1: the business case per lever, costing each lever's first recommended step at the client's own rate, when its currency matches. */
+export function businessCaseFor(i: CostIqReportInput): BusinessCase {
+  const ind = indicativeFor(i);
+  const recs = orderedRecs({ i, findings: byClientPriority(i.result) } as Ctx);
+  const stepFor = (fid: string) => {
+    const r = recs.find(x => x.findingIds.includes(fid)), p = r ? PACKAGES.get(r.id) : undefined;
+    return r && p ? { recommendationId: r.id, offeringType: p.offeringType, effortFteWeeks: p.workstreams.reduce<[number, number]>((t, w) => [t[0] + w.effortFteWeeks[0], t[1] + w.effortFteWeeks[1]], [0, 0]) } : null;
+  };
+  return evaluateBusinessCase(ind, stepFor, i.rate && i.rate.currency === ind.currency ? i.rate.perFteMonth : null);
+}
+
 export function indicativeFor(i: CostIqReportInput): IndicativeResult {
   const measured = i.nonCloud?.status === 'quantified' ? i.nonCloud.lines.map(l => l.findingId) : [];
   return evaluateIndicative(i.answers, i.result.findings.map(f => f.id), i.currency, measured, i.baseline ?? null);
@@ -213,6 +227,7 @@ export function resolveCostIqField(i: CostIqReportInput, field: string): number 
   if (field.startsWith('indicative.')) return indicativeFigures(indicativeFor(i)).get(field);
   if (field.startsWith('scenario[')) return scenarioFigures(indicativeFor(i), i.answers).get(field);
   if (field.startsWith('units.') || field.startsWith('unitCost.')) return unitFigures(indicativeFor(i), i.baseline).get(field);
+  if (field.startsWith('case.')) return businessCaseFigures(businessCaseFor(i)).get(field);
   const f = /^finops\.(.+)$/.exec(field);
   if (f && i.finops) {
     let o: any = i.finops;
@@ -350,6 +365,44 @@ function scenarioSection(c: Ctx): ReportSection | null {
   return { id: 'scenario', title: 'Reduction scenarios', blocks };
 }
 
+/**
+ * E1: the business case per lever. With the client's own rate: one-off cost, payback and three-year net; without it, the
+ * effort only, and how to cost it. Phasing as the measured lever (A-09); assumption A-15.
+ */
+function caseBlocks(c: Ctx): Block[] {
+  if (c.client && c.brief) return [];
+  const b = businessCaseFor(c.i);
+  if (!b.lines.length || !hasMoney(c)) return [];
+  const m = (f: string, v: number) => traced(f, v, 'currency', [], [...IND_ASM, 'A-15'], b.currency);
+  const range = (p: string, lo: number | null, hi: number | null): Seg[] => lo == null && hi == null ? ['Not computable'] : lo == null ? ['up to ', m(`${p}High`, hi!)] : hi == null ? ['at least ', m(`${p}Low`, lo)] : lo === hi ? [m(`${p}Low`, lo)] : [m(`${p}Low`, lo), ' to ', m(`${p}High`, hi)];
+  const months = (f: string, v: number) => traced(f, v, 'months', [], ['A-15']);
+  const lever = (fid: string) => upperFirst((INDICATIVE_LIBRARY.findings as unknown as Record<string, { lever: string }>)[fid].lever.split(';')[0]);
+  const effort = (l: BusinessCase['lines'][number]): Seg[] => l.sharedWith ? [ref(`Same step as Finding ${findingNo(c, l.sharedWith)}, costed there`)] : l.effortFteWeeks ? [ref(`${TYPE_LABEL[l.offeringType!]} step, ${l.effortFteWeeks[0]} to ${l.effortFteWeeks[1]} FTE-weeks`)] : ['No step defined'];
+  const ind = (l: BusinessCase['lines'][number]) => moneyRange(c, `indicative.findings[${l.findingId}]`, l.runLow, l.runHigh);
+  const blocks: Block[] = [{ kind: 'subheading', text: 'Business case by lever' }];
+  if (b.rated) {
+    blocks.push({ kind: 'table', head: ['Lever', 'First step and effort', 'One-off cost', 'Run-rate saving a year', 'Payback', 'Net over three years'], widths: ['*', 90, 70, 75, 55, 80], small: true, rows: [
+      ...b.lines.map(l => {
+        const p = `case.lines[${l.findingId}]`;
+        const pay: Seg[] = l.paybackBest == null ? ['Not within three years'] : l.paybackWorst == null ? ['from ', months(`${p}.paybackBest`, l.paybackBest)] : l.paybackBest === l.paybackWorst ? [months(`${p}.paybackBest`, l.paybackBest)] : [months(`${p}.paybackBest`, l.paybackBest), ' to ', months(`${p}.paybackWorst`, l.paybackWorst)];
+        return [[strong(lever(l.findingId)), '\n', ref(`Finding ${findingNo(c, l.findingId)}`)], effort(l), range(`${p}.oneOff`, l.oneOffLow, l.oneOffHigh), ind(l), pay, range(`${p}.net3`, l.net3Low, l.net3High)];
+      }),
+      [[strong('Total')], [''], range('case.total.oneOff', b.total.oneOffLow, b.total.oneOffHigh), moneyRange(c, 'indicative.total', b.total.runLow, b.total.runHigh), [''], range('case.total.net3', b.total.net3Low, b.total.net3High)]
+    ] });
+    blocks.push({ kind: 'paragraph', style: 'small', segs: [
+      'One-off cost is the effort in LTM\'s delivery plan for the first recommended step, at the client\'s own cost of one FTE-month. ',
+      ref(`Year one earns ${Math.round(YEAR_ONE_SHARE * 100)}% of the run rate and years two and three all of it; ${Math.round(RUNNING_SHARE * 100)}% of the one-off cost recurs each year (A-15). `),
+      'Payback runs from the best case (high saving, low cost) to the worst. ',
+      ...(b.lines.some(l => l.offeringType === 'advisory' && !l.sharedWith) ? ['An advisory step is costed on its own: the cost of making the change it recommends is agreed once the saving is measured, so its payback is optimistic. '] : []),
+      'Planning figures, not a commitment; external fees, tools and contract penalties are excluded.'
+    ] });
+  } else {
+    blocks.push({ kind: 'table', head: ['Lever', 'First step and effort', 'Run-rate saving a year'], widths: ['*', 150, 110], small: true, rows: b.lines.map(l => [[strong(lever(l.findingId)), '\n', ref(`Finding ${findingNo(c, l.findingId)}`)], effort(l), ind(l)]) });
+    blocks.push({ kind: 'paragraph', style: 'small', segs: ['The one-off cost, payback and net over three years need the client\'s own cost of one FTE-month, which the consultant records with the measured figures; LTM does not assume a salary.'] });
+  }
+  return blocks;
+}
+
 function valueSection(c: Ctx): ReportSection | null {
   const r = c.ind;
   if (!r.lines.length && !r.notSized.some(n => n.reason !== 'enabler')) return null;
@@ -365,7 +418,6 @@ function valueSection(c: Ctx): ReportSection | null {
     if (r.total) rows.push([[strong('Total, each category counted once')], [''], shareRange('indicative.total', r.total.shareLow, r.total.shareHigh), hasMoney(c) ? moneyRange(c, 'indicative.total', r.total.low, r.total.high) : ['No spend band given']]);
     blocks.push({ kind: 'table', head: ['Finding', 'Lever', 'Share of spend in scope', 'Indicative range a year'], widths: ['*', 130, 80, 110], small: true, rows });
   }
-  blocks.push(...valueCharts(c));
   const notes: Seg[] = [];
   if (r.spend && r.lines.length && r.basis.spend === 'exact') notes.push('Spend used: ', traced('indicative.spend.low', r.spend.low, 'currency', [], IND_ASM, r.currency), ' a year, the client\'s own figure for the technology spend in scope, recorded by the consultant. ');
   else if (r.spend && r.lines.length) notes.push('Spend band used: ', ...(r.spend.high == null ? ['above ', traced('indicative.spend.low', r.spend.low, 'currency', [], IND_ASM, r.currency)] : r.spend.low ? [traced('indicative.spend.low', r.spend.low, 'currency', [], IND_ASM, r.currency), ' to ', traced('indicative.spend.high', r.spend.high, 'currency', [], IND_ASM, r.currency)] : ['below ', traced('indicative.spend.high', r.spend.high, 'currency', [], IND_ASM, r.currency)]), ', as shown to the client when the band was chosen. ');
@@ -387,6 +439,8 @@ function valueSection(c: Ctx): ReportSection | null {
     const list = `${nos.length === 1 ? 'Finding' : 'Findings'} ${andList(nos)}`;
     blocks.push({ kind: 'paragraph', style: 'small', segs: [ref(list), nos.length === 1 ? ' concerns governance or the value of spend: it makes the other savings measurable and lasting, or raises the value of what is spent, and is not sized as a saving on its own.' : ' concern governance or the value of spend: they make the other savings measurable and lasting, or raise the value of what is spent, and are not sized as savings on their own.'] });
   }
+  // B1 charts and the E1 business case follow the table, its notes and the findings without a range.
+  blocks.push(...valueCharts(c), ...caseBlocks(c));
   return { id: 'value', title: 'Indicative value', blocks };
 }
 
@@ -1009,6 +1063,7 @@ function assumptions(c: Ctx): ReportSection {
     { id: 'A-13', what: 'Planning rates', value: Object.entries(INDICATIVE_LIBRARY.findings).map(([, f]) => `${f.lever}: ${Math.round(f.rate[0] * 100)}% to ${Math.round(f.rate[1] * 100)}% of its category`).join('; '), basis: 'LTM heuristic: no public source gives a savings range for these levers (searched 3 Nov 2026); to be calibrated by LTM\'s practice lead against delivered work', confidence: 'Low', ifWrong: 'Each range scales with its rate; the evidence each finding lists replaces the rate with a measured figure' },
     { id: 'A-14', what: 'Overlap, band and timing', value: `Findings in one category overlap, so a category counts once, at its largest range. Money is the share times ${c.ind.basis.spend === 'exact' ? 'the client\'s exact spend figure' : 'both ends of the spend band as it was shown to the client'}. Ranges are the annual run rate once delivered, before the cost to deliver and before phasing`, basis: 'Design rule', confidence: 'High', ifWrong: 'Adding overlapping findings would count the same spend twice' }
   );
+  if (businessCaseFor(c.i).rated && c.ind.lines.length) list.push({ id: 'A-15', what: 'Business case phasing and cost', value: `Year one earns ${Math.round(YEAR_ONE_SHARE * 100)}% of each lever's run rate, years two and three all of it; the one-off cost is the effort of the first recommended step at the client's own rate, with ${Math.round(RUNNING_SHARE * 100)}% of it recurring each year`, basis: 'LTM heuristic, the rule the measured licence lever uses (A-09), pending calibration on delivered work', confidence: 'Low', ifWrong: 'Payback and the three-year net move; the run-rate ranges do not' });
   if (c.i.currency && !['USD', 'AED', 'SAR', 'OTHER'].includes(c.i.currency)) {
     const a = bands.assumptions[0];
     list.push({ id: 'A-07', what: 'Currency conversion of size bands', value: a.value, basis: a.basis, confidence: a.confidence.charAt(0).toUpperCase() + a.confidence.slice(1), ifWrong: a.ifWrong });

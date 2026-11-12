@@ -76,6 +76,8 @@ export function createHandler(store: CostIqAssessmentStore, now: () => Date = ()
       input.nonCloud = evidence?.ok ? evaluateNonCloud(evidence.value, input.result.findings.map(f => f.id), input.finops) : null;
       // C1: the client's own spend baseline, when the consultant recorded one, narrows the indicative ranges.
       input.baseline = evidence?.ok && evidence.value.baseline ? { ...evidence.value.baseline, currency: evidence.value.currency } : null;
+      // E1: the client's own cost of one FTE-month costs the steps in the business case.
+      input.rate = evidence?.ok && evidence.value.internalRatePerFteMonth ? { perFteMonth: evidence.value.internalRatePerFteMonth, currency: evidence.value.currency } : null;
       const client = item.clientName || 'the organisation';
       if (format === 'csv') {
         return {
