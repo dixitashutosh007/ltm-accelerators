@@ -4,6 +4,7 @@
  *   GET /api/cost-iq/report?assessmentId=...&format=pdf     the report PDF
  *                          &format=csv                      the backlog CSV
  *                          &format=brief                    the two-page CIO brief (PDF, always client edition)
+ *                          &format=pptx                     the slide deck (PowerPoint, always client edition)
  *                          &view=client                     client edition
  * Only a completed assessment has a report, built from the result the server stored at completion and the FinOps IQ
  * summary as it was when linked. A record belongs to its respondent (Admins may read any). Read-only.
@@ -15,15 +16,16 @@ import { authorized, canAccess } from '../_shared/resilience-data';
 import { withAcceleratorAccess, isConsultant } from '../_shared/access';
 import { checkCostIqReport } from '../../../packages/engine-core/src/report-checks/accelerators';
 import { failureMessage } from '../../../packages/engine-core/src/report-checks';
-import { costIqBacklog, costIqBrief, costIqReport, type CostIqReportInput, type CostIqResult } from '../../../packages/engine-core/src/accelerators/cost-iq/report';
+import { costIqBacklog, costIqBrief, costIqDeck, costIqReport, type CostIqReportInput, type CostIqResult } from '../../../packages/engine-core/src/accelerators/cost-iq/report';
 import { evaluateNonCloud, parseNonCloudEvidence, reportingCurrency } from '../../../packages/engine-core/src/accelerators/cost-iq/non-cloud-levers';
 import { COST_IQ_SUMMARY_SCHEMA, type CostIqSummary } from '../../../packages/engine-core/src/accelerators/finops-iq/v3/cost-iq-summary';
 import { scopeCounts } from '../../../packages/engine-core/src/accelerators/cost-iq/evaluate.cjs';
 import { renderPdf } from '../../../packages/engine-core/src/report/pdf';
+import { renderPptx } from '../../../packages/engine-core/src/report/pptx';
 import { toCsv } from '../../../packages/engine-core/src/report/csv';
 import { appSyncStore, type CostIqAssessmentStore } from '../manage-cost-assessment/store';
 
-const FORMATS = new Set(['pdf', 'csv', 'brief']);
+const FORMATS = new Set(['pdf', 'csv', 'brief', 'pptx']);
 
 const fileName = (client: string, date: string, view: string, ext: string, kind = '') =>
   `cost-iq-${kind}${client.normalize('NFKD').replace(/[^A-Za-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 60).toLowerCase() || 'assessment'}-${date}${view === 'client' ? '-client' : ''}.${ext}`;
@@ -45,10 +47,10 @@ export function createHandler(store: CostIqAssessmentStore, now: () => Date = ()
     // The consultant edition (statement-of-work draft, consultant notes, internal IDs) goes to LTM consultants only (M8); without a
     // view, each caller gets the edition for their role.
     const consultant = isConsultant(event);
-    if (q.view === 'consultant' && !consultant && format !== 'brief') return respond(403, { ok: false, error: 'consultant_role_required', message: 'The consultant edition is for LTM consultants. Download the client edition instead.' });
+    if (q.view === 'consultant' && !consultant && format !== 'brief' && format !== 'pptx') return respond(403, { ok: false, error: 'consultant_role_required', message: 'The consultant edition is for LTM consultants. Download the client edition instead.' });
     const view = q.view === 'client' || !consultant ? 'client' : 'consultant';
     if (!q.assessmentId) return respond(400, { ok: false, error: 'assessmentId is required' });
-    if (!FORMATS.has(format)) return respond(400, { ok: false, error: 'format: expected pdf, brief or csv' });
+    if (!FORMATS.has(format)) return respond(400, { ok: false, error: 'format: expected pdf, brief, pptx or csv' });
     try {
       const item = await store.get(q.assessmentId);
       if (!item) return respond(404, { ok: false, error: 'assessment_not_found' });
@@ -83,17 +85,27 @@ export function createHandler(store: CostIqAssessmentStore, now: () => Date = ()
       // The narrative goes in only when the engagement's AI switch is on and the stored one passed the grounding check.
       const stored2 = item.aiEnabled ? parse<any>(item.narrativeJson, null) : null;
       const narrative = stored2?.status === 'ok' ? { narrative: stored2.narrative, modelId: stored2.modelId, generatedAt: stored2.generatedAt } : null;
-      // The CIO brief (B2) is a client document whoever asks for it, built from the same traced figures and checked the same way.
-      const brief = format === 'brief';
-      const edition = brief ? 'client' : view;
-      const doc = brief
-        ? costIqBrief(input, { client, preparedBy: 'LTM', dataProvidedBy: client, aiEnabled: !!item.aiEnabled })
+      // The CIO brief (B2) and the deck (B3) are client documents whoever asks for them, built from the same traced figures and
+      // checked the same way.
+      const brief = format === 'brief', deck = format === 'pptx';
+      const edition = brief || deck ? 'client' : view;
+      const doc = brief ? costIqBrief(input, { client, preparedBy: 'LTM', dataProvidedBy: client, aiEnabled: !!item.aiEnabled })
+        : deck ? costIqDeck(input, { client, preparedBy: 'LTM', dataProvidedBy: client, aiEnabled: !!item.aiEnabled })
         : costIqReport(input, { client, preparedBy: view === 'client' || !item.respondentEmail ? (view === 'client' ? 'LTM' : 'LTM consultant') : `LTM consultant (${item.respondentEmail})`, dataProvidedBy: client, view, aiEnabled: !!item.aiEnabled, narrative });
       // Layer 1 report checks (REPORT-VALIDATION.md): a report that fails any check is not issued.
-      const checked = checkCostIqReport(doc, input, edition, now().toISOString().slice(0, 10), brief ? 'brief' : 'report');
+      const checked = checkCostIqReport(doc, input, edition, now().toISOString().slice(0, 10), brief ? 'brief' : deck ? 'deck' : 'report');
       if (checked.status === 'fail') {
         console.error('[CostIqReport] report checks failed', { requestId, assessmentId: q.assessmentId, view: edition, format, failures: checked.failures });
         return respond(422, { ok: false, error: 'report_checks_failed', message: failureMessage(checked), failures: checked.failures });
+      }
+      if (deck) {
+        const pptx = await renderPptx(doc);
+        return {
+          statusCode: 200,
+          headers: { ...headers, 'Content-Type': 'application/vnd.openxmlformats-officedocument.presentationml.presentation', 'Content-Disposition': `attachment; filename="${fileName(client, date, edition, 'pptx', 'slides-')}"`, 'Cache-Control': 'no-store', 'X-Report-Checks': `pass ${checked.checks.join(' ')}` },
+          body: pptx.toString('base64'),
+          isBase64Encoded: true
+        };
       }
       const pdf = await renderPdf(doc);
       return {
