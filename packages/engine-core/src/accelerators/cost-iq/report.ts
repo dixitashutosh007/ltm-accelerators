@@ -9,7 +9,7 @@
  * docs/cio-readiness/cost-iq/BOUNDARY.md). Cost IQ computes no cloud figure, and in this edition sizes no non-cloud
  * saving, so no total is stated: the report says so and lists the evidence each finding needs before it can be sized.
  */
-import type { Backlog, Block, ReportDocument, ReportSection, Seg, Tone } from '../../report/model';
+import type { Backlog, Block, ReportDocument, ReportSection, Seg, Tone, TracedSeg } from '../../report/model';
 import { figure, traced } from '../../report/model';
 import { noRegulatoryCoverage } from '../../report/coverage';
 import { NOTICES } from './notices';
@@ -274,6 +274,49 @@ function scopeNote(c: Ctx): string {
   return `It excludes ${parts.join(' and ')}. ${shown.join(' and ').replace(/^t/, 'T')} ${shown.length > 1 ? 'are' : 'is'} shown separately below and not added to it, because ${shown.length > 1 ? 'they rest' : 'it rests'} on measured or modelled figures and the indicative value on planning rates.`;
 }
 
+/**
+ * B1 charts, drawn only from the traced figures in the table above: where the value sits (one range per counted category and
+ * the total) and value against time to deliver (each sized finding by the upper end of its range and of its first step).
+ */
+function valueCharts(c: Ctx): Block[] {
+  const r = c.ind, t = r.total;
+  if (!t) return [];
+  const money = hasMoney(c);
+  const counted = r.lines.filter(l => l.counted).sort((a, b) => b.shareHigh - a.shareHigh);
+  const cur = (f: string, v: number) => traced(f, v, 'currency', [], IND_ASM, c.ind.currency);
+  const end = (base: string, low: number | null, high: number | null, sl: number, sh: number) => money
+    ? { low: cur(`${base}.low`, low ?? 0) as TracedSeg, high: high == null ? null : cur(`${base}.high`, high) as TracedSeg, shown: moneyRange(c, base, low, high) }
+    : { low: share(`${base}.shareLow`, sl) as TracedSeg, high: share(`${base}.shareHigh`, sh) as TracedSeg, shown: shareRange(base, sl, sh) };
+  const label = (cat: string) => upperFirst((INDICATIVE_LIBRARY.categoryLabels as Record<string, string>)[cat]);
+  const blocks: Block[] = [];
+  if (counted.length > 1) {
+    blocks.push({ kind: 'subheading', text: 'Where the value sits' });
+    blocks.push({ kind: 'ranges', items: [
+      ...counted.map(l => ({ label: `${label(l.category)} (Finding ${findingNo(c, l.findingId)})`, ...end(`indicative.findings[${l.findingId}]`, l.low, l.high, l.shareLow, l.shareHigh) })),
+      { label: 'Total, each category counted once', total: true, ...end('indicative.total', t.low, t.high, t.shareLow, t.shareHigh) }
+    ] });
+  }
+  // Time to deliver: the upper end of LTM's planning range for the first recommended step that addresses the finding.
+  const recs = orderedRecs(c);
+  const pts = r.lines.flatMap(l => {
+    const rec = recs.find(x => x.findingIds.includes(l.findingId));
+    const p = rec ? pkg(c, rec.id) : undefined;
+    return p ? [{ l, weeks: elapsed(p)[1], p }] : [];
+  });
+  if (pts.length > 1) {
+    const xmax = Math.ceil((Math.max(...pts.map(x => x.weeks)) * 1.1) / 4) * 4;
+    blocks.push({ kind: 'subheading', text: 'Value against time to deliver' });
+    blocks.push({ kind: 'matrix',
+      x: { label: 'Across: time to deliver the first step, upper end of LTM\'s planning range', max: xmax, low: 'Sooner', high: 'Later' },
+      y: { label: 'Up: indicative value, upper end, as a share of spend in scope', low: 'Less', high: 'More' },
+      quadrant: 'More value, sooner',
+      points: pts.map(x => ({ label: String(findingNo(c, x.l.findingId)), x: x.weeks, y: share(`indicative.findings[${x.l.findingId}].shareHigh`, x.l.shareHigh) as TracedSeg })),
+      key: pts.sort((a, b) => findingNo(c, a.l.findingId) - findingNo(c, b.l.findingId)).map(x => [strong(`${findingNo(c, x.l.findingId)}  `), quoted(lowerFirst(x.l.lever).replace(/^./, m => m.toUpperCase())), ': up to ', share(`indicative.findings[${x.l.findingId}].shareHigh`, x.l.shareHigh), ', ', ref(weeks([elapsed(x.p)[0], x.weeks]))])
+    });
+  }
+  return blocks;
+}
+
 function valueSection(c: Ctx): ReportSection | null {
   const r = c.ind;
   if (!r.lines.length && !r.notSized.some(n => n.reason !== 'enabler')) return null;
@@ -289,6 +332,7 @@ function valueSection(c: Ctx): ReportSection | null {
     if (r.total) rows.push([[strong('Total, each category counted once')], [''], shareRange('indicative.total', r.total.shareLow, r.total.shareHigh), hasMoney(c) ? moneyRange(c, 'indicative.total', r.total.low, r.total.high) : ['No spend band given']]);
     blocks.push({ kind: 'table', head: ['Finding', 'Lever', 'Share of spend in scope', 'Indicative range a year'], widths: ['*', 130, 80, 110], small: true, rows });
   }
+  blocks.push(...valueCharts(c));
   const notes: Seg[] = [];
   if (r.spend && r.lines.length) notes.push('Spend band used: ', ...(r.spend.high == null ? ['above ', traced('indicative.spend.low', r.spend.low, 'currency', [], IND_ASM, r.currency)] : r.spend.low ? [traced('indicative.spend.low', r.spend.low, 'currency', [], IND_ASM, r.currency), ' to ', traced('indicative.spend.high', r.spend.high, 'currency', [], IND_ASM, r.currency)] : ['below ', traced('indicative.spend.high', r.spend.high, 'currency', [], IND_ASM, r.currency)]), ', as shown to the client when the band was chosen. ');
   if (r.spend && r.lines.length && c.i.currency && c.i.currency !== r.currency) notes.push(`The bands were shown in ${r.currency} for this reporting currency, so the ranges are in ${r.currency}. `);

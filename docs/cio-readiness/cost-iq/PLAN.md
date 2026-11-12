@@ -590,3 +590,18 @@ Owner decision of 12 Nov 2026: the delivery detail and the technical execution m
   - Browser test: a consultant sees the card, and a user outside the group does not.
 
   Unit tests 1,396; Cost IQ browser tests 24; `validate:costiq` PASS.
+
+## Product-grade plan B1, part 1 (12 Nov 2026): value charts in the PDF
+- **Shared renderer.** Two new block kinds in the report model, drawn as vector graphics by `report/pdf.ts` and available to every accelerator:
+  - `ranges`: range bars on one scale, with the total in ink below a rule, values labelled directly, and an arrow for an open range.
+  - `matrix`: two axes and four quadrants, numbered markers nudged apart where they would overlap, and a key.
+
+  Both carry traced segments, so a chart is drawn only from traced figures. The report checks re-read the figures (R2) and read the chart labels (R5).
+- **Cost IQ.** Two charts in "Indicative value":
+  - **Where the value sits:** one range per counted category, largest first, and the total.
+  - **Value against time to deliver:** each sized finding by the upper end of its range (up) and of its first step's planning range (across), with "more value, sooner" shaded.
+- **Evidence.**
+  - Tests: the charts match the traced figures and the order; a tampered chart figure fails R2; both charts render to PDF.
+  - The rendered pages were inspected for collisions and overflow.
+  - Unit tests 1,400; Cost IQ and FinOps IQ browser tests 39.
+- **Still to do in B1.** Spend against the published reference (a range with a marker), and moving FinOps IQ and Sovereign IQ onto the new blocks. The dimension heat map is not needed: the scores section already draws every dimension as a bar.

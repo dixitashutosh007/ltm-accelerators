@@ -61,6 +61,10 @@ function block(b: Block): Content {
       return bars(b);
     case 'steps':
       return steps(b);
+    case 'ranges':
+      return ranges(b);
+    case 'matrix':
+      return matrix(b);
   }
 }
 
@@ -123,6 +127,83 @@ function bars(b: Extract<Block, { kind: 'bars' }>): Content {
     unbreakable: true,
     layout: 'noBorders', margin: [0, 2, 0, 10]
   };
+}
+
+/**
+ * Range bars on one scale from zero (B1). One series, in the brand colour; totals in ink below a rule. Values are labelled
+ * directly beside each bar, so there is no axis to read. An open range runs to the edge and ends in an arrow.
+ */
+function ranges(b: Extract<Block, { kind: 'ranges' }>): Content {
+  const W = 170, H = 9;
+  const top = Math.max(1, ...b.items.map(i => (i.high ? i.high.trace.value : i.low.trace.value * 1.25)));
+  const x = (v: number) => Math.round((W * Math.max(0, Math.min(v, top))) / top);
+  const bar = (i: Extract<Block, { kind: 'ranges' }>['items'][number]) => {
+    const color = i.total ? INK : RED, x0 = Math.min(x(i.low.trace.value), W - 2), x1 = i.high ? Math.max(x(i.high.trace.value), x0 + 2) : W - 6;
+    return [
+      { type: 'line', x1: 0, y1: 2 + H / 2, x2: W, y2: 2 + H / 2, lineWidth: 0.5, lineColor: LINE },
+      { type: 'rect', x: x0, y: 2, w: x1 - x0, h: H, r: 2, color },
+      ...(i.high ? [] : [{ type: 'polyline', points: [{ x: W - 6, y: 2 }, { x: W, y: 2 + H / 2 }, { x: W - 6, y: 2 + H }], closePath: true, color }])
+    ];
+  };
+  return {
+    table: {
+      widths: [185, W + 4, '*'],
+      body: b.items.map(i => [
+        { text: i.label, fontSize: 8, bold: i.total || undefined },
+        { canvas: bar(i) as any },
+        { text: run(i.shown), fontSize: 8, bold: i.total || undefined }
+      ]),
+      dontBreakRows: true
+    },
+    unbreakable: true,
+    layout: { hLineWidth: (row: number, node: any) => (b.items[row]?.total && row > 0 ? 0.75 : 0), vLineWidth: () => 0, hLineColor: () => LINE, paddingTop: () => 3, paddingBottom: () => 3 },
+    margin: [0, 2, 0, 10]
+  };
+}
+
+/**
+ * Two axes, four quadrants (B1): planning time to deliver across, indicative value up. Points are numbered markers; the key
+ * below names them. The top-left quadrant (more value, sooner) is shaded and captioned.
+ */
+function matrix(b: Extract<Block, { kind: 'matrix' }>): Content {
+  const W = 300, H = 170, L = 18, R = 10, M = 9;
+  const ymax = Math.max(1e-9, ...b.points.map(p => p.y.trace.value)) * 1.15;
+  const px = (v: number) => L + Math.round(((W - L - R) * Math.max(0, Math.min(v, b.x.max))) / b.x.max);
+  const py = (v: number) => H - 14 - Math.round(((H - 28) * Math.max(0, v)) / ymax);
+  const midX = L + (W - L - R) / 2, midY = 14 + (H - 28) / 2;
+  // Markers that would overlap are nudged apart vertically, so every number stays readable.
+  const placed: Array<{ x: number; y: number; label: string }> = [];
+  for (const p of [...b.points].sort((a, c) => c.y.trace.value - a.y.trace.value)) {
+    let x = px(p.x), y = py(p.y.trace.value);
+    while (placed.some(q => Math.abs(q.x - x) < 2 * M && Math.abs(q.y - y) < 2 * M)) y += 2 * M;
+    placed.push({ x, y: Math.min(y, H - 14 - M), label: p.label });
+  }
+  const shapes: any[] = [
+    // A full-size background fixes the canvas height at H, so the detached labels below can be placed from it.
+    { type: 'rect', x: 0, y: 0, w: W, h: H, color: '#FFFFFF' },
+    { type: 'rect', x: L, y: 14, w: midX - L, h: midY - 14, color: BLUE_BG },
+    { type: 'rect', x: L, y: 14, w: W - L - R, h: H - 28, lineWidth: 0.75, lineColor: LINE },
+    { type: 'line', x1: midX, y1: 14, x2: midX, y2: H - 14, lineWidth: 0.5, lineColor: LINE, dash: { length: 3 } },
+    { type: 'line', x1: L, y1: midY, x2: W - R, y2: midY, lineWidth: 0.5, lineColor: LINE, dash: { length: 3 } },
+    ...placed.flatMap(q => [{ type: 'ellipse', x: q.x, y: q.y, r1: M, r2: M, color: RED, lineWidth: 2, lineColor: '#FFFFFF' }])
+  ];
+  // Labels are detached nodes placed against the canvas: each is positioned from the point just below it, so y is offset by -H.
+  const at = (x: number, y: number) => ({ relativePosition: { x, y: y - H } });
+  const labels: Content[] = [
+    ...placed.map(q => ({ text: q.label, fontSize: 7.5, bold: true, color: '#FFFFFF', ...at(q.x - (q.label.length > 1 ? 4 : 2), q.y - 4.5) } as Content)),
+    ...(b.quadrant ? [{ text: b.quadrant, fontSize: 7, color: MUTED, ...at(L + 4, 17) } as Content] : []),
+    { text: b.y.high, fontSize: 7, color: MUTED, ...at(0, 14) } as Content,
+    { text: b.y.low, fontSize: 7, color: MUTED, ...at(0, H - 22) } as Content,
+    { text: b.x.low, fontSize: 7, color: MUTED, ...at(L, H - 11) } as Content,
+    { text: b.x.high, fontSize: 7, color: MUTED, ...at(W - R - 24, H - 11) } as Content
+  ];
+  return {
+    columns: [
+      { width: W, stack: [{ canvas: shapes }, ...labels] },
+      { width: '*', stack: [{ text: b.y.label, fontSize: 7.5, bold: true, margin: [0, 10, 0, 2] }, { text: b.x.label, fontSize: 7.5, bold: true, margin: [0, 0, 0, 6] }, ...b.key.map(k => ({ text: run(k), fontSize: 7.5, margin: [0, 0, 0, 2] } as Content))] }
+    ],
+    columnGap: 12, unbreakable: true, margin: [0, 4, 0, 10]
+  } as Content;
 }
 
 /** Stepped levels: one box per step, filled up to the row's value, with an outlined marker step. */

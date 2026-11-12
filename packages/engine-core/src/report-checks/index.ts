@@ -54,6 +54,8 @@ function documentText(doc: ReportDocument): string {
       if (b.kind === 'table') out.push(...b.head);
       if (b.kind === 'kpis') out.push(...b.items.map(i => i.label));
       if (b.kind === 'bars') out.push(...b.items.map(i => i.label));
+      if (b.kind === 'ranges') out.push(...b.items.map(i => i.label));
+      if (b.kind === 'matrix') out.push(b.x.label, b.x.low, b.x.high, b.y.label, b.y.low, b.y.high, b.quadrant ?? '', ...b.points.map(p => p.label));
       if (b.kind === 'heatmap') for (const row of b.rows) out.push(row.label, ...row.cells.flatMap(c => [c.label, c.note ?? '']));
     }
   }
