@@ -530,3 +530,17 @@ Owner decision of 12 Nov 2026: the delivery detail and the technical execution m
 - **Change.** In the client edition, the roadmap's delivery plan is one table: step, LTM offering and type, elapsed time, client owners, and what the client supplies before work starts. Evidence lines are named by finding number, because the findings section already lists them. The sponsor line common to every step is said once. The workstream tables, risks, "Technical execution" section and the vendor sources behind its practice steps are consultant edition only. The report check now requires `execution` only in the consultant edition. Also fixed: "Institutionalize" in a step title is now in British spelling.
 - **Result.** The sample client report (a bank, GBP, A1 sample) falls from 30 pages to 18, and its delivery plan fits on one page. The consultant edition keeps everything (38 pages).
 - **Evidence.** `cost-iq-delivery.test.ts`: each edition carries the right sections, and the client edition has no workstream or risk table. Unit tests 1,382; Cost IQ browser tests 23.
+
+## Product-grade plan A2 (12 Nov 2026): the one-page answer
+- **Change.** The executive summary is one page.
+  - It opens with the indicative value and the moves that carry it.
+  - A row of tiles follows: indicative value a year, share of spend in scope, findings (high), and the cost and value scores, with the share of questions answered.
+  - Then the findings paragraph, the client's view, the decision requested, and a new **first 100 days** table:
+    - Days 1 to 30: owners and evidence.
+    - From day 31: the first three steps, with when each ends on LTM's planning ranges.
+    - Day 100: a review with LTM.
+  - The 100-day table replaces "Recommended first steps"; findings are named in order ("Findings 1, 7 and 8").
+  - The cloud line keeps its table only when FinOps IQ quantified it. Otherwise its status is one sentence in "What this report sizes".
+  - "Where to look first" and the note that scores are not savings move to the scores section.
+- **Result.** In the sample bank report, page 3 holds the whole answer, and the report falls from 18 pages to 17. With measured lever and cloud tables, those tables follow on page 4.
+- **Evidence.** A new test reads page 3 of the rendered client PDF: the amount, the moves, the decision and the first 100 days are there, and "Where to look first" is not. M4 and M5 tests follow the moved blocks. The PDF layout test no longer treats a row of figure tiles, or an unscored bar, as a heading. Unit tests 1,383; Cost IQ browser tests 23.
