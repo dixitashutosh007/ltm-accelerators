@@ -32,6 +32,38 @@ export interface NonCloudEvidence {
   /** Delivery effort tier 1, 2 or 3 (the FinOps IQ tiers); 2 when not given. */
   effortTier?: 1 | 2 | 3;
   levers: Record<string, LeverEvidence>;
+  /** The client's own spend baseline (product-grade plan C1), recorded by the consultant; it narrows the indicative ranges. */
+  baseline?: SpendBaseline;
+}
+
+/**
+ * The exact annual technology spend in scope, in the evidence currency, and its split by Cost IQ category in percent (summing
+ * to 100). Either replaces what the questionnaire gave: the band, and the typical shares.
+ */
+export interface SpendBaseline { exactAnnualSpend?: number; splitPercent?: Record<string, number> }
+export const BASELINE_CATEGORIES = ['INFRA', 'CLOUD', 'SAAS', 'SOFTWARE', 'APPS', 'NETWORK', 'DATA', 'SECURITY', 'PEOPLE', 'EXTERNAL', 'END_USER', 'OTHER'];
+
+function parseBaseline(b: any): { ok: true; value: SpendBaseline } | { ok: false; error: string } {
+  if (!b || typeof b !== 'object' || Array.isArray(b)) return { ok: false, error: 'baseline must be an object' };
+  const out: SpendBaseline = {};
+  if (b.exactAnnualSpend !== undefined) {
+    if (!valid(b.exactAnnualSpend) || b.exactAnnualSpend <= 0) return { ok: false, error: 'baseline.exactAnnualSpend: expected a positive number' };
+    out.exactAnnualSpend = b.exactAnnualSpend;
+  }
+  if (b.splitPercent !== undefined) {
+    const sp = b.splitPercent;
+    if (!sp || typeof sp !== 'object' || Array.isArray(sp)) return { ok: false, error: 'baseline.splitPercent must be an object' };
+    const split: Record<string, number> = {};
+    for (const [k, v] of Object.entries<any>(sp)) {
+      if (!BASELINE_CATEGORIES.includes(k)) return { ok: false, error: `baseline.splitPercent.${k}: unknown category` };
+      if (!valid(v) || v > 100) return { ok: false, error: `baseline.splitPercent.${k}: expected a percentage from 0 to 100` };
+      if (v > 0) split[k] = v;
+    }
+    const sum = Object.values(split).reduce((t, v) => t + v, 0);
+    if (Math.abs(sum - 100) > 1) return { ok: false, error: `baseline.splitPercent: the shares add up to ${Math.round(sum * 10) / 10}%, not 100%` };
+    out.splitPercent = split;
+  }
+  return { ok: true, value: out };
 }
 
 export interface Figure { field: string; value: number; unit: 'currency'; claimIds: string[]; assumptionIds: string[] }
@@ -129,7 +161,13 @@ export function parseNonCloudEvidence(raw: unknown): { ok: true; value: NonCloud
     if (e.renewingYear1Share !== undefined && !(valid(e.renewingYear1Share) && e.renewingYear1Share <= 1)) return { ok: false, error: `levers.${id}.renewingYear1Share: expected a share between 0 and 1` };
     levers[id] = { unusedAnnualCost: e.unusedAnnualCost, ...(e.addressableSpend !== undefined ? { addressableSpend: e.addressableSpend } : {}), ...(e.renewingYear1Share !== undefined ? { renewingYear1Share: e.renewingYear1Share } : {}) };
   }
-  return { ok: true, value: { currency: o.currency, ...(o.internalRatePerFteMonth !== undefined ? { internalRatePerFteMonth: o.internalRatePerFteMonth } : {}), ...(o.effortTier !== undefined ? { effortTier: o.effortTier } : {}), levers } };
+  let baseline: SpendBaseline | undefined;
+  if (o.baseline !== undefined && o.baseline !== null) {
+    const b = parseBaseline(o.baseline);
+    if (!b.ok) return b;
+    if (b.value.exactAnnualSpend !== undefined || b.value.splitPercent) baseline = b.value;
+  }
+  return { ok: true, value: { currency: o.currency, ...(o.internalRatePerFteMonth !== undefined ? { internalRatePerFteMonth: o.internalRatePerFteMonth } : {}), ...(o.effortTier !== undefined ? { effortTier: o.effortTier } : {}), levers, ...(baseline ? { baseline } : {}) } };
 }
 
 /** The assessment's reporting currency: the one saved with it, else the answer to the currency question (CTX-01). */

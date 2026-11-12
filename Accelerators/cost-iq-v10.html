@@ -391,13 +391,47 @@ async function loadCloudLine(){
 function leverPanelHtml(){
   const cur=/^(?:[A-Z]{3}|OTHER)$/.test(String(answers['CTX-01']||''))?answers['CTX-01']:'';
   return '<div class="card" id="leverCard" style="margin-top:16px"><div class="eyebrow">MEASURED FIGURES</div><h2>Software licences outside SaaS</h2><p class="muted">Enter figures from the client\'s own licence reconciliation'+(cur?' in '+esc(cur):'')+'. Nothing is sized from answers alone. SaaS and marketplace software are counted in the FinOps IQ line, so leave them out here.</p>'+
-  (cur?'<div id="leverBody"><p class="muted">Loading…</p></div>':'<p class="muted" role="status">Choose the reporting currency in the context questions first; the figures are recorded in that currency.</p>')+'</div>';
+  (cur?'<div id="leverBody"><p class="muted">Loading…</p></div>':'<p class="muted" role="status">Choose the reporting currency in the context questions first; the figures are recorded in that currency.</p>')+'</div>'+
+  (cur?'<div class="card" id="baselineCard"><div class="eyebrow">CLIENT BASELINE</div><h2>Technology spend in scope</h2><p class="muted">The client\'s own figures, from its ledger, in '+esc(cur)+'. The exact spend replaces the band, and the split by category replaces LTM\'s typical shares, so the indicative ranges narrow to the planning rates. Both are optional.</p><div id="baselineBody"><p class="muted">Loading…</p></div></div>':'');
+}
+// C1: the client's own spend baseline, saved in the same evidence record as the measured lever.
+let leverEvidence=null;
+const BASELINE_CATS=['INFRA','CLOUD','SAAS','SOFTWARE','APPS','NETWORK','DATA','SECURITY','PEOPLE','EXTERNAL','END_USER','OTHER'];
+function renderBaseline(){
+  const host=$('baselineBody');if(!host)return;
+  const cur=answers['CTX-01'];const b=(leverEvidence&&leverEvidence.baseline)||{};
+  const q=(allQuestions||[]).find(function(x){return x.id==='CORE-05'});
+  const label=function(id){const o=q&&q.options&&q.options.find(function(x){return x.id===id});return o?o.label:id};
+  const inc=Array.isArray(answers['CORE-05'])?answers['CORE-05'].filter(function(x){return BASELINE_CATS.indexOf(x)>=0}):[];
+  const cats=inc.length?inc:BASELINE_CATS;const split=b.splitPercent||{};
+  host.innerHTML='<label for="blExact" class="muted">Exact annual technology spend in scope ('+esc(cur)+')</label><input class="input" id="blExact" type="number" min="0" step="any" inputmode="decimal" value="'+(b.exactAnnualSpend!=null?esc(b.exactAnnualSpend):'')+'">'
+    +'<fieldset style="border:0;padding:0;margin:14px 0 0"><legend class="muted" style="margin-bottom:6px">Split by category, % of that spend (optional; must add up to 100)</legend><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:8px">'
+    +cats.map(function(c){return '<label style="display:flex;justify-content:space-between;gap:8px;align-items:center;font-size:13px">'+esc(label(c))+'<input class="input blSplit" data-cat="'+c+'" type="number" min="0" max="100" step="any" style="width:90px" value="'+(split[c]!=null?esc(split[c]):'')+'"></label>'}).join('')
+    +'</div></fieldset><p class="muted" id="blSum" role="status"></p><div class="actions"><button class="btn primary" type="button" id="blSave">Save baseline</button><button class="btn" type="button" id="blClear">Clear baseline</button></div><p class="muted" id="blMsg" role="status"></p>';
+  const sum=function(){let t=0,any=false;document.querySelectorAll('.blSplit').forEach(function(i){if(i.value!==''){any=true;t+=Number(i.value)}});$('blSum').textContent=any?'Split adds up to '+(Math.round(t*10)/10)+'%.':'';return any?t:null};
+  document.querySelectorAll('.blSplit').forEach(function(i){i.oninput=sum});sum();
+  const say=function(t){$('blMsg').textContent=t};
+  $('blSave').onclick=async function(){
+    const ex=$('blExact').value===''?undefined:Number($('blExact').value);
+    if(ex!==undefined&&!(ex>0))return say('Enter the exact spend as a positive number, or leave it blank.');
+    const t=sum();const sp={};
+    if(t!==null){if(Math.abs(t-100)>1)return say('The split adds up to '+(Math.round(t*10)/10)+'%, not 100%.');document.querySelectorAll('.blSplit').forEach(function(i){if(i.value!==''&&Number(i.value)>0)sp[i.dataset.cat]=Number(i.value)})}
+    const baseline={};if(ex!==undefined)baseline.exactAnnualSpend=ex;if(t!==null)baseline.splitPercent=sp;
+    if(!Object.keys(baseline).length)return say('Enter the exact spend, the split, or both.');
+    const evidence=Object.assign({currency:cur,levers:{}},leverEvidence||{},{currency:cur,baseline:baseline});
+    try{await window.CostIqPersistence.setLeverEvidence(savedAssessment.assessmentId,evidence);leverEvidence=evidence;say('Saved. The next report narrows the indicative ranges with these figures.')}catch(e){say('Not saved: '+e.message)}
+  };
+  $('blClear').onclick=async function(){
+    const rest=leverEvidence&&Object.keys(leverEvidence.levers||{}).length?Object.assign({},leverEvidence,{baseline:undefined}):null;
+    try{await window.CostIqPersistence.setLeverEvidence(savedAssessment.assessmentId,rest);leverEvidence=rest;renderBaseline();say('Cleared.')}catch(e){say('Not cleared: '+e.message)}
+  };
 }
 async function loadLeverEvidence(){
   const host=$('leverBody');if(!host)return;
   const cur=answers['CTX-01'];
-  if(!savedAssessment||!window.CostIqPersistence?.configured()){host.innerHTML='<p class="muted">Sign in and save the assessment to record measured figures.</p>';return}
+  if(!savedAssessment||!window.CostIqPersistence?.configured()){host.innerHTML='<p class="muted">Sign in and save the assessment to record measured figures.</p>';if($('baselineBody'))$('baselineBody').innerHTML='<p class="muted">Sign in and save the assessment to record the baseline.</p>';return}
   let ev=null;try{const rec=await window.CostIqPersistence.get(savedAssessment.assessmentId);ev=rec&&rec.leverEvidenceJson?JSON.parse(rec.leverEvidenceJson):null}catch(e){ev=null}
+  leverEvidence=ev;renderBaseline();
   const f=function(id,label,hint){return '<label for="'+id+'" class="muted">'+label+'</label><input class="input" id="'+id+'" type="number" min="0" step="any" inputmode="decimal" aria-describedby="'+id+'Hint"><div class="muted" id="'+id+'Hint" style="font-size:12px;margin-bottom:8px">'+hint+'</div>'};
   host.innerHTML=f('levBase','Unused or over-entitled licence cost, a year','Required. From the licence reconciliation: entitlements held against what is deployed and used.')+f('levSpend','Total annual spend on these licences','Optional. If given, the unused cost may not exceed it.')+f('levRenew','Share of those contracts renewing in year one, %','Optional, 0 to 100. A quarter is assumed if blank.')+f('levRate','Client\'s own cost of one FTE-month','Required: without it the lever is not sized. LTM does not assume a salary.')+
     '<div class="actions"><button class="btn primary" type="button" id="levSave">Save measured figures</button><button class="btn" type="button" id="levClear">Clear</button></div><p class="muted" id="levMsg" role="status"></p>';
@@ -410,10 +444,11 @@ async function loadLeverEvidence(){
     if(base===undefined||!(base>=0))return say('Enter the unused licence cost as a number, not negative.');
     if(renew!==undefined&&!(renew>=0&&renew<=100))return say('The renewal share is between 0 and 100.');
     const lever={unusedAnnualCost:base};if(num('levSpend')!==undefined)lever.addressableSpend=num('levSpend');if(renew!==undefined)lever.renewingYear1Share=renew/100;
-    const evidence={currency:cur,levers:{'LEV-11':lever}};if(num('levRate')!==undefined)evidence.internalRatePerFteMonth=num('levRate');
-    try{await window.CostIqPersistence.setLeverEvidence(savedAssessment.assessmentId,evidence);say('Saved. The next report includes this lever if the licensing finding is raised.')}catch(e){say('Not saved: '+e.message)}
+    // The baseline, when recorded, is kept with the lever (one evidence record per assessment).
+    const evidence={currency:cur,levers:{'LEV-11':lever}};if(num('levRate')!==undefined)evidence.internalRatePerFteMonth=num('levRate');if(leverEvidence&&leverEvidence.baseline)evidence.baseline=leverEvidence.baseline;
+    try{await window.CostIqPersistence.setLeverEvidence(savedAssessment.assessmentId,evidence);leverEvidence=evidence;say('Saved. The next report includes this lever if the licensing finding is raised.')}catch(e){say('Not saved: '+e.message)}
   };
-  $('levClear').onclick=async function(){try{await window.CostIqPersistence.setLeverEvidence(savedAssessment.assessmentId,null);loadLeverEvidence()}catch(e){say('Not cleared: '+e.message)}};
+  $('levClear').onclick=async function(){const keep=leverEvidence&&leverEvidence.baseline?{currency:cur,levers:{},baseline:leverEvidence.baseline}:null;try{await window.CostIqPersistence.setLeverEvidence(savedAssessment.assessmentId,keep);loadLeverEvidence()}catch(e){say('Not cleared: '+e.message)}};
 }
 // A4: answers that look unlikely or contradict each other, for the consultant to confirm with the respondent. Scores are unchanged.
 function confirmCard(){

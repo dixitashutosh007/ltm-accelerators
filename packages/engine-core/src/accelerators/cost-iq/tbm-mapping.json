@@ -1,0 +1,19 @@
+{
+  "schema": "cost-iq-tbm-mapping/1",
+  "note": "Product-grade plan C1: how Cost IQ's spend categories (CORE-05) sit in the TBM Taxonomy. Cost IQ's categories are LTM's; the mapping is LTM's reading of the published taxonomy, not the TBM Council's, and implies no endorsement. Two categories are cost pools (who or what the money pays for) rather than towers (what it runs), so they spread across towers.",
+  "source": { "publisher": "TBM Council", "title": "TBM Taxonomy", "version": "5.0.1", "released": "2025-07-18", "url": "https://www.tbmcouncil.org/taxonomy/", "checked": "2026-11-12" },
+  "categories": {
+    "INFRA": { "towers": ["Data Center", "Compute", "Storage"], "costPools": ["Hardware", "Data Center Facilities"] },
+    "CLOUD": { "towers": ["Compute", "Storage"], "costPools": ["Cloud Services"] },
+    "SAAS": { "towers": ["Application"], "costPools": ["Software & SaaS"] },
+    "SOFTWARE": { "towers": ["Application"], "costPools": ["Software & SaaS"] },
+    "APPS": { "towers": ["Application"], "costPools": [] },
+    "NETWORK": { "towers": ["Network"], "costPools": ["Telecom"] },
+    "DATA": { "towers": ["Data"], "costPools": [] },
+    "SECURITY": { "towers": ["Security", "Risk & Compliance"], "costPools": [] },
+    "PEOPLE": { "towers": [], "costPools": ["Staffing"] },
+    "EXTERNAL": { "towers": [], "costPools": ["Outside Services"] },
+    "END_USER": { "towers": ["End User", "Smart Devices"], "costPools": [] },
+    "OTHER": { "towers": ["Delivery", "Tech Management"], "costPools": ["Misc Costs"] }
+  }
+}

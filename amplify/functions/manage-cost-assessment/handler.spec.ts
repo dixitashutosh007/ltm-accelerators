@@ -245,6 +245,18 @@ describe('Cost IQ links a FinOps IQ result as its cloud line (shared value model
       expect((await call(event('GET', { query: { assessmentId: 'CIQ-0001-abcd' } }))).body.data.leverEvidenceJson ?? null).toBeNull();
     });
 
+    it('stores the client spend baseline with the evidence (C1), and refuses a split that does not add up', async () => {
+      await save({ clientCurrency: 'GBP' });
+      const baseline = { exactAnnualSpend: 31500000, splitPercent: { INFRA: 45, APPS: 30, PEOPLE: 25 } };
+      expect((await setEv(evidence({ baseline }))).status).toBe(200);
+      const got = JSON.parse((await call(event('GET', { query: { assessmentId: 'CIQ-0001-abcd' } }))).body.data.leverEvidenceJson);
+      expect(got.baseline).toEqual(baseline);
+      expect(got.levers['LEV-11'].unusedAnnualCost).toBe(800000);
+      const bad = await setEv(evidence({ baseline: { splitPercent: { INFRA: 45, APPS: 30 } } }));
+      expect(bad.status).toBe(400);
+      expect(JSON.stringify(bad.body)).toContain('not 100%');
+    });
+
     it('refuses unknown levers, negative or non-numeric money, a share above one, and a currency other than the assessment\'s', async () => {
       await save({ clientCurrency: 'GBP' });
       for (const bad of [evidence({ levers: { 'LEV-09': { unusedAnnualCost: 1 } } }), evidence({ levers: { 'LEV-11': { unusedAnnualCost: -1 } } }), evidence({ levers: { 'LEV-11': { unusedAnnualCost: '9' } } }),

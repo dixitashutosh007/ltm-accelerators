@@ -672,3 +672,20 @@ Owner decision of 12 Nov 2026: the delivery detail and the technical execution m
   - `cost-iq-scenario.test.ts`: the rule, the three outcomes, protections, and the mapping against the real ADP-57 options and categories. The section is consultant-only and passes the checks in both editions; a tampered scenario figure fails R2.
   - Browser test: the panel's outcome and lever count equal `evaluateScenario` for three settings; a non-consultant sees no panel.
   - Unit tests 1,413; Cost IQ browser tests 26; `validate:costiq` PASS.
+
+## Product-grade plan C1 (12 Nov 2026): the client's own baseline, and the TBM Taxonomy
+- **TBM Taxonomy.** Version 5.0.1 (TBM Council, released 18 Jul 2025), checked at tbmcouncil.org/taxonomy on 12 Nov 2026: nine cost pools and twelve towers ("Output" and "Platform" retired).
+  - `tbm-mapping.json` maps each Cost IQ spend category to towers and cost pools. The internal workforce (Staffing) and external services (Outside Services) are cost pools, not towers, and the mapping says so.
+  - The methodology appendix shows the mapping, and the source row names the version.
+  - The categories and the mapping are LTM's, and imply no endorsement. No licence for the taxonomy is stated on the page; it is used here as a reference only, as before.
+- **Client baseline.** The consultant can record the client's exact annual spend in scope and its split by category in percent, which must add up to 100 within a point. They are saved with the measured-lever evidence (`baseline`), so the data model is unchanged.
+  - The exact spend replaces the band (a one-point range).
+  - The split replaces the typical shares and the categories named in CORE-05.
+  - The report says which basis it used (`basis`). A-12 becomes "the client's own split" (client input, Medium), and A-14 follows the spend basis.
+- **Screen.** A "Client baseline" card sits beside the measured licence figures. It shows a live total of the split and refuses one that does not add up. Its save keeps the measured lever, and the lever's save and clear keep the baseline.
+- **Not changed.** The results screen's answer (B4) is computed when scoring, before any baseline exists. Once a baseline is recorded, the report is the record.
+- **Evidence.**
+  - `cost-iq-baseline.test.ts`: validation; an exact spend gives a one-point band; a split replaces shares and categories; the report's notes and A-12 in both editions, with the checks passing; the range is narrower than the band's; the mapping uses only published towers and pools.
+  - Handler spec: the baseline is stored, and a bad split is refused.
+  - Browser test: the card validates the split, saves it and keeps the lever.
+  - Unit tests 1,422; Cost IQ browser tests 27; `validate:costiq` PASS.
