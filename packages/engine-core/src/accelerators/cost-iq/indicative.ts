@@ -20,6 +20,8 @@ export interface IndicativeLine {
   category: string;
   /** The finding's lever, in words. */
   lever: string;
+  /** The category's share of in-scope spend (the addressable base), and that base in `currency` at both ends of the band. */
+  baseShare: number; baseLow: number | null; baseHigh: number | null;
   /** Share of in-scope spend, as fractions. */
   shareLow: number; shareHigh: number;
   /** Annual run rate in `currency`; null when no spend band was given, or (high) when the band is open. */
@@ -93,7 +95,9 @@ export function evaluateIndicative(answers: Record<string, unknown>, raisedFindi
     const share = Math.min(1, SHARES[f.category] / sum);
     const shareLow = share * f.rate[0], shareHigh = share * f.rate[1];
     out.lines.push({
-      findingId: id, category: f.category, lever: f.lever, shareLow, shareHigh,
+      findingId: id, category: f.category, lever: f.lever,
+      baseShare: share, baseLow: band ? round(band.low * share) : null, baseHigh: band && band.high != null ? round(band.high * share) : null,
+      shareLow, shareHigh,
       low: band ? round(band.low * shareLow) : null,
       high: band && band.high != null ? round(band.high * shareHigh) : null,
       counted: false
@@ -118,6 +122,9 @@ export function indicativeFigures(r: IndicativeResult): Map<string, number> {
   if (r.spend) { m.set('indicative.spend.low', r.spend.low); if (r.spend.high != null) m.set('indicative.spend.high', r.spend.high); }
   for (const l of r.lines) {
     const p = `indicative.findings[${l.findingId}]`;
+    m.set(`${p}.baseShare`, l.baseShare);
+    if (l.baseLow != null) m.set(`${p}.baseLow`, l.baseLow);
+    if (l.baseHigh != null) m.set(`${p}.baseHigh`, l.baseHigh);
     m.set(`${p}.shareLow`, l.shareLow); m.set(`${p}.shareHigh`, l.shareHigh);
     if (l.low != null) m.set(`${p}.low`, l.low);
     if (l.high != null) m.set(`${p}.high`, l.high);

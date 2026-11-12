@@ -183,6 +183,8 @@ describe('report fixes from the CIO challenge (CQ10)', () => {
       if (amounts) expect(t, x.label).not.toContain('no saving is stated');
       // With indicative ranges (A1) the summary says each range is replaced by a measured figure instead.
       if (amounts && x.i.result.findings.length) expect(t, x.label).toMatch(indicativeFor(x.i).total ? /Each indicative range is replaced by a measured figure/ : /the only amounts? in this report (is|are) /);
+      // A3: the indicative value says the measured and FinOps IQ amounts are separate and not added to it.
+      if (amounts && indicativeFor(x.i).total) expect(t, x.label).toContain('shown separately below and not added to it');
     }
     expect(cases.some(x => x.i.nonCloud?.status === 'quantified')).toBe(true);
   });

@@ -544,3 +544,26 @@ Owner decision of 12 Nov 2026: the delivery detail and the technical execution m
   - "Where to look first" and the note that scores are not savings move to the scores section.
 - **Result.** In the sample bank report, page 3 holds the whole answer, and the report falls from 18 pages to 17. With measured lever and cloud tables, those tables follow on page 4.
 - **Evidence.** A new test reads page 3 of the rendered client PDF: the amount, the moves, the decision and the first 100 days are there, and "Where to look first" is not. M4 and M5 tests follow the moved blocks. The PDF layout test no longer treats a row of figure tiles, or an unscored bar, as a heading. Unit tests 1,383; Cost IQ browser tests 23.
+
+## Product-grade plan A3 (12 Nov 2026): findings with numbers
+- **Stated titles.** The 20 hedged or soft finding titles now state the practice gap the answers show, for example:
+  - "Software licences are not reconciled to actual use", formerly "Software licensing may be inefficient".
+  - "Infrastructure capacity is not managed to demand".
+
+  Their "Why it matters" text now gives the consequence without "may". Each title was checked against the answers that raise it (the activation rules), so a title claims no more than those answers show. The finding text in both copies of the delivery library ("Evidence for F-…") follows the new titles.
+- **Methodology `6.7.0` → `6.7.1`.** This is a wording-only patch: no scores, rules or findings change. Assessments saved earlier keep the version they were made under. The release label stays `COSTIQ-1.1.0`.
+- **Numbers on each sized finding.** Three rows are added:
+  - **Addressable base:** the category's spend, at both ends of the band, and its share of spend in scope.
+  - **Indicative value**, with the LTM planning rate applied to that base.
+  - **Confidence:** Low, with the assumptions behind it (A-12, A-13), and whether the categories were assumed.
+
+  Every figure is traced (`indicative.findings[ID].baseShare`, `baseLow`, `baseHigh`).
+- **Two amounts, one story.** The note under the indicative value says what it excludes: cloud and SaaS (FinOps IQ), and the levers measured from the client's figures. Where those carry amounts, they are shown separately and not added, because they rest on measured or modelled figures while the indicative value rests on planning rates. The value-range table says the same from its side.
+- **Also fixed:** the "Needed…" evidence lists start with a capital letter.
+- **Evidence.** New tests:
+  - Catalogue lint: no "may", "might", "could" or "potentially" in a title, and titles of 70 characters or fewer.
+  - Delivery-library titles match the catalogue, and the two library copies are identical.
+  - Each sized finding has its base, rate and confidence, and the base times the rate equals the range.
+  - The scope note appears in every edition that has an amount.
+
+  Unit tests 1,387; Cost IQ browser tests 23; `validate:costiq` PASS.

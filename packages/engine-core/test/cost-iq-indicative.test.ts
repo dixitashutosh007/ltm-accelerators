@@ -182,4 +182,44 @@ describe('the report', () => {
     // The scores are supporting evidence: the areas to look at first are in the scores section, not the summary.
     expect(p3).not.toContain('Where to look first');
   }, 60_000);
+
+  it('A3: each sized finding shows its addressable base, the rate applied and a Low confidence, and the numbers agree', () => {
+    for (const { doc } of docs) {
+      const sec = doc.sections.find(x => x.id === 'findings')!;
+      const rows = sec.blocks.filter(b => b.kind === 'table').map((b: any) => b.rows.map((r: any) => r[0].join('')));
+      expect(rows.filter((r: string[]) => r.includes('Addressable base') && r.includes('Confidence')).length).toBe(ind.lines.length);
+    }
+    for (const l of ind.lines) {
+      const rate = (library.findings as any)[l.findingId].rate;
+      expect(l.shareLow).toBeCloseTo(l.baseShare * rate[0], 12);
+      expect(l.shareHigh).toBeCloseTo(l.baseShare * rate[1], 12);
+      expect(l.baseHigh! * rate[1]).toBeCloseTo(l.high!, -1);
+    }
+    expect(text(docs[0].doc)).toContain('Low. The rate and the split by category are LTM planning assumptions');
+  });
+
+  it('A3: the indicative value says what it leaves out', () => {
+    expect(text({ meta: docs[0].doc.meta, sections: [docs[0].doc.sections[0]] })).toContain('It excludes cloud and SaaS, which FinOps IQ sizes.');
+  });
 });
+
+describe('finding catalogue lint (A3)', () => {
+  it('titles are stated, not hedged, and "Why it matters" carries no "may"', () => {
+    for (const f of cfg.findings) {
+      expect(f.title, f.id).not.toMatch(/\bmay\b|\bmight\b|\bcould\b|\bpotentially\b/i);
+      expect(f.description, f.id).not.toMatch(/\bmay\b|\bmight\b|\bpotentially\b/i);
+      expect(f.title.length, f.id).toBeLessThanOrEqual(70);
+    }
+  });
+
+  it('every "Evidence for" line in the delivery library names its finding by the current title', () => {
+    const titles = new Map(cfg.findings.map((f: any) => [f.id, f.title]));
+    const lib = require('../src/accelerators/cost-iq/delivery-library.json');
+    for (const p of lib.packages) for (const t of p.prerequisites) {
+      const m = /^Evidence for (F-\d{3}) \(([^)]+)\)/.exec(t);
+      if (m) expect(m[2], `${p.recommendationId} ${m[1]}`).toBe(titles.get(m[1]));
+    }
+    expect(JSON.stringify(lib)).toBe(JSON.stringify(require('../../../docs/cio-readiness/cost-iq/delivery-library.json')));
+  });
+});
+

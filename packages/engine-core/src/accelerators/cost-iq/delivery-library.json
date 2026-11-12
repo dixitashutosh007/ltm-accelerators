@@ -10,8 +10,8 @@
       "scope": "LTM builds a reconciled baseline of technology spend by category, owner and service from the client's ledger and supporting sources, and agrees allocation rules with finance. It includes material business-led spend. It does not change the client's ledger, chart of accounts or tooling.",
       "outcome": "A reconciled baseline with documented gaps, an agreed allocation model and a named owner for each spend line.",
       "prerequisites": [
-        "Evidence for F-001 (Technology spend baseline is not sufficiently transparent), to be supplied by the client before work starts: enterprise spend ledger or equivalent; major technology category totals; owner/service mapping.",
-        "Evidence for F-002 (Technology cost allocation is not sufficiently actionable), to be supplied by the client before work starts: allocation rules; service/product ownership mapping; cost-driver or unit-economics evidence.",
+        "Evidence for F-001 (Technology spend lacks a reliable enterprise baseline), to be supplied by the client before work starts: enterprise spend ledger or equivalent; major technology category totals; owner/service mapping.",
+        "Evidence for F-002 (Technology cost is not allocated to services and owners), to be supplied by the client before work starts: allocation rules; service/product ownership mapping; cost-driver or unit-economics evidence.",
         "Named client sponsor and a nominated data owner for each evidence item",
         "Read access to the general ledger extract and procurement or accounts-payable data for the agreed period"
       ],
@@ -218,7 +218,7 @@
       "scope": "LTM designs and starts a governance forum with decision rights, challenge criteria and a stop-or-reduce process for technology spend, including business-led spend. LTM facilitates the first cycles. The client holds the decision rights; LTM does not approve or cancel spend.",
       "outcome": "A running forum with charter, thresholds, a decision log and at least one completed challenge cycle.",
       "prerequisites": [
-        "Evidence for F-003 (Low-value technology spend is not consistently challenged), to be supplied by the client before work starts: portfolio governance decisions; spend challenge/stop history; investment/value thresholds.",
+        "Evidence for F-003 (Low-value technology spend is not challenged or stopped), to be supplied by the client before work starts: portfolio governance decisions; spend challenge/stop history; investment/value thresholds.",
         "Evidence for F-017 (Business-led technology spend is not fully governed), to be supplied by the client before work starts: business-led spend inventory; ownership/governance model; procurement/billing evidence.",
         "Named client sponsor and a nominated data owner for each evidence item",
         "Executive sponsor with authority to chair the forum"
@@ -406,8 +406,8 @@
       "scope": "A short scoping step that decides whether a FinOps IQ assessment of cloud cost management is warranted, who should take part and what evidence to collect. LTM runs the FinOps IQ assessment as the next step. This package does not size opportunities or recommend cloud changes.",
       "outcome": "A scoping note naming the cloud estate in scope, participants, evidence owners and the date of a FinOps IQ assessment.",
       "prerequisites": [
-        "Evidence for F-005 (Cloud consumption may contain avoidable leakage), to be supplied by the client before work starts: cloud billing/usage data; workload-level utilization; optimization/anomaly evidence.",
-        "Evidence for F-006 (Cloud commercial commitments may not be optimized), to be supplied by the client before work starts: commitment contracts; utilization history; renewal/commitment terms.",
+        "Evidence for F-005 (Cloud cost data is not turned into action), to be supplied by the client before work starts: cloud billing/usage data; workload-level utilization; optimization/anomaly evidence.",
+        "Evidence for F-006 (Cloud and SaaS commitments limit the flexibility to cut cost), to be supplied by the client before work starts: commitment contracts; utilization history; renewal/commitment terms.",
         "Name of the cloud accounts, subscriptions or projects holder (cloud platform or finance owner)"
       ],
       "workstreams": [
@@ -546,8 +546,8 @@
       "scope": "LTM builds a subscription and licence inventory, reconciles entitlements to deployment and usage, and prepares renewal decisions with business owners. LTM prepares positions; the client signs any contract change. LTM does not give legal advice or conduct a vendor audit.",
       "outcome": "An owner-validated inventory, a reconciliation of entitlement against use, and a renewal calendar with decisions prepared per contract.",
       "prerequisites": [
-        "Evidence for F-007 (SaaS usage and licensing may contain avoidable overlap or shelfware), to be supplied by the client before work starts: SaaS user/usage data; subscription inventory; business-owner validation.",
-        "Evidence for F-008 (Software licensing may be inefficient), to be supplied by the client before work starts: license entitlements; deployment/usage reconciliation; renewal/audit exposure.",
+        "Evidence for F-007 (SaaS subscriptions are not matched to active use), to be supplied by the client before work starts: SaaS user/usage data; subscription inventory; business-owner validation.",
+        "Evidence for F-008 (Software licences are not reconciled to actual use), to be supplied by the client before work starts: license entitlements; deployment/usage reconciliation; renewal/audit exposure.",
         "Named client sponsor and a nominated data owner for each evidence item",
         "Access to contract repository and, where available, identity and usage logs"
       ],
@@ -905,7 +905,7 @@
       "scope": "LTM reviews capacity, utilisation, asset lifecycle and facility and network cost for the infrastructure in scope, on-premises and hosted, and identifies options with dependencies. It does not execute decommissioning or procurement.",
       "outcome": "A footprint review with utilisation findings, lifecycle timeline, options and dependencies for each asset group.",
       "prerequisites": [
-        "Evidence for F-009 (Infrastructure capacity or assets may be underutilized), to be supplied by the client before work starts: asset inventory; utilization/capacity data; refresh/lifecycle plan.",
+        "Evidence for F-009 (Infrastructure capacity is not managed to demand), to be supplied by the client before work starts: asset inventory; utilization/capacity data; refresh/lifecycle plan.",
         "Named client sponsor and a nominated data owner for each evidence item",
         "Access to the configuration database or asset inventory and monitoring data"
       ],
@@ -1119,8 +1119,8 @@
       "scope": "LTM analyses demand, skills, sourcing and recurring manual work, then designs and pilots changes to operating model and automation. The client decides on all employment and sourcing matters; LTM does not give employment-law advice.",
       "outcome": "A workforce and operations baseline, a prioritised automation and sourcing plan and a pilot with measured results.",
       "prerequisites": [
-        "Evidence for F-010 (Technology workforce capacity may not align to demand), to be supplied by the client before work starts: demand/capacity data; skills inventory; sourcing/workforce cost data.",
-        "Evidence for F-016 (Manual technology operations may create productivity leakage), to be supplied by the client before work starts: process inventory; manual effort/time evidence; automation candidates.",
+        "Evidence for F-010 (Technology workforce capacity is not matched to demand), to be supplied by the client before work starts: demand/capacity data; skills inventory; sourcing/workforce cost data.",
+        "Evidence for F-016 (Recurring technology operations rely on manual work), to be supplied by the client before work starts: process inventory; manual effort/time evidence; automation candidates.",
         "Named client sponsor and a nominated data owner for each evidence item",
         "HR and finance agreement to share role and cost data in anonymised or aggregated form"
       ],
@@ -1310,8 +1310,8 @@
       "scope": "LTM reviews strategic vendors, contract terms, sourcing mix and performance governance, and recommends a vendor strategy and negotiation priorities. The client leads negotiations; LTM does not act as the client's agent and gives no legal advice.",
       "outcome": "A vendor strategy with a segmentation, commercial position per key vendor, performance governance model and a negotiation calendar.",
       "prerequisites": [
-        "Evidence for F-011 (Vendor economics may contain commercial leakage), to be supplied by the client before work starts: contracts; vendor spend; commercial terms and benchmarks.",
-        "Evidence for F-020 (Technology duplication after M&A may dilute synergy), to be supplied by the client before work starts: M&A application/platform inventory; contract overlap; team/capability duplication evidence.",
+        "Evidence for F-011 (Vendor commercials are not actively managed), to be supplied by the client before work starts: contracts; vendor spend; commercial terms and benchmarks.",
+        "Evidence for F-020 (Duplicated technology after M&A is not tracked or removed), to be supplied by the client before work starts: M&A application/platform inventory; contract overlap; team/capability duplication evidence.",
         "Named client sponsor and a nominated data owner for each evidence item",
         "Procurement and legal agreement to share contracts under confidentiality"
       ],
@@ -1471,8 +1471,8 @@
       "outcome": "A scored portfolio, a disposition per application (retain, change, consolidate, retire), and the first moves under way with owners.",
       "prerequisites": [
         "Evidence for F-012 (Complexity and technical debt are contributing to run cost), to be supplied by the client before work starts: architecture/dependency evidence; technical-debt inventory; run/change effort evidence.",
-        "Evidence for F-013 (Application portfolio may contain avoidable cost), to be supplied by the client before work starts: application portfolio; usage/business value; run/support cost and duplication evidence.",
-        "Evidence for F-020 (Technology duplication after M&A may dilute synergy), to be supplied by the client before work starts: M&A application/platform inventory; contract overlap; team/capability duplication evidence.",
+        "Evidence for F-013 (Application retirement and duplication are not governed), to be supplied by the client before work starts: application portfolio; usage/business value; run/support cost and duplication evidence.",
+        "Evidence for F-020 (Duplicated technology after M&A is not tracked or removed), to be supplied by the client before work starts: M&A application/platform inventory; contract overlap; team/capability duplication evidence.",
         "Named client sponsor and a nominated data owner for each evidence item",
         "Application owners available to validate records"
       ],
@@ -1690,10 +1690,10 @@
       "scope": "LTM designs and implements a benefits process: baselines, targets, owners and post-implementation reviews, including for transformation and AI investments. It applies the process to a first set of live investments. It does not own benefits delivery.",
       "outcome": "A benefits framework in use on selected investments, with baselines, owners, KPIs and review dates.",
       "prerequisites": [
-        "Evidence for F-004 (Technology investment benefits are not consistently measured), to be supplied by the client before work starts: benefit baselines; benefit targets; post-delivery KPI evidence.",
+        "Evidence for F-004 (Technology investment benefits are not measured after go-live), to be supplied by the client before work starts: benefit baselines; benefit targets; post-delivery KPI evidence.",
         "Evidence for F-014 (Business perception of technology value is weak or mixed), to be supplied by the client before work starts: business stakeholder evidence; service/product KPIs; satisfaction trend.",
         "Evidence for F-018 (Transformation spend lacks measurable outcomes), to be supplied by the client before work starts: transformation business cases; outcome baselines/targets; post-delivery benefits evidence.",
-        "Evidence for F-019 (AI investment economics are not sufficiently defined), to be supplied by the client before work starts: AI workload/use-case cost data; unit economics; business outcome evidence.",
+        "Evidence for F-019 (AI investment has no defined cost and value case), to be supplied by the client before work starts: AI workload/use-case cost data; unit economics; business outcome evidence.",
         "Named client sponsor and a nominated data owner for each evidence item",
         "List of current major investments and their business cases"
       ],
@@ -1881,7 +1881,7 @@
       "outcome": "A sequenced roadmap with dependencies, funding view, flexibility analysis and decision points.",
       "prerequisites": [
         "Evidence for F-015 (Technology investment is difficult to redirect), to be supplied by the client before work starts: contractual commitments; funding model; dependency/criticality evidence.",
-        "Evidence for F-019 (AI investment economics are not sufficiently defined), to be supplied by the client before work starts: AI workload/use-case cost data; unit economics; business outcome evidence.",
+        "Evidence for F-019 (AI investment has no defined cost and value case), to be supplied by the client before work starts: AI workload/use-case cost data; unit economics; business outcome evidence.",
         "Named client sponsor and a nominated data owner for each evidence item",
         "Strategic priorities from the executive team and the current budget"
       ],

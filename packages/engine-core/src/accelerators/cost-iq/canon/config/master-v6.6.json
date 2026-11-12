@@ -2,7 +2,7 @@
   "manifest": {
     "product": "Cost IQ",
     "schemaVersion": "1.2",
-    "masterVersion": "6.7.0",
+    "masterVersion": "6.7.1",
     "releaseId": "COSTIQ-1.1.0",
     "releaseStatus": "approved",
     "lastUpdated": "2026-11-10",
@@ -7555,8 +7555,8 @@
     {
       "id": "F-001",
       "dimension": "Spend Transparency",
-      "title": "Technology spend baseline is not sufficiently transparent",
-      "description": "The current cost view may not provide a reliable enterprise picture for challenge, allocation or investment decisions.",
+      "title": "Technology spend lacks a reliable enterprise baseline",
+      "description": "Without a reliable enterprise view of spend, cost cannot be challenged, allocated or weighed against investment with confidence.",
       "severity": "high",
       "recommendationIds": [
         "R-001"
@@ -7567,8 +7567,8 @@
     {
       "id": "F-002",
       "dimension": "Spend Transparency",
-      "title": "Technology cost allocation is not sufficiently actionable",
-      "description": "Spend may be visible in aggregate but not consistently attributable to services, products, owners or outcomes.",
+      "title": "Technology cost is not allocated to services and owners",
+      "description": "Spend that is visible in total but not attributed to services, products, owners or outcomes cannot be managed by the people who drive it.",
       "severity": "medium",
       "recommendationIds": [
         "R-001"
@@ -7579,8 +7579,8 @@
     {
       "id": "F-003",
       "dimension": "Cost Governance",
-      "title": "Low-value technology spend is not consistently challenged",
-      "description": "Governance may lack a repeatable mechanism to challenge or stop spend that no longer creates sufficient value.",
+      "title": "Low-value technology spend is not challenged or stopped",
+      "description": "Without a repeatable way to challenge and stop spend, technology that no longer earns its cost keeps running.",
       "severity": "high",
       "recommendationIds": [
         "R-002"
@@ -7591,8 +7591,8 @@
     {
       "id": "F-004",
       "dimension": "Investment Effectiveness",
-      "title": "Technology investment benefits are not consistently measured",
-      "description": "Benefits may be tracked unevenly, reducing the CIO’s ability to distinguish investment that creates value from investment that simply consumes budget.",
+      "title": "Technology investment benefits are not measured after go-live",
+      "description": "Without benefits tracked after go-live, investment that creates value cannot be told apart from investment that only consumes budget.",
       "severity": "high",
       "recommendationIds": [
         "R-009"
@@ -7603,8 +7603,8 @@
     {
       "id": "F-005",
       "dimension": "Cloud Economics",
-      "title": "Cloud consumption may contain avoidable leakage",
-      "description": "Cloud consumption appears insufficiently aligned to actual demand, creating potential optimization and cost-avoidance opportunity subject to evidence validation.",
+      "title": "Cloud cost data is not turned into action",
+      "description": "Cloud cost that is reported but not acted on lets consumption run ahead of demand. FinOps IQ sizes this saving.",
       "severity": "high",
       "recommendationIds": [
         "R-003"
@@ -7615,8 +7615,8 @@
     {
       "id": "F-006",
       "dimension": "Cloud Economics",
-      "title": "Cloud commercial commitments may not be optimized",
-      "description": "Commitment and commercial structures may leave avoidable cost or flexibility leakage subject to evidence validation.",
+      "title": "Cloud and SaaS commitments limit the flexibility to cut cost",
+      "description": "Commitments and contract terms that limit flexibility hold cost in place when demand falls. FinOps IQ sizes the cloud effect.",
       "severity": "medium",
       "recommendationIds": [
         "R-003"
@@ -7627,8 +7627,8 @@
     {
       "id": "F-007",
       "dimension": "SaaS & Software Economics",
-      "title": "SaaS usage and licensing may contain avoidable overlap or shelfware",
-      "description": "Subscriptions may not be fully aligned to active users, usage and business need.",
+      "title": "SaaS subscriptions are not matched to active use",
+      "description": "Subscriptions not matched to active users and business need keep paying for shelfware and overlap. FinOps IQ sizes measured SaaS licences.",
       "severity": "high",
       "recommendationIds": [
         "R-004"
@@ -7639,8 +7639,8 @@
     {
       "id": "F-008",
       "dimension": "SaaS & Software Economics",
-      "title": "Software licensing may be inefficient",
-      "description": "License models, entitlement position or renewal practices may create avoidable cost or compliance exposure.",
+      "title": "Software licences are not reconciled to actual use",
+      "description": "Licences not reconciled to deployment and use leave cost in unused entitlement and create audit exposure at renewal.",
       "severity": "high",
       "recommendationIds": [
         "R-004"
@@ -7651,8 +7651,8 @@
     {
       "id": "F-009",
       "dimension": "Infrastructure Economics",
-      "title": "Infrastructure capacity or assets may be underutilized",
-      "description": "Capacity and lifecycle practices may create avoidable run cost or excess footprint.",
+      "title": "Infrastructure capacity is not managed to demand",
+      "description": "Capacity set by refresh cycles and headroom rather than demand carries run cost and footprint the business does not use.",
       "severity": "medium",
       "recommendationIds": [
         "R-005"
@@ -7663,8 +7663,8 @@
     {
       "id": "F-010",
       "dimension": "Workforce Economics",
-      "title": "Technology workforce capacity may not align to demand",
-      "description": "Skills, capacity or sourcing may be mismatched with actual demand, creating productivity and cost leakage.",
+      "title": "Technology workforce capacity is not matched to demand",
+      "description": "Skills, capacity or sourcing that do not match demand leave cost in idle or contracted capacity and slow delivery.",
       "severity": "medium",
       "recommendationIds": [
         "R-006"
@@ -7675,8 +7675,8 @@
     {
       "id": "F-011",
       "dimension": "Vendor & Commercial Economics",
-      "title": "Vendor economics may contain commercial leakage",
-      "description": "Vendor structures, commercials or governance may limit leverage and value realization.",
+      "title": "Vendor commercials are not actively managed",
+      "description": "Contracts challenged only at renewal, charged as fixed fees or negotiated separately give away commercial leverage.",
       "severity": "high",
       "recommendationIds": [
         "R-007"
@@ -7688,7 +7688,7 @@
       "id": "F-012",
       "dimension": "Architecture & Technology Economics",
       "title": "Complexity and technical debt are contributing to run cost",
-      "description": "Architecture choices or accumulated debt may be increasing operational effort, change cost or platform cost.",
+      "description": "Architecture complexity and accumulated technical debt raise operating effort, the cost of change and platform cost.",
       "severity": "high",
       "recommendationIds": [
         "R-008"
@@ -7699,8 +7699,8 @@
     {
       "id": "F-013",
       "dimension": "Application Economics",
-      "title": "Application portfolio may contain avoidable cost",
-      "description": "Duplication, legacy, low-value or high-support applications may consume disproportionate cost.",
+      "title": "Application retirement and duplication are not governed",
+      "description": "Duplicate, legacy, low-value or high-support applications kept without lifecycle decisions consume cost out of proportion to their value.",
       "severity": "high",
       "recommendationIds": [
         "R-008"
@@ -7712,7 +7712,7 @@
       "id": "F-014",
       "dimension": "Business Satisfaction",
       "title": "Business perception of technology value is weak or mixed",
-      "description": "Stakeholder perception suggests value delivered may not consistently justify technology cost.",
+      "description": "When the business doubts the value delivered, technology cost is harder to defend and reinvestment harder to win.",
       "severity": "medium",
       "recommendationIds": [
         "R-009"
@@ -7724,7 +7724,7 @@
       "id": "F-015",
       "dimension": "Strategic Agility",
       "title": "Technology investment is difficult to redirect",
-      "description": "Committed run cost, contracts or funding structures may constrain reallocation when priorities change.",
+      "description": "Committed run cost, contracts or funding structures hold money in place when priorities change.",
       "severity": "high",
       "recommendationIds": [
         "R-010"
@@ -7735,8 +7735,8 @@
     {
       "id": "F-016",
       "dimension": "Operations Economics",
-      "title": "Manual technology operations may create productivity leakage",
-      "description": "Recurring work may depend on manual effort that could potentially be automated or standardized.",
+      "title": "Recurring technology operations rely on manual work",
+      "description": "Recurring work done by hand costs effort that automation or standard services would remove.",
       "severity": "medium",
       "recommendationIds": [
         "R-006"
@@ -7748,7 +7748,7 @@
       "id": "F-017",
       "dimension": "Cost Governance",
       "title": "Business-led technology spend is not fully governed",
-      "description": "Material spend outside the central technology organization may reduce visibility, leverage and enterprise optimization.",
+      "description": "Material spend outside the central technology organisation escapes visibility, aggregated buying and enterprise standards.",
       "severity": "high",
       "recommendationIds": [
         "R-002",
@@ -7761,7 +7761,7 @@
       "id": "F-018",
       "dimension": "Benefits Realization",
       "title": "Transformation spend lacks measurable outcomes",
-      "description": "Major transformation investment may not have sufficiently clear outcome baselines, targets or post-delivery accountability.",
+      "description": "Major transformation spend without outcome baselines, targets or post-delivery accountability cannot show what it returned.",
       "severity": "high",
       "recommendationIds": [
         "R-009"
@@ -7772,8 +7772,8 @@
     {
       "id": "F-019",
       "dimension": "Investment Effectiveness",
-      "title": "AI investment economics are not sufficiently defined",
-      "description": "AI investment may be proceeding without a consistent view of cost, value, benefits and scale economics.",
+      "title": "AI investment has no defined cost and value case",
+      "description": "AI spend without a consistent view of cost, value and scale economics cannot be prioritised or scaled on evidence.",
       "severity": "medium",
       "recommendationIds": [
         "R-009",
@@ -7785,8 +7785,8 @@
     {
       "id": "F-020",
       "dimension": "Application Economics",
-      "title": "Technology duplication after M&A may dilute synergy",
-      "description": "Acquired and incumbent technology estates may have overlapping platforms, contracts or teams.",
+      "title": "Duplicated technology after M&A is not tracked or removed",
+      "description": "Overlapping platforms, contracts or teams left after an acquisition keep paying twice for the same capability.",
       "severity": "high",
       "recommendationIds": [
         "R-008",
