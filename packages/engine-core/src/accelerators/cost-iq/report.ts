@@ -252,6 +252,7 @@ const hasMoney = (c: Ctx) => !!c.ind.total && (c.ind.total.low != null || c.ind.
 /** The number a reader uses for a finding (its position in the report). */
 const findingNo = (c: Ctx, id: string) => orderedFindings(c.findings).findIndex(f => f.id === id) + 1;
 /** Sentence case for a catalogue title, keeping an acronym's capitals ("SaaS usage", not "saaS usage"). */
+const upperFirst = (t: string) => t.charAt(0).toUpperCase() + t.slice(1);
 const lowerFirst = (t: string) => (/^[A-Z][A-Z]/.test(t) || /^[A-Z][a-z]+[A-Z]/.test(t) ? t : t.charAt(0).toLowerCase() + t.slice(1));
 const IND_REASON: Record<string, string> = { ...(INDICATIVE_LIBRARY.notSizedReason as Record<string, string>), measured: 'Sized from the client\'s own measured figures instead (see "Non-cloud levers and total").' };
 
@@ -266,8 +267,20 @@ function valueLead(c: Ctx): Block[] {
   segs.push(counted.length > 1 ? 'Most of it sits in three moves: ' : 'It sits in one move: ', ...counted.flatMap((l, k) => [k ? '; ' : '', quoted(l.lever.charAt(0).toLowerCase() + l.lever.slice(1)), ' (', ref(`Finding ${findingNo(c, l.findingId)}`), ')']), '.');
   return [
     { kind: 'paragraph', style: 'lead', segs },
-    { kind: 'paragraph', style: 'small', segs: ['An LTM planning estimate, not a published benchmark and not a savings commitment: the annual run rate once delivered, before the cost to deliver it. ', ref('Section 2'), ' shows each range and how it is worked out; a measured figure replaces a range when the client supplies the evidence.'] }
+    { kind: 'paragraph', style: 'small', segs: ['An LTM planning estimate, not a published benchmark and not a savings commitment: the annual run rate once delivered, before the cost to deliver it. ', ref('Section 2'), ' shows each range and how it is worked out; a measured figure replaces a range when the client supplies the evidence. ', scopeNote(c)] }
   ];
+}
+
+/**
+ * What the indicative value leaves out (A3): cloud and SaaS (FinOps IQ) and any lever measured from the client's figures.
+ * Where those carry amounts they are shown separately and not added, because one is a planning estimate and the other is not.
+ */
+function scopeNote(c: Ctx): string {
+  const cloud = c.i.finops?.status === 'quantified', nc = !!sized(c)?.total;
+  if (!cloud && !nc) return 'It excludes cloud and SaaS, which FinOps IQ sizes.';
+  const parts = [cloud ? 'the cloud line from FinOps IQ' : 'cloud and SaaS, which FinOps IQ sizes', ...(nc ? ['the levers sized from the client\'s measured figures'] : [])];
+  const shown = [...(nc ? ['the value range from measured figures'] : []), ...(cloud ? ['the cloud line'] : [])];
+  return `It excludes ${parts.join(' and ')}. ${shown.join(' and ').replace(/^t/, 'T')} ${shown.length > 1 ? 'are' : 'is'} shown separately below and not added to it, because ${shown.length > 1 ? 'they rest' : 'it rests'} on measured or modelled figures and the indicative value on planning rates.`;
 }
 
 function valueSection(c: Ctx): ReportSection | null {
@@ -441,7 +454,7 @@ function summary(c: Ctx): ReportSection {
   if (nc?.total) {
     blocks.push({ kind: 'subheading', text: nc.total.cloudIncluded ? 'Value range: total across the estate' : 'Value range: total excluding cloud' });
     blocks.push(totalTable(nc.total, nc.currency));
-    blocks.push({ kind: 'paragraph', style: 'small', segs: [nc.total.cloudNote, ' Each case is net of the client\'s own internal cost to deliver (external fees, tools and contract penalties are not included and are agreed separately), phased as the lever sections explain. The range is indicative and depends on the client-measured figures set out under "Non-cloud levers and total". ', confidenceNote(c)] });
+    blocks.push({ kind: 'paragraph', style: 'small', segs: [...(c.ind.total ? ['Separate from the indicative value above, which covers the other cost findings. '] : []), nc.total.cloudNote, ' Each case is net of the client\'s own internal cost to deliver (external fees, tools and contract penalties are not included and are agreed separately), phased as the lever sections explain. The range is indicative and depends on the client-measured figures set out under "Non-cloud levers and total". ', confidenceNote(c)] });
   }
   // A quantified cloud line is money and keeps its table; otherwise its status is one sentence in the note on what is sized.
   const cloud = cloudLine(c);
@@ -616,7 +629,20 @@ function sharedWith(c: Ctx, f: Finding, k: number): number[] {
 /** A finding's indicative range, or why it has none, as a row of its table. */
 function indicativeRow(c: Ctx, f: Finding): Seg[][][] {
   const l = c.ind.lines.find(x => x.findingId === f.id);
-  if (l) return [[['Indicative value'], [...(hasMoney(c) ? [...moneyRange(c, `indicative.findings[${f.id}]`, l.low, l.high), ' a year, '] : []), ...shareRange(`indicative.findings[${f.id}]`, l.shareLow, l.shareHigh), ' of spend in scope. LTM planning estimate.']]];
+  // A3: the numbers behind the range, so a reader can check it: the category spend it applies to, the rate and how sure it is.
+  if (l) {
+    const p = `indicative.findings[${f.id}]`;
+    const m = (k: 'baseLow' | 'baseHigh', v: number) => traced(`${p}.${k}`, v, 'currency', [], IND_ASM, c.ind.currency);
+    const base: Seg[] = hasMoney(c) && (l.baseLow != null || l.baseHigh != null)
+      ? [...(l.baseHigh == null ? ['at least ', m('baseLow', l.baseLow!)] : !l.baseLow ? ['up to ', m('baseHigh', l.baseHigh)] : [m('baseLow', l.baseLow), ' to ', m('baseHigh', l.baseHigh)]), ' a year, ']
+      : [];
+    const rate = (INDICATIVE_LIBRARY.findings as unknown as Record<string, { rate: [number, number] }>)[f.id].rate;
+    return [
+      [['Addressable base'], [quoted(upperFirst((INDICATIVE_LIBRARY.categoryLabels as Record<string, string>)[l.category])), ': ', ...base, ...(l.baseShare >= 1 ? ['all of the spend in scope, which the client said is this category only.'] : [share(`${p}.baseShare`, l.baseShare), ' of spend in scope, on a typical split by category.'])]],
+      [['Indicative value'], [...(hasMoney(c) ? [...moneyRange(c, p, l.low, l.high), ' a year, '] : []), ...shareRange(p, l.shareLow, l.shareHigh), ' of spend in scope: ', ref(`an LTM planning rate of ${Math.round(rate[0] * 100)}% to ${Math.round(rate[1] * 100)}%`), ' of the base.', ...(l.counted ? [] : [' Overlaps another finding in the same category, so it is counted once in the total.'])]],
+      [['Confidence'], [ref(`Low. The rate and the split by category are LTM planning assumptions (A-12, A-13), not measured.${c.ind.categoriesAssumed ? ' The client did not say which categories the spend includes, so every category is assumed.' : ''} The evidence below replaces the range with a measured figure.`)]]
+    ];
+  }
   const n = c.ind.notSized.find(x => x.findingId === f.id);
   return n && n.reason !== 'enabler' ? [[['Indicative value'], [IND_REASON[n.reason]]]] : [];
 }
@@ -646,7 +672,7 @@ function findingsSection(c: Ctx): ReportSection {
       ...(sharedWith(c, f, k).length ? [[['Shares its trigger'], [ref(`The same answer also raises ${sharedWith(c, f, k).map(n => `Finding ${n}`).join(' and ')}.`)]]] as Seg[][][] : []),
       ...((i.result.cio?.findingContext[f.id] ?? []).length ? [[['Where the client sees it'], (i.result.cio!.findingContext[f.id]).flatMap((x, n) => [n ? '\n' : '', strong(x.label), ': ', ...answerSegs(i, x.questionId, x.answer)])]] as Seg[][][] : []),
       ...indicativeRow(c, f),
-      [[c.ind.lines.some(l => l.findingId === f.id) ? 'Needed to measure it' : 'Needed before it is sized'], [o?.economic.missingEvidence?.length ? o.economic.missingEvidence.join('; ') : 'Evidence supplied; feasibility still to be agreed']]
+      [[c.ind.lines.some(l => l.findingId === f.id) ? 'Needed to measure it' : 'Needed before it is sized'], [o?.economic.missingEvidence?.length ? upperFirst(o.economic.missingEvidence.join('; ')) : 'Evidence supplied; feasibility still to be agreed']]
     ];
     if (c.opts.view === 'consultant' && o?.practical.missingFactors?.length) rows.push([['Feasibility to agree'], [o.practical.missingFactors.join('; ')]]);
     blocks.push({ kind: 'table', head: ['Topic', 'Detail'], widths: [120, '*'], rows, small: true });
