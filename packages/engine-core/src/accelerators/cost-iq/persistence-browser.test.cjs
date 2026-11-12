@@ -15,7 +15,9 @@ async function main() {
   assert.doesNotMatch(source, /COST_IQ_DATA_URL|graphql/i, 'the browser no longer calls the Data API (CQ1)');
 
   const calls = [];
-  const window = { COST_IQ_API: 'https://api.example/', LTM_API: { getIdToken: async () => 'parent-id-token', refreshIdToken: async () => null } };
+  // Two APIs, as in production: COST_IQ_API is the Accelerators API (scoring only); saving goes to the Advisory API (LTM_API.apiBase).
+  let advisory = 'https://advisory.example';
+  const window = { COST_IQ_API: 'https://engine.example/', LTM_API: { apiBase: () => advisory, getIdToken: async () => 'parent-id-token', refreshIdToken: async () => null } };
   const context = {
     window,
     location: { pathname: '/cost-iq-v10', search: '', href: '' },
@@ -38,7 +40,8 @@ async function main() {
   await api.remove('A0');
 
   assert.equal(calls.length, 6);
-  assert.ok(calls.every(c => c.url.startsWith('https://api.example//api/cost-iq/assessment') || c.url.startsWith('https://api.example/') ), 'calls go to the Advisory API');
+  assert.ok(calls.every(c => c.url.startsWith('https://advisory.example/api/cost-iq/assessment')), 'calls go to the Advisory API, not the scoring API');
+  assert.equal(api.base(), 'https://advisory.example', 'the report download uses the same base');
   assert.ok(calls.every(c => c.url.includes('/api/cost-iq/assessment')));
   assert.ok(calls.every(c => c.init.headers.Authorization === 'Bearer parent-id-token'), 'every call carries the platform token');
   assert.deepEqual(calls.slice(0, 3).map(c => c.body.action), ['save', 'save', 'complete'], 'a completed record asks the server to complete it');
@@ -47,8 +50,8 @@ async function main() {
   assert.ok(calls[3].url.endsWith('?assessmentId=A0'));
   assert.deepEqual(calls[5].body, { action: 'delete', assessmentId: 'A0' });
 
-  window.COST_IQ_API = '';
-  assert.equal(api.configured(), false);
+  advisory = '';
+  assert.equal(api.configured(), false, 'without the Advisory API address there is no saving');
 
   console.log('Cost IQ browser persistence API transport: PASS');
 }
