@@ -108,7 +108,8 @@ describe('Cost IQ report: priorities and the client’s view', () => {
     for (const { view, doc } of docs) {
       expect(checkCostIqReport(doc, i, view, '2026-11-08').failures, view).toEqual([]);
       const t = text(doc);
-      expect(doc.sections[1].title).toBe('Priorities and the client\'s view');
+      // The indicative value (A1) comes straight after the summary when a cost finding is sized; the client's view follows it.
+      expect(doc.sections.filter(x => x.id !== 'value')[1].title).toBe('Priorities and the client\'s view');
       expect(t).toContain('As described by the client: Banking / Financial Services');
       expect(t).toContain('EUR 890M to 4.5bn');
       expect(t).toContain('It does not include:');

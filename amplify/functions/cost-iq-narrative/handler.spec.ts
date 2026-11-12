@@ -166,8 +166,10 @@ describe('Cost IQ narrative service', () => {
     expect(costIqReport(input as any, opts).sections.some(s => s.id === 'narrative')).toBe(false);
     const n = { narrative: grounded(), modelId: 'stub-model', generatedAt: '2026-11-05T11:00:00Z' };
     const doc = costIqReport(input as any, { ...opts, aiEnabled: true, narrative: n });
-    expect(doc.sections[1].id).toBe('narrative');
-    expect(doc.sections[1].title).toMatch(/AI-written/);
+    // After the summary, and the indicative value (A1) when a cost finding is sized.
+    const after = doc.sections.filter(s => s.id !== 'value');
+    expect(after[1].id).toBe('narrative');
+    expect(after[1].title).toMatch(/AI-written/);
     expect(JSON.stringify(doc)).toContain('Amazon Bedrock in India');
     expect(checkCostIqReport(doc, input as any, 'client', '2026-11-05').failures).toEqual([]);
   });

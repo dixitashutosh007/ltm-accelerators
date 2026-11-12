@@ -11,7 +11,7 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { evaluateNonCloud, NON_CLOUD_LEVER_IDS, type NonCloudEvidence } from '../src/accelerators/cost-iq/non-cloud-levers';
 import { FINOPS_IQ_LEVER_IDS } from '../src/accelerators/finops-iq/v3/cost-iq-summary';
-import { uk, cloudless, costIqReport, costIqBacklog, resolveCostIqField, type CostIqReportInput, type CostIqResult } from '../src/accelerators/cost-iq/report';
+import { uk, cloudless, indicativeFor, costIqReport, costIqBacklog, resolveCostIqField, type CostIqReportInput, type CostIqResult } from '../src/accelerators/cost-iq/report';
 import { checkCostIqReport } from '../src/report-checks/accelerators';
 import { renderPdf } from '../src/report/pdf';
 import { toCsv } from '../src/report/csv';
@@ -181,7 +181,8 @@ describe('report fixes from the CIO challenge (CQ10)', () => {
       const t = everything(x.doc);
       const amounts = x.i.finops?.status === 'quantified' || x.i.nonCloud?.status === 'quantified';
       if (amounts) expect(t, x.label).not.toContain('no saving is stated');
-      if (amounts && x.i.result.findings.length) expect(t, x.label).toMatch(/the only amounts? in this report (is|are) /);
+      // With indicative ranges (A1) the summary says each range is replaced by a measured figure instead.
+      if (amounts && x.i.result.findings.length) expect(t, x.label).toMatch(indicativeFor(x.i).total ? /Each indicative range is replaced by a measured figure/ : /the only amounts? in this report (is|are) /);
     }
     expect(cases.some(x => x.i.nonCloud?.status === 'quantified')).toBe(true);
   });
@@ -367,8 +368,11 @@ describe('PDF layout (CQ10 challenge L4)', () => {
         const items = ((await (await pdf.getPage(p)).getTextContent()).items as any[]).filter(t => t.str.trim() && t.transform[5] > 60 && t.transform[5] < 800);
         if (!items.length) continue;
         const bottom = Math.min(...items.map(t => t.transform[5]));
-        const size = Math.max(...items.filter(t => Math.abs(t.transform[5] - bottom) < 2).map(t => Math.hypot(t.transform[0], t.transform[1])));
-        expect(size >= 10.9 || Math.abs(size - 8) < 0.05, `${n} ${view} page ${p} ends on a heading or table header`).toBe(false);
+        const last = items.filter(t => Math.abs(t.transform[5] - bottom) < 2);
+        // A score bar's row ("Application Economics 66 / 100 · 4 answered") is body content in a larger type, not a heading.
+        if (/\/ 100/.test(last.map(t => t.str).join(' '))) continue;
+        const size = Math.max(...last.map(t => Math.hypot(t.transform[0], t.transform[1])));
+        expect(size >= 10.9 || Math.abs(size - 8) < 0.05, `${n} ${view} page ${p} ends on a heading or table header: ${last.map(t => t.str).join(' ')}`).toBe(false);
       }
     }
   }, 90_000);
