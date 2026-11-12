@@ -189,3 +189,13 @@ F      ████████████████████████�
 4. **LTM benchmark dataset (C4):** pursue it. It is the only way to get industry peers without a paid source, but it needs a consent clause and counsel.
 5. **Data uploads (D1, D2):** in scope for the first release, or after the pilots?
 6. **Repository visibility (F6):** when to make it private again.
+
+### Decided (12 Nov 2026)
+
+| # | Decision |
+|---|---|
+| 1 | Planning ranges: the owner chose "LTM planning ranges", labelled as such, with the practice lead's calibration before external use. |
+| 2 | Yes: the delivery detail and the technical execution move to the consultant edition (A5). |
+| 3 | Claude builds an LTM slide master from the brand assets (B3). |
+| 4 | Yes: build LTM's own benchmark dataset (C4). Consent clause and counsel review before the first contribution. |
+| 5 | Left to Claude: **uploads after the pilots start.** Pilots run on the Phase A and B version. Each pilot client is asked for a ledger and contract-register extract, and those extracts shape the D1 mapping rules, so D is built on real data, not on guesses about its shape. D1 starts once two pilot extracts are in hand. |
