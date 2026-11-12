@@ -114,12 +114,21 @@ describe('Cost IQ report: delivery plan, offerings, execution and statement of w
       const doc = costIqReport(i, { ...OPTS, view });
       const t = everything(doc);
       const ids = doc.sections.map(s => s.id);
-      expect(ids).toContain('execution');
+      // Product-grade plan A5: workstreams, risks and practice steps are in the consultant edition only.
+      expect(ids.includes('execution')).toBe(view === 'consultant');
       expect(ids.includes('sow')).toBe(view === 'consultant');
       if (i.result.recommendations.length) {
         expect(t).toContain('Delivery plan');
-        expect(JSON.stringify(doc.sections.find(x => x.id === 'execution'))).toContain('How to check it worked');
         expect(t).toContain('A-11');
+        if (view === 'consultant') {
+          expect(JSON.stringify(doc.sections.find(x => x.id === 'execution'))).toContain('How to check it worked');
+          expect(JSON.stringify(doc)).toContain('How it is managed');
+        } else {
+          expect(JSON.stringify(doc)).toContain('Before work starts, the client supplies');
+          expect(JSON.stringify(doc)).not.toContain('How it is managed');
+          expect(JSON.stringify(doc)).not.toContain('Milestone and measures');
+          expect(t).not.toContain('technical execution section');
+        }
       }
       if (view === 'client') { expect(t).not.toMatch(/\b[FR]-\d{3}\b/); expect(t).not.toContain('statement of work'); }
       else if (i.result.recommendations.length) expect(t).toContain('Draft statement of work');

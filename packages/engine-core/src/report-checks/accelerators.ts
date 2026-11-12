@@ -84,7 +84,7 @@ export function checkSovereignIqReport(doc: ReportDocument, result: SovereignIqV
 export function checkCostIqReport(doc: ReportDocument, input: CostIqReportInput, view: View, today: string): CheckResult {
   const quantified = input.finops?.status === 'quantified';
   return runReportChecks(doc, view, {
-    requiredSections: ['summary', 'profile', 'scores', 'findings', 'cloud', 'roadmap', 'help', 'execution', 'calculation', 'assumptions', 'methodology', 'sources', ...(view === 'consultant' ? ['sow', 'consultant'] : [])],
+    requiredSections: ['summary', 'profile', 'scores', 'findings', 'cloud', 'roadmap', 'help', 'calculation', 'assumptions', 'methodology', 'sources', ...(view === 'consultant' ? ['execution', 'sow', 'consultant'] : [])],
     requiredNotices: ['not a savings commitment', 'FinOps Framework', 'creativecommons.org/licenses/by/4.0', 'does not assess legal, tax or regulatory obligations', 'Mumbai region', 'qualified professional', quantified ? 'does not estimate it again' : cloudless(input) ? 'Not applicable' : 'Not quantified'],
     // One currency per edition: skipped when the cloud line and the non-cloud levers are in different currencies (never converted).
     // The indicative ranges (A1) add their own currency when they show money.
