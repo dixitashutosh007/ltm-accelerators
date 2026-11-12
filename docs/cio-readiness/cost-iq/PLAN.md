@@ -605,3 +605,18 @@ Owner decision of 12 Nov 2026: the delivery detail and the technical execution m
   - The rendered pages were inspected for collisions and overflow.
   - Unit tests 1,400; Cost IQ and FinOps IQ browser tests 39.
 - **Still to do in B1.** Spend against the published reference (a range with a marker), and moving FinOps IQ and Sovereign IQ onto the new blocks. The dimension heat map is not needed: the scores section already draws every dimension as a bar.
+
+## Product-grade plan B2 (12 Nov 2026): the two-page CIO brief
+- **Document.** `costIqBrief` builds the brief from the same blocks as the full report: the value lead, figure tiles, findings, decision, both charts, the first 100 days and the note on what is sized. So its figures are the same traced figures.
+  - **Page 1:** the answer, and where the value sits.
+  - **Page 2:** value against time to deliver, the first 100 days, and the basis in fine print (jurisdiction, data handling, status).
+
+  It is always the client edition. Where the full report cross-refers to a section, the brief points to the full report instead.
+- **Renderer.** A `brief` layout (`meta.layout`): an LTM masthead on page 1 in place of the cover and contents, unnumbered section titles, a section that can start a new page (`newPage`), and a footer on every page. There is also a `fine` paragraph style for notices.
+- **Checks.** `checkCostIqReport(…, 'brief')` runs the same checks with the brief's three sections and its notices. The FinOps Framework attribution is not required, because the brief carries no Framework content. A brief that fails is not issued.
+- **Delivery.**
+  - `GET /api/cost-iq/report?format=brief` returns `cost-iq-brief-<client>-<date>-client.pdf` to anyone with access to the assessment.
+  - The results page has a "CIO brief (PDF)" button, first in the row.
+- **Evidence.**
+  - Tests: the brief passes the checks; every traced figure in it equals the same field in the full report; it renders to exactly two pages with the answer on page 1; the handler serves it to consultants and others alike and rejects unknown formats; the browser download test covers the new button.
+  - Unit tests 1,404; Cost IQ browser tests 24.

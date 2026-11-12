@@ -81,11 +81,15 @@ export function checkSovereignIqReport(doc: ReportDocument, result: SovereignIqV
 }
 
 /** Cost IQ: sections from the report builder; every number traced and re-read from the engine result; the notices are present. */
-export function checkCostIqReport(doc: ReportDocument, input: CostIqReportInput, view: View, today: string): CheckResult {
+export function checkCostIqReport(doc: ReportDocument, input: CostIqReportInput, view: View, today: string, edition: 'report' | 'brief' = 'report'): CheckResult {
   const quantified = input.finops?.status === 'quantified';
+  const brief = edition === 'brief';
+  const cloudNotice = quantified ? 'does not estimate it again' : cloudless(input) ? 'Not applicable' : 'Not quantified';
   return runReportChecks(doc, view, {
-    requiredSections: ['summary', 'profile', 'scores', 'findings', 'cloud', 'roadmap', 'help', 'calculation', 'assumptions', 'methodology', 'sources', ...(view === 'consultant' ? ['execution', 'sow', 'consultant'] : [])],
-    requiredNotices: ['not a savings commitment', 'FinOps Framework', 'creativecommons.org/licenses/by/4.0', 'does not assess legal, tax or regulatory obligations', 'Mumbai region', 'qualified professional', quantified ? 'does not estimate it again' : cloudless(input) ? 'Not applicable' : 'Not quantified'],
+    // The CIO brief (B2) has its own three sections and no FinOps Framework content, so no attribution; every other check is the same.
+    requiredSections: brief ? ['brief-answer', 'brief-plan', 'brief-basis'] : ['summary', 'profile', 'scores', 'findings', 'cloud', 'roadmap', 'help', 'calculation', 'assumptions', 'methodology', 'sources', ...(view === 'consultant' ? ['execution', 'sow', 'consultant'] : [])],
+    requiredNotices: brief ? ['not a savings commitment', 'does not assess legal, tax or regulatory obligations', 'Mumbai region', 'qualified professional', cloudNotice]
+      : ['not a savings commitment', 'FinOps Framework', 'creativecommons.org/licenses/by/4.0', 'does not assess legal, tax or regulatory obligations', 'Mumbai region', 'qualified professional', cloudNotice],
     // One currency per edition: skipped when the cloud line and the non-cloud levers are in different currencies (never converted).
     // The indicative ranges (A1) add their own currency when they show money.
     currency: (() => {
@@ -115,6 +119,6 @@ export function checkCostIqReport(doc: ReportDocument, input: CostIqReportInput,
     // The AI narrative may quote the scores it was given: its numbers are grounded when it is written (ai/grounding.ts), not traced.
     numbersAllowedIn: ['consultant', 'narrative'],
     clientForbidden: [/CORE-\d+/, /ADP-\d+/],
-    ids: { pattern: /\b(?:CORE|ADP|CTX)-\d{2}\b|\b[FR]-\d{3}\b|\b(?:COST|VALUE)-\d{2}\b/, clientBannedIn: ['summary', 'profile', 'scores', 'findings', 'cloud', 'roadmap', 'help', 'execution'] }
+    ids: { pattern: /\b(?:CORE|ADP|CTX)-\d{2}\b|\b[FR]-\d{3}\b|\b(?:COST|VALUE)-\d{2}\b/, clientBannedIn: ['summary', 'profile', 'scores', 'findings', 'cloud', 'roadmap', 'help', 'execution', 'brief-answer', 'brief-plan', 'brief-basis'] }
   }, today);
 }

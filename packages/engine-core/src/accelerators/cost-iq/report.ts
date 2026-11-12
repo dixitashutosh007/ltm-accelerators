@@ -168,7 +168,7 @@ function elapsed(p: Package): [number, number] {
   return [...end.values()].reduce<[number, number]>((m, e) => [Math.max(m[0], e[0]), Math.max(m[1], e[1])], [0, 0]);
 }
 
-interface Ctx { i: CostIqReportInput; client: boolean; opts: CostIqReportOptions; scored: Dimension[]; findings: Finding[]; ind: IndicativeResult }
+interface Ctx { i: CostIqReportInput; client: boolean; opts: CostIqReportOptions; scored: Dimension[]; findings: Finding[]; ind: IndicativeResult; /** The two-page CIO brief (B2): references point to the full report. */ brief?: boolean }
 
 /** The indicative ranges for this input (A1): measured levers replace the range for their finding. */
 export function indicativeFor(i: CostIqReportInput): IndicativeResult {
@@ -258,7 +258,7 @@ function valueLead(c: Ctx): Block[] {
   segs.push(counted.length > 1 ? 'Most of it sits in three moves: ' : 'It sits in one move: ', ...counted.flatMap((l, k) => [k ? '; ' : '', quoted(l.lever.charAt(0).toLowerCase() + l.lever.slice(1)), ' (', ref(`Finding ${findingNo(c, l.findingId)}`), ')']), '.');
   return [
     { kind: 'paragraph', style: 'lead', segs },
-    { kind: 'paragraph', style: 'small', segs: ['An LTM planning estimate, not a published benchmark and not a savings commitment: the annual run rate once delivered, before the cost to deliver it. ', ref('Section 2'), ' shows each range and how it is worked out; a measured figure replaces a range when the client supplies the evidence. ', scopeNote(c), ...(plausibilityChecks(c.i.answers).some(k => k.id === 'P-01' || k.id === 'P-02') ? [' The spend band is unusual against revenue and is listed to confirm under "Scope and context"; every range scales with it.'] : [])] }
+    { kind: 'paragraph', style: 'small', segs: ['An LTM planning estimate, not a published benchmark and not a savings commitment: the annual run rate once delivered, before the cost to deliver it. ', ref(c.brief ? 'The full report' : 'Section 2'), ' shows each range and how it is worked out; a measured figure replaces a range when the client supplies the evidence. ', scopeNote(c), ...(plausibilityChecks(c.i.answers).some(k => k.id === 'P-01' || k.id === 'P-02') ? [' The spend band is unusual against revenue and is listed to confirm under "Scope and context"; every range scales with it.'] : [])] }
   ];
 }
 
@@ -278,7 +278,7 @@ function scopeNote(c: Ctx): string {
  * B1 charts, drawn only from the traced figures in the table above: where the value sits (one range per counted category and
  * the total) and value against time to deliver (each sized finding by the upper end of its range and of its first step).
  */
-function valueCharts(c: Ctx): Block[] {
+function valueCharts(c: Ctx, only?: 'ranges' | 'matrix'): Block[] {
   const r = c.ind, t = r.total;
   if (!t) return [];
   const money = hasMoney(c);
@@ -289,7 +289,7 @@ function valueCharts(c: Ctx): Block[] {
     : { low: share(`${base}.shareLow`, sl) as TracedSeg, high: share(`${base}.shareHigh`, sh) as TracedSeg, shown: shareRange(base, sl, sh) };
   const label = (cat: string) => upperFirst((INDICATIVE_LIBRARY.categoryLabels as Record<string, string>)[cat]);
   const blocks: Block[] = [];
-  if (counted.length > 1) {
+  if (counted.length > 1 && only !== 'matrix') {
     blocks.push({ kind: 'subheading', text: 'Where the value sits' });
     blocks.push({ kind: 'ranges', items: [
       ...counted.map(l => ({ label: `${label(l.category)} (Finding ${findingNo(c, l.findingId)})`, ...end(`indicative.findings[${l.findingId}]`, l.low, l.high, l.shareLow, l.shareHigh) })),
@@ -303,7 +303,7 @@ function valueCharts(c: Ctx): Block[] {
     const p = rec ? pkg(c, rec.id) : undefined;
     return p ? [{ l, weeks: elapsed(p)[1], p }] : [];
   });
-  if (pts.length > 1) {
+  if (pts.length > 1 && only !== 'ranges') {
     const xmax = Math.ceil((Math.max(...pts.map(x => x.weeks)) * 1.1) / 4) * 4;
     blocks.push({ kind: 'subheading', text: 'Value against time to deliver' });
     blocks.push({ kind: 'matrix',
@@ -311,7 +311,7 @@ function valueCharts(c: Ctx): Block[] {
       y: { label: 'Up: indicative value, upper end, as a share of spend in scope', low: 'Less', high: 'More' },
       quadrant: 'More value, sooner',
       points: pts.map(x => ({ label: String(findingNo(c, x.l.findingId)), x: x.weeks, y: share(`indicative.findings[${x.l.findingId}].shareHigh`, x.l.shareHigh) as TracedSeg })),
-      key: pts.sort((a, b) => findingNo(c, a.l.findingId) - findingNo(c, b.l.findingId)).map(x => [strong(`${findingNo(c, x.l.findingId)}  `), quoted(lowerFirst(x.l.lever).replace(/^./, m => m.toUpperCase())), ': up to ', share(`indicative.findings[${x.l.findingId}].shareHigh`, x.l.shareHigh), ', ', ref(weeks([elapsed(x.p)[0], x.weeks]))])
+      key: pts.sort((a, b) => findingNo(c, a.l.findingId) - findingNo(c, b.l.findingId)).map(x => [strong(`${findingNo(c, x.l.findingId)}  `), quoted(upperFirst(x.l.lever.split(';')[0])), ...(c.brief ? [] : [': up to ', share(`indicative.findings[${x.l.findingId}].shareHigh`, x.l.shareHigh), ', ', ref(weeks([elapsed(x.p)[0], x.weeks]))])])
     });
   }
   return blocks;
@@ -454,37 +454,32 @@ function first100(c: Ctx): Block[] {
   return [
     { kind: 'subheading', text: 'The first 100 days' },
     { kind: 'table', head: ['When', 'What happens', 'Client owner'], widths: [62, '*', 110], small: true, rows },
-    { kind: 'paragraph', style: 'small', segs: ['Days run from receipt of this report. ', ...(first.length ? ['The steps shown are those for the most severe findings, in order; the roadmap lists every step. ', 'Durations are LTM planning ranges, not commitments (see the assumptions).'] : ['No delivery step is recommended yet; the roadmap explains why.'])] }
+    { kind: 'paragraph', style: 'small', segs: ['Days run from receipt of this report. ', ...(first.length ? [`The steps shown are those for the most severe findings, in order; the ${c.brief ? 'full report\'s ' : ''}roadmap lists every step. `, `Durations are LTM planning ranges, not commitments (${c.brief ? 'the full report lists the assumptions' : 'see the assumptions'}).`] : ['No delivery step is recommended yet; the roadmap explains why.'])] }
   ];
 }
 
-function summary(c: Ctx): ReportSection {
+/** The findings in one paragraph: how many, how many high, and the three most important. */
+function findingsLead(c: Ctx): Block {
   const { i } = c;
-  const blocks: Block[] = [];
-  // CIO-first (CQ12 slice 4; product-grade plan A2): one page with the value, the decision and the first 100 days. The
-  // scores and the areas to look at first are supporting evidence in the scores section.
   const top = orderedFindings(c.findings).slice(0, 3);
   const nHigh = i.result.findings.filter(f => f.severity === 'high').length;
-  blocks.push(...valueLead(c));
-  blocks.push(answerTiles(c));
-  blocks.push({ kind: 'paragraph', style: c.ind.total ? undefined : 'lead', segs: i.result.findings.length
+  return { kind: 'paragraph', style: c.ind.total ? undefined : 'lead', segs: i.result.findings.length
     ? [count('findings.count', i.result.findings.length), ` ${plural(i.result.findings.length, 'finding is', 'findings are')} raised, `, count('findings[high]', nHigh), ` ${plural(nHigh, 'of them', 'of them')} high. The most important: `,
        ...top.flatMap((f, k) => [k ? '; ' : '', ref(`Finding ${k + 1}`), ', ', quoted(lowerFirst(f.title))]), c.ind.total ? '. Each lists the evidence that turns its range into a measured figure.' : '. Each lists the evidence needed before any saving is sized.']
-    : ['No finding is raised on the answers given. That reflects the areas assessed and the questions answered; it is not evidence that no saving exists.'] });
-  const x = i.result.cio;
-  const named = x ? [...x.expectations, ...x.costHypotheses] : [];
-  if (named.length) blocks.push({ kind: 'paragraph', segs: [
-    'Of the ', count('cio.named', named.length), ` opportunity ${plural(named.length, 'area', 'areas')} the client named before seeing the findings, `, count('cio.confirmed', named.filter(e => e.status === 'confirmed').length), ' ',
-    plural(named.filter(e => e.status === 'confirmed').length, 'is', 'are'), ' confirmed by a finding',
-    ...(x!.blindSpots.length ? ['; ', count('cio.blindSpots', x!.blindSpots.length), ` high ${plural(x!.blindSpots.length, 'finding sits', 'findings sit')} outside them`] : []),
-    '. ', ref(valueSection(c) ? 'Section 3' : 'Section 2'), ' sets the client\'s view against the evidence.'
-  ] });
-  blocks.push({ kind: 'callout', tone: 'info', title: 'Decision requested', segs: [
-    i.result.findings.length
+    : ['No finding is raised on the answers given. That reflects the areas assessed and the questions answered; it is not evidence that no saving exists.'] };
+}
+
+function decision(c: Ctx): Block {
+  return { kind: 'callout', tone: 'info', title: 'Decision requested', segs: [
+    c.i.result.findings.length
       ? ['The CIO, or the head of technology finance, is asked to name an owner for each finding and to release the evidence listed against it, within ', ref('30 days'), ' of receiving this report. ', ref(sizing(c)), ' The ', ref('30 days'), ' is a default to adjust to the organisation\'s own planning cycle.'] as Seg[]
       : ['The CIO, or the head of technology finance, is asked to confirm the owner of the lowest-scoring areas in the scores section and to complete the unanswered questions within ', ref('30 days'), ' of receiving this report, so that findings can be tested. The ', ref('30 days'), ' is a default to adjust to the organisation\'s own planning cycle.'] as Seg[]
-  ].flat() });
-  blocks.push(...first100(c));
+  ].flat() };
+}
+
+/** The amounts beside the indicative value: the measured total, the cloud line, and the note on what is sized. */
+function amounts(c: Ctx): Block[] {
+  const blocks: Block[] = [];
   const nc = sized(c);
   if (nc?.total) {
     blocks.push({ kind: 'subheading', text: nc.total.cloudIncluded ? 'Value range: total across the estate' : 'Value range: total excluding cloud' });
@@ -503,9 +498,34 @@ function summary(c: Ctx): ReportSection {
       : c.i.finops?.status === 'quantified'
       ? 'The only amount in this report is the cloud line above, taken from FinOps IQ. Cost IQ does not size any non-cloud saving here, so no total across the estate is stated: each finding lists the evidence needed first. '
       : 'No amount is stated. Cost IQ does not size a saving from self-reported answers: each finding lists the evidence needed first. ',
-    ...(cloudQuantified ? [] : cloud.flatMap(b => (b.kind === 'callout' ? [...b.segs, ' '] : []))),
+    // The brief states the cloud line's status in one sentence; the full report says what to do about it.
+    ...(cloudQuantified ? [] : c.brief
+      ? [cloudless(c.i) ? 'Cloud line: not applicable, because no public cloud, SaaS or AI estate was described. ' : `Cloud line: not quantified, because ${c.i.finops ? 'the linked FinOps IQ assessment shows no money for this estate' : 'no FinOps IQ assessment is linked'}. `]
+      : cloud.flatMap(b => (b.kind === 'callout' ? [...b.segs, ' '] : []))),
     'Indicative figures are for planning. They are not a savings commitment and need validating against the organisation\'s own data.'
   ] });
+  return blocks;
+}
+
+function summary(c: Ctx): ReportSection {
+  const { i } = c;
+  const blocks: Block[] = [];
+  // CIO-first (CQ12 slice 4; product-grade plan A2): one page with the value, the decision and the first 100 days. The
+  // scores and the areas to look at first are supporting evidence in the scores section.
+  blocks.push(...valueLead(c));
+  blocks.push(answerTiles(c));
+  blocks.push(findingsLead(c));
+  const x = i.result.cio;
+  const named = x ? [...x.expectations, ...x.costHypotheses] : [];
+  if (named.length) blocks.push({ kind: 'paragraph', segs: [
+    'Of the ', count('cio.named', named.length), ` opportunity ${plural(named.length, 'area', 'areas')} the client named before seeing the findings, `, count('cio.confirmed', named.filter(e => e.status === 'confirmed').length), ' ',
+    plural(named.filter(e => e.status === 'confirmed').length, 'is', 'are'), ' confirmed by a finding',
+    ...(x!.blindSpots.length ? ['; ', count('cio.blindSpots', x!.blindSpots.length), ` high ${plural(x!.blindSpots.length, 'finding sits', 'findings sit')} outside them`] : []),
+    '. ', ref(valueSection(c) ? 'Section 3' : 'Section 2'), ' sets the client\'s view against the evidence.'
+  ] });
+  blocks.push(decision(c));
+  blocks.push(...first100(c));
+  blocks.push(...amounts(c));
   return { id: 'summary', title: 'Executive summary', blocks };
 }
 
@@ -1031,6 +1051,40 @@ export function costIqReport(rawInput: CostIqReportInput, opts: CostIqReportOpti
   };
   // Last pass: every string in the sections in British spelling, the client's own name aside (L2).
   const name = opts.client.trim();
+  const protect = (t: string) => (name.length >= 2 ? t.split(name).map(uk).join(name) : uk(t));
+  return { ...doc, sections: JSON.parse(JSON.stringify(doc.sections), (_k, v) => (typeof v === 'string' ? protect(v) : v)) };
+}
+
+/**
+ * The two-page CIO brief (product-grade plan B2): the answer on page 1 (value, tiles, findings, decision), where the value is
+ * and the first 100 days on page 2, and the basis in brief. Built from the same blocks as the full report, so its figures are
+ * the same traced figures and it passes the same checks (checkCostIqReport with edition 'brief'). Always the client edition.
+ */
+export function costIqBrief(rawInput: CostIqReportInput, opts: Omit<CostIqReportOptions, 'view'>): ReportDocument {
+  const input: CostIqReportInput = { ...rawInput, result: britishResult(rawInput.result) };
+  const o: CostIqReportOptions = { ...opts, view: 'client' };
+  const c: Ctx = { i: input, client: true, opts: o, scored: input.result.dimensions.filter(d => d.score != null), findings: byClientPriority(input.result), ind: indicativeFor(input), brief: true };
+  const doc: ReportDocument = {
+    meta: {
+      platform: PLATFORM, product: PRODUCT, title: 'CIO brief: technology cost and value',
+      subtitle: 'The answer, where the value is, and the first 100 days',
+      client: o.client, preparedBy: o.preparedBy, dataProvidedBy: o.dataProvidedBy, date: input.assessmentDate,
+      version: `Cost IQ methodology ${(config as any).manifest.masterVersion}`, view: 'client', layout: 'brief',
+      footer: `${PLATFORM} · ${PRODUCT} · CIO brief · Confidential`,
+      status: 'Indicative assessment from self-reported answers. Not a savings commitment.'
+    },
+    sections: [
+      // Page 1: the answer, where the value sits and what is sized. Page 2: priorities, the first 100 days and the basis.
+      { id: 'brief-answer', title: 'The answer', blocks: [...valueLead(c), answerTiles(c), findingsLead(c), decision(c), ...valueCharts(c, 'ranges'), ...amounts(c)] },
+      { id: 'brief-plan', title: c.ind.total ? 'Priorities and the first 100 days' : 'The first 100 days', newPage: true, blocks: [...valueCharts(c, 'matrix'), ...first100(c)] },
+      { id: 'brief-basis', title: 'Basis', blocks: [
+        ...[noRegulatoryCoverage('Cost IQ')].map(b => (b.kind === 'callout' ? { kind: 'paragraph', style: 'fine', segs: [strong(`${b.title ?? ''}. `), ...b.segs] } as Block : b)),
+        { kind: 'paragraph', style: 'fine', segs: [strong('How your data is handled. '), NOTICES.dataWith(!!o.aiEnabled)] },
+        { kind: 'paragraph', style: 'fine', segs: [strong('Status. '), `${NOTICES.disclaimer} Prepared by ${o.preparedBy}; data provided by ${o.dataProvidedBy}.`] }
+      ] }
+    ]
+  };
+  const name = o.client.trim();
   const protect = (t: string) => (name.length >= 2 ? t.split(name).map(uk).join(name) : uk(t));
   return { ...doc, sections: JSON.parse(JSON.stringify(doc.sections), (_k, v) => (typeof v === 'string' ? protect(v) : v)) };
 }

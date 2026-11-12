@@ -30,7 +30,8 @@ export interface Trace {
 export type Seg = string | { text: string; trace?: Trace; cite?: string[]; ref?: true; strong?: boolean; italic?: boolean };
 
 export type Block =
-  | { kind: 'paragraph'; segs: Seg[]; style?: 'lead' | 'small' | 'note' }
+  /** 'fine' is fine print, for notices at the end of a short document (the CIO brief's basis). */
+  | { kind: 'paragraph'; segs: Seg[]; style?: 'lead' | 'small' | 'note' | 'fine' }
   | { kind: 'subheading'; text: string }
   | { kind: 'list'; items: Seg[][]; small?: boolean }
   | { kind: 'table'; head: string[]; rows: Seg[][][]; widths?: Array<number | '*' | 'auto'>; small?: boolean }
@@ -69,6 +70,8 @@ export interface ReportSection {
   blocks: Block[];
   /** Appendices start on a new page and are numbered A, B, C. */
   appendix?: boolean;
+  /** Starts on a new page (the brief layout's second page). */
+  newPage?: boolean;
 }
 
 export interface ReportMeta {
@@ -89,6 +92,11 @@ export interface ReportMeta {
   status?: string;
   /** The client's logo (PNG or JPEG data URL) for the cover. */
   clientLogo?: string;
+  /**
+   * 'brief' (product-grade plan B2): a short document with a masthead on page 1 instead of the cover and contents, unnumbered
+   * section titles and the footer on every page. Omitted: the full report.
+   */
+  layout?: 'brief';
 }
 
 export interface ReportDocument { meta: ReportMeta; sections: ReportSection[] }

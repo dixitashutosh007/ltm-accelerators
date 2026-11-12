@@ -7,7 +7,7 @@ import { describe, it, expect } from 'vitest';
 import { createRequire } from 'node:module';
 import { bandEdges, spendBand, evaluateIndicative, indicativeFigures } from '../src/accelerators/cost-iq/indicative';
 import library from '../src/accelerators/cost-iq/indicative-ranges.json' with { type: 'json' };
-import { costIqReport, costIqBacklog, indicativeFor, type CostIqReportInput, type CostIqResult } from '../src/accelerators/cost-iq/report';
+import { costIqReport, costIqBrief, costIqBacklog, indicativeFor, type CostIqReportInput, type CostIqResult } from '../src/accelerators/cost-iq/report';
 import { checkCostIqReport } from '../src/report-checks/accelerators';
 import { walkSegments, type ReportDocument } from '../src/report/model';
 
@@ -255,6 +255,52 @@ describe('value charts (B1)', () => {
     for (let n = 1; n <= pdf.numPages; n++) all += ((await (await pdf.getPage(n)).getTextContent()).items as any[]).map(x => x.str).join(' ') + ' ';
     expect(all).toContain('Where the value sits');
     expect(all).toContain('More value, sooner');
+  }, 60_000);
+});
+
+describe('the CIO brief (B2)', () => {
+  const answers: Record<string, unknown> = {
+    'CORE-01': ['ON_PREM', 'PUBLIC_CLOUD', 'SAAS', 'SOFTWARE', 'EXTERNAL'], 'CTX-01': 'GBP', 'CORE-04': '25M_50M',
+    'CORE-05': ['INFRA', 'SOFTWARE', 'APPS', 'PEOPLE', 'EXTERNAL', 'SAAS'], 'CORE-09': ['ARCHITECTURE_SIMPLIFICATION']
+  };
+  for (const id of Object.keys(library.findings)) {
+    const t = (calibration[id] ?? []).find((x: any) => x.type === 'option' && !x.applicableWhen && !answers[x.questionId]);
+    if (t) answers[t.questionId] = cfg.questions.find((q: any) => q.id === t.questionId)?.interaction?.startsWith('multi') ? [t.triggerOptions[0]] : t.triggerOptions[0];
+  }
+  const scope = { selectedAreas: AREAS };
+  const i: CostIqReportInput = { result: adapter.evaluateCostIq({ answers, scope }) as CostIqResult, answers, selectedAreas: AREAS, scope: adapter.scopeCounts({ answers, scope }), assessmentDate: '2026-11-12', currency: 'GBP', finops: null, finopsLinkedAt: null };
+  const opts = { client: 'Example Insurer', preparedBy: 'LTM', dataProvidedBy: 'Example Insurer' };
+  const brief = costIqBrief(i, opts);
+  const full = costIqReport(i, { ...opts, view: 'client' });
+  const traces = (doc: ReportDocument) => { const m = new Map<string, number>(); walkSegments(doc, s => { if (typeof s !== 'string' && s.trace) m.set(s.trace.field, s.trace.value); }); return m; };
+
+  it('passes the same report checks as the full report, as a brief', () => {
+    expect(checkCostIqReport(brief, i, 'client', '2026-11-12', 'brief').failures).toEqual([]);
+    expect(brief.meta.layout).toBe('brief');
+    expect(brief.sections.map(s => s.id)).toEqual(['brief-answer', 'brief-plan', 'brief-basis']);
+  });
+
+  it('shows the same figures as the full report: every traced field in the brief has the same value there', () => {
+    const b = traces(brief), f = traces(full);
+    expect(b.size).toBeGreaterThan(10);
+    for (const [field, v] of b) expect(f.get(field), field).toBe(v);
+  });
+
+  it('renders to two pages: the answer and where the value sits, then priorities, the first 100 days and the basis', async () => {
+    const { renderPdf } = await import('../src/report/pdf');
+    const pdfjs = await import('pdfjs-dist/legacy/build/pdf.mjs');
+    const pdf = await pdfjs.getDocument({ data: new Uint8Array(await renderPdf(brief)), verbosity: 0 }).promise;
+    expect(pdf.numPages).toBe(2);
+    const page = async (n: number) => ((await (await pdf.getPage(n)).getTextContent()).items as any[]).map(x => x.str).join(' ').replace(/\s+/g, ' ');
+    const [p1, p2] = [await page(1), await page(2)];
+    expect(p1).toContain('CIO brief: technology cost and value');
+    expect(p1).toMatch(/Indicative value: GBP [\d.]+[km]? to GBP [\d.]+[km]? a year/);
+    expect(p1).toContain('Decision requested');
+    expect(p1).toContain('Where the value sits');
+    expect(p2).toContain('Value against time to deliver');
+    expect(p2).toContain('The first 100 days');
+    expect(p2).not.toContain('see the assumptions');
+    expect(p2).toContain('does not assess legal, tax or regulatory obligations');
   }, 60_000);
 });
 
