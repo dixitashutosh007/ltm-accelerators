@@ -22,6 +22,15 @@ Do not use the retired variants: "LTM Advisory" (for the platform), "LTM CIS", "
 - **Report and PDF footer:** `LTM Vantage · Responsible Advisory · <Accelerator> · Confidential`.
 - **Feature names:** `LTM Vantage Studio` (the AI drawer) and `LTM Vantage Accelerators` (the cross-accelerator menu).
 
+## PDF reports
+
+Every accelerator report uses the shared renderer (`packages/engine-core/src/report/pdf.ts`). It applies the LTM brand (owner request, 12 Nov 2026):
+
+- **Cover:** LTM black (`#0B0B0C`), the LTM logo in coral, the LTM ribbon across the foot, white text and the coral badge. The client's logo, when given, sits below the LTM logo. There's no footer on the cover.
+- **Pages:** a small LTM logo in the running header, coral (`#FF5E4F`) rules under section headings, ink text, and the platform footer.
+- **Assets:** `packages/engine-core/src/report/brand.ts` embeds the logo (`docs/brand/LTM-Logo.svg`) and the ribbon as a JPEG, because the PDF library can't read WebP.
+- **Text colour:** coral is for marks and rules only. Small text stays ink or grey for contrast.
+
 ## Enforcement
 
 `npm run check:repo` (rule 9) fails if:
