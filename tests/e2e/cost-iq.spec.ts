@@ -538,7 +538,7 @@ test.describe('Cost IQ', () => {
     expect(world.pageErrors).toEqual([]);
   });
 
-  test('a completed assessment downloads the server-built report: PDF, client edition and backlog, each through the API', async ({ page, context, world }) => {
+  test('a completed assessment downloads the server-built report: PDF, client edition, backlog and CIO brief, each through the API', async ({ page, context, world }) => {
     await signedIn(context, permitted(makeIdToken('consultant@ltm.com', 3600, { 'cognito:groups': ['Consultant'] })));
     const answers = { 'CORE-01': ['PUBLIC_CLOUD'], 'CORE-16': 'TRUE', 'ADP-42': 'UNKNOWN' };
     const areas = ['Infrastructure', 'Applications'];
@@ -556,7 +556,8 @@ test.describe('Cost IQ', () => {
     expect(await download('Consultant edition (PDF)')).toBe('cost-iq-acme-bank.pdf');
     expect(await download('Client edition (PDF)')).toBe('cost-iq-acme-bank.pdf');
     expect(await download('Backlog (CSV)')).toBe('cost-iq-acme-bank.csv');
-    expect(asked).toEqual(['?assessmentId=CIQ-stored-0001&format=pdf&view=consultant', '?assessmentId=CIQ-stored-0001&format=pdf&view=client', '?assessmentId=CIQ-stored-0001&format=csv&view=client']);
+    expect(await download('CIO brief (PDF)')).toBe('cost-iq-acme-bank.pdf');
+    expect(asked).toEqual(['?assessmentId=CIQ-stored-0001&format=pdf&view=consultant', '?assessmentId=CIQ-stored-0001&format=pdf&view=client', '?assessmentId=CIQ-stored-0001&format=csv&view=client', '?assessmentId=CIQ-stored-0001&format=brief&view=client']);
     expect(await page.evaluate('typeof window.jspdf')).toBe('undefined');
     expect(world.pageErrors).toEqual([]);
   });

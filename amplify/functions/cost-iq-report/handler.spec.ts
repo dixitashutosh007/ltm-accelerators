@@ -66,6 +66,18 @@ describe('Cost IQ report service', () => {
     expect(String(r.headers!['Content-Disposition'])).toContain('cost-iq-example-bank-2026-11-03.pdf');
   });
 
+  it('serves the two-page CIO brief (B2) to anyone with access, always as the client edition, after the same checks', async () => {
+    await seed();
+    for (const claims of [{ email: ME, sub: 's1' }, { email: ME, sub: 's1', 'cognito:groups': '[Consultant]' }]) {
+      const r = await call(event({ assessmentId: 'CIQ-1', format: 'brief', view: 'consultant' }, claims));
+      expect(r.statusCode).toBe(200);
+      expect(r.headers!['Content-Type']).toBe('application/pdf');
+      expect(String(r.headers!['X-Report-Checks'])).toMatch(/^pass /);
+      expect(String(r.headers!['Content-Disposition'])).toContain('cost-iq-brief-example-bank-2026-11-03-client.pdf');
+    }
+    expect((await call(event({ assessmentId: 'CIQ-1', format: 'docx' }))).statusCode).toBe(400);
+  });
+
   it('serves the backlog CSV, and the client edition by name', async () => {
     await seed();
     const csv = await call(event({ assessmentId: 'CIQ-1', format: 'csv', view: 'client' }));

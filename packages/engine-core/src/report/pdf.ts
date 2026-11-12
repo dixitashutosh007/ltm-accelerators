@@ -32,7 +32,7 @@ const run = (segs: Seg[]): Content[] => segs.map(s => (typeof s === 'string' ? {
 function block(b: Block): Content {
   switch (b.kind) {
     case 'paragraph':
-      return { text: run(b.segs), style: b.style === 'lead' ? 'lead' : b.style === 'small' || b.style === 'note' ? 'small' : 'body', ...(b.style === 'note' ? { color: MUTED } : {}) };
+      return { text: run(b.segs), style: b.style === 'lead' ? 'lead' : b.style === 'fine' ? 'fine' : b.style === 'small' || b.style === 'note' ? 'small' : 'body', ...(b.style === 'note' ? { color: MUTED } : {}) };
     case 'subheading':
       return { text: b.text, style: 'h3', headlineLevel: 2 };
     case 'list':
@@ -252,11 +252,12 @@ function keepHeadingsWithContent(node: any, following: any[]): boolean {
 
 export function definition(doc: ReportDocument): TDocumentDefinitions {
   const m = doc.meta;
+  const brief = m.layout === 'brief';
   let n = 0, a = 0;
   const body: Content[] = [];
   for (const s of doc.sections) {
-    const label = s.appendix ? `Appendix ${String.fromCharCode(65 + a++)}. ${s.title}` : `${++n}. ${s.title}`;
-    body.push({ text: label, style: 'h2', pageBreak: s.appendix ? 'before' : undefined, id: s.id, tocItem: true, headlineLevel: 1 });
+    const label = brief ? s.title : s.appendix ? `Appendix ${String.fromCharCode(65 + a++)}. ${s.title}` : `${++n}. ${s.title}`;
+    body.push({ text: label, style: brief ? 'h3' : 'h2', pageBreak: s.appendix || s.newPage ? 'before' : undefined, id: s.id, tocItem: !brief, headlineLevel: 1 });
     body.push({ canvas: [{ type: 'line', x1: 0, y1: 0, x2: 495, y2: 0, lineWidth: 1, lineColor: RED }], margin: [0, 0, 0, 8] });
     const skip = new Set<number>();
     s.blocks.forEach((b, i) => {
@@ -300,12 +301,25 @@ export function definition(doc: ReportDocument): TDocumentDefinitions {
     { text: 'Contents', style: 'h3', margin: [0, 40, 0, 4], pageBreak: 'before' },
     { toc: { title: { text: '' }, numberStyle: { fontSize: 9 } }, style: 'small' }
   ];
+  // The brief's masthead: the logo, what the document is, for whom and when, and its status, above a coral rule.
+  const masthead: Content[] = [
+    { columns: [
+      { svg: LTM_LOGO_SVG, width: 64, margin: [0, 4, 0, 0] } as Content,
+      { width: '*', stack: [
+        { text: `${m.platform.toUpperCase()} · ${m.product.toUpperCase()}`, style: 'coverBadge', margin: [0, 0, 0, 3] },
+        { text: m.title, fontSize: 17, bold: true },
+        { text: `${m.client} · ${m.date} · ${m.version}`, color: MUTED, fontSize: 8.5, margin: [0, 2, 0, 0] }
+      ] }
+    ], columnGap: 16 },
+    ...(m.status ? [{ text: m.status, fontSize: 8, color: MUTED, margin: [0, 6, 0, 0] } as Content] : []),
+    { canvas: [{ type: 'line', x1: 0, y1: 0, x2: 495, y2: 0, lineWidth: 1.5, lineColor: RED }], margin: [0, 6, 0, 6] }
+  ];
   return {
     pageSize: 'A4',
     pageMargins: [50, 56, 50, 56],
     info: { title: `${m.product}: ${m.title} · ${m.client}`, author: m.preparedBy, subject: m.subtitle, creator: m.platform, producer: m.platform },
     defaultStyle: { font: 'Roboto', fontSize: 9.5, color: INK, lineHeight: 1.25 },
-    background: (page: number, size: { width: number; height: number }) => (page === 1 ? [
+    background: (page: number, size: { width: number; height: number }) => (page === 1 && !brief ? [
       { canvas: [{ type: 'rect', x: 0, y: 0, w: size.width, h: size.height, color: LTM_BLACK }] },
       { image: LTM_RIBBON_JPEG, width: size.width, absolutePosition: { x: 0, y: size.height - size.width * 553 / 1200 } }
     ] as Content : null) as any,
@@ -318,17 +332,18 @@ export function definition(doc: ReportDocument): TDocumentDefinitions {
       columnGap: 8, margin: [50, 22, 50, 0], fontSize: 7.5
     }),
     // The cover carries no footer: the ribbon fills its foot.
-    footer: (page: number, pages: number) => (page === 1 ? null : {
+    footer: (page: number, pages: number) => (page === 1 && !brief ? null : {
       columns: [{ text: m.footer, color: MUTED, headlineLevel: RUNNING }, { text: `Page ${page} of ${pages}`, alignment: 'right', color: MUTED, headlineLevel: RUNNING }],
       margin: [50, 18, 50, 0], fontSize: 7.5
     }),
-    content: [...cover, { text: '', pageBreak: 'after' }, ...body],
+    content: brief ? [...masthead, ...body] : [...cover, { text: '', pageBreak: 'after' }, ...body],
     pageBreakBefore: keepHeadingsWithContent,
     styles: {
       body: { margin: [0, 0, 0, 6] },
       lead: { fontSize: 11, margin: [0, 0, 0, 8] },
       small: { fontSize: 8.5, margin: [0, 0, 0, 6] },
       tiny: { fontSize: 7.5, color: MUTED },
+      fine: { fontSize: 7.5, lineHeight: 1.2, color: MUTED, margin: [0, 0, 0, 4] },
       h2: { fontSize: 15, bold: true, margin: [0, 6, 0, 4] },
       h3: { fontSize: 11, bold: true, margin: [0, 8, 0, 4] },
       th: { bold: true, fontSize: 8, color: MUTED },
