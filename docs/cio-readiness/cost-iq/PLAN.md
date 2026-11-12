@@ -718,3 +718,12 @@ Owner decision of 12 Nov 2026: the delivery detail and the technical execution m
 - **Report.** Under the spend-to-revenue comparison, the report names the client's industry and says no free, verifiable figure is published for it, so the comparison is cross-industry only. It names no paid source and shows no peer figure. Nothing changes for "Other".
 - **To add an industry later:** a claim in the register, then an entry in `verified`. This is the CLM rule.
 - **Evidence.** Tests: the record is in place; the industry sentence appears in both editions and the checks pass; no paid source is named; nothing is said for "Other". Cost IQ unit tests 200.
+
+## Product-grade plan C4 (12 Nov 2026): the LTM benchmark dataset, built switched off
+- **Engine** (`benchmark.ts`, `benchmark-config.json`). Off as shipped: `enabled: false`, `consentVersion: null`.
+  - A contribution is built only when the dataset is on and the client consented to the current consent version.
+  - It carries industry, revenue band, year, methodology, the two scores, the split by category in percent, and users, applications and servers per employee. There is no name, money, answer, currency or exact date.
+  - Peer figures are quartiles per metric within an industry × revenue-band group, shown only from 10 contributions, a floor configuration cannot lower.
+- **Consent.** `BENCHMARK-CONSENT-DRAFT.md`: the wording the client would see, seven questions for counsel (authority, personal data, confidentiality, hosting, withdrawal, group size, competition law), and what the code enforces.
+- **Not built** (a separate change that needs approval): storage, the consent tick box and record, and the report section with peer figures.
+- **Evidence.** `cost-iq-benchmark.test.ts`: off by default; the consent gate; anonymisation (a leak test); no figure below 10; the floor holds against configuration; per-metric, per-group counts.
