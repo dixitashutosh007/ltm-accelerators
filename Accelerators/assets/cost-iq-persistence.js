@@ -4,6 +4,9 @@
   'use strict';
 
   const ENDPOINT = '/api/cost-iq/assessment';
+  // Saving, the report and the narrative are Advisory API routes (window.LTM_CONFIG.apiBase, assets/runtime-config.js);
+  // COST_IQ_API is the Accelerators API, which serves only the scoring engine.
+  const base = () => (window.LTM_API && window.LTM_API.apiBase ? window.LTM_API.apiBase() : '');
 
   function toSignIn() {
     location.href = '/?require_login=1&redirect=' + encodeURIComponent(location.pathname + location.search);
@@ -13,7 +16,7 @@
     const lib = window.LTM_API;
     const token = lib ? await lib.getIdToken() : '';
     if (!token) { toSignIn(); throw new Error('Your session has expired. Sign in again to save or resume assessments.'); }
-    const send = t => fetch((window.COST_IQ_API || '') + path, Object.assign({}, options, {
+    const send = t => fetch(base() + path, Object.assign({}, options, {
       headers: Object.assign({ 'Content-Type': 'application/json' }, options && options.headers, { Authorization: 'Bearer ' + t })
     }));
     let response = await send(token);
@@ -32,7 +35,8 @@
   const progress = () => (typeof window.costIqProgress === 'function' ? window.costIqProgress() : undefined);
 
   window.CostIqPersistence = Object.freeze({
-    configured: () => Boolean(window.COST_IQ_API),
+    configured: () => Boolean(base()),
+    base: base,
     create: record => post({ action: 'save', snapshot: record, progress: progress() }),
     // A completed record asks the server to complete it: the result is computed there from the saved answers.
     update: record => post({ action: record.status === 'completed' ? 'complete' : 'save', snapshot: record, progress: progress() }),

@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Cost IQ — Technology Cost & Value Diagnostic · LTM Vantage</title>
 <script src="./cost-iq-runtime-config.js"></script>
+<script src="/assets/runtime-config.js"></script>
 <script src="/assets/vendor/chart-4.4.1.umd.js"></script>
 <script src="/assets/ltm-api.js"></script>
 <script src="/assets/s3-reports.js"></script>
@@ -489,7 +490,7 @@ async function downloadReport(format,view,btn){
   if(!reportReady()){say('Complete and save the assessment first.');return}
   if(btn)btn.disabled=true;say('Preparing the report…');
   try{
-    const r=await authedFetch(API+'/api/cost-iq/report?assessmentId='+encodeURIComponent(savedAssessment.assessmentId)+'&format='+format+'&view='+view);
+    const r=await authedFetch(window.CostIqPersistence.base()+'/api/cost-iq/report?assessmentId='+encodeURIComponent(savedAssessment.assessmentId)+'&format='+format+'&view='+view);
     if(!r.ok){let m='HTTP '+r.status;try{const d=await r.json();m=d.message||d.error||m}catch(e){}throw Error(m)}
     const blob=await r.blob();const m=/filename="([^"]+)"/.exec(r.headers.get('Content-Disposition')||'');
     const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=m?m[1]:'cost-iq-report.'+format;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),1000);
