@@ -23,6 +23,7 @@ import references from './published-references.json' with { type: 'json' };
 import { evaluateIndicative, indicativeFigures, INDICATIVE_LIBRARY, type IndicativeResult } from './indicative';
 import { plausibilityChecks, spendShareOfRevenue } from './plausibility';
 import { evaluateScenario, protectedFromAnswers, scenarioFigures, SCENARIO_TARGETS } from './scenario';
+import { unitCosts, unitFigures } from './units';
 
 const PLATFORM = 'LTM Vantage · Responsible Advisory';
 const PRODUCT = 'Cost IQ';
@@ -210,6 +211,7 @@ export function resolveCostIqField(i: CostIqReportInput, field: string): number 
   if (i.nonCloud && /^(levers\[|total\.)/.test(field)) return nonCloudFigures(i.nonCloud).get(field);
   if (field.startsWith('indicative.')) return indicativeFigures(indicativeFor(i)).get(field);
   if (field.startsWith('scenario[')) return scenarioFigures(indicativeFor(i), i.answers).get(field);
+  if (field.startsWith('units.') || field.startsWith('unitCost.')) return unitFigures(indicativeFor(i), i.baseline).get(field);
   const f = /^finops\.(.+)$/.exec(field);
   if (f && i.finops) {
     let o: any = i.finops;
@@ -560,16 +562,40 @@ function summary(c: Ctx): ReportSection {
   return { id: 'summary', title: 'Executive summary', blocks };
 }
 
+/** C2: technology spend per employee, user, server and application, from the counts the consultant recorded. */
+function unitMeasures(c: Ctx): Block[] {
+  const u = c.i.baseline?.units;
+  if (!u || !Object.keys(u).length) return [];
+  const costs = unitCosts(c.ind, c.i.baseline);
+  const LABEL: Record<string, [string, string]> = { employees: ['Employees', 'Technology spend per employee'], users: ['Technology users', 'Technology spend per user'], servers: ['Servers', 'Infrastructure spend per server'], applications: ['Applications', 'Application spend per application'] };
+  const KEY: Record<string, string> = { employees: 'perEmployee', users: 'perUser', servers: 'perServer', applications: 'perApplication' };
+  const money = (k: string, lo: number, hi: number | null): Seg[] => {
+    const m = (f: string, v: number) => traced(`unitCost.${k}.${f}`, v, 'currency', [], IND_ASM, c.ind.currency);
+    return hi == null ? ['at least ', m('low', lo)] : lo === hi ? [m('low', lo)] : !lo ? ['up to ', m('high', hi)] : [m('low', lo), ' to ', m('high', hi)];
+  };
+  const rows: Seg[][][] = Object.entries(u).map(([k, v]) => {
+    const cost = costs.find(x => x.key === KEY[k]);
+    return [[strong(LABEL[k][0])], [count(`units.${k}`, v as number)], cost ? [LABEL[k][1], ': ', ...money(cost.key, cost.low, cost.high)] : [k === 'servers' || k === 'applications' ? 'Needs the client\'s split of spend by category' : 'Needs the spend in scope']];
+  });
+  return [
+    { kind: 'subheading', text: 'Unit measures' },
+    { kind: 'table', head: ['Measure', 'Count', 'Spend per unit a year'], widths: [110, 70, '*'], small: true, rows },
+    { kind: 'paragraph', style: 'small', segs: [`Counts recorded by the consultant; the spend is the ${c.ind.basis.spend === 'exact' ? 'client\'s exact figure' : 'spend band'}${c.ind.basis.shares === 'split' ? ', split by the client\'s own shares' : ''}. No peer comparison is made: no verified, free benchmark for these unit costs is used.`] }
+  ];
+}
+
 /** A4: answers that are unlikely on their own or contradict each other. They change nothing in the scoring; they are checked first. */
 function toConfirm(c: Ctx): Block[] {
-  const checks = plausibilityChecks(c.i.answers);
+  const checks = plausibilityChecks(c.i.answers, c.i.baseline?.units);
   if (!checks.length) return [];
+  const UNIT_LABEL: Record<string, string> = { employees: 'Employees', users: 'Technology users', servers: 'Servers', applications: 'Applications' };
+  const counts = (): Seg[] => Object.entries(c.i.baseline?.units ?? {}).flatMap(([k, v], n) => [n ? '; ' : '', `${UNIT_LABEL[k]}: `, count(`units.${k}`, v as number)]);
   return [
     { kind: 'subheading', text: 'Answers to confirm' },
     { kind: 'paragraph', style: 'small', segs: ['These answers are unlikely on their own or do not fit together. They are scored as given and change no score, finding or range here; LTM confirms them with the respondent before evidence is gathered against them. The thresholds are LTM\'s, not published benchmarks.'] },
     { kind: 'table', head: ['What to confirm', 'Answers given', 'Why'], widths: [130, '*', 150], small: true, rows: checks.map(k => [
       [strong(k.title), ...(c.client ? [] : ['\n', ref(k.id)] as Seg[])],
-      k.questionIds.flatMap((q, n) => [n ? '\n' : '', quoted(questionsById.get(q)?.prompt ?? q), ' Answer: ', ...answerSegs(c.i, q, c.i.answers[q])]),
+      k.questionIds.length ? k.questionIds.flatMap((q, n) => [n ? '\n' : '', quoted(questionsById.get(q)?.prompt ?? q), ' Answer: ', ...answerSegs(c.i, q, c.i.answers[q])]) : ['Counts recorded by the consultant: ', ...counts()],
       [ref(k.confirm)]
     ]) }
   ];
@@ -594,6 +620,7 @@ function profile(c: Ctx): ReportSection {
   blocks.push({ kind: 'paragraph', segs: ['Focus areas assessed: ', i.selectedAreas.join('; ') || 'none', '.'] });
   blocks.push({ kind: 'paragraph', style: 'small', segs: ['Every client is also asked the baseline questions on enterprise context, priorities, spend visibility, cost governance and investment, so some dimensions are scored from those alone, whichever focus areas were chosen.'] });
   if (notChosen.length) blocks.push({ kind: 'paragraph', style: 'small', segs: [`Focus areas not chosen, so without their deeper questions: ${notChosen.join('; ')}. Findings and scores in this report reflect the questions asked, and say nothing further about these areas.`] });
+  blocks.push(...unitMeasures(c));
   blocks.push(...toConfirm(c));
   return { id: 'profile', title: 'Scope and context', blocks };
 }

@@ -40,7 +40,10 @@ export interface NonCloudEvidence {
  * The exact annual technology spend in scope, in the evidence currency, and its split by Cost IQ category in percent (summing
  * to 100). Either replaces what the questionnaire gave: the band, and the typical shares.
  */
-export interface SpendBaseline { exactAnnualSpend?: number; splitPercent?: Record<string, number> }
+export interface SpendBaseline { exactAnnualSpend?: number; splitPercent?: Record<string, number>; units?: UnitCounts }
+/** C2: headcount and estate counts, for unit costs (spend per employee, user, server, application) and plausibility checks. */
+export interface UnitCounts { employees?: number; users?: number; servers?: number; applications?: number }
+export const UNIT_KEYS = ['employees', 'users', 'servers', 'applications'] as const;
 export const BASELINE_CATEGORIES = ['INFRA', 'CLOUD', 'SAAS', 'SOFTWARE', 'APPS', 'NETWORK', 'DATA', 'SECURITY', 'PEOPLE', 'EXTERNAL', 'END_USER', 'OTHER'];
 
 function parseBaseline(b: any): { ok: true; value: SpendBaseline } | { ok: false; error: string } {
@@ -62,6 +65,17 @@ function parseBaseline(b: any): { ok: true; value: SpendBaseline } | { ok: false
     const sum = Object.values(split).reduce((t, v) => t + v, 0);
     if (Math.abs(sum - 100) > 1) return { ok: false, error: `baseline.splitPercent: the shares add up to ${Math.round(sum * 10) / 10}%, not 100%` };
     out.splitPercent = split;
+  }
+  if (b.units !== undefined) {
+    const u = b.units;
+    if (!u || typeof u !== 'object' || Array.isArray(u)) return { ok: false, error: 'baseline.units must be an object' };
+    const units: UnitCounts = {};
+    for (const [k, v] of Object.entries<any>(u)) {
+      if (!(UNIT_KEYS as readonly string[]).includes(k)) return { ok: false, error: `baseline.units.${k}: unknown measure` };
+      if (!(typeof v === 'number' && Number.isInteger(v) && v > 0)) return { ok: false, error: `baseline.units.${k}: expected a whole number above zero` };
+      units[k as keyof UnitCounts] = v;
+    }
+    if (Object.keys(units).length) out.units = units;
   }
   return { ok: true, value: out };
 }
@@ -165,7 +179,7 @@ export function parseNonCloudEvidence(raw: unknown): { ok: true; value: NonCloud
   if (o.baseline !== undefined && o.baseline !== null) {
     const b = parseBaseline(o.baseline);
     if (!b.ok) return b;
-    if (b.value.exactAnnualSpend !== undefined || b.value.splitPercent) baseline = b.value;
+    if (b.value.exactAnnualSpend !== undefined || b.value.splitPercent || b.value.units) baseline = b.value;
   }
   return { ok: true, value: { currency: o.currency, ...(o.internalRatePerFteMonth !== undefined ? { internalRatePerFteMonth: o.internalRatePerFteMonth } : {}), ...(o.effortTier !== undefined ? { effortTier: o.effortTier } : {}), levers, ...(baseline ? { baseline } : {}) } };
 }

@@ -560,9 +560,15 @@ test.describe('Cost IQ', () => {
     await expect(card.getByText('The split adds up to 95%, not 100%.')).toBeVisible();
     expect(sent).toEqual([]);
     await split.nth(2).fill('25');
+    // C2: counts are whole numbers.
+    await card.getByLabel('Employees').fill('4200.5');
+    await card.getByRole('button', { name: 'Save baseline' }).click();
+    await expect(card.getByText('Counts are whole numbers above zero.')).toBeVisible();
+    await card.getByLabel('Employees').fill('4200');
+    await card.getByLabel('Servers').fill('900');
     await card.getByRole('button', { name: 'Save baseline' }).click();
     await expect(card.getByText(/^Saved\./)).toBeVisible();
-    expect(sent).toEqual([{ action: 'set_lever_evidence', assessmentId: 'CIQ-base-1', evidence: { ...lever, baseline: { exactAnnualSpend: 31500000, splitPercent: { INFRA: 45, APPS: 30, PEOPLE: 25 } } } }]);
+    expect(sent).toEqual([{ action: 'set_lever_evidence', assessmentId: 'CIQ-base-1', evidence: { ...lever, baseline: { exactAnnualSpend: 31500000, splitPercent: { INFRA: 45, APPS: 30, PEOPLE: 25 }, units: { employees: 4200, servers: 900 } } } }]);
     expect(world.pageErrors).toEqual([]);
   });
 
