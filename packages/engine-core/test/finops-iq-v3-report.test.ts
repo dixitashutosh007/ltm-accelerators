@@ -451,8 +451,10 @@ describe('FinOps IQ report: client logo on the cover (carried over from FinOps V
     const withLogo = await renderPdf(doc);
     const without = await renderPdf(x.doc);
     expect(withLogo.subarray(0, 5).toString()).toBe('%PDF-');
-    expect(withLogo.includes(Buffer.from('/Subtype /Image'))).toBe(true);
-    expect(without.includes(Buffer.from('/Subtype /Image'))).toBe(false);
+    // The LTM ribbon is on every cover; the client's logo adds its image (and, for a PNG with transparency, its mask).
+    const images = (b: Buffer) => b.toString('latin1').split('/Subtype /Image').length - 1;
+    expect(images(without)).toBeGreaterThan(0);
+    expect(images(withLogo)).toBeGreaterThan(images(without));
   }, 30_000);
 });
 

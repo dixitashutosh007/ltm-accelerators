@@ -1,20 +1,22 @@
 /**
  * Renders a ReportDocument to PDF on the server (WS-S4). pdfmake's self-contained build with the Roboto fonts it
  * ships as base64 data, so nothing is read from disk and the renderer bundles into a Lambda. (The package's Node
- * entry reads font-shaping tables from files beside its own source, which the Lambda bundle does not carry.) LTM Vantage brand: ink text, the LTM red
- * for rules and headings, the platform footer on every page (docs/BRAND.md).
+ * entry reads font-shaping tables from files beside its own source, which the Lambda bundle does not carry.) LTM brand
+ * (owner request, 12 Nov 2026; docs/BRAND.md): a black cover with the LTM logo and ribbon, the LTM coral for rules and
+ * marks, the logo in the running header, ink text, and the platform footer on every page.
  */
 import pdfMake from 'pdfmake/build/pdfmake.js';
 import vfsFonts from 'pdfmake/build/vfs_fonts.js';
 import type { Content, TDocumentDefinitions, TableCell } from 'pdfmake/interfaces';
 import type { Block, ReportDocument, Seg, Tone } from './model';
+import { LTM_BLACK, LTM_CORAL, LTM_LOGO_SVG, LTM_RIBBON_JPEG } from './brand';
 
 const VFS: Record<string, string> = (vfsFonts as any).pdfMake?.vfs ?? (vfsFonts as any).vfs ?? (vfsFonts as any);
 const FONTS = {
   Roboto: { normal: 'Roboto-Regular.ttf', bold: 'Roboto-Medium.ttf', italics: 'Roboto-Italic.ttf', bolditalics: 'Roboto-MediumItalic.ttf' }
 };
 
-const INK = '#141414', MUTED = '#4B5563', RED = '#D33826', LINE = '#D1D5DB', FILL = '#F3F4F6', AMBER_BG = '#FDF6EB', BLUE_BG = '#EEF7FA';
+const INK = '#141414', MUTED = '#4B5563', RED = LTM_CORAL, LINE = '#D1D5DB', FILL = '#F3F4F6', AMBER_BG = '#FDF6EB', BLUE_BG = '#EEF7FA';
 
 /** Fills and text colours for heatmap cells and bars (WCAG AA text on each fill). */
 const TONE: Record<Tone, { fill: string; text: string; bar: string }> = {
@@ -192,9 +194,12 @@ export function definition(doc: ReportDocument): TDocumentDefinitions {
       else body.push(t, ...(note ? [block(note)] : []));
     });
   }
+  // The cover is LTM black with the ribbon across its foot (the page background), in light text.
+  const COVER_TEXT = '#FFFFFF', COVER_MUTED = '#A1A1AA';
   const cover: Content[] = [
+    { svg: LTM_LOGO_SVG, width: 110, margin: [0, 8, 0, 0] } as Content,
     // The client's logo sits in the space above the badge when one was given, so the cover does not shift.
-    m.clientLogo ? { image: m.clientLogo, fit: [180, 64], margin: [0, 56, 0, 18] } : { text: '', margin: [0, 120, 0, 0] },
+    m.clientLogo ? { image: m.clientLogo, fit: [180, 64], margin: [0, 40, 0, 18] } : { text: '', margin: [0, 92, 0, 0] },
     { text: m.platform.toUpperCase(), style: 'coverBadge', margin: [0, 0, 0, 18] },
     { text: m.product, style: 'coverProduct' },
     { text: m.title, style: 'coverTitle' },
@@ -207,7 +212,7 @@ export function definition(doc: ReportDocument): TDocumentDefinitions {
           ['Client', m.client], ['Assessment date', m.date], ['Prepared by', m.preparedBy], ['Data provided by', m.dataProvidedBy],
           ['Version', m.version], ['Edition', m.view === 'client' ? 'Client edition' : 'Consultant edition (includes consultant-only checks)'],
           ...(m.status ? [['Status', m.status]] : [])
-        ].map(([k, v]) => [{ text: k, color: MUTED }, { text: v }])
+        ].map(([k, v]) => [{ text: k, color: COVER_MUTED }, { text: v, color: COVER_TEXT }])
       },
       layout: 'noBorders', style: 'body'
     },
@@ -219,11 +224,20 @@ export function definition(doc: ReportDocument): TDocumentDefinitions {
     pageMargins: [50, 56, 50, 56],
     info: { title: `${m.product}: ${m.title} · ${m.client}`, author: m.preparedBy, subject: m.subtitle, creator: m.platform, producer: m.platform },
     defaultStyle: { font: 'Roboto', fontSize: 9.5, color: INK, lineHeight: 1.25 },
+    background: (page: number, size: { width: number; height: number }) => (page === 1 ? [
+      { canvas: [{ type: 'rect', x: 0, y: 0, w: size.width, h: size.height, color: LTM_BLACK }] },
+      { image: LTM_RIBBON_JPEG, width: size.width, absolutePosition: { x: 0, y: size.height - size.width * 553 / 1200 } }
+    ] as Content : null) as any,
     header: (page: number) => (page === 1 ? null : {
-      columns: [{ text: m.platform, color: MUTED, headlineLevel: RUNNING }, { text: `${m.product} · ${m.client}`, alignment: 'right', color: MUTED, headlineLevel: RUNNING }],
-      margin: [50, 24, 50, 0], fontSize: 7.5
+      columns: [
+        { svg: LTM_LOGO_SVG, width: 30, margin: [0, 1, 0, 0] } as Content,
+        { text: m.platform, color: MUTED, headlineLevel: RUNNING, width: '*' },
+        { text: `${m.product} · ${m.client}`, alignment: 'right', color: MUTED, headlineLevel: RUNNING, width: 'auto' }
+      ],
+      columnGap: 8, margin: [50, 22, 50, 0], fontSize: 7.5
     }),
-    footer: (page: number, pages: number) => ({
+    // The cover carries no footer: the ribbon fills its foot.
+    footer: (page: number, pages: number) => (page === 1 ? null : {
       columns: [{ text: m.footer, color: MUTED, headlineLevel: RUNNING }, { text: `Page ${page} of ${pages}`, alignment: 'right', color: MUTED, headlineLevel: RUNNING }],
       margin: [50, 18, 50, 0], fontSize: 7.5
     }),
@@ -241,10 +255,10 @@ export function definition(doc: ReportDocument): TDocumentDefinitions {
       tableSmall: { fontSize: 7.5 },
       kpiLabel: { fontSize: 7, color: MUTED, bold: true },
       kpiValue: { fontSize: 15, bold: true, margin: [0, 2, 0, 2] },
-      coverBadge: { fontSize: 9, bold: true, color: RED, characterSpacing: 1.5 },
-      coverProduct: { fontSize: 30, bold: true },
-      coverTitle: { fontSize: 16, margin: [0, 4, 0, 0] },
-      coverSubtitle: { fontSize: 11, color: MUTED }
+      coverBadge: { fontSize: 9, bold: true, color: LTM_CORAL, characterSpacing: 1.5 },
+      coverProduct: { fontSize: 30, bold: true, color: COVER_TEXT },
+      coverTitle: { fontSize: 16, margin: [0, 4, 0, 0], color: COVER_TEXT },
+      coverSubtitle: { fontSize: 11, color: COVER_MUTED }
     }
   };
 }
