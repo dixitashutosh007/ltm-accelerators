@@ -246,7 +246,9 @@ describe('"Where to look first" (CQ10 challenge M4)', () => {
     for (const [n, fp] of Object.entries(PROFILES)) for (const salt of [3, 7, 11]) {
       const i = input(fp, salt, null);
       const doc = costIqReport(i, { ...OPTS, view: 'client' });
-      const sec = doc.sections.find(x => x.id === 'summary')!;
+      // Product-grade plan A2: the areas to look at first are supporting evidence in the scores section.
+      expect(JSON.stringify(doc.sections.find(x => x.id === 'summary'))).not.toContain('Where to look first');
+      const sec = doc.sections.find(x => x.id === 'scores')!;
       const idx = sec.blocks.findIndex(b => b.kind === 'subheading' && (b as any).text === 'Where to look first');
       const singles = i.result.dimensions.filter(d => d.score != null && d.answered < 2);
       if (singles.length) sawSingle = true;
@@ -290,17 +292,20 @@ describe('phasing, confidence and first steps (CQ10 challenge M2, M3, M5)', () =
     expect(JSON.stringify(sec)).toMatch(/Confidence in the licence lever is Low[^"]*upper case is all of it/);
   });
 
-  it('M5: the summary lists at most three first steps for the most severe findings, and the roadmap is in the same order', () => {
+  it('M5 and A2: the first 100 days list at most three first steps for the most severe findings, and the roadmap is in the same order', () => {
     let seen = 0;
     for (const [n, fp] of Object.entries(PROFILES)) for (const salt of [3, 11]) {
       const i = input(fp, salt, null);
       const doc = costIqReport(i, { ...OPTS, view: 'client' });
       const sum = doc.sections.find(s => s.id === 'summary')!;
-      const idx = sum.blocks.findIndex(b => b.kind === 'subheading' && (b as any).text === 'Recommended first steps');
-      if (!i.result.recommendations.length) { expect(idx, n).toBe(-1); continue; }
-      seen++;
+      const idx = sum.blocks.findIndex(b => b.kind === 'subheading' && (b as any).text === 'The first 100 days');
+      if (!i.result.findings.length) { expect(idx, n).toBe(-1); continue; }
       expect(idx, n).toBeGreaterThan(-1);
-      expect((sum.blocks[idx + 1] as any).items.length).toBeLessThanOrEqual(3);
+      const steps = (sum.blocks[idx + 1] as any).rows.filter((r: any[]) => r[0][0].text === 'From day 31');
+      if (!i.result.recommendations.length) { expect(steps.length, n).toBe(0); continue; }
+      seen++;
+      expect(steps.length, n).toBeGreaterThan(0);
+      expect(steps.length, n).toBeLessThanOrEqual(3);
       const road = doc.sections.find(s => s.id === 'roadmap')!;
       expect(JSON.stringify(road)).toContain('In order: each step is placed by the highest-severity finding');
     }
@@ -370,7 +375,10 @@ describe('PDF layout (CQ10 challenge L4)', () => {
         const bottom = Math.min(...items.map(t => t.transform[5]));
         const last = items.filter(t => Math.abs(t.transform[5] - bottom) < 2);
         // A score bar's row ("Application Economics 66 / 100 · 4 answered") is body content in a larger type, not a heading.
-        if (/\/ 100/.test(last.map(t => t.str).join(' '))) continue;
+        if (/\/ 100|Not scored$/.test(last.map(t => t.str).join(' '))) continue;
+        // So is a row of figure tiles ("54 54 2 of 18"): figures only, no words beyond "of" and "to".
+        const line = last.map(t => t.str).join(' ');
+        if (/\d/.test(line) && !/\b(?!of\b|to\b)[a-z]{3,}/.test(line)) continue;
         const size = Math.max(...last.map(t => Math.hypot(t.transform[0], t.transform[1])));
         expect(size >= 10.9 || Math.abs(size - 8) < 0.05, `${n} ${view} page ${p} ends on a heading or table header: ${last.map(t => t.str).join(' ')}`).toBe(false);
       }

@@ -167,4 +167,19 @@ describe('the report', () => {
     const t = text(docs[0].doc);
     expect(t).not.toMatch(/saaS/);
   });
+
+  it('A2: page 3 of the client PDF is the one-page answer: the amount, the moves, the decision and the first 100 days', async () => {
+    const { renderPdf } = await import('../src/report/pdf');
+    const pdfjs = await import('pdfjs-dist/legacy/build/pdf.mjs');
+    const pdf = await pdfjs.getDocument({ data: new Uint8Array(await renderPdf(docs[0].doc)), verbosity: 0 }).promise;
+    const page = (n: number) => pdf.getPage(n).then(p => p.getTextContent()).then(t => (t.items as any[]).map(x => x.str).join(' ').replace(/\s+/g, ' '));
+    const p3 = await page(3);
+    expect(p3).toMatch(/Indicative value: GBP [\d.]+[km]? to GBP [\d.]+[km]? a year/);
+    expect(p3).toMatch(/Most of it sits in three moves/);
+    expect(p3).toContain('Decision requested');
+    expect(p3).toContain('The first 100 days');
+    expect(p3).toContain('Day 100');
+    // The scores are supporting evidence: the areas to look at first are in the scores section, not the summary.
+    expect(p3).not.toContain('Where to look first');
+  }, 60_000);
 });

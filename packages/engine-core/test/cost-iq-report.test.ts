@@ -117,7 +117,7 @@ describe('Cost IQ report', () => {
     const a = costIqReport(runs[0].i, { ...OPTS, view: 'client' }), b = costIqReport(runs[0].i, { ...OPTS, view: 'client' });
     expect(JSON.stringify(a)).toBe(JSON.stringify(b));
     const h = runs[0].i.result.headlines;
-    expect(text(a.sections[0].blocks.flatMap(bl => (bl.kind === 'paragraph' ? bl.segs : [])))).toContain(String(Math.round(h.costIQ as number)));
+    expect(text(a.sections[0].blocks.flatMap(bl => (bl.kind === 'paragraph' ? bl.segs : bl.kind === 'kpis' ? bl.items.flatMap(k => k.value) : [])))).toContain(String(Math.round(h.costIQ as number)));
   });
 
   it('lists each assumption with its basis and what changes if it is wrong, and every source with a year', () => {
