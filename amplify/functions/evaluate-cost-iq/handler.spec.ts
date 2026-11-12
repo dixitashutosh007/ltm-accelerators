@@ -44,6 +44,24 @@ describe('Cost IQ scoring service access', () => {
     expect(m.body.release.product).toBe('Cost IQ');
   });
 
+  it('returns the answer that leads the results screen (B4), formatted as the report formats it', async () => {
+    const answers = { 'CORE-01': ['ON_PREM'], 'CTX-01': 'GBP', 'CORE-04': '25M_50M', 'CORE-05': ['INFRA', 'PEOPLE'], 'CORE-34': 90, 'ADP-37': 70 };
+    const r = await call(event('POST', '/api/evaluate/cost-iq', { body: { answers } }));
+    expect(r.status).toBe(200);
+    expect(r.body.answer.value).toMatch(/^GBP [\d.]+[km]? to GBP [\d.]+[km]?$/);
+    expect(r.body.answer.share).toMatch(/^[\d.]+% to [\d.]+%$/);
+    expect(r.body.answer.moves.length).toBeGreaterThan(0);
+    // The screen and the report say the same thing: the report's lead opens with the same value and share.
+    const { costIqReport } = await import('../../../packages/engine-core/src/accelerators/cost-iq/report');
+    const { scopeCounts } = await import('../../../packages/engine-core/src/accelerators/cost-iq/evaluate.cjs');
+    const { plausibility, answer, ...result } = r.body;
+    const doc = costIqReport({ result, answers, selectedAreas: [], scope: scopeCounts({ answers, scope: { selectedAreas: [] } }), assessmentDate: '2026-11-12', currency: 'GBP', finops: null }, { client: 'X', preparedBy: 'LTM', dataProvidedBy: 'X', view: 'client' });
+    const lead = (doc.sections[0].blocks[0] as any).segs.map((x: any) => (typeof x === 'string' ? x : x.text)).join('');
+    expect(lead.startsWith(`Indicative value: ${answer.value} a year, ${answer.share} of the technology spend in scope.`)).toBe(true);
+    const none = await call(event('POST', '/api/evaluate/cost-iq', { body: { answers: { 'CORE-01': ['ON_PREM'] } } }));
+    expect(none.body.answer).toBeNull();
+  });
+
   it('returns the answers to confirm with the result (A4), and they leave the scores unchanged', async () => {
     const answers = { 'CORE-01': ['ON_PREM'], 'CORE-03': 'GT25B', 'CORE-04': 'LT5M', 'CORE-34': 95 };
     const r = await call(event('POST', '/api/evaluate/cost-iq', { body: { answers } }));
